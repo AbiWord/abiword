@@ -1,0 +1,833 @@
+Changes up to 0.5.2
+	* implemented auto text color colour check for table cells, no more
+	  black on black, or black on blue. i must look closely at what other
+	  auto changes word makes.
+	* some uber-simple greyscaling code when table look says no-color.
+	* verified it works under AIX, made a few changes that showed up due
+	to its stricter malloc, theres probably a few more malloc related
+	issues hiding in there.
+	* column breaks show up as well now.
+	* the various types of section breaks are distinguisable from the
+	others, and from page breaks.
+	* a few changes to make sure formatting and tables get on better 
+	together.
+	* sequence field supported, i.e caption numbering, i just use the last
+	fields that msword left in there.
+	* changed hyperlinking so that it works with bookmarks that are in
+	comments (annotations).
+	* i now support multiple bookmarks that end on the same location.
+	* multiple bookmarks that start on the same location should be supported,
+	but no examples yet.
+	* the comment author initials are extracted and used in the main document
+	when referencing comments.
+	* comments now end when they are supposed to, only the correct comments get
+	included, should work for fastsave, not tested.
+	* removed unused variables, sorted out a few other warnings, maybe itll
+	squeak by the irix compiler now ?
+	* names and initial info for comments is extracted as well, and stuck in a 
+	table at the end of the document.
+	* fixed the <a name= for comments, should work in fast saved.
+	* custom graphics for annotations.
+ALL TODO
+	* whats the story with the page number ref that shows up in annotations ?
+	* the bounds of the comment in the main document ?
+	* strikethrough and annotations ?
+	* start using the same structure names as word, and putting stuff like
+	get_FIB in order, switch to using bit fields where word uses them
+	rather than the current promotion to U8 that i do to keep my sanity.
+	* allow the various colors that im using to specifiy different attributes to
+	be modified by the user.
+	* bookmarks embedded in html tags break them, constructs such as e.g
+	<A href="stuff">stuf<a name="here">f</a></A> are being output even though
+	thats well wrong in html.
+	* optional html correct handling of lists.
+	* hmm, with bookmarks implemented, it might not be too hard to do 
+	the toc
+	* place all wingding and symbolfont names directly in the makefile for
+	make install.
+	* convert the cross-referenced "above/below", into hyperlinked above and 
+	below.
+	* support ole embedded graphics ?
+	* optional support for specifying special fonts, not recommended for use
+	on publishing for internet sites, but useful for internal use for those 
+	of you who have done the funky chicken dance with unix netscape to work 
+	with ms winding etc fonts or are using ie/netscape on windows.
+	* all the fields, document background colour, wmf converter .
+	* it might be possible to support right indentation, if its simultaneous
+	with equal left indentation by using <blockquote> instead of <dir>, but
+	i dont see that as essential.
+	* inside/outside page numbering doesnt work, dont know where its set.
+	* find the location of whatever sets the footnote & endnote styles of 
+	numbering, as its currently unknown, i havent figured it out yet, this
+	isnt super essential though, but it is annoying.
+	* all endnotes are listed at the end of the section rather than optionally
+	at the end of the document, i dont know how this is done, doesnt appear 
+	documented.
+	* two pass parser for finding best fit html tables for word tables.
+	* you know i could really do with a nifty logo.
+	* gtk+dps wysiwyg viewer, output to ps from this
+	* --> xml support ??, im told that xml is the way to go, i dont know a thing
+	about it yet, so the next task is to learn it.
+	* use incremental zlib functions to do decompressing rather than use mmap.
+	* make sure annotations references always get shown in the normal font ?
+	* hyperlink sequence fields ?
+	* doesnt compile under neXt ?
+	* do a check for mman.h and dont do compression if not there.
+Changes up to 0.5.1
+	* forgot to change the version no in the source.
+	* damn sunsite broke connection half way through uploading.
+Changes up to 0.5.0
+	* Martin Kalms <kalms@lysator.liu.se>, configure fix for sunos 4.1 in
+	relation to strerror.
+	* added option where you can ignore table widths.
+	* custom graphics for comments.
+	* endnote autonumbering now works, now defaults in roman numerals.
+	* fast save footnote problem fixed, though i think things might be
+	even more complex that i thought, so keep an eye on that area.
+	* footnotes are in a colour of their own.
+	* symbols as footnotes, required a change to the 4a30 sprm that might fix
+	a few other char formatting issues.
+	* restarting footnotes on each page, and each section works, this is 
+	encoded in the the number itself it appears, a href and a name, and some 
+	invalid html code fixed in the footnote area as well, footnotes are now in 
+	a colour of their own *but* the location of whatever sets the footnote & 
+	endnote styles of numbering is unknown, i havent figured it out.
+	* all endnotes are listed at the end of the section rather than optionally
+	at the end of the document, i dont know how this is done, doesnt appear 
+	documented.
+	* textmarks / bookmarks and explicit hyperlinking supported, bugs in 
+	old code removed hopefully and internal hyperlinks put in via insert
+	hyperlink are supported.
+	* support for bookmarks, i.e they are converted to <a name>[text]</a> html 
+	code.
+	* converted cross-referenced textmarks/bookmarks into hyperlinks.
+	* wmf files can now be decompressed thanks to peter.brandstrom@ericsson.com
+	now i need a wmf --> something useful converter. i see that theres a new
+	one available off the gimp plugin page, with some uberhacking it might
+	do the trick, the notes/wmf dir has a goodly chunk of info on the format if
+	anyone wants to do it for me.
+	* when bookmarks are embedded in bookmarks something odd appears to occur, 
+	but nonetheless the ms save as html does the same, so im assuming that its 
+	ok
+	* added bookmark support to fastsaved, should work fine, not tested.
+	* pagebreak gifs are correctly centered if the next para is a centered etc 
+	one.
+	* author field supported.
+	* proper positioning of page numbers, general layout of headers appears
+	to be fine, except that tab stops are used in headers to center, left
+	and right align headers, which doesnt work so well in html mode.
+	* added defensive code to some sort of list bug.
+	* mimic strike-through and double st by setting the text color to either
+	#ed32ff or #ff7332
+	* disallow height commands inside tables, as the model of paragraph heights
+	doesnt fit well with the architecture for tables, so im ignoring them in
+	tables, hopefully noone will notice :-)
+	* fixed a small bug in sprm which was causing errors later in lists.
+	* tables and paragraph formatting were misaligned across td boundries.
+	so now i clear specials and fonts on entry to a table, and on exit of each
+	cell, hopefully i broke nothing else on doing so.
+	* at least one really bad conversion with a file called RESUME.doc, but in
+	my defence i looked at the msword conversion of this to html, and its just
+	as buggered up so rasp ;-P
+	* added credits file
+	* found problem in decompress code, i didnt make it good enough for real
+	world usage, i now use mmapping so make my life easier, dont know if this
+	is fully portable, works on linux and solaris.
+	* oledecod had bugs on cleanup, so sent filters group wmf.doc and 
+	Contribu.doc to demo the problems.
+	* i now use oledecod 0.0.4 which fixes cleanup problems, but Contribu.doc
+	style problems continue, they return 5 but laola can extract the streams
+	nonetheless while oledecode cannot, i modified the original laolareplace.c
+	to handle this as well.
+	* oledecod 0.0.4 has a bug in relation to 1812bb.doc, laolareplace.old.c
+	hasnt this bug, so im back to using that again.
+	* those ffffffff's in lists that haunted me in earlier releases are *back*
+	grrrrr!!, anyway ive another massive nasty workaround that im using that
+	hasnt crashed any docs, and appears to do the right thing, at least in
+	propos~s.doc
+	* wmf decompression code changed to use mmap, replaces the original code
+	that ate memory, if mmapping doesnt work try looking at the zlib docs
+	and change the code to fixed buffer incremental decompression.
+	* added a bailout to ignore encrypted documents, wonder how id decrypt
+	them if i had the correct password, anyone know ?
+	* added a bug fix for crossreference parsing.
+	* beginnings of tables of contents included, doesnt always work yet.
+	* bug where if the word file ends on a table, the table wasnt closed off is
+	fixed.
+	* bug where non built in graphic types were causing hangs.
+	* im now often happily (if slowly) converting 90 and 100 page documents,
+	the only thing i really am unhappy with is table handling, which is
+	also one of the reasons the conversion is *soooo* slow sometimes, the
+	other reason is those godforsaken fastsaved files.
+	* fixed some other mem related bugs, converted sucessfully the last two 
+	problem docs without crashes.
+	* table looks are somewhat supported, though theres no support for last
+	row and last column different from the rest of the cells as of yet, this
+	will have to wait until multi pass on tables is implemented.
+	* the foregrounds and character attributes in general for tables appear
+	to always set correctly in general, but i believe i have to look into
+	how the "auto" text color selects is final colour, as ive been assuming
+	that it gets set to black, which is a fairly valid assumption most
+	of the time, but not always, so a few docs will have black text on
+	black backgrounds in table cells, but the situation is much improved.
+	* ran purify over mswordview, removed a load of dodgy code out of it, theres
+	still a bug or two hiding in the list code, which i belive is the reason
+	that lists are sometimes missing in complex documents, e.g meeting.doc
+	i think i love purify, its the bees knees.
+	* dib's are now extracted as well, though i dont do anything with them yet,
+	this fixes yet more crashes.
+	* fixed laolareplace.old.c, which is the version im going to use for this
+	release, to work on 64bit platforms, a few longs had crept into the code
+	there which shagged the whole thing up. I havent done extensive tests on
+	64bit yet, but im confident that itll work.
+	* fixed defines to make it work if theres no zlib present.
+	* no crashes after running mswordview on 300 megs of uploaded files.
+	* good enough to upload to sunsite, version number reflects this.
+changes up to 0.4.9
+	--This is an interim release while im in scotland until later this november--
+	added features are that the gateway is included, endnotes are supported,
+	pagebreaks that split tables are supported and some more bugs are fixed,
+	especially in relation to graphics.
+	* added -o - option to gateway, like i should have about 4 releases
+	ago.
+	* fixed graphics again, forgot to reset the extra amount that some have
+	before the graphic data begins, means more jpgs and pngs should work.
+	* endnote text done in simple saved
+	* cleaned up beginning whitespace from footnotes/endnotes/comments.
+	* endnotes in complex mode is in, needs testing.
+	* changed url code to match the other field code, fixes a big bug there.
+	* header and footer colours were wrong again, fixed.
+	* indent drift is fixed again, moved do_indent into decode_?_specials
+	* pagebreaks can occur in the middle of a table, this sort of confusion
+	is fixed for full saved files, and is probably fixed for fastsaved files
+	* pagebreaks now look like they occur after footers,footnotes and endnotes.
+	* custom graphics replace <hr>'s as there were too many of them at the
+	bottom of a page to figure out what was what.
+	* custom graphics for footnotes, and comments
+changes up to 0.4.8
+	* this has a slew of bug fixes related to graphics and a new option
+	to put images in a certain directory
+	* fixed f006 code in blip handling, removing a slew of hangs.
+	* ignore every graphic that isnt an understood type, removes hangs.
+	* figured out when theres an extra 16 bytes to delete from the beginning
+	of a blit, and where one of my magical 17s were coming from
+	* got a bug fix off Harry Shamansky (shamansky@adinc.com) as to why
+	the default make wouldnt work under irix.
+	* the current spid handling was mismatching spids and the graphics
+	involved.
+	* i cant handle forms, or ole data, so ive added a check to avoid
+	doing them, removes crashes.
+	* also ive added some other code to watch out for unsupported graphic
+	features.
+	* msword can include wmf and emf files, these are stored in compressed
+	form, using lz encoding in a fashion supposedly compatable with the zlib 
+	library, but i havent been able to decompress them yet and even if i 
+	could i dont know of any source to convert wmf/emf files to anything 
+	usable under linux
+	* ive changed blip handling, so that it works better, well i believe its
+	more crash resitant, but im still not 100% happy with 0x01 handling.
+	* if you insert a bmp via insert->picture->from file, it appears to
+	be converted to png for you, handy.
+	* paragraph indentation is back in, lists and table were confusing the
+	indentation code.
+	* fixed titchy bug so that space at beginning of lists isnt underlined.
+	* support paragraphs whose first lines indentation is greater that the rest
+	of it
+	* support vertical space between paragraphs.
+	* sorted out end_para for the first paragraph found in complex mode, i think
+	i have it right now, in passing i reckon a load of those pap searches
+	in complex mode are unneeded, but i dont want to rock a working boat, if it
+	aint broke dont fix it as an uncle of mine used say, though we did seem to
+	spend an awful amount of time panically fixing things that broke 
+	dramaticlly after years of neglect.
+	* finally settled on dirs for left indentation, blockquotes indent from both 
+	sides automatically
+	* added an option to put graphics in a specified dir.
+	* added an option to find the graphics at a specified url.
+	* updated man page.
+	* made another change to blip handling, fixes some problems.
+changes up to 0.4.7
+	* warning !, in this release mswordview no longer outputs by default to
+	the screen. use -o - for this behaviour. This is an interim release to
+	reassure people that im still working on it, its got quite a few new
+	features and bug fixes since 0.4.4 read down for them all.
+	* implemented tabbing with trans gif, optionally use hardspaces or 
+	dont do it at all.
+	* added some support for borders such that the vertical space between 
+	paragraphs due to width of borders is retained through the use of 
+	vertical trans gif space.
+changes up to 0.4.6
+	* indentation of paragraphs dithered to <blockquote>'s is out again as it 
+	its doing strange things on long complicated documents.
+	* table cell shading done, fully supported i believe.
+	* drew all the available table patterns in all available colors, 
+	made small transparent gifs out of them, if someone wants to do 
+	better copies of the ms ones go ahead, use the convert.sh script
+	in the patterns dir to generate pics in all necessary colors.
+	* text color support is in
+	* word underline, which iswhere whitespace isnt underlined is supported.
+	* courier as an alternative to courier new, times alternative to
+	times new roman font face, helvetica as an alternative for everything 
+	else.
+	* all caps supported, Small caps supported, though i want full tests
+	of those two babies in all modes. Similiar to the fontfaces these two 
+	babies are only supported in ascii languages, as i dont really know how 
+	to convert utf-8 unicode into upper case !
+	* text animations supported by converting them to blink :-)
+	features-examples dir added, supported-font-features.doc has what i
+	believe is all the font features that word supports demonstrated in it.
+	id be happy to have omissions noted, mswordview now supports
+	1) font size
+	2) colored text, (in headers and footers as well)
+	3) font face in ascii based languages
+	4) underline, including word underline, where whitespace is nt underlined
+	5) super and sub script
+	6) All caps and small caps (ascii based languages only)
+	7) text animations dithered to blink tag
+	mswordview doesnt support due to html limitations (at least i dont think
+	i can do them)
+	strikethrough,double strikethrough,shadowed and outlined text, embossed
+	or engraved text. 
+	"hidden text" is shown, coz i dont know the purpose of it yet
+	all caps, small caps and font face for non ascii languages.
+	character spacing
+	* centralized pap initialization code
+	* fixed a crash causing blip bug
+	* fixed a crash due to sep sprms showing up in a papx !!, i ignored them
+	im sure that will bite me hard in the future, but ive documented it here so
+	i wont forget.
+	- Problem:
+		now we have a problem with paragraph properties which is only making
+	a difference now that i want to use the paragraph justification codes.
+	there exist pieces which have fc's greater than the maximum one listed
+	in the plcfbtePapx !, ive been pushing them around for the last 2 days to
+	no avail, im beginning to think that maybe this means that they have no
+	native formatting of their own, the catch is to find the paragaph that they
+	belong to, the spec says to find that by taking the smallest fc in fkp
+	tables that is bigger than the current fc, but there *is none* thats bigger.
+	my thought is to remember if this piece is the beginning of a paragraph
+	mark and if not inherit the previous piece's formatting, and keep going
+	backward until we get one. If it is then either im supposed to default to
+	a new one or go forward to find one.
+	+  Solution: Ah-ha i believe i have it, 
+		+ firstly varient 1 gpprls have to be supported, and i had some offsetting 
+		in them wrong
+		+ secondly i had a very subtle bug where i changed the value of the avalrgfc,
+		from when i didnt know why sometimes they were +400000000, of course i now
+		use it to determine if the end of the piece if twice the distance of its 
+		reported character len of not, and with the val reset i ocassionally had
+		the piece recorded as being too long, so the paragraph properties of the 
+		wrong paragraph were being used.
+	* added is paragraph formatting information, supported well is
+		1) centering,		center
+		2) right justification , div align=right
+	* made a closing paragraph thing like the closing chp for the blurb at the
+	bottom to avoid having the version info centered of justified.
+	* 0x01 fSpec graphics are now supported in addition to 0x08 graphics 
+	  while both of these are draw objects, only non-vector graphics are supported, and 
+	  only partial support of those i.e png and jpg.
+	  as with the 0x08 graphics theres a lot of magic emperically derived offsets being used
+	  to put it together, so dont be too surprised at getting corrupt images.
+	  though i *have* fixed a bug in png handling i believe for 0x08 graphic which was the
+	  previous subset i supported.
+changes up to 0.4.5
+	* i now open graphic and doc files in binary mode to support platforms where this
+	makes a difference.
+	* replaced laola, perl no longer required, thanks to the mighty
+	Andrew Scriven who replaced the OLE functionality i needed with C
+	* got a bug fix off above to handle files with more blocks
+	* optional support for fontface if the text if an ascii based one,
+	i.e if were guaranteed that this is a western european language
+	then we do font faces, fastsaves will probably confuse this test and
+	mean we wont get faces even when we can handle them correctly.
+	* changed indent method for outline lists to multiple hard spaces, rather
+	than <dir>'s, in the future ill make an optional proper html conversion,
+	but it wont look like the original, so its a TO-DO.
+	* indentation of paragraphs dithered to <blockquote>'s is in, alpha support.
+	* absolute width and height of tables is in as well.
+	* i now default to outputting to a file whose name is the same as the input
+	file, with .html appended. graphics are output to the files with the same 
+	prefix as the .html file. use -o - to output to stdio
+	* new ole code was broken on a few files ( 1 :-) ), fixed this. 
+changes up to 0.4.4
+	* a good few bug reports in, crashes and what not, i got the use
+	of purify on a sun box (thanks to martin mellody et al) and sorted
+	out *all* the uninitilized mem reads there, (3000 of them in the course
+	of a typical conversion!!), it still leaks memory like a sieve but thats
+	not important for mswordview, though i will sort that out. purify is
+	a wonderful piece of work i have to say.
+	* changed ffffffff handling for lists, i think it means that
+	the list in question isnt actually there, so to skip it.
+	* changed blockquotes to dir, looks neater and word itself does
+	it, biggest software company in the world cant be wrong, can it ?
+	:-)
+changes up to 0.4.3
+	* oops, i shafted the inclusion of getopt for systems that need it.
+changes up to 0.4.2
+	* fixed broken simple mode footnotes (doh!)
+	* fixed bug in blip where having drawings where none
+	of them was a picture caused a crash
+changes up to 0.4.1
+	* did some tweaking to remove a crash.
+changes up to 0.4.0
+	* and big breaking news, preliminary graphic support is now in!!
+	yes, gifs/pngs/jpgs added to a document through the 
+	insert->picture->from file mechanism now convert correctly. They
+	are stored in the office draw format which ive just cracked the 
+	rough layout of. (through the handy ms spec on the msdn site),
+	graphic support is messy for now, as the files are generated in
+	the cwd of mswordview and named graphic*mswv.*, ill tidy it up
+	later, this news is too good to not get an announcement.
+changes up to 0.3.0
+	* added -m  --mainonly option if you dont want headers and footers.
+	* added a few more places to look for lls-mswordview
+	search order is now
+	1 in the path.
+	2 the same dir as lls was run from if ran absolutely.
+	3 the current dir.
+	4 a dir called laola off the absolute path.
+	5 a dir called laola off the current dir.
+	but stuff line ../../mswordview isnt in there though, coz folk should
+	just put lls-mswordview into their path dammit!
+	* diffent numbering formats for pagenumbering is in, a vs i vs 1 etc.
+	* gpprls for sep's work now, complex sections are in.
+	* found some strange code in clx_headers and clx_footers so i blew it 
+	away.
+	* section support in for simple saved files.
+	* sections that restart pagenumbering work now.
+	* sections that have no footers/headers at the beginning work now.
+	* complex support for sections is in as well, should work hopefully
+	needs extensive testing.
+	* TO-DO text color, eventually font faces, but no sleep lost on that i have
+	to say.
+	* TO-DO shaded cells in a table, think up a better table handling method.
+	* i now stick a space into an empty cell so that it shows up.
+	* another U8 wraparound bug removed.
+	* i now use the piecetable for simple docs, so as to skip over sections
+	that arent to be processed, i.e the simple format is just as complex as
+	the complex format :-), i think ive done this right and it wont break 
+	anything, ill have to wait and see though.
+	* changed slightly the portions of a field that dont get printed,
+	to make some html ones work, hope i havent shafted anything else.
+	* hmm, really need to cleanup character handling, unicode &
+	special reserved ms symbols and so on, im just plinking at
+	them for the moment.
+	* aghh, found another U8 overflow, what possessed me to put
+	them in in the first place ?, i should have guessed that
+	there would be hundreds of pieces in a file.
+	* received report that it compiles and runs with
+	Sparc solaris 2.5.1 - sparcworks compiler
+	&
+	Intel x86 solaris 2.5.1 - gcc compiler
+	* added patch from diakka <diakka@staff.sinanet.com> to run
+	create_bins on a make rather than make install
+changes up to 0.2.2
+	* compiled it on a solaris account i got, and its fine, got 
+	confirmation that it works from Will Renkel <renkel@cig.mot.com>
+	* changed fastsaved chpnextfc check to be >= rather that >, hope that i 
+	dont break anything cox of it.
+	* foolish error, U8 used for number of pieces, extended to U16
+	* changed embedded link handling to not end character properties in
+	the middle of a URL !
+	* changed embedded link handling so as to *not* place "" around urls,
+	as sometimes they are there already, and not having them doesnt hurt,
+	though it offends my sense as to how they should be done.
+	* would you *believe* these ms guys, now they are hitting me with
+	file offsets that are past the end of the file !!, so now i have to
+	watch out for that, the complex format is *such* a collection of
+	hacks, ah-ha ive just checked in word, this file crashes word :-)
+	so this is the first reported case of mswordview being better than 
+	msword, though i have to say that in recovery mode word pulled loads
+	of text out of it that i didnt get, :-(, still its a corrupt file
+	so doing anything at all is a success.
+	* i forgot to reset the higher list levels when changing a lower one,
+	fixed now, i think ive it right.
+	* added a define of SA_RESTART to 0 if it isnt there. bash does it so
+	i should get away with it, sunos seems to need it.
+	* added a little patch from Zachariah Baum <zack@studioarchetype.com>,
+	that should help get around folk who run mswordview absolutely and dont 
+	stick lls-mswordview in their path, ie make and then dont make install.
+	* fixed yet more bugs, for some reason i thought that
+	the order of evaluation was from right to left !!!!
+	i.e i was doing 
+		if ((*p == 'a') && (p!=NULL))
+	doh!
+	* changed web interface so that utf-8 is always on.
+	* font characteristics turn off when going into tables now.
+	and turn back on when inside, gets rid of some off look
+	and feel.
+	* checked out corel's wordperfect import functionality with
+	office 97 files, conversion isnt as good as mswordview i think.
+	missing header numbers, and one or two didnt convert at all.
+	though of course corel retains layout which mswordview cant
+	do with html, and does shading, ill check pictures at some stage.
+	* have a report that suns pcfileviewer similarly covers about 50%
+	of mswordview's functionality and vice versa.
+	* gzipped uploaded word file collection has just hit 120megs :-)
+	* i now look at this section table so i know whether its a section
+	break or page break. If its a section break, then the header/footers
+	revert to the beginning again.
+	TO-DO, add an space to empty cells to make them look reasonable in 
+	netscape.
+	TO-DO check page numbering with sections.
+	TO-DO, do endnotes, should be easy. make new pic to replace hr
+	lines, theres too many hrs now at the bottom of a page to make
+	sense to anyone anymore. if theres no footers, then dont do
+	the lines.
+	TO-DO, continue with the sent files since 0.1.0, and the rest
+	of them.
+changes up to 0.2.1
+	* removed bug that caused lists to drift further and further
+	right.
+	1. checked out the blockquote indention for lists, doesnt
+	appear to be right for srom*.doc, fixed now
+	took closer look at font scanning in decode_letter,
+	in particular special chars, the < 39 wasnt precise enough, being
+	in a wingding/symbol font seems to make you automatically a special
+	char.
+	2. something not fully right with lists that take their
+	text as special chars (i.e sectionnumber), not done by ms in
+	an obvious fashion. edit doc down to just the 2 headers and then
+	see what happens.
+	3 AHA!!!, 1 and 2 are wrong, as was previous ideas to ignore lists
+	that appear to have nothing in them, they are there to artifically
+	bump lists up to a different starting number without requiring a
+	seperate list definition for each one, ms shoves in dummy elements
+	to get the list up to the right number, the section id just before
+	one of them threw me entirely, i thought the section number should
+	have been the text of the list. ive got it now!
+	* 3 above is *rubbish*, thats not it at all, i was right originally,
+	ignore those 0 len lists, and the problem was with my list restarting
+	mechanism which didnt work if there was more that 1 list between list
+	section that had to continue numbering.
+	* numerical outline list sublevels will retain the prefix of the 
+	above levels, this required a change of the number figuring out code,
+	its now rather heavy of silliness, but it works, i dont love it and
+	im sure lists will be back to get me again at some stage, but outline
+	lists now work, in particular the 
+	1
+	1.1
+	1.1.1
+	style.
+	* TO-DO sections, srom*.doc has them, check them out.
+	* TO-DO change web interface so that the utf-8 can kick in if 
+	needs be.
+	* fixed bug where the new piecetable check in simple saved
+	files fell apart after hitting a footer.
+	(tempcp = tempcp, rather than realcp=tempcp, doh!)
+changes up to 0.2.0
+	* well arse again, ive revised my ideas as to what consititutes
+	the end of a piece, rather than the beginning the the next piece as
+	i was doing, i now believe thats its the beginning of the piece +
+	the twiddled cp len. makes more sense, and removes crashes from the
+	latest doc i was given.
+	* distinguishs between odd & even page footers.
+	* TO-DO odd & even headers
+	* added the tm symbol as a special case, theres quite a large
+	range of unicode that ms is using that is part of the customizable
+	section, i.e theres loads of glyphs that ms can use that are not
+	part of the standard unicode set, the tm appears to be one of hundreds.
+	eventuallly ill have to get a table of them.
+	* woweee, is ms an evil designer of data formats, they have two
+	types of simple saved docs i thought, those in 8 bit (basically ascii) 
+	and those in 16bit (unicode), hah bloody hah, ive been given one which is a 
+	mixture of both, and i have to use the damn piecetable to shove it together.
+	and its not as if the document shifted into a different language of 
+	anything. if this was fastsaved id not blink an eye, but simple saved, 
+	come *on*, why bother calling it simple saved. so i have to keep an eye 
+	on the piecetable to determine what exact offset to use after all.
+	* added a huge bit filthy hack in for more list twiddlings, the 
+	previously mentioned unknown 4 byte sequence now rears its head
+	as an optional 8 byte sequence !!, but always ffffffff, it might
+	be some kind of flag or summat. anyhow i now chew up any 4 bytes
+	consisting of this if they show up in the place that they might
+	appear, this removes a large crash that occurs otherewise, as all
+	the counters get thrown off course by them.
+changes up to 0.1.1
+	* added Makefile patch from Pavel.Roskin@ecsoft.co.uk (says it works
+	on hpux)
+	* well the good news is that the unicode utf-8 is working for
+	taiwanese and im sure other languages, the bad news is that everyones
+	telling me that noone in their language group is actually using unicode :-)
+	so i suppose i require a huge unicode --> JIS/EUC/KSC/Big5/GB converter.
+	:-)
+	* rudimentary support for annotations, i havent too many examples of these 
+	  but i think they'll work fairly well.
+	* rudimentary support for all special ascii codes for time,page no etc.
+	p.s by rudimentary support i mean that if asked for e.g the current date
+	in a particular format i output the date, maybe in the correct format
+	maybe not. i.e the meaning is the same, though the look might be different.
+	* added a supported sprm, that changes chp information totally to the
+	chp of a different style.
+	* added support for custom footnotes, had to do a bit of a hack to
+	get the <a name> stuff right, hopefully it'll always work, even if it
+	doesn't itll still be readable.
+	* twiddled the char formatting dependancies about again, really ill have
+	to redesign that a bit.
+	* broke the mswordview.c file down a bit into other files. 
+changes up to 0.1.0
+	* hell ive enough done to warrent a new numbering system.
+	so from now on
+	x.y.z
+	x is a stable bug free (hah) release. folk packaging for commercial
+	unices probably should wait for these releases (none yet, i know)
+	y is a new feature or enough bugs fixed that you better use this
+	version if you want to keep up with the jones. 
+	z is some small bug or change that is small enough that i wont upload
+	it to sunsite et al automatically, itll be mostly for me.
+	* added a defaultfont size option, so that if you think the output is
+	too big or small, you can skrink or enlarge it.
+	* added a horizontal padding option, you have the option of 3 different
+	ways to handle a run of multiple line breaks, though the default is probably 
+	the best.
+	* tweaked char formatting system, TO-DO overhaul all of that, theres quite
+	a few dependancies between the tags thats becoming a little to difficult
+	to do by hand, a little stack is called for methinks.
+	* added some support for a type of holdover list format found in docs
+	converted to word8 from older versions. works on the one i have so far
+	though theres more testing to be done with it. missing bullets and 
+	incorrect numbering may be related to this. pass them on to me.
+	* battered LFO's into submission, this time they'll stay down (i hope).
+	found a 4 byte field that i cant figure out where it came from. *shrug*
+	wouldnt be the first time that happened though.
+	* changed footer and header handling, i now take notice if the first pages
+	headers and footers are different that all the others. i still dont get
+	section breaks, which i think impact on this, i dont have any examples of
+	this to work against. Theres a discrepency between header/footer documentation
+	and what i see before me in the hex, maybe im missing something.
+	* ok theres some difficulty with tables, ive implemented this baby as a
+	one pass parser, later ill have to add multipass (or backpatch) to figure out 
+	the number of pages so as to get that field right, but with ms tables you can 
+	start off with 2 cols then go to e.g 4 in the same table, you dont know in 
+	advance how many rows and cols there are in maxiumum, or which ones span which,
+	which is a pain in the butt, really as far as word is concerned each row 
+	is a table into itself, so ive done it this way
+
+	- each table has the cols of the first row counted and the widths
+	  figured out in % of the page width, if a subsequent row has a different
+	  number of rows or different widths than the previous row a new table 
+	  will be begun. the % width will cause netscape to line them up correctly.
+	  itll do for now. not perfect i know but hey what is. Itll do the job
+	  for the primary task which is making word readable as close to the 
+	  original layout as possible within html. 
+	- to get the tap that tells me all the above we have to scan forward
+	  until we find a rowend char, and get the pap of that to get the tap.
+	  and with fastsaved theres the usual complexity
+	- The problem will be that netscape and other browsers dont take the 
+	  width% as their primary factor in determing the actual width of a cell, 
+	  if the text in it cannot be broken on a space then the cell is expanded 
+	  to fit, breaking the lineing up. Im considering a somewhat more sophisticated
+	  (and questionable) technique where i stick the tables together using
+	  dithering of the cells to a (max 64 cell (msdefined)) cell grid. using colspan
+	  and so on to do it.
+	* TO-DO theres something called a header text box that i have to figure out
+	  and some companion of it for the main doc. i have to implement something to
+	  handle these beasts.
+	* TO-DO more testing for bugs and stuff.
+	* TO-DO code overhaul to simplify it.
+	* TO-DO support all fields, ive some supporte page no, date and time.
+	but not perfectly in the same format that word has them in.
+	* TO-DO,figure out how to extract ole embedded msoffice draw and equation
+	editors data, and see if i can get them converted as well.
+	* TO-DO provide alternative outputs, tex/rtf and friends. ive a load of
+	formatting information that i think i can get into those formats.
+	* TO-DO provide basic formatting for html, i.e centering.
+	* TO-DO think about writing word docs :-), now that would be a hunk of work.
+	so to all you asking me about it i recommend you dont even bother with it,
+	just write rtf files and get on with it, thats even what ms did for word 8,
+	saving as word 6/95 just creates a rtf file, if its good enough for them, its 
+	good enough for us.
+	* TO-THINK-ABOUT i dont keep very much information in memory really, i just work
+	out what i need for any given instant and drag it out of the file, and then dump it
+	often to only get it again in a few seconds. this leads to an impressive amounting
+	of seeking back and forth across the streams. theres a groove burnt in my hd where
+	im working, its not really optimum behaviour, (works though :-) )
+	* NEED_HELP-ON, can this compile and work under sgi ?, have success reports
+	from linux, solaris,hpux,aix,freebsd and one failure to compile under sgi, ive
+	one message that it compiles under os/2, though it needs some work to do that.
+changes up to 0.0.27
+	* know how to do the right thing with embedded sprm list
+	gets rid of a few wild bugs.
+	* found the list documentation after all, maybe i forgot
+	to download it the last time (doh!), or it wasnt there
+	when i downloaded it. so i removed all of my rather good
+	but unnecessary hex determined code.
+	* added a special case for "*" in lists, make it a bullet
+	point instead, seems to be the right thing to do (?)
+	* changed laola commands name to append -mswordview to avoid
+	overwriting newer lls commands etc.
+	* changed the INC in perl files to reflect final install dir.
+	* TO-WORRY-ABOUT, quite a few ??'s displayed in netscape when
+	dealing with those utf-8 docs, dont know if thats my lack of
+	correct fonts, or a great big dirty bug. also ive a few special
+	cases in the decode_letter to translate letters into what *i* think
+	they should be, its rather questionable and very emperically based.
+	* added some hook code to protect lists from pagebreaks. 
+	in doing so i notice that my complex code is a wee bit confused, but
+	it works, so im leaving it alone for now, the added code doesnt make
+	for reability but hey, neither does any of the rest of the code :-)
+	* fiddled list interpertation so that ilfo isnt looked at until the
+	last pap and chp sprms have changed it. fixes difficulties in fast
+	saved files.
+	* TO-DO
+	(list stuff) LFO override not implemented correctly may cause crashes.
+	this is surely the last major list related thing to do.
+	restarts are probably incorrect as are a few other minor list 
+	related bits and pieces
+changes up to 0.0.26
+	* changed laola lib to a subdir of mswordview and changed laola
+	program names to custom mswordview ones, to avoid clashing
+	with newer versions or original version of laola, as ive
+	doctored things slightly for my own needs.
+	* applied Martin Schultze patch to add lib path to perl include
+	path, though i twiddled it to make a nice tree in my lib.
+	* lists start on the correct number (well ones that are simple
+	numerals do anyway).
+	* understand list continuing and restarting now.
+	* added a defensive patch from Peter Silva <Peter.Silva@ec.gc.ca>
+	* lists now get the char formatting that they should get.
+	* yes!, sorted lists out, have bulleted lists, arabic & roman numerals,
+	lowercase and uppercase lettering systems done. multilevel also works
+	i believe, works on all examples i have anyway
+	* fixed bug that made mswordview fail on files without an extension
+	* TO-DO look at list indentation, if they are true multilevel then
+	i blockquote them (for now), but if they have a set indentation value
+	then like all the other layout constructs i dont preserve this into 
+	html.
+	* TO-DO fields, table of contents should be easier with lists
+	done.
+	* TO-DO find out if my unicode (utf-8) support actually works
+	for anyone except me. What fonts do various people need, this
+	is a general netscape question.
+	* middleterm TO-DO, reorganize tags to external data files, to make extensible
+	to other formats, i.e raw ascii, an attempt at latex, rtf. 
+changes up to 0.0.25
+	* changed list handling slightly, removes a bug where
+	you get too many list levels inserted
+	* i believe that most lists will now be handled correctly as to
+	whether they are numbers or not. I have isolated the undocumented
+	section and have a handle on the situation so its just a matter
+	to comparing theory with practice again.
+	* removed bug where header pap gets used in the main document
+	following a header
+	* finished checking all uploaded files beginning with a, yipee.
+	now theres quite a few elements not addressed yet in those files, but 
+	i understand whats involved, in short, section support, proper list 
+	support, justification support (centering anyway) decoding of the DATE 
+	and TIME fields, would you believe that the TIME field can encode the 
+	DATE, despite the fact that theres a DATE field whos job this is !, 
+	gagh what can you do with people who do this to you. but anyhow the 
+	uploaded all convert without crash, all text is in the right place, and
+	in the right language ( i think :-) ).  all bold,italic,font sizes,
+	underline, manual page breaks, the content of footnotes,footers 
+	and headers is all shown, albeit not always the way they appear in 
+	word, yeah we're getting there.
+	* changed utf conversion code as the original code i was using wasnt
+	quite gpl compatable, anyhow new code is better designed for my needs.
+	* TO-DO, grr!! is someone reading this log, as after my weeks holidays
+	i note thats theres a huge amout of files beginning with a to go through
+	again, i never did make it to b.
+changes up to 0.0.24
+	* fixed NULL complex pap bug.
+	* supports underline tag now as well :-)
+	* footnotes supported, all the ones referenced before a 
+    pagebreak get listed at the manual pagebreaks and document
+	end . (thats a <hr> in my current output, splitting word docs
+	into different files is a challenge id rather not accept for 
+	now as itd just be guesswork and mess), not checked in fastsave
+	yet though.
+	* TO-DO support sections, so as to know what pages get headers
+	and which dont, etc.
+	* TO-DO proper table of contents, the text is now listed
+	but theres no link between the table of contents and the
+	text it purports to describe, for the moment.
+	* TO-DO differenciate between different types of underline
+	i.e word for word etc
+	* EVENTUALLY-TO-DO, i have come across one case where a symbol 
+	used in a footnote isnt working !, if i create one of my own
+	it works fine, but when i alter the given one it still 
+	occurs, strange.
+changes up to 0.0.23
+	* verified it works on linux, aix and solaris.
+	* fixed a very silly overflow byte vs int bug. 
+	* overhauled unicode conversion, fixed my sprm
+	size detection.
+	* changed table handling so that tables dont
+	end prematurely.
+	* fixed img insertion dummying of wingding font 
+	support.
+	* massively changed my paragraph end detection for
+	complex files, i had the idea all wrong, but close
+	enough that it worked on fairly uniformly formatted
+	files.
+	* works with all uploaded files beginning with A and a
+	theres soooo many to go through :-), im looking
+	forward to getting to b soon.
+	* TO-DO, continue checking against uploaded files,
+	verify header and footer support, start on list
+	information (dum de dum dum dummmm)
+changes up to 0.0.22
+	* check for errno
+	* fix list related crash bug, found by Wayne Roberts 
+	<milcom@netcom.com>
+	* TO-DO, go through the 50 megs of uploaded word
+	files and see do the convert fairly correctly :-)
+	lists need to be done better. i need to confirm
+	language conversion. and check out table of
+	contents field.
+changes up to 0.0.21
+	* for simple format i now decode to utf-8, when appropiate.
+	on viewing many docs with windows netscape 4 it works
+	fine, i dont have the X fonts to do half of the
+	languages under my own X, but hopefully those
+	in the various language blocks can figure out
+	fonts for themselves ?
+	* complex format non-west-european docs might
+	still be shagged, id love to hear from an asian
+	language group as to whether or not the utf8 works
+	for them
+	* some bug fixes by Pavel Machek <pavel@Elf.ucw.cz>
+changes up to 0.0.20
+	* headers are fairly correct now, the spec and me 
+	are confused as to headers and footers though, so 
+	while i *can* do headers and footers, it might require
+	a bit of fine tuning, so i need docs with all sorts
+	of header and footer types in them until im sure im right
+	, but its close enough.
+	* docs with subdocs in them should return the output of
+	the main doc now.
+	*to do, from the veritable deluge of documents in languages
+	i cant read :-), id better handle the non-standard, well
+	non standard to me anyway ! russian and one or two
+	others that i hope fall out in the process, asian
+	would be wonderful.
+changes up to 0.0.19
+	* header support added to complex format
+	* wingding font hack added like symbol font
+	* headers are still not right, footers and headers are all 
+	appearing at the top of the document, ive more work to do on
+	that next.
+	* ive shagged up the parsing of lls output, so docs with
+	ole inside ole will not work even though theres no good reason
+	they dont, bear with me on this
+	* mswordview.wrapper added to allow inline viewing of word docs.
+changes up to 0.0.18
+	* new option to not change msword headings to html headings to 
+	support those dodgy people who dont use them correctly.
+	* fixed what looks like a specialized case for recognizing tables
+	* fixed the lack of - sign.
+	* have a new group of files that convert correctly.
+	* these are minor changes, ill add header handling to complex
+	format tomorrow
+changes up to 0.0.17
+	* lack of getopt.h on some systems taken into account now.
+	* sub and super scripting now in for simple format.
+	* laola.pl changed to continue even if it thinks the file is
+	the wrong length.
+	* added option to not attempt to dummy up formatting done with
+	whitespace.
+	* using gifs for symbols, this will do for html output, for
+	other output in the future we'll have to organize something a 
+	little more sohpisticated
+	* i have some alpha support for headers in at the moment, 
+	if you have headers you "might" see them in russet text.

@@ -1,0 +1,37 @@
+how i test
+
+1) every now and then i run the testall.sh script over the incuded doc
+files and a few selected trouble makers that ive received.
+
+2) i have a set of supported features documents that display what
+mswordview should be able to do, i regularly check these to see if theres
+any feature rot.
+
+3) ocassionally i repeat the above test while using purify and identify
+out of bounds and mem leaks.
+
+4) once a week i run the huge test of (1) over the 300 megs of uploaded
+documents that i have received on poor old skynet.csn.ul.ie, many of these
+are not word 8 docs as people often upload rtf & word 6/7 & excel docs as
+well, but its a good brute force test for crashes, but no good to see if
+the conversion makes sense.
+
+5) i scan through the comments tha uploaders make of their files to identify 
+trouble docs and visually scan the output, making changes if necessary.
+
+some tools
+
+i still use laola's lls to help me find errors, its a great piece of kit
+to have. i also gives me other ole code to compare against the one thats
+included in mswordview, if both of them cant decode a file, then theres 
+pretty good evidence that somethings buggered in the ole tables, when word
+hangs on them as well, thats probably becomes definite.
+
+never having gotten the hang of hexdump i use the little jhex script that
+was posted in the linux-gazette at one stage as my hex reader. And theres
+nothing like doing a diff on the text output of a hexdump to find what
+changes between two versions of the same file, but with a different style
+chosen.
+
+purify is also the biz for tracking down mem leaks and uninitilized memory
+elements.

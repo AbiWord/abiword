@@ -18,10 +18,26 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=..
+# TODO we should move this down into src/other/libmswordview/xp
+
+ABI_DEPTH = ../..
+
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=		expat spell libmswordview
+CFLAGS += -DHAVE_CONFIG_H  -Ioledecod -I. -DPATTERNDIR=\"file:$(ABI_DEPTH)/other/libmswordview/patterns\" -DSYMBOLFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/symbolfont\" -DWINGDINGFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/wingdingfont\"
+
+CSRCS=	oledecod.c annotations.c blip.c blip.test.c decompresswmf.c field.c formatting.c getopt.c getopt1.c gpprl.c hyperlink.c init_chp.c laolareplace.c laolareplace.old.c list.c mswordview.c papchpsep.c piecetable.c references.c roman.c sprm.c strerror.c stylesheet.c support.c table.c utf.c 
+
+LIBRARY_NAME=		MsWordView
+LIBRARY_VERSION=	$(ABI_VERSION)
+TARGETS=		$(LIBRARY)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
+
+build:: $(TARGETS)
+	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
+	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(DIST)/lib
+
+
 
