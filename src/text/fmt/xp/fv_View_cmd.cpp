@@ -1328,6 +1328,10 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	{
 		return false;
 	}
+	if(isInHdrFtr(getPoint()))
+	{
+		return false;
+	}
 	if(getSelectionMode() != FV_SelectionMode_Single)
 	{
 		return false;

@@ -3179,10 +3179,6 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		{
 			maxW = pCell->getCellWidth();
 		}
-		//		if(pCell->getCellHeight() > pG->tlu(2) && pCell->getCellHeight() < maxH)
-		//	{
-		//	maxH = pCell->getCellHeight();
-		//}
 	}
 	if(pG->tdu(maxW) < 3)
 	{
