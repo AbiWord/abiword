@@ -33,7 +33,7 @@ John Wood <jyonw@asu.edu>                       NetBSD
 
 translators
 -----------
-albi <albi@linuxfan.com>                        Dutch
+Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Christian Terboven <cterboven@gmx.net>          German
