@@ -324,6 +324,7 @@ dcl(LANG_OC_FR,								"Occitan")		// Jordi 19/10/2002
 dcl(LANG_PL_PL, 							"Polish")
 dcl(LANG_PT_BR, 							"Portuguese (Brazil)")
 dcl(LANG_PT_PT, 							"Portuguese (Portugal)")
+dcl(LANG_QU_BO, 							"Quechua")
 dcl(LANG_RO_RO, 							"Romanian")
 dcl(LANG_RU_RU, 							"Russian (Russia)")
 dcl(LANG_SC_IT,								"Sardinian")	// Jordi 19/10/2002
