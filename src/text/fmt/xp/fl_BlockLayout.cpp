@@ -1113,17 +1113,79 @@ void fl_BlockLayout::_destroySpellCheckLists(void)
 
 void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 {
-	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
-	if (!pPOB)
+
+	fl_PartOfBlock*	pPOB;
+	bool foundAdjoiningRegion = false;
+
+	// TODO: This will work fine when adding text.... but what about deletion?
+	/* merge neighboring regions... */
+	pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
+	while ( (!foundAdjoiningRegion) && (pPOB != (fl_PartOfBlock *) 0))
 	{
-		// TODO handle outofmem
+		if ((pPOB->iOffset + pPOB->iLength) == iOffset)
+		{
+			/* new region comes right after this region... so extend this region */
+			pPOB->iLength += iLen;
+			foundAdjoiningRegion = true;
+		}
+		else if ((iOffset + iLen) == pPOB->iOffset)
+		{
+			/* new region comes right before this region... so extend this region */
+			pPOB->iOffset = iOffset;
+			pPOB->iLength += iLen;
+			foundAdjoiningRegion = true;
+		} 
+		else if ((pPOB->iOffset < iOffset) && (iOffset < (pPOB->iOffset + pPOB->iLength)))
+		{
+			/* overlapping regions... this region is in front of new region*/
+			if ((pPOB->iOffset + pPOB->iLength) < (iOffset + iLen))
+			{
+				pPOB->iLength = iLen + (iOffset - pPOB->iOffset);
+			}
+			/* else, 
+				new region is a subset of this region... do nothing 
+			*/
+
+			foundAdjoiningRegion = true;
+		}
+		else if ((iOffset < pPOB->iOffset) && (pPOB->iOffset < (iOffset + iLen)))
+		{
+			/* overlapping regions... new region is in front of this region */
+			if ((iOffset + iLen) < (pPOB->iOffset + pPOB->iLength))
+			{
+				pPOB->iOffset = iOffset;
+				pPOB->iLength = pPOB->iLength + (pPOB->iOffset - iOffset);
+			}
+			else
+			{
+				/* new region is a superset of this region */
+				pPOB->iOffset = iOffset;
+				pPOB->iLength = iLen;
+			}
+			foundAdjoiningRegion = true;
+		} else if ((iOffset == pPOB->iOffset) && (iLen == pPOB->iLength))
+		{
+			/* same region... do nothing */
+			foundAdjoiningRegion = true;
+		}
+		
+		pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.next();
 	}
 	
-	pPOB->iOffset = iOffset;
-	pPOB->iLength = iLen;
-
-	(void) m_lstNotSpellChecked.tail();
-	m_lstNotSpellChecked.append(pPOB);
+	if (!foundAdjoiningRegion)
+	{
+		pPOB = new fl_PartOfBlock();
+		if (!pPOB)
+		{
+			// TODO handle outofmem
+		}
+		
+		pPOB->iOffset = iOffset;
+		pPOB->iLength = iLen;
+	
+		(void) m_lstNotSpellChecked.tail();
+		m_lstNotSpellChecked.append(pPOB);
+	}
 }
 
 void fl_BlockLayout::_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen)
@@ -1188,6 +1250,8 @@ void fl_BlockLayout::checkSpelling(void)
 
 		wordBeginning = pPOB->iOffset;
 		eor = pPOB->iOffset + pPOB->iLength;
+		eor = (eor > pgb.getLength()) ? pgb.getLength() : eor;  // bounds check...
+
 		/* Loop through all of the words in this Part of Block segment */
 
 		while (wordBeginning < eor)
