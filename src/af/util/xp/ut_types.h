@@ -133,8 +133,9 @@ typedef	UT_sint32		UT_Error;
 #define UCS_REPLACECHAR	((UT_UCSChar)0xFFFD)
 
 /* Note: the following are our interpretations, not Unicode's */
-#define UCS_FIELDSTART		((UT_UCSChar)0xFFFE)
-#define UCS_FIELDEND		((UT_UCSChar)0xFFFD)
+/* Note: use Unicode Private Use Area 0xE000 - 0xF8FF         */
+#define UCS_FIELDSTART		((UT_UCSChar)0xE000)
+#define UCS_FIELDEND		((UT_UCSChar)0xE001)
 
 
 #if 1 /* try to use the unicode values for special chars */
