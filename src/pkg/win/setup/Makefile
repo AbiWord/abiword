@@ -42,7 +42,7 @@ $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
 	@rm -f $(BINDIR)/AbiWord.nsi; \
 	 $(ABICOPY) $(NSIS_SRC) $(BINDIR)/AbiWord.nsi; \
 	 cd $(BINDIR); \
-	 $(BINDIR)/makensis$(EXE_SUFFIX) ./AbiWord.nsi
+	 $(BINDIR)/makensis$(EXE_SUFFIX) /DUI_VERSION=$(ABI_BUILD_VERSION) /DUI_VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR) ./AbiWord.nsi
 
 ifeq ($(ABI_OPT_DEBUG),1)
 
