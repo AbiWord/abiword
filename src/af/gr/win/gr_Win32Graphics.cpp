@@ -428,7 +428,10 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 // it is possible (and it has happened) that the pointers are the same,
 // but it's two different fonts.
 //
-//	if (m_pFont != pWin32Font)
+
+	// this should work though, the allocation number is unique, even
+	// if the pointers are identical
+	if (!m_pFont || m_pFont->getAllocNumber() != pWin32Font->getAllocNumber())
 	{
 		m_pFont = pWin32Font;
 		GR_Win32Font::Acq::selectFontIntoDC(*m_pFont, m_hdc);
