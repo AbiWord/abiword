@@ -86,7 +86,7 @@ public:
 										  UT_String & sHeight,
 										  UT_String & sColXpos,
 										  UT_String & sColYpos,
-										  PT_DocPosition & posAtXY);
+										  fl_BlockLayout ** pCloseBL);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}

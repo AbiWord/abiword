@@ -955,7 +955,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 										UT_String & sHeight,
 										UT_String & sColXpos,
 										UT_String & sColYpos,
-								   PT_DocPosition & posAtXY)
+								   fl_BlockLayout ** pCloseBL)
 {
 //
 // Find the block that contains (x,y). We'll insert the frame after
@@ -964,6 +964,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 //
 // X and y are the (x,y) coords of the frame on the screen.
 //
+                PT_DocPosition posAtXY = 0;
 		posAtXY = m_pView->getDocPositionFromXY(x,y,true);
 		fl_BlockLayout * pBL = NULL;
 		fp_Run * pRun = NULL;
@@ -983,6 +984,9 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		{
 			return false;
 		}
+		UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
+			  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
+		*pCloseBL = pBL;
 		posAtXY = pBL->getPosition();
 
 		// don't left widths and heights be too big
@@ -1122,7 +1126,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sColYpos("");
 		UT_String sWidth("");
 		UT_String sHeight("");
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,posAtXY);
+		fl_BlockLayout * pCloseBL = NULL;
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,&pCloseBL);
 		pf_Frag_Strux * pfFrame = NULL;
 		const XML_Char * props[22] = {"frame-type","textbox",
 									  "wrap-mode","wrapped-both",
@@ -1140,6 +1145,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // position posXY.
 // It returns the Frag_Strux of the new frame.
 //
+		posAtXY = pCloseBL->getPosition();
 		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,NULL,props,&pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
 		getDoc()->insertStrux(posFrame+1,PTX_Block);
@@ -1475,7 +1481,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sHeight("");
 		UT_String sColXpos("");
 		UT_String sColYpos("");
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,posAtXY);
+		fl_BlockLayout * pCloseBL = NULL;
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,&pCloseBL);
 		sProp = "xpos";
 		sVal = sXpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
@@ -1540,7 +1547,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		getDoc()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
 
 		m_pFrameLayout = NULL;
-
+		posAtXY = pCloseBL->getPosition();
 // Insert the new frame struxes
 //
 // This should place the the frame strux immediately after the block containing
