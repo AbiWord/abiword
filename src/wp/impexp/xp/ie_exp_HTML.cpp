@@ -613,7 +613,10 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		if ( m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && 
 				(pAP->getProperty("text-align", szValue) 
 				|| pAP->getProperty("margin-bottom", szValue)
-				|| pAP->getProperty("margin-top", szValue)) )
+				|| pAP->getProperty("margin-top", szValue)
+				|| pAP->getProperty("margin-left", szValue)
+				|| pAP->getProperty("margin-right", szValue)
+				|| pAP->getProperty("text-indent", szValue)) )
 		{
 			m_pie->write(" style=\"");
 
@@ -638,6 +641,33 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				     m_pie->write("; margin-top: ");
 				else
 				     m_pie->write("margin-top: ");
+				m_pie->write((char*)szValue);
+				css = true;
+			}
+			if(pAP->getProperty("margin-left", szValue))
+			{
+				if(css)
+					m_pie->write("; margin-left: ");
+				else
+					m_pie->write("margin-left: ");
+				m_pie->write((char*)szValue);
+				css = true;
+			}
+			if(pAP->getProperty("margin-right", szValue))
+			{
+				if(css)
+					m_pie->write("; margin-right: ");
+				else
+					m_pie->write("margin-right: ");
+				m_pie->write((char*)szValue);
+				css = true;
+			}
+			if(pAP->getProperty("text-indent", szValue))
+			{
+				if(css)
+					m_pie->write("; text-indent: ");
+				else
+					m_pie->write("text-indent: ");
 				m_pie->write((char*)szValue);
 				css = true;
 			}
@@ -1023,7 +1053,8 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				}
 				else 
 				{
-					m_pie->write("; background: #");						m_pie->write(pszBgColor);
+					m_pie->write("; background: #");
+					m_pie->write(pszBgColor);
 				}
 			}
 		}
@@ -1426,7 +1457,19 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 				m_pie->write(szName);
 				m_pie->write(": ");
-				m_pie->write(szValue);
+				if (UT_strcmp(szName, "font-family") == 0 &&
+					(UT_strcmp(szValue, "serif") != 0 ||
+					 UT_strcmp(szValue, "sans-serif") != 0 ||
+					 UT_strcmp(szValue, "cursive") != 0 ||
+					 UT_strcmp(szValue, "fantasy") != 0 ||
+					 UT_strcmp(szValue, "monospace") != 0))
+				{
+					m_pie->write("\"");
+					m_pie->write(szValue);
+					m_pie->write("\"");
+				}						// only quote non-keyword family names
+				else
+					m_pie->write(szValue);
 				m_pie->write(";\n\t");
 			}
 		}

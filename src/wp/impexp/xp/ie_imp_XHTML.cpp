@@ -532,7 +532,6 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
 		X_VerifyParseState(_PS_Doc);
-		m_parseState = _PS_Block;
 
 		// append the two lists to the document
 		m_pDocument->appendList (ol_atts);
@@ -540,16 +539,13 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		UT_DEBUGMSG(("DOM: appended lists\n"));
 
 		//UT_DEBUGMSG(("%d atts: %s\n", i, atts[i]));
-		X_CheckError(m_pDocument->appendStrux(PTX_Section,NULL));
-		X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
 		return;		
 
 	case TT_DIV:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		m_parseState = _PS_Block;
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_Sec;
 		X_CheckError(m_pDocument->appendStrux(PTX_Section,NULL));
-		X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
 		return;
 
 	case TT_Q:
@@ -656,7 +652,8 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H3:
 	  {
 	    //    UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Block;
 
 		const XML_Char *p_val;
 
@@ -701,15 +698,21 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  }
 
 	case TT_OL:	  
-	  m_listType = L_OL; return;
-	  break;
-
 	case TT_UL:
-	  m_listType = L_UL; return;
-	  break;
+		if(tokenIndex == TT_OL)
+	  		m_listType = L_OL;
+	  	else m_listType = L_UL;
+
+		if(m_parseState != _PS_Sec)
+		{
+			_endElement("li");
+			m_parseState = _PS_Sec;
+		}
+
+		return;
 
 	case TT_LI:
-	  X_VerifyParseState(_PS_Block);
+	  X_VerifyParseState(_PS_Sec);
 	  m_parseState = _PS_Block;
 
 	  XML_Char *sz;
@@ -754,7 +757,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H6:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 	  {
-		X_VerifyParseState(_PS_Block);
+		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		
 		const XML_Char *p_val;
@@ -805,7 +808,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_BREAK:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
+		if(m_parseState == _PS_Block)
 		{
 			UT_UCSChar ucs = UCS_LF;
 			X_CheckError(m_pDocument->appendSpan(&ucs,1));
@@ -820,7 +823,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  return;
 
 	case TT_PRE:
-		X_VerifyParseState(_PS_Block);
+		X_VerifyParseState(_PS_Sec);
 		m_bWhiteSignificant = true;
 		return;
 
@@ -852,20 +855,19 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
+		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Doc;
 		return;
 
 	case TT_DIV:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		m_parseState = _PS_Block;
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Doc;
 		return;
 
 	case TT_OL:
 	case TT_UL:
-	  m_listType = L_NONE; return;
-	  break;
+		m_listType = L_NONE; return;
 
 	case TT_LI:
 	case TT_P:
@@ -879,8 +881,8 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	case TT_BLOCKQUOTE:
 	  UT_ASSERT(m_lenCharDataSeen==0);
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		m_parseState = _PS_Block;
+	  	if(m_parseState != _PS_Block) return;
+		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		_popInlineFmt();
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
@@ -932,11 +934,12 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	case TT_TITLE:
 	case TT_META:
 	case TT_STYLE:
-	  return;
+		return;
 
 	case TT_PRE:
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
+		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		m_bWhiteSignificant = false;
 		return;
