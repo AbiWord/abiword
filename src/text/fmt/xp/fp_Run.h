@@ -215,7 +215,7 @@ public:
 	UT_sint32               getToplineThickness(void);
 
 #ifdef BIDI_ENABLED
-	FriBidiCharType			inline getDirection(){return m_iDirection; };
+	virtual FriBidiCharType	getDirection() const {return m_iDirection; };
 	FriBidiCharType			getVisDirection();
 	virtual void            setDirection(FriBidiCharType iDirection = FRIBIDI_TYPE_WS);
 	void					setVisDirection(FriBidiCharType iDir);

@@ -268,31 +268,81 @@ void fp_TextRun::lookupProperties(void)
 	delete lls;
 
 #ifdef BIDI_ENABLED
-	//###TF
-	FriBidiCharType prevDir = m_iDirection;
-	
-	if(m_iDirection == FRIBIDI_TYPE_UNSET)
-		setDirection(FRIBIDI_TYPE_UNSET);
-
-	//UT_DEBUGMSG(("TextRun (0x%x): lookupProperties, m_iDirection=%d\n", this,m_iDirection));
     const XML_Char *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-    if(!UT_stricmp(pszDirection, "rtl"))
-    	m_iDirOverride = FRIBIDI_TYPE_RTL;
+    // the way MS Word handles bidi is peculiar and requires that we allow
+    // temporarily a non-standard value for the dir-override property
+    // called "nobidi"
+#if 0
+    bool bMSWordNoBidi = false;
+#endif
+    if(!pszDirection)
+       	m_iDirOverride = FRIBIDI_TYPE_UNSET;
     else if(!UT_stricmp(pszDirection, "ltr"))
     	m_iDirOverride = FRIBIDI_TYPE_LTR;
+    else if(!UT_stricmp(pszDirection, "rtl"))
+    	m_iDirOverride = FRIBIDI_TYPE_RTL;
+#if 0
+    else if(!UT_stricmp(pszDirection, "nobidi"))
+    	bMSWordNoBidi = true;
+#endif
     else
-    {
        	m_iDirOverride = FRIBIDI_TYPE_UNSET;
-       	setDirection(FRIBIDI_TYPE_UNSET);
-    }
+   	
+   	setDirection(FRIBIDI_TYPE_UNSET);
 
-    if(m_iDirOverride != FRIBIDI_TYPE_UNSET)
-    	m_iDirection = m_iDirOverride;
-    	
-   	if(m_iDirection != prevDir && m_pLine)
-   	{
-    	m_pLine->changeDirectionUsed(prevDir, m_iDirection, true);
-    }
+    // now we should have a valid value for both direction and override,
+    // except in the MSWord specific case
+/*
+	the problem with the following code is, that although it works quite nicely,
+	it leaves incorrectly bracketed record in the undo, and if the user gets
+	to a point when undo actually tries to restore the nobidi property,
+	it leads to infinite recursion. I have tried a number of things, but did not
+	succeed in finding a way to get around that, so for the time being this is off
+	and the MSWord importer sets directly "ltr". (This is a nuisance, since
+	it means unnecessary use of the dir-override property.)
+*/
+#if 0
+    if(bMSWordNoBidi)
+    {
+    	// the nobidi override is used by the importer to indicate that no bidi
+    	// algortithm should be applied to this text; we will only respect this
+		// if the current run is weak and translate it to LTR (only happens in LTR
+		// contexts) this effectively means that all numbers in LTR context imported
+		// from Word will be overriden to strong LTR
+		
+		const XML_Char * prop[]    = {NULL, NULL, 0};
+		const XML_Char direction[] = "dir-override";
+		const XML_Char ltr[]       = "ltr";
+		const XML_Char nbidi[]	   = "nobidi";
+		prop[0] = (XML_Char*) &direction;
+
+		UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
+
+	    if(FRIBIDI_IS_WEAK(m_iDirection))
+    	{
+			prop[1] = (XML_Char*) &ltr;
+			
+			m_iDirOverride = FRIBIDI_TYPE_LTR;
+			// this might have resulted in change of overall direction, so
+			// make sure that all is OK
+			setDirection(FRIBIDI_TYPE_UNSET);
+			bool bRes = getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
+    		UT_DEBUGMSG(("fp_TextRun::lookupProperties: changing \"nobidi\" to \"ltr\", dir %d, bRes %d\n", m_iDirection, bRes));
+			
+	    }
+	    else
+	    {
+    		UT_DEBUGMSG(("fp_TextRun::lookupProperties: removing \"nobidi\", dir %d\n", m_iDirection));
+	
+			prop[1] = (XML_Char*) &nbidi;
+			
+			m_iDirOverride = FRIBIDI_TYPE_UNSET;
+			// no need to call setDirection, since the overall direction remains the same
+			//setDirection(FRIBIDI_TYPE_UNSET);
+			getBlock()->getDocument()->changeSpanFmt(PTC_RemoveFmt,offset,offset + m_iLen,NULL,prop);
+	    }
+	}
+#endif
 	xxx_UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
 #endif
 }
@@ -772,6 +822,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_pLanguage != m_pLanguage)  //this is not a bug
 #ifdef BIDI_ENABLED
 		|| (pNext->m_iDirection != m_iDirection)  //#TF cannot merge runs of different direction of writing
+		|| (pNext->m_iDirOverride != m_iDirOverride)
 #endif
 		)
 	{
@@ -800,6 +851,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
 #ifdef BIDI_ENABLED
 	UT_ASSERT(m_iDirection == pNext->m_iDirection); //#TF
+	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 #endif
 //	UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
 
@@ -901,6 +953,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_pLanguage = this->m_pLanguage;
 #ifdef BIDI_ENABLED
 	pNew->m_iDirection = this->m_iDirection; //#TF
+	pNew->m_iDirOverride = this->m_iDirOverride;
 #endif
 //	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
 
@@ -2392,23 +2445,18 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 void fp_TextRun::setDirection(FriBidiCharType dir)
 {
 	if(!m_iLen)
-	{
 		return; //ignore 0-length runs, let them be treated on basis of the app defaults
-	}
 
-	FriBidiCharType prevDir = m_iDirection;	
+	FriBidiCharType prevDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;
 	if(dir == FRIBIDI_TYPE_UNSET)
 	{
-		if(m_iDirOverride == FRIBIDI_TYPE_UNSET)
+		// only do this once
+		if(m_iDirection == FRIBIDI_TYPE_UNSET)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
-			
+		
 			m_iDirection = fribidi_get_type((FriBidiChar)firstChar);
-		}
-		else
-		{
-			m_iDirection = m_iDirOverride;
 		}
 	}
 	else //meaningfull value received
@@ -2418,8 +2466,6 @@ void fp_TextRun::setDirection(FriBidiCharType dir)
 	
 	xxx_UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, m_iDirection, dir, m_iDirOverride, prevDir));
 	
-	//setDirectionProperty(m_iDirection);
-	
 	/*
 		if this run belongs to a line we have to notify the line that
 		that it now contains a run of this direction, if it does not belong
@@ -2428,12 +2474,16 @@ void fp_TextRun::setDirection(FriBidiCharType dir)
 		is a run that is being typed in and it gets set in the member
 		functions when the run is loaded from a document on the disk.)
 	*/
+
+	FriBidiCharType curDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;
 	
-	if(m_iDirection != prevDir)
+	UT_ASSERT(curDir != FRIBIDI_TYPE_UNSET);
+	
+	if(curDir != prevDir)
 	{
 		if(m_pLine)
 		{
-			m_pLine->changeDirectionUsed(prevDir,m_iDirection,true);
+			m_pLine->changeDirectionUsed(prevDir,curDir,true);
 		}
 		clearScreen();
 	}
@@ -2462,15 +2512,18 @@ void fp_TextRun::_refreshPrefs(UT_Worker * /*pWorker*/)
 /*
 	NB !!!
 	This function will set the m_iDirOverride member and change the properties
-	in the piece table correspondingly; because it does not do any updates, etc.,
+	in the piece table correspondingly; however, note that if dir ==
+	FRIBIDI_TYPE_UNSET, this function must immediately return.
+	
+	Because of this specialised behaviour and since it does not do any updates, etc.,
 	its usability is limited -- its main purpose is to allow to set this property
 	in response to inserting a Unicode direction token in fl_BlockLayout _immediately_
 	after the run is created. For all other purposes one of the standard
-	edit methods should be used
+	edit methods should be used.
 */
 void fp_TextRun::setDirOverride(FriBidiCharType dir)
 {
-	if(dir == m_iDirOverride)
+	if(dir == FRIBIDI_TYPE_UNSET || dir == m_iDirOverride)
 		return;
 		
 	const XML_Char * prop[] = {NULL, NULL, 0};
@@ -2488,22 +2541,15 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 		case FRIBIDI_TYPE_RTL:
 			prop[1] = (XML_Char*) &rtl;
 			break;
-		case FRIBIDI_TYPE_UNSET:
-			// leave the NULL in place
-			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	};
 	
+	m_iDirOverride = dir;
+	
 	UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
-	if(m_iDirOverride == FRIBIDI_TYPE_UNSET)
-	{
-		getBlock()->getDocument()->changeSpanFmt(PTC_RemoveFmt,offset,offset + m_iLen,NULL,prop);
-	}
-	else
-	{
-		getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
-	}
+	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
+	
 	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,m_iLen,prop[1]));
 }
 
