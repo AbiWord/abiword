@@ -254,7 +254,9 @@ public:									// we create...
 						UT_ASSERT(length < 1024);				       
 						strcpy(wd->m_comboEntryBuffer, buffer);
 
-						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview)
+						// HACK BUG - disable font preview for GTK 2.2
+						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview &&
+							!(GTK_CHECK_VERSION (2,1,0)))
 						  {
 						    wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
 						    wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
@@ -319,7 +321,7 @@ public:									// we create...
 		GtkWidget * entry = static_cast<GtkWidget*>(g_object_get_data(G_OBJECT(widget), "entry"));
 
 		// only act if the widget has been shown and embedded in the toolbar
-		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
+		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT && !(GTK_CHECK_VERSION (2,1,0)))
 		{
 		    // if the popwin is still shown, this is a copy run and widget has a ->parent
 		    if (entry->parent)
