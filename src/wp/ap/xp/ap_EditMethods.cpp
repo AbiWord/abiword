@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -47,6 +48,7 @@
 #include "ap_Dialog_Paragraph.h"
 #include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
+#include "ap_Dialog_Insert_DateTime.h"
 
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
@@ -3866,6 +3868,45 @@ Defun1(dlgZoom)
 	return s_doZoomDlg(pView);
 }
 
+static UT_Bool s_doInsertDateTime(FV_View * pView)
+{
+  XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+    UT_ASSERT(pFrame);
+
+    pFrame->raise();
+
+    XAP_DialogFactory * pDialogFactory
+      = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+    AP_Dialog_Insert_DateTime * pDialog
+      = (AP_Dialog_Insert_DateTime *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_DATETIME));
+    UT_ASSERT(pDialog);
+
+    pDialog->runModal(pFrame);
+
+    if (pDialog->getAnswer() == AP_Dialog_Insert_DateTime::a_OK)
+    {
+        time_t  tim = time(NULL);
+        struct tm *pTime = localtime(&tim);
+        UT_UCSChar *CurrentDateTime = NULL;
+        char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
+
+        strftime(szCurrentDateTime,CURRENT_DATE_TIME_SIZE,pDialog->GetDateTimeFormat(),pTime);
+        UT_UCS_cloneString_char(&CurrentDateTime,szCurrentDateTime);
+        pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime));
+        FREEP(CurrentDateTime);
+    }
+
+    pDialogFactory->releaseDialog(pDialog);
+
+    return UT_TRUE;
+}
+
+Defun1(insDateTime)
+{
+  ABIWORD_VIEW;
+  return s_doInsertDateTime(pView);
+}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -3882,15 +3923,6 @@ Defun1(insPageNo)
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Insert page numbers dialog", __LINE__);
-	return UT_TRUE;
-}
-
-Defun1(insDateTime)
-{
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Insert date/time dialog", __LINE__);
 	return UT_TRUE;
 }
 

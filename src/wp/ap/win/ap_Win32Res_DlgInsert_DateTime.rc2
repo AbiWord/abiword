@@ -1,0 +1,56 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_INSERT_DATETIME_AVAILABALE_FORMATS       1001
+#define AP_RID_DIALOG_INSERT_DATETIME_FORMAT_LISTBOX        1002
+//#define AP_RID_DIALOG_INSERT_DATETIME_BTN_DEFAULT        1003
+#define AP_RID_DIALOG_INSERT_DATETIME_BTN_OK         IDOK
+#define AP_RID_DIALOG_INSERT_DATETIME_BTN_CANCEL       IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+
+AP_RID_DIALOG_INSERT_DATETIME DIALOG DISCARDABLE  0, 0, 170, 143
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Date and Time"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LISTBOX         AP_RID_DIALOG_INSERT_DATETIME_FORMAT_LISTBOX,7,20,101,116,LBS_USETABSTOPS |
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL |
+                    WS_TABSTOP
+    DEFPUSHBUTTON   "OK",AP_RID_DIALOG_INSERT_DATETIME_BTN_OK,113,7,50,14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_INSERT_DATETIME_BTN_CANCEL,113,24,50,14
+//    PUSHBUTTON      "Default...",AP_RID_DIALOG_INSERT_DATETIME_BTN_DEFAULT,113,41,50,14
+    LTEXT           "Available Formats",AP_RID_DIALOG_INSERT_DATETIME_AVAILABALE_FORMATS,7,7,56,8
+END
+
+
+#endif /* RC_INVOKED */

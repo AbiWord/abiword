@@ -47,6 +47,7 @@
 #	include "ap_UnixDialog_Paragraph.h"
 #	include "ap_UnixDialog_Options.h"
 #	include "ap_UnixDialog_Spell.h"
+#	include "ap_UnixDialog_Insert_DateTime.h"
 
 #ifdef HAVE_GNOME
 #   include "xap_UnixGnomeDlg_Zoom.h"
@@ -75,7 +76,7 @@
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
-	DeclareDialog(AP_DIALOG_ID_OPTIONS,		AP_UnixDialog_Options)	
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)	
 
 	// ... also add new dialogs here ...
 #   else
@@ -94,7 +95,8 @@
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
-	DeclareDialog(AP_DIALOG_ID_OPTIONS,		AP_UnixDialog_Options)	
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)
+	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)		
 
 	// ... also add new dialogs here ...
 #   endif

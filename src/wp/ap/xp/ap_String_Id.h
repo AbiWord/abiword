@@ -175,3 +175,6 @@ dcl(DLG_Options_Label_ViewUnprintable,	"Un&printable characters")
 
 dcl(DLG_Options_Prompt_IgnoreResetCurrent,	"Do you want to reset ignored words in the current document?" )
 dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in all the documents?" )
+
+dcl(DLG_DateTime_DateTimeTitle,			"Date and Time")
+dcl(DLG_DateTime_AvailableFormats,		"&Available formats:")
