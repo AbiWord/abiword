@@ -213,7 +213,7 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %changelog
 
 * Sat Nov 24 2001 Rui M. Silva Seabra <rms@multicert.com>
-- Made spec ready to be included in tree
+- Made some minor corrections
 
 * Sat Nov 24 2001 Francis James Franklin <fjf@alinameridon.com>
 - Made spec ready to be included in tree
