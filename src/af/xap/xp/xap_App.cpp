@@ -527,6 +527,17 @@ bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
 	return m_pDict->isWord(pWord, len);
 }
 
+/*!
+ * Look up the custom dictionary for suggested words
+ */
+void    XAP_App::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord)
+{
+  if(m_pDict)
+  {
+       m_pDict->suggestWord(pVecSuggestions, pWord, lenWord);
+  }
+}
+
 XAP_Prefs * XAP_App::getPrefs() const
 {
 	return m_prefs;

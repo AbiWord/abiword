@@ -396,6 +396,79 @@ bool XAP_Dictionary::addWord(const char * word)
 	return true;
 }
 
+
+/*!
+ * Returns true if the word given is found in the users custom dictionary.
+\param const UT_UCSChar * pWord the word to look for suggestion for
+\param UT_uint32 len the length of the word
+\returns UT_Vector * pVecSuggestions this a vector of suggestions.
+The returner is responsible for deleting these words. 
+*/
+void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 len)
+{
+  //
+  // Get the words in the local dictionary
+  //
+  UT_Vector * pVec = m_hashWords.enumerate();
+  UT_ASSERT(pVec);
+  UT_uint32 i=0;
+  UT_uint32 count = pVec->getItemCount();
+  //
+  // Turn our word into a NULL teminated string
+  //
+  UT_UCSChar * pszWord = (UT_UCSChar*) calloc(len+1, sizeof(UT_UCSChar));
+  for(i=0; i< len; i++)
+  {
+    pszWord[i] = pWord[i];
+  }
+  pszWord[len] = 0;
+  //
+  // Loop over all the words in our custom doctionary and add them to the 
+  //the suggestions if they're possibilities.
+  //
+  for(i=0; i< count; i++)
+  {
+    UT_UCSChar * pszDict = (UT_UCSChar *) pVec->getNthItem(i);
+    UT_UCSChar * pszReturn = NULL;
+    float lenDict = (float) UT_UCS_strlen(pszDict);
+    UT_uint32 wordInDict = countCommonChars(pszDict,pszWord);
+    UT_uint32 dictInWord = countCommonChars(pszWord,pszDict);
+    float flen = (float) len;
+    float frac1 = ((float) wordInDict) / flen;
+    float frac2 = ((float) dictInWord) / lenDict;
+
+    if((frac1 > 0.8) && (frac2 > 0.8))
+    {
+	  UT_UCS_cloneString(&pszReturn, pszDict);
+	  pVecSuggestions->addItem((void *) pszReturn);
+    }
+  }
+  FREEP(pszWord);
+}
+
+/*!
+ * This method counts the number of common characters in pszNeedle found in
+ * pszHaystack. Every time character in pszNeedle is found in pszHaystack the 
+ * score is incremented by 1.
+ */
+UT_uint32 XAP_Dictionary::countCommonChars( UT_UCSChar *pszHaystack,UT_UCSChar * pszNeedle)
+{
+    UT_uint32 lenNeedle =  UT_UCS_strlen(pszNeedle);
+    UT_UCSChar oneChar[2];
+    oneChar[1] = 0;
+    UT_uint32 i=0;
+    UT_uint32 score =0;
+    for(i=0; i< lenNeedle; i++)
+    {
+      oneChar[0] = pszNeedle[i];
+      if(UT_UCS_strstr(pszHaystack,oneChar) != 0)
+      {
+	  score++;
+      }
+    }
+    return score;
+}
+
 bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 {
 //

@@ -314,12 +314,22 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				return false;
 			}
 
-		    m_Suggestions = checker->suggestWord(theWord, m_iWordLength);
-
+			m_Suggestions = checker->suggestWord(theWord, m_iWordLength);
+			if(m_Suggestions)
+			{
+			  pApp->suggestWord(m_Suggestions,theWord,  m_iWordLength);
+			}
 			if (!m_Suggestions)
 			{
-				UT_DEBUGMSG(("DOM: no suggestions returned\n"));
-				return false;
+				UT_DEBUGMSG(("DOM: no suggestions returned from main dictionary \n"));
+				m_Suggestions = new UT_Vector();
+				pApp->suggestWord(m_Suggestions,theWord, m_iWordLength);
+				if(m_Suggestions->getItemCount() == 0)
+				{
+				     DELETEP(m_Suggestions);
+				     m_Suggestions = NULL;
+				     return false;
+				}		
 			}
 			    
 			// update sentence boundaries (so we can display

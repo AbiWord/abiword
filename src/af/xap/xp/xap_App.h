@@ -97,11 +97,11 @@ public:
 	EV_Menu_ActionSet *				getMenuActionSet();
 	EV_Toolbar_ActionSet *			getToolbarActionSet();
 
-	XAP_Args *						getArgs() const;
+	XAP_Args *			getArgs() const;
 
-	bool							addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
-	bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
-
+	bool				addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
+	bool				isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
+	void                            suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
 	XAP_Prefs *						getPrefs() const;
 	bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	bool							getPrefsValue(const UT_String &stKey, UT_String &stValue) const;

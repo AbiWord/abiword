@@ -1,4 +1,3 @@
-
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -9756,14 +9755,24 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		}
 
 		sg = checker->suggestWord (theWord, pPOB->getLength());
-		
+		if(sg)
+		{
+		     m_pApp->suggestWord(sg,theWord, pPOB->getLength());
+		}
 	}
 
 	if (!sg)
 	{
-		UT_DEBUGMSG(("DOM: no suggestions returned\n"));
+		UT_DEBUGMSG(("DOM: no suggestions returned in main dictionary \n"));
 		DELETEP(sg);
-		return 0;
+		sg = new UT_Vector();
+		m_pApp->suggestWord(sg,theWord, pPOB->getLength());
+		if(sg->getItemCount() == 0)
+		{
+		     DELETEP(sg);
+		     return 0;
+		}
+		  
 	}
 
 	// we currently return all requested suggestions
@@ -9776,7 +9785,6 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	pSuggestionCache = sg;
 	pLastBL = pBL;
 	pLastPOB = pPOB;
-
 	return szSuggest;
 }
 

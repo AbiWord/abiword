@@ -41,8 +41,9 @@ public:
 
 	bool				load(void);
 	bool				save(void);
-	
-	bool                addWord(const char * pWord);
+	UT_uint32                       countCommonChars(UT_UCSChar * pszNeedle, UT_UCSChar *pszHaystack);
+	void                            suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 len);
+	bool                            addWord(const char * pWord);
 	bool				addWord(const UT_UCSChar * pWord, UT_uint32 len);
 	bool				isWord(const UT_UCSChar * pWord, UT_uint32 len) const;
 
