@@ -985,6 +985,8 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		// like italic Times New Roman f. Clear a litle bit before if
 		// there is clear screen there
 		//
+		// TODO: bidi bug: this only works if the logical and visual
+		// order are identical
 		UT_sint32 j = runIndex - 1;
 		fp_Run * pPrev = pRun->getPrev();
 		UT_sint32 leftClear = 0;
@@ -2157,7 +2159,8 @@ void fp_Line::layout(void)
 
 	if(bLineErased)
 	{
-		xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): clearling line from indx %d\n", this, iIndxToEraseFrom));
+		xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): clearling line from indx %d\n",
+						 this, iIndxToEraseFrom));
 		clearScreenFromRunToEnd(iIndxToEraseFrom);
 	}
 	else
