@@ -295,10 +295,8 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
 
 	int kLimit = m_pArgs->m_argc;
-	int nFirstArg = 0;	// Win32 does not put the program name in argv[0], so [0] is the first argument
-	int k;
 
-	for (k=nFirstArg; k<kLimit; k++)
+	for (int k=1; k<kLimit; k++)
 		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
 		{
 			strcpy(buf,m_pArgs->m_argv[k+1]);
@@ -397,13 +395,10 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 			XAP_App::_setAbiSuiteLibDir(buf);
 			return;
 		}
-
-		// otherwise, use the hard-coded value
-		XAP_App::_setAbiSuiteLibDir(getAbiSuiteHome());
-		return;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	// otherwise, use the hard-coded value
+	XAP_App::_setAbiSuiteLibDir(getAbiSuiteHome());
 	return;
 }
 

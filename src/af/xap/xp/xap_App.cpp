@@ -669,7 +669,7 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 void XAP_App::_setAbiSuiteLibDir(const char * sz)
 {
 	FREEP(m_szAbiSuiteLibDir);
-	UT_cloneString((char *&)m_szAbiSuiteLibDir,sz);
+	m_szAbiSuiteLibDir = UT_strdup(sz);		// don't use UT_cloneString as "" is a valid libdir value
 }
 
 const char * XAP_App::getAbiSuiteLibDir() const
