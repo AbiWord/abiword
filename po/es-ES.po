@@ -1,13 +1,14 @@
+# translation of es-ES.po to Spanish
 # translation of abiword to Spanish
 # This file is distributed under the same license as the PACKAGE package.
 # Copyright (C) 2003
 # Francisco Javier F. Serrador <serrador@arrakis.es>, 2003.
 msgid ""
 msgstr ""
-"Project-Id-Version: abiword-2.0\n"
+"Project-Id-Version: es-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-08-21 19:17+0200\n"
-"PO-Revision-Date: 2003-08-20 06:16+0200\n"
+"POT-Creation-Date: 2003-08-25 05:05+0200\n"
+"PO-Revision-Date: 2003-08-25 05:07+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -482,7 +483,7 @@ msgstr "&Campos:"
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h.h:247
 msgid "&File"
-msgstr "&Fichero"
+msgstr "&Archivo"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:249
@@ -517,7 +518,7 @@ msgstr "&Formato"
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:261
 msgid "&From File"
-msgstr "&Desde el fichero"
+msgstr "&Desde el archivo"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:263
@@ -584,7 +585,7 @@ msgstr "&Insertar"
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:289
 msgid "&Insert File"
-msgstr "&Insertar fichero"
+msgstr "&Insertar archivo"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:291
@@ -705,7 +706,7 @@ msgstr "&Abrir"
 #. DLG_MailMerge_OpenFile
 #: po/tmp/ap_String_Id.h.h:338
 msgid "&Open File"
-msgstr "&Abrir fichero"
+msgstr "&Abrir archivo"
 
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:340
@@ -1065,8 +1066,7 @@ msgstr "AbiWord terminó de comprobar la selección."
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:490
 #, c-format
-msgid ""
-"AbiWord has finished its search of the document and has made %d replacements."
+msgid "AbiWord has finished its search of the document and has made %d replacements."
 msgstr ""
 "AbiWord ha terminado su búsqueda en el documento y ha efectuado %d "
 "reemplazos."
@@ -1088,7 +1088,7 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"Abiword está diseñado para una versión más nueva del fichero de sistema "
+"Abiword está diseñado para una versión más nueva del archivo de sistema "
 "COMCTL32.DLL\n"
 "que la que está actualmente en su sistema. (COMCTL32.DLL versión 4.72 o más "
 "nueva)\n"
@@ -1106,7 +1106,7 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/msdownload/"
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
-"AbiWord necesita el fichero %s.dll\n"
+"AbiWord necesita el archivo %s.dll\n"
 "Por favor, descárguelo e instálelo desde http://www.microsoft.com/msdownload/"
 "platformsdk/sdkupdate/psdkredist.htm"
 
@@ -1175,8 +1175,7 @@ msgstr "Añadir columna después"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:522
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr ""
-"Añadir o modificar puntos y numeración para los parágrafos seleccionados"
+msgstr "Añadir o modificar puntos y numeración para los parágrafos seleccionados"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:524
@@ -1289,7 +1288,7 @@ msgstr "Autor:"
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:569
 msgid "Auto &save current file every"
-msgstr "Auto-&guardar el fichero actual cada"
+msgstr "Auto-&guardar el archivo actual cada"
 
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:571
@@ -1481,7 +1480,7 @@ msgstr "Objetivo de compilación"
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:648
 msgid "Bullet"
-msgstr "Viñeta"
+msgstr "Punto"
 
 #. DLG_Lists_Bullet_List
 #: po/tmp/ap_String_Id.h.h:650 po/tmp/xap_String_Id.h.h:111
@@ -1493,7 +1492,7 @@ msgstr "Lista de puntos"
 #. TOOLBAR_TOOLTIP_LISTS_BULLETS
 #: po/tmp/ap_String_Id.h.h:654
 msgid "Bullets"
-msgstr "Viñetas"
+msgstr "Puntos"
 
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:656
@@ -1906,25 +1905,25 @@ msgstr "Cordialmente,"
 #: po/tmp/ap_String_Id.h.h:821
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "No se pudo abrir el fichero %s para escritura"
+msgstr "No se pudo abrir el archivo %s para escritura"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h.h:823
 #, c-format
 msgid "Could not open file %s."
-msgstr "No se pudo abrir el fichero %s."
+msgstr "No se pudo abrir el archivo %s."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:825
 #, c-format
 msgid "Could not write to file %s"
-msgstr "No se pudo escribir en el fichero %s"
+msgstr "No se pudo escribir en el archivo %s"
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h.h:827
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "No se pudo escribir en el fichero %s."
+msgstr "No se pudo escribir en el archivo %s."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:829
@@ -2068,12 +2067,12 @@ msgstr "Fecha y hora"
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:887
 msgid "Day # in the year"
-msgstr "# de día en el año"
+msgstr "nº de día en el año"
 
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h.h:889
 msgid "De&faults"
-msgstr "&Preestablecidos"
+msgstr "&Predeterminados"
 
 #. AUTOTEXT_SALUTATION_1
 #: po/tmp/ap_String_Id.h.h:891
@@ -2105,7 +2104,7 @@ msgstr "Disminuir sangría"
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:903
 msgid "Default date (w/o time)"
-msgstr "Fecha preestablecida (sin hora)"
+msgstr "Fecha predeterminada (sin hora)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h.h:905
@@ -2340,7 +2339,7 @@ msgstr "Espaciado doble"
 #. DLG_DlFile_Title
 #: po/tmp/ap_String_Id.h.h:1003
 msgid "Downloading file..."
-msgstr "Descargando fichero..."
+msgstr "Descargando archivo..."
 
 #. MENU_LABEL_EDIT_EDITFOOTER
 #. TOOLBAR_LABEL_EDIT_FOOTER
@@ -2418,7 +2417,7 @@ msgstr "Error ejecutando script %s"
 #: po/tmp/ap_String_Id.h.h:1037
 #, c-format
 msgid "Error importing file %s."
-msgstr "Error importando el fichero %s."
+msgstr "Error importando el archivo %s."
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h.h:1039
@@ -2502,30 +2501,30 @@ msgstr "Nombre del campo:"
 #: po/tmp/ap_String_Id.h.h:1070
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr "El fichero %s no es un tipo de fichero actualmente soportado"
+msgstr "El archivo %s no es un tipo de archivo actualmente soportado"
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h.h:1072
 #, c-format
 msgid "File %s is not of the type it claims to be"
-msgstr "El fichero %s no es del tipo que dice ser"
+msgstr "El archivo %s no es del tipo que dice ser"
 
 #. MSG_IE_UnknownType
 #: po/tmp/ap_String_Id.h.h:1074
 #, c-format
 msgid "File %s is of unknown type"
-msgstr "El fichero %s es de tipo desconocido"
+msgstr "El archivo %s es de tipo desconocido"
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h.h:1076
 #, c-format
 msgid "File %s not found"
-msgstr "El fichero %s no se ha encontrado"
+msgstr "El archivo %s no se ha encontrado"
 
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:1078
 msgid "File Name"
-msgstr "Nombre del fichero"
+msgstr "Nombre del archivo"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:1080
@@ -3063,7 +3062,7 @@ msgstr "Inserta una nota final"
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:1303
 msgid "Insert an existing picture from another file"
-msgstr "Inserta una imagen existente desde otro fichero"
+msgstr "Inserta una imagen existente desde otro archivo"
 
 #. TOOLBAR_STATUSLINE_IMG
 #. TOOLBAR_TOOLTIP_IMG
@@ -3110,7 +3109,7 @@ msgstr "Inserta una tabla"
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1323
 msgid "Insert the contents of another file"
-msgstr "Inserta el contenido de otro fichero"
+msgstr "Inserta el contenido de otro archivo"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:1325
@@ -3574,7 +3573,7 @@ msgstr "Siguiente >>"
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h.h:1515
 msgid "No File"
-msgstr "No hay fichero"
+msgstr "No hay archivo"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1517
@@ -3865,7 +3864,7 @@ msgstr "Parágrafos:"
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h.h:1641
 msgid "Password required, this is an encrypted document"
-msgstr "Se requiere contraseña, esto es un documento encriptado"
+msgstr "Se requiere contraseña, esto es un documento cifrado"
 
 #. TOOLBAR_LABEL_EDIT_PASTE
 #. TOOLBAR_STATUSLINE_EDIT_PASTE
@@ -4167,8 +4166,7 @@ msgstr "Informar de un &fallo"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1773
 msgid "Report a bug and help AbiWord become a better product"
-msgstr ""
-"Informa de un fallo y ayuda a AbiWord a convertirse en un producto mejor"
+msgstr "Informa de un fallo y ayuda a AbiWord a convertirse en un producto mejor"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1775
@@ -4386,7 +4384,7 @@ msgstr "Guarda el documento sin cambiar el nombre actual"
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
 #: po/tmp/ap_String_Id.h.h:1864
 msgid "Save the selected image to a file"
-msgstr "Guarda la imagen seleccionada a un fichero"
+msgstr "Guarda la imagen seleccionada a un archivo"
 
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1866
@@ -4521,8 +4519,7 @@ msgstr "Establecer las preferencias de ortografía"
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:1918
 msgid "Setup your document's page properties such as page size and margins"
-msgstr ""
-"Configurar las propiedades de página del documento como tamaño y márgenes"
+msgstr "Configurar las propiedades de página del documento como tamaño y márgenes"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1920
@@ -5273,8 +5270,7 @@ msgstr "Ha cambiado el modo de dirección."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2230
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr ""
-"Debe seleccionar una porción del documento antes de insertar un hiperenlace."
+msgstr "Debe seleccionar una porción del documento antes de insertar un hiperenlace."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2232
@@ -5444,7 +5440,7 @@ msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
-"AbiWord no puede encontrar el fichero de ortografía %s.dll\n"
+"AbiWord no puede encontrar el archivo de ortografía %s.dll\n"
 "Por favor descargue e instale Aspell desde  http://aspell.net/win32/"
 
 #. DLG_UP_PrintPreviewTitle
@@ -5928,7 +5924,7 @@ msgstr "Estonio"
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:247
 msgid "Export File"
-msgstr "Exportar fichero"
+msgstr "Exportar archivo"
 
 #. DLG_HTMLOPT_ExpIs4
 #: po/tmp/xap_String_Id.h.h:249
@@ -5948,13 +5944,13 @@ msgstr "Farsi"
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:255
 msgid "File"
-msgstr "Fichero"
+msgstr "Archivo"
 
 #. DLG_OverwriteFile
 #: po/tmp/xap_String_Id.h.h:257
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "El fichero ya existe. ¿Quiere sobreescribir el fichero «%s»?"
+msgstr "El archivo ya existe. ¿Quiere sobreescribir el archivo «%s»?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:259
@@ -6203,7 +6199,7 @@ msgstr "Propiedades de la imagen"
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:361
 msgid "Import File"
-msgstr "Importar fichero"
+msgstr "Importar archivo"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h.h:363
@@ -6223,7 +6219,7 @@ msgstr "Métodos de entrada"
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Insert File"
-msgstr "Insertar fichero"
+msgstr "Insertar archivo"
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h.h:373
@@ -6418,12 +6414,12 @@ msgstr "Occitano"
 #. DLG_FOSA_OpenTitle
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Open File"
-msgstr "Abrir fichero"
+msgstr "Abrir archivo"
 
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Open file as type:"
-msgstr "Abrir fichero como tipo:"
+msgstr "Abrir archivo como tipo:"
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:461
@@ -6493,12 +6489,12 @@ msgstr "Vista previa de la imagen"
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:494
 msgid "Print To File"
-msgstr "Imprimir a un fichero"
+msgstr "Imprimir a un archivo"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:496
 msgid "Print file as type:"
-msgstr "Imprimir fichero como tipo:"
+msgstr "Imprimir archivo como tipo:"
 
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:498
@@ -6558,7 +6554,7 @@ msgstr "Sardinian"
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:520
 msgid "Save File As"
-msgstr "Guardar fichero como"
+msgstr "Guardar archivo como"
 
 #. DLG_HTMLOPT_ExpSave
 #: po/tmp/xap_String_Id.h.h:522
@@ -6568,7 +6564,7 @@ msgstr "Guardar configuración"
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:524
 msgid "Save file as type:"
-msgstr "Guardar fichero como tipo:"
+msgstr "Guardar archivo como tipo:"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:526
@@ -6633,8 +6629,7 @@ msgstr "Esloveno"
 #. DLG_HashDownloader_DictlistDLFail
 #: po/tmp/xap_String_Id.h.h:550
 msgid "Sorry! I seem unable to download the dictionary-list."
-msgstr ""
-"¡Lo sentimos! Parece que no es posible descargar la lista de diccionarios."
+msgstr "¡Lo sentimos! Parece que no es posible descargar la lista de diccionarios."
 
 #. DLG_HashDownloader_DictDLFail
 #: po/tmp/xap_String_Id.h.h:552
@@ -7004,3 +6999,4 @@ msgstr "la lista de diccionarios"
 
 #~ msgid "Right-justify the paragraph"
 #~ msgstr "Justificar el párrafo a la derecha"
+
