@@ -41,15 +41,15 @@
  *
  * Issues - 
  * 1) freebsd: requires extern "C" around iconv.h
- * 2) invalid iconv handles (== iconv_t -1)
- * 3) iconv resetting
+ * 2) invalid iconv handles (== iconv_t -1 (usually))
+ * 3) iconv resetting (vlad's i18n issues)
  * 4) ICONV_CONST passed to iconv()
  * 5) UCS2 internally to AbiWord
  * 6) byte-order problems
  * 7) good C/C++ linkage
  * 
  * Provides solutions to all of the above plus -
- * 1) 1-shot conversions (UT_convert)
+ * 1) 1-shot conversions (UT_convert, UT_convert_cd)
  * 2) wrapper class around an iconv_t handle
  */
 
@@ -156,7 +156,7 @@ size_t  UT_iconv( UT_iconv_t cd, const char **inbuf,
   //    while some (newer, conformant ones) do
 
   if ( !UT_iconv_isValid ( cd ) )
-    return -1;
+    return (size_t)-1;
 
   ICONV_CONST char ** buf = (ICONV_CONST char**)(inbuf);
   return iconv( cd, buf, inbytesleft, outbuf, outbytesleft );
@@ -196,7 +196,6 @@ void UT_iconv_reset(UT_iconv_t cd)
  *
  * TODO: Check for out-of-memory allocations etc.
  */
-extern "C"
 char * UT_convert(const char*	str,
 		  UT_sint32	len,
 		  const char*	from_codeset,
@@ -210,6 +209,37 @@ char * UT_convert(const char*	str,
 		return NULL;
 	}
 
+	UT_TRY
+	  {
+	    auto_iconv converter(from_codeset, to_codeset);
+	    return UT_convert_cd(str, len, converter, bytes_read_arg, bytes_written_arg);
+	  }
+	UT_CATCH(UT_CATCH_ANY)
+	  {
+	    if (bytes_read_arg)
+		*bytes_read_arg = 0;
+	    if (bytes_written_arg)
+		*bytes_written_arg = 0;
+	    return NULL;
+	  }
+	UT_END_CATCH
+}
+
+/*! This function is almost the same as the other UT_convert function,
+ * only that it takes an UT_iconv_t instead of a from and to codeset.
+ * This is useful if you need to do a conversion multiple times
+ */
+char * UT_convert_cd(const char *str,
+		     UT_sint32 len,
+		     UT_iconv_t cd,
+		     UT_uint32 *bytes_read_arg,
+		     UT_uint32 *bytes_written_arg)
+{
+  if ( !UT_iconv_isValid ( cd ) || !str )
+    {
+      return NULL ;
+    }
+
 	// The following two variables are used to be used in absence of given arguments
 	// (to not have to check for NULL pointers upon assignment).
 	UT_uint32 bytes_read_local;
@@ -218,114 +248,99 @@ char * UT_convert(const char*	str,
 	UT_uint32& bytes_read = bytes_read_arg ? *bytes_read_arg : bytes_read_local; 
 	UT_uint32& bytes_written = bytes_written_arg ? *bytes_written_arg : bytes_written_local;
 
-	UT_iconv_t cd = INVALID_ICONV_HANDLE;
-
-	UT_TRY
+	if (len < 0)
 	  {
-	    auto_iconv converter(from_codeset, to_codeset);
-	    cd = converter.getHandle();
+	    len = strlen(str);
+	  }
 
-	    if (len < 0)
+	const char* p = str;
+	size_t inbytes_remaining = len;
+
+	/* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
+	/* + 1 for nul in case len == 1 */
+	size_t outbuf_size = ((len + 3) & ~3) + 15;
+	size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
+
+	char* pDest = (char*)malloc(outbuf_size);
+	char* outp = pDest;
+
+	bool have_error = false;
+	bool bAgain = true;
+
+	while (bAgain)
+	  {
+	    size_t err = UT_iconv(cd,
+	                          &p,
+				  &inbytes_remaining,
+				  &outp, &outbytes_remaining);
+
+	    if (err == (size_t) -1)
 	      {
-		len = strlen(str);
-	      }
-
-	    const char* p = str;
-	    size_t inbytes_remaining = len;
-
-	    /* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
-	    /* + 1 for nul in case len == 1 */
-	    size_t outbuf_size = ((len + 3) & ~3) + 15;
-	    size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
-
-	    char* pDest = (char*)malloc(outbuf_size);
-	    char* outp = pDest;
-
-	    bool have_error = false;
-	    bool bAgain = true;
-
-	    while (bAgain)
-	      {
-		size_t err = UT_iconv(cd,
-				      &p,
-				      &inbytes_remaining,
-				      &outp, &outbytes_remaining);
-
-		if (err == (size_t) -1)
+	        switch (errno)
 		  {
-		    switch (errno)
-		      {
-		      case EINVAL:
-				    /* Incomplete text, do not report an error */
-			bAgain = false;
-			break;
-		      case E2BIG:
-			{
-			  size_t used = outp - pDest;
-
-			  /* glibc's iconv can return E2BIG even if there is space
-			   * remaining if an internal buffer is exhausted. The
-			   * folllowing is a heuristic to catch this. The 16 is
-			   * pretty arbitrary.
-			   */
-			  if (used + 16 > outbuf_size)
-			    {
-			      outbuf_size = outbuf_size  + 15;
-			      pDest = (char*)realloc(pDest, outbuf_size);
-
-			      outp = pDest + used;
-			      outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
-			    }
-
-			  bAgain = true;
-			  break;
-			}
-		      default:
-			have_error = true;
-			bAgain = false;
-			break;
-		      }
-		  } 
-		else 
-		  {
+		  case EINVAL:
+		    /* Incomplete text, do not report an error */
 		    bAgain = false;
-		  }
-	      }
+		    break;
+		  case E2BIG:
+		    {
+		      size_t used = outp - pDest;
 
-	    *outp = '\0';
+		      /* glibc's iconv can return E2BIG even if there is space
+		       * remaining if an internal buffer is exhausted. The
+		       * folllowing is a heuristic to catch this. The 16 is
+		       * pretty arbitrary.
+		       */
+		      if (used + 16 > outbuf_size)
+		        {
+		          outbuf_size = outbuf_size  + 15;
+		          pDest = (char*)realloc(pDest, outbuf_size);
 
-	    const size_t nNewLen = p - str;
+		          outp = pDest + used;
+		          outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
+		        }
 
-	    if (bytes_read_arg)
-	      {
-		bytes_read = nNewLen;
-	      }
-	    else
-	      {
-		if (nNewLen != len) 
-		  {
+		      bAgain = true;
+		      break;
+		    }
+		  default:
 		    have_error = true;
+		    bAgain = false;
+		    break;
 		  }
 	      }
-
-	    bytes_written = outp - pDest;	/* Doesn't include '\0' */
-
-	    if (have_error && pDest)
+	    else 
 	      {
-		free(pDest);
+		bAgain = false;
 	      }
-
-	    if (have_error)
-	      return NULL;
-
-	    return pDest;
 	  }
-	UT_CATCH(UT_CATCH_ANY)
+
+	*outp = '\0';
+
+	const size_t nNewLen = p - str;
+
+	if (bytes_read_arg)
 	  {
-	    bytes_read = 0;
-	    bytes_written = 0;
-	    return NULL;
+	    bytes_read = nNewLen;
 	  }
-	UT_END_CATCH
+	else
+	  {
+	    if (nNewLen != len) 
+	      {
+	        have_error = true;
+	      }
+	  }
+
+	bytes_written = outp - pDest;	/* Doesn't include '\0' */
+
+	if (have_error && pDest)
+	  {
+	    free(pDest);
+	  }
+
+	if (have_error)
+	  return NULL;
+
+	return pDest;
 }
 

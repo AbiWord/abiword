@@ -79,6 +79,12 @@ char *      UT_convert (const char *str,
 			UT_uint32 *bytes_read,
 			UT_uint32 *bytes_written);
 
+char *      UT_convert_cd (const char *str,
+			   UT_sint32 len,
+			   UT_iconv_t cd,
+			   UT_uint32 *bytes_read,
+			   UT_uint32 *bytes_written);
+
 UT_END_EXTERN_C
 
 #endif /* UT_ICONV_H */
