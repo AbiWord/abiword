@@ -161,8 +161,15 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	case IDOK:							// also XAP_RID_DIALOG_LANGUAGE_BTN_OK
 		hWndList = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_LBX_LANGUAGE);
 		nItem = SendMessage(hWndList, LB_GETCURSEL, 0, 0);
-		_setLanguage( m_ppLanguages[nItem] );
-		m_answer = a_OK;
+		if( nItem != LB_ERR)
+		{
+			_setLanguage( m_ppLanguages[nItem] );
+			m_answer = a_OK;
+		}
+		else
+		{
+			m_answer = a_CANCEL;
+		}	
 		EndDialog(hWnd,0);
 		return 1;
 
