@@ -1329,8 +1329,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 // Delete the frame
 
-		posStart = m_pFrameLayout->getPosition(true);
-		posEnd = posStart + m_pFrameLayout->getLength()-1;
+		PL_StruxDocHandle sdhStart =  m_pFrameLayout->getStruxDocHandle();
+		PL_StruxDocHandle sdhEnd = NULL;
+		posStart = getDoc()->getStruxPosition(sdhStart);
+		getDoc()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
+		posEnd = getDoc()->getStruxPosition(sdhEnd)+1;
 		UT_uint32 iRealDeleteCount;
 		PP_AttrProp * p_AttrProp_Before = NULL;
 
@@ -1465,8 +1468,13 @@ void FV_FrameEdit::deleteFrame(void)
 	getDoc()->beginUserAtomicGlob();
 	getDoc()->setDontImmediatelyLayout(true);
 
-	PT_DocPosition posStart = m_pFrameLayout->getPosition(true);
-	PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength() -1;
+// Delete the frame
+
+	PL_StruxDocHandle sdhStart =  m_pFrameLayout->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	PT_DocPosition posStart = getDoc()->getStruxPosition(sdhStart);
+	getDoc()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
+	PT_DocPosition posEnd = getDoc()->getStruxPosition(sdhEnd)+1;	
 	UT_uint32 iRealDeleteCount;
 
 	getDoc()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
