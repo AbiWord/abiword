@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,27 +17,27 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_MACDIALOG_ABOUT_H
+#define AP_MACDIALOG_ABOUT_H
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include "ap_Dialog_About.h"
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+/*****************************************************************/
 
-#include "xap_Dialog_Id.h"
-
-typedef enum _AP_Dialog_Id
+class AP_MacDialog_About: public AP_Dialog_About
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+public:
+	AP_MacDialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_MacDialog_About(void);
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
-	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
-	AP_DIALOG_ID_ABOUT,               /* About Dialog */
-	/* ... add others here ... */
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+	virtual void			runModal(XAP_Frame * pFrame);
 
+	// public so callbacks can access them
+
+ protected:
+	
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* AP_MACDIALOG_ABOUT_H */

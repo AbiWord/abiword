@@ -38,7 +38,7 @@
 #	include "xap_UnixDlg_FileOpenSaveAs.h"
 #	include "xap_UnixDlg_Print.h"
 #	include "xap_UnixDlg_FontChooser.h"
-
+#   include "ap_UnixDialog_About.h"
 #	include "ap_UnixDialog_Replace.h"
 
 	// ... add new dialogs here ...
@@ -54,7 +54,11 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_ABOUT,			AP_UnixDialog_About)
 	
 	// ... also add new dialogs here ...
 
 #endif
+
+
+

@@ -26,6 +26,7 @@ ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
 CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_Dialog_Goto.cpp		\
+		ap_Dialog_About.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\

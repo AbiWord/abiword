@@ -36,6 +36,7 @@
 #	include "xap_Win32Dlg_FontChooser.h"
 
 #	include "ap_Win32Dialog_Replace.h"
+#	include "ap_Win32Dialog_About.h"
 
 	// ... add new dialogs here ...
 
@@ -50,6 +51,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_ABOUT,			AP_Win32Dialog_Replace)
 	
 	// ... also add new dialogs here ...
 

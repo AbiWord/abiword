@@ -1196,12 +1196,37 @@ Defun1(dlgMoreWindows)
 	return UT_TRUE;
 }
 
+static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, AP_Dialog_Id id)
+{
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Replace * pDialog
+		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	// run the dialog (it should really be modeless if anyone
+	// gets the urge to make it safe that way)
+	pDialog->runModal(pFrame);
+	
+	UT_Bool bOK = UT_TRUE;
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
 Defun1(dlgAbout)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "About dialog", __LINE__);
+	s_doAboutDlg(pFrame, AP_DIALOG_ID_ABOUT);
+//	s_TellNotImplemented(pFrame, "About dialog", __LINE__);
 	return UT_TRUE;
 }
 
@@ -2554,6 +2579,7 @@ static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, AP_Dialog_Id id)
 
 	return bOK;
 }
+
 
 Defun1(find)
 {

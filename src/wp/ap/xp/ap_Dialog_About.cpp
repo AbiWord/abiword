@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,27 +17,39 @@
  * 02111-1307, USA.
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "ut_assert.h"
+#include "ut_string.h"
+#include "ut_debugmsg.h"
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include "ap_Dialog_About.h"
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+#include "ap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
 
-#include "xap_Dialog_Id.h"
+#include "fl_DocLayout.h"
+#include "fv_View.h"
 
-typedef enum _AP_Dialog_Id
+AP_Dialog_About::AP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+	: AP_Dialog_AppPersistent(pDlgFactory,id)
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
-	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
-	AP_DIALOG_ID_ABOUT,               /* About Dialog */
-	/* ... add others here ... */
+}
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+AP_Dialog_About::~AP_Dialog_About(void)
+{
 
-};
+}
 
-#endif /* AP_DIALOG_ID_H */
+void AP_Dialog_About::useStart(void)
+{
+
+}
+
+void AP_Dialog_About::useEnd(void)
+{
+
+}
+
