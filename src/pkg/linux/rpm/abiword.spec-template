@@ -7,7 +7,7 @@
 %define no_static UNIX_CAN_BUILD_STATIC=__UNIX_CAN_BUILD_STATIC__
 %define debug ABI_OPT_DEBUG=__ABI_OPT_DEBUG__
 %define gnome ABI_OPT_GNOME=__ABI_OPT_GNOME__
-%define bidi ABI_OPT_BIDI=__ABI_OPT_BIDI__
+%define bidi ABI_OPT_BIDI_ENABLED=__ABI_OPT_BIDI_ENABLED__
 %define perl ABI_OPT_PERL=__ABI_OPT_PERL__
 %define jpeg ABI_OPT_LIBJPEG=__ABI_OPT_LIBJPEG__
 %define libxml2 ABI_OPT_LIBXML2=__ABI_OPT_LIBXML2__
