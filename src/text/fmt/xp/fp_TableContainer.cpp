@@ -3733,7 +3733,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
-	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
+	UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
 	fp_TableContainer *pMaster = getMasterTable();
 	UT_sint32 iCountCells = 0;
 	UT_Rect * pClipRect = const_cast<UT_Rect *>(pDA->pG->getClipRect());
@@ -3742,16 +3742,19 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	if(m_pFirstBrokenCell)
 	{
 		pCell = m_pFirstBrokenCell;
+		xxx_UT_DEBUGMSG(("Starting at cell %x \n",pCell));
 		while(pCell)
 		{
+			xxx_UT_DEBUGMSG(("Look at Cell %x isdirty %d \n",this,pCell->isDirty()));
 			dg_DrawArgs da = *pDA;
 			da.yoff = da.yoff - getYBreak();
 			if(bDirtyOnly)
 			{
-				if(pCell->isDirty())
+				if(pCell->isDirty() || pCell->getSectionLayout()->needsRedraw())
 				{
 					pCell->drawBroken(&da, this);
 					iCountCells++;
+					pCell->getSectionLayout()->clearNeedsRedraw();
 				}
 			}
 			else
@@ -3799,7 +3802,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 
 			if((pCell->getY() > getYBottom()) || (botY < getYBreak()) )
 			{
-				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
+				UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 				if((m_pFirstBrokenCell != NULL) && (m_pLastBrokenCell == NULL))
 				{
 					m_pLastBrokenCell = static_cast<fp_CellContainer *>(pCell->getPrev());
@@ -3810,7 +3813,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			else
 			{
 				dg_DrawArgs da = *pDA;
-				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken yoff %d cellY %d cellHeight %d YBreak %d yBottom %d \n",da.yoff,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
+				UT_DEBUGMSG(("SEVIOR: _drawBroken yoff %d cellY %d cellHeight %d YBreak %d yBottom %d \n",da.yoff,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 				da.yoff = da.yoff - getYBreak();
 				iCountCells++;
 				pCell->drawBroken(&da, this);
