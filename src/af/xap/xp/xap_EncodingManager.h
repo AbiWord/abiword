@@ -138,7 +138,7 @@ public:
     
     
     virtual char fallbackChar(UT_UCSChar c) const;
-	static XAP_EncodingManager *get_instance();
+	ABI_EXPORT static XAP_EncodingManager *get_instance();
 	void Delete_instance();
 
     /*  This tries to approximate the character with the string, e.g.
