@@ -340,14 +340,14 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	          xoff+=_scale(pChineseFont->getUnixFont()->get_CJK_Width());
 	  if(pE>pS)
 		{
-		  emit_SetFontCJK(pChineseFont);
+		  _emit_SetFont(pChineseFont);
 		  drawCharsCJK(pS,0,pE-pS,xS,yoff);
 		}
 	  for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
 	          xoff+=_scale(cwi[XAP_EncodingManager::instance->UToNative(remapGlyph(*pE,*pS > 0xff))]);
 	  if(pE>pS)
 		{
-		  emit_SetFontCJK(pEnglishFont);
+		  _emit_SetFont(pEnglishFont);
 		  drawCharsCJK(pS,0,pE-pS,xS,yoff);
 		}
 	}
@@ -819,9 +819,7 @@ void PS_Graphics::_emit_FontMacros(void)
 
 void PS_Graphics::_emit_SetFont(void)
 {
-	char buf[1024];
-	g_snprintf(buf, sizeof (buf), "F%d\n", m_pCurrentFont->getIndex());
-	m_ps->writeBytes(buf);
+        _emit_SetFont(m_pCurrentFont);
 }
 
 void PS_Graphics::_emit_SetLineWidth(void)
@@ -1166,7 +1164,7 @@ PSFont *PS_Graphics::findMatchPSFontCJK(PSFont * pFont)
   return p;
 };
 
-void PS_Graphics::emit_SetFontCJK(PSFont *pFont)
+void PS_Graphics::_emit_SetFont(PSFont *pFont)
 {
 	char buf[1024];
 	g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());

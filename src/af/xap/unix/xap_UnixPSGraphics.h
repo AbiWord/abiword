@@ -117,6 +117,7 @@ protected:
 	void			_emit_PrologMacros(void);
 	void			_emit_FontMacros(void);
 	void			_emit_SetFont(void);
+	void                    _emit_SetFont(PSFont *pFont);
 	void			_emit_SetLineWidth(void);
 	void 			_emit_SetColor(void);
 	virtual UT_uint32 _getResolution(void) const;
@@ -139,7 +140,6 @@ protected:
 	XAP_UnixFontManager *	m_fm;
 
 	PSFont *findMatchPSFontCJK(PSFont * pFont);
-	void emit_SetFontCJK(PSFont *pFont);
 	void drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset, 
 								 int iLength, UT_sint32 xoff, UT_sint32 yoff);
 	void explodePSFonts(PSFont*& non_cjk_font,PSFont*& cjk_font);
