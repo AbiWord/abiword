@@ -110,9 +110,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_pVDBl(NULL),
 	  m_pVDRun(NULL),
 	  m_iVDLastPos(0xffffffff),
-	  m_iVersion(0),
 	  m_bHistoryWasSaved(false),
-	  m_iEditTime(0),
 	  m_pDocUID(NULL),
 	  m_bAutoRevisioning(false)
 {
@@ -377,6 +375,8 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		return errorCode;
 	}
 
+	m_lastOpenedTime = time(NULL);
+	
 	// get document-wide settings from the AP
 	const PP_AttrProp * pAP = getAttrProp();
 	
@@ -500,6 +500,8 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		return UT_IE_NOMEMORY;
 	}
 
+	m_lastOpenedTime = time(NULL);
+	
 	// get document-wide settings from the AP
 	const PP_AttrProp * pAP = getAttrProp();
 	
@@ -647,6 +649,7 @@ UT_Error PD_Document::newDocument(void)
 
 	setDocVersion(0);
 	setEditTime(0);
+	m_lastOpenedTime = time(NULL);
 
 	if(m_pDocUID)
 	{
@@ -4360,32 +4363,6 @@ void PD_Document::forceDirty()
 	signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD);	
 }
 
-/*!
-    Return time in seconds this document has been edit for since it
-    creation
-*/
-UT_uint32 PD_Document::getEditTime()const
-{
-	return m_iEditTime + getTimeSinceSave();
-}
-
-/*!
-    Set the cumulative editing time of this document
-*/
-void PD_Document::setEditTime(UT_uint32 t)
-{
-	m_iEditTime = t;
-}
-
-/*!
-    Set version of this document
-    NB: this is not version of the fmt or AbiWord with which the doc
-    was created, but rather version of the document contents.
-*/
-void PD_Document::setDocVersion(UT_uint32 i)
-{
-	m_iVersion = i;
-}
 
 /*!
     Update document history and version information; should only be
@@ -4400,8 +4377,7 @@ void PD_Document::_adjustHistoryOnSave()
 	if(!m_bHistoryWasSaved || m_bAutoRevisioning)
 	{
 		m_bHistoryWasSaved = true;
-		PD_VersionData v(m_iVersion);
-		m_iEditTime = getEditTime(); // adjust by time from prvious save
+		PD_VersionData v(m_iVersion, m_lastOpenedTime);
 		m_lastSavedTime = v.getTime(); // store the time of this save
 		addRecordToHistory(v);
 	}
@@ -4416,7 +4392,6 @@ void PD_Document::_adjustHistoryOnSave()
 		UT_return_if_fail(v);
 		v->setId(m_iVersion);
 		v->newUID();
-		m_iEditTime = getEditTime();
 		m_lastSavedTime = v->getTime();
 	}
 
@@ -4468,6 +4443,7 @@ UT_uint32 PD_Document::getHistoryNthId(UT_uint32 i)const
 
 /*!
     Get time stamp for n-th record in version history
+    NB: the time stamp represents the last save time
 */
 time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
 {
@@ -4482,6 +4458,20 @@ time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
 	return v->getTime();
 }
 
+time_t PD_Document::getHistoryNthTimeStarted(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getStartTime();
+}
+
+
 /*!
     Get get cumulative edit time for n-th record in version history
     NB: this time is cumulative from the creation of document not from
@@ -4493,13 +4483,12 @@ UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
 	if(!m_vHistory.getItemCount() || !m_pDocUID)
 		return 0;
 
-	time_t t0 = m_pDocUID->getTime();
-
 	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
 
 	if(!v)
 		return 0;
 
+	time_t t0 = v->getStartTime();
 	time_t t1 = v->getTime();
 
 	UT_ASSERT( t1 >= t0 );
@@ -5318,20 +5307,21 @@ void PD_DocumentDiff::_dump() const
 // PD_VersionData
 //
 // constructor for new entries
-PD_VersionData::PD_VersionData(UT_uint32 v)
-	:m_iId(v),m_pUUID(NULL)
+PD_VersionData::PD_VersionData(UT_uint32 v, time_t start)
+	:m_iId(v),m_pUUID(NULL),m_tStart(start)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
 	
 	m_pUUID = pGen->createUUID();
 	UT_ASSERT(m_pUUID);
+	m_tStart = m_pUUID->getTime();
 }
 
 
 // constructors for importers
-PD_VersionData::PD_VersionData(UT_uint32 v, UT_String &uuid):
-		m_iId(v),m_pUUID(NULL)
+PD_VersionData::PD_VersionData(UT_uint32 v, UT_String &uuid, time_t start):
+	m_iId(v),m_pUUID(NULL),m_tStart(start)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -5340,8 +5330,8 @@ PD_VersionData::PD_VersionData(UT_uint32 v, UT_String &uuid):
 	UT_ASSERT(m_pUUID);
 };
 
-PD_VersionData::PD_VersionData(UT_uint32 v, const char *uuid):
-		m_iId(v),m_pUUID(NULL)
+PD_VersionData::PD_VersionData(UT_uint32 v, const char *uuid, time_t start):
+	m_iId(v),m_pUUID(NULL),m_tStart(start)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -5360,18 +5350,21 @@ PD_VersionData::PD_VersionData(const PD_VersionData & v):
 	
 	m_pUUID = pGen->createUUID(*(v.m_pUUID));
 	UT_ASSERT(m_pUUID);
+
+	m_tStart = v.m_tStart;
 };
 
 PD_VersionData & PD_VersionData::operator = (const PD_VersionData &v)
 {
 	m_iId       = v.m_iId;
 	*m_pUUID    = *(v.m_pUUID);
+	m_tStart    = v.m_tStart;
 	return *this;
 }
 
 bool PD_VersionData::operator == (const PD_VersionData &v)
 {
-	return (m_iId == v.m_iId && *m_pUUID == *(v.m_pUUID));
+	return (m_iId == v.m_iId && m_tStart == v.m_tStart && *m_pUUID == *(v.m_pUUID));
 }
 
 PD_VersionData::~PD_VersionData()

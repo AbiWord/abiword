@@ -172,11 +172,11 @@ class PD_VersionData
   public:
 
 	// constructor for importers
-	PD_VersionData(UT_uint32 v, UT_String &uuid);
-	PD_VersionData(UT_uint32 v, const char * uuid);
+	PD_VersionData(UT_uint32 v, UT_String &uuid, time_t start);
+	PD_VersionData(UT_uint32 v, const char * uuid, time_t start);
 	
 	// constructor for new entries
-	PD_VersionData(UT_uint32 v);
+	PD_VersionData(UT_uint32 v, time_t start);
 
 	// copy constructor
 	PD_VersionData(const PD_VersionData & v);
@@ -189,6 +189,7 @@ class PD_VersionData
 
 	UT_uint32      getId()const{return m_iId;}
 	time_t         getTime()const;
+	time_t         getStartTime()const {return m_tStart;}
 	const UT_UUID& getUID()const {return (const UT_UUID&)*m_pUUID;}
 	bool           newUID(); // true on success
 	void           setId(UT_uint32 id) {m_iId = id;}
@@ -196,6 +197,7 @@ class PD_VersionData
   private:
 	UT_uint32   m_iId;
 	UT_UUID *   m_pUUID;
+	time_t      m_tStart;
 };
 
 // class for managing Documents UID
@@ -602,17 +604,12 @@ public:
 	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
 	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.isIdUnique(t,i);}
 
-	UT_uint32 getEditTime()const;
-	void      setEditTime(UT_uint32 t);
-	
-	void      setDocVersion(UT_uint32 i);
-	UT_uint32 getDocVersion() const {return m_iVersion;}
-
 	void            addRecordToHistory(const PD_VersionData & v);
 	void            purgeHistory();
 	UT_uint32       getHistoryCount()const {return m_vHistory.getItemCount();}
 	UT_uint32       getHistoryNthId(UT_uint32 i)const;
 	time_t          getHistoryNthTime(UT_uint32 i)const;
+	time_t          getHistoryNthTimeStarted(UT_uint32 i)const;
 	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
 	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
 
@@ -698,9 +695,7 @@ private:
 	UT_UniqueId             m_UID;
 
 	// these are for tracking versioning
-	UT_uint32               m_iVersion;
 	bool                    m_bHistoryWasSaved;
-	UT_uint32               m_iEditTime;
 	UT_Vector               m_vHistory;
 	PD_DocumentUID *        m_pDocUID;
 	bool                    m_bAutoRevisioning;
