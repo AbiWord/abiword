@@ -113,7 +113,7 @@ UT_Error UT_XML::parse (const char * szFilename)
   xmlSAXHandler hdl;
   xmlParserCtxtPtr ctxt;
 
-  memset(hdl, 0, sizeof(hdl));
+  memset(&hdl, 0, sizeof(hdl));
 
   hdl.getEntity    = _getEntity;
   hdl.startElement = _startElement;
