@@ -185,6 +185,9 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(cf);
 	connectFocus(GTK_WIDGET(cf),pFrame);
 
+	// make the window big
+	gtk_widget_set_usize(cf, 255, 350);
+
 	// fill the listbox
 	gtk_clist_freeze(GTK_CLIST(m_pLanguageList));
 	gtk_clist_clear(GTK_CLIST(m_pLanguageList));
@@ -217,9 +220,6 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(parent);
 	// center it
 	centerDialog(parent, GTK_WIDGET(cf));
-
-	// make the window big
-	gtk_widget_set_usize(cf, 255, 350);
 	
 	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));
