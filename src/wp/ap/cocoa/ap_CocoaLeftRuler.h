@@ -42,12 +42,12 @@ public:
 	AP_CocoaLeftRuler(XAP_Frame * pFrame);
 	virtual ~AP_CocoaLeftRuler(void);
 
-	NSControl *		createWidget(void);
+	Abi_NSView *		createWidget(void);
 	virtual void	setView(AV_View * pView);
 
 	// cheats for the callbacks
 	void				getWidgetPosition(int * x, int * y);
-	NSControl * 		getWidget(void) { return m_wLeftRuler; };
+	Abi_NSView * 		getWidget(void) { return m_wLeftRuler; };
 	NSWindow * 	getRootWindow(void);
 
 //	void _ruler_style_changed (void);
@@ -55,7 +55,7 @@ public:
 private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 	
-	NSControl *		m_wLeftRuler;
+	Abi_NSView *		m_wLeftRuler;
 	NSWindow *	m_rootWindow;
 
 #if 0

@@ -116,7 +116,7 @@ void AP_CocoaLeftRuler::_ruler_style_changed (void)
 }
 #endif
 
-NSControl * AP_CocoaLeftRuler::createWidget(void)
+Abi_NSView * AP_CocoaLeftRuler::createWidget(void)
 {
 #if 0
 	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_press_event",
