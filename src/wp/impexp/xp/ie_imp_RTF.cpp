@@ -4847,7 +4847,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 							return true;
 						}
-						if(pView->isInTable())
+						if(pView->isInTable() && pView->isHdrFtrEdit())
 						{
 //
 // No nested Tables in header/footer
