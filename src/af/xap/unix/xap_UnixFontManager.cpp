@@ -113,12 +113,16 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 	// TODO: We should follow symlinks.
 	metricFile = reinterpret_cast<char*>(fontFile);
 	size_t ffs = metricFile.size();
-	if (ffs < 4 || (fontFile[ffs - 4] != '.' && fontFile[ffs - 5] != '.'))
+	if ( !((ffs >= 4 && fontFile[ffs - 4] == '.') ||
+		   (ffs >= 5 && fontFile[ffs - 5] == '.') ))	// Separate check to avoid [-1]
 		return NULL;
 
 	// handle '.font'
 	if (fontFile[ffs - 5] == '.')
+	{
 		metricFile = UT_UTF8String(metricFile.ucs4_str().substr(0, metricFile.size() - 1));
+		--ffs; // Decrement, as we've reduced the size of the string by one.  I'm not sure why this is prefix.
+	}
 
 	metricFile.ucs4_str()[ffs - 3] = 'a';
 	metricFile.ucs4_str()[ffs - 2] = 'f';
