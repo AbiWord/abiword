@@ -21,8 +21,12 @@
 #define XAP_UNIXDIALOG_STUB_H
 
 #include "xap_Dlg_DocComparison.h"
-
+#include <gtk/gtk.h>
+#include "xap_UnixDialogFactory.h"
+#include "xap_Dialog_Id.h"
+#include "xap_Dialog.h"
 class XAP_Frame;
+
 
 /*****************************************************************/
 
@@ -36,8 +40,13 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-protected:
+private:
 
+	void _populateWindowData();
+	GtkWidget *             constructWindow();
+	GladeXML *              m_pXML;
+	GtkWidget *             m_windowMain;
 };
 
-#endif /* XAP_UNIXDIALOG_STUB_H */
+
+#endif /* XAP_UNIXDLG_DOCCOMPARISON */

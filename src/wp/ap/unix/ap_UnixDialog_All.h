@@ -43,6 +43,10 @@
 #   include "xap_UnixDlg_HTMLOptions.h"
 #   include "xap_UnixDlg_Password.h"
 #   include "xap_UnixDlg_Image.h"
+#   include "xap_UnixDlg_ListDocuments.h"
+#	include "xap_UnixDlg_History.h"
+#   include "xap_UnixDlg_DocComparison.h"
+
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
 #	include "ap_UnixDialog_InsertTable.h"
@@ -124,6 +128,12 @@
     DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,    XAP_UnixDialog_FileOpenSaveAs)
     DeclareDialog(XAP_DIALOG_ID_PASSWORD,       XAP_UnixDialog_Password)
     DeclareDialog(XAP_DIALOG_ID_IMAGE,          XAP_UnixDialog_Image)
+	DeclareDialog(XAP_DIALOG_ID_LISTDOCUMENTS,  XAP_UnixDialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_COMPAREDOCUMENTS,XAP_UnixDialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_MERGEDOCUMENTS, XAP_UnixDialog_ListDocuments)
+    DeclareDialog(XAP_DIALOG_ID_HISTORY,        XAP_UnixDialog_History)
+    DeclareDialog(XAP_DIALOG_ID_DOCCOMPARISON,  XAP_UnixDialog_DocComparison)
+
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)
     DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_UnixDialog_HdrFtr)

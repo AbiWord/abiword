@@ -30,12 +30,17 @@
 #include "ut_uuid.h"
 #include "ut_misc.h"
 #include "ut_path.h"
+#include "xap_DialogFactory.h"
 
 #include "xad_Document.h"
 #include "xav_View.h"
 #include "xap_App.h"
 #include "xap_Strings.h"
 #include "xap_Dlg_History.h"
+#include "xap_Dlg_MessageBox.h"
+#include "xap_Frame.h"
+#include "xap_Strings.h"
+#include "xap_Dialog_Id.h"
 
 #ifdef ENABLE_RESOURCE_MANAGER
 #include "xap_ResourceManager.h"

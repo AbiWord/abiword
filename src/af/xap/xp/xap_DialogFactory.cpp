@@ -23,6 +23,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_DialogFactory.h"
+#include "xap_Dialog_Id.h"
 
 /*****************************************************************/
 
