@@ -1373,6 +1373,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 				if(pView)
 				{
 					pView->setCursorToContext();
+					pView->focusChange(AV_FOCUS_HERE);
 				}
 			}
 			s_pLoadingFrame = NULL;
