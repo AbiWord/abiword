@@ -156,12 +156,6 @@ UT_Bool AP_UnixApp::initialize(void)
 		
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
-#if 0
-#ifdef DEBUG
-		// TODO Change this to be someplace more friendly.
-		pBuiltinStringSet->dumpBuiltinSet("/tmp/EnUS.strings");
-#endif
-#endif
 		m_pStringSet = pBuiltinStringSet;
 
 		// see if we should load an alternate set from the disk
@@ -253,16 +247,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {
 	// This is a static function.
 		   
-	// TODO These printfs are not here permanently.  remove them later.
-
-	printf("Build ID:\t%s\n", XAP_App::s_szBuild_ID);
-	printf("Version:\t%s\n", XAP_App::s_szBuild_Version);
-	printf("Build Options: \t%s\n", XAP_App::s_szBuild_Options);
-	printf("Build Target: \t%s\n", XAP_App::s_szBuild_Target);
-	printf("Compile Date:\t%s\n", XAP_App::s_szBuild_CompileDate);
-	printf("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime);
-
-	printf("\n");
+	UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
+	UT_DEBUGMSG(("Version:\t%s\n", XAP_App::s_szBuild_Version));
+	UT_DEBUGMSG(("Build Options: \t%s\n", XAP_App::s_szBuild_Options));
+	UT_DEBUGMSG(("Build Target: \t%s\n", XAP_App::s_szBuild_Target));
+	UT_DEBUGMSG(("Compile Date:\t%s\n", XAP_App::s_szBuild_CompileDate));
+	UT_DEBUGMSG(("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime));
 	
 	// initialize our application.
 
@@ -277,57 +267,102 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		return -1;	// make this something standard?
 	}
 
-	// create the first window.
-	AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(pMyUnixApp);
-	pFirstUnixFrame->initialize();
-	
-	/*
-		TODO command-line parsers are a-dime-a-dozen.
-		We should find one and put it in a util directory
-		somewhere so we can use it.  For now, we
-		cruise through and find filenames, and look for
-		-script arguments.
-	*/
-
+	if (pMyUnixApp->ParseCommandLine())
 	{
-		int i;
+		// turn over control to gtk
 
-		for (i=1; i<argc; i++)
-		{
-			if (0 == strcmp(argv[i], "-script"))
-			{
-				i++;
-				
-#ifdef ABI_OPT_JS
-				js_eval_file(pMyUnixApp->getInterp(), argv[i]);
-#endif /* ABI_OPT_JS */
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		// try to load the document named on the command line,
-		// if that fails, create an new, untitled document window.
-
-		if (!pFirstUnixFrame->loadDocument(argv[i], IEFT_Unknown))
-		{
-			// TODO: warn user that we couldn't open that file
-
-			// The file type doesn't really matter since the path is NULL
-			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
-		}
+		gtk_main();
 	}
-
-	// turn over control to gtk
-
-	gtk_main();
-
+	
 	// destroy the App.  It should take care of deleting all frames.
 
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
 	
 	return 0;
+}
+
+UT_Bool AP_UnixApp::ParseCommandLine(void)
+{
+	// parse the command line
+	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
+	
+	// TODO when we refactor the App classes, consider moving
+	// TODO this to app-specific, cross-platform.
+
+	// TODO replace this with getopt or something similar.
+	
+	// Unix puts the program name in argv[0], so [1] is the first argument.
+
+	int nFirstArg = 1;
+	int k;
+	int kWindowsOpened = 0;
+	
+	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
+	{
+		if (*m_pArgs->m_argv[k] == '-')
+		{
+			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
+			{
+				// [-script scriptname]
+#ifdef ABI_OPT_JS			
+				js_eval_file(getInterp(),m_pArgs->m_argv[k+1]);
+#endif /* ABI_OPT_JS */
+				k++;
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
+			{
+				// [-dumpstrings]
+#ifdef DEBUG
+				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+				pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
+				delete pBuiltinStringSet;
+#endif
+			}
+			else
+			{
+				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
+				// TODO don't know if it has a following argument or not -- assume not
+			}
+		}
+		else
+		{
+			// [filename]
+			
+			AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+			pFirstUnixFrame->initialize();
+			if (pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
+			{
+				kWindowsOpened++;
+			}
+			else
+			{
+				// TODO: warn user that we couldn't open that file
+
+#if 1
+				// TODO this is a unix/gtk problem.
+				// TODO we crash if we just delete this without putting something
+				// TODO in it, so let's go ahead and open an untitled document
+				// TODO for now.  this would cause us to get 2 untitled documents
+				// TODO if the user gave us 2 bogus pathnames....
+				kWindowsOpened++;
+				pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+#else
+				delete pFirstUnixFrame;
+				// TODO do we want to signal and error and exit.... if so, return false here
+#endif
+			}
+		}
+	}
+
+	if (kWindowsOpened == 0)
+	{
+		// no documents specified or were able to be opened, open an untitled one
+
+		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+		pFirstUnixFrame->initialize();
+		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+	}
+
+	return UT_TRUE;
 }

@@ -293,8 +293,6 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
 
-	// create the first window.
-
 	if (pMyWin32App->ParseCommandLine(iCmdShow))
 	{
 		while (GetMessage(&msg, NULL, 0, 0))
@@ -366,10 +364,11 @@ UT_Bool AP_Win32App::ParseCommandLine(int iCmdShow)
 			
 			AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
 			pFirstWin32Frame->initialize();
-			HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
 			if (pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
 			{
 				kWindowsOpened++;
+
+				HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
 				ShowWindow(hwnd, iCmdShow);
 				UpdateWindow(hwnd);
 			}
@@ -390,10 +389,10 @@ UT_Bool AP_Win32App::ParseCommandLine(int iCmdShow)
 
 		AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
 		pFirstWin32Frame->initialize();
-		HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
 
 		pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
 
+		HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
 		ShowWindow(hwnd, iCmdShow);
 		UpdateWindow(hwnd);
 	}
