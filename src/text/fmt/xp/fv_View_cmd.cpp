@@ -2659,9 +2659,10 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	setPoint(getPoint());
+    notifyListeners(AV_CHG_ALL);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-    notifyListeners(AV_CHG_MOTION);
 
 	return true;
 }
