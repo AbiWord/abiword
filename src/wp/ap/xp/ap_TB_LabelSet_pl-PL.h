@@ -41,7 +41,7 @@
 
 // Polish translated by Sercxemulo <explo@poczta.wp.pl>
 // Since December '01 maintained by Piotr Banski <bansp@bigfoot.com>
-// Last update: 27-dec-2001
+// Last update: 21-jan-2002
 BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
@@ -75,8 +75,8 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Podkre¶lona",tb_text_underline_xpm,	NULL, "Czcionka podkre¶lona")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Nadkre¶lona",		tb_text_overline_xpm,	NULL, "Czcionka nadkre¶lona")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Przekre¶lona",   tb_text_strikeout_xpm,	NULL, "Czcionka przekre¶lona")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Linia górna",		tb_text_topline_xpm,	NULL, "Linia wzd³u¿ górnego marginesu tekstu")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Linia dolna",		tb_text_bottomline_xpm,	NULL, "Linia wzd³u¿ dolnego marginesu tekstu")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Linia górna",		tb_text_topline_xpm,	NULL, "Linia wzd³u¿ górnego marginesu wiersza")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Linia dolna",		tb_text_bottomline_xpm,	NULL, "Linia wzd³u¿ dolnego marginesu wiersza")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,			"Pomoc",			tb_help_xpm,			NULL, "Menu systemu pomocy")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Indeks górny",	tb_text_superscript_xpm,	NULL, "Indeks górny")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indeks dolny",	tb_text_subscript_xpm,		NULL, "Indeks dolny")
@@ -98,7 +98,7 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Kolumny",		tb_3column_xpm,			NULL, "3 Kolumny")
 
 	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Poka¿ wszystko",			tb_view_showpara_xpm,		NULL, "Poka¿/ukryj znaki niedrukowane")
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Powiêkszenie",		NoIcon,			NULL, "Zmiana skali podgl¹du")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Powiêkszenie",		NoIcon,			NULL, "Zmiana skali podgl±du")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Wypunktowanie",			tb_lists_bullets_xpm,	NULL, "Lista wypunktowana")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numerowanie",		tb_lists_numbers_xpm,	NULL, "Lista numerowana")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Kolor czcionki",		tb_text_fgcolor_xpm,	NULL, "Kolor czcionki")
