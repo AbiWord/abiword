@@ -80,7 +80,7 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	if (getIdentifier() == 0)
 		setIdentifier(m_iGtkTimerId);
 
-	UT_DEBUGMSG(("ut_unixTimer.cpp: timer [%d] (with id [%d] set\n", getIdentifier(), m_iGtkTimerId));
+//	UT_DEBUGMSG(("ut_unixTimer.cpp: timer [%d] (with id [%d] set\n", getIdentifier(), m_iGtkTimerId));
 
 	m_iMilliseconds = iMilliseconds;
 
