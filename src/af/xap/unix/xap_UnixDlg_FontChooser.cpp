@@ -250,10 +250,32 @@ static gint s_drawing_area_expose(GtkWidget * w,
 			            (UT_sint32) dlg->m_gc->getFontHeight() / (UT_sint32) 2;
 
 		top -= 4; // things seem to line up better this way
-		
+
 		// draw in 5 pixels or so from left edge
 		dlg->m_gc->drawChars(unicodeString, 0, UT_UCS_strlen(unicodeString), 5, top);
 		FREEP(unicodeString);
+#if 0
+		// TODO:
+		
+		// we draw decorations after the text, even though the underline looks
+		// kinda funny this way
+		UT_sint32 iDrop = (dlg->m_gc->getFontDescent() / 3);
+		dlg->m_gc->drawLine(5, top + iDrop + dlg->m_gc->getFontAscent(),
+							5 + getWidth(), yoff + iDrop + m_iAscent);
+			if (m_fDecorations & TEXT_DECOR_OVERLINE)
+	{
+		UT_sint32 y2 = yoff;
+		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
+	}
+
+	if (m_fDecorations & TEXT_DECOR_LINETHROUGH)
+	{
+		UT_sint32 y2 = yoff + getAscent() * 2 / 3;
+		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
+		
+	}
+#endif
+
 	}
 		
 	return FALSE;
