@@ -263,6 +263,22 @@ bool AP_Win32App::initialize(void)
 	}
 	_findclose( findtag );
 
+	UT_String pluginName( getUserPrivateDirectory() ); 
+	UT_String pluginDir( getUserPrivateDirectory() );
+	pluginDir += "\\AbiWord\\plugins\\*.dll";
+	findtag = _findfirst( pluginDir.c_str(), &cfile );
+	if( findtag != -1 )
+	{
+		do
+		{	
+			pluginName = getUserPrivateDirectory();
+			pluginName += "\\AbiWord\\plugins\\";
+			pluginName += cfile.name;
+			XAP_ModuleManager::instance().loadModule( pluginName.c_str() );
+		} while( _findnext( findtag, &cfile ) == 0 );
+	}
+	_findclose( findtag );
+
 	return true;
 }
 
