@@ -74,7 +74,6 @@ class XAP_CocoaDialog_FontChooser;
 -(IBAction)strikeoutAction:(id)sender;
 -(IBAction)transparentAction:(id)sender;		// = no higlight color ?
 
-- (void)colorWellDidChange:(NSNotification *)aNotification;
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 
 /* accessors */
@@ -130,6 +129,8 @@ public:
 	void				_deleteGC(void);
 	
 private:
+	void _colorChanged(NSColor* color, const XML_Char* attr, char* buf);
+
 	XML_Char*	m_currentFamily;
 	XAP_CocoaDialog_FontChooserController*	m_dlg;
 };

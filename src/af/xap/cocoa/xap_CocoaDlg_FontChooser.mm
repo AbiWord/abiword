@@ -36,15 +36,7 @@
 // your typographer's standard nonsense latin font phrase
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
 
-//
-// For Screen color picker
-	enum
-	{
-		RED,
-		GREEN,
-		BLUE,
-		OPACITY
-	};
+
 
 /*****************************************************************/
 XAP_Dialog * XAP_CocoaDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
@@ -68,26 +60,6 @@ XAP_CocoaDialog_FontChooser::~XAP_CocoaDialog_FontChooser(void)
 	DELETEP(m_pGraphics);
 }
 
-
-#if 0
-/*****************************************************************/
-
-static gint s_drawing_area_expose(GtkWidget * w,
-								  GdkEventExpose * /* pExposeEvent */)
-{
-	XAP_CocoaDialog_FontChooser * dlg = (XAP_CocoaDialog_FontChooser *)
-		                              g_object_get_user_data(G_OBJECT(w));
-
-//
-// Look if updates are blocked and quit if they are.
-//
-	if(dlg->m_blockUpdate)
-		return FALSE;
-	dlg->updatePreview();
-	return FALSE;
-}
-
-#endif
 
 /*****************************************************************/
 
@@ -125,9 +97,6 @@ void XAP_CocoaDialog_FontChooser::transparencyChanged(bool value)
 	{
 		addOrReplaceVecProp("bgcolor","transparent");
 		UT_DEBUGMSG (("Update background color"));
-//		m_currentBGColor[RED]  = -1;
-//		m_currentBGColor[GREEN] = -1;
-//		m_currentBGColor[BLUE] = -1;
 	}
 	updatePreview();
 }
@@ -137,7 +106,6 @@ void XAP_CocoaDialog_FontChooser::fontRowChanged(void)
 	NSString *fontFamily;
 	
 	fontFamily = [m_dlg selectedFont];
-	NSLog (@"font family is %@", fontFamily);
 	FREEP(m_currentFamily);
 	m_currentFamily = UT_strdup([fontFamily UTF8String]);
 	addOrReplaceVecProp("font-family",m_currentFamily);
@@ -189,36 +157,44 @@ void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
 	updatePreview();
 }
 
-
-void XAP_CocoaDialog_FontChooser::fgColorChanged(void)
+/*!
+	Change the color for the property.
+	
+	\param color the NSColor
+	\param attr the CSS attribute
+	\param buf the buf to store the color (static in the caller)
+ */
+void XAP_CocoaDialog_FontChooser::_colorChanged(NSColor* color, const XML_Char* attr,
+					char* buf)
 {
-	NSColor* color;
-	static char buf_color[8];
 	float r,g,b,a;
-	color = [m_dlg bgColor];
+	color = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 	[color getRed:&r green:&g blue:&b alpha:&a];
-	snprintf(buf_color, sizeof(buf_color), "%02x%02x%02x",
+	snprintf(buf, 7, "%02x%02x%02x",
 			(unsigned int) (r 	* (float) 255.0),
 			(unsigned int) (g	* (float) 255.0),
 			(unsigned int) (b * (float) 255.0));
-	addOrReplaceVecProp("color",(XML_Char *)buf_color);
+	addOrReplaceVecProp(attr,(XML_Char *)buf);
 	updatePreview();
 }
 
+/*!
+	Called when text color has been changed in the widget
+ */
+void XAP_CocoaDialog_FontChooser::fgColorChanged(void)
+{
+	static char buf_color[8];
+	_colorChanged([m_dlg textColor], "color", buf_color);
+}
 
+
+/*!
+	Called when text background color has been changed in the widget
+ */
 void XAP_CocoaDialog_FontChooser::bgColorChanged(void)
 {
-	NSColor* color;
 	static char buf_color[8];
-	float r,g,b,a;
-	color = [m_dlg bgColor];
-	[color getRed:&r green:&g blue:&b alpha:&a];
-	snprintf(buf_color, sizeof(buf_color), "%02x%02x%02x",
-			(unsigned int) (r 	* (float) 255.0),
-			(unsigned int) (g	* (float) 255.0),
-			(unsigned int) (b * (float) 255.0));
-	addOrReplaceVecProp("bgcolor",(XML_Char *)buf_color);
-	updatePreview();
+	_colorChanged([m_dlg bgColor], "bgcolor", buf_color);
 }
 
 
@@ -254,7 +230,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		[m_dlg setTextColor:color];
 	}
 	else {
-		[m_dlg setTextColor:[NSColor blackColor]];	
+		[m_dlg setTextColor:[[NSColor blackColor] colorUsingColorSpaceName:NSDeviceRGBColorSpace]];	
 	}
 	
 	// Set color in the color selector
@@ -269,7 +245,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 	else
 	{
-		[m_dlg setBgColor:[NSColor whiteColor]];	
+		[m_dlg setBgColor:[[NSColor whiteColor] colorUsingColorSpaceName:NSDeviceRGBColorSpace]];	
 	}
 
 	// set the strikeout and underline check buttons
@@ -312,24 +288,20 @@ bool XAP_CocoaDialog_FontChooser::getEntryString(char ** string)
 void XAP_CocoaDialog_FontChooser::updatePreview(void)
 {
 	// if we don't have anything yet, just ignore this request
-	if (!m_pGraphics)
+	if (!m_pGraphics) {
 		return;
+	}
+	
 	// if a font has been set since this dialog was launched, draw things with it
-//	if (m_doneFirstFont)
-//	{
-		char * entryString;
+	char * entryString;
 
-		if (!getEntryString(&entryString))
-			return;
+	if (!getEntryString(&entryString)) {
+		return;
+	}
 
-		UT_UCSChar * unicodeString = NULL;
-		UT_UCS4_cloneString_char(&unicodeString, entryString);
-		event_previewExposed(unicodeString);
-//	}
-//	else
-//	{
-//		event_previewClear();
-//	}
+	UT_UCSChar * unicodeString = NULL;
+	UT_UCS4_cloneString_char(&unicodeString, entryString);
+	event_previewExposed(unicodeString);
 }
 
 void XAP_CocoaDialog_FontChooser::_okAction(void)
@@ -378,7 +350,6 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 -(void)dealloc
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super dealloc];
 	[m_sizeDataSource release];
 	[m_stylesDataSource release];
@@ -441,15 +412,6 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		}
 		[_sizeList setDataSource:m_sizeDataSource];
 		[_sizeList setDelegate:self];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self 
-						selector:@selector(colorWellDidChange:) 
-						name:nil
-						object:_textColorWell];
-		[[NSNotificationCenter defaultCenter] addObserver:self 
-						selector:@selector(colorWellDidChange:) 
-						name:nil
-						object:_textHighlightColorWell];
 	}
 	else {
 		NSLog(@"Loaded Windows without XAP (%s:%d)", __FILE__, __LINE__);
@@ -470,9 +432,16 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 -(IBAction)colorWellAction:(id)sender
 {
-	NSColorPanel*	panel = [NSColorPanel sharedColorPanel];
-	[panel setTarget:sender];
-	[panel setColor:[sender color]];
+//	NSColorPanel*	panel = [NSColorPanel sharedColorPanel];
+//	[panel setTarget:sender];
+//	[panel setColor:[sender color]];
+	if (sender == _textColorWell) {
+		_xap->fgColorChanged();
+	}
+	else if (sender == _textHighlightColorWell) {
+		_xap->bgColorChanged();
+	}
+
 }
 
 -(IBAction)underlineAction:(id)sender
@@ -500,25 +469,6 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->strikeoutChanged
 			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
-}
-
-- (void)colorPanelDidChange:(NSNotification *)aNotification
-{
-	id obj = [aNotification object];
-
-}
-
-
-- (void)colorWellDidChange:(NSNotification *)aNotification
-{
-	id obj = [aNotification object];
-	UT_DEBUGMSG(("received notification\n"));
-	if (obj == _textColorWell) {
-		_xap->fgColorChanged();
-	}
-	else if (obj == _textHighlightColorWell) {
-		_xap->bgColorChanged();
-	}
 }
 
 
