@@ -1136,10 +1136,10 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 		XPoint points[4];
 
 		points[0].x = r.x;
-		points[0].y = r.y;
+		points[0].y = r.y - r.height;
 			
 		points[1].x = r.x + r.width;
-		points[1].y = r.y;
+		points[1].y = r.y - r.height;
 			
 		points[2].x = r.x + r.width;
 		points[2].y = r.y + r.height;

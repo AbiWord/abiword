@@ -341,7 +341,7 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		GR_Graphics * pG = pView->getGraphics();
 		pG->doRepaint(&rClip);
 	}
-	return 0;
+	return TRUE;
 }
 
 /*!
@@ -374,7 +374,8 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 	{
 		while(pG->isExposedAreaAccessed())
 		{
-			UT_usleep(10); // 10 microseconds
+			pF->nullUpdate();
+//			UT_usleep(10); // 10 microseconds
 		}
 		pG->setExposedAreaAccessed(true);
 		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,

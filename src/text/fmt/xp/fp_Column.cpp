@@ -580,6 +580,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
         ybot += ytop + _UL(1);
+		xxx_UT_DEBUGMSG(("clipRect height %d \n",pClipRect->height));
 	}
 	else
 	{
@@ -597,7 +598,6 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	{
 		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
 		UT_sint32 ydiff = 0;
-
 		bool bTable = false;
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
@@ -627,9 +627,20 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 		{
 			da.xoff = pDA->xoff + pContainer->getX();
 			da.yoff = pDA->yoff + pContainer->getY();
-			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
+			ydiff = da.yoff + pContainer->getHeight();
 		}
-		if(bTable || (da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
+		UT_sint32 sumHeight = pContainer->getHeight() + (ybot-ytop);
+		UT_sint32 totDiff = 0;
+		if(da.yoff < ytop)
+		{
+			totDiff = ybot - da.yoff;
+		}
+		else
+		{
+			totDiff = ydiff - ytop;
+		}
+//		if(bTable || (da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
+		if(bTable || (totDiff < sumHeight)  || (pClipRect == NULL))
 		{
 			bStart = true;
 			pContainer->draw(&da);
@@ -639,7 +650,6 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 			bStop = true;
 		}
 	}
-
     _drawBoundaries(pDA);
 }
 
