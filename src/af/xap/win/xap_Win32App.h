@@ -56,6 +56,9 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 
+	virtual HICON							getIcon(void) = 0;
+	virtual HICON							getSmallIcon(void) = 0;
+
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	

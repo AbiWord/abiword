@@ -64,6 +64,16 @@ OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
 
 ABICOPY=cp
 
+ifdef ABI_OPT_BRANDED
+ABI_TMDEFS=		-DABI_OPT_BRANDED
+ABI_OPTIONS+=Branding:On
+ABI_TM_INCS=/../../abisource/art
+else
+ABI_TMDEFS=
+ABI_OPTIONS+=Branding:Off
+ABI_TM_INCS=
+endif
+
 ##################################################################
 ##################################################################
 ## Help for finding all of our include files without needing to
@@ -91,7 +101,7 @@ ABI_OTH_INCS=	/other/spell
 ABI_PEER_INCS=	/../../expat/xmlparse	\
 		/../../expat/xmltok
 
-ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS)
+ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
 ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
 
 ##################################################################
@@ -119,7 +129,7 @@ endif
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
-			$(ABI_DBGDEFS) $(ABI_INCS)
+			$(ABI_TMDEFS) $(ABI_DBGDEFS) $(ABI_INCS)
 
 ##################################################################
 ##################################################################

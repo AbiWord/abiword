@@ -144,7 +144,7 @@ endif
 ifeq ($(OS_NAME), WIN32)
 $(RCOBJS): $(RCSRCS)
 	@$(MAKE_OBJDIR)
-	@$(RC) /fo$(subst /,\\,$(RCOBJS)) $(ABI_INCS) $(RCSRCS)
+	@$(RC) /fo$(subst /,\\,$(RCOBJS)) $(ABI_INCS) $(ABI_TMDEFS) $(RCSRCS)
 	@echo $(RCOBJS) finished
 endif
 

@@ -48,6 +48,9 @@ public:
 	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
 						HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
 
+	virtual HICON							getIcon(void);
+	virtual HICON							getSmallIcon(void);
+	
 protected:
 	AP_Win32Prefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;

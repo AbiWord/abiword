@@ -60,12 +60,12 @@ UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
 	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
+	wndclass.hIcon         = app->getIcon();
 	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wndclass.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
 	wndclass.lpszMenuName  = NULL;
 	wndclass.lpszClassName = app->getApplicationName();
-	wndclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+	wndclass.hIconSm       = app->getSmallIcon();
 
 	a = RegisterClassEx(&wndclass);
 	UT_ASSERT(a);

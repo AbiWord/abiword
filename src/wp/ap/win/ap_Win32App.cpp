@@ -27,10 +27,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifdef ABI_OPT_JS
-#include <js.h>
-#endif /* ABI_OPT_JS */
-
 #include <stdio.h>
 #include <string.h>
 
@@ -44,6 +40,8 @@
 #include "ap_LoadBindings.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
+
+#include "ap_Win32Resources.rc2"
 
 #include "ie_types.h"
 
@@ -240,6 +238,16 @@ UT_Bool AP_Win32App::shutdown(void)
 XAP_Prefs * AP_Win32App::getPrefs(void) const
 {
 	return m_prefs;
+}
+
+HICON AP_Win32App::getIcon(void)
+{
+	return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_MAINFRAME));
+}
+
+HICON AP_Win32App::getSmallIcon(void)
+{
+	return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_MAINFRAME));
 }
 
 UT_Bool AP_Win32App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
@@ -528,9 +536,6 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
 			{
 				// [-script scriptname]
-#ifdef ABI_OPT_JS			
-				js_eval_file(getInterp(),m_pArgs->m_argv[k+1]);
-#endif /* ABI_OPT_JS */
 				k++;
 			}
 			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
