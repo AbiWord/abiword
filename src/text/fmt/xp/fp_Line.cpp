@@ -1306,7 +1306,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, F
 
 	UT_sint32 iXreal;
 	if(iDomDirection == FRIBIDI_TYPE_RTL)
-		iXreal = m_iMaxWidth - iXreal;
+		iXreal = m_iMaxWidth - iWidth;
 	else
 		iXreal = iWidth;
 
