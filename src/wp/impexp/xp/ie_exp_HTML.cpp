@@ -4141,7 +4141,14 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		m_utf8_1 += " class=\"ABI_FIELD_";
 		m_utf8_1 += szType;
 		m_utf8_1 += "\"";
-
+		
+		UT_UTF8String footnoteAIDString;
+		if (UT_strcmp (szType, "footnote_anchor") == 0)
+		{
+			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (m_footnoteNum));
+			m_utf8_1 += footnoteAIDString;	
+		}
+		
 		tagOpen (TT_SPAN, m_utf8_1, ws_None);
 
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
