@@ -53,9 +53,7 @@ EnchantChecker::EnchantChecker()
 	if (s_enchant_broker_count == 0) {
 		s_enchant_broker = enchant_broker_init ();
 	}
-	if (s_enchant_broker) {
-		s_enchant_broker_count++;
-	}
+	s_enchant_broker_count++;
 }
 
 EnchantChecker::~EnchantChecker()
