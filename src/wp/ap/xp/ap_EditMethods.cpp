@@ -5587,7 +5587,7 @@ Defun1(dlgBullets)
   //
   // Dialog for Bullets and Lists
   //
-#if defined(WIN32) || defined(__QNXTO__) || defined(__BEOS__) || defined(TARGET_OS_MAC)
+#if defined(__QNXTO__) || defined(__BEOS__) || defined(TARGET_OS_MAC)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 

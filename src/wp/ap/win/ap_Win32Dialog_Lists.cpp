@@ -94,9 +94,13 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 {
 	// Always revert to non-customized state when bringing it up.
 	m_bDisplayCustomControls = false;
-	m_bisCustomized = _isNewList();
-	_customChanged();
-	_setData();
+	m_bisCustomized = false;
+	if( m_hThisDlg )
+	{
+		m_bisCustomized = _isNewList();
+		_customChanged();
+		_setData();
+	}
 
 	// raise the dialog
 	_win32Dialog.runModeless(pFrame, AP_DIALOG_ID_LISTS, AP_RID_DIALOG_LIST, this);
@@ -106,6 +110,10 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hThisDlg = hWnd;
+	m_bisCustomized = _isNewList();
+	_customChanged();
+	_setData();
+
 
 	// Default range for a spin control is 100 -- 0 (i.e. min > max),
 	// making it go "the wrong way" (i.e. cursor up lowers the value).
