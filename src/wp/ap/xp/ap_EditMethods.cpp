@@ -1088,7 +1088,6 @@ Defun(Test_Dump)
 /*****************************************************************/
 
 #ifdef WIN32
-#include "ut_debugmsg.h"
 #include "ap_Win32Frame.h"
 #include "gr_Win32Graphics.h"
 
