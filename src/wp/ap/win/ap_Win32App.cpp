@@ -376,9 +376,20 @@ UT_Bool AP_Win32App::ParseCommandLine(int iCmdShow)
 			{
 				// TODO: warn user that we couldn't open that file
 
+#if 1
+				// TODO we crash if we just delete this without putting something
+				// TODO in it, so let's go ahead and open an untitled document
+				// TODO for now.  this would cause us to get 2 untitled documents
+				// TODO if the user gave us 2 bogus pathnames....
+				kWindowsOpened++;
+				pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
+				HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
+				ShowWindow(hwnd, iCmdShow);
+				UpdateWindow(hwnd);
+#else
 				delete pFirstWin32Frame;
-
 				// TODO do we want to signal and error and exit.... if so, return false here
+#endif
 			}
 		}
 	}

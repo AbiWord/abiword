@@ -340,7 +340,6 @@ UT_Bool AP_UnixApp::ParseCommandLine(void)
 				// TODO: warn user that we couldn't open that file
 
 #if 1
-				// TODO this is a unix/gtk problem.
 				// TODO we crash if we just delete this without putting something
 				// TODO in it, so let's go ahead and open an untitled document
 				// TODO for now.  this would cause us to get 2 untitled documents
