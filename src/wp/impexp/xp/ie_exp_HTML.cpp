@@ -171,7 +171,7 @@ bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
-	*pszDesc = "AbiWord Web Document (.phtml)";
+	*pszDesc = "XHTML+PHP (.phtml)";
 	*pszSuffixList = "*.phtml";
 	*ft = getFileType();
 	return true;
