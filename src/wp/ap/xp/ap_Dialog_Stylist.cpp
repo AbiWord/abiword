@@ -552,5 +552,6 @@ bool Stylist_row::getStyle(UT_UTF8String & sStyleName, UT_sint32 col)
 	}
 	UT_UTF8String * psStyle = static_cast<UT_UTF8String *>(m_vecStyles.getNthItem(col));
 	sStyleName = *psStyle;
+	return true;
 }
 
