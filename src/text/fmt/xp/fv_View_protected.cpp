@@ -2252,81 +2252,42 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 		}
 			
 		UT_uint32 t = 0;
-			
-		if (m_bMatchCase)
-		{
-			UT_UCSChar currentChar;
+		UT_UCSChar currentChar;
 
-			while ((i > 0 ))
-			{
-				t = 0;
-				currentChar = buffer[i];
-				if (currentChar == UCS_RQUOTE) currentChar = '\'';
-				while ((m_sFind[t] == currentChar)&& ( t < m+1)) {
-					t++;
-					currentChar = buffer[i + t];
-					if (currentChar == UCS_RQUOTE) currentChar = '\'';
-					}	
-					
-				if (t == m) {
-					if (m_bWholeWord)
-					{
-						bool start = UT_isWordDelimiter(buffer[i-1], UCS_UNKPUNK, UCS_UNKPUNK);
-						bool end = UT_isWordDelimiter(buffer[i+m], UCS_UNKPUNK, UCS_UNKPUNK);
-						if (start && end)
-						{
-							foundAt = i;
-							break;
-						}
-					}
-					else
-					{
-						foundAt = i;
-						break;
-					}
-				}
-			
-				i--;
-			}
-		}
-		else
+		while ((i > 0 ))
 		{
-			UT_UCSChar currentChar;
-
-			while ((i >0 ))
+			t = 0;
+			currentChar = buffer[i];
+			if (currentChar == UCS_RQUOTE) currentChar = '\'';
+			if (!m_bMatchCase) currentChar = UT_UCS4_tolower(currentChar);
+			while ((m_sFind[t] == currentChar)&& ( t <= m))
 			{
-				t = 0;
-				currentChar = buffer[i];
+				t++;
+				currentChar = buffer[i + t];
 				if (currentChar == UCS_RQUOTE) currentChar = '\'';
-				currentChar = UT_UCS4_tolower(currentChar);
-				while ((m_sFind[t] == currentChar) && ( t <= m)) {
-					t++;
-					currentChar = buffer[i + t];
-					if (currentChar == UCS_RQUOTE) currentChar = '\'';
-					currentChar = UT_UCS4_tolower(currentChar);
-					}	
-				if (t == m) 
+				if (!m_bMatchCase) currentChar = UT_UCS4_tolower(currentChar);
+			}	
+				
+			if (t == m) {
+				if (m_bWholeWord)
 				{
-					if (m_bWholeWord)
-					{
-						bool start = UT_isWordDelimiter(buffer[i-1], UCS_UNKPUNK, UCS_UNKPUNK);
-						bool end = UT_isWordDelimiter(buffer[i+m], UCS_UNKPUNK, UCS_UNKPUNK);
-						if (start && end)
-						{
-							foundAt = i;
-							break;
-						}
-					}
-					else
+					bool start = UT_isWordDelimiter(buffer[i-1], UCS_UNKPUNK, UCS_UNKPUNK);
+					bool end = UT_isWordDelimiter(buffer[i+m], UCS_UNKPUNK, UCS_UNKPUNK);
+					if (start && end)
 					{
 						foundAt = i;
 						break;
 					}
 				}
-				i--;
+				else
+				{
+					foundAt = i;
+					break;
+				}
 			}
+		
+			i--;
 		}
-
 
 		// Select region of matching string if found
 		if (foundAt > 0)
