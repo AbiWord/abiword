@@ -43,6 +43,7 @@
 #	include "xap_Win32Dlg_PluginManager.h"
 #	include "xap_Win32Dlg_Password.h"
 #	include "xap_Win32Dlg_Image.h"
+#	include "xap_Win32Dlg_HTMLOptions.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
@@ -96,6 +97,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_Win32Dialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_PASSWORD,		XAP_Win32Dialog_Password)
 	DeclareDialog(XAP_DIALOG_ID_IMAGE,			XAP_Win32Dialog_Image)
+	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,    XAP_Win32Dialog_HTMLOptions)		
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
@@ -125,10 +127,8 @@
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_Win32Dialog_MetaData)	
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_Win32Dialog_MergeCells)
 	
-	
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_Win32Dialog_Download_File)
 #endif
  	// ... also add new dialogs here ...
-
 #endif
