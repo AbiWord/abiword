@@ -40,6 +40,9 @@ public:
 	UINT getWin32Identifier(void) { return m_nIDEvent; }
 	static UT_Win32Timer* findWin32Timer(HWND hwnd, UINT win32ID);
 
+	static void pauseAllTimers(bool bPause){s_bPauseAllTimers = bPause;}
+	static bool timersPaused(){return s_bPauseAllTimers;}
+
 protected:
 	UT_sint32 m_iMilliseconds;
 	bool m_bStarted;
@@ -48,6 +51,9 @@ protected:
 	static int _compareIdentifiers(const void* p1, const void* p2);
 	UT_uint32 _createIdentifier(void);
 	UINT _createWin32Identifier(void);
+
+private:
+	static bool s_bPauseAllTimers;
 };
 
 VOID CALLBACK Global_Win32TimerProc(HWND hwnd, 

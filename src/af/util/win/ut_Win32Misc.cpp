@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include "ut_debugmsg.h"
 #include "ut_Win32Resources.rc2"
+#include "ut_Win32Timer.h"
 
 /*!
     UT_gettimeofday() fills in the timeval structure with current
@@ -415,7 +416,7 @@ class UT_Win32AssertDlg
 	
   private:
 	UT_Win32AssertDlg(const char * pCond, const char * pFile, int iLine, int iCount)
-		: m_pCond(pCond), m_pFile(pFile), m_iLine(iLine), m_iCount(iCount), m_myHWND(NULL){};
+		: m_pCond(pCond), m_pFile(pFile), m_iLine(iLine), m_iCount(iCount), m_myHWND(NULL), m_bTimersPaused(false){};
 	~UT_Win32AssertDlg(){};
 
 	static BOOL CALLBACK  s_dlgProc(HWND,UINT,WPARAM,LPARAM);
@@ -439,6 +440,7 @@ class UT_Win32AssertDlg
 
 	HWND m_myHWND;
 	UT_GenericVector<HWND> m_vecDisabledWnds;
+	bool m_bTimersPaused;
 };
 
 /*!
@@ -534,7 +536,7 @@ BOOL UT_Win32AssertDlg::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 
 	enableWindows();
-	
+	UT_Win32Timer::pauseAllTimers(m_bTimersPaused);
 	EndDialog(hWnd,0);
 	return 1;
 
@@ -566,6 +568,10 @@ void UT_Win32AssertDlg::enableWindows()
 
 BOOL UT_Win32AssertDlg::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	// pause all timers
+	m_bTimersPaused = UT_Win32Timer::timersPaused();
+	UT_Win32Timer::pauseAllTimers(true);
+	
 	// We need to make this dlg 'Task Modal' (equivalent to MB_TASKMODAL of the
 	// MessageBox() function), otherwise mutliple assert boxes can potentially be created
 	// in response to things like mouse movement. The idea how to do this came from the

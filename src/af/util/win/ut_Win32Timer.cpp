@@ -24,6 +24,8 @@
 #include "ut_assert.h"
 #include "gr_Win32Graphics.h"
 
+bool UT_Win32Timer::s_bPauseAllTimers = false;
+
 /*****************************************************************/
 	
 UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG)
@@ -61,7 +63,7 @@ VOID CALLBACK Global_Win32TimerProc(HWND hwnd,
 	UT_Timer* pMyTimer = UT_Win32Timer::findWin32Timer(hwnd, idEvent);
 	UT_ASSERT(pMyTimer);
 
-	if (pMyTimer && static_cast<UT_Win32Timer *>(pMyTimer)->isActive())
+	if (pMyTimer && static_cast<UT_Win32Timer *>(pMyTimer)->isActive() && !UT_Win32Timer::timersPaused())
 		pMyTimer->fire();
 }
 
