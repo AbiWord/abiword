@@ -140,59 +140,6 @@ AC_DEFUN([ABI_GLIB12_OPT], [
 	fi
 ])
 
-# Check for required gtk+
-
-# Usage: 
-# ABI_GTK12(<micro-version>)
-
-AC_DEFUN([ABI_GTK12], [	
-	AC_ARG_WITH(gtk,[  --with-gtk[=DIR]   Use gtk+ (v1.2) [in DIR] ],[
-		if [ test "x$withval" = "xno" ]; then
-			AC_MSG_ERROR([* * * gtk-1.2 is not optional! * * *])
-		elif [ test "x$withval" = "xyes" ]; then
-			GTK_DIR=""
-		else
-			GTK_DIR="$withval"
-		fi
-	],[	GTK_DIR=""
-	])
-	if [ test "x$GTK_DIR" = "x" ]; then
-		AC_PATH_PROG(GTK_CONFIG,gtk12-config, ,[$PATH])
-	else
-		AC_PATH_PROG(GTK_CONFIG,gtk12-config, ,[$GTK_DIR/bin:$PATH])
-	fi
-	if [ test "x$GTK_CONFIG" = "x" ]; then
-		if [ test "x$GTK_DIR" = "x" ]; then
-			AC_PATH_PROG(GTK_CONFIG,gtk-config, ,[$PATH])
-		else
-			AC_PATH_PROG(GTK_CONFIG,gtk-config, ,[$GTK_DIR/bin:$PATH])
-		fi
-	fi
-	if [ test "x$GTK_CONFIG" = "x" ]; then
-		AC_MSG_ERROR([* * * unable to find gtk12-config or gtk-config in path! * * *])
-	fi
-        if [ $GTK_CONFIG --version > /dev/null 2>&1 ]; then
-		abi_gtk_version=`$GTK_CONFIG --version`
-		abi_gtk_major=`echo $abi_gtk_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-		abi_gtk_minor=`echo $abi_gtk_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-		abi_gtk_micro=`echo $abi_gtk_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-
-		abi_gtk_version=""
-		if [ test $abi_gtk_major -eq 1 ]; then
-			if [ test $abi_gtk_minor -eq 2 ]; then
-				if [ test $abi_gtk_micro -ge "$1" ]; then
-					abi_gtk_version="1.2.$abi_gtk_micro"
-				fi
-			fi
-		fi
-		if [ test "x$abi_gtk_version" = "x" ]; then
-			AC_MSG_ERROR([* * * gtk version is incompatible! require at least "1.2.$1" * * *])
-		fi
-	else
-		AC_MSG_ERROR([* * * unable to determine gtk version! * * *])
-	fi
-])
-
 # On unix, check for glib library.
 # On mac, check for glib, but it's optional; module support unnecessary.
 # Ensure that the version number of glib is >= 1.2.0
@@ -241,29 +188,6 @@ elif test "$PLATFORM" = "cocoa"; then
         AC_SUBST(GLIB_CFLAGS)
         AC_SUBST(GLIB_LIBS)
 
-fi
-
-])
-
-# On unix, check gtk libraries.
-# Ensure that the version number of gtk is >= 1.2.2
-
-# Usage: 
-# ABI_GLIB_GTK
-#
-
-AC_DEFUN([ABI_GLIB_GTK], [
-
-ABI_GLIB
-
-if test "$PLATFORM" = "unix"; then
-	ABI_GTK12(2)
-
-        GTK_CFLAGS=`$GTK_CONFIG --cflags`
-        GTK_LIBS=`$GTK_CONFIG --libs`
-
-        AC_SUBST(GTK_CFLAGS)
-        AC_SUBST(GTK_LIBS)
 fi
 
 ])
