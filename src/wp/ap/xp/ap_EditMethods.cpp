@@ -72,6 +72,7 @@
 #include "xap_Dlg_WindowMore.h"
 #include "xap_Dlg_Zoom.h"
 #include "xap_Dlg_Insert_Symbol.h"
+#include "xap_Dlg_Language.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -232,7 +233,7 @@ public:
 	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
-        static EV_EditMethod_Fn printPreview;
+	static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn printDirectly;
 	static EV_EditMethod_Fn fileInsertGraphic;
 
@@ -276,6 +277,8 @@ public:
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
+	static EV_EditMethod_Fn dlgLanguage;
+	static EV_EditMethod_Fn language;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
 	static EV_EditMethod_Fn toggleBold;
@@ -478,6 +481,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgBullets),			0,		""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
 	EV_EditMethod(NF(dlgFont),			0,		""),
+	EV_EditMethod(NF(dlgLanguage),			0,		""),
 	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
 	EV_EditMethod(NF(dlgOptions),			0,	        ""),
 	EV_EditMethod(NF(dlgParagraph),			0,		""),
@@ -567,6 +571,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// k
 
 	// l
+	EV_EditMethod(NF(language),			0,	""),
 
 	// m
 	EV_EditMethod(NF(middleSpace),			0,		""),
@@ -3280,6 +3285,69 @@ Defun1(replace)
 
 /*****************************************************************/
 
+static bool s_doLangDlg(FV_View * pView)
+{
+#ifdef LANGUAGE
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_LANGUAGE;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_Language * pDialog
+		= (XAP_Dialog_Language *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	const XML_Char ** props_in = NULL;
+	if (pView->getCharFormat(&props_in))
+	{
+		pDialog->setLanguageProperty(UT_getAttribute("language", props_in));
+		free(props_in);
+	}
+
+	// run the dialog
+
+	pDialog->runModal(pFrame);
+
+	// extract what they did
+
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_Language::a_OK);
+
+	if (bOK)
+	{
+		//UT_DEBUGMSG(("pressed OK\n"));
+		UT_uint16 k = 0;
+		const XML_Char * props_out[3];
+		const XML_Char * s;
+
+		if (pDialog->getChangedLangProperty(&s))
+		{
+			//UT_DEBUGMSG(("some change\n"));
+			
+			props_out[k++] = "language";
+			props_out[k++] = s;
+		}
+
+		props_out[k] = 0;						// put null after last pair.
+		
+		if (k > 0)								// if something changed
+			pView->setCharFormat(props_out);
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+#else
+	return false;
+#endif
+}
+
+/*****************************************************************/
+
 static bool s_doFontDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -3627,6 +3695,24 @@ static bool s_doOptionsDlg(FV_View * pView)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return true;	
+}
+
+/****************************************************************/
+
+Defun1(dlgLanguage)
+{
+	ABIWORD_VIEW;
+
+	return s_doLangDlg(pView);
+}
+
+Defun(language)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "language", NULL, 0};
+	properties[1] = (const XML_Char *) pCallData->m_pData;
+	pView->setCharFormat(properties);
+	return true;
 }
 
 /*****************************************************************/

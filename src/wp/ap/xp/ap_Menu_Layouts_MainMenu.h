@@ -98,6 +98,7 @@ BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_FORMAT)
 		MenuItem(AP_MENU_ID_FMT_FONT)
+		MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
 #ifdef DEBUG

@@ -137,6 +137,36 @@ dcl(DLG_IP_Width_Label,					"Width:  ")
 dcl(DLG_IP_Button_Label,				"Insert")
 
 
+/* Language Dialog */
+dcl(DLG_ULANG_LangLabel,				"Select Language:")
+dcl(DLG_ULANG_LangTitle,				"Language")
+
+/* Language property in different languages; keep sorted by the numerical id's */
+dcl(LANG_0,								"-none-")
+dcl(LANG_1,								"English (AU)")
+dcl(LANG_2,								"English (GB)")
+dcl(LANG_3,								"English (US)")
+dcl(LANG_4,								"Czech")
+dcl(LANG_5,								"German (Austria)")
+dcl(LANG_6,								"German (Germany)")
+dcl(LANG_7,								"French (France)")
+dcl(LANG_8,								"Hebrew")
+dcl(LANG_9,								"Italian (Italy)")
+dcl(LANG_10,								"Spanish (Spain)")
+dcl(LANG_11,								"Portuguese (Portugal)")
+dcl(LANG_12,								"Russian (Russia)")
+dcl(LANG_13,								"Danish")
+dcl(LANG_14,								"Dutch (Netherlands)")
+dcl(LANG_15,								"Finnish")
+
+
+
+
+
+
+
+
+
 
 
 

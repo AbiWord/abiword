@@ -2118,6 +2118,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	v.addItem(new _fmtPair("dir",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair("dir-override",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 #endif
+	v.addItem(new _fmtPair("language",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)

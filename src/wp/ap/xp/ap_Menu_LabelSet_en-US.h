@@ -92,6 +92,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&Picture",			"Insert an existing picture from another file")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"F&ormat",			NULL)
+	MenuLabel(AP_MENU_ID_FMT_LANGUAGE,		"&Language",		"Change the language of the selected text")
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Font",			"Change the font of the selected text")
 	MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,		"&Paragraph",		"Change the format of the selected paragraph")
 	MenuLabel(AP_MENU_ID_FMT_BULLETS,		"Bullets and &Numbering",	"Add or modify bullets and numbering for selected paragraphs")

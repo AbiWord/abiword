@@ -55,7 +55,7 @@ typedef enum _XAP_Dialog_Id
 
 	XAP_DIALOG_ID_ABOUT,				/* about dialog */
 	/* ... add others here ... */
-
+    XAP_DIALOG_ID_LANGUAGE,
 	XAP_DIALOG_ID__LAST__				= 1000	/* must be last */
 
 };
