@@ -13017,26 +13017,66 @@ Defun(btn1Frame)
 	return true;
 }
 
+static bool sReleaseFrame = false;
+
+static void sActualDragFrame(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+{
+	ABIWORD_VIEW;
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	if(sReleaseFrame)
+	{
+		sReleaseFrame = false;
+		pView->releaseFrame(x,y);
+	}
+	pView->dragFrame(x,y);
+
+}
 
 Defun(dragFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	xxx_UT_DEBUGMSG(("Drag Frame \n"));
-	UT_sint32 y = pCallData->m_yPos;
-	UT_sint32 x = pCallData->m_xPos;
-	pView->dragFrame(x,y);
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
+	pNewData->m_xPos = pCallData->m_xPos;
+	pNewData->m_yPos = pCallData->m_yPos;
+	_Freq * pFreq = new _Freq(pView,pNewData,sActualDragFrame);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
 	return true;
 }
 
 
 Defun(releaseFrame)
 {
+	sReleaseFrame = true;
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Release Frame \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
+	sReleaseFrame = false;
 	pView->releaseFrame(x,y);
 	return true;
 }
