@@ -34,6 +34,12 @@
 #include "fv_View.h"
 #include "fl_BlockLayout.h"
 
+// needed for convertToPNG
+#include "ie_impGraphic.h"
+#include "ut_bytebuf.h"
+
+// needed for unix printing
+
 #if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(__APPLE__)
 #define ANY_UNIX 1
 #endif
@@ -215,4 +221,50 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 
   DELETEP(pDocLayout);
   UNREFP(pDoc);
+}
+
+void AP_Convert::convertToPNG ( const char * szSourceFileName )
+{
+  UT_ByteBuf src ;
+  UT_ByteBuf *dest = NULL ;
+
+  if ( szSourceFileName && src.insertFromFile ( 0, szSourceFileName ) )
+    {
+      IE_ImpGraphic * pGraphic = NULL ;
+
+      if ( UT_OK == IE_ImpGraphic::constructImporter ( &src,
+						       IEGFT_Unknown,
+						       &pGraphic ) )
+	{
+	  if ( UT_OK == pGraphic->convertGraphic ( &src, &dest ) )
+	    {
+
+	      // generate new filename with .png extension
+	      char * fileDup = UT_strdup ( szSourceFileName );
+	      char * tmp = strrchr(fileDup, '.');
+	      if (tmp != NULL)
+		*tmp = '\0';
+
+	      UT_String szDestFileName ( fileDup ) ;
+	      szDestFileName += ".png" ;
+
+	      FREEP( fileDup ) ;
+
+	      if ( dest->writeToFile ( szDestFileName.c_str() ) )
+		{
+		  // success
+		  DELETEP( dest ) ;
+		  DELETEP( pGraphic ) ;
+		  return ;
+		}
+	    }
+	}
+
+      DELETEP( pGraphic ) ;
+    }
+
+  // failure
+  DELETEP( dest ) ;
+
+  printf ( "Conversion to PNG failed\n" ) ;
 }

@@ -45,6 +45,8 @@ class ABI_EXPORT AP_Convert
 				   const char * szSourceSuffix,
 				   const char * szTargetFormat);
 
+	void convertToPNG ( const char * szSourceFileName ) ;
+
 	void setVerbose(int level);
 	XAP_App* getApp() { return m_pApp; }
 
