@@ -63,6 +63,10 @@ protected:
 		{ m_iSelIndex = index; };
 	UT_uint32                       _getSelectionIndex () const
 		{ return m_iSelIndex; };
+	const XML_Char **               _getAllEncodings () const
+		{ return m_ppEncodings; };
+	UT_uint32                       _getEncodingsCount() const
+		{ return m_iEncCount; };
 
 private:
 	XAP_Dialog_Encoding::tAnswer	m_answer;

@@ -63,7 +63,7 @@ public:
 
 protected:
 
-	gint 		_GetFromList(void);
+	gint 		_getFromList(void);
 	GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
 	

@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -133,7 +133,7 @@ void XAP_UnixDialog_Encoding::runModal(XAP_Frame * pFrame)
 void XAP_UnixDialog_Encoding::event_OK(void)
 {
 	// Query the list for its selection.
-	gint row = _GetFromList();
+	gint row = _getFromList();
 
 	if (row >= 0)
 		_setSelectionIndex((UT_uint32) row);
@@ -151,7 +151,7 @@ void XAP_UnixDialog_Encoding::event_Cancel(void)
 void XAP_UnixDialog_Encoding::event_DoubleClick(void)
 {
 	// Query the list for its selection.	
-	gint row = _GetFromList();
+	gint row = _getFromList();
 
 	// If it found something, return with it
 	if (row >= 0)
@@ -169,7 +169,7 @@ void XAP_UnixDialog_Encoding::event_WindowDelete(void)
 
 /*****************************************************************/
 
-gint XAP_UnixDialog_Encoding::_GetFromList(void)
+gint XAP_UnixDialog_Encoding::_getFromList(void)
 {
 	// Grab the selected index and store it in the member data
 	GList * selectedRow = GTK_CLIST(m_clistWindows)->selection;
@@ -227,7 +227,7 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 
 	// Create the new top level window.
 	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));
+	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(XAP_STRING_ID_DLG_UENC_EncTitle));
 	// This policy allows the window to let the window manager shrink and grow it.
 	gtk_window_set_policy (GTK_WINDOW (windowMain), TRUE, TRUE, FALSE);
 
@@ -236,14 +236,14 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 	gtk_container_add (GTK_CONTAINER (windowMain), vboxMain);
 
 #else
-	windowMain = gnome_dialog_new (pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows), GNOME_STOCK_BUTTON_OK,
+	windowMain = gnome_dialog_new (pSS->getValue(XAP_STRING_ID_DLG_UENC_EncTitle), GNOME_STOCK_BUTTON_OK,
 				       GNOME_STOCK_BUTTON_CANCEL, NULL);
 	vboxMain = GNOME_DIALOG(windowMain)->vbox;
 	buttonOK = GTK_WIDGET (g_list_first (GNOME_DIALOG (windowMain)->buttons)->data);
 	buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowMain)->buttons)->data);
 #endif
 
-	labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
+	labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UENC_EncLabel));
 	gtk_widget_show (labelActivate);
 	gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
@@ -351,12 +351,10 @@ void XAP_UnixDialog_Encoding::_populateWindowData(void)
 	// We just do one thing here, which is fill the list with
 	// all the windows.
 
-	for (UT_uint32 i = 0; i < m_pApp->getFrameCount(); i++)
+	for (UT_uint32 i = 0; i < _getEncodingsCount(); i++)
 	{
-		XAP_Frame * f = m_pApp->getFrame(i);
-		UT_ASSERT(f);
-		const char * s = f->getTitle(128);	// TODO: chop this down more? 
-		
+		const XML_Char* s = _getAllEncodings()[i];
+
 		gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), (gchar **) &s);
 		gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));
 	} 
