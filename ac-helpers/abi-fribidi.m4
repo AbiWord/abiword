@@ -14,10 +14,6 @@
 # itself may be copied and distributed under the terms of the GNU
 # GPL, see COPYING for more details
 #
-# This file detects which of the AbiWord platforms we are currently
-# building on.  The detection logic in question is mostly by Jeff
-# Hostetler, and is taken from the original AbiWord build system.  
-#
 # Usage: ABI_FRIBIDI
 
 AC_DEFUN([ABI_FRIBIDI],[

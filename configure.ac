@@ -208,43 +208,6 @@ AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
 ])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
-#
-# Checks for FreeType
-#
-FREETYPE_LIBS=
-FREETYPE_CFLAGS=
-have_freetype=false
-AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
-if test "x$FREETYPE_CONFIG" != "xno" ; then
-  FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
-  FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
-
-  AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true
-	       ,:,$FREETYPE_LIBS)
-
-  if $have_freetype ; then
-    abi_save_cppflags="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
-
-    AC_MSG_CHECKING([For sufficiently new FreeType (at least 2.0.1)])
-    AC_TRY_COMPILE([
-#include <freetype/freetype.h>
-#include FT_ERRORS_H
-]
-                ,[(void)1;],:,have_freetype=false)
-    if $have_freetype ; then
-      AC_MSG_RESULT(yes)
-    else
-      AC_MSG_RESULT(no)
-    fi
-
-    CPPFLAGS="$abi_save_cppflags"
-  fi
-fi
-AC_SUBST(FREETYPE_LIBS)
-AC_SUBST(FREETYPE_CFLAGS)
-AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype) 
-
 ## see which freetype we have, 2.0.3 vs. 2.0.4
 abi_save_cppflags="$CPPFLAGS"  
 CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"

@@ -58,7 +58,17 @@ if test "x$xft" = "xtrue" ; then
 	XFT_LIBS="`xft-config --libs`"
 
 	AC_CHECK_HEADERS(fontconfig/fontconfig.h)
+
+	ABI_FREETYPE_OPT(2.0.0,no)
+
+	FREETYPE_CFLAGS="`$abi_freetype_config --cflags`"
+	FREETYPE_LIBS="`$abi_freetype_config --libs`"
+else
+	FREETYPE_CFLAGS=""
+	FREETYPE_LIBS=""
 fi
+AC_SUBST(FREETYPE_CFLAGS)
+AC_SUBST(FREETYPE_LIBS)
 
 AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
