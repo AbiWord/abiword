@@ -10210,7 +10210,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		return false;
 	}
 	UT_ASSERT(pCL->getContainerType() != FL_CONTAINER_TABLE);
-	UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
+	xxx_UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));
