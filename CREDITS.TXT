@@ -41,7 +41,8 @@ Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Paul Egli <pegli@sourcegear.com>
 Danny Faught <faught@rstcorp.com>
 Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
-Hubert Figuiere <hfiguiere@teaser.fr>           RTF export fixes
+Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) port, MacOS X makefiles
+                                                and autoconf, JPEG import, Applix import
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Tomas Frydrych <tomas@frydrych.uklinux.net>	ttf, utf8 locale, bidi
 David Given <dg@tao-group.com>			Human Readable Text Export
@@ -64,7 +65,8 @@ Andrew Klassen <ak@dkp.com>                     Irix 64 fixes
 Larry Kollar <kollar@alltel.net>                MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
-Dom Lachowicz <cinamod@hotmail.com>             glib and Word export, gnome FE maintainer, current wvWare maintainer
+Dom Lachowicz <cinamod@hotmail.com>             glib and Word export, gnome FE maintainer, 
+                                                current wvWare maintainer
 Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
 Patrick Lam <plam@mit.edu>			tab leaders, left ruler grippies
 Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
