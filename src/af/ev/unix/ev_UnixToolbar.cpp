@@ -223,6 +223,11 @@ public:									// we create...
 		}				
 	};
 
+	static void s_combo_list_changed(GtkList* list, GtkWidget * widget, gpointer user_data)
+	{
+		s_combo_changed(widget, user_data);
+	}
+	
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
 	// a microclass for combo boxes.
 	static void s_combo_changed(GtkWidget * widget, gpointer user_data)
@@ -239,7 +244,16 @@ public:									// we create...
 				// block is only honored here
 				if (!wd->m_blockSignal)
 				{
-					const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
+					const gchar * buffer = NULL;
+					if (GTK_IS_ENTRY(widget))
+						buffer = gtk_entry_get_text(GTK_ENTRY(widget));
+					else if (GTK_IS_LIST_ITEM(widget))
+					{
+						GtkWidget* label = gtk_bin_get_child(GTK_BIN(widget));
+						buffer = gtk_label_get_text(GTK_LABEL(label));
+					}
+					else
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 
 					UT_uint32 length = strlen(buffer);
 					xxx_UT_DEBUGMSG(("LACHANCE: comboChanged, length: %d \n", length));
@@ -255,8 +269,7 @@ public:									// we create...
 						strcpy(wd->m_comboEntryBuffer, buffer);
 
 						// HACK BUG - disable font preview for GTK 2.2
-						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview &&
-							!(GTK_CHECK_VERSION (2,1,0)))
+						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview)
 						  {
 						    wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
 						    wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
@@ -321,7 +334,7 @@ public:									// we create...
 		GtkWidget * entry = static_cast<GtkWidget*>(g_object_get_data(G_OBJECT(widget), "entry"));
 
 		// only act if the widget has been shown and embedded in the toolbar
-		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT && !(GTK_CHECK_VERSION (2,1,0)))
+		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
 		{
 		    // if the popwin is still shown, this is a copy run and widget has a ->parent
 		    if (entry->parent)
@@ -831,6 +844,10 @@ bool EV_UnixToolbar::synthesize(void)
 						 "changed",
 						 G_CALLBACK(_wd::s_combo_changed),
 						 wd);
+			        g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->list),
+						 "select-child",
+						 G_CALLBACK(_wd::s_combo_list_changed),
+						 wd);						 
 				// populate it
 				if (pControl)
 				{
@@ -1228,7 +1245,3 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 	return true;
 }
-
-
-
-
