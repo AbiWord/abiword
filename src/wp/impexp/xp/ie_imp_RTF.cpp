@@ -3666,7 +3666,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if(strcmp(reinterpret_cast<char*>(pKeyword), "landscape") == 0)
 		{
 //
-// Just set landsape mode.
+// Just set landscape mode.
 //
 			getDoc()->m_docPageSize.setLandscape();
 		}
