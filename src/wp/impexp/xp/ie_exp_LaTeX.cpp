@@ -249,6 +249,9 @@ void s_LaTeX_Listener::_closeBlock(void)
 	switch (m_iBlockType)
 	{
 	case BT_NORMAL:
+		if (m_bLineHeight)
+		  m_pie->write("\n\\end{spacing}");
+
 		switch (m_eJustification)
 		{
 		case JUSTIFIED:
@@ -263,9 +266,6 @@ void s_LaTeX_Listener::_closeBlock(void)
 			m_pie->write("\n\\end{flushleft}");
 			break;
 		}
-
-		if (m_bLineHeight)
-		  m_pie->write("\n\\end{spacing}");
 
 		m_pie->write("\n\n");
 		break;
