@@ -4141,7 +4141,7 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		m_utf8_1 += " class=\"ABI_FIELD_";
 		m_utf8_1 += szType;
 		m_utf8_1 += "\"";
-		
+
 		UT_UTF8String footnoteAIDString;
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
 		{
@@ -4151,17 +4151,24 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		
 		tagOpen (TT_SPAN, m_utf8_1, ws_None);
 
+		// If the field is a footnote ref, finish opening the span (unchanged),
+		// then open a link with
+		//  m_utf8_1 = "a";
+		//  UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (m_footnoteRNum));
+		//  m_utf8_1 += footnoteRLString;
+		//  tagOpen (TT_A, m_utf8_1, ws_None);
+		// then let the span be finished below (it'll catch the textUntrusted)
+		// then close up with
+		//  m_utf8_1 = "a";
+		//  tagClose (TT_A, m_utf8_1, ws_None);
+		
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
 		{
 			UT_UTF8String footnoteAnchorString;
 			UT_UTF8String_sprintf(footnoteAnchorString, "[%d]", (m_footnoteNum));
 			m_pie->write (footnoteAnchorString.utf8_str (), footnoteAnchorString.byteLength ());
-			textUntrusted (field->getValue ());
 		}
-		else
-		{
 			textUntrusted (field->getValue ());
-		}
 
 		m_utf8_1 = "span";
 		tagClose (TT_SPAN, m_utf8_1, ws_None);
