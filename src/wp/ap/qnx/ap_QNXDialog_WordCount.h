@@ -35,9 +35,22 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+	virtual void			event_OK(void);
+	virtual void			event_WindowDelete(void);
 	
 protected:
 
+	// private construction functions
+	virtual PtWidget_t * _constructWindow(void);
+	void		_populateWindowData(void);
+
+	// pointers to widgets we need to query/set
+	PtWidget_t * m_windowMain;
+
+	PtWidget_t * m_buttonOK;
+
+	int 		done;
 };
 
 #endif /* AP_QNXDIALOG_WORDCOUNT_H */
