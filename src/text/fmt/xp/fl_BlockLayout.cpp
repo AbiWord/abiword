@@ -1148,6 +1148,10 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 
 	pFirst->addRun(m_pFirstRun);
 
+#if 0
+	// with the fix for reversed loading, our line might not have been
+	// inserted into the vertical container, so we cannot do layout
+	
 	// only do the line layout if this block is not hidden ...
 	FV_View * pView = getView();
 	UT_return_if_fail(pView);
@@ -1160,7 +1164,7 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
 	if(!bHidden)
 		pFirst->layout();
-
+#endif
 	// Run list should be valid now.
 	_assertRunListIntegrity();
 }
