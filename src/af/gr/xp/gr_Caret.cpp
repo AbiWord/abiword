@@ -43,12 +43,12 @@
 
 GR_Caret::GR_Caret(GR_Graphics * pG)
 	:   m_pClr(NULL),
-		m_pG(pG),
-		m_nDisableCount(1),
-		m_bCursorBlink(true),
-		m_bCursorIsOn(false),
-		m_bPositionSet(false),
-		m_bRecursiveDraw(false)
+	    m_pG(pG),
+	    m_nDisableCount(1),
+	    m_bCursorBlink(true),
+	    m_bCursorIsOn(false),
+	    m_bPositionSet(false),
+	    m_bRecursiveDraw(false)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -60,6 +60,19 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
 	UT_ASSERT(outMode == UT_WorkerFactory::TIMER);
 	m_enabler->set(CURSOR_DELAY_TIME);
+
+	xxx_UT_DEBUGMSG(("DOM: caret %p created\n",this));
+}
+
+GR_Caret::~GR_Caret()
+{
+	m_worker->stop();
+	m_enabler->stop();
+
+	DELETEP(m_worker);
+	DELETEP(m_enabler);
+
+	xxx_UT_DEBUGMSG(("DOM: deleting caret %p\n", this));
 }
 
 void GR_Caret::s_work(UT_Worker * _w)
@@ -75,22 +88,16 @@ void GR_Caret::s_enable(UT_Worker * _w)
 {
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
 
- 	xxx_UT_DEBUGMSG(("enabling cursor %d\n", c->m_nDisableCount));
+ 	xxx_UT_DEBUGMSG(("enabling caret %d (%p)\n", c->m_nDisableCount, c));
 
 	c->_blink(false);
 	c->m_worker->start();
 	c->m_enabler->stop();
 }
 
-GR_Caret::~GR_Caret()
-{
-	m_worker->stop();
-	m_enabler->stop();
-}
-
 void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
-						 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
-						 bool bPointDirection, UT_RGBColor * pClr)
+			 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
+			 bool bPointDirection, UT_RGBColor * pClr)
 {
 	// if visible, then hide while we change positions.
 	_erase();
@@ -100,8 +107,8 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	m_bPointDirection = bPointDirection; m_pClr = pClr;
 	m_bPositionSet = true;
 
-	// now show the cursor, if it's enabled, and restart the timer.
-	// if we don't do this, the cursor is invisible during cursor motion.
+	// now show the caret, if it's enabled, and restart the timer.
+	// if we don't do this, the caret is invisible during caret motion.
 	// For some reason, we seem to do OK now for that.  I don't get it.
 	if (m_nDisableCount == 0)
 	{
@@ -109,10 +116,9 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	}
 }
 
-
 void GR_Caret::enable()
 {
-	xxx_UT_DEBUGMSG(("GR_Caret: enable() recursive draw %d disablecount %d \n",m_bRecursiveDraw,m_nDisableCount));
+	xxx_UT_DEBUGMSG(("GR_Caret: enable() recursive draw %d disablecount %d (%p)\n",m_bRecursiveDraw,m_nDisableCount, this));
 	if (m_bRecursiveDraw)
 		return;
 
@@ -135,7 +141,7 @@ void GR_Caret::enable()
 
 void GR_Caret::disable(bool bNoMulti)
 {
-	xxx_UT_DEBUGMSG(("GR_Caret: disable () recursive draw %d disablecount %d \n",m_bRecursiveDraw,m_nDisableCount));
+	xxx_UT_DEBUGMSG(("GR_Caret: disable () recursive draw %d disablecount %d (%p)\n",m_bRecursiveDraw,m_nDisableCount, this));
 	if (m_bRecursiveDraw)
 		return;
 
@@ -154,8 +160,8 @@ void GR_Caret::disable(bool bNoMulti)
 			  (m_nDisableCount != 0) || !m_bCursorIsOn);
 }
 
-/** Determines whether Abi is going to blink the cursor or not.
- * If not, then _blink() won't actually clear the cursor; it'll only draw. */
+/** Determines whether Abi is going to blink the caret or not.
+ * If not, then _blink() won't actually clear the caret; it'll only draw. */
 void GR_Caret::setBlink(bool bBlink)
 {
 	m_bCursorBlink = bBlink;
@@ -170,7 +176,7 @@ void GR_Caret::_erase()
 
 void GR_Caret::_blink(bool bExplicit)
 {
-	xxx_UT_DEBUGMSG(("GR_Caret: _blink recursive draw %d position set %d \n",m_bRecursiveDraw,m_bPositionSet));
+	xxx_UT_DEBUGMSG(("GR_Caret: _blink recursive draw %d position set %d (%p)\n",m_bRecursiveDraw,m_bPositionSet, this));
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
 
@@ -182,8 +188,8 @@ void GR_Caret::_blink(bool bExplicit)
 	}
 
 	// Blink if: (a) _blink explicitly called (not autoblink); or
-	//           (b) autoblink and cursor blink enabled; or
-    //           (c) autoblink, cursor blink disabled, cursor is off
+	//           (b) autoblink and caret blink enabled; or
+	//           (c) autoblink, caret blink disabled, caret is off
 	if (bExplicit || m_bCursorBlink || !m_bCursorIsOn)
 	{
 		m_bRecursiveDraw = true;
@@ -201,7 +207,8 @@ void GR_Caret::_blink(bool bExplicit)
 			UT_Rect r(m_xPoint-1, m_yPoint+1, 2, m_iPointHeight);
 			m_pG->saveRectangle(r);
 
-			m_pG->setColor(UT_RGBColor(0,0,0));
+			static const UT_RGBColor black (0,0,0);
+			m_pG->setColor(black);
 
 			m_pG->drawLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, 
 					  m_yPoint + m_iPointHeight+1);

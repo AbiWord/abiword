@@ -268,6 +268,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	if(m_pView)
 	{
 		m_pView->notifyListeners(AV_CHG_ALL);
+		m_pView->focusChange(AV_FOCUS_HERE);
 	}
 	return UT_OK;
 

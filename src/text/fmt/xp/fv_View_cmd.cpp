@@ -1815,7 +1815,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// of the line upon character insertion, but it's the wrong thing to
 	// do.  The right thing to do is to either delay calculation, or to
 	// not make the wrong number come up; disabling the caret is wrong. -PL
- 	// GR_CaretDisabler caretDisabler(m_pG->getCaret());
+ 	GR_CaretDisabler caretDisabler(m_pG->getCaret());
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
