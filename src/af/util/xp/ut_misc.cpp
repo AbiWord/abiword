@@ -9,6 +9,11 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
+UT_Rect::UT_Rect()
+{
+	left = top = height = width = 0;
+}
+
 static int x_hexDigit(char c)
 {
 	if ((c>='0') && (c<='9'))

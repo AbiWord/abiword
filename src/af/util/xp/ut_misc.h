@@ -25,7 +25,7 @@ void UT_parseColor(const char*, UT_RGBColor&);
 class UT_Rect
 {
 public:
-	UT_Rect(void);
+	UT_Rect();
 	void setValues(int, int, int, int);
 	
 	UT_sint32	left;
