@@ -106,6 +106,8 @@ BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	_populateWindowData();
 	
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_NONE_RADIO);
+	_event_somethingChanged();
 	_win32Dialog.centerDialog();
 	
 	return 1;							// 1 == we did not call SetFocus()
