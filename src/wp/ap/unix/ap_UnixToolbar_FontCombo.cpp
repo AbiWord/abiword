@@ -51,6 +51,7 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 	UT_ASSERT(id == AP_TOOLBAR_ID_FMT_FONT);
 	m_nPixels = 150;
 
+	EV_UnixToolbar * toolbar = static_cast<EV_UnixToolbar *>(m_pToolbar);
 	UT_Vector * list = toolbar->getApp()->getFontManager()->getAllFonts();
 	UT_ASSERT(list);
 
