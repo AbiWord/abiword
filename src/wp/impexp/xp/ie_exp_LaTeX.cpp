@@ -160,6 +160,7 @@ IE_Exp_LaTeX::~IE_Exp_LaTeX()
 /*****************************************************************/
 typedef UT_UCSChar U16;
 static int wvConvertUnicodeToLaTeX(U16 char16,char*& out);
+static bool _convertLettersToSymbols(char c, char *& subst);
 
 #define BT_NORMAL		1
 #define BT_HEADING1		2
@@ -213,7 +214,8 @@ protected:
 	bool				m_bInBlock;
 	bool				m_bInSpan;
 	const PP_AttrProp*	m_pAP_Span;
-	bool             m_bMultiCols;
+	bool                m_bMultiCols;
+	UT_uint16           m_iInSymbol;
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
 	bool				m_bFirstSection;
@@ -583,11 +585,11 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
-				m_pie->write("$^{\\rm{}"); // TODO: Finish it
+				m_pie->write("$^{\\mathrm{");
 			}
 			else if (!UT_strcmp("subscript", szValue))
 			{
-				m_pie->write("$_{\\rm{}"); // TODO: Finish it
+				m_pie->write("$_{\\mathrm{");
 			}
 		}
 		
@@ -615,7 +617,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-size", szValue))
 		{
-			if (strcmp (szValue, DEFAULT_SIZE) != 0)
+			if (!UT_strcmp (DEFAULT_SIZE, szValue))
 			{
 				m_pie->write("{\\");
 				char szSize[16];
@@ -627,6 +629,8 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (pAP->getProperty("font-family", szValue))
 		{
+			if (!UT_strcmp ("Symbol", szValue))
+				m_iInSymbol++;
 			UT_DEBUGMSG (("Latex export: TODO: 'font-family' property\n"));
 		}
 
@@ -668,11 +672,11 @@ void s_LaTeX_Listener::_closeSpan(void)
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
-				m_pie->write("}$"); // TODO
+				m_pie->write("}}$");
 			}
 			else if (!UT_strcmp("subscript", szValue))
 			{
-				m_pie->write("}$"); // TODO
+				m_pie->write("}}$");
 			}
 		}
 
@@ -753,6 +757,12 @@ void s_LaTeX_Listener::_closeSpan(void)
 			m_pie->write("}");
 		}
 
+		if (pAP->getProperty("font-family", szValue))
+		{
+			if (!UT_strcmp ("Symbol", szValue))
+				m_iInSymbol--;
+		}
+
 		m_pAP_Span = NULL;
 	}
 
@@ -775,6 +785,19 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 	for (pData = data; (pData < data + length); /**/)
 	{
+		char* subst = "";
+
+		if (m_iInSymbol > 0)
+		{
+			if (_convertLettersToSymbols(*pData, subst))
+			{
+				while (*subst)
+					sBuf += *subst++;
+				pData++;
+				continue;
+			}
+		}
+
 		switch (*pData)
 		{
 		case '\\':
@@ -865,7 +888,6 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			
 			
 		default:
-			char* subst = "";
 			int translated =  wvConvertUnicodeToLaTeX(*pData,subst);
 			if (translated) 
 			{
@@ -889,6 +911,50 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
+#define SUB(a,who) case a: subst = "\\(\\"who"\\)"; return true;
+#define SUBd(a,who) case a: subst = who; return true;
+static bool _convertLettersToSymbols(char c, char *& subst)
+{
+	switch (c)
+	{
+		// only-if-amssymb
+// 		SUB('\\', "therefore");
+		// todo: $ and ^ don't actually work right.
+
+		SUB('\"', "forall");    SUB('$', "exists");
+		SUB('\'', "ni");        SUB('@', "cong");
+		SUB('^', "perp");       SUB('`', "overline{\\ }");
+		SUB('a', "alpha");      SUBd('A', "A");
+		SUB('b', "beta"); 	    SUBd('B', "B");
+		SUB('c', "chi");  	    SUBd('C', "X");
+		SUB('d', "delta");	    SUB('D', "Delta");
+		SUB('e', "varepsilon"); SUBd('E', "E");
+		SUB('f', "phi");  	    SUB('F', "Phi");
+		SUB('g', "gamma");	    SUB('G', "Gamma");
+		SUB('h', "eta");	    SUBd('H', "H");
+		SUB('i', "iota"); 	    SUBd('I', "I"); 
+		SUB('j', "varphi");     SUB('J', "vartheta");
+		SUB('k', "kappa"); 	    SUBd('K', "K");
+		SUB('l', "lambda");	    SUB('L', "Lambda");
+		SUB('m', "mu");    	    SUBd('M', "M");
+		SUB('n', "nu");    	    SUBd('N', "N");
+		SUBd('o', "o");    	    SUBd('O', "O");
+		SUB('p', "pi");    	    SUB('P', "Pi");
+		SUB('q', "theta"); 	    SUB('Q', "Theta");
+		SUB('r', "rho");   	    SUBd('R', "P");
+		SUB('s', "sigma"); 	    SUB('S', "Sigma");
+		SUB('t', "tau");   	    SUBd('T', "T");
+		SUB('u', "upsilon");    SUBd('U', "Y");
+ 		SUB('v', "varpi");		SUB('V', "varsigma");
+		SUB('w', "omega");      SUB('W', "Omega");
+		SUB('x', "xi");         SUB('X', "Xi");
+		SUB('y', "psi");        SUB('Y', "Psi");
+		SUB('z', "zeta");       SUBd('Z', "Z");
+// TODO all those fun upper-ascii letters
+	default: return false;
+	}
+}
+
 s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 										 IE_Exp_LaTeX * pie)
 {
@@ -898,6 +964,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_bInBlock = false;
 	m_bInSpan = false;
 	m_bFirstSection = true;
+	m_iInSymbol = 0;
 
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
