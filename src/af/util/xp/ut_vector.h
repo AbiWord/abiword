@@ -23,6 +23,8 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 
+#define ABI_OPT_STL 0
+
 // TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
 
 // ----------------------------------------------------------------
@@ -32,6 +34,8 @@
 	are not yet portable enough for our needs.  (Same goes for exceptions
 	and namespaces, BTW.)
 */
+
+#ifndef ABI_OPT_STL
 class UT_Vector
 {
 public:
@@ -101,4 +105,75 @@ protected:
 			}											\
 	} while (0)
 
+#else /* ABI_OPT_STL */
+
+#include <vector>
+#include <algorithm>
+
+class UT_Vector
+{
+ public:
+	UT_Vector();
+	~UT_Vector();
+
+	UT_sint32	addItem(void*);
+	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
+	void*		getNthItem(UT_uint32 n) const;
+	const void*           operator[](UT_uint32 i) const;
+	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
+	void*		getFirstItem() const;
+	void*		getLastItem() const;
+	UT_uint32	getItemCount() const;
+	UT_sint32	findItem(void*) const;
+
+	UT_sint32	insertItemAt(void*, UT_uint32 ndx);
+	void		deleteNthItem(UT_uint32 n);
+	void		clear();
+	void		qsort(int (*compar)(const void *, const void *));
+
+	UT_Bool		copy(UT_Vector *pVec);
+ private:
+	vector<void *>  m_STLVec;
+
+
+};
+
+// NB: this macro is useful only in destructors
+#define UT_VECTOR_PURGEALL(d, v)						\
+	do	{	int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
+			{											\
+				d utv_p = (d) v.getNthItem(utv);		\
+				UT_ASSERT(utv_p);						\
+				if (utv_p)								\
+					delete utv_p;						\
+			}											\
+	} while (0)
+
+// NB: this macro is useful only in destructors
+#define UT_VECTOR_SPARSEPURGEALL(d, v)					\
+	do	{	int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
+			{											\
+				d utv_p = (d) v.getNthItem(utv);		\
+				if (utv_p)								\
+					delete utv_p;						\
+			}											\
+	} while (0)
+
+// NB: this macro is useful only in destructors
+#define UT_VECTOR_FREEALL(d, v)							\
+	do	{	int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
+			{											\
+				d utv_p = (d) v.getNthItem(utv);		\
+				UT_ASSERT(utv_p);						\
+				if (utv_p)								\
+					free(utv_p);						\
+			}											\
+	} while (0)
+
+#endif /* ABI_OPT_STL */
+
 #endif /* UTVECTOR_H */
+

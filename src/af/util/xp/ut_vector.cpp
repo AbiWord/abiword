@@ -27,6 +27,7 @@
 #include "ut_vector.h"
 #include "ut_assert.h"
 
+#ifndef ABI_OPT_STL
 
 UT_Vector::UT_Vector()
 {
@@ -258,3 +259,112 @@ const void* UT_Vector::operator[](UT_uint32 i) const
 	return this->getNthItem(i);
 }
 
+#else /* ABI_OPT_STL */
+
+UT_Vector::UT_Vector()
+{
+}
+
+void UT_Vector::clear()
+{
+	m_STLVec.clear();
+}
+
+UT_Vector::~UT_Vector()
+{
+}
+
+UT_uint32 UT_Vector::getItemCount() const
+{
+	return m_STLVec.size();
+}
+
+UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
+{
+	m_STLVec.insert(m_STLVec.begin()+ndx, p);
+	return 0;
+}
+
+UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
+{
+	int err = addItem(p);
+	if (!err && pIndex)
+		*pIndex = m_STLVec.size()-1;
+	return err;
+}
+
+UT_sint32 UT_Vector::addItem(void* p)
+{
+	m_STLVec.push_back(p);
+
+	return 0;
+}
+
+void* UT_Vector::getNthItem(UT_uint32 n) const
+{
+	return m_STLVec[n];
+}
+
+UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
+{
+	if (ppOld)
+	{
+		*ppOld = m_STLVec[ndx];
+	}
+	
+	m_STLVec[ndx] = pNew;
+	return 0;
+}
+
+void* UT_Vector::getLastItem() const
+{
+	return m_STLVec[m_STLVec.size()-2];
+}
+
+void* UT_Vector::getFirstItem() const
+{
+	return m_STLVec[0];
+}
+
+void UT_Vector::deleteNthItem(UT_uint32 n)
+{
+	m_STLVec.erase(m_STLVec.begin()+n);
+	return;
+}
+
+UT_sint32 UT_Vector::findItem(void* p) const
+{
+	for (UT_uint32 i=0; i<m_STLVec.size(); i++)
+	{
+		if (m_STLVec[i] == p)
+		{
+			return (UT_sint32) i;
+		}
+	}
+
+	return -1;
+}
+
+void UT_Vector::qsort(int (*compar)(const void *, const void *))
+{
+	sort(m_STLVec.begin(), m_STLVec.end(), compar);
+}
+
+UT_Bool UT_Vector::copy(UT_Vector *pVec)
+{
+	clear();
+
+	for (UT_uint32 i=0; i < pVec->getItemCount(); i++)
+	{
+		m_STLVec.push_back(pVec->getNthItem(i));
+	}
+
+	return 0;
+}
+
+const void* UT_Vector::operator[](UT_uint32 i) const
+{
+	return m_STLVec[i];
+}
+
+#endif /* ABI_OPT_STL */
