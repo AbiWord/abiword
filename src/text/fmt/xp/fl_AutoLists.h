@@ -45,6 +45,10 @@ typedef enum
 	NOT_A_LIST
 }       List_Type;
 
+#define IS_NUMBERED_LIST_TYPE(x) ((x) >= NUMBERED_LIST && (x) < BULLETED_LIST)
+#define IS_BULLETED_LIST_TYPE(x) ((x) >= BULLETED_LIST && (x) < NOT_A_LIST)
+#define IS_NONE_LIST_TYPE(x) ((x) == NOT_A_LIST)
+
 #define  XML_NUMBERED_LIST (( const XML_Char *) "Numbered List")
 #define  XML_LOWERCASE_LIST ((const XML_Char *) "Lower Case List")
 #define  XML_UPPERCASE_LIST ((const XML_Char *) "Upper Case List")
