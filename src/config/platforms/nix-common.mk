@@ -35,7 +35,7 @@
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
-OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
+OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc32/ -e s/sparc32/sparc/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
 OS_REALARCH	:= $(shell uname -m)
 
 # Define architecture-specific flags (L. Kollar, 3 Nov 1998)
@@ -166,6 +166,11 @@ OS_ENDIAN		= LittleEndian32
 endif
 
 ifeq ($(OS_ARCH), sparc)
+PLATFORM_FLAGS		+= $(SPARC_ARCH_FLAGS)
+OS_ENDIAN		= BigEndian32
+endif
+
+ifeq ($(OS_ARCH), sparc64)
 PLATFORM_FLAGS		+= $(SPARC_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
 endif
