@@ -1263,7 +1263,7 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 	gtk_im_context_set_surrounding (context,
 									utf.utf8_str(),
 									utf.byteLength (),
-									here - begin_p);
+									g_utf8_offset_to_pointer(utf.utf8_str(), here - begin_p) - utf.utf8_str());
 
 	return TRUE;
 }

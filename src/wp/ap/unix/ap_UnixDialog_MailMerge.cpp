@@ -82,15 +82,13 @@ static void s_types_dblclicked(GtkTreeView *treeview,
 XAP_Dialog * AP_UnixDialog_MailMerge::static_constructor(XAP_DialogFactory * pFactory,
 													   XAP_Dialog_Id id)
 {
-	AP_UnixDialog_MailMerge * p = new AP_UnixDialog_MailMerge(pFactory,id);
-	return p;
+	return new AP_UnixDialog_MailMerge(pFactory,id);
 }
 
 AP_UnixDialog_MailMerge::AP_UnixDialog_MailMerge(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_MailMerge(pDlgFactory,id)
+	: AP_Dialog_MailMerge(pDlgFactory,id), m_windowMain(NULL)
 {
-	m_windowMain = NULL;
 }
 
 AP_UnixDialog_MailMerge::~AP_UnixDialog_MailMerge(void)

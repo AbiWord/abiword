@@ -41,8 +41,7 @@
 XAP_Dialog * AP_Win32Dialog_MailMerge::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)
 {
-	AP_Win32Dialog_MailMerge * p = new AP_Win32Dialog_MailMerge(pFactory,id);
-	return p;
+	return new AP_Win32Dialog_MailMerge(pFactory,id);
 }
 
 AP_Win32Dialog_MailMerge::AP_Win32Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,

@@ -43,6 +43,7 @@ static void s_types_clicked(GtkTreeView *treeview,
 	GtkTreeIter iter;
 	GtkTreeModel * model;
 	UT_sint32 row,col;
+
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(treeview) );
 	if (!selection || !gtk_tree_selection_get_selected (selection, &model, &iter)) {
 		return;
@@ -82,12 +83,10 @@ static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me )
     abiDestroyWidget( wid ) ;// will emit signals for us
 }
 
-
 static void s_destroy_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me )
 {
    me->event_Close();
 }
-
 
 static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Stylist * dlg)
 {
@@ -131,18 +130,16 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 {
 	UT_sint32 row,col;
 	UT_UTF8String sCurStyle = *getCurStyle();
+
 	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
-	{
 		updateDialog();
-	}
+
 	if(m_wStyleList == NULL)
-	{
 		return;
-	}
+
 	if(isStyleTreeChanged())
-	{
 		_fillTree();
-	}
+
 	getStyleTree()->findStyle(sCurStyle,row,col);
 	UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
 	UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
@@ -179,24 +176,20 @@ void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame *pFrame)
 }
 
 /*!
- * Set the style in the XP layer fromthe selection in the GUI.
+ * Set the style in the XP layer from the selection in the GUI.
  */
 void AP_UnixDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 {
 	UT_UTF8String sStyle;
 	UT_DEBUGMSG(("row %d col %d clicked \n",row,col));
+
 	if((col == 0) && (getStyleTree()->getNumCols(row) == 1))
-	{
 		return;
-	}
 	else if(col == 0)
-	{
 		getStyleTree()->getStyleAtRowCol(sStyle,row,col);
-	}
 	else
-	{
 		getStyleTree()->getStyleAtRowCol(sStyle,row,col-1);
-	}
+
 	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
 	setCurStyle(sStyle);
 }
@@ -272,7 +265,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	GtkTreeSelection *sel;
 	UT_sint32 row,col, page;
 
-	m_wModel = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT,G_TYPE_INT);
+	m_wModel = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 
 	page = 0;
 	UT_UTF8String sTmp(""); 
@@ -323,10 +316,13 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
+
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
 												 -1, 
 												 pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles).utf8_str(),
-												 m_wRenderer, "text", 0, NULL); 	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));
+												 m_wRenderer, "text", 0, NULL); 	
+
+	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));
 	gtk_container_add (GTK_CONTAINER (m_wStyleListContainer), m_wStyleList);
 
 	g_signal_connect_after(G_OBJECT(m_wStyleList),
