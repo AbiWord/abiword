@@ -1386,7 +1386,7 @@ __except (1)
 {
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
 	
-	UT_return_val_if_fail (pApp);
+	UT_return_val_if_fail (pApp,1);
 	
 	UT_uint32 i = 0;
 	
