@@ -172,7 +172,7 @@ BeginSetEnc(it,IT,true,"iso-8859-1")
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&Dispondi tutto",		"Visualizza tutta la lista delle finestre")
 
 	MenuLabel(AP_MENU_ID_HELP,				"&Aiuto",					NULL)
-	MenuLabel(AP_MENU_ID_HELP_CREDITS, 		"C&rediti", 		"Mostra i crediti")
+	MenuLabel(AP_MENU_ID_HELP_CREDITS, 		"&Riconoscimenti", 		"Riconoscimenti e ringraziamenti")
 	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Contenuto dell'Aiuto",	"Mostra il contenuto dell'Aiuto")
 	MenuLabel(AP_MENU_ID_HELP_INDEX,		"&Indice",		"Mostra l'indice")
 	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Mostra la &Versione",	"Mostra il numero di versione del programma")
