@@ -99,6 +99,7 @@ AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 
 AP_Args::~AP_Args()
 {
+	poptFreeContext(poptcon);
 }
 
 /*****************************************************************/
