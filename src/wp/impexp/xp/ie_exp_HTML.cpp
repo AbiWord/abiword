@@ -508,7 +508,7 @@ void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
 	  const char* pszBgColor = mTableHelper.getCellProp("bgcolor");
 	  if(pszBgColor && pszBgColor[0])
 	    {
-	      UT_String bgcolor (UT_String_sprintf(" bgcolor: %s;", pszBgColor));
+	      UT_String bgcolor (UT_String_sprintf(" bgcolor=\"#%s\"", pszBgColor));
 	      td += bgcolor;
 	    }
 	  
