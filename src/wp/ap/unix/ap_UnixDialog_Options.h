@@ -44,7 +44,7 @@ public:
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
- 					    virtual void _set##a(const t)
+ 					    virtual void _set##a(t)
 
  	SET_GATHER			(SpellCheckAsType,	bool );
  	SET_GATHER			(SpellHideErrors,	bool );
@@ -80,9 +80,12 @@ public:
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
 
-#if 0 // TODO: JCA
+#if 1 // TODO: JCA
 	SET_GATHER			(AutoSaveFile, bool);
-	SET_GATHER			(AutoSaveFileExt, char *);
+	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
+	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
+	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
+	virtual void _setAutoSaveFileExt(const UT_String &stExt);
 #endif
 
 #undef SET_GATHER
@@ -136,6 +139,7 @@ public:
     GtkWidget * m_checkbuttonOtherDirectionRtl;
 #endif
 	GtkWidget * m_checkbuttonAutoSaveFile;
+	GtkWidget * m_textAutoSaveFilePeriod;
 	GtkWidget * m_textAutoSaveFileExt;
 	
 	GtkWidget * m_buttonDefaults;

@@ -21,8 +21,8 @@
 #include "ap_FrameData.h"
 
 AP_FrameData::AP_FrameData()
+	: m_pG(NULL)
 {
-	m_pG = NULL;
 }
 
 AP_FrameData::~AP_FrameData()

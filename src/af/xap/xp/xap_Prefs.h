@@ -28,6 +28,8 @@
 #include "xap_App.h"
 #include "xap_Prefs_SchemeIds.h"
 
+class UT_String;
+
 /* For handling the position of windows on the screen, this sets up preferences */
 enum {
 	PREF_FLAG_GEOMETRY_POS = 0x1,     // Position is valid
@@ -73,6 +75,7 @@ public:
 	// argument; they return error information as the function
 	// return value.
 	bool				getValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool				getValue(const UT_String &szKey, UT_String &szValue) const;
 	bool				getValueBool(const XML_Char * szKey, bool * pbValue) const;
 	bool				getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const;
 	
@@ -103,6 +106,7 @@ public:
 	bool					setCurrentScheme(const XML_Char * szSchemeName);
 
 	bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool					getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
 	bool					getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
 
 	bool					getAutoSavePrefs(void) const;

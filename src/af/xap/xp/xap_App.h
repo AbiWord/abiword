@@ -45,6 +45,7 @@ class PD_DocumentRange;
 class AV_View;
 class XAP_EncodingManager;
 class XAP_Module;
+class UT_String;
 
 /*****************************************************************
 ******************************************************************
@@ -99,6 +100,7 @@ public:
 
 	XAP_Prefs *						getPrefs(void) const;
 	bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool							getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
 	bool							getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
 
 	static XAP_App *				getApp(void) {return m_pApp;}

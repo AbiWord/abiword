@@ -22,6 +22,7 @@
 #include <string.h>
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_units.h"
 #include "ut_debugmsg.h"
 
@@ -39,10 +40,10 @@
 #include "ap_FrameData.h"
 
 AP_Dialog_Options::AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id),
+	  m_answer(a_OK),
+	  m_pFrame(0)	// needs to be set from runModal for some of the event_'s to work
 {
-	m_answer = a_OK;
-	m_pFrame = (XAP_Frame *)0;		// needs to be set from runModal for some of the event_'s to work
 }
 
 AP_Dialog_Options::~AP_Dialog_Options(void)
@@ -61,13 +62,6 @@ inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme,
 	XML_Char szBuffer[2] = {0,0};
 	szBuffer[0] = ((var)==true ? '1' : '0');
 	pPrefsScheme->setValue( key, szBuffer );
-}
-
-inline void Save_Pref_Text(  XAP_PrefsScheme *pPrefsScheme, 
-							 XML_Char const *key, 
-							 const char *var )
-{
-	pPrefsScheme->setValue( key, var );
 }
 
 void AP_Dialog_Options::_storeWindowData(void)
@@ -120,10 +114,19 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 #endif
 
-#if 0
+#if 1
 	// JOAQUIN - fix this: Dom
+	UT_DEBUGMSG(("Saving Auto Save File [%i]\n", _gatherAutoSaveFile()));
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoSaveFile, _gatherAutoSaveFile() );
-	Save_Pref_Text( pPrefsScheme, XAP_PREF_KEY_AutoSaveFileExt, _gatherAutoSaveFileExt() );
+
+	UT_String stVal;
+
+	_gatherAutoSaveFileExt(stVal);
+	UT_DEBUGMSG(("Saving Auto Save File Ext [%s]\n", stVal.c_str()));
+	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFileExt, stVal);
+	_gatherAutoSaveFilePeriod(stVal);
+	UT_DEBUGMSG(("Saving Auto Save File with a period of [%s]\n", stVal.c_str()));
+	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, stVal);
 #endif					
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible
@@ -208,8 +211,8 @@ void AP_Dialog_Options::_eventSave(void)
 void AP_Dialog_Options::_populateWindowData(void)
 {
 	bool			b;
-	XAP_Prefs		*pPrefs;
-	const XML_Char	*pszBuffer;	
+	XAP_Prefs		*pPrefs = 0;
+	const XML_Char	*pszBuffer = 0;	
 	
 	// TODO: move this logic when we get a PrefsListener API and turn this
 	//		 dialog into an app-specific
@@ -265,13 +268,17 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
 
-#if 0
+#if 1
 	// TODO: JOAQUIN FIX THIS
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFile,&b))
 		_setAutoSaveFile (b);
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFileExt,&b))
-		_setAutoSaveFileExt (b);
+	UT_String stBuffer;
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, stBuffer))
+		_setAutoSaveFileExt(stBuffer);
+
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stBuffer))
+		_setAutoSaveFilePeriod(stBuffer);
 #endif
 
 	// ------------ the page tab number 

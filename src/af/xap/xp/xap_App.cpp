@@ -473,6 +473,14 @@ bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) 
 	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
+bool XAP_App::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
+{
+	if (!m_prefs)
+		return false;
+
+	return m_prefs->getPrefsValue(stKey, stValue);
+}
+
 bool XAP_App::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 {
 	if (!m_prefs)

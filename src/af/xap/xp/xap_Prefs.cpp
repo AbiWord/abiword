@@ -26,6 +26,7 @@
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "xap_Prefs.h"
 
 struct xmlToIdMapping {
@@ -112,12 +113,22 @@ bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, bool bValue)
 
 bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
-	UT_HashEntry * pEntry = m_hash.findEntry((char*)szKey);
+	UT_HashEntry * pEntry = m_hash.findEntry((const char*)szKey);
 	if (!pEntry)
 		return false;
 
 	if (pszValue)
 		*pszValue = (const XML_Char*)pEntry->pszRight;
+	return true;
+}
+
+bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
+{
+	UT_HashEntry *pEntry = m_hash.findEntry(stKey.c_str());
+	if (!pEntry)
+		return false;
+
+	stValue = pEntry->pszRight;
 	return true;
 }
 
@@ -483,6 +494,29 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 		return true;
 	}
 
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return false;
+}
+
+bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
+{
+	UT_ASSERT(m_currentScheme);
+
+	if (m_currentScheme->getValue(stKey, stValue))
+		return true;
+	if (m_builtinScheme->getValue(stKey, stValue))
+		return true;
+	
+	// It is legal for there to be arbitrary preference tags that start with 
+	// "Debug", and Abi apps won't choke.  The idea is that developers can use
+	// these to selectively trigger development-time behaviors.
+	if (UT_XML_strnicmp(stKey.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
+	{
+		stValue = NO_PREF_VALUE;
+		return true;
+	}
+
+	UT_DEBUGMSG(("JCA: key: [%s] Value: [%s]", stKey.c_str(), stValue.c_str()));
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }

@@ -28,6 +28,7 @@
 #include "fp_PageSize.h"
 
 class XAP_Frame;
+class UT_String;
 
 class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 {
@@ -56,6 +57,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 #endif
 				   id_CHECK_AUTO_SAVE_FILE,
 				   id_TEXT_AUTO_SAVE_FILE_EXT,
+				   id_TEXT_AUTO_SAVE_FILE_PERIOD,
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
@@ -125,9 +127,12 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
 
-#if 0 // TODO: JCA
+#if 1 // TODO: JCA
 	SET_GATHER			(AutoSaveFile,		bool);
-	SET_GATHER			(AutoSaveFileExt,	char *);
+	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal) = 0;
+	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod) = 0;
+	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal) = 0;
+	virtual void _setAutoSaveFileExt(const UT_String &stExt) = 0;
 #endif
 	
  	// so we can save and restore to the same page - must be able to return

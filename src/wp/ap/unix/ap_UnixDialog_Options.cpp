@@ -19,6 +19,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -727,11 +728,10 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_box_pack_start (GTK_BOX (vbox59), rtl_dominant, FALSE, FALSE, 0);
 #endif		
 	
-#define _(a) (a)
 	// AUTO SAVE
-	frame43 = gtk_frame_new (_("Auto Save"));
+	frame43 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_AutoSave));
 	gtk_widget_show (frame43);
-	gtk_box_pack_start (GTK_BOX (vbox36), frame43, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox36), frame43, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame43), 4);
 	
 	hbox26 = gtk_hbox_new (FALSE, 14);
@@ -742,16 +742,16 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (hbox27);
 	gtk_box_pack_start (GTK_BOX (hbox26), hbox27, TRUE, TRUE, 0);
 	
-	autosave_cb = gtk_check_button_new_with_label (_("Auto save current file each"));
+	autosave_cb = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent));
 	gtk_widget_show (autosave_cb);
 	gtk_box_pack_start (GTK_BOX (hbox27), autosave_cb, FALSE, FALSE, 0);
 	
-	autosave_time_adj = gtk_adjustment_new (5, 0, 100, 1, 10, 10);
+	autosave_time_adj = gtk_adjustment_new (5, 1, 120, 1, 5, 5);
 	autosave_time = gtk_spin_button_new (GTK_ADJUSTMENT (autosave_time_adj), 1, 0);
 	gtk_widget_show (autosave_time);
 	gtk_box_pack_start (GTK_BOX (hbox27), autosave_time, FALSE, TRUE, 0);
 	
-	label23 = gtk_label_new (_("minutes"));
+	label23 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_Minutes));
 	gtk_widget_show (label23);
 	gtk_box_pack_start (GTK_BOX (hbox27), label23, FALSE, FALSE, 0);
 	
@@ -759,7 +759,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (hbox28);
 	gtk_box_pack_start (GTK_BOX (hbox26), hbox28, TRUE, FALSE, 0);
 	
-	label24 = gtk_label_new (_("With extension:"));
+	label24 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_WithExtension));
 	gtk_widget_show (label24);
 	gtk_box_pack_start (GTK_BOX (hbox28), label24, FALSE, FALSE, 0);
 	
@@ -767,7 +767,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (autosave_ext);
 	gtk_box_pack_start (GTK_BOX (hbox28), autosave_ext, TRUE, TRUE, 0);
 	gtk_widget_set_usize (autosave_ext, 50, -2);
-	gtk_entry_set_text (GTK_ENTRY (autosave_ext), _(".bak"));
 
 	label10 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_show (label10);
@@ -782,6 +781,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 #endif
 	m_checkbuttonAutoSaveFile = autosave_cb;
 	m_textAutoSaveFileExt = autosave_ext;
+	m_textAutoSaveFilePeriod = autosave_time;
 
 	m_checkbuttonSpellCheckAsType	        = check_spell;
 	m_checkbuttonSpellHideErrors	        = hide_errors;
@@ -1014,6 +1014,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_TEXT_AUTO_SAVE_FILE_EXT:
 		return m_textAutoSaveFileExt;
 		
+	case id_TEXT_AUTO_SAVE_FILE_PERIOD:
+		return m_textAutoSaveFilePeriod;
+		
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
 	case id_CHECK_PREFS_AUTO_SAVE:
@@ -1139,14 +1142,46 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 #endif
 
-#if 0 // TODO: JCA
+#if 1 // TODO: JCA
 DEFINE_GET_SET_BOOL(AutoSaveFile);
-DEFINE_GET_SET_TEXT(AutoSaveFileExt);
 #endif
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
+
+#if 1 // TODO: JCA
+void AP_UnixDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
+{
+	UT_ASSERT(m_textAutoSaveFileExt && GTK_IS_EDITABLE(m_textAutoSaveFileExt));
+	char *tmp = gtk_editable_get_chars(GTK_EDITABLE(m_textAutoSaveFileExt), 0, -1);
+	stRetVal = tmp;
+	g_free(tmp);
+}
+
+void AP_UnixDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
+{
+	int pos = 0;
+	UT_ASSERT(m_textAutoSaveFileExt && GTK_IS_EDITABLE(m_textAutoSaveFileExt));
+	gtk_editable_delete_text(GTK_EDITABLE(m_textAutoSaveFileExt), 0, -1);
+	gtk_editable_insert_text(GTK_EDITABLE(m_textAutoSaveFileExt), stExt.c_str(), stExt.size(), &pos);
+}
+
+void AP_UnixDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
+{
+	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_SPIN_BUTTON(m_textAutoSaveFilePeriod));
+	char nb[10];
+	int val = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod));
+	snprintf(nb, 10, "%d", val);
+	stRetVal = nb;
+}
+
+void AP_UnixDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
+{
+	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_EDITABLE(m_textAutoSaveFilePeriod));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod), atoi(stPeriod.c_str()));
+}
+#endif
 
 UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void) 
 {				

@@ -86,6 +86,9 @@
 #define XAP_PREF_KEY_AutoSaveFile					"AutoSaveFile"
 #define XAP_PREF_DEFAULT_AutoSaveFile				"1"							/* Auto save files by default */
 
+#define XAP_PREF_KEY_AutoSaveFilePeriod					"AutoSaveFilePeriod"
+#define XAP_PREF_DEFAULT_AutoSaveFilePeriod				"5"							/* Auto save files by default */
+
 #define XAP_PREF_KEY_AutoSaveFileExt					"AutoSaveFileExt"
 #define XAP_PREF_DEFAULT_AutoSaveFileExt				".bak"						/* TODO: set a platform specific suffix */
 
@@ -111,6 +114,7 @@ dcl(DefaultDirectionRtl)
 #endif
 
 dcl(AutoSaveFile)
+dcl(AutoSaveFilePeriod)
 dcl(AutoSaveFileExt)
 
 dcl(EmbedFontsInPS)

@@ -267,9 +267,9 @@ void PD_Document::_setClean(void)
 //////////////////////////////////////////////////////////////////
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
-										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties)
+								  PTObjectType pto,
+								  const XML_Char ** attributes,
+								  const XML_Char ** properties)
 {
 	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
 }
@@ -277,9 +277,9 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
-										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties, fd_Field ** pField)
+								  PTObjectType pto,
+								  const XML_Char ** attributes,
+								  const XML_Char ** properties, fd_Field ** pField)
 {
 	pf_Frag_Object * pfo = NULL;
 	bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
@@ -289,9 +289,9 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 
 
 bool PD_Document::insertSpan(PT_DocPosition dpos,
-								  const UT_UCSChar * p,
-								  UT_uint32 length,
-								  PP_AttrProp *p_AttrProp)
+							 const UT_UCSChar * p,
+							 UT_uint32 length,
+							 PP_AttrProp *p_AttrProp)
 {
 	if(p_AttrProp)
 	{
@@ -302,33 +302,33 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 }
 
 bool PD_Document::deleteSpan(PT_DocPosition dpos1,
-								PT_DocPosition dpos2,
-								PP_AttrProp *p_AttrProp_Before)
+							 PT_DocPosition dpos2,
+							 PP_AttrProp *p_AttrProp_Before)
 {
 	return m_pPieceTable->deleteSpan(dpos1, dpos2, p_AttrProp_Before);
 }												 
 
 bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
-								   PT_DocPosition dpos1,
-								   PT_DocPosition dpos2,
-								   const XML_Char ** attributes,
-								   const XML_Char ** properties)
+								PT_DocPosition dpos1,
+								PT_DocPosition dpos2,
+								const XML_Char ** attributes,
+								const XML_Char ** properties)
 {
 	return m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
 }
 
 bool PD_Document::insertStrux(PT_DocPosition dpos,
-								 PTStruxType pts)
+							  PTStruxType pts)
 {
 	return m_pPieceTable->insertStrux(dpos,pts);
 }
 
 bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
-									PT_DocPosition dpos1,
-									PT_DocPosition dpos2,
-									const XML_Char ** attributes,
-									const XML_Char ** properties,
-									PTStruxType pts)
+								 PT_DocPosition dpos1,
+								 PT_DocPosition dpos2,
+								 const XML_Char ** attributes,
+								 const XML_Char ** properties,
+								 PTStruxType pts)
 {
 	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties,pts);
 }

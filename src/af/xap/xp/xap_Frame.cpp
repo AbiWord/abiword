@@ -29,7 +29,6 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "ut_timer.h"
-#include "ut_string_class.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
@@ -55,63 +54,66 @@
 /*****************************************************************/
 
 XAP_Frame::XAP_Frame(XAP_App * app)
-:       m_app(app),
-        m_pDoc(0),
-        m_pView(0),
-        m_pViewListener(0),
-        m_lid((AV_ListenerId)-1),
-        m_pScrollObj(0),
-        m_szMenuLayoutName(0),
-        m_szMenuLabelSetName(0),
-        m_szToolbarLabelSetName(0),
-        m_szToolbarAppearance(0),
-        m_nView(0),
-        m_iUntitled(0),
-        m_pMouse(0),
-        m_pKeyboard(0),
-        m_pScrollbarViewListener(0),
-        m_lidScrollbarViewListener((AV_ListenerId)-1),
-        m_zoomType(z_100),
-        m_pData(0),
-        m_pInputModes(0),
-		m_iIdAutoSaveTimer(0)
+	: m_app(app),
+	  m_pDoc(0),
+	  m_pView(0),
+	  m_pViewListener(0),
+	  m_lid((AV_ListenerId)-1),
+	  m_pScrollObj(0),
+	  m_szMenuLayoutName(0),
+	  m_szMenuLabelSetName(0),
+	  m_szToolbarLabelSetName(0),
+	  m_szToolbarAppearance(0),
+	  m_nView(0),
+	  m_iUntitled(0),
+	  m_pMouse(0),
+	  m_pKeyboard(0),
+	  m_pScrollbarViewListener(0),
+	  m_lidScrollbarViewListener((AV_ListenerId)-1),
+	  m_zoomType(z_100),
+	  m_pData(0),
+	  m_pInputModes(0),
+	  m_iIdAutoSaveTimer(0),
+	  m_iAutoSavePeriod(0),
+	  m_stAutoSaveExt(),
+	  m_bBackupRunning(false)
 {
-        m_app->rememberFrame(this);
-        memset(m_szTitle,0,sizeof(m_szTitle));
-        memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
+	m_app->rememberFrame(this);
+	memset(m_szTitle,0,sizeof(m_szTitle));
+	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
-:       m_app(f->m_app),                        // only clone a few things
-        m_pDoc(REFP(f->m_pDoc)),
-        m_pView(0),
-        m_pViewListener(0),
-        m_lid((AV_ListenerId)-1),
-        m_pScrollObj(0),
-        m_szMenuLayoutName(0),
-        m_szMenuLabelSetName(0),
-        m_szToolbarLabelSetName(0),
-        m_szToolbarAppearance(0),
-        m_nView(0),
-        m_iUntitled(f->m_iUntitled),
-        m_pMouse(0),
-        m_pKeyboard(0),
-        m_pScrollbarViewListener(0),
-        m_lidScrollbarViewListener((AV_ListenerId)-1),
-        m_zoomType(z_100),
-        m_pData(0),
-        m_pInputModes(0),
-        m_iIdAutoSaveTimer(0)
+	: m_app(f->m_app),                        // only clone a few things
+	m_pDoc(REFP(f->m_pDoc)),
+	m_pView(0),
+	m_pViewListener(0),
+	m_lid((AV_ListenerId)-1),
+	m_pScrollObj(0),
+	m_szMenuLayoutName(0),
+	m_szMenuLabelSetName(0),
+	m_szToolbarLabelSetName(0),
+	m_szToolbarAppearance(0),
+	m_nView(0),
+	m_iUntitled(f->m_iUntitled),
+	m_pMouse(0),
+	m_pKeyboard(0),
+	m_pScrollbarViewListener(0),
+	m_lidScrollbarViewListener((AV_ListenerId)-1),
+	m_zoomType(z_100),
+	m_pData(0),
+	m_pInputModes(0),
+	m_iIdAutoSaveTimer(0),
+	m_bBackupRunning(false)
 {
-        m_app->rememberFrame(this, f);
-        memset(m_szTitle,0,sizeof(m_szTitle));
-        memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
+	m_app->rememberFrame(this, f);
+	memset(m_szTitle,0,sizeof(m_szTitle));
+	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 XAP_Frame::~XAP_Frame(void)
 {
 	// only delete the things that we created...
-
   	DELETEP(m_pKeyboard);
 	DELETEP(m_pMouse);
 
@@ -137,15 +139,18 @@ XAP_Frame::~XAP_Frame(void)
 
 	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
 
-	UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
-	if (timer != 0)
+	if (m_iIdAutoSaveTimer != 0)
 	{
-		UT_DEBUGMSG(("Stopping timer [%d]\n", m_iIdAutoSaveTimer));
-		timer->stop();
-	}
-	else
-	{
-		UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
+		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
+		if (timer != 0)
+		{
+			xxx_UT_DEBUGMSG(("Stopping timer [%d]\n", m_iIdAutoSaveTimer));
+			timer->stop();
+		}
+		else
+		{
+			xxx_UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
+		}
 	}
 }
 
@@ -161,10 +166,10 @@ int XAP_Frame::_getNextUntitledNumber(void)
 /*****************************************************************/
 
 bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
-							  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
-							  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
-							  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
-							  const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
+						   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
+						   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
+						   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
+						   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
 {
 	XAP_App * pApp = getApp();
 
@@ -275,15 +280,29 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 			    (const XML_Char**)&szToolbarAppearance);
 	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
 	UT_cloneString((char *&)m_szToolbarAppearance,szToolbarAppearance);
+
+	//////////////////////////////////////////////////////////////////
+	// select the auto save options
+	//////////////////////////////////////////////////////////////////
+	UT_String stTmp;
+	bool autosave;
+
+	pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stTmp);
+	m_iIdAutoSaveTimer = atoi(stTmp.c_str());
+	pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFileExt, m_stAutoSaveExt);
+	pApp->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, &autosave);
+
+	if (autosave)
+		_createAutoSaveTimer();
 	
 	//////////////////////////////////////////////////////////////////
 	// ... add other stuff here ...
 	//////////////////////////////////////////////////////////////////
-	_createAutoSaveTimer();
 
 	return true;
 }
 
+extern "C" {
 static void autoSaveCallback(UT_Timer *timer)
 {
 	UT_DEBUGMSG(("Autosaving doc...\n"));
@@ -293,23 +312,32 @@ static void autoSaveCallback(UT_Timer *timer)
 	{
 		UT_Error error = me->backup();
 
-#if DEBUG
 		if (!error)
 			UT_DEBUGMSG(("Document saved\n"));
 		else
 			UT_DEBUGMSG(("Error [%d] saving document.\n", error));
-#endif
 	}
+	else
+	{
+		 UT_DEBUGMSG(("Doc is not dirty\n"));
+	}
+}
 }
 
 void XAP_Frame::_createAutoSaveTimer()
 {
-#if 0
 	UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
-	timer->set(300000); // TODO: the time should be configurable.  I choose 5 min by now
+	UT_String stPeriod;
+	
+	UT_ASSERT(m_app);
+	m_app->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stPeriod);
+	UT_ASSERT(stPeriod.empty() == false);
+	m_iAutoSavePeriod = atoi(stPeriod.c_str());
+	
+	// stPeriod is in minutes, and we should use milliseconds
+	timer->set(m_iAutoSavePeriod * 60000);
 	m_iIdAutoSaveTimer = timer->getIdentifier();
-	UT_DEBUGMSG(("Creating auto save timer [%d].\n", m_iIdAutoSaveTimer));
-#endif
+	UT_DEBUGMSG(("Creating auto save timer [%d] with a timeout of [%d] minutes.\n", m_iIdAutoSaveTimer, m_iAutoSavePeriod));
 }
 
 EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
@@ -548,6 +576,45 @@ EV_Keyboard * XAP_Frame::getKeyboard(void)
 	return m_pKeyboard;
 }
 
+void XAP_Frame::setAutoSaveFile(bool b)
+{
+	if (b && !m_iIdAutoSaveTimer)
+	{
+		UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
+		UT_ASSERT(m_iAutoSavePeriod != 0);
+		timer->set(m_iAutoSavePeriod * 60000);
+		m_iIdAutoSaveTimer = timer->getIdentifier();
+	}
+
+	if (!b && m_iIdAutoSaveTimer)
+	{
+		// TODO: We're leaking UT_Timer objects.  We should
+		// TODO: give the posibility to erase a UT_Timer...
+		// TODO: something like UT_Timer::eraseTimer(...) should
+		// TODO: do the work (we should change the sign. of findTimer).
+		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
+		if (timer)
+			timer->stop();
+	}
+}
+
+void XAP_Frame::setAutoSaveFilePeriod(int min)
+{
+	m_iAutoSavePeriod = min;
+	
+	if (m_iIdAutoSaveTimer != 0)
+	{
+		// I know, it looks weird... I just want to restart the timer
+		setAutoSaveFile(false);
+		setAutoSaveFile(true);
+	}
+}
+
+void XAP_Frame::setAutoSaveFileExt(const UT_String &stExt)
+{
+	m_stAutoSaveExt = stExt;
+}
+
 XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char *szMessage,
 											  XAP_Dialog_MessageBox::tButtons buttons,
 											  XAP_Dialog_MessageBox::tAnswer default_answer)
@@ -616,23 +683,34 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
 
 UT_Error XAP_Frame::backup()
 {
-	UT_String ext(".bak"); // TODO: Make this a preference
+	if (m_bBackupRunning)
+		return UT_OK;
+	m_bBackupRunning = true;
+
+	UT_String &ext = m_stAutoSaveExt;
 	UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
 	UT_String backupName;
 
 	if (oldName.empty())
 	{
 		const XAP_StringSet * pSS = m_app->getStringSet();
-		oldName = pSS->getValue(XAP_STRING_ID_UntitledDocument);
-		UT_DEBUGMSG(("Unnamed.  We will give it the name [%s]", oldName.c_str()));
+		const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument);
+		int iLen = strlen(szTmp) + 5;
+		char *szTmp2 = new char[iLen];
+
+		snprintf(szTmp2, iLen, szTmp, m_iUntitled);
+		oldName = szTmp2;
+		delete[] (szTmp2);
+		UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
 	}
 	else
-		UT_DEBUGMSG(("Filename [%s]", oldName.c_str()));
+		UT_DEBUGMSG(("Filename [%s]\n", oldName.c_str()));
 
 	backupName = oldName + ext;
-	UT_Error error = m_pDoc->saveAs(backupName, m_pDoc->getLastType());
+	UT_Error error = m_pDoc->saveAs(backupName, m_pDoc->getLastType(), false);
 	UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
-	
+
+	m_bBackupRunning = false;
 	return error;
 }
 

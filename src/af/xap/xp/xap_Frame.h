@@ -21,13 +21,12 @@
 #ifndef XAP_Frame_H
 #define XAP_Frame_H
 
+#include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xav_Listener.h"	// for AV_ListenerID
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Strings.h"
-
-
 
 class XAP_App;
 class XAP_DialogFactory;
@@ -142,6 +141,10 @@ public:
    	EV_Mouse *					getMouse(void);
 	EV_Keyboard *				getKeyboard(void);
 
+	void						setAutoSaveFile(bool);
+	void						setAutoSaveFilePeriod(int);
+	void						setAutoSaveFileExt(const UT_String &);
+
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer,
@@ -194,6 +197,9 @@ private:
 	char						m_szTitle[512];				/* TODO need #define for this number */
 	char						m_szNonDecoratedTitle[512]; /* TODO need #define for this number */
 	UT_uint32					m_iIdAutoSaveTimer;
+	UT_uint32					m_iAutoSavePeriod;
+	UT_String					m_stAutoSaveExt;
+	bool						m_bBackupRunning;
 	
 	static int					s_iUntitled;	
 };

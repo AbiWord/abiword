@@ -216,6 +216,11 @@ dcl(DLG_Options_Label_DirectionRtl, "Default to right-to-left direction of text"
 dcl(DLG_Options_Label_BiDiOptions, "Bi-Directional Options")
 #endif
 
+dcl(DLG_Options_Label_AutoSave,			"Auto Save")
+dcl(DLG_Options_Label_AutoSaveCurrent,	"Auto &save current file each")
+dcl(DLG_Options_Label_Minutes,			"minutes")
+dcl(DLG_Options_Label_WithExtension,	"With extension:")
+
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
 dcl(DLG_Options_Label_PrefsCurrentScheme,	"&Current Preferences Scheme")
 
