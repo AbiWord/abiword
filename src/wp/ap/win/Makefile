@@ -22,6 +22,8 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
+ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
+
 CPPSRCS=		ap_Win32DialogFactory.cpp	\
 			ap_Win32Frame.cpp
 

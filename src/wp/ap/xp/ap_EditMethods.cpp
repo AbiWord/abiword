@@ -589,9 +589,8 @@ Defun1(fileOpen)
 
 			if (!s_AskRevertFile(pNewFrame))
 			{
-				// TODO should this be a delete instead of free() ??
 				// never mind
-				free(pNewFrame);
+				free(pNewFile);
 				return UT_FALSE;
 			}
 		}
@@ -1838,93 +1837,6 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	UT_ASSERT(!err);
 
 	return UT_FALSE;
-}
-
-dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton)
-{
-	dlg_Answer ans = dlg_OK;
-
-	AP_App * pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
-
-	const char * szCaption = pApp->getApplicationTitleForTitleBar();
-
-	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
-	HWND hwnd = pWin32Frame->getTopLevelWindow();
-	UINT flags = (b == dlg_O ? MB_ICONASTERISK : MB_ICONQUESTION);
-
-	switch (b)
-	{
-	case dlg_O:
-		flags |= MB_OK;
-		break;
-
-	case dlg_OC:
-		flags |= MB_OKCANCEL;
-		break;
-
-	case dlg_YN:
-		flags |= MB_YESNO;
-		break;
-
-	case dlg_YNC:
-		flags |= MB_YESNOCANCEL;
-		break;
-
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-
-	switch (defButton)
-	{
-	case 0:
-		flags |= MB_DEFBUTTON1;
-		break;
-
-	case 1:
-		flags |= MB_DEFBUTTON2;
-		break;
-
-	case 2:
-		flags |= MB_DEFBUTTON3;
-		break;
-
-	case 3:
-		flags |= MB_DEFBUTTON4;
-		break;
-
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-
-	int res = MessageBox(hwnd, szQ, szCaption, flags);
-
-	switch (res)
-	{
-	case IDCANCEL:
-		ans = dlg_CANCEL;
-		break;
-
-	case IDNO:
-		ans = dlg_NO;
-		break;
-
-	case IDOK:
-		ans = dlg_OK;
-		break;
-
-	case IDYES:
-		ans = dlg_YES;
-		break;
-
-	case IDABORT:
-	case IDIGNORE:
-	case IDRETRY:
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-
-	return ans;
 }
 
 // TODO: figure out what can be shared here and move it up

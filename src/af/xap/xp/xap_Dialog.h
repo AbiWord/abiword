@@ -63,7 +63,7 @@ public:
 
 	virtual void				runModal(AP_Frame * pFrame) = 0;
 
-	static const AP_Dialog_Type	s_persistence = AP_DLGT_NON_PERSISTENT;
+	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_NON_PERSISTENT; };
 	
 protected:
 };
@@ -93,7 +93,7 @@ public:
 	virtual void				runModal(AP_Frame * pFrame) = 0;
 	virtual UT_uint32			useEnd(void) = 0;
 
-	static const AP_Dialog_Type	s_persistence = AP_DLGT_FRAME_PERSISTENT;
+	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_FRAME_PERSISTENT; };
 	
 protected:
 };
@@ -108,8 +108,8 @@ public:
 	virtual void				runModal(AP_Frame * pFrame) = 0;
 	virtual UT_uint32			useEnd(void) = 0;
 
-	static const AP_Dialog_Type	s_persistence = AP_DLGT_APP_PERSISTENT;
-
+	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_APP_PERSISTENT; };
+	
 protected:
 };
 #endif

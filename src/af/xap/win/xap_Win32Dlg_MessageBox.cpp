@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <windows.h>
 #include "ut_assert.h"
 #include "ap_Win32Dialog_MessageBox.h"
 #include "ap_Win32App.h"
@@ -84,7 +85,7 @@ void AP_Win32Dialog_MessageBox::runModal(AP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	int res = MessageBox(hwnd, szQ, szCaption, flags);
+	int res = MessageBox(hwnd, m_szMessage, szCaption, flags);
 
 	switch (res)
 	{
@@ -93,11 +94,11 @@ void AP_Win32Dialog_MessageBox::runModal(AP_Frame * pFrame)
 		break;
 
 	case IDNO:
-		m_anwser = a_NO;
+		m_answer = a_NO;
 		break;
 
 	case IDOK:
-		m_anwser = a_OK;
+		m_answer = a_OK;
 		break;
 
 	case IDYES:

@@ -77,13 +77,6 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_bSelection = UT_FALSE;
 	m_bPointAP = UT_FALSE;
 
-	pLayout->setView(this);
-		
-	moveInsPtTo(FV_DOCPOS_BOD);
-	m_iSelectionAnchor = _getPoint();
-	_resetSelection();
-	_fixInsertionPointCoords();
-
 	// initialize change cache
 	m_chg.bUndo = UT_FALSE;
 	m_chg.bRedo = UT_FALSE;
@@ -91,6 +84,13 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_chg.bSelection = UT_FALSE;
 	m_chg.propsChar = NULL;
 	m_chg.propsBlock = NULL;
+
+	pLayout->setView(this);
+		
+	moveInsPtTo(FV_DOCPOS_BOD);
+	m_iSelectionAnchor = _getPoint();
+	_resetSelection();
+	_fixInsertionPointCoords();
 }
 
 FV_View::~FV_View()
