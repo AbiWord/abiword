@@ -492,7 +492,7 @@ UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)
 
 UT_uint32 GR_Win32Graphics::getFontHeight()
 {
-	return GR_Win32Font::Acq::getFontHeight(*m_pFont);
+	return GR_Win32Font::Acq::getFontHeight(*m_pFont) * getResolution() / getDeviceResolution() + 0.5;
 }
 
 UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
@@ -506,7 +506,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
 
 UT_uint32 GR_Win32Graphics::getFontAscent()
 {
-	return GR_Win32Font::Acq::getAscent(*m_pFont);
+	return GR_Win32Font::Acq::getAscent(*m_pFont) * getResolution() / getDeviceResolution() + 0.5;
 }
 
 UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
@@ -520,7 +520,7 @@ UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
-	return GR_Win32Font::Acq::getDescent(*m_pFont);
+	return GR_Win32Font::Acq::getDescent(*m_pFont) * getResolution() / getDeviceResolution() + 0.5;
 }
 
 void GR_Win32Graphics::getCoverage(UT_Vector& coverage)
