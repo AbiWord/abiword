@@ -268,12 +268,17 @@ AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
 
 case "$script" in
      "true" ) 
-	    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
 	    SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
+	    ABI_PERL_VERSION=`perl -V:version | tr -d "version=" | tr -d "\'" | tr -d "\;" | awk '{printf "%d", [$]1 * 10}'`
 		AC_MSG_CHECKING(for perl xsubpp precompiler)
 		XSUBPPDIR="`(cd $abs_srcdir/src/bindings/perl && perl -MExtUtils::MakeMaker -e 'print ExtUtils::MakeMaker->new({NAME => qw(abi)})->tool_xsubpp') | grep ^XSUBPPDIR | sed -e 's/XSUBPPDIR = //g;'`"
 		if test -n "${XSUBPPDIR}"; then
 			AC_MSG_RESULT(${XSUBPPDIR})
+			if test "$ABI_PERL_VERSION" -le 56; then
+			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool -DNOT_PERL_5_8"
+			else
+			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
+			fi
 		else
 			AC_MSG_ERROR(not found)
 		fi

@@ -290,8 +290,14 @@ UT_PerlBindings::runCallback(const char* method)
 
 	dSP;
 	PUSHMARK(SP);
+
+#ifdef NOT_PERL_5_8
+	Perl_call_pv(const_cast<char*> (method),
+		     G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
+#else
 	Perl_call_pv(my_perl, const_cast<char*> (method),
 		     G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
+#endif
 
 	if (SvTRUE(ERRSV))
 	{
