@@ -35,7 +35,7 @@
 // on both older and newer compilers via a UT_Error code). You can throw
 // from inside of a constructor, so we can potentially catch errors there
 // and verify which platforms support exceptions with 0 side-effects
-// to those platforms where exceptions aren't supporter. So those people
+// to those platforms where exceptions aren't supported. So those people
 // with good compilers are now better off, and those with older, non-compliant
 // ones are no worse off than before, and that's not too bad because they
 // can't possibly do anything better/else anyway.
@@ -43,33 +43,52 @@
 // -DAL-
 //
 
+// UT_TRY will begin a 'try' block
+// UT_CATCH will 'catch' a specific exception type
+// UT_END_CATCH evaluates to nothing, basically, but use it
+//              after each UT_CATCH under penalty of death
+// UT_THROW will throw a new exception
+// UT_CATCH_ANY will catch anything (...)
+// UT_THROWS will declare a C++ method as throwing an exception
+//           usage:
+//           UT_THROWS((MyException1, MyException2))
+
 #ifdef ABI_DOESNT_SUPPORT_EXCEPTIONS
 
 // d'oh! please list platforms/compilers here which have 
 // issues with exceptions here for future reference
 
 // btw, this is nasty-as-shit for a reason -
-// 1) first off, this is just plain ugly
+// 1) first off, what i'm doing is just plain ugly
 // 2) secondly, the preprocessor can't spit-out other preprocessor codes
 // so we can't use an #if 0 ... #endif construct, which would be nicer/prettier
 
-#define ABI_TRY
-#define ABI_CATCH(x)     if(false) { \
+#define UT_TRY
+#define UT_CATCH(x)     if(false) { \
                          x;
-#define ABI_END_CATCH    }
-#define ABI_THROW(x)     (void)0
-#define ABI_CATCH_ANY    (void)0
+#define UT_END_CATCH    }
+#define UT_THROW(x)     (void)0
+#define UT_CATCH_ANY    (void)0
 
 #else
 
 // yay, this platform supports exceptions
 
-#define ABI_TRY           try
-#define ABI_CATCH(x)      catch(x)
-#define ABI_END_CATCH
-#define ABI_THROW(x)      throw(x)
-#define ABI_CATCH_ANY     ...
+#define UT_TRY           try
+#define UT_CATCH(x)      catch(x)
+#define UT_END_CATCH
+#define UT_THROW(x)      throw(x)
+#define UT_CATCH_ANY     ...
 
+#endif
+
+// void Class::method () throw(Ex1, Ex2) 
+// is a newer C++ language feature (1998, IIRC). let's special-case it
+
+#if defined(ABI_DOESNT_SUPPORT_EXCEPTIONS) || defined(ABI_DOESNT_SUPPORT_THROWS)
+#define UT_THROWS(x)
+#else
+#define UT_THROWS(x)     throw(x)
 #endif
 
 #endif /* UT_EXCEPTION_H */
