@@ -567,23 +567,23 @@ void fl_TableLayout::_lookupProperties(void)
 	switch(dim)
 	{
 	case DIM_IN:
-		defaultOffset = "0.01in";
+		defaultOffset = "0.02in";
 		break;
 
 	case DIM_CM:
-		defaultOffset = "0.0254cm";
+		defaultOffset = "0.0508cm";
 		break;
 
 	case DIM_PI:
-		defaultOffset = "0.05pi";
+		defaultOffset = "0.1pi";
 		break;
 
 	case DIM_PT:
-		defaultOffset= "0.6pt";
+		defaultOffset= "1.2pt";
 		break;
 
 	case DIM_MM:
-		defaultOffset= "0.254mm";
+		defaultOffset= "0.508mm";
 		break;
 
 		// TODO: PX, and PERCENT
