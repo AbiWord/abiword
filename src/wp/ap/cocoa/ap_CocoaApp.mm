@@ -250,7 +250,7 @@ bool AP_CocoaApp::initialize(void)
 	    
 		// see if we should load an alternative set from the disk
 	    
-		const char * szDirectory = NULL;
+//		const char * szDirectory = NULL;
 		const char * szStringSet = NULL;
 	    
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
@@ -259,6 +259,7 @@ bool AP_CocoaApp::initialize(void)
 			   && (*szStringSet)
 			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
+#if 0			
 			getPrefsValueDirectory(true,
 								   (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
 								   (const XML_Char**)&szDirectory);
@@ -269,20 +270,23 @@ bool AP_CocoaApp::initialize(void)
 				szPathname += "/";
 			szPathname += szStringSet;
 			szPathname += ".strings";
-		
+#endif
+			
+			NSString* stringSet = [[NSBundle bundleForClass:[NSApp class]] 
+										pathForResource:[NSString stringWithUTF8String:szStringSet] ofType:@".strings"];
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
 			UT_ASSERT(pDiskStringSet);
 		
-			if (pDiskStringSet->loadStringsFromDisk(szPathname.c_str()))
+			if (pDiskStringSet->loadStringsFromDisk([stringSet UTF8String]))
 			{
 				pDiskStringSet->setFallbackStringSet(m_pStringSet);
 				m_pStringSet = pDiskStringSet;
-				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname.c_str()));
+				UT_DEBUGMSG(("Using StringSet [%s]\n",[stringSet UTF8String]));
 			}
 			else
 			{
 				DELETEP(pDiskStringSet);
-				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname.c_str()));
+				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",[stringSet UTF8String]));
 			}
 		}
     }
@@ -1041,6 +1045,10 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     UT_DEBUGMSG(("Compile Date:\t%s\n", XAP_App::s_szBuild_CompileDate));
     UT_DEBUGMSG(("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime));
     
+	/* we create this autorelease pool because app startup will create a lot of things */
+	/* we'll delete it before starting the main loop to cleanup memory */
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
     // initialize our application.
 	[NSApplication sharedApplication];
 	
@@ -1106,11 +1114,14 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 	// anymore, because doWindowlessArgs was supposed to bail already. -PL
     if (pMyCocoaApp->openCmdLineFiles(&Args))
     {
+		[pool release];
+		pool = nil;
 		// turn over control to Cocoa
 		[NSApp run];
 	}
     else
 	{
+		[pool release];
 		UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
 	}
     
@@ -1119,15 +1130,6 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     delete pMyCocoaApp;
     
     return 0;
-}
-
-XAP_Frame * AP_CocoaApp::newFrame(AP_App * app)
-{
-	AP_CocoaFrame * pFrame = new AP_CocoaFrame(app);
-	if (pFrame)
-		pFrame->initialize();
-
-	return pFrame;
 }
 
 void AP_CocoaApp::errorMsgBadArg(AP_Args * Args, int nextopt)
