@@ -126,6 +126,8 @@
 #	include "tb_text_strikeout_rus.xpm"
 	// Italian translations
 #	include "tb_text_overline_S.xpm"
+#	include "tb_text_topline_it-IT.xpm"
+#	include "tb_text_bottomline_it-IT.xpm"
 	// Portuguese translations
 #	include "tb_text_topline_pt-PT.xpm"
 #	include "tb_text_bottomline_pt-PT.xpm"
@@ -224,6 +226,8 @@
 	DefineToolbarIcon(tb_text_strikeout_rus_xpm)
 	// Italian translations
 	DefineToolbarIcon(tb_text_overline_S_xpm)
+	DefineToolbarIcon(tb_text_topline_it_IT_xpm)
+	DefineToolbarIcon(tb_text_bottomline_it_IT_xpm)
 	// Portuguese translations
 	DefineToolbarIcon(tb_text_overline_S_xpm)
 	DefineToolbarIcon(tb_text_topline_pt_PT_xpm)
