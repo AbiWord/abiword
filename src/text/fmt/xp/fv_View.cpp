@@ -4806,7 +4806,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	UT_Bool bIsDirty = UT_FALSE;
 	fp_Run* pCurRun = pRun1;
 
-	while (!bDone || bIsDirty)
+	while ((!bDone || bIsDirty) && pCurRun)
 	{
 		if (pCurRun == pRun2)
 		{
@@ -4929,6 +4929,10 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 			{
 				pCurRun = pNextBlock->getFirstRun();
 			}
+			else
+			    bDone = UT_TRUE;
+			// otherwise we get fun
+			// infinte loops
 		}
 	}
 }
