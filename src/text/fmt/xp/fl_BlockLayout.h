@@ -132,6 +132,7 @@ public:
 	fp_Run* findPointCoords(PT_DocPosition position, UT_Bool bEOL, UT_uint32& x, UT_uint32& y, UT_uint32& height);
 
 	UT_Bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
+	UT_Bool	getBlockBuf(UT_GrowBuf * pgb) const;
 
 	UT_Bool truncateLayout(fp_Run* pTruncRun);
 

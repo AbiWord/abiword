@@ -268,9 +268,82 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 		iPos = pBlock->getPosition(UT_TRUE);
 		break;
 
+	case FV_DOCPOS_BOW:
+		{
+			UT_GrowBuf pgb;
+
+			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
+			UT_ASSERT(bRes);
+
+			const UT_UCSChar* pSpan = pgb.getPointer(0);
+
+			UT_uint32 offset = iPos - pBlock->getPosition();
+			UT_ASSERT(offset >= 0);
+			UT_ASSERT(offset <= pgb.getLength());
+
+			if (offset == 0)
+			{
+				// TODO: look in prior block?
+				break;
+			}
+
+			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[offset-1]);
+
+			for (offset--; offset > 0; offset--)
+			{
+				if (UT_isWordDelimiter(pSpan[offset]))
+				{
+					if (bInWord)
+						break;
+				}
+				else if (!bInWord)
+					break;
+			}
+
+			if ((offset > 0) && (offset < pgb.getLength()))
+				offset++;
+
+			iPos = offset + pBlock->getPosition();
+		}
+		break;
+
+	case FV_DOCPOS_EOW:
+		{
+			UT_GrowBuf pgb;
+
+			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
+			UT_ASSERT(bRes);
+
+			const UT_UCSChar* pSpan = pgb.getPointer(0);
+
+			UT_uint32 offset = iPos - pBlock->getPosition();
+			UT_ASSERT(offset >= 0);
+			UT_ASSERT(offset <= pgb.getLength());
+
+			if (offset == pgb.getLength())
+			{
+				// TODO: look in next block?
+				break;
+			}
+
+			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[offset]);
+
+			for (; offset < pgb.getLength(); offset++)
+			{
+				if (UT_isWordDelimiter(pSpan[offset]))
+				{
+					if (bInWord)
+						break;
+				}
+				else if (!bInWord)
+					break;
+			}
+
+			iPos = offset + pBlock->getPosition();
+		}
+		break;
+
 	case FV_DOCPOS_EOB:		// TODO: just write it
-	case FV_DOCPOS_BOW:		// TODO: need doc api (getBlockBuf variant of getSpanPtr)
-	case FV_DOCPOS_EOW:		// TODO: need doc api (getBlockBuf variant of getSpanPtr)
 	case FV_DOCPOS_BOS: 
 	case FV_DOCPOS_EOS:
 		UT_ASSERT(UT_TODO);
@@ -1270,75 +1343,10 @@ void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 {
 	warpInsPtToXY(xPos, yPos);
 
-	UT_ASSERT((UT_TODO));	
-#ifdef BUFFER	// cmdSelectWord
 	_eraseInsertionPoint();
 
-	PT_DocPosition iPoint = _getPoint();
-	
-	UT_UCSChar ch;
-	DG_DocMarkerId dmid;
-	UT_Bool bDone;
-
-	/*
-	  TODO this notion of selecting a word is a bit too English-centric
-	*/
-	
-	bDone = UT_FALSE;
-	UT_uint32 iPosLeft = iPoint;
-	while (!bDone)
-	{
-		DG_DB_PosInfo dbpi = m_pBuffer->getOneItem(iPosLeft, &ch, &dmid);
-		switch (dbpi)
-		{
-		case DG_DBPI_DATA:
-			if (UT_isWordDelimiter(ch))
-			{
-				bDone = UT_TRUE;
-			}
-			else
-			{
-				iPosLeft--;
-			}
-			break;
-		case DG_DBPI_END:
-		case DG_DBPI_ERROR:
-			bDone = UT_TRUE;
-			break;
-		default:
-			iPosLeft--;
-			break;
-		}
-	}
-
-	iPosLeft++;		// TODO is this safe?  what if the next char is a marker?
-	
-	bDone = UT_FALSE;
-	UT_uint32 iPosRight = iPoint;
-	while (!bDone)
-	{
-		DG_DB_PosInfo dbpi = m_pBuffer->getOneItem(iPosRight, &ch, &dmid);
-		switch (dbpi)
-		{
-		case DG_DBPI_DATA:
-			if (UT_isWordDelimiter(ch))
-			{
-				bDone = UT_TRUE;
-			}
-			else
-			{
-				iPosRight++;
-			}
-			break;
-		case DG_DBPI_END:
-		case DG_DBPI_ERROR:
-			bDone = UT_TRUE;
-			break;
-		default:
-			iPosRight++;
-			break;
-		}
-	}
+	PT_DocPosition iPosLeft = _getDocPos(FV_DOCPOS_BOW);
+	PT_DocPosition iPosRight = _getDocPos(FV_DOCPOS_EOW);
 
 	if (!_isSelectionEmpty())
 	{
@@ -1350,7 +1358,6 @@ void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 	m_bSelection = UT_TRUE;
 	
 	_xorSelection();
-#endif /* BUFFER */
 }
 
 void FV_View::cmdFormatBlock(const XML_Char * properties[])

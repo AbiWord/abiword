@@ -625,6 +625,11 @@ UT_Bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan,
 	return m_pDoc->getSpanPtr(m_sdh, offset+fl_BLOCK_STRUX_OFFSET, ppSpan, pLength);
 }
 
+UT_Bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
+{
+	return m_pDoc->getBlockBuf(m_sdh, pgb);
+}
+
 fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_uint32& x, UT_uint32& y, UT_uint32& height)
 {
 	// find the run which has this position inside it.
