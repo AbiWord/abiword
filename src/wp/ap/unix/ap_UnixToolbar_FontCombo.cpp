@@ -31,7 +31,6 @@
 #define MAX_FONTS 32767
 #define PROPERTY_ARRAY_INCREMENT	16
 #define XLFD_MAX_FIELD_LEN 64
-#define GTK_NUM_FONT_PROPERTIES 6
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_UnixToolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,

@@ -26,6 +26,8 @@
 class EV_Toolbar;
 
 /*****************************************************************/
+#define GTK_NUM_FONT_PROPERTIES 6
+#define GTK_NUM_STYLE_PROPERTIES 5
 
 typedef struct _FontInfo FontInfo;
 struct _FontInfo
