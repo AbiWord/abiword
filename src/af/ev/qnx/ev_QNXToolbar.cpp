@@ -572,16 +572,21 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							 (bGrayed) ? Pt_LIST_INACTIVE : 0, 
 							 Pt_LIST_INACTIVE); 
 
+					if (!szState) {
+						UT_DEBUGMSG(("TODO: Determine why state is NULL "));
+					}
+
 					//printf("State [%s] \n", (szState) ? szState : "NULL");
-					if (!szState || !(top = PtListItemPos(tcb->m_widget, szState))) {
+					if (szState && !(top = PtListItemPos(tcb->m_widget, szState))) {
 						//Assume this is the case of Times New Roman not being found
 						FontID *id = PfFindFont((const uchar_t *)szState, 0, 10);
 						if (id) {
 							top = PtListItemPos(tcb->m_widget, (char *)PfFontDescription(id));
 							PfFreeFont(id);
 						}
-						top = (top) ? top : 1;
 					}
+					top = (top) ? top : 1;
+
 					//PtSetArg(&args[n], Pt_ARG_TOP_ITEM_POS, top, 0); n++;
 					PtSetArg(&args[n++], Pt_ARG_CBOX_SEL_ITEM, top, 0);
 					PtSetResources(tcb->m_widget, n, args);
