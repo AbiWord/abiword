@@ -93,6 +93,18 @@ public:
     */
     virtual const char* getUCS2LEName() const;
 
+    /*
+	this can return NULL. Don't free or write to returned string. 
+	The string should be uppercased (extra font tarballs assume this).
+    */
+    virtual const char* getUCS4BEName() const;
+
+    /*
+	this can return NULL. Don't free or write to returned string. 
+	The string should be uppercased (extra font tarballs assume this).
+    */
+    virtual const char* getUCS4LEName() const;
+
 	/*
 	This should return true for any Unicode locale:
 	UTF-8 on *nix, UCS-2 on Windows, etc

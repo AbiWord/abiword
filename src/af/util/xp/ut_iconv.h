@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
@@ -38,6 +40,8 @@ extern "C" {
 #endif
 
 typedef iconv_t UT_iconv_t;
+
+#define UT_ICONV_INVALID ((iconv_t)(-1))
 
 #ifdef __cplusplus
 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2000
  * Orignially by Vlad Harchev <hvv@hippo.ru>
@@ -29,10 +31,11 @@
 #include <stdio.h>
 #include <string.h>
 
-
-static 	UT_iconv_t iconv_handle_N2U = NULL, iconv_handle_U2N = NULL,
-	iconv_handle_U2Latin1 = NULL,
-	iconv_handle_U2Win = NULL ,iconv_handle_Win2U = NULL;
+static UT_iconv_t iconv_handle_N2U      = UT_ICONV_INVALID;
+static UT_iconv_t iconv_handle_U2N      = UT_ICONV_INVALID;
+static UT_iconv_t iconv_handle_U2Latin1 = UT_ICONV_INVALID;
+static UT_iconv_t iconv_handle_U2Win    = UT_ICONV_INVALID;
+static UT_iconv_t iconv_handle_Win2U    = UT_ICONV_INVALID;
 
 XAP_EncodingManager*	XAP_EncodingManager::_instance = NULL;
 
@@ -81,7 +84,10 @@ const char* XAP_EncodingManager::getNativeUnicodeEncodingName() const
     return "UTF-8"; /* this will definitely work*/
 }
 
-static const char* UCS2BEName, *UCS2LEName;
+static const char * UCS2BEName = 0;
+static const char * UCS2LEName = 0;
+static const char * UCS4BEName = 0;
+static const char * UCS4LEName = 0;
 
 /*!
  * Returns the name this system uses for UCS-2, big endian
@@ -101,6 +107,26 @@ const char* XAP_EncodingManager::getUCS2BEName() const
 const char* XAP_EncodingManager::getUCS2LEName() const
 {
 	return UCS2LEName;
+}
+
+/*!
+ * Returns the name this system uses for UCS-4, big endian
+ *
+ * UCS-4BE is standard
+ */
+const char* XAP_EncodingManager::getUCS4BEName() const
+{
+	return UCS4BEName;
+}
+
+/*!
+ * Returns the name this system uses for UCS-4, little endian
+ *
+ * UCS-4LE is standard
+ */
+const char* XAP_EncodingManager::getUCS4LEName() const
+{
+	return UCS4LEName;
 }
 
 XAP_EncodingManager::~XAP_EncodingManager()
@@ -300,13 +326,28 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 extern "C" { char *wvLIDToCodePageConverter(unsigned short lid); }
 static void init_values(const XAP_EncodingManager* that)
 {
-	iconv_handle_N2U = UT_iconv_open("UCS-2",that->getNativeEncodingName());
-	iconv_handle_U2N = UT_iconv_open(that->getNativeEncodingName(),"UCS-2");
-	iconv_handle_U2Latin1 = UT_iconv_open("ISO-8859-1","UCS-2");
+	const char * ucs4i = ucs4Internal ();
+	const char * naten = that->getNativeEncodingName ();
+
+	iconv_handle_N2U = UT_iconv_open (ucs4i, naten);
+	if (iconv_handle_N2U == UT_ICONV_INVALID)
+		{
+			UT_DEBUGMSG(("WARNING: UT_iconv_open(%s,%s) failed!\n",ucs4i,naten));
+		}
+	iconv_handle_U2N = UT_iconv_open (naten, ucs4i);
+	if (iconv_handle_U2N == UT_ICONV_INVALID)
+		{
+			UT_DEBUGMSG(("WARNING: UT_iconv_open(%s,%s) failed!\n",naten,ucs4i));
+		}
+	iconv_handle_U2Latin1 = UT_iconv_open ("ISO-8859-1", ucs4i);
+	if (iconv_handle_U2Latin1 == UT_ICONV_INVALID)
+		{
+			UT_DEBUGMSG(("WARNING: UT_iconv_open(ISO-8859-1,%s) failed!\n",ucs4i));
+		}
 	
 	char* winencname = wvLIDToCodePageConverter(that->getWinLanguageCode());
-	iconv_handle_Win2U = UT_iconv_open("UCS-2",winencname);
-	iconv_handle_U2Win = UT_iconv_open(winencname,"UCS-2");
+	iconv_handle_Win2U = UT_iconv_open(ucs4Internal(),winencname);
+	iconv_handle_U2Win = UT_iconv_open(winencname,ucs4Internal());
 };
 
 
@@ -854,11 +895,23 @@ void XAP_EncodingManager::initialize()
 		"UTF-16LE",			// superset
 		"UTF-16-LE",		// my guess
 		0 };
-	const char ** p;
-	UT_iconv_t iconv_handle;
+
+	// UCS-4 Encoding Names
+	static const char * (szUCS4BENames[]) = {
+		"UCS-4BE",			// preferred
+		"UCS-4-BE",			// older libiconv (??)
+		0 };
+	static const char * (szUCS4LENames[]) = {
+		"UCS-4LE",			// preferred
+		"UCS-4-LE",			// older libiconv (??)
+		0 };
+
+	const char ** p = 0;
+	UT_iconv_t iconv_handle = UT_ICONV_INVALID;
+
 	for (p = szUCS2BENames; *p; ++p)
 	{
-		if ((iconv_handle = UT_iconv_open(*p,*p)) != (UT_iconv_t)-1)
+		if ((iconv_handle = UT_iconv_open(*p,*p)) != UT_ICONV_INVALID)
 		{
 			UT_iconv_close(iconv_handle);
 			UCS2BEName = *p;
@@ -867,7 +920,7 @@ void XAP_EncodingManager::initialize()
 	}
 	for (p = szUCS2LENames; *p; ++p)
 	{
-		if ((iconv_handle = UT_iconv_open(*p,*p)) != (UT_iconv_t)-1)
+		if ((iconv_handle = UT_iconv_open(*p,*p)) != UT_ICONV_INVALID)
 		{
 			UT_iconv_close(iconv_handle);
 			UCS2LEName = *p;
@@ -882,6 +935,33 @@ void XAP_EncodingManager::initialize()
 		UT_DEBUGMSG(("This iconv supports UCS-2LE as \"%s\"\n",UCS2LEName));
 	else
 		UT_DEBUGMSG(("This iconv does not support UCS-2LE!\n"));
+
+	for (p = szUCS4BENames; *p; ++p)
+	{
+		if ((iconv_handle = UT_iconv_open(*p,*p)) != UT_ICONV_INVALID)
+		{
+			UT_iconv_close(iconv_handle);
+			UCS4BEName = *p;
+			break;
+		}
+	}
+	for (p = szUCS4LENames; *p; ++p)
+	{
+		if ((iconv_handle = UT_iconv_open(*p,*p)) != UT_ICONV_INVALID)
+		{
+			UT_iconv_close(iconv_handle);
+			UCS4LEName = *p;
+			break;
+		}
+	}
+	if (UCS4BEName)
+		UT_DEBUGMSG(("This iconv supports UCS-4BE as \"%s\"\n",UCS4BEName));
+	else
+		UT_DEBUGMSG(("This iconv does not support UCS-4BE!\n"));
+	if (UCS4LEName)
+		UT_DEBUGMSG(("This iconv supports UCS-4LE as \"%s\"\n",UCS4LEName));
+	else
+		UT_DEBUGMSG(("This iconv does not support UCS-4LE!\n"));
 
 	if(!strcmp(enc, "UTF-8") || !strcmp(enc, "UTF8") || !strcmp(enc, "utf-8") || !strcmp(enc, "utf8"))
 		m_bIsUnicodeLocale = true;

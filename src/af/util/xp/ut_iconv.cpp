@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 2001
  * 
@@ -52,8 +54,6 @@
  * 1) 1-shot conversions (UT_convert, UT_convert_cd)
  * 2) wrapper class around an iconv_t handle
  */
-
-#define INVALID_ICONV_HANDLE (iconv_t)-1
 
 /*!
  * This class is a nice wrapper around an iconv_t type
@@ -164,14 +164,14 @@ const char * ucs4Internal ()
  */
 int UT_iconv_isValid ( UT_iconv_t cd )
 {
-  return (cd != INVALID_ICONV_HANDLE);
+  return (cd != UT_ICONV_INVALID);
 }
 
 UT_iconv_t  UT_iconv_open( const char* to, const char* from )
 {
   if ( to && from )
     return iconv_open( to, from );
-  return INVALID_ICONV_HANDLE;
+  return UT_ICONV_INVALID;
 }
 
 size_t  UT_iconv( UT_iconv_t cd, const char **inbuf, 
@@ -372,4 +372,3 @@ char * UT_convert_cd(const char *str,
 
 	return pDest;
 }
-
