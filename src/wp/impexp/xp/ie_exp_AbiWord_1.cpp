@@ -670,14 +670,14 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	//const char * szPid;
 	//const char * szProps;
 
-	const fl_AutoNum * pAutoNum;
+	fl_AutoNum * pAutoNum;
 	const char ** attr;
 
 #define LCheck(str) (0 == UT_stricmp(attr[0], str))
 
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
 	{	
-		if (pAutoNum->isEmpty())
+		if (pAutoNum->isEmpty() == UT_TRUE)
 			continue;
 		
 		if (!bWroteOpenListSection)
@@ -688,6 +688,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 		m_pie->write("<l");
 		for (attr = pAutoNum->getAttributes(); (*attr); attr++)
 		{
+		  UT_DEBUGMSG(("SEVIOR: attribue = %s \n",*attr));
 			if (LCheck("id") || LCheck("parentid") || LCheck("type") || LCheck("start-value") || LCheck("list-delim"))
 			{
 				m_pie->write(" ");

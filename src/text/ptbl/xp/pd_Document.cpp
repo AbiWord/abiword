@@ -833,7 +833,7 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 	        
 	UT_ASSERT(m_vecLists.getFirstItem());
 		        
-	while (m_vecLists[i])
+	while (i<m_vecLists.getItemCount())
 	{
 	 	pAutoNum = (fl_AutoNum *)m_vecLists[i];
                 if (pAutoNum->getID() == id)
@@ -844,7 +844,7 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 	return 0;
 }
 
-UT_Bool PD_Document::enumLists(UT_uint32 k, const fl_AutoNum ** pAutoNum) const
+UT_Bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum) 
 {
 	UT_uint32 kLimit = m_vecLists.getItemCount();
 	if (k >= kLimit)
@@ -869,8 +869,48 @@ UT_uint32 PD_Document::getListsCount(void) const
 
 void PD_Document::addList(fl_AutoNum * pAutoNum)
 {
-	m_vecLists.addItem(pAutoNum);
+        UT_uint32 id = pAutoNum->getID();
+	UT_uint32 i;
+	UT_uint32 numlists = m_vecLists.getItemCount();
+	for(i=0; i < numlists; i++)
+	{
+	        fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		if(pAuto->getID() == id)
+		         break;
+	}
+	if(i >= numlists)
+	        m_vecLists.addItem(pAutoNum);
 }
+
+void PD_Document::listUpdate(PL_StruxDocHandle sdh )
+{
+  //
+  // Notify all views of a listupdate
+  //
+        pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+        PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+	//PT_DocPosition pos = getStruxPosition(sdh) + fl_BLOCK_STRUX_OFFSET;
+	PT_DocPosition pos = getStruxPosition(sdh);
+        const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
+	notifyListeners(pfs, pcr);
+	delete pcr;						  
+}
+
+
+void PD_Document::StopList(PL_StruxDocHandle sdh )
+{
+  //
+  // Notify all views of a stoplist
+  //
+        pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+        PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+	//PT_DocPosition pos = getStruxPosition(sdh) + fl_BLOCK_STRUX_OFFSET;
+	PT_DocPosition pos = getStruxPosition(sdh);
+        const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
+	notifyListeners(pfs, pcr);
+	delete pcr;						  
+}
+
 
 UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 {
@@ -904,14 +944,49 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 		return UT_FALSE;
 
 	id = atoi(szID);
+	UT_uint32 i;
+	UT_uint32 numlists = m_vecLists.getItemCount();
+	for(i=0; i < numlists; i++)
+	{
+	        fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		if(pAuto->getID() == id)
+		         break;
+	}
+	if(i < numlists)
+	        return UT_TRUE; // List is already present
 	parent_id = atoi(szPid);
 	type = (List_Type)atoi(szType);
 	start = atoi(szStart);
 
-	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim);
+	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,this);
 	addList(pAutoNum);
 	
 	return UT_TRUE;
+}
+
+void PD_Document::disableListUpdates(void)
+{
+        UT_uint32 iNumLists = m_vecLists.getItemCount();
+	UT_uint32 i;
+	fl_AutoNum * pAutoNum;
+	for(i=0; i< iNumLists; i++)
+	{
+	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+	         pAutoNum->setUpdatePolicy(UT_FALSE);
+	}
+}
+
+
+void PD_Document::enableListUpdates(void)
+{
+        UT_uint32 iNumLists = m_vecLists.getItemCount();
+	UT_uint32 i;
+	fl_AutoNum * pAutoNum;
+	for(i=0; i< iNumLists; i++)
+	{
+	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+	         pAutoNum->setUpdatePolicy(UT_TRUE);
+	}
 }
 
 UT_Bool PD_Document::fixListHierarchy(void)

@@ -460,6 +460,8 @@ void fl_BlockLayout::_lookupProperties(void)
 	else 
 		id = 0;
 
+	UT_DEBUGMSG(("SEVIOR: Integer ID = %d \n",id));
+
 /*	if (!pBlockAP || !pBlockAP->getAttribute(PT_PARENTID_ATTRIBUTE_NAME, szPid))
 		szPid = NULL;
 	if (szPid)
@@ -482,7 +484,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
 	{
 		// We have stopped or started a multi-level list
-		m_pAutoNum->removeItem(this);
+		m_pAutoNum->removeItem(getStruxDocHandle());
 		m_pAutoNum = NULL;
 		UT_DEBUGMSG(("Started/Stopped Multi-Level\n"));
 	}
@@ -491,7 +493,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		// We have stopped a final list item.
 		m_bStopList = UT_TRUE;
-		m_pAutoNum->removeItem(this);
+		m_pAutoNum->removeItem(getStruxDocHandle());
 		m_bListItem = UT_FALSE;
 		_deleteListLabel();
 		
@@ -521,16 +523,26 @@ void fl_BlockLayout::_lookupProperties(void)
 		nextBlockInList = getNextList(id);		
 		
 		if (prevBlockInList)
-			m_pAutoNum->insertItem(this, prevBlockInList);
+			m_pAutoNum->insertItem(getStruxDocHandle(), prevBlockInList->getStruxDocHandle());
 		else if (nextBlockInList)
-			m_pAutoNum->prependItem(this, nextBlockInList);
+			m_pAutoNum->prependItem(getStruxDocHandle(),nextBlockInList->getStruxDocHandle());
 		else
 		{
 			if (pAutoNum->getParent())
 				prevBlockInList = getParentItem();
 			else 
 				prevBlockInList = NULL;
-			m_pAutoNum->insertFirstItem(this, prevBlockInList);
+                        PL_StruxDocHandle pItem = getStruxDocHandle();
+                        PL_StruxDocHandle ppItem;
+			if(prevBlockInList != NULL )
+			{
+                               ppItem = prevBlockInList->getStruxDocHandle();
+			}
+			else
+			{
+			       ppItem = (PL_StruxDocHandle) NULL;
+			}
+			m_pAutoNum->insertFirstItem(pItem,ppItem,0);
 			m_bStartList = UT_TRUE;
 		}
 
@@ -551,12 +563,12 @@ fl_BlockLayout::~fl_BlockLayout()
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 
 	DELETEP(m_pAlignment);
-	if (m_pAutoNum) 
-	{
-		m_pAutoNum->removeItem(this);
-		if (m_pAutoNum->isEmpty())
-			DELETEP(m_pAutoNum);
-	}
+	//  if (m_pAutoNum) 
+//  	{
+//  		m_pAutoNum->removeItem(getStruxDocHandle());
+//  		if (m_pAutoNum->isEmpty())
+//  			DELETEP(m_pAutoNum);
+//  	}
 
 	UT_ASSERT(m_pLayout != NULL);
 
@@ -638,7 +650,7 @@ void fl_BlockLayout::coalesceRuns(void)
 					if (iNumRunsInChain > 1)
 					{
 						_mergeRuns(pFirstRunInChain, pLastRun);
-					}
+	        				}
 
 					pFirstRunInChain = pCurrentRun;
 					iNumRunsInChain = 1;
@@ -4313,7 +4325,7 @@ void fl_BlockLayout::remItemFromList(void)
 	               const XML_Char * attribs[] = { 	"listid", lid,
 							"level", buf,0 };
 		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
-		       listUpdate();
+		       m_pDoc->listUpdate(getStruxDocHandle());
 		}
        		//format();
 		m_pDoc->endUserAtomicGlob();
@@ -4397,7 +4409,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
        {
                UT_XML_strncpy((XML_Char *)font,30, (const XML_Char *)"Symbol");
        }
-       StartList( lType, startv,szDelim, lDecimal, font, fAlign, fIndent, currID);
+       StartList( lType, startv,szDelim, lDecimal, font, fAlign, fIndent, currID,level);
 }
 
 void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
@@ -4405,16 +4417,18 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
   //
   // This function fills the vector va with list attributes
   //
-        UT_uint32 count=0;
+        UT_uint32 count=0,level;
 	const XML_Char * style = NULL;
 	const XML_Char * lid = NULL;
-	const XML_Char * buf = NULL;
+	static XML_Char  buf[5];
 
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
 	pBlockAP->getAttribute("listid",lid);
-	pBlockAP->getAttribute("level",buf);
+	level = getAutoNum()->getLevel();
+	sprintf(buf,"%i",level);
+	//	pBlockAP->getAttribute("level",buf);
 	if(lid != NULL)
 	{
 	        va->addItem( (void *) "listid");  va->addItem( (void *) lid);
@@ -4486,12 +4500,12 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 }
 
 
-void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID )
+void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID, UT_uint32 curlevel )
 {
   //
   // Starts a new list at the current block with all the options
   //
-	XML_Char lid[15], pszAlign[20], pszIndent[20];
+	XML_Char lid[15], pszAlign[20], pszIndent[20],buf[20],pid[20],pszStart[20];
 	XML_Char * style = getListStyleString(lType);
 	UT_Bool bRet;
 	UT_uint32 id;
@@ -4506,22 +4520,22 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	id = rand();
 	sprintf(lid, "%i", id);
 
-//	sprintf(pid, "%i", iParentID);
-//	sprintf(buf, "%i", curlevel);
-//	sprintf(pszStart,"%i",start);
-//	sprintf(pszAlign,"%fin",Align);
+	sprintf(pid, "%i", iParentID);
+	sprintf(buf, "%i", curlevel);
+	sprintf(pszStart,"%i",start);
+	sprintf(pszAlign,"%fin",Align);
 	sprintf(pszIndent,"%fin",indent);
 	sprintf(pszAlign, "%fin", Align);
 
 	va.addItem( (void *) "listid");  va.addItem( (void *) lid);
-//	va.addItem( (void *) "parentid"); va.addItem( (void *) pid);
-//	va.addItem( (void *) "level");	va.addItem( (void *) buf);
-//	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
+	va.addItem( (void *) "parentid"); va.addItem( (void *) pid);
+	va.addItem( (void *) "level");	va.addItem( (void *) buf);
+	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
 	va.addItem( (void *) "style");	va.addItem( (void *) style);
 
-	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim);
+	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, m_pDoc);
 	if (!pAutoNum)
 	{
 		// TODO Out of Mem.
@@ -4551,7 +4565,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	pView->_ensureThatInsertionPointIsOnScreen();
 	pView->_eraseInsertionPoint();
 
-	listUpdate();
+	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
 	pView->_ensureThatInsertionPointIsOnScreen();
 	DELETEP(attribs);
@@ -4563,7 +4577,7 @@ void    fl_BlockLayout::StopList(void)
   //
   // Stops the list in the current block
   //
-	XML_Char lid[15];
+	static XML_Char lid[15],pszlevel[5];
 	UT_Bool bRet;
 	UT_uint32 id, level;
 	UT_Vector vp;
@@ -4707,6 +4721,7 @@ void    fl_BlockLayout::StopList(void)
 		props[i] = (XML_Char *) vp.getNthItem(i);
 	}
 	props[i] = NULL;
+	sprintf(pszlevel, "%i", level);
 
 	if (id == 0)
 	{
@@ -4717,9 +4732,9 @@ void    fl_BlockLayout::StopList(void)
 	}
 	else
 	{
-	        const XML_Char * attribs[] = { 	"listid", lid, 0 };
+	        const XML_Char * attribs[] = { 	"listid", lid,"level",pszlevel, 0 };
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
-		listUpdate();
+		m_pDoc->listUpdate(getStruxDocHandle());
 	}
 	// format();
 	if(offset > 0 )
@@ -4753,7 +4768,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 			while (pAutoNum && !bmatchid)
 			{
 				bmatchid = (UT_Bool) (id == pAutoNum->getID()
-						&& pAutoNum->isItem(pPrev));
+						&& pAutoNum->isItem(pPrev->getStruxDocHandle()));
 				pAutoNum = pAutoNum->getParent();
 			}
 		}
@@ -4772,7 +4787,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 				{
 					bmatchid = (UT_Bool) 
 						(id == pAutoNum->getID()
-						&& pAutoNum->isItem(pPrev));
+						&& pAutoNum->isItem(pPrev->getStruxDocHandle()));
 					pAutoNum = pAutoNum->getParent();
 				}
 			}
@@ -4865,7 +4880,7 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
         m_bListLabelCreated = UT_FALSE;
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
         m_bListItem = UT_TRUE;
-        listUpdate();
+        m_pDoc->listUpdate(getStruxDocHandle());
         pView->_generalUpdate();
 	DELETEP(attribs);
 	DELETEP(props);
@@ -4905,7 +4920,7 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
         m_bListLabelCreated = UT_FALSE;
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
         m_bListItem = UT_TRUE;
-        listUpdate();
+        m_pDoc->listUpdate(getStruxDocHandle());
         pView->_generalUpdate();
 	DELETEP(attribs);
 	DELETEP(props);
@@ -4989,12 +5004,13 @@ UT_Bool  fl_BlockLayout::isListLabelInBlock( void)
 	return bListLabel;
 }
 
-inline UT_Bool fl_BlockLayout::isFirstInList(void) const
+UT_Bool fl_BlockLayout::isFirstInList(void)
 {
+        PL_StruxDocHandle sdh = fl_Layout::getStruxDocHandle();
 	if (!m_pAutoNum)
 		return UT_FALSE;
 	else
-		return (UT_Bool) (this == (fl_BlockLayout *)m_pAutoNum->getFirstItem());
+		return (UT_Bool) (sdh == m_pAutoNum->getFirstItem());
 }
 
 void fl_BlockLayout::_createListLabel(void)
@@ -5094,7 +5110,7 @@ XML_Char * fl_BlockLayout::getListLabel(void)
   // Return the calculated list label for the block 
   //
 	if(m_pAutoNum != NULL)
-		return m_pAutoNum->getLabel(this);
+		return const_cast< XML_Char *>(m_pAutoNum->getLabel(getStruxDocHandle()));
 	else
 		return NULL;
 }
@@ -5125,7 +5141,7 @@ inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInLis
 	}
 	UT_DEBUGMSG(("Found List with Id: %d\n", pAutoNum->getID()));
 	m_pAutoNum = pAutoNum;
-	m_pAutoNum->insertItem(this, prevBlockInList);
+	m_pAutoNum->insertItem(getStruxDocHandle(), prevBlockInList->getStruxDocHandle());
 }
 
 
@@ -5136,7 +5152,7 @@ inline void fl_BlockLayout::_prependBlockToPrevList( fl_BlockLayout * nextBlockI
   //
 	UT_ASSERT(nextBlockInList);
 	m_pAutoNum = nextBlockInList->getAutoNum();
-	m_pAutoNum->prependItem(this, nextBlockInList);
+	m_pAutoNum->prependItem(getStruxDocHandle(), nextBlockInList->getStruxDocHandle());
 }
 
 UT_uint32 fl_BlockLayout::getLevel(void)

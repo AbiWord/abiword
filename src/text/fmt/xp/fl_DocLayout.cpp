@@ -76,7 +76,10 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
 	// TODO and are not allowed to report failure.
-	
+
+	// Turn off list updating until document is formatted
+
+	m_pDoc->disableListUpdates();
 	m_pDocListener = new fl_DocListener(doc, this);
 	doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
 
@@ -483,7 +486,7 @@ void FL_DocLayout::deleteEmptyPages(void)
 void FL_DocLayout::formatAll()
 {
 	UT_ASSERT(m_pDoc);
-
+	m_pDoc->enableListUpdates();
 	fl_SectionLayout* pSL = m_pFirstSection;
 	while (pSL)
 	{

@@ -197,7 +197,7 @@ public:
 	inline fp_Run* getFirstRun(void) const { return m_pFirstRun; }
 
 	inline UT_Bool isListItem(void) const { return m_bListItem; }
-	inline UT_Bool isFirstInList(void) const;
+	UT_Bool isFirstInList(void);
 //	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
 	void    getListAttributesVector( UT_Vector * va);
 	void  getListPropertyVector( UT_Vector * vp);
@@ -215,7 +215,7 @@ public:
 	UT_Bool isListLabelInBlock(void); 
 	void StartList( const XML_Char * style);
 
-	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0 );
+	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0, UT_uint32 level=0 );
 
 	void StopList(void);
 	void deleteListLabel(void);

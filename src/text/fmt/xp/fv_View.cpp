@@ -1240,22 +1240,23 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
 	        fl_BlockLayout * pBlock =  (fl_BlockLayout *) vBlock.getNthItem(i);
+		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		if(pBlock->getListType() == listType)
 		{
-	              pBlock->listUpdate();
-	              pBlock->StopList();
+	              m_pDoc->listUpdate(sdh);
+	              m_pDoc->StopList(sdh);
 		}
 		else
 		{
 	              fl_BlockLayout * pPrev = pBlock->getPrev();
 		      if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == listType)
 		      {
-	                     pBlock->listUpdate();
+	                     m_pDoc->listUpdate(sdh);
 		             pBlock->resumeList(pPrev);
 		      }
 		      else if(pBlock->isListItem()== NULL)
 		      {
-	                     pBlock->listUpdate();
+	                     m_pDoc->listUpdate(sdh);
 			     XML_Char* cType = pBlock->getListStyleString(listType);
 		             pBlock->StartList(cType);
 		      } 
@@ -1315,9 +1316,10 @@ void FV_View::insertParagraphBreak(void)
 	// otherwise blank.
 	//
 	fl_BlockLayout * pBlock = getCurrentBlock();
+	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 	if(isCurrentListBlockEmpty() == UT_TRUE)
 	{
-	         pBlock->StopList();
+	         m_pDoc->StopList(sdh);
 	}
 	else if(isPointBeforeListLabel() == UT_TRUE)
 	{
@@ -1333,12 +1335,14 @@ void FV_View::insertParagraphBreak(void)
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 	_generalUpdate();
+	sdh = getCurrentBlock()->getStruxDocHandle();
 	getCurrentBlock()->format();
-	getCurrentBlock()->listUpdate();
+	m_pDoc->listUpdate(sdh);
 	if(bBefore == UT_TRUE)
 	{
 	          fl_BlockLayout * pPrev = getCurrentBlock()->getPrev();
-		  pPrev->StopList();
+		  sdh = pPrev->getStruxDocHandle();
+		  m_pDoc->StopList(sdh);
 		  _setPoint(getCurrentBlock()->getPosition());
 	}
 	m_pDoc->endUserAtomicGlob();
@@ -1899,28 +1903,28 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	UT_uint32 i=0;
 	XML_Char pszStart[80],pszAlign[20],pszIndent[20];
 	UT_Vector va,vp,vb;
-	fl_BlockLayout * pBlock = (fl_BlockLayout *) pAuto->getNthBlock(i);
+	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
 	if(lType == NOT_A_LIST)
 	{
 	  // Stop lists in all elements
 	       i = 0;
-	       pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(i);
-	       while(pBlock != NULL)
+	       sdh =  pAuto->getNthBlock(i);
+	       while(sdh != NULL)
                {
-		      vb.addItem((void *) pBlock);
+		      vb.addItem((void *) sdh);
 	              i++;
-		      pBlock = (fl_BlockLayout *) pAuto->getNthBlock(i);
+		      sdh = pAuto->getNthBlock(i);
 	       }
 	       for(i=0; i< vb.getItemCount(); i++)
 	       {
-	              fl_BlockLayout * pBlock =  (fl_BlockLayout *) vb.getNthItem(i);
-	              pBlock->listUpdate();
-	              pBlock->StopList();
+	              PL_StruxDocHandle  sdh =  ( PL_StruxDocHandle) vb.getNthItem(i);
+	              m_pDoc->listUpdate(sdh);
+	              m_pDoc->StopList(sdh);
 		}
 	       return;
 	}
 
-	XML_Char * style = pBlock->getListStyleString(lType);
+	XML_Char * style = getCurrentBlock()->getListStyleString(lType);
 	_eraseInsertionPoint();
 	va.addItem( (void *) "style");	va.addItem( (void *) style);
 
@@ -1971,17 +1975,17 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
  	//const XML_Char * attrib_list[] = {"style", style, 0 };
         _eraseInsertionPoint();
 	i = 0;
-	pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(i);
-	while(pBlock != NULL)
+	sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
+	while(sdh != NULL)
         {
-               PT_DocPosition iPos = pBlock->getPosition();
+	       PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
 	       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);  
 	       i++;
-	       pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(i);
+	       sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
 	       _generalUpdate();
 	}
-	pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(0);
-	pBlock->listUpdate();
+	sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(0);
+	m_pDoc->listUpdate(sdh);
 	_ensureThatInsertionPointIsOnScreen();
 	DELETEP(attribs);
 	DELETEP(props);
@@ -1992,7 +1996,7 @@ UT_Bool FV_View::cmdStopList(void)
 
 	m_pDoc->beginUserAtomicGlob();
 	fl_BlockLayout * pBlock = getCurrentBlock();
-	pBlock->StopList();
+	m_pDoc->StopList(pBlock->getStruxDocHandle());
 	m_pDoc->endUserAtomicGlob();
 
 	return UT_TRUE;

@@ -43,6 +43,12 @@ fl_Layout::~fl_Layout()
 {
 }
 
+PL_StruxDocHandle fl_Layout::getStruxDocHandle(void)
+{
+        return m_sdh;
+}
+
+
 PTStruxType	fl_Layout::getType(void) const
 {
 	return m_type;

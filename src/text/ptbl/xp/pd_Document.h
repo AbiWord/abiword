@@ -173,13 +173,16 @@ public:
 	// List Functions
 	fl_AutoNum *    getListByID(UT_uint32 id) const;
 	fl_AutoNum *    getNthList(UT_uint32 i) const; 
-	UT_Bool		enumLists(UT_uint32 k, const fl_AutoNum ** pAutoNum) const;
+	UT_Bool		enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
 	UT_uint32       getListsCount(void) const; 
 	void            addList(fl_AutoNum * pAutoNum);
 	UT_Bool		appendList(const XML_Char ** attributes);
 	UT_Bool		fixListHierarchy(void);
 	void	 	removeList(fl_AutoNum * pAutoNum);
-	
+	void            listUpdate(PL_StruxDocHandle sdh);
+	void            StopList(PL_StruxDocHandle sdh);
+	void            disableListUpdates(void);
+	void            enableListUpdates(void);
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -201,6 +204,8 @@ protected:
 
 
 #endif /* PD_DOCUMENT_H */
+
+
 
 
 

@@ -43,6 +43,7 @@ public:
 	fl_Layout(PTStruxType type, PL_StruxDocHandle sdh);
 	virtual ~fl_Layout();
 
+	PL_StruxDocHandle               getStruxDocHandle(void);
 	PTStruxType			getType(void) const;
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
 	void				setAttrPropIndex(PT_AttrPropIndex apIndex);

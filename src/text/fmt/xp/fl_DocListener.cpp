@@ -126,7 +126,6 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
 			goto finish_up;
 		}
-	
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
@@ -501,7 +500,23 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			pView->_setPoint(pcr->getPosition());
 		goto finish_up;
 	}
-		
+	case PX_ChangeRecord::PXT_ListUpdate:
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		pBL->listUpdate();
+		goto finish_up;
+
+	}
+	case PX_ChangeRecord::PXT_StopList:
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		pBL->StopList();
+		goto finish_up;
+	}
 	default:
 		UT_ASSERT(0);
 		bResult = UT_FALSE;

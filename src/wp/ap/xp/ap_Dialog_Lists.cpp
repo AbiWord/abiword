@@ -32,7 +32,7 @@
 
 #include "fl_DocLayout.h"
 #include "fv_View.h"
-
+#include "pd_Document.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "ap_Preview_Paragraph.h"
@@ -52,6 +52,7 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
         for(UT_uint32 i=0; i<4; i++)
         {
 	      m_pFakeLayout[i] = NULL;
+	      m_pFakeSdh[i] = NULL;
 	}
         m_pFakeAuto = NULL;
 }
@@ -64,6 +65,8 @@ AP_Dialog_Lists::~AP_Dialog_Lists(void)
         {
 	      DELETEP(m_pFakeLayout[i]);
 	}
+	// What do we do about the fakeAutoNum in the Document pDoc?
+	// Maybe we need another constrcutor
         DELETEP(m_pFakeAuto);
 }
 
@@ -236,7 +239,7 @@ void  AP_Dialog_Lists::Apply(void)
 	      }
 	      else if (m_bisCustomized == UT_TRUE)
 	      {
-	              getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0); 
+	              getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
 	              getBlock()->listUpdate();
 	              return;
 	      }
@@ -255,7 +258,7 @@ void  AP_Dialog_Lists::Apply(void)
 		      UT_uint32 currID = getBlock()->getAutoNum()->getID();
 		      curlevel++;
 		      if (m_bisCustomized == UT_TRUE)
-		      	getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID); 
+		      	getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel); 
 		      else if (m_bisCustomized == UT_FALSE)
 		      	getBlock()->StartList(getBlock()->getListStyleString(m_newListType));
 		      getBlock()->listUpdate();
@@ -360,23 +363,29 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
   //
        UT_uint32 i;
        //
-       // Start by generating 4 fake fl_Layout pointers
+       // Start by generating 4 fake (PL_StruxDocHandle and fl_Layout pointers
        //
+       // Jeeze gotta generate a fake void * pointer!! Try this hack.
+       //
+       XAP_App * fakeApp = getApp();
        for(i=0; i<4; i++)
        {
 	      DELETEP(m_pFakeLayout[i]);
-	      m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) NULL ); 
+              m_pFakeSdh[i] = (PL_StruxDocHandle) fakeApp++;
+	      m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] ); 
        }
        //
        // Now generate the AutoNum
        //
        DELETEP(m_pFakeAuto);
-       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim);
-       m_pFakeAuto->insertFirstItem(m_pFakeLayout[0], NULL);
+       //PD_Document * pDoc = getBlock()->getDocument();
+       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim, (PD_Document *) NULL);
+       m_pFakeAuto->setUpdatePolicy( UT_FALSE);
+       m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1);
        m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
        for(i=1; i<4; i++)
        {
-	      m_pFakeAuto->insertItem(m_pFakeLayout[i],m_pFakeLayout[i-1]);
+	      m_pFakeAuto->insertItem(m_pFakeSdh[i],m_pFakeSdh[i-1]);
 	      m_pFakeLayout[i]->setAutoNum(m_pFakeAuto);
        }
 }
@@ -384,9 +393,9 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 XML_Char * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
 {
        UT_ASSERT(itemNo < 4);
-       XML_Char lab[80];
+       static XML_Char lab[80];
        const XML_Char * tmp;
-       tmp = m_pFakeAuto->getLabel(m_pFakeLayout[itemNo]);
+       tmp = m_pFakeAuto->getLabel(m_pFakeSdh[itemNo]);
        if(tmp == NULL)
        {
 	      return NULL;
@@ -593,7 +602,7 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
 
 UT_Bool  AP_Dialog_Lists::isLastOnLevel(void)
 {
-       return getAutoNum()->isLastOnLevel(getBlock());
+       return getAutoNum()->isLastOnLevel(getBlock()->getStruxDocHandle());
 }
 
 

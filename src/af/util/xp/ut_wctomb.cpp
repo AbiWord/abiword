@@ -201,7 +201,7 @@ int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
 	buf[!swap] = b1;
     }
     size_t inlen = 2, outlen = 100;
-    size_t len = iconv(cd,const_cast<const char **>(&ibuf),&inlen,&obuf,&outlen);
+    size_t len = iconv(cd,const_cast<char **>(&ibuf),&inlen,&obuf,&outlen);
     if (len==(size_t)-1)
 	return 0;
     length = 100-outlen;
