@@ -114,16 +114,18 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	DELETEP(m_pFontGUI);
 }
 
+/*
+ TF NOTE: I'm not sure I understand what this function does
+*/
 UT_Bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
-	printf("Querying properties? \n");
 	switch (gp)
 	{
 	case DGP_SCREEN:
 		return UT_TRUE;
 	case DGP_PAPER:
+		//return (m_pPrintContext) ? UT_TRUE : UT_FALSE;
 		return UT_TRUE;
-		return UT_FALSE;
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
@@ -215,11 +217,12 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 	to PgSetFont(char *font);
 	*/
 	QNXFont *qnxFont = (QNXFont *)pFont;
+	const char *backupfont = { "helv10" };
 	const char *font;
 
 	if (!qnxFont || !(font = qnxFont->getFont())) {
 		fprintf(stderr, "No font found, using helv10 as default \n");
-		font = "helv10";
+		font = backupfont;
 	}
 
 	PgSetFont((char *)font);
@@ -359,8 +362,8 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
 	
-	printf("GR: findFont [%s] [%s] [%s] [%s] \n", 
-			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize);
+	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] \n", 
+			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize));
 
 	char fname[MAX_FONT_TAG];
 	int size = convertDimension(pszFontSize);
@@ -370,8 +373,8 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	if (UT_stricmp(pszFontWeight, "bold") == 0) {
 		style |= PF_STYLE_BOLD;
 	}
-	else if (UT_stricmp(pszFontStyle, "italic") == 0) {
-		style |= PF_STYLE_BOLD;
+	if (UT_stricmp(pszFontStyle, "italic") == 0) {
+		style |= PF_STYLE_ITALIC;
 	}
 
 //	printf("Looking for font [%s]@%d w/0x%x\n", pszFontFamily, size, style); 
@@ -390,7 +393,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 			break;
 		}
 	}
-//	printf("Setting to font name [%s] \n", fname);
+	UT_DEBUGMSG(("Setting to font name [%s] \n", fname));
 
 	return(new QNXFont(fname));
 }

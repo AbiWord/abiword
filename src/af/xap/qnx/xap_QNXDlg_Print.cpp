@@ -167,6 +167,29 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	if (value == Pt_PRINTSEL_PRINT) {
 		UT_uint32 first = 0, last = 0;
 		char *option;
+		PhRect_t 	*rect, nrect;
+		PhDim_t 	*dim, size;
+
+		nrect.ul.x = nrect.ul.y = 10;
+		nrect.lr.x = nrect.lr.y = 10;
+		PpPrintSetPC(m_pPrintContext, 
+					 INITIAL_PC, 0, Pp_PC_NONPRINT_MARGINS, &nrect);
+
+		PpPrintGetPC(m_pPrintContext, 
+					 Pp_PC_NONPRINT_MARGINS, (const void **)&rect);
+		printf("Margins are %d,%d %d,%d \n", 
+				rect->ul.x, rect->ul.y, rect->lr.x, rect->lr.y);
+
+		PpPrintGetPC(m_pPrintContext, 
+					 Pp_PC_PAPER_SIZE, (const void **)&dim);
+		printf("Paper size is %d/%d \n", dim->w, dim->h);
+
+		size.w = ((dim->w -
+				  (rect->ul.x + rect->lr.x)) * 72) / 1000;
+		size.h = ((dim->h -
+				  (rect->ul.y + rect->lr.y)) * 72) / 1000;
+		printf("Source size %d/%d \n", size.w, size.h);
+		PpPrintSetPC(m_pPrintContext, INITIAL_PC, 0, Pp_PC_SOURCE_SIZE, &size);
 
 		PpPrintGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&option);
 		printf("Range is set to [%s] \n", (option) ? option : "NULL");
