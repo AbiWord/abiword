@@ -308,6 +308,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 	  reader->closeFile ();
 	  return UT_ERROR;
 	}
+      xmlSubstituteEntitiesDefault (1);
     }
   while (!done && !m_bStopped)
     {
@@ -542,6 +543,7 @@ UT_Error UT_XML::html (const char * szFilename)
 	  reader->closeFile ();
 	  return UT_ERROR;
 	}
+      xmlSubstituteEntitiesDefault (1);
     }
   while (!done && !m_bStopped)
     {
@@ -628,6 +630,7 @@ UT_Error UT_XML::html (const char * buffer, UT_uint32 length)
 	  UT_DEBUGMSG (("Unable to create libxml2 (HTML) push-parser context!\n"));
 	  return UT_ERROR;
 	}
+      xmlSubstituteEntitiesDefault (1);
     }
   if (!m_bStopped)
     if (htmlParseChunk (ctxt, buffer, 0, 1))
@@ -714,6 +717,7 @@ bool UT_XML::startDecoder ()
   if (m_decoder) stopDecoder ();
 #ifdef HAVE_LIBXML2
   xmlParserCtxtPtr parser = xmlCreatePushParserCtxt (0, 0, "<?xml version=\"1.0\"?>", 21, 0);
+  xmlSubstituteEntitiesDefault (1);
 #else /* EXPAT */
   const char s[] = "<?xml version=\"1.0\"?>\n<decoder>\n";
   XML_Parser parser = XML_ParserCreate (0);
