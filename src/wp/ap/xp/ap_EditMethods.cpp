@@ -1726,7 +1726,7 @@ XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, con
 									pNewFile);
 }
 
-static UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
+UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 {
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();

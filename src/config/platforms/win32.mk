@@ -110,6 +110,12 @@ OS_LIBS		= kernel32.lib \
               comctl32.lib \
               msvcprt.lib
 
+ifdef ABI_BUILD_VERSION
+OS_CFLAGS += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
+else
+OS_CFLAGS += -DABI_BUILD_VERSION=\"\"
+endif
+
 OS_CFLAGS 	+= $(OPTIMIZER) $(ARCH_FLAGS)
 
 ABI_NATIVE	= win
