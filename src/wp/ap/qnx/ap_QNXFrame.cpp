@@ -317,7 +317,7 @@ void AP_QNXFrame::setXScrollRange(void)
 	//printf("Set X limits to %d -[%d]- %d \n", 0, newvalue, newmax);
 	
 	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
-		m_pView->sendHorizontalScrollEvent(newvalue);
+		m_pView->sendHorizontalScrollEvent(newvalue, (long) width-windowWidth);
 	}
 }
 
@@ -361,7 +361,7 @@ void AP_QNXFrame::setYScrollRange(void)
 	//printf("Set Y limits to %d -[%d]- %d \n", 0, newvalue, newmax);
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue);
+		m_pView->sendVerticalScrollEvent(newvalue, (long) height-windowHeight);
 }
 
 
