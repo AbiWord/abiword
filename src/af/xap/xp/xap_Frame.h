@@ -28,7 +28,7 @@
 #include "xav_Listener.h"	// for AV_ListenerID
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Strings.h"
-#include "ev_Toolbar.h"
+//#include "ev_Toolbar.h"
 
 class XAP_App;
 class XAP_DialogFactory;
@@ -36,12 +36,11 @@ class ap_ViewListener;
 class AV_View;
 class AD_Document;
 class EV_EditEventMapper;
-class EV_Menu_Layout;
-class EV_Menu_LabelSet;
 class EV_EditBindingMap;
 class EV_Mouse;
-//class EV_Toolbar;
+class EV_Toolbar;
 class EV_Keyboard;
+class EV_Menu;
 class AV_ScrollObj;
 class ap_Scrollbar_ViewListener;
 
@@ -145,6 +144,7 @@ public:
    	EV_Mouse *					getMouse(void);
 	EV_Keyboard *				getKeyboard(void);
 	EV_Toolbar *                getToolbar(UT_uint32 ibar);
+	virtual EV_Menu*			getMainMenu() = 0;
 
 	bool                        repopulateCombos(void);
 	void						setAutoSaveFile(bool);
@@ -165,6 +165,7 @@ public:
 	// when the user selects hide statusbar, the Frame has to be
 	// resized in order to fill the gap leaved by the statusbar
 	virtual void				queue_resize() {}
+
 protected:
 	virtual void				_createToolbars(void);
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *)

@@ -84,6 +84,7 @@ public:
 
 	int							getPopupDone() { return m_PopupDone; };
 	void						setPopupDone(int value) { m_PopupDone = value; };
+	virtual EV_Menu*			getMainMenu();
 
 	PhArea_t					m_AvailableArea;
 	PtWidget_t * 				m_wSunkenBox;

@@ -569,3 +569,8 @@ EV_Toolbar * XAP_BeOSFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 							   static_cast<XAP_BeOSFrame *>(frame), 
 							   szLayout, szLanguage));
 }
+
+EV_Menu* XAP_BeOSFrame::getMainMenu()
+{
+	return m_pBeOSMenu;
+}

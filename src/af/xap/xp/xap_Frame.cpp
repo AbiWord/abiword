@@ -45,6 +45,8 @@
 #include "xap_Scrollbar_ViewListener.h"
 #include "ev_Keyboard.h"
 #include "ev_Mouse.h"
+#include "ev_Toolbar.h"
+#include "ev_Menu.h"
 #include "xap_Strings.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_Id.h"
@@ -233,7 +235,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarLayouts = NULL;
 	if ((pApp->getPrefsValue(szToolbarLayoutsKey,
-				 (const XML_Char**)&szToolbarLayouts)) &&
+							 (const XML_Char**)&szToolbarLayouts)) &&
 	    (szToolbarLayouts) && (*szToolbarLayouts))
 		;
 	else

@@ -691,3 +691,8 @@ EV_Toolbar * XAP_Win32Frame::_newToolbar(XAP_App*		app,
 
 	return result;
 }
+
+EV_Menu* XAP_Win32Frame::getMainMenu()
+{
+	return m_pWin32Menu;
+}

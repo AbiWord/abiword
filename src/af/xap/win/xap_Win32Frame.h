@@ -67,6 +67,7 @@ public:
 	HWND						getTopLevelWindow(void) const;
 	HWND						getToolbarWindow(void) const;
 	EV_Win32Mouse *				getWin32Mouse(void);
+	virtual EV_Menu*			getMainMenu();
 
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;

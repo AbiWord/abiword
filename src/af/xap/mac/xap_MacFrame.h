@@ -104,6 +104,8 @@ public:
 	short                       _getVisibleRgnTop ()
 		{ return m_visibleRgnTop; };
 	void                        _setVisibleRgnTop (short top);
+	virtual EV_Menu*			getMainMenu();
+
 protected:
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 

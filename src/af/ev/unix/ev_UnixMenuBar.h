@@ -43,9 +43,9 @@ public:
 				   XAP_UnixFrame * pUnixFrame,
 				   const char * szMenuLayoutName,
 				   const char * szMenuLabelSetName);
-	virtual ~EV_UnixMenuBar(void);
+	virtual ~EV_UnixMenuBar();
 
-	virtual bool     synthesizeMenuBar(void);
+	virtual bool		synthesizeMenuBar();
 	virtual bool		refreshMenu(AV_View * pView);
 
 protected:

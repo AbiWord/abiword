@@ -890,6 +890,11 @@ EV_Toolbar * XAP_UnixFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 
 void XAP_UnixFrame::queue_resize()
 {
-	UT_DEBUGMSG(("XAP_UnixFrame::queue_resize\n"));	
+	xxx_UT_DEBUGMSG(("XAP_UnixFrame::queue_resize\n"));	
 	gtk_widget_queue_resize(m_wTopLevelWindow);
+}
+
+EV_Menu* XAP_UnixFrame::getMainMenu()
+{
+	return m_pUnixMenu;
 }

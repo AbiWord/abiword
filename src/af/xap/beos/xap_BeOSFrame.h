@@ -153,6 +153,7 @@ public:
 
 	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
+	virtual EV_Menu*			getMainMenu();
 
 protected:
 //	virtual GtkWidget *			_createDocumentWindow(void)=0;

@@ -620,3 +620,8 @@ EV_Toolbar * XAP_QNXFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 	return (new EV_QNXToolbar((XAP_QNXApp *)(app), 
 							  (XAP_QNXFrame *)(frame), szLayout, szLanguage));
 }
+
+EV_Menu* XAP_QNXFrame::getMainMenu()
+{
+	return m_pQNXMenu;
+}

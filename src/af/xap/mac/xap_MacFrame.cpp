@@ -371,3 +371,7 @@ void XAP_MacFrame::_setVisibleRgnTop (short top)
 	//_setOrigin (0, top);
 }
 
+EV_Menu* XAP_MacFrame::getMainMenu()
+{
+	return m_pMacMenu;
+}
