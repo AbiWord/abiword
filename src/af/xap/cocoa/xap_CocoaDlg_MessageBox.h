@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,10 +21,40 @@
 #ifndef XAP_COCOADIALOG_MESSAGEBOX_H
 #define XAP_COCOADIALOG_MESSAGEBOX_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "xap_CocoaFrame.h"
 #include "xap_Dlg_MessageBox.h"
 
 class XAP_CocoaFrame;
+
+class XAP_CocoaDialog_MessageBox;
+
+@interface XAP_CocoaDlg_MessageBoxController : NSWindowController
+{
+	IBOutlet NSButton * m_okBtn;
+	IBOutlet NSButton * m_cancelBtn;
+	IBOutlet NSButton * m_yesBtn;
+	IBOutlet NSButton * m_noBtn;
+	IBOutlet NSTextField * m_messageField;
+	XAP_Dialog_MessageBox::tButtons	m_buttons;
+	XAP_CocoaDialog_MessageBox	* m_xap;
+}
++ (XAP_CocoaDlg_MessageBoxController *)loadFromNibWithButtons:(XAP_Dialog_MessageBox::tButtons)buttons;
+- (void)windowDidLoad;
+
+- (void)setXAPOwner:(XAP_CocoaDialog_MessageBox *)owner;
+- (void)setOkBtnLabel:(NSString *)label;
+- (void)setCancelBtnLabel:(NSString *)label;
+- (void)setYesBtnLabel:(NSString *)label;
+- (void)setNoBtnLabel:(NSString *)label;
+- (void)setMessage:(NSString *)message;
+- (IBAction)okAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)yesAction:(id)sender;
+- (IBAction)noAction:(id)sender;
+@end
+
 
 /*****************************************************************/
 
@@ -39,24 +69,12 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	// must let static callbacks read our bindings
-//	UT_Vector * 		_getBindingsVector();
 	void 				_setAnswer(XAP_Dialog_MessageBox::tAnswer answer);
-		
-	// Export for use by s_key_pressed()
-#if 0
-   	struct keyBinding
-	{
-		guint key;
-		XAP_Dialog_MessageBox::tAnswer answer;
-	};
-#endif
-
-private:
-	XAP_CocoaFrame *			m_pCocoaFrame;
-	UT_Vector 				m_keyBindings;
-
-//	void _bindKey(guint key, XAP_Dialog_MessageBox::tAnswer answer);
 	
+	XAP_CocoaFrame *		_getFrame () { return m_pCocoaFrame; };	//accessor for Obj-C
+private:
+	XAP_CocoaFrame *		m_pCocoaFrame;
+	XAP_CocoaDlg_MessageBoxController *m_dlg;	
 };
 
 #endif /* XAP_COCOADIALOG_MESSAGEBOX_H */

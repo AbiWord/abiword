@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,12 +18,10 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
-#include <glib.h>
+#import <Cocoa/Cocoa.h>
+
 #include "ut_assert.h"
 #include "ut_vector.h"
-#include "xap_CocoaDialogHelper.h"
 #include "xap_CocoaDlg_MessageBox.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
@@ -32,132 +31,27 @@
 
 /*****************************************************************/
 XAP_Dialog * XAP_CocoaDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id id)
+														 XAP_Dialog_Id dlgid)
 {
-	XAP_CocoaDialog_MessageBox * p = new XAP_CocoaDialog_MessageBox(pFactory,id);
+	XAP_CocoaDialog_MessageBox * p = new XAP_CocoaDialog_MessageBox(pFactory, dlgid);
 	return p;
 }
 
 XAP_CocoaDialog_MessageBox::XAP_CocoaDialog_MessageBox(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id id)
-	: XAP_Dialog_MessageBox(pDlgFactory,id)
+												   XAP_Dialog_Id dlgid)
+	: XAP_Dialog_MessageBox(pDlgFactory, dlgid), m_dlg (nil)
 {
 }
 
 XAP_CocoaDialog_MessageBox::~XAP_CocoaDialog_MessageBox(void)
 {
-	UT_VECTOR_PURGEALL(XAP_CocoaDialog_MessageBox::keyBinding *, m_keyBindings);
-}
-
-/*****************************************************************/
-
-// perhaps this should move to util/dialogHelper.cpp?  Right now
-// only hand-crafted dialogs like Message Box will need to handle
-// their own keys.
-static gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e, XAP_CocoaDialog_MessageBox * box)
-{
-	UT_ASSERT(e);
-	UT_ASSERT(box);
-
-	const UT_Vector * bindings = box->_getBindingsVector();
-	
-	guint key = e->keyval;
-	XAP_CocoaDialog_MessageBox::keyBinding * item = NULL;
-	
-	// find binding
-	for (unsigned int i = 0; i < bindings->getItemCount(); i++)
-	{
-		item = (XAP_CocoaDialog_MessageBox::keyBinding *) bindings->getNthItem(i);
-		UT_ASSERT(item);
-
-		// execute action
-		if (item->key == key)
-		{
-			switch(item->answer)
-			{
-			case XAP_Dialog_MessageBox::a_OK:
-				box->_setAnswer(XAP_Dialog_MessageBox::a_OK);
-				gtk_main_quit();
-				return TRUE;
-				break;
-			case XAP_Dialog_MessageBox::a_CANCEL:
-				box->_setAnswer(XAP_Dialog_MessageBox::a_CANCEL);
-				gtk_main_quit();
-				return TRUE;
-				break;
-			case XAP_Dialog_MessageBox::a_YES:
-				box->_setAnswer(XAP_Dialog_MessageBox::a_YES);
-				gtk_main_quit();
-				return TRUE;
-				break;
-			case XAP_Dialog_MessageBox::a_NO:
-				box->_setAnswer(XAP_Dialog_MessageBox::a_NO);
-				gtk_main_quit();
-				return TRUE;
-				break;
-			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			}
-		}
+	if (m_dlg != nil) {
+		[m_dlg autorelease];
+		m_dlg = nil;
 	}
-	
-	return TRUE;
-}
-
-static void s_ok_clicked(GtkWidget * /* widget */,
-						 XAP_Dialog_MessageBox::tAnswer * answer)
-{
-	*answer = XAP_Dialog_MessageBox::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-							 XAP_Dialog_MessageBox::tAnswer * answer)
-{
-	*answer = XAP_Dialog_MessageBox::a_CANCEL;
-	gtk_main_quit();
-}
-
-static void s_yes_clicked(GtkWidget * /* widget */,
-						  XAP_Dialog_MessageBox::tAnswer * answer)
-{
-	*answer = XAP_Dialog_MessageBox::a_YES;
-	gtk_main_quit();
-}
-
-static void s_no_clicked(GtkWidget * /* widget */,
-						 XAP_Dialog_MessageBox::tAnswer * answer)
-{
-	*answer = XAP_Dialog_MessageBox::a_NO;
-	gtk_main_quit();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */, XAP_Dialog_MessageBox::tAnswer * answer)
-{
-	*answer = XAP_Dialog_MessageBox::a_CANCEL;
-	gtk_main_quit();
-}
-					  
-/*****************************************************************/
-
-void XAP_CocoaDialog_MessageBox::_bindKey(guint key, XAP_Dialog_MessageBox::tAnswer answer)
-{
-	XAP_CocoaDialog_MessageBox::keyBinding * item = new XAP_CocoaDialog_MessageBox::keyBinding;
-
-	item->key = key;
-	item->answer = answer;
-	
-	m_keyBindings.addItem((void *) item);
 }
 
 /*****************************************************************/
-
-// static callback helpers, they break encapsulation
-UT_Vector * XAP_CocoaDialog_MessageBox::_getBindingsVector()
-{
-	return &m_keyBindings;
-}
-
 void XAP_CocoaDialog_MessageBox::_setAnswer(XAP_Dialog_MessageBox::tAnswer answer)
 {
 	m_answer = answer;
@@ -172,215 +66,131 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
-	// New GTK+ dialog window
-	GtkWidget * dialog_window = gtk_dialog_new();								 
+	m_dlg = [XAP_CocoaDlg_MessageBoxController loadFromNibWithButtons:m_buttons];	// autoreleased
+	[m_dlg setXAPOwner:this];
+	NSWindow *win = [m_dlg window];		// force the window to be loaded.
+	[m_dlg setMessage:[NSString stringWithCString:m_szMessage]];	// string autoreleased
 
-	connectFocus(GTK_WIDGET(dialog_window),pFrame);
-	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
-							  "destroy",
-							  NULL,
-							  NULL);
-	gtk_signal_connect (GTK_OBJECT (dialog_window),
-			    "delete_event",
-			    GTK_SIGNAL_FUNC(s_delete_clicked),
-			    &m_answer);
 
-	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
 
-	// don't let user shrink or expand, but auto-size to
-	// contents initially
-    gtk_window_set_policy(GTK_WINDOW(dialog_window),
-						  FALSE,
-						  FALSE,
-						  TRUE);
-
-	// Intercept key strokes
-	gtk_signal_connect(GTK_OBJECT(dialog_window),
-					   "key_press_event",
-					   GTK_SIGNAL_FUNC(s_key_pressed),
-					   this);
-
-	// Add our label string to the dialog in the message area
-	GtkWidget * label = gtk_label_new (m_szMessage);
-	gtk_misc_set_padding (GTK_MISC (label), 10, 10);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->vbox),
-						label, TRUE, TRUE, 0);
-	gtk_widget_show (label);
-
-	// Build all the buttons, regardless of whether they're
-	// used.  This is much easier than creating the ones we know we
-	// need.  Trust me.
-
-	GtkWidget *		ok_label;
-	GtkWidget * 	ok_button;
-	guint			ok_accel;
-	
-	GtkWidget *		cancel_label;
-	GtkWidget *		cancel_button;
-	guint 			cancel_accel;
-	
-	GtkWidget *		yes_label;
-	GtkWidget *		yes_button;
-	guint			yes_accel;
-	
-	GtkWidget *		no_label;
-	GtkWidget *		no_button;
-	guint			no_accel;
-
-	// we get all our strings from the application string set
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	
-	// OK
-	ok_label = gtk_label_new("SHOULD NOT APPEAR");
-	ok_accel = gtk_label_parse_uline(GTK_LABEL(ok_label), pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show(ok_label);
-	ok_button = gtk_button_new();
-	gtk_container_add(GTK_CONTAINER(ok_button), ok_label);
-	gtk_signal_connect (GTK_OBJECT (ok_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (s_ok_clicked),
-						&m_answer);
-	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
-	gtk_widget_set_usize(ok_button, DEFAULT_BUTTON_WIDTH, 0);
-	// Cancel
-	cancel_label = gtk_label_new("SHOULD NOT APPEAR");
-	cancel_accel = gtk_label_parse_uline(GTK_LABEL(cancel_label), pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show(cancel_label);
-	cancel_button = gtk_button_new();
-	gtk_container_add(GTK_CONTAINER(cancel_button), cancel_label);
-	gtk_signal_connect (GTK_OBJECT (cancel_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (s_cancel_clicked),
-						&m_answer);
-	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
-	gtk_widget_set_usize(cancel_button, DEFAULT_BUTTON_WIDTH, 0);
-	// Yes
-	yes_label = gtk_label_new("SHOULD NOT APPEAR");
-	yes_accel = gtk_label_parse_uline(GTK_LABEL(yes_label), pSS->getValue(XAP_STRING_ID_DLG_CocoaMB_Yes));
-	gtk_widget_show(yes_label);
-	yes_button = gtk_button_new();
-	gtk_container_add(GTK_CONTAINER(yes_button), yes_label);
-	gtk_signal_connect (GTK_OBJECT (yes_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (s_yes_clicked),
-						&m_answer);
-	GTK_WIDGET_SET_FLAGS (yes_button, GTK_CAN_DEFAULT);
-	gtk_widget_set_usize(yes_button, DEFAULT_BUTTON_WIDTH, 0);
-	// No
-	no_label = gtk_label_new("SHOULD NOT APPEAR");
-	no_accel = gtk_label_parse_uline(GTK_LABEL(no_label), pSS->getValue(XAP_STRING_ID_DLG_CocoaMB_No));
-	gtk_widget_show(no_label);
-	no_button = gtk_button_new();
-	gtk_container_add(GTK_CONTAINER(no_button), no_label);
-	gtk_signal_connect (GTK_OBJECT (no_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (s_no_clicked),
-						&m_answer);
-	GTK_WIDGET_SET_FLAGS (no_button, GTK_CAN_DEFAULT);
-	gtk_widget_set_usize(no_button, DEFAULT_BUTTON_WIDTH, 0);
-
-	switch (m_buttons)
-	{
-	case b_O:
-		// OK
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							ok_button, FALSE, FALSE, 0);
-		gtk_widget_grab_default (ok_button);
-		_bindKey(ok_accel, a_OK);
-		_bindKey(GDK_Escape, a_OK);
-		gtk_widget_show (ok_button);
-		break;
-
-	case b_OC:
-		// OK
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							ok_button, FALSE, FALSE, 0);
-		if (m_defaultAnswer == a_OK)
-			gtk_widget_grab_default (ok_button);
-		_bindKey(ok_accel, a_OK);
-		gtk_widget_show (ok_button);
-		// Cancel
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							cancel_button, FALSE, FALSE, 0);
-		if (m_defaultAnswer == a_NO)
-			gtk_widget_grab_default (cancel_button);
-		_bindKey(cancel_accel, a_CANCEL);
-		_bindKey(GDK_Escape, a_CANCEL);
-		gtk_widget_show (cancel_button);
-		break;
-
-	case b_YN:
-		// Yes
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							yes_button, FALSE, FALSE, 0);
-		if (m_defaultAnswer == a_YES)
-			gtk_widget_grab_default (yes_button);
-		_bindKey(yes_accel, a_YES);
-		gtk_widget_show (yes_button);
-		// No
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							no_button, FALSE, FALSE, 0);
-		if (m_defaultAnswer == a_NO)
-			gtk_widget_grab_default (no_button);
-		_bindKey(no_accel, a_NO);
-		_bindKey(GDK_Escape, a_NO);
-		gtk_widget_show (no_button);
-		break;
-
-	case b_YNC:
-		// Yes
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							yes_button, FALSE, FALSE, 0);
-		if (m_defaultAnswer == a_YES)
-			gtk_widget_grab_default (yes_button);
-		_bindKey(yes_accel, a_YES);
-		gtk_widget_show (yes_button);
-		// No
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							no_button, FALSE, FALSE, 0);
-		if (m_defaultAnswer == a_NO)
-			gtk_widget_grab_default (no_button);
-		_bindKey(no_accel, a_NO);
-		gtk_widget_show (no_button);
-		// Cancel
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							cancel_button, FALSE, FALSE, 0);
-		if (m_defaultAnswer == a_CANCEL)
-			gtk_widget_grab_default (cancel_button);
-		gtk_widget_show (cancel_button);
-		_bindKey(cancel_accel, a_CANCEL);
-		_bindKey(GDK_Escape, a_CANCEL);
-		break;
-
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-
-	// set the size of the dialog to size with the label inside
-	gtk_widget_size_request(dialog_window, &dialog_window->requisition);
-	gtk_widget_set_usize(dialog_window, dialog_window->requisition.width + 40, 0);
-	
-	// get top level window and it's GtkWidget *
-	XAP_CocoaFrame * frame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
-
-	// center it
-    centerDialog(parent, dialog_window);
-
-	gtk_grab_add(GTK_WIDGET(dialog_window));
-	gtk_widget_show(dialog_window);
-	
-	gtk_main();
-
-	// clean up
-	if(dialog_window && GTK_IS_WIDGET(dialog_window))
-	  gtk_widget_destroy(GTK_WIDGET(dialog_window));
-
-	// answer should be set by the appropriate callback
-	// the caller can get the answer from getAnswer().
+	[NSApp runModalForWindow:win];
 
 	m_pCocoaFrame = NULL;
 }
 
+
+
+@implementation XAP_CocoaDlg_MessageBoxController
+
++ (XAP_CocoaDlg_MessageBoxController *)loadFromNibWithButtons:(XAP_Dialog_MessageBox::tButtons)buttons
+{
+	XAP_CocoaDlg_MessageBoxController * box = [[XAP_CocoaDlg_MessageBoxController alloc] initWithWindowNibName:@"xap_CocoaDlg_MessageBox"];
+	
+	return [box autorelease];
+}
+
+- (void)windowDidLoad
+{
+	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
+	// we get all our strings from the application string set
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	[self setOkBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_OK)]];
+	[self setCancelBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_Cancel)]];
+	[self setYesBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_UnixMB_Yes)]];
+	[self setNoBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_UnixMB_No)]];
+
+	switch (m_buttons)
+	{
+	case XAP_Dialog_MessageBox::b_O:
+		[[m_cancelBtn retain] removeFromSuperview];
+		[[m_yesBtn retain] removeFromSuperview];
+		[[m_noBtn retain] removeFromSuperview];
+		[[self window] makeFirstResponder:m_okBtn];
+		break;
+
+	case XAP_Dialog_MessageBox::b_OC:
+		[[m_yesBtn retain] removeFromSuperview];
+		[[m_noBtn retain] removeFromSuperview];
+		[[self window] makeFirstResponder:m_cancelBtn];
+		break;
+
+	case XAP_Dialog_MessageBox::b_YN:
+		[[m_okBtn retain] removeFromSuperview];
+		[[m_cancelBtn retain] removeFromSuperview];
+		[[self window] makeFirstResponder:m_noBtn];
+		break;
+	case XAP_Dialog_MessageBox::b_YNC:
+		[[m_okBtn retain] removeFromSuperview];
+		[[self window] makeFirstResponder:m_cancelBtn];
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+}
+
+/*
+	Set owner (XAP class) so that IBAction can do something...
+ */
+- (void)setXAPOwner:(XAP_CocoaDialog_MessageBox *)owner
+{
+	m_xap = owner;
+}
+
+
+- (void)setOkBtnLabel:(NSString *)label
+{
+	[m_okBtn setTitle:label];
+}
+
+
+- (void)setCancelBtnLabel:(NSString *)label
+{
+	[m_cancelBtn setTitle:label];
+}
+
+
+- (void)setYesBtnLabel:(NSString *)label
+{
+	[m_yesBtn setTitle:label];
+}
+
+
+- (void)setNoBtnLabel:(NSString *)label
+{
+	[m_noBtn setTitle:label];
+}
+
+- (void)setMessage:(NSString *)message
+{
+	[m_messageField setStringValue:message];
+}
+
+- (IBAction)okAction:(id)sender
+{
+	UT_ASSERT (m_xap);
+	m_xap->_setAnswer (XAP_Dialog_MessageBox::a_OK);
+	[NSApp stopModal];
+}
+
+- (IBAction)cancelAction:(id)sender
+{
+	UT_ASSERT (m_xap);
+	m_xap->_setAnswer (XAP_Dialog_MessageBox::a_CANCEL);
+	[NSApp stopModal];
+}
+
+- (IBAction)yesAction:(id)sender
+{
+	UT_ASSERT (m_xap);
+	m_xap->_setAnswer (XAP_Dialog_MessageBox::a_YES);
+	[NSApp stopModal];
+}
+
+- (IBAction)noAction:(id)sender
+{
+	UT_ASSERT (m_xap);
+	m_xap->_setAnswer (XAP_Dialog_MessageBox::a_NO);
+	[NSApp stopModal];
+}
+
+@end
