@@ -857,6 +857,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	DELETEP(pGr);
 	DELETEP(fnt);
 	DELETEPV(ucstext);
+	DELETEP(pIEG);
+	DELETEP(pGraphic);
 
 	return answer;
 }

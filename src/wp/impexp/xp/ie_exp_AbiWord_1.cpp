@@ -825,7 +825,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	//const char * szProps;
 
 	fl_AutoNum * pAutoNum;
-	const char ** attr;
+	const char ** attr = NULL;
 
 #define LCheck(str) (0 == UT_strcmp(attr[0], str))
 
@@ -854,6 +854,8 @@ void s_AbiWord_1_Listener::_handleLists(void)
 		}
 		m_pie->write("/>\n");
 	}
+
+	FREEP(attr);
 
 #undef LCheck			
 	

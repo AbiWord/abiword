@@ -384,7 +384,8 @@ bool GR_UnixImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispl
 			  if (!yarray)
 			  {
 				  // TODO outofmem
-				  return false;
+			    FREEP(xarray);
+			    return false;
 			  }
 		
 			  ptr22 = pOtherFM->data;
@@ -420,6 +421,10 @@ bool GR_UnixImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispl
 					  *ptr++ = (int)*ptr2;
 				  }
 			  }
+
+			  // thou shalt free what thou allocate...
+			  FREEP(xarray);
+			  FREEP(yarray);
 		  }
 		  
 		  pFM = pDisplayFM;

@@ -191,6 +191,8 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 		xxx_UT_DEBUGMSG(("closing X display\n"));
 		XCloseDisplay(dsp);
 		xxx_UT_DEBUGMSG(("done.\n"));
+
+		delete[] newPath ;
 	}
 }
 

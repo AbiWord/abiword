@@ -1295,13 +1295,6 @@ const char ** fl_AutoNum::getAttributes(void)
 	static char  szID[15], szPid[15], szType[5], szStart[5];
 	UT_Vector va;
  
-	/*       
-			 szID = (char *)malloc(10);
-			 szPid = (char *)malloc(10);
-			 szType = (char *)malloc(5);
-			 szStart = (char *)malloc(5);
-	*/
-
 	sprintf(szID, "%i", m_iID);
 	va.addItem( (void *) "id"); va.addItem( (void *) szID);
         
@@ -1323,7 +1316,7 @@ const char ** fl_AutoNum::getAttributes(void)
 	
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 i;
-	const char ** attribs = (const char **) calloc(counta, sizeof(char *));
+	const char ** attribs = (const char **) UT_calloc(counta, sizeof(char *));
 	for (i = 0; i < va.getItemCount(); i++)
 	{
 		attribs[i] = (const char *) va[i];

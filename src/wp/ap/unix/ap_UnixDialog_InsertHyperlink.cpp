@@ -63,6 +63,7 @@ AP_UnixDialog_InsertHyperlink::AP_UnixDialog_InsertHyperlink(XAP_DialogFactory *
 
 AP_UnixDialog_InsertHyperlink::~AP_UnixDialog_InsertHyperlink(void)
 {
+  DELETEPV(m_pBookmarks);
 }
 
 /*****************************************************************/
@@ -175,8 +176,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   gtk_clist_column_titles_hide(GTK_CLIST(m_clist));
   //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
 
-  if(m_pBookmarks)
-  	  delete [] m_pBookmarks;
+  DELETEPV(m_pBookmarks);
   m_pBookmarks = new const XML_Char *[getExistingBookmarksCount()];
 	
   for (int i = 0; i < (int)getExistingBookmarksCount(); i++)

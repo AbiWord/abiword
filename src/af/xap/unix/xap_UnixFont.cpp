@@ -223,8 +223,6 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	if (!xlfd)
 		return false;
 
-	//UT_DEBUGMSG(("XAP_UnixFont::openFileAs [fontfile `%s']\n", fontfile));
-
 	struct stat buf;
 	
 	if (!m_is_cjk) //HJ's patch had this logic
@@ -276,7 +274,9 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	{
 		m_fontType = FONT_TYPE_UNKNOWN;
 		if(!m_is_cjk)	/* cjk has different fonts.dir format. */
+		  {
 		    return false;
+		  }
 	}
 
 	return true;
@@ -366,7 +366,11 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile()
 	char * encfile = new char[strlen(m_fontfile)+3]; //3 to be on the safe side, in case extension is < 3
 	strcpy(encfile, m_fontfile);
 	char * dot = strrchr(encfile, '.');
-	if(!dot) return NULL;
+	if(!dot)
+	  {
+	    delete [] encfile;
+	    return NULL;
+	  }
 	*(dot+1) = 'u';
 	*(dot+2) = '2';
 	*(dot+3) = 'g';

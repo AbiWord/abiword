@@ -4991,7 +4991,7 @@ static bool s_doFontDlg(FV_View * pView)
 			bBottomLine = (strstr(s, "bottomline") != NULL);
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopLine,bBottomLine);
-		free(props_in);
+		FREEP(props_in);
 	}
 
 	if(!pView->isSelectionEmpty())
@@ -5421,6 +5421,8 @@ Defun(formatPainter)
   retval = true;
 
  cleanup:
+  FREEP(block_properties);
+  FREEP(block_properties);
   DELETEP(pDocLayout);
   UNREFP(pNewDoc);
 
@@ -7291,6 +7293,7 @@ Defun(dlgFmtImage)
 		  else
 		  {
 			  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			  FREEP(props_in);
 			  return false;
 		  }
 		  pDialog->setWidth(iWidth);
@@ -7311,14 +7314,13 @@ Defun(dlgFmtImage)
 		  else
 		  {
 			  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			  FREEP(props_in);
 			  return false;
 		  }
 		  pDialog->setHeight(iHeight);
 	  }
+	  FREEP(props_in);
 
-
-	  UT_DEBUGMSG(("DOM: w: %f h: %f mw: %f mh: %f\n", width, height, max_width, max_height));
-	  
 	  pDialog->runModal(pFrame);
 	  
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
@@ -7530,7 +7532,7 @@ Defun(dlgColumns)
 		FREEP(props);
 	}
 
-	free(props_in);
+	FREEP(props_in);
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -8896,6 +8898,7 @@ Defun(dlgColorPickerFore)
 		pView->setCharFormat(properties);
 	}
 	pDialogFactory->releaseDialog(pDialog);
+	FREEP(propsChar);
 	return bOK;
 }
 
@@ -8942,6 +8945,7 @@ Defun(dlgColorPickerBack)
 		properties[1] = clr;
 		pView->setCharFormat(properties);
 	}
+	FREEP(propsChar);
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 }
@@ -8986,6 +8990,7 @@ Defun(dlgBackground)
 		pView->setPaperColor (clr);
 	}
 
+	FREEP(propsSection);
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 }
@@ -9093,7 +9098,7 @@ Defun(dlgHdrFtr)
 		restartValue = atoi(szRestartValue);
 	}
 	pDialog->setRestart(bRestart, restartValue, false);
-	free(propsSectionIn);
+	FREEP(propsSectionIn);
 
 	pDialog->runModal (pFrame);
 
