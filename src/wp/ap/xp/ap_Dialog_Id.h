@@ -39,9 +39,7 @@ typedef enum _AP_Dialog_Id
 	AP_DIALOG_ID_OPTIONS,				/* edit|options settings dialog */
 	AP_DIALOG_ID_INSERT_DATETIME,		/* insert date and time dialog */
 	AP_DIALOG_ID_FIELD,					/* insert field dialog */
-    AP_DIALOG_ID_INSERT_SYMBOL,         /* insert symbol dialog */
-
-	AP_DIALOG_ID_WORDCOUNT,                                 /* word count dialog */
+	AP_DIALOG_ID_WORDCOUNT,             /* word count dialog */
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

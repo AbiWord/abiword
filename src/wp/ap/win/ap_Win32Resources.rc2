@@ -41,7 +41,6 @@
 #define AP_RID_DIALOG_DATETIME					211
 #define AP_RID_DIALOG_FIELD						212
 #define AP_RID_DIALOG_WORDCOUNT					213
-#define AP_RID_DIALOG_INSERTSYMBOL				214
 
 
 #include "ap_Win32Resources_DialogReplace.rc2"

@@ -60,7 +60,7 @@
 #include "xap_Dlg_Print.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_Dlg_Zoom.h"
-#include "ap_Dialog_Insert_Symbol.h"
+#include "xap_Dlg_Insert_Symbol.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -3781,6 +3781,33 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 }
 
 
+class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
+	{
+	public:
+		FV_View_Insert_symbol_listener(FV_View *p_view_in)
+			{
+			p_view = p_view_in;
+			}
+
+		UT_Bool insertSymbol(UT_UCSChar Char, char *p_font_name)
+			{
+			const XML_Char ** props_in = NULL;
+			const XML_Char * currentfont;
+			p_view->getCharFormat(&props_in);
+			currentfont = UT_getAttribute("font-family",props_in);
+
+			p_view->insertSymbol(Char, p_font_name, (XML_Char *)currentfont);
+
+			free(props_in);
+
+			return UT_TRUE;
+			}
+
+	private:
+		FV_View *p_view;
+	};
+
+
 
 static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 {
@@ -3792,11 +3819,12 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_Insert_Symbol * pDialog
-		= (AP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
+	XAP_Dialog_Insert_Symbol * pDialog
+		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	pDialog->setView(pView);
+	FV_View_Insert_symbol_listener Listener(pView);
+	pDialog->setListener(&Listener);
 	pDialog->runModal(pFrame);
 
 	/*
@@ -3809,9 +3837,9 @@ symbol and change it back to the previous font.
 
 	*/
 
-	AP_Dialog_Insert_Symbol::tAnswer ans = pDialog->getAnswer();
+	XAP_Dialog_Insert_Symbol::tAnswer ans = pDialog->getAnswer();
 
-	if(ans == AP_Dialog_Insert_Symbol::a_OK)
+	if(ans == XAP_Dialog_Insert_Symbol::a_OK)
 	{
 
 	  /* User pressed OK so first determine the current font and save it*/
@@ -3821,7 +3849,7 @@ symbol and change it back to the previous font.
 	  const XML_Char ** props_in = NULL;
 	  const XML_Char * currentfont;
 	  pView->getCharFormat(&props_in);
-          currentfont = UT_getAttribute("font-family",props_in);
+      currentfont = UT_getAttribute("font-family",props_in);
 
 	  /* Now get the character to be inserted */
 
@@ -4088,7 +4116,7 @@ Defun1(insSymbol)
 {
 
 	ABIWORD_VIEW;
-	XAP_Dialog_Id id = AP_DIALOG_ID_INSERT_SYMBOL;
+	XAP_Dialog_Id id = XAP_DIALOG_ID_INSERT_SYMBOL;
 
 	return s_InsertSymbolDlg(pView,id);
 	/*

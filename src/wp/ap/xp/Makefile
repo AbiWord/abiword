@@ -27,7 +27,6 @@ ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 CPPSRCS=	ap_Convert.cpp			\
 		ap_Dialog_Break.cpp		\
 		ap_Dialog_WordCount.cpp		\
-		ap_Dialog_Insert_Symbol.cpp		\
 		ap_Dialog_Field.cpp		\
 		ap_Dialog_Goto.cpp		\
 		ap_Dialog_Insert_DateTime.cpp	\
