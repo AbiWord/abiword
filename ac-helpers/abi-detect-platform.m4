@@ -87,7 +87,7 @@ esac
 if test "$PLATFORM" = "cocoa"; then
 	BE_PLATFORM="unix"
 else
-	BE_PLAFORN="$PLATFORM"
+	BE_PLATFORM="$PLATFORM"
 fi
 
 AC_SUBST(PLATFORM)
