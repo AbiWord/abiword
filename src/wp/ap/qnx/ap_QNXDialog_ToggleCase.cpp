@@ -141,6 +141,7 @@ static ToggleCase *find_entry(ToggleCase match) {
 
 PtWidget_t * AP_QNXDialog_ToggleCase::_constructWindow(void)
 {
+#if 0 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	PtWidget_t *window, *widget;
 	PtWidget_t *vboxMain;
@@ -233,6 +234,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	return window;
+#endif
 }
 
 void AP_QNXDialog_ToggleCase::setFinalAnswer(AP_Dialog_ToggleCase::tAnswer ans) {

@@ -264,13 +264,12 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_WordCount_WordCountTitle), 0);
-	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_WordCount",_(AP,DLG_WordCount_WordCountTitle)); 
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_WordCount",pSS,AP_STRING_ID_DLG_WordCount_WordCountTitle); 
 	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	SetupContextHelp(m_windowMain,this);
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpStorage"),Pt_ARG_TITLE,"honken",0);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpStorage"),Pt_ARG_TITLE,"WordCount",0);
 
 	m_pAutocheck = abiPhabLocateWidget(m_windowMain,"toggleAupdate");
 		PtAddCallback(m_pAutocheck,Pt_CB_ACTIVATE,s_autoupdate_clicked,this);
@@ -278,40 +277,40 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 		PtAddCallback(m_pAutospin,Pt_CB_NUMERIC_CHANGED,s_autospinner_changed,this);
 
 	/* Pages */
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblPages"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Pages )), 0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblPages"),pSS,AP_STRING_ID_DLG_WordCount_Pages);
 	m_labelPgCount = abiPhabLocateWidget(m_windowMain,"lblNumPages");
 
 	/* Words */
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblWords"), Pt_ARG_TEXT_STRING,_(AP,DLG_WordCount_Words ), 0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblWords"), pSS,AP_STRING_ID_DLG_WordCount_Words );
 	m_labelWCount = abiPhabLocateWidget(m_windowMain,"lblNumWords");
 	
 	/* Characters (no spaces) */
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblCharNoSpace"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Characters_No )), 0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblCharNoSpace"), pSS, (AP_STRING_ID_DLG_WordCount_Characters_No ));
 
 	m_labelCNCount = abiPhabLocateWidget(m_windowMain,"lblNumCharsNoSpace");
 
 	/* Characters (spaces) */
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblCharWithSpace"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Characters_Sp )), 0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblCharWithSpace"), pSS, (AP_STRING_ID_DLG_WordCount_Characters_Sp ));
 
 	m_labelCCount = abiPhabLocateWidget(m_windowMain,"lblNumCharsWithSpace"); 
 
 	/* Paragraphs */
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblParagraphs"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Paragraphs )), 0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblParagraphs"), pSS, (AP_STRING_ID_DLG_WordCount_Paragraphs ));
 
 	m_labelPCount = abiPhabLocateWidget(m_windowMain,"lblNumParagraphs");
 
 	/* Lines */
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblLines"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Lines )), 0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblLines"), pSS, (AP_STRING_ID_DLG_WordCount_Lines ));
 
 	m_labelLCount = abiPhabLocateWidget(m_windowMain,"lblNumLines"); 
 
 	/* Close button */	
 	buttonUpdate = abiPhabLocateWidget(m_windowMain,"btnUpdate");
-	PtSetResource(buttonUpdate, Pt_ARG_TEXT_STRING, _(XAP,DLG_Update), 0);
+	localizeLabel(buttonUpdate, pSS, XAP_STRING_ID_DLG_Update);
 	PtAddCallback(buttonUpdate, Pt_CB_ACTIVATE, s_update_clicked, this);
 
 	buttonOK = abiPhabLocateWidget(m_windowMain,"btnClose");
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_Close);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	return m_windowMain;
