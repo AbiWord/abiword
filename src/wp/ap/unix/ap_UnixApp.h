@@ -74,26 +74,26 @@ public:
 	  Sets the view selection
 	  \param pView The veiw the selection view is to be set to.
 	*/
-        inline virtual void                             setViewSelection( AV_View * pView)
-	  { m_pViewSelection = pView; }
+	inline virtual void                             setViewSelection( AV_View * pView)
+	{ m_pViewSelection = pView; }
 
 	/*!
 	  Gets the View Selection
 	  \return The View currently selected.
 	*/
 	inline virtual AV_View *                        getViewSelection(void)
-	  { return m_pViewSelection; }
+	{ return m_pViewSelection; }
 	virtual void					clearSelection(void);
 	virtual bool					getCurrentSelection(const char** formatList,
-									    void ** ppData, UT_uint32 * pLen,
-									    const char **pszFormatFound);
+														void ** ppData, UT_uint32 * pLen,
+														const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
 	void                                             catchSignals(int sig_num);
 #ifdef ABI_OPT_JS
-	void											perlEvalFile(const char * filename);
+	virtual void									perlEvalFile(const char * filename);
 	PerlInterpreter *								getPerlInterp();
 #endif
 

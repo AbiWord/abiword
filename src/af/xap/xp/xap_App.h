@@ -143,6 +143,11 @@ public:
 
 	virtual XAP_Module * createModule (void) = 0;
 
+#ifdef ABI_OPT_JS
+	// HACK: I don't think that perlEvalFile belongs to App
+	virtual void					perlEvalFile(const char * filename) = 0;
+#endif
+	
 protected:
 	void							_setAbiSuiteLibDir(const char * sz);
 	virtual void					_printUsage(void);   

@@ -45,9 +45,9 @@ public:
 	const EV_Toolbar_LabelSet * getToolbarLabelSet(void) const;
 
 	bool invokeToolbarMethod(AV_View * pView,
-								EV_EditMethod * pEM,
-								UT_UCSChar * pData,
-								UT_uint32 dataLength);
+							 EV_EditMethod * pEM,
+							 UT_UCSChar * pData,
+							 UT_uint32 dataLength);
 
 	virtual bool synthesize(void) { return (false); } // Abstract
 	virtual void show(void) {} // It must be abstract, but I don't want to screw

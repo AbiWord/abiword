@@ -39,18 +39,13 @@ abi - Perl extension for AbiWord
 
 =head1 SYNOPSIS
 
-  use abi;
-  $frame = abi::openFile("blah.abw");
-  $view = abi::getCurrentViewFromFrame($frame);
-  abi::insertData($view, "Hello world!");
+  $frame = abi::XAP_Frame::openFile("blah.abw");
+  $view = $frame->getCurrentView;
+  $view->write("Hello world!");
 
 =head1 DESCRIPTION
 
-Stub documentation for abi, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
-
-Blah blah blah.
+Perl bindings to AbiWord.
 
 =head2 EXPORT
 

@@ -86,6 +86,11 @@
 #	include "tb_view_showpara.xpm"
 #	include "tb_text_fgcolor.xpm"
 #	include "tb_text_bgcolor.xpm"
+
+#ifdef ABI_OPT_JS
+#	include "tb_script_play.xpm"
+#endif
+
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
@@ -175,6 +180,9 @@
 	DefineToolbarIcon(tb_view_showpara_xpm)
 	DefineToolbarIcon(tb_text_fgcolor_xpm)
 	DefineToolbarIcon(tb_text_bgcolor_xpm)
+#ifdef ABI_OPT_JS
+	DefineToolbarIcon(tb_script_play_xpm)
+#endif
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

@@ -127,7 +127,11 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	// AV_CHG_ALL, below, doesn't seem right.  TODO
 	_s(AP_TOOLBAR_ID_LISTS_BULLETS,		EV_TBIT_ToggleButton,	"doBullets",	AV_CHG_ALL,		ap_ToolbarGetState_Bullets	);
 	_s(AP_TOOLBAR_ID_LISTS_NUMBERS,		EV_TBIT_ToggleButton,	"doNumbers",	AV_CHG_ALL,		ap_ToolbarGetState_Numbers	);
-	
+
+#ifdef ABI_OPT_JS
+	_s(AP_TOOLBAR_ID_SCRIPT_PLAY,	EV_TBIT_PushButton,	"scriptPlay",		AV_CHG_ALL,			NULL);
+#endif
+
 	// ... add others here ...
 #ifdef BIDI_ENABLED
 	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	EV_TBIT_ToggleButton,	"toggleDirOverrideLTR",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);

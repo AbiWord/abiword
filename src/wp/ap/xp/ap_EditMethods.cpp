@@ -457,6 +457,8 @@ public:
 	static EV_EditMethod_Fn insAutotext_email_5;
 	static EV_EditMethod_Fn insAutotext_email_6;
 
+	static EV_EditMethod_Fn scriptPlay;
+
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -714,6 +716,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(replaceChar),			_D_,	""),
 
 	// s
+#ifdef ABI_OPT_JS
+	EV_EditMethod(NF(scriptPlay),			0,	""),
+#endif
 	EV_EditMethod(NF(scrollLineDown),		0,	""),
 	EV_EditMethod(NF(scrollLineLeft),		0,	""),
 	EV_EditMethod(NF(scrollLineRight),		0,	""),
@@ -852,10 +857,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 EV_EditMethodContainer * AP_GetEditMethods(void)
 {
-       // Construct a container for all of the methods this application
-       // knows about.
+	// Construct a container for all of the methods this application
+	// knows about.
 
-       return new EV_EditMethodContainer(NrElements(s_arrayEditMethods),s_arrayEditMethods);
+	return new EV_EditMethodContainer(NrElements(s_arrayEditMethods),s_arrayEditMethods);
 }
 
 #undef _D_
@@ -1079,10 +1084,10 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 #define BAD_FILETYPE ((UT_sint32)(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) - 1)
 
 static bool s_AskForPathname(XAP_Frame * pFrame,
-								bool bSaveAs,
-								const char * pSuggestedName,
-								char ** ppPathname,
-								IEFileType * ieft)
+							 bool bSaveAs,
+							 const char * pSuggestedName,
+							 char ** ppPathname,
+							 IEFileType * ieft)
 {
 	// raise the file-open or file-save-as dialog.
 	// return a_OK or a_CANCEL depending on which button
@@ -6473,6 +6478,24 @@ Defun(insAutotext_subject_1)
   return _insAutotext(static_cast<FV_View *>(pAV_View), 
 		      AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }
+
+#ifdef ABI_OPT_JS
+Defun(scriptPlay)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	char * pNewFile = NULL;
+	IEFileType ieft = (IEFileType)BAD_FILETYPE;
+	bool bOK = s_AskForPathname(pFrame, false, NULL, &pNewFile, &ieft);
+
+	if (!bOK || !pNewFile)
+		return false;
+
+	pFrame->getApp()->perlEvalFile(pNewFile);
+	return true;
+}
+#endif
 
 Defun(dlgBackground)
 {

@@ -101,6 +101,14 @@ write(pView, pszText)
 MODULE = abi		PACKAGE = abi::XAP_Frame
 
 XAP_Frame *
+getLastFocussed()
+	CODE:
+		RETVAL = XAP_App::getApp()->getLastFocussedFrame();
+		printf("getLastFocussed\n");
+	OUTPUT:
+		RETVAL
+
+XAP_Frame *
 openFile(pszFilename)
 	const char *pszFilename
 	CODE:

@@ -185,7 +185,7 @@ PerlInterpreter *AP_UnixApp::getPerlInterp()
 {
 	if (m_pPerlInstance == 0)
 	{
-		char *argv[] = { "", "-Mabi", "-e", "0" };
+		char *argv[] = { "", "-Mabi", "-MGtk", "-e", "0" };
 		m_pPerlInstance = perl_alloc();
 		perl_construct(m_pPerlInstance);
 		perl_parse(m_pPerlInstance, xs_init, 4, argv, (char **)NULL);

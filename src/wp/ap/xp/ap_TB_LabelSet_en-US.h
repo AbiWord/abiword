@@ -100,6 +100,10 @@ BeginSet(en,US,true)
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Increase indent",	tb_text_indent_xpm, 	NULL, "Increase indent")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Decrease indent",	tb_text_unindent_xpm,	NULL, "Decrease indent")
 
+#ifdef ABI_OPT_JS
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Ex. script",	tb_script_play_xpm,		NULL, "Execute script")
+#endif
+
      // ... add others here ...
 #ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Force text LTR",		tb_text_direction_ltr_xpm,	NULL, "Force LTR direction of text")
