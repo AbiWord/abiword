@@ -1129,12 +1129,11 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		iStyle = static_cast<UT_sint32>(_getStyleNumber(szStyle));
 		getDoc()->getStyle(szStyle,&pStyle);
 		pADStyle = new s_RTF_AttrPropAdapter_Style(pStyle);
-		_rtf_keyword("cf",iStyle);
 //
 // OK now we have to make sure all these character props aren't in the style
 //
 	}
-#endif	
+#endif
 	const XML_Char * szColor = _getStyleProp(pADStyle,&apa,"color");
 
 	UT_sint32 ndxColor = -1;

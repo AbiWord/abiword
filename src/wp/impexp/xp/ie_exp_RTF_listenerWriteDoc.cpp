@@ -38,6 +38,7 @@
 #include "ie_exp_RTF_listenerWriteDoc.h"
 #include "ie_exp_RTF_AttrProp.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "pf_Frag_Strux.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
@@ -550,18 +551,72 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
-
-	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
-	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
+    
+    const PP_AttrProp * pDeepestAP = NULL; // the one that is the most local
+    
+    bool bHaveSpanProps = 0;
+	bool bHaveSectionProps = m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
+    bool bHaveBlockProps = m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 	if(pInSpanAP == NULL)
 	{
-		m_pDocument->getAttrProp(apiSpan,&pSpanAP);
+        bHaveSpanProps = m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 	}
 	else
 	{
 		pSpanAP = pInSpanAP;
 	}
 
+    if (bHaveSpanProps && (0 != pSpanAP)) 
+	{
+        pDeepestAP = pSpanAP;
+    }
+    else if (bHaveBlockProps  && (0 != pBlockAP)) 
+	{
+        pDeepestAP = pBlockAP;
+    }
+    else if (bHaveSectionProps && (0 != pSectionAP)) 
+	{
+        pDeepestAP = pSectionAP;
+    }
+    
+    if (NULL != pDeepestAP) 
+	{
+		const XML_Char * styleSzValue = 0;
+		bool have_style  = pDeepestAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 
+													 styleSzValue);
+        if (!have_style) 
+		{
+            if (bHaveBlockProps && (0 != pBlockAP)) 
+			{
+                have_style = pBlockAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 
+													 styleSzValue);
+            }
+        }
+        if (!have_style) 
+		{
+            if (bHaveSectionProps && (0 != pSectionAP)) 
+			{
+                have_style = pSectionAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 													   styleSzValue);
+            }
+        }
+        
+        if (have_style) 
+		{
+            int styleID = m_pie->_getStyleNumber(styleSzValue);
+            char* styleType = "s";
+            
+            //get the style from the styleName
+            PD_Style* pStyle = NULL;
+			m_pDocument->getStyle(styleSzValue,&pStyle);
+            UT_ASSERT(pStyle);
+            if (pStyle,pStyle->isCharStyle()) 
+			{
+                styleType = "cs";
+            }
+            m_pie->_rtf_keyword(styleType, styleID);
+        }
+    }
+   
 	m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 	m_bBlankLine = false;
 	m_bInSpan = true;
@@ -1046,7 +1101,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	}
 	PL_StruxFmtHandle sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
 	fl_Layout * pL = const_cast<fl_Layout *>(reinterpret_cast<const fl_Layout *>(sfh));
-	if(pL->getType() != PTX_Block)
+	if(pL && pL->getType() != PTX_Block)
 	{
 	  UT_return_val_if_fail(0, NULL);
 	}

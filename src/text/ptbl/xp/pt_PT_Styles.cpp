@@ -321,7 +321,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return true;		// silently ignore unnamed styles
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Appending style %s \n",szName));
+	UT_DEBUGMSG(("STYLE: Appending style %s \n",szName));
 	PD_Style * pStyle = NULL;
 	if (getStyle(szName,&pStyle) == true)
 	{
@@ -341,7 +341,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	{
 		// this is a new name
 		pStyle = new PD_Style(this, indexAP, szName);
-		xxx_UT_DEBUGMSG(("SEVIOR: Creating new style %s \n",szName));
+		UT_DEBUGMSG(("STYLE: Creating new style %s saving in hash \n",szName));
 
 //
 // TODO: Learn how to use Dom's AbiObject instead of this hack.
