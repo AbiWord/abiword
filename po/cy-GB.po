@@ -1,14 +1,16 @@
+# translation of cy-GB.po to Cymraeg/Welsh
 # Comments:Raphael Finkel <raphael@cs.uky.edu>, 2003.
+# Rhoslyn Prys <rhoslyn.prys@meddal.org.uk>, 2003
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Abiword VERSION\n"
+"Project-Id-Version: cy-GB\n"
 "POT-Creation-Date: 2003-01-24 15:05-0500\n"
-"PO-Revision-Date: 2003-01-30 17:49-0000\n"
+"PO-Revision-Date: 2003-06-22 15:36-0000\n"
 "Last-Translator: Rhoslyn Prys <rhoslyn.prys@meddal.org.uk>\n"
-"Language-Team: Cymraeg/Welsh <en@li.org>\n"
+"Language-Team: Cymraeg/Welsh <rhoslyn.prys@meddal.org.uk>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-14\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #.
@@ -77,21 +79,22 @@ msgstr ""
 #. MENU_STATUSLINE_AUTOTEXT_EMAIL_5
 #. MENU_STATUSLINE_AUTOTEXT_EMAIL_6
 #: po/tmp/ap_String_Id.h.h:67
-#, fuzzy
 msgid " "
-msgstr ""
+msgstr "."
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h.h:69
-msgid " - Reserved. \n"
+msgid ""
+" - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr " - Wedi ei Neilltuo. \n"
+msgstr ""
+" - Wedi ei Neilltuo. \n"
 " Nid oes modd defnyddio'r enw hwn. Dewiswch un arall \n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:71
 msgid " Auto Update"
-msgstr " Awtoddiweddaru"
+msgstr " Awtodiweddaru"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:73
@@ -174,7 +177,7 @@ msgstr ""
 #. MENU_LABEL_FILE_RECENT_1
 #. MENU_LABEL_WINDOW_1
 #: po/tmp/ap_String_Id.h.h:124
-#, c-format
+#, c-format 
 msgid "&1 %s"
 msgstr "&1 %s"
 
@@ -314,12 +317,12 @@ msgstr "&Cadw'r Cynllun hwn yn awtomatig"
 #. MENU_LABEL_INSERT_AUTOTEXT
 #: po/tmp/ap_String_Id.h.h:181
 msgid "&Autotext"
-msgstr "&Awtodestun"
+msgstr "&Awtotestun"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h.h:183
 msgid "&Available formats:"
-msgstr "&Fformatiau ar gael:"
+msgstr "&Fformatau ar gael:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h.h:185
@@ -374,7 +377,7 @@ msgstr "&Colofnau"
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:205
 msgid "&Copy"
-msgstr "&Copio"
+msgstr "&Copïo"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:207
@@ -708,7 +711,7 @@ msgstr "&Gosodiad Argraffu"
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:340
 msgid "&Redo"
-msgstr "&Ailwneud"
+msgstr "&Ail-wneud"
 
 #. MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:342
@@ -854,7 +857,7 @@ msgstr "&Tanlinellu"
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:399
 msgid "&Undo"
-msgstr "&Dad-wneud"
+msgstr "&Dadwneud"
 
 #. DLG_Options_Label_ViewUnits
 #. DLG_PageSetup_Units
@@ -1000,9 +1003,11 @@ msgstr "Mae Abiword wedi gorffen chwilio'r ddogfen."
 #. DLG_DlFile_Status
 #: po/tmp/ap_String_Id.h.h:462
 #, c-format
-msgid "Abiword is now downloading %s from:\n"
+msgid ""
+"Abiword is now downloading %s from:\n"
 "%s"
-msgstr "Mae Abiword yn llwytho %s i lawr o:\n"
+msgstr ""
+"Mae Abiword yn llwytho %s i lawr o:\n"
 "%s"
 
 #. MENU_LABEL_HELP_ABOUT_GNU
@@ -1045,7 +1050,7 @@ msgstr "Ychwanegu colofn i'r tabl wedi'r golofn bresennol"
 #. TOOLBAR_TOOLTIP_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:480
 msgid "Add a row to this table after the current row"
-msgstr "Ychwanegu rhes i'r tabl wedi'r rhes presennol"
+msgstr "Ychwanegu rhes i'r tabl wedi'r rhes bresennol"
 
 #. MENU_STATUSLINE_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:482
@@ -1075,7 +1080,7 @@ msgstr "Ychwanegu'r gair i'r geiriadur personol"
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:492
 msgid "Add to template"
-msgstr "Ychwanegu i'r templad"
+msgstr "Ychwanegu i'r templed"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h.h:494
@@ -1106,12 +1111,12 @@ msgstr "Popeth"
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:504
 msgid "Allow Custom Toolbars"
-msgstr "Caniatau Barrau Offer Addasu"
+msgstr "Caniatáu Barrau Offer Addasu"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:506
 msgid "Allow screen colors other than white"
-msgstr "Caniatau lliwiau sgrin heblaw gwyn"
+msgstr "Caniatáu lliwiau sgrîn heblaw gwyn"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:508
@@ -1128,7 +1133,7 @@ msgstr "Gosod"
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:513
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Gosod fformat y paragraff copiwyd ynghynt ar y testun yma"
+msgstr "Gosod fformat y paragraff copïwyd ynghynt ar y testun yma"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:515
@@ -1372,7 +1377,7 @@ msgstr "Bwledi"
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:613
 msgid "Bullets and &Numbering"
-msgstr "Bwledi a &Rhifo"
+msgstr "Bwledi a Rhifo"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:615
@@ -1474,9 +1479,11 @@ msgstr "Newid Maint"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:656
-msgid "Change Current \n"
+msgid ""
+"Change Current \n"
 "List"
-msgstr "Newid y Rhestr \n"
+msgstr ""
+"Newid y Rhestr \n"
 "Gyfredol"
 
 #. DLG_Background_TitleHighlight
@@ -1602,7 +1609,7 @@ msgstr "Dewis"
 #. DLG_Options_Label_ChooseForTransparent
 #: po/tmp/ap_String_Id.h.h:712
 msgid "Choose Screen Color"
-msgstr "Dewis Lliw'r Sgrin"
+msgstr "Dewis Lliw'r Sgrîn"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:714
@@ -1612,7 +1619,7 @@ msgstr "Dewis Templad"
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:716
 msgid "Choose screen color for AbiWord"
-msgstr "Dewis lliw sgrin ar gyfer AbiWord"
+msgstr "Dewis lliw sgrîn ar gyfer AbiWord"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:718
@@ -1621,9 +1628,11 @@ msgstr "Dewis pa newidiadau i'w hadolygu"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:720
-msgid "Choose your target in the left side.\n"
+msgid ""
+"Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
-msgstr "Dewiswch eich targed ar yr ochr chwith.\n"
+msgstr ""
+"Dewiswch eich targed ar yr ochr chwith.\n"
 "Os ydych am ddefnyddio'r botwm \"Mynd i\", yna llanwch y Cofnod Rhif gyda'ch rhif.  Medrwch ddefnyddio + a - i'w newid.\t H.y., os ydych am ysgrifennu \"+2\" a dewis \"Llinell\", bydd \"Mynd i\" yn mynd â chi dwy linell o dan eich safle presennol."
 
 #. MENU_LABEL_EDIT_CLEAR
@@ -1947,6 +1956,11 @@ msgstr "Dyddiad rhagosodedig (heb amser)"
 #: po/tmp/ap_String_Id.h.h:851
 msgid "Default date representation"
 msgstr "Cynrychioliad dyddiad rhagosodedig"
+
+#. DLG_Options_Label_DefLangForDocs
+#: po/tmp/ap_String_Id.h.h:853
+msgid "Default language for documents"
+msgstr "Iaith rhagosodedig dogfennau"
 
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:855
@@ -2480,7 +2494,7 @@ msgstr "Fformatio Tabl"
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:1075
 msgid "Format Toolbar"
-msgstr "Fformatio Bar Offer"
+msgstr "Bar Offer Fformatio"
 
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:1077
@@ -2778,7 +2792,7 @@ msgstr "Mewnosod Rhesi Cyn"
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1196
 msgid "Insert Table"
-msgstr "Mewnosod Tab"
+msgstr "Mewnosod Tabbb"
 
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
@@ -2820,7 +2834,7 @@ msgstr "Mewnosod symbol neu nod arbennig arall"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1215
-msgid "Insert a footnote"
+msgid "Insert an Footnote"
 msgstr "Mewnosod Troednodyn"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
@@ -3297,16 +3311,20 @@ msgstr "Rhestr Label Newydd"
 
 #. DLG_Lists_New_List_Type
 #: po/tmp/ap_String_Id.h.h:1415
-msgid "New List \n"
+msgid ""
+"New List \n"
 "Type"
-msgstr "Rhestr Newydd\n"
+msgstr ""
+"Rhestr Newydd\n"
 "Math"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h.h:1417
-msgid "New Starting \n"
+msgid ""
+"New Starting \n"
 "Value"
-msgstr "Cychwyn Newydd\n"
+msgstr ""
+"Cychwyn Newydd\n"
 "Gwerth"
 
 #. DLG_Styles_NewTitle
@@ -3331,9 +3349,11 @@ msgstr "Dim Ffeil"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1427
-msgid "No Style selected \n"
+msgid ""
+"No Style selected \n"
 " so it cannot be modified"
-msgstr "Heb ddewis Arddull \n"
+msgstr ""
+"Heb ddewis Arddull \n"
 " felly does dim modd ei newid"
 
 #. SCRIPT_NOSCRIPTS
@@ -3801,7 +3821,7 @@ msgstr "Ailwneud"
 #. TOOLBAR_TOOLTIP_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1635
 msgid "Redo editing"
-msgstr "Dad-wneud y golygu"
+msgstr "Dadwneud y golygu"
 
 #. MENU_STATUSLINE_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1637
@@ -3869,7 +3889,7 @@ msgstr "Tynnu'r Pennawd o'r dudalen hon o'r Ddogfen"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:1667
 msgid "Remove the suggested change"
-msgstr "Tynnu'r neiwdiadau awgrymwyd"
+msgstr "Tynnu'r newidiadau awgrymwyd"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
@@ -3935,7 +3955,7 @@ msgstr "Ailgychwyn rhifo yn:"
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1694
 msgid "Resume Previous List"
-msgstr "Ail-gychwyn y Rhestr Flaenorol"
+msgstr "Ailgychwyn y Rhestr Flaenorol"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1696
@@ -4052,7 +4072,7 @@ msgstr "Cadw &Fel"
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1742
 msgid "Save &Template"
-msgstr "Cadw &Templad"
+msgstr "Cadw &Templed"
 
 #. TOOLBAR_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1744
@@ -4075,7 +4095,7 @@ msgstr "Cadw'r ddogfen"
 #. MENU_STATUSLINE_FILE_SAVE_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1752
 msgid "Save the document as a template"
-msgstr "Cadw'r ddogfen fel templad"
+msgstr "Cadw'r ddogfen fel templed"
 
 #. MENU_STATUSLINE_FILE_SAVEAS
 #. TOOLBAR_STATUSLINE_FILE_SAVEAS
@@ -4092,7 +4112,7 @@ msgstr "Cadw'r ddogfen heb newid yr enw presennol"
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
 #: po/tmp/ap_String_Id.h.h:1760
 msgid "Save the selected image to a file"
-msgstr "Cadw'r delwedd i ffeil"
+msgstr "Cadw'r ddelwedd i ffeil"
 
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1762
@@ -4349,7 +4369,7 @@ msgstr "Trefnu Tabl"
 #. DLG_MetaData_Source_LBL
 #: po/tmp/ap_String_Id.h.h:1864
 msgid "Source:"
-msgstr "Ffynhonell"
+msgstr "Ffynhonnell"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:1866
@@ -4403,7 +4423,7 @@ msgstr "Hollti &Tabl"
 #. MENU_STATUSLINE_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1888
 msgid "Split Cells"
-msgstr "Hollti Celledd"
+msgstr "Hollti Celloedd"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:1890
@@ -4425,7 +4445,7 @@ msgstr "Hollti'r gell"
 #: po/tmp/ap_String_Id.h.h:1897
 #: po/tmp/xap_String_Id.h.h:554
 msgid "Square List"
-msgstr "Rhestr Sgwar"
+msgstr "Rhestr Sgwâr"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:1899
@@ -4704,9 +4724,11 @@ msgstr "Mae'r paragraff yn cynrychioli geiriau fel byddant yn ymddangos yn eich 
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2014
-msgid "This style does not exist \n"
+msgid ""
+"This style does not exist \n"
 " so it cannot be modified"
-msgstr "Nid yw'r arddull hwn yn bodoli\n"
+msgstr ""
+"Nid yw'r arddull hwn yn bodoli\n"
 "felly nid oes modd ei newid"
 
 #. DLG_Column_Three
@@ -4789,7 +4811,7 @@ msgstr "Math"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2047
 msgid "Type a name for the bookmark, or select existing one from the list."
-msgstr "Teipiwch enw ar gyfer y nod tudalen, neu ddewiswch un o'r rhestr."
+msgstr "Teipiwch enw ar gyfer y nod tudalen, neu dewiswch un o'r rhestr."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:2049
@@ -4817,14 +4839,14 @@ msgstr "Tanlinellu'r dewis (newid)"
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2059
 msgid "Undo"
-msgstr "Dad-wneud"
+msgstr "Dadwneud"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2063
 msgid "Undo editing"
-msgstr "Dad-wneud y golygu"
+msgstr "Dadwneud y golygu"
 
 #. DLG_Lists_Upper_Case_List
 #: po/tmp/ap_String_Id.h.h:2065
@@ -4836,7 +4858,7 @@ msgstr "Rhestr Prif Lythrennau"
 #: po/tmp/ap_String_Id.h.h:2067
 #: po/tmp/xap_String_Id.h.h:644
 msgid "Upper Roman List"
-msgstr "Rhestr Rhufeinig Uwch"
+msgstr "Rhestr Rufeinig Uwch"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2069
@@ -4846,7 +4868,7 @@ msgstr "Defnyddiwch drefn RTL"
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2071
 msgid "Use glyph shaping for Hebrew"
-msgstr "Defnyddiwch siapio glyffau ar gyfer yr Hebraeg"
+msgstr "Defnyddiwch siapio glyffiau ar gyfer yr Hebraeg"
 
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2073
@@ -4856,7 +4878,7 @@ msgstr "Iaith Rhyngwyneb y Defnyddiwr"
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2075
 msgid "User-defined styles"
-msgstr "Arddulliau defnyddiwr ddiffinedig"
+msgstr "Arddulliau defnyddiwr ddiffiniedig"
 
 #. AUTOTEXT_MAIL_6
 #: po/tmp/ap_String_Id.h.h:2077
@@ -4887,7 +4909,7 @@ msgstr "Golwg"
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:2087
 msgid "View the document in full screen mode"
-msgstr "Edrych ar y ddogfen mewn sgrin lawn"
+msgstr "Edrych ar y ddogfen mewn sgrîn lawn"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:2089
@@ -4908,7 +4930,7 @@ msgstr "Yn y golwg"
 #: po/tmp/ap_String_Id.h.h:2095
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr "Rhybydd: nid yw'r nod tudalen [%s] a roddwyd yn bod "
+msgstr "Rhybudd: nid yw'r nod tudalen [%s] a roddwyd yn bod "
 
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:2097
@@ -5271,7 +5293,7 @@ msgstr "Basg"
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:85
 msgid "Belarusian"
-msgstr "Belarwseg"
+msgstr "Belaswseg"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:87
@@ -5351,7 +5373,7 @@ msgstr "Tseineëg (Singapore)"
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:125
 msgid "Chinese (Taiwan)"
-msgstr "Tseineeg (Taiwan)"
+msgstr "Tsieinëeg (Taiwan)"
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:127
@@ -5381,7 +5403,7 @@ msgstr "Tseinëeg Traddodiadol, BIG5"
 #. ENC_CHTR_BIG5HKSCS
 #: po/tmp/xap_String_Id.h.h:137
 msgid "Chinese Traditional, BIG5-HKSCS"
-msgstr "Tseineëg Tradddiadol, BIG5-HKSCS"
+msgstr "Tseineëg Traddodiadol, BIG5-HKSCS"
 
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:139
@@ -5421,7 +5443,7 @@ msgstr "Lliw:"
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:153
 msgid "Copies: "
-msgstr "Copiau: "
+msgstr "Copïau: "
 
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h.h:155
@@ -5443,7 +5465,7 @@ msgstr "Methu gweithredu/llwytho atodyn"
 msgid "Could not deactivate plugin"
 msgstr "Methu atal yr atodyn"
 
-#. SPELL_CANTLOAD_DICT
+#. DICTIONARY_CANTLOAD
 #: po/tmp/xap_String_Id.h.h:163
 #, c-format
 msgid "Could not load the dictionary for the %s language"
@@ -5558,12 +5580,12 @@ msgstr "Amgodio:"
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:213
 msgid "Endnote Reference"
-msgstr "Cyfeiiriad Diweddnod"
+msgstr "Cyfeiriad Diweddnod"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:215
 msgid "Endnote Text"
-msgstr "Testn Diweddnod"
+msgstr "Testun Diweddnod"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:217
@@ -5628,7 +5650,7 @@ msgstr "Allforio fel HTML 4.01"
 #. DLG_HTMLOPT_ExpAbiWebDoc
 #: po/tmp/xap_String_Id.h.h:241
 msgid "Export with PHP instructions"
-msgstr "Allfrio gda cyfarwyddiadau PHP"
+msgstr "Allforio gyda chyfarwyddiadau PHP"
 
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:243
@@ -5694,7 +5716,7 @@ msgstr "Ffrangeg (Ffrainc)"
 #. LANG_FR_CH
 #: po/tmp/xap_String_Id.h.h:271
 msgid "French (Switzerland)"
-msgstr "Ffrangeg (Y Swisdir)"
+msgstr "Ffrangeg (Y Swistir)"
 
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:273
@@ -5739,7 +5761,7 @@ msgstr "Almaeneg (Yr Almaen)"
 #. LANG_DE_CH
 #: po/tmp/xap_String_Id.h.h:289
 msgid "German (Switzerland)"
-msgstr "Almaeneg (Y Swisdir)"
+msgstr "Almaeneg (Y Swistir)"
 
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:291
@@ -5849,9 +5871,11 @@ msgstr "Hwngareg"
 #. DLG_HashDownloader_AskDownload
 #: po/tmp/xap_String_Id.h.h:337
 #, c-format
-msgid "I could not find a dictionary for %s.\n"
+msgid ""
+"I could not find a dictionary for %s.\n"
 "Would you like me to try downloading it from the internet?"
-msgstr "Methu canfod geiriadur ar gyfer %s.\n"
+msgstr ""
+"Methu canfod geiriadur ar gyfer %s.\n"
 "Hoffech chi ei lwyth i lawr o'r rhyngrwyd?"
 
 #. DLG_HashDownloader_DictNotAvailable
@@ -5861,16 +5885,20 @@ msgstr "Nid yw'r geiriadur hwnnw ar gael"
 
 #. DLG_HashDownloader_DictNotForThis
 #: po/tmp/xap_String_Id.h.h:341
-msgid "I'm sorry. The wanted dictionary is not available for this release.\n"
+msgid ""
+"I'm sorry. The wanted dictionary is not available for this release.\n"
 "Please consider upgrading AbiWord."
-msgstr "Nid yw'r geiriadur ar gael ar gyfer y rhyddhad hwn.\n"
+msgstr ""
+"Nid yw'r geiriadur ar gael ar gyfer y rhyddhad hwn.\n"
 "Ystyriwch uwchraddio Abiword"
 
 #. DLG_HashDownloader_FeatureDisabledForThis
 #: po/tmp/xap_String_Id.h.h:343
-msgid "I'm sorry. This feature is disabled for this release.\n"
+msgid ""
+"I'm sorry. This feature is disabled for this release.\n"
 "Please consider upgrading AbiWord."
-msgstr "Mae'r nodwedd wedi ei anablu ar gyfer y rhyddhad hwn.\n"
+msgstr ""
+"Mae'r nodwedd wedi ei anablu ar gyfer y rhyddhad hwn.\n"
 "Ystyriwch uwchraddio Abiword"
 
 #. DLG_HashDownloader_FeatureDisabled
@@ -5961,7 +5989,7 @@ msgstr "Eidaleg (Yr Eidal)"
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h.h:385
 msgid "Japanese"
-msgstr "Siapaneeg"
+msgstr "Siapanëeg"
 
 #. ENC_JAPN_EUC
 #: po/tmp/xap_String_Id.h.h:387
@@ -6141,7 +6169,7 @@ msgstr "Cyfrinair:"
 #. STYLE_PLAIN_TEXT
 #: po/tmp/xap_String_Id.h.h:467
 msgid "Plain Text"
-msgstr "Testn Plaen"
+msgstr "Testun Plaen"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:469
@@ -6216,7 +6244,7 @@ msgstr "Arferol"
 #. DLG_HTMLOPT_ExpRestore
 #: po/tmp/xap_String_Id.h.h:502
 msgid "Restore Settings"
-msgstr "Adfer Gsodiadau"
+msgstr "Adfer Gosodiadau"
 
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h.h:504
@@ -6226,7 +6254,7 @@ msgstr "Rwmaneg"
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:506
 msgid "Romanian, Macintosh"
-msgstr "Rwmaneg, Macintosh"
+msgstr "Romaneg, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:508
@@ -6266,7 +6294,7 @@ msgstr "Sgript:"
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h.h:522
 msgid "Section Heading"
-msgstr "Penawd Adran"
+msgstr "Pennawd Adran"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:524
@@ -6276,7 +6304,7 @@ msgstr "Dewis Amgodiad:"
 #. DLG_HTMLOPT_ExpLabel
 #: po/tmp/xap_String_Id.h.h:526
 msgid "Select HTML export options:"
-msgstr "Dewis dewisiadau allfrio HTML:"
+msgstr "Dewis dewisiadau allforio HTML:"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:528
@@ -6321,7 +6349,7 @@ msgstr "Slofeneg"
 #. DLG_HashDownloader_DictlistDLFail
 #: po/tmp/xap_String_Id.h.h:544
 msgid "Sorry! I seem unable to download the dictionary-list."
-msgstr "Methu llwytho'r rhestr geriaduron!"
+msgstr "Methu llwytho'r rhestr geiriaduron!"
 
 #. DLG_HashDownloader_DictDLFail
 #: po/tmp/xap_String_Id.h.h:546
@@ -6513,7 +6541,7 @@ msgstr "Unicode UTF-8"
 #: po/tmp/xap_String_Id.h.h:638
 #, c-format
 msgid "Untitled%d"
-msgstr "Di-deitl%d"
+msgstr "Dideitl%d"
 
 #. DLG_Update
 #: po/tmp/xap_String_Id.h.h:640
@@ -6651,4 +6679,5 @@ msgstr "y geiriadur"
 #: po/tmp/xap_String_Id.h.h:698
 msgid "the dictionary-list"
 msgstr "y rhestr geiriaduron"
+
 
