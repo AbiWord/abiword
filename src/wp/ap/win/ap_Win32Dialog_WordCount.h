@@ -21,6 +21,7 @@
 #define AP_WIN32DIALOG_WORDCOUNT_H
 
 #include <commctrl.h>
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_WordCount.h"
 #include "ut_timer.h"
 #include "xap_Frame.h"
@@ -28,7 +29,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_WordCount: public AP_Dialog_WordCount
+class AP_Win32Dialog_WordCount: public AP_Dialog_WordCount, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

@@ -20,10 +20,11 @@
 #ifndef AP_WIN32DIALOG_INSERT_DATETIME_H
 #define AP_WIN32DIALOG_INSERT_DATETIME_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Insert_DateTime.h"
 #include "xap_Frame.h"
 
-class AP_Win32Dialog_Insert_DateTime : public AP_Dialog_Insert_DateTime
+class AP_Win32Dialog_Insert_DateTime : public AP_Dialog_Insert_DateTime, XAP_Win32DialogBase
 {
 public:
     AP_Win32Dialog_Insert_DateTime(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id);

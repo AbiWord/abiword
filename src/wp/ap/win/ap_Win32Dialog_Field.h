@@ -20,10 +20,11 @@
 #ifndef AP_WIN32DIALOG_FIELD_H
 #define AP_WIN32DIALOG_FIELD_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Field.h"
 #include "xap_Frame.h"
 
-class AP_Win32Dialog_Field : public AP_Dialog_Field
+class AP_Win32Dialog_Field : public AP_Dialog_Field, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Field(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id);
@@ -35,6 +36,7 @@ public:
 protected:
 	BOOL		  _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL		  _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL 			_onDeltaPos(NM_UPDOWN * pnmud) {return false;};
 private:
 	HWND m_hwndTypes;
 	HWND m_hwndFormats;

@@ -112,6 +112,7 @@
 // The sub-dialog for the TOOLBARS tab of the Preference dialog
 AP_RID_DIALOG_OPT_TOOLBARS DIALOG DISCARDABLE  0, 0, 295, 135
 STYLE WS_CHILD
+CAPTION "Toolbars"
 FONT 8, "MS Sans Serif"
 BEGIN
 	GROUPBOX		"Toolbars",AP_RID_DIALOG_OPTIONS_FRM_Toolbars,2,2,143,131
@@ -138,6 +139,7 @@ END
 // The sub-dialog for the SPELL tab of the Options dialog
 AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE	0, 0, 295, 135
 STYLE WS_CHILD
+CAPTION "Spell"
 FONT 8, "MS Sans Serif"
 BEGIN
 	GROUPBOX		"General",AP_RID_DIALOG_OPTIONS_FRM_SpellGeneral,2,2,143,
@@ -184,6 +186,7 @@ END
 // The sub-dialog for the LAYOUT tab of the Options dialog
 AP_RID_DIALOG_OPT_LAYOUT DIALOG DISCARDABLE  0, 0, 295, 135
 STYLE WS_CHILD
+CAPTION "Layout"
 FONT 8, "MS Sans Serif"
 BEGIN
 	GROUPBOX		"Show/Hide...",AP_RID_DIALOG_OPTIONS_FRM_SHOWHIDE,2,2,143,
@@ -222,6 +225,7 @@ END
 // The sub-dialog for the PREFERENCES tab of the Options dialog
 AP_RID_DIALOG_OPT_PREF DIALOG DISCARDABLE  0, 0, 295, 135
 STYLE WS_CHILD
+CAPTION "Preferences"
 FONT 8, "MS Sans Serif"
 BEGIN
 	GROUPBOX		"Preference Schemes",
@@ -261,6 +265,7 @@ END
 // The sub-dialog for the LANGUAGE tab of the Language dialog
 AP_RID_DIALOG_OPT_LANGUAGE DIALOG DISCARDABLE  0, 0, 295, 135
 STYLE WS_CHILD
+CAPTION "Language"
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "Language settings",AP_RID_DIALOG_OPTIONS_LANGSETTINGS,0,

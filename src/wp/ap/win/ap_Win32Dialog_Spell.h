@@ -20,13 +20,14 @@
 #ifndef AP_WIN32DIALOG_SPELL_H
 #define AP_WIN32DIALOG_SPELL_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Spell.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Spell: public AP_Dialog_Spell
+class AP_Win32Dialog_Spell: public AP_Dialog_Spell, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

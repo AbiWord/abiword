@@ -22,12 +22,13 @@
 #define AP_WIN32DIALOG_MARKREVISIONS_H
 
 #include "ap_Dialog_MarkRevisions.h"
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_MarkRevisions: public AP_Dialog_MarkRevisions
+class AP_Win32Dialog_MarkRevisions: public AP_Dialog_MarkRevisions, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

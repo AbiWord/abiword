@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,21 +69,13 @@ AP_Win32Dialog_MergeCells::~AP_Win32Dialog_MergeCells(void)
 
 void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);	
-	
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCTSTR lpTemplate = NULL;
-
+	UT_ASSERT(pFrame);
 	UT_ASSERT(m_id == AP_DIALOG_ID_MERGE_CELLS);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MERGECELLS);
+	setDialog(this);
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_MERGECELLS) );
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT((hWndDialog != NULL));
 }
 
 BOOL CALLBACK AP_Win32Dialog_MergeCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -128,20 +120,19 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	RECT rect;
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	m_hwndDlg = hWnd;	
 				
 	// localise controls 		
-	_DS(TEXT_LEFT,		DLG_MergeCells_Left);		
-	_DS(TEXT_RIGHT,		DLG_MergeCells_Right);		
-	_DS(TEXT_ABOVE,		DLG_MergeCells_Above);		
-	_DS(TEXT_BELOW,		DLG_MergeCells_Below);		
-	_DS(TEXT_FRAME,		DLG_MergeCells_Frame);		
-	_DSX(BTN_CANCEL,	DLG_Close);				
+	localizeControlText(AP_RID_DIALOG_MERGECELLS_BTN_CANCEL, 	XAP_STRING_ID_DLG_Close);
+	localizeControlText(AP_RID_DIALOG_MERGECELLS_TEXT_LEFT, 	AP_STRING_ID_DLG_MergeCells_Left);
+	localizeControlText(AP_RID_DIALOG_MERGECELLS_TEXT_RIGHT, 	AP_STRING_ID_DLG_MergeCells_Right);
+	localizeControlText(AP_RID_DIALOG_MERGECELLS_TEXT_ABOVE, 	AP_STRING_ID_DLG_MergeCells_Above);
+	localizeControlText(AP_RID_DIALOG_MERGECELLS_TEXT_BELOW, 	AP_STRING_ID_DLG_MergeCells_Below);
+	localizeControlText(AP_RID_DIALOG_MERGECELLS_TEXT_FRAME, 	AP_STRING_ID_DLG_MergeCells_Frame);
 				
 	// Localise caption
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_MergeCellsTitle));	
+	localizeDialogTitle(AP_STRING_ID_DLG_MergeCellsTitle);	
 	
 	// The four items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_MERGECELLS_BMP_LEFT), &rect);			
@@ -157,7 +148,7 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
     m_hBitmapBelow = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_BELOW, "MERGEBELOW", x, y, Color);
 	
 	setAllSensitivities();
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_MERGECELLS_BTN_CANCEL));
 	return 0; // 0 because we called SetFocus

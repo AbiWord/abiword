@@ -20,13 +20,14 @@
 #ifndef AP_WIN32DIALOG_REPLACE_H
 #define AP_WIN32DIALOG_REPLACE_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Replace.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Replace: public AP_Dialog_Replace
+class AP_Win32Dialog_Replace: public AP_Dialog_Replace, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

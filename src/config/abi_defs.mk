@@ -313,14 +313,16 @@ ifeq ($(OS_NAME), MACOSX)
 ABI_XAP_INCS+= /af/util/unix
 endif
 
-ABI_OTH_INCS=	/other/spell/xp \
-				/other/pango
+ABI_OTH_INCS=	/other/spell/xp
 
 ifeq ($(OS_NAME), WIN32)
-ABI_OTH_INCS+=	/../../wv/glib-wv
+#ABI_OTH_INCS+=	/../../wv/glib-wv
+ABI_OTH_INCS+=	/../../glib/glib /../../glib /../../glib/gmodule /../../pango /../../pango/pango
+GLIB_CONFIG=1
 endif
 ifeq ($(OS_NAME), MINGW32)
-ABI_OTH_INCS+=	/../../wv/glib-wv
+ABI_OTH_INCS+=	/../../glib/glib /../../glib /../../glib/gmodule /../../pango /../../pango/pango
+GLIB_CONFIG=1
 endif
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)

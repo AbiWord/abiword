@@ -33,7 +33,6 @@
 #include "ap_Win32Dialog_Columns.h"
 
 #include "gr_Win32Graphics.h"
-#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32Toolbar_Icons.h"
 
@@ -202,12 +201,12 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			GetDlgItemTextA( hWnd, wId, buf, BUFSIZE ); //!TODO Using ANSI function
 			if( atoi( buf ) > 0 && atoi(buf) != (signed) getColumns() )
 			{
 				setColumns( atoi(buf) );
 			}
-			SetDlgItemText(hWnd, wId, itoa(getColumns(),buf,10));
+			SetDlgItemTextA(hWnd, wId, itoa(getColumns(),buf,10)); //!TODO Using ANSI function
 			checkButton(AP_RID_DIALOG_COLUMN_RADIO_ONE, (getColumns()==1));
 			checkButton(AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2));
 			checkButton(AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3));
@@ -218,7 +217,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
 			char buf[BUFSIZE];
-			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			GetDlgItemTextA( hWnd, wId, buf, BUFSIZE ); //!TODO Using ANSI function
 			setSpaceAfter( buf );
 			setControlText(wId, getSpaceAfterString());
 		}
@@ -228,7 +227,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
 			char buf[BUFSIZE];
-			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			GetDlgItemTextA( hWnd, wId, buf, BUFSIZE ); //!TODO Using ANSI function
 			setMaxHeight( buf );
 			setControlText( wId, getHeightString());
 		}

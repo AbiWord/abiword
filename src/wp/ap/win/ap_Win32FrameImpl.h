@@ -132,8 +132,8 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	#define MAXDOCWNDCLSNMSIZE 256
 	#define MAXCNTWNDCLSNMSIZE 256
-	static char s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
-	static char s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
+	static TCHAR s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
+	static TCHAR s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
 };
 
 #endif /* AP_WIN32FRAMEIMPL_H */

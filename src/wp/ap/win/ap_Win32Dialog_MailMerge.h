@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2003 Jordi Mas i Hernàdez, jmas@softcatala.org
+ * Copyright (C) 2003 Jordi Mas i Hernï¿½dez, jmas@softcatala.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,12 +20,13 @@
 #ifndef AP_WIN32DIALOG_MAILMERGE_H
 #define AP_WIN32DIALOG_MAILMERGE_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_MailMerge.h"
 #include "xap_Frame.h"
 
 /*****************************************************************/
 
-class AP_Win32Dialog_MailMerge: public AP_Dialog_MailMerge
+class AP_Win32Dialog_MailMerge: public AP_Dialog_MailMerge, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_MailMerge(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

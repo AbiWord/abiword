@@ -20,13 +20,14 @@
 #ifndef AP_WIN32DIALOG_GOTO_H
 #define AP_WIN32DIALOG_GOTO_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Goto.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Goto: public AP_Dialog_Goto
+class AP_Win32Dialog_Goto: public AP_Dialog_Goto, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

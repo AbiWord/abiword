@@ -125,7 +125,7 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 			if( result != LB_ERR )
 			{
 				char buf[_MAX_PATH];
-				getListText( wId, result, buf );
+				getListText( wId, result, buf, _MAX_PATH );
 				setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, buf);
 			}
 		}

@@ -30,7 +30,6 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
-#include "xap_Win32DialogHelper.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_HdrFtr.h"
@@ -50,7 +49,6 @@ XAP_Dialog * AP_Win32Dialog_HdrFtr::static_constructor(XAP_DialogFactory * pFact
 AP_Win32Dialog_HdrFtr::AP_Win32Dialog_HdrFtr(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_HdrFtr(pDlgFactory,id), 
-      _win32Dialog(this),
       m_hThisDlg(NULL)
 {
 
@@ -63,14 +61,10 @@ AP_Win32Dialog_HdrFtr::~AP_Win32Dialog_HdrFtr(void)
 void AP_Win32Dialog_HdrFtr::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	_win32Dialog.runModal( pFrame,
-						   AP_DIALOG_ID_HDRFTR,
-                           AP_RID_DIALOG_HDRFTR,
-	         		       this );
+	UT_ASSERT(m_id == AP_DIALOG_ID_HDRFTR);
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_HDRFTR));
 }
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -81,39 +75,39 @@ BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// localize dialog title
-	_win32Dialog.setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title) );
+	localizeDialogTitle(AP_STRING_ID_DLG_HdrFtr_Title);
 
 	// localize controls
-	_DSX(HDRFTR_BTN_OK,				DLG_OK);
-	_DSX(HDRFTR_BTN_CANCEL,			DLG_Cancel);
-
-	_DS(HDRFTR_GBX_HDR,				DLG_HdrFtr_HeaderFrame);
-	_DS(HDRFTR_CHK_HDRFACING,		DLG_HdrFtr_HeaderEven);
-	_DS(HDRFTR_CHK_HDRFIRST,		DLG_HdrFtr_HeaderFirst);
-	_DS(HDRFTR_CHK_HDRLAST,			DLG_HdrFtr_HeaderLast);
-	_DS(HDRFTR_GBX_FTR,				DLG_HdrFtr_FooterFrame);
-	_DS(HDRFTR_CHK_FTRFACING,		DLG_HdrFtr_FooterEven);
-	_DS(HDRFTR_CHK_FTRFIRST,		DLG_HdrFtr_FooterFirst);
-	_DS(HDRFTR_CHK_FTRLAST,			DLG_HdrFtr_FooterLast);
-	_DS(HDRFTR_CHK_SECTION,			DLG_HdrFtr_RestartCheck);
-	_DS(HDRFTR_LBL_SECTION,			DLG_HdrFtr_RestartNumbers);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_BTN_OK, 	XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_BTN_CANCEL, 	XAP_STRING_ID_DLG_Cancel);
+	
+	localizeControlText(AP_RID_DIALOG_HDRFTR_GBX_HDR, 	AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_CHK_HDRFACING, AP_STRING_ID_DLG_HdrFtr_HeaderEven);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_CHK_HDRFIRST, 	AP_STRING_ID_DLG_HdrFtr_HeaderFirst);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_CHK_HDRLAST, 	AP_STRING_ID_DLG_HdrFtr_HeaderLast);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_GBX_FTR, 	AP_STRING_ID_DLG_HdrFtr_FooterFrame);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_CHK_FTRFACING, AP_STRING_ID_DLG_HdrFtr_FooterEven);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_CHK_FTRFIRST, 	AP_STRING_ID_DLG_HdrFtr_FooterFirst);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_CHK_FTRLAST, 	AP_STRING_ID_DLG_HdrFtr_FooterLast);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_CHK_SECTION, 	AP_STRING_ID_DLG_HdrFtr_RestartCheck);
+	localizeControlText(AP_RID_DIALOG_HDRFTR_LBL_SECTION, 	AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
 
 	// set initial state
-	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRFACING, getValue(HdrEven));
-	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRFIRST,  getValue(HdrFirst));
-	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRLAST,   getValue(HdrLast));
-	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRFACING, getValue(FtrEven));
-	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRFIRST,  getValue(FtrFirst));
-	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRLAST,   getValue(FtrLast));
-	_win32Dialog.setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, getRestartValue());
+	checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRFACING, getValue(HdrEven));
+	checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRFIRST,  getValue(HdrFirst));
+	checkButton(AP_RID_DIALOG_HDRFTR_CHK_HDRLAST,   getValue(HdrLast));
+	checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRFACING, getValue(FtrEven));
+	checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRFIRST,  getValue(FtrFirst));
+	checkButton(AP_RID_DIALOG_HDRFTR_CHK_FTRLAST,   getValue(FtrLast));
+	setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, getRestartValue());
 
 	bool bRestart = isRestart();
-	_win32Dialog.checkButton(AP_RID_DIALOG_HDRFTR_CHK_SECTION, bRestart);
-	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_LBL_SECTION, bRestart);
-	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, bRestart);
-	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, bRestart);
+	checkButton(AP_RID_DIALOG_HDRFTR_CHK_SECTION, bRestart);
+	enableControl(AP_RID_DIALOG_HDRFTR_LBL_SECTION, bRestart);
+	enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, bRestart);
+	enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, bRestart);
 	
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
+	centerDialog();			
 	return 1;
 }
 
@@ -132,14 +126,14 @@ BOOL AP_Win32Dialog_HdrFtr::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case AP_RID_DIALOG_HDRFTR_BTN_OK:
 		{
-			bool bHdrEven  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRFACING) != 0;
-			bool bHdrFirst = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRFIRST)  != 0;
-			bool bHdrLast  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRLAST)   != 0;
-			bool bFtrEven  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRFACING) != 0;
-			bool bFtrFirst = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRFIRST)  != 0;
-			bool bFtrLast  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRLAST)   != 0;
- 			bool bRestart  = _win32Dialog.isChecked(AP_RID_DIALOG_HDRFTR_CHK_SECTION)   != 0;
-			UT_sint32 val  = _win32Dialog.getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
+			bool bHdrEven  = isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRFACING) != 0;
+			bool bHdrFirst = isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRFIRST)  != 0;
+			bool bHdrLast  = isChecked(AP_RID_DIALOG_HDRFTR_CHK_HDRLAST)   != 0;
+			bool bFtrEven  = isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRFACING) != 0;
+			bool bFtrFirst = isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRFIRST)  != 0;
+			bool bFtrLast  = isChecked(AP_RID_DIALOG_HDRFTR_CHK_FTRLAST)   != 0;
+ 			bool bRestart  = isChecked(AP_RID_DIALOG_HDRFTR_CHK_SECTION)   != 0;
+			UT_sint32 val  = getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
 
 			setValue( HdrEven,  bHdrEven,  bHdrEven  != getValue(HdrEven)  );
 			setValue( HdrFirst, bHdrFirst, bHdrFirst != getValue(HdrFirst) );
@@ -154,16 +148,16 @@ BOOL AP_Win32Dialog_HdrFtr::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_HDRFTR_CHK_SECTION:
-		_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_LBL_SECTION, _win32Dialog.isChecked(wId)!=0);
-		_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, _win32Dialog.isChecked(wId)!=0);
-		_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, _win32Dialog.isChecked(wId)!=0);	
+		enableControl(AP_RID_DIALOG_HDRFTR_LBL_SECTION, isChecked(wId)!=0);
+		enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, isChecked(wId)!=0);
+		enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, isChecked(wId)!=0);	
 		return 1;
 
 	case AP_RID_DIALOG_HDRFTR_EBX_SECTION:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			UT_sint32 value = _win32Dialog.getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
-			_win32Dialog.setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, value );
+			UT_sint32 value = getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
+			setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, value );
 		}
 		return 1;
 
@@ -179,10 +173,10 @@ BOOL AP_Win32Dialog_HdrFtr::_onDeltaPos(NM_UPDOWN * pnmud)
 	{
 	case AP_RID_DIALOG_HDRFTR_SPN_SECTION:
 		{
-			UT_sint32 value = _win32Dialog.getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
+			UT_sint32 value = getControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION);
 			value -= pnmud->iDelta;
 			if( value < 0 ) value = 0;
-			_win32Dialog.setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, value );
+			setControlInt(AP_RID_DIALOG_HDRFTR_EBX_SECTION, value );
 			return 1;
 		}
 	default:

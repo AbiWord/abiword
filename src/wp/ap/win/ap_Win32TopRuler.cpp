@@ -37,7 +37,7 @@
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
-static char s_TopRulerWndClassName[256];
+static WCHAR s_TopRulerWndClassName[256];
 
 /*****************************************************************/
 
@@ -82,7 +82,7 @@ bool AP_Win32TopRuler::RegisterClass(XAP_Win32App * app)
 	ATOM a;
 	
 	// register class for the top ruler
-	sprintf(s_TopRulerWndClassName, "%sTopRuler", app->getApplicationName());
+	swprintf(s_TopRulerWndClassName, L"%sTopRuler", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);

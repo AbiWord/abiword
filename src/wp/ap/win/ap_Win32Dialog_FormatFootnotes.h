@@ -20,12 +20,13 @@
 #ifndef AP_WIN32DIALOG_STUB_H
 #define AP_WIN32DIALOG_STUB_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_FormatFootnotes.h"
 #include "xap_Frame.h"
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FormatFootnotes: public AP_Dialog_FormatFootnotes
+class AP_Win32Dialog_FormatFootnotes: public AP_Dialog_FormatFootnotes, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

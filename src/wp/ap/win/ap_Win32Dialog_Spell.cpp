@@ -67,20 +67,13 @@ void AP_Win32Dialog_Spell::runModal(XAP_Frame * pFrame)
 	// if nothing misspelled, then nothing to do
 	if (!bRes)
 		return;
-
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCTSTR lpTemplate = NULL;
-
+	UT_ASSERT(pFrame);
 	UT_ASSERT(m_id == AP_DIALOG_ID_SPELL);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_SPELL);
+	// raise the dialog
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_SPELL));
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
 }
 
 BOOL CALLBACK AP_Win32Dialog_Spell::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -112,19 +105,18 @@ BOOL AP_Win32Dialog_Spell::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle));
+	localizeDialogTitle(AP_STRING_ID_DLG_Spell_SpellTitle);
 
 	// localize controls
-	_DSX(SPELL_BTN_CANCEL,		DLG_Cancel);
-
-	_DS(SPELL_TEXT_NOT,			DLG_Spell_UnknownWord);
-	_DS(SPELL_TEXT_CHANGE,		DLG_Spell_ChangeTo);
-	_DS(SPELL_TEXT_SUGGEST,		DLG_Spell_Suggestions);
-	_DS(SPELL_BTN_IGNORE,		DLG_Spell_Ignore);
-	_DS(SPELL_BTN_IGNOREALL,	DLG_Spell_IgnoreAll);
-	_DS(SPELL_BTN_ADD,			DLG_Spell_AddToDict);
-	_DS(SPELL_BTN_CHANGE,		DLG_Spell_Change);
-	_DS(SPELL_BTN_CHANGEALL,	DLG_Spell_ChangeAll);
+	localizeControlText(AP_RID_DIALOG_SPELL_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_SPELL_TEXT_NOT,	AP_STRING_ID_DLG_Spell_UnknownWord);
+	localizeControlText(AP_RID_DIALOG_SPELL_TEXT_CHANGE,	AP_STRING_ID_DLG_Spell_ChangeTo);
+	localizeControlText(AP_RID_DIALOG_SPELL_TEXT_SUGGEST,	AP_STRING_ID_DLG_Spell_Suggestions);
+	localizeControlText(AP_RID_DIALOG_SPELL_BTN_IGNORE,	AP_STRING_ID_DLG_Spell_Ignore);
+	localizeControlText(AP_RID_DIALOG_SPELL_BTN_IGNOREALL,	AP_STRING_ID_DLG_Spell_IgnoreAll);
+	localizeControlText(AP_RID_DIALOG_SPELL_BTN_ADD,	AP_STRING_ID_DLG_Spell_AddToDict);
+	localizeControlText(AP_RID_DIALOG_SPELL_BTN_CHANGE,	AP_STRING_ID_DLG_Spell_Change);
+	localizeControlText(AP_RID_DIALOG_SPELL_BTN_CHANGEALL,	AP_STRING_ID_DLG_Spell_ChangeAll);
 
 	// remember the windows we're using 
 	m_hwndDlg = hWnd;
@@ -178,7 +170,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 		buf = new char [iLength + 1];
 		UT_UCS4_strncpy_to_char(buf, p, iLength);
 		buf[iLength] = '\0';
-		SendMessage(m_hwndSentence, WM_SETTEXT, 0, (LPARAM)buf);
+		SendMessage(m_hwndSentence, WM_SETTEXT, 0, (LPARAM)XAP_Win32App::getWideString(buf));
 		DELETEP(buf);
 	}
 	sum += iLength;
@@ -223,7 +215,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 		buf = new char [iLength + 1];
 		UT_UCS4_strncpy_to_char(buf, p, iLength);
 		buf[iLength] = '\0';
-		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)buf);
+		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)XAP_Win32App::getWideString(buf));
 		DELETEP(buf);
 	}
 
@@ -231,7 +223,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	if (!m_Suggestions->getItemCount())
 	{
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM) pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
+		SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM) XAP_Win32App::getWideString(pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions)));
 
 		m_iSelectedRow = -1;
 		_toggleChangeButtons(false);
@@ -246,7 +238,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 			{
 				buf = new char [len + 1];
 				UT_UCS4_strcpy_to_char(buf, p);
-				SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM)buf);
+				SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM)XAP_Win32App::getWideString(buf));
 				DELETEP(buf);
 			}
 		}
@@ -284,7 +276,7 @@ void AP_Win32Dialog_Spell::_suggestChange(void)
 
 		char buf[256];
 		SendMessage(m_hwndSuggest, LB_GETTEXT, m_iSelectedRow, (LPARAM)buf);
-		SendMessage(m_hwndChangeTo, WM_SETTEXT, 0, (LPARAM)buf);
+		SendMessage(m_hwndChangeTo, WM_SETTEXT, 0, (LPARAM)XAP_Win32App::getWideString(buf));
 
 		// you'd think this'd be overkill...
 		SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
@@ -304,7 +296,7 @@ static UT_UCSChar * s_getUCSText(HWND hwnd)
 	pBuf = new char [len + 1];
 	if (!pBuf)
 		goto FreeMemory;
-	GetWindowText(hwnd,pBuf,len+1);
+	GetWindowTextA(hwnd,pBuf,len+1); //!TODO Using ANSI function
 
 	UT_UCS4_cloneString_char(&pUCS,pBuf);
 	if (!pUCS)

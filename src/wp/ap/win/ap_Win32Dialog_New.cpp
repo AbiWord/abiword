@@ -40,7 +40,6 @@
 #include "ie_imp.h"
 #include "ie_types.h"
 #include "ut_string_class.h"
-#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -58,7 +57,7 @@ XAP_Dialog * AP_Win32Dialog_New::static_constructor(XAP_DialogFactory * pFactory
 
 AP_Win32Dialog_New::AP_Win32Dialog_New(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_New(pDlgFactory,id), _win32Dialog(this), m_hThisDlg(NULL), m_pFrame(NULL)
+	: AP_Dialog_New(pDlgFactory,id), /*_win32Dialog(this),*/ m_hThisDlg(NULL), m_pFrame(NULL)
 {
 }
 
@@ -68,18 +67,12 @@ AP_Win32Dialog_New::~AP_Win32Dialog_New(void)
 
 void AP_Win32Dialog_New::runModal(XAP_Frame * pFrame)
 {
-
+	// raise the dialog
 	UT_ASSERT(pFrame);
-	m_pFrame = pFrame;
-
-	_win32Dialog.runModal( pFrame, 
-                           AP_DIALOG_ID_FILE_NEW, 
-                           AP_RID_DIALOG_NEW, 
-                           this );
+	UT_ASSERT(m_id == AP_DIALOG_ID_FILE_NEW);
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_NEW));
 }
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -88,21 +81,18 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
 	UT_ASSERT(app);
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	_win32Dialog.setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
+	localizeDialogTitle(AP_STRING_ID_DLG_NEW_Title);
 
 	// localize controls
-	_DSX(NEW_BTN_OK,		DLG_OK);
-	_DSX(NEW_BTN_CANCEL,	DLG_Cancel);
-	_DS(NEW_RDO_BLANK,		DLG_NEW_StartEmpty);
-	_DS(NEW_RDO_TEMPLATE,	DLG_NEW_Create);
-	_DS(NEW_RDO_EXISTING,	DLG_NEW_Open);
-    _DS(NEW_BTN_EXISTING,	DLG_NEW_Choose);
+	localizeControlText(AP_RID_DIALOG_NEW_BTN_OK,			XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_NEW_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_NEW_RDO_BLANK,		AP_STRING_ID_DLG_NEW_StartEmpty);
+	localizeControlText(AP_RID_DIALOG_NEW_RDO_TEMPLATE,		AP_STRING_ID_DLG_NEW_Create);
+	localizeControlText(AP_RID_DIALOG_NEW_RDO_EXISTING,		AP_STRING_ID_DLG_NEW_Open);
+	localizeControlText(AP_RID_DIALOG_NEW_BTN_EXISTING,		AP_STRING_ID_DLG_NEW_Choose);
 
 	// set initial state
-	_win32Dialog.setControlText(AP_RID_DIALOG_NEW_EBX_EXISTING, 
-  								pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile));
+	localizeControlText(AP_RID_DIALOG_NEW_EBX_EXISTING, AP_STRING_ID_DLG_NEW_NoFile);
 
 	HWND hControl = GetDlgItem(hWnd, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
 
@@ -121,7 +111,7 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName += "\\templates\\";
 			templateName += cfile.name;
 			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
+			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) XAP_Win32App::getWideString(UT_basename( templateName.c_str()) ) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
@@ -139,13 +129,13 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName += "\\templates\\";
 			templateName += cfile.name;
 			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
+			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) XAP_Win32App::getWideString(UT_basename( templateName.c_str() )) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();
 	_updateControls();
 	return 1;	// 1 == we did not call SetFocus()
 }
@@ -173,7 +163,7 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		switch (HIWORD(wParam))
 		{
 		case LBN_SELCHANGE:
-			UT_sint32 nIndex = _win32Dialog.getListSelectedIndex(wId);
+			UT_sint32 nIndex = getListSelectedIndex(wId);
 			_setFileName( nIndex );
 			return 1;
 		}
@@ -191,12 +181,12 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_NEW_RDO_TEMPLATE:
 		setOpenType(AP_Dialog_New::open_Template);
 		{
-			int nIndex = _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_NEW_LBX_TEMPLATE);
+			int nIndex = getListSelectedIndex(AP_RID_DIALOG_NEW_LBX_TEMPLATE);
 			if( nIndex == LB_ERR )
 			{
 				HWND hControl = GetDlgItem(hWnd, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
-				nIndex = SendMessage( hControl, LB_FINDSTRING , (WPARAM) -1, (LPARAM) "Normal" );
-				_win32Dialog.selectListItem(AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex);
+				nIndex = SendMessage( hControl, LB_FINDSTRING , (WPARAM) -1, (LPARAM) L"Normal" );
+				selectListItem(AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex);
 				_setFileName( nIndex );
 			}
 		}
@@ -212,11 +202,6 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
 	}
-}
-
-BOOL AP_Win32Dialog_New::_onDeltaPos(NM_UPDOWN * pnmud)
-{
-	return 0;
 }
 
 void AP_Win32Dialog_New::_doChoose()
@@ -263,7 +248,7 @@ void AP_Win32Dialog_New::_doChoose()
 		if (szResultPathname && *szResultPathname)
 		{
 			// update the entry box
-			_win32Dialog.setControlText( AP_RID_DIALOG_NEW_EBX_EXISTING, 
+			setControlText( AP_RID_DIALOG_NEW_EBX_EXISTING, 
 			                             szResultPathname);
 			setFileName (szResultPathname);
 		}
@@ -275,28 +260,28 @@ void AP_Win32Dialog_New::_updateControls()
 	switch( getOpenType() )
 	{
 	case AP_Dialog_New::open_New:
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, false );
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, false );
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, true );
+		enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, false );
+		enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, false );
+		enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
+		checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
+		checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
+		checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, true );
 		break;
 	case AP_Dialog_New::open_Template:
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, false );
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, false );
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, true );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, true );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
+		enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, false );
+		enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, false );
+		enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, true );
+		checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
+		checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, true );
+		checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
 		break;
 	case AP_Dialog_New::open_Existing:
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, true );
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, true );
-		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, true );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
+		enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, true );
+		enableControl( AP_RID_DIALOG_NEW_BTN_EXISTING, true );
+		enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
+		checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, true );
+		checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
+		checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
 		break;
 	}
 }
@@ -307,7 +292,7 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 	if( nIndex != LB_ERR )
 	{
 		char buf[_MAX_PATH];
-		_win32Dialog.getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, buf );
+		getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, buf, _MAX_PATH );
 		UT_String templateName; 
 		switch ( SendMessage( hControl, LB_GETITEMDATA, nIndex, 0 ) )
 		{

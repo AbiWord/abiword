@@ -119,7 +119,7 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 		return false;
 	}
 
-	if (CreateDirectory(szDir,NULL))
+	if (CreateDirectory(XAP_Win32App::getWideString(szDir),NULL))
 		return true;
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
@@ -267,18 +267,18 @@ bool AP_Win32App::initialize(void)
 	// Check for necessary DLLs now that we can do localized error messages
 	//////////////////////////////////////////////////////////////////
 
-#if 0 /* re-enable once we use unicows again */
+#if 1 /* re-enable once we use unicows again */
 	// Ensure that we have Unicows dll
 	if (!UT_IsWinNT())
 	{
-		HMODULE hModule = LoadLibrary("unicows.dll");
+		HMODULE hModule = LoadLibrary(L"unicows.dll");
 		
 		if (!hModule)
 		{
 			UT_String sErr(UT_String_sprintf(m_pStringSet->getValue(AP_STRING_ID_WINDOWS_NEED_UNICOWS),
 											 "Unicows"));
 
-			MessageBox(NULL, sErr.c_str(), NULL, MB_OK);
+			MessageBox(NULL, XAP_Win32App::getWideString(sErr.c_str()), NULL, MB_OK);
 
 			bSuccess = false;
 		}
@@ -288,7 +288,7 @@ bool AP_Win32App::initialize(void)
 #endif
 
 	// Ensure that common control DLL is loaded
-	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
+	HINSTANCE hinstCC = LoadLibrary(L"comctl32.dll");
 	UT_ASSERT(hinstCC);
 	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
 	if( hinstCC != NULL )
@@ -309,7 +309,7 @@ bool AP_Win32App::initialize(void)
 		UT_String sErr(UT_String_sprintf(m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING),
 										 "Unicows"));
 
-		MessageBox(NULL, sErr.c_str(), NULL, MB_OK);
+		MessageBox(NULL, XAP_Win32App::getWideString(sErr.c_str()), NULL, MB_OK);
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -804,7 +804,7 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 //
 //
 //
-void CreateBMPFile(HWND hwnd, LPTSTR pszFile, PBITMAPINFO pbi, 
+void CreateBMPFile(HWND hwnd, LPCSTR pszFile, PBITMAPINFO pbi, 
                   HBITMAP hBMP, HDC hDC) 
 { 
 	HANDLE hf;                 // file handle 
@@ -826,8 +826,8 @@ void CreateBMPFile(HWND hwnd, LPTSTR pszFile, PBITMAPINFO pbi,
     	return;
 
     // Create the .BMP file. 
-    hf = CreateFile(pszFile,  GENERIC_READ | GENERIC_WRITE, 
-                   (DWORD) 0,  NULL,  CREATE_ALWAYS,  FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL); 
+    hf = CreateFileA(pszFile,  GENERIC_READ | GENERIC_WRITE, 
+                   (DWORD) 0,  NULL,  CREATE_ALWAYS,  FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL); // !TODO Using ANSI function 
                    
     if (hf == INVALID_HANDLE_VALUE)  return;
         
@@ -932,8 +932,8 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		hdc = GetDC(hWnd);		
  		
  		// Get a temp file
- 		GetTempPath(MAX_PATH,szPath);
-  		GetTempFileName(szPath, "abi", rand()*65535*65535, szFile);		
+ 		GetTempPathA(MAX_PATH,szPath); // !TODO Using ANSI function
+  		GetTempFileNameA(szPath, "abi", rand()*65535*65535, szFile); // !TODO Using ANSI function		
  
   		// Create a BMP file from a BITMAP
  		bi =  CreateBitmapInfoStruct(hBitmap);						
@@ -1051,7 +1051,7 @@ ReturnTrue:
 
 static HWND hwndSplash = NULL;
 static GR_Image * pSplash = NULL;
-static char s_SplashWndClassName[256];
+static WCHAR s_SplashWndClassName[256];
 
 static void _hideSplash(void)
 {
@@ -1134,7 +1134,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 		WNDCLASSEX  wndclass;
 		ATOM a;
 	
-		sprintf(s_SplashWndClassName, "%sSplash", szAppName /* app->getApplicationName() */);
+		swprintf(s_SplashWndClassName, L"%SSplash", szAppName /* app->getApplicationName() */);
 
 		// register class for the splash window
 		wndclass.cbSize        = sizeof(wndclass);
@@ -1215,9 +1215,9 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// TODO: fix Spell dlg so we don't rely on this
 	// ALT:  make it a Preview widget instead
 
-	HINSTANCE hinstRich = LoadLibrary("riched32.dll");
+	HINSTANCE hinstRich = LoadLibrary(L"riched32.dll");
 	if (!hinstRich)
-		hinstRich = LoadLibrary("riched20.dll");
+		hinstRich = LoadLibrary(L"riched20.dll");
 	UT_ASSERT(hinstRich);
 	
 	AP_Win32App * pMyWin32App;
@@ -1453,7 +1453,7 @@ void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
 	strcat( pszMessage, ": " );
 	strcat( pszMessage, poptStrerror (nextopt) );
 	strcat( pszMessage, "\nRun with --help' to see a full list of available command line options.\n" );
-	MessageBox(NULL, pszMessage, "Command Line Option Error", MB_OK|MB_ICONERROR);
+	MessageBoxA(NULL, pszMessage, "Command Line Option Error", MB_OK|MB_ICONERROR); // !TODO Using ANSI function
 	free( pszMessage );
 }
 

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -61,7 +61,20 @@ protected:
 
 };
 
-class AP_Win32Dialog_MetaData_General: public XAP_Win32PropertyPage
+/*
+	Sheet
+*/
+class AP_Win32Dialog_MetaData_Sheet: public XAP_Win32PropertySheet
+{
+
+public:	
+		AP_Win32Dialog_MetaData_Sheet() : XAP_Win32PropertySheet() {};				
+		void _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) {};		
+		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return 1;};
+};
+
+
+class AP_Win32Dialog_MetaData_General: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 	
 public:		
@@ -74,20 +87,21 @@ public:
 	
 private:
 
-	virtual	void				_onInitDialog();
+	virtual	BOOL				_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return false;};
 	virtual	void				_onOK(); 	
 	char* 						_get_text(XAP_String_Id nID, char *szBuff, int nSize);
 	
-	UT_String					m_sTitle;
-	UT_String					m_sSubject;
-	UT_String					m_sAuthor;
-	UT_String					m_sPublisher;
-	UT_String					m_sCoAuthor;
+	UT_UTF8String					m_sTitle;
+	UT_UTF8String					m_sSubject;
+	UT_UTF8String					m_sAuthor;
+	UT_UTF8String					m_sPublisher;
+	UT_UTF8String					m_sCoAuthor;
 	AP_Win32Dialog_MetaData*	m_pData;	
 	
 };
 
-class AP_Win32Dialog_MetaData_Summary: public XAP_Win32PropertyPage
+class AP_Win32Dialog_MetaData_Summary: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 	public:		
 								AP_Win32Dialog_MetaData_Summary();
@@ -101,17 +115,18 @@ private:
 						
 	virtual	void				_onOK(); 	
 	char* 						_get_text(XAP_String_Id nID, char *szBuff, int nSize);	
-	virtual	void				_onInitDialog();	
+	virtual	BOOL				_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return false;};	
 	
 	AP_Win32Dialog_MetaData*	m_pData;	
-	UT_String					m_sCategory;
-	UT_String					m_sKeywords;
-	UT_String					m_sLanguages;
-	UT_String					m_sDescription;
+	UT_UTF8String					m_sCategory;
+	UT_UTF8String					m_sKeywords;
+	UT_UTF8String					m_sLanguages;
+	UT_UTF8String					m_sDescription;
 	
 };
 
-class AP_Win32Dialog_MetaData_Permissions: public XAP_Win32PropertyPage
+class AP_Win32Dialog_MetaData_Permissions: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 public:		
 								AP_Win32Dialog_MetaData_Permissions();
@@ -124,14 +139,15 @@ public:
 private:	
 
 	char* 						_get_text(XAP_String_Id nID, char *szBuff, int nSize);
-	virtual	void				_onInitDialog();			
+	virtual	BOOL				_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return false;};			
 	virtual	void				_onOK(); 	
 	
 	AP_Win32Dialog_MetaData*	m_pData;	
-	UT_String					m_sSource;
-	UT_String					m_sRelation;
-	UT_String					m_sCoverage;
-	UT_String					m_sRights;	
+	UT_UTF8String					m_sSource;
+	UT_UTF8String					m_sRelation;
+	UT_UTF8String					m_sCoverage;
+	UT_UTF8String					m_sRights;	
 };
 
 #endif /* AP_WIN32DIALOG_METADATA_H */

@@ -102,7 +102,7 @@ void AP_Args::parsePoptOpts ()
  	{		
  		printf("%s\n", XAP_App::s_szBuild_Version);
 		#ifdef _WIN32
-			MessageBox(NULL, XAP_App::s_szBuild_Version, "Version", MB_OK|MB_ICONINFORMATION);
+			MessageBoxA(NULL, XAP_App::s_szBuild_Version, "Version", MB_OK|MB_ICONINFORMATION); // !TODO Using ANSI function
 		#endif
 		exit(0);
  	}

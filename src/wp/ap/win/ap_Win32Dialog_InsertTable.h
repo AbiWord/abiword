@@ -20,9 +20,10 @@
 #ifndef AP_Win32Dialog_InsertTable_H
 #define AP_Win32Dialog_InsertTable_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_InsertTable.h"
 
-class AP_Win32Dialog_InsertTable : public AP_Dialog_InsertTable
+class AP_Win32Dialog_InsertTable : public AP_Dialog_InsertTable, XAP_Win32DialogBase
 {
 public:
 	

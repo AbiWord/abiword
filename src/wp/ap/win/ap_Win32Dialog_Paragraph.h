@@ -20,6 +20,7 @@
 #ifndef AP_WIN32DIALOG_PARAGRAPH_H
 #define AP_WIN32DIALOG_PARAGRAPH_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Paragraph.h"
 #include "xap_Frame.h"
 
@@ -28,7 +29,7 @@ class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Paragraph: public AP_Dialog_Paragraph
+class AP_Win32Dialog_Paragraph: public AP_Dialog_Paragraph, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

@@ -35,10 +35,10 @@ enum PSH_PAGES {PG_TOOLBARS, PG_SPELL, PG_LANG, PG_PREF, PG_LAYOUT};
 */
 class AP_Win32Dialog_Options_Sheet: public XAP_Win32PropertySheet
 {
-	
+
 public:	
 		AP_Win32Dialog_Options_Sheet();				
-		void _onInitDialog(HWND hwnd);
+		void _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
 		AP_Win32Dialog_Options* getParent(){return m_pParent;};
@@ -53,7 +53,7 @@ private:
 /*
 	Toolbar page
 */
-class AP_Win32Dialog_Options_Toolbars: public XAP_Win32PropertyPage
+class AP_Win32Dialog_Options_Toolbars: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 	
 public:		
@@ -67,9 +67,9 @@ public:
 	
 private:
 
-	void						_onInitDialog();
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
 	int							m_nCentered;
@@ -79,7 +79,7 @@ private:
 /*
 	Spelling page
 */
-class AP_Win32Dialog_Options_Spelling: public XAP_Win32PropertyPage
+class AP_Win32Dialog_Options_Spelling: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 	
 public:		
@@ -93,9 +93,9 @@ public:
 	
 private:
 
-	void						_onInitDialog();
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
 	
@@ -104,7 +104,7 @@ private:
 /*
 	Lang
 */
-class AP_Win32Dialog_Options_Lang: public XAP_Win32PropertyPage
+class AP_Win32Dialog_Options_Lang: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 	
 public:		
@@ -118,9 +118,9 @@ public:
 	
 private:
 
-	void						_onInitDialog();
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
 	UT_Vector*					m_pVecUILangs;
@@ -130,7 +130,7 @@ private:
 /*
 	Layout page
 */
-class AP_Win32Dialog_Options_Layout: public XAP_Win32PropertyPage
+class AP_Win32Dialog_Options_Layout: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 	
 public:		
@@ -144,9 +144,9 @@ public:
 	
 private:
 
-	void						_onInitDialog();
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
 	
@@ -155,7 +155,7 @@ private:
 /*
 	Preferences page
 */
-class AP_Win32Dialog_Options_Pref: public XAP_Win32PropertyPage
+class AP_Win32Dialog_Options_Pref: public XAP_Win32PropertyPage, XAP_Win32DialogBase
 {
 	
 public:	
@@ -170,9 +170,9 @@ public:
 	
 private:
 
-	void						_onInitDialog();
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
 	
@@ -182,7 +182,7 @@ private:
 
 
 /*****************************************************************/
-class AP_Win32Dialog_Options: public AP_Dialog_Options
+class AP_Win32Dialog_Options: public AP_Dialog_Options, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -263,6 +263,8 @@ public:
  protected:
 	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
 	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) {return false;};
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return false;};
 
 	HWND						m_hwndDlg;		// parent dialog
 	HWND						m_hwndTab;		// tab control in parent dialog

@@ -20,9 +20,10 @@
 #ifndef AP_Win32Dialog_PageSetup_H
 #define AP_Win32Dialog_PageSetup_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_PageSetup.h"
 
-class AP_Win32Dialog_PageSetup : public AP_Dialog_PageSetup
+class AP_Win32Dialog_PageSetup : public AP_Dialog_PageSetup, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id);

@@ -19,4 +19,4 @@
 ## 02111-1307, USA.
 
 #SUBDIRS = @PLATFORM@
-SUBDIRS = unix
+#SUBDIRS = unix

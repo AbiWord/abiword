@@ -368,7 +368,7 @@ bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	if (!XAP_DiskStringSet::loadStringsFromDisk(szFilename))
 		return false;
 
-#ifdef DEBUG	
+#if 0	
 	{
 		// TODO should we promote this test to be production code
 		// TODO and maybe raise a message box ??

@@ -49,7 +49,7 @@ XAP_Dialog * AP_Win32Dialog_ToggleCase::static_constructor(XAP_DialogFactory * p
 
 AP_Win32Dialog_ToggleCase::AP_Win32Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_ToggleCase(pDlgFactory,id), m_helper(this), m_iWhichCase(CASE_SENTENCE)
+	: AP_Dialog_ToggleCase(pDlgFactory,id), m_iWhichCase(CASE_SENTENCE)
 {
 }
 
@@ -60,33 +60,32 @@ AP_Win32Dialog_ToggleCase::~AP_Win32Dialog_ToggleCase(void)
 void AP_Win32Dialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	m_helper.runModal(pFrame, AP_DIALOG_ID_TOGGLECASE, AP_RID_DIALOG_TOGGLECASE, this);
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_TOGGLECASE);
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_TOGGLECASE));
+
 
 	
 }
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hThisDlg = hWnd;
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	SetWindowText( hWnd, pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title) );
+	localizeDialogTitle(AP_STRING_ID_DLG_ToggleCase_Title);
 
 	// localize controls
-	_DSX(TOGGLECASE_BTN_OK,			DLG_OK);
-	_DSX(TOGGLECASE_BTN_CANCEL,		DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_TOGGLECASE_BTN_OK,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_TOGGLECASE_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
 	
-	_DS(TOGGLECASE_RDO_SentenceCase,	DLG_ToggleCase_SentenceCase);
-	_DS(TOGGLECASE_RDO_LowerCase,		DLG_ToggleCase_LowerCase);
-	_DS(TOGGLECASE_RDO_UpperCase,		DLG_ToggleCase_UpperCase);
-	_DS(TOGGLECASE_RDO_TitleCase,		DLG_ToggleCase_FirstUpperCase);
-	_DS(TOGGLECASE_RDO_ToggleCase,		DLG_ToggleCase_ToggleCase);
+	localizeControlText(AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase,	AP_STRING_ID_DLG_ToggleCase_SentenceCase);
+	localizeControlText(AP_RID_DIALOG_TOGGLECASE_RDO_LowerCase,	AP_STRING_ID_DLG_ToggleCase_LowerCase);
+	localizeControlText(AP_RID_DIALOG_TOGGLECASE_RDO_UpperCase,	AP_STRING_ID_DLG_ToggleCase_UpperCase);
+	localizeControlText(AP_RID_DIALOG_TOGGLECASE_RDO_TitleCase,	AP_STRING_ID_DLG_ToggleCase_TitleCase);
+	localizeControlText(AP_RID_DIALOG_TOGGLECASE_RDO_ToggleCase,	AP_STRING_ID_DLG_ToggleCase_ToggleCase);
 
-	m_helper.checkButton(AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase, true);
+	checkButton(AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase, true);
 
 	return 1;							// 1 == we did not call SetFocus()
 }

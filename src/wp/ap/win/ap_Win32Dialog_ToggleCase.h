@@ -21,13 +21,13 @@
 #define AP_WIN32DIALOG_TOGGLECASE_H
 
 #include "ap_Dialog_ToggleCase.h"
-#include "xap_Win32DialogHelper.h"
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_ToggleCase: public AP_Dialog_ToggleCase, XAP_Win32Dialog
+class AP_Win32Dialog_ToggleCase: public AP_Dialog_ToggleCase, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -44,7 +44,6 @@ protected:
 
 private:
 	HWND					m_hThisDlg;
-	XAP_Win32DialogHelper		m_helper;
 	ToggleCase				m_iWhichCase;
 
 };

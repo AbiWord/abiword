@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- *			 (c) 2002 Jordi Mas i Hernàndez jmas@softcatala.org 
+ *			 (c) 2002 Jordi Mas i Hernï¿½ndez jmas@softcatala.org 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -132,8 +132,7 @@ void ap_usb_TextListener::notify()
 {
 	UT_ASSERT(m_hWnd);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
-	UT_String 	s =	AP_Win32App::s_fromUTF8ToAnsi(textInfo->getBuf().utf8_str());	
-	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  s.c_str());
+	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  XAP_Win32App::getWideString(textInfo->getBuf().utf8_str()));
 
 }
 

@@ -104,21 +104,16 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// store frame for later use
 	m_pFrame = pFrame;
 
-	// raise the dialog
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_PARAGRAPH);
+
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
-	UT_ASSERT(m_id == AP_DIALOG_ID_PARAGRAPH);
-
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_PARAGRAPH);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	
+	// raise the dialog
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_PARAGRAPH));
 }
 
 BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -224,18 +219,17 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Para_ParaTitle));
+	localizeDialogTitle(AP_STRING_ID_DLG_Para_ParaTitle);
 
 	// localize controls
-	_DSX(PARA_BTN_OK,			DLG_OK);
-	_DSX(PARA_BTN_CANCEL,		DLG_Cancel);
-
-	_DS(PARA_BTN_TABS,			DLG_Para_ButtonTabs);
+	localizeControlText(AP_RID_DIALOG_PARA_BTN_OK,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_PARA_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_PARA_BTN_TABS,	AP_STRING_ID_DLG_Para_ButtonTabs);
 
 	// setup the tabs
 	{
 		TabParam tp;
-		TCITEM tie;
+		TCITEMA tie; //!TODO Using ANSI function
 
 		XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 		HINSTANCE hinst = pWin32App->getInstance();
@@ -282,14 +276,15 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, true);
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	return 1;							// 1 == we did not call SetFocus()
 }
 
 /*****************************************************************/
 
-#define _CAS(w,s)	SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GV(s))
-#define _SST(c,i)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,_getSpinItemValue(i))
+#define _CAS(w,s)	SendMessage(w, CB_ADDSTRING, 0, (LPARAM) XAP_Win32App::getWideString(_GV(s)))
+#define _SST(c,i)	SetDlgItemTextA(hWnd,AP_RID_DIALOG_##c,_getSpinItemValue(i))
+//!TODO Using ANSI function
 #define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
 
 BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -320,18 +315,18 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			}
 
 			// localize controls
-			_DS(PARA_TEXT_ALIGN,		DLG_Para_LabelAlignment);
-			_DS(PARA_TEXT_INDENT,		DLG_Para_LabelIndentation);
-			_DS(PARA_TEXT_LEFT,			DLG_Para_LabelLeft);
-			_DS(PARA_TEXT_RIGHT,		DLG_Para_LabelRight);
-			_DS(PARA_TEXT_HANG,			DLG_Para_LabelSpecial);
-			_DS(PARA_TEXT_BY,			DLG_Para_LabelBy);
-			_DS(PARA_TEXT_SPACING,		DLG_Para_LabelSpacing);
-			_DS(PARA_TEXT_BEFORE,		DLG_Para_LabelBefore);
-			_DS(PARA_TEXT_AFTER,		DLG_Para_LabelAfter);
-			_DS(PARA_TEXT_LEAD,			DLG_Para_LabelLineSpacing);
-			_DS(PARA_TEXT_AT,			DLG_Para_LabelAt);
-			_DS(PARA_CHECK_BIDI,		DLG_Para_DomDirection);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_ALIGN,	AP_STRING_ID_DLG_Para_LabelAlignment);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_INDENT,	AP_STRING_ID_DLG_Para_LabelIndentation);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_LEFT,	AP_STRING_ID_DLG_Para_LabelLeft);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_RIGHT,	AP_STRING_ID_DLG_Para_LabelRight);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_HANG,	AP_STRING_ID_DLG_Para_LabelSpecial);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_BY,		AP_STRING_ID_DLG_Para_LabelBy);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_SPACING,	AP_STRING_ID_DLG_Para_LabelSpacing);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_BEFORE,	AP_STRING_ID_DLG_Para_LabelBefore);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_AFTER,	AP_STRING_ID_DLG_Para_LabelAfter);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_LEAD,	AP_STRING_ID_DLG_Para_LabelLineSpacing);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_AT,		AP_STRING_ID_DLG_Para_LabelAt);
+			localizeControlText(AP_RID_DIALOG_PARA_CHECK_BIDI,	AP_STRING_ID_DLG_Para_DomDirection);
 
 			// populate fixed choices
 			{
@@ -374,13 +369,13 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			m_hwndBreaks = hWnd;
 
 			// localize controls
-			_DS(PARA_TEXT_PAGE,			DLG_Para_LabelPagination);
-			_DS(PARA_CHECK_WIDOW,		DLG_Para_PushWidowOrphanControl);
-			_DS(PARA_CHECK_NEXT,		DLG_Para_PushKeepWithNext);
-			_DS(PARA_CHECK_TOGETHER,	DLG_Para_PushKeepLinesTogether);
-			_DS(PARA_CHECK_BREAK,		DLG_Para_PushPageBreakBefore);
-			_DS(PARA_CHECK_SUPPRESS,	DLG_Para_PushSuppressLineNumbers);
-			_DS(PARA_CHECK_NOHYPHEN,	DLG_Para_PushNoHyphenate);
+			localizeControlText(AP_RID_DIALOG_PARA_TEXT_PAGE,	AP_STRING_ID_DLG_Para_LabelPagination);
+			localizeControlText(AP_RID_DIALOG_PARA_CHECK_WIDOW,	AP_STRING_ID_DLG_Para_PushWidowOrphanControl);
+			localizeControlText(AP_RID_DIALOG_PARA_CHECK_NEXT,	AP_STRING_ID_DLG_Para_PushKeepWithNext);
+			localizeControlText(AP_RID_DIALOG_PARA_CHECK_TOGETHER,	AP_STRING_ID_DLG_Para_PushKeepLinesTogether);
+			localizeControlText(AP_RID_DIALOG_PARA_CHECK_BREAK,	AP_STRING_ID_DLG_Para_PushPageBreakBefore);
+			localizeControlText(AP_RID_DIALOG_PARA_CHECK_SUPPRESS,	AP_STRING_ID_DLG_Para_PushSuppressLineNumbers);
+			localizeControlText(AP_RID_DIALOG_PARA_CHECK_NOHYPHEN,	AP_STRING_ID_DLG_Para_PushNoHyphenate);
 
 			// set initial state
 			_CDB(PARA_CHECK_WIDOW,		id_CHECK_WIDOW_ORPHAN);
@@ -399,7 +394,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 	// the following are common to each tab
 
-	_DS(PARA_TEXT_PREVIEW,		DLG_Para_LabelPreview);
+	localizeControlText(AP_RID_DIALOG_PARA_TEXT_PREVIEW,	AP_STRING_ID_DLG_Para_LabelPreview);
 
 	if (!m_pPreviewWidget)
 	{
@@ -463,6 +458,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 // we call "_syncControls(i)" after we set the variable, to
 // catch any changes the _setSpinItemValue() call might
 // have done to validate data
+//!TODO Using ANSI function
 #define _EDIT(c,i)				\
 	case AP_RID_DIALOG_##c:		\
 		switch (wNotifyCode)	\
@@ -473,7 +469,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 								\
 			case EN_KILLFOCUS:	\
 				char buf[SPIN_BUF_TEXT_SIZE];	\
-				GetWindowText(hWndCtrl,buf,SPIN_BUF_TEXT_SIZE);		\
+				GetWindowTextA(hWndCtrl,buf,SPIN_BUF_TEXT_SIZE);		\
 				_setSpinItemValue(i,buf);		\
 				_syncControls(i);				\
 				m_bEditChanged = false;		\
@@ -540,12 +536,12 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 }
 
 /*****************************************************************/
-
+//!TODO Using ANSI function
 #define _SPIN(w,c,i)					\
 	case AP_RID_DIALOG_PARA_SPIN_##c:	\
 		if (m_bEditChanged)				\
 		{								\
-			GetDlgItemText(w,AP_RID_DIALOG_PARA_EDIT_##c,buf,SPIN_BUF_TEXT_SIZE);	\
+			GetDlgItemTextA(w,AP_RID_DIALOG_PARA_EDIT_##c,buf,SPIN_BUF_TEXT_SIZE);	\
 			_setSpinItemValue(i,buf);	\
 			m_bEditChanged = false;	\
 		}								\
@@ -582,10 +578,10 @@ BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
 }
 
 /*****************************************************************/
-
+//!TODO Using ANSI function
 #define _syncSPIN(w,c,i)	\
 		case i:				\
-			SetDlgItemText(w,AP_RID_DIALOG_##c,_getSpinItemValue(i));	\
+			SetDlgItemTextA(w,AP_RID_DIALOG_##c,_getSpinItemValue(i));	\
 			break;			\
 
 void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
@@ -613,12 +609,12 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		{
 		case indent_NONE:
 			// clear the spin control
-			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, NULL);
+			SetDlgItemTextA(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, NULL); //!TODO Using ANSI function
 			break;
 
 		default:
 			// set the spin control
-			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			SetDlgItemTextA(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, _getSpinItemValue(id_SPIN_SPECIAL_INDENT)); //!TODO Using ANSI function
 			break;
 		}
 	}
@@ -642,12 +638,12 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		case spacing_ONEANDHALF:
 		case spacing_DOUBLE:
 			// clear the spin control
-			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, NULL);
+			SetDlgItemTextA(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, NULL); //!TODO Using ANSI function
 			break;
 
 		default:
 			// set the spin control
-			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			SetDlgItemTextA(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, _getSpinItemValue(id_SPIN_SPECIAL_SPACING)); //!TODO Using ANSI function
 			break;
 		}
 	}

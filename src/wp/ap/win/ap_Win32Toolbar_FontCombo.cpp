@@ -26,6 +26,7 @@
 #include "ap_Win32Toolbar_FontCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
+#include "xap_Win32App.h"
 #include "ut_debugmsg.h"
 
 /*****************************************************************/
@@ -96,7 +97,7 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf,
 #endif	
 
 	char * p;
-	UT_cloneString(p, lplf->lfFaceName);
+	UT_cloneString(p, XAP_Win32App::getUTF8String(lplf->lfFaceName));
 
 	ctl->m_vecContents.addItem(p);
 	ctl->m_vecFontCharSet.addItem((void*)lplf->lfCharSet);

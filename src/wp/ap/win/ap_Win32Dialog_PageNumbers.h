@@ -21,14 +21,14 @@
 #define AP_WIN32DIALOG_PAGENUMBERS_H
 
 #include "ap_Dialog_PageNumbers.h"
-#include "xap_Win32DialogHelper.h"
+#include "xap_Win32DialogBase.h"
 
 // fwd decl.
 class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_PageNumbers : public AP_Dialog_PageNumbers, XAP_Win32Dialog
+class AP_Win32Dialog_PageNumbers : public AP_Dialog_PageNumbers, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_PageNumbers(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id);
@@ -50,7 +50,6 @@ private:
 	void				_createPreviewWidget();
 
 	HWND                    m_hThisDlg;
-	XAP_Win32DialogHelper	m_helper;
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;
 };
 

@@ -162,7 +162,7 @@ void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWN
 	   y++;
 	 }
 
-	ExtTextOut(hdc, (nWidth/6)*1, ((nHeight/4)), 0, NULL, pText,  strlen(pText), NULL);
+	ExtTextOutA(hdc, (nWidth/6)*1, ((nHeight/4)), 0, NULL, pText,  strlen(pText), NULL); //!TODO Using ANSI function
 		
     // Clean Up
     SelectObject(hdc, pOldPen);       
@@ -209,12 +209,12 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	char szTemp[20];
-	GetWindowText(hWnd, szTemp, 20 );	
+	GetWindowTextA(hWnd, szTemp, 20 );	//!TODO Using ANSI function
 			
 	// Regular dialog box
 	if( strncmp(szTemp, "Styles", 20) == 0 )
 	{	
-		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
+		localizeDialogTitle(AP_STRING_ID_DLG_Styles_StylesTitle);
 
 		// localize controls
 		struct control_id_string_id {
@@ -278,9 +278,9 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	else  
 	{
 		// Localize the controls Labels etc...
-		SetWindowText(hWnd, pSS->getValue( (m_bisNewStyle) ? 
+		localizeDialogTitle( (m_bisNewStyle) ? 
                                            AP_STRING_ID_DLG_Styles_NewTitle :
-                                           AP_STRING_ID_DLG_Styles_ModifyTitle ));
+                                           AP_STRING_ID_DLG_Styles_ModifyTitle );
 
 		_win32DialogNewModify.setHandle(hWnd);
 		

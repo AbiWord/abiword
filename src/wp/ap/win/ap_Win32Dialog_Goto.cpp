@@ -59,7 +59,7 @@ void AP_Win32Dialog_Goto::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, m_WindowName);
+	setDialogTitle(m_WindowName); 
 
 	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER ) );
 
@@ -88,7 +88,7 @@ void AP_Win32Dialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hWnd, m_WindowName);
+		setDialogTitle(m_WindowName); 
 
 		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
@@ -109,33 +109,18 @@ void AP_Win32Dialog_Goto::notifyCloseFrame(XAP_Frame *pFrame)
 void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-
-	// raise the dialog
-	int iResult;
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCTSTR lpTemplate = NULL;
-
 	UT_ASSERT(m_id == AP_DIALOG_ID_GOTO);
+	int iResult;
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_GOTO);
+	setDialog(this);
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_GOTO) );
 
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-							(DLGPROC)s_dlgProc,(LPARAM)this);
+	UT_ASSERT((hWndDialog != NULL));
+	iResult = ShowWindow(hWndDialog, SW_SHOW);
+	m_hWnd = hWndDialog;
+	iResult = BringWindowToTop(m_hWnd);
 
-	UT_ASSERT((hResult != NULL));
-
-	m_hWnd = hResult;
-
-	// Save dialog the ID number and pointer to the widget
-	UT_sint32 sid =(UT_sint32)	getDialogId();
-	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
-
-	iResult = ShowWindow( m_hWnd, SW_SHOW );
-
-	iResult = BringWindowToTop( m_hWnd );
-
+	m_pApp->rememberModelessId(m_id, this);		
 	UT_ASSERT((iResult != 0));
 	m_pView->focusChange(AV_FOCUS_MODELESS);
 }
@@ -185,8 +170,6 @@ int AP_Win32Dialog_Goto::getSelectedRow (void)
 }
 
 #define _DSI(c,i)	SetDlgItemInt(hWnd,AP_RID_DIALOG_##c,m_count.##i,FALSE)
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -198,7 +181,7 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
+	setDialogTitle(m_WindowName); 
 
 	// Disable the Go To button until something has been entered into the Number box
 	EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
@@ -206,18 +189,18 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	m_iRow = 0;
 	ppszTargets = getJumpTargets();
 	for ( iTarget = 0; ppszTargets[ iTarget ] != NULL; iTarget++ )
-		SendMessage( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_ADDSTRING, 0, (LPARAM)ppszTargets[ iTarget ] );
+		SendMessage( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_ADDSTRING, 0, (LPARAM)XAP_Win32App::getWideString(ppszTargets[ iTarget ]) );
 
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_SETCURSEL, m_iRow, 0);
 
 	// localize controls
-	_DSX(GOTO_BTN_CLOSE,		DLG_Close);
-	_DS(GOTO_BTN_GOTO,			DLG_Goto_Btn_Goto);
-	_DS(GOTO_BTN_PREV,			DLG_Goto_Btn_Prev);
-	_DS(GOTO_BTN_NEXT,			DLG_Goto_Btn_Next);
-	_DS(GOTO_TEXT_WHAT, 		DLG_Goto_Label_What);
-	_DS(GOTO_TEXT_NUMBER,		DLG_Goto_Label_Number);
-	_DS(GOTO_TEXT_INFO, 		DLG_Goto_Label_Help);
+	localizeControlText(AP_RID_DIALOG_GOTO_BTN_CLOSE,		XAP_STRING_ID_DLG_Close);
+	localizeControlText(AP_RID_DIALOG_GOTO_BTN_GOTO,		AP_STRING_ID_DLG_Goto_Btn_Goto);
+	localizeControlText(AP_RID_DIALOG_GOTO_BTN_PREV,		AP_STRING_ID_DLG_Goto_Btn_Prev);
+	localizeControlText(AP_RID_DIALOG_GOTO_BTN_NEXT,		AP_STRING_ID_DLG_Goto_Btn_Next);
+	localizeControlText(AP_RID_DIALOG_GOTO_TEXT_WHAT,		AP_STRING_ID_DLG_Goto_Label_What);
+	localizeControlText(AP_RID_DIALOG_GOTO_TEXT_NUMBER,		AP_STRING_ID_DLG_Goto_Label_Number);
+	localizeControlText(AP_RID_DIALOG_GOTO_TEXT_INFO,		AP_STRING_ID_DLG_Goto_Label_Help);
 
 	// Initial data
 
@@ -267,15 +250,13 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			{
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),FALSE);
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),TRUE);
-				const XAP_StringSet * pSS = m_pApp->getStringSet();
-				SetDlgItemText(hWnd,AP_RID_DIALOG_GOTO_TEXT_NUMBER,pSS->getValue(AP_STRING_ID_DLG_Goto_Label_Name));
+				localizeControlText(AP_RID_DIALOG_GOTO_TEXT_NUMBER,		AP_STRING_ID_DLG_Goto_Label_Name);
 			}
 			else
 			{
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),TRUE);
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),FALSE);
-				const XAP_StringSet * pSS = m_pApp->getStringSet();
-				SetDlgItemText(hWnd,AP_RID_DIALOG_GOTO_TEXT_NUMBER,pSS->getValue(AP_STRING_ID_DLG_Goto_Label_Number));
+				localizeControlText(AP_RID_DIALOG_GOTO_TEXT_NUMBER,		AP_STRING_ID_DLG_Goto_Label_Number);
 			}
 			return 1;
 
@@ -297,7 +278,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					m_pszOldValue = new char[1024];
 
 					SendMessage( hWndCtrl, LB_GETTEXT, (WPARAM) nIndex, (LPARAM) m_pszOldValue );
-					SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+					SetWindowTextA( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue ); //!TODO Using ANSI function
 					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
 					if( wNotifyCode == LBN_DBLCLK )
 						GoTo( m_pszOldValue );
@@ -330,7 +311,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex-1, 0);
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,	(WPARAM) nIndex-1, (LPARAM) m_pszOldValue );
 			}
-			SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+			SetWindowTextA( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue ); //!TODO Using ANSI function
 			EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
 
 			if (m_pszOldValue)
@@ -363,7 +344,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex+1, 0);
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,	(WPARAM) nIndex+1, (LPARAM) m_pszOldValue );
 			}
-			SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+			SetWindowTextA( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue ); //!TODO Using ANSI function
 			EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
 
 			if (m_pszOldValue)
@@ -393,7 +374,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					if( !pBuf )
 						return 0;
 				
-					GetWindowText( hWndCtrl, pBuf, dwTextLength + 1 );
+					GetWindowTextA( hWndCtrl, pBuf, dwTextLength + 1 ); //!TODO Using ANSI function
 
 					// If the first character is + or -, skip over it in the
 					// check loop below
@@ -413,7 +394,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 								*m_pszOldValue = '\0';
 							}
 							
-							SetWindowText( hWndCtrl, m_pszOldValue );
+							SetWindowTextA( hWndCtrl, m_pszOldValue ); //!TODO Using ANSI function
 							
 							bValueOK = FALSE;
 
@@ -457,7 +438,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					if( m_pszOldValue )
 						DELETEP( m_pszOldValue );
 					m_pszOldValue = new char[dwTextLength+1];
-					GetWindowText( hWndCtrl, m_pszOldValue, dwTextLength + 1 );
+					GetWindowTextA( hWndCtrl, m_pszOldValue, dwTextLength + 1 ); //!TODO Using ANSI function
 				}
 				else
 				{

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,13 +41,14 @@
 /*
 	Helpers
 */
+#if 0
 static UT_String 	sRslt;
 static UT_UTF8String  sRsltUTF8;
 
 const char* fromUTF8toAnsi(const char* szIn)
 {
 	sRslt =	AP_Win32App::s_fromUTF8ToAnsi(szIn);
-	return sRslt.c_str();
+	return sRslt.utf8_str();
 }
 
 const char* fromAnsitoUTF8(const char* szIn)
@@ -55,7 +56,7 @@ const char* fromAnsitoUTF8(const char* szIn)
 	sRsltUTF8 = AP_Win32App::s_fromAnsiToUTF8(szIn);				
 	return sRsltUTF8.utf8_str();
 }
-
+#endif
 
 
 /*****************************************************************/
@@ -82,7 +83,7 @@ void AP_Win32Dialog_MetaData::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame);	
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(pFrame->getApp());	
 		
-	XAP_Win32PropertySheet				sheet;
+	AP_Win32Dialog_MetaData_Sheet	sheet;
 	AP_Win32Dialog_MetaData_General		general;
 	AP_Win32Dialog_MetaData_Summary		summary;
 	AP_Win32Dialog_MetaData_Permissions	permissions;	
@@ -132,9 +133,11 @@ AP_Win32Dialog_MetaData_General::~AP_Win32Dialog_MetaData_General()
 /*
 	
 */	
-void AP_Win32Dialog_MetaData_General::_onInitDialog()
+BOOL AP_Win32Dialog_MetaData_General::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {				
-	const XAP_StringSet * pSS = getApp()->getStringSet();		
+	const XAP_StringSet * pSS = getApp()->getStringSet();
+	setStringSet(pSS);
+	setHandle(getHandle());		
 	
 	control_id_string_id rgMapping[] =
 	{						 
@@ -148,28 +151,29 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 	
 	// Localise the controls
 	for (int i = 0; i < rgMapping[i].controlId; i++)		
-		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));						
+		localizeControlText(rgMapping[i].controlId, rgMapping[i].stringId);						
 	
 	// Setup previous text	
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_TITLE,			fromUTF8toAnsi(getContainer()->getTitle().utf8_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT,		fromUTF8toAnsi(getContainer()->getSubject().utf8_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR,			fromUTF8toAnsi(getContainer()->getAuthor().utf8_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER,		fromUTF8toAnsi(getContainer()->getPublisher().utf8_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR,	fromUTF8toAnsi(getContainer()->getCoAuthor().utf8_str()));									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_TITLE,				getContainer()->getTitle().c_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT,		getContainer()->getSubject().c_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR,		getContainer()->getAuthor().c_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER,		getContainer()->getPublisher().c_str());									
+	setControlText(AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR,	getContainer()->getCoAuthor().c_str());									
 	
 	
 	HWND hParent = GetParent(getHandle());						
-	SetDlgItemText(hParent, IDOK, pSS->getValue(XAP_STRING_ID_DLG_OK));
-	SetDlgItemText(hParent, IDCANCEL, pSS->getValue(XAP_STRING_ID_DLG_Cancel));				
+	SetDlgItemText(hParent, IDOK, XAP_Win32App::getWideString(pSS->getValue(XAP_STRING_ID_DLG_OK)));
+	SetDlgItemText(hParent, IDCANCEL, XAP_Win32App::getWideString(pSS->getValue(XAP_STRING_ID_DLG_Cancel)));	
 	
-	XAP_Win32DialogHelper::s_centerDialog(hParent);							
+	centerDialog();	
+	return true;						
 }
 
 char* AP_Win32Dialog_MetaData_General::_get_text(XAP_String_Id nID, char *szBuff, int nSize)
 {
 	*szBuff=0;
-	 GetDlgItemText(getHandle(), nID, szBuff, nSize); 
-	 strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szBuff)).utf8_str());
+	 getControlText(nID, szBuff, nSize); 
+	 //strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szBuff)).utf8_str());
 	 return szBuff;
 }
 
@@ -180,7 +184,7 @@ void AP_Win32Dialog_MetaData_General::_onOK()
 {	
 	char szBuff[1024];
 
-	m_sTitle = 	_get_text(AP_RID_DIALOG_META_GENERAL_EDIT_TITLE, szBuff, sizeof(szBuff));
+	m_sTitle = _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_TITLE, szBuff, sizeof(szBuff));
 	m_sSubject = _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT, szBuff, sizeof(szBuff));
 	m_sAuthor =  _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR, szBuff, sizeof(szBuff));
 	m_sPublisher = _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER, szBuff, sizeof(szBuff));
@@ -192,11 +196,11 @@ void AP_Win32Dialog_MetaData_General::_onOK()
 */
 void AP_Win32Dialog_MetaData_General::transferData()
 {	
-	getContainer()->setTitle(m_sTitle.c_str());
-	getContainer()->setSubject(m_sSubject.c_str());
-	getContainer()->setAuthor(m_sAuthor.c_str());
-	getContainer()->setPublisher(m_sPublisher.c_str());
-	getContainer()->setCoAuthor(m_sCoAuthor.c_str());	
+	getContainer()->setTitle(m_sTitle.utf8_str());
+	getContainer()->setSubject(m_sSubject.utf8_str());
+	getContainer()->setAuthor(m_sAuthor.utf8_str());
+	getContainer()->setPublisher(m_sPublisher.utf8_str());
+	getContainer()->setCoAuthor(m_sCoAuthor.utf8_str());	
 }
 
 
@@ -219,37 +223,40 @@ AP_Win32Dialog_MetaData_Summary::~AP_Win32Dialog_MetaData_Summary()
 /*
 	
 */	
-void AP_Win32Dialog_MetaData_Summary::_onInitDialog()
+BOOL AP_Win32Dialog_MetaData_Summary::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {		
 	const XAP_StringSet * pSS = getApp()->getStringSet();
+	setStringSet(pSS);
+	setHandle(getHandle());
 	
 	control_id_string_id rgMapping[] =
 	{						 
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_KEYWORDS,		AP_STRING_ID_DLG_MetaData_Keywords_LBL},
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_LANGUAGE,		AP_STRING_ID_DLG_MetaData_Languages_LBL},			
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_CATEGORY,		AP_STRING_ID_DLG_MetaData_Category_LBL},     
-		{AP_RID_DIALOG_META_SUMMARY_TEXT_DESCRIPTION,	AP_STRING_ID_DLG_MetaData_Description_LBL},     
+		{AP_RID_DIALOG_META_SUMMARY_TEXT_DESCRIPTION,		AP_STRING_ID_DLG_MetaData_Description_LBL},     
 		
 		{NULL,NULL}
 	};		
 	
 	// Localise the controls
 	for (int i = 0; i < rgMapping[i].controlId; i++)		
-		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
+		localizeControlText(rgMapping[i].controlId, rgMapping[i].stringId);				
 
 	// Setup previous text	
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY,		fromUTF8toAnsi(getContainer()->getCategory().utf8_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS,		fromUTF8toAnsi(getContainer()->getKeywords().utf8_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE,		fromUTF8toAnsi(getContainer()->getLanguages().utf8_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION,	fromUTF8toAnsi(getContainer()->getDescription().utf8_str()));									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY,	getContainer()->getCategory().c_str());									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS,	getContainer()->getKeywords().c_str());									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE,	getContainer()->getLanguages().c_str());									
+	setControlText(AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION,	getContainer()->getDescription().c_str());									
 
+	return true;
 }
 
 char* AP_Win32Dialog_MetaData_Summary::_get_text(XAP_String_Id nID, char *szBuff, int nSize)
 {
 	*szBuff=0;
-	 GetDlgItemText(getHandle(), nID, szBuff, nSize); 
-	 strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szBuff)).utf8_str());
+	 getControlText(nID, szBuff, nSize); 
+	 //strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szBuff)).utf8_str());
 	 return szBuff;
 }
 
@@ -272,10 +279,10 @@ void AP_Win32Dialog_MetaData_Summary::_onOK()
 */
 void AP_Win32Dialog_MetaData_Summary::transferData()
 {		
-	getContainer()->setCategory(m_sCategory.c_str());
-	getContainer()->setKeywords(m_sKeywords.c_str());
-	getContainer()->setLanguages(m_sLanguages.c_str());
-	getContainer()->setDescription(m_sLanguages.c_str());	
+	getContainer()->setCategory(m_sCategory.utf8_str());
+	getContainer()->setKeywords(m_sKeywords.utf8_str());
+	getContainer()->setLanguages(m_sLanguages.utf8_str());
+	getContainer()->setDescription(m_sDescription.utf8_str());	
 }
 
 /*
@@ -298,9 +305,11 @@ AP_Win32Dialog_MetaData_Permissions::~AP_Win32Dialog_MetaData_Permissions()
 /*
 	
 */	
-void AP_Win32Dialog_MetaData_Permissions::_onInitDialog()
+BOOL AP_Win32Dialog_MetaData_Permissions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {				
 	const XAP_StringSet * pSS = getApp()->getStringSet();
+	setStringSet(pSS);
+	setHandle(getHandle());
 	
 	control_id_string_id rgMapping[] =
 	{	
@@ -313,13 +322,15 @@ void AP_Win32Dialog_MetaData_Permissions::_onInitDialog()
 	
 	// Localise the controls
 	for (int i = 0; i < rgMapping[i].controlId; i++)		
-		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
+		localizeControlText(rgMapping[i].controlId, rgMapping[i].stringId);				
 
 	// Setup previous text	
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE,		fromUTF8toAnsi(getContainer()->getSource().utf8_str()));											
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION,	fromUTF8toAnsi(getContainer()->getRelation().utf8_str()));											
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE,	fromUTF8toAnsi(getContainer()->getCoverage().utf8_str()));											
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS,		fromUTF8toAnsi(getContainer()->getRights().utf8_str()));									
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE,	getContainer()->getSource().c_str());											
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION,	getContainer()->getRelation().c_str());											
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE,	getContainer()->getCoverage().c_str());											
+	setControlText(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS,	getContainer()->getRights().c_str());
+
+	return true;									
 
 }												
 
@@ -344,16 +355,16 @@ void AP_Win32Dialog_MetaData_Permissions::_onOK()
 */
 void AP_Win32Dialog_MetaData_Permissions::transferData()
 {			
-	getContainer()->setSource(m_sSource.c_str());
-	getContainer()->setRelation(m_sRelation.c_str());
-	getContainer()->setCoverage(m_sCoverage.c_str());
-	getContainer()->setRights(m_sRights.c_str());	
+	getContainer()->setSource(m_sSource.utf8_str());
+	getContainer()->setRelation(m_sRelation.utf8_str());
+	getContainer()->setCoverage(m_sCoverage.utf8_str());
+	getContainer()->setRights(m_sRights.utf8_str());	
 }
 
 char* AP_Win32Dialog_MetaData_Permissions::_get_text(XAP_String_Id nID, char *szBuff, int nSize)
 {
 	 *szBuff=0;
-	 GetDlgItemText(getHandle(), nID, szBuff, nSize); 
-	 strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szBuff)).utf8_str());
+	 getControlText(nID, szBuff, nSize); 
+	 //strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szBuff)).utf8_str());
 	 return szBuff;
 }

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-3 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002-3 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -70,28 +70,18 @@ AP_Win32Dialog_FormatTable::~AP_Win32Dialog_FormatTable(void)
 
 void AP_Win32Dialog_FormatTable::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);		
-	
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	LPCTSTR lpTemplate = NULL;
-	
-	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_TABLE);	
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_TABLE);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATTABLE);
-	
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-							(DLGPROC)s_dlgProc,(LPARAM)this);
-							
-	m_hwndDlg = hResult;										
+	setDialog(this);
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_FORMATTABLE) );
 
-	// Save dialog the ID number and pointer to the widget
-	UT_sint32 sid =(UT_sint32)  getDialogId();
-	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+	UT_ASSERT((hWndDialog != NULL));
+	ShowWindow(hWndDialog, SW_SHOW);
+	m_hwndDlg = hWndDialog;;
+	BringWindowToTop(m_hwndDlg);
 
-	ShowWindow(m_hwndDlg, SW_SHOW);
-	BringWindowToTop(m_hwndDlg);	
-		
+	m_pApp->rememberModelessId(m_id, this);		
 }
 
 BOOL CALLBACK AP_Win32Dialog_FormatTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -136,9 +126,6 @@ HBITMAP AP_Win32Dialog_FormatTable::_loadBitmap(HWND hWnd, UINT nId, char* pName
 	return hBitmap; 
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 // This handles the WM_INITDIALOG message for the top-level dialog.
 BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {	
@@ -158,7 +145,15 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	y = rect.bottom - rect.top;
 	
 	/* Localise controls*/
-	_DSX(FORMATTABLE_BTN_CANCEL,		DLG_Close);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL,	 XAP_STRING_ID_DLG_Close);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_BTN_APPLY,	 XAP_STRING_ID_DLG_Apply);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUND,	 AP_STRING_ID_DLG_FormatTable_Color);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_TEXT_PREVIEW,	 AP_STRING_ID_DLG_FormatTable_Preview);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_TEXT_BORDERS,	 AP_STRING_ID_DLG_FormatTable_Border_Color);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_TEXT_BORDER,	 AP_STRING_ID_DLG_FormatTable_Color);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUNDS,	 AP_STRING_ID_DLG_FormatTable_Background);
+	localizeControlText(AP_RID_DIALOG_FORMATTABLE_TEXT_APPLYTO,	 AP_STRING_ID_DLG_FormatTable_Apply_To);
+/*	_DSX(FORMATTABLE_BTN_CANCEL,		DLG_Close);
 	_DSX(FORMATTABLE_BTN_APPLY,			DLG_Apply);
 	_DS(FORMATTABLE_TEXT_BACKGROUND,	DLG_FormatTable_Color);
 	_DS(FORMATTABLE_TEXT_PREVIEW,		DLG_FormatTable_Preview);
@@ -166,8 +161,9 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_DS(FORMATTABLE_TEXT_BORDER, 		DLG_FormatTable_Color);
 	_DS(FORMATTABLE_TEXT_BACKGROUNDS, 	DLG_FormatTable_Background);
 	_DS(FORMATTABLE_TEXT_APPLYTO,	 	DLG_FormatTable_Apply_To);
+*/
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));	
+	localizeDialogTitle(AP_STRING_ID_DLG_FormatTableTitle);
 	
 	
 	/* Load the bitmaps into the dialog box */								
@@ -387,7 +383,7 @@ void AP_Win32Dialog_FormatTable::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hwndDlg, m_WindowName);
+		setDialogTitle(m_WindowName); 
 
 		SetWindowLong(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,

@@ -58,24 +58,15 @@ AP_Win32Dialog_MarkRevisions::~AP_Win32Dialog_MarkRevisions(void)
 void AP_Win32Dialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	// raise the dialog
+	UT_ASSERT(m_id == AP_DIALOG_ID_MARK_REVISIONS);
+
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
-	UT_ASSERT(m_id == AP_DIALOG_ID_MARK_REVISIONS);
-
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MARK_REVISIONS);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
-	if(result == -1)
-		UT_DEBUGMSG(( "AP_Win32Dialog_MarkRevisions::runModal error %d\n", GetLastError() ));
-
+	
+	// raise the dialog
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_MARK_REVISIONS));
 }
 
 BOOL CALLBACK AP_Win32Dialog_MarkRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -100,22 +91,18 @@ BOOL CALLBACK AP_Win32Dialog_MarkRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM 
 	}
 }
 
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MARK_REVISIONS_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	SetWindowText(hWnd, getTitle());
+	setDialogTitle(getTitle());
 
 	// localize controls
-	_DSX(BTN_OK,			DLG_OK);
-	_DSX(BTN_CANCEL,		DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_MARK_REVISIONS_BTN_OK, 	XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_MARK_REVISIONS_BTN_CANCEL, 	XAP_STRING_ID_DLG_Cancel);
 
 	char * pStr = getRadio1Label();
 	if(pStr)
 	{
-		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO1,pStr);
+		setControlText(AP_RID_DIALOG_MARK_REVISIONS_RADIO1,pStr);
 		FREEP(pStr);
 
 		CheckDlgButton(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO1,BST_CHECKED);
@@ -123,10 +110,10 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 		SetFocus(h);
 
 		pStr = getComment1();
-		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL1,pStr);
+		setControlText(AP_RID_DIALOG_MARK_REVISIONS_LABEL1,pStr);
 		FREEP(pStr);
 
-		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO2,getRadio2Label());
+		setControlText(AP_RID_DIALOG_MARK_REVISIONS_RADIO2,getRadio2Label());
 
 		//disable the edit box
 		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_EDIT2);
@@ -158,7 +145,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 	}
 
-	SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL2,getComment2Label());
+	setControlText(AP_RID_DIALOG_MARK_REVISIONS_LABEL2,getComment2Label());
 
 
 
@@ -206,7 +193,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 		{
 			// get the text from the edit control
 			char text[200];
-			GetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_EDIT2, text, 200);
+			getControlText(AP_RID_DIALOG_MARK_REVISIONS_EDIT2, text, 200);
 			setComment2(text);
 		}
 

@@ -21,13 +21,13 @@
 #define AP_WIN32DIALOG_TAB_H
 
 #include "ap_Dialog_Tab.h"
-#include "xap_Win32DialogHelper.h"
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Tab: public AP_Dialog_Tab, XAP_Win32Dialog
+class AP_Win32Dialog_Tab: public AP_Dialog_Tab, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -38,7 +38,6 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 private:
-	XAP_Win32DialogHelper	_win32Dialog;
 	char Buffer[128];
 
 protected:

@@ -31,7 +31,6 @@
 #include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Win32Dialog_FormatFootnotes.h"
 #include "ap_Win32Resources.rc2"
-#include "xap_Win32DialogHelper.h"
 #include "xap_Win32LabelledSeparator.h"
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_##c,pSS->getValue(AP_STRING_ID_##s))
@@ -61,24 +60,16 @@ AP_Win32Dialog_FormatFootnotes::~AP_Win32Dialog_FormatFootnotes(void)
 
 void AP_Win32Dialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 {	
-	UT_ASSERT(pFrame);	
-	setFrame(pFrame);
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_FOOTNOTES);
 	
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 
-	LPCTSTR lpTemplate = NULL;
-	
-	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_FOOTNOTES);
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_FORMATFOOTNOTES));
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATFOOTNOTES);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-						
-	UT_ASSERT((result != -1));
 }
 
 BOOL CALLBACK AP_Win32Dialog_FormatFootnotes::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -134,22 +125,23 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	char szText[16];	
 				
 	/* localize controls  */
-	_DSX(BTN_OK,			DLG_OK);
-	_DSX(BTN_CANCEL,		DLG_Cancel);				
-	_DS(RADIO_RSEL, 		DLG_FormatFootnotes_FootRestartSec);	
-	_DS(RADIO_PAGE,			DLG_FormatFootnotes_FootRestartPage);
-	_DS(STATIC_INITFOOTVAL,	DLG_FormatFootnotes_FootInitialVal);
-	_DS(STATIC_FSTYLES1,	DLG_FormatFootnotes_FootStyle);
-	_DS(STATIC_FSTYLES2,	DLG_FormatFootnotes_FootStyle);
-	_DS(RADIO_ENDDOC,		DLG_FormatFootnotes_EndPlaceEndDoc);	
-	_DS(RADIO_ENDSEC,		DLG_FormatFootnotes_EndPlaceEndSec);	
-	_DS(STATIC_INITENDVAL,	DLG_FormatFootnotes_EndInitialVal);
-	_DS(STATIC_ESTYLES1,	DLG_FormatFootnotes_EndStyle);
-	_DS(STATIC_ESTYLES2, 	DLG_FormatFootnotes_EndStyle);
-	_DS(RADIO_ERSTSEC, 		DLG_FormatFootnotes_EndRestartSec);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_BTN_OK, 	XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_BTN_CANCEL, 	XAP_STRING_ID_DLG_Cancel);
+	
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, 	AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE, 	AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_INITFOOTVAL, 	AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES1, 	AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES2, 	AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC, 	AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC, 	AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_INITENDVAL, 	AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES1, 	AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES2, 	AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ERSTSEC, 	AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec);
 	
 	/*Caption*/
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatFootnotes_Title));
+	localizeDialogTitle(AP_STRING_ID_DLG_FormatFootnotes_Title);
 		
 	setInitialValues(); /* Parent class loads data*/
 	
@@ -195,18 +187,18 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_FSTYLE),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);	
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_FSTYLE),EM_LIMITTEXT,(WPARAM)4,(WPARAM)0);	
 	sprintf (szText, "%u", getFootnoteVal());	
-	SetDlgItemText(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_FSTYLE, szText);
+	setControlText(AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_FSTYLE, szText);
 	
 	/* Set Endnotes Spin*/ 
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_ESTYLE),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);	
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_ESTYLE),EM_LIMITTEXT,(WPARAM)4,(WPARAM)0);		
 	sprintf (szText, "%u", getEndnoteVal());	
-	SetDlgItemText(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_ESTYLE, szText);
+	setControlText(AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_ESTYLE, szText);
 	
 	
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ERSTSEC, getRestartEndnoteOnSection());
 	      
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	
 	return 0; // 0 because we called SetFocus
 
@@ -229,10 +221,10 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 		{
 			char szValue[16];
 			
-			if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_FSTYLE, szValue, 16))	
+			if (getControlText(AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_FSTYLE, szValue, 16))	
 				setFootnoteVal(atoi(szValue));
 				
-			if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_ESTYLE, szValue, 16))	
+			if (getControlText(AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_ESTYLE, szValue, 16))	
 				setEndnoteVal(atoi(szValue));
 		
 			setAnswer(AP_Dialog_FormatFootnotes::a_OK);

@@ -20,6 +20,7 @@
 #ifndef AP_WIN32DIALOG_FORMATTABLE_H
 #define AP_WIN32DIALOG_FORMATTABLE_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_FormatTable.h"
 #include "xap_Frame.h"
 #include "xap_Win32PreviewWidget.h"
@@ -28,7 +29,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FormatTable: public AP_Dialog_FormatTable
+class AP_Win32Dialog_FormatTable: public AP_Dialog_FormatTable, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

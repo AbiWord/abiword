@@ -678,7 +678,7 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 		if (hDC)
 		{
 			SIZE size;
-			::GetTextExtentPoint32(hDC, psz, strlen(psz), &size);
+			::GetTextExtentPoint32A(hDC, psz, strlen(psz), &size);  //!TODO Using ANSI function
 			if (size.cx > nMaxWidth)
 			{
 				nMaxWidth = size.cx;

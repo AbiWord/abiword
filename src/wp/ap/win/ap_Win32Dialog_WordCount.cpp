@@ -59,49 +59,29 @@ AP_Win32Dialog_WordCount::~AP_Win32Dialog_WordCount(void)
 
 void AP_Win32Dialog_WordCount::runModal(XAP_Frame * pFrame)
 {
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCTSTR lpTemplate = NULL;
-
+	UT_ASSERT(pFrame);
 	UT_ASSERT(m_id == AP_DIALOG_ID_WORDCOUNT);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	// raise the dialog
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT));
 }
 
 void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
 {
-	// raise the dialog
-	int iResult;
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCTSTR lpTemplate = NULL;
-
+	UT_ASSERT(pFrame);
 	UT_ASSERT(m_id == AP_DIALOG_ID_WORDCOUNT);
+	int iResult;
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
+	setDialog(this);
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT) );
 
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-							(DLGPROC)s_dlgProc,(LPARAM)this);
+	UT_ASSERT((hWndDialog != NULL));
+	iResult = ShowWindow(hWndDialog, SW_SHOW);
+	m_hWnd = hWndDialog;
+	iResult = BringWindowToTop(m_hWnd);
 
-	UT_ASSERT((hResult != NULL));
-
-	m_hWnd = hResult;
-
-	// Save dialog the ID number and pointer to the widget
-	UT_sint32 sid =(UT_sint32)  getDialogId();
-	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
-
-	iResult = ShowWindow( m_hWnd, SW_SHOW );
-
-	iResult = BringWindowToTop( m_hWnd );
-
+	m_pApp->rememberModelessId(m_id, this);		
 	UT_ASSERT((iResult != 0));
 }
 
@@ -168,7 +148,7 @@ void AP_Win32Dialog_WordCount::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, m_WindowName);
+	setDialogTitle(m_WindowName); 
 
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 
@@ -183,7 +163,7 @@ void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hWnd, m_WindowName);
+		setDialogTitle(m_WindowName); 
 
 		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
@@ -258,22 +238,21 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(hWnd, m_WindowName);
+	setDialogTitle(m_WindowName); 
 			
 	GR_Graphics * pG = NULL;
 	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this,pG);
 	setUpdateCounter( 1 );
 
 	// localize controls
-	_DSX(WORDCOUNT_BTN_CLOSE,		DLG_Close);
-	
-	_DS(WORDCOUNT_TEXT_STATS,		DLG_WordCount_Statistics);
-	_DS(WORDCOUNT_TEXT_PAGE,		DLG_WordCount_Pages);
-	_DS(WORDCOUNT_TEXT_WORD,		DLG_WordCount_Words);
-	_DS(WORDCOUNT_TEXT_CH,			DLG_WordCount_Characters_No);
-	_DS(WORDCOUNT_TEXT_CHSP,		DLG_WordCount_Characters_Sp);
-	_DS(WORDCOUNT_TEXT_PARA,		DLG_WordCount_Paragraphs);
-	_DS(WORDCOUNT_TEXT_LINE,		DLG_WordCount_Lines);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_BTN_CLOSE,		XAP_STRING_ID_DLG_Close);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_TEXT_STATS,	AP_STRING_ID_DLG_WordCount_Statistics);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_TEXT_PAGE,	AP_STRING_ID_DLG_WordCount_Pages);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_TEXT_WORD,	AP_STRING_ID_DLG_WordCount_Words);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_TEXT_CH,		AP_STRING_ID_DLG_WordCount_Characters_No);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_TEXT_CHSP,	AP_STRING_ID_DLG_WordCount_Characters_Sp);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_TEXT_PARA,	AP_STRING_ID_DLG_WordCount_Paragraphs);
+	localizeControlText(AP_RID_DIALOG_WORDCOUNT_TEXT_LINE,	AP_STRING_ID_DLG_WordCount_Lines);
 
 	// set initial state
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PAGE,		m_count.page);
@@ -283,7 +262,7 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
 	
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -301,7 +280,7 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 
 	// Update the caption in case the name of the document has changed
 	ConstructWindowName();
-	SetWindowText(hWnd, m_WindowName);
+	setDialogTitle(m_WindowName); 
 }
 
 BOOL AP_Win32Dialog_WordCount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)

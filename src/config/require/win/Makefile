@@ -30,6 +30,9 @@ ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
 REQUIRE+=	_LIBICONV_
 endif
 REQUIRE+=	_LIBWV_ _POPT_ _FRIBIDI_
+ifeq ($(ABI_OPT_PANGO),1)
+REQUIRE+=	_GLIB2_ _PANGO_
+endif
 #REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_ clean_POPT_
 
 TARGET=		build
@@ -122,4 +125,26 @@ _FRIBIDI_:
 	fi
 
 #################################################################
+
+_GLIB2_:
+	@if [ -d $(ABI_ROOT)/../glib ]; then					\
+		echo Found glib in peer directory;				\
+		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../glib;	\
+	else									\
+		echo mini-glib2 not found;						\
+		echo Please checkout the mini-glib module from cvs or \
+		echo download it from where you obtained your AbiWord source. \
+		exit 1;								\
+	fi
+
+_PANGO_:
+	@if [ -d $(ABI_ROOT)/../pango ]; then					\
+		echo Found pango in peer directory;				\
+		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../pango;	\
+	else									\
+		echo pango not found;						\
+		echo Please checkout the pango module from cvs or \
+		echo download it from where you obtained your AbiWord source. \
+		exit 1;								\
+	fi
 

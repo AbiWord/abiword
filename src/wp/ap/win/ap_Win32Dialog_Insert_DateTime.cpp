@@ -56,19 +56,12 @@ XAP_Dialog * AP_Win32Dialog_Insert_DateTime::static_constructor(XAP_DialogFactor
 
 void AP_Win32Dialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 {
-    // raise the dialog
-    XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-    LPCTSTR lpTemplate = NULL;
-
-    UT_ASSERT(m_id == AP_DIALOG_ID_INSERT_DATETIME);
-
-    lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_DATETIME);
-
-    int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-                static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-                (DLGPROC)s_dlgProc,(LPARAM)this);
-    UT_ASSERT((result != -1));
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_INSERT_DATETIME);
+	
+	// raise the dialog
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_DATETIME));
 }
 
 BOOL CALLBACK AP_Win32Dialog_Insert_DateTime::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -108,32 +101,28 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 
     for (i = 0;InsertDateTimeFmts[i] != NULL;i++) {
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
-        SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)szCurrentDateTime);
+        SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)XAP_Win32App::getWideString(szCurrentDateTime));
     }
 }
 
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Insert_DateTime::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
+	localizeDialogTitle(AP_STRING_ID_DLG_DateTime_DateTimeTitle);
 
 	// localize controls
-	_DSX(DATETIME_BTN_OK,			DLG_OK);
-	_DSX(DATETIME_BTN_CANCEL,		DLG_Cancel);
-
-	_DS(DATETIME_TEXT_FORMATS,		DLG_DateTime_AvailableFormats);
+	localizeControlText(AP_RID_DIALOG_DATETIME_BTN_OK,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_DATETIME_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_DATETIME_TEXT_FORMATS,	AP_STRING_ID_DLG_DateTime_AvailableFormats);
 
 	// set initial state
     m_hwndFormats = GetDlgItem(hWnd, AP_RID_DIALOG_DATETIME_LIST_FORMATS);
     SetFormatsList();
     SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
     
-    XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+    centerDialog();	
 
     return 1;             // 1 == we did not call SetFocus()
 }

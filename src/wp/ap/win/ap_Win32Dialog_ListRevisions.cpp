@@ -65,24 +65,15 @@ AP_Win32Dialog_ListRevisions::~AP_Win32Dialog_ListRevisions(void)
 void AP_Win32Dialog_ListRevisions::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	// raise the dialog
+	UT_ASSERT(m_id == AP_DIALOG_ID_LIST_REVISIONS);
+
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
-	UT_ASSERT(m_id == AP_DIALOG_ID_LIST_REVISIONS);
-
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_LIST_REVISIONS);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
-	if(result == -1)
-		UT_DEBUGMSG(( "AP_Win32Dialog_ListRevisions::runModal error %d\n", GetLastError() ));
-
+	
+	// raise the dialog
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_LIST_REVISIONS));
 }
 
 BOOL CALLBACK AP_Win32Dialog_ListRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -111,20 +102,18 @@ BOOL CALLBACK AP_Win32Dialog_ListRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM 
 
 BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	SetWindowText(hWnd, getTitle());
+	setDialogTitle(getTitle());
 
 	// localize controls
-	_DSX(BTN_OK,			DLG_OK);
-	_DSX(BTN_CANCEL,		DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_LIST_REVISIONS_BTN_OK, 	XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_LIST_REVISIONS_BTN_CANCEL, 	XAP_STRING_ID_DLG_Cancel);
 
-	SetDlgItemText(hWnd, AP_RID_DIALOG_LIST_REVISIONS_FRAME,getLabel1());
+	setControlText(AP_RID_DIALOG_LIST_REVISIONS_FRAME,getLabel1());
 
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, AP_RID_DIALOG_LIST_REVISIONS_LIST);
 
-	LVCOLUMN col;
+	LVCOLUMNA col; //!TODO Using ANSI function
 	col.mask = LVCF_TEXT | LVCF_SUBITEM | LVCF_WIDTH;
 
 	col.iSubItem = 0;
@@ -140,7 +129,7 @@ BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 	ListView_SetItemCount(h, getItemCount());
 
-	LVITEM item;
+	LVITEMA item; //!TODO Using ANSI function
 	item.state = 0;
 	item.stateMask = 0;
 	item.iImage = 0;

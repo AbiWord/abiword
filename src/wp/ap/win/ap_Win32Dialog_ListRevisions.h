@@ -21,13 +21,14 @@
 #ifndef AP_WIN32DIALOG_LISTREVISIONS_H
 #define AP_WIN32DIALOG_LISTREVISIONS_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_ListRevisions.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_ListRevisions: public AP_Dialog_ListRevisions
+class AP_Win32Dialog_ListRevisions: public AP_Dialog_ListRevisions, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

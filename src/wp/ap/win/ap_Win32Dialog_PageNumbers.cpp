@@ -1,6 +1,6 @@
 /* AbiWord - Win32 PageNumbers Dialog
  * Copyright (C) 2001 Mike Nordell
- * Copyright (C) 2003 Jordi Mas i Hernàndez
+ * Copyright (C) 2003 Jordi Mas i Hernï¿½ndez
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32PreviewWidget.h"
+#include "xap_Win32LabelledSeparator.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -55,7 +56,6 @@ XAP_Dialog* AP_Win32Dialog_PageNumbers::static_constructor(XAP_DialogFactory* pF
 
 AP_Win32Dialog_PageNumbers::AP_Win32Dialog_PageNumbers(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id)
 :	AP_Dialog_PageNumbers(pDlgFactory,id),
-	m_helper(this),
 	m_pPreviewWidget(0),
 	m_hThisDlg(0)
 {
@@ -70,37 +70,34 @@ AP_Win32Dialog_PageNumbers::~AP_Win32Dialog_PageNumbers()
 void AP_Win32Dialog_PageNumbers::runModal(XAP_Frame* pFrame)
 {
 	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_PAGE_NUMBERS);
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_PAGENUMBERS));
 
-	// raise the dialog
-	m_helper.runModal(pFrame, AP_DIALOG_ID_PAGE_NUMBERS, AP_RID_DIALOG_PAGENUMBERS, this);
 }
 
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hThisDlg = hWnd;
 
-	const XAP_StringSet* pSS = m_pApp->getStringSet();
-
 	// Update the caption
-	m_helper.setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
+	localizeDialogTitle(AP_STRING_ID_DLG_PageNumbers_Title);
 
 	/* Localise controls*/
-	_DSX(PAGENUMBERS_BTN_OK,				DLG_OK);
-	_DSX(PAGENUMBERS_BTN_CANCEL,			DLG_Cancel);
-	_DS(PAGENUMBERS_STATIC_ALIGNMENT,		DLG_PageNumbers_Alignment);
-	_DS(PAGENUMBERS_STATIC_POSITION,		DLG_PageNumbers_Position);
-	_DS(PAGENUMBERS_STATIC_PREVIEW,			DLG_PageNumbers_Preview);
-	
-	_DS(PAGENUMBERS_RADIO_POSITIONLEFT,		DLG_PageNumbers_Left);
-	_DS(PAGENUMBERS_RADIO_POSITIONRIGHT,	DLG_PageNumbers_Right);
-	_DS(PAGENUMBERS_RADIO_POSITIONCENTER,	DLG_PageNumbers_Center);
-	_DS(PAGENUMBERS_RADIO_ALIGNFOOTER,		DLG_PageNumbers_Footer);
-	_DS(PAGENUMBERS_RADIO_ALIGNHEADER,		DLG_PageNumbers_Header);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_BTN_OK,			XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_STATIC_ALIGNMENT,		AP_STRING_ID_DLG_PageNumbers_Alignment);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_STATIC_POSITION,		AP_STRING_ID_DLG_PageNumbers_Position);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_STATIC_PREVIEW,		AP_STRING_ID_DLG_PageNumbers_Preview);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONLEFT,	AP_STRING_ID_DLG_PageNumbers_Left);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONRIGHT,	AP_STRING_ID_DLG_PageNumbers_Right);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER,	AP_STRING_ID_DLG_PageNumbers_Center);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER,	AP_STRING_ID_DLG_PageNumbers_Footer);
+	localizeControlText(AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNHEADER,	AP_STRING_ID_DLG_PageNumbers_Header);
 	
 	/*Set Default Radio buttons */	
 	CheckRadioButton(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONLEFT, AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER,
@@ -113,7 +110,7 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	m_pPreviewWidget->getGraphics()->init3dColors();
 	_updatePreview(m_align, m_control);
 	
-	m_helper.centerDialog();
+	centerDialog();
 
 	return 1;	// 0 == we called SetFocus()
 }

@@ -40,7 +40,6 @@ public:
 private:
 	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL _onDeltaPos(NM_UPDOWN * pnmud);
 };
 
 #endif /* AP_WIN32DIALOG_BREAK_H */

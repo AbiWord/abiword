@@ -26,12 +26,12 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
+#include "xap_Win32LabelledSeparator.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Tab.h"
 #include "ap_Win32Dialog_Tab.h"
-#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -49,7 +49,7 @@ XAP_Dialog * AP_Win32Dialog_Tab::static_constructor(XAP_DialogFactory * pFactory
 
 AP_Win32Dialog_Tab::AP_Win32Dialog_Tab(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_Tab(pDlgFactory,id), _win32Dialog(this)
+	: AP_Dialog_Tab(pDlgFactory,id)
 {
 }
 
@@ -63,7 +63,11 @@ void AP_Win32Dialog_Tab::runModal(XAP_Frame * pFrame)
 
 	// raise the dialog
 
-	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_TAB, AP_RID_DIALOG_TABS, this);
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_TAB);
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_TABS));
+
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
@@ -76,39 +80,40 @@ BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Tab_TabTitle));
+	localizeDialogTitle(AP_STRING_ID_DLG_Tab_TabTitle);
 
 	// localize controls
-	_DSX(TABS_OK_BUTTON,				DLG_OK);
-	_DSX(TABS_CANCEL_BUTTON,			DLG_Cancel);
-	_DSX(TABS_APPLY_BUTTON,				DLG_Apply);
-										
-	_DS(TABS_TAB_STOP_POSITION_LABEL,	DLG_Tab_Label_TabPosition);
-	_DS(TABS_TAB_STOPS_CLEARED_LABEL,	DLG_Tab_Label_TabToClear);
-	_DS(TABS_DEFAULT_TAB_STOPS_LABEL,	DLG_Tab_Label_DefaultTS);
+	localizeControlText(AP_RID_DIALOG_TABS_OK_BUTTON,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_TABS_CANCEL_BUTTON,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_TABS_APPLY_BUTTON,		XAP_STRING_ID_DLG_Apply);
+	
+	localizeControlText(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LABEL,	AP_STRING_ID_DLG_Tab_Label_TabPosition);
+	localizeControlText(AP_RID_DIALOG_TABS_TAB_STOPS_CLEARED_LABEL,	AP_STRING_ID_DLG_Tab_Label_TabToClear);
+	localizeControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_LABEL,	AP_STRING_ID_DLG_Tab_Label_DefaultTS);
+	
+	localizeControlText(AP_RID_DIALOG_TABS_ALIGNMENT_LABEL,		AP_STRING_ID_DLG_Tab_Label_Alignment);
+	localizeControlText(AP_RID_DIALOG_TABS_LEFT_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Left);
+	localizeControlText(AP_RID_DIALOG_TABS_CENTER_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Center);
+	localizeControlText(AP_RID_DIALOG_TABS_RIGHT_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Right);
+	localizeControlText(AP_RID_DIALOG_TABS_DECIMAL_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Decimal);
+	localizeControlText(AP_RID_DIALOG_TABS_BAR_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Bar);
+	
+	localizeControlText(AP_RID_DIALOG_TABS_BAR_RADIO,		AP_STRING_ID_DLG_Tab_Label_Leader);
+	localizeControlText(AP_RID_DIALOG_TABS_NONE_RADIO,		AP_STRING_ID_DLG_Tab_Radio_None);
+	localizeControlText(AP_RID_DIALOG_TABS_DOTS_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Dot);
+	localizeControlText(AP_RID_DIALOG_TABS_DASH_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Dash);
+	localizeControlText(AP_RID_DIALOG_TABS_UNDERLINE_RADIO,		AP_STRING_ID_DLG_Tab_Radio_Underline);
+	
+	localizeControlText(AP_RID_DIALOG_TABS_SET_BUTTON,		AP_STRING_ID_DLG_Tab_Button_Set);
+	localizeControlText(AP_RID_DIALOG_TABS_CLEAR_BUTTON,		AP_STRING_ID_DLG_Tab_Button_Clear);
+	localizeControlText(AP_RID_DIALOG_TABS_CLEAR_ALL_BUTTON,	AP_STRING_ID_DLG_Tab_Button_ClearAll);
 
-	_DS(TABS_ALIGNMENT_LABEL,			DLG_Tab_Label_Alignment);
-	_DS(TABS_LEFT_RADIO,				DLG_Tab_Radio_Left);
-	_DS(TABS_CENTER_RADIO,				DLG_Tab_Radio_Center);
-	_DS(TABS_RIGHT_RADIO,				DLG_Tab_Radio_Right);
-	_DS(TABS_DECIMAL_RADIO,				DLG_Tab_Radio_Decimal);
-	_DS(TABS_BAR_RADIO,					DLG_Tab_Radio_Bar);
-
-	_DS(TABS_LEADER_LABEL,				DLG_Tab_Label_Leader);
-	_DS(TABS_NONE_RADIO,				DLG_Tab_Radio_None);
-	_DS(TABS_DOTS_RADIO,				DLG_Tab_Radio_Dot);
-	_DS(TABS_DASH_RADIO,				DLG_Tab_Radio_Dash);
-	_DS(TABS_UNDERLINE_RADIO,			DLG_Tab_Radio_Underline);
-
-	_DS(TABS_SET_BUTTON,				DLG_Tab_Button_Set);
-	_DS(TABS_CLEAR_BUTTON,				DLG_Tab_Button_Clear);
-	_DS(TABS_CLEAR_ALL_BUTTON,			DLG_Tab_Button_ClearAll);
 
 	_populateWindowData();
 	
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_NONE_RADIO);
+	checkButton(AP_RID_DIALOG_TABS_NONE_RADIO);
 	_event_somethingChanged();
-	_win32Dialog.centerDialog();
+	centerDialog();
 	
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -150,7 +155,7 @@ BOOL AP_Win32Dialog_Tab::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST:
 		if(wNotifyCode == LBN_SELCHANGE)
 		{
-			UT_uint32 Index = (UT_uint32)_win32Dialog.getListSelectedIndex(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
+			UT_uint32 Index = (UT_uint32)getListSelectedIndex(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 			_event_TabSelected(Index);
 		}
 		return 1;
@@ -282,7 +287,7 @@ void AP_Win32Dialog_Tab::_controlEnable( tControl id, bool value )
 
 	if(WinControlID)
 	{
-		_win32Dialog.enableControl(WinControlID, value);
+		enableControl(WinControlID, value);
 	}
 
 }
@@ -290,19 +295,19 @@ void AP_Win32Dialog_Tab::_controlEnable( tControl id, bool value )
 
 eTabType AP_Win32Dialog_Tab::_gatherAlignment()
 {
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_LEFT_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_LEFT_RADIO))
 		return FL_TAB_LEFT;
 
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_RIGHT_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_RIGHT_RADIO))
 		return FL_TAB_RIGHT;
 
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_CENTER_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_CENTER_RADIO))
 		return FL_TAB_CENTER;
 
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_DECIMAL_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_DECIMAL_RADIO))
 		return FL_TAB_DECIMAL;
 
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_BAR_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_BAR_RADIO))
 		return FL_TAB_BAR;
 
 	return FL_TAB_NONE;
@@ -311,24 +316,24 @@ eTabType AP_Win32Dialog_Tab::_gatherAlignment()
 
 void AP_Win32Dialog_Tab::_setAlignment( eTabType a )
 {
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_LEFT_RADIO, a == FL_TAB_LEFT);
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_RIGHT_RADIO, a == FL_TAB_RIGHT);
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_CENTER_RADIO, a == FL_TAB_CENTER);
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_DECIMAL_RADIO, a == FL_TAB_DECIMAL);
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_BAR_RADIO, a == FL_TAB_BAR);
+	checkButton(AP_RID_DIALOG_TABS_LEFT_RADIO, a == FL_TAB_LEFT);
+	checkButton(AP_RID_DIALOG_TABS_RIGHT_RADIO, a == FL_TAB_RIGHT);
+	checkButton(AP_RID_DIALOG_TABS_CENTER_RADIO, a == FL_TAB_CENTER);
+	checkButton(AP_RID_DIALOG_TABS_DECIMAL_RADIO, a == FL_TAB_DECIMAL);
+	checkButton(AP_RID_DIALOG_TABS_BAR_RADIO, a == FL_TAB_BAR);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 eTabLeader AP_Win32Dialog_Tab::_gatherLeader()
 {
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_DOTS_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_DOTS_RADIO))
 		return FL_LEADER_DOT;
 
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_DASH_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_DASH_RADIO))
 		return FL_LEADER_HYPHEN;
 
-	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_UNDERLINE_RADIO))
+	if(isChecked(AP_RID_DIALOG_TABS_UNDERLINE_RADIO))
 		return FL_LEADER_UNDERLINE;
 
 	return FL_LEADER_NONE;
@@ -336,23 +341,23 @@ eTabLeader AP_Win32Dialog_Tab::_gatherLeader()
 
 void AP_Win32Dialog_Tab::_setLeader( eTabLeader a )
 {
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_NONE_RADIO, a == FL_LEADER_NONE);
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_DOTS_RADIO, a == FL_LEADER_DOT);
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_DASH_RADIO, a == FL_LEADER_HYPHEN);
-	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_UNDERLINE_RADIO, a == FL_LEADER_UNDERLINE);
+	checkButton(AP_RID_DIALOG_TABS_NONE_RADIO, a == FL_LEADER_NONE);
+	checkButton(AP_RID_DIALOG_TABS_DOTS_RADIO, a == FL_LEADER_DOT);
+	checkButton(AP_RID_DIALOG_TABS_DASH_RADIO, a == FL_LEADER_HYPHEN);
+	checkButton(AP_RID_DIALOG_TABS_UNDERLINE_RADIO, a == FL_LEADER_UNDERLINE);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 const XML_Char * AP_Win32Dialog_Tab::_gatherDefaultTabStop()
 {
-	_win32Dialog.getControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, Buffer, 128);
+	getControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, Buffer, 128);
 
 	return Buffer;
 }
 
 void AP_Win32Dialog_Tab::_setDefaultTabStop( const XML_Char* default_tab )
 {
-	_win32Dialog.setControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, default_tab);
+	setControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, default_tab);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -362,11 +367,11 @@ void AP_Win32Dialog_Tab::_setTabList( UT_uint32 count )
 	UT_uint32 i;
 
 	// clear all the items from the list
-	_win32Dialog.resetContent(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
+	resetContent(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 
 	for ( i = 0; i < count; i++ )
 	{
-		_win32Dialog.addItemToList(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST, _getTabDimensionString(i));
+		addItemToList(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST, _getTabDimensionString(i));
 	}
 	
 
@@ -376,27 +381,27 @@ void AP_Win32Dialog_Tab::_setTabList( UT_uint32 count )
 
 UT_sint32 AP_Win32Dialog_Tab::_gatherSelectTab()
 {
-	return _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
+	return getListSelectedIndex(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 }
 
 void AP_Win32Dialog_Tab::_setSelectTab( UT_sint32 v )
 {
 
-	_win32Dialog.selectListItem(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST, v);
+	selectListItem(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST, v);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 const char * AP_Win32Dialog_Tab::_gatherTabEdit()
 {
-	_win32Dialog.getControlText(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT, Buffer, 128);
+	getControlText(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT, Buffer, 128);
 
 	return Buffer;
 }
 
 void AP_Win32Dialog_Tab::_setTabEdit( const char *pszStr )
 {
-	_win32Dialog.setControlText(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT, pszStr);
+	setControlText(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT, pszStr);
 }
 
 
@@ -404,5 +409,5 @@ void AP_Win32Dialog_Tab::_setTabEdit( const char *pszStr )
 void AP_Win32Dialog_Tab::_clearList()
 {
 
-	_win32Dialog.resetContent(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
+	resetContent(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 }

@@ -122,7 +122,4 @@ BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-BOOL AP_Win32Dialog_Break::_onDeltaPos(NM_UPDOWN * pnmud)
-{
-	return FALSE;
-}
+
