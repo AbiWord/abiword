@@ -17,7 +17,7 @@ extern "C"
 typedef struct _sp_suggestions {
    int count;
    short *score;
-   short **word;
+   unsigned short **word;
 } sp_suggestions;
    
 int SpellCheckInit(char *hashname);

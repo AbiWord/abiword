@@ -32,7 +32,7 @@ PROGRAM=		$(BINDIR)/AbiWord.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		AbiWordVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv \
-			AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib Abi_expat Abi_libwv
+			AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib Abi_expat Abi_libiconv Abi_libwv
 ABI_APPLIBDEP=		$(ABI_APPLIBS)
 
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
