@@ -28,39 +28,40 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "xav_View.h"
+#include "xap_Frame.h"
 
 #include <MessageFilter.h>
 
 class MouseFilter: public BMessageFilter {
 	public:
-		MouseFilter(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame, 
+		MouseFilter(XAP_BeOSApp * pBeOSApp, XAP_Frame * pFrame, 
 				    EV_Mouse *pEVMouse);
 		filter_result Filter(BMessage *message, BHandler **target);
 	private:
-		XAP_BeOSApp 	*m_pBeOSApp;
-		XAP_BeOSFrame 	*m_pBeOSFrame;
-		EV_Mouse	*m_pEVMouse;
+		XAP_BeOSApp		*m_pBeOSApp;
+		XAP_Frame		*m_pFrame;
+		EV_Mouse		*m_pEVMouse;
 };
 		
-MouseFilter::MouseFilter(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame, 
+MouseFilter::MouseFilter(XAP_BeOSApp * pBeOSApp, XAP_Frame * pFrame, 
 				       EV_Mouse *pEVMouse)
           : BMessageFilter(B_PROGRAMMED_DELIVERY, B_LOCAL_SOURCE) {
-	m_pBeOSApp = pBeOSApp;
-	m_pBeOSFrame = pBeOSFrame;
-	m_pEVMouse = pEVMouse;
+	m_pBeOSApp	= pBeOSApp;
+	m_pFrame	= pFrame;
+	m_pEVMouse	= pEVMouse;
 }					   
 
 filter_result MouseFilter::Filter(BMessage *message, BHandler **target) { 
 	//if (message->what != B_KEY_DOWN && message->what != B_KEY_UP) {
 	switch(message->what) {
 	case B_MOUSE_DOWN:
-		((ev_BeOSMouse*)m_pEVMouse)->mouseClick(m_pBeOSFrame->getCurrentView(), message);
+		((ev_BeOSMouse*)m_pEVMouse)->mouseClick(m_pFrame->getCurrentView(), message);
 		break;
 	case B_MOUSE_UP:
-		((ev_BeOSMouse*)m_pEVMouse)->mouseUp(m_pBeOSFrame->getCurrentView(), message);
+		((ev_BeOSMouse*)m_pEVMouse)->mouseUp(m_pFrame->getCurrentView(), message);
 		break;
 	case B_MOUSE_MOVED:
-		((ev_BeOSMouse*)m_pEVMouse)->mouseMotion(m_pBeOSFrame->getCurrentView(), message);
+		((ev_BeOSMouse*)m_pEVMouse)->mouseMotion(m_pFrame->getCurrentView(), message);
 		break;
 	default:
 		return(B_DISPATCH_MESSAGE);
@@ -78,19 +79,20 @@ ev_BeOSMouse::ev_BeOSMouse(EV_EditEventMapper * pEEM) : EV_Mouse(pEEM)
 	m_bIsTracking = false;
 }
 
+/*
 bool ev_BeOSMouse::synthesize(XAP_BeOSApp * pBeOSApp, 
-				 XAP_BeOSFrame * pBeOSFrame) {
-	UT_ASSERT(pBeOSFrame); 
+				 XAP_Frame * pFrame) {
+	UT_ASSERT(pFrame); 
 
 	be_Window *pBWin = (be_Window *)pBeOSFrame->getTopLevelWindow();
 	UT_ASSERT(pBWin);
 
 	pBWin->Lock();
-	pBWin->m_pbe_DocView->AddFilter(new MouseFilter(pBeOSApp, pBeOSFrame, this));
+	pBWin->m_pbe_DocView->AddFilter(new MouseFilter(pBeOSApp, pFrame, this));
 	pBWin->Unlock();
 	return true;
 }
-
+*/
 
 void ev_BeOSMouse::mouseUp(AV_View* pView, BMessage *msg)
 {

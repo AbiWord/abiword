@@ -31,19 +31,21 @@ CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSDlg_ClipArt.cpp		\
 			xap_BeOSDlg_FileOpenSaveAs.cpp	\
 			xap_BeOSDlg_FontChooser.cpp	\
-			xap_BeOSDlg_Language.cpp	\
+			xap_BeOSDlg_Language.cpp		\
 			xap_BeOSDlg_MessageBox.cpp	\
-			xap_BeOSDlg_Password.cpp	\
+			xap_BeOSDlg_Password.cpp		\
 			xap_BeOSDlg_PluginManager.cpp	\
-			xap_BeOSDlg_Print.cpp		\
-			xap_BeOSDlg_PrintPreview.cpp    \
+			xap_BeOSDlg_Print.cpp			\
+			xap_BeOSDlg_PrintPreview.cpp	\
 			xap_BeOSEncodingManager.cpp	\
-			xap_BeOSModule.cpp              \
+			xap_BeOSModule.cpp			\
 			xap_BeOSDlg_Zoom.cpp		\
 			xap_BeOSDlg_Insert_Symbol.cpp	\
-			xap_BeOSFrame.cpp		\
-			xap_BeOSToolbar_Icons.cpp	\
-			xap_BeOSDlg_Encoding.cpp
+			xap_BeOSFrameImpl.cpp		\
+			xap_BeOSToolbar_Icons.cpp		\
+			xap_BeOSDlg_Encoding.cpp		\
+			xap_BeOSDlg_HTMLOptions.cpp	\
+			xap_BeOSFontPreview.cpp
 
 CPPSRCS+=		be_GRDrawView.cpp
 

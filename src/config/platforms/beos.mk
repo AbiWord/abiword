@@ -56,7 +56,8 @@ OPTIMIZER	= -g -O2 -Wall -W -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O3 -Wall -W -ansi -pedantic
+#OPTIMIZER	= -O3 -Wall -W -ansi -pedantic
+OPTIMIZER	= -O3
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif

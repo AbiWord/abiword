@@ -1,5 +1,5 @@
-/* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiWord
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,23 +17,25 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_BEOSTOOLBARICONS_H
-#define XAP_BEOSTOOLBARICONS_H
+#ifndef XAP_BEOSDIALOG_HTMLOPTIONS_H
+#define XAP_BEOSDIALOG_HTMLOPTIONS_H
 
-#include <Bitmap.h>
-#include "ut_types.h"
-#include "xap_Toolbar_Icons.h"
+#include "xap_Dlg_HTMLOptions.h"
+
+class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_BeOSToolbar_Icons : public AP_Toolbar_Icons
+class XAP_BeOSDialog_HTMLOptions : public XAP_Dialog_HTMLOptions
 {
 public:
-	AP_BeOSToolbar_Icons(void);
-	~AP_BeOSToolbar_Icons(void);
+	XAP_BeOSDialog_HTMLOptions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_BeOSDialog_HTMLOptions(void);
 
-	BBitmap *GetIconBitmap(const char * szIconName);
-protected:
+	virtual void			runModal(XAP_Frame * pFrame);
+
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
 };
 
-#endif /* XAP_BEOSTOOLBARICONS_H */
+#endif /* XAP_BEOSDIALOG_HTMLOPTIONS_H */

@@ -17,23 +17,45 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_BEOSTOOLBARICONS_H
-#define XAP_BEOSTOOLBARICONS_H
-
-#include <Bitmap.h>
+#include <stdio.h>
+#include <string.h>
+#include <Roster.h>
 #include "ut_types.h"
-#include "xap_Toolbar_Icons.h"
+#include "ut_string.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "xap_ViewListener.h"
+#include "xap_BeOSApp.h"
+#include "xap_Frame.h"
+#include "xap_BeOSFrameImpl.h"
+#include "ev_BeOSKeyboard.h"
+#include "ev_BeOSMouse.h"
+#include "ev_BeOSMenu.h"
+#include "ev_BeOSToolbar.h"
+#include "ev_EditMethod.h"
+#include "xav_View.h"
+#include "xad_Document.h"
 
-/*****************************************************************/
 
-class AP_BeOSToolbar_Icons : public AP_Toolbar_Icons
+#include "ap_FrameData.h"
+#include "gr_BeOSGraphics.h"
+
+
+XAP_BeOSFrameImpl::XAP_BeOSFrameImpl(XAP_Frame *pFrame, XAP_BeOSApp * app)
+	: XAP_FrameImpl(pFrame),
+	  m_pBeWin(NULL),
+	  m_dialogFactory(pFrame, static_cast<XAP_App *>(app))
 {
-public:
-	AP_BeOSToolbar_Icons(void);
-	~AP_BeOSToolbar_Icons(void);
+	// pFrame->m_pFrameImpl = this;	
+}
 
-	BBitmap *GetIconBitmap(const char * szIconName);
-protected:
-};
+XAP_BeOSFrameImpl::~XAP_BeOSFrameImpl(void)
+{
+}
 
-#endif /* XAP_BEOSTOOLBARICONS_H */
+BWindow * XAP_BeOSFrameImpl::getTopLevelWindow(void) const
+{
+	return(m_pBeWin);
+}
+
+

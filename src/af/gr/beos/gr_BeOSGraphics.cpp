@@ -273,6 +273,11 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UPDATE_VIEW
 }
 
+void GR_BeOSGraphics::drawGlyph(UT_uint32 Char,UT_sint32 xoff,UT_sint32 yoff)
+{
+	UT_ASSERT(UT_TODO);
+}
+
 BFont *findClosestFont(const char* pszFontFamily, 
 		 	const char* pszFontStyle, 
 			const char* pszFontWeight) {
@@ -487,7 +492,7 @@ UT_uint32 GR_BeOSGraphics::getFontHeight(GR_Font *font)
 	return((UT_uint32)(fh.ascent + fh.descent + fh.leading + 0.5));
 }
 
-UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	//We need to convert the string from UCS-X to UTF-8 before
 	//we use the BeOS string operations on it.
@@ -522,6 +527,11 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	}
 	
 	return 1.0f; // Shouldn't happen.
+}
+
+void GR_BeOSGraphics::getCoverage(UT_Vector& coverage)
+{
+	UT_ASSERT(UT_TODO);
 }
 
 UT_uint32 GR_BeOSGraphics::_getResolution() const
@@ -622,7 +632,7 @@ void GR_BeOSGraphics::invertRect(const UT_Rect* pRect)
 }
 
 
-void GR_BeOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+void GR_BeOSGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 						UT_sint32 w, UT_sint32 h)
 {
 	DPRINTF(printf("GR: Flll Rect\n"));
@@ -964,6 +974,28 @@ void GR_BeOSGraphics::setCursor(GR_Graphics::Cursor c)
 GR_Graphics::Cursor GR_BeOSGraphics::getCursor(void) const
 {
 	return m_cursor;
+}
+
+void GR_BeOSGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
+{
+	UT_ASSERT(UT_TODO);
+}
+
+void GR_BeOSGraphics::restoreRectangle(UT_uint32 iIndx)
+{
+	UT_ASSERT(UT_TODO);
+}
+
+UT_uint32 GR_BeOSGraphics::getDeviceResolution(void) const
+{
+	BScreen * pScreen = new BScreen(m_pShadowView->Window());
+	if (pScreen)
+	{
+		BRect r = pScreen->Frame();
+		return (UT_uint32)(r.Width()); // NOTE: assumes square pixels
+	}
+	else
+		return 800; // fallback
 }
 
 void GR_BeOSGraphics::setColor3D(GR_Color3D c)

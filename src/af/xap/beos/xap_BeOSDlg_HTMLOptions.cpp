@@ -1,5 +1,5 @@
-/* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiWord
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,36 +16,46 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
+#include <stdlib.h>
+#include <stdio.h>
 
-#ifndef EV_BEOSMOUSE_H
-#define EV_BEOSMOUSE_H
+#include "ut_string.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
 
-#include "ut_types.h"
-#include "ev_Mouse.h"
-#include "ev_EditBits.h"
-#include "xap_Frame.h"
-
+#include "xap_App.h"
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrameImpl.h"
+#include "xap_Frame.h"
 
-class BMessage;
+#include "xap_Strings.h"
+#include "xap_Dialog_Id.h"
+#include "xap_BeOSDlg_HTMLOptions.h"
+
 
 /*****************************************************************/
 
-class ev_BeOSMouse : public EV_Mouse
+XAP_Dialog * XAP_BeOSDialog_HTMLOptions::static_constructor(XAP_DialogFactory * pFactory,
+													 XAP_Dialog_Id id)
 {
-public:
-	ev_BeOSMouse(EV_EditEventMapper * pEEM);
-	void mouseUp(AV_View* pView, BMessage *msg);
-	void mouseClick(AV_View* pView, BMessage *msg);
-	void mouseMotion(AV_View* pView, BMessage *msg);
-	//bool synthesize(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame);
-private:
-	UT_uint32				m_clickState;   /* {NoClick,SingleClick,DoubleClick} */
-	EV_EditMouseContext		m_contextState; /* mouse context of click */ 
-	bool m_bIsTracking;
-};
+	XAP_BeOSDialog_HTMLOptions * p = new XAP_BeOSDialog_HTMLOptions(pFactory,id);
+	return p;
+}
 
-#endif // EV_BEOSMOUSE_H
+XAP_BeOSDialog_HTMLOptions::XAP_BeOSDialog_HTMLOptions(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
+	: XAP_Dialog_HTMLOptions(pDlgFactory,id)
+{
+}
+
+XAP_BeOSDialog_HTMLOptions::~XAP_BeOSDialog_HTMLOptions(void)
+{
+}
+
+void XAP_BeOSDialog_HTMLOptions::runModal(XAP_Frame * pFrame)
+{
+	UT_ASSERT(pFrame);
+
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
