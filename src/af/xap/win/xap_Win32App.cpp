@@ -26,8 +26,10 @@
 #include "xap_Win32Frame.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32_TB_CFactory.h"
+#include "xap_Win32Slurp.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
+#define DELETEP(p)	do { if (p) delete p; p=NULL; } while (0)
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 
 /*****************************************************************/
 
@@ -44,6 +46,9 @@ XAP_Win32App::~XAP_Win32App(void)
 {
 	DELETEP(m_pWin32ToolbarIcons);
 	DELETEP(_pClipboard);
+
+	m_pSlurp->disconnectSlurper();
+	DELETEP(m_pSlurp);
 }
 
 HINSTANCE XAP_Win32App::getInstance() const
@@ -64,6 +69,12 @@ UT_Bool XAP_Win32App::initialize(void)
 	// do anything else we need here...
 
 	_pClipboard = new AP_Win32Clipboard();
+
+	m_pSlurp = new XAP_Win32Slurp(this);
+	m_pSlurp->connectSlurper();
+	char bufExePathname[4096];
+	GetModuleFileName(NULL,bufExePathname,NrElements(bufExePathname));
+	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname);
 	
 	return UT_TRUE;
 }

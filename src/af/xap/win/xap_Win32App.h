@@ -27,6 +27,7 @@
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Strings.h"
 
+class XAP_Win32Slurp;
 class AP_Args;
 class AP_Win32Toolbar_Icons;
 
@@ -62,6 +63,8 @@ protected:
 	HINSTANCE								m_hInstance;
 	AP_Win32DialogFactory					m_dialogFactory;
 	AP_Win32Toolbar_ControlFactory			m_controlFactory;
+
+	XAP_Win32Slurp *						m_pSlurp;
 };
 
 #endif /* XAP_WIN32APP_H */

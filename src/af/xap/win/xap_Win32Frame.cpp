@@ -35,6 +35,8 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+FILE * fpLog = NULL;
+
 /*****************************************************************/
 
 #define GWL(hwnd)		(XAP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
@@ -69,6 +71,8 @@ UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 	a = RegisterClassEx(&wndclass);
 	UT_ASSERT(a);
 
+	fpLog = fopen("c:\\message.log","w");
+	
 	return UT_TRUE;
 }
 
@@ -336,6 +340,12 @@ UT_Bool XAP_Win32Frame::updateTitle()
 
 LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (fpLog)
+	{
+		fprintf(fpLog,"Msg [%lx] WParam [%lx] LParam [%lx]\n",iMsg,wParam,lParam);
+		fflush(fpLog);
+	}
+	
 	XAP_Win32Frame * f = GWL(hwnd);
 	AV_View * pView = NULL;
 
