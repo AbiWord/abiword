@@ -278,7 +278,7 @@ public:
 	// they could not be called
 	PP_RevisionAttr *   getRevisions() const {return m_pRevisions;}
 	FPVisibility        getVisibility() const {return m_eVisibility;}
-	inline bool         isHidden() const;
+	bool         isHidden() const {return _wouldBeHidden(m_eVisibility;)}
 	void                setVisibility(FPVisibility eVis);
 	void                Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height);

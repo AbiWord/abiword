@@ -1155,11 +1155,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	 b) it is part of a revision that makes it hidden; several cases
 	    fall into this category, but that is immaterial here (the
 	    decision on this is made in lookupProperties()
-*/
 bool fp_Run::isHidden() const
-{
-	return _wouldBeHidden(m_eVisibility);
-}
+*/
 
 /*!
     Determines if run would be hidden if its visibility was set to the
