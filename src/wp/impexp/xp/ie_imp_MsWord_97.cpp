@@ -27,7 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
-
+#include "ut_units.h"
 #include "pd_Document.h"
 
 #include "ie_types.h"
@@ -184,20 +184,20 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   // page margins
 		   // -left
 		   sprintf(propBuffer + strlen(propBuffer),
-			   "page-margin-left:%1.4fin;", 
-			   (((float)asep->dxaLeft) / 1440));
+			   "page-margin-left:%s;", 
+			   UT_convertToDimensionString(DIM_IN, (((float)asep->dxaLeft) / 1440), "1.4"));
 		   // -right
 		   sprintf(propBuffer + strlen(propBuffer),
-			   "page-margin-right:%1.4fin;", 
-			   (((float)asep->dxaRight) / 1440));
+			   "page-margin-right:%s;", 
+			   UT_convertToDimensionString(DIM_IN, (((float)asep->dxaRight) / 1440), "1.4"));
 		   // -top
 		   sprintf(propBuffer + strlen(propBuffer),
-			   "page-margin-top:%1.4fin;", 
-			   (((float)asep->dyaTop) / 1440));
+			   "page-margin-top:%s;", 
+			   UT_convertToDimensionString(DIM_IN, (((float)asep->dyaTop) / 1440), "1.4"));
 		   // -left
 		   sprintf(propBuffer + strlen(propBuffer),
-			   "page-margin-bottom:%1.4fin;", 
-			   (((float)asep->dyaBottom) / 1440));
+			   "page-margin-bottom:%s;", 
+			   UT_convertToDimensionString(DIM_IN, (((float)asep->dyaBottom) / 1440), "1.4"));
 
 		   // columns
 		   if (asep->ccolM1) {
@@ -206,14 +206,14 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 			      "columns:%d;", (asep->ccolM1+1));
 		      // gap between columns
 		      sprintf(propBuffer + strlen(propBuffer),
-			      "column-gap:%1.4in;", 
-			      (((float)asep->dxaColumns) / 1440));
+			      "column-gap:%s;", 
+			      UT_convertToDimensionString(DIM_IN, (((float)asep->dxaColumns) / 1440), "1.4"));
 		   }
 		   
 		   // space after section (this is the gutter, right?)
 		   sprintf(propBuffer + strlen(propBuffer),
-			   "section-space-after:%1.4fin;",
-			   (((float)asep->dzaGutter) / 1440));
+			   "section-space-after:%s;",
+			   UT_convertToDimensionString(DIM_IN, (((float)asep->dzaGutter) / 1440), "1.4"));
 
 		   // remove trailing semi-colon
 		   propBuffer[strlen(propBuffer)-1] = 0;
@@ -256,7 +256,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   if (apap->lspd.fMultLinespace) {
 		      strcat(propBuffer, "line-height:");
 		      sprintf(propBuffer + strlen(propBuffer),
-			      "%1.1f;", (((float)apap->lspd.dyaLine) / 240));
+			      "%s;", UT_convertToDimensionlessString( (((float)apap->lspd.dyaLine) / 240), "1.1"));
 		   } else { 
 		      // I'm not sure Abiword currently handles the other method
 		      // which requires setting the height of the lines exactly
@@ -266,19 +266,19 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   if (apap->dxaRight) {
 		      strcat(propBuffer, "margin-right:");
 		      sprintf(propBuffer + strlen(propBuffer),
-			      "%1.4fin;", (((float)apap->dxaRight) / 1440));
+			      "%s;", UT_convertToDimensionString(DIM_IN, (((float)apap->dxaRight) / 1440), "1.4"));
 		   }
 		   // -left
 		   if (apap->dxaLeft) {
 		      strcat(propBuffer, "margin-left:");
 		      sprintf(propBuffer + strlen(propBuffer),
-			      "%1.4fin;", (((float)apap->dxaLeft) / 1440));
+			      "%s;", UT_convertToDimensionString(DIM_IN, (((float)apap->dxaLeft) / 1440), "1.4"));
 		   }
 		   // -left first line (indent)
 		   if (apap->dxaLeft1) {
 		      strcat(propBuffer, "text-indent:");
 		      sprintf(propBuffer + strlen(propBuffer),
-			      "%1.4fin;", (((float)apap->dxaLeft1) / 1440));
+			      "%s;", UT_convertToDimensionString(DIM_IN, (((float)apap->dxaLeft1) / 1440), "1.4"));
 		   }
 		   // -top
 		   if (apap->dyaBefore) {
@@ -313,8 +313,8 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   if (apap->itbdMac) {
 		      for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
 			 sprintf(propBuffer + strlen(propBuffer),
-				 "%1.4fin/",
-				 (((float)apap->rgdxaTab[iTab]) / 1440));
+				 "%s/",
+				 UT_convertToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab]) / 1440), "1.4"));
 			 switch (apap->rgtbd[iTab].jc) {
 			  case 1:
 			    strcat(propBuffer, "C,");

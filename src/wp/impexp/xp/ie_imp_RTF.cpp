@@ -31,6 +31,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_units.h"
 #include "ie_types.h"
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
@@ -995,7 +996,7 @@ UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 			UT_sint32 tabTwips = (UT_sint32)m_currentRTFState.m_paraProps.m_tabStops.getNthItem(i);
 			double tabIn = tabTwips/(20.0*72.0);
 
-			sprintf(tempBuffer, "%04fin/L", tabIn);	// TODO - left tabs only
+			sprintf(tempBuffer, "%s/L", UT_convertToDimensionString(DIM_IN,tabIn,"04"));	// TODO - left tabs only
 			strcat(propBuffer, tempBuffer);
 		}
 
@@ -1024,15 +1025,15 @@ UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 	strcat(propBuffer, "; ");
 
 	// indents - first, left and right, top and bottom
-	sprintf(tempBuffer, "margin-top:%fin; ", (double)m_currentRTFState.m_paraProps.m_spaceBefore/1440);
+	sprintf(tempBuffer, "margin-top:%s; ",		UT_convertToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_spaceBefore/1440));
 	strcat(propBuffer, tempBuffer);
-	sprintf(tempBuffer, "margin-bottom:%fin; ", (double)m_currentRTFState.m_paraProps.m_spaceAfter/1440);
+	sprintf(tempBuffer, "margin-bottom:%s; ",	UT_convertToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_spaceAfter/1440));
 	strcat(propBuffer, tempBuffer);
-	sprintf(tempBuffer, "margin-left:%fin; ", (double)m_currentRTFState.m_paraProps.m_indentLeft/1440);
+	sprintf(tempBuffer, "margin-left:%s; ",		UT_convertToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_indentLeft/1440));
 	strcat(propBuffer, tempBuffer);
-	sprintf(tempBuffer, "margin-right:%fin; ", (double)m_currentRTFState.m_paraProps.m_indentRight/1440);
+	sprintf(tempBuffer, "margin-right:%s; ",	UT_convertToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_indentRight/1440));
 	strcat(propBuffer, tempBuffer);
-	sprintf(tempBuffer, "text-indent:%fin; ", (double)m_currentRTFState.m_paraProps.m_indentFirst/1440);
+	sprintf(tempBuffer, "text-indent:%s; ",		UT_convertToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_indentFirst/1440));
 	strcat(propBuffer, tempBuffer);
 	
 	// line spacing
@@ -1043,7 +1044,7 @@ UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 	}
 	else
 	{
-		sprintf(tempBuffer, "line-height:%f", fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240));
+		sprintf(tempBuffer, "line-height:%s",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
 	}
 
 	strcat(propBuffer, tempBuffer);

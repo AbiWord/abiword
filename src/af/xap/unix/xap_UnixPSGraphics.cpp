@@ -693,7 +693,7 @@ void PS_Graphics::_emit_SetColor(void)
 	switch(m_cs)
 	{
 	case GR_Graphics::GR_COLORSPACE_COLOR:
-		sprintf(buf,"%.8f %.8f %.8f setrgbcolor\n",
+		sprintf(buf,"%.8f %.8f %.8f setrgbcolor\n",					// TODO do we need to deal with locale for PS
 				((float) m_currentColor.m_red / (float) 255.0),
 				((float) m_currentColor.m_grn / (float) 255.0),
 				((float) m_currentColor.m_blu / (float) 255.0));
@@ -703,7 +703,8 @@ void PS_Graphics::_emit_SetColor(void)
 									(float) m_currentColor.m_grn +
 									(float) m_currentColor.m_blu ) /
 								  (float) 3.0);
-		sprintf(buf,"%.8f setgray\n", (float) newclr / (float) 255.0);
+		sprintf(buf,"%.8f setgray\n",								// TODO do we need to deal with locale for PS
+				(float) newclr / (float) 255.0);
 		break;
 	case GR_Graphics::GR_COLORSPACE_BW:
 		// Black & White is a special case of the Gray color space where

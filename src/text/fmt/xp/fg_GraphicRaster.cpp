@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
 
 #include "ut_assert.h"
 #include "ut_png.h"
@@ -170,10 +171,12 @@ UT_Bool FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	  Insert the object into the document.
 	*/
 	char szProps[256];
-	
-	sprintf(szProps, "width:%3.2fin; height:%3.2fin", 
-			m_iWidth / fDPI, m_iHeight / fDPI);
-	
+
+	strcpy(szProps,"width:");
+	strcat(szProps,UT_convertToDimensionString(DIM_IN, (double)m_iWidth/fDPI, "3.2"));
+	strcat(szProps,"; height:");
+	strcat(szProps,UT_convertToDimensionString(DIM_IN, (double)m_iHeight/fDPI, "3.2"));
+
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
 		"PROPS", szProps,

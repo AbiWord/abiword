@@ -341,7 +341,7 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	// for now, just allow fixed multiples
 	// TODO: if units were used, convert to exact spacing required
-	m_dLineSpacing = atof(getProperty("line-height"));
+	m_dLineSpacing = UT_convertDimensionless(getProperty("line-height"));
 	m_bExactSpacing = UT_FALSE;
 }
 

@@ -529,7 +529,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 	if (UT_strcmp(szLineHeight,"1.0") != 0)
 	{
-		double f = atof(szLineHeight);
+		double f = UT_convertDimensionless(szLineHeight);
 		if (f != 0.0)					// we get zero on bogus strings....
 		{
 			// don't ask me to explain the details of this conversion factor,

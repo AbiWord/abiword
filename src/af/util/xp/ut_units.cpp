@@ -26,12 +26,14 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#include <locale.h>
 
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
+#include "ut_debugmsg.h"
 #include "gr_Graphics.h"
 
 const char * UT_dimensionName(UT_Dimension dim)
@@ -74,14 +76,20 @@ UT_Dimension UT_determineDimension(const char * sz)
 	return DIM_IN;
 }
 
-const char * UT_convertToDimensionString(UT_Dimension dim, double value)
+const char * UT_convertToDimensionString(UT_Dimension dim, double value, const char * szPrecision)
 {
 	// return pointer to static buffer -- use it quickly.
+	//
+	// We temporarily force the locale back to english so that
+	// we get a period as the decimal point.
 
 	// TODO what should the decimal precision of each different
 	// TODO unit of measurement be ??
 	
 	static char buf[100];
+	char bufFormat[100];
+	double valueScaled;
+	
 	switch (dim)
 	{
 	case DIM_IN:
@@ -89,25 +97,35 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value)
 		// let them enter (via the TopRuler), so let's
 		// set the precision so that we get nice roundoff.
 		// TODO we may need to improve this later.
-		sprintf(buf,"%.4fin",value);
+		valueScaled = value;
+		sprintf(bufFormat,"%%%sfin",((szPrecision && *szPrecision) ? szPrecision : ".4"));
 		break;
 
 	case DIM_CM:
-		sprintf(buf,"%.1fcm",(value * 2.54));
+		valueScaled = (value * 2.54);
+		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
 		break;
 
 	case DIM_PI:
-		sprintf(buf,"%.0fpi",(value * 6));
+		valueScaled = (value * 6);
+		sprintf(bufFormat,"%%%sfpi",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 		break;
 
 	case DIM_PT:
-		sprintf(buf,"%.0fpt",(value * 72));
+		valueScaled = (value * 72);
+		sprintf(bufFormat,"%%%sfpt",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 		break;
 
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		valueScaled = value;
+		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 	}
+	const char * szOldLocaleInfo = setlocale(LC_NUMERIC,"English");
+	sprintf(buf,bufFormat,value);
+	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
+	setlocale(LC_NUMERIC,szOldLocaleInfo); // restore original locale
 	
 	return buf;
 }
@@ -115,12 +133,17 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value)
 
 double UT_convertToInches(const char* s)
 {
+	// NOTE: we explicitly use a period '.' as a decimal place
+	// NOTE: and assume that the locale is set to english.
+	// NOTE: all other places where we deal with these values
+	// NOTE: are wrapped with locale code.
+	
 	double result = 0;
 
 	if (!s || !*s)
 		return 0;
 
-	double f = atof(s);
+	double f = UT_convertDimensionless(s);
 	const char *p = s;
 	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
 	{
@@ -164,7 +187,7 @@ double UT_convertToPoints(const char* s)
 	if (!s || !*s)
 		return 0;
 
-	double f = atof(s);
+	double f = UT_convertDimensionless(s);
 	const char *p = s;
 	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
 	{
@@ -199,6 +222,47 @@ double UT_convertToPoints(const char* s)
 	}
 
 	return result;
+}
+
+double UT_convertDimensionless(const char * sz)
+{
+	// convert given string into a number -- without using any dimension
+	// info that may be in the string.
+	//
+	// normally we would just use atof(), but that is locale-aware and
+	// we want our file format to be locale-independent and thus portable.
+	// this means that anything we do internally (eg top ruler gadgets),
+	// needs to be in this convention.
+	//
+	// we can let the GUI do locale-specific conversions for presentation
+	// in dialogs and etc.
+
+	const char * szOldLocaleInfo = setlocale(LC_NUMERIC,"English");
+	double f = atof(sz);
+	setlocale(LC_NUMERIC,szOldLocaleInfo);
+
+	//UT_DEBUGMSG(("ConvertDimensionless: [%s] --> [%f]\n", sz, f));
+	return f;
+}
+
+const char * UT_convertToDimensionlessString(double value, const char * szPrecision)
+{
+	// return pointer to static buffer -- use it quickly.
+	//
+	// We temporarily force the locale back to english so that
+	// we get a period as the decimal point.
+
+	static char buf[100];
+
+	char bufFormat[100];
+	sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
+	
+	const char * szOldLocaleInfo = setlocale(LC_NUMERIC,"English");
+	sprintf(buf,bufFormat,value);
+	//UT_DEBUGMSG(("ConvertToDimensionlessString: [%g] --> [%s]\n",value,buf));
+	setlocale(LC_NUMERIC,szOldLocaleInfo); // restore original locale
+	
+	return buf;
 }
 
 UT_sint32 UT_paperUnits(const char * sz)
