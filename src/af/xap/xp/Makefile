@@ -28,10 +28,10 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Clipboard.cpp		\
 		xap_Dialog.cpp			\
 		xap_DialogFactory.cpp		\
-		xap_Dialog_FileOpenSaveAs.cpp	\
-		xap_Dialog_FontChooser.cpp	\
-		xap_Dialog_MessageBox.cpp	\
-		xap_Dialog_Print.cpp		\
+		xap_Dlg_FileOpenSaveAs.cpp	\
+		xap_Dlg_FontChooser.cpp		\
+		xap_Dlg_MessageBox.cpp		\
+		xap_Dlg_Print.cpp		\
 		xap_FakeClipboard.cpp		\
 		xap_Frame.cpp			\
 		xap_LoadBindings.cpp		\

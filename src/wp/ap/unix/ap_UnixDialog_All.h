@@ -34,10 +34,10 @@
 // We need better cross-platform dialog layout guidelines.
 #	define DEFAULT_BUTTON_WIDTH	85
 
-#	include "xap_UnixDialog_MessageBox.h"
-#	include "xap_UnixDialog_FileOpenSaveAs.h"
-#	include "xap_UnixDialog_Print.h"
-#	include "xap_UnixDialog_FontChooser.h"
+#	include "xap_UnixDlg_MessageBox.h"
+#	include "xap_UnixDlg_FileOpenSaveAs.h"
+#	include "xap_UnixDlg_Print.h"
+#	include "xap_UnixDlg_FontChooser.h"
 
 #	include "ap_UnixDialog_Replace.h"
 

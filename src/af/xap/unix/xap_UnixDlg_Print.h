@@ -21,7 +21,7 @@
 #define AP_UNIXDIALOG_PRINT_H
 
 #include "xap_UnixFrame.h"
-#include "xap_Dialog_Print.h"
+#include "xap_Dlg_Print.h"
 class XAP_UnixFrame;
 class PS_Graphics;
 

@@ -25,7 +25,7 @@
 #include "xap_Win32Clipboard.h"
 #include "xap_Win32Frame.h"
 #include "xap_Win32Toolbar_Icons.h"
-#include "xap_Win32Toolbar_ControlFactory.h"
+#include "xap_Win32_TB_CFactory.h"
 #include "sp_spell.h"
 
 #include "ap_Win32Frame.h"				// TODO move this

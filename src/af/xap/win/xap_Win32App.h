@@ -24,7 +24,7 @@
 #include <windows.h>
 #include "xap_App.h"
 #include "xap_Win32DialogFactory.h"
-#include "xap_Win32Toolbar_ControlFactory.h"
+#include "xap_Win32_TB_CFactory.h"
 class AP_Args;
 class AP_Win32Toolbar_Icons;
 

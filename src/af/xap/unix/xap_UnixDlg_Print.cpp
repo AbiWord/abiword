@@ -25,7 +25,7 @@
 #include "ut_assert.h"
 #include "ut_dialogHelper.h"
 #include "xap_Dialog_Id.h"
-#include "xap_UnixDialog_Print.h"
+#include "xap_UnixDlg_Print.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 #include "xap_UnixPSGraphics.h"

@@ -23,10 +23,10 @@ ABI_DEPTH = ../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		xap_UnixApp.cpp				\
-			xap_UnixDialog_FileOpenSaveAs.cpp	\
-			xap_UnixDialog_FontChooser.cpp		\
-			xap_UnixDialog_MessageBox.cpp		\
-			xap_UnixDialog_Print.cpp		\
+			xap_UnixDlg_FileOpenSaveAs.cpp		\
+			xap_UnixDlg_FontChooser.cpp		\
+			xap_UnixDlg_MessageBox.cpp		\
+			xap_UnixDlg_Print.cpp			\
 			xap_UnixFont.cpp			\
 			xap_UnixFontManager.cpp			\
 			xap_UnixFrame.cpp			\

@@ -21,7 +21,7 @@
 #define AP_UNIXDIALOG_FONTCHOOSER_H
 
 #include "xap_UnixFontManager.h"
-#include "xap_Dialog_FontChooser.h"
+#include "xap_Dlg_FontChooser.h"
 class XAP_UnixFrame;
 
 /*****************************************************************/

@@ -22,7 +22,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Win32Dialog_FileOpenSaveAs.h"
+#include "xap_Win32Dlg_FileOpenSaveAs.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 #include "ie_imp.h"

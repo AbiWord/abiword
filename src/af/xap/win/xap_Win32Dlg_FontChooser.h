@@ -20,7 +20,7 @@
 #ifndef AP_WIN32DIALOG_FONTCHOOSER_H
 #define AP_WIN32DIALOG_FONTCHOOSER_H
 
-#include "xap_Dialog_FontChooser.h"
+#include "xap_Dlg_FontChooser.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/

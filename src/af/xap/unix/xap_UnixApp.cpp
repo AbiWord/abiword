@@ -31,7 +31,7 @@
 #include "gr_UnixImage.h"
 #include "xap_UnixFrame.h"
 #include "xap_UnixToolbar_Icons.h"
-#include "xap_UnixToolbar_ControlFactory.h"
+#include "xap_Unix_TB_CFactory.h"
 #include "sp_spell.h"
 
 #include "ap_UnixFrame.h"				// TODO move this

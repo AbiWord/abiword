@@ -21,7 +21,7 @@
 #define AP_UNIXDIALOG_MESSAGEBOX_H
 
 #include "xap_UnixFrame.h"
-#include "xap_Dialog_MessageBox.h"
+#include "xap_Dlg_MessageBox.h"
 #include <glib.h>
 class XAP_UnixFrame;
 

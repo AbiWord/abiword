@@ -20,7 +20,7 @@
 #ifndef AP_WIN32DIALOG_FILEOPENSAVEAS_H
 #define AP_WIN32DIALOG_FILEOPENSAVEAS_H
 
-#include "xap_Dialog_FileOpenSaveAs.h"
+#include "xap_Dlg_FileOpenSaveAs.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/

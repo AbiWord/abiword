@@ -30,10 +30,10 @@
 
 #	define AP_WIN32DIALOG_ALL_H
 
-#	include "xap_Win32Dialog_MessageBox.h"
-#	include "xap_Win32Dialog_FileOpenSaveAs.h"
-#	include "xap_Win32Dialog_Print.h"
-#	include "xap_Win32Dialog_FontChooser.h"
+#	include "xap_Win32Dlg_MessageBox.h"
+#	include "xap_Win32Dlg_FileOpenSaveAs.h"
+#	include "xap_Win32Dlg_Print.h"
+#	include "xap_Win32Dlg_FontChooser.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 

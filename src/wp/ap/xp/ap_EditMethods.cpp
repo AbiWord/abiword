@@ -38,10 +38,10 @@
 #include "ap_Dialog_Goto.h"
 
 #include "xap_DialogFactory.h"
-#include "xap_Dialog_MessageBox.h"
-#include "xap_Dialog_FileOpenSaveAs.h"
-#include "xap_Dialog_FontChooser.h"
-#include "xap_Dialog_Print.h"
+#include "xap_Dlg_MessageBox.h"
+#include "xap_Dlg_FileOpenSaveAs.h"
+#include "xap_Dlg_FontChooser.h"
+#include "xap_Dlg_Print.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 

@@ -23,7 +23,7 @@
 
 #include "xap_App.h"
 #include "xap_UnixDialogFactory.h"
-#include "xap_UnixToolbar_ControlFactory.h"
+#include "xap_Unix_TB_CFactory.h"
 #include "xap_UnixFontManager.h"
 
 #include <gdk/gdk.h>

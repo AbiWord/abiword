@@ -24,10 +24,10 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32Clipboard.cpp			\
-			xap_Win32Dialog_FileOpenSaveAs.cpp	\
-			xap_Win32Dialog_FontChooser.cpp		\
-			xap_Win32Dialog_MessageBox.cpp		\
-			xap_Win32Dialog_Print.cpp		\
+			xap_Win32Dlg_FileOpenSaveAs.cpp		\
+			xap_Win32Dlg_FontChooser.cpp		\
+			xap_Win32Dlg_MessageBox.cpp		\
+			xap_Win32Dlg_Print.cpp			\
 			xap_Win32Frame.cpp			\
 			xap_Win32Main.cpp			\
 			xap_Win32Toolbar_Icons.cpp

@@ -28,7 +28,7 @@
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
-#include "xap_Dialog_MessageBox.h"
+#include "xap_Dlg_MessageBox.h"
 
 #include "fl_DocLayout.h"
 #include "fv_View.h"

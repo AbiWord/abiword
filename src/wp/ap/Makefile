@@ -38,7 +38,7 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_ControlFactory.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)TopRuler.$(OBJ_SUFFIX)
 
 

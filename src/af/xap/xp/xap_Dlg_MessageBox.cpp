@@ -22,7 +22,7 @@
 #include <string.h>
 #include "ut_string.h"
 #include "ut_debugmsg.h"
-#include "xap_Dialog_MessageBox.h"
+#include "xap_Dlg_MessageBox.h"
 
 #define FREEP(p)	do { if (p) free(p); } while (0)
 #define DELETEP(p)	do { if (p) delete(p); } while (0)

@@ -23,7 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Win32Dialog_Print.h"
+#include "xap_Win32Dlg_Print.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 #include "gr_Win32Graphics.h"

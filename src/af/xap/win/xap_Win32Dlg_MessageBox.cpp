@@ -19,7 +19,7 @@
 
 #include <windows.h>
 #include "ut_assert.h"
-#include "xap_Win32Dialog_MessageBox.h"
+#include "xap_Win32Dlg_MessageBox.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 

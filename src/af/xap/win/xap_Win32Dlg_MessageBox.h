@@ -20,7 +20,7 @@
 #ifndef AP_WIN32DIALOG_MESSAGEBOX_H
 #define AP_WIN32DIALOG_MESSAGEBOX_H
 
-#include "xap_Dialog_MessageBox.h"
+#include "xap_Dlg_MessageBox.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/

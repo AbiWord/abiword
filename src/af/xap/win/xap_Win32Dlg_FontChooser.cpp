@@ -23,7 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
-#include "xap_Win32Dialog_FontChooser.h"
+#include "xap_Win32Dlg_FontChooser.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 #include "gr_Graphics.h"

@@ -21,7 +21,7 @@
 
 #include <windows.h>
 #include "ap_Toolbar_Id.h"
-#include "xap_Win32Toolbar_ControlFactory.h"
+#include "xap_Win32_TB_CFactory.h"
 
 /*****************************************************************/
 /*****************************************************************/
