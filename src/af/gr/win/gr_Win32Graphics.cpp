@@ -544,7 +544,9 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 }
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
-{
+{	
+	UT_DEBUGMSG(("GR_Win32Graphics::drawLine->%d %d, %d %d %x\n", x1, y1, x2, y2, m_clrCurrent));
+	
 	if (m_eLineStyle == LINE_SOLID &&
 		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
 	 && m_iLineWidth <= tlu(1))
@@ -571,7 +573,8 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 		}
 		else
 		{
-			if (x2 < x1) {
+			if (x2 < x1) 
+			{
 				++x2;
 				const UT_sint32 temp = x1;
 				x1 = x2;
@@ -580,16 +583,19 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 			else
 				--x2;
 		}
+
 		UT_ASSERT(x1 <= x2);
 		UT_ASSERT(y1 <= y2);
-		fillRect(	color,
+
+		fillRect(color,
 					x1, y1,
 					nLineWidth + (!bVert ? x2 - x1: 0),
 					nLineWidth + ( bVert ? y2 - y1: 0));
 		return;
 	}
 
-	_UUD(x1);
+	
+	_UUD(x1); //tdu((a)
 	_UUD(x2);
 	_UUD(y1);
 	_UUD(y2);
@@ -625,7 +631,7 @@ void GR_Win32Graphics::setLineProperties(double inWidthPixels,
 	m_eJoinStyle = inJoinStyle;
 	m_eCapStyle  = inCapStyle;
 	m_eLineStyle = inLineStyle;
-	m_iLineWidth = (int)inWidthPixels;
+	m_iLineWidth = tlu((int)inWidthPixels);
 }
 
 
@@ -1354,42 +1360,49 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 }
 
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
-{	
+{
+		
 	UT_Rect * oldR = NULL;
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
 	DELETEP(oldR);
 
 	UT_uint32 iWidth = tdu(r.width);
 	UT_uint32 iHeight = tdu(r.height);
+	UT_sint32 left = tdu(r.left);
+	UT_sint32 top = tdu(r.top);
 
 	COLORREF *p = new COLORREF[iWidth * iHeight];
 	COLORREF* oldC = NULL;
 
 	m_vSaveRectBuf.setNthItem(iIndx, (void*)p, (void **)&oldC);
-	DELETEP(oldC);
+	DELETEP(oldC);	 	
 
 	for (UT_uint32 x = 0; x < iWidth; x++)
-		for (UT_uint32 y = 0; y < iHeight; y++) {
-			UT_sint32 left = tdu(r.left);
-			UT_sint32 top = tdu(r.top);
-			*(p++) = GetPixel(m_hdc, left + x, r.top + y);
-		}
+	{
+		for (UT_uint32 y = 0; y < iHeight; y++) 
+			*(p++) = GetPixel(m_hdc, left + x, top + y);		
+	
+	}
+	
 }
 
-void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) {
+void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) 
+{	
 	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
-	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);
-	
-	if (r && p) {
+	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);	
+											
+	if (r && p) 
+	{
 		UT_uint32 iWidth = tdu(r->width);
 		UT_uint32 iHeight = tdu(r->height);
+		UT_sint32 left = tdu(r->left);
+		UT_sint32 top = tdu(r->top);		
 		
 		for (int x = 0; x < iWidth; x++)
-			for (int y = 0; y < iHeight; y++) {
-				UT_sint32 left = tdu(r->left);
-				UT_sint32 top = tdu(r->top);
-				SetPixel(m_hdc, left + x, top + y, *(p++));
-			}
+		{	
+			for (int y = 0; y < iHeight; y++) 
+				SetPixel(m_hdc, left + x, top + y, *(p++));			
+		}
 	}
 }
 
