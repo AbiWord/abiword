@@ -1814,14 +1814,14 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength)
 	// remove all deleted squiggles
 	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
 	UT_uint32 j;
-	for (j=iSquiggles-1; j>=0; j--)
+	for (j=iSquiggles; j>0; j--)
 	{
-		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j);
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j-1);
 
 		if (pPOB->doesTouch(iOffset, iLength))
 		{
 			_updateSquiggle(pPOB);
-			m_vecSquiggles.deleteNthItem(j);
+			m_vecSquiggles.deleteNthItem(j-1);
 			delete pPOB;
 		}
 	}
