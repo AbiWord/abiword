@@ -67,6 +67,7 @@ ifneq ($(findstring rpm,$(ABI_DIST_TARGET)),)
 ifneq ($(RPM_LOC),)
 	DIST_DEPS += rpm
 else
+bogus1:
 	@echo ""
 	@echo "Skipping RPM packaging: [/usr/bin/rpm] not found."
 	@echo ""
@@ -78,6 +79,7 @@ ifneq ($(findstring deb,$(ABI_DIST_TARGET)),)
 ifneq ($(ALIEN_LOC),)
 	DIST_DEPS += deb
 else
+bogus2:
 	@echo ""
 	@echo "Skipping DEB packaging: [/usr/bin/alien] not found."
 	@echo ""
@@ -89,6 +91,7 @@ ifneq ($(findstring slp,$(ABI_DIST_TARGET)),)
 ifneq ($(ALIEN_LOC),)
 	DIST_DEPS += slp
 else
+bogus3:
 	@echo ""
 	@echo "Skipping SLP packaging: [/usr/bin/alien] not found."
 	@echo ""
