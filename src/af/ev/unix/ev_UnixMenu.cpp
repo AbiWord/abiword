@@ -607,6 +607,11 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{ AP_MENU_ID_TABLE_SELECT_ROW, "Menu_AbiWord_Select_Row"},
 		{ AP_MENU_ID_TABLE_SELECT_TABLE, "Menu_AbiWord_Select_Table"},
 		{ AP_MENU_ID_INSERT_DATETIME, "Menu_AbiWord_Insert_Date"},
+
+		{ AP_MENU_ID_EDIT_CUT_FRAME, GTK_STOCK_CUT},
+		{ AP_MENU_ID_EDIT_COPY_FRAME, GTK_STOCK_COPY},
+		{ AP_MENU_ID_EDIT_SELECT_FRAME, "Menu_AbiWord_Select_All"},
+		{ AP_MENU_ID_EDIT_DELETEFRAME, GTK_STOCK_DELETE},
 		
 		{AP_MENU_ID__BOGUS2__, NULL}
 	};
