@@ -33,6 +33,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Options.cpp		\
 			ap_$(ABI_FE)Dialog_Paragraph.cpp	\
 			ap_$(ABI_FE)Dialog_Spell.cpp		\
+			ap_$(ABI_FE)Dialog_Tab.cpp		\
 			ap_$(ABI_FE)Dialog_Columns.cpp		\
 			ap_$(ABI_FE)Dlg_Replace.cpp		\
 			ap_$(ABI_FE)Dlg_Break.cpp		\

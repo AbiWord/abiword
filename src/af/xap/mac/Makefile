@@ -24,11 +24,11 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacClipboard.cpp			\
-			xap_MacDialog_About.cpp		\
-			xap_MacDialog_FileOpenSaveAs.cpp	\
-			xap_MacDialog_FontChooser.cpp		\
-			xap_MacDialog_MessageBox.cpp		\
-			xap_MacDialog_Print.cpp		\
+			xap_MacDlg_About.cpp		\
+			xap_MacDlg_FileOpenSaveAs.cpp	\
+			xap_MacDlg_FontChooser.cpp		\
+			xap_MacDlg_MessageBox.cpp		\
+			xap_MacDlg_Print.cpp		\
 			xap_MacFrame.cpp			\
 			xap_MacToolbar_Icons.cpp
 
