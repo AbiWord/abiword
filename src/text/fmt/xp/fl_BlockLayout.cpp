@@ -5793,8 +5793,12 @@ void    fl_BlockLayout::StopList(void)
 		m_pDoc->listUpdate(getStruxDocHandle());
 	}
 	// format();
-	if(offset > 0 )
-		pView->_setPoint(pView->getPoint()+offset-2);
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		if(offset > 0 )
+			pView->_setPoint(pView->getPoint()+offset-2);
+	}
+
 
 	pView->_generalUpdate();
 	if (!pView->_ensureThatInsertionPointIsOnScreen())
@@ -6163,7 +6167,10 @@ void fl_BlockLayout::_createListLabel(void)
 		UT_UCSChar c = UCS_TAB;
 		bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
 	}
-	pView->_setPoint(pView->getPoint()+offset);
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->_setPoint(pView->getPoint()+offset);
+	}
 	pView->_generalUpdate();
 
 	if (!pView->_ensureThatInsertionPointIsOnScreen())

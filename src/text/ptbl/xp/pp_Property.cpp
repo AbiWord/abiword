@@ -59,6 +59,10 @@
 
 // KEEP THIS ALPHABETICALLY ORDERED UNDER PENALTY OF DEATH!
 
+
+/*!
+ * Definitions are: Property Nme: Ininital Value: Can Inherit: Pointer to class
+ */
 static PP_Property _props[] =
 {
 	{ "background-color", "ffffff", false, NULL},
@@ -105,7 +109,8 @@ static PP_Property _props[] =
 	{ "line-height", "1.0", false, NULL},
 	{ "list-decimal", ".", true, NULL},
 	{ "list-delim", "%L", true, NULL},
-	{ "list-style", "Nome",true,NULL},
+	{ "list-style", "None",true,NULL},
+    { "list-tag", "0",false,NULL},
 
 	{ "margin-bottom", "0in", false, NULL},
 	{ "margin-left", "0in",	false, NULL},
@@ -121,6 +126,7 @@ static PP_Property _props[] =
 	{ "page-margin-right",		"1in",				false, NULL},
 	{ "page-margin-top",		"1in",				false, NULL},
 
+    { "section-max-column-height", "0in",         false,NULL},
 	{ "section-space-after",	"0.25in",			false, NULL},
    	{ "start-value",			"1",				true, NULL},
 
