@@ -341,7 +341,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 		cl_brace = strchr(t, '}');
 		op_brace = strchr(t, '{');
 
-		if(!cl_brace && !op_brace)
+		if(!cl_brace || !op_brace)
 		{
 			// no props
 			if(eType == PP_REVISION_FMT_CHANGE)
