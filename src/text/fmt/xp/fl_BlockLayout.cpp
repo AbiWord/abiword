@@ -3331,7 +3331,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		//allocating and deleting the runs when loading a
 		//document. The following code tries to catch out the obvious
 		//cases when the span can remain intact. Tomas, Jan 28, 2003
-		for(i = 1; i < len; i++)
+		for(i = 1; i < len - (curOffset-blockOffset); i++)
 		{
 			iPrevType = iType;
 			if(FRIBIDI_IS_STRONG(iType))
