@@ -1127,13 +1127,13 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
     {
       if ( val )
 	{
-	  const UT_String *stringval = static_cast<const UT_String*>(val);
+	  const UT_UTF8String *stringval = static_cast<const UT_UTF8String*>(val);
 	  if( stringval->size () > 0 )
 	    {
 	      m_pie->write( "<m key=\"" ) ;
 	      _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
 	      m_pie->write ( "\">" ) ;
-	      _outputXMLChar ( stringval->c_str(), stringval->size() ) ;
+	      _outputXMLChar ( stringval->utf8_str(), stringval->size() ) ;
 	      m_pie->write ( "</m>\n" ) ;
 	    }
 	}
