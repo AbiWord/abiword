@@ -125,8 +125,8 @@ private:
 	const char		*m_szTitle;
 	const char 		*m_szURL;
 	const char		*m_szDesc;
-	UT_uint32		m_showProgress;
-	UT_uint32		m_dialogRemoved;
+	bool		m_showProgress;
+	bool		m_dialogRemoved;
 };
 
 class ABI_EXPORT AP_Dialog_Download_File_Thread : public UT_Thread
@@ -154,7 +154,7 @@ class ABI_EXPORT AP_Dialog_Download_File_Thread : public UT_Thread
 	const char 								*m_szFName;
 	AP_Dialog_Download_File::tFileData		m_data;
 	int 									m_dataPipe[2];
-	UT_uint32								m_showProgress;
+	bool								m_showProgress;
 	AP_Dialog_Download_File::tProgressData	*m_pd;
 };
 

@@ -54,7 +54,8 @@ public:
 	virtual UT_Error constructImporter (IE_ImpGraphic ** ppieg) = 0;
 	
  protected:
-	IE_ImpGraphicSniffer() {}
+	IE_ImpGraphicSniffer()
+		:m_type(IEGFT_Unknown) {}
 	
  private:
 	// only IE_ImpGraphic ever calls this

@@ -31,10 +31,10 @@
 #include "ap_Dialog_Break.h"
 
 AP_Dialog_Break::AP_Dialog_Break(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogbreak")
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogbreak"),
+	m_answer(a_OK),
+	m_break(b_PAGE)
 {
-	m_answer = a_OK;
-	m_break = b_PAGE;
 }
 
 AP_Dialog_Break::~AP_Dialog_Break(void)

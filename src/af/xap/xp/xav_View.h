@@ -71,7 +71,8 @@ class AV_ScrollObj
 	AV_ScrollObj(void * pData,
 				 void (*pfnX)(void *,UT_sint32,UT_sint32),
 				 void (*pfnY)(void *,UT_sint32,UT_sint32))
-		{ m_pData=pData; m_pfnX=pfnX; m_pfnY=pfnY; };
+			: m_pData(pData), m_pfnX(pfnX), m_pfnY(pfnY)
+		{	};
 	
 	void* m_pData;
 	void (*m_pfnX)(void *, UT_sint32 xoff, UT_sint32 xlimit);

@@ -31,12 +31,12 @@
 #include "ap_Dialog_Field.h"
 
 AP_Dialog_Field::AP_Dialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogfield")
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogfield"),
+    m_answer(a_OK),
+	m_iTypeIndex(0),
+    m_iFormatIndex(0),
+    m_pParameter(NULL)
 {
-    m_answer = a_OK;
-	m_iTypeIndex = 0;
-    m_iFormatIndex = 0;
-    m_pParameter = 0;
 }
 
 AP_Dialog_Field::~AP_Dialog_Field()

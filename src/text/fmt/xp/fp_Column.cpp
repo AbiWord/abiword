@@ -874,7 +874,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 {
 	UT_sint32 ndx = (NULL == pLastContainerToKeep) ? 0 : (findCon(pLastContainerToKeep)+1);
 	UT_ASSERT(ndx >= 0);
-	UT_sint32 i;
+	UT_uint32 i;
 
 	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
 	UT_ASSERT(pNextContainer);

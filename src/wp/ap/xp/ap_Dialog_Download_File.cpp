@@ -100,13 +100,15 @@ AP_Dialog_Download_File_Thread::event_Progress(UT_sint32 total, UT_sint32 progre
 }
 
 AP_Dialog_Download_File_Thread::AP_Dialog_Download_File_Thread(const char *szFName, int dataPipe[2], AP_Dialog_Download_File::tProgressData *pd)
-	: UT_Thread(UT_Thread::PRI_NORMAL)
+	: UT_Thread(UT_Thread::PRI_NORMAL),
+	m_szFName(UT_strdup(szFName)),
+	m_data(),
+	m_dataPipe(),
+	m_showProgress(true),
+	m_pd(pd)
 {
-	m_szFName = UT_strdup(szFName);
 	m_dataPipe[0] = dataPipe[0];
 	m_dataPipe[1] = dataPipe[1];
-	m_pd = pd;
-	m_showProgress = 1;
 }
 
 AP_Dialog_Download_File_Thread::~AP_Dialog_Download_File_Thread()
@@ -168,7 +170,20 @@ AP_Dialog_Download_File_Thread::run()
 
 
 AP_Dialog_Download_File::AP_Dialog_Download_File(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id),
+	m_data(),
+	didShowStatusBar(0),
+	m_pd(NULL),
+	m_pG(NULL),
+	m_rect3d(),
+	m_iWidth(0),
+	m_iHeight(0),
+	s_iPBFixedHeight(20),
+	m_szTitle(NULL),
+	m_szURL(NULL),
+	m_szDesc(NULL),
+	m_showProgress(true),
+	m_dialogRemoved(false)
 {
 	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
 
@@ -178,11 +193,8 @@ AP_Dialog_Download_File::AP_Dialog_Download_File(XAP_DialogFactory * pDlgFactory
 	m_pd->dlDone = 0;
 	m_pd->dlResult = 0;
 	m_pd->userAnswer = a_NONE;
-	m_dialogRemoved = 0;
 	m_szTitle = pSS->getValue(AP_STRING_ID_DLG_DlFile_Title);
 	
-	m_pG = NULL;
-	s_iPBFixedHeight = 20;
 	_setHeight(s_iPBFixedHeight);
 	// Minimum wanted width
 	_setWidth(250);

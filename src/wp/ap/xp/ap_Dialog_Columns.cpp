@@ -32,21 +32,24 @@
 #include "ap_Dialog_Columns.h"
 
 AP_Dialog_Columns::AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogcolumns")
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogcolumns"),
+	m_answer(a_OK),
+	m_pColumnsPreview(NULL),
+	m_previewDrawer(),
+	m_iColumns(0),
+	m_bLineBetween(false),
+	m_iColumnOrder (0),
+	m_HeightString("0.0in"),
+	m_SpaceAfterString("0pt"),
+	m_pDoc(NULL),
+	m_pView (NULL),
+	m_bSpaceAfterChanged(false),
+	m_bMaxHeightChanged(false),
+	m_dMarginTop(0.0),
+	m_dMarginBottom(0.0),
+	m_dMarginLeft(0.0),
+	m_dMarginRight(0.0)
 {
-
-	m_answer = a_OK;
-	m_pColumnsPreview = NULL;
-	m_bLineBetween = false;
-	m_HeightString = "0.0in";
-	m_SpaceAfterString = "0pt";
-	m_iColumnOrder = 0;
-	m_pDoc = NULL;
-	m_pView = NULL;
-	m_dMarginTop = 0.0;
-	m_dMarginBottom = 0.0;
-	m_dMarginLeft = 0.0;
-	m_dMarginRight = 0.0;
 }
 
 AP_Dialog_Columns::~AP_Dialog_Columns(void)
@@ -376,9 +379,12 @@ void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *
 //////////////////////////////////////////////////////////////////
 
 AP_Columns_preview::AP_Columns_preview(GR_Graphics * gc, AP_Dialog_Columns * pColumns)
-	: XAP_Preview(gc)
+	: XAP_Preview(gc),
+	m_previewDrawer(),
+	m_pColumns(pColumns),
+	m_iColumns(0),
+	m_bLineBetween (false)
 {
-	m_pColumns = pColumns;
 }
 
 AP_Columns_preview::~AP_Columns_preview()

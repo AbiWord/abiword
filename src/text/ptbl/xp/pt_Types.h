@@ -44,18 +44,14 @@ public:
 	//! Dummy constructor.
 	//! Resulting range is invalid until it is initialized with set
 	PD_DocumentRange(void)
+		: m_pDoc(NULL), m_pos1(0), m_pos2(0)
 		{
-			m_pDoc = NULL;
-			m_pos1 = 0;
-			m_pos2 = 0;
 		}
 
 	//! Initializing constructor.
 	PD_DocumentRange(PD_Document * pDoc, PT_DocPosition k1, PT_DocPosition k2)
+		: m_pDoc(pDoc), m_pos1(k1), m_pos2(k2)
 		{
-			m_pDoc = pDoc;
-			m_pos1 = k1;
-			m_pos2 = k2;
 		}
 
 	//! Set range limits

@@ -1126,7 +1126,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 // output cellx for each cell
 //
 		double thisX = 0.0;
-		UT_sint32 j =0;
+		UT_uint32 j =0;
 		if(vecColProps.getItemCount() > 0)
 		{
 			for(j= 0; (j< m_Table.getRight()) && (j < vecColProps.getItemCount()); j++)

@@ -97,7 +97,9 @@ class PP_Revision: public PP_AttrProp
 class PP_RevisionAttr
 {
   public:
-	PP_RevisionAttr():m_bDirty(true),m_iSuperfluous(0){};
+	PP_RevisionAttr()
+		:m_vRev(),m_sXMLstring(),m_bDirty(true),m_iSuperfluous(0),m_pLastRevision(NULL)
+		{};
 	PP_RevisionAttr(const XML_Char * r);
 	~PP_RevisionAttr();
 

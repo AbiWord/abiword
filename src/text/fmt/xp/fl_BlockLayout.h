@@ -501,12 +501,13 @@ public:
 	UT_uint32		getOffset() { return iOffset;}
 	void			setOffset(UT_uint32 value) { iOffset = value;}
 
-	void operator = (const fl_TabStop &Other)
+	fl_TabStop& operator = (const fl_TabStop &Other)
 		{
 			iPosition = Other.iPosition;
 			iType = Other.iType;
 			iLeader = Other.iLeader;
 			iOffset = Other.iOffset;
+			return *this;
 		}
 
 protected:
