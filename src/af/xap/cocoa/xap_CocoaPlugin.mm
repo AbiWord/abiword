@@ -32,7 +32,18 @@
 
 #include "pd_Document.h"
 
+#include "fd_Field.h"
+
+#include "fl_BlockLayout.h"
+
+#include "fp_Line.h"
+#include "fp_Run.h"
+
+#include "fv_View.h"
+
 #include "ie_mailmerge.h"
+
+static void s_updateMailMergeFields(XAP_Frame * pFrame, PD_Document * pDoc);
 
 @interface XAP_CocoaPlugin_DocumentImpl : NSObject <XAP_CocoaPlugin_Document>
 {
@@ -49,8 +60,11 @@
 - (NSString *)documentMailMergeSource; // may return nil
 - (void)setDocumentMailMergeSource:(NSString *)path;
 
+- (void)insertDocumentMailMergeField:(NSString *)field_name;
+
 - (NSArray *)documentMailMergeFields;
 - (void)setDocumentMailMergeFields:(NSArray *)field_array;
+- (void)unsetDocumentMailMergeFields;
 
 /* value_dictionary maps (NSString *) keys [field names] to (NSString *) values.
  */
@@ -182,11 +196,31 @@ public:
 
 - (void)setDocumentMailMergeSource:(NSString *)path
 {
-	if ([XAP_CocoaPlugin_DocumentImpl frameExists:m_pFrame])
-		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
-			{
-				pDoc->setMailMergeLink([path UTF8String]);
-			}
+	if (path)
+		if ([XAP_CocoaPlugin_DocumentImpl frameExists:m_pFrame])
+			if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
+				{
+					pDoc->setMailMergeLink([path UTF8String]);
+				}
+}
+
+- (void)insertDocumentMailMergeField:(NSString *)field_name
+{
+	if (field_name)
+		if ([field_name length])
+			if ([XAP_CocoaPlugin_DocumentImpl frameExists:m_pFrame])
+				if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView()))
+					{
+						const XML_Char param_name[] = "param";
+						const XML_Char * pParam = (const XML_Char *) [field_name UTF8String];
+						const XML_Char * pAttr[3];
+
+						pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
+						pAttr[1] = pParam;
+						pAttr[2] = 0;
+
+						pView->cmdInsertField("mail_merge", static_cast<const XML_Char **>(&pAttr[0]));
+					}
 }
 
 - (NSArray *)documentMailMergeFields
@@ -231,6 +265,17 @@ public:
 			}
 }
 
+- (void)unsetDocumentMailMergeFields
+{
+	if ([XAP_CocoaPlugin_DocumentImpl frameExists:m_pFrame])
+		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
+			{
+				pDoc->clearMailMergeMap();
+
+				s_updateMailMergeFields(m_pFrame, pDoc);
+			}
+}
+
 /* value_dictionary maps (NSString *) keys [field names] to (NSString *) values.
  */
 - (void)setDocumentMailMergeValues:(NSDictionary *)value_dictionary
@@ -256,10 +301,69 @@ public:
 
 						pDoc->setMailMergeField(cursor.key(), new_value);
 					}
+
+				s_updateMailMergeFields(m_pFrame, pDoc);
 			}
 }
 
 @end
+
+/* TODO: move this to FV_View ??
+ */
+static void s_updateMailMergeFields(XAP_Frame * pFrame, PD_Document * pDoc)
+{
+	if (FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView()))
+		{
+			pf_Frag * pf = 0;
+
+			fl_BlockLayout * pLastBlock = 0;
+
+			while (true)
+				{
+					pf = pDoc->findFragOfType(pf_Frag::PFT_Object, (UT_sint32) PTO_Field, pf);
+
+					if (!pf || (pf == pDoc->getLastFrag()))
+						break;
+
+					if (fd_Field * pField = pf->getField())
+						if (pField->getFieldType() == fd_Field::FD_MailMerge)
+							if (fl_BlockLayout * pBlock = pView->getBlockAtPosition(pf->getPos()))
+								if (pLastBlock != pBlock)
+									{
+										pLastBlock = pBlock;
+
+										fp_Run * pRun = pBlock->getFirstRun();
+										while (pRun)
+											{
+												if (pRun->getBlock() != pBlock)
+													break;
+
+												if (pRun->getType() == FPRUN_FIELD)
+													{
+														fp_FieldRun * pFieldRun = static_cast<fp_FieldRun *>(pRun);
+
+														if (pFieldRun->getFieldType() == FPFIELD_mail_merge)
+															{
+																pFieldRun->calculateValue();
+																pFieldRun->recalcWidth();
+
+																if (fp_Line * pLine = pRun->getLine())
+																	{
+																		pLine->layout();
+																	}
+															}
+													}
+												pRun = pRun->getNextRun();
+											}
+										pBlock->setNeedsReformat();
+										pBlock->redrawUpdate();
+									}
+
+					pf = pf->getNext();
+				}
+			pView->updateLayout();
+		}
+}
 
 @implementation XAP_CocoaPluginImpl
 

@@ -93,6 +93,8 @@ enum XAP_CocoaAppMenu_Id
 	NSMenu *				m_AppMenu[XAP_CocoaAppMenu_count__];
 	NSMenuItem *			m_AppItem[XAP_CocoaAppMenu_count__];
 
+	NSMutableDictionary *	m_FontDictionary;
+
 	NSMutableArray *		m_Plugins;
 	NSMutableArray *		m_PluginsTools;
 
@@ -154,6 +156,8 @@ enum XAP_CocoaAppMenu_Id
 - (void)clearContextMenu;
 - (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu; // except AbiWord & Windows
 - (void)clearAllMenus;                          // except AbiWord & Windows
+
+- (NSString *)familyNameForFont:(NSString *)fontName;
 
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem;
 - (void)removePluginMenuItem:(NSMenuItem *)menuItem;

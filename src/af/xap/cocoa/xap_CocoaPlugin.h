@@ -40,8 +40,11 @@
 - (NSString *)documentMailMergeSource; // may return nil
 - (void)setDocumentMailMergeSource:(NSString *)path;
 
+- (void)insertDocumentMailMergeField:(NSString *)field_name;
+
 - (NSArray *)documentMailMergeFields;
 - (void)setDocumentMailMergeFields:(NSArray *)field_array;
+- (void)unsetDocumentMailMergeFields;
 
 /* value_dictionary maps (NSString *) keys [field names] to (NSString *) values.
  */

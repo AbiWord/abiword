@@ -153,6 +153,8 @@
 	<string>AbiWord.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.AbiSource.AbiWord</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
 	<key>CFBundleVersion</key>
 	<string>2.3.0</string>
 	<key>NSMainNibFile</key>

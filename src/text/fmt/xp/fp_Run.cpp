@@ -3818,7 +3818,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	fd_Field * fd = NULL;
 	if(!getBlock()->isContainedByTOC())
 	{
-		getBlock()->getField(getBlockOffset()+1,fd); // Next Pos?
+		getBlock()->getField(getBlockOffset() /*+1*/,fd); // Next Pos?
 		_setField(fd);
 	}
 	else
