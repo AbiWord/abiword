@@ -1622,7 +1622,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, F
 	UT_ASSERT(iCountRuns > static_cast<UT_sint32>(iIndxVisual));
 
 	//work out the real index based on working direction
-	UT_uint32 iIndx;
+	UT_uint32 iIndx =0;
 	iIndx = eWorkingDirection == WORK_FORWARD ? iIndxVisual : iCountRuns - iIndxVisual - 1;
 
 	// of course, the loop is running in visual order, but the vector is
@@ -1632,7 +1632,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, F
 	// find out the direction of the paragraph
 	UT_BidiCharType iDomDirection = m_pBlock->getDominantDirection();
 
-	UT_sint32 iXreal;
+	UT_sint32 iXreal = 0;
 	if(iDomDirection == UT_BIDI_RTL)
 		iXreal = m_iMaxWidth - iWidth;
 	else
@@ -1706,10 +1706,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			if (eUseTabStop != USE_FIXED_TABWIDTH)
 			{
 				//if we are using the tabstops, we go through the hoops,
-				UT_sint32	iPos;
-				eTabType	iTabType;
-				eTabLeader	iTabLeader;
-				bool bRes;
+				UT_sint32	iPos = 0;
+				eTabType	iTabType =FL_TAB_NONE ;
+				eTabLeader	iTabLeader = FL_LEADER_NONE;
+				bool bRes = false;
 				if(pTabRun->isTOCTab())
 				{
 					iTabLeader = getBlock()->getTOCTabLeader(10);
@@ -1863,7 +1863,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 
 					case FL_TAB_DECIMAL:
 					{
-						UT_UCSChar *pDecimalStr;
+						UT_UCSChar *pDecimalStr =NULL;
 						UT_uint32	runLen = 0;
 
 #if 1
