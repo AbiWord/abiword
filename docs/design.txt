@@ -15,7 +15,7 @@ directory 'guts' because 'core' would look like a UNIX core file. :-)
 In this directory, you should find all of the classes which are used
 to represent a document and its formatted representation.  All files
 here are prefixed with "dg_", to indicate their membership in the
-guts module.  Classes defined here at prefixed with DG_ if they are
+guts module.  Classes defined here are prefixed with DG_ if they are
 public (usable outside the guts module), and dg_ if they are private.
 
 Here is a brief description of each major class:
@@ -28,40 +28,6 @@ Rather, it simply is the representation of a document file on disk.
 After reading or importing a document file, a DG_Document is the
 result.  To export or save a document file, a DG_Document is all you
 need.
-
---DG_DocNode
-
-A DG_Document contains a document tree which represents the hierarchy
-of the document structure.  Each node in this tree is a DG_DocNode, or
-actually, a member of some subclass of DG_DocNode.  There are two
-subclasses currently:  DG_TextNode and DG_ElementNode.  Although a
-DG_Document can result by importing other file formats, the data
-structure is very XML-centric, designed to closely mimic the XML-based
-file format used by AbiWord.
-
---DG_TextNode
-
-A DG_TextNode is a node in the tree which has document characters
-(actual content) associated with it.  Such a node is always a leaf in
-the tree -- it can have no children.  There is no arbitrary limit on
-the amount of text which might appear within a text node.  Rather, a
-text node will contain as much text as possible, as long as all text
-within it is contiguous, and has the same properties.  For example,
-using XML, an entire paragraph could be contained in a DG_TextNode, if
-there were no elements within that paragraph element.
-
---DG_ElementNode
-
-An element node is a node which represents a container element in the
-XML sense.  An element node should always have at least one child.
-Every container tag in the original XML file will have an element node
-in the document tree.  Element nodes can be queried to obtain any
-properties or attributes which were specified in the markup for that
-element.
-
-An element node is somewhat special if it corresponds to a paragraph.
-Such a node is called a block node.  We generally use the terms
-"block" and "paragraph" interchangeably.
 
 --DG_Section
 
@@ -181,24 +147,9 @@ BlockPiece.
 A Line is a line.  It represents one line of formatted content.  A
 Line is always rectangular.
 
---DG_Span
+--DG_Run
 
-A Span is the basic building block from which we create a Line.  In
-fact, a Line is represented as a collection of Spans.
-
-Spans are initially created directly from the document tree, with a
-nearly one-to-one mapping.  During layout, a LineBreaker (see below)
-tries to take all of the Spans for a given paragraph and put them into
-lines.  In most cases, there will be Spans which simply won't fit on
-the Line.  When that happens, the LineBreaker will begin to ask the
-Span about its ability to split itself.
-
-Span is abstract.  Concrete subclasses of Span are used to represent
-specific behaviors, including things like TextSpan (a Span which
-encapsulates text content), and NestedSpan (a Span which includes
-other Spans inside it).  For example, a TextSpan, when asked about
-where it can be split, will look inside its text content to find
-breaks between words.
+// TODO
 
 --DG_LineBreaker
 
@@ -216,7 +167,7 @@ The design of LineBreakers is specifically done so that the
 LineBreaker can remain ignorant of the fact that its paragraph may be
 split across multiple columns.  Basically, you create a LineBreaker,
 and you tell it run its algorithm on a given BlockLayout.  It iterates
-over all of the Span in that Block, an places them on Lines as it sees
+over all of the Runs in that Block, an places them on Lines as it sees
 fit.  For each Line, it requests space from the BlockLayout.  A chain
 of space requests ensues, as the BlockLayout must request space from
 the SectionLayout which may need to request space from a Page.
@@ -240,9 +191,7 @@ value of a property can be queried from a DG_ElementNode.
    A SectionPiece contains Columns
    A Column contains BlockPieces
    A BlockPiece contains Lines.
-   A Line contains Spans.
-   A Span may contain other Spans.
-   A Span may be a leaf, containing text or other content.
+   A Line contains Runs.
 
 -- Things don't know where they are
 
@@ -264,6 +213,9 @@ anything inside it.
 --------------------------------
 --------------------------------
 $Log$
+Revision 1.2  1998/08/12 15:41:14  eric
+Partial work updating the README files and build instructions in the tree.
+
 Revision 1.1  1998/07/21 14:25:38  eric
 Initial version of design notes.
 

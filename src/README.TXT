@@ -13,15 +13,32 @@ other
 	every one of our coding guidelines.  Don't make gratuitous sweeping
 	changes just to fix the indent level on someone else's library.
 
-doc
+wp
 	Source code for the word processor application.
 
 util
 	Source code for general-purpose utility functions.
 
-Subdirectories below this one may have additional hierarchy to further break
-things down by module.  However, eventually, source code should find itself
-in a directory which indicates the portability of the code within it.  For
-example, cross-platform code should always be placed in a subdirectory called
-'xp'.  Win32-specific code should be in a subdirectory called 'win32'.
+config
+	Files related to the build system.  This contains no actual
+	product source code.  Rather, it contains things like
+	Makefiles and scripts.
+
+dist
+	This is where things are placed after they are built.  Under this
+	directory, you'll find one or more directories which are named
+	in accordance with the platform on which the build took place.
+	The dist directory is initially empty, since nothing is placed
+	there until it has been built.
+
+ps
+	Source code for PostScript generation.  Currently used only by
+	AbiWord, but will likely be used by other products later.
+
+Subdirectories below may have additional hierarchy to further break
+things down by module.  However, eventually, source code should find
+itself in a directory which indicates the portability of the code
+within it.  For example, cross-platform code should always be placed
+in a subdirectory called 'xp'.  Win32-specific code should be in a
+subdirectory called 'win32'.
 

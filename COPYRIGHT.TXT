@@ -1,3 +1,28 @@
 
-TODO -- get a draft of our open source license!
+This tree contains source code from a variety of sources.  In each
+instance, the copyright holder has released that source code under
+some kind of license.  Source code created by AbiSource is copyrighted
+by AbiSource, Inc., and is distributed under the terms of the
+AbiSource Public License (AbiPL).  The AbiPL is contained in the file
+AbiPL.TXT.  You should read this license carefully, as it defines your
+specific rights regarding the use of covered source code, as well as
+the conditions under which those rights are given to you.
+
+Note that the AbiSource Public License deals exclusively with your
+rights to use copyrighted materials.  It does not grant you any right
+to use any trademarks held by AbiSource, Inc., or by any other vendor.
+Further information about this matter is contained in the AbiSource
+Trademark License, which is contained here in the file called
+AbiTL.TXT.
+
+Other parts of this source tree are covered by the Netscape Public
+License.  See http://www.mozilla.org/NPL/ for Netscape's information
+regarding this license.
+
+Still other parts of this source tree are covered by the Mozilla
+Public License, also created by the Netscape.  Information about this
+license is also available at http://www.mozilla.org/NPL/.
+
+
+
 

@@ -1,3 +1,66 @@
 
-TODO -- put instructions here on how to build.
+Build Instructions -- Linux
+--------
+
+The Linux tree should build easily assuming that you have all the tools
+properly installed.  You'll need gcc, make, and all the tools which usually
+accompany them.
+
+You'll also need GTK.
+
+We have not attempted building of this tree under a wide variety of different Linux distributions
+or environments.  One configuration which is known to work without difficulties is to simply
+install Red Hat 5.1, and install "Everything".  Lots of other configurations should work too,
+as long as you have the basic developments tools, and GTK.
+
+Building the tree is a pretty simple process.  We use a "diving make" system, where virtually
+every directory in the tree hierarchy has its own Makefile, which contains the instructions
+for how to build the contents of that directory.
+
+To get things started, just cd into the abi/src directory, and type 'make'.
+
+Build Instructions -- Windows NT
+--------
+
+Building on Windows NT is remarkably similar to building on Linux.  We
+use the same set of Makefiles on Linux as well as NT.  You'll need to
+get the CygWin32 tool set from Cygnus before you can build.  See
+http://www.cygnus.com/misc/gnu-win32/ for information and downloads.
+The file you need should be called cdk.exe, and it's going to be
+around 12 megabytes.  Installing this stuff on your NT machine will
+create an environment which looks remarkably like a UNIX box.  You'll
+get a standard bash shell, GNU make, and all the standard UNIX
+utilities like sed, awk, cp, ls, mv, and so on.  This environment is
+the key which allows us to use the same set of Makefiles for both NT
+and Linux.
+
+Just in case you're wondering, yes, it should be possible to build
+this tree with a subset of the tools.  There's 12 meg of stuff there,
+and we don't *really* need all of it.  However, we haven't had time or
+motivation to identify the specific set of apps we need.  Disk space
+is cheap.  If you decide to make the effort to do so, please let us
+know, and we'll share that information with other developers.
+
+You also need Visual C++ 5.0.  Obviously, we don't use the IDE at all,
+but we do use the compiler, headers, libraries, and so on.  You'll
+need them all to be in your PATH, since the Makefiles will expect them
+to be readily available.
+
+Once you have all this stuff installed, then you should be able to
+build the tree in the same way that the Linux version builds.  Just cd
+into the abi/src directory and type make.
+
+Where to the binaries go?
+--------
+
+Our build system is derived from the one used by the NSPR library from
+Mozilla.  Builds are placed in a directory which bears the name of the
+platform on which the build is taking place, under abi/src/dist.  For
+example, on my system, it builds under a directory called
+Linux2.0.34_x86_DBG.OBJ.  Your mileage may vary.  Under that
+directory, whatever it gets called on your system, you'll find a bin
+directory.  Under there, you'll find AbiWord (or AbiWord.exe).
+
+
+
 
