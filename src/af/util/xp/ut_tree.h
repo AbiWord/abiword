@@ -179,6 +179,8 @@ template <class T> class ABI_EXPORT UT_GenericTree
 	UT_uint32 getNodeCountForLevel(UT_uint32 iLevel) const;
 	T         getNthNodeForLevel(UT_uint32 iLevel, UT_uint32 n) const;
 
+	bool      getNodesForLevel(UT_uint32 iLevel, UT_GenericVector<T> & vecNodes) const;
+
   private:
 	// internall representation of a node
 	class Node
@@ -545,6 +547,22 @@ UT_GenericTree<T>::getNthNodeForLevel(UT_uint32 iLevel, UT_uint32 n) const
 	return node->getContent();
 }
 
+template <class T> bool
+UT_GenericTree<T>::getNodesForLevel(UT_uint32 iLevel, UT_GenericVector<T> & vecNodes) const
+{
+	UT_return_val_if_fail(m_nodeMap.getItemCount() > iLevel, false);
+
+	UT_GenericVector<Node*>* v = m_nodeMap.getNthItem(iLevel);
+
+	UT_return_val_if_fail( v, false );
+
+	for(UT_uint32 i = 0; i < v->getItemCount(); ++i)
+	{
+		vecNodes.addItem(v->getNthItem(i)->getContent());
+	}
+}
+
+
 template <class T> UT_GenericTree<T>::Node *
 UT_GenericTree<T>::_getNthNodeForLevel(UT_uint32 iLevel, UT_uint32 n) const
 {
@@ -554,7 +572,7 @@ UT_GenericTree<T>::_getNthNodeForLevel(UT_uint32 iLevel, UT_uint32 n) const
 
 	UT_return_val_if_fail( v, NULL );
 
-	UT_return_val_if_fail( v->getItemCount() > n, s );
+	UT_return_val_if_fail( v->getItemCount() > n, NULL );
 
 	return v->getNthItem(n);
 }

@@ -357,6 +357,8 @@ public:
 	UT_uint32				getPopUp_UnitsCount() const { return m_PopUp_UnitsCount; }
 	UT_uint32				getPopUp_UnitsIndex(const XML_Char * szUnits) const;
 
+	static const XML_Char *	reverseTranslate(const char * PopUp_Units);
+
 private:
 	void					_constructLanguageArrays();
 	void					_constructPopUpArrays();

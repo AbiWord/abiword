@@ -2,8 +2,8 @@
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
- * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
+ * Copyright (C) 2001-2004 Hubert Figuiere
+ * Copyright (C) 2002-2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
