@@ -52,21 +52,23 @@ XAP_Dialog * AP_UnixDialog_Styles::static_constructor(XAP_DialogFactory * pFacto
 
 AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-  : AP_Dialog_Styles(pDlgFactory,id), m_whichRow(0), m_whichCol(0), m_whichType(AP_UnixDialog_Styles::USED_STYLES)
+  : AP_Dialog_Styles(pDlgFactory,id), m_selectedStyle(NULL), m_whichType(AP_UnixDialog_Styles::USED_STYLES)
 {
 	m_windowMain = NULL;
 
-	m_wbuttonApply = NULL;
-	m_wbuttonClose = NULL;
+	m_btApply = NULL;
+	m_btClose = NULL;
 	m_wGnomeButtons = NULL;
 	m_wParaPreviewArea = NULL;
 	m_pParaPreviewWidget = NULL;
 	m_wCharPreviewArea = NULL;
 	m_pCharPreviewWidget = NULL;
 
-	m_wclistStyles = NULL;
-	m_wlistTypes = NULL;
-	m_wlabelDesc = NULL;
+	m_tvStyles = NULL;
+	m_rbList1 = NULL;
+	m_rbList2 = NULL;
+	m_rbList3 = NULL;
+	m_lbAttributes = NULL;
 
 	m_wModifyDialog = NULL;
 	m_wStyleNameEntry = NULL;
@@ -108,18 +110,18 @@ AP_UnixDialog_Styles::~AP_UnixDialog_Styles(void)
 /*****************************************************************/
 
 static void
-s_clist_clicked (GtkWidget *w, gint row, gint col, 
-		 GdkEvent *evt, gpointer d)
+s_tvStyles_selection_changed (GtkTreeSelection *selection,
+		gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
-	dlg->event_ClistClicked (row, col);
+	dlg->event_SelectionChanged(selection);
 }
 
 static void
 s_typeslist_changed (GtkWidget *w, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
-	dlg->event_ListClicked (gtk_entry_get_text (GTK_ENTRY(w)));
+	dlg->event_ListClicked (gtk_button_get_label (GTK_BUTTON(w)));
 }
 
 static void
@@ -141,6 +143,20 @@ s_newbtn_clicked (GtkWidget *w, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
 	dlg->event_NewClicked ();
+}
+
+static void
+s_applybtn_clicked (GtkWidget *w, gpointer d)
+{
+	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
+	dlg->event_Apply ();
+}
+
+static void
+s_closebtn_clicked (GtkWidget *w, gpointer d)
+{
+	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
+	dlg->event_Close ();
 }
 
 static void s_remove_property(GtkWidget * widget, AP_UnixDialog_Styles * me)
@@ -258,10 +274,10 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(getDoc());
 
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	m_windowMain = _constructWindow();
+	UT_ASSERT(m_windowMain);
 
-	abiSetupModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL);
+	abiSetupModalDialog(GTK_DIALOG(m_windowMain), pFrame, this, GTK_RESPONSE_CLOSE);
 
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
@@ -317,23 +333,22 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 					   reinterpret_cast<gpointer>(this));
 	
 	// connect the select_row signal to the clist
-	g_signal_connect (G_OBJECT (m_wclistStyles), "select_row",
-			  G_CALLBACK (s_clist_clicked), reinterpret_cast<gpointer>(this));
+	g_signal_connect (G_OBJECT (gtk_tree_view_get_selection(GTK_TREE_VIEW(m_tvStyles))), "changed",
+			  G_CALLBACK (s_tvStyles_selection_changed), reinterpret_cast<gpointer>(this));
 	
 	// main loop for the dialog
+	gint response;
 	while(true)
     {
-	    if(abiRunModalDialog(GTK_DIALOG(m_windowMain), false) == BUTTON_APPLY)
-		{
+		response = abiRunModalDialog(GTK_DIALOG(m_windowMain), false);
+	    if (response == GTK_RESPONSE_APPLY)
 			event_Apply();
-		}
 	    else
 		{
 			event_Close();
+			break; // exit the loop
 		}
-		break ; // exit the loop
 	}
-
 
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
@@ -379,17 +394,19 @@ void AP_UnixDialog_Styles::event_charPreviewExposed(void)
 
 void AP_UnixDialog_Styles::event_DeleteClicked(void)
 {
-	if (m_whichRow != -1)
+	if (m_selectedStyle)
     {
         gchar * style = NULL;
-		int rtn = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
-									  m_whichRow, m_whichCol, 
-									  &style);
-		if (!rtn || !style)
+		
+		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
+		GtkTreeIter iter;
+		gtk_tree_model_get_iter(model, &iter, m_selectedStyle);
+		gtk_tree_model_get(model, &iter, 0, &style, -1);
+
+		if (!style)
 			return; // ok, nothing's selected. that's fine
 
 		UT_DEBUGMSG(("DOM: attempting to delete style %s\n", style));
-
 
 		if (!getDoc()->removeStyle(style)) // actually remove the style
 		{
@@ -403,6 +420,8 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 										XAP_Dialog_MessageBox::a_OK);
 			return;
 		}
+
+		g_free(style);
 
 		getFrame()->repopulateCombos();
 		_populateWindowData(); // force a refresh
@@ -421,10 +440,14 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 	}
 }
 
-void AP_UnixDialog_Styles::event_ClistClicked(gint row, gint col)
-{
-	m_whichRow = row;
-	m_whichCol = col;
+void AP_UnixDialog_Styles::event_SelectionChanged(GtkTreeSelection * selection)
+{	
+	GtkTreeView *tree = gtk_tree_selection_get_tree_view(selection);
+	GtkTreeModel *model = gtk_tree_view_get_model(tree);
+	GList *list = gtk_tree_selection_get_selected_rows(selection, &model);
+
+	gpointer item = g_list_nth_data(list, 0);
+	m_selectedStyle = reinterpret_cast<GtkTreePath *>(item);
 
 	// refresh the previews
 	_populatePreviews(false);
@@ -455,272 +478,178 @@ void AP_UnixDialog_Styles::event_ListClicked(const char * which)
 
 GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 {
-	GtkWidget * windowStyles;
-	GtkWidget * vboxContents;
-
-	GtkWidget * buttonApply;
-	GtkWidget * buttonClose;
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_Styles.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
+
+	GtkWidget *window = glade_xml_get_widget(xml, "ap_UnixDialog_Styles");
 	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle,s);
-	windowStyles = abiDialogNew("styles dialog", TRUE, s.utf8_str());
-	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
-	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
-
-	buttonClose = abiAddStockButton(GTK_DIALOG(windowStyles),
-					GTK_STOCK_CLOSE,
-					BUTTON_CANCEL);
-
-	buttonApply = abiAddStockButton(GTK_DIALOG(windowStyles),
-					GTK_STOCK_APPLY,
-					BUTTON_APPLY);
-
-	m_windowMain   = windowStyles;
-	m_wbuttonApply = buttonApply;
-	m_wbuttonClose = buttonClose;
-
-	vboxContents = _constructWindowContents(GTK_DIALOG(windowStyles)->vbox);
-	gtk_widget_show(vboxContents);
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(windowStyles)->vbox), 
-			  vboxContents);
-
-	_connectsignals();
-	return windowStyles;
-}
-
-GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
-									GtkWidget * windowStyles)
-{
-	GtkWidget * vboxContents;
-	GtkWidget * hboxContents;
-	GtkWidget * vboxTopLeft;
-	GtkWidget * vboxTopRight;
-
-
-	GtkWidget * frameStyles;
-	GtkWidget *	listStyles;
-
-	GtkWidget * frameList;
-	GtkWidget * comboList;
-
-	GtkWidget * frameParaPrev;
-	GtkWidget * ParaPreviewArea;
-
-	GtkWidget * frameCharPrev;
-	GtkWidget * CharPreviewArea;
-
-	GtkWidget * frameDescription;
-	GtkWidget * DescriptionArea;
-
-	GtkWidget * hsepBot;
-	GtkWidget * buttonBoxStyleManip;
-
-	GtkWidget * buttonNew;
-	GtkWidget * buttonModify;
-	GtkWidget * buttonDelete;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	vboxContents = gtk_vbox_new(FALSE, 0);
-
-	hboxContents = gtk_hbox_new(FALSE, 0);
-
-	vboxTopLeft = gtk_vbox_new(FALSE, 0);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle, s);
+	gtk_window_set_title (GTK_WINDOW (window), s.utf8_str());
 
 	// list of styles goes in the top left
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Available,s);
-	frameStyles = gtk_frame_new(
-		s.utf8_str());
-	gtk_frame_set_shadow_type(GTK_FRAME(frameStyles), GTK_SHADOW_NONE);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbStyles"), pSS, AP_STRING_ID_DLG_Styles_Available);
+	
+	// treeview
+	m_tvStyles = glade_xml_get_widget(xml, "tvStyles");
+	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvStyles)), GTK_SELECTION_SINGLE);	
 
-	GtkWidget * scrollWindow = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_show(scrollWindow);
-	gtk_widget_set_size_request(scrollWindow, 120, 120);
-	gtk_container_set_border_width(GTK_CONTAINER(scrollWindow), 10);
-	gtk_container_add (GTK_CONTAINER(frameStyles), scrollWindow);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbList"), pSS, AP_STRING_ID_DLG_Styles_List);
 
-	listStyles = gtk_clist_new(1);
-	gtk_clist_set_column_width (GTK_CLIST (listStyles), 0, 100);
-	gtk_clist_column_titles_hide (GTK_CLIST (listStyles));
-	gtk_widget_show(listStyles);
-	gtk_container_add(GTK_CONTAINER(scrollWindow), listStyles);
-
-	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameStyles, TRUE, TRUE, 2);
-	gtk_widget_show(frameStyles);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_List,s);
-	frameList = gtk_frame_new(s.utf8_str());
-	gtk_frame_set_shadow_type(GTK_FRAME(frameList), GTK_SHADOW_NONE);
-	comboList = gtk_combo_new();
-
-	// TODO: translate me
-	GList * styleTypes = NULL;
-
-	styleTypes = g_list_append (styleTypes, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse))));
-	styleTypes = g_list_append (styleTypes, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_All))));
-	styleTypes = g_list_append (styleTypes, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_UserDefined))));
-
-	gtk_combo_set_popdown_strings (GTK_COMBO(comboList), styleTypes);
-	gtk_combo_set_value_in_list (GTK_COMBO(comboList), static_cast<int>(m_whichType), false);
-	gtk_container_add(GTK_CONTAINER(frameList), comboList);
-
-	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameList, FALSE, FALSE, 2);
-	gtk_widget_show(frameList);
-	gtk_widget_show(comboList);
-
-	gtk_widget_show(vboxTopLeft);
-	gtk_box_pack_start(GTK_BOX(hboxContents), vboxTopLeft, TRUE, TRUE, 2);
-
-	vboxTopRight = gtk_vbox_new(FALSE, 0);
-
+	m_rbList1 = glade_xml_get_widget(xml, "rbList1");
+	localizeButton(m_rbList1, pSS, AP_STRING_ID_DLG_Styles_LBL_InUse);
+	m_rbList2 = glade_xml_get_widget(xml, "rbList2");
+	localizeButton(m_rbList2, pSS, AP_STRING_ID_DLG_Styles_LBL_All);
+	m_rbList3 = glade_xml_get_widget(xml, "rbList3");
+	localizeButton(m_rbList3, pSS, AP_STRING_ID_DLG_Styles_LBL_UserDefined);
+	
 	// previewing and description goes in the top right
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev,s);
-	frameParaPrev = gtk_frame_new(s.utf8_str());
-	gtk_frame_set_shadow_type(GTK_FRAME(frameParaPrev), GTK_SHADOW_NONE);
 
-	ParaPreviewArea = createDrawingArea();
-	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 70);
-	gtk_container_add(GTK_CONTAINER(frameParaPrev), ParaPreviewArea);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbParagraph"), pSS, AP_STRING_ID_DLG_Styles_ParaPrev);
+	GtkWidget *frameParaPrev = glade_xml_get_widget(xml, "frameParagraph");
+	m_wParaPreviewArea = createDrawingArea();
+	gtk_drawing_area_size(GTK_DRAWING_AREA(m_wParaPreviewArea), 300, 70);
+	gtk_container_add(GTK_CONTAINER(frameParaPrev), m_wParaPreviewArea);
+	gtk_widget_show(m_wParaPreviewArea);
 
-	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameParaPrev, TRUE, TRUE, 2);
-	gtk_widget_show(ParaPreviewArea);
-	gtk_widget_show(frameParaPrev);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbCharacter"), pSS, AP_STRING_ID_DLG_Styles_CharPrev);
+	GtkWidget *frameCharPrev = glade_xml_get_widget(xml, "frameCharacter");
+	m_wCharPreviewArea = createDrawingArea();
+	gtk_drawing_area_size(GTK_DRAWING_AREA(m_wCharPreviewArea), 300, 50);
+	gtk_container_add(GTK_CONTAINER(frameCharPrev), m_wCharPreviewArea);
+	gtk_widget_show(m_wCharPreviewArea);
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev,s);
-	frameCharPrev = gtk_frame_new(s.utf8_str());
-	gtk_frame_set_shadow_type(GTK_FRAME(frameCharPrev), GTK_SHADOW_NONE);
-	CharPreviewArea = createDrawingArea();
-	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 50);
-	gtk_container_add(GTK_CONTAINER(frameCharPrev), CharPreviewArea);
-
-	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameCharPrev, TRUE, TRUE, 2);
-	gtk_widget_show(CharPreviewArea);
-	gtk_widget_show(frameCharPrev);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Description,s);
-	frameDescription = gtk_frame_new(s.utf8_str());
-	gtk_frame_set_shadow_type(GTK_FRAME(frameDescription), GTK_SHADOW_NONE);
-	DescriptionArea = gtk_label_new(NULL);
-	gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
-	gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
-	gtk_widget_set_size_request(DescriptionArea, 300, 60);
-	gtk_container_add(GTK_CONTAINER(frameDescription), DescriptionArea);
-	gtk_misc_set_alignment(GTK_MISC(DescriptionArea), 0, 0);
-	gtk_misc_set_padding(GTK_MISC(DescriptionArea), 8, 6);
-
-	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameDescription, TRUE, TRUE, 2);
-	gtk_widget_show(DescriptionArea);
-	gtk_widget_show(frameDescription);
-
-	gtk_widget_show(vboxTopRight);
-	gtk_box_pack_start(GTK_BOX(hboxContents), vboxTopRight, TRUE, TRUE, 2);
-
-
-	gtk_widget_show(hboxContents);
-	gtk_box_pack_start(GTK_BOX(vboxContents), hboxContents, TRUE, TRUE, 2);
-
-	hsepBot = gtk_hseparator_new();
-	gtk_box_pack_start(GTK_BOX(vboxContents), hsepBot, FALSE, FALSE, 0);
-	gtk_widget_show(hsepBot);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_Styles_Description);
+	m_lbAttributes = glade_xml_get_widget(xml, "lbAttributes");
 
 	// Pack buttons at the bottom of the dialog
-	buttonBoxStyleManip = gtk_hbutton_box_new();
-	gtk_hbutton_box_set_spacing_default(0);
-	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
-	gtk_widget_show(buttonBoxStyleManip);
+	m_btNew = glade_xml_get_widget(xml, "btNew");
+	m_btDelete = glade_xml_get_widget(xml, "btDelete");
+	m_btModify = glade_xml_get_widget(xml, "btModify");
+	localizeButton(m_btModify, pSS, AP_STRING_ID_DLG_Styles_Modify);
 
-	buttonNew = gtk_button_new_from_stock(GTK_STOCK_NEW);
-	gtk_widget_show(buttonNew);
-	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonNew);
-	GTK_WIDGET_SET_FLAGS (buttonNew, GTK_CAN_DEFAULT);
+	m_btApply = glade_xml_get_widget(xml, "btApply");
+	m_btClose = glade_xml_get_widget(xml, "btClose");
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Modify,s);
-	buttonModify = gtk_button_new_with_label(s.utf8_str());
-	gtk_widget_show(buttonModify);
-	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonModify);
-	GTK_WIDGET_SET_FLAGS (buttonModify, GTK_CAN_DEFAULT);
-
-	buttonDelete = gtk_button_new_from_stock(GTK_STOCK_DELETE);
-	gtk_widget_show(buttonDelete);
-	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonDelete);
-	GTK_WIDGET_SET_FLAGS (buttonDelete, GTK_CAN_DEFAULT);
-
-	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxStyleManip, FALSE, FALSE, 0);
-
-	// connect signal for this list
-	g_signal_connect (G_OBJECT(GTK_COMBO(comboList)->entry), 
-			  "changed",
-			  G_CALLBACK(s_typeslist_changed),
-			  reinterpret_cast<gpointer>(this));
-
-	// connect signals for these 3 buttons
-	g_signal_connect (G_OBJECT(buttonNew),
-			  "clicked",
-			  G_CALLBACK(s_newbtn_clicked),
-			  reinterpret_cast<gpointer>(this));
-	
-	g_signal_connect (G_OBJECT(buttonModify),
-			  "clicked",
-			  G_CALLBACK(s_modifybtn_clicked),
-			  reinterpret_cast<gpointer>(this));
-	
-	g_signal_connect (G_OBJECT(buttonDelete),
-			  "clicked",
-			  G_CALLBACK(s_deletebtn_clicked),
-			  reinterpret_cast<gpointer>(this));
-	
-	m_wclistStyles = listStyles;
-	m_wlistTypes = comboList;
-	m_wbuttonNew = buttonNew;
-	m_wbuttonModify = buttonModify;
-	m_wbuttonDelete = buttonDelete;
-	m_wParaPreviewArea = ParaPreviewArea;
-	m_wCharPreviewArea = CharPreviewArea;
-	m_wlabelDesc = DescriptionArea;
-	return vboxContents;
+	_connectSignals();
+	return window;
 }
 
-void AP_UnixDialog_Styles::_connectsignals(void) const
+void AP_UnixDialog_Styles::_connectSignals(void) const
 {
+	// connect signal for this list
+	g_signal_connect (G_OBJECT(GTK_BUTTON(m_rbList1)), 
+			  "clicked",
+			  G_CALLBACK(s_typeslist_changed),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+	
+	g_signal_connect (G_OBJECT(GTK_BUTTON(m_rbList2)), 
+			  "clicked",
+			  G_CALLBACK(s_typeslist_changed),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+	
+	g_signal_connect (G_OBJECT(GTK_BUTTON(m_rbList3)), 
+			  "clicked",
+			  G_CALLBACK(s_typeslist_changed),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+	
+	/*
+	g_signal_connect (G_OBJECT(GTK_COMBO(m_cbList)->entry), 
+			  "changed",
+			  G_CALLBACK(s_typeslist_changed),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+	*/
+
+	// connect signals for these 3 buttons
+	g_signal_connect (G_OBJECT(m_btNew),
+			  "clicked",
+			  G_CALLBACK(s_newbtn_clicked),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+	
+	g_signal_connect (G_OBJECT(m_btModify),
+			  "clicked",
+			  G_CALLBACK(s_modifybtn_clicked),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+	
+	g_signal_connect (G_OBJECT(m_btDelete),
+			  "clicked",
+			  G_CALLBACK(s_deletebtn_clicked),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+	
+	// dialog buttons
+	g_signal_connect (G_OBJECT(m_btApply),
+			  "clicked",
+			  G_CALLBACK(s_applybtn_clicked),
+			  (void*)reinterpret_cast<gconstpointer>(this));
+
+	g_signal_connect (G_OBJECT(m_btClose),
+			  "clicked",
+			  G_CALLBACK(s_closebtn_clicked),
+			  (void*)reinterpret_cast<gconstpointer>(this));
 }
 
 void AP_UnixDialog_Styles::_populateCList(void) const
 {
 	const PD_Style * pStyle;
-	const char * name = NULL;
+	const gchar * name = NULL;
 
 	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
+	
+	GtkListStore *model = NULL;
+	GtkTreeModel *m = gtk_tree_view_get_model (GTK_TREE_VIEW(m_tvStyles));
+	if (!m)
+	{
+		model = gtk_list_store_new (1, G_TYPE_STRING);	
+		gtk_tree_view_set_model(GTK_TREE_VIEW(m_tvStyles), reinterpret_cast<GtkTreeModel*>(model));	
+	}
+	else
+	{
+		model = reinterpret_cast<GtkListStore*>(m);
+		gtk_list_store_clear (model);
+	}
 
-	gtk_clist_freeze (GTK_CLIST (m_wclistStyles));
-	gtk_clist_clear (GTK_CLIST (m_wclistStyles));
+	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW(m_tvStyles), 0);
+	if (!column) 
+	{
+		column = gtk_tree_view_column_new_with_attributes ("Style", gtk_cell_renderer_text_new (), "text", 0, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(m_tvStyles), column);
+	}
 
+	GtkTreeIter iter;
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
-	    const char * data[1];
-
-	    getDoc()->enumStyles(static_cast<UT_uint32>(i), &name, &pStyle);
+		getDoc()->enumStyles(static_cast<UT_uint32>(i), &name, &pStyle);
 
 		// style has been deleted probably
 		if (!pStyle)
 			continue;
 
-	    // all of this is safe to do... append should take a const char **
-	    data[0] = name;
-
-	    if ((m_whichType == ALL_STYLES) || 
+		if ((m_whichType == ALL_STYLES) || 
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()))
 		{
-			gtk_clist_append (GTK_CLIST(m_wclistStyles), const_cast<gchar **>(reinterpret_cast<const gchar **>(&data[0])));
+			gtk_list_store_append(model, &iter);
+			gtk_list_store_set(model, &iter, 0, name, -1);
 		}
 	}
 
-	gtk_clist_thaw (GTK_CLIST (m_wclistStyles));
-	gtk_clist_select_row (GTK_CLIST (m_wclistStyles), 0, 0);
+	// select first
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_tvStyles));
+	GtkTreePath *path = gtk_tree_path_new_from_string("0");
+	gtk_tree_selection_select_path(selection, path);
+	g_free(path);
+	
+	// selection "changed" doesn't fire here, so hack manually
+	s_tvStyles_selection_changed (selection, (gpointer)(this));
 }
 
 void AP_UnixDialog_Styles::_populateWindowData(void)
@@ -731,29 +660,32 @@ void AP_UnixDialog_Styles::_populateWindowData(void)
 
 void AP_UnixDialog_Styles::setDescription(const char * desc) const
 {
-	UT_ASSERT(m_wlabelDesc);
-	gtk_label_set_text (GTK_LABEL(m_wlabelDesc), desc);
+	UT_ASSERT(m_lbAttributes);
+	gtk_label_set_text (GTK_LABEL(m_lbAttributes), desc);
 }
 
 const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 {
-	static UT_String szStyleBuf;
+	static UT_UTF8String sStyleBuf;
 
-	UT_ASSERT(m_wclistStyles);
+	UT_ASSERT(m_tvStyles);
 
-	if (m_whichRow < 0 || m_whichCol < 0)
+	if (!m_selectedStyle)
 		return NULL;
 
-	char * szStyle = NULL;
-
-	int ret = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
-								  m_whichRow, m_whichCol, &szStyle);
-
-	if (!ret)
+	gchar * style = NULL;
+	
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
+	GtkTreeIter iter;
+	gtk_tree_model_get_iter(model, &iter, m_selectedStyle);
+	gtk_tree_model_get(model, &iter, 0, &style, -1);
+	
+	if (!style)
 		return NULL;
 
-	szStyleBuf = szStyle;
-	return szStyleBuf.c_str();
+	sStyleBuf = style;
+	g_free(style);
+	return sStyleBuf.utf8_str();
 }
 
 GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
@@ -1441,7 +1373,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 
 void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
 {
-	UT_ASSERT(m_wlabelDesc);
+	UT_ASSERT(m_lbAttributes);
 	gtk_label_set_text (GTK_LABEL(m_wLabDescription), desc);
 }
 

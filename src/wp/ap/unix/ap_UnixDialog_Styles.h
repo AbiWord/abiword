@@ -57,7 +57,7 @@ public:
 	virtual void event_DeleteClicked(void);
 	virtual void event_NewClicked(void);
 	virtual void event_ModifyClicked(void);
-	virtual void event_ClistClicked(int row, int col);
+	virtual void event_SelectionChanged(GtkTreeSelection * selection);
 	virtual void event_ListClicked(const char * which);
 	virtual void			event_WindowDelete(void);
 	void new_styleName(void);
@@ -94,7 +94,7 @@ protected:
 	enum
 	  {
 	    BUTTON_APPLY,
-	    BUTTON_CANCEL,
+	    BUTTON_CLOSE,
 	    BUTTON_MODIFY_OK,
 	    BUTTON_MODIFY_CANCEL
 	  } ResponseId;
@@ -105,7 +105,7 @@ protected:
 	void				_populateWindowData(void);
 	void                            _populateCList(void) const;
 	void 				_storeWindowData(void) const;
-	void				_connectsignals(void) const;
+	void				_connectSignals(void) const;
 	virtual const char * getCurrentStyle (void) const;
 	virtual void setDescription (const char * desc) const;
 
@@ -115,20 +115,22 @@ protected:
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
-	GtkWidget * m_wbuttonApply;
-	GtkWidget * m_wbuttonClose;
-	GtkWidget * m_wbuttonNew;
-	GtkWidget * m_wbuttonModify;
-	GtkWidget * m_wbuttonDelete;
+	GtkWidget * m_btApply;
+	GtkWidget * m_btClose;
+	GtkWidget * m_btNew;
+	GtkWidget * m_btModify;
+	GtkWidget * m_btDelete;
 	GtkWidget * m_wParaPreviewArea;
 	GtkWidget * m_wCharPreviewArea;
 	GtkWidget * m_wGnomeButtons;
 
-	GtkWidget * m_wclistStyles;
-	GtkWidget * m_wlistTypes;
-	GtkWidget * m_wlabelDesc;
+	GtkWidget * m_tvStyles;
+	GtkWidget * m_rbList1;
+	GtkWidget * m_rbList2;
+	GtkWidget * m_rbList3;
+	GtkWidget * m_lbAttributes;
 
-	gint m_whichRow, m_whichCol;
+	GtkTreePath * m_selectedStyle;
 	StyleType m_whichType;
 
 //////////////////////////////////////////////////////////////////////////
