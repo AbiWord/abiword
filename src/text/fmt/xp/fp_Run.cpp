@@ -138,6 +138,14 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 fp_Run::~fp_Run()
 {
   // no impl.
+
+// Zero these to trap mem errors.
+#if 1
+	m_pPrev = NULL;
+	m_pNext = NULL;
+	m_pBL = NULL;
+	m_pLine = NULL;
+#endif
 }
 
 void fp_Run::lookupProperties()
@@ -2350,6 +2358,12 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 	UT_ASSERT((pBL));
 	_setDirection(pBL->getDominantDirection());
 	lookupProperties();
+}
+
+
+bool fp_EndOfParagraphRun::recalcWidth(void)
+{
+	return false;
 }
 
 void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,

@@ -166,7 +166,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_colorHyperLink(0, 0, 255),
 		m_colorHdrFtr(0, 0, 0),
 		m_colorColumnLine(0, 0, 0),
-		m_countDisable(0)
+		m_countDisable(0),
+		m_bDragTableLine(false),
+		m_prevMouseContext(EV_EMC_UNKNOWN),
+		m_pTopRuler(NULL),
+		m_pLeftRuler(NULL)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -5302,11 +5306,18 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 	return bRet;
 }
 
+
 bool FV_View::setTableFormat(const XML_Char * properties[])
+{
+	PT_DocPosition pos = getPoint();
+	return setTableFormat(properties);
+}
+
+bool FV_View::setTableFormat(PT_DocPosition pos, const XML_Char * properties[])
 {
 	bool bRet;
 
-	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posStart = pos;
 	PL_StruxDocHandle tableSDH = NULL;
 	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart, PTX_SectionTable, &tableSDH);
 	if(!bRet)
@@ -5335,13 +5346,13 @@ bool FV_View::setTableFormat(const XML_Char * properties[])
 		}
 	}
 	posStart = m_pDoc->getStruxPosition(tableSDH) +1 ;
+	posEnd = posStart+1;
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionTable);
-
-	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
+	_generalUpdate();
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
 	notifyListeners(AV_CHG_MOTION);
@@ -5407,6 +5418,11 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	{
 		return;
 	}
+	getTopRulerInfo(getPoint(), pInfo);
+}
+
+void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
+{
 
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run * pRun = NULL;
@@ -5414,7 +5430,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
 	bool bDirection;
-	_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+	_findPositionCoords(pos, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
 	UT_return_if_fail(pRun);
 
@@ -5636,8 +5652,6 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 {
-	memset(pInfo,0,sizeof(*pInfo));
-
 //
 // Can't do this before the layouts are filled.
 //
@@ -5645,6 +5659,13 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 	{
 		return;
 	}
+	getLeftRulerInfo(getPoint(),pInfo);
+}
+
+void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
+{
+	memset(pInfo,0,sizeof(*pInfo));
+
 	if (1)								// TODO support tables
 	{
 		// we assume that we are in a column context (rather than a table)
@@ -5657,8 +5678,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		UT_uint32 heightCaret;
 		UT_sint32 xCaret2, yCaret2;
 		bool bDirection;
-		//PT_DocPosition pos = getPoint();
-		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+		_findPositionCoords(pos, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
 //		UT_ASSERT(pRun); // We always recover after this so no assert.
 //
@@ -5873,10 +5893,15 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	{
 		return EV_EMC_UNKNOWN;
 	}
+	if(m_bDragTableLine)
+	{
+		return m_prevMouseContext;
+	}
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 	if (!pPage)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (1)\n"));
+		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
 
@@ -5886,6 +5911,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		   || (xClick > pPage->getWidth()) )
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (2)\n"));
+		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
 
@@ -5893,10 +5919,104 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
 	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+	if(isInTable(pos))
+	{
+		fp_Line * pLine = pRun->getLine();
+		if(pLine)
+		{
+			fp_CellContainer * pCell = (fp_CellContainer *) pLine->getContainer();
+			if(pCell && pCell->getContainerType() == FP_CONTAINER_CELL)
+			{
+				xxx_UT_DEBUGMSG(("getcontext: Looking at Table \n"));
+				UT_sint32 iLeft = pCell->getLeftPos();
+				UT_sint32 iRight = pCell->getRightPos();
+				UT_sint32 iTop = pCell->getStartY();
+				UT_sint32 iBot = pCell->getStopY();
+				UT_sint32 offy =0;
+				UT_sint32 offx =0;
+				fp_Column * pCol = (fp_Column *) pCell->getColumn();
+				UT_sint32 col_x =0;
+				UT_sint32 col_y =0;
+				pPage->getScreenOffsets(pCol, col_x,col_y);
+//
+// Now find the brokentable the line is in.
+//
+				fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
+				bool bNested = false;
+				if(pTab->getContainer()->getContainerType() == FP_CONTAINER_CELL)
+				{
+					bNested = true;
+				}
+				fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+				if(!bNested)
+				{
+					UT_sint32 i =0;
+					offx = pTab->getX();
+					while(pBroke && !pBroke->isInBrokenTable(pCell,pLine))
+					{
+						i++;
+						pBroke = (fp_TableContainer *) pBroke->getNext();
+					}
+					if(i==0)
+					{
+						offy = pTab->getY();
+					}
+					else
+					{
+						offy = 0;
+					}
+				}
+				else
+				{
+					fp_Container * pConTmp = pTab;
+					while(pConTmp && !pConTmp->isColumnType())
+					{
+						offy += pConTmp->getY();
+						offx += pConTmp->getX();
+						pConTmp = pConTmp->getContainer();
+					}
+				}
+				iLeft += col_x + offx;
+				iRight += col_x + offx;
+				iTop += col_y +  offy;
+				iBot += col_y + offy;
+				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
+				UT_sint32 ires = 4;
+				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
+				{
 
+// TODO put in some code to indicate which control of which cell is being
+// dragged. Maybe reuse topRuler stuff???
+//
+					xxx_UT_DEBUGMSG(("getContext: Found left cell \n"));
+					m_prevMouseContext = EV_EMC_VLINE;
+					return EV_EMC_VLINE;
+				}
+				if((iRight - xPos < ires) && (xPos - iRight < ires))
+				{
+					xxx_UT_DEBUGMSG(("getContext: Found right cell \n"));
+					m_prevMouseContext = EV_EMC_VLINE;
+					return EV_EMC_VLINE;
+				}
+				if((iTop - yPos < ires) && (yPos - iTop < ires))
+				{
+					xxx_UT_DEBUGMSG(("getContext: Found top cell \n"));
+					m_prevMouseContext = EV_EMC_HLINE;
+					return EV_EMC_HLINE;
+				}
+				if((iBot - yPos < ires) && (yPos - iBot < ires))
+				{
+					xxx_UT_DEBUGMSG(("getContext: Found bot cell \n"));
+					m_prevMouseContext = EV_EMC_HLINE;
+					return EV_EMC_HLINE;
+				}
+			}
+		}
+	}
 	if (!pBlock)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (5)\n"));
+		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
 
@@ -5907,11 +6027,13 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_RTL)
 		{
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (3)\n"));
+			m_prevMouseContext = EV_EMC_RIGHTOFTEXT;
 			return EV_EMC_RIGHTOFTEXT;
 		}
 		else
 		{
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (4)\n"));
+			m_prevMouseContext = EV_EMC_LEFTOFTEXT;
 			return EV_EMC_LEFTOFTEXT;
 		}
 	}
@@ -5924,17 +6046,20 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	if (!pRun)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (6)\n"));
+		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
 
 	if(pRun->containsRevisions())
 	{
+		m_prevMouseContext = EV_EMC_REVISION;
 		return EV_EMC_REVISION;
 	}
 
 	if(pRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
+		m_prevMouseContext = EV_EMC_HYPERLINK;
 		return EV_EMC_HYPERLINK;
 	}
 	
@@ -5945,9 +6070,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
 			{
 				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (8)\n"));
+				m_prevMouseContext = EV_EMC_MISSPELLEDTEXT;
 				return EV_EMC_MISSPELLEDTEXT;
 			}
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (9)\n"));
+		m_prevMouseContext = EV_EMC_TEXT;
 		return EV_EMC_TEXT;
 
 	case FPRUN_IMAGE:
@@ -5986,10 +6113,12 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		
 			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
 			{
+				m_prevMouseContext = EV_EMC_IMAGESIZE;
 				return EV_EMC_IMAGESIZE;
 			}
 			else
 			{
+				m_prevMouseContext = EV_EMC_IMAGE;
 				return EV_EMC_IMAGE;
 			}
 		}
@@ -6002,21 +6131,25 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_BOOKMARK:
 	case FPRUN_HYPERLINK:
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (10): %d\n", pRun->getType()));
+		m_prevMouseContext = EV_EMC_TEXT;
 		return EV_EMC_TEXT;
 
 	case FPRUN_FIELD:
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (11)\n"));
+		m_prevMouseContext = EV_EMC_FIELD;
 		return EV_EMC_FIELD;
 
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (12)\n"));
+		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
 
 	/*NOTREACHED*/
 	UT_ASSERT(0);
 	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (13)\n"));
+	m_prevMouseContext = EV_EMC_UNKNOWN;
 	return EV_EMC_UNKNOWN;
 }
 
@@ -6095,6 +6228,13 @@ void FV_View::setCursorToContext()
 		break;
 	case EV_EMC_HYPERLINKMISSPELLED:
 		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
+	case EV_EMC_VLINE:
+		UT_DEBUGMSG(("setCursor: Set to VLINE_DRAG \n"));
+		cursor = GR_Graphics::GR_CURSOR_VLINE_DRAG;
+		break;
+	case EV_EMC_HLINE:
+		cursor = GR_Graphics::GR_CURSOR_HLINE_DRAG;
 		break;
 	default:
 		break;

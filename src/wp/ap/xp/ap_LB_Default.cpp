@@ -59,6 +59,8 @@
 #define _CF		EV_EMC_FIELD
 #define _CH		EV_EMC_HYPERLINK
 #define _CV		EV_EMC_REVISION
+#define _CTV		EV_EMC_VLINE
+#define _CTH		EV_EMC_HLINE
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -86,6 +88,9 @@ ap_bs_Mouse MouseTable[] =
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CR _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
+	{_CTV _B0,	{ "",	"",			"cursorVline",	"",			"",			"",				}},
+	{_CTH _B0,	{ "",	"",			"cursorHline",	"",			"",			"",				}},
+
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
@@ -120,6 +125,12 @@ ap_bs_Mouse MouseTable[] =
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
 	{_CZ _B1,	{ "",				"",				"resizeImage",	"",		"endResizeImage",	""				}},
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
+
+//	Button-1, TableLine-context
+
+	{_CTV _B1,	{ "beginVDrag",		 "clearSetCols", "dragVline",	"",		"endDragVline",	""				}},
+	{_CTH _B1,	{ "beginHDrag",		 "clearSetRows", "dragHline",	"",		"endDragHline",	""				}},
+
 
 //	Button-1, ImageSize-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},

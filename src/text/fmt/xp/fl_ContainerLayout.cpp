@@ -73,6 +73,15 @@ fl_ContainerLayout::~fl_ContainerLayout()
 	{
 		delete m_pLB;
 	}
+#if 1
+	m_pMyLayout = NULL;
+	m_pFirstL = NULL;
+	m_pLastL = NULL;
+	m_pPrev = NULL;
+	m_pNext = NULL;
+	m_pFirstContainer = NULL;
+	m_pLastContainer = NULL;
+#endif
 }
 
 /*!

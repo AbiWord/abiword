@@ -510,7 +510,10 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	UT_sint32 iRightWidth = getWidth();
 #endif
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
+	if(pCharWidths == NULL)
+	{
+		return false;
+	}
 	UT_sint32 iLeftWidth = 0;
 
 	si.iOffset = -1;
@@ -668,7 +671,10 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
+	if(pCharWidths == NULL)
+	{
+		return;
+	}
 	// catch the case of a click directly on the left half of the
 	// first character in the run
 	UT_sint32 iCW = pCharWidths[getBlockOffset()] > 0 ? pCharWidths[getBlockOffset()] : 0;
@@ -730,7 +736,10 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	getLine()->getOffsets(this, xoff, yoff);
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
+	if(pCharWidths == NULL)
+	{
+		return;
+	}
 	UT_uint32 offset = UT_MIN(iOffset, getBlockOffset() + getLength());
 
 	for (UT_uint32 i=getBlockOffset(); i<offset; i++)
@@ -1601,6 +1610,11 @@ bool fp_TextRun::recalcWidth(void)
 		// with Pango the width gets recalcuated in _refreshDrawBuffer()
 		UT_GrowBuf * pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
 		UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
+		if(pCharWidthsDisplay == NULL)
+		{
+			_setWidth(0);
+			return false;
+		}
 		_setWidth(0);
 
 #if defined(USE_LAYOUT_UNITS)
@@ -1680,7 +1694,10 @@ bool fp_TextRun::_addupCharWidths(void)
 {
 	UT_sint32 iWidth = 0;
 	UT_GrowBuf *pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
-	UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
+	UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);    if(pCharWidthsDisplay == NULL)
+	{
+		return false;
+	}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iWidthLayoutUnits = 0;
 	UT_GrowBuf *pgbCharWidthsLayout  = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
@@ -1816,7 +1833,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 #else
 	UT_sint32 * pCWThis = pgbCharWidths->getPointer(getBlockOffset());
 #endif
-
+	if(pCWThis == NULL)
+	{
+		return;
+	}
 	// should this prove to be too much of a performance bottleneck,
 	// we will cache this in a member array
 
@@ -2708,6 +2728,10 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+	if(pCharWidths == NULL)
+	{
+		return;
+	}
 	UT_sint32 iWidth = 0;
 	UT_uint32 iLen = getLength();
 	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,getAscent())-10)/8;
@@ -2998,7 +3022,10 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 {
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
+	if(pCharWidths == NULL)
+	{
+		return 0;
+	}
 	UT_sint32 iTrailingDistance = 0;
 
 	if(getLength() > 0)
@@ -3028,7 +3055,10 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
 {
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
+	if(pCharWidths == NULL)
+	{
+		return 0;
+	}
 	UT_sint32 iTrailingDistance = 0;
 
 	if(getLength() > 0)
@@ -3063,7 +3093,10 @@ void fp_TextRun::resetJustification()
 	{
 		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
+		if(pCharWidths == NULL)
+		{
+			return;
+		}
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
 		
 		// if for some reason the width after justification is the
@@ -3187,7 +3220,10 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 {
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
+	if(pCharWidths == NULL)
+	{
+		return;
+	}
 	if(!iAmount && !iSpacesInRun)
 	{
 		// I suspect this might now be redundant ...

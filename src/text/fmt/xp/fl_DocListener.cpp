@@ -156,6 +156,10 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
+		if(pL->getType() != PTX_Block)
+		{
+			m_pDoc->miniDump(pL->getStruxDocHandle(),8);
+		}
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 		PT_BlockOffset blockOffset = pcro->getBlockOffset();

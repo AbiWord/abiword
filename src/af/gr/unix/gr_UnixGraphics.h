@@ -119,6 +119,9 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 
+	void                createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
+											 GdkBitmap * mask);
+
 	virtual void setLineProperties ( double inWidthPixels, 
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,

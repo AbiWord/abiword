@@ -175,6 +175,7 @@ public:
 	void			draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo = NULL);
 	void			scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 
+	UT_sint32       setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint32 & iFixed);
 	void			mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y);
 	void			mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
 	void			mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y);

@@ -29,6 +29,8 @@
 #include "ut_bytebuf.h"
 #include "xap_FakeClipboard.h"
 #include "xap_UnixApp.h"
+#include "xap_EditMethods.h"
+#include "ev_EditMethod.h"
 
 //////////////////////////////////////////////////////////////////
 
@@ -100,6 +102,8 @@ public:
 	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);
 	    pThis->clipboard_clear_func(clipboard);
 	  }
+	void  lockGUI(void);
+	void  unlockGUI(void);
 
 	void clipboard_get_func(GtkClipboard *clipboard,
 				GtkSelectionData *selection_data,
@@ -123,6 +127,9 @@ public:
 	GtkTargetEntry * m_Targets ;
 	UT_uint32 m_nTargets;
 	bool m_bWaitingForContents;
+private:
+	EV_EditMethod * m_pLockGUI;
+	EV_EditMethod * m_pUnLockGUI;
 };
 
 #endif /* XAP_UNIXCLIPBOARD_H */

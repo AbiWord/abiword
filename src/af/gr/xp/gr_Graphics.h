@@ -369,7 +369,9 @@ class ABI_EXPORT GR_Graphics
 				   GR_CURSOR_GRAB,
 				   GR_CURSOR_LINK,
 				   GR_CURSOR_WAIT,
-				   GR_CURSOR_LEFTARROW
+				   GR_CURSOR_LEFTARROW,
+				   GR_CURSOR_VLINE_DRAG,
+				   GR_CURSOR_HLINE_DRAG
 	} Cursor;
 
 	virtual void      setCursor(GR_Graphics::Cursor c) = 0;

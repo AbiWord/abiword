@@ -1188,6 +1188,7 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		pf = pf->getNext();
 		while(pf && pf->getType() != pf_Frag::PFT_Strux)
 		{
+			UT_DEBUGMSG(("MiniDump: Other Frag %x of Type %d \n",pf,pf->getType()));
 			pf = pf->getNext();
 		}
 		if(pf)

@@ -499,6 +499,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 	}
 
 	UT_VECTOR_PURGEALL(ListIdLevelPair *, m_vLists);
+	UT_VECTOR_PURGEALL(emObject *, m_vecEmObjects);
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
@@ -753,22 +754,48 @@ void IE_Imp_MsWord_97::_flush ()
 	}
 
   if(!m_bInPara)
-	{
+  {
 	  // append a blank defaul paragraph - assume it works
 	  UT_DEBUGMSG(("#TF: _flush: appending default block\n"));
 	  getDoc()->appendStrux(PTX_Block, NULL);
 	  m_bInPara = true;
-	}
+	  emObject * pObject = NULL;
+	  if(m_vecEmObjects.getItemCount() > 0)
+	  {
+		  UT_sint32 i =0;
+		  for(i=0;i< (UT_sint32) m_vecEmObjects.getItemCount(); i++)
+		  {
+			  pObject = (emObject *) m_vecEmObjects.getNthItem(i);
+			  const XML_Char* propsArray[5];
+			  if(pObject->objType == PTO_Bookmark)
+			  {
+				  propsArray[0] = (XML_Char *) "name";
+				  propsArray[1] = (XML_Char *) pObject->props1.c_str();
+				  propsArray[2] = (XML_Char *) "type";
+				  propsArray[3] = (XML_Char *) pObject->props2.c_str();
+				  propsArray[4] = (XML_Char *) NULL;
+				  getDoc()->appendObject (PTO_Bookmark, propsArray);
+			  }
+			  else
+			  {
+				  UT_DEBUGMSG(("MSWord 97 _flush: Object not handled \n"));
+				  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			  }
+			  delete pObject;
+		  }
+		  m_vecEmObjects.clear();
+	  }
+  }
 
-	if (m_pTextRun.size())
-	{
-		if (!getDoc()->appendSpan(m_pTextRun.ucs4_str(), m_pTextRun.size()))
-		{
-			UT_DEBUGMSG(("DOM: error appending text run\n"));
-			return;
-		}
-		m_pTextRun.clear ();
-	}
+  if (m_pTextRun.size())
+  {
+	  if (!getDoc()->appendSpan(m_pTextRun.ucs4_str(), m_pTextRun.size()))
+	  {
+		  UT_DEBUGMSG(("DOM: error appending text run\n"));
+		  return;
+	  }
+	  m_pTextRun.clear ();
+  }
 }
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
@@ -975,11 +1002,21 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 	else
 		propsArray[3] = (XML_Char *)"end";
 
-
-	if (!getDoc()->appendObject (PTO_Bookmark, propsArray))
+	if(m_bInTable && !m_bCellOpen)
 	{
-		UT_DEBUGMSG (("Could not append bookmark object\n"));
-		error = true;
+		emObject * pObject = new emObject;
+		pObject->props1 = propsArray[1];
+		pObject->objType = PTO_Bookmark;
+		pObject->props2 = propsArray[3];
+		m_vecEmObjects.addItem((void *) pObject);
+	}
+	else
+	{
+		if (!getDoc()->appendObject (PTO_Bookmark, propsArray))
+		{
+			UT_DEBUGMSG (("Could not append bookmark object\n"));
+			error = true;
+		}
 	}
 	return error;
 }
@@ -2123,6 +2160,7 @@ list_error:
 		list_field_fmt[0] = "type";
 		list_field_fmt[1] = "list_label";
 		list_field_fmt[2] = 0;
+
 		getDoc()->appendObject(PTO_Field, (const XML_Char**)list_field_fmt);
 
 		// the character following the list label - 0=tab, 1=space, 2=none
@@ -2498,6 +2536,13 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
 				_insertBookmarkIfAppropriate();
 			}
 			this->_flush();
+
+			if(!m_bInPara)
+			{
+				getDoc()->appendStrux(PTX_Block, NULL);
+				m_bInPara = true ;
+			}
+
 			getDoc()->appendObject(PTO_Hyperlink,NULL);
 			// increase doc position for the 0x15
 			m_iDocPosition++;
@@ -2598,6 +2643,13 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		new_atts[1] = href.c_str();
 		new_atts[2] = 0;
 		this->_flush();
+
+		if(!m_bInPara)
+		{
+			getDoc()->appendStrux(PTX_Block, NULL);
+			m_bInPara = true ;
+		}
+
 		getDoc()->appendObject(PTO_Hyperlink, new_atts);
 		return true;
 		  }
@@ -2608,6 +2660,13 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		}
 
 		this->_flush();
+
+		if(!m_bInPara)
+		{
+			getDoc()->appendStrux(PTX_Block, NULL);
+			m_bInPara = true ;
+		}
+
 		if (!getDoc()->appendObject (PTO_Field, (const XML_Char**)atts))
 		{
 			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
@@ -2743,6 +2802,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   propsArray[3] = (XML_Char *)propsName.c_str();
   propsArray[4] = 0;
 
+  if(!m_bInPara)
+  {
+	  getDoc()->appendStrux(PTX_Block, NULL);
+	  m_bInPara = true ;
+  }
+
   if (!getDoc()->appendObject (PTO_Image, propsArray))
 	{
 	  UT_DEBUGMSG (("Could not create append object\n"));
@@ -2810,6 +2875,7 @@ void IE_Imp_MsWord_97::_table_open ()
   
   m_bRowOpen = false;
   m_bCellOpen = false;
+  m_bInPara = false;
   xxx_UT_DEBUGMSG(("\n<TABLE>"));
 }
 
@@ -2847,6 +2913,8 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   
   // end-of-table
   getDoc()->appendStrux(PTX_EndTable, NULL);
+  m_bInPara = false ;
+
   xxx_UT_DEBUGMSG(("\n</TABLE>\n"));
 }
 
@@ -2983,6 +3051,8 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   propsArray[2] = NULL;
   
   getDoc()->appendStrux(PTX_SectionCell, propsArray);
+  m_bInPara = false;
+
   xxx_UT_DEBUGMSG(("\t<CELL:%d:%d>", (int)m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1), ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1]));
 }
 
@@ -2996,5 +3066,7 @@ void IE_Imp_MsWord_97::_cell_close ()
   
   m_bCellOpen = false;  
   getDoc()->appendStrux(PTX_EndCell, NULL);
+  m_bInPara = false ;
+
   xxx_UT_DEBUGMSG(("</CELL>"));
 }

@@ -43,6 +43,7 @@ private:
 							int iMaxColHeight, int iWorkingColHeight,
 							int iContainerMarginAfter);
 	fp_Page * m_pStartPage;
+	bool      m_bStartFromStart;
 };
 
 #endif /* COLUMNBREAKER_H */

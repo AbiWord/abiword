@@ -48,6 +48,8 @@ static AV_View * viewFromApp(XAP_App * pApp)
 XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
 	: m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0), m_bWaitingForContents(false)
 {
+	m_pLockGUI = NULL;
+	m_pUnLockGUI = NULL;
 }
 
 XAP_UnixClipboard::~XAP_UnixClipboard()
@@ -64,6 +66,29 @@ void XAP_UnixClipboard::AddFmt(const char * szFormat)
   UT_return_if_fail(szFormat && strlen(szFormat));
   m_vecFormat_AP_Name.addItem((void *) szFormat);
   m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));
+}
+
+void XAP_UnixClipboard::lockGUI(void)
+{
+	if(NULL == m_pLockGUI)
+	{ 
+		EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer();
+		m_pLockGUI = pEMC->findEditMethodByName("lockGUI");
+		m_pUnLockGUI = pEMC->findEditMethodByName("unlockGUI");
+	}
+	ev_EditMethod_invoke(m_pLockGUI,"From clipboard");
+}
+
+
+void XAP_UnixClipboard::unlockGUI(void)
+{
+	if(NULL == m_pUnLockGUI)
+	{ 
+		EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer();
+		m_pLockGUI = pEMC->findEditMethodByName("lockGUI");
+		m_pUnLockGUI = pEMC->findEditMethodByName("unlockGUI");
+	}
+	ev_EditMethod_invoke(m_pUnLockGUI,"From clipboard");
 }
 
 void XAP_UnixClipboard::initialize()
@@ -248,7 +273,9 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
         GdkAtom atom = (GdkAtom)atoms.getNthItem(i);
 
         m_bWaitingForContents = true;
+		lockGUI();
         GtkSelectionData* selection = gtk_clipboard_wait_for_contents (clipboard, atom);
+		unlockGUI();
         m_bWaitingForContents = false;
 
         if(selection)

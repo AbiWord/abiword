@@ -117,6 +117,7 @@ public:
 	void			sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit = -1);
 	void			sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit = -1);
 
+
 	bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	bool			removeListener(AV_ListenerId listenerId);
 

@@ -36,7 +36,8 @@
 #include "fl_AutoLists.h"
 #include "fl_SectionLayout.h"
 #include "pp_Revision.h"
-
+#include "ap_TopRuler.h"
+#include "ap_LeftRuler.h"
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
@@ -59,6 +60,8 @@ class UT_StringPtrMap;
 class PP_AttrProp;
 class fl_AutoNum;
 class fp_PageSize;
+class AP_TopRuler;
+class AP_LeftRuler;
 
 typedef enum _FVDocPos
 {
@@ -193,7 +196,9 @@ public:
 	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
+	virtual void	getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
+	virtual void	getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo);
         virtual void    setCursorWait(void);
 	virtual void    clearCursorWait(void);
 	virtual void    setCursorToContext(void);
@@ -460,6 +465,7 @@ public:
 										 UT_sint32 * pTop, UT_sint32 * pBot);
 	bool				setCellFormat(const XML_Char * properties[]);
 	bool	            setTableFormat(const XML_Char * properties[]);
+	bool	            setTableFormat(PT_DocPosition pos,const XML_Char * properties[]);
 	
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
 									   const XML_Char * pPropsArray[]);
@@ -508,7 +514,6 @@ public:
 	void				stopImageResizing();
 	bool				isResizingImage();
 	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
-	
 	//
 	// image dragging functions
 	//
@@ -518,7 +523,24 @@ public:
 	fp_Run *			getDraggedImage();
 	UT_Rect				getImageDragRect();
 	void				getDragOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
+
+//
+// Table resizing
+//
+	void                setDragTableLine(bool bSet) 
+                        { m_bDragTableLine = bSet;}
+	bool                getDragTableLine(void) const 
+		                { return m_bDragTableLine;}
+	void                setTopRuler(AP_TopRuler * pRuler) 
+                        { m_pTopRuler = pRuler;}
+	AP_TopRuler *       getTopRuler(void) const 
+		                { return m_pTopRuler;}
+	void                setLeftRuler(AP_LeftRuler * pRuler) 
+                        { m_pLeftRuler = pRuler;}
+	AP_LeftRuler *       getLeftRuler(void) const 
+		                { return m_pLeftRuler;}
 	
+
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
@@ -709,7 +731,10 @@ private:
 	UT_RGBColor			m_colorColumnLine;
 
 	UT_uint32 m_countDisable; // cursor disable count
-
+	bool                m_bDragTableLine;
+	EV_EditMouseContext m_prevMouseContext;
+	AP_TopRuler *       m_pTopRuler;
+	AP_LeftRuler *      m_pLeftRuler;
 };
 
 #endif /* FV_VIEW_H */

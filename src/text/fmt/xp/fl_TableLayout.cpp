@@ -88,6 +88,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_bRecursiveFormat(false)
 
 {
+	UT_ASSERT(pLayout);
 	m_vecColProps.clear();
 	m_vecRowProps.clear();
 	createTableContainer();
@@ -252,8 +253,39 @@ void fl_TableLayout::format(void)
 	}
 	m_bRecursiveFormat = true;
 	bool bRebuild = false;
+//
+// All this code is to find the right page to do a sectionBreak from.
+//
 	fl_ContainerLayout * pPrevCL = getPrev();
 	fp_Page * pPrevP = NULL;
+#if 0
+	while(pPrevCL && (pPrevCL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION))
+	{
+		pPrevCL = pPrevCL->myContainingLayout();
+	}
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+		static_cast<fl_DocSectionLayout *>(pPrevCL)->setNeedsSectionBreak(true,pPrevP);
+	}
+	else
+	{
+		getDocLayout()->getFirstSection()->setNeedsSectionBreak(true,NULL);
+		pPrevCL = myContainingLayout();
+		while(pPrevCL && (pPrevCL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION))
+		{
+			pPrevCL = pPrevCL->myContainingLayout();
+		}
+		if(pPrevCL)
+		{
+			static_cast<fl_DocSectionLayout *>(pPrevCL)->setNeedsSectionBreak(true,pPrevP);
+		}
+	}
+#else
 	if(pPrevCL)
 	{
 		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
@@ -263,6 +295,10 @@ void fl_TableLayout::format(void)
 		}
 	}
 	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true,pPrevP);
+#endif
+//
+// OK on with the formatting
+//
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);

@@ -568,7 +568,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	}
 	else
 	{
-		fp_Container * pCon = pBroke;
+		fp_Container * pCon = (fp_Container *) pBroke;
 		while(!pCon->isColumnType())
 		{
 			offy += pCon->getY();
@@ -620,6 +620,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 				pBroke->setBrokenBot(1);
 			}
 		}
+		m_bDrawRight = true;
 		if(m_bDrawLeft)
 		{
 			// must draw a line : if no thickness available, fetch it from the enclosing table object
@@ -633,6 +634,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		}
 		if(m_bDrawRight)
 		{
+			UT_DEBUGMSG(("RightThickness %d \n",m_iRightThickness));
 			getGraphics()->setLineWidth(m_iRightThickness >=0 ? m_iRightThickness : pTab->getLineThickness());
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
@@ -852,6 +854,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // draw right if this cell is the rightmost of the table
 
 	m_bDrawRight = (pTab->getCellAtRowColumn(getTopAttach(),getRightAttach()) == NULL);
+	m_bDrawRight = true;
 	m_bDrawLeft = true;
    
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
@@ -1581,19 +1584,35 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 	UT_sint32 count = (UT_sint32 )countCons();
 	UT_sint32 i =0;
 	fp_CellContainer * pCell = NULL;
+	fp_CellContainer * pSmall = NULL;
 	bool bFound = false;
 	for(i=0; i < count && !bFound; i++)
 	{
 		pCell = (fp_CellContainer *) getNthCon(i);
-		if(pCell->getLeftAttach() <= col && pCell->getRightAttach() > col &&
-		   pCell->getTopAttach() <= row && pCell->getBottomAttach() > row)
+		xxx_UT_DEBUGMSG(("getCellAtRowColumn: left %d ,right %d, top %d, bot %d \n",pCell->getLeftAttach(),pCell->getRightAttach(),pCell->getTopAttach(),pCell->getBottomAttach()));
+		if(pCell->getLeftAttach() >= col && pCell->getRightAttach() > col &&
+		   pCell->getTopAttach() >= row && pCell->getBottomAttach() > row)
 		{
 			bFound = true;
+			if(pSmall == NULL)
+			{
+				pSmall = pCell;
+			}
+#if 0
+			else
+			{
+				if((pSmall->getLeftAttach() > pCell->getLeftAttach()) && 
+				   (pSmall->getTopAttach() > pCell->getTopAttach()))
+				{
+					pSmall = pCell;
+				}
+			}
+#endif
 		}
 	}
 	if(bFound)
 	{
-		return pCell;
+		return pSmall;
 	}
 	return NULL;
 }

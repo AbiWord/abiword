@@ -114,6 +114,7 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 
     // TODO this dimension shouldn't be hard coded.
 	m_minColumnWidth = m_pG->convertDimension("0.5in");
+	static_cast<FV_View *>(pView)->setTopRuler(this);
 }
 
 void AP_TopRuler::setView(AV_View * pView)
@@ -129,6 +130,7 @@ void AP_TopRuler::setView(AV_View * pView)
 	}
 
 	m_pView = pView;
+	static_cast<FV_View *>(pView)->setTopRuler(this);
 
 	// create an AV_ScrollObj to receive send*ScrollEvents()
 
@@ -1771,6 +1773,106 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 	}
 }
 
+UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint32 & iFixed)
+{
+	_UUL(x);
+	m_bValidMouseClick = false;
+	m_draggingWhat = DW_NOTHING;
+	m_bEventIgnored = false;
+	UT_sint32 y = s_iFixedHeight/2;
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	pView->getTopRulerInfo(pos,&m_infoCache);
+	draw(NULL, &m_infoCache);
+
+	iFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+
+	if(pView->getViewMode() != VIEW_PRINT)
+	{
+		iFixed = s_iFixedWidth;
+	}
+	x += iFixed;
+	// Set this in case we never get a mouse motion event
+    UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+	UT_sint32 xrel;
+
+    UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	UT_DEBUGMSG(("setTableLineDrag: x = %d \n",x));
+	if(bRTL)
+		xrel = xAbsRight - ((UT_sint32)x);
+	else
+		xrel = ((UT_sint32)x) - xAbsLeft;
+
+    ap_RulerTicks tick(m_pG,m_dim);
+    UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
+
+	if(bRTL)
+	    m_draggingCenter = xAbsRight - xgrid;
+	else
+	    m_draggingCenter = xAbsLeft + xgrid;
+
+	xxx_UT_DEBUGMSG(("mousePress: m_draggingCenter (1) %d\n", m_draggingCenter));
+	m_oldX = xgrid; // used to determine if delta is zero on a mouse release
+
+// Now hit test against the cell containers to find the right cell to drag.
+
+	if(m_infoCache.m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
+	{
+		UT_sint32 i = 0;
+		bool bFound = false;
+		UT_Rect rCell;
+		for(i=0; i<= m_infoCache.m_iCells && !bFound; i++)
+		{
+			_getCellMarkerRect(&m_infoCache, i, &rCell);
+			UT_DEBUGMSG(("setTableLine: cell %d left %d \n",i,rCell.left));
+			if(rCell.containsPoint(x,y))
+			{
+				bFound = true;
+				
+				// determine the range in which this cell marker can be dragged
+				UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+				UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+				UT_sint32 xExtraMargin = 3; // keep an extra margin 3 pixels; there must be some space left to enter text in
+				if (i == 0)
+				{
+					AP_TopRulerTableInfo * pCurrentCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i);
+					
+					m_iMinCellPos = xAbsLeft;
+					m_iMaxCellPos = xAbsLeft + pCurrentCellInfo->m_iRightCellPos - pCurrentCellInfo->m_iRightSpacing - pCurrentCellInfo->m_iLeftSpacing - xExtraMargin;
+				}
+				else if (i == m_infoCache.m_iCells)
+				{
+					AP_TopRulerTableInfo * pPrevCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+					
+					m_iMinCellPos = xAbsLeft + pPrevCellInfo->m_iLeftCellPos + pPrevCellInfo->m_iLeftSpacing + pPrevCellInfo->m_iRightSpacing + xExtraMargin;
+					m_iMaxCellPos = xAbsRight;
+				}
+				else
+				{
+					AP_TopRulerTableInfo * pPrevCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+					AP_TopRulerTableInfo * pCurrentCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i);
+					
+					m_iMinCellPos = xAbsLeft + pPrevCellInfo->m_iLeftCellPos + pPrevCellInfo->m_iLeftSpacing + pPrevCellInfo->m_iRightSpacing + xExtraMargin;
+					m_iMaxCellPos = xAbsLeft + pCurrentCellInfo->m_iRightCellPos - pCurrentCellInfo->m_iRightSpacing - pCurrentCellInfo->m_iLeftSpacing - xExtraMargin;
+				}
+
+				break;
+			}
+		}
+		if(bFound)
+		{
+			UT_DEBUGMSG(("hit Cell marker %d \n",i));
+			m_bValidMouseClick = true;
+			m_draggingWhat = DW_CELLMARK;
+			m_bBeforeFirstMotion = true;
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+			m_draggingCell = i;
+			return y;
+		}
+	}
+	return 0;
+}
+
 void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 							 EV_EditMouseButton emb , UT_uint32 x, UT_uint32 y)
 {
@@ -2560,7 +2662,16 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				props[2] = "table-column-leftpos";
 				props[3] = sCellPos.c_str();
 			}
-			pView->setTableFormat(props);
+//
+// Now do manipulations to find the position of the table we're about to 
+// change.
+//
+			pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(0);
+			fp_CellContainer * pCell = pTInfo->m_pCell;
+			fl_SectionLayout * pSL = pCell->getSectionLayout();
+			fl_BlockLayout * pBL = (fl_BlockLayout *) pSL->getFirstLayout();
+			PT_DocPosition pos = pBL->getPosition();
+			pView->setTableFormat(pos,props);
 			notify(pView, AV_CHG_HDRFTR);
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 			return;

@@ -168,6 +168,8 @@ public:
 	static EV_EditMethod_Fn cursorDefault;
 	static EV_EditMethod_Fn cursorIBeam;
 	static EV_EditMethod_Fn cursorRightArrow;
+	static EV_EditMethod_Fn cursorVline;
+	static EV_EditMethod_Fn cursorHline;
 	static EV_EditMethod_Fn cursorLeftArrow;
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
@@ -285,6 +287,17 @@ public:
 	static EV_EditMethod_Fn endResizeImage;
 	static EV_EditMethod_Fn dragImage;
 	static EV_EditMethod_Fn dropImage;
+
+	static EV_EditMethod_Fn beginVDrag;
+	static EV_EditMethod_Fn clearSetCols;
+	static EV_EditMethod_Fn dragVline;
+	static EV_EditMethod_Fn endDragVline;
+
+	static EV_EditMethod_Fn beginHDrag;
+	static EV_EditMethod_Fn clearSetRows;
+	static EV_EditMethod_Fn dragHline;
+	static EV_EditMethod_Fn endDragHline;
+
 
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
@@ -623,8 +636,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(alignRight),			0,		""),
 
 	// b
+	EV_EditMethod(NF(beginHDrag), 0, ""),
+	EV_EditMethod(NF(beginVDrag), 0, ""),
 
 	// c
+	EV_EditMethod(NF(clearSetCols), 0, ""),
+	EV_EditMethod(NF(clearSetRows), 0, ""),
 	EV_EditMethod(NF(closeWindow),			0,	""),
 	EV_EditMethod(NF(closeWindowX), 0, ""),
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
@@ -637,11 +654,13 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
 	EV_EditMethod(NF(cursorDefault),		0,	""),
+	EV_EditMethod(NF(cursorHline),      	0,	""),
 	EV_EditMethod(NF(cursorIBeam),			0,	""),
 	EV_EditMethod(NF(cursorImage),			0,	""),
 	EV_EditMethod(NF(cursorImageSize),		0,	""),
 	EV_EditMethod(NF(cursorLeftArrow),		0,	""),
 	EV_EditMethod(NF(cursorRightArrow), 	0,	""),
+	EV_EditMethod(NF(cursorVline), 	        0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
 	EV_EditMethod(NF(cycleInputMode),		0,	""),
 	EV_EditMethod(NF(cycleWindows), 		0,	""),
@@ -692,17 +711,22 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(doBullets),			0,	""),
 	EV_EditMethod(NF(doNumbers),			0,	""),
 	EV_EditMethod(NF(doubleSpace),			0,	""),
+	EV_EditMethod(NF(dragHline), 			0,	""),
 	EV_EditMethod(NF(dragImage),			0,	""),
 	EV_EditMethod(NF(dragSelectionBegin), 0, ""),
 	EV_EditMethod(NF(dragSelectionEnd), 0, ""),
 	EV_EditMethod(NF(dragToXY), 			0,	""),
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
+	EV_EditMethod(NF(dragVline), 			0,	""),
 	EV_EditMethod(NF(dropImage),			0,	""),
+
 
 	// e
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(endDrag),				0,	""),
+	EV_EditMethod(NF(endDragHline),			0,	""),
+	EV_EditMethod(NF(endDragVline),			0,	""),
 	EV_EditMethod(NF(endResizeImage),		0,	""),
 	EV_EditMethod(NF(executeScript),		EV_EMT_REQUIRE_SCRIPT_NAME, ""),
 	EV_EditMethod(NF(extSelBOB),			0,	""),
@@ -3541,6 +3565,42 @@ Defun1(cursorRightArrow)
 	if (pG)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_RIGHTARROW);
+	}
+	return true;
+}
+
+
+Defun1(cursorVline)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+	{
+		pG->setCursor(GR_Graphics::GR_CURSOR_VLINE_DRAG);
+	}
+	return true;
+}
+
+
+Defun1(cursorHline)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+	{
+		pG->setCursor(GR_Graphics::GR_CURSOR_HLINE_DRAG);
 	}
 	return true;
 }
@@ -10382,6 +10442,95 @@ Defun(endResizeImage)
 		
 	return true;
 }
+static UT_sint32 sTopRulerHeight =0;
+static UT_sint32 siFixed =0;
+Defun(beginVDrag)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	AP_TopRuler * pTopRuler = pView->getTopRuler();
+	if(!pTopRuler)
+	{
+		return true;
+	}
+	pView->setDragTableLine(true);
+	UT_sint32 x = pCallData->m_xPos;
+	UT_sint32 y = pCallData->m_yPos;
+	PT_DocPosition pos = pView->getDocPositionFromXY(x, y);
+	sTopRulerHeight = pTopRuler->setTableLineDrag(pos,x,siFixed);
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	return true;
+}
+
+Defun(beginHDrag)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun(clearSetCols)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun(clearSetRows)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun(dragVline)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Doing Line drag \n"));
+	AP_TopRuler * pTopRuler = pView->getTopRuler();
+	if(!pTopRuler)
+	{
+		return true;
+	}
+	UT_sint32 x = pCallData->m_xPos + siFixed;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	EV_EditModifierState ems = 0; 
+	pTopRuler->mouseMotion(ems, x, sTopRulerHeight);
+	return true;
+}
+
+Defun(dragHline)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun(endDragVline)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	AP_TopRuler * pTopRuler = pView->getTopRuler();
+	if(!pTopRuler)
+	{
+		return true;
+	}
+	UT_sint32 x = pCallData->m_xPos;
+	EV_EditModifierState ems = 0; 
+	EV_EditMouseButton emb = EV_EMB_BUTTON1;
+	pTopRuler->mouseRelease(ems,emb, x, sTopRulerHeight);
+	pView->setDragTableLine(false);
+	pView->setCursorToContext();
+	return true;
+}
+
+Defun(endDragHline)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
 
 Defun(dragImage)
 {
@@ -10472,3 +10621,4 @@ Defun(dropImage)
 	
 	return true;
 }
+

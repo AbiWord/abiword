@@ -771,7 +771,10 @@ fl_BlockLayout::~fl_BlockLayout()
 
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
+#if 1
 	m_pDoc = NULL;
+	m_pLayout = NULL;
+#endif
 	xxx_UT_DEBUGMSG(("SEVIOR: Deleting block %x \n",this));
 }
 
@@ -1371,6 +1374,34 @@ void fl_BlockLayout::format()
 	setUpdatableField(false);
 	fl_ContainerLayout * pPrevCL = getPrev();
 	fp_Page * pPrevP = NULL;
+#if 0
+	if(pPrevCL)
+	{
+		UT_DEBUGMSG(("formatBlock 0: pPrevCL Type %d \n",pPrevCL->getContainerType()));
+		if(pPrevCL->myContainingLayout()->getContainerType() == FL_CONTAINER_CELL)
+		{
+			while(pPrevCL && pPrevCL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
+			{
+				pPrevCL = pPrevCL->myContainingLayout();
+			}
+			if(pPrevCL)
+			{
+				UT_DEBUGMSG(("formatBlock 1: pPrevCL Type %d \n",pPrevCL->getContainerType()));
+				pPrevCL = pPrevCL->getPrev();
+				UT_DEBUGMSG(("formatBlock 2: pPrevCL Type %d \n",pPrevCL->getContainerType()));
+			}
+		}
+		if(pPrevCL)
+		{
+			fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+			if(pPrevCon)
+			{
+				pPrevP = pPrevCon->getPage();
+			}
+		}
+	}
+	UT_DEBUGMSG(("formatBlock 3: pPage%x \n",pPrevP));
+#else
 	if(pPrevCL)
 	{
 		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
@@ -1379,6 +1410,7 @@ void fl_BlockLayout::format()
 			pPrevP = pPrevCon->getPage();
 		}
 	}
+#endif
 	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	if (m_pFirstRun)
 	{
@@ -1414,7 +1446,7 @@ void fl_BlockLayout::format()
 				if(pRunToStartAt && pRun == pRunToStartAt)
 					bDoit = true;
 
-				if(bDoit)
+				if(bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH))
 				{
 					pRun->recalcWidth();
 				}

@@ -43,6 +43,14 @@ struct bookmark
 	bool	   start;
 };
 
+class emObject
+{
+public:
+	UT_String props1;
+	UT_String props2;
+	PTObjectType objType;
+};
+
 //
 // The Sniffer/Manager/Creator Class for DOC
 //
@@ -161,7 +169,7 @@ private:
 	bool		m_bCellOpen;					// cell strux open ?
 	UT_Vector	m_vecColumnSpansForCurrentRow;	// placeholder for horizontal cell spans
 	UT_Vector	m_vecColumnWidths;
-		
+	UT_Vector   m_vecEmObjects;               // Objects between cell struxes
 };
 
 #endif /* IE_IMP_MSWORD_H */

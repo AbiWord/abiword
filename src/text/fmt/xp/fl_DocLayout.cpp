@@ -658,8 +658,8 @@ void FL_DocLayout::deleteEmptyPages( bool bDontNotify /* default false */)
 	for (i=iCountPages - 1; i>=0; i--)
 	{
 		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
-
-		if (p->isEmpty())
+		UT_ASSERT(p);
+		if (p && p->isEmpty())
 		{
 			deletePage(p, bDontNotify);
 		}
@@ -697,6 +697,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	UT_ASSERT(m_pDoc);
 	if(isLayoutFilling())
 	{
+//		UT_ASSERT(0);
 		return;
 	}
 //

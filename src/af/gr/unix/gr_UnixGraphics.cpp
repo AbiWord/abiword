@@ -45,6 +45,67 @@
 #include <X11/Xft/Xft.h>
 #endif
 
+/* XPM */
+static char * cursor_select_vline_xpm[] = {
+"24 24 2 1",
+" 	c None",
+".	c #000000",
+"                        ",
+"                        ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"     .....   .....      ",
+"     .....   .....      ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"        ..   ..         ",
+"                        ",
+"                        ",
+"                        "};
+
+/* XPM */
+static char * cursor_select_hline_xpm[] = {
+"24 24 2 1",
+" 	c None",
+".	c #000000",
+"                        ",
+"                        ",
+"                        ",
+"                        ",
+"                        ",
+"                        ",
+"           ..           ",
+"           ..           ",
+"           ..           ",
+"   ..................   ",
+"   ..................   ",
+"                        ",
+"                        ",
+"                        ",
+"   ..................   ",
+"   ..................   ",
+"           ..           ",
+"           ..           ",
+"           ..           ",
+"                        ",
+"                        ",
+"                        ",
+"                        ",
+"                        "};
+
+
 
 static UT_uint32 adobeSUni[/*185*/][2] =
 	{
@@ -1725,11 +1786,75 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_WAIT:
 		cursor_number = GDK_WATCH;
 		break;
+
+	case GR_CURSOR_HLINE_DRAG:
+		{
+#if 0
+			GdkPixmap * source = NULL;
+			GdkPixmap * mask = NULL;
+			GdkColor  fg;
+			GdkColor  bg;
+			gdk_color_black	 (m_pColormap,&fg);
+			gdk_color_white	 (m_pColormap,&bg);
+			source	= gdk_pixmap_colormap_create_from_xpm_d(m_pWin,NULL,
+														&mask, NULL,
+														(char ** )cursor_select_hline_xpm);
+			GDK_IS_PIXMAP(source);
+			GDK_IS_PIXMAP(mask);
+			UT_DEBUGMSG(("setCursor: source = %x \n",source));
+			GdkCursor* cursor_new = gdk_cursor_new_from_pixmap(source,mask,&fg,
+															   &bg,12,12);
+			gdk_window_set_cursor(m_pWin, cursor_new);
+			//			gdk_cursor_destroy(cursor_new);
+			// gdk_pixmap_unref(source);
+			// gdk_bitmap_unref(mask);
+			return;
+#else
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+#endif
+		}
+
+	case GR_CURSOR_VLINE_DRAG:
+		{
+#if 0
+			GdkPixmap * source = NULL;
+			GdkPixmap * mask = NULL;
+			GdkColor fg;
+			GdkColor  bg;
+			gdk_color_black	 (m_pColormap,&fg);
+			gdk_color_white	 (m_pColormap,&bg);
+			source = gdk_pixmap_colormap_create_from_xpm_d(m_pWin,NULL,
+														&mask, NULL,
+														(char ** )cursor_select_vline_xpm);
+			GdkCursor* cursor_new = gdk_cursor_new_from_pixmap(source,mask,&fg,
+															   &bg,12,12);
+			gdk_window_set_cursor(m_pWin, cursor_new);
+			//	gdk_cursor_destroy(cursor_new);
+			// gdk_pixmap_unref(source);
+			// gdk_bitmap_unref(mask);
+			return;
+#else
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+#endif
+		}
 	}
 
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
 	gdk_window_set_cursor(m_pWin, cursor);
 	gdk_cursor_destroy(cursor);
+}
+
+void GR_UnixGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
+										   GdkBitmap * mask)
+{
+	source
+		= gdk_pixmap_colormap_create_from_xpm_d(m_pWin,NULL,
+							&mask, NULL,
+							pXPM);
 }
 
 GR_Graphics::Cursor GR_UnixGraphics::getCursor(void) const

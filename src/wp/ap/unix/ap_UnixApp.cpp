@@ -630,7 +630,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
 bool AP_UnixApp::canPasteFromClipboard(void)
 {
-#if 1
+#if 0
     const char * szFormatFound = NULL;
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;

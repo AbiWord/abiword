@@ -30,13 +30,22 @@
 #include "fp_Page.h"
 
 fb_ColumnBreaker::fb_ColumnBreaker() :
-	m_pStartPage(NULL)
+	m_pStartPage(NULL),
+	m_bStartFromStart(true)
 {
 }
 
 void fb_ColumnBreaker::setStartPage(fp_Page * pPage)
 {
-	m_pStartPage = pPage;
+	if(!m_bStartFromStart)
+	{
+		m_pStartPage = pPage;
+	}
+	if(pPage == NULL)
+	{
+		m_bStartFromStart = true;
+		m_pStartPage = NULL;
+	}
 	return;
 }
 	
@@ -62,6 +71,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	if (!pFirstLayout)
 	{
 		m_pStartPage = NULL;
+		m_bStartFromStart = false;
 		return 0;
 	}
 	pOuterContainer = pFirstLayout->getFirstContainer();
@@ -77,6 +87,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		}
 		else if(pOuterContainer)
 		{
+			UT_ASSERT(pOuterContainer->getContainerType() == FP_CONTAINER_TABLE);
 			pFirstLayout = (fl_ContainerLayout *) pOuterContainer->getSectionLayout();
 		}
 	}
@@ -570,10 +581,51 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			// pCurColumn->layout() might delete a broken table; fixup.
 			if(bTableTest &&
 			   pOuterContainer != pCurColumn->getLastContainer())
+			{
 				pOuterContainer = 
 				 pCurColumn->getLastContainer()->getNextContainerInSection();
-
+				bTableTest = true;
+			}
 			pCurColumn = (fp_Column *) pCurColumn->getNext();
+			if(pCurColumn == NULL && bTableTest && pOuterContainer != NULL)
+			{
+				if(pOuterContainer->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					pCurColumn =  (fp_Column *) pSL->getNewContainer(NULL);
+				}
+				else
+				{
+					pCurColumn = (fp_Column *) pSL->getNewContainer(pOuterContainer);
+				}
+			}
+			else if(pCurColumn == NULL && pLastContainerToKeep && pLastContainerToKeep->getNextContainerInSection())
+			{
+				fp_Container * pCon = pLastContainerToKeep->getNextContainerInSection();
+				if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					pCurColumn =  (fp_Column *) pSL->getNewContainer(NULL);
+				}
+				else
+				{
+					pCurColumn =  (fp_Column *) pSL->getNewContainer(pCon);
+				}
+			}
+		}
+		if(pCurColumn == NULL && pLastContainerToKeep && pLastContainerToKeep->getNextContainerInSection())
+		{
+			fp_Container * pCon = pLastContainerToKeep->getNextContainerInSection();
+			if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				pCurColumn =  (fp_Column *) pSL->getNewContainer(NULL);
+			}
+			else
+			{
+				pCurColumn =  (fp_Column *) pSL->getNewContainer(pCon);
+			}
+		}
+		if(pCurColumn == NULL)
+		{
+			UT_ASSERT(pOuterContainer == NULL);
 		}
 //
 // Loop back for next pCurContainer. Finish if pCurColumn == NULL.
@@ -583,6 +635,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 // End of massive while loop here
 //
 	m_pStartPage = NULL;
+	m_bStartFromStart = false;
 	return 0; // TODO return code
 }
 
