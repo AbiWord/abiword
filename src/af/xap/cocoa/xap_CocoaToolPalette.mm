@@ -1350,13 +1350,13 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 			if (tlbrid == AP_TOOLBAR_ID_COLOR_FORE)
 				{
-					[colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_FG color]];
 					[colorPanel setAction:@selector(aColor_FG:)];
 				}
 			else
 				{
-					[colorPanel setTitle:@"Background Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_BG color]];
 					[colorPanel setAction:@selector(aColor_BG:)];
 				}
