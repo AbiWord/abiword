@@ -605,7 +605,9 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		deleteAll();
 		m_pOwner->checkSpelling();
 		pNewBL->checkSpelling();
-		pNewBL->getSpellSquiggles()->_deleteAtOffset(0);
+		fl_Squiggles * pSq = pNewBL->getSpellSquiggles();
+		UT_return_if_fail( pSq );
+		pSq->_deleteAtOffset(0);
 	}
 	else
 	{
@@ -694,7 +696,10 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 	}
 
 	// Delete squiggle touching IP
-	pPrevBL->getSpellSquiggles()->_deleteAtOffset(iOffset);
+	fl_Squiggles * pSq = pPrevBL->getSpellSquiggles();
+	UT_return_if_fail( pSq );
+	
+	pSq->_deleteAtOffset(iOffset);
 
 	// Update pending word
 	pPrevBL->_recalcPendingWord(iOffset, 0);
