@@ -1191,12 +1191,6 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 {
 	UT_Error tmp_var;
 
-	// HACK TODO: fix this. tables should be embeddable inside of tables
-	if (isInTable())
-	  {
-	    UT_DEBUGMSG(("Tables not yet embeddable inside of tables\n"));
-	    return UT_ERROR ;
-	  }
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
 //
