@@ -55,8 +55,8 @@
 class UT_Exception
 {
  public:
-  UT_Exception ();
-  virtual ~UT_Exception ();
+  UT_Exception () {}
+  virtual ~UT_Exception () {}
 };
 
 //
