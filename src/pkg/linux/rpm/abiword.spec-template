@@ -279,7 +279,6 @@ cd ../abi
 %{ABIPREFIX}/%{AbiSuite}/dictionary/ispell_dictionary_list.xml
 %{ABIPREFIX}/%{AbiSuite}/icons
 %{ABIPREFIX}/%{AbiSuite}/templates
-%{ABIPREFIX}/%{AbiSuite}/templates
 %{prefix}/share/pixmaps/abiword_48.png
 %{prefix}/share/applications/abiword.desktop
 
