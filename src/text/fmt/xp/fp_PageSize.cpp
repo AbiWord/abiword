@@ -170,12 +170,12 @@ void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 		m_unit = size.u;
 
 	// Always scale to mm's, which we store.
-	m_iWidth        = UT_convertDimensions(size.w, m_unit, FUND);
-	m_iHeight       = UT_convertDimensions(size.h, m_unit, FUND);
-	m_iMarginTop    = UT_convertDimensions(size.t, m_unit, FUND);
-	m_iMarginBottom = UT_convertDimensions(size.b, m_unit, FUND);
-	m_iMarginLeft   = UT_convertDimensions(size.l, m_unit, FUND);
-	m_iMarginRight  = UT_convertDimensions(size.r, m_unit, FUND);
+	m_iWidth        = UT_convertDimensions(size.w, size.u, FUND);
+	m_iHeight       = UT_convertDimensions(size.h, size.u, FUND);
+	m_iMarginTop    = UT_convertDimensions(size.t, size.u, FUND);
+	m_iMarginBottom = UT_convertDimensions(size.b, size.u, FUND);
+	m_iMarginLeft   = UT_convertDimensions(size.l, size.u, FUND);
+	m_iMarginRight  = UT_convertDimensions(size.r, size.u, FUND);
 
 	m_predefined = (char *)pagesizes [preDef].name;
 }
@@ -197,10 +197,10 @@ void fp_PageSize::Set(double w, double h, UT_Dimension u)
 	{
 		if (pagesizes[i].u != u )  // Convert to local defined units and round off
 		{
-			converted_w = UT_convertDimensions(w, pagesizes[i].u, u);
+			converted_w = UT_convertDimensions(w, u, pagesizes[i].u);
 			converted_w = ((int)(converted_w*10.0+0.5))/(double)10.0;
-			converted_h = UT_convertDimensions(h, pagesizes[i].u, u);
-			converted_w = ((int)(converted_h*10.0+0.5))/(double)10.0;
+			converted_h = UT_convertDimensions(h, u, pagesizes[i].u);
+			converted_h = ((int)(converted_h*10.0+0.5))/(double)10.0;
 		}
 		else
 		{
