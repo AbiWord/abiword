@@ -24,4 +24,13 @@ dist
 	The dist directory is initially absent, since nothing is placed
 	there until it has been built.
 
+test
+	Test files for each product. 
+
+user
+	Support files, other than code, which need to be installed
+	on the user's machine, are stored in here.  Items which
+	are too large to be practical do not necessarily go here,
+	such as the fonts.
+
 

@@ -8,34 +8,32 @@ config
 	product source code.  Rather, it contains things like
 	Makefiles and scripts.
 
-ev
-	Source code for the event mechanizm for the cross-platform application
-	framework. This code contains the machinery to do key bindings, mouse
-	bindings, menu bars, and tool bars.  This code is currently used by
-	the word processor, but we expect to also use it for the
-	spreadsheet application.
+af
+	Source code for application-neutral cross-platform framework.
+
+hello
+	Source code for the "Hello World" sample application.
 
 other
-	This is where source code for all third-party libraries is placed.
+	This is where source code for forked third-party libraries is placed.
+	For example, we use a librarified subset of ispell, which is
+	stored here.  In general, put libraries in 'other' if we are making 
+	substantial modifications to the code.  DO NOT DO THIS LIGHTLY!!
 
-	For example, we use James Clark's XML parser, expat, which is
-	stored here.  In general, don't put libraries in 'other' if
-	we are making substantial modifications to the code.  Minor bug
-	fixes are fine (please send the fix back to the original author).
-	Customizations to make the library fit into our build system are
-	fine.  Source code in 'other' is not required to comply with
-	every one of our coding guidelines.  Don't make gratuitous sweeping
-	changes just to fix the indent level on someone else's library.
+	Whenever possible, it's better to use existing libraries as peer 
+	modules of the abi tree.  Minor bug fixes there are fine (please 
+	send the fix back to the original author).  Customizations to make 
+	the library fit into our build system are fine.  
+	
+	Source code in 'other' is not required to comply with every one of our 
+	coding guidelines.  Don't make gratuitous sweeping changes just to fix 
+	the indent level on someone else's library.
 
-util
-	Source code for general-purpose utility functions.
+text
+	Source code for the text-editing library used by various applications. 
 
 wp
 	Source code for the word processor application.
-
-xap
-	Source code for application-neutral portion of the
-	cross-platform framework defined in src/ev.
 
 
 Subdirectories below may have additional hierarchy to further break
