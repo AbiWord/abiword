@@ -24,7 +24,10 @@
 ******************************************************************
 *****************************************************************/
 
-/* Commmon to many dialogs */
+/* Default name for new, untitled document */
+dcl(UntitledDocument,		"Untitled%d")
+
+/* Common to many dialogs */
 dcl(DLG_OK,					"OK")
 dcl(DLG_Cancel,				"Cancel")
 

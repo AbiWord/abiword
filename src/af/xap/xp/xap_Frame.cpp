@@ -40,6 +40,7 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 #include "xap_Scrollbar_ViewListener.h"
+#include "xap_Strings.h"
 
 /*****************************************************************/
 
@@ -377,7 +378,9 @@ UT_Bool XAP_Frame::updateTitle()
 	else
 	{
 		UT_ASSERT(m_iUntitled);
-		sprintf(m_szTitle, "Untitled%d", m_iUntitled);
+		const XAP_StringSet * pSS = m_app->getStringSet();
+		
+		sprintf(m_szTitle, pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
 	}
 
 	strcpy(m_szNonDecoratedTitle, m_szTitle);

@@ -12,6 +12,7 @@
 <AbiStrings app="AbiWord Personal" ver="1.0" language="FiFI">
 
 <Strings	class="XAP"
+UntitledDocument="Untitled%d"
 DLG_OK="OK"
 DLG_Cancel="Peruuta"
 DLG_UnixMB_Yes="_Yes"
