@@ -81,6 +81,7 @@ GtkWidget * AP_UnixGnomeDialog_Insert_DateTime::_constructWindow (void)
 			    (gpointer)this);
 
 	_connectSignals ();
+	setDefaultButton (GNOME_DIALOG(m_windowMain), 1);
 
 	return (m_windowMain);
 }

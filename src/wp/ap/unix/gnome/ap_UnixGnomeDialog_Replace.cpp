@@ -40,6 +40,7 @@
 #include "ap_Dialog_Replace.h"
 #include "ap_UnixDialog_Replace.h"
 #include "ap_UnixGnomeDialog_Replace.h"
+#include "ut_dialogHelper.h"
 
 #include <gnome.h>
 
@@ -335,7 +336,12 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 						   "clicked",
 						   GTK_SIGNAL_FUNC(s_replace_all_clicked),
 						   this);
+		setDefaultButton (GNOME_DIALOG(windowReplace), 3);
 	}
+	else
+	  {
+	    setDefaultButton (GNOME_DIALOG(windowReplace), 0);
+	  }
 
 	// save pointers to members
 	m_windowMain = windowReplace;
@@ -351,7 +357,6 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 
 	m_buttonCancel = buttonCancel;
 
-	
 	return windowReplace;
 }
 

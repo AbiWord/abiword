@@ -629,3 +629,14 @@ void createLabelAccelerators( GtkWidget *widget )
 	gtk_window_add_accel_group (GTK_WINDOW (widget), data.accel_group);
 }
 
+#ifdef HAVE_GNOME
+void setDefaultButton (GnomeDialog * dlg, int which)
+{
+  gnome_dialog_set_default (dlg, which);
+
+#if 0
+  gnome_dialog_grab_focus (dlg, which);
+  gnome_dialog_set_sensitive (dlg, which, TRUE);
+#endif
+}
+#endif

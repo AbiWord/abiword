@@ -126,7 +126,7 @@ GtkWidget * XAP_UnixGnomeDialog_Insert_Symbol::_constructWindow(void)
 
 	_connectSignals ();
 
-	gnome_dialog_set_default (GNOME_DIALOG (m_windowMain), 0);
+	setDefaultButton (GNOME_DIALOG(m_windowMain), 0); // insert button
 	
 	return m_windowMain;
 }

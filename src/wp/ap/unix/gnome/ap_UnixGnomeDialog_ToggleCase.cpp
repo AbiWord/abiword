@@ -35,6 +35,7 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_UnixGnomeDialog_ToggleCase.h"
+#include "ut_dialogHelper.h"
 
 /*****************************************************************/
 
@@ -120,5 +121,6 @@ GtkWidget * AP_UnixGnomeDialog_ToggleCase::_constructWindow(void)
 			    GTK_SIGNAL_FUNC(s_cancel_clicked),
 			    (gpointer) this);
 
+	setDefaultButton (GNOME_DIALOG(windowMain), 1);
 	return windowMain;
 }

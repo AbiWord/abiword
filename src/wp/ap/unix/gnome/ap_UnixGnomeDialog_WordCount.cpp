@@ -34,6 +34,7 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_UnixGnomeDialog_WordCount.h"
+#include "ut_dialogHelper.h"
 
 /*****************************************************************/
 
@@ -93,6 +94,7 @@ GtkWidget * AP_UnixGnomeDialog_WordCount::_constructWindow(void)
 			    (gpointer)this);
 
 	_connectSignals ();
+	setDefaultButton (GNOME_DIALOG(m_windowMain), 1);
 
 	return m_windowMain;
 }

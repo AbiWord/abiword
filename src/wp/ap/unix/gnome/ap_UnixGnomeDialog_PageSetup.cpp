@@ -21,6 +21,7 @@
 #include "ap_UnixGnomeDialog_PageSetup.h"
 #include "ap_Strings.h"
 #include "ut_debugmsg.h"
+#include "ut_dialogHelper.cpp"
 
 static void
 cb_close (GtkWidget * w, AP_UnixGnomeDialog_PageSetup * dlg)
@@ -64,5 +65,6 @@ GtkWidget * AP_UnixGnomeDialog_PageSetup::_constructWindow (void)
 		     (gpointer)this);
 
   _connectSignals ();
+  setDefaultButton (GNOME_DIALOG(m_window), 1);
   return m_window;
 }

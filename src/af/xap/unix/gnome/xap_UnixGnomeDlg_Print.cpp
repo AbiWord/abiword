@@ -113,16 +113,16 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		m_nFirstPage, m_nLastPage,
 		"_Active Page", (char *)pSS->getValue(XAP_STRING_ID_DLG_UP_PageRanges));
 
-	gnome_dialog_set_default (GNOME_DIALOG (gpd),
-				  GNOME_PRINT_PRINT);
+	setDefaultButton (GNOME_DIALOG (gpd),
+			  GNOME_PRINT_PRINT);
 
 	// get top level window and it's GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);
-	gnome_dialog_set_parent(GNOME_DIALOG(gpd), GTK_WINDOW(parent));
-	//centerDialog(parent, GTK_WIDGET(gpd));
+	//gnome_dialog_set_parent(GNOME_DIALOG(gpd), GTK_WINDOW(parent));
+	centerDialog(parent, GTK_WIDGET(gpd));
 
 	// 2.  Toggle dialog options to match persistent values
 	// TODO: We're not really persistant. I view this as a good thing, others don't.

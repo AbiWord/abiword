@@ -91,6 +91,7 @@ GtkWidget * AP_UnixGnomeDialog_Field::_constructWindow(void)
 
 	// connect all the signals
 	_connectSignals ();
+	setDefaultButton (GNOME_DIALOG(m_windowMain), 1);
 
 	// and action!
 	gtk_widget_show_all (m_windowMain);

@@ -105,5 +105,7 @@ GtkWidget * AP_UnixGnomeDialog_Background::_constructWindow (void)
   
   _constructWindowContents (GNOME_DIALOG(dlg)->vbox);
 
+  setDefaultButton (GNOME_DIALOG(dlg), 1);
+
   return dlg;
 }

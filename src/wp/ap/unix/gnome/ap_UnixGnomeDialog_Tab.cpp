@@ -42,6 +42,7 @@
 #include "ap_UnixGnomeDialog_Tab.h"
 
 #include <gnome.h>
+#include "ut_dialogHelper.h"
 
 XAP_Dialog * AP_UnixGnomeDialog_Tab::static_constructor(XAP_DialogFactory * pFactory,
 							XAP_Dialog_Id id)
@@ -127,4 +128,5 @@ void    AP_UnixGnomeDialog_Tab::_constructGnomeButtons(GtkWidget * /* ignored */
 	m_buttonApply = buttonApply;
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
+	setDefaultButton (GNOME_DIALOG(m_windowMain), 2);
 }

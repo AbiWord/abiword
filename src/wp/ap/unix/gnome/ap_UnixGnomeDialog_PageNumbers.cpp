@@ -21,6 +21,7 @@
 #include "ap_UnixGnomeDialog_PageNumbers.h"
 #include "ap_Strings.h"
 #include "ut_debugmsg.h"
+#include "ut_dialogHelper.h"
 
 AP_UnixGnomeDialog_PageNumbers::AP_UnixGnomeDialog_PageNumbers(XAP_DialogFactory * pDlgFactory, 
 			       XAP_Dialog_Id id) :
@@ -64,5 +65,6 @@ GtkWidget * AP_UnixGnomeDialog_PageNumbers::_constructWindow (void)
 		      (gpointer)this);
 
   _connectSignals ();
+  setDefaultButton (GNOME_DIALOG(m_window), 1);
   return m_window;
 }

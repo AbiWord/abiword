@@ -348,6 +348,10 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
 
+#ifdef HAVE_GNOME
+	setDefaultButton (GNOME_DIALOG(windowMain), 0); // ok button
+#endif
+
 	return windowMain;
 }
 

@@ -106,5 +106,7 @@ GtkWidget * XAP_UnixGnomeDialog_Language::constructWindow(void)
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
 			   (gpointer) &m_answer);
 
+	// make cancel button the default
+	setDefaultButton (GNOME_DIALOG (windowLangSelection), 1);
 	return windowLangSelection;
 }

@@ -161,7 +161,8 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 	    
 	    gtk_object_set_data( GTK_OBJECT(w), "tControl", (gpointer) i );
 	  }
-	
+
+	setDefaultButton (GNOME_DIALOG (windowOptions), 3);
 	return windowOptions;
 }
 

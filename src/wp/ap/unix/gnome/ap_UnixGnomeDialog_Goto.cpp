@@ -85,6 +85,8 @@ GtkWidget * AP_UnixGnomeDialog_Goto::_constructWindow (void)
 			    (gpointer)this);
 
 	_connectSignals ();
+	// the goto button
+	setDefaultButton (GNOME_DIALOG(m_wMainWindow), 2);
 
 	return (m_wMainWindow);
 }

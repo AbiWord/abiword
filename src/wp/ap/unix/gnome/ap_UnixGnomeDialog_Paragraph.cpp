@@ -99,5 +99,6 @@ GtkWidget * AP_UnixGnomeDialog_Paragraph::_constructWindow(void)
 			    GTK_SIGNAL_FUNC(cb_close),
 			    (gpointer)this);
 
+	setDefaultButton (GNOME_DIALOG(m_windowMain), 2);
 	return m_windowMain;
 }

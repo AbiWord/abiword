@@ -80,5 +80,6 @@ GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 			    (gpointer) this);
 
 	_connectsignals();
+	setDefaultButton (GNOME_DIALOG(windowStyles), 1);
 	return windowStyles;
 }

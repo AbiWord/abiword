@@ -418,5 +418,7 @@ GtkWidget * XAP_UnixGnomeDialog_Zoom::_constructWindow(void)
 
 	m_radioGroup = vboxZoomTo_group;
 	
+	setDefaultButton (GNOME_DIALOG(windowZoom), 1);
+
 	return windowZoom;
 }

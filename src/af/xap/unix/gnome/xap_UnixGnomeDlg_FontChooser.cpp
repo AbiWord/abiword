@@ -128,5 +128,8 @@ GtkWidget * XAP_UnixGnomeDialog_FontChooser::constructWindow(void)
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) &m_answer);
 
+	// set cancel button as default
+	setDefaultButton (GNOME_DIALOG (windowFontSelection), 1);
+
 	return windowFontSelection;
 }

@@ -64,6 +64,11 @@ gint searchCList(GtkCList * clist, char * compareText);
 //		checkbutton/button.  It will also set the accel-groups 
 void createLabelAccelerators( GtkWidget * widget );
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+void setDefaultButton (GnomeDialog * dlg, int which);
+#endif
+
 #endif /* UT_DIALOGHELPER_H */
 
 

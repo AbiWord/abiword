@@ -251,6 +251,8 @@ GtkWidget * AP_UnixGnomeDialog_Break::_constructWindow(void)
 	m_buttonCancel = buttonCancel;
 
 	m_radioGroup = tableInsert_group;
+
+	setDefaultButton (GNOME_DIALOG(windowBreak), 1);
 	
 	return windowBreak;
 }

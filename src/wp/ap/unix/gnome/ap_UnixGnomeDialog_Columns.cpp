@@ -76,5 +76,7 @@ GtkWidget * AP_UnixGnomeDialog_Columns::_constructWindow(void)
 			    (gpointer) this);
 
 	_connectsignals();
+	setDefaultButton (GNOME_DIALOG(windowColumns), 1);
+
 	return windowColumns;
 }
