@@ -1092,7 +1092,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 #ifdef HAVE_GNOME_XML2
 const char*	fl_BlockLayout::getProperty(const char * pszName, UT_Bool bExpandStyles) const
 {
-	return getProperty(static_cast<const XML_Char *> (pszName), bExpandStyles);
+	return getProperty((const XML_Char *) (pszName), bExpandStyles);
 }
 #endif
 

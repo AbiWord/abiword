@@ -2363,7 +2363,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	//UT_DEBUGMSG(("AP_TopRuler::_prefsListener (this=%p)\n", data));
 
 	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszBuffer );
+	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );

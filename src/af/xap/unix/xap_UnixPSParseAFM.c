@@ -1092,7 +1092,7 @@ static int parseCompCharData(fp, fi)
  *  pointer upon return of this function is undefined.
  */
 
-extern int parseFile (FILE *fp, ABIFontInfo **fi, FLAGS flags)
+extern int abi_parseFile (FILE *fp, ABIFontInfo **fi, FLAGS flags)
 {
     
     int code = ok; 	/* return code from each of the parsing routines */

@@ -718,7 +718,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	}
 
 	// call down to the Adobe code
-	int result = parseFile(fp, &m_metricsData, P_GM);
+	int result = abi_parseFile(fp, &m_metricsData, P_GM);
 	switch (result)
 	{
 	case parseError:

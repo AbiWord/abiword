@@ -169,20 +169,20 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat
 		UT_DEBUGMSG(("GR_Graphics::remapGlyph() refreshing cached values\n"));
 		m_pPrefsScheme = s;
 		m_uTick = t;
-		p->getPrefsValueBool("RemapGlyphsMasterSwitch", &m_bRemapGlyphsMasterSwitch);
-		p->getPrefsValueBool("RemapGlyphsNoMatterWhat", &m_bRemapGlyphsNoMatterWhat);
+		p->getPrefsValueBool((XML_Char*)"RemapGlyphsMasterSwitch", &m_bRemapGlyphsMasterSwitch);
+		p->getPrefsValueBool((XML_Char*)"RemapGlyphsNoMatterWhat", &m_bRemapGlyphsNoMatterWhat);
 
 		const XML_Char *table_utf8, *default_utf8;
 		UT_GrowBuf gb;
 		const UT_UCSChar *tbl;
 
-		p->getPrefsValue("RemapGlyphsDefault", &default_utf8);
-		UT_ASSERT(p->getPrefsValue("RemapGlyphsDefault", &default_utf8));
+		p->getPrefsValue((XML_Char*)"RemapGlyphsDefault", &default_utf8);
+		UT_ASSERT(p->getPrefsValue((XML_Char*)"RemapGlyphsDefault", &default_utf8));
 		UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
 		m_ucRemapGlyphsDefault = *(gb.getPointer(0));  // might be null
 
-		p->getPrefsValue("RemapGlyphsTable", &table_utf8);
-		UT_ASSERT(p->getPrefsValue("RemapGlyphsTable", &table_utf8));
+		p->getPrefsValue((XML_Char*)"RemapGlyphsTable", &table_utf8);
+		UT_ASSERT(p->getPrefsValue((XML_Char*)"RemapGlyphsTable", &table_utf8));
 		gb.truncate(0);
 		UT_decodeUTF8string(table_utf8, UT_XML_strlen(table_utf8), &gb);
 

@@ -4637,7 +4637,7 @@ Defun1(cycleInputMode)
 
 	// this edit method may get ignored entirely
 	UT_Bool b;
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
 		return UT_FALSE;
 
 	const char * szCurrentInputMode = pFrame->getInputMode();
@@ -4671,7 +4671,7 @@ Defun1(toggleInsertMode)
 
 	// this edit method may get ignored entirely
 	UT_Bool b;
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, &b) && !b)
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_InsertModeToggle, &b) && !b)
 		return UT_FALSE;
 
 	// toggle the insert mode

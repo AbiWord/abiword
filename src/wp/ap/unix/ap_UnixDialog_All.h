@@ -60,6 +60,7 @@
 #	include "xap_UnixGnomeDlg_FontChooser.h"
 #	include "xap_UnixGnomeDlg_Insert_Symbol.h"
 #	include "xap_UnixGnomeDlg_MessageBox.h"
+#       include "xap_UnixGnomeDlg_Print.h"
 #	include "xap_UnixGnomeDlg_Zoom.h"
 
 #	include "ap_UnixGnomeDialog_Replace.h"
@@ -81,7 +82,7 @@
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixGnomeDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixGnomeDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixGnomeDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)

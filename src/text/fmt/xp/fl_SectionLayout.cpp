@@ -758,7 +758,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	}
 
 	const char* pszColumnLineBetween = NULL;
-	pSectionAP->getProperty("column-line", (const XML_Char *&)pszColumnLineBetween);
+	pSectionAP->getProperty((XML_Char*)"column-line", (const XML_Char *&)pszColumnLineBetween);
 	if (pszColumnLineBetween && pszColumnLineBetween[0])
 	{
 		m_bColumnLineBetween = (strcmp(pszColumnLineBetween, "on") == 0) ? UT_TRUE : UT_FALSE;

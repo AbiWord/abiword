@@ -5539,7 +5539,7 @@ void FV_View::cmdContextAdd(void)
 	FV_View *pView = (FV_View *)data;
 	UT_Bool b;
 	UT_ASSERT(data && pPrefs);
-	if ( pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &b) && b != pView->m_bCursorBlink )
+	if ( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CursorBlink, &b) && b != pView->m_bCursorBlink )
 	{
 		UT_DEBUGMSG(("FV_View::_prefsListener m_bCursorBlink=%s m_bCursorIsOn=%s\n",
 					 pView->m_bCursorBlink ? "TRUE" : "FALSE",

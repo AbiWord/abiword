@@ -434,7 +434,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	UT_ASSERT( data && pPrefs );
 
 	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszBuffer );
+	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );

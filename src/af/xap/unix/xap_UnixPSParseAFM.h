@@ -337,7 +337,7 @@ typedef struct
 #ifdef __cplusplus
 extern "C" {
 #endif
-  extern int parseFile (FILE *fp, ABIFontInfo **fi, FLAGS flags); 
+  extern int abi_parseFile (FILE *fp, ABIFontInfo **fi, FLAGS flags); 
 #ifdef __cplusplus
 };
 #endif

@@ -449,7 +449,7 @@ UT_Bool XAP_App::getPrefsValue(const char * szKey, const XML_Char ** pszValue) c
 	if (!m_prefs)
 		return UT_FALSE;
 
-	return m_prefs->getPrefsValue(static_cast<XML_Char *> (szKey), pszValue);
+	return m_prefs->getPrefsValue((XML_Char*) (szKey), pszValue);
 }
 #endif
 
@@ -467,7 +467,7 @@ UT_Bool XAP_App::getPrefsValueBool(const char * szKey, UT_Bool * pbValue) const
 	if (!m_prefs)
 		return UT_FALSE;
 
-	return m_prefs->getPrefsValueBool(static_cast<XML_Char *> (szKey), pbValue);
+	return m_prefs->getPrefsValueBool((XML_Char*) (szKey), pbValue);
 }
 #endif
 

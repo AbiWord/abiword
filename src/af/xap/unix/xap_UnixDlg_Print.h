@@ -53,8 +53,8 @@ protected:
 
 	printCBStruct			m_callbackData;
 	
-	void					_raisePrintDialog(XAP_Frame * pFrame);
-	void					_getGraphics(void);
+	virtual void			_raisePrintDialog(XAP_Frame * pFrame);
+	virtual void			_getGraphics(void);
 
 //	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message);
 	

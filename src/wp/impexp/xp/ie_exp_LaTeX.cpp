@@ -297,7 +297,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				}
 			}
 
-			if (pAP->getProperty("line-height", szValue))
+			if (pAP->getProperty((XML_Char*)"line-height", szValue))
 			{
 				double height = atof(szValue);
 
