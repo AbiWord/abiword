@@ -47,8 +47,8 @@ protected:
 	XAP_Win32PreviewWidget* m_pPreviewWidget;
 
 	bool					m_bWin32Overline;
-	bool					m_bWin32Topline;
-	bool					m_bWin32Bottomline;
+//	bool					m_bWin32Topline;
+//	bool					m_bWin32Bottomline;
 	bool                    m_bWin32Hidden;
 	bool					m_bWin32SuperScript;
 	bool					m_bWin32SubScript;

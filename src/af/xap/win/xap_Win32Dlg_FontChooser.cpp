@@ -50,9 +50,7 @@ XAP_Win32Dialog_FontChooser::XAP_Win32Dialog_FontChooser(XAP_DialogFactory * pDl
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_FontChooser(pDlgFactory,id),
 	m_pPreviewWidget(NULL),
-	m_bWin32Overline(false),
-	m_bWin32Topline(false),
-	m_bWin32Bottomline(false)
+	m_bWin32Overline(false)
 {
 }
 
@@ -80,8 +78,6 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 (m_bStrikeout)));
 
 	m_bWin32Overline   = m_bOverline;
-	m_bWin32Topline    = m_bTopline;
-	m_bWin32Bottomline = m_bBottomline;
 	m_bWin32Hidden     = m_bHidden;
 	m_bWin32SuperScript = m_bSuperScript;
 	m_bWin32SubScript = m_bSubScript;
@@ -238,18 +234,12 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_bChangedUnderline  = ((lf.lfUnderline == TRUE) != m_bUnderline);
 		m_bChangedStrikeOut  = ((lf.lfStrikeOut == TRUE) != m_bStrikeout);
 		m_bChangedOverline   = (m_bWin32Overline   != m_bOverline);
-		m_bChangedTopline    = (m_bWin32Topline    != m_bTopline);
-		m_bChangedBottomline = (m_bWin32Bottomline != m_bBottomline);
 		if (m_bChangedUnderline ||
             m_bChangedStrikeOut ||
-            m_bChangedOverline  ||
-            m_bChangedTopline   ||
-            m_bChangedBottomline)
+            m_bChangedOverline)
 			setFontDecoration( (lf.lfUnderline == TRUE),
                                 m_bWin32Overline,
-                                (lf.lfStrikeOut == TRUE),
-                                m_bWin32Topline,
-                                m_bWin32Bottomline );
+                                (lf.lfStrikeOut == TRUE), NULL, NULL);
 
 		m_bChangedHidden = (m_bWin32Hidden != m_bHidden);
 		m_bChangedSuperScript = (m_bWin32SuperScript != m_bSuperScript);
@@ -331,8 +321,6 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	_DS(FONT_BTN_STRIKEOUT,		DLG_UFS_StrikeoutCheck);
 	_DS(FONT_BTN_UNDERLINE,		DLG_UFS_UnderlineCheck);
 	_DS(FONT_CHK_OVERLINE,		DLG_UFS_OverlineCheck);
-	_DS(FONT_CHK_TOPLINE,		DLG_UFS_ToplineCheck);
-	_DS(FONT_CHK_BOTTOMLINE,	DLG_UFS_BottomlineCheck);	
 	_DS(FONT_TEXT_COLOR,		DLG_UFS_ColorLabel);
 	_DS(FONT_TEXT_SCRIPT,		DLG_UFS_ScriptLabel);
 	_DS(FONT_TEXT_SAMPLE,		DLG_UFS_SampleFrameLabel);
@@ -345,12 +333,6 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	// set initial state
 	if( m_bWin32Overline )
 		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_OVERLINE, BST_CHECKED );
-
-	if( m_bWin32Topline )
-		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_TOPLINE, BST_CHECKED );
-
-	if( m_bWin32Bottomline )
-		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE, BST_CHECKED );
 
 	if( m_bWin32Hidden )
 		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_HIDDEN, BST_CHECKED );
@@ -391,13 +373,6 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	case XAP_RID_DIALOG_FONT_CHK_OVERLINE:
 		m_bWin32Overline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_OVERLINE)==BST_CHECKED);
 		return 1;
-
-	case XAP_RID_DIALOG_FONT_CHK_TOPLINE:
-		m_bWin32Topline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_TOPLINE)==BST_CHECKED);
-		return 1;
-
-	case XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE:
-		m_bWin32Bottomline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE)==BST_CHECKED);
 
 	case XAP_RID_DIALOG_FONT_CHK_HIDDEN:
 		m_bWin32Hidden = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_HIDDEN)==BST_CHECKED);
