@@ -388,11 +388,13 @@ UT_Bool EV_BeOSMenu::synthesize()
 			char key;
 			key=0;
 			modifiers=0;
+			
+			// New -- We map control to the command key and alt to option.
 			if (szMnemonicName != NULL)
 			{
 				if ((index=betterString.FindFirst("Ctrl+")) != B_ERROR)
 				{
-					modifiers=B_CONTROL_KEY;
+					modifiers=0; // Command is implied.
 					if (betterString.FindFirst("F4") != B_ERROR)
 					{
 						//key=B_F4_KEY;
@@ -412,7 +414,7 @@ UT_Bool EV_BeOSMenu::synthesize()
 				}
 				else if ((index=betterString.FindFirst("Alt+")) != B_ERROR)
 				{
-					modifiers=B_COMMAND_KEY;
+					modifiers=B_OPTION_KEY;
 					if (betterString.FindFirst("F4") != B_ERROR)
 					{
 					//	key=B_F4_KEY;
@@ -686,7 +688,7 @@ UT_Bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 			{
 				if ((index=betterString.FindFirst("Ctrl+")) != B_ERROR)
 				{
-					modifiers=B_CONTROL_KEY;
+					modifiers=0; // Command is implied.
 					if (betterString.FindFirst("F4") != B_ERROR)
 					{
 						//key=B_F4_KEY;
@@ -706,7 +708,7 @@ UT_Bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 				}
 				else if ((index=betterString.FindFirst("Alt+")) != B_ERROR)
 				{
-					modifiers=B_COMMAND_KEY;
+					modifiers=B_OPTION_KEY;
 					if (betterString.FindFirst("F4") != B_ERROR)
 					{
 					//	key=B_F4_KEY;

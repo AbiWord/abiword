@@ -65,9 +65,14 @@ filter_result KeybdFilter::Filter(BMessage *message, BHandler **target) {
 	if (message->what != B_KEY_DOWN) {
 		return(B_DISPATCH_MESSAGE);
 	}
-	((ev_BeOSKeyboard*)m_pEVKeyboard)->keyPressEvent(m_pBeOSFrame->getCurrentView(), message);
 	
-	return(B_SKIP_MESSAGE);			
+	m_pBeOSFrame->getTopLevelWindow()->Lock();
+	UT_Bool result = ((ev_BeOSKeyboard*)m_pEVKeyboard)->keyPressEvent(m_pBeOSFrame->getCurrentView(), message);
+	m_pBeOSFrame->getTopLevelWindow()->Unlock();
+		
+	if( result == UT_TRUE)
+		return(B_SKIP_MESSAGE);			
+	
 	return(B_DISPATCH_MESSAGE);			
 }
 
@@ -136,15 +141,32 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 	UT_DEBUGMSG(("Modifiers 0x%x keychar %c (0x%x) rawchar %c (0x%x)\n", 
 					modifier, keychar, keychar, rawchar, rawchar));
 
+	// CJP - If we want to 'BeOS'ize the menu's we need to map the command key to control
+	// CJP - Is this safe? - Will we mess up any of the non-menu keyboard shortcuts?
+	if( modifier & B_COMMAND_KEY )
+	{
+		state |= EV_EMS_CONTROL;
+	}
+	if( modifier & B_COMMAND_KEY && modifier & B_CONTROL_KEY && modifier & B_OPTION_KEY)
+	{
+		state |= EV_EMS_ALT;
+	}
+	if( !(modifier & B_COMMAND_KEY) && modifier & B_OPTION_KEY )
+		state |= EV_EMS_ALT;
+	else if( !(modifier & B_COMMAND_KEY) && modifier & B_CONTROL_KEY )
+		state |= EV_EMS_ALT;
 	if (modifier & B_SHIFT_KEY) {
 		state |= EV_EMS_SHIFT;
 	}
+	
+#if 0
 	if (modifier & B_CONTROL_KEY) {
 		state |= EV_EMS_CONTROL;
 	}
 	if (modifier & B_OPTION_KEY) {
 		state |= EV_EMS_ALT;
 	}
+#endif
 
 	if (s_mapVirtualKeyCodeToNVK(keychar, modifier, rawchar, bytes)) {
 		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(keychar, modifier, 
