@@ -118,9 +118,10 @@ public:
 	UT_BidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
 
+	void                measureCharWidths();
+	
 private:
 	bool				_refreshDrawBuffer();
-	void                _measureCharWidths();
 	bool				_addupCharWidths(void);
 	virtual void        _lookupProperties(const PP_AttrProp * pSpanAP,
 										   const PP_AttrProp * pBlockAP,

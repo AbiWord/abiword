@@ -1266,7 +1266,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
     measures widths of individual characters in our draw buffer,
     stores them in the block's width cache and recalculates overall width.
 */
-void fp_TextRun::_measureCharWidths()
+void fp_TextRun::measureCharWidths()
 {
 	_setWidth(0);
 	UT_return_if_fail(m_pRenderInfo);
@@ -2021,7 +2021,7 @@ bool fp_TextRun::_refreshDrawBuffer()
 		_setRefreshDrawBuffer(GRSR_BufferClean);
 
 		// now remeasure our characters
-		_measureCharWidths();
+		measureCharWidths();
 		return true;
 	} //if(m_bRefreshDrawBuffer)
 
