@@ -129,7 +129,7 @@ static PP_Property _props[] =
    	{ "start-value",           "1",               true,  NULL, PP_LEVEL_BLOCK},
 
 	{ "table-border",          "0.1in",           false, NULL, PP_LEVEL_TABLE},
-	{ "table-col-spacing",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-col-spacing",     "0.05in",          false, NULL, PP_LEVEL_TABLE},
 	{ "table-column-leftpos",  "0.0in",           false, NULL, PP_LEVEL_TABLE},
 	{ "table-column-props",    "",                false, NULL, PP_LEVEL_TABLE},
 	{ "table-line-thickness",  "1",               false, NULL, PP_LEVEL_TABLE},

@@ -208,6 +208,22 @@ bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			m_apiThisSection = pcr->getIndexAP();
 			return true;
 		}
+	case PTX_SectionTable:
+	    {
+			return true;
+		}
+	case PTX_SectionCell:
+	    {
+			return true;
+		}
+	case PTX_EndTable:
+	    {
+			return true;
+		}
+	case PTX_EndCell:
+	    {
+			return true;
+		}
 
 	case PTX_Block:
 		{

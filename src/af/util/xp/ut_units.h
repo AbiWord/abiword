@@ -114,6 +114,7 @@ UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits);
 #endif
 
 const char * UT_incrementDimString(const char * dimString, double inc);
+const char * UT_multiplyDimString(const char * dimString, double mult);
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 ABI_EXPORT const char * UT_dimensionName(UT_Dimension dim);
 const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);

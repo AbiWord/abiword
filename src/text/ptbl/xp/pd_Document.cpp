@@ -847,8 +847,226 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 	return NULL;
 }
 
+//====================================================================================
+// Table Medthods
+//====================================================================================
+/*!
+ * This method returns the end table strux associated with the table strux tableSDH
+ * Returns NULL on failure to find it.
+ */
+PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH)
+{
+	pf_Frag * currentFrag = (pf_Frag *) tableSDH;
+	currentFrag = currentFrag->getNext();
+	PL_StruxDocHandle EndTableSDH = NULL;
+	UT_sint32 depth =0;
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			if(pfSec->getStruxType() == PTX_SectionTable)
+			{
+				depth++;
+			}
+			else if(pfSec->getStruxType() == PTX_EndTable)
+			{
+				if(depth == 0)
+				{
+					EndTableSDH = (PL_StruxDocHandle) pfSec;
+					return EndTableSDH;
+				}
+				else
+				{
+					depth--;
+				}
+			}
+		}
+//
+// Get Next frag in the table.
+//
+		currentFrag = currentFrag->getNext();
+	}
+	return NULL;
+}
+
+/*!
+ * This method returns the end table strux associated with the table strux tableSDH
+ * Returns NULL on failure to find it.
+ */
+PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition tablePos)
+{
+	PL_StruxDocHandle tableSDH = NULL;
+	PL_StruxDocHandle EndTableSDH = NULL;
+	bool bRes =	getStruxOfTypeFromPosition(tablePos, PTX_SectionTable, &tableSDH);
+	if(!bRes)
+	{
+		return NULL;
+	}
+	EndTableSDH = getEndTableStruxFromTableSDH(tableSDH);
+	return EndTableSDH;
+}
+
+/*!
+ * The method returns the number of rows and columns in table pointed to by tableSDH
+\params PL_StruxDocHandle tableSDH SDH of the table in question
+\params UT_sint32 * numRows pointer to the number of rows returned
+\params UT_sint32 * numCols pointer to the number of cols returned
+*/
+bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 * numRows,
+										  UT_sint32 * numCols)
+{
+	UT_sint32 Right,Bot;
+	const char * szRight = NULL;
+	const char * szBot = NULL;
+	PL_StruxDocHandle cellSDH;
+//
+// Do the scan
+//
+	pf_Frag * currentFrag = (pf_Frag *) tableSDH;
+	currentFrag = currentFrag->getNext();
+	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			if(pfSec->getStruxType() == PTX_SectionTable)
+			{
+//
+// skip to the end of this nested table
+//
+				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH((PL_StruxDocHandle) pfSec );
+				pfSec = (pf_Frag_Strux *) endSDH;
+			}
+			else if(pfSec->getStruxType() == PTX_EndTable)
+			{
+				return true;
+			}
+			else if(pfSec->getStruxType() == PTX_SectionCell)
+			{
+				cellSDH = (PL_StruxDocHandle) pfSec;
+				bool bres = m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&szRight);
+				if(szRight && *szRight)
+				{
+					Right = atoi(szRight);
+				}
+				bres = m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
+				if(szBot && *szBot)
+				{
+					Bot = atoi(szBot);
+				}
+
+				if(*numCols < Right)
+				{
+					*numCols = Right;
+				}
+				if(*numRows < Bot)
+				{
+					*numRows = Bot;
+				}
+			}
+			currentFrag = (pf_Frag *) pfSec;
+		}
+		if(currentFrag)
+		{
+			currentFrag = currentFrag->getNext();
+		}
+	}
+	return false;
+}
 
 
+/*!
+ * The method returns the SDH of the cell at the location given by (rows,columns) in table 
+ * pointed to by tableSDH. Returns NULL if the requested location is not contained in the
+ * cell.
+\params PL_StruxDocHandle tableSDH SDH of the table in question
+\params UT_sint32 row row location.
+\params UT_sint32 col column location
+*/
+
+PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, UT_sint32 row,
+													UT_sint32 col)
+{
+	UT_sint32 Top,Left,Bot,Right;
+	const char * szLeft = NULL;
+	const char * szTop = NULL;
+	const char * szRight = NULL;
+	const char * szBot = NULL;
+	PL_StruxDocHandle cellSDH;
+//
+// Do the scan
+//
+	pf_Frag * currentFrag = (pf_Frag *) tableSDH;
+	currentFrag = currentFrag->getNext();
+	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+		if(currentFrag->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			if(pfSec->getStruxType() == PTX_SectionTable)
+			{
+//
+// skip to the end of this nested table
+//
+				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH((PL_StruxDocHandle) pfSec );
+				pfSec = (pf_Frag_Strux *) endSDH;
+			}
+			else if(pfSec->getStruxType() == PTX_EndTable)
+			{
+//
+// end of table before the requested cell was found. Return NULL
+//
+				return NULL;
+			}
+			else if(pfSec->getStruxType() == PTX_SectionCell)
+			{
+				cellSDH = (PL_StruxDocHandle) pfSec;
+				Left = -1;
+				Top = -1;
+				Right = -1;
+				Bot = -1;
+				bool bres = m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&szLeft);
+				if(szLeft && *szLeft)
+				{
+					Left = atoi(szLeft);
+				}
+				bres = m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&szTop);
+				if(szTop && *szTop)
+				{
+					Top = atoi(szTop);
+				}
+				bres = m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&szRight);
+				if(szRight && *szRight)
+				{
+					Right = atoi(szRight);
+				}
+				bres = m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
+				if(szBot && *szBot)
+				{
+					Bot = atoi(szBot);
+				}
+				if( (Top <= row) && (row < Bot) && (Left <= col) && (Right > col))
+				{
+					cellSDH = (PL_StruxDocHandle) pfSec;
+					return cellSDH;
+				}
+			}
+			currentFrag = (pf_Frag *) pfSec;
+		}
+		if(currentFrag)
+		{
+			currentFrag = currentFrag->getNext();
+		}
+	}
+	return NULL;
+}
+
+
+//===================================================================================
 /*!
  * This method scans the document for all styles used in the document, including
  * styles in the basedon heiracy and the followedby list

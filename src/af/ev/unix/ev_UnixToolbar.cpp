@@ -39,6 +39,8 @@
 #include "xap_EncodingManager.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixFontPreview.h"
+#include "xap_FontPreview.h"
+#include "gr_UnixGraphics.h"
 
 // hack
 #include "ap_Toolbar_Id.h"

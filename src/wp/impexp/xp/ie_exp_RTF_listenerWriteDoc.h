@@ -21,6 +21,10 @@
 #define IE_EXP_RTF_LISTENERWRITEDOC
 #include "ie_exp_RTF.h"
 #include "ut_wctomb.h"
+#include "ut_stack.h"
+#include "ie_Table.h"
+
+class ie_Table;
 class PX_ChangeRecord_Object;
 
 /******************************************************************
@@ -81,6 +85,14 @@ protected:
     void                _writeFieldPreamble(const PP_AttrProp * pSpanAP);
 	const UT_UCSChar *  _getFieldValue(void);
 	void                _writeFieldTrailer(void);
+	void                _close_cell(void);
+	void                _close_table(void);
+	void                _open_cell(PT_AttrPropIndex api);
+	void                _open_table(PT_AttrPropIndex api);
+	void                _newRow(void);
+	void                _outputTableBorders(UT_sint32 iThick);
+	void                _outputCellBorders(UT_sint32 iThick);
+	double              _getColumnWidthInches(void);
  private:
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
@@ -100,6 +112,13 @@ protected:
 	PT_DocPosition      m_posDoc;
 	bool                m_bBlankLine;
 	bool                m_bStartedList;
+	ie_Table            m_Table;
+	bool                m_bNewTable;
+	UT_sint32           m_iCurRow;
+	UT_sint32           m_iLeft;
+	UT_sint32           m_iRight;
+	UT_sint32           m_iTop;
+	UT_sint32           m_iBot;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

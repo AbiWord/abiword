@@ -314,6 +314,21 @@ const char * UT_incrementDimString(const char * dimString, double inc)
 }
 
 
+/*!
+ * This method multiplys a dimenstioned string by the amount given.
+\param const char * dimString - string to be incremented.
+\param amount to be multiplied.
+*/
+const char * UT_multiplyDimString(const char * dimString, double mult)
+{
+  UT_Dimension dim = UT_determineDimension(dimString);
+  double val = UT_convertDimensionless(dimString);
+  val *= mult;
+  const char * retv = UT_formatDimensionString(dim, val);
+  return retv;
+}
+
+
 double UT_convertToInches(const char* s)
 {
 	// NOTE: we explicitly use a period '.' as a decimal place

@@ -49,6 +49,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_Run.h"
 #include "fl_Layout.h"
+#include "fl_TableLayout.h"
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
@@ -343,6 +344,13 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_bToClipboard = bToClipboard;
 	m_bStartedList = false;
 	m_bBlankLine = false;
+	m_Table.setDoc(m_pDocument);
+	m_iCurRow = -1;
+	m_bNewTable = false;
+	m_iLeft = -1;
+	m_iRight = -1;
+	m_iTop = -1;
+	m_iBot = -1;
 	_setTabEaten(false);
 	_setListBlock(false);
 
@@ -822,6 +830,325 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 }
 }
 
+void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
+{
+	UT_sint32 iOldRow = m_iTop;
+	UT_sint32 i =0;
+	m_Table.OpenCell(api);
+	bool bNewRow = false;
+	UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
+	if(	m_Table.getTop() != iOldRow)
+	{
+		if(m_bNewTable)
+		{
+			m_pie->_rtf_open_brace();
+			_newRow();
+		}
+		if(!m_bNewTable)
+		{
+			bNewRow = true;
+			m_pie->_rtf_keyword("row");
+			m_pie->_rtf_nl();
+//			m_pie->_rtf_close_brace();
+//			m_pie->_rtf_open_brace();
+//			_newRow();
+		}
+	}
+	if(bNewRow)
+	{
+//
+// Output mergecell markers for all vertically merged cells at the start of the row
+//
+		for(i = 0; i < m_Table.getLeft(); i++)
+		{
+			m_pie->_rtf_keyword("clvmrg");
+			m_pie->_rtf_keyword("cell");
+		}
+	}
+	else
+	{
+//
+// Cover other vertically merged cells
+//
+		if(!m_bNewTable)
+		{
+			for(i= m_iRight; i < m_Table.getLeft();i++)
+			{
+				m_pie->_rtf_keyword("clvmrg");
+				m_pie->_rtf_keyword("cell");
+			}
+		}
+	}			
+	m_bNewTable = false;
+	m_iLeft = m_Table.getLeft();
+	m_iRight = m_Table.getRight();
+	m_iTop = m_Table.getTop();
+	m_iBot = m_Table.getBot();
+	if(m_iRight > m_iLeft + 1 )
+	{
+		m_pie->_rtf_keyword("clmgf");
+	}
+	if(m_iBot > m_iTop + 1)
+	{
+		m_pie->_rtf_keyword("clvmgf");
+	}
+}
+
+void s_RTF_ListenerWriteDoc::_newRow(void)
+{
+	UT_sint32 i;
+	m_pie->_rtf_nl();
+	m_pie->_rtf_keyword("trowd");
+	m_pie->write(" ");
+//
+// Set spacing between cells
+//
+	const char * szColSpace = m_Table.getTableProp("table-col-spacing");
+	if(szColSpace && *szColSpace)
+	{
+		double dspace = UT_convertToInches(szColSpace) * 360.0;
+		UT_sint32 iSpace =0;
+		iSpace = (UT_sint32) dspace;
+		m_pie->_rtf_keyword("trgaph",iSpace);
+	}
+	else
+	{
+		m_pie->_rtf_keyword("trgaph",36);
+		szColSpace = "0.05in";
+	}
+	double dColSpace = UT_convertToInches(szColSpace);
+//
+// Hardwire left-justification (for now)
+//
+	m_pie->_rtf_keyword("trql");
+//
+// Height of row. Hardwired to zero (take maximum cell height for row) for now.
+//
+	m_pie->_rtf_keyword("trrh",0);
+//
+// Lookup column positions.
+//
+	const char * szColumnProps = NULL;
+	const char * szColumnLeftPos = NULL;
+	szColumnProps = m_Table.getTableProp("table-column-props");
+	szColumnLeftPos = m_Table.getTableProp("table-column-leftpos");
+	double cellLeftPos = 0;
+	if(szColumnLeftPos && *szColumnLeftPos)
+	{
+		cellLeftPos = UT_convertToInches(szColumnLeftPos);
+	}
+	UT_sint32 iLeftTwips = 0;
+	iLeftTwips =  (UT_sint32) cellLeftPos*720.0;
+	m_pie->_rtf_keyword("trleft",iLeftTwips);
+	UT_Vector vecColProps;
+	vecColProps.clear();
+	if(szColumnProps && *szColumnProps)
+	{
+		UT_String sProps = szColumnProps;
+		UT_sint32 sizes = sProps.size();
+		i =0 ;
+		UT_sint32 j =0;
+		while(i < sizes)
+		{
+			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if((j+1)>i && sProps[j] == '/')
+			{
+				char * pszSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
+				i = j + 1;
+				double colWidth = UT_convertToInches(pszSub);
+				fl_ColProps * pColP = new fl_ColProps;
+				pColP->m_iColWidth = colWidth;
+				vecColProps.addItem((void *) pColP);
+				delete [] pszSub;
+			}
+		}
+	}
+	else
+	{
+//
+// Autofit (or not) the row. Look up col widths
+//
+		m_pie->_rtf_keyword("trautofit",1);
+	}
+//
+// Handle table line types.
+//
+	const char * szLineThick = m_Table.getTableProp("table-line-thickness");
+	UT_sint32 iThick = -1;
+	if(szLineThick && *szLineThick)
+	{
+		iThick = atoi(szLineThick);
+		if(iThick > 0)
+		{
+			_outputTableBorders(iThick);
+		}
+	}
+	else
+	{
+		_outputTableBorders(1);
+	}
+	double cellpos = cellLeftPos + dColSpace*0.5;
+	double colwidth = 0.0;
+	double dcells = (double) m_Table.getNumCols();
+	colwidth = (_getColumnWidthInches() - dColSpace*0.5)/dcells;
+	for(i=0; i < m_Table.getNumCols();i++)
+	{
+		m_pie->_rtf_keyword("clvertalt"); // Top aligned vertical alignment. ONly one for now
+		if(iThick > 0)
+		{
+			_outputCellBorders(iThick);
+		}
+		else if(iThick < 0)
+		{
+			_outputCellBorders(1);
+		}
+		m_pie->_rtf_keyword("cltxlrtb"); // Text flow left to right, top to bottom
+		                                 // Hardwired for now.
+//
+// output cellx for each cell
+//
+		if(vecColProps.getItemCount() > 0)
+		{
+			fl_ColProps * pColP = (fl_ColProps *) vecColProps.getNthItem(i);
+			colwidth = pColP->m_iColWidth;
+		}
+		cellpos += colwidth;
+		UT_sint32 iCellTwips = 0;
+		iCellTwips = (UT_sint32) cellpos*1440.0;
+		m_pie->_rtf_keyword("cellx",iCellTwips);
+	}
+	if(vecColProps.getItemCount() > 0)
+	{
+		UT_VECTOR_PURGEALL(fl_ColProps *,vecColProps);
+	}
+}
+
+void s_RTF_ListenerWriteDoc::_outputTableBorders(UT_sint32 iThick)
+{
+	m_pie->_rtf_keyword("trbrdrt"); // top border
+	m_pie->_rtf_keyword("brdrs"); // plain border
+	m_pie->_rtf_keyword("brdrw",10*iThick); //border thickness
+	m_pie->write(" ");											
+	m_pie->_rtf_keyword("trbrdrl"); // left border
+	m_pie->_rtf_keyword("brdrs");
+	m_pie->_rtf_keyword("brdrw",10*iThick); // border thickness
+	m_pie->write(" ");											
+	m_pie->_rtf_keyword("trbrdrb"); // bottom border
+	m_pie->_rtf_keyword("brdrs");
+	m_pie->_rtf_keyword("brdrw",10*iThick); // border thickness
+	m_pie->write(" ");											
+	m_pie->_rtf_keyword("trbrdrr"); // right border
+	m_pie->_rtf_keyword("brdrs");
+	m_pie->_rtf_keyword("brdrw",10*iThick); // border thickness
+	m_pie->write(" ");											
+}
+
+void s_RTF_ListenerWriteDoc::_outputCellBorders(UT_sint32 iThick)
+{
+	m_pie->_rtf_keyword("clbrdrt"); // cell top border
+	m_pie->_rtf_keyword("brdrs"); // plain border
+	m_pie->_rtf_keyword("brdrw",10*iThick); //border thickness
+	m_pie->write(" ");											
+	m_pie->_rtf_keyword("clbrdrl"); // cell left border
+	m_pie->_rtf_keyword("brdrs");
+	m_pie->_rtf_keyword("brdrw",10*iThick); // border thickness
+	m_pie->write(" ");											
+	m_pie->_rtf_keyword("clbrdrb"); // cell bottom border
+	m_pie->_rtf_keyword("brdrs");
+	m_pie->_rtf_keyword("brdrw",10*iThick); // border thickness
+	m_pie->write(" ");											
+	m_pie->_rtf_keyword("clbrdrr"); // cell right border
+	m_pie->_rtf_keyword("brdrs");
+	m_pie->_rtf_keyword("brdrw",10*iThick); // border thickness
+	m_pie->write(" ");											
+}
+
+double s_RTF_ListenerWriteDoc::_getColumnWidthInches(void)
+{
+	double pageWidth = m_pDocument->m_docPageSize.Width(DIM_IN);
+
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
+	const XML_Char * szColumns = PP_evalProperty("columns",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+	const XML_Char * szColumnGap = PP_evalProperty("column-gap",
+												   pSpanAP,pBlockAP,pSectionAP,
+												   m_pDocument,true);
+	const XML_Char * szMarginLeft = PP_evalProperty("page-margin-left",
+													pSpanAP,pBlockAP,pSectionAP,
+													m_pDocument,true);
+	const XML_Char * szMarginRight = PP_evalProperty("page-margin-right",
+													 pSpanAP,pBlockAP,pSectionAP,
+													 m_pDocument,true);
+	UT_sint32 iNumCols = 1;
+	if(szColumns && *szColumns)
+	{
+		iNumCols = atoi(szColumns);
+	}
+	double dNumCols = (double) iNumCols;
+	double lMarg = UT_convertToInches(szMarginLeft);
+	double rMarg = UT_convertToInches(szMarginRight);
+	double dGap = UT_convertToInches(szColumnGap);
+	double colWidth = pageWidth - lMarg - rMarg - dGap*(dNumCols - 1.0);
+	colWidth = colWidth/dNumCols;
+	return colWidth;
+}
+
+void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
+{
+	if(m_Table.getNestDepth() > 1)
+	{
+	}
+	m_Table.OpenTable(m_sdh,api);
+	m_bNewTable = true;
+	m_iLeft = -1;
+	m_iRight = -1;
+	m_iTop = -1;
+	m_iBot = -1;
+}
+
+void s_RTF_ListenerWriteDoc::_close_cell(void)
+{
+	m_pie->_rtf_keyword("cell");
+	UT_sint32 i = m_iLeft + 1;
+	for(i = m_iLeft +1; i< m_iRight; i++)
+	{
+		m_pie->_rtf_keyword("clmrg");
+		m_pie->_rtf_keyword("cell");
+	}
+	m_Table.CloseCell();
+}
+
+void s_RTF_ListenerWriteDoc::_close_table(void)
+{
+//
+// Close off the last row
+//
+	m_pie->_rtf_keyword("row");
+	m_pie->_rtf_close_brace();
+	m_Table.CloseTable();
+	if(m_Table.getNestDepth() < 2)
+	{
+		m_iCurRow = -1;
+		m_iLeft = -1;
+		m_iRight = -1;
+		m_iTop = -1;
+		m_iBot = -1;
+	}
+	else
+	{
+		m_iCurRow = m_Table.getTop();
+		m_iLeft = m_Table.getLeft();
+		m_iRight = m_Table.getRight();
+		m_iTop = m_Table.getTop();
+		m_iBot = m_Table.getBot();
+	}
+}
+
+
 bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
@@ -934,7 +1261,43 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			return true;
 #endif
 		}
+	case PTX_SectionTable:
+	    {
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = sdh;
+			_open_table(pcr->getIndexAP());
+			return true;
+		}
+	case PTX_SectionCell:
+	    {
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = sdh;
+			_open_cell(pcr->getIndexAP());
+			return true;
+		}
+	case PTX_EndTable:
+	    {
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = sdh;
+			_close_table();
+			return true;
+		}
+	case PTX_EndCell:
+	    {
 
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = sdh;
+			_close_cell();
+			return true;
+		}
 	case PTX_Block:
 		{
 			_closeSpan();
@@ -1646,6 +2009,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			m_pie->_rtf_keyword("slmult",1);
 		}
 	}
+
+//
+// Output Paragraph Cell nesting level.
+//
+	m_pie->_rtf_keyword("itap",m_Table.getNestDepth());
 
 	if (UT_strcmp(szKeepTogether,"yes")==0)
 		m_pie->_rtf_keyword("keep");

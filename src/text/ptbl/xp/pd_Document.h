@@ -326,6 +326,13 @@ public:
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
 
+// Table functions
+
+	PL_StruxDocHandle       getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH);
+	PL_StruxDocHandle       getEndTableStruxFromTablePos(PT_DocPosition posTable);
+	bool                    getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 * numRows, UT_sint32 * numCols);
+	PL_StruxDocHandle       getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, UT_sint32 row, UT_sint32 col);
+
 	// List Functions
 	fl_AutoNum *			getListByID(UT_uint32 id) const;
 	fl_AutoNum *			getNthList(UT_uint32 i) const;
