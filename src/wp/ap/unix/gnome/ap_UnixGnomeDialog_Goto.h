@@ -17,30 +17,23 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_GOTO_H
-#define AP_UNIXDIALOG_GOTO_H
+#ifndef AP_UNIXGNOMEDIALOG_GOTO_H
+#define AP_UNIXGNOMEDIALOG_GOTO_H
 
-#include "ap_Dialog_Goto.h"
-class XAP_UnixFrame;
+#include "ap_UnixDialog_Goto.h"
 
 /*****************************************************************/
 
-class AP_UnixDialog_Goto: public AP_Dialog_Goto
+class AP_UnixGnomeDialog_Goto: public AP_UnixDialog_Goto
 {
 public:
-	AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_UnixDialog_Goto(void);
+	AP_UnixGnomeDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixGnomeDialog_Goto(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-
-	// public so callbacks can access them
-   	GtkWidget *				targetList;
-	GtkWidget *				targetEntry;
-
 protected:
-
+	virtual GtkWidget *		_constructWindow (void);
 };
 
-#endif /* AP_UNIXDIALOG_GOTO_H */
+#endif /* AP_UNIXGNOMEDIALOG_GOTO_H */

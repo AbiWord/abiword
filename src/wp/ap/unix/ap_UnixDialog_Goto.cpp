@@ -55,7 +55,23 @@ AP_UnixDialog_Goto::~AP_UnixDialog_Goto(void)
 {
 }
 
-static void s_goto (const char *number, AP_UnixDialog_Goto * me)
+char *AP_UnixDialog_Goto::s_convert(const char * st)
+{
+	UT_ASSERT(st);
+	char *res = g_strdup (st);
+	char *tmp = res;
+
+	while (*tmp)
+	{
+		if (*tmp == '&')
+			*tmp = '_';
+		tmp++;
+	}
+
+	return res;
+}
+
+void AP_UnixDialog_Goto::s_goto (const char *number, AP_UnixDialog_Goto * me)
 {
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
 	UT_UCS_strcpy_char (ucsnumber, number);
@@ -64,28 +80,29 @@ static void s_goto (const char *number, AP_UnixDialog_Goto * me)
 	free (ucsnumber);
 }
 
-static void s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
+void AP_UnixDialog_Goto::s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
 {
 	char *number = gtk_entry_get_text (GTK_ENTRY (me->m_wEntry));
-	s_goto ((const char *) number, me);
+	if (number && *number)
+			s_goto ((const char *) number, me);
 }
 
-static void s_nextClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
+void AP_UnixDialog_Goto::s_nextClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
 {
 	s_goto ("+1", me);
 }
 
-static void s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
+void AP_UnixDialog_Goto::s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
 {
 	s_goto ("-1", me);
 }
 
-static void s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
+void AP_UnixDialog_Goto::s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
 {
 	me->destroy();
 }
 
-static void s_deleteClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
+void AP_UnixDialog_Goto::s_deleteClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
 {
 	me->destroy();
 }
@@ -96,19 +113,19 @@ void AP_UnixDialog_Goto::s_targetChanged (GtkWidget *clist, gint row, gint colum
 	me->setSelectedRow (row);
 }
 
-static void s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * me)
+void AP_UnixDialog_Goto::s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * me)
 {
 	gchar *text = gtk_entry_get_text (GTK_ENTRY (widget));
 
 	if (text[0] == '\0')
 	{
+		gtk_widget_grab_default (me->m_wClose);
 		gtk_widget_set_sensitive (me->m_wGoto, FALSE);
-		// TODO
 	}
 	else
 	{
-		// TODO
 		gtk_widget_set_sensitive (me->m_wGoto, TRUE);
+		gtk_widget_grab_default (me->m_wGoto);
 	}
 }
 
@@ -152,18 +169,132 @@ void AP_UnixDialog_Goto::activate (void)
 
 GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 {
-	GtkWidget *vbox1;
-	GtkWidget *hseparator1;
-	GtkWidget *hbuttonbox1;
-	GtkWidget *button4;
-	GtkWidget *button5;
-	GtkWidget *close_bt;
+	GtkWidget *vbox;
+	GtkWidget *actionarea;
 	GtkWidget *contents;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_wMainWindow = gtk_window_new (GTK_WINDOW_DIALOG);
+	m_wMainWindow = gtk_dialog_new ();
 	gtk_container_set_border_width (GTK_CONTAINER (m_wMainWindow), 4);
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), pSS->getValue (AP_STRING_ID_DLG_Goto_Title));
+	gtk_window_set_policy(GTK_WINDOW(m_wMainWindow), FALSE, FALSE, TRUE);
+	vbox = GTK_DIALOG (m_wMainWindow)->vbox;
+	actionarea = GTK_DIALOG (m_wMainWindow)->action_area;
+
+	contents = _constructWindowContents ();
+
+	// TODO: This call must be in _constructWindowContents
+	gtk_window_add_accel_group (GTK_WINDOW (m_wMainWindow), m_accelGroup);
+
+	gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
+	
+	// Buttons
+	m_wPrev = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Prev));
+	gtk_container_add (GTK_CONTAINER (actionarea), m_wPrev);
+ 	GTK_WIDGET_SET_FLAGS (m_wPrev, GTK_CAN_DEFAULT);
+
+	m_wNext = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Next));
+	gtk_container_add (GTK_CONTAINER (actionarea), m_wNext);
+ 	GTK_WIDGET_SET_FLAGS (m_wNext, GTK_CAN_DEFAULT);
+
+	m_wGoto = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Goto));
+	gtk_container_add (GTK_CONTAINER (actionarea), m_wGoto);
+ 	GTK_WIDGET_SET_FLAGS (m_wGoto, GTK_CAN_DEFAULT);
+	gtk_widget_set_sensitive (m_wGoto, FALSE);
+
+	m_wClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Close));
+	gtk_container_add (GTK_CONTAINER (actionarea), m_wClose);
+ 	GTK_WIDGET_SET_FLAGS (m_wClose, GTK_CAN_DEFAULT);
+	gtk_widget_grab_default (m_wClose);
+
+	gtk_widget_show_all (m_wMainWindow);
+	_connectSignals ();
+
+	return (m_wMainWindow);
+}
+
+GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
+{
+	GtkWidget *contents;
+	GtkWidget *hbox;
+	GtkWidget *vbox;
+	GtkWidget *what_lb;
+	GtkWidget *clist;
+	GtkWidget *vbox2;
+	GtkWidget *number_lb;
+	GtkWidget *description_lb;
+	guint number_lb_key;
+	guint what_lb_key;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	char *tmp;
+
+	m_accelGroup = gtk_accel_group_new ();
+
+	contents = gtk_vbox_new (FALSE, 0);
+
+	hbox = gtk_hbox_new (FALSE, 8);
+	gtk_box_pack_start (GTK_BOX (contents), hbox, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 4);
+
+	vbox = gtk_vbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+
+	what_lb = gtk_label_new ("");
+	tmp = s_convert (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_What));
+	what_lb_key = gtk_label_parse_uline (GTK_LABEL (what_lb), tmp);
+	g_free (tmp);
+	gtk_box_pack_start (GTK_BOX (vbox), what_lb, FALSE, FALSE, 0);
+	gtk_misc_set_alignment (GTK_MISC (what_lb), 0, 0.5);
+
+	clist = gtk_clist_new (1);
+	gtk_box_pack_start (GTK_BOX (vbox), clist, TRUE, TRUE, 0);
+	gtk_clist_set_column_width (GTK_CLIST (clist), 0, 80);
+	gtk_clist_set_selection_mode (GTK_CLIST (clist), GTK_SELECTION_BROWSE);
+	gtk_clist_column_titles_hide (GTK_CLIST (clist));
+	m_iRow = 0;
+	char **tmp2 = getJumpTargets ();
+	for (int i = 0; tmp2[i] != NULL; i++)
+		gtk_clist_append (GTK_CLIST (clist), &tmp2[i]);
+
+	vbox2 = gtk_vbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), vbox2, TRUE, TRUE, 0);
+
+	number_lb = gtk_label_new ("");
+	tmp = s_convert (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Number));
+	number_lb_key = gtk_label_parse_uline (GTK_LABEL (number_lb), tmp);
+	g_free (tmp);
+	gtk_box_pack_start (GTK_BOX (vbox2), number_lb, FALSE, FALSE, 0);
+	gtk_misc_set_alignment (GTK_MISC (number_lb), 7.45058e-09, 0.5);
+
+	m_wEntry = gtk_entry_new ();
+	gtk_box_pack_start (GTK_BOX (vbox2), m_wEntry, FALSE, FALSE, 0);
+
+	description_lb = gtk_label_new (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Help));
+	gtk_box_pack_start (GTK_BOX (vbox2), description_lb, FALSE, FALSE, 0);
+	gtk_label_set_justify (GTK_LABEL (description_lb), GTK_JUSTIFY_FILL);
+	gtk_label_set_line_wrap (GTK_LABEL (description_lb), TRUE);
+	gtk_misc_set_alignment (GTK_MISC (description_lb), 0, 0.5);
+
+	gtk_signal_connect (GTK_OBJECT (clist), "select_row",
+						GTK_SIGNAL_FUNC (s_targetChanged),
+						this);
+	gtk_signal_connect (GTK_OBJECT (m_wEntry), "changed",
+						GTK_SIGNAL_FUNC (s_dataChanged), this);
+	gtk_signal_connect (GTK_OBJECT (m_wEntry), "activate",
+						GTK_SIGNAL_FUNC (s_gotoClicked), this);
+
+	gtk_widget_add_accelerator (clist, "grab_focus", m_accelGroup,
+								what_lb_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
+	gtk_widget_add_accelerator (m_wEntry, "grab_focus", m_accelGroup,
+								number_lb_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
+
+	return contents;
+}
+
+void AP_UnixDialog_Goto::_populateWindowData (void) {}
+
+void AP_UnixDialog_Goto::_connectSignals(void)
+{
 	gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
 							 "destroy",
 							 GTK_SIGNAL_FUNC(s_deleteClicked),
@@ -172,121 +303,12 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_deleteClicked),
 							 this);
-	gtk_window_set_policy(GTK_WINDOW(m_wMainWindow), FALSE, FALSE, TRUE);
-
-	vbox1 = gtk_vbox_new (FALSE, 4);
-	gtk_container_add (GTK_CONTAINER (m_wMainWindow), vbox1);
-
-	contents = _constructWindowContents ();
-	gtk_box_pack_start (GTK_BOX (vbox1), contents, TRUE, TRUE, 0);
-	
-	// container for buttons
-	hseparator1 = gtk_hseparator_new ();
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, TRUE, TRUE, 0);
-
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, TRUE, TRUE, 0);
-
-	button4 = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Prev));
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), button4);
-	gtk_signal_connect (GTK_OBJECT (button4), "clicked",
+	gtk_signal_connect (GTK_OBJECT (m_wPrev), "clicked",
 						GTK_SIGNAL_FUNC (s_prevClicked), this);
-	GTK_WIDGET_SET_FLAGS (button4, GTK_CAN_DEFAULT);
-
-	button5 = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Next));
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), button5);
-	gtk_signal_connect (GTK_OBJECT (button5), "clicked",
+	gtk_signal_connect (GTK_OBJECT (m_wNext), "clicked",
 						GTK_SIGNAL_FUNC (s_nextClicked), this);
-	GTK_WIDGET_SET_FLAGS (button5, GTK_CAN_DEFAULT);
-
-	m_wGoto = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Goto));
-	gtk_signal_connect_after(GTK_OBJECT(m_wGoto), "clicked",
-							 GTK_SIGNAL_FUNC(s_gotoClicked), this);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), m_wGoto);
-	GTK_WIDGET_SET_FLAGS (m_wGoto, GTK_CAN_DEFAULT);
-	gtk_widget_set_sensitive (m_wGoto, FALSE);
-
-	close_bt = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Close));
-	gtk_signal_connect_after(GTK_OBJECT(close_bt), "clicked",
-							 GTK_SIGNAL_FUNC(s_closeClicked), this);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), close_bt);
-	GTK_WIDGET_SET_FLAGS (close_bt, (GTK_CAN_DEFAULT | GTK_HAS_DEFAULT));
-
-	gtk_widget_show_all (m_wMainWindow);
-
-	return (m_wMainWindow);
+	gtk_signal_connect (GTK_OBJECT (m_wGoto), "clicked",
+						GTK_SIGNAL_FUNC (s_gotoClicked), this);
+	gtk_signal_connect (GTK_OBJECT (m_wClose), "clicked",
+						GTK_SIGNAL_FUNC (s_closeClicked), this);
 }
-
-GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
-{
-	GtkWidget *table;
-	GtkWidget *clist;
-	GtkWidget *scrolledwindow1;
-	GtkWidget *label;
-	GtkWidget *label2;
-	GtkWidget *label3;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	table = gtk_table_new (3, 3, FALSE);
-	gtk_table_set_row_spacings (GTK_TABLE (table), 4);
-	gtk_table_set_col_spacings (GTK_TABLE (table), 4);
-	gtk_widget_show (table);
-
-	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_show (scrolledwindow1);
-	gtk_table_attach (GTK_TABLE (table), scrolledwindow1, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (table), 8);
-
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	
-	clist = gtk_clist_new (1);
-	gtk_widget_show (clist);
-	gtk_container_add (GTK_CONTAINER (scrolledwindow1), clist);
-	gtk_clist_set_column_width (GTK_CLIST (clist), 0, 80);
-	gtk_clist_set_selection_mode (GTK_CLIST (clist), GTK_SELECTION_BROWSE);
-	gtk_signal_connect (GTK_OBJECT (clist), "select_row",
-						GTK_SIGNAL_FUNC (s_targetChanged),
-						this);
-	m_iRow = 0;
-	char **tmp = getJumpTargets ();
-	for (int i = 0; tmp[i] != NULL; i++)
-		gtk_clist_append(GTK_CLIST (clist), &tmp[i]);
-
-	gtk_clist_column_titles_hide (GTK_CLIST (clist));
-	
-	label = gtk_label_new (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_What));
-	gtk_widget_show (label);
-	gtk_table_attach (GTK_TABLE (table), label, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-
-	m_wEntry = gtk_entry_new ();
-	gtk_widget_show (m_wEntry);
-	gtk_table_attach (GTK_TABLE (table), m_wEntry, 1, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_signal_connect (GTK_OBJECT (m_wEntry), "changed",
-						GTK_SIGNAL_FUNC (s_dataChanged), this);
-
-	label2 = gtk_label_new (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Number));
-	gtk_widget_show (label2);
-	gtk_table_attach (GTK_TABLE (table), label2, 1, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (label2), 0, 0.5);
-	
-	label3 = gtk_label_new (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Help));
-	gtk_widget_show (label3);
-	gtk_table_attach (GTK_TABLE (table), label3, 1, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (label3), 0, 0.5);
-	
-	return (table);
-}
-
-void AP_UnixDialog_Goto::_populateWindowData (void) {}
-

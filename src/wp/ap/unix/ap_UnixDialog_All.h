@@ -62,10 +62,11 @@
 
 #	include "ap_UnixGnomeDialog_Replace.h"
 #	include "ap_UnixGnomeDialog_Break.h"
-#	include "ap_UnixGnomeDialog_Field.h"
-#	include "ap_UnixGnomeDialog_WordCount.h"
-#	include "ap_UnixGnomeDialog_Options.h"
+#	include "ap_UnixGnomeDialog_Goto.h"
 #	include "ap_UnixGnomeDialog_Paragraph.h"
+#	include "ap_UnixGnomeDialog_Options.h"
+#	include "ap_UnixGnomeDialog_WordCount.h"
+#	include "ap_UnixGnomeDialog_Field.h"
 
 #endif
 
@@ -87,7 +88,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
-	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixDialog_Goto)
+	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixGnomeDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixGnomeDialog_Paragraph)	
@@ -118,8 +119,8 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)		
-	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,       AP_UnixDialog_WordCount)
-	DeclareDialog(AP_DIALOG_ID_FIELD,       AP_UnixDialog_Field)
+	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_UnixDialog_WordCount)
+	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_UnixDialog_Field)
 	// ... also add new dialogs here ...
 #   endif
 

@@ -2854,7 +2854,7 @@ UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			bNext = inc;
 
 			for (UT_uint32 i = 0; i < number; i++)
-				_moveInsPtNextPrevLine (bNext);  // HACK: A like the quick hacks... :)
+				_moveInsPtNextPrevLine (bNext);  // HACK: I like the quick hacks... :)
 		}
 		else
 		{

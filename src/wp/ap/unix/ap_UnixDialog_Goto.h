@@ -37,20 +37,38 @@ public:
 	virtual void			destroy(void);
 	virtual void			activate(void);
 
-	void                    setSelectedRow(int row);
-	int                     getSelectedRow(void);
+	void					setSelectedRow(int row);
+	int						getSelectedRow(void);
 
+	/* CALLBACKS */
+	static void				s_targetChanged(GtkWidget *clist, gint row, gint column,
+											GdkEventButton *event, AP_UnixDialog_Goto *me);
+	static void				s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * me);
+	static void				s_goto (const char *number, AP_UnixDialog_Goto * me);
+	static void				s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+	static void				s_nextClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+	static void				s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+	static void				s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+	static void				s_deleteClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+
+	/* Widgets members.  Publics to make them accesible to the callbacks */
+	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */
 	GtkWidget *				m_wMainWindow;
 	GtkWidget *				m_wEntry;
+	GtkWidget *				m_wPrev;
+	GtkWidget *				m_wNext;
 	GtkWidget *				m_wGoto;
-	int                     m_iRow;
-
+	GtkWidget *				m_wClose;
+	GtkAccelGroup *			m_accelGroup;
+	int						m_iRow;
+	
 protected:
-	GtkWidget *             _constructWindow(void);
-	GtkWidget *             _constructWindowContents(void);
-	void                    _populateWindowData(void);
-	static void             s_targetChanged(GtkWidget *, gint, gint,
-											GdkEventButton *,  AP_UnixDialog_Goto *);
+	virtual GtkWidget *		_constructWindow(void);
+	GtkWidget *				_constructWindowContents(void);
+	void					_populateWindowData(void);
+	void					_connectSignals(void);
+
+	static char *			s_convert(const char * st);
 };
 
 #endif /* AP_UNIXDIALOG_GOTO_H */

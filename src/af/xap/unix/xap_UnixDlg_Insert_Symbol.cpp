@@ -113,7 +113,7 @@ static void s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialo
 	dlg->Symbolarea_exposed();
 }
 
- static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->SymbolMap_clicked( e );

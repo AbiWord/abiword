@@ -208,9 +208,16 @@ dcl(DLG_Field_Types,					"&Types:")
 dcl(DLG_Field_Fields,					"&Fields:")
 
 dcl(DLG_Goto_Title,						"Go to...")
-dcl(DLG_Goto_Label_Help,				"TODO: Write some help text!")
+dcl(DLG_Goto_Label_Help,				"Choose your target in the left side.\n"
+										"If you want to use the \"Go To\" button, "
+										"just fill the Number Entry with the "
+										"desired number.  You can use + and - "
+										"to perform relative movement.  I.e., if "
+										"you write \"+2\" and you select \"Line\", "
+										"the \"Go To\" will go 4 lines below your "
+										"currect position.")
 dcl(DLG_Goto_Btn_Prev,					"<< Prev")
 dcl(DLG_Goto_Btn_Next,					"Next >>")
-dcl(DLG_Goto_Label_What,				"Go To What:")
-dcl(DLG_Goto_Label_Number,				"Number:")
+dcl(DLG_Goto_Label_What,				"Go To &What:")
+dcl(DLG_Goto_Label_Number,				"&Number:")
 dcl(DLG_Goto_Btn_Goto,					"Go To")
