@@ -52,7 +52,7 @@ XAP_UnixGnomeApp::~XAP_UnixGnomeApp(void)
 bool XAP_UnixGnomeApp::initialize(void)
 {
 #ifndef ABI_OPT_WIDGET
-	gnome_init(m_szAppName, "0.9.5", m_pArgs->m_argc, m_pArgs->m_argv);
+	gnome_init(m_szAppName, "0.99.2", m_pArgs->m_argc, m_pArgs->m_argv);
 #endif
 
 	// let the base class of XAP_UnixApp do it's thing.
@@ -92,7 +92,6 @@ bool XAP_UnixGnomeApp::initialize(void)
 void XAP_UnixGnomeApp::_setAbiSuiteLibDir(void)
 {
 	char buf[PATH_MAX];
-	//	char buf2[PATH_MAX]; // not used?
 
 	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
 	// NOTE: Gnome parses the command line with popt, so we have to change the way to parse the line
