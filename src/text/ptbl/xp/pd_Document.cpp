@@ -234,15 +234,20 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 	
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
+	IEFileType newFileType;
 
-	errorCode = IE_Exp::constructExporter(this, szFilename, (IEFileType) ieft, &pie, &m_lastSavedAsType);
+	errorCode = IE_Exp::constructExporter(this, szFilename, (IEFileType) ieft, &pie, &newFileType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
 		return UT_SAVE_EXPORTERROR;
 	}
 
-	_syncFileTypes(true);
+	if (cpy)
+	{
+		m_lastSavedAsType = newFileType;
+		_syncFileTypes(true);
+	}
 
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
@@ -1312,7 +1317,7 @@ void PD_Document::_destroyDataItemData(void)
 
 /*! 
   Synchronize the last opened/last saves filetypes.
- \param bBool bOpenedFromSaved True to set opened from saved, otherwise the reverse
+ \param bOpenedFromSaved True to set opened from saved, otherwise the reverse
 
  There are actually two filetypes - one for importers and one for
  exporters.  This function tries to synchronize the one to the other.

@@ -1772,7 +1772,7 @@ Defun1(filePreviewWeb)
 
 	  if( pWhere )
 	  {
-		if( UT_stricmp( pWhere, ".html" ) )
+		if( UT_stricmp( pWhere, ".html" ) && UT_stricmp( pWhere, ".htm" ) )
 			strcpy( pWhere, ".html" );
 	  }
 	  else
