@@ -63,6 +63,9 @@
 #include "fd_Field.h"
 #include "spell_manager.h"
 #include "ut_rand.h"
+#include "fp_TableContainer.h"
+#include "fl_TableLayout.h"
+
 
 #include "xap_EncodingManager.h"
 
@@ -5289,93 +5292,163 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	{
 		return;
 	}
-	if (true)		// TODO support tables
+
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run * pRun = NULL;
+	UT_sint32 xCaret, yCaret;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection;
+	_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+
+	UT_return_if_fail(pRun);
+
+	fp_Container * pContainer = pRun->getLine()->getContainer();
+	fl_SectionLayout * pSection = pContainer->getSectionLayout();
+	
+	UT_return_if_fail(pContainer);
+	UT_return_if_fail(pSection);
+	if(pInfo->m_vecTableColInfo)
 	{
-		// we are in a column context
-
-		fl_BlockLayout * pBlock = NULL;
-		fp_Run * pRun = NULL;
-		UT_sint32 xCaret, yCaret;
-		UT_uint32 heightCaret;
-		UT_sint32 xCaret2, yCaret2;
-		bool bDirection;
-		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
-
-		UT_return_if_fail(pRun);
-
-		fp_Container * pContainer = pRun->getLine()->getContainer();
-		fl_SectionLayout * pSection = pContainer->getSectionLayout();
-
-		UT_return_if_fail(pContainer);
-		UT_return_if_fail(pSection);
-
-		if (pSection->getType() == FL_SECTION_DOC)
+		UT_sint32 count = (UT_sint32) pInfo->m_vecTableColInfo->getItemCount();
+		UT_sint32 i =0;
+		for(i=0; i< count; i++)
 		{
-			fp_Column* pColumn = (fp_Column*) pContainer;
-			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-
-			UT_uint32 nCol=0;
-			fp_Column * pNthColumn=pColumn->getLeader();
-			while (pNthColumn && (pNthColumn != pColumn))
-			{
-				nCol++;
-				pNthColumn = pNthColumn->getFollower();
-			}
-			pInfo->m_iCurrentColumn = nCol;
-			pInfo->m_iNumColumns = pDSL->getNumColumns();
-
-			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
-			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
-			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
+			delete (AP_TopRulerTableInfo *) pInfo->m_vecTableColInfo->getNthItem(i);
 		}
-		else if(isHdrFtrEdit())
+		delete pInfo->m_vecTableColInfo;
+		pInfo->m_vecTableColInfo =NULL;
+	}
+	if (pSection->getType() == FL_SECTION_DOC)
+	{
+		fp_Column* pColumn = (fp_Column*) pContainer;
+		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
+		
+		UT_uint32 nCol=0;
+		fp_Column * pNthColumn=pColumn->getLeader();
+		while (pNthColumn && (pNthColumn != pColumn))
 		{
-			fp_Column* pColumn = (fp_Column*) pContainer;
-			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-			pDSL = m_pEditShadow->getHdrFtrSectionLayout()->getDocSectionLayout();
-
-			pInfo->m_iCurrentColumn = 0;
-			pInfo->m_iNumColumns = 1;
-
-			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
-			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
-			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
-
+			nCol++;
+			pNthColumn = pNthColumn->getFollower();
 		}
-		else
-		{
-
-		// fill in the details
-		}
-
+		pInfo->m_iCurrentColumn = nCol;
+		pInfo->m_iNumColumns = pDSL->getNumColumns();
+		
+		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
+		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
-
-		static char buf[20];
-		char * old_locale = setlocale(LC_NUMERIC,"C");
-		snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
-		setlocale(LC_NUMERIC,old_locale); // restore original locale
-
-		pInfo->m_xPaperSize = m_pG->convertDimension(buf);
-		pInfo->m_xPageViewMargin = getPageViewLeftMargin();
+	}
+	else if(isHdrFtrEdit())
+	{
+		fp_Column* pColumn = (fp_Column*) pContainer;
+		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
+		pDSL = m_pEditShadow->getHdrFtrSectionLayout()->getDocSectionLayout();
+		
+		pInfo->m_iCurrentColumn = 0;
+		pInfo->m_iNumColumns = 1;
+		
+		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
+		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
+		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
 		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
 
-		pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;
-		pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
-		pInfo->m_iTabStops = (UT_sint32) pBlock->getTabsCount();
-		pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
-		pInfo->m_pszTabStops = pBlock->getProperty("tabstops");
-
 	}
+	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
+	{
+		fp_CellContainer * pCell = (fp_CellContainer *) pContainer;
+		fl_ContainerLayout * pCL = pSection->myContainingLayout();
+		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_TABLE;
+		while(pCL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+		{
+			pCL = pCL->myContainingLayout();
+		}
+		fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pCL;
+		if(pDSL == NULL)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		fp_Column * pColumn = (fp_Column *) pContainer->getColumn();
+			
+		UT_uint32 nCol=0;
+		fp_Column * pNthColumn=pColumn->getLeader();
+		while (pNthColumn && (pNthColumn != pColumn))
+		{
+			nCol++;
+			pNthColumn = pNthColumn->getFollower();
+		}
+		pInfo->m_iCurrentColumn = nCol;
+		pInfo->m_iNumColumns = pDSL->getNumColumns();
+		
+		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
+		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
+
+		pInfo->m_xrPoint = xCaret - pContainer->getX();
+		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
+		fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
+		UT_sint32 row = pCell->getTopAttach();
+		UT_sint32 numcols = pTab->getNumCols();
+		UT_sint32 i =0;
+		fp_CellContainer * pCur = NULL;
+		pInfo->m_vecTableColInfo = new UT_Vector();
+		while( i < numcols)
+		{ 
+			pCur = pTab->getCellAtRowColumn(row,i);
+			if(pCur == pCell)
+			{
+				pInfo->m_iCurCell = i;
+			}
+			if(pCur)
+			{
+				AP_TopRulerTableInfo *pTInfo = new  AP_TopRulerTableInfo;
+				pTInfo->m_pCell = pCur;
+				pTInfo->m_iLeftCellPos = pCur->getLeftPos();
+				pTInfo->m_iRightCellPos = pCur->getRightPos();
+				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
+				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX() 
+											- pCur->getWidth());
+				pInfo->m_vecTableColInfo->addItem((void *) pTInfo);
+				i = pCur->getRightAttach();
+			}
+			else
+			{
+				i = numcols + 1;
+			}
+		}
+		pInfo->m_iCells = pInfo->m_vecTableColInfo->getItemCount();
+	}
+
 	else
 	{
-		// TODO support tables
+		// fill in the details
+
 	}
+
+	static char buf[20];
+	char * old_locale = setlocale(LC_NUMERIC,"C");
+	snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
+	setlocale(LC_NUMERIC,old_locale); // restore original locale
+	
+	pInfo->m_xPaperSize = m_pG->convertDimension(buf);
+	pInfo->m_xPageViewMargin = getPageViewLeftMargin();
+	
+	pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;
+	pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
+	pInfo->m_iTabStops = (UT_sint32) pBlock->getTabsCount();
+	pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
+	pInfo->m_pszTabStops = pBlock->getProperty("tabstops");
 
 	return;
 }

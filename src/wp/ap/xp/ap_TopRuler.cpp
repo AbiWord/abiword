@@ -513,17 +513,50 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 		xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 	}
 
+	AP_TopRulerTableInfo *pTInfo = NULL;
+	if(pInfo->m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
+	{
+		pTInfo = (AP_TopRulerTableInfo *) pInfo->m_vecTableColInfo->getNthItem(pInfo->m_iCurCell);
+	}
 	if (pLeft)
-		*pLeft = xAbsLeft + pInfo->m_xrLeftIndent;
-	if (pRight)
-		*pRight = xAbsRight - pInfo->m_xrRightIndent;
+	{
+		if(pTInfo == NULL)
+		{
+			*pLeft = xAbsLeft + pInfo->m_xrLeftIndent;
+		}
+		else
+		{
+			*pLeft = xAbsLeft + pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing;
+		}
+	}
 
+	if (pRight)
+	{
+		if(pTInfo == NULL)
+		{
+			*pRight = xAbsRight - pInfo->m_xrRightIndent;
+		}
+		else
+		{
+			*pRight = xAbsLeft + pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing;
+		}
+	}
 	if (pFirstLine)
 	{
-		if(bRTL)
-			*pFirstLine = xAbsRight - pInfo->m_xrRightIndent - pInfo->m_xrFirstLineIndent;
+		if(pTInfo == NULL)
+		{
+			if(bRTL)
+				*pFirstLine = xAbsRight - pInfo->m_xrRightIndent - pInfo->m_xrFirstLineIndent;
+			else
+				*pFirstLine = xAbsLeft + pInfo->m_xrLeftIndent + pInfo->m_xrFirstLineIndent;
+		}
 		else
-			*pFirstLine = xAbsLeft + pInfo->m_xrLeftIndent + pInfo->m_xrFirstLineIndent;
+		{
+			if(bRTL)
+				*pFirstLine = xAbsLeft + pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing - pInfo->m_xrFirstLineIndent;
+			else
+				*pFirstLine = xAbsLeft + pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing + pInfo->m_xrFirstLineIndent;
+		}
 	}
 
 	return;
@@ -1056,7 +1089,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawTabToggle(pClipRect, false);
 
 	// TODO for now assume we are in column display mode.
-	UT_ASSERT(pInfo->m_mode==AP_TopRulerInfo::TRI_MODE_COLUMNS);
+	//UT_ASSERT(pInfo->m_mode==AP_TopRulerInfo::TRI_MODE_COLUMNS);
 
 	// draw the dark-gray and white bar across the
 	// width of the paper.  we adjust the x coords
@@ -1236,9 +1269,9 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawMarginProperties(pClipRect, pInfo, GR_Graphics::CLR3D_Foreground);
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,0);
-	_drawParagraphProperties(pClipRect,pInfo,true);
 	_drawTabProperties(pClipRect,pInfo,true);
-
+	_drawCellProperties(pClipRect, pInfo);
+	_drawParagraphProperties(pClipRect,pInfo,true);
 	return;
 }
 
@@ -1445,25 +1478,26 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 // Now the Cells
 
 	UT_Rect rCell;
-	UT_sint32 nCells =  m_infoCache.m_vecTableColInfo.getItemCount();
-	UT_sint32 iCell =0;
-	for(iCell = 0; iCell <= nCells; iCell++)
+	if(m_infoCache.m_vecTableColInfo)
 	{
-		_getCellMarkerRect(&m_infoCache,(UT_uint32) iCell, &rCell);
-		if(rCell.containsPoint(x,y))
+		UT_sint32 nCells =  m_infoCache.m_vecTableColInfo->getItemCount();
+		UT_sint32 iCell =0;
+		for(iCell = 0; iCell <= nCells; iCell++)
 		{
-			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-			if(iCell < nCells)
+			_getCellMarkerRect(&m_infoCache,(UT_uint32) iCell, &rCell);
+			if(rCell.containsPoint(x,y))
 			{
-				AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo.getNthItem(iCell); 
-				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, pCellInfo->m_iLeftCellPos);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				if(iCell < nCells)
+			{
+				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, "%s %d");
 			}
 			else
 			{
-				AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo.getNthItem(iCell-1); 
-				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, pCellInfo->m_iRightCellPos);
+				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, "%s %d");
 			}
-			return true;
+				return true;
+			}
 		}
 	}
 
@@ -1476,20 +1510,27 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 void AP_TopRuler::_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell, 
 								   UT_Rect * prCell)
 {
-	UT_sint32 nCells = pInfo->m_vecTableColInfo.getItemCount();
-	if(kCell < nCells)
+	if(pInfo->m_vecTableColInfo)
 	{
-		AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo.getNthItem(kCell);
-		UT_sint32 pos = pCellInfo->m_iLeftCellPos;
-		UT_sint32 ileft = s_iFixedHeight/2;
-		prCell->set(pos-ileft,0,s_iFixedHeight,s_iFixedHeight); // left/top/width/height
-	}
-	else if(nCells > 0)
-	{
-		AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo.getNthItem(kCell-1);
-		UT_sint32 pos = pCellInfo->m_iRightCellPos;
-		UT_sint32 ileft = s_iFixedHeight/2;
-		prCell->set(pos-ileft,0,s_iFixedHeight,s_iFixedHeight); // left/top/width/height
+		UT_sint32 nCells = pInfo->m_vecTableColInfo->getItemCount();
+		if(kCell < nCells)
+		{
+			AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo->getNthItem(kCell);
+
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
+			UT_sint32 pos = xAbsLeft + pCellInfo->m_iLeftCellPos;
+			UT_sint32 ileft = s_iFixedHeight/4;
+			prCell->set(pos-ileft,ileft,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
+		}
+		else if(nCells > 0)
+		{
+			AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo->getNthItem(nCells-1);
+
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
+			UT_sint32 pos = xAbsLeft + pCellInfo->m_iRightCellPos;
+			UT_sint32 ileft = s_iFixedHeight/4;
+			prCell->set(pos-ileft,0,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
+		}
 	}
 
 }
@@ -1503,10 +1544,10 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag)
 //
 // Draw square inside
 //
-	UT_sint32 left = prDrag->left + 2 ;
-	UT_sint32 right = left + prDrag->width - 4;
-	UT_sint32 top = prDrag->top + 2;
-	UT_sint32 bot = top + prDrag->height - 4;
+	UT_sint32 left = prDrag->left + 4 ;
+	UT_sint32 right = left + prDrag->width - 8;
+	UT_sint32 top = prDrag->top + 4;
+	UT_sint32 bot = top + prDrag->height - 8;
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	m_pG->drawLine(left,top,left,bot);
 	m_pG->drawLine(left,bot,right,bot);
@@ -1538,6 +1579,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 		that got revealed after being obscured by the dragged column
 	*/
 	UT_Rect rCell;
+		// loop over all explicit cells
 	if (bDrawAll)
 	{
 		// loop over all explicit cells
@@ -1548,7 +1590,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 		UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 		UT_sint32 left = xAbsLeft + pInfo->m_xrLeftIndent;
 #endif
-		for (UT_sint32 i = 0; i < pInfo->m_iTabStops; i++)
+		for (UT_sint32 i = 0; i <= pInfo->m_iCells; i++)
 		{
 			if ((m_draggingWhat == DW_CELLMARK) &&
 				(m_draggingCell == (UT_sint32) i))
@@ -1558,6 +1600,21 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 			if (!pClipRect || rCell.intersectsRect(pClipRect))
 				_drawCellMark(&rCell);
 		}
+	}
+}
+/*!
+ * Draw all the cell locations.
+ */
+void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
+									  AP_TopRulerInfo * pInfo)
+{
+	UT_Rect rCell;
+
+	for (UT_sint32 i = 0; i <= pInfo->m_iCells; i++)
+	{
+		_getCellMarkerRect(pInfo, i, &rCell);
+		if (!pClipRect || rCell.intersectsRect(pClipRect))
+			_drawCellMark(&rCell);
 	}
 
 }
@@ -3515,33 +3572,23 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	pFrameData->m_pStatusBar->setStatusMessage(temp);
 }
 
-void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, XAP_String_Id messageID1, XAP_String_Id messageID2)
+void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * format)
 {
 	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID);
-	const XML_Char *pzMessageID1;
-	const XML_Char *pzMessageID2;
-
-	if (messageID1 >0)
-	{
-		pzMessageID1 = m_pFrame->getApp()->getStringSet()->getValue(messageID1);
-	}
-	else
-	{
-		pzMessageID1 = "";
-	}
-	if (messageID2 >0)
-	{
-		pzMessageID2 = m_pFrame->getApp()->getStringSet()->getValue(messageID2);
-	}
-	else
-	{
-		pzMessageID2 = "";
-	}
-	char temp[100];
-	sprintf(temp, pzMessageFormat, pzMessageID1, pzMessageID2);
+	static UT_String sCell;
+	UT_String_sprintf(sCell,format,pzMessageFormat,iCol);
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(temp);
+	pFrameData->m_pStatusBar->setStatusMessage(sCell.c_str());
+}
+
+
+void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
+{
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID);
+
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage(pzMessageFormat);
 }
 
 /* lambda */ void AP_TopRuler::_autoScroll(UT_Worker * pWorker)

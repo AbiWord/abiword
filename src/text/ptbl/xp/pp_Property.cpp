@@ -125,7 +125,7 @@ static PP_Property _props[] =
 	{ "page-margin-right",		"1in",				false, NULL},
 	{ "page-margin-top",		"1in",				false, NULL},
 
-    	{ "section-max-column-height", "0in",         false,NULL},
+    { "section-max-column-height", "0in",         false,NULL},
 	{ "section-restart",        "",                 false,NULL},
 	{ "section-restart-value",  "",                 false,NULL},
 	{ "section-space-after",	"0.25in",			false, NULL},
@@ -139,10 +139,10 @@ static PP_Property _props[] =
 	{"table-line-thickness", "1",false,NULL},
 	{"table-line-type", "1",false,NULL},
 
- 	{"table-margin-left", "0.1in", false, NULL},
-	{"table-margin-top", "0.1in", false, NULL},
-	{"table-margin-right", "0.1in", false, NULL},
 	{"table-margin-bottom", "0.1in", false, NULL},
+ 	{"table-margin-left", "0.1in", false, NULL},
+	{"table-margin-right", "0.1in", false, NULL},
+	{"table-margin-top", "0.1in", false, NULL},
 
 	{"table-row-spacing", "0.1in",false,NULL},
 	{"table-rows", "",false,NULL},
@@ -154,7 +154,7 @@ static PP_Property _props[] =
 	{ "text-position", "normal", true, NULL},
 
 	{ "widows", "2", false, NULL},
-	{ "width", "0in", false, NULL},
+	{ "width", "0in", false, NULL} // was ,
 
 };
 

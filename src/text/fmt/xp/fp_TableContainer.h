@@ -329,6 +329,11 @@ public:
 	void                adjustBrokenTables(void);
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
+	void                setRedrawLines(void)
+		{ m_bRedrawLines = true;}
+	bool                doRedrawLines(void) const
+		{ return m_bRedrawLines;}
+	
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -373,6 +378,8 @@ private:
 	fp_TableContainer *     m_pMasterTable;
 	UT_sint32               m_iYBreakHere;
 	UT_sint32               m_iYBottom;
+
+	bool                    m_bRedrawLines;
 };
 
 #endif /* TABLECONTAINER_H */

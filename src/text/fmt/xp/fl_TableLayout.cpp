@@ -266,6 +266,11 @@ void fl_TableLayout::redrawUpdate(void)
 		}
 		pBL = pBL->getNext();
 	}
+	fp_TableContainer * pTab = (fp_TableContainer *) getFirstContainer();
+	if(pTab->doRedrawLines())
+	{
+		pTab->drawLines();
+	}
 }
 
 bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)

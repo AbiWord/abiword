@@ -613,6 +613,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // draw right if this cell is the rightmost of the table
 
 	m_bDrawRight = (pTab->getNumCols() == getRightAttach());
+	m_bDrawLeft = true;
    
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
@@ -702,7 +703,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 				}
 				bStart = true;
 				pContainer->draw(&da);
-				m_bDrawLeft = true;
 			}
 			else if(bStart)
 			{
@@ -731,6 +731,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		m_iRight += (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double)pTab->getBorderWidth()));
 	}
 	drawLines(pBroke);
+	pTab->setRedrawLines();
     _drawBoundaries(pDA,pBroke);
 }
 
@@ -1034,7 +1035,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_bIsBroken(false),
 	  m_pMasterTable(NULL),
 	  m_iYBreakHere(0),
-	  m_iYBottom(0)
+	  m_iYBottom(0),
+	  m_bRedrawLines(false)
 {
 }
 

@@ -41,13 +41,47 @@ class UT_StringPtrMap;
 class AV_ScrollObj;
 class UT_Timer;
 class fp_CellContainer;
-/*****************************************************************/
+class  AP_TopRulerTableInfo;
 /*****************************************************************/
 
-class AP_TopRulerInfo
+
+
+/*****************************************************************/
+class AP_TopRulerTableInfo
+{
+public:
+	UT_sint32 m_iLeftCellPos;
+	UT_sint32 m_iLeftSpacing;
+	UT_sint32 m_iRightCellPos;
+	UT_sint32 m_iRightSpacing;
+	fp_CellContainer * m_pCell;
+};
+
+/*****************************************************************/
+
+/*****************************************************************/
+
+class AP_TopRulerInfo 
 {
 public:
 	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
+
+	AP_TopRulerInfo(void) : 	m_vecTableColInfo(NULL)
+		{
+		}
+	virtual ~AP_TopRulerInfo(void)
+		{
+			if(m_vecTableColInfo)
+			{
+				UT_sint32 count = (UT_sint32) m_vecTableColInfo->getItemCount();
+				UT_sint32 i =0;
+				for(i=0; i< count; i++)
+				{
+					delete (AP_TopRulerTableInfo *) m_vecTableColInfo->getNthItem(i);
+				}
+				delete m_vecTableColInfo;
+			}
+		}		
 		
 	Mode					m_mode;
 	UT_uint32				m_xPaperSize;
@@ -76,8 +110,10 @@ public:
 
 // Column information for current table
 
-	UT_Vector               m_vecTableColInfo;
+	UT_Vector             * m_vecTableColInfo;
 	UT_sint32               m_iTablePadding;
+	UT_sint32               m_iCells;
+	UT_sint32               m_iCurCell;
 	union _u {
 
 		struct _c {
@@ -103,19 +139,6 @@ public:
 
 	} u;
 };
-
-/*****************************************************************/
-class AP_TopRulerTableInfo
-{
-public:
-	UT_sint32 m_iLeftCellPos;
-	UT_sint32 m_iLeftSpacing;
-	UT_sint32 m_iRightCellPos;
-	UT_sint32 m_iRightSpacing;
-	fp_CellContainer * m_pCell;
-};
-
-/*****************************************************************/
 
 class AP_TopRuler : public AV_Listener
 {
@@ -198,6 +221,8 @@ protected:
 	void		_drawCellProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo,
 									  UT_uint32 kCol, bool bDrawAll);
+	void		_drawCellProperties(const UT_Rect * pClipRect,
+									AP_TopRulerInfo * pInfo);
 	void        _drawCellMark(UT_Rect * prDrag);
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
@@ -217,7 +242,9 @@ protected:
 	bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2);
-	void		_displayStatusMessage(XAP_String_Id FormatMessageID, XAP_String_Id messageID1=0, XAP_String_Id messageID2=0);
+	void		_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * format);
+	void		_displayStatusMessage(XAP_String_Id FormatMessageID);
+
 
 	void        _refreshView(void);
 
