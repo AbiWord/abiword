@@ -3534,6 +3534,7 @@ UT_sint32 fp_Run::getVisDirection()
 	    fp_Run * r = getPrev();
 	    UT_sint32 prevDir = -1;
 	    UT_sint32 nextDir = -1;
+	    bool bEndOfPara;
 	
 	    if(r)
 	    	prevDir = r->getDirection();
@@ -3541,7 +3542,17 @@ UT_sint32 fp_Run::getVisDirection()
 	    r = getNext();
 	
 	    if(r)
+	    {
 	    	nextDir = r->getDirection();
+	    	if(r->getType() == FPRUN_ENDOFPARAGRAPH)
+	    	{
+	    		fp_Run * pr = getPrev();
+	    		if(pr && prevDir != -3)
+	    			return pr->getVisDirection();
+		    	else
+			    	return iBlDirection;
+	    	}
+	    }
 
 	    if(nextDir < 0 && prevDir < 0)
 	    {

@@ -39,10 +39,10 @@
 #ifdef BIDI_ENABLED
 	#ifdef USE_STATIC_MAP
 	//initialize the static members of the class
-	UT_uint32    fp_Line::s_iClassInstanceCounter = 0;
+	UT_uint32	fp_Line::s_iClassInstanceCounter = 0;
 	UT_sint32  * fp_Line::s_pMapOfRuns = 0;
-	UT_uint32    fp_Line::s_iMapOfRunsSize = 0;
-	fp_Line    * fp_Line::s_pMapOwner = 0;
+	UT_uint32	fp_Line::s_iMapOfRunsSize = 0;
+	fp_Line	* fp_Line::s_pMapOwner = 0;
 	#else
 	//make sure that any references to the static members are renamed to their non-static versions
 	#define s_iMapOfRunsSize m_iMapOfRunsSize
@@ -77,7 +77,7 @@ fp_Line::fp_Line()
 #ifdef BIDI_ENABLED
 	m_iRunsRTLcount = 0;
 	m_iRunsLTRcount = 0;
-	m_bMapDirty = true;    //map that has not been initialized is dirty by deafault
+	m_bMapDirty = true;	//map that has not been initialized is dirty by deafault
 
 	#ifdef USE_STATIC_MAP
 	if(!s_pMapOfRuns)
@@ -86,8 +86,8 @@ fp_Line::fp_Line()
 		s_iMapOfRunsSize = RUNS_MAP_SIZE;
 	}
 	++s_iClassInstanceCounter; // this tells us how many instances of Line are out there
-	                           //we use this to decide whether the above should be
-	                           //deleted by the destructor
+				               //we use this to decide whether the above should be
+				               //deleted by the destructor
 	#else
 	m_pMapOfRuns = new UT_sint32[RUNS_MAP_SIZE];
 	m_iMapOfRunsSize = RUNS_MAP_SIZE;
@@ -164,8 +164,8 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 	}
 
 #ifdef BIDI_ENABLED
-    switch(pRun->getDirection())
-    {
+	switch(pRun->getDirection())
+	{
 		case 0:
 			m_iRunsLTRcount--;
 			//UT_DEBUGMSG(("decreased LTR run count (fp_Line::removeRun) [%d, this=0x%x]\n", m_iRunsLTRcount, this));
@@ -178,7 +178,7 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 			UT_ASSERT((m_iRunsRTLcount >= 0));
 			break;
 		default:;
-    }
+	}
 #endif
 	
 	
@@ -509,8 +509,8 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
   conversion functions.
 
   \note This function is quite intentionally <b>not</b> called
-        setHeight. It should <b>only</b> be called from
-        fp_Column::layout.
+		setHeight. It should <b>only</b> be called from
+		fp_Column::layout.
 
   \see fp_Column::layout 
   Note bye Sevior: This method is causing pixel dirt by making lines smaller 
@@ -531,12 +531,12 @@ void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
   XY/position conversions.
 
   \fixme I originally put in an assertion that checked that the line
-         was only ever asked to grow in size. But that fired a lot, so
-         it had to be removed. This suggests that we actually try to
-         render stuff to closely on screen - the fp_Line::recalcHeight
-         function should probably be fixed to round height and widths
-         up always. But it gets its data from Runs, so this is not
-         where the problem should be fixed.
+		 was only ever asked to grow in size. But that fired a lot, so
+		 it had to be removed. This suggests that we actually try to
+		 render stuff to closely on screen - the fp_Line::recalcHeight
+		 function should probably be fixed to round height and widths
+		 up always. But it gets its data from Runs, so this is not
+		 where the problem should be fixed.
 
   \see fp_Column::layout, fp_Line::setAssignedScreenHeight
 */
@@ -1014,7 +1014,7 @@ void fp_Line::layout(void)
 			// Need to erase some or all of the line depending of Alignment mode.
 #ifdef BIDI_ENABLED
    			pRun->setX(iX); //#TF have to set this before the call to erase, since otherwise
-	               			//we will be erasing from invalid coordinances.
+				   			//we will be erasing from invalid coordinances.
 #endif
 			pAlignment->eraseLineFromRun(this, i);
 			bLineErased = true;
@@ -1044,7 +1044,7 @@ void fp_Line::layout(void)
 			switch ( iTabType )
 			{
 			case FL_TAB_LEFT:
-			    {
+				{
 					iXLayoutUnits = (iPosLayoutUnits + iStartXLayoutUnits);
 					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
 #ifdef BIDI_ENABLED
@@ -1158,7 +1158,7 @@ void fp_Line::layout(void)
 			}
 		
 			case FL_TAB_BAR:
-			    {
+				{
 					iXLayoutUnits = (iPosLayoutUnits + iStartXLayoutUnits);
 					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
 					pTabRun->setWidth(iX - pTabRun->getX());
@@ -1524,7 +1524,7 @@ void fp_Line::coalesceRuns(void)
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 			if (pTR->canMergeWithNext())
 			{
-    			pTR->mergeWithNext();
+				pTR->mergeWithNext();
 				count--;
 				i--; //test the newly merged run with the next
 			}
@@ -1833,7 +1833,7 @@ void fp_Line::splitRunsAtSpaces(void)
 							m_iRunsRTLcount++;
 							break;
 					default:;
-			    }
+				}
 #endif				
 				pTR->split(iSpacePosition + 1);
 				count++;
@@ -1865,7 +1865,7 @@ void fp_Line::splitRunsAtSpaces(void)
 						m_iRunsRTLcount++;
 						break;
 				default:;
-			    }
+				}
 #endif				
 			pTR->split(iSpacePosition + 1);
 		}
@@ -1883,21 +1883,19 @@ void fp_Line::splitRunsAtSpaces(void)
 //
 // BIDI specific functions
 //
-
-/*
-	Creates a map for conversion from visual to logical position.
+/*!
+	Creates a map for conversion from visual to logical position of runs on the line.
+	\param void
 	
 	There are four types of runs with respect to their direction:
 	ltr, rtl, neutral (whitespace), other netural (e.g. brackets)
 	
 	In order to organise the line correctly the latter two types
 	need to be assigned a temporary ltr or rtl direction from their
-	context. This is that hard bit that takes the longest.
+	context. This is the hard bit that takes the longest.
 	
-	Once this is done, the visual order of the runs can be
-	calculated.
+	\note This function is BIDI-exclusive.
 */
-
 UT_sint32 fp_Line::_createMapOfRuns()
 {
 	//UT_DEBUGMSG(("_createMapOfRuns\n"));
@@ -1906,58 +1904,60 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 	if(!m_iRunsRTLcount)
 	{
-		UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
+		//we do not have to create the map, because the functions that use it have shortcuts
+		//implemented for this scenario; we will not do the same for rtl-only lines, since
+		//calculating the index requires to retrieve the run count, so it will be faster
+		//to create the map then have to call m_vecRuns.getItemCount() for each run
+
+		xxx_UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
 		return UT_OK;
 	}
-    //UT_DEBUGMSG(("createMapOfRuns: this=%x, Owner=%x, Dirty=%x\n", this, s_pMapOwner, m_bMapDirty));
+
 #ifdef USE_STATIC_MAP
-    if((s_pMapOwner != this) || (m_bMapDirty))
-    {
-        //claim the ownership of the map and mark it not dirty
-        s_pMapOwner = this;
-        m_bMapDirty = false;
+	if((s_pMapOwner != this) || (m_bMapDirty))
+	{
+		//claim the ownership of the map and mark it not dirty
+		s_pMapOwner = this;
+		m_bMapDirty = false;
 
 #else //if using non-static map, we only check for dirtiness
-    if(m_bMapDirty)
-    {
-        m_bMapDirty = false;
-	//just rename the static members to their non-static equivalents, otherwise the code below
-	//is fine
+	if(m_bMapDirty)
+	{
+		m_bMapDirty = false;
 #endif
 		UT_uint32 count = m_vecRuns.getItemCount();
-		//UT_DEBUGMSG(("run count %d\n", count));
 		if(!count) 
 			return UT_OK;  // do not even try to map a line with no runs
 
-        if(count == 1)   //if there is just one run, then make sure that it maps on itself and return
-        {
-            s_pMapOfRuns[0] = 0;
-            return UT_OK;
-        }
+		if(count == 1)   //if there is just one run, then make sure that it maps on itself and return
+		{
+			s_pMapOfRuns[0] = 0;
+			return UT_OK;
+		}
 
-        if (count >= s_iMapOfRunsSize) //the MapOfRuns member is too small, reallocate
-        {
+		if (count >= s_iMapOfRunsSize) //the MapOfRuns member is too small, reallocate
+		{
 			delete[] s_pMapOfRuns;
 			s_iMapOfRunsSize = count + 20; //allow for 20 extra runs, so that we do not have to
-                                           //do this immediately again
+			                               //do this immediately again
 			s_pMapOfRuns = new UT_sint32[s_iMapOfRunsSize];
 			UT_ASSERT(s_pMapOfRuns);
-        }
+		}
 
 		//make sure that the map is not exessively long;
 		if ((count < RUNS_MAP_SIZE) && (s_iMapOfRunsSize > 2* RUNS_MAP_SIZE))
 		{
-         	delete[] s_pMapOfRuns;
+		 	delete[] s_pMapOfRuns;
 			s_iMapOfRunsSize = RUNS_MAP_SIZE;
 			s_pMapOfRuns = new UT_sint32[s_iMapOfRunsSize];
 			UT_ASSERT(s_pMapOfRuns);
 		}
 
-		//if this is unidirectional rtl text, we can skip the next step
-		//we only need to test absence of ltr runs
+		//if this is unidirectional rtl text, we just fill the map sequentially
+		//from back to start
 		if(!m_iRunsLTRcount)
 		{
-			UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));			
+			xxx_UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));			
 			for(i = 0; i < count/2; i++)
 			{
 				s_pMapOfRuns[i]= count - i - 1;
@@ -1969,20 +1969,30 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		}
 		else
 		{
-			UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs, line 0x%x)\n", m_iRunsLTRcount, m_iRunsRTLcount, this));        	
+			/*
+				This is a genuine bidi line, so we have to go the full way. There are four types of runs
+				unabiguously ltr and rtl, whitespace and other-netural. To be able to order the line 
+				correctly, we first need to assign ltr or rtl direction to the latter two types from their
+				context
+			*/
+			xxx_UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs, line 0x%x)\n", m_iRunsLTRcount, m_iRunsRTLcount, this));			
+
 			// get the dominant direction of the block and set the MapOfRuns so that all runs
 			// that have different direction than the dominant will have value 1,
-			// neutral runs -1 and the rest 0
+			// whitespace runs -1, other-neutral -3 and the rest 0
+
 			UT_sint32 RTLdominant = m_pBlock->getDominantDirection();
 			UT_sint32 iRunDirection = ((fp_Run*) m_vecRuns.getNthItem(0))->getDirection();
+
 			// run 0 is a special case, we will treat it here, to speed up the loop below
+			// this run is whitespace or other-netural, it will get the dominant direction
 			if(iRunDirection < 0)
-				//if this is the very first run, then set it to the paragraph direction,
-				//this will make things easier in the next step				
 				s_pMapOfRuns[0] = RTLdominant;
 			else
 				s_pMapOfRuns[0] = (iRunDirection) ? !RTLdominant : RTLdominant;
+
 				
+			// now the rest of the runs ...
 			for (i=1; i < count; i++)
 			{
 				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
@@ -1992,8 +2002,9 @@ UT_sint32 fp_Line::_createMapOfRuns()
 					s_pMapOfRuns[i] = iRunDirection;
 					if(iRunDirection == -3)
 					{
+						// if this is other-neutral, we will remember it, so we can skip
+						// the other-neutral loop if not needed
 						bContainsOtherNtrl = true;
-						//UT_DEBUGMSG(("found other neutral\n"));
 					}
 				}
 				else
@@ -2002,71 +2013,86 @@ UT_sint32 fp_Line::_createMapOfRuns()
 				}
 			}
 
-        	//UT_DEBUGMSG(("fp_Line::_createMapOfRuns(), s_pMapOfRuns{pre}(domDir %d) %d %d %d %d\n", RTLdominant, s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3]));
 
-        	// all sequences of runs that have direction different than the block direction have
-        	// to be put into mirror order but first of all we have to convert all directionally
-        	// neutral runs into correct direction depending on their context
+			// all sequences of runs that have direction different than the block direction have
+			// to be put into mirror order but first of all we have to convert all directionally
+			// neutral runs into correct direction depending on their context
 
-        	//UT_DEBUGMSG(("pre-map0 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
-        	if(bContainsOtherNtrl)
-        	{
-	        	for (i=1; i < count; i++)
-    	    	{
-        			if(s_pMapOfRuns[i] == -3)
-        			{
-        				if((i == count-1) || (s_pMapOfRuns[i-1] < 0 && s_pMapOfRuns[i+1] < 0))
-        					s_pMapOfRuns[i] = -1;
-	        			else if(s_pMapOfRuns[i-1] >= 0)
-    	    				s_pMapOfRuns[i] = s_pMapOfRuns[i-1];
-        				else
-        					s_pMapOfRuns[i] = s_pMapOfRuns[i+1];
-	        			//UT_DEBUGMSG(("other neutral, dir %d\n", s_pMapOfRuns[i]));
-    	    		}
+			// now work out the real direction for the ambiguous runs (whitespace, other-neutral)
+			// we start with other-neutral, since in certain circumstances it will be transformed into
+			// a whitespace
+
+			if(bContainsOtherNtrl)
+			{
+				// if the two runs on each side have identical directions, we will take the same
+				// direction; if they are different and one is a whitespace, we will take the
+				// direction of the unabmbiguous run; if neither is a whitespace, we will take
+				// the direction of the preceding run; last run on the line is a special case,
+				// it behaves like whitespace.
+				for (i=1; i < count; i++)
+				{
+					if(s_pMapOfRuns[i] == -3)
+					{
+						if((i == count-1) || (s_pMapOfRuns[i-1] < 0 && s_pMapOfRuns[i+1] < 0)
+							|| ((i == count - 2) && (((fp_Run *) m_vecRuns.getNthItem(i+1))->getType() == FPRUN_ENDOFPARAGRAPH)))
+							s_pMapOfRuns[i] = -1;
+						else if(s_pMapOfRuns[i-1] >= 0)
+							s_pMapOfRuns[i] = s_pMapOfRuns[i-1];
+						else
+							s_pMapOfRuns[i] = s_pMapOfRuns[i+1];
+					}
 				}
 			}
-			
-        	UT_uint32 j;
-        	for (i=1; i < count; i++)
-        	{
-            	if(s_pMapOfRuns[i] == -1) //directionally neutral, i.e., whitespace
+
+
+			// now we deal with the whitespace ...			
+			UT_uint32 j;
+
+			for (i=1; i < count; i++)
+			{
+				if(s_pMapOfRuns[i] == -1) 
 				{
-            		//if we follow a run that is consistent with the direciton of the para, then so will be this
-            		//(dont have to worry about the i-1 since this will never happen on position 0
-            		//because we have already set the value for any neutral run at pos 0 to that of the
-            		//dominant direction
-                	if(s_pMapOfRuns[i-1] == 0)
+					//if we follow a run that is consistent with the direction of the para, then so will be we
+					//(dont have to worry about the i-1 since this will never happen on position 0
+					//because we have already set the value for any neutral run at pos 0 to that of the
+					//dominant direction
+				 	if(s_pMapOfRuns[i-1] == 0)
 					{
-                    	s_pMapOfRuns[i] = 0;
+			  			s_pMapOfRuns[i] = 0;
 					}
-                	//if the preceeding run is foreign, we will have the direction of the following run
-                	//except where the following run is end of paragraph marker.
-                	//but we have to skip any following whitespace runs
-                	else
-                	{
-                    	j = i + 1;
-                    	while ((s_pMapOfRuns[j] < 0) && (j < count))
-                        	j++;
-                    	/*	last run on the line and the last run before
-                    		the formating marker require special treatment.
-                    		if the last run on the line is whitespace, it will have the
-                    		direction of the preceding run; if it is a formating marker
-                    		preceded by a white space, the white space will also get
-                    		the direction of the preceding run.
-                    	*/
-                    	if(j == count || ((j == count -1) && (((fp_Run *) m_vecRuns.getNthItem(j))->getType() == FPRUN_ENDOFPARAGRAPH)))
-                			s_pMapOfRuns[i] = s_pMapOfRuns[i-1]; //last run on the line, will have the direction of the preceding run
-                    	else
+				 	//if the preceeding run is foreign, we will have the direction of the following run
+			    	//except where the following run is end of paragraph marker.
+			    	//but we have to skip any following whitespace runs
+		    		else
+			    	{
+			        	j = i + 1;
+			        	while ((s_pMapOfRuns[j] < 0) && (j < count))
+			            	j++;
+		        		/*	last run on the line and the last run before
+		        			the formating marker require special treatment.
+		        			if the last run on the line is whitespace, it will have the
+			        		direction of the preceding run; if it is a formating marker
+			        		preceded by a white space, the white space will also get
+			        		the direction of the preceding run.
+			        	*/
+		        		if(j == count || ((j == count -1) && (((fp_Run *) m_vecRuns.getNthItem(j))->getType() == FPRUN_ENDOFPARAGRAPH)))
+		    				s_pMapOfRuns[i] = s_pMapOfRuns[i-1]; //last run on the line, will have the direction of the preceding run
+			        	else
 							s_pMapOfRuns[i] = s_pMapOfRuns[j]; //otherwise the direction of the first non-white run we found
-                	}
-            	}
-        	}
+			
+						//next we set the direction of all the whitespace runs we had to skip, this will speed
+						//things up in the next round.
+						for(UT_uint32 k = i+1; k < j; k++)
+							s_pMapOfRuns[k] = s_pMapOfRuns[i];
+		    		}
+				}
+			}
 
 			
-        	//UT_DEBUGMSG(("pre-map1 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
-        	//now we can do the reorganisation
-        	for (i=0; i < count; i++)
-        	{
+			// now we can do the reorganisation: all sequences of runs that have direction different than the
+			// dominant direction have to be reversed
+			for (i=0; i < count; i++)
+			{
 				if(s_pMapOfRuns[i] != 0) //foreign direction of text
 				{
 					j = i;
@@ -2086,30 +2112,28 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			}
 
 		
-        // if the dominant direction is rtl, the final order of the runs
-        // has to be a mirror of the present order
+			// if the dominant direction is rtl, the final order of the runs
+			// has to be a mirror of the present order
 
-        UT_uint32 temp;
+			UT_uint32 temp;
 
-        if(RTLdominant) //we have to switch all the runs around the centre.
-		{
-            for (i = 0; i < count/2; i++)
+			if(RTLdominant) //we have to switch all the runs around the centre.
 			{
-                UT_ASSERT((count - i - 1) < count);
-                temp = s_pMapOfRuns[i];
-                s_pMapOfRuns[i] = s_pMapOfRuns[count - i - 1];
-                s_pMapOfRuns[count - i - 1] = temp;
+				for (i = 0; i < count/2; i++)
+				{
+					UT_ASSERT((count - i - 1) < count);
+					temp = s_pMapOfRuns[i];
+					s_pMapOfRuns[i] = s_pMapOfRuns[count - i - 1];
+					s_pMapOfRuns[count - i - 1] = temp;
+				}
 			}
-		}
+			// we do not need to worry about the run in the midle if count is odd, since it already has
+			// a correct index
 		
-	}//if/else only rtl
-		
-    //UT_DEBUGMSG(("fp_Line::_createMapOfRuns(), s_pMapOfRuns{post} %d %d %d %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3]));
-    //UT_DEBUGMSG(("count=%d: %d, %d, %d, %d, %d, %d, %d\n", count, s_pMapOfRuns[0], s_pMapOfRuns[1],s_pMapOfRuns[2],s_pMapOfRuns[3],s_pMapOfRuns[4],s_pMapOfRuns[5],s_pMapOfRuns[6]));
+		}//if/else only rtl
+	}
 
-    }
-
-    return(UT_OK);
+	return(UT_OK);
 }
 
 /* the following two functions convert the position of a run from logical to visual
@@ -2117,54 +2141,52 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 UT_uint32 fp_Line::_getRunLogIndx(UT_uint32 indx)
 {
-    //UT_DEBUGMSG(("indx=%d, ItemCount=%d, s_pMapOfRuns[indx]=%d\n", indx, m_vecRuns.getItemCount(),s_pMapOfRuns[indx]));
-    UT_ASSERT((m_vecRuns.getItemCount() > indx));
+	UT_ASSERT((m_vecRuns.getItemCount() > indx));
 
-    if(!m_iRunsRTLcount)
-    	return(indx);
+	if(!m_iRunsRTLcount)
+		return(indx);
 
-    _createMapOfRuns();
-    return(s_pMapOfRuns[indx]);
+	_createMapOfRuns();
+	return(s_pMapOfRuns[indx]);
 }
 
 
 UT_uint32 fp_Line::_getRunVisIndx(UT_uint32 indx)
 {
-    UT_ASSERT(m_vecRuns.getItemCount() > indx);
+	UT_ASSERT(m_vecRuns.getItemCount() > indx);
 
-    if(!m_iRunsRTLcount)
-    	return(indx);
+	if(!m_iRunsRTLcount)
+		return(indx);
 
-    UT_uint32 i = 0;
-    _createMapOfRuns();
-    //UT_DEBUGMSG(("getRunLogIndex: indx=%d, map=%d, %d, %d, %d, %d, %d\n", indx, s_pMapOfRuns[0], s_pMapOfRuns[1],s_pMapOfRuns[2],s_pMapOfRuns[3],s_pMapOfRuns[4],s_pMapOfRuns[5]));
-    for(;;)
-    {
-        UT_ASSERT(m_vecRuns.getItemCount() > i);
-        if(s_pMapOfRuns[i] == (UT_sint32)indx)
+	UT_uint32 i = 0;
+	_createMapOfRuns();
+	for(;;)
+	{
+		UT_ASSERT(m_vecRuns.getItemCount() > i);
+		if(s_pMapOfRuns[i] == (UT_sint32)indx)
 			return(i);
-        ++i;
-    }
+		++i;
+	}
 }
 
 fp_Run * fp_Line::getLastVisRun()
 {
-    if(!m_iRunsRTLcount)
-    	return(getLastRun());
+	if(!m_iRunsRTLcount)
+		return(getLastRun());
 
-    _createMapOfRuns();
-    UT_uint32 count = m_vecRuns.getItemCount();
-    UT_ASSERT(count > 0);
-    return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRuns[count - 1]));
+	_createMapOfRuns();
+	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_ASSERT(count > 0);
+	return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRuns[count - 1]));
 }
 
 fp_Run * fp_Line::getFirstVisRun()
 {
-    if(!m_iRunsRTLcount)
-    	return(0);
+	if(!m_iRunsRTLcount)
+		return(0);
 
-    _createMapOfRuns();
-    return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRuns[0]));
+	_createMapOfRuns();
+	return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRuns[0]));
 }
 
 void fp_Line::addDirectionUsed(UT_uint32 dir)
