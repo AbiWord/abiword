@@ -1196,13 +1196,11 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 #ifdef LOGFILE
-//	UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
-	UT_String sLogFile = "/home/msevior/.AbiSuite";
+	UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
+//	UT_String sLogFile = "/home/msevior/.AbiSuite";
 	sLogFile += "abiLogFile";
 	logfile = fopen(sLogFile.c_str(),"a+");
 	fprintf(logfile,"About to do gtk_set_locale \n");
-	sLogFile = "/home/msevior/abiLogFile";
-	logfile = fopen(sLogFile.c_str(),"a+");
 	fprintf(logfile,"New logfile \n");
 #endif
     
@@ -1800,6 +1798,9 @@ static BonoboUIVerb abi_nautilus_verbs[] = {
 	BONOBO_UI_VERB_END
 };
 
+/*!
+ * Do this after
+ */
 static void
 abi_nautilus_view_create_ui (AbiWidget *abi)
 {
@@ -1807,13 +1808,21 @@ abi_nautilus_view_create_ui (AbiWidget *abi)
 	g_return_if_fail (IS_ABI_WIDGET(abi));
 	BonoboUIComponent * uic = abi_widget_get_Bonobo_uic(abi);
 
+	/* Connect the UI component to the control frame's UI container. */
+
+// see nautilus/libnautilus/nautilus-view.c:994
+//  
+//	ui_container = bonobo_control_get_remote_ui_container (view->details->control, NULL);
+//	bonobo_ui_component_set_container (ui_component, ui_container, NULL);
+//	bonobo_object_release_unref (ui_container, NULL);
+
 	/* Set up the UI from XML file. 
 	   Have to find a way to get this from a global
 	installation
 	*/
 	AP_UnixApp * pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
 	const char * szDir =   pApp->getUserPrivateDirectory();
-	bonobo_ui_util_set_ui (uic, szDir,
+	bonobo_ui_util_set_ui (uic, "/home/msevior",
 			       "abi-nautilus-view-file.xml", "AbiWordNautilusView", NULL);
 	bonobo_ui_component_add_verb_list_with_data (uic, abi_nautilus_verbs,
 						     abi);

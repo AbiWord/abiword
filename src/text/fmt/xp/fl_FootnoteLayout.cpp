@@ -90,7 +90,20 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 	PT_DocPosition startPos = getDocPosition();
 	PL_StruxDocHandle sdhEnd = NULL;
 	PL_StruxDocHandle sdhStart = getStruxDocHandle();
-	bool bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote,&sdhEnd);
+	bool bres;
+	if(getContainerType() == FL_CONTAINER_FOOTNOTE)
+	{
+		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote,&sdhEnd);
+	}
+	else if(getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote,&sdhEnd);
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
 	UT_ASSERT(bres && sdhEnd);
 	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
 	UT_uint32 length = static_cast<UT_uint32>(endPos - startPos + 1); 

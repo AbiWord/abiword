@@ -2866,8 +2866,16 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL
 		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_populateSpan(pcrs,blockOffset,len)
-			&& bResult;
+		if(pShadowBL)
+		{
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_populateSpan(pcrs,blockOffset,len)
+				&& bResult;
+		}
+		else
+		{
+			UT_ASSERT(0);
+			break;
+		}
 	}
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);

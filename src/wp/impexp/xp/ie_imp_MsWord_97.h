@@ -82,6 +82,15 @@ struct header
 	}d;
 };
 
+class MsColSpan
+{
+public:
+	MsColSpan(void):iLeft(0),iRight(0),width(0){}
+	virtual ~MsColSpan(void) {}
+	UT_sint32 iLeft;
+	UT_sint32 iRight;
+	UT_sint32 width;
+};
 
 class emObject
 {
@@ -196,7 +205,10 @@ private:
 	bool		_appendFmt(const XML_Char ** attributes);
 	void        _handleHeaders(const wvParseStruct *ps);
 	bool        _handleHeadersText(UT_uint32 iPos);
-	
+	bool        _build_ColumnWidths(UT_NumberVector & colWidths);
+	bool        _isVectorFull(UT_NumberVector & vec);
+	void        setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_sint32 val);
+	bool        findMatchSpan(UT_sint32 iLeft,UT_sint32 iRight);
 	UT_UCS4String		m_pTextRun;
 	//UT_uint32			m_iImageCount;
 	UT_uint32			m_nSections;
@@ -239,7 +251,7 @@ private:
 	int			m_iCurrentCell;					//
 	bool		m_bRowOpen;						// row strux open ?
 	bool		m_bCellOpen;					// cell strux open ?
-	UT_Vector	m_vecColumnSpansForCurrentRow;	// placeholder for horizontal cell spans
+	UT_NumberVector	m_vecColumnSpansForCurrentRow;	// placeholder for horizontal cell spans
 	UT_Vector	m_vecColumnWidths;
 	UT_Vector   m_vecEmObjects;               // Objects between cell
 											  // struxes
@@ -275,6 +287,8 @@ private:
 	UT_NumberVector m_vListIdMap;
 	bool        m_bSymbolFont;
 	UT_Dimension m_dim;
+	UT_sint32    m_iLeft;
+	UT_sint32    m_iRight;
 };
 
 #endif /* IE_IMP_MSWORD_H */

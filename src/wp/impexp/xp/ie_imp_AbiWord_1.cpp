@@ -357,19 +357,10 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		const XML_Char * pszId = _getXMLPropValue("footnote-id", atts);
-		UT_ASSERT( pszId );
-		bool bOK;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote,id+1);
-			if(!bOK)
-			{
-				UT_DEBUGMSG(("Footnote id %d [%s] already in use\n",id,pszId));
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			}
-		}
+
+		// Don't check for id on the footnote. It should match an id on
+        // a footnote reference field.
+
 		X_CheckError(getDoc()->appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
 		return;
@@ -380,19 +371,10 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		const XML_Char * pszId = _getXMLPropValue("endnote-id", atts);
-		UT_ASSERT( pszId );
-		bool bOK;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::Endnote,id+1);
-			if(!bOK)
-			{
-				UT_DEBUGMSG(("Endnote id %d [%s] already in use\n",id,pszId));
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			}
-		}
+
+		// Don't check for id of the endnote strux. It should match the
+		// id of the endnote reference.
+
 		X_CheckError(getDoc()->appendStrux(PTX_SectionEndnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append Endnote strux \n"));
 		return;
@@ -439,18 +421,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(_handleImage (atts));
 #else
 		const XML_Char * pszId = _getXMLPropValue("dataid", atts);
-		UT_ASSERT( pszId );
-		bool bOK;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::Image,id+1);
-			if(!bOK)
-			{
-				UT_DEBUGMSG(("Image id %d [%s] already in use\n",id,pszId));
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			}
-		}
+
+		//
+		// Remove this assert because the image object MUST have already
+		// defined the correct ID.
+		//
 		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
 #endif
 		return;

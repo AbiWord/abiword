@@ -131,6 +131,14 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 
 	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), &m_height, &from);
 	gnome_print_convert_distance (&m_height, from, to);
+	m_height = getDeviceResolution()*m_height/72.;
+	m_width = getDeviceResolution()*m_width/72.;
+	//
+	// Scale the height and widths by the requested device resolution
+	//
+	//gnome_print_config_set_int (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_RESOLUTION_DPI), getDeviceResolution());
+	//	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_LAYOUT_WIDTH), m_width, to);
+	//	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_LAYOUT_HEIGHT), m_height, to);
 
 	m_bIsPreview     = isPreview;
 	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
@@ -427,7 +435,7 @@ GR_Graphics::ColorSpace XAP_UnixGnomePrintGraphics::getColorSpace(void) const
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getDeviceResolution(void) const
 {
-	return 72;
+	return _getResolution();
 }
 
 void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg, 
@@ -443,7 +451,7 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 
 	gnome_print_gsave (m_gpc);
 	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
-	gnome_print_scale (m_gpc, static_cast<double>(iDestWidth), static_cast<double>(iDestHeight));
+	gnome_print_scale (m_gpc, static_cast<float>(iDestWidth), static_cast<float>(iDestHeight));
 	
 	gint width, height, rowstride;
 	const guchar * pixels;
@@ -690,7 +698,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 	// FIXME we should really be getting stuff from the font in layout units,
 	// FIXME but we're not smart enough to do that yet
 	// we call getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+   	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
@@ -703,7 +711,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 	PSFont*	psfnt = static_cast<PSFont*> (fnt);
 	// FIXME we should really be getting stuff from the font in layout units,
 	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+   	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
@@ -732,7 +740,7 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 													pszFontVariant, pszFontWeight,
 													pszFontStretch, pszFontSize);
 
-	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
+	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize)*getDeviceResolution()/72.);
 
 	XAP_UnixFontHandle* item = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(item);

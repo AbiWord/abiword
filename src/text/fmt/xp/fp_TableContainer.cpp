@@ -135,7 +135,7 @@ fp_CellContainer::~fp_CellContainer()
 void fp_CellContainer::setHeight(UT_sint32 iHeight)
 {
 	xxx_UT_DEBUGMSG(("cell: Height was %d \n",getHeight()));
-	if (iHeight == getHeight())
+	if ((iHeight == getHeight()) || (iHeight== 0))
 	{
 		return;
 	}
@@ -425,6 +425,10 @@ UT_sint32 fp_CellContainer::getSpannedHeight(void)
 	{
 		fp_CellContainer * pCell = pTab->getCellAtRowColumn(pTab->getNumRows() -1,0);
 		fp_CellContainer * pMaxH = pCell;
+		if(pMaxH == NULL)
+		{
+			return 0;
+		}
 		while(pCell)
 		{
 			if(pCell->getHeight() > pMaxH->getHeight())
@@ -1810,6 +1814,10 @@ void fp_CellContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	fp_Container *pContainer, *pPrevContainer = NULL;
+	if(countCons() == 0)
+	{
+		return;
+	}
 	for (UT_uint32 i=0; i < countCons(); i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));

@@ -2185,6 +2185,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint() + count +1);
 				count += pFL->getLength();
 			}
+			if(!isInEndnote() && isInEndnote(getPoint() + count))
+			{
+				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint() + count +1);
+				count += pEL->getLength();
+			}
 		}
 		else
 		{
@@ -2192,6 +2197,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			{
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
 				count += pFL->getLength();
+			}
+			else if(!isInEndnote() && isInEndnote(getPoint() - count))
+			{
+				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint());
+				count += pEL->getLength();
 			}
 		}
 		// Code to deal with font boundary problem.

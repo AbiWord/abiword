@@ -201,6 +201,7 @@ class ABI_EXPORT ie_imp_table
 	bool                getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec);
 	bool                removeRow(UT_sint32 row);
 	void                appendRow(UT_Vector * pVecRowOfCells);
+	bool                doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2);
  private:
 	void                _buildCellXVector(void);
 	void                _removeAllStruxes(void);

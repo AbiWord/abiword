@@ -1326,7 +1326,9 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bFootnotePending(false),
 	m_bFtnReferencePending(false),
 	m_bNoteIsFNote(true),
-	m_bStyleImportDone(false)
+	m_bStyleImportDone(false),
+	m_bCellHandled(false),
+	m_bContentFlushed(false)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1560,6 +1562,7 @@ void IE_Imp_RTF::CloseTable(void)
 
 void IE_Imp_RTF::HandleCell(void)
 {
+	m_bCellHandled = true;
 	if(!m_pImportFile)
 	{
 		return;
@@ -1699,6 +1702,11 @@ void IE_Imp_RTF::HandleRow(void)
 
 	UT_DEBUGMSG(("ie_imp_RTF: Handle Row now \n"));
 	m_TableControl.NewRow();
+//
+// Need these for strange barely legal docs like that in bug 4111
+//
+	m_bCellHandled = false;
+	m_bContentFlushed = false;
 }
 
 void IE_Imp_RTF::HandleNoteReference(void)
@@ -2159,6 +2167,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
 	}
+	m_bContentFlushed = true;
 	return ok;
 }
 
@@ -4678,11 +4687,21 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // If a trowd appears without  a preceding \cell we close the previous table
 //
-			else if(!m_bCellBlank && !m_bNestTableProps)
+			if(!m_bCellBlank && !m_bNestTableProps)
 			{
-				UT_DEBUGMSG(("After trowd closing table coz no cell detected\n"));
+				UT_DEBUGMSG(("After trowd closing table coz no cell detected -1\n"));
 				CloseTable();
 			}
+//
+// Another way of detecting if a trowd appears without a preceding \cell.
+// Close the previous table. This should always work.
+
+			else if(!m_bCellHandled && m_bContentFlushed)
+			{
+				UT_DEBUGMSG(("After trowd closing table coz no cell detected - 2\n"));
+				CloseTable();
+			}
+			m_bContentFlushed = false;
 			m_bNestTableProps = false;
 			ResetCellAttributes();
 			ResetTableAttributes();

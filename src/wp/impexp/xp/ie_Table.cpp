@@ -812,6 +812,28 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec)
 	return true;
 }
 
+bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2)
+{
+	UT_sint32 fuz = 50; // CellXs within 50 TWIPS are assumed to be the same
+	if(iCellX1 > iCellX2)
+	{
+		if((iCellX1 - iCellX2) < fuz)
+		{
+			return true;
+		}
+		return false;
+	}
+	else if( iCellX2 > iCellX1)
+	{
+		if( (iCellX2 - iCellX1) < fuz)
+		{
+			return true;
+		}
+		return false;
+	}
+	return true;
+}
+
 
 /*!
  * Start a new row. 
@@ -868,7 +890,7 @@ UT_sint32 ie_imp_table::NewRow(void)
 			for(j=0; !bMatch && (j < static_cast<UT_sint32>(m_vecCellX.getItemCount())); j++)
 			{
 				UT_sint32 prevX = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(j));
-				bMatch =  (prevX == curX);
+				bMatch =  doCellXMatch(prevX,curX);
 			}
 			if(bMatch)
 			{
@@ -1176,7 +1198,7 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecCellX.getItemCount())); i++)
 	{
 		UT_sint32 icellx = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(i));
-		if(icellx == cellx)
+		if(doCellXMatch(icellx,cellx))
 		{
 			bFound = true;
 			iFound = i;
@@ -1199,7 +1221,7 @@ ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
 	{
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		UT_sint32 icellx = pCell->getCellX();
-		if(icellx == cellX && (pCell->getRow() == iRow))
+		if((icellx == cellX) && (pCell->getRow() == iRow))
 		{
 			bfound = true;
 			break;

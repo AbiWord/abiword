@@ -2491,11 +2491,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		{
 			bJustOpennedCell = m_Table.isCellJustOpenned();
 		}
-		if(!m_bOpennedFootnote && !bJustOpennedCell)
+		if(!m_bOpennedFootnote && (!bJustOpennedCell || (m_Table.getNestDepth()==0)))
 		{
 			m_pie->_rtf_keyword("par");
 		}
-		else if(!m_bOpennedFootnote)
+		else if(m_bOpennedFootnote)
 		{
 			m_bOpennedFootnote = false;
 		}
@@ -2991,7 +2991,12 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	UT_sint32 iImageWidth, iImageHeight;
 	UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
 
-	// TODO compute scale factors...
+	// compute scale factors...
+
+	double dImageWidth = static_cast<double>(iImageWidth);
+	double dImageHeight = static_cast<double>(iImageHeight);
+	dImageWidth = UT_convertDimToInches(dImageWidth,DIM_PT);
+	dImageHeight = UT_convertDimToInches(dImageHeight,DIM_PT);
 
 	// if everything is ok, we need to dump the image data (in hex)
 	// to the RTF stream with some screwy keywords...
@@ -3022,10 +3027,22 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			m_pie->_rtf_keyword("picw",iImageWidth);
 			m_pie->_rtf_keyword("pich",iImageHeight);
 			if (bFoundWidthProperty)
+			{
 				m_pie->_rtf_keyword_ifnotdefault_twips("picwgoal",static_cast<const char*>(szWidthProp),0);
+				double dWidth = UT_convertToInches(szWidthProp);
+				double scalex = 100.0*dWidth/dImageWidth;
+				UT_uint32 iscalex = static_cast<UT_uint32>(scalex);
+				m_pie->_rtf_keyword("picscalex",iscalex);
+
+			}
 			if (bFoundHeightProperty)
+			{
 				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",static_cast<const char*>(szHeightProp),0);
-			// we use the default values for picscale[xy]==100, piccrop[tblr]==0
+				double dHeight = UT_convertToInches(szHeightProp);
+				double scaley = 100.0*dHeight/dImageHeight;
+				UT_uint32 iscaley = static_cast<UT_uint32>(scaley);
+				m_pie->_rtf_keyword("picscaley",iscaley);
+			}
 
 			// TODO deal with <metafileinfo>
 

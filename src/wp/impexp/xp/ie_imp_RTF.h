@@ -746,6 +746,8 @@ private:
 	bool                  m_bFtnReferencePending;
 	bool                  m_bNoteIsFNote;
 	bool                  m_bStyleImportDone;
+	bool                  m_bCellHandled;
+	bool                  m_bContentFlushed;
 };
 
 #endif /* IE_IMP_RTF_H */

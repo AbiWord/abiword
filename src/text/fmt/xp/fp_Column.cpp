@@ -816,7 +816,7 @@ UT_uint32 fp_VerticalContainer::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 
 	UT_uint32 dist = (UT_uint32) (sqrt((float)(dx * dx) + (dy * dy)));
 
-	UT_ASSERT(dist > 0);
+//	UT_ASSERT(dist > 0);
 
 	return dist;
 }

@@ -823,7 +823,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iTextEnd(0xffffffff),
 	m_bPageBreakPending(false),
 	m_bSymbolFont(false),
-	m_dim(DIM_IN)
+	m_dim(DIM_IN),
+	m_iLeft(0),
+	m_iRight(0)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -2333,40 +2335,58 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	}
 
 	{
-	  if (apap->fInTable) {
-	    if (!m_bInTable) {
-	      m_bInTable = true;
-	        _table_open();
-	    }
+	  if (apap->fInTable) 
+	  {
+		  if (!m_bInTable) 
+		  {
+			  m_bInTable = true;
+			  _table_open();
+		  }
 
-	    if (ps->endcell) {
-	      ps->endcell = 0;
-	      _cell_close();
-	      if (m_iCellsRemaining > 0) {
-		m_iCellsRemaining--;
-		if (m_iCellsRemaining == 0) {
-		  _row_close();
-		}
-	      }
-	    }
+		  if (ps->endcell) 
+		  {
+			  ps->endcell = 0;
+			  _cell_close();
+			  if (m_iCellsRemaining > 0) 
+			  {
+				  m_iCellsRemaining--;
+				  if (m_iCellsRemaining == 0) 
+				  {
+					  _row_close();
+				  }
+			  }
+		  }
 
 	    _row_open();
 
 	    // determine column spans
-	    if (!m_bCellOpen) {
-	      m_vecColumnSpansForCurrentRow.clear();
+	    if (!m_bCellOpen) 
+		{
+			m_vecColumnSpansForCurrentRow.clear();
 
-	      for (int column = 1; column < ps->nocellbounds; column++) {
-		int span = 0;
-
-		for (int i = column; i < ps->nocellbounds; i++) {
-		  if (ps->cellbounds[i] >= apap->ptap.rgdxaCenter[column]) {
-		    span = (i - column);
-		    break;
-		  }
-		}
-		m_vecColumnSpansForCurrentRow.addItem(reinterpret_cast<void *>(span));
-	      }
+			UT_DEBUGMSG(("Number Cols in New row %d \n",ps->nocellbounds));
+			UT_sint32 column =1;
+			UT_sint32 i =0;
+			UT_sint32 posLeft = 0;
+			UT_sint32 posRight =0;
+			for (column = 1; column < ps->nocellbounds; column++) 
+			{
+				int span = 0;
+				posLeft = apap->ptap.rgdxaCenter[column-1];
+				posRight = apap->ptap.rgdxaCenter[column];
+				for (i = 0; i < ps->nocellbounds; i++) 
+				{
+					if (ps->cellbounds[i] >= posLeft && ps->cellbounds[i] < posRight) 
+					{
+						span++;
+					}
+					else if (ps->cellbounds[i] >= posRight)
+					{
+						break;
+					}
+				}
+				m_vecColumnSpansForCurrentRow.addItem(span);
+			}
 	    }
 
 	    _cell_open(ps, apap);
@@ -3478,7 +3498,7 @@ void IE_Imp_MsWord_97::_table_open ()
 
   _appendStrux(PTX_Block, NULL);
   _appendStrux(PTX_SectionTable, NULL);
-
+  m_vecColumnWidths.clear();
   m_bRowOpen = false;
   m_bCellOpen = false;
   m_bInPara = false;
@@ -3488,6 +3508,201 @@ void IE_Imp_MsWord_97::_table_open ()
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
+/*!
+ * Exand a vector with zeros to make room for a new value
+ */
+void IE_Imp_MsWord_97::setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_sint32 val)
+{
+	while(i > static_cast<UT_sint32>(vec.size() +1))
+	{
+		vec.addItem(0);
+	}
+	vec.setNthItem(i,val,NULL);
+}
+
+/*!
+ * This method parses the vector of MsColSpans held by m_vecColumnWidths
+ * and fills the vector colWidths with the widths of the individual columns.
+ *
+ * We do this because MSWord provides the widths of column spans, and in 
+ * some cases you can get a table with no row fully partitioned into 
+ * individual cells.
+ */
+bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
+{
+
+// OK handle the easy cases first and find the maximum value of iRight
+
+	UT_sint32 iMaxRight = 0;
+	UT_sint32 i = 0;
+	UT_sint32 iLeft,iRight = 0;
+	UT_sint32 iSize = static_cast<UT_sint32>(m_vecColumnWidths.size());
+	for(i=0; i< iSize;i++)
+	{
+		MsColSpan * pSpan = reinterpret_cast<MsColSpan *>(m_vecColumnWidths.getNthItem(i));
+		iLeft = pSpan->iLeft;
+		iRight = pSpan->iRight;
+		if(iMaxRight < iRight)
+		{
+			iMaxRight = iRight;
+		}
+		if((iLeft + 1) == iRight)
+		{
+			setNumberVector(colWidths,iLeft,pSpan->width);
+			xxx_UT_DEBUGMSG(("_build_ColumnWidths Initial set: Left %d Width %d \n",iLeft,colWidths[iLeft]));
+		}
+	}
+//
+// Look to see if we're finished now.
+//
+	if((colWidths.size() == static_cast<UT_uint32>(iMaxRight)) && _isVectorFull(colWidths))
+	{
+		return true;
+	}
+	if(colWidths.size() < static_cast<UT_uint32>(iMaxRight))
+	{
+		setNumberVector(colWidths,iMaxRight -1,0);
+	}
+//
+// OK Now the hard part. Procede by scanning through the m_vecColWidths,
+// Looking for spans, at each span we look to see if we can break the span
+// into smaller pieces by subtracting a single span width.
+//
+// When we have a single column span we insert it in colWidths if colWidths
+// is empty at that point.
+//
+// We continue until colWidths is completely full.
+//
+	UT_uint32 iLoop = 0;
+	while(iLoop < 1000 && !_isVectorFull(colWidths))
+	{
+		for(i=0; i<static_cast<UT_sint32>(m_vecColumnWidths.size()); i++)
+		{
+			MsColSpan * pSpan = reinterpret_cast<MsColSpan *>(m_vecColumnWidths.getNthItem(i));
+			iLeft = pSpan->iLeft;
+			iRight = pSpan->iRight;
+			xxx_UT_DEBUGMSG(("Loop %d iLeft %d,iRight %d colWidth[iLeft] %d colWidth[iRight-1] %d\n",iLoop,iLeft,iRight,colWidths[iLeft],colWidths[iRight -1]));
+			if(iMaxRight < iRight)
+			{
+				iMaxRight = iRight;
+			}
+			if(((iLeft + 1) == iRight) && (colWidths[iLeft] == 0))
+			{
+				setNumberVector(colWidths,iLeft,pSpan->width);
+			}
+			else if((iLeft + 1) < iRight)
+			{
+				if(colWidths[iLeft] > 0)
+				{
+					if(!findMatchSpan(iLeft+1,iRight))
+					{
+						MsColSpan * pNewSpan = new MsColSpan();
+						pNewSpan->iLeft = iLeft+1;
+						pNewSpan->iRight = iRight;
+						pNewSpan->width = pSpan->width - colWidths[iLeft];
+						m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+					}
+				}
+				else if(colWidths[iRight - 1] > 0)
+				{
+					if(!findMatchSpan(iLeft,iRight-1))
+					{
+						MsColSpan * pNewSpan = new MsColSpan();
+						pNewSpan->iLeft = iLeft;
+						pNewSpan->iRight = iRight-1;
+						pNewSpan->width = pSpan->width - colWidths[iRight-1];
+						m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+					}
+				}
+//
+// OK now look to see if we can fragment this by substracting a span of more 
+// than one column from either end.
+//
+				else
+				{
+					UT_sint32 k =0;
+					for(k=0; k<static_cast<UT_sint32>(m_vecColumnWidths.size()); k++)
+					{
+						MsColSpan * pMulSpan = reinterpret_cast<MsColSpan *>(m_vecColumnWidths.getNthItem(i));
+						UT_sint32 iMulLeft = pMulSpan->iLeft;
+						UT_sint32 iMulRight = pMulSpan->iRight;
+						if(iMulLeft == iLeft && iMulRight < iRight)
+						{
+//
+// Make a new span fragment out of the bit greater than MulRight if one doesn't
+// exist
+//
+							if(!findMatchSpan(iMulRight+1,iRight))
+							{
+								MsColSpan * pNewSpan = new MsColSpan();
+								pNewSpan->iLeft = iMulRight+1;
+								pNewSpan->iRight = iRight;
+								pNewSpan->width = pSpan->width - pMulSpan->width;
+								m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+							}
+
+						}
+						else if (iMulLeft > iLeft && iMulRight == iRight)
+						{
+//
+// Make a new span fragment out of the bit less than MulLeft
+//
+							if(!findMatchSpan(iLeft,iMulLeft))
+							{
+								MsColSpan * pNewSpan = new MsColSpan();
+								pNewSpan->iLeft = iLeft;
+								pNewSpan->iRight = iMulLeft;
+								pNewSpan->width = pSpan->width - pMulSpan->width;
+								m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+							}							
+						}
+					}
+				}
+			}
+		}
+		iLoop++;
+		UT_ASSERT(0);
+	}
+	UT_ASSERT(iLoop < 1000);
+	return (iLoop < 1000);
+}
+
+/*!
+ * Returns true if a span in the m_vecColumnWidths span matches the left, right
+ * values given
+ */
+bool IE_Imp_MsWord_97::findMatchSpan(UT_sint32 iLeft,UT_sint32 iRight)
+{
+	UT_sint32 i =0;
+	for(i=0; i< static_cast<UT_sint32>(m_vecColumnWidths.size());i++)
+	{
+		MsColSpan * pSpan = reinterpret_cast<MsColSpan *>(m_vecColumnWidths.getNthItem(i));
+		if(pSpan->iLeft == iLeft && pSpan->iRight == iRight)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/*!
+ * Returns false if any element in the vector is non-zero
+ */
+bool IE_Imp_MsWord_97::_isVectorFull(UT_NumberVector & vec)
+{
+	UT_uint32 i = 0;
+	for(i=0;i< vec.size() ; i++)
+	{
+		xxx_UT_DEBUGMSG(("isVectorFull i %d val %d \n",i,vec[i]));
+		if( vec[i] == 0)
+		{
+			return false;
+			break;
+		}
+	}
+	return true;
+}
+
 void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 {
   _cell_close();
@@ -3495,20 +3710,30 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 
   UT_String props("table-column-props:");
 
-  if (m_vecColumnWidths.size()) {
-    // build column width properties string
-    UT_String propBuffer;
+  if (m_vecColumnWidths.size() > 0) 
+  {
+	  // build column width properties string
+	  UT_NumberVector colWidths;
+//
+// Some tables maybe too complicated for my simple algorithim to work out
+//
+	  if(_build_ColumnWidths(colWidths))
+	  {
+		  UT_String propBuffer;
 
-    for (UT_uint32 i = 0; i < m_vecColumnWidths.size(); i++) {
-      UT_String_sprintf(propBuffer,"%s/",
-		UT_convertInchesToDimensionString(m_dim,
-		  (static_cast<float>(reinterpret_cast<int>(m_vecColumnWidths.getNthItem(i))))/1440.0));
+		  for (UT_uint32 i = 0; i < colWidths.size(); i++) 
+		  {
+			  UT_String_sprintf(propBuffer,"%s/",
+							UT_convertInchesToDimensionString(m_dim,
+															  (static_cast<float>(colWidths.getNthItem(i)))/1440.0));
 	  
-      props += propBuffer;
-    }
-
-    props += "; ";
-    m_vecColumnWidths.clear ();
+			  props += propBuffer;
+		  }
+	  }
+	  
+	  props += "; ";
+	  UT_VECTOR_PURGEALL(MsColSpan *,m_vecColumnWidths);
+	  m_vecColumnWidths.clear ();
   }
 
   props += "table-line-ignore:0; table-line-type:1; table-line-thickness:0.8pt;";
@@ -3523,7 +3748,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   _appendStrux(PTX_EndTable, NULL);
   m_bInPara = false ;
 
-  xxx_UT_DEBUGMSG(("\n</TABLE>\n"));
+  UT_DEBUGMSG(("\n</TABLE>\n"));
 }
 
 //--------------------------------------------------------------------------/
@@ -3536,9 +3761,11 @@ void IE_Imp_MsWord_97::_row_open ()
 
   m_bRowOpen = true;
   m_iCurrentRow++;
+  UT_DEBUGMSG(("imp_MsWord: _row_open: Last Left %d Last Right %d \n",m_iLeft,m_iRight));
   m_iCurrentCell = 0;
-
-  xxx_UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
+  m_iLeft = 0;
+  m_iRight = 0;
+  UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
 }
 
 //--------------------------------------------------------------------------/
@@ -3593,62 +3820,80 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 
   // determine column widths
   UT_Vector columnWidths;
-
-  for (int i = 1; i < ps->nocellbounds; i++) {
-    int width = apap->ptap.rgdxaCenter[i] - apap->ptap.rgdxaCenter[i - 1];
-    if (width <= 0)
-      break;
-    columnWidths.addItem(reinterpret_cast<void *>(width));
-  }
-
-  if (columnWidths.size() > m_vecColumnWidths.size()) {
-    m_vecColumnWidths.clear();
-    m_vecColumnWidths = columnWidths;
-  }
-
+  
   // add a new cell
   m_bCellOpen = true;
-  m_iCurrentCell++;
-
+  if(m_iCurrentCell == 0)
+  {
+//
+// Scan the differences in centers for this row so we can work out the column
+// widths of the table eventually.
+//
+	  UT_sint32 iLeft = 0;
+	  UT_sint32 iRight = 1;
+	  UT_sint32 i =0;
+	  
+	  for(i =0; i< ps->nocellbounds; i++) 
+	  {
+		  iLeft = i;
+		  iRight = i+1;
+		  UT_sint32 width = ps->cellbounds[iRight] - ps->cellbounds[iLeft];
+		  if (width <= 0)
+			  break;
+		  MsColSpan * pSpan = new MsColSpan();
+		  pSpan->iLeft = iLeft;
+		  pSpan->iRight = iRight;
+		  pSpan->width = width;
+		  xxx_UT_DEBUGMSG(("MsImport iLeft %d  iRight %d width  %d \n",iLeft,iRight,width));
+		  m_vecColumnWidths.addItem(reinterpret_cast<void *>(pSpan));
+	  }
+  }
   UT_String propBuffer;
 
-  int vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1];
+  int vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell];
 
   if (vspan > 0)
     vspan--;
 
+  m_iRight = m_iLeft + m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell);
+  if(m_iRight == m_iLeft)
+  {
+	  m_iRight++;
+  }
+  xxx_UT_DEBUGMSG(("MSWord Import:  iLeft %d iRight %d m_iCurrentCell %d \n",m_iLeft,m_iRight,m_iCurrentCell));
+  UT_ASSERT(vspan >= 0);
   UT_String_sprintf(propBuffer,
 		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ",
-		    m_iCurrentCell - 1,
-		    m_iCurrentCell + reinterpret_cast<int>(m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1)),
+		    m_iLeft,
+		    m_iRight,
 		    m_iCurrentRow - 1,
 		    m_iCurrentRow + vspan
 		    );
 
-  propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoFore).c_str());
-  propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoBack).c_str());
+  propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoFore).c_str());
+  propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoBack).c_str());
   // so long as it's not the "auto" color
-  if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
+  if (apap->ptap.rgshd[m_iCurrentCell].icoBack != 0)
     propBuffer += "bg-style:1;";
 
   const char * old_locale = setlocale(LC_NUMERIC, "C");
 
   propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.brcType));
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcTop.ico).c_str(),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcTop.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcTop.brcType));
   propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%fpx; left-style:%d;",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.brcType));
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcLeft.ico).c_str(),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcLeft.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcLeft.brcType));
   propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%fpx; bot-style:%d;",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.brcType));
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcBottom.ico).c_str(),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcBottom.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcBottom.brcType));
   propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%fpx; right-style:%d",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcRight.ico).c_str(),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcRight.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcRight.brcType));
 
   setlocale (LC_NUMERIC, old_locale);
   xxx_UT_DEBUGMSG(("propbuffer: %s \n",propBuffer.c_str()));
@@ -3660,7 +3905,8 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 
   _appendStrux(PTX_SectionCell, propsArray);
   m_bInPara = false;
-
+  m_iCurrentCell++;
+  m_iLeft = m_iRight;
   xxx_UT_DEBUGMSG(("\t<CELL:%d:%d>", static_cast<int>(m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1)), ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1]));
 }
 
