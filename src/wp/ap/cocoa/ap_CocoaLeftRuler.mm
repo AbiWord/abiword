@@ -38,7 +38,10 @@
 
 @interface AP_CocoaLeftRulerDelegate : NSObject <XAP_MouseEventDelegate>
 {
+	AP_CocoaLeftRuler* _xap;
 }
+- (void)setXAPOwner:(AP_CocoaLeftRuler*)owner;
+- (void)viewDidResize:(NSNotification*)notif;
 @end
 
 /*****************************************************************/
@@ -64,28 +67,12 @@ AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
 
 XAP_CocoaNSView * AP_CocoaLeftRuler::createWidget(void)
 {
-#if 0
-	g_signal_connect(G_OBJECT(m_wLeftRuler), "configure_event",
-					   G_CALLBACK(_fe::configure_event), NULL);
-	if( m_iBackgroundRedrawID == 0)
-	{
-//
-// Start background repaint
-//
-		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-	}
-	else
-    {
-		gtk_timeout_remove(m_iBackgroundRedrawID);
-		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-	}
-#endif
-
 	return m_wLeftRuler;
 }
 
 void AP_CocoaLeftRuler::setView(AV_View * pView)
 {
+	AP_CocoaLeftRulerDelegate* delegate;
 	AP_LeftRuler::setView(pView);
 	
 	DELETEP(m_pG);
@@ -93,8 +80,17 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wLeftRuler, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
-	[m_wLeftRuler setEventDelegate:[[[AP_CocoaLeftRulerDelegate alloc] init] autorelease]];
-	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	delegate = [[AP_CocoaLeftRulerDelegate alloc] init];
+	[m_wLeftRuler setEventDelegate:delegate];
+	[delegate setXAPOwner:this];
+	[[NSNotificationCenter defaultCenter] addObserver:delegate
+			selector:@selector(viewDidResize:) 
+			name:NSViewFrameDidChangeNotification object:m_wLeftRuler];
+	[delegate release];
+//	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	NSRect bounds = [m_wLeftRuler bounds];
+	setWidth(lrintf(bounds.size.width));
+	setHeight(lrintf(bounds.size.height));
 }
 
 void AP_CocoaLeftRuler::getWidgetPosition(int * x, int * y)
@@ -153,62 +149,31 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 
 /*****************************************************************/
 
-#if 0
-/*!
- * Background abi repaint function.
-\param XAP_CocoaFrame * p pointer to the Frame that initiated this background
-       repainter.
- */
-gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
-{
-//
-// Grab our pointer so we can do useful stuff.
-//
-	UT_Rect localCopy;
-	AP_CocoaLeftRuler * pR = static_cast<AP_CocoaLeftRuler *>(p);
-	GR_Graphics * pG = pR->getGraphics();
-	if(pG == NULL || pG->isDontRedraw())
-	{
-//
-// Come back later
-//
-		return TRUE;
-	}
-	pG->setSpawnedRedraw(true);
-	if(pG->isExposePending())
-	{
-		while(pG->isExposedAreaAccessed())
-		{
-			UT_usleep(10); // 10 microseconds
-		}
-		pG->setExposedAreaAccessed(true);
-		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,
-					  pG->getPendingRect()->width,pG->getPendingRect()->height);
-//
-// Clear out this set of expose info
-//
-		pG->setExposePending(false);
-		pG->setExposedAreaAccessed(false);
-		xxx_UT_DEBUGMSG(("Painting area on Left ruler:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
-		xxx_UT_DEBUGMSG(("SEVIOR: Repaint now \n"));
-		pR->draw(&localCopy);
-	}
-//
-// OK we've finshed. Wait for the next signal
-//
-	pG->setSpawnedRedraw(false);
-	return TRUE;
-}
-#endif
 
 @implementation AP_CocoaLeftRulerDelegate
 
+- (void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super dealloc];
+}
+
+
+- (void)setXAPOwner:(AP_CocoaLeftRuler*)owner
+{
+	_xap = owner;
+}
+
+- (void)viewDidResize:(NSNotification*)notif
+{
+	NSRect bounds = [[notif object] bounds];
+	_xap->setWidth(lrintf(bounds.size.width));
+	_xap->setHeight(lrintf(bounds.size.height));
+	_xap->draw(NULL);
+}
+
 - (void)mouseDown:(NSEvent *)theEvent from:(id)sender
 {
-	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
-	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)pFrameData->m_pLeftRuler;
-
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 
@@ -217,18 +182,16 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	pt.y = [sender bounds].size.height - pt.y;
-	GR_Graphics* pGr = pCocoaLeftRuler->getGraphics();
-	pCocoaLeftRuler->mousePress(ems, emb, (UT_uint32)pGr->tluD(pt.x), (UT_uint32)pGr->tluD(pt.y));
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
+	if (!pGr->_isFlipped()) {
+		pt.y = [sender bounds].size.height - pt.y;
+	}
+	_xap->mousePress(ems, emb, (UT_uint32)pGr->tluD(pt.x), (UT_uint32)pGr->tluD(pt.y));
 }
 
 
 - (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
 {
-	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
-	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)pFrameData->m_pLeftRuler;
-
 	EV_EditModifierState ems = 0;
 	
 	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
@@ -236,18 +199,16 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	pt.y = [sender bounds].size.height - pt.y;
-	GR_Graphics* pGr = pCocoaLeftRuler->getGraphics();
-	pCocoaLeftRuler->mouseMotion(ems,(UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
+	if (!pGr->_isFlipped()) {
+		pt.y = [sender bounds].size.height - pt.y;
+	}
+	_xap->mouseMotion(ems,(UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
 }
 
 
 - (void)mouseUp:(NSEvent *)theEvent from:(id)sender
 {
-	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
-	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)pFrameData->m_pLeftRuler;
-
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 
@@ -257,8 +218,10 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	pt.y = [sender bounds].size.height - pt.y;
-	GR_Graphics* pGr = pCocoaLeftRuler->getGraphics();
-	pCocoaLeftRuler->mouseRelease(ems, emb, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
+	if (!pGr->_isFlipped()) {
+		pt.y = [sender bounds].size.height - pt.y;
+	}
+	_xap->mouseRelease(ems, emb, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
 }
 @end

@@ -40,7 +40,10 @@
 
 @interface AP_CocoaTopRulerDelegate : NSObject <XAP_MouseEventDelegate>
 {
+	AP_CocoaTopRuler* _xap;
 }
+- (void)setXAPOwner:(AP_CocoaTopRuler*)owner;
+- (void)viewDidResize:(NSNotification*)notif;
 @end
 
 
@@ -52,15 +55,6 @@ AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
 	m_pG = NULL;
 
 	m_wTopRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl *>(m_pFrame->getFrameImpl())->_getController()) getHRuler];
-
-#if 0
-	// change ruler color on theme change
-	NSWindow * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();
-	g_signal_connect_after (G_OBJECT(toplevel),
-							  "client_event",
-							  G_CALLBACK(ruler_style_changed),
-							  (gpointer)this);
-#endif
 }
 
 AP_CocoaTopRuler::~AP_CocoaTopRuler(void)
@@ -68,67 +62,35 @@ AP_CocoaTopRuler::~AP_CocoaTopRuler(void)
 	DELETEP(m_pG);
 }
 
-#if 0
-void AP_CocoaTopRuler::_ruler_style_changed (void)
-{
-	_refreshView();
-}
-#endif
+
 
 XAP_CocoaNSView * AP_CocoaTopRuler::createWidget(void)
 {
 	//UT_DEBUGMSG(("AP_CocoaTopRuler::createWidget - [w=%p] [this=%p]\n", m_wTopRuler,this));
-
-#if 0
-	g_object_set_user_data(G_OBJECT(m_wTopRuler),this);
-	gtk_widget_show(m_wTopRuler);
-	gtk_widget_set_usize(m_wTopRuler, -1, s_iFixedHeight);
-
-	gtk_widget_set_events(GTK_WIDGET(m_wTopRuler), (GDK_EXPOSURE_MASK |
-													GDK_BUTTON_PRESS_MASK |
-													GDK_POINTER_MOTION_MASK |
-													GDK_BUTTON_RELEASE_MASK |
-													GDK_KEY_PRESS_MASK |
-													GDK_KEY_RELEASE_MASK));
-
-	g_signal_connect(G_OBJECT(m_wTopRuler), "expose_event",
-					   G_CALLBACK(_fe::expose), NULL);
-  
-	g_signal_connect(G_OBJECT(m_wTopRuler), "button_press_event",
-					   G_CALLBACK(_fe::button_press_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_wTopRuler), "button_release_event",
-					   G_CALLBACK(_fe::button_release_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_wTopRuler), "motion_notify_event",
-					   G_CALLBACK(_fe::motion_notify_event), NULL);
-  
-	g_signal_connect(G_OBJECT(m_wTopRuler), "configure_event",
-					   G_CALLBACK(_fe::configure_event), NULL);
-#endif
-
 	return m_wTopRuler;
 }
 
 void AP_CocoaTopRuler::setView(AV_View * pView)
 {
+	AP_CocoaTopRulerDelegate* delegate;
 	AP_TopRuler::setView(pView);
-
-	// We really should allocate m_pG in createWidget(), but
-	// unfortunately, the actual window (m_wTopRuler->window)
-	// is not created until the frame's top-level window is
-	// shown.
 
 	DELETEP(m_pG);
 
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wTopRuler, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
-	[m_wTopRuler setEventDelegate:[[[AP_CocoaTopRulerDelegate alloc] init] autorelease]];
-	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
-
-//	GtkWidget * ruler = gtk_hruler_new ();
-// TODO	pG->init3dColors(get_ensured_style(ruler));
+	delegate = [[AP_CocoaTopRulerDelegate alloc] init];
+	[m_wTopRuler setEventDelegate:delegate];
+	[delegate setXAPOwner:this];
+	[[NSNotificationCenter defaultCenter] addObserver:delegate
+			selector:@selector(viewDidResize:) 
+			name:NSViewFrameDidChangeNotification object:m_wTopRuler];
+	[delegate release];
+//	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	NSRect bounds = [m_wTopRuler bounds];
+	setWidth(lrintf(bounds.size.width));
+	setHeight(lrintf(bounds.size.height));
 }
 
 void AP_CocoaTopRuler::getWidgetPosition(int * x, int * y)
@@ -179,60 +141,30 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, v
 		
 /*****************************************************************/
 
-#if 0
-
-gint AP_CocoaTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
-{
-	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
-
-	//UT_DEBUGMSG(("CocoaTopRuler: [p %p] [size w %d h %d] received configure_event\n",
-	//			 pCocoaTopRuler, e->width, e->height));
-
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	if (iHeight != pCocoaTopRuler->getHeight())
-		pCocoaTopRuler->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pCocoaTopRuler->getWidth())
-		pCocoaTopRuler->setWidth(iWidth);
-	
-	return 1;
-}
-
-		
-gint AP_CocoaTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
-{
-	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
-	UT_DEBUGMSG(("CocoaTopRuler: [p %p] received key_press_event\n",pCocoaTopRuler));
-	return 1;
-}
-	
-gint AP_CocoaTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	// a static function
-	// AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)g_object_get_user_data(G_OBJECT(w));
-	// UT_DEBUGMSG(("CocoaTopRuler: [p %p] received delete_event\n",pCocoaTopRuler));
-	return 1;
-}
-
-
-void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// a static function
-}
-
-#endif
 
 @implementation AP_CocoaTopRulerDelegate
 
+- (void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super dealloc];
+}
+
+- (void)setXAPOwner:(AP_CocoaTopRuler*)owner
+{
+	_xap = owner;
+}
+
+- (void)viewDidResize:(NSNotification*)notif
+{
+	NSRect bounds = [[notif object] bounds];
+	_xap->setWidth(lrintf(bounds.size.width));
+	_xap->setHeight(lrintf(bounds.size.height));
+	_xap->draw(NULL);
+}
+
 - (void)mouseDown:(NSEvent *)theEvent from:(id)sender
 {
-	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
-	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)pFrameData->m_pTopRuler;
-
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 
@@ -241,18 +173,16 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	pt.y = [sender bounds].size.height - pt.y;
-	GR_Graphics* pGr = pCocoaTopRuler->getGraphics();
-	pCocoaTopRuler->mousePress(ems, emb, (UT_uint32)pGr->tluD(pt.x), (UT_uint32)pGr->tluD(pt.y));
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
+	if (!pGr->_isFlipped()) {
+		pt.y = [sender bounds].size.height - pt.y;
+	}
+	_xap->mousePress(ems, emb, (UT_uint32)pGr->tluD(pt.x), (UT_uint32)pGr->tluD(pt.y));
 }
 
 
 - (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
 {
-	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
-	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)pFrameData->m_pTopRuler;
-
 	EV_EditModifierState ems = 0;
 	
 	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
@@ -260,19 +190,17 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	pt.y = [sender bounds].size.height - pt.y;
-	GR_Graphics* pGr = pCocoaTopRuler->getGraphics();
-	pCocoaTopRuler->mouseMotion(ems, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
-	pCocoaTopRuler->isMouseOverTab((UT_uint32)pGr->tluD(pt.x),(UT_uint32)pGr->tluD(pt.y));
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
+	if (!pGr->_isFlipped()) {
+		pt.y = [sender bounds].size.height - pt.y;
+	}
+	_xap->mouseMotion(ems, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
+	_xap->isMouseOverTab((UT_uint32)pGr->tluD(pt.x),(UT_uint32)pGr->tluD(pt.y));
 }
 
 
 - (void)mouseUp:(NSEvent *)theEvent from:(id)sender
 {
-	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
-	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)pFrameData->m_pTopRuler;
-
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 
@@ -282,8 +210,10 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
-	pt.y = [sender bounds].size.height - pt.y;
-	GR_Graphics* pGr = pCocoaTopRuler->getGraphics();
-	pCocoaTopRuler->mouseRelease(ems, emb, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
+	GR_CocoaGraphics* pGr = dynamic_cast<GR_CocoaGraphics*>(_xap->getGraphics());
+	if (!pGr->_isFlipped()) {
+		pt.y = [sender bounds].size.height - pt.y;
+	}
+	_xap->mouseRelease(ems, emb, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
 }
 @end
