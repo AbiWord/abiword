@@ -93,8 +93,8 @@ s_try_autodetect_charset(ispell_state_t *istate, const UT_String & inEncoding)
 /***************************************************************************/
 
 // declare static data
-UT_uint32 ISpellChecker::mRefCnt = 0;
-UT_Vector ISpellChecker::m_mapping;
+static UT_Vector m_mapping; // vector of DictionaryMapping*
+static UT_uint32 mRefCnt = 0;
 
 UT_Vector & ISpellChecker::getMapping()
 {
@@ -106,7 +106,7 @@ UT_Vector & ISpellChecker::getMapping()
 ISpellChecker::ISpellChecker()
   : deftflag(-1), prefstringchar(-1), m_bSuccessfulInit(false), m_pISpellState(NULL)
 {
-  if ( mRefCnt == 0)
+  if (mRefCnt == 0)
     {
       // load the dictionary list
       UT_String dictionary_list ( XAP_App::getApp()->getAbiSuiteLibDir() ) ;
@@ -130,21 +130,22 @@ ISpellChecker::~ISpellChecker()
     {
       // free the elements
       UT_VECTOR_PURGEALL(DictionaryMapping*, m_mapping);
+      m_mapping.clear ();
     }
-
-	if (!m_pISpellState)
-		return;
-
-	lcleanup(m_pISpellState);
-
-	if(UT_iconv_isValid (m_pISpellState->translate_in ))
-		UT_iconv_close(m_pISpellState->translate_in);
-	m_pISpellState->translate_in = (UT_iconv_t)-1;
-	if(UT_iconv_isValid(m_pISpellState->translate_out))
-		UT_iconv_close(m_pISpellState->translate_out);
-	m_pISpellState->translate_out = (UT_iconv_t)-1;
-
-	FREEP(m_pISpellState);
+  
+  if (!m_pISpellState)
+    return;
+  
+  lcleanup(m_pISpellState);
+  
+  if(UT_iconv_isValid (m_pISpellState->translate_in ))
+    UT_iconv_close(m_pISpellState->translate_in);
+  m_pISpellState->translate_in = (UT_iconv_t)-1;
+  if(UT_iconv_isValid(m_pISpellState->translate_out))
+    UT_iconv_close(m_pISpellState->translate_out);
+  m_pISpellState->translate_out = (UT_iconv_t)-1;
+  
+  FREEP(m_pISpellState);
 }
 
 SpellChecker::SpellCheckResult
@@ -395,7 +396,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
 	{
 	  DictionaryMapping * mapping = (DictionaryMapping * )m_mapping.getNthItem ( i ) ;
-	  if (!strcmp (szLang, mapping->lang.c_str()))
+	  if (mapping->lang.size() && !strcmp (szLang, mapping->lang.c_str()))
 	    {
 	      szFile   = mapping->dict;
 	      encoding = mapping->enc;

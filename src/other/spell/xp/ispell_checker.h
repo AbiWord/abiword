@@ -55,9 +55,6 @@ private:
 	ispell_state_t	*m_pISpellState;
 	Barbarisms		m_barbarism;
 
-	static UT_Vector m_mapping; // vector of DictionaryMapping*
-	static UT_uint32 mRefCnt ;
-
 #ifdef HAVE_CURL
 	UT_uint32		m_userSaidNo;
 #endif
