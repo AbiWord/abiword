@@ -61,6 +61,7 @@ struct fv_ChangeState
 	UT_Bool				bRedo;
 	UT_Bool				bDirty;
 	UT_Bool				bSelection;
+	UT_uint32			iColumn;
 	const XML_Char **	propsChar;
 	const XML_Char **	propsBlock;
 };

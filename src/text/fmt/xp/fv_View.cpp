@@ -88,6 +88,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_chg.bRedo = UT_FALSE;
 	m_chg.bDirty = UT_FALSE;
 	m_chg.bSelection = UT_FALSE;
+	m_chg.iColumn = 0;					// current column number
 	m_chg.propsChar = NULL;
 	m_chg.propsBlock = NULL;
 
@@ -275,7 +276,33 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	{
 		// NOTE: we don't attempt to filter this
 	}
+
+	if (mask & AV_CHG_COLUMN)
+	{
+		// computing which column the cursor is in is rather expensive,
+		// i'm not sure it's worth the effort here...
 		
+		fp_Run * pRun;
+		UT_sint32 xCaret, yCaret;
+		UT_uint32 heightCaret;
+
+		_findPositionCoords(_getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, NULL, &pRun);
+
+		fp_Column * pColumn = pRun->getLine()->getColumn();
+		UT_uint32 nCol=0;
+		fp_Column * pNthColumn=pColumn->getLeader();
+		while (pNthColumn && (pNthColumn != pColumn))
+		{
+			nCol++;
+			pNthColumn = pNthColumn->getFollower();
+		}
+
+		if (nCol != m_chg.iColumn)
+			m_chg.iColumn = nCol;
+		else
+			mask ^= AV_CHG_COLUMN;
+	}
+
 	// base class does the rest
 	return AV_View::notifyListeners(mask);
 }
