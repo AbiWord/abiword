@@ -1093,7 +1093,7 @@ FunctionEnd
 ; check if a file extension is associated with us and if so delete it
 !macro un.RemoveFileAssociation extension appType
 	push $0
-	ReadRegStr $0 HKCR "${extension}" "(Default)"
+	ReadRegStr $0 HKCR "${extension}" ""
 	StrCmp $0 "${appType}" 0 Skip_Del_File_Assoc.${extension}
 		; actually remove file assoications
 		DeleteRegKey HKCR "${extension}"
