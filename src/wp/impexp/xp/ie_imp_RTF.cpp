@@ -2746,6 +2746,13 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 }
 
 
+bool IE_Imp_RTF::HandleHyperlink()
+{
+	UT_ASSERT (UT_NOT_IMPLEMENTED); // see bug 2438
+	return false;
+}
+
+
 /*!
   Handle a header
   \retvalue header return the created header, for information 
@@ -6184,7 +6191,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	UT_Byte ch = 0;
 	UT_String bookmarkName;
 
-	UT_DEBUGMSG(("hub: HandleBookmark of type %d\n", type));
+	xxx_UT_DEBUGMSG(("hub: HandleBookmark of type %d\n", type));
 
 
 	while (ch != '}')
@@ -6216,7 +6223,13 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	props [3] = bookmarkName.c_str();
 	props [4] = NULL;
 
-	getDoc()->appendObject(PTO_Bookmark, props);
+	if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) {	
+		getDoc()->appendObject(PTO_Bookmark, props);
+	}
+	else {
+		getDoc()->insertObject(m_dposPaste, PTO_Bookmark, props, NULL);
+		m_dposPaste++;
+	}
 	return true;
 }
 

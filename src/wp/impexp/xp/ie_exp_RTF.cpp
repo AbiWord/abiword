@@ -597,10 +597,10 @@ void IE_Exp_RTF::_write_prop_ifnotdefault(const PD_Style * pStyle,
 					  const XML_Char * szPropName, 
 					  const char * szRTFName)
 {
-    const XML_Char * sz = NULL;
-    if (pStyle->getProperty((const XML_Char *)szPropName, sz)) {
-	_rtf_keyword_ifnotdefault_twips(szRTFName, sz, 0);
-    }
+	const XML_Char * sz = NULL;
+	if (pStyle->getProperty((const XML_Char *)szPropName, sz)) {
+		_rtf_keyword_ifnotdefault_twips(szRTFName, sz, 0);
+	}
 }
 
 /*!
@@ -913,7 +913,7 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
 
     const XML_Char * szLineHeight = NULL;
     if (pStyle->getProperty((const XML_Char *) "line-height", szLineHeight)
-	&& strcmp(szLineHeight,"1.0") != 0) 
+		&& strcmp(szLineHeight,"1.0") != 0) 
 	{
 		double f = UT_convertDimensionless(szLineHeight);
 		if (f != 0.0) 

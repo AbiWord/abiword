@@ -75,6 +75,7 @@ protected:
 	void				_rtf_open_section(PT_AttrPropIndex api);
 	void				_rtf_open_block(PT_AttrPropIndex api);
 	void				_writeImageInRTF(const PX_ChangeRecord_Object * pcro);
+	void                _writeBookmark(const PX_ChangeRecord_Object * pcro);
 
  private:
 	PD_Document *		m_pDocument;

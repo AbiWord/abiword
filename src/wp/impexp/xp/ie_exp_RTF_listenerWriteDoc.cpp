@@ -353,7 +353,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 		{
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();
-		       switch (pcro->getObjectType())
+			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
 				_closeSpan();
@@ -371,6 +371,9 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				//#endif
 				
 			case PTO_Bookmark:
+				_closeSpan ();
+				_writeBookmark(pcro);
+				return true;
 			case PTO_Hyperlink:
 			    return true;
 
@@ -987,6 +990,38 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
+{
+	PT_AttrPropIndex api = pcro->getIndexAP();
+	const PP_AttrProp * pBookmarkAP = NULL;
+	m_pDocument->getAttrProp(api,&pBookmarkAP);
+	
+	const XML_Char * szType = NULL;
+	bool bFound = pBookmarkAP->getAttribute("type", szType);
+	if (!bFound) {
+		UT_DEBUGMSG (("RTF_Export: cannot get type for bookmark\n"));
+		return;
+	}
+	const XML_Char * szName = NULL;
+	bFound = pBookmarkAP->getAttribute("name", szName);
+	if (!bFound) {
+		UT_DEBUGMSG (("RTF_Export: cannot get name for bookmark\n"));
+		return;
+	}
+	m_pie->_rtf_open_brace();
+	{
+		m_pie->_rtf_keyword("*");
+		if (UT_strcmp (szType, "start") == 0) {
+			m_pie->_rtf_keyword("bkmkstart");
+		}
+		else if (UT_strcmp (szType, "end") == 0) {
+			m_pie->_rtf_keyword("bkmkend");
+		}
+		m_pie->_rtf_chardata(szName, strlen(szName));
+		m_pie->_rtf_close_brace();
+	}
+}
+
 
 void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcro)
 {

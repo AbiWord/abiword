@@ -502,6 +502,7 @@ private:
 	bool HandlePicture();
 	bool HandleObject();
 	bool HandleField();
+	bool HandleHyperlink();
 	bool HandleStyleDefinition(void);
 	bool HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID);
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
