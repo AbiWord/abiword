@@ -70,6 +70,8 @@ BeginSet(nn,NO,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Understreking",	tb_text_underline_xpm,	NULL, "Understreking")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overstreking",		tb_text_overline_xpm,	NULL, "Overstreking")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Gjennomstreking",  	tb_text_strikeout_xpm,	NULL, "Gjennomstreking")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Topplinje",		tb_text_topline_xpm,	NULL, "Topplinje")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Botnlinje",		tb_text_bottomline_xpm,	NULL, "Botnlinje")
         ToolbarLabel(AP_TOOLBAR_ID_HELP,		"Hjelp",		tb_help_xpm, 		NULL, "Hjelp")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Heva skrift",	tb_text_superscript_xpm,	NULL, "Heva skrift")
@@ -100,6 +102,10 @@ BeginSet(nn,NO,true)
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Uthevingsfarge",		tb_text_bgcolor_xpm,					NULL, "Uthevingsfarge")
         ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Auk innrykk", tb_text_indent_xpm, NULL, "Aukar avsnittsinnrykk")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Reduser innrykk", tb_text_unindent_xpm, NULL, "Reduserer avsnittsinnrykk")
+
+#ifdef ABI_OPT_JS
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Kjør skript",	tb_script_play_xpm,		NULL, "Kjør skript")
+#endif
 	
      // ... add others here ...
 #ifdef BIDI_ENABLED
