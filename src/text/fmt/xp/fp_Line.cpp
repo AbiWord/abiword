@@ -784,6 +784,13 @@ void fp_Line::recalcHeight()
 
 	UT_sint32 iMaxImage =0;
 	UT_sint32 iMaxText = 0;
+	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
+	if(pPrev && isSameYAsPrevious())
+	{
+		iMaxAscent = pPrev->getAscent();
+		iMaxDescent = pPrev->getDescent();
+		iMaxText = pPrev->getHeight();
+	}
 	bool bSetByImage = false;
 	for (i=0; i<count; i++)
 	{
@@ -857,7 +864,6 @@ void fp_Line::recalcHeight()
 			iNewHeight = UT_MAX(iMaxAscent+static_cast<UT_sint32>(iMaxDescent*dLineSpace + 0.5), static_cast<UT_sint32>(dLineSpace));
 		}
 	}
-	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
 	if(isSameYAsPrevious() && pPrev)
 	{
 		if(iNewHeight > pPrev->getHeight())
@@ -867,7 +873,7 @@ void fp_Line::recalcHeight()
 			pPrev->setAscent(iNewAscent);
 			pPrev->setDescent(iNewDescent);
 			pPrev->setScreenHeight(-1);
-			pPrev = static_cast<fp_Line *>(getPrev());
+			pPrev = static_cast<fp_Line *>(pPrev->getPrev());
 			while(pPrev && pPrev->isSameYAsPrevious())
 			{
 				pPrev->clearScreen();
@@ -875,7 +881,7 @@ void fp_Line::recalcHeight()
 				pPrev->setAscent(iNewAscent);
 				pPrev->setDescent(iNewDescent);
 				pPrev->setScreenHeight(-1);
-				pPrev = static_cast<fp_Line *>(getPrev());
+				pPrev = static_cast<fp_Line *>(pPrev->getPrev());
 			}
 			return;
 		}

@@ -1172,18 +1172,17 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		fp_Line * pLine = static_cast<fp_Line *>(pContainer);
 		if(pLine->isWrapped())
 		{
-			fp_Line * pNext = static_cast<fp_Line *>(getNext());
-			if(pNext && (pNext->getY() == pLine->getY()))
+			fp_Line * pNext = static_cast<fp_Line *>(pLine->getNext());
+			if(pNext && pNext->isSameYAsPrevious())
 			{
-				pNext->setSameYAsPrevious(true);
 				fp_ContainerObject *pBest = pContainer;
 				UT_sint32 xmin = UT_MIN(abs(pNext->getX() - x),abs(pNext->getX()+pNext->getMaxWidth() -x));
 				while(pNext && pNext->isSameYAsPrevious())
 				{
 					if((pNext->getX() < x) && (x < pNext->getX() + pNext->getMaxWidth()))
 					{
-						pNext->mapXYToPosition(x - pContainer->getX(),
-											   y - pContainer->getY() , 
+						pNext->mapXYToPosition(x - pNext->getX(),
+											   y - pNext->getY() , 
 											   pos, bBOL, bEOL,isTOC);
 						return;
 					}
@@ -1194,10 +1193,6 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 						pBest = static_cast<fp_ContainerObject *>(pNext);
 					}
 					pNext = static_cast<fp_Line *>(pNext->getNext());
-					if(pNext->getY() == pLine->getY())
-					{
-						pNext->setSameYAsPrevious(true);
-					}
 				}
 				pBest->mapXYToPosition(x - pContainer->getX(),
 									   y - pContainer->getY() , 
@@ -1646,6 +1641,7 @@ void fp_Column::layout(void)
 		else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
 			pLastLine = static_cast<fp_Line *>(pContainer);
+			iHeight = pLastLine->getHeight();
 			UT_sint32 count = static_cast<UT_sint32>(vecBlocks.getItemCount());
 			if(count == 0)
 			{
