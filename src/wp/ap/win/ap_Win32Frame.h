@@ -84,10 +84,6 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 	virtual UT_sint32 _getDocumentAreaHeight(void) { return getAPWin32FrameImpl()->_getDocumentAreaHeight(); }
 
  private:
-	 UT_Vector					m_vecToolbars;
-	UT_Vector					m_vecToolbarLayoutNames;
-	void						_showOrHideToolbars(void);
-	void						_showOrHideStatusbar(void);
 
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
