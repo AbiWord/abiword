@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES)
+INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES)
 
 if WITH_RESOURCE_MANAGER
 RESOURCE_MANAGER_OBJ = xap_Resource.cpp xap_ResourceManager.cpp
