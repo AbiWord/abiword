@@ -415,10 +415,23 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	{
 		const XML_Char * szValue;
 		const XML_Char * szDefault = "Normal";
+		/*	TODO: Perhaps the above should be/is a #define somewhere?	*/
 		const XML_Char * szLevel;
 		const XML_Char * szListID;
 		const XML_Char * szStyleType;
 		UT_uint16 *popped, *pushed;
+
+		/*	This is the point at which we differentiate between different
+		 *	types of tags in HTML.  We do a sequence of checks on the "style"
+		 *	and other useful attributes of the current block.  First we check
+		 *	if we are in a block which has a named "style" or which contains
+		 *	list information.
+		 *
+		 *	Weaknesses in this code include the mutability of our stored
+		 *	document state.  I've had it happen where the representation of
+		 *	lists in the abiword format changes, which tends to break this
+		 *	code.
+		 */
 
 		if (
 		   (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue) ||
@@ -426,15 +439,28 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 			 0 != UT_strcmp(szListID, "0")))
 		   )
 		{
-			if(pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szListID))
-			{	// we're in a list
-				if(!pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue)) szValue = szDefault;
+			if(pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szListID)
+				&& 0 != UT_strcmp(szListID, "0"))
+			{
+				/*	A nonzero "listid" attribute value indicates that we
+				 *	are in a list item, so we need to process it, HTML-style.
+				 */
+
+				/*	Specify a default style name for this list item if it
+				 *	doesn't already have one.	*/
+				if(!pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue)) 
+					szValue = szDefault;
+
+				/*	Find out how deeply nested this list item is.	*/
 				pAP->getAttribute("level", szLevel);
 				m_iListDepth = atoi((const char*) szLevel);
 				if(!pAP->getProperty("list-style", szStyleType))
 				{
 					szStyleType = szValue;
 				}
+
+				/*	If our list is getting deeper, we need to start a
+				 *	nested list.	*/
 				if(m_iListDepth > m_iPrevListDepth)
 				{
 					if(UT_strcmp((const char*) szStyleType, "Bullet List") != 0)
@@ -452,6 +478,11 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					pushed = new UT_uint16(m_iBlockType);
 					m_utsListType.push(pushed);
 				}
+				/*	If our list is not getting deeper, but the list type
+				 *	switched from a numbered list to a bullet list, then we
+				 *	pop list types off the stack until we are at the same
+				 *	depth, closing out lists as necessary.  This may only be
+				 *	once, if we are already at the same depth. */
 				else if(m_iPrevListDepth > 0 && (
 					(m_iBlockType == BT_BULLETLIST && (
 					 UT_strcmp((const char*) szStyleType, 
@@ -461,9 +492,10 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					 UT_strcmp((const char*) szStyleType, 
 					 	"Bullet List") == 0 ||
 					 _inherits((const char*) szStyleType, "BulletList"))) ) )
-				{						/* list type switched */
+				{
 					m_pie->write("</li>\r\n");
 
+					/*	Toggle the current block type	*/
 					m_iBlockType = (m_iBlockType == BT_NUMBEREDLIST ?
 						BT_BULLETLIST : BT_NUMBEREDLIST);
 
@@ -527,7 +559,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				}
 				m_pie->write("<li");
 				m_iPrevListDepth = m_iListDepth;
-				wasWritten = true;	
+				wasWritten = true;
 			}
 			else 
 			{
