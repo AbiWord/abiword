@@ -6367,9 +6367,12 @@ PT_DocPosition FV_View::getDocPositionFromLastXY(void)
  */
 void FV_View::setCursorWait(void)
 {
+	if (!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		return;
+
 	m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
-	if(pFrame )
+	if(pFrame)
 	{
 		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	}
@@ -6380,12 +6383,13 @@ void FV_View::setCursorWait(void)
  */
 void FV_View::clearCursorWait(void)
 {
+	if (!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		return;
+
 	setCursorToContext();
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
-	if(pFrame )
-	{
+	if(pFrame)
 		pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
-	}
 }
 
 /*!
@@ -6393,6 +6397,9 @@ void FV_View::clearCursorWait(void)
  */
 void FV_View::setCursorToContext()
 {
+	if (!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		return;
+
 	EV_EditMouseContext evMC = getMouseContext(m_iMouseY,m_iMouseY);
 	GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DEFAULT;
 	switch (evMC)

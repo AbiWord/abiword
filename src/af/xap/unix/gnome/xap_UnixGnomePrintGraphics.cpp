@@ -160,6 +160,9 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 										   UT_sint32 xoff, UT_sint32 yoff,
 										   int * pCharWidths)
 {
+	if (!m_bStartPage)
+		return;
+
 	// The GR classes are expected to take yoff as the upper-left of
 	// each glyph.  PostScript interprets the yoff as the baseline,
 	// which doesn't match this expectation.  Adding the ascent of the
@@ -182,6 +185,9 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 void XAP_UnixGnomePrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
 										   UT_sint32 x2, UT_sint32 y2)
 {
+	if (!m_bStartPage)
+		return;
+
 	gnome_print_moveto (m_gpc, tdu(x1), tdu(y1));
 	gnome_print_lineto (m_gpc, tdu(x2), tdu(y2));
 	gnome_print_stroke (m_gpc);
@@ -220,7 +226,7 @@ void XAP_UnixGnomePrintGraphics::getColor(UT_RGBColor& clr)
 
 void XAP_UnixGnomePrintGraphics::setColor(const UT_RGBColor& clr)
 {
-	if (m_currentColor == clr)
+	if (!m_bStartPrint || m_currentColor == clr)
 		return;
 
 	m_currentColor = clr;
@@ -233,6 +239,9 @@ void XAP_UnixGnomePrintGraphics::setColor(const UT_RGBColor& clr)
 
 void XAP_UnixGnomePrintGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
+	if (!m_bStartPage)
+		return;
+
  	m_dLineWidth = tduD((double)iLineWidth);
 	gnome_print_setlinewidth (m_gpc, m_dLineWidth); 
 }
@@ -317,6 +326,9 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, 
 										   UT_sint32 yDest)
 {
+	if (!m_bStartPage)
+		return;
+
 	xDest = tdu(xDest);
 	yDest = tdu(yDest);
 
@@ -400,11 +412,7 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 		{
 			const XAP_StringSet * pSS = m_pApp->getStringSet();
 			GtkWidget * preview = gnome_print_job_preview_new (m_gpm, 
-															   pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle));
-#if 0
-			g_signal_connect (G_OBJECT (preview), "unrealize",
-			  G_CALLBACK (gtk_main_quit), NULL);
-#endif
+															   (const guchar *)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle));
 			gtk_widget_show(GTK_WIDGET(preview));
 		}
 	
@@ -421,6 +429,9 @@ void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c,
 										  UT_sint32 x, UT_sint32 y, 
 										  UT_sint32 w, UT_sint32 h)
 {
+	if (!m_bStartPage)
+		return;
+
 	// set the bgcolor
 	UT_RGBColor old (m_currentColor);
 	setColor (c);
@@ -673,6 +684,8 @@ void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 													CapStyle inCapStyle,
 													LineStyle inLineStyle)
 {
+	if (!m_bStartPage)
+		return;
 
 	gnome_print_setlinejoin (m_gpc, joinToPS(inJoinStyle));
 	gnome_print_setlinecap (m_gpc, capToPS(inCapStyle));

@@ -6249,8 +6249,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 //
 // Turn on Wait cursor
 //
-		if(pView)
-		     pView->setCursorWait();
+		pView->setCursorWait();
 		s_pLoadingFrame = pFrame;
 		s_pLoadingDoc = (AD_Document *) doc;
 
@@ -6325,8 +6324,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	PD_Document * doc = pLayout->getDocument();
 
     // Turn on Wait cursor
-	if(pView)
-		pView->setCursorWait();
+	pView->setCursorWait();
 	s_pLoadingFrame = pFrame;
 	s_pLoadingDoc = (AD_Document *) doc;
 
