@@ -38,14 +38,11 @@
 AP_MacApp::AP_MacApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_MacApp(pArgs,szAppName)
 {
-	m_prefs = NULL;
 }
 
 AP_MacApp::~AP_MacApp(void)
 {
 	SpellCheckCleanup();
-
-	DELETEP(m_prefs);
 }
 
 UT_Bool AP_MacApp::initialize(void)
@@ -107,19 +104,6 @@ UT_Bool AP_MacApp::shutdown(void)
 		m_prefs->savePrefsFile();
 
 	return UT_TRUE;
-}
-
-XAP_Prefs * AP_MacApp::getPrefs(void) const
-{
-	return m_prefs;
-}
-
-UT_Bool AP_MacApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
-{
-	if (!m_prefs)
-		return UT_FALSE;
-
-	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
 /*****************************************************************/

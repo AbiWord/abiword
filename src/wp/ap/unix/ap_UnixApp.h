@@ -45,8 +45,6 @@ public:
 	virtual XAP_Frame *				newFrame(void);
 	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
 	virtual UT_Bool					shutdown(void);
-	virtual XAP_Prefs *				getPrefs(void) const;
-	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual UT_Bool					getPrefsValueDirectory(UT_Bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
@@ -70,7 +68,6 @@ protected:
 
 	void							_printUsage(void);
 
-	AP_UnixPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;
 

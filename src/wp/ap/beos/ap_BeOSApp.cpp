@@ -134,7 +134,6 @@ void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
 AP_BeOSApp::AP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_BeOSApp(pArgs,szAppName)
 {
-	m_prefs = NULL;
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
 }
@@ -143,7 +142,6 @@ AP_BeOSApp::~AP_BeOSApp(void)
 {
 //	SpellCheckCleanup();
 
-	DELETEP(m_prefs);
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 }
@@ -313,19 +311,6 @@ UT_Bool AP_BeOSApp::shutdown(void)
 		m_prefs->savePrefsFile();
 
 	return UT_TRUE;
-}
-
-XAP_Prefs * AP_BeOSApp::getPrefs(void) const
-{
-	return m_prefs;
-}
-
-UT_Bool AP_BeOSApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
-{
-	if (!m_prefs)
-		return UT_FALSE;
-
-	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
 UT_Bool AP_BeOSApp::getPrefsValueDirectory(UT_Bool bAppSpecific,

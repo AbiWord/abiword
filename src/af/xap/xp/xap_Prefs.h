@@ -101,6 +101,7 @@ public:
 	void					addRecent(const char * szRecent);
 	void					removeRecent(UT_uint32 k);			// one-based
 	
+	virtual void				fullInit(void) = 0;
 	virtual UT_Bool				loadBuiltinPrefs(void) = 0;
 	virtual const XML_Char *	getBuiltinSchemeName(void) const = 0;
 	virtual const char *		getPrefsPathname(void) const = 0;

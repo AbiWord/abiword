@@ -44,8 +44,6 @@ public:
 	virtual UT_Bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
 	virtual UT_Bool					shutdown(void);
-	virtual XAP_Prefs *				getPrefs(void) const;
-	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual UT_Bool					getPrefsValueDirectory(UT_Bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
@@ -64,7 +62,6 @@ public:
 	virtual HICON							getSmallIcon(void);
 	
 protected:
-	AP_Win32Prefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
 	AP_Win32Clipboard *		m_pClipboard;
 };

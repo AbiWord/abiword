@@ -35,6 +35,7 @@
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_LoadBindings.h"
 #include "xap_Dictionary.h"
+#include "xap_Prefs.h"
 
 /*****************************************************************/
 
@@ -50,6 +51,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 	m_pMenuActionSet = NULL;
 	m_pToolbarActionSet = NULL;
 	m_pDict = NULL;
+	m_prefs = NULL;
 }
 
 XAP_App::~XAP_App(void)
@@ -68,6 +70,7 @@ XAP_App::~XAP_App(void)
 	DELETEP(m_pMenuActionSet);
 	DELETEP(m_pToolbarActionSet);
 	DELETEP(m_pDict);
+	DELETEP(m_prefs);
 }
 
 UT_Bool XAP_App::initialize(void)
@@ -414,4 +417,24 @@ UT_Bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
 	return m_pDict->isWord(pWord, len);
 }
 
+XAP_Prefs * XAP_App::getPrefs(void) const
+{
+	return m_prefs;
+}
+
+UT_Bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValue(szKey,pszValue);
+}
+
+UT_Bool XAP_App::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValueBool(szKey,pbValue);
+}
 

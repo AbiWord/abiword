@@ -57,7 +57,6 @@
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
 	: XAP_Win32App(hInstance, pArgs,szAppName)
 {
-	m_prefs = NULL;
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
 }
@@ -66,7 +65,6 @@ AP_Win32App::~AP_Win32App(void)
 {
 	SpellCheckCleanup();
 
-	DELETEP(m_prefs);
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 }
@@ -231,19 +229,6 @@ UT_Bool AP_Win32App::shutdown(void)
 		m_prefs->savePrefsFile();
 
 	return UT_TRUE;
-}
-
-XAP_Prefs * AP_Win32App::getPrefs(void) const
-{
-	return m_prefs;
-}
-
-UT_Bool AP_Win32App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
-{
-	if (!m_prefs)
-		return UT_FALSE;
-
-	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
 UT_Bool AP_Win32App::getPrefsValueDirectory(UT_Bool bAppSpecific,

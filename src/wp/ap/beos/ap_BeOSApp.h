@@ -44,8 +44,6 @@ public:
 	virtual XAP_Frame *				newFrame(void);
 	virtual XAP_Frame *				newFrame(const char *path);
 	virtual UT_Bool					shutdown(void);
-	virtual XAP_Prefs *				getPrefs(void) const;
-	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual UT_Bool					getPrefsValueDirectory(UT_Bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
@@ -60,7 +58,6 @@ public:
 	static int local_main (const char * szAppName, int argc, char ** argv);
 
 protected:
-	AP_BeOSPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
 	AP_BeOSClipboard *		m_pClipboard;
 };

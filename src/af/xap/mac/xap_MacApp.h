@@ -46,8 +46,6 @@ public:
 
 	virtual XAP_DialogFactory *				getDialogFactory(void);
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
-	virtual XAP_Prefs *		getPrefs(void) const = 0;
-	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 
 protected:
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);

@@ -91,11 +91,13 @@ public:
 	UT_Bool							addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
 	UT_Bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
 
+	XAP_Prefs *						getPrefs(void) const;
+	UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	UT_Bool							getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
+
 	virtual XAP_DialogFactory *				getDialogFactory(void) = 0;
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void) = 0;
 
-	virtual XAP_Prefs *						getPrefs(void) const = 0;
-	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getUserPrivateDirectory(void) = 0;
 	virtual const char *					getAbiSuiteLibDir(void) const;
@@ -117,6 +119,8 @@ protected:
 	EV_Menu_ActionSet *				m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 	EV_Toolbar_ActionSet *			m_pToolbarActionSet;
 	XAP_Dictionary *				m_pDict;
+
+	XAP_Prefs *						m_prefs;			/* populated in AP_<platform>App::initialize() */
 
 	UT_Vector						m_vecFrames;
 	UT_HashTable					m_hashClones;

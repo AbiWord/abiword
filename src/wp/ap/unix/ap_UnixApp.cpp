@@ -70,7 +70,6 @@
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_UnixApp(pArgs,szAppName)
 {
-	m_prefs = NULL;
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
 
@@ -86,7 +85,6 @@ AP_UnixApp::~AP_UnixApp(void)
 {
 	SpellCheckCleanup();
 
-	DELETEP(m_prefs);
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 }
@@ -245,19 +243,6 @@ UT_Bool AP_UnixApp::shutdown(void)
 		m_prefs->savePrefsFile();
 
 	return UT_TRUE;
-}
-
-XAP_Prefs * AP_UnixApp::getPrefs(void) const
-{
-	return m_prefs;
-}
-
-UT_Bool AP_UnixApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
-{
-	if (!m_prefs)
-		return UT_FALSE;
-
-	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
 UT_Bool AP_UnixApp::getPrefsValueDirectory(UT_Bool bAppSpecific,
