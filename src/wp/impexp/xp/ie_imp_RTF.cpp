@@ -10339,26 +10339,64 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 		UT_String_sprintf(tempBuffer, "margin-right:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentRight)/1440));
 		strcat(propBuffer, tempBuffer.c_str());
 	}
-    //
-	// line spacing
-    //
-	if (pParas->m_lineSpaceExact)
+//
+// First line indent
+//
+
+	if(pbParas->bm_indentFirst)
 	{
-        if (pParas->m_lineSpaceVal < 0) {  // exact spacing
-			UT_String_sprintf(tempBuffer, "line-height:%spt;",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
-		}
-		else                                                         // "at least" spacing
-		{
-			UT_String_sprintf(tempBuffer, "line-height:%spt+;",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
-		}
-			
-	}
-	else   // multiple spacing
-	{
-		UT_String_sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
+		UT_String_sprintf(tempBuffer, "text-indent:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentFirst)/1440));
+		strcat(propBuffer, tempBuffer.c_str());
 	}
 
-	strcat(propBuffer, tempBuffer.c_str());
+//
+// line spacing
+//
+	if(pbParas->bm_lineSpaceVal)
+	{
+		if (pParas->m_lineSpaceExact)
+		{
+			if (pParas->m_lineSpaceVal < 0) {  // exact spacing
+				UT_String_sprintf(tempBuffer, "line-height:%spt; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+			}
+			else                                                         // "at least" spacing
+			{
+				UT_String_sprintf(tempBuffer, "line-height:%spt+; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+			}
+		}
+		else   // multiple spacing
+		{
+			UT_String_sprintf(tempBuffer, "line-height:%s; ",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
+		}
+		strcat(propBuffer, tempBuffer.c_str());
+	}
+
+//
+// justification
+//
+	if (pbParas->bm_justification)
+	{
+		strcat(propBuffer, "text-align:");
+		switch(pParas->m_justification)
+		{
+			case RTFProps_ParaProps::pjCentre:
+				strcat(propBuffer, "center; ");
+				break;
+		    case RTFProps_ParaProps::pjRight:
+			    strcat(propBuffer, "right; ");
+			    break;
+		    case RTFProps_ParaProps::pjFull:
+			    strcat(propBuffer, "justify; ");
+		     	break;
+		    default:
+			    UT_ASSERT_NOT_REACHED();	// so what is it?
+		    case RTFProps_ParaProps::pjLeft:
+			    strcat(propBuffer,"left; ");
+			    break;
+		}
+		strcat(propBuffer, tempBuffer.c_str());
+	}
+
 //
 // Character Properties.
 //
