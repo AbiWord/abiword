@@ -30,7 +30,7 @@
 
 /*****************************************************************/
 
-static UINT CALLBACK s_PrintHookProc(
+/*static UINT CALLBACK s_PrintHookProc(
   HWND hdlg,      // handle to the dialog box window
   UINT uiMsg,     // message identifier
   WPARAM wParam,  // message parameter
@@ -50,7 +50,7 @@ static UINT CALLBACK s_PrintHookProc(
 	}
 	
 	return 0;
-}
+}*/
 
 XAP_Dialog * XAP_Win32Dialog_Print::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
@@ -125,8 +125,8 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	m_pPersistPrintDlg->nToPage		= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->nMinPage		= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nMaxPage		= (WORD)m_nLastPage;
-	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC | PD_ENABLEPRINTHOOK;
-	m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
+	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC | PD_CURRENTPAGE;
+	//m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
 	// we do not need this at the moment, but one day it will come handy in the hook procedure
 	m_pPersistPrintDlg->lCustData       = (DWORD)this;
 		
@@ -160,7 +160,6 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 
 	// see if they just want the properties of the printer without
 	// bothering the user.
-	
 	if (m_bPersistValid && m_bBypassActualDialog)
 	{
 		_extractResults(pFrame);
