@@ -20,9 +20,8 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 
-#if DEBUG
+#include <stdlib.h>
 #include <stdio.h>
-#endif
 
 #include "ut_debugmsg.h"
 
@@ -70,8 +69,28 @@ UT_Bool AP_UnixApp::initialize(void)
 	m_fontManager = new AP_UnixFontManager();
 
 	// find all the fonts in the appropriate places
+
+	// TODO this should be read from the environment/prefs
+	char * fontpath = getenv("ABIWORD_FONTPATH");
+	if (fontpath)
+	{
+		UT_DEBUGMSG(("Using font path of %s.\n", fontpath));
+		m_fontManager->setFontPath(fontpath);
+	}
+	else
+	{
+		UT_DEBUGMSG(("$ABIWORD_FONTPATH not set, using default font path.\n"));
+		// change this?
+		m_fontManager->setFontPath("../../lib/unix/fonts");
+	}
+
+	// let it loose
+	if (!m_fontManager->scavengeFonts())
+	{
+		// we couldn't find any fonts
+		return UT_FALSE;
+	}
 	
-	m_fontManager->scavengeFonts();
 
 #ifdef DEBUG	
 	AP_UnixFont ** fonts = m_fontManager->getAllFonts();
@@ -92,6 +111,8 @@ UT_Bool AP_UnixApp::initialize(void)
 		fonts[i]->closePFA();
 #endif
 	}
+
+	DELETEP(fonts);
 	
 #endif
 
@@ -145,4 +166,9 @@ AP_DialogFactory * AP_UnixApp::getDialogFactory(void)
 AP_Toolbar_ControlFactory * AP_UnixApp::getControlFactory(void)
 {
 	return &m_controlFactory;
+}
+
+AP_UnixFontManager * AP_UnixApp::getFontManager(void)
+{
+	return m_fontManager;
 }

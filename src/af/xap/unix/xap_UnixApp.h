@@ -49,7 +49,8 @@ public:
 
 	virtual AP_DialogFactory *				getDialogFactory(void);
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
-
+	AP_UnixFontManager *					getFontManager(void);
+	
 	static int main (const char * szAppName, int argc, char ** argv);
 
 protected:

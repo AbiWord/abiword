@@ -25,13 +25,16 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
+
 #include "ut_types.h"
+#include "ut_vector.h"
 
 /*****************************************************************/
 
 class AP_UnixFont
 {
 public:
+
 	typedef enum
 	{
 		STYLE_NORMAL = 0,
@@ -40,36 +43,52 @@ public:
 		STYLE_BOLD_ITALIC,
 		STYLE_LAST	// this must be last
 	} style;
-		
+
+	
 	AP_UnixFont(void);
 	~AP_UnixFont(void);
 
-	UT_Bool 				openFileAs(char * name, char * fontfile,
-									   char * metricfile, AP_UnixFont::style s);
+	UT_Bool 				openFileAs(const char * fontfile,
+									   const char * metricfile,
+									   const char * xlfd,
+									   AP_UnixFont::style s);
 	const char * 			getName(void);
 	AP_UnixFont::style		getStyle(void);
 	const char * 			getFontfile(void);
 	const char * 			getMetricfile(void);
-
+	const char * 			getXLFD(void);
+	
 	UT_Bool					openPFA(void);
 	char					getPFAChar(void);
 	UT_Bool					closePFA(void);	
 
-
-	GdkFont *				getGdkFont(void);
+	const char * 			getFontKey(void);
+	GdkFont *				getGdkFont(UT_uint16 pointsize);
 
 protected:
+
+	struct allocFont
+	{
+		UT_uint16			pointSize;
+		GdkFont *			gdkFont;
+	};
+
+	void					_makeFontKey();
+	char * 					m_fontKey;
+
+	// a cache of GdkFont * at a given size
+	UT_Vector				m_allocFonts;
+	
 	// expand this data to account for other attributes of a
 	// font, like character set or special decorations.
 	char * 					m_name;
 	AP_UnixFont::style		m_style;
+	char * 					m_xlfd;
 
 	char * 					m_fontfile;
 	char *					m_metricfile;
 
 	ifstream * 				m_PFAFile;
-	
-	GdkFont * 				m_font;
 };
 
 #endif /* AP_UNIXFONT_H */

@@ -26,6 +26,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_hash.h"
 
 #include "xap_UnixFont.h"
 
@@ -48,14 +49,13 @@ public:
 		
 protected:
 
+	void					_allocateThisFont(const char * line,
+											  const char * workingdir);
 	void					_addFont(AP_UnixFont * font);
-	
-	UT_Vector				m_vSearchPaths;
 
-	// A hash might be faster, but it's a lot of
-	// overhead for a list of pointers to AP_UnixFont
-	// classes.
-	UT_Vector				m_vFonts;
+	// perhaps this should be a hash to avoid duplicates?
+	UT_Vector				m_searchPaths;
+	UT_HashTable 			m_fontHash;
 	
 };
 
