@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include "ut_string.h"
 #include "ut_types.h"
 #include "ut_bytebuf.h"
@@ -630,11 +629,12 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	UT_Bool bWroteOpenDataSection = UT_FALSE;
 
 	const char * szName;
+   	const char * szMimeType;
 	const UT_ByteBuf * pByteBuf;
 
-	UT_ByteBuf bb64(1024);
+	UT_ByteBuf bbEncoded(1024);
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,NULL)); k++)
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
 	{
 		if (!bWroteOpenDataSection)
 		{
@@ -642,23 +642,67 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 			bWroteOpenDataSection = UT_TRUE;
 		}
 
-		if (UT_Base64Encode(&bb64, pByteBuf))
+	   	UT_Bool status = UT_FALSE;
+	   	UT_Bool encoded = UT_TRUE;
+	   
+		if (szMimeType && (UT_stricmp(szMimeType, "image/svg-xml") == 0 || UT_stricmp(szMimeType, "text/mathml") == 0))
+	     	{
+		   bbEncoded.truncate(0);
+		   bbEncoded.append((UT_Byte*)"<![CDATA[", 9);
+		   UT_uint32 off = 0;
+		   UT_uint32 len = pByteBuf->getLength();
+		   const UT_Byte * buf = pByteBuf->getPointer(0);
+		   while (off < len) {
+		      if (buf[off] == ']' && buf[off+1] == ']' && buf[off+2] == '>') {
+			 bbEncoded.append(buf, off-1);
+			 bbEncoded.append((UT_Byte*)"]]&gt;", 6);
+			 off += 3;
+			 len -= off;
+			 buf = pByteBuf->getPointer(off);
+			 off = 0;
+			 continue;
+		      }
+		      off++;
+		   }
+		   bbEncoded.append(buf, off);
+		   bbEncoded.append((UT_Byte*)"]]>\n", 4);
+		   status = UT_TRUE;
+		   encoded = UT_FALSE;
+		}
+	   	else  
 		{
-			m_pie->write("<d name=\"");
+		   status = UT_Base64Encode(&bbEncoded, pByteBuf);
+		   encoded = UT_TRUE;
+		}
+
+	   	if (status)
+	     	{
+	   		m_pie->write("<d name=\"");
 			m_pie->write(szName);
-			m_pie->write("\">\n");
+		   	if (szMimeType) {
+			   m_pie->write("\" mime-type=\"");
+			   m_pie->write(szMimeType);
+			}
+		   	if (encoded) 
+		     	{
+			   	m_pie->write("\" base64=\"yes\">\n");
+				// break up the Base64 blob as a series lines
+				// like MIME does.
 
-			// break up the Base64 blob as a series lines
-			// like MIME does.
-
-			UT_uint32 jLimit = bb64.getLength();
-			UT_uint32 jSize;
-			UT_uint32 j;
-			for (j=0; j<jLimit; j+=72)
-			{
-				jSize = MyMin(72,(jLimit-j));
-				m_pie->write((const char *)bb64.getPointer(j),jSize);
-				m_pie->write("\n");
+				UT_uint32 jLimit = bbEncoded.getLength();
+				UT_uint32 jSize;
+				UT_uint32 j;
+				for (j=0; j<jLimit; j+=72)
+				{
+					jSize = MyMin(72,(jLimit-j));
+					m_pie->write((const char *)bbEncoded.getPointer(j),jSize);
+					m_pie->write("\n");
+				}
+			}
+		   	else
+		     	{
+		     		m_pie->write("\" base64=\"no\">\n");
+			   	m_pie->write((const char*)bbEncoded.getPointer(0), bbEncoded.getLength());
 			}
 			m_pie->write("</d>\n");
 		}

@@ -138,6 +138,7 @@ Cleanup:
 IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 {
 	FREEP(m_currentDataItemName);
+	FREEP(m_currentDataItemMimeType);
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
@@ -150,6 +151,7 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 	m_bSeenCR = UT_FALSE;
 
 	m_currentDataItemName = NULL;
+	m_currentDataItemMimeType = NULL;
 }
 
 /*****************************************************************/
@@ -414,6 +416,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		m_parseState = _PS_DataItem;
 		m_currentDataItem.truncate(0);
 		X_CheckError(UT_XML_cloneString(m_currentDataItemName,_getDataItemName(atts)));
+		X_CheckError(UT_XML_cloneString(m_currentDataItemMimeType,_getDataItemMimeType(atts)));
+		m_currentDataItemEncoded = _getDataItemEncoded(atts);
 		return;
 		
 	case TT_STYLESECTION:
@@ -443,7 +447,11 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 {
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
-	UT_uint32 tokenIndex = s_mapNameToToken(name);
+	UT_uint32 trim;
+	UT_uint32 len;
+	const UT_Byte * buffer;
+
+   	UT_uint32 tokenIndex = s_mapNameToToken(name);
 
 	switch (s_Tokens[tokenIndex].m_type)
 	{
@@ -505,9 +513,22 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataItem);
 		m_parseState = _PS_DataSec;
-		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,UT_TRUE,&m_currentDataItem,NULL,NULL));
+#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
+		trim = 0;
+		len = m_currentDataItem.getLength();
+		buffer = m_currentDataItem.getPointer(0);
+		while (trim < len && MyIsWhite(buffer[trim])) trim++;
+		if (trim) m_currentDataItem.del(0, trim);
+		trim = m_currentDataItem.getLength();
+		buffer = m_currentDataItem.getPointer(0);
+		while (trim >= 0 && MyIsWhite(buffer[trim])) trim--;
+		m_currentDataItem.truncate(trim+1);
+#undef MyIsWhite
+ 		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
 		FREEP(m_currentDataItemName);
-		return;
+		// the data item will free the token we passed (mime-type)
+		m_currentDataItemMimeType = NULL;
+ 		return;
 		
 	case TT_STYLESECTION:
 		X_VerifyParseState(_PS_StyleSec);
@@ -641,28 +662,37 @@ void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 		{
 #define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
 			
-			// DataItem data consists of Base64 encoded data with
-			// white space added for readability.  strip out any
-			// white space and put the rest in the ByteBuf.
+		   
+		   	if (m_currentDataItemEncoded)
+		        {
 
-			UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
+			   	// DataItem data consists of Base64 encoded data with
+			   	// white space added for readability.  strip out any
+			   	// white space and put the rest in the ByteBuf.
+
+			   	UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
 			
-			const UT_Byte * ss = (UT_Byte *)s;
-			const UT_Byte * ssEnd = ss + len;
-			while (ss < ssEnd)
-			{
-				while ((ss < ssEnd) && MyIsWhite(*ss))
-					ss++;
-				UT_uint32 k=0;
-				while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
-					k++;
-				if (k > 0)
-					m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
+			   	const UT_Byte * ss = (UT_Byte *)s;
+			   	const UT_Byte * ssEnd = ss + len;
+			   	while (ss < ssEnd)
+			   	{
+					while ((ss < ssEnd) && MyIsWhite(*ss))
+						ss++;
+					UT_uint32 k=0;
+					while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
+						k++;
+					if (k > 0)
+						m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
 
-				ss += k;
+					ss += k;
+			   	}
+
+			   	return;
 			}
-
-			return;
+		   	else
+		        {
+			   	m_currentDataItem.append((UT_Byte*)s, len);
+			}
 #undef MyIsWhite
 		}
 	}
@@ -719,6 +749,27 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
 		if (UT_XML_stricmp(a[0],"name") == 0)
 			return a[1];
 	return NULL;
+}
+
+const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
+{
+	// find the 'name="value"' pair and return the "value".
+	// ignore everything else (which there shouldn't be)
+
+	for (const XML_Char ** a = atts; (*a); a++)
+		if (UT_XML_stricmp(a[0],"mime-type") == 0)
+			return a[1];
+	return NULL;
+}
+
+UT_Bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
+{
+	for (const XML_Char ** a = atts; (*a); a++)
+		if (UT_XML_stricmp(a[0],"base64") == 0) {
+		   	if (UT_XML_stricmp(a[1], "no") == 0) return UT_FALSE;
+		}
+   	return UT_TRUE;
+   	
 }
 
 //////////////////////////////////////////////////////////////////

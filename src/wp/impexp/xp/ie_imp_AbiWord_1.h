@@ -66,6 +66,8 @@ protected:
     UT_Bool				_pushInlineFmt(const XML_Char ** atts);
     void				_popInlineFmt(void);
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
+    const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
+    UT_Bool		_getDataItemEncoded(const XML_Char ** atts);
 	
     typedef enum _parseState { _PS_Init,
 			       _PS_Doc,
@@ -89,6 +91,8 @@ protected:
 
     UT_ByteBuf			m_currentDataItem;
     XML_Char *			m_currentDataItemName;
+    XML_Char *			m_currentDataItemMimeType;
+    UT_Bool			m_currentDataItemEncoded;
     FILE *			m_fp;
 };
 
