@@ -632,22 +632,24 @@ UT_Bool XAP_UnixFrame::show()
 
 UT_Bool XAP_UnixFrame::openURL(const char * szURL)
 {
-  	char execstring[4096];
+  	char *execstring;
 	struct stat * statbuf = (struct stat *) malloc(sizeof(struct stat));
+
 	if (!stat("/opt/gnome/bin/gnome-help-browser", statbuf) || !stat("/usr/local/bin/gnome-help-browser", statbuf) || !stat("/usr/bin/gnome-help-browser", statbuf))
 	{
-		g_snprintf(execstring, 4096, "gnome-help-browser %s &", szURL);
+		execstring = g_strdup_printf("gnome-help-browser %s &", szURL);
 	}
 	else if (!stat("/opt/kde/bin/kdehelp", statbuf) || !stat("/usr/local/kde/bin/kdehelp", statbuf) || !stat("/usr/local/bin/kdehelp", statbuf) || !stat("/usr/bin/kdehelp", statbuf))
 	{
-		g_snprintf(execstring, 4096, "kdehelp %s &", szURL);
+		execstring = g_strdup_printf("kdehelp %s &", szURL);
 	}
 	else
 	{
 		// Try to connect to a running Netscape, if not, start new one
-		g_snprintf(execstring, 4096, "netscape -remote openURL\\(%s\\) || netscape %s &", szURL, szURL);
+		execstring = g_strdup_printf("netscape -remote openURL\\(%s\\) || netscape %s &", szURL, szURL);
 	}
 	system(execstring);
+	gfree(execstring);
 	FREEP(statbuf);
 	return UT_FALSE;
 }
