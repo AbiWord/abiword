@@ -25,11 +25,12 @@
 #ifndef XP_MAC_TARGET_MACOSX
 # include <QuickDraw.h>
 # include <MacMemory.h>
+# include <QuickTime.h>
 #else
 # include <ApplicationServices/ApplicationServices.h>
+# include <QuickTime/ImageCompression.h>
 #endif
 
-#include <Icons.h>
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
@@ -39,20 +40,16 @@
 #include "ut_string.h"
 #include "ut_MacAssert.h"
 
-#define _RoundUp(x,y) ((((x)+((y)-1))/(y))*(y))
 
-/*****************************************************************/
-#if 0
-bool UT_Xpm2Bmp(UT_uint32 maxWidth,
-				   UT_uint32 maxHeight,
-				   const char ** pIconData,
-				   UT_uint32 sizeofData,
-				   UT_RGBColor * pBackgroundColor,
-				   CIconHandle * pCIcon)
-#endif
-bool UT_Xpm2CIcon (const char ** pIconData,
+typedef struct _my_argb {
+	RGBColor rgb;
+	unsigned char alpha;
+} my_argb;
+
+
+bool UT_Xpm2Pict (const char ** pIconData,
 					UT_uint32 sizeofData,
-					CIconHandle * pCIcon)
+					PicHandle * pCIcon)
 {
 	UT_ASSERT(pIconData && *pIconData);
 	UT_ASSERT(sizeofData > 0);
@@ -68,307 +65,129 @@ bool UT_Xpm2CIcon (const char ** pIconData,
 	UT_ASSERT((nrColors > 0) && (nrColors < 256));
 	UT_ASSERT(charsPerPixel > 0);
 
-	CIconHandle myCICN;
-
-	char depth = 32; 	// default to 32 bits
-	Rect bounds, zeroBounds;
+	GWorldPtr  iconImage;
+	PicHandle 	newPict;
+	OSStatus err;
+	Rect bounds;
 	
 	::SetRect (&bounds, 0, 0, width, height);
-	::SetRect (&zeroBounds, 0, 0, 0, 0);
 
-	myCICN = (CIconHandle)NewHandleClear ((long)sizeof (CIcon));
+    // Create a gworld image for the icon (and we'll do one for the mask).
+    err = ::QTNewGWorld(&iconImage, k32ARGBPixelFormat, &bounds, NULL, NULL, 0);
+    if (err == noErr) {
 
-	/* Fill in the cicn's bitmap fields. */ 
-	
-	(**myCICN).iconBMap.baseAddr = nil;
-	(**myCICN).iconBMap.rowBytes = 0; //width / 8;
-	(**myCICN).iconBMap.bounds = zeroBounds;
-	
-	/* Fill in the cicn's mask bitmap fields. */
-	
-	(**myCICN).iconMask.baseAddr = nil;
-	(**myCICN).iconMask.rowBytes = 0; //width / 8;
-	(**myCICN).iconMask.bounds = zeroBounds;
-	
-	/* Fill in the cicn's pixmap fields. */
-	
-	(**myCICN).iconPMap.baseAddr = nil;
-	(**myCICN).iconPMap.rowBytes = (((bounds.right - bounds.left) * depth) / 8) | 0x8000;
-	(**myCICN).iconPMap.bounds = bounds;
-	(**myCICN).iconPMap.pmVersion = 0;
-	(**myCICN).iconPMap.packType = 0;
-	(**myCICN).iconPMap.packSize = 0;
-	(**myCICN).iconPMap.hRes = 0x00480000;
-	(**myCICN).iconPMap.vRes = 0x00480000;
-	(**myCICN).iconPMap.pixelSize = depth;
-	//(**myCICN).iconPMap.planeBytes= 0;
-	//(**myCICN).iconPMap.pmReserved= 0;
-	(**myCICN).iconPMap.pixelType = RGBDirect;
-	(**myCICN).iconPMap.cmpCount = 3;
-	(**myCICN).iconPMap.cmpSize = 8;
-	(**myCICN).iconPMap.pmTable = NULL; //::GetCTable (64 + depth); // fixme : handle non 32 bits pixmaps.
-	
-		
-	RGBColor *pRGB = (RGBColor*)malloc((nrColors + 1) * sizeof(RGBColor));
-	UT_ASSERT(pRGB);
-	UT_StringPtrMap hash(61);
-	UT_RGBColor color(0,0,0);
-	
-	// walk thru the palette
-	const char ** pIconDataPalette = &pIconData[1];
-	for (UT_uint32 k=0; (k < nrColors); k++)
-	{
-		char bufSymbol[10];
-		char bufKey[10];
-		char bufColorValue[100];
+		PixMapHandle iconPixMap = ::GetGWorldPixMap(iconImage);
+		if ( NULL != iconPixMap && ::LockPixels(iconPixMap)) {
+			char *        imageDstPtr;
+			long        bytesPerRow;
+	        imageDstPtr = ::GetPixBaseAddr (iconPixMap );
+			bytesPerRow = ::GetPixRowBytes (iconPixMap );
 
-		// we expect something of the form: ".. c #000000"
-		// but we allow a space as a character in the symbol, so we
-		// get the first field the hard way.
-		memset(bufSymbol,0,sizeof(bufSymbol));
-		for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
-			bufSymbol[kPx] = pIconDataPalette[k][kPx];
-		UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
-		
-		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1],
-						" %s %s",&bufKey,&bufColorValue);
-		UT_ASSERT(nf == 2);
-		UT_ASSERT(bufKey[0] = 'c');
-
-		// make the ".." a hash key and store our color index as the data.
-		// we add k+1 because the hash code does not like null pointers...
-		hash.insert(bufSymbol,(void *)(k+1));
-		
-		// store the actual color value in the 
-		// rgb quad array with our color index.
-		if (UT_stricmp(bufColorValue,"None")==0) {
-			pRGB[k].red = 0xffff; 
-			pRGB[k].green = 0;
-			pRGB[k].blue = 0;
-		}
-		else
-		{
-			// TODO fix this to also handle 
-			// #ffffeeeedddd type color references
-			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
-			UT_parseColor(bufColorValue, color);
-			pRGB[k].red	= color.m_red << 8;
-			pRGB[k].green	= color.m_grn << 8;
-			pRGB[k].blue	= color.m_blu << 8;
-		}
-	}
-
-	(**myCICN).iconData = NewHandleClear (((bounds.right - bounds.left) * (depth / 8)) * (bounds.bottom - bounds.top));
-
-	::HLock ((**myCICN).iconData);
-	char *bits = *((**myCICN).iconData);
-
-	int rgb_index;
-	const char ** pIconDataImage = &pIconDataPalette[nrColors];
-	short bytesPerRow = (**myCICN).iconPMap.rowBytes ^ 0x8000;
-	
-	for (UT_uint32 kRow=0; (kRow < height); kRow++) {
-		const char * p = pIconDataImage[kRow];
-		
-		for (UT_uint32 kCol=0; (kCol < width); kCol++) {
-			char bufPixel[10];
-			memset(bufPixel,0,sizeof(bufPixel));
-			for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
-				bufPixel[kPx] = *p++;
-
-			//printf("Looking for character %s \n", bufPixel);
-			const void * pEntry = hash.pick(bufPixel);
+			my_argb *pRGB = (my_argb*)malloc((nrColors + 1) * sizeof(my_argb));
+			UT_ASSERT(pRGB);
+			UT_StringPtrMap hash(61);
+			UT_RGBColor color(0,0,0);
 			
-			rgb_index = ((UT_Byte)(pEntry)) -1;
-			//printf("Returned hash index %d \n", rgb_index); 
+			// walk thru the palette
+			const char ** pIconDataPalette = &pIconData[1];
+			for (UT_uint32 k=0; (k < nrColors); k++)
+			{
+				char bufSymbol[10];
+				char bufKey[10];
+				char bufColorValue[100];
+		
+				// we expect something of the form: ".. c #000000"
+				// but we allow a space as a character in the symbol, so we
+				// get the first field the hard way.
+				memset(bufSymbol,0,sizeof(bufSymbol));
+				for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
+					bufSymbol[kPx] = pIconDataPalette[k][kPx];
+				UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
+				
+				UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1],
+								" %s %s",&bufKey,&bufColorValue);
+				UT_ASSERT(nf == 2);
+				UT_ASSERT(bufKey[0] = 'c');
+		
+				// make the ".." a hash key and store our color index as the data.
+				// we add k+1 because the hash code does not like null pointers...
+				hash.insert(bufSymbol,(void *)(k+1));
+				
+				// store the actual color value in the 
+				// rgb quad array with our color index.
+				if (UT_stricmp(bufColorValue,"None")==0) {
+					pRGB[k].rgb.red = 255;
+					pRGB[k].rgb.green = 255;
+					pRGB[k].rgb.blue = 255;
+					pRGB[k].alpha = 255;
+				}
+				else
+				{
+					// TODO fix this to also handle 
+					// #ffffeeeedddd type color references
+					UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
+					UT_parseColor(bufColorValue, color);
+					pRGB[k].rgb.red	= color.m_red ;
+					pRGB[k].rgb.green	= color.m_grn;
+					pRGB[k].rgb.blue	= color.m_blu;
+					pRGB[k].alpha   = 0;
+				}
+			}
 
-			*(bits + kRow * bytesPerRow + kCol*4) 
-							= pRGB[rgb_index].blue;
-			*(bits + kRow * bytesPerRow + kCol*4 + 1) 
-							= pRGB[rgb_index].green;
-			*(bits + kRow * bytesPerRow + kCol*4 + 2) 
-							= pRGB[rgb_index].red; 
+
+			int rgb_index;
+			const char ** pIconDataImage = &pIconDataPalette[nrColors];
+			
+			for (UT_uint32 kRow=0; (kRow < height); kRow++) {
+				const char * p = pIconDataImage[kRow];
+				
+				for (UT_uint32 kCol=0; (kCol < width); kCol++) {
+					char bufPixel[10];
+					memset(bufPixel,0,sizeof(bufPixel));
+					for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
+						bufPixel[kPx] = *p++;
+		
+					//printf("Looking for character %s \n", bufPixel);
+					const void * pEntry = hash.pick(bufPixel);
+					
+					rgb_index = ((UT_Byte)(pEntry)) -1;
+					//printf("Returned hash index %d \n", rgb_index); 
+		
+					*(imageDstPtr + kRow * bytesPerRow + kCol*4) 
+									= pRGB[rgb_index].alpha;
+					*(imageDstPtr + kRow * bytesPerRow + kCol*4 + 1) 
+									= pRGB[rgb_index].rgb.red;
+					*(imageDstPtr + kRow * bytesPerRow + kCol*4 + 2) 
+									= pRGB[rgb_index].rgb.green;
+					*(imageDstPtr + kRow * bytesPerRow + kCol*4 + 3) 
+									= pRGB[rgb_index].rgb.blue; 
+				}
+			}
+
+			free(pRGB);
+
+			GWorldPtr offscreen;
+		
+			err = QTNewGWorld( &offscreen, k32ARGBPixelFormat, &bounds, NULL, NULL, 0 );
+			if ((err == noErr) && (offscreen)) { 
+				GrafPtr thePort;
+				::GetPort (&thePort);
+				::SetPort (offscreen);
+				newPict = ::OpenPicture (&bounds);
+				::CopyBits (GetPortBitMapForCopyBits (iconImage),
+							GetPortBitMapForCopyBits (offscreen),
+							&bounds, &bounds, srcCopy, NULL);
+				::ClosePicture ();
+				::SetPort (thePort);
+				::DisposeGWorld (offscreen);
+			}
+			::UnlockPixels (iconPixMap);
 		}
+		::DisposeGWorld (iconImage);
 	}
-
-	::HUnlock ((**myCICN).iconData);
-	//(**myCICN).iconPMap.baseAddr = (**myCICN).iconData;
-	free(pRGB);
-#if 0
-	Rect off = {0, 0, 24, 24};
-	Picture * newPict = ::OpenCPicture (&off);
-	::CopyBits ((**myCICN).iconPMap, (**myCICN).iconPMap, &off, &off, srcCopy, NULL);
-	::ClosePicture ();
-#endif
-	*pCIcon = myCICN;
+	*pCIcon = newPict;
 	return true;
 }
 
 
 
-
-#ifndef XP_MAC_TARGET_QUARTZ
-bool UT_Xpm2Bmp(UT_uint32 maxWidth,
-				   UT_uint32 maxHeight,
-				   const char ** pIconData,
-				   UT_uint32 sizeofData,
-				   UT_RGBColor * pBackgroundColor,
-				   PixMapHandle * pBitmap)
-{
-	// convert an XPM into a BMP using a DIB.
-	// return true if successful.
-
-	UT_ASSERT(pIconData && *pIconData);
-	UT_ASSERT(sizeofData > 0);
-	UT_ASSERT(pBackgroundColor);
-	UT_ASSERT(pBitmap);
-
-	// first row contains: width height, number of colors, chars per pixel
-
-	UT_uint32 width, height, nrColors, charsPerPixel;
-	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
-						 &width, &height, &nrColors, &charsPerPixel);
-	UT_ASSERT(n == 4);
-	UT_ASSERT(width > 0);
-	UT_ASSERT(height > 0);
-	UT_ASSERT((nrColors > 0) && (nrColors < 256));
-	UT_ASSERT(charsPerPixel > 0);
-
-	UT_ASSERT(width <= maxWidth);
-	UT_ASSERT(height <= maxHeight);
-	
-	UT_uint32 sizeofColorData = nrColors * sizeof(RGBColor);
-	UT_uint32 widthRoundedUp = _RoundUp(width,sizeof(long));
-	UT_uint32 rowPadding = widthRoundedUp - width;
-	UT_uint32 sizeofPixelData = widthRoundedUp * height;
-	
-	
-	PixMapHandle hBitmap = NewPixMap ();
-	Rect bounds;
-	bounds.top = 0;
-	bounds.left = 0;
-	bounds.right = width;
-	bounds.bottom = height;
-	(*hBitmap)->bounds = bounds;
-	(*hBitmap)->pixelSize = 8;
-
-	RGBColor *pRGB = (RGBColor *) NewPtr ((nrColors + 1) * sizeof(RGBColor));
-	UT_ASSERT (pRGB != NULL);
-	
-	UT_HashTable hash(61);
-	UT_RGBColor color(0,0,0);
-	
-	// walk thru the palette
-
-	const char ** pIconDataPalette = &pIconData[1];
-	for (UT_uint32 k=0; (k < nrColors); k++)
-	{
-		char bufSymbol[10];
-		char bufKey[10];
-		char bufColorValue[100];
-
-		// we expect something of the form: ".. c #000000"
-		// but we allow a space as a character in the symbol, so we
-		// get the first field the hard way.
-
-		memset(bufSymbol,0,sizeof(bufSymbol));
-		for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
-			bufSymbol[kPx] = pIconDataPalette[k][kPx];
-		UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
-		
-		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1]," %s %s",&bufKey,&bufColorValue);
-		UT_ASSERT(nf == 2);
-		UT_ASSERT(bufKey[0] = 'c');
-
-		// make the ".." a hash key and store our color index as the data.
-		// we add k+1 because the hash code does not like null pointers...
-		
-		hash.insert(bufSymbol, (UT_HashTable::HashValType)(k+1));
-		
-		// store the actual color value in the rgb quad array with our color index.
-
-		if (UT_stricmp(bufColorValue,"None")==0)
-		{
-			pRGB[k].red		= pBackgroundColor->m_red;
-			pRGB[k].green	= pBackgroundColor->m_grn;
-			pRGB[k].blue	= pBackgroundColor->m_blu;
-		}
-		else
-		{
-			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
-			UT_parseColor(bufColorValue, color);
-			pRGB[k].red		= color.m_red;
-			pRGB[k].green	= color.m_grn;
-			pRGB[k].blue	= color.m_blu;
-		}
-	}
-
-	// walk thru the image data
-
-	UT_Byte *pPixel = NULL;
-
-	const char ** pIconDataImage = &pIconDataPalette[nrColors];
-	for (UT_uint32 kRow=0; (kRow < height); kRow++)
-	{
-		const char * p = pIconDataImage[kRow];
-		
-		for (UT_uint32 kCol=0; (kCol < width); kCol++)
-		{
-			char bufPixel[10];
-			memset(bufPixel,0,sizeof(bufPixel));
-			for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
-				bufPixel[kPx] = *p++;
-
-			const UT_HashTable::HashValType pEntry = hash.pick(bufPixel);
-			*pPixel++ = ((UT_Byte)(pEntry)) - 1;
-		}
-
-		pPixel += rowPadding;
-	}
-
-//	UT_ASSERT(pPixel == (pInfo + sizeofStructure));
-//	pPixel = (UT_Byte *)(pInfo + sizeof(BITMAPINFOHEADER) + sizeofColorData);
-		
-//	HBITMAP hBitmap = CreateDIBitmap(hdc,pbmih,CBM_INIT,pPixel,pbmi,DIB_RGB_COLORS);
-	*pBitmap = hBitmap;
-
-//	free(pInfo);
-	::DisposePtr ((Ptr)pRGB);
-	pRGB = NULL; 
-
-	return (hBitmap != 0);
-}
-#endif
-
-
-#if 0 
-// Quartz version 
-static void Draw32BitARGBToContext(void * pBits, size_t width, size_t height, size_t bytesPerRow, CGContextRef context)
-{
-    CGRect rectangle;
-    CGDataProviderRef provider;
-    CGColorSpaceRef colorspace;
-    size_t size;
-    CGImageRef image;
-    size = bytesPerRow * height;
-    /* Create a data provider with a pointer to the memory bits */
-    provider = CGDataProviderCreateWithData(NULL, pBits, size, NULL);
-    /* Colorspace can be device, calibrated, or ICC profile based */
-    colorspace = CGColorSpaceCreateDeviceRGB();
-    /* Create the image */
-    image = CGImageCreate(width, height, 8 /* bitsPerComponent */, 32 /* bitsPerPixel */,
-                            bytesPerRow, colorspace,
-                            kCGImageAlphaFirst, provider, NULL, 0,
-                            kCGRenderingIntentDefault);
-    /* Once the image is created we can release our reference to the
-    provider and the colorspace. They will be retained by the
-    image */
-    CGDataProviderRelease(provider);
-    CGColorSpaceRelease(colorspace);
-    /* Determine the location where the image will be drawn in userspace */
-    rectangle = CGRectMake(0, 0, width, height);
-    /* Draw the image to the Core Graphics context */
-    CGContextDrawImage(context, rectangle, image);
-    CGImageRelease(image);
-}
-#endif

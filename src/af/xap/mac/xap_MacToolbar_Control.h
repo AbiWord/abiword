@@ -41,6 +41,12 @@ public:
 	const WindowRef	getWindow () 
 	                { return m_window; };
 	void	requestToolbarRect (Rect & r) const;
+static	UInt16	getButtonWidth ()
+					{ return 28; };
+static	UInt16	getButtonHeight ()
+					{ return 28; };
+static	UInt16	getButtonSpace () 
+					{ return 4; };
 private:
 	static int		m_instanceCount;
 	WindowRef		m_window;

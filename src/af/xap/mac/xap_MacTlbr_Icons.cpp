@@ -39,7 +39,7 @@ AP_MacToolbar_Icons::~AP_MacToolbar_Icons(void)
 }
 
 bool AP_MacToolbar_Icons::getBitmapForIcon(const char * szIconName,
-					   CIconHandle * pIconHandle)
+					   PicHandle * pIconHandle)
 {
 	UT_ASSERT(szIconName && *szIconName);
 	UT_ASSERT(pIconHandle);
@@ -54,7 +54,7 @@ bool AP_MacToolbar_Icons::getBitmapForIcon(const char * szIconName,
 		return false;
 	}
 	
-	bool bCreated = UT_Xpm2CIcon(pIconData,sizeofIconData,pIconHandle);
+	bool bCreated = UT_Xpm2Pict(pIconData,sizeofIconData,pIconHandle);
 	
 	return bCreated;
 }

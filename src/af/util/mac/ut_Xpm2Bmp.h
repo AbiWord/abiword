@@ -37,6 +37,10 @@ bool UT_Xpm2CIcon (const char ** pIconData,
 					UT_uint32 sizeofData,
 					CIconHandle * pCIcon);
 
+bool UT_Xpm2Pict (const char ** pIconData,
+					UT_uint32 sizeofData,
+					PicHandle * pCIcon);
+
 
 #endif /* UT_XPM2BMP_H */
 

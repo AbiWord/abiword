@@ -42,7 +42,7 @@ XAP_MacToolbar_Control::XAP_MacToolbar_Control ()
 		Rect bounds;
 		SInt16 top = ::GetMBarHeight ();
 		// TODO find the appropriate width and menu bar height
-		::SetRect (&bounds, 0, top, 1024, top + 40);
+		::SetRect (&bounds, 0, top, 1024, top + 36);
 		err = CreateNewWindow (kToolbarWindowClass, 
 		                       kWindowStandardHandlerAttribute, 
 							   &bounds, &m_window);
@@ -139,5 +139,5 @@ XAP_MacToolbar_Control::setToolbar (XAP_MacFrame * frame)
 void
 XAP_MacToolbar_Control::requestToolbarRect (Rect & r) const
 {
-	::SetRect (&r, 0, 0, 1024, 40);
+	::SetRect (&r, 0, 0, 1024, 36);
 }

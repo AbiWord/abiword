@@ -120,8 +120,11 @@ bool EV_MacToolbar::synthesize(void)
 	ControlHandle rootControl;
 	XAP_MacToolbar_Control *appWideControl;
 	Rect toolbarRect;
+	const UInt16 BTN_WIDTH = XAP_MacToolbar_Control::getButtonWidth ();
+	const UInt16 BTN_HEIGHT = XAP_MacToolbar_Control::getButtonHeight ();
+	const UInt16 BTN_SPACE = XAP_MacToolbar_Control::getButtonSpace ();
 
-    short btnX = 8;
+    short btnX = BTN_SPACE;
 	appWideControl = ((XAP_MacApp*)m_pMacFrame->getApp())->getToolbarControl();
     WindowPtr owningWin = appWideControl->getWindow();
     UT_ASSERT (owningWin);
@@ -178,6 +181,8 @@ bool EV_MacToolbar::synthesize(void)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
         ControlHandle control;
+		ControlButtonContentInfo info;
+		PicHandle iconHandle;
         const char * szToolTip;
         Rect btnRect;
 		bool	bFoundIcon;
@@ -208,17 +213,14 @@ bool EV_MacToolbar::synthesize(void)
 
 			case EV_TBIT_PushButton:
                 // get pixmap
-				CIconHandle iconHandle;
 				bFoundIcon = m_pMacToolbarIcons->getBitmapForIcon(pLabel->getIconName(),
 												  &iconHandle);
 				UT_ASSERT(bFoundIcon);
-
-
                 // build control
-                btnRect.top = toolbarRect.top + 8;
+                btnRect.top = toolbarRect.top + BTN_SPACE;
                 btnRect.left = btnX;
-                btnRect.bottom = btnRect.top + 24;
-                btnRect.right = btnX + 24;
+                btnRect.bottom = btnRect.top + BTN_HEIGHT;
+                btnRect.right = btnX + BTN_WIDTH;
                 
 				xxx_UT_DEBUGMSG (("Toolbar: new push button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
                 control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonNormalBevelProc, 0);
@@ -226,33 +228,38 @@ bool EV_MacToolbar::synthesize(void)
 				err = ::EmbedControl (control, m_hMainControl);
 				UT_ASSERT (err == noErr);
 				// set its icon
-				ControlButtonContentInfo info;
-				info.contentType = kControlContentCIconHandle;
-				info.u.cIconHandle = iconHandle;
+				info.contentType = kControlContentPictHandle;
+				info.u.picture = iconHandle;
 				// find why the iconHandle is bogus and makes Carbon crashing
-				//err = SetControlData (control, kControlEntireControl, kControlBevelButtonContentTag, 
-				//                      sizeof (info), &info);
-				//UT_ASSERT (err == noErr);
-                btnX += 32;
-//				if (iconHandle) {
-//					::DisposeCIcon (iconHandle);
-//				}
+				err = SetControlData (control, kControlEntireControl, kControlBevelButtonContentTag, 
+				                      sizeof (info), &info);
+				UT_ASSERT (err == noErr);
+                btnX += BTN_WIDTH + BTN_SPACE;
                 break;
 			case EV_TBIT_ToggleButton:
 			case EV_TBIT_GroupButton:
                 // get pixmap
-                
+				bFoundIcon = m_pMacToolbarIcons->getBitmapForIcon(pLabel->getIconName(),
+												  &iconHandle);
+				UT_ASSERT(bFoundIcon);
                 // build control
-                btnRect.top = toolbarRect.top + 8;
+                btnRect.top = toolbarRect.top + BTN_SPACE;
                 btnRect.left = btnX;
-                btnRect.bottom = btnRect.top + 24;
-                btnRect.right = btnX + 24;
+                btnRect.bottom = btnRect.top + BTN_HEIGHT;
+                btnRect.right = btnX + BTN_WIDTH;
                 
 				xxx_UT_DEBUGMSG (("Toolbar: new group button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
                 control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonNormalBevelProc, 0);
 				err = ::EmbedControl (control, m_hMainControl);
 				UT_ASSERT (err == noErr);
-                btnX += 32;
+               				// set its icon
+				info.contentType = kControlContentPictHandle;
+				info.u.picture = iconHandle;
+				// find why the iconHandle is bogus and makes Carbon crashing
+				err = SetControlData (control, kControlEntireControl, kControlBevelButtonContentTag, 
+				                      sizeof (info), &info);
+				UT_ASSERT (err == noErr);
+				btnX += BTN_WIDTH + BTN_SPACE;
                 break;
 			case EV_TBIT_EditText:
 				break;
@@ -274,9 +281,9 @@ bool EV_MacToolbar::synthesize(void)
                 //
                 // Really special as Combo Box does NOT exists in MacOS.
                 // Use popup menu instead. This will be the same as combo boxes are not editable in AbiWord
-                btnRect.top = toolbarRect.top + 8;
+                btnRect.top = toolbarRect.top + BTN_SPACE;
                 btnRect.left = btnX;
-                btnRect.bottom = btnRect.top + 24;
+                btnRect.bottom = btnRect.top + BTN_HEIGHT;
                 btnRect.right = btnX + iWidth;
                 
 				static short menuID = 10000;
@@ -290,7 +297,7 @@ bool EV_MacToolbar::synthesize(void)
                 // control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
 				err = ::EmbedControl (control, m_hMainControl);
 				UT_ASSERT (err == noErr);
-                btnX += iWidth + 8;
+                btnX += iWidth + BTN_SPACE;
 				if (pControl)
 				{
 					pControl->populate();
@@ -320,7 +327,7 @@ bool EV_MacToolbar::synthesize(void)
 			case EV_TBIT_Spacer:
 				// TODO really put some visual spacer. Purely cosmetic.
 				xxx_UT_DEBUGMSG (("Putting spacer\n"));
-				btnX += 8;
+				btnX += BTN_SPACE * 2;
 				break;
 					
 			case EV_TBIT_BOGUS:

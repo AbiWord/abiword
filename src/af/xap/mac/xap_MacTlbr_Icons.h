@@ -42,7 +42,7 @@ public:
 //							 const char * szIconName,
 //							 PixMapHandle pBitmap);
 	bool getBitmapForIcon(const char * szIconName,
-					   CIconHandle * pIconHandle);
+					   PicHandle * pIconHandle);
 protected:
 };
 
