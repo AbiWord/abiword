@@ -11,9 +11,9 @@ Using BiDi
 ----------
 The BiDi algorithm is Unicode-based, so that text is correctly
 arranged as it is typed in. It uses the FriBidi library to calculate
-the layout, which in truns follows the Unicode bidirectional algorithm.
+the layout, which in turn follows the Unicode bidirectional algorithm.
 When the user requires the text to be handled differently than the
-Unicode algorithm prescribes, he or she can force any segement of the 
+Unicode algorithm prescribes, he or she can force any segment of the 
 text into a particular direction using two toolbar buttons (the three
 bidi buttons are now located on the Extra toolbar).
 
@@ -32,7 +32,7 @@ output, or the actual document.
 It should be noted that while the shaping engine supports Arabic,
 in the Unix version this will only work under utf-8 locale with
 Unicode fonts (see UnixLocale.txt and UnixFonts.txt); those wishing 
-to use Arabic with AW under an 8-bit locale will have to swich the 
+to use Arabic with AW under an 8-bit locale will have to switch the 
 shaping engine off (as mentioned in the previous paragraph) and put 
 up with the basic letter forms (the shaping engine is very basic, and
 will one day be replaced by something better, probably Pango).
@@ -65,13 +65,13 @@ has to be also of consistent direction, with three possible options:
 ltr, rtl, and neutral. The last of these applies basically to whitespace,
 which derives its actual direction from the context. The direction of
 the run is worked out automatically from the Unicode value of a
-character, but can be overriden by the user.
+character, but can be overridden by the user.
 
 The heart of BiDi in AbiWord is built into fp_Line class (guess why?).
 Each run of text stores its direction, and this is used by the function
 fp_Line::_createMapOfRuns() to calculate the order of the runs belonging
 to the particular line. The order is stored in an array that is used
-to translate logical coordinances to visual ones and vice versa. Any
+to translate logical coordinates to visual ones and vice versa. Any
 operations on the actual text buffer have to use logical order, while
 any operations on the screen have to use visual order.
 
@@ -81,13 +81,13 @@ in the illustration earlier ('abcd XYZ UVW klm') will look differently,
 if the overall direction is ltr, say an English document with a Hebrew 
 quote in it ('abcd WVU ZYX klm') or rtl, such as Hebrew document with 
 an English quote ('klm WVU ZYX abcd'). This paragraph property is in AW
-always explicitely specified by the user, we do not use any heuristic 
+always explicitly specified by the user, we do not use any heuristic 
 algorithm that would try to guess.
 
 This really is all there is to BiDi, just sometimes it makes life more
 complicated than this introduction might lead you to believe. For instance
 the insertion point can appear on two places on the screen at the same time,
-because the the visual position of the next character to be input is the
+because the visual position of the next character to be input is the
 function of the direction of this character, which we do not know, since
 it has not been typed in yet :-). Or, things are more complicated if you
 want to display say rtl quote in an ltr paragraph, but the quote itself
