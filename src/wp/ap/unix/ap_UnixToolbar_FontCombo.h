@@ -37,6 +37,9 @@ public:
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, AP_Toolbar_Id id);
 
 protected:
+	gboolean isXLFDFontName(const gchar *fontname);
+	gchar * getFoundryFromXLFD(gchar * xlfd);
+	
 };
 
 #endif /* AP_UNIXTOOLBAR_FONTCOMBO_H */

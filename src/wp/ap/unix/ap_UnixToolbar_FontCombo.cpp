@@ -28,10 +28,10 @@
 #include "ap_Toolbar_Id.h"
 #include "ap_Frame.h"
 
-/*
-static gint    gtk_font_selection_insert_field       (gchar          *fontname,
-						      gint            prop);
-*/
+#define MAX_FONTS 32767
+#define PROPERTY_ARRAY_INCREMENT	16
+#define XLFD_MAX_FIELD_LEN 64
+#define GTK_NUM_FONT_PROPERTIES 6
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_UnixToolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,
@@ -99,12 +99,6 @@ struct _GtkFontSelInfo {
 	guint16 space_allocated[GTK_NUM_FONT_PROPERTIES];
 };
 
-static GtkFontSelInfo *fontsel_info = NULL;
-
-#define MAX_FONTS 32767
-#define PROPERTY_ARRAY_INCREMENT	16
-#define XLFD_MAX_FIELD_LEN 64
-
 /* These are the array indices of the font properties used in several arrays,
    and should match the xlfd_index array below. */
 typedef enum
@@ -116,8 +110,6 @@ typedef enum
   CHARSET	= 4,
   FOUNDRY	= 5
 } PropertyIndexType;
-
-#define GTK_NUM_FONT_PROPERTIES 6
 
 /* These are the field numbers in the X Logical Font Description fontnames,
    e.g. -adobe-courier-bold-o-normal--25-180-100-100-m-150-iso8859-1 */
@@ -138,6 +130,10 @@ typedef enum
   XLFD_CHARSET		= 12
 } FontField;
 
+/*****************************************************************/
+
+static GtkFontSelInfo *fontsel_info = NULL;
+
 /* This is used to look up a field in a fontname given one of the above
    property indices. */
 static const FontField xlfd_index[GTK_NUM_FONT_PROPERTIES] = {
@@ -149,8 +145,12 @@ static const FontField xlfd_index[GTK_NUM_FONT_PROPERTIES] = {
   XLFD_FOUNDRY
 };
 
-// Taken almost straight from the GTK font selector dialog code
-static gboolean gtk_font_selection_is_xlfd_font_name (const gchar *fontname)
+/*****************************************************************/
+
+// These members are taken almost straight from the GTK font selector
+// widget code.
+
+gboolean AP_UnixToolbar_FontCombo::isXLFDFontName(const gchar *fontname)
 {
 	gint i = 0;
 	gint field_len = 0;
@@ -170,7 +170,7 @@ static gboolean gtk_font_selection_is_xlfd_font_name (const gchar *fontname)
 	return (i == 14) ? TRUE : FALSE;
 }
 
-gchar * getFoundryFromXLFD(gchar * xlfd)
+gchar * AP_UnixToolbar_FontCombo::getFoundryFromXLFD(gchar * xlfd)
 {
 	gchar * chunk = new gchar[XLFD_MAX_FIELD_LEN];
 	UT_ASSERT(chunk);
@@ -202,88 +202,6 @@ gchar * getFoundryFromXLFD(gchar * xlfd)
 	*chunk_count = NULL;
 	return chunk;
 }
-
-#if 0
-static gchar*
-gtk_font_selection_get_xlfd_field (const gchar *fontname,
-				   FontField    field_num,
-				   gchar       *buffer)
-{
-  const gchar *t1, *t2;
-  gint countdown, len, num_dashes;
-  
-  if (!fontname)
-    return NULL;
-  
-  /* we assume this is a valid fontname...that is, it has 14 fields */
-  
-  countdown = field_num;
-  t1 = fontname;
-  while (*t1 && (countdown >= 0))
-    if (*t1++ == '-')
-      countdown--;
-  
-  num_dashes = (field_num == XLFD_CHARSET) ? 2 : 1;
-  for (t2 = t1; *t2; t2++)
-    { 
-      if (*t2 == '-' && --num_dashes == 0)
-	break;
-    }
-  
-  if (t1 != t2)
-    {
-      /* Check we don't overflow the buffer */
-      len = (long) t2 - (long) t1;
-      if (len > XLFD_MAX_FIELD_LEN - 1)
-	return NULL;
-      strncpy (buffer, t1, len);
-      buffer[len] = 0;
-
-      /* Convert to lower case. */
-      g_strdown (buffer);
-    }
-  else
-    strcpy(buffer, "(nil)");
-  
-  return buffer;
-}
-#endif
-
-#if 0
-static gint
-gtk_font_selection_insert_field (gchar		       *fontname,
-				 gint			prop)
-{
-  gchar field_buffer[XLFD_MAX_FIELD_LEN];
-  gchar *field;
-  guint16 index2;
-  
-  field = gtk_font_selection_get_xlfd_field (fontname, xlfd_index[prop],
-					     field_buffer);
-  if (!field)
-    return 0;
-  
-  /* If the field is already in the array just return its index2. */
-  for (index2 = 0; index2 < fontsel_info->nproperties[prop]; index2++)
-    if (!strcmp(field, fontsel_info->properties[prop][index2]))
-      return index2;
-  
-  /* Make sure we have enough space to add the field. */
-  if (fontsel_info->nproperties[prop] == fontsel_info->space_allocated[prop])
-    {
-      fontsel_info->space_allocated[prop] += PROPERTY_ARRAY_INCREMENT;
-      fontsel_info->properties[prop] = g_realloc(fontsel_info->properties[prop],
-						 sizeof(gchar*)
-						 * fontsel_info->space_allocated[prop]);
-    }
-  
-  /* Add the new field. */
-  index2 = fontsel_info->nproperties[prop];
-  fontsel_info->properties[prop][index2] = g_strdup(field);
-  fontsel_info->nproperties[prop]++;
-  return index2;
-}
-#endif
 
 UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 {
@@ -331,9 +249,8 @@ UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 	fontsel_info->nfonts = 0;
 	for (i = 0; i < num_fonts; i++)
     {
-		if (gtk_font_selection_is_xlfd_font_name (xfontnames[i]) != NULL)
+		if (isXLFDFontName(xfontnames[i]) != NULL)
 		{
-//			gtk_font_selection_insert_font(fontnames, &fontsel_info->nfonts, xfontnames[i]);
 			gchar * fontName = getFoundryFromXLFD(xfontnames[i]);
 
 			if (fontName)
@@ -346,13 +263,6 @@ UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 					// wipe it from RAM
 					delete [] fontName;
 			}
-			
-/*
-			if (fontName)
-				m_vecContents.addItem(fontName);
-			else
-				UT_DEBUGMSG(("No family name could be found in font %s", xfontnames[i]));
-*/
 		}
 		else
 			UT_DEBUGMSG(("Skipping invalid font: %s", xfontnames[i]));
