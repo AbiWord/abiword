@@ -336,7 +336,6 @@ try_again:
 
 bool UT_UUID::_makeUUID(uuid &uu)
 {
-    static UT_sint32 has_init = 0;
     UT_uint32  clock_mid;
 
 	bool bRet = true;

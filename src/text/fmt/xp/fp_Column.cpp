@@ -914,7 +914,6 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		xxx_UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
-		UT_sint32 yoff = 0;
 		pTab->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
 								pos, bBOL, bEOL);

@@ -3467,7 +3467,6 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 		return;
 	}
 	fp_TableContainer * pUpTab = this;
-	fp_CellContainer * pUpCell = NULL;
 	if(bRecurseUp)
 	{
 		while(pUpTab && pUpTab->getContainer() && pUpTab->getContainer()->getContainerType() == FP_CONTAINER_CELL)

@@ -4503,8 +4503,7 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	UT_GrowBuf buffer;
 
 	UT_uint32 iLength = pos2 - pos1;
-	UT_uint32 curLen = 0;
-
+	
 	PT_DocPosition curPos = pos1;
 
 	// get the current block the insertion point is in

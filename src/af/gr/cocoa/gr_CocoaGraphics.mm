@@ -833,7 +833,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	UT_ASSERT(pImg);
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
-	   	pImg->render(this, TDUX(xDest), _tduY(yDest));
+	   	pImg->render(this, (UT_sint32)rint(TDUX(xDest)), (UT_sint32)rint(_tduY(yDest)));
 	   	return;
 	}
 

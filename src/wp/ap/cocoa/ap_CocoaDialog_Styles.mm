@@ -101,7 +101,7 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
         // let the widget materialize
 	NSSize size = [preview frame].size;
 	_createParaPreviewFromGC(m_pParaPreviewWidget,
-							 rintf(size.width), rintf(size.height));
+							 (UT_uint32)rintf(size.width), (UT_uint32)rintf(size.height));
 
 	// make a new Cocoa GC
 	DELETEP (m_pCharPreviewWidget);
@@ -111,7 +111,7 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 	// let the widget materialize
 	size = [preview frame].size;
 	_createCharPreviewFromGC(m_pCharPreviewWidget,
-							 rintf(size.width), rintf(size.height));
+							 (UT_uint32)rintf(size.width), (UT_uint32)rintf(size.height));
 
 //
 // Draw the previews!!
@@ -411,7 +411,7 @@ void  AP_CocoaDialog_Styles::modifyRunModal(void)
 	
 		NSSize size =  [preview frame].size;
 		_createAbiPreviewFromGC(m_pAbiPreviewWidget,
-								rintf(size.width), rintf(size.height)); 
+								(UT_uint32)rintf(size.width), (UT_uint32)rintf(size.height)); 
 		_populateAbiPreview(isNew());
 		event_ModifyPreviewExposed();
 	

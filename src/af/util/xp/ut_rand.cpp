@@ -344,11 +344,9 @@ static UT_sint32 random__ ()
 #define	DEG_2		15
 #define	SEP_2		1
 
+
 /* x**31 + x**3 + 1.  */
-#define	TYPE_3		3
 #define	BREAK_3		128
-#define	DEG_3		31
-#define	SEP_3		3
 
 /* x**63 + x + 1.  */
 #define	TYPE_4		4

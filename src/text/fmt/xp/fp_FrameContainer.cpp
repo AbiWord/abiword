@@ -412,7 +412,7 @@ void fp_FrameContainer::layout(void)
 			iContainerHeight = pTab->getHeight();
 			if(!pTab->isThisBroken() && (pTab->getFirstBrokenTable() == NULL))
 			{
-				fp_Container * pBroke = static_cast<fp_Container *>(pTab->VBreakAt(0));
+				/*fp_Container * pBroke = static_cast<fp_Container *> */(pTab->VBreakAt(0));
 			}
 		}
 

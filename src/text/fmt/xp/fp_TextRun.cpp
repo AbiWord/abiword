@@ -1310,7 +1310,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 // If a refresh was performed, we lose our full justification. If this is done
 // and we have full justification we abort, reformat the paragraph and redraw.
 //
-	bool bRefresh = _refreshDrawBuffer();
+	/*bool bRefresh =*/ _refreshDrawBuffer();
 #if 0
 	// this is extremely expensive; all we need to do is to restore
 	// the justification info in _refereshDrawBuffer();
@@ -2305,12 +2305,7 @@ bool fp_TextRun::_canContainPoint(void) const
 
 UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 {
-	const UT_UCSChar* pSpan = NULL;
-	UT_uint32 lenSpan = 0;
-	UT_uint32 offset = getBlockOffset();
 	UT_uint32 len = getLength();
-	bool bContinue = true;
-	UT_UCSChar * pStrPos = pStr;
 
 	if(iMax <= len)
 	{

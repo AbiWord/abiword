@@ -175,7 +175,7 @@
 		AV_View * pView = m_pFrame->getCurrentView();
 		NSRect rect = [self frame];
 		if (pView && !pView->isLayoutFilling()) {
-			pView->setWindowSize(rect.size.width, rect.size.height);
+			pView->setWindowSize((UT_sint32)rint(rect.size.width), (UT_sint32)rint(rect.size.height));
 			m_pGR->_callUpdateCallback(&rect);
 //				m_pFrame->quickZoom(); // was update zoom
 		}

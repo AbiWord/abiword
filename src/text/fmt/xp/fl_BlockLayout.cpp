@@ -3310,7 +3310,6 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 		// Find out if the word is in the document's list of ignored
 		// words
-		PD_Document * pDoc = m_pLayout->getDocument();
 		pPOB->setIsIgnored(_getSpellChecker(iBlockPos)->isIgnored(pWord, iLength));
 
 		// Word not correct or recognized, so squiggle it

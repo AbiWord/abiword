@@ -27,6 +27,7 @@
 #include "ut_unixIdle.h"
 #include "ut_assert.h"
 
+#ifndef XP_TARGET_COCOA
 //
 // timer procedure callback
 //
@@ -39,6 +40,7 @@ static gint _Timer_Proc(void *p)
 
   return true;
 }
+#endif
 
 /*!
  * Returns a new UT_Idle

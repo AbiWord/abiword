@@ -728,8 +728,6 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		
 		iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 
-		UT_uint32 i = 1;
-
 		//we have to break the text into chunks that each will go into a
 		//separate run in a manner that will ensure that the text will
 		//be correctly processed later. The most obvious way is to
@@ -968,8 +966,7 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 			measureString(RI.m_pChars + j, 0, 1,
 										 static_cast<UT_GrowBufElement*>(ri.m_pWidths) + k);
-
-			UT_uint32 iCW = ri.m_pWidths[k] > 0 ? ri.m_pWidths[k] : 0;
+			/*UT_uint32 iCW = ri.m_pWidths[k] > 0 ? ri.m_pWidths[k] : 0;*/
 		}
 	}
 	

@@ -233,7 +233,7 @@ void FV_View::_clearSelection(void)
 				{
 					iPos2++;
 				}
-				bool bres = _clearBetweenPositions(iPos1, iPos2, true);
+				/*bool bres =*/ _clearBetweenPositions(iPos1, iPos2, true);
 			}
 		}
 		_resetSelection();
@@ -2935,7 +2935,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	bool bDone = false;
 	bool bIsDirty = false;
 	fp_Run* pCurRun = pRun1;
-	bool bShowHidden = getShowPara();
+	//bool bShowHidden = getShowPara();
 	fp_CellContainer * pCell = NULL;
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();

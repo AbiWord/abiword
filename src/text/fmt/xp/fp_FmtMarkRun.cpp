@@ -219,7 +219,6 @@ void fp_DummyRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setDescent(pG->getFontDescent(pFont));
 	_setHeight(pG->getFontHeight(pFont));
 	xxx_UT_DEBUGMSG(("fmtmark lookup properties: Font Ascent %d  Font Descent %d Font %x Span %x \n",getAscent(),getDescent(),pFont,pSpanAP));
-	PD_Document * pDoc = getBlock()->getDocument();
 	_setWidth(0);
 	_setLength(1);
 	_setDirection(FRIBIDI_TYPE_WS);

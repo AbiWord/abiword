@@ -1102,8 +1102,6 @@ void UT_UTF8Hash::parse_attributes (const char * attributes)
 	UT_UTF8String name;
 	UT_UTF8String value;
 
-	bool bSkip = false;
-
 	while (*atstr)
 		{
 			s_pass_whitespace (atstr);
