@@ -116,7 +116,7 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		BOOL bEnableReplace = bEnableFind && (lenReplace > 0);
+		BOOL bEnableReplace = bEnableFind;
 		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACE),bEnableReplace);
 		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACEALL),bEnableReplace);
 	}
