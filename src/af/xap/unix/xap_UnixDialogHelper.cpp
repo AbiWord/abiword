@@ -944,6 +944,42 @@ void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_
 }
 
 /*!
+ * Localizes a button given the string id
+ * It formats its label using the current button label as a format
+ * string. It is assumed to be something like
+ * "<span size="larger">%s</span>".
+ * Note that in addition to doing markup, ampersands will be converted
+ * to underscores/mnemonic since this makes sense for buttons
+ */
+void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
+{
+	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).utf8_str());
+	UT_ASSERT(newlbl);
+	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
+	{
+		if ( newlbl[i] == '&' ) {
+			if (i > 0 && newlbl[i-1] == '\\')
+			{
+				newlbl[i-1] = '&';
+				strcpy( &newlbl[i], &newlbl[i+1]);
+				i--;
+				}
+			else
+				newlbl[i] = '_';
+		}
+	}
+	UT_String markupStr(UT_String_sprintf(gtk_button_get_label (GTK_BUTTON(widget)), newlbl));
+	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
+	gtk_button_set_label (GTK_BUTTON(widget), markupStr.c_str());
+
+	// by default, they don't like markup, so we teach them
+	GtkWidget * button_child = gtk_bin_get_child (GTK_BIN(widget));
+	if (GTK_IS_LABEL (button_child))
+		gtk_label_set_use_markup (GTK_LABEL(button_child), TRUE);
+
+	FREEP(newlbl);	
+}
+/*!
  * Localizes the label of a Menu widget given the string id
  */
 void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
