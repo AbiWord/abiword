@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,17 +56,38 @@ typedef struct _my_argb {
 	\param szIconName the name of the icon
 	\return the newly allocated NSImage [autoreleased]
  */
-NSImage* AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName)
+NSImage* AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
 {
-	UT_ASSERT(szIconName && *szIconName);
+	UT_ASSERT(szIconID && *szIconID);
 	NSImage *pixmap = nil;
 
+#if 1
+	//begin cocoa icon loading
+	const char * szIconName;
+	if (AP_Toolbar_Icons::_findIconNameForID(szIconID, &szIconName)) {
+		char *s = strdup(szIconName);
+		char *tmp = strstr(s, "_xpm");
+		if (tmp) {
+			*tmp = 0;
+		}
+		NSString * str = [[NSString alloc] initWithUTF8String:s];
+		pixmap = [NSImage imageNamed:str];
+		[str release];
+		FREEP(s);
+		UT_ASSERT(pixmap);
+		return pixmap;
+	}
+	else {
+		UT_ASSERT_NOT_REACHED();
+		return nil;
+	}
+#else
 	UT_uint32 width, height, nrColors, charsPerPixel;
 	
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	
-	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	bool bFound = _findIconDataByName(szIconID, &pIconData, &sizeofIconData);
 	if (!bFound)
 		return nil;
 
@@ -170,5 +191,6 @@ NSImage* AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName)
 	UT_ASSERT (pixmap);	
 
 	return [pixmap autorelease];
+#endif
 }
 
