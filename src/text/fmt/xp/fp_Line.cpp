@@ -219,11 +219,12 @@ void fp_Line::splitRunInLine(fp_Run* pRun1, fp_Run* pRun2)
 {
 	// insert run2 after run1 in the current line.
 	
+	fp_RunInfo* pRunInfo1 = (fp_RunInfo*) pRun1->getLineData();
 	fp_RunInfo* pRI;
 	
 	pRI = new fp_RunInfo(pRun2);
 	pRun2->setLine(this, pRI);
-	pRI->xoff = m_iWidth;
+	pRI->xoff = pRunInfo1->xoff + pRun1->getWidth();
 
 	UT_sint32 count = m_vecRunInfos.getItemCount();
 	UT_sint32 k;
@@ -238,7 +239,7 @@ void fp_Line::splitRunInLine(fp_Run* pRun1, fp_Run* pRun2)
 		}
 	}
 
-	// we don't update m_iWidth or recalseHeight() since we
+	// we don't update m_iWidth or recalcHeight() since we
 	// assume the space in run2 came from run1.
 }
 

@@ -507,8 +507,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						}
 
 						// TODO we should NOT be doing a complete format here.
-						pBL->complete_format();
-						pBL->draw(m_pLayout->getGraphics());
+						pBL->minor_reformat();
+						// pBL->draw(m_pLayout->getGraphics());
 
 						// in case anything else moved
 						m_pLayout->reformat();
