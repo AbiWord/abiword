@@ -26,17 +26,19 @@ CPPSRCS=		UnixMain.cpp
 
 INCLUDES=		`gtk-config --cflags`
 
-PROGRAM=		AbiWord
+PROGRAM=		$(BINDIR)/AbiWord
 
 # TODO the Linux linker is fussy about the ordering of libraries.
 # TODO in order to get all symbols to resolve, i had to list them
 # TODO several times.  see if there is a better way of doing this.
 
-LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat
-ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
+LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat
 
-ABI_OTHLIBS=		$(DL_LIBS)
-ABI_LIBS=		stdc++
+ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
+ABI_APPLIBDEP=		$(LoadOrder)
+
+ABI_LIBS=		png z stdc++ $(DL_LIBS)
 
 TARGETS=		$(PROGRAM)
 
@@ -46,34 +48,16 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-## TODO decide how/if to build completely statically.
-## TODO defer decision until later.
-## TODO you'll need to set LD_LIBRARY_PATH to $(BINDIR)
-## TODO in your environment in order to run the executable
-
 ##LDFLAGS +=		-static
 ##LDFLAGS +=		-shared
 
-# ACK!  TODO - do we really want a directory pattern match here in a makefile?
-# 	TODO - using $(shell) is just slightly better than letting the compiler
-#              do the expansion
-
-THE_LIBS=		$(shell ls $(LIBDIR)/*)
-
 # we override the $(PROGRAM) rule.
 
-$(PROGRAM): $(OBJS) $(THE_LIBS)
+## TODO why do we do -L/usr/local/lib twice ??
+
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -L/usr/local/lib
 
 build:: $(TARGETS)
-	@echo Exporting $(TARGETS) from `pwd`
-	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(BINDIR)
-	@$(subst xxxx,$(DISTDIR),$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DISTDIR)
-
-# the last two lines are a hack to put something into the DIST tree until
-# we decide what we want the layout to be.
-

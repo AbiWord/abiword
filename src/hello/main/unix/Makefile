@@ -34,9 +34,9 @@ PROGRAM=		AbiHello
 
 LoadOrder=		AbiGr AbiHEAp AbiXAp AbiEv AbiUtil AbiHelloVer
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
+ABI_APPLIBDEP=		$(LoadOrder)
 
-ABI_OTHLIBS=		Abi_expat $(DL_LIBS)
-ABI_LIBS=		stdc++
+ABI_LIBS=		stdc++ $(DL_LIBS)
 
 TARGETS=		$(PROGRAM)
 
@@ -54,23 +54,11 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ##LDFLAGS +=		-static
 ##LDFLAGS +=		-shared
 
-# ACK!  TODO - do we really want a directory pattern match here in a makefile?
-# 	TODO - using $(shell) is just slightly better than letting the compiler
-#              do the expansion
-
-THE_LIBS=		$(shell ls $(LIBDIR)/*)
-
 # we override the $(PROGRAM) rule.
 
-$(PROGRAM): $(OBJS) $(THE_LIBS)
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -L/usr/local/lib
 
 build:: $(TARGETS)
-	@echo Exporting $(TARGETS) from `pwd`
-	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(BINDIR)
-
-
-

@@ -76,8 +76,8 @@ endif
 #
 
 ifeq ($(OS_NAME), WIN32)
-RCOBJS=$(RCSRCS:.rc=.res)
-OBJS+=$(RCOBJS)
+RCOBJS		= $(addprefix $(OBJDIR)/,$(RCSRCS:.rc=.res))
+OBJS		+= $(RCOBJS)
 endif
 
 #
@@ -90,16 +90,16 @@ ALL_TRASH		= $(TARGETS) $(OBJS) $(OBJDIR) LOGS TAGS $(GARBAGE) \
 
 
 ifdef DIRS
-LOOP_OVER_DIRS		=					\
-	@for d in $(DIRS); do					\
-		if test -d $$d; then				\
-			set -e;					\
-			echo "$(MAKE) -C $$d $@";		\
-			$(MAKE) -C $$d $@;			\
-			set +e;					\
-		else						\
-			echo "Skipping non-directory $$d...";	\
-		fi;						\
+LOOP_OVER_DIRS		=						\
+	@for d in $(DIRS); do						\
+		if test -d $$d; then					\
+			set -e;						\
+			echo "$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$d $@";	\
+			$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$d $@;		\
+			set +e;						\
+		else							\
+			echo "Skipping non-directory $$d...";		\
+		fi;							\
 	done
 endif
 
@@ -109,14 +109,6 @@ all:: build
 
 build::
 	@echo Building with [$(ABI_OPTIONS)].
-	+$(LOOP_OVER_DIRS)
-
-clean::
-	rm -rf $(OBJS) so_locations $(NOSUCHFILE)
-	+$(LOOP_OVER_DIRS)
-
-realclean::
-	rm -rf $(OBJS) $(TARGETS) $(OBJDIR) $(GARBAGE) so_locations $(NOSUCHFILE) $(ALL_TRASH)
 	+$(LOOP_OVER_DIRS)
 
 ifdef HELPER_PROGRAM
@@ -130,10 +122,11 @@ endif
 endif
 
 $(LIBRARY): $(OBJS)
+	@echo Building library $(LIBRARY)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
 ifeq ($(OS_NAME),WIN32)
-	@$(AR) $(subst /,\\,$(OBJS)) $(AR_EXTRA_ARGS)
+	@$(AR) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') $(AR_EXTRA_ARGS)
 else
 	@$(AR) $(OBJS) $(AR_EXTRA_ARGS)
 endif
@@ -151,7 +144,7 @@ endif
 ifeq ($(OS_NAME), WIN32)
 $(RCOBJS): $(RCSRCS)
 	@$(MAKE_OBJDIR)
-	@$(RC) -Fo$(RCOBJS) $(ABI_INCS) $(RCSRCS)
+	@$(RC) /fo$(subst /,\\,$(RCOBJS)) $(ABI_INCS) $(RCSRCS)
 	@echo $(RCOBJS) finished
 endif
 
@@ -167,10 +160,10 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.c
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CC) -Fo$(subst /,\\,$@) -c $(CFLAGS) $*.c
+	@$(CC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c $(CFLAGS) $<
 else
 	@echo $<:
-	@$(CC) -o $@ -c $(CFLAGS) $*.c
+	@$(CC) -o $@ -c $(CFLAGS) $<
 endif
 
 ################################################################################

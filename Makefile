@@ -18,18 +18,53 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-DEPENDS=
+ABI_ROOT	:=$(shell pwd)
 
-DEPENDS_ABIWORD=	$(DEPENDS)
+##################################################################
+## Useful options:
+##
+##	make	[OUT=<compiler_output_directory>]
+##		[DIST=<distribution_output_directory>]
+##		[ABI_BUILD_VERSION=x.y.z]
+##		[ABI_BUILD_ID=<some_useful_to_you_distinguishing_label>]
 
-abiword:	$(DEPENDS_ABIWORD)
-	@echo Building AbiWord...
-	$(MAKE) -C src T=abiword  &&  echo AbiWord build complete.
+
+default:	compile canonical
+
+##################################################################
+## Compile all applications in AbiSuite
+## This creates $(OUT)/bin/<programs>
+
+compile:
+	@echo Building AbiSuite with [ABI_ROOT=$(ABI_ROOT)]
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src
+
+##################################################################
+## Build system library files (strings, dictionaries, example
+## documents, default system profile, etc) in a canonical, 
+## non-installed layout.   (This is the layout we'd like to use
+## -- and do use for personal builds.  Various systems may want
+## a different layout and can use this canonical layout to
+## construct the desired layout and installation script.)
+## This creates $(OUT)/AbiSuite
+
+canonical:
+	@echo Building AbiSuite Canonical Layout
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src canonical
+
+##################################################################
+## Target to make binary distribution files
+## This creates $(DIST)/<platform_specific_installation_packages>
+
+distribution: compile canonical
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src distribution
+
+##################################################################
+## Targets to clean up the mess that we make
 
 clean:
-	$(MAKE) -C src clean
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src clean
 
 realclean:
-	$(MAKE) -C src realclean
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src realclean
 	rm -rf dist
-

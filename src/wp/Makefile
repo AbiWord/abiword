@@ -27,3 +27,25 @@ DIRS=		ap impexp main
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
+##################################################################
+## Build system library files (strings, dictionaries, example
+## documents, default system profile, etc) in a canonical, 
+## non-installed layout.
+
+## CANON_AppDir is where we put application-specific stuff in the
+## canonical layout.
+CANON_AppDir=	$(CANONDIR)/AbiWord
+
+## CANON_Lang is a wildcard to match language strings like "EnUS"
+## and "FiFI" (and not "CVS").
+CANON_Lang=	[A-Z][a-z][A-Z][A-Z]
+
+canonical:
+	@$(subst xxxx,$(CANON_AppDir),$(VERIFY_DIRECTORY))
+	@$(subst xxxx,$(CANON_AppDir)/strings,$(VERIFY_DIRECTORY))
+	@$(subst xxxx,$(CANON_AppDir)/help,$(VERIFY_DIRECTORY))
+	@$(subst xxxx,$(CANON_AppDir)/sample,$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(USERDIR)/wp/strings/*.strings $(CANON_AppDir)/strings
+	(cd $(USERDIR)/wp/help; tar -cf - $(CANON_Lang)/*.*) | (cd $(CANON_AppDir)/help; tar -xf -)
+	(cd $(USERDIR)/wp/sample; tar -cf - $(CANON_Lang)/*.*) | (cd $(CANON_AppDir)/sample; tar -xf -)
+

@@ -33,9 +33,3 @@ TARGETS=		$(LIBRARY)
 include $(ABI_DEPTH)/config/abi_rules.mk
 
 build:: $(TARGETS)
-	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
-	@$(subst xxxx,$(LIBDIR),$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(LIBDIR)
-
-
-

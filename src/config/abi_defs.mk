@@ -47,6 +47,8 @@
 ##################################################################
 
 
+##################################################################
+##################################################################
 # OS_NAME is the output of uname -s minus any forward slashes
 # (so we don't imply another level of depth).  This is to solve
 # a problem with BSD/OS.  In fact, it might be good to do this
@@ -70,6 +72,13 @@ ABICOPY=cp
 ##    ABI_INCS is constructed from the following ABI_*_INCS.  Each
 ##    of these is a directory in our source tree that we should
 ##    reference for header files.
+##
+## ABI_XAP_INCS define the cross-platform, cross-application directories
+## ABI_OTH_INCS define the header directories in src/other
+## ABI_PEEER_INCS define header directories in source trees that are peers to abi
+##
+## ABI_AP_INCS should define application-specific headers.  these are set
+##             in abi_defs_*.mk -- one for each application in AbiSuite.
 
 ABI_XAP_INCS=	/config					\
 		/af/xap/xp		/af/xap/$(ABI_NATIVE)	\
@@ -194,34 +203,62 @@ endef
 ##################################################################
 ##################################################################
 ## Directory name pattern and locations of where we put our output.
-
-OUT		= $(ABI_DEPTH)
-OBJDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/obj
-LIBDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/lib
-BINDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/bin
-
-DIST		= $(ABI_DEPTH)/../dist
-DISTDIR		= $(DIST)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/bin
-
-##################################################################
-##################################################################
-## Help for the loader.  In the makefile which builds the program,
-## the following three variables:
 ##
-##    ABI_APPLIBS should be for ABI_ versioned things in $(LIBDIR)
-##    ABI_OTHLIBS should be for MOD_ versioned things in $(LIBDIR) (from abi/src/other)
-##    ABI_LIBS should be for the X11 libraries and the like
+## $OUT/<platform>/{bin,obj}		contains the executables and
+##					all other compiler/linker
+##					generated stuff.
+## $OUT/<platform>/image		contains scratch space used
+##					to construct distribution
+##					binary images.
+## $DIST/				contains the final archives
+##					of all distribution binaries.
+##
+## (The final archives will be named $DISTBASENAME.<suffix>)
+##
+## ABI_BUILD_VERSION	should be set to the build version (1.0.0)
+##			for a numbered build.
+##
+## ABI_BUILD_ID		can be used as a identifying label (such as
+##			a date stamp in a nightly build system).
+##
+ABI_BUILD_VERSION	= unnumbered
+ABI_BUILD_ID		=
+
+OUT			= $(ABI_DEPTH)
+OUTDIR			= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
+OBJDIR			= $(OUTDIR)/obj
+LIBDIR			= $(OUTDIR)/lib
+BINDIR			= $(OUTDIR)/bin
+CANONDIR		= $(OUTDIR)/AbiSuite
+
+PKGBASENAME		= AbiSuite-$(ABI_BUILD_VERSION)-$(OS_NAME)_$(OS_ARCH)
+
+DIST			= $(ABI_DEPTH)/../dist
+USERDIR			= $(ABI_DEPTH)/../user
+
+##################################################################
+##################################################################
+## Help for the loader.  In the makefile which builds the actual
+## application (abi/src/{wp,show,...}/main/{win,unix,...}/Makefile,
+## the following variables:
+##
+##    ABI_APPLIBS should be for ABI_ versioned things in $(OBJDIR)
+##    ABI_LIBS should be for other system libraries
+##    ABI_APPLIBDEP should be ABI_APPLIBS without duplicates.
+##
+## EXTRA_LIBS is the series of -L... -l options needed to link.
+## EXTRA_LIBDEP is a pathname version of ABI_APPLIBDEP used for
+##              checking dependencies in the final link.
 
 ifeq ($(OS_NAME),WIN32)
-EXTRA_LIBS	= 	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-			$(addprefix $(LIBDIR)/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
+EXTRA_LIBS	= 	$(addprefix $(OBJDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 			$(addsuffix .lib,$(ABI_LIBS))
+EXTRA_LIBDEP	=	$(addprefix $(OBJDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBDEP)))
 else
-EXTRA_LIBS	=	-L$(LIBDIR) 							\
+EXTRA_LIBS	=	-L$(OBJDIR) 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
-			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
-			$(addprefix -l,$(ABI_LIBS))					\
-			-lpng -lz
+			$(addprefix -l,$(ABI_LIBS))
+EXTRA_LIBDEP	=	$(addprefix $(OBJDIR)/lib,$(addsuffix $(ABI_VERSION).a,$(ABI_APPLIBDEP)))
 endif
 
 ##################################################################

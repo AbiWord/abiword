@@ -27,10 +27,13 @@ RCSRCS=			Win32Main.rc
 
 PROGRAM=		AbiHello.exe
 
+## TODO should /profile be on the following line ??  does this
+## TODO enable linking with profile-libraries and thus bloat us.
+
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
 ABI_APPLIBS=		AbiHelloVer AbiUtil AbiEv AbiXAp AbiGr AbiHEAp Abi_libpng Abi_zlib Abi_expat
+ABI_APPLIBDEP=		$(ABI_APPLIBS)
 
-ABI_OTHLIBS=		
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
@@ -45,18 +48,10 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-# ACK!  TODO - do we really want a directory pattern match here in a makefile?
-
-THE_LIBS=		$(LIBDIR)/*
-
-
-$(PROGRAM): $(OBJS) $(THE_LIBS)
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CC) $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(EXTRA_LIBS)
+	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
 
 build:: $(TARGETS)
-	@echo Exporting $(TARGETS) from `pwd`...
-	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(BINDIR)
-
+	@echo Target $(TARGETS) completed.

@@ -30,13 +30,13 @@
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
-OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
+OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ | sed "s/\//-/")
 
 # Define tools
 CC 	= cl
 CCC 	= cl
 LINK 	= link
-AR 	= lib -NOLOGO -OUT:"$@"
+AR 	= lib -NOLOGO -OUT:"$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')"
 RANLIB 	= echo
 BSDECHO	= echo
 RC 	= rc.exe

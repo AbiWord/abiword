@@ -22,13 +22,9 @@ ABI_DEPTH=../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-ABI_R1 := `pwd`
-ABI_ROOT := $(ABI_R1)/../$(ABI_DEPTH)
+ABI_ROOT := $(shell pwd)/../../../..
 
-REQUIRE=		_EXPAT_ 
-REQUIRECLEAN=		clean_EXPAT_ 
-REQUIREREALCLEAN=	$(REQUIRECLEAN)
-
+REQUIRE=	_EXPAT_ 
 TARGET=		build
 
 include $(ABI_DEPTH)/config/abi_rules.mk
@@ -37,28 +33,16 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 build::		$(REQUIRE)
 	@echo Build requirements satisfied.
 
-clean::		$(REQUIRECLEAN)
-
-realclean::	$(REQUIREREALCLEAN)
-
 #################################################################
 
 _EXPAT_:
-	@if [ -d ../../$(ABI_DEPTH)/expat ]; then				\
-		echo Found expat in peer directory;				\
-		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C ../../$(ABI_DEPTH)/expat;	\
-	else									\
-		echo expat not found;						\
-		echo You need to get expat from the AbiSource downloads site;	\
-		echo It is identical to expat from www.jclark.com, except;	\
-		echo for minor modifications to integrate with the abi tree build system;	\
-		exit 1;								\
+	@if [ -d $(ABI_ROOT)/../expat ]; then						\
+		echo Found expat in peer directory;					\
+		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;			\
+	else										\
+		echo ERROR -- expat not found;						\
+		echo You need to get expat from the AbiSource downloads site;		\
+		echo It is identical to expat from www.jclark.com, except for;		\
+		echo minor modifications to integrate with the AbiSource build system.;	\
+		exit 1;									\
 	fi
-
-#################################################################
-
-clean_EXPAT_:
-	@if [ -d ../../$(ABI_DEPTH)/expat ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/expat clean;	\
-	fi
-

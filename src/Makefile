@@ -18,14 +18,71 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+ABI_ROOT:=$(shell pwd)/..
 ABI_DEPTH=.
+
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-T=abiword
-
-ifeq ($(T), abiword)
 DIRS=		config other af text wp
-endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
+##################################################################
+## Targets for cleaning up
+
+clean::
+	rm -rf $(OBJDIR)
+
+realclean::
+	rm -rf $(OUTDIR) $(DIST)
+
+##################################################################
+## Build system library files (strings, dictionaries, example
+## documents, default system profile, etc) in a canonical, 
+## non-installed layout.
+
+## Set the following to a list of pathnames to be copied to $(CANONDIR)
+CANON_TOPLEVELFILES=	$(ABI_DEPTH)/../COPYING
+
+## Set the following to a list of directories (probably a subset of DIRS)
+## that have work to do.
+CANON_SubDirs=		wp
+
+## TODO decide who/what wants to deal with unix fonts.
+
+canonical:
+	@$(subst xxxx,$(CANONDIR),$(VERIFY_DIRECTORY))
+	@for k in $(CANON_TOPLEVELFILES); do			\
+		$(ABICOPY) $$k $(CANONDIR);			\
+	done
+	@for k in $(CANON_SubDirs); do				\
+		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
+	done
+	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary) | (cd $(CANONDIR); tar -xf -)
+
+##################################################################
+## Target for building a distribution package from the compiled
+## sources.  Since each platform has it's own quirks, the config
+## files in abi/src/config/platforms/*.mk must specify which
+## package script to run.  Note, some platform scripts may build
+## more than one package (like Linux with .tgz, .deb, .rpm)
+##
+## I'm not going to set the dependency to the executable here
+## because this probably needs to be a separate step anyway and
+## it is already set at the /abi level.
+
+ifneq ($(ABIPKGDIR),)
+
+distribution:
+	@echo Building distribution packages for $(ABIPKGDIR)...
+	@$(MAKE) ABI_ROOT=$(ABI_ROOT) -C pkg/$(ABIPKGDIR) distribution
+
+else
+
+distribution:
+	@echo Error -- No package script defined for this platform.
+	@echo Error -- Please make sure ABIPKGDIR is set in
+	@echo Error -- the proper 'abi/src/config/platforms/*.mk'
+	@echo Error -- makefile.
+	@exit 1
+endif

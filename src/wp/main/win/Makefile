@@ -25,12 +25,16 @@ include $(ABI_DEPTH)/config/abi_defs_wp.mk
 CPPSRCS=		Win32Main.cpp
 RCSRCS=			Win32Main.rc
 
-PROGRAM=		AbiWord.exe
+PROGRAM=		$(BINDIR)/AbiWord.exe
+
+## TODO should /profile be on the following line ??  does this
+## TODO enable linking with profile-libraries and thus bloat us.
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
-ABI_APPLIBS=		AbiWordVer AbiUtil AbiImpExp MsWordView AbiPTbl AbiFmt AbiEv AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib Abi_expat
+ABI_APPLIBS=		AbiWordVer AbiUtil AbiImpExp MsWordView AbiPTbl AbiFmt AbiEv \
+			AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib Abi_expat
+ABI_APPLIBDEP=		$(ABI_APPLIBS)
 
-ABI_OTHLIBS=		
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
@@ -45,23 +49,10 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-# ACK!  TODO - do we really want a directory pattern match here in a makefile?
-
-THE_LIBS=		$(LIBDIR)/*
-
-
-$(PROGRAM): $(OBJS) $(THE_LIBS)
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
 
 build:: $(TARGETS)
-	@echo Exporting $(TARGETS) from `pwd` to $(BINDIR)
-	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(BINDIR)
-	@$(subst xxxx,$(DISTDIR),$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DISTDIR)
-
-# the last two lines are a hack to put something into the DIST tree until
-# we decide what we want the layout to be.
-
+	@echo Target $(TARGETS) completed.
