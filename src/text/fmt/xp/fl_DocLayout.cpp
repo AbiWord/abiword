@@ -200,6 +200,10 @@ UT_sint32 FL_DocLayout::getHeight()
 		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
 		iHeight += p->getHeight();
+		if(getView() && (getView()->getViewMode() == VIEW_NORMAL))
+		{
+			iHeight = iHeight - p->getOwningSection()->getTopMargin() - p->getOwningSection()->getBottomMargin();
+		}
 	}
 
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))

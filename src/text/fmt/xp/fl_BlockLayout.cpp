@@ -5024,12 +5024,11 @@ bool fl_BlockLayout::recalculateFields(bool bLayoutDependentOnly)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-            if(bLayoutDependentOnly && !pFieldRun->isLayoutDependent())
-            	continue;
-
-			const bool bSizeChanged = pFieldRun->calculateValue();
-
-			bResult = bResult || bSizeChanged;
+            if(!bLayoutDependentOnly || pFieldRun->isLayoutDependent())
+            {
+				const bool bSizeChanged = pFieldRun->calculateValue();
+				bResult = bResult || bSizeChanged;
+			}
 		}
 		//       		else if(pRun->isField() == true)
 		//	{

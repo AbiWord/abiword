@@ -149,6 +149,28 @@ void fp_Container::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
 }
 
 /*!
+  Get container's X position
+  \return X position
+*/
+UT_sint32 fp_Container::getX(void) const
+{
+	return m_iX;
+}
+
+/*!
+  Get container's Y position.
+  \return Y position
+*/
+UT_sint32 fp_Container::getY(void) const
+{
+	if(getSectionLayout()->getDocLayout()->getView()  && (getSectionLayout()->getDocLayout()->getView()->getViewMode() == VIEW_NORMAL))
+	{
+		return m_iY - static_cast<fl_DocSectionLayout *>(getSectionLayout())->getTopMargin();
+	}
+	return m_iY;
+}
+
+/*!
   Get line's offsets relative to this container
  \param  pLine Line
  \retval xoff Line's X offset relative to container
@@ -853,6 +875,12 @@ fl_HdrFtrSectionLayout* fp_ShadowContainer::getHdrFtrSectionLayout(void) const
 */
 void fp_ShadowContainer::clearScreen(void)
 {
+	FV_View * pView = getPage()->getDocLayout()->getView();
+	if(pView->getViewMode() ==  VIEW_NORMAL)
+	{
+		UT_DEBUGMSG(("SEVIOR: Attempting to clear Header/Footer in Normal Mode \n"));
+		return;
+	}
 	int count = m_vecLines.getItemCount();
 	for (int i = 0; i<count; i++)
 	{
@@ -872,6 +900,12 @@ void fp_ShadowContainer::clearScreen(void)
 
 void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 {
+	FV_View * pView = getPage()->getDocLayout()->getView();
+	if(pView->getViewMode() ==  VIEW_NORMAL)
+	{
+		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));
+		return;
+	}
 	UT_sint32 count = m_vecLines.getItemCount();
 	UT_sint32 iY= 0;
 	for (UT_sint32 i = 0; i<count; i++)
@@ -893,7 +927,6 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 			break;
 		pLine->draw(&da);
 	}
-	FV_View * pView = getPage()->getDocLayout()->getView();
     if(pView && pView->isHdrFtrEdit() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
 	{
 		_drawHdrFtrBoundaries(pDA);
@@ -911,6 +944,12 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
     UT_ASSERT(pDA->pG == getGraphics());
+	FV_View * pView = getPage()->getDocLayout()->getView();
+	if(pView->getViewMode() ==  VIEW_NORMAL)
+	{
+		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));
+		return;
+	}
 //
 // Can put this in to speed things up.
 //

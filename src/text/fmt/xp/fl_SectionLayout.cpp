@@ -1274,6 +1274,27 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	m_bForceNewPage = false;
 }
 
+UT_sint32 fl_DocSectionLayout::getTopMargin(void) const 
+{ 
+	return m_iTopMargin; 
+}
+
+UT_sint32 fl_DocSectionLayout::getTopMarginInLayoutUnits(void) const 
+{	
+	return m_iTopMarginLayoutUnits; 
+}
+
+UT_sint32 fl_DocSectionLayout::getBottomMargin(void) const 
+{ 	
+	return m_iBottomMargin; 
+}
+
+UT_sint32 fl_DocSectionLayout::getBottomMarginInLayoutUnits(void) const 
+{
+	return m_iBottomMarginLayoutUnits; 
+}
+
+
 /*!
  * Set the color of the background paper in the following order of precedence
  * 1. If The section level proper "background-color" is present and is
@@ -2674,7 +2695,8 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 //  This triggers if we're rebuilding a section before page is defined like in a section change
 //  strux. Reinstate if needed to find other bugs.
 //	UT_ASSERT(0 > _findShadow(pPage));
-
+//
+	
 	if(_findShadow(pPage) > -1)
 		return;
 //

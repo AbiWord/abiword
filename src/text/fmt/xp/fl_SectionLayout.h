@@ -203,10 +203,11 @@ public:
 	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32			getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
-	inline UT_sint32			getTopMargin(void) const { return m_iTopMargin; }
-	inline UT_sint32			getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
-	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
-	inline UT_sint32			getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
+
+	UT_sint32                   getTopMargin(void) const;
+	UT_sint32                   getTopMarginInLayoutUnits(void) const;
+    UT_sint32                   getBottomMargin(void) const;
+    UT_sint32                   getBottomMarginInLayoutUnits(void) const;
 	inline UT_sint32			getFooterMargin(void) const { return m_iFooterMargin; }
 	inline UT_sint32			getFooterMarginInLayoutUnits(void) const { return m_iFooterMarginLayoutUnits; }
 	inline UT_sint32			getHeaderMargin(void) const { return m_iHeaderMargin; }

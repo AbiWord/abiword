@@ -306,23 +306,24 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			pTmpCol = pNextCol;
 		}
 	}
-
-	if (m_pHeader)
+    if(m_pView->getViewMode()!= VIEW_NORMAL) 
 	{
-		dg_DrawArgs da = *pDA;
-  		da.xoff += m_pHeader->getX();
-  		da.yoff += m_pHeader->getY();
-		m_pHeader->draw(&da);
-	}
+		if (m_pHeader)
+		{
+			dg_DrawArgs da = *pDA;
+			da.xoff += m_pHeader->getX();
+			da.yoff += m_pHeader->getY();
+			m_pHeader->draw(&da);
+		}
 	
-	if (m_pFooter)
-	{
-		dg_DrawArgs da = *pDA;
-  		da.xoff += m_pFooter->getX();
-  		da.yoff += m_pFooter->getY();
-		m_pFooter->draw(&da);
+		if (m_pFooter)
+		{
+			dg_DrawArgs da = *pDA;
+			da.xoff += m_pFooter->getX();
+			da.yoff += m_pFooter->getY();
+			m_pFooter->draw(&da);
+		}
 	}
-	
 	m_bNeedsRedraw = false;
 }
 
@@ -893,40 +894,43 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 // Look in header for insertion point
 //
 	pShadow = NULL;
-	if(m_pHeader != NULL)
+	if(m_pView && m_pView->getViewMode() != VIEW_NORMAL)
 	{
-		if (m_pHeader->getFirstLine())
+		if(m_pHeader != NULL)
 		{
-			if (
-				(x >= m_pHeader->getX())
-				&& (x < (m_pHeader->getX() + m_pHeader->getWidth()))
-				&& (y >= m_pHeader->getY())
-				&& (y < (m_pHeader->getY() + m_pHeader->getHeight()))
-				)
+			if (m_pHeader->getFirstLine())
 			{
+				if (
+					(x >= m_pHeader->getX())
+					&& (x < (m_pHeader->getX() + m_pHeader->getWidth()))
+					&& (y >= m_pHeader->getY())
+					&& (y < (m_pHeader->getY() + m_pHeader->getHeight()))
+					)
+				{
 					m_pHeader->mapXYToPosition(x - m_pHeader->getX(), y - m_pHeader->getY(), pos, bBOL, bEOL);
 					pShadow = m_pHeader->getShadow();
 					return;
+				}
 			}
 		}
-	}
 //
 // Look in footer for insertion point
 //
-	if(m_pFooter != NULL)
-	{
-		if (m_pFooter->getFirstLine())
+		if(m_pFooter != NULL)
 		{
-			if (
-				(x >= m_pFooter->getX())
-				&& (x < (m_pFooter->getX() + m_pFooter->getWidth()))
-				&& (y >= m_pFooter->getY())
-				&& (y < (m_pFooter->getY() + m_pFooter->getHeight()))
-				)
+			if (m_pFooter->getFirstLine())
 			{
+				if (
+					(x >= m_pFooter->getX())
+					&& (x < (m_pFooter->getX() + m_pFooter->getWidth()))
+					&& (y >= m_pFooter->getY())
+					&& (y < (m_pFooter->getY() + m_pFooter->getHeight()))
+					)
+				{
 					m_pFooter->mapXYToPosition(x - m_pFooter->getX(), y - m_pFooter->getY(), pos, bBOL, bEOL);
 					pShadow = m_pFooter->getShadow();
 					return;
+				}
 			}
 		}
 	}

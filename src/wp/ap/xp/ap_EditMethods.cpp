@@ -5853,6 +5853,8 @@ Defun1(viewNormalLayout)
 
 	pScheme->setValue(AP_PREF_KEY_LayoutMode, "2");
 
+	pView->updateScreen(false);
+	pView->notifyListeners(AV_CHG_ALL);
 	return true;
 }
 
@@ -5907,6 +5909,9 @@ Defun1(viewPrintLayout)
 	UT_ASSERT(pScheme);
 
 	pScheme->setValue(AP_PREF_KEY_LayoutMode, "1");
+
+	pView->updateScreen(false);
+	pView->notifyListeners(AV_CHG_ALL);
 
 	return true;
 }

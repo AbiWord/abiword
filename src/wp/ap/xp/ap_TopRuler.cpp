@@ -202,6 +202,12 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 		UT_Rect pClipRect;
 		pClipRect.top = 0;
 		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		if(pView->getViewMode() == VIEW_NORMAL)
+		{
+			pClipRect.left = 0;
+		}
+
 		pClipRect.height = m_iHeight;
 		pClipRect.width = m_iWidth;
 		draw(&pClipRect);
@@ -250,6 +256,12 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 		return;
 
 	UT_sint32 xFixed = MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		xFixed = s_iFixedWidth;
+	}
+
 	UT_sint32 width = m_iWidth - xFixed;
 	UT_sint32 height = s_iFixedHeight;
 	UT_sint32 y_dest = 0;
@@ -320,9 +332,16 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 
 	// convert page-relative coordinates into absolute coordinates.
-	
-	UT_sint32 xAbsLeft = xFixed + pInfo->m_xPageViewMargin + x - m_xScrollOffset;
+	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		ixMargin = 0;
+		xFixed = s_iFixedWidth;
+	}
+	UT_sint32 xAbsLeft = xFixed + ixMargin + x - m_xScrollOffset;
 	UT_sint32 xAbsRight = xAbsLeft + w;
+
 
 	// we need to do our own clipping for the fixed area
 	
@@ -357,10 +376,6 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		// it will either be a single line or a small
 		// font -- let's assume that a 3 digit centered
 		// string will be less than 100 pixels.
-		
-		UT_Rect r(xTick-50,yTop,100,yBar);
-		if (!r.intersectsRect(pClipRect))
-			return;
 	}
 
 	if (k % tick.tickLabel)
@@ -414,6 +429,12 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	UT_ASSERT(xTo >= 0);
 	
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		xFixed = s_iFixedWidth;
+	}
+
 
 	// convert page-relative coordinates into absolute coordinates.
 	
@@ -434,6 +455,10 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	if (xAbsTo > xAbsFrom)
 	{
 		// draw increasing numbers to the right
+		//if(pView->getViewMode() == VIEW_NORMAL)
+		//{
+		//	xAbsOrigin -= s_iFixedWidth;
+		//}
 		UT_sint32 k=0;
 		while (1)
 		{
@@ -442,7 +467,9 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 				break;
 			
 			if (xTick >= xAbsFrom)
+			{
 				_drawTickMark(pClipRect,pInfo,tick,clr3d,pFont,k,xTick);
+			}
 			k++;
 		}
 	}
@@ -661,6 +688,12 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
 	UT_sint32 l,xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		xFixed = s_iFixedWidth;
+	}
+
 #if 0
 //#ifdef BIDI_ENABLED
 	bool bRTL;	
@@ -761,7 +794,13 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		_getTabStopRect(pInfo, anchor, &rect);
 
 		_drawTabStop(rect, m_draggingTabType, false);
-		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth))
+		UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		if(pView->getViewMode() == VIEW_NORMAL)
+		{
+			xFixed = s_iFixedWidth;
+		}
+		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)xFixed)
 			_drawTabStop(m_draggingRect, m_draggingTabType, true);
 	}
 	
@@ -1060,8 +1099,15 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
     else
 #endif
 	{
-		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,0+1,pInfo->u.c.m_xaLeftMargin-1);
-		sum=pInfo->u.c.m_xaLeftMargin;
+		UT_sint32 width = pInfo->u.c.m_xaLeftMargin;
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		if(pView->getViewMode() == VIEW_NORMAL)
+		{
+			width -= s_iFixedWidth;
+		}
+
+		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,0+1, width-1);
+		sum = width;
 	}
 
 
@@ -1118,8 +1164,8 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// be drawn on a negative scale to the left relative to here.  everything
 	// to the right of this x-value will be drawn on a positive scale to the
 	// right.
-
-	UT_sint32 xTickOrigin;
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	UT_sint32 xTickOrigin = 0;
 #ifdef BIDI_ENABLED
 	
 	if(bRTL)
@@ -1131,9 +1177,14 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	else
 #endif
 	{	//do not remove!!!
-	xTickOrigin = pInfo->u.c.m_xaLeftMargin;	
-	if (pInfo->m_iCurrentColumn > 0)
-		xTickOrigin += pInfo->m_iCurrentColumn * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
+		xTickOrigin = pInfo->u.c.m_xaLeftMargin;
+		if(pView->getViewMode() == VIEW_NORMAL)
+		{
+			xTickOrigin -= s_iFixedWidth;
+		}
+	
+		if (pInfo->m_iCurrentColumn > 0)
+			xTickOrigin += pInfo->m_iCurrentColumn * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
     }
 
 	sum = 0;
@@ -1145,21 +1196,25 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		sum = xTickOrigin + pInfo->u.c.m_xaRightMargin;
 		if(pInfo->u.c.m_xaRightMargin)
 			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin,xTickOrigin,sum);
-			sum -= pInfo->u.c.m_xaRightMargin;
+		sum -= pInfo->u.c.m_xaRightMargin;
 	}	
 	else
 #endif
 	{	//do not remove!!!
-	if(pInfo->u.c.m_xaLeftMargin)
-		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
+		if(pInfo->u.c.m_xaLeftMargin)
+			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
 		sum += pInfo->u.c.m_xaLeftMargin;
 	}
 	
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		sum -= s_iFixedWidth;
+	}
+
 	
 	for (k=0; k<pInfo->m_iNumColumns; k++)
 	{
 		// draw positive or negative ticks on this column.
-		
 		if (k < pInfo->m_iCurrentColumn)
 #ifdef BIDI_ENABLED
 			if(bRTL)
@@ -1236,6 +1291,12 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 void AP_TopRuler::_xorGuide(bool bClear)
 {
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		xFixed = 0;
+	}
+
 	UT_sint32 x = m_draggingCenter - xFixed;
 
 	// when dragging the column gap, we draw lines on both
@@ -1778,6 +1839,12 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			// edge of the page is always a right edge of the page ...
 			
 			UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			if(pView->getViewMode() == VIEW_NORMAL)
+			{
+				xFixed = 0;
+			}
+
 			UT_sint32 xAbsLeft;
 			double dxrel;
 			
@@ -1793,7 +1860,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
-            FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
@@ -2152,6 +2218,12 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// for example, it will not let a left indent be moved to a place before the end of the left page view margin
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		xFixed = s_iFixedWidth;
+	}
+
 	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
 	UT_sint32 xAbsRight;  	// NB !!! this variable is used by the page margins and
 							// refers to the very right edge of the page; it is not
@@ -2273,7 +2345,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			iFirstIndentR = 0;
 	        iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
 		}
-			
+
 		m_draggingCenter = tick.snapPixelToGrid(x);
 
 
@@ -2885,8 +2957,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 double AP_TopRuler::_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & tick)
 {
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		xFixed = 0;
+	}
 
+	UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
 	return tick.scalePixelDistanceToUnits(xColRel - xAbsLeft) * tick.tickUnitScale /  tick.tickUnit * tick.dBasicUnit;
 }
 
@@ -2897,7 +2974,14 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	UT_sint32 xOrigin = pInfo->u.c.m_xaLeftMargin
 		+ kCol * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
-	UT_sint32 xAbsLeft = xFixed + pInfo->m_xPageViewMargin + xOrigin - m_xScrollOffset;
+	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		ixMargin = 0;
+		xFixed = 0;
+	}
+	UT_sint32 xAbsLeft = xFixed + ixMargin + xOrigin - m_xScrollOffset;
 #ifdef BIDI_ENABLED
 	bool bRTL;	
 	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTL);

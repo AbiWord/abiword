@@ -127,7 +127,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		_m_matchCase(false),
 		_m_findNextString(0),
 		m_bShowPara(false),
-		m_viewMode(VIEW_NORMAL),
+		m_viewMode(VIEW_PRINT),
 		m_previewMode(PREVIEW_NONE),
 		m_bDontUpdateScreenOnGeneralUpdate(false),
 		m_iPieceTableState(0)
@@ -140,6 +140,24 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	// initialize prefs listener
 	pApp->getPrefs()->addListener( _prefsListener, this );
 
+	// Get View Mode
+	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		const char * szViewMode = NULL;
+		pApp->getPrefsValue((const char *) AP_PREF_KEY_LayoutMode,&szViewMode);
+		if(strcmp(szViewMode,"1") == 0)
+		{
+			setViewMode(VIEW_PRINT);
+		}
+		if(strcmp(szViewMode,"2") == 0)
+		{
+			setViewMode(VIEW_NORMAL);
+		}
+		if(strcmp(szViewMode,"3") == 0)
+		{
+			setViewMode(VIEW_WEB);
+		}
+	}
 #ifdef BIDI_ENABLED
 	pApp->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, &m_bDefaultDirectionRtl);
 		
@@ -4140,6 +4158,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				{
 					getPageYOffset(pPage, iPageOffset);
 					yPoint = pPage->getBottom();
+					if(getViewMode() == VIEW_NORMAL)
+					{
+						fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+						yPoint = yPoint - pDSL->getTopMargin() -2;
+					}
 				}
 				else
 				{
@@ -4599,6 +4622,11 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 	while (pPage)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			iPageHeight = iPageHeight - pPage->getOwningSection()->getTopMargin() - 
+				pPage->getOwningSection()->getBottomMargin();
+		}
 		if (yClick < iPageHeight)
 		{
 			// found it
@@ -6082,7 +6110,11 @@ void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 			break;
 		}
 		y += pPage->getHeight() + getPageViewSep();
-
+		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			y = y - pDSL->getTopMargin() - pDSL->getBottomMargin();
+		}
 		pPage = pPage->getNext();
 	}
 
@@ -6102,6 +6134,11 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 			break;
 		}
 		y += pPage->getHeight() + getPageViewSep();
+		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			y = y - pDSL->getTopMargin() - pDSL->getBottomMargin();
+		}
 
 		pPage = pPage->getNext();
 	}
@@ -6114,8 +6151,12 @@ UT_sint32 FV_View::getPageViewSep(void) const
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-	if(isPreview()  || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 		return 0;
+	else if (getViewMode() == VIEW_NORMAL)
+	{
+		return 1;
+	}
 	else
 		return fl_PAGEVIEW_PAGE_SEP;
 }
@@ -6126,7 +6167,7 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 	// return the amount of gray-space we draw to the left
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() == VIEW_NORMAL))
 		return 0;
 	else
 		return fl_PAGEVIEW_MARGIN_X;
@@ -6137,7 +6178,7 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-	if(isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() == VIEW_NORMAL))
 		return 0;
 	else
 		return fl_PAGEVIEW_MARGIN_Y;
@@ -6786,13 +6827,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	if (!bDirtyRunsOnly)
 	{
-		if (m_xScrollOffset < getPageViewLeftMargin())
+		if ((m_xScrollOffset < getPageViewLeftMargin()) && !(getViewMode() == VIEW_NORMAL))
 		{
 			// fill left margin
 			m_pG->fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, m_iWindowHeight);
 		}
 
-		if (m_yScrollOffset < getPageViewTopMargin())
+		if (m_yScrollOffset < getPageViewTopMargin() && !(getViewMode() == VIEW_NORMAL))
 		{
 			// fill top margin
 			m_pG->fillRect(clrMargin, 0, 0, m_iWindowWidth, getPageViewTopMargin() - m_yScrollOffset);
@@ -6806,7 +6847,14 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
 		UT_sint32 adjustedTop		= curY - m_yScrollOffset;
-		UT_sint32 adjustedBottom	= adjustedTop + iPageHeight + getPageViewSep();
+		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
+		}
+
+		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
+
 		if (adjustedTop > m_iWindowHeight)
 		{
 			// the start of this page is past the bottom
@@ -6880,7 +6928,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			adjustedBottom -= getPageViewSep();
 
-			if (!bDirtyRunsOnly || pPage->needsRedraw())
+			if (!bDirtyRunsOnly || pPage->needsRedraw() && !(getViewMode() == VIEW_NORMAL))
 			{	
 			  UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
 			  m_pG->fillRect(*pClr,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
@@ -6892,13 +6940,25 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			UT_RGBColor clr(0,0,0);		// black
 			m_pG->setColor(clr);
 
-			// one pixel border
-			if(!isPreview())
+			// one pixel border a
+			if(!isPreview() && !(getViewMode() == VIEW_NORMAL))
 			{
 				m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
 				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 				m_pG->drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
 				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
+			}
+
+//
+// Draw page seperator
+//
+			if(getViewMode() == VIEW_NORMAL)
+			{
+				UT_RGBColor clrPageSep(192,192,192);		// light gray
+				m_pG->setColor(clrPageSep);
+				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight, adjustedBottom);
+				adjustedBottom += 1;
+				m_pG->setColor(clr);
 			}
 			// fill to right of page
 			if (m_iWindowWidth - (adjustedRight + 1) > 0)
@@ -6907,8 +6967,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 
 			// fill separator below page
-//			if ((m_iWindowHeight - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()) )
-			if ((m_iWindowHeight - (adjustedBottom + 1)) > 0)
+			if ((m_iWindowHeight - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()) )
 			{
 				if(pPage->getNext() != NULL)
 				{
@@ -6920,19 +6979,31 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, botfill);
 				}
 			}
-			
-			// two pixel drop shadow
-			adjustedLeft += 3;
-			adjustedBottom += 1;
-			m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
-			adjustedBottom += 1;
-			m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
 
-			adjustedTop += 3;
-			adjustedRight += 1;
-			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
-			adjustedRight += 1;
-			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+			// two pixel drop shadow
+			
+			if(!isPreview() && !(getViewMode() == VIEW_NORMAL))
+			{
+				adjustedLeft += 3;
+				adjustedBottom += 1;
+				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+			}
+			if(!isPreview() && !(getViewMode() == VIEW_NORMAL))
+			{
+				adjustedBottom += 1;
+				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+			}
+			if(!isPreview() && !(getViewMode() == VIEW_NORMAL))
+			{
+				adjustedTop += 3;
+				adjustedRight += 1;
+				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+			}
+			if(!isPreview() && !(getViewMode() == VIEW_NORMAL))
+			{
+				adjustedRight += 1;
+				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+			}
 		}
 
 		curY += iPageHeight + getPageViewSep();

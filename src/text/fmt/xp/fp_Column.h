@@ -95,20 +95,14 @@ public:
 	*/
 	inline UT_sint32	getWidthInLayoutUnits(void) const
 		{ UT_ASSERT(m_iWidthLayoutUnits); return m_iWidthLayoutUnits; }
-	/*!
-	  Get container's X position
-	  \return X position
-	*/
-	inline UT_sint32	getX(void) const
-		{ return m_iX; }
-	void _setX( UT_sint32 iX) { m_iX = iX;}
-	/*!
-	  Get container's Y position
-	  \return Y position
-	*/
-	inline UT_sint32	getY(void) const
-		{ return m_iY; }
-	void _setY( UT_sint32 iY) { m_iY = iY;}
+
+	UT_sint32	getX(void) const;
+
+	void        _setX( UT_sint32 iX) { m_iX = iX;}
+
+	UT_sint32	getY(void) const;
+
+	void        _setY( UT_sint32 iY) { m_iY = iY;}
 	/*!
 	  Get page container is located on
 	  \return Page
