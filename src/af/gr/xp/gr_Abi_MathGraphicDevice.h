@@ -26,12 +26,12 @@
 class GR_Abi_MathGraphicDevice : public MathGraphicDevice
 {
 protected:
-  GR_Abi_MathGraphicDevice(void);
+  GR_Abi_MathGraphicDevice(class GR_Graphics*);
   virtual ~GR_Abi_MathGraphicDevice();
 
 public:
-  static SmartPtr<GR_Abi_MathGraphicDevice> create(void)
-  { return new GR_Abi_MathGraphicDevice(); }
+  static SmartPtr<GR_Abi_MathGraphicDevice> create(class GR_Graphics* pGr)
+  { return new GR_Abi_MathGraphicDevice(pGr); }
 
 private:
   SmartPtr<class GR_Abi_AreaFactory> m_abiFactory;

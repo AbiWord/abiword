@@ -135,7 +135,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bPlaceAtSecEnd = false;
 
 	// MathView-related stuff
-	SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create();
+	SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create(m_pG);
 	m_pMathGraphicDevice = mathGraphicDevice;
 	m_pMathGraphicDevice->ref();
 	m_pAbiContext = new GR_Abi_RenderingContext(pG);

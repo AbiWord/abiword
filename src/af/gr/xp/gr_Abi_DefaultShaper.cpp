@@ -114,3 +114,9 @@ GR_Abi_DefaultShaper::shapeChar(MathVariant variant, const MathFormattingContext
   // font size and font variant
   return factory->charArea(m_pGraphics, font, ch);
 }
+
+void
+GR_Abi_DefaultShaper::setGraphics(GR_Graphics* pGr)
+{
+  m_pGraphics = pGr;
+}

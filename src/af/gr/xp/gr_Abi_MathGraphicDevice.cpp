@@ -19,19 +19,23 @@
 
 #include <MathView/MathMLElement.hh>
 #include <MathView/ShaperManager.hh>
-//#include <MathView/SpaceShaper.hh>
+#include <MathView/SpaceShaper.hh>
 
 #include "gr_Abi_AreaFactory.h"
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_DefaultShaper.h"
 
-GR_Abi_MathGraphicDevice::GR_Abi_MathGraphicDevice()
+GR_Abi_MathGraphicDevice::GR_Abi_MathGraphicDevice(GR_Graphics* pGr)
   : m_abiFactory(GR_Abi_AreaFactory::create())
 {
+  UT_ASSERT(pGr);
+
   setFactory(m_abiFactory);
 
-  getShaperManager()->registerShaper(GR_Abi_DefaultShaper::create());
-  //getShaperManager()->registerShaper(SpaceShaper::create());
+  SmartPtr<GR_Abi_DefaultShaper> defaultShaper = GR_Abi_DefaultShaper::create();
+  defaultShaper->setGraphics(pGr);
+  getShaperManager()->registerShaper(defaultShaper);
+  getShaperManager()->registerShaper(SpaceShaper::create());
 }
 
 GR_Abi_MathGraphicDevice::~GR_Abi_MathGraphicDevice()
