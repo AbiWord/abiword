@@ -140,16 +140,19 @@ DLG_NoSaveFile_DirNotWriteable="A directoria '%s' esta protegida contra escita."
 
 DLG_OK="OK"
 
+
 DLG_Options_Btn_Apply="Aplicar"
 DLG_Options_Btn_CustomDict="&amp;Dicionário pessoal..."
 DLG_Options_Btn_Default="&amp;Original"
 DLG_Options_Btn_IgnoreEdit="&amp;Modificar"
 DLG_Options_Btn_IgnoreReset="&amp;Cancelar"
 DLG_Options_Btn_Save="&amp;Gravar"
+DLG_Options_Label_DefaultPageSize="Tamanho habitual da página"
 DLG_Options_Label_PrefsAutoSave="Gravar &amp;automaticamente as preferências"
 DLG_Options_Label_PrefsCurrentScheme="Esquema de preferências actual"
 DLG_Options_Label_SmartQuotesEnable="Activar citações estilizadas"
 DLG_Options_Label_SpellCheckAsType="Verificar ortografia enquanto escreve"
+
 DLG_Options_Label_SpellCustomDict="Dicionário pessoal:"
 DLG_Options_Label_SpellHideErrors="&amp;Esconder erros ortográficos no documento"
 DLG_Options_Label_SpellIgnoredWord="Palavras ignoradas:"
@@ -180,6 +183,17 @@ DLG_Options_TabLabel_Spelling="Correcção ortográfica"
 DLG_Options_TabLabel_View="Ver"
 
 DLG_OverwriteFile="O ficheiro '%s' já existe. Quer substituí-lo?"
+
+DLG_PageNumbers_Alignment="Alinhamento"
+DLG_PageNumbers_Center="Centrado"
+DLG_PageNumbers_Footer="No rodapé"
+DLG_PageNumbers_Header="No cabeçalho"
+DLG_PageNumbers_Left="À esquerda"
+DLG_PageNumbers_Position="Posição"
+DLG_PageNumbers_Preview="Visualização"
+DLG_PageNumbers_Right="À direita"
+DLG_PageNumbers_Title="Numeração de páginas"
+
 
 DLG_Para_AlignCentered="ao Centro"
 DLG_Para_AlignJustified="Justificado"
@@ -319,6 +333,7 @@ DLG_Zoom_PreviewFrame="Exemplo"
 DLG_Zoom_RadioFrameCaption="Zoom a..."
 DLG_Zoom_WholePage="Toda a página"
 DLG_Zoom_ZoomTitle="Zoom"
+
 
 FIELD_Datetime_CurrentTime="Hora actual"
 FIELD_Numbers_ListLabel="Etiqueta da lista"
