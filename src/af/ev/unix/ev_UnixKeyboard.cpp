@@ -19,6 +19,7 @@
  
 
 #include <gdk/gdk.h>
+#include <gdk/gdkkeysyms.h>
 #include <string.h>
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -85,11 +86,13 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	if (s_isVirtualKeyCode(e->keyval))
 	{
 		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval);
+
 		switch (nvk)
 		{
 		case EV_NVK__IGNORE__:
 			return false;
 		default:
+
 			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
 
 			switch (result)
@@ -428,10 +431,11 @@ static bool s_isVirtualKeyCode(gint keyval)
 
 	if (keyval > 0x0000FFFF)
 		return false;//was true before CJK patch
+
+	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9) // number pad keys
+		return false;
 	
 	if (keyval > 0xFF00)				// see the above table
-		return true;
-	if (keyval > 0xFE00)
 		return true;
 
 	UT_ASSERT(keyval <= 0xFD00);		// we don't what to do with 3270 keys
