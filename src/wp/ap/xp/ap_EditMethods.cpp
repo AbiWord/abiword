@@ -171,6 +171,8 @@ public:
 	static EV_EditMethod_Fn replace;
 
 	static EV_EditMethod_Fn dlgFont;
+	static EV_EditMethod_Fn fontFamily;
+	static EV_EditMethod_Fn fontSize;
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
@@ -314,6 +316,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(replace),				_M_,	""),
 
 	EV_EditMethod(NF(dlgFont),				0,		""),
+	EV_EditMethod(NF(fontFamily),			_D_,	""),
+	EV_EditMethod(NF(fontSize),				_D_,	""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
 	EV_EditMethod(NF(toggleItalic),			0,		""),
 	EV_EditMethod(NF(toggleUline),			0,		""),
@@ -630,7 +634,7 @@ Defun1(fileOpen)
 	if (!bOK || !pNewFile)
 		return UT_FALSE;
 	
-	// we own storate for pNewFile and must free it.
+	// we own storage for pNewFile and must free it.
 		
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	AP_App * pApp = pFrame->getApp();
@@ -1539,6 +1543,38 @@ Defun1(dlgFont)
 	return s_doFontDlg(pView);
 }
 
+Defun(fontFamily)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "font-family", NULL, 0};
+	properties[1] = (const XML_Char *) pCallData->m_pData;
+	pView->setCharFormat(properties);
+	return UT_TRUE;
+}
+
+Defun(fontSize)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "font-size", NULL, 0};
+
+	// BUGBUG: stupid casting trick will eventually bite us
+	const XML_Char * sz = (const XML_Char *) pCallData->m_pData;
+
+	if (sz && *sz)
+	{
+		int len = strlen(sz) + 2;
+		XML_Char * buf = (XML_Char *) calloc(len, sizeof(XML_Char *));
+
+		sprintf(buf, "%spt", sz);
+
+		properties[1] = buf;
+		pView->setCharFormat(properties);
+
+		FREEP(buf);
+	}
+	return UT_TRUE;
+}
+
 /*****************************************************************/
 
 static UT_Bool _toggleSpan(FV_View * pView,
@@ -1621,8 +1657,7 @@ static UT_Bool _toggleSpan(FV_View * pView,
 	// set it either way
 	pView->setCharFormat(props_out);
 
-	if (buf)
-		free(buf);
+	FREEP(buf);
 
 	return UT_TRUE;
 }

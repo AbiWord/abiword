@@ -82,7 +82,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_REDO,		0,0,0,	"redo",				ap_GetState_Changes,	NULL);
 	_s(AP_MENU_ID_EDIT_CUT,			0,0,0,	"cut",				ap_GetState_Selection,	NULL);
 	_s(AP_MENU_ID_EDIT_COPY,		0,0,0,	"copy",				ap_GetState_Selection,	NULL);
-	_s(AP_MENU_ID_EDIT_PASTE,		0,0,0,	"paste",			NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_PASTE,		0,0,0,	"paste",			ap_GetState_Clipboard,	NULL);
 	_s(AP_MENU_ID_EDIT_CLEAR,		0,0,0,	"delRight",			NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_SELECTALL,	0,0,0,	"selectAll",		NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	"find",				NULL,					NULL);

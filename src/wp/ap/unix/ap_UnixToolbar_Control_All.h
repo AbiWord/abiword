@@ -17,23 +17,29 @@
  * 02111-1307, USA.
  */
 
-
-#ifndef AP_TOOLBAR_FUNCTIONS_H
-#define AP_TOOLBAR_FUNCTIONS_H
-
 /*****************************************************************
 ******************************************************************
-** This file defines the EV_GetToolbarItemState functions used by
-** the set of toolbar actions.
+** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+** MORE THAN ONE TIME.  Each time you add an entry to the top-half
+** of this file be sure to add a corresponding entry to the other
+** half and be sure to add an entry to each of the other platforms.
 ******************************************************************
 *****************************************************************/
 
-#include "ev_Toolbar_Actions.h"
+#ifndef AP_UNIXTOOLBAR_CONTROL_ALL_H
 
-Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes);
-Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection);
-Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard);
-Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt);
-Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt);
+#	define AP_UNIXTOOLBAR_CONTROL_ALL_H
 
-#endif /* AP_TOOLBAR_FUNCTIONS_H */
+#	include "ap_UnixToolbar_FontCombo.h"
+#	include "ap_UnixToolbar_SizeCombo.h"
+
+	// ... add new controls here ...
+
+#else
+
+	Declare_Control(AP_TOOLBAR_ID_FMT_FONT,	AP_UnixToolbar_FontCombo)
+	Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,	AP_UnixToolbar_SizeCombo)
+
+	// ... also add new controls here ...
+
+#endif

@@ -34,6 +34,7 @@ CPPSRCS=		ev_EditBinding.cpp		\
 			ev_NamedVirtualKey.cpp		\
 			ev_Toolbar.cpp			\
 			ev_Toolbar_Actions.cpp		\
+			ev_Toolbar_Control.cpp		\
 			ev_Toolbar_Labels.cpp		\
 			ev_Toolbar_Layouts.cpp
 

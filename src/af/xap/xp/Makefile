@@ -23,16 +23,17 @@ ABI_DEPTH = ../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=	ad_Document.cpp				\
-		ap_App.cpp				\
-		ap_Args.cpp				\
-		ap_Dialog.cpp				\
+		ap_App.cpp						\
+		ap_Args.cpp						\
+		ap_Dialog.cpp					\
 		ap_DialogFactory.cpp			\
-		ap_Dialog_FileOpenSaveAs.cpp		\
+		ap_Dialog_FileOpenSaveAs.cpp	\
 		ap_Dialog_FontChooser.cpp		\
 		ap_Dialog_MessageBox.cpp		\
-		ap_Dialog_Print.cpp			\
-		ap_Frame.cpp				\
-		ap_ViewListener.cpp			\
+		ap_Dialog_Print.cpp				\
+		ap_Frame.cpp					\
+		ap_Toolbar_ControlFactory.cpp	\
+		ap_ViewListener.cpp				\
 		av_View.cpp
 
 TARGETS=		$(OBJS)

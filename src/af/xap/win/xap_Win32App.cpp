@@ -24,13 +24,14 @@
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32Toolbar_Icons.h"
+#include "ap_Win32Toolbar_ControlFactory.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName), m_dialogFactory(this)
+	: AP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	UT_ASSERT(hInstance);
 
@@ -84,4 +85,9 @@ AP_Frame * AP_Win32App::newFrame(void)
 AP_DialogFactory * AP_Win32App::getDialogFactory(void)
 {
 	return &m_dialogFactory;
+}
+
+AP_Toolbar_ControlFactory * AP_Win32App::getControlFactory(void)
+{
+	return &m_controlFactory;
 }

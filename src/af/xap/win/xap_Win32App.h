@@ -24,6 +24,7 @@
 #include <windows.h>
 #include "ap_App.h"
 #include "ap_Win32DialogFactory.h"
+#include "ap_Win32Toolbar_ControlFactory.h"
 class AP_Args;
 class AP_Win32Toolbar_Icons;
 
@@ -47,15 +48,17 @@ public:
 
 	virtual HINSTANCE		getInstance() const;
 
-	virtual AP_DialogFactory *		getDialogFactory(void);
+	virtual AP_DialogFactory *				getDialogFactory(void);
+	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
 
 	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
 					HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
 
 protected:
-	AP_Win32Toolbar_Icons *	m_pWin32ToolbarIcons;
-	HINSTANCE				m_hInstance;
-	AP_Win32DialogFactory	m_dialogFactory;
+	AP_Win32Toolbar_Icons *		m_pWin32ToolbarIcons;
+	HINSTANCE					m_hInstance;
+	AP_Win32DialogFactory			m_dialogFactory;
+	AP_Win32Toolbar_ControlFactory	m_controlFactory;
 
 	/* TODO put anything we need here. */
 };

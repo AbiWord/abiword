@@ -33,7 +33,10 @@ TARGETS=		$(LIBRARY)
 # note: the $(DIST)/bin directory on Windows.
 
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_ControlFactory.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)			\

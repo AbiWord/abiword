@@ -41,17 +41,18 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Main.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
-OBJS=		$(PLATFORM_OBJS)							\
+OBJS=		$(PLATFORM_OBJS)									\
 		xp/$(OBJDIR)/ad_Document.$(OBJ_SUFFIX)					\
-		xp/$(OBJDIR)/ap_App.$(OBJ_SUFFIX)					\
-		xp/$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)					\
+		xp/$(OBJDIR)/ap_App.$(OBJ_SUFFIX)						\
+		xp/$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)						\
 		xp/$(OBJDIR)/ap_Dialog.$(OBJ_SUFFIX)					\
 		xp/$(OBJDIR)/ap_DialogFactory.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Dialog_FontChooser.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Dialog_MessageBox.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/ap_Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Dialog_FontChooser.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Dialog_MessageBox.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Dialog_Print.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)					\
+		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)						\
+		xp/$(OBJDIR)/ap_Toolbar_ControlFactory.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ap_ViewListener.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/av_View.$(OBJ_SUFFIX)
 

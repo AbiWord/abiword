@@ -23,12 +23,12 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ev_Win32Toolbar.h"
-//#include "ap_Toolbar_Id.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Labels.h"
+#include "ev_Toolbar_Control.h"
 #include "ev_EditEventMapper.h"
 #include "ap_Win32Toolbar_Icons.h"
 #include "ev_Win32Toolbar_ViewListener.h"
@@ -58,7 +58,9 @@ EV_Win32Toolbar::~EV_Win32Toolbar(void)
 //	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 }
 
-UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id)
+UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,
+									  UT_UCSChar * pData,
+									  UT_uint32 dataLength)
 {
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
@@ -80,10 +82,172 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id)
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(m_pWin32Frame->getCurrentView(),pEM,1,0,0);
+	invokeToolbarMethod(m_pWin32Frame->getCurrentView(),pEM,1,pData,dataLength);
 	return UT_TRUE;
 }
 
+/*****************************************************************/
+
+// HACK: forward declarations for subclassed controls
+#ifdef STRICT   
+#define WHICHPROC	WNDPROC
+#else   
+#define WHICHPROC	FARPROC
+#endif
+
+WHICHPROC s_lpfnDefCombo; 
+WHICHPROC s_lpfnDefComboEdit; 
+
+#define COMBO_BUF_LEN 256
+
+LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMessage)
+	{
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		{
+			// relay mouse messages from the combo box to get tool tips to work
+			// TODO: similar relay needed from edit control, too??
+			// ALT:  tell tooltip control to subclass for these events
+			MSG msg;
+			HWND hWndTT;
+			msg.lParam = lParam;
+			msg.wParam = wParam;
+			msg.message = uMessage;
+			msg.hwnd = hWnd;
+
+			HWND hwndToolbar = GetParent(hWnd);
+
+			hWndTT = (HWND)SendMessage(hwndToolbar, TB_GETTOOLTIPS, 0,0);
+			SendMessage(hWndTT, TTM_RELAYEVENT, 0, (LPARAM)(LPMSG)&msg);
+			break;
+		}
+
+		case WM_COMMAND:
+		{
+			switch (HIWORD(wParam))
+			{
+				case CBN_SELCHANGE:
+				{
+					// are we currently dropped down?
+					UT_Bool bDropped = (UT_Bool) SendMessage(hWnd, CB_GETDROPPEDSTATE, 0, 0);
+					
+					if (!bDropped)
+						break;
+
+					// yep, we're done 
+					SendMessage(hWnd, CB_SHOWDROPDOWN, (WPARAM) FALSE, 0);
+
+					// now that we know dropdown is gone, this should be ok
+					PostMessage(hWnd, WM_KEYDOWN, VK_RETURN, 0);
+					break;
+				}
+			}
+			break;
+		}
+
+		case WM_KEYDOWN:
+		{
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+			UT_ASSERT(t);
+
+			switch (wParam)
+			{
+				case VK_ESCAPE:
+				{
+					// restore combo state
+					UINT u = GetDlgCtrlID(hWnd);
+					AP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
+
+					t->_refreshID(id);
+				}
+				// fall through
+
+				case VK_TAB:
+				case VK_RETURN:
+				{
+					HWND hwndFrame = t->m_pWin32Frame->getTopLevelWindow();
+					SetFocus(hwndFrame);
+					return 0;
+				}
+			}
+		}
+	}
+	return (CallWindowProc(s_lpfnDefCombo, hWnd, uMessage, wParam, lParam));
+}
+
+LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMessage)
+	{
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		{
+			// forward these to parent (ie, the combo)
+			// TODO: figure out why tooltips still don't work over the edit
+			// HYP:  may need to tweak coord system for wParam/lParam
+			HWND hwndParent = GetParent(hWnd);
+			SendMessage(hwndParent, uMessage, wParam, lParam);
+			break;
+		}
+
+		case WM_KILLFOCUS:
+		{
+			// for now, we fire an event any time we lose focus
+			// TODO: confirm that this gives the desired behavior
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+			UT_ASSERT(t);
+
+			HWND hwndParent = GetParent(hWnd);
+			UINT u = GetDlgCtrlID(hwndParent);
+			AP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
+
+			static char buf[COMBO_BUF_LEN];
+
+			UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
+			UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
+			t->toolbarEvent(id, pData, dataLength);
+			break;
+		}
+
+		case WM_KEYDOWN:
+		{
+			switch (wParam)
+			{
+				case VK_ESCAPE:
+				case VK_RETURN:
+				case VK_TAB:
+				{
+					// forward these to parent (ie, the combo)
+					HWND hwndParent = GetParent(hWnd);
+					SendMessage(hwndParent, uMessage, wParam, lParam);
+					return 0;
+				}
+			}
+			break;
+		}
+
+		case WM_KEYUP:
+		case WM_CHAR:
+		{
+			switch (wParam) 
+			{ 
+                case VK_TAB:
+				case VK_ESCAPE: 
+                case VK_RETURN:
+					// swallow these
+					return 0;
+			}
+			break;
+		}
+	}
+	return (CallWindowProc(s_lpfnDefComboEdit, hWnd, uMessage, wParam, lParam));
+}
+
+/*****************************************************************/
 
 UT_Bool EV_Win32Toolbar::synthesize(void)
 {
@@ -94,6 +258,9 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
+
+	AP_Toolbar_ControlFactory * pFactory = m_pWin32App->getControlFactory();
+	UT_ASSERT(pFactory);
 
 #ifdef REBAR
 	HWND hwndParent = m_pWin32Frame->getToolbarWindow();
@@ -153,6 +320,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	// TODO: is there any advantage to building up all the TBBUTTONs at once
 	//		 and then adding them en masse, instead of one at a time? 
 	UINT last_id=0;
+	UT_Bool bControls = UT_FALSE;
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -174,49 +342,127 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 		{
 		case EV_TLF_Normal:
 			{
-				// TODO figure out who destroys hBitmap...
-				// TODO add code to create these once per application
-				// TODO and reference them in each toolbar instance
-				// TODO rather than create them once for each window....
-				
-				HBITMAP hBitmap;
-				UT_Bool bFoundIcon = m_pWin32ToolbarIcons->getBitmapForIcon(m_hwnd,
-																			MY_MAXIMUM_BITMAP_X,
-																			MY_MAXIMUM_BITMAP_Y,
-																			&backgroundColor,
-																			pLabel->getIconName(),
-																			&hBitmap);
-				UT_ASSERT(bFoundIcon);
-				TBADDBITMAP ab;
-				ab.hInst = 0;
-				ab.nID = (LPARAM)hBitmap;
-				LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
-				UT_ASSERT(iAddedAt != -1);
-				
-				tbb.iBitmap = iAddedAt;
 				tbb.idCommand = u;
 				tbb.dwData = 0;
 				
 				last_id = u;
 
-				const char * szLabel = pLabel->getToolbarLabel();
-				tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
+				UT_Bool bButton = UT_FALSE;
 
 				switch (pAction->getItemType())
 				{
 				case EV_TBIT_PushButton:
+					bButton = UT_TRUE;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_BUTTON;     
 					break;
 
 				case EV_TBIT_ToggleButton:
+					bButton = UT_TRUE;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_CHECK;     
 					break;
 
+				case EV_TBIT_ComboBox:
+					{
+						EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
+						UT_ASSERT(pControl);
+
+						int iWidth = 100;
+
+						if (pControl)
+						{
+							iWidth = pControl->getPixelWidth();
+						}
+						
+						bControls = UT_TRUE;
+						tbb.fsStyle = TBSTYLE_SEP;   
+						tbb.iBitmap = iWidth;
+
+						// create a matching child control
+						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
+							"COMBOBOX",                    // Class name.
+							"",                            // Default text.
+							WS_CHILD | WS_BORDER | WS_VISIBLE |
+								CBS_HASSTRINGS | CBS_DROPDOWN,    // Styles and defaults.
+							0, 2, iWidth, 250,             // Size and position.
+                            m_hwnd,                        // Parent window.
+							(HMENU) u,                     // ID.
+							m_pWin32App->getInstance(),    // Current instance.
+							NULL );                        // No class data.
+
+						UT_ASSERT(hwndCombo);
+						
+						SendMessage(hwndCombo, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
+
+						// populate it
+						if (pControl)
+						{
+							pControl->populate();
+
+							const UT_Vector * v = pControl->getContents();
+							UT_ASSERT(v);
+
+							if (v)
+							{
+								UT_uint32 items = v->getItemCount();
+								for (UT_uint32 k=0; k < items; k++)
+								{
+									char * sz = (char *)v->getNthItem(k);
+									SendMessage(hwndCombo, CB_INSERTSTRING,(WPARAM)-1, (LPARAM)sz);
+								}
+							}
+						}
+
+						// override the window procedure for the combo box
+						s_lpfnDefCombo = (WHICHPROC)GetWindowLong(hwndCombo, GWL_WNDPROC);
+						SetWindowLong(hwndCombo, GWL_WNDPROC, (LONG)_ComboWndProc);
+						SetWindowLong(hwndCombo, GWL_USERDATA, (LONG)this);
+
+						// override the window procedure for its edit control, too
+						POINT pt;
+						pt.x = 4;
+						pt.y = 4; 
+			            HWND hwndComboEdit = ChildWindowFromPoint(hwndCombo, pt); 
+						UT_ASSERT(hwndComboEdit);
+						UT_ASSERT(hwndComboEdit != hwndCombo);
+						s_lpfnDefComboEdit = (WHICHPROC)GetWindowLong(hwndComboEdit, GWL_WNDPROC);
+						SetWindowLong(hwndComboEdit, GWL_WNDPROC, (LONG)_ComboEditWndProc);
+						SetWindowLong(hwndComboEdit, GWL_USERDATA, (LONG)this);
+
+						// Get the handle to the tooltip window.
+						HWND hwndTT = (HWND)SendMessage(m_hwnd, TB_GETTOOLTIPS, 0, 0);
+
+						if (hwndTT)
+						{
+							const char * szToolTip = pLabel->getToolTip();
+							if (!szToolTip || !*szToolTip)
+							{
+								szToolTip = pLabel->getStatusMsg();
+							}
+
+							// Fill in the TOOLINFO structure.
+							TOOLINFO ti;
+
+							ti.cbSize = sizeof(ti);
+							ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
+							ti.lpszText = (char *) szToolTip;
+							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
+							ti.uId = (UINT)hwndCombo;
+							// Set up tooltips for the combo box.
+							SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
+						}
+						
+						// bind this separator to its control
+						tbb.dwData = (DWORD) hwndCombo;
+
+						// for now, we never repopulate, so can just toss it
+						DELETEP(pControl);
+					}
+					break;
+					
 				case EV_TBIT_EditText:
 				case EV_TBIT_DropDown:
-				case EV_TBIT_ComboBox:
 				case EV_TBIT_StaticLabel:
 					// TODO do these...
 					break;
@@ -226,6 +472,34 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 				default:
 					UT_ASSERT(0);
 					break;
+				}
+
+				if (bButton)
+				{
+					// TODO figure out who destroys hBitmap...
+					// TODO add code to create these once per application
+					// TODO and reference them in each toolbar instance
+					// TODO rather than create them once for each window....
+					
+					HBITMAP hBitmap;
+					UT_Bool bFoundIcon = m_pWin32ToolbarIcons->getBitmapForIcon(m_hwnd,
+																				MY_MAXIMUM_BITMAP_X,
+																				MY_MAXIMUM_BITMAP_Y,
+																				&backgroundColor,
+																				pLabel->getIconName(),
+																				&hBitmap);
+					UT_ASSERT(bFoundIcon);
+					TBADDBITMAP ab;
+					ab.hInst = 0;
+					ab.nID = (LPARAM)hBitmap;
+					LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
+					UT_ASSERT(iAddedAt != -1);
+					
+					tbb.iBitmap = iAddedAt;
+#if 0
+					const char * szLabel = pLabel->getToolbarLabel();
+					tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
+#endif
 				}
 			}
 			break;
@@ -244,7 +518,53 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	}
 
 	// figure out bar dimensions now that buttons are all there
-	SendMessage(m_hwnd, TB_AUTOSIZE, 0, 0);  
+	SendMessage(m_hwnd, TB_AUTOSIZE, 0, 0); 
+	
+	if (bControls)
+	{
+		// move each control on top of its associated separator
+		for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+		{
+			EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
+			UT_ASSERT(pLayoutItem);
+
+			AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+			EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
+			UT_ASSERT(pAction);
+
+			RECT r;
+			HWND hwndCtrl;
+			int nHeight, nSep;
+
+			switch (pAction->getItemType())
+			{
+				case EV_TBIT_ComboBox:
+					hwndCtrl = _getControlWindow(id);
+					UT_ASSERT(hwndCtrl);
+					GetWindowRect(hwndCtrl, &r);
+					nHeight = r.bottom - r.top;
+
+					SendMessage(m_hwnd, TB_GETITEMRECT, (WPARAM) k, (LPARAM)(LPRECT) &r);
+
+					nSep = (r.bottom - r.top - nHeight)/2;
+					if (nSep < 0)
+						nSep = 0;
+
+					MoveWindow(hwndCtrl, r.left, r.top + nSep, r.right - r.left, nHeight, TRUE);
+
+					break;
+
+				case EV_TBIT_EditText:
+				case EV_TBIT_DropDown:
+				case EV_TBIT_StaticLabel:
+					// TODO do these...
+					break;
+					
+				default:
+					break;
+			}
+		}
+	}
 
 #ifdef REBAR
 	// Get the height of the toolbar.
@@ -264,19 +584,15 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	rbbi.fMask = RBBIM_COLORS |	// clrFore and clrBack are valid
 		RBBIM_CHILD |				// hwndChild is valid
 		RBBIM_CHILDSIZE |			// cxMinChild and cyMinChild are valid
-		RBBIM_SIZE |				// fStyle is valid
+		RBBIM_SIZE |				// cx is valid
 		RBBIM_STYLE |				// fStyle is valid
-//		RBBIM_ID |					// wID is valid
-//		RBBIM_TEXT |				// lpText is valid
-//		RBBIM_IMAGE |				// iImage is valid
-		/* RBBIM_BACKGROUND */ 0;			// hbmBack is valid
+		0;
 	rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
 	rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
 	rbbi.fStyle = RBBS_NOVERT |	// do not display in vertical orientation
-		RBBS_CHILDEDGE | RBBS_BREAK |
-		/* RBBS_FIXEDBMP */ 0;
-//	rbbi.hbmBack = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BACK));
-//	rbbi.lpText = TEXT("Cool sites:");
+		RBBS_CHILDEDGE | 
+		RBBS_BREAK |
+		0;
 	rbbi.hwndChild = m_hwnd;
 	rbbi.cxMinChild = 0;
 	rbbi.cyMinChild = HIWORD(dwBtnSize);
@@ -292,6 +608,22 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 HWND EV_Win32Toolbar::getWindow(void) const
 {
 	return m_hwnd;
+}
+
+HWND EV_Win32Toolbar::_getControlWindow(AP_Toolbar_Id id)
+{
+	TBBUTTON tbb;
+	HWND hwndCtrl;
+	UINT u = WmCommandFromItemId(id);
+
+	UT_uint32 k = SendMessage(m_hwnd, TB_COMMANDTOINDEX, (WPARAM) u, 0);
+	SendMessage(m_hwnd, TB_GETBUTTON, (WPARAM) k, (LPARAM)(LPTBBUTTON) &tbb);
+	UT_ASSERT(tbb.idCommand == (int) u);
+	UT_ASSERT(tbb.fsStyle & TBSTYLE_SEP);
+
+	hwndCtrl = (HWND) tbb.dwData;
+
+	return hwndCtrl;
 }
 
 void EV_Win32Toolbar::_releaseListener(void)
@@ -339,58 +671,12 @@ UT_Bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		AV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
 		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
 			continue;										// changes of this type, skip it...
-		
-		UINT u = WmCommandFromItemId(id);
 
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
 			{
-				const char * szState = 0;
-				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
-			
-				switch (pAction->getItemType())
-				{
-				case EV_TBIT_PushButton:
-					{
-						UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-
-						SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
-
-						UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
-									m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-									((bGrayed) ? "disabled" : "enabled")));
-					}
-					break;
-			
-				case EV_TBIT_ToggleButton:
-					{
-						UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-						UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
-						
-						SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
-						SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
-
-						UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
-									 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-									 ((bGrayed) ? "disabled" : "enabled"),
-									 ((bToggled) ? "pressed" : "not pressed")));
-					}
-					break;
-
-				case EV_TBIT_EditText:
-				case EV_TBIT_DropDown:
-				case EV_TBIT_ComboBox:
-				case EV_TBIT_StaticLabel:
-					// TODO do these later...
-					break;
-					
-				case EV_TBIT_Spacer:
-				case EV_TBIT_BOGUS:
-				default:
-					UT_ASSERT(0);
-					break;
-				}
+				_refreshItem(pView, pAction, id);
 			}
 			break;
 			
@@ -401,6 +687,92 @@ UT_Bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 			UT_ASSERT(0);
 			break;
 		}
+	}
+
+	return UT_TRUE;
+}
+
+UT_Bool EV_Win32Toolbar::_refreshID(AP_Toolbar_Id id)
+{
+	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
+	UT_ASSERT(pToolbarActionSet);
+
+	EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
+	UT_ASSERT(pAction);
+
+	AV_View * pView = m_pWin32Frame->getCurrentView();
+	UT_ASSERT(pView);
+
+	return _refreshItem(pView, pAction, id);
+}
+
+UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, EV_Toolbar_Action * pAction, AP_Toolbar_Id id)
+{
+	const char * szState = 0;
+	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
+		
+	UINT u = WmCommandFromItemId(id);
+
+	switch (pAction->getItemType())
+	{
+		case EV_TBIT_PushButton:
+			{
+				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+
+				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
+
+				UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
+							m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+							((bGrayed) ? "disabled" : "enabled")));
+			}
+			break;
+	
+		case EV_TBIT_ToggleButton:
+			{
+				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+				
+				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
+				SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
+
+				UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
+							 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+							 ((bGrayed) ? "disabled" : "enabled"),
+							 ((bToggled) ? "pressed" : "not pressed")));
+			}
+			break;
+
+		case EV_TBIT_ComboBox:
+			{
+				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				UT_Bool bString = EV_TIS_ShouldUseString(tis);
+
+				HWND hwndCombo = _getControlWindow(id);
+				UT_ASSERT(hwndCombo);
+
+				// NOTE: we always update the control even if !bString
+				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
+				if (idx==CB_ERR)
+					SetWindowText(hwndCombo, szState);
+
+				UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
+							 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+							 ((bGrayed) ? "disabled" : "enabled"),
+							 ((bString) ? szState : "no state")));
+			}
+			break;
+
+		case EV_TBIT_EditText:
+		case EV_TBIT_DropDown:
+		case EV_TBIT_StaticLabel:
+			// TODO do these later...
+			break;
+			
+		case EV_TBIT_Spacer:
+		case EV_TBIT_BOGUS:
+		default:
+			UT_ASSERT(0);
+			break;
 	}
 
 	return UT_TRUE;
@@ -431,4 +803,3 @@ UT_Bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 
 	return UT_TRUE;
 }
-				  

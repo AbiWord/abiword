@@ -22,13 +22,14 @@
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixToolbar_Icons.h"
+#include "ap_UnixToolbar_ControlFactory.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName), m_dialogFactory(this)
+	: AP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	m_pUnixToolbarIcons = 0;
 }
@@ -71,4 +72,9 @@ AP_Frame * AP_UnixApp::newFrame(void)
 AP_DialogFactory * AP_UnixApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;
+}
+
+AP_Toolbar_ControlFactory * AP_UnixApp::getControlFactory(void)
+{
+	return &m_controlFactory;
 }

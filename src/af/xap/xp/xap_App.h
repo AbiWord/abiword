@@ -31,6 +31,7 @@
 
 class AP_Args;
 class AP_DialogFactory;
+class AP_Toolbar_ControlFactory;
 class AP_Frame;
 class EV_EditMethodContainer;
 class EV_Menu_ActionSet;
@@ -78,7 +79,8 @@ public:
 
 	AP_Args *						getArgs(void) const;
 
-	virtual AP_DialogFactory *		getDialogFactory(void) = 0;
+	virtual AP_DialogFactory *				getDialogFactory(void) = 0;
+	virtual AP_Toolbar_ControlFactory *		getControlFactory(void) = 0;
 
 protected:
 	AP_Args *						m_pArgs;

@@ -28,6 +28,7 @@
 BeginLayout(FormatOps)
 
 	ToolbarItem(AP_TOOLBAR_ID_FMT_FONT)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_SIZE)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FMT_BOLD)

@@ -39,20 +39,21 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
 
 
-OBJS=		$(PLATFORM_OBJS)					\
+OBJS=		$(PLATFORM_OBJS)							\
 		xp/$(OBJDIR)/ev_EditBinding.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_EditEventMapper.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_EditEventMapper.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ev_EditMethod.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ev_Keyboard.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ev_Menu.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ev_Menu.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ev_Menu_Actions.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ev_Menu_Labels.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ev_Menu_Layouts.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_Mouse.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ev_NamedVirtualKey.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_Mouse.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/ev_NamedVirtualKey.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ev_Toolbar.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ev_Toolbar_Actions.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_Toolbar_Labels.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_Toolbar_Actions.$(OBJ_SUFFIX)	\
+		xp/$(OBJDIR)/ev_Toolbar_Control.$(OBJ_SUFFIX)	\
+		xp/$(OBJDIR)/ev_Toolbar_Labels.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ev_Toolbar_Layouts.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk

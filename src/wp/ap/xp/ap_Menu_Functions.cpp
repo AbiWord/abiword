@@ -158,7 +158,33 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	{
 	case AP_MENU_ID_EDIT_CUT:
 	case AP_MENU_ID_EDIT_COPY:
+#if CLIPBOARD
 		if (pView->isSelectionEmpty())
+#endif
+			s = EV_MIS_Gray;
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	switch(id)
+	{
+	case AP_MENU_ID_EDIT_PASTE:
+#if CLIPBOARD
+		// TODO: only gray this if nothing relevant on the clipboard
+#endif
 			s = EV_MIS_Gray;
 		break;
 

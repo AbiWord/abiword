@@ -33,6 +33,7 @@
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Window);

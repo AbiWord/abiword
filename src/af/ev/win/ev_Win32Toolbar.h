@@ -32,6 +32,7 @@ class AP_Win32App;
 class AP_Win32Frame;
 class AP_Win32Toolbar_Icons;
 class EV_Win32Toolbar_ViewListener;
+class EV_Toolbar_Action;
 
 // HACK: it'd be nice to guarantee that menu and toolbar IDs don't overlap
 #ifdef AP_MENU_ID__BOGUS2__
@@ -49,7 +50,9 @@ public:
 	
 	~EV_Win32Toolbar(void);
 
-	UT_Bool toolbarEvent(AP_Toolbar_Id id);
+	UT_Bool toolbarEvent(AP_Toolbar_Id id,
+						 UT_UCSChar * pData = 0,
+						 UT_uint32 dataLength = 0);
 	UT_Bool synthesize(void);
 	UT_Bool bindListenerToView(AV_View * pView);
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
@@ -66,6 +69,15 @@ public:
 
 protected:
 	void							_releaseListener(void);
+	HWND							_getControlWindow(AP_Toolbar_Id id);
+
+	UT_Bool							_refreshID(AP_Toolbar_Id id);
+	UT_Bool							_refreshItem(AV_View * pView, 
+												 EV_Toolbar_Action * pAction, 
+												 AP_Toolbar_Id id);
+
+	static LRESULT CALLBACK			_ComboWndProc(HWND, UINT, WPARAM, LPARAM);
+	static LRESULT CALLBACK			_ComboEditWndProc(HWND, UINT, WPARAM, LPARAM);
 
 	AP_Win32App *					m_pWin32App;
 	AP_Win32Frame *					m_pWin32Frame;

@@ -53,7 +53,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS ;
 	wndclass.lpfnWndProc   = AP_Win32Frame::_WndProc ;
 	wndclass.cbClsExtra    = 0 ;
-	wndclass.cbWndExtra    = sizeof(AP_Win32Frame*) ;
+	wndclass.cbWndExtra    = 0 ;
 	wndclass.hInstance     = app->getInstance() ;
 	wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION) ;
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
@@ -77,7 +77,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS ;
 	wndclass.lpfnWndProc   = AP_Win32Frame::_ChildWndProc ;
 	wndclass.cbClsExtra    = 0 ;
-	wndclass.cbWndExtra    = sizeof(AP_Win32Frame*) ;
+	wndclass.cbWndExtra    = 0 ;
 	wndclass.hInstance     = app->getInstance() ;
 	wndclass.hIcon         = NULL ;
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
@@ -96,8 +96,8 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	return UT_TRUE;
 }
 
-#define GWL(hwnd)		(AP_Win32Frame*)GetWindowLong((hwnd), 0)
-#define SWL(hwnd, f)	(AP_Win32Frame*)SetWindowLong((hwnd), 0, (LONG)(f))
+#define GWL(hwnd)		(AP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
+#define SWL(hwnd, f)	(AP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA, (LONG)(f))
 
 /*****************************************************************/
 
@@ -453,7 +453,7 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		{
 			return 0;
 		}
-		else
+		else if (HIWORD(wParam) == 0)
 		{
 			// after menu passes on it, give each of the toolbars a chance
 			UT_uint32 nrToolbars, k;

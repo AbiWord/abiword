@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_units.h"
 #include "ap_Toolbar_Id.h"
 #include "ap_Toolbar_Functions.h"
 #include "ev_Toolbar_Actions.h"
@@ -74,7 +75,33 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 	{
 	case AP_TOOLBAR_ID_EDIT_CUT:
 	case AP_TOOLBAR_ID_EDIT_COPY:
+#if CLIPBOARD
 		if (pView->isSelectionEmpty())
+#endif
+			s = EV_TIS_Gray;
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return s;
+}
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+	switch(id)
+	{
+	case AP_TOOLBAR_ID_EDIT_PASTE:
+#if CLIPBOARD
+		// TODO: only gray this if nothing relevant on the clipboard
+#endif
 			s = EV_TIS_Gray;
 		break;
 
@@ -91,6 +118,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 	UT_Bool bMultiple = UT_FALSE;
+	UT_Bool bSize = UT_FALSE;
+	UT_Bool bString = UT_FALSE;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -99,6 +128,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 
 	switch(id)
 	{
+	case AP_TOOLBAR_ID_FMT_FONT:
+		prop = "font-family";
+		val  = "";
+		bString = UT_TRUE;
+		break;
+
+	case AP_TOOLBAR_ID_FMT_SIZE:
+		prop = "font-size";
+		val  = "";
+		bSize = UT_TRUE;
+		break;
+
 	case AP_TOOLBAR_ID_FMT_BOLD:
 		prop = "font-weight";
 		val  = "bold";
@@ -138,7 +179,22 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		sz = UT_getAttribute(prop, props_in);
 		if (sz)
 		{
-			if (bMultiple)
+			if (bSize)
+			{	
+				static char buf[5];
+				int pt = (int) UT_convertToPoints(sz);
+				sprintf(buf, "%d", pt);
+				*pszState = buf;
+				s = EV_TIS_UseString;
+			}
+			else if (bString)
+			{	
+				static const char * sz2;
+				sz2 = sz;
+				*pszState = sz2;
+				s = EV_TIS_UseString;
+			}
+			else if (bMultiple)
 			{	
 				// some properties have multiple values
 				if (strstr(sz, val))
