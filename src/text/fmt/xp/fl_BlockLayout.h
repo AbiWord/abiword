@@ -318,7 +318,6 @@ protected:
 	UT_Bool					m_bNeedsReformat;
 	UT_Bool					m_bNeedsRedraw;
 	UT_Bool					m_bFixCharWidths;
-	UT_Bool					m_bCheckInteractively;
 	
 	fl_CharWidths			m_gbCharWidths;
 
