@@ -66,7 +66,7 @@
  */
 static PP_Property _props[] =
 {
-	{ "background-color",      "ffffff",          false, NULL, PP_LEVEL_CHAR},
+	{ "background-color",      "transparent",     false, NULL, PP_LEVEL_SECT},
 	{ "bgcolor",               "transparent",     true,  NULL, PP_LEVEL_CHAR},
 	{ "bot-color",             "000000",          false, NULL, PP_LEVEL_TABLE},//ArVee
 	{ "bot-style",             "0",               false, NULL, PP_LEVEL_TABLE},//ArVee
