@@ -1961,20 +1961,20 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	}
 
 	if(!bDontGeneralUpdate)
-		_generalUpdate();
-
-
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
-
-	// Signal piceTable is stable again
-	m_pDoc->notifyPieceTableChangeEnd();
-
-	if (isSelectionEmpty())
 	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		_generalUpdate();
+		// restore updates and clean up dirty lists
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+
+		// Signal piceTable is stable again
+		m_pDoc->notifyPieceTableChangeEnd();
+
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 	return bRet;
 }
@@ -7849,89 +7849,6 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	return true;
 }
 
-
-/*!
-
-   This method is a replacement for getBounds which returns the beginning 
-   and end points of the document. It keeps the insertion point out of the 
-   header/footer region of the document by not counting the size of the 
-   header/footer region in the document length.
-   HOWEVER if m_bHdrFtr is true this means we are editting in the Header/Footer
-   region so the insertion piont is constrained to be in shadow section.
-   
-   We need all this so that we can jump into a Header/Footer region, stay 
-   there with simple keyboard motions and jump out again with a cursor click
-   outside the header/footer.
-
-   \param   isEnd true to get the end of the document. False gets the beginning
-   \param   posEnd is the value of the doc position at the beginning and end 
-            of the doc
-   \return  true if succesful
-   \todo speed this up by finding clever way to cache the size of the 
-         header/footer region so we can just subtract it off.
-*/
-//  bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
-//  {
-//  	bool res=true;
-//  	fl_SectionLayout * pSL = NULL;
-//  	fl_BlockLayout * pBL = NULL;
-//  	if(!isEnd && !m_bEditHdrFtr)
-//  	{
-//  		res = m_pDoc->getBounds(isEnd,posEOD);
-//  		return res;
-//  	}
-//  	if(!m_bEditHdrFtr)
-//  	{	
-//  		pSL = (fl_SectionLayout *)  m_pLayout->getLastSection();
-//  		while(pSL->getNext() != NULL && pSL->getType() == FL_SECTION_DOC)
-//  		{
-//  			pSL  = pSL->getNext();
-//  		}
-//  		if( pSL->getType() == FL_SECTION_DOC)
-//  		{
-//  			res = m_pDoc->getBounds(isEnd,posEOD);
-//  			return res;
-//  		}
-//  //
-//  // Now loop through all the HdrFtrSections, find the first in the doc and 
-//  // use that to get the end of edittable region.
-//  //
-//  		PT_DocPosition posFirst = pSL->getFirstBlock()->getPosition(true) - 1;
-//  		PT_DocPosition posNext;
-//  		while(pSL->getNext() != NULL)
-//  		{
-//  			pSL = pSL->getNext();
-//  			posNext = pSL->getFirstBlock()->getPosition(true) - 1;
-//  			if(posNext < posFirst)
-//  				posFirst = posNext;
-//  		}
-//  		posEOD = posFirst;
-//  		return res;
-//  	}
-//  //
-//  // Constrain insertion point to the header/Footer Layout
-//  //
-//  	if(!isEnd)
-//  	{
-//  		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
-//  		return true;
-//  	}
-//  	pBL = m_pEditShadow->getLastBlock();
-//  	posEOD = pBL->getPosition(false);
-//  	PT_DocPosition posDocEnd;
-//  	m_pDoc->getBounds(isEnd,posDocEnd);
-//  	fp_Run * pRun = pBL->getFirstRun();
-//  	while( pRun->getNext() != NULL)
-//  	{
-//  		pRun = pRun->getNext();
-//  	}
-//  	posEOD += pRun->getBlockOffset();
-//  	while(_findBlockAtPosition(posEOD) == pBL && posEOD <= posDocEnd)
-//  		posEOD++;
-//  	posEOD--;
-//  	return true;
-//  }
-
 bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 {
 
@@ -8026,11 +7943,11 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 // This moves the insertion point and screws up other commands to the piecetable
 // so put them back
 //
-	m_pDoc->notifyPieceTableChangeStart();
-	m_pDoc->disableListUpdates();
+//	m_pDoc->notifyPieceTableChangeStart();
+//	m_pDoc->disableListUpdates();
 
-	if(isSelectionEmpty())
-		_eraseInsertionPoint();
+//	if(isSelectionEmpty())
+//		_eraseInsertionPoint();
 
 	//
 	// Now Insert the footer section.

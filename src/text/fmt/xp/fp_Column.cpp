@@ -783,7 +783,7 @@ void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 		iY += iLineHeightLayoutUnits;
 		iY += iLineMarginAfterLayoutUnits;
 //
-// Clip to keep inside header/footter container
+// Clip to keep inside header/footer container
 //
 		if(iY > m_iMaxHeightLayoutUnits)
 			break;
@@ -808,15 +808,15 @@ void fp_HdrFtrContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
     UT_ASSERT(pDA->pG == m_pG);
 //
-// Can put these
+// Can put this in to speed things up.
 //
 //	if(m_bHdrFtrBoxDrawn)
 //		return;
 	UT_RGBColor clrDrawHdrFtr(0,0,0);
-	m_pG->setLineWidth(3);
+	m_pG->setLineWidth(1);
 	m_pG->setColor(clrDrawHdrFtr);
 //
-// These magic number stop blanking the lines
+// These magic numbers stop clearscreens from blanking the lines
 //
 	m_ixoffBegin = pDA->xoff-2; 
 	m_iyoffBegin = pDA->yoff+2;
@@ -840,7 +840,7 @@ void fp_HdrFtrContainer::clearHdrFtrBoundaries(void)
 	if(!m_bHdrFtrBoxDrawn)
 		return;
 	UT_RGBColor clrClearHdrFtr(255,255,255);
-	m_pG->setLineWidth(3);
+	m_pG->setLineWidth(1);
 	m_pG->setColor(clrClearHdrFtr);
 //
 // Paint over the previous lines with "white"
