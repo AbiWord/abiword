@@ -169,6 +169,9 @@ public:
 	UT_uint32 getResolution(void) const;
 	void setLayoutResolutionMode(UT_Bool bEnable) {m_bLayoutResolutionModeEnabled = bEnable;}
 
+	inline void setPortrait (UT_Bool b) {m_bIsPortrait = b;}
+	inline UT_Bool isPortrait (void) const {return m_bIsPortrait;}
+
 	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
 				   CLR3D_Background=1,				/* color of face/background on a 3d object */
 				   CLR3D_BevelUp=2,					/* color of bevel-up  */
@@ -211,6 +214,7 @@ protected:
 	static UT_uint32 m_uTick;
 private:
     UT_Bool _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
+    UT_Bool m_bIsPortrait;
 };
 
 #endif /* GR_GRAPHICS_H */

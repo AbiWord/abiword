@@ -566,7 +566,8 @@ UT_Bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
 		xxx_UT_DEBUGMSG(("DOM: startPage\n"));
         gnome_print_beginpage(m_gpc, szPageLabel);
-	return UT_TRUE;
+		_setup_rotation ();
+		return UT_TRUE;
 }
 
 UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
@@ -600,8 +601,9 @@ UT_Bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 	    GnomePrintMasterPreview *preview;
 	    const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	    // TODO: translate me
-	    preview = gnome_print_master_preview_new(m_gpm, pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle));
+	    preview = gnome_print_master_preview_new_with_orientation (m_gpm, 
+																   pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle), 
+																   !isPortrait());
 	    gtk_widget_show(GTK_WIDGET(preview));
 	  }
 	
@@ -878,6 +880,23 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 /*                Private Scaling Conversion Routines                  */
 /***********************************************************************/
 
+void XAP_UnixGnomePrintGraphics::_setup_rotation (void)
+{
+	double affine [6];
+
+	// do nothing for this default case
+	if (isPortrait ())
+		return;
+
+	// we have to apply an affine to the print context for
+	// each page in order to print in landscape mode
+	art_affine_rotate (affine, 90.0);
+	gnome_print_concat (m_gpc, affine);
+
+	art_affine_translate (affine, 0, - _get_height ());
+	gnome_print_concat (m_gpc, affine);
+}
+
 double XAP_UnixGnomePrintGraphics::_scale_factor_get (void)
 {
 	return ((double) 72.0 / (double) GPG_RESOLUTION);
@@ -898,20 +917,31 @@ double XAP_UnixGnomePrintGraphics::_scale_x_dir (int x)
 	return d;
 }
 
+double XAP_UnixGnomePrintGraphics::_get_height (void)
+{
+	if (m_paper)
+			{
+					if (isPortrait ())
+							return gnome_paper_psheight (m_paper);
+					else
+							return gnome_paper_pswidth (m_paper);
+			}
+	else
+			{
+					/* FIXME: Hardcode US-Letter values as a standby/fallback for now */
+					if (isPortrait ())
+							return 11.0;
+					else
+							return 8.5;
+			}
+}
+
 double XAP_UnixGnomePrintGraphics::_scale_y_dir (int y)
 {
 	double d = 0.0;
 	double page_length = 0.0;
 	
-	if (m_paper)
-			{
-					page_length = gnome_paper_psheight (m_paper);
-			}
-	else
-			{
-					/* FIXME: Hardcode US-Letter as a standby for now */
-					page_length = 11;      
-			}
+	page_length = _get_height ();
 
 	/* This one is obscure:
 	 * Our drawChars and drawLine functions recieve yDests relative to the

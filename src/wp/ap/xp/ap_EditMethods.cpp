@@ -3713,6 +3713,10 @@ static UT_Bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	memset(&da, 0, sizeof(da));
 	da.pG = NULL;
 
+	fp_PageSize ps = pPrintView->getPageSize();
+
+	pGraphics->setPortrait (ps.isPortrait ());
+
 	if(pGraphics->startPrint())
 	  {
 	    if (bCollate)

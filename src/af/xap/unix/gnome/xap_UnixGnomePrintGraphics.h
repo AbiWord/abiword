@@ -123,7 +123,12 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 
 	GnomeFont * _allocGnomeFont(PSFont* pFont);
 	
-	/* ugly scaling functions */
+	// if we need to rotate a page for landscape mode, this'll do it
+	void _setup_rotation (void);
+
+	double _get_height (void);
+
+	/* ugly scaling functions */	
 	double _scale_factor_get(void);
 	double _scale_factor_get_inverse(void);
 	double _scale_x_dir(int x);

@@ -56,6 +56,7 @@ GR_Graphics::GR_Graphics()
 	m_pApp = 0;
 	m_iZoomPercentage = 100;
 	m_bLayoutResolutionModeEnabled = UT_FALSE;
+	m_bIsPortrait = UT_TRUE;
 }
 
 GR_Graphics::~GR_Graphics()

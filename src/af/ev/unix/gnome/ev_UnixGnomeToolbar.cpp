@@ -399,9 +399,6 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 						gtk_combo_box_set_title (GTK_COMBO_BOX (comboBox), szToolTip);
 						gtk_container_set_border_width (GTK_CONTAINER (comboBox), 0);
 						
-				                // set the size of the entry to set the total combo size
-						// gtk_widget_set_usize(entry, iWidth, 0);					     
-
 						// populate it
 						for (UT_uint32 m=0; m < items; m++)
 						{
