@@ -1324,6 +1324,10 @@ void GR_Win32Font::setupFontInfo()
 
 UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSChar c)
 {
+	// first of all, handle 0-width spaces ...
+	if(c == 0xfeff || c == 0x200b)
+		return 0;
+	
 	int iWidth;
 	// try to get cached value for the width of this char.
 	// if that fails, force fill the cache for this char
