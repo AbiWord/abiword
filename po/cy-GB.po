@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cy-GB\n"
 "POT-Creation-Date: 2003-11-10 20:59+0100\n"
-"PO-Revision-Date: 2004-02-14 11:13-0000\n"
+"PO-Revision-Date: 2004-02-17 17:09-0000\n"
 "Last-Translator: Rhoslyn Prys <rhoslyn.prys@meddal.org.uk>\n"
 "Language-Team: Cymraeg/Welsh\n"
 "MIME-Version: 1.0\n"
@@ -325,7 +325,7 @@ msgstr "&Fformatau ar gael:"
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h.h:187
 msgid "&Before:"
-msgstr "&CynT:"
+msgstr "&Cynt:"
 
 #. MENU_LABEL_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:189
@@ -4263,7 +4263,7 @@ msgstr "POST COFRESTREDIG"
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:1803
 msgid "RTL &Paragraph"
-msgstr "Paragraff &DIC"
+msgstr "Paragraff &De>Ch"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1805
@@ -4511,12 +4511,12 @@ msgstr "De i chwith &yn bennaf"
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h.h:1910
 msgid "Rights"
-msgstr "De"
+msgstr "Caniatâd"
 
 #. DLG_MetaData_Rights_LBL
 #: po/tmp/ap_String_Id.h.h:1912
 msgid "Rights:"
-msgstr "De:"
+msgstr "Caniatâd:"
 
 #. DLG_FormatTable_Apply_To_Row
 #: po/tmp/ap_String_Id.h.h:1914
@@ -4762,7 +4762,7 @@ msgstr "Gosod delwedd fel cefndir eich tudalen"
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:2012
 msgid "Set dominant direction of paragraph to RTL"
-msgstr "Gosod prif gyfeiriad paragraff i DIC"
+msgstr "Gosod prif gyfeiriad paragraff i De>Ch"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:2014
@@ -5335,7 +5335,7 @@ msgstr "Mae'r gwirio sillafu wedi'i gwblhau"
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:2253
 msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
-msgstr "Bydd y testun fydd wedi ei gysylltu �i'r hypergyswllt o fewn paragraff unigol."
+msgstr "Bydd y testun fydd wedi ei gysylltu â'r hypergyswllt o fewn paragraff unigol."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:2255
@@ -5511,7 +5511,7 @@ msgstr "Rhestr Rufeinig Uwch"
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2320
 msgid "Use RTL Order"
-msgstr "Defnyddiwch drefn RTL"
+msgstr "Defnyddiwch drefn De>Ch"
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2322
@@ -5961,7 +5961,7 @@ msgstr "Basgeg"
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:93
 msgid "Belarusian"
-msgstr "Belaswseg"
+msgstr "Belarwsieg"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:95
@@ -6046,7 +6046,7 @@ msgstr "Tseineëg (Singapore)"
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:135
 msgid "Chinese (Taiwan)"
-msgstr "Tsieineëg (Taiwan)"
+msgstr "Tseineëg (Taiwan)"
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:137
@@ -6883,7 +6883,7 @@ msgstr "Rwmaneg"
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:506
 msgid "Romanian, Macintosh"
-msgstr "Romaneg, Macintosh"
+msgstr "Rwmaneg, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:508
@@ -7287,3 +7287,4 @@ msgstr "pica"
 msgid "points"
 msgstr "pwyntiau"
 
+ 
