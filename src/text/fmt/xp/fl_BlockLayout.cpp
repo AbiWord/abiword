@@ -7733,7 +7733,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		}
 
 		// Check last character in block if necessary
-		if (!bFound)
+		if (!bFound && iWordEnd != m_iLength)
 		{
 			UT_ASSERT(iWordEnd == (m_iLength-1));
 			
