@@ -44,7 +44,9 @@ typedef enum _AV_ListenerType
     AV_LISTENER_VIEW,
     AV_LISTENER_STATUSBAR,
 	AV_LISTENER_CARET,
-	AV_LISTENER_PLUGIN
+    AV_LISTENER_PLUGIN,
+    AV_LISTENER_PLUGIN_EXTRA
+    
 } AV_ListenerType;
 
 // TODO how did we fill this mask so fast?
@@ -91,10 +93,18 @@ typedef UT_uint32 AV_ChangeMask;
 	later to refer to it.
 */
 
-class AV_Listener
+class ABI_EXPORT AV_Listener
 {
 public:
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
+	virtual AV_ListenerType    getType(void) = 0;
+};
+
+
+class ABI_EXPORT AV_ListenerExtra : public AV_Listener
+{
+public:
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask, void * pPrivateData =NULL) = 0;
 	virtual AV_ListenerType    getType(void) = 0;
 };
 

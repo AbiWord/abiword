@@ -767,7 +767,7 @@ void fl_SectionLayout::checkGraphicTick(GR_Graphics * pG)
 {
   if(getDocLayout()->getGraphicTick() != m_iGraphicTick)
     {
-      UT_DEBUGMSG(("Current tick == %d layout Tick == %d \n",m_iGraphicTick,getDocLayout()->getGraphicTick()));
+      xxx_UT_DEBUGMSG(("Current tick == %d layout Tick == %d \n",m_iGraphicTick,getDocLayout()->getGraphicTick()));
     }
 	if(m_pImageImage && (getDocLayout()->getGraphicTick() != m_iGraphicTick))
 	{

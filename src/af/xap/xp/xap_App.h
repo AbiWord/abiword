@@ -237,7 +237,7 @@ public:
 	EV_EditEventMapper *		getEditEventMapper() const;
 	bool			            addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	bool			            removeListener(AV_ListenerId listenerId);
-	virtual bool	            notifyListeners(AV_View * pView, const AV_ChangeMask hint);
+	virtual bool	            notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);

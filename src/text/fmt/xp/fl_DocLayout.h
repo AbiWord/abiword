@@ -251,7 +251,8 @@ public:
 		bgcrNone         = 0,
 		bgcrDebugFlash   = (1 <<  0),
 		bgcrSpelling     = (1 <<  1),
-		bgcrSmartQuotes  = (1 <<  2)   // ha!  we're not using background checks for this after all
+		bgcrSmartQuotes  = (1 <<  2),   // ha!  we're not using background checks for this after all
+		bgcrGrammar     = (1 <<  3)
 	};
 
 	// New List Guts

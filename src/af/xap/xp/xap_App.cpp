@@ -379,7 +379,7 @@ bool XAP_App::removeListener(AV_ListenerId listenerId)
 /*!
  * Send notifications to all the registered plugins
  */
-bool XAP_App::notifyListeners(AV_View * pView, const AV_ChangeMask hint)
+bool XAP_App::notifyListeners(AV_View * pView, const AV_ChangeMask hint, void * pPrivateData)
 {
 	/*
 		App-specific logic calls this virtual method when relevant portions of 
@@ -420,9 +420,14 @@ bool XAP_App::notifyListeners(AV_View * pView, const AV_ChangeMask hint)
 	for (lid=0; lid<lidCount; lid++)
 	{
 		AV_Listener * pListener = static_cast<AV_Listener *>(m_vecPluginListeners.getNthItem(lid));
-		if(pListener)
+		if(pListener->getType()!= AV_LISTENER_PLUGIN_EXTRA )
 		{
 				pListener->notify(pView,hint);
+		}
+		else
+		{
+		  AV_ListenerExtra * pExtra = static_cast<AV_ListenerExtra *>(pListener);
+		  pExtra->notify(pView,hint,pPrivateData);
 		}
 	}
 
