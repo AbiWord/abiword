@@ -1506,7 +1506,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 	ap_RulerTicks tick(m_pG,m_dim);
 
-	if ((x < xFixed + m_infoCache.m_xPageViewMargin)
+	if ((x < xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin)
 		|| (x > xAbsRight))
 	{
 		return;
