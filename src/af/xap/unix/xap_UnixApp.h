@@ -22,6 +22,7 @@
 #define XAP_UNIXAPP_H
 
 #include <unistd.h>
+#include <sys/stat.h>
 #include "xap_App.h"
 #include "xap_UnixDialogFactory.h"
 #include "xap_Unix_TB_CFactory.h"
