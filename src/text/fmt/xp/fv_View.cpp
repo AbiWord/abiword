@@ -4566,7 +4566,23 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
 
+        PT_DocPosition posEOD;
+        UT_Bool bRes;
+
+
+	// The idea of the following code is thus: we need the previous block in 
+	// the document.  But at the beginning of the document, sometimes there
+	// isn't a previous block.  So we get the next block in the document.  
+	// If we don't do this, we end up in big trouble, since we reference
+	// that block in about 8 lines.   Sam, 11.9.00
+
+        bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+        UT_ASSERT(bRes);
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	while(!pBlock && (pos < posEOD))
+		pBlock =  _findBlockAtPosition((PT_DocPosition) pos++);
+	pos = (PT_DocPosition) pos; 
+
 	UT_ASSERT(pBlock);
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
 
