@@ -791,7 +791,23 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 		int nHeight = HIWORD(lParam);
 
 		if (pView)
+		{
 			pView->setWindowSize(nWidth, nHeight);
+			
+			// may need to scroll to keep everything in sync
+			SCROLLINFO si;
+			memset(&si, 0, sizeof(si));
+
+			si.cbSize = sizeof(si);
+			si.fMask = SIF_ALL;
+
+			GetScrollInfo(hwnd, SB_VERT, &si);
+			pView->setYScrollOffset(si.nPos);
+
+			GetScrollInfo(hwnd, SB_HORZ, &si);
+			pView->setXScrollOffset(si.nPos);
+
+		}
 		return 0;
 	}
 		
