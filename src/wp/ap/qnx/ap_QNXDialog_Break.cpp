@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -65,45 +66,43 @@ AP_QNXDialog_Break::~AP_QNXDialog_Break(void)
 }
 
 /*****************************************************************/
-#if 0
-static void s_ok_clicked(GtkWidget * widget, AP_QNXDialog_Break * dlg)
+static int s_ok_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
-	UT_ASSERT(widget && dlg);
+	AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
 	dlg->event_OK();
 }
 
-static void s_cancel_clicked(GtkWidget * widget, AP_QNXDialog_Break * dlg)
+static int s_cancel_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
-	UT_ASSERT(widget && dlg);
+	AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
 	dlg->event_Cancel();
 }
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_QNXDialog_Break * dlg)
+static int s_delete_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
+        AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
+        dlg->event_WindowDelete();
+        return Pt_CONTINUE;
 }
-#endif
+
 /*****************************************************************/
 
 void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 {
-#if 0
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
+	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
 	// Populate the window's data items
 	_populateWindowData();
-	
+
+#if 0	
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pQNXFrame->getTopLevelWindow();
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	
 	// Center our new dialog in its parent and make it a transient
@@ -120,237 +119,207 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
-	_storeWindowData();
 	
 	gtk_widget_destroy(mainWindow);
 #endif
+	printf("Running the break main window loop \n");
+	PtRealizeWidget(m_windowMain);
+	int count = PtModalStart();
+	done = 0;
+	while(!done) {
+		PtProcessEvent();
+	}
+	PtModalEnd(count);
+
+	_storeWindowData();
+
+	PtDestroyWidget(m_windowMain);
 }
 
 void AP_QNXDialog_Break::event_OK(void)
 {
-#if 0
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Break::a_OK;
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void AP_QNXDialog_Break::event_Cancel(void)
 {
-#if 0
 	m_answer = AP_Dialog_Break::a_CANCEL;
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void AP_QNXDialog_Break::event_WindowDelete(void)
 {
-#if 0
 	m_answer = AP_Dialog_Break::a_CANCEL;	
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 /*****************************************************************/
-#if 0
-GtkWidget * AP_QNXDialog_Break::_constructWindow(void)
+PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 {
 
-	GtkWidget * windowBreak;
-	GtkWidget * vboxMain;
-	GtkWidget * tableInsert;
-	GtkWidget * labelInsert;
-	GSList * tableInsert_group = NULL;
-	GtkWidget * radiobuttonPageBreak;
-	GtkWidget * radiobuttonNextPage;
-	GtkWidget * radiobuttonContinuous;
-	GtkWidget * radiobuttonColumnBreak;
-	GtkWidget * radiobuttonEvenPage;
-	GtkWidget * radiobuttonOddPage;
-	GtkWidget * labelSectionBreaks;
-	GtkWidget * hseparator9;
-	GtkWidget * hseparator10;
-	GtkWidget * hbuttonboxBreak;
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
+	PtWidget_t * windowBreak;
+	PtWidget_t * boxTop, *boxBottom;
+	PtWidget_t * tableInsert;
+	PtWidget_t * labelInsert;
+	PtWidget_t * radiobuttonPageBreak;
+	PtWidget_t * radiobuttonNextPage;
+	PtWidget_t * radiobuttonContinuous;
+	PtWidget_t * radiobuttonColumnBreak;
+	PtWidget_t * radiobuttonEvenPage;
+	PtWidget_t * radiobuttonOddPage;
+	PtWidget_t * labelSectionBreaks;
+	PtWidget_t * hseparator9;
+	PtWidget_t * hseparator10;
+	PtWidget_t * hbuttonboxBreak;
+	PtWidget_t * buttonOK;
+	PtWidget_t * buttonCancel;
+	PtArg_t	   args[10];
+	int 	   bmi, n, height, width;
+	PhArea_t 	area;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowBreak = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "windowBreak", windowBreak);
-	gtk_window_set_title (GTK_WINDOW (windowBreak), pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowBreak), FALSE, FALSE, FALSE);
-	
-	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "vboxMain", vboxMain);
-	gtk_widget_show (vboxMain);
-	gtk_container_add (GTK_CONTAINER (windowBreak), vboxMain);
-	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
+	n = bmi = 0;
+	height = 140; width = 300;
+    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
+	PtSetArg(&args[n++], Pt_ARG_TITLE, unixstr, 0);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	tableInsert = gtk_table_new (7, 2, FALSE);
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "tableInsert", tableInsert);
-	gtk_widget_show (tableInsert);
-	gtk_box_pack_start (GTK_BOX (vboxMain), tableInsert, FALSE, FALSE, 0);
+	/* TODO: Add all these items to a group */
 
+#define LABEL_WIDTH  100
+#define RADIO_WIDTH  150 
+#define GEN_HEIGHT   20 
+#define GEN_OFFSET   5
+/* 
+	printf("Area set to %d,%d %d/%d \n", 
+			area.pos.x, area.pos.y, area.size.w, area.size.h);
+*/
+
+	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Insert));
-	labelInsert = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "labelInsert", labelInsert);
-	gtk_widget_show (labelInsert);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelInsert, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-	gtk_widget_set_usize (labelInsert, 17, -1);
-	gtk_label_set_justify (GTK_LABEL (labelInsert), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelInsert), 0, 0.5);
-	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = GEN_OFFSET; area.pos.y = GEN_OFFSET;
+	area.size.w = LABEL_WIDTH; area.size.h = GEN_HEIGHT;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	labelInsert = PtCreateWidget(PtLabel, windowBreak, n, args);
+
+	/* TODO: Add a seperator */
+
+	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_PageBreak));	
-	radiobuttonPageBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageBreak));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "radiobuttonPageBreak", radiobuttonPageBreak);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonPageBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
-	gtk_widget_show (radiobuttonPageBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonPageBreak, 0, 1, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_NextPage));	
-	radiobuttonNextPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonNextPage));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "radiobuttonNextPage", radiobuttonNextPage);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonNextPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
-	gtk_widget_show (radiobuttonNextPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonNextPage, 0, 1, 4, 5,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Continuous));	
-	radiobuttonContinuous = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonContinuous));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "radiobuttonContinuous", radiobuttonContinuous);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonContinuous), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
-	gtk_widget_show (radiobuttonContinuous);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonContinuous, 0, 1, 5, 6,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = 2*GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	bm[bmi].widget =
+	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	bm[bmi++].type = AP_Dialog_Break::b_PAGE;
+
+	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_ColumnBreak));	
-	radiobuttonColumnBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonColumnBreak));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "radiobuttonColumnBreak", radiobuttonColumnBreak);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonColumnBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
-	gtk_widget_show (radiobuttonColumnBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonColumnBreak, 1, 2, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_EvenPage));	
-	radiobuttonEvenPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonEvenPage));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "radiobuttonEvenPage", radiobuttonEvenPage);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonEvenPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
-	gtk_widget_show (radiobuttonEvenPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonEvenPage, 1, 2, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_OddPage));	
-	radiobuttonOddPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonOddPage));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "radiobuttonOddPage", radiobuttonOddPage);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonOddPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
-	gtk_widget_show (radiobuttonOddPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonOddPage, 1, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x += area.size.w + GEN_OFFSET; 
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	bm[bmi].widget = 
+	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	bm[bmi++].type = AP_Dialog_Break::b_COLUMN;
+
+	/* --- */
+
+	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_SectionBreaks));	
-	labelSectionBreaks = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "labelSectionBreaks", labelSectionBreaks);
-	gtk_widget_show (labelSectionBreaks);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelSectionBreaks, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 4);
-	gtk_widget_set_usize (labelSectionBreaks, 76, -1);
-	gtk_label_set_justify (GTK_LABEL (labelSectionBreaks), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelSectionBreaks), 0, 0.5);
-	
-	hseparator9 = gtk_hseparator_new ();
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "hseparator9", hseparator9);
-	gtk_widget_show (hseparator9);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator9, 0, 2, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	labelSectionBreaks = PtCreateWidget(PtLabel, windowBreak, n, args);
 
-	hseparator10 = gtk_hseparator_new ();
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "hseparator10", hseparator10);
-	gtk_widget_show (hseparator10);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator10, 0, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
+	/* TODO: Add a seperator */
 
-	hbuttonboxBreak = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "hbuttonboxBreak", hbuttonboxBreak);
-	gtk_widget_show (hbuttonboxBreak);
-	gtk_box_pack_start (GTK_BOX (vboxMain), hbuttonboxBreak, FALSE, FALSE, 4);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxBreak), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxBreak), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxBreak), 85, 24);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxBreak), 0, 0);
+	n = 0;
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_NextPage));	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = 2*GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	bm[bmi].widget = 
+	radiobuttonNextPage = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	bm[bmi++].type = AP_Dialog_Break::b_NEXTPAGE;
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonOK);
+	n = 0;
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_EvenPage));	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x += area.size.w + GEN_OFFSET; 
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	bm[bmi].widget = 
+	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	bm[bmi++].type = AP_Dialog_Break::b_EVENPAGE;
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonCancel);
+	n = 0;
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Continuous));	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = 2*GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	bm[bmi].widget = 
+	radiobuttonContinuous = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	bm[bmi++].type = AP_Dialog_Break::b_CONTINUOUS;
 
-	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
+	n = 0;
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_OddPage));	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x += area.size.w + GEN_OFFSET; 
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	bm[bmi].widget = 
+	radiobuttonOddPage = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	bm[bmi++].type = AP_Dialog_Break::b_ODDPAGE;
 
-	// the catch-alls
-	
-	gtk_signal_connect_after(GTK_OBJECT(windowBreak),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowBreak),
-							 "destroy",
-							 NULL,
-							 NULL);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	area.pos.x = GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	buttonOK = PtCreateWidget(PtButton, windowBreak, n, args);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	area.pos.x += area.size.w + GEN_OFFSET; 
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	buttonCancel = PtCreateWidget(PtButton, windowBreak, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 
 	m_windowMain = windowBreak;
-
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
-
-	m_radioGroup = tableInsert_group;
 	
 	return windowBreak;
 }
 
 void AP_QNXDialog_Break::_populateWindowData(void)
 {
+#if 0
 	// We're a pretty stateless dialog, so we just set up
 	// the defaults from our members.
 
-	GtkWidget * widget = _findRadioByID(m_break);
+	PtWidget_t * widget = _findRadioByID(m_break);
 	UT_ASSERT(widget);
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), TRUE);
+#endif
 }
 
 void AP_QNXDialog_Break::_storeWindowData(void)
@@ -358,37 +327,19 @@ void AP_QNXDialog_Break::_storeWindowData(void)
 	m_break = _getActiveRadioItem();
 }
 
-// TODO if this function is useful elsewhere, move it to QNX dialog
-// TODO helpers and standardize on a user-data tag for WIDGET_ID_TAG_KEY
-GtkWidget * AP_QNXDialog_Break::_findRadioByID(AP_Dialog_Break::breakType b)
-{
-	UT_ASSERT(m_radioGroup);
-	for (GSList * item = m_radioGroup ; item ; item = item->next)
-	{
-		if (GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(item->data), WIDGET_ID_TAG_KEY)) ==
-			(int) b)
-			return (GtkWidget *) item->data;
-	}
-
-	return NULL;
-
-}
-
 AP_Dialog_Break::breakType AP_QNXDialog_Break::_getActiveRadioItem(void)
 {
-	UT_ASSERT(m_radioGroup);
-	for (GSList * item = m_radioGroup ; item ; item = item->next)
-	{
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
-		{
-			return (AP_Dialog_Break::breakType)
-				GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(item->data), WIDGET_ID_TAG_KEY));
+	PtArg_t arg;
+	int		*value;
+
+	for (int i = 0; i < BREAK_COUNT; i++) {
+		value = NULL;
+		PtSetArg(&arg, Pt_ARG_FLAGS, &value, 0);
+		PtGetResources(bm[i].widget, 1, &arg);
+		if (*value & Pt_SET) {
+			return ( AP_Dialog_Break::breakType)(bm[i].type);
 		}
 	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
 	return AP_Dialog_Break::b_PAGE;
 }
 
-#endif

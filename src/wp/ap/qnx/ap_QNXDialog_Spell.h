@@ -21,6 +21,7 @@
 #define AP_QNXDIALOG_SPELL_H
 
 #include "ap_Dialog_Spell.h"
+#include <Pt.h>
 
 class XAP_QNXFrame;
 
@@ -43,18 +44,16 @@ class AP_QNXDialog_Spell: public AP_Dialog_Spell
    virtual void event_IgnoreAll(void);
    virtual void event_AddToDict(void);
    virtual void event_Cancel(void);
-   virtual void event_SuggestionSelected(int row, int column);
+   virtual void event_SuggestionSelected(int index, char *text);
    virtual void event_ReplacementChanged(void);
    
  protected:
 
-#if 0
    // private construction functions
-   GtkWidget * _constructWindow(void);
+   PtWidget_t * _constructWindow(void);
    void	    _populateWindowData(void);
-   void 	    _storeWindowData(void);
-   void _showMisspelledWord(void);	
-#endif
+   void     _storeWindowData(void);
+   void 	_showMisspelledWord(void);	
 
    char * _convertToMB(UT_UCSChar *wword);
    UT_UCSChar * _convertFromMB(char *word);
@@ -63,22 +62,23 @@ class AP_QNXDialog_Spell: public AP_Dialog_Spell
    short m_iSelectedRow;
    
    // pointers to widgets we need to query/set
-   void * m_windowMain;
-   void * m_textWord;
-   void * m_entryChange;
-   void * m_clistSuggestions;
+   PtWidget_t * m_windowMain;
+   PtWidget_t * m_textWord;
+   PtWidget_t * m_entryChange;
+   PtWidget_t * m_clistSuggestions;
    
-   void * m_buttonChange;
-   void * m_buttonChangeAll;
-   void * m_buttonIgnore;
-   void * m_buttonIgnoreAll;
-   void * m_buttonAddToDict;
-   void * m_buttonCancel;
+   PtWidget_t * m_buttonChange;
+   PtWidget_t * m_buttonChangeAll;
+   PtWidget_t * m_buttonIgnore;
+   PtWidget_t * m_buttonIgnoreAll;
+   PtWidget_t * m_buttonAddToDict;
+   PtWidget_t * m_buttonCancel;
 
    //GdkColor m_highlight;
 
    int m_listHandlerID;
    int m_replaceHandlerID;
+	int done;
 };
 
 #endif /* AP_QNXDIALOG_SPELL_H */

@@ -798,9 +798,15 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 				break;
 			}
 
-	if (bShowSplash)
+	//TODO: Do a PtAppInit() here with the main window being the splash screen
+	PtWidget_t *spwin;
+	spwin = PtAppInit(NULL, NULL /* argc */, NULL /* argv */, 0, NULL);
+	if (bShowSplash) {
 		_showSplash(2000);
-			
+	}
+	//Delete that window here ...
+	PtDestroyWidget(spwin);
+	
 	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&Args, szAppName);
 
 	// if the initialize fails, we don't have icons, fonts, etc.

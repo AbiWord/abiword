@@ -21,10 +21,17 @@
 #define AP_QNXDIALOG_BREAK_H
 
 #include "ap_Dialog_Break.h"
+#include <Pt.h>
 
 class XAP_QNXFrame;
-
+class AP_Dialog_Break;
 /*****************************************************************/
+
+#define BREAK_COUNT  6
+struct _break_match {
+	PtWidget_t *widget;
+	int type;
+};	
 
 class AP_QNXDialog_Break: public AP_Dialog_Break
 {
@@ -44,25 +51,24 @@ public:
 
 protected:
 
-#if 0
 	// private construction functions
-	GtkWidget * _constructWindow(void);
+	PtWidget_t * _constructWindow(void);
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
-#endif
 
 	void * _findRadioByID(AP_Dialog_Break::breakType b);
 	AP_Dialog_Break::breakType _getActiveRadioItem(void);
 	
 	// pointers to widgets we need to query/set
-	void * m_windowMain;
+	PtWidget_t * m_windowMain;
 
 	// group of radio buttons for easy traversal
-	void *	m_radioGroup;
+	PtWidget_t *	m_radioGroup;
 
-	void * m_buttonOK;
-	void * m_buttonCancel;
-
+	PtWidget_t * m_buttonOK;
+	PtWidget_t * m_buttonCancel;
+	int 		 done;
+	struct _break_match	bm[BREAK_COUNT];
 };
 
 #endif /* AP_QNXDIALOG_BREAK_H */

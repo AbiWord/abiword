@@ -112,20 +112,12 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
  	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_GETS_FOCUS, Pt_GETS_FOCUS); n++;
 	m_wTopRuler = PtCreateWidget(PtRaw, cont, n, args);
+	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
+								  _fe::motion_notify_event, this);
+	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
+	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
 
 /*
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
-  
 	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "configure_event",
 					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
 */
@@ -179,99 +171,128 @@ void * AP_QNXTopRuler::getRootWindow(void)
 
 		
 /*****************************************************************/
+static int get_stuff(PtCallbackInfo_t *info, EV_EditModifierState *ems, 
+									EV_EditMouseButton *emb, int *x, int *y) {
+	PhPointerEvent_t *ptrevent;
+    PhRect_t         *rect;
+
+	ptrevent = (PhPointerEvent_t *)PhGetData(info->event);
+    rect = PhGetRects(info->event);
+
+	if (x) {
+		*x = rect->ul.x;
+	}
+	if (y) {
+		*y = rect->ul.y;
+	}
+	if (ems) {
+		if (ptrevent->key_mods & Pk_KM_Shift)
+			*ems |= EV_EMS_SHIFT;
+		if (ptrevent->key_mods & Pk_KM_Ctrl)
+			*ems |= EV_EMS_CONTROL;
+		if (ptrevent->key_mods & Pk_KM_Alt)
+			*ems |= EV_EMS_ALT;
+	}
+
+	if (emb) {
+  		//PHOTON refers to buttons 1,2,3 as the mouse buttons
+		//from right to left (biased against right handers!)
+		if (ptrevent->buttons & Ph_BUTTON_3)
+ 			*emb = EV_EMB_BUTTON1;
+		else if (ptrevent->buttons & Ph_BUTTON_2)
+			*emb = EV_EMB_BUTTON2;
+		else if (ptrevent->buttons & Ph_BUTTON_1)
+			*emb = EV_EMB_BUTTON3;
+	}
+
+	return 0;
+}
+
+int AP_QNXTopRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
+{
+	//return Pt_CONTINUE;
+
+	// a static function
+	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
+
+	EV_EditModifierState ems = 0;
+	EV_EditMouseButton emb = 0;
+	int 				mx, my;
+	
+	mx = my = 0;
+	get_stuff(info, &ems, &emb, &mx, &my);
+
+	printf("Pressing the mouse %x %x %d,%d \n",
+				ems, emb, mx, my);
+	pQNXTopRuler->mousePress(ems, emb, mx, my);
+
+	return Pt_CONTINUE;
+}
+
+int AP_QNXTopRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
+{
+	//return Pt_CONTINUE;
+
+	// a static function
+	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
+
+	EV_EditModifierState ems = 0;
+	EV_EditMouseButton emb = 0;
+	int 				mx, my;
+	
+	mx = my = 0;
+	get_stuff(info, &ems, &emb, &mx, &my);
+
+/*
+	printf("Release type 0x%x \n", info->reason); 
+	printf("Release sub_type 0x%x \n", info->reason_subtype); 
+	printf("Release event type 0x%x \n", info->event->type);
+	printf("Release event subtype 0x%x \n", info->event->subtype);
+*/
+	
+	if (info->event->subtype == Ph_EV_RELEASE_REAL) {
+		UT_DEBUGMSG(("Mouse Real Release! (%d,%d)", mx, my));
+	}
+	else if (info->event->subtype == Ph_EV_RELEASE_PHANTOM) {
+		UT_DEBUGMSG(("Mouse Phantom Release! (%d,%d)", mx, my));
+		UT_DEBUGMSG(("Skipping "));
+		return Pt_CONTINUE;
+	}
+	else if (info->event->subtype == Ph_EV_RELEASE_ENDCLICK) {
+		UT_DEBUGMSG(("Mouse Endclick Release! (%d,%d)", mx, my));
+		UT_DEBUGMSG(("Skipping "));
+		return Pt_CONTINUE;
+	}
+	else {
+		UT_DEBUGMSG(("Unknown release type 0x%x (%d,%d)",info->event->subtype, mx, my));
+		UT_DEBUGMSG(("Skipping "));
+		return Pt_CONTINUE;
+	}
+
+	pQNXTopRuler->mouseRelease(ems, emb, mx, my);
+
+	return Pt_CONTINUE;
+}
+	
+int AP_QNXTopRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
+{
+	//return Pt_CONTINUE;
+
+	// a static function
+	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
+
+	EV_EditModifierState ems = 0;
+	int 				 mx, my;
+	
+	mx = my = 0;
+	get_stuff(info, &ems, NULL, &mx, &my);
+
+	pQNXTopRuler->mouseMotion(ems, mx, my);
+
+	return Pt_CONTINUE;
+}
+	
 #if 0
-int AP_QNXTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
-{
-	// a static function
-	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-
-	// grab the mouse for the duration of the drag.
-	gtk_grab_add(w);
-	
-	EV_EditModifierState ems;
-	EV_EditMouseButton emb = 0;
-	
-	ems = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
-		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
-		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
-		ems |= EV_EMS_ALT;
-
-	if (e->state & GDK_BUTTON1_MASK)
-		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
-		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
-		emb = EV_EMB_BUTTON3;
-
-	pQNXTopRuler->mousePress(ems, emb, (long) e->x, (long) e->y);
-	return 1;
-}
-
-int AP_QNXTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
-{
-	// a static function
-	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-
-	EV_EditModifierState ems;
-	EV_EditMouseButton emb = 0;
-	
-	ems = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
-		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
-		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
-		ems |= EV_EMS_ALT;
-
-	if (e->state & GDK_BUTTON1_MASK)
-		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
-		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
-		emb = EV_EMB_BUTTON3;
-
-	// Map the mouse into coordinates relative to our window.
-	int xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pQNXTopRuler,&xrel,&yrel);
-
-	pQNXTopRuler->mouseRelease(ems, emb, xrel, yrel);
-
-	// release the mouse after we are done.
-	gtk_grab_remove(w);
-	
-	return 1;
-}
-	
-int AP_QNXTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
-{
-	// a static function
-	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-
-	EV_EditModifierState ems;
-	
-	ems = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
-		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
-		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
-		ems |= EV_EMS_ALT;
-
-	// Map the mouse into coordinates relative to our window.
-	int xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pQNXTopRuler,&xrel,&yrel);
-
-	pQNXTopRuler->mouseMotion(ems, xrel, yrel);
-	return 1;
-
-}
-	
 int AP_QNXTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function

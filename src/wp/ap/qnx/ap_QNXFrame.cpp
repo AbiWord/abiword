@@ -686,7 +686,7 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	n = 0;
 	PtSetArg(&args[n], Pt_ARG_DIM, &area.size, 0); n++;
 	//If we set to transparent, then we don't properly re-draw areas
-	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_WHITE, 0); n++;
+	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
 	PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
 	PtSetArg(&args[n], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); n++;
 	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_GETS_FOCUS, Pt_GETS_FOCUS); n++;

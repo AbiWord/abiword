@@ -152,10 +152,10 @@ void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
+#endif
 
 	// this dialogs needs this
-	setView(static_cast<FV_View *> (pFrame->getCurrentView()));
-#endif
+	setView((FV_View *) (pFrame->getCurrentView()));
 
 	printf("Running the find main window loop \n");	
 	PtRealizeWidget(m_windowMain);
@@ -315,6 +315,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
 	PtSetArg(&args[n++], Pt_ARG_TITLE, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
 	if (m_id == AP_DIALOG_ID_FIND)
 		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle), 0);
 	else

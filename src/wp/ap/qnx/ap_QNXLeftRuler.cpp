@@ -135,7 +135,15 @@ int AP_QNXLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * /
 	UT_DEBUGMSG(("QNXLeftRuler: [p %p] received button_release_event\n",pQNXLeftRuler));
 	return 1;
 }
-	
+
+int AP_QNXLeftRuler::_fe::motion_notify_event(GtkWidget* /* w */, GdkEventMotion* /* e */)
+{
+	// a static function
+	// AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// UT_DEBUGMSG(("QNXLeftRuler: [p %p] received motion_notify_event\n",pQNXLeftRuler));
+	return 1;
+}
+		
 int AP_QNXLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 {
 	// a static function
@@ -155,14 +163,7 @@ int AP_QNXLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 	return 1;
 }
 	
-int AP_QNXLeftRuler::_fe::motion_notify_event(GtkWidget* /* w */, GdkEventMotion* /* e */)
-{
-	// a static function
-	// AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("QNXLeftRuler: [p %p] received motion_notify_event\n",pQNXLeftRuler));
-	return 1;
-}
-	
+
 int AP_QNXLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function

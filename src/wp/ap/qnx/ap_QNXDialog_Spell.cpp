@@ -21,6 +21,7 @@
 // TODO: still getting some artifacts when doing highligh/replacements
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -55,7 +56,6 @@ AP_QNXDialog_Spell::~AP_QNXDialog_Spell(void)
 void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
 {
    UT_DEBUGMSG(("beginning spelling check..."));
-#if 0
    
    // class the base class method to initialize some basic xp stuff
    AP_Dialog_Spell::runModal(pFrame);
@@ -64,18 +64,19 @@ void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
    UT_Bool bRes = nextMisspelledWord();
    
    if (bRes) { // we need to prepare the dialog
-      GtkWidget * mainWindow = _constructWindow();
+      PtWidget_t * mainWindow = _constructWindow();
       UT_ASSERT(mainWindow);
       
       // Populate the window's data items
       _populateWindowData();
       
+#if 0
       // To center the dialog, we need the frame of its parent.
       XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
       UT_ASSERT(pQNXFrame);
       
       // Get the GtkWindow of the parent frame
-      GtkWidget * parentWindow = pQNXFrame->getTopLevelWindow();
+      PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
       UT_ASSERT(parentWindow);
       
       // Center our new dialog in its parent and make it a transient
@@ -88,344 +89,275 @@ void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
       
       // Make it modal, and stick it up top
       gtk_grab_add(mainWindow);
+#endif
+
+	printf("Running the spell main window loop \n");
+	PtRealizeWidget(mainWindow);
       
-      // now loop while there are still misspelled words
-      while (bRes) {
+     // now loop while there are still misspelled words
+     while (bRes) {
 	 
-	 // show word in main window
-	 makeWordVisible();
+	 	// show word in main window
+	 	makeWordVisible();
 	 
-	 // update dialog with new misspelled word info/suggestions
-	 _showMisspelledWord();
+	 	// update dialog with new misspelled word info/suggestions
+	 	_showMisspelledWord();
 	 
+#if 0
 	 // run into the GTK event loop for this window
 	 gtk_main();
+#endif
+		int count = PtModalStart();
+		done = 0;
+		while(!done) {
+			PtProcessEvent();
+		}
+		PtModalEnd(count);
+		 
+		for (int i = 0; i < m_Suggestions.count; i++) {
+			FREEP(m_Suggestions.word[i]);
+		}
+	 	FREEP(m_Suggestions.word);
+	 	FREEP(m_Suggestions.score);
+	 	m_Suggestions.count = 0;
 	 
-	 for (int i = 0; i < m_Suggestions.count; i++)
-	   FREEP(m_Suggestions.word[i]);
-	 FREEP(m_Suggestions.word);
-	 FREEP(m_Suggestions.score);
-	 m_Suggestions.count = 0;
+	 	if (m_bCancelled) {
+			break;
+		}
 	 
-	 if (m_bCancelled) break;
-	 
-	 // get the next unknown word
-	 bRes = nextMisspelledWord();
-      }
+		// get the next unknown word
+		bRes = nextMisspelledWord();
+	}
       
       _storeWindowData();
       
-      gtk_widget_destroy(mainWindow);
+	  printf("Destroying the spell window \n");
+	PtDestroyWidget(mainWindow);
    }
+
    
    // TODO: all done message?
    UT_DEBUGMSG(("spelling check complete."));
-#endif
 }
 
 /**********************************************************/
-#if 0
-static void s_change_clicked(GtkWidget * widget, AP_QNXDialog_Spell * dlg)
+static int s_change_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
    dlg->event_Change();
+	return Pt_CONTINUE;
 }
 
-static void s_change_all_clicked(GtkWidget * widget, AP_QNXDialog_Spell * dlg)
+static int s_change_all_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
    dlg->event_ChangeAll();
+	return Pt_CONTINUE;
 }
 
-static void s_ignore_clicked(GtkWidget * widget, AP_QNXDialog_Spell * dlg)
+static int s_ignore_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
    dlg->event_Ignore();
+	return Pt_CONTINUE;
 }
 
-static void s_ignore_all_clicked(GtkWidget * widget, AP_QNXDialog_Spell * dlg)
+static int s_ignore_all_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
    dlg->event_IgnoreAll();
+	return Pt_CONTINUE;
 }
 
-static void s_add_to_dict_clicked(GtkWidget * widget, AP_QNXDialog_Spell * dlg)
+static int s_add_to_dict_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
    dlg->event_AddToDict();
+	return Pt_CONTINUE;
 }
 
-static void s_cancel_clicked(GtkWidget * widget, AP_QNXDialog_Spell * dlg)
+static int s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
    dlg->event_Cancel();
+	return Pt_CONTINUE;
 }
 
-static void s_suggestion_selected(GtkWidget * widget, int row, int column,
-				  GdkEventButton * /*event*/, AP_QNXDialog_Spell * dlg)
+static int s_suggestion_selected(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
-   dlg->event_SuggestionSelected(row, column);
+	PtListCallback_t   *list = (PtListCallback_t *)info->cbdata;
+   dlg->event_SuggestionSelected(list->item_pos, list->item);
+	return Pt_CONTINUE;
 }
 
-static void s_replacement_changed(GtkWidget * widget, AP_QNXDialog_Spell * dlg)
+static int s_replacement_changed(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(widget && dlg);
    dlg->event_ReplacementChanged();
+	return Pt_CONTINUE;
 }
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-			     gpointer /* data */,
-			     AP_QNXDialog_Spell * dlg)
+static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_Spell *dlg = (AP_QNXDialog_Spell *)data;
    UT_ASSERT(dlg);
    dlg->event_Cancel();
+	return Pt_CONTINUE;
 }
-#endif      
 /********************************************************************/
-#if 0
-GtkWidget * AP_QNXDialog_Spell::_constructWindow(void)
+
+PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
 {
-   GtkWidget *windowSpell;
-   GtkWidget *tableMain;
+   PtWidget_t *windowSpell;
+   PtWidget_t *tableMain;
    
-   GtkWidget *label1;
-   GtkWidget *scroll2;
-   GtkWidget *textWord;
-   GtkWidget *label2;
-   GtkWidget *entryChange;
-   GtkWidget *scroll1;
-   GtkWidget *clistSuggestions;
-   GtkWidget *buttonChange;
-   GtkWidget *buttonChangeAll;
-   GtkWidget *buttonIgnore;
-   GtkWidget *buttonIgnoreAll;
-   GtkWidget *buttonAddToDict;
-   GtkWidget *buttonCancel;
+   PtWidget_t *label1;
+   PtWidget_t *scroll2;
+   PtWidget_t *textWord;
+   PtWidget_t *label2;
+   PtWidget_t *entryChange;
+   PtWidget_t *scroll1;
+   PtWidget_t *clistSuggestions;
+   PtWidget_t *buttonChange;
+   PtWidget_t *buttonChangeAll;
+   PtWidget_t *buttonIgnore;
+   PtWidget_t *buttonIgnoreAll;
+   PtWidget_t *buttonAddToDict;
+   PtWidget_t *buttonCancel;
+	PtArg_t  args[10];
+	int    n;
+	PhArea_t area;
 
    const XAP_StringSet * pSS = m_pApp->getStringSet();
    XML_Char * unixstr = NULL;      // used for conversions
-   
-   windowSpell = gtk_window_new (GTK_WINDOW_DIALOG);
-   gtk_object_set_data (GTK_OBJECT (windowSpell), "windowSpell", windowSpell);
-   gtk_window_set_title (GTK_WINDOW (windowSpell),  pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle));
-   gtk_window_set_policy (GTK_WINDOW (windowSpell), TRUE, TRUE, FALSE);
 
-   tableMain = gtk_table_new (10, 3, FALSE);
-   gtk_widget_ref (tableMain);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "tableMain", tableMain,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (tableMain);
-   gtk_container_add (GTK_CONTAINER (windowSpell), tableMain);
-   gtk_container_set_border_width (GTK_CONTAINER(tableMain), 5);
-   gtk_table_set_row_spacings (GTK_TABLE(tableMain), 2);
-   gtk_table_set_row_spacing (GTK_TABLE(tableMain), 4, 7);
-   gtk_table_set_row_spacing (GTK_TABLE(tableMain), 8, 7);
-   gtk_table_set_col_spacings (GTK_TABLE(tableMain), 2);
+	n = 0;
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle), 0);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+	windowSpell = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowSpell, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
    
-   GtkWidget * alignmentLabel = gtk_alignment_new (0, 1, 0, 0);
-   gtk_widget_ref (alignmentLabel);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "alignmentLabel", alignmentLabel,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (alignmentLabel);
-   gtk_table_attach (GTK_TABLE(tableMain), alignmentLabel, 0, 2, 0, 1, GTK_FILL, GTK_FILL, 0, 0);
+#define BUTTON_WIDTH 80
+#define TEXT_WIDTH   200
+#define LABEL_HEIGHT  10
+#define TEXTBOX_HEIGHT  100
+#define H_SPACER     15
+#define V_SPACER   	 15
 
+
+	n = 0;
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_UnknownWord));
-   label1 = gtk_label_new (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (label1);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "label1", label1,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (label1);
-   gtk_label_set_justify (GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
-   gtk_container_add (GTK_CONTAINER(alignmentLabel), label1);
-   
-   scroll2 = gtk_scrolled_window_new (NULL, NULL);
-   gtk_widget_ref (scroll2);
-   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll2),
-				   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "scroll2", scroll2,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (scroll2);
-   gtk_table_attach_defaults (GTK_TABLE(tableMain), scroll2, 0, 2, 1, 4);   
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = area.pos.y = V_SPACER;
+	area.size.w = TEXT_WIDTH; area.size.h = LABEL_HEIGHT;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+   	label1 = PtCreateWidget(PtLabel, windowSpell, n, args);
 
-   textWord = gtk_text_new (NULL, NULL);
-   gtk_widget_ref (textWord);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "textWord", textWord,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (textWord);
-   gtk_container_add (GTK_CONTAINER (scroll2), textWord);
-   gtk_text_set_word_wrap(GTK_TEXT(textWord), TRUE);
-   gtk_widget_set_usize (textWord, 350, 80);
-
-   gtk_widget_realize (textWord);
+	//Add the multi-text snippet around the word we are writing ....
+	n = 0;
+	area.pos.y += area.size.h + V_SPACER;
+	area.size.h = TEXTBOX_HEIGHT;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
+    textWord = PtCreateWidget(PtMultiText, windowSpell, n, args);
 
    // ignore button set
-   GtkWidget * vboxIgnoreButtons = gtk_vbox_new(FALSE, 5);
-   gtk_widget_ref (vboxIgnoreButtons);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "vboxIgnoreButtons", vboxIgnoreButtons,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (vboxIgnoreButtons);
-   gtk_table_attach_defaults (GTK_TABLE(tableMain), vboxIgnoreButtons, 2, 3, 1, 4);
+	n = 0;
+	area.pos.x += area.size.w + H_SPACER;
+	area.size.w = BUTTON_WIDTH;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
+			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+   PtWidget_t * vboxIgnoreButtons = PtCreateWidget(PtGroup, windowSpell, n, args);
    
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_Ignore));
-   buttonIgnore = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonIgnore);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonIgnore", buttonIgnore,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonIgnore);
-   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), buttonIgnore, FALSE, FALSE, 5);
-//   gtk_table_attach (GTK_TABLE(tableMain), buttonIgnore, 2, 3, 1, 2, GTK_FILL, GTK_EXPAND, 2, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+   buttonIgnore = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
+	PtAddCallback(buttonIgnore, Pt_CB_ACTIVATE, s_ignore_clicked, this);
    
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_IgnoreAll));
-   buttonIgnoreAll = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonIgnoreAll);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonIgnoreAll", buttonIgnoreAll,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonIgnoreAll);
-   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), buttonIgnoreAll, FALSE, FALSE, 5);
-//   gtk_table_attach (GTK_TABLE(tableMain), buttonIgnoreAll, 2, 3, 2, 3, GTK_FILL, GTK_EXPAND, 2, 5);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+   buttonIgnoreAll = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
+	PtAddCallback(buttonIgnoreAll, Pt_CB_ACTIVATE, s_ignore_all_clicked, this);
    
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_AddToDict));
-   buttonAddToDict = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonAddToDict);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonAddToDict", buttonAddToDict,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonAddToDict);
-   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), buttonAddToDict, FALSE, FALSE, 5);
-//   gtk_table_attach (GTK_TABLE(tableMain), buttonAddToDict, 2, 3, 3, 4, GTK_FILL, GTK_EXPAND, 2, 0);
-
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+   buttonAddToDict = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
+	PtAddCallback(buttonAddToDict, Pt_CB_ACTIVATE, s_add_to_dict_clicked, this);
 
    // suggestion half
-   GtkWidget * hboxChangeTo = gtk_hbox_new(FALSE, 5);
-   gtk_widget_ref (hboxChangeTo);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "hboxChangeTo", hboxChangeTo,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (hboxChangeTo);
-   gtk_table_attach_defaults (GTK_TABLE(tableMain), hboxChangeTo, 0, 2, 5, 6);
-
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeTo));
-   label2 = gtk_label_new (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (label2);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "label2", label2,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (label2);
-   gtk_box_pack_start (GTK_BOX(hboxChangeTo), label2, FALSE, FALSE, 5);
-//   gtk_table_attach (GTK_TABLE(tableMain), label2, 0, 1, 5, 6, GTK_SHRINK, GTK_SHRINK, 0, 0);
-   gtk_label_set_justify( GTK_LABEL(label2), GTK_JUSTIFY_LEFT);
-//   gtk_misc_set_padding (GTK_MISC (label2), 5, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = H_SPACER; 
+	area.pos.y = V_SPACER + LABEL_HEIGHT + V_SPACER + TEXTBOX_HEIGHT + V_SPACER; 
+	area.size.w = TEXT_WIDTH / 3;
+	area.size.h = LABEL_HEIGHT;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+   label2 = PtCreateWidget(PtLabel, windowSpell, n, args);
 
-   entryChange = gtk_entry_new ();
-   gtk_widget_ref (entryChange);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "entryChange", entryChange,
-                            (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (entryChange);
-   gtk_box_pack_start (GTK_BOX(hboxChangeTo), entryChange, TRUE, TRUE, 0);
-//   gtk_table_attach_defaults (GTK_TABLE(tableMain), entryChange, 1, 2, 5, 6);
+	n = 0;
+	area.pos.x += area.size.w + H_SPACER;
+	area.size.w = (TEXT_WIDTH / 3) * 2 - H_SPACER;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+   entryChange = PtCreateWidget(PtText, windowSpell, n, args);
+	PtAddCallback(entryChange, Pt_CB_TEXT_CHANGED, s_replacement_changed, this);
+	//We should call change when we hit return
+	//PtAddCallback(entryChange, Pt_CB_ACTIVATE, s_change_clicked, this);
 
-   scroll1 = gtk_scrolled_window_new (NULL, NULL);
-   gtk_widget_ref (scroll1);
-   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll1),
-				   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "scroll1", scroll1,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (scroll1);
-   gtk_table_attach_defaults (GTK_TABLE(tableMain), scroll1, 0, 2, 6, 9);
-
-   clistSuggestions = gtk_clist_new (1);
-   gtk_widget_ref (clistSuggestions);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "clistSuggestions", 
-			     clistSuggestions, (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (clistSuggestions);
-   gtk_container_add (GTK_CONTAINER (scroll1), clistSuggestions);
-   gtk_widget_set_usize (clistSuggestions, -2, 100);
-   gtk_clist_set_column_width (GTK_CLIST (clistSuggestions), 0, 80);
-   gtk_clist_column_titles_hide (GTK_CLIST (clistSuggestions));
+	n = 0;
+	area.pos.x = H_SPACER;
+	area.pos.y += area.size.h + V_SPACER;
+	area.size.w = TEXT_WIDTH;
+	area.size.h = TEXTBOX_HEIGHT;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+   clistSuggestions = PtCreateWidget(PtList, windowSpell, n, args);
+	//We should call the "activate" on double click
+	//PtAddCallback(clistSuggestions, Pt_CB_ACTIVATE, s_change_clicked, this);
+	PtAddCallback(clistSuggestions, Pt_CB_SELECTION, s_suggestion_selected, this);
 
    
    // change buttons
-   GtkWidget * vboxChangeButtons = gtk_vbox_new(FALSE, 5);
-   gtk_widget_ref (vboxChangeButtons);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "vboxChangeButtons", vboxChangeButtons,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (vboxChangeButtons);
-   gtk_table_attach_defaults (GTK_TABLE(tableMain), vboxChangeButtons, 2, 3, 6, 9);
+	n = 0;
+	area.pos.x += area.size.w + H_SPACER;
+	area.size.w = BUTTON_WIDTH;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
+			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+   PtWidget_t * vboxChangeButtons = PtCreateWidget(PtGroup, windowSpell, n, args);
 
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_Change));
-   buttonChange = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonChange);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonChange", buttonChange,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonChange);
-   gtk_box_pack_start (GTK_BOX(vboxChangeButtons), buttonChange, FALSE, FALSE, 5);
-//   gtk_table_attach (GTK_TABLE(tableMain), buttonChange, 2, 3, 6, 7, GTK_FILL, GTK_EXPAND, 2, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+   buttonChange = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
+	PtAddCallback(buttonChange, Pt_CB_ACTIVATE, s_change_clicked, this);
    
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeAll));
-   buttonChangeAll = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonChangeAll);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonChangeAll", buttonChangeAll,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonChangeAll);
-   gtk_box_pack_start (GTK_BOX(vboxChangeButtons), buttonChangeAll, FALSE, FALSE, 5);
-//   gtk_table_attach (GTK_TABLE(tableMain), buttonChangeAll, 2, 3, 7, 8, GTK_FILL, GTK_EXPAND, 2, 5);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+   buttonChangeAll = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
+	PtAddCallback(buttonChangeAll, Pt_CB_ACTIVATE, s_change_all_clicked, this);
    
-   
-   
-   buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-   gtk_widget_ref (buttonCancel);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonCancel", buttonCancel,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonCancel);
-   gtk_table_attach (GTK_TABLE(tableMain), buttonCancel, 2, 3, 9, 10, GTK_FILL, GTK_EXPAND, 2, 5);
-   
-   // connect signals to handlers
-
-   // buttons
-   gtk_signal_connect(GTK_OBJECT(buttonChange), "clicked",
-		      GTK_SIGNAL_FUNC(s_change_clicked),
-		      (gpointer) this);
-   gtk_signal_connect(GTK_OBJECT(buttonChangeAll), "clicked",
-		      GTK_SIGNAL_FUNC(s_change_all_clicked),
-		      (gpointer) this);
-   gtk_signal_connect(GTK_OBJECT(buttonIgnore), "clicked",
-		      GTK_SIGNAL_FUNC(s_ignore_clicked),
-		      (gpointer) this);
-   gtk_signal_connect(GTK_OBJECT(buttonIgnoreAll), "clicked",
-		      GTK_SIGNAL_FUNC(s_ignore_all_clicked),
-		      (gpointer) this);
-   gtk_signal_connect(GTK_OBJECT(buttonAddToDict), "clicked",
-		      GTK_SIGNAL_FUNC(s_add_to_dict_clicked),
-		      (gpointer) this);
-   gtk_signal_connect(GTK_OBJECT(buttonCancel), "clicked",
-		      GTK_SIGNAL_FUNC(s_cancel_clicked),
-		      (gpointer) this);
-
-   // suggestion list
-   m_listHandlerID = gtk_signal_connect(GTK_OBJECT(clistSuggestions), "select-row",
-		      GTK_SIGNAL_FUNC(s_suggestion_selected),
-		      (gpointer) this);
-   
-   // replacement edited
-   m_replaceHandlerID = gtk_signal_connect(GTK_OBJECT(entryChange), "changed",
-		      GTK_SIGNAL_FUNC(s_replacement_changed),
-		      (gpointer) this);
-   
-   // the catch-alls
-   gtk_signal_connect_after(GTK_OBJECT(windowSpell),
-			    "delete_event",
-			    GTK_SIGNAL_FUNC(s_delete_clicked),
-			    (gpointer) this);
-         
-   gtk_signal_connect_after(GTK_OBJECT(windowSpell),
-			    "destroy",
-			    NULL,
-			    NULL);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+   buttonCancel = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
    
    // update member variables with the important widgets 
    // that we'll interact with later
@@ -440,89 +372,122 @@ GtkWidget * AP_QNXDialog_Spell::_constructWindow(void)
    m_textWord = textWord;
    m_entryChange = entryChange;
    m_clistSuggestions = clistSuggestions;
-   
-   GdkColormap * cm = gdk_colormap_get_system();
-   m_highlight.red = 0xffff;
-   m_highlight.green = 0x0000;
-   m_highlight.blue = 0x0000;
-   gdk_colormap_alloc_color(cm, &m_highlight, FALSE, TRUE);
+   m_windowMain = windowSpell;
    
    return windowSpell;
 }
 
+static char *get_text_string(PtWidget_t *w) {
+	PtArg_t arg;
+	char *text;
+	PtSetArg(&arg, Pt_ARG_TEXT_STRING, &text, 0);
+	PtGetResources(w, 1, &arg);
+	return text;
+}
+
+static void set_text_string(PtWidget_t *w, char *str) {
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_TEXT_STRING, str, 0);
+	PtSetResources(w, 1, &arg);
+}
+
+
 void AP_QNXDialog_Spell::_showMisspelledWord(void)
 {                                
-   
-   gtk_text_freeze( GTK_TEXT(m_textWord) );
-   
-   gtk_text_set_point( GTK_TEXT(m_textWord), 0 );
-   gtk_text_forward_delete( GTK_TEXT(m_textWord), 
-			   gtk_text_get_length( GTK_TEXT(m_textWord) ) );
+	PtArg_t args[10];
+	int 	n;
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 0, 0);
+	PtSetResources(m_textWord, n, args);
    
    UT_UCSChar *p;
+   char 		*str;
+   int		   len;
 
    // insert start of sentence
    p = _getPreWord();
-   gchar * preword = (gchar*) _convertToMB(p);
+   str = _convertToMB(p);
+   len = mbstrlen(str, 0, NULL);
    FREEP(p);
-   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
-		   preword, strlen(preword));
-   FREEP(preword);
+	PtMultiTextAttributes_t attrs;
+	memset(&attrs, 0, sizeof(attrs));
+	attrs.text_color = Pg_BLACK;
+	PtMultiTextModifyText(m_textWord, 	/* Widget */
+						  0, 0,			/* start, end positions */
+						  -1,			/* insert position (end of buffer) */
+						  str,	/* text to insert */
+						  len,			/* length of text */
+						  &attrs,			/* Attributes (use default) */
+						  Pt_MT_TEXT_COLOR);		    /* Flags on which attrs to use */				
+   FREEP(str);
    
    // insert misspelled word (in highlight color)
    p = _getCurrentWord();
-   gchar * word = (gchar*) _convertToMB(p);
+   str = _convertToMB(p);
+   len = mbstrlen(str, 0, NULL);
    FREEP(p);
-   gtk_text_insert(GTK_TEXT(m_textWord) , NULL, &m_highlight, NULL,
-		   word, strlen(word));
-   FREEP(word);
+	attrs.text_color = Pg_RED;
+  	PtMultiTextModifyText(m_textWord, 	/* Widget */
+						  0, 0,			/* start, end positions */
+						  -1,			/* insert position (end of buffer) */
+						  str,			/* text to insert */
+						  len,			/* length of text */
+						  &attrs,		/* Attributes */
+						  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
    
+   FREEP(str);
+
    // insert end of sentence
    p = _getPostWord();
-   gchar * postword = (gchar*) _convertToMB(p);
+   str = _convertToMB(p);
+   len = mbstrlen(str, 0, NULL);
    FREEP(p);
-   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
-		   postword, strlen(postword));
-   FREEP(postword);
-   
+	attrs.text_color = Pg_BLACK;
+  	PtMultiTextModifyText(m_textWord, 	/* Widget */
+						  0, 0,			/* start, end positions */
+						  -1,			/* insert position (end of buffer) */
+						  str,			/* text to insert */
+						  len,			/* length of text */
+						  &attrs,		/* Attributes */
+						  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
+   FREEP(str);
+    
    // TODO: set scroll position so misspelled word is centered
 
-   gtk_text_thaw( GTK_TEXT(m_textWord) );
-   
-   gtk_clist_freeze( GTK_CLIST(m_clistSuggestions) );
-   
-   gtk_clist_clear(GTK_CLIST(m_clistSuggestions));
-   
-   gchar *suggest[2] = {NULL, NULL};
-   
+
+   char *suggest[2] = {NULL, NULL};
+
+   PtListDeleteAllItems(m_clistSuggestions); 
    for (int i = 0; i < m_Suggestions.count; i++) {
-      suggest[0] = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions.word[i]);
-      gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
-      FREEP(suggest[0]);
+	  suggest[0] = _convertToMB((UT_UCSChar *)m_Suggestions.word[i]);
+      PtListAddItems(m_clistSuggestions, (const char **)suggest, 1, 0);
+	  if (i==0) {
+		set_text_string(m_entryChange, suggest[0]);
+	  }
+	  FREEP(suggest[0]);
    }
-   
+  
    if (!m_Suggestions.count) {
 
       const XAP_StringSet * pSS = m_pApp->getStringSet();
       UT_XML_cloneNoAmpersands(suggest[0], pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
-      gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
+
+      PtListAddItems(m_clistSuggestions, (const char **)&suggest[0], 1, 0);
       FREEP(suggest[0]);
-      gtk_clist_set_selectable( GTK_CLIST(m_clistSuggestions), 0, FALSE);
+	  	n = 0;
+	  	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_BLOCKED, Pt_BLOCKED);
+		PtSetResources(m_clistSuggestions, n, args);
 
-      gtk_signal_handler_block(GTK_OBJECT(m_entryChange), m_replaceHandlerID);
-      gtk_entry_set_text(GTK_ENTRY(m_entryChange), "");
-      gtk_signal_handler_unblock(GTK_OBJECT(m_entryChange), m_replaceHandlerID);
+		n = 0;
+      	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, NULL, 0);
+		PtSetResources(m_entryChange, n, args);
 
-      m_iSelectedRow = -1;
-      
+      	m_iSelectedRow = -1;
    } else {
-
-      // select first on the list; signal handler should update our entry box
-      gtk_clist_select_row( GTK_CLIST(m_clistSuggestions), 0, 0);
-
+      	// select first on the list; signal handler should update our entry box
+		PtListSelectPos(m_clistSuggestions, 1);
    }
-   
-   gtk_clist_thaw( GTK_CLIST(m_clistSuggestions) );
    
 }
 
@@ -535,134 +500,113 @@ void AP_QNXDialog_Spell::_storeWindowData(void)
 {
    // TODO: anything to store?
 }
-#endif
 
 /*************************************************************/
 
 void AP_QNXDialog_Spell::event_Change()
 {
-#if 0
-   UT_UCSChar * replace = NULL;
-   if (m_iSelectedRow != -1)
-     {
-	replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
-	changeWordWith(replace);
-     }
-   else
-     {
-	replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
-	if (!UT_UCS_strlen(replace)) {
-	   FREEP(replace);
-	   return;
-	}
-	changeWordWith(replace);
-	FREEP(replace);
-     }
+	UT_UCSChar * replace = NULL;
 
-   gtk_main_quit();
-#endif
+   	if (m_iSelectedRow != -1) {
+		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		changeWordWith(replace);
+	}
+	else {
+		char *text = get_text_string(m_entryChange);
+		replace = _convertFromMB(text);
+		if (!UT_UCS_strlen(replace)) {
+		   FREEP(replace);
+		   return;
+		}
+		changeWordWith(replace);
+		FREEP(replace);
+   	}
+	done = 1;
 }
 
 void AP_QNXDialog_Spell::event_ChangeAll()
 {
-#if 0
    UT_UCSChar * replace = NULL;
-   if (m_iSelectedRow != -1)
-     {
-	replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
-	addChangeAll(replace);
-	changeWordWith(replace);
-     }
-   else
-     {
-	replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
-	if (!UT_UCS_strlen(replace)) {
-	   FREEP(replace);
-	   return;
+
+	if (m_iSelectedRow != -1) {
+		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		addChangeAll(replace);
+		changeWordWith(replace);
 	}
-	addChangeAll(replace);
-	changeWordWith(replace);
-	FREEP(replace);
-     }
-   
-   gtk_main_quit();
-#endif
+	else {
+		char *text = get_text_string(m_entryChange);
+		replace = _convertFromMB(text);
+		if (!UT_UCS_strlen(replace)) {
+			FREEP(replace);
+			return;
+		}
+		addChangeAll(replace);
+		changeWordWith(replace);
+		FREEP(replace);
+	}
+
+	done = 1;
 }
 
 void AP_QNXDialog_Spell::event_Ignore()
 {
-#if 0
-   ignoreWord();
-   gtk_main_quit();
-#endif
+   	ignoreWord();
+	done = 1;
 }
 
 void AP_QNXDialog_Spell::event_IgnoreAll()
 {
-#if 0
-   addIgnoreAll();
-   ignoreWord();
-   gtk_main_quit();
-#endif
+   	addIgnoreAll();
+   	ignoreWord();
+	done = 1;
 }
 
 void AP_QNXDialog_Spell::event_AddToDict()
 {
-#if 0
-   addToDict();
-   
-   ignoreWord();
-   gtk_main_quit();
-#endif
+   	addToDict();
+   	ignoreWord();
+	done = 1;
 }
 
 void AP_QNXDialog_Spell::event_Cancel()
 {
-#if 0
-   m_bCancelled = UT_TRUE;
-   gtk_main_quit();
-#endif
+   	m_bCancelled = UT_TRUE;
+	done = 1;
 }
 
-void AP_QNXDialog_Spell::event_SuggestionSelected(int row, int column)
+//This is called when the user clicks an item in the list ...
+void AP_QNXDialog_Spell::event_SuggestionSelected(int index, char *newreplacement)
 {
-#if 0
-   if (!m_Suggestions.count) return;
-   
-   m_iSelectedRow = row;
-   
-   gchar * newreplacement = NULL;
-   gtk_clist_get_text(GTK_CLIST(m_clistSuggestions), row, column, &newreplacement);
-   UT_ASSERT(newreplacement);
 
-   gtk_signal_handler_block(GTK_OBJECT(m_entryChange), m_replaceHandlerID);
-   gtk_entry_set_text(GTK_ENTRY(m_entryChange), newreplacement);
-   gtk_signal_handler_unblock(GTK_OBJECT(m_entryChange), m_replaceHandlerID);
-#endif
+   if (!newreplacement) return;
+
+	m_iSelectedRow = index - 1;
+	set_text_string(m_entryChange, newreplacement); 
+
+	//Set the suggestion text ....
+   UT_ASSERT(newreplacement);
 }
 
 void AP_QNXDialog_Spell::event_ReplacementChanged()
 {
-#if 0
-   gchar * modtext = gtk_entry_get_text(GTK_ENTRY(m_entryChange));
-   UT_ASSERT(modtext);
-   
-   gchar * suggest = NULL;
-   for (int i = 0; i < GTK_CLIST(m_clistSuggestions)->row_height; i++)
-     {
-	gtk_clist_get_text(GTK_CLIST(m_clistSuggestions), i, 0, &suggest);
-	UT_ASSERT(suggest);
-	if (strcmp(modtext, suggest) == 0) {
-	   gtk_signal_handler_block(GTK_OBJECT(m_clistSuggestions), m_listHandlerID);
-	   gtk_clist_select_row(GTK_CLIST(m_clistSuggestions), i, 0);
-	   gtk_signal_handler_unblock(GTK_OBJECT(m_clistSuggestions), m_listHandlerID);
-	   return;
+	printf("Replacement changed \n");
+
+	char * modtext = get_text_string(m_entryChange);
+	UT_ASSERT(modtext);
+
+	int index = PtListItemPos(m_clistSuggestions, modtext);
+  	if (index != 0) {
+		m_iSelectedRow = index -1;
+		PtListSelectPos(m_clistSuggestions, index); 
+		//PtListGotoPos(m_clistSuggestions, index);
 	}
-     }
-   
-   gtk_clist_unselect_all(GTK_CLIST(m_clistSuggestions));
-   m_iSelectedRow = -1;
-#endif
+	else {
+		if (m_iSelectedRow > 0) {
+			PtListUnselectPos(m_clistSuggestions, m_iSelectedRow + 1);
+		}
+		//PtListGotoPos(m_clistSuggestions, 0);
+   		m_iSelectedRow = -1;
+	}
 }
 
 
@@ -675,6 +619,30 @@ void AP_QNXDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_QNXDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
+	int    len;
+	char   *buffer;
+
+	len = UT_UCS_strlen(wword);
+	buffer = new char[(len + 1) * 3];	//Be very pessimistic about size
+	wcstombs(buffer, (wchar_t *)wword, len*3);	
+	return buffer;
+
+#if 0
+	int len, offset;
+	char *buffer;
+
+	len = offset = 0;
+	for (buffer = NULL; wword[offset]; offset++) {
+		if (offset >= len) {
+			len += 10;
+			buffer = (char *)realloc(buffer, len);
+		}
+		buffer[offset] = (char)wword[offset];
+	}
+	buffer[offset] = '\0';
+	return buffer;
+#endif
+
 #if 0
    int mbindex = 0, wcindex = 0;
    int mblength = 0;
@@ -708,6 +676,30 @@ char * AP_QNXDialog_Spell::_convertToMB(UT_UCSChar *wword)
 // make a wide string from a multibyte string
 UT_UCSChar * AP_QNXDialog_Spell::_convertFromMB(char *word)
 {
+	int 		len;
+	UT_UCSChar *buffer;
+
+	len = mbstrlen(word, 0, NULL);
+	buffer = new UT_UCSChar[(len + 1) * 2];
+	mbstowcs((wchar_t *)buffer, word, len);	
+	return buffer;
+
+#if 0
+	int len, offset;
+	UT_UCSChar *buffer;
+
+	len = offset = 0;
+	for (buffer = NULL; word[offset]; offset++) {
+		if (offset >= len) {
+			len += 10;
+			buffer = (UT_UCSChar *)realloc(buffer, len*sizeof(UT_UCSChar));
+		}
+		buffer[offset] = (UT_UCSChar)word[offset];
+	}
+	buffer[offset] = '\0';
+	return buffer;
+#endif
+
 #if 0
    int wcindex = 0, mbindex = 0;
    int wclength = 0;
