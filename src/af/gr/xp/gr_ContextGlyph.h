@@ -162,7 +162,6 @@ private:
 #ifndef NO_BIDI_SUPPORT
 	static void _generateNoLigatureTable();
 	static void _generateNoShapingTable();
-	static void _fixHebrewLigatures(bool bShape);
 #endif
 	
 	static UT_UCS4Char _remapGlyph(UT_UCS4Char g);
@@ -171,7 +170,6 @@ private:
 	static bool             s_bSmartQuotes;
 	static const XML_Char * s_pEN_US;
 	static UT_UCS4Char      s_cDefaultGlyph;
-	static bool             s_bHebrewShaping;
 	static bool             s_bLatinLigatures;
 };
 #endif
