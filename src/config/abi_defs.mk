@@ -166,10 +166,30 @@ ifeq ($(OS_NAME), OpenBSD)
 include $(ABI_DEPTH)/config/platforms/openbsd.mk
 endif
 
+ifeq ($(OS_NAME), NetBSD)
+include $(ABI_DEPTH)/config/platforms/netbsd.mk
+endif
+
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
 include $(ABI_DEPTH)/config/platforms/sunos.mk
 endif
+
+# Catch all for undefined platform (CC will always be defined on a working platform)
+ifndef CC
+fake-target::
+	@echo
+	@echo "    I can't seem to figure out which platform you are using."
+	@echo
+	@echo "    If this is a Unix-like platform, it should be easy to"
+	@echo "modify an existing platform configuration file to suit this"
+	@echo "platform's needs.  Look in abi/src/config/platforms for starter"
+	@echo "platform configuration files, and abi/src/config/abi_defs.mk"
+	@echo "for the proper detection magic."
+	@echo
+	exit 1
+endif
+
 #### End of platform defs
 
 # Generic Unix includes for Gtk, as it moves about installation paths.
