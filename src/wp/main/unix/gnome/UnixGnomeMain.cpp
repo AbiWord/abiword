@@ -21,7 +21,7 @@
 
 #include "ap_UnixGnomeApp.h"
 
-int main(int argc, char ** argv)
+int main(int argc, const char ** argv)
 {
 	return AP_UnixGnomeApp::main(ABIWORD_APP_NAME, argc, argv);
 }

@@ -38,7 +38,7 @@ public:
 
 	virtual void initPopt (AP_Args *);
 
-	static int				main (const char * szAppName, int argc, char ** argv);
+	static int				main (const char * szAppName, int argc, const char ** argv);
 };
 
 #endif /* AP_UNIXGNOMEAPP_H */

@@ -107,7 +107,7 @@ AP_UnixGnomeApp::~AP_UnixGnomeApp()
 
 /*****************************************************************/
 
-int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
+int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 {
 	// This is a static function.		   
 
@@ -216,7 +216,7 @@ void AP_UnixGnomeApp::initPopt(AP_Args *Args)
 #ifndef ABI_OPT_WIDGET
 	// This is deprecated.  We're supposed to use gnome_program_init!
 	gnome_init_with_popt_table("AbiWord", "1.0.0", 
-				   Args->XArgs->m_argc, Args->XArgs->m_argv, 
+				   Args->XArgs->m_argc, (char **)Args->XArgs->m_argv, 
 				   Args->options, 0, &Args->poptcon);
 #endif
 }
@@ -245,14 +245,14 @@ static bool s_checkControl(const char * szAppName, XAP_Args XArgs)
 		/* intialize gnome - need this before initialize method */
 		gtk_set_locale();
 		gnome_init_with_popt_table ("AbiSource_AbiWord_ControlFactory",  "0.0",
-									XArgs.m_argc, XArgs.m_argv, 
+									XArgs.m_argc, (char **)XArgs.m_argv, 
 									oaf_popt_options, 0, NULL);
 		if (!pMyUnixApp->initialize())
 		{
 			delete pMyUnixApp;
 			exit(-1);
 		}
-		s_mainBonobo(XArgs.m_argc,XArgs.m_argv);
+		s_mainBonobo(XArgs.m_argc,(char **)XArgs.m_argv);
 
 		// destroy the App.  It should take care of deleting all frames.
 
