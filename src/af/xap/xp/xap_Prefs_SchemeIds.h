@@ -102,7 +102,7 @@
 #endif
 
 #define XAP_PREF_KEY_EmbedFontsInPS 				"EmbedFontsInPs"
-#define XAP_PREF_DEFAULT_EmbedFontsInPS 			"1"
+#define XAP_PREF_DEFAULT_EmbedFontsInPS 			"0"
 
 #define XAP_PREF_KEY_ColorForTransparent			"TransparentColor"
 #define XAP_PREF_DEFAULT_ColorForTransparent		"ffffff"
