@@ -66,7 +66,16 @@ OPTIMIZER   	= -pg -O2 -Wall -ansi -pedantic
 DEFINES  	= 
 OBJ_DIR_SFX	= PRF
 ABI_OPT_DEBUG 	= ""
+ABI_OPTIONS	+= Profile:On
 else
+
+	ifdef ABI_OPT_OPTIMIZE
+	OPTIMIZER	= -O3 -Wall -ansi -pedantic
+	DEFINES		=
+	OBJ_DIR_SFX	= OPT
+	ABI_OPTIONS	+= Optimize:On
+	ABI_OPT_DEBUG	= ""
+	else #/* OPTIMIZE*/	
 
 	ifdef ABI_OPT_DEBUG
 	OPTIMIZER	= -g -Wall -ansi -pedantic
@@ -91,6 +100,7 @@ else
 	DEFINES		=
 	OBJ_DIR_SFX	= OBJ
 	endif #/* DEBUG */ 
+	endif #/* OPTIMIZE */
 
 endif #/* PROF */
 
