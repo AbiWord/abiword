@@ -676,7 +676,7 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
    }
    word[mblength] = 0;
 
-   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i\m", wcindex, wclength, mbindex, mblength));
+   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i\n", wcindex, wclength, mbindex, mblength));
    UT_ASSERT(mblength >= mbindex);
    
    return word;
