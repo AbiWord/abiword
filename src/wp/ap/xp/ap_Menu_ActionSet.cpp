@@ -72,6 +72,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_OPEN,		0,1,0,	"fileOpen",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,	"fileSave",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,	"fileSaveAs",		NULL,					NULL);
+	_s(AP_MENU_ID_FILE_EXPORT, 0,1,0, "fileExport", NULL, NULL);
 	_s(AP_MENU_ID_FILE_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
 	_s(AP_MENU_ID_FILE_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	"closeWindow",		NULL,					NULL);

@@ -234,6 +234,7 @@ public:
 	static EV_EditMethod_Fn fileOpen;
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
+	static EV_EditMethod_Fn fileExport;
 	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
@@ -578,6 +579,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(extSelToXY),			0,	""),
 
 	// f
+	EV_EditMethod(NF(fileExport), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				0,	""),
 	EV_EditMethod(NF(fileOpen),				0,	""),
@@ -1521,7 +1523,8 @@ Defun(fileSave)
 	return true;
 }
 
-Defun1(fileSaveAs)
+static bool
+s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -1536,7 +1539,7 @@ Defun1(fileSaveAs)
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 	
 	UT_Error errSaved;
-	errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft);
+	errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft, overwriteName);
 	if (errSaved)
 	{
 		// throw up a dialog
@@ -1544,6 +1547,10 @@ Defun1(fileSaveAs)
 		free(pNewFile);
 		return false;
 	}
+
+	// ignore all of this stuff
+	if (!overwriteName)
+		return bOK;
 
 	// update the MRU list
 	XAP_App * pApp = pFrame->getApp();
@@ -1560,6 +1567,16 @@ Defun1(fileSaveAs)
 	}
 
 	return true;
+}
+
+Defun1(fileExport)
+{
+	return s_actuallySaveAs(pAV_View, false);
+}
+
+Defun1(fileSaveAs)
+{
+	return s_actuallySaveAs(pAV_View, true);
 }
 
 Defun1(fileSaveAsWeb)
