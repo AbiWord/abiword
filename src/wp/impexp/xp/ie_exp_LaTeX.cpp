@@ -628,7 +628,8 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (pAP->getProperty("font-family", szValue))
 		{
-			if (!UT_strcmp ("Symbol", szValue))
+			if (!UT_strcmp ("Symbol", szValue) || 
+				!UT_strcmp("Standard Symbols", szValue))
 				m_iInSymbol++;
 			UT_DEBUGMSG (("Latex export: TODO: 'font-family' property\n"));
 		}
@@ -758,7 +759,8 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 		if (pAP->getProperty("font-family", szValue))
 		{
-			if (!UT_strcmp ("Symbol", szValue))
+			if (!UT_strcmp ("Symbol", szValue) ||
+				!UT_strcmp("Standard Symbols", szValue))
 				m_iInSymbol--;
 		}
 
