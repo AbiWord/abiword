@@ -481,7 +481,6 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 				)
 			{
 					m_pHeader->mapXYToPosition(x - m_pHeader->getX(), y - m_pHeader->getY(), pos, bBOL, bEOL);
-					UT_DEBUGMSG(("SEVIOR: found shadow %x \n",m_pHeader->getShadow()));
 					pShadow = m_pHeader->getShadow();
 					return;
 			}
@@ -502,7 +501,6 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 				)
 			{
 					m_pFooter->mapXYToPosition(x - m_pFooter->getX(), y - m_pFooter->getY(), pos, bBOL, bEOL);
-					UT_DEBUGMSG(("SEVIOR: found shadow %x \n",m_pFooter->getShadow()));
 					pShadow = m_pFooter->getShadow();
 					return;
 			}

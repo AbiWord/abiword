@@ -1991,7 +1991,9 @@ Defun1(warpInsPtLeft)
 Defun1(warpInsPtRight)
 {
 	ABIWORD_VIEW;
+	UT_DEBUGMSG(("getPoint1: %d\n", pView->getPoint()));
 	pView->cmdCharMotion(true,1);
+	UT_DEBUGMSG(("getPoint2: %d\n", pView->getPoint()));
 	return true;
 }
 

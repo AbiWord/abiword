@@ -1942,6 +1942,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	UT_DEBUGMSG(("SEVIOR!!!! Insert Span In header/footer Number of Pages = %d \n",iCount));
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -1949,6 +1950,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_insertSpan(pcrs)
 			&& bResult;
+		UT_DEBUGMSG(("SEVIOR!!!! Span Inserted into shadow %x \n",pPair->pShadow ));
 	}
 	// Update the overall block too.
 	//	bResult = pBL->doclistener_insertSpan(pcrs)
@@ -2052,6 +2054,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 //
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	UT_DEBUGMSG(("SEVIOR!!! Insert Block Called!! \n"));
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -2339,18 +2342,17 @@ void fl_HdrFtrShadow::updateLayout(void)
 	{
 		if (pBL->needsReformat())
 		{
-		  bredraw = true;
+			bredraw = true;
 			pBL->format();
 		}
 		
 		pBL = pBL->getNext();
 	}
 	if(bredraw == true)
-	  {
-	    clearScreen();
+	{
+		//    clearScreen();
 	    m_pContainer->layout();
-	  }
-	//	m_pContainer->draw();
+ 	}
 }
 
 
@@ -2366,7 +2368,10 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
-		pBL->redrawUpdate();
+		if(pBL->needsRedraw())
+		{
+			pBL->redrawUpdate();
+		}
 		pBL = pBL->getNext();
 	}
 	m_pContainer->layout();

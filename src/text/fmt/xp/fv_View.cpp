@@ -1144,7 +1144,6 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	{
 		fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
 		fl_BlockLayout * pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
-		UT_DEBUGMSG(("SEVIOR: Returning shadow block %x \n",pBL));
 	}
 	return pBL;
 }
@@ -3301,7 +3300,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
 	bool bEOL = false;
-	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+	fl_HdrFtrShadow * pShadow=NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
 //
 // Check we're not moving out of allowed region.
 //
@@ -3717,7 +3717,8 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
 	bool bEOL = false;
-	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+	fl_HdrFtrShadow * pShadow = NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
 
 	bool bPostpone = false;
 
@@ -3729,7 +3730,6 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 		if ((xPos < 0 || xPos > m_iWindowWidth) ||
 			(yPos < 0 || yPos > m_iWindowHeight))
 			bOnScreen = false;
-		
 		// is autoscroll timer set properly?
 		if (bOnScreen)
 		{
@@ -3785,7 +3785,8 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	bool bBOL, bEOL;
 
 	bBOL = bEOL = false;
-	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+	fl_HdrFtrShadow * pShadow = NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
 
 	//UT_ASSERT(!isSelectionEmpty());
 
@@ -5123,7 +5124,10 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		UT_ASSERT(pBlock);
 
 		fp_Line* pLine = pCurRun->getLine();
-
+		if(pLine == NULL)
+		{
+			return;
+		}
 		pLine->getScreenOffsets(pCurRun, xoff, yoff);
 
 		dg_DrawArgs da;
@@ -5985,7 +5989,8 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
 	bool bEOL = false;
-	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+	fl_HdrFtrShadow * pShadow=NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
 
 	return bBOL;
 }
@@ -6803,7 +6808,8 @@ bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 
 	PT_DocPosition pos;
 	bool bBOL, bEOL;
-	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	fl_HdrFtrShadow * pShadow=NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, pos, pShadow, bBOL, bEOL);
 
 	return isPosSelected(pos);
 }
