@@ -98,7 +98,6 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 
 fp_TextRun::~fp_TextRun()
 {
-	delete getRevisions();
 	delete m_pRenderInfo;
 }
 

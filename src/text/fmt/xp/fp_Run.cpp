@@ -139,6 +139,8 @@ fp_Run::~fp_Run()
 	m_pBL = NULL;
 	m_pLine = NULL;
 #endif
+
+	DELETEP(m_pRevisions);
 }
 
 fg_FillType * fp_Run::getFillType(void)
