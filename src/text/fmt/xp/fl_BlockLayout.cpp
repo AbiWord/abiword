@@ -4609,7 +4609,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
-        pView->_eraseInsertionPoint();
+	pView->_eraseInsertionPoint();
 
 	id = rand();
 	sprintf(lid, "%i", id);
@@ -4617,13 +4617,18 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	sprintf(pid, "%i", iParentID);
 	sprintf(buf, "%i", curlevel);
 	sprintf(pszStart,"%i",start);
-	sprintf(pszAlign,"%fin",Align);
-	sprintf(pszIndent,"%fin",indent);
-	sprintf(pszAlign, "%fin", Align);
 
-	va.addItem( (void *) "listid");  va.addItem( (void *) lid);
-	va.addItem( (void *) "parentid"); va.addItem( (void *) pid);
-	va.addItem( (void *) "level");	va.addItem( (void *) buf);
+	UT_XML_strncpy(	pszAlign,
+					sizeof(pszAlign),
+					UT_convertInchesToDimensionString(DIM_IN, Align, 0));
+
+	UT_XML_strncpy(	pszIndent,
+					sizeof(pszIndent),
+					UT_convertInchesToDimensionString(DIM_IN, Align, 0));
+	
+	va.addItem( (void *) "listid");			va.addItem( (void *) lid);
+	va.addItem( (void *) "parentid");		va.addItem( (void *) pid);
+	va.addItem( (void *) "level");			va.addItem( (void *) buf);
 	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
