@@ -180,6 +180,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
  	
 	case _PS_Block:
 	case _PS_IgnoredWordsItem:
+	case _PS_Meta:
 	{
 		UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
 		UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
@@ -304,6 +305,14 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 			X_CheckError(getDoc()->appendIgnore(buf.ucs4_str(), buf.size()));
 		      }
 		    break;
+		  case _PS_Meta:
+		    {
+		      // ugly hack
+		      UT_String data(UT_UTF8String(buf).utf8_str());
+		      getDoc()->setMetaDataProp(m_currentMetaDataName, data);
+		      UT_DEBUGMSG(("Storing metadata: %s=%s\n", m_currentMetaDataName.c_str(), data.c_str()));
+		      break;
+		    }
 		  default:
 		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		    break;

@@ -29,6 +29,7 @@
 #include "ut_stack.h"
 #include "ie_imp.h"
 #include "ut_bytebuf.h"
+#include "ut_string_class.h"
 class PD_Document;
 
 struct ABI_EXPORT xmlToIdMapping {
@@ -95,11 +96,13 @@ protected:
 			       _PS_StyleSec,
 			       _PS_Style,
 			       _PS_IgnoredWordsSec,
-				   _PS_IgnoredWordsItem,
+			       _PS_IgnoredWordsItem,
 			       _PS_ListSec,
 			       _PS_List,
 			       _PS_Field,
-			       _PS_PageSize
+			       _PS_PageSize,
+			       _PS_MetaData,
+			       _PS_Meta
     } ParseState;
 
  protected:
@@ -126,6 +129,8 @@ protected:
     bool			m_currentDataItemEncoded;
 
     FILE *			m_fp;
+
+    UT_String			m_currentMetaDataName;
 };
 
 #endif /* IE_IMP_XML_H */

@@ -471,6 +471,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_parseState = _PS_IgnoredWordsItem;
 		return;
 
+	case TT_METADATA:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_MetaData;
+		return;
+
+	case TT_META:
+		X_VerifyParseState(_PS_MetaData);
+		m_parseState = _PS_Meta;
+		m_currentMetaDataName = _getXMLPropValue("name", atts);
+		return;
 
 	case TT_OTHER:
 	default:
@@ -639,7 +649,17 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_IgnoredWordsItem);
 		m_parseState = _PS_IgnoredWordsSec;
 		return;
-			
+
+	case TT_METADATA:
+		X_VerifyParseState(_PS_MetaData);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_META:
+		X_VerifyParseState(_PS_Meta);
+		m_parseState = _PS_MetaData;
+		return;
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
