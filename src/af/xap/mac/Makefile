@@ -42,7 +42,8 @@ CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacFontManager.cpp		\
 			xap_MacFrame.cpp		\
 			xap_MacModule.cpp		\
-			xap_MacTlbr_Icons.cpp
+			xap_MacTlbr_Icons.cpp		\
+			xap_MacToolbar_Control.cpp
 
 REZSRCS=		xap_MacDlg_MessageBox.r		\
                         xap_MacResources.r
