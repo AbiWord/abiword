@@ -22,7 +22,6 @@
 #define XAP_WIN32APP_H
 
 #include <windows.h>
-#include <direct.h>
 #include "xap_App.h"
 #include "xap_Win32DialogFactory.h"
 #include "xap_Win32_TB_CFactory.h"
@@ -66,7 +65,7 @@ public:
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) = 0;
 
 	void									enableAllTopLevelWindows(bool);
-	virtual UT_sint32						makeDirectory(const char * szPath, const UT_sint32 mode ) { return mkdir(szPath); };
+	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);

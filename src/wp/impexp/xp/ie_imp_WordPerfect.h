@@ -190,10 +190,6 @@ public:
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 						unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
  protected:
-   FILE *m_importFile;
-   UT_uint32 m_documentEnd;
-   UT_uint32 m_documentPointer;
-   UT_uint16 m_indexPointer;
    UT_Error _parseHeader();
    UT_Error _parseIndexHeader();
    UT_Error _parseFontDescriptorPacket(int packetID, UT_uint32 dataPacketSize, UT_uint32 dataPointer);
@@ -220,6 +216,10 @@ public:
    UT_Error _flushParagraph();
    
  private:
+   FILE *m_importFile;
+   UT_uint32 m_documentEnd;
+   UT_uint32 m_documentPointer;
+   UT_uint16 m_indexPointer;
    bool m_undoOn;
    bool m_firstParagraph; 
    UT_Mbtowc m_Mbtowc;

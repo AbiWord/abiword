@@ -86,7 +86,7 @@ public:
 
 	void							setTimeOfLastEvent(UT_uint32 eventTime);
 	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
-	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) { return  mkdir(szPath, mode); };
+	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	
 protected:
 	bool							_loadFonts();
