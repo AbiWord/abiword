@@ -50,7 +50,7 @@ bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
 	// round up to the next multiple of the chunk size.
 	
 	UT_uint32 newSize = ((m_iSize+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
-	UT_Byte * pNew = (UT_Byte *)calloc(newSize,sizeof(*m_pBuf));
+	UT_Byte * pNew = (UT_Byte *)UT_calloc(newSize,sizeof(*m_pBuf));
 	if (!pNew)
 		return false;
 	

@@ -50,7 +50,7 @@ bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 	// round up to the next multiple of the chunk size.
 	
 	UT_uint32 newSize = ((m_iSize+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
-	UT_uint16 * pNew = (UT_uint16 *)calloc(newSize,sizeof(*m_pBuf)); // Why not use realloc ? - fjf
+	UT_uint16 * pNew = (UT_uint16 *)UT_calloc(newSize,sizeof(*m_pBuf)); // Why not use realloc ? - fjf
 	if (!pNew)
 		return false;
 	

@@ -586,7 +586,7 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	HPEN hPen = CreatePen(PS_SOLID, 1, m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
-	POINT * points = (POINT *)calloc(nPoints, sizeof(POINT));
+	POINT * points = (POINT *)UT_calloc(nPoints, sizeof(POINT));
 	UT_ASSERT(points);
 
 	for (UT_uint32 i = 0; i < nPoints; i++)

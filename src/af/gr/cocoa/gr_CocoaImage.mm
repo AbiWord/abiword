@@ -308,7 +308,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisp
       pFM->height = height;
       
       // allocate for 3 bytes each pixel (one for R, G, and B)
-      pFM->data = (unsigned char *) calloc(pFM->width * pFM->height * 3, sizeof(unsigned char));
+      pFM->data = (unsigned char *) UT_calloc(pFM->width * pFM->height * 3, sizeof(unsigned char));
       
       if (!pFM->data)
 	  {
@@ -318,7 +318,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisp
       
       UT_Byte * pBits = (UT_Byte *) pFM->data;
       
-      UT_Byte ** pRowStarts = (UT_Byte **) calloc(height, sizeof(UT_Byte *));
+      UT_Byte ** pRowStarts = (UT_Byte **) UT_calloc(height, sizeof(UT_Byte *));
       
       // fill a list of the starts of rows, so png_read_rows() can walk
       // the pointer it gets (&pRowStarts) up each element to get a new
@@ -349,7 +349,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisp
 		  pDisplayFM->height = iDisplayHeight;
 	   
 	   // allocate for 3 bytes each pixel (one for R, G, and B)
-		  pDisplayFM->data = (unsigned char *) calloc(pDisplayFM->width * pDisplayFM->height * 3, sizeof(unsigned char));
+		  pDisplayFM->data = (unsigned char *) UT_calloc(pDisplayFM->width * pDisplayFM->height * 3, sizeof(unsigned char));
 	   
 		  if (!pDisplayFM->data)
 		  {

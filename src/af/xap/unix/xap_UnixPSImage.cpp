@@ -171,7 +171,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	m_image->height = height;
 
 	// allocate for 3 bytes each pixel (one for R, G, and B)
-	m_image->data = (guchar *) calloc(m_image->width * m_image->height * 3, sizeof(guchar));
+	m_image->data = (guchar *) UT_calloc(m_image->width * m_image->height * 3, sizeof(guchar));
 	
 	if (!m_image->data)
 	{
@@ -181,7 +181,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 
 	UT_Byte * pBits = (UT_Byte *) m_image->data;
 
-	UT_Byte ** pRowStarts = (UT_Byte **) calloc(height, sizeof(UT_Byte *));
+	UT_Byte ** pRowStarts = (UT_Byte **) UT_calloc(height, sizeof(UT_Byte *));
 
 	// fill a list of the starts of rows, so png_read_rows() can walk
 	// the pointer it gets (&pRowStarts) up each element to get a new

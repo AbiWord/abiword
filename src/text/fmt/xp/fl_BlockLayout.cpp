@@ -5725,7 +5725,7 @@ void fl_BlockLayout::remItemFromList(void)
 			pNext->getListPropertyVector( &vp);
 			UT_uint32 countp = vp.getItemCount() + 1;
 			UT_uint32 i;
-			props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+			props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 			for(i=0; i<vp.getItemCount();i++)
 			{
 				if( i > 0 &&
@@ -5747,7 +5747,7 @@ void fl_BlockLayout::remItemFromList(void)
 			getListPropertyVector( &vp);
 			UT_uint32 countp = vp.getItemCount() + 1;
 			UT_uint32 i;
-			props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+			props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 			for(i=0; i<vp.getItemCount();i++)
 			{
 				if( i > 0 &&
@@ -6108,14 +6108,14 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	const XML_Char ** attribs = (const XML_Char **) UT_calloc(counta, sizeof(XML_Char *));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = (XML_Char *) va.getNthItem(i);
 	}
 	attribs[i] = (XML_Char *) NULL;
 
-	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = (XML_Char *) vp.getNthItem(i);
@@ -6305,7 +6305,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 	}
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	for (i = 0; i < vp.getItemCount(); i++)
 	{
 		props[i] = (XML_Char *) vp.getNthItem(i);
@@ -6579,14 +6579,14 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	const XML_Char ** attribs = (const XML_Char **) UT_calloc(counta, sizeof(XML_Char *));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = (XML_Char *) va.getNthItem(i);
 	}
 	attribs[i] = (XML_Char *) NULL;
 
-	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = (XML_Char *) vp.getNthItem(i);
@@ -6624,14 +6624,14 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	const XML_Char ** attribs = (const XML_Char **) UT_calloc(counta, sizeof(XML_Char *));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = (XML_Char *) va.getNthItem(i);
 	}
 	attribs[i] = (XML_Char *) NULL;
 
-	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = (XML_Char *) vp.getNthItem(i);

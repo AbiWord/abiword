@@ -343,7 +343,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 // Finally make the const XML_Char * array of properties
 //
 		UT_uint32 countp = vProps.getItemCount() + 1;
-		sProps = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+		sProps = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 		countp--;
 		UT_uint32 i;
 		for(i=0; i<countp; i++)

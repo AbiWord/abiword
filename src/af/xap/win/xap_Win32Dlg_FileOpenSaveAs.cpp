@@ -384,7 +384,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			UT_ASSERT(szSuffix);
 
 			UT_uint32 length = strlen(szFile) + strlen(szSuffix) + 1;
-			m_szFinalPathname = (char *)calloc(length,sizeof(char));
+			m_szFinalPathname = (char *)UT_calloc(length,sizeof(char));
 			if (m_szFinalPathname)
 			{
 				char * p = m_szFinalPathname;

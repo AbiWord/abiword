@@ -344,7 +344,7 @@ void XAP_CocoaFont::_makeFontKey()
 	
 	// allocate enough to combine name, seperator, style, and NULL into key.
 	// this won't work if we have styles that require two digits in decimal.
-	char * key = (char *) calloc(strlen(m_name) + 1 + 1 + 1, sizeof(char));
+	char * key = (char *) UT_calloc(strlen(m_name) + 1 + 1 + 1, sizeof(char));
 	UT_ASSERT(key);
 
 	char * copy;

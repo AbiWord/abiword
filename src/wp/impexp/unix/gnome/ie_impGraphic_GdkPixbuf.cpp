@@ -148,7 +148,7 @@ GdkPixbuf * IE_ImpGraphicPixbufGraphic::_loadXPM(UT_ByteBuf * pBB)
 	}
 	char * sz = NULL;
 	UT_sint32 kLen = k-iBase+1;
-	sz = (char *) calloc(kLen,sizeof(char));
+	sz = (char *) UT_calloc(kLen,sizeof(char));
 	UT_sint32 i =0;
 
 	for(i=0; i< (kLen -1); i++)
@@ -180,7 +180,7 @@ GdkPixbuf * IE_ImpGraphicPixbufGraphic::_loadXPM(UT_ByteBuf * pBB)
 			}
 			sz = NULL;
 			kLen = k-iBase+1;
-			sz = (char *) calloc(kLen,sizeof(char));
+			sz = (char *) UT_calloc(kLen,sizeof(char));
 			for(i=0; i<(kLen -1); i++)
 			{
 				*(sz+i) = *(pBC+iBase+i);
@@ -198,7 +198,7 @@ GdkPixbuf * IE_ImpGraphicPixbufGraphic::_loadXPM(UT_ByteBuf * pBB)
 		}
 		return NULL;
 	}
-	const char ** pszStr = (const char **) calloc(vecStr.getItemCount(),sizeof(char *));
+	const char ** pszStr = (const char **) UT_calloc(vecStr.getItemCount(),sizeof(char *));
 	for(i=0; i< (UT_sint32) vecStr.getItemCount(); i++)
 	{
 		pszStr[i] = (const char *) vecStr.getNthItem(i);

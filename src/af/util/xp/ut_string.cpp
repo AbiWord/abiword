@@ -135,7 +135,7 @@ char * UT_strdup(const char * szSource)
 	UT_ASSERT(szSource);
 
 	int len = strlen(szSource)+1;
-	if(char * ret = (char *)calloc(len, sizeof(char)))
+	if(char * ret = (char *)UT_calloc(len, sizeof(char)))
 		return((char *)memcpy(ret, szSource, len));
 	else
 		return(NULL);
@@ -188,7 +188,7 @@ bool UT_cloneString(char *& rszDest, const char * szSource)
 	if (szSource && *szSource)
 	{
 		UT_uint32 length = strlen(szSource) + 1;
-		rszDest = (char *)calloc(length,sizeof(char));
+		rszDest = (char *)UT_calloc(length,sizeof(char));
 		if (!rszDest)
 			return false;
 		memmove(rszDest,szSource,length*sizeof(char));
@@ -227,7 +227,7 @@ bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource)
 		return true;
 
 	XML_Char ** newmemory = (XML_Char **)
-		calloc(UT_pointerArrayLength((void **) szSource) + 1, sizeof(XML_Char *));
+		UT_calloc(UT_pointerArrayLength((void **) szSource) + 1, sizeof(XML_Char *));
 
 	if (newmemory == NULL)
 		return false;
@@ -250,7 +250,7 @@ bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource)
 bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 {
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
-	rszDest = (XML_Char *)calloc(length,sizeof(XML_Char));
+	rszDest = (XML_Char *)UT_calloc(length,sizeof(XML_Char));
 	if (!rszDest)
 		return false;
 	memmove(rszDest,szSource,length*sizeof(XML_Char));
@@ -281,7 +281,7 @@ bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 		return false;
 
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
-	rszDest = (XML_Char *) calloc(length, sizeof(XML_Char));
+	rszDest = (XML_Char *) UT_calloc(length, sizeof(XML_Char));
 
 	if (!rszDest)
 		return false;
@@ -316,7 +316,7 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 			free(rszDestBuffer);
 		}
 		iDestBufferLength = 0;
-		rszDestBuffer = (XML_Char *) calloc(length, sizeof(XML_Char));
+		rszDestBuffer = (XML_Char *) UT_calloc(length, sizeof(XML_Char));
 
 		if (!rszDestBuffer)
 			return NULL;
@@ -778,7 +778,7 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
 {
 	UT_uint32 length = UT_UCS_strlen(src) + 1;
-	*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
+	*dest = (UT_UCSChar *)UT_calloc(length,sizeof(UT_UCSChar));
 	if (!*dest)
 		return false;
 	memmove(*dest,src,length*sizeof(UT_UCSChar));
@@ -792,7 +792,7 @@ bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 #ifdef WITHOUT_MB
 
 		UT_uint32 length = strlen(src) + 1;
-		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
+		*dest = (UT_UCSChar *)UT_calloc(length,sizeof(UT_UCSChar));
 		if (!*dest)
 				return false;
 		UT_UCS_strcpy_char(*dest, src);
@@ -801,7 +801,7 @@ bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 #else
 
 		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
-		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
+		*dest = (UT_UCSChar *)UT_calloc(length,sizeof(UT_UCSChar));
 		if (!*dest)
 				return false;
 		UT_UCSChar * d= *dest;

@@ -72,7 +72,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 	UT_uint32 sizeofPixelData = widthRoundedUp * height;
 	UT_uint32 sizeofStructure = sizeof(BITMAPINFOHEADER) + sizeofColorData + sizeofPixelData;
 
-	UT_Byte * pInfo = (UT_Byte *)calloc(1,sizeofStructure);
+	UT_Byte * pInfo = (UT_Byte *)UT_calloc(1,sizeofStructure);
 	if (!pInfo)
 		return false;
 

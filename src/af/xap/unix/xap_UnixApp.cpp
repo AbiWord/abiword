@@ -226,13 +226,13 @@ bool XAP_UnixApp::_loadFonts()
  		if ( ((i == 0) || (szPrefFontPathPtr[i-1] == ';')) && (szPrefFontPathPtr[i] != '/'))
  		{
 		        // if relative path in prefs, prepend library directory.
- 			szTemp = (char *)calloc(suiteLenCache + strlen(szPrefFontPathPtr) + 10, sizeof(char));
+ 			szTemp = (char *)UT_calloc(suiteLenCache + strlen(szPrefFontPathPtr) + 10, sizeof(char));
  			strcpy(szTemp, szPrefFontPathPtr);
  			sprintf(szTemp + i, "%s/%s", suiteDirCache, szPrefFontPathPtr + i);
  			
  			// if relativePathsSoFar > 1 then szPrefFontPathPtr
  			// was really szTemp and was allocated by our call to
- 			// calloc so we must free it. also, we are sure not to
+ 			// UT_calloc so we must free it. also, we are sure not to
 			// free the memory pointed to by getPrefsValue()
  			if (relativePathsSoFar && szPrefFontPathPtr)
  				free(szPrefFontPathPtr);

@@ -1487,11 +1487,11 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	else
 		filterCount = IE_Imp::getImporterCount();
 	
-	const char ** szDescList = (const char **) calloc(filterCount + 1,
+	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 													  sizeof(char *));
-	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
 														sizeof(char *));
-	IEFileType * nTypeList = (IEFileType *) calloc(filterCount + 1,
+	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1,
 												   sizeof(IEFileType));
 	UT_uint32 k = 0;
 
@@ -1617,12 +1617,12 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 
 	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
 	
-	const char ** szDescList = (const char **) calloc(filterCount + 1,
+	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 							  sizeof(char *));
-	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
 								sizeof(char *));
 	IEGraphicFileType * nTypeList = (IEGraphicFileType *)
-		 calloc(filterCount + 1,	sizeof(IEGraphicFileType));
+		 UT_calloc(filterCount + 1,	sizeof(IEGraphicFileType));
 	UT_uint32 k = 0;
 
 	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
@@ -5475,7 +5475,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 
 				// ... take it out
 				int len = strlen(s);
-				buf = (XML_Char *) calloc(len, sizeof(XML_Char));
+				buf = (XML_Char *) UT_calloc(len, sizeof(XML_Char));
 
 				strncpy(buf, s, p - s);
 				strcat(buf, s + (p - s) + strlen(vOn));
@@ -5498,7 +5498,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				{
 					// ...put it in by appending to current contents
 					int len = strlen(s) + strlen(vOn) + 2;
-					buf = (XML_Char *) calloc(len, sizeof(XML_Char));
+					buf = (XML_Char *) UT_calloc(len, sizeof(XML_Char));
 
 					strcpy(buf, s);
 					strcat(buf, " ");
@@ -6331,7 +6331,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	v.addItem((void *) szHeaderMargin.c_str());
 
 	UT_uint32 countv = v.getItemCount() + 1;
-	const XML_Char ** props = (const XML_Char **) calloc(countv, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(countv, sizeof(XML_Char *));
 	UT_uint32 i;
 	for(i=0; i<v.getItemCount();i++)
 	{
@@ -7505,7 +7505,7 @@ Defun(dlgColumns)
 		{
 			num_out_props += 2;
 		}
-		const XML_Char ** props = (const XML_Char **) calloc(num_out_props,sizeof(XML_Char *));
+		const XML_Char ** props = (const XML_Char **) UT_calloc(num_out_props,sizeof(XML_Char *));
 		UT_sint32 i = 0;
 		for(i = 0; i < num_in_props-1; i++)
 		{
@@ -8716,11 +8716,11 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 	UT_uint32 filterCount = instance.getNumScripts ();
 
-	const char ** szDescList = (const char **) calloc(filterCount + 1,
+	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 							  sizeof(char *));
-	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
 								sizeof(char *));
-	UT_ScriptIdType * nTypeList = (UT_ScriptIdType *) calloc(filterCount + 1,
+	UT_ScriptIdType * nTypeList = (UT_ScriptIdType *) UT_calloc(filterCount + 1,
 								 sizeof(UT_ScriptIdType));
 	UT_uint32 k = 0;
 

@@ -157,11 +157,11 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 	pDialog->setSuggestFilename(false);
 
 	UT_uint32 filterCount = IE_Imp::getImporterCount();
-	const char ** szDescList = (const char **) calloc(filterCount + 1,
+	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 													  sizeof(char *));
-	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
 														sizeof(char *));
-	IEFileType * nTypeList = (IEFileType *) calloc(filterCount + 1,
+	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1,
 												   sizeof(IEFileType));
 	UT_uint32 k = 0;
 

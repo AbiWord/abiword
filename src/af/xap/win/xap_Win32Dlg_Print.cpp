@@ -63,7 +63,7 @@ XAP_Win32Dialog_Print::XAP_Win32Dialog_Print(XAP_DialogFactory * pDlgFactory,
 										   XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
-	m_pPersistPrintDlg = (PRINTDLG *)calloc(1,sizeof(PRINTDLG));
+	m_pPersistPrintDlg = (PRINTDLG *)UT_calloc(1,sizeof(PRINTDLG));
 	UT_ASSERT(m_pPersistPrintDlg);
 	
 	memset(m_pPersistPrintDlg,0,sizeof(m_pPersistPrintDlg));

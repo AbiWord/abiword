@@ -65,7 +65,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 
 	int count = 10;	// start with 10 and realloc if necessary
 	int k = 0;
-	m_argv = (char **)calloc(count,sizeof(char *));
+	m_argv = (char **)UT_calloc(count,sizeof(char *));
 
 	enum _state { S_START, S_INTOKEN, S_INDQUOTE, S_INSQUOTE } state;
 	state = S_START;

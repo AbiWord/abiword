@@ -194,7 +194,7 @@ EV_Toolbar_LabelSet::EV_Toolbar_LabelSet(const char * szLanguage,
 	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
 	UT_cloneString(m_szLanguage,szLanguage);
-	m_labelTable = (EV_Toolbar_Label **)calloc((last-first+1),sizeof(EV_Toolbar_Label *));
+	m_labelTable = (EV_Toolbar_Label **)UT_calloc((last-first+1),sizeof(EV_Toolbar_Label *));
 	m_first = first;
 	m_last = last;
 }

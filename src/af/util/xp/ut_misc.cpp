@@ -904,3 +904,22 @@ UT_uint32 UT_HeadingDepth(const char * szHeadingName)
 	i = (UT_uint32) atoi(sz.c_str());
 	return i;
 }
+
+void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size )
+{
+#if 1
+  // this is actually much faster than the OSes calloc usually
+  UT_uint32 theSize = nmemb * size ;
+  if ( !theSize )
+    return NULL ;
+
+  void * theBlock = ::malloc( theSize ) ;
+  if ( !theBlock )
+    return NULL ;
+
+  ::memset( theBlock, 0, theSize ) ;
+  return theBlock ;
+#else
+  return ::calloc ( nmemb, size ) ;
+#endif
+}

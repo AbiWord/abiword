@@ -267,7 +267,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 					UT_ASSERT(szSuffix);                            
 					UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
 					
-					szFinalPathname = (char *)calloc(length,sizeof(char));
+					szFinalPathname = (char *)UT_calloc(length,sizeof(char));
 					
 					if (szFinalPathname)                            						
 						{                                               

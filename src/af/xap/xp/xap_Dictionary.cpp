@@ -331,8 +331,8 @@ void XAP_Dictionary::_outputUTF8(const UT_UCSChar * data, UT_uint32 length)
 
 bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 {
-	char * key = (char *) calloc(len+1, sizeof(char));
-	UT_UCSChar * copy = (UT_UCSChar *) calloc(len+1, sizeof(UT_UCSChar));
+	char * key = (char *) UT_calloc(len+1, sizeof(char));
+	UT_UCSChar * copy = (UT_UCSChar *) UT_calloc(len+1, sizeof(UT_UCSChar));
     if (!key || !copy)
 	{
 		UT_DEBUGMSG(("mem failure adding word to dictionary\n"));
@@ -365,7 +365,7 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 //
 // Useful debugging code
 //
-	char * ucs_dup = (char *) calloc(2*len+1, sizeof(char));
+	char * ucs_dup = (char *) UT_calloc(2*len+1, sizeof(char));
 	UT_UCS_strcpy_to_char( ucs_dup, copy);
 	UT_DEBUGMSG(("Inserting word %s with key %s into hash \n",ucs_dup,key));
 	FREEP(ucs_dup);
@@ -389,7 +389,7 @@ bool XAP_Dictionary::addWord(const char * word)
 	{
 		return false;
 	}
-	UT_UCSChar * ucs_dup = (UT_UCSChar *) calloc(len+1, sizeof(UT_UCSChar));
+	UT_UCSChar * ucs_dup = (UT_UCSChar *) UT_calloc(len+1, sizeof(UT_UCSChar));
 	UT_UCS_strcpy_char(ucs_dup, word);
 	addWord(ucs_dup,len);
 	FREEP(ucs_dup);
@@ -416,7 +416,7 @@ void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar *
   //
   // Turn our word into a NULL teminated string
   //
-  UT_UCSChar * pszWord = (UT_UCSChar*) calloc(len+1, sizeof(UT_UCSChar));
+  UT_UCSChar * pszWord = (UT_UCSChar*) UT_calloc(len+1, sizeof(UT_UCSChar));
   for(i=0; i< len; i++)
   {
     pszWord[i] = pWord[i];
@@ -471,7 +471,7 @@ UT_uint32 XAP_Dictionary::countCommonChars( UT_UCSChar *pszHaystack,UT_UCSChar *
 
 bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 {
-	char * key = (char*) calloc(len+1, sizeof(char));
+	char * key = (char*) UT_calloc(len+1, sizeof(char));
 	if (!key)
 	{
 		UT_DEBUGMSG(("mem failure looking up word in dictionary\n"));

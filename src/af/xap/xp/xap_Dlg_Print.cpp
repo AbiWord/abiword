@@ -240,12 +240,12 @@ bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 
 		UT_uint32 filterCount = 1;
 
-		const char ** szDescList = (const char **) calloc(filterCount + 1,
+		const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 														  sizeof(char *));
-		const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+		const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
 															sizeof(char *));
 		// HACK : this should be IEFileType
-		UT_sint32 * nTypeList = (UT_sint32 *) calloc(filterCount + 1,
+		UT_sint32 * nTypeList = (UT_sint32 *) UT_calloc(filterCount + 1,
 													 sizeof(UT_sint32));
 
 		szDescList[0] = "PostScript 2.0";

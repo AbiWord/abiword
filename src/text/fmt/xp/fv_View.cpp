@@ -3650,7 +3650,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must free this, but not the referenced contents
-	const XML_Char ** props = (const XML_Char **) calloc(count, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
 	if (!props)
 		return false;
 
@@ -4105,7 +4105,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	// Assemble the List attributes
 	//
 	UT_uint32 counta = va.getItemCount() + 1;
-	const XML_Char ** attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	const XML_Char ** attribs = (const XML_Char **) UT_calloc(counta, sizeof(XML_Char *));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = (XML_Char *) va.getNthItem(i);
@@ -4115,7 +4115,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	// Now assemble the list properties
 	//
 	UT_uint32 countp = vp.getItemCount() + 1;
-	const XML_Char ** props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = (XML_Char *) vp.getNthItem(i);
@@ -4293,7 +4293,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must free this, but not the referenced contents
-	const XML_Char ** props = (const XML_Char **) calloc(count, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
 	if (!props)
 		return false;
 
@@ -4505,7 +4505,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must free this, but not the referenced contents
-	const XML_Char ** props = (const XML_Char **) calloc(count, sizeof(XML_Char *));
+	const XML_Char ** props = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
 	if (!props)
 		return false;
 
@@ -4599,7 +4599,7 @@ UT_UCSChar * FV_View::getSelectionText(void)
 			selLength = buffer.getLength() - offset;
 		// give us space for our new chunk of selected text, add 1 so it
 		// terminates itself
-		bufferSegment = (UT_UCSChar *) calloc(selLength + 1, sizeof(UT_UCSChar));
+		bufferSegment = (UT_UCSChar *) UT_calloc(selLength + 1, sizeof(UT_UCSChar));
 
 		// copy it out
 		memmove(bufferSegment, buffer.getPointer(offset), selLength * sizeof(UT_UCSChar));
@@ -5994,7 +5994,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	bool inc = false;
 	bool dec = false;
 
-	char * numberString = (char *) calloc(UT_UCS_strlen(data) + 1, sizeof(char));
+	char * numberString = (char *) UT_calloc(UT_UCS_strlen(data) + 1, sizeof(char));
 	UT_ASSERT(numberString);
 
 	UT_UCS_strcpy_to_char(numberString, data);
@@ -6301,7 +6301,7 @@ FV_View::_computeFindPrefix(const UT_UCSChar* pFind, bool bMatchCase)
 {
 	UT_uint32 m = UT_UCS_strlen(pFind);
 	UT_uint32 k = 0, q = 1;
-	UT_uint32 *pPrefix = (UT_uint32*) calloc(m, sizeof(UT_uint32));
+	UT_uint32 *pPrefix = (UT_uint32*) UT_calloc(m, sizeof(UT_uint32));
 	UT_ASSERT(pPrefix);
 
 	pPrefix[0] = 0; // Must be this regardless of the string
@@ -6357,7 +6357,7 @@ FV_View::_findNext(const UT_UCSChar* pFind, UT_uint32* pPrefix,
 
 	// Clone the search string, converting it to lowercase is search
 	// should ignore case.
-	UT_UCSChar* pFindStr = (UT_UCSChar*) calloc(m, sizeof(UT_UCSChar));
+	UT_UCSChar* pFindStr = (UT_UCSChar*) UT_calloc(m, sizeof(UT_UCSChar));
 	UT_ASSERT(pFindStr);
 	if (!pFindStr)
 		return false;
@@ -6576,7 +6576,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	UT_UCSChar* bufferSegment = NULL;
 
 	// remember, the caller gets to free this memory
-	bufferSegment = (UT_UCSChar*)calloc(bufferLength + 1, sizeof(UT_UCSChar));
+	bufferSegment = (UT_UCSChar*)UT_calloc(bufferLength + 1, sizeof(UT_UCSChar));
 	UT_ASSERT(bufferSegment);
 	
 	memmove(bufferSegment, pBuffer.getPointer(newOffset),

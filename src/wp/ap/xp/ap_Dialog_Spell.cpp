@@ -414,7 +414,7 @@ bool AP_Dialog_Spell::inChangeAll(void)
 {
    UT_UCSChar * bufferUnicode = _getCurrentWord();
    UT_ASSERT(bufferUnicode);
-   char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+   char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
    UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
    FREEP(bufferUnicode);
    const void * ent = m_pChangeAll->pick(bufferNormal);
@@ -431,12 +431,12 @@ bool AP_Dialog_Spell::inChangeAll(void)
 bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
 {
    UT_UCSChar * bufferUnicode = _getCurrentWord();
-   char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+   char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
    UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
    FREEP(bufferUnicode);
 
    // make a copy of the word for storage
-   UT_UCSChar * newword2 = (UT_UCSChar*) calloc(UT_UCS_strlen(newword) + 1, sizeof(UT_UCSChar));
+   UT_UCSChar * newword2 = (UT_UCSChar*) UT_calloc(UT_UCS_strlen(newword) + 1, sizeof(UT_UCSChar));
    UT_UCS_strcpy(newword2, newword);
    
    m_pChangeAll->insert(bufferNormal, 
@@ -492,7 +492,7 @@ bool AP_Dialog_Spell::addToDict(void)
 
 UT_UCSChar * AP_Dialog_Spell::_getCurrentWord(void)
 {
-   UT_UCSChar * word = (UT_UCSChar*) calloc(m_iWordLength + 1, sizeof(UT_UCSChar));
+   UT_UCSChar * word = (UT_UCSChar*) UT_calloc(m_iWordLength + 1, sizeof(UT_UCSChar));
    if (word == NULL) return NULL;
 
    UT_uint16 * pBuf = m_pBlockBuf->getPointer(m_iWordOffset);
@@ -505,7 +505,7 @@ UT_UCSChar * AP_Dialog_Spell::_getCurrentWord(void)
 UT_UCSChar * AP_Dialog_Spell::_getPreWord(void)
 {
    UT_sint32 len = m_iWordOffset - m_iSentenceStart;
-   UT_UCSChar * preword = (UT_UCSChar*) calloc(len + 1, sizeof(UT_UCSChar));
+   UT_UCSChar * preword = (UT_UCSChar*) UT_calloc(len + 1, sizeof(UT_UCSChar));
    if (preword == NULL) return NULL;
    
    if (len) {
@@ -520,7 +520,7 @@ UT_UCSChar * AP_Dialog_Spell::_getPreWord(void)
 UT_UCSChar * AP_Dialog_Spell::_getPostWord(void)
 {
    UT_sint32 len = m_iSentenceEnd - (m_iWordOffset + m_iWordLength) + 1;
-   UT_UCSChar * postword = (UT_UCSChar*) calloc(len + 1, sizeof(UT_UCSChar));
+   UT_UCSChar * postword = (UT_UCSChar*) UT_calloc(len + 1, sizeof(UT_UCSChar));
    if (postword == NULL) return NULL;
    
    if (len) {

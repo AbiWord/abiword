@@ -419,7 +419,7 @@ invalid_old_path:
 	    
 	    for(const char** subdir = subdirs;*subdir;++subdir)
 	    {	    	
-		filename = (char *) calloc(basedirname_len + 1 + strlen(*subdir) + strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
+		filename = (char *) UT_calloc(basedirname_len + 1 + strlen(*subdir) + strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
 		sprintf(filename, "%s/%s%s", basedirname, *subdir, FONTS_DIR_FILE);
 
 		FILE * file;
@@ -707,7 +707,7 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	// allocate a real buffer for this
 	fontfile = UT_strdup(fontfile);
 	// tack on the working directory to get the full path to the font file
-	char * newstuff = (char *) calloc(strlen(workingdir) + 1 + strlen(fontfile) + 1,
+	char * newstuff = (char *) UT_calloc(strlen(workingdir) + 1 + strlen(fontfile) + 1,
 									  sizeof(char));
 	sprintf(newstuff, "%s/%s", workingdir, fontfile);
 	FREEP(fontfile);
@@ -781,7 +781,7 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 
 	// allocate a new buffer for the AFM name
 	size_t len = stemchars + 4 + 1;
-	char * metricfile = (char *) calloc(len, sizeof(char));
+	char * metricfile = (char *) UT_calloc(len, sizeof(char));
 	g_snprintf(metricfile, stemchars, "%s", fontfile);
 	strcat(metricfile, ".afm");
 

@@ -179,7 +179,7 @@ bool AP_QNXApp::initialize(void)
 		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
 		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
 		
-		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
+		char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
 		UT_ASSERT(szPathname);
 		
 		sprintf(szPathname,"%s%s%s",
@@ -221,7 +221,7 @@ bool AP_QNXApp::initialize(void)
 			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
-			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
+			char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
 			UT_ASSERT(szPathname);
 
 			sprintf(szPathname,"%s%s%s.strings",

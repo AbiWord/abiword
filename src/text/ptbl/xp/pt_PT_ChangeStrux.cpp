@@ -278,7 +278,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 //
 		const XML_Char ** sProps = NULL;
 		UT_uint32 countp = vProps.getItemCount() + 1;
-		sProps = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+		sProps = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 		countp--;
 		UT_uint32 i;
 		for(i=0; i<countp; i++)

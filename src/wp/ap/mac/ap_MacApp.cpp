@@ -107,7 +107,7 @@ bool AP_MacApp::initialize(void)
 		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
 		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
 		
-		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
+		char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
 		UT_ASSERT(szPathname);
 		
 		sprintf(szPathname,"%s/%s",szISpellDirectory,szSpellCheckWordList);		// TODO fix pathname construction

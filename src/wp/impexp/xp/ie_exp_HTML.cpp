@@ -205,7 +205,7 @@ protected:
 
 static char* removeWhiteSpace(const char * text)
 {
-	char* temp = static_cast<char *>(calloc(strlen(text)+1, sizeof(char)));
+	char* temp = static_cast<char *>(UT_calloc(strlen(text)+1, sizeof(char)));
 	char* ref = temp;
 	char* ptr = (char *)text; // only a pointer for quick traversal
 

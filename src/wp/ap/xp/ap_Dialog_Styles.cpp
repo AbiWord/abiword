@@ -813,7 +813,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 	if(m_vecAllProps.getItemCount() <= 0)
 		return;
 	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	countp--;
 	for(i=0; i<countp; i++)
 	{
@@ -896,7 +896,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	if(m_vecAllProps.getItemCount() <= 0)
 		return;
 	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	countp--;
 	for(i=0; i<countp; i++)
 	{
@@ -953,7 +953,7 @@ bool AP_Dialog_Styles::createNewStyle(const XML_Char * szName)
 	if(m_vecAllProps.getItemCount() <= 0)
 		return false;
 	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	countp--;
 	for(i=0; i<countp; i++)
 	{
@@ -1008,7 +1008,7 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	if(m_vecAllProps.getItemCount() <= 0)
 		return false;
 	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	countp--;
 	for(i=0; i<countp; i++)
 	{
@@ -1017,7 +1017,7 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	props[i] = NULL;
 	UT_uint32 counta = m_vecAllAttribs.getItemCount() + 3;
 	const XML_Char ** attribs = NULL;
-	attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	attribs = (const XML_Char **) UT_calloc(counta, sizeof(XML_Char *));
 	counta = counta -3;
 	UT_uint32 iatt;
 	for(iatt=0; iatt<counta; iatt++)
@@ -1313,7 +1313,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 	UT_uint32 countp = m_vecAllProps.getItemCount()+1;
 	const XML_Char ** lprop = NULL;
-	lprop = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	lprop = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
 	countp--;
 	for(i=0; i<countp; i++)
 	{

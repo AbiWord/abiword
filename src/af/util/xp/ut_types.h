@@ -121,7 +121,10 @@ typedef	UT_sint32		UT_Error;
 #define UT_IE_SKIPINVALID       ((UT_Error) -313)       // (pass) protected doc
 #define UT_IE_IMPORTERROR       ((UT_Error) -300) 	/* The general case */
 
-UT_Error UT_errnoToUTError (void);
+ABI_EXPORT UT_Error UT_errnoToUTError (void);
+
+/* defined in ut_misc.cpp */
+ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 
 /* 
 	The MSVC debug runtime library can track leaks back to the 

@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#include <stdlib.h>
+#include "ut_types.h"
 #include "ut_allocator.h"
 
 UT_Allocator::UT_Allocator ()
@@ -62,6 +62,6 @@ void * UT_NullAllocator::allocate (size_t nbytes)
   memset (ptr, 0, nbytes);
   return ptr;
 #else
-  return calloc(1, nbytes);
+  return UT_calloc(1, nbytes);
 #endif
 }

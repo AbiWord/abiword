@@ -77,14 +77,14 @@ void FindWin::SetDlg(AP_BeOSDialog_Replace *repl) {
 	//What an ugly piece of code this is ..
 	txt = (BTextControl *)FindView("txtFind");
 	bufferUnicode = m_DlgReplace->getFindString();
-        bufferNormal = (char *)calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+        bufferNormal = (char *)UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
         UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 	if (txt) txt->SetText(bufferNormal);
 	if (bufferNormal) free(bufferNormal);
 
 	txt = (BTextControl *)FindView("txtReplace");
 	bufferUnicode = m_DlgReplace->getReplaceString();
-        bufferNormal = (char *)calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+        bufferNormal = (char *)UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
         UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 	if (txt) txt->SetText(bufferNormal);
 	if (bufferNormal) free(bufferNormal);

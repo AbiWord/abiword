@@ -363,7 +363,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 
 #define ALLOC_PROP_PAIR(p)									\
         do {                								\
-            p = (propPair *) calloc(1, sizeof(propPair));	\
+            p = (propPair *) UT_calloc(1, sizeof(propPair));	\
             if (!p) return false;						\
         } while (0)											\
 
@@ -525,7 +525,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			break;
 		case spacing_ATLEAST:
 			nSize = UT_XML_strlen(pString);
-			pTmp = (XML_Char *) calloc(nSize + 2, sizeof(XML_Char));
+			pTmp = (XML_Char *) UT_calloc(nSize + 2, sizeof(XML_Char));
 			UT_ASSERT(pTmp);
 
 			UT_XML_strncpy(pTmp, nSize, pString);
@@ -621,7 +621,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	// export everything in the array
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
-	const XML_Char ** newprops = (const XML_Char **) calloc(count, sizeof(XML_Char *));
+	const XML_Char ** newprops = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
 	if (!newprops)
 		return false;
 

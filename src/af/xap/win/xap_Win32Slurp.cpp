@@ -185,7 +185,7 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 {
 	DWORD bufSize = DdeGetData(hData,NULL,0,0);
 
-	char * pBuf = (char *)calloc(sizeof(char),bufSize+100);
+	char * pBuf = (char *)UT_calloc(sizeof(char),bufSize+100);
 	if (!pBuf)
 	{
 		UT_DEBUGMSG(("No memory to allocate DDE buffer [size %d]\n",bufSize));

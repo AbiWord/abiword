@@ -486,7 +486,7 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 	// last used find string
 	{
 		UT_UCSChar * bufferUnicode = getFindString();
-		char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
@@ -502,7 +502,7 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 		UT_ASSERT(m_entryReplace);
 		
 		UT_UCSChar * bufferUnicode = getReplaceString();
-		char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
