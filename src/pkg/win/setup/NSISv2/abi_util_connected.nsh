@@ -26,7 +26,7 @@ Function ConnectInternet
 		DetailPrint "Unable to establish Internet connection, aborting download"
 		DetailPrint "Dialer::AttemptConnect returned $0"
 		MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet."
-		Goto connected:
+		Goto connected
      
      noie3:
    
