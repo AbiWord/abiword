@@ -10028,6 +10028,10 @@ fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
+	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		pos++;
+	}
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	if(!pBL)
 	{

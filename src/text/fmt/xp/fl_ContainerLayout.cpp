@@ -876,7 +876,7 @@ UT_uint32 fl_ContainerLayout::getPosition(bool bActualBlockPos) const
 		}
 		return 0;
 	}
-	PT_DocPosition pos = getDocLayout()->getDocument()->getStruxPosition(m_sdh);
+	PT_DocPosition pos = getDocLayout()->getDocument()->getStruxPosition(getStruxDocHandle());
 	return pos;
 }
 

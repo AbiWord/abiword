@@ -2482,7 +2482,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 					i = iMinId;
 				}
 			}
-			while(!pRev && i <= (UT_sint32)iMaxId);
+			while(!pRev && i <= iMaxId);
 			
 				
 			if(  (pRev->getType() == PP_REVISION_ADDITION)

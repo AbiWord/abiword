@@ -186,7 +186,7 @@ void fl_TableLayout::__dump(FILE * fp) const
 */
 void fl_BlockLayout::__dump(FILE * fp) const
 {
-	fprintf(fp,"  Block: %p [sdh %p]\n",(void*)this,(void*)m_sdh);
+	fprintf(fp,"  Block: %p [sdh %p]\n",(void*)this,(void*)getStruxDocHandle());
 	fp_Container* pContainer = (fp_Container*)-1;
 	fp_Run* pRun;
 	fp_Line* pLine;

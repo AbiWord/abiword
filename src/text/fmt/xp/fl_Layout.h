@@ -46,7 +46,7 @@ public:
 	fl_Layout(PTStruxType type, PL_StruxDocHandle sdh);
 	virtual ~fl_Layout();
 
-	PL_StruxDocHandle               getStruxDocHandle(void);
+	PL_StruxDocHandle               getStruxDocHandle(void) const;
 	PTStruxType			getType(void) const;
 	void                setType(PTStruxType type);
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
@@ -71,11 +71,12 @@ public:
 	
 protected:
 	PTStruxType				m_type;
-	PL_StruxDocHandle		m_sdh;
 	PT_AttrPropIndex		m_apIndex;
 	fl_AutoNum * 			m_pAutoNum;
 	
 	PD_Document *			m_pDoc;		// set by child
+private:
+	PL_StruxDocHandle		m_sdh;
 };
 
 #endif /* FL_LAYOUT_H */

@@ -28,23 +28,27 @@
 #include "fd_Field.h"
 #include "po_Bookmark.h"
 #include "pp_AttrProp.h"
-
+#include "pf_Frag.h"
 fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh) :
 	m_type(type),
-	m_sdh(sdh),
 	m_apIndex(0),
 	m_pAutoNum(NULL),
-	m_pDoc(NULL) // set by child
+	m_pDoc(NULL), // set by child
+	m_sdh(sdh)
 {
-	//UT_ASSERT(sdh); Sevior this assert screws up my fake fl_layout code
 	xxx_UT_DEBUGMSG(("Layout Strux type = %d \n",type));
+	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
+	if(pf)
+	{
+		UT_ASSERT(pf->getType() ==  pf_Frag::PFT_Strux);
+	}
 }
 
 fl_Layout::~fl_Layout()
 {
 }
 
-PL_StruxDocHandle fl_Layout::getStruxDocHandle(void)
+PL_StruxDocHandle fl_Layout::getStruxDocHandle(void) const
 {
 	return m_sdh;
 }

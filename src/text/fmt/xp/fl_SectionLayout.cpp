@@ -3098,7 +3098,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	// TODO outofmem
 	xxx_UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
 	pPair->setPage(pPage);
-	pPair->setShadow(new fl_HdrFtrShadow(m_pLayout, pPage, this, m_sdh, m_apIndex));
+	pPair->setShadow(new fl_HdrFtrShadow(m_pLayout, pPage, this, getStruxDocHandle(), m_apIndex));
 	//
 	// Make sure we register the shadow before populating it.
 	//
@@ -3725,6 +3725,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 	bool bResult = true;
 	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	if(iCount <=0)
+	{
+		UT_ASSERT(0);
+	}
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -3737,6 +3741,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 		{
 			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteStrux(pcrx)
 				&& bResult;
+		}
+		else
+		{
+			UT_ASSERT(0);
 		}
 	}
 	// Update the overall block too.

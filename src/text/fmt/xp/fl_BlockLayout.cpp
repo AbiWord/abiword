@@ -844,7 +844,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	  {
 	    setVisibility(FP_VISIBLE);
 	  }
-	UT_DEBUGMSG(("BlockLayout %x Folded Level %d \n",this,getFoldedLevel()));
+	UT_DEBUGMSG(("BlockLayout %x Folded Level %d sdh %x \n",this,getFoldedLevel(),getStruxDocHandle()));
 	if(getFoldedLevel()>0)
 	{ 
 		if(m_pAutoNum == NULL)
@@ -894,7 +894,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
+	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
 }
 
 void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
@@ -1911,7 +1911,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
 			//
 			// The frame container may not yet be created.
-			//
+			// 
 			if(pFrameCon)
 			{
 				pFrameCon->setX(xFpos);
@@ -2481,7 +2481,7 @@ const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName
 */
 PT_DocPosition fl_BlockLayout::getPosition(bool bActualBlockPos) const
 {
-	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);
+	PT_DocPosition pos = m_pDoc->getStruxPosition(getStruxDocHandle());
 
 	// it's usually more useful to know where the runs start
 	if (!bActualBlockPos)
@@ -2498,7 +2498,7 @@ void fl_BlockLayout::getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) 
 
 bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
 {
-	return m_pDoc->getBlockBuf(m_sdh, pgb);
+	return m_pDoc->getBlockBuf(getStruxDocHandle(), pgb);
 }
 
 
