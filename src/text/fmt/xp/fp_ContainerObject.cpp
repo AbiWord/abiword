@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fp_Column.h"
+#include "fv_View.h"
 
 /*!
   Create container
