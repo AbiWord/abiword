@@ -197,8 +197,15 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 {
    IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
 
-   // TODO: handle special characters (images, objects, fields(?))
+   Blip blip;
+   FILE *fil;
+   long pos;
+   FSPA * fspa;
+   PICF picf;
+   FDOA * fdoa;
    
+   // TODO: handle special characters (images, objects, fields(?))
+
    switch (eachchar)
      {
       case 19: // field begin
@@ -218,10 +225,64 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	ps->fieldstate--;
 	ps->fieldmiddle = 0;
 	return 0;
+
+      case 0x01:
+	
+	if (achp->fOle2) {
+	   // TODO: support embedded OLE2 components...
+	   UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
+	   return 0;
+	}
+	
+	pos = ftell(ps->data);
+	
+	fseek(ps->data, achp->fcPic_fcObj_lTagObj, SEEK_SET);
+	
+	wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, ps->data);
+	
+	fil = (FILE*)picf.rgb;
+	
+	if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
+	  {
+	     pDocReader->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
+	  }
+	
+	fseek(ps->data, pos, SEEK_SET);
+
+	return 0;
+	break;
+	
+      case 0x08:
+	
+	if (wvQuerySupported(&ps->fib, NULL) == WORD8)
+	  {
+	     fspa = wvGetFSPAFromCP(ps->currentcp, ps->fspa,
+				    ps->fspapos, ps->nooffspa);
+	     
+	     if (wv0x08(&blip, fspa->spid, ps))
+	       {
+		  pDocReader->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
+					   fspa->yaBottom-fspa->yaTop);
+	       }
+	     
+	  }
+	else
+	  {
+	     UT_DEBUGMSG(("pre Word8 0x08 graphic -- unsupported at the moment"));
+	     fdoa = wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos, ps->nooffdoa);
+	     
+	     // TODO: do something with the data in this fdoa someday...
+	     
+	  }
+	
+	return 0;
+	break;
+	
      }
    
    return 0;
 }
+
 int DocProc(wvParseStruct *ps,wvTag tag)
 	{
 	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
@@ -613,7 +674,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
    	m_iTextRunMaxLength = 256;
    	m_pTextRun = (UT_UCSChar*) calloc(m_iTextRunMaxLength, sizeof(UT_UCSChar));
    	UT_ASSERT(m_pTextRun != NULL);
-}
+
+	m_iImageCount = 0;
+ }
 
 /*****************************************************************/
 /*****************************************************************/
@@ -653,4 +716,55 @@ void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				       unsigned char * pData, UT_uint32 lenData)
 {
 	UT_DEBUGMSG(("TODO IE_Imp_MsWord_97::pasteFromBuffer\n"));
+}
+
+UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
+{
+   int data;
+   
+   UT_ByteBuf * buf = new UT_ByteBuf();
+   
+   switch(b->type)
+     {
+      case msoblipPNG:
+	// conveniently, PNG is the internal format, so we do nothing here
+	// but copy the bitstream
+	while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+	  buf->append((UT_Byte*)&data, 1);
+	break;
+      case msoblipWMF:
+      case msoblipEMF:
+      case msoblipPICT:
+      case msoblipJPEG:
+      case msoblipDIB:
+      default:
+	// TODO: support other image types
+	DELETEP(buf);
+	return UT_OK;
+	break;
+     }
+
+   XML_Char propBuffer[128];
+   propBuffer[0] = 0;
+   sprintf(propBuffer, "width:%fin; height:%fin", 
+	   (double)width / (double)1440, 
+	   (double)height / (double)1440);
+   XML_Char propsName[32];
+   propsName[0] = 0;
+   sprintf(propsName, "image%d", m_iImageCount++);
+   const XML_Char* propsArray[3];
+	   
+   propsArray[0] = "PROPS";
+   propsArray[1] = propBuffer;
+   propsArray[2] = "DATAID";
+   propsArray[3] = propsName;
+   propsArray[4] = NULL;
+
+   X_ReturnNoMemIfError(m_pDocument->appendObject(PTO_Image, propsArray));
+   X_CheckError0(m_pDocument->createDataItem(propsName, UT_FALSE,
+					     buf, NULL, NULL));
+
+   DELETEP(buf);
+
+   return UT_OK;
 }

@@ -53,6 +53,12 @@ typedef enum _IEFileType { IEFT_Unknown,
 typedef enum _IEGraphicFileType { IEGFT_Unknown,
 								  IEGFT_PNG,
 								  IEGFT_SVG,
+   								  IEGFT_PICT,
+   								  IEGFT_WMF,
+   								  IEGFT_GIF,
+   								  IEGFT_JPEG,
+   								  IEGFT_BMP,
+   								  IEGFT_DIB,
 								  IEGFT_LAST_BOGUS } IEGraphicFileType;
 
 #endif /* IE_TYPES_H */

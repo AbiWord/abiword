@@ -56,13 +56,16 @@ public:
    	int				_charData(UT_UCSChar *, int);
 	int 				_docProc(wvParseStruct *ps,wvTag tag);
 	int 				_eleProc(wvParseStruct *ps,wvTag tag,void *props,int dirty);
+   	UT_Error _handleImage(Blip *, long, long);
+   	
 
 	UT_UCSChar * m_pTextRun;
    	UT_uint16 m_iTextRunLength;
    	UT_uint16 m_iTextRunMaxLength;
    
 protected:
-	UT_Error			m_error;
+   	UT_Error			m_error;
+   	int m_iImageCount;
 };
 
 #endif /* IE_IMP_WV_H */
