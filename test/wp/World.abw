@@ -58,7 +58,7 @@
 <p style="Sample"><c style="ISO">pl-PL</c><c style="ISO"></c>	Polish	<c props="lang:pl-PL">Kiedy świat chce mówić, mówi w Unicode</c></p>
 <p style="Sample"><c style="ISO">pt-PT</c><c style="ISO"></c>	Portuguese	<c props="lang:pt-PT">Quando o mundo quer falar, fala Unicode</c></p>
 <p style="Sample"><c style="ISO">pt-BR</c><c style="ISO"></c>	Portuguese (Brazil)	<c props="lang:pt-BR">Quando o mundo quer falar, fala Unicode</c></p>
-<p style="Sample"><c style="ISO">ro-RO</c><c style="ISO"></c>	Romanian	<c props="lang:ro-RO">Când lumea vrea să comunice, vorbeşte Unicode</c></p>
+<p style="Sample"><c style="ISO">ro-RO</c><c style="ISO"></c>	Romanian	<c props="lang:ro-RO">Când lumea vrea să comunice, vorbește Unicode</c></p>
 <p style="Sample"><c style="ISO">ru-RU</c><c style="ISO"></c>	Russian	<c props="lang:ru-RU">Когда мир желает общаться, он общается на Unicode</c></p>
 <p style="Sample"><c style="ISO">sl-SL</c><c style="ISO"></c>	Slovenian	<c props="lang:sl-SL">Ko se želi svet pogovarjati, govori Unicode</c></p>
 <p style="Sample"><c style="ISO">es-ES</c><c style="ISO"></c>	Spanish	<c props="lang:es-ES">Cuando el mundo quiere conversar, habla Unicode</c></p>
@@ -83,14 +83,18 @@
 <p style="Sample"><c style="ISO">tr-TR</c><c style="ISO"></c>	Turkish	<c props="lang:tr-TR">Dünya birbiriyle konuşmak isterse bunu Unicode vasıtası ile yapar</c></p>
 <p style="Sample"><c style="ISO">cy-UK</c><c style="ISO"></c>	Welsh	<c props="lang:cy-UK">Pan mae'r byd am siarad, mae'n siarad Unicode</c></p>
 <p></p>
+<p><c props="font-weight:bold">These have no ISO 639 2-letter or 3-letter language code</c><c props="font-weight:bold"></c></p>
+<p></p>
+<p style="Sample"><c style="ISO">??-AU</c><c style="ISO"></c>	Arernte	<c props="lang:-none-">Ilengare ahelhe angketyeke ahentye-aneme, re Unicode angkeme</c></p>
+<p style="Sample"><c style="ISO">??-US</c><c style="ISO"></c>	Hawaiian	<c props="lang:-none-">Hele ā makemake ka honua e walaʻau, ʻōlelo ʻo ia i ka ʻōlelo Unicode</c></p>
+<p></p>
 <p><c props="font-weight:bold">Additional fonts, etc. needed</c><c props="font-weight:bold"></c></p>
 <p></p>
 <p style="Sample"><c style="ISO">hy-AM</c><c style="ISO"></c>	Armenian	<c props="lang:hy-AM">Երբ աջխհարը կուզէ խոսիլ կը գործածէ յունիգոտ լէզուն</c></p>
 <p style="Sample"><c style="ISO">bn-IN</c><c style="ISO"></c>	Bengali	<c props="lang:bn-IN">বলতে ইচ্ছে হলে, পৃথিবী কথা বলে ইউনিকোডের ভাষায়</c></p>
-<p style="Sample">	Chinese (Simplified)	当世界需要沟通时，请用Unicode</p>
-<p style="Sample">	Chinese (Traditional)	當世界需要溝通時，請用統一碼（Unicode）</p>
+<p style="Sample"><c style="ISO">zh-CN</c><c style="ISO"></c>	Chinese (Simplified)	当世界需要沟通时，请用统一码 <c props="lang:zh-CN">(Unicode)</c></p>
+<p style="Sample"><c style="ISO">zh-HK</c><c style="ISO"></c>	Chinese (Traditional)	當世界需要溝通時，請用統一碼 <c props="lang:zh-HK">(Unicode)</c></p>
 <p style="Sample"><c style="ISO">ka-GE</c><c style="ISO"></c>	Georgian	<c props="lang:ka-GE">როდესაც მსოფლიოს ურთირთობა სურს, იგი </c>Unicode<c props="lang:ka-GE">-ის ენაზე ლაპარაკობს</c></p>
-<p style="Sample"><c style="ISO">??-US</c><c style="ISO"></c>	Hawaiian	<c props="lang:?">Hele ā makemake ka honua e walaʻau, ʻōlelo ʻo ia i ka ʻōlelo Unicode</c></p>
 <p style="Sample"><c style="ISO">hi-IN</c><c style="ISO"></c>	Hindi	<c props="lang:hi-IN">जब दुनिया बोलती है तो </c>Unicode<c props="lang:hi-IN"> में बोलती है</c></p>
 <p style="Sample"><c style="ISO">iu-CA</c><c style="ISO"></c>	Inuktitut	<c props="lang:iu-CA">ᓯᓚᕐᔪᐊᕐᒥᐅᑦ ᑐᓴᖅᑕᐅᔪᒪᔭᕌᖓᒥᒃ ᑎᑎᕈᓯᑐᐊᑎᒍᑦ ᐅᖃᖅᐸᒃᐳᑦ</c></p>
 <p style="Sample"><c style="ISO">ja-JP</c><c style="ISO"></c>	Japanese	<c props="lang:ja-JP">世界的に話すなら、 </c>Unicode<c props="lang:ja-JP"> です</c></p>
@@ -111,8 +115,13 @@
 <p style="Sample"><c style="ISO">fa-IR</c><c style="ISO"></c>	Farsi	<c props="lang:fa-IR">وقتى که دنيا صحبت ميکند، با زبان </c>Unicode <c props="lang:fa-IR">حرف ميزند</c></p>
 <p style="Sample"><c style="ISO">he-IL</c><c style="ISO"></c>	Hebrew	<c props="lang:he-IL">כאשר העולם רוצה לדבר, הוא מדבר ב־</c>Unicode</p>
 <p style="Sample"><c style="ISO">pa-PK</c><c style="ISO"></c>	Punjabi (Shahmukhi)	<c props="lang:pa-PK">جدّوں دنیا بولنا چاہندی اۧ، یونیکوڈ بولدی اۧۦ</c></p>
+<p style="Sample"><c style="ISO">tr-TR</c><c style="ISO"></c>	Turkish (Ottoman)	<c props="lang:tr-TR">دنيا بر بريله قونشمق ايسترسه بوني يونيقود واسطهسي ايله ياپار</c></p>
 <p style="Sample"><c style="ISO">ur-PK</c><c style="ISO"></c>	Urdu	<c props="lang:ur-PK">جب دنيا بات كرتى ہے تو يه يونيكوڈ بولتى ہے</c></p>
 <p style="Sample"><c style="ISO">yi</c><c style="ISO"></c>	Yiddish	<c props="lang:yi">אַז די װעלט װיל רעדן, רעדט זי אוניקאָד</c></p>
+<p></p>
+<p><c props="font-weight:bold">Right to Left with only a 3-letter ISO 639 language code</c><c props="font-weight:bold"></c></p>
+<p></p>
+<p style="Sample"><c style="ISO">syr</c><c style="ISO"></c>	Syriac	<c props="lang:syr">ܐܝܡܢ ܬܒܝܠ ܒܝܐ ܗܡܙܡܐ ، ܒܝܬ ܐܡܪܐ </c>Unicode</p>
 <p></p>
 </section>
 </abiword>
