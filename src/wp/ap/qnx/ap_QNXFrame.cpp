@@ -111,6 +111,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	if (m_pView != NULL)
 	{
 		point = ((FV_View *) m_pView)->getPoint();
+		pView->setFocus(m_pView->getFocus());		//Keep the same focus policy
 	}
 	ENSUREP(pView);
 
@@ -225,8 +226,10 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 
 	PtContainerGiveFocus(m_dArea, NULL);
 
-	if (point != 0)
+	if (point != 0) {
 		((FV_View *) m_pView)->moveInsPtTo(point);
+	}
+
 #if 1
 	/*
 	  UPDATE:  this code is back, but I'm leaving these comments as
