@@ -104,6 +104,8 @@ BeginSet(pt,PT,UT_TRUE)
     MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   "&Expoente",       "Elevar texto")
     MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,     "Í&ndice",         "Indiciar texto")
 
+    MenuLabel(AP_MENU_ID_TOOLS,        "Fe&rramentas",	NULL)
+    MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,        "&Contas palavras",	"Contar palavras no documento")
     MenuLabel(AP_MENU_ID_TOOLS_SPELL,        "O&rtografia",	"Verificar ortografia")
     MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,      "&Opções",         "Configurar as opções")
     
