@@ -34,6 +34,9 @@
 #include "ut_rand.h"
 #include "ut_misc.h"
 
+#include "xap_App.h"
+#include "xap_Prefs.h"
+
 
 //static UT_UUID _null();
 
@@ -330,7 +333,11 @@ bool UT_UUID::_makeUUID(uuid &uu)
 	
     if(!s_bInitDone)
 	{
-        if(!UT_getEthernetAddress(s_node))
+		bool bNoMAC;
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_NoMACinUUID,
+											 &bNoMAC);
+		
+        if(bNoMAC || !UT_getEthernetAddress(s_node))
 		{
             bRet &= _getRandomBytes(s_node, 6);
             /*
