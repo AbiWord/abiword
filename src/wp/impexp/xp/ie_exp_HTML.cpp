@@ -905,75 +905,62 @@ void s_HTML_Listener::tagPop ()
 	{
 		case TT_TD:
 			{
-				m_utf8_1 = "td";
-				tagClose (TT_TD, m_utf8_1);
+				tagClose (TT_TD, "td");
 			}
 			break;
 		case TT_TR:
 			{
-				m_utf8_1 = "tr";
-				tagClose (TT_TR, m_utf8_1);
+				tagClose (TT_TR, "tr");
 			}
 			break;
 		case TT_TBODY:
 			{
-				m_utf8_1 = "tbody";
-				tagClose (TT_TBODY, m_utf8_1);
+				tagClose (TT_TBODY, "tbody");
 			}
 			break;
 		case TT_TABLE:
 			{
-				m_utf8_1 = "table";
-				tagClose (TT_TABLE, m_utf8_1);
+				tagClose (TT_TABLE, "table");
 			}
 			break;
 		case TT_DIV:
 			{
-				m_utf8_1 = "div";
-				tagClose (TT_DIV, m_utf8_1);
+				tagClose (TT_DIV, "div");
 			}
 			break;
-
 		case TT_P:
 			{
-				m_utf8_1 = "p";
-				tagClose(TT_P,m_utf8_1);
+				tagClose(TT_P, "p");
 			}
 			break;
 		case TT_H1:
 			{
-				m_utf8_1 = "h1";
-				tagClose(TT_H1,m_utf8_1);
+				tagClose(TT_H1, "h1");
 			}
 			break;
 		case TT_H2:
 			{
-				m_utf8_1 = "h2";
-				tagClose(TT_H2,m_utf8_1);
+				tagClose(TT_H2, "h2");
 			}
 			break;
 		case TT_H3:
 			{
-				m_utf8_1 = "h3";
-				tagClose(TT_H3,m_utf8_1);
+				tagClose(TT_H3, "h3");
 			}
 			break;
 		case TT_H4:
 			{
-				m_utf8_1 = "h4";
-				tagClose(TT_H4,m_utf8_1);
+				tagClose(TT_H4, "h4");
 			}
 			break;
 		case TT_SPAN:
 			{
-				m_utf8_1 = "span";
-				tagClose (TT_SPAN, m_utf8_1);
+				tagClose (TT_SPAN, "span");
 			}
 			break;
 		case TT_BDO:
 			{
-				m_utf8_1 = "bdo";
-				tagClose (TT_BDO, m_utf8_1);
+				tagClose (TT_BDO, "bdo");
 			}
 			break;
 
@@ -1545,7 +1532,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		 */
 		m_utf8_1 = "@charset \"UTF-8\";";
 		if(!get_Compact())
-		m_utf8_0 += MYEOL MYEOL;
+			m_utf8_0 += MYEOL MYEOL;
 		
 		styleText (m_utf8_1);
 	}
@@ -2502,7 +2489,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		}
 	
 	{
-		
 		const XML_Char * szP_FontWeight = 0;
 		const XML_Char * szP_FontStyle = 0;
 		const XML_Char * szP_FontSize = 0;
@@ -2524,8 +2510,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		if(first)
 			m_utf8_1 = "span style=\"";
 		else
-			m_utf8_1 += " style=\"";
-	
+			m_utf8_1 += " style=\"";	
 
 		/* TODO: this bold/italic check needs re-thought
 		 */
@@ -2745,18 +2730,15 @@ void s_HTML_Listener::_closeSpan ()
 {
 	if (tagTop () == TT_A)
 	{
-		m_utf8_1 = "a";
-		tagClose (TT_A, m_utf8_1, ws_None);
+		tagClose (TT_A, "a", ws_None);
 	}
 	if (tagTop () == TT_BDO)
 	{
-		m_utf8_1 = "bdo";
-		tagClose (TT_BDO, m_utf8_1, ws_None);
+		tagClose (TT_BDO, "bdo", ws_None);
 	}
 	if (tagTop () == TT_SPAN)
 	{
-		m_utf8_1 = "span";
-		tagClose (TT_SPAN, m_utf8_1, ws_None);
+		tagClose (TT_SPAN, "span", ws_None);
 	}
 	m_bInSpan = false;
 }
