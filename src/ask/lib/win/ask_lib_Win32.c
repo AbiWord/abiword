@@ -326,6 +326,8 @@ int initGraphic(void)
 		return 1;
 		
 	}
+
+	return 0;
 }
 
 int try_cancel(void)
@@ -380,7 +382,7 @@ int BrowseDir(HWND hwnd, char* pszDest)
     bi.pidlRoot = pidlPrograms; 
     bi.pszDisplayName = lpBuffer; 
     bi.lpszTitle = "Please choose a folder"; 
-    bi.ulFlags = 0; 
+    bi.ulFlags = BIF_RETURNONLYFSDIRS; 
     bi.lpfn = NULL; 
     bi.lParam = 0; 
 
@@ -391,6 +393,10 @@ int BrowseDir(HWND hwnd, char* pszDest)
         if (SHGetPathFromIDList(pidlBrowse, lpBuffer))
 		{
 			strcpy(pszDest, lpBuffer);
+
+			if( pszDest[ strlen( pszDest ) - 1 ] == '\\' )
+				pszDest[ strlen( pszDest ) - 1 ] = '\0';
+
 			result = 1;
 		}
  
