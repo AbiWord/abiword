@@ -123,8 +123,8 @@ ifdef HELPER_PROGRAM
 $(HELPER_PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME),WIN32)
-	@$(CC) -nologo $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
-		-Fe$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')		\
+	@$(CC) -nologo $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )	\
+		-Fe$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH) )		\
 		-link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
 else
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) 
@@ -138,14 +138,17 @@ $(LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
 ifeq ($(OS_NAME),WIN32)
-####	@$(AR) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') $(AR_EXTRA_ARGS)
+####	@$(AR) $(shell echo $(OBJS) | sed 's|/cygdrive/[a-zA-Z]/|/|g' | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') $(AR_EXTRA_ARGS)
 ####	we build a @file because the command line can overrun the win32 bash
 ####	command line limit (or something which crashes bash)....
-	@echo -NOLOGO -OUT:"$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')" 	>linkfile.1
-	@echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\|g' 				>linkfile.2
+	@echo -NOLOGO -OUT:"$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))" > linkfile.1
+	@echo $(OBJS)                               > linkfile.4
+	@sed 's|/cygdrive/[a-zA-Z]/|/|g' linkfile.4 > linkfile.5
+	@sed 's|//[a-zA-Z]/|/|g'         linkfile.5 > linkfile.6
+	@sed 's|/|\\|g'                  linkfile.6 > linkfile.2
 	@echo $(AR_EXTRA_ARGS)									>linkfile.3
 	@lib @linkfile.1 @linkfile.2 @linkfile.3
-	@rm linkfile.[123]
+	@rm linkfile.[123456]
 else
 	@$(AR) $(OBJS) $(AR_EXTRA_ARGS)
 endif
@@ -157,7 +160,7 @@ $(SHARED_LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
 ifeq ($(OS_NAME), WIN32)
-	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) $(EXTRA_LIBS) $(subst /,\\,$(OBJS))
+	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) $(EXTRA_LIBS) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
 else
 	$(MKSHLIB) -o $@ $(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 endif
@@ -167,7 +170,7 @@ endif
 ifeq ($(OS_NAME), WIN32)
 $(RCOBJS): $(RCSRCS)
 	@$(MAKE_OBJDIR)
-	@$(RC) /fo$(shell echo $(RCOBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+	@$(RC) /fo$(shell echo $(RCOBJS) | $(TRANSFORM_TO_DOS_PATH) )	\
 		$(ABI_INCS) $(ABI_TMDEFS) $(RCSRCS)
 	@echo $(RCOBJS) finished
 endif
@@ -179,7 +182,7 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.cpp
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CCC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c $(CFLAGS) $<
+	@$(CCC) -Fo$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH) ) -c $(CFLAGS) $<
 else
 	@echo $<:
 	@$(CCC) -o $@ -c $(CFLAGS) $<
@@ -192,8 +195,8 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): $(OBJDIR)/%.cpp
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CCC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c	\
-		$(CFLAGS) $(shell echo $< | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
+	@$(CCC) -Fo$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH) ) -c	\
+		$(CFLAGS) $(shell echo $< | $(TRANSFORM_TO_DOS_PATH) )
 else
 	@echo $<:
 	@$(CCC) -o $@ -c $(CFLAGS) $<
@@ -206,7 +209,7 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.c
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c $(CFLAGS) $<
+	@$(CC) -Fo$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH) ) -c $(CFLAGS) $<
 else
 	@echo $<:
 	@$(CC) -o $@ -c $(CFLAGS) $<
@@ -220,8 +223,8 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): $(OBJDIR)/%.c
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c	\
-		$(CFLAGS) $(shell echo $< | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
+	@$(CC) -Fo$(shell echo $@ | sed $(TRANSFORM_TO_DOS_PATH) ) -c	\
+		$(CFLAGS) $(shell echo $< | $(TRANSFORM_TO_DOS_PATH) )
 else
 	@echo $<:
 	@$(CC) -o $@ -c $(CFLAGS) $<

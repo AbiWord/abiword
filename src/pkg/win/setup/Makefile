@@ -64,13 +64,13 @@ $(OBJDIR)/data.c:	abisuite.ask $(BINDIR)/ask_gendata.exe $(BINDIR)/askrm.exe
 	sed -e 's|__BINDIR__|$(BINDIR)|g' $(OBJDIR)/_tmp1_.ask > $(OBJDIR)/_tmp2_.ask
 	sed -e 's|__GRAPHICNAME__|$(GRAPHICNAME)|g' $(OBJDIR)/_tmp2_.ask > $(OBJDIR)/_tmp3_.ask
 	$(BINDIR)/ask_gendata.exe $(OBJDIR)/_tmp3_.ask \
-		 $(shell echo $(OBJDIR)/_tmp_.c | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
+		 $(shell echo $(OBJDIR)/_tmp_.c | $(TRANSFORM_TO_DOS_PATH))
 	(cd $(OBJDIR); mv _tmp_.c data.c)
 
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
+	@$(CC) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH)) -Fe$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH)) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH))
 
 ifdef ABI_OPT_DEBUG
 

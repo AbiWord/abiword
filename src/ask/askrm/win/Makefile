@@ -49,10 +49,10 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 $(PROGRAM): $(OBJS) $(THE_LIBS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CC) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
-		-Fe$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+	@$(CC) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH))	\
+		-Fe$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))	\
 		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS)				\
-		$(shell echo $(EXTRA_LIBS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
+		$(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH))
 
 build:: $(TARGETS)
 	@echo askrm built
