@@ -340,9 +340,15 @@ AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
 
 dnl other configure scripts
 # AC_CONFIG_SUBDIRS($PEERDIRS) won't work :-(
-for i in $PEERDIRS; do
-  echo "Running configure in ${i}"
-  (cd $i; ./configure --disable-shared)
+for i in . $PEERDIRS; do
+  if test $i != . ; then
+    echo "Running configure in ${i}"
+    config_flags='--disable-shared --enable-static'
+    if test `basename "$i"` = wv; then
+      config_flags="$config_flags --with-exporter"
+    fi
+    (cd $i; ./configure $config_flags)
+  fi
 done
 AC_SUBST(PEERDIRS)
 AC_SUBST(PEERS)
