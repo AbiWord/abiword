@@ -106,6 +106,7 @@ public:
 	void 				dump();
 
 protected:
+	UT_uint32 				_getBottomOfLastSlice(void) const;
 	virtual UT_uint32 		_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX) = 0;	
 	fp_BlockSliceInfo*		_findSlice(fp_BlockSlice* p);
 	int 					_repositionSlices();

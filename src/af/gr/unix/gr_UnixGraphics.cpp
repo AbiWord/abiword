@@ -468,7 +468,10 @@ void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height)
 {
 //	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
-	gdk_window_clear_area(m_pWin, x, y, width, height);	
+	if (width > 0)
+	{
+		gdk_window_clear_area(m_pWin, x, y, width, height);
+	}
 }
 
 UT_Bool UNIXGraphics::startPrint(void)

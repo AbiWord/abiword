@@ -287,51 +287,6 @@ void fl_BlockLayout::_align()
 	}
 }
 
-int fl_BlockLayout::minor_reformat()
-{
-	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_DEBUGMSG(("BEGIN reformat block: 0x%x\n", this));
-
-	UT_ASSERT(!m_bFormatting);
-	m_bFormatting = UT_TRUE;
-
-	m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
-
-	m_pBreaker->reLayoutParagraph(this);
-
-	/*
-	  A delete could mean that there are empty lines
-	  in the block.  If so, we need to remove them.
-	*/
-	while (m_pLastLine->isEmpty())
-	{
-		fp_Line* pLine = m_pLastLine;
-		
-		pLine->remove();
-		m_pLastLine = pLine->getPrev();
-
-		// note that we do NOT delete pLine here.  It is deleted elsewhere.
-	}
-	
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
-	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
-
-		pSlice->returnExtraSpace();
-	}
-
-	// TODO should we call _align here?
-	
-	UT_DEBUGMSG(("END reformat block: 0x%x\n", this));
-
-	setNeedsCompleteReformat(UT_FALSE);
-	
-	m_bFormatting = UT_FALSE;
-	return 0;
-}
-
 void fl_BlockLayout::_purgeLayout(UT_Bool bVisible)
 {
 	int countSlices = m_vecSlices.getItemCount();
@@ -439,6 +394,86 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	return UT_TRUE;
 }
 
+/*
+  Notes on reformatting.
+
+  Editing operations frequently cause the need to reformat a block.
+  For the purpose of this note, 'reformat' means formatting something
+  after it has already been formatted.
+  
+  The following things can happen when a block is reformatted:
+
+  1.  Erase the screen space used by all the current slices.
+
+      This one is serious.  It causes the entire block to flicker.
+
+  2.  Purge the lines.
+
+      Also serious.  This means that all the lines need to be rebuilt.
+	  If the lines are purged, you must call breakParagraph.  Otherwise,
+	  you must call relayoutParagraph.
+
+  3.  Clobber the slices.
+
+      Quite serious.  This means that the location of the first slice
+	  for this block will be calculated by looking at the previous block.
+	  In some cases, this is necessary.  For example, if a block is currently
+	  beginning in column D, but there is now room for it to begin in
+	  column C (the predecessor to D), then the slices should be purged
+	  so that the block will be reformatted to place it in the previous
+	  column.
+
+  4.  Clobber runs.
+
+      The most serious.  This means that nearly everything is tossed out,
+	  and the entire layout is being constructed from scratch.
+*/
+
+int fl_BlockLayout::minor_reformat()
+{
+	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_DEBUGMSG(("BEGIN reformat block: 0x%x\n", this));
+
+	UT_ASSERT(!m_bFormatting);
+	m_bFormatting = UT_TRUE;
+
+	m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
+
+	m_pBreaker->reLayoutParagraph(this);
+
+	/*
+	  A delete could mean that there are empty lines
+	  in the block.  If so, we need to remove them.
+	*/
+	while (m_pLastLine->isEmpty())
+	{
+		fp_Line* pLine = m_pLastLine;
+		
+		pLine->remove();
+		m_pLastLine = pLine->getPrev();
+
+		// note that we do NOT delete pLine here.  It is deleted elsewhere.
+	}
+	
+	int countSlices = m_vecSlices.getItemCount();
+	for (int i=0; i<countSlices; i++)
+	{
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
+		UT_ASSERT(pSlice);
+
+		pSlice->returnExtraSpace();
+	}
+
+	// TODO should we call _align here?
+	
+	UT_DEBUGMSG(("END reformat block: 0x%x\n", this));
+
+	setNeedsCompleteReformat(UT_FALSE);
+	
+	m_bFormatting = UT_FALSE;
+	return 0;
+}
+
 int fl_BlockLayout::complete_format()
 {
 	UT_DEBUGMSG(("BEGIN Formatting block: 0x%x\n", this));
@@ -469,6 +504,8 @@ int fl_BlockLayout::complete_format()
 		  In some cases, we will want to stomp the slices.  In some cases
 		  we want to call relayoutBlock and in others breakParagraph.
 		*/
+
+#define CLOBBER_SLICES
 		
 		int countSlices = m_vecSlices.getItemCount();
 		for (int i=0; i<countSlices; i++)
@@ -478,27 +515,26 @@ int fl_BlockLayout::complete_format()
 
 			pSlice->clearScreen(m_pLayout->getGraphics());
 			pSlice->deleteLines();
-			pSlice->verifyColumnFit();
-#if 0
+#ifdef CLOBBER_SLICES
 			pSlice->remove();
 
 			delete pSlice;
+#else
+			pSlice->verifyColumnFit();
 #endif
 		}
+		m_pFirstLine = m_pLastLine = NULL;
 
-#if 0		
+#ifdef CLOBBER_SLICES
 		for (int j=countSlices-1; j>=0; j--)
 		{
 			m_vecSlices.deleteNthItem(j);
 		}
 		UT_ASSERT(m_vecSlices.getItemCount() == 0);
-#endif		
-		m_pFirstLine = m_pLastLine = NULL;
-
-#if 0
 		m_pCurrentSlice = NULL;
-#endif
+#else
 		m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
+#endif		
 
 		/*
 		  NOTE that we currently leave the runs alone.  If we were

@@ -183,12 +183,18 @@ void fp_Line::insertRun(fp_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 		fp_RunInfo *p = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
 		if (bClear == UT_TRUE)
+		{
 			p->pRun->clearScreen();
+		}
 		
 		if (i == 0)
+		{
 			p->xoff = 0;
+		}
 		else
+		{
 			p->xoff += width;
+		}
 	}
 	
 	_recalcHeight();

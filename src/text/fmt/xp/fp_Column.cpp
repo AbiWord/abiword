@@ -361,6 +361,8 @@ int fp_Column::_repositionSlices()
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 
+	UT_uint32 iBottom = _getBottomOfLastSlice();
+	
 	/*
 	  This method is called whenever some slice has changed size,
 	  or the number of slices has changed.  The result is that all
@@ -452,23 +454,23 @@ int fp_Column::_repositionSlices()
 		pListNode = pListNode->pNext;
 	}
 
-	/*
-	  TODO the following code is very pessimistic.  It
-	  should only be called if this _repositionSlices() call
-	  was made in response to something moving UP, not down.
-
-	  TODO what we really want to force here is that the block
-	  needs to look and see if it can start in the previous
-	  column.  We're currently setting needsCompleteReformat
-	  to accomplish that purpose.
-	*/
-	fp_Column* pNextColumn = getNext();
-	if (pNextColumn)
+	if (_getBottomOfLastSlice() < iBottom)
 	{
-		fp_BlockSliceInfo* pBSI = pNextColumn->m_pFirstSlice;
-		if (pBSI->pSlice->isFirstSliceInBlock())
+		/*
+		  TODO what we really want to force here is that the block
+		  needs to look and see if it can start in the previous
+		  column.  We're currently setting needsCompleteReformat
+		  to accomplish that purpose.
+		*/
+
+		fp_Column* pNextColumn = getNext();
+		if (pNextColumn)
 		{
-			pBSI->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
+			fp_BlockSliceInfo* pBSI = pNextColumn->m_pFirstSlice;
+			if (pBSI->pSlice->isFirstSliceInBlock())
+			{
+				pBSI->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
+			}
 		}
 	}
 
@@ -487,6 +489,24 @@ void fp_Column::draw(dg_DrawArgs* pDA)
 		pListNode->pSlice->draw(&da);
 		pListNode = pListNode->pNext;
 	}
+}
+
+UT_uint32 fp_Column::_getBottomOfLastSlice(void) const
+{
+	if (!m_pFirstSlice)
+	{
+		return 0;
+	}
+	
+	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
+	while (pListNode && pListNode->pNext)
+	{
+		pListNode = pListNode->pNext;
+	}
+
+	UT_ASSERT(pListNode && !(pListNode->pNext));
+
+	return pListNode->yoff + pListNode->pSlice->getHeight();
 }
 
 void fp_Column::dump()
