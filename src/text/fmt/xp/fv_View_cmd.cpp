@@ -3028,6 +3028,13 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
 		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	}
+//
+// Handle special case of not putting a table immediately after an end text box 
+//
+	if(m_pDoc->isEndFrameAtPos(pointBreak-1))
+	{
+		pointBreak--;
+	}
 	setPoint(pointBreak);
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //

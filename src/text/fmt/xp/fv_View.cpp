@@ -4105,7 +4105,8 @@ bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szVal
 
 	if (!bExplicitlyDefined)
 	{
-		if (szPropValue = PP_evalProperty(szProperty, pSpanAP, pBlockAP, pSectionAP, m_pDoc, true))
+		szPropValue = PP_evalProperty(szProperty, pSpanAP, pBlockAP, pSectionAP, m_pDoc, true);
+		if (szPropValue != NULL)
 		{
 			xxx_UT_DEBUGMSG(("Property \"%s\" defined at style/document level as \"%s\"\n",szProperty,szPropValue));
 			szValue = szPropValue;
@@ -4722,11 +4723,13 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 	if(hfType == FL_HDRFTR_FOOTER && pDSL->getFooter() == NULL)
 	{
 		insertPageNum(atts, hfType);
+		setPoint(oldpos);
 		return true;
 	}
 	else if(hfType == FL_HDRFTR_HEADER && pDSL->getHeader() == NULL)
 	{
 		insertPageNum(atts, hfType);
+		setPoint(oldpos);
 		return true;
 	}
 //
