@@ -172,7 +172,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	g_free (tmp);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelWCount", labelWCount);
 	gtk_widget_show (labelWCount);
-	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelWCount, 1, 2, 0, 1);
+	gtk_table_attach (GTK_TABLE (dataTable), labelWCount, 1, 2, 0, 1,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelWCount), 1.0, 0.5);
 	
 	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Words));	
 	labelWords = gtk_label_new (unixstr);
@@ -180,7 +183,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelWords", labelWords);
 	gtk_widget_show (labelWords);
 	gtk_label_set_justify (GTK_LABEL (labelWords), GTK_JUSTIFY_LEFT);
-	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelWords, 0, 1, 0, 1);
+	gtk_table_attach (GTK_TABLE (dataTable), labelWords, 0, 1, 0, 1,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelWords), 0, 0.5);
 
 	UT_XML_cloneNoAmpersands(unixstr, tmp = g_strdup_printf("%d", m_count.para));	
 	labelPCount = gtk_label_new (unixstr);
@@ -188,7 +194,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	g_free (tmp);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelPCount", labelPCount);
 	gtk_widget_show (labelPCount);
-	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelPCount, 1, 2, 1, 2);
+	gtk_table_attach (GTK_TABLE (dataTable), labelPCount, 1, 2, 1, 2,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelPCount), 1.0, 0.5);
 	
 	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Paragraphs));	
 	labelPara = gtk_label_new (unixstr);
@@ -196,6 +205,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelPara", labelPara);
 	gtk_widget_show (labelPara);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelPara, 0, 1, 1, 2);
+	gtk_table_attach (GTK_TABLE (dataTable), labelPara, 0, 1, 1, 2,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelPara), 0, 0.5);
 
 	UT_XML_cloneNoAmpersands(unixstr, tmp = g_strdup_printf("%d", m_count.ch_sp));	
 	labelCCount = gtk_label_new (unixstr);
@@ -205,6 +218,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelCCount", labelCCount);
 	gtk_widget_show (labelCCount);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelCCount, 1, 2, 2, 3);
+	gtk_table_attach (GTK_TABLE (dataTable), labelCCount, 1, 2, 2, 3,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelCCount), 1.0, 0.5);
 	
 	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_Sp));	
 	labelChar = gtk_label_new (unixstr);
@@ -213,6 +230,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelChar", labelChar);
 	gtk_widget_show (labelChar);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelChar, 0, 1, 2, 3);
+	gtk_table_attach (GTK_TABLE (dataTable), labelChar, 0, 1, 2, 3,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelChar), 0, 0.5);
 
 	UT_XML_cloneNoAmpersands(unixstr, tmp = g_strdup_printf("%d", m_count.ch_no));	
 	labelCNCount = gtk_label_new (unixstr);
@@ -221,13 +242,20 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelCNCount", labelCNCount);
 	gtk_widget_show (labelCNCount);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelCNCount, 1, 2, 3, 4);
+	gtk_table_attach (GTK_TABLE (dataTable), labelCNCount, 1, 2, 3, 4,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelCNCount), 1.0, 0.5);
 	
 	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_No));	
 	labelCharNo = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelCharNo", labelCharNo);
 	gtk_widget_show (labelCharNo);
-	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelCharNo, 0, 1, 3, 4);
+	gtk_table_attach (GTK_TABLE (dataTable), labelCharNo, 0, 1, 3, 4,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelCharNo), 0, 0.5);
 
 
 	UT_XML_cloneNoAmpersands(unixstr, tmp = g_strdup_printf("%d", m_count.line));	
@@ -236,7 +264,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	g_free (tmp);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelLCount", labelLCount);
 	gtk_widget_show (labelLCount);
-	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelLCount, 1, 2, 4, 5);
+	gtk_table_attach (GTK_TABLE (dataTable), labelLCount, 1, 2, 4, 5,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelLCount), 1.0, 0.5);
 	
 	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Lines));	
 	labelLine = gtk_label_new (unixstr);
@@ -244,6 +275,10 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelLine", labelLine);
 	gtk_widget_show (labelLine);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelLine, 0, 1, 4, 5);
+	gtk_table_attach (GTK_TABLE (dataTable), labelLine, 0, 1, 4, 5,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelLine), 0, 0.5);
 
 	// new
 	UT_XML_cloneNoAmpersands(unixstr, tmp = g_strdup_printf("%d", m_count.page));	
@@ -252,14 +287,20 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	g_free (tmp);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelPgCount", labelPgCount);
 	gtk_widget_show (labelPgCount);
-	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelPgCount, 1, 2, 5, 6);
+	gtk_table_attach (GTK_TABLE (dataTable), labelPgCount, 1, 2, 5, 6,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelPgCount), 1.0, 0.5);
 	
 	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Pages));	
 	labelPage = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelPage", labelPage);
 	gtk_widget_show (labelPage);
-	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelPage, 0, 1, 5, 6);
+	gtk_table_attach (GTK_TABLE (dataTable), labelPage, 0, 1, 5, 6,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelPage), 0, 0.5);
 	// end new
 
 
@@ -268,7 +309,6 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "hbuttonboxWordCount", hbuttonboxWordCount);
 	gtk_widget_show (hbuttonboxWordCount);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), hbuttonboxWordCount, 1, 2, 7, 8);
-
 
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxWordCount), GTK_BUTTONBOX_END);
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxWordCount), 10);
