@@ -470,6 +470,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/tools/cdump/qnx/GNUmakefile
  src/tools/pfa2afm/GNUmakefile
  src/tools/pfa2afm/unix/GNUmakefile
+ src/tools/po2str/GNUmakefile
+ src/tools/po2str/xp/GNUmakefile
  src/tools/ttftool/GNUmakefile
  src/tools/ttftool/unix/GNUmakefile
  src/tools/scripts/GNUmakefile
