@@ -817,7 +817,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	PT_DocPosition posRun = 0;
 	if(pPrev == NULL)
 	{
-		iDiff = (UT_sint32) (pRun->getBlockOffset() - getPosition());
+		iDiff = (UT_sint32) pRun->getBlockOffset();
 	}
 	else
 	{
@@ -827,7 +827,11 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			iDiff = (UT_sint32) (pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength());
 			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
-		
+		else if((posRun == posEmbedded) && pRun->getNext())
+		{
+			iDiff = (UT_sint32) (pRun->getNext()->getBlockOffset() -pRun->getBlockOffset() - pRun->getLength());
+			pRun = pRun->getNext();
+		}
 //
 // here if the last run starts beyond the point where the footnote is embedded
 // This means the previous run spans the embed point. 
@@ -5222,9 +5226,8 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-
-	setNeedsReformat(blockOffset);
 	updateEnclosingBlockIfNeeded();
+	setNeedsReformat(blockOffset);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
