@@ -21,9 +21,29 @@ class px_ChangeHistory
 public:
 	px_ChangeHistory();
 	~px_ChangeHistory();
+
+	// addChangeRecord -- append the given cr to the history
+	//                    at the current position and advance
+	//                    the current position.  also deletes
+	//                    any (now) invalid redo items beyond
+	//                    the current position.
+	// getUndo -- fetch the cr immediately prior to the current
+	//            position.
+	// getRedo -- fetch the cr immediately after the current position.
+	//
+	// didUndo -- decrement the current position (to compensate for
+	//            having just performed the undo).
+	// didRedo -- increment the current position (to compensate for
+	//            having just performed the redo).
+	
+	UT_Bool					addChangeRecord(PX_ChangeRecord * pcr);
+	UT_Bool					getUndo(PX_ChangeRecord ** ppcr) const;
+	UT_Bool					getRedo(PX_ChangeRecord ** ppcr) const;
+	UT_Bool					didUndo(void);
+	UT_Bool					didRedo(void);
 	
 protected:
-	UT_vector				m_vecChangeRecords;
+	UT_Vector				m_vecChangeRecords;
 	UT_uint32				m_undoPosition;
 };
 

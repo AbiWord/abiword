@@ -2,7 +2,7 @@
 #ifndef PP_TABLEATTRPROP_H
 #define PP_TABLEATTRPROP_H
 
-#include "ut_type.h"
+#include "ut_types.h"
 #include "ut_vector.h"
 #include "pp_AttrProp.h"
 
@@ -16,9 +16,18 @@ class pp_TableAttrProp
 public:
 	pp_TableAttrProp();
 	~pp_TableAttrProp();
+
+	UT_Bool					createAP(void);
+	UT_Bool					createAP(const XML_Char ** attributes,
+									 const XML_Char ** properties,
+									 UT_uint32 * pIndex);
+	UT_Bool					createAP(UT_Vector * pVector,
+									 UT_uint32 * pIndex);
+	
+	const PP_AttrProp *		getAP(UT_uint32 index) const;
 	
 protected:
-	UT_vector				m_vecTable;
+	UT_Vector				m_vecTable;
 };
 
 #endif /* PP_TABLEATTRPROP_H */

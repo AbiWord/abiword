@@ -18,6 +18,12 @@ public:
 	virtual ~pf_Frag_Strux_Column();
 	
 protected:
+	// m_pColumn contains an internalized representation of the
+	// column (attributes/properties have been parsed and stored
+	// for easy/quick access).  we defer this internalization
+	// until the first time the column is access (asked to create
+	// an actual column for the layout).
+	
 	PC_Column *			m_pColumn;
 };
 

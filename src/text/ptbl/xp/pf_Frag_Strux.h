@@ -18,6 +18,8 @@ class pf_Frag_Strux : public pf_Frag
 public:
 	pf_Frag_Strux();
 	virtual ~pf_Frag_Strux();
+
+	PTStruxType				getStruxType(void) const;
 	
 protected:
 	PTStruxType				m_struxType;

@@ -19,10 +19,18 @@ public:
 	virtual ~pf_Frag();
 
 	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux } PFType;
+
+	PFType					getType(void) const;
+	pf_Frag *				getNext(void) const;
+	pf_Frag *				getPrev(void) const;
+	pf_Frag *				setNext(pf_Frag * pNext);
+	pf_Frag *				setPrev(pf_Frag * pPrev);
 	
 protected:
 	PFType					m_type;
-	
+
+	pf_Frag *				m_next;
+	pf_Frag *				m_prev;
 };
 
 #endif /* PF_FRAG_H */
