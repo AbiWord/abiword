@@ -1559,11 +1559,13 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 
 	UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
+	UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	m_Table.OpenCell(api);
 	bool bNewRow = false;
 	UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
 	if(	m_Table.getTop() != iOldRow)
 	{
+		UT_DEBUGMSG(("NEW ROW DETECTED !!!!!!!!!!!!!!!!!\n"));
 		if(m_bNewTable)
 		{
 			m_pie->_rtf_open_brace();
@@ -1576,7 +1578,31 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 		else
 		{
 			bNewRow = true;
-			m_pie->_rtf_keyword("row");
+//
+// Now we have to output cell markers for all the vertically merged cells
+// on the right edge of previous row
+//
+			UT_sint32 count = m_Table.getPrevNumRightMostVMerged();
+			UT_sint32 i =0;
+			for(i=0; i<count; i++)
+			{
+				if(m_Table.getNestDepth() < 2)
+				{
+					m_pie->_rtf_keyword("cell");
+				}
+				else
+				{
+					m_pie->_rtf_keyword("nestcell");
+				}
+			}
+			if(m_Table.getNestDepth() < 2)
+			{
+				m_pie->_rtf_keyword("row");
+			}
+			else
+			{
+				m_pie->_rtf_keyword("nestrow");
+			}
 			_newRow();
 			if(m_Table.getNestDepth() > 1)
 			{
@@ -1587,6 +1613,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 // reset api. It may have been screwed in _newRow
 //
+	UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	m_Table.OpenCell(api);
 	if(bNewRow)
 	{
@@ -1650,7 +1677,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("*");
 		m_pie->_rtf_keyword("nesttableprops");
-	}
+	} 
 	m_pie->_rtf_keyword("trowd");
 	m_pie->write(" ");
 //
@@ -1747,7 +1774,21 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	double cellpos = cellLeftPos + dColSpace*0.5;
 	double colwidth = 0.0;
 	double dcells = static_cast<double>(m_Table.getNumCols());
+#if 0
+//
+// fixme. Write this function to determine the width of a nested cell
+//
+	if(m_Table.getNestDepth() < 2)
+	{
+		colwidth = (_getColumnWidthInches() - dColSpace*0.5)/dcells;
+	}
+	else
+	{
+		colwidth = m_Table.findThisColWidth();
+	}
+#endif
 	colwidth = (_getColumnWidthInches() - dColSpace*0.5)/dcells;
+
 	UT_sint32 iNext = 1;
 	UT_String sTableProps;
 	PT_AttrPropIndex tableAPI = m_Table.getTableAPI();
@@ -1789,7 +1830,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 //
 // Look to see if this is the first cell of a set of vertically merged cells
 //		
-		if(m_Table.getBot() > row +1)
+		if((m_Table.getBot() > row +1) && (m_Table.getTop() == row))
 		{
 			m_pie->_rtf_keyword("clvmgf");
 		}
@@ -2260,6 +2301,15 @@ void s_RTF_ListenerWriteDoc::_close_cell(void)
 
 void s_RTF_ListenerWriteDoc::_close_table(void)
 {
+//
+// First output the cells we need to cover any vertically merged cells
+//
+	UT_sint32 count = m_Table.getNumCols() - m_Table.getRight();
+	UT_sint32 i = 0;
+	for(i=0; i< count; i++)
+	{
+		m_pie->_rtf_keyword("cell");
+	}
 //
 // Close off the last row
 //

@@ -1248,9 +1248,19 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	if (iCell == 0)
 	{
 		bottomSpacing = 0;
-	} else
+	} 
+	else
 	{
-		AP_LeftRulerTableInfo * pKInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(iCell-1));
+		UT_sint32 imax = static_cast<UT_sint32>(pInfo->m_vecTableRowInfo->getItemCount());
+		AP_LeftRulerTableInfo * pKInfo = NULL;
+		if(iCell - 1 < imax)
+		{
+			pKInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(iCell-1));
+		}
+		else
+		{
+			pKInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(imax-1));
+		}
 		bottomSpacing = pKInfo->m_iBotSpacing;
 	}
 

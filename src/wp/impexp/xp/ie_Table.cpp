@@ -69,13 +69,19 @@ ie_PartTable::ie_PartTable(PD_Document * pDoc) :
 	m_iRight(-1),
 	m_iTop(-1),
 	m_iBot(-1),
+	m_iPrevLeft(-1),
+	m_iPrevRight(-1),
+	m_iPrevTop(-1),
+	m_iPrevBot(-1),
 	m_TableSDH(NULL),
 	m_bIsCellJustOpenned(false)
 {
+	xxx_UT_DEBUGMSG(("ie_PartTable created %x \n",this));
 }
 
 ie_PartTable::~ie_PartTable(void)
 {
+	xxx_UT_DEBUGMSG(("ie_PartTable deleted %x \n",this));
 }
 
 /*!
@@ -83,12 +89,17 @@ ie_PartTable::~ie_PartTable(void)
  */
 void ie_PartTable::_clearAllCell(void)
 {
+	xxx_UT_DEBUGMSG(("Clearing cell now \n"));
 	m_apiCell = 0;
 	m_CellAttProp = NULL;
 	m_iLeft = -1;
 	m_iRight = -1;
 	m_iTop = -1;
 	m_iBot = -1;
+	m_iPrevLeft = -1;
+	m_iPrevRight = -1;
+	m_iPrevTop = -1;
+	m_iPrevBot = -1;
 	m_bIsCellJustOpenned = false;
 }
 
@@ -194,7 +205,33 @@ UT_sint32 ie_PartTable::getBot(void)
  */
 void ie_PartTable::setCellApi(PT_AttrPropIndex iApi)
 {
+	if(iApi == 0)
+	{
+		return;
+	}
+	UT_sint32 iL,iR,iT,iB;
+	xxx_UT_DEBUGMSG(("setCellApi to %d \n",iApi));
+	xxx_UT_DEBUGMSG(("Old Right was %d \n",m_iRight));
+	if(iApi != 	m_apiCell)
+	{ 
+		iL = m_iLeft;
+		iR = m_iRight;
+	    iT = m_iTop;
+		iB = m_iBot;
+	}
+	else
+	{
+		iL = m_iPrevLeft;
+		iR = m_iPrevRight;
+	    iT = m_iPrevTop;
+		iB = m_iPrevBot;
+	}
 	_clearAllCell();
+	m_iPrevLeft = iL;
+	m_iPrevRight = iR;
+	UT_DEBUGMSG(("New prevRight is %d \n",m_iPrevRight));
+	m_iPrevTop = iT;
+	m_iPrevBot = iB;
 	m_apiCell = iApi;
 	UT_return_if_fail(m_pDoc);
 	m_pDoc->getAttrProp(iApi, &m_CellAttProp);
@@ -205,6 +242,7 @@ void ie_PartTable::setCellApi(PT_AttrPropIndex iApi)
 		m_iLeft = atoi(szVal);
 	}
 	szVal = getCellProp("right-attach");
+	xxx_UT_DEBUGMSG(("New Right set to %s \n",szVal));
 	if(szVal && *szVal)
 	{
 		m_iRight = atoi(szVal);
@@ -377,6 +415,15 @@ void ie_Table::CloseTable(void)
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.pop(reinterpret_cast<void **>(&pPT));
 	delete pPT;
+}
+
+UT_sint32 ie_Table::getPrevNumRightMostVMerged(void)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	UT_DEBUGMSG(("PrevRight %d curRight %d \n",pPT->getPrevRight(),pPT->getRight()));
+	UT_sint32 num = pPT->getNumCols() - pPT->getPrevRight();
+	return num;
 }
 
 /*!

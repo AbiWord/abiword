@@ -44,6 +44,7 @@ class ABI_EXPORT ie_PartTable
 	void             setCellApi(PT_AttrPropIndex iApi);
 	UT_sint32        getLeft(void);
 	UT_sint32        getRight(void);
+	UT_sint32        getPrevRight(void) {return m_iPrevRight;}
 	UT_sint32        getTop(void);
 	UT_sint32        getBot(void);
 	const char *     getTableProp(const char * pPropName);
@@ -71,6 +72,10 @@ class ABI_EXPORT ie_PartTable
 	UT_sint32             m_iRight;
 	UT_sint32             m_iTop;
 	UT_sint32             m_iBot;
+	UT_sint32             m_iPrevLeft;
+	UT_sint32             m_iPrevRight;
+	UT_sint32             m_iPrevTop;
+	UT_sint32             m_iPrevBot;
 	PL_StruxDocHandle     m_TableSDH;
 	bool                  m_bIsCellJustOpenned;
 };			
@@ -102,6 +107,7 @@ class ABI_EXPORT ie_Table
 	bool             isCellJustOpenned(void);
 	PT_AttrPropIndex getTableAPI(void);
 	PT_AttrPropIndex getCellAPI(void);
+	UT_sint32        getPrevNumRightMostVMerged(void);
  private:
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;
