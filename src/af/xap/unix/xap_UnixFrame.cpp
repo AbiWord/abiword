@@ -18,6 +18,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -917,9 +918,71 @@ bool XAP_UnixFrame::raise()
 	return true;
 }
 
-void XAP_UnixFrame::setFullScreen(bool isFullScreen)
+static void wmspec_change_state(bool add, GdkWindow *w, GdkAtom atom1, GdkAtom atom2)
 {
-  // SCOTT: TODO
+   XEvent xev;
+#define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
+#define _NET_WM_STATE_ADD           1    /* add/set property */
+#define _NET_WM_STATE_TOGGLE        2    /* toggle property  */  
+
+   xev.xclient.type = ClientMessage;
+   xev.xclient.serial = 0;
+   xev.xclient.send_event = True;
+   xev.xclient.display = gdk_display;
+   xev.xclient.window = GDK_WINDOW_XID (w);
+   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_NET_WM_STATE");
+   xev.xclient.format = 32;
+   xev.xclient.data.l[0] = add ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+   xev.xclient.data.l[1] = gdk_x11_atom_to_xatom (atom1);
+   xev.xclient.data.l[2] = gdk_x11_atom_to_xatom (atom2);
+   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
+              False, SubstructureRedirectMask | SubstructureNotifyMask,
+              &xev);
+}
+
+static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
+{
+   XEvent xev;
+#define _WIN_LAYER_TOP        -1    /* remove/unset property */
+#define _WIN_LAYER_NORMAL      4    /* add/set property */
+
+   xev.xclient.type = ClientMessage;
+   xev.xclient.serial = 0;
+   xev.xclient.send_event = True;
+   xev.xclient.display = gdk_display;
+   xev.xclient.window = GDK_WINDOW_XID (window);
+   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_WIN_LAYER");
+   xev.xclient.format = 32;
+   xev.xclient.data.l[0] = fullscreen ? _WIN_LAYER_TOP : _WIN_LAYER_NORMAL ;
+   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
+              False, SubstructureRedirectMask | SubstructureNotifyMask,
+              &xev);
+}
+
+
+void XAP_UnixFrame::setFullScreen(bool changeToFullScreen)
+{
+ 	GtkWidget * app;
+
+	app = getTopLevelWindow();
+
+	if(changeToFullScreen)
+	{
+		wmspec_change_layer(true, GTK_WIDGET(app)->window);
+
+      		wmspec_change_state(true, GTK_WIDGET(app)->window,
+                          gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE),
+                          GDK_NONE);
+	}
+	else
+	{
+		wmspec_change_layer(false, GTK_WIDGET(app)->window);
+
+		wmspec_change_state(false, GTK_WIDGET(app)->window,
+                          gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", FALSE),
+                          GDK_NONE);
+
+	}
 }
 
 bool XAP_UnixFrame::show()
