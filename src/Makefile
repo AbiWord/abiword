@@ -27,9 +27,9 @@ ifneq ($(OS_NAME), WIN32)
 PS_DIRS=	ps
 endif
 
-ifeq ($(T), all)
-DIRS=		ver other util $(PS_DIRS) ev ap wp calc
-endif
+# ifeq ($(T), all)
+# DIRS=		ver other util $(PS_DIRS) ev ap wp calc
+# endif
 
 ifeq ($(T), abiword)
 DIRS=		ver other util $(PS_DIRS) ev ap wp
