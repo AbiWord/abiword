@@ -39,33 +39,6 @@
 
 /*****************************************************************/
 
-class _menuCallback
-{
-public:
-	_menuCallback (short id, MenuHandle handle);
-	~_menuCallback ();
-
-	UT_Vector * items;
-	short mId;
-	MenuHandle mHandle;	
-};
-
-/*****************************************************************/
-_menuCallback::_menuCallback (short id, MenuHandle handle)
-{
-	mId = id;
-	mHandle = handle;
-	items = new UT_Vector;
-}
-
-/*****************************************************************/
-_menuCallback::~_menuCallback ()
-{
-	delete items;
-}
-	
-
-/*****************************************************************/
 
 EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 						   const char * szMenuLayoutName,
@@ -76,14 +49,10 @@ EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 	m_pMacFrame = pMacFrame;
 	m_hMacMenubar = NULL;
 	m_lastSubMenuID = 0;		// submenu have ID between 1-235
-	m_lastMenuID = 255;			// menu have > 0 ID, above 256 to not conflict with sub menus.
-	
-	m_callbacks = new UT_Vector;
 }
 
 EV_MacMenu::~EV_MacMenu(void)
 {
-	_menuCallback * callback;
     if (m_hMacMenubar) {
 #if UNIVERSAL_INTERFACES_VERSION <= 0x0330
         ::DisposeHandle (m_hMacMenubar);
@@ -92,13 +61,6 @@ EV_MacMenu::~EV_MacMenu(void)
 #endif
         m_hMacMenubar = NULL;
     }
-	if (m_callbacks) {
-		while (m_callbacks->getItemCount() > 0) {
-			delete (_menuCallback *) (m_callbacks->getFirstItem ());	
-			m_callbacks->deleteNthItem (0);
-		}
-		delete m_callbacks;
-	}
 }
 
 bool EV_MacMenu::onCommand(XAP_Menu_Id id)
@@ -181,32 +143,62 @@ void EV_MacMenu::_convertToMac (char * buf, size_t bufSize, const char * label)
 }
 
 
-char EV_MacMenu::_getItemCmd (const char * mnemonic)
+char EV_MacMenu::_getItemCmd (const char * mnemonic, UInt8 & modifiers, SInt16 & glyph)
 {
+	char cmd = 0;
+	glyph = 0;
+	modifiers = kMenuNoModifiers;
 	char * p;
-	p = strchr (mnemonic, '+');
-	p++;
+	if (strstr (mnemonic, "Alt+")) {
+		modifiers |= kMenuOptionModifier;
+	}
+	else if (strstr (mnemonic, "Ctrl+") == NULL) {
+		modifiers |= kMenuNoCommandModifier;
+	}
+	if (modifiers & kMenuNoCommandModifier) {
+		p = (char *)mnemonic;
+	}
+	else {
+		p = strchr (mnemonic, '+');
+		p++;
+	}
 	if (strlen (p) == 1) {
 		return *p;
 	}
-	// TODO handle strange shortcuts
-	return 0;
+	else {
+		if (strcmp (p, "Del") == 0) {
+			glyph = 0x17;
+			cmd = kDeleteCharCode;
+		}
+		else if (strcmp (p, "F4") == 0) {
+			glyph = 0x72;
+		}
+		else if (strcmp (p, "F7") == 0) {
+			glyph = 0x75;
+		}
+	}
+	// convert Alt_F4 to cmd-Q to be consistant with HIG.
+	if ((glyph == 0x72) && (modifiers == kMenuOptionModifier)) {
+		glyph = 0;
+		modifiers = kMenuNoModifiers;
+		return 'Q';
+	}
+	return cmd;
 }
 
 
 
 bool EV_MacMenu::synthesize(void)
 {
+	OSStatus err;
 	int menuType;
 	char buf[1024];
 	MenuHandle parentMenu;
-	_menuCallback * cb;
+	UInt8 menuModifiers;
+	SInt16 menuGlyph;
 
-	// create a Mac menu from the info provided.
-	AV_View* pView = m_pMacFrame->getCurrentView();
-    
+	// create a Mac menu from the info provided.   
 	bool bResult;
-    bool bCheck;
 	UT_uint32 tmp = 0;
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
@@ -220,10 +212,8 @@ bool EV_MacMenu::synthesize(void)
 
 	UT_Stack stack;
 	UT_Stack typeStack;
-	UT_Stack cbStack;
 	stack.push(m_hMacMenubar);
 	typeStack.push ((void *) EV_MAC_MENUBAR);
-	cbStack.push (NULL);
 	
 	m_lastSubMenuID++;
 	
@@ -266,7 +256,7 @@ bool EV_MacMenu::synthesize(void)
 				if (szMnemonicName && *szMnemonicName)
 				{
 					/* MAC TODO add the accelerator */
-					menuCmd = _getItemCmd (szMnemonicName);
+					menuCmd = _getItemCmd (szMnemonicName, menuModifiers, menuGlyph);
 				}
 				C2PStr (menuLabel, buf);
 			}
@@ -278,15 +268,24 @@ bool EV_MacMenu::synthesize(void)
 			UT_ASSERT(bResult);
 			bResult = typeStack.viewTop ((void **)&menuType);
 			UT_ASSERT(bResult);
-			bResult = cbStack.viewTop ((void **)&cb);
-			UT_ASSERT(bResult);
-			currentItem = ::CountMenuItems (parentMenu);
-			currentItem++;
-			::InsertMenuItem (parentMenu, menuLabel, currentItem);
-			if (menuCmd) {
-				::SetItemCmd (parentMenu, currentItem, menuCmd);
+			// we only create non empty menus. Otherwise it does not work... (menu manger do not like it).
+			// TODO handle the MRU list as it looks like it is the only case were this happens.
+			if (menuLabel [0] != 0) {
+				currentItem = ::CountMenuItems (parentMenu);
+				currentItem++;
+				::InsertMenuItem (parentMenu, menuLabel, currentItem);
+				if (menuCmd) {
+					err = ::SetMenuItemModifiers (parentMenu, currentItem, menuModifiers);
+					UT_ASSERT (err == noErr);
+					::SetItemCmd (parentMenu, currentItem, menuCmd);
+					if (menuGlyph != 0) {
+						err = ::SetMenuItemKeyGlyph (parentMenu, currentItem, menuGlyph);
+						UT_ASSERT (err == noErr);
+					}
+				}
+				err = ::SetMenuItemCommandID (parentMenu, currentItem, (UInt32)id);
+				UT_ASSERT (err == noErr);
 			}
-			cb->items->addItem ((void *)id);
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
@@ -315,19 +314,13 @@ bool EV_MacMenu::synthesize(void)
 					::InsertMenu (subMenu, kInsertHierarchicalMenu);
 					currentItem++;
 					::InsertMenuItem (parentMenu, menuLabel, currentItem);
-					::SetItemCmd (parentMenu, currentItem, hMenuCmd);
-					::SetItemMark (parentMenu, currentItem, m_lastSubMenuID);
+					err = ::SetMenuItemHierarchicalID (parentMenu, currentItem, m_lastSubMenuID);
+					UT_ASSERT (err == noErr);
 				}
 				else if (menuType == EV_MAC_MENUBAR) {
 					subMenu = ::NewMenu (m_lastSubMenuID, menuLabel);
 					::InsertMenu (subMenu, 0);
 				}
-	
-				cb = new _menuCallback (m_lastSubMenuID, subMenu);
-
-				cbStack.push (cb);
-				m_callbacks->addItem (cb);
-				cb = NULL;
 				stack.push(subMenu);
 				typeStack.push ((void *)EV_MAC_MENU);
 				break;
@@ -357,7 +350,6 @@ bool EV_MacMenu::synthesize(void)
 			UT_ASSERT(menuType == EV_MAC_MENU);
 			currentItem = ::CountMenuItems (parentMenu);
 			::InsertMenuItem (parentMenu, "\p-", currentItem + 1);
-			cb->items->addItem (NULL);
 			break;
 		}
 
@@ -383,18 +375,21 @@ bool EV_MacMenu::synthesize(void)
 }
 
 
+//
+// Find the XAP_Menu_Id stored for the item #<item> on the menu ID <menu>.
 XAP_Menu_Id EV_MacMenu::findMenuId (short menu, short item)
 {
-	UT_uint32 count = m_callbacks->getItemCount ();
-	UT_uint32 i;
-	_menuCallback * cb;
+	MenuHandle h;
+	UInt32 cmd;
+	OSStatus err;
 	
-	for (i = 0; i < count; i++) {
-		cb = (_menuCallback *)m_callbacks->getNthItem (i);
-		if (cb->mId == menu) {
-			XAP_Menu_Id id = (XAP_Menu_Id)cb->items->getNthItem (item - 1);
-			return id;
-		}
+	h = ::GetMenuHandle (menu);
+	UT_ASSERT (h != NULL);
+	err = ::GetMenuItemCommandID (h, item, &cmd);
+	UT_ASSERT (err == noErr);
+	
+	if (err == noErr) {
+		return (XAP_Menu_Id)cmd;
 	}
 	UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	return 0;

@@ -65,13 +65,10 @@ private:
 #endif
     MenuBarHandle	m_hMacMenubar;
     
-    short m_lastMenuID;
     short m_lastSubMenuID;
-	
-	UT_Vector * m_callbacks;
-	
+		
 	static void _convertToMac (char * buf, size_t bufSize, const char * label);
-	static char _getItemCmd (const char * mnemonic);
+	static char _getItemCmd (const char * mnemonic, UInt8 & modifiers, SInt16 & glyph);
 };
 
 #endif /* EV_MACMENU_H */
