@@ -34,17 +34,7 @@ XFT_LIBS=""
 
 xft=true
 
-AC_ARG_ENABLE(xft,[  --disable-xft   Turn off xft ],[
-	if test "x$enableval" = "xno"; then
-		xft=false
-	fi
-])
-
-if test "$PLATFORM" = unix; then
-	if test $xft = false; then
-		AC_MSG_WARN([* * * building on *NIX w/o Xft2 is not supported * * *])
-	fi
-else
+if test "$PLATFORM" != unix; then
 	xft=false
 fi
 
