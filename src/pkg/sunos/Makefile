@@ -63,8 +63,9 @@ pkg: install
 # Tgz target is provided by a common Unix makefile
 
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 
 ########################################################################
 
 # This target should build all packages 
-distribution: tgz pkg
+distribution: tgz pkg tbz

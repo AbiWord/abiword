@@ -45,16 +45,24 @@ install:
 
 ########################################################################
 
+# If tgz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tgz,$(ABI_DIST_TARGET)),)
+        DIST_DEPS += tgz
+endif
+
+# If tbz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tbz,$(ABI_DIST_TARGET)),)
+        DIST_DEPS += tbz
+endif
+
 # Tgz target is provided by a common Unix makefile
 
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
-
-########################################################################
-
-# TODO : add tardist format here?
+include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 
 ########################################################################
 
 # This target should build all packages defined for this platform
-distribution: tgz
+distribution: $(DIST_DEPS)
+
 

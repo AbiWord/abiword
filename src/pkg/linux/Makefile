@@ -62,6 +62,11 @@ ifneq ($(findstring tgz,$(ABI_DIST_TARGET)),)
 	DIST_DEPS += tgz
 endif
 
+# If tbz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tbz,$(ABI_DIST_TARGET)),)
+	DIST_DEPS += tbz
+endif
+
 # If rpm is inside $ABI_DIST_TARGET _and_ rpm is found locally
 ifneq ($(findstring rpm,$(ABI_DIST_TARGET)),)
 ifneq ($(RPM_LOC),)
@@ -167,6 +172,9 @@ slp: rpm
 
 # tgz target is provided by a common Unix makefile
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+
+# tbz target is provided by a common Unix makefile
+include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 
 # This target should build all packages 
 distribution: $(DIST_DEPS)

@@ -42,6 +42,11 @@ ifneq ($(findstring tgz,$(ABI_DIST_TARGET)),)
         DIST_DEPS += tgz
 endif
 
+# If tbz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tbz,$(ABI_DIST_TARGET)),)
+        DIST_DEPS += tbz
+endif
+
 # If pkg is inside $ABI_DIST_TARGET
 ifneq ($(findstring pkg,$(ABI_DIST_TARGET)),)
         DIST_DEPS += pkg

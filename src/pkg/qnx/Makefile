@@ -53,6 +53,11 @@ ifneq ($(findstring tgz,$(ABI_DIST_TARGET)),)
 	DIST_DEPS += tgz
 endif
 
+# If tbz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tbz,$(ABI_DIST_TARGET)),)
+	DIST_DEPS += tbz
+endif
+
 # If qpkg is inside $ABI_DIST_TARGET
 ifneq ($(findstring qpkg,$(ABI_DIST_TARGET)),)
 	DIST_DEPS += qpkg
@@ -63,6 +68,7 @@ endif
 UNIX_CAN_BUILD_DYNAMIC = $(QNX_CAN_BUILD_DYNAMIC)
 UNIX_CAN_BUILD_STATIC = $(QNX_CAN_BUILD_STATIC)
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 
 include qpkg.mk
 
