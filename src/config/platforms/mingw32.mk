@@ -26,7 +26,7 @@
 ##
 PLATFORM_FLAGS		=
 PORT_FLAGS		=
-OS_CFLAGS		=
+OS_CFLAGS		= -fvtable-thunks  # required for compiling ole dragndrop
 ##
 
 # mingw doesn't like -ansi in compiling wv
@@ -56,7 +56,8 @@ MKSHLIB			= $(LD) --dll
 
 # Compiler options for static and dynamic linkage
 STATIC_FLAGS		= -static
-SHARED_FLAGS		= -shared
+SHARED_FLAGS		= -shared -Wl,--no-keep-memory
+
 
 ABI_NATIVE	= win
 ABI_FE		= Win32

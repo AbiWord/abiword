@@ -319,6 +319,9 @@ ABI_OTH_INCS=	/other/spell/xp \
 ifeq ($(OS_NAME), WIN32)
 ABI_OTH_INCS+=	/../../wv/glib-wv
 endif
+ifeq ($(OS_NAME), MINGW32)
+ABI_OTH_INCS+=	/../../wv/glib-wv
+endif
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
   ABI_PEER_INCS+=/../../expat/lib
@@ -821,5 +824,8 @@ ifeq ($(OS_NAME), WIN32)
 	CFLAGS += -I$(ABI_ROOT)/..	# so <fribidi/fribidi.h> works
 else
 	EXTRA_LIBS += -lfribidi
+endif
+ifeq ($(OS_NAME), MINGW32)
+	CFLAGS += -I$(ABI_ROOT)/..	# so <fribidi/fribidi.h> works
 endif
 
