@@ -22,9 +22,6 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-#TF These aren't required any more.  As of R4 they ship w/ the OS
-#REQUIRE=	_ZLIB_ _LIBPNG_
-
 REQUIRE=	_LIBWV_
 TARGET=		build
 
@@ -35,28 +32,6 @@ build::		$(REQUIRE)
 	@echo Build requirements satisfied.
 
 #################################################################
-
-_ZLIB_:
-	@if [ -d $(ABI_ROOT)/../zlib ]; then			\
-		echo Found zlib in peer directory;		\
-		$(MAKE) -C $(ABI_ROOT)/../zlib;			\
-	else							\
-		echo zlib not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
-		exit 1;						\
-	fi
-
-_LIBPNG_:
-	@if [ -d $(ABI_ROOT)/../libpng ]; then			\
-		echo Found libpng in peer directory;		\
-		$(MAKE) -C $(ABI_ROOT)/../libpng;		\
-	else							\
-		echo libpng not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
-		exit 1;						\
-	fi
 
 _LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then			\
