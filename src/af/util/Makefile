@@ -60,6 +60,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_qnxAssert.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_qnxString.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_qnxTimer.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_Xpm2Bitmap.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_qnxHelper.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 

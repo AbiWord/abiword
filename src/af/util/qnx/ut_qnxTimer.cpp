@@ -24,6 +24,8 @@
 #include <Pt.h>
 #include <stdio.h>
 
+#define ENABLE_TIMER 
+
 /*****************************************************************/
 extern PtWidget_t *gTimerWidget;
 	
@@ -101,7 +103,7 @@ UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 
 	setIdentifier(0);
 
-#if !defined(USE_TIMER_THREADS) 
+#if defined(ENABLE_TIMER) 
 	PtArg_t args[5];
 	int     n = 0;
 	PtWidget_t *idTimer;
@@ -120,21 +122,11 @@ UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 	//All bad things go away when I don't use this
 	PtRealizeWidget(idTimer);
 	setIdentifier((UT_sint32)idTimer);
-#else
-	//This really blows chunks ... not quite finished
-	SIGEV_THREAD_INIT(&event, _Timer_Thread, NULL);
-	event.sigev_value.sival_ptr =  this;
-	off.it_value.tv_sec = 
-	off.it_interval.tv_sec = 0;
-	off.it_value.tv_nsec = 
-	off.it_interval.tv_nsec = iMilliseconds * 1000000;
-	timer_create(CLOCK_REALTIME, event, &timerid);
-	timer_settime(timerid, 0, &off, NULL); 
-	setIdentifier(&timerid);
-#endif
 
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
+#endif
+
 	return 0;
 }
 
@@ -151,14 +143,12 @@ void UT_QNXTimer::stop(void)
 	//PtSetArg(&arg, Pt_ARG_TIMER_INITIAL, 0, 0);
 	//PtSetResources((PtWidget_t *)getIdentifier(), 1, &arg);
 	//OR
-#if !defined(USE_TIMER_THREADS) 
+#if defined(ENABLE_TIMER) 
 	PtWidget_t *timer;
 	if (!(timer = (PtWidget_t *)getIdentifier()) || !PtWidgetIsRealized(timer)) {
 		return;
 	}
 	PtDestroyWidget(timer);
-#else
-	timer_delete(timerid);
 #endif
 	setIdentifier(0);
 	m_bStarted = UT_FALSE;
@@ -170,7 +160,9 @@ void UT_QNXTimer::start(void)
 {
 	// resume the delivery of events.
 
+#if defined(ENABLE_TIMER)
 	UT_ASSERT(m_iMilliseconds > 0);
+#endif
 	
 	if (!m_bStarted)
 		set(m_iMilliseconds);
