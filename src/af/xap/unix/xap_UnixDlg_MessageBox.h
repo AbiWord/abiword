@@ -35,8 +35,21 @@ public:
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
+	// must let static callbacks read our bindings
+	UT_Vector * 		_getBindingsVector();
+	void 				_setAnswer(AP_Dialog_MessageBox::tAnswer answer);
+		
 protected:
 	AP_UnixFrame *			m_pUnixFrame;
+	UT_Vector 				m_keyBindings;
+
+	struct keyBinding
+	{
+		guint key;
+		AP_Dialog_MessageBox::tAnswer answer;
+	};
+			
+	void _bindKey(guint key, AP_Dialog_MessageBox::tAnswer answer);
 	
 };
 
