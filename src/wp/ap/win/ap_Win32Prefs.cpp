@@ -21,14 +21,81 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ut_types.h"
+#include "ut_units.h"
 #include "ut_debugmsg.h"
 #include "ap_Win32Prefs.h"
+
+// Codes from ISO 3166 
+// Very compressed form. Two char code folowed by tree char code. 
+char s_ISO3166_2_and_3[] =
+"AFAFGALALBDZDZAASASMADANDAOAGOAIAIAAQATAAGATGARARGAMARMAWABWAUAUSATAUT"
+"AZAZEBSBHSBHBHRBDBGDBBBRBBYBLRBEBELBZBLZBJBENBMBMUBTBTNBOBOLBABIHBWBWA"
+"BVBVTBRBRAIOIOTBNBRNBGBGRBFBFABIBDIKHKHMCMCMRCACANCVCPVKYCYMCFCAFTDTCD"
+"CLCHLCNCHNCXCXRCCCCKCOCOLKMCOMCGCOGCKCOKCRCRICICIVHRHRVCUCUBCYCYPCZCZE"
+"DKDNKDJDJIDMDMADODOMTPTMPECECUEGEGYSVSLVGQGNQERERIEEESTETETHFKFLKFOFRO"
+"FJFJIFIFINFRFRAFXFXXGFGUFPFPYFTFATFGAGABGMGMBGEGEODEDEUGHGHAGIGIBGRGRC"
+"GLGRLGDGRDGPGLPGUGUMGTGTMGNGINGWGNBGYGUYHTHTIHMHMDHNHNDHKHKGHUHUNISISL"
+"ININDIDIDNIRIRNIQIRQIEIRLILISRITITAJMJAMJPJPNJOJORKZKAZKEKENKIKIRKPPRK"
+"KRKORKWKWTKGKGZLALAOLVLVALBLBNLSLSOLRLBRLYLBYLILIELTLTULULUXMOMACMKMKD"
+"MGMDGMWMWIMYMYSMVMDVMLMLIMTMLTMHMHLMQMTQMRMRTMUMUSYTMYTMXMEXFMFSMMDMDA"
+"MCMCOMNMNGMSMSRMAMARMZMOZMMMMRNANAMNRNRUNPNPLNLNLDANANTNCNCLNZNZLNINIC"
+"NENERNGNGANUNIUNFNFKMPMNPNONOROMOMNPKPAKPWPLWPAPANPGPNGPYPRYPEPERPHPHL"
+"PNPCNPLPOLPTPRTPRPRIQAQATREREUROROMRURUSRWRWAKNKNALCLCAVCVCTWSWSMSMSMR"
+"STSTPSASAUSNSENSCSYCSLSLESGSGPSKSVKSISVNSBSLBSOSOMZAZAFESESPLKLKASHSHN"
+"PMSPMSDSDNSRSURSJSJMSZSWZSESWECHCHESYSYRTWTWNTJTJKTZTZATHTHATGTGOTKTKL"
+"TOTONTTTTOTNTUNTRTURTMTKMTCTCATVTUVUGUGAUAUKRAEAREGBGBRUSUSAUMUMIUYURY"
+"UZUZBVUVUTVAVATVEVENVNVNMVGVGBVIVIRWFWLFEHESHYEYEMYUYUGZRZARZMZMBZWZWE";
 
 /*****************************************************************/
 
 AP_Win32Prefs::AP_Win32Prefs(XAP_App * pApp)
 	: AP_Prefs(pApp)
 {
+}
+
+UT_Bool AP_Win32Prefs::loadBuiltinPrefs(void)
+{
+	char  szLocaleInfo[64];
+
+	// Call base function
+	UT_Bool ret = AP_Prefs::loadBuiltinPrefs();
+
+	// Add information from Win32 system and user setup
+
+	if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_IMEASURE, szLocaleInfo, sizeof( szLocaleInfo ) / sizeof( szLocaleInfo[0] ) ) )
+	{
+		m_builtinScheme->setValue( AP_PREF_KEY_RulerUnits, UT_dimensionName( szLocaleInfo[0] == '0' ? DIM_CM : DIM_IN ) );
+	}
+
+	if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVLANGNAME, szLocaleInfo, sizeof( szLocaleInfo ) / sizeof( szLocaleInfo[0] ) ) )
+	{
+		char  szTmp[64];
+
+		szLocaleInfo[0] = toupper( szLocaleInfo[0] );
+
+		if( !strcmp( szLocaleInfo, "Non" ) ) // Special case: Nynorsk in Norway
+			strcpy( &szLocaleInfo[2], "NYNORSK" );
+		else if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVCTRYNAME, szTmp, sizeof( szTmp ) / sizeof( szTmp[0] ) ) )
+		{
+			char *psz;
+			for( psz = s_ISO3166_2_and_3; *psz != '\0'; psz += 5 )
+				if( !strncmp( &psz[2], szTmp, 3 ) )
+					break;
+			strncpy( &szLocaleInfo[2], psz, 2 );
+			szLocaleInfo[4] = '\0';
+		}
+		else
+			szLocaleInfo[2] = '\0';
+
+		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
+
+		m_builtinScheme->setValue( AP_PREF_KEY_MenuLabelSet, szLocaleInfo );
+		m_builtinScheme->setValue( AP_PREF_KEY_ToolbarLabelSet, szLocaleInfo );
+		m_builtinScheme->setValue( AP_PREF_KEY_StringSet, szLocaleInfo );
+	}
+
+	return ret;
 }
 
 const char * AP_Win32Prefs::getPrefsPathname(void) const
@@ -64,3 +131,4 @@ void AP_Win32Prefs::overlayEnvironmentPrefs(void)
 	// TODO steal the appropriate code from the unix version
 	// TODO after it is finished.
 }
+
