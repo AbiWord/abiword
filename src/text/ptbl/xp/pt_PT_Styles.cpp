@@ -58,10 +58,10 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 #endif
 	_s("Normal Clean",	"P", "Normal",    "Current Settings", "font-weight:normal; font-style:normal; margin-top:0pt; text-align:left; line-height:1.0; field-font:NULL");
 
-	_s("Heading 1",	"P", "Normal", "Current Settings", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Heading 1",	"P", "Normal", "Normal Clean", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
 	_s("Heading 2",	"P", "Normal", "Normal Clean", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
 	_s("Heading 3",	"P", "Normal", "Normal Clean", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
-	_s("Plain Text","P", "Normal", "Normal Clean", "font-family:Courier New;  field-font:NULL");
+	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New;  field-font:NULL");
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
 
 	sprintf(list_fmt_tmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
