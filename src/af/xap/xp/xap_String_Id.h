@@ -27,7 +27,7 @@
 *****************************************************************/
 
 dcl(MSG_ImportingDoc, "Importing Document..")
-dcl(MSG_BuildingDoc,  "Building Document..")
+dcl(MSG_BuildingDoc,  "Building Document, percent filled")
 dcl(MSG_AutoRevision, "Autorevision")
 dcl(MSG_HistoryPartRestore1, "AbiWord cannot fully restore version %d of the document because the version information is incomplete.")
 dcl(MSG_HistoryPartRestore2, "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No.")
