@@ -1135,7 +1135,7 @@ msgstr "Alles"
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:506
 msgid "Allow Custom Toolbars"
-msgstr "Angepasste Werkzeugeisten zulassen"
+msgstr "Angepasste Werkzeugleisten zulassen"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:508
@@ -6215,12 +6215,12 @@ msgstr "Normal"
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h.h:437
 msgid "Norwegian Bokmal"
-msgstr "Norwegisch (Bokmal)"
+msgstr "Norwegisch (Bokmål)"
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:439
 msgid "Norwegian Nynorsk"
-msgstr "Norwegisch (Nyorsk)"
+msgstr "Norwegisch (Nynorsk)"
 
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:441
@@ -6664,7 +6664,7 @@ msgstr "Aktualisieren"
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:648
 msgid "Vietnamese"
-msgstr "Vietnameisch"
+msgstr "Vietnamesisch"
 
 #. ENC_VIET_TCVN
 #: po/tmp/xap_String_Id.h.h:650
