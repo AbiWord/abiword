@@ -9,6 +9,9 @@
 <!-- Revision History:
 
      $Log$
+     Revision 1.3  1998/12/09 19:35:05  jeff
+     Progress....
+
      Revision 1.2  1998/12/06 18:25:40  jeff
      Added comments to several sections in the DTD.
      Added additional prose to the Format document.
@@ -121,12 +124,12 @@
 <!--================================================================-->
 <!-- SECTION is a collection of blocks (paragraphs) under the same  -->
 <!-- column layout.  There will be other section-level stuff added  -->
-<!-- later. The "break" attribute is not yet supported in the code. -->
+<!-- later.                                                         -->
 
 <!ENTITY % secton.content "COLUMNMODEL P*">
 <!ELEMENT SECTION - - %section.content>
 <!ATTLIST SECTION
-	break	(yes|no|odd|even) yes -- page break --
+	PROPS	CDATA
 	>
 <!--================================================================-->
 
