@@ -29,7 +29,8 @@
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "ap_UnixPrefs.h"
-
+#include "ap_UnixClipboard.h"
+class PD_DocumentRange;
 class XAP_StringSet;
 
 class AP_UnixApp : public XAP_UnixApp
@@ -45,6 +46,8 @@ public:
 	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual UT_Bool					getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange);
 	
 	UT_Bool							parseCommandLine(void);
 
@@ -56,7 +59,7 @@ protected:
 
 	AP_UnixPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
-	
+	AP_UnixClipboard *		m_pClipboard;
 };
 
 #endif /* AP_UNIXAPP_H */

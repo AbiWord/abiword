@@ -20,36 +20,30 @@
 #ifndef XAP_CLIPBOARD_H
 #define XAP_CLIPBOARD_H
 
-#define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
-#define	AP_CLIPBOARD_TEXTPLAIN_UNICODE 		"text-unicode"
-#define AP_CLIPBOARD_RTF 					"rtf"
-#define AP_CLIPBOARD_IMAGE					"image"
-#define AP_CLIPBOARD_UNKNOWN 				"unknown"
-
 #include "ut_types.h"
-
 class GR_Image;
 
-class AP_Clipboard
+
+class XAP_Clipboard
 {
 public:
-	AP_Clipboard();
+	XAP_Clipboard();
 	
-	virtual UT_Bool		open(void) = 0;
-	virtual UT_Bool		close(void) = 0;
-	virtual UT_Bool		addData(char* format, void* pData, UT_sint32 iNumBytes) = 0;
-	virtual UT_sint32	getDataLen(char* format) = 0;
-	virtual UT_Bool		getData(char* format, void* pData) = 0;
-	virtual UT_sint32	countFormats(void) = 0;
-	virtual UT_Bool		hasFormat(char* format) = 0;
-	virtual char*		getNthFormat(UT_sint32 n) = 0;
-	virtual UT_Bool		clear(void) = 0;
+	virtual UT_Bool			open(void) = 0;
+	virtual UT_Bool			close(void) = 0;
+	virtual UT_Bool			addData(const char * format, void* pData, UT_sint32 iNumBytes) = 0;
+	virtual UT_sint32		getDataLen(const char * format) = 0;
+	virtual UT_Bool			getData(const char * format, void* pData) = 0;
+	virtual UT_sint32		countFormats(void) = 0;
+	virtual UT_Bool			hasFormat(const char * format) = 0;
+	virtual const char *	getNthFormat(UT_sint32 n) = 0;
+	virtual UT_Bool			clear(void) = 0;
 
-	virtual GR_Image*	getImage(void) = 0;
-	virtual UT_Bool		addImage(GR_Image*) = 0;
+	virtual GR_Image*		getImage(void) = 0;
+	virtual UT_Bool			addImage(GR_Image*) = 0;
 
 protected:
-	UT_Bool	m_bOpen;
+	UT_Bool					m_bOpen;
 };
 
 #endif /* XAP_CLIPBOARD_H */

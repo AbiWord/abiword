@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,9 +17,14 @@
  * 02111-1307, USA.
  */
 
-#include "xap_Clipboard.h"
+#ifndef AP_CLIPBOARD_H
+#define AP_CLIPBOARD_H
 
-XAP_Clipboard::XAP_Clipboard()
-{
-	m_bOpen = UT_FALSE;
-}
+#define AP_CLIPBOARD_ABIWORD_1				"AbiSource.AbiWord.1"
+#define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
+#define	AP_CLIPBOARD_TEXTPLAIN_UNICODE 		"text-unicode"
+#define AP_CLIPBOARD_RTF 					"rtf"
+#define AP_CLIPBOARD_IMAGE					"image"
+#define AP_CLIPBOARD_UNKNOWN 				"unknown"
+
+#endif /* AP_CLIPBOARD_H */

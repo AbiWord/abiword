@@ -24,17 +24,20 @@
 
 #include "xap_FakeClipboard.h"
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 struct _ClipboardItem
 {
-	_ClipboardItem(char* _szFormat, void* _pData, UT_uint32 _iLen);
+	_ClipboardItem(const char * _szFormat, void* _pData, UT_uint32 _iLen);
 	~_ClipboardItem();
 
-	char*		szFormat;
-	void*		pData;
-	UT_uint32	iLen;
+	const char *	szFormat;
+	void*			pData;
+	UT_uint32		iLen;
 };
 
-_ClipboardItem::_ClipboardItem(char* _szFormat, void* _pData, UT_uint32 _iLen)
+_ClipboardItem::_ClipboardItem(const char * _szFormat, void* _pData, UT_uint32 _iLen)
 {
 	szFormat = _szFormat;
 	pData = new char[_iLen];
@@ -47,36 +50,35 @@ _ClipboardItem::~_ClipboardItem()
 	delete pData;
 }
 
-AP_FakeClipboard::AP_FakeClipboard() : AP_Clipboard()
-{
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
+XAP_FakeClipboard::XAP_FakeClipboard()
+	: XAP_Clipboard()
+{
 }
 
-AP_FakeClipboard::~AP_FakeClipboard()
+XAP_FakeClipboard::~XAP_FakeClipboard()
 {
+	clear();
 }
 
-UT_Bool		AP_FakeClipboard::open(void)
+UT_Bool XAP_FakeClipboard::open(void)
 {
 	if (m_bOpen)
-	{
 		return UT_FALSE;
-	}
 
 	return UT_TRUE;
 }
 
-UT_Bool		AP_FakeClipboard::close(void)
+UT_Bool XAP_FakeClipboard::close(void)
 {
 	m_bOpen = UT_FALSE;
-
 	return UT_TRUE;
 }
 
-UT_Bool		AP_FakeClipboard::addData(char* format, void* pData, UT_sint32 iNumBytes)
+UT_Bool XAP_FakeClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
-	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
-	
 	_ClipboardItem* pItem = new _ClipboardItem(format, pData, iNumBytes);
 
 	UT_sint32 err = m_vecData.addItem(pItem);
@@ -90,7 +92,7 @@ UT_Bool		AP_FakeClipboard::addData(char* format, void* pData, UT_sint32 iNumByte
 	}
 }
 
-_ClipboardItem* AP_FakeClipboard::_findFormatItem(char* format)
+_ClipboardItem* XAP_FakeClipboard::_findFormatItem(const char* format)
 {
 	UT_uint32 iCount = m_vecData.getItemCount();
 
@@ -107,23 +109,14 @@ _ClipboardItem* AP_FakeClipboard::_findFormatItem(char* format)
 	return NULL;
 }
 
-UT_Bool		AP_FakeClipboard::hasFormat(char* format)
+UT_Bool XAP_FakeClipboard::hasFormat(const char* format)
 {
 	_ClipboardItem* pItem = _findFormatItem(format);
-	if (pItem)
-	{
-		return UT_TRUE;
-	}
-	else
-	{
-		return UT_FALSE;
-	}
+	return (pItem != NULL);
 }
 
-UT_sint32	AP_FakeClipboard::getDataLen(char* format)
+UT_sint32 XAP_FakeClipboard::getDataLen(const char * format)
 {
-	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
-
 	_ClipboardItem* pItem = _findFormatItem(format);
 	if (!pItem)
 	{
@@ -133,27 +126,23 @@ UT_sint32	AP_FakeClipboard::getDataLen(char* format)
 	return pItem->iLen;
 }
 
-UT_Bool		AP_FakeClipboard::getData(char* format, void* pData)
+UT_Bool XAP_FakeClipboard::getData(const char * format, void* pData)
 {
-	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
-
 	_ClipboardItem* pItem = _findFormatItem(format);
 	if (!pItem)
-	{
 		return UT_FALSE;
-	}
 	
 	memcpy(pData, pItem->pData, pItem->iLen);
 		
 	return UT_TRUE;
 }
 
-UT_sint32	AP_FakeClipboard::countFormats(void)
+UT_sint32 XAP_FakeClipboard::countFormats(void)
 {
 	return m_vecData.getItemCount();
 }
 
-char*		AP_FakeClipboard::getNthFormat(UT_sint32 n)
+const char * XAP_FakeClipboard::getNthFormat(UT_sint32 n)
 {
 	_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(n);
 	UT_ASSERT(pItem);
@@ -161,7 +150,7 @@ char*		AP_FakeClipboard::getNthFormat(UT_sint32 n)
 	return pItem->szFormat;
 }
 
-UT_Bool		AP_FakeClipboard::clear(void)
+UT_Bool XAP_FakeClipboard::clear(void)
 {
 	UT_sint32 iCount = m_vecData.getItemCount();
 	for (int i=0; i<iCount; i++)
@@ -177,17 +166,15 @@ UT_Bool		AP_FakeClipboard::clear(void)
 	return UT_TRUE;
 }
 
-GR_Image*	AP_FakeClipboard::getImage(void)
+GR_Image * XAP_FakeClipboard::getImage(void)
 {
 	UT_ASSERT(UT_TODO);
-
 	return NULL;
 }
 
-UT_Bool		AP_FakeClipboard::addImage(GR_Image*)
+UT_Bool XAP_FakeClipboard::addImage(GR_Image*)
 {
 	UT_ASSERT(UT_TODO);
-
 	return UT_FALSE;
 }
 

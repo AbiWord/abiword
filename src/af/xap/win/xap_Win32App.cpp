@@ -44,7 +44,6 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 XAP_Win32App::~XAP_Win32App(void)
 {
 	DELETEP(m_pWin32ToolbarIcons);
-	DELETEP(_pClipboard);
 
 	m_pSlurp->disconnectSlurper();
 	DELETEP(m_pSlurp);
@@ -66,8 +65,6 @@ UT_Bool XAP_Win32App::initialize(void)
 	m_pWin32ToolbarIcons = new AP_Win32Toolbar_Icons();
 	
 	// do anything else we need here...
-
-	_pClipboard = new AP_Win32Clipboard();
 
 	m_pSlurp = new XAP_Win32Slurp(this);
 	m_pSlurp->connectSlurper();

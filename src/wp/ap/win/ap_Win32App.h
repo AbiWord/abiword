@@ -29,6 +29,11 @@
 #include "xap_Args.h"
 #include "xap_Win32App.h"
 #include "ap_Win32Prefs.h"
+#include "ap_Win32Clipboard.h"
+class PD_DocumentRange;
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 class AP_Win32App : public XAP_Win32App
 {
@@ -43,6 +48,8 @@ public:
 	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual UT_Bool					getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange);
 
 	void							ParseCommandLine(int iCmdShow);
 	
@@ -55,6 +62,7 @@ public:
 protected:
 	AP_Win32Prefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
+	AP_Win32Clipboard *		m_pClipboard;
 };
 
 #endif /* AP_WIN32APP_H */

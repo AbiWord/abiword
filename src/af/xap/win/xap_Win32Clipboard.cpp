@@ -22,171 +22,104 @@
 
 #include "ut_string.h"
 #include "ut_assert.h"
-
 #include "xap_Win32Clipboard.h"
-
 #include "gr_Image.h"
 #include "gr_Win32Image.h"
 
-AP_Win32Clipboard::AP_Win32Clipboard() : AP_Clipboard()
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+XAP_Win32Clipboard::XAP_Win32Clipboard(void)
+	: XAP_Clipboard()
 {
-	m_cfRTF = RegisterClipboardFormat(CF_RTF);
 }
 
-UT_Bool		AP_Win32Clipboard::open(void)
+UT_Bool XAP_Win32Clipboard::open(void)
 {
 	if (m_bOpen)
-	{
 		return UT_FALSE;
-	}
 
-	if (OpenClipboard(NULL))
-	{
-		m_bOpen = UT_TRUE;
-		
-		return UT_TRUE;
-	}
+	if (!OpenClipboard(NULL))
+		return UT_FALSE;
 	
-	return UT_FALSE;
+	m_bOpen = UT_TRUE;
+	return UT_TRUE;
 }
 
-UT_Bool		AP_Win32Clipboard::close(void)
+UT_Bool XAP_Win32Clipboard::close(void)
 {
 	m_bOpen = UT_FALSE;
-	
 	return CloseClipboard();
 }
 
-UT_uint32	AP_Win32Clipboard::_convertFormatString(char* format)
+UT_Bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNumBytes)
 {
-	if (0 == UT_stricmp(format, AP_CLIPBOARD_TEXTPLAIN_8BIT))
-	{
-		return CF_TEXT;
-	}
-	else if (0 == UT_stricmp(format, AP_CLIPBOARD_TEXTPLAIN_UNICODE))
-	{
-		// this is expected to work on Windows NT only!!!
-		return CF_UNICODETEXT;
-	}
-	else if (0 == UT_stricmp(format, AP_CLIPBOARD_RTF))
-	{
-		return m_cfRTF;
-	}
-	else if (0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE))
-	{
-		return CF_DIB;
-	}
-	else
-	{
-		return 0;	// unknown format
-	}
-}
-
-UT_Bool		AP_Win32Clipboard::addData(char* format, void* pData, UT_sint32 iNumBytes)
-{
-	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
-	
 	// TODO do we need to verify that we own the clipboard?
-	
+
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
-	{
 		return UT_FALSE;
-	}
-	
-	HANDLE hData = NULL;
 
-	hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, iNumBytes);
-	// TODO handle outofmem
+	HANDLE hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, iNumBytes);
+	if (!hData)
+		return UT_FALSE;
+	
 	void* p = GlobalLock(hData);
 	memcpy(p, pData, iNumBytes);
 	GlobalUnlock(hData);
 
-	if (SetClipboardData(iFormat, hData))
-	{
-		return UT_TRUE;
-	}
-	else
-	{
-		return UT_FALSE;
-	}
+	return (SetClipboardData(iFormat, hData) != NULL);
 }
 
-UT_Bool		AP_Win32Clipboard::hasFormat(char* format)
+UT_Bool XAP_Win32Clipboard::hasFormat(const char * format)
 {
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
-	{
 		return UT_FALSE;
-	}
 
 	HANDLE hData = GetClipboardData(iFormat);
-	if (hData)
-	{
-		return UT_TRUE;
-	}
-	else
-	{
-		return UT_FALSE;
-	}
+	return (hData != NULL);
 }
 
-UT_sint32	AP_Win32Clipboard::getDataLen(char* format)
+UT_sint32 XAP_Win32Clipboard::getDataLen(const char * format)
 {
-	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
-	
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
-	{
 		return -1;
-	}
 
 	HANDLE hData = GetClipboardData(iFormat);
-	if (hData)
-	{
-		return GlobalSize(hData);
-	}
-	else
-	{
+	if (!hData)
 		return -1;
-	}
+
+	return GlobalSize(hData);
 }
 
-UT_Bool		AP_Win32Clipboard::getData(char* format, void* pData)
+UT_Bool XAP_Win32Clipboard::getData(const char * format, void* pData)
 {
-	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
-	
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
-	{
 		return UT_FALSE;
-	}
 
 	HANDLE hData = GetClipboardData(iFormat);
-	if (hData)
-	{
-		// TODO error check the following stuff
+	if (!hData)
+		return UT_FALSE;
+
+	// TODO error check the following stuff
 		
-		UT_uint32 iLen = GlobalSize(hData);
-		void* p = GlobalLock(hData);
+	UT_uint32 iLen = GlobalSize(hData);
+	void* p = GlobalLock(hData);
+	memcpy(pData, p, iLen);
+	GlobalUnlock(hData);
 
-		memcpy(pData, p, iLen);
-		GlobalUnlock(hData);
-
-		return UT_TRUE;
-	}
-	else
-	{
-		return UT_FALSE;
-	}
+	return UT_TRUE;
 }
 
-UT_sint32	AP_Win32Clipboard::countFormats(void)
+UT_sint32 XAP_Win32Clipboard::countFormats(void)
 {
 	return CountClipboardFormats();
 }
 
-char*		AP_Win32Clipboard::getNthFormat(UT_sint32 n)
+const char * XAP_Win32Clipboard::getNthFormat(UT_sint32 n)
 {
 	UT_ASSERT(n < countFormats());
 	
@@ -196,71 +129,67 @@ char*		AP_Win32Clipboard::getNthFormat(UT_sint32 n)
 	while (0 != (iCurFormat = EnumClipboardFormats(iCurFormat)))
 	{
 		if (iCount == n)
-		{
-			
-			switch (iCurFormat)
-			{
-			case CF_TEXT:
-				return AP_CLIPBOARD_TEXTPLAIN_8BIT;
-
-			case CF_UNICODETEXT:
-				return AP_CLIPBOARD_TEXTPLAIN_UNICODE;
-
-			// should we add CF_BITMAP here too?  (probably not)
-			case CF_DIB:
-				return AP_CLIPBOARD_IMAGE;
-				
-			default:
-				if (iCurFormat == m_cfRTF)
-				{
-					return AP_CLIPBOARD_RTF;
-				}
-				
-				return AP_CLIPBOARD_UNKNOWN;
-			}
-		}
+			return _convertToFormatString(iCurFormat);
 
 		iCount++;
 	}
 	
-	return AP_CLIPBOARD_UNKNOWN;
+	return NULL;
 }
 
-UT_Bool		AP_Win32Clipboard::clear(void)
+UT_Bool XAP_Win32Clipboard::clear(void)
 {
 	return EmptyClipboard();
 }
 
-GR_Image*	AP_Win32Clipboard::getImage(void)
+GR_Image * XAP_Win32Clipboard::getImage(void)
 {
 	HANDLE hData = GetClipboardData(CF_DIB);
-	if (hData)
-	{
-		// TODO error check the following stuff
-		
-		UT_uint32 iLen = GlobalSize(hData);
-		void* p = GlobalLock(hData);
-
-		BITMAPINFO* pDIB;
-		pDIB = (BITMAPINFO*) new unsigned char[iLen];
-		UT_ASSERT(pDIB); // TODO outofmem
-		
-		memcpy(pDIB, p, iLen);
-		
-		GlobalUnlock(hData);
-
-		return new GR_Win32Image(pDIB, "clipboard");
-	}
-	else
-	{
+	if (!hData)
 		return NULL;
-	}
+	
+	// TODO error check the following stuff
+		
+	UT_uint32 iLen = GlobalSize(hData);
+	void* p = GlobalLock(hData);
+
+	BITMAPINFO* pDIB;
+	pDIB = (BITMAPINFO*) new unsigned char[iLen];
+	UT_ASSERT(pDIB); // TODO outofmem
+	memcpy(pDIB, p, iLen);
+	GlobalUnlock(hData);
+	return new GR_Win32Image(pDIB, "clipboard");
 }
 
-UT_Bool		AP_Win32Clipboard::addImage(GR_Image*)
+UT_Bool XAP_Win32Clipboard::addImage(GR_Image*)
 {
 	UT_ASSERT(UT_TODO);
-
 	return UT_FALSE;
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+UT_uint32 XAP_Win32Clipboard::_convertFormatString(const char * format) const
+{
+	int kLimit = m_vecFormat.getItemCount();
+	int k;
+
+	for (k=0; k<kLimit; k++)
+		if (UT_stricmp(format,(const char *)m_vecFormat.getNthItem(k)) == 0)
+			return (UT_uint32)m_vecCF.getNthItem(k);
+
+	return 0;
+}
+
+const char * XAP_Win32Clipboard::_convertToFormatString(UT_uint32 fmt) const
+{
+	int kLimit = m_vecFormat.getItemCount();
+	int k;
+
+	for (k=0; k<kLimit; k++)
+		if (fmt == (UT_uint32)m_vecCF.getNthItem(k))
+			return (const char *)m_vecFormat.getNthItem(k);
+
+	return NULL;
+}

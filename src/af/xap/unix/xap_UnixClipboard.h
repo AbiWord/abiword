@@ -17,9 +17,34 @@
  * 02111-1307, USA.
  */
 
-#include "xap_Clipboard.h"
+#ifndef XAP_UNIXCLIPBOARD_H
+#define XAP_UNIXCLIPBOARD_H
 
-XAP_Clipboard::XAP_Clipboard()
+#include "ut_types.h"
+#include "ut_vector.h"
+
+#include "xap_Clipboard.h"
+#include "xap_FakeClipboard.h"
+
+class XAP_UnixClipboard : public XAP_FakeClipboard
 {
-	m_bOpen = UT_FALSE;
-}
+public:
+	XAP_UnixClipboard();
+	virtual ~XAP_UnixClipboard();
+	
+	virtual UT_Bool			open(void);
+	virtual UT_Bool			close(void);
+	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual UT_sint32		getDataLen(const char* format);
+	virtual UT_Bool			getData(const char* format, void* pData);
+	virtual UT_Bool			hasFormat(const char* format);
+	virtual UT_sint32		countFormats(void);
+	virtual const char *	getNthFormat(UT_sint32 n);
+	virtual UT_Bool			clear(void);
+
+	virtual GR_Image*	getImage(void);
+	virtual UT_Bool		addImage(GR_Image*);
+};
+
+#endif /* XAP_UNIXCLIPBOARD_H */
+

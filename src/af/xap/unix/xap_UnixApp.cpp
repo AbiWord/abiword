@@ -62,7 +62,6 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 XAP_UnixApp::~XAP_UnixApp(void)
 {
 	DELETEP(m_pUnixToolbarIcons);
-	DELETEP(_pClipboard);
 }
 
 UT_Bool XAP_UnixApp::initialize(void)
@@ -101,8 +100,6 @@ UT_Bool XAP_UnixApp::initialize(void)
 	
 	// do any thing we need here...
 
-	_pClipboard = new AP_FakeClipboard();
-	
 	return UT_TRUE;
 }
 

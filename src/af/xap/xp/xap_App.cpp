@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <stdio.h>	// for sprintf
+#include <stdio.h>
 #include <malloc.h>
 
 #include "ut_types.h"
@@ -28,7 +28,6 @@
 #include "ev_Toolbar_Actions.h"
 #include "xap_App.h"
 #include "xap_Args.h"
-#include "xap_Clipboard.h"
 #include "gr_Image.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
@@ -37,8 +36,6 @@
 #include "xap_LoadBindings.h"
 
 /*****************************************************************/
-
-AP_Clipboard* XAP_App::_pClipboard = NULL;
 
 XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 {
@@ -371,12 +368,6 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 
 	return -1;
 }
-
-AP_Clipboard* XAP_App::getClipboard(void)
-{
-	return _pClipboard;
-}
-
 
 void XAP_App::_setAbiSuiteLibDir(const char * sz)
 {

@@ -27,27 +27,27 @@
 
 struct _ClipboardItem;
 
-class AP_FakeClipboard : public AP_Clipboard
+class XAP_FakeClipboard : public XAP_Clipboard
 {
 public:
-	AP_FakeClipboard();
-	virtual ~AP_FakeClipboard();
+	XAP_FakeClipboard();
+	virtual ~XAP_FakeClipboard();
 	
-	virtual UT_Bool		open(void);
-	virtual UT_Bool		close(void);
-	virtual UT_Bool		addData(char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_sint32	getDataLen(char* format);
-	virtual UT_Bool		getData(char* format, void* pData);
-	virtual UT_Bool		hasFormat(char* format);
-	virtual UT_sint32	countFormats(void);
-	virtual char*		getNthFormat(UT_sint32 n);
-	virtual UT_Bool		clear(void);
+	virtual UT_Bool			open(void);
+	virtual UT_Bool			close(void);
+	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual UT_sint32		getDataLen(const char* format);
+	virtual UT_Bool			getData(const char* format, void* pData);
+	virtual UT_Bool			hasFormat(const char* format);
+	virtual UT_sint32		countFormats(void);
+	virtual const char *	getNthFormat(UT_sint32 n);
+	virtual UT_Bool			clear(void);
 
 	virtual GR_Image*	getImage(void);
 	virtual UT_Bool		addImage(GR_Image*);
 	
 protected:
-	_ClipboardItem*		_findFormatItem(char*);
+	_ClipboardItem*		_findFormatItem(const char*);
 	
 	UT_Vector			m_vecData;
 };

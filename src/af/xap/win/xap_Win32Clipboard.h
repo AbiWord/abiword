@@ -21,31 +21,33 @@
 #define XAP_WIN32CLIPBOARD_H
 
 #include "ut_types.h"
-
+#include "ut_vector.h"
 #include "xap_Clipboard.h"
 
-class AP_Win32Clipboard : public AP_Clipboard
+class XAP_Win32Clipboard : public XAP_Clipboard
 {
 public:
-	AP_Win32Clipboard();
+	XAP_Win32Clipboard(void);
 	
-	virtual UT_Bool		open(void);
-	virtual UT_Bool		close(void);
-	virtual UT_Bool		addData(char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_sint32	getDataLen(char* format);
-	virtual UT_Bool		getData(char* format, void* pData);
-	virtual UT_Bool		hasFormat(char* format);
-	virtual UT_sint32	countFormats(void);
-	virtual char*		getNthFormat(UT_sint32 n);
-	virtual UT_Bool		clear(void);
+	virtual UT_Bool			open(void);
+	virtual UT_Bool			close(void);
+	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual UT_sint32		getDataLen(const char* format);
+	virtual UT_Bool			getData(const char* format, void* pData);
+	virtual UT_Bool			hasFormat(const char * format);
+	virtual UT_sint32		countFormats(void);
+	virtual const char *	getNthFormat(UT_sint32 n);
+	virtual UT_Bool			clear(void);
 
-	virtual GR_Image*	getImage(void);
-	virtual UT_Bool		addImage(GR_Image*);
+	virtual GR_Image *		getImage(void);
+	virtual UT_Bool			addImage(GR_Image*);
 	
 protected:
-	UT_uint32			_convertFormatString(char* format);
-	
-	UT_uint32			m_cfRTF;
+	virtual UT_uint32		_convertFormatString(const char * format) const;
+	virtual const char *	_convertToFormatString(UT_uint32 fmt) const;
+
+	UT_Vector				m_vecFormat;
+	UT_Vector				m_vecCF;
 };
 
 #endif /* XAP_WIN32CLIPBOARD_H */

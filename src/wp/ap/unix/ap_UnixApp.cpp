@@ -270,6 +270,135 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 	return m_pStringSet;
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
+{
+	// copy the given subset of the given document to the
+	// system clipboard in a variety of formats.
+
+	if (!m_pClipboard->open())
+		return;
+	
+	m_pClipboard->clear();
+	
+	{
+#if 0
+		// put raw 8bit text on the clipboard
+		
+		IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+		if (pExpText)
+		{
+			UT_ByteBuf buf;
+			IEStatus status = pExpText->copyToBuffer(pDocRange,&buf);
+
+			// NOTE: MS Docs state that for CF_TEXT and CF_OEMTEXT we must have a zero
+			// NOTE: on the end of the buffer -- that's how they determine how much text
+			// NOTE: that we have.
+			UT_Byte b = 0;
+			buf.append(&b,1);
+			
+			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpText);
+			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
+		}
+
+		// also put RTF on the clipboard
+		
+		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
+		if (pExpRtf)
+		{
+			UT_ByteBuf buf;
+			IEStatus status = pExpRtf->copyToBuffer(pDocRange,&buf);
+			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpRtf);
+			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
+		}
+
+		// also put our format on the clipboard
+		
+		IE_Exp_AbiWord_1 * pExpAbw = new IE_Exp_AbiWord_1(pDocRange->m_pDoc);
+		if (pExpAbw)
+		{
+			UT_ByteBuf buf;
+			IEStatus status = pExpAbw->copyToBuffer(pDocRange,&buf);
+			m_pClipboard->addData(AP_CLIPBOARD_ABIWORD_1,(UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpAbw);
+			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in ABIWORD_1 format.\n",buf.getLength()));
+		}
+
+		// TODO on NT, do we need to put unicode text on the clipboard ??
+		// TODO do we need to put HTML on the clipboard ??
+#endif
+	}
+
+	m_pClipboard->close();
+}
+
+void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
+{
+	// paste from the system clipboard using the best-for-us format
+	// that is present.
+	
+	if (!m_pClipboard->open())
+		return;
+	
+	{
+		// TODO decide what the proper order is for these.
+
+#if 0
+		if (m_pClipboard->hasFormat(AP_CLIPBOARD_ABIWORD_1))
+		{
+			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_ABIWORD_1);
+			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in ABIWORD_1 format.\n",iLen));
+			unsigned char * pData = new unsigned char[iLen+1];
+			memset(pData,0,iLen+1);
+			m_pClipboard->getData(AP_CLIPBOARD_ABIWORD_1,pData);
+			IE_Imp_AbiWord_1 * pImpAbw = new IE_Imp_AbiWord_1(pDocRange->m_pDoc);
+			pImpAbw->pasteFromBuffer(pDocRange,pData,iLen);
+			DELETEP(pImpAbw);
+			DELETEP(pData);
+			goto MyEnd;
+		}
+
+		if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
+		{
+			// TODO
+			UT_DEBUGMSG(("PasteFromClipboard: TODO paste RTF\n"));
+			goto MyEnd;
+		}
+#endif
+#if 0
+		if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+		{
+			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
+			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
+			unsigned char * pData = new unsigned char[iLen+1];
+			memset(pData,0,iLen+1);
+			m_pClipboard->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT,pData);
+			IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
+			// NOTE: MS Docs state that the terminating zero on the string buffer is 
+			// NOTE: included in the length for CF_TEXT and CF_OEMTEXT, so we compensate
+			// NOTE: for it here.
+			if (pData[iLen-1]==0)
+				iLen--;
+			pImpText->pasteFromBuffer(pDocRange,pData,iLen);
+			DELETEP(pImpText);
+			DELETEP(pData);
+			goto MyEnd;
+		}
+#endif
+		// TODO figure out what to do with an image....
+		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
+	}
+
+MyEnd:
+	m_pClipboard->close();
+	return;
+}
+
+/*****************************************************************/
 /*****************************************************************/
 
 static GtkWidget * wSplash = NULL;

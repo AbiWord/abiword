@@ -103,6 +103,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 		*pszState = NULL;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+#if 0
 	AP_Clipboard* pClip = XAP_App::getClipboard();
 
 	switch (id)
@@ -128,7 +129,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-
+#endif
 	return s;
 }
 

@@ -260,6 +260,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
+#if 0
 	AP_Clipboard* pClip = XAP_App::getClipboard();
 
 	switch(id)
@@ -285,7 +286,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-
+#endif
 	return s;
 }
 

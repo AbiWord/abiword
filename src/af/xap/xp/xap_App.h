@@ -34,10 +34,10 @@ class EV_EditMethodContainer;
 class EV_EditBindingMap;
 class EV_Menu_ActionSet;
 class EV_Toolbar_ActionSet;
-class AP_Clipboard;
 class XAP_BindingSet;
 class XAP_Prefs;
 class XAP_StringSet;
+class PD_DocumentRange;
 
 /*****************************************************************
 ******************************************************************
@@ -94,9 +94,9 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getUserPrivateDirectory(void) = 0;
 	virtual const char *					getAbiSuiteLibDir(void) const;
+	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange) = 0;
 
-	static AP_Clipboard*					getClipboard(void);
-	
 protected:
 	void							_setAbiSuiteLibDir(const char * sz);
 	
@@ -111,9 +111,6 @@ protected:
 
 	UT_Vector						m_vecFrames;
 	UT_HashTable					m_hashClones;
-
-	// TODO give this a s_ prefix like all other static variables
-	static AP_Clipboard*			_pClipboard;
 };
 
 #endif /* XAP_APP_H */
