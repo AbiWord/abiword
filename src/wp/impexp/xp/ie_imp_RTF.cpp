@@ -1541,7 +1541,7 @@ void IE_Imp_RTF::HandleCell(void)
 // Look to see if this is just has a cell/endCell with no content. If so
 // repair it.
 //
-		PL_StruxDocHandle * sdhEndCell = getDoc()->getLastStruxOfType(PTX_EndCell);
+		PL_StruxDocHandle * sdhEndCell = (PL_StruxDocHandle *) getDoc()->getLastStruxOfType(PTX_EndCell);
 		if(getDoc()->isStruxBeforeThis(sdhEndCell,PTX_SectionCell))
 		{
 			getDoc()->insertStruxNoUpdateBefore(sdhEndCell,PTX_Block,NULL);
