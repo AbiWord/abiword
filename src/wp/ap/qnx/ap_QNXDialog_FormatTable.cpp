@@ -179,25 +179,25 @@ PtWidget_t* AP_QNXDialog_FormatTable::_constructWindow()
 	ConstructWindowName();
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_WordCount_WordCountTitle), 0);
-	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_FormatTable",m_WindowName); 
+	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_FormatTable",pSS,XAP_STRING_ID_DLG_Cancel);
+	PtSetResource(m_mainWindow,Pt_ARG_WINDOW_TITLE,m_WindowName,0); 
 	PtAddHotkeyHandler(m_mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	SetupContextHelp(m_mainWindow,this);
 	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpBorder"),Pt_ARG_TITLE,_(AP,DLG_FormatTable_Borders),0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"grpBorder"),pSS,AP_STRING_ID_DLG_FormatTable_Borders);
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblBorderColor"),Pt_ARG_TEXT_STRING,_(AP,DLG_FormatTable_Border_Color),0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblBorderColor"),pSS,AP_STRING_ID_DLG_FormatTable_Border_Color);
 	m_wBorderColorButton = abiPhabLocateWidget(m_mainWindow,"btnBorderColor");
 	PtAddCallback(m_wBorderColorButton,Pt_CB_ACTIVATE,s_color_border,this);
 	
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpBackground"),Pt_ARG_TITLE,_(AP,DLG_FormatTable_Background),0);
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblBackgroundColor"),Pt_ARG_TEXT_STRING,_(AP,DLG_FormatTable_Background_Color),0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"grpBackground"),pSS,AP_STRING_ID_DLG_FormatTable_Background);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblBackgroundColor"),pSS,AP_STRING_ID_DLG_FormatTable_Background_Color);
 	m_wBackgroundColorButton = abiPhabLocateWidget(m_mainWindow,"btnBackgroundColor");
 	PtAddCallback(m_wBackgroundColorButton,Pt_CB_ACTIVATE,s_color_background,this);
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpPreview"),Pt_ARG_TITLE,_(AP,DLG_FormatTable_Preview),0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"grpPreview"),pSS,AP_STRING_ID_DLG_FormatTable_Preview);
 
 	m_wLineTop = abiPhabLocateWidget(m_mainWindow,"btnTop");
 	m_wLineLeft =abiPhabLocateWidget(m_mainWindow,"btnLeft"); 
@@ -227,11 +227,11 @@ PtWidget_t* AP_QNXDialog_FormatTable::_constructWindow()
 	m_wPreviewArea = abiPhabLocateWidget(m_mainWindow,"rawPreview");
 
 	PtWidget_t *buttonClose = abiPhabLocateWidget(m_mainWindow,"btnClose");
-	PtSetResource(buttonClose, Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
+	localizeLabel(buttonClose, pSS, XAP_STRING_ID_DLG_Close);
 	PtAddCallback(buttonClose, Pt_CB_ACTIVATE, s_delete_clicked, this);
 
 	m_wApplyButton = abiPhabLocateWidget(m_mainWindow,"btnApply");
-	PtSetResource(m_wApplyButton, Pt_ARG_TEXT_STRING, _(XAP,DLG_Apply), 0);
+	localizeLabel(m_wApplyButton, pSS, XAP_STRING_ID_DLG_Apply);
 	PtAddCallback(m_wApplyButton, Pt_CB_ACTIVATE, s_apply_clicked, this);
 
 	return m_mainWindow;

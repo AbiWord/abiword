@@ -242,7 +242,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_window = abiCreatePhabDialog("ap_QNXDialog_PageNumbers",_(AP,DLG_PageNumbers_Title));
+	m_window = abiCreatePhabDialog("ap_QNXDialog_PageNumbers",pSS,AP_STRING_ID_DLG_PageNumbers_Title);
 
 
 	SetupContextHelp(m_window,this);
@@ -250,7 +250,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtAddCallback(m_window,Pt_CB_WINDOW_CLOSING,s_delete_clicked,this);
 
 	//Create the first label/toggle combination
-	PtSetResource(abiPhabLocateWidget(m_window,"grpPosition"), Pt_ARG_TITLE, _(AP,DLG_PageNumbers_Position), 0);
+	localizeLabel(abiPhabLocateWidget(m_window,"grpPosition"), pSS, AP_STRING_ID_DLG_PageNumbers_Position);
 	UT_UTF8String s;
 	
 	m_toggleFooter = abiPhabLocateWidget(m_window,"togglePositionFooter");
@@ -263,7 +263,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtAddCallback(m_toggleHeader, Pt_CB_ACTIVATE, s_position_changed,this);
 
 	//Create the second label/toggle combination
-	PtSetResource(abiPhabLocateWidget(m_window,"grpAlignment"), Pt_ARG_TITLE, _(AP,DLG_PageNumbers_Alignment), 0);
+	localizeLabel(abiPhabLocateWidget(m_window,"grpAlignment"), pSS, AP_STRING_ID_DLG_PageNumbers_Alignment);
 	
 	m_toggleAlignmentRight = abiPhabLocateWidget(m_window,"toggleAlignmentRight");
 	pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right,s);
@@ -285,7 +285,7 @@ PtAddCallback(m_toggleAlignmentRight, Pt_CB_ACTIVATE, s_alignment_changed, this)
 	PtSetResource(m_previewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
 	m_buttonOK = abiPhabLocateWidget(m_window,"btnOK");
-	PtSetResource(m_buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(m_buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	m_buttonCancel = abiPhabLocateWidget(m_window,"btnCancel"); 

@@ -209,28 +209,28 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    const XAP_StringSet * pSS = m_pApp->getStringSet();
    XML_Char * unixstr = NULL;      // used for conversions
 
-	windowSpell = abiCreatePhabDialog("ap_QNXDialog_Spell",_(AP,DLG_Spell_SpellTitle)); 
+	windowSpell = abiCreatePhabDialog("ap_QNXDialog_Spell",pSS,AP_STRING_ID_DLG_Spell_SpellTitle); 
 	SetupContextHelp(windowSpell,this);
 	PtAddHotkeyHandler(windowSpell,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowSpell, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
    
-	PtSetResource(abiPhabLocateWidget(windowSpell,"lblNotDictionary"), Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_UnknownWord), 0);
+	localizeLabel(abiPhabLocateWidget(windowSpell,"lblNotDictionary"), pSS, AP_STRING_ID_DLG_Spell_UnknownWord);
 
 	textWord = abiPhabLocateWidget(windowSpell,"multiError");
  
 	buttonIgnore = abiPhabLocateWidget(windowSpell,"btnIgnore");
-	PtSetResource(buttonIgnore, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_Ignore), 0);
+	localizeLabel(buttonIgnore, pSS, AP_STRING_ID_DLG_Spell_Ignore);
 	PtAddCallback(buttonIgnore, Pt_CB_ACTIVATE, s_ignore_clicked, this);
    
 	buttonIgnoreAll = abiPhabLocateWidget(windowSpell,"btnIgnoreAll"); 
-	PtSetResource(buttonIgnoreAll, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_IgnoreAll), 0);
+	localizeLabel(buttonIgnoreAll, pSS, AP_STRING_ID_DLG_Spell_IgnoreAll);
 	PtAddCallback(buttonIgnoreAll, Pt_CB_ACTIVATE, s_ignore_all_clicked, this);
    
 	buttonAddToDict = abiPhabLocateWidget(windowSpell,"btnAdd"); 
-	PtSetResource(buttonAddToDict, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_AddToDict), 0);
+	localizeLabel(buttonAddToDict, pSS, AP_STRING_ID_DLG_Spell_AddToDict);
 	PtAddCallback(buttonAddToDict, Pt_CB_ACTIVATE, s_add_to_dict_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(windowSpell,"lblChange"), Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_ChangeTo), 0);
+	localizeLabel(abiPhabLocateWidget(windowSpell,"lblChange"), pSS, AP_STRING_ID_DLG_Spell_ChangeTo);
 
 	entryChange = abiPhabLocateWidget(windowSpell,"textChange");
 	PtAddCallback(entryChange, Pt_CB_TEXT_CHANGED, s_replacement_changed, this);
@@ -240,15 +240,15 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
 
    
 	buttonChange = abiPhabLocateWidget(windowSpell,"btnChange"); 
-	PtSetResource(buttonChange, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_Change), 0);
+	localizeLabel(buttonChange, pSS, AP_STRING_ID_DLG_Spell_Change);
 	PtAddCallback(buttonChange, Pt_CB_ACTIVATE, s_change_clicked, this);
    
 	buttonChangeAll = abiPhabLocateWidget(windowSpell,"btnChangeAll"); 
-	PtSetResource(buttonChangeAll, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_ChangeAll), 0);
+	localizeLabel(buttonChangeAll, pSS, AP_STRING_ID_DLG_Spell_ChangeAll);
 	PtAddCallback(buttonChangeAll, Pt_CB_ACTIVATE, s_change_all_clicked, this);
    
 	buttonCancel = abiPhabLocateWidget(windowSpell,"btnCancel"); 
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
    
    // update member variables with the important widgets 

@@ -312,6 +312,7 @@ void AP_QNXDialog_PageSetup::runModal (XAP_Frame *pFrame)
 
 PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 {
+#if 0
 	PtArg_t	args[10];
 	int		n;
 	double  d, min, max;
@@ -619,6 +620,7 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	PtAddCallback(m_buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
   	return m_window;
+#endif
 }
 
   

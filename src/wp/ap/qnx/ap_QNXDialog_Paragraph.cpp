@@ -451,7 +451,6 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtArg_t args[10];
 	int     n = 0;
 	double  inc = 0.01;
-	UT_UTF8String s;
 	//TODO: Put a vertical group in the window first, set the offset etc.
 
 #define WIN_WIDTH  550	
@@ -916,7 +915,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	buttonOK = PtCreateWidget(PtButton, hbuttongroup, n, args);

@@ -150,25 +150,24 @@ int n=0;
 const XAP_StringSet *pSS = m_pApp->getStringSet();	
 
 
-PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertTable_TableTitle),0);
-	mainwindow= abiCreatePhabDialog("ap_QNXDialog_InsertTable",_(AP,DLG_InsertTable_TableTitle)); 
+	mainwindow= abiCreatePhabDialog("ap_QNXDialog_InsertTable",pSS,AP_STRING_ID_DLG_InsertTable_TableTitle); 
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"grpTableSize"),Pt_ARG_TITLE,_(AP,DLG_InsertTable_TableSize),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"grpTableSize"),pSS,AP_STRING_ID_DLG_InsertTable_TableSize);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblNumCols"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumCols),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblNumCols"),pSS,AP_STRING_ID_DLG_InsertTable_NumCols);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblNumRows"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumRows),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblNumRows"),pSS,AP_STRING_ID_DLG_InsertTable_NumRows);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"grpAutoFit"),Pt_ARG_TITLE,_(AP,DLG_InsertTable_AutoFit),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"grpAutoFit"),pSS,AP_STRING_ID_DLG_InsertTable_AutoFit);
 
 	toggle_auto = abiPhabLocateWidget(mainwindow,"toggleAutoColSize");
-	PtSetResource(toggle_auto,Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoColSize),0);
+	localizeLabel(toggle_auto,pSS,AP_STRING_ID_DLG_InsertTable_AutoColSize);
  
 	toggle_fixed = abiPhabLocateWidget(mainwindow,"toggleFixed");
-	PtSetResource(toggle_fixed,Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_FixedColSize),0);
+	localizeLabel(toggle_fixed,pSS,AP_STRING_ID_DLG_InsertTable_FixedColSize);
 
 	m_widgetNumCol= abiPhabLocateWidget(mainwindow,"NumericCols");
 	PtSetResource(m_widgetNumCol,Pt_ARG_NUMERIC_VALUE,getNumCols(),0);
@@ -181,10 +180,10 @@ PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertTable_TableTitle),0);
 	PtSetResource(fixed_size_value,Pt_ARG_NUMERIC_VALUE,&val,0);
 
 	btn_ok = abiPhabLocateWidget(mainwindow,"btnOK"); 
-	PtSetResource(btn_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	localizeLabel(btn_ok,pSS,XAP_STRING_ID_DLG_OK);
 
 	btn_cancel = abiPhabLocateWidget(mainwindow,"btnCancel");
-	PtSetResource(btn_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	localizeLabel(btn_cancel,pSS,XAP_STRING_ID_DLG_Cancel);
 
 	PtAddCallback(btn_ok,Pt_CB_ACTIVATE,ph_event_ok,this);
 	PtAddCallback(btn_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);	

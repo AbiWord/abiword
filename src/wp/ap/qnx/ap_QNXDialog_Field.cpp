@@ -243,15 +243,15 @@ PtWidget_t * AP_QNXDialog_Field::_constructWindow(void)
 
 
 	// Start with the main window
-	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Field",_(AP,DLG_Field_FieldTitle));
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Field",pSS,AP_STRING_ID_DLG_Field_FieldTitle);
 	SetupContextHelp(m_windowMain,this);
 	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 	// Label the Types Box
-PtSetResource(abiPhabLocateWidget(m_windowMain,"lblTypes"), Pt_ARG_TEXT_STRING, _(AP,DLG_Field_Types ), 0);
+localizeLabel(abiPhabLocateWidget(m_windowMain,"lblTypes"), pSS, AP_STRING_ID_DLG_Field_Types );
 
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblFields"), Pt_ARG_TEXT_STRING, _(AP,DLG_Field_Fields ), 0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblFields"), pSS, AP_STRING_ID_DLG_Field_Fields );
 
 	// Put a scrolled window into the Types box
 	m_listTypes = abiPhabLocateWidget(m_windowMain,"listTypes"); 
@@ -261,11 +261,11 @@ PtSetResource(abiPhabLocateWidget(m_windowMain,"lblTypes"), Pt_ARG_TEXT_STRING, 
 	m_listFields = abiPhabLocateWidget(m_windowMain,"listFields"); 
 
 	PtWidget_t *buttonCancel = abiPhabLocateWidget(m_windowMain,"btnCancel"); 
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	PtWidget_t *buttonOK = abiPhabLocateWidget(m_windowMain,"btnOK"); 
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	return m_windowMain;

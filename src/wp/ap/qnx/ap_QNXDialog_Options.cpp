@@ -298,6 +298,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 {
 	// for the internationalization
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_UTF8String s;
 
 	PtWidget_t *windowOptions;
 	PtWidget_t *buttonSave;
@@ -311,7 +312,6 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *checkbuttonSpellMainOnly;
 	PtWidget_t *checkbuttonSpellUppercase;
 	PtWidget_t *checkbuttonSpellNumbers;
-	PtWidget_t *checkbuttonSpellInternet;
 	PtWidget_t *label4;
 	PtWidget_t *checkbuttonSpellCheckAsType;
 	PtWidget_t *buttonSpellIgnoreReset;
@@ -344,7 +344,6 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 #define WIN_WIDTH  450
 #define WIN_HEIGHT 350
 	n = 0;
-	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle,s);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, s.utf8_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
@@ -414,11 +413,6 @@ PtSetArg(&args[n++], Pt_ARG_TITLE, TR(s.utf8_str()), 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellNumbers,s);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(s.utf8_str()), 0);
 	checkbuttonSpellNumbers = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
-
-	n = 0;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellInternet,s);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(s.utf8_str()), 0);
-	checkbuttonSpellInternet = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	n = 0;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType,s);
@@ -679,15 +673,17 @@ PtSetArg(&args[n++], Pt_ARG_TITLE, TR(s.utf8_str()), 0);
 	//PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
 
 	n = 0;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent,s);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent ).utf8_str()), 0);
+TR(s.utf8_str()), 0);
 	m_wCheckWhiteTransparent = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 	PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
 
 	/** Colour Selector Options **/
 	n = 0;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ShowSplash,s);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-	TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ShowSplash ).utf8_str()), 0);
+	TR(s.utf8_str()), 0);
 	PtWidget_t *check_splash = PtCreateWidget (PtToggleButton, vmiscgroup, n, args);
 
 
@@ -764,7 +760,6 @@ TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_BiDiOptions ).utf8_str(), 0)
   m_checkbuttonSpellMainOnly		= checkbuttonSpellMainOnly;
   m_checkbuttonSpellUppercase		= checkbuttonSpellUppercase;
   m_checkbuttonSpellNumbers		= checkbuttonSpellNumbers;
-  m_checkbuttonSpellInternet		= checkbuttonSpellInternet;
   m_listSpellDicts				= listSpellDicts;
   m_listSpellDicts_menu			= listSpellDicts_menu = NULL;
   m_buttonSpellDictionary			= buttonSpellDictionary;
@@ -821,10 +816,6 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_SPELL_NUMBERS:
 		return m_checkbuttonSpellNumbers;
-		break;
-
-	case id_CHECK_SPELL_INTERNET:
-		return m_checkbuttonSpellInternet;
 		break;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

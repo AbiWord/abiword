@@ -412,13 +412,15 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	ConstructWindowName();
-	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_Lists",(char*)getWindowName()); 
+	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_Lists",pSS,XAP_STRING_ID_DLG_Cancel);
+
+	PtSetResource(m_mainWindow,Pt_ARG_WINDOW_TITLE,getWindowName(),NULL); 
 
 	SetupContextHelp(m_mainWindow,this);
 	PtAddHotkeyHandler(m_mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblType"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Type), 0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblType"), pSS, AP_STRING_ID_DLG_Lists_Type);
 	
 	listType = abiPhabLocateWidget(m_mainWindow,"comboType");
 	PtAddCallback(listType, Pt_CB_SELECTION, s_typeChanged, this);
@@ -435,19 +437,19 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	text = s.utf8_str();
 	PtListAddItems(listType, &text, 1, 0);
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblStyle"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Style), 0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblStyle"), pSS, AP_STRING_ID_DLG_Lists_Style);
 
 	listStyle = abiPhabLocateWidget(m_mainWindow,"comboStyle"); 
 	PtAddCallback(listStyle, Pt_CB_SELECTION, s_styleChanged, this);
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpCustomLists"),Pt_ARG_TITLE,_(AP,DLG_Lists_Customize ),0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"grpCustomLists"),pSS,AP_STRING_ID_DLG_Lists_Customize );
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblFormat"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Format), 0);
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblFont"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Font), 0);
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblLevelDelimiter"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_DelimiterString), 0);
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblStartAt"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start), 0);
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblTextAlign"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Align), 0);
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblLabelAlign"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Indent), 0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblFormat"), pSS, AP_STRING_ID_DLG_Lists_Format);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblFont"), pSS, AP_STRING_ID_DLG_Lists_Font);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblLevelDelimiter"), pSS, AP_STRING_ID_DLG_Lists_DelimiterString);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblStartAt"), pSS, AP_STRING_ID_DLG_Lists_Start);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblTextAlign"), pSS, AP_STRING_ID_DLG_Lists_Align);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblLabelAlign"), pSS, AP_STRING_ID_DLG_Lists_Indent);
 
 	lblFormat = abiPhabLocateWidget(m_mainWindow,"textFormat"); 
 	PtAddCallback(lblFormat, Pt_CB_ACTIVATE, s_somethingChanged, this);
@@ -472,20 +474,20 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	numIndentAlign =abiPhabLocateWidget(m_mainWindow,"NumericLabelAlign"); 
 	PtAddCallback(numIndentAlign, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
 
-	 PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpPreview"),Pt_ARG_TITLE,_(AP,DLG_Lists_Preview),0);
+	 localizeLabel(abiPhabLocateWidget(m_mainWindow,"grpPreview"),pSS,AP_STRING_ID_DLG_Lists_Preview);
 
 	m_wPreviewArea = abiPhabLocateWidget(m_mainWindow,"rawPreview"); 
 	PtSetResource(m_wPreviewArea, Pt_ARG_POINTER, this, 0);
 	PtSetResource(m_wPreviewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1);
 
 	radnewlist = abiPhabLocateWidget(m_mainWindow,"toggleNew"); 
-	PtSetResource(radnewlist, Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_New), 0);
+	localizeLabel(radnewlist, pSS, AP_STRING_ID_DLG_Lists_Start_New);
 
 	radexisting = abiPhabLocateWidget(m_mainWindow,"toggleCurrent");
-	PtSetResource(radexisting, Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Apply_Current), 0);
+	localizeLabel(radexisting, pSS, AP_STRING_ID_DLG_Lists_Apply_Current);
 
 	radsublist = abiPhabLocateWidget(m_mainWindow,"togglePrevious"); 
-	PtSetResource(radsublist, Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_Sub), 0);
+	localizeLabel(radsublist, pSS, AP_STRING_ID_DLG_Lists_Start_Sub);
 
 	butOK = abiPhabLocateWidget(m_mainWindow,"btnApply"); 
 	PtSetResource(butOK, Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Apply), 0);

@@ -183,22 +183,22 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Insert_DateTime",_(AP,DLG_DateTime_DateTimeTitle));
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Insert_DateTime",pSS,AP_STRING_ID_DLG_DateTime_DateTimeTitle);
 	SetupContextHelp(m_windowMain,this);
 	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpDateTime"),Pt_ARG_TITLE,_(AP,DLG_DateTime_AvailableFormats  ),0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"grpDateTime"),pSS,AP_STRING_ID_DLG_DateTime_AvailableFormats  );
 
 	m_listFormats = abiPhabLocateWidget(m_windowMain,"listDateTime");
 	PtAddCallback(m_listFormats, Pt_CB_SELECTION, s_item_selected, this);
 
 	buttonOK = abiPhabLocateWidget(m_windowMain,"btnOK");
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	buttonCancel = abiPhabLocateWidget(m_windowMain,"btnCancel"); 
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 

@@ -186,46 +186,46 @@ PtWidget_t *toggleRestartNewSection;
 PtWidget_t *UpDown;
 PtWidget_t *RestartLabel;
 
-	mainWindow= abiCreatePhabDialog("ap_QNXDialog_HdrFtr",_(AP,DLG_HdrFtr_Title));
+	mainWindow= abiCreatePhabDialog("ap_QNXDialog_HdrFtr",pSS,AP_STRING_ID_DLG_HdrFtr_Title);
 	PtAddHotkeyHandler(mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	SetupContextHelp(mainWindow,this);
 
-	PtSetResource(abiPhabLocateWidget(mainWindow,"grpHdr"),Pt_ARG_TITLE,_(AP,DLG_HdrFtr_HeaderFrame),0);
+	localizeLabel(abiPhabLocateWidget(mainWindow,"grpHdr"),pSS,AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
 
 	toggleHeadEven= abiPhabLocateWidget(mainWindow,"HdrEven");
-	PtSetResource(toggleHeadEven,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderEven),0);
+	localizeLabel(toggleHeadEven,pSS,AP_STRING_ID_DLG_HdrFtr_HeaderEven);
 
 	toggleHeadFirst=abiPhabLocateWidget(mainWindow,"HdrFirst");
-	PtSetResource(toggleHeadFirst,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderFirst),0);
+	localizeLabel(toggleHeadFirst,pSS,AP_STRING_ID_DLG_HdrFtr_HeaderFirst);
 
 	toggleHeadLast= abiPhabLocateWidget(mainWindow,"HdrLast");
-	PtSetResource(toggleHeadLast,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderLast),0);
+	localizeLabel(toggleHeadLast,pSS,AP_STRING_ID_DLG_HdrFtr_HeaderLast);
 
-	PtSetResource(abiPhabLocateWidget(mainWindow,"grpFtr"),Pt_ARG_TITLE,_(AP,DLG_HdrFtr_FooterFrame),0);
+	localizeLabel(abiPhabLocateWidget(mainWindow,"grpFtr"),pSS,AP_STRING_ID_DLG_HdrFtr_FooterFrame);
 
 	toggleFootEven= abiPhabLocateWidget(mainWindow,"FtrEven");
-	PtSetResource(toggleFootEven,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterEven),0);
+	localizeLabel(toggleFootEven,pSS,AP_STRING_ID_DLG_HdrFtr_FooterEven);
 
 	toggleFootFirst= abiPhabLocateWidget(mainWindow,"FtrFirst");
-	PtSetResource(toggleFootFirst,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterFirst),0);
+	localizeLabel(toggleFootFirst,pSS,AP_STRING_ID_DLG_HdrFtr_FooterFirst);
 
 	toggleFootLast=abiPhabLocateWidget(mainWindow,"FtrLast");
-	PtSetResource(toggleFootLast,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterLast),0);
+	localizeLabel(toggleFootLast,pSS,AP_STRING_ID_DLG_HdrFtr_FooterLast);
 
 
 	toggleRestartNewSection=abiPhabLocateWidget(mainWindow,"toggleRestart"); 
-	PtSetResource(toggleRestartNewSection,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartCheck),0);
+	localizeLabel(toggleRestartNewSection,pSS,AP_STRING_ID_DLG_HdrFtr_RestartCheck);
 
 	RestartLabel = abiPhabLocateWidget(mainWindow,"lblRestart");
-	PtSetResource(RestartLabel,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartNumbers),0);
+	localizeLabel(RestartLabel,pSS,AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
 
 	UpDown=abiPhabLocateWidget(mainWindow,"NumericRestart");
 
 	PtButton_ok=abiPhabLocateWidget(mainWindow,"btnOK");
-	PtSetResource(PtButton_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	localizeLabel(PtButton_ok,pSS,XAP_STRING_ID_DLG_OK);
 
 	PtButton_cancel=abiPhabLocateWidget(mainWindow,"btnCancel");
-	PtSetResource(PtButton_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	localizeLabel(PtButton_cancel,pSS,XAP_STRING_ID_DLG_Cancel);
 
 	
 	PtAddCallback(PtButton_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);

@@ -529,6 +529,7 @@ void AP_QNXDialog_Styles::event_ListClicked(const char * which)
 
 PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 {
+#if 0
 	PtWidget_t * windowStyles;
 	PtWidget_t * buttonApply;
 	PtWidget_t * buttonClose;
@@ -705,6 +706,7 @@ _(AP,DLG_Styles_StylesTitle), 0);
 	m_wbuttonClose = buttonClose;
 
 	return windowStyles;
+#endif
 }
 
 void AP_QNXDialog_Styles::_populateCList(void) const
@@ -816,6 +818,7 @@ char *_combo_or_text_entry(PtWidget_t *widget, const char *newentry) {
 
 PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 {
+#if 0
 	PtWidget_t *windowModify;
 	PtWidget_t *vgroup, *hgroup;
 
@@ -1011,6 +1014,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_ModifyShortCut), 0);
 	m_wModifyShortCutKey = shortCutButton;
 	
 	return windowModify;
+#endif
 }
 
 void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)

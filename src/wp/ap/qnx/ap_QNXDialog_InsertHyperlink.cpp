@@ -158,21 +158,21 @@ PtWidget_t *PtButton_ok;
 PtWidget_t *PtButton_cancel;
 
 
-	windowHyperlink= abiCreatePhabDialog("ap_QNXDialog_InsertHyperlink",_(AP,DLG_InsertHyperlink_Title)); 
+	windowHyperlink= abiCreatePhabDialog("ap_QNXDialog_InsertHyperlink",pSS,AP_STRING_ID_DLG_InsertHyperlink_Title); 
 	SetupContextHelp(windowHyperlink,this);
 	PtAddHotkeyHandler(windowHyperlink,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
-	PtSetResource(abiPhabLocateWidget(windowHyperlink,"lblMsg"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertHyperlink_Msg),0);
+	localizeLabel(abiPhabLocateWidget(windowHyperlink,"lblMsg"),pSS,AP_STRING_ID_DLG_InsertHyperlink_Msg);
 
 	mSelectedBookmark=abiPhabLocateWidget(windowHyperlink,"txtName");
 
 	mBookmarkList = abiPhabLocateWidget(windowHyperlink,"listHyperlink");
 
 	PtButton_cancel= abiPhabLocateWidget(windowHyperlink,"btnCancel");
-	PtSetResource(PtButton_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	localizeLabel(PtButton_cancel,pSS,XAP_STRING_ID_DLG_Cancel);
 
 	PtButton_ok = abiPhabLocateWidget(windowHyperlink,"btnOK");
-	PtSetResource(PtButton_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	localizeLabel(PtButton_ok,pSS,XAP_STRING_ID_DLG_OK);
 
 	//Add existing bookmarks to the list.
  XML_Char ** pBookmarks = (XML_Char **)calloc(getExistingBookmarksCount(),sizeof(XML_Char*));

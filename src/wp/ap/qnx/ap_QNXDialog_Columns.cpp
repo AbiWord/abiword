@@ -246,44 +246,44 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
-	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Columns",_(AP,DLG_Column_ColumnTitle));
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Columns",pSS,AP_STRING_ID_DLG_Column_ColumnTitle);
 	SetupContextHelp(m_windowMain,this);
 	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
   PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpColumnNumber"),Pt_ARG_TITLE, _(AP,DLG_Column_Number ),0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"grpColumnNumber"),pSS, AP_STRING_ID_DLG_Column_Number );
 	
 	m_wtoggleOne = abiPhabLocateWidget(m_windowMain,"toggleOne"); 
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblOne"), Pt_ARG_TEXT_STRING,_(AP,DLG_Column_One),0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblOne"), pSS,AP_STRING_ID_DLG_Column_One);
 	label_button_with_abi_pixmap(m_wtoggleOne, "tb_1column_xpm");
 	PtAddCallback(m_wtoggleOne, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 
 	m_wtoggleTwo = abiPhabLocateWidget(m_windowMain,"toggleTwo"); 
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblTwo"), Pt_ARG_TEXT_STRING,_(AP,DLG_Column_Two),0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblTwo"), pSS,AP_STRING_ID_DLG_Column_Two);
 	label_button_with_abi_pixmap(m_wtoggleTwo, "tb_2column_xpm");
 	PtAddCallback(m_wtoggleTwo, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 
 	m_wtoggleThree = abiPhabLocateWidget(m_windowMain,"toggleThree"); 
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblThree"), Pt_ARG_TEXT_STRING,_(AP,DLG_Column_Three),0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"lblThree"), pSS,AP_STRING_ID_DLG_Column_Three);
 	label_button_with_abi_pixmap(m_wtoggleThree, "tb_3column_xpm");
 	PtAddCallback(m_wtoggleThree, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpPreview"),Pt_ARG_TITLE, _(AP,DLG_Column_Preview ),0);
+	localizeLabel(abiPhabLocateWidget(m_windowMain,"grpPreview"),pSS, AP_STRING_ID_DLG_Column_Preview );
 
 	m_wpreviewArea = abiPhabLocateWidget(m_windowMain,"rawPreview");
 	PtSetResource(m_wpreviewArea, Pt_ARG_POINTER,this,0); 
 	PtSetResource(m_wpreviewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
 	m_wlineBetween = abiPhabLocateWidget(m_windowMain,"toggleLineBetween"); 
-	PtSetResource(m_wlineBetween, Pt_ARG_TEXT_STRING, _(AP,DLG_Column_Line_Between), 0);
+	localizeLabel(m_wlineBetween, pSS, AP_STRING_ID_DLG_Column_Line_Between);
 	PtAddCallback(m_wlineBetween, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 
 	m_buttonOK = abiPhabLocateWidget(m_windowMain,"btnOK"); 
-	PtSetResource(m_buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(m_buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	m_buttonCancel = abiPhabLocateWidget(m_windowMain,"btnCancel"); 
-	PtSetResource(m_buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(m_buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(m_buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	return m_windowMain;
 }

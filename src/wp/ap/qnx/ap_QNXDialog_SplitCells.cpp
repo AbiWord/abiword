@@ -154,23 +154,24 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
 
-	mainwindow= abiCreatePhabDialog("ap_QNXDialog_MergeCells",m_WindowName);
+	mainwindow= abiCreatePhabDialog("ap_QNXDialog_MergeCells",pSS,XAP_STRING_ID_DLG_Cancel);
+	PtSetResource(mainwindow,Pt_ARG_WINDOW_TITLE,m_WindowName,0);
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(mainwindow, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"grpSplitCells"),Pt_ARG_TITLE,_(AP,DLG_SplitCells_Frame ),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"grpSplitCells"),pSS,AP_STRING_ID_DLG_SplitCells_Frame );
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitLeft"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Left),0);
+localizeLabel(abiPhabLocateWidget(mainwindow,"lblSplitLeft"),pSS,AP_STRING_ID_DLG_SplitCells_Left);
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitRight"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Right),0);
+localizeLabel(abiPhabLocateWidget(mainwindow,"lblSplitRight"),pSS,AP_STRING_ID_DLG_SplitCells_Right);
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitAbove"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Above),0);
+localizeLabel(abiPhabLocateWidget(mainwindow,"lblSplitAbove"),pSS,AP_STRING_ID_DLG_SplitCells_Above);
 
-PtSetResource(abiPhabLocateWidget(mainwindow,"lblSplitBelow"),Pt_ARG_TEXT_STRING,_(AP,DLG_SplitCells_Below),0);
+localizeLabel(abiPhabLocateWidget(mainwindow,"lblSplitBelow"),pSS,AP_STRING_ID_DLG_SplitCells_Below);
 
 	btn=abiPhabLocateWidget(mainwindow,"btnClose");
-	PtSetResource(btn,Pt_ARG_TEXT_STRING,_(XAP,DLG_Close),0);
+	localizeLabel(btn,pSS,XAP_STRING_ID_DLG_Close);
 	PtAddCallback(btn,Pt_CB_ACTIVATE,s_delete_clicked,this);
 
 	btn=abiPhabLocateWidget(mainwindow,"btnSplitLeft");

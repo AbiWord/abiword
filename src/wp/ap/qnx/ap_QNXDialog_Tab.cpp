@@ -146,12 +146,12 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowTabs = abiCreatePhabDialog("ap_QNXDialog_Tab",_(AP,DLG_Tab_TabTitle)); 
+	windowTabs = abiCreatePhabDialog("ap_QNXDialog_Tab",pSS,AP_STRING_ID_DLG_Tab_TabTitle); 
 	SetupContextHelp(windowTabs,this);
 	PtAddHotkeyHandler(windowTabs,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowTabs,Pt_CB_WINDOW_CLOSING,s_delete_clicked,this);
 
-	PtSetResource(abiPhabLocateWidget(windowTabs,"lblTabStopPos"), Pt_ARG_TEXT_STRING, (_( AP,DLG_Tab_Label_TabPosition)), 0);
+	localizeLabel(abiPhabLocateWidget(windowTabs,"lblTabStopPos"), pSS, ( AP_STRING_ID_DLG_Tab_Label_TabPosition));
 
 	PtWidget_t *entryTabEntry = abiPhabLocateWidget(windowTabs,"txtTabStop");
 	PtAddCallback(entryTabEntry, Pt_CB_ACTIVATE, s_set_clicked, this);
@@ -160,64 +160,64 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	PtWidget_t *listTabs = abiPhabLocateWidget(windowTabs,"listTabs"); 
 	PtAddCallback(listTabs, Pt_CB_SELECTION, s_list_select, this);
 
-//	PtSetResource(abiPhabLocateWidget(windowTabs,"lblTabsToClear"), Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Label_TabToClear)), 0);
+//	localizeLabel(abiPhabLocateWidget(windowTabs,"lblTabsToClear"), pSS, (AP_STRING_ID_DLG_Tab_Label_TabToClear));
 
-	PtSetResource(abiPhabLocateWidget(windowTabs,"lblDefault"), Pt_ARG_TEXT_STRING, (_( AP,DLG_Tab_Label_DefaultTS)), 0);
+	localizeLabel(abiPhabLocateWidget(windowTabs,"lblDefault"), pSS, ( AP_STRING_ID_DLG_Tab_Label_DefaultTS));
 
 	PtWidget_t *spinbuttonTabstop = abiPhabLocateWidget(windowTabs,"NumericDefault");
 	PtAddCallback(spinbuttonTabstop, Pt_CB_ACTIVATE, s_spin_default_changed, this);
 	PtAddCallback(spinbuttonTabstop, Pt_CB_NUMERIC_CHANGED, s_spin_default_changed, this);
 
-	PtSetResource(abiPhabLocateWidget(windowTabs,"grpAlignment"), Pt_ARG_TITLE, (_(AP,DLG_Tab_Label_Alignment)), 0);
+	localizeLabel(abiPhabLocateWidget(windowTabs,"grpAlignment"), pSS, (AP_STRING_ID_DLG_Tab_Label_Alignment));
 
 	PtWidget_t *radiobuttonLeft = abiPhabLocateWidget(windowTabs,"toggleLeft"); 
-	PtSetResource(radiobuttonLeft, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Left)), 0);
+	localizeLabel(radiobuttonLeft, pSS, (AP_STRING_ID_DLG_Tab_Radio_Left));
 
 	PtWidget_t *radiobuttonDecimal = abiPhabLocateWidget(windowTabs,"toggleDecimal");
-PtSetResource(radiobuttonDecimal, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Decimal)), 0);
+localizeLabel(radiobuttonDecimal, pSS, (AP_STRING_ID_DLG_Tab_Radio_Decimal));
 
 	PtWidget_t *radiobuttonCenter = abiPhabLocateWidget(windowTabs,"toggleCenter"); 
-	PtSetResource(radiobuttonCenter, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Center)), 0);
+	localizeLabel(radiobuttonCenter, pSS, (AP_STRING_ID_DLG_Tab_Radio_Center));
 
 	PtWidget_t *radiobuttonBar = abiPhabLocateWidget(windowTabs,"toggleBar");
-	PtSetResource(radiobuttonBar, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Bar)), 0);
+	localizeLabel(radiobuttonBar, pSS, (AP_STRING_ID_DLG_Tab_Radio_Bar));
 
 	PtWidget_t *radiobuttonRight = abiPhabLocateWidget(windowTabs,"toggleRight");
-	PtSetResource(radiobuttonRight, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Right)), 0);
+	localizeLabel(radiobuttonRight, pSS, (AP_STRING_ID_DLG_Tab_Radio_Right));
  
-	PtSetResource(abiPhabLocateWidget(windowTabs,"grpLeader"), Pt_ARG_TITLE, (_(AP,DLG_Tab_Label_Leader)), 0);
+	localizeLabel(abiPhabLocateWidget(windowTabs,"grpLeader"), pSS, (AP_STRING_ID_DLG_Tab_Label_Leader));
 
 	PtWidget_t *radiobuttonLeaderNone = abiPhabLocateWidget(windowTabs,"toggleNone");
-	PtSetResource(radiobuttonLeaderNone, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_None)), 0);
+	localizeLabel(radiobuttonLeaderNone, pSS, (AP_STRING_ID_DLG_Tab_Radio_None));
  
 	PtWidget_t *radiobuttonLeaderDash = abiPhabLocateWidget(windowTabs,"toggleDash");
-	PtSetResource(radiobuttonLeaderDash, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Dash)), 0);
+	localizeLabel(radiobuttonLeaderDash, pSS, (AP_STRING_ID_DLG_Tab_Radio_Dash));
  
 	PtWidget_t *radiobuttonLeaderDot = abiPhabLocateWidget(windowTabs,"toggleDot"); 
-	PtSetResource(radiobuttonLeaderDot, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Dot)), 0);
+	localizeLabel(radiobuttonLeaderDot, pSS, (AP_STRING_ID_DLG_Tab_Radio_Dot));
 
 	PtWidget_t *radiobuttonLeaderUnderline = abiPhabLocateWidget(windowTabs,"toggleUnderline");
-	PtSetResource(radiobuttonLeaderUnderline, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Underline)), 0);
+	localizeLabel(radiobuttonLeaderUnderline, pSS, (AP_STRING_ID_DLG_Tab_Radio_Underline));
 
 
 	PtWidget_t *buttonSet = abiPhabLocateWidget(windowTabs,"btnSet"); 
-	PtSetResource(buttonSet, Pt_ARG_TEXT_STRING, _(AP,DLG_Tab_Button_Set), 0);
+	localizeLabel(buttonSet, pSS, AP_STRING_ID_DLG_Tab_Button_Set);
 	PtAddCallback(buttonSet, Pt_CB_ACTIVATE, s_set_clicked, this);
 
 	PtWidget_t *buttonClear = abiPhabLocateWidget(windowTabs,"btnClear"); 
-	PtSetResource(buttonClear, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Button_Clear)), 0);
+	localizeLabel(buttonClear, pSS, (AP_STRING_ID_DLG_Tab_Button_Clear));
 	PtAddCallback(buttonClear, Pt_CB_ACTIVATE, s_clear_clicked, this);
 	
 	PtWidget_t *buttonClearAll = abiPhabLocateWidget(windowTabs,"btnClearAll"); 
-	PtSetResource(buttonClearAll, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Button_ClearAll)), 0);
+	localizeLabel(buttonClearAll, pSS, (AP_STRING_ID_DLG_Tab_Button_ClearAll));
 	PtAddCallback(buttonClearAll, Pt_CB_ACTIVATE, s_clear_all_clicked, this);
 
 	PtWidget_t *buttonOK = abiPhabLocateWidget(windowTabs,"btnOK");
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 	
 	PtWidget_t *buttonCancel = abiPhabLocateWidget(windowTabs,"btnCancel"); 
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	m_Widgets.setNthItem( id_EDIT_TAB,				entryTabEntry,		NULL);

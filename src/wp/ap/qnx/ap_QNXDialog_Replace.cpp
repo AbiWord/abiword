@@ -323,15 +323,15 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 
 	// conditionally set title
 	if (m_id == AP_DIALOG_ID_FIND)
-		windowReplace = abiCreatePhabDialog("ap_QNXDialog_Find",_(AP,DLG_FR_FindTitle));
+		windowReplace = abiCreatePhabDialog("ap_QNXDialog_Find",pSS,AP_STRING_ID_DLG_FR_FindTitle);
 	else
-		windowReplace = abiCreatePhabDialog("ap_QNXDialog_Replace",_(AP,DLG_FR_ReplaceTitle));
+		windowReplace = abiCreatePhabDialog("ap_QNXDialog_Replace",pSS,AP_STRING_ID_DLG_FR_ReplaceTitle);
 		
 	SetupContextHelp(windowReplace,this);
 	PtAddHotkeyHandler(windowReplace,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowReplace, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(windowReplace,"lblFind"),Pt_ARG_TEXT_STRING,_(AP,DLG_FR_FindLabel),0);
+	localizeLabel(abiPhabLocateWidget(windowReplace,"lblFind"),pSS,AP_STRING_ID_DLG_FR_FindLabel);
 	
 	comboFind = abiPhabLocateWidget(windowReplace,"comboFind"); 
 	PtAddCallback(comboFind, Pt_CB_ACTIVATE, s_find_entry_activate, this);
@@ -339,7 +339,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	// the replace label and field are only visible if we're a "replace" dialog
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{	
-		PtSetResource(abiPhabLocateWidget(windowReplace,"lblReplace"), Pt_ARG_TEXT_STRING, _(AP,DLG_FR_ReplaceWithLabel), 0);
+		localizeLabel(abiPhabLocateWidget(windowReplace,"lblReplace"), pSS, AP_STRING_ID_DLG_FR_ReplaceWithLabel);
 	
 		comboReplace = abiPhabLocateWidget(windowReplace,"comboReplace"); 
 		PtAddCallback(comboReplace, Pt_CB_ACTIVATE, s_replace_entry_activate, this);
@@ -348,17 +348,17 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	}
 	
 	buttonFindNext = abiPhabLocateWidget(windowReplace,"btnFindNext"); 
-	PtSetResource(buttonFindNext, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_FindNextButton), 0);
+	localizeLabel(buttonFindNext, pSS, AP_STRING_ID_DLG_FR_FindNextButton);
 	PtAddCallback(buttonFindNext, Pt_CB_ACTIVATE, s_find_clicked, this);
 
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		buttonReplace = abiPhabLocateWidget(windowReplace,"btnReplace");
-		PtSetResource(buttonReplace, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_ReplaceButton), 0);
+		localizeLabel(buttonReplace, pSS, AP_STRING_ID_DLG_FR_ReplaceButton);
 		PtAddCallback(buttonReplace, Pt_CB_ACTIVATE, s_replace_clicked, this);
 
 		buttonReplaceAll =abiPhabLocateWidget(windowReplace,"btnReplaceAll"); 
-		PtSetResource(buttonReplaceAll, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_ReplaceAllButton), 0);
+		localizeLabel(buttonReplaceAll, pSS, AP_STRING_ID_DLG_FR_ReplaceAllButton);
 		PtAddCallback(buttonReplaceAll, Pt_CB_ACTIVATE, s_replace_all_clicked, this);
 	} else {
 		buttonReplace = NULL;
@@ -366,22 +366,22 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	}
 
 	buttonCancel = abiPhabLocateWidget(windowReplace,"btnCancel"); 
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	checkbuttonMatchCase = abiPhabLocateWidget(windowReplace,"toggleCase");
-	PtSetResource(checkbuttonMatchCase, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_MatchCase), 0);
+	localizeLabel(checkbuttonMatchCase, pSS, AP_STRING_ID_DLG_FR_MatchCase);
 	PtSetResource(checkbuttonMatchCase,Pt_ARG_FLAGS,getMatchCase(),Pt_SET);
 	PtAddCallback(checkbuttonMatchCase, Pt_CB_ACTIVATE, s_toggled, this);
 
 
 	m_checkbuttonWholeWords = abiPhabLocateWidget(windowReplace,"toggleWholeWord");
-	PtSetResource(m_checkbuttonWholeWords,Pt_ARG_TEXT_STRING,_(AP,DLG_FR_WholeWord),0);
+	localizeLabel(m_checkbuttonWholeWords,pSS,AP_STRING_ID_DLG_FR_WholeWord);
 	PtSetResource(m_checkbuttonWholeWords,Pt_ARG_FLAGS,getWholeWord(),Pt_SET);
 	PtAddCallback(m_checkbuttonWholeWords,Pt_CB_ACTIVATE,s_toggled,this);
 	
 	m_checkbuttonReverse = abiPhabLocateWidget(windowReplace,"toggleReverse");
-	PtSetResource(m_checkbuttonReverse,Pt_ARG_TEXT_STRING,_(AP,DLG_FR_ReverseFind),0);
+	localizeLabel(m_checkbuttonReverse,pSS,AP_STRING_ID_DLG_FR_ReverseFind);
 	PtSetResource(m_checkbuttonReverse,Pt_ARG_FLAGS,getReverseFind(),Pt_SET);
 	PtAddCallback(m_checkbuttonReverse,Pt_CB_ACTIVATE,s_toggled,this);
 

@@ -130,12 +130,12 @@ int i;
 const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
-	MainWindow = abiCreatePhabDialog("ap_QNXDialog_InsertBookmark",_(AP,DLG_InsertBookmark_Title));
+	MainWindow = abiCreatePhabDialog("ap_QNXDialog_InsertBookmark",pSS,AP_STRING_ID_DLG_InsertBookmark_Title);
 	SetupContextHelp(MainWindow,this);
 	PtAddHotkeyHandler(MainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
 	
-	PtSetResource(abiPhabLocateWidget(MainWindow,"lblMessage"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertBookmark_Msg),0);
+	localizeLabel(abiPhabLocateWidget(MainWindow,"lblMessage"),pSS,AP_STRING_ID_DLG_InsertBookmark_Msg);
 
 	m_comboBox = abiPhabLocateWidget(MainWindow,"comboBookmarks");
 
@@ -164,13 +164,13 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 	  }
 
 	PtButton_cancel = abiPhabLocateWidget(MainWindow,"btnCancel");
-	PtSetResource(PtButton_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	localizeLabel(PtButton_cancel,pSS,XAP_STRING_ID_DLG_Cancel);
 
 	PtButton_delete = abiPhabLocateWidget(MainWindow,"btnDelete"); 
-	PtSetResource(PtButton_delete,Pt_ARG_TEXT_STRING,_(XAP,DLG_Delete),0);
+	localizeLabel(PtButton_delete,pSS,XAP_STRING_ID_DLG_Delete);
 
 	PtButton_ok = abiPhabLocateWidget(MainWindow,"btnOK");
-	PtSetResource(PtButton_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	localizeLabel(PtButton_ok,pSS,XAP_STRING_ID_DLG_OK);
 
 	PtAddCallback(PtButton_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
 	PtAddCallback(PtButton_delete,Pt_CB_ACTIVATE,ph_event_delete,this);

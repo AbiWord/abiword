@@ -191,7 +191,9 @@ PtWidget_t *label1,*label2;
 const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 
-	mainwindow = abiCreatePhabDialog("ap_QNXDialog_MarkRevisions",(char *)getTitle()); 
+	mainwindow = abiCreatePhabDialog("ap_QNXDialog_MarkRevisions",pSS,XAP_STRING_ID_DLG_Cancel);
+
+	PtSetResource(mainwindow,Pt_ARG_WINDOW_TITLE,(char *)getTitle(),0); 
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
@@ -202,9 +204,9 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 
 	btnOk = abiPhabLocateWidget(mainwindow,"btnOK");
-	PtSetResource(btnOk,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);		
+	localizeLabel(btnOk,pSS,XAP_STRING_ID_DLG_OK);		
 	btnCancel = abiPhabLocateWidget(mainwindow,"btnCancel");
-	PtSetResource(btnCancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	localizeLabel(btnCancel,pSS,XAP_STRING_ID_DLG_Cancel);
 
 	char *pStr = getRadio1Label(); 
 	if(pStr){

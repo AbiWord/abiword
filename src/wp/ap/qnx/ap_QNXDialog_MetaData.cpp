@@ -147,21 +147,21 @@ PtWidget_t *mainwindow;
 PtWidget_t *panelgrp;
 PtWidget_t *btnOk,*btnCancel;
 	  
-	mainwindow = abiCreatePhabDialog("ap_QNXDialog_MetaData",_(AP,DLG_MetaData_Title)); 
+	mainwindow = abiCreatePhabDialog("ap_QNXDialog_MetaData",pSS,AP_STRING_ID_DLG_MetaData_Title); 
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
 	panelgrp=abiPhabLocateWidget(mainwindow,"panelgrp");
 
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"paneGeneral"),Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_General),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"paneGeneral"),pSS,AP_STRING_ID_DLG_MetaData_TAB_General);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblTitle"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Title_LBL),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblTitle"),pSS,AP_STRING_ID_DLG_MetaData_Title_LBL);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblSubject"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Subject_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblAuthor"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Author_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblPublisher"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Publisher_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblCoAuthor"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_CoAuthor_LBL),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblSubject"),pSS,AP_STRING_ID_DLG_MetaData_Subject_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblAuthor"),pSS,AP_STRING_ID_DLG_MetaData_Author_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblPublisher"),pSS,AP_STRING_ID_DLG_MetaData_Publisher_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblCoAuthor"),pSS,AP_STRING_ID_DLG_MetaData_CoAuthor_LBL);
 
 	PtWidget_t *title_entry=abiPhabLocateWidget(mainwindow,"textTitle");
 	PtWidget_t *subject_entry= abiPhabLocateWidget(mainwindow,"textSubject");
@@ -169,24 +169,24 @@ PtWidget_t *btnOk,*btnCancel;
 	PtWidget_t *publisher_entry =abiPhabLocateWidget(mainwindow,"textPublisher");
 	PtWidget_t *coauthor_entry =abiPhabLocateWidget(mainwindow,"textCoAuthor");
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"paneSummary"),Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Summary),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"paneSummary"),pSS,AP_STRING_ID_DLG_MetaData_TAB_Summary);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblCategory"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Category_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblKeywords"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Keywords_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblLanguages"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Languages_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblDescription"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Description_LBL),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblCategory"),pSS,AP_STRING_ID_DLG_MetaData_Category_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblKeywords"),pSS,AP_STRING_ID_DLG_MetaData_Keywords_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblLanguages"),pSS,AP_STRING_ID_DLG_MetaData_Languages_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblDescription"),pSS,AP_STRING_ID_DLG_MetaData_Description_LBL);
 
 	PtWidget_t *category_entry = abiPhabLocateWidget(mainwindow,"textCategory"); 
 	PtWidget_t *keywords_entry =abiPhabLocateWidget(mainwindow,"textKeywords");
 	PtWidget_t *languages_entry = abiPhabLocateWidget(mainwindow,"textLanguages");
 	PtWidget_t *description_txt = abiPhabLocateWidget(mainwindow,"multiDescription");
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"panePermissions"),Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Permission),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"panePermissions"),pSS,AP_STRING_ID_DLG_MetaData_TAB_Permission);
 
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblSource"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Source_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblRelation"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Relation_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblCoverage"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Coverage_LBL),0);
-	PtSetResource(abiPhabLocateWidget(mainwindow,"lblRights"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Rights_LBL),0);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblSource"),pSS,AP_STRING_ID_DLG_MetaData_Source_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblRelation"),pSS,AP_STRING_ID_DLG_MetaData_Relation_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblCoverage"),pSS,AP_STRING_ID_DLG_MetaData_Coverage_LBL);
+	localizeLabel(abiPhabLocateWidget(mainwindow,"lblRights"),pSS,AP_STRING_ID_DLG_MetaData_Rights_LBL);
 	
 	PtWidget_t *source_entry = abiPhabLocateWidget(mainwindow,"textSource"); 
 	PtWidget_t *relation_entry = abiPhabLocateWidget(mainwindow,"textRelation");
@@ -194,10 +194,10 @@ PtWidget_t *btnOk,*btnCancel;
 	PtWidget_t *rights_entry = abiPhabLocateWidget(mainwindow,"textRights");
 
 	btnOk = abiPhabLocateWidget(mainwindow,"btnOK"); 
-	PtSetResource(btnOk,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	localizeLabel(btnOk,pSS,XAP_STRING_ID_DLG_OK);
 
 	btnCancel = abiPhabLocateWidget(mainwindow,"btnCancel"); 
-	PtSetResource(btnCancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	localizeLabel(btnCancel,pSS,XAP_STRING_ID_DLG_Cancel);
 
 	PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
 	PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);

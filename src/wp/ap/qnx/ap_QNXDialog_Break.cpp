@@ -174,52 +174,52 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	bmi=0;
-	windowBreak = abiCreatePhabDialog("ap_QNXDialog_Break",_(AP,DLG_Break_BreakTitle)); 
+	windowBreak = abiCreatePhabDialog("ap_QNXDialog_Break",pSS,AP_STRING_ID_DLG_Break_BreakTitle); 
 	PtAddHotkeyHandler(windowBreak,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	SetupContextHelp(windowBreak,this);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	PtSetResource(abiPhabLocateWidget(windowBreak,"grpInsert"),Pt_ARG_TITLE,_(AP,DLG_Break_Insert),0);
+	localizeLabel(abiPhabLocateWidget(windowBreak,"grpInsert"),pSS,AP_STRING_ID_DLG_Break_Insert);
 
 	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"togglePageBreak");
-	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_PageBreak), 0);
+	localizeLabel(bm[bmi].widget, pSS, AP_STRING_ID_DLG_Break_PageBreak);
 
 	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_PAGE;
 
 	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleColumnBreak");
-	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_ColumnBreak ), 0);
+	localizeLabel(bm[bmi].widget, pSS, AP_STRING_ID_DLG_Break_ColumnBreak );
 	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_COLUMN;
 
-	PtSetResource(abiPhabLocateWidget(windowBreak,"grpSectionBreak"),Pt_ARG_TITLE,_(AP,DLG_Break_SectionBreaks),0);
+	localizeLabel(abiPhabLocateWidget(windowBreak,"grpSectionBreak"),pSS,AP_STRING_ID_DLG_Break_SectionBreaks);
 
 	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleNextPage");
-	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_NextPage ), 0);
+	localizeLabel(bm[bmi].widget, pSS, AP_STRING_ID_DLG_Break_NextPage );
 	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_NEXTPAGE;
 
 	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleEvenPage");
-	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_EvenPage ), 0);
+	localizeLabel(bm[bmi].widget, pSS, AP_STRING_ID_DLG_Break_EvenPage );
 	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_EVENPAGE;
 
 	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleContinuous");
-	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_Continuous ), 0);
+	localizeLabel(bm[bmi].widget, pSS, AP_STRING_ID_DLG_Break_Continuous );
 	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_CONTINUOUS;
 
 	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleOddPage");
-	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_OddPage ), 0);
+	localizeLabel(bm[bmi].widget, pSS, AP_STRING_ID_DLG_Break_OddPage );
 	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_ODDPAGE;
 
 	buttonCancel = abiPhabLocateWidget(windowBreak,"btnCancel");
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	buttonOK = abiPhabLocateWidget(windowBreak,"btnOK");
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	m_windowMain = windowBreak;
