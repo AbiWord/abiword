@@ -183,7 +183,7 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 	}
 	else
 	{
-		m_rightStop = DEFAULT_LEFT_STOP;
+		m_rightStop = DEFAULT_RIGHT_STOP;
 	}
 
 	// right margins are in or out from the default stop
@@ -625,17 +625,22 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 	y += ypost;
 	
 	// handle all other lines until out of words
-	while (wordCounter < wordCount)
+	UT_uint32 newWords = 1;
+	while (wordCounter < wordCount && newWords > 0)
 	{
 		// handle any spacing before this line
 		y += ypre;
-		wordCounter += _appendLine(&block->m_words,
-								   &block->m_widths,
-								   wordCounter,
-								   block->m_leftStop,
-								   block->m_rightStop,
-								   block->m_align,
-								   y);
+
+		newWords = _appendLine(&block->m_words,
+					      	   &block->m_widths,
+							   wordCounter,
+							   block->m_leftStop,
+							   block->m_rightStop,
+							   block->m_align,
+							   y);
+
+		wordCounter += newWords;
+
 		y += block->m_fontHeight;
 		// handle any spacing after this line
 		y += ypost;
@@ -672,8 +677,9 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	// left stop and the (normal) right stop
 	UT_sint32 maxPixelsForThisLine = getWindowWidth() - left - right;
 
-	// negative or zero makes no sense
-	UT_ASSERT(maxPixelsForThisLine > 0);
+	// negative or zero makes no sense; bail in that case (callers can deal)
+	if (maxPixelsForThisLine <= 0)
+	  return 0;
 
 	i = startWithWord;
 
@@ -689,7 +695,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	if(i == startWithWord)
 	{
-		// HACK: Make sure we have at least one word.
+		// HACK: Make sure we have at least one word. (no longer true, because of above)
 
 		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + spaceCharWidth;
 		i++;

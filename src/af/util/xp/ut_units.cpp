@@ -449,6 +449,52 @@ UT_sint32 UT_paperUnits(const char * sz)
 	return (UT_sint32)(dInches * dResolution);
 }
 
+/*!
+  Converts paper units into inches.
+  \param1 quantity of paper units
+  \return corresponding quantity of inches
+
+  This function uses the UT_PAPER_UNITS_PER_INCH constant
+  to convert paper units into inches.
+  
+  Paper units are a relatively low-resolution measurement (say
+  1/100 inch) but are suitable for specifying margins,
+  etc. -- stuff relative to the actual paper.
+
+  \see    UT_paperUnits
+  \see    UT_paperUnitsFromInches
+*/
+
+double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits)
+{
+	double dResolution = UT_PAPER_UNITS_PER_INCH;
+
+	return ((double)iPaperUnits / dResolution);
+}
+
+/*!
+  Converts inches into paper units.
+  \param1 quantity of inches
+  \return corresponding quantity of paper units
+
+  This function uses the UT_PAPER_UNITS_PER_INCH constant
+  to convert paper units into inches.  Unlike UT_paperUnits,
+  this function does not require a string as input.
+  
+  Paper units are a relatively low-resolution measurement (say
+  1/100 inch) but are suitable for specifying margins,
+  etc. -- stuff relative to the actual paper.
+
+  \see    UT_paperUnits
+  \see    UT_paperUnitsFromInches
+*/
+UT_sint32 UT_paperUnitsFromInches(double dInches)
+{
+	double dResolution = UT_PAPER_UNITS_PER_INCH;
+
+	return (UT_sint32)(dInches * dResolution);
+}
+
 UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits)
 {
 	// convert number in paper units (see above) into

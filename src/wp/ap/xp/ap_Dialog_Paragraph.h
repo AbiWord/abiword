@@ -54,6 +54,9 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	bool setDialogData(const XML_Char ** pProps);
  	bool getDialogData(const XML_Char **& pProps);
 
+	// expects a width in paper units.
+	void setMaxWidth(UT_sint32 width) { m_iMaxWidth = UT_inchesFromPaperUnits(width); }
+
 	AP_Dialog_Paragraph::tAnswer	getAnswer(void) const;
 	
  protected:
@@ -120,11 +123,14 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 
 	XAP_Frame *				m_pFrame;
 
+private:
+	void _addPropertyItem(UT_uint32 index, void* pValue);
+
 	// which dimension system we're using as "native" for this document
 	UT_Dimension			m_dim;
 
-private:
-	void _addPropertyItem(UT_uint32 index, void* pValue);
+	// current column width, in inches.
+	double				m_iMaxWidth;
 };
 
 #endif /* AP_DIALOG_PARAGRAPH_H */

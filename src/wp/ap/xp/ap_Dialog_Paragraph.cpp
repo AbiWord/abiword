@@ -36,10 +36,13 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 
+#include "fp_PageSize.h"
+
 #include "ap_Preview_Paragraph.h"
 #include "ap_Dialog_Paragraph.h"
 #include "ap_Prefs_SchemeIds.h"
 
+#include "pp_Property.h"
 
 AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
@@ -266,7 +269,9 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			// NOTE : of lines to consider an orphaned or widowed piece of text.
 			// NOTE : If they're both 0 they're off.  If either is greater than
 			// NOTE : 0, then some form of control is in effect.  If the property
-			// NOTE : is not set, they're indeterminate.
+			// NOTE : is not set, they're indeterminate (e.g. because we're setting
+		    // NOTE : properties for text with multiple "orphans" values), or because
+  		    // NOTE : the block has no value for orphans/widows here.
 
 			bool bNoOrphans = false;
 			bool bNoWidows = false;
@@ -315,16 +320,27 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		else
 			_setCheckItemValue(id_CHECK_KEEP_NEXT, check_INDETERMINATE, op_INIT);
 
+		// these are not like the others, they set fields on this, not dialogData.
 		sz = UT_getAttribute("page-margin-left", pProps);
 		if (sz)
 		{
 			UT_XML_cloneString(m_pageLeftMargin, sz);
+		}
+		else
+		{
+		  	UT_XML_cloneString(m_pageLeftMargin,
+					   PP_lookupProperty("page-margin-left")->getInitial());
 		}
 			
 		sz = UT_getAttribute("page-margin-right", pProps);
 		if (sz)
 		{
 			UT_XML_cloneString(m_pageRightMargin, sz);
+		}
+		else
+		{
+		  	UT_XML_cloneString(m_pageRightMargin,
+					   PP_lookupProperty("page-margin-right")->getInitial());
 		}
 			
 		// TODO : add these to PP_Property (pp_Property.cpp) !!!
@@ -802,11 +818,8 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 		break;
 
 	case id_SPIN_SPECIAL_INDENT:
-		// NOTE : special indent doesn't mean anything as a negative number.
-		// NOTE : we flip the sign and apply the resultant magnitude to
-		// NOTE : the current indent type
 
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, _makeAbsolute(value)));			
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, value));			
 		break;
 		
 	case id_SPIN_BEFORE_SPACING:
@@ -983,8 +996,10 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 	{
 		// need to check the limits
 		// cannot go past left page margin.
+		// TODO : is there a minimum text width?
 
 		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin, m_dim);
+		double rightIndent = UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim);
 
 		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim) >
 					leftPageMargin)
@@ -993,6 +1008,15 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin),
 									op_SYNC);
 		}
+
+		// nor past pagesize - rightIndent on right.
+  		if(UT_convertDimensionless(_getSpinItemValue(id_SPIN_LEFT_INDENT)) >
+						UT_convertInchesToDimension(m_iMaxWidth, m_dim) - rightIndent)
+  		{
+  			_setSpinItemValue(id_SPIN_LEFT_INDENT,
+  									(const XML_Char *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - rightIndent),
+  									op_SYNC);
+  		}
 	}
 
 	if(changed == id_SPIN_RIGHT_INDENT)
@@ -1001,6 +1025,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 		// cannot go past right page margin.
 
 		double rightPageMargin = UT_convertToDimension(m_pageRightMargin, m_dim);
+		double leftIndent = UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim);
 
 		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim) >
 					rightPageMargin)
@@ -1009,60 +1034,114 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 									(const XML_Char *)UT_formatDimensionString(m_dim, -rightPageMargin),
 									op_SYNC);
 		}
+
+		// nor can we force text left past pagesize, minus left margin
+  		if(UT_convertDimensionless(_getSpinItemValue(id_SPIN_RIGHT_INDENT)) >
+						UT_convertInchesToDimension(m_iMaxWidth, m_dim) - leftIndent)
+  		{
+  			_setSpinItemValue(id_SPIN_RIGHT_INDENT,
+  									(const XML_Char *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - leftIndent),
+  									op_SYNC);
+  		}
 	}
 
-	if (changed == id_SPIN_SPECIAL_INDENT)
-	{
-		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
-		{
-		case indent_NONE:
-			_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_SYNC);
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	if (changed == id_MENU_SPECIAL_INDENT)
+	if (changed == id_MENU_SPECIAL_INDENT || changed == id_SPIN_SPECIAL_INDENT)
 	{
 		double dDefault = 0.0;
 		bool bDefault = true;
 
-		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
+		double sign = -1.0;
+		if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
+		  sign = +1.0;
+
+		if (changed == id_MENU_SPECIAL_INDENT)
 		{
-		case indent_NONE:
-			dDefault = 0.0;
-			break;
-
-		case indent_FIRSTLINE:
-		case indent_HANGING:
-			// only change to default if existing value is zero
-			dDefault = UT_convertDimensionless(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
-			if (dDefault > 0)
+			switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
 			{
-				bDefault = false;
-			}
-			else
-			{
-				dDefault = 0.5;
-			}
-			break;
+			case indent_NONE:
+				dDefault = 0.0;
+				break;
 
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
+			case indent_FIRSTLINE:
+			case indent_HANGING:
+				// only change to default if existing value is zero
+				dDefault = UT_convertDimensionless(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+				if (dDefault == 0)
+				{
+					bDefault = false;
+				}
+				else
+				{
+					dDefault = 0.5;
+				}
+				break;
+
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
+			}
+
+			if (bDefault)
+			{
+				if (m_dim != DIM_IN)
+					dDefault = UT_convertInchesToDimension(dDefault, m_dim);
+	
+				const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1");
+	
+				_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
+			}
+		}
+		else /* (changed == id_SPIN_SPECIAL_INDENT) */
+		{
+			switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
+			{
+			case indent_NONE:
+				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_SYNC);
+				break;
+	
+			default:
+				break;
+			}
 		}
 
-		if (bDefault)
+		// if spin contains a negative number, we flip the direction of the indent.
+		double val = UT_convertDimensionless(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+		if (val < 0)
 		{
-			if (m_dim != DIM_IN)
-				dDefault = UT_convertInchesToDimension(dDefault, m_dim);
+			sign = -sign;
 
-			const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1");
+			// sometimes this appears to have no effect. why?
+			if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
+				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_HANGING, op_SYNC);
+			else if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_HANGING)
+				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_SYNC);
 
+			const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, -val, ".1");
 			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
 		}
+
+		// sanity check.
+
+		double effectiveLeftMargin = UT_convertToDimension
+		  (_getSpinItemValue(id_SPIN_SPECIAL_INDENT), m_dim) * sign;
+
+		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin, m_dim);
+		double rightIndent = UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim);
+
+		if(-effectiveLeftMargin > leftPageMargin)
+		{
+			_setSpinItemValue(id_SPIN_SPECIAL_INDENT,
+									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin),
+									op_SYNC);
+		}
+
+  		if(effectiveLeftMargin >
+			UT_convertInchesToDimension(m_iMaxWidth, m_dim) - rightIndent)
+  		{
+  			_setSpinItemValue(id_SPIN_SPECIAL_INDENT,
+  									(const XML_Char *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - rightIndent),
+  									op_SYNC);
+  		}
 	}
 
 	if (changed == id_SPIN_SPECIAL_SPACING)

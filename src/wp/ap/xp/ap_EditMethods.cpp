@@ -42,6 +42,7 @@
 #include "ap_LoadBindings.h"
 #include "ap_FrameData.h"
 #include "ap_LeftRuler.h"
+#include "ap_TopRuler.h"
 #include "ap_Prefs.h"
 #include "ut_string_class.h"
 
@@ -3983,7 +3984,14 @@ static bool s_doParagraphDlg(FV_View * pView)
 		return false;
 
 	FREEP(props);
-	
+
+	// let's steal the width from getTopRulerInfo.
+	AP_TopRulerInfo info;
+	pView->getTopRulerInfo(&info);
+
+	// TODO tables
+	pDialog->setMaxWidth (info.u.c.m_xColumnWidth);
+
 	// run the dialog
 	pDialog->runModal(pFrame);
 

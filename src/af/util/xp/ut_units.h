@@ -51,6 +51,8 @@ double UT_convertDimensionless(const char * sz);
 double UT_convertInchesToDimension(double inches, UT_Dimension dim);
 
 UT_sint32 UT_paperUnits(const char * sz);
+double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits);
+UT_sint32 UT_paperUnitsFromInches(double dInches);
 UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
 UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits);
 UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits);
