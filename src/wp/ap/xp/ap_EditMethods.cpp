@@ -2822,7 +2822,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 		pDocLayout->formatAll();
-		FV_View * pPrintView = new FV_View(pFrame,pDocLayout);
+		FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
 

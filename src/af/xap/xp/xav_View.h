@@ -27,6 +27,7 @@
 #include "xav_Listener.h"
 #include "ev_EditBits.h"
 class AP_TopRulerInfo;
+class XAP_App;
 
 typedef enum _AV_ScrollCmd
 {
@@ -59,7 +60,7 @@ class AV_ScrollObj
 class AV_View
 {
 public:
-	AV_View(void*);
+	AV_View(XAP_App * pApp, void*);
 	virtual ~AV_View();
 
 	void*			getParentData() const;
@@ -68,6 +69,7 @@ public:
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
 
+	inline XAP_App *	getApp(void) const { return m_pApp; };
 	inline UT_sint32	getWindowWidth(void) const { return m_iWindowWidth; };
 	inline UT_sint32	getWindowHeight(void) const { return m_iWindowHeight; };
 	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; };
@@ -98,7 +100,8 @@ public:
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos) = 0;
 	
-protected: 
+protected:
+	XAP_App *			m_pApp;
 	void*				m_pParentData;
 
 	UT_sint32			m_xScrollOffset;

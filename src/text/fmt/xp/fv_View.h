@@ -76,7 +76,7 @@ class FV_View : public AV_View
 	friend class fl_SectionLayout;
 	
 public:
-	FV_View(void*, FL_DocLayout*);
+	FV_View(XAP_App*, void*, FL_DocLayout*);
 	~FV_View();
 
 	inline GR_Graphics*		getGraphics(void) const { return m_pG; }

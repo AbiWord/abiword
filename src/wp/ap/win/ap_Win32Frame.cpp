@@ -136,7 +136,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
   
 //	pDocLayout->formatAll();
 	
-	pView = new FV_View(this,pDocLayout);
+	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
 	// The "AV_ScrollObj pScrollObj" receives

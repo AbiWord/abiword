@@ -71,8 +71,8 @@ public:
 /****************************************************************/
 
 
-FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
-	: AV_View(pParentData)
+FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
+	: AV_View(pApp, pParentData)
 {
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();

@@ -22,8 +22,9 @@
 #include "xav_View.h"
 #include "xav_Listener.h"
 
-AV_View::AV_View(void* pParentData)
+AV_View::AV_View(XAP_App * pApp, void* pParentData)
 {
+	m_pApp = pApp;
 	m_pParentData = pParentData;
 	
 	m_xScrollOffset = 0;
