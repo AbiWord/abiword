@@ -658,7 +658,7 @@ void IE_Imp_DocBook :: createList (void)
 		m_iTitle [i] = NULL;
 	}
 	
-	for (int i = m_iInSection - 2; i >= 1; i++)
+	for (i = m_iInSection - 2; i >= 1; i++)
 	{
 		/* retrieves parent id, if available */
 		if (m_iTitle [i])
