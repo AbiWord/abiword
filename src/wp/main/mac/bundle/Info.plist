@@ -51,7 +51,7 @@
 	<key>CFBundleInfoPlistVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Abiword</string>
+	<string>AbiWord</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
