@@ -94,6 +94,8 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
 {
 	UT_String sAllSuffixes;
 
+	const XAP_StringSet*  pSS   = XAP_App::getApp()->getStringSet();
+
 	UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
 			  UT_pointerArrayLength((void **) m_szDescriptions));
 
@@ -130,15 +132,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
 	}
 
 	// all supported files filter
-	// TODO localize
-	sFilter += m_id == XAP_DIALOG_ID_INSERT_PICTURE ? "All AbiWord Image Files" : "All AbiWord Documents";
+	sFilter += m_id == XAP_DIALOG_ID_INSERT_PICTURE ? pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALLIMAGES) : pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALLDOCS);
 	sFilter += " (" + sAllSuffixes + ")";
 	sFilter += '\0';				// include the trailing 0
 	sFilter += sAllSuffixes;
 	sFilter += '\0';				// include the trailing 0
 
 	// all files filter
-	sFilter += "All (*.*)";
+	sFilter += pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALL);
 	sFilter += '\0';				// include the trailing 0
 	sFilter += "*.*";
 	sFilter += '\0';				// include the trailing 0
