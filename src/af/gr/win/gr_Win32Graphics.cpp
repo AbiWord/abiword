@@ -173,15 +173,6 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		strcpy(lf.lfFaceName, pszFontFamily);
 	}
 
-	if (!UT_stricmp(pszFontFamily, "symbol") ||
-		!UT_stricmp(pszFontFamily, "wingdings") ||
-		!UT_stricmp(pszFontFamily, "webdings") ||
-		!UT_stricmp(pszFontFamily, "marlett"))
-	{
-		lf.lfCharSet = SYMBOL_CHARSET;
-		strcpy(lf.lfFaceName, pszFontFamily);
-	}
-
 	// Get character set value from the font itself
 	LOGFONT enumlf = { 0 };
 	enumlf.lfCharSet = DEFAULT_CHARSET;
