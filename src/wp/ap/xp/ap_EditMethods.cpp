@@ -3611,7 +3611,7 @@ Defun1(warpInsPtRight)
 	if(pBL)
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
-	pView->cmdCharMotion(bRTL,1);
+	pView->cmdCharMotion(!bRTL,1);
 	return true;
 }
 
@@ -4251,7 +4251,7 @@ Defun1(extSelRight)
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 
-	pView->extSelHorizontal(bRTL,1);
+	pView->extSelHorizontal(!bRTL,1);
 
 	return true;
 }
