@@ -147,6 +147,8 @@ void PP_Revision::_refreshString()
 	for(i = 0; i < iCount; i++)
 	{
 		getNthProperty(i,n,v);
+		if(!v) v = "";
+		
 		m_sXMLProps += n;
 		m_sXMLProps += ":";
 		m_sXMLProps += v;
@@ -158,6 +160,8 @@ void PP_Revision::_refreshString()
 	for(i = 0; i < iCount; i++)
 	{
 		getNthAttribute(i,n,v);
+		if(!v) v = "";
+
 		m_sXMLAttrs += n;
 		m_sXMLAttrs += ":";
 		m_sXMLAttrs += v;

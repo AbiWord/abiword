@@ -299,7 +299,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		}
 
 		UT_lowerString(copy);
-		char * szDupValue = UT_strdup(szValue);
+		char * szDupValue = szValue ? UT_strdup(szValue) : NULL;
 
 		if(!m_pAttributes->insert(copy, szDupValue))
 			FREEP(szDupValue);
@@ -322,15 +322,13 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		}
 	}
 
-#if 0
-	// no. we have to set it empty, otherwise the code that changes
+	// if szValue == NULL or *szValue == 0, indicates absent property.
+	// We have to set it empty, otherwise the code that changes
 	// properties has no way of knowing that this property is not to
 	// be present
 	// 
-	// if szValue == NULL or *szValue == 0, we want this property
-	// removed
 	bool bRemove = (!szValue || !*szValue);
-#endif
+	
 	const PropertyPair * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
 	{
@@ -348,25 +346,11 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		if (p->second())
 			delete p->second();
 		delete p;
-#if 0
-		if(bRemove)
-		{
-			m_pProperties->remove(szName,NULL);
-		}
-		else
-#endif
-		{
-			m_pProperties->set(szName, new PropertyPair(UT_strdup(szValue), NULL));
-		}
+		m_pProperties->set(szName, new PropertyPair(szValue ? UT_strdup(szValue) : NULL, NULL));
 	}
 	else
 	{
-#if 0
-		if(!bRemove)
-#endif
-		{
-			m_pProperties->insert(szName, new PropertyPair(UT_strdup(szValue), NULL));
-		}
+		m_pProperties->insert(szName, new PropertyPair(szValue ? UT_strdup(szValue) : NULL, NULL));
 	}
 	return true;
 }

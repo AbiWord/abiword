@@ -252,7 +252,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		{
 			// first of all deal with list-attributes if the new style is not
 			// a list style and the old style is a list style
-			if(pStyle->isList())
+			if(pStyle->isList() && properties)
 			{
 				UT_DEBUGMSG(("old style is a list style\n"));
 				// OK, old style is a list, is the new style?
