@@ -463,7 +463,7 @@ int fl_BlockLayout::minor_reformat()
 
 		pSlice->returnExtraSpace();
 	}
-
+	
 	// TODO should we call _align here?
 	
 	UT_DEBUGMSG(("END reformat block: 0x%x\n", this));
@@ -505,7 +505,7 @@ int fl_BlockLayout::complete_format()
 		  we want to call relayoutBlock and in others breakParagraph.
 		*/
 
-#define CLOBBER_SLICES
+#undef CLOBBER_SLICES
 		
 		int countSlices = m_vecSlices.getItemCount();
 		for (int i=0; i<countSlices; i++)
