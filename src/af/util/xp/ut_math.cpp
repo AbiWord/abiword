@@ -20,6 +20,18 @@
 #include "ut_types.h"
 #include "ut_math.h"
 
+/*!
+ * Guaranteed to return a unique new number quickly
+ * on each call, for the first 4.2 billion calls
+ * or so
+ */
+UT_uint32 UT_newNumber ()
+{
+  static UT_uint32 theNumber = 1;
+  //TODO: MUTEX_PROTECT this variable someday soon
+  return theNum++;
+}
+
 #ifdef _WIN32
 
 double rint(double x) 
