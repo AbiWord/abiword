@@ -30,6 +30,7 @@
 #include "ev_UnixMenu.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
+#include "ev_UnixKeyboard.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
@@ -48,6 +49,7 @@ public:									// we create...
 	{
 		m_pUnixMenu = pUnixMenu;
 		m_id = id;
+		m_accelGroup = NULL;
 	};
 	
 	~_wd(void)
@@ -232,9 +234,45 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 	return buf;
 }
 
+static char _ev_get_underlined_char(const char * szString)
+{
+	UT_ASSERT(szString);
+	
+	// return the char right after the underline
+	const char * p = szString;
+	while (*p && *(p+1))
+	{
+		if (*p == '_')
+			return *++p;
+		else
+			p++;
+	}
+	return 0;
+}
+
+static void _ev_strip_underline(char * bufResult,
+								const char * szString)
+{
+	UT_ASSERT(szString && bufResult);
+	
+	const char * pl = szString;
+	char * b = bufResult;
+	while (*pl)
+	{
+		if (*pl == '_')
+			pl++;
+		else
+			*b++ = *pl++;
+	}
+	
+	*b = 0;
+}
+
 static void _ev_convert(char * bufResult,
 						const char * szString)
 {
+	UT_ASSERT(szString && bufResult);
+	
 	strcpy(bufResult, szString);
 
 	char * pl = bufResult;
@@ -290,28 +328,24 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				char buf[1024];
 				// convert label into underscored version
 				_ev_convert(buf, szLabelName);
-				// create a label
-				GtkWidget * label = gtk_accel_label_new("SHOULD NOT APPEAR");
-				UT_ASSERT(label);
-				// trigger the underscore conversion in the menu labels
-				guint keyCode = gtk_label_parse_uline(GTK_LABEL(label), buf);
 
 				// create the item with the underscored label
 				GtkWidget * w = gtk_menu_item_new();
-				UT_ASSERT(w);
 				GtkWidget * hbox = gtk_hbox_new(FALSE, 20);
-				UT_ASSERT(hbox);
 				gtk_widget_show(hbox);
- 
 				gtk_container_add(GTK_CONTAINER(w), hbox);
-				
-				// show and add the label to our menu item
+
+				// label widget
+				GtkWidget * label;
+
+				label = gtk_accel_label_new("SHOULD NOT APPEAR");
+				guint keyCode = gtk_label_parse_uline(GTK_LABEL(label), buf);
+
+				// either path above filled out the label pointer, so pack it
+				// in the hbox
 				gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-				//gtk_container_add(GTK_CONTAINER(w), GTK_WIDGET(label));
 				gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 				
-				gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
-
 				if (szMnemonicName && *szMnemonicName)
 				{
 					GtkWidget * mlabel = gtk_accel_label_new(szMnemonicName);
@@ -326,6 +360,7 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				// set menu data to relate to class
 				gtk_object_set_user_data(GTK_OBJECT(w),this);
+
 				// create callback info data for action handling
 				_wd * wd = new _wd(this, id);
 				UT_ASSERT(wd);
@@ -339,8 +374,12 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				// connect callbacks
 				gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
 
+				// we always set the acccelerators in "normal" menu items, but
+				// not top-level (begin_submenus), as shown below
+				gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
+
 				// bind to parent item's accel group
-				if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
+				if ((keyCode != GDK_VoidSymbol))
 				{
 					gtk_widget_add_accelerator(w,
 											   "activate_item",
@@ -372,26 +411,12 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				char buf[1024];
 				// convert label into underscored version
 				_ev_convert(buf, szLabelName);
-				// create a label
-				GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
-				UT_ASSERT(label);
 
-				// trigger the underscore conversion in the menu labels
-				guint keyCode = gtk_label_parse_uline(label, buf);
-				
-				// create the item with the underscored label
+				// create the item widget
 				GtkWidget * w = gtk_menu_item_new();
-				UT_ASSERT(w);
-				// show and add the label to our menu item
-				gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-				gtk_container_add(GTK_CONTAINER(w), GTK_WIDGET(label));
-				gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
-				gtk_widget_show(GTK_WIDGET(label));
+				gtk_object_set_user_data(GTK_OBJECT(w), this);
 				gtk_widget_show(w);
-				
-				// set menu data to relate to class
-				gtk_object_set_user_data(GTK_OBJECT(w),this);
-				
+								
 				// create callback info data for action handling
 				_wd * wd = new _wd(this, id);
 				UT_ASSERT(wd);
@@ -400,41 +425,109 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
 				gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
-				// bury in parent
+				// bury the widget in parent menu
 				gtk_container_add(GTK_CONTAINER(wParent),w);
 				
 				// since we are starting a new sub menu, create a shell for new items
 				GtkWidget * wsub = gtk_menu_new();
-				UT_ASSERT(wsub);
 
-				wd->m_accelGroup = gtk_accel_group_new();
+				// Here's the tricky part:
+				// If the underlined character conflicts with ANY accelerator
+				// in the keyboard layer, don't do the underline construction,
+				// but instead make a label with no underlines (and no accelerators).
 
-				if ((keyCode != GDK_VoidSymbol))
+				
+				// get the underlined value from the candidate label
+				guint keyCode = _ev_get_underlined_char(buf);
+
+				// this pointer will be filled conditionally later
+				GtkWidget * label = NULL;
+				
+				EV_EditEventMapper * pEEM = m_pUnixFrame->getEditEventMapper();
+				UT_ASSERT(pEEM);
+				EV_EditMethod * pEM = NULL;
+
+				// Lookup any bindings cooresponding to MOD1-key and the lower-case
+				// version of the underlined char, since all the menus ignore upper
+				// case (SHIFT-MOD1-[char]) invokations of accelerators.
+				pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|tolower(keyCode),&pEM);
+
+				// if the pointer is valid, there is a conflict
+				UT_Bool bAccelConflict = UT_FALSE;
+				
+				if (pEM)
+					bAccelConflict = UT_TRUE;
+
+				if (bAccelConflict)
 				{
-					// bind to top level if parent is top level
-					if (wParent == wMenuRoot)
+					// construct the label with NO underlined text and
+					// no accelerators bound
+					char * dup = NULL;
+
+					// clone string just for the space it gives us, the data
+					// is trashed by _ev_strip_underlines()
+					UT_cloneString(dup, buf);
+
+					// get a clean string
+					_ev_strip_underline(dup, buf);
+					
+					label = gtk_accel_label_new(dup);
+					
+					if (dup)
 					{
-						gtk_widget_add_accelerator(w,
-												   "activate_item",
-												   m_accelGroup,
-												   keyCode,
-												   GDK_MOD1_MASK,
-												   GTK_ACCEL_LOCKED);
-					}
-					else
-					{
-						// just bind to be triggered by parent
-						gtk_widget_add_accelerator(w,
-												   "activate_item",
-												   GTK_MENU(wParent)->accel_group,
-												   keyCode,
-												   0,
-												   GTK_ACCEL_LOCKED);
+						free(dup);
+						dup = NULL;
 					}
 				}
-				
-				gtk_menu_set_accel_group(GTK_MENU(wsub), wd->m_accelGroup);
+				else
+				{
+					label = gtk_accel_label_new("SHOULD NOT APPEAR");
+					gtk_label_parse_uline(GTK_LABEL(label), buf);
+
+					if ((keyCode != GDK_VoidSymbol))
+					{
+						// bind to top level if parent is top level
+						if (wParent == wMenuRoot)
+						{
+							gtk_widget_add_accelerator(w,
+													   "activate_item",
+													   m_accelGroup,
+													   keyCode,
+													   GDK_MOD1_MASK,
+													   GTK_ACCEL_LOCKED);
+						}
+						else
+						{
+							// just bind to be triggered by parent
+							gtk_widget_add_accelerator(w,
+													   "activate_item",
+													   GTK_MENU(wParent)->accel_group,
+													   keyCode,
+													   0,
+													   GTK_ACCEL_LOCKED);
+						}
+
+						// TODO: Should these happen for every widget, even if
+						// TODO: we don't register an accelerator?
+						gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
 										 
+					}
+				}
+
+				UT_ASSERT(label);
+				gtk_widget_show(label);
+
+				// we always set an accel group, even if we don't actually bind any
+				// to this widget
+				wd->m_accelGroup = gtk_accel_group_new();
+				gtk_menu_set_accel_group(GTK_MENU(wsub), wd->m_accelGroup);
+				
+				// This stuff happens to every label:
+				
+				// set alignment inside the label; add to container
+				gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+				gtk_container_add(GTK_CONTAINER(w), label);
+
 				// menu items with sub menus attached (w) get this signal
 				// bound to their children so they can trigger a refresh 
 				gtk_signal_connect(GTK_OBJECT(wsub),
