@@ -104,16 +104,16 @@ int FP_Line::countRuns() const
 
 FP_Run* FP_Line::getFirstRun() const
 {
-	fp_RunInfo* psi = (fp_RunInfo*) m_vecRunInfos.getFirstItem();
+	fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getFirstItem();
 
-	return psi->pRun;
+	return pRI->pRun;
 }
 
 FP_Run* FP_Line::getLastRun() const
 {
-	fp_RunInfo* psi = (fp_RunInfo*) m_vecRunInfos.getLastItem();
+	fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getLastItem();
 
-	return psi->pRun;
+	return pRI->pRun;
 }
 
 UT_Bool FP_Line::removeRun(FP_Run* pRun)
@@ -125,13 +125,13 @@ UT_Bool FP_Line::removeRun(FP_Run* pRun)
 
 	for (i = 0; i < numRuns; i++)
 	{
-		fp_RunInfo* psi = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
 		if (bAdjust)
 		{
-			psi->xoff -= iAdjust;
+			pRI->xoff -= iAdjust;
 		}
-		else if (psi->pRun == pRun)
+		else if (pRI->pRun == pRun)
 		{
 			iAdjust = pRun->getWidth();
 			bAdjust = UT_TRUE;
@@ -140,11 +140,12 @@ UT_Bool FP_Line::removeRun(FP_Run* pRun)
 
 	for (i = 0; i < numRuns; i++)
 	{
-		fp_RunInfo* psi = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		if (psi->pRun == pRun)
+		if (pRI->pRun == pRun)
 		{
 			m_vecRunInfos.deleteNthItem(i);
+			delete pRI;
 			m_iWidth -= iAdjust;
 
 			pRun->setLine(NULL, NULL);
@@ -158,16 +159,16 @@ UT_Bool FP_Line::removeRun(FP_Run* pRun)
 
 void FP_Line::insertRun(FP_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 {
-	fp_RunInfo* psi = (fp_RunInfo*) pRun->getLineData();
+	fp_RunInfo* pRI = (fp_RunInfo*) pRun->getLineData();
 	
 	if (bNewData == UT_TRUE)
 	{
-		psi = new fp_RunInfo(pRun);
+		pRI = new fp_RunInfo(pRun);
 	}
 
-	pRun->setLine(this, psi);
+	pRun->setLine(this, pRI);
 
-	m_vecRunInfos.insertItemAt(psi, 0);
+	m_vecRunInfos.insertItemAt(pRI, 0);
 
 	UT_sint32 count = m_vecRunInfos.getItemCount();
 	UT_sint32 width = pRun->getWidth();
@@ -192,13 +193,13 @@ void FP_Line::insertRun(FP_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 
 void FP_Line::addRun(FP_Run* pRun)
 {
-	fp_RunInfo* psi;
+	fp_RunInfo* pRI;
 	
-	psi = new fp_RunInfo(pRun);
-	pRun->setLine(this, psi);
-	psi->xoff = m_iWidth;
+	pRI = new fp_RunInfo(pRun);
+	pRun->setLine(this, pRI);
+	pRI->xoff = m_iWidth;
 
-	m_vecRunInfos.addItem(psi);
+	m_vecRunInfos.addItem(pRI);
 	
 	m_iWidth += pRun->getWidth();
 
@@ -209,11 +210,11 @@ void FP_Line::splitRunInLine(FP_Run* pRun1, FP_Run* pRun2)
 {
 	// insert run2 after run1 in the current line.
 	
-	fp_RunInfo* psi;
+	fp_RunInfo* pRI;
 	
-	psi = new fp_RunInfo(pRun2);
-	pRun2->setLine(this, psi);
-	psi->xoff = m_iWidth;
+	pRI = new fp_RunInfo(pRun2);
+	pRun2->setLine(this, pRI);
+	pRI->xoff = m_iWidth;
 
 	UT_sint32 count = m_vecRunInfos.getItemCount();
 	UT_sint32 k;
@@ -223,7 +224,7 @@ void FP_Line::splitRunInLine(FP_Run* pRun1, FP_Run* pRun2)
 		UT_ASSERT(p);
 		if (p->pRun == pRun1)
 		{
-			m_vecRunInfos.insertItemAt(psi,k+1);
+			m_vecRunInfos.insertItemAt(pRI,k+1);
 			return;
 		}
 	}
@@ -239,9 +240,9 @@ UT_uint32 FP_Line::getNumChars() const
 	int countRuns = m_vecRunInfos.getItemCount();
 	for (int i=0; i<countRuns; i++)
 	{
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		iCountChars += pSI->pRun->getLength();
+		iCountChars += pRI->pRun->getLength();
 	}
 
 	return iCountChars;
@@ -249,7 +250,7 @@ UT_uint32 FP_Line::getNumChars() const
 
 void FP_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 {
-	fp_RunInfo* psi = (fp_RunInfo*) p;
+	fp_RunInfo* pRI = (fp_RunInfo*) p;
 
 	//UT_ASSERT(newWidth);
 	
@@ -276,7 +277,7 @@ void FP_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 		*/
 		pInfo->pRun->clearScreen();
 		
-		if (psi == pInfo)
+		if (pRI == pInfo)
 		{
 			bIncr = UT_TRUE;
 			continue;
@@ -290,6 +291,17 @@ void FP_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 	m_iWidth += dx;
 
 	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
+}
+
+void FP_Line::remove()
+{
+	if (m_pNext)
+		m_pNext->setPrev(m_pPrev);
+
+	if (m_pPrev)
+		m_pPrev->setNext(m_pNext);
+
+	m_pBlockSlice->removeLine(this, m_pBlockSliceData);
 }
 
 void FP_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
@@ -308,15 +320,15 @@ void FP_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 
 	for (int i=0; i<count; i++)
 	{
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		UT_sint32 y2 = y - pSI->yoff - m_iAscent + pSI->pRun->getAscent();
-		if (((x - pSI->xoff) >= 0) && ((x - pSI->xoff) < (pSI->pRun->getWidth())))
+		UT_sint32 y2 = y - pRI->yoff - m_iAscent + pRI->pRun->getAscent();
+		if (((x - pRI->xoff) >= 0) && ((x - pRI->xoff) < (pRI->pRun->getWidth())))
 		{
 			// when hit testing runs within a line, we ignore the Y coord
-//			if (((y2) >= 0) && ((y2) < (pSI->pRun->getHeight())))
+//			if (((y2) >= 0) && ((y2) < (pRI->pRun->getHeight())))
 			{
-				pSI->pRun->mapXYToPosition(x - pSI->xoff, y2, pos, bRight);
+				pRI->pRun->mapXYToPosition(x - pRI->xoff, y2, pos, bRight);
 				return;
 			}
 		}
@@ -382,9 +394,9 @@ void FP_Line::_recalcHeight()
 	{
 		UT_uint32 iAscent;
 
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		iAscent = pSI->pRun->getAscent();
+		iAscent = pRI->pRun->getAscent();
 		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 	}
 
@@ -392,9 +404,9 @@ void FP_Line::_recalcHeight()
 	{
 		UT_uint32 iDescent;
 
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		iDescent = pSI->pRun->getDescent();
+		iDescent = pRI->pRun->getDescent();
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
 	}
 
@@ -414,22 +426,22 @@ void FP_Line::expandWidthTo(UT_uint32 iNewWidth)
 	
 	for (i=0; i<count; i++)
 	{
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		UT_uint32 iCurSpanWidth = pSI->pRun->getWidth();
+		UT_uint32 iCurSpanWidth = pRI->pRun->getWidth();
 		UT_uint32 iNewSpanWidth = 
 			iCurSpanWidth 
 			+ ((UT_uint32) ((iCurSpanWidth / ((double) iPrevWidth)) * iMoreWidth));
-		pSI->pRun->expandWidthTo(iNewSpanWidth);
+		pRI->pRun->expandWidthTo(iNewSpanWidth);
 	}
 
 	m_iWidth = 0;
 	for (i=0; i<count; i++)
 	{
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
-		pSI->xoff = m_iWidth;
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		pRI->xoff = m_iWidth;
 
-		m_iWidth += pSI->pRun->getWidth();
+		m_iWidth += pRI->pRun->getWidth();
 	}
 }
 
@@ -444,9 +456,9 @@ void FP_Line::clearScreen()
 
 	for (int i=0; i < count; i++)
 	{
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		pSI->pRun->clearScreen();
+		pRI->pRun->clearScreen();
 	}
 }
 
@@ -475,13 +487,13 @@ void FP_Line::draw(DG_Graphics* pG)
 
 	for (int i=0; i < count; i++)
 	{
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		da.xoff += pSI->xoff;
-		da.yoff += pSI->yoff;
-		pSI->pRun->draw(&da);
-		da.xoff -= pSI->xoff;
-		da.yoff -= pSI->yoff;
+		da.xoff += pRI->xoff;
+		da.yoff += pRI->yoff;
+		pRI->pRun->draw(&da);
+		da.xoff -= pRI->xoff;
+		da.yoff -= pRI->yoff;
 	}
 }
 
@@ -498,20 +510,20 @@ void FP_Line::draw(dg_DrawArgs* pDA)
 
 	for (int i=0; i<count; i++)
 	{
-		fp_RunInfo* pSI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
-		UT_sint32 rHeight = pSI->pRun->getHeight();
+		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		UT_sint32 rHeight = pRI->pRun->getHeight();
 
 		// TODO adjust this clipping to draw lines which are partially visible
 		// TODO - X clipping - for now, just clip against y
-		if (((((UT_sint32)pSI->yoff + yOff) >= y) &&
-		     (((UT_sint32)pSI->yoff + yOff) <= (y + height))) ||
-		    ((((UT_sint32)pSI->yoff + yOff) <= y) &&
-		     (((UT_sint32)pSI->yoff + yOff + rHeight) > y)))
+		if (((((UT_sint32)pRI->yoff + yOff) >= y) &&
+		     (((UT_sint32)pRI->yoff + yOff) <= (y + height))) ||
+		    ((((UT_sint32)pRI->yoff + yOff) <= y) &&
+		     (((UT_sint32)pRI->yoff + yOff + rHeight) > y)))
 		{
 			dg_DrawArgs da = *pDA;
-			da.xoff += pSI->xoff;
-			da.yoff += pSI->yoff;
-		    pSI->pRun->draw(&da);
+			da.xoff += pRI->xoff;
+			da.yoff += pRI->yoff;
+		    pRI->pRun->draw(&da);
 		}
 	}
 }

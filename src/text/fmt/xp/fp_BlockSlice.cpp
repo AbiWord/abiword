@@ -183,6 +183,24 @@ void FP_BlockSlice::deleteLines()
 	m_iTotalLineHeight = 0;
 }
 
+void FP_BlockSlice::removeLine(FP_Line* pLine, void* p)
+{
+	fp_LineInfo* pLI = (fp_LineInfo*) p;
+	UT_ASSERT(pLI);
+	UT_ASSERT(pLI->pLine == pLine);
+
+	UT_sint32 ndx = m_vecLineInfos.findItem(pLI);
+	UT_ASSERT(ndx >= 0);
+
+	if (ndx > 0)
+	{
+		m_vecLineInfos.deleteNthItem(ndx);
+
+		delete pLI->pLine;
+		delete pLI;
+	}
+}
+
 int	FP_BlockSlice::addLine(FP_Line* pLine)
 {
 	fp_Sliver* pSliver = NULL;
@@ -253,6 +271,7 @@ void FP_BlockSlice::verifyColumnFit()
 		if (pSliver->iHeight == 0)
 		{
 			m_vecSlivers.deleteNthItem(i);
+			delete pSliver;
 		}
 	}
 
@@ -309,6 +328,7 @@ void FP_BlockSlice::returnExtraSpace()
 			if (pSliver->iHeight == 0)
 			{
 				m_vecSlivers.deleteNthItem(i);
+				delete pSliver;
 			}
 		}
 

@@ -35,6 +35,7 @@
 #include "fl_ColumnSetLayout.h"
 #include "fl_ColumnLayout.h"
 #include "fl_BlockLayout.h"
+#include "fp_Line.h"
 #include "fp_Run.h"
 #include "pd_Document.h"
 
@@ -295,11 +296,42 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					{					
 						if (pRun->del(blockOffset, len))
 							pRun->calcWidths(&pBL->m_gbCharWidths);
-						
-						pRun = pRun->getNext();
+
+						if (pRun->getLength() == 0)
+						{
+							// remove empty runs from their line
+							FP_Line* pLine = pRun->getLine();
+							UT_ASSERT(pLine);
+
+							pLine->removeRun(pRun);
+
+							FP_Run* pNuke = pRun;
+							FP_Run* pPrev = pNuke->getPrev();
+
+							// sneak in our iterator here  :-)
+							pRun = pNuke->getNext();
+
+							// detach from run sequence
+							if (pRun)
+								pRun->m_pPrev = pPrev;
+
+							if (pPrev)
+								pPrev->m_pNext = pRun;
+
+							if (pBL->m_pFirstRun == pNuke)
+								pBL->m_pFirstRun = pRun;
+							
+							// delete it
+							delete pNuke;
+						}
+						else
+						{
+							pRun = pRun->getNext();
+						}
 					}
 
-					pBL->reformat();
+					pBL->format();
+					pBL->draw(m_pLayout->getGraphics());
 				}
 				return UT_TRUE;
 					
@@ -352,8 +384,18 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			case PTX_Block:
 				{
 					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
-					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
-					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					FL_SectionLayout* pSL = pBL->m_pSectionLayout;
+					UT_ASSERT(pSL);
+					FL_BlockLayout*	pNewBL = pSL->insertBlock(sdh, pBL);
+					if (!pNewBL)
+					{
+						UT_DEBUGMSG(("no memory for BlockLayout"));
+						return UT_FALSE;
+					}
+
+					pNewBL->setAttrPropIndex(pcr->getIndexAP());
+
+					*psfh = (PL_StruxFmtHandle)pNewBL;
 
 					/*
 						The idea here is to divide the runs of the existing block 
@@ -364,11 +406,14 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 						fine, although the last run should be redrawn.
 
 						All runs in the new block need their offsets fixed, and 
-						that entire block needs to be reformatted from scratch. 
+						that entire block needs to be formatted from scratch. 
 					*/
 
-					FP_Run* pRun = pBL->m_pFirstRun;
+					// figure out where the breakpoint is
+					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 
+					FP_Run* pRun = pBL->m_pFirstRun;
 					while (pRun)
 					{			
 						UT_uint32 iWhere = pRun->containsOffset(blockOffset);
@@ -392,6 +437,11 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					if (pRun)
 					{
 						pFirstNewRun = pRun->getNext();
+
+						// break run sequence
+						pRun->m_pNext = NULL;
+						if (pFirstNewRun)
+							pFirstNewRun->m_pPrev = NULL;
 					}
 					else if (blockOffset == 0)
 					{
@@ -399,19 +449,8 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 						pFirstNewRun = pBL->m_pFirstRun;
 					}
 
-					// insert a new BlockLayout in this SectionLayout
-					FL_SectionLayout* pSL = pBL->m_pSectionLayout;
-					UT_ASSERT(pSL);
-
-					FL_BlockLayout*	pNewBL = pSL->insertBlock(sdh, pBL);
-					if (!pNewBL)
-					{
-						UT_DEBUGMSG(("no memory for BlockLayout"));
-						return UT_FALSE;
-					}
-					pNewBL->setAttrPropIndex(pcr->getIndexAP());
-
-					*psfh = (PL_StruxFmtHandle)pNewBL;
+					// explicitly truncate rest of this block's layout
+					pBL->truncateLayout(pFirstNewRun);
 
 					// split charwidths across the two blocks
 					UT_uint32 lenNew = pBL->m_gbCharWidths.getLength() - blockOffset;
@@ -420,6 +459,8 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					pBL->m_gbCharWidths.truncate(blockOffset);
 
 					// move remaining runs to new block
+					pNewBL->m_pFirstRun = pFirstNewRun;
+
 					pRun = pFirstNewRun;
 					while (pRun)
 					{
@@ -429,9 +470,12 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 						pRun = pRun->getNext();
 					}
 
-					// fix them both					
+					// update the display
 					pBL->reformat();
+					pBL->draw(m_pLayout->getGraphics());
+
 					pNewBL->format();
+					pNewBL->draw(m_pLayout->getGraphics());
 				}
 				return UT_TRUE;
 					

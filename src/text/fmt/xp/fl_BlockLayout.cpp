@@ -333,6 +333,71 @@ void FL_BlockLayout::_purgeLayout(UT_Bool bVisible)
 	m_pCurrentSlice = NULL;
 }
 
+UT_Bool FL_BlockLayout::truncateLayout(FP_Run* pTruncRun)
+{
+	if (pTruncRun->getBlock() != this)
+	{
+		// be safe
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+
+	// special case, nothing to do
+	if (!pTruncRun)
+		return UT_TRUE;
+
+	if (m_pFirstRun == pTruncRun)
+		m_pFirstRun = NULL;
+
+	// remove runs from lines
+	FP_Run* pRun = pTruncRun;
+	while (pRun)
+	{
+		FP_Line* pLine = pRun->getLine();
+		UT_ASSERT(pLine);
+
+		pRun->clearScreen();
+		pLine->removeRun(pRun);
+
+		pRun = pRun->getNext();
+	}
+
+	// remove empty lines 
+	while (m_pLastLine && (m_pLastLine != m_pFirstLine))
+	{
+		if (m_pLastLine->countRuns())
+			break;
+
+		FP_Line* pLine = m_pLastLine;
+		m_pLastLine = m_pLastLine->getPrev();
+
+		pLine->remove();
+	}
+
+	// remove any empty slices, and reclaim space from the rest
+	int countSlices = m_vecSlices.getItemCount();
+	for (int i=countSlices-1; i>=0; i--)
+	{
+		FP_BlockSlice* pSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+		UT_ASSERT(pSlice);
+
+		if ((pSlice->countLines()) || (i == 0))
+		{
+			pSlice->returnExtraSpace();
+		}
+		else
+		{
+			pSlice->remove();
+			delete pSlice;
+			m_vecSlices.deleteNthItem(i);
+		}
+	}
+
+	UT_ASSERT(m_vecSlices.getItemCount() > 0);
+
+	return UT_TRUE;
+}
+
 int FL_BlockLayout::format()
 {
 	UT_DEBUGMSG(("BEGIN Formatting block: 0x%x\n", this));
