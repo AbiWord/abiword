@@ -333,7 +333,7 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 
 	// TODO fix prefix on class UNIXGraphics
 	
-	m_pG = new UNIXGraphics(GetDC(hwnd), hwnd);
+	m_pG = new UNIXGraphics(m_dArea->window);
 	UT_ASSERT(m_pG);
 	FL_DocLayout * m_pDocLayout = new FL_DocLayout(m_pDoc, m_pG);
 	UT_ASSERT(m_pDocLayout);
