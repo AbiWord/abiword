@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:Off -->
+<!--         Build_Target      = /cygdrive/c/abibuild/abi/src/WIN32_1.1.0_i386_OBJ/obj -->
+<!--         Build_CompileTime = 09:26:42 -->
+<!--         Build_CompileDate = Jun 27 2000 -->
+
+<section>
+<p props="margin-top:0pt; tabstops:0.5000in/L,1.0000in/L,1.5000in/L"><c props="font-family:Times New Roman; font-size:12pt">0	1	2	3</c></p>
+<p props="margin-top:0pt; tabstops:0.5000in/L,1.0000in/L,1.5000in/L"><c props="font-family:Times New Roman; font-size:12pt">|	|	|	|</c></p>
+<p props="margin-top:0pt; tabstops:0.5000in/L,1.0000in/L,1.5000in/L"><c props="font-family:Times New Roman; font-size:12pt">Randall		Neighbor.</c></p>
+<p props="margin-top:0pt; tabstops:0.5000in/L,1.0000in/L,1.5000in/L"></p>
+<p props="margin-top:0pt; tabstops:0.5000in/L,1.0000in/L,1.5000in/L"><c props="font-family:Times New Roman; font-size:12pt">The word "Neighbor" should appear in the same horizontal position at all zoom levels as well as when you print. If it does, that is a good indication that this bug has been fixed.</c></p>
+</section>
+</abiword>
