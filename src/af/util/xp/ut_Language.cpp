@@ -178,6 +178,10 @@ const XML_Char * UT_Language::getNthLanguage(UT_uint32 n)
 	return (s_Table[n].lang);
 }
 
+const UT_uint32 UT_Language::getNthId(UT_uint32 n)
+{
+	return (s_Table[n].id);
+}
 
 const XML_Char * UT_Language::getPropertyFromLanguage(const XML_Char * lang)
 {

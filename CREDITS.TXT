@@ -155,6 +155,7 @@ James Montgomerie <jamie@montgomerie.net>		ANSI C patrol, libole2 integration
 David Nay						PalmDoc exporter
 Tom Newton <Tom.Newton@gtl.com>
 Mike Nordell <tamlin@algonet.se>			Windows printing fix
+Marc Oude Kotte <woprog@hotmail.com>		Various bug fixes
 Bruce Pearson <BruceP@wn.com.au>			full justification
 Adrian Phillips <adrianp@powertech.no>
 Matti Picus <matti@picus.org>				RTF fixes

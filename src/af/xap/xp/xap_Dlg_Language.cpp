@@ -26,6 +26,8 @@
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
 #include "xap_Dlg_Language.h"
+#include "xap_Strings.h"
+
 
 /*****************************************************************/
 
@@ -45,19 +47,54 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_pLangProperty		= NULL;
 	m_bChangedLanguage	= false;
 	m_pLangTable = new UT_Language;
-	
 	UT_ASSERT(m_pLangTable);
+	
 	m_iLangCount = m_pLangTable->getCount();
 	m_ppLanguages = new const XML_Char * [m_iLangCount];
 	m_ppLanguagesCode = new const XML_Char * [m_iLangCount];
-
+	
+	// find languages that needn't be sorted (where id = XAP_STRING_ID_LANG_0)
+	UT_uint32 dontsort = 0;
+	for(UT_uint32 i=0; i<m_iLangCount; i++)
+	{
+		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0)
+		{
+			dontsort++;
+		}
+	}
+	UT_DEBUGMSG(("FODDEX: dontsort = %d\n", dontsort));
+	
+	// copy - at first - only the languages that need to be sorted into a temporary language array
+	const XML_Char ** ppTempLang = new const XML_Char * [m_iLangCount-dontsort];
+	UT_uint32 j = 0;
 	for(UT_uint32 i = 0; i < m_iLangCount; i++)
 	{
-		m_ppLanguages[i] = m_pLangTable->getNthLanguage(i);
-		m_ppLanguagesCode[i] = m_pLangTable->getNthProperty(i);			
+		if (m_pLangTable->getNthId(i)!=XAP_STRING_ID_LANG_0) {
+			ppTempLang[j] = m_pLangTable->getNthLanguage(i);
+			j++;
+		}
 	}
-	
-	qsort(m_ppLanguages, m_iLangCount, sizeof(XML_Char *), s_compareQ);
+	// sort the temporary array
+	qsort(ppTempLang, m_iLangCount-dontsort, sizeof(XML_Char *), s_compareQ);
+
+	// copy all languages that needn't be sorted to the final array first
+	j = 0;
+	for(UT_uint32 i=0; i<m_iLangCount; i++) 
+	{
+		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0)
+		{
+			m_ppLanguages[j] = m_pLangTable->getNthLanguage(i);
+			j++;
+		}		
+	}
+	// now use 'j' as a base index to add the sorted items from the temporary language array
+	for(UT_uint32 i=0; i<m_iLangCount-dontsort; i++)
+	{
+		m_ppLanguages[j] = ppTempLang[i];
+		j++;
+	}
+	// dispose of temporary array
+	delete [] ppTempLang;
 	
 	// Assign its language code to every language once is sorted
 	for(UT_uint32 nLang = 0; nLang < m_iLangCount; nLang++)
@@ -147,5 +184,4 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 	}
 	
 	return vecRslt;
-}	
-
+}
