@@ -141,6 +141,7 @@ struct _rtfListTable
 };
 
 
+
 // Paragraph properties
 struct RTFProps_ParaProps
 {
