@@ -73,6 +73,17 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 	UT_ASSERT(ndx >= 0);
 
 	m_sniffers.deleteNthItem (ndx-1);
+
+	// Refactor the indexes
+	IE_ExpSniffer * pSniffer = 0;
+	UT_uint32 size  = m_sniffers.size();
+	UT_uint32 i     = 0;
+	for( i = ndx-1; i < size; i++)
+	{
+		pSniffer = static_cast <IE_ExpSniffer *>(m_sniffers.getNthItem(i));
+		if (pSniffer)
+        	pSniffer->setFileType(i+1);
+	}
 }
 
 void IE_Exp::unregisterAllExporters ()

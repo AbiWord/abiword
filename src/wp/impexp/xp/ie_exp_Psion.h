@@ -31,7 +31,7 @@ class s_Psion_Listener;
 
 // The exporter/writer for Psion Files.
 
-class IE_Exp_Psion: public IE_Exp
+class ABI_EXPORT IE_Exp_Psion: public IE_Exp
 {
 	// This friend declaration needs to be cleaned up, I think.
 	friend class s_Psion_Listener;
@@ -54,7 +54,7 @@ protected:
 	psiconv_text_and_layout m_paragraphs;
 };
 
-class IE_Exp_Psion_TextEd_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_Psion_TextEd_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -70,7 +70,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_Psion_Word_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_Psion_Word_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -86,7 +86,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_Psion_TextEd : public IE_Exp_Psion
+class ABI_EXPORT IE_Exp_Psion_TextEd : public IE_Exp_Psion
 {
 public:
 	// Constructors and destructor
@@ -98,7 +98,7 @@ protected:
 	virtual psiconv_file _createPsionFile(void);
 };
 
-class IE_Exp_Psion_Word : public IE_Exp_Psion
+class ABI_EXPORT IE_Exp_Psion_Word : public IE_Exp_Psion
 {
 public:
 	// Constructors and destructor
