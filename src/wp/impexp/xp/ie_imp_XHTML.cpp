@@ -1179,6 +1179,13 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 			FREEP(m_szBookMarkName);
 			m_szBookMarkName = NULL;
 		}
+		else if (m_parseState == _PS_Block)
+		{
+			/* if (m_parseState == _PS_Sec) then this is an anchor outside
+			 * of a block, not a hyperlink (see TT_HREF in startElement)
+			 */
+ 			X_CheckError(getDoc()->appendObject(PTO_Hyperlink,0));
+		}
 		return;
 
 	case TT_PRE:

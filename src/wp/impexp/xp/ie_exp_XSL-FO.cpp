@@ -825,7 +825,7 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			if (api) _openSpan (api);
+			_openSpan (api);
 			
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
@@ -1248,7 +1248,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 	bool bInSpan = false;
 
 	const PP_AttrProp * pAP = 0;
-	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 
 	// query and output properties
 	if (bHaveProp && pAP)
@@ -1334,10 +1334,9 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 			if (m_bInSpan)
 				{
 					if (m_utf8_span == content) return; // this span same as last...
-					m_utf8_span = content;
 					_closeSpan ();
 				}
-			else m_utf8_span = content;
+			m_utf8_span = content;
 
 			tagOpen (TT_INLINE, m_utf8_span, ws_None);
 			m_bInSpan = true;

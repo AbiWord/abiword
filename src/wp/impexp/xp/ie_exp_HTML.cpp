@@ -1649,8 +1649,15 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 
 	blockStyleClear ();
 
-	if (m_bInBlock && (tagTop () != TT_LI)) _closeTag ();
-
+	if (m_bInBlock)
+		{
+			if (tagTop () == TT_A)
+				{
+					m_utf8_1 = "a";
+					tagClose (TT_A, m_utf8_1, ws_None);
+				}
+			if (tagTop () != TT_LI) _closeTag ();
+		}
 	m_bWroteText = false;
 
 	const PP_AttrProp * pAP = 0;
@@ -2022,6 +2029,11 @@ void s_HTML_Listener::_closeTag (void)
 
 	if (m_bInSpan) _closeSpan ();
 	
+	if (tagTop () == TT_A)
+		{
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
 	if (m_iBlockType == BT_NORMAL)
 		{
 			if (!m_bWroteText) // TODO: is this really ideal?
@@ -2105,7 +2117,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	if (!m_bInBlock) return;
 
 	const PP_AttrProp * pAP = 0;
-	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	
 	if (!bHaveProp || (pAP == 0))
 		{
@@ -2331,6 +2343,11 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_closeSpan ()
 {
+	if (tagTop () == TT_A)
+		{
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
 	if (tagTop () == TT_SPAN)
 		{
 			m_utf8_1 = "span";
@@ -2680,20 +2697,21 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 
 void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = 0;
-	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
-
-	if (!bHaveProp || (pAP == 0)) return;
-
-	const XML_Char * szHRef = 0;
-	pAP->getAttribute ("xlink:href", szHRef);
-
 	m_utf8_1 = "a";
 
 	if (tagTop () == TT_A)
 		{
 			tagClose (TT_A, m_utf8_1, ws_None);
 		}
+
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	const XML_Char * szHRef = 0;
+	pAP->getAttribute ("xlink:href", szHRef);
+
 	if (szHRef) // trust this to be a valid URL??
 		{
 			m_utf8_1 += " href=\"";
@@ -2706,8 +2724,15 @@ void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 {
+	m_utf8_1 = "a";
+
+	if (tagTop () == TT_A)
+		{
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
+
 	const PP_AttrProp * pAP = 0;
-	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 
 	if (!bHaveProp || (pAP == 0)) return;
 
@@ -2716,12 +2741,6 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 
 	if (szType == 0) return; // ??
 
-	m_utf8_1 = "a";
-
-	if (tagTop () == TT_A)
-		{
-			tagClose (TT_A, m_utf8_1, ws_None);
-		}
 	if (UT_XML_stricmp (szType, "start") == 0)
 		{
 			const XML_Char * szName = 0;
@@ -2755,7 +2774,7 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 
 				PT_AttrPropIndex api = pcr->getIndexAP ();
 
-				if (api) _openSpan (api);
+				_openSpan (api);
 
 				PT_BufIndex bi = pcrs->getBufIndex ();
 				_outputData (m_pDocument->getPointer (bi), pcrs->getLength ());
