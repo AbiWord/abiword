@@ -2015,6 +2015,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		getCharFormat(&props_in);
 		currentfont = UT_getAttribute("font-family",props_in);
 		properties[1] = currentfont;
+		UT_DEBUGMSG(("deleteSpan - 1: Inital pos %d count %d \n",getPoint(),count));
 
 		UT_uint32 amt = count;
 		UT_uint32 posCur = getPoint();
@@ -2093,6 +2094,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			}
 			else
 			{
+				UT_DEBUGMSG(("deleteSpan - 2: posCur %d amt %d \n",posCur,amt));
 				m_pDoc->deleteSpan(posCur, posCur+amt,NULL, iRealDeleteCount);
 			}
 

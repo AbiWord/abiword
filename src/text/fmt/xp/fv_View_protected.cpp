@@ -3278,6 +3278,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// if the run which declared itself for our position is end of paragraph run,
 		// we need to ensure that the position is just before the run, not after it
 		// (fixes bug 1120)
+		UT_DEBUGMSG(("_charMotion: pRun->getBlockOffset() %d getPosition %d insPoint %d \n",pRun->getBlockOffset(), pRun->getBlock()->getPosition(),m_iInsPoint));
 		if(pRun && pRun->getType() == FPRUN_ENDOFPARAGRAPH
 		   && (pRun->getBlockOffset() + pRun->getBlock()->getPosition()) < m_iInsPoint)
 		{
@@ -3333,7 +3334,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// this is much simpler, since the findPointCoords will return the
 	// run on the left of the requested position, so we just need to move
 	// to its end if the position does not fall into that run
-	if(!bForward && (iRunEnd <= m_iInsPoint))
+	UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
+	if(!bForward && (iRunEnd <= m_iInsPoint) && (pRun->getBlockOffset() > 0))
 	{
 		_setPoint(iRunEnd - 1);
 	}
