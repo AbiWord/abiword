@@ -876,13 +876,9 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   if (oldName.empty())
     {
       const XAP_StringSet * pSS = m_pApp->getStringSet();
-      const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_pApp->getDefaultEncoding()).c_str();
-      int iLen = strlen(szTmp) + 10;
-      char *szTmp2 = new char[iLen];
-      
-      sprintf(szTmp2, szTmp, m_iUntitled);
-      oldName = szTmp2;
-      delete[] (szTmp2);
+	  const UT_String sTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_app->getDefaultEncoding());
+	  UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
+
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
     }
   else
@@ -1991,13 +1987,9 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   if (oldName.empty())
     {
       const XAP_StringSet * pSS = m_app->getStringSet();
-      const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_app->getDefaultEncoding()).c_str();
-      int iLen = strlen(szTmp) + 10;
-      char *szTmp2 = new char[iLen];
-      
-      sprintf(szTmp2, szTmp, m_iUntitled);
-      oldName = szTmp2;
-      delete[] (szTmp2);
+	  const UT_String sTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_app->getDefaultEncoding());
+	  UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
+
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
     }
   else
