@@ -1924,6 +1924,12 @@ static void set_ok (GtkWidget * /*widget*/, UT_Bool *dialog_result)
 
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
+	// These define the element offsets in a color vector
+	guint RED = 0;
+	guint GREEN = 1;
+	guint BLUE = 2;
+	gdouble currentColor[3] = { 0, 0, 0 };
+
 	GtkFontSelectionDialog * cf;
 	UT_Bool accepted = FALSE;
 	gchar * selectedFont = NULL;
@@ -2098,14 +2104,12 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		UT_RGBColor c;
 		UT_parseColor(s, c);
 
-		gdouble currentColor[4];
-
-		currentColor[0] = ((gdouble) c.m_red / (gdouble) 255.0);
-		currentColor[1] = ((gdouble) c.m_grn / (gdouble) 255.0);
-		currentColor[2] = ((gdouble) c.m_blu / (gdouble) 255.0);
-		currentColor[3] = 1; // Alpha channel?
+		currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
+		currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
+		currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
+
 	}
 
 	if (!gtk_font_selection_dialog_set_font_name(cf, fontString))
@@ -2285,14 +2289,13 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 			}
 
 			// Color
-			gdouble gotColor[4];
-			gtk_color_selection_get_color(GTK_COLOR_SELECTION(colorSelector), gotColor);
+			gtk_color_selection_get_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
 			
 			char buf_color[6];
 			sprintf(buf_color, "%02x%02x%02x",
-					(unsigned int) (gotColor[0] * (gdouble) 255.0),
-					(unsigned int) (gotColor[1] * (gdouble) 255.0),
-					(unsigned int) (gotColor[2] * (gdouble) 255.0));
+					(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
+					(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
+					(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
 
 			props_out[i] = "color";
 			props_out[i+1] = buf_color;
