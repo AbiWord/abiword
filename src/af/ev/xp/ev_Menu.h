@@ -31,7 +31,11 @@ class EV_EditMethodContainer;
 class EV_EditMethod;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
+class EV_Menu_Action;
+class EV_Menu_Label;
 class AV_View;
+class XAP_App;
+class XAP_Frame;
 
 class EV_Menu
 {
@@ -50,6 +54,9 @@ public:
 	const EV_Menu_LabelSet *	getMenuLabelSet(void) const;
 
 protected:
+        const char ** getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+				  EV_Menu_Action * pAction, EV_Menu_Label * pLabel);
+
 	EV_EditMethodContainer *	m_pEMC;
 	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */
 	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */

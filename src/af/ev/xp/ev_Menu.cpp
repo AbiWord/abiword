@@ -29,8 +29,13 @@
 #include "ev_Menu.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
+#include "ev_EditEventMapper.h"
+#include "ev_Menu_Actions.h"
+#include "ev_Menu_Labels.h"
 #include "xap_Menu_Layouts.h"
 #include "xap_Menu_LabelSet.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
 
 
 /*****************************************************************/
@@ -94,6 +99,74 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 
 	return true;
 	
+}
+
+
+/* replace _ev_GetLabelName () */
+/* this version taken from ev_UnixMenu.cpp */
+const char ** EV_Menu::getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+				  EV_Menu_Action * pAction, EV_Menu_Label * pLabel)
+{
+	static const char * data[2] = {NULL, NULL};
+
+	// hit the static pointers back to null each time around
+	data[0] = NULL;
+	data[1] = NULL;
+	
+	const char * szLabelName;
+	
+	if (pAction->hasDynamicLabel())
+		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
+	else
+		szLabelName = pLabel->getMenuLabel();
+
+	if (!szLabelName || !*szLabelName)
+		return data;	// which will be two nulls now
+
+	static char accelbuf[32];
+	{
+		// see if this has an associated keybinding
+		const char * szMethodName = pAction->getMethodName();
+
+		if (szMethodName)
+		{
+			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+			UT_ASSERT(pEMC);
+
+			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+			UT_ASSERT(pEM);						// make sure it's bound to something
+
+			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
+			UT_ASSERT(pEEM);
+
+			const char * string = pEEM->getShortcutFor(pEM);
+			if (string && *string)
+				strcpy(accelbuf, string);
+			else
+				// zero it out for this round
+				*accelbuf = 0;
+		}
+	}
+
+	// set shortcut mnemonic, if any
+	if (*accelbuf)
+		data[1] = accelbuf;
+	
+	if (!pAction->raisesDialog())
+	{
+		data[0] = szLabelName;
+		return data;
+	}
+
+	// append "..." to menu item if it raises a dialog
+	static char buf[128];
+	memset(buf,0,NrElements(buf));
+	strncpy(buf,szLabelName,NrElements(buf)-4);
+	strcat(buf,"...");
+
+	data[0] = buf;
+	
+	return data;
 }
 
 
