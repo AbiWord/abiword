@@ -194,7 +194,7 @@ PtWidget_t *RestartLabel;
 
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_Title),0);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
-	mainWindow=PtCreateWidget( PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
+	mainWindow=PtCreateWidget( PtWindow,NULL,n,args);
 	n=0;
 
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
