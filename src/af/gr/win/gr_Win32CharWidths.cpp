@@ -27,9 +27,7 @@
 #include "ut_endian.h"
 
 //////////////////////////////////////////////////////////////////
-#define NEW_SCALE 0
-
-#if NEW_SCALE
+#if 1
 
 #define _UL(x) (x)
 #define _UUL(x)(x) = (x)

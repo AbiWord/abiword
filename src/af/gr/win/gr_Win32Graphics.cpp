@@ -37,7 +37,7 @@
 #include "ut_Win32OS.h"
 
 #define WIN_SCALE_RATIO 1440.0/72.
-#define NEW_SCALE 0
+#define NEW_SCALE 1
 
 //#define GR_GRAPHICS_DEBUG	1
 
@@ -1378,7 +1378,7 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 #if NEW_SCALE
 	LOGFONT lf;
 	int iRes = GetObject(m_hFont, sizeof(LOGFONT), &lf);
-	lf.lfHeight= - static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
+	lf.lfHeight= static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
 	HFONT hFont = CreateFontIndirect(&lf);
 	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
 	SelectObject(hdc,hFont);
@@ -1416,7 +1416,7 @@ void GR_Win32Font::setupFontInfo()
 #if NEW_SCALE
 	LOGFONT lf;
 	int iRes = GetObject(m_hFont, sizeof(LOGFONT), &lf);
-	lf.lfHeight = - static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
+	lf.lfHeight = static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
 	HFONT hFont = CreateFontIndirect(&lf);
 	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
 	SelectObject(hdc,hFont);
