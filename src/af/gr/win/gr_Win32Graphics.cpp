@@ -192,7 +192,6 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 		LOGFONT lf;
 		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
-		lf.lfHeight = (abs(lf.lfHeight) * 100.0)/getZoomPercentage();
 		m_pFontGUI = new GR_Win32Font(lf);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
