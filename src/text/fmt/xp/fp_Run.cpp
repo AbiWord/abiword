@@ -3165,6 +3165,10 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pCL);
 		maxW = pFL->getFrameWidth();
 		maxH = pFL->getFrameHeight();
+		if(getLine())
+		{
+			maxH -= getLine()->getY(); // take Y height into account.
+		}
 	}
 	else if (pCL && pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
@@ -3387,7 +3391,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	pClipRect.left = xoff;
 	pClipRect.height = getLine()->getContainer()->getHeight();
 	pClipRect.width = getLine()->getContainer()->getWidth();
-
+    pClipRect.height -= getLine()->getY();
 	//
 	// SEVIOR Says don't touch this if statement unless you know how to make windows
 	// and gnome-print print images. Otherwise your commit priviliges will be revoked.

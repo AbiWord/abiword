@@ -1077,6 +1077,13 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	}
 	if(pDSL->m_pLayout->isLayoutFilling())
 	{
+// FIXME:
+// Don't resize on load for now. Put this back laters when I can workout
+// how to avoid horrible slowdowns and crashes.
+//
+		pDSL->m_sHdrFtrChangeProps.clear();
+		pDSL->m_pHdrFtrChangeTimer->stop();
+		DELETEP(pDSL->m_pHdrFtrChangeTimer);
 		return;
 	}
 	// Don't do anything while a redrawupdate is happening either...

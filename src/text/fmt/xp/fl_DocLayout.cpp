@@ -455,7 +455,7 @@ void FL_DocLayout::fillLayouts(void)
 	m_pDoc->setDontImmediatelyLayout(false);
 	UT_ASSERT(m_lid != (PL_ListenerId)-1);
 	GR_Graphics * pG = getGraphics();
-//	formatAll();
+	formatAll(); // Do we keep this or not?
 	if(m_pView)
 	{
 		m_pView->setLayoutIsFilling(false);
@@ -473,11 +473,11 @@ void FL_DocLayout::fillLayouts(void)
 			}
 		}
 	}
+	setLayoutIsFilling(false);
 	if(!m_pView)
 	{
 		updateLayout();
 	}
-	setLayoutIsFilling(false);
 
 	// Layout of any TOC that is built only from a restricted document range is tentative, because
 	// the information required by the TOC might not have been available during the incremental

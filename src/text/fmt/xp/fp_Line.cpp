@@ -2848,7 +2848,7 @@ fp_Container*	fp_Line::getPrevContainerInSection(void) const
 //
 // Have to handle broken tables in the previous layout..
 //
-		if(pPrevCon->getContainerType() == FP_CONTAINER_TABLE)
+		if(pPrevCon && pPrevCon->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pPrevCon);
 			fp_TableContainer * pLLast = pTab;
