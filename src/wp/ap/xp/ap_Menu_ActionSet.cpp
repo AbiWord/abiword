@@ -149,7 +149,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,0,	"insPageNo",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,0,	"insDateTime",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,0,	"insField",			NULL,					NULL);
-	_s(AP_MENU_ID_INSERT_TEXTBOX,		0,1,0,0,	"insTextBox",			NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_TEXTBOX,		0,0,0,0,	"insTextBox",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_MAILMERGE,		0,1,0,0,	"insMailMerge",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FILE, 0,1,0,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,0,	"insSymbol",		NULL,					NULL);
@@ -162,8 +162,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 #endif
 	_s(AP_MENU_ID_INSERT_INSERTHEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_INSERT_INSERTFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
+#ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);
+#endif
 	_s(AP_MENU_ID_FORMAT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,0,	"dlgLanguage",	ap_GetState_StylesLocked,					NULL);
@@ -173,7 +175,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,0,	"dlgColumns",		ap_GetState_ColumnsActive,					NULL);
-	_s(AP_MENU_ID_FMT_BACKGROUND, 0,1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_FMT_BACKGROUND, 1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR, 0,1,0,0, "dlgBackground", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_IMAGE, 0,1,0,0, "fileInsertPageBackgroundGraphic", NULL, NULL);
 	_s(AP_MENU_ID_FMT_HDRFTR,     0,1,0,0, "dlgHdrFtr", NULL, NULL);
@@ -243,7 +245,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_SELECT_ROW,0,0,0,0, "selectRow", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT_CELL,0,0,0,0, "selectCell", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_MERGE_CELLS,0,1,0,0, "mergeCells", ap_GetState_InTable, NULL);
-	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,0,0,0, NULL, ap_GetState_InTableMerged, NULL);
+	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,1,0,0, "splitCells", ap_GetState_InTableMerged, NULL);
 	_s(AP_MENU_ID_TABLE_SPLIT_TABLE,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_FORMAT,0,1,0,0, "formatTable", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);

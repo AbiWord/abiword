@@ -286,7 +286,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
 		MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
 		MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
+#ifndef XP_MAC_TARGET_MACOSX
+		// On MacOS X don't put a separator as the "Option" menu item is moved away at run time
 		Separator()
+#endif
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 	EndSubMenu()
 
@@ -370,7 +373,10 @@ BeginLayout(Main,0)
 		Separator()
 #ifndef HAVE_GNOME
 		MenuItem(AP_MENU_ID_HELP_CREDITS)
+#ifndef XP_MAC_TARGET_MACOSX
+		// On MacOS X don't put a separator as the "About" menu item is moved away at run time
 		Separator()
+#endif
 #endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 	EndSubMenu()
