@@ -23,10 +23,6 @@
 
 #include <stdio.h>
 
-#ifndef HAVE_LIBXML2
-#include "xmlparse.h"
-#endif
-
 #include "ut_vector.h"
 #include "ut_stack.h"
 #include "ie_imp_XML.h"

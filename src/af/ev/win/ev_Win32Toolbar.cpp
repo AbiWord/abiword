@@ -35,7 +35,7 @@
 #include "xap_Win32Toolbar_Icons.h"
 #include "ev_Win32Toolbar_ViewListener.h"
 #include "xav_View.h"
-#include "xmlparse.h"
+#include "ut_xml.h"
 #include "xap_Prefs.h"
 
 #ifndef TBSTYLE_AUTOSIZE

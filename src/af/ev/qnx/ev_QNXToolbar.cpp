@@ -35,7 +35,7 @@
 #include "xap_QNXToolbar_Icons.h"
 #include "ev_QNXToolbar_ViewListener.h"
 #include "xav_View.h"
-#include "xmlparse.h"
+#include "ut_xml.h"
 #include "xap_Prefs.h"
 
 

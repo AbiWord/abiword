@@ -42,6 +42,11 @@ _EXPAT_:
 	@if [ -d $(ABI_ROOT)/../expat ]; then						\
 		echo Found expat in peer directory;					\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;			\
+	elif [ -e /usr/include/expat.h -o -e /usr/local/include/expat.h ]; then \
+		echo "*** Found a shared library version of expat.  I'm going to use "; \
+		echo "*** that.  If it doesn't work, you should use the version "; \
+		echo "*** distributed with AbiWord."; \
+		echo ; \
 	else										\
 		echo ERROR -- expat not found;						\
 		echo You need to get expat from the AbiSource downloads site;		\
