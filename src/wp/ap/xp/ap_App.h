@@ -20,7 +20,11 @@
 #ifndef AP_APP_H
 #define AP_APP_H
 
+#include <popt.h>
+
 class AP_Args;
+class AP_Frame;
+class XAP_Frame;
 
 // this ugliness is needed for proper inheritence
 
@@ -60,9 +64,23 @@ class AP_App : public XAP_App_BaseClass
 	AP_App (XAP_Args * pArgs, const char * szAppName);
 #endif
 	virtual ~AP_App ();
+
+	/* Command line stuff. */
+
+	/* Initialize popt (different for GNOME); others needn't subclass. */
 	virtual void initPopt (AP_Args *);
+
+	/* Print an error message.  eg printf on UNIX, MessageBox on Windows. */
+	virtual void errorMsgBadArg (AP_Args *, int);
+	virtual void errorMsgBadFile(XAP_Frame *, const char *, UT_Error);
+
+	/* Allow additional platform-specific windowless args. */
 	virtual bool doWindowlessArgs (const AP_Args *);
 
+	/* Create a new XAP_Frame object. */
+	virtual XAP_Frame * newFrame(AP_App *);
+
+	bool parseCommandLine(poptContext poptcon);
  private:
 
 };

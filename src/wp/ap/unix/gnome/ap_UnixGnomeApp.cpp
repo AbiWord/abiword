@@ -285,6 +285,8 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 	return 0;
 }
 
+// This is distinctly different, due to the use of gnome_init_with_popt_table
+// and the chopping off after "version".
 void AP_UnixGnomeApp::initPopt(AP_Args *Args)
 {
 	int v = -1, i;

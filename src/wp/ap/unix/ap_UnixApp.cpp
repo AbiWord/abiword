@@ -198,7 +198,9 @@ bool AP_UnixApp::initialize(void)
 {
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
     bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
-    UT_ASSERT(bVerified);
+
+	if (!bVerified)
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
     // load the preferences.
     
@@ -1325,89 +1327,26 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     return 0;
 }
 
-/*!
- *  Open windows requested on commandline.
- * 
- * Unix puts the program name in argv[0], so [1] is the first argument.
- *
- * \return False if an unknown command line option was used, true
- * otherwise.  
- */
-bool AP_UnixApp::parseCommandLine(poptContext poptcon)
+XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
 {
-	int kWindowsOpened = 0;
-	const char *file = NULL;
+	AP_UnixFrame * pFrame = new AP_UnixFrame(app);
+	pFrame->initialize();
 
-	while ((file = poptGetArg (poptcon)) != NULL) {
-		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-		pFirstUnixFrame->initialize();
-
-		UT_Error error = pFirstUnixFrame->loadDocument
-			(file, IEFT_Unknown, true);
-		if (!error)
-		{
-			kWindowsOpened++;
-		}
-		else
-		{
-			// TODO we crash if we just delete this without putting something
-			// TODO in it, so let's go ahead and open an untitled document
-			// TODO for now.  this would cause us to get 2 untitled documents
-			// TODO if the user gave us 2 bogus pathnames....
-
-			// Because of the incremental loader, we should not crash anymore;
-			// I've got other things to do now though.
-			kWindowsOpened++;
-			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
-			pFirstUnixFrame->raise();
-
-			s_CouldNotLoadFileMessage (pFirstUnixFrame, file, error);
-		}
-	}
-
-	if (kWindowsOpened == 0)
-	{
-		// no documents specified or openable, open an untitled one
-		
-		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-		pFirstUnixFrame->initialize();
-		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
-	}
-
-	return true;
+	return pFrame;
 }
 
-void AP_UnixApp::initPopt(AP_Args *Args)
+void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
-	int nextopt, v, i;
+	printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+			poptBadOption (Args->poptcon, 0),
+			poptStrerror (nextopt),
+			Args->XArgs->m_argv[0]);
+}
 
-	for (i = 0; Args->const_opts[i].longName != NULL; i++)
-		;
-
-	v = i;
-
-	struct poptOption * opts = (struct poptOption *)
-		UT_calloc(v+1, sizeof(struct poptOption));
-	for (int j = 0; j < v; j++)
-		opts[j] = Args->const_opts[j];
-
-	Args->options = opts;
-	Args->poptcon = poptGetContext("AbiWord", 
-				       Args->XArgs->m_argc, Args->XArgs->m_argv, 
-				       Args->options, 0);
-
-    while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 || 
-		   nextopt == POPT_ERROR_BADOPT)
-        /* do nothing */ ;
-
-    if (nextopt != -1) 
-	{
-        printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
-                 poptBadOption (Args->poptcon, 0),
-                 poptStrerror (nextopt),
-                 Args->XArgs->m_argv[0]);
-        exit (1);
-    }
+void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+							 UT_Error error)
+{
+	s_CouldNotLoadFileMessage (pFrame, file, error);
 }
 
 /*!

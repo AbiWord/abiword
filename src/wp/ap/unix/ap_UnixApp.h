@@ -66,7 +66,6 @@ public:
 	virtual bool					canPasteFromClipboard(void);
 	
 	virtual void					setSelectionStatus(AV_View * pView);
-	bool							parseCommandLine(poptContext poptcon);
 
 	/*!
 	  Sets the view selection
@@ -92,8 +91,11 @@ public:
 	void							catchSignals(int sig_num);
 	void loadAllPlugins ();
 
-	virtual void initPopt (AP_Args *);
+	virtual void errorMsgBadArg(AP_Args * Args, int nextopt);
+	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+								 UT_Error error);
 	virtual bool doWindowlessArgs (const AP_Args *);
+	virtual XAP_Frame * newFrame(AP_App *);
 
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);
