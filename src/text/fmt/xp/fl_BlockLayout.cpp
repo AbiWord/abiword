@@ -5113,8 +5113,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// Detach from the line
 		fp_Line* pLine = pNukeRun->getLine();
 		UT_ASSERT(pLine && pLine == pLastLine);
-		pLine->removeRun(pNukeRun);
-
+		if(pLine)
+		{
+			pLine->removeRun(pNukeRun);
+		}
 		// Unlink and delete it
 		if (pPrevRun && (pPrevRun != pNukeRun))
 		{
@@ -5189,8 +5191,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			{
 				pLine->removeRun(pRun);
 			}
-			pLastLine->addRun(pRun);
-
+			if(pLastLine)
+			{
+				pLastLine->addRun(pRun);
+			}
 			pRun = pRun->getNextRun();
 		}
 
