@@ -624,10 +624,12 @@ endif
 endif
 endif
 
+ifdef LIBGLADE_CONFIG
 LIBGLADE_CFLAGS = $(shell $(LIBGLADE_CONFIG) --cflags)
 LIBGLADE_LIBS = $(shell $(LIBGLADE_CONFIG) --libs)
 CFLAGS 	 +=	$(LIBGLADE_CFLAGS)
 EXTRA_LIBS +=	$(LIBGLADE_LIBS)
+endif
 
 ##################################################################
 ##################################################################
