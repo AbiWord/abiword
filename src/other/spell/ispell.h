@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.11  2001/03/24 23:28:41  dom
+ * Make C++ aware and watch out for VOID on Win32
+ *
  * Revision 1.10  1999/12/21 18:46:29  sterwill
  * ispell patch for non-English dictionaries by Henrik Berg <henrik@lansen.se>
  *
@@ -135,6 +138,10 @@
 
 #include <stdio.h>
 /*  #include "ut_types.h" */
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* c++ */
 
 /* largest word accepted from a file by any input routine, plus one */
 #ifndef	INPUTWORDLEN
@@ -256,10 +263,14 @@ extern int		gnMaskBits;
 
 #ifdef __STDC__
 #define P(x)	x
-#define VOID	void
+ #ifndef VOID
+   #define VOID	void
+ #endif
 #else /* __STDC__ */
 #define P(x)	()
-#define VOID	char
+ #ifndef VOID
+   #define VOID	char
+ #endif
 #define const
 #endif /* __STDC__ */
 
@@ -820,3 +831,7 @@ INIT (int math_mode, 0);
  * m -- looking for a \begin{minipage} argument.
  */
 INIT (char LaTeX_Mode, 'P');
+
+#ifdef __cplusplus
+}
+#endif /* c++ */
