@@ -425,7 +425,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 				if(dot)
 				{
 					*(dot+1) = 0;
-					UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrFile) < MAX_DLG_INS_PICT_STRING);
+					UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING);
 					strcat(buff,pNotify->lpOFN->lpstrDefExt);
 				}
 				//SendMessage(hDlg,CDM_SETDEFEXT,0,(LPARAM)ext);
