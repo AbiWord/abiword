@@ -44,7 +44,10 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xav_View.h"
-
+#include "ap_Command.h"
+#include "xap_ModuleManager.h"
+#include "xap_Module.h"
+#include "ev_EditMethod.h"
 #include "ie_imp.h"
 #include "ie_types.h"
 #include "ie_exp_Text.h"
@@ -107,6 +110,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	 {"verbose", 'v', POPT_ARG_INT, NULL, 0, "The verbosity level (0, 1, 2)", "LEVEL"},
 	 {"print", 'p', POPT_ARG_STRING, NULL, 0, "print this file to a file or printer", "FILE or |lpr"},
 	 {"show", '\0', POPT_ARG_NONE, NULL, 0, "If you really want to start the GUI (even if you use the --to option)", ""},
+	 {"plugin", '\0', POPT_ARG_NONE, NULL, 0, "If you want to execute a plugin instead of the main application ", ""},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
 	gnomelib_register_popt_table (options, "Abiword Options");
@@ -163,6 +167,16 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
  	for (k = 1; k < Args.m_argc; k++)
  		if (*Args.m_argv[k] == '-')
  			if ((UT_stricmp(Args.m_argv[k],"--nosplash") == 0) ||
+				(UT_stricmp(Args.m_argv[k], "-n") == 0))
+ 			{
+ 				bShowSplash = false;
+ 				break;
+ 			}
+
+ 	// Do a quick and dirty find for "--plugin"
+ 	for (k = 1; k < Args.m_argc; k++)
+ 		if (*Args.m_argv[k] == '-')
+ 			if ((UT_stricmp(Args.m_argv[k],"--plugin") == 0) ||
 				(UT_stricmp(Args.m_argv[k], "-n") == 0))
  			{
  				bShowSplash = false;
@@ -247,6 +261,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	char *printto = NULL;
 	int verbose = 1;
 	int show = 0;
+	char * plugin = NULL;
 #ifdef DEBUG
  	gboolean dumpstrings = FALSE;
 #endif
@@ -267,6 +282,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	 {"print", 'p', POPT_ARG_STRING, &printto, 0, "HACK", "HACK"},
 	 {"verbose", 'v', POPT_ARG_INT, &verbose, 0, "HACK", "HACK"},
 	 {"show", '\0', POPT_ARG_NONE, &show, 0, "HACK", NULL},
+	 {"plugin", '\0', POPT_ARG_STRING, &plugin, 0, "HACK", NULL},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
 	
@@ -364,6 +380,48 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	    return false;
 	}
 	
+	if(plugin)
+	{
+//
+// Start a plugin rather than the main abiword application.
+//
+	    const char * szName = NULL;
+		XAP_Module * pModule = NULL;
+
+		const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+		bool bFound = false;
+		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+		{
+			pModule = (XAP_Module *)pVec->getNthItem (i);
+			szName = pModule->getModuleInfo()->name;
+			if(UT_strcmp(szName,plugin) == 0)
+			{
+				bFound = true;
+			}
+		}
+		if(!bFound)
+		{
+			printf("Plugin %s not found or loaded \n",plugin);
+			return false;
+		}
+//
+// You must put the name of the ev_EditMethod in the usage field
+// of the plugin registered information.
+//
+		const char * evExecute = pModule->getModuleInfo()->usage;
+		EV_EditMethodContainer* pEMC = getEditMethodContainer();
+		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
+		if(!pInvoke)
+		{
+			printf("Plugin %s invoke method %s not found \n",plugin,evExecute);
+			return false;
+		}
+//
+// Execute the plugin, then quit
+//
+		ev_EditMethod_invoke(pInvoke, "Called From UnixGnomeApp");
+		return false;
+	}
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();
@@ -404,5 +462,8 @@ bool AP_UnixGnomeApp::parseCommandLine()
 
 	return true;
 }
+
+
+
 
 

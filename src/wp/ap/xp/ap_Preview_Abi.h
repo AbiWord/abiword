@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 Martin Sevior <msevior@physics.unimelb.edu.au>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

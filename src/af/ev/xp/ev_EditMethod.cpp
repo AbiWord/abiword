@@ -256,7 +256,15 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM,
     return false ;
 
   // no controlling view == bad joo joo - return false
-  AV_View * pView = XAP_App::getApp()->getLastFocussedFrame()->getCurrentView() ;
+  // Actually allow this for plugins invoked from the command line
+  //
+  AV_View * pView = NULL;
+  XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+  if(!pFrame)
+  {
+	  return (*pFN)(pView, pData);
+  }
+  pView = pFrame->getCurrentView() ;
   UT_ASSERT(pView);
   if (!pView)
     return false;
