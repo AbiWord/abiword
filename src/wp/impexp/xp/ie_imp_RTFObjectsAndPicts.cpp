@@ -896,7 +896,14 @@ IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
 	if(	m_ieRTF->getPasteDepth() > 0)
 	{
 		m_ieRTF->closePastedTableIfNeeded();
-		m_ieRTF->insertStrux(PTX_Block);
+		if(m_ieRTF->bUseInsertNotAppend())
+		{
+			m_ieRTF->insertStrux(PTX_Block);
+		}
+		else
+		{
+			m_ieRTF->getDoc()->appendStrux(PTX_Block, NULL);
+		}
 	}
 	if(!m_ieRTF->isFrameIn())
 	{
@@ -990,12 +997,12 @@ void IE_Imp_RTF::HandleShape(void)
 	UT_DEBUGMSG((">>>>End frame\n"));
 	if(!bUseInsertNotAppend()) {
 		getDoc()->appendStrux(PTX_EndFrame, NULL);
-		m_newParaFlagged = true;
+		m_newParaFlagged = false;
 	}
 	else 
 	{
 		insertStrux(PTX_EndFrame);
-		m_newParaFlagged = true;
+		m_newParaFlagged = false;
 	}
 }
 

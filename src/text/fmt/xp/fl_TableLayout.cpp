@@ -159,12 +159,18 @@ void fl_TableLayout::createTableContainer(void)
 	setTableContainerProperties(pTableContainer);
 	fl_ContainerLayout * pCL = myContainingLayout();
 	fp_Container * pCon = pCL->getLastContainer();
-	UT_ASSERT(pCon);
-	UT_sint32 iWidth = pCon->getWidth();
+	UT_sint32 iWidth = 0;
+	if(pCon != NULL)
+	{
+		iWidth = pCon->getWidth();
+	}
 	if(iWidth == 0)
 	{
 		iWidth = getDocSectionLayout()->getWidth();
-		pCon->setWidth(iWidth);
+		if(pCon)
+		{
+			pCon->setWidth(iWidth);
+		}
 	}
 	pTableContainer->setWidth(iWidth);
 //
@@ -299,6 +305,10 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	else
 	{
 		pUpCon = pUPCL->getLastContainer();
+		if(pUpCon == NULL)
+		{
+			pUpCon = pUPCL->getNewContainer(NULL);
+		}
 		UT_ASSERT(pUpCon);
 	}
 	if(pPrevL == NULL)
