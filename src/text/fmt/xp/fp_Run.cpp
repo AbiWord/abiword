@@ -609,6 +609,17 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 
 /*! returns PP_AttrProp associated with this span, taking on board the
     presence of revisions
+    \returns pSpan : location to store the PP_AttrProp
+*/
+const PP_AttrProp * fp_Run::getSpanAP(void)
+{
+	const PP_AttrProp * pAP = NULL; 
+	getSpanAP(pAP); 
+	return pAP;
+}
+
+/*! returns PP_AttrProp associated with this span, taking on board the
+    presence of revisions
     \param pSpan : location to store the PP_AttrProp
 */
 void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)

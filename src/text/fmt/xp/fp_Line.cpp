@@ -468,7 +468,7 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 	}
 
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
-	UT_ASSERT(ndx >= 0);
+	UT_return_val_if_fail(ndx>=0,false);
 	m_vecRuns.deleteNthItem(ndx);
 
 	removeDirectionUsed(pRun->getDirection());

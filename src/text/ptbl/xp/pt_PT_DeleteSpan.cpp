@@ -827,7 +827,31 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 			}
 		}
 	}
-
+//
+// Can't handle a delete span start from an endTOC. sum1 has arranged corner
+// cases where this is possible. HAndle this corner case by starting at the 
+// next strux
+//
+	if(pf_First->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf_First);
+		if(pfs->getStruxType() == PTX_EndTOC)
+		{
+			pf_Frag * pf = pf_First->getNext();
+			while(pf && pf->getLength() == 0)
+			{
+				pf = pf->getNext();
+			}
+			if(pf && pf->getType() ==  pf_Frag::PFT_Strux)
+			{
+				pfs = static_cast<pf_Frag_Strux *>(pf);
+				if(pfs->getStruxType() == PTX_Block)
+				{
+					dpos1++;
+				}
+			}
+		}
+	}
 	//  We want to keep tweaking the delete span until there is nothing
 	//  more to tweak.  We check to see if nothing has changed in the
 	//  last tweak, and if so, we are done.

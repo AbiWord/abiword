@@ -167,7 +167,8 @@ public:
 #endif
 
 	void                getSpanAP(const PP_AttrProp * &pSpanAP);
-	const PP_AttrProp * getSpanAP() {const PP_AttrProp * pAP; getSpanAP(pAP); return pAP;}
+	const PP_AttrProp * getSpanAP(void);
+
 	
 	inline void         getBlockAP(const PP_AttrProp * &pBlockAP)
 	                                     {getBlock()->getAP(pBlockAP);}

@@ -637,7 +637,14 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		{
 			UT_ASSERT(pRunToBump->getLine() == pLine);
 			xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
-			pLine->removeRun(pRunToBump);
+			if(!pLine->removeRun(pRunToBump))
+			{
+//
+// More repair code I think...
+// run is not on the Line! It's totally lost...
+//
+				pRunToBump->setLine(NULL);
+			}
 			
 			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
 //
