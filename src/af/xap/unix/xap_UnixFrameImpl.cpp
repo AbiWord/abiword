@@ -1242,12 +1242,27 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 {
 	UT_DEBUGMSG(("Retrieve Surrounding\n"));
 
-#if 0
-  gtk_im_context_set_surrounding (context,
-				  entry->text,
-				  entry->n_bytes,
-				  g_utf8_offset_to_pointer (entry->text, entry->current_pos) - entry->text);
-#endif
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
+	PT_DocPosition begin_p, end_p, here;
+
+	begin_p = pView->mapDocPos (FV_DOCPOS_BOB);
+	end_p = pView->mapDocPos (FV_DOCPOS_EOB);
+	here = pView->getInsPoint ();
+
+	UT_UCSChar * text = pView->getTextBetweenPos (begin_p, end_p);
+
+	if (!text)
+		return TRUE;
+
+	UT_UTF8String utf (text);
+	DELETEP(text);
+
+	gtk_im_context_set_surrounding (context,
+									utf.utf8_str(),
+									utf.byteLength (),
+									here - begin_p);
 
 	return TRUE;
 }
