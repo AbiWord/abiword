@@ -115,7 +115,7 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 	
 	#define BITMAP_ITEMS	14
 			
-	EV_Menu_Bitmap bitmaps[BITMAP_ITEMS] = 
+	static const EV_Menu_Bitmap bitmaps[BITMAP_ITEMS] = 
 	{	
 			
 		// File
@@ -157,14 +157,21 @@ void	EV_Win32Menu::destroy()
 	{
 		EV_Menu_Bitmap* pItem = m_pArMenuBitmaps;
 		
-		for (int i=0; i<BITMAP_ITEMS; i++, pItem++)	
-			 ::DeleteObject(pItem->hBitmap);
+		for (int i=0; i< BITMAP_ITEMS; ++i)
+		{
+			if (pItem[i].hBitmap)
+				::DeleteObject(pItem[i].hBitmap);
+		}
 		
-		delete m_pArMenuBitmaps;
+		delete [] m_pArMenuBitmaps;
+		m_pArMenuBitmaps = 0;
 	}	
 	
 	if (m_myMenu)
+	{
 		DestroyMenu(m_myMenu);
+		m_myMenu = 0;
+	}
 	
 }
 
