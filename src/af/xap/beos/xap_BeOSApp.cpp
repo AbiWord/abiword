@@ -26,14 +26,17 @@
 #include "xap_BeOSFrame.h"
 #include "xap_BeOSToolbar_Icons.h"
 #include "xap_BeOSToolbar_ControlFactory.h"
+#include "ut_debugmsg.h"
+#include "ut_string.h"
+
 
 /*****************************************************************/
 
 XAP_BeOSApp::XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 	  : XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
-	printf("BEAPP: Starting Application! \n");
 	m_pBeOSToolbarIcons = 0;
+        _setAbiSuiteLibDir();                
 }
 
 XAP_BeOSApp::~XAP_BeOSApp(void)
@@ -43,7 +46,6 @@ XAP_BeOSApp::~XAP_BeOSApp(void)
 
 UT_Bool XAP_BeOSApp::initialize(void)
 {
-	printf("BEAPP: Initialize! \n");
 	// let our base class do it's thing.
 	
 	XAP_App::initialize();
@@ -98,6 +100,61 @@ const char * XAP_BeOSApp::getUserPrivateDirectory(void) {
                 strcat(buf,"/");
         strcat(buf,szAbiDir);
         return buf;                                     
+}
+
+void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
+        char buf[PATH_MAX];
+        char buf2[PATH_MAX];
+
+        // see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
+
+        int kLimit = m_pArgs->m_argc;
+	// BeOS puts the program name in argv[0], so [1] is the first argument
+        int nFirstArg = 1;      
+        int k;
+
+        for (k=nFirstArg; k<kLimit; k++)
+                if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
+                {
+                        strcpy(buf,m_pArgs->m_argv[k+1]);
+                        int len = strlen(buf);
+                        if (buf[len-1]=='/')            // trim trailing slash
+                                buf[len-1] = 0;
+                        XAP_App::_setAbiSuiteLibDir(buf);
+                        return;
+                }
+
+        // if not, see if ABISUITE_HOME was set in the environment
+
+        const char * sz = getenv("ABISUITE_HOME");
+        if (sz && *sz)
+        {
+                strcpy(buf,sz);
+                char * p = buf;
+                int len = strlen(p);
+                if ( (p[0]=='"') && (p[len-1]=='"') )
+                {
+                        // trim leading and trailing DQUOTES
+                        p[len-1]=0;
+                        p++;
+                        len -= 2;
+                }
+                if (p[len-1]=='/')                              // trim trailingslash
+                        p[len-1] = 0;
+                XAP_App::_setAbiSuiteLibDir(p);
+                return;
+        }
+
+        // TODO what to do ??  try the current directory...
+
+        UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory...."));
+
+        getcwd(buf,sizeof(buf));
+        int len = strlen(buf);
+        if (buf[len-1]=='/')                            // trim trailing slash
+                buf[len-1] = 0;
+        XAP_App::_setAbiSuiteLibDir(buf);
+        return;
 }
 
 /*

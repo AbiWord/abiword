@@ -58,6 +58,7 @@ public:
 	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getUserPrivateDirectory(void);
+	virtual void 						_setAbiSuiteLibDir(void);
 
 
 	ABI_BApp				m_BApp;		
