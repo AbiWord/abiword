@@ -643,7 +643,7 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	[item setTag:DIM_PT];
 	[menu addItem:item];
 	[item release];
-	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_pico)
+	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_pica)
 									action:nil keyEquivalent:@""];
 	[item setTag:DIM_PI];
 	[menu addItem:item];
