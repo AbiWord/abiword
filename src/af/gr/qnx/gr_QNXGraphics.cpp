@@ -277,36 +277,40 @@ UT_uint32 GR_QNXGraphics::getFontHeight()
 
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	if (c >= 256) return 0;  // TODO: doesn't grok Unicode
-	const char *font;
-	char buffer[2];
+	if (c >= 256) {
+		UT_DEBUGMSG(("TODO: Support wide characters properly "));
+		return 0;  // TODO: doesn't grok Unicode
+	}
 
+	const char *font;
 	if (!m_pFont || !(font = m_pFont->getFont())) {
-		return(0);
+		return 0;
 	}
 
 	PhRect_t rect;
-	int indices, penpos;
+	char 	 buffer[2];
+	int 	 indices, penpos;
 
-	UT_UCSChar currentChar;
-	buffer[0] = (char)currentChar;
-	buffer[1] = 0;
 	memset(&rect, 0, sizeof(rect));
-	indices = 1;
-	penpos = 0;
+	buffer[0] = (char)c;
+	buffer[1] = '\0';
+	indices = 1;			
+	penpos = 0;			
+
 	PfExtentTextCharPositions(&rect, 		/* Rect extent */
-							  NULL,			/* Position offset */
-							  buffer,	    /* Buffer to hit */
-							  font, 		/* Font buffer uses */
-							  &indices,		/* Where to get pen pos from */
-							  &penpos, 		/* Where to store pen pos */
-							  1,			/* Number of indices */
-							  0,			/* Flags */
-							  0,			/* Length of buffer (use strlen) */
-							  0, 			/* Number of characters to skip */
-							  NULL);		/* Clipping rectangle? */
-	return (penpos);
+				  NULL,			/* Position offset */
+				  buffer,	    	/* Buffer to hit */
+				  font, 		/* Font buffer uses */
+				  &indices,		/* Where to get pen pos from */
+				  &penpos, 		/* Where to store pen pos */
+				  1,			/* Number of indices */
+				  0,			/* Flags TODO: PF_WIDE_CHARS */
+				  1,			/* Length of buffer (0 = use strlen) */
+				  0, 			/* Number of characters to skip */
+				  NULL);		/* Clipping rectangle? */
+	return penpos;
 }
+
 #if 0
 UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 					  int num,  unsigned short* pWidths)
@@ -741,7 +745,8 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 #else
-	UT_ASSERT(0);
+	//UT_ASSERT(0);
+	UT_DEBUGMSG(("TODO: Implement scrolling"));
 #endif
 }
 
