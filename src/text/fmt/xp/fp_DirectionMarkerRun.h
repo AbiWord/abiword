@@ -36,7 +36,8 @@ public:
 											UT_sint32 yPos,
 											PT_DocPosition& pos,
 											bool& bBOL,
-											bool& bEOL);
+											bool& bEOL,
+											bool & isTOC);
 	
 	virtual void 			findPointCoords(UT_uint32 iOffset,
 											UT_sint32& x,

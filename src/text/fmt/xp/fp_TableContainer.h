@@ -340,7 +340,7 @@ public:
 	void                sizeAllocate(fp_Allocation * pAllocate);
     virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y, 
 										PT_DocPosition& pos,
-										bool& bBOL, bool& bEOL);
+										bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual fp_Page *   getPage(void);
 	void				layout(void);
 	virtual void        setY(UT_sint32 iY);

@@ -138,7 +138,8 @@ void fp_DirectionMarkerRun::mapXYToPosition(UT_sint32 x,
 											UT_sint32 y,
 											PT_DocPosition& pos,
 											bool& bBOL,
-											bool& bEOL)
+											bool& bEOL,
+											bool & isTOC)
 {
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();

@@ -1763,7 +1763,7 @@ bool fp_TabRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
@@ -2160,7 +2160,7 @@ bool fp_ForcedLineBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::mapXYToPosition\n"));
 	pos = getBlock()->getPosition() + getBlockOffset();
@@ -2356,7 +2356,7 @@ bool fp_FieldStartRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2416,7 +2416,7 @@ bool fp_FieldEndRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2496,11 +2496,11 @@ bool fp_BookmarkRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_BookmarkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_BookmarkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	fp_Run *pRun = getNextRun();
 	UT_ASSERT(pRun);
-	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL);
+	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL,isTOC);
 }
 
 void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
@@ -2677,11 +2677,11 @@ bool fp_HyperlinkRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_HyperlinkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_HyperlinkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	fp_Run *pRun = getNextRun();
 	UT_ASSERT(pRun);
-	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL);
+	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL,isTOC);
 }
 
 void fp_HyperlinkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
@@ -2810,7 +2810,7 @@ bool fp_EndOfParagraphRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -3132,7 +3132,7 @@ bool fp_ImageRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
@@ -3713,7 +3713,7 @@ bool fp_FieldRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
@@ -4998,7 +4998,7 @@ bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -5109,7 +5109,7 @@ bool fp_ForcedPageBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;

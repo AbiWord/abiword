@@ -154,7 +154,7 @@ public:
 	void		remove(void);
 	UT_sint32	getMarginBefore(void) const;
 	UT_sint32	getMarginAfter(void) const;
-	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& isTOC);
 	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 	virtual void  clearScreen(void);

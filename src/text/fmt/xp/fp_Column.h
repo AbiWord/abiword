@@ -115,7 +115,7 @@ public:
 	virtual void		mapXYToPosition(UT_sint32 xPos,
 										UT_sint32 yPos,
 										PT_DocPosition& pos,
-										bool& bBOL, bool& bEOL);
+										bool& bBOL, bool& bEOL, bool &isTOC);
 
 	void		 		getOffsets(fp_ContainerObject* pContainer,
 								   UT_sint32& xoff,

@@ -3518,7 +3518,8 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 	PT_DocPosition pos;
 	bool bBOL = false;
 	bool bEOL = false;
-	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	bool isTOC = false;
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC);
 
 	// now get the run at the position and the hyperlink run
 	fp_HyperlinkRun * pH1 = 0;

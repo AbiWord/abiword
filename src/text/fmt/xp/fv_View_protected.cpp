@@ -1511,14 +1511,15 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 			PT_DocPosition iNewP;
 			fp_Page* pPage = _getPageForXY(xP, yP, xC, yC);
-			pPage->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL);
+			bool isTOC = false;
+			pPage->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL,isTOC);
 			UT_sint32 ii =0;
 			while((iNewP == iOldPoint) && (ii < 100) && (yPoint > 0))
 			{
 				yPoint -= iAfter;
 				yP = yPoint + iPageOffset - m_yScrollOffset;
 				pPage = _getPageForXY(xP, yP, xC, yC);
-				pPage->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL);
+				pPage->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL,isTOC);
 				ii++;
 			}
 			if(yPoint < 0)
@@ -1569,11 +1570,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 // If we're not in a Header/Footer we can't get off the page with the click
 // version of mapXYToPosition
 //
+	bool isTOC = false;
 	if(isHdrFtrEdit())
-		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true, &pShadow);
+		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, true, &pShadow);
 	else
 	{
-		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC);
 		while(pPage && (iNewPoint == iOldPoint) && (yClick < m_pLayout->getHeight()) && (yClick > 0))
 		{
 			if (bNext)
@@ -1596,7 +1598,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			}
 
 			if(pPage)
-				pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+				pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC);
 		}
 		xxx_UT_DEBUGMSG((" pPage %x iNewPoint %d iOldPoint %d yClick %d m_pLayout->getHeight() \n",pPage,iNewPoint,yClick,m_pLayout->getHeight()));
 	}
@@ -1721,7 +1723,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	UT_sint32 x,y,x2,y2;
 	UT_uint32 iHeight;
 	bool bDirection;
-	bool bBOL,bEOL;
+	bool bBOL,bEOL,isTOC;
 	UT_sint32 iYnext,iYscroll;
 	PT_DocPosition iNewPoint;
 	_findPositionCoords(getPoint(),false,x,y,x2,y2,iHeight,bDirection,&pBlock,&pRun);
@@ -1762,9 +1764,8 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 
 	if (pPage == NULL) pPage = pLine->getPage ();
 	if (iYnext < 0) iYnext = 0;
-
 	// convert the iYnext back into a point position, namely iNewPoint.
-	pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+	pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL,isTOC);
 
 	UT_sint32 newX,newY;
 	UT_uint32 newHeight;
@@ -1794,7 +1795,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 
 		for (x=0; x < pPage->getWidth(); x += step)
 		{
-			pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+			pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL,isTOC);
 			_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
 			pNewLine = static_cast<fp_Line *>(pRun->getLine());
 			if(pLine != pNewLine)

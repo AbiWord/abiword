@@ -489,7 +489,7 @@ void fp_Line::remove(void)
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
-							  bool& bBOL, bool& bEOL)
+							  bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	UT_uint32 count = m_vecRuns.getItemCount();
 	UT_uint32 i = 0;
@@ -517,7 +517,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 		bBOL = true;
 		bool bBBOL = true;
 		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
-		pFirstRun->mapXYToPosition(0, y2, pos, bBBOL, bEOL);
+		pFirstRun->mapXYToPosition(0, y2, pos, bBBOL, bEOL,isTOC);
 		return;
 	}
 
@@ -538,7 +538,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 				// when hit testing runs within a line, we ignore the Y coord
 //			if (((y2) >= 0) && ((y2) < (pRun2->getHeight())))
 				{
-					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
+					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL,isTOC);
 					return;
 				}
 			}
@@ -549,7 +549,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 				// #TF this can also happen legitimately with overstriking text runs
 				//UT_ASSERT(FPRUN_FMTMARK == pRun2->getType());
 
-				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
+				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL,isTOC);
 				return;
 			}
 
@@ -603,7 +603,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 		if(pClosestRun && pClosestRun->getType() == FPRUN_ENDOFPARAGRAPH)
 		{
 			UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
-			pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
+			pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL,isTOC);
 			return;
 		}
 		
@@ -617,11 +617,11 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	if(pClosestRun->isField())
 	{
 		UT_uint32 width = pClosestRun->getWidth() + 1;
-		pClosestRun->mapXYToPosition(width , y2, pos, bBOL, bEOL);
+		pClosestRun->mapXYToPosition(width , y2, pos, bBOL, bEOL,isTOC);
 	}
 	else
 	{
-		pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
+		pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL,isTOC);
 	}
 }
 

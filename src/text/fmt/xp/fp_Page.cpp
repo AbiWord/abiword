@@ -1224,17 +1224,17 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	return pos;
 }
 
-void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
+void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
 {
 	fl_HdrFtrShadow * pShad = NULL;
 	if(pShadow == NULL)
 	{
-		mapXYToPosition(false,x,y,pos,bBOL,bEOL, bUseHdrFtr, NULL);
+		mapXYToPosition(false,x,y,pos,bBOL,bEOL,isTOC, bUseHdrFtr, NULL);
 		return;
 	}
 	else
 	{
-		mapXYToPosition(false,x,y,pos,bBOL,bEOL, bUseHdrFtr, &pShad);
+		mapXYToPosition(false,x,y,pos,bBOL,bEOL,isTOC, bUseHdrFtr, &pShad);
 	}
 	*pShadow = pShad;
 }
@@ -1251,7 +1251,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
  \return pos The Document position corresponding the text at location x,y
  \return pShadow A pointer to the shadow corresponding to this header/footer
  */
-void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
+void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
 {
 	int count = m_vecColumnLeaders.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
@@ -1280,7 +1280,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 					&& (y < (pFrameC->getFullY() + pFrameC->getFullHeight() + iextra))
 					)
 				{
-					pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL);
+					pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL,isTOC);
 					return;
 				}
 				
@@ -1325,7 +1325,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 					&& (y >= p->getY())
 					&& (y < (p->getY() + p->getHeight())))
 				{
-					p->mapXYToPosition(x - p->getX(), y - p->getY(), pos, bBOL, bEOL);
+					p->mapXYToPosition(x - p->getX(), y - p->getY(), pos, bBOL, bEOL,isTOC);
 					if (pShadow)
 						*pShadow = p->getShadow();
 					return;
@@ -1355,7 +1355,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 					&& (y < (pColumn->getY() + pColumn->getHeight()))
 					)
 				{
-					pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
+					pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL,isTOC);
 					return;
 				}
 
@@ -1398,7 +1398,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 				&& (y < (pFC->getY() + pFC->getHeight()))
 				)
 			{
-				pFC->mapXYToPosition(x - pFC->getX(), y - pFC->getY(), pos, bBOL, bEOL);
+				pFC->mapXYToPosition(x - pFC->getX(), y - pFC->getY(), pos, bBOL, bEOL,isTOC);
 					return;
 			}
 
@@ -1422,13 +1422,13 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 	}
 	if (pMinXDist)
 	{
-		pMinXDist->mapXYToPosition(x - pMinXDist->getX(), y - pMinXDist->getY(), pos, bBOL, bEOL);
+		pMinXDist->mapXYToPosition(x - pMinXDist->getX(), y - pMinXDist->getY(), pos, bBOL, bEOL,isTOC);
 		return;
 	}
 
 	UT_ASSERT(pMinDist);
 
-	pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL);
+	pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL,isTOC);
 }
 
 void fp_Page::setView(FV_View* pView)

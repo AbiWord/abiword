@@ -119,7 +119,7 @@ bool fp_FmtMarkRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -251,7 +251,7 @@ bool fp_DummyRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_DummyRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_DummyRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;

@@ -587,7 +587,8 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 }
 
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
-								 PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+								 PT_DocPosition& pos, 
+								 bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	FriBidiCharType iVisDirection = getVisDirection();
 	FriBidiCharType iDomDirection = getBlock()->getDominantDirection();

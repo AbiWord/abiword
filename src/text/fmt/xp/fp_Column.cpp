@@ -844,9 +844,17 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
  \retval bEOL True if position is at end of line, otherwise false
  */
 void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
-								   bool& bBOL, bool& bEOL)
+								   bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	int count = countCons();
+	if(getContainerType() == FP_CONTAINER_TOC)
+	{
+		isTOC = true;
+	}
+	else if(getContainerType() == FP_CONTAINER_COLUMN)
+	{
+		isTOC = false;
+	}
 	xxx_UT_DEBUGMSG(("SEVIOR: count cons %d x %d y %d \n",count,x,y));
 	if(count == 0)
 	{
@@ -916,14 +924,14 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
 		pTab->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
-								pos, bBOL, bEOL);
+								pos, bBOL, bEOL,isTOC);
 	}
 	else
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
 		pContainer->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
-									pos, bBOL, bEOL);
+									pos, bBOL, bEOL,isTOC);
 		xxx_UT_DEBUGMSG(("SEVIOR: Found pos %d in column \n",pos));
 	}
 }

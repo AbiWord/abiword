@@ -235,7 +235,7 @@ public:
 	virtual UT_sint32	findTrailingSpaceDistance(void) const { return 0; }
 	virtual bool		findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
 	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos,
-										PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
+										PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC) = 0;
 	
 	virtual void 		findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 										UT_sint32& x2, UT_sint32& y2, UT_sint32& height,
@@ -420,7 +420,7 @@ class ABI_EXPORT fp_TabRun : public fp_Run
 {
 public:
 	fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -459,7 +459,7 @@ class ABI_EXPORT fp_ForcedLineBreakRun : public fp_Run
 {
 public:
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -479,7 +479,7 @@ class ABI_EXPORT fp_FieldStartRun : public fp_Run
 {
 public:
 	fp_FieldStartRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -499,7 +499,7 @@ class ABI_EXPORT fp_FieldEndRun : public fp_Run
 {
 public:
 	fp_FieldEndRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -520,7 +520,7 @@ class ABI_EXPORT fp_ForcedColumnBreakRun : public fp_Run
 public:
 	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -540,7 +540,7 @@ class ABI_EXPORT fp_ForcedPageBreakRun : public fp_Run
 {
 public:
 	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -562,7 +562,7 @@ class ABI_EXPORT fp_EndOfParagraphRun : public fp_Run
 public:
 	fp_EndOfParagraphRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isToc);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -606,7 +606,8 @@ public:
 								 UT_sint32 y,
 								 PT_DocPosition& pos,
 								 bool& bBOL,
-								 bool& bEOL);
+								 bool& bEOL,
+								 bool & isTOC);
 
 	virtual void findPointCoords(UT_uint32 iOffset,
 								 UT_sint32& x,
@@ -649,7 +650,8 @@ public:
 								 UT_sint32 y,
 								 PT_DocPosition& pos,
 								 bool& bBOL,
-								 bool& bEOL);
+								 bool& bEOL,
+								 bool &isTOC);
 
 	virtual void findPointCoords(UT_uint32 iOffset,
 								 UT_sint32& x,
@@ -683,7 +685,7 @@ public:
 	fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic);
 	virtual ~fp_ImageRun();
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -781,7 +783,7 @@ public:
 	fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual ~fp_FieldRun() {return;};
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual fp_FieldsEnum	getFieldType(void) const;
@@ -1399,7 +1401,7 @@ class ABI_EXPORT fp_FmtMarkRun : public fp_Run
 public:
 	fp_FmtMarkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -1434,7 +1436,7 @@ class ABI_EXPORT fp_DummyRun : public fp_Run
 public:
 	fp_DummyRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;

@@ -214,7 +214,7 @@ public:
 	virtual UT_sint32   wantHBreakAt(UT_sint32) = 0;
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) =0;
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) = 0;
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& isTOC) = 0;
 	virtual fp_Container * getNextContainerInSection(void) const = 0;
 	virtual fp_Container * getPrevContainerInSection(void) const = 0;
     virtual UT_Rect *      getScreenRect() = 0;

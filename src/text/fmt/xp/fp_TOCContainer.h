@@ -56,6 +56,7 @@ public:
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+
 	fl_DocSectionLayout * getDocSectionLayout(void);
 private:
 };

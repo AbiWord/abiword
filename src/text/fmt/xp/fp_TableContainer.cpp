@@ -3148,12 +3148,12 @@ UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
  \retval bEOL True if position is at end of line, otherwise false
  */
 void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
-								   bool& bBOL, bool& bEOL)
+								   bool& bBOL, bool& bEOL, bool & isTOC)
 {
 	if(isThisBroken())
 	{
 		y = y + getYBreak();
-		getMasterTable()->mapXYToPosition(x,y, pos,bBOL,bEOL);
+		getMasterTable()->mapXYToPosition(x,y, pos,bBOL,bEOL,isTOC);
 		return;
 	}
 	UT_sint32 count = countCons();
@@ -3182,7 +3182,7 @@ void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition
 	}
 	if(bFound)
 	{
-		pC->mapXYToPosition(x - pC->getX(), y - pC->getY(), pos, bBOL, bEOL);
+		pC->mapXYToPosition(x - pC->getX(), y - pC->getY(), pos, bBOL, bEOL,isTOC);
 		return;
 	}
 //
@@ -3237,7 +3237,7 @@ void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition
 		pC = pCloseTot;
 	}
 	UT_ASSERT( pC != NULL);
-	pC->mapXYToPosition(x - pC->getX(), y  - pC->getY(), pos, bBOL, bEOL);
+	pC->mapXYToPosition(x - pC->getX(), y  - pC->getY(), pos, bBOL, bEOL,isTOC);
 }
 
 void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
