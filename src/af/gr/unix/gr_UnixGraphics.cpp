@@ -1014,6 +1014,8 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
 	GdkPixbuf * image = pUnixImage->getData();
 
+	UT_ASSERT(image);
+
    	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 	

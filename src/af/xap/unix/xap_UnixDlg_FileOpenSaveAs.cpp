@@ -844,14 +844,17 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		pImage = new GR_VectorImage(NULL);
 	}
 
-	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
+	if ( iegft == IEGFT_PNG ) // disable png for now
+	  {
 
-	pGr->drawImage(pImage,
-		       (m_preview->allocation.width  - scaled_width ) / 2,
-		       (m_preview->allocation.height - scaled_height) / 2);
-
-	answer = 1;
-
+	    pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
+	    
+	    pGr->drawImage(pImage,
+			   (m_preview->allocation.width  - scaled_width ) / 2,
+			   (m_preview->allocation.height - scaled_height) / 2);
+	    
+	    answer = 1;
+	  }
  Cleanup:
 	DELETEP(pBB);
 	DELETEP(pImage);
