@@ -73,6 +73,10 @@ protected:
 	UT_uint32 m_iIdentifier;
 
 	static UT_Vector static_vecTimers;
+	
 };
+
+// declare static member
+UT_Vector UT_Timer::static_vecTimers;
 
 #endif /* UT_TIMER_H */

@@ -177,7 +177,7 @@ void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 	m_iMarginLeft   = UT_convertDimensions(size.l, size.u, FUND);
 	m_iMarginRight  = UT_convertDimensions(size.r, size.u, FUND);
 
-	m_predefined = const_cast<char *>(pagesizes [preDef].name);
+	m_predefined = (char*)(pagesizes [preDef].name);
 }
 
 /*!
