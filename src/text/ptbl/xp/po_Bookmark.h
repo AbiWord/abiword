@@ -20,11 +20,12 @@
 #define BOOKMARK_H
 
 #include "ut_types.h"
+#include "ut_xml.h"
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Text.h"
 #include "pt_Types.h"
-#include "fl_BlockLayout.h"
 
+class fl_BlockLayout;
 class pf_Frag_Object;
 
 /*!
