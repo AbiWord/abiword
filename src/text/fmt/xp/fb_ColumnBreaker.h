@@ -24,6 +24,7 @@
 
 #include "ut_types.h"
 
+class fp_Container;
 class fl_DocSectionLayout;
 
 class ABI_EXPORT fb_ColumnBreaker
@@ -31,6 +32,10 @@ class ABI_EXPORT fb_ColumnBreaker
 public:
 	static UT_sint32 breakSection(fl_DocSectionLayout * pSL);
 private:
+	static bool _breakTable(fp_Container *& pOffendingContainer,
+							fp_Container *& pLastContainerToKeep,
+							int iMaxColHeight, int iWorkingColHeight,
+							int iContainerMarginAfter);
 	fb_ColumnBreaker();
 };
 
