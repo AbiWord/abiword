@@ -22,11 +22,10 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-ifeq ($(ABI_OPT_BIDI_ENABLED),1)
-
 CSRCS= \
 	ps.c \
-	parse.c
+	parse.c \
+	ttfutils.c
 
 LIBRARY_NAME=		Abi_ttftool
 LIBRARY_VERSION=	$(ABI_VERSION)
@@ -35,8 +34,6 @@ TARGETS=		$(LIBRARY)
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)
-
-endif
 
 #leave this line here
 

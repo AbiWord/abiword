@@ -298,7 +298,7 @@ ABI_XAP_INCS=	/config						\
                 /text/ptbl/xp \
                 /text/fmt/xp \
                 /wp/impexp/xp \
-                /wp/ap/xp/ToolbarIcons
+                /wp/ap/xp/ToolbarIcons	/other/ttftool/$(ABI_NATIVE)
 
 
 ifeq ($(ABI_OPT_GNOME),1)
