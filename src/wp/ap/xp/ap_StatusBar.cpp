@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ap_StatusBar.h"
+#include "ap_FrameData.h"
 #include "gr_Graphics.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
@@ -355,6 +356,90 @@ void ap_sb_Field_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask ma
 	}
 }
 
+class ap_sb_Field_InsertMode : public ap_sb_Field
+{
+public:
+    ap_sb_Field_InsertMode(AP_StatusBar * pSB);
+    virtual ~ap_sb_Field_InsertMode(void);
+
+    virtual UT_uint32   getDesiredWidth(void);
+    virtual void        draw(void);
+    virtual void        notify(AV_View * pView, const AV_ChangeMask mask);
+
+private:
+    UT_UCSChar          m_InsertMode[2][AP_MAX_MESSAGE_FIELD];
+    UT_Bool             m_bInsertMode;
+    UT_uint32           m_iDesiredWidth;
+};
+
+ap_sb_Field_InsertMode::ap_sb_Field_InsertMode(AP_StatusBar * pSB)
+    : ap_sb_Field(pSB)
+{
+    UT_UCS_strcpy_char(m_InsertMode[(int)UT_TRUE],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
+    UT_UCS_strcpy_char(m_InsertMode[(int)UT_FALSE],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR));
+
+    m_iDesiredWidth = 0;
+    m_bInsertMode = UT_TRUE;
+}
+
+ap_sb_Field_InsertMode::~ap_sb_Field_InsertMode(void)
+{
+}
+
+UT_uint32 ap_sb_Field_InsertMode::getDesiredWidth(void)
+{
+    if (!m_iDesiredWidth)
+    {
+        UT_uint32 i;
+        UT_uint16 charWidths[AP_MAX_MESSAGE_FIELD];
+        UT_uint32 len;
+        for(i = 0;i < 2;i++){
+            len = UT_UCS_strlen(m_InsertMode[i]);
+            m_iDesiredWidth = MyMax(m_iDesiredWidth,m_pSB->getGraphics()->measureString(m_InsertMode[i],0,len,charWidths));
+        }
+        UT_ASSERT(m_iDesiredWidth);
+        m_iDesiredWidth = MyMin(m_iDesiredWidth,300) + 6;
+    }
+    return m_iDesiredWidth;
+}
+
+void ap_sb_Field_InsertMode::draw(void)
+{
+    _draw3D();
+    int len;
+
+    UT_UCSChar *bufInsertMode = m_InsertMode[m_bInsertMode];
+
+    len = UT_UCS_strlen(bufInsertMode);
+
+    if (len)
+    {
+        GR_Graphics * pG = m_pSB->getGraphics();
+        UT_uint32 iFontHeight = pG->getFontHeight();
+
+        UT_uint32 x = m_rect3d.left + 3;
+        UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
+
+        pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+
+        pG->setClipRect(&m_rect3d);
+        pG->drawChars(bufInsertMode,0,len,x,y);
+        pG->setClipRect(NULL);
+    }
+}
+
+void ap_sb_Field_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
+{
+    if (mask & (AV_CHG_INSERTMODE))
+    {
+		AP_FrameData * pData = (AP_FrameData *) m_pSB->getFrame()->getFrameData();
+		if (pData)
+	        m_bInsertMode = pData->m_bInsertMode;
+
+        draw();
+    }
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -428,6 +513,7 @@ void AP_StatusBar::setView(AV_View * pView)
 		m_pStatusMessageField = pf2;	// its in the vector, but we remember it explicitly
 										// so that setStatusMessage() can do its thing.
 
+		DclField(ap_sb_Field_InsertMode, pf4);
 		DclField(ap_sb_Field_InputMode, pf3);
 		
 		// TODO add other fields

@@ -210,6 +210,8 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	}
 
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+
+	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
@@ -363,7 +365,7 @@ UT_Bool AP_UnixFrame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	AP_FrameData* pData = new AP_FrameData();
+	AP_FrameData* pData = new AP_FrameData(m_pUnixApp);
 
 	m_pData = (void*)pData;
 	return (pData ? UT_TRUE : UT_FALSE);
@@ -527,10 +529,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 {
 	GtkWidget * wSunkenBox;
 
-	// initialize the show rulers flag
-	UT_Bool bShowRulers;
-	m_pUnixApp->getPrefsValueBool( AP_PREF_KEY_RulerVisible, &bShowRulers); 
-	((AP_FrameData*)m_pData)->m_bShowRuler = bShowRulers;
+	UT_Bool bShowRulers = ((AP_FrameData*)m_pData)->m_bShowRuler;
 
 	// create the rulers
 	AP_UnixTopRuler * pUnixTopRuler = NULL;

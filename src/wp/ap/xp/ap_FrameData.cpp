@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,17 +24,31 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "ap_StatusBar.h"
+#include "xap_App.h"
 
 /*****************************************************************/
 
-AP_FrameData::AP_FrameData()
+AP_FrameData::AP_FrameData(XAP_App * pApp)
 {
 	m_pDocLayout = NULL;
 	m_pG = NULL;
-	m_bShowRuler = UT_TRUE;		// TODO : change to Prefs
 	m_pTopRuler = NULL;
 	m_pLeftRuler = NULL;
 	m_pStatusBar = NULL;
+
+	m_bShowRuler = UT_TRUE;
+	m_bInsertMode = UT_TRUE;
+
+	if (pApp)
+	{
+		UT_Bool b;
+
+		if (pApp->getPrefsValueBool( AP_PREF_KEY_InsertMode, &b))
+			m_bInsertMode = b;
+
+		if (pApp->getPrefsValueBool( AP_PREF_KEY_RulerVisible, &b))
+			m_bShowRuler = b;
+	}
 }
 
 AP_FrameData::~AP_FrameData()

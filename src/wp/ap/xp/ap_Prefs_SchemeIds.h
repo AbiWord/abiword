@@ -76,6 +76,12 @@
 #define AP_PREF_KEY_KeyBindingsCycle				"KeyBindingsCycle"			/* does F12 cycle keybindings? {0,1} */
 #define AP_PREF_DEFAULT_KeyBindingsCycle			"0"
 
+#define AP_PREF_KEY_InsertMode						"InsertMode"
+#define AP_PREF_DEFAULT_InsertMode					"1"							/* overwrite or insert? {0,1} */
+
+#define AP_PREF_KEY_InsertModeToggle				"InsertModeToggle"			/* does INS key toggle modes? {0,1} */
+#define AP_PREF_DEFAULT_InsertModeToggle			"1"
+
 #define AP_PREF_KEY_MenuLayout						"MenuLayouts"
 #define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginLayout() */
 
@@ -109,6 +115,8 @@ dcl(SpellCheckWordList)
 dcl(StringSet)
 dcl(KeyBindings)
 dcl(KeyBindingsCycle)
+dcl(InsertMode)
+dcl(InsertModeToggle)
 dcl(MenuLayout)
 dcl(MenuLabelSet)
 dcl(ToolbarLabelSet)

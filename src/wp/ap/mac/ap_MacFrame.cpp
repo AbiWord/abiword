@@ -71,7 +71,7 @@ UT_Bool AP_MacFrame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	AP_FrameData* pData = new AP_FrameData();
+	AP_FrameData* pData = new AP_FrameData(m_pMacApp);
 	m_pData = (void*) pData;
 	
 	return (pData ? UT_TRUE : UT_FALSE);

@@ -251,6 +251,8 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 
+	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
+
 	RECT r;
 	GetClientRect(hwnd, &r);
 	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
@@ -478,11 +480,6 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 										  UT_uint32 iLeft, UT_uint32 iTop,
 										  UT_uint32 iWidth, UT_uint32 iHeight)
 {
-	// initialize the show rulers flag
-	UT_Bool bShowRulers;
-	m_pWin32App->getPrefsValueBool( AP_PREF_KEY_RulerVisible, &bShowRulers); 
-	((AP_FrameData*)m_pData)->m_bShowRuler = bShowRulers;
-
 	// create the window(s) that the user will consider to be the
 	// document window -- the thing between the bottom of the toolbars
 	// and the top of the status bar.  return the handle to it.
@@ -536,7 +533,7 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 
 	// create the rulers, if needed
 
-	if (bShowRulers)
+	if (((AP_FrameData*)m_pData)->m_bShowRuler)
 		_createRulers();
 
 	int yTopRulerHeight = 0;
@@ -992,7 +989,7 @@ UT_Bool AP_Win32Frame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	AP_FrameData* pData = new AP_FrameData();
+	AP_FrameData* pData = new AP_FrameData(m_pWin32App);
 	m_pData = (void*) pData;
 	
 	return (pData ? UT_TRUE : UT_FALSE);

@@ -171,7 +171,7 @@ public:
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
-	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count);
+    UT_Bool         cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce = UT_FALSE);
 	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar * 	getSelectionText(void);

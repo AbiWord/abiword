@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +28,7 @@ class FL_DocLayout;
 class AP_TopRuler;
 class AP_LeftRuler;
 class AP_StatusBar;
+class XAP_App;
 
 // A trivial helper class to hold app-specific frame data.
 // We need this because we factored the Frame classes
@@ -39,12 +40,13 @@ class AP_StatusBar;
 class AP_FrameData
 {
 public:
-	AP_FrameData();
+	AP_FrameData(XAP_App * pApp);
 	~AP_FrameData(void);
 
 	FL_DocLayout *		m_pDocLayout;
 	GR_Graphics *		m_pG;
 
+	UT_Bool				m_bInsertMode;
 	UT_Bool				m_bShowRuler;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;

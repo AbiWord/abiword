@@ -198,6 +198,8 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
 	//((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+
+	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
 	
 	m_pBeDocView->Window()->Lock();
 	m_pView->setWindowSize(m_pBeDocView->Bounds().Width(),
@@ -387,7 +389,7 @@ UT_Bool AP_BeOSFrame::initFrameData(void)
 {
 	UT_ASSERT(!m_pData);
 
-	m_pData = new AP_FrameData();
+	m_pData = new AP_FrameData(m_pBeOSApp);
 	
 	return (m_pData ? UT_TRUE : UT_FALSE);
 }

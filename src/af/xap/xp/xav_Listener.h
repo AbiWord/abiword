@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@ typedef UT_uint16 AV_ChangeMask;
 #define AV_CHG_COLUMN		((AV_ChangeMask) 0x0400)
 #define AV_CHG_INPUTMODE	((AV_ChangeMask) 0x0800)
 #define AV_CHG_FMTSTYLE		((AV_ChangeMask) 0x1000)		// getStyle
+#define AV_CHG_INSERTMODE	((AV_ChangeMask) 0x2000)
 #define AV_CHG_ALL			((AV_ChangeMask) 0xFFFF) 
 
 #define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))

@@ -55,6 +55,9 @@ dcl(LeftIndentStatus,			"Left Indent [%s]")
 dcl(RightIndentStatus,			"Right Indent [%s]")
 dcl(TabStopStatus,				"Tab Stop [%s]")
 
+dcl(InsertModeFieldINS,			"INS")
+dcl(InsertModeFieldOVR,			"OVR")
+
 /* Find and Replace strings */
 dcl(DLG_FR_FindTitle, 			"Find")
 dcl(DLG_FR_ReplaceTitle,		"Replace")

@@ -318,6 +318,7 @@ public:
 	static EV_EditMethod_Fn setEditVI;
 	static EV_EditMethod_Fn setInputVI;
 	static EV_EditMethod_Fn cycleInputMode;
+	static EV_EditMethod_Fn toggleInsertMode;
 
 	static EV_EditMethod_Fn viCmd_A;
 	static EV_EditMethod_Fn viCmd_I;
@@ -597,6 +598,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(setEditVI),			0,	""),
 	EV_EditMethod(NF(setInputVI),			0,	""),
 	EV_EditMethod(NF(cycleInputMode),		0,	""),
+	EV_EditMethod(NF(toggleInsertMode),         0,  ""),
 
 	EV_EditMethod(NF(viCmd_A),		0,	""),
 	EV_EditMethod(NF(viCmd_I),		0,	""),
@@ -3939,7 +3941,7 @@ static UT_Bool s_doInsertDateTime(FV_View * pView)
 
 		strftime(szCurrentDateTime,CURRENT_DATE_TIME_SIZE,pDialog->GetDateTimeFormat(),pTime);
 		UT_UCS_cloneString_char(&CurrentDateTime,szCurrentDateTime);
-		pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime));
+		pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime), UT_TRUE);
 		FREEP(CurrentDateTime);
 	}
 
@@ -4343,6 +4345,41 @@ Defun1(cycleInputMode)
 
 	return bResult;
 }
+
+Defun1(toggleInsertMode)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	// this edit method may get ignored entirely
+	UT_Bool b;
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, &b) && !b)
+		return UT_FALSE;
+
+	// toggle the insert mode
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	pFrameData->m_bInsertMode = ! pFrameData->m_bInsertMode;
+
+	// the view actually does the dirty work
+	pAV_View->setInsertMode(pFrameData->m_bInsertMode);
+
+#if 1
+	// POLICY: make this the default for new frames, too
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode); 
+#endif
+
+	return UT_TRUE;
+}
+
 
 //////////////////////////////////////////////////////////////////
 // The following commands are suggested for the various VI keybindings.

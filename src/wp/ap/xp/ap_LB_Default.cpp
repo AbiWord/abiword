@@ -178,7 +178,7 @@ static struct ap_bs_NVK s_NVKTable[] =
 						  "",					"",					"",				""					}},
 	{EV_NVK_MENU_SHORTCUT,	{ "contextMenu",	"",					"",				"",
 						  "",					"",					"",				""					}},
-	{EV_NVK_INSERT,		{ "",					"paste",			"copy",			"",
+    {EV_NVK_INSERT,     { "toggleInsertMode",   "paste",            "copy",         "",
 						  "",					"",					"",				""					}},
 	{EV_NVK_DELETE,		{ "delRight",			"cut",				"delEOW",		"",
 						  "",					"",					"",				""					}},

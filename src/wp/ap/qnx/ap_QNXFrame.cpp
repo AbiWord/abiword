@@ -204,6 +204,8 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+
+	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
 	
 	PtArg_t args[1];
 	PhArea_t *area;
@@ -413,7 +415,7 @@ UT_Bool AP_QNXFrame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	AP_FrameData* pData = new AP_FrameData();
+	AP_FrameData* pData = new AP_FrameData(m_pQNXApp);
 
 	m_pData = (void*)pData;
 	return (pData ? UT_TRUE : UT_FALSE);

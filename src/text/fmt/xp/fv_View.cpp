@@ -960,7 +960,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	return m_pLayout->findBlockAtPosition(pos);
 }
 
-UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
+UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce)
 {
 	UT_Bool bResult;
 
@@ -970,11 +970,26 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 		_deleteSelection();
 		bResult = m_pDoc->insertSpan(getPoint(), text, count);
 		m_pDoc->endUserAtomicGlob();
-	}
-	else
+	} 
+	else 
 	{
 		_eraseInsertionPoint();
+
+		UT_Bool bOverwrite = (!m_bInsertMode && !bForce);
+
+		if (bOverwrite)
+		{
+			// we need to glob when overwriting
+			m_pDoc->beginUserAtomicGlob();
+			cmdCharDelete(UT_TRUE,count);
+		}
+
 		bResult = m_pDoc->insertSpan(getPoint(), text, count);
+
+		if (bOverwrite)
+		{
+			m_pDoc->endUserAtomicGlob();
+		}
 	}
 
 	_generalUpdate();

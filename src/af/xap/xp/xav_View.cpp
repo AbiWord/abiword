@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -127,6 +127,13 @@ UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
 
 	return UT_TRUE;
 }
+
+void AV_View::setInsertMode(UT_Bool bInsert)
+{
+	m_bInsertMode = bInsert; 
+
+	notifyListeners(AV_CHG_INSERTMODE); 
+};
 
 void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 {

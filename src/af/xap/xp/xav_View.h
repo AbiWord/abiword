@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@ public:
 
 	void*			getParentData() const;
 
+	void			setInsertMode(UT_Bool bInsert);
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
@@ -106,6 +107,8 @@ protected:
 	UT_sint32			m_yScrollOffset;
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
+
+	UT_Bool				m_bInsertMode;
 
 	UT_Vector			m_scrollListeners;
 	UT_Vector			m_vecListeners;
