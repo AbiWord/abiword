@@ -85,7 +85,11 @@ void fp_TextRun::lookupProperties(void)
 	
 	m_fDecorations = 0;
 
-	XML_Char*	p = strdup(pszDecor);
+	XML_Char* p;
+	if (!UT_cloneString(p, pszDecor))
+	{
+		// TODO outofmem
+	}
 	UT_ASSERT(p || !pszDecor);
 	XML_Char*	q = strtok(p, " ");
 
