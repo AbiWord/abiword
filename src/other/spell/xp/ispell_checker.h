@@ -316,8 +316,6 @@ private:
 
 	UT_iconv_t  m_translate_in; /* Selected translation from/to Unicode */
 	UT_iconv_t  m_translate_out;
-	
-	bool m_initialized;
 };
 
 #endif /* ISPELL_CHECKER_H */

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2003/08/26 13:24:06  uwog
+ * beautify my previous patch
+ *
  * Revision 1.4  2003/08/26 13:07:58  uwog
  * Fix segfault when the requested dictionary couldn't be found.
  *
@@ -506,8 +509,7 @@ int ISpellChecker::linit (char *hashname)
 		}
 	}
 
-    initckch(NULL);   
-	m_initialized = true;  
+    initckch(NULL); 
 	
     return (0);
 }

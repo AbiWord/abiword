@@ -120,8 +120,7 @@ ISpellChecker::ISpellChecker()
 	m_askfilename(NULL),
 	m_Trynum(0),
 	m_translate_in(UT_ICONV_INVALID),
-	m_translate_out(UT_ICONV_INVALID),
-	m_initialized(false)
+	m_translate_out(UT_ICONV_INVALID)
 {
 	memset(m_sflagindex,0,sizeof(m_sflagindex));
 	memset(m_pflagindex,0,sizeof(m_pflagindex));
@@ -150,7 +149,7 @@ ISpellChecker::~ISpellChecker()
 		m_mapping.clear ();
 	}
 
-	if (m_initialized)
+	if (m_bSuccessfulInit)
 		lcleanup(); // only cleanup our mess if we were successfully initialized
 
 	if (UT_iconv_isValid (m_translate_in ))
