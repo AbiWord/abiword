@@ -674,7 +674,7 @@ void fp_Line::coalesceRuns(void)
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
-			fp_TextRun* pTR;
+			fp_TextRun* pTR = static_cast<fp_TextRun*>(pRun);
 			if (pTR->canMergeWithNext())
 			{
 				pTR->mergeWithNext();

@@ -4410,11 +4410,10 @@ fp_Page* FV_View::getCurrentPage(void) const
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
 	UT_uint32 pos = getPoint();
-	UT_Bool bEOL;
 	
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	UT_ASSERT(pBlock);
-	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, iPointHeight);
 
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
