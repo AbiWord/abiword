@@ -149,16 +149,22 @@ static int s_combo_select(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 		}
 	}
 	
-		if((info->reason_subtype == Pt_LIST_SELECTION_FINAL || info->reason_subtype == Pt_LIST_SELECTION_CANCEL )&& (cb_data->id == AP_TOOLBAR_ID_FMT_FONT) && cb_data->tb->m_pFontPreview != NULL)
-		{
-			DELETEP(cb_data->tb->m_pFontPreview);
-		}
 	if (info->reason_subtype == Pt_LIST_SELECTION_FINAL) {
 		cb_data->tb->toolbarEvent(cb_data->id, cb->item, (UT_uint32)cb->item_len);
 	}
 	return Pt_CONTINUE;
 }
 
+static int s_combo_list_close(PtWidget_t *w,void *data,PtCallbackInfo_t *info)
+{
+	struct _cb_data *cb_data = (struct _cb_data *)data;
+
+	if((cb_data->id == AP_TOOLBAR_ID_FMT_FONT) && cb_data->tb->m_pFontPreview != NULL)
+	{
+		DELETEP(cb_data->tb->m_pFontPreview);
+	}
+return Pt_CONTINUE;
+}
 static int s_button_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 
 	struct _cb_data *cb_data = (struct _cb_data *)data;
@@ -399,9 +405,9 @@ bool EV_QNXToolbar::synthesize(void)
 //This shouldn't be done for ListBoxes as it will prevent the user from scrolling using the arrow keys.
 //				PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 				PtSetArg(&args[n++], Pt_ARG_LIST_FLAGS, 
-						/*Pt_LIST_NON_SELECT |*/ 0, 
+						/*Pt_LIST_NON_SELECT |*/ Pt_FALSE, 
 						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS);
-				PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
+				PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, Pt_FALSE, Pt_EDITABLE);
 				tb = PtCreateWidget(PtComboBox, tbgroup, n, args);
 
 				// populate it
@@ -426,6 +432,7 @@ bool EV_QNXToolbar::synthesize(void)
 					tcb->id = id;	
 					tcb->m_widget = tb;
 					PtAddCallback(tb, Pt_CB_SELECTION, s_combo_select, tcb);
+					PtAddCallback(tb,Pt_CB_CBOX_CLOSE,s_combo_list_close,tcb);
 				}
  			}
 			break;
