@@ -308,7 +308,7 @@ void fp_Line::remove(void)
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 							  bool& bBOL, bool& bEOL)
 {
-	const UT_sint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
 #ifdef BIDI_ENABLED
 	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(0)); //#TF retrieve first visual run

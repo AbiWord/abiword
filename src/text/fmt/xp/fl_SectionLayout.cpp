@@ -3695,7 +3695,7 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 	{
 		if(pBL->hasUpdatableField())
 		{
-			bool bReformat = pBL->recalculateFields(true);
+			bool bReformat = pBL->recalculateFields(getDocLayout()->getRedrawCount());
 			if(bReformat)
 			{
 				pBL->format();

@@ -3582,7 +3582,6 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 
 	_delete(blockOffset, len);
 	
-	setNeedsReformat();
 
 	m_pSquiggles->textDeleted(blockOffset, len);
 
@@ -3600,6 +3599,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	}
 
 	_assertRunListIntegrity();
+	setNeedsReformat();
 
 	return true;
 }
@@ -3876,10 +3876,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	if (pPrevBL)
 	{
-		// Update the display
-//		pPrevBL->_lookupProperties();	// TODO: this may be needed
-//		pPrevBL->setNeedsReformat(); // Sevior 4/6/2001
-		pPrevBL->format(pLastLine);
+//
+// Now fix up the previous block. Calling this format fixes bug 2702
+//
+		pPrevBL->format();
 
 		// This call will dequeue the block from background checking
 		// if necessary

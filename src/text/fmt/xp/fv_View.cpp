@@ -6528,28 +6528,6 @@ void FV_View::_generalUpdate(void)
 		return;
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	
-	// now we have updated the overall layout, next we have to
-	// update all layout-dependent fields, if the size of any of the fields
-	// changes, then we have to redo the layout again ... we should really
-	// do this in a loop, but if it does not change in the second go, we will
-	// leave it for the time being
-    //
-    // Sevior I moved what's n
-#if 0	
-	bool bChange =	false;
-	fl_SectionLayout * pSL = m_pLayout->getFirstSection();
-	while(pSL)
-	{
-		bChange |= pSL->recalculateFields(true);
-		pSL  = pSL->getNext();
-	}
-	
-	if(bChange)
-	{
-		UT_DEBUGMSG(("fv_View::_generalUpdate: width of some fields changed, pass 2\n"));
-		m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
-	}
-#endif
 //
 // No need to update other stuff if we're doing a preview
 //
@@ -10467,10 +10445,12 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	{
 		pHdrFtrDest = pDSL->getFooterLast();
 	}
-
-	_populateThisHdrFtr(pHdrFtrSrc, pHdrFtrDest);
-	_setPoint(oldPos);
-
+	UT_ASSERT(pHdrFtrDest);
+	if(pHdrFtrDest)
+	{
+		_populateThisHdrFtr(pHdrFtrSrc, pHdrFtrDest);
+		_setPoint(oldPos);
+	}
 	// restore updates and clean up dirty lists
 	if(!bSkipPTSaves)
 	{
