@@ -74,7 +74,7 @@ public:
 // about are PNG and SVG.  The code to handle other formats should be isolated
 // in the impexp package.
 //
-class IE_ImpGraphic
+class ABI_EXPORT IE_ImpGraphic
 {
 public:
 
