@@ -589,8 +589,8 @@ void ToolbarView::Draw(BRect clip) {
 	for (i=0; i<item_count; i++) {
 		r = items[i].rect;
 		if (items[i].bitmap && r.Intersects(clip)) {
-			UT_DEBUGMSG(("Clip intersection on i:%d\n",i));
-			UT_DEBUGMSG(("Item rect left=%f top=%f right=%f bottom=%f\n",r.left,r.top,r.right,r.bottom));
+//			UT_DEBUGMSG(("Clip intersection on i:%d\n",i));
+//			UT_DEBUGMSG(("Item rect left=%f top=%f right=%f bottom=%f\n",r.left,r.top,r.right,r.bottom));
 			Window()->Lock();
 			//Draw the bitmap of the icon
 			DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
@@ -598,11 +598,11 @@ void ToolbarView::Draw(BRect clip) {
 			
 			//Disabled icons should be greyed out ...
 			if (!(items[i].state & ENABLED_MASK)) {
-				drawing_mode oldmode = DrawingMode();
-				SetDrawingMode(B_OP_ADD);
-				SetHighColor(80, 80, 80);
-				FillRect(r);
-				SetDrawingMode(oldmode);
+//				drawing_mode oldmode = DrawingMode();
+//				SetDrawingMode(B_OP_SUBTRACT);
+///				SetHighColor(80, 80, 80);
+//				FillRect(r);
+//				SetDrawingMode(oldmode);
 			}
 
 			//Pressed icons should look like they are pressed (ie down)
@@ -686,7 +686,7 @@ void ToolbarView::FrameResized(float width, float height) {
 		r.right=width;
 		r.top=Bounds().top;
 		r.bottom=Bounds().bottom;
-		UT_DEBUGMSG(("Actually invalidating toolbar\n"));
+//		UT_DEBUGMSG(("Actually invalidating toolbar\n"));
 		Invalidate(r);
 	}
 	m_fOldWidth=width;
