@@ -1760,7 +1760,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	PT_BlockOffset beginning;
 	UT_uint32 end;
 
-
 	m_gbCharWidths.del(blockOffset, len);
 	
 	fp_Run* pRun = m_pFirstRun;
@@ -1822,6 +1821,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
+#if 0	
 /*****  SPELL CHECK UPDATE follows *************************************************************/
 
 	UT_Bool takeCurrent = UT_FALSE;
@@ -1889,8 +1889,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		}
 	}
 
-
-
 	// update the misspelled word list (m_lstSpelledWrong)...
 
 	takeCurrent = UT_FALSE;
@@ -1945,6 +1943,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 				 m_lstSpelledWrong.size()));
 
 /****  End of Spell check code ***********************************************************/
+#endif
+
+	m_pLayout->addBlockToSpellCheckQueue(this);
 
 	return UT_TRUE;
 }
@@ -2138,11 +2139,14 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
 	pSL->removeBlock(this);
-	delete this;
+	//delete this;			// TODO whoa!  we cannot do this.
 
 	// update the display
 	pPrevBL->complete_format();
 	pPrevBL->fixColumns();
+
+	pPrevBL->_destroySpellCheckLists();
+	m_pLayout->addBlockToSpellCheckQueue(pPrevBL);
 	pPrevBL->draw(pPrevBL->m_pLayout->getGraphics());
 							
 	// in case anything else moved
@@ -2289,6 +2293,10 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		pRun = pRun->getNext();
 	}
 
+	_destroySpellCheckLists();
+
+	m_pLayout->addBlockToSpellCheckQueue(this);
+	
 	// update the display
 
 	getLastLine()->draw(m_pLayout->getGraphics());
@@ -2299,6 +2307,8 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	fixColumns();
 	pNewBL->fixColumns();
 
+	m_pLayout->addBlockToSpellCheckQueue(pNewBL);
+	
 	pNewBL->draw(m_pLayout->getGraphics());
 					
 	// in case anything else moved
