@@ -863,6 +863,28 @@ void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id
 	FREEP(unixstr);	
 }
 
+void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, 
+							 XAP_String_Id id)
+{
+	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).c_str());
+	UT_ASSERT(newlbl);
+	for (i = 0; newlbl[i] != 0; i++) 
+	{
+		if ( newlbl[i] == '&' ) {
+			if (i > 0 && newlbl[i-1] == '\\')
+			{
+				newlbl[i-1] = '&';
+				strcpy( &newlbl[i], &newlbl[i+1]);
+				i--;
+				}
+			else
+				newlbl[i] = '_';
+		}
+	}
+	gtk_button_set_label (GTK_BUTTON(widget), newlbl);
+	FREEP(newlbl);	
+}
+
 /*!
  * Localizes the label of a widget given the string id
  * It formats the label using the current label of the widget as a format string. The
