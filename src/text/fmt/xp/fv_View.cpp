@@ -4933,6 +4933,10 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 {
 	UT_DEBUGMSG(("FV_View::draw_1: [page %ld]\n",page));
 
+	if(getPoint() == 0) {
+		return;
+	}
+
 	da->pG = m_pG;
 	fp_Page* pPage = m_pLayout->getNthPage(page);
 	if (pPage)
@@ -4946,6 +4950,10 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 */
 void FV_View::draw(const UT_Rect* pClipRect)
 {
+	if(getPoint() == 0) {
+		return;
+	}
+
 	if (pClipRect)
 	{
 		_draw(_UL(pClipRect->left),
