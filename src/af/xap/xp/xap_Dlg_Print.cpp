@@ -253,6 +253,9 @@ bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 		nTypeList[0] = 0;
 
 		pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
+		FREEP(szDescList);
+		FREEP(szSuffixList);
+		FREEP(nTypeList);
 	}
 
 	pDialog->runModal(pFrame);
@@ -264,6 +267,6 @@ bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 		UT_cloneString(m_szPrintToFilePathname,pDialog->getPathname());
 	
 	pDialogFactory->releaseDialog(pDialog);
-
+	
 	return bOK;
 }
