@@ -48,10 +48,12 @@ public:
 class ABI_EXPORT XAP_Toolbar_Factory_vec
 {
 public:
+  XAP_Toolbar_Factory_vec(const char * szName);
   XAP_Toolbar_Factory_vec(XAP_Toolbar_Factory_tt * orig);
   XAP_Toolbar_Factory_vec(EV_Toolbar_Layout *  orig);
   ~XAP_Toolbar_Factory_vec();
   UT_uint32 getNrEntries(void);
+  void add_lt(XAP_Toolbar_Factory_lt * plt);
   XAP_Toolbar_Factory_lt * getNth_lt(UT_uint32 i);
   void insertItemBefore(void * p, XAP_Toolbar_Id id);
   void insertItemAfter(void * p, XAP_Toolbar_Id id);
@@ -80,7 +82,9 @@ public:
     bool             removeIcon(const char * szName,
 									XAP_Toolbar_Id nukeId);
 	bool             resetToolbarToDefault(const char * szName);
-    bool             saveToolbarsInPreferences(void);
+	bool             resetAllToolbarsToDefault(void);
+    bool             saveToolbarsInCurrentScheme(void);
+    bool             restoreToolbarsFromCurrentScheme(void);
 private:
   UT_Vector m_vecTT;
   XAP_App * m_pApp;

@@ -61,10 +61,12 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_hashClones(5),
 	  m_lastFocussedFrame(NULL),
 	  m_pMenuFactory(NULL),
-	  m_pToolbarFactory(NULL)
+	  m_pToolbarFactory(NULL),
+	  m_bAllowCustomizing(true)
 {
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;
+	UT_DEBUGMSG(("SEVIOR: Building menus and toolbars \n"));
 	m_pMenuFactory = new XAP_Menu_Factory(this);
 	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
 	clearIdTable();
@@ -137,8 +139,21 @@ bool XAP_App::initialize()
 	FREEP(szPathname);
 	UT_ASSERT(m_pDict);
 	m_pDict->load();
-        clearIdTable();
-
+	clearIdTable();
+//
+// Reload toolbar configuration from prefs
+//
+	bool bAllowCustom = true;
+	getPrefsValueBool(XAP_PREF_KEY_AllowCustomToolbars, &bAllowCustom);
+	if(bAllowCustom)
+	{
+		m_pToolbarFactory->restoreToolbarsFromCurrentScheme();
+		setToolbarsCustomizable(true);
+	}
+	else
+	{
+		setToolbarsCustomizable(false);
+	}
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
 	//
@@ -147,6 +162,40 @@ bool XAP_App::initialize()
 	UT_uint32 t = (UT_uint32) time( NULL);
 	UT_srandom(t);
 	return true;
+}
+
+void XAP_App::setToolbarsCustomizable(bool b)
+{
+	if(m_bAllowCustomizing && !b)
+	{
+//
+// Set all the frames to default toolbars
+//
+		m_bAllowCustomizing = b;
+		m_pToolbarFactory->resetAllToolbarsToDefault();
+		UT_uint32 count = m_vecFrames.getItemCount();
+		UT_Vector vClones;
+		UT_uint32 i = 0;
+		for(i=0; i< count; i++)
+		{
+			XAP_Frame * pFrame = (XAP_Frame *) m_vecFrames.getNthItem(i);
+			if(pFrame->getViewNumber() > 0)
+			{
+				getClones(&vClones,pFrame);
+				UT_uint32 j=0;
+				for(j=0; j < vClones.getItemCount(); j++)
+				{
+					XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(j);
+					f->rebuildAllToolbars();
+				}
+			}
+			else
+			{
+				pFrame->rebuildAllToolbars();
+			}
+		}
+	}
+	m_bAllowCustomizing = b;
 }
 
 const char * XAP_App::getApplicationTitleForTitleBar() const
@@ -703,3 +752,11 @@ void XAP_App::_printUsage()
 
 	printf("\n");
 }
+
+
+
+
+
+
+
+

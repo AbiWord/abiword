@@ -111,6 +111,13 @@
 #define XAP_PREF_KEY_ShowUnixFontWarning "ShowUnixFontWarning"
 #define XAP_PREF_DEFAULT_ShowUnixFontWarning "1"
 
+#define XAP_PREF_KEY_AllowCustomToolbars "AllowCustomToolbars"
+#define XAP_PREF_DEFAULT_AllowCustomToolbars         "1"
+
+#define XAP_PREF_KEY_ToolbarNumEntries "Toolbar_NumEntries_"
+#define XAP_PREF_KEY_ToolbarID "Toolbar_ID_"
+#define XAP_PREF_KEY_ToolbarFlag "Toolbar_Flag_"
+
 #define XAP_PREF_KEY_ModifyUnixFontPath	 "ModifyUnixFontPath"
 #define XAP_PREF_DEFAULT_ModifyUnixFontPath "1"
 
@@ -142,6 +149,8 @@ dcl(AutoSaveFileExt)
 dcl(EmbedFontsInPS)
 dcl(ColorForTransparent)
 dcl(DocumentLocale)
+
+dcl(AllowCustomToolbars)
 
 dcl(ZoomType)
 

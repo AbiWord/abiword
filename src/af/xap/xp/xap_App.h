@@ -148,6 +148,9 @@ public:
 	XAP_Toolbar_Factory *                   getToolbarFactory(void) const { return m_pToolbarFactory;}
  
     virtual bool                            theOSHasBidiSupport() const {return false;}
+	bool                                    areToolbarsCustomizable(void) const 
+		                                             { return m_bAllowCustomizing;}
+    void                                    setToolbarsCustomizable(bool b);
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -177,6 +180,7 @@ protected:
 	} m_IdTable[NUM_MODELESSID+1]; 
         
 	static XAP_App *						m_pApp;
+	bool                                    m_bAllowCustomizing;
 };
 
 #endif /* XAP_APP_H */

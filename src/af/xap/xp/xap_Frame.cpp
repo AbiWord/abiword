@@ -851,10 +851,26 @@ void XAP_Frame::updateZoom(void)
 /*!
  * This method destroys toolbar number ibar, then rebuilds it and displays
  * as requested from the current toolbar layouts. Used for dynamic toolbars.
+ * This viryual method is overidden by the platfrom classes.
  */ 
 void XAP_Frame::rebuildToolbar(UT_uint32 ibar)
 {
 }
+
+/*!
+ * This method rebuilds all the toolbars in the frame. Useful for when the
+ * user wants to revert to default toolbars.
+ */
+void XAP_Frame::rebuildAllToolbars(void)
+{
+	UT_uint32 count = m_vecToolbars.getItemCount();
+	UT_uint32 i =0;
+	for(i=0; i< count; i++)
+	{
+		rebuildToolbar(i);
+	}
+}
+
 
 /*!
  * Record stuff for start of drag.
@@ -902,6 +918,10 @@ void XAP_Frame::dragDropToTB(XAP_Toolbar_Id srcId,EV_Toolbar * pTBsrc, EV_Toolba
 void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 {
 	UT_ASSERT(m_isrcId == srcId);
+	if(!getApp()->areToolbarsCustomizable())
+	{
+		return;
+	}
 //
 // Drop to icon
 //

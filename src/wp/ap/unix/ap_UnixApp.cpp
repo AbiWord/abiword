@@ -50,6 +50,7 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Menu_Layouts.h"
 #include "xap_Toolbar_ActionSet.h"
+#include "xap_Toolbar_Layouts.h"
 #include "xav_View.h"
 
 #include "gr_Graphics.h"
@@ -317,6 +318,13 @@ XAP_Frame * AP_UnixApp::newFrame(void)
 */
 bool AP_UnixApp::shutdown(void)
 {
+//
+// Save our toolbars if we're customizable
+//
+	if(areToolbarsCustomizable())
+	{
+		m_pToolbarFactory->saveToolbarsInCurrentScheme();
+	}
     if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 

@@ -390,6 +390,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *hbox58;
 	GtkWidget *checkWhiteForTransparent;
 	GtkWidget *pushChooseColorForTransparent;
+	GtkWidget *checkAllowCustomToolbars;
 	GtkWidget *label3;
 	GtkWidget *vbox36;
 	GtkWidget *frame40;
@@ -829,8 +830,16 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (pushChooseColorForTransparent);
 	gtk_box_pack_start (GTK_BOX (hbox58), pushChooseColorForTransparent, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (pushChooseColorForTransparent), 2);
+//
+// Custom toolbars.
+//
+	checkAllowCustomToolbars = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars));
+	gtk_widget_show (checkAllowCustomToolbars);
+	gtk_box_pack_start (GTK_BOX (vbox58), checkAllowCustomToolbars, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (checkAllowCustomToolbars), 2);
 
-	
+
+
 	label3 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_Layout));
 	gtk_widget_show (label3);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label3);
@@ -985,6 +994,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	m_checkbuttonTransparentIsWhite = checkWhiteForTransparent;
 	m_pushbuttonNewTransparentColor = pushChooseColorForTransparent;
+
+	m_checkbuttonAllowCustomToolbars      = checkAllowCustomToolbars;
+
 	m_checkbuttonSmartQuotesEnable	        = enable_sq;
 	m_listDefaultPageSize			= page_size;
 
@@ -1269,6 +1281,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_VIEW_UNPRINTABLE:
 		return m_checkbuttonViewUnprintable;
 
+	case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
+		return m_checkbuttonAllowCustomToolbars;
+
 	case id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
 		return  m_checkbuttonTransparentIsWhite;
 
@@ -1500,6 +1515,7 @@ DEFINE_GET_SET_BOOL	(ViewCursorBlink);
 DEFINE_GET_SET_BOOL	(ViewAll);
 DEFINE_GET_SET_BOOL	(ViewHiddenText);
 DEFINE_GET_SET_BOOL	(ViewUnprintable);
+DEFINE_GET_SET_BOOL (AllowCustomToolbars);
 
 #undef DEFINE_GET_SET_BOOL
 

@@ -75,6 +75,7 @@ public:
  	SET_GATHER			(ViewAll,			bool );
  	SET_GATHER			(ViewHiddenText,	bool );
  	SET_GATHER			(ViewUnprintable,	bool );
+    SET_GATHER          (AllowCustomToolbars, bool);
   
 	SET_GATHER			(AutoSaveFile, bool);
 	SET_GATHER			(ShowSplash, bool);

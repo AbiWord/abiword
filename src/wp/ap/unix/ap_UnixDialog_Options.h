@@ -74,11 +74,12 @@ public:
 
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	bool);
+
  
  	SET_GATHER			(ViewAll,			bool );
  	SET_GATHER			(ViewHiddenText,	bool );
  	SET_GATHER			(ViewUnprintable,	bool );
-  
+    SET_GATHER          (AllowCustomToolbars, bool);
  	SET_GATHER			(NotebookPageNum,	int );
 
 #ifdef BIDI_ENABLED
@@ -134,6 +135,8 @@ public:
 
 	GtkWidget * m_checkbuttonTransparentIsWhite;
 	GtkWidget * m_pushbuttonNewTransparentColor;
+
+	GtkWidget * m_checkbuttonAllowCustomToolbars;
 
     GtkWidget * m_checkbuttonViewShowTB;
     GtkWidget * m_checkbuttonViewHideTB;

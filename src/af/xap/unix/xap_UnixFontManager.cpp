@@ -199,7 +199,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	
 	const char** subdirs = localeinfo_combinations("","","");
 
-#if 0
+#if 1
 	bool bModifyPath = true;
 	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);

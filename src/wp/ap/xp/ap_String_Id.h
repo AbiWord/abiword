@@ -309,6 +309,7 @@ dcl(DLG_Options_Label_ViewViewFrame,	"View...")
 dcl(DLG_Options_Label_ViewAll,			"&All")
 dcl(DLG_Options_Label_ViewHiddenText,	"&Hidden Text")
 dcl(DLG_Options_Label_ViewUnprintable,	"Invisible &Layout Marks")
+dcl(DLG_Options_Label_CheckAllowCustomToolbars,	"Allow Custom Toolbars")
 
 dcl(DLG_Options_Label_CheckWhiteForTransparent,	"Allow screen colors other than white")
 dcl(DLG_Options_Label_ChooseForTransparent,	"Choose Screen Color")

@@ -72,6 +72,7 @@ public:
  	SET_GATHER			(ViewAll,			bool );
  	SET_GATHER			(ViewHiddenText,	bool );
  	SET_GATHER			(ViewUnprintable,	bool );
+    SET_GATHER          (AllowCustomToolbars, bool);
 
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl,	bool );

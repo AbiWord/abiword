@@ -153,6 +153,7 @@ public:
 
 
 	virtual void                rebuildToolbar(UT_uint32 ibar);
+	void                        rebuildAllToolbars(void);
 
 	void                        dragBegin(XAP_Toolbar_Id srcId, 
 										  EV_Toolbar * pTBsrc);
@@ -164,6 +165,7 @@ public:
 											 EV_Toolbar * pTBsrc, 
 											 EV_Toolbar * pTBdest);
 	void                        dragEnd(XAP_Toolbar_Id srcId);
+
 
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
