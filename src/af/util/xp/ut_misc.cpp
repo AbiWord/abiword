@@ -264,7 +264,7 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
 {
-	UT_ASSERT(atts && atts[0]);
+	UT_ASSERT(atts);
 
 	const XML_Char** p = atts;
 
