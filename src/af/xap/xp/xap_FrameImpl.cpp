@@ -75,6 +75,11 @@ UT_RGBColor XAP_FrameImpl::getColorSelBackground () const
 	return UT_RGBColor(192, 192, 192);
 }
 
+UT_RGBColor XAP_FrameImpl::getColorSelForeground () const
+{
+	return UT_RGBColor(255, 255, 255);
+}
+
 #define MAX_TITLE_LENGTH 256
 bool XAP_FrameImpl::_updateTitle()
 {

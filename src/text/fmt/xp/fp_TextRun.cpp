@@ -2088,7 +2088,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  			}
 
 			if(pT->m_bIsOverhanging)
-				pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp);
+			{
+				bool bSel = (iSel1 != iSel2) && ((iRunBase + getLength()) < iSel1);
+				pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp,bSel);
+			}
+			
 		}
 
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
@@ -2105,8 +2109,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  			}
 
  			if(pT->m_bIsOverhanging)
-			        pT->_drawLastChar(pDA->xoff,ytemp, pgbCharWidths);
-
+			{
+				bool bSel = (iSel1 != iSel2) && (iRunBase > iSel1);
+				pT->_drawLastChar(pDA->xoff,ytemp, pgbCharWidths, bSel);
+			}
 		}
 	}
 
@@ -2117,7 +2123,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	getGR()->setFont(_getFont());
 #endif
 
-	getGR()->setColor(getFGColor()); // set colour just in case we drew a first/last char with a diff colour
+#ifdef CLR_FOREGROUND
+	if(iSel1 != iSel2)
+	{
+		getGR()->setColor(_getView()->getColorSelForeground());
+	}
+	else
+#endif
+		getGR()->setColor(getFGColor()); // set colour just in case we drew a first/last char with a diff colour
 
 	// this code handles spaces in justified runs
 	UT_uint32 iSpaceCount = 0;
@@ -2618,7 +2631,7 @@ void fp_TextRun::shape()
 /*
 	xoff is the right edge of this run !!!
 */
-void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths)
+void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths, bool bSelection)
 {
 	if(!getLength())
 		return;
@@ -2629,7 +2642,15 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 #else
 	getGR()->setFont(_getFont());
 #endif
-	getGR()->setColor(getFGColor());
+
+#ifdef CLR_FOREGROUND
+	if(bSelection)
+	{
+		getGR()->setColor(_getView()->getColorSelForeground());	
+	}
+	else
+#endif
+		getGR()->setColor(getFGColor());
 
 	FriBidiCharType iVisDirection = getVisDirection();
 
@@ -2646,7 +2667,7 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 	}
 }
 
-void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff)
+void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection)
 {
 	if(!getLength())
 		return;
@@ -2657,8 +2678,16 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff)
 #else
 	getGR()->setFont(_getFont());
 #endif
-	getGR()->setColor(getFGColor());
 
+#ifdef CLR_FOREGROUND
+	if(bSelection)
+	{
+		getGR()->setColor(_getView()->getColorSelForeground());	
+	}
+	else
+#endif
+		getGR()->setColor(getFGColor());
+	
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char

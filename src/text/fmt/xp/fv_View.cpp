@@ -451,6 +451,18 @@ UT_RGBColor FV_View::getColorSelBackground ()
   return bgcolor;
 }
 
+UT_RGBColor FV_View::getColorSelForeground ()
+{
+  static UT_RGBColor fgcolor (255, 255, 255);
+
+  XAP_Frame * pFrame = 0;
+  
+  if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != NULL)
+    return pFrame->getColorSelForeground ();
+  
+  return fgcolor;
+}
+
 // TODO i18n All of these case functions are too simplistic:
 // TODO i18n French uppercase letters must not show accents
 // TODO i18n German single-letter "sharp s" uppercases to double-letter "SS"

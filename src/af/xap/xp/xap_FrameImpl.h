@@ -89,6 +89,7 @@ protected:
 	virtual void _setCursor(GR_Graphics::Cursor cursor) = 0;
 
 	virtual UT_RGBColor getColorSelBackground () const;
+	virtual UT_RGBColor getColorSelForeground () const;
 
 	EV_Mouse * m_pMouse;
 	EV_Keyboard * m_pKeyboard;

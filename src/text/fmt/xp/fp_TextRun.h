@@ -188,8 +188,14 @@ protected:
 									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
 
-	void					_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths);
-	void					_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff);
+	void					_drawLastChar(UT_sint32 xoff,
+										  UT_sint32 yoff,
+										  const UT_GrowBuf * pgbCharWidths,
+										  bool bSelection);
+	
+	void					_drawFirstChar(UT_sint32 xoff,
+										   UT_sint32 yoff,
+										   bool bSelection);
 
 	void					_fillRect(UT_RGBColor& clr,
 									  UT_sint32 xoff,

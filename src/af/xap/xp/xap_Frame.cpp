@@ -477,6 +477,11 @@ UT_RGBColor XAP_Frame::getColorSelBackground () const
   return m_pFrameImpl->getColorSelBackground ();
 }
 
+UT_RGBColor XAP_Frame::getColorSelForeground () const
+{
+  return m_pFrameImpl->getColorSelForeground ();
+}
+
 EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
 {
 	UT_ASSERT(m_pInputModes);

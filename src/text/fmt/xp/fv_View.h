@@ -497,6 +497,7 @@ public:
 	UT_RGBColor			getColorSquiggle(void) const { return m_colorSquiggle; }
 	UT_RGBColor			getColorMargin(void) const { return m_colorMargin; }
 	UT_RGBColor			getColorSelBackground(void);
+	UT_RGBColor			getColorSelForeground(void);
 	UT_RGBColor			getColorFieldOffset(void) const { return m_colorFieldOffset; }
 	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
 	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
