@@ -80,3 +80,20 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 	c.m_grn = x_hexDigit(p[2]) * 16 + x_hexDigit(p[3]);
 	c.m_blu = x_hexDigit(p[4]) * 16 + x_hexDigit(p[5]);
 }
+
+UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
+{
+	switch (ch)
+	{
+	case ' ':
+	case ',':
+	case '.':
+	case ';':
+	case ':':
+	case '!':
+	case '?':
+		return UT_TRUE;
+	default:
+		return UT_FALSE;
+	}
+}

@@ -61,4 +61,6 @@ protected:
 #define UT_MIN(A,B)	(((A) < (B)) ? (A) : (B))
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
+UT_Bool UT_isWordDelimiter(UT_UCSChar);
+
 #endif /* UTMISC_H */
