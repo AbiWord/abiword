@@ -73,17 +73,17 @@ protected:
 
 // NB: this macro is useful only in destructors
 #define UT_HASH_PURGEDATA(d, h)							\
-	do	{	int utmax = h.getEntryCount();				\
-			UT_HashTable::UT_HashEntry* e;				\
-			for (int uti=utmax-1; uti>=0; uti--)		\
+	do	{	int uth_max = h.getEntryCount();			\
+			UT_HashTable::UT_HashEntry* uth_e;			\
+			for (int uth=uth_max-1; uth>=0; uth--)		\
 			{											\
-				e = h.getNthEntry(uti);					\
-				UT_ASSERT(e);							\
-				if (e)									\
+				uth_e = h.getNthEntry(uth);				\
+				UT_ASSERT(uth_e);						\
+				if (uth_e)								\
 				{										\
-					d* p = (d*) e->pData;				\
-					if (p)								\
-						delete p;						\
+					d* uth_p = (d*) uth_e->pData;		\
+					if (uth_p)							\
+						delete uth_p;					\
 				}										\
 			}											\
 	} while (0)

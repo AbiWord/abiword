@@ -66,13 +66,13 @@ protected:
 
 // NB: this macro is useful only in destructors
 #define UT_VECTOR_PURGEALL(d, v)						\
-	do	{	int utmax = v.getItemCount();				\
-			for (int uti=utmax-1; uti>=0; uti--)		\
+	do	{	int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
 			{											\
-				d* p = (d*) v.getNthItem(uti);			\
-				UT_ASSERT(p);							\
-				if (p)									\
-					delete p;							\
+				d* utv_p = (d*) v.getNthItem(utv);		\
+				UT_ASSERT(utv_p);						\
+				if (utv_p)								\
+					delete utv_p;						\
 			}											\
 	} while (0)
 
