@@ -1668,17 +1668,29 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 			{
 			case '{':
 				ok = PushRTFState();
+				if (!ok) {
+					UT_DEBUGMSG(("PushRTFState()\n"));
+				}
 				break;
 			case '}':
 				ok = PopRTFState();
+				if (!ok) {
+					UT_DEBUGMSG(("PopRTFState()\n"));
+				}
 				break;
 			case '\\':
 				ok = ParseRTFKeyword();
+				if (!ok) {
+					UT_DEBUGMSG(("ParseRTFKeyword()\n"));
+				}
 				break;
 			default:
 				if (m_currentRTFState.m_internalState == RTFStateStore::risNorm)
 				{
 					ok = ParseChar(c);
+					if (!ok) {
+						UT_DEBUGMSG(("ParseChar()\n"));
+					}
 				}
 				else
 				{
@@ -1695,6 +1707,9 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 					if (!cNibble  &&  ok)
 					{
 						ok = ParseChar(b,0);
+						if (!ok) {
+							UT_DEBUGMSG(("ParseChar()\n"));
+						}
 						cNibble = 2;
 						b = 0;
 						m_currentRTFState.m_internalState = RTFStateStore::risNorm;
@@ -1710,6 +1725,9 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 	if (ok)
 	{
 		ok = FlushStoredChars(true);
+		if (!ok) {
+			UT_DEBUGMSG(("FlushStoredChars()\n"));
+		}
 	}
 	return ok ? UT_OK : UT_ERROR;
 }
@@ -1843,6 +1861,7 @@ bool IE_Imp_RTF::PushRTFState(void)
 	RTFStateStore* pState = new RTFStateStore;
 	if (pState == NULL)
 	{
+	    UT_DEBUGMSG (("PushRTFState(): no state\n"));
 	    return false;
 	}
 	*pState = m_currentRTFState;
@@ -1916,6 +1935,8 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 			// handle other destinations....
 			return true;
 	}
+	UT_DEBUGMSG (("went thru all ParseChar() withou doing anything\n"));
+	return true;
 }
 
 
@@ -6407,58 +6428,68 @@ bool IE_Imp_RTF::ReadColourTable()
 				long red = 0;
 				long green = 0;
 				long blue = 0;
+				bool hasRed, hasGreen, hasBlue;
+				hasRed = hasGreen = hasBlue = false;
 
-				// read Red, Green and Blue values (will be in that order).
-				if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
-					return false;
-				if (strcmp((char*)keyword, "red") == 0  &&  paramUsed)
+				for (int i = 0; i < 3; i++)
 				{
-					red = parameter;
-
+					// read Red, Green and Blue values (will be in that order).
+					if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN)) 
+					{
+						UT_DEBUGMSG (("ReadKeyword() failed in ReadColourTable()\n"));
+						return false;
+					}
+					if (strcmp((char*)keyword, "red") == 0  &&  paramUsed)
+					{
+						if (!hasRed) {
+							red = parameter;
+							hasRed = true;
+						}
+						else {
+							tableError = true;
+						}
+					}
+					else if (strcmp((char*)keyword, "green") == 0  &&  paramUsed)
+					{
+						if (!hasGreen) {
+							green = parameter;
+							hasGreen = true;
+						}
+						else {
+							tableError = true;
+						}
+					}
+					else if (strcmp((char*)keyword, "blue") == 0  &&  paramUsed)
+					{
+						if (!hasBlue) {
+							blue = parameter;
+							hasBlue = true;
+						}
+						else {
+							tableError = true;
+						}
+					}
+					else 
+					{
+						tableError = true;
+					}
 					// Read slash at start of next keyword
-					if (!ReadCharFromFile(&ch) ||  ch != '\\')
-						tableError = true;
-				}
-				else
-					tableError = true;
-
-
-				if (!tableError)
-				{
-					if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
-						return false;
-					if (strcmp((char*)keyword, "green") == 0  &&  paramUsed)
+					if (!ReadCharFromFile(&ch) 
+							|| ((ch != '\\') && (ch != ';')))
 					{
-						green = parameter;
-						if (!ReadCharFromFile(&ch) ||  ch != '\\')
-							tableError = true;
-					}
-					else
 						tableError = true;
-				}
-
-				if (!tableError)
-				{
-					if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
-						return false;
-					if (strcmp((char*)keyword, "blue") == 0  &&  paramUsed)
-					{
-						blue = parameter;
-						if (!ReadCharFromFile(&ch) ||  ch != ';')
-							tableError = true;
 					}
-					else
-						tableError = true;
 				}
-
 				colour = (unsigned char)red << 16 | (unsigned char)green << 8 | (unsigned char)blue;
 			}
-			else
+			else {
 				tableError = true;
+			}
 		}
 
 		if (tableError)
 		{
+			UT_DEBUGMSG (("RTF color Table error\n"));
 			return false;
 		}
 		else if(ch!= '}')
