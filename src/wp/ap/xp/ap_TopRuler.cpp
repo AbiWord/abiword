@@ -1093,7 +1093,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	// next hit-test against the tabs
 
 	unsigned char iType;
-	UT_sint32 iTab = _findTabStop(&m_infoCache, x, y, iType);
+	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType);
 	if (iTab >= 0)
 	{
 		UT_DEBUGMSG(("hit tab %ld\n",iTab));
@@ -1411,17 +1411,22 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	case DW_TABSTOP:
 		{
 			unsigned char iType;
-			UT_sint32 iTab = _findTabStop(&m_infoCache, x, y, iType);
-
-			if (iTab >= 0)
+			UT_sint32 iTab = _findTabStop(&m_infoCache, xgrid+xAbsLeft, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType);
+			
+			UT_DEBUGMSG (("iTab: %i, m_draggingTab: %i\n", iTab, m_draggingTab));
+			
+			if (iTab >= 0 && iTab != m_draggingTab)
 			{
-				// a tabstop is already set here ==> delete the one we're dragging
-				m_draggingWhat = DW_NOTHING;
-				_setTabStops(tick, iTab, UT_TRUE); // UT_TRUE for the last arg will cause this to be deleted
+				UT_DEBUGMSG (("This tab was released over an existing tab. It will be deleted.\n"));
+				_setTabStops(tick, m_draggingTab, UT_TRUE); // UT_TRUE for the last arg will cause this to be deleted
 			}
-			_setTabStops(tick, iTab, UT_FALSE);
+			else
+			{
+				_setTabStops(tick, iTab, UT_FALSE);
+			}
+			m_draggingWhat = DW_NOTHING;
+			return;
 		}
-		return;
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1599,7 +1604,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_RIGHTMARGIN:
 		{
 		UT_sint32 oldDragCenter = m_draggingCenter;
-        UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
         UT_sint32 iRightShift = UT_MAX(0,m_infoCache.m_xrRightIndent);
         UT_sint32 iLeftShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
         UT_sint32 newMargin;
@@ -1767,7 +1771,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
             UT_sint32 iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent - iFirstIndentShift;
 
 			// Prevent the first-line indent from being dragged off the page
-			if (m_dragging2Center < xFixed + m_infoCache.m_xPageViewMargin)
+			if (m_dragging2Center < xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin)
 			{
 				m_dragging2Center = oldDragging2Center;
 				m_draggingCenter = oldDraggingCenter;
