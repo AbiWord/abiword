@@ -23,6 +23,23 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+if ! test -d `aclocal --print-ac-dir`; then
+  echo "Bad aclocal (automake) installation"
+  exit 1
+fi
+
+echo "Selecting the correct m4 script..."
+
+for script in `cd ac-helpers/fallback; echo *.m4`; do
+  if test -r `aclocal --print-ac-dir`/$script; then
+    # Perhaps it was installed recently
+    rm -f ac-helpers/$script
+  else
+    # Use the fallback script
+    cp ac-helpers/fallback/$script ac-helpers/$script
+  fi
+done
+
 # Produce aclocal.m4, so autoconf gets the automake macros it needs
 echo "Creating aclocal.m4..."
 aclocal -I ac-helpers
