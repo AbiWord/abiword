@@ -184,6 +184,7 @@ IE_Imp_RTF::StandardKeywordParser(IE_Imp_RTFGroupParser *parser)
 			break;
 		case RTF_TOKEN_DATA:	//Ignore data
 		{
+			SkipBackChar(*keyword);
 			UT_UTF8String data;
 			HandlePCData(data);
 			parser->tokenData(this, data);
