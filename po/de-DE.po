@@ -1024,7 +1024,7 @@ msgstr "Format"
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:385
 msgid "Format Toolbar"
-msgstr "&Formatierungs-Werkzeigleiste"
+msgstr "&Formatierungs-Werkzeugleiste"
 
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:387
@@ -1747,7 +1747,7 @@ msgstr "Zeigen"
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:663
 msgid "Show the AbiWord splash screen on application startup"
-msgstr "Den AbiWord-Begrüßungsbildschim beim Starten zeigen"
+msgstr "Den AbiWord-Begrüßungsbildschirm beim Starten zeigen"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:665
