@@ -379,8 +379,9 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),TRUE);
 		 break;
 	default:
+		break;
 		// TODO: make these insenstive and update a spin control
-	         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
 	}
 	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
 							   m_oneHandlerID);

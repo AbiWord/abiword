@@ -158,7 +158,6 @@ double AP_Dialog_Columns::getIncrement(const char * sz)
 */
 void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 {
-	UT_DEBUGMSG(("SEVIOR: Setting view and doc \n"));
 	m_pView = (FV_View *) pFrame->getCurrentView();
 	m_pDoc = m_pView->getDocument();
 	const XML_Char ** pszSecProps = NULL;
@@ -167,7 +166,6 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 	const XML_Char * pszMaxHeight =  UT_getAttribute("section-max-column-height",pszSecProps);
 	if(pszAfter && *pszAfter)
 	{
-		UT_DEBUGMSG(("SEVIOR: Initial After string = %s \n",pszAfter));
 		m_SpaceAfterString =  (const char *) pszAfter;
 	}
 	if(pszMaxHeight && *pszMaxHeight)
@@ -238,7 +236,13 @@ void AP_Dialog_Columns::incrementSpaceAfter(bool bIncrement)
 	{
 		inc = -inc;
 	}
+	UT_Dimension dim = UT_determineDimension(getSpaceAfterString(), DIM_none);
 	m_SpaceAfterString = UT_incrementDimString(m_SpaceAfterString.c_str(),inc);
+	double dum = UT_convertToInches(getSpaceAfterString());
+	if(dum < 0.0)
+	{
+		m_SpaceAfterString = UT_convertInchesToDimensionString(dim,0.0);
+	}
 	m_bSpaceAfterChanged = true;
 	if(m_pColumnsPreview)
 		m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
@@ -255,7 +259,13 @@ void AP_Dialog_Columns::incrementMaxHeight(bool bIncrement)
 	{
 		inc = -inc;
 	}
+	UT_Dimension dim = UT_determineDimension(getHeightString(), DIM_none);
 	m_HeightString = UT_incrementDimString(m_HeightString.c_str(),inc);
+	double dum = UT_convertToInches(getHeightString());
+	if(dum < 0.2)
+	{
+		m_HeightString = UT_convertInchesToDimensionString(dim,0.0);
+	}
 	m_bMaxHeightChanged = true;
 	if(m_pColumnsPreview)
 		m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
@@ -299,6 +309,11 @@ void AP_Dialog_Columns::setMaxHeight(const char * szHeight)
 	{
 		m_bMaxHeightChanged = true;
 		m_HeightString = szHeight;
+		double dum = UT_convertToInches(getHeightString());
+		if(dum < 0.2)
+		{
+			m_HeightString = UT_convertInchesToDimensionString(dim,0.0);
+		}
 		if(m_pColumnsPreview)
 			m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
 	}
@@ -315,6 +330,11 @@ void AP_Dialog_Columns::setSpaceAfter(const char * szAfter)
 	{
 		m_bSpaceAfterChanged = true;
 		m_SpaceAfterString = szAfter;
+		double dum = UT_convertToInches(getSpaceAfterString());
+		if(dum < 0.0)
+		{
+			m_SpaceAfterString = UT_convertInchesToDimensionString(dim,0.0);
+		}
 		if(m_pColumnsPreview)
 			m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
 	}
@@ -396,10 +416,6 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	UT_DEBUGMSG(("SEVIOR: maxheightpercent = %f \n",maxHeightPercent));
 	maxHeightPercent = maxHeightPercent/100.0;
 	SpacePercent = SpacePercent/100.0;
-	if(SpacePercent < 0.001)
-	{
-		SpacePercent = 1.1;
-	}
 	if(maxHeightPercent < 0.01)
 	{
 		maxHeightPercent = 1.1;
@@ -412,39 +428,32 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	rect.width -= 2 * iHalfColumnGap;
 	double d_y_start = (double) y_start;
 	double d_ysize = (double) (y_end - y_start);
-	double dnum = static_cast<double>(y_step)/(d_ysize * SpacePercent);
-	UT_sint32 numSteps = 1 + static_cast<UT_sint32>(dnum);
+	UT_sint32 iSpace = static_cast<UT_sint32>(SpacePercent* d_ysize);
+	if(iSpace < y_step)
+	{
+		iSpace = y_step;
+	}
+	UT_sint32 maxHeight = static_cast<UT_sint32>(maxHeightPercent * d_ysize);
 	for (UT_sint32 i = 1; i <= iColumns; i++)
 	{
 		UT_sint32 lskip = 0;
 		UT_sint32 curskip = 0;
-		UT_sint32 nsteps = 0;
 		for(UT_sint32 y = y_start; y < y_end; y += y_step)
 		{
 			UT_sint32 xLeft, xRight;
 
 			// a little bit of math to avoid/replace a (nasty) switch statement
-			xLeft = rect.left + iHalfColumnGap + ((i-1) * rect.width / iColumns);
+			xLeft = rect.left + iHalfColumnGap + ((i-1) * rect.width/iColumns);
 			xRight = rect.left - iHalfColumnGap + (i * rect.width / iColumns);
 			double dy = (double) y;
 			double rat = (dy - d_y_start)/d_ysize;
-			curskip = static_cast<UT_sint32>(rat/maxHeightPercent);
-			if(curskip > lskip )
+			curskip += y_step;
+			if(curskip >= maxHeight )
 			{
-				if(nsteps < numSteps)
-				{
-					nsteps++;
-				}
-				if(nsteps >= numSteps)
-				{
-					nsteps = 0;
-					lskip = curskip;
-				}
+					curskip = 0;
+					y += iSpace;
 			}
-			else
-			{
-				gc->drawLine(xLeft, y, xRight, y);
-			}
+			gc->drawLine(xLeft, y, xRight, y);
 		}
 	}
 

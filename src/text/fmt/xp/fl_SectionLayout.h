@@ -225,6 +225,12 @@ public:
 
 	fl_HdrFtrSectionLayout*         getHeader(void);
 	fl_HdrFtrSectionLayout*         getFooter(void);
+	fl_HdrFtrSectionLayout*         getHeaderEven(void);
+	fl_HdrFtrSectionLayout*         getFooterEven(void);
+	fl_HdrFtrSectionLayout*         getHeaderFirst(void);
+	fl_HdrFtrSectionLayout*         getFooterFirst(void);
+	fl_HdrFtrSectionLayout*         getHeaderLast(void);
+	fl_HdrFtrSectionLayout*         getFooterLast(void);
 
 	void				setEndnote(fl_DocSectionLayout*);
 	fl_DocSectionLayout* getEndnote(void);
@@ -250,6 +256,12 @@ protected:
 	*/
 	fl_HdrFtrSectionLayout*		m_pHeaderSL;
 	fl_HdrFtrSectionLayout*		m_pFooterSL;
+	fl_HdrFtrSectionLayout*		m_pHeaderEvenSL;
+	fl_HdrFtrSectionLayout*		m_pFooterEvenSL;
+	fl_HdrFtrSectionLayout*		m_pHeaderFirstSL;
+	fl_HdrFtrSectionLayout*		m_pFooterFirstSL;
+	fl_HdrFtrSectionLayout*		m_pHeaderLastSL;
+	fl_HdrFtrSectionLayout*		m_pFooterLastSL;
 	
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;

@@ -97,7 +97,19 @@ static PP_Property _props[] =
 	{ "font-style",	"normal", true, NULL},
 	{ "font-variant", "normal", true, NULL},
 	{ "font-weight", "normal", true, NULL},
+
+	{ "footer","",false,NULL},
+	{ "footer-even","",false,NULL},
+	{ "footer-first","",false,NULL},
+	{ "footer-last","",false,NULL},
+
+
 	{ "format","%*%d.", true, NULL},
+
+	{ "header","",false,NULL},
+	{ "header-even","",false,NULL},
+	{ "header-first","",false,NULL},
+	{ "header-last","",false,NULL},
 
 	{ "height", "",	false, NULL},
 

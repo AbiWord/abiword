@@ -497,6 +497,39 @@ fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void)
 	return m_pFooterSL;
 }
 
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderEven(void)
+{
+	return m_pHeaderEvenSL;
+}
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterEven(void)
+{
+	return m_pFooterEvenSL;
+}
+
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderFirst(void)
+{
+	return m_pHeaderFirstSL;
+}
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterFirst(void)
+{
+	return m_pFooterFirstSL;
+}
+
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderLast(void)
+{
+	return m_pHeaderLastSL;
+}
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterLast(void)
+{
+	return m_pFooterLastSL;
+}
+
 void fl_DocSectionLayout::setEndnote(fl_DocSectionLayout* pEndnoteSL)
 {
 	UT_ASSERT(getType() == FL_SECTION_DOC);
