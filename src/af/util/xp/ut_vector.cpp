@@ -104,6 +104,8 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_sint32 ndx)
 
 	m_pEntries[ndx] = p;
 	++m_iCount;
+
+	return 0;
 }
 
 UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
