@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2003 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -168,5 +170,97 @@ private:
 
 #endif /* ABI_OPT_STL */
 
-#endif /* UTVECTOR_H */
+class ABI_EXPORT UT_NumberVector
+{
+public:
+	/* sizehint: initial size of internal array
+	 * baseincr: size of increments
+	 */
+	UT_NumberVector (UT_uint32 sizehint = 2048, UT_uint32 baseincr = 256);
+	UT_NumberVector (const UT_NumberVector & NV);
 
+	~UT_NumberVector ();
+
+	UT_NumberVector &	operator= (const UT_NumberVector & NV);
+
+	bool				copy (const UT_NumberVector & NV);
+
+	void				clear (bool free_memory = true);
+
+	inline UT_uint32	size () const
+	{
+		return m_iCount;
+	}
+	inline UT_uint32	getItemCount() const
+	{
+		return m_iCount;
+	}
+
+	/* addItem() & push_back() return 0 on success, -1 on failure:
+	 */
+	inline UT_sint32	addItem (UT_sint32 number, UT_uint32 * pIndex)
+	{
+		if (addItem (number)) return -1;
+		if (pIndex)
+			*pIndex = m_iCount - 1;
+		return 0;
+	}
+	UT_sint32			addItem (UT_sint32 number);
+
+	inline UT_sint32	push_back (UT_sint32 number)
+	{
+		return addItem (number);
+	}
+	inline bool			pop_back ()
+	{
+		if (!m_iCount) return false;
+		m_pEntries[--m_iCount] = 0;
+		return true;
+	}
+
+	inline UT_sint32	operator[] (UT_uint32 index) const
+	{
+		return getNthItem (index);
+	}
+	inline UT_sint32	getFirstItem () const
+	{
+		return getNthItem (0);
+	}
+	inline UT_sint32	getLastItem () const
+	{
+		return getNthItem (m_iCount ? (m_iCount - 1) : 0);
+	}
+	inline UT_sint32	back () const // == getLastItem
+	{
+		return getNthItem (m_iCount ? (m_iCount - 1) : 0);
+	}
+	UT_sint32			getNthItem (UT_uint32 index) const;
+
+	/* setNthItem() and insertItemAt() return 0 on success, -1 on failure:
+	 */
+	UT_sint32			setNthItem (UT_uint32 index, UT_sint32 new_number, UT_sint32 * old_number = 0);
+
+	UT_sint32			insertItemAt (UT_sint32 number, UT_uint32 index);
+
+	void				deleteNthItem (UT_uint32 index);
+
+	/* findItem() returns index >= 0 of first instance of number, or -1 if not found:
+	 */
+	UT_sint32			findItem (UT_sint32 number) const;
+
+	// void				qsort (bool ascending = true);
+
+private:
+	/* grow() returns 0 on success, -1 on failure:
+	 */
+	UT_sint32			grow (UT_uint32 requirement);
+	
+	UT_sint32 *			m_pEntries;
+
+	UT_uint32			m_iCount;
+	UT_uint32			m_iSpace;
+	UT_uint32			m_iInitialSize;
+	UT_uint32			m_iIncrement;
+};
+
+#endif /* UTVECTOR_H */

@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2003 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,4 +54,38 @@ bool UT_Stack::viewTop(void ** ppVoid) const
 UT_uint32 UT_Stack::getDepth(void) const
 {
 	return m_vecStack.getItemCount();
+}
+
+UT_NumberStack::UT_NumberStack (UT_uint32 sizehint, UT_uint32 baseincr) :
+	m_vecStack(sizehint,baseincr)
+{
+	// 
+}
+
+bool UT_NumberStack::push (UT_sint32 number)
+{
+	return (m_vecStack.addItem (number) == 0);
+}
+
+bool UT_NumberStack::pop (UT_sint32 * number)
+{
+	if (!m_vecStack.getItemCount ()) return false;
+
+	if (number) *number = m_vecStack.getLastItem ();
+
+	return m_vecStack.pop_back ();
+}
+
+bool UT_NumberStack::viewTop (UT_sint32 & number) const
+{
+	if (!m_vecStack.getItemCount ()) return false;
+
+	number = m_vecStack.getLastItem ();
+
+	return true;
+}
+
+UT_uint32 UT_NumberStack::getDepth () const
+{
+	return m_vecStack.getItemCount ();
 }

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -41,6 +43,25 @@ public:
 
 private:
 	UT_Vector		m_vecStack;
+};
+
+/* some people have been storing numbers casted to pointers in a UT_Stack;
+ * this causes problems sometimes on 64-bit architectures.
+ * 
+ * so, here is a number stack
+ */
+class ABI_EXPORT UT_NumberStack
+{
+public:
+	UT_NumberStack (UT_uint32 sizehint = 32, UT_uint32 baseincr = 32); // see UT_NumberVector
+
+	bool			push (UT_sint32 number);
+	bool			pop (UT_sint32 * number = 0);
+	bool			viewTop (UT_sint32 & number) const;
+	UT_uint32		getDepth (void) const;
+
+private:
+	UT_NumberVector	m_vecStack;
 };
 
 #endif /* UT_STACK_H */

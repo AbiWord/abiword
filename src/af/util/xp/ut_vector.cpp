@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2003 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -363,3 +365,182 @@ const void* UT_Vector::operator[](UT_uint32 i) const
 }
 
 #endif /* ABI_OPT_STL */
+
+
+UT_NumberVector::UT_NumberVector (UT_uint32 sizehint, UT_uint32 baseincr) :
+	m_pEntries(0),
+	m_iCount(0),
+	m_iSpace(0),
+	m_iInitialSize(sizehint),
+	m_iIncrement(baseincr)
+{
+	// 
+}
+
+UT_NumberVector::UT_NumberVector (const UT_NumberVector & NV) :
+	m_pEntries(0),
+	m_iCount(0),
+	m_iSpace(0),
+	m_iInitialSize(NV.m_iInitialSize),
+	m_iIncrement(NV.m_iIncrement)
+{
+	copy (NV);
+}
+
+UT_NumberVector::~UT_NumberVector ()
+{
+	clear ();
+}
+
+UT_NumberVector & UT_NumberVector::operator= (const UT_NumberVector & NV)
+{
+	copy (NV);
+	return *this;
+}
+
+bool UT_NumberVector::copy (const UT_NumberVector & NV)
+{
+	clear (false);
+
+	if (NV.m_iCount > m_iSpace)
+		if (grow (NV.m_iCount) == -1)
+			return false; // :-(
+
+	if (NV.m_iCount)
+		{
+			m_iCount = NV.m_iCount;
+			memcpy (m_pEntries, NV.m_pEntries, m_iCount * sizeof (UT_sint32));
+		}
+	return true;
+}
+
+void UT_NumberVector::clear (bool free_memory)
+{
+	if (free_memory)
+		{
+			FREEP(m_pEntries);
+			m_iSpace = 0;
+		}
+	m_iCount = 0;
+}
+
+/* addItem() returns 0 on success, -1 on failure:
+ */
+UT_sint32 UT_NumberVector::addItem (UT_sint32 number)
+{
+	if (grow (m_iCount + 1) == -1)
+		return -1; // :-(
+
+	m_pEntries[m_iCount++] = number;
+
+	return 0;
+}
+
+UT_sint32 UT_NumberVector::getNthItem (UT_uint32 index) const
+{
+	UT_ASSERT(index < m_iCount);
+	return ((index < m_iCount) ? m_pEntries[index] : 0);
+}
+
+/* setNthItem() and insertItemAt() return 0 on success, -1 on failure:
+ */
+UT_sint32 UT_NumberVector::setNthItem (UT_uint32 index, UT_sint32 new_number, UT_sint32 * old_number)
+{
+	if (index >= m_iCount)
+		{
+			if (grow (index + 1) == -1)
+				return -1; // :-(
+
+			m_iCount = index + 1;
+		}
+
+	if (old_number) *old_number = m_pEntries[index];
+
+	m_pEntries[index] = new_number;
+
+	return 0;
+}
+
+UT_sint32 UT_NumberVector::insertItemAt (UT_sint32 number, UT_uint32 index)
+{
+	UT_ASSERT(index <= m_iCount);
+	if (index > m_iCount)
+		return -1;
+
+	if (grow (m_iCount + 1) == -1)
+		return -1; // :-(
+
+	if (index <  m_iCount)
+		memmove (m_pEntries + index + 1, m_pEntries + index, (m_iCount - index) * sizeof (UT_sint32));
+
+	++m_iCount;
+
+	m_pEntries[index] = number;
+
+	return 0;
+}
+
+void UT_NumberVector::deleteNthItem (UT_uint32 index)
+{
+	if (index >= m_iCount) return;
+
+	--m_iCount;
+
+	if (index <  m_iCount)
+		memmove (m_pEntries + index, m_pEntries + index + 1, (m_iCount - index) * sizeof (UT_sint32));
+
+	m_pEntries[m_iCount] = 0;
+}
+
+/* findItem() returns index >= 0 of first instance of number, or -1 if not found:
+ */
+UT_sint32 UT_NumberVector::findItem (UT_sint32 number) const
+{
+	UT_sint32 retval = -1;
+
+	for (UT_uint32 index = 0; index < m_iCount; index++)
+		if (m_pEntries[index] == number)
+			{
+				retval = static_cast<UT_sint32>(index);
+				break;
+			}
+	return retval;
+}
+
+/* grow() returns 0 on success, -1 on failure:
+ */
+UT_sint32 UT_NumberVector::grow (UT_uint32 requirement)
+{
+	if (requirement <= m_iSpace) return 0;
+
+	UT_uint32 new_space = m_iInitialSize;
+	if (new_space < requirement)
+		{
+			new_space = (requirement - m_iInitialSize) / m_iIncrement;
+			new_space = m_iInitialSize + new_space * m_iIncrement;
+
+			if (new_space < requirement)
+				new_space += m_iIncrement;
+		}
+	if (m_pEntries == 0)
+		{
+			m_pEntries = reinterpret_cast<UT_sint32 *>(malloc (new_space * sizeof (UT_sint32)));
+			UT_ASSERT(m_pEntries);
+			if (m_pEntries == 0)
+				return -1;
+			memset (m_pEntries, 0, new_space * sizeof (UT_sint32));
+		}
+	else
+		{
+			UT_sint32 * more = 0;
+			more = reinterpret_cast<UT_sint32 *>(realloc (m_pEntries, new_space * sizeof (UT_sint32)));
+			UT_ASSERT(more);
+			if (more == 0)
+				return -1;
+			m_pEntries = more;
+			memset (m_pEntries + m_iSpace, 0, (new_space - m_iSpace) * sizeof (UT_sint32));
+		}
+	m_iSpace = new_space;
+
+	return 0;
+}
