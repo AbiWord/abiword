@@ -55,7 +55,7 @@ public:
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
 	SET_GATHER			(SmartQuotesEnable, UT_Bool );
-	SET_GATHER			(DefaultPagesize,   fp_PageSize::Predefined);
+	SET_GATHER			(DefaultPageSize,   fp_PageSize::Predefined);
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
