@@ -50,7 +50,7 @@ endif
 #			Abi_libpopt $(ABIICONV) Abi_libpng Abi_zlib
 LoadOrder=	AbiGr AbiFmt AbiXAp AbiWPAp AbiPTbl AbiImpExp \
 			AbiEv AbiUtil AbiGr AbiWordVer AbiSpell 
-ABI_PERIPHLIBS=		Abi_libwv fribidi \
+ABI_PERIPHLIBS=		Abi_libwv fribidi Abi_libexpat \
 			Abi_libpopt $(ABIICONV) Abi_libpng
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder) $(ABI_PERIPHLIBS)
 ABI_APPLIBDEP=		$(LoadOrder)
