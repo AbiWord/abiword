@@ -87,7 +87,7 @@ OS_ENDIAN		= BigEndian32
 endif
 
 LDFLAGS			= -framework Carbon -framework CoreServices \
-				-framework ApplicationService
+				-framework ApplicationServices
 # Shared library flags
 #MKSHLIB		= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)

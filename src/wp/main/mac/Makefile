@@ -41,11 +41,11 @@ PROGRAM_RES=$(PROGRAM_BUNDLE_RES)/AbiWord.rsrc
 PROGRAM=$(PROGRAM_BUNDLE_BIN)/AbiWord
 
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv Abi_libiconv
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libpng Abi_libwv Abi_libiconv
 
 
 ABI_APPLIBS=		$(LoadOrder)
-ABI_LIBS=		png z
+ABI_LIBS=		z
 
 ABI_APPLIBS+=		$(LoadOrder) $(LoadOrder)
 ABI_LIBS+=		
