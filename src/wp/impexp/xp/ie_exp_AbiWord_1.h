@@ -24,7 +24,7 @@
 #include "ie_exp.h"
 #include "pl_Listener.h"
 class PD_Document;
-class s_Abword_1_Listener;
+class s_AbiWord_1_Listener;
 
 // The exporter/writer for AbiWord file format version 1.
 
@@ -48,7 +48,7 @@ public:
 protected:
 	IEStatus			_writeDocument(void);
 	
-	s_Abword_1_Listener *	m_pListener;
+	s_AbiWord_1_Listener *	m_pListener;
 	PL_ListenerId		m_lid;
 
 public:
