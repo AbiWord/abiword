@@ -6863,6 +6863,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			// Have to loop so that multi-level lists get stopped. Each StopList removes
 			// the sdh from the next highest level.
 			//
+			UT_sint32 iLoop = 20;
 			do
 			{
 				fl_AutoNum * pAuto = NULL;
@@ -6881,8 +6882,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					UT_DEBUGMSG(("SEVIOR: Stopping list at %x \n",sdh));
 					getDoc()->StopList(sdh);
 				}
+				iLoop--;
 			}
-			while(bisListItem);
+			while(bisListItem && (iLoop > 0));
 		}
 		return bSuccess;
 	}

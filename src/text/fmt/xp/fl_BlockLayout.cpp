@@ -7736,8 +7736,8 @@ void	fl_BlockLayout::StopListInBlock(void)
 	//
 	const XML_Char ** props = NULL;
 	const XML_Char * szAlign, * szIndent;
-	pPrev = static_cast<fl_BlockLayout *>(getPrev());
-	pNext = static_cast<fl_BlockLayout *>(getNext());
+	pPrev = static_cast<fl_BlockLayout *>(getPrevBlockInDocument());
+	pNext = static_cast<fl_BlockLayout *>(getNextBlockInDocument());
 
 	if (id != 0)
 	{
@@ -7748,14 +7748,14 @@ void	fl_BlockLayout::StopListInBlock(void)
 		bmatch = static_cast<bool>(pPrev->isListItem() && pPrev->getLevel() == level && pPrev->getAutoNum()->getID() == id);
 		while (pPrev && !bmatch)
 		{
-			pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
+			pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrevBlockInDocument());
 			if (pPrev && pPrev->isListItem())
 				bmatch = static_cast<bool>(pPrev->getLevel() == level
 								&& pPrev->getAutoNum()->getID() == id);
 		}
 		while (pNext  && !bmatch)
 		{
-			pNext = static_cast<fl_BlockLayout *>(pNext->getNext());
+			pNext = static_cast<fl_BlockLayout *>(pNext->getNextBlockInDocument());
 			if (pNext && pNext->isListItem())
 				bmatch = static_cast<bool>(pNext->getLevel() == level
 								&& pNext->getAutoNum()->getID() == id);

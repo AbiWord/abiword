@@ -72,7 +72,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		pf_Frag * pTemp;
 		pf_Frag * pEnd = pf2->getNext();
 
-		for(pTemp = pf1; pTemp != pEnd; pTemp = pTemp->getNext())
+		for(pTemp = pf1; pTemp && (pTemp != pEnd); pTemp = pTemp->getNext())
 		{
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;

@@ -539,7 +539,11 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 	const char * current = pbuf;
 	UT_uint32 count = 0;
 
-	UT_DEBUGMSG(("data = %s\n", pbuf));
+	UT_DEBUGMSG(("Buffer length = %d \n",buflen));
+	if(buflen < 400)
+	{ 
+		UT_DEBUGMSG(("data = %s\n", pbuf));
+	}
 	if (m_bLastWasKeyword)
 	{
 		write(" ");
