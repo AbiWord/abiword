@@ -377,7 +377,7 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 0, 0);
 	PtSetResources(m_textWord, n, args);
    
-	UT_UCSChar *p;
+	UT_UCS4Char *p;
 	char 		*str;
 	int		   len;
 
@@ -435,7 +435,7 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 
 	PtListDeleteAllItems(m_clistSuggestions); 
 	for (int i = 0; i < m_Suggestions->getItemCount(); i++) {
-		suggest[0] = _convertToMB((UT_UCSChar *)m_Suggestions->getNthItem(i));
+		suggest[0] = _convertToMB((UT_UCS4Char *)m_Suggestions->getNthItem(i));
 		PtListAddItems(m_clistSuggestions, (const char **)suggest, 1, 0);
 		if (i==0) {
 			set_text_string(m_entryChange, suggest[0]);
@@ -478,16 +478,16 @@ void AP_QNXDialog_Spell::_storeWindowData(void)
 
 void AP_QNXDialog_Spell::event_Change()
 {
-	UT_UCSChar * replace = NULL;
+	UT_UCS4Char * replace = NULL;
 
    	if (m_iSelectedRow != -1) {
-		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
+		replace = (UT_UCS4Char*) m_Suggestions->getNthItem(m_iSelectedRow);
 		changeWordWith(replace);
 	}
 	else {
 		char *text = get_text_string(m_entryChange);
 		replace = _convertFromMB(text);
-		if (!UT_UCS_strlen(replace)) {
+		if (!UT_UCS4_strlen(replace)) {
 		   FREEP(replace);
 		   return;
 		}
@@ -499,17 +499,17 @@ void AP_QNXDialog_Spell::event_Change()
 
 void AP_QNXDialog_Spell::event_ChangeAll()
 {
-	UT_UCSChar * replace = NULL;
+	UT_UCS4Char * replace = NULL;
 
 	if (m_iSelectedRow != -1) {
-		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
+		replace = (UT_UCS4Char*) m_Suggestions->getNthItem(m_iSelectedRow);
 		addChangeAll(replace);
 		changeWordWith(replace);
 	}
 	else {
 		char *text = get_text_string(m_entryChange);
 		replace = _convertFromMB(text);
-		if (!UT_UCS_strlen(replace)) {
+		if (!UT_UCS4_strlen(replace)) {
 			FREEP(replace);
 			return;
 		}
@@ -590,37 +590,28 @@ void AP_QNXDialog_Spell::event_ReplacementChanged()
 // TODO: but I don't know about xp support for them.
 
 // make a multibyte encoded version of a string
-char * AP_QNXDialog_Spell::_convertToMB(UT_UCSChar *wword)
+char * AP_QNXDialog_Spell::_convertToMB(UT_UCS4Char *wword)
 {
-#if 0
-	int    len;
-	char   *buffer;
+char *str;
+UT_UTF8String *utf8 = new UT_UTF8String(wword,0);
 
-	len = UT_UCS_strlen(wword);
-	buffer = new char[(len + 1) * 3];	//Be very pessimistic about size
-	wcstombs(buffer, (wchar_t *)wword, len*3);	
-	return buffer;
-#else
-	char *word = (char *) malloc (UT_UCS_strlen(wword)*3);
-	UT_UCS_strcpy_to_char(word,wword);
-	return word;
-#endif
+str=strdup(utf8->utf8_str());
+delete utf8;
+return str;
 }
 
 // make a wide string from a multibyte string
 UT_UCSChar * AP_QNXDialog_Spell::_convertFromMB(char *word)
 {
-#if 0
-	int 		len;
-	UT_UCSChar *buffer;
+UT_UCSChar *wcstr;
+UT_UCS2String str;
+UT_UTF8String *wc = new UT_UTF8String(word);
 
-	len = mbstrlen(word, 0, NULL);
-	buffer = new UT_UCSChar[(len + 1) * 2];
-	mbstowcs((wchar_t *)buffer, word, len);	
-	return buffer;
-#else
-	UT_UCSChar *wword = (UT_UCSChar *) malloc (strlen(word)*2);
-	UT_UCS_strcpy_char(wword,word);
-	return wword;
-#endif
+str=wc->ucs2_str();
+wcstr=(UT_UCSChar*)calloc(str.size()+1,sizeof(UT_UCSChar));
+
+memcpy(wcstr,str.ucs4_str(),(sizeof(UT_UCSChar)*str.size()));
+wcstr[(str.size())+1]='\0';
+delete wc;
+return wcstr;
 }
