@@ -93,7 +93,9 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 	
 	if (bForward != bForwardSelection)
 	{
-		UT_uint32 countChars = _getDataCount(curPos,m_iSelectionAnchor);
+		UT_uint32 b = UT_MIN(curPos,m_iSelectionAnchor);
+		UT_uint32 e = UT_MAX(curPos,m_iSelectionAnchor);
+		UT_uint32 countChars = _getDataCount(b,e);
 		_charMotion(bForward,countChars);
 	}
 
