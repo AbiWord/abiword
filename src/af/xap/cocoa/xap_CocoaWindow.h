@@ -75,7 +75,6 @@ protected:
 	NSBackingStoreType		m_backingType;
 	NSWindowController *	m_controller;
 	NSWindow *				m_window;
-	NSView *				m_view;
 	bool					m_isToolbar;
 	NSRect					m_frame;
 };

@@ -85,9 +85,7 @@ AP_CocoaSplash * AP_CocoaSplash::instance (bool instantiate)
 AP_CocoaSplash::AP_CocoaSplash (const NSSize & size, NSImage * image) :
 	XAP_CocoaWindow(ws_Raw,NSMakeRect(100.0,100.0,size.width,size.height)), // fix position later
 	m_statusbar(0)
-{
-	[image retain];
-	
+{	
     [m_window setHidesOnDeactivate:NO];
     [m_window setExcludedFromWindowsMenu:YES];
     [m_window setAlphaValue:0.8];
@@ -101,10 +99,9 @@ AP_CocoaSplash::AP_CocoaSplash (const NSSize & size, NSImage * image) :
 	NSImageView * iview = [[NSImageView alloc] initWithFrame:box];
 	UT_ASSERT (iview);
 	[iview setImage:image];
-	[m_view addSubview:iview];
+	[[m_window contentView] addSubview:iview];
 	[iview release];
 	
-	[image release];
 	
 	_show ();
 
@@ -112,7 +109,7 @@ AP_CocoaSplash::AP_CocoaSplash (const NSSize & size, NSImage * image) :
 	m_statusbar = [[NSText alloc] initWithFrame:box];
 	UT_ASSERT(m_statusbar);
 	
-	[m_view addSubview:m_statusbar];	/* m_statusbar will be released in destructor of this */
+	[[m_window contentView] addSubview:m_statusbar];	/* m_statusbar will be released in destructor of this */
 										/* that allow the view to be detached safely */
 	XAP_StatusBar::setStatusBar (this);
 }
@@ -120,8 +117,6 @@ AP_CocoaSplash::AP_CocoaSplash (const NSSize & size, NSImage * image) :
 AP_CocoaSplash::~AP_CocoaSplash ()
 {
 	XAP_StatusBar::unsetStatusBar (this);
-
-	[m_view release];
 	s_Splash = 0;
 }
 

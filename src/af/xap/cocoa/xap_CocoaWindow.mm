@@ -39,7 +39,7 @@ static float s_ToolbarHeight = 0.0;
 
 - (id)initWithWindow:(NSWindow *)window withXAPWindow:(XAP_CocoaWindow *)xap
 {
-	[super initWithWindow:window];
+	self = [super initWithWindow:window];
 	m_window = xap;
 	return self;
 }
@@ -58,7 +58,6 @@ XAP_CocoaWindow::XAP_CocoaWindow (WindowStyle ws, const NSRect & frameRect) :
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
 	m_window(0),
-	m_view(0),
 	m_isToolbar(false)
 {
 	NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
@@ -76,7 +75,6 @@ XAP_CocoaWindow::XAP_CocoaWindow () :
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
 	m_window(0),
-	m_view(0),
 	m_isToolbar(false)
 {
 	NSRect frame = [[NSScreen mainScreen] visibleFrame];
@@ -100,7 +98,6 @@ XAP_CocoaWindow::XAP_CocoaWindow (float height) :
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
 	m_window(0),
-	m_view(0),
 	m_isToolbar(true)
 {
 	m_frame = [[NSScreen mainScreen] visibleFrame];
@@ -131,8 +128,6 @@ void XAP_CocoaWindow::_init (WindowStyle ws)
 	
 	m_controller = [[XAP_CocoaWindowDelegate alloc] initWithWindow:m_window withXAPWindow:this];
 	[m_window setDelegate:m_controller];
-
-	m_view = [[m_window contentView] retain];
 }
 
 XAP_CocoaWindow::~XAP_CocoaWindow ()
@@ -140,7 +135,6 @@ XAP_CocoaWindow::~XAP_CocoaWindow ()
 	if (m_controller) {
 		[m_controller close];
 	}
-	[m_view release];		// m_view has been retained to be valid during the whole object life
 	[m_controller release];
 	[m_window release];
 	
