@@ -2513,12 +2513,16 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty())
 	{
+		m_pDoc->setDontImmediatelyLayout(true);
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
-	m_pDoc->setDontImmediatelyLayout(true);
+	else
+	{
+		m_pDoc->setDontImmediatelyLayout(true);
+	}
 //
 // insert a block to terminate the text before this.
 //
@@ -3378,6 +3382,7 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	m_pDoc->disableListUpdates();
 	m_pDoc->setDoingPaste();
 	setCursorWait();
+	m_pDoc->setDontImmediatelyLayout(true);
 	_doPaste(true, bHonorFormatting);
 
 	// restore updates and clean up dirty lists

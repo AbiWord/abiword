@@ -1441,11 +1441,13 @@ IE_Imp_RTF::~IE_Imp_RTF()
 			{
 				getDoc()->insertStrux(m_dposPaste,PTX_Block);
 				m_dposPaste++;	
+				UT_DEBUGMSG(("Paste block in destructor 1 \n"));
 			}
 			if(pPaste->m_bHasPastedCellStrux)
 			{
 				getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
 				m_dposPaste++;	
+				UT_DEBUGMSG(("Paste EndCell in destructor 1 \n"));
 			}
 //
 // Now fill out any remaining cells needed to finish the row of the table
@@ -6715,7 +6717,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		bool bSuccess = true;
 		if(bAbiList && (bUseInsertNotAppend()))
 		{
-			xxx_UT_DEBUGMSG(("Insert block at 1 \n"));
+			UT_DEBUGMSG(("Insert block at 1 \n"));
 			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
@@ -6767,6 +6769,19 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else if(bUseInsertNotAppend())
 		{
+			ABI_Paste_Table * pPaste = NULL;		
+			m_pasteTableStack.viewTop((void**)(&pPaste));
+			if(pPaste != NULL)
+			{
+				if(!pPaste->m_bHasPastedCellStrux)
+				{
+//
+// We have either a bare table strux or a bare endcell strux. No blocks
+// allowed here.
+//
+					return true;
+				}
+			}
 			UT_DEBUGMSG((" Insert block at 2 \n"));
 			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
@@ -7097,7 +7112,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	{
 		// Add a block before the section so there's something content
 		// can be inserted into.
-		xxx_UT_DEBUGMSG(("Insert block at 3 \n"));
+		UT_DEBUGMSG(("Insert block at 3 \n"));
 		markPasteBlock();
 		bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 
@@ -8687,10 +8702,11 @@ bool IE_Imp_RTF::HandleAbiEndCell(void)
 	}
 	if(!pPaste->m_bHasPastedBlockStrux)
 	{
+		UT_DEBUGMSG(("Insert Block  -4 \n"));
 		getDoc()->insertStrux(m_dposPaste,PTX_Block);
 		m_dposPaste++;	
 	}
-
+	UT_DEBUGMSG(("Insert EndCell -1!!!!!!!!!!!!!! \n"));
 	getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
 	m_dposPaste++;	
 	pPaste->m_bHasPastedCellStrux = false;
