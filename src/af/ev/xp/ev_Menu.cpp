@@ -192,7 +192,7 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 
 /* replace _ev_GetLabelName () */
 /* this version taken from ev_UnixMenu.cpp */
-const char ** EV_Menu::getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+const char ** EV_Menu::getLabelName(XAP_App * pApp, 
 									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
@@ -204,7 +204,7 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
+		szLabelName = pAction->getDynamicLabel(pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -224,7 +224,7 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
-			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
+			const EV_EditEventMapper * pEEM = getApp()->getEditEventMapper();
 			UT_ASSERT(pEEM);
 
 			const char * string = pEEM->getShortcutFor(pEM);

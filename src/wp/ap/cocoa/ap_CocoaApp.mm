@@ -228,7 +228,7 @@ bool AP_CocoaApp::initialize(void)
     m_pToolbarActionSet = AP_CreateToolbarActionSet();
     UT_ASSERT(m_pToolbarActionSet);
     
-    if (! XAP_CocoaApp::initialize())
+    if (! AP_App::initialize())
 		return false;
 
 	//////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ public:
 
 	virtual const char * 					getDefaultEncoding () const;
 
-	virtual bool							initialize();
+	virtual bool							initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 	virtual XAP_Frame * 					newFrame() = 0;
 	virtual void							reallyExit();
 

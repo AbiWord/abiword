@@ -149,7 +149,7 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
+		szLabelName = pAction->getDynamicLabel(pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 

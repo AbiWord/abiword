@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998, 1999 AbiSource, Inc.
+ * Copyright (C) 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +35,7 @@
 #include "xap_App.h"
 #include "xap_AppImpl.h"
 #include "xap_Args.h"
+#include "xap_InputModes.h"
 #include "gr_Image.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
@@ -45,6 +47,7 @@
 #include "xap_EncodingManager.h"
 #include "xap_Menu_Layouts.h"
 #include "xap_Toolbar_Layouts.h"
+#include "xav_View.h"
 #include "ut_rand.h"
 #include "ut_contextGlyph.h"
 #include "ut_map.h"
@@ -79,6 +82,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_bEnableSmoothScrolling(true),
 	  m_pKbdLang(NULL), // must not be deleted by destructor !!!
  	  m_pUUIDGenerator(NULL),
+	  m_pInputModes(NULL),
 	  m_pImpl(NULL)
 {
 #ifdef DEBUG
@@ -136,6 +140,7 @@ XAP_App::~XAP_App()
 	GR_CharWidthsCache::destroyCharWidthsCache();
 
 	DELETEP(m_pUUIDGenerator);
+	DELETEP(m_pInputModes);
 	DELETEP(m_pImpl);
 }
 
@@ -190,7 +195,7 @@ EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
 	return m_pToolbarActionSet;
 }
 
-bool XAP_App::initialize()
+bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
 	// create application-wide resources that
 	// are shared by everything.
@@ -256,6 +261,31 @@ bool XAP_App::initialize()
 	//
 	UT_uint32 t = static_cast<UT_uint32>(time(NULL));
 	UT_srandom(t);
+
+	// Input mode initilization, taken out of the XAP_Frame
+	const char * szBindings = NULL;
+	EV_EditBindingMap * pBindingMap = NULL;
+
+	if ((getPrefsValue(szKeyBindingsKey,
+				 static_cast<const XML_Char**>(&szBindings))) && 
+	    (szBindings) && (*szBindings))
+		pBindingMap = m_pApp->getBindingMap(szBindings);
+	if (!pBindingMap)
+		pBindingMap = m_pApp->getBindingMap(szKeyBindingsDefaultValue);
+	UT_ASSERT(pBindingMap);
+
+	if (!m_pInputModes)
+	{
+		m_pInputModes = new XAP_InputModes();
+		UT_ASSERT(m_pInputModes);
+	}
+	bool bResult;
+	bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
+	UT_ASSERT(bResult);
+	bool bResult2;
+	bResult2 = m_pInputModes->setCurrentMap(szBindings);
+	UT_ASSERT(bResult2);
+
 
 	return true;
 }
@@ -959,6 +989,52 @@ void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude)
 	}
 }
 
+EV_EditEventMapper * XAP_App::getEditEventMapper(void) const
+{
+	UT_ASSERT(m_pInputModes);
+	return m_pInputModes->getCurrentMap();
+}
+
+UT_sint32 XAP_App::setInputMode(const char * szName)
+{
+	UT_uint32 i;
+	
+	UT_ASSERT(m_pInputModes);
+	const char * szCurrentName = m_pInputModes->getCurrentMapName();
+	if (UT_stricmp(szName,szCurrentName) == 0)
+		return -1;					// already set, no change required
+
+	EV_EditEventMapper * p = m_pInputModes->getMapByName(szName);
+	if (!p)
+	{
+		// map not previously loaded -- we need to install it first
+
+		EV_EditBindingMap * pBindingMap = m_pApp->getBindingMap(szName);
+		UT_ASSERT(pBindingMap);
+		bool bResult;
+		bResult = m_pInputModes->createInputMode(szName,pBindingMap);
+		UT_ASSERT(bResult);
+	}
+	
+	// note: derrived classes will need to update keyboard
+	// note: and mouse after we return.
+
+	UT_DEBUGMSG(("Setting InputMode to [%s] for the current window.\n",szName));
+	
+	bool bStatus = m_pInputModes->setCurrentMap(szName);
+	
+	// notify all the frames about the INPUTMODE change
+	for (i = 0; i < getFrameCount(); i++) {
+		getFrame(i)->getCurrentView()->notifyListeners(AV_CHG_INPUTMODE);
+	}
+	
+	return (bStatus);
+}
+
+const char * XAP_App::getInputMode(void) const
+{
+	return m_pInputModes->getCurrentMapName();
+}
 
 
 #ifdef DEBUG

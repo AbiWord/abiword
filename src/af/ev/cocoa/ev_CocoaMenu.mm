@@ -117,7 +117,7 @@ bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
 		}
 
 		// Get the dynamic label
-		const char ** data = _getCocoaLabelName(app, NULL, pAction, pLabel);
+		const char ** data = getLabelName(app, pAction, pLabel);
 		const char * szLabelName = data[0];
 		const char * szMnemonicName = data[1];		
 		bool bHasDynamicLabel = pAction->hasDynamicLabel();
@@ -347,7 +347,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 		case EV_MLF_Normal:
 		{
 			unsigned int modifier = 0;
-			const char ** data = _getCocoaLabelName(m_pCocoaApp, NULL, pAction, pLabel);
+			const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 			
@@ -407,7 +407,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 		}
 		case EV_MLF_BeginSubMenu:
 		{
-			const char ** data = _getCocoaLabelName(m_pCocoaApp, NULL, pAction, pLabel);
+			const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
 			szLabelName = data[0];
 			
 			char buf[1024];
@@ -488,10 +488,14 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
 	return false;
 }
 
+
+#warning remove the code below...
+#if 0
 /*!
 	\todo move away this function once we are able to get the current from from XAP_App
+	\todo get in par with XP version
  */
-const char ** EV_CocoaMenu::_getCocoaLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+const char ** EV_CocoaMenu::_getCocoaLabelName(XAP_App * pApp,
 									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
@@ -502,12 +506,8 @@ const char ** EV_CocoaMenu::_getCocoaLabelName(XAP_App * pApp,  XAP_Frame * pFra
 	
 	const char * szLabelName;
 	
-	if (!pFrame) {
-		pFrame = static_cast<XAP_CocoaApp*>(XAP_App::getApp())->_getFrontFrame();
-	}
-	
-	if (pFrame && pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
+	if (pAction->hasDynamicLabel())
+		szLabelName = pAction->getDynamicLabel(pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -519,14 +519,14 @@ const char ** EV_CocoaMenu::_getCocoaLabelName(XAP_App * pApp,  XAP_Frame * pFra
 		// see if this has an associated keybinding
 		const char * szMethodName = pAction->getMethodName();
 
-		if (pFrame && szMethodName)
+		if (szMethodName)
 		{
 			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 			UT_ASSERT(pEMC);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
-			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
+			const EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 			UT_ASSERT(pEEM);
 
 			const char * string = pEEM->getShortcutFor(pEM);
@@ -561,7 +561,7 @@ const char ** EV_CocoaMenu::_getCocoaLabelName(XAP_App * pApp,  XAP_Frame * pFra
 	
 	return data;
 }
-
+#endif
 
 /*!
 	Return the menu shortcut for the mnemonic

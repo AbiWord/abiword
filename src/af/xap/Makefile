@@ -146,6 +146,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_FrameImpl.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_FontPreview.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_InputModes.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_LoadBindings.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Log.$(OBJ_SUFFIX)					\
 		$(OBJDIR)/xap_Prefs.$(OBJ_SUFFIX)				\

@@ -2,6 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +46,7 @@ class XAP_Toolbar_ControlFactory;
 class XAP_Frame;
 class EV_EditMethodContainer;
 class EV_EditBindingMap;
+class EV_EditEventMapper;
 class EV_Menu_ActionSet;
 class EV_Toolbar_ActionSet;
 class XAP_BindingSet;
@@ -59,6 +61,7 @@ class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
 class UT_UUIDGenerator;
+class XAP_InputModes;
 
 /*****************************************************************
 ******************************************************************
@@ -97,7 +100,7 @@ public:
 
 	virtual const char * getDefaultEncoding () const = 0 ;
 
-	virtual bool					initialize();
+	virtual bool					initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 	virtual bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = 0);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					forgetClones(XAP_Frame * pFrame);
@@ -212,6 +215,10 @@ public:
 												const char * pathAfterLang, const char * remoteURLbase)
 							{ return m_pImpl->localizeHelpUrl(pathBeforeLang, pathAfterLang, remoteURLbase); }
 
+	virtual UT_sint32			setInputMode(const char * szName);
+	const char *				getInputMode() const;
+	EV_EditEventMapper *		getEditEventMapper() const;
+
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual const char *                    _getKbdLanguage() {return NULL;}
@@ -251,6 +258,7 @@ protected:
 private:
 	const UT_LangRecord *                   m_pKbdLang;
 	UT_UUIDGenerator *                      m_pUUIDGenerator;
+	XAP_InputModes *						m_pInputModes;
 	
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);

@@ -25,6 +25,7 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_ViewListener.h"
 #include "xav_Listener.h"
@@ -54,8 +55,8 @@ bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 	}
 	if(mask & AV_CHG_INPUTMODE)
 	{
-		m_pFrame->getMouse()->setEditEventMap(m_pFrame->getEditEventMapper());
-		m_pFrame->getKeyboard()->setEditEventMap(m_pFrame->getEditEventMapper());
+		m_pFrame->getMouse()->setEditEventMap(XAP_App::getApp()->getEditEventMapper());
+		m_pFrame->getKeyboard()->setEditEventMap(XAP_App::getApp()->getEditEventMapper());
 	}
 	return true;
 }

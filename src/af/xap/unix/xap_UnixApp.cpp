@@ -84,13 +84,13 @@ XAP_UnixApp::~XAP_UnixApp()
 	delete m_fontManager;
 }
 
-bool XAP_UnixApp::initialize(bool have_display)
+bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
 	if (!g_thread_supported ()) g_thread_init (NULL);
 
 	// let our base class do it's thing.
 	
-	XAP_App::initialize();
+	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
 	/*******************************/
 

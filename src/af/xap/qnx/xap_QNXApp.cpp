@@ -56,9 +56,9 @@ XAP_QNXApp::~XAP_QNXApp(void)
 	DELETEP(m_pQNXToolbarIcons);
 }
 
-bool XAP_QNXApp::initialize(void)
+bool XAP_QNXApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
-	XAP_App::initialize();
+	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
 	/*******************************/
   

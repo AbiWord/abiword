@@ -65,7 +65,7 @@ public:
 	XAP_Menu_Id					addMenuItem(const UT_String& path, const UT_String& description);
 
 protected:
-	const char ** 				getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+	const char ** 				getLabelName(XAP_App * pApp,
 											 const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel);
 	XAP_App *					getApp() { return m_pApp; }
 

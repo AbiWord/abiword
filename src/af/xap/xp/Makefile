@@ -48,6 +48,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_FontPreview.cpp		\
 		xap_Frame.cpp			\
 		xap_FrameImpl.cpp		\
+		xap_InputModes.cpp		\
 		xap_LoadBindings.cpp		\
 		xap_Log.cpp			\
 		xap_Prefs.cpp			\

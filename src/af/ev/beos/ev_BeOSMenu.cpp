@@ -220,7 +220,7 @@ const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 	
 	if (pAction->hasDynamicLabel())
 {
-		szLabelName = pAction->getDynamicLabel(pBeOSFrame,pLabel);
+		szLabelName = pAction->getDynamicLabel(pLabel);
 
 }
 	else
@@ -242,7 +242,7 @@ const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
-			const EV_EditEventMapper * pEEM = pBeOSFrame->getEditEventMapper();
+			const EV_EditEventMapper * pEEM = pBeOSApp->getEditEventMapper();
 			UT_ASSERT(pEEM);
 
 			const char * string = pEEM->getShortcutFor(pEM);

@@ -68,25 +68,7 @@ class UT_Timer;
 ******************************************************************
 *****************************************************************/
 
-class ABI_EXPORT XAP_InputModes
-{
-public:
-	XAP_InputModes(void);
-	~XAP_InputModes(void);
 
-	bool							createInputMode(const char * szName,
-													EV_EditBindingMap * pBindingMap);
-	bool							setCurrentMap(const char * szName);
-	EV_EditEventMapper *			getCurrentMap(void) const;
-	const char * 					getCurrentMapName(void) const;
-	EV_EditEventMapper *			getMapByName(const char * szName) const;
-
-protected:
-	UT_Vector						m_vecEventMaps; /* EV_EditEventMapper * */
-	UT_Vector						m_vecNames;		/* const char * */
-	
-	UT_uint32						m_indexCurrentEventMap;
-};
 
 //////////////////////////////////////////////////////////////////
 
@@ -134,10 +116,7 @@ public:
 
 	XAP_FrameImpl * getFrameImpl() const { return m_pFrameImpl; }
 
-	virtual UT_sint32			setInputMode(const char * szName);
-	const char *				getInputMode() const;
 	void                        nullUpdate () const { m_pFrameImpl->_nullUpdate(); }
-	EV_EditEventMapper *		getEditEventMapper() const;
 	XAP_App *					getApp() const;
 	AV_View *		       		getCurrentView() const;
 	AD_Document *				getCurrentDoc() const;
@@ -257,8 +236,6 @@ protected:
 	XAP_Frame::tZoomType		m_zoomType;
 	GR_Graphics::Cursor         m_cursor;
 	void *						m_pData;		/* app-specific frame data */
-
-	XAP_InputModes *			m_pInputModes;
 	
 	static int					_getNextUntitledNumber();
 	

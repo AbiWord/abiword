@@ -62,8 +62,8 @@ protected:
 	bool				_isItemPresent(XAP_Menu_Id menuid) const;
 
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
-	const char ** 		_getCocoaLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
-									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel);
+/*	const char ** 		_getCocoaLabelName(XAP_App * pApp, 
+									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel);*/
 private:
 	static NSString* _getItemCmd (const char * mnemonic, unsigned int & modifiers);
 	XAP_CocoaApp *		m_pCocoaApp;

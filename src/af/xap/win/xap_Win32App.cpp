@@ -98,11 +98,11 @@ HINSTANCE XAP_Win32App::getInstance() const
 	return m_hInstance;
 }
 
-bool XAP_Win32App::initialize(void)
+bool XAP_Win32App::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
 	// let our base class do it's thing.
 
-	XAP_App::initialize();
+	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
 	// do anything else we need here...
 

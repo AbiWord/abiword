@@ -66,7 +66,7 @@ static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
+		szLabelName = pAction->getDynamicLabel(pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -86,7 +86,7 @@ static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
-			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
+			const EV_EditEventMapper * pEEM = pQNXApp->getEditEventMapper();
 			UT_ASSERT(pEEM);
 
 			const char * string = pEEM->getShortcutFor(pEM);

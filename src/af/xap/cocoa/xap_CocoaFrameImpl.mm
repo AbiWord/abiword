@@ -170,7 +170,7 @@ void XAP_CocoaFrameImpl::_initialize()
    	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
 
-	EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
+	EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 	UT_ASSERT(pEEM);
 
 	m_pKeyboard = new ev_CocoaKeyboard(pEEM);
@@ -195,13 +195,12 @@ void XAP_CocoaFrameImpl::_initialize()
 
 UT_sint32 XAP_CocoaFrameImpl::_setInputMode(const char * szName)
 {
-	XAP_Frame*	pFrame = getFrame();
-	UT_sint32 result = pFrame->XAP_Frame::setInputMode(szName);
+	UT_sint32 result = XAP_App::getApp()->setInputMode(szName);
 	if (result == 1)
 	{
 		// if it actually changed we need to update keyboard and mouse
 
-		EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
+		EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 		UT_ASSERT(pEEM);
 
 		m_pKeyboard->setEditEventMap(pEEM);

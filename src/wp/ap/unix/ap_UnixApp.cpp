@@ -305,7 +305,7 @@ bool AP_UnixApp::initialize(bool has_display)
     m_pToolbarActionSet = AP_CreateToolbarActionSet();
     UT_ASSERT(m_pToolbarActionSet);
     
-    if (! XAP_UNIXBASEAPP::initialize(has_display))
+    if (! AP_App::initialize())
 		return false;
 
 	//////////////////////////////////////////////////////////////////

@@ -68,7 +68,6 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	  m_zoomType(z_PAGEWIDTH),
 	  m_pData(0),
-	  m_pInputModes(0),
 	  m_iIdAutoSaveTimer(0),
 	  m_iAutoSavePeriod(0),
 	  m_stAutoSaveExt(),
@@ -105,7 +104,6 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	m_zoomType(f->m_zoomType),
 	m_pData(0),
-	m_pInputModes(0),
 	m_iIdAutoSaveTimer(0),
 	m_bBackupRunning(false),
 	m_isrcId(0),
@@ -154,7 +152,6 @@ XAP_Frame::~XAP_Frame(void)
 	UNREFP(m_pDoc);
 
 	DELETEP(m_pScrollObj);
-	DELETEP(m_pInputModes);
 
 	DELETEP(m_pScrollbarViewListener);
 
@@ -198,6 +195,8 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	// create a EventMapper state-machine to process our events
 	//////////////////////////////////////////////////////////////////
 
+#pragma warning remove me
+#if 0 		// moved out to XAP_App
 	const char * szBindings = NULL;
 	EV_EditBindingMap * pBindingMap = NULL;
 
@@ -220,7 +219,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	bool bResult2;
 	bResult2 = m_pInputModes->setCurrentMap(szBindings);
 	UT_ASSERT(bResult2);
-	
+#endif	
 	//////////////////////////////////////////////////////////////////
 	// select which menu bar we should use
 	//////////////////////////////////////////////////////////////////
@@ -527,46 +526,6 @@ UT_RGBColor XAP_Frame::getColorSelForeground () const
   return m_pFrameImpl->getColorSelForeground ();
 }
 
-EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
-{
-	UT_ASSERT(m_pInputModes);
-	return m_pInputModes->getCurrentMap();
-}
-
-UT_sint32 XAP_Frame::setInputMode(const char * szName)
-{
-	UT_ASSERT(m_pInputModes);
-	const char * szCurrentName = m_pInputModes->getCurrentMapName();
-	if (UT_stricmp(szName,szCurrentName) == 0)
-		return -1;					// already set, no change required
-
-	EV_EditEventMapper * p = m_pInputModes->getMapByName(szName);
-	if (!p)
-	{
-		// map not previously loaded -- we need to install it first
-
-		EV_EditBindingMap * pBindingMap = m_pApp->getBindingMap(szName);
-		UT_ASSERT(pBindingMap);
-		bool bResult;
-		bResult = m_pInputModes->createInputMode(szName,pBindingMap);
-		UT_ASSERT(bResult);
-	}
-	
-	// note: derrived classes will need to update keyboard
-	// note: and mouse after we return.
-
-	UT_DEBUGMSG(("Setting InputMode to [%s] for the current window.\n",szName));
-	
-	bool bStatus = m_pInputModes->setCurrentMap(szName);
-	getCurrentView()->notifyListeners(AV_CHG_INPUTMODE);
-
-	return (bStatus);
-}
-
-const char * XAP_Frame::getInputMode(void) const
-{
-	return m_pInputModes->getCurrentMapName();
-}
 
 XAP_App * XAP_Frame::getApp(void) const
 {
@@ -1092,82 +1051,5 @@ XAP_FrameMode XAP_Frame::getFrameMode()
 void XAP_Frame::setFrameMode(XAP_FrameMode iFrameMode)
 {
 	m_pFrameImpl->m_iFrameMode = iFrameMode;
-}
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-XAP_InputModes::XAP_InputModes(void)
-{
-	m_indexCurrentEventMap = 0;
-}
-
-XAP_InputModes::~XAP_InputModes(void)
-{
-	UT_ASSERT(m_vecEventMaps.getItemCount() == m_vecNames.getItemCount());
-
-	UT_VECTOR_PURGEALL(EV_EditEventMapper *, m_vecEventMaps);
-	UT_VECTOR_FREEALL(char *, m_vecNames);
-}
-
-bool XAP_InputModes::createInputMode(const char * szName,
-										EV_EditBindingMap * pBindingMap)
-{
-	UT_ASSERT(szName && *szName);
-	UT_ASSERT(pBindingMap);
-	
-	char * szDup = NULL;
-	EV_EditEventMapper * pEEM = NULL;
-
-	UT_cloneString(szDup,szName);
-	UT_ASSERT(szDup);
-	
-	pEEM = new EV_EditEventMapper(pBindingMap);
-	UT_ASSERT(pEEM);
-
-	bool b1;
-	b1 = (m_vecEventMaps.addItem(pEEM) == 0);
-	bool b2;
-	b2 = (m_vecNames.addItem(szDup) == 0);
-    UT_ASSERT(b1 && b2);
-
-	return true;
-}
-
-bool XAP_InputModes::setCurrentMap(const char * szName)
-{
-	UT_uint32 kLimit = m_vecNames.getItemCount();
-	UT_uint32 k;
-
-	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
-		{
-			m_indexCurrentEventMap = k;
-			return true;
-		}
-
-	return false;
-}
-
-EV_EditEventMapper * XAP_InputModes::getCurrentMap(void) const
-{
-	return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(m_indexCurrentEventMap));
-}
-
-const char * XAP_InputModes::getCurrentMapName(void) const
-{
-	return reinterpret_cast<const char *>(m_vecNames.getNthItem(m_indexCurrentEventMap));
-}
-
-EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
-{
-	UT_uint32 kLimit = m_vecNames.getItemCount();
-	UT_uint32 k;
-
-	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
-			return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(k));
-
-	return NULL;
 }
 

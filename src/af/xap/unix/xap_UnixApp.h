@@ -49,7 +49,7 @@ public:
 	    return "UTF-8" ;
 	  }
 
-	virtual bool							initialize(bool have_display);
+	virtual bool					initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 	virtual XAP_Frame * 					newFrame() = 0;
 	virtual void							reallyExit();
 

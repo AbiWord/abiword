@@ -69,10 +69,10 @@ bool EV_Menu_Action::hasDynamicLabel() const
 	return (m_pfnGetLabel != NULL);
 }
 
-const char * EV_Menu_Action::getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const
+const char * EV_Menu_Action::getDynamicLabel(const EV_Menu_Label * pLabel) const
 {
 	if (m_pfnGetLabel)
-		return m_pfnGetLabel(pFrame,pLabel,m_id);
+		return m_pfnGetLabel(pLabel,m_id);
 	else
 		return NULL;
 }

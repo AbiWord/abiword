@@ -57,7 +57,7 @@ public:
 #endif
 	
 	
-	virtual bool							initialize(void);
+	virtual bool							initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 	virtual XAP_Frame *						newFrame(void) = 0;
 	virtual void							reallyExit(void);
 

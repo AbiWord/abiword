@@ -73,9 +73,9 @@ typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, XAP_Menu_I
 // for now, current (quick) compromise is to pass the XAP_Frame, 
 // because you can get to either of them easily from there -- pcr
 
-typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
-typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
-#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
+typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(const EV_Menu_Label * pLabel, XAP_Menu_Id id);
+typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(const EV_Menu_Label * pLabel, XAP_Menu_Id id);
+#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(const EV_Menu_Label * pLabel, XAP_Menu_Id id)
 
 /*****************************************************************/
 
@@ -96,7 +96,7 @@ public:
 	XAP_Menu_Id						getMenuId() const;
 	void 						    incrementId(void);
 	bool							hasDynamicLabel() const;
-	const char*						getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const;
+	const char*						getDynamicLabel(const EV_Menu_Label * pLabel) const;
 	const char*						getMethodName() const;
 	const UT_String&				getScriptName() const { return m_stScriptName; }
 	bool							hasGetStateFunction() const;

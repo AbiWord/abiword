@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz and others
+ * Copyright (C) 2004 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,6 +65,7 @@ class AP_App : public XAP_App_BaseClass
 	AP_App (XAP_Args * pArgs, const char * szAppName);
 #endif
 	virtual ~AP_App ();
+	virtual bool	initialize(void);
 
 	/* Command line stuff. */
 

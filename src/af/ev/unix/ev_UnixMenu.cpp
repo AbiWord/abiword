@@ -202,7 +202,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
+		szLabelName = pAction->getDynamicLabel(pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -222,7 +222,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
-			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
+			const EV_EditEventMapper * pEEM = pUnixApp->getEditEventMapper();
 			UT_ASSERT(pEEM);
 
 			const char * string = pEEM->getShortcutFor(pEM);
@@ -753,7 +753,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				if (bAltOnMod1)
 				{
-					EV_EditEventMapper * pEEM = m_pFrame->getEditEventMapper();
+					EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 					UT_ASSERT(pEEM);
 					EV_EditMethod * pEM = NULL;
 					pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|tolower(keyCode),&pEM);

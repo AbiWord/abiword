@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -92,7 +92,7 @@ const char * XAP_CocoaApp::getDefaultEncoding () const
 	return "UTF-8";
 }
 
-bool XAP_CocoaApp::initialize()
+bool XAP_CocoaApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
 	if (!g_thread_supported ()) {
 		g_thread_init(NULL);
@@ -100,7 +100,7 @@ bool XAP_CocoaApp::initialize()
 
 	// let our base class do it's thing.
 	
-	XAP_App::initialize();
+	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
 	/*******************************/
 

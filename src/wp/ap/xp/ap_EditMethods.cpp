@@ -2002,7 +2002,7 @@ XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, con
 UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 {
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
 	XAP_Frame * pNewFrame = NULL;
@@ -2046,7 +2046,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// current frame if it's the only top-level view on an empty,
 	// untitled document.
 
-	if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+	if ((pFrame == NULL) || pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
 	{
 		// open new document in a new frame.  if we fail,
 		// put up an error dialog on current frame (our
@@ -10075,7 +10075,7 @@ Defun1(setEditVI)
 	// When exiting input mode, vi goes to previous character
 	pView->cmdCharMotion(false,1);
 
-	bool bResult = (pFrame->setInputMode("viEdit") != 0);
+	bool bResult = (XAP_App::getApp()->setInputMode("viEdit") != 0);
 	return bResult;
 }
 
@@ -10087,7 +10087,7 @@ Defun1(setInputVI)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	bool bResult = (pFrame->setInputMode("viInput") != 0);
+	bool bResult = (XAP_App::getApp()->setInputMode("viInput") != 0);
 	return bResult;
 }
 
@@ -10108,13 +10108,13 @@ Defun1(cycleInputMode)
 	if (pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_KeyBindingsCycle), &b) && !b)
 		return false;
 
-	const char * szCurrentInputMode = pFrame->getInputMode();
+	const char * szCurrentInputMode = pApp->getInputMode();
 	UT_ASSERT(szCurrentInputMode);
 	const char * szNextInputMode = AP_BindingSet::s_getNextInCycle(szCurrentInputMode);
 	if (!szNextInputMode)				// probably an error....
 		return false;
 
-	bool bResult = (pFrame->setInputMode(szNextInputMode) != 0);
+	bool bResult = (pApp->setInputMode(szNextInputMode) != 0);
 
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz and others
+ * Copyright (C) 2004 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +20,7 @@
 
 #include "ap_App.h"
 #include "ap_Args.h"
+#include "ap_Prefs_SchemeIds.h"
 #include "xap_Frame.h"
 #include "pd_Document.h"
 
@@ -95,6 +97,12 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 
 	return true;
 }
+
+bool	AP_App::initialize(void)
+{
+	return XAP_App_BaseClass::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings);
+}
+
 
 /*! Prepares for popt to be callable by setting up Args->options.
  * Needs to be in AP_App so that platform code can subclass (eg GNOME).

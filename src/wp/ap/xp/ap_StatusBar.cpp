@@ -185,7 +185,7 @@ ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
       
 {
-    UT_UTF8String sInputMode(pSB->getFrame()->getInputMode(), pSB->getFrame()->getApp()->getDefaultEncoding());
+    UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), pSB->getFrame()->getApp()->getDefaultEncoding());
     m_sBuf = sInputMode;
 
     m_fillMethod = REPRESENTATIVE_STRING;
@@ -197,7 +197,7 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
     if (mask & (AV_CHG_INPUTMODE))
     {
-	UT_UTF8String sInputMode(m_pSB->getFrame()->getInputMode(), m_pSB->getFrame()->getApp()->getDefaultEncoding());
+	UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), m_pSB->getFrame()->getApp()->getDefaultEncoding());
 	m_sBuf = sInputMode;
 
 	if (getListener())

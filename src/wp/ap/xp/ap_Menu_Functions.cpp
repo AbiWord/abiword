@@ -55,8 +55,7 @@
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 {
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -155,8 +154,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
 {
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -188,8 +186,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	// We return a pointer to a static string (which will be overwritten
 	// on the next call).
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -222,8 +219,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 {
 	// Compute the menu label for the _help_about item.
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -242,8 +238,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 {
 	// Compute the menu label for the _help_contents item.
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -262,8 +257,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Index)
 {
 	// Compute the menu label for the _help_index item.
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -282,8 +276,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 {
 	// Compute the menu label for the _help_search item.
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -302,8 +295,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_AboutOS)
 {
 	// Compute the menu label for the about OS help item.
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -322,8 +314,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
 {
 	// Compute the menu label for the about the check version item.
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -368,8 +359,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 	// We return a pointer to a static string (which will be overwritten
 	// on the next call).
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -407,8 +397,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 {
 	// Compute the menu label for the _window_more ("More Windows...") item.
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 	UT_ASSERT(id == AP_MENU_ID_WINDOW_MORE);
@@ -504,12 +493,12 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	// We return a pointer to a static string (which will be overwritten
 	// on the next call).
 
-	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
+	XAP_Frame * frame = pApp->getLastFocussedFrame();
 
-	AV_View * pAV_View = pFrame->getCurrentView();
+	AV_View * pAV_View = frame->getCurrentView();
 	ABIWORD_VIEW;
 
 	UT_ASSERT(id >= AP_MENU_ID_SPELL_SUGGEST_1);
