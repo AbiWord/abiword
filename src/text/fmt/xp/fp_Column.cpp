@@ -197,7 +197,15 @@ void fp_Column::layout(void)
 		iY += iLineMarginAfter;
 	}
 
+	UT_uint32 iNewHeight = iY;
+	if (m_iHeight == iNewHeight)
+	{
+		return;
+	}
+
 	m_iHeight = iY;
+	
+	m_pPage->columnHeightChanged(this);
 }
 
 UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
