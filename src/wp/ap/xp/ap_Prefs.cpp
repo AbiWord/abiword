@@ -63,8 +63,8 @@ void AP_Prefs::fullInit(void)
 	startBlockChange();	
 
 	loadBuiltinPrefs();
-	loadPrefsFile();
 	overlayEnvironmentPrefs();
+	loadPrefsFile();
 
 	// stop blocking the signal and send the combined one
 	endBlockChange();

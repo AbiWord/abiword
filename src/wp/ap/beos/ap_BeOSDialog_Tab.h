@@ -37,7 +37,21 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
-
+	virtual void                    _controlEnable( tControl id, UT_Bool value ) { };
+	virtual void                    _setTabList( UT_uint32 count );
+	virtual void                    _clearList();
+	eTabType                        _gatherAlignment();
+        void                            _setAlignment( eTabType a );
+	eTabLeader                      _gatherLeader();
+	void                            _setLeader( eTabLeader a );
+	const XML_Char *                _gatherDefaultTabStop();
+	void                            _setDefaultTabStop( const XML_Char* default_tab );
+	UT_sint32                       _gatherSelectTab();
+	void                            _setSelectTab( UT_sint32 v );
+	const char *                    _gatherTabEdit();
+	void                            _setSelectTab( UT_sint32 v );
+	const char *                    _gatherTabEdit();
+	void                            _setTabEdit( const char *pszStr );
 };
 
 #endif /* AP_BEOSDIALOG_TAB_H */

@@ -3448,7 +3448,7 @@ static UT_Bool s_doOptionsDlg(FV_View * pView)
 static UT_Bool s_doTabDlg(FV_View * pView)
 {
 
-//#ifndef NDEBUG
+#ifndef NDEBUG
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -3490,12 +3490,12 @@ static UT_Bool s_doTabDlg(FV_View * pView)
 		s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
 	}
 	return UT_TRUE;	
-//#else
-//	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-//	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
-//	return UT_TRUE;
-//
-//#endif
+#else
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
+	return UT_TRUE;
+
+#endif
 }
 
 /*****************************************************************/

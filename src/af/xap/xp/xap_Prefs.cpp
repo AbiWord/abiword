@@ -732,6 +732,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
  Cleanup:
 #else
 	fp = fopen(szFilename, "r");
+	UT_DEBUGMSG(("SEVIOR: Openning file %s ",szFilename));
 	if (!fp)
 	{
 		UT_DEBUGMSG(("could not open preferences file [%s].\n",szFilename));

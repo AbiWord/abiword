@@ -223,10 +223,10 @@ void AP_Dialog_Tab::_event_Set(void)
 
 		Dimension_size++;
 	}
-
+	UT_uint32 i;
 	// do we have the tab already.
 
-	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
+	for (  i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
 		UT_ASSERT(pTabInfo);
