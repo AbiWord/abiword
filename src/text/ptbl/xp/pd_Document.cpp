@@ -210,17 +210,23 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 //////////////////////////////////////////////////////////////////
 
 void PD_Document::setMetaDataProp ( const UT_String & key,
-				    const UT_String & value )
+									const UT_String & value )
 {
-  UT_UTF8String * ptrvalue = new UT_UTF8String(value.c_str());
-  m_metaDataMap.set (key, ptrvalue);
+	UT_UTF8String * old = (UT_UTF8String *)(m_metaDataMap.pick ( key ) );
+	DELETEP(old);
+	
+	UT_UTF8String * ptrvalue = new UT_UTF8String(value.c_str());
+	m_metaDataMap.set (key, ptrvalue);
 }
 
 void PD_Document::setMetaDataProp ( const UT_String & key,
-				    const UT_UTF8String & value )
+									const UT_UTF8String & value )
 {
-  UT_UTF8String * ptrvalue = new UT_UTF8String(value);
-  m_metaDataMap.set (key, ptrvalue);
+	UT_UTF8String * old = (UT_UTF8String *)(m_metaDataMap.pick ( key ) );
+	DELETEP(old);
+	
+	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
+	m_metaDataMap.set (key, ptrvalue);
 }
 
 bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp ) const
@@ -259,10 +265,13 @@ bool PD_Document::mailMergeFieldExists(const UT_String & key) const
 }
 
 void PD_Document::setMailMergeField(const UT_String & key,
-				    const UT_UTF8String & value)
+									const UT_UTF8String & value)
 {
-  UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
-  m_mailMergeMap.set ( key, ptrvalue ) ;
+	UT_UTF8String * old = (UT_UTF8String *)(m_mailMergeMap.pick ( key ) );
+	DELETEP(old);
+
+	UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
+	m_mailMergeMap.set ( key, ptrvalue ) ;
 }
 
 //////////////////////////////////////////////////////////////////
