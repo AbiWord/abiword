@@ -970,7 +970,7 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iLeftAttach(0),
 	  m_iRightAttach(1),
 	  m_iTopAttach(0),
-	  m_iBotAttach(1),
+	  m_iBottomAttach(1),
 	  m_bCellPositionedOnPage(false),
 	  m_iCellHeight(0)
 {
@@ -992,6 +992,7 @@ fl_CellLayout::~fl_CellLayout()
 		delete pTC;
 		pTC = pNext;
 	}
+
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 }
@@ -1031,11 +1032,15 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setLeftAttach(m_iLeftAttach);
 	pCell->setRightAttach(m_iRightAttach);
 	pCell->setTopAttach(m_iTopAttach);
-	pCell->setBottomAttach(m_iBotAttach);
+	pCell->setBottomAttach(m_iBottomAttach);
 	pCell->setLeftPad(m_iLeftOffsetLayoutUnits);
 	pCell->setRightPad(m_iRightOffsetLayoutUnits);
 	pCell->setTopPad(m_iTopOffset);
 	pCell->setBotPad(m_iBottomOffset);
+	pCell->setLeftColor(m_iLeftColor);
+	pCell->setRightColor(m_iRightColor);
+	pCell->setTopColor(m_iTopColor);
+	pCell->setBottomColor(m_iBottomColor);
 }
 
 /*!
@@ -1429,12 +1434,12 @@ void fl_CellLayout::_lookupProperties(void)
 	const char* pszLeftAttach = NULL;
 	const char* pszRightAttach = NULL;
 	const char* pszTopAttach = NULL;
-	const char* pszBotAttach = NULL;
+	const char* pszBottomAttach = NULL;
 	pSectionAP->getProperty("left-attach", (const XML_Char *&)pszLeftAttach);
 	pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
 	pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
-	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBotAttach);
-	UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBotAttach,pszLeftAttach,pszRightAttach)); 
+	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBottomAttach);
+	UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
 	if(pszLeftAttach && pszLeftAttach[0])
 	{
 		m_iLeftAttach = atoi(pszLeftAttach);
@@ -1459,13 +1464,54 @@ void fl_CellLayout::_lookupProperties(void)
 	{
 		m_iTopAttach = 0;
 	}
-	if(pszBotAttach && pszBotAttach[0])
+	if(pszBottomAttach && pszBottomAttach[0])
 	{
-		m_iBotAttach = atoi(pszBotAttach);
+		m_iBottomAttach = atoi(pszBottomAttach);
 	}
 	else
 	{
-		m_iBotAttach = m_iTopAttach+1;
+		m_iBottomAttach = m_iTopAttach+1;
+	}
+	UT_RGBColor clrBlack(0,0,0);
+	const char* pszLeftColor = NULL;
+	const char* pszRightColor = NULL;
+	const char* pszTopColor = NULL;
+	const char* pszBottomColor = NULL;
+	pSectionAP->getProperty("left-color", (const XML_Char *&)pszLeftColor);
+	pSectionAP->getProperty("right-color", (const XML_Char *&)pszRightColor);
+	pSectionAP->getProperty("top-color", (const XML_Char *&)pszTopColor);
+	pSectionAP->getProperty("bot-color", (const XML_Char *&)pszBottomColor);
+	if(pszLeftColor && pszLeftColor[0])
+	{
+		UT_parseColor(pszLeftColor, m_iLeftColor);
+	}
+	else
+	{
+		m_iLeftColor = clrBlack;
+	}
+	if(pszRightColor && pszRightColor[0])
+	{
+		UT_parseColor(pszRightColor, m_iRightColor);
+	}
+	else
+	{
+		m_iRightColor = clrBlack;
+	}
+	if(pszTopColor && pszTopColor[0])
+	{
+		UT_parseColor(pszTopColor, m_iTopColor);
+	}
+	else
+	{
+		m_iTopColor = clrBlack;
+	}
+	if(pszBottomColor && pszBottomColor[0])
+	{
+		UT_parseColor(pszBottomColor, m_iBottomColor);
+	}
+	else
+	{
+		m_iBottomColor = clrBlack;
 	}
 }
 

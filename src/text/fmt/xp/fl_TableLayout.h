@@ -293,9 +293,13 @@ private:
 	UT_sint32              m_iLeftAttach;
 	UT_sint32              m_iRightAttach;
 	UT_sint32              m_iTopAttach;
-	UT_sint32              m_iBotAttach;
+	UT_sint32              m_iBottomAttach;
 	bool                   m_bCellPositionedOnPage;
 	UT_sint32              m_iCellHeight;
+	UT_RGBColor            m_iLeftColor;
+	UT_RGBColor            m_iRightColor;
+	UT_RGBColor            m_iTopColor;
+	UT_RGBColor            m_iBottomColor;	
 };
 
 #endif /* TABLELAYOUT_H */

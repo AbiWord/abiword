@@ -158,6 +158,22 @@ public:
 		{ m_iTopPad = i;}
 	void                setBotPad(UT_sint32 i)
 		{ m_iBotPad = i;}
+    UT_RGBColor         getLeftColor(void)
+		{ return m_iLeftColor;}
+    UT_RGBColor         getRightColor(void)
+		{ return m_iRightColor;}
+    UT_RGBColor         getTopColor(void)
+		{ return m_iTopColor;}
+    UT_RGBColor         getBottomColor(void)
+		{ return m_iBottomColor;}
+	void                setLeftColor(UT_RGBColor c)
+		{ m_iLeftColor = c;}
+    void                setRightColor(UT_RGBColor c)
+		{ m_iRightColor = c;}
+    void                setTopColor(UT_RGBColor c)
+		{ m_iTopColor = c;}
+    void                setBottomColor(UT_RGBColor c)
+		{ m_iBottomColor = c;}
 	bool                getXexpand(void) const
 		{ return m_bXexpand;}
 	bool                getYexpand(void) const
@@ -258,6 +274,13 @@ private:
 	bool                m_bDrawBot;
 	bool                m_bDrawRight;
 	bool                m_bLinesDrawn;
+	
+// Line colors to be used for drawing the cell
+
+	UT_RGBColor         m_iLeftColor;
+	UT_RGBColor         m_iRightColor;
+	UT_RGBColor         m_iTopColor;
+	UT_RGBColor         m_iBottomColor;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer

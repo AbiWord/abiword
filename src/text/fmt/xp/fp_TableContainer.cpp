@@ -330,9 +330,8 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		return;
 	}
 
-	UT_RGBColor clrBlack(0,0,0);
-	getGraphics()->setColor(clrBlack);
 	getGraphics()->setLineWidth(pTab->getLineThickness());
+	
 //
 // Now correct if iTop or iBot is off the page.
 //
@@ -401,18 +400,22 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		}
 		if(m_bDrawLeft)
 		{
+			getGraphics()->setColor(m_iLeftColor);
 			getGraphics()->drawLine(iLeft,iTop, iLeft, iBot);
 		}
 		if(m_bDrawTop && bDrawTop)
 		{
+			getGraphics()->setColor(m_iTopColor);
 			getGraphics()->drawLine(iLeft, iTop, iRight, iTop);
 		}
 		if(m_bDrawRight)
 		{
+			getGraphics()->setColor(m_iRightColor);
 			getGraphics()->drawLine(iRight, iTop, iRight, iBot);
 		}
 		if(m_bDrawBot && bDrawBot)
 		{
+			getGraphics()->setColor(m_iBottomColor);
 			getGraphics()->drawLine(iLeft, iBot, iRight, iBot);
 		}
 	}
