@@ -470,7 +470,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "hbox1", hbox1);
 	gtk_widget_show (hbox1);
 	gtk_fixed_put (GTK_FIXED (fixedColor), hbox1, 8, 10);
-	gtk_widget_set_usize (hbox1, 429, 186);	
+	gtk_widget_set_usize (hbox1, 426, 186);	
 
 	colorSelector = gtk_color_selection_new ();
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "colorSelector", colorSelector);
