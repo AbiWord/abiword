@@ -118,7 +118,8 @@ AP_QNXApp::AP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 
 AP_QNXApp::~AP_QNXApp(void)
 {
-	SpellCheckCleanup();
+	UT_DEBUGMSG(("TODO: Clean up the spell check stuff \n"));
+//	SpellCheckCleanup();
 
 	DELETEP(m_prefs);
 	DELETEP(m_pStringSet);
@@ -241,8 +242,9 @@ bool AP_QNXApp::initialize(void)
 				((szISpellDirectory[strlen(szISpellDirectory)-1]=='/') ? "" : "/"),
 				szSpellCheckWordList);
 
-		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
-		SpellCheckInit(szPathname);
+		UT_DEBUGMSG(("TODO: Clean up the spell check stuff \n"));
+//		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
+//		SpellCheckInit(szPathname);
 		free(szPathname);
 		
 		// we silently go on if we cannot load it....
@@ -453,7 +455,8 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
 #endif
 }
 
-void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
+void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, 
+									bool bHonorFormatting)
 {
 	PhClipHeader *clip;
 	void *handle;
@@ -464,7 +467,7 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 
 	handle = PhClipboardPasteStart(PhInputGroup(NULL));
 
-	if (handle && (clip = PhClipboardPasteType(handle, Ph_CLIPBOARD_TYPE_RTF))) {
+	if (handle && (clip = PhClipboardPasteType(handle, Ph_CLIPBOARD_TYPE_RTF)) && bHonorFormatting) {
 		unsigned char * pData = (unsigned char *)clip->data;
 		UT_uint32 iLen = clip->length;
 		iLen = MyMin(iLen,strlen((const char *) pData));
