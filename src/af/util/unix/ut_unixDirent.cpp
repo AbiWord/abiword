@@ -64,59 +64,59 @@ scandir(const char *dirname, struct dirent ***namelist,
         int (*dcomp) (const void *, const void *))
 { 
 	struct dirent *d, *p, **names; 
-        size_t nitems; 
-        struct stat stb; 
-        size_t arraysz; 
-        DIR *dirp; 
-
-        if ((dirp = opendir(dirname)) == NULL) 
-                return(-1); 
-        if (fstat(dirp->d_fd, &stb) < 0) 
-                return(-1); 
-
-        /* 
-         * estimate the array size by taking the size of thedirectory file 
-         * and dividing it by a multiple of the minimum sizeentry. 
-         */ 
-        arraysz = (stb.st_size / 24); 
+	size_t nitems; 
+	struct stat stb; 
+	size_t arraysz; 
+	DIR *dirp; 
+	
+	if ((dirp = opendir(dirname)) == NULL) 
+		return(-1); 
+	if (fstat(dirp->d_fd, &stb) < 0) 
+		return(-1); 
+	
+	/* 
+	 * estimate the array size by taking the size of thedirectory file 
+	 * and dividing it by a multiple of the minimum sizeentry. 
+	 */ 
+	arraysz = (stb.st_size / 24); 
 	names = static_cast<struct dirent **>(malloc(arraysz * sizeof(struct dirent *)));
-        if (names == NULL) 
-                return(-1); 
-
-        nitems = 0; 
-        while ((d = readdir(dirp)) != NULL) { 
-                if (select != NULL && !(*select)(d)) 
-                        continue; /* just selected names */ 
-                /* 
-                 * Make a minimum size copy of the data 
-                 */ 
-                p = static_cast<struct dirent *>(malloc(DIRSIZ(d)));
-                if (p == NULL) 
-                        return(-1); 
-                p->d_ino = d->d_ino; 
-                p->d_off = d->d_off; 
-                p->d_reclen = d->d_reclen; 
-                memcpy(p->d_name, d->d_name, strlen(d->d_name) +1); 
-                /* 
-                 * Check to make sure the array has space left and 
-                 * realloc the maximum size. 
-                 */ 
-                if (++nitems >= arraysz) { 
-                        if (fstat(dirp->d_fd, &stb) < 0) 
-                                return(-1); /* just might have grown */ 
-                        arraysz = stb.st_size / 12; 
-                        names = static_cast<struct dirent **>(realloc(static_cast<char*>(names),
-                            arraysz * sizeof(struct dirent*)));
-                        if (names == NULL) 
-                                return(-1); 
-                } 
-                names[nitems-1] = p; 
-        } 
-        closedir(dirp); 
-        if (nitems && dcomp != NULL) 
-                qsort(names, nitems, sizeof(struct dirent *),dcomp); 
-        *namelist = names; 
-        return(nitems); 
+	if (names == NULL) 
+		return(-1); 
+	
+	nitems = 0; 
+	while ((d = readdir(dirp)) != NULL) { 
+		if (select != NULL && !(*select)(d)) 
+			continue; /* just selected names */ 
+		/* 
+		 * Make a minimum size copy of the data 
+		 */ 
+		p = static_cast<struct dirent *>(malloc(DIRSIZ(d)));
+		if (p == NULL) 
+			return(-1); 
+		p->d_ino = d->d_ino; 
+		p->d_off = d->d_off; 
+		p->d_reclen = d->d_reclen; 
+		memcpy(p->d_name, d->d_name, strlen(d->d_name) +1); 
+		/* 
+		 * Check to make sure the array has space left and 
+		 * realloc the maximum size. 
+		 */ 
+		if (++nitems >= arraysz) { 
+			if (fstat(dirp->d_fd, &stb) < 0) 
+				return(-1); /* just might have grown */ 
+			arraysz = stb.st_size / 12; 
+			names = (struct dirent **)(realloc(static_cast<char*>(names),
+											   arraysz * sizeof(struct dirent*)));
+			if (names == NULL) 
+				return(-1); 
+		} 
+		names[nitems-1] = p; 
+	} 
+	closedir(dirp); 
+	if (nitems && dcomp != NULL) 
+		qsort(names, nitems, sizeof(struct dirent *),dcomp); 
+	*namelist = names; 
+	return(nitems); 
 } 
 
 /* 
@@ -125,9 +125,8 @@ scandir(const char *dirname, struct dirent ***namelist,
 int 
 alphasort(const void *d1, const void *d2) 
 { 
-        return(strcmp((*static_cast<struct dirent **>(d1))->d_name, 
-            (*static_cast<struct dirent **>(d2))->d_name)); 
+	return(strcmp((*(struct dirent **)(d1))->d_name, 
+				  (*(struct dirent **)(d2))->d_name)); 
 } 
-
 
 #endif // SCANDIR_MISSING
