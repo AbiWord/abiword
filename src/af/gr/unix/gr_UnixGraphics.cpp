@@ -111,6 +111,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		return;
 	}
 	gc_private = (GdkGCPrivate*) m_pGC;
+	UT_ASSERT(m_pFont);
 	font_private = (GdkFontPrivate*) m_pFont->getGdkFont();
 
 	XFontStruct *xfont = (XFontStruct *) font_private->xfont;

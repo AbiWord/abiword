@@ -25,6 +25,8 @@
 // like centering them, measuring them, etc.
 #include "ut_dialogHelper.h"
 
+#include "gr_UnixGraphics.h"
+
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
@@ -52,6 +54,8 @@ XAP_UnixDialog_Zoom::XAP_UnixDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 {
 	m_windowMain = NULL;
 
+	m_unixGraphics = NULL;
+	
 	m_buttonOK = NULL;
 	m_buttonCancel = NULL;
 
@@ -72,6 +76,7 @@ XAP_UnixDialog_Zoom::XAP_UnixDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 
 XAP_UnixDialog_Zoom::~XAP_UnixDialog_Zoom(void)
 {
+	DELETEP(m_unixGraphics);
 }
 
 /*****************************************************************/
@@ -129,6 +134,16 @@ static void s_spin_Percent_changed(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg
 	dlg->event_SpinPercentChanged();
 }
 
+static gint s_preview_exposed(GtkWidget * /* widget */,
+							  GdkEventExpose * /* pExposeEvent */,
+							  XAP_UnixDialog_Zoom * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->event_PreviewAreaExposed();
+
+	return FALSE;
+}
+
 /*****************************************************************/
 
 void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
@@ -159,6 +174,27 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
+	// *** this is how we add the gc ***
+	{
+		// attach a new graphics context to the drawing area
+		XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+		UT_ASSERT(unixapp);
+
+		UT_ASSERT(m_previewArea && m_previewArea->window);
+
+		// make a new Unix GC
+		m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, unixapp->getFontManager());
+		
+		// let the widget materialize
+		_createPreviewFromGC(m_unixGraphics,
+							 (UT_uint32) m_previewArea->allocation.width,
+							 (UT_uint32) m_previewArea->allocation.height);
+	}
+
+	// HACK : we call this TWICE so it generates an update on the buttons to
+	// HACK : trigger a preview
+	_populateWindowData();
+
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
@@ -188,36 +224,52 @@ void XAP_UnixDialog_Zoom::event_WindowDelete(void)
 void XAP_UnixDialog_Zoom::event_Radio200Clicked(void)
 {
 	_enablePercentSpin(UT_FALSE);
+	_updatePreviewZoomPercent(200);
 }
 
 void XAP_UnixDialog_Zoom::event_Radio100Clicked(void)
 {
 	_enablePercentSpin(UT_FALSE);
+	_updatePreviewZoomPercent(100);
 }
 
 void XAP_UnixDialog_Zoom::event_Radio75Clicked(void)
 {
 	_enablePercentSpin(UT_FALSE);
+	_updatePreviewZoomPercent(75);
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPageWidthClicked(void)
 {
 	_enablePercentSpin(UT_FALSE);
+	// TODO : figure out the dimensions
 }
 
 void XAP_UnixDialog_Zoom::event_RadioWholePageClicked(void)
 {
 	_enablePercentSpin(UT_FALSE);
+	// TODO : figure out the dimensions
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPercentClicked(void)
 {
 	_enablePercentSpin(UT_TRUE);
+	// call event_SpinPercentChanged() to do the fetch and update work
+	event_SpinPercentChanged();
 }
 
 void XAP_UnixDialog_Zoom::event_SpinPercentChanged(void)
 {
-	// TODO: something?  Maybe?
+	_updatePreviewZoomPercent((UT_uint32) gtk_spin_button_get_value_as_int(
+		GTK_SPIN_BUTTON(m_spinPercent)));
+}
+
+void XAP_UnixDialog_Zoom::event_PreviewAreaExposed(void)
+{
+	UT_ASSERT(m_zoomPreview);
+
+    // trigger a draw on the preview area in the base class
+	m_zoomPreview->draw();
 }
 
 /*****************************************************************/
@@ -340,12 +392,15 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	gtk_widget_set_usize (frameSampleText, 221, 97);
 	gtk_container_border_width (GTK_CONTAINER (frameSampleText), 10);
 
-	drawingareaPreview = gtk_drawing_area_new ();
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "drawingareaPreview", drawingareaPreview);
-	gtk_widget_show (drawingareaPreview);
-	gtk_container_add (GTK_CONTAINER (frameSampleText), drawingareaPreview);
-	gtk_widget_set_usize (drawingareaPreview, 149, 10);
-
+	// *** This is how we do a preview widget ***
+	{
+		drawingareaPreview = gtk_drawing_area_new ();
+		gtk_object_set_data (GTK_OBJECT (windowZoom), "drawingareaPreview", drawingareaPreview);
+		gtk_widget_show (drawingareaPreview);
+		gtk_container_add (GTK_CONTAINER (frameSampleText), drawingareaPreview);
+		gtk_widget_set_usize (drawingareaPreview, 149, 10);
+   	}
+	
 	hbuttonboxZoom = gtk_hbutton_box_new ();
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "hbuttonboxZoom", hbuttonboxZoom);
 	gtk_widget_show (hbuttonboxZoom);
@@ -419,6 +474,12 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 							 NULL,
 							 NULL);
 
+	// the expose event off the preview
+	gtk_signal_connect(GTK_OBJECT(drawingareaPreview),
+					   "expose_event",
+					   GTK_SIGNAL_FUNC(s_preview_exposed),
+					   (gpointer) this);
+	
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 
@@ -457,12 +518,15 @@ void XAP_UnixDialog_Zoom::_populateWindowData(void)
 	{
 	case XAP_UnixDialog_Zoom::z_200:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio200), TRUE);
+		_updatePreviewZoomPercent(200);
 		break;
 	case XAP_UnixDialog_Zoom::z_100:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio100), TRUE);
+		_updatePreviewZoomPercent(100);		
 		break;
 	case XAP_UnixDialog_Zoom::z_75:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio75), TRUE);
+		_updatePreviewZoomPercent(75);
 		break;
 	case XAP_UnixDialog_Zoom::z_PAGEWIDTH:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioPageWidth), TRUE);
@@ -473,6 +537,7 @@ void XAP_UnixDialog_Zoom::_populateWindowData(void)
 	case XAP_UnixDialog_Zoom::z_PERCENT:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioPercent), TRUE);
 		_enablePercentSpin(UT_TRUE);	// override
+		_updatePreviewZoomPercent(getZoomPercent());
 		break;
 	default:
 		// if they haven't set anything yet, default to the 100% radio item

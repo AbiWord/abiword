@@ -78,6 +78,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_LoadBindings.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Prefs.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_Preview.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_Preview_Zoom.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_Strings.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Toolbar_ControlFactory.$(OBJ_SUFFIX)		\

@@ -21,6 +21,8 @@
 #define XAP_UNIXDIALOG_ZOOM_H
 
 #include "xap_Dlg_Zoom.h"
+#include "xap_UnixFontManager.h"
+
 class XAP_UnixFrame;
 
 /*****************************************************************/
@@ -49,15 +51,19 @@ public:
 
 	virtual void			event_RadioPercentClicked(void);
 	virtual void			event_SpinPercentChanged(void);
+
+	virtual void			event_PreviewAreaExposed(void);
 	
 protected:
 
+	GR_UnixGraphics	* 		m_unixGraphics;
+	
 	// private construction functions
 	GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
 	void		_enablePercentSpin(UT_Bool enable);
 	void 		_storeWindowData(void);
-	
+
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 

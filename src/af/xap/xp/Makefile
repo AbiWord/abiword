@@ -39,6 +39,8 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Frame.cpp			\
 		xap_LoadBindings.cpp		\
 		xap_Prefs.cpp			\
+		xap_Preview.cpp			\
+		xap_Preview_Zoom.cpp		\
 		xap_Scrollbar_ViewListener.cpp	\
 		xap_Strings.cpp			\
 		xap_Toolbar_ControlFactory.cpp	\

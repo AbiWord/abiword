@@ -22,6 +22,8 @@
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
+#include "xap_Preview_Zoom.h"
+
 #include "xav_View.h"
 
 class XAP_Frame;
@@ -47,6 +49,16 @@ public:
 	UT_uint32						getZoomPercent(void);
 	
 protected:
+
+	// handle the XP-job of telling m_zoomPreview what to draw
+	void							_updatePreviewZoomPercent(UT_uint32 percent);
+
+	// handle the XP-job of attaching something to our m_zoomPreview
+	void							_createPreviewFromGC(GR_Graphics * gc,
+														 UT_uint32 width,
+														 UT_uint32 height);
+
+	XAP_Preview_Zoom * 				m_zoomPreview;
 	
 	XAP_Dialog_Zoom::zoomType		m_zoomType;
 	UT_uint32						m_zoomPercent;

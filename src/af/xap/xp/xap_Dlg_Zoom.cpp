@@ -38,10 +38,13 @@ XAP_Dialog_Zoom::XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	// this should really never appear, since setZoomPercent()
 	// should always be called before the dialog is shown
 	m_zoomPercent = 100;
+
+	m_zoomPreview = NULL;
 }
 
 XAP_Dialog_Zoom::~XAP_Dialog_Zoom(void)
 {
+	DELETEP(m_zoomPreview);
 }
 
 XAP_Dialog_Zoom::tAnswer XAP_Dialog_Zoom::getAnswer(void) const
@@ -75,7 +78,7 @@ void XAP_Dialog_Zoom::setZoomPercent(UT_uint32 zoom)
 
 	// store the percentage
 	m_zoomPercent = zoom;
-}
+}	
 
 XAP_Dialog_Zoom::zoomType XAP_Dialog_Zoom::getZoomType(void)
 {
@@ -109,3 +112,31 @@ UT_uint32 XAP_Dialog_Zoom::getZoomPercent(void)
 			return 1;
 	}
 }
+
+/************************************************************************/
+
+void XAP_Dialog_Zoom::_updatePreviewZoomPercent(UT_uint32 percent)
+{
+	if (m_zoomPreview)
+	{
+		m_zoomPreview->setZoomPercent(percent);
+		m_zoomPreview->draw();
+	}
+}
+
+void XAP_Dialog_Zoom::_createPreviewFromGC(GR_Graphics * gc,
+										   UT_uint32 width,
+										   UT_uint32 height)
+{
+	UT_ASSERT(gc);
+
+	m_zoomPreview = new XAP_Preview_Zoom(gc);
+	UT_ASSERT(m_zoomPreview);
+	
+	m_zoomPreview->setWindowSize(width, height);
+	m_zoomPreview->setString("Foobar!");
+	m_zoomPreview->setFont(XAP_Preview_Zoom::font_NORMAL);
+
+}
+
+	
