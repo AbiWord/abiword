@@ -64,6 +64,9 @@ protected:
 		bool		bEnablePageRange;
 
 	} m_persistPrintDlg;
+
+	private:
+		XAP_Frame *m_pFrame;
 };
 
 #endif /* XAP_QNXDIALOG_PRINT_H */

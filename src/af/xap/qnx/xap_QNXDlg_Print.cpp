@@ -29,6 +29,7 @@
 #include "xap_QNXApp.h"
 #include "xap_QNXFrameImpl.h"
 #include "xap_Frame.h"
+#include "gr_QNXGraphics.h"
 
 #include "xap_Strings.h"
 
@@ -85,38 +86,37 @@ void XAP_QNXDialog_Print::useEnd(void)
 
 GR_Graphics * XAP_QNXDialog_Print::getPrinterGraphicsContext(void)
 {
-#if 0
 	UT_ASSERT(m_answer == a_OK);
 	UT_ASSERT(m_pPrintContext);
-//XXX: FIXME FIXME!
-	GR_QNXGraphics *gr = (GR_QNXGraphics *)m_pQNXFrame->getGraphics();
+	XAP_QNXFrameImpl *pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl());
+	
+
+	GR_QNXGraphics *gr = (GR_QNXGraphics *)pQNXFrameImpl->getGraphics();
 	gr->setPrintContext(m_pPrintContext);
 
 	/* Return the same graphics as we used for the screen */
-	return m_pQNXFrame->getGraphics();
-#endif 
+	return pQNXFrameImpl->getGraphics();
 }
 
 void XAP_QNXDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pContext)
 {
-#if 0
-	UT_ASSERT(m_pQNXFrame);
 	UT_ASSERT(m_pPrintContext);
+	XAP_QNXFrameImpl *pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl());
 
-	GR_QNXGraphics *gr = (GR_QNXGraphics *)m_pQNXFrame->getGraphics();
+	GR_QNXGraphics *gr = (GR_QNXGraphics *)pQNXFrameImpl->getGraphics();
 	gr->setPrintContext(NULL);
 /*
 	PpPrintReleasePC(m_pPrintContext);
 	m_pPrintContext = NULL;
 */
-#endif
 }
 
 /*****************************************************************/
 
 void XAP_QNXDialog_Print::runModal(XAP_Frame * pFrame)
 {
-	
+
+	m_pFrame = pFrame;	
 	// see if they just want the properties of the printer without
 	// bothering the user.
 	if (m_bPersistValid && m_bBypassActualDialog) {

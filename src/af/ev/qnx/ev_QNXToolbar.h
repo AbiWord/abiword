@@ -29,14 +29,13 @@
 #include "xap_FontPreview.h"
 
 class XAP_QNXApp;
-class XAP_QNXFrame;
 class AP_QNXToolbar_Icons;
 class EV_QNXToolbar_ViewListener;
 
 class EV_QNXToolbar : public EV_Toolbar
 {
 public:
-	EV_QNXToolbar(XAP_QNXApp * pQNXApp, XAP_QNXFrame * pQNXFrame,
+	EV_QNXToolbar(XAP_QNXApp * pQNXApp, XAP_Frame * pFrame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
@@ -48,7 +47,7 @@ public:
 	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 	XAP_QNXApp *	getApp(void);
-	XAP_QNXFrame * getFrame(void);
+	XAP_Frame * getFrame(void);
 
 	virtual void	show();
 	virtual void	hide();
@@ -58,7 +57,7 @@ protected:
 	void							_releaseListener(void);
 	
 	XAP_QNXApp *				m_pQNXApp;
-	XAP_QNXFrame *				m_pQNXFrame;
+	XAP_Frame *				m_pFrame;
 	EV_QNXToolbar_ViewListener *m_pViewListener;
 	AV_ListenerId				m_lid;	/* view listener id */
 

@@ -878,7 +878,6 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	pMyQNXApp->shutdown();
 	delete pMyQNXApp;
 
-	poptFreeContext(Args.poptcon);	
 	return 0;
 }
 #if 0

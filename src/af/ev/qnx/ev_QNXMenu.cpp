@@ -29,7 +29,8 @@
 #include "xap_Types.h"
 #include "ev_QNXMenu.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 #include "ev_QNXKeyboard.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
@@ -51,7 +52,7 @@
 */
 
 static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
-									  XAP_QNXFrame * pQNXFrame,
+									  XAP_Frame * pFrame,
 									  const EV_Menu_Action * pAction,
 									  const EV_Menu_Label * pLabel)
 {
@@ -64,7 +65,7 @@ static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pQNXFrame,pLabel);
+		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -84,7 +85,7 @@ static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
-			const EV_EditEventMapper * pEEM = pQNXFrame->getEditEventMapper();
+			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
 			UT_ASSERT(pEEM);
 
 			const char * string = pEEM->getShortcutFor(pEM);
@@ -119,12 +120,12 @@ static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
 
 /*****************************************************************/
 
-EV_QNXMenu::EV_QNXMenu(XAP_QNXApp * pQNXApp, XAP_QNXFrame * pQNXFrame,
+EV_QNXMenu::EV_QNXMenu(XAP_QNXApp * pQNXApp, XAP_Frame * pFrame,
 					   const char * szMenuLayoutName,
 					   const char * szMenuLabelSetName)
 	: EV_Menu(pQNXApp, pQNXApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	  m_pQNXApp(pQNXApp),
-	  m_pQNXFrame(pQNXFrame)
+	  m_pFrame(pFrame)
 {
 }
 
@@ -133,9 +134,9 @@ EV_QNXMenu::~EV_QNXMenu()
 	m_vecMenuWidgets.clear();
 }
 
-XAP_QNXFrame * EV_QNXMenu::getFrame()
+XAP_Frame * EV_QNXMenu::getFrame()
 {
-	return m_pQNXFrame;
+	return m_pFrame;
 }
 
 bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
@@ -163,10 +164,10 @@ bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 	//Right away switch the focus back to the document, do this before
 	//we invoke the menu method since the menu method could tell us to 
 	//self destruct (ie a close selection) on the frame.
-	m_pQNXFrame->setDocumentFocus();
+//	m_pQNXFrame->setDocumentFocus();
 
 	UT_String script_name(pAction->getScriptName());
-	invokeMenuMethod(m_pQNXFrame->getCurrentView(), pEM, script_name);
+	invokeMenuMethod(m_pFrame->getCurrentView(), pEM, script_name);
 
 	return true;
 }
@@ -202,7 +203,7 @@ static int s_menu_select(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 		struct _cb_menu *mcb = (struct _cb_menu *)data;
 		UT_ASSERT(mcb && mcb->qnxmenu);
 
-		XAP_QNXFrame * pFrame = mcb->qnxmenu->getFrame();
+		XAP_Frame * pFrame = mcb->qnxmenu->getFrame();
 		UT_ASSERT(pFrame);
 
 		EV_Menu_Label * pLabel = mcb->qnxmenu->getLabelSet()->getLabel(mcb->id);
@@ -226,7 +227,7 @@ static int s_menu_deselect(PtWidget_t *widget, void *data, PtCallbackInfo_t *inf
 
 		UT_ASSERT(mcb && mcb->qnxmenu);
 
-		XAP_QNXFrame * pFrame = mcb->qnxmenu->getFrame();
+		XAP_Frame * pFrame = mcb->qnxmenu->getFrame();
 		UT_ASSERT(pFrame);
 
 		pFrame->setStatusMessage(NULL);
@@ -330,7 +331,7 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 		{
 		case EV_MLF_Normal:
 		{
-			const char ** data = _ev_GetLabelName(m_pQNXApp, m_pQNXFrame, pAction, pLabel);
+			const char ** data = _ev_GetLabelName(m_pQNXApp, m_pFrame, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 
@@ -388,7 +389,7 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 		}
 		case EV_MLF_BeginSubMenu:
 		{
-			const char ** data = _ev_GetLabelName(m_pQNXApp, m_pQNXFrame, pAction, pLabel);
+			const char ** data = _ev_GetLabelName(m_pQNXApp, m_pFrame, pAction, pLabel);
 			szLabelName = data[0];
 
 			PtWidget_t * wParent, *wbutton, *wmenu;
@@ -540,7 +541,7 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 				UT_ASSERT((k < m_vecMenuWidgets.getItemCount() - 1));
 
 				// Get the dynamic label
-				const char ** data = _ev_GetLabelName(m_pQNXApp, m_pQNXFrame, pAction, pLabel);
+				const char ** data = _ev_GetLabelName(m_pQNXApp, m_pFrame, pAction, pLabel);
 				const char * szLabelName = data[0];
 				
 				// Get the item we are pointing at
@@ -697,10 +698,10 @@ bool EV_QNXMenu::_doAddMenuItem(UT_uint32 layout_pos)
 /*****************************************************************/
 
 EV_QNXMenuBar::EV_QNXMenuBar(XAP_QNXApp * pQNXApp,
-							   XAP_QNXFrame * pQNXFrame,
+							   XAP_Frame * pFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
-	: EV_QNXMenu(pQNXApp,pQNXFrame,szMenuLayoutName,szMenuLabelSetName)
+	: EV_QNXMenu(pQNXApp,pFrame,szMenuLayoutName,szMenuLabelSetName)
 {
 	m_wMenuBar = NULL;
 }
@@ -716,7 +717,9 @@ EV_QNXMenuBar::~EV_QNXMenuBar(void)
 
 bool EV_QNXMenuBar::synthesizeMenuBar(void)
 {
-	m_wMenuBar = PtCreateWidget(PtMenuBar, m_pQNXFrame->getTBGroupWidget(), 0, NULL);
+	 XAP_QNXFrameImpl *pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl()); 
+
+	m_wMenuBar = PtCreateWidget(PtMenuBar, pQNXFrameImpl->getTBGroupWidget(), 0, NULL);
 	synthesizeMenu(m_wMenuBar);
 	return true;
 }
@@ -735,10 +738,10 @@ bool EV_QNXMenuBar::refreshMenu(AV_View * pView)
 /*****************************************************************/
 
 EV_QNXMenuPopup::EV_QNXMenuPopup(XAP_QNXApp * pQNXApp,
-								   XAP_QNXFrame * pQNXFrame,
+								   XAP_Frame * pFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
-	: EV_QNXMenu(pQNXApp,pQNXFrame,szMenuLayoutName,szMenuLabelSetName)
+	: EV_QNXMenu(pQNXApp,pFrame,szMenuLayoutName,szMenuLabelSetName)
 {
 	m_wMenuPopup = NULL;
 }
@@ -758,23 +761,23 @@ PtWidget_t * EV_QNXMenuPopup::getMenuHandle(void) const
 }
 
 static int popup_realized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
-	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)data; 
-
+	XAP_Frame *pFrame = (XAP_Frame *)data; 
+	 PtWidget_t *top =(static_cast<XAP_QNXFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow()); 
 	PtArg_t arg;
 	PtSetArg(&arg, Pt_ARG_FLAGS, Pt_BLOCKED, Pt_BLOCKED);
-	PtSetResources(pQNXFrame->getTopLevelWindow(), 1, &arg);
+	PtSetResources(top, 1, &arg);
 
 	return Pt_CONTINUE;
 }
 
 static int popup_unrealized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
-	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)data; 
-
+	XAP_Frame *pFrame = (XAP_Frame *)data; 
+	 PtWidget_t *top =(static_cast<XAP_QNXFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow()); 
 	PtArg_t arg;
 	PtSetArg(&arg, Pt_ARG_FLAGS,Pt_FALSE, Pt_BLOCKED);
-	PtSetResources(pQNXFrame->getTopLevelWindow(), 1, &arg);
+	PtSetResources(top, 1, &arg);
 
-	pQNXFrame->setPopupDone(1);
+	static_cast<XAP_QNXFrameImpl *>(pFrame->getFrameImpl())->setPopupDone(1);
 
 	return Pt_CONTINUE;
 }
@@ -784,12 +787,13 @@ bool EV_QNXMenuPopup::synthesizeMenuPopup()
 {
     PtArg_t args[10];
 	int 	n = 0;
-
+	 PtWidget_t *top =(static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow()); 
+	
 	m_wMenuPopup = PtCreateWidget(PtMenu, 
-								  m_pQNXFrame->getTopLevelWindow(),
+								  top,
 								  n, args);
-	PtAddCallback(m_wMenuPopup, Pt_CB_REALIZED, popup_realized, m_pQNXFrame);
-	PtAddCallback(m_wMenuPopup, Pt_CB_UNREALIZED, popup_unrealized, m_pQNXFrame);
+	PtAddCallback(m_wMenuPopup, Pt_CB_REALIZED, popup_realized, m_pFrame);
+	PtAddCallback(m_wMenuPopup, Pt_CB_UNREALIZED, popup_unrealized, m_pFrame);
 
 	synthesizeMenu(m_wMenuPopup);
 

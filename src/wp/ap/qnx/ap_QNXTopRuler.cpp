@@ -22,7 +22,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_Frame.h"
-
+#include "xap_QNXFrameImpl.h"
 #include "gr_QNXGraphics.h"
 #include "ap_QNXTopRuler.h"
 #include <stdio.h>
@@ -47,22 +47,21 @@ AP_QNXTopRuler::~AP_QNXTopRuler(void)
 
 PtWidget_t * AP_QNXTopRuler::createWidget(void)
 {
-#if 0
 	PtArg_t args[10];
 	PhArea_t area;
 	void 	*data = this;
 	int n = 0;
 	UT_ASSERT(!m_pG && !m_wTopRuler);
 
-	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)m_pFrame;
-	m_rootWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl *pQNXFrameImpl = (XAP_QNXFrameImpl *)m_pFrame->getFrameImpl();
+	m_rootWindow = pQNXFrameImpl->getTopLevelWindow();
 
 	area.pos.x = 0;
-	area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
-	area.size.w = pQNXFrame->m_AvailableArea.size.w;
+	area.pos.y = pQNXFrameImpl->m_AvailableArea.pos.y;
+	area.size.w = pQNXFrameImpl->m_AvailableArea.size.w;
 	area.size.h = _UD(s_iFixedHeight);
-	pQNXFrame->m_AvailableArea.pos.y += area.size.h + 3;
-	pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
+	pQNXFrameImpl->m_AvailableArea.pos.y += area.size.h + 3;
+	pQNXFrameImpl->m_AvailableArea.size.h -= area.size.h + 3;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
 	UT_DEBUGMSG(("TR: Offset %d,%d Size %d/%d ",
 				area.pos.x, area.pos.y, area.size.w, area.size.h));
@@ -90,12 +89,10 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
 
 	return m_wTopRulerGroup;
-#endif
 }
 
 void AP_QNXTopRuler::setView(AV_View * pView)
 {
-#if 0
 	AP_TopRuler::setView(pView);
 
 	// We really should allocate m_pG in createWidget(), but
@@ -104,12 +101,11 @@ void AP_QNXTopRuler::setView(AV_View * pView)
 	// shown.
 
 	DELETEP(m_pG);	
-	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrame *)m_pFrame)->getTopLevelWindow(), 
-											 m_wTopRuler, m_pFrame->getApp());
+	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(), 
+											 m_wTopRuler,  ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 	pG->init3dColors();
-#endif 
 }
 
 void AP_QNXTopRuler::getWidgetPosition(int * x, int * y)

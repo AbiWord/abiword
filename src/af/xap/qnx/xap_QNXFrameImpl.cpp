@@ -44,6 +44,7 @@
 #include "ie_imp.h"
 #include "ap_FrameData.h"
 #include "xap_Frame.h"
+#include "ut_qnxHelper.h"
 
 XAP_QNXFrameImpl::XAP_QNXFrameImpl(XAP_Frame *pFrame,XAP_QNXApp *pApp) : 
 	XAP_FrameImpl(pFrame),
@@ -163,20 +164,22 @@ int XAP_QNXFrameImpl::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *
 
 int XAP_QNXFrameImpl::_fe::window_resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 {
-#if 0
 	PtContainerCallback_t *cbinfo = (PtContainerCallback_t *)(info->cbdata);
-
-	if (m_pQNXApp) {
+	XAP_QNXFrameImpl * pFrameImpl = (XAP_QNXFrameImpl *)data;
+	XAP_Frame	*pFrame	= pFrameImpl->getFrame();
+	if(pFrame) {
+		XAP_App	*pApp	=pFrame->getApp();
+	if (pApp) {
 		UT_DEBUGMSG(("Window Resizing to %d,%d %d,%d ",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
-		m_pQNXApp->setGeometry(-1, -1, 
+		pApp->setGeometry(-1, -1, 
 						   cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 
 				           cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
 	}
+	}
 
-	return Pt_CONTINUE;
-#endif
+return Pt_CONTINUE;
 }
 		
 int XAP_QNXFrameImpl::_fe::window_delete(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
@@ -376,27 +379,179 @@ return Pt_CONTINUE;
 
 bool XAP_QNXFrameImpl::_updateTitle()
 {
-return false;
+	if (!XAP_FrameImpl::_updateTitle() || (m_wTopLevelWindow == NULL) || (m_iFrameMode != XAP_NormalFrame))
+	{
+		// no relevant change, so skip it
+		return false;
+	}
+
+	char buf[256];
+	buf[0] = 0;
+
+	const char * szAppName = m_pQNXApp->getApplicationTitleForTitleBar();
+
+	int len = 256 - strlen(szAppName) - 4;
+	
+	const char * szTitle = getFrame()->getTitle(len);
+
+	sprintf(buf, "%s - %s", szTitle, szAppName);
+
+	PtArg_t args[1];
+
+	PtSetArg(&args[0], Pt_ARG_WINDOW_TITLE, buf, 0); 
+	PtSetResources(getTopLevelWindow(), 1, args);
+	
+	return true;
 }
 
 void XAP_QNXFrameImpl::_initialize()
 {
 
+	// get a handle to our keyboard binding mechanism
+	// and to our mouse binding mechanism.
+
+	EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
+	UT_ASSERT(pEEM);
+
+	m_pKeyboard = new ev_QNXKeyboard(pEEM);
+	UT_ASSERT(m_pKeyboard);
+	
+	m_pMouse = new EV_QNXMouse(pEEM);
+	UT_ASSERT(m_pMouse);
+
 }
 
 void XAP_QNXFrameImpl::_nullUpdate() const
 {
+      #define EVENT_SIZE sizeof(PhEvent_t) + 1000
+   
+	UT_uint32 i =0;
+	PhEvent_t *event = (PhEvent_t*)malloc(EVENT_SIZE);
+        if (!event) return;
 
+	while(i < 5)
+	{
+		switch(PhEventPeek(event, EVENT_SIZE))
+		{
+		case Ph_EVENT_MSG:
+			PtEventHandler( event );
+			break;
+		case -1:
+			perror( "PhEventPeek failed" );
+			break;
+		}
+		i++;
+	}
+        free(event);
 }
 
 void XAP_QNXFrameImpl::_setCursor(GR_Graphics::Cursor c)
 {
+unsigned short cursor_number=0;
+
+if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
+	return;
+	switch (c)
+	{
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		/*FALLTHRU*/
+	case GR_Graphics::GR_CURSOR_DEFAULT:
+		cursor_number = Ph_CURSOR_POINTER;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IBEAM:
+		cursor_number = Ph_CURSOR_POINTER; //XXX: Wtf is IBEAM ?
+		break;
+
+	case GR_Graphics::GR_CURSOR_RIGHTARROW:
+		cursor_number = Ph_CURSOR_DRAG_RIGHT;
+		break;
+
+	case GR_Graphics::GR_CURSOR_LEFTARROW:
+		cursor_number = Ph_CURSOR_DRAG_LEFT; //GDK_ARROW;
+		break;
+
+	case GR_Graphics::GR_Graphics::GR_CURSOR_IMAGE:
+		cursor_number = Ph_CURSOR_POINTER; //XXX: ???
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
+		cursor_number = Ph_CURSOR_DRAG_TL;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
+		cursor_number = Ph_CURSOR_DRAG_TOP;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
+		cursor_number = Ph_CURSOR_DRAG_TR;
+		break;
+
+	case GR_Graphics::GR_Graphics::GR_CURSOR_IMAGESIZE_E:
+		cursor_number = Ph_CURSOR_DRAG_RIGHT;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
+		cursor_number = Ph_CURSOR_DRAG_BR;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_S:
+		cursor_number = Ph_CURSOR_DRAG_BOTTOM;
+		break;
+
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:
+		cursor_number = Ph_CURSOR_DRAG_BL;
+		break;
+
+	case GR_Graphics::GR_Graphics::GR_CURSOR_IMAGESIZE_W:
+		cursor_number = Ph_CURSOR_DRAG_LEFT;
+		break;
+
+	case GR_Graphics::GR_CURSOR_LEFTRIGHT:
+		cursor_number=Ph_CURSOR_DRAG_HORIZONTAL;
+		break;
+	case GR_Graphics::GR_CURSOR_UPDOWN:
+		cursor_number=Ph_CURSOR_DRAG_VERTICAL;
+		break;
+	case GR_Graphics::GR_CURSOR_EXCHANGE:
+		cursor_number=Ph_CURSOR_POINTER;
+		break;
+	case GR_Graphics::GR_CURSOR_GRAB:
+		cursor_number=Ph_CURSOR_MOVE;
+		break;
+	case GR_Graphics::GR_CURSOR_LINK:
+		cursor_number=Ph_CURSOR_FINGER;
+		break;
+	case GR_Graphics::GR_CURSOR_WAIT:
+		cursor_number= Ph_CURSOR_WAIT;
+		break;
+	}
+
+	PtSetResource(getTopLevelWindow(),Pt_ARG_CURSOR_TYPE,cursor_number,0);
+	PtSetResource(m_wSunkenBox,Pt_ARG_CURSOR_TYPE,cursor_number,0);
+	PtSetResource(m_wStatusBar,Pt_ARG_CURSOR_TYPE,cursor_number,0);
 
 }
 
 
 UT_sint32 XAP_QNXFrameImpl::_setInputMode(const char *szName)
 {
+	XAP_Frame*	pFrame = getFrame();
+	UT_sint32 result = pFrame->XAP_Frame::setInputMode(szName);
+
+	if (result == 1)
+	{
+		// if it actually changed we need to update keyboard and mouse
+
+		EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
+		UT_ASSERT(pEEM);
+
+		m_pKeyboard->setEditEventMap(pEEM);
+		m_pMouse->setEditEventMap(pEEM);
+	}
+
+	return result;
 
 }
 
@@ -412,7 +567,142 @@ XAP_DialogFactory *XAP_QNXFrameImpl::_getDialogFactory(void)
 
 void XAP_QNXFrameImpl::createTopLevelWindow(void)
 {
+	bool bResult;
+	PtArg_t args[10];
+	int 	n;
+	UT_uint32	w, h;
+	PhArea_t area;
 
+#define INIT_WIDTH 500
+#define INIT_HEIGHT 400
+	/*** Create the main window ***/
+	//ndim.w = m_geometry.width; ndim.h = m_geometry.height;
+	void *data = this;
+	area.pos.x = 0; area.pos.y = 0;
+	area.size.w = INIT_WIDTH; area.size.h = INIT_HEIGHT;
+
+	//If it is available then get the default geometry
+	if(m_pQNXApp && m_pQNXApp->getGeometry(NULL, NULL, &w, &h) == true) {
+		area.size.w = w;
+		area.size.h = h;
+	} 
+
+	m_AvailableArea = area;
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, m_pQNXApp->getApplicationTitleForTitleBar(), 0);
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, Ph_WM_CLOSE);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_NOTIFY_FLAGS, Ph_WM_CLOSE, Ph_WM_CLOSE);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_CALLBACKS_ACTIVE);
+
+	PtSetParentWidget(NULL);
+	m_wTopLevelWindow = PtCreateWidget(PtWindow, NULL /* Use last widget? */, n, args);
+	if (!m_wTopLevelWindow) {
+		fprintf(stderr, "Can't create top level window \n");
+		exit(1);
+	}
+	//PtAddEventHandler(m_wTopLevelWindow, Ph_EV_KEY, _fe::key_press_event, this);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_in_event, this);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_LOST_FOCUS, _fe::focus_out_event, this);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_RESIZE, _fe::window_resize, m_pQNXApp);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_WINDOW, _fe::window_delete, this);
+
+	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
+	n = 0;
+#define _A_TBGRP (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | Pt_TOP_ANCHORED_TOP)
+    PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _A_TBGRP, _A_TBGRP);
+    PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, 0, Pt_RESIZE_X_BITS);
+    PtSetArg(&args[n++], Pt_ARG_WIDTH, area.size.w, 0); 
+		PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_BLOCK_CUA_FOCUS);
+	m_wTBGroup = PtCreateWidget(PtToolbarGroup, m_wTopLevelWindow, n, args);
+
+	/*** Create the menu bars ***/
+	m_pQNXMenu = new EV_QNXMenuBar(m_pQNXApp, getFrame(), m_szMenuLayoutName, m_szMenuLabelSetName);
+	UT_ASSERT(m_pQNXMenu);
+	bResult = m_pQNXMenu->synthesizeMenuBar();
+	UT_ASSERT(bResult);
+
+	/*** Create the tool bars ***/
+	_createToolbars();
+
+	/*** Figure out the height to adjust by ***/
+	unsigned short tbheight;	
+	UT_QNXGetWidgetArea(m_wTBGroup, NULL, NULL, NULL, &tbheight);
+#define PHOTON_TOOLBAR_EXTENT_WEIRDNESS
+#if defined(PHOTON_TOOLBAR_EXTENT_WEIRDNESS)
+	tbheight += 4; 	
+#endif
+	m_AvailableArea.pos.y += tbheight;
+	m_AvailableArea.size.h -= tbheight;
+
+	// Let the app-specific frame code create the contents of
+	// the child area of the window (between the toolbars and
+	// the status bar).
+	
+	/* Peel off some space at the bottom for the status bar */
+	m_AvailableArea.size.h -= 24;
+
+	/*** Add the document view ***/	
+	m_wSunkenBox = _createDocumentWindow();
+
+	//Add status bars
+	m_wStatusBar = _createStatusBarWindow();
+	
+	//Set the icon for the window
+	_setWindowIcon();
+
+	// Set geometry 
+	int x,y;
+	UT_uint32 width,height;
+	UT_uint32 f;
+
+	m_pQNXApp->getWinGeometry(&x,&y,&width,&height,&f);
+	
+	//Get fall-back defaults from pref
+	UT_uint32 pref_flags, pref_width, pref_height;
+	UT_sint32 pref_x, pref_y;
+	m_pQNXApp->getPrefs()->getGeometry(&pref_x, &pref_y, &pref_width,
+										 &pref_height, &pref_flags);
+	if (!(f & XAP_QNXApp::GEOMETRY_FLAG_SIZE)
+	&& (pref_flags & PREF_FLAG_GEOMETRY_SIZE))
+	{
+		width = pref_width;
+		height = pref_height;
+		f |= XAP_QNXApp::GEOMETRY_FLAG_SIZE;
+	}
+	if (!(f & XAP_QNXApp::GEOMETRY_FLAG_POS)
+		&& (pref_flags & PREF_FLAG_GEOMETRY_POS))
+	{
+		x = pref_x;
+		y = pref_y;
+	f |= XAP_QNXApp::GEOMETRY_FLAG_POS;
+	}
+// Set the size if requested.
+	if(f & XAP_QNXApp::GEOMETRY_FLAG_SIZE)
+	{
+			PhDim_t dim;
+			dim.w = width;
+			dim.h = height;
+		
+			PtSetResource(m_wTopLevelWindow,Pt_ARG_DIM,&dim,0);		
+	}
+	//Only set the pos on the first window.
+	if(m_pQNXApp->getFrameCount() <= 1)
+	{
+		if( f & XAP_QNXApp::GEOMETRY_FLAG_POS)
+		{
+			PhPoint_t pos;
+			pos.x=x;
+			pos.y=y;
+			PtSetResource(m_wTopLevelWindow,Pt_ARG_POS,&pos,0);
+		}
+	}
+	//Remember the settings for next time
+	m_pQNXApp->getPrefs()->setGeometry(x,y,width,height,f);
+
+return;
 }
 
 void XAP_QNXFrameImpl::_setGeometry()
@@ -432,50 +722,131 @@ void XAP_QNXFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 
 bool XAP_QNXFrameImpl::_close()
 {
-
+	PtDestroyWidget(getTopLevelWindow());
+	return true;
 }
 
 bool XAP_QNXFrameImpl::_raise()
 {
-
+	if (getTopLevelWindow())
+		PtWindowToFront(getTopLevelWindow());
+	return true;
 }
 
 bool XAP_QNXFrameImpl::_show()
 {
-
+	_raise();
+	return true;
 }
 
 bool XAP_QNXFrameImpl::_runModalContextMenu(AV_View *pView,const char *szMenuName,
 	UT_sint32 x,UT_sint32 y)
 {
+	_UUD(x);
+	_UUD(y);
+	bool bResult = true;
+	UT_ASSERT(!m_pQNXPopup);
 
+	setPopupDone(0);	
+	m_pQNXPopup = new EV_QNXMenuPopup(m_pQNXApp, getFrame(), 
+									  szMenuName, 
+									  m_szMenuLabelSetName);
+	if (m_pQNXPopup && m_pQNXPopup->synthesizeMenuPopup())
+	{
+		PtArg_t	arg;
+		PhPoint_t pos;
 
+		PtWidget_t *menu = m_pQNXPopup->getMenuHandle();
+
+		memset(&pos, 0, sizeof(pos));
+		PtGetAbsPosition(m_wSunkenBox, &pos.x, &pos.y);
+		pos.x += x; pos.y += y;
+
+		PtSetArg(&arg, Pt_ARG_POS, &pos, 0);
+		PtSetResources(menu, 1, &arg);
+		PtRealizeWidget(menu);
+
+		//Really we need to run this synchronously ... or at least
+		//be able to provide some sort of handler that blocks the
+		//window and then unblocks it when we are finished with 
+		//the menu. This is why we do the "getPopupDone" test, set by the menu
+		int level;
+		level = PtModalStart();
+		while (getPopupDone() == 0) {
+			PtProcessEvent();
+		}	
+		PtModalEnd(MODAL_END_ARG(level));
+	}
+	DELETEP(m_pQNXPopup);
+
+	return bResult;
 }
 
 bool XAP_QNXFrameImpl::_openURL(const char *szURL)
 {
-
-
+	spawnlp(P_NOWAITO,"voyager","voyager","-u",szURL,NULL);
+	return true;
 }
 
 void XAP_QNXFrameImpl::_setFullScreen(bool changeToFullScreen)
 {
+PtWidget_t *app = getTopLevelWindow();
+static PhArea_t pharea;
+static unsigned short phflags;
 
+PhArea_t *area,area2;
+unsigned short *flags;
+PgDisplaySettings_t disp;
+
+if(changeToFullScreen == false)
+{
+	PtSetResource(app,Pt_ARG_AREA,&pharea,0);	
+	PtSetResource(app,Pt_ARG_WINDOW_RENDER_FLAGS,Pt_TRUE,phflags);
+}
+else
+{
+	PtGetResource(app,Pt_ARG_WINDOW_RENDER_FLAGS,&flags,0);
+	phflags = *flags;
+	PtSetResource(app,Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,Pt_TRUE);
+	PtGetResource(app,Pt_ARG_AREA,&area,0);
+
+	area2.pos.x = area2.pos.y=0;
+	PgGetVideoMode(&disp);
+	area2.size.w=disp.xres;
+	area2.size.h=disp.yres;
+	pharea = *area;
+	PtSetResource(app,Pt_ARG_AREA,&area2,0);
+}
 }
 
 EV_Toolbar *XAP_QNXFrameImpl::_newToolbar(XAP_App *pApp,XAP_Frame *pFrame,
 	const char *szLayout,
 	const char *szLanguage)
 {
-
+	return (new EV_QNXToolbar((XAP_QNXApp *)(pApp), 
+							  pFrame, szLayout, szLanguage));
 }
 
 EV_Menu *XAP_QNXFrameImpl::_getMainMenu(void)
 {
-
+	return m_pQNXMenu;
 }
 
 void XAP_QNXFrameImpl::_queue_resize()
 {
 
+}
+PtWidget_t * XAP_QNXFrameImpl::getVBoxWidget(void) const
+{
+	return m_wVBox;
+}
+
+PtWidget_t * XAP_QNXFrameImpl::getTBGroupWidget(void) const
+{
+	return m_wTBGroup;
+}
+
+GR_Graphics * XAP_QNXFrameImpl::getGraphics()
+{
+return(((AP_FrameData *)getFrame()->getFrameData())->m_pG);
 }

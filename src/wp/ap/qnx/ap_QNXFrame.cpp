@@ -63,15 +63,14 @@ UT_uint32 AP_QNXFrame::getZoomPercentage(void)
 
 void AP_QNXFrame::setXScrollRange(void)
 {
-#if 0
-	AP_QNXFrameImpl * pFrameImpl = static_cast<AP_QNXFrameImpl *>(getFrameImpl());
+	AP_QNXFrameImpl * pQNXFrameImpl = static_cast<AP_QNXFrameImpl *>(getFrameImpl());
 
 	int width = _UD(((AP_FrameData*)m_pData)->m_pDocLayout->getWidth());
 	int n, windowWidth;
 	PtArg_t args[6];
 
 	unsigned short tmp;
-	UT_QNXGetWidgetArea(pFrameImpl->m_dArea, NULL, NULL, &tmp, NULL);
+	UT_QNXGetWidgetArea(pQNXFrameImpl->m_dArea, NULL, NULL, &tmp, NULL);
 	windowWidth = tmp;
 
 	int newvalue = ((m_pView) ? _UD(m_pView->getXScrollOffset()) : 0);
@@ -89,27 +88,28 @@ void AP_QNXFrame::setXScrollRange(void)
 	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
 	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowWidth, 0); 
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); 
-	PtSetResources(m_hScroll, n, args);
+	PtSetResources(pQNXFrameImpl->m_hScroll, n, args);
 
-	bool bDifferentPosition = (newvalue != (int)pFrameImpl->m_pHadj->value);
-	bool bDifferentLimits = ((width-windowWidth) != ((int)pFrameImpl->m_pHadj->upper - pFrameImpl->m_pHadj->page_size));
+	bool bDifferentPosition = true;
+//(newvalue != (int)pQNXFrameImpl->m_pHadj->value);
+	bool bDifferentLimits = true;
+//((width-windowWidth) != ((int)pQNXFrameImpl->m_pHadj->upper - pQNXFrameImpl->m_pHadj->page_size));
 
-#warning 	pFrameImpl->_setScrollRange(apufi_scrollX,newvalue,...);
+#warning 	pQNXFrameImpl->_setScrollRange(apufi_scrollX,newvalue,...);
 	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
 		m_pView->sendHorizontalScrollEvent(_UL(newvalue), _UL((long) width-windowWidth)); //XXX:
 	}
-#endif
 }
 
 void AP_QNXFrame::setYScrollRange(void)
 {
-#if 0
 	int height = _UD(((AP_FrameData*)m_pData)->m_pDocLayout->getHeight());
+	AP_QNXFrameImpl	*pQNXFrameImpl = static_cast<AP_QNXFrameImpl *>(getFrameImpl());	
 	int n, windowHeight;
 	PtArg_t args[6];
 
 	unsigned short tmp;
-	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, NULL, &tmp);
+	UT_QNXGetWidgetArea(pQNXFrameImpl->m_dArea, NULL, NULL, NULL, &tmp);
 	windowHeight = tmp;
 
 	int newvalue = ((m_pView) ? _UD(m_pView->getYScrollOffset()) : 0);
@@ -124,7 +124,7 @@ void AP_QNXFrame::setYScrollRange(void)
 	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
 	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowHeight, 0);
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0);
-	PtSetResources(m_vScroll, n, args);
+	PtSetResources(pQNXFrameImpl->m_vScroll, n, args);
 
 	/*
 	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
@@ -137,7 +137,6 @@ void AP_QNXFrame::setYScrollRange(void)
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendVerticalScrollEvent(_UL(newvalue), _UL((long) height-windowHeight));
-#endif
 }
 
 
@@ -210,40 +209,36 @@ Cleanup:
 */
 void AP_QNXFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
 {
-#if 0
 	PtArg_t args[1];
 	//printf("Static X scroll function  \n");
 	// this is a static callback function and doesn't have a 'this' pointer.
 	
 	AP_QNXFrame * pQNXFrame = (AP_QNXFrame *)(pData);
 	AV_View * pView = pQNXFrame->getCurrentView();
-	
+	AP_QNXFrameImpl	*pQNXFrameImpl = static_cast<AP_QNXFrameImpl *>(pQNXFrame->getFrameImpl());	
 	//Do some range checking ...
 
 	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(xoff), 0);
-	PtSetResources(pQNXFrame->m_hScroll, 1, args);
+	PtSetResources(pQNXFrameImpl->m_hScroll, 1, args);
 
 	pView->setXScrollOffset(xoff);
-#endif 
 }
 
 void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {
-#if 0
 	PtArg_t args[1];
 	//printf("Static Y scroll function  \n");
 
 	// this is a static callback function and doesn't have a 'this' pointer.
 	AP_QNXFrame * pQNXFrame = (AP_QNXFrame *)(pData);
 	AV_View * pView = pQNXFrame->getCurrentView();
-	
+	AP_QNXFrameImpl	*pQNXFrameImpl = static_cast<AP_QNXFrameImpl *>(pQNXFrame->getFrameImpl());		
 	//Do some range checking ...
 
 	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(yoff), 0);
-	PtSetResources(pQNXFrame->m_vScroll, 1, args);
+	PtSetResources(pQNXFrameImpl->m_vScroll, 1, args);
 
 	pView->setYScrollOffset(yoff);
-#endif
 }
 	
 
@@ -357,6 +352,10 @@ UT_sint32	AP_QNXFrame::_getDocumentAreaHeight()
 
 bool AP_QNXFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
+
+	pG = new GR_QNXGraphics(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->getTopLevelWindow(),static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_dArea,getApp());
+	UT_ASSERT(pG);
+	pG->setZoomPercentage(iZoom);
 	return true;
 }
 
@@ -374,6 +373,22 @@ bool AP_QNXFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pSc
 					     ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
 					     AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener)
 {
+
+	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	UT_ASSERT(pScrollObj);
+
+	pViewListener = new ap_QNXViewListener(this);
+	UT_ASSERT(pViewListener);
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
+	UT_ASSERT(pScrollbarViewListener);
+	
+	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
+		return false;
+	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
+							&lidScrollbarViewListener))
+		return false;
+
+	return true;
 
 
 }

@@ -21,6 +21,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Frame.h"
+#include "xap_QNXFrameImpl.h"
 #include "ap_QNXLeftRuler.h"
 #include "gr_QNXGraphics.h"
 #include <stdio.h>
@@ -45,22 +46,21 @@ AP_QNXLeftRuler::~AP_QNXLeftRuler(void)
 
 PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 {
-#if 0 
 	PtArg_t args[10];
 	PhArea_t area;
 	void    *data = this;
 	int n = 0;
 	UT_ASSERT(!m_pG && !m_wLeftRuler);
 
-	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)m_pFrame;
-	m_rootWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl *pQNXFrameImpl = (XAP_QNXFrameImpl *)m_pFrame->getFrameImpl();
+	m_rootWindow = pQNXFrameImpl->getTopLevelWindow();
 
 	area.pos.x = 0;
-	area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
+	area.pos.y = pQNXFrameImpl->m_AvailableArea.pos.y;
 	area.size.w = _UD(s_iFixedWidth);
-	area.size.h = pQNXFrame->m_AvailableArea.size.h;
-	pQNXFrame->m_AvailableArea.pos.x += area.size.w + 3;
-	pQNXFrame->m_AvailableArea.size.w -= area.size.w + 3;
+	area.size.h = pQNXFrameImpl->m_AvailableArea.size.h;
+	pQNXFrameImpl->m_AvailableArea.pos.x += area.size.w + 3;
+	pQNXFrameImpl->m_AvailableArea.size.w -= area.size.w + 3;
 	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
 	UT_DEBUGMSG(("LR: Offset %d,%d Size %d/%d ",
                 area.pos.x, area.pos.y, area.size.w, area.size.h));
@@ -72,7 +72,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _LR_STRETCH_, _LR_STRETCH_); n++;
 	PtSetArg(&args[n], Pt_ARG_BORDER_WIDTH, 2, 0); n++;
 	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); n++;
-	m_wLeftRulerGroup = PtCreateWidget(PtGroup, pQNXFrame->getTopLevelWindow(), n, args);
+	m_wLeftRulerGroup = PtCreateWidget(PtGroup, pQNXFrameImpl->getTopLevelWindow(), n, args);
 	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
@@ -89,12 +89,10 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 
 
 	return m_wLeftRulerGroup;
-#endif
 }
 
 void AP_QNXLeftRuler::setView(AV_View * pView)
 {
-#if 0
 	AP_LeftRuler::setView(pView);
 
 	// We really should allocate m_pG in createWidget(), but
@@ -102,11 +100,10 @@ void AP_QNXLeftRuler::setView(AV_View * pView)
 	// is not created until the frame's top-level window is
 	// shown.
 	DELETEP(m_pG);
-	GR_QNXGraphics * pG = new GR_QNXGraphics(m_pFrame->getTopLevelWindow(),
-                                           m_wLeftRuler, m_pFrame->getApp());
+	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(),
+                                           m_wLeftRuler, ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
 	m_pG = pG;
 	pG->init3dColors();
-#endif
 }
 
 void * AP_QNXLeftRuler::getRootWindow(void)

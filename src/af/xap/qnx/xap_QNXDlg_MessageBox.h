@@ -21,7 +21,6 @@
 #define XAP_QNXDIALOG_MESSAGEBOX_H
 
 #include "xap_Dlg_MessageBox.h"
-class XAP_QNXFrame;
 
 /*****************************************************************/
 

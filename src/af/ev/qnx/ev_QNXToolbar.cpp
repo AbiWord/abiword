@@ -26,7 +26,8 @@
 #include "ev_QNXToolbar.h"
 #include "xap_Types.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 #include "ut_iconv.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
@@ -45,7 +46,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-EV_QNXToolbar::EV_QNXToolbar(XAP_QNXApp * pQNXApp, XAP_QNXFrame * pQNXFrame,
+EV_QNXToolbar::EV_QNXToolbar(XAP_QNXApp * pQNXApp, XAP_Frame * pFrame,
 							   const char * szToolbarLayoutName,
 							   const char * szToolbarLabelSetName)
 	: EV_Toolbar(pQNXApp->getEditMethodContainer(),
@@ -53,7 +54,7 @@ EV_QNXToolbar::EV_QNXToolbar(XAP_QNXApp * pQNXApp, XAP_QNXFrame * pQNXFrame,
 				 szToolbarLabelSetName)
 {
 	m_pQNXApp = pQNXApp;
-	m_pQNXFrame = pQNXFrame;
+	m_pFrame = pFrame;
 	m_pViewListener = 0;
 	m_lid = 0;							// view listener id
 	m_pFontPreview = 0;
@@ -80,10 +81,10 @@ bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	UT_ASSERT(pAction);
 
-	AV_View * pView = m_pQNXFrame->getCurrentView();
+	AV_View * pView = m_pFrame->getCurrentView();
 
 	//Right away switch the focus
-	m_pQNXFrame->setDocumentFocus();
+//	m_pFrame->setDocumentFocus();
 
 	// make sure we ignore presses on "down" group buttons
 	if (pAction->getItemType() == EV_TBIT_GroupButton) 
@@ -237,8 +238,8 @@ bool EV_QNXToolbar::synthesize(void)
 		style = Pt_TEXT_IMAGE;
 #endif
 	
-
-	m_wToolbarGroup = m_pQNXFrame->getTBGroupWidget();
+	XAP_QNXFrameImpl * pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl()); 
+	m_wToolbarGroup = pQNXFrameImpl->getTBGroupWidget();
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_FLAGS, 0, Pt_TOOLBAR_FOLLOW_FOCUS);
@@ -690,9 +691,9 @@ XAP_QNXApp * EV_QNXToolbar::getApp(void)
 	return m_pQNXApp;
 }
 
-XAP_QNXFrame * EV_QNXToolbar::getFrame(void)
+XAP_Frame * EV_QNXToolbar::getFrame(void)
 {
-	return m_pQNXFrame;
+	return m_pFrame;
 }
 
 void EV_QNXToolbar::show(void) {

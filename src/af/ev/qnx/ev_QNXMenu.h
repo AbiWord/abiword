@@ -37,7 +37,7 @@ class EV_QNXMenu : public EV_Menu
 {
 public:
 	EV_QNXMenu(XAP_QNXApp * pQNXApp,
-				XAP_QNXFrame * pQNXFrame,
+				XAP_Frame * pFrame,
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
 	virtual ~EV_QNXMenu(void);
@@ -47,7 +47,7 @@ public:
 	bool				menuEvent(XAP_Menu_Id id);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 
-	XAP_QNXFrame * 	getFrame(void);
+	XAP_Frame * 	getFrame(void);
 
 protected:
 
@@ -56,7 +56,7 @@ protected:
 	bool				_isItemPresent(XAP_Menu_Id id) const;
 
 	XAP_QNXApp *		m_pQNXApp;
-	XAP_QNXFrame *		m_pQNXFrame;
+	XAP_Frame *		m_pFrame;
 
 	// Menu accelerator group, dynamically filled on synth()
 //	GtkAccelGroup * 	m_accelGroup;
@@ -73,7 +73,7 @@ class EV_QNXMenuBar : public EV_QNXMenu
 {
 public:
 	EV_QNXMenuBar(XAP_QNXApp * pQNXApp,
-				   XAP_QNXFrame * pQNXFrame,
+				   XAP_Frame * pFrame,
 				   const char * szMenuLayoutName,
 				   const char * szMenuLabelSetName);
 	virtual ~EV_QNXMenuBar(void);
@@ -92,7 +92,7 @@ class EV_QNXMenuPopup : public EV_QNXMenu
 {
 public:
 	EV_QNXMenuPopup(XAP_QNXApp * pQNXApp,
-					 XAP_QNXFrame * pQNXFrame,
+					 XAP_Frame * pFrame,
 					 const char * szMenuLayoutName,
 					 const char * szMenuLabelSetName);
 	virtual ~EV_QNXMenuPopup(void);

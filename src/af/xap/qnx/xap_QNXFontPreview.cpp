@@ -55,11 +55,11 @@ XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_ui
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 	m_pDrawingArea = PtCreateWidget(PtRaw,m_pPreviewWindow,n,args); 
 
-/*	XAP_App *pApp = pQNXFrameImpl->getApp();
+	XAP_App *pApp = pQNXFrameImpl->getFrame()->getApp();
 	m_gc = new GR_QNXGraphics(m_pPreviewWindow,m_pDrawingArea, pApp);
 	
 	_createFontPreviewFromGC(m_gc, area.size.w,area.size.h);
-*/
+
 }
 
 XAP_QNXFontPreview::~XAP_QNXFontPreview(void)
