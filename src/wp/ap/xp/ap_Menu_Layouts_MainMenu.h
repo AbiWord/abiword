@@ -38,6 +38,9 @@ BeginLayout(Main,0)
                 MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
+#ifdef HAVE_GNOME_DIRECT_PRINT
+		MenuItem(AP_MENU_ID_FILE_PRINT_DIRECTLY)
+#endif
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_RECENT_1)
 		MenuItem(AP_MENU_ID_FILE_RECENT_2)

@@ -84,6 +84,9 @@
 #       include "ap_UnixGnomeDialog_Spell.h"
 #       include "ap_UnixGnomeDialog_Tab.h"
 
+#	ifdef HAVE_GNOME_DIRECT_PRINT
+#		include "xap_UnixDlg_Print.h"
+#	endif
 #endif
 
 	// ... add new dialogs here ...
@@ -97,6 +100,9 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixGnomeDialog_Print)
         DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW, XAP_UnixGnomeDialog_PrintPreview)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
+#	ifdef HAVE_GNOME_DIRECT_PRINT	
+		DeclareDialog(XAP_DIALOG_ID_PRINT_DIRECTLY,	XAP_UnixDialog_Print)
+#	endif
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixGnomeDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixGnomeDialog_Zoom)

@@ -40,6 +40,12 @@ typedef enum _XAP_Dialog_Id
 	XAP_DIALOG_ID_PRINT,
 	XAP_DIALOG_ID_PRINTPREVIEW,
 	XAP_DIALOG_ID_PRINTTOFILE,			/* the file-save-as spun as pathname-for-print-to-file */
+#ifdef HAVE_GNOME_DIRECT_PRINT
+	XAP_DIALOG_ID_PRINT_DIRECTLY,	
+#else
+	XAP_DIALOG_ID_PRINT_DIRECTLY = XAP_DIALOG_ID_PRINT, /* just to reduce # of ifdefs */
+#endif	
+
 	XAP_DIALOG_ID_FONT,
 
 	XAP_DIALOG_ID_WINDOWMORE,

@@ -54,9 +54,16 @@ CPPSRCS +=		xap_UnixDlg_About.cpp			\
 			xap_UnixPSGraphics.cpp
 endif
 
+# only build this until gnome-print support gets better
+ifeq ($(ABI_OPT_GNOME_DIRECT_PRINT),1)
+CPPSRCS +=		xap_UnixPSGenerate.cpp			\
+			xap_UnixPSGraphics.cpp
+endif
+
+
 TARGETS=		$(OBJS)
 INCLUDES=      -I/usr/X11R6/include
- 
+
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

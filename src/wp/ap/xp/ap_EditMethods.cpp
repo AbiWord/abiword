@@ -232,6 +232,9 @@ public:
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
         static EV_EditMethod_Fn printPreview;
+#ifdef HAVE_GNOME_DIRECT_PRINT
+	static EV_EditMethod_Fn printDirectly;
+#endif
 	static EV_EditMethod_Fn fileInsertGraphic;
 
 	static EV_EditMethod_Fn undo;
@@ -592,6 +595,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	        // intended for X11 middle mouse
 	EV_EditMethod(NF(pasteSelection),		0,	""),
 	EV_EditMethod(NF(print),				0,	""),
+#ifdef HAVE_GNOME_DIRECT_PRINT	
+	EV_EditMethod(NF(printDirectly), 0, ""),
+#endif
 	EV_EditMethod(NF(printPreview), 0, ""),
 	EV_EditMethod(NF(printTB),				0,	""),
 
@@ -3821,7 +3827,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	return true;
 }
 
-static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog)
+static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3832,7 +3838,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog)
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_Print * pDialog
-		= (XAP_Dialog_Print *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+		= (XAP_Dialog_Print *)(pDialogFactory->requestDialog(bPrintDirectly? XAP_DIALOG_ID_PRINT_DIRECTLY: XAP_DIALOG_ID_PRINT));
 	UT_ASSERT(pDialog);
 
 	FL_DocLayout* pLayout = pView->getLayout();
@@ -4410,7 +4416,13 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 Defun1(print)
 {
 	ABIWORD_VIEW;
-	return s_doPrint(pView,false);
+	return s_doPrint(pView,false,false);
+}
+
+Defun1(printDirectly)
+{
+	ABIWORD_VIEW;
+	return s_doPrint(pView,false,true);
 }
 
 Defun1(printTB)
@@ -4419,7 +4431,7 @@ Defun1(printTB)
 	// suppress the dialog if possible))
 
 	ABIWORD_VIEW;
-	return s_doPrint(pView,true);
+	return s_doPrint(pView,true,false);
 }
 
 Defun1(printPreview)

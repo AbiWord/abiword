@@ -520,9 +520,16 @@ ifeq ($(ABI_NATIVE),unix)
 
 # ABI_OPT_BONOBO turns on ABI_OPT_GNOME
 # But we should build without gnome by default
-ABI_OPT_GNOME := 0
+ABI_OPT_GNOME = 0
 ifdef ABI_OPT_BONOBO
-	ABI_OPT_GNOME := 1
+	ABI_OPT_GNOME = 1
+endif
+
+# ABI_OPT_GNOME_DIRECT_PRINT enables "Print directly" command for
+# gnome port
+ABI_OPT_GNOME_DIRECT_PRINT = 1
+ifeq ($(ABI_OPT_GNOME),0)
+	ABI_OPT_GNOME_DIRECT_PRINT = 0
 endif
 
 # This next bit is ugly so I'll explain my rationale:
@@ -557,6 +564,13 @@ GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil
 ABI_OPTIONS+=Bonobo:On
 else
 ABI_OPTIONS+=Bonobo:Off
+endif
+
+ifeq ($(ABI_OPT_GNOME_DIRECT_PRINT),1)
+GNOME_CFLAGS    +=	-DHAVE_GNOME_DIRECT_PRINT
+ABI_OPTIONS+=DirectPrint:On
+else
+ABI_OPTIONS+=DirectPrint:Off
 endif
 
 CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
