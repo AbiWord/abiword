@@ -595,6 +595,11 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
 
+  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, fp_PageSize::mm, s_page_units_changed);
+  gtk_widget_show (glade_menuitem);
+  gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
+
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionPageUnits), optionPageUnits_menu);
   last_page_unit = getPageUnits ();
   gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageUnits), fp_2_pos (last_page_unit));
@@ -798,6 +803,11 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
   CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, fp_PageSize::cm, s_margin_units_changed);
+  gtk_widget_show (glade_menuitem);
+  gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
+
+  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, fp_PageSize::mm, s_margin_units_changed);
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
 
