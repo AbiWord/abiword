@@ -35,7 +35,7 @@ public:
   int mbtowc(wchar_t &wc,char mb);
 };
 #else
-#include <iconv.h>
+#include "iconv.h"
 class UT_Mbtowc
 {
   char m_buf[MB_LEN_MAX];

@@ -35,7 +35,7 @@ public:
 };
 #else /*portable version using iconv*/
 
-#include <iconv.h>
+#include "iconv.h"
 
 class UT_Wctomb
 {

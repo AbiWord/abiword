@@ -85,6 +85,22 @@ TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
+# Win32 must build libiconv as a peer, Unix should either
+# have iconv.h available as part of its C library (GNU libc
+# systems) or have it installed as part of the libiconv-1.0
+# package.
+
+# Test for iconv in system locations
+HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/include/iconv.h ] ; then echo 1 ; fi)
+
+ifeq ($(OS_NAME), WIN32)
+INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
+else
+ifneq ($(HAVE_ICONV_SYSTEM),1)
+INCLUDES= 		-I$(ABI_ROOT)/../libiconv/include
+endif
+endif
+
 build:: $(TARGETS)
 
 ifdef ABISOURCE_LICENSED_TRADEMARKS
