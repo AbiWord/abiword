@@ -90,7 +90,7 @@ BeginSet(de,DE,UT_TRUE)
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"Forma&t",			NULL)
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Schrift",			"Schrifteigenschaften der Markierung ändern")
-	MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,		"&Zeilenabstand",	"Zeilenabstand der Markierung ändern")
+	MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,		"&Absatz",	"Absatzeigenschaften der Markierung ändern")
 	MenuLabel(AP_MENU_ID_FMT_BULLETS,		"&Numerierung und Aufzählung",	"Aufzählungszeichen oder Numerierung einfügen")
 	MenuLabel(AP_MENU_ID_FMT_BORDERS,		"&Rahmen und Schattierung",	"Rahmen und Schattierung der Markierung bearbeiten")
 	MenuLabel(AP_MENU_ID_FMT_COLUMNS,		"&Spalten",			"Spaltenzahl der Markierung ändern")
