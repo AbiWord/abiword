@@ -184,10 +184,15 @@ void XAP_QNXDialog_Insert_Symbol::activate(void)
 
 void XAP_QNXDialog_Insert_Symbol::destroy(void)
 {
+	if (!m_windowMain) {
+		return;
+	}
+
 	modeless_cleanup();
 
-	PtDestroyWidget(m_windowMain);
+	PtWidget_t *win = m_windowMain;
 	m_windowMain = NULL;
+	PtDestroyWidget(win);
 }
 
 void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
