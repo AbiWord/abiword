@@ -52,13 +52,16 @@ BeginSet(cs,CZ,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Otevøít",	tb_open_xpm,	NULL, "Otevøít ulo¾ený dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Ulo¾it", 	tb_save_xpm,	NULL, "Ulo¾it dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Ulo¾it jako", 	tb_save_as_xpm,	NULL, "Ulo¾it dokument pod jiným jménem")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Tisk",	tb_print_xpm,	NULL, "Vytisknout dokument")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Tisk",		tb_print_xpm,	NULL, "Vytisknout dokument")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,	"Náhled",	tb_print_preview_xpm, NULL, "Náhled dokumentu")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Zpìt",		tb_undo_xpm,	NULL, "Undo editing")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Vpøed",	tb_redo_xpm,	NULL, "Redo editing")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Vyjmout",	tb_cut_xpm,	NULL, "Cut")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopírovat",	tb_copy_xpm,	NULL, "Kopírovat")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Vlo¾it",	tb_paste_xpm,	NULL, "Vlo¾it")
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Pravopis",	tb_spellcheck_xpm,	NULL, "Najít pøeklepy v dokumentu")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG,			"Vlo¾it obrázek", tb_insert_graphic_xpm,NULL, "Vlo¾it obrázek")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Styl",		NoIcon,			NULL, "Styl")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Písmo",	NoIcon,			NULL, "Písmo")
@@ -68,6 +71,7 @@ BeginSet(cs,CZ,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Podtr¾ení",	tb_text_underline_xpm,	NULL, "Podtr¾ení")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Pod èarou",	tb_text_overline_xpm,	NULL, "Pod èarou")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Pøe¹krtnutí",	tb_text_strikeout_xpm,	NULL, "Pøe¹krtnutí")
+	ToolbarLabel(AP_TOOLBAR_ID_HELP,		"Pomoc",	tb_help_xpm,		NULL, "Pomoc")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Horní index",	tb_text_superscript_xpm,NULL, "Horní index")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Spodní index",	tb_text_subscript_xpm,	NULL, "Spodní index")
@@ -92,8 +96,17 @@ BeginSet(cs,CZ,true)
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zvìt¹ení",		NoIcon,			NULL,	"Zvìt¹ení")
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Odrá¾ky",		tb_lists_bullets_xpm,	NULL,	"Start/Stop Bullet Lists")
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Èíslovaný seznam",	tb_lists_numbers_xpm,	NULL,	"Start/Stop Numbered Lists") 
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Barva písma",		tb_text_fgcolor_xpm,	NULL,	"Barva písma")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Highlight",		tb_text_bgcolor_xpm,	NULL,	"Highlight")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Zvìt¹it odsazení",	tb_text_indent_xpm,	NULL,	"Zvìt¹it odsazení")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,            "Zmen¹it odsazení",	tb_text_unindent_xpm,	NULL,	"Zmen¹it odsazení")
 	
 	// ... add others here ...
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR, "Text z leva do prava", tb_text_direction_ltr_xpm, NULL, "")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL, "Text z prava do leva", tb_text_direction_rtl_xpm, NULL, "")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION, "Smìr odstavce",  tb_text_dom_direction_rtl_xpm,  NULL, "")
+#endif
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
