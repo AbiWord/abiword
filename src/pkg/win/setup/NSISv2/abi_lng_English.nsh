@@ -98,8 +98,8 @@ ${LSTR} MSG_ERROR_SELECTING_DL_MIRROR "Error obtaining user choice, using defaul
 
 ; Start menu & desktop
 ${LSTR} SM_PRODUCT_GROUP              "${PRODUCT} Word Processor"
-${LSTR} SHORTCUT_NAME                 "${PRODUCT} v${VERSION_MAJOR}"
-${LSTR} SHORTCUT_NAME_UNINSTALL       "Uninstall ${PRODUCT} v${VERSION_MAJOR}"
+${LSTR} SHORTCUT_NAME                 "${PRODUCT} ${VERSION_MAJOR}.${VERSION_MINOR}"
+${LSTR} SHORTCUT_NAME_UNINSTALL       "Uninstall ${PRODUCT} ${VERSION_MAJOR}.${VERSION_MINOR}"
 ${LSTR} SHORTCUT_NAME_HELP            "(English) Help for ${PRODUCT}"
 
 ; Uninstall Strings
