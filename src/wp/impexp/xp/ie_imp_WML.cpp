@@ -283,7 +283,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 	      break;
 	    }
 
-	    p_atts = (const XML_Char **)&buf;
+	    p_atts = (const XML_Char **)buf;
 	    X_CheckError(_pushInlineFmt(p_atts));
 	    X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 	  }
