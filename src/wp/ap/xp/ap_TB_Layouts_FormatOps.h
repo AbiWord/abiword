@@ -36,8 +36,6 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_ITALIC)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_UNDERLINE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_STRIKE)
-
-	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SUPERSCRIPT)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SUBSCRIPT)	
 	
