@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,8 +38,10 @@
 #define AP_RID_DIALOG_OPT_SPL					208		// tab-sub-dlg
 #define AP_RID_DIALOG_OPT_PREF					209		// tab-sub-dlg
 #define AP_RID_DIALOG_OPT_VIEW					210		// tab-sub-dlg
-#define AP_RID_DIALOG_DATETIME					211  
-#define AP_RID_DIALOG_FIELD					212  
+#define AP_RID_DIALOG_DATETIME					211
+#define AP_RID_DIALOG_FIELD						212
+#define AP_RID_DIALOG_WORDCOUNT					213
+
 
 #include "ap_Win32Resources_DialogReplace.rc2"
 #include "ap_Win32Res_DlgBreak.rc2"
@@ -48,5 +50,6 @@
 #include "ap_Win32Res_DlgSpell.rc2"
 #include "ap_Win32Res_DlgParagraph.rc2"
 #include "ap_Win32Res_DlgOptions.rc2"
+#include "ap_Win32Res_DlgWordCount.rc2"
 #include "ap_Win32Res_Icons.rc2"
 

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,10 +69,14 @@ dcl(DLG_Break_EvenPage,			"&Even page")
 dcl(DLG_Break_OddPage,			"&Odd page")
 
 /* Word Count dialog */
-dcl(DLG_WordCount_WordCountTitle,       "Word Count")
-dcl(DLG_WordCount_Words,                "Words")
-dcl(DLG_WordCount_Paragraphs,           "Paragraphs")
-dcl(DLG_WordCount_Characters,           "Characters")
+dcl(DLG_WordCount_WordCountTitle,	"Word Count")
+dcl(DLG_WordCount_Statistics,		"Statistics:")
+dcl(DLG_WordCount_Pages,			"Pages")
+dcl(DLG_WordCount_Words,			"Words")
+dcl(DLG_WordCount_Characters_No,	"Characters (no spaces)")
+dcl(DLG_WordCount_Characters_Sp,	"Characters (with spaces)")
+dcl(DLG_WordCount_Paragraphs,		"Paragraphs")
+dcl(DLG_WordCount_Lines,			"Lines")
 	
 /* Spell dialog */
 dcl(DLG_Spell_SpellTitle,		"Spelling")

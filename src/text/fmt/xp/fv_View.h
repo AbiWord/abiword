@@ -82,11 +82,12 @@ struct fv_ChangeState
 	const XML_Char **	propsSection;
 };
 
-struct fv_DocCount
+struct FV_DocCount
 {
 	UT_uint32 word;  
 	UT_uint32 para; 
-	UT_uint32 ch;
+	UT_uint32 ch_no;
+	UT_uint32 ch_sp;
 	UT_uint32 line;
 	UT_uint32 page;
 };
@@ -237,7 +238,7 @@ public:
 
 // ----------------------
 
-	fv_DocCount                     countWords(void);
+	FV_DocCount                     countWords(void);
 
 protected:
 	void				_generalUpdate(void);

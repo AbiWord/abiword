@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,13 +40,13 @@ public:
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 
 	AP_Dialog_WordCount::tAnswer		getAnswer(void) const;
-	fv_DocCount                             getCount(void) const;
-	void                                    setCount(fv_DocCount);
+	FV_DocCount                             getCount(void) const;
+	void                                    setCount(FV_DocCount);
 	
 protected:
 	
 	AP_Dialog_WordCount::tAnswer		m_answer;
-	fv_DocCount                             m_count;
+	FV_DocCount                             m_count;
 };
 
 #endif /* AP_DIALOG_WORDCOUNT_H */

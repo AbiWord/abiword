@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@ dcl(UntitledDocument,		"Untitled%d")
 /* Common to many dialogs */
 dcl(DLG_OK,					"OK")
 dcl(DLG_Cancel,				"Cancel")
+dcl(DLG_Close,				"Close")
 
 /* Message box */
 /* These are tagged "UnixMB" because the underscores precede accelerator

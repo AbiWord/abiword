@@ -4926,34 +4926,32 @@ void FV_View::cmdContextAdd(void)
  *****************************************************/
 UT_Bool s_notChar(UT_UCSChar c)
 {
-  UT_Bool res = UT_FALSE;
+	UT_Bool res = UT_FALSE;
 
-  switch (c)
-    {
-    case UCS_TAB:
-    case UCS_LF:
-    case UCS_VTAB:
-    case UCS_FF:
-    case UCS_CR:
-      {
-      res = UT_TRUE;
-      break;
-      }
-    default:
-      break;
-    }
-  return res;
+	switch (c)
+	{
+	case UCS_TAB:
+	case UCS_LF:
+	case UCS_VTAB:
+	case UCS_FF:
+	case UCS_CR:
+		{
+			res = UT_TRUE;
+			break;
+		}
+	default:
+		break;
+	}
+	return res;
 }
 
-
-fv_DocCount FV_View::countWords(void)
+FV_DocCount FV_View::countWords(void)
 {
-	fv_DocCount wCount;
+	FV_DocCount wCount;
+	memset(&wCount,0,sizeof(wCount));
+
 	UT_Bool isPara = UT_FALSE;
-	wCount.word = 0;
-	wCount.para = 0;
-	wCount.ch = 0;
-	
+
 	fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 	while (pSL)
 	{
@@ -4970,32 +4968,54 @@ fv_DocCount FV_View::countWords(void)
 			UT_Bool newWord = UT_FALSE;
 			UT_Bool delim = UT_TRUE;
 			for (i = 0; i < len; i++)
-			 {
-				 UT_DEBUGMSG(("%c", i));
-				 if (!s_notChar(pSpan[i]))
-				 {
-					 wCount.ch++;
-					 isPara = UT_TRUE;
-				 }
-				 newWord = (delim && !UT_isWordDelimiter(pSpan[i]));
-				 
-				 delim = UT_isWordDelimiter(pSpan[i]);
-				 
-				 if (newWord)
-					 wCount.word++;
-				 
-			 }
+			{
+				UT_DEBUGMSG(("%c", i));
+				if (!s_notChar(pSpan[i]))
+				{
+					wCount.ch_sp++;
+					isPara = UT_TRUE;
+
+					switch (pSpan[i])
+					{
+					case UCS_SPACE:
+					case UCS_NBSP:
+					case UCS_EN_SPACE:
+					case UCS_EM_SPACE:
+						break;
+
+					default:
+						wCount.ch_no++;
+					}
+				}
+				newWord = (delim && !UT_isWordDelimiter(pSpan[i]));
+				
+				delim = UT_isWordDelimiter(pSpan[i]);
+				
+				if (newWord)
+					wCount.word++;
+			}
 			
-			pBL = pBL->getNext();
 			if (isPara)
-	       		{
+			{
 				wCount.para++;
 				isPara = UT_FALSE;
-	       		}
+
+				// count lines
+				fp_Line * pLine = pBL->getFirstLine();
+				while (pLine)
+				{
+					wCount.line++;
+					pLine = pLine->getNext();
+				}
+			}
+
+			pBL = pBL->getNext();
 		}
 		pSL = pSL->getNext();
-        }
+	}
 	
+	// count pages
+	wCount.page = m_pLayout->countPages();
 	
 	return (wCount);
 }

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -188,14 +188,14 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_widget_show (labelPara);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelPara, 0, 1, 1, 2);
 
-	UT_XML_cloneNoAmpersands(unixstr, g_strdup_printf("%d", m_count.ch));	
+	UT_XML_cloneNoAmpersands(unixstr, g_strdup_printf("%d", m_count.ch_sp));	
 	labelCCount = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelCCount", labelCCount);
 	gtk_widget_show (labelCCount);
 	gtk_table_attach_defaults (GTK_TABLE (dataTable), labelCCount, 1, 2, 2, 3);
 	
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters));	
+	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_Sp));	
 	labelChar = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_object_set_data (GTK_OBJECT (windowWordCount), "labelChar", labelChar);

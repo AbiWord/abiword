@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,7 +21,6 @@
 #define AP_WIN32DIALOG_WORDCOUNT_H
 
 #include "ap_Dialog_WordCount.h"
-
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -35,9 +34,11 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
 protected:
-
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 };
 
 #endif /* AP_WIN32DIALOG_WORDCOUNT_H */
