@@ -1,0 +1,59 @@
+// AbiWord
+// Copyright (C) 2000 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_GOTO_BTN_GOTO             1001
+#define AP_RID_DIALOG_GOTO_BTN_NEXT             1002
+#define AP_RID_DIALOG_GOTO_BTN_PREV             1003
+#define AP_RID_DIALOG_GOTO_TEXT_WHAT            1004
+#define AP_RID_DIALOG_GOTO_LIST_WHAT            1005
+#define AP_RID_DIALOG_GOTO_TEXT_NUMBER          1006
+#define AP_RID_DIALOG_GOTO_EDIT_NUMBER          1007
+#define AP_RID_DIALOG_GOTO_TEXT_INFO            1008
+#define AP_RID_DIALOG_GOTO_BTN_CLOSE			IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_GOTO DIALOG DISCARDABLE  0, 0, 270, 110
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Go To"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "&Close",			AP_RID_DIALOG_GOTO_BTN_CLOSE,	200,88,62,14
+	LISTBOX         ,					AP_RID_DIALOG_GOTO_LIST_WHAT,	8,17,62,74, LBS_NOTIFY | WS_BORDER | WS_TABSTOP
+	EDITTEXT        					AP_RID_DIALOG_GOTO_EDIT_NUMBER,	74,17,188,14
+    DEFPUSHBUTTON   "&Goto",			AP_RID_DIALOG_GOTO_BTN_GOTO,	136,88,62,14
+	PUSHBUTTON      "&Next >>",			AP_RID_DIALOG_GOTO_BTN_NEXT,	72,88,62,14
+	PUSHBUTTON      "<< &Prev",			AP_RID_DIALOG_GOTO_BTN_PREV,	8,88,62,14
+	LTEXT           "Go To What",		AP_RID_DIALOG_GOTO_TEXT_WHAT,	8,8,62,8
+	LTEXT           "&Number",			AP_RID_DIALOG_GOTO_TEXT_NUMBER,	74,8,38,8
+	LTEXT           "Info here",		AP_RID_DIALOG_GOTO_TEXT_INFO,	74,33,188,54
+END
+#endif /* RC_INVOKED */

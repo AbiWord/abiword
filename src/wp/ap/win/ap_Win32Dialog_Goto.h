@@ -36,9 +36,21 @@ public:
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	void					GoTo (const char *number);
+	void					setSelectedRow (int row);
+	int						getSelectedRow (void);
+
+	void *					pGetWindowHandle( void ) { return (void*)m_hWnd; }
 
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
+	int                     m_iRow;
+	HWND                    m_hWnd;
+
+	char *					m_pszOldValue;
 };
 
 #endif /* AP_WIN32DIALOG_GOTO_H */

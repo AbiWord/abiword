@@ -34,6 +34,8 @@
 
 #include "ap_Win32Resources.rc2"
 
+#include "fv_View.h"
+
 /*****************************************************************/
 
 XAP_Dialog * AP_Win32Dialog_Goto::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -53,15 +55,33 @@ AP_Win32Dialog_Goto::~AP_Win32Dialog_Goto(void)
 
 void AP_Win32Dialog_Goto::activate(void)
 {
+	int iResult;
+	XAP_Frame *	pFrame = getActiveFrame();
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(m_hWnd, m_WindowName);
+
+	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER ) );
+
+	iResult = ShowWindow( m_hWnd, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
 }
 
 
 void AP_Win32Dialog_Goto::destroy(void)
 {
+	DELETEP( m_pszOldValue );
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	int iResult = DestroyWindow( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
+
+	modeless_cleanup();
 }
 
 
@@ -69,36 +89,238 @@ void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+	// raise the dialog
+	int iResult;
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
+	LPCTSTR lpTemplate = NULL;
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+	UT_ASSERT(m_id == AP_DIALOG_ID_GOTO);
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_GOTO);
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+	// Change the third argument to
+	// pWin32Frame->getTopLevelWindow(),
+	// if you want the dialog to stay on top of the Abi windows
+	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+								GetDesktopWindow(),
+								(DLGPROC)s_dlgProc,(LPARAM)this);
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT((hResult != NULL));
+
+	m_hWnd = hResult;
+
+	// Save dialog the ID number and pointer to the widget
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+	iResult = ShowWindow( m_hWnd, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
 }
 
+BOOL CALLBACK AP_Win32Dialog_Goto::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+	// This is a static function.
 
+	AP_Win32Dialog_Goto * pThis;
+	
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		pThis = (AP_Win32Dialog_Goto *)lParam;
+		SetWindowLong(hWnd,DWL_USER,lParam);
+		return pThis->_onInitDialog(hWnd,wParam,lParam);
+		
+	case WM_COMMAND:
+		pThis = (AP_Win32Dialog_Goto *)GetWindowLong(hWnd,DWL_USER);
+		if (pThis)
+			return pThis->_onCommand(hWnd,wParam,lParam);
+		else
+			return 0;
+		
+	default:
+		return 0;
+	}
+}
 
+void AP_Win32Dialog_Goto::GoTo (const char *number)
+{
+	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
+	UT_UCS_strcpy_char (ucsnumber, number);
+	int target = this->getSelectedRow ();
+	this->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
+	free (ucsnumber);
+}
 
+void AP_Win32Dialog_Goto::setSelectedRow (int row)
+{
+	m_iRow = row;
+}
 
+int AP_Win32Dialog_Goto::getSelectedRow (void)
+{
+	return (m_iRow);
+}
+
+#define _DSI(c,i)	SetDlgItemInt(hWnd,AP_RID_DIALOG_##c,m_count.##i,FALSE)
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	int iTarget;
+	char **ppszTargets;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	m_pszOldValue = NULL;
+
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(hWnd, m_WindowName);
+
+	// Disable the Go To button until something has been entered into the Number box
+	EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
+
+	m_iRow = 0;
+	ppszTargets = getJumpTargets();
+	for ( iTarget = 0; ppszTargets[ iTarget ] != NULL; iTarget++ )
+		SendMessage( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_ADDSTRING, 0, (LPARAM)ppszTargets[ iTarget ] );
+
+	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_SETCURSEL, m_iRow, 0);
+
+	// localize controls
+	_DSX(GOTO_BTN_CLOSE,		DLG_Close);
+	_DS(GOTO_BTN_GOTO,			DLG_Goto_Btn_Goto);
+	_DS(GOTO_BTN_PREV,			DLG_Goto_Btn_Prev);
+	_DS(GOTO_BTN_NEXT,			DLG_Goto_Btn_Next);
+	_DS(GOTO_TEXT_WHAT,			DLG_Goto_Label_What);
+	_DS(GOTO_TEXT_NUMBER,		DLG_Goto_Label_Number);
+	_DS(GOTO_TEXT_INFO,			DLG_Goto_Label_Help);
+
+	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER) );
+
+	return 0;							// 0 == we called SetFocus()
+}
+
+BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	char * pBuf = NULL;
+	UT_Bool bValueOK = TRUE;
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+	DWORD dwTextLength, dwCounter, dwStart;
+	XAP_Frame *	pFrame = getActiveFrame();
+
+	switch (wId)
+	{
+	case IDCANCEL:						// also AP_RID_DIALOG_GOTO_BTN_CLOSE
+		destroy();
+		return 1;
+
+	case AP_RID_DIALOG_GOTO_LIST_WHAT:
+		switch (HIWORD(wParam))
+		{
+		case LBN_SELCHANGE:
+			m_iRow = (short) SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_GETCURSEL, 0, 0);
+			return 1;
+
+		default:
+			return 0;
+		}
+
+	case AP_RID_DIALOG_GOTO_BTN_PREV:
+		GoTo("-1");
+		return 1;
+
+	case AP_RID_DIALOG_GOTO_BTN_NEXT:
+		GoTo("+1");
+		return 1;
+
+	case AP_RID_DIALOG_GOTO_BTN_GOTO:
+		UT_ASSERT( m_pszOldValue );
+		GoTo( m_pszOldValue );
+		return 1;
+
+	case AP_RID_DIALOG_GOTO_EDIT_NUMBER:
+		switch (wNotifyCode)
+		{
+		case EN_UPDATE:
+			dwTextLength = GetWindowTextLength( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER) );
+			
+			if( dwTextLength )
+			{
+				pBuf = new char [ dwTextLength + 1 ];
+				if( !pBuf )
+					return 0;
+				
+				GetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), pBuf, dwTextLength + 1 );
+
+				// If the first character is + or -, skip over it in the
+				// check loop below
+				if( *pBuf == '-' || *pBuf == '+' )
+					dwStart = 1;
+				else
+					dwStart = 0;
+
+				// Make sure everything we have is numeric
+				for( dwCounter = dwStart; dwCounter < dwTextLength; dwCounter++ )
+				{
+					if( !UT_UCS_isdigit( pBuf[ dwCounter ] ) )
+					{
+						if( m_pszOldValue == NULL )
+						{
+							m_pszOldValue = new char[ 1 ];
+							*m_pszOldValue = '\0';
+						}
+						
+						SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
+						
+						bValueOK = FALSE;
+
+						break;
+					}
+				}
+
+				if( bValueOK )
+				{
+					if( m_pszOldValue != NULL )
+						DELETEP( m_pszOldValue );
+
+					m_pszOldValue = pBuf;
+
+					// Only enable the goto button if what we have actually contains a number
+					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), !(((pBuf[ 0 ] == '-') || (pBuf[ 0 ] == '+')) && (pBuf[ 1 ] == '\0')) );
+				}
+				else
+				{
+					FREEP( pBuf );
+
+					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
+				}
+			}
+			else
+			{
+				if( m_pszOldValue != NULL )
+					DELETEP( m_pszOldValue );
+
+				m_pszOldValue = NULL;
+
+				EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
+			}
+
+			return 1;
+		default:
+			return 0;
+		}
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
 

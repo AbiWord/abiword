@@ -41,7 +41,7 @@
 #define AP_RID_DIALOG_DATETIME					211
 #define AP_RID_DIALOG_FIELD						212
 #define AP_RID_DIALOG_WORDCOUNT					213
-
+#define AP_RID_DIALOG_GOTO						214
 
 #include "ap_Win32Resources_DialogReplace.rc2"
 #include "ap_Win32Res_DlgBreak.rc2"
@@ -51,5 +51,5 @@
 #include "ap_Win32Res_DlgParagraph.rc2"
 #include "ap_Win32Res_DlgOptions.rc2"
 #include "ap_Win32Res_DlgWordCount.rc2"
+#include "ap_Win32Res_DlgGoto.rc2"
 #include "ap_Win32Res_Icons.rc2"
-

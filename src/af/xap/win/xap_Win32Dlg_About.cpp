@@ -158,7 +158,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		
 	HWND hwndOK = CreateWindow("BUTTON",
 							   "OK",		// TODO isn't this in the strings file?
-							   WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+							   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 							   iWidth - BUTTON_WIDTH - BUTTON_GAP,
 							   iHeight - BUTTON_HEIGHT - BUTTON_GAP,
 							   BUTTON_WIDTH,
@@ -170,7 +170,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	HWND hwndURL = CreateWindow("BUTTON",
 								"www.abisource.com",
-								WS_CHILD | WS_VISIBLE,
+								WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 								iWidth - BUTTON_WIDTH - BUTTON_GAP - 2*BUTTON_WIDTH - BUTTON_GAP,
 								iHeight - BUTTON_HEIGHT - BUTTON_GAP,
 								BUTTON_WIDTH*2,
@@ -276,6 +276,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		{
 			if (GetMessage(&msg, NULL, 0, 0))
 			{
+				if( hwndAbout && IsDialogMessage( hwndAbout, &msg ) )
+					continue;
+
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
