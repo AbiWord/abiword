@@ -935,6 +935,8 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	xxx_UT_DEBUGMSG(("There are %d allocated fonts for %s \n",count,m_name));
 	allocFont * entry;
         char buf[1000];
+
+ 	bool bFontNotFound = false;
 		
 	while (l < count)
 	{
@@ -1036,11 +1038,20 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 			"\n"
 			"Please visit http://www.abisource.com/ for more information.";
 		messageBoxOK(message.c_str());
+		
+		// we do not have to quit here, just continue ...
+#if 0		
 		exit(1);
+#else
+		bFontNotFound = true;
+#endif
 	}
 
 	free(newxlfd);
 	
+	if(bFontNotFound)
+		return NULL;
+		
 	allocFont * item = new allocFont;
 	item->pixelSize = pixelsize;
 	item->gdkFont = gdkfont;
