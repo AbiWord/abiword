@@ -92,7 +92,6 @@ SpellManager::instance ()
 SpellChecker *
 SpellManager::requestDictionary (const char * szLang)
 {  
-	//UT_DEBUGMSG(("SpellManager: requested dictionary %s\n", szLang));
 	SpellCheckerClass * checker = 0;
 	
 	// first look up the entry in the hashtable
@@ -101,7 +100,6 @@ SpellManager::requestDictionary (const char * szLang)
 		return (SpellCheckerClass *)pEntry->pData;
 	
 	// not found, so insert it
-	//UT_DEBUGMSG(("Dictionary not found, we try to create a new checker\n"));
 	checker = new SpellCheckerClass ();
 	
 	if (checker->requestDictionary (szLang))
@@ -112,8 +110,8 @@ SpellManager::requestDictionary (const char * szLang)
     }
 	else
     {
+		m_map.addEntry (szLang, 0, 0); // add a null entry for this lang
 		delete checker;
-		//UT_DEBUGMSG(("The new checker does not support this language.\n"));
 		return 0;
     }
 }

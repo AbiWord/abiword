@@ -44,7 +44,6 @@ class PD_Style;
 class XAP_App;
 class fd_Field;
 class fl_AutoNum;
-class fp_PageSize;
 
 #ifdef PT_TEST
 #include "ut_test.h"

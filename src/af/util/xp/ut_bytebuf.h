@@ -26,6 +26,7 @@
 ** A buffer class which can grow and shrink
 *****************************************************************/
 
+#include <stdio.h>
 #include "ut_types.h"
 
 class UT_ByteBuf
@@ -44,6 +45,7 @@ public:
 	const UT_Byte *		getPointer(UT_uint32 position) const;				/* temporary use only */
 	bool				writeToFile(const char* pszFileName);
 	bool				insertFromFile(UT_uint32 iPosition, const char* pszFilename);
+	bool                insertFromFile(UT_uint32 iPosition, FILE * fp);
 	
 protected:
 	bool				_byteBuf(UT_uint32 spaceNeeded);

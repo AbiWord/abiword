@@ -194,6 +194,29 @@ void UT_ByteBuf::truncate(UT_uint32 position)
 	}
 }
 
+bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, FILE * fp)
+{
+	UT_uint32 iLengthOfFile = ftell (fp);
+
+	if (0 != fseek(fp, 0, SEEK_SET))
+	{
+		return false;
+	}
+
+	// create a lot of space initialized to 0s
+	this->ins (iPosition, iLengthOfFile);
+
+	UT_Byte *pBuf = m_pBuf + iPosition;	
+	UT_uint32 iBytesRead = 0;
+
+	while (iBytesRead < iLengthOfFile)
+	{
+		iBytesRead += fread (pBuf + iBytesRead, sizeof(UT_Byte), 
+							 iLengthOfFile - iBytesRead, fp);
+	
+	}
+}
+
 bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
 {
 	UT_ASSERT(pszFileName && pszFileName[0]);
@@ -207,35 +230,13 @@ bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
 	if (0 != fseek(fp, 0, SEEK_END))
 	{
 		fclose(fp);
-
 		return false;
 	}
 
-	UT_uint32 iLengthOfFile = ftell(fp);
-
-	if (0 != fseek(fp, 0, SEEK_SET))
-	{
-		fclose(fp);
-
-		return false;
-	}
-
-	this->ins(iPosition, iLengthOfFile);
-
-	UT_Byte* pBuf = m_pBuf + iPosition;
-	
-	UT_uint32 iBytesRead = fread(pBuf, 1, iLengthOfFile, fp);
-	
-	if (iBytesRead != iLengthOfFile)
-	{
-		fclose(fp);
-
-		return false;
-	}
+	bool b = this->insertFromFile (iPosition, fp);
 
 	fclose(fp);
-
-	return true;
+	return b;
 }
 
 bool UT_ByteBuf::writeToFile(const char* pszFileName)

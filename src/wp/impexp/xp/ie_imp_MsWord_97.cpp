@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
+ * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,127 +24,148 @@
 #include <string.h>
 
 #include "wv.h"
+#include "ie_imp_MsWord_97.h"
+#include "ie_impGraphic.h"
+#include "xap_EncodingManager.h"
 
-#include "ut_types.h"
-#include "ut_assert.h"
-#include "ut_debugmsg.h"
+#include "ut_string_class.h"
+#include "pd_Document.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_units.h"
-#include "pd_Document.h"
 
-#include "xap_EncodingManager.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
 
-#include "ie_types.h"
-#include "ie_imp_MsWord_97.h"
+//
+// Forward decls. to wv's callbacks
+//
+static int charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid);
+static int specCharProc (wvParseStruct *ps, U16 eachchar, CHP* achp);
+static int eleProc (wvParseStruct *ps, wvTag tag, void *props, int dirty);
+static int docProc (wvParseStruct *ps, wvTag tag);
 
-#include "ie_impGraphic.h"
+//
+// DOC uses an unsigned int color index
+//
+typedef UT_uint32 Doc_Color_t;
 
-
-#define X_ReturnIfFail(exp,error)     do { bool b = (exp); if (!b) return (error); } while (0)
-#define X_ReturnNoMemIfError(exp)   X_ReturnIfFail(exp,UT_IE_NOMEMORY)
-
-#define X_CheckError(v)         do {  if (!(v))                             \
-                                      {  m_error = UT_ERROR;            \
-                                         return; } } while (0)
-#define X_CheckError0(v)        do {  if (!(v))                             \
-                                      {  m_error = UT_ERROR;            \
-                                         return 0; } } while (0)
-
-extern "C" {
-  int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype, U16 lid);
-  int SpecCharProc(wvParseStruct *ps,U16 eachchar, CHP* achp);
-  int ElementProc(wvParseStruct *ps,wvTag tag, void *props, int dirty);
-  int DocProc(wvParseStruct *ps,wvTag tag);
-}
-
-// a little look-up table for mapping Word text colors 
-// (the comments) to Abiword's superior RGB color encoding
-static int word_colors[][3] = {
-   {0x00, 0x00, 0x00}, /* black */
-   {0x00, 0x00, 0xff}, /* blue */
-   {0x00, 0xff, 0xff}, /* cyan */
-   {0x00, 0xff, 0x00}, /* green */
-   {0xff, 0x00, 0xff}, /* magenta */
-   {0xff, 0x00, 0x00}, /* red */
-   {0xff, 0xff, 0x00}, /* yellow */
-   {0xff, 0xff, 0xff}, /* white */
-   {0x00, 0x00, 0x80}, /* dark blue */
-   {0x00, 0x80, 0x80}, /* dark cyan */
-   {0x00, 0x80, 0x00}, /* dark green */
-   {0x80, 0x00, 0x80}, /* dark magenta */
-   {0x80, 0x00, 0x00}, /* dark red */
-   {0x80, 0x80, 0x00}, /* dark yellow */
-   {0x80, 0x80, 0x80}, /* dark gray */
-   {0xc0, 0xc0, 0xc0}, /* light gray */
+//
+// A mapping between Word's colors and Abi's RGB color scheme
+//
+static Doc_Color_t word_colors [][3] = {
+	{0x00, 0x00, 0x00}, /* black */
+	{0x00, 0x00, 0xff}, /* blue */
+	{0x00, 0xff, 0xff}, /* cyan */
+	{0x00, 0xff, 0x00}, /* green */
+	{0xff, 0x00, 0xff}, /* magenta */
+	{0xff, 0x00, 0x00}, /* red */
+	{0xff, 0xff, 0x00}, /* yellow */
+	{0xff, 0xff, 0xff}, /* white */
+	{0x00, 0x00, 0x80}, /* dark blue */
+	{0x00, 0x80, 0x80}, /* dark cyan */
+	{0x00, 0x80, 0x00}, /* dark green */
+	{0x80, 0x00, 0x80}, /* dark magenta */
+	{0x80, 0x00, 0x00}, /* dark red */
+	{0x80, 0x80, 0x00}, /* dark yellow */
+	{0x80, 0x80, 0x80}, /* dark gray */
+	{0xc0, 0xc0, 0xc0}, /* light gray */
 };
+
+//
+// Field Ids that are useful later for mapping
+//
+typedef enum { 
+	F_TIME,
+	F_DATE,
+	F_EDITTIME,
+	F_AUTHOR,
+	F_PAGE,
+	F_NUMCHARS,
+	F_NUMPAGES,
+	F_NUMWORDS,
+	F_FILENAME,
+	F_HYPERLINK,
+	F_PAGEREF,
+	F_EMBED,
+	F_TOC,
+	F_DateTimePicture,
+	F_TOC_FROM_RANGE,
+	F_OTHER
+} Doc_Field_t;
+
+//
+// A mapping between DOC's field names and our given IDs
+//
+typedef struct
+{
+	char * m_name;
+	Doc_Field_t m_id;
+} Doc_Field_Mapping_t;
 
 /*
- * This next bit of code is so we can hopefully import 
- * At least some of MSWord's fields
+ * This next bit of code enables us to import many of Word's fields
  */
 
-enum {F_TIME,
-	  F_DATE,
-	  F_EDITTIME,
-	  F_AUTHOR,
-	  F_PAGE,
-	  F_NUMCHARS,
-	  F_NUMPAGES,
-	  F_NUMWORDS,
-	  F_FILENAME,
-	  F_HYPERLINK,
-	  F_PAGEREF,
-	  F_EMBED,
-	  F_TOC,
-	  F_DateTimePicture,
-	  F_TOC_FROM_RANGE,
-	  F_OTHER};
-
-static TokenTable s_Tokens[] =
+static Doc_Field_Mapping_t s_Tokens[] =
 {
-	{"TIME",      F_TIME},
-	{"EDITTIME",  F_EDITTIME},
-	{"DATE",      F_DATE},
-	{"date",      F_DATE},
+	{"TIME",       F_TIME},
+	{"EDITTIME",   F_EDITTIME},
+	{"DATE",       F_DATE},
+	{"date",       F_DATE},
 
-	{"FILENAME",  F_FILENAME},
-	{"\\filename",F_FILENAME},
-	{"PAGE",      F_PAGE},
-	{"NUMCHARS",  F_NUMCHARS},
-	{"NUMWORDS",  F_NUMWORDS},
+	{"FILENAME",   F_FILENAME},
+	{"\\filename", F_FILENAME},
+	{"PAGE",       F_PAGE},
+	{"NUMCHARS",   F_NUMCHARS},
+	{"NUMWORDS",   F_NUMWORDS},
 
-	// these below aren't handled, but they're known about
-	{"HYPERLINK", F_HYPERLINK},
-	{"PAGEREF",   F_PAGEREF},
-	{"EMBED",     F_EMBED},
-	{"TOC",       F_TOC},
-	{"\\@",       F_DateTimePicture},
-	{"\\o",       F_TOC_FROM_RANGE},
-	{"AUTHOR",    F_AUTHOR},
+	// these below aren't handled by AbiWord, but they're known about
+	{"HYPERLINK",  F_HYPERLINK},
+	{"PAGEREF",    F_PAGEREF},
+	{"EMBED",      F_EMBED},
+	{"TOC",        F_TOC},
+	{"\\@",        F_DateTimePicture},
+	{"\\o",        F_TOC_FROM_RANGE},
+	{"AUTHOR",     F_AUTHOR},
 
-	{ "*",        F_OTHER}
+	{ "*",         F_OTHER}
 };
 
+#define FieldMappingSize (sizeof(s_Tokens)/sizeof(s_Tokens[0]))
 
-// a linear search is fine here. we don't encounter fields
-// that often, and the length of the list is very short
-// and roughly in the order of how often they are encountered
-static unsigned int s_mapNameToToken(const char* name)
+static Doc_Field_t
+s_mapNameToField (const char * name)
 {
-	unsigned int k;
-	for (k=0; k<FieldCodeTableSize; k++)
+	for (unsigned int k = 0; k < FieldMappingSize; k++)
 	{
-		if (s_Tokens[k].m_name[0] == '*')
-			return k;
-		else if (!(UT_strcmp(s_Tokens[k].m_name,name)))
-			return k;
+		if (!UT_strcmp(s_Tokens[k].m_name,name))
+			return s_Tokens[k].m_id;
     }
-    return 0;
+    return F_OTHER;
 }
 
-/*****************************************************************/
-/*****************************************************************/
+#undef FieldMappingSize
+
+static const char *
+s_mapPageIdToString (UT_uint16 id)
+{
+	// TODO: make me way better when we determine code names
+
+	switch (id)
+	{
+	case 0:
+		return "Letter";
+	case 9:
+		return "A4";
+
+	default:
+		return 0;
+	}
+}
+
+/****************************************************************************/
+/****************************************************************************/
 
 #ifdef ENABLE_PLUGINS
 
@@ -175,11 +197,13 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	mi->name = "MsWord_97 Importer";
-	mi->desc = "Import MsWord_97 Documents";
+	UT_ASSERT (m_sniffer && m_refs);
+
+	mi->name    = "Microsoft Word (tm) Importer";
+	mi->desc    = "Import Microsoft Word (tm) Documents";
 	mi->version = "0.7.15";
-	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->author  = "Abi the Ant";
+	mi->usage   = "No Usage";
 
 	IE_Imp::registerImporter (m_sniffer);
 	return 1;
@@ -188,11 +212,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_FAR extern "C"
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name = 0;
-	mi->desc = 0;
+	mi->name    = 0;
+	mi->desc    = 0;
 	mi->version = 0;
-	mi->author = 0;
-	mi->usage = 0;
+	mi->author  = 0;
+	mi->usage   = 0;
 
 	UT_ASSERT (m_refs && m_sniffer);
 
@@ -214,109 +238,102 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 	return SUPPORTS_ABI_VERSION(major, minor, release);
 }
 
-#endif
+#endif /* ENABLE_PLUGINS */
 
-/*****************************************************************/
-/*****************************************************************/
+/****************************************************************************/
+/****************************************************************************/
 
-bool IE_Imp_MsWord_97_Sniffer::recognizeContents(const char * szBuf, 
-												 UT_uint32 iNumbytes)
+bool IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf, 
+												  UT_uint32 iNumbytes)
 {
-	// TODO: This is rather crude, because we don't parse OLE files.
-	// TODO: For the time being, we assume that any OLE file is an
-	// TODO: msword document.
-	// TODO: Caolan is gonna kill me for this.  :)
-	// Most of the magic numbers here were taken from the public domain
-	// /etc/magic file distributed with the file(1) command written
-	// by Ian F. Darwin, with contributions and magic entries from
-	// Rob McMahon, Guy Harris, Christos Zoulas <christos@astron.com>,
-	// Mark Moraes <moraes@deshaw.com>, and Pawel Wiecek.
-
-	char *magic = 0;
+	char * magic    = 0;
 	int magicoffset = 0;
 
-	magic = "Microsoft Word 6.0 Document" ;
-	magicoffset = 2080 ;
-
-	if ( iNumbytes > magicoffset+strlen(magic) )
+	magic = "Microsoft Word 6.0 Document";
+	magicoffset = 2080;
+	if (iNumbytes > (magicoffset + strlen (magic)))
 	{
-		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		if (!strncmp (szBuf + magicoffset, magic, strlen (magic)))
 		{
-			return(true);
-		}
-	}
-	magic = "Documento Microsoft Word 6" ;
-	magicoffset = 2080 ;
-	if ( iNumbytes > magicoffset+strlen(magic) )
-	{
-		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
-		{
-			return(true);
+			return true;
 		}
 	}
 
-	magic = "MSWordDoc" ;
-	magicoffset = 2112 ;
-	if ( iNumbytes > magicoffset+strlen(magic) )
+	magic = "Documento Microsoft Word 6";
+	magicoffset = 2080;
+	if (iNumbytes > (magicoffset + strlen (magic)))
 	{
-		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		if (!strncmp(szBuf + magicoffset, magic, strlen (magic)))
 		{
-			return(true);
+			return true;
 		}
 	}
-	if ( iNumbytes > 8 )
+
+	magic = "MSWordDoc";
+	magicoffset = 2112;
+	if (iNumbytes > (magicoffset + strlen (magic)))
 	{
-		if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
-			 szBuf[2] == (char)0 && szBuf[3] == (char)0 )
+		if (!strncmp (szBuf + magicoffset, magic, strlen (magic)))
 		{
-			return(true);
+			return true;
 		}
-		if ( szBuf[0] == 'P' && szBuf[1] == 'O' &&
-			 szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`' )
+	}
+
+	// ok, that didn't work, we'll try to dig through the OLE stream
+	if (iNumbytes > 8)
+	{
+		if (szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
+			szBuf[2] == (char)0 && szBuf[3] == (char)0)
 		{
-			return(true);
+			return true;
 		}
-		if ( szBuf[0] == (char)0xfe && szBuf[1] == (char)0x37 &&
-			 szBuf[2] == (char)0 && szBuf[3] == (char)0x23 )
+		if (szBuf[0] == 'P' && szBuf[1] == 'O' &&
+			szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`')
 		{
-			return(true);
+			return true;
 		}
+		if (szBuf[0] == (char)0xfe && szBuf[1] == (char)0x37 &&
+			szBuf[2] == (char)0 && szBuf[3] == (char)0x23)
+		{
+			return true;
+		}
+
 		// OLE magic:
-		// TODO: Dig through the OLE file
-		if ( szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
-			 szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
-			 szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
-			 szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1 )
+		if (szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
+			szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
+			szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
+			szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1)
 		{
-			return(true);
+			return true;
 		}
-		if ( szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
-			 szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
-			 szBuf[4] == (char)0 && szBuf[5] == (char)0 )
+		if (szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
+			szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
+			szBuf[4] == (char)0 && szBuf[5] == (char)0)
 		{
-			return(true);
+			return true;
 		}
 	}
-	return(false);
+	return false;
 }
 
-bool IE_Imp_MsWord_97_Sniffer::recognizeSuffix(const char * szSuffix)
+bool IE_Imp_MsWord_97_Sniffer::recognizeSuffix (const char * szSuffix)
 {
+	// We recognize both word documents and their template versions
 	return (!UT_stricmp(szSuffix,".doc") || 
 			!UT_stricmp(szSuffix,".dot"));
 }
 
-UT_Error IE_Imp_MsWord_97_Sniffer::constructImporter(PD_Document * pDocument,
-													 IE_Imp ** ppie)
+UT_Error IE_Imp_MsWord_97_Sniffer::constructImporter (PD_Document * pDocument,
+													  IE_Imp ** ppie)
 {
 	IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Imp_MsWord_97_Sniffer::getDlgLabels(const char ** pszDesc,
-											   const char ** pszSuffixList,
-											   IEFileType * ft)
+bool	IE_Imp_MsWord_97_Sniffer::getDlgLabels (const char ** pszDesc,
+												const char ** pszSuffixList,
+												IEFileType * ft)
 {
 	*pszDesc = "Microsoft Word (.doc, .dot)";
 	*pszSuffixList = "*.doc; *.dot";
@@ -324,185 +341,204 @@ bool	IE_Imp_MsWord_97_Sniffer::getDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-/*****************************************************************/
-/*****************************************************************/
+/****************************************************************************/
+/****************************************************************************/
+
+// just buffer sizes, arbitrarily chosen
+#define DOC_TEXTRUN_SIZE 2048
+#define DOC_PROPBUFFER_SIZE 1024
+
+IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
+{
+	DELETEPV (m_pTextRun);
+}
+
+IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
+	: IE_Imp (pDocument), m_pTextRun (new UT_UCSChar [DOC_TEXTRUN_SIZE]), 
+	m_iTextRunLength (0), m_iImageCount (0)
+{
+}
+
+/****************************************************************************/
+/****************************************************************************/
 
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
-	FILE *fp = NULL;
-	xxx_UT_DEBUGMSG(("got to import file\n"));
-	
-	fp = fopen(szFilename, "rb");
-	if (!fp)
-	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		m_error = UT_IE_FILENOTFOUND;
-		return m_error;
-	}
-	xxx_UT_DEBUGMSG(("wv importer\n"));
-	fclose(fp);
-	
 	wvParseStruct ps;
-	if (wvInitParser(&ps,(char *)szFilename))
+	if (wvInitParser (&ps, (char *)szFilename))
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		wvOLEFree();
-		m_error = UT_IE_BOGUSDOCUMENT;
-		return m_error;
+		UT_DEBUGMSG (("Could not open file %s\n",szFilename));
+		wvOLEFree ();
+		return UT_IE_BOGUSDOCUMENT;
 	}
-	
-	xxx_UT_DEBUGMSG(("just here\n"));
+
+	// register ourself as the userData
 	ps.userData = this;
-	wvSetElementHandler(&ps, ElementProc);
-	wvSetCharHandler(&ps, CharProc);
-	wvSetSpecialCharHandler(&ps, SpecCharProc);
-	wvSetDocumentHandler(&ps, DocProc);
+
+	// register callbacks
+	wvSetElementHandler (&ps, eleProc);
+	wvSetCharHandler (&ps, charProc);
+	wvSetSpecialCharHandler(&ps, specCharProc);
+	wvSetDocumentHandler (&ps, docProc);
 	
-	wvText(&ps);
-	
+	wvText(&ps);	
 	wvOLEFree();
-	
-   	m_error = UT_OK;
-	return m_error;
+
+	return UT_OK;
 }
 
-int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
+void IE_Imp_MsWord_97::pasteFromBuffer (PD_DocumentRange *, 
+										unsigned char *, unsigned int)
 {
-	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	
+	// nada
+}
+
+void IE_Imp_MsWord_97::_flush ()
+{
+	if (m_iTextRunLength)
+	{
+		if (!m_pDocument->appendSpan(m_pTextRun, m_iTextRunLength))
+		{
+			UT_DEBUGMSG(("DOM: error appending text run\n"));
+			return;
+		}
+		m_iTextRunLength = 0;
+	}
+}
+
+void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
+{
+	if (m_iTextRunLength == DOC_TEXTRUN_SIZE)
+		_flush ();
+
+    m_pTextRun[m_iTextRunLength++] = ch;
+}
+
+/****************************************************************************/
+/****************************************************************************/
+
+int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
+{
+	// flush out any pending character data
+	this->_flush ();
+
+	//
+	// we currently don't do anything with these tags
+	//
+
+	switch ((wvTag)tag)
+	{
+	case DOCBEGIN:
+	case DOCEND:	
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
+{
 	// convert incoming character to unicode
 	if (chartype)
 		eachchar = wvHandleCodePage(eachchar, lid);
-	//eachchar = XAP_EncodingManager::get_instance()->UToNative(eachchar);
-	
-	xxx_UT_DEBUGMSG(("word 97 char is %c (%d), type is %d\n",eachchar,(int)eachchar,chartype));
-	
-	// take care of any oddities in Microsoft's character "encoding"
-	// TODO: does the above code page handler take care of these?
-	if (chartype == 1 && eachchar == 146) eachchar = 39; // apostrophe
-	
-	// marks, breaks, etc.
+
 	switch (eachchar)
 	{
-	case 13: // paragraph end
-		return 0;
 
-	case 11: // hard line break
-		xxx_UT_DEBUGMSG(("a line break\n"));
+	case 11: // forced line break
 		eachchar = UCS_LF;
 		break;
 
-	case 12: // page breaks, section marks
-		// flush current text buffer
-		pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
-		pDocReader->m_iTextRunLength = 0;
-		// we'll go ahead and always add this as a page break.
-		// when we hit an end-of-section, we'll remove it if it's
-		// the last character in the text buffer. since we just 
-		// flushed it above, there's no chance of auto-flushing
-		// before the end-of-section hits.
-		xxx_UT_DEBUGMSG(("a page break/section mark\n"));
+	case 12: // page or section break
+		this->_flush ();
 		eachchar = UCS_FF;
 		break;
 
+	case 13: // end of paragraph
+		return 0;
+
 	case 14: // column break
-		xxx_UT_DEBUGMSG(("a column break\n"));
 		eachchar = UCS_VTAB;
 		break;
 
 	case 19: // field begin
-		// flush current text buffer
-		pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
-		pDocReader->m_iTextRunLength = 0;
-		xxx_UT_DEBUGMSG(("a field is beginning\n"));
+		this->_flush ();
 		ps->fieldstate++;
 		ps->fieldmiddle = 0;
-		pDocReader->_fieldProc(ps, eachchar, chartype, lid);	/* temp */
+		this->_fieldProc (ps, eachchar, chartype, lid); 
 		return 0;
 
 	case 20: // field separator
-		xxx_UT_DEBUGMSG(("a field separator\n"));
-		pDocReader->_fieldProc(ps, eachchar, chartype, lid);
+		this->_fieldProc (ps, eachchar, chartype, lid);
 		ps->fieldmiddle = 1;
 		return 0;
 
 	case 21: // field end
-		xxx_UT_DEBUGMSG(("a field has ended\n"));
 		ps->fieldstate--;
 		ps->fieldmiddle = 0;
-		pDocReader->_fieldProc(ps, eachchar, chartype, lid);	/* temp */
+		this->_fieldProc (ps, eachchar, chartype, lid);
 		return 0;
+
 	}
-	
-	// TODO: it seems the text which is displayed by a field is contained
-	// TODO: after the field separator. since I haven't written real field
-	// TODO: import support, yet, this will fake it somewhat...
-	if (ps->fieldstate) {
-		if(pDocReader->_fieldProc(ps, eachchar, chartype, lid))
+
+	// TODO: i'm not sure if this is needed any more
+	if (ps->fieldstate)
+	{
+		xxx_UT_DEBUGMSG(("DOM: fieldstate\n"));
+		if(this->_fieldProc (ps, eachchar, chartype, lid))
 			return 0;
 	}
-	
-	// add character to our current text run
-	pDocReader->m_pTextRun[pDocReader->m_iTextRunLength++] = 
-		(UT_UCSChar) eachchar;
-	
-	if (pDocReader->m_iTextRunLength == 
-		pDocReader->m_iTextRunMaxLength) 
-	{
-		// we can't hold any more characters in this run,
-		// so send what we currently have
-		int iRes = pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
-		pDocReader->m_iTextRunLength = 0;
-		return iRes;
-	}
-	else
-	{
-		return 0;
-	}
+
+	// take care of any oddities in Microsoft's character encoding
+	if (chartype == 1 && eachchar == 146) 
+		eachchar = 39; // apostrophe
+
+	//
+	// Append the character to our character buffer
+	//
+	this->_appendChar ((UT_UCSChar) eachchar);
+	return 0;
 }
 
-int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
+int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 {
-	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	
 	Blip blip;
 	wvStream *fil;	
 	long pos;
 	FSPA * fspa;
 	PICF picf;
 	FDOA * fdoa;
-	
-	// TODO: handle special characters (images, objects, fields(?))
-	
+
+	//
+	// This next bit of code is to handle fields
+	//
+
 	switch (eachchar)
 	{
+
 	case 19: // field begin
-		// flush current text buffer
-		pDocReader->_charData(pDocReader->m_pTextRun, 
-							  pDocReader->m_iTextRunLength);
-		pDocReader->m_iTextRunLength = 0;
-		xxx_UT_DEBUGMSG(("a field is beginning\n"));
+		this->_flush ();
 		ps->fieldstate++;
 		ps->fieldmiddle = 0;
-		pDocReader->_fieldProc(ps, eachchar, 0, 0x400); /* temp */
+		this->_fieldProc (ps, eachchar, 0, 0x400);
 		return 0;
-
-      case 20: // field separator
-		  if (achp->fOle2)
-		  {
-			  xxx_UT_DEBUGMSG(("field has associated embedded OLE object\n"));
-		  }
-		  xxx_UT_DEBUGMSG(("a field separator\n"));
-		  ps->fieldmiddle = 1;
-		  pDocReader->_fieldProc(ps, eachchar, 0, 0x400); /* temp */
-		  return 0;
+		
+	case 20: // field separator
+		if (achp->fOle2)
+		{
+			UT_DEBUGMSG(("Field has an assocaited embedded OLE object\n"));
+		}
+		ps->fieldmiddle = 1;
+		this->_fieldProc (ps, eachchar, 0, 0x400);
+		return 0;
 
 	case 21: // field end
-		xxx_UT_DEBUGMSG(("a field has ended\n"));
 		ps->fieldstate--;
 		ps->fieldmiddle = 0;
-		pDocReader->_fieldProc(ps, eachchar, 0, 0x400); /* temp */
+		this->_fieldProc (ps, eachchar, 0, 0x400);
 		return 0;
+
 	}
 	
 	/* it seems some fields characters slip through here which tricks
@@ -510,50 +546,52 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	 * not. this catches special characters in a field
 	 */
 	if (ps->fieldstate) {
-		if(pDocReader->_fieldProc(ps, eachchar, 0, 0x400))
+		if (this->_fieldProc(ps, eachchar, 0, 0x400))
 			return 0;
 	}
 	
+	//
+	// This next bit of code is to handle OLE2 embedded objects and images
+	//
+
 	switch (eachchar) 
 	{
-	case 0x01:
-		
+	case 0x01: // Older ( < Word97) image, currently not handled very well
+ 		
 		if (achp->fOle2) {
-			// TODO: support embedded OLE2 components...
-			xxx_UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
+			UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
 			return 0;
 		}
 		
 		pos = wvStream_tell(ps->data);
 
-#if 0	
+#ifdef SUPPORTS_OLD_IMAGES
 		wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
 		
-		wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, ps->data);
-		
+		wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, ps->data);		
 		fil = picf.rgb;
 		
 		if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
 		{
-			pDocReader->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
+			this->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("Dom: strange no graphic data 1\n"));
+			UT_DEBUGMSG(("Dom: no graphic data\n"));
 		}
 #else
-		UT_DEBUGMSG(("DOM: 0x01 graphics support is buggy at the moment\n"));
+		UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
 #endif
+
 		wvStream_goto(ps->data, pos);
 		
 		return 0;
-		break;
 		
-	case 0x08:
+	case 0x08: // Word 97, 2000, XP image
 		
-		if (wvQuerySupported(&ps->fib, NULL) == WORD8)
+		if (wvQuerySupported(&ps->fib, NULL) >= WORD8) // sanity check
 		{
-			if(ps->nooffspa>0)
+			if (ps->nooffspa > 0)
 			{
 				
 				fspa = wvGetFSPAFromCP(ps->currentcp, ps->fspa,
@@ -567,18 +605,18 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 				
 				if (wv0x08(&blip, fspa->spid, ps))
 				{
-					pDocReader->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
-											 fspa->yaBottom-fspa->yaTop);
+					this->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
+									   fspa->yaBottom-fspa->yaTop);
 				}
 				else
 				{
-					xxx_UT_DEBUGMSG(("Dom: strange no graphic data 2\n"));
+					UT_DEBUGMSG(("Dom: no graphic data!\n"));
 					return 0;
 				}
 			}
 			else
 			{
-				xxx_UT_DEBUGMSG(("nooffspa was <=0 -- ignoring"));
+				xxx_UT_DEBUGMSG(("nooffspa was <= 0 -- ignoring"));
 			} 
 		}
 		else
@@ -591,167 +629,548 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 		}
 		
 		return 0;
-		break;
-		
 	}
 	
 	return 0;
 }
 
-int DocProc(wvParseStruct *ps,wvTag tag)
+int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag, 
+							   void *props, int dirty)
 {
-	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	return(pDocReader->_docProc(ps, tag));
-}
+	//
+	// Marshall these off to the correct handlers
+	//
 
-int ElementProc(wvParseStruct *ps,wvTag tag,void *props, int dirty)
-{
-	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	xxx_UT_DEBUGMSG(("element tag = %d\n", tag));
-	return(pDocReader->_eleProc(ps, tag, props, dirty));
+	switch ((wvTag)tag)
+	{
+
+	case SECTIONBEGIN:
+		return _beginSect (ps, tag, props, dirty);
+
+	case SECTIONEND:
+		return _endSect (ps, tag, props, dirty);
+
+	case PARABEGIN:
+		return _beginPara (ps, tag, props, dirty);
+
+	case PARAEND:
+		return _endPara (ps, tag, props, dirty);
+
+	case CHARPROPBEGIN:
+		return _beginChar (ps, tag, props, dirty);
+
+	case CHARPROPEND:
+		return _endChar (ps, tag, props, dirty);
+
 	}
 
-int IE_Imp_MsWord_97::_charData(UT_UCSChar * charstr, int len)
-{
-	if (len)
-		X_CheckError0(m_pDocument->appendSpan(charstr, len));
-	return(0);
+	return 0;
 }
 
-int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, UT_uint32 tag)
+/****************************************************************************/
+/****************************************************************************/
+
+int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
+								  void *prop, int dirty)
 {
-	if (m_iTextRunLength)
-	{
-		// flush any text in the current run
-		int iRes = _charData(m_pTextRun, m_iTextRunLength);
-		m_iTextRunLength = 0;
-		UT_ASSERT(iRes == 0);
+	SEP * asep = static_cast <SEP *>(prop);
+
+	XML_Char * propsArray[3];
+	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
+	UT_String props;
+
+	// flush any character runs
+	this->_flush ();
+		
+	// page-margin-left
+	sprintf(propBuffer,
+			"page-margin-left:%s;", 
+			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaLeft) / 1440), "1.4"));
+	props += propBuffer;
+
+	// page-margin-right
+	sprintf(propBuffer,
+			"page-margin-right:%s;", 
+			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaRight) / 1440), "1.4"));
+	props += propBuffer;
+
+	// page-margin-top
+	sprintf(propBuffer,
+			"page-margin-top:%s;", 
+			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaTop) / 1440), "1.4"));
+	props += propBuffer;
+
+	// page-margin-bottom
+	sprintf(propBuffer,
+			"page-margin-bottom:%s;", 
+			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaBottom) / 1440), "1.4"));
+	props += propBuffer;
+
+	// page-margin-header
+	sprintf(propBuffer,
+			"parge-margin-header:%s;",
+			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrTop) / 1440), "1.4"));
+	props += propBuffer;
+
+	// page-margin-footer
+	sprintf(propBuffer,
+			"parge-margin-footer:%s;",
+			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrBottom) / 1440), 
+											  "1.4"));
+	props += propBuffer;
+
+	// columns
+	if (asep->ccolM1) {
+		// number of columns
+		sprintf(propBuffer,
+				"columns:%d;", (asep->ccolM1+1));
+		props += propBuffer;
+
+		// columns gap
+		sprintf(propBuffer,
+				"column-gap:%s;", 
+				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaColumns) / 1440), 
+												  "1.4"));
+		props += propBuffer;
 	}
 
-	/* we don't do anything with these */
-	switch((wvTag)tag)
+	// darw a vertical line between columns
+	if (asep->fLBetween == 1)
 	{
-	case DOCBEGIN:
-	case DOCEND:	
-	default:
-		break;
+		props += "column-line:on;";
 	}
-	return(0);
-}
+	
+	// space after section (gutter)
+	sprintf(propBuffer,
+			"section-space-after:%s",
+			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dzaGutter) / 1440), "1.4"));
+	props += propBuffer;
 
-int IE_Imp_MsWord_97::_handleCommandField(char *command)
-{
-	unsigned int tokenIndex = 0;
-	char *token = NULL;
-	
-	xxx_UT_DEBUGMSG(("DOM: handleCommandField '%s'\n", command));
-	
-	const XML_Char* atts[3];
-	atts[0] = "type";
-	atts[2] = NULL;
-	
-	if (*command!= 0x13)
+	//
+	// TODO: headers/footers, section breaks
+	//
+
 	{
-		UT_DEBUGMSG(("DOM: field did not begin with 0x13\n"));
+		//
+		// all of this data is related to Abi's <pagesize> tag
+		//
+		double page_width  = 0.0;
+		double page_height = 0.0;
+		double page_scale  = 1.0;
+
+		// TODO: paper type is currently unhandled
+		const char * paper_name = 0;
+
+		if (asep->dmOrientPage == 1)
+			m_pDocument->m_docPageSize.setLandscape ();
+		else
+			m_pDocument->m_docPageSize.setPortrait ();
+
+		page_width = asep->xaPage / 1440.0;
+		page_height = asep->yaPage / 1440.0;
+
+		UT_DEBUGMSG(("DOM: pagesize: (landscape: %d) (width: %f) (height: %f) (paper-type: %d)\n",
+					 asep->dmOrientPage, page_width, page_height, asep->dmPaperReq));
+
+		paper_name = s_mapPageIdToString (asep->dmPaperReq);
+
+		if (paper_name) {
+			// we found a paper name
+			m_pDocument->m_docPageSize.Set (paper_name);
+		}
+		else {
+			// this can cause us to SEGV, so I'm not sure if we even want to set it...
+			// TODO: make more mappings for s_MapPageIdToString as I discover them
+			m_pDocument->m_docPageSize.Set (page_width, page_height, fp_PageSize::inch);
+		}
+		m_pDocument->m_docPageSize.setScale(page_scale);
+	}
+
+	xxx_UT_DEBUGMSG (("DOM: the section properties are: '%s'\n", props.c_str()));
+
+	propsArray[0] = (XML_Char *)"props";
+	propsArray[1] = (XML_Char *)props.c_str();
+	propsArray[2] = 0;
+
+	if (!m_pDocument->appendStrux(PTX_Section, (const XML_Char **)propsArray))
+	{
+		UT_DEBUGMSG (("DOM: error appending section props!\n"));
 		return 1;
 	}
-	strtok(command,"\t, ");
-	while((token = strtok(NULL,"\t, ")))
-	{
-		tokenIndex = s_mapNameToToken(token);
-		
-		switch (s_Tokens[tokenIndex].m_type)
-	    {
-		case F_EDITTIME:
-	    case F_TIME:
-			atts[1] = "time";
-			X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
-			return 1;
-			
-		case F_DATE:
-			atts[1] = "date";
-			X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
-			return 1;
-			
-		case F_PAGE:
-			atts[1] = "page_number";
-			X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
-			return 1;
-
-		case F_NUMCHARS:
-			atts[1] = "char_count";
-			X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
-			return 1;
-
-		case F_NUMPAGES:
-			atts[1] = "page_count";
-			X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
-			return 1;
-	
-		case F_NUMWORDS:
-			atts[1] = "word_count";
-			X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
-			return 1;
-
-		case F_FILENAME: 
-			atts[1] = "file_name";
-			X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
-			return 1;
-
-	    default:
-			// unhandled field type
-			break;
-	    }
-	}
 	
 	return 0;
 }
 
-/*
- * Caolan had this set to 40000 in wv/field.c
- * That seemed a bit excessive to me
- */
-#define FLD_SZ 40000
-static U16 command[FLD_SZ];
-static U16 argumen[FLD_SZ];
+int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
+								void *prop, int dirty)
+{		
+	// if we're at the end of a section, we need to check for a section mark
+	// at the end of our character stream and remove it (to prevent page breaks
+	// between sections)
+	if (m_iTextRunLength && 
+		m_pTextRun[m_iTextRunLength-1] == UCS_FF)
+	{
+		m_pTextRun[--m_iTextRunLength] = 0;
+	}
+	return 0;
+}
 
-int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar, 
-								 U8 chartype, U16 lid)
+int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
+								  void *prop, int dirty)
+{
+	PAP *apap = static_cast <PAP *>(prop);
+
+	XML_Char * propsArray[3];
+	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
+	UT_String props;
+
+	//
+	// TODO: lists, exact line heights (and, eventually, tables)
+	//
+
+	// first, flush any character data in any open runs
+	this->_flush ();
+
+	// paragraph alignment/justification
+	switch(apap->jc)
+	{
+	case 0:
+		props += "text-align:left;";
+		break;
+	case 1:
+		props += "text-align:center;";
+		break;
+	case 2:
+		props += "text-align:right;";
+		break;
+	case 3:
+		props += "text-align:justify;";
+		break;
+	case 4:			
+		/* this type of justification is of unknown purpose and is 
+		 * undocumented , but it shows up in asian documents so someone
+		 * should be able to tell me what it is someday 
+		 */
+		props += "text-align:justify;";
+		break;
+	}
+
+	// keep paragraph together?
+	if (apap->fKeep) {
+		props += "keep-together:yes;";
+	}
+
+	// keep with next paragraph?
+	if (apap->fKeepFollow) {
+		props += "keep-with-next:yes;";
+	}
+
+	// break before paragraph?
+	if (apap->fPageBreakBefore)
+	{
+		// TODO: this should really set a property in
+		// TODO: in the paragraph, instead; but this
+		// TODO: gives a similar effect for now.
+		UT_UCSChar ucs = UCS_FF;
+		m_pDocument->appendSpan(&ucs,1);
+	}
+
+	// widowed/orphaned lines
+	if (!apap->fWidowControl) {
+		// these AbiWord properties give the same effect
+		props += "orphans:0;widows:0;";
+	}
+
+	// line spacing (single-spaced, double-spaced, etc.)
+	if (apap->lspd.fMultLinespace) {
+		sprintf(propBuffer,
+				"line-height:%s;", 
+				UT_convertToDimensionlessString( (((float)apap->lspd.dyaLine) / 240), "1.1"));
+		props += propBuffer;
+	} else { 
+		// TODO: handle exact line heights
+	}
+
+	//
+	// margins
+	//
+
+	// margin-right
+	if (apap->dxaRight) {
+		sprintf(propBuffer,
+				"margin-right:%s;", 
+				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaRight) / 1440), 
+												  "1.4"));
+		props += propBuffer;
+	}
+
+	// margin-left
+	if (apap->dxaLeft) {
+		sprintf(propBuffer,
+				"margin-left:%s;", 
+				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft) / 1440), 
+												  "1.4"));
+		props += propBuffer;
+	}
+
+	// margin-left first line (indent)
+	if (apap->dxaLeft1) {
+		sprintf(propBuffer,
+				"text-indent:%s;", 
+				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft1) / 1440), 
+												  "1.4"));
+		props += propBuffer;
+	}
+
+	// margin-top
+	if (apap->dyaBefore) {
+		sprintf(propBuffer,
+				"margin-top:%dpt;", (apap->dyaBefore / 20));
+		props += propBuffer;
+	}
+
+	// margin-bottom
+	if (apap->dyaAfter) {
+		sprintf(propBuffer,
+				"margin-bottom:%dpt;", (apap->dyaAfter / 20));
+	}
+
+	// tab stops
+	if (apap->itbdMac) {
+		strcpy(propBuffer, "tabstops:");
+
+		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
+			sprintf(propBuffer + strlen(propBuffer),
+					"%s/",
+					UT_convertInchesToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab]) 
+															   / 1440), "1.4"));
+			switch (apap->rgtbd[iTab].jc) {
+			case 1:
+				strcat(propBuffer, "C,");
+				break;
+			case 2:
+				strcat(propBuffer, "R,");
+				break;
+			case 3:
+				strcat(propBuffer, "D,");
+				break;	
+			case 4:
+				strcat(propBuffer, "B,");
+				break;
+			case 0:
+			default:
+				strcat(propBuffer, "L,");
+				break;
+			}
+		}
+		// replace final comma with a semi-colon
+		propBuffer[strlen(propBuffer)-1] = ';';
+		props += propBuffer;
+	}
+
+	// remove the trailing semi-colon
+	props = props.substr (0, props.size()-1);
+
+	xxx_UT_DEBUGMSG(("Dom: the paragraph properties are: '%s'\n",props.c_str()));
+	
+	propsArray[0] = (XML_Char *)"props";
+	propsArray[1] = (XML_Char *)props.c_str();
+	propsArray[2] = 0;
+	
+	if (!m_pDocument->appendStrux(PTX_Block, (const XML_Char **)propsArray))
+	{
+		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
+		return 1;
+	}
+	return 0;
+}
+
+int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
+								void *prop, int dirty)
+{
+	// nothing is needed here
+	return 0;
+}
+
+int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
+								  void *prop, int dirty)
+{
+	CHP *achp = static_cast <CHP *>(prop);
+
+	XML_Char * propsArray[3];
+	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
+	UT_String props;
+
+	//
+	// TODO: set char tolower if fSmallCaps && fLowerCase, possibly some list stuff
+	//
+
+	// flush any data in our character runs
+	this->_flush ();
+
+	// set language based the lid - TODO: do we want to handle -none- differently?
+	if (!ps->fib.fFarEast) {
+		props += "lang:";
+		props += wvLIDToLangConverter (achp->lidDefault);
+		props += ";";
+	}
+	else {
+		props += "lang:";
+		props += wvLIDToLangConverter (achp->lidFE);
+		props += ";";
+	}
+
+	// bold text
+	if (achp->fBold) { 
+		props += "font-weight:bold;";
+	}
+
+	// italic text
+	if (achp->fItalic) {
+		props += "font-style:italic;";
+	}
+
+	// underline and strike-through
+	if (achp->fStrike || achp->kul) {
+		props += "text-decoration:";
+		if (achp->fStrike && achp->kul) {
+			props += "underline line-through;";
+		} else if (achp->kul) {
+			props += "underline;";
+		} else {
+			props += "line-through;";
+		}
+	}
+
+	// foreground color
+	if (achp->ico) {
+		sprintf(propBuffer, 
+				"color:%02x%02x%02x;", 
+				word_colors[achp->ico-1][0], 
+				word_colors[achp->ico-1][1], 
+				word_colors[achp->ico-1][2]);
+		props += propBuffer;
+	}
+	
+	// background color
+	if (achp->fHighlight) {
+		sprintf(propBuffer, 
+				"bgcolor:%02x%02x%02x;", 
+				word_colors[achp->icoHighlight-1][0], 
+				word_colors[achp->icoHighlight-1][1], 
+				word_colors[achp->icoHighlight-1][2]);
+		props += propBuffer;
+	}
+
+	// superscript && subscript
+	if (achp->iss == 1) {
+		props += "text-position: superscript;";
+	} else if (achp->iss == 2) {
+		props += "text-position: subscript;";
+	}
+
+	// font size (hps is half-points)
+	sprintf(propBuffer, 
+			"font-size:%dpt;", (achp->hps/2));
+	props += propBuffer;
+
+	// font family
+	char *fname;
+
+	// if the FarEast flag is set, use the FarEast font,
+	// otherwise, we'll use the ASCII font.
+	if (!ps->fib.fFarEast) {
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
+	} else {
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
+
+		if(strlen(fname)>6)
+			fname[6]='\0';
+
+		const char *f=XAP_EncodingManager::cjk_word_fontname_mapping.getFirst(fname);
+
+		if(f==fname)
+		{
+			FREEP(fname);
+			fname=UT_strdup("song");
+		}
+		else
+		{
+			FREEP(fname);
+			fname=UT_strdup(f ? f : "helvetic");
+		}			   
+	}
+
+	// there are times when we should use the third, Other font, 
+	// and the logic to know when somehow depends on the
+	// character sets or encoding types? it's in the docs.
+	
+	UT_ASSERT(fname != NULL);
+	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
+		
+	props += "font-family:";
+	props += fname;
+	FREEP(fname);
+
+	xxx_UT_DEBUGMSG(("DOM: character properties are: '%s'\n", props.c_str()));
+	
+	propsArray[0] = (XML_Char *)"props";
+	propsArray[1] = (XML_Char *)props.c_str();
+	propsArray[2] = 0;
+	if (!m_pDocument->appendFmt((const XML_Char **)propsArray))
+	{
+		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
+		return 1;
+	}
+	return 0;
+}
+
+int IE_Imp_MsWord_97::_endChar (wvParseStruct *ps, UT_uint32 tag,
+								void *prop, int dirty)
+{
+	// nothing is needed here
+	return 0;
+}
+
+/****************************************************************************/
+/****************************************************************************/
+
+int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar, 
+								  U8 chartype, U16 lid)
 {
 	xxx_UT_DEBUGMSG(("DOM: fieldProc: %c %x\n", (char)eachchar, 
 					 (int)eachchar));
 
-	/* 
-	 * The majority of this code has just been ripped out of
-	 * wv/field.c
-	 */
+	//
+	// The majority of this code has just been ripped out of wv/field.c
+	//
 
 	static U16 *which;
-	static int i,depth;
-	char *a;
-	static char *c = NULL;
-	static int ret;
+	static int i, depth;
+	char *a = 0;
+	static char *c = 0;
+	static int ret = 0;
 	
-	if (eachchar == 0x13)
+	if (eachchar == 0x13) // beginning of a field
 	{
-	    a = NULL;
+	    a = 0;
 	    ret = 1;
 	    if (depth == 0)
 		{
-			which = command;
-			command[0] = 0;
-			argumen[0] = 0;
-			i=0;
+			which = m_command;
+			m_command[0] = 0;
+			m_argument[0] = 0;
+			i = 0;
 		}
 	    depth++;
 	}
-	else if (eachchar == 0x14)
+	else if (eachchar == 0x14) // field trigger
 	{
 	    if (depth == 1)
 		{
-			command[i] = 0;
-			c = wvWideStrToMB(command);
-			if (_handleCommandField(c))
+			m_command[i] = 0;
+			c = wvWideStrToMB (m_command);
+			if (this->_handleCommandField(c))
 				ret = 1;
 			else
 				ret = 0;
@@ -759,19 +1178,18 @@ int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar,
 			xxx_UT_DEBUGMSG(("DOM: Field: command %s, ret is %d\n", 
 							 wvWideStrToMB(command), ret));
 			wvFree(c);
-			which = argumen;
+			which = m_argument;
 			i = 0;
 		}
 	}
 	
-	if (i >= FLD_SZ)
+	if (i >= FLD_SIZE)
 	{
 	    UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
-	    //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	    return 1;
 	}
 	
-	/* DOM: note to self: make sure wv's iconv problem is fixed */
 	if (chartype)
 		which[i] = wvHandleCodePage(eachchar, lid);
 	else
@@ -779,460 +1197,140 @@ int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar,
 	
 	i++;
 	
-	if (eachchar == 0x15)
+	if (eachchar == 0x15) // end of field marker
 	{
 	    depth--;
 	    if (depth == 0)
 		{
 			which[i] = 0;
-#if 0
-			/* only used for hyperlinks, which abi doesn't support */
-			/* but i'll leave the sample code in here so we don't have */
-			/* to go digging for it later */
-			a = wvWideStrToMB(argumen);
-			c = wvWideStrToMB(command);
-			wvHandleTotalField(c);
-			wvFree(a);
-			wvFree(c);
-#endif
 		}
 	}
 	return ret;
 }
 
-int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag, 
-							   void *props, int dirty)
+bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 {
-	XML_Char propBuffer[1024];
-	XML_Char* pProps = "props";
-	const XML_Char* propsArray[3];
+	Doc_Field_t tokenIndex = F_OTHER;
+	char *token = NULL;
 	
-	propBuffer[0] = 0;
-	xxx_UT_DEBUGMSG(("element started\n"));
-	PAP *apap;
-	CHP *achp;
-	SEP *asep;
-	int iRes;
+	xxx_UT_DEBUGMSG(("DOM: handleCommandField '%s'\n", command));
 	
-	switch((wvTag)tag)
+	const XML_Char* atts[3];
+	atts[0] = "type";
+	atts[1] = 0;
+	atts[2] = 0;
+	
+	if (*command != 0x13)
 	{
-	case SECTIONBEGIN:
-		
-		// flush character run
-		iRes = _charData(m_pTextRun, m_iTextRunLength);
-		m_iTextRunLength = 0;
-		UT_ASSERT(iRes == 0);
-		
-		xxx_UT_DEBUGMSG(("section properties...\n"));
-		asep = (SEP*)props;
-		
-		// page margins
-		// -left
-		sprintf(propBuffer + strlen(propBuffer),
-				"page-margin-left:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaLeft) / 1440), "1.4"));
-		// -right
-		sprintf(propBuffer + strlen(propBuffer),
-				"page-margin-right:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaRight) / 1440), "1.4"));
-		// -top
-		sprintf(propBuffer + strlen(propBuffer),
-				"page-margin-top:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaTop) / 1440), "1.4"));
-		// -left
-		sprintf(propBuffer + strlen(propBuffer),
-				"page-margin-bottom:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaBottom) / 1440), "1.4"));
-		
-		// columns
-		if (asep->ccolM1) {
-			// number of columns
-			sprintf(propBuffer + strlen(propBuffer),
-					"columns:%d;", (asep->ccolM1+1));
-			// gap between columns
-			sprintf(propBuffer + strlen(propBuffer),
-					"column-gap:%s;", 
-					UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaColumns) / 1440), "1.4"));
-		}
-		
-		// space after section 
-		// TODO: this is the gutter, right?
-		sprintf(propBuffer + strlen(propBuffer),
-				"section-space-after:%s;",
-				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dzaGutter) / 1440), "1.4"));
-		
-		// remove trailing semi-colon
-		propBuffer[strlen(propBuffer)-1] = 0;
-		
-		propsArray[0] = pProps;
-		propsArray[1] = propBuffer;
-		propsArray[2] = NULL;
-		UT_DEBUGMSG(("the section propBuffer is %s\n",propBuffer));
-		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, propsArray));
-		break;
-		
-	case PARABEGIN:
-		
-		// flush character run
-		iRes = _charData(m_pTextRun, m_iTextRunLength);
-		m_iTextRunLength = 0;
-		UT_ASSERT(iRes == 0);
-		
-		xxx_UT_DEBUGMSG(("paragraph properties...\n"));
-		apap = (PAP*)props;
-		
-		// break before paragraph?
-		if (apap->fPageBreakBefore)
-		{
-			// TODO: this should really set a property in
-			// TODO: in the paragraph, instead; but this
-			// TODO: gives a similar effect for now.
-			UT_UCSChar ucs = UCS_FF;
-			m_pDocument->appendSpan(&ucs,1);
-		}
-		
-		// paragraph alignment
-		strcat(propBuffer, "text-align:");
-		switch(apap->jc)
-		{
-		case 0:
-			strcat(propBuffer, "left");
-			break;
-		case 1:
-			strcat(propBuffer, "center");
-			break;
-		case 2:
-			strcat(propBuffer, "right");
-			break;
-		case 3:
-			strcat(propBuffer, "justify");
-			break;
-		case 4:			
-			/* this type of justification is of unknown purpose and is 
-			 * undocumented , but it shows up in asian documents so someone
-			 * should be able to tell me what it is someday C. */
-			strcat(propBuffer, "justify");
-			break;
-		}
-		strcat(propBuffer, ";");
-		
-		// line spacing (single-spaced, double-spaced, etc.)
-		if (apap->lspd.fMultLinespace) {
-			strcat(propBuffer, "line-height:");
-			sprintf(propBuffer + strlen(propBuffer),
-					"%s;", UT_convertToDimensionlessString( (((float)apap->lspd.dyaLine) / 240), "1.1"));
-		} else { 
-			// I'm not sure Abiword currently handles the other method
-			// which requires setting the height of the lines exactly
-		}
-		
-		// margins
-		// -right
-		if (apap->dxaRight) {
-			strcat(propBuffer, "margin-right:");
-			sprintf(propBuffer + strlen(propBuffer),
-					"%s;", UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaRight) / 1440), "1.4"));
-		}
-		// -left
-		if (apap->dxaLeft) {
-			strcat(propBuffer, "margin-left:");
-			sprintf(propBuffer + strlen(propBuffer),
-					"%s;", UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft) / 1440), "1.4"));
-		}
-		// -left first line (indent)
-		if (apap->dxaLeft1) {
-			strcat(propBuffer, "text-indent:");
-			sprintf(propBuffer + strlen(propBuffer),
-					"%s;", UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft1) / 1440), "1.4"));
-		}
-		// -top
-		if (apap->dyaBefore) {
-			strcat(propBuffer, "margin-top:");
-			sprintf(propBuffer + strlen(propBuffer),
-					"%dpt;", (apap->dyaBefore / 20));
-		}		   
-		// -bottom
-		if (apap->dyaAfter) {
-			strcat(propBuffer, "margin-bottom:");
-			sprintf(propBuffer + strlen(propBuffer),
-					"%dpt;", (apap->dyaAfter / 20));
-		}
-		
-		// keep paragraph together?
-		if (apap->fKeep) {
-			strcat(propBuffer, "keep-together:yes;");
-		}
-		// keep with next paragraph?
-		if (apap->fKeepFollow) {
-			strcat(propBuffer, "keep-with-next:yes;");
-		}
-		
-		// widowed lines
-		if (!apap->fWidowControl) {
-			// I believe Word only allows control of
-			// widows/orphans with a single flag. I believe 
-			// these AbiWord properties give the same effect
-			// (with orphan/widow control off)
-			strcat(propBuffer, "orphans:0;widows:0;");
-		}
-		
-		// tabs
-		if (apap->itbdMac) {
-			strcat(propBuffer, "tabstops:");
-			for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
-				sprintf(propBuffer + strlen(propBuffer),
-						"%s/",
-						UT_convertInchesToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab]) / 1440), "1.4"));
-				switch (apap->rgtbd[iTab].jc) {
-				case 1:
-					strcat(propBuffer, "C,");
-					break;
-				case 2:
-					strcat(propBuffer, "R,");
-					break;
-				case 3:
-					strcat(propBuffer, "D,");
-					break;	
-				case 4:
-					strcat(propBuffer, "B,");
-					break;
-				case 0:
-				default:
-					strcat(propBuffer, "L,");
-					break;
-				}
-			}
-			// replace final comma with semi-colon
-			propBuffer[strlen(propBuffer)-1] = ';';
-		}
-		
-		// remove trailing semi-colon
-		propBuffer[strlen(propBuffer)-1] = 0;
-		
-		propsArray[0] = pProps;
-		propsArray[1] = propBuffer;
-		propsArray[2] = 0;
-		UT_DEBUGMSG(("the paragraph propBuffer is: '%s'\n",propBuffer));
-		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, propsArray));
-		break;
-		
-	case CHARPROPBEGIN:
-		
-		// flush character buffer
-		iRes = _charData(m_pTextRun, m_iTextRunLength);
-		m_iTextRunLength = 0;
-		UT_ASSERT(iRes == 0);
-		
-		xxx_UT_DEBUGMSG(("character properties...\n"));
-		achp = (CHP*)props;
-		
-		// bold text
-		if (achp->fBold) { 
-			strcat(propBuffer, "font-weight:bold;");
-		}
-		// italic text
-		if (achp->fItalic) {
-			strcat(propBuffer, "font-style:italic;");
-		}
-		
-		// underline and strike-through
-		if (achp->fStrike || achp->kul) {
-			strcat(propBuffer, "text-decoration:");
-			if (achp->fStrike && achp->kul) {
-				strcat(propBuffer, "underline line-through;");
-			} else if (achp->kul) {
-				strcat(propBuffer, "underline;");
-			} else {
-				strcat(propBuffer, "line-through;");
-			}
-		}
-		
-		// text color
-		if (achp->ico) {
-			sprintf((propBuffer + strlen(propBuffer)), 
-					"color:%02x%02x%02x;", 
-					word_colors[achp->ico-1][0], 
-					word_colors[achp->ico-1][1], 
-					word_colors[achp->ico-1][2]);
-		}
-		
-		// i think that this will do background colors
-		// untested!! - Dom
-		if (achp->fHighlight) {
-			sprintf((propBuffer + strlen(propBuffer)), 
-					"bgcolor:%02x%02x%02x;", 
-					word_colors[achp->icoHighlight-1][0], 
-					word_colors[achp->icoHighlight-1][1], 
-					word_colors[achp->icoHighlight-1][2]);
-		}
-		
-		// font family
-		char *fname;
-		// if FarEast flag is set, use the FarEast font,
-		// otherwise, we'll use the ASCII font.
-		if (!ps->fib.fFarEast) {
-			fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
-			UT_DEBUGMSG(("ASCII font id = %d\n", achp->ftcAscii));
-		} else {
-			fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
-			UT_DEBUGMSG(("FE font id = %d\n", achp->ftcFE));
-			{
-			   if(strlen(fname)>6)
-				   fname[6]='\0';
-			   const char *f=XAP_EncodingManager::cjk_word_fontname_mapping.getFirst(fname);
-			   if(f==fname)
-			   {
-				   FREEP(fname);
-				   fname=UT_strdup("song");
-			   }
-			   else
-			   {
-				   FREEP(fname);
-				   fname=UT_strdup(f ? f : "helvetic");
-			   }			   
-			}
-		}
-		// there are times when we should use the third, Other font, 
-		// and the logic to know when somehow depends on the
-		// character sets or encoding types? it's in the docs.
-		
-		UT_ASSERT(fname != NULL);
-		xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
-		
-		strcat(propBuffer, "font-family:");
-		strcat(propBuffer, fname);
-		strcat(propBuffer, ";");
-		
-		FREEP(fname);
-		
-		// font size (hps is half-points)
-		sprintf(propBuffer + strlen(propBuffer), 
-				"font-size:%dpt;", (achp->hps/2));
-		
-		// sub/superscript
-		if (achp->iss == 1) {
-			strcat(propBuffer, "text-position: superscript;");
-		} else if (achp->iss == 2) {
-			strcat(propBuffer, "text-position: subscript;");
-		}
-		
-		// done processing character properties
-		
-		// remove trailing ;
-		propBuffer[strlen(propBuffer)-1] = 0;
-		
-		propsArray[0] = pProps;
-		propsArray[1] = propBuffer;
-		propsArray[2] = 0;
-		xxx_UT_DEBUGMSG(("the character propBuffer is %s\n",propBuffer));
-		X_ReturnNoMemIfError(m_pDocument->appendFmt(propsArray));
-		break;
-		
-	case SECTIONEND:
-		
-		// if we're at the end of a section, we need to check for a section mark
-		// at the end of our character stream and remove it (to prevent page breaks
-		// between sections)
-		if (m_iTextRunLength && 
-			m_pTextRun[m_iTextRunLength-1] == UCS_FF)
-		{
-			m_iTextRunLength--;
-			xxx_UT_DEBUGMSG(("section mark removed\n"));
-		}
-		xxx_UT_DEBUGMSG(("section end\n"));
-		break;
-		
-	case CHARPROPEND: /* not needed */
-	case PARAEND:	/* not needed */
-	default:
-		break;
+		UT_DEBUGMSG(("DOM: field did not begin with 0x13\n"));
+		return true;
 	}
-	xxx_UT_DEBUGMSG(("element ended\n"));
-	return(0);
-}
+	strtok(command, "\t, ");
 
-
-/*****************************************************************/
-
-IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
-{
-	FREEP(m_pTextRun);
-}
-
-IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
-	: IE_Imp(pDocument)
-{
-	xxx_UT_DEBUGMSG(("constructed wv\n"));
-	m_error = UT_OK;
-	
-	// to increase the speed and efficiency of the important,
-	// we'll queue characters into runs of text, and only
-	// append this to the document when something changes
-	// (or we run out of space in the buffer)
-   	m_iTextRunLength = 0;
-   	m_iTextRunMaxLength = 256;
-   	m_pTextRun = (UT_UCSChar*) calloc(m_iTextRunMaxLength, sizeof(UT_UCSChar));
-   	UT_ASSERT(m_pTextRun != NULL);
-
-	m_iImageCount = 0;
-}
-
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
-									   unsigned char * pData, 
-									   UT_uint32 lenData)
-{
-}
-
-UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
-{
-	int data = 0;
-	const char * mimetype = NULL;
-	
-	UT_ByteBuf * buf = NULL;
-	IE_ImpGraphic * converter = NULL;
-	UT_Error err = UT_OK;
-	
-	// short-circuit this method if we don't support
-	// the incoming format
-	switch(b->type)
+	while ((token = strtok(NULL, "\t, ")))
 	{
+		tokenIndex = s_mapNameToField (token);
+		
+		switch (tokenIndex)
+	    {
+		case F_EDITTIME:
+	    case F_TIME:
+			atts[1] = "time";
+			break;
+			
+		case F_DATE:
+			atts[1] = "date";
+			break;
+			
+		case F_PAGE:
+			atts[1] = "page_number";
+			break;
+
+		case F_NUMCHARS:
+			atts[1] = "char_count";
+			break;
+
+		case F_NUMPAGES:
+			atts[1] = "page_count";
+			break;
+	
+		case F_NUMWORDS:
+			atts[1] = "word_count";
+			break;
+
+		case F_FILENAME: 
+			atts[1] = "file_name";
+			break;
+
+	    default:
+			// unhandled field type
+			continue;
+	    }
+
+		if (!m_pDocument->appendObject (PTO_Field, (const XML_Char**)atts))
+		{
+			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
+		}
+	}
+	
+	return true;
+}
+
+UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
+{
+	const char * mimetype     = 0;
+	
+	UT_ByteBuf * pBBPNG       = 0;
+	UT_ByteBuf * buf          = 0;
+	IE_ImpGraphic * converter = 0;
+	UT_Error err              = UT_OK;
+	
+	switch(b->type) 
+	{
+	// currently handled image types
 	case msoblipDIB:
-		// this is just a BMP file, so we'll use the BMP image importer
-		// to convert it to a PNG for us.
-		mimetype = UT_strdup("image/png");
-		break;
 	case msoblipPNG:
-		// conveniently, PNG is the internal format, so we do nothing here
-		mimetype = UT_strdup("image/png");
+		mimetype = UT_strdup("image/png"); // this will get freed for us elsewhere
 		break;
+
+	// currently unhandled image types
 	case msoblipWMF:
 	case msoblipEMF:
 	case msoblipPICT:
 	case msoblipJPEG:
 	default:
-		// TODO: support other image types
 		return UT_ERROR;
 	}
 	
 	buf = new UT_ByteBuf();
-	
+
+	// suck the data into the ByteBuffer
+
+#if 0
+	// TODO: make this call work
+	buf->insertFromFile (0, (FILE *)(b->blip.bitmap.m_pvBits));
+#else
+	int data = 0;
+
 	while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
 		buf->append((UT_Byte*)&data, 1);
+#endif
 	
-	if(b->type == msoblipDIB)
-	{
+	if(b->type == msoblipDIB) {
 		// this is just a BMP file, so we'll use the BMP image importer
 		// to convert it to a PNG for us.
-		err = IE_ImpGraphic::constructImporter("", IEGFT_DIB, &converter);
+		if ((err = IE_ImpGraphic::constructImporter("", IEGFT_DIB, &converter)) != UT_OK)
+		{
+			UT_DEBUGMSG(("Could not construct importer for BMP\n"));
+			DELETEP(buf);
+			return err;
+		}
 	}
 	
-	if (err != UT_OK)
-		goto HandleImgEnd;
-	
+	//
+	// This next bit of code will set up our properties based on the image attributes
+	//
+
 	XML_Char propBuffer[128];
 	propBuffer[0] = 0;
 	sprintf(propBuffer, "width:%fin; height:%fin", 
@@ -1244,32 +1342,86 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 	sprintf(propsName, "image%d", m_iImageCount++);
 	
 	const XML_Char* propsArray[5];
-	propsArray[0] = "props";
-	propsArray[1] = propBuffer;
-	propsArray[2] = "dataid";
-	propsArray[3] = propsName;
-	propsArray[4] = NULL;
+	propsArray[0] = (XML_Char *)"props";
+	propsArray[1] = (XML_Char *)propBuffer;
+	propsArray[2] = (XML_Char *)"dataid";
+	propsArray[3] = (XML_Char *)propsName;
+	propsArray[4] = 0;
 
-	UT_ByteBuf * pBBPNG;
-	if (converter == NULL) 
+	if (converter == NULL) // we never converted from BMP->PNG
+	{
 		pBBPNG = buf;
+	}
 	else 
 	{
-		err = converter->convertGraphic(buf, &pBBPNG);
-		DELETEP(converter);
-		if (err != UT_OK) 
-			goto HandleImgEnd;
+		if (!converter->convertGraphic(buf, &pBBPNG))
+		{
+			UT_DEBUGMSG (("Could not convert from BMP to PNG\n"));
+			DELETEP(buf);
+			DELETEP(converter);
+			return UT_ERROR;
+		}
 	}
 	
-	X_ReturnNoMemIfError(m_pDocument->appendObject(PTO_Image, propsArray));
-	X_CheckError0(m_pDocument->createDataItem((char*)propsName, false,
-											  pBBPNG, (void*)mimetype, NULL));
+	if (!m_pDocument->appendObject (PTO_Image, propsArray))
+	{
+		UT_DEBUGMSG (("Could not append object\n"));
+		DELETEP(buf);
+
+		if (converter)
+		{
+			DELETEP(pBBPNG);
+			DELETEP(converter);
+		}
+
+		return UT_ERROR;
+	}
+
+	if (!m_pDocument->createDataItem((char*)propsName, false,
+									 pBBPNG, (void*)mimetype, NULL))
+	{
+		UT_DEBUGMSG (("Could not create data item\n"));
+
+		DELETEP(buf);
+		if (converter)
+		{
+			DELETEP(pBBPNG);
+			DELETEP(converter);
+		}
+		return UT_ERROR;
+	}
 	
- HandleImgEnd:
-	
-	// TODO: free mimetype??
-	
-	FREEP(mimetype);
-	DELETEP(buf);
-	return err;
+	//
+	// Free any allocated data
+	//
+
+	DELETEP(converter);
+	return UT_OK;
+}
+
+/****************************************************************************/
+/****************************************************************************/
+
+static int charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
+{
+	IE_Imp_MsWord_97 * pDocReader = static_cast <IE_Imp_MsWord_97 *> (ps->userData);
+	return pDocReader->_charProc (ps, eachchar, chartype, lid);
+}
+
+static int specCharProc (wvParseStruct *ps, U16 eachchar, CHP* achp)
+{
+	IE_Imp_MsWord_97 * pDocReader = static_cast <IE_Imp_MsWord_97 *> (ps->userData);
+	return pDocReader->_specCharProc (ps, eachchar, achp);
+}
+
+static int eleProc (wvParseStruct *ps, wvTag tag, void *props, int dirty)
+{
+	IE_Imp_MsWord_97 * pDocReader = static_cast <IE_Imp_MsWord_97 *> (ps->userData);
+	return pDocReader->_eleProc (ps, tag, props, dirty);
+}
+
+static int docProc (wvParseStruct *ps, wvTag tag)
+{
+	IE_Imp_MsWord_97 * pDocReader = static_cast <IE_Imp_MsWord_97 *> (ps->userData);
+	return pDocReader->_docProc (ps, tag);
 }
