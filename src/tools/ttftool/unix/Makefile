@@ -24,6 +24,8 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CSRCS= ttftool.c ps.c parse.c ttfutils.c
 
+ABI_PEER:=/ttftool
+
 build:: $(TARGETS)
 
 OBJS=		$(OBJDIR)/ttftool.$(OBJ_SUFFIX) \

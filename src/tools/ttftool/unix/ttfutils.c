@@ -193,14 +193,14 @@ void print_encodings()
 {
    struct enc_vector ** ev = (struct enc_vector **) &known_encodings[0];
    printf("Known encodings:\n");
-   printf("                   ISO-8895-1\n");
+   printf("                   ISO-8859-1\n");
    while (*ev)
    {
       printf("                   %s\n", (*ev)->name);
       ev++;
    }
    printf("                   StandardEncoding\n\nWhen run without"
-          " the -e parameter, Adobe StandardEncoding\nwill be used.\n");
+          " the -e parameter, Adobe StandardEncoding\nwill be used.\n\n");
    exit(0);
 }
 
