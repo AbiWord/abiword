@@ -385,26 +385,32 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 
 	m_iLen = splitOffset - m_iOffsetFirst;
 
-	UT_sint32 iOldWidth = m_iWidth;
-	
-	calcWidths(pgbCharWidths, UT_TRUE);
-	pNew->calcWidths(pgbCharWidths, UT_TRUE);
+	/*
+		The ordering of the next three lines gets everything 
+		positioned properly using the existing primitives, albeit 
+		at the cost of more flicker than is theoretically needed. 
+
+		1.  Fix the width of the left run.  This usually shrinks the 
+		line and erases and moves all runs to the right.
+		
+		2. Insert the new run into the line, creating a properly 
+		positioned RunInfo for it.  
+
+		3.  Fix the width of the new run.  This usually kicks 
+		subsequent runs to the right.  They've already been erased,
+		so it doesn't matter.
+
+		I don't like it, but it seems to work.  PCR
+	*/
+	calcWidths(pgbCharWidths);
+	m_pLine->splitRunInLine(this,pNew);
+	pNew->calcWidths(pgbCharWidths);
 
 	// clean up immediately after doing the charwidths calculation 
 	if (bInsertBlock)
 	{
 		pNew->m_iOffsetFirst -= fl_BLOCK_STRUX_OFFSET;
 	}
-
-	UT_sint32 iNewWidth = m_iWidth + pNew->m_iWidth;
-
-	if (iOldWidth != iNewWidth)
-	{
-		m_pLine->runSizeChanged(NULL, iOldWidth, iNewWidth);
-	}
-
-	// this has to happen *after* calcWidths to position things properly
-	m_pLine->splitRunInLine(this,pNew);
 
 	// TODO who deals with iLineBreak{Before,After},bCanSplit,iExtraWidth,etc...
 	
@@ -581,14 +587,14 @@ void fp_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 	UT_ASSERT(m_iWidth >= 0);
 }
 
-void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths, UT_Bool bSplitting)
+void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
 {
 	UT_sint32 iOldWidth = m_iWidth;
 
 	_calcWidths(pgbCharWidths);
 	
 	// let our parent know that we are changing underneath them ...
-	if (m_pLine && !bSplitting)
+	if (m_pLine)
 	{
 		m_pLine->runSizeChanged(m_pLineData, iOldWidth, m_iWidth);
 	}
@@ -955,7 +961,7 @@ void fp_Run::dumpRun(void) const
 UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex /*indexAP*/)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	
+
 	/*
 	  NOTE  changing the following comparison to <= (from <)
 	  and deleting the || (m_iOffsetFirst == iOffset) case

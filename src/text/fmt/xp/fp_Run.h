@@ -99,7 +99,7 @@ class fp_Run
 	UT_Bool					findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	UT_Bool					findMinLeftFitSplitPoint(fp_RunSplitInfo& si);
 
-	void 					calcWidths(UT_GrowBuf * pgbCharWidths, UT_Bool bSplitting=UT_FALSE);
+	void 					calcWidths(UT_GrowBuf * pgbCharWidths);
 	void            		expandWidthTo(UT_uint32);
 
 	void					mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
