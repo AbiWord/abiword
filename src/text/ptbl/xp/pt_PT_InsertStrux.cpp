@@ -425,6 +425,21 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 			}
 		}
 	}
+	//
+	// Look if we're placing an endcell in an empty block. If so, 
+	// insert a format mark
+	//
+	if (pfsNew->getStruxType() == PTX_EndCell)
+	{
+		if((pf->getPrev()!=NULL) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
+		{
+			pf_Frag_Strux *pfsStrux = static_cast<pf_Frag_Strux *>(pf->getPrev());
+			if(pfsStrux->getStruxType() == PTX_Block)
+			{
+				_insertFmtMarkAfterBlockWithNotify(pfsContainer,dpos,apFmtMark);
+			}
+		}
+	}
 
 	// insert this frag into the fragment list. Update the container strux as needed
 	_insertStrux(pf,fragOffset,pfsNew);
