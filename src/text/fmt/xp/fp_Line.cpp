@@ -2841,6 +2841,12 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 		{
 			iSpaceCount++;
 		}
+		else if (   pRun->getType () == FPRUN_DIRECTIONMARKER || pRun->getType () == FPRUN_FMTMARK
+				 || pRun->getType () == FPRUN_BOOKMARK || pRun->getType () == FPRUN_HYPERLINK)
+		{
+			// these runs do not expand under justification, but neither do they contain non-blank data
+			continue;
+		}
 		else
 		{
 			bStartFound = true;
