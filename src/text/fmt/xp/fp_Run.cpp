@@ -102,7 +102,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iUnderlineXoff(0),
 		m_imaxUnderline(0),
 		m_iminOverline(0),
-		m_iOverlineXoff(0)
+		m_iOverlineXoff(0),
+		m_pHyperlink(0)
 {
         // set the default background color and the paper color of the 
 	    // section owning the run.
@@ -310,6 +311,8 @@ void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
 	if (m_pPrev)
 	{
 		m_pPrev->m_pNext = &newRun;
+		if(newRun.getType()!= FPRUN_HYPERLINK)
+		newRun.m_pHyperlink = m_pPrev->getHyperlink();
 	}
 	newRun.m_pPrev = m_pPrev;
 	m_pPrev = &newRun;
@@ -319,6 +322,8 @@ void fp_Run::insertIntoRunListAfterThis(fp_Run& newRun)
 {
 	newRun.unlinkFromRunList();
 	newRun.m_pPrev = this;
+	if(newRun.getType()!= FPRUN_HYPERLINK)
+		newRun.m_pHyperlink = m_pHyperlink;
 	if (m_pNext)
 	{
 		m_pNext->m_pPrev = &newRun;
@@ -329,6 +334,23 @@ void fp_Run::insertIntoRunListAfterThis(fp_Run& newRun)
 
 void fp_Run::unlinkFromRunList()
 {
+	//first if this is the start of a hyperlink run,
+	//remove the references to it from the following runs
+	if(getType() == FPRUN_HYPERLINK)
+	{
+		fp_HyperlinkRun * pH = static_cast<fp_HyperlinkRun*>(this);
+		if(pH->isStartOfHyperlink())
+		{
+			fp_Run * pRun = getNext();
+			
+			while(pRun && pRun->getHyperlink() == pH)
+			{
+				pRun->setHyperlink(NULL);
+				pRun = pRun->getNext();
+			}
+		}
+	}
+	
 	if (m_pPrev)
 	{
 		m_pPrev->m_pNext = m_pNext;
@@ -500,6 +522,14 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		{
 			return;
 		}
+	}
+	
+	if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		// TODO this should not be hardcoded
+		UT_RGBColor fgColor(0,0,255);
+		
+		m_pG->setColor(fgColor);
 	}
 	
 	_draw(pDA);
@@ -1705,6 +1735,111 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     #undef NPOINTS
 
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
+								GR_Graphics* pG,
+								UT_uint32 iOffsetFirst,
+								UT_uint32 /*iLen*/)
+	: fp_Run(pBL, pG, iOffsetFirst, 1, FPRUN_HYPERLINK)
+{
+	m_iLen = 1;
+	m_bDirty = false;
+	m_iWidth = 0;
+	m_iWidthLayoutUnits = 0;
+#ifdef BIDI_ENABLED
+	UT_ASSERT((pBL));
+	m_iDirection = FRIBIDI_TYPE_WS;
+#endif
+	
+	const PP_AttrProp * pAP = NULL;
+	
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pAP);
+	const XML_Char * pTarget;
+	const XML_Char * pName;
+	bool bFound = false;
+	UT_uint32 k = 0;
+					
+	while(pAP->getNthAttribute(k++, pName, pTarget))
+	{
+		bFound = (0 == UT_XML_strnicmp(pName,"href",4));
+		if(bFound)
+			break;
+	}
+		
+	// we have got to keep a local copy, since the pointer we get
+	// is to a potentially volatile location
+	if(bFound)
+	{
+		UT_uint32 iTargetLen = UT_XML_strlen(pTarget);
+		m_pTarget = new XML_Char [iTargetLen + 1];
+		UT_XML_strncpy(m_pTarget, iTargetLen + 1, pTarget);
+		m_bIsStart = true;
+		//if this is a start of the hyperlink, we set m_pHyperlink to this,
+		//so that when a run gets inserted after this one, its m_pHyperlink is
+		//set correctly
+		m_pHyperlink = this;
+	}
+	else
+	{
+		m_bIsStart = false;
+		m_pTarget = NULL;
+		m_pHyperlink = NULL;
+	}
+	
+}
+
+
+fp_HyperlinkRun::~fp_HyperlinkRun()
+{
+	if(m_pTarget)
+		delete [] m_pTarget;
+}
+
+void fp_HyperlinkRun::lookupProperties(void)
+{
+}
+
+bool fp_HyperlinkRun::canBreakAfter(void) const
+{
+	return false;
+}
+
+bool fp_HyperlinkRun::canBreakBefore(void) const
+{
+	return false;
+}
+
+bool fp_HyperlinkRun::letPointPass(void) const
+{
+	return true;
+}
+
+void fp_HyperlinkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+{
+	fp_Run *pRun = getNext();
+	UT_ASSERT(pRun);
+	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL);
+}
+
+void fp_HyperlinkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+{
+	fp_Run * pRun = getNext();
+	UT_ASSERT(pRun);
+	
+	pRun->findPointCoords(iOffset, x, y,  x2, y2, height, bDirection);
+}
+
+void fp_HyperlinkRun::_clearScreen(bool /* bFullLineHeightRect */)
+{
+}
+
+void fp_HyperlinkRun::_draw(dg_DrawArgs* /*pDA*/)
+{
+}
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

@@ -43,6 +43,7 @@
 #	include "ap_MacDlg_Replace.h"
 #	include "ap_MacDlg_Break.h"
 #	include "ap_MacDialog_InsertBookmark.h"
+#	include "ap_MacDialog_InsertHyperlink.h"
 	// ... add new dialogs here ...
 
 #else
@@ -63,6 +64,7 @@
 //	DeclareDialog(AP_DIALOG_ID_FIND,			AP_MacDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_MacDialog_Break)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_MacDialog_InsertBookmark)	
+ 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_MacDialog_InsertHyperlink)	
 	// ... also add new dialogs here ...
 
 #endif

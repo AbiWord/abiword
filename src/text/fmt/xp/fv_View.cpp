@@ -4938,7 +4938,14 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			fp_Run* pRun = pBL->getFirstRun();
 			fp_BookmarkRun * pB[2];
 			UT_uint32 i = 0;
-						
+			UT_DEBUGMSG(("fv_View::gotoTarget: bookmark [%s]\n",numberString));
+			if(!strncmp(numberString,"http://",7))
+			{
+				XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+				UT_ASSERT((pFrame));
+				pFrame->openURL(numberString);
+				return false;
+			}
 			if(m_pDoc->isBookmarkUnique((const XML_Char *)numberString))
 				goto book_mark_not_found; //bookmark does not exist
 				
@@ -4960,6 +4967,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			
 			if(pB[0] && pB[1])
 			{
+				_clearSelection();
 				PT_DocPosition dp1 = pB[0]->getBlock()->getPosition(false) + pB[0]->getBlockOffset();
 				PT_DocPosition dp2 = pB[1]->getBlock()->getPosition(false) + pB[1]->getBlockOffset();
 				
@@ -7085,6 +7093,54 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	cmdSelect (iPosLeft, iPosRight);
 }
 
+void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
+{
+	_clearSelection();
+	warpInsPtToXY(xPos, yPos,true);
+
+	//_eraseInsertionPoint();
+    fl_BlockLayout * pBlock = getCurrentBlock();
+    PT_DocPosition iRelPos = getPoint() - pBlock->getPosition(false);
+
+    fp_Run *pRun = pBlock->getFirstRun();
+    while (pRun && pRun->getBlockOffset()+ pRun->getLength() < iRelPos)
+    	pRun= pRun->getNext();
+    	
+    UT_ASSERT(pRun);
+    pRun->getPrev();
+
+    UT_ASSERT(pRun);
+#if 0
+    if(pRun->getType()== FPRUN_FMTMARK || pRun->getType()== FPRUN_HYPERLINK || pRun->getType()== FPRUN_BOOKMARK)
+    	pRun  = pRun->getNext();
+
+	UT_ASSERT(pRun);
+#endif
+    fp_HyperlinkRun * pH = pRun->getHyperlink();
+
+    UT_ASSERT(pH);
+
+    const XML_Char * pTarget = pH->getTarget();
+	
+	if(*pTarget == '#')
+    	pTarget++;
+
+    UT_uint32 iTargetLen = UT_XML_strlen(pTarget);
+    UT_UCSChar * pTargetU = new UT_UCSChar[iTargetLen+1];
+
+    UT_ASSERT(pTargetU);
+
+    UT_UCSChar * pJump = pTargetU;
+
+    for (UT_uint32 i = 0; i < iTargetLen; i++)
+    	*pTargetU++ = (UT_UCSChar) *pTarget++;
+    *pTargetU = 0;
+
+	gotoTarget(AP_JUMPTARGET_BOOKMARK, pJump);
+	
+	delete [] pJump;
+}
+
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
 
@@ -7816,6 +7872,13 @@ UT_Error FV_View::cmdDeleteBookmark(const char* szName)
 	return _deleteBookmark(szName,true,i,j);
 }
 
+UT_Error FV_View::cmdDeleteHyperlink(const char* szName)
+{
+	PT_DocPosition i,j;
+	return _deleteHyperlink(szName,true,i,j);
+}
+
+
 UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &pos1, PT_DocPosition &pos2)
 {
 	if(!m_pDoc->isBookmarkUnique((const XML_Char *)szName))
@@ -7874,6 +7937,191 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 	else
 		UT_DEBUGMSG(("fv_View::cmdDeleteBookmark: bookmark \"%s\" does not exist\n",szName));
 	return true;
+}
+
+UT_Error FV_View::_deleteHyperlink(const char* szName, bool bSignal, PT_DocPosition &pos1, PT_DocPosition &pos2)
+{
+	fp_HyperlinkRun * pH1 = 0, * pH2 = 0;
+	PT_DocPosition curPos = pos1;
+		
+	fl_BlockLayout *pBlock = _findBlockAtPosition(pos1);
+	
+	fp_Run * pRun = pBlock->getFirstRun();
+		
+	//find the two hyperlink runs
+	while(pRun)
+	{
+		if(pRun->getBlockOffset() == curPos)
+		{
+			if(pRun->getType()== FPRUN_HYPERLINK)
+			{
+				pH1 = static_cast<fp_HyperlinkRun*>(pRun);
+				pRun = pRun->getNext();
+				UT_ASSERT(pRun);
+				while(pRun && pRun->getType()!=FPRUN_HYPERLINK)
+					pRun = pRun->getNext();
+				UT_ASSERT(pRun && pRun->getHyperlink() == pH1);
+				pH2 = static_cast<fp_HyperlinkRun*>(pRun);
+				break;
+			}
+			else
+				return false;
+		}
+		pRun = pRun->getNext();
+	}
+		
+	UT_ASSERT(pH1 && pH2);
+	
+    if(!pH1 || !pH2)
+    	return false;
+
+    pos2 = pH2->getBlock()->getPosition(false) + pH2->getBlockOffset();
+
+	// Signal PieceTable Change
+	if(bSignal)
+		_saveAndNotifyPieceTableChange();
+			
+    UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: position [%d,%d]\n",
+    			pos1, pos2));
+        			
+	m_pDoc->deleteSpan(pos1,pos1 + 1);
+		
+	// because of the previous delete, the position of the second bookmark has to be adjusted by 1
+	m_pDoc->deleteSpan(pos2 - 1,pos2);
+		
+	// Signal PieceTable Changes have finished
+	if(bSignal)
+	{
+		_generalUpdate();
+		_restorePieceTableState();
+	}
+	return true;
+}
+
+/******************************************************************/
+UT_Error FV_View::cmdInsertHyperlink(const char * szName)
+{
+	bool bRet;
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+	
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+		{
+			posStart = m_iSelectionAnchor;
+		}
+		else
+		{
+			posEnd = m_iSelectionAnchor;
+		}
+	}
+	else
+	{
+		//No selection
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT((pFrame));
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection);
+		
+		UT_ASSERT(pMsg1);
+		
+		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		return false;
+	}
+	
+	if(!UT_XML_strnicmp(szName, "http://",7))
+	{
+	}
+	else if(m_pDoc->isBookmarkUnique(szName))
+	{
+		//No bookmark of that name in document
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT((pFrame));
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoBookmark);
+		UT_ASSERT(pMsg1);
+		
+		char * szMsg = new char[strlen(pMsg1)+strlen(szName)+1];
+		UT_ASSERT(szMsg);
+		sprintf(szMsg,pMsg1,szName);
+		
+		pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		delete[] szMsg;
+	}
+
+    // the selection has to be within a single block
+    // we could implement hyperlinks spaning arbitrary part of the document
+    // but then we could not use <a href=> </a> in the output and
+    // I see no obvious need for hyperlinks to span more than a single block
+    fl_BlockLayout * pBl1 = _findBlockAtPosition(posStart);
+    fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
+
+    if(pBl1 != pBl2)
+    {
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT((pFrame));
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries);
+		UT_ASSERT(pMsg1);
+		
+		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		
+		return false;
+    }
+
+	
+	XML_Char * pAttr[4];
+	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
+
+	UT_uint32 target_len = UT_XML_strlen(szName);
+	XML_Char * target  = new XML_Char[ target_len+ 2];
+	
+	if(!UT_XML_strnicmp(szName, "http://",7))
+	{
+		UT_XML_strncpy(target, target_len + 1, (XML_Char*)szName);
+	}
+	else
+	{
+		target[0] =  '#';
+		UT_XML_strncpy(target + 1, target_len + 1, (XML_Char*)szName);
+	}
+
+	XML_Char target_l[]	 = "href";
+	pAttr [0] = &target_l[0];
+	pAttr [1] = &target[0];
+	pAttr [2] = 0;
+	pAttr [3] = 0;
+	
+	UT_DEBUGMSG(("fv_View::cmdInsertHyperlink: target \"%s\"\n", target));
+	
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// we first insert the end run, so that we can use it as a stop
+	// after inserting the start run when marking the runs in between
+	// as a hyperlink	
+	bRet = m_pDoc->insertObject(posEnd, PTO_Hyperlink, NULL, NULL);
+	
+	
+	if(bRet)
+	{
+		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAt, NULL);
+	}
+	
+	delete [] target;
+	
+	_generalUpdate();
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
+	return bRet;
+
 }
 
 /******************************************************************/
@@ -8144,13 +8392,17 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 	if (!pPage)
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (1)\n"));
 		return EV_EMC_UNKNOWN;
+	}
 
 
 	if (   (yClick < 0)
 		   || (xClick < 0)
 		   || (xClick > pPage->getWidth()) )
 	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (2)\n"));
 		return EV_EMC_UNKNOWN;
 	}
 
@@ -8165,9 +8417,15 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		UT_ASSERT(pBlock);
 		xxx_UT_DEBUGMSG(("Entered BOL margin: dir %d\n", pBlock->getDominantDirection()));
 		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_RTL)
+		{
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (3)\n"));
 			return EV_EMC_RIGHTOFTEXT;
+		}
 		else
+		{
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (4)\n"));
 			return EV_EMC_LEFTOFTEXT;
+		}
 #else
 		return EV_EMC_LEFTOFTEXT;
 #endif
@@ -8178,19 +8436,34 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 #endif
 	if (!pBlock)
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (5)\n"));
 		return EV_EMC_UNKNOWN;
+	}
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	
 	if (!pRun)
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (6)\n"));
 		return EV_EMC_UNKNOWN;
+	}
 
+	if(pRun->getHyperlink() != NULL)
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7)\n"));
+		return EV_EMC_HYPERLINK;
+	}
+		
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
 		if (!isPosSelected(pos))
 			if (pBlock->getSquiggle(pos - pBlock->getPosition()))
+			{
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (8)\n"));
 				return EV_EMC_MISSPELLEDTEXT;
-
+			}
+        xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (9)\n"));
 		return EV_EMC_TEXT;
 		
 	case FPRUN_IMAGE:
@@ -8206,18 +8479,23 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_FMTMARK:
 	case FPRUN_ENDOFPARAGRAPH:
 	case FPRUN_BOOKMARK:
+	case FPRUN_HYPERLINK:
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (10)\n"));
 		return EV_EMC_TEXT;
 		
 	case FPRUN_FIELD:
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (11)\n"));
 		return EV_EMC_FIELD;
 		
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (12)\n"));
 		return EV_EMC_UNKNOWN;
 	}
 
 	/*NOTREACHED*/
 	UT_ASSERT(0);
+	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (13)\n"));
 	return EV_EMC_UNKNOWN;
 }
 

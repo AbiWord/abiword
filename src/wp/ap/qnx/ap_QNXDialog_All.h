@@ -65,6 +65,7 @@
 #   include "ap_QNXDialog_New.h"
 #   include "ap_QNXDialog_HdrFtr.h"
 #	include "ap_QNXDialog_InsertBookmark.h"
+#	include "ap_QNXDialog_InsertHyperlink.h"
 
 	// ... add new dialogs here ...
 
@@ -108,6 +109,7 @@
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_QNXDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_QNXDialog_FileOpenSaveAs)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_QNXDialog_InsertBookmark)
+ 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_QNXDialog_InsertHyperlink)
 	// ... also add new dialogs here ...
 
 #endif

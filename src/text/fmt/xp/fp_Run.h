@@ -47,6 +47,7 @@ class PP_AttrProp;
 struct dg_DrawArgs;
 class fl_CharWidths;
 class fd_Field;
+class fp_HyperlinkRun;
 
 struct fp_RunSplitInfo
 {
@@ -79,7 +80,8 @@ enum FP_RUN_TYPE
 	FPRUN_FIELDENDRUN				= 10,
 	FPRUN_ENDOFPARAGRAPH            = 11,
 	FPRUN_BOOKMARK					= 12,
-	FPRUN__LAST__					= 13
+	FPRUN_HYPERLINK					= 13,
+	FPRUN__LAST__					= 14
 };
 
 // specifies how setX should handle screen clearing
@@ -103,6 +105,8 @@ enum FPRUN_CLEAR_SCREEN
 		fp_FmtMarkRun
 		fp_FieldStartRun
 		fp_FieldEndRun
+		fp_BookmarkRun
+		fp_HyperlinkRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat 
 	differently, but they can all be treated like rectangular blocks to 
@@ -133,6 +137,7 @@ public:
 	UT_uint32		getDescent() const 				{ return m_iDescent; }
 	UT_uint32		getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
 	UT_uint32		getDescentInLayoutUnits() const	{ return m_iDescentLayoutUnits; }
+	fp_HyperlinkRun * getHyperlink() const 			{ return m_pHyperlink;}
 
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);
 	void					insertIntoRunListAfterThis(fp_Run& newRun);
@@ -151,9 +156,9 @@ public:
 	void					setY(UT_sint32);
 	void					setBlockOffset(UT_uint32);
 	void					setLength(UT_uint32);
-	
 	void					setNext(fp_Run*);
 	void					setPrev(fp_Run*);
+	void					setHyperlink(fp_HyperlinkRun * pH)	{m_pHyperlink = pH;}
 	bool					isFirstRunOnLine(void) const;
 	bool					isLastRunOnLine(void) const;
 	bool					isOnlyRunOnLine(void) const;
@@ -279,6 +284,7 @@ protected:
 	UT_sint32                               m_imaxUnderline;
 	UT_sint32                               m_iminOverline;
 	UT_sint32                               m_iOverlineXoff;
+	fp_HyperlinkRun *						m_pHyperlink;
 
 private:
 	fp_Run(const fp_Run&);			// no impl.
@@ -462,6 +468,43 @@ private:
 	XML_Char	  	m_pName[BOOKMARK_NAME_SIZE + 1];
 	po_Bookmark		* m_pBookmark;
 };
+
+class ABI_EXPORT fp_HyperlinkRun : public fp_Run
+{
+public:
+	fp_HyperlinkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	~fp_HyperlinkRun();
+	bool 				isStartOfHyperlink() const {return m_bIsStart;};
+	const XML_Char * 	getTarget() const {return (const XML_Char *)m_pTarget;};
+	
+	virtual void lookupProperties(void);
+	virtual bool canBreakAfter(void) const;
+	virtual bool canBreakBefore(void) const;
+	virtual bool letPointPass(void) const;
+	
+	virtual void mapXYToPosition(UT_sint32 x,
+								 UT_sint32 y,
+								 PT_DocPosition& pos,
+								 bool& bBOL,
+								 bool& bEOL);
+								
+	virtual void findPointCoords(UT_uint32 iOffset,
+								 UT_sint32& x,
+								 UT_sint32& y,
+								 UT_sint32& x2,
+								 UT_sint32& y2,
+								 UT_sint32& height,
+								 bool& bDirection);
+	
+	
+private:
+	virtual void _clearScreen(bool /* bFullLineHeightRect */);
+	virtual void _draw(dg_DrawArgs* /*pDA */);
+
+	bool m_bIsStart;
+	XML_Char *	  	m_pTarget;
+};
+
 
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {

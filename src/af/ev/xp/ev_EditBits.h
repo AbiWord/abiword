@@ -42,10 +42,12 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_IMAGE			((EV_EditMouseContext) 0x50000000)
 #define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x60000000)
 #define EV_EMC_FIELD			((EV_EditMouseContext) 0x70000000)
+#define EV_EMC_HYPERLINK		((EV_EditMouseContext) 0x80000000)
 
 #ifdef BIDI_ENABLED
-#define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x80000000)
+#define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x90000000)
 #endif
+
 
 #define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>28)
 
@@ -107,8 +109,11 @@ typedef UT_uint32 EV_EditBits;	/* union of all the above bits */
 
 #define EV_COUNT_EMB			6		// simple count (not 'OR')
 #define EV_COUNT_EMO			6		// simple count (not 'OR')
-#define EV_COUNT_EMC			7		// simple count (not 'OR')
-
+#ifdef BIDI_ENABLED
+#define EV_COUNT_EMC			9		// simple count (not 'OR')
+#else
+#define EV_COUNT_EMC			8		// simple count (not 'OR')
+#endif
 
 #define EV_IsMouse(eb)			(((eb) & EV_EMO__MASK__))
 #define EV_IsKeyboard(eb)		(((eb) & EV_EKP__MASK__))

@@ -152,6 +152,8 @@ public:
 	virtual void	setXScrollOffset(UT_sint32);
 	virtual void	setYScrollOffset(UT_sint32);
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
+	
+	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 
 	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL);
 
@@ -169,6 +171,8 @@ public:
 	UT_Error        cmdInsertField(const char* szName, const XML_Char ** extra_attrs);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
+	UT_Error		cmdInsertHyperlink(const char* szName);
+    UT_Error		cmdDeleteHyperlink(const char* szName);
 
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 
@@ -475,7 +479,7 @@ protected:
 	void                _removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 
 	UT_Error 			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
-	
+	UT_Error 			_deleteHyperlink(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);	
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;

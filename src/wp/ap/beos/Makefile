@@ -56,7 +56,8 @@ CPPSRCS=	ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)_TB_CFactory.cpp		\
 			ap_$(ABI_FE)Dialog_Background.cpp	\
 			ap_$(ABI_FE)Dialog_HdrFtr.cpp		\
-			ap_$(ABI_FE)Dialog_InsertBookmarks.cpp		\
+			ap_$(ABI_FE)Dialog_InsertBookmark.cpp		\
+			ap_$(ABI_FE)Dialog_InsertHyperlink.cpp		\
 			ap_$(ABI_FE)TopRuler.cpp
 
 #TF We could use

@@ -386,7 +386,8 @@ protected:
 	bool					_doInsertFieldStartRun(PT_BlockOffset blockOffset);
 	bool					_doInsertFieldEndRun(PT_BlockOffset blockOffset);
 	bool					_doInsertBookmarkRun(PT_BlockOffset blockOffset);
-	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);
+	bool					_doInsertHyperlinkRun(PT_BlockOffset blockOffset);
+//	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertTabRun(PT_BlockOffset blockOffset);

@@ -45,6 +45,7 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Dialog_Background.cpp	\
 		ap_Dialog_HdrFtr.cpp	\
 		ap_Dialog_InsertBookmark.cpp	\
+		ap_Dialog_InsertHyperlink.cpp	\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\

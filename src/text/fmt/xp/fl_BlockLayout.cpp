@@ -481,7 +481,7 @@ void fl_BlockLayout::_lookupProperties(void)
 #ifdef BIDI_ENABLED
 		const char * dir = getProperty("dom-dir", true);
 #ifdef DEBUG		
-		FriBidiCharType iOldDirection = m_iDomDirection;
+		//FriBidiCharType iOldDirection = m_iDomDirection;
 #endif
 		if(!UT_stricmp(dir,"rtl"))
 		{
@@ -3001,7 +3001,7 @@ bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 
 	return bResult;
 }
-
+#if 0
 bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 {
 	UT_DEBUGMSG(("fl_BlockLayout::_deleteBookmarkRun: blockOffset %d\n",blockOffset));	
@@ -3059,6 +3059,7 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 	
 	return true;	
 }
+#endif
 
 bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 {
@@ -3073,6 +3074,41 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 	return bResult;
 	
 }
+
+bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
+{
+	fp_HyperlinkRun * pNewRun =  new fp_HyperlinkRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);
+	bool bResult = _doInsertRun((fp_Run*)pNewRun);
+	if (bResult)
+	{
+		// if this is the start of the hyperlink, we need to mark all the runs
+		// till the end of it
+		// if this is because of an insert operation, the end run is already
+		// in place, because we insert them in that order; if it is because of
+		// append, ther is no end run, but then this is the last run; the other
+		// runs will get marked as they get appended (inside fp_Run::insertRun...)
+		// any hyperlink run will not get its m_pHyperlink set, so that
+		// runs that follow it would not be marked
+		
+		if(pNewRun->isStartOfHyperlink())
+		{
+			fp_Run * pRun = pNewRun->getNext();
+			UT_ASSERT(pRun);
+			while(pRun && pRun->getType() != FPRUN_HYPERLINK)
+			{
+				pRun->setHyperlink(pNewRun);
+				pRun = pRun->getNext();
+			}
+		}
+		
+	    _breakLineAfterRun(pNewRun);
+	}
+
+	return bResult;
+	
+}
+
 
 bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
 {
@@ -4752,8 +4788,13 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		return true;
 
 	case PTO_Bookmark:
-		UT_DEBUGMSG(("Populate:InsertBookmark:Field:\n"));
+		UT_DEBUGMSG(("Populate:InsertBookmark:\n"));
 		_doInsertBookmarkRun(blockOffset);
+		return true;
+	
+	case PTO_Hyperlink:
+		UT_DEBUGMSG(("Populate:InsertHyperlink:\n"));
+		_doInsertHyperlinkRun(blockOffset);
 		return true;
 						
 	default:
@@ -4799,6 +4840,15 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		UT_DEBUGMSG(("Edit:InsertObject:Bookmark:\n"));
 		blockOffset = pcro->getBlockOffset();
 		_doInsertBookmarkRun(blockOffset);
+		break;
+	
+	}
+	
+	case PTO_Hyperlink:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Hyperlink:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertHyperlinkRun(blockOffset);
 		break;
 	
 	}
@@ -4860,10 +4910,18 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		{
 			UT_DEBUGMSG(("Edit:DeleteObject:Bookmark:\n"));
 			blockOffset = pcro->getBlockOffset();
-			_deleteBookmarkRun(blockOffset);
+			_delete(blockOffset,1);
 			break;
 		}
 
+		case PTO_Hyperlink:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Hyperlink:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset,1);
+			break;
+		}
+		
 		default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -4896,6 +4954,9 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	FV_View* pView = m_pLayout->getView();
 	switch (pcroc->getObjectType())
 	{
+	case PTO_Bookmark:
+	case PTO_Hyperlink:
+		return true;
 	case PTO_Image:
 		UT_DEBUGMSG(("Edit:ChangeObject:Image:\n"));
 		// TODO ... deal with image object ...

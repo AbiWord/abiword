@@ -62,6 +62,7 @@
 #	include "ap_Win32Dialog_Background.h"
 #	include "ap_Win32Dialog_HdrFtr.h"
 #	include "ap_Win32Dialog_InsertBookmark.h"
+#	include "ap_Win32Dialog_InsertHyperlink.h"
 	// ... add new dialogs here ...
 
 #else
@@ -104,6 +105,8 @@
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_Win32Dialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_Win32Dialog_Background)
 	DeclareDialog(AP_DIALOG_ID_HDRFTR,  		AP_Win32Dialog_HdrFtr)
- 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_Win32Dialog_InsertBookmark)	// ... also add new dialogs here ...
+ 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_Win32Dialog_InsertBookmark)	
+ 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_Win32Dialog_InsertHyperlink)
+ 	// ... also add new dialogs here ...
 
 #endif

@@ -203,6 +203,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				case FPRUN_FIELDENDRUN:
 				case FPRUN_BOOKMARK:
 				case FPRUN_TEXT:
+				case FPRUN_HYPERLINK:
 				{
 
 					break;

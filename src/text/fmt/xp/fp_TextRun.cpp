@@ -1276,7 +1276,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iBase = m_pBL->getPosition();
 
 	m_pG->setFont(m_pScreenFont);
-	m_pG->setColor(m_colorFG);
+	if(!m_pHyperlink || !m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		m_pG->setColor(m_colorFG);
 
 	/*
 	  TODO this should not be hard-coded.  We should calculate an

@@ -491,6 +491,9 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			
 			case PTO_Bookmark:
 				return true;
+			
+			case PTO_Hyperlink:
+				return true;
 
 			default:
 				UT_ASSERT(0);

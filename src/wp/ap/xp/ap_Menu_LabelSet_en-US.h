@@ -114,6 +114,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_INSERT_CLIPART, 	"&Clip Art", 		"Insert clipart")
 	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&From File",		"Insert an existing picture from another file")
 	MenuLabel(AP_MENU_ID_INSERT_BOOKMARK,	"&Bookmark",		"Insert bookmark")
+	MenuLabel(AP_MENU_ID_INSERT_HYPERLINK,	"&Hyperlink",		"Insert hyperlink")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"F&ormat",			NULL)
 	MenuLabel(AP_MENU_ID_FMT_LANGUAGE,		"Set &Language",		"Change the language of the selected text")

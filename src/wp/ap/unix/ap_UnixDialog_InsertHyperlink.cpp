@@ -1,0 +1,283 @@
+/* AbiWord
+ * Copyright (C) 2000 AbiSource, Inc.
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * 02111-1307, USA.
+ */
+
+#include <stdlib.h>
+#include <time.h>
+
+#include "ut_string.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+
+// This header defines some functions for Unix dialogs,
+// like centering them, measuring them, etc.
+#include "ut_dialogHelper.h"
+
+#include "xap_App.h"
+#include "xap_UnixApp.h"
+#include "xap_UnixFrame.h"
+
+#include "ap_Strings.h"
+#include "ap_Dialog_Id.h"
+#include "ap_Dialog_InsertHyperlink.h"
+#include "ap_UnixDialog_InsertHyperlink.h"
+#include "ap_UnixDialog_All.h"
+
+/*****************************************************************/
+
+XAP_Dialog * AP_UnixDialog_InsertHyperlink::static_constructor(XAP_DialogFactory * pFactory,
+													 XAP_Dialog_Id id)
+{
+	AP_UnixDialog_InsertHyperlink * p = new AP_UnixDialog_InsertHyperlink(pFactory,id);
+	return p;
+}
+
+AP_UnixDialog_InsertHyperlink::AP_UnixDialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
+										 XAP_Dialog_Id id)
+	: AP_Dialog_InsertHyperlink(pDlgFactory,id)
+{
+	m_windowMain = 0;
+	m_buttonOK = 0;
+	m_buttonCancel = 0;
+	//m_comboEntry = 0;
+	m_clist = 0;
+	m_pBookmarks = 0;
+	m_iRow = -1;
+	m_entry = 0;
+}
+
+AP_UnixDialog_InsertHyperlink::~AP_UnixDialog_InsertHyperlink(void)
+{
+}
+
+/*****************************************************************/
+
+static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_InsertHyperlink * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_OK();
+}
+
+static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_InsertHyperlink * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_Cancel();
+}
+
+static void s_blist_clicked(GtkWidget *clist, gint row, gint column,
+										  GdkEventButton *event, AP_UnixDialog_InsertHyperlink *me)
+{
+	me->setRow(row);
+	gtk_entry_set_text(GTK_ENTRY(me->m_entry), me->m_pBookmarks[row]);
+}
+
+/***********************************************************************/
+void AP_UnixDialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
+{
+	UT_ASSERT(pFrame);
+	// Build the window's widgets and arrange them
+	GtkWidget * mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
+
+	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+
+	// select the first row of the list (this must come after the
+ 	// call to _connectSignals)
+ 	gtk_clist_unselect_row(GTK_CLIST(m_clist),0,0);
+
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	UT_ASSERT(pUnixFrame);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	
+	// Center our new dialog in its parent and make it a transient
+	// so it won't get lost underneath
+	centerDialog(parentWindow, mainWindow);
+
+	// Make it modal, and stick it up top
+	gtk_grab_add(mainWindow);
+
+	// Show the top level dialog,
+	gtk_widget_show_all(mainWindow);
+
+	// Run into the GTK event loop for this window.
+	gtk_main();
+
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
+
+}
+
+void AP_UnixDialog_InsertHyperlink::event_OK(void)
+{
+	UT_ASSERT(m_windowMain);
+	// get the bookmark name, if any (return cancel if no name given)
+	gchar * res = gtk_entry_get_text(GTK_ENTRY(m_entry));
+	if(res && *res)	
+	{
+		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
+		setHyperlink((XML_Char*)res);
+	}
+	else
+	{
+		setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
+	}
+		
+	gtk_main_quit();
+}
+
+void AP_UnixDialog_InsertHyperlink::event_Cancel(void)
+{
+	setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
+	gtk_main_quit();
+}
+
+
+GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
+{
+  GtkWidget *frame1;
+  GtkWidget *vbox2;
+  GtkWidget *label1;
+  GtkWidget *hseparator1;
+  GtkWidget *hbox1;
+
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+  m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_object_set_data (GTK_OBJECT (m_windowMain), "window1", m_windowMain);
+  gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title));
+
+  frame1 = gtk_frame_new (NULL);
+  gtk_widget_ref (frame1);
+  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "frame1", frame1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (frame1);
+  gtk_container_add (GTK_CONTAINER (m_windowMain), frame1);
+  gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
+
+  vbox2 = gtk_vbox_new (FALSE, 6);
+  gtk_widget_ref (vbox2);
+  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "vbox2", vbox2,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (vbox2);
+  gtk_container_add (GTK_CONTAINER (frame1), vbox2);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
+
+  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Msg));
+  gtk_widget_ref (label1);
+  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "label1", label1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (label1);
+  gtk_box_pack_start (GTK_BOX (vbox2), label1, TRUE, FALSE, 3);
+
+  m_entry = gtk_entry_new();
+  gtk_box_pack_start (GTK_BOX (vbox2), m_entry, FALSE, FALSE, 0);
+  gtk_widget_show(m_entry);
+
+  // the bookmark list
+  m_swindow  = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_widget_show(m_swindow);
+  gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
+	
+  m_clist = gtk_clist_new (1);
+  gtk_clist_set_selection_mode(GTK_CLIST(m_clist), GTK_SELECTION_BROWSE);
+  gtk_clist_column_titles_hide(GTK_CLIST(m_clist));
+  //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
+
+  if(m_pBookmarks)
+  	  delete [] m_pBookmarks;
+  m_pBookmarks = new const XML_Char *[getExistingBookmarksCount()];
+	
+  for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
+  	  m_pBookmarks[i] = getNthExistingBookmark(i);
+
+  int (*my_cmp)(const void *, const void *) =
+  	  (int (*)(const void*, const void*)) UT_XML_strcmp;
+    	
+  qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(XML_Char*),my_cmp);
+
+  for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
+  	  gtk_clist_append (GTK_CLIST (m_clist), (gchar**) &m_pBookmarks[i]);
+
+  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
+
+  hseparator1 = gtk_hseparator_new ();
+  gtk_widget_ref (hseparator1);
+  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "hseparator1", hseparator1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hseparator1);
+  gtk_box_pack_start (GTK_BOX (vbox2), hseparator1, TRUE, TRUE, 0);
+
+  hbox1 = gtk_hbox_new (TRUE, 0);
+  gtk_widget_ref (hbox1);
+  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "hbox1", hbox1,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (hbox1);
+  gtk_box_pack_start (GTK_BOX (vbox2), hbox1, TRUE, TRUE, 0);
+
+  m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+  gtk_widget_ref (m_buttonOK);
+  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "button1", m_buttonOK,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (m_buttonOK);
+  gtk_box_pack_start (GTK_BOX (hbox1), m_buttonOK, FALSE, FALSE, 3);
+  gtk_widget_set_usize (m_buttonOK, DEFAULT_BUTTON_WIDTH, 0);
+
+  m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+  gtk_widget_ref (m_buttonCancel);
+  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "button2", m_buttonCancel,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (m_buttonCancel);
+  gtk_box_pack_start (GTK_BOX (hbox1), m_buttonCancel, FALSE, FALSE, 3);
+  gtk_widget_set_usize (m_buttonCancel, DEFAULT_BUTTON_WIDTH, 0);
+
+  gtk_widget_grab_focus (m_clist);
+  gtk_widget_grab_default (m_buttonOK);
+
+  // connect all the signals
+  _connectSignals ();
+
+  return m_windowMain;
+}
+
+void AP_UnixDialog_InsertHyperlink::_connectSignals (void)
+{
+	// the control buttons
+	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   (gpointer) this);
+	
+	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   (gpointer) this);
+					
+	gtk_signal_connect (GTK_OBJECT (m_clist), "select_row",
+						GTK_SIGNAL_FUNC (s_blist_clicked), this);
+					
+	
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+							 "destroy",
+							 NULL,
+							 NULL);
+}

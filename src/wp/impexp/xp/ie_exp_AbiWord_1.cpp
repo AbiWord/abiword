@@ -120,10 +120,12 @@ protected:
 	void				_closeBlock(void);
 	void				_closeSpan(void);
 	void				_closeField(void);
+	void				_closeHyperlink(void);
 	void				_closeTag(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
-								 bool bNewLineAfter, PT_AttrPropIndex api);
+								 bool bNewLineAfter, PT_AttrPropIndex api,
+								 bool bIgnoreProperties = false);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleStyles(void);
 	void				_handleIgnoredWords(void);
@@ -138,6 +140,7 @@ protected:
 	bool				m_bInBlock;
 	bool				m_bInSpan;
 	bool				m_bInTag;
+	bool				m_bInHyperlink;
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *          m_pCurrentField;
 	bool                m_bOpenChar;
@@ -198,6 +201,16 @@ void s_AbiWord_1_Listener::_closeField(void)
 	return;
 }
 
+void s_AbiWord_1_Listener::_closeHyperlink(void)
+{
+	if (!m_bInHyperlink)
+		return;
+    _closeSpan();
+	m_pie->write("</a>");
+    m_bInHyperlink = false;
+	return;
+}
+
 void s_AbiWord_1_Listener::_openSpan(PT_AttrPropIndex apiSpan)
 {
 	if (m_bInSpan)
@@ -217,7 +230,8 @@ void s_AbiWord_1_Listener::_openSpan(PT_AttrPropIndex apiSpan)
 }
 
 void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix,
-								   bool bNewLineAfter, PT_AttrPropIndex api)
+								   bool bNewLineAfter, PT_AttrPropIndex api,
+								   bool bIgnoreProperties)
 {
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
@@ -245,7 +259,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			m_pie->write((char*)szValue);
 			m_pie->write("\"");
 		}
-		if (pAP->getNthProperty(0,szName,szValue))
+		if (!bIgnoreProperties && pAP->getNthProperty(0,szName,szValue))
 		{
 			m_pie->write(" ");
 			m_pie->write((char*)PT_PROPS_ATTRIBUTE_NAME);
@@ -385,6 +399,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInBlock = false;
 	m_bInSpan = false;
 	m_bInTag = false;
+	m_bInHyperlink = false;
 	m_bOpenChar = false;
 	m_apiLastSpan = 0;
 	m_pCurrentField = 0;
@@ -453,6 +468,7 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 {
 	_closeSpan();
 	_closeField();
+	_closeHyperlink();
 	_closeBlock();
 	_closeSection();
 	_handleDataItems();
@@ -530,10 +546,44 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
    				{
    					_closeSpan();
    					_closeField();
-   					_openTag("bookmark", "/",false, api);
+   					_openTag("bookmark", "/",false, api,true);
+   					return true;
+   				}
+   			
+   			case PTO_Hyperlink:
+   				{
+   					_closeSpan();
+   					_closeField();
+					const PP_AttrProp * pAP = NULL;
+					m_pDocument->getAttrProp(api,&pAP);
+					const XML_Char * pName;
+					const XML_Char * pValue;
+					bool bFound = false;
+					UT_uint32 k = 0;
+					
+					while(pAP->getNthAttribute(k++, pName, pValue))
+					{
+						bFound = (0 == UT_XML_strnicmp(pName,"href",4));
+						if(bFound)
+							break;
+					}
+					
+					if(bFound)
+					{
+						//this is the start of the hyperlink
+   						_openTag("a", "",false, api,true);
+   						m_bInHyperlink = true;
+   					}
+   					else
+   					{
+   						_closeHyperlink();
+   					}
+   					
+
    					return true;
    				
    				}
+   				
    				
 			default:
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -570,6 +620,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		{
 			_closeSpan();
             _closeField();
+            _closeHyperlink();
 			_closeBlock();
 			_closeSection();
 			_openTag("section","",true,pcr->getIndexAP());
@@ -581,6 +632,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		{
 			_closeSpan();
             _closeField();
+			_closeHyperlink();
 			_closeBlock();
 			_openTag("p","",false,pcr->getIndexAP());
 			m_bInBlock = true;

@@ -502,6 +502,10 @@ dcl(MSG_DefaultDirectionChg,"You have changed the default direction.")
 dcl(MSG_AfterRestartNew, "This change will only take effect when you restart \
 AbiWord or create a new document.")
 dcl(MSG_BookmarkNotFound, "Bookmark \"%s\" was not found in this document.")
+dcl(MSG_HyperlinkNoSelection, "You must select a portion of the document before inserting a hyperlink.")
+dcl(MSG_HyperlinkNoBookmark, "Warning: the bookmark you provided [%s] does not exist.")
+dcl(MSG_HyperlinkCrossesBoundaries, "The text to which the hyperlink is to be attached \
+must be within a single paragraph.")
 
 dcl(DLG_ToggleCase_Title, "Change Case")
 dcl(DLG_ToggleCase_SentenceCase, "Sentence case")
@@ -532,6 +536,10 @@ dcl(MSG_EmptySelection, "Current Selection is Empty")
 
 dcl(DLG_InsertBookmark_Title, "Insert Bookmark")
 dcl(DLG_InsertBookmark_Msg, "Type a name for the bookmark, or select existing one from the list.")
+
+dcl(DLG_InsertHyperlink_Title, "Insert Hyperlink")
+dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list.")
+
 
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")

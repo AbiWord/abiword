@@ -77,7 +77,7 @@ public:
 //! PTStruxType tells the sub-type of a FragStrux.
 typedef enum _PTStruxType { PTX_Section, PTX_Block, PTX_SectionHdrFtr, PTX_SectionEndnote } PTStruxType;
 //! PTObjectType tells the sub-type of an FragObject.
-typedef enum _PTObjectType { PTO_Image, PTO_Field, PTO_Bookmark } PTObjectType;
+typedef enum _PTObjectType { PTO_Image, PTO_Field, PTO_Bookmark, PTO_Hyperlink } PTObjectType;
 
 //! PieceTable states
 typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;

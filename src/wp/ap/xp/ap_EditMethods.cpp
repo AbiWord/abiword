@@ -69,6 +69,7 @@
 #include "ap_Dialog_New.h"
 #include "ap_Dialog_HdrFtr.h"
 #include "ap_Dialog_InsertBookmark.h"
+#include "ap_Dialog_InsertHyperlink.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -226,6 +227,7 @@ public:
 	static EV_EditMethod_Fn insertPageBreak;
 	static EV_EditMethod_Fn insertColumnBreak;
 	static EV_EditMethod_Fn insertBookmark;
+	static EV_EditMethod_Fn insertHyperlink;
 	
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
@@ -505,7 +507,10 @@ public:
 
 	static EV_EditMethod_Fn scriptPlay;
 	static EV_EditMethod_Fn executeScript;
+	
+	static EV_EditMethod_Fn hyperlinkJump;
 
+	
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -674,7 +679,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpCredits), 0, ""),
 	EV_EditMethod(NF(helpIndex),			0,		""),
 	EV_EditMethod(NF(helpSearch),			0,		""),
-
+	EV_EditMethod(NF(hyperlinkJump),		0,		""),
 	// i
 	EV_EditMethod(NF(insAutotext_attn_1), 0, ""),
 	EV_EditMethod(NF(insAutotext_attn_2), 0, ""),
@@ -732,6 +737,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertDiaeresisData),	_D_,	""),
 	EV_EditMethod(NF(insertDoubleacuteData),_D_,	""),
 	EV_EditMethod(NF(insertGraveData),		_D_,	""),
+	EV_EditMethod(NF(insertHyperlink),		0,	""),
 	EV_EditMethod(NF(insertLineBreak),		0,	""),
 	EV_EditMethod(NF(insertMacronData),		_D_,	""),
 	EV_EditMethod(NF(insertNBSpace),		0,	""),
@@ -3371,6 +3377,61 @@ Defun1(deleteBookmark)
 	return true;
 }
 
+/*****************************************************************/
+static bool s_doHyperlinkDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_InsertHyperlink * pDialog
+		= (AP_Dialog_InsertHyperlink *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTHYPERLINK));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+		
+	pDialog->setDoc(pView);
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_InsertHyperlink::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_InsertHyperlink::a_OK);
+
+	if (bOK)
+	{
+		pView->cmdInsertHyperlink(pDialog->getHyperlink());
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+Defun1(insertHyperlink)
+{
+	ABIWORD_VIEW;
+	if(pView->isSelectionEmpty())
+	{
+		//No selection
+		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+		UT_ASSERT((pFrame));
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection);
+		
+		UT_ASSERT(pMsg1);
+		
+		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		return false;
+	}
+	else
+		s_doHyperlinkDlg(pView);
+	return true;
+}
 
 Defun(replaceChar)
 {
@@ -7885,8 +7946,9 @@ Defun(dlgHdrFtr)
 	return bOK;
 }
 
-
-
-
-
-
+Defun(hyperlinkJump)
+{
+	ABIWORD_VIEW;
+	pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}

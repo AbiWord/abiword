@@ -142,6 +142,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_IGNOREDWORDS 17		// an ignored words section <ignoredwords>
 #define TT_IGNOREDWORD  18      // a word <iw> within an ignored words section
 #define TT_BOOKMARK     19		// <bookmark>
+#define TT_HYPERLINK	20		// <a href=>
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -160,6 +161,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 ///
 static struct xmlToIdMapping s_Tokens[] =
 {
+	{	"a",			TT_HYPERLINK	},
 	{	"abiword",		TT_DOCUMENT		},
 	{	"awml",			TT_DOCUMENT		},
 	{	"bookmark",		TT_BOOKMARK		},
@@ -262,6 +264,10 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_BOOKMARK:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(getDoc()->appendObject(PTO_Bookmark,atts));
+		return;
+	case TT_HYPERLINK:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,atts));
 		return;
 	
 	case TT_FIELD:
@@ -483,7 +489,16 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;
-	
+
+	case TT_HYPERLINK:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		// we append another Hyperlink Object, but with no attributes		
+		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,NULL));
+		return;
+		
+		return;
+			
 	case TT_FIELD:						// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Field);

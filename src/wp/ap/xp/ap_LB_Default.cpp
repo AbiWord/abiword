@@ -61,6 +61,7 @@
 #define _CI		EV_EMC_IMAGE
 #define _CZ		EV_EMC_IMAGESIZE
 #define _CF		EV_EMC_FIELD
+#define _CH		EV_EMC_HYPERLINK
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -89,6 +90,9 @@ ap_bs_Mouse MouseTable[] =
 #ifdef BIDI_ENABLED
 	{_CR _B0,	{ "",	"",			"cursorLeftArrow",	"",			"",			""				}},
 #endif
+
+	{_CH _B0,	{ "",	"",			"cursorDefault",	"",			"",			"",				}},
+
 //	Button-1, Unknown-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
 	{_CU _B1,	{ "warpInsPtToXY",	"",				"",			"",				"",			""	}},
@@ -98,6 +102,10 @@ ap_bs_Mouse MouseTable[] =
 	{_CT _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 	{_CT _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"		}},
 	{_CT _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"		}},
+
+//	Button-1, Left-of-Text-context (left-margin)
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
+	{_CL _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 	
 //	Button-1, Misspelled-Word-Text-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
@@ -105,12 +113,12 @@ ap_bs_Mouse MouseTable[] =
 	{_CM _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"		}},
 	{_CM _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"		}},
 
-//	Button-1, Left-of-Text-context (left-margin)
-//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
-	{_CL _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 #ifdef BIDI_ENABLED
 	{_CR _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 #endif
+
+//  button-1, hyperlink context
+	{_CH _B1,	{ "warpInsPtToXY",	"hyperlinkJump",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
@@ -129,6 +137,7 @@ ap_bs_Mouse MouseTable[] =
 
 // special key binding for X11-style middle mouse selection (not to be confused with the clipboard)
 	{_CT _B2,	{ "pasteSelection",	"",				"",			"",				"",			""				}},
+	{_CH _B2,	{ "pasteSelection",	"",				"",			"",				"",			""				}},
 
 
 //	Button-3, context menus
@@ -141,6 +150,8 @@ ap_bs_Mouse MouseTable[] =
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
+	{_CH _B3,	{ "contextText",		"",			"",		"",			"",			""				}},
+	
 //  Button-4, Mouse wheel (3 lines up)... yes, a hack.
 	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CT _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
@@ -152,6 +163,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CI _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CZ _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CF _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CH _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 
 //  Button-5, Mouse wheel (3 lines down)
 	{_CU _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
@@ -161,6 +173,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CI _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
 	{_CZ _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
 	{_CF _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CH _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},

@@ -54,6 +54,12 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory,
 
 AP_UnixDialog_Goto::~AP_UnixDialog_Goto(void)
 {
+	if(m_pBookmarks)
+	{
+		delete [] m_pBookmarks;
+		m_pBookmarks = 0;
+	}
+		
 }
 
 void AP_UnixDialog_Goto::s_blist_clicked(GtkWidget *clist, gint row, gint column,
