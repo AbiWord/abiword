@@ -131,6 +131,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Preferences",		"Set preferences")
         MenuLabel(AP_MENU_ID_TOOLS_LANGUAGE, "&Language", "Change the language of the selected text")
 	MenuLabel(AP_MENU_ID_TOOLS_PLUGINS, "P&lugins", "Manage plugins")
+	MenuLabel(AP_MENU_ID_TOOLS_SCRIPTS, "S&cripts", "Exectute helper scripts")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Align",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Left",			"Left-justify the paragraph")

@@ -57,7 +57,7 @@ utf8_to_utf16(const char *word8, unsigned short *word16,
 	unsigned short *p;
 	int i;
 
-	/* this should work since UTF8 is a subset of UTF16 */
+	/* this routine doesn't work correctly */
 	for(i = 0, p = word16; i < length; i++)
 		*p++ = (unsigned short)*word8++;
 	*p = 0;

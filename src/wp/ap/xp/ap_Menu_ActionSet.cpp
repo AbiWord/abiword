@@ -167,6 +167,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_WORDCOUNT,		0,1,0,	"dlgWordCount",			NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_PLUGINS, 1,0,0, "dlgPlugins", NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
+#ifdef ABI_OPT_JS
+	_s(AP_MENU_ID_SCRIPTS,	1,0,0,	"scriptPlay",		NULL, NULL);
+#endif
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,	"newWindow",		NULL,					NULL);

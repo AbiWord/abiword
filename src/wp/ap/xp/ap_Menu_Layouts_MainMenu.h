@@ -37,7 +37,7 @@ BeginLayout(Main,0)
 	    Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
 #if defined(HAVE_GNOME)
-                MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
+        MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 
@@ -220,6 +220,9 @@ BeginLayout(Main,0)
 #ifdef DEBUG
 	    Separator()
 	    MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
+#ifdef ABI_OPT_JS
+	    MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
+#endif
 #endif
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)

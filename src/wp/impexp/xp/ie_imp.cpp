@@ -30,7 +30,6 @@
 #include "ie_imp_GraphicAsDocument.h"
 #include "pd_Document.h"
 
-#define IEFT_ABIWORD_1 ((IEFileType)(IE_Imp::fileTypeForSuffix(".abw")))
 #define IEFT_Text ((IEFileType)(IE_Imp::fileTypeForSuffix(".txt")))
 
 static UT_Vector m_sniffers (20);
