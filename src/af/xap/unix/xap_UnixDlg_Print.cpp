@@ -79,6 +79,7 @@ void XAP_UnixDialog_Print::useStart(void)
 		m_persistPrintDlg.bDoCollate = m_bCollate;
 
 		m_persistPrintDlg.colorSpace = m_cColorSpace;
+		m_persistPrintDlg.szPrintCommand = m_szPrintCommand;
 	}
 }
 
