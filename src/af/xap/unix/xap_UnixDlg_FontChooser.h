@@ -38,6 +38,8 @@ public:
 protected:
 	void buildXLFD(char * buf);
 	void parseXLFD(char * buf);
+
+	UT_Bool bAbusingTheFontSize;
 	
 	AP_UnixFrame *			m_pUnixFrame;
 	

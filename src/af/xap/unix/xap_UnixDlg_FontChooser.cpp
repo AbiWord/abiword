@@ -41,6 +41,7 @@ AP_UnixDialog_FontChooser::AP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFact
 												   AP_Dialog_Id id)
 	: AP_Dialog_FontChooser(pDlgFactory,id)
 {
+	bAbusingTheFontSize = UT_FALSE;
 }
 
 AP_UnixDialog_FontChooser::~AP_UnixDialog_FontChooser(void)
@@ -71,8 +72,8 @@ void AP_UnixDialog_FontChooser::buildXLFD(char * buf)
 	char * 	family;
 	char * 	weight;
 	char 	slant;
-	guint 	size;
-
+	char 	size[10];
+	
 	// family
 	if (m_pFontFamily)
 	{
@@ -109,13 +110,29 @@ void AP_UnixDialog_FontChooser::buildXLFD(char * buf)
 	// size
 	if (m_pFontSize)
 	{
-		sscanf(m_pFontSize, "%d", &size);
-		size *= 10;
+		int numSize;
+		sscanf(m_pFontSize, "%d", &numSize);
+		numSize *= 10;
+
+		sprintf(size, "%d", numSize);
 	}
 	else
-		size = 140; // is this the default size?
+	{
+		// This is incredibly ugly.  It's a hack because the GTK
+		// font selector behaves oddly.  If you pass a "blank"
+		// font point size, it goes ahead and selects a default
+		// one for you anyway, which is usually something like 8.
+		// Now, there's no way for us to know whether it's changed
+		// or not if we can't both set it blank and get it back
+		// blank (for spans of text with multiple point sizes.).
+		//
+		// We just peek into the entry and make it blank, if it's
+		// blank, and hope we don't break things on the way out.
+		bAbusingTheFontSize = UT_TRUE;
+		strcpy(size, "*");
+	}
 	
-	sprintf(buf, "-*-%s-%s-%c-normal-*-*-%d-75-75-*-*-*-*",
+	sprintf(buf, "-*-%s-%s-%c-normal-*-*-%s-75-75-*-*-*-*",
 			family, weight, slant, size);
 }
 
@@ -131,8 +148,11 @@ void AP_UnixDialog_FontChooser::parseXLFD(char * buf)
 	// font family name
 	if ((token = strtok(NULL, "-")))
 	{
-		setFontFamily(token);
-		m_bChangedFontFamily = UT_TRUE;
+		if (!m_pFontFamily || UT_stricmp(m_pFontFamily, token))
+		{
+			setFontFamily(token);
+			m_bChangedFontFamily = UT_TRUE;
+		}
 	}
 
 	/* weight (X has lots of defined weights, we just
@@ -140,31 +160,66 @@ void AP_UnixDialog_FontChooser::parseXLFD(char * buf)
 	*/
 	if ((token = strtok(NULL, "-")))
 	{
+		// this is icky, but we have to test every case
 		if (!UT_stricmp(token, "black"))
-			setFontWeight("bold");
+			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
+			{
+				setFontWeight("bold");
+				m_bChangedFontWeight = UT_TRUE;
+			}
 		else if (!UT_stricmp(token, "bold"))
-			setFontWeight("bold");
+			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
+			{
+				setFontWeight("bold");
+				m_bChangedFontWeight = UT_TRUE;
+			}
 		else if (!UT_stricmp(token, "demibold"))
-			setFontWeight("bold");
+			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
+			{
+				setFontWeight("bold");
+				m_bChangedFontWeight = UT_TRUE;
+			}
 		else if (!UT_stricmp(token, "medium"))
-			setFontWeight("normal");
+			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
+			{
+				setFontWeight("normal");
+				m_bChangedFontWeight = UT_TRUE;
+			}
 		else if (!UT_stricmp(token, "regular"))
-			setFontWeight("normal");
+			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
+			{
+				setFontWeight("normal");
+				m_bChangedFontWeight = UT_TRUE;
+			}
 		else
-			setFontWeight("normal");
-		m_bChangedFontWeight = UT_TRUE;
+			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
+			{
+				setFontWeight("normal");
+				m_bChangedFontWeight = UT_TRUE;
+			}
 	}
 	
 	// slant (X has i,o,r, which we cast to italic or normal)
 	if ((token = strtok(NULL, "-")))
 	{
 		if (!UT_stricmp(token, "i"))
-			setFontStyle("italic");
+			if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
+			{
+				setFontStyle("italic");
+				m_bChangedFontStyle = UT_TRUE;
+			}
 		else if (!UT_stricmp(token, "o"))
-			setFontStyle("oblique");
+			if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "oblique"))
+			{
+				setFontStyle("oblique");
+				m_bChangedFontStyle = UT_TRUE;
+			}
 		else // o and r
-			setFontStyle("normal");
-		m_bChangedFontStyle = UT_TRUE;
+			if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
+			{
+				setFontStyle("normal");
+				m_bChangedFontStyle = UT_TRUE;
+			}
 	}
 
 	// sWidth
@@ -175,15 +230,22 @@ void AP_UnixDialog_FontChooser::parseXLFD(char * buf)
 	// pxlStyle
 	strtok(NULL, "-");
 
+// This is handled as part of the main procedure, because the XLFD
+// will often have an incorrect size.
+#if 0
 	// point size
 	char buf_size[5];
 	if ((token = strtok(NULL, "-")))
 	{
 		sprintf(buf_size, "%dpt", (atoi(token) / 10));
-		setFontSize(buf_size);
-		m_bChangedFontSize = UT_TRUE;
+		if (!m_pFontSize || UT_stricmp(m_pFontSize, buf_size))
+		{
+			setFontSize(buf_size);
+			m_bChangedFontSize = UT_TRUE;
+		}
 	}
-
+#endif
+	
 	if (cloneString)
 		free(cloneString);
 }
@@ -261,8 +323,9 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	buildXLFD(buf);
 
 	UT_DEBUGMSG(("Priming dialog with XLFD: [%s]\n", buf));
-
+	
 	// Set color in the color selector, since this can't be done via XLFD
+	if (m_pColor)
 	{
 		UT_RGBColor c;
 		UT_parseColor(m_pColor, c);
@@ -277,9 +340,19 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	if (!gtk_font_selection_dialog_set_font_name(cf, buf))
 	{
 		UT_DEBUGMSG(("Couldn't hint to font selection dialog to use XLFD.  "
-					 "This font was not found on this X server.\n"));
+					 "An exact match for this XLFD was not found on this X server."));
 	}
 
+	if (bAbusingTheFontSize)
+	{
+		UT_DEBUGMSG(("\tAbusing the font selector size list; setting blank to match font."));
+		// peek into the constructed dialog and fix what it set wrong
+		gtk_clist_unselect_all(GTK_CLIST(GTK_FONT_SELECTION(cf->fontsel)->size_clist));
+		gtk_entry_set_text(GTK_ENTRY(GTK_FONT_SELECTION(cf->fontsel)->size_entry), "");
+
+		bAbusingTheFontSize = UT_FALSE;
+	}
+	
 	// Set up a nice sample string
 	gchar * sampleString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijlkmnopqrstuvwxyz";
 	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
@@ -306,14 +379,32 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 
 		if (selectedFont)
 		{
-			UT_DEBUGMSG(("Font selection returned [%s].\n\n", selectedFont));
+			UT_DEBUGMSG(("Font selection returned [%s].\n", selectedFont));
 
 			// blow XLFD buffer back into member variables
 			parseXLFD(selectedFont);
 
 			// Strikeout or underline aren't done via XLFD
 			// TODO: do them ?
-			
+
+			// The XLFD screws up font sizes, returning "8" (or something small)
+			// even when there is nothing selected in the list and nothing
+			// in the entry box.
+			gchar * sizeText = gtk_entry_get_text(GTK_ENTRY(GTK_FONT_SELECTION(cf->fontsel)->size_entry));
+			UT_ASSERT(sizeText);
+
+			// if it's changed, do the apply
+			if (UT_stricmp(sizeText, ""))
+			{
+				char buf_size[5];
+				sprintf(buf_size, "%dpt", atoi(sizeText));
+				if (!m_pFontSize || UT_stricmp(m_pFontSize, buf_size))
+				{
+					setFontSize(buf_size);
+					m_bChangedFontSize = UT_TRUE;
+				}
+			}
+
 			// Color isn't done via XLFD
 			gtk_color_selection_get_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
 			
@@ -323,8 +414,11 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 					(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
 					(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
 
-			setColor(buf_color);
-			m_bChangedColor = UT_TRUE;
+			if (!m_pColor || UT_stricmp(m_pColor, buf_color))
+			{
+				setColor(buf_color);
+				m_bChangedColor = UT_TRUE;
+			}
 		}
 	}
 

@@ -18,6 +18,8 @@
  */
 
 #include <gtk/gtk.h>
+#include <string.h>
+#include <stdlib.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -73,23 +75,39 @@ public:									// we create...
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 
-		if (wd->m_blockSignal)
-			return;
-		
-		gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
-		UT_uint32 length = strlen(buffer);
-		UT_ASSERT(length > 0);
-
-		char buf[1024];
-		UT_ASSERT(length < 1024);
-		strcpy(buf,buffer);
-
-		// TODO fix cast here or figure our 1- vs. 2-byte strings....
-
-		UT_UCSChar * text = (UT_UCSChar *) buf;
-
+		// only act if the widget has been shown and embedded in the toolbar
 		if (wd->m_widget)
-			wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, length);
+		{
+			// if the popwin is still shown, this is a copy run and widget has a ->parent
+			if (widget->parent)
+			{
+				// block is only honored here
+				if (!wd->m_blockSignal)
+				{
+					gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
+					UT_uint32 length = strlen(buffer);
+					UT_ASSERT(length > 0);
+					UT_ASSERT(length < 1024);
+					strcpy(wd->comboEntryBuffer, buffer);
+				}
+			}
+			else // widget has no ->parent, so use the buffer's results
+			{
+				UT_uint32 size = strlen(wd->comboEntryBuffer);
+
+				// TODO : do a real conversion to UT_UCSChar or figure out the casting
+
+				// don't do changes for empty combo texts
+				if (UT_stricmp(wd->comboEntryBuffer, ""))
+				{
+					UT_UCSChar * text = (UT_UCSChar *) wd->comboEntryBuffer;
+					UT_ASSERT(text);
+
+					wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, size);
+				}
+			}
+		}
+			
 	};
 
 	// block the changed signals on popdown (so we don't get real-time formatting
@@ -98,8 +116,6 @@ public:									// we create...
 	{
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
-
-		wd->m_blockSignal = true;
 	}
 
 	// unblock when the menu goes away
@@ -108,22 +124,16 @@ public:									// we create...
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 
-		wd->m_blockSignal = false;
-
-		// since the last "changed" event happens before we ever
-		// get here (before the list goes away), we have to
-		// manually trigger an edit method
-		GtkWidget * combo = GTK_WIDGET(widget)->parent;
-		UT_ASSERT(combo);
-		GtkWidget * entry = GTK_COMBO(combo)->entry;
-		UT_ASSERT(entry);
-		s_combo_changed(entry, user_data);
+		// manually force an update
+		s_combo_changed(widget, user_data);
 	}
 	
 	EV_UnixToolbar *	m_pUnixToolbar;
 	AP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
 	bool				m_blockSignal;
+
+	char comboEntryBuffer[1024];
 };
 
 /*****************************************************************/
@@ -300,12 +310,14 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				// handle popup events, so we can block our signals until the popdown
 				GtkWidget * button = GTK_WIDGET(GTK_COMBO(comboBox)->button);
 				UT_ASSERT(button);
-				gtk_signal_connect(GTK_OBJECT(button),
-								   "pressed",
+				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
+				UT_ASSERT(popwin);
+				gtk_signal_connect(GTK_OBJECT(popwin),
+								   "show",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_show),
 								   wd);
-				gtk_signal_connect(GTK_OBJECT(button),
-								   "released",
+				gtk_signal_connect(GTK_OBJECT(popwin),
+								   "hide",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
 								   wd);
 				
