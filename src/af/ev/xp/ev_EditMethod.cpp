@@ -144,7 +144,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	UT_uint32 k, kLast;
 	for (k=0; k<m_countStatic; k++)
 		if (strcmp(szName,m_arrayStaticEditMethods[k].getName()) == 0)
-			return &m_arrayStaticEditMethods[k];
+			return (EV_EditMethod *)&m_arrayStaticEditMethods[k];
 	
 	kLast = m_vecDynamicEditMethods.getItemCount();
 	for (k=0; k<kLast; k++)
