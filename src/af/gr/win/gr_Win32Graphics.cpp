@@ -31,6 +31,8 @@
 
 #include <xap_Win32Res_Cursors.rc2>
 
+#include "xap_Prefs.h"
+
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
@@ -39,6 +41,16 @@
 #ifdef __MINGW32__
 #include <w32api.h>
 #endif
+
+
+#define THROW_WIN32_FNT_EXCP(msg)                                  \
+{                                                                  \
+    UT_String __s;                                                 \
+    UT_String_sprintf(__s, "%s (%d): %s",__FILE__, __LINE__, msg); \
+	UT_DEBUGMSG(("%s",__s.c_str()));                               \
+	_win32FntExcpt e(__s.c_str());                                 \
+    throw (e);                                                     \
+}
 
 //#define GR_GRAPHICS_DEBUG	1
 
@@ -191,6 +203,26 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONT & lf)
+{
+	GR_Win32Font * f = NULL;
+
+	try
+	{
+		f = new GR_Win32Font(lf);
+	}
+	catch (_win32FntExcpt e)
+	{
+		f = NULL;
+	    if(XAP_App::getApp()->getPrefs())
+	    {
+		   XAP_App::getApp()->getPrefs()->log("gr_Win32Graphics", e.what());
+	    }
+	}
+
+	return f;
+}
+
 GR_Font* GR_Win32Graphics::getGUIFont(void)
 {
 	if (!m_pFontGUI)
@@ -203,8 +235,9 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
 	}
-
-	m_pFontGUI->markGUIFont();
+	if(m_pFontGUI)
+		m_pFontGUI->markGUIFont();
+	
 	return m_pFontGUI;
 }
 
@@ -577,6 +610,7 @@ UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)
 
 UT_uint32 GR_Win32Graphics::getFontHeight()
 {
+	UT_return_val_if_fail( m_pFont, 0 );
 	return (UT_uint32)((GR_Win32Font::Acq::getFontHeight(*m_pFont)) * getResolution() / getDeviceResolution());
 }
 
@@ -591,6 +625,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
 
 UT_uint32 GR_Win32Graphics::getFontAscent()
 {
+	UT_return_val_if_fail( m_pFont, 0 );
 	return (UT_uint32)((GR_Win32Font::Acq::getAscent(*m_pFont)) * getResolution() / getDeviceResolution());
 }
 
@@ -605,6 +640,7 @@ UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
+	UT_return_val_if_fail( m_pFont, 0 );
 	return (UT_uint32)((GR_Win32Font::Acq::getDescent(*m_pFont)) * getResolution() / getDeviceResolution());
 }
 
@@ -1338,10 +1374,15 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 	m_tm(TEXTMETRIC()),
 	m_bGUIFont(false)
 {
-	
 	m_iHeight = abs(lf.lfHeight);
 
 	m_layoutFont = CreateFontIndirect(&lf); // this is what we see to start with
+
+	if(!m_layoutFont)
+	{
+		THROW_WIN32_FNT_EXCP("CreateFontIndirectFailed")
+	}
+	
 	insertFontInCache (m_iHeight, m_layoutFont);
 
 	//
@@ -1353,6 +1394,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 	{
 		// NOW what? We can't throw an exeption, and this object isn't
 		// legal yet...
+		THROW_WIN32_FNT_EXCP("No DC")
 	}
 	else
 	{
@@ -1360,7 +1402,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 		HFONT hOldFont = (HFONT)SelectObject(hDC, m_layoutFont);
 		if (hOldFont == (HFONT)GDI_ERROR)
 		{
-			// Same here... What do do?
+			THROW_WIN32_FNT_EXCP("Could not select font into DC.")
 		}
 		else
 		{

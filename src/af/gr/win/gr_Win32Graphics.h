@@ -26,6 +26,8 @@
 #include "gr_Win32CharWidths.h"
 #include "ut_vector.h"
 
+#include <stdexcpt.h>
+
 class UT_ByteBuf;
 
 #define _MAX_CACHE_PENS 64
@@ -33,10 +35,17 @@ class UT_ByteBuf;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+class _win32FntExcpt : public exception
+{
+  public:
+	_win32FntExcpt(const char * msg): exception(msg){};
+	virtual ~_win32FntExcpt(){};
+};
+
 class ABI_EXPORT GR_Win32Font : public GR_Font
 {
 public:
-	GR_Win32Font(LOGFONT & lf);
+	GR_Win32Font(LOGFONT & lf) throw (_win32FntExcpt);
 	virtual ~GR_Win32Font();
 
 	// make GR_Win32Graphics an "aquaintance" of GR_Win32Font
@@ -244,7 +253,7 @@ protected:
 	void					_setColor(DWORD clrRef);
 
   private:
-	virtual GR_Win32Font *          _newFont(LOGFONT & lf){return new GR_Win32Font(lf);}
+	virtual GR_Win32Font *          _newFont(LOGFONT & lf)throw (_win32FntExcpt);
 
   protected:
 

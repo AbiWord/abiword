@@ -17,10 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <exception>
-#ifndef __WINE__
-#include <stdexcept>
-#endif
 #include "gr_Win32USPGraphics.h"
 #include "ut_debugmsg.h"
 #include "xap_App.h"
@@ -54,26 +50,21 @@ tScriptIsComplex     GR_Win32USPGraphics::fScriptIsComplex     = NULL;
 tScriptGetProperties GR_Win32USPGraphics::fScriptGetProperties = NULL;
 tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstitution = NULL;
 
-enum usp_error
-{
-	uspe_unknown       = 0x00000000,
-	uspe_loadfail      = 0x00000001,
-	uspe_nohinst       = 0x00000002,
-	uspe_nofunct       = 0x00000003,
-	uspe_noscriptprops = 0x00000004
-};
-
-
-class usp_exception
+class usp_exception : public exception
 {
   public:
-	usp_exception():error(uspe_unknown){};
-	usp_exception(usp_error e):error(e){};
-	
-	~usp_exception(){};
-	
-	usp_error error;
+	usp_exception(const char * s):exception(s){};
+	virtual ~usp_exception(){};
 };
+
+#define THROW_WIN32_USP_EXCP(msg)                                  \
+{                                                                  \
+    UT_String __s;                                                 \
+    UT_String_sprintf(__s, "%s (%d): %s",__FILE__, __LINE__, msg); \
+	UT_DEBUGMSG(("%s",__s.c_str()));                               \
+	usp_exception e(__s.c_str());                                  \
+    throw (e);                                                     \
+}
 
 class GR_Win32USPItem: public GR_Item
 {
@@ -257,12 +248,31 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App *
 	}
 }
 
+GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONT & lf)
+{
+	GR_Win32Font * f = NULL;
+
+	try
+	{
+		f = new GR_Win32USPFont(lf);
+	}
+	catch (_win32FntExcpt e)
+	{
+		f = NULL;
+	    if(XAP_App::getApp()->getPrefs())
+	    {
+		   XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", e.what());
+	    }
+	}
+
+	return f;
+}
+
 #define loadUSPFunction(name)                           \
 f##name = (t##name)GetProcAddress(s_hUniscribe, #name); \
 if(!f##name)                                            \
 {                                                       \
-	usp_exception e(uspe_nofunct);                      \
-	throw(e);                                           \
+	THROW_WIN32_USP_EXCP(#name)                         \
 	return false;                                       \
 }
 
@@ -309,8 +319,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 
 		if(!s_hUniscribe)
 		{
-			usp_exception e(uspe_loadfail);
-			throw(e);
+			THROW_WIN32_USP_EXCP("could not load usp10.dll")
 			return false;
 		}
 		
@@ -378,8 +387,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		HRESULT hRes = fScriptGetProperties(&s_ppScriptProperties, & s_iMaxScript);
 		if(hRes)
 		{
-			usp_exception e(uspe_noscriptprops);
-			throw(e);
+			THROW_WIN32_USP_EXCP("no script properties")
 			return false;
 		}
 #ifdef DEBUG
@@ -393,8 +401,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 	{
 		if(!s_hUniscribe)
 		{
-			usp_exception e(uspe_nohinst);
-			throw(e);
+			THROW_WIN32_USP_EXCP("no USP HINST")
 			return false;
 		}
 	}
@@ -456,17 +463,31 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 	}
 	catch (usp_exception &e)
 	{
-		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: error 0x%04x\n",e.error));
+		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: error 0x%04x\n",e.what()));
+
+		if(XAP_App::getApp()->getPrefs())
+	    {
+			XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", e.what());
+	    }
 		return NULL;
 	}
 	catch (std::exception &e)
 	{
 		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: %s\n",e.what()));
+
+		if(XAP_App::getApp()->getPrefs())
+	    {
+			XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", e.what());
+	    }
 		return NULL;
 	}
 	catch (...)
 	{
 		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: unknown error\n"));
+		if(XAP_App::getApp()->getPrefs())
+	    {
+			XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", "unhandled exception");
+	    }
 		return NULL;
 	}
 }
@@ -481,9 +502,14 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 */
 void GR_Win32USPGraphics::setFont(GR_Font* pFont)
 {
-	UT_ASSERT_HARMLESS(pFont);	// TODO should we allow pFont == NULL?
 	m_pFont = static_cast<GR_Win32Font *>(pFont);
-	m_iFontAllocNo = pFont->getAllocNumber();
+
+	UT_ASSERT_HARMLESS(pFont);	// TODO should we allow pFont == NULL?
+
+	if(pFont)
+		m_iFontAllocNo = pFont->getAllocNumber();
+	else
+		m_iFontAllocNo = 0;
 }
 
 void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont)

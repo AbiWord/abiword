@@ -119,7 +119,7 @@ public:
 	
   private:
 	bool      _constructorCommonCode();
-	virtual GR_Win32Font * _newFont(LOGFONT & lf){return new GR_Win32USPFont(lf);}
+	virtual GR_Win32Font * _newFont(LOGFONT & lf) throw (_win32FntExcpt);
 
 	void   _setupFontOnDC(GR_Win32USPFont *pFont);
 
