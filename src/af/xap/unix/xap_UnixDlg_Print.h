@@ -32,18 +32,27 @@ public:
 	AP_UnixDialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Print(void);
 
+	virtual void			useStart(void);
 	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			useEnd(void);
+
 	virtual DG_Graphics *	getPrinterGraphicsContext(void);
 	virtual void			releasePrinterGraphicsContext(DG_Graphics *);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
-	UT_Bool					_raisePrintDialog(void);
-	void					_extractResults(void);
+	void					_raisePrintDialog(void);
+	void					_getGraphics(void);
 	
 	AP_UnixFrame *			m_pUnixFrame;
 	PS_Graphics *			m_pPSGraphics;
+	struct
+	{
+		// add various fields here to persist between uses of the dialog....
+		
+	} m_persistPrintDlg;
+	
 };
 
 #endif /* AP_UNIXDIALOG_PRINT_H */

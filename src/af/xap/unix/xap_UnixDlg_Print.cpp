@@ -43,11 +43,30 @@ AP_UnixDialog_Print::AP_UnixDialog_Print(AP_DialogFactory * pDlgFactory,
 										   AP_Dialog_Id id)
 	: AP_Dialog_Print(pDlgFactory,id)
 {
+	memset(&m_persistPrintDlg, 0, sizeof(m_persistPrintDlg));
 }
 
 AP_UnixDialog_Print::~AP_UnixDialog_Print(void)
 {
 	DELETEP(m_pPSGraphics);
+}
+
+void AP_UnixDialog_Print::useStart(void)
+{
+	AP_Dialog_Print::useStart();
+
+	if (m_bPersistValid)
+	{
+		// TODO fill in initial values in the current variables
+		// TODO from the persistent vars we keep.
+	}
+}
+
+void AP_UnixDialog_Print::useEnd(void)
+{
+	AP_Dialog_Print::useEnd();
+
+	// TODO save current vars into out persistent vars.
 }
 
 DG_Graphics * AP_UnixDialog_Print::getPrinterGraphicsContext(void)
@@ -70,8 +89,36 @@ void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
 {
 	m_pUnixFrame = static_cast<AP_UnixFrame *>(pFrame);
 	UT_ASSERT(m_pUnixFrame);
+	
+	// see if they just want the properties of the printer without
+	// bothering the user.
+	
+	if (m_bPersistValid && m_bBypassActualDialog)
+	{
+		m_answer = a_OK;
+		_getGraphics();
+	}
+	else
+	{
+		_raisePrintDialog();
+		if (m_answer == a_OK)
+			_getGraphics();
+	}
+
+	m_pUnixFrame = NULL;
+	return;
+}
+
+void AP_UnixDialog_Print::_raisePrintDialog(void)
+{
+	// raise the actual dialog and wait for an answer.
+	// return true if they hit ok.
+
 
 #if 0
+	// replace these with calls to stuff the vars on the
+	// right into gtk widgets....
+	
 	m_pPersistPrintDlg->hwndOwner		= hwnd;
 	m_pPersistPrintDlg->nFromPage		= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nToPage			= (WORD)m_nLastPage;
@@ -99,39 +146,16 @@ void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
 			m_pPersistPrintDlg->Flags	|= PD_COLLATE;
 	}
 #endif
-	
-	// see if they just want the properties of the printer without
-	// bothering the user.
-	
-	if (m_bPersistValid && m_bBypassActualDialog)
-	{
-		_extractResults();
-	}
-	else if (_raisePrintDialog())
-	{
-		_extractResults();
-	}
-	else
-	{
-		m_answer = a_CANCEL;
-	}
 
-	m_pUnixFrame = NULL;
-	return;
-}
+	// run gtk_main().
+	//
+	// set m_answer to result from dialog...
+	m_answer = a_OK;
 
-UT_Bool AP_UnixDialog_Print::_raisePrintDialog(void)
-{
-	// raise the actual dialog and wait for an answer.
-	// return true if they hit ok.
-
-	return UT_TRUE;
-}
-
-
-void AP_UnixDialog_Print::_extractResults(void)
-{
 #if 0
+	// replace with gtk calls to extract stuff from the
+	// widgets and stuff values into the vars on the left.
+	
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
 	m_bDoPrintToFile	= ((m_pPersistPrintDlg->Flags & PD_PRINTTOFILE) != 0);
@@ -142,6 +166,15 @@ void AP_UnixDialog_Print::_extractResults(void)
 #else
 	m_bDoPrintToFile = UT_TRUE;
 #endif
+
+	// destroy the widgets.
+
+	return;
+}
+
+void AP_UnixDialog_Print::_getGraphics(void)
+{
+	UT_ASSERT(m_answer == a_OK);
 	
 	if (m_bDoPrintToFile)
 	{
@@ -156,14 +189,20 @@ void AP_UnixDialog_Print::_extractResults(void)
 		sprintf(bufSuggestedName,"%s.ps",m_szDocumentPathname);
 		if (!_getPrintToFilePathname(m_pUnixFrame,bufSuggestedName))
 			goto Fail;
+
+		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname,
+										m_szDocumentTitle,
+										m_pUnixFrame->getApp()->getApplicationName());
+	}
+	else
+	{
+		// TODO use a POPEN style constructor to get the graphics....
+		
+		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname,
+										m_szDocumentTitle,
+										m_pUnixFrame->getApp()->getApplicationName());
 	}
 
-	// we're going to remember the application name here because PS_Graphics
-	// needs it on the constructor
-
-	m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname,
-									m_szDocumentTitle,
-									m_pUnixFrame->getApp()->getApplicationName());
 	UT_ASSERT(m_pPSGraphics);
 	
 	m_answer = a_OK;
