@@ -60,6 +60,8 @@
  *    - introduced initializeArray() back to metric parsing
  *  modified: SourceGear, Inc. May 29 2000
  *    - removed Win32 specific code.  
+ *  modified: mwm@mired.org Jun 01, 2000
+ *    - Changed whitespace tests to use isspace
  */
 
 #include <stdio.h>
@@ -69,6 +71,8 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <math.h>
+#include <ctype.h>
+
 #include "xap_UnixPSParseAFM.h"
  
 #define lineterm EOL	/* line terminating character */
@@ -156,12 +160,10 @@ static char *token(stream)
     int ch, idx;
 
     /* skip over white space */
-    while ((ch = fgetc(stream)) == ' ' || ch == lineterm || 
-            ch == ',' || ch == '\t' || ch == ';');
+    while (isspace((ch = fgetc(stream))) || ch == ',' || ch == ';');
     
     idx = 0;
-    while (ch != EOF && ch != ' ' && ch != lineterm 
-           && ch != '\t' && ch != ':' && ch != ';') 
+    while (ch != EOF && !isspace(ch) && ch != ':' && ch != ';')
     {
         ident[idx++] = ch;
         ch = fgetc(stream);
@@ -189,8 +191,8 @@ static char *linetoken(stream)
 {
     int ch, idx;
 
-    while ((ch = fgetc(stream)) == ' ' || ch == '\t' ); 
-    
+    while (isspace(ch = fgetc(stream)));
+ 
     idx = 0;
     while (ch != EOF && ch != lineterm) 
     {

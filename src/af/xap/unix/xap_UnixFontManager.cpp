@@ -386,6 +386,13 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	{
 		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 	}
+    else
+    {
+        UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - can't guess "
+                     "font style from XLFD.\n"));
+        FREEP(linedup);
+        return;
+    }
 	
 	// do some voodoo to get the AFM file from the file name
 	char * dot = strrchr(fontfile, '.');
