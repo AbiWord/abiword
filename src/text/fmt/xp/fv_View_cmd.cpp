@@ -738,6 +738,8 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 		m_Selection.addCellToSelection(pCell);
 		jPrev = j;
 	}
+	PD_DocumentRange * pRange = getNthSelection(getNumSelections()-1);
+	_setPoint(pRange->m_pos2);
 	_drawSelection();
 	notifyListeners(AV_CHG_MOTION);
 	return true;

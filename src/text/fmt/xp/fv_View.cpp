@@ -1659,7 +1659,11 @@ bool FV_View::isSelectionEmpty(void) const
 	{
 		return true;
 	}
-
+	if((m_Selection.getSelectionMode() != FV_SelectionMode_Single) &&
+	   (m_Selection.getSelectionMode() != FV_SelectionMode_NONE))
+	{
+		return false;
+	}
 	PT_DocPosition curPos = getPoint();
 	if (curPos == m_Selection.getSelectionAnchor())
 	{
@@ -2151,31 +2155,56 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 	{
 		startpos = m_Selection.getSelectionAnchor();
 	}
+	bool bStop = false;
 //
 // tweak the start point of the selection if it is just before the current block
 // strux. Clicking in the left margin moves the start point here but usually the
 // user wants block after this.
 //
-	fl_BlockLayout * pBlock = _findBlockAtPosition(startpos);
-	fl_BlockLayout * pBlNext = NULL;
-	PT_DocPosition posEOD = 0;
-	getEditableBounds(true, posEOD);
+	UT_sint32 iNumSelections = getNumSelections();
+	UT_sint32 iSel =0;
+	if(iNumSelections > 0)
+	{
+		PD_DocumentRange * pRange = getNthSelection(iSel);
+		startpos = pRange->m_pos1;
+		endpos = pRange->m_pos2;
+		iNumSelections--;
+	}
+	while(!bStop)
+	{
+		fl_BlockLayout * pBlock = _findBlockAtPosition(startpos);
+		fl_BlockLayout * pBlNext = NULL;
+		PT_DocPosition posEOD = 0;
+		getEditableBounds(true, posEOD);
 
-	if(startpos < posEOD)
-	{
-		pBlNext = _findBlockAtPosition(startpos+1);
-	}
-	if((pBlNext != NULL) && (pBlNext != pBlock))
-	{
-		pBlock = pBlNext;
-	}
-	while( pBlock != NULL && pBlock->getPosition() <= endpos)
-	{
-		if(pBlock->getContainerType()== FL_CONTAINER_BLOCK)
+		if(startpos < posEOD)
 		{
-			vBlock->addItem(pBlock);
+			pBlNext = _findBlockAtPosition(startpos+1);
 		}
-		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());
+		if((pBlNext != NULL) && (pBlNext != pBlock))
+		{
+			pBlock = pBlNext;
+		}
+		while( pBlock != NULL && pBlock->getPosition() <= endpos)
+		{
+			if(pBlock->getContainerType()== FL_CONTAINER_BLOCK)
+			{
+				vBlock->addItem(pBlock);
+			}
+			pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());
+		}
+		if(iNumSelections == 0)
+		{
+			bStop = true;
+		}
+		else
+		{
+			iNumSelections--;
+			iSel++;
+			PD_DocumentRange * pRange = getNthSelection(iSel);
+			startpos = pRange->m_pos1;
+			endpos = pRange->m_pos2;
+		}
 	}
 	return;
 }
@@ -3009,6 +3038,41 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 
 	if (!isSelectionEmpty())
 	{
+		if(1 < getNumSelections())
+		{
+
+			m_pDoc->beginUserAtomicGlob();
+			UT_sint32 i = 0;
+			PD_DocumentRange * pRange = NULL;
+			for(i=0; i < getNumSelections(); i++)
+			{
+				pRange = getNthSelection(i); // don't delete!
+				posStart = pRange->m_pos1;
+				posEnd = pRange->m_pos2;
+				while(!isPointLegal(posStart))
+				{
+					posStart++;
+				}
+				while(!isPointLegal(posEnd))
+				{
+					posEnd--;
+				}
+				posEnd++;
+				if(posEnd < posStart)
+				{
+					posEnd= posStart;
+				}
+				bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,attribs,properties);
+			}
+
+			m_pDoc->endUserAtomicGlob();
+			_generalUpdate();
+
+			// Signal piceTable is stable again
+			_restorePieceTableState();
+			
+			return bRet;
+		}
 		if (m_Selection.getSelectionAnchor() < posStart)
 		{
 			posStart = m_Selection.getSelectionAnchor();
@@ -3018,6 +3082,8 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 			posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
+
+	m_pDoc->beginUserAtomicGlob();
 
 	// Here the selection used to be cleared, but that prevented users
 	// from making multiple changes to the same region.
@@ -3083,6 +3149,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
 	}
 
+	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_fixInsertionPointCoords();
 

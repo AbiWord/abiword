@@ -245,7 +245,7 @@ bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 	for(i=0; i < static_cast<UT_sint32>(m_vecSelRanges.getItemCount()); i++)
 	{
 		PD_DocumentRange * pDocRange = static_cast<PD_DocumentRange *>(m_vecSelRanges.getNthItem(i));
-		UT_DEBUGMSG(("Looking at pos %d low %d high %d \n",pos, pDocRange->m_pos1,pDocRange->m_pos2 ));
+		xxx_UT_DEBUGMSG(("Looking at pos %d low %d high %d \n",pos, pDocRange->m_pos1,pDocRange->m_pos2 ));
 		if ((pos >= pDocRange->m_pos1) && (pos <= pDocRange->m_pos2+1))
 		{
 			return true;

@@ -222,7 +222,6 @@ void FV_View::_clearSelection(void)
 			PD_DocumentRange * pTmp2 = new PD_DocumentRange(m_pDoc,pTmp->m_pos1,pTmp->m_pos2);
 			vecRanges.addItem(static_cast<void *>(pTmp2));
 		}
-		_resetSelection();
 		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
 		{
 			PD_DocumentRange * pDocR = static_cast<PD_DocumentRange *>(vecRanges.getNthItem(i));
@@ -235,8 +234,20 @@ void FV_View::_clearSelection(void)
 					iPos2++;
 				}
 				bool bres = _clearBetweenPositions(iPos1, iPos2, true);
-				if(!bres)
-					return;
+			}
+		}
+		_resetSelection();
+		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
+		{
+			PD_DocumentRange * pDocR = static_cast<PD_DocumentRange *>(vecRanges.getNthItem(i));
+			if(pDocR)
+			{
+				iPos1 = pDocR->m_pos1;
+				iPos2 = pDocR->m_pos2;
+				if(iPos1 == iPos2)
+				{
+					iPos2++;
+				}
 				_drawBetweenPositions(iPos1, iPos2);
 			}
 		}
