@@ -21,7 +21,7 @@ foreach my $file (qw(./src/wp/ap/xp/ap_String_Id.h ./src/af/xap/xp/xap_String_Id
     or die "Cannot open $file";
   
   while (<STRINGS>) {
-    next unless /dcl\((.*)\s*,\s*\"(.*)\"/;
+    next unless /^\s*dcl\((.*)\s*,\s*\"(.*)\"/;
     my ($dlg,$string) = ($1,$2);
     $string =~ s/&amp/&/;
     $dlgs{$dlg}{$lang} = $string;
