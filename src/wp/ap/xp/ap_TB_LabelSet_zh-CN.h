@@ -43,7 +43,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(zh,CN,true)
+BeginSetEnc(zh,CN,true,"GB2312")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 

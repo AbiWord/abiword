@@ -42,7 +42,7 @@
 // If the third argument is UT_TRUE, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(ja,JP,true)
+BeginSetEnc(ja,JP,true,"EUC-JP")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 

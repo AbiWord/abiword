@@ -41,7 +41,7 @@
 
 // Polish translated by Sercxemulo <explo@poczta.wp.pl>
 // Last update: 07.14.2000A.D.
-BeginSet(pl,PL,true)
+BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 

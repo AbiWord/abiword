@@ -43,7 +43,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(lt,LT,true)
+BeginSetEnc(lt,LT,true,"iso-8859-13")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,		NULL)
 

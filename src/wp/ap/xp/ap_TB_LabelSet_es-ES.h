@@ -42,7 +42,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(es,ES,true)
+BeginSetEnc(es,ES,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 
@@ -93,6 +93,7 @@ BeginSet(es,ES,true)
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Columnas",		tb_2column_xpm,			NULL, "2 Columnas")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Columnas",		tb_3column_xpm,			NULL, "3 Columnas")
 
+	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Ver todo",			tb_view_showpara_xpm,		NULL, "Mostrar/esconder ¶")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,					NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Viñetas",			tb_lists_bullets_xpm,	NULL, "Viñetas")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Listas",			tb_lists_numbers_xpm,	NULL, "Listas numeradas")
@@ -103,7 +104,9 @@ BeginSet(es,ES,true)
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar párrafo", tb_text_unindent_xpm,	NULL, "Reducir la indentación del párrafo")
 
 	// ... add others here ...
-
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Dirección de párrafo",	tb_text_dom_direction_rtl_xpm,	NULL, "Change dominant direction of paragraph")
+#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

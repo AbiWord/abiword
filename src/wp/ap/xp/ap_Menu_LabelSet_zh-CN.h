@@ -32,7 +32,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(zh,CN,true)
+BeginSetEnc(zh,CN,true,"GB2312")
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 
