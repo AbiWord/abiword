@@ -111,7 +111,11 @@ const char* pt_PieceTable::s_getLocalisedStyleName(const char *szStyle)
 	{
 		if (strcmp(szStyle, stLocalised[n].pStyle)==0)
 		{
-			pRslt = pSS->getValue(stLocalised[n].nID, pApp->getDefaultEncoding()).c_str();
+			XML_Char * szName = (XML_Char *) pSS->getValue(stLocalised[n].nID);
+
+			if (szName)
+				pRslt = szName;
+			
 			break;
 		}
 	}		
