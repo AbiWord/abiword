@@ -81,6 +81,10 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_pDoc->disableListUpdates();
 	m_pDocListener = new fl_DocListener(doc, this);
 	doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
+//
+// Put the default View color to white
+//
+	strncpy(m_szCurrentTransparentColor,(const char *) XAP_PREF_DEFAULT_ColorForTransparent,9);
 
 #ifdef FMT_TEST
 	m_pDocLayout = this;
@@ -561,6 +565,39 @@ void FL_DocLayout::updateLayout()
 	}
 	
 	deleteEmptyColumnsAndPages();
+}
+
+
+void FL_DocLayout::updateColor()
+{
+	UT_ASSERT(m_pDoc);
+	FV_View * pView = getView();
+	if(pView)
+	{
+		XAP_App * pApp = pView->getApp();
+		XAP_Prefs * pPrefs = pApp->getPrefs();
+		const XML_Char * pszTransparentColor = NULL;
+		pPrefs->getPrefsValue((const XML_Char *) XAP_PREF_KEY_ColorForTransparent,&pszTransparentColor);
+//
+// Save the new preference color
+//
+		strncpy(m_szCurrentTransparentColor,pszTransparentColor,9);
+	}  
+//
+// Now loop through the document and update the Background color
+//
+	fl_DocSectionLayout* pDSL = (fl_DocSectionLayout *) m_pFirstSection;
+	while (pDSL)
+	{
+		pDSL->setPaperColor();
+		pDSL->updateBackgroundColor();
+		pDSL = pDSL->getNextDocSection();
+	}
+//
+// Redraw the view associated with this document.
+//
+	if(pView)
+		pView->updateScreen(false);
 }
 
 #define BACKGROUND_CHECK_MSECS 100
@@ -1086,6 +1123,11 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 
 	pPrefs->getPrefsValueBool( (XML_Char *)XAP_PREF_KEY_SmartQuotesEnable, &b );
 	pDocLayout->_toggleAutoSmartQuotes( b );
+
+	const XML_Char * pszTransparentColor = NULL;
+	pPrefs->getPrefsValue((const XML_Char *)XAP_PREF_KEY_ColorForTransparent,&pszTransparentColor);
+	if(UT_strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
+		pDocLayout->updateColor();
 }
 
 void FL_DocLayout::recheckIgnoredWords()

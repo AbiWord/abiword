@@ -192,10 +192,12 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 //
 // Fill the Page with the page color
 //
-#if 0
-	// only print background color to the screen, not to paper
-	if(!bAlwaysUseWhiteBackground && pDA->pG->queryProperties (GR_Graphics::DGP_SCREEN))
+// only call this for printing and honour the option to not fill the paper with
+// color.
+//
+	if(!bAlwaysUseWhiteBackground && !pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
+		UT_DEBUGMSG(("SEVIOR: Doing a rectangular color fill \n"));
 		UT_RGBColor * pClr = getOwningSection()->getPaperColor();
 		double ScaleLayoutUnitsToScreen;
 		ScaleLayoutUnitsToScreen = (double)pDA->pG->getResolution() / UT_LAYOUT_UNITS;
@@ -205,7 +207,6 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		UT_sint32 width = (UT_sint32) ((double)getWidthInLayoutUnits() * ScaleLayoutUnitsToScreen);
 		pDA->pG->fillRect(*pClr,xmin,ymin,width,height);
 	}
-#endif
 
     _drawCropMarks(pDA);
 
@@ -241,16 +242,16 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	if (m_pHeader)
 	{
 		dg_DrawArgs da = *pDA;
-		da.xoff += m_pHeader->getX();
-		da.yoff += m_pHeader->getY();
+  		da.xoff += m_pHeader->getX();
+  		da.yoff += m_pHeader->getY();
 		m_pHeader->draw(&da);
 	}
 	
 	if (m_pFooter)
 	{
 		dg_DrawArgs da = *pDA;
-		da.xoff += m_pFooter->getX();
-		da.yoff += m_pFooter->getY();
+  		da.xoff += m_pFooter->getX();
+  		da.yoff += m_pFooter->getY();
 		m_pFooter->draw(&da);
 	}
 	

@@ -253,7 +253,7 @@ public:
 	void			extSelNextPrevLine(bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
-	void			updateScreen(void);
+	void			updateScreen(bool bDirtyRunsOnly=true);
 
 
 // ----------------------

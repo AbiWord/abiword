@@ -208,7 +208,7 @@ public:
 	UT_uint32			getColumnGap(void) const;
 	UT_uint32			getColumnGapInLayoutUnits(void) const;
 	bool				getColumnLineBetween(void) const {return m_bColumnLineBetween;}
-
+	void                setPaperColor();
 	UT_RGBColor *       getPaperColor(void);
 	void				deleteEmptyColumns(void);
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
@@ -287,6 +287,7 @@ public:
 	void                        localCollapse(void);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
+	void                        layout(void);
 	fl_BlockLayout *            findMatchingBlock( fl_BlockLayout * pBL);
 	virtual void				redrawUpdate(void);
 	void                        updateBackgroundColor(void);
@@ -353,6 +354,7 @@ public:
 	fl_BlockLayout *			findBlockAtPosition(PT_DocPosition pos);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
+	void                        layout(void);
 	void						clearScreen(void);
 	virtual void				redrawUpdate(void);
 	fp_Page *                       getPage(void) { return m_pPage;}

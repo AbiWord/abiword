@@ -237,6 +237,11 @@ dcl(DLG_Options_Label_ViewAll,			"&All")
 dcl(DLG_Options_Label_ViewHiddenText,	"&Hidden Text")
 dcl(DLG_Options_Label_ViewUnprintable,	"Invisible &Layout Marks")
 
+dcl(DLG_Options_Label_CheckWhiteForTransparent,	"Allow screen colors other than White")
+dcl(DLG_Options_Label_ChooseForTransparent,	"Choose Screen Color")
+dcl(DLG_Options_Label_ColorChooserLabel,	"Choose screen color for AbiWord")
+
+
 dcl(DLG_Options_Prompt_IgnoreResetCurrent,	"Do you want to reset ignored words in the current document?")
 dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in all the documents?")
 

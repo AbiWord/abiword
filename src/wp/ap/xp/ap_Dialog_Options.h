@@ -68,6 +68,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_VIEW_SHOW_STATUS_BAR,
 				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT, 
 				   id_CHECK_VIEW_UNPRINTABLE,
+				   id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE,
+				   id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT,
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS,
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
 			
@@ -142,8 +144,17 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 #undef SET_GATHER
 	
  protected:
+
+
+//
+// Screen Color stuff
+	const XML_Char * _gatherColorForTransparent(void);
+	void _setColorForTransparent(const XML_Char * pzsColorForTransparent);
+	
+
 	tAnswer				m_answer;
 	XAP_Frame *			m_pFrame;
+	XML_Char            m_CurrentTransparentColor[10];
 
 	// AP level handlers
 	void _event_SetDefaults(void);
@@ -153,3 +164,16 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 };
 
 #endif /* AP_DIALOG_PARAGRAPH_H */
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -48,6 +48,16 @@
 
 /*****************************************************************/
 
+//
+// For Screen color picker
+	enum
+	{
+		RED,
+		GREEN,
+		BLUE,
+		OPACITY
+	};
+
 static void s_radio_toggled (GtkWidget * w, GtkWidget * c)
 {
   GtkCList * clist = GTK_CLIST (c);
@@ -90,6 +100,7 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 
     // Populate the window's data items
     _populateWindowData();
+	initializeTransperentToggle(); // Hack for Transperency, sorry.
 
     // To center the dialog, we need the frame of its parent.
     XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -150,6 +161,137 @@ void AP_UnixDialog_Options::event_clistClicked (int row, int col)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonViewHideTB), (b ? FALSE : TRUE));
 }
 
+/// 
+/// All this color selection code is stolen from the ap_UnixDialog_Background
+/// dialog
+/// 
+#define CTI(c, v) (unsigned char)(c[v] * 255.0)
+
+/* static */ void AP_UnixDialog_Options::s_color_changed(GtkWidget * csel,
+			    AP_UnixDialog_Options * dlg)
+{
+  UT_ASSERT(csel && dlg);
+  
+  char color[10];
+
+  GtkColorSelection * w = GTK_COLOR_SELECTION(csel);
+
+  gdouble cur [4];
+
+  gtk_color_selection_get_color (w, cur);
+  sprintf(color,"#%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
+
+  strncpy(dlg->m_CurrentTransparentColor,(const XML_Char *) color,9);
+}
+
+#undef CTI
+
+void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
+{
+//
+// Run the Background dialog over the options? No the title is wrong.
+//
+  GtkWidget * dlg;
+  GtkWidget * k;
+  GtkWidget * actionarea;
+
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+  dlg = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW(dlg),		
+						pSS->getValue(AP_STRING_ID_DLG_Options_Label_ColorChooserLabel));
+
+  actionarea = GTK_DIALOG (dlg)->action_area;
+
+  k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Close));
+  gtk_widget_show(k);
+  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->action_area),
+                               k, TRUE, TRUE, 0);
+  gtk_signal_connect (GTK_OBJECT(k), "clicked", 
+		      GTK_SIGNAL_FUNC(gtk_main_quit), (gpointer)this);
+
+  gtk_signal_connect_after(GTK_OBJECT(dlg),
+			   "destroy",
+			   NULL,
+			   NULL);
+
+  gtk_signal_connect(GTK_OBJECT(dlg),
+		     "delete_event",
+		     GTK_SIGNAL_FUNC(gtk_main_quit),
+		     (gpointer) this);
+
+  GtkWidget *colorsel;
+
+  colorsel = gtk_color_selection_new();
+  gtk_widget_show (colorsel);
+  UT_DEBUGMSG(("SEVIOR: About to add color selector to dialog window \n"));
+  gtk_container_add (GTK_CONTAINER(GTK_DIALOG(dlg)->vbox), colorsel);
+  UT_DEBUGMSG(("SEVIOR: Added color selector to dialog window \n"));
+  UT_RGBColor c;
+  UT_parseColor(m_CurrentTransparentColor,c);
+
+  gdouble currentColor[4] = { 0, 0, 0, 0 };
+  currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
+  currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
+  currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
+
+  gtk_color_selection_set_color (GTK_COLOR_SELECTION(colorsel),
+				 currentColor);
+
+  gtk_signal_connect (GTK_OBJECT(colorsel), "color-changed",
+		      GTK_SIGNAL_FUNC(s_color_changed),
+		      (gpointer) this);
+
+//
+// Do all the nice stuff and put the color selector on top of our current
+// dialog.
+//
+	// Center our new dialog in its parent and make it a transient
+	// so it won't get lost underneath
+	centerDialog(m_windowMain,dlg);
+
+	// Show the top level dialog,
+	gtk_widget_show(dlg);
+
+	// Make it modal, and stick it up top
+	gtk_grab_add(dlg);
+
+	// run into the gtk main loop for this window
+	gtk_main();
+
+//
+// Finish up here after a close or window delete signal.
+//
+	if(dlg && GTK_IS_WIDGET(dlg))
+		gtk_widget_destroy(dlg);
+
+}
+
+void AP_UnixDialog_Options::event_AllowTransparentColor(void)
+{
+//
+// If this button is up we do not allow transparent color
+//
+	if(!GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite)->active)
+	{
+		strncpy(m_CurrentTransparentColor,(const XML_Char *) "ffffff",9);
+		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,FALSE);
+	}
+	else
+		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,TRUE);
+}
+
+void AP_UnixDialog_Options::initializeTransperentToggle(void)
+{
+	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), FALSE);
+	}
+	else
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), TRUE);
+	}
+}
 void AP_UnixDialog_Options::event_OK(void)
 {
     m_answer = AP_Dialog_Options::a_OK;
@@ -256,6 +398,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *label21;
 	GtkWidget *vbox58;
 	GtkWidget *enable_sq;
+	GtkWidget *hbox58;
+	GtkWidget *checkWhiteForTransparent;
+	GtkWidget *pushChooseColorForTransparent;
 	GtkWidget *label3;
 	GtkWidget *vbox36;
 	GtkWidget *frame40;
@@ -285,7 +430,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	mainWindow = m_windowMain;
 	dialog_vbox1 = vbox;
 	gtk_widget_show (dialog_vbox1);
-	
+	   
 	notebook1 = gtk_notebook_new ();
 	gtk_widget_show (notebook1);
 	gtk_box_pack_start (GTK_BOX (dialog_vbox1), notebook1, TRUE, TRUE, 0);
@@ -673,6 +818,21 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (enable_sq);
 	gtk_box_pack_start (GTK_BOX (vbox58), enable_sq, FALSE, FALSE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (enable_sq), 2);
+
+	hbox58 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hbox58);
+	gtk_box_pack_start(GTK_BOX(vbox58),hbox58, TRUE, TRUE, 0);
+
+	checkWhiteForTransparent = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent));
+	gtk_widget_show (checkWhiteForTransparent);
+	gtk_box_pack_start (GTK_BOX (hbox58), checkWhiteForTransparent, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (checkWhiteForTransparent), 2);
+
+	pushChooseColorForTransparent = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent));
+	gtk_widget_show (pushChooseColorForTransparent);
+	gtk_box_pack_start (GTK_BOX (hbox58), pushChooseColorForTransparent, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (pushChooseColorForTransparent), 2);
+
 	
 	label3 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_Layout));
 	gtk_widget_show (label3);
@@ -796,6 +956,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_buttonSpellIgnoreEdit			= button_edit;
 	m_buttonSpellIgnoreReset		= button_reset;
 
+	m_checkbuttonTransparentIsWhite = checkWhiteForTransparent;
+	m_pushbuttonNewTransparentColor = pushChooseColorForTransparent;
 	m_checkbuttonSmartQuotesEnable	        = enable_sq;
 	m_listDefaultPageSize			= page_size;
 
@@ -816,6 +978,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_checkbuttonViewHideTB = hide_toolbar;
 	m_toolbarClist = toolbar_clist;
 
+	
 	gtk_signal_connect(GTK_OBJECT(m_buttonSpellIgnoreEdit),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
@@ -836,6 +999,20 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 			   "toggled",
 			   GTK_SIGNAL_FUNC(s_checkbutton_toggle),
 			   (gpointer) this);
+
+	// to enable/disable other screen colors from white
+	gtk_signal_connect(GTK_OBJECT( m_checkbuttonTransparentIsWhite),
+			   "toggled",
+			   GTK_SIGNAL_FUNC(s_allowTransparentColor),
+			   (gpointer) this);
+
+
+	// to choose another color for the screen
+	gtk_signal_connect(GTK_OBJECT( m_pushbuttonNewTransparentColor ),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_chooseTransparentColor),
+			   (gpointer) this);
+
 
 	_setNotebookPageNum (0);
 	//gtk_clist_select_row (GTK_CLIST (toolbar_clist), 0, 0);
@@ -1047,6 +1224,12 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_VIEW_UNPRINTABLE:
 		return m_checkbuttonViewUnprintable;
+
+	case id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
+		return  m_checkbuttonTransparentIsWhite;
+
+	case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
+		return  m_pushbuttonNewTransparentColor;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// general
@@ -1345,6 +1528,22 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
 	dlg->_event_SetDefaults(); 
+}
+
+
+/*static*/ void AP_UnixDialog_Options::s_chooseTransparentColor( GtkWidget *widget, gpointer data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_ChooseTransparentColor(); 
+}
+
+
+/*static*/ void AP_UnixDialog_Options::s_allowTransparentColor( GtkWidget *widget, gpointer data )
+{ 
+	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_AllowTransparentColor(); 
 }
 
 

@@ -674,7 +674,7 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
 	m_iHeightLayoutUnits = iHeightLayout;
 	m_iMaxHeight = m_iHeight;
 	m_iMaxHeightLayoutUnits = (UT_sint32)(  (double) m_iHeight * ( (double) iHeightLayout/ (double) m_iMaxHeight)) ;
-    m_bHdrFtrBoxDrawn = false;
+   m_bHdrFtrBoxDrawn = false;
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()
@@ -696,7 +696,7 @@ void fp_HdrFtrContainer::layout(void)
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 		UT_sint32 sum = iLineHeightLayoutUnits + iLineMarginAfterLayoutUnits;
-		if(iYLayoutUnits + sum <= m_iMaxHeightLayoutUnits)
+		if((iYLayoutUnits + sum) <= (m_iMaxHeightLayoutUnits))
 		{
 			pLine->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
 			pLine->setYInLayoutUnits(iYLayoutUnits);
@@ -706,8 +706,8 @@ void fp_HdrFtrContainer::layout(void)
 //
 // FIXME: Dirty hack to clip.
 // 
-			pLine->setY(-100000);
-			pLine->setYInLayoutUnits(-100000);
+			pLine->setY(-1000000);
+			pLine->setYInLayoutUnits(-1000000);
 		}
 		iYLayoutUnits += iLineHeightLayoutUnits;
 		iYLayoutUnits += iLineMarginAfterLayoutUnits;

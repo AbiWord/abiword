@@ -647,7 +647,16 @@ void fl_DocSectionLayout::format(void)
 	}
 
 	breakSection();
-
+//	if(m_pHeaderSL)
+//	{
+//		m_pHeaderSL->format();
+//		m_pHeaderSL->layout();
+//	}
+//	if(m_pFooterSL)
+//	{
+//		m_pFooterSL->format();
+//		m_pFooterSL->layout();
+//	}
 }
 
 void fl_DocSectionLayout::updateLayout(void)
@@ -993,22 +1002,53 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iHeaderMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
 		m_dHeaderMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
-	const char* pszClrPaper = NULL;
-	pSectionAP->getProperty("background-color", (const XML_Char *&)pszClrPaper);
-	if(pszClrPaper)
-		UT_parseColor(pszClrPaper,m_clrPaper);
-	else
-		UT_parseColor("ffffff",m_clrPaper);
-
+	setPaperColor();
 	m_bForceNewPage = false;
 }
 
+/*!
+ * Set the color of the background paper in the following order of precedence
+ * 1. If The section level proper "background-color" is present and is
+ *    not transparent use that.
+ * 2. If this section is being displayed to the screen use the
+ *     ColorForTransparency preference item color.
+ * 3. Otherwise use white
+ */
+void fl_DocSectionLayout::setPaperColor(void)
+{
+	const PP_AttrProp* pSectionAP = NULL;
+	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+
+	const char* pszClrPaper = NULL;
+	pSectionAP->getProperty("background-color", (const XML_Char *&)pszClrPaper);
+	FV_View * pView = m_pLayout->getView();
+	if(pszClrPaper && UT_strcmp(pszClrPaper,"transparent") != 0)
+		UT_parseColor(pszClrPaper,m_clrPaper);
+	else if( pView && pView->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		XAP_App * pApp = pView->getApp();
+		XAP_Prefs * pPrefs = pApp->getPrefs();
+		const XML_Char * pszTransparentColor = NULL;
+		pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForTransparent,&pszTransparentColor);
+		UT_parseColor(pszTransparentColor,m_clrPaper);
+	}
+	else
+	{
+		UT_parseColor("ffffff",m_clrPaper);
+	}
+}
+
+/*!
+ * Return a pointer the current background color.
+ */
 UT_RGBColor * fl_DocSectionLayout::getPaperColor(void) 
 {
 	return &m_clrPaper;
 }
 
-
+/*! 
+ * Delete Empty Column containers in this section.
+ */
 void fl_DocSectionLayout::deleteEmptyColumns(void)
 {
 	fp_Column* pCol = m_pFirstColumn;
@@ -1996,20 +2036,29 @@ void fl_HdrFtrSectionLayout::format(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		pPair->pShadow->format();
 	}
+	layout();
 }
 
 void fl_HdrFtrSectionLayout::updateLayout(void)
 {
+	bool bredraw = false;
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
 		if (pBL->needsReformat())
 		{
+			bredraw = true;
 			pBL->format();
 		}
 		
 		pBL = pBL->getNext();
 	}
+	if(bredraw == true)
+	{
+		if(m_pVirContainer)
+			static_cast<fp_VirtualContainer *>(m_pVirContainer)->layout();
+ 	}
+
 	//
 	// update Just the  blocks in the shadowlayouts
 	//
@@ -2019,6 +2068,25 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
 		pPair->pShadow->updateLayout();
+	}
+}
+
+/*!
+ * Layout the overall HdrFtr and everything underneath it.
+ */
+void fl_HdrFtrSectionLayout::layout(void)
+{
+    if(m_pVirContainer)
+	static_cast<fp_VirtualContainer *>(m_pVirContainer)->layout();
+	//
+	// update the shadowlayouts
+	//
+  	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->layout();
 	}
 }
 
@@ -2063,6 +2131,11 @@ void fl_HdrFtrSectionLayout::clearScreen(void)
 
 void fl_HdrFtrSectionLayout::redrawUpdate(void)
 {
+//
+// Do another layout but don't redraw.
+//
+	if(m_pVirContainer)
+		static_cast<fp_VirtualContainer *>(m_pVirContainer)->layout();
 	//
 	// Don't need to draw here since this is never displayed on the screen?
 	// 
@@ -2654,6 +2727,10 @@ void fl_HdrFtrShadow::updateLayout(void)
  	}
 }
 
+void fl_HdrFtrShadow::layout(void)
+{
+	m_pContainer->layout();
+}
 
 void fl_HdrFtrShadow::clearScreen(void)
 {
@@ -2664,10 +2741,11 @@ void fl_HdrFtrShadow::clearScreen(void)
 
 void fl_HdrFtrShadow::redrawUpdate(void)
 {
+	FV_View * pView = m_pLayout->getView();
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
-		if(pBL->needsRedraw())
+		if(pView)
 		{
 			pBL->redrawUpdate();
 		}

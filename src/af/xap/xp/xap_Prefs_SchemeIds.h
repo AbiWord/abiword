@@ -94,6 +94,10 @@
 
 #define XAP_PREF_KEY_EmbedFontsInPS					"EmbedFontsInPs"
 #define XAP_PREF_DEFAULT_EmbedFontsInPS				"1"
+
+#define XAP_PREF_KEY_ColorForTransparent            "TransparentColor"
+#define XAP_PREF_DEFAULT_ColorForTransparent        "ffffff"
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -118,5 +122,6 @@ dcl(AutoSaveFilePeriod)
 dcl(AutoSaveFileExt)
 
 dcl(EmbedFontsInPS)
+dcl(ColorForTransparent)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

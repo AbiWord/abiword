@@ -36,6 +36,9 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	void initializeTransperentToggle(void);
+	void event_ChooseTransparentColor(void);
+	void event_AllowTransparentColor(void);
 
  protected:
 
@@ -125,6 +128,9 @@ public:
     GtkWidget * m_checkbuttonViewCursorBlink;
     GtkWidget * m_checkbuttonViewShowStatusBar;
 
+	GtkWidget * m_checkbuttonTransparentIsWhite;
+	GtkWidget * m_pushbuttonNewTransparentColor;
+
     GtkWidget * m_checkbuttonViewShowTB;
     GtkWidget * m_checkbuttonViewHideTB;
     GtkWidget * m_toolbarClist;
@@ -155,7 +161,9 @@ protected:
 	static void s_ignore_edit_clicked	( GtkWidget *, gpointer );
 	static void s_dict_edit_clicked		( GtkWidget *, gpointer );
 	static void s_defaults_clicked		( GtkWidget *, gpointer );
-
+	static void s_chooseTransparentColor( GtkWidget *, gpointer );
+	static void s_allowTransparentColor ( GtkWidget *, gpointer );
+	static void s_color_changed(GtkWidget * csel,  AP_UnixDialog_Options * dlg);
 	static void s_clist_clicked (GtkWidget *, gint, gint, GdkEvent *, gpointer);
 
 	static void s_checkbutton_toggle	( GtkWidget *, gpointer );
@@ -170,3 +178,4 @@ protected:
 };
 
 #endif /* AP_UNIXDIALOG_OPTIONS_H */
+

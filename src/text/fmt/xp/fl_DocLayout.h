@@ -119,6 +119,7 @@ public:
 
 	void		formatAll();
 	void  		updateLayout();
+	void        updateColor();
 
 	bool		isPendingWordForSpell(void) const;
 	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
@@ -216,7 +217,7 @@ protected:
 	// smart quote latent instance
 	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if NULL, ignore m_uOffsetForSmartQuote
 	UT_uint32           m_uOffsetForSmartQuote;
-
+	char                m_szCurrentTransparentColor[10];
 	UT_Timer*			m_pBackgroundCheckTimer; 
 
 	XAP_Prefs *			m_pPrefs;
@@ -227,3 +228,4 @@ protected:
 };
 
 #endif /* DOCLAYOUT_H */
+

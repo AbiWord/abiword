@@ -5966,9 +5966,9 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	_drawInsertionPoint();
 }
 
-void FV_View::updateScreen(void)
+void FV_View::updateScreen(bool bDirtyRunsOnly)
 {
-	_draw(0,0,m_iWindowWidth,m_iWindowHeight,true,false);
+	_draw(0,0,m_iWindowWidth,m_iWindowHeight,bDirtyRunsOnly,false);
 }
 
 

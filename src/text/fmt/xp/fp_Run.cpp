@@ -232,19 +232,15 @@ UT_RGBColor * fp_Run::getHighlightColor(void)
 // FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this 
 // no prexisting docs will be able to change the Highlight color in paragraphs 
 // with lists. I think this is a good solution for now. However it does mean
-// field-color od "ffffff", pure white is actually transparent.
+// field-color of "ffffff", ie pure white is actually transparent.
 //
 	if(pszBGcolor && UT_strcmp(pszBGcolor,"transparent")!= 0  && UT_strcmp(pszBGcolor,"ffffff") != 0)
 	{
-	  //UT_parseColor(pszBGcolor, sClr);
-	  //UT_setColor (m_colorHL, sClr.m_red, sClr.m_grn, sClr.m_blu);
-	        UT_parseColor (pszBGcolor, m_colorHL);
+		UT_parseColor (pszBGcolor, m_colorHL);
 		return &m_colorHL;
 	}
-	else if (m_pG->queryProperties (GR_Graphics::DGP_SCREEN))
+	else
 	{
-	  // this is safe to do because we're drawing to the screen
-	  // and not to paper (i.e. printing)
 		fp_Line * pLine = getLine();
 		fp_Page * pPage = NULL;		
 		if(pLine != NULL)
@@ -256,12 +252,6 @@ UT_RGBColor * fp_Run::getHighlightColor(void)
 		UT_setColor (m_colorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
 		return pClr;
 	}
-	else
-	  {
-	    // DOM: safe to hardcode white here
-	    UT_setColor (m_colorHL, 255, 255, 255);
-	    return &m_colorHL;
-	  }
 }
 
 

@@ -179,6 +179,14 @@ void AP_Dialog_Options::_storeWindowData(void)
 	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_DefaultPageSize,
 			       (XML_Char*)fp_PageSize::PredefinedToName( _gatherDefaultPageSize()) );
 
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // save screen color
+	UT_ASSERT(sizeof(XML_Char) && sizeof(char));
+	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ColorForTransparent,
+			       _gatherColorForTransparent() );
+
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// allow XAP_Prefs to notify all the listeners of changes
 
@@ -197,6 +205,17 @@ void AP_Dialog_Options::_storeWindowData(void)
 		pPrefs->savePrefsFile();				// TODO: check the results
 	}
 
+}
+
+void AP_Dialog_Options::_setColorForTransparent(const XML_Char * 
+												pzsColorForTransparent)
+{
+	strncpy(m_CurrentTransparentColor,pzsColorForTransparent,9);
+}
+
+const XML_Char * AP_Dialog_Options::_gatherColorForTransparent(void)
+{
+	return (const XML_Char *) m_CurrentTransparentColor;
 }
 
 void AP_Dialog_Options::_eventSave(void)
@@ -281,6 +300,13 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setAutoSaveFilePeriod(stBuffer);
 #endif
 
+    // ------------ Screen Color
+
+	const XML_Char * pszColorForTransparent = NULL;
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, &pszColorForTransparent))
+		_setColorForTransparent(pszColorForTransparent);
+
+			
 	// ------------ the page tab number 
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
 		_setNotebookPageNum (atoi(pszBuffer));
@@ -337,6 +363,18 @@ void AP_Dialog_Options::_initEnableControls()
 
 	// general
 	_controlEnable( id_BUTTON_SAVE,					false );
+//
+// If the prefs color for transparent is white initially disable the choose
+// color button
+//
+	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
+	{
+		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, false);
+	}
+	else
+	{
+		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, true);
+	}
 }
 
 void AP_Dialog_Options::_event_SetDefaults(void)
