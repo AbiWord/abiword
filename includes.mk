@@ -88,8 +88,15 @@ ABI_CFLAGS=@PLATFORM_CFLAGS@ @WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PSICONV_CFLAGS@ @WV_CFLAGS@ 
 endif
 
-CXXFLAGS=$(ABI_CFLAGS)
-CFLAGS=$(ABI_CFLAGS)
+# this is done here because of m4 macro conflict in configure.in
+if WITH_MACOSX
+MACOSX_CFLAGS=-I'$(top_builddir)/src/af/util/unix' -DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_CARBON -DXP_MAC_TARGET_QUARTZ $(ABI_CFLAGS)
+else
+MACOSX_CFLAGS=''
+endif
+
+CXXFLAGS=$(ABI_CFLAGS) $(MACOSX_CFLAGS)
+CFLAGS=$(ABI_CFLAGS) $(MACOSX_CFLAGS)
 
 # these are currently hacks.  They need to be auto-detected
 ABI_FE = @ABI_FE@
