@@ -299,15 +299,9 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	_DS(WORDCOUNT_TEXT_CHSP,		DLG_WordCount_Characters_Sp);
 	_DS(WORDCOUNT_TEXT_PARA,		DLG_WordCount_Paragraphs);
 	_DS(WORDCOUNT_TEXT_LINE,		DLG_WordCount_Lines);
-
-	// set initial state
-	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PAGE,		m_count.page);
-	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORD,		m_count.word);
-	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CH,			m_count.ch_no);
-	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,		m_count.ch_sp);
-	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
-	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
+	_DS(WORDCOUNT_TEXT_WORDSONLY,	DLG_WordCount_Words_No_Notes);
 	
+	_updateWindowData ();
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 1;							// 1 == we did not call SetFocus()
@@ -323,6 +317,7 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,		m_count.ch_sp);
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORDSONLY,	m_count.words_no_hdrftr);
 
 	// Update the caption in case the name of the document has changed
 	ConstructWindowName();
