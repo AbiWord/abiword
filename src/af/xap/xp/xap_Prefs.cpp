@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "ut_debugmsg.h"
 #include "xap_Prefs.h"
