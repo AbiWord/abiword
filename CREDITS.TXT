@@ -47,6 +47,9 @@ Scott Boesch <scott@abisource.com>			artist, trade shows
 Brian Bosse <bhb002@drake.edu>
 Justin Bradford <justin@ukans.edu>			Word import,
 							spell dialog
+Jean Brefort <jean.brefort@normalesup.org>              Build System for 
+                                                        abimathview plugin
+
 John Brewer <jbrewer@jera.com>				started MacOS port
 Thomas Briggs <tom@sane.com>				Lots of Win32 work, Bug 919
 Sean Bright <elixer@erols.com>				Fix Page# Preview align bug
