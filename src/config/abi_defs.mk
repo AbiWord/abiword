@@ -465,20 +465,46 @@ endif
 ## We should change this when get non-gtk versions on unix....
 
 ifeq ($(ABI_NATIVE),unix)
-ifdef ABI_OPT_GNOME
+
+# ABI_OPT_BONOBO turns on ABI_OPT_GNOME
+# But we should build without gnome by default
+ABI_OPT_GNOME := 0
 ifdef ABI_OPT_BONOBO
-GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print bonobo)
-GNOME_LIBS	:= $(shell $(GNOME_CONFIG) --libs gnomeui gal print bonobo)
-CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME -DHAVE_BONOBO
-else
-GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
-GNOME_LIBS	:= $(shell $(GNOME_CONFIG) --libs gnomeui gal print)
-CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
+	ABI_OPT_GNOME := 1
 endif
+
+# This next bit is ugly so I'll explain my rationale:
+# gnome-config --libs links us against lots of libs that we don't need.
+# This is usually harmless, esp. if you build from source. But say
+# that I build a binary and gnome-config --libs returns -lgnomefont.
+# We don't require gnome-font. Most people don't have gnome-font
+# installed. So when they go to run Abi, it complains about not
+# finding the proper library to link against. This sucks. This is my
+# work-around. It isn't the greatest but it's the best solution that my
+# puny intellect could come up with, at least in the short-term ;^)
+ifeq ($(ABI_OPT_GNOME),1)
+GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
+GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
+# These also might be needed: -lSM -lICE
+GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L)
+GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lglade-gnome -lglade -lxml -lunicode -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
+
+# the bonobo target is known not to work properly yet
+ifdef ABI_OPT_BONOBO
+GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)
+GNOME_CFLAGS    += -DHAVE_BONOBO
+GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil
+ABI_OPTIONS+=Bonobo:On
+else
+ABI_OPTIONS+=Bonobo:Off
+endif
+
+CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
 EXTRA_LIBS	+=	$(GNOME_LIBS)
 ABI_GNOME_DIR		= gnome
 ABI_GNOME_PREFIX	= Gnome
 ABI_OPTIONS+=Gnome:On
+
 else
 GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
