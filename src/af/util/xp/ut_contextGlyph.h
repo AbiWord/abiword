@@ -72,6 +72,9 @@ class UT_contextGlyph
 {
 public:
 	UT_contextGlyph();
+	UT_contextGlyph(bool bNoInit);
+	void static_destructor();
+	
 	UT_UCSChar getGlyph(const UT_UCSChar * code,
 						const UT_UCSChar * prev,
 						const UT_UCSChar * next,
@@ -87,7 +90,10 @@ public:
 		
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;
-	
+
+	bool  isNotFirstInLigature(UT_UCS4Char c) const;
+	bool  isNotSecondInLigature(UT_UCS4Char c) const;
+	bool  isNotContextSensitive(UT_UCS4Char c) const;
 		
 private:
 	GlyphContext _evalGlyphContext( const UT_UCSChar * code,
@@ -98,11 +104,12 @@ private:
 								XAP_Prefs       * pPrefs,
 								UT_StringPtrMap * phChanges,
 								void            * data);
-										
-	static LetterData	  * s_pGlyphTable;
-	static UCSRange 	  * s_pIgnore;
-	static LigatureData	  * s_pLigature;
-	static LigatureData	  * s_pLigRev;
+
+	void _generateNoLigatureTable();
+	void _generateNoLigature2Table();
+	void _generateNoShapingTable();
+	
+
 	static bool 		    s_bInit;
 	static UT_uint32	    s_iGlyphTableSize;
 	static bool             s_bSmartQuotes;
