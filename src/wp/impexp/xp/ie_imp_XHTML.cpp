@@ -42,6 +42,7 @@
 
 #include "ie_types.h"
 #include "ie_impGraphic.h"
+#include "ie_impexp_HTML.h"
 #include "ie_imp_XHTML.h"
 
 #define CSS_MASK_INLINE (1<<0)
@@ -261,80 +262,20 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 /*****************************************************************/
 /*****************************************************************/
 
-#define TT_OTHER		0
-#define TT_DOCUMENT		1		// a document <html>
-#define TT_DIV  		2		// a section <div>
-#define TT_P    		3		// a paragraph <p>
-#define TT_INLINE		4		// inline span of text <span>
-#define TT_BREAK		5		// a forced line-break <br>
-#define TT_BODY                 6               // a body <body>
-#define TT_TR                   7               // a table row <tr>
-#define TT_H1                   8               // heading 1 <h1>
-#define TT_H2                   9               // heading 2 <h2>
-#define TT_H3                   10              // heading 3 <h3>
-#define TT_H4                   11              // heading 4 <h4>
-#define TT_H5                   12              // heading 5 <h5>
-#define TT_H6                   13              // heading 6 <h6>
-
-// bold elements
-#define TT_B                    14              // bold <b>
-#define TT_EM                   15              // emphasis
-#define TT_STRONG               16              // strong
-#define TT_DFN                  17              // definitional
-#define TT_CODE                 18              // programming language code
-
-// italic elements
-#define TT_I                    19              // italic <i>
-#define TT_ADDRESS              20              // author's address
-#define TT_SAMP                 21              // sample
-#define TT_KBD                  22              // keyboard
-#define TT_VAR                  23              // variable (programming)
-#define TT_CITE                 24              // citation
-#define TT_Q                    25              // quote
-
-#define TT_SUP                  26              // superscript
-#define TT_SUB                  27              // subscript
-#define TT_S                    28              // strike-through
-#define TT_STRIKE               29              // strike-through
-
-#define TT_FONT                 30              // mother of all...
-#define TT_BLOCKQUOTE           31              // blockquote
-#define TT_UNDERLINE            32              // underline
-
-#define TT_OL                   33              // ordered list
-#define TT_UL                   34              // unordered list
-#define TT_LI                   35              // list item
-#define TT_HEAD                 36              // head tag
-#define TT_META                 37              // meta info tag
-#define TT_TITLE                38              // title tag
-#define TT_STYLE                39              // style tag
-
-#define TT_PRE					40				// preformatted tag
-
-#define TT_HREF                 41              // <a> anchor tag
-
-#define TT_DL                   42
-#define TT_DT                   43
-#define TT_DD                   44
-
-#define TT_TT                   45
-
-#define TT_IMG                  46
-
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
 static struct xmlToIdMapping s_Tokens[] =
 {
-	{ "a",			TT_HREF			},
+	{ "a",			TT_A			},
 	{ "address",	TT_ADDRESS		},
 	{ "b",			TT_B			},
 	{ "blockquote",	TT_BLOCKQUOTE	},
 	{ "body",		TT_BODY			},
-	{ "br",			TT_BREAK		},
+	{ "br",			TT_BR			},
 	{ "cite",		TT_CITE			},
 	{ "code",		TT_CODE			},
 	{ "dd",			TT_DD			},
-	{ "def",		TT_DFN			},
+	{ "dfn",		TT_DFN			},
 	{ "div",		TT_DIV			},
 	{ "dl",			TT_DL			},
 	{ "dt",			TT_DT			},
@@ -347,7 +288,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{ "h5",			TT_H5			},
 	{ "h6",			TT_H6			},
 	{ "head",		TT_HEAD			},
-	{ "html",		TT_DOCUMENT		},
+	{ "html",		TT_HTML			},
 	{ "i",			TT_I			},
 	{ "img",		TT_IMG			},
 	{ "kbd",		TT_KBD			},
@@ -359,7 +300,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{ "q",			TT_Q			},
 	{ "s",			TT_S			},
 	{ "samp",		TT_SAMP			},
-	{ "span",		TT_INLINE		},
+	{ "span",		TT_SPAN			},
 	{ "strike",		TT_STRIKE		},
 	{ "strong",		TT_STRONG		},
 	{ "style",		TT_STYLE		},
@@ -368,7 +309,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{ "title",		TT_TITLE		},
 	{ "tr",			TT_TR			},	
 	{ "tt",			TT_TT			},
-	{ "u",			TT_UNDERLINE	},
+	{ "u",			TT_U			},
 	{ "ul",			TT_UL			},
 	{ "var",		TT_VAR			}
 };
@@ -593,7 +534,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	switch (tokenIndex)
 	{
-	case TT_DOCUMENT:
+	case TT_HTML:
 	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_Doc;
@@ -664,7 +605,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 
-	case TT_UNDERLINE:
+	case TT_U:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
@@ -690,8 +631,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 		
-	case TT_S:
-	case TT_STRIKE:
+	case TT_S://	case TT_STRIKE:
 		//UT_DEBUGMSG(("Strike\n"));
 		X_VerifyParseState(_PS_Block);
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
@@ -988,7 +928,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 	}
 	
-	case TT_INLINE:
+	case TT_SPAN:
 		{
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
@@ -1019,7 +959,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		return;
 
-	case TT_BREAK:
+	case TT_BR:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		if(m_parseState == _PS_Block)
 		{
@@ -1028,7 +968,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		return;
 
-	case TT_HREF:
+	case TT_A:
 	{
 		const XML_Char * p_val = 0;
 		p_val = _getXMLPropValue((const XML_Char *)"xlink:href", atts);
@@ -1282,7 +1222,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
 	switch (tokenIndex)
 	{
-	case TT_DOCUMENT:
+	case TT_HTML:
 	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Init;
@@ -1347,13 +1287,12 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_DFN:
 	case TT_STRONG:
 	case TT_EM:	
-	case TT_S:
-	case TT_STRIKE:
+	case TT_S://	case TT_STRIKE:
 	case TT_SUP:
 	case TT_SUB:
 	case TT_B:
 	case TT_I:
-	case TT_UNDERLINE:
+	case TT_U:
 	case TT_FONT:
 	case TT_TT:
 		UT_ASSERT(m_lenCharDataSeen==0);
@@ -1364,7 +1303,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		return;
 		
-	case TT_INLINE:
+	case TT_SPAN:
 		UT_ASSERT(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
@@ -1373,7 +1312,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		getDoc()->appendFmt(&m_vecInlineFmt);
 		return;
 
-	case TT_BREAK:						// not a container, so we don't pop stack
+	case TT_BR:						// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 //		X_VerifyParseState(_PS_Block);
@@ -1385,7 +1324,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_STYLE:
 		return;
 
-	case TT_HREF:
+	case TT_A:
 		if( m_szBookMarkName )
 		{
 			UT_sint32 i;
@@ -1411,7 +1350,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		else if (m_parseState == _PS_Block)
 		{
 			/* if (m_parseState == _PS_Sec) then this is an anchor outside
-			 * of a block, not a hyperlink (see TT_HREF in startElement)
+			 * of a block, not a hyperlink (see TT_A in startElement)
 			 */
  			X_CheckError(getDoc()->appendObject(PTO_Hyperlink,0));
 		}
