@@ -63,10 +63,10 @@ AP_UnixDialog_InsertBookmark::~AP_UnixDialog_InsertBookmark(void)
 
 void AP_UnixDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	UT_return_if_fail(mainWindow);
 
 	// Populate the window's data items
 	_setList();
@@ -128,7 +128,19 @@ void AP_UnixDialog_InsertBookmark::_setList(void)
 	    g_list_free (glist);
 	  }
 	
-	gtk_entry_set_text(GTK_ENTRY(m_comboEntry), getBookmark());	
+	if (getBookmark() && strlen(getBookmark()) > 0)
+	  {
+	    gtk_entry_set_text(GTK_ENTRY(m_comboEntry), getBookmark());
+	  }
+	else
+	  {
+	    const UT_UCS4String suggestion = getSuggestedBM ();
+	    if (suggestion.size()>0)
+	      {
+		UT_UTF8String utf8 (suggestion);
+		gtk_entry_set_text (GTK_ENTRY(m_comboEntry), utf8.utf8_str());
+	      }
+	  }
 }
 
 void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * container )
@@ -173,7 +185,6 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_DELETE, BUTTON_DELETE);
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK);
-
 
   gtk_widget_grab_focus (m_comboEntry);
   gtk_widget_grab_default (m_comboEntry);

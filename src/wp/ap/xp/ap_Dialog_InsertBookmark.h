@@ -25,6 +25,7 @@
 #include "fv_View.h"
 #include "pd_Document.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 
 #define BOOKMARK_SIZE_LIMIT 30
 class XAP_Frame;
@@ -47,9 +48,24 @@ public:
 	const XML_Char *	getBookmark() const;
 	void				setBookmark(const XML_Char * mark);
 	void				setDoc(FV_View * pView);
+
+	void setSuggestedBM(const UT_UCS4Char * str)
+	  {
+	    if (str)
+	      m_suggested = str;
+	    else
+	      m_suggested.clear ();
+	  }
 	
+	UT_UCS4String getSuggestedBM () const
+	  {
+	    return m_suggested;
+	  }
+
 private:
 	PD_Document *		m_pDoc;
+
+	UT_UCS4String m_suggested;
 	
 	AP_Dialog_InsertBookmark::tAnswer	m_answer;
 	XML_Char			m_pBookmark[BOOKMARK_SIZE_LIMIT + 1];

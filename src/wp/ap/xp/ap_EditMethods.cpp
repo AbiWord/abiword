@@ -4108,8 +4108,14 @@ static bool s_doBookmarkDlg(FV_View * pView, bool /*bInsert*/)
 	if (!pDialog)
 		return false;
 
-	pDialog->setDoc(pView);
+	if (!pView->isSelectionEmpty())
+	{
+		UT_UCSChar * buffer = pView->getSelectionText();
+		pDialog->setSuggestedBM(buffer);
+		FREEP(buffer);
+	}
 
+	pDialog->setDoc(pView);
 	pDialog->runModal(pFrame);
 
 	AP_Dialog_InsertBookmark::tAnswer ans = pDialog->getAnswer();
