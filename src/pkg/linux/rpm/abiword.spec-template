@@ -48,8 +48,7 @@
 %if %{enable_impexp}
 %define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-pdb --enable-psion --enable-pw --enable-t602 --enable-wml --enable-xhtml --enable-xsl-fo --enable-librsvg --enable-docbook %{?_with_libgsf:--enable-OpenWriter --enable-sdw} %{!?_with_libgsf:--disable-OpenWriter --disable-sdw} %{?_with_libwpd:--enable-wordperfect} %{!?_with_libwpd:--disable-wordperfect}
 %else
-%define plugin_impexp --disable-gdkpixbuf --disable-bmp --disable-jpeg --disable-wmf --disable-applix --disable-bz2abw --disable-clarisworks --disable-docbook
---disable-eml --disable-hancom --disable-hrtext --disable-html --disable-iscii-text --disable-kword --disable-latex --disable-mif --disable-mswrite --disable-nroff --disable-pdb --disable-psion --disable-pw --disable-t602 --disable-wml --disable-xhtml --disable-xsl-fo --disable-OpenWriter --disable-sdw --disable-wordperfect
+%define plugin_impexp --disable-gdkpixbuf --disable-bmp --disable-jpeg --disable-wmf --disable-applix --disable-bz2abw --disable-clarisworks --disable-docbook --disable-eml --disable-hancom --disable-hrtext --disable-html --disable-iscii-text --disable-kword --disable-latex --disable-mif --disable-mswrite --disable-nroff --disable-pdb --disable-psion --disable-pw --disable-t602 --disable-wml --disable-xhtml --disable-xsl-fo --disable-OpenWriter --disable-sdw --disable-wordperfect
 %endif
 
 
