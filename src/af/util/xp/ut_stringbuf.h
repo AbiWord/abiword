@@ -55,6 +55,9 @@ public:
 private:
 	void	grow_nocopy(size_t n);
 	void	grow_copy(size_t n);
+	void	grow_common(size_t n, bool bCopy);
+
+	static void copy(char_type* pDest, const char_type* pSrc, size_t n);
 
 	char_type*	m_psz;
 	char_type*	m_pEnd;
@@ -89,6 +92,9 @@ public:
 private:
 	void	grow_nocopy(size_t n);
 	void	grow_copy(size_t n);
+	void	grow_common(size_t n, bool bCopy);
+
+	static void copy(char_type* pDest, const char_type* pSrc, size_t n);
 
 	char_type*	m_psz;
 	char_type*	m_pEnd;
