@@ -482,7 +482,10 @@ static int debug = 0;
   if (debug) print_double_string (w, s1, sz1, s2, sz2)
 
 
-extern void printchar ();
+void printchar(char c)
+{
+    printf("%c", c);
+}
 
 /* Print the fastmap in human-readable form.  */
 
