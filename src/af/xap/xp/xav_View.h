@@ -110,6 +110,7 @@ public:
 	virtual void	cmdRedo(UT_uint32 count) = 0;
 	virtual UT_Error	cmdSave(void) = 0;
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft) = 0;
+	virtual UT_Error        cmdSaveAs(const char * szFilename, int ieft, bool cpy) = 0;
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
 	virtual bool 	isSelectionEmpty(void) const = 0;

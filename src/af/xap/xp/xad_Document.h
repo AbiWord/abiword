@@ -50,6 +50,7 @@ public:
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
 
 	virtual UT_Error   		saveAs(const char * szFilename, int ieft) = 0;
+	virtual UT_Error                saveAs(const char * szFilename, int ieft, bool cpy) = 0;
 	virtual UT_Error                save(void) = 0;
 
    	// "ignore all" list for spell check

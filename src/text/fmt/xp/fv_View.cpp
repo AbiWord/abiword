@@ -6443,16 +6443,20 @@ UT_Error FV_View::cmdSave(void)
 	return tmpVar;
 }
 
-
-UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft)
+UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft, bool cpy)
 {
-	UT_Error tmpVar;
-	tmpVar = m_pDoc->saveAs(szFilename, ieft);
-	if (!tmpVar)
+  	UT_Error tmpVar;
+	tmpVar = m_pDoc->saveAs(szFilename, ieft, cpy);
+	if (!tmpVar && cpy)
 	{
 		notifyListeners(AV_CHG_SAVE);
 	}
 	return tmpVar;
+}
+
+UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft)
+{
+  return cmdSaveAs(szFilename, ieft, true);
 }
 
 

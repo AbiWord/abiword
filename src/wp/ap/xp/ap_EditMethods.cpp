@@ -1583,21 +1583,16 @@ Defun1(filePreviewWeb)
 
   tmpFileName = UT_tmpnam(NULL);
 
-  UT_Error errSaved;
+  UT_Error errSaved = UT_OK;
 
   // we do this because we don't want to change the default
   // document extension or rename what we're working on
-  FV_View * pView = static_cast<FV_View *>(pAV_View);
-  UT_ASSERT(pView);
-  PD_Document *pDoc = pView->getDocument();
-  UT_ASSERT(pDoc);
-  errSaved = pDoc->saveAs(tmpFileName, (int)IEFT_HTML, false);
+  errSaved = pAV_View->cmdSaveAs(tmpFileName, (int)IEFT_HTML, false);
 
   if(errSaved != UT_OK)
     {
       // throw up a dialog
       s_TellSaveFailed(pFrame, tmpFileName, errSaved);
-      //FREEP(tmpFileName);
       return false;
     }
 
@@ -1606,8 +1601,6 @@ Defun1(filePreviewWeb)
   tmpUrl = UT_catPathname("file://", tmpFileName);
 
   bool bOk = _helpOpenURL(pAV_View, tmpUrl);
-
-  //FREEP(tmpFileName);
   FREEP(tmpUrl);
 
   return bOk;

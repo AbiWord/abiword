@@ -140,6 +140,7 @@ public:
 	virtual void	cmdRedo(UT_uint32 count);
 	virtual UT_Error	cmdSave(void);
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
+	virtual UT_Error        cmdSaveAs(const char * szFilename, int ieft, bool cpy);
 
 	UT_Error		cmdInsertField(const char* szName);
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
@@ -155,8 +156,6 @@ public:
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
-
-	inline virtual PD_Document *    getDocument(void) const {return m_pDoc;}
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
