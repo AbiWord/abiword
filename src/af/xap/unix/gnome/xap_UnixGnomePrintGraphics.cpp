@@ -995,14 +995,14 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 // resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
 //
 	double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
-	UT_sint32 iScreenSize = (UT_sint32) (dScreenSize + 0.5);
+	UT_sint32 iScreenSize = (UT_sint32) (dScreenSize + 0.05);
 	dScreenSize = (double) iScreenSize;
 
 	double ratToLayout = (double) UT_LAYOUT_UNITS / (double) getScreenResolution();
 	UT_sint32 iSizeLayout = (UT_sint32) (dScreenSize * ratToLayout + 0.5);
 
 	double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
-	UT_sint32 iSize = (UT_sint32) (dPaperSize + 0.5);
+	UT_sint32 iSize = (UT_sint32) (dPaperSize + 0.05);
     
 	
 	if( m_bLayoutResolutionModeEnabled)

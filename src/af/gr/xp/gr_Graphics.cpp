@@ -306,8 +306,9 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 	 We do this because the convert Dimension code is actually
 	 lossy in that when we put a conversion of 12pt in at 72DPI
 	 then we end up getting 11pt back which really kind of licks.
+	 We have to round down to fix bug 1521.
 	*/
-	return (UT_sint32) ((dInches * dResolution) + 0.5);
+	return (UT_sint32) ((dInches * dResolution) + 0.05);
 }
 
 UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
