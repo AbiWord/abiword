@@ -44,12 +44,14 @@ public:
 
     void                            customChanged(void);
 	void                            applyClicked(void);
-	void                            typeChanged( int type);
+	void                            styleChanged(int type);
 	void                            previewExposed(void);
-	void                            setMemberVariables(void);
+	void							setXPFromLocal(void);
 	/* Just Plain Useful Functions */
 	void                            fillWidgetFromDialog(void);
 	void                            updateDialog(void);
+	void 							updateFromDocument(void);
+	bool 							dontUpdate(void);
 	static void                     autoupdateLists(UT_Timer * pTimer);
 
 protected:
@@ -59,7 +61,8 @@ protected:
 	void                            _fillNumberedStyleMenu( PtWidget_t *listmenu);
 	void                            _fillBulletedStyleMenu( PtWidget_t *listmenu);
 	void                            _fillNoneStyleMenu( PtWidget_t *listmenu);
-	void                            _setData(void);
+	void 							_setRadioButtonLabels(void); 
+	void 							_loadXPDataIntoLocal(void);
 	void                            _gatherData(void);
 
 	PtWidget_t *					m_mainWindow;
@@ -68,6 +71,7 @@ protected:
 	bool                         m_bDestroy_says_stopupdating;
 	bool                         m_bAutoUpdate_happening_now;
 	bool                         m_bisCustomFrameHidden;
+	bool						 m_bDontUpdate;
 	UT_Timer *                      m_pAutoUpdateLists;
 
 	//List things ...
@@ -89,6 +93,7 @@ protected:
 	PtWidget_t * m_wCustomLabel;
 	//Custom box entries
 	PtWidget_t * m_wDelimEntry;
+	PtWidget_t * m_wDecimalEntry;
 	PtWidget_t * m_wListStyleBox;
 	PtWidget_t * m_wLevelSpin;
 	PtWidget_t * m_wStartSpin;

@@ -59,10 +59,33 @@ AP_QNXDialog_Lists::~AP_QNXDialog_Lists(void)
 static int s_customChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
+	dlg->setDirty();
 	dlg->customChanged();
 	return Pt_CONTINUE;
 }
 
+/*
+ The style is the sub-type of the list.
+*/
+static int s_styleChanged (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
+	PtListCallback_t *lcb = (PtListCallback_t *)info->cbdata;
+
+	if (info->reason == Pt_CB_SELECTION && info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
+		return Pt_CONTINUE;
+	}
+
+  	dlg->setDirty();
+	dlg->setXPFromLocal();
+	dlg->previewExposed();
+	
+	return Pt_CONTINUE;
+}
+
+/*
+ The type is the main type of the list: None, Numbered, Bulleted
+*/
 static int s_typeChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
@@ -72,25 +95,18 @@ static int s_typeChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 		return Pt_CONTINUE;
 	}
 
-	dlg->typeChanged(lcb->item_pos - 1);
-	dlg->setMemberVariables();
-	dlg->previewExposed();
-	return Pt_CONTINUE;
-}
-
-static int s_styleChanged (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
-
-	if (info->reason == Pt_CB_SELECTION && info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
+/*
+	if(dlg->dontUpdate()) {
 		return Pt_CONTINUE;
 	}
+*/
 
-	dlg->setMemberVariables();
-	dlg->previewExposed();
+	dlg->setDirty();
+	/* 0: None 1: Bullet 2: Numbered */
+	dlg->styleChanged(lcb->item_pos - 1);
+
 	return Pt_CONTINUE;
 }
-
 
 static int s_applyClicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
@@ -137,7 +153,7 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 
 static int s_update (void)
 {
-	printf("Static update \n");
+	printf("TODO: Static update \n");
 //	Current_Dialog->updateDialog();
 	return true;
 }
@@ -149,6 +165,7 @@ void AP_QNXDialog_Lists::activate()
 {
 	ConstructWindowName();
 	PtSetResource(m_mainWindow, Pt_ARG_WINDOW_TITLE, m_WindowName, NULL);
+	m_bDontUpdate = false;
 	updateDialog();
 	//Raise the window ...
 }
@@ -181,6 +198,8 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 	m_mainWindow = _constructWindow ();
 	UT_ASSERT (m_mainWindow);
 
+	clearDirty();
+
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid = (UT_sint32) getDialogId ();
 	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
@@ -211,9 +230,11 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 	}
 
 	// Populate the dialog
-	fillWidgetFromDialog();
+	updateDialog();
+	m_bDontUpdate = false;
 
 	// Now Display the dialog
+	UT_QNXCenterWindow(NULL, m_mainWindow);
 	PtRealizeWidget(m_mainWindow);
 
 	// Next construct a timer for auto-updating the dialog
@@ -231,73 +252,67 @@ void    AP_QNXDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 	AP_QNXDialog_Lists * pDialog =  (AP_QNXDialog_Lists *) pTimer->getInstanceData();
 	// Handshaking code
 
-	if( pDialog->m_bDestroy_says_stopupdating != true)
-	{
-		pDialog->m_bAutoUpdate_happening_now = true;
-		pDialog->updateDialog();
-		pDialog->m_bAutoUpdate_happening_now = false;
+	if(pDialog->isDirty()) {
+		return;
 	}
+
+/*
+	if(pDialog->getAvView()->getTick() != pDialog->getTick())
+	{
+		pDialog->setTick(pDialog->getAvView()->getTick());
+		if( pDialog->m_bDestroy_says_stopupdating != true)
+		{
+			pDialog->m_bAutoUpdate_happening_now = true;
+			pDialog->updateDialog();
+			pDialog->previewExposed();
+			pDialog->m_bAutoUpdate_happening_now = false;
+		}
+	}
+*/
 }
 
 void AP_QNXDialog_Lists::previewExposed(void)
 {
 	if(m_pPreviewWidget) {
+		m_bisCustomized = true; //Why is this so?
 		event_PreviewAreaExposed();
 	}
 } 
 
 
-void  AP_QNXDialog_Lists::typeChanged(int style)
+/*
+ THIS FUNCTION IS MIS-NAMED:  This is really the case of the
+_type_ changing, which results in a changing of the styles
+combo box.
+*/
+void AP_QNXDialog_Lists::styleChanged(int type)
 {
-	int *currenttype;
-
-	currenttype = NULL;
-	PtGetResource(m_wListType_menu, Pt_ARG_CBOX_SEL_ITEM, &currenttype, 0);
-
-	if (!currenttype) {
-		UT_DEBUGMSG(("typeChanged(%d): Current list type is not set .. how odd", style));
-	}
-	else if (*currenttype == style + 1) {
-		UT_DEBUGMSG(("typeChanged(%d) no change in style", style));
-		return;
-	} else  {
-		UT_DEBUGMSG(("typeChanged(%d) from old style %d", style, *currenttype));
-	}
-
-	//TODO: Make these #define's or enumerated types
-	switch(style) {
+	//Fill in the entries for the appropriate list
+	switch(type) {
 	case 0:
 		_fillNoneStyleMenu(m_wListStyle_menu);
+		m_newListType = NOT_A_LIST;
 		break;
 	case 1:
 		_fillBulletedStyleMenu(m_wListStyle_menu);
+        m_newListType = BULLETED_LIST;
 		break;
 	case 2:
 		_fillNumberedStyleMenu(m_wListStyle_menu);
+        m_newListType = NUMBERED_LIST;
 		break;
 	default:
 		UT_ASSERT(0);
 	}
 
-	UT_uint32 i;
-	printf("Set up %d different styles:\n  ", m_styleVector.getItemCount());
-	for (i=0; i<m_styleVector.getItemCount(); i++) {
-		void *junk;
-		junk = m_styleVector.getNthItem(i);
-		printf("%d, ", (int)junk);
-	}
-	printf("\n");
+	//When we re-fill the style list, set it to the first item
+	UT_QNXComboSetPos(m_wListStyle_menu, 1);
 
-	//Just in case we come from the _setData() call then make sure the item is set
-	PtSetResource(m_wListType_menu, Pt_ARG_CBOX_SEL_ITEM, style + 1, 0);
-	//When we are changed via a callback we need a default, when we are
-	//called from _setData() then we are going to explicitly set a style
-	PtSetResource(m_wListStyle_menu, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
-
+	setXPFromLocal();
 	previewExposed();
 }
 
-void  AP_QNXDialog_Lists::setMemberVariables(void)
+void  AP_QNXDialog_Lists::setXPFromLocal(void)
 {
 	unsigned short *value;
 
@@ -316,10 +331,7 @@ void  AP_QNXDialog_Lists::setMemberVariables(void)
 	}
 	printf("setMemberVariable newListType to %d from index %d \n", m_newListType, *value);
 
-	if(m_bisCustomized == true)
-	{
-	        _gatherData();
-	}
+	_gatherData();
 
 	m_bStartNewList = false;
 	m_bApplyToCurrent = false;
@@ -339,56 +351,48 @@ void  AP_QNXDialog_Lists::setMemberVariables(void)
 	if ((*value) & Pt_SET) {
 		m_bStartSubList = true;
 	}
-
 }
 
 
 void  AP_QNXDialog_Lists::applyClicked(void)
 {
-	setMemberVariables();
+	setXPFromLocal();
 	previewExposed();
 	Apply();
 }
 
 void  AP_QNXDialog_Lists::customChanged(void)
 {
-	if(m_bisCustomFrameHidden == true) {
-		fillWidgetFromDialog();
-
-		PtRealizeWidget(m_wCustomFrame);
-		PtExtentWidget(PtWidgetParent(m_wCustomFrame));
-		PtExtentWidget(PtWidgetParent(PtWidgetParent(m_wCustomFrame)));
-		PtExtentWidget(m_mainWindow);
-
-		m_bisCustomFrameHidden = false;
-		m_bisCustomized = true;
-		setMemberVariables();
-		previewExposed();
-	} else {
-		PtUnrealizeWidget(m_wCustomFrame);
-
-		m_bisCustomFrameHidden = true;
-		m_bisCustomized = false;
-		_setData();
-	}
+	fillUncustomizedValues();
+	_loadXPDataIntoLocal();
 }
 
-void AP_QNXDialog_Lists::fillWidgetFromDialog(void)
+void AP_QNXDialog_Lists::updateFromDocument(void)
 {
- 	PopulateDialogData();
-	_setData();
+	PopulateDialogData();
+	_setRadioButtonLabels();
+	m_newListType = m_iListType;
+	_loadXPDataIntoLocal();
 }
 
 void AP_QNXDialog_Lists::updateDialog(void)
 {
-	List_Type oldlist = m_iListType;
-	if(m_bisCustomized == false)
-		_populateWindowData();
-	if((oldlist != m_iListType) && (m_bisCustomized == false))
-		m_newListType = m_iListType;
-	if(m_bisCustomized == false)
-		_setData();
+	if(!isDirty()) {
+		updateFromDocument();
+	} else {
+		setXPFromLocal();
+	}
 }
+
+#if 0
+void AP_UnixDialog_Lists::setAllSensitivity(void)
+{ 
+	PopulateDialogData();
+	if(m_isListAtPoint == true)
+	{
+	}
+}
+#endif
 
 PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 {
@@ -396,7 +400,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtWidget_t *lblStyle, *listStyle;
 	PtWidget_t *lblType, *listType;
 	PtWidget_t *togCustomize, *grpCustomize;
-	PtWidget_t *lblFormat;
+	PtWidget_t *lblFormat, *lblFormat2;
 	PtWidget_t *numListLevel, *numListAlign, *numIndentAlign, *numStart;
 	PtWidget_t *radnewlist, *radexisting, *radsublist;
 	PtWidget_t *butOK, *butCancel;
@@ -416,6 +420,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
    	vgroup = PtCreateWidget(PtGroup, m_mainWindow, n, args);
 
 	PtWidget_t *hgroup;
@@ -461,6 +466,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	listStyle = PtCreateWidget(PtComboBox, group, n, args);	
 	PtAddCallback(listStyle, Pt_CB_SELECTION, s_styleChanged, this);
 
+#if 0
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Customize), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_OUTLINE, 0);
@@ -468,6 +474,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	togCustomize = PtCreateWidget(PtToggleButton, ctlgroup, n, args);	
 	PtAddCallback(togCustomize, Pt_CB_ACTIVATE, s_customChanged, this);
 	m_bisCustomFrameHidden = true;
+#endif
 
 	n = 0;
 #define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
@@ -476,8 +483,11 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
                                            Pt_RIGHT_OUTLINE | Pt_RIGHT_BEVEL)
 	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
 	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
+/*
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED);
+*/
 	grpCustomize = PtCreateWidget(PtGroup, ctlgroup, n, args);
+	pretty_group(grpCustomize, pSS->getValue(AP_STRING_ID_DLG_Lists_Customize));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -508,28 +518,41 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
 	lblFormat = PtCreateWidget(PtText, group, n, args);	
+#if 0
+	/* This is for something ... I just don't know what */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Font ...", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	lblFormat2 = PtCreateWidget(PtText, group, n, args);	
+#endif
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtButton, group, n, args);	
+	PtWidget_t *font = PtCreateWidget(PtComboBox, group, n, args);	
+	//TODO: Fill this with the current fonts 
+	{
+		text = "Current Font";
+		PtListAddItems(font, &text, 1, 0);
+	}
+
 	n = 0;
 	numListLevel = PtCreateWidget(PtNumericInteger, group, n, args);	
-	PtAddCallback(numListLevel, Pt_CB_ACTIVATE, s_styleChanged, this);
+	PtAddCallback(numListLevel, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
 	n = 0;
 	numStart = PtCreateWidget(PtNumericInteger, group, n, args);	
-	PtAddCallback(numStart, Pt_CB_ACTIVATE, s_styleChanged, this);
+	PtAddCallback(numStart, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
 	n = 0;
 	numListAlign = PtCreateWidget(PtNumericFloat, group, n, args);	
-	PtAddCallback(numListAlign, Pt_CB_ACTIVATE, s_styleChanged, this);
+	PtAddCallback(numListAlign, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
 	n = 0;
 	numIndentAlign = PtCreateWidget(PtNumericFloat, group, n, args);	
-	PtAddCallback(numIndentAlign, Pt_CB_ACTIVATE, s_styleChanged, this);
+	PtAddCallback(numIndentAlign, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
 
 	/*** Create the preview in the next dialog ***/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  300, 0);
 	m_wPreviewGroup = PtCreateWidget(PtGroup, hgroup, n, args);
+	pretty_group(m_wPreviewGroup, "Preview");
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
@@ -560,10 +583,13 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 		
 	/*** Then we have the final cancellation buttons ***/
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_RIGHT, 0);
 	group = PtCreateWidget(PtGroup, vgroup, n, args);
+/*
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	PtCreateWidget(PtLabel, group, n, args);	
+*/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Apply), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -577,6 +603,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 	/** Done **/
 	m_wDelimEntry = lblFormat;
+	m_wDecimalEntry = lblFormat2;
 
 	m_wCustomFrame = grpCustomize;
 	m_wCustomLabel = togCustomize;
@@ -695,40 +722,45 @@ void AP_QNXDialog_Lists::_fillBulletedStyleMenu( PtWidget_t *listmenu)
 	m_styleVector.addItem((void *)HEART_LIST);
 }
 
-void AP_QNXDialog_Lists::_populateWindowData (void) 
+void AP_QNXDialog_Lists::_setRadioButtonLabels(void) 
 {
-  //	char *tmp;
+	//	char *tmp;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	PopulateDialogData();
-	
-	if(m_isListAtPoint == true) {
-	  // Button 0 is stop list, button 2 is startsub list
-		PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List), 0);
-		PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_Sub), 0);
-	} else {
-	  // Button 0 is Start New List, button 2 is resume list
-		PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New), 0);
-		PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Resume), 0);
-	}
+	// Button 0 is Start New List, button 2 is resume list
+	PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New), 0);
+	PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Resume), 0);
+/*
+	gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New));
+	gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Resume));
+*/
 }
 
-void AP_QNXDialog_Lists::_setData(void)
+//
+// This function reads the various memeber variables and loads them into
+// into the dialog variables.
+//
+void AP_QNXDialog_Lists::_loadXPDataIntoLocal(void)
 {
-	double indent;
+	int i;
+	double d;
 
-	PtSetResource(m_wLevelSpin, Pt_ARG_NUMERIC_VALUE, m_iLevel, 0);
+	m_bDontUpdate = true;
 
-	indent = m_fAlign;
-	PtSetResource(m_wAlignListSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
+	UT_DEBUGMSG(("_loadXP newListType = %d \n",m_newListType));
+	
+	//PtSetResource(m_wLevelSpin, Pt_ARG_NUMERIC_VALUE, m_iLevel, 0);
 
-	indent = m_fAlign + m_fIndent;
-	if( indent < 0.0) {
-		m_fIndent = - m_fAlign;
-		indent = 0.0;
-		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
+	d = m_fAlign;
+	PtSetResource(m_wAlignListSpin, Pt_ARG_NUMERIC_VALUE, &d, 0);
+
+	d = m_fAlign + m_fIndent;
+	if(d < 0.0) {
+		m_fIndent = -m_fAlign;
+		d = 0.0;
+		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &d, 0);
 	} else {
-		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
+		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &d, 0); 
 	}
 
 	//
@@ -737,45 +769,51 @@ void AP_QNXDialog_Lists::_setData(void)
 #if 0
 	if(strcmp((char *) m_pszFont,"NULL") == 0 )
 	{
-                gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
+		gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
 	}
 	else
 	{
-	        for(i=0; i < (gint) g_list_length(m_glFonts);i++)
+		for(i=0; i < (gint) g_list_length(m_glFonts);i++)
 		{
-		         if(strcmp((char *) m_pszFont,(char *) g_list_nth_data(m_glFonts,i)) == 0)
-		                 break;
+			if(strcmp((char *) m_pszFont,(char *) g_list_nth_data(m_glFonts,i)) == 0)
+				break;
 		}
 		if(i < (gint) g_list_length(m_glFonts))
 		{
-                         gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), i+ 1 );
+			gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), i+ 1 );
 		}
 		else
 		{
-                         gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
+			gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
 		}
 	}
-#else
 #endif
 
 	PtSetResource(m_wStartSpin, Pt_ARG_NUMERIC_VALUE, m_iStartValue, 0);
 
+#if 0
+	PtSetResource(m_wDecimalEntry, Pt_ARG_TEXT_STRING, m_pszDecimal, 0);
+#endif
 	PtSetResource(m_wDelimEntry, Pt_ARG_TEXT_STRING, m_pszDelim, 0);
 
-	//This potentially causes a loop
-	printf("_setData with list style/type %d \n", m_newListType);
-	if (IS_NONE_LIST_TYPE(m_newListType)) {
-		typeChanged(0);
-	} else if (IS_BULLETED_LIST_TYPE(m_newListType)) {
-		typeChanged(1);
-	} else if (IS_NUMBERED_LIST_TYPE(m_newListType)) {
-		typeChanged(2);
+	//
+	// Now set the list type and style
+	List_Type save = m_newListType;
+	if(m_newListType == NOT_A_LIST) {
+		styleChanged(0);
+		m_newListType = save;
+		PtSetResource(m_wListType_menu, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
+	} else if(m_newListType >= BULLETED_LIST) {
+		styleChanged(1);
+		m_newListType = save;
+		PtSetResource(m_wListType_menu, Pt_ARG_CBOX_SEL_ITEM, 2, 0);
 	} else {
-		UT_ASSERT(0);
-		typeChanged(0);
+		styleChanged(2);
+		m_newListType = save;
+		PtSetResource(m_wListType_menu, Pt_ARG_CBOX_SEL_ITEM, 3, 0);
 	}
 
-	UT_uint32 i;
+	/* Determine which of the styles should be set */
 	for (i=0; i<m_styleVector.getItemCount(); i++) {
 		void *junk;
 		junk = m_styleVector.getNthItem(i);
@@ -785,9 +823,17 @@ void AP_QNXDialog_Lists::_setData(void)
 			break;
 		}
 	}
-	UT_ASSERT(i < m_styleVector.getItemCount());
+
+	//
+	// HACK to allow an update during this method
+	//
+	m_bDontUpdate = false;
 }
 
+bool AP_QNXDialog_Lists::dontUpdate(void)
+{
+        return m_bDontUpdate;
+}
 
 void AP_QNXDialog_Lists::_gatherData(void)
 {
@@ -796,8 +842,11 @@ void AP_QNXDialog_Lists::_gatherData(void)
 	double *ddata;
 	char   *sdata;
 
+/*
 	PtGetResource(m_wLevelSpin, Pt_ARG_NUMERIC_VALUE, &idata, 0);
 	m_iLevel = *idata;
+*/
+	m_iLevel = 1;
 
 	PtGetResource(m_wAlignListSpin, Pt_ARG_NUMERIC_VALUE, &ddata, 0);
 	m_fAlign = *ddata;
@@ -828,7 +877,6 @@ void AP_QNXDialog_Lists::_gatherData(void)
 	UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  "NULL");
 #endif
 
-	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 
 	PtGetResource(m_wStartSpin, Pt_ARG_NUMERIC_VALUE, &idata, 0);
 	m_iStartValue =  *idata;
@@ -836,6 +884,14 @@ void AP_QNXDialog_Lists::_gatherData(void)
 	sdata = NULL;
 	PtGetResource(m_wDelimEntry, Pt_ARG_TEXT_STRING, &sdata, 0);
 	UT_XML_strncpy((XML_Char *)m_pszDelim, 80, (const XML_Char *) sdata);
+
+#if 0
+	sdata = NULL;
+	PtGetResource(m_wDecimalEntry, Pt_ARG_TEXT_STRING, &sdata, 0);
+	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+#else
+	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+#endif
 }
 
 
