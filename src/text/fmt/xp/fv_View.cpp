@@ -3576,6 +3576,12 @@ void FV_View::cmdSaveAs(const char * szFilename)
 
 void FV_View::cmdCut(void)
 {
+	if (isSelectionEmpty())
+	{
+		// clipboard does nothing if there is no selection
+		return;
+	}
+	
 	cmdCopy();
 	_deleteSelection();
 
