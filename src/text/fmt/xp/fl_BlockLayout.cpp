@@ -3177,6 +3177,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	  {
 	    pNewRun = new fp_FieldMetaKeywordsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	  }
+	else if(UT_strcmp(pszType, "meta_description") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaDescriptionRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
 	else
 	{
 		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

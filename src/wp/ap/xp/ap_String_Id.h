@@ -452,6 +452,7 @@ dcl(FIELD_Document_Language, "Language")
 dcl(FIELD_Document_Coverage, "Coverage")
 dcl(FIELD_Document_Rights, "Rights")
 dcl(FIELD_Document_Keywords, "Keywords")
+dcl(FIELD_Document_Description, "Description")
 
 dcl(DLG_Goto_Title, 					"Go to...")
 dcl(DLG_Goto_Label_Help,			"Choose your target in the left side.\nIf you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.	I.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position.")

@@ -233,6 +233,10 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 			  {
 			    fieldType = fd_Field::FD_Meta_Coverage;
 			  }
+			else if(0 == UT_strcmp(pszType, "meta_description"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Description;
+			  }
 		        else
         		{
 		            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

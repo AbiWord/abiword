@@ -1353,6 +1353,17 @@ class ABI_EXPORT fp_FieldMetaCoverageRun : public fp_FieldRun
   virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
+class ABI_EXPORT fp_FieldMetaDescriptionRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaDescriptionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaDescriptionRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
 // END DOM
 
 class ABI_EXPORT fp_FmtMarkRun : public fp_Run

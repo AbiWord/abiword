@@ -91,6 +91,7 @@ class ABI_EXPORT fd_Field
 		FD_Meta_Keywords,
 		FD_Meta_Contributor,
 		FD_Meta_Coverage,
+		FD_Meta_Description,
 
 		__last_field_dont_use__
 	} FieldType;

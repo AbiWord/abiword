@@ -4700,6 +4700,30 @@ bool fp_FieldMetaCoverageRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+fp_FieldMetaDescriptionRun::fp_FieldMetaDescriptionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaDescriptionRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_DESCRIPTION, value)|| !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
