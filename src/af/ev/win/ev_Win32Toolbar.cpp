@@ -131,14 +131,24 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	UT_ASSERT(m_hwnd);
 
 	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
-	SendMessage(m_hwnd, TB_SETBUTTONSIZE, 0, (LPARAM) MAKELONG(16,15));  
 
-	// HACK: stuff in the standard icons for now
-	TBADDBITMAP ab;
-	ab.hInst = HINST_COMMCTRL;		// hinstCommctrl
-	ab.nID   = IDB_STD_SMALL_COLOR;	// std bitmaps
-	LRESULT iAddedAt = SendMessage(m_hwnd, TB_ADDBITMAP, 15, (LPARAM)&ab);
-	UT_ASSERT(iAddedAt != -1);
+	// the Windows Common Control Toolbar requires that we set
+	// a bitmap size in the toolbar window **before** we actually
+	// add any of them.  at this point in the code, we haven't
+	// loaded any of the bitmaps yet and thus don't know the maximum
+	// size.  we could go thru the layout twice and compute the
+	// maxium before calling this, but this seems overkill since
+	// we know at compile time what all of the bitmaps are....
+	// so, let's just put in the code to assert if someone adds
+	// an overly large bitmap to the source....
+	
+#define MY_MAXIMUM_BITMAP_X		24
+#define MY_MAXIMUM_BITMAP_Y		24
+	SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0,
+				(LPARAM) MAKELONG(MY_MAXIMUM_BITMAP_X,MY_MAXIMUM_BITMAP_Y));
+
+	DWORD dwColor = GetSysColor(COLOR_BTNFACE);
+	UT_RGBColor backgroundColor(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 
 	// TODO: is there any advantage to building up all the TBBUTTONs at once
 	//		 and then adding them en masse, instead of one at a time? 
@@ -164,21 +174,24 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 		{
 		case EV_TLF_Normal:
 			{
-#if 0
-				// TODO: actually translate XPM into a HBITMAP here
-				// NOTE: if the logic's here, apps don't need it, but can't provide BMPs either
-				UT_Bool bFoundIcon =
-					m_pWin32ToolbarIcons->getPixmapForIcon(wTLW->window,
-														  &wTLW->style->bg[GTK_STATE_NORMAL],
-														  pLabel->getIconName(),
-														  &wPixmap);
+				// TODO figure out who destroys hBitmap...
+				HBITMAP hBitmap;
+				UT_Bool bFoundIcon = m_pWin32ToolbarIcons->getBitmapForIcon(m_hwnd,
+																			MY_MAXIMUM_BITMAP_X,
+																			MY_MAXIMUM_BITMAP_Y,
+																			&backgroundColor,
+																			pLabel->getIconName(),
+																			&hBitmap);
 				UT_ASSERT(bFoundIcon);
-#endif
-
-				// these don't vary much by type
-				tbb.iBitmap = STD_HELP;		// HACK: just map to std. icons for now
-				tbb.idCommand = u;     
-				tbb.dwData = 0; 
+				TBADDBITMAP ab;
+				ab.hInst = 0;
+				ab.nID = (LPARAM)hBitmap;
+				LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
+				UT_ASSERT(iAddedAt != -1);
+				
+				tbb.iBitmap = iAddedAt;
+				tbb.idCommand = u;
+				tbb.dwData = 0;
 				
 				last_id = u;
 

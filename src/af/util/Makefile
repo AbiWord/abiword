@@ -38,7 +38,8 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
 endif
 
 ifeq ($(ABI_NATIVE), win)
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
 
 OBJS=		$(PLATFORM_OBJS)					\

@@ -22,15 +22,9 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		ut_Win32Timer.h
-
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		ut_debugmsg.cpp		\
-			ut_Win32Timer.cpp
+			ut_Win32Timer.cpp	\
+			ut_Xpm2Bmp.cpp
 
 TARGETS=		$(OBJS)
 

@@ -17,8 +17,10 @@
  * 02111-1307, USA.
  */
 
+#include <windows.h>
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_Xpm2Bmp.h"
 #include "ap_Win32Toolbar_Icons.h"
 
 AP_Win32Toolbar_Icons::AP_Win32Toolbar_Icons(void)
@@ -32,14 +34,16 @@ AP_Win32Toolbar_Icons::~AP_Win32Toolbar_Icons(void)
 	// TODO handed out, so that we can delete them ??
 }
 
-#if 0
-UT_Bool AP_Win32Toolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * background,
-											   const char * szIconName, GtkWidget ** pwPixmap)
+UT_Bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND hwnd,
+												UT_uint32 maxWidth,
+												UT_uint32 maxHeight,
+												UT_RGBColor * pColor,
+												const char * szIconName,
+												HBITMAP * pBitmap)
 {
-	UT_ASSERT(window);
-	UT_ASSERT(background);
+	UT_ASSERT(hwnd);
 	UT_ASSERT(szIconName && *szIconName);
-	UT_ASSERT(pwPixmap);
+	UT_ASSERT(pBitmap);
 	
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
@@ -48,19 +52,11 @@ UT_Bool AP_Win32Toolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * b
 	if (!bFound)
 		return UT_FALSE;
 
-	GdkBitmap * mask;
-	GdkColormap * colormap = NULL;
-	GdkPixmap * pixmap
-		= gdk_pixmap_colormap_create_from_xpm_d(window,colormap,&mask,
-												background, (char **)pIconData);
-	if (!pixmap)
-		return UT_FALSE;
+	HDC hdc = GetDC(hwnd);
+	UT_Bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,hdc,pColor,pBitmap);
+	ReleaseDC(hwnd,hdc);
 
-	GtkWidget * wpixmap = gtk_pixmap_new(pixmap,mask);
-	if (!wpixmap)
-		return UT_FALSE;
-	
-	*pwPixmap = wpixmap;
-	return UT_TRUE;
+	return bCreated;
 }
-#endif
+
+	

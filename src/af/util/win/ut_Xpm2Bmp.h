@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,29 +17,18 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32TOOLBARICONS_H
-#define AP_WIN32TOOLBARICONS_H
+#ifndef UT_XPM2BMP_H
+#define UT_XPM2BMP_H
 
-#include "ut_types.h"
-#include "ut_misc.h"
-#include "ap_Toolbar_Icons.h"
+class UT_RGBColor;
 
-/*****************************************************************/
+UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
+				   UT_uint32 maxHeight,
+				   const char ** pIconData,
+				   UT_uint32 sizeofData,
+				   HDC hdc,
+				   UT_RGBColor * pBackgroundColor,
+				   HBITMAP * pBitmap);
 
-class AP_Win32Toolbar_Icons : public AP_Toolbar_Icons
-{
-public:
-	AP_Win32Toolbar_Icons(void);
-	~AP_Win32Toolbar_Icons(void);
+#endif /* UT_XPM2BMP_H */
 
-	UT_Bool getBitmapForIcon(HWND hwnd,
-							 UT_uint32 maxWidth,
-							 UT_uint32 maxHeight,
-							 UT_RGBColor * pColor,
-							 const char * szIconName,
-							 HBITMAP * pBitmap);
-
-protected:
-};
-
-#endif /* AP_WIN32TOOLBARICONS_H */

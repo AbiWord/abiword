@@ -70,15 +70,30 @@ UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu
 	m_blu = blu;
 }
 
-// TODO shouldn't we have a #000000 syntax like CSS?
-// TODO shouldn't we accept stock names (vga) colors, too?
 void UT_parseColor(const char *p, UT_RGBColor& c)
 {
-	UT_ASSERT(strlen(p) == 6);
+	if (strlen(p) == 6)
+	{
+		goto ParseHex;
+	}
+	if ((strlen(p) == 7) && (*p=='#'))
+	{
+		p++;
+		goto ParseHex;
+	}
 
+	// TODO consider accepting stock names (vga) colors, too?
+
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
+	return;
+
+ ParseHex:
 	c.m_red = x_hexDigit(p[0]) * 16 + x_hexDigit(p[1]);
 	c.m_grn = x_hexDigit(p[2]) * 16 + x_hexDigit(p[3]);
 	c.m_blu = x_hexDigit(p[4]) * 16 + x_hexDigit(p[5]);
+
+	return;
 }
 
 UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
