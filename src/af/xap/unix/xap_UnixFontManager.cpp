@@ -368,9 +368,9 @@ static XAP_UnixFont* forceFontSynth(XAP_UnixFontManager* pFontManager,
 
   UT_DEBUGMSG(("Attempting to cache synth [%s, %s] style for font [%s]\n",
 			   pszFontWeight,pszFontStyle,pszFontFamily));
-  XAP_UnixFont* pNewFont = pFontManager->findNearestFont(pszFontFamily, NULL,
-														 NULL, NULL, NULL,
-														 pszFontSize);
+  XAP_UnixFont* pNewFont = new XAP_UnixFont(*(pFontManager->findNearestFont(pszFontFamily, NULL,
+																			NULL, NULL, NULL,
+																			pszFontSize)));
   if(pNewFont){
     if(!(pNewFont->getFontfile())){
       UT_DEBUGMSG(("No font file found!  ABORT ABORT ABORT!"));
