@@ -197,15 +197,18 @@ static struct xmlToIdMapping s_Tokens[] =
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
 #define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))			\
-									  {  m_error = UT_IE_BOGUSDOCUMENT;	\
+									  { UT_DEBUGMSG(("DOM: X_VerifyParseState failed: %s\n", #ps)); \ 
+									    m_error = UT_IE_BOGUSDOCUMENT;	\
 										 return; } } while (0)
 
 #define X_CheckDocument(b)		do {  if (!(b))								\
-									  {  m_error = UT_IE_BOGUSDOCUMENT;	\
+									  { UT_DEBUGMSG(("DOM: X_CheckDocument failed: %s\n", #b)); \  
+									    m_error = UT_IE_BOGUSDOCUMENT;	\
 										 return; } } while (0)
 
 #define X_CheckError(v)			do {  if (!(v))								\
-									  {  m_error = UT_ERROR;			\
+									  { UT_DEBUGMSG(("DOM: X_CheckError failed: %s\n", #v)); \  
+									    m_error = UT_ERROR;			\
 										 return; } } while (0)
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
@@ -330,7 +333,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 	    return;
 	    
 	case TT_TITLE:
-	    X_VerifyParseState(_PS_Sec);
+	  X_VerifyParseState(_PS_Sec);
 	    return;
 
 	case TT_OTHER:

@@ -49,9 +49,10 @@ public:
 	IE_Exp_KWord_1(PD_Document * pDocument);
 	virtual ~IE_Exp_KWord_1();
 	
-protected:
+ protected:
 	virtual UT_Error	_writeDocument(void);
-	
+
+ private:	
 	s_KWord_1_Listener *	m_pListener;
 };
 

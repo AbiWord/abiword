@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,6 @@
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
 #include "pt_Types.h"
-#include "ie_exp_KWord_1.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "px_ChangeRecord.h"
@@ -41,8 +40,9 @@
 #include "xap_EncodingManager.h"
 #include "fl_AutoNum.h"
 #include "fp_PageSize.h"
-
 #include "ut_string_class.h"
+
+#include "ie_exp_KWord_1.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -115,8 +115,6 @@ private:
 
 #include "xap_Module.h"
 
-#define SUPPORTS_ABI_VERSION(a,b,c) (((a==0)&&(b==7)&&(c==15)) ? 1 : 0)
-
 // we use a reference-counted sniffer
 static IE_Exp_KWord_1_Sniffer * m_sniffer = 0;
 
@@ -135,7 +133,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	mi->name = "KWord Exporter";
 	mi->desc = "Export KWord Documents";
-	mi->version = "0.7.15";
+	mi->version = "0.9.3";
 	mi->author = "Abi the Ant and Nils Barth";
 	mi->usage = "No Usage";
 
@@ -167,7 +165,7 @@ ABI_FAR extern "C"
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {
-	return SUPPORTS_ABI_VERSION(major, minor, release);
+	return isCurrentAbiVersion(major, minor, release);
 }
 
 #endif
