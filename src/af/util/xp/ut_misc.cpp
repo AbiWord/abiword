@@ -400,6 +400,22 @@ static int parseColorToNextDelim ( const char * p, UT_uint32 & index )
   return atoi(buffer);
 }
 
+static void UT_parseGrayColor(const char *p, UT_RGBColor& c, UT_uint32 len)
+{
+  UT_DEBUGMSG(("DOM: parsing gray value\n"));
+
+  int grayVal = 0 ;
+
+  p+=5; // go past gray(
+
+  UT_uint32 index = 0;
+  grayVal= parseColorToNextDelim ( p, index ) ;
+
+  c.m_red = grayVal;
+  c.m_grn = grayVal;
+  c.m_blu = grayVal;
+}
+
 static void UT_parseCMYKColor(const char *p, UT_RGBColor& c, UT_uint32 len)
 {
   // yes, i know that CMYK->RGB is lossy... DAL
@@ -475,6 +491,13 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 	    // CMYK color. parse that out
 	    UT_parseCMYKColor ( p, c, len ) ;
 	    return;
+	  }
+
+	if ( len > 6 && strncmp ( p, "gray(", 5 ) == 0 )
+	  {
+	    // grayscale color. parse that out
+	    UT_parseGrayColor ( p, c, len ) ;
+	    return ;
 	  }
 
 	char returned_color[7] = "";
