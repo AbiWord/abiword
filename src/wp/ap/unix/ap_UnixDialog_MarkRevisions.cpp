@@ -87,7 +87,7 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
   GtkWidget *dialog_vbox1;
   GtkWidget *dialog_action_area1;
 
-  dialog1 = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_MarkRevisions_Title).c_str());
+  dialog1 = abiDialogNew ( "mark revisions", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_MarkRevisions_Title).c_str());
   gtk_widget_set_usize ( dialog1, 250, 250 ) ;
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;

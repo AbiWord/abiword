@@ -131,7 +131,7 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowDL = abiDialogNew ( true, getTitle());	
+	windowDL = abiDialogNew ( "download file dialog", TRUE, getTitle());	
 	g_object_set_data (G_OBJECT (windowDL), "windowDL", windowDL);
 	//gtk_window_set_policy (GTK_WINDOW (windowDL), FALSE, FALSE, FALSE);
 	

@@ -113,15 +113,15 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 	
 	if(isForeground())
 	{
-		dlg = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleFore).c_str()) ;
+		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleFore).c_str()) ;
 	}
 	else if(isHighlight())
 	{
-		dlg = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleHighlight).c_str()) ;
+		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleHighlight).c_str()) ;
 	}
 	else
 	{
-		dlg = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title).c_str()) ;
+		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title).c_str()) ;
 	}
 
 	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;

@@ -189,7 +189,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	UT_ASSERT(pSS);
 	
-	window = abiDialogNew ( FALSE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintTitle).c_str());
+	window = abiDialogNew ("print dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintTitle).c_str());
 
 	// Add a main vbox
 	vbox1 = GTK_DIALOG(window)->vbox;

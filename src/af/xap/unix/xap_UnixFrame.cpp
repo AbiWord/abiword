@@ -683,12 +683,9 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
-							 m_pUnixApp->getApplicationTitleForTitleBar());
-		gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
-		gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
-							   m_pUnixApp->getApplicationName(),
-							   m_pUnixApp->getApplicationName());
-
+				     m_pUnixApp->getApplicationTitleForTitleBar());
+		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
+		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");
 		if ( wmIcon )
 			gtk_window_set_icon(GTK_WINDOW(m_wTopLevelWindow), wmIcon);
 	}
@@ -698,8 +695,21 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 						GINT_TO_POINTER(FALSE));
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
 
-	// This is now done with --geometry parsing.
-	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
+	{
+	  XAP_App * pApp = XAP_App::getApp() ;
+	  UT_sint32 x, y ; 
+	  UT_uint32 w, h, f ;
+	  x = y = w = h = f = 0 ;
+
+	  // ignore flags, x, y as the WM will set them for us just fine
+	  pApp->getGeometry ( &x, &y, &w, &h, &f ) ;
+	  
+	  // This is now done with --geometry parsing.
+	  if ( w && h )
+	    gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), w, h);
+	  else
+	    gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 800, 600);
+	}
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
 					   G_CALLBACK(_fe::realize), NULL);

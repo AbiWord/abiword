@@ -529,7 +529,7 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
   
   const XAP_StringSet * pSS = m_pApp->getStringSet();
   
-  windowPlugins = abiDialogNew(TRUE, pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE).c_str());	
+  windowPlugins = abiDialogNew("plugin manager dialog", TRUE, pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE).c_str());	
   dialog_vbox1 = GTK_DIALOG (windowPlugins)->vbox;
   gtk_widget_show (dialog_vbox1);
   gtk_container_set_border_width (GTK_CONTAINER (dialog_vbox1), 3);

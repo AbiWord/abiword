@@ -102,7 +102,7 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   GtkWidget *dialog_vbox1;
   GtkWidget *dialog_action_area1;
 	
-  dialog1 = abiDialogNew ( true, getTitle());	
+  dialog1 = abiDialogNew ( "list revisions dialog", TRUE, getTitle());	
 	
   gtk_window_set_modal (GTK_WINDOW (dialog1), TRUE);
   gtk_window_set_policy (GTK_WINDOW (dialog1), TRUE, TRUE, FALSE);

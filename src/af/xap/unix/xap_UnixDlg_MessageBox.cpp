@@ -107,11 +107,11 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			UT_ASSERT_NOT_REACHED();
 	}
 
-	// TODO: locale->utf8
 	gtk_window_set_title ( GTK_WINDOW(message), szCaption ) ;
+	gtk_window_set_role (GTK_WINDOW(message), "message dialog");
 						   	
 	switch ( abiRunModalDialog ( GTK_DIALOG(message), pFrame,
-								 this, GTK_RESPONSE_OK, true ) )
+				     this, GTK_RESPONSE_OK, true ) )
 	{
 		case GTK_RESPONSE_OK:
 			m_answer = XAP_Dialog_MessageBox::a_OK; break;

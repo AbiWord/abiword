@@ -466,7 +466,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_window = abiDialogNew (true, _(AP, DLG_PageSetup_Title));
+  m_window = abiDialogNew ("page setup dialog", TRUE, _(AP, DLG_PageSetup_Title));
 
   _constructWindowContents (GTK_DIALOG(m_window)->vbox);
 

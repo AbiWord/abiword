@@ -183,7 +183,7 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	HdrFtrDialog = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title).c_str()) ;
+	HdrFtrDialog = abiDialogNew ( "headers and footers dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title).c_str()) ;
 
 	vbox1 = GTK_DIALOG(HdrFtrDialog)->vbox ;
 

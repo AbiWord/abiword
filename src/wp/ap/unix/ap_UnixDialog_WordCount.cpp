@@ -262,7 +262,7 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	GtkWidget * vbox;
 
         ConstructWindowName();
-	m_windowMain = abiDialogNew(true, m_WindowName);
+	m_windowMain = abiDialogNew("word count dialog", TRUE, m_WindowName);
 
 	vbox = GTK_DIALOG(m_windowMain)->vbox;
 	gtk_widget_show (vbox);

@@ -423,7 +423,7 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	//	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowColumns = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle).c_str() ) ;
+	windowColumns = abiDialogNew ( "column dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle).c_str() ) ;
 
 	_constructWindowContents(GTK_DIALOG(windowColumns)->vbox);
 

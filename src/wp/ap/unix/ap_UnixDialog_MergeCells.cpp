@@ -173,7 +173,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindow(void)
 	GtkWidget * vboxMain;
 	GtkWidget * windowMergeCells;
 	ConstructWindowName();
-	windowMergeCells = abiDialogNew ( true, (char *) m_WindowName);
+	windowMergeCells = abiDialogNew ( "merge cell dialog", TRUE, (char *) m_WindowName);
 	
 	vboxMain = GTK_DIALOG(windowMergeCells)->vbox ;
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	

@@ -55,7 +55,7 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
   GtkWidget *vboxMain;
   GtkWidget *vboxOuter;
   
-  windowLangSelection = abiDialogNew ( TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str() ) ;
+  windowLangSelection = abiDialogNew ( "language dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str() ) ;
   
   vboxOuter = GTK_DIALOG(windowLangSelection)->vbox ;
   

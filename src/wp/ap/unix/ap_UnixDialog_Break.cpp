@@ -121,7 +121,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 
-	windowBreak = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
+	windowBreak = abiDialogNew ( "break dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
 	
 	vboxMain = GTK_DIALOG(windowBreak)->vbox ;
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);

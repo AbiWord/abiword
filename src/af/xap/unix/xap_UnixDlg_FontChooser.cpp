@@ -418,7 +418,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	GtkWidget *vboxMain;
 	GtkWidget *vboxOuter;
 
-	windowFontSelection = abiDialogNew ( FALSE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).c_str() ) ;
+	windowFontSelection = abiDialogNew ( "font dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).c_str() ) ;
 
 	vboxOuter = GTK_DIALOG(windowFontSelection)->vbox;
 

@@ -127,7 +127,7 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 	accel_group = gtk_accel_group_new ();
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowTabs = abiDialogNew(true, pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_TabTitle).c_str());
+	windowTabs = abiDialogNew("tab dialog", TRUE, pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_TabTitle).c_str());
 	g_object_set_data (G_OBJECT (windowTabs), "windowTabs", windowTabs);
 
 	_constructWindowContents(windowTabs);

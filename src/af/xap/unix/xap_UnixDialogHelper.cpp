@@ -576,7 +576,8 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 	UT_return_if_fail(child);
 
 	gtk_window_set_transient_for(GTK_WINDOW(child),
-								 GTK_WINDOW(parent));
+				     GTK_WINDOW(parent));
+
 #ifdef HAVE_GNOME
 	gnome_window_icon_set_from_default (GTK_WINDOW(child));
 #else
@@ -696,9 +697,11 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 /*!
  * Create a new GtkDialog
  */
-GtkWidget * abiDialogNew(gboolean resizable)
+GtkWidget * abiDialogNew(const char * role, gboolean resizable)
 {
   GtkWidget * dlg = gtk_dialog_new () ;
+  if ( role )
+    gtk_window_set_role( GTK_WINDOW(dlg), role ) ;
   gtk_window_set_resizable ( GTK_WINDOW(dlg), resizable ) ;
   return dlg ;
 }
@@ -706,9 +709,9 @@ GtkWidget * abiDialogNew(gboolean resizable)
 /*!
  * Create a new GtkDialog with this title
  */
-GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...)
+GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * title, ...)
 {
-  GtkWidget * dlg = abiDialogNew(resizable);
+  GtkWidget * dlg = abiDialogNew(role, resizable);
   
   if ( title != NULL && strlen ( title ) )
   {
@@ -863,6 +866,8 @@ void messageBoxOK(const char * message)
 						   message ) ;
 
 	gtk_window_set_title(GTK_WINDOW(msg), "AbiWord");
+	gtk_window_set_role(GTK_WINDOW(msg), "message dialog");
+
 	gtk_widget_show ( msg ) ;
 	gtk_dialog_run ( GTK_DIALOG(msg) ) ;
 	gtk_widget_destroy ( msg ) ;

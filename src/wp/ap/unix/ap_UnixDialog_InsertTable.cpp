@@ -103,7 +103,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	GtkWidget * windowInsertTable;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	windowInsertTable = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle).c_str());
+	windowInsertTable = abiDialogNew ( "insert table dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle).c_str());
 	
 	vboxMain = GTK_DIALOG(windowInsertTable)->vbox ;
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	

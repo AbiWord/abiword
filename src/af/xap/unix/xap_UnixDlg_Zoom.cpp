@@ -278,7 +278,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   
   XML_Char * tmp = NULL;
   UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle).c_str());
-  windowZoom = abiDialogNew ( FALSE, tmp ) ;
+  windowZoom = abiDialogNew ( "zoom dialog", TRUE, tmp ) ;
   FREEP(tmp);
 
   vboxZoom = GTK_DIALOG(windowZoom)->vbox;

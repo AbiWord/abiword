@@ -168,7 +168,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dlg = abiDialogNew(true, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ColorChooserLabel).c_str());
+  dlg = abiDialogNew("color chooser dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ColorChooserLabel).c_str());
 
   abiAddStockButton(GTK_DIALOG(dlg), GTK_STOCK_CLOSE, GTK_RESPONSE_CANCEL);
 
@@ -1038,7 +1038,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	GtkWidget * buttonCancel;
 	GtkWidget * buttonDefaults;
 
-	mainWindow = abiDialogNew(true, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).c_str());
+	mainWindow = abiDialogNew("options dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).c_str());
 
 	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
 	gtk_widget_show (buttonApply);

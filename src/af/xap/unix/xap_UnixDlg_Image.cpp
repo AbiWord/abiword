@@ -368,7 +368,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dialog1 = abiDialogNew ( TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).c_str() );
+  dialog1 = abiDialogNew ( "resize image dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).c_str() );
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
   gtk_widget_show (dialog_vbox1);

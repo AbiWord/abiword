@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#define GTK_ENABLE_BROKEN
-
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
@@ -141,8 +139,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   // we use this for all sorts of strings that can't appear in the string sets
   char buf[4096];
 
-  // create the toplevel, non-resizable window
-  windowAbout = abiDialogNew (FALSE, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
+  windowAbout = abiDialogNew ("about dialog", TRUE, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
   gtk_widget_set_usize (windowAbout, 0, 350);
   
   hboxAbout = gtk_hbox_new (FALSE, 0);
@@ -184,12 +181,12 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	
   g_snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
   
-  textCopyright = gtk_text_new (NULL, NULL);
+  textCopyright = gtk_text_view_new ();
   gtk_widget_show (textCopyright);
   gtk_box_pack_start (GTK_BOX (vboxInfo), textCopyright, TRUE, FALSE, 10);
   gtk_widget_set_usize (textCopyright, 290, 200);
   gtk_widget_realize (textCopyright);
-  gtk_text_insert (GTK_TEXT (textCopyright), NULL, NULL, NULL, buf, strlen(buf));
+  gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(textCopyright)), buf, -1);
   
   // make the font slightly smaller
   GtkStyle * smallstyle = gtk_style_copy(gtk_widget_get_style(textCopyright));

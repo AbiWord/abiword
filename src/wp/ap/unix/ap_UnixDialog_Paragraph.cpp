@@ -278,7 +278,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle).c_str());
-	windowParagraph = abiDialogNew(true, unixstr);
+	windowParagraph = abiDialogNew("paragraph dialog", TRUE, unixstr);
 	FREEP(unixstr);
 
 	vboxMain = GTK_DIALOG(windowParagraph)->vbox;

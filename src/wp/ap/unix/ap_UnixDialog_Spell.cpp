@@ -20,8 +20,6 @@
 
 // TODO: still getting some artifacts when doing highligh/replacements
 
-#define GTK_ENABLE_BROKEN
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -139,7 +137,7 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
 
    const XAP_StringSet * pSS = m_pApp->getStringSet();
    
-   windowSpell = abiDialogNew(true, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle).c_str());
+   windowSpell = abiDialogNew("spelling dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle).c_str());
 
    // *very* important to add the vbox
    // to the window so that it gets a

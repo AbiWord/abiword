@@ -234,7 +234,7 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	GtkWidget *contents;
 
         ConstructWindowName();
-	m_wMainWindow = abiDialogNew( true, m_WindowName );
+	m_wMainWindow = abiDialogNew( "goto dialog", TRUE, m_WindowName );
 	gtk_container_set_border_width (GTK_CONTAINER (m_wMainWindow), 4);
 
 	vbox = GTK_DIALOG (m_wMainWindow)->vbox;

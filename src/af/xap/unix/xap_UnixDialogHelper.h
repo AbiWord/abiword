@@ -82,8 +82,8 @@ GtkWidget* abiAddStockButton (GtkDialog * me, const gchar * btn_id,
 GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
 			gint response_id);
 
-GtkWidget * abiDialogNew(gboolean resizable = FALSE);
-GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...);
+GtkWidget * abiDialogNew(const char * role, gboolean resizable = FALSE);
+GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * title, ...);
 
 UT_String abiLocaleToUTF8(const UT_String & inStr);
 UT_String abiLocaleToUTF8(const char * str);

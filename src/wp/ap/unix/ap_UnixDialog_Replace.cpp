@@ -272,7 +272,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 	ConstructWindowName();
-	windowReplace = abiDialogNew (true, m_WindowName);
+	windowReplace = abiDialogNew ("find and replace dialog", TRUE, m_WindowName);
 	gtk_window_set_default_size(GTK_WINDOW (windowReplace), 400, 100);
 
 	// top level vbox

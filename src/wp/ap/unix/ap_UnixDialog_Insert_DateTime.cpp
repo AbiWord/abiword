@@ -127,7 +127,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_windowMain = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle).c_str());
+  m_windowMain = abiDialogNew ( "insert date time dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle).c_str());
   
   vbox = GTK_DIALOG(m_windowMain)->vbox;
   contents = _constructWindowContents();

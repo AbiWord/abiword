@@ -129,7 +129,7 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 
   // create dialog
 
-  main_dlg = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title).c_str());
+  main_dlg = abiDialogNew ( "metadata dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title).c_str());
   gtk_container_set_border_width (GTK_CONTAINER (main_dlg), 3);
 
   dialog_vbox1 = GTK_DIALOG (main_dlg)->vbox;

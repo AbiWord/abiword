@@ -482,7 +482,7 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowStyles = abiDialogNew(true, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle).c_str());
+	windowStyles = abiDialogNew("styles dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle).c_str());
 	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
 	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
 	//gtk_widget_set_usize(windowStyles, 600, 400);
@@ -799,7 +799,7 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 	else
 		title = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_NewTitle);
 
-	modifyDialog = abiDialogNew(true, title.c_str());
+	modifyDialog = abiDialogNew("modify style dialog", TRUE, title.c_str());
 	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
 
 	_constructModifyDialogContents(GTK_DIALOG (modifyDialog)->vbox);

@@ -514,6 +514,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_FS = pFS;
 
 	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
+	gtk_window_set_role(GTK_WINDOW(pFS), "file selection dialog");
  
 	GtkWidget * filetypes_pulldown = NULL;
 	

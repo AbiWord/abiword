@@ -289,7 +289,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_window = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str()) ;
+  m_window = abiDialogNew ( "page number dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str()) ;
 
   _constructWindowContents (GTK_DIALOG(m_window)->vbox);
 

@@ -447,7 +447,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 	ConstructWindowName();
 
-	m_windowMain = abiDialogNew ( TRUE, m_WindowName ) ;
+	m_windowMain = abiDialogNew ( "insert symbol dialog", TRUE, m_WindowName ) ;
 
 	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
 	// and OK -Selected Symbol- Cancel

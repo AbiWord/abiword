@@ -522,8 +522,8 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 	GtkWidget *contents;
 	GtkWidget *vbox1;
 
-	ConstructWindowName(); // why don't call this function constructWindowName?
-	m_wMainWindow = abiDialogNew ( true, getWindowName() );
+	ConstructWindowName();
+	m_wMainWindow = abiDialogNew ( "list dialog", TRUE, getWindowName() );
 	vbox1 = GTK_DIALOG(m_wMainWindow)->vbox ;
 
 	contents = _constructWindowContents();

@@ -164,7 +164,7 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
   
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  windowMain = abiDialogNew ( TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle).c_str() ) ;
+  windowMain = abiDialogNew ( "encoding dialog", true, pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle).c_str() ) ;
 
   vboxMain = GTK_DIALOG(windowMain)->vbox ;
 

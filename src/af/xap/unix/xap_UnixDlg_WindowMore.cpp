@@ -177,7 +177,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 
   // create dialog, buttons
 
-  windowMain = abiDialogNew (TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).c_str());  
+  windowMain = abiDialogNew ("more windows dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).c_str());  
   vboxMain = GTK_DIALOG(windowMain)->vbox;
   
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);

@@ -240,7 +240,7 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	GtkWidget *dialog_vbox1;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	mainWindow = abiDialogNew ( true, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Title).c_str());
+	mainWindow = abiDialogNew ( "new dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Title).c_str());
 	dialog_vbox1 = GTK_DIALOG (mainWindow)->vbox;
 	gtk_widget_show (dialog_vbox1);
 
