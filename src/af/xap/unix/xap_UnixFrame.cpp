@@ -460,13 +460,10 @@ UT_Bool XAP_UnixFrame::openURL(const char * szURL)
 	// TODO : FIX THIS.  Oh, this is hackish, really hackish, but
 	// TODO : better than an assert to the user.
 
-	// try to connect to a running Netscape
-	int launch = system("netscape -remote openURL\\(http://www.abisource.com/\\)");
-
-	// if that fails, open an new one
-	if (launch != 0)
+	// try to connect to a running Netscape, if not, start new one
+	if (system("netscape -remote openURL\\(http://www.abisource.com/\\)") != 0)
 	{
-		system("netscape http://www.abisource.com/");
+		system("netscape http://www.abisource.com/ &");
 	}
 	
 	return UT_FALSE;
