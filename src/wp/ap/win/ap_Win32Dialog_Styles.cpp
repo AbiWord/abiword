@@ -204,34 +204,32 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
                                            (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
 		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE , 
                                            (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
-		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA , 
-                                           (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA , SW_HIDE );
 		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON , 
                                            (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
 		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE , 
                                            (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
-		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA , 
-                                           (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA ,  SW_SHOW );
 		// Initialize the controls with appropriate data
-		if( m_bisNewStyle )
-		{
-			size_t nStyles = getDoc()->getStyleCount();
-			const char * name = NULL;
-			const PD_Style * pcStyle = NULL;
-			for (UT_uint32 i = 0; i < nStyles; i++)
-			{
-	    		getDoc()->enumStyles(i, &name, &pcStyle);
-				_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, name );
-				_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, name );
-			}
 
-		
+		size_t nStyles = getDoc()->getStyleCount();
+		const char * name = NULL;
+		const PD_Style * pcStyle = NULL;
+		for (UT_uint32 i = 0; i < nStyles; i++)
+		{
+    		getDoc()->enumStyles(i, &name, &pcStyle);
+			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, name );
+			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, name );
+		}
+		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
+                                              pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+		if( m_bisNewStyle )
+		{	
 			// Add last Member item which will be defined as the default value
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
                                                   pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
                                                   pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
-
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
                                                   pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
@@ -313,12 +311,15 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 			if(pFollowedByStyle != NULL)
 			{
-				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA, szFollowedBy);
+				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
+										(LPARAM) szFollowedBy);
+				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			}
 			else
 			{
-				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA, 
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
+										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			}
 			
 			if(strstr(getAttsVal("type"),"P") != 0)
@@ -336,7 +337,6 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME, false );
 			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON, false );
 			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE, false ); 
-			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA , false ); 
 
 			fillVecWithProps(szCurrentStyle,true);
 		}
@@ -539,31 +539,6 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 		return 1;
 
-	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEUP:
-		if(m_selectToggle == 0 ) 
-		{ 
-			m_selectToggle = MAX_NEWMODIFY_TOGGLE;
-		}
-		else
-		{
-			m_selectToggle--;
-		}
-		_updateToggleButtonText();
-		return 1;
-
-
-	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEDOWN:
-		if(m_selectToggle == MAX_NEWMODIFY_TOGGLE) 
-		{ 
-			m_selectToggle = 0;
-		}
-		else
-		{
-			m_selectToggle++;
-		}
-		_updateToggleButtonText();
-		return 1;
-
 	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS:
 		switch( m_selectToggle )
 		{
@@ -618,7 +593,17 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 BOOL AP_Win32Dialog_Styles::_onDeltaPos(NM_UPDOWN * pnmud)
 {
-	return 0;
+	switch( pnmud->hdr.idFrom )
+	{
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_SPN_TOGGLEITEMS: 
+		m_selectToggle += pnmud->iDelta;
+		if( m_selectToggle > MAX_NEWMODIFY_TOGGLE ) m_selectToggle = 0;
+		if( m_selectToggle < 0 ) m_selectToggle = MAX_NEWMODIFY_TOGGLE;
+		_updateToggleButtonText();
+		return 1;
+	default:
+		return 0;
+	}
 }
 
 void AP_Win32Dialog_Styles::_populateWindowData(void)
