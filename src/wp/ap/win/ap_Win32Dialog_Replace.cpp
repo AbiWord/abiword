@@ -72,7 +72,7 @@ void AP_Win32Dialog_Replace::activate(void)
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 
 	iResult = BringWindowToTop( m_hWnd );
-
+	
 	UT_ASSERT((iResult != 0));
 }
 
@@ -162,12 +162,20 @@ BOOL CALLBACK AP_Win32Dialog_Replace::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 	xxx_UT_DEBUGMSG(("s_dlgProc: msg 0x%x\n",msg));
 	switch (msg)
 	{
+	
+	     	
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Replace *)lParam;
 		SetWindowLong(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
+	
+	// The second time that the dialog box is displayed
+	// if he hit return it does not process the order
+	// because it sends an IDOK msg
 	case WM_COMMAND:
+		if (wParam==IDOK)
+			wParam=AP_RID_DIALOG_REPLACE_BTN_FINDNEXT;
+			
 		pThis = (AP_Win32Dialog_Replace *)GetWindowLong(hWnd,DWL_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
