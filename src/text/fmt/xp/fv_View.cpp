@@ -1859,7 +1859,8 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 		p += 2;
 	}
 
-	UT_VECTOR_PURGEALL(_fmtPair *,v);
+	if( i> 0)
+	        UT_VECTOR_PURGEALL(_fmtPair *,v);
 
 	*pProps = props;
 
