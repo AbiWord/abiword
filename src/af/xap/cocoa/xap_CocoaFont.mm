@@ -28,19 +28,32 @@
 
 
 /*******************************************************************/
+NSTextStorage *XAP_CocoaFont::s_fontMetricsTextStorage = nil;
+NSLayoutManager *XAP_CocoaFont::s_fontMetricsLayoutManager = nil;
+NSTextContainer *XAP_CocoaFont::s_fontMetricsTextContainer = nil;
+
+
+/*******************************************************************/
 
 XAP_CocoaFont::XAP_CocoaFont()
   : GR_Font(),
-	m_font(NULL),
+	m_font(nil),
+	m_fontForCache(nil),
+	m_fontProps(nil),
 	_m_coverage(NULL)
 {
+	m_hashKey = "";
 	_resetMetricsCache();
 }
 
 XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
   : GR_Font(),
+	m_font(nil),
+	m_fontForCache(nil),
+	m_fontProps(nil),
 	_m_coverage(NULL)
 {
+	m_hashKey = [[font fontName] UTF8String];
 	m_font = font;
 	[m_font retain];
 	_resetMetricsCache();
@@ -48,8 +61,12 @@ XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
 
 XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
   : GR_Font(copy),
+	m_font(nil),
+	m_fontForCache(nil),
+	m_fontProps(nil),
 	_m_coverage(NULL)
 {
+	m_hashKey = copy.hashKey();
 	m_font = [copy.getNSFont() copy];
 	_resetMetricsCache();
 }
@@ -57,6 +74,8 @@ XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
 XAP_CocoaFont::~XAP_CocoaFont()
 {
 	[m_font release];
+	[m_fontForCache release];
+	[m_fontProps release];
 	DELETEP(_m_coverage);
 }
 
@@ -148,3 +167,54 @@ void XAP_CocoaFont::getCoverage(UT_Vector& coverage)
 	}
 	coverage = *_m_coverage;
 }
+
+UT_sint32 XAP_CocoaFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
+{
+	if (m_fontForCache == nil) {
+		m_fontForCache = [[NSFontManager sharedFontManager] 
+					convertFont:m_font toSize:GR_CharWidthsCache::CACHE_FONT_SIZE];
+		m_fontProps = [[NSMutableDictionary alloc] init];
+		[m_fontProps setObject:m_fontForCache forKey:NSFontAttributeName];
+	}
+	return _measureChar (cChar, m_fontForCache);
+}
+
+void XAP_CocoaFont::_initMetricsLayouts(void)
+{
+	s_fontMetricsTextStorage = [[NSTextStorage alloc] init];
+
+	s_fontMetricsLayoutManager = [[NSLayoutManager alloc] init];
+	[s_fontMetricsTextStorage addLayoutManager:s_fontMetricsLayoutManager];
+
+	s_fontMetricsTextContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(10000, 1000)];
+	[s_fontMetricsTextContainer setLineFragmentPadding:0];
+	[s_fontMetricsLayoutManager addTextContainer:s_fontMetricsTextContainer];
+}
+
+UT_sint32 XAP_CocoaFont::_measureChar(UT_UCSChar cChar, NSFont* font) const
+{
+    NSAttributedString *attributedString;
+    NSRange glyphRange;
+
+    if (!s_fontMetricsTextStorage) {
+		_initMetricsLayouts();
+    }
+
+	unichar c2 = cChar;		// FIXME: I suspect a problem beetween UT_UCSChar and unichar
+	NSString * aString =  [[NSString alloc] initWithCharacters:&c2 length:1];
+    attributedString = [[NSAttributedString alloc] initWithString:aString attributes:m_fontProps];
+    [s_fontMetricsTextStorage setAttributedString:attributedString];
+    [attributedString release];
+	[aString release];
+
+    glyphRange = [s_fontMetricsLayoutManager glyphRangeForTextContainer:s_fontMetricsTextContainer];
+    if (glyphRange.length == 0) {
+        return 0;
+	}
+	
+	NSRect rect = [s_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange 
+				inTextContainer:s_fontMetricsTextContainer];
+	return static_cast<UT_uint32>(rect.size.width);
+}
+
+

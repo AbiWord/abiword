@@ -50,15 +50,30 @@ class XAP_CocoaFont : public GR_Font
 	float						getDescent(); /* returns -descent because it is <0 on CG */
 	float						getHeight();
 	void 						getCoverage(UT_Vector& coverage);
+	
+	virtual UT_sint32 			measureUnremappedCharForCache(UT_UCSChar cChar) const;
 private:
 	NSFont*						m_font;
+	mutable NSFont*						m_fontForCache;
+	mutable NSMutableDictionary*		m_fontProps;
 	void						_resetMetricsCache();
+	static void				_initMetricsLayouts(void);
+	/*!
+		Measure the char for the given NSFont
+	 */
+	UT_sint32			_measureChar(UT_UCSChar cChar, NSFont* font) const;
 	/* metrics cache */
 	UT_uint32					_m_size;
 	float						_m_ascent;
 	float						_m_descent;
 	float						_m_height;
 	UT_Vector*					_m_coverage;
+
+	/*! static metrics stuff */
+	static NSTextStorage *s_fontMetricsTextStorage;
+	static NSLayoutManager *s_fontMetricsLayoutManager;
+	static NSTextContainer *s_fontMetricsTextContainer;
+
 };
 
 #endif /* XAP_COCOAFONT_H */
