@@ -223,9 +223,6 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	// fragment(s) into the list.  first we construct a new text fragment
 	// for the data that we inserted.
 
-	// PLAM: This is where we need to get a new AP, I think
-   	// PLAM: I mean, indexAP has all sorts of cruft left over, we should zap it.
-
 	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,indexAP,pField);
 	if (!pftNew)
 		return false;
@@ -459,6 +456,32 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
+
+	const XML_Char * pFieldAttrs[8];
+	pFieldAttrs[0] = "type";
+	pFieldAttrs[1] = NULL;
+	pFieldAttrs[2] = "param";
+	pFieldAttrs[3] = NULL;
+	pFieldAttrs[4] = "name";
+	pFieldAttrs[5] = NULL;
+	pFieldAttrs[6] = NULL;
+	pFieldAttrs[7] = NULL;
+
+	const PP_AttrProp * pAP = NULL;
+
+	if (!getAttrProp(indexAP, &pAP))
+		return false;
+
+	if (pAP->areAnyOfTheseNamesPresent(pFieldAttrs, NULL))
+	{
+		PP_AttrProp * pAPNew = pAP->cloneWithElimination(pFieldAttrs, NULL);
+		if (!pAPNew)
+			return false;
+		pAPNew->markReadOnly();
+
+		if (!m_varset.addIfUniqueAP(pAPNew, &indexAP))
+			return false;
+	}
 
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
 		goto Finish;
