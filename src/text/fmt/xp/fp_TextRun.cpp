@@ -707,7 +707,7 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 		}
 		else
 		{
-			m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
+		        m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 		}
 	}
 
@@ -720,8 +720,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  the top.
 	*/
 
-	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent;
-	UT_sint32 yTopOfSel = yTopOfRun;
+        UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove
+	UT_sint32 yTopOfSel = yTopOfRun+1; // final character dirt
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{

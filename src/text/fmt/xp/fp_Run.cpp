@@ -1097,7 +1097,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 
 
 
-	UT_sint32 iYdraw =  pDA->yoff - getAscent();
+	UT_sint32 iYdraw =  pDA->yoff - getAscent()-1;
 	
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
@@ -1222,7 +1222,6 @@ void fp_ForcedColumnBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     m_pLine->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-
     m_pG->clearArea(xoff,yoff,iWidth,m_pLine->getHeight());
 }
 
@@ -1310,7 +1309,6 @@ void fp_ForcedPageBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     m_pLine->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-
     m_pG->clearArea(xoff,yoff,iWidth,m_pLine->getHeight());
 }
 

@@ -275,6 +275,8 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 
 void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 {
+  // This returns the baseline of run. ie the bottom of the line of text
+  //
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
@@ -424,7 +426,6 @@ void fp_Line::clearScreen(void)
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 
 			UT_sint32 columnGap = getColumnGap();
-	
 			pRun->getGraphics()->clearArea(xoffLine - columnGap / 2, yoffLine, m_iMaxWidth + columnGap, m_iHeight);
 		}
 	}
@@ -467,7 +468,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		if(runIndex == 0)
 		{
 			// Erasing the whole line so include 1/2 column gap at start and end.
-			pRun->getGraphics()->clearArea(xoff - getColumnGap() / 2, yoff, m_iMaxWidth + getColumnGap() - (xoff - xoffLine), m_iHeight);
+		        pRun->getGraphics()->clearArea(xoff - getColumnGap() / 2, yoff, m_iMaxWidth + getColumnGap() - (xoff - xoffLine), m_iHeight);
 		}
 		else
 		{

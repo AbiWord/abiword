@@ -1997,8 +1997,6 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 TODO: This should really be fixed by someone who understands how this code
  works! In the meantime save current font to be restored after character is
 deleted.
-Blame Martin Sevior (msevior@physics.unimelb.edu.au) if this screws up
-something
 	  */
         	getCharFormat(&props_in);
 		currentfont = UT_getAttribute("font-family",props_in);
@@ -2066,9 +2064,10 @@ something
 
 void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 {
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 iPointHeight, iLineHeight;
+        UT_sint32 xPoint;
+        UT_sint32 yPoint;
+        UT_sint32 iPointHeight;
+	UT_sint32 iLineHeight;
 
 	/*
 		This function moves the IP up or down one line, attempting to get 
@@ -2855,7 +2854,7 @@ UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			bNext = inc;
 
 			for (UT_uint32 i = 0; i < number; i++)
-				_moveInsPtNextPrevLine (bNext);  // HACK: I like the quick hacks... :)
+				_moveInsPtNextPrevLine (bNext);  // HACK: A like the quick hacks... :)
 		}
 		else
 		{
@@ -3885,8 +3884,8 @@ void FV_View::_xorInsertionPoint()
 		UT_RGBColor clr(255,255,255);
 
 		m_pG->setColor(clr);
-		m_pG->xorLine(m_xPoint-1, m_yPoint, m_xPoint-1, m_yPoint + m_iPointHeight);
-		m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
+		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
+		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
 		m_bCursorIsOn = !m_bCursorIsOn;
 	}
 	if(_hasPointMoved() == UT_TRUE)
@@ -4441,8 +4440,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 	if (iPosLeft == iPosRight)
 	{
-	  //	        _fixInsertionPointCoords();
-	  _drawInsertionPoint(); // Sevior This is OK!!!
+	        _drawInsertionPoint(); 
 		return;
 	}
 
