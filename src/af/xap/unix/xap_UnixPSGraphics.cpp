@@ -698,11 +698,19 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT
 	UT_Byte * cursor = NULL;
 	UT_Byte * end = start + image->width * image->height * 3; // 3 bytes per pixel
 	static UT_Byte hexbuf[3];
-	for (cursor = start; cursor < end; cursor++)
+	int col;
+	for (cursor = start, col = 0 ; cursor < end; cursor++, col++)
 	{
 		// fetch a byte and convert to hex
 		snprintf((char *) hexbuf, 3, "%.2X", *cursor);
 		m_ps->writeBytes(hexbuf, 2);
+
+		if (col == 40) // 2 chars per round, 80 columns total
+		{
+			col = -1;
+			sprintf((char *) hexbuf, "\n");
+			m_ps->writeBytes(hexbuf, 1);
+		}
 	}
 	sprintf(buf, "\n");
 	m_ps->writeBytes(buf);
