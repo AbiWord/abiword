@@ -290,6 +290,7 @@ static const char * s_prop_list[] = {
 	"font-variant",		"normal",
 	"font-weight",		"normal",
 	"height",			"auto",
+   	"lang",             0,
 	"margin-bottom",	"0pt",
 	"margin-left",		"0pt",
 	"margin-right",		"0pt",
@@ -301,9 +302,9 @@ static const char * s_prop_list[] = {
 	"vertical-align",	"baseline",
 	"widows",			"2",
 	"width"				"auto",
-	0,					0
+	0, 0
 };
-static UT_uint32 s_PropListLen = sizeof s_prop_list / sizeof (char *) - 2; // don't include zeros in this size
+static const UT_uint32 s_PropListLen = NrElements(s_prop_list) - 2; /* don't include the zeros */
 
 /*!	This function returns true if the given property is a valid CSS
 	property.  It is based on the list in pp_Property.cpp, and, as such,
@@ -2504,6 +2505,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	const XML_Char * szP_TextPosition = 0;
 	const XML_Char * szP_Color = 0;
 	const XML_Char * szP_BgColor = 0;
+	const XML_Char * szP_Lang = 0;
 
 	pAP->getProperty ("font-weight",     szP_FontWeight);
 	pAP->getProperty ("font-style",      szP_FontStyle);
@@ -2513,6 +2515,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	pAP->getProperty ("text-position",   szP_TextPosition);
 	pAP->getProperty ("color",           szP_Color);
 	pAP->getProperty ("bgcolor",         szP_BgColor);
+	pAP->getProperty ("lang",         szP_Lang);
 
 	bool first = true;
 
@@ -2536,6 +2539,14 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					m_utf8_1 += "font-style: italic";
 					first = false;
 				}
+	if (szP_Lang)
+		if (!compareStyle ("font-style", szP_Lang))
+			{
+				if (!first) m_utf8_1 += "; ";
+				m_utf8_1 += "lang: ";
+				m_utf8_1 += szP_Lang;
+				first = false;
+			}
 
 	if (szP_FontSize)
 		{
