@@ -45,14 +45,14 @@
 
 BeginSet(sv,SE,UT_TRUE)
 
-	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,			NoIcon,						NULL, NULL)
+	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,			NoIcon,					NULL, NULL)
 
-	//          (id, 		                    szLabel,		IconName,     				szToolTip, szStatusMsg)
+	//          (id,						szLabel,		IconName,					szToolTip, szStatusMsg)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nytt", 		tb_new_xpm,					NULL, "Skapar ett nytt tomt dokument")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Öppna",		tb_open_xpm,				NULL, "Öppnar ett befintligt dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Spara", 		tb_save_xpm,				NULL, "Sparar dokumentet")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Spara...", 	tb_save_as_xpm, 			NULL, "Sparar dokumentet med ett nytt namn")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Spara...", 	tb_save_as_xpm, 				NULL, "Sparar dokumentet med ett nytt namn")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Skriv ut",		tb_print_xpm,				NULL, "Skriv ut dokumentet")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Ångra",		tb_undo_xpm,				NULL, "Ångra inmatningen")
@@ -61,36 +61,39 @@ BeginSet(sv,SE,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiera",		tb_copy_xpm,				NULL, "Kopiera")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Klistra in", 	tb_paste_xpm,				NULL, "Klistra in")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",			NoIcon,						NULL, "Stil")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Teckensnitt", 	NoIcon,						NULL, "Teckensnitt")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Teckenstorlek", NoIcon,					NULL, "Teckenstorlek")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fet",			tb_text_bold_F_xpm,			NULL, "Fet")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",		tb_text_italic_K_xpm,		NULL, "Kursiv")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Under", 		tb_text_underline_xpm,		NULL, "Understruken")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Över",			tb_text_overline_xpm,		NULL, "Överstruken")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Genom", 		tb_text_strikeout_G_xpm,	NULL, "Genomstruken")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",		NoIcon,					NULL, "Stil")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Teckensnitt",	NoIcon,					NULL, "Teckensnitt")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Teckenstorlek",	NoIcon,					NULL, "Teckenstorlek")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fet",		tb_text_bold_F_xpm,			NULL, "Fet")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",		tb_text_italic_K_xpm,			NULL, "Kursiv")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,		"Under", 		tb_text_underline_xpm,			NULL, "Understruken")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,		"Över",		tb_text_overline_xpm,			NULL, "Överstruken")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Genom", 		tb_text_strikeout_G_xpm,		NULL, "Genomstruken")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Upphöjd",		tb_text_superscript_xpm,	NULL, "Upphöjd")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Nedsänkt",		tb_text_subscript_xpm,		NULL, "Nedsänkt")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Upphöjd",		tb_text_superscript_xpm,		NULL, "Upphöjd")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		"Nedsänkt",		tb_text_subscript_xpm,			NULL, "Nedsänkt")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,		"Symbol",		tb_symbol_xpm,				NULL, "Infoga symbol")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Vänster",		tb_text_align_left_xpm,		NULL, "Vänsterjustera")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centrera", 	tb_text_center_xpm,			NULL, "Centrera")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Höger",		tb_text_align_right_xpm,	NULL, "Högerjustera")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Marginal", 	tb_text_justify_xpm,		NULL, "Marginaljustera")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Vänster",		tb_text_align_left_xpm,			NULL, "Vänsterjustera")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,		"Centrera", 	tb_text_center_xpm,			NULL, "Centrera")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Höger",		tb_text_align_right_xpm,		NULL, "Högerjustera")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,		"Marginal", 	tb_text_justify_xpm,			NULL, "Marginaljustera")
 
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Inget före", 	tb_para_0before_xpm,		NULL, "Mellanrum före: Inget")
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12pt före", 	tb_para_12before_xpm,		NULL, "Mellanrum före: 12 pt")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,		"Inget före", 	tb_para_0before_xpm,			NULL, "Mellanrum före: Inget")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,		"12pt före", 	tb_para_12before_xpm,			NULL, "Mellanrum före: 12 pt")
 
-	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Enkelt",		tb_line_single_space_xpm,	NULL, "Enkelt radavstånd")
-	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1,5 rad",		tb_line_middle_space_xpm,	NULL, "1,5 radavstånd")
-	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Dubbelt",		tb_line_double_space_xpm,	NULL, "Dubbelt radavstånd")
+	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,		"Enkelt",		tb_line_single_space_xpm,		NULL, "Enkelt radavstånd")
+	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,		"1,5 rad",		tb_line_middle_space_xpm,		NULL, "1,5 radavstånd")
+	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,		"Dubbelt",		tb_line_double_space_xpm,		NULL, "Dubbelt radavstånd")
 
 	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"1 spalt",		tb_1column_xpm,				NULL, "1 spalt")
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 spalter",	tb_2column_xpm,				NULL, "2 spalter")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 spalter",	tb_3column_xpm,				NULL, "3 spalter")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",			NoIcon,						NULL, "Zoom")
-	
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,					NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Punktlista",	tb_lists_bullets_xpm,			NULL,	"Start/Stopp punktlista")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Numreradlista",	tb_lists_numbers_xpm,			NULL,	"Start/Stopp numreradlista")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,						NULL, NULL)
