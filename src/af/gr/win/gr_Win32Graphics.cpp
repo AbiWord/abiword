@@ -171,6 +171,8 @@ GR_Win32Graphics::~GR_Win32Graphics()
 		DeleteObject(pArPens->hPen);	
 
 	delete m_pArPens;
+
+	DELETEP(m_pFontGUI);
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
