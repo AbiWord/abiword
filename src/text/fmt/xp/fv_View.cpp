@@ -116,6 +116,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	moveInsPtTo(FV_DOCPOS_BOD);
 	m_iSelectionAnchor = getPoint();
 	_resetSelection();
+	_clearOldPoint();
 	_fixInsertionPointCoords();
 
 	_m_findNextString = NULL;
@@ -123,7 +124,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_wrappedEnd = UT_FALSE;
 	m_startPosition = 0;
 	m_bShowPara = UT_FALSE;
-	_saveCurrentPoint();
+	m_bCursorIsOn = UT_FALSE;
 }
 
 FV_View::~FV_View()
@@ -140,7 +141,7 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
 }
-	
+
 void FV_View::focusChange(AV_Focus focus)
 {
 	m_focus=focus;
@@ -184,6 +185,7 @@ void FV_View::focusChange(AV_Focus focus)
 		if (isSelectionEmpty())
 		{
 			_eraseInsertionPoint();
+			_saveCurrentPoint();
 		}
 		else
 		{
@@ -1003,7 +1005,6 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 		_clearIfAtFmtMark(getPoint());
 
 	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ UT_FALSE);  // is this bool correct?
-	
 	_fixInsertionPointCoords();
 	cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32) (m_yPoint + m_iPointHeight/2 - m_iWindowHeight/2));
 	cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32) (m_xPoint - m_iWindowWidth/2));
@@ -1033,6 +1034,8 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 		{
 		    if(!_charMotion(bForward, count))   
 			{
+
+			        _eraseInsertionPoint();	
 				_setPoint(iPoint);
 				notifyListeners(AV_CHG_MOTION);
 				return;
@@ -2215,6 +2218,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
 	UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
 
+
 	_setPoint(iNewPoint, bEOL);
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -2235,14 +2239,14 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 	{
 		return UT_FALSE;
 	}
-	
+
 	_fixInsertionPointCoords();
 
 	//UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,m_iWindowWidth,m_iWindowHeight));
 
 	if (m_yPoint < 0)
 	{
-		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
+	        cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
 		bRet = UT_TRUE;
 	}
 	else if (((UT_uint32) (m_yPoint + m_iPointHeight)) >= ((UT_uint32) m_iWindowHeight))
@@ -2264,6 +2268,8 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth + fl_PAGEVIEW_MARGIN_X/2));
 		bRet = UT_TRUE;
 	}
+        if(bRet == UT_FALSE)
+	        _drawInsertionPoint();
 
 	return bRet;
 }
@@ -2341,11 +2347,13 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	UT_Bool bVScroll = UT_FALSE;
 	if (iPageOffset < 0)
 	{
+	        _eraseInsertionPoint();	
 		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-iPageOffset));
 		bVScroll = UT_TRUE;
 	}
 	else if (iPageOffset > 0)
 	{
+                _eraseInsertionPoint();	
 		cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(iPageOffset));
 		bVScroll = UT_TRUE;
 	}
@@ -2541,19 +2549,23 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
  
 			if (yPos < 0)
 			{
+		                pView->_eraseInsertionPoint();	
 				pView->cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(yPos)));
 			}
 			else if (((UT_uint32) (yPos)) >= ((UT_uint32) pView->m_iWindowHeight))
 			{
+		                pView->_eraseInsertionPoint();	
 				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(yPos - pView->m_iWindowHeight));
 			}
 
 			if (xPos < 0)
 			{
+		                pView->_eraseInsertionPoint();	
 				pView->cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(xPos)));
 			}
 			else if (((UT_uint32) (xPos)) >= ((UT_uint32) pView->m_iWindowWidth))
 			{
+		                pView->_eraseInsertionPoint();	
 				pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(xPos - pView->m_iWindowWidth));
 			}
 		}
@@ -3820,8 +3832,9 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_fixInsertionPointCoords()
 {
+        _eraseInsertionPoint();
 	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
-
+        _saveCurrentPoint();
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
 }
@@ -3830,8 +3843,6 @@ void FV_View::_updateInsertionPoint()
 {
 	if (isSelectionEmpty())
 	{
-		_eraseInsertionPoint();
-
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
 			_fixInsertionPointCoords();
@@ -3889,16 +3900,20 @@ void FV_View::_eraseInsertionPoint()
         if(_hasPointMoved() == UT_TRUE)
 	{
 	        UT_DEBUGMSG(("Insertion Point has moved before erasing \n"));
-		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		if (m_pAutoCursorTimer) 
+		        m_pAutoCursorTimer->stop();
 		m_bCursorIsOn = UT_FALSE;
+                _saveCurrentPoint();
                 return;
 	}
 
 	if (m_pAutoCursorTimer) 
-		m_pAutoCursorTimer->stop();
+	        m_pAutoCursorTimer->stop();
+
 	
 	if (!isSelectionEmpty() || !m_bCursorIsOn)
 	{
+	        m_bCursorIsOn = UT_FALSE;
 		return;
 	}
 	_xorInsertionPoint();
@@ -3950,7 +3965,6 @@ void FV_View::_autoDrawPoint(UT_Timer * pTimer)
 		return;
 	}
 	pView->_xorInsertionPoint();
-	//	pView->m_bCursorIsOn = !pView->m_bCursorIsOn;
 }
 
 void FV_View::setXScrollOffset(UT_sint32 v)
@@ -3959,10 +3973,9 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 
 	if (dx == 0)
 		return;
-	
+	_fixInsertionPointCoords();
 	m_pG->scroll(dx, 0);
 	m_xScrollOffset = v;
-	
 	if (dx > 0)
     {
 		if (dx >= m_iWindowWidth)
@@ -3985,6 +3998,9 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 			_draw(0, 0, -dx, m_iWindowHeight, UT_FALSE, UT_TRUE);
 		}
     }
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
+
 }
 
 void FV_View::setYScrollOffset(UT_sint32 v)
@@ -3993,10 +4009,9 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 
 	if (dy == 0)
 		return;
-	
+	_fixInsertionPointCoords();
 	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
-
 	if (dy > 0)
     {
 		if (dy >= m_iWindowHeight)
@@ -4019,6 +4034,8 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 			_draw(0, 0, m_iWindowWidth, -dy, UT_FALSE, UT_TRUE);
 		}
     }
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 }
 
 void FV_View::draw(int page, dg_DrawArgs* da)
@@ -4039,16 +4056,29 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	if (pClipRect)
 	{
 		_draw(pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height,UT_FALSE,UT_TRUE);
+		_fixInsertionPointCoords();
+	        _drawInsertionPoint();
+
 	}
 	else
 	{
 		_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_FALSE,UT_FALSE);
+		 _fixInsertionPointCoords();
+		 _drawInsertionPoint();
 	}
 }
 
 void FV_View::updateScreen(void)
 {
 	_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_TRUE,UT_FALSE);
+}
+
+
+void FV_View::initializeInsertionPoint(void)
+{
+        updateScreen();
+        m_bCursorIsOn = UT_FALSE;
+        _drawInsertionPoint();
 }
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,
@@ -4248,12 +4278,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		m_pG->fillRect(clrMargin, 0, y, m_iWindowWidth, h);
 	}
 
-	if (!bDirtyRunsOnly)
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
-
 	if (bClip)
 	{
 		m_pG->setClipRect(NULL);
@@ -4282,8 +4306,6 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	UT_Bool bVertical = UT_FALSE;
 	UT_Bool bHorizontal = UT_FALSE;
 	
-	_eraseInsertionPoint();	
-
 	docHeight = m_pLayout->getHeight();
 	
 	if (lineHeight == 0)
@@ -4374,8 +4396,10 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 
 	if (bRedrawPoint)
 	{
-		_drawInsertionPoint();
+       		_drawInsertionPoint();
 	}
+
+	
 }
 
 UT_Bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
@@ -4420,7 +4444,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 	if (iPosLeft == iPosRight)
 	{
-		_fixInsertionPointCoords();
+	        _fixInsertionPointCoords();
 		_drawInsertionPoint();
 		return;
 	}

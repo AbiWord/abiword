@@ -183,6 +183,8 @@ public:
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
 	void			updateScreen(void);
+        void                    initializeInsertionPoint(void);
+
 
 // ----------------------
 
@@ -278,9 +280,9 @@ protected:
 	void 				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
 	void 				_xorInsertionPoint();
-        UT_Bool                         _hasPointMoved(void); // sevior
-	void                            _saveCurrentPoint(void); //sevior
-        void                            _clearOldPoint(void); //sevior
+        UT_Bool                         _hasPointMoved(void); 
+	void                            _saveCurrentPoint(void); 
+        void                            _clearOldPoint(void); 
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
@@ -307,9 +309,9 @@ protected:
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
 	UT_uint32			m_iPointHeight;
-	UT_sint32			m_oldxPoint; // sevior
-	UT_sint32			m_oldyPoint; // sevior
-	UT_uint32			m_oldiPointHeight; //sevior
+	UT_sint32			m_oldxPoint; 
+	UT_sint32			m_oldyPoint; 
+	UT_uint32			m_oldiPointHeight;
 	UT_sint32			m_xPointSticky;		// used only for _moveInsPtNextPrevLine() 
 
 	UT_Bool				m_bPointVisible;

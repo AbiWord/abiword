@@ -1772,6 +1772,7 @@ void fl_BlockLayout::checkSpelling(void)
 
 	if (bUpdateScreen && pView)
 	{
+	        pView->_eraseInsertionPoint();
 		pView->updateScreen();
 		pView->_drawInsertionPoint();
 	}
@@ -3750,6 +3751,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 	}
 	if (bUpdate && pView)
 	{
+	        pView->_eraseInsertionPoint();
 		pView->updateScreen();
 		pView->_drawInsertionPoint();
 	}
