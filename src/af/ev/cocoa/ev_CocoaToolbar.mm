@@ -235,6 +235,8 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 	case EV_TBIT_ToggleButton:
 	case EV_TBIT_GroupButton:
 		{
+			btnFrame.origin.y = -1;
+
 			btn = [[XAP_CocoaToolbarButton alloc] initWithFrame:btnFrame];
 
 			[btn setButtonType:NSPushOnPushOffButton];
@@ -352,6 +354,20 @@ void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
 #endif
 }
 
+@interface EV_CocoaToolbarView : NSView
+- (void)drawRect:(NSRect)aRect;
+@end
+
+@implementation EV_CocoaToolbarView
+
+- (void)drawRect:(NSRect)aRect
+{
+	[[NSColor lightGrayColor] set];
+
+	[NSBezierPath strokeRect:[self frame]];
+}
+
+@end
 
 bool EV_CocoaToolbar::synthesize(void)
 {
@@ -390,7 +406,7 @@ bool EV_CocoaToolbar::synthesize(void)
 	viewBounds.size.width  = 0.0f;
 	viewBounds.size.height = getToolbarHeight();
 
-	m_wToolbar = [[NSView alloc] initWithFrame:viewBounds];
+	m_wToolbar = [[EV_CocoaToolbarView alloc] initWithFrame:viewBounds];
 
 	[m_wToolbar setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 
