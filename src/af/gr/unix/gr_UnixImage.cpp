@@ -208,6 +208,7 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 	m_image = image;
 }
 
+// note that this does take device units, unlike everything else.
 bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, 
 				     UT_sint32 iDisplayWidth, 
 				     UT_sint32 iDisplayHeight)
@@ -225,6 +226,8 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 	
+	gdk_pixbuf_loader_set_size(ldr, iDisplayWidth, iDisplayHeight);
+	
 	if ( FALSE== gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
 										  static_cast<gsize>(pBB->getLength ()), &err) )
 	{
@@ -233,7 +236,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		gdk_pixbuf_loader_close (ldr, NULL);
 		return false ;
 	}
-
+	
 	m_image = gdk_pixbuf_loader_get_pixbuf (ldr);
 	if (!m_image)
 	{
@@ -242,9 +245,9 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 
-	scale (iDisplayWidth, iDisplayHeight);
 	g_object_ref (G_OBJECT(m_image));
-   
+
+	
 	if ( FALSE == gdk_pixbuf_loader_close (ldr, &err) )
 	{
 		UT_DEBUGMSG(("DOM: error closing loader. Corrupt image: %s\n", err->message));
@@ -252,6 +255,10 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		g_object_unref(G_OBJECT(m_image));
 		return false;
 	}
+	
+	// if gdk_pixbuf_loader_set_size was not able to scale the image, then do it manually
+	if (iDisplayWidth != gdk_pixbuf_get_width (m_image) || iDisplayHeight != gdk_pixbuf_get_height(m_image))
+		scale (iDisplayWidth, iDisplayHeight);
 
 	return true;
 }
