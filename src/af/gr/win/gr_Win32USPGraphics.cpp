@@ -107,17 +107,19 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	    m_pAdvances(NULL),
 		m_pJustify(NULL),
 		m_iZoom(100),
-		m_eJustification(SCRIPT_JUSTIFY_NONE)
+		m_eJustification(SCRIPT_JUSTIFY_NONE),
+		m_bRejustify(true)
 	{
 		s_iInstanceCount++;
 		if(s_iInstanceCount == 1)
 		{
 			s_pAdvances = new int [200];
+			s_pJustifiedAdvances = new int [200];
 			s_pJustify  = new int [200];
 			s_pLogAttr  = new SCRIPT_LOGATTR[200]; // log attr. correspont to characters, not glyphs, but since there are
 												   // always at least as many glyphs, this is OK
 			s_pChars    = new WCHAR[200];
-			UT_ASSERT(s_pAdvances && s_pJustify && s_pLogAttr && s_pChars);
+			UT_ASSERT(s_pAdvances && s_pJustifiedAdvances && s_pJustify && s_pLogAttr && s_pChars);
 			s_iAdvancesSize = 200;
 		}
 		
@@ -133,6 +135,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 			if(!s_iInstanceCount)
 			{
 				delete [] s_pAdvances; s_pAdvances = NULL;
+				delete [] s_pJustifiedAdvances; s_pJustifiedAdvances = NULL;
 				delete [] s_pJustify;  s_pJustify  = NULL;
 				delete [] s_pLogAttr;  s_pLogAttr  = NULL;
 				delete [] s_pChars;    s_pChars    = NULL;
@@ -166,8 +169,11 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	UT_uint32        m_iZoom;
 
 	SCRIPT_JUSTIFY   m_eJustification;
+
+	bool             m_bRejustify;
 	
-	static int *     s_pAdvances;
+	static int *     s_pAdvances;            // in device units, used for drawing
+	static int *     s_pJustifiedAdvances;   // in logical units, used for mapping x to CP
 	static UT_uint32 s_iInstanceCount;
 	static UT_uint32 s_iAdvancesSize;
 	static int *     s_pJustify;
@@ -179,6 +185,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 };
 
 int *           GR_Win32USPRenderInfo::s_pAdvances      = NULL;
+int *           GR_Win32USPRenderInfo::s_pJustifiedAdvances = NULL;
 int *           GR_Win32USPRenderInfo::s_pJustify       = NULL;
 UT_uint32       GR_Win32USPRenderInfo::s_iInstanceCount = 0;
 UT_uint32       GR_Win32USPRenderInfo::s_iAdvancesSize  = 0;
@@ -783,8 +790,9 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 
 	if(RI.s_iAdvancesSize < RI.m_iIndicesCount)
 	{
-		delete [] RI.s_pAdvances; delete [] RI.s_pJustify;
+		delete [] RI.s_pAdvances; delete [] RI.s_pJustifiedAdvances;  delete [] RI.s_pJustify;
 		RI.s_pAdvances = new int [RI.m_iIndicesCount];
+		RI.s_pJustifiedAdvances = new int [RI.m_iIndicesCount];
 		RI.s_pJustify  = new int [RI.m_iIndicesCount];
 		// also need to realloc s_pLogAttr and s_pChars, since we do not keep track
 		// of is size separately
@@ -860,8 +868,6 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 		iGlyphCount = iOffsetEnd - iGlyphOffset;
 	}
 
-	int * pJustify = RI.m_pJustify ? RI.s_pJustify + iGlyphOffset : NULL;
-
 	if(RI.m_bInvalidateFontCache)
 	{
 		fScriptFreeCache(pFont->getScriptCache());
@@ -869,6 +875,8 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 		RI.m_bInvalidateFontCache = false;
 	}
 
+	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : NULL;
+	
 	// not sure how expensive SetBkMode is, but GetBkMode() should not
 	// be ...
 	if(GetBkMode(m_hdc) != TRANSPARENT)
@@ -887,6 +895,9 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 								 RI.s_pAdvances + iGlyphOffset,
 								 pJustify,
 								 RI.m_pGoffsets);
+
+	//RI.m_bRejustify = false; -- the docs are misleading; rejustification is always needed
+	
 	UT_ASSERT( !hRes );
 }
 
@@ -937,6 +948,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
 	RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 
+	RI.m_bRejustify = true;
+	
 	UT_ASSERT( !hRes );
 }
 
@@ -1216,7 +1229,21 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 	
 	int iPos;
 	int iTrail;
-	HRESULT hRes = fScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, RI.m_pAdvances,
+	int * pAdvances = RI.m_pJustify ? RI.s_pJustifiedAdvances : RI.m_pAdvances;
+	
+	if(RI.m_pJustify && RI.s_pOwner != &RI)
+	{
+		UT_return_val_if_fail( RI.s_iAdvancesSize >= RI.m_iIndicesCount, 0 );
+		
+		for(UT_uint32 i  = 0; i < RI.m_iIndicesCount; ++i)
+		{
+			RI.s_pJustifiedAdvances[i] = RI.m_pAdvances[i] + RI.m_pJustify[i];
+		}
+
+		RI.s_pOwner = &RI;
+	}
+	
+	HRESULT hRes = fScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, pAdvances,
 							   & pItem->m_si.a, &iPos, &iTrail);
 
 	UT_ASSERT( !hRes );
@@ -1237,11 +1264,27 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 		return;
 
 	bool bTrailing = true;
+
+	int * pAdvances = RI.m_pJustify ? RI.s_pJustifiedAdvances : RI.m_pAdvances;
+	
+	if(RI.m_pJustify && RI.s_pOwner != &RI)
+	{
+		UT_return_if_fail( RI.s_iAdvancesSize >= RI.m_iIndicesCount);
+		
+		for(UT_uint32 i  = 0; i < RI.m_iIndicesCount; ++i)
+		{
+			RI.s_pJustifiedAdvances[i] = RI.m_pAdvances[i] + RI.m_pJustify[i];
+		}
+
+		RI.s_pOwner = &RI;
+	}
+	
 	HRESULT hRes = fScriptCPtoX(RI.m_iOffset,
 							   bTrailing, /* fTrailing*/
 							   RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr,
-							   RI.m_pAdvances, & pItem->m_si.a, &x);
+							   pAdvances, & pItem->m_si.a, &x);
 
+	
 	UT_ASSERT( !hRes );
 	x = x;
 	x2 = x;
