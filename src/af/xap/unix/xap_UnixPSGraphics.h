@@ -57,7 +57,7 @@ public:
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
 
-	virtual void getCoverage(UT_Vector& coverage);
+	virtual void getCoverage(UT_NumberVector& coverage);
 	
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
@@ -165,24 +165,6 @@ protected:
 	GR_Graphics::ColorSpace	m_cs;
 	
 	XAP_UnixFontManager *	m_fm;
-};
-
-class ABI_EXPORT PS_GraphicsFactory : public GR_GraphicsFactory
-{
-public:
-	explicit PS_GraphicsFactory(const UT_String & command);
-
-	virtual ~PS_GraphicsFactory();
-
-	virtual GR_Graphics* getGraphics();
-
-private:
-
-	PS_GraphicsFactory(const PS_GraphicsFactory & other);
-	PS_GraphicsFactory& operator=(const PS_GraphicsFactory & other);
-
-	UT_String m_command;
-	UT_uint32 m_mergeCount;
 };
 
 #endif /* XAP_UNIXPSGRAPHICS_H */

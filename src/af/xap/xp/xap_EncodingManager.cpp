@@ -160,12 +160,12 @@ void XAP_EncodingManager::Delete_instance()
 const char* XAP_EncodingManager::getLanguageISOName() const 
 {
     return "en";
-};
+}
 
 const char* XAP_EncodingManager::getLanguageISOTerritory() const
 {
     return NULL;
-};
+}
 
 // TODO Do we need an equivalent function which can return
 // TODO U+FFFD "REPLACEMENT CHARACTER" or U+25A0 "BLACK SQUARE"
@@ -200,13 +200,13 @@ UT_uint32 XAP_EncodingManager::approximate(char* out,UT_uint32 max_length,UT_UCS
 		*/
 	}
 	return 0;
-};
+}
 
 UT_UCSChar XAP_EncodingManager::nativeToU(UT_UCSChar c) const
 {
     UT_UCSChar ret = try_nativeToU(c);
     return ret ? ret : fallbackChar(c);	
-};
+}
 
 UT_UCSChar XAP_EncodingManager::UToNative(UT_UCSChar c)  const
 {
@@ -219,27 +219,27 @@ UT_UCSChar XAP_EncodingManager::UToNative(UT_UCSChar c)  const
     }
     else
     	return ret;
-};
+}
 
 UT_UCSChar XAP_EncodingManager::WindowsToU(UT_UCSChar c) const
 {
     UT_UCSChar ret = try_WindowsToU(c);
     return ret ? ret : fallbackChar(c);	
-};
+}
 
 
 UT_UCSChar XAP_EncodingManager::UToWindows(UT_UCSChar c)  const
 {
     UT_UCSChar ret = try_UToWindows(c);
     return ret && ret<=0xff ? ret : fallbackChar(c);	
-};
+}
 
 
 const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,bool bUseSysEncoding) const
 {
 	static char buf[500];
 	return strToNative(in, charset, buf, sizeof(buf), bUseSysEncoding);
-};
+}
 
 const char* XAP_EncodingManager::strToNative(const char* in, const char* charset, char* buf, int bufsz,
 											 bool bUseSysEncoding) const
@@ -280,7 +280,7 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 
 	UT_iconv_close(iconv_handle);
 	return retstr;
-};
+}
 
 int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerData*/,
                                           const XML_Char *name,
@@ -322,7 +322,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 	UT_iconv_close(iconv_handle);
 	return 1;
 #endif
-};
+}
 
 extern "C" { char *wvLIDToCodePageConverter(unsigned short lid); }
 
@@ -350,7 +350,7 @@ static void init_values(const XAP_EncodingManager* that)
 	char* winencname = wvLIDToCodePageConverter(that->getWinLanguageCode());
 	iconv_handle_Win2U = UT_iconv_open(ucs4Internal(),winencname);
 	iconv_handle_U2Win = UT_iconv_open(winencname,ucs4Internal());
-};
+}
 
 
 static UT_UCSChar try_CToU(UT_UCSChar c,UT_iconv_t iconv_handle)
@@ -398,7 +398,7 @@ static UT_UCSChar try_CToU(UT_UCSChar c,UT_iconv_t iconv_handle)
 			}
 	}
 	return uval;
-};
+}
 
 static UT_UCSChar try_UToC(UT_UCSChar c,UT_iconv_t iconv_handle)
 {
@@ -441,22 +441,22 @@ static UT_UCSChar try_UToC(UT_UCSChar c,UT_iconv_t iconv_handle)
 		else byte = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[0]));
 	}
 	return byte;
-};
+}
 
 UT_UCSChar XAP_EncodingManager::try_nativeToU(UT_UCSChar c) const
 {
 	return try_CToU(c,iconv_handle_N2U);
-};
+}
 
 UT_UCSChar XAP_EncodingManager::try_UToNative(UT_UCSChar c)  const
 {
 	return try_UToC(c,iconv_handle_U2N);
-};
+}
 
 UT_UCSChar XAP_EncodingManager::try_UToLatin1(UT_UCSChar c)  const
 {
 	return try_UToC(c,iconv_handle_U2Latin1);
-};
+}
 
 UT_UCSChar XAP_EncodingManager::try_WindowsToU(UT_UCSChar c) const 
 { 
@@ -497,7 +497,7 @@ static const char* search_rmap(const _rmap* m,const char* key,bool* is_default =
 	if (is_default)	
 		*is_default = true;
 	return m->value;
-};
+}
 
 static const char* search_rmap_with_opt_suffix(const _rmap* m,const char* key,const char* fallback_key=NULL,const char* fallback_key_final=NULL)
 {
@@ -506,7 +506,7 @@ static const char* search_rmap_with_opt_suffix(const _rmap* m,const char* key,co
 	if (!is_default || !fallback_key)
 		return value;
 	return search_rmap_with_opt_suffix(m,fallback_key,fallback_key_final);
-};
+}
 
 
 struct _map
@@ -525,7 +525,7 @@ static const char* search_map(const _map* m,const char* key,bool* is_default = N
 	if (is_default)
 		*is_default = true;
 	return m->value;
-};
+}
 
 static const char* search_map_with_opt_suffix(const _map* m,const char* key,const char* fallback_key=NULL,const char* fallback_key_final=NULL)
 {
@@ -534,7 +534,7 @@ static const char* search_map_with_opt_suffix(const _map* m,const char* key,cons
 	if (!is_default || !fallback_key)
 		return value;
 	return search_map_with_opt_suffix(m,fallback_key,fallback_key_final);
-};
+}
 
 /* ************************* here begin tables *************************/
 
@@ -966,7 +966,7 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 		if (!UT_stricmp(cur->fields[idx],key))
 			return cur;
 	return NULL;
-};
+}
 
 bool XAP_EncodingManager::swap_utos = false;
 bool XAP_EncodingManager::swap_stou = false;
@@ -1159,7 +1159,7 @@ int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
 bool XAP_EncodingManager::can_break_words() const
 {
     return can_break_words_;
-};
+}
 
 /*
     I'm not sure whether any non-cjk language doesn't make distinction
@@ -1173,7 +1173,7 @@ bool XAP_EncodingManager::is_cjk_letter(UT_UCSChar c) const
     if (!cjk_locale())
 	return 0;
     return (c>0xff);
-};
+}
 
 bool XAP_EncodingManager::noncjk_letters(const UT_UCSChar* str,int len) const
 {
@@ -1184,7 +1184,7 @@ bool XAP_EncodingManager::noncjk_letters(const UT_UCSChar* str,int len) const
 	    return 0;
     };
     return 1;
-};
+}
 
 /*
     This one correlates with can_break_words() very tightly.
@@ -1200,13 +1200,13 @@ bool XAP_EncodingManager::can_break_at(const UT_UCSChar c) const
 	 || c == UCS_EM_DASH)
 	return 1;
     return is_cjk_letter(c);
-};
+}
 
 
 const char* XAP_EncodingManager::getTexPrologue() const
 {
     return TexPrologue;
-};
+}
 
 // Warning:
 // This code forces us to use "GB2312", "BIG5", etc instead
@@ -1221,7 +1221,7 @@ const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
     bool is_default;
     const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
     return is_default ? cpname : ret;
-};
+}
 
 const char* XAP_EncodingManager::CodepageFromCharset(char *charset) const
 {
@@ -1237,17 +1237,17 @@ const char* XAP_EncodingManager::WindowsCharsetName() const
     bool is_default;
     const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
     return is_default ? cpname : ret;
-};
+}
 
 UT_uint32  XAP_EncodingManager::getWinLanguageCode() const
 {
 	return WinLanguageCode;
-};
+}
 
 UT_uint32  XAP_EncodingManager::getWinCharsetCode() const
 {
 	return WinCharsetCode;
-};
+}
 
 void 	XAP_EncodingManager::describe()
 {
@@ -1274,7 +1274,7 @@ void 	XAP_EncodingManager::describe()
 		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)
 		));
 	UT_ASSERT( UT_iconv_isValid(iconv_handle_N2U) && UT_iconv_isValid(iconv_handle_U2N) );
-};
+}
 
 
 /*
@@ -1337,7 +1337,7 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 	ptrs[5] = 0;
 	
     return ptrs;
-};
+}
 
 /* pspell hack */
 extern "C" {

@@ -42,12 +42,12 @@ public:
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-   	void			setData(Fatmap * image) { m_image = image; }
-	Fatmap *			getData(void) const { return m_image; }
+   	void			setData(PhImage_t * image) { m_image = image; }
+	PhImage_t *			getData(void) const { return m_image; }
 
 private:
 	
-	Fatmap * m_image;
+	PhImage_t * m_image;
 	GRType m_grtype;
 
 	UT_sint32 m_iDisplayWidth;

@@ -71,6 +71,8 @@ XAP_Win32Slurp::XAP_Win32Slurp(XAP_Win32App * pApp)
 	m_pApp = pApp;
 	m_bInitialized = false;
 	s_Slurp = this;
+	m_hszServerName = NULL;
+	m_hszTopic = NULL;
 }
 
 XAP_Win32Slurp::~XAP_Win32Slurp(void)

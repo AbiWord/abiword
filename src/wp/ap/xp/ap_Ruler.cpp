@@ -111,7 +111,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
 	}
-};
+}
 
 /*! 
     Snap pixel value to nearest grid line

@@ -32,6 +32,7 @@
 #include "xav_View.h"
 #include "gr_QNXGraphics.h"
 #include <stdio.h>
+#include <Pt.h>
 
 EV_QNXMouse::EV_QNXMouse(EV_EditEventMapper * pEEM)
 	: EV_Mouse(pEEM)
@@ -285,4 +286,56 @@ void EV_QNXMouse::mouseMotion(AV_View* pView, PtCallbackInfo_t *e)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
+}
+
+void EV_QNXMouse::mouseScroll(AV_View *pView,PtCallbackInfo_t *info)
+{
+	EV_EditMethod * pEM;
+	EV_EditModifierState state = 0;
+	EV_EditEventMapperResult result;
+	EV_EditMouseButton emb = 0;
+	EV_EditMouseOp mop = 0;
+	EV_EditMouseContext emc = 0;
+	PhKeyEvent_t *kev = (PhKeyEvent_t *)PhGetData(info->event);
+
+	// map the scrolling type generated from mouse buttons 4 to 7 onto mousebuttons
+	if (kev->key_cap == Pk_Up)
+			emb = EV_EMB_BUTTON4;
+	else if (kev->key_cap == Pk_Down)
+	        emb = EV_EMB_BUTTON5;
+	
+	if (kev->key_mods & Pk_KM_Shift)
+		state |= EV_EMS_SHIFT;
+	if (kev->key_mods & Pk_KM_Ctrl)
+		state |= EV_EMS_CONTROL;
+	if (kev->key_mods & Pk_KM_Alt)
+		state |= EV_EMS_ALT;
+	mop = EV_EMO_SINGLECLICK;
+	
+	emc = pView->getMouseContext(static_cast<UT_sint32>(pView->getGraphics()->tlu(kev->pos.x)),static_cast<UT_sint32>(pView->getGraphics()->tlu(kev->pos.y)));
+	
+	m_clickState = mop;					// remember which type of click
+	m_contextState = emc;				// remember context of click
+	
+	result = m_pEEM->Mouse(emc|mop|emb|state, &pEM);
+	
+	switch (result)
+	{
+	case EV_EEMR_COMPLETE:
+		UT_ASSERT(pEM);
+		invokeMouseMethod(pView,pEM,static_cast<UT_sint32>(pView->getGraphics()->tlu(kev->pos.x)),static_cast<UT_sint32>(pView->getGraphics()->tlu(kev->pos.y)));
+		return;
+	case EV_EEMR_INCOMPLETE:
+		// I'm not sure this makes any sense, but we allow it.
+		return;
+	case EV_EEMR_BOGUS_START:
+	case EV_EEMR_BOGUS_CONT:
+		// TODO What to do ?? Should we beep at them or just be quiet ??
+		return;
+	default:
+		UT_ASSERT(0);
+		return;
+	}
+
+
 }

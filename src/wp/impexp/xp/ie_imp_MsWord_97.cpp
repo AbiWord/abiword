@@ -74,7 +74,7 @@
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
 
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 //#define BIDI_DEBUG
 //
@@ -193,7 +193,8 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 89: return NULL /*"Document Map"*/;
 		case 90: return "Plain Text";
 		case 91: return NULL /*"Email Signature"*/;
-			
+	    case 92: return NULL /*"Index 1"*/;
+	    case 93: return NULL /*"List Bullet"*/;
 		case 94: return NULL /*"Normal (Web)"*/;
 		case 95: return NULL /*"HTML Acronym"*/;
 		case 96: return NULL /*"HTML Address"*/;
@@ -206,10 +207,17 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 103: return NULL /*"HTML Typewriter"*/;
 		case 104: return NULL /*"HTML Variable"*/;
 		case 105: return NULL /*"Table Normal"*/;
-
+    	case 106: return NULL /*"Comment Subject"*/;
 		case 107: return NULL /*"No List"*/;
+    	case 108: return NULL /*"Index Heading"*/;
+	    case 109: return NULL /*"Plain Text"*/;
+	    case 110: return NULL /*"Hyperlink"*/;
+	    case 111: return NULL /*"FollowedHyperlink"*/;
+    	case 112: return NULL /*"EnumList"*/;
+    	case 115: return NULL /*"Balloon Text"*/;
 
 		case 153: return NULL /*"Table of Authorities"*/;
+		case 154: return NULL /*"Grille du tableau" in fr_FR*/;
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
@@ -392,7 +400,9 @@ s_mapPageIdToString (UT_uint16 id)
 
 	switch (id)
 	{
-		case 0:  return "Letter";
+		case 0:  
+		case 1:
+			return "Letter";
 		case 5:  return "Legal";
 		case 7:  return NULL; //"Executive";
 		case 9:  return "A4";
@@ -1328,7 +1338,8 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	char buff[200];
 	char *buff_ptr = &buff[0];
 	const char *in_ptr;
-	size_t out_left = 200, in_left;
+	size_t out_left = sizeof(buff);
+	size_t in_left;
 
 	if (!XAP_EncodingManager::get_instance()->cjk_locale()
 	   &&(XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1))
@@ -1338,7 +1349,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	else
 	{
 		// use UTF-8
-		ic_handle = UT_iconv_open("UTF-8", "UCS-2LE");
+		ic_handle = UT_iconv_open("UTF-8", "UCS-2");
 	}
 
 	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)
@@ -1670,6 +1681,14 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	
 	if(_insertNoteIfAppropriate(ps->currentcp,0))
 		return 0;
+
+	if(eachchar == 0x28)
+	{
+		// this is a symbol; the font is identified by achp->ftcSym and the char code is
+		// achp->xchSym
+		this->_appendChar(achp->xchSym);
+		return 0;
+	}
 	
 	//
 	// This next bit of code is to handle fields
@@ -2860,9 +2879,20 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	m_charProps.clear();
 	m_charStyle.clear();
 
-	if(ps->fonts.ffn[achp->ftcAscii].chs == 0)
+	UT_uint32 iFontType = 0;
+	if(achp->xchSym)
+	{
+		// inserting a symbol char ...
+		iFontType = ps->fonts.ffn[achp->ftcSym].chs;
+	}
+	else
+	{
+		iFontType = ps->fonts.ffn[achp->ftcAscii].chs;
+	}
+	
+	if(iFontType == 0)
 		m_bSymbolFont = false;
-	else if(ps->fonts.ffn[achp->ftcAscii].chs == 2)
+	else if(iFontType == 2)
 		m_bSymbolFont = true;
 	else
 	{
@@ -4117,11 +4147,20 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 
 	// if the FarEast flag is set, use the FarEast font,
 	// otherwise, we'll use the ASCII font.
-	if (achp->fBidi) {
+	if(achp->xchSym)
+	{
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcSym);
+	}
+	else if (achp->fBidi)
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcBidi);
-	} else if (!ps->fib.fFarEast) {
+	}
+	else if (!ps->fib.fFarEast)
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
-	} else {
+	}
+	else
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
 
 		if (strlen (fname) > 6)

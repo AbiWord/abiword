@@ -126,7 +126,7 @@ static char _ev_buf[256];
 #ifdef _
 #undef _
 #endif
-#define _(a, x) _ev_convert (_ev_buf, pSS->getValueUTF8 (a##_STRING_ID_##x).c_str())
+#define _(a, x) _ev_convert (_ev_buf, pSS->getValueUTF8 (a##_STRING_ID_##x).utf8_str())
 
 // string tags to stuff stored in widget data
 #define WIDGET_MENU_OPTION_PTR		"menuoptionptr"

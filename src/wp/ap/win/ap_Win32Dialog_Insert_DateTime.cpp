@@ -19,11 +19,12 @@
 
 #include <windows.h>
 #include <time.h>
+#include <locale.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
+#include "ut_locale.h"
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
@@ -106,10 +107,16 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 	pTime = &wide;
 #endif
 
+	UT_LocaleInfo localeInfo;
+	char *oldLocale = setlocale(LC_ALL, localeInfo.getLanguage().c_str());
+
     for (i = 0;InsertDateTimeFmts[i] != NULL;i++) {
+    	
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
         SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)szCurrentDateTime);
     }
+    
+    setlocale(LC_ALL, oldLocale);
 }
 
 
