@@ -28,31 +28,49 @@ public:
 	AP_Win32Dialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_PageSetup (void);
 
-	virtual void runModal (XAP_Frame *pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-	static UINT CALLBACK	s_hookProc(HWND, UINT, WPARAM, LPARAM);
+
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
 
 protected:
+	UT_sint32	m_curSelection;
 
-	enum					{HEADER,FOOTER};
-	bool					m_bisInches;
-	char					m_strCurrentBuffer[10];
-	char					m_strOldBuffer[10];
-	char					m_strOriginalBuffer[10];
-	UT_uint32				m_iMarginHeader;
-	UT_uint32				m_iMarginFooter;
-	float					m_fpageScaleFactor;
+
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
 	
-	UINT					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	UINT					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
+	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onNotifyTab(HWND hWnd, LPARAM lParam);
 
-	void					loadData(HWND hWnd, UT_uint32 type, char* dest);
-	void					convertInteger(UT_uint32 margin, char* dest);
-	bool					isKeyStrokeValid();
-	bool					isInputValid(HWND hWnd, UT_uint32 type);
-	UT_uint32				verifyMarginValue(HWND hWnd, UT_uint32 type, UT_uint32 margin);
+	void						doSpinControl(UT_uint32 id, UT_sint32 delta);
+	void						updatePageSize();
+	void						updateWidth();
+	void						updateHeight();
+	void						updateMargins();
+	void						updateTopMargin();
+	void						updateBottomMargin();
+	void						updateLeftMargin();
+	void						updateRightMargin();
+	void						updateHeaderMargin();
+	void						updateFooterMargin();
+	void						updatePreview();
+
+	HWND						m_hwndDlg;		// parent dialog
+	HWND						m_hwndTab;		// tab control in parent dialog
+
+	int							m_nrSubDlgs;		// number of tabs on tab control
+	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+
+	HBITMAP						m_bmpLandscape;
+	HBITMAP						m_bmpPortrait;
+	HBITMAP						m_bmpPreview;
+	
+	fp_PageSize					m_PageSize;
 };
 
 #endif

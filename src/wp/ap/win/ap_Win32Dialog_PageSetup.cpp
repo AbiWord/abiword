@@ -26,6 +26,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Win32OS.h"
+#include "ut_Xpm2Bmp.h"
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
@@ -33,45 +34,21 @@
 
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
-
 #include "ap_Strings.h"
+#include "ap_Dialog_Id.h"
 
 #include "ap_Win32Dialog_PageSetup.h"
 #include "ap_Win32Resources.rc2"
 
+#include "orient-vertical.xpm"
+#include "orient-horizontal.xpm"
+
+#define BUFSIZE		128
+#define SIGDIGIT	4
+
+float mScale[] = { 1.0f, 10.0f, 25.4f };
+
 /*****************************************************************/
-
-#define GWL(hwnd)		(PAGESETUPDLG*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(PAGESETUPDLG*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
-
-/*****************************************************************/
-
-// fwd. decl. for documentation purposes.
-static const POINT	_getPaperSizeFromDlg(const AP_Dialog_PageSetup& dlg);
-static const RECT	_getMarginRectFromDlg(const AP_Dialog_PageSetup& dlg);
-static void			_initDevModeFromDlg(HGLOBAL hDevMode, const AP_Dialog_PageSetup& dlg);
-static void			_setDlgFromPSD(AP_Dialog_PageSetup& dlg, const PAGESETUPDLG& psd);
-
-AP_Win32Dialog_PageSetup::AP_Win32Dialog_PageSetup(	XAP_DialogFactory* pDlgFactory,
-													XAP_Dialog_Id id)
-:	AP_Dialog_PageSetup (pDlgFactory, id)
-{
-	m_iMarginHeader 	= 0;
-	m_iMarginFooter 	= 0;
-	// Windows only supports mm or inches, why we only check for DIM_IN
-	m_bisInches 		= (getPageUnits() == fp_PageSize::inch);
-	m_fpageScaleFactor	= (m_bisInches) ? 1000.0f : 100.0f;
-	for (UT_uint32 i=0;i<10;i++)
-	{
-		m_strCurrentBuffer[i] = NULL;
-		m_strOldBuffer[i] = NULL;
-		m_strOriginalBuffer[i] = NULL;
-	}
-}
-
-AP_Win32Dialog_PageSetup::~AP_Win32Dialog_PageSetup()
-{
-}
 
 XAP_Dialog* AP_Win32Dialog_PageSetup::static_constructor(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id)
 {
@@ -79,478 +56,940 @@ XAP_Dialog* AP_Win32Dialog_PageSetup::static_constructor(XAP_DialogFactory* pDlg
 	return dlg;
 }
 
-
-//
-// Free standing functions that have no business in the class' interface since
-// these *can* be free-standing. Positive effect: less compile time
-// dependencies and a smaller class interface. But, take note, following
-// the "Interface Priciple" these *are* logically part of the
-// AP_Dialog_PageSetup interface.
-//
-
-static const POINT _getPaperSizeFromDlg(const AP_Dialog_PageSetup& dlg)
+AP_Win32Dialog_PageSetup::AP_Win32Dialog_PageSetup(	XAP_DialogFactory* pDlgFactory,
+													XAP_Dialog_Id id)
+:	AP_Dialog_PageSetup (pDlgFactory, id),
+    m_PageSize(fp_PageSize::Letter)
 {
-	bool bPageIsInches	= dlg.getPageUnits() == fp_PageSize::inch;
-	float pageScaleFactor	= bPageIsInches ? 1000.0f : 100.0f;
-	fp_PageSize::Unit pageUnit   = bPageIsInches ? fp_PageSize::inch : fp_PageSize::mm;
-
-	const POINT ptPaperSize =
-	{
-		(LONG)(dlg.getPageSize().Width(pageUnit)	* pageScaleFactor),
-		(LONG)(dlg.getPageSize().Height(pageUnit)	* pageScaleFactor)
-	};
-
-	return ptPaperSize;
 }
 
-static const RECT _getMarginRectFromDlg(const AP_Dialog_PageSetup& dlg)
+AP_Win32Dialog_PageSetup::~AP_Win32Dialog_PageSetup()
 {
-	bool bMarginIsInches	= dlg.getMarginUnits()	== fp_PageSize::inch;
-	float marginScaleFactor	= bMarginIsInches ? 1000.0f : 100.0f;
-
-	const RECT rcMargin =
-	{
-		(LONG)(dlg.getMarginLeft()		* marginScaleFactor),
-		(LONG)(dlg.getMarginTop()		* marginScaleFactor),
-		(LONG)(dlg.getMarginRight()		* marginScaleFactor),
-		(LONG)(dlg.getMarginBottom()	* marginScaleFactor)
-	};
-
-	return rcMargin;
 }
 
-static void _initDevModeFromDlg(HGLOBAL hDevMode, const AP_Dialog_PageSetup& dlg)
-{
-	if (!hDevMode)
-	{
-		return;
-	}
-
-	DEVMODE* pDM = (DEVMODE*)GlobalLock(hDevMode);
-	UT_ASSERT(pDM);
-	if (pDM->dmFields & DM_ORIENTATION)
-	{
-		pDM->dmOrientation = dlg.getPageOrientation() == AP_Dialog_PageSetup::PORTRAIT ?
-								DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
-	}
-	if (pDM->dmFields & DM_SCALE)
-	{
-		pDM->dmScale = (short)dlg.getPageScale();
-	}
-
-	pDM->dmFields &= ~(DM_PAPERSIZE | DM_FORMNAME);
-	pDM->dmPaperSize = 0;
-	pDM->dmFormName[0] = '\0';
-	const char* pszName = dlg.getPageSize().getPredefinedName();
-	if (pszName)
-	{
-		pDM->dmFields |= DM_FORMNAME;
-		lstrcpyn((char*)pDM->dmFormName, pszName, CCHFORMNAME);
-	}
-
-	// The following two are in tenths of mm
-	pDM->dmPaperLength = (short)(dlg.getPageSize().Height(fp_PageSize::mm) * 10.0f);
-	pDM->dmPaperWidth  = (short)(dlg.getPageSize().Width(fp_PageSize::mm) * 10.0f);
-
-	GlobalUnlock(hDevMode);
-}
-
-static void _setDlgFromPSD(AP_Dialog_PageSetup& dlg, const PAGESETUPDLG& psd)
-{
-	bool bPageIsInches	= dlg.getPageUnits() == fp_PageSize::inch;
-//	const bool bPageIsInches = (psd.Flags & PSD_INTHOUSANDTHSOFINCHES) != 0;
-	const float pageScaleFactor	= bPageIsInches ? 1000.0f : 100.0f;
-	dlg.setPageUnits(bPageIsInches ? fp_PageSize::inch : fp_PageSize::mm);
-	dlg.setMarginUnits(dlg.getPageUnits());
-	dlg.setPageSize(fp_PageSize(float(psd.ptPaperSize.x) / pageScaleFactor,
-								float(psd.ptPaperSize.y) / pageScaleFactor,
-								dlg.getPageUnits()));
-
-	dlg.setMarginLeft(psd.rtMargin.left		/ pageScaleFactor);
-	dlg.setMarginTop(psd.rtMargin.top		/ pageScaleFactor);
-	dlg.setMarginRight(psd.rtMargin.right	/ pageScaleFactor);
-	dlg.setMarginBottom(psd.rtMargin.bottom	/ pageScaleFactor);
-
-	if (psd.hDevMode)
-	{
-		DEVMODE* pDM = (DEVMODE*)GlobalLock(psd.hDevMode);
-		UT_ASSERT(pDM);
-		if (pDM->dmFields & DM_ORIENTATION)
-		{
-			dlg.setPageOrientation(pDM->dmOrientation == DMORIENT_PORTRAIT ?
-														dlg.PORTRAIT : dlg.LANDSCAPE);
-		}
-		if (pDM->dmFields & DM_SCALE)
-		{
-			dlg.setPageScale((int)pDM->dmScale);
-		}
-		if (pDM->dmFields & DM_FORMNAME &&
-			pDM->dmFormName[0] &&
-			fp_PageSize::IsPredefinedName((const char*)pDM->dmFormName))
-		{
-			// override PAGESETUPDLG value
-			dlg.setPageSize(fp_PageSize((const char*)pDM->dmFormName));
-		}
-
-		GlobalUnlock(psd.hDevMode);
-	}
-}
 
 void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 {
-	
-	XAP_Win32App*   pWin32App   = static_cast<XAP_Win32App*>  (pFrame->getApp());
-	XAP_Win32Frame* pWin32Frame = static_cast<XAP_Win32Frame*>(pFrame);
+	UT_ASSERT(pFrame);
 
-	PAGESETUPDLG psd = { 0 };
-	
-	// get the DEVMODE struct so we can set Landscape/Portrait
-	psd.lStructSize	= sizeof(psd);
-	psd.Flags		= PSD_RETURNDEFAULT;
-	PageSetupDlg(&psd);
+	// raise the dialog
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
+	LPCTSTR lpTemplate = NULL;
 
-	const POINT ptPaperSize	= _getPaperSizeFromDlg(*this);
-	const RECT rcMargin		= _getMarginRectFromDlg(*this);
+	UT_ASSERT(m_id == AP_DIALOG_ID_FILE_PAGESETUP);
 
-	_initDevModeFromDlg(psd.hDevMode, *this);
+	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_PAGE_SETUP);
 
-
-	psd.hwndOwner				= pWin32Frame->getTopLevelWindow();
-	psd.Flags					= (m_bisInches ? PSD_INTHOUSANDTHSOFINCHES : PSD_INHUNDREDTHSOFMILLIMETERS) |
-									PSD_MARGINS ;
-	psd.Flags               	|= PSD_ENABLEPAGESETUPTEMPLATE;
-	psd.Flags                	|= PSD_ENABLEPAGESETUPHOOK;
-	psd.ptPaperSize				= ptPaperSize;
-// Use the printer defaults as minimum margins
-//	psd.rtMinMargin				= RECT();
-	psd.rtMargin				= rcMargin;
-	psd.hInstance				= pWin32App->getInstance();
-	psd.lCustData				= (LONG)this;
-	psd.lpfnPageSetupHook		= (LPPAGESETUPHOOK) s_hookProc;
-	psd.lpfnPagePaintHook		= 0;
-	psd.lpPageSetupTemplateName	= MAKEINTRESOURCE(AP_RID_DIALOG_PAGE_SETUP);
-	psd.hPageSetupTemplate		= 0;
-
-	const BOOL bDlgOK = PageSetupDlg(&psd);	// Display the Page Setup dialog
-	if (bDlgOK)
-	{
-		_setDlgFromPSD(*this, psd);	// Set data from the PAGESETUPDLG
-		// Set Header/Footer Margins
-		setMarginHeader(m_iMarginHeader / m_fpageScaleFactor);
-		setMarginFooter(m_iMarginFooter / m_fpageScaleFactor);
-		setAnswer(a_OK);
-	}
-	else
-	{
-		setAnswer(a_CANCEL);
-		DWORD temp = CommDlgExtendedError();
-		UT_DEBUGMSG(("Dialog Error Id %ld\n",temp));
-	}
-
-	if (psd.hDevMode)
-	{
-		GlobalFree(psd.hDevMode);
-	}
-	if (psd.hDevNames)
-	{
-		GlobalFree(psd.hDevNames);
-	}
+	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+								pWin32Frame->getTopLevelWindow(),
+								(DLGPROC)s_dlgProc,(LPARAM)this);
+	UT_ASSERT((result != -1));
 
 }
+
+/*****************************************************************/
+
+#define GWL(hwnd)		(AP_Win32Dialog_PageSetup*)GetWindowLong((hwnd), DWL_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_PageSetup*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+
+/*****************************************************************/
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+BOOL CALLBACK AP_Win32Dialog_PageSetup::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+	// This is a static function.
+	// This is the dialog procedure for the top-level dialog (that contains
+	// the Close button and the Tab-control).
+
+	AP_Win32Dialog_PageSetup * pThis;
+	
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		pThis = (AP_Win32Dialog_PageSetup *)lParam;
+		SWL(hWnd,lParam);
+		return pThis->_onInitDialog(hWnd,wParam,lParam);
+		
+	case WM_COMMAND:
+		pThis = GWL(hWnd);
+		return pThis->_onCommand(hWnd,wParam,lParam);
+		
+	case WM_NOTIFY:
+		pThis = GWL(hWnd);
+		return pThis->_onNotify(hWnd,lParam);
+		
+	default:
+		return 0;
+	}
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+// the order of the tabs
+
+#define PAGE_INDEX		0
+#define MARGINS_INDEX	1
+
+// this little struct gets passed into s_tabProc
+// it's on the stack so don't rely on it to be valid later.
+typedef struct _tabParam 
+{
+	AP_Win32Dialog_PageSetup*	pThis;
+	WORD which;
+} TabParam;
+
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _GV(s)		(pSS->getValue(AP_STRING_ID_##s))
+#define _GVX(s)		(pSS->getValue(XAP_STRING_ID_##s))
 
-UINT AP_Win32Dialog_PageSetup::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageSetup::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	// This handles the WM_INITDIALOG message for the dialog.
-	//
-	// Initalizae Variables
-	HWND hFrame						= GetParent(hWnd);
-	XAP_Win32Frame* pWin32Frame		= (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
-	XAP_App* pApp					= pWin32Frame->getApp();
-	const XAP_StringSet * pSS		= pApp->getStringSet();
+	// This handles the WM_INITDIALOG message for the top-level dialog.
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_PageSetup_Title));
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	m_PageSize = getPageSize();
 
 	// localize controls
-	_DS(PAGE_SETUP_TEXT_PAPER,		DLG_PageSetup_Paper);
-	_DS(PAGE_SETUP_TEXT_SIZE,		DLG_PageSetup_Paper_Size);
-//	_DS(PAGE_SETUP_TEXT_SOURCE,		DLG_PageSetup_PaperSource);	// FIXME: not yet added.
-//	_DS(PAGE_SETUP_TEXT_ORIENTATION,DLG_PageSetup_OrientWin);	// FIXME: not yet added.
-	_DS(PAGE_SETUP_BTN_LANDSCAPE,	DLG_PageSetup_Landscape);
-	_DS(PAGE_SETUP_BTN_PORTRAIT,	DLG_PageSetup_Portrait);
-	_DS(PAGE_SETUP_TEXT_TOP,		DLG_PageSetup_Top);
-	_DS(PAGE_SETUP_TEXT_HEADER,		DLG_PageSetup_Header);
-	_DS(PAGE_SETUP_TEXT_FOOTER,		DLG_PageSetup_Footer);
-	_DS(PAGE_SETUP_TEXT_BOTTOM,		DLG_PageSetup_Bottom);
-	_DS(PAGE_SETUP_TEXT_LEFT,		DLG_PageSetup_Left);
-	_DS(PAGE_SETUP_TEXT_RIGHT,		DLG_PageSetup_Right);
-//	_DS(PAGE_SETUP_TEXT_MARGINS,	DLG_PageSetup_MarginWin);	// FIXME: not yet added.
-	_DSX(PAGE_SETUP_BTN_OK,			DLG_OK);
-	_DSX(PAGE_SETUP_BTN_CANCEL,		DLG_Cancel);
-//	_DS(PAGE_SETUP_BTN_PRINTER,		DLG_PageSetup_ButtonPrinter);// FIXME: not yet added.
+	SetWindowText( hWnd, pSS->getValue(AP_STRING_ID_DLG_PageSetup_Title) );
 
-	// Initialize Controls
-	char buf[10];
+	SetWindowText( GetDlgItem( hWnd, 
+		                       AP_RID_DIALOG_PAGE_SETUP_BTN_OK ),
+				   pSS->getValue(XAP_STRING_ID_DLG_OK) );
 
-	HWND hHeader = GetDlgItem( hWnd, AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER );
-	loadData(hWnd,HEADER,buf);
-	SetDlgItemText(hWnd,AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER,buf);
-	SendMessage( hHeader, EM_LIMITTEXT, 6, 0 );
+	SetWindowText( GetDlgItem( hWnd, 
+		                       AP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL  ),
+				   pSS->getValue(XAP_STRING_ID_DLG_Cancel) );
 
-	HWND hFooter = GetDlgItem( hWnd, AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER );
-	loadData(hWnd,FOOTER,buf);
-	SetDlgItemText(hWnd,AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER,buf);
-	SendMessage( hFooter, EM_LIMITTEXT, 6, 0 );
-	
-	return 0;							
+
+	// setup the tabs
+	{
+		TabParam tp;
+		TCITEM tie; 
+
+		XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+		HINSTANCE hinst = pWin32App->getInstance();
+		DLGTEMPLATE * pTemplate = NULL;
+		HWND w = NULL;
+
+		tp.pThis = this;
+
+		// remember the windows we're using 
+		m_hwndDlg = hWnd;
+		m_hwndTab = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_TAB);
+
+		// add a tab for each of the child dialog boxes
+    
+		tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM; 
+		tie.iImage = -1; 
+
+		tie.pszText = (LPSTR) _GV(DLG_PageSetup_Page); 
+		tie.lParam = AP_RID_DIALOG_PAGE_SETUP_PAGE;
+		TabCtrl_InsertItem(m_hwndTab, PAGE_INDEX, &tie); 
+
+		tie.pszText = (LPSTR) _GV(DLG_PageSetup_Margin); 
+		tie.lParam = AP_RID_DIALOG_PAGE_SETUP_MARGINS;
+		TabCtrl_InsertItem(m_hwndTab, MARGINS_INDEX, &tie); 
+
+		// finally, create the (modeless) child dialogs
+		
+		tp.which = AP_RID_DIALOG_PAGE_SETUP_PAGE;
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		w = CreateDialogIndirectParam( hinst, 
+                                       pTemplate, 
+                                       m_hwndTab, 
+									   (DLGPROC)s_tabProc, 
+                                       (LPARAM)&tp );
+		UT_ASSERT(( w
+				    && ( m_vecSubDlgHWnd.getItemCount() > 0 )
+				    && ( w == m_vecSubDlgHWnd.getLastItem() ) ));
+
+		tp.which = AP_RID_DIALOG_PAGE_SETUP_MARGINS;
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		w = CreateDialogIndirectParam( hinst, 
+                                       pTemplate, 
+                                       m_hwndTab, 
+									   (DLGPROC)s_tabProc, 
+                                       (LPARAM)&tp ); 
+		UT_ASSERT(( w
+				    && ( m_vecSubDlgHWnd.getItemCount() > 0 )
+				    && ( w == m_vecSubDlgHWnd.getLastItem() ) ));
+
+	}
+
+	// Initialize the preview bitmaps
+	updatePreview();
+
+	// make sure first tab is selected.
+	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(0), SW_SHOW);
+
+	return 1;							// 1 == we did not call SetFocus()
 }
 
-UINT AP_Win32Dialog_PageSetup::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageSetup::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	// This handles WM_COMMAND message for the top-level dialog.
-
+	
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
-	UT_uint32 type=0;
-	
-	if ( wId == AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER ||
-		 wId == AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER )
-	{
-		switch( wNotifyCode )
-		{
-		case EN_UPDATE:
-			SendMessage(hWndCtrl, WM_GETTEXT, 6, (LPARAM)m_strCurrentBuffer );
-			if ( isKeyStrokeValid() )
-			{
-				strncpy(m_strOldBuffer, m_strCurrentBuffer, 6);
-			}
-			else
-			{
-				MessageBeep(MB_OK);
-				SendMessage(hWndCtrl, WM_SETTEXT, 0, (LPARAM) m_strOldBuffer);
-			}
-			break;
-			
-		case EN_SETFOCUS:
-			SendMessage(hWndCtrl, WM_GETTEXT, 6, (LPARAM)m_strOriginalBuffer);
-			strncpy(m_strOldBuffer, m_strOriginalBuffer, 6);
-			break;
 
-		case EN_KILLFOCUS:
-			// Verify if data is valid
-			SendMessage(hWndCtrl, WM_GETTEXT, 6, (LPARAM)m_strCurrentBuffer);
-			type = ( wId == AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER ) ? HEADER : FOOTER;
-			if ( isInputValid(hWnd, type) )
+	switch (wId)
+	{
+	case AP_RID_DIALOG_PAGE_SETUP_BTN_OK:
+		setAnswer( a_OK );
+		setPageSize( m_PageSize );
+		EndDialog(hWnd,0);
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL:
+		setAnswer( a_CANCEL );
+		EndDialog(hWnd,0);
+		return 0;
+
+	default:		// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;	// return zero to let windows take care of it.
+	}
+}
+
+BOOL AP_Win32Dialog_PageSetup::_onNotify(HWND hWnd, LPARAM lParam)
+{
+	// This handles WM_NOTIFY messages for the top-level dialog.
+	LPNMHDR pNmhdr = (LPNMHDR)lParam;
+
+	switch (pNmhdr->code)
+	{
+	case TCN_SELCHANGING:
+		// TODO: consider validating data before leaving page
+		break;
+
+	case TCN_SELCHANGE:
+		{
+			UT_uint32 iTo = TabCtrl_GetCurSel(pNmhdr->hwndFrom); 
+			for (UT_uint32 k=0; k<m_vecSubDlgHWnd.getItemCount(); k++)
 			{
-				SendMessage(hWndCtrl, WM_SETTEXT, 0, (LPARAM) m_strCurrentBuffer);
+				ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(k), ((k==iTo) ? SW_SHOW : SW_HIDE));
 			}
-			else
-			{
-				SendMessage(hWndCtrl, WM_SETTEXT, 0, (LPARAM) m_strOriginalBuffer);
-			}
-			break;
-			
-		default:
 			break;
 		}
-	}
+		
+	// Process other notifications here
+	default:
+		UT_DEBUGMSG(("WM_Notify for id %ld\n",pNmhdr->code));
+		break;
+	} 
+
+
 
 	return 0;
-
 }
 
-void AP_Win32Dialog_PageSetup::loadData(HWND hWnd, UT_uint32 type, char* buf)
-{
-	UT_uint32 iValue;
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
-	switch(type)
-	{
-	case HEADER:
-		iValue = (UT_uint32) (getMarginHeader()*m_fpageScaleFactor);
-		break;
-	case FOOTER:
-		iValue = (UT_uint32) (getMarginFooter()*m_fpageScaleFactor);
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-	iValue = verifyMarginValue(hWnd, type, iValue);
-	convertInteger(iValue, buf);
-}
-
-bool AP_Win32Dialog_PageSetup::isKeyStrokeValid()
-{
-	const char* strValidChar = (m_bisInches) ?	"1234567890.\"\0" : "1234567890.m\0" ;
-	UT_uint32 i = 0;
-
-	while (i<5 && m_strCurrentBuffer[i]) 
-	{
-		if ( strchr(strValidChar, m_strCurrentBuffer[i]) == NULL )
-		{
-			return false;
-		}
-		i++;
-	}
-	return true;
-}
-
-bool AP_Win32Dialog_PageSetup::isInputValid(HWND hWnd, UT_uint32 type)
-{
-	//Input Validation
-	const char* strValidChar = (m_bisInches) ? "1234567890.\"\0" : "1234567890.m\0" ;
-	const char* endMarker    = (m_bisInches) ? "\"" : "mm" ;
-	
-	//String Termination
-	UT_uint32 i = 0;
-	while ( m_strCurrentBuffer[i] && (strchr(strValidChar, m_strCurrentBuffer[i])!=NULL) ) i++;
-	m_strCurrentBuffer[i+1] = '\0';
-	
-	// Check data for endmarker and strip and add end of string NULL
-	if (m_bisInches)
-	{
-		if (m_strCurrentBuffer[i] == '"') m_strCurrentBuffer[i-1] = '\0';
-	}
-	else
-	{
-		if ( m_strCurrentBuffer[i] == 'm' &&
-		     m_strCurrentBuffer[i-1] == 'm' ) m_strCurrentBuffer[i] = '\0';
-	}
-
-	// Check data for conversion to float if not float invalidate
-	float fMarginValue = 0.0f;
-	if ( (fMarginValue = (float) atof(m_strCurrentBuffer)) == NULL) return false;
-			
-	// Convert float to integer for storage by scaling,
-	UT_uint32 iMarginValue=0;
-	iMarginValue = (UT_uint32) (fMarginValue * m_fpageScaleFactor);
-	iMarginValue = verifyMarginValue(hWnd, type,iMarginValue);
-	// Reset the CurrentBuffer
-	convertInteger(iMarginValue, m_strCurrentBuffer);
-	// Load local variable
-	switch(type)
-	{
-	case HEADER:
-		m_iMarginHeader = iMarginValue;
-		break;
-	case FOOTER:
-		m_iMarginFooter = iMarginValue;
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-
-	return true;
-}
-
-UT_uint32 AP_Win32Dialog_PageSetup::verifyMarginValue(HWND hWnd, UT_uint32 type, UT_uint32 margin)
-{
-	PAGESETUPDLG* psd = GWL(hWnd);
-	UT_sint32 value=0;
-	UT_sint32 tempMarg  = (UT_sint32)margin;
-	switch(type)
-	{
-	case HEADER:
-		if      ( tempMarg < psd->rtMinMargin.top ) value = psd->rtMinMargin.top;
-		else if ( tempMarg > psd->rtMargin.top )    value = psd->rtMargin.top;
-		else                                        value = tempMarg;
-		break;
-	case FOOTER:
-		if      ( tempMarg < psd->rtMinMargin.bottom ) value = psd->rtMinMargin.bottom;
-		else if ( tempMarg > psd->rtMargin.bottom )    value = psd->rtMargin.bottom;
-		else                                           value = tempMarg;
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-	return ( (UT_uint32) value);
-}
-
-void AP_Win32Dialog_PageSetup::convertInteger(UT_uint32 margin, char* buf)
-{
-	char strIntValue[20];
-	UT_uint32 iDecPt = m_bisInches ? 3 : 2;
-	
-	// Trim trailing Zeros
-	while (  margin && ((margin % 10) == 0) ) 
-	{
-		iDecPt--;
-		margin /= 10;
-	}
-	UT_ASSERT( iDecPt >= 0);
-	
-	itoa(margin,strIntValue,10);
-	UT_uint32 iLength = strlen(strIntValue);
-	
-	UT_ASSERT( iLength < 10 ); // 6 characters as input + 3 for scale
-	
-	if (margin == 0)
-	{
-		buf[0] 	= '0';
-		buf[1] 	= '\0';
-	}
-	else if ( iLength <= iDecPt)
-	{
-		strncpy(buf,"0.\0",3);
-		for (UT_uint32 i=0; i < (iDecPt-iLength); i++) strncat(buf,"0",1);
-		strncat(buf,strIntValue,iLength);
-	}
-	else
-	{
-		strncpy(buf,strIntValue,iLength-iDecPt);
-		buf[iLength-iDecPt] = '\0';
-		strncat(buf,".",1);
-		strncat(buf, strIntValue+(iLength-iDecPt) ,iDecPt);
-	}
-
-	//Trim Tailing decimal point
-	iLength = strlen(buf);
-	if ( buf[iLength-1] == '.') buf[iLength-1] = '\0';
-	
-	if (m_bisInches) 
-	{
-		strcat(buf,"\"");
-	}
-	else
-	{
-		strcat(buf,"mm");
-	}
-}
-
-UINT CALLBACK AP_Win32Dialog_PageSetup::s_hookProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+BOOL CALLBACK AP_Win32Dialog_PageSetup::s_tabProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
 	// This is a static function.
-	PAGESETUPDLG* pPSD = { 0 };	
+	// This is a pseudo-dialog procedure for the tab-control.
+
 	AP_Win32Dialog_PageSetup * pThis;
 
 	switch (msg)
 	{
 	case WM_INITDIALOG:
-		pPSD = (PAGESETUPDLG *)lParam;
-		SWL(hWnd,lParam);
-		pThis = (AP_Win32Dialog_PageSetup *)pPSD->lCustData;
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
+		{
+			TabParam * pTP = (TabParam *) lParam;
+			// from now on, we can just remember pThis 
+			pThis = pTP->pThis;
+			SWL(hWnd,pThis);
+			return pThis->_onInitTab(hWnd,wParam,lParam);
+		}
 		
 	case WM_COMMAND:
-		pPSD = GWL(hWnd);
-		if (pPSD)
-		{
-			pThis = (AP_Win32Dialog_PageSetup *)pPSD->lCustData;
-		}
-		else
-		{
-			pThis = NULL;
-		}
-		return pThis->_onCommand(hWnd,wParam,lParam);
-	
+		pThis = GWL(hWnd);
+		return pThis->_onCommandTab(hWnd,wParam,lParam);
+
+	case WM_NOTIFY:
+		pThis = GWL(hWnd);
+		return pThis->_onNotifyTab(hWnd,lParam);
+
 	default:
 		return 0;
 	}
+}
+
+BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	// This handles the WM_INITDIALOG message for the tab-control
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// position ourselves w.r.t. containing tab
+
+	RECT r;
+	GetClientRect(m_hwndTab, &r);
+	TabCtrl_AdjustRect(m_hwndTab, FALSE, &r);
+    SetWindowPos(hWnd, HWND_TOP, r.left, r.top, 0, 0, SWP_NOSIZE); 
+
+	m_vecSubDlgHWnd.addItem(hWnd);
+	
+	TabParam * pTP = (TabParam *) lParam;
+	switch( pTP->which )
+	{
+	// Initialize Page Tab controls
+	case AP_RID_DIALOG_PAGE_SETUP_PAGE:
+		{
+			// Localize Controls
+			_DS(PAGE_SETUP_GBX_PAPER,			DLG_PageSetup_Paper);
+			_DS(PAGE_SETUP_GBX_ORIENTATION,		DLG_PageSetup_Orient);
+			_DS(PAGE_SETUP_GBX_SCALE,	     	DLG_PageSetup_Scale);
+			_DS(PAGE_SETUP_LBL_PAPERSIZE,		DLG_PageSetup_Paper_Size);			
+			_DS(PAGE_SETUP_LBL_WITDH,			DLG_PageSetup_Width);			
+			_DS(PAGE_SETUP_LBL_HEIGHT,			DLG_PageSetup_Height);			
+			_DS(PAGE_SETUP_LBL_UNITS,			DLG_PageSetup_Units);			
+			_DS(PAGE_SETUP_LBL_PORTRAIT,		DLG_PageSetup_Portrait);			
+			_DS(PAGE_SETUP_LBL_LANDSCAPE,		DLG_PageSetup_Landscape);			
+			_DS(PAGE_SETUP_LBL_ADJUSTTO,		DLG_PageSetup_Adjust);			
+			_DS(PAGE_SETUP_LBL_PERCENTOFSIZE,	DLG_PageSetup_Percent);			
+
+			// Populate Combo and List Boxes
+			HWND hwndPaperSize = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE);
+			for (UT_uint32 i = 0; i < (UT_uint32)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
+			{
+				SendMessage( hwndPaperSize,
+                             CB_INSERTSTRING ,
+							 (WPARAM) (fp_PageSize::Predefined)i,
+						     (LPARAM) fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)i ) );
+			}
+			HWND hwndUnits = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS);
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::mm,   (LPARAM) _GVX(DLG_Unit_mm) );                                
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::cm,   (LPARAM) _GVX(DLG_Unit_cm) );                                
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::inch, (LPARAM) _GVX(DLG_Unit_inch) );                                
+			
+			// Initialize Data
+			char buf[BUFSIZE];
+			updateWidth();
+			updateHeight();
+			SetDlgItemText( hWnd,
+                            AP_RID_DIALOG_PAGE_SETUP_EBX_SCALE,
+                            itoa( getPageScale(), buf, 10 ) );
+
+			CheckRadioButton( hWnd,
+							  AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT,
+							  AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE,
+							  ( getPageOrientation() == PORTRAIT ) ?
+							    AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT :
+							    AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE );
+
+			updatePageSize();
+			SendMessage( hwndUnits, CB_SETCURSEL, (WPARAM) getPageUnits(), (LPARAM) 0 );
+
+			// Load Appropriate XPM to BMPs
+			COLORREF ColorRef = GetSysColor(COLOR_BTNFACE);
+			UT_RGBColor Color( GetRValue(ColorRef), GetGValue(ColorRef), GetBValue(ColorRef));
+			HDC hdc = GetDC(hWnd);
+			RECT rect;
+			GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION), &rect);
+			UT_Xpm2Bmp( rect.right - rect.left,
+                        rect.bottom - rect.top,
+                        (const char**) orient_vertical_xpm,
+						sizeof(orient_vertical_xpm),
+						hdc,
+                        &Color,
+						&m_bmpPortrait);
+			UT_Xpm2Bmp( rect.right - rect.left,
+                        rect.bottom - rect.top,
+                        (const char**) orient_horizontal_xpm,
+						sizeof(orient_horizontal_xpm),
+						hdc,
+                        &Color,
+						&m_bmpLandscape);
+			GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_BMP_PREVIEW), &rect);
+			m_bmpPreview = CreateCompatibleBitmap( hdc, rect.right - rect.left, rect.bottom - rect.top );
+			ReleaseDC( hWnd, hdc );
+
+			if( getPageOrientation() == PORTRAIT )
+			{
+				SendDlgItemMessage( hWnd, 
+    	                            AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION, 
+        	                        STM_SETIMAGE, 
+            	                    IMAGE_BITMAP, 
+									(LPARAM) m_bmpPortrait );
+			}
+			else
+			{
+				SendDlgItemMessage( hWnd, 
+    	                            AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION, 
+        	                        STM_SETIMAGE, 
+            	                    IMAGE_BITMAP, 
+									(LPARAM) m_bmpLandscape );
+			}
+
+			SendDlgItemMessage( hWnd, 
+				                AP_RID_DIALOG_PAGE_SETUP_BMP_PREVIEW,
+				                STM_SETIMAGE, 
+								IMAGE_BITMAP, 
+								(LPARAM)m_bmpPreview );			
+		}
+		break;
+
+	// Initialize Margin Tab controls
+	case AP_RID_DIALOG_PAGE_SETUP_MARGINS:
+		{
+			// Localize Controls
+			_DS(PAGE_SETUP_LBL_TOP,				DLG_PageSetup_Top);
+			_DS(PAGE_SETUP_LBL_BOTTOM,			DLG_PageSetup_Bottom);
+			_DS(PAGE_SETUP_LBL_LEFT,	     	DLG_PageSetup_Left);
+			_DS(PAGE_SETUP_LBL_RIGHT,			DLG_PageSetup_Right);			
+			_DS(PAGE_SETUP_LBL_HEADER,			DLG_PageSetup_Header);			
+			_DS(PAGE_SETUP_LBL_FOOTER,			DLG_PageSetup_Footer);			
+			HWND hwndMarginUnits = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS);
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::mm,   (LPARAM) _GVX(DLG_Unit_mm) );                                
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::cm,   (LPARAM) _GVX(DLG_Unit_cm) );                                
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::inch, (LPARAM) _GVX(DLG_Unit_inch) );                                
+
+			// Initialize Data
+			SendMessage( hwndMarginUnits, CB_SETCURSEL, (WPARAM) getMarginUnits(), (LPARAM) 0 );
+			updateMargins();
+		}
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return 1;		// 1 == we did not call SetFocus()
+}
+
+BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	// This handles WM_COMMAND message for all of the sub-dialogs.
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	// PAGE TAB
+	case AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE:
+		if( wNotifyCode == CBN_SELCHANGE )
+		{
+			UT_sint32 previous = (UT_sint32) fp_PageSize::NameToPredefined( m_PageSize.getPredefinedName()  );
+			UT_sint32 selected = SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
+			if( selected != previous )
+			{
+				m_PageSize.Set( (fp_PageSize::Predefined)selected );
+				if( getPageUnits() != m_PageSize.getUnit() )
+				{
+					SendDlgItemMessage( hWnd,
+								 		AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS,
+								 		CB_SETCURSEL, 
+								 		(WPARAM) m_PageSize.getUnit(),
+							 			(LPARAM) 0);
+					setPageUnits( m_PageSize.getUnit() );
+				}
+				updateWidth();
+				updateHeight();
+				updatePreview();
+			}
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS:
+		if( wNotifyCode == CBN_SELCHANGE )
+		{
+			fp_PageSize::Unit unit = (fp_PageSize::Unit)SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
+			if( unit != getPageUnits() )
+			{
+				setPageUnits( unit );
+				updateWidth();
+				updateHeight();
+				updatePreview();
+			}
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof(buf) >= 0.0 && atof(buf) != m_PageSize.Width(getPageUnits()) )
+			{
+				m_PageSize.Set( atof(buf),
+					            m_PageSize.Height(getPageUnits()),
+								getPageUnits() );
+				updatePageSize();
+				updatePreview();
+
+			}
+			updateWidth();		
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof(buf) >= 0.0 && atof(buf) != m_PageSize.Height(getPageUnits()) )
+			{
+				m_PageSize.Set( m_PageSize.Width(getPageUnits()), 
+								atof(buf),
+								getPageUnits() );
+				updatePageSize();
+				updatePreview();
+			}
+			updateHeight();
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_SCALE:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atoi(buf) >= 0.0 && atoi(buf) != getPageScale() )
+			{
+				setPageScale( atoi(buf) );
+
+			}
+			SetDlgItemText( hWnd, wId, itoa( getPageScale() , buf, 10 ) );
+
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT:
+		if( getPageOrientation() != PORTRAIT )
+		{
+			setPageOrientation( PORTRAIT );
+			m_PageSize.setPortrait();
+			SendDlgItemMessage( hWnd, 
+   	                            AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION, 
+       	                        STM_SETIMAGE, 
+           	                    IMAGE_BITMAP, 
+								(LPARAM) m_bmpPortrait );
+			updateWidth();
+			updateHeight();
+			updatePreview();
+		}
+		return 0;
+		
+	case AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE:
+		if( getPageOrientation() != LANDSCAPE )
+		{
+			setPageOrientation( LANDSCAPE );
+			m_PageSize.setLandscape();
+			SendDlgItemMessage( hWnd, 
+   	                            AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION, 
+       	                        STM_SETIMAGE, 
+           	                    IMAGE_BITMAP, 
+								(LPARAM) m_bmpLandscape );
+			updateWidth();
+			updateHeight();
+			updatePreview();
+		}
+		return 0;
+
+
+	// MARGINS TAB	
+	case AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS:
+		if( wNotifyCode == CBN_SELCHANGE )
+		{
+			UT_sint32 selected = SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
+			if( getMarginUnits() != (fp_PageSize::Unit) selected )
+			{
+				setMarginTop(    getMarginTop()   * mScale[getMarginUnits()] / mScale[selected] );
+				setMarginBottom( getMarginBottom()* mScale[getMarginUnits()] / mScale[selected] );
+				setMarginLeft(   getMarginLeft()  * mScale[getMarginUnits()] / mScale[selected] );
+				setMarginRight(  getMarginRight() * mScale[getMarginUnits()] / mScale[selected] );
+				setMarginHeader( getMarginHeader()* mScale[getMarginUnits()] / mScale[selected] );
+				setMarginFooter( getMarginFooter()* mScale[getMarginUnits()] / mScale[selected] );
+				updateMargins();
+				setMarginUnits( (fp_PageSize::Unit) selected );
+			}
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_TOP:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof( buf ) > 0 && atof(buf) != (double) getMarginTop() )
+			{
+				setMarginTop( (float) atof(buf) );
+				updatePreview();
+			}
+			updateTopMargin();
+		}
+		return 0;
+
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_BOTTOM:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof( buf ) > 0 && atof(buf) != (double) getMarginBottom() )
+			{
+				setMarginBottom( (float) atof(buf) );
+				updatePreview();
+			}
+			updateBottomMargin();
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_LEFT:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof( buf ) > 0 && atof(buf) != (double) getMarginLeft() )
+			{
+				setMarginLeft( (float) atof(buf) );
+				updatePreview();
+			}
+			updateLeftMargin();
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_RIGHT:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof( buf ) > 0 && atof(buf) != (double) getMarginRight() )
+			{
+				setMarginRight( (float) atof(buf) );
+				updatePreview();
+			}
+			updateRightMargin();
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_HEADER:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof( buf ) > 0 && atof(buf) != (double) getMarginHeader() )
+			{
+				setMarginHeader( (float) atof(buf) );
+				updatePreview();
+			}
+			updateHeaderMargin();
+		}
+		return 0;
+
+	case AP_RID_DIALOG_PAGE_SETUP_EBX_FOOTER:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			if( atof( buf ) > 0 && atof(buf) != (double) getMarginFooter() )
+			{
+				setMarginFooter( (float) atof(buf) );
+				updatePreview();
+			}
+			updateFooterMargin();
+		}
+		return 0;
+
+	default:
+		UT_DEBUGMSG(("WM_Command for id %ld for sub-dialog\n",wId));
+		return 0;
+	}
+}
+
+BOOL AP_Win32Dialog_PageSetup::_onNotifyTab(HWND hWnd, LPARAM lParam)
+{
+	// This handles WM_NOTIFY message for all of the sub-dialogs.
+	LPNMUPDOWN lpnmud = (LPNMUPDOWN)lParam;
+
+	switch( lpnmud->hdr.code )
+	{
+	case UDN_DELTAPOS:
+		doSpinControl( lpnmud->hdr.idFrom, -lpnmud->iDelta );
+		break;
+	default:
+		UT_DEBUGMSG(("WM_Nofify for id %ld for sub-dialog\n", lpnmud->hdr.code));
+		return 0;
+	}
+}
+
+void AP_Win32Dialog_PageSetup::doSpinControl(UT_uint32 id, UT_sint32 delta)
+{
+	char buf[BUFSIZE];
+	int updatedData =  0;
+	int pageScale   = ( getPageUnits()   == fp_PageSize::mm ) ? 1 : 10;
+	int marginScale = ( getMarginUnits() == fp_PageSize::mm ) ? 1 : 10;
+
+	switch( id )
+	{
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_WIDTH:
+		updatedData = (int)( m_PageSize.Width(getPageUnits()) * pageScale + delta );
+		if( updatedData >= 0 )
+		{
+			m_PageSize.Set( (double) updatedData/pageScale,
+				             m_PageSize.Height(getPageUnits()),
+							 getPageUnits() );
+			updatePageSize();
+			updateWidth();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_HEIGHT:
+		updatedData = (int)( m_PageSize.Height(getPageUnits()) * pageScale + delta );
+		if( updatedData >= 0 )
+		{
+			m_PageSize.Set( m_PageSize.Width(getPageUnits()),
+							(double) updatedData/pageScale,
+							getPageUnits() );
+			updatePageSize();
+			updateHeight();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_TOP:
+		updatedData = (int)( getMarginTop()*marginScale + delta + 0.05f );
+		if( updatedData >= 0 ) 
+		{
+			setMarginTop( (float) updatedData/marginScale );
+			updateTopMargin();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_BOTTOM:
+		updatedData = (int)( getMarginBottom()*marginScale + delta + 0.05f );
+		if( updatedData >= 0 ) 
+		{
+			setMarginBottom( (float) updatedData/marginScale );
+			updateBottomMargin();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_LEFT:
+		updatedData = (int)( getMarginLeft()*marginScale + delta + 0.05f );
+		if( updatedData >= 0 )
+		{
+			setMarginLeft( (float) updatedData/marginScale );
+			updateLeftMargin();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_RIGHT:
+		updatedData = (int)( getMarginRight()*marginScale + delta + 0.05f );
+		if( updatedData >= 0 ) 
+		{
+			setMarginRight( (float) updatedData/marginScale );
+			updateRightMargin();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_HEADER:
+		updatedData = (int)( getMarginHeader()*marginScale + delta + 0.05f );
+		if( updatedData >= 0 ) 
+		{
+			setMarginHeader( (float) updatedData/marginScale );
+			updateHeaderMargin();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_FOOTER:
+		updatedData = (int)( getMarginFooter()*marginScale + delta + 0.05f );
+		if( updatedData >= 0 ) 
+		{
+			setMarginFooter( (float) updatedData/marginScale );
+			updateFooterMargin();
+			updatePreview();
+		}
+		break;
+
+	case AP_RID_DIALOG_PAGE_SETUP_SPN_SCALE:
+		updatedData = getPageScale() + delta;
+		if( updatedData >= 0 )
+		{
+			setPageScale( updatedData);
+			SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(PAGE_INDEX),
+		                    AP_RID_DIALOG_PAGE_SETUP_EBX_SCALE,
+			                itoa( getPageScale() , buf, 10 ) );
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+
+void AP_Win32Dialog_PageSetup::updatePageSize()
+{
+	SendDlgItemMessage( (HWND)m_vecSubDlgHWnd.getNthItem(PAGE_INDEX),
+						AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE,
+						CB_SETCURSEL,
+						(WPARAM) fp_PageSize::NameToPredefined( m_PageSize.getPredefinedName()  ),
+						(LPARAM) 0 );
+}
+
+void AP_Win32Dialog_PageSetup::updateWidth()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(PAGE_INDEX),
+   	                AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH,
+       	            gcvt( m_PageSize.Width(getPageUnits()), SIGDIGIT, buf ) );
+}
+
+void AP_Win32Dialog_PageSetup::updateHeight()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(PAGE_INDEX),
+   	                AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT,
+       	            gcvt( m_PageSize.Height(getPageUnits()), SIGDIGIT, buf ) );
+}
+
+
+void AP_Win32Dialog_PageSetup::updateMargins()
+{
+	updateTopMargin();
+	updateBottomMargin();
+	updateLeftMargin();
+	updateRightMargin();
+	updateHeaderMargin();
+	updateFooterMargin();
+}
+
+void AP_Win32Dialog_PageSetup::updateTopMargin()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(MARGINS_INDEX),
+                    AP_RID_DIALOG_PAGE_SETUP_EBX_TOP,
+                    gcvt( (double)getMarginTop(), SIGDIGIT, buf ) );
+}
+
+void AP_Win32Dialog_PageSetup::updateBottomMargin()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(MARGINS_INDEX),
+                    AP_RID_DIALOG_PAGE_SETUP_EBX_BOTTOM,
+                    gcvt( (double)getMarginBottom(), SIGDIGIT, buf ) );
+}
+
+void AP_Win32Dialog_PageSetup::updateLeftMargin()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(MARGINS_INDEX),
+                    AP_RID_DIALOG_PAGE_SETUP_EBX_LEFT,
+                    gcvt( (double)getMarginLeft(), SIGDIGIT, buf ) );
+}
+
+void AP_Win32Dialog_PageSetup::updateRightMargin()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(MARGINS_INDEX),
+                    AP_RID_DIALOG_PAGE_SETUP_EBX_RIGHT,
+                    gcvt( (double)getMarginRight(), SIGDIGIT, buf ) );
+}
+
+void AP_Win32Dialog_PageSetup::updateHeaderMargin()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(MARGINS_INDEX),
+                    AP_RID_DIALOG_PAGE_SETUP_EBX_HEADER,
+                    gcvt( (double)getMarginHeader(), SIGDIGIT, buf ) );
+}
+
+void AP_Win32Dialog_PageSetup::updateFooterMargin()
+{
+	char buf[BUFSIZE];
+	SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(MARGINS_INDEX),
+                    AP_RID_DIALOG_PAGE_SETUP_EBX_FOOTER,
+                    gcvt( (double)getMarginFooter(), SIGDIGIT, buf ) );
+}
+
+void AP_Win32Dialog_PageSetup::updatePreview()
+{
+	UT_uint16 offset = 5;
+
+	RECT rectBorder;
+	RECT rectPage;
+	RECT rectShadow;
+	RECT rectMargin;
+
+	COLORREF colorBackground = GetSysColor(COLOR_BTNFACE);
+	COLORREF colorWhite(0x00FFFFFF);
+	COLORREF colorBlack(0x00000000);
+	HBRUSH brushBackground = CreateSolidBrush( colorBackground );
+	HBRUSH brushWhite = CreateSolidBrush( colorWhite );
+	HBRUSH brushBlack = CreateSolidBrush( colorBlack );
+
+	HWND hwndPreview = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(PAGE_INDEX),
+		                            AP_RID_DIALOG_PAGE_SETUP_BMP_PREVIEW );
+
+	HWND hwndMargin = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(MARGINS_INDEX),
+								  AP_RID_DIALOG_PAGE_SETUP_BMP_MARGINPREVIEW );
+	// Calculate Rectangles
+	GetClientRect(hwndPreview, &rectBorder);
+	
+	UT_uint16 borderWidth  = rectBorder.right  - rectBorder.left - offset;
+	UT_uint16 borderHeight = rectBorder.bottom - rectBorder.top  - offset;
+
+	UT_uint16 pageWidth  = (UT_uint16) m_PageSize.Width( (fp_PageSize::Unit)0 );  // in mm
+	UT_uint16 pageHeight = (UT_uint16) m_PageSize.Height( (fp_PageSize::Unit)0 ); // in mm
+	UT_uint16 marginTop  = (UT_uint16) (getMarginTop() * mScale[getMarginUnits()] );
+	UT_uint16 marginLeft = (UT_uint16) (getMarginLeft() * mScale[getMarginUnits()] );
+	UT_uint16 marginRight= (UT_uint16) (getMarginRight() * mScale[getMarginUnits()] );
+	UT_uint16 marginBottom  = (UT_uint16) (getMarginBottom() * mScale[getMarginUnits()] );
+
+	double scale = ( (double)pageWidth/borderWidth > (double)pageHeight/borderHeight ) ?
+					(double)pageWidth / borderWidth :
+					(double)pageHeight / borderHeight ;
+
+	rectPage.left   = rectBorder.left   + ( borderWidth  - (int)(pageWidth/scale) ) / 2;
+	rectPage.right  = rectBorder.right  - ( borderWidth  - (int)(pageWidth/scale) ) / 2 - offset;
+	rectPage.top    = rectBorder.top    + ( borderHeight - (int)(pageHeight/scale) ) / 2;
+	rectPage.bottom = rectBorder.bottom - ( borderHeight - (int)(pageHeight/scale) ) / 2 - offset;
+
+	CopyRect( &rectShadow, &rectPage );
+	OffsetRect( &rectShadow, offset, offset );
+
+	rectMargin.left   = rectPage.left  + (int)(marginLeft/scale);
+	rectMargin.right  = rectPage.right - (int)(marginRight/scale);
+	rectMargin.top    = rectPage.top   + (int)(marginTop/scale);
+	rectMargin.bottom = rectPage.bottom - (int)(marginBottom/scale);
+
+	HDC hDC = CreateCompatibleDC(NULL);
+
+	SelectObject( hDC, m_bmpPreview );
+	FillRect( hDC, &rectBorder, brushBackground );
+	FillRect( hDC, &rectShadow, brushBlack );
+	FillRect( hDC, &rectPage, brushWhite );
+	FrameRect( hDC, &rectMargin, brushBlack );
+
+	SendMessage( hwndPreview, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_bmpPreview );
+	InvalidateRgn( hwndPreview, NULL, FALSE );
+
+	if( hwndMargin )
+	{
+		SendMessage( hwndMargin,  STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_bmpPreview );
+		InvalidateRgn( hwndMargin,  NULL, FALSE );
+	}
+	
+	DeleteDC( hDC );
 }
 
