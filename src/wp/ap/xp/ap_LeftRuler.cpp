@@ -1188,10 +1188,17 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView == NULL)
 	{
+		rCell.set(0,0,0,0);
 		return;
 	}
 	GR_Graphics * pG = pView->getGraphics();
 	AP_LeftRulerTableInfo * pLInfo = NULL;
+	if(pInfo->m_iNumRows == 0)
+	{
+		rCell.set(0,0,0,0);
+		return;
+	}
+
 	if(iCell < pInfo->m_iNumRows)
 	{
 		pLInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(iCell));
