@@ -43,30 +43,14 @@ bool ps_Generate::openFile(bool bIsFile)
 	if(bIsFile)
 	{
 		m_bIsFile = true;
-		m_fp = fopen(m_szFilename, "w");
+		m_fp = fopen(m_szFilename, "wb");
 	}
 	else
 	{
-		// We should most likely give some thought to the
-		// security implications with a popen() (which is
-		// a shell out to possibly-priveliged commands).
-		// I think we're pretty safe since we're never going
-		// to be run setuid root (let's hope).
-		//
-		// As an alternative, someone should investigate
-		// a pipe()/fork()/execve() option, which gets around
-		// the /bin/sh problems and is a bit more flexible
 		m_bIsFile = false;
-		
-		// This is not sufficient to catch a failed popen(), at least
-		// on Linux.  This may be a bug in Linux's popen(), but more likely
-		// most Unixes will give you a valid FP, but with all flags and fields
-		// invalid.
-		m_fp = NULL;
 		if ((m_fp = popen(m_szFilename, "w")) == NULL)
 			return false;
 	}
-
 	
 	return writeBytes("%!PS-Adobe-2.0\n");
 }
@@ -119,8 +103,6 @@ bool ps_Generate::writeBytes(UT_Byte * pBytes, size_t length)
 	UT_ASSERT(m_fp);
 	UT_ASSERT(pBytes && (length>0));
 
-//	UT_ASSERT(length<256);				// DSC3.0 requirement
-	
 	doProtectFromPipe();
 	bool bSuccess = (fwrite(pBytes,sizeof(UT_Byte),length,m_fp)==length);
 	undoProtectFromPipe();

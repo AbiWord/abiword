@@ -61,8 +61,6 @@ protected:
 	virtual void			_raisePrintDialog(XAP_Frame * pFrame);
 	virtual void			_getGraphics(void);
 
-//	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message);
-	
 	XAP_Frame *			m_pFrame;
 	PS_Graphics *			m_pPSGraphics;
 

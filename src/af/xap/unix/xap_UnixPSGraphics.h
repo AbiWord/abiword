@@ -125,7 +125,6 @@ public:
 
 
 protected:
-	UT_uint32		_scale(UT_uint32 units) const;
 	bool			_startDocument(void);
 	bool			_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							   bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
@@ -147,13 +146,7 @@ protected:
 								 	UT_sint32 			xoff,
 								 	UT_sint32 			yoff, 
 								    int *				pCharWidths);
-								 	
-	void 			_drawCharsOverstriking(const UT_UCSChar*	pChars,
-									UT_uint32			iCharOffset,
-								 	UT_uint32			iLength,
-								 	UT_sint32 			xoff,
-								 	UT_sint32 			yoff);
-	
+								 		
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;

@@ -56,18 +56,6 @@
 #define OUR_LINE_LIMIT		220			
 #define LINE_BUFFER_SIZE   OUR_LINE_LIMIT + 30
 
-static
-UT_uint32 _scaleFont(PSFont * pFont, UT_uint32 units)
-{
-	XftFont* pXftFont = pFont->getUnixFont()->getLayoutXftFont(pFont->getSize());
-	XftFaceLocker locker(pXftFont);
-
-	UT_uint32 retval = units * pFont->getSize() / locker.getFace()->units_per_EM;
-	xxx_UT_DEBUGMSG(("_scaleFont(%u) -> %u\n", units, retval));
-
-	return retval;
-}
-
 /*****************************************************************
 ******************************************************************
 ** This file contains the Interface between the application and
@@ -84,7 +72,7 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 {
 	UT_ASSERT(szFilename && *szFilename);
 	m_pApp = pApp;
-	m_szFilename = szFilename;
+	m_szFilename = UT_strdup (szFilename);
 	m_szTitle = szTitle;
 	m_szSoftwareNameAndVersion = szSoftwareNameAndVersion;
 	m_pCurrentFont = 0;
@@ -106,9 +94,8 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 
 PS_Graphics::~PS_Graphics()
 {
-	// TODO free stuff
-	// UT_VECTOR_PURGEALL(PSFont*, m_vecFontList);
 	FREEP(m_szPageSizeName);
+	FREEP(m_szFilename);
 }
 
 bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -178,7 +165,6 @@ void PS_Graphics::getCoverage(UT_Vector& coverage)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-
 UT_uint32 PS_Graphics::getFontHeight(GR_Font * fnt)
 {
 	return getFontAscent(fnt) + getFontDescent(fnt);
@@ -196,7 +182,6 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
   return static_cast<UT_uint32>(m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution());
 }
 #endif //#ifndef WITH_PANGO
-
 
 UT_uint32 PS_Graphics::getDeviceResolution(void) const
 {
@@ -284,8 +269,7 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 #ifndef WITH_PANGO
 void PS_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	/* we should not reach this point */
-	UT_ASSERT(false);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
@@ -296,137 +280,6 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		return;
 
 	_drawCharsUTF8(pChars, iCharOffset, iLength, tdu(xoff), tdu(yoff), pCharWidths);
-}
-
-void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
-							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
-{
-	const encoding_pair*  enc = 0;
-	UT_AdobeEncoding* ae = 0;
-	
-	UT_ASSERT(m_pCurrentFont);
-
-	xoff = tdu(xoff);
-	yoff = tdu(yoff);
-
-	enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
-	if(enc)
-	{
-		ae = new UT_AdobeEncoding(enc, m_pCurrentFont->getUnixFont()->getEncodingTableSize());
-	}
-	else
-	{
-		UT_DEBUGMSG(("UnixPS_Graphics: no encoding available!\n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-	
-	// The GR classes are expected to take yoff as the upper-left of
-	// each glyph.  PostScript interprets the yoff as the baseline,
-	// which doesn't match this expectation.  Adding the ascent of the
-	// font will bring it back to the correct position.
-	yoff += getFontAscent();
-
-	// unsigned buffer holds Latin-1 data to character code 255
-	char buf[LINE_BUFFER_SIZE]; //some extra space at the end
-	char * pD = buf;
-
-	const UT_UCSChar * pS = pChars+iCharOffset;
-	const UT_UCSChar * pEnd = pS+iLength;
-	UT_UCSChar currentChar;
-
-	//when printing 8-bit chars we enclose them in brackets, but 16-bit
-	//chars must be printed by name without brackets
-	
-	bool open_bracket = false;
-	bool using_names = false;
-	
-	for(; pS < pEnd; pS++)
-	{
-		if (pD-buf > OUR_LINE_LIMIT)
-		{
-			if(!using_names)
-				*pD++ = '\\';
-			*pD++ = '\n';
-			*pD++ = 0;
-			m_ps->writeBytes(buf);
-			pD = buf;
-		}
-
-		currentChar = remapGlyph(*pS, false);
-		if(currentChar > 255)
-		{
-			if(open_bracket)
-			{
-				open_bracket = false;
-				sprintf((char *) pD,") %d %d MS\n",xoff,yoff);
-				m_ps->writeBytes(buf);
-				pD = buf;
-			}
-			else if(!using_names)
-			{
-				sprintf((char *) pD," %d %d MV ",xoff,yoff);
-				pD = buf + strlen(buf);
-				using_names = true;
-			}
-
-			// we don't properly handle double mappings:
-			// http://partners.adobe.com/asn/developer/type/unicodegn.html#4
-			const char * glyph = ae->ucsToAdobe(currentChar);
-			// ' /glyph GS '
-			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
-			{
-				//*pD++ = '\\';
-				*pD++ = '\n';
-				*pD++ = 0;
-				m_ps->writeBytes(buf);
-				pD = buf;
-			}
-				
-			*pD++ = ' ';
-			*pD++ = '/';
-			strcpy(pD, (const char*)glyph);
-			pD += strlen(glyph);
-			strcpy(pD, " GS ");
-			pD += 4;
-		}
-		else    // currentChar < 255
-		{
-			if(!open_bracket)
-			{
-				*pD++ = '(';
-				open_bracket = true;
-				using_names = false;
-			}
-			
-		    switch (currentChar)
-		    {
-				case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
-				case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
-				case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
-				case UCS_FF:	*pD++ = '\\';	*pD++ = 'f';	break;
-				case UCS_CR:	*pD++ = '\\';	*pD++ = 'r';	break;
-				case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
-				case '(':		*pD++ = '\\';	*pD++ = '(';	break;
-				case ')':		*pD++ = '\\';	*pD++ = ')';	break;
-				default:		*pD++ = (char)currentChar; 	break;
-	    	}
-		}
-	}
-	if(open_bracket)
-	{
-		*pD++ = ')';
-		sprintf((char *) pD," %d %d MS\n",xoff,yoff);
-	}
-	else
-	{
-		*pD++ = '\n';
-		*pD++ = 0;
-	}
-			
-	m_ps->writeBytes(buf);
-	if(ae)
-		delete ae;
-	
 }
 
 void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
@@ -577,7 +430,6 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	_emit_SetLineWidth();
 	UT_ASSERT(y1 < 400000);
 	char buf[LINE_BUFFER_SIZE];
-//	UT_sint32 nA = getFontAscent();
 	g_snprintf(buf,sizeof (buf),"%d %d %d %d ML\n", tdu(x2), tdu(y2), tdu(x1), tdu(y1));
 	m_ps->writeBytes(buf);
 }
@@ -707,10 +559,7 @@ void PS_Graphics::invertRect(const UT_Rect* /*pRect*/)
 
 void PS_Graphics::setClipRect(const UT_Rect* /*pRect*/)
 {
-    // setClipRect is used for clipping images, even when printing to
-    // PostScript.  Just ignore these for now.
-
-    // TODO : Can PostScript clip regions?  Does it make sense for our images?
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void PS_Graphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
@@ -766,16 +615,6 @@ bool PS_Graphics::endPrint(void)
 
 /*****************************************************************/
 /*****************************************************************/
-
-UT_uint32 PS_Graphics::_scale(UT_uint32 units) const
-{
-	// we are given a value from the AFM file which are
-	// expressed in 1/1000ths of the scaled font.
-	// return the number of pixels at our resolution.
-	// It's 1/2048 for TrueType fonts.  The Xft code does the right thing.
-  
-	return _scaleFont(m_pCurrentFont, units);
-}
 
 bool PS_Graphics::_startDocument(void)
 {
@@ -882,7 +721,7 @@ bool PS_Graphics::_endPage(void)
 {
 	// emit stuff following each page
 
-        m_ps->writeBytes ("grestore\n");
+	m_ps->writeBytes ("grestore\n");
 
 	m_ps->formatComment("PageTrailer");
 
@@ -1086,7 +925,7 @@ void PS_Graphics::_emit_PrologMacros(void)
 		"/MS  {neg moveto show} bind def",					// Move and draw. (<string>) <x> <y> MS
 		"/GS  {glyphshow} bind def",						// show glyph by name
 		"/MV  {neg moveto} bind def",						// Move only
-		"/BP  {gsave 72 exch div dup scale} bind def",		// Begin Page. <res> BP
+		"/BP  {gsave 75 exch div dup scale} bind def",		// Begin Page. <res> BP
 		"/SZ  {/HH exch def /WW exch def} bind def",		// Page Size.  <w> <h> SZ
 		"/BPP {BP SZ 0 HH translate} bind def",				// Begin Portrait Page.  <w> <h> <res> BPP
 		"/BPL {BP SZ 90 rotate} bind def",					// Begin Landscape Page. <w> <h> <res> BPP
