@@ -118,12 +118,15 @@ UT_Map  ListHelper::myLists;
 #define TT_OTHER               0 // ? Tag not recognized (not an error, though)
 
 #define TT_ROOT		           1 // <root> Document main/first tag
-#define TT_BLOCK               2 // <block>
-#define TT_LIST_BLOCK          3 // <list-block>
-#define TT_FLOW                4 // <flow>
-#define TT_INLINE              5 // <inline>
+#define TT_FLOW                2 // <flow>
+#define TT_BLOCK               3 // <block>
+#define TT_INLINE              4 // <inline>
 
-#define TT_LIST_ITEM_LABEL    11 // <list-item-label>
+#define TT_LIST_BLOCK          5 // <list-block>
+#define TT_LIST_ITEM           6 // <list-item>
+#define TT_LIST_ITEM_LABEL     7 // <list-item-label>
+#define TT_LIST_ITEM_BODY      8 // <list-item-body>
+
 #define TT_EXTERNAL_GRAPHIC   12 // <external-graphic>
 #define TT_STATIC_CONTENT     13 // <static-content>
 #define TT_LAYOUT_MASTER_SET  14 // <layout-master-set>
@@ -609,17 +612,17 @@ void s_XSL_FO_Listener::_handleField(PT_AttrPropIndex api)
 			if (szValue[0] == 'l' && strcmp((const char*) szValue, "list_label") == 0)
 			{
 				UT_UTF8String content("list-item-label end-indent=\"label-end()\"");
-				tagOpen (TT_LIST_ITEM_LABEL, content, ws_None);
+				tagOpen (TT_LIST_ITEM_LABEL, content, ws_Pre);
 
-				content = "block";
-				tagOpen (TT_BLOCK, content, ws_None);
-
+				/* content = "block";
+				 * tagOpen (TT_BLOCK, content, ws_None);
+				 */
 				textUntrusted (m_List.getNextLabel().c_str());
 
-				tagClose (TT_BLOCK, content, ws_None);
-
+				/* tagClose (TT_BLOCK, content, ws_None);
+				 */
 				content = "list-item-label";
-				tagClose (TT_LIST_ITEM_LABEL, content, ws_None);
+				tagClose (TT_LIST_ITEM_LABEL, content, ws_Post);
 			}
 		}
 	}
@@ -931,7 +934,6 @@ bool s_XSL_FO_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	
 	case PTX_Block:
 	{
-		_closeBlock();
 		_openBlock(pcr->getIndexAP());
 		return true;
 	}
@@ -1112,21 +1114,50 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 {
 	if (!m_bInSection) return;
 
-	UT_uint32 tagID = TT_BLOCK;
-	UT_UTF8String content("block");
+	UT_UTF8String content;
 
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 	const XML_Char * szValue = 0;
 
+	UT_uint32 tagID;
+	WhiteSpace ws;
+
 	if (pAP && pAP->getAttribute ("listid", szValue))
 	{
-		tagID = TT_LIST_BLOCK;
-		content = "list-block";
+		if (tagTop () == TT_LIST_ITEM_BODY)
+		{
+			content = "list-item-body";
+			tagClose (TT_LIST_ITEM_BODY, content, ws_Post);
+		}
+		if (tagTop () == TT_LIST_ITEM)
+		{
+			content = "list-item";
+			tagClose (TT_LIST_ITEM, content);
+		}
+		if (tagTop () != TT_LIST_BLOCK)
+		{
+			_closeBlock();
+
+			content = "list-block";
+			tagOpen (TT_LIST_BLOCK, content);
+		}
+
+		tagID = TT_LIST_ITEM;
+		ws = ws_Both;
+		content = "list-item";
 
 		UT_uint32 listid = (UT_uint32) atoi ((const char *) szValue);
 		m_List.setIdList (listid);
+	}
+	else
+	{
+		_closeBlock ();
+
+		tagID = TT_BLOCK;
+		ws = ws_Pre;
+		content = "block";
 	}
 
 	// query and output properties
@@ -1204,7 +1235,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 #undef PROPERTY
 	}
-	tagOpen (tagID, content, ws_Pre);
+	tagOpen (tagID, content, ws);
 
 	m_utf8_span = "";
 
@@ -1217,25 +1248,41 @@ void s_XSL_FO_Listener::_closeBlock()
 
 	if (m_bInSpan) _closeSpan ();
 
-	UT_uint32 tagID;
 	UT_UTF8String content;
+
+	if (tagTop () == TT_LIST_ITEM_BODY)
+	{
+		content = "list-item-body";
+		tagClose (TT_LIST_ITEM_BODY, content, ws_Post);
+	}
+	if (tagTop () == TT_LIST_ITEM)
+	{
+		content = "list-item";
+		tagClose (TT_LIST_ITEM, content);
+	}
+
+	UT_uint32 tagID;
+	WhiteSpace ws;
 
 	if (tagTop () == TT_BLOCK)
 	{
 		tagID = TT_BLOCK;
+		ws = ws_Post;
 		content = "block";
 	}
 	else if (tagTop () == TT_LIST_BLOCK)
 	{
 		tagID = TT_LIST_BLOCK;
+		ws = ws_Both;
 		content = "list-block";
 	}
 	else
 	{
-		UT_DEBUGMSG(("s_XSL_FO_Listener::_closeBlock: tag mis-match!\n"));
+		UT_DEBUGMSG(("s_XSL_FO_Listener::_closeBlock: close tag mis-match!\n"));
 		return;
 	}
-	tagClose (tagID, content, ws_Post);
+
+	tagClose (tagID, content, ws);
 
 	m_bInBlock = false;
 }
@@ -1244,7 +1291,15 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 {
 	if (!m_bInBlock) return;
 
-	UT_UTF8String content("inline");
+	UT_UTF8String content;
+
+	if (tagTop () == TT_LIST_ITEM)
+	{
+		content = "list-item-body";
+		tagOpen (TT_LIST_ITEM_BODY, content, ws_Pre);
+	}
+
+	content = "inline";
 	bool bInSpan = false;
 
 	const PP_AttrProp * pAP = 0;
@@ -1362,6 +1417,12 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	if (!m_bInBlock) return;
 
 	UT_UTF8String content;
+
+	if (tagTop () == TT_LIST_ITEM)
+	{
+		content = "list-item-body";
+		tagOpen (TT_LIST_ITEM_BODY, content, ws_Pre);
+	}
 
 	const UT_UCSChar * ucs2ptr = data;
 	for (UT_uint32 i = 0; i < length; i++)
