@@ -60,7 +60,7 @@ AP_Win32FrameImpl::AP_Win32FrameImpl(AP_Frame *pFrame) :
 	m_bMouseWheelTrack(false),
 	m_startMouseWheelY(0),
 	m_startScrollPosition(0),
-	m_bMouseActivateReceived(false),
+	m_bMouseActivateReceived(false)
 {
 }
 
