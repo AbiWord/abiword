@@ -6904,7 +6904,9 @@ Defun1(viewPara)
 	ABIWORD_VIEW;
 	pView->setShowPara(pFrameData->m_bShowPara);
 
-	pView->notifyListeners(AV_CHG_FRAMEDATA);
+	// need to update toolbar and entire layout (hidden runs emerging/hiding, etc.)
+
+	pView->notifyListeners(AV_CHG_ALL);
 #if 1
 	// POLICY: make this the default for new frames, too
 	XAP_App * pApp = pFrame->getApp();
@@ -7906,18 +7908,18 @@ Defun1(toggleDomDirection)
 	if(pBl->getDominantDirection()== FRIBIDI_TYPE_RTL)
 	{
 		properties[1] = (XML_Char *) &dltr;
-		
+		/*
 		//the last run in the block is the FmtMark, and we need
 		//to reset its direction
 		pBl->getLastLine()->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
-		
+		*/
 	}
 	else
 	{
 		properties[1] = (XML_Char *) &drtl;
-		
+		/*
 		pBl->getLastLine()->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
-		
+		*/
 	}
 	
 	// if the paragraph is was aligned either left or right, then
