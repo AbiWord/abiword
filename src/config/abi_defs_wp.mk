@@ -23,6 +23,20 @@ ABI_AP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
 		/wp/impexp/xp				\
 		/text/ptbl/xp	/wp/ap/xp/ToolbarIcons
 
+ifdef ABISOURCE_LICENSED_TRADEMARKS
+ifeq ($(OS_NAME),WIN32)
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord\"\"
+else
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord\""
+endif
+else
+ifeq ($(OS_NAME),WIN32)
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord Personal\"\"
+else
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord Personal\""
+endif
+endif
+
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 ##################################################################

@@ -31,7 +31,7 @@
 
 #ifdef RC_INVOKED
 
-#ifdef ABI_OPT_BRANDED
+#ifdef ABISOURCE_LICENSED_TRADEMARKS
 
 IDR_MAINFRAME           ICON    DISCARDABLE     "mainframe_tm.ico"
 

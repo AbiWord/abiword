@@ -76,15 +76,15 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 build:: $(TARGETS)
 
-ifdef ABI_OPT_BRANDED
+ifdef ABISOURCE_LICENSED_TRADEMARKS
 
-$(OBJDIR)/ap_wp_splash.cpp: $(ABI_BRAND_DIR)/art/xp/splash_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
+$(OBJDIR)/ap_wp_splash.cpp: splash_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_splash.cpp
-	$(BINDIR)/cdump$(EXE_SUFFIX) $(ABI_BRAND_DIR)/art/xp/splash_tm.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) splash_tm.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
 
-$(OBJDIR)/ap_wp_sidebar.cpp: $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
+$(OBJDIR)/ap_wp_sidebar.cpp: sidebar_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_sidebar.cpp
-	$(BINDIR)/cdump$(EXE_SUFFIX) $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
 
 else
 

@@ -23,5 +23,5 @@
 int main(int argc, char ** argv)
 {
 	printf("Starting! \n");
-	return AP_BeOSApp::local_main("AbiWord", argc, argv);
+	return AP_BeOSApp::local_main(ABIWORD_APP_NAME, argc, argv);
 }

@@ -64,14 +64,11 @@ OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
 
 ABICOPY=cp
 
-ifdef ABI_OPT_BRANDED
-ABI_TMDEFS=		-DABI_OPT_BRANDED
-ABI_TM_INCS=/../../abisource/art
-ABI_BRAND_DIR= $(ABI_DEPTH)/../../abisource
+ifdef ABISOURCE_LICENSED_TRADEMARKS
+ABI_TMDEFS=	-DABISOURCE_LICENSED_TRADEMARKS
+ABI_OPTIONS+=LicensedTrademarks:On
 else
 ABI_TMDEFS=
-ABI_TM_INCS=
-ABI_BRAND_DIR=
 endif
 
 ##################################################################
@@ -129,7 +126,7 @@ endif
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
-			$(ABI_TMDEFS) $(ABI_DBGDEFS) $(ABI_INCS)
+			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_DBGDEFS) $(ABI_INCS)
 
 ##################################################################
 ##################################################################
