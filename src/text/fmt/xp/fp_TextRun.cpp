@@ -1545,7 +1545,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	/*
 	  TODO We should add more possibilities for text placement here.
-	  It shouldn't be too hard.  Just adjust the math a little.  
+	  It shouldn't be too hard.  Just adjust the math a little.
 	  See bug 1297
 	*/
 	
@@ -1697,8 +1697,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  				ytemp += pT->m_iDescent /* * 3/2 */;
  			}
 
- 			if(pT->m_bIsOverhanging)
- 				pT->_drawFirstChar(pDA->xoff + m_iWidth,ytemp);
+              		if(pT->m_bIsOverhanging)
+		                pT->_drawFirstChar(pDA->xoff + m_iWidth,ytemp);
 		}
 
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
@@ -1715,12 +1715,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  			}
 
  			if(pT->m_bIsOverhanging)
- 				pT->_drawLastChar(pDA->xoff,ytemp, pgbCharWidths);
+			        pT->_drawLastChar(pDA->xoff,ytemp, pgbCharWidths);
+		   
 		}
 	}
 
 	// now draw the whole string
-	m_pG->setFont(m_pScreenFont);
+       m_pG->setFont(m_pScreenFont);
+       m_pG->setColor(m_colorFG); // set colour just in case we drew a first/last char with a diff colour
 
 #ifdef BIDI_ENABLED
 	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
@@ -2035,8 +2037,10 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 	if(!m_iLen)
 		return;
 
-	// have to sent font, since we were called from a run using different font	
-	m_pG->setFont(m_pScreenFont);
+      // have to sent font (and colour!), since we were called from a run using different font	
+      m_pG->setFont(m_pScreenFont);
+      m_pG->setColor(m_colorFG);
+
 #ifdef BIDI_ENABLED
 	FriBidiCharType iVisDirection = getVisDirection();
 
@@ -2067,8 +2071,10 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff)
 	if(!m_iLen)
 		return;
 	
-	// have to sent font, since we were called from a run using different font	
-	m_pG->setFont(m_pScreenFont);
+	// have to sent font (and colour!), since we were called from a run using different font	
+       m_pG->setFont(m_pScreenFont);
+       m_pG->setColor(m_colorFG);
+
 #ifdef BIDI_ENABLED
 	if(!s_bBidiOS)
 	{
