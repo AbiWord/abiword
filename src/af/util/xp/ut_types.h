@@ -238,6 +238,11 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
    Update - the folks repsonsible for the Single Unix Specification
    are responsible for this.  They will suffer even more in the
    afterlife than I will. - sam - mar 2001
+
+   Update - I ditched this, it was breaking builds.  Besides, the platforms
+   that would have been broken by using const have since changed to allow it.
+   AIX and hpux are my only concerns, and hpux is under the care of someone
+   else who will look into it.  Enjoy your afterlife, sam. - MG - jun 2002
 */
 
 #if defined (WIN32) || defined(__QNXNTO__) ||  \
@@ -246,7 +251,7 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 defined(__BEOS__) || defined (__AIX__) || \
 (defined(__linux__) && defined(__powerpc__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 1))
 
-#define ICONV_CONST 
+#define ICONV_CONST const
 #else
 #define ICONV_CONST
 #endif

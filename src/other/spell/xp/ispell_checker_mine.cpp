@@ -131,7 +131,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
 	toucs2(word16,length);
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, const_cast<const char **>(&In), &len_in, &Out, &len_out);
+        iconv(translate_in, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
         *Out = '\0';
     }
     
@@ -183,7 +183,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 		toucs2(word16,length);	
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, const_cast<const char **>(&In), &len_in, &Out, &len_out);
+        iconv(translate_in, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
         *Out = '\0';
     }
    
@@ -241,7 +241,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 
             len_in = l;
             len_out = sizeof(unsigned short) * l;
-            iconv(translate_out, const_cast<const char **>(&In), &len_in, &Out, &len_out);	    
+            iconv(translate_out, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
 			fromucs2(sg->word[c], (unsigned short*)Out-ucs2);
         }
