@@ -1953,7 +1953,7 @@ list_error:
  	if (!m_bInSect)
  	{
  		// check for should-be-impossible case
- 		UT_ASSERT_NOT_REACHED();
+ 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
  		getDoc()->appendStrux(PTX_Section, NULL);
  		m_bInSect = true ;
  	}
@@ -2190,14 +2190,14 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// woah - major error here
 	if(!m_bInSect)
 	{
-		UT_ASSERT_NOT_REACHED();
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		getDoc()->appendStrux(PTX_Section, NULL);
 		m_bInSect = true ;
 	}
 
 	if(!m_bInPara)
 	{
-		UT_ASSERT_NOT_REACHED();
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		getDoc()->appendStrux(PTX_Block, NULL);
 		m_bInPara = true ;
 	}
