@@ -3042,27 +3042,33 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const char * pszFieldColor = NULL;
 	pszFieldColor = PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
 
+	const char * pszBGColor = NULL;
+	pszBGColor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
+
 //
 // FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this
 // no prexisting docs will be able to change the Highlight color in paragraphs
 // with lists. I think this is a good solution for now. However it does mean
 // field-color of "ffffff", pure white is actually transparent.
 //
-	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 )
+	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_RGBColor r;
 		UT_parseColor(pszFieldColor, r);
+		_setColorHL(r);
+	} else if (pszBGColor && UT_strcmp(pszFieldColor,"transparent") != 0)
+	{
+		UT_RGBColor r;
+		UT_parseColor(pszBGColor, r);
 		_setColorHL(r);
 	}
 
 	_setAscent(getGR()->getFontAscent(m_pFont));
 	_setDescent(getGR()->getFontDescent(m_pFont));
 	_setHeight(getGR()->getFontHeight(m_pFont));
-//	getGR()->setFont(m_pFont);  Why??? DOM!!
 
 	const XML_Char* pszType = NULL;
 	const XML_Char* pszParam = NULL;
-
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
