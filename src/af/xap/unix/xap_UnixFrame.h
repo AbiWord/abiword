@@ -121,6 +121,7 @@ protected:
 		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
 		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
 		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
+		static gint scroll_notify_event(GtkWidget* w, GdkEventScroll* e);
 		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
 		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);

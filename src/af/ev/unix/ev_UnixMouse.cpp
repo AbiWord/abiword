@@ -241,3 +241,69 @@ void EV_UnixMouse::mouseMotion(AV_View* pView, GdkEventMotion *e)
 		return;
 	}
 }
+
+void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
+{
+	EV_EditMethod * pEM;
+	EV_EditModifierState state = 0;
+	EV_EditEventMapperResult result;
+	EV_EditMouseButton emb = 0;
+	EV_EditMouseOp mop = 0;
+	EV_EditMouseContext emc = 0;
+
+	// map the scrolling type generated from mouse buttons 4 to 7 onto mousebuttons
+	if (e->direction == GDK_SCROLL_UP)
+			emb = EV_EMB_BUTTON4;
+	else if (e->direction == GDK_SCROLL_DOWN)
+	        emb = EV_EMB_BUTTON5;
+	/*else if (e->direction == GDK_SCROLL_LEFT) // we don't handle buttons 6 and 7
+	        emb = EV_EMB_BUTTON6;
+	else if (e->direction == GDK_SCROLL_RIGHT)
+	        emb = EV_EMB_BUTTON7;*/
+	else
+	{
+		// TODO decide something better to do here....
+		UT_DEBUGMSG(("EV_UnixMouse::mouseScroll: unhandled scroll action\n"));
+		return;
+	}
+	
+	if (e->state & GDK_SHIFT_MASK)
+		state |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		state |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		state |= EV_EMS_ALT;
+
+	// map the scrolling event onto a single mouse click
+	if (e->type == GDK_SCROLL)
+		mop = EV_EMO_SINGLECLICK;
+	else
+	{
+		// TODO this shouldn't really happen at all
+	}
+
+	emc = pView->getMouseContext((UT_sint32)e->x,(UT_sint32)e->y);
+	
+	m_clickState = mop;					// remember which type of click
+	m_contextState = emc;				// remember context of click
+	
+	result = m_pEEM->Mouse(emc|mop|emb|state, &pEM);
+	
+	switch (result)
+	{
+	case EV_EEMR_COMPLETE:
+		UT_ASSERT(pEM);
+		invokeMouseMethod(pView,pEM,(UT_sint32)e->x,(UT_sint32)e->y);
+		return;
+	case EV_EEMR_INCOMPLETE:
+		// I'm not sure this makes any sense, but we allow it.
+		return;
+	case EV_EEMR_BOGUS_START:
+	case EV_EEMR_BOGUS_CONT:
+		// TODO What to do ?? Should we beep at them or just be quiet ??
+		return;
+	default:
+		UT_ASSERT(0);
+		return;
+	}
+}

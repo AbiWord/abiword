@@ -218,6 +218,19 @@ gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	return 1;
 }
 
+gint XAP_UnixFrame::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e)
+{
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrame->setTimeOfLastEvent(e->time);
+	AV_View * pView = pUnixFrame->getCurrentView();
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
+
+	if (pView)
+		pUnixMouse->mouseScroll(pView, e);
+
+	return 1;
+}
+
 gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));

@@ -804,7 +804,10 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 
 	g_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
 					   G_CALLBACK(_fe::motion_notify_event), NULL);
-  
+
+	g_signal_connect(G_OBJECT(m_dArea), "scroll_event",
+					   G_CALLBACK(_fe::scroll_notify_event), NULL);
+
 	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
 					   G_CALLBACK(_fe::configure_event), NULL);
 
