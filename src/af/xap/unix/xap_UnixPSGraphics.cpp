@@ -22,11 +22,6 @@
 #include <locale.h>
 #include <math.h>
 
-#ifdef USE_XFT
-#include <freetype/ftsnames.h>
-#include <freetype/ttnameid.h>
-#endif
-
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"

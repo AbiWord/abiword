@@ -23,52 +23,35 @@ AC_DEFUN([ABI_XFT_QUICK], [
 
 dnl Quick&Easy Xft2 Detection
 
+FREETYPE_CFLAGS=""
+FREETYPE_LIBS=""
+
+AC_SUBST(FREETYPE_CFLAGS)
+AC_SUBST(FREETYPE_LIBS)
+
 XFT_CFLAGS=""
 XFT_LIBS=""
 
+xft=true
+
 AC_ARG_ENABLE(xft,[  --enable-xft    Turn on xft ],[
-	case "${enableval}" in
-	 yes)	if test "$PLATFORM" = unix; then
-			xft=true
-		else
-			AC_MSG_ERROR([sorry: --enable-xft supported only on UNIX platforms])
-			xft=false
-		fi
-		;;
-	  no)	xft=false ;;
-	   *)	AC_MSG_ERROR(bad value ${enableval} for --enable-xft) ;;
-	esac
+	if test "x$enableval" = "xno"; then
+		xft=false
+	fi
 ],[	xft=false
 ])
 
-if test "x$xft" = "xtrue" ; then
-    AC_MSG_CHECKING(for Xft >= 2.0.0)
-    dnl We need the "%d" in order not to get e-notation on hpux.
-    vers=`xft-config --version | awk 'BEGIN { FS = "."; } { printf "%d", ([$]1 * 1000 + [$]2) * 1000 + [$]3;}'`
-    if test "$vers" -ge 2000000; then
-        AC_MSG_RESULT(found)
-    else
-        AC_MSG_RESULT(You need at least Xft 2.0.0: disabling xft)
-        xft=false
-    fi
-fi
-
-if test "x$xft" = "xtrue" ; then
-	XFT_CFLAGS="`xft-config --cflags` -DUSE_XFT=1"
-	XFT_LIBS="`xft-config --libs`"
-
-	AC_CHECK_HEADERS(fontconfig/fontconfig.h)
-
-	ABI_FREETYPE_OPT(2.0.0,no)
-
-	FREETYPE_CFLAGS="`$abi_freetype_config --cflags`"
-	FREETYPE_LIBS="`$abi_freetype_config --libs`"
+if test "$PLATFORM" = unix; then
+	if test $xft = false; then
+		AC_MSG_WARN([* * * building on *NIX w/o Xft2 is not supported * * *])
+	fi
 else
-	FREETYPE_CFLAGS=""
-	FREETYPE_LIBS=""
+	xft=false
 fi
-AC_SUBST(FREETYPE_CFLAGS)
-AC_SUBST(FREETYPE_LIBS)
+
+if test "x$xft" = "xtrue" ; then
+	PKG_CHECK_MODULES(XFT,[xft >= 2.0 fontconfig >= 1.0])
+fi
 
 AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
