@@ -79,6 +79,7 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
   // build the dialog
   GtkWidget * cf = _constructWindow();
 
+  gtk_widget_show (cf);
   gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
   
   switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, false ) )
