@@ -6634,8 +6634,6 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     UT_uint32 nToPage, UT_uint32 nFromPage)
 {
 	UT_uint32 j,k;
-//	ViewMode prevViewMode = pPrintView->getViewMode();
-//	pPrintView->setViewMode(VIEW_PRINT);
 
 	//
 	// Lock out operations on this document
@@ -6705,7 +6703,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		  pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
 	s_pLoadingDoc = NULL;
-//	pPrintView->setViewMode(prevViewMode);
+
 	return true;
 }
 

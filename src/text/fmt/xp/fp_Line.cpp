@@ -1201,7 +1201,6 @@ void fp_Line::draw(GR_Graphics* pG)
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
-	UT_DEBUGMSG(("Draw line at Y %d \n",da.yoff));
 
 	for (int i=0; i < count; i++)
 	{
