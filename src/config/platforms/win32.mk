@@ -55,12 +55,14 @@ ifeq ($(OS_ARCH), i386)
 ARCH_FLAGS	= -D_X86_
 OPTIMIZER	= -O2 -Ob1
 LINK_ARCH	= IX86
+OS_ENDIAN	= LittleEndian32
 endif
 
 ifeq ($(OS_ARCH), alpha)
 ARCH_FLAGS	= -D_ALPHA_
 OPTIMIZER	= -Oib3 -QAtuneEV56 -QAarchEV4 -QAgq -QAOu0 -QAieee0
 LINK_ARCH	= ALPHA
+OS_ENDIAN	= BigEndian32
 endif
 
 # Compiler and shared library flags 

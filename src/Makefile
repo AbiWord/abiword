@@ -55,7 +55,15 @@ canonical:
 	@for k in $(CANON_SubDirs); do				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
 	done
-	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
+# copy the various dictionary hash files
+	@$(subst xxxx,$(CANONDIR)/dictionary,$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/$(OS_ENDIAN).*.hash.zip $(CANONDIR)/dictionary
+	@(cd $(CANONDIR)/dictionary; 				\
+		for k in *.zip; do				\
+			unzip -o $$k;				\
+			rm $$k;					\
+		done)
+#	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
 ifeq ($(ABI_NATIVE),unix)
 # each Unix installer requires both unixfonts and abidistfiles, 
 # so we check for those here (TODO : move them somewhere else?)

@@ -74,10 +74,12 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 # Architecture-specific flags
 ifeq ($(OS_ARCH), x86)
 PLATFORM_FLAGS		+= $(X86_ARCH_FLAGS)
+OS_ENDIAN		= LittleEndian32
 endif
 
 ifeq ($(OS_ARCH), ppc)
 PLATFORM_FLAGS		+= $(PPC_ARCH_FLAGS)
+OS_ENDIAN		= BigEndian32
 endif
 
 # Shared library flags

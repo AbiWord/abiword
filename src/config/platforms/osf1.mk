@@ -32,6 +32,7 @@
 ## in constructing the name object file destination directory.
 
 OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
+OS_ENDIAN	= LittleEndian32
 
 # Define tools
 CC		= gcc

@@ -32,6 +32,7 @@
 ## in constructing the name object file destination directory.
 
 OS_ARCH		:= $(shell uname -m)
+OS_ENDIAN	= BigEndian32
 
 # Define tools
 CC		= gcc

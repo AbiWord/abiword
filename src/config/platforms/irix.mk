@@ -92,22 +92,27 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 # Architecture-specific flags
 ifeq ($(OS_ARCH), i386)
 PLATFORM_FLAGS		+= $(i386_ARCH_FLAGS)
+OS_ENDIAN		= LittleEndian32
 endif
 
 ifeq ($(OS_ARCH), ppc)
 PLATFORM_FLAGS		+= $(PPC_ARCH_FLAGS)
+OS_ENDIAN		= BigEndian32
 endif
 
 ifeq ($(OS_ARCH), alpha)
 PLATFORM_FLAGS		+= $(ALPHA_ARCH_FLAGS)
+OS_ENDIAN		= BigEndian32
 endif
 
 ifeq ($(OS_ARCH), sparc)
 PLATFORM_FLAGS		+= $(SPARC_ARCH_FLAGS)
+OS_ENDIAN		= BigEndian32
 endif
 
 ifeq ($(OS_ARCH), mips)
 PLATFORM_FLAGS		+= $(MIPS_ARCH_FLAGS)
+OS_ENDIAN		= BigEndian32
 endif
 
 # Shared library flags
