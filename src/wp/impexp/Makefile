@@ -26,9 +26,9 @@ LIBRARY_NAME=           AbiImpExp
 LIBRARY_VERSION=        $(ABI_VERSION)
 TARGETS=                $(LIBRARY)
 
-ifeq ($(ABI_NATIVE), unix)
-	PLATFORM_OBJS= $(OBJDIR)/ie_impexp_Register$(ABI_FE).$(OBJ_SUFFIX)
+PLATFORM_OBJS= $(OBJDIR)/ie_impexp_Register$(ABI_FE).$(OBJ_SUFFIX)
 
+ifeq ($(ABI_NATIVE), unix)
 	ifeq ($(ABI_OPT_GNOME),1)
 		PLATFORM_OBJS+= $(OBJDIR)/ie_impGraphic_GdkPixbuf.$(OBJ_SUFFIX)  \
 			$(OBJDIR)/ie_impexp_Register$(ABI_GNOME_PREFIX).$(OBJ_SUFFIX)
