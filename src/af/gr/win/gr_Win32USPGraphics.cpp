@@ -102,6 +102,7 @@ tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstituti
     }                                                                                    \
 }
 
+#define GR_WIN32_USP_FONT_SCALING 20
 class GR_Win32USPItem: public GR_Item
 {
 	friend class GR_Win32USPGraphics;
@@ -520,18 +521,35 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 {
 	UT_return_if_fail( pFont );
 
-	bool bDontScale = pFont->isFontGUI() || !bZoomMe;
+	UT_uint32 zoom = 0;
+	UT_uint32 pixels = 0;
+
+	if(pFont->isFontGUI())
+	{
+		zoom = 100;
+		pixels = pFont->getUnscaledHeight();
+	}
+	else if (bZoomMe)
+	{
+		zoom = getZoomPercentage();
+		pixels = pFont->getUnscaledHeight()*zoom/100;
+	}
+	else
+	{
+		// neither GUI font, nor to be zoomed -- we will actually scale the font to a big
+		// size, so that our measurements are no affected by hinting; the scaling factor
+		// is fairly arbitrary and is set near the top of this file
+		zoom = 100;
+		pixels = pFont->getUnscaledHeight() * GR_WIN32_USP_FONT_SCALING;
+	}
 	
-	UT_uint32 zoom = bDontScale ? 100 : getZoomPercentage();
-	UT_uint32 pixels = bDontScale ? pFont->getUnscaledHeight() : pFont->getUnscaledHeight()*zoom/100;
-		
 	HFONT hFont = pFont->getFontFromCache(pixels, false, zoom);
 	if (!hFont)
 	{
 		pFont->fetchFont(pixels);
 		hFont = pFont->getFontFromCache(pixels, false, zoom);
 	}
-	
+
 	if(pFont->getAllocNumber() != m_iDCFontAllocNo ||
 	   (HFONT) GetCurrentObject(m_hdc, OBJ_FONT) != hFont)
 	{
@@ -938,10 +956,15 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(GR_RenderInfo & ri)
 		measureRenderedCharWidths(ri);
 	}
 	
+
 	
+#if 0
+	// as neat as this is, we cannot use it, because due to the hinting errors, this is a
+	// different number than our sum of character widths
 	if(!RI.m_pJustify && ri.m_iOffset == 0 && ri.m_iLength == (UT_sint32)RI.m_iCharCount)
 		return (RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
-
+#endif
+	
 	UT_return_val_if_fail(ri.m_iOffset + ri.m_iLength <= (UT_sint32)RI.m_iCharCount, 0);
 	
 	UT_sint32 iWidth = 0;
@@ -1217,15 +1240,19 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
 		// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
-		RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/(double)getDeviceResolution());
+		RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/
+										((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING));
 	}
 
 	//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
 	//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
 	//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
-	RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution() / (double)getDeviceResolution());
-	RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution() / (double)getDeviceResolution());
-	RI.m_ABC.abcC = (UT_sint32)((double) RI.m_ABC.abcC * (double)getResolution() / (double)getDeviceResolution());
+	RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution() /
+								((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING));
+	RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution() /
+								((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING));
+	RI.m_ABC.abcC = (UT_sint32)((double) RI.m_ABC.abcC * (double)getResolution() /
+								((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING));
 
 	RI.m_bRejustify = true;
 	
