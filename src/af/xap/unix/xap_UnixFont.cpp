@@ -457,7 +457,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 			
 			sscanf(comma + 1, "0x%x", &ucs);
 			m_pEncodingTable[i].ucs = (UT_UCSChar) ucs;
-			m_pEncodingTable[i].adb = strdup(buff);
+			m_pEncodingTable[i].adb = UT_strdup(buff);
 			//UT_DEBUGMSG(("encoding pair: %s, 0x%x\n",m_pEncodingTable[i].adb, m_pEncodingTable[i].ucs));
 		}
 		else
