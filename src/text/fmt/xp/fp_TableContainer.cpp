@@ -2299,7 +2299,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 	xxx_UT_DEBUGMSG(("Column %x iTop = %d ybreak %d iBot= %d ybottom= %d \n",getColumn(),iTop,iBreak,iBot,iBottom));
 	if(iTop >= iBreak)
 	{
-		if(iBot <= iBottom);
+		if(iBot <= iBottom)
 		{
 			UT_sint32 diff = iBottom - iBot;
 			if(diff >= 0)
