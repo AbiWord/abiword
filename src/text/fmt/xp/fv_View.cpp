@@ -1070,6 +1070,25 @@ void FV_View::toggleCase (ToggleCase c)
 
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(low);
 	fp_Run * pRun;
+	if(low < pBL->getPosition())
+	{
+		low = pBL->getPosition();
+	}
+//
+// skip blank lines
+//
+	while(pBL && (low == pBL->getPosition(true) + pBL->getLength()))
+	{
+		pBL = pBL->getNextBlockInDocument();
+		low = pBL->getPosition();
+	}
+	if(pBL == NULL)
+	{
+		return;
+	}
+	// if this is an empty document, gracefully return
+	if(low >= high)
+		return;
 
 	// create a temp buffer of a reasonable size (will realloc if too small)
 	UT_uint32	 iTempLen = 150;
@@ -1137,6 +1156,14 @@ void FV_View::toggleCase (ToggleCase c)
 			xxx_UT_DEBUGMSG(("CASE_ROTATE translated to %d\n", c));
 
 		}
+		if(pBL == NULL)
+		{
+			return;
+		}
+		if(pBL->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			pBL = static_cast<fl_ContainerLayout *>(pBL)->getNextBlockInDocument();
+		}
 
 		const PP_AttrProp * pSpanAPAfter = NULL;
 		pBL->getSpanAP(offset,false,pSpanAPAfter);
@@ -1149,10 +1176,6 @@ void FV_View::toggleCase (ToggleCase c)
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
 
 		bool bBlockDone = false;
-		if(pBL->getContainerType() != FL_CONTAINER_BLOCK)
-		{
-			pBL = static_cast<fl_ContainerLayout *>(pBL)->getNextBlockInDocument();
-		}
 		while(!bBlockDone && (low < high) /*&& (low < lastPos)*/)
 		{
 			UT_uint32 iLenToCopy = UT_MIN(high - low, buffer.getLength() - offset);
