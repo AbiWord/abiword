@@ -42,6 +42,7 @@
 #include "fp_Page.h"
 #include "fp_PageSize.h"
 #include "fp_Column.h"
+#include "fp_TableContainer.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
@@ -2465,6 +2466,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 	UT_uint32 uheight;
+	UT_Vector vecTables;
 //
 // This fixes a bug from insert file, when the view we copy from is selected
 // If don't bail out now we get all kinds of crazy dirty on the screen.
@@ -2506,7 +2508,29 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 
 		fl_BlockLayout* pBlock = pCurRun->getBlock();
 		UT_ASSERT(pBlock);
-
+//
+// Look to see if the Block is in a table.
+//
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		if(pCL->getContainerType() == FL_CONTAINER_CELL)
+		{
+			fp_Container * pCP = (fp_Container *) pCL->getFirstContainer();
+			if(pCP)
+			{
+				fp_TableContainer * pTab = (fp_TableContainer *) pCP->getContainer();
+				if(pTab)
+				{
+					if(vecTables.getItemCount() == 0)
+					{
+						vecTables.addItem((void *) pTab);
+					}
+					else if(vecTables.findItem(pTab) < 0)
+					{
+						vecTables.addItem((void *) pTab);
+					}
+				}
+			}
+		}
 		FPVisibility eHidden  = pCurRun->isHidden();
 		if(!((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
 		   || eHidden == FP_HIDDEN_REVISION
@@ -2549,6 +2573,15 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		{
 			bIsDirty = pCurRun->isDirty();
 		}
+	}
+//
+// Now redraw the lines in any table encountered.
+//
+	UT_sint32 i =0;
+	for(i=0; i< (UT_sint32)vecTables.getItemCount(); i++)
+	{
+		fp_TableContainer * pTab = (fp_TableContainer *) vecTables.getNthItem(i);
+		pTab->drawLines();
 	}
 }
 
