@@ -320,8 +320,7 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 {
 	char * key = (char *) calloc(len+1, sizeof(char));
 	UT_UCSChar * copy = (UT_UCSChar *) calloc(len+1, sizeof(UT_UCSChar));
-
-	if (!key || !copy)
+    if (!key || !copy)
 	{
 		UT_DEBUGMSG(("mem failure adding word to dictionary\n"));
 		FREEP(key);
@@ -335,10 +334,18 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 		currentChar = pWord[i];
 		// map smart quote apostrophe to ASCII right single quote
 		if (currentChar == UCS_RQUOTE) currentChar = '\'';
-		key[i] = (char) currentChar;
+		key[i] =  (char) (unsigned char) currentChar;
 		copy[i] = currentChar;
 	}
-
+#if 0
+//
+// Useful debugging code
+//
+	char * ucs_dup = (char *) calloc(2*len+1, sizeof(char));
+	UT_UCS_strcpy_to_char( ucs_dup, copy);
+	UT_DEBUGMSG(("Inserting word %s with key %s into hash \n",ucs_dup,key));
+	FREEP(ucs_dup);
+#endif
 	m_hashWords.insert(key, 
 			   (void *) copy);
 
@@ -361,7 +368,7 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 
 	for (UT_uint32 i = 0; i < len; i++)
 	{
-		key[i] = (char) pWord[i];
+		key[i] =  (char) (unsigned char) pWord[i];
 	}
 
 	bool contains = m_hashWords.contains (key, NULL);
