@@ -31,11 +31,11 @@ GR_QNXImage::GR_QNXImage(const char* szName)
 	
 	if (szName)
 	{
-		strcpy(m_szName, szName);
+		m_szName = szName;
 	}
 	else
 	{
-		strcpy(m_szName, "QNXImage");
+		m_szName = "QNXImage";
 	}
 }
 
