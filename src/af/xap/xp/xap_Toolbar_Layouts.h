@@ -30,16 +30,14 @@ EV_Toolbar_Layout * AP_CreateToolbarLayout(const char * szName);
 
 class XAP_App;
 
-class ABI_EXPORT XAP_Toolbar_Factory_lt
+struct ABI_EXPORT XAP_Toolbar_Factory_lt
 {
-public:
   EV_Toolbar_LayoutFlags	m_flags;
   XAP_Toolbar_Id			m_id;
 };
 
-class ABI_EXPORT XAP_Toolbar_Factory_tt
+struct ABI_EXPORT XAP_Toolbar_Factory_tt
 {
-public:
   const char *				m_name;
   UT_uint32					m_nrEntries;
   XAP_Toolbar_Factory_lt *	m_lt;

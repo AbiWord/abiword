@@ -195,7 +195,7 @@ run_length_encode_types (FriBidiCharType * char_type, gint type_len)
   current.type = FRIBIDI_LEVEL_START;
   current.len = 0;
   current.pos = -1;
-  for (i = 0; i <= type_len; i++)
+  for (i = 0; i < type_len; i++)
     {
       if (char_type[i] != current.type || i == type_len)
 	{
@@ -1164,7 +1164,7 @@ fribidi_log2vis (		/* input */
 	position_V_to_L_list[i] = i;
     /* Copy the logical string to the visual */
     if (visual_str)
-      for (i = 0; i < len + 1; i++)
+      for (i = 0; i < len; i++)
 	visual_str[i] = str[i];
 
     /* Assign the embedding level array */
