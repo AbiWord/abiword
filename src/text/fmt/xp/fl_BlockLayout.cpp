@@ -1593,6 +1593,11 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 			delete pPOB;
 		}
 	}
+	else
+	{
+		// forget about it
+		delete pPOB;
+	}
 }
 
 /*****************************************************************/
