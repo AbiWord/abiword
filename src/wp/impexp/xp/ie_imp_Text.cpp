@@ -197,9 +197,10 @@ bool IE_Imp_Text::_insertBlock()
 
  Uses appropriate function for clipboard or file
  */
-bool IE_Imp_Text::_insertSpan(const UT_GrowBuf &b)
+bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 {
 	bool bRes = appendSpan ((UT_UCS4Char*)b.getPointer(0), b.getLength());
+	b.truncate(0);
 	return bRes;
 }
 

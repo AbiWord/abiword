@@ -159,7 +159,7 @@ protected:
 	void				_setEncoding(const char *szEncoding);
 
 	bool _insertBlock ();
-	bool _insertSpan (const UT_GrowBuf &b);
+	bool _insertSpan (UT_GrowBuf &b);
 
  private:
 	const char *	m_szEncoding;

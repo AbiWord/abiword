@@ -180,12 +180,12 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
   // give priority to rich text, html, then images, then text
   if (getData(tFrom, rtfszFormatsAccepted, ppData, pLen, pszFormatFound))
     return true;
-  else if (getData (tFrom, htmlszFormatsAccepted, ppData, pLen, pszFormatFound))
-	  return true;
   else if (getData(tFrom, imgszFormatsAccepted, ppData, pLen, pszFormatFound))
     return true;  
   else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
     return true;
+  else if (getData (tFrom, htmlszFormatsAccepted, ppData, pLen, pszFormatFound))
+	  return true;
 
   return false;
 }
