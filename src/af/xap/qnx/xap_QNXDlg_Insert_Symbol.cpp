@@ -384,7 +384,6 @@ void XAP_QNXDialog_Insert_Symbol::event_WindowDelete(void)
 
 PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 {
-#if 0
 	PtWidget_t * windowInsertS;
 
 	PtWidget_t * vboxInsertS;
@@ -402,136 +401,74 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	XML_Char * tmp = NULL;
+	PtArg_t args[10];
+	int     n;
 
-	windowInsertS = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowInsertS), "windowInsertS", windowInsertS);
-	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
-	gtk_window_set_title (GTK_WINDOW (windowInsertS), tmp);
-	FREEP(tmp);
-	gtk_widget_set_usize(windowInsertS, 610, 245);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
+				UT_XML_transNoAmpersands(pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle)), 0); 
+	windowInsertS = PtCreateWidget(PtWindow, NULL, n, args);
 
-	gtk_window_set_policy (GTK_WINDOW (windowInsertS), FALSE, FALSE, FALSE);
+	//Create a vertical group to contain the font selector, 
+	// raw drawing area and then a horizontal group of buttons
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	vboxInsertS = PtCreateWidget(PtGroup, windowInsertS, n, args);
 
-	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
-	// and OK -Selected Symbol- Cancel
+	// First put in a combo box so the user can select fonts
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	fontcombo = PtCreateWidget(PtComboBox, windowInsertS, n, args);
+	const char *sz = "Symbol";
+	PtListAddItems(fontcombo, &sz, 1, 0);
 
-	vboxInsertS = gtk_vbox_new( FALSE, 1);
-	gtk_widget_show(vboxInsertS);
-	// Insert the vbox into the dialog window
-
-	gtk_container_add(GTK_CONTAINER(windowInsertS),vboxInsertS);
-
-	// Now Build the font combo box into the frame
-
-	/* First though we have to grab the fonts!
-
-	   This code is to suck all the available fonts and put them in a GList.
-	   This can then be displayed on a combo box at the top of the dialog.
-	   Code stolen from ap_QNXToolbar_FontCombo */
-
-	XAP_QNXApp * unixapp = static_cast<XAP_QNXApp *> (m_pApp);
-	UT_uint32 count = unixapp->getFontManager()->getCount();
-	XAP_QNXFont ** list = unixapp->getFontManager()->getAllFonts();
-
-	/* Now we remove all the duplicate name entries and create the Glist
-	   m_InsertS_Font_list. This will be used in the font selection combo
-	   box */
-
-	gchar currentfont[50] = "\0";
-	UT_uint32 j = 0;
-	m_InsertS_Font_list = NULL;
-
-	for (UT_uint32 i = 0; i < count; i++)
-	{
-		gchar * lgn  = (gchar *) list[i]->getName();
-		if(strstr(currentfont, lgn) == NULL)
-		{
-			strncpy(currentfont, lgn, 50);
-			m_fontlist[j] = g_strdup(currentfont);
-			m_InsertS_Font_list = g_list_prepend(m_InsertS_Font_list, m_fontlist[j++]);
-		}
-	}
-	m_Insert_Symbol_no_fonts = j;
-	DELETEP(list);
-  
-	m_InsertS_Font_list = g_list_reverse(m_InsertS_Font_list);
-
-	vhbox = gtk_hbox_new(FALSE, 1);
-
-	// Insert the vhbox into the vbox to hold the combo box
-	gtk_widget_show(vhbox);
-	gtk_box_pack_start(GTK_BOX(vboxInsertS), vhbox, TRUE, TRUE, 0);
-
-	// Finally construct the combo box
-	fontcombo = gtk_combo_new();
- 
-	gtk_object_set_data (GTK_OBJECT(windowInsertS), "fontcombo", fontcombo);
-	gtk_widget_set_usize(fontcombo, 200, 25);
-	gtk_widget_show(fontcombo);
-	gtk_combo_set_value_in_list(GTK_COMBO(fontcombo), TRUE, TRUE);
-	gtk_combo_set_use_arrows(GTK_COMBO(fontcombo), FALSE);
-	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
-
-	// Put the current font in the entry box.
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),
-					   (gchar *) DEFAULT_QNX_SYMBOL_FONT);
-
-	// Turn off keyboard entry in the font selection box
-	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),FALSE);
-
-	// Now put the font combo box at the top of the dialog 
-	gtk_box_pack_start(GTK_BOX(vhbox), fontcombo, TRUE, FALSE, 0);
-
-	// Now the Symbol Map. 
-
+	// Then put the main symbol area in the center vertically 
 	// *** Code Stolen from the preview widget ***
 	{
-		SymbolMap = gtk_drawing_area_new ();
-		gtk_object_set_data (GTK_OBJECT (windowInsertS), "SymbolMap", SymbolMap);
-		gtk_widget_show (SymbolMap);
-
 		// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
-		gtk_widget_set_usize (SymbolMap, 608, 147);
-		// Put this in the dialog under the font selection widget
+		n = 0;
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, 608, 0);
+		PtSetArg(&args[n++], Pt_ARG_HEIGHT, 147, 0);
+		PtWidget_t *symgroup = PtCreateWidget(PtGroup, windowInsertS, n, args);
 
-		gtk_box_pack_start(GTK_BOX(vboxInsertS), SymbolMap, FALSE, FALSE, 0);
+		n = 0;
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, 608, 0);
+		PtSetArg(&args[n++], Pt_ARG_HEIGHT, 147, 0);
+		SymbolMap = PtCreateWidget(PtRaw, symgroup, n, args);
 
 		// Enable button press events
-		gtk_widget_add_events(SymbolMap, GDK_BUTTON_PRESS_MASK);
+		//gtk_widget_add_events(SymbolMap, GDK_BUTTON_PRESS_MASK);
    	}
 	
-	// Now make a Hbox to hold  OK, Current Selection and Cancel
-	hboxInsertS = gtk_hbox_new (FALSE, 1);
+	// Then horizontally group the OK, Preview, Cancel widgets
+	n = 0;
+	hboxInsertS = PtCreateWidget(PtGroup, windowInsertS, n, args);
 
-	// Insert the hbox into the dialog window
-	gtk_object_set_data (GTK_OBJECT (windowInsertS), "hboxInsertS", hboxInsertS);
-	gtk_widget_show (hboxInsertS);
-	gtk_box_pack_start (GTK_BOX (vboxInsertS), hboxInsertS, TRUE, TRUE, 0);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowInsertS), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_box_pack_start(GTK_BOX(hboxInsertS), buttonOK, TRUE, FALSE, 4);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
+	n = 0;
+ 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonOK = PtCreateWidget(PtButton, hboxInsertS, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	// *** Code Stolen from the preview widget again! ***
 	{
-		areaCurrentSym = gtk_drawing_area_new ();
-		gtk_object_set_data (GTK_OBJECT (windowInsertS), 
-							 "areaCurrentSym", areaCurrentSym);
-		gtk_widget_show (areaCurrentSym);
-		gtk_widget_set_usize (areaCurrentSym, 60,45);
-		gtk_box_pack_start(GTK_BOX(hboxInsertS), areaCurrentSym, TRUE, FALSE, 0);
+		n = 0;
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, 60, 0);
+		PtSetArg(&args[n++], Pt_ARG_HEIGHT, 45, 0);
+		PtWidget_t *symgroup = PtCreateWidget(PtGroup, hboxInsertS, n, args);
+
+		n = 0;
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, 60, 0);
+		PtSetArg(&args[n++], Pt_ARG_HEIGHT, 45, 0);
+		areaCurrentSym = PtCreateWidget(PtRaw, symgroup, n, args);
    	}
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowInsertS), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_box_pack_start(GTK_BOX(hboxInsertS), buttonCancel, TRUE, FALSE, 4);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
-	gtk_widget_show (hboxInsertS);
+	n = 0;
+ 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonCancel = PtCreateWidget(PtButton, hboxInsertS, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -544,68 +481,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	m_fontcombo = fontcombo;
 	m_areaCurrentSym = areaCurrentSym;
 
-	// Now connect the signals
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
-
-	// The event to choose the Symbol!
-	gtk_signal_connect(GTK_OBJECT(SymbolMap),
-					   "button_press_event",
-				       GTK_SIGNAL_FUNC(s_SymbolMap_clicked),
-					   (gpointer) this);
-
-	// Look for keys pressed
-	gtk_signal_connect(GTK_OBJECT(windowInsertS),
-					   "key_press_event",
-					   GTK_SIGNAL_FUNC(s_keypressed),
-					   (gpointer) this);
-
-
-	// Look for "changed" signal on the entry part of the combo box.
-	// Code stolen from ev_QNXGnomeToolbar.cpp
-
-	GtkEntry * blah = GTK_ENTRY(GTK_COMBO(fontcombo)->entry);
-	GtkEditable * yuck = GTK_EDITABLE(blah);
-	gtk_signal_connect(GTK_OBJECT(&yuck->widget),
-					   "changed",
-					   GTK_SIGNAL_FUNC(s_new_font),
-					   (gpointer) this);
-
-	// the catch-alls
-	gtk_signal_connect_after(GTK_OBJECT(windowInsertS),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(windowInsertS),
-							 "destroy",NULL, NULL);
-	
-	// the expose event of the SymbolMap
-	gtk_signal_connect(GTK_OBJECT(SymbolMap),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_sym_SymbolMap_exposed),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(areaCurrentSym),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_Symbolarea_exposed),
-					   (gpointer) this);
-
-	gtk_widget_grab_focus (buttonOK);
-	gtk_widget_grab_default (buttonOK);
-// We have to wait a little...
-//	gtk_widget_show(windowInsertS);
-	
 	return windowInsertS;
-#endif
-	return NULL;
 }
 
 

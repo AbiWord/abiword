@@ -159,18 +159,16 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	m_answer = a_OK;
 
-	if (value == Pt_PRINTSEL_PRINT) {
+	if (value == Pt_PRINTSEL_PRINT || value == Pt_PRINTSEL_PREVIEW) {
 		UT_uint32 first = 0, last = 0;
 		char *option;
 		PhRect_t 	*rect, nrect;
 		PhDim_t 	*dim, size;
 
-#if 0
 		nrect.ul.x = nrect.ul.y = 0;
 		nrect.lr.x = nrect.lr.y = 0;
 		PpPrintSetPC(m_pPrintContext, 
-					 INITIAL_PC, 0, Pp_PC_NONPRINT_MARGINS, &nrect);
-#endif
+					 INITIAL_PC, 0, Pp_PC_MARGINS, &nrect);
 
 		PpPrintGetPC(m_pPrintContext, 
 					 Pp_PC_NONPRINT_MARGINS, (const void **)&rect);
@@ -182,20 +180,27 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		UT_DEBUGMSG(("Paper size is %d/%d \n", dim->w, dim->h));
 
 #define DPI_LEVEL 72
+#if 0	/* Hardcode 612/792 for now */
 		size.w = ((dim->w -
 				  (rect->ul.x + rect->lr.x)) * DPI_LEVEL) / 1000;
 		size.h = ((dim->h -
 				  (rect->ul.y + rect->lr.y)) * DPI_LEVEL) / 1000;
-		UT_DEBUGMSG(("Source size %d/%d \n", size.w, size.h));
+#else
+		size.w = 612;
+		size.h = 792;
+#endif
+		printf("Source size %d/%d \n", size.w, size.h);
 		PpPrintSetPC(m_pPrintContext, INITIAL_PC, 0, Pp_PC_SOURCE_SIZE, &size);
 
-		PpPrintGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&option);
-		UT_DEBUGMSG(("Range is set to [%s] \n", (option) ? option : "NULL"));
-		if (!option || !*option || strcmp(option, "all") == 0) {
+		PpPageRange_t *range = NULL;
+		PpPrintGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&range);
+		UT_DEBUGMSG(("Range is set to [%d - %d] \n", 
+					(range) ? range->from : -1, (range) ? range->to : -1));
+		if (!range || (range->from == 0 && range->to == 0)) {
 			m_bDoPrintRange		= UT_FALSE;
 			m_bDoPrintSelection = UT_FALSE;
 		}
-		else if (strcmp(option, "selection") == 0) {
+		else if (range->from == -1 && range->to == -1) {
 			m_bDoPrintRange		= UT_FALSE;
 			m_bDoPrintSelection = UT_TRUE;
 		}
@@ -203,7 +208,8 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			m_bDoPrintRange = UT_TRUE;
 			m_bDoPrintSelection = UT_FALSE;
 			//Punt for now only accept %d-%d format
-			sscanf(option, "%d-%d", &first, &last);
+			first = range->from;
+			last = range->to;
 			UT_DEBUGMSG(("Got range from %d to %d \n", first, last));
 		}
 
