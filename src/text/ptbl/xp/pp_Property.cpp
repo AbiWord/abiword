@@ -72,6 +72,7 @@ static PP_Property _props[] =
 	{ "page-margin-bottom",		"1in",				0},
 	{ "columns",				"1",				0},
 	{ "column-gap",				"0.25in",			0},
+	{ "section-space-after",	"0.25in",			0},
 	
 	{ "default-tab-interval",	"0.5in",			0},
 	{ "tabstops",				"",					0},

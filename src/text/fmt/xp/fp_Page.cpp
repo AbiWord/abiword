@@ -225,7 +225,7 @@ void fp_Page::_reformat(void)
 
 		iY += iMostHeight;
 
-		iY += m_pLayout->getGraphics()->convertDimension("0.25in");	// TODO
+		iY += pLeader->getSectionLayout()->getSpaceAfter();
 	}
 
 	while (i < count)

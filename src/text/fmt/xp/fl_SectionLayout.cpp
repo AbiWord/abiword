@@ -71,9 +71,6 @@ void fl_SectionLayout::_lookupProperties(void)
 	
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
 
-	const char* pszNumColumns = NULL;
-	const char* pszColumnGap = NULL;
-
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
 	  the blockLayout does?
@@ -83,9 +80,8 @@ void fl_SectionLayout::_lookupProperties(void)
 	  hard-coding its own defaults.  Bad idea.
 	*/
 	
+	const char* pszNumColumns = NULL;
 	pSectionAP->getProperty("columns", pszNumColumns);
-	pSectionAP->getProperty("column-gap", pszColumnGap);
-	
 	if (pszNumColumns && pszNumColumns[0])
 	{
 		m_iNumColumns = atoi(pszNumColumns);
@@ -95,6 +91,8 @@ void fl_SectionLayout::_lookupProperties(void)
 		m_iNumColumns = 1;
 	}
 
+	const char* pszColumnGap = NULL;
+	pSectionAP->getProperty("column-gap", pszColumnGap);
 	if (pszColumnGap && pszColumnGap[0])
 	{
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
@@ -102,6 +100,17 @@ void fl_SectionLayout::_lookupProperties(void)
 	else
 	{
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
+	}
+
+	const char* pszSpaceAfter = NULL;
+	pSectionAP->getProperty("section-space-after", pszSpaceAfter);
+	if (pszSpaceAfter && pszSpaceAfter[0])
+	{
+		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension(pszSpaceAfter);
+	}
+	else
+	{
+		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension("0in");
 	}
 
 	const char* pszLeftMargin = NULL;

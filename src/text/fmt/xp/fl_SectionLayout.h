@@ -59,6 +59,7 @@ public:
 	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
 	inline fl_SectionLayout*	getPrev(void) const { return m_pPrev; }
 	inline fl_SectionLayout*	getNext(void) const { return m_pNext; }
+	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
 
 	void				setPrev(fl_SectionLayout*);
 	void				setNext(fl_SectionLayout*);
@@ -103,6 +104,7 @@ protected:
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;
 
+	UT_sint32			m_iSpaceAfter;
 	UT_sint32			m_iLeftMargin;
 	UT_sint32			m_iRightMargin;
 	UT_sint32			m_iTopMargin;

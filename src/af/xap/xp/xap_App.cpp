@@ -134,7 +134,7 @@ const char * AP_App::getApplicationTitleForTitleBar(void) const
 		the build is debug or not.
 	*/
 
-	sprintf(_title, "%s Personal %s (%s)", m_szAppName, s_szBuild_Version, s_szBuild_ID);
+	sprintf(_title, "%s (www.abisource.com)", m_szAppName);
 
 	return _title;
 }
