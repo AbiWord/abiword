@@ -2969,7 +2969,7 @@ msgstr "Voeg een symbool of ander speciaal karakter toe"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1232
-msgid "Insert an Footnote"
+msgid "Insert a footnote"
 msgstr "Voetnoot invoegen"
 
 #. MENU_STATUSLINE_INSERT_PAGENO

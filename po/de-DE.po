@@ -2907,7 +2907,7 @@ msgstr "Symbol oder Sonderzeichen einfügen"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1232
-msgid "Insert an Footnote"
+msgid "Insert a footnote"
 msgstr "Eine Fußnote einfügen"
 
 #. MENU_STATUSLINE_INSERT_PAGENO

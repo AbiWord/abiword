@@ -2825,7 +2825,7 @@ msgstr "Mewnosod symbol neu nod arbennig arall"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1215
-msgid "Insert an Footnote"
+msgid "Insert a footnote"
 msgstr "Mewnosod Troednodyn"
 
 #. MENU_STATUSLINE_INSERT_PAGENO

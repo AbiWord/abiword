@@ -2861,7 +2861,7 @@ msgstr "Fut një simbol ose një tjetër karakter special"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1232
-msgid "Insert an Footnote"
+msgid "Insert a footnote"
 msgstr "Fut një Poshtëshënim"
 
 #. MENU_STATUSLINE_INSERT_PAGENO

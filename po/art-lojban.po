@@ -2639,7 +2639,7 @@ msgstr "Insère un symbole ou un caractère spécial"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1017
-msgid "Insert an Footnote"
+msgid "Insert a footnote"
 msgstr "setca lo rebypinka"
 
 #. MENU_STATUSLINE_INSERT_PAGENO

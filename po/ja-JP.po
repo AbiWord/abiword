@@ -2872,7 +2872,7 @@ msgstr "記号やその他の特別な文字を挿入"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1232
-msgid "Insert an Footnote"
+msgid "Insert a footnote"
 msgstr "脚注を挿入"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
