@@ -67,6 +67,7 @@ XAP_QNXDialog_FontChooser::XAP_QNXDialog_FontChooser(XAP_DialogFactory * pDlgFac
 
 	m_doneFirstFont = UT_FALSE;
 #endif
+					
 }
 
 XAP_QNXDialog_FontChooser::~XAP_QNXDialog_FontChooser(void)
@@ -637,13 +638,80 @@ void * XAP_QNXDialog_FontChooser::create_windowFontSelection(void)
 
 void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
-#if 0
+
+	/* This is a really simplified version of the font selector using
+	   the native font selection widget.  Later we will have to do
+       something a little more bold and creative with our own dialog */
 	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
 	UT_ASSERT(m_pQNXFrame);
 
 	XAP_QNXApp * pApp = (XAP_QNXApp *)m_pApp;
 	UT_ASSERT(pApp);
 
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	char *newfont;
+
+	newfont = (char *)PtFontSelection(NULL,	/* Parent */
+							  NULL, /* Position (centered) */
+							  /* Title */
+ 							  pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle),
+							  "helv10",	/* Initial font */
+							  -1,	/* Symbol to select fonts by */							
+							  PHFONT_ALL_FONTS, /* Which type of fonts */
+							  NULL); /* Sample string */
+
+	if (newfont) {
+		FontQueryInfo finfo;
+		char *s, *p, c;
+
+		//NOTE: I could use PfQueryFont for all this information
+		PfQueryFont(newfont, &finfo);
+
+		printf("Selected font [%s] \n", newfont);
+		//Split name[size][style] into pieces
+		s = p = newfont;
+		while (*p && (*p < '0' || *p > '9')) { p++; }
+		c = *p; *p = '\0';
+		s = finfo.desc;
+		printf("Set family to %s \n", s);
+		setFontFamily(s); m_bChangedFontFamily = UT_TRUE;
+
+		s = p; *p = c;
+		while (*p && (*p >= 0 && *p <= '9')) { p++; }
+		c = *p; *p = '\0';
+		//This is mental having to put the pt on the end
+		char tempsize[20]; sprintf(tempsize, "%spt", s);
+		printf("Set size to %spt \n", tempsize);
+		setFontSize(tempsize); m_bChangedFontSize = UT_TRUE;
+
+		setFontWeight("normal"); m_bChangedFontWeight = UT_TRUE;
+		setFontStyle("normal"); m_bChangedFontStyle = UT_TRUE;
+		while (*p) {
+			switch (*p) {
+			case 'b':
+				printf("Set weight to %s \n", s);
+				setFontWeight("bold");
+				break;
+			case 'i':
+				printf("Set style to %s \n", s);
+				setFontStyle("italic");
+				break;
+			default:
+				break;
+			}
+		}
+		
+		printf("Finished \n");
+		m_answer = XAP_Dialog_FontChooser::a_OK;
+		//free(newfont);
+	}
+	else {
+		printf("Didn't select any font \n");
+		m_answer = XAP_Dialog_FontChooser::a_CANCEL;
+	}
+	return;
+
+#if 0
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",
 				 ((m_pFontFamily) ? m_pFontFamily : ""),
 				 ((m_pFontSize) ? m_pFontSize : ""),

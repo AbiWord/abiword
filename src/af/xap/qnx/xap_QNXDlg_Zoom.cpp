@@ -231,19 +231,23 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 
 void XAP_QNXDialog_Zoom::event_OK(void)
 {
-	m_answer = XAP_Dialog_Zoom::a_OK;
-	done = 1;
+	if (!done++) {
+		m_answer = XAP_Dialog_Zoom::a_OK;
+	}
 }
 
 void XAP_QNXDialog_Zoom::event_Cancel(void)
 {
-	m_answer = XAP_Dialog_Zoom::a_CANCEL;
+	if (!done++) {
+		m_answer = XAP_Dialog_Zoom::a_CANCEL;
+	}
 }
 
 void XAP_QNXDialog_Zoom::event_WindowDelete(void)
 {
-	m_answer = XAP_Dialog_Zoom::a_CANCEL;	
-	done = 1;
+	if (!done++) {
+		m_answer = XAP_Dialog_Zoom::a_CANCEL;	
+	}
 }
 
 void XAP_QNXDialog_Zoom::event_Radio200Clicked(void)

@@ -95,6 +95,7 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
 
+	printf("XAP Resize called! \n");
 	if (pView) {
 		UT_DEBUGMSG(("Resizing to %d,%d %d,%d \n",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
@@ -103,7 +104,7 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 				     cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
 	}
 
-	return 0;
+	return Pt_CONTINUE;
 }
 		
 #if 0
@@ -149,11 +150,9 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
    PtSuperClassDraw(PtBasic, w, damage);
    PtBasicWidgetCanvas(w, &rect);
    PtWidgetOffset(w, &pnt);
-	UT_DEBUGMSG(("-----\nWidget Rect is %d,%d  %d,%d (@ %d,%d) \n",
+	UT_DEBUGMSG(("-----\nWidget Rect is %d,%d  %d,%d (@ %d,%d)",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, pnt.x, pnt.y));
 
-	//UT_DEBUGMSG(("gtk expose:  left=%d, top=%d, width=%d, height=%d\n", 
-	//			rClip.left, rClip.top, rClip.width, rClip.height));
 	XAP_QNXFrame *pQNXFrame, **ppQNXFrame = NULL;
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXFrame, 0);
 	PtGetResources(w, 1, args);
@@ -172,15 +171,19 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 		 widgets co-ordinates when passing to our draw() functions
 		*/
 		if (damage->next) {
+			UT_DEBUGMSG(("Multiple damage rects "));
 			damage = damage->next;
 		}
 		while (damage) {
-			rClip.left = damage->rect.ul.x - pnt.x;
-			rClip.top = damage->rect.ul.y - pnt.y;
+			UT_DEBUGMSG(("Expose Rect is %d,%d  %d,%d ",
+			damage->rect.ul.x, damage->rect.ul.y, damage->rect.lr.x, damage->rect.lr.y));
+			/* At one point in time this required some fiddling to put it in the widget co-ordinates*/
 			rClip.width = damage->rect.lr.x - damage->rect.ul.x;
 			rClip.height = damage->rect.lr.y - damage->rect.ul.y;
+			rClip.left = damage->rect.ul.x /*- pnt.x*/;
+			rClip.top = damage->rect.ul.y /*- pnt.y*/;
 
-			UT_DEBUGMSG(("Adjusted Expose Rect %d,%d %d/%d \n",
+			UT_DEBUGMSG(("Adjusted Expose Rect %d,%d %d/%d ",
 				rClip.left, rClip.top, rClip.width, rClip.height));
 				
 			//Set the Clipping here, and then draw it all
@@ -193,10 +196,14 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 			//can optimize their drawing routines as well.
 			pView->draw(&rClip);
 
+			//OR: Completely unoptimized
+			//pView->draw(NULL);
+			//break;
+
 			damage = damage->next;
 		}
 	}
-	UT_DEBUGMSG(("=====\n"));
+	UT_DEBUGMSG(("====="));
 
 	return 0;
 }
@@ -510,45 +517,44 @@ UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * sz
 	printf("TODO: runModalContextMenu %s:%d \n", __FILE__, __LINE__);
 	UT_Bool bResult = UT_TRUE;
 
+#if 1
+
 	UT_ASSERT(!m_pQNXPopup);
 
-	m_pQNXPopup = new EV_QNXMenuPopup(m_pQNXApp, this, szMenuName, m_szMenuLabelSetName);
+	m_pQNXPopup = new EV_QNXMenuPopup(m_pQNXApp, this, 
+									  szMenuName, 
+									  m_szMenuLabelSetName);
 	if (m_pQNXPopup && m_pQNXPopup->synthesizeMenuPopup())
 	{
-/*
-		translateDocumentToScreen(x,y);
-
-		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
-		UT_Point pt;
-		pt.x = x;
-		pt.y = y;
-		gtk_menu_popup(GTK_MENU(m_pQNXPopup->getMenuHandle()), NULL, NULL,
-					   s_gtkMenuPositionFunc, &pt, 3, 0);
-
-		// We run this menu synchronously, since GTK doesn't.
-		// Popup menus have a special "unmap" function to call
-		// gtk_main_quit() when they're done.
-		gtk_main();
-*/
-
-		//Am I going to have to send the even myself?		
-		//PtPositionMenu(menu, (info) ? info->event : NULL);
-
 		PtArg_t	arg;
 		PhPoint_t pos;
 
 		PtWidget_t *menu = m_pQNXPopup->getMenuHandle();
 		PtRealizeWidget(menu);
 
-		pos.x = x; pos.y = y;
-		printf("Reposition menu to %d,%d \n", pos.x, pos.y);
+		memset(&pos, 0, sizeof(pos));
+		PtGetAbsPosition(m_wSunkenBox, &pos.x, &pos.y);
+		pos.x += x; pos.y += y;
+
 		PtSetArg(&arg, Pt_ARG_POS, &pos, 0);
 		PtSetResources(menu, 1, &arg);
-		
-		//So ... do we wait? ...
-	}
 
+		//Really we need to run this synchronously ... or at least
+		//be able to provide some sort of handler that blocks the
+		//window and then unblocks it when we are finished with 
+		//the menu.
+#if 0	
+		int level = PtModalStart();
+		while (m_pQNXPopup) {
+			PtProcessEvent();
+		}	
+		PtModalEnd(level);
+#endif		
+	}
 	DELETEP(m_pQNXPopup);
+
+#endif
+
 	return bResult;
 }
 
