@@ -52,7 +52,7 @@ fi
 
 # changed from the original neon test to detect libxml2, not libxml1.  
 
-if test "$abi_found_parser" = "no" -a "$abi_force_expat" = "no" ; then
+if test "$abi_found_parser" = "no" -a "$abi_force_xml2" = "yes" ; then
 	#Have we got libxml2 or later?
 	AC_CHECK_PROG(XML_CONFIG, xml2-config, xml2-config)
 	if test "$XML_CONFIG" != ""; then
@@ -67,7 +67,6 @@ if test "$abi_found_parser" = "no" -a "$abi_force_expat" = "no" ; then
 			XML_LIBS=""
 			AC_WARN([cannot use libxml1; libxml2 is required ]),
                         $XML_LIBS)
-		
 	fi
 fi
 
