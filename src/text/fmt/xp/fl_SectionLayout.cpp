@@ -2350,6 +2350,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 				static_cast<fl_BlockLayout *>(pBCur)->
 					setSectionLayout(pPrevSL);
 			}
+			pPrevSL->setLastLayout(pBCur);
 			pBCur = pBCur->getNext();
 		}
 	}
