@@ -91,7 +91,8 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
   
   // Build the window's widgets and arrange them
   GtkDialog * mainWindow = GTK_DIALOG ( _constructWindow() );
-  
+  gtk_widget_show (GTK_WIDGET(mainWindow)); // need to realize the window right away, so we have a graphic's context for the drawing area's window
+
   // assemble an image
   _preparePicture();
   
@@ -156,7 +157,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   gtk_widget_show (drawingareaGraphic);
   gtk_box_pack_start (GTK_BOX (hboxAbout), drawingareaGraphic, 
 		      TRUE, TRUE, 0);
-  
+   
   vboxInfo = gtk_vbox_new (FALSE, 0);
   gtk_widget_show (vboxInfo);
   gtk_box_pack_start (GTK_BOX (hboxAbout), vboxInfo, TRUE, TRUE, 8);
