@@ -85,6 +85,11 @@ FL_DocLayout* fl_BlockLayout::getLayout()
 	return m_pLayout;
 }
 
+fl_SectionLayout * fl_BlockLayout::getSectionLayout()
+{
+	return m_pSectionLayout;
+}
+
 /*
 	_createNewSlice is only called when a new slice is needed to continue a flow
 	which is already in progress.  This routine is not used to create the first
@@ -873,7 +878,17 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 					}
 					else
 					{
-						return NULL;
+						fl_SectionLayout* pSL = m_pLayout->getPrevSection(m_pSectionLayout);
+
+						if (!pSL)
+						{
+							// at EOD, so just bail
+							return NULL;
+						}
+
+						fl_BlockLayout* pBlock = pSL->getLastBlock();
+						UT_ASSERT(pBlock);
+						return pBlock->getLastLine();
 					}
 				}
 			}
@@ -918,8 +933,18 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 				}
 				else
 				{
-					// there is no next line in the document
-					return NULL;
+					// there is no next line in this section, try the next
+					fl_SectionLayout* pSL = m_pLayout->getNextSection(m_pSectionLayout);
+
+					if (!pSL)
+					{
+						// at EOD, so just bail
+						return NULL;
+					}
+
+					fl_BlockLayout* pBlock = pSL->getFirstBlock();
+					UT_ASSERT(pBlock);
+					return pBlock->getFirstLine();
 				}
 			}
 		}
@@ -929,14 +954,40 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 	return NULL;
 }
 
-fl_BlockLayout* fl_BlockLayout::getNext() const
+fl_BlockLayout* fl_BlockLayout::getNext(UT_Bool bKeepGoing) const
 {
-	return m_pNext;
+	if (m_pNext || !bKeepGoing)
+		return m_pNext;
+
+	// keep going (check next section)
+	fl_SectionLayout* pSL = m_pLayout->getNextSection(m_pSectionLayout);
+	fl_BlockLayout* pBL = NULL;
+
+	if (pSL)
+	{
+		pBL = pSL->getFirstBlock();
+		UT_ASSERT(pBL);
+	}
+
+	return pBL;
 }
 
-fl_BlockLayout* fl_BlockLayout::getPrev() const
+fl_BlockLayout* fl_BlockLayout::getPrev(UT_Bool bKeepGoing) const
 {
-	return m_pPrev;
+	if (m_pPrev || !bKeepGoing)
+		return m_pPrev;
+
+	// keep going (check prev section)
+	fl_SectionLayout* pSL = m_pLayout->getPrevSection(m_pSectionLayout);
+	fl_BlockLayout* pBL = NULL;
+
+	if (pSL)
+	{
+		pBL = pSL->getLastBlock();
+		UT_ASSERT(pBL);
+	}
+
+	return pBL;
 }
 
 fp_BlockSlice* fl_BlockLayout::getFirstSlice()

@@ -468,11 +468,11 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 			if (iPos == pBlock->getPosition())
 			{
 				// yep.  is there a prior block?
-				if (!pBlock->getPrev())
+				if (!pBlock->getPrev(UT_TRUE))
 					break;
 
 				// yep.  look there instead
-				pBlock = pBlock->getPrev();
+				pBlock = pBlock->getPrev(UT_TRUE);
 			}
 
 			iPos = pBlock->getPosition();
@@ -481,10 +481,10 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 	case FV_DOCPOS_EOB:
 		{
-			if (pBlock->getNext())
+			if (pBlock->getNext(UT_TRUE))
 			{
 				// BOB for next block
-				pBlock = pBlock->getNext();
+				pBlock = pBlock->getNext(UT_TRUE);
 				iPos = pBlock->getPosition();
 			}
 			else
@@ -515,7 +515,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 					break;
 
 				// is there a prior block?
-				pBlock = pBlock->getPrev();
+				pBlock = pBlock->getPrev(UT_TRUE);
 
 				if (!pBlock)
 					break;
@@ -574,7 +574,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 					break;
 
 				// is there a next block?
-				pBlock = pBlock->getNext();
+				pBlock = pBlock->getNext(UT_TRUE);
 
 				if (!pBlock)
 					break;
@@ -864,12 +864,11 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 			if (!pRun)
 			{
 				// go to first run of next block
-				pBlock = pBlock->getNext();
+				pBlock = pBlock->getNext(UT_TRUE);
 
 				if (!pBlock)
 				{
-					// TODO: go to first block of next section
-					// for now, just bail
+					// at EOD, so just bail
 					break;
 				}
 
@@ -1034,12 +1033,11 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 			const PP_AttrProp * pAP;
 			UT_Bool bCheck = UT_FALSE;
 
-			pBlock = pBlock->getNext();
+			pBlock = pBlock->getNext(UT_TRUE);
 
 			if (!pBlock)
 			{
-				// TODO: go to first block of next section
-				// for now, just bail
+				// at EOD, so just bail
 				break;
 			}
 
@@ -1726,7 +1724,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		{
 			fl_BlockLayout* pNextBlock;
 			
-			pNextBlock = pBlock->getNext();
+			pNextBlock = pBlock->getNext(UT_TRUE);
 			if (pNextBlock)
 			{
 				pCurRun = pNextBlock->getFirstRun();

@@ -169,7 +169,7 @@ int fl_SectionLayout::format()
 	while (pBL && bStillGoing)
 	{
 		pBL->complete_format();
-		pBL = pBL->getNext();
+		pBL = pBL->getNext(UT_FALSE);
 	}
 
 	return 0;	// TODO return code
@@ -190,7 +190,7 @@ UT_Bool fl_SectionLayout::reformat()
 			bResult = UT_TRUE;
 		}
 
-		pBL = pBL->getNext();
+		pBL = pBL->getNext(UT_FALSE);
 	}
 
 	return bResult;
@@ -204,7 +204,7 @@ void fl_SectionLayout::_purgeLayout()
 	{
 		fl_BlockLayout* pNuke = pBL;
 
-		pBL = pBL->getNext();
+		pBL = pBL->getNext(UT_FALSE);
 
 		delete pNuke;
 	}
@@ -225,6 +225,11 @@ fl_ColumnSetLayout * fl_SectionLayout::getColumnSetLayout(void) const
 fl_BlockLayout * fl_SectionLayout::getFirstBlock(void) const
 {
 	return m_pFirstBlock;
+}
+
+fl_BlockLayout * fl_SectionLayout::getLastBlock(void) const
+{
+	return m_pLastBlock;
 }
 
 fl_BlockLayout * fl_SectionLayout::appendBlock(PL_StruxDocHandle sdh)
@@ -265,7 +270,7 @@ fl_BlockLayout * fl_SectionLayout::removeBlock(fl_BlockLayout * pBL)
 	UT_ASSERT(m_pLastBlock);
 
 	if (m_pLastBlock == pBL)
-		m_pLastBlock = pBL->getPrev();
+		m_pLastBlock = pBL->getPrev(UT_FALSE);
 
 	return pBL;
 }

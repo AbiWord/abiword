@@ -119,8 +119,8 @@ public:
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_uint32 getAlignment();
 
-	fl_BlockLayout* getNext() const;
-	fl_BlockLayout* getPrev() const;
+	fl_BlockLayout* getNext(UT_Bool bKeepGoing) const;
+	fl_BlockLayout* getPrev(UT_Bool bKeepGoing) const;
 	fp_BlockSlice* getFirstSlice();
 	fp_BlockSlice* getLastSlice();
 	fp_Line* getFirstLine();
@@ -130,6 +130,7 @@ public:
 	fp_Run* getFirstRun();
 
 	FL_DocLayout * getLayout();
+	fl_SectionLayout * getSectionLayout();
 	UT_GrowBuf * getCharWidths(void);
 
 	PT_DocPosition getPosition(UT_Bool bActualBlockPos=UT_FALSE) const;

@@ -115,6 +115,8 @@ UT_uint32 FL_DocLayout::getWidth()
 	{
 		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
+		// TODO: we layout pages vertically, so this should be max, not sum
+		// TODO: coordinate this change with print HACK in ap_EditMethods
 		iWidth += p->getWidth();
 	}
 
@@ -248,6 +250,38 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 
 
 	return pBL;
+}
+
+fl_SectionLayout* FL_DocLayout::getPrevSection(fl_SectionLayout* pSL) const
+{
+	fl_SectionLayout* pPrev = NULL;
+
+	UT_sint32 ndx = m_vecSectionLayouts.findItem(pSL);
+	UT_ASSERT(ndx >= 0);
+
+	if (ndx > 0)
+	{
+		pPrev = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(ndx-1);
+		UT_ASSERT(pPrev);
+	}
+
+	return pPrev;
+}
+
+fl_SectionLayout* FL_DocLayout::getNextSection(fl_SectionLayout* pSL) const
+{
+	fl_SectionLayout* pNext = NULL;
+
+	UT_sint32 ndx = m_vecSectionLayouts.findItem(pSL);
+	UT_ASSERT(ndx >= 0);
+
+	if (m_vecSectionLayouts.getItemCount() > (UT_uint32)(ndx+1))
+	{
+		pNext = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(ndx+1);
+		UT_ASSERT(pNext);
+	}
+
+	return pNext;
 }
 
 int FL_DocLayout::formatAll()

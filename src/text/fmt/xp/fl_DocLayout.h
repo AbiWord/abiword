@@ -30,6 +30,7 @@
 
 class FV_View;
 class fl_DocListener;
+class fl_SectionLayout;
 class fl_BlockLayout;
 class fp_Page;
 class PD_Document;
@@ -89,6 +90,8 @@ public:
 	int			countPages();
 
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
+	fl_SectionLayout* getPrevSection(fl_SectionLayout* pSL) const;
+	fl_SectionLayout* getNextSection(fl_SectionLayout* pSL) const;
 
 	int			formatAll();
 	int			reformat();
