@@ -45,6 +45,8 @@
 #include "ut_rand.h"
 #include "ut_contextGlyph.h"
 #include "ut_map.h"
+#include "gr_CharWidthsCache.h"
+
 UT_Map * abi_ut_map_instance = 0;
 
 /*****************************************************************/
@@ -123,6 +125,7 @@ XAP_App::~XAP_App()
 	// the debugger complaining about memory leaks
 	UT_contextGlyph cg(true);
 	cg.static_destructor();
+	GR_CharWidthsCache::destroyCharWidthsCache();
 }
 
 const char* XAP_App::getBuildId ()
