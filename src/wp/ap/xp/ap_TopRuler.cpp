@@ -205,15 +205,15 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		UT_Rect pClipRect;
 		pClipRect.top = 0;
-		pClipRect.left = _UD(UT_MAX(m_iLeftRulerWidth, s_iFixedWidth));
+		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
 			pClipRect.left = 0;
 		}
 
-		pClipRect.height = _UD(m_iHeight);
-		pClipRect.width = _UD(m_iWidth);
+		pClipRect.height = m_iHeight;
+		pClipRect.width = m_iWidth;
 		draw(&pClipRect);
 	}
 
@@ -309,10 +309,10 @@ void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 	
 	if (pCR)
 	{
-		r.left   = _UL(pCR->left);
-		r.top    = _UL(pCR->top);
-		r.width  = _UL(pCR->width);
-		r.height = _UL(pCR->height);
+		r.left   = pCR->left;
+		r.top    = pCR->top;
+		r.width  = pCR->width;
+		r.height = pCR->height;
 		pClipRect = &r;
 		m_pG->setClipRect(pClipRect);
 	}
