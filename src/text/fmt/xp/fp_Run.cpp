@@ -497,6 +497,19 @@ const PP_AttrProp* fp_Run::getAP(void) const
 	return pSpanAP;
 }
 
+/*!
+ * This draws a line with some text in the center.   
+ * \param xOff the x offset of the left end of the line
+ * \param yOff the y offset of the top (maybe bottom, I don't know) of
+ * the line
+ * \param iWidth the desired length of the line.
+ * \param iHeight the desired height of the line.  Note that the line
+ * will almost certainly take up more vertical space than this, since
+ * the text will be taller than the line.
+ * \param pText the text to be displayed in the middle of the line
+ * \bug Currently, this does not detect whether it is on the screen or
+ * not, so it redraws way too often.  
+*/
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
 

@@ -953,6 +953,12 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun+1; // final character dirt
 
+	/*
+	  TODO We should add more possibilities for text placement here.
+	  It shouldn't be too hard.  Just adjust the math a little.  
+	  See bug 1297
+	*/
+	
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
 		yTopOfRun -= m_iAscent * 1/2;
