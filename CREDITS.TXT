@@ -264,6 +264,7 @@ Nikos Niktaris <niktarin@yahoo.com>			Greek
 Damon Allen Davison <allolex@users.sourceforge.net>	German
 Masayuki Hatta <mhatta@gnu.org>				Japanese
 Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
+Mugurel Tudor <mugurelu@go.ro>				Romanian
 unsung heroes
 -------------
 Mary Eppich
