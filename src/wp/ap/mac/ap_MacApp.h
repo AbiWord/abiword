@@ -38,6 +38,7 @@ public:
 	virtual ~AP_MacApp(void);
 
 	virtual UT_Bool			initialize(void);
+	virtual XAP_Frame *		newFrame(void);
 	virtual UT_Bool			shutdown(void);
 	virtual XAP_Prefs *		getPrefs(void) const;
 	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;

@@ -171,7 +171,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 	
 	UT_Stack stack;
 	stack.push(menuRoot);
-	UT_DEBUGMSG(("Menu::synthesize [menuRoot 0x%08lx]\n",menuRoot));
+	//UT_DEBUGMSG(("Menu::synthesize [menuRoot 0x%08lx]\n",menuRoot));
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -214,11 +214,11 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 					flags |= MF_POPUP;
 					stack.push(sub);
 					u = (UINT) sub;
-					UT_DEBUGMSG(("menu::synthesize [name %s][subMenu 0x%08lx]\n",szLabelName,u));
+					//UT_DEBUGMSG(("menu::synthesize [name %s][subMenu 0x%08lx]\n",szLabelName,u));
 				}
 				else
 				{
-					UT_DEBUGMSG(("menu::synthesize [name %s]\n",szLabelName));
+					//UT_DEBUGMSG(("menu::synthesize [name %s]\n",szLabelName));
 				}
 
 				if (szLabelName && *szLabelName)
@@ -231,7 +231,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 				HMENU m = NULL;
 				bResult = stack.pop((void **)&m);
 				UT_ASSERT(bResult);
-				UT_DEBUGMSG(("menu::synthesize [endSubMenu 0x%08lx]\n",m));
+				//UT_DEBUGMSG(("menu::synthesize [endSubMenu 0x%08lx]\n",m));
 			}
 			break;
 			
@@ -242,7 +242,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 				UT_ASSERT(bResult);
 
 				AppendMenu(m, MF_SEPARATOR, 0, NULL);
-				UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
+				//UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
 			}
 			break;
 
@@ -286,7 +286,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 
 	HMENU mTemp;
 	HMENU m = hMenuBar;
-	UT_DEBUGMSG(("menu::onInitMenu: [menubar 0x%08lx]\n",m));
+	//UT_DEBUGMSG(("menu::onInitMenu: [menubar 0x%08lx]\n",m));
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -402,8 +402,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 			stackPos.push((void*)pos);
 
 			m = GetSubMenu(mTemp, pos-1);
-			UT_DEBUGMSG(("menu::onInitMenu: [menu 0x%08lx] at [pos %d] has [submenu 0x%08lx]\n",
-						 mTemp,pos-1,m));
+			//UT_DEBUGMSG(("menu::onInitMenu: [menu 0x%08lx] at [pos %d] has [submenu 0x%08lx]\n",mTemp,pos-1,m));
 			UT_ASSERT(m);
 			pos = 0;
 			break;
@@ -414,8 +413,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 			bResult = stackPos.pop((void **)&pos);
 			UT_ASSERT(bResult);
 
-			UT_DEBUGMSG(("menu::onInitMenu: endSubMenu [popping to menu 0x%08lx pos %d] from 0x%08lx\n",
-						 mTemp,pos,m));
+			//UT_DEBUGMSG(("menu::onInitMenu: endSubMenu [popping to menu 0x%08lx pos %d] from 0x%08lx\n",mTemp,pos,m));
 			m = mTemp;
 			break;
 

@@ -33,13 +33,23 @@ public:
 	virtual const char *		getPrefsPathname(void) const = 0;
 };
 
+//////////////////////////////////////////////////////////////////////////////
 // The following are the set of application-dependent preference keys.
 // These are in addition to the application-independent ones defined in
 // abi/src/xap/xp/xap_Prefs.h.
 //
 // The list in ap_Prefs::loadBuildinPrefs() in _t[] should match these sets.
 
-#define AP_PREF_KEY_AutoSpellCheck		"AutoSpellCheck"
-#define AP_PREF_KEY_RulerUnits			"RulerUnits"
+#define AP_PREF_KEY_AutoSpellCheck					"AutoSpellCheck"
+#define AP_PREF_KEY_RulerUnits						"RulerUnits"
+#define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"
+#define AP_PREF_KEY_UnixISpellDirectory				"UnixISpellDirectory"
+#define AP_PREF_KEY_WinISpellDirectory				"WinISpellDirectory"
+
+#define AP_PREF_DEFAULT_AutoSpellCheck				"1"
+#define AP_PREF_DEFAULT_RulerUnits					"in"
+#define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"
+#define AP_PREF_DEFAULT_UnixISpellDirectory			"/usr/lib/ispell" /* TODO decide where this should be */
+#define AP_PREF_DEFAULT_WinISpellDirectory			"C:\\" /* TODO DECIDE WHERE THIS SHOULD BE */
 
 #endif /* AP_PREFS_H */

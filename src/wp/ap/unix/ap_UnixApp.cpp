@@ -26,11 +26,14 @@
 #endif /* ABI_OPT_JS */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include "ut_debugmsg.h"
 #include "xap_Args.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
+#include "sp_spell.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -46,6 +49,8 @@ AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
 
 AP_UnixApp::~AP_UnixApp(void)
 {
+	SpellCheckCleanup();
+
 	DELETEP(m_prefs);
 }
 
@@ -61,7 +66,53 @@ UT_Bool AP_UnixApp::initialize(void)
 		   
 	// now that preferences are established, let the xap init
 		   
-	return XAP_UnixApp::initialize();
+	if (! XAP_UnixApp::initialize())
+		return UT_FALSE;
+	
+	//////////////////////////////////////////////////////////////////
+	// initializes the spell checker.
+	//////////////////////////////////////////////////////////////////
+	
+	{
+		const char * szISpellDirectory = NULL;
+		const char * szSpellCheckWordList = NULL;
+		if ((getPrefsValue(AP_PREF_KEY_UnixISpellDirectory,&szISpellDirectory)) && (szISpellDirectory) && (*szISpellDirectory))
+			;
+		else
+			szISpellDirectory = AP_PREF_DEFAULT_UnixISpellDirectory;
+		if ((getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList)) && (szSpellCheckWordList) && (*szSpellCheckWordList))
+			;
+		else
+			szSpellCheckWordList = AP_PREF_DEFAULT_SpellCheckWordList;
+		
+		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
+		UT_ASSERT(szPathname);
+		
+		sprintf(szPathname,"%s%s%s",
+				szISpellDirectory,
+				((szISpellDirectory[strlen(szISpellDirectory)-1]=='/') ? "" : "/"),
+				szSpellCheckWordList);
+
+		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
+		SpellCheckInit(szPathname);
+		free(szPathname);
+		
+		// we silently go on if we cannot load it....
+	}
+	
+	//////////////////////////////////////////////////////////////////
+
+	return UT_TRUE;
+}
+
+XAP_Frame * AP_UnixApp::newFrame(void)
+{
+	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
+
+	if (pUnixFrame)
+		pUnixFrame->initialize();
+
+	return pUnixFrame;
 }
 
 UT_Bool AP_UnixApp::shutdown(void)

@@ -44,7 +44,7 @@ public:
 	virtual ~XAP_UnixApp(void);
 
 	virtual UT_Bool					initialize(void);
-	virtual XAP_Frame * 			newFrame(void);
+	virtual XAP_Frame * 			newFrame(void) = 0;
 	virtual void					reallyExit(void);
 
 	virtual AP_DialogFactory *				getDialogFactory(void);

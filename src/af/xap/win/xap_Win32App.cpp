@@ -26,9 +26,6 @@
 #include "xap_Win32Frame.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32_TB_CFactory.h"
-#include "sp_spell.h"
-
-#include "ap_Win32Frame.h"				// TODO move this
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -45,8 +42,6 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * sz
 
 XAP_Win32App::~XAP_Win32App(void)
 {
-	SpellCheckCleanup();
-
 	DELETEP(m_pWin32ToolbarIcons);
 	DELETEP(_pClipboard);
 }
@@ -66,43 +61,11 @@ UT_Bool XAP_Win32App::initialize(void)
 
 	m_pWin32ToolbarIcons = new AP_Win32Toolbar_Icons();
 	
-	// let various window types register themselves
-
-	if (!AP_Win32Frame::RegisterClass(this))
-	{
-		UT_DEBUGMSG(("couldn't register class\n"));
-		return UT_FALSE;
-	}
-
 	// do anything else we need here...
 
 	_pClipboard = new AP_Win32Clipboard();
-
-	/*
-	  TODO for now, we assume the dictionary
-	  file is in the same directory as the EXE,
-	  and that it is called 'american.hash'.  Later,
-	  we will want to support spell checking in other
-	  languages.
-	*/
-	char szDictionary[512];
-
-	_getExeDir(szDictionary, 512);
-	strcat(szDictionary, "american.hash");
-	
-	SpellCheckInit(szDictionary);
 	
 	return UT_TRUE;
-}
-
-XAP_Frame * XAP_Win32App::newFrame(void)
-{
-	AP_Win32Frame * pWin32Frame = new AP_Win32Frame(this);
-
-	if (pWin32Frame)
-		pWin32Frame->initialize();
-
-	return pWin32Frame;
 }
 
 void XAP_Win32App::reallyExit(void)

@@ -31,6 +31,7 @@
 #include "xap_Args.h"
 #include "ap_MacFrame.h"
 #include "ap_MacApp.h"
+#include "sp_spell.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -46,6 +47,8 @@ AP_MacApp::AP_MacApp(AP_Args * pArgs, const char * szAppName)
 
 AP_MacApp::~AP_MacApp(void)
 {
+	SpellCheckCleanup();
+
 	DELETEP(m_prefs);
 }
 
@@ -61,7 +64,49 @@ UT_Bool AP_MacApp::initialize(void)
 		   
 	// now that preferences are established, let the xap init
 		   
-	return XAP_MacApp::initialize();
+	if (! XAP_MacApp::initialize())
+		return UT_FALSE;
+
+#if 0
+	//////////////////////////////////////////////////////////////////
+	// initializes the spell checker.
+	//////////////////////////////////////////////////////////////////
+	
+	{
+		const char * szISpellDirectory = NULL;
+		const char * szSpellCheckWordList = NULL;
+		if ((getPrefsValue(AP_PREF_KEY_MacISpellDirectory,&szISpellDirectory)) && (szISpellDirectory) && (*szISpellDirectory))
+			;
+		else
+			szISpellDirectory = AP_PREF_DEFAULT_MacISpellDirectory;
+		if ((getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList)) && (szSpellCheckWordList) && (*szSpellCheckWordList))
+			;
+		else
+			szSpellCheckWordList = AP_PREF_DEFAULT_SpellCheckWordList;
+		
+		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
+		UT_ASSERT(szPathname);
+		
+		sprintf(szPathname,"%s/%s",szISpellDirectory,szSpellCheckWordList);		// TODO fix pathname construction
+		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
+		SpellCheckInit(szPathname);
+		free(szPathname);
+		
+		// we silently go on if we cannot load it....
+	}
+	
+	//////////////////////////////////////////////////////////////////
+#endif
+}
+
+XAP_Frame * AP_MacApp::newFrame(void)
+{
+	AP_MacFrame * pMacFrame = new AP_MacFrame(this);
+
+	if (pMacFrame)
+		pMacFrame->initialize();
+
+	return pMacFrame;
 }
 
 UT_Bool AP_MacApp::shutdown(void)

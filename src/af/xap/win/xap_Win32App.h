@@ -41,7 +41,7 @@ public:
 	virtual ~XAP_Win32App(void);
 
 	virtual UT_Bool			initialize(void);
-	virtual XAP_Frame *		newFrame(void);
+	virtual XAP_Frame *		newFrame(void) = 0;
 	virtual void			reallyExit(void);
 
 	virtual HINSTANCE		getInstance() const;

@@ -26,11 +26,8 @@
 #include "xap_MacApp.h"
 #include "xap_MacClipboard.h"
 #include "xap_MacFrame.h"
-#include "ap_MacFrame.h"
 #include "xap_MacTlbr_Icons.h"
 #include "xap_MacTlbr_ControlFactory.h"
-#include "sp_spell.h"
-
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -44,8 +41,6 @@ XAP_MacApp::XAP_MacApp(AP_Args * pArgs, const char * szAppName)
 
 XAP_MacApp::~XAP_MacApp(void)
 {
-	SpellCheckCleanup();
-
 	DELETEP(m_pMacToolbarIcons);
 	DELETEP(_pClipboard);
 }
@@ -63,32 +58,8 @@ UT_Bool XAP_MacApp::initialize(void)
 	// do anything else we need here...
 
 	_pClipboard = new AP_MacClipboard();
-
-	/*
-	  TODO for now, we assume the dictionary
-	  file is in the same directory as the EXE,
-	  and that it is called 'american.hash'.  Later,
-	  we will want to support spell checking in other
-	  languages.
-	*/
-	char szDictionary[512];
-
-	_getExeDir(szDictionary, 512);
-	strcat(szDictionary, "american.hash");
-	
-	SpellCheckInit(szDictionary);
 	
 	return UT_TRUE;
-}
-
-XAP_Frame * XAP_MacApp::newFrame(void)
-{
-	AP_MacFrame * pMacFrame = new AP_MacFrame(this);
-
-	if (pMacFrame)
-		pMacFrame->initialize();
-
-	return pMacFrame;
 }
 
 void XAP_MacApp::reallyExit(void)

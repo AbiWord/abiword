@@ -32,9 +32,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ut_debugmsg.h"
 #include "xap_Args.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"
+#include "sp_spell.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -50,6 +52,8 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAp
 
 AP_Win32App::~AP_Win32App(void)
 {
+	SpellCheckCleanup();
+
 	DELETEP(m_prefs);
 }
 
@@ -65,7 +69,67 @@ UT_Bool AP_Win32App::initialize(void)
 		   
 	// now that preferences are established, let the xap init
 		   
-	return XAP_Win32App::initialize();
+	if (! XAP_Win32App::initialize())
+		return UT_FALSE;
+
+	// let various window types register themselves
+
+	if (!AP_Win32Frame::RegisterClass(this))
+	{
+		UT_DEBUGMSG(("couldn't register class\n"));
+		return UT_FALSE;
+	}
+
+	//////////////////////////////////////////////////////////////////
+	// initializes the spell checker.
+	//////////////////////////////////////////////////////////////////
+	
+	{
+#if 0 // TODO turn this part on when we get installation stuff ready
+		const char * szISpellDirectory = NULL;
+		if ((getPrefsValue(AP_PREF_KEY_WinISpellDirectory,&szISpellDirectory)) && (szISpellDirectory) && (*szISpellDirectory))
+			;
+		else
+			szISpellDirectory = AP_PREF_DEFAULT_WinISpellDirectory;
+#else
+		char szISpellDirectory[512];
+		_getExeDir(szISpellDirectory, 512);
+#endif
+
+		const char * szSpellCheckWordList = NULL;
+		if ((getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList)) && (szSpellCheckWordList) && (*szSpellCheckWordList))
+			;
+		else
+			szSpellCheckWordList = AP_PREF_DEFAULT_SpellCheckWordList;
+		
+		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
+		UT_ASSERT(szPathname);
+		
+		sprintf(szPathname,"%s%s%s",
+				szISpellDirectory,
+				((szISpellDirectory[strlen(szISpellDirectory)-1]=='\\') ? "" : "\\"),
+				szSpellCheckWordList);
+
+		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
+		SpellCheckInit(szPathname);
+		free(szPathname);
+		
+		// we silently go on if we cannot load it....
+	}
+	
+	//////////////////////////////////////////////////////////////////
+
+	return UT_TRUE;
+}
+
+XAP_Frame * AP_Win32App::newFrame(void)
+{
+	AP_Win32Frame * pWin32Frame = new AP_Win32Frame(this);
+
+	if (pWin32Frame)
+		pWin32Frame->initialize();
+
+	return pWin32Frame;
 }
 
 UT_Bool AP_Win32App::shutdown(void)

@@ -65,8 +65,11 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 		{	XAP_PREF_KEY_ToolbarLabelSet,	XAP_PREF_DEFAULT_ToolbarLabelSet	/* value in BeginSet() */			},
 		{	XAP_PREF_KEY_ToolbarLayouts,	XAP_PREF_DEFAULT_ToolbarLayouts		/* values in BeginLayout() */		},
 
-		{	AP_PREF_KEY_AutoSpellCheck,		"1"									/* {0,1} */							},
-		{	AP_PREF_KEY_RulerUnits,			"in"								/* value in UT_dimensionName() */	},
+		{	AP_PREF_KEY_AutoSpellCheck,			AP_PREF_DEFAULT_AutoSpellCheck			/* {0,1} */								},
+		{	AP_PREF_KEY_RulerUnits,				AP_PREF_DEFAULT_RulerUnits				/* value in UT_dimensionName() */		},
+		{	AP_PREF_KEY_SpellCheckWordList,		AP_PREF_DEFAULT_SpellCheckWordList		/* name of ispell hash file */			},
+		{	AP_PREF_KEY_UnixISpellDirectory,	AP_PREF_DEFAULT_UnixISpellDirectory		/* where we find spell,strings,etc */	},
+		{	AP_PREF_KEY_WinISpellDirectory,		AP_PREF_DEFAULT_WinISpellDirectory		/* where we find spell,strings,etc */	},
 	};
 
 	for (UT_uint32 k=0; k<NrElements(_t); k++)

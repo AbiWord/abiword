@@ -33,13 +33,13 @@
 #include "xap_UnixFrame.h"
 #include "xap_UnixToolbar_Icons.h"
 #include "xap_Unix_TB_CFactory.h"
-#include "sp_spell.h"
-
-#include "ap_UnixFrame.h"				// TODO move this
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
-// TODO move all the AbiWord declarations to wp/ap/unix/ap_UnixApp...
+//////////////////////////////////////////////////////////////////
+// TODO either move all the AbiWord declarations to wp/ap/unix/ap_UnixApp
+// TODO or rename the variables as AbiSuite or something...
+//////////////////////////////////////////////////////////////////
 
 // The first defines the environment variable we honor,
 // the second defines the default path we use (this should
@@ -57,8 +57,6 @@ XAP_UnixApp::XAP_UnixApp(AP_Args * pArgs, const char * szAppName)
 
 XAP_UnixApp::~XAP_UnixApp(void)
 {
-	SpellCheckCleanup();
-
 	DELETEP(m_pUnixToolbarIcons);
 	DELETEP(_pClipboard);
 }
@@ -136,31 +134,7 @@ UT_Bool XAP_UnixApp::initialize(void)
 
 	_pClipboard = new AP_FakeClipboard();
 	
-	/*
-	  The following call initializes the spell checker.
-	  It does NOT belong here.  However, right now, it's
-	  not clear where it does belong.
-	  HACK TODO fix this
-
-	  Furthermore, it currently initializes the dictionary
-	  to a hard-coded path which happens to be correct on
-	  Red Hat systems which already have ispell installed.
-	  TODO fix this
-	*/
-
-	SpellCheckInit("/usr/lib/ispell/american.hash");
-	
 	return UT_TRUE;
-}
-
-XAP_Frame * XAP_UnixApp::newFrame(void)
-{
-	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
-
-	if (pUnixFrame)
-		pUnixFrame->initialize();
-
-	return pUnixFrame;
 }
 
 void XAP_UnixApp::reallyExit(void)
