@@ -76,17 +76,20 @@ class fd_Field
 		__last_field_dont_use__
 	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);
-    virtual                              ~fd_Field(void);
-    bool                              update(void);
-    void                                 setBlock(fl_BlockLayout * pBlock);
-    fl_BlockLayout *                     getBlock( void);
+    virtual							~fd_Field(void);
+    bool							update(void);
+    void							setBlock(fl_BlockLayout * pBlock);
+    fl_BlockLayout *				getBlock( void);
+	FieldType						getFieldType(void) const;
+	XML_Char *						getValue(void) const;
+	void							setValue(XML_Char * szValue);
     // probably need different types of update
     // which are overridden in the appropriate subclass
     // eg positionChangeUpdate
     //    referenceChangeUpdate
  protected:
-    bool                              _deleteSpan(void);
-    void                                 _throwChangeRec(PT_DocPosition docPos);
+    bool							_deleteSpan(void);
+    void							_throwChangeRec(PT_DocPosition docPos);
     fl_BlockLayout * m_pBlock;
     // will need some more helper functions in here eg. to test 
     // whether text has changed to avoid unnecessary updates
@@ -95,6 +98,7 @@ class fd_Field
     pt_PieceTable *	m_pPieceTable;
     UT_uint32 m_updateCount;
     FieldType m_iFieldType;
+	XML_Char * m_szValue;
 };
 
 #endif

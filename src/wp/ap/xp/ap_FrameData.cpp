@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
  
-
+#include <stdlib.h> // for atoi()
 #include "ap_FrameData.h"
 #include "gr_Graphics.h"
 #include "fl_DocLayout.h"
@@ -36,11 +36,13 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 	m_pLeftRuler = NULL;
 	m_pStatusBar = NULL;
 
+	m_pViewMode = VIEW_PRINT;
+
 	m_bShowRuler = true;
 	m_bShowBar[0] = true;
 	m_bShowBar[1] = true;
 	m_bShowBar[2] = true;
-    m_bShowPara = true;
+        m_bShowPara = true;
 	m_bInsertMode = true;
 	m_bShowStatusBar = true;
 	m_bIsFullScreen = false;
@@ -48,6 +50,7 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 	if (pApp)
 	{
 		bool b;
+		const XML_Char *str;
 
 		if (pApp->getPrefsValueBool(AP_PREF_KEY_InsertMode, &b))
 			m_bInsertMode = b;
@@ -69,6 +72,16 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 
 		if (pApp->getPrefsValueBool(AP_PREF_KEY_ParaVisible, &b))
 			m_bShowPara = b;
+
+		if (pApp->getPrefsValue(AP_PREF_KEY_LayoutMode, &str))
+		  {
+		    int i = atoi ((const char *)str);
+		    switch (i){
+		    case 3:  m_pViewMode = VIEW_WEB;    break;
+		    case 2:  m_pViewMode = VIEW_NORMAL; break;
+		    default: m_pViewMode = VIEW_PRINT;  break;
+		    }
+		  }
 	}
 }
 

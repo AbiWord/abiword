@@ -27,6 +27,7 @@
 #include "ut_units.h"
 #include "ut_wctomb.h"
 #include "pt_Types.h"
+#include "fd_Field.h"
 #include "ie_exp_HTML.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
@@ -342,13 +343,33 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 		/* Assumption: never get property set with block text, plain text. Probably true. */
 
-		if (
-			m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && (pAP->getProperty("text-align", szValue))
-			)
+		if ( m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && 
+				(pAP->getProperty("text-align", szValue) 
+				|| pAP->getProperty("margin-bottom", szValue)
+				|| pAP->getProperty("margin-top", szValue)) )
 		{
-			m_pie->write(" style=\"text-align: ");
-			m_pie->write((char*)szValue);
-			m_pie->write(";\"");
+			m_pie->write(" style=\"");
+
+			if(pAP->getProperty("text-align", szValue))
+			{
+				m_pie->write("text-align: ");
+				m_pie->write((char*)szValue);
+				m_pie->write("; ");
+			}
+			if(pAP->getProperty("margin-bottom", szValue))
+			{
+				m_pie->write("margin-bottom: ");
+				m_pie->write((char*)szValue);
+				m_pie->write("; ");
+			}
+			if(pAP->getProperty("margin-top", szValue))
+			{
+				m_pie->write("margin-top: ");
+				m_pie->write((char*)szValue);
+				m_pie->write("; ");
+			}
+
+			m_pie->write("\"");
 		}
 	}
 	else 
@@ -1043,53 +1064,77 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
-	m_pie->write("<!--\np { margin-top: 0pt; margin-bottom: 0pt; }\n");
+	m_pie->write("<!--\n");
 
-	if(bHaveProp && pAP)
-	{
+	if(bHaveProp && pAP)				// this is where we write out the
+	{									// default style sheet
 		const XML_Char * szValue;
-		// TODO: Make this the actual user specified background color when
-		// TODO: it becomes available
-		m_pie->write("body { background-color: white");
-	
-		szValue = PP_evalProperty("page-margin-top",
+		/* begin paragraph (p) stylesheet */
+		szValue = PP_evalProperty("margin-top",
 			NULL, NULL, pAP, m_pDocument, true);
-		if(szValue)
-		{
-			m_pie->write(";\n       margin-top: ");
+			m_pie->write("p\n{\n    margin-top: ");
 			m_pie->write(szValue);
-		}
 
-		szValue = PP_evalProperty("page-margin-bottom",
+		szValue = PP_evalProperty("margin-bottom",
 			NULL, NULL, pAP, m_pDocument, true);
-		if(szValue)
-		{
-			m_pie->write(";\n       margin-bottom: ");
+			m_pie->write(";\n    margin-bottom: ");
 			m_pie->write(szValue);
-		}
+			m_pie->write(";\n}\n\n");	// end paragraph stylesheet
 
-		szValue = PP_evalProperty("page-margin-left",
+		/* begin generic text (p, ul, ol) stylesheet */
+		szValue = PP_evalProperty("font-family",
 			NULL, NULL, pAP, m_pDocument, true);
-		if(szValue)
-		{
-			m_pie->write(";\n       margin-left: ");
+			m_pie->write("p, ul, ol\n{\n    font-family: \"");
 			m_pie->write(szValue);
-		}
+			m_pie->write("\"");
 
-		szValue = PP_evalProperty("page-margin-right",
+		szValue = PP_evalProperty("font-size",
 			NULL, NULL, pAP, m_pDocument, true);
-		if(szValue)
-		{
-			m_pie->write(";\n       margin-right: ");
+			m_pie->write("; font-size: ");
 			m_pie->write(szValue);
-		}
 
-		m_pie->write("; }\n");
+			m_pie->write(";\n}\n");		// end generic text stylesheet
 	}
 		
 	m_pie->write("-->\n</style>\n");
 	m_pie->write("</head>\n");
-	m_pie->write("<body>\n");
+	m_pie->write("<body");
+	if(bHaveProp && pAP)
+	{									// global page styles go in the <body> tag
+		const XML_Char * szValue;
+
+			m_pie->write(" style=\"");
+
+		szValue = PP_evalProperty("bgcolor",
+			NULL, NULL, pAP, m_pDocument, true);
+			m_pie->write("background-color: #");
+			char color[16];
+			_convertColor(color, szValue);
+			m_pie->write(color);
+
+		szValue = PP_evalProperty("page-margin-top",
+			NULL, NULL, pAP, m_pDocument, true);
+			m_pie->write(";\n    margin-top: ");
+			m_pie->write(szValue);
+
+		szValue = PP_evalProperty("page-margin-bottom",
+			NULL, NULL, pAP, m_pDocument, true);
+			m_pie->write("; margin-bottom: ");
+			m_pie->write(szValue);
+
+		szValue = PP_evalProperty("page-margin-left",
+			NULL, NULL, pAP, m_pDocument, true);
+			m_pie->write("; margin-left: ");
+			m_pie->write(szValue);
+
+		szValue = PP_evalProperty("page-margin-right",
+			NULL, NULL, pAP, m_pDocument, true);
+			m_pie->write("; margin-right: ");
+			m_pie->write(szValue);
+
+			m_pie->write("\"");
+	}
+	m_pie->write(">\n");
 
 	m_bFirstWrite = false;
 }
@@ -1136,7 +1181,8 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
 		{
-			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+			const PX_ChangeRecord_Span * pcrs = 
+				static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			if (api)
@@ -1154,13 +1200,20 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-			//PT_AttrPropIndex api = pcr->getIndexAP();
+			m_bWroteText = true;
+			const PX_ChangeRecord_Object * pcro = 
+				static_cast<const PX_ChangeRecord_Object *> (pcr);
+			const XML_Char* szValue;
+			char buf[16];
+
+			fd_Field* field;
+			PT_AttrPropIndex api = pcr->getIndexAP();
+			const PP_AttrProp * pAP = NULL;
+			bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
-			        char buf [32];
-
 				// TODO: differentiate between SVG and PNG
 				// TODO: we do this in the img saving code
 	                        sprintf(buf, "-%d.png", m_iImgCnt++);
@@ -1173,7 +1226,19 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 
 			case PTO_Field:
-				// TODO: LOSSY we do nothing with computed fields.
+				if(bHaveProp && pAP && pAP->getAttribute("type", szValue))
+				{
+					field = pcro->getField();
+
+					if(UT_strcmp(szValue, "list_label") != 0)
+					{
+						m_pie->write("<span class=\"ABI_FIELD_");
+						m_pie->write(szValue);
+						m_pie->write("\">");
+						m_pie->write(field->getValue());
+						m_pie->write("</span>");
+					}
+				}
 				return true;
 
 			default:

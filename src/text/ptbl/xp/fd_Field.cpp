@@ -28,7 +28,6 @@
 #include "ut_string.h"
 #include "pt_PieceTable.h"
 #include "pt_Types.h"
-#include "ut_debugmsg.h"
 #include "ut_types.h"
 
 fd_Field::fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, 
@@ -36,23 +35,41 @@ fd_Field::fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt,
     : m_fragObject(fO),m_pPieceTable(pt),
       m_updateCount(0), m_iFieldType(fieldType)
 {
-        m_pBlock = NULL;
+	m_pBlock = NULL;
+	m_szValue = NULL;
 }
 
 
 fd_Field::~fd_Field(void)
 {
-
+	FREEP(m_szValue);
+	m_szValue = NULL;
 }
 
 void fd_Field::setBlock( fl_BlockLayout *pBlock)
 {
-       m_pBlock = pBlock;
+	m_pBlock = pBlock;
 }
 
 fl_BlockLayout* fd_Field::getBlock( void)
 {
-       return m_pBlock;
+	return m_pBlock;
+}
+
+fd_Field::FieldType fd_Field::getFieldType(void) const
+{
+	return m_iFieldType;
+}
+
+XML_Char* fd_Field::getValue(void) const
+{
+	return m_szValue;
+}
+
+void fd_Field::setValue(XML_Char* szValue)
+{
+        FREEP(m_szValue);
+	m_szValue = UT_strdup(szValue);
 }
 
 bool fd_Field::update(void)

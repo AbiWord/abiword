@@ -22,6 +22,7 @@
 #define AP_FRAMEDATA_H
 
 #include "ut_types.h"
+#include "fv_View.h"
 
 class GR_Graphics;
 class FL_DocLayout;
@@ -57,6 +58,7 @@ public:
 	AP_LeftRuler *		m_pLeftRuler;
 	EV_Toolbar *		m_pToolbar[3]; // TODO: 3 = NB_OF_TOOLBARS...
 	AP_StatusBar *		m_pStatusBar;
+	ViewMode                m_pViewMode;
 };
 
 #endif /* AP_FRAMEDATA_H */

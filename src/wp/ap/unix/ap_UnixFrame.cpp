@@ -574,24 +574,34 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	// create the rulers
 	AP_UnixTopRuler * pUnixTopRuler = NULL;
 	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
+
 	if ( bShowRulers )
 	{
 		pUnixTopRuler = new AP_UnixTopRuler(this);
 		UT_ASSERT(pUnixTopRuler);
 		m_topRuler = pUnixTopRuler->createWidget();
 		
-		pUnixLeftRuler = new AP_UnixLeftRuler(this);
-		UT_ASSERT(pUnixLeftRuler);
-		m_leftRuler = pUnixLeftRuler->createWidget();
-		
-		// get the width from the left ruler and stuff it into the top ruler.
-		pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
+		if (static_cast<AP_FrameData*> (m_pData)->m_pViewMode == VIEW_PRINT)
+		  {
+		    pUnixLeftRuler = new AP_UnixLeftRuler(this);
+		    UT_ASSERT(pUnixLeftRuler);
+		    m_leftRuler = pUnixLeftRuler->createWidget();
+
+		    // get the width from the left ruler and stuff it into the top ruler.
+		    pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
+		  }
+		else
+		  {
+		    m_leftRuler = NULL;
+		    pUnixTopRuler->setOffsetLeftRuler(0);
+		  }
 	}
 	else
 	{
 		m_topRuler = NULL;
 		m_leftRuler = NULL;
 	}
+
 	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
 
@@ -773,63 +783,92 @@ UT_Error AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
 	return _showDocument();
 }
 
-void AP_UnixFrame::toggleRuler(bool bRulerOn)
+void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 {
-	//UT_DEBUGMSG(("AP_UnixFrame::toggleRuler %d\n", bRulerOn));	
-
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 		
 	AP_UnixTopRuler * pUnixTopRuler = NULL;
-	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
-		
+
+	UT_DEBUGMSG(("AP_UnixFrame::toggleTopRuler %d, %d\n", 
+		     bRulerOn, pFrameData->m_pTopRuler));
 
 	if ( bRulerOn )
 	{
 		UT_ASSERT(!pFrameData->m_pTopRuler);
-		UT_ASSERT(!pFrameData->m_pLeftRuler);
-	
+
 		pUnixTopRuler = new AP_UnixTopRuler(this);
 		UT_ASSERT(pUnixTopRuler);
 		m_topRuler = pUnixTopRuler->createWidget();
-		
+
+		// get the width from the left ruler and stuff it into the 
+		// top ruler.
+
+		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
+		  pUnixTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
+		else
+		  pUnixTopRuler->setOffsetLeftRuler(0);
+
+		// attach everything	
+		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0,
+				 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL),
+				 0, 0);
+
+		pUnixTopRuler->setView(m_pView);
+	}
+	else
+	  {
+		// delete the actual widgets
+		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
+		m_topRuler = NULL;
+	  }
+
+	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
+}
+
+void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
+{
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+
+	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
+
+	UT_DEBUGMSG(("AP_UnixFrame::toggleLeftRuler %d, %d\n", 
+		     bRulerOn, pFrameData->m_pLeftRuler));
+
+	if (bRulerOn)
+	  {
 		pUnixLeftRuler = new AP_UnixLeftRuler(this);
 		UT_ASSERT(pUnixLeftRuler);
 		m_leftRuler = pUnixLeftRuler->createWidget();
-		
-		// get the width from the left ruler and stuff it into the top ruler.
-		pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
-	
-		// attach everything	
-		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0, 1,
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions)(GTK_FILL),
-						 0,0);
 
 		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
-						 (GtkAttachOptions)(GTK_FILL),
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 0,0);
-
-		pUnixTopRuler->setView(m_pView);
+				 (GtkAttachOptions)(GTK_FILL),
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 0,0);
 		pUnixLeftRuler->setView(m_pView);
-
-	}
-	else	// turning rulers off
-	{
-		// delete the actual widgets
-		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+	  }
+	else
+	  {
+	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
 		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+	    
+	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
+	    m_leftRuler = NULL;
+	  }
 
-		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
-		DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
-
-		m_topRuler = NULL;
-		m_leftRuler = NULL;
-	}
-	
-	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
+}
+
+void AP_UnixFrame::toggleRuler(bool bRulerOn)
+{
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+
+        toggleTopRuler(bRulerOn);
+	toggleLeftRuler(bRulerOn && (pFrameData->m_pViewMode == VIEW_PRINT));
 }
 
 void AP_UnixFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)

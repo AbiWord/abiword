@@ -604,6 +604,7 @@ bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
 			switch (pfTemp->getType()) 
 			{
 			case pf_Frag::PFT_Text:
+			case pf_Frag::PFT_Object:
 				pft = static_cast<pf_Frag_Text *> (pfTemp);
 				pField = pft->getField();
 				return true; // break out of loop

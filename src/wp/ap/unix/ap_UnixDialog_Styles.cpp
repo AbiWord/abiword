@@ -229,7 +229,7 @@ void AP_UnixDialog_Styles::event_charPreviewExposed(void)
 GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 {
 	GtkWidget * windowStyles;
-
+	GtkWidget * hsepMid;
 	GtkWidget * vboxContents;
 
 	GtkWidget * buttonBoxGlobal;
@@ -246,6 +246,10 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
 
 	vboxContents = _constructWindowContents(windowStyles);
+
+	hsepMid = gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(vboxContents), hsepMid, FALSE, FALSE, 0);
+	gtk_widget_show(hsepMid);
 
 	// These buttons need to be gnomified
 
@@ -306,8 +310,6 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	GtkWidget * frameDescription;
 	GtkWidget * DescriptionArea;
 
-
-	GtkWidget * hsepMid;
 	GtkWidget * hsepBot;
 
 	GtkWidget * buttonBoxStyleManip;
@@ -419,12 +421,6 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	GTK_WIDGET_SET_FLAGS (buttonDelete, GTK_CAN_DEFAULT);
 
 	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxStyleManip, FALSE, FALSE, 0);
-
-
-	hsepMid = gtk_hseparator_new();
-	gtk_box_pack_start(GTK_BOX(vboxContents), hsepMid, FALSE, FALSE, 0);
-	gtk_widget_show(hsepMid);
-
 
 	m_windowMain = windowStyles;
 	m_wbuttonNew = buttonNew;

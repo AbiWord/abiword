@@ -120,26 +120,26 @@ void AP_Dialog_Options::_storeWindowData(void)
 	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
-		m_pFrame->toggleRuler( _gatherViewShowRuler() );
+		m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
 	}
 
 	// TODO: Don't use 0, 1, 2, but AP_TOOLBAR_STANDARD, AP_TOOLBAR_FORMAT, AP_TOOLBAR_EXTRA...
 	if (_gatherViewShowStandardBar() != pFrameData->m_bShowBar[0])
 	{
 		pFrameData->m_bShowBar[0] = _gatherViewShowStandardBar();
-		m_pFrame->toggleBar(0, _gatherViewShowStandardBar());
+		m_pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
 	}
 
 	if (_gatherViewShowFormatBar() != pFrameData->m_bShowBar[1])
 	{
 		pFrameData->m_bShowBar[1] = _gatherViewShowFormatBar();
-		m_pFrame->toggleBar(1, _gatherViewShowFormatBar());
+		m_pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
 	}
 
 	if (_gatherViewShowExtraBar() != pFrameData->m_bShowBar[2])
 	{
 		pFrameData->m_bShowBar[2] = _gatherViewShowExtraBar();
-		m_pFrame->toggleBar(2, _gatherViewShowExtraBar());
+		m_pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
 	}
 
     if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
@@ -150,7 +150,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 
         FV_View * pView = static_cast<FV_View *> (pAVView);
 
-        pView->setShowPara( _gatherViewUnprintable() );
+        pView->setShowPara(pFrameData->m_bShowPara);
     }
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -1248,6 +1248,8 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 		m_pFontLayout(0),
 		m_iFieldType(FPFIELD_start)
 {
+	bool gotField = pBL->getField(iOffsetFirst,m_pField);
+	UT_ASSERT(gotField);
 	m_sFieldValue[0] = 0;
 }
 
@@ -1602,6 +1604,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	FV_DocCount cnt = pView->countWords();
 
 	sprintf(szFieldValue, "%d", cnt.ch_sp);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1624,6 +1627,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	FV_DocCount cnt = pView->countWords();
 
 	sprintf(szFieldValue, "%d", cnt.ch_no);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1646,6 +1650,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	FV_DocCount cnt = pView->countWords();
 
 	sprintf(szFieldValue, "%d", cnt.line);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1668,6 +1673,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	FV_DocCount cnt = pView->countWords();
 
 	sprintf(szFieldValue, "%d", cnt.para);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1690,6 +1696,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	FV_DocCount cnt = pView->countWords();
 
 	sprintf(szFieldValue, "%d", cnt.word);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_DEBUGMSG(("DOM: szFieldValue is %s\n", szFieldValue));
 
@@ -1714,6 +1721,7 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%m/%d/%y", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1736,6 +1744,7 @@ bool fp_FieldDDMMYYRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%d/%m/%y", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1758,6 +1767,7 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%B %d, %Y", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1779,6 +1789,7 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%b %d, %Y", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1800,6 +1811,7 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%c", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1821,6 +1833,7 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%x", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1842,6 +1855,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
+	m_pField->setValue((XML_Char*) strdup(szFieldValue));
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1863,6 +1877,7 @@ bool fp_FieldDOYRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%j", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1884,6 +1899,7 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%H:%M:%S", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1905,6 +1921,7 @@ bool fp_FieldAMPMRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%p", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1924,6 +1941,7 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 
 	time_t	tim = time(NULL);
 	sprintf(szFieldValue, "%ld", (long)tim);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1945,6 +1963,7 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%Z", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1961,6 +1980,7 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_ID);
+	m_pField->setValue((XML_Char*) XAP_App::s_szBuild_ID);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -1974,6 +1994,7 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Version);
+	m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Version);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -1987,6 +2008,7 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Options);
+	m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Options);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2000,7 +2022,7 @@ bool fp_FieldBuildTargetRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Target);
-
+	m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Target);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2014,7 +2036,7 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileDate);
-
+	m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileDate);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2028,7 +2050,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileTime);
-
+	m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileTime);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2049,6 +2071,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%I:%M:%S %p", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2070,6 +2093,7 @@ bool fp_FieldDateRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A %B %d, %Y", pTime);
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2119,6 +2143,7 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 	{
 		strcpy(szFieldValue, "?");
 	}
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2148,6 +2173,7 @@ bool fp_FieldPageCountRun::calculateValue(void)
 	{
 		strcpy(szFieldValue, "?");
 	}
+	m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 

@@ -114,6 +114,9 @@
 #define AP_PREF_KEY_StringSetDirectory				"StringSetDirectory"		/* where we find StringSets */
 #define AP_PREF_DEFAULT_StringSetDirectory			"strings"					/* if relative, use prefix "getAbiSuiteAppDir()" */
 
+#define AP_PREF_KEY_LayoutMode                     "layoutMode"
+#define AP_PREF_DEFAULT_LayoutMode                 "1" /* 1=print, 2=normal, 3=web */
+
 #ifdef BIDI_ENABLED
 #define AP_PREF_KEY_DefaultDirectionRtl             "DefaultDirectionRtl"       /* the deafault direction of text is rtl */
 #ifndef BIDI_RTL_DOMINANT
@@ -149,6 +152,7 @@ dcl(MenuLayout)
 dcl(MenuLabelSet)
 dcl(ToolbarLabelSet)
 dcl(ToolbarLayouts)
+dcl(LayoutMode)
 
 dcl(SpellDirectory)
 dcl(StringSetDirectory)

@@ -23,13 +23,14 @@
 #include "ut_base64.h"
 #include "pt_Types.h"
 #include "ie_exp_Text.h"
+#include "fd_Field.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
-#include"ut_wctomb.h"
+#include "ut_wctomb.h"
 
 //////////////////////////////////////////////////////////////////
 // a private listener class to help us translate the document
@@ -236,17 +237,22 @@ bool s_Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-#if 0
+#if 1
 			// TODO decide how to indicate objects in text output.
 			
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-			PT_AttrPropIndex api = pcr->getIndexAP();
+			//PT_AttrPropIndex api = pcr->getIndexAP();
+			fd_Field* field;
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
 				return true;
 
 			case PTO_Field:
+				// Lossy, but pretty much unavoidable
+				field = pcro->getField();
+				m_pie->write(field->getValue());
+				
 				return true;
 
 			default:

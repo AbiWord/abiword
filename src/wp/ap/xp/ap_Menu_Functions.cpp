@@ -679,7 +679,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_STATUSBAR:
-		if ( pFrameData->m_bShowStatusBar && !pFrameData->m_bIsFullScreen)
+		if ( pFrameData->m_bShowStatusBar && !pFrameData->m_bIsFullScreen && (pFrameData->m_bShowRuler == VIEW_PRINT))
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
@@ -691,6 +691,27 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 			s = EV_MIS_ZERO;
 		break;
+
+	case AP_MENU_ID_VIEW_NORMAL:
+	  if ( pFrameData->m_pViewMode == VIEW_NORMAL) 
+	    s = EV_MIS_Toggled;
+	  else
+	    s = EV_MIS_ZERO;
+	  break;
+
+	case AP_MENU_ID_VIEW_WEB: 
+	  if ( pFrameData->m_pViewMode == VIEW_WEB) 
+	    s = EV_MIS_Toggled;
+	  else
+	    s = EV_MIS_ZERO;
+	  break;
+
+	case AP_MENU_ID_VIEW_PRINT: 
+	  if ( pFrameData->m_pViewMode == VIEW_PRINT) 
+	    s = EV_MIS_Toggled;
+	  else
+	    s = EV_MIS_ZERO;
+	  break;
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

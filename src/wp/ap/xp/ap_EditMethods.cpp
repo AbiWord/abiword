@@ -401,6 +401,10 @@ public:
 	static EV_EditMethod_Fn viCmd_yw;
 	static EV_EditMethod_Fn viCmd_yy;
 
+        static EV_EditMethod_Fn viewNormalLayout;
+        static EV_EditMethod_Fn viewPrintLayout;
+        static EV_EditMethod_Fn viewWebLayout;
+
         static EV_EditMethod_Fn toggleAutoSpell;
 
 	static EV_EditMethod_Fn noop;
@@ -717,10 +721,13 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewFormat),			0,		""),
 	EV_EditMethod(NF(viewFullScreen), 0, ""),
 	EV_EditMethod(NF(viewHeadFoot),			0,		""),
+	EV_EditMethod(NF(viewNormalLayout), 0, ""),
 	EV_EditMethod(NF(viewPara),			0,		""),
+	EV_EditMethod(NF(viewPrintLayout), 0, ""),
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
+	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
 	EV_EditMethod(NF(warpInsPtBOB),			0,	""),
@@ -4757,6 +4764,88 @@ Defun1(viewExtra)
 	return true;
 }
 
+Defun1(viewNormalLayout)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	pFrameData->m_pViewMode = VIEW_NORMAL;
+	pFrame->toggleLeftRuler (false);
+
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	pView->setViewMode (VIEW_NORMAL);
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValue(AP_PREF_KEY_LayoutMode, "2");
+
+	return true;
+}
+
+Defun1(viewWebLayout)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	pFrameData->m_pViewMode = VIEW_WEB;
+	pFrame->toggleLeftRuler (false);
+
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	pView->setViewMode (VIEW_WEB);
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValue(AP_PREF_KEY_LayoutMode, "3");
+
+	return true;
+}
+
+Defun1(viewPrintLayout)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	pFrameData->m_pViewMode = VIEW_PRINT;
+	pFrame->toggleLeftRuler (true && (pFrameData->m_bShowRuler) &&
+				 (!pFrameData->m_bIsFullScreen));
+
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	pView->setViewMode (VIEW_PRINT);
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValue(AP_PREF_KEY_LayoutMode, "1");
+
+	return true;
+}
+
 Defun1(viewStatus)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -4803,7 +4892,7 @@ Defun1(viewRuler)
 	pFrameData->m_bShowRuler = ! pFrameData->m_bShowRuler;
 
 	// actually do the dirty work
-	pFrame->toggleRuler( pFrameData->m_bShowRuler );
+	pFrame->toggleRuler(pFrameData->m_bShowRuler);
 
 #if 1
 	// POLICY: make this the default for new frames, too
@@ -4839,7 +4928,7 @@ Defun1(viewFullScreen)
       pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
       pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
       pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
-      pFrame->toggleRuler(pFrameData->m_bShowRuler);      
+      pFrame->toggleRuler(pFrameData->m_bShowRuler);
       pFrameData->m_bIsFullScreen = false;
     }
 

@@ -82,6 +82,13 @@ typedef enum
 	BreakSectionOddPage
 } BreakSectionType;
 
+typedef enum
+{
+  VIEW_PRINT,
+  VIEW_NORMAL,
+  VIEW_WEB
+} ViewMode;
+
 struct fv_ChangeState
 {
 	bool				bUndo;
@@ -321,6 +328,9 @@ public:
 	UT_uint32			calculateZoomPercentForPageHeight();
 	UT_uint32			calculateZoomPercentForWholePage();
 
+	inline void             setViewMode (ViewMode vm) {m_viewMode = vm;}
+	inline ViewMode         getViewMode (void) const  {return m_viewMode;}
+
 protected:
 	void				_generalUpdate(void);
 	
@@ -466,6 +476,7 @@ protected:
 
 	bool		m_bShowPara;
 	UT_RGBColor     m_clrPaper;
+	ViewMode        m_viewMode;
 };
 
 #endif /* FV_VIEW_H */

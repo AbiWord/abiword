@@ -132,6 +132,8 @@ public:
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
 	virtual void				toggleRuler(bool /*bRulerOn*/) { } //
+	virtual void                            toggleTopRuler(bool /*bRulerOn*/) = 0;
+	virtual void                            toggleLeftRuler(bool /*bRulerOn*/) = 0;
 	virtual void				toggleBar(UT_uint32 /* iBarNb */, bool /* bBarOn */) { }
 	virtual void				toggleStatusBar(bool /* bStatusBarOn */) { }
 	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
