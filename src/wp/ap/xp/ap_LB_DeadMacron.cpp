@@ -74,6 +74,8 @@ static struct _iChar s_CharTable[] =
 	{0x69, /* i      */ { "insertMacronData",		"",		"",		""		}},
 	{0x6f, /* o      */ { "insertMacronData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertMacronData",		"",		"",		""		}},
+#else
+	0
 #endif
 };
 

@@ -84,6 +84,8 @@ static struct _iChar s_CharTable[] =
 	{0x64, /* d      */ { "insertCaronData",		"",		"",		""		}},
 	{0x6e, /* n      */ { "insertCaronData",		"",		"",		""		}},
 	{0x72, /* r      */ { "insertCaronData",		"",		"",		""		}},
+#else
+	0
 #endif
 };
 

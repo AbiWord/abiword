@@ -70,6 +70,8 @@ static struct _iChar s_CharTable[] =
 
 	{0x6f, /* o      */ { "insertDoubleacuteData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertDoubleacuteData",		"",		"",		""		}},
+#else
+	0
 #endif
 };
 

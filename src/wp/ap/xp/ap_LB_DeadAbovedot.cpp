@@ -76,6 +76,8 @@ static struct _iChar s_CharTable[] =
 	{0x7a, /* z      */ { "insertAbovedotData",		"",		"",		""		}},
 	{0x63, /* c      */ { "insertAbovedotData",		"",		"",		""		}},
 	{0x67, /* g      */ { "insertAbovedotData",		"",		"",		""		}},
+#else
+	0
 #endif
 };
 

@@ -72,6 +72,8 @@ static struct _iChar s_CharTable[] =
 	{0x61, /* a      */ { "insertBreveData",		"",		"",		""		}},
 	{0x67, /* g      */ { "insertBreveData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertBreveData",		"",		"",		""		}},
+#else
+	0
 #endif
 };
 
