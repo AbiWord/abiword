@@ -368,58 +368,78 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 
-	{
-		const PP_AttrProp * pBlockAP = NULL;
-		getAttrProp(&pBlockAP);
+	const PP_AttrProp * pBlockAP = NULL;
+	getAttrProp(&pBlockAP);
 
-		if(!pBlockAP)
+	if(!pBlockAP)
+	{
+		m_szStyle = NULL;
+	}
+	else if (!pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
+	{
+		m_szStyle = NULL;
+	}
+
+	// Now work out our dominant direction
+	// First, test if this is not a block that is the wrapper around a
+	// footnote text, if it is, we will get the direction from the
+	// document section that contains the footnote
+	const XML_Char * pszFntId = NULL;
+	const XML_Char * pszDir = NULL;
+		
+	if (pBlockAP && pBlockAP->getAttribute("footnote-id", pszFntId ))
+	{
+		if(pszFntId && *pszFntId)
 		{
-			m_szStyle = NULL;
-		}
-		else if (!pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
-		{
-			m_szStyle = NULL;
+			UT_ASSERT(m_pSectionLayout->getType() == PTX_SectionFootnote);
+			fl_FootnoteLayout   * pFL = (fl_FootnoteLayout*) m_pSectionLayout;
+			fl_DocSectionLayout * pDSL=	 pFL->getDocSectionLayout();
+
+			const PP_AttrProp * pSectionAP = NULL;
+			pDSL->getAttrProp(&pSectionAP);
+				
+			pszDir = PP_evalProperty("dom-dir",NULL,NULL,pSectionAP,m_pDoc,false);
 		}
 	}
 
+	if(!pszDir)
 	{
-		const char * dir = getProperty("dom-dir", true);
-#ifdef DEBUG
-		//FriBidiCharType iOldDirection = m_iDomDirection;
-#endif
-		FriBidiCharType iOldDirection = m_iDomDirection;
+		pszDir = getProperty("dom-dir", true);
+	}
 		
-		if(!UT_stricmp(dir,"rtl"))
-		{
-			m_iDomDirection = FRIBIDI_TYPE_RTL;
-		}
-		else
-			m_iDomDirection = FRIBIDI_TYPE_LTR;
+	FriBidiCharType iOldDirection = m_iDomDirection;
+		
+	if(!UT_stricmp(pszDir,"rtl"))
+	{
+		m_iDomDirection = FRIBIDI_TYPE_RTL;
+	}
+	else
+		m_iDomDirection = FRIBIDI_TYPE_LTR;
 
-		// if the direction was previously set and the new dominant
-		// direction is different, we have to split all runs in this
-		// block at their direciton boundaries, because the base
-		// direction influences the visual direciton of weak characters
-		if(iOldDirection != FRIBIDI_TYPE_UNSET && iOldDirection != m_iDomDirection)
-		{
-			fp_Run * pRun = getFirstRun();
+	// if the direction was previously set and the new dominant
+	// direction is different, we have to split all runs in this
+	// block at their direciton boundaries, because the base
+	// direction influences the visual direciton of weak characters
+	if(iOldDirection != FRIBIDI_TYPE_UNSET && iOldDirection != m_iDomDirection)
+	{
+		fp_Run * pRun = getFirstRun();
 
-			while(pRun)
+		while(pRun)
+		{
+			if (pRun->getType() == FPRUN_TEXT)
 			{
-				if (pRun->getType() == FPRUN_TEXT)
-				{
-					fp_TextRun * pTextRun = static_cast<fp_TextRun*>(pRun);
+				fp_TextRun * pTextRun = static_cast<fp_TextRun*>(pRun);
 
-					//we get the next run in line prior to breaking this
-					//one up, so that we do not break those already broken
-					pRun = pRun->getNext();
-					pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
-				}
-				else
-					pRun = pRun->getNext();
+				//we get the next run in line prior to breaking this
+				//one up, so that we do not break those already broken
+				pRun = pRun->getNext();
+				pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
 			}
+			else
+				pRun = pRun->getNext();
 		}
-
+	}
+	{
 		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(getPropertyType("orphans", Property_type_int));
 		UT_ASSERT(pOrphans);
 		m_iOrphansProperty = pOrphans->getValue();
@@ -607,8 +627,8 @@ void fl_BlockLayout::_lookupProperties(void)
 		return;
 	}
 
-	const PP_AttrProp * pBlockAP = NULL;
-	getAttrProp(&pBlockAP);
+	//const PP_AttrProp * pBlockAP = NULL;
+	//getAttrProp(&pBlockAP);
 	const XML_Char * szLid=NULL;
 	const XML_Char * szPid=NULL;
 	const XML_Char * szLevel=NULL;
