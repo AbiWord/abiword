@@ -207,7 +207,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			}
 
 			UT_cloneString(m_szFinalPathnameCandidate, szDialogFilename);
-			
+			if(szDialogFilename) FREEP(szDialogFilename);
 			// if we got here, the text wasn't a directory, so it's a file,
 			// and life is good
 			return (m_answer == a_OK);
