@@ -828,10 +828,11 @@ void PS_Graphics::_emit_IncludeResource(void)
 		// by line or in larger chunks the font data.
 		XAP_UnixFont * unixfont = psf->getUnixFont();
 		
-		//under unicode locale we do not want to ouptut the fonts, because they
-		//are huge, neither do we want to dump ttf fonts, because the screw up
-		//the PS file
-		if(unixfont->is_CJK_font() || unixfont->is_TTF_font() || XAP_EncodingManager::instance->isUnicodeLocale())
+		// TODO we want to have a checkbox in the Preferences that would allow
+		// to disable splating of the fonts into the output, since people who
+		// use Ghostscript my simply register their fonts with GS and do not
+		// need them in the document		
+		if(unixfont->is_CJK_font() /*|| unixfont->is_TTF_font() || XAP_EncodingManager::instance->isUnicodeLocale()*/)
 		  continue;
 		int match=0;
 		for(int i=0;i<fontKeyCount;++i)

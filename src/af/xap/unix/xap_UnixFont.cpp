@@ -424,17 +424,17 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 	return m_pEncodingTable;
 };
 
-bool XAP_UnixFont::_createTtfSupportFiles(ttf_file f)
+bool XAP_UnixFont::_createTtfSupportFiles()
 {
 	if(!is_TTF_font())
 		return false;
 	char fontfile[100];
-	char ttf2uafm[100];
+	char ttf2util[100];
 	char cmdline[400];
 	char buff[256];
 	
-	strcpy(ttf2uafm, XAP_App::getApp()->getAbiSuiteLibDir());
-	strcat(ttf2uafm, "/bin/ttf2uafm");
+	strcpy(ttf2util, XAP_App::getApp()->getAbiSuiteLibDir());
+	strcat(ttf2util, "/bin/ttf2uafm");
 	
 	char * dot   = strrchr(m_fontfile, '.');
 	strcpy(fontfile, m_fontfile);
@@ -443,18 +443,7 @@ bool XAP_UnixFont::_createTtfSupportFiles(ttf_file f)
 	/*	now open a pipe to the ttf2uafm program, and examine the output for
 		presence of error messages
 	*/
-	switch(f)
-	{
-		case UNIX_FONT_FILES_AFM:
-			sprintf(cmdline, "%s -f %sttf -a %safm", ttf2uafm, fontfile, fontfile);
-			break;
-		case UNIX_FONT_FILES_U2G:
-	    	sprintf(cmdline, "%s -f %sttf -u %su2g", ttf2uafm, fontfile, fontfile);
-			break;
-		default:
-			sprintf(cmdline, "%s -f %sttf -a %safm -u %su2g", ttf2uafm, fontfile, fontfile, fontfile);
-	
-	}
+	sprintf(cmdline, "%s -f %sttf -a %safm -u %su2g", ttf2util, fontfile, fontfile, fontfile);
 	
 	UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: running ttf2uafm\n\t%s", cmdline));
 	FILE * p = popen(cmdline, "r");
@@ -474,6 +463,32 @@ bool XAP_UnixFont::_createTtfSupportFiles(ttf_file f)
 		}
 	}
 	pclose(p);
+
+	/*	now do the same with ttf242 */	
+	strcpy(ttf2util, XAP_App::getApp()->getAbiSuiteLibDir());
+	strcat(ttf2util, "/bin/ttf2t42");
+	sprintf(cmdline, "%s -t %sttf -p %st42", ttf2util, fontfile, fontfile);
+	
+	UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: running ttf2t42\n\t%s", cmdline));
+	p = popen(cmdline, "r");
+	if(!p)
+	{
+		UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: unable to run ttf2t42\n"));
+		return false;
+	}
+	
+	while(!feof(p))
+	{
+		fgets(buff, 256, p);
+		if(strstr(buff, "Error"))
+		{
+			UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: ttf2t42 error:\n%s\n", buff));
+			return false;
+		}
+	}
+
+	pclose(p);
+	
 	return true;
 }
 
@@ -495,7 +510,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	*/
 	if (fp == NULL)
 	{
-		if(_createTtfSupportFiles(UNIX_FONT_FILES_BOTH))
+		if(_createTtfSupportFiles())
 			fp = fopen(m_metricfile, "r");
 	}
 	
@@ -624,8 +639,35 @@ bool XAP_UnixFont::openPFA(void)
 {
 	ASSERT_MEMBERS;
 	int peeked;
+
+	/*	If this is a ttf font rather than a pfa/pfb font, we will try to
+		open a .t42 file for the font which should have been generated
+		when the font was first used; this file contains Type 42 PS font
+		corresponding to our ttf font
+	*/	
+	char* pfafile;
+	bool  delete_pfa = false;
+	if(is_TTF_font())
+	{
+		pfafile = new char[strlen(m_fontfile)];
+		strcpy(pfafile, m_fontfile);
+		delete_pfa = true;
+		char* dot = strrchr(pfafile, '.');
+		if(dot)
+		{
+			*(dot+2) = '4';
+			*(dot+3) = '2';
+		}
+		else
+			return false;
+	}
+	else
+	{
+		pfafile = m_fontfile;
+	}
 	
-	m_PFFile = fopen(m_fontfile, "r");
+	UT_DEBUGMSG(("UnixFont::openPFA: opening file %s\n", pfafile));
+	m_PFFile = fopen(pfafile, "r");
 
 	if (!m_PFFile)
 	{
@@ -641,6 +683,8 @@ bool XAP_UnixFont::openPFA(void)
 	ungetc(peeked, m_PFFile);
 	m_PFB = peeked == PFB_MARKER;
 	m_bufpos = 0;
+	if(delete_pfa)
+		delete[] pfafile;
 	return true;
 }
 

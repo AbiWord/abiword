@@ -41,7 +41,6 @@ struct uniWidth
 	UT_uint16  width;
 };
 
-typedef enum{UNIX_FONT_FILES_AFM, UNIX_FONT_FILES_U2G, UNIX_FONT_FILES_BOTH} ttf_file;
 
 class XAP_UnixFont
 {
@@ -94,7 +93,7 @@ class XAP_UnixFont
 
 	GdkFont *				getMatchGdkFont(UT_uint32 size);
 protected:
-	bool					_createTtfSupportFiles(ttf_file t);
+	bool					_createTtfSupportFiles();
 	struct allocFont
 	{
 		UT_uint32			pixelSize;
