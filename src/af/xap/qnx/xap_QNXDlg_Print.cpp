@@ -45,14 +45,17 @@ XAP_QNXDialog_Print::XAP_QNXDialog_Print(XAP_DialogFactory * pDlgFactory,
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	m_pPrintContext = NULL;
+	m_pQNXFrame = NULL;
 }
 
 XAP_QNXDialog_Print::~XAP_QNXDialog_Print(void)
 {
+	//TODO: Clear the context here ...	
 }
 
 void XAP_QNXDialog_Print::useStart(void)
 {
+	printf("PRINT USE START \n");
 	XAP_Dialog_Print::useStart();
 
 	if (m_bPersistValid)
@@ -66,6 +69,7 @@ void XAP_QNXDialog_Print::useStart(void)
 
 void XAP_QNXDialog_Print::useEnd(void)
 {
+	printf("PRINT USE START \n");
 	XAP_Dialog_Print::useEnd();
 
 	m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
@@ -79,22 +83,28 @@ void XAP_QNXDialog_Print::useEnd(void)
 
 GR_Graphics * XAP_QNXDialog_Print::getPrinterGraphicsContext(void)
 {
-#if 0
-	UT_ASSERT(m_answer == a_OK && m_pPrintContext);
+	printf("PRINT getPrinterGraphicsContext \n");
+	UT_ASSERT(m_answer == a_OK);
+	UT_ASSERT(m_pQNXFrame);
+	UT_ASSERT(m_pPrintContext);
 
-	return m_pPrintContext;
-#endif
-	return NULL;
+	GR_QNXGraphics *gr = (GR_QNXGraphics *)m_pQNXFrame->getGraphics();
+	gr->setPrintContext(m_pPrintContext);
+
+	/* Return the same graphics as we used for the screen */
+	return m_pQNXFrame->getGraphics();
 }
 
 void XAP_QNXDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pContext)
 {
-#if 0
-	if (m_pPrintContext) {
-		PpPrintStop(m_pPrintContext);
-		PpPrintClost(m_pPrintContext);
-	}
-#endif
+	printf("PRINT releasePrinterGraphicsContext \n");
+	UT_ASSERT(m_pQNXFrame);
+	UT_ASSERT(m_pPrintContext);
+
+	GR_QNXGraphics *gr = (GR_QNXGraphics *)m_pQNXFrame->getGraphics();
+	gr->setPrintContext(NULL);
+	PpPrintReleasePC(m_pPrintContext);
+	m_pPrintContext = NULL;
 }
 
 /*****************************************************************/
@@ -108,154 +118,92 @@ void XAP_QNXDialog_Print::runModal(XAP_Frame * pFrame)
 	// bothering the user.
 	if (m_bPersistValid && m_bBypassActualDialog) {
 		m_answer = a_OK;
-		_getGraphics();
 	}
-	else
-	{
+	else {
 		_raisePrintDialog(pFrame);		
-		if (m_answer == a_OK)
-			_getGraphics();
 	}
-
-	m_pQNXFrame = NULL;
 }
 
 void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
-		if (!m_bPersistValid)		// first time called
-		{
-			m_persistPrintDlg.bEnablePrintToFile = m_bEnablePrintToFile;
-			m_persistPrintDlg.bEnablePageRange = m_bEnablePageRange;
-			m_persistPrintDlg.bEnableSelection = m_bEnablePrintSelection;
-			m_persistPrintDlg.nFromPage = m_nFirstPage;
-			m_persistPrintDlg.nToPage = m_nLastPage;
-			// The first time through, grab the settings and set min and max for range checking
-			m_persistPrintDlg.nMinPage = m_nFirstPage;
-			m_persistPrintDlg.nMaxPage = m_nLastPage;
+	printf("PRINT _raisePrintDialog \n");
+	if (!m_bPersistValid) {		// first time called
+		m_persistPrintDlg.bEnablePrintToFile = m_bEnablePrintToFile;
+		m_persistPrintDlg.bEnablePageRange = m_bEnablePageRange;
+		m_persistPrintDlg.bEnableSelection = m_bEnablePrintSelection;
+		m_persistPrintDlg.nFromPage = m_nFirstPage;
+		m_persistPrintDlg.nToPage = m_nLastPage;
+		// The first time through, grab the settings and set min and max for range checking
+		m_persistPrintDlg.nMinPage = m_nFirstPage;
+		m_persistPrintDlg.nMaxPage = m_nLastPage;
+	}
 
-		}
+	if (m_pPrintContext) {
+		PpPrintReleasePC(m_pPrintContext);
+	}
 
-#if 0
-		char str[30];
-		sprintf(str, "%d", m_persistPrintDlg.nFromPage);
-		gtk_entry_set_text (GTK_ENTRY (entryFrom), str);
-		sprintf(str, "%d", m_persistPrintDlg.nToPage);
-		gtk_entry_set_text (GTK_ENTRY (entryTo), str);
-#endif
-
-	// get top level window and it's GtkWidget *
-	XAP_QNXFrame * frame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(frame);
-
+	/*TODO: Map the user choices from persistPrintDlg to the current dialog */
 
 	int value;
 
 	m_pPrintContext = PpPrintCreatePC();
 	UT_ASSERT(m_pPrintContext);
+	value = PtPrintSelection(m_pQNXFrame->getTopLevelWindow(), 		/* Parent widget */
+					 		 NULL, 									/* Position on the screen */
+					 		 NULL, 									/* Title */
+					 		 m_pPrintContext, 						/* Print context */
+					 		 Pt_PRINTSEL_ALL_PANES); 				/* Flags */
 
-	value = PtPrintSelection(frame->getTopLevelWindow(), 		/* Parent widget */
-					 		 NULL, 		/* Position on the screen */
-					 		 NULL, 		/* Title */
-					 		 m_pPrintContext, 	/* Print context */
-					 		 Pt_PRINTSEL_ALL_PANES); /* Flags */
 	m_answer = a_CANCEL;
 
 	if (value == Pt_PRINTSEL_CANCEL) {
-		PpPrintClose(m_pPrintContext);
+		PpPrintReleasePC(m_pPrintContext);
 		m_pPrintContext = NULL;
 		return;	
 	}
-		
 
 	m_answer = a_OK;
 
 	if (value == Pt_PRINTSEL_PRINT) {
-		m_bDoPrintRange		= 0;
-		m_bDoPrintSelection = 0;
-		m_bDoPrintToFile	= 0;
-		m_bCollate			= 0;
-		m_nCopies			= 1;
+		UT_uint32 first = 0, last = 0;
+		char *option;
+
+		PpPrintGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&option);
+		printf("Range is set to [%s] \n", (option) ? option : "NULL");
+		if (!option || !*option || strcmp(option, "all") == 0) {
+			m_bDoPrintRange		= UT_FALSE;
+			m_bDoPrintSelection = UT_FALSE;
+		}
+		else if (strcmp(option, "selection") == 0) {
+			m_bDoPrintRange		= UT_FALSE;
+			m_bDoPrintSelection = UT_TRUE;
+		}
+		else {	//Must be a range in 1[-2][,3-6][,10-] notation
+			m_bDoPrintRange = UT_TRUE;
+			m_bDoPrintSelection = UT_FALSE;
+			//Punt for now only accept %d-%d format
+			sscanf(option, "%d-%d", &first, &last);
+			printf("Got range from %d to %d \n", first, last);
+		}
+
+		m_bDoPrintToFile	= UT_FALSE;	//Let photon take care of this
+		m_bCollate			= UT_FALSE; //Pp_PC_COLLATING_MODE
+		
+		PpPrintGetPC(m_pPrintContext, Pp_PC_COPIES, (const void **)&option);
+		m_nCopies			= __max(strtoul(option, NULL, 10), 1);
+		printf("Printing %d copies [%s] \n", m_nCopies, option);
 
 		if (m_bDoPrintRange) {
-			UT_uint32 first = 0;
 			if (first < m_persistPrintDlg.nMinPage) {
 				first = m_persistPrintDlg.nMinPage;
 			}
 
-			UT_uint32 last = 0;
 			if (last > m_persistPrintDlg.nMaxPage) {
 				last = m_persistPrintDlg.nMaxPage;
 			}
 			
-			m_nFirstPage = MyMin(first,last);
-			m_nLastPage = MyMax(first,last);
+			m_nFirstPage = __min(first,last);
+			m_nLastPage = __max(first,last);
 		}
 	}
-
-	return;
-}
-
-void XAP_QNXDialog_Print::_getGraphics(void)
-{
-	printf("TODO: _getGraphics \n");
-	m_answer = a_CANCEL;
-
-#if 0
-	UT_ASSERT(m_answer == a_OK);
-
-	XAP_App * app = m_pQNXFrame->getApp();
-	UT_ASSERT(app);
-	
-	XAP_QNXApp * unixapp = static_cast<XAP_QNXApp *> (app);
-	UT_ASSERT(unixapp);
-
-	if (m_bDoPrintToFile)
-	{
-		printf("TODO: Print to a file \n");
-#if 0
-		// we construct a suggested pathname for the print-to-file pathname.
-		// we append a .print to the string.  it would be better to append
-		// a .ps or whatever, but we don't know what the technology/language
-		// of the device is....
-		
-		char bufSuggestedName[1030];
-		memset(bufSuggestedName,0,sizeof(bufSuggestedName));
-
-		sprintf(bufSuggestedName,"%s.ps",m_szDocumentPathname);
-		if (!_getPrintToFilePathname(m_pQNXFrame,bufSuggestedName))
-			goto Fail;
-
-		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
-										m_pQNXFrame->getApp()->getApplicationName(),
-										fontmgr,
-										UT_TRUE);
-#endif
-		m_answer = a_CANCEL;
-		return;	
-	}
-	else
-	{		
-		int value;
-
-		m_pPrintContext = PpPrintContextCreatePC();
-		UT_ASSERT(m_pPrintContext);
-
-		value = PtPrintSelection(NULL, 		/* Parent widget */
-						 		 NULL, 		/* Position on the screen */
-						 		 NULL, 		/* Title */
-						 		 m_pPrintContext, 	/* Print context */
-						 		 Pt_PRINTSEL_ALL_PANES); /* Flags */
-
-		if (value == Pt_PRINTSEL_CANCEL) {
-			PpPrintClose(m_pPrintContext);
-			m_pPrintContext = NULL;
-			m_answer = a_CANCEL;
-			return;	
-		}
-		
-	}
-
-	m_answer = a_OK;
-	return;
-#endif
 }

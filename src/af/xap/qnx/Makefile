@@ -20,7 +20,9 @@
 
 ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_ROOT)/src/config/abi_defs.mk
+#This is very bad
+#include $(ABI_ROOT)/src/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		xap_QNXApp.cpp				\
 			xap_QNXClipboard.cpp			\

@@ -24,6 +24,7 @@
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_QNXDialogFactory.h"
+#include "gr_QNXGraphics.h"
 #include <Pt.h>
 
 class XAP_QNXApp;
@@ -66,6 +67,7 @@ public:
 	PtWidget_t *				getTopLevelWindow(void) const;	//Get the Window widget
 	PtWidget_t *				getVBoxWidget(void) const;		//Less than usefull 
 	PtWidget_t *				getTBGroupWidget(void) const;	//Get the Toolbar Group widget
+	GR_Graphics * 				getGraphics(void);				//Get the document graphics context
 	
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;

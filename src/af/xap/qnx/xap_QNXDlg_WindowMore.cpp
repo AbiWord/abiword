@@ -139,7 +139,7 @@ void XAP_QNXDialog_WindowMore::runModal(XAP_Frame * pFrame)
    while(!done) {
            PtProcessEvent();
    }
-   PtModalEnd(count);	
+   PtModalEnd(MODAL_END_ARG(count));	
 }
 
 void XAP_QNXDialog_WindowMore::event_OK(void)

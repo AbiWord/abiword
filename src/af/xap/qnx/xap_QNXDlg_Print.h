@@ -49,7 +49,6 @@ protected:
 	PpPrintContext_t  		*m_pPrintContext;
 
 	void					_raisePrintDialog(XAP_Frame * pFrame);
-	void					_getGraphics(void);
 
 	struct {
 		// add various fields here to persist between uses of the dialog....

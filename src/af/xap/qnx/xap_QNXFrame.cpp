@@ -34,6 +34,10 @@
 #include "ev_EditMethod.h"
 #include "xav_View.h"
 #include "xad_Document.h"
+#include "ut_qnxHelper.h"
+
+//THIS IS BAD!!!
+#include "ap_FrameData.h"
 
 /*****************************************************************/
 
@@ -350,6 +354,10 @@ PtWidget_t * XAP_QNXFrame::getTBGroupWidget(void) const
 	return m_wTBGroup;
 }
 
+GR_Graphics * XAP_QNXFrame::getGraphics() {
+	return(((AP_FrameData*)m_pData)->m_pG);
+}
+
 
 XAP_DialogFactory * XAP_QNXFrame::getDialogFactory(void)
 {
@@ -524,7 +532,7 @@ UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * sz
 		while (getPopupDone() == 0) {
 			PtProcessEvent();
 		}	
-		PtModalEnd(level);
+		PtModalEnd(MODAL_END_ARG(level));
 	}
 	DELETEP(m_pQNXPopup);
 

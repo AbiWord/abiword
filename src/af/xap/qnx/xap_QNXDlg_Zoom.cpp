@@ -215,7 +215,7 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 	while(!done) {
 		PtProcessEvent();
 	}
-	PtModalEnd(count);
+	PtModalEnd(MODAL_END_ARG(count));
 
 	_storeWindowData();
 	
