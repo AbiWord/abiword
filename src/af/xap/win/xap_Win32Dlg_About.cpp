@@ -66,14 +66,14 @@ XAP_Win32Dialog_About::~XAP_Win32Dialog_About(void)
 }
 
 #define ABOUT_WIDTH			500
-#define	ABOUT_HEIGHT		400
+#define	ABOUT_HEIGHT		390
 #define BUTTON_WIDTH		64
 #define BUTTON_HEIGHT		24
 #define BUTTON_GAP			10
 #define HEADING_HEIGHT		36
 #define VERSION_HEIGHT		24
 #define COPYRIGHT_HEIGHT	24
-#define GPL_HEIGHT			160
+#define GPL_HEIGHT			200
 
 #define	ID_BUTTON_URL	3000
 

@@ -47,6 +47,12 @@ CFLAGS +=		-Zm1000
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
+ifdef ABISOURCE_LICENSED_TRADEMARKS
+GRAPHICNAME=setup_tm.png
+else
+GRAPHICNAME=setup.png
+endif
+
 ##################################################################
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
@@ -54,8 +60,9 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 $(OBJDIR)/data.c:	abisuite.ask $(BINDIR)/ask_gendata.exe $(BINDIR)/askrm.exe
 	rm -f $(OBJDIR)/_tmp_.ask
 	sed -e 's|__CANONDIR__|$(CANONDIR)|g' abisuite.ask > $(OBJDIR)/_tmp1_.ask
-	sed -e 's|__BINDIR__|$(BINDIR)|g' $(OBJDIR)/_tmp1_.ask > $(OBJDIR)/_tmp_.ask
-	$(BINDIR)/ask_gendata.exe $(OBJDIR)/_tmp_.ask $(OBJDIR)/_tmp_.c
+	sed -e 's|__BINDIR__|$(BINDIR)|g' $(OBJDIR)/_tmp1_.ask > $(OBJDIR)/_tmp2_.ask
+	sed -e 's|__GRAPHICNAME__|$(GRAPHICNAME)|g' $(OBJDIR)/_tmp2_.ask > $(OBJDIR)/_tmp3_.ask
+	$(BINDIR)/ask_gendata.exe $(OBJDIR)/_tmp3_.ask $(OBJDIR)/_tmp_.c
 	mv $(OBJDIR)/_tmp_.c $(OBJDIR)/data.c
 
 $(PROGRAM): $(OBJS)

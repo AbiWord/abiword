@@ -22,7 +22,7 @@
 <datafile name="__CANONDIR__/AbiWord/strings/FiFI.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/DuNL.strings" relpath="AbiWord/strings" />
 
-<datafile name="setup.png" graphic="true" nocopy="true" />
+<datafile name="__GRAPHICNAME__" graphic="true" nocopy="true" />
 
 </fileset>
 
