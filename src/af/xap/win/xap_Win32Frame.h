@@ -74,6 +74,8 @@ public:
 	virtual EV_Menu*			getMainMenu();
 			void				queue_resize();
 
+	virtual void				rebuildToolbar(UT_uint32 ibar);
+
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;

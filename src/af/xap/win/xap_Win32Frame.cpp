@@ -962,3 +962,7 @@ void XAP_Win32Frame::queue_resize()
 {
 	::SendMessage(m_hwndFrame, WM_SIZE, 0, MAKELONG(m_iRealSizeWidth, m_iRealSizeHeight));
 }
+
+void XAP_Win32Frame::rebuildToolbar(UT_uint32 ibar)
+{
+}
