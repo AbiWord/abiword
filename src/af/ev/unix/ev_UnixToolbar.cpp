@@ -254,6 +254,7 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
+	gtk_toolbar_set_space_style(GTK_TOOLBAR (m_wToolbar), GTK_TOOLBAR_SPACE_LINE);
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
