@@ -29,4 +29,5 @@
 // TODO decide if we want to ifdef these...
 
 #include "ap_Menu_LabelSet_EnUS.h"
+#include "ap_Menu_LabelSet_FiFI.h"
 
