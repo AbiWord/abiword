@@ -33,7 +33,7 @@ public:
 		
 		bool		 	suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg);
 		
-		
+		bool checkWord(const UT_UCSChar * word32, size_t length);
 		
 		/* 
 			Implementation of UT_XML::Listener

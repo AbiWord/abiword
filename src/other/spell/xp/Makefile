@@ -27,14 +27,14 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 #dummy initialization
 CSRCS=
-CPPSRCS= spell_manager.cpp
+CPPSRCS= spell_manager.cpp barbarisms.cpp
 
 ifeq ($(ABI_OPT_PSPELL),1)
 	CPPSRCS+= pspell_checker.cpp
 else
 	CSRCS=	good.c tgood.c lookup.c makedent.c hash.c \
 correct.c 
-	CPPSRCS+= ispell_checker.cpp barbarisms.cpp
+	CPPSRCS+= ispell_checker.cpp
 endif
 
 LIBRARY_NAME=		AbiSpell

@@ -92,7 +92,6 @@ private:
     void operator=(const SpellChecker&);	// no impl
 };
 
-
 class SpellManager
 {
 public:	

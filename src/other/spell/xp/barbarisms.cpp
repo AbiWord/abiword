@@ -65,7 +65,18 @@ bool Barbarisms::load(const char *szHash)
 	return true;
 }
 
+/**
+ * True if word is a barbarsim, false if not
+ */
+bool Barbarisms::checkWord(const UT_UCSChar * word32, size_t length)
+{
+	UT_UTF8String stUTF8;			 
+	stUTF8.appendUCS4(word32, length);
+	
+	// TODO: capitalization issues
 
+	return (m_map.pick(stUTF8.utf8_str()) != NULL);
+}
 
 /*
 	Looks for a exact case maching of the suggestion

@@ -156,6 +156,9 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
     if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return SpellChecker::LOOKUP_FAILED;
 
+    if (m_barbarism.checkWord (word32, length))
+      return SpellChecker::LOOKUP_FAILED; // is a barbarism, should be squiggled
+
     if(!UT_iconv_isValid(m_pISpellState->translate_in))
       return SpellChecker::LOOKUP_FAILED;
     else
