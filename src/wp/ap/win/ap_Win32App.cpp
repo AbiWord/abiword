@@ -755,7 +755,10 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 			// Note: we do not call TranslateMessage() because
 			// Note: the keybinding mechanism is responsible
 			// Note: for deciding if/when to do this.
-				
+
+			if( pMyWin32App->handleModelessDialogMessage( &msg ) )
+				continue;
+
 			DispatchMessage(&msg);
 		}
 	}
@@ -909,4 +912,29 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 UT_Error AP_Win32App::fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 {
 	return ::fileOpen(pFrame, pNewFile, IEFT_Unknown);
+}
+
+UT_Bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
+{
+	int iCounter;
+	HWND hWnd = NULL;
+
+	// Try to knock off the easy case quickly
+	if( m_IdTable[ 0 ].id == -1 )
+		return UT_FALSE;
+
+    for( iCounter = 0; iCounter <= NUM_MODELESSID; iCounter++ )
+	{
+		if( m_IdTable[ iCounter ].id != -1 )
+		{
+			hWnd = (HWND)m_IdTable[ iCounter ].pDialog->pGetWindowHandle();
+
+			if( hWnd && IsDialogMessage( hWnd, msg ) )
+				return UT_TRUE;
+		}
+		else
+			break;
+	}
+
+	return UT_FALSE;
 }

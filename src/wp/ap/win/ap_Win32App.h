@@ -63,6 +63,8 @@ public:
 
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile);
 	
+	UT_Bool handleModelessDialogMessage( MSG * msg );
+
 protected:
 	XAP_StringSet *			m_pStringSet;
 	AP_Win32Clipboard *		m_pClipboard;

@@ -47,6 +47,8 @@ AP_Win32Dialog_WordCount::AP_Win32Dialog_WordCount(XAP_DialogFactory * pDlgFacto
 										 XAP_Dialog_Id id)
 	: AP_Dialog_WordCount(pDlgFactory,id)
 {
+	m_bAutoWC = 1;
+	m_iUpdateRate = 1;
 }
 
 AP_Win32Dialog_WordCount::~AP_Win32Dialog_WordCount(void)
@@ -73,6 +75,126 @@ void AP_Win32Dialog_WordCount::runModal(XAP_Frame * pFrame)
 	UT_ASSERT((result != -1));
 }
 
+void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
+{
+	// raise the dialog
+	int iResult;
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+
+	LPCTSTR lpTemplate = NULL;
+
+	UT_ASSERT(m_id == AP_DIALOG_ID_WORDCOUNT);
+
+	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
+
+	// Change the third argument to
+	// pWin32Frame->getTopLevelWindow(),
+	// if you want the dialog to stay on top of the Abi windows
+	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+								GetDesktopWindow(),
+								(DLGPROC)s_dlgProc,(LPARAM)this);
+
+	UT_ASSERT((hResult != NULL));
+
+	m_hWnd = hResult;
+
+	// Save dialog the ID number and pointer to the widget
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+	iResult = ShowWindow( m_hWnd, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
+}
+
+void    AP_Win32Dialog_WordCount::setUpdateCounter( UT_uint32 iRate )
+{
+	UT_uint32 iFactor = 1000;
+
+	m_bDestroy_says_stopupdating = UT_FALSE;
+	m_bAutoUpdate_happening_now = UT_FALSE;
+
+	// Make a special case for 0 seconds in
+	// an attempt to reduce screen flicker
+	if( iRate == 0 )
+		iFactor = 100;
+
+	m_pAutoUpdateWC->stop();
+
+	if(m_bAutoWC == UT_TRUE)
+		m_pAutoUpdateWC->set(m_iUpdateRate * iFactor);
+}         
+
+void    AP_Win32Dialog_WordCount::autoupdateWC(UT_Timer * pTimer)
+{
+	UT_ASSERT(pTimer);
+
+	// this is a static callback method and does not have a 'this' pointer.
+
+	AP_Win32Dialog_WordCount * pDialog =  (AP_Win32Dialog_WordCount *) pTimer->getInstanceData();
+
+	// Handshaking code
+
+	if( pDialog->m_bDestroy_says_stopupdating != UT_TRUE)
+	{
+		pDialog->m_bAutoUpdate_happening_now = UT_TRUE;
+		pDialog->event_Update();
+		pDialog->m_bAutoUpdate_happening_now = UT_FALSE;
+	}
+}        
+
+void AP_Win32Dialog_WordCount::event_Update(void)
+{
+	setCountFromActiveFrame();
+	_updateWindowData();
+}
+
+void AP_Win32Dialog_WordCount::destroy(void)
+{
+	m_bDestroy_says_stopupdating = UT_TRUE;
+	while (m_bAutoUpdate_happening_now == UT_TRUE) ;
+	m_pAutoUpdateWC->stop();
+
+	int iResult = DestroyWindow( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
+
+	modeless_cleanup();
+}
+
+void AP_Win32Dialog_WordCount::activate(void)
+{
+	int iResult;
+	XAP_Frame *	pFrame = getActiveFrame();
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(m_hWnd, m_WindowName);
+
+	iResult = ShowWindow( m_hWnd, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
+
+	iResult = BringWindowToTop( pWin32Frame->getTopLevelWindow() );
+
+	UT_ASSERT((iResult != 0));
+}
+
+void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
+{
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(m_hWnd, m_WindowName);
+
+	event_Update();
+}
+
 BOOL CALLBACK AP_Win32Dialog_WordCount::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
 	// This is a static function.
@@ -88,8 +210,17 @@ BOOL CALLBACK AP_Win32Dialog_WordCount::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 		
 	case WM_COMMAND:
 		pThis = (AP_Win32Dialog_WordCount *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
+		if (pThis)
+			return pThis->_onCommand(hWnd,wParam,lParam);
+		else
+			return 0;
 		
+	case WM_VSCROLL:
+		pThis = (AP_Win32Dialog_WordCount *)GetWindowLong(hWnd,DWL_USER);
+		pThis->setUpdateCounter( (UT_uint32)HIWORD(wParam) );
+		pThis->event_Update();
+		return 1;
+
 	default:
 		return 0;
 	}
@@ -103,10 +234,31 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle));
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(hWnd, m_WindowName);
+
+	// Set the starting rate a 1 update/second
+	SetDlgItemInt(hWnd, AP_RID_DIALOG_WORDCOUNT_EDIT_RATE, 1, FALSE );
+
+	// Set the range for auto-updating to 0-10
+	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_WORDCOUNT_SPIN_RATE),UDM_SETRANGE,(WPARAM)0,(WPARAM)10);
+	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_WORDCOUNT_EDIT_RATE),EM_LIMITTEXT,(WPARAM)2,(WPARAM)0);
+
+	EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_WORDCOUNT_BTN_UPDATE), !m_bAutoWC );
+	if( m_bAutoWC )
+		CheckDlgButton(hWnd, AP_RID_DIALOG_WORDCOUNT_CHK_AUTOUPDATE, BST_CHECKED);
+
+	GR_Graphics * pG = NULL;
+	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this,pG);
+	setUpdateCounter( 1 );
 
 	// localize controls
 	_DSX(WORDCOUNT_BTN_CLOSE,		DLG_Close);
+	_DSX(WORDCOUNT_BTN_UPDATE,		DLG_Update);
+
+	_DS(WORDCOUNT_CHK_AUTOUPDATE,	DLG_WordCount_Auto_Update);
+	_DS(WORDCOUNT_TEXT_RATE,		DLG_WordCount_Update_Rate);
 
 	_DS(WORDCOUNT_TEXT_STATS,		DLG_WordCount_Statistics);
 	_DS(WORDCOUNT_TEXT_PAGE,		DLG_WordCount_Pages);
@@ -127,17 +279,46 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	return 1;							// 1 == we did not call SetFocus()
 }
 
+void AP_Win32Dialog_WordCount::_updateWindowData(void)
+{
+	HWND hWnd = m_hWnd;
+
+	_DSI(WORDCOUNT_VAL_PAGE,		page);
+	_DSI(WORDCOUNT_VAL_WORD,		word);
+	_DSI(WORDCOUNT_VAL_CH,			ch_no);
+	_DSI(WORDCOUNT_VAL_CHSP,		ch_sp);
+	_DSI(WORDCOUNT_VAL_PARA,		para);
+	_DSI(WORDCOUNT_VAL_LINE,		line);
+
+	// Update the caption in case the name of the document has changed
+	ConstructWindowName();
+	SetWindowText(hWnd, m_WindowName);
+}
+
 BOOL AP_Win32Dialog_WordCount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
+	XAP_Frame *	pFrame = getActiveFrame();
 
 	switch (wId)
 	{
 	case IDCANCEL:						// also AP_RID_DIALOG_WORDCOUNT_BTN_CLOSE
 		m_answer = a_CANCEL;
-		EndDialog(hWnd,0);
+		destroy();
+		return 1;
+
+	case AP_RID_DIALOG_WORDCOUNT_BTN_UPDATE:
+		notifyActiveFrame(pFrame);
+		return 1;
+
+	case AP_RID_DIALOG_WORDCOUNT_CHK_AUTOUPDATE:
+		m_bAutoWC = !m_bAutoWC;
+		EnableWindow( GetDlgItem(m_hWnd,AP_RID_DIALOG_WORDCOUNT_BTN_UPDATE), !m_bAutoWC );
+		EnableWindow( GetDlgItem(m_hWnd,AP_RID_DIALOG_WORDCOUNT_EDIT_RATE), m_bAutoWC );
+		EnableWindow( GetDlgItem(m_hWnd,AP_RID_DIALOG_WORDCOUNT_SPIN_RATE), m_bAutoWC );
+		setUpdateCounter( m_iUpdateRate );
 		return 1;
 
 	default:							// we did not handle this notification

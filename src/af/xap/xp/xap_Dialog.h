@@ -148,6 +148,9 @@ public:
         char *                                  BuildWindowName( char* pWindowName, char* pDialogName, UT_sint32 width);
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 	
+	// ugly hack necessary for Win32
+	virtual void *				pGetWindowHandle(void) { return NULL; }
+
 protected:
         XAP_Dialog_Modeless *                    m_pDialog;
 };

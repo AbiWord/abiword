@@ -20,7 +20,10 @@
 #ifndef AP_WIN32DIALOG_WORDCOUNT_H
 #define AP_WIN32DIALOG_WORDCOUNT_H
 
+#include <commctrl.h>
 #include "ap_Dialog_WordCount.h"
+#include "ut_timer.h"
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -33,18 +36,32 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	virtual void			runModeless(XAP_Frame * pFrame){};
-	virtual void			destroy(void){};
-	virtual void			activate(void){};
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame) {};
+	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			destroy(void);
+	virtual void			activate(void);
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame) {};
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static void				autoupdateWC(UT_Timer * pTimer);
+	virtual void			setUpdateCounter( UT_uint32 );
+	virtual void			event_Update(void);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	void *					pGetWindowHandle( void ) { return (void*)m_hWnd; }
 	
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	void 					_updateWindowData(void);       
+
+	HWND                    m_hWnd;
+	UT_Bool					m_bAutoWC;
+
+	UT_Timer *				m_pAutoUpdateWC;
+	UT_Bool					m_bDestroy_says_stopupdating;
+	UT_Bool					m_bAutoUpdate_happening_now;
+	UT_uint32				m_iUpdateRate;
 };
 
 #endif /* AP_WIN32DIALOG_WORDCOUNT_H */
