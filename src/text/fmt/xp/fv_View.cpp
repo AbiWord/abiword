@@ -3389,7 +3389,12 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 								&pRun);
 		}
 	}
-
+	if(pBlock == NULL)
+	{
+		static const char * pszTmp[2] = {NULL,NULL};
+		*pProps = pszTmp;
+		return false;
+	}
 	UT_uint32 blockPosition = pBlock->getPosition();
 	if(blockPosition > posStart)
 	{
