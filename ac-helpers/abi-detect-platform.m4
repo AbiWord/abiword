@@ -22,6 +22,10 @@
 
 AC_DEFUN([ABI_DETECT_PLATFORM], [
 
+dnl require that this is called, so we can make use of $GCC to test
+dnl whether we're using a gcc-variant or not.
+AC_REQUIRE([AC_PROG_CC])
+
 ##################################################################
 ##################################################################
 # OS_NAME is the output of uname -s minus any forward slashes
@@ -126,17 +130,80 @@ fi
 # OS_RELEASE = something like '2.4.1'
 # Additionally, there may be info about Cygwin versions.
 
-dnl TODO It would be nice to eventually add -Werror
-dnl FIXME these flags are gcc-specific, and need to be fixed
-dnl actually MacOS X build does not want some of them because of 
-dnl precompiled Mac headers.... with Apple's GCC.
-dnl 
+dnl why not call AC_CANONICAL_HOST or AC_CANONICAL_SYSTEM and
+dnl use those values instead?
 case "$OS_NAME" in 
-	MACOSX) WARNING_CFLAGS="" ;;
-	*BSD)   WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe" ;;
-	SunOS)  WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe -D__EXTENSIONS__ -DSCANDIR_MISSING -DSunOS";;
-	OSF1)   WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -D_OSF_SOURCE -D_XOPEN_SOURCE_EXTENDED -DAES_SOURCE" ;;
-	*)      WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe" ;;
+	MACOSX)
+		# the default for MacOS X is to no enable warnings with
+		# the Apple-derived gcc.
+		WARNING_CFLAGS=""
+		;;
+	*BSD)
+		WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
+		;;
+	IRIX*)
+		case "$GCC" in
+			yes)
+				WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -pipe"
+			;;
+			no)
+				# the default with the IRIX compiler is for warnings to be
+				# on.  You can turn individual warnings off using the
+				# `-woff #' directive to the MIPSpro compiler.
+				WARNING_CFLAGS=""
+			;;
+		esac
+		;;
+	SunOS)
+		case "$GCC" in
+			yes)
+				# why -D_BSD_SOURCE?
+				WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
+				WARNING_CFLAGS="$WARNING_CFLAGS -D__EXTENSIONS__ -DSCANDIR_MISSING -DSunOS"
+			;;
+			no)
+				# the default with the SparcWorks 5.x and Forte 6.x and
+				# later is for all warnings to be on.  See the
+				# -erroff and -errtags section of the cc man page.
+				WARNING_CFLAGS=""
+			;;
+		esac
+		;;
+	OSF1)
+		case "$GCC" in
+			yes)
+				WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -D_OSF_SOURCE -D_XOPEN_SOURCE_EXTENDED -DAES_SOURCE"
+			;;
+			no)
+				# the DEC/Compaq compiler has a plethora of options related
+				# to warnings.  Enabling `-portable' and then turning off
+				# specific, annoying warnings may be the easiest way to go.
+				# some versions of the compiler under 4.x might not have
+				# supported `-portable', so leave WARNING_CFLAGS empty in
+				# that case
+				case "$OS_RELEASE" in
+					V5*)
+						no_msg='hexoctunsign,switchlong,valuepres'
+						WARNING_CFLAGS="-portable -msg_disable $no_msg"
+						no_msg=''
+					;;
+					*) WARNING_CFLAGS=""
+					;;
+				esac
+			;;
+		esac
+		;;
+	*)
+		case "$GCC" in
+			yes)
+				WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE"
+				WARNING_CFLAGS="$WARNING_CFLAGS -D_BSD_SOURCE -pipe"
+			;;
+			no)
+				WARNING_CFLAGS=""
+			;;
+		esac
+		;;
 esac
 
 # huge nasty case statement to actually pick the platform
