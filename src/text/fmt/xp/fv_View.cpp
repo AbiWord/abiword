@@ -663,6 +663,34 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 	notifyListeners(AV_CHG_MOTION);
 }
 
+void FV_View::moveInsPtTo(PT_DocPosition dp)
+{
+	if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+	
+	if (dp != _getPoint())
+	{
+		_clearPointAP(UT_TRUE);
+	}
+
+	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ UT_FALSE);  // is this bool correct?
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+	notifyListeners(AV_CHG_MOTION);
+}
+
+
 void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 {
 	if (!isSelectionEmpty())
@@ -1597,67 +1625,91 @@ void FV_View::findReset(void)
 	
 }
 
+/*
+  This needs to be far more readable, starting with tossing the
+  goto call.
+*/
 UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 {
 	UT_ASSERT(string);
-
-	UT_GrowBuf * buffer;
+	UT_ASSERT(UT_UCS_strlen(string) > 0);
+	
+	UT_GrowBuf buffer;
 	fl_BlockLayout * block;
 
 	// get the block
 	block = _findGetCurrentBlock();
 
-	// we do hold a local start position, so we know when we've
-	// done the entire document, and when to stop
-	//PT_DocPosition;
-		
+	// Hold a local "started at which block" so we can bail on
+	// one full rotation.  This may have to change; right now
+	// it depends on a document block never starting at 0.  
+	PT_DocPosition cycleBeganAt = 0;	// magic number
+	
 	// search it
-	while (block)
+	while (block && cycleBeganAt != block->getPosition(UT_FALSE))
 	{
+		if (!cycleBeganAt)
+			cycleBeganAt = block->getPosition(UT_FALSE);
+		
 		UT_DEBUGMSG(("Got a block at cursor position [%d].\n", m_iFindCur));
 
-		buffer = new UT_GrowBuf;
-		
 		// read its buffer and look for substring via dumb search
-		if (block->getBlockBuf(buffer))
+		if (block->getBlockBuf(&buffer))
 		{
-			// search starting at last place you stopped
-			UT_UCSChar * foundAt = UT_UCS_strstr((const UT_UCSChar *) buffer->getPointer(m_iFindBufferOffset), string);
+			// TODO: non-case-sensitive searches
+
+			UT_UCSChar * foundAt = NULL;
+		   
+			// search starting at last place you stopped, but not if you've exhausted
+			// this buffer, then move to next
+			if (m_iFindBufferOffset < buffer.getLength())
+				foundAt = UT_UCS_strstr((const UT_UCSChar *) buffer.getPointer(m_iFindBufferOffset), string);
+			else
+				// this has gotta go
+				goto FetchNextBlock;
+			
 
 			if (foundAt)
 			{
-				// increment by the offset within the buffer block at which the substring was found,
-				// then add one so subsequent searches progress
-				m_iFindBufferOffset = (foundAt - buffer->getPointer(0));
+				// increment by the offset within the buffer block at which the substring was found
+				m_iFindBufferOffset = (foundAt - buffer.getPointer(0));
 				
 				UT_DEBUGMSG(("Found substring [%d] chars into buffer.\n", m_iFindBufferOffset));
 
 				PT_DocPosition newPoint = m_iFindBufferOffset + m_iFindCur;
+
+				UT_DEBUGMSG(("Moving cursor to document position [%d], offset in buffer [%d] characters.\n",
+							 newPoint, newPoint - m_iFindCur));
 				
-				// update the screen insertion point
-				_setPoint(newPoint);
-				
-				// this could get ugly, and should be optimized out
-				draw();
+				// update document cursor
+				moveInsPtTo(newPoint);
 
 				if (bSelect)
 				{
+					UT_DEBUGMSG(("Extending selection [%d] characters.\n", UT_UCS_strlen(string)));
 					extSelHorizontal(UT_TRUE, UT_UCS_strlen(string));
 				}
+						
+				// this could get ugly, and should be optimized out
+				draw();
 
 				// increment the buffer offset by 1 for next round, so we
 				// start at current find + 1... this could be changed
 				// so it increments by strlen(searchstring) so that we
-				// start after the whole substring
+				// start after the whole substring.
+				// Note that the code that uses this value will have to
+				// be smart with it, so that a search isn't started
+				// at end of buffer, etc.
 				m_iFindBufferOffset++;
-				
-				if (buffer)
-					delete buffer;
+
+				// wipe the old buffer, since we're done with it
+				buffer.truncate(0);//(0, buffer.getLength());
 				
 				return UT_TRUE;
 			}
 			else
 			{
+			FetchNextBlock:				
 				// the string wasn't found in the remaining part of the buffer, so
 				// fetch the next block
 				UT_Bool bWrapped = UT_FALSE;
@@ -1682,16 +1734,17 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 					UT_DEBUGMSG(("Wrapped around end of search area.\n"));
 					// TODO: fire off some "you just got wrapped" message box
 				}
+
+				// wipe the old buffer, since we fetch new contents into it
+				// for the next block
+				buffer.truncate(0);//(0, buffer.getLength());
 			}
 		}
 
-		if (buffer)
-			delete buffer;
+		// don't need to remove contents of buffer, since
+		// they were never written
 	}
 
-	if (buffer)
-		delete buffer;
-	
 	return UT_FALSE;
 }
 	

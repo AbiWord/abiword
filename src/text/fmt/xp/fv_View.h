@@ -115,6 +115,7 @@ public:
 
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			moveInsPtTo(FV_DocPos dp);
+	void 			moveInsPtTo(PT_DocPosition dp);
 	void			warpInsPtNextPrevLine(UT_Bool bNext);
 	void			extSelHorizontal(UT_Bool bForward, UT_uint32 count);
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag);
