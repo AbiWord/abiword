@@ -246,7 +246,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	//
 	if(!m_bIsTOC)
 	{
-		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
+		if(!isEmbeddedType())
+		{
+			m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
+		}
 	}
 
 	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
@@ -862,11 +865,14 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	//
 	if(!m_bIsTOC && !(sNewStyle == sOldStyle))
 	{
-		if(m_bStyleInTOC)
+		if(!isEmbeddedType())
 		{
-			m_pLayout->removeBlockFromTOC(this); // remove old one
+			if(m_bStyleInTOC)
+			{
+				m_pLayout->removeBlockFromTOC(this); // remove old one
+			}
+			m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 		}
-		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 	}
 
 	// latter we will need to add here revision handling ...
@@ -886,7 +892,10 @@ fl_BlockLayout::~fl_BlockLayout()
 //		}
 	if(!m_bIsTOC)
 	{
-		m_pLayout->removeBlockFromTOC(this);
+		if(!isEmbeddedType())
+		{
+			m_pLayout->removeBlockFromTOC(this);
+		}
 	}
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
@@ -4539,6 +4548,12 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "footnote_anchor") == 0)
 	{
+		if(isContainedByTOC())
+		{
+			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			return _doInsertRun(pDumRun);
+		}
 		pNewRun = new fp_FieldFootnoteAnchorRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "endnote_ref") == 0)
@@ -4555,6 +4570,12 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
 	{
+		if(isContainedByTOC())
+		{
+			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			return _doInsertRun(pDumRun);
+		}
 		pNewRun = new fp_FieldEndnoteAnchorRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time") == 0)
@@ -5262,7 +5283,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	//
 	// OK Now do the insertSpan for any TOC's that shadow this block.
 	//
-	if(!m_bIsTOC && m_bStyleInTOC)
+	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
@@ -5666,7 +5687,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	//
 	// OK Now do the deleteSpan for any TOC's that shadow this block.
 	//
-	if(!m_bIsTOC && m_bStyleInTOC)
+	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
@@ -7272,7 +7293,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	//
 	// OK Now do the insertSpan for any TOC's that shadow this block.
 	//
-	if(!m_bIsTOC && m_bStyleInTOC)
+	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
@@ -7361,7 +7382,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	//
 	// OK Now do the deleteObject for any TOC's that shadow this block.
 	//
-	if(!m_bIsTOC && m_bStyleInTOC)
+	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
