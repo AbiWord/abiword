@@ -22,24 +22,25 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
-EXPORT_HEADERS=
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		BeOSMain.cpp
-
-INCLUDES=		
-
 PROGRAM=		AbiWord
 
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiWordVer AbiSpell 
+
+ifeq ($(OS_ARCH), BePC)
+ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
+endif
+
+ifeq ($(OS_ARCH), ppc)
 ABI_APPLIBS=		$(LoadOrder) 
+endif
 
 #ABI_OTHLIBS=		expat $(ABI_JSLIBS) dl
 ABI_OTHLIBS=		Abi_expat
-#ABI_LIBS=		stdc++
+
+ifeq ($(OS_ARCH), BePC)
+ABI_LIBS=		stdc++.r4 translation be tracker
+endif
 
 TARGETS=		$(PROGRAM)
 
@@ -56,7 +57,10 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 ##LDFLAGS +=		-static
 ##LDFLAGS +=		-shared 
+
+ifeq ($(OS_ARCH), ppc)
 CFLAGS += -lmslcpp -ltranslation -msg nodup
+endif
 
 # ACK!  TODO - do we really want a directory pattern match here in a makefile?
 

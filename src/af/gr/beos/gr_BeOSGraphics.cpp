@@ -652,4 +652,19 @@ GR_Graphics::Cursor GR_BEOSGraphics::getCursor(void) const
 	return m_cursor;
 }
 
+void GR_BEOSGraphics::setColor3D(GR_Color3D c)
+{
+	// TODO
+}
 
+void GR_BEOSGraphics::fillRect(GR_Color3D c, 
+		UT_sint32 x, UT_sint32 y,
+		UT_sint32 w, UT_sint32 h)
+{
+	// TODO
+}
+
+void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+	// TODO
+}
