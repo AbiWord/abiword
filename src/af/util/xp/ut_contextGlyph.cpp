@@ -616,7 +616,7 @@ void UT_contextGlyph::_prefsListener(	XAP_App *pApp, XAP_Prefs *, UT_StringPtrMa
 
 /*!
     Finds the description for the smart quote for given language and character
-    IMPORTANT: pLang must a pointer directly into the static table of
+    IMPORTANT: pLang must be a pointer directly into the static table of
     UT_Language, not just an arbitrary pointer !!!
 */
 const LetterData * UT_contextGlyph::smartQuote(UT_UCS4Char c, const XML_Char * pLang) const
@@ -624,7 +624,6 @@ const LetterData * UT_contextGlyph::smartQuote(UT_UCS4Char c, const XML_Char * p
 	UT_uint32 i;
 	if(!pLang)
 	{
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		return NULL;
 	}
 	
