@@ -544,7 +544,7 @@ if(!m_pFont || !(font = m_pFont->getFont())) {
 return;
 }
 coverage.clear();
-
+memset(&info,0,sizeof(info));
 PfQueryFontInfo(font,&info);
 coverage.push_back((void*)info.lochar);
 coverage.push_back((void*)(info.hichar - info.lochar));
@@ -1085,3 +1085,15 @@ bool GR_QNXGraphics::_setTransform(const GR_Transform &tr)
 
 return true;
 }
+
+void GR_QNXGraphics::saveRectangle(UT_Rect &r)
+{
+
+}
+
+void GR_QNXGraphics::restoreRectangle()
+{
+
+
+}
+
