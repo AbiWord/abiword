@@ -874,7 +874,8 @@ UT_Bool AP_Win32Frame::initFrameData(void)
 
 void AP_Win32Frame::killFrameData(void)
 {
-	DELETEP(m_pData);
+	AP_FrameData * pData = (AP_FrameData *) m_pData;
+	DELETEP(pData);
 	m_pData = NULL;
 }
 
