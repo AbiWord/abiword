@@ -1383,7 +1383,10 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	bool bRTLglobal;
 	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTLglobal);
 
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	fl_BlockLayout * pBL = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	UT_return_val_if_fail(pBL,false);
+	
+	bool bRTLpara = pBL->getDominantDirection() == FRIBIDI_TYPE_RTL;
 	if(bRTLpara)
 		xrel = xAbsRight - anchor;
 	else

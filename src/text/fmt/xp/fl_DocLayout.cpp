@@ -548,6 +548,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			// We asked for a block, and we got a section.  Bad
+			return NULL;
 		}
 	}
 	else
