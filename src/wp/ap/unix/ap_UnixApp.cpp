@@ -1195,8 +1195,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 #ifdef LOGFILE
-	UT_String sLogFile = getUserPrivateDirectory();
-	sLogFile += "abiLogFile"
+	UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
+	sLogFile += "abiLogFile";
 	logfile = fopen(sLogFile.c_str(),"a+");
 	fprintf(logfile,"About to do gtk_set_locale \n");
 #endif
@@ -1792,6 +1792,49 @@ abi_nautilus_view_create_ui (AbiWidget *abi)
 						     abi);
 }
 
+static void
+control_set_ui_container (AbiWidget *abi,
+			  Bonobo_UIContainer ui_container)
+{
+	g_return_if_fail (IS_ABI_WIDGET(abi));
+	g_return_if_fail (ui_container != CORBA_OBJECT_NIL);
+
+	bonobo_ui_component_set_container (abi_widget_get_Bonobo_uic(abi), ui_container, NULL);
+
+	abi_nautilus_view_create_ui (abi);
+}
+
+static void
+control_unset_ui_container (AbiWidget * abi)
+{
+	g_return_if_fail (IS_ABI_WIDGET(abi));
+
+	bonobo_ui_component_unset_container (abi_widget_get_Bonobo_uic(abi), NULL);
+}
+
+static void abi_control_activate_cb(BonoboControl *object, gboolean state, gpointer data)
+{
+	AbiWidget * abi;
+	g_return_if_fail (IS_ABI_WIDGET(G_OBJECT(data)));
+	abi = ABI_WIDGET(G_OBJECT(data));
+	if(state)
+	{
+		Bonobo_UIContainer ui_container;
+		ui_container = bonobo_control_get_remote_ui_container (object, NULL);
+		if (ui_container != CORBA_OBJECT_NIL) 
+		{
+			control_set_ui_container (abi, ui_container);
+			bonobo_object_release_unref (ui_container, NULL);
+		}
+
+	} 
+	else
+	{
+		control_unset_ui_container (abi);
+	}
+}
+
+
 
 /*****************************************************************/
 /* Implements the Bonobo/Persist:1.0, Bonobo/PersistStream:1.0,
@@ -2332,7 +2375,8 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 /* UI Component */
 	BonoboUIComponent * uic = bonobo_ui_component_new ("AbiWordNautilusView");
 	abi_widget_set_Bonobo_uic(abiwidget,uic);
-	abi_nautilus_view_create_ui (abiwidget);
+
+	g_signal_connect (BONOBO_CONTROL(to_aggregate), "activate", G_CALLBACK (abi_control_activate_cb), abiwidget);
 
 	return to_aggregate;
 }

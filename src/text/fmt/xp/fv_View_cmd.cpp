@@ -588,6 +588,22 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+	UT_sint32 iColInsertAt =0;
+	if(!bBefore)
+	{
+		iColInsertAt = iRight;
+	}
+	else
+	{
+		if(iLeft == 0)
+		{
+			iColInsertAt = 0;
+		}
+		else
+		{
+			iColInsertAt = iLeft;
+		}
+	}
 
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
@@ -595,30 +611,11 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
 //
-// Now find the number of rows and columns inthis table. This is easiest to
-// get from the table container
+// Now find the number of rows and columns in this table. 
 //
-	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posCol);
-	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
-	bool bDirection;
-	pRun = pBL->findPointCoords(posCol, false, xPoint,
-							    yPoint, xPoint2, yPoint2,
-							    iPointHeight, bDirection);
-
-	UT_return_val_if_fail(pRun, false);
-
-	fp_Line * pLine = pRun->getLine();
-	UT_return_val_if_fail(pLine, false);
-
-	fp_Container * pCon = pLine->getContainer();
-	UT_return_val_if_fail(pCon, false);
-
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
-	UT_return_val_if_fail(pTab, false);
-
-	UT_sint32 numRows = pTab->getNumRows();
-	UT_sint32 numCols = pTab->getNumCols();
+	UT_sint32 numRows = 0;
+	UT_sint32 numCols = 0;
+	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
 //
 // Got all we need, now set things up to do the delete nicely
 //
@@ -631,10 +628,9 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty())
 	{
-		m_pDoc->beginUserAtomicGlob();
-		PP_AttrProp AttrProp_Before;
-		_deleteSelection(&AttrProp_Before);
-		m_pDoc->endUserAtomicGlob();
+//
+// Fixme: Put code in here to detect how many columns to insert.
+//
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -668,7 +664,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_sint32 oldTop = -1;
 	for(i=0; i <numRows; i++)
 	{
-		posCell = findCellPosAt(posTable,i,iLeft);
+		posCell = findCellPosAt(posTable,i,iColInsertAt);
 		bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
 		UT_sint32 Left,Right,Top,Bot;
 		getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
@@ -695,9 +691,9 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		{
 			if(bBefore)
 			{
-				if(iLeft > 0)
+				if(iColInsertAt > 0)
 				{
-					PT_DocPosition posCellLeft = findCellPosAt(posTable,i,iLeft-1);
+					PT_DocPosition posCellLeft = findCellPosAt(posTable,i,iColInsertAt-1);
 					UT_sint32 jLeft,jRight,jTop,jBot;
 					getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
 					UT_String_sprintf(sLeft,"%d",jRight);
@@ -718,10 +714,20 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			}
 			else
 			{
+//
+// Find coordinate just to right of this cell.
+//
+				PT_DocPosition posCellLeft = findCellPosAt(posTable,i,iColInsertAt);
 				endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 				posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-				UT_String_sprintf(sLeft,"%d",iLeft+1);
-				UT_String_sprintf(sRight,"%d",iLeft+2);
+				UT_sint32 jLeft,jRight,jTop,jBot;
+				getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
+				if(jLeft < iColInsertAt)
+				{
+					iColInsertAt = jRight;
+				}
+				UT_String_sprintf(sLeft,"%d",iColInsertAt);
+				UT_String_sprintf(sRight,"%d",iColInsertAt+1);
 				props[4] = sColLeft.c_str();
 				props[5] = sLeft.c_str();
 				props[6] = sColRight.c_str();
@@ -745,17 +751,17 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // OK now loop backwards until we find a cell on this row.
 //
 				UT_sint32 j =0;
-				for(j=iLeft; (j>= 0) && !bBBefore; j--)
+				for(j=iColInsertAt; (j>= 0) && !bBBefore; j--)
 				{
 					posCell = findCellPosAt(posCol,i,j);
 					getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
 					if(jTop == i)
 					{ 
 						bBBefore = true;
-						if(iLeft > 0)
+						if(iColInsertAt > 0)
 						{
-							UT_String_sprintf(sLeft,"%d",iLeft-1);
-							UT_String_sprintf(sRight,"%d",iLeft);
+							UT_String_sprintf(sLeft,"%d",iColInsertAt-1);
+							UT_String_sprintf(sRight,"%d",iColInsertAt);
 						}
 						else
 						{
@@ -777,7 +783,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 				bool bAfter = false;
 				if(!bBBefore)
 				{
-					for(j=iLeft+1; (j< numCols) && !bAfter; j++)
+					for(j=iColInsertAt+1; (j< numCols) && !bAfter; j++)
 					{
 						posCell = findCellPosAt(posCol,i,j);
 						getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
@@ -786,8 +792,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 							bAfter = true;
 							endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 							posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-							UT_String_sprintf(sLeft,"%d",iLeft+1);
-							UT_String_sprintf(sRight,"%d",iLeft+2);
+							UT_String_sprintf(sLeft,"%d",iColInsertAt+1);
+							UT_String_sprintf(sRight,"%d",iColInsertAt+2);
 							props[4] = sColLeft.c_str();
 							props[5] = sLeft.c_str();
 							props[6] = sColRight.c_str();
@@ -814,7 +820,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 				bAfter = false;
 				bBBefore = false;
 				UT_sint32 j=0;
-				for(j=iLeft+1; (j< numCols) && !bAfter; j++)
+				for(j=iColInsertAt+1; (j< numCols) && !bAfter; j++)
 				{
 					posCell = findCellPosAt(posCol,i,j);
 					getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
@@ -823,8 +829,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 						bAfter = true;
 						endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 						posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-						UT_String_sprintf(sLeft,"%d",iLeft+1);
-						UT_String_sprintf(sRight,"%d",iLeft+2);
+						UT_String_sprintf(sLeft,"%d",iColInsertAt+1);
+						UT_String_sprintf(sRight,"%d",iColInsertAt+2);
 						props[4] = sColLeft.c_str();
 						props[5] = sLeft.c_str();
 						props[6] = sColRight.c_str();
@@ -840,17 +846,17 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 				if(!bAfter)
 				{
 					UT_sint32 j =0;
-					for(j=iLeft; (j>= 0) && !bBBefore; j--)
+					for(j=iColInsertAt; (j>= 0) && !bBBefore; j--)
 					{
 						posCell = findCellPosAt(posCol,i,j);
 						getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
 						if(jTop == i)
 						{ 
 							bBBefore = true;
-							if(iLeft > 0)
+							if(iColInsertAt > 0)
 							{
-								UT_String_sprintf(sLeft,"%d",iLeft-1);
-								UT_String_sprintf(sRight,"%d",iLeft);
+								UT_String_sprintf(sLeft,"%d",iColInsertAt-1);
+								UT_String_sprintf(sRight,"%d",iColInsertAt);
 							}
 							else
 							{
@@ -925,12 +931,12 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
 		if(!bChange)
 		{
-			if(iCurLeft > iLeft+1)
+			if(iCurLeft > iColInsertAt+1)
 			{
 				bChange = true;
 				iNewLeft++;
 			}
-			if(iCurRight > iLeft+2)
+			if(iCurRight > iColInsertAt+2)
 			{
 				bChange = true;
 				iNewRight++;

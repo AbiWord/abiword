@@ -877,14 +877,14 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 {
 	UT_sint32 ndx = (NULL == pLastContainerToKeep) ? 0 : (findCon(pLastContainerToKeep)+1);
 	UT_ASSERT(ndx >= 0);
-	UT_uint32 i;
+	UT_sint32 i;
 
 	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
 	UT_ASSERT(pNextContainer);
 
 	if (pNextContainer->isEmpty())
 	{
-		for (i=ndx; i<countCons(); i++)
+		for (i=ndx; i< static_cast<UT_sint32>(countCons()); i++)
 		{
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
@@ -907,7 +907,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	}
 	else
 	{
-		for (i=countCons() - 1; i >= ndx; i--)
+		for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
 		{
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
@@ -929,7 +929,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 		}
 	}
 
-	for (i=countCons() - 1; i >= ndx; i--)
+	for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
 	{
 		deleteNthCon(i);
 	}
@@ -1183,10 +1183,12 @@ void fp_ShadowContainer::layout(void)
 			pTab = static_cast<fp_TableContainer *>(pContainer);
 			UT_DEBUGMSG(("Found Table in shadow!!!\n"));
 		}
-		if((pTab!= NULL) && !pTab->isThisBroken())
-		{
-			fp_Container * pBroke = static_cast<fp_Container *>(pTab->VBreakAt(0));
-		}
+//
+// FIXME: Implement this one day. Tables in header/footers.
+//		if((pTab!= NULL) && !pTab->isThisBroken())
+//		{
+//			fp_Container * pBroke = static_cast<fp_Container *>(pTab->VBreakAt(0));
+//		}
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		if(pTab != NULL)
 		{
