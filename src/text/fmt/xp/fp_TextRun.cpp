@@ -134,7 +134,7 @@ UT_Bool fp_TextRun::canBreakAfter(void) const
 			{
 				UT_ASSERT(len>0);
 
-				if (pSpan[len-1] == 32)
+				if (pSpan[len-1] == UCS_SPACE)
 				{
 					return UT_TRUE;
 				}
@@ -172,7 +172,7 @@ UT_Bool fp_TextRun::canBreakBefore(void) const
 		{
 			UT_ASSERT(lenSpan>0);
 
-			if (pSpan[0] == 32)
+			if (pSpan[0] == UCS_SPACE)
 			{
 				return UT_TRUE;
 			}
@@ -208,7 +208,7 @@ UT_Bool fp_TextRun::alwaysFits(void) const
 
 			for (UT_uint32 i=0; i<lenSpan; i++)
 			{
-				if (pSpan[i] != 32)
+				if (pSpan[i] != UCS_SPACE)
 				{
 					return UT_FALSE;
 				}
@@ -261,7 +261,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpli
 
 			if (
 				(
-					(32 == pSpan[i])
+					(UCS_SPACE == pSpan[i])
 					&& ((i + offset) != (m_iOffsetFirst + m_iLen - 1))
 					)
 				|| bForce

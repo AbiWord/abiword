@@ -76,9 +76,16 @@ typedef		UT_sint32			UT_ErrorCode;
 #endif /* _MSC_VER && _DEBUG && _CRTDBG_MAP_ALLOC */
 
 
+/*
+	Unicode character constants.
+*/
+#define UCS_TAB				((UT_UCSChar)0x0009)
 #define UCS_LF				((UT_UCSChar)0x000a)
+#define UCS_VTAB			((UT_UCSChar)0x000b)
+#define UCS_FF				((UT_UCSChar)0x000c)
 #define UCS_CR				((UT_UCSChar)0x000d)
 #define UCS_SPACE			((UT_UCSChar)0x0020)
+#define UCS_NBSP			((UT_UCSChar)0x00a0)
 
 
 #endif /* UT_TYPES_H */

@@ -707,57 +707,6 @@ static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFram
 	return (ans);
 }
 
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
-
-Defun1(fileInsertImage)
-{
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-	UT_Bool bRes = UT_FALSE;
-
-	char* pNewFile = NULL;
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
-
-	if (!bOK || !pNewFile)
-		return UT_FALSE;
-
-	// we own storage for pNewFile and must free it.
-
-	UT_DEBUGMSG(("fileInsertImage: loading [%s]\n",pNewFile));
-
-	UT_ByteBuf* pBB = new UT_ByteBuf();
-
-	bRes = pBB->insertFromFile(0, pNewFile);
-
-	if (!bRes)
-	{
-		free(pNewFile);
-		delete pBB;
-		
-		return UT_FALSE;
-	}
-	
-	ABIWORD_VIEW;
-
-	/*
-	  TODO we will eventually want to support other
-	  image file formats, although PNG will still be
-	  the only format which we consider to be a
-	  "first class citizen", since images saved in ABW
-	  files are encoded as PNG.  Anyway, when we support
-	  other formats, the place to do the conversion would
-	  be somewhere right around here.  The file dialog
-	  above would need to be modified to show a different
-	  set of file formats in the drop-down list, as well.
-	*/
-	
-	pView->cmdInsertPNGImage(pBB, pNewFile);
-
-	free(pNewFile);
-	
-	return UT_TRUE;
-}
-
 Defun1(fileOpen)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
@@ -1142,6 +1091,66 @@ Defun(querySaveAndExit)
 
 /*****************************************************************/
 /*****************************************************************/
+
+/*
+	NOTE: This file should really be split in two:
+	
+		1.  XAP methods (above)
+		2.  AbiWord-specific methods (below)
+
+	Until we do the necessary architectural work, we just segregate 
+	the methods within the same file.  
+*/
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
+Defun1(fileInsertImage)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+	UT_Bool bRes = UT_FALSE;
+
+	char* pNewFile = NULL;
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
+
+	if (!bOK || !pNewFile)
+		return UT_FALSE;
+
+	// we own storage for pNewFile and must free it.
+
+	UT_DEBUGMSG(("fileInsertImage: loading [%s]\n",pNewFile));
+
+	UT_ByteBuf* pBB = new UT_ByteBuf();
+
+	bRes = pBB->insertFromFile(0, pNewFile);
+
+	if (!bRes)
+	{
+		free(pNewFile);
+		delete pBB;
+		
+		return UT_FALSE;
+	}
+	
+	ABIWORD_VIEW;
+
+	/*
+	  TODO we will eventually want to support other
+	  image file formats, although PNG will still be
+	  the only format which we consider to be a
+	  "first class citizen", since images saved in ABW
+	  files are encoded as PNG.  Anyway, when we support
+	  other formats, the place to do the conversion would
+	  be somewhere right around here.  The file dialog
+	  above would need to be modified to show a different
+	  set of file formats in the drop-down list, as well.
+	*/
+	
+	pView->cmdInsertPNGImage(pBB, pNewFile);
+
+	free(pNewFile);
+	
+	return UT_TRUE;
+}
 
 Defun(singleClick)
 {
@@ -1535,17 +1544,17 @@ Defun1(insertSectionBreak)
 /*
   Note that within the piece table, we use the following
   representations:
-    char code				meaning
-	9  (tab)				tab
-	10 (line feed)			forced line break
-	11 (vertical tab)		forced column break
-	12 (form feed)			forced page break
+    char code					meaning
+	UCS_TAB  (tab)				tab
+	UCS_LF   (line feed)		forced line break
+	UCS_VTAB (vertical tab)		forced column break
+	UCS_FF   (form feed)		forced page break
 */
 
 Defun1(insertTab)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar c = 0x0009;
+	UT_UCSChar c = UCS_TAB;
 	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
@@ -1553,7 +1562,7 @@ Defun1(insertTab)
 Defun1(insertLineBreak)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar c = 0x000a;
+	UT_UCSChar c = UCS_LF;
 	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
@@ -1561,7 +1570,7 @@ Defun1(insertLineBreak)
 Defun1(insertColumnBreak)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar c = 0x000b;
+	UT_UCSChar c = UCS_VTAB;
 	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
@@ -1569,7 +1578,7 @@ Defun1(insertColumnBreak)
 Defun1(insertPageBreak)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar c = 0x000c;
+	UT_UCSChar c = UCS_FF;
 	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
@@ -1577,7 +1586,7 @@ Defun1(insertPageBreak)
 Defun1(insertSpace)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar c = 0x0020;
+	UT_UCSChar c = UCS_SPACE;
 	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
@@ -1585,7 +1594,7 @@ Defun1(insertSpace)
 Defun1(insertNBSpace)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar c = 0x00a0;				// decimal 160 is NBS
+	UT_UCSChar c = UCS_NBSP;			// decimal 160 is NBS
 	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }

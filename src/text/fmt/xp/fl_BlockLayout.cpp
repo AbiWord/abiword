@@ -1372,10 +1372,10 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	{
 		switch (pChars[i])
 		{
-		case 12:	// form feed, forced page break
-		case 11:	// vertical tab, forced column break
-		case 10:	// newline
-		case 9:		// tab
+		case UCS_FF:	// form feed, forced page break
+		case UCS_VTAB:	// vertical tab, forced column break
+		case UCS_LF:	// newline
+		case UCS_TAB:	// tab
 			if (bNormal)
 			{
 				_doInsertTextSpan(iNormalBase + blockOffset, i - iNormalBase);
@@ -1388,19 +1388,19 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 			*/
 			switch (pChars[i])
 			{
-			case 12:
+			case UCS_FF:
 				_doInsertForcedPageBreakRun(i + blockOffset);
 				break;
 				
-			case 11:
+			case UCS_VTAB:
 				_doInsertForcedColumnBreakRun(i + blockOffset);
 				break;
 				
-			case 10:
+			case UCS_LF:
 				_doInsertForcedLineBreakRun(i + blockOffset);
 				break;
 				
-			case 9:
+			case UCS_TAB:
 				_doInsertTabRun(i + blockOffset);
 				break;
 				
@@ -1788,10 +1788,10 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	{
 		switch (pChars[i])
 		{
-		case 12:	// form feed, forced page break
-		case 11:	// vertical tab, forced column break
-		case 10:	// newline
-		case 9:		// tab
+		case UCS_FF:	// form feed, forced page break
+		case UCS_VTAB:	// vertical tab, forced column break
+		case UCS_LF:	// newline
+		case UCS_TAB:	// tab
 			if (bNormal)
 			{
 				_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
@@ -1804,19 +1804,19 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 			*/
 			switch (pChars[i])
 			{
-			case 12:
+			case UCS_FF:
 				_doInsertForcedPageBreakRun(i + blockOffset);
 				break;
 				
-			case 11:
+			case UCS_VTAB:
 				_doInsertForcedColumnBreakRun(i + blockOffset);
 				break;
 				
-			case 10:
+			case UCS_LF:
 				_doInsertForcedLineBreakRun(blockOffset + i);
 				break;
 				
-			case 9:
+			case UCS_TAB:
 				_doInsertTabRun(blockOffset + i);
 				break;
 				

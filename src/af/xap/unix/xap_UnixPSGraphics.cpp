@@ -323,10 +323,10 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		switch (*pS)
 		{
 		case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
-		case 0x09:		*pD++ = '\\';	*pD++ = 't';	break;
-		case 0x0a:		*pD++ = '\\';	*pD++ = 'n';	break;
-		case 0x0c:		*pD++ = '\\';	*pD++ = 'f';	break;
-		case 0x0d:		*pD++ = '\\';	*pD++ = 'r';	break;
+		case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
+		case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
+		case UCS_FF:	*pD++ = '\\';	*pD++ = 'f';	break;
+		case UCS_CR:	*pD++ = '\\';	*pD++ = 'r';	break;
 		case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
 		case '(':		*pD++ = '\\';	*pD++ = '(';	break;
 		case ')':		*pD++ = '\\';	*pD++ = ')';	break;

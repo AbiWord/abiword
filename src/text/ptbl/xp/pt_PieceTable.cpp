@@ -296,7 +296,7 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) cons
 			UT_UCSChar* pSpaces = new UT_UCSChar[length];
 			for (UT_uint32 i=0; i<length; i++)
 			{
-				pSpaces[i] = 32;
+				pSpaces[i] = UCS_SPACE;
 			}
 			UT_Bool bAppended = pgb->ins(bufferOffset, pSpaces, length);
 			delete pSpaces;
