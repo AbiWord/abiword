@@ -268,13 +268,28 @@ void GR_Caret::_blink(bool bExplicit)
 				m_bRecursiveDraw = false;
 				return;
 			}
+
+			// we position the regular LTR caret so that it slightly
+			// covers the right edge of the character; in order to be
+			// consitent we will do notionally the same for the RTL
+			// carets, where this requires addition in the calculation
+			// of coordinances instead of substraction; we will use
+			// the following value as a sign to avoid having to branch
+			// all the draw calls (Tomas, Oct 26, 2003).
 			
-			UT_Rect r0(m_xPoint-m_pG->tlu(3), m_yPoint+m_pG->tlu(1), m_pG->tlu(7), m_iPointHeight+m_pG->tlu(2));
+			UT_sint32 iDelta = m_bPointDirection ? 1 : -1;
+			
+			UT_Rect r0(m_xPoint-m_pG->tlu(2),
+					   m_yPoint+m_pG->tlu(1),
+					   m_pG->tlu(5),
+					   m_iPointHeight+m_pG->tlu(2));
+			
 			m_pG->saveRectangle(r0,0);
 
 			if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
 			{
 				m_bSplitCaret = true;
+				
 				// have to save the rectangle for the joining line
 				// before we draw the carets
 				UT_uint32 xmin = UT_MIN(m_xPoint, m_xPoint2);
@@ -282,7 +297,11 @@ void GR_Caret::_blink(bool bExplicit)
 				UT_uint32 ymin = UT_MIN(m_yPoint, m_yPoint2);
 				UT_uint32 ymax = UT_MAX(m_yPoint, m_yPoint2);
 			
-				UT_Rect r2(xmin-m_pG->tlu(1), ymin + m_iPointHeight, xmax - xmin + m_pG->tlu(2), ymax - ymin + m_pG->tlu(1));
+				UT_Rect r2(xmin-m_pG->tlu(1),
+						   ymin + m_iPointHeight,
+						   xmax - xmin + m_pG->tlu(2),
+						   ymax - ymin + m_pG->tlu(1));
+				
 				m_pG->saveRectangle(r2,2);
 			}
 			else
@@ -295,59 +314,108 @@ void GR_Caret::_blink(bool bExplicit)
 
 			if(m_bCaret1OnScreen)
 			{
-				m_pG->drawLine(m_xPoint-m_pG->tlu(1), m_yPoint+m_pG->tlu(1), m_xPoint-m_pG->tlu(1), 
+				// draw the primary caret
+				m_pG->drawLine(m_xPoint + iDelta * m_pG->tlu(1),
+							   m_yPoint + m_pG->tlu(1),
+							   m_xPoint + iDelta * m_pG->tlu(1), 
 							   m_yPoint + m_iPointHeight+m_pG->tlu(1));
-				m_pG->drawLine(m_xPoint, m_yPoint+m_pG->tlu(1), m_xPoint, 
-							   m_yPoint + m_iPointHeight+m_pG->tlu(1));
+				
+				m_pG->drawLine(m_xPoint,
+							   m_yPoint + m_pG->tlu(1),
+							   m_xPoint, 
+							   m_yPoint + m_iPointHeight + m_pG->tlu(1));
 			}
 			
 			if(m_bSplitCaret)
 			{
-				// #TF the caret will have a small flag at the top 
-				// indicating the direction of writing
+				// each of the two carets will have a small flag at the top 
+				// indicating the direction of writing to which it
+				// applies
 				if(m_bCaret1OnScreen)
 				{
+					// draw the flag of the primary caret
 					if(m_bPointDirection)
 					{
-						m_pG->drawLine(m_xPoint-m_pG->tlu(3), m_yPoint+m_pG->tlu(1), m_xPoint-m_pG->tlu(1), m_yPoint+m_pG->tlu(1));
-						m_pG->drawLine(m_xPoint-m_pG->tlu(2), m_yPoint+m_pG->tlu(2), m_xPoint-m_pG->tlu(1), m_yPoint+m_pG->tlu(2));
+						//primary RTL caret flag
+						m_pG->drawLine(m_xPoint - m_pG->tlu(2),
+									   m_yPoint + m_pG->tlu(1),
+									   m_xPoint /*- m_pG->tlu(1)*/,
+									   m_yPoint + m_pG->tlu(1));
+						
+						m_pG->drawLine(m_xPoint - m_pG->tlu(1),
+									   m_yPoint + m_pG->tlu(2),
+									   m_xPoint /*- m_pG->tlu(1)*/,
+									   m_yPoint+m_pG->tlu(2));
 					}
 					else
 					{
-						m_pG->drawLine(m_xPoint+m_pG->tlu(1), m_yPoint+m_pG->tlu(1), m_xPoint+m_pG->tlu(3), m_yPoint+m_pG->tlu(1));
-						m_pG->drawLine(m_xPoint+m_pG->tlu(1), m_yPoint+m_pG->tlu(2), m_xPoint+m_pG->tlu(2), m_yPoint+m_pG->tlu(2));
+						// primary LTR caret flag
+						m_pG->drawLine(m_xPoint + m_pG->tlu(1),
+									   m_yPoint + m_pG->tlu(1),
+									   m_xPoint + m_pG->tlu(3),
+									   m_yPoint + m_pG->tlu(1));
+						
+						m_pG->drawLine(m_xPoint + m_pG->tlu(1),
+									   m_yPoint + m_pG->tlu(2),
+									   m_xPoint + m_pG->tlu(2),
+									   m_yPoint + m_pG->tlu(2));
 					}
 				}
 				
-				// This is the second caret on ltr-rtl boundary
-
+				// Now we deal with the secondary caret needed on ltr-rtl boundary
 				if(m_bCaret2OnScreen)
 				{
-					UT_Rect r1(m_xPoint2-m_pG->tlu(3), m_yPoint2+m_pG->tlu(1), m_pG->tlu(7), m_iPointHeight);
+					// first of all, save the area it will cover
+					UT_Rect r1(m_xPoint2 - m_pG->tlu(2),
+							   m_yPoint2 + m_pG->tlu(1),
+							   m_pG->tlu(5),
+							   m_iPointHeight);
+					
 					m_pG->saveRectangle(r1,1);				
-			
-					m_pG->drawLine(m_xPoint2-m_pG->tlu(1), m_yPoint2+m_pG->tlu(1), 
-								   m_xPoint2-m_pG->tlu(1), m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
-					m_pG->drawLine(m_xPoint2, m_yPoint2+m_pG->tlu(1), 
-								   m_xPoint2, m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
 
-					// This is the line that links the two carets
-					m_pG->drawLine(m_xPoint, m_yPoint + m_iPointHeight, 
-								   m_xPoint2, m_yPoint2 + m_iPointHeight);
+					// draw the caret
+					m_pG->drawLine(m_xPoint2 - iDelta * m_pG->tlu(1),
+								   m_yPoint2 + m_pG->tlu(1), 
+								   m_xPoint2 - iDelta * m_pG->tlu(1),
+								   m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
+					
+					m_pG->drawLine(m_xPoint2,
+								   m_yPoint2 + m_pG->tlu(1), 
+								   m_xPoint2,
+								   m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
 
+					// Now draw the line that links the two carets
+					m_pG->drawLine(m_xPoint,
+								   m_yPoint + m_iPointHeight, 
+								   m_xPoint2,
+								   m_yPoint2 + m_iPointHeight);
+
+					// now draw the direction flag for the secondary caret
 					if(m_bPointDirection)
 					{
-						m_pG->drawLine(m_xPoint2+m_pG->tlu(1), m_yPoint2+m_pG->tlu(1), 
-									   m_xPoint2+m_pG->tlu(3), m_yPoint2+m_pG->tlu(1));
-						m_pG->drawLine(m_xPoint2+m_pG->tlu(1), m_yPoint2+m_pG->tlu(2), 
-									   m_xPoint2+m_pG->tlu(2), m_yPoint2+m_pG->tlu(2));
+						// secondary LTR caret flag
+						m_pG->drawLine(m_xPoint2 + m_pG->tlu(1),
+									   m_yPoint2 + m_pG->tlu(1), 
+									   m_xPoint2 + m_pG->tlu(3),
+									   m_yPoint2 + m_pG->tlu(1));
+						
+						m_pG->drawLine(m_xPoint2 + m_pG->tlu(1),
+									   m_yPoint2 + m_pG->tlu(2), 
+									   m_xPoint2 + m_pG->tlu(2),
+									   m_yPoint2 + m_pG->tlu(2));
 					}
 					else
 					{
-						m_pG->drawLine(m_xPoint2-m_pG->tlu(3), m_yPoint2+m_pG->tlu(1), 
-									   m_xPoint2-m_pG->tlu(1), m_yPoint2+m_pG->tlu(1));
-						m_pG->drawLine(m_xPoint2-m_pG->tlu(2), m_yPoint2+m_pG->tlu(2), 
-									   m_xPoint2-m_pG->tlu(1), m_yPoint2+m_pG->tlu(2));
+						// secondary RTL caret flag
+						m_pG->drawLine(m_xPoint2 - m_pG->tlu(2),
+									   m_yPoint2 + m_pG->tlu(1), 
+									   m_xPoint2 /*- m_pG->tlu(1)*/,
+									   m_yPoint2 + m_pG->tlu(1));
+						
+						m_pG->drawLine(m_xPoint2 - m_pG->tlu(1),
+									   m_yPoint2 + m_pG->tlu(2), 
+									   m_xPoint2 /*- m_pG->tlu(1)*/,
+									   m_yPoint2 + m_pG->tlu(2));
 					}
 				}
 				
