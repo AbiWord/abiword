@@ -426,6 +426,7 @@ public:
 
 	// FRAME function
 	bool                    isFrameAtPos(PT_DocPosition pos);
+	bool                    isEndFrameAtPos(PT_DocPosition pos);
 
 // Table functions
 

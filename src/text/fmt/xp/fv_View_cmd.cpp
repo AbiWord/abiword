@@ -3438,6 +3438,31 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		if(!curBlock)
 			curBlock = _findBlockAtPosition(getPoint());
 
+// 
+// Code to check for a delete over a frame boundary.
+//
+		if(isInFrame(posCur) && !isInFrame(posCur+amt))
+		{
+			return;
+		}
+		if(!isInFrame(posCur) && isInFrame(posCur+amt))
+		{
+			return;
+		}
+//
+// isInFrame will return true if we're right at the frame strux or right
+// at the EndFrame strux. We we delete either we're screwed. Handle
+// the cases.
+//
+// Later we want to be clever about moving the frame into a valid position
+// in the new merged block. Just fix the crash for now.
+//
+		if((m_pDoc->isFrameAtPos(posCur) || m_pDoc->isEndFrameAtPos(posCur))  
+			&& isInFrame(posCur+amt)  )
+		{
+			return;
+		}
+
 		// Signal PieceTable Change
 		_saveAndNotifyPieceTableChange();
 
