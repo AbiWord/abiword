@@ -751,6 +751,10 @@ bool fp_TextRun::canMergeWithNext(void)
 #endif
 		|| (pNext->m_iDirOverride != m_iDirOverride)
 
+		// cannot merge two runs within different hyperlinks, but than
+		// this can never happen, since between them alwasy will be at
+		// least two hyperlink runs.
+
 		/* the revision evaluation is a bit more complex*/
 		|| ((  getRevisions() != pNext->getRevisions()) // non-identical and one is null
 			&& (!getRevisions() || !pNext->getRevisions()))
@@ -921,6 +925,23 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 #endif
 	// need to set this, so the split run could reset its justification correctly
 	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
+
+	pNew->_setHyperlink(this->getHyperlink());
+
+	// when revisions are present, this gets bit trickier
+	if(getRevisions() != NULL)
+	{
+		// the revisions object cannot be shared, we have to
+		// recreate one
+		// TODO -- this is not a very efficient way of doing
+		// this, it would be preferable to design copy constructors
+		// for PP_Revision and PP_RevisionAttr and use the copy
+		// constructor, but for no this will do
+		pNew->_setRevisions(new PP_RevisionAttr(getRevisions()->getXMLstring()));
+	}
+
+	pNew->setVisibility(this->isHidden());
+	
 
 	pNew->setPrev(this);
 	pNew->setNext(this->getNext());
