@@ -137,7 +137,7 @@ void AP_QNXDialog_Replace::activate(void)
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	PtSetResource(m_windowMain, Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
-	PtWindowFocus(m_windowMain);
+//	PtWindowFocus(m_windowMain);
 }
 
 void AP_QNXDialog_Replace::destroy(void)
@@ -188,9 +188,9 @@ void AP_QNXDialog_Replace::runModeless(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	// this dialog needs this
-	setView((FV_View *) (getActiveFrame()->getCurrentView()));
+//	setView((FV_View *) (getActiveFrame()->getCurrentView()));
 
-	UT_QNXCenterWindow(NULL, m_windowMain);
+//	UT_QNXCenterWindow(NULL, m_windowMain);
 
 	PtRealizeWidget(m_windowMain);
 }
@@ -342,8 +342,11 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
 	PtSetArg(&args[n++], Pt_ARG_TITLE, unixstr, 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+  PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+  PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_FFRONT, ABI_MODAL_WINDOW_MANAGE_FLAGS|Ph_WM_FFRONT);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_STATE,Pt_TRUE,Ph_WM_STATE_ISFRONT);
+	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
+
 	if (m_id == AP_DIALOG_ID_FIND)
 		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle), 0);
 	else
