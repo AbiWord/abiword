@@ -98,8 +98,17 @@ protected:
 								UT_uint32 iLeft, UT_uint32 iTop, UT_uint32 iWidth) = 0;
 	void						_createTopLevelWindow(void);
 
+	void						_setHwndRebar(HWND hWnd)     {  m_hwndRebar = hWnd;  }
+	HWND						_getHwndRebar(void)          {  return m_hwndRebar;  }
+	void						_setHwndContainer(HWND hWnd) {  m_hwndContainer = hWnd;  }
+	HWND						_getHwndContainer(void)      {  return m_hwndContainer;  }
 	void						_setHwndStatusBar(HWND hWnd) {  m_hwndStatusBar = hWnd;  }
 	HWND						_getHwndStatusBar(void)      {  return m_hwndStatusBar;  }
+
+	UT_uint32					_getBarHeight(void) { return m_iBarHeight; }
+	void 						_setBarHeight(UT_uint32 iBarHeight) { m_iBarHeight = iBarHeight; }
+	UT_uint32					_getSizeWidth(void) { return m_iSizeWidth; }
+	UT_uint32					_getSizeHeight(void) { return m_iSizeHeight; }
 
 	/** window class related functions **/
 	static LRESULT CALLBACK			_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);

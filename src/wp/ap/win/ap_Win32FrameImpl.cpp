@@ -190,7 +190,7 @@ HWND AP_Win32FrameImpl::_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParen
 	AP_Win32StatusBar * pStatusBar = new AP_Win32StatusBar(pFrame);
 	UT_ASSERT(pStatusBar);
 	_setHwndStatusBar(pStatusBar->createWindow(hwndParent,iLeft,iTop,iWidth));
-	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pStatusBar = pStatusBar;
+	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pStatusBar = pStatusBar;
 
 	return _getHwndStatusBar();
 }
@@ -203,6 +203,75 @@ void AP_Win32FrameImpl::_refillToolbarsInFrameData()
 void AP_Win32FrameImpl::_rebuildToolbar(UT_uint32 ibar)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+void AP_Win32FrameImpl::_toggleBar(UT_uint32 iBarNb, bool bBarOn)
+{
+	UT_DEBUGMSG(("AP_Win32FrameImpl::toggleBar %d, %d\n", iBarNb, bBarOn));
+
+	// TMN: Yes, this cast is correct. We store EV_Win32Toolbar in
+	// m_vecToolbars, but we only need the EV_Toolbar part of it.
+	EV_Toolbar* pToolbar = (EV_Toolbar*)m_vecToolbars.getNthItem(iBarNb);
+	UT_return_if_fail(pToolbar);
+
+	if (bBarOn)
+	{
+		pToolbar->show();
+	}
+	else
+	{
+		pToolbar->hide();
+	}
+
+	int iToolbarCount = 0;
+	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	{
+		EV_Win32Toolbar *pThisToolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(i);
+
+		UT_ASSERT(pThisToolbar);
+
+		if (pThisToolbar)	// release build paranoia
+			if ( pThisToolbar->bVisible() )
+				iToolbarCount++;
+	}
+
+	if( !iToolbarCount || ((iToolbarCount == 1) && bBarOn) )
+	{
+		RECT r;
+
+		ShowWindow( _getHwndRebar(), (iToolbarCount ? SW_SHOW : SW_HIDE) );
+
+		MoveWindow( _getHwndRebar(), 0, 0, (iToolbarCount ? _getSizeWidth() : 1),
+									  (iToolbarCount ? _getSizeHeight() : 1), TRUE);
+
+		if( iToolbarCount )
+		{
+			GetClientRect(_getHwndRebar(), &r);
+			_setBarHeight(r.bottom - r.top + 6);
+		}
+		else
+			_setBarHeight(1);
+
+		GetClientRect(_getHwndContainer(), &r);
+		_onSize(static_cast<AP_FrameData *>(getFrame()->getFrameData()), r.right - r.left, r.bottom - r.top);
+	}
+
+	// We *need* to make the window recalc its layout after adding/removing a
+	// toolbar in the rebar control. Since we have no "recalcLayout" I'm
+	// aware of we use this not-so-good-but-old idiom of resizing the window.
+	RECT rc;
+	GetWindowRect(_getTopLevelWindow(), &rc);
+	const int cx = rc.right - rc.left;
+	const int cy = rc.bottom - rc.top;
+	const UINT fFlags =
+		SWP_FRAMECHANGED	|
+		SWP_NOACTIVATE		|
+		SWP_NOCOPYBITS		|
+		SWP_NOMOVE			|
+		SWP_NOOWNERZORDER	|
+		SWP_NOZORDER;
+	SetWindowPos(_getTopLevelWindow(), 0, 0, 0, cx - 1, cy - 1, fFlags | SWP_NOREDRAW);
+	SetWindowPos(_getTopLevelWindow(), 0, 0, 0, cx, cy, fFlags);
 }
 
 void AP_Win32FrameImpl::_bindToolbars(AV_View *pView)
@@ -228,7 +297,7 @@ void AP_Win32FrameImpl::_showOrHideToolbars(void)
 {
 	XAP_Frame* pFrame = getFrame();
 	UT_ASSERT( pFrame );
-	bool *bShowBar = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowBar;
+	bool *bShowBar = static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowBar;
 
 	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
 	{
@@ -241,9 +310,34 @@ void AP_Win32FrameImpl::_showOrHideStatusbar(void)
 {
 	XAP_Frame* pFrame = getFrame();
 	UT_ASSERT( pFrame );
-	bool bShowStatusBar = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowStatusBar;
+	bool bShowStatusBar = static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowStatusBar;
 	pFrame->toggleStatusBar(bShowStatusBar);
 }
+
+/* helper methods for helper methods for _showDocument (meta-helper-methods?) :-)
+ * called by AP_Frame::_replaceView which is called by AP_Frame::_showDocument 
+ */
+void AP_Win32FrameImpl::_getDocumentArea(RECT &r)
+{
+	HWND hwnd = _getHwndDocument();
+	GetClientRect(hwnd, &r);
+	InvalidateRect(hwnd, NULL, TRUE);
+}
+
+UT_sint32 AP_Win32FrameImpl::_getDocumentAreaWidth(void)
+{
+	RECT r;
+	_getDocumentArea(r);
+	return r.right - r.left;
+}
+
+UT_sint32 AP_Win32FrameImpl::_getDocumentAreaHeight(void)
+{
+	RECT r;
+	_getDocumentArea(r);
+	return r.bottom - r.top;
+}
+
 
 void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 {
@@ -259,7 +353,7 @@ void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 	UT_ASSERT(pWin32TopRuler);
 	m_hwndTopRuler = pWin32TopRuler->createWindow(m_hwndContainer,
 												  0,0, (r.right - cxVScroll));
-	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pTopRuler = pWin32TopRuler;
+	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pTopRuler = pWin32TopRuler;
 
 
 	// get the width from the left ruler and stuff it into the top ruler.
@@ -267,7 +361,7 @@ void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 	if( m_hwndLeftRuler )
 	{
 		AP_Win32LeftRuler * pWin32LeftRuler = NULL;
-		pWin32LeftRuler =  (AP_Win32LeftRuler *) static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pLeftRuler;
+		pWin32LeftRuler =  static_cast<AP_Win32LeftRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pLeftRuler);
 		xLeftRulerWidth = pWin32LeftRuler->getWidth();
 	}
 	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
@@ -287,7 +381,7 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 	if( m_hwndTopRuler )
 	{
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
-		pWin32TopRuler =  (AP_Win32TopRuler * ) static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pTopRuler;
+		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pTopRuler);
 		yTopRulerHeight = pWin32TopRuler->getHeight();
 	}
 
@@ -296,14 +390,14 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 	UT_ASSERT(pWin32LeftRuler);
 	m_hwndLeftRuler = pWin32LeftRuler->createWindow(m_hwndContainer,0,yTopRulerHeight,
 													r.bottom - yTopRulerHeight - cyHScroll);
-	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pLeftRuler = pWin32LeftRuler;
+	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pLeftRuler = pWin32LeftRuler;
 
 	// get the width from the left ruler and stuff it into the top ruler.
     if( m_hwndTopRuler )
 	{
 		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
-		pWin32TopRuler =  (AP_Win32TopRuler * ) static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pTopRuler;
+		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pTopRuler);
 		pWin32TopRuler->setOffsetLeftRuler(_UD(xLeftRulerWidth));
 	}
 }
@@ -311,7 +405,7 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 {
 	UT_return_if_fail(pFrame);
-	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	AP_FrameData *pFrameData = pFrame->getAPFrameData();
 	UT_return_if_fail(pFrameData);
 
 	if (bRulerOn)
@@ -342,7 +436,7 @@ void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 void AP_Win32FrameImpl::_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 {
 	UT_return_if_fail(pFrame);
-	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	AP_FrameData *pFrameData = pFrame->getAPFrameData();
 	UT_return_if_fail(pFrameData);
 
 	if (bRulerOn)
@@ -431,6 +525,38 @@ void AP_Win32FrameImpl::_setYScrollRange(AP_FrameData * pData, AV_View *pView)
 	_setVerticalScrollInfo(&si);
 
 	pView->sendVerticalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
+}
+
+// scroll event came in (probably from an EditMethod (like a PageDown
+// or insertData or something).  update the on-screen scrollbar and
+// then warp the document window contents.
+void AP_Win32FrameImpl::_scrollFuncY(UT_sint32 yoff, UT_sint32 ylimit)
+{
+	SCROLLINFO si = { 0 };
+	si.cbSize = sizeof(si);
+	si.fMask = SIF_ALL;
+
+	_getVerticalScrollInfo(&si);
+	si.nPos = _UD(yoff);
+	_setVerticalScrollInfo(&si);
+	_getVerticalScrollInfo(&si); // values may have been clamped
+	getFrame()->getCurrentView()->setYScrollOffset(_UL(si.nPos));
+}
+
+void AP_Win32FrameImpl::_scrollFuncX(UT_sint32 xoff, UT_sint32 xlimit)
+{
+	SCROLLINFO si = { 0 };
+	si.cbSize = sizeof(si);
+	si.fMask = SIF_ALL;
+
+	HWND hwndH = _getHwndHScroll();
+	GetScrollInfo(hwndH, SB_CTL, &si);
+
+	si.nPos = _UD(xoff);
+	SetScrollInfo(hwndH, SB_CTL, &si, TRUE);
+
+	GetScrollInfo(hwndH, SB_CTL, &si);	// may have been clamped
+	getFrame()->getCurrentView()->setXScrollOffset(_UL(si.nPos));
 }
 
 bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
@@ -684,7 +810,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
 
-	AP_Win32FrameImpl *fImpl = static_cast<AP_Win32FrameImpl *>(f->getFrameImpl());
+	AP_Win32FrameImpl *fImpl = f->getAPWin32FrameImpl();
 	UT_return_val_if_fail(fImpl, DefWindowProc(hwnd, iMsg, wParam, lParam));
 
 	AV_View* pView = f->getCurrentView();
@@ -695,7 +821,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 	{
 		case WM_SETFOCUS:
 		{
-			SetFocus(fImpl->m_hwndDocument);
+			SetFocus(fImpl->_getHwndDocument());
 			return 0;
 		}
 
@@ -704,7 +830,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 			const int nWidth = LOWORD(lParam);
 			const int nHeight = HIWORD(lParam);
 
-			fImpl->_onSize(static_cast<AP_FrameData*>(f->getFrameData()), nWidth, nHeight);
+			fImpl->_onSize(static_cast<AP_FrameData *>(f->getFrameData()), nWidth, nHeight);
 			return 0;
 		}
 

@@ -24,6 +24,7 @@
 #include "ap_Frame.h"
 #include "xap_Win32FrameImpl.h"
 #include "ap_FrameData.h"
+#include "gr_Win32Graphics.h"
 
 
 class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
@@ -42,6 +43,8 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	virtual void _rebuildToolbar(UT_uint32 ibar);
 	virtual void _bindToolbars(AV_View *pView);
 
+	virtual void				_toggleBar(UT_uint32 iBarNb, bool bBarOn);
+
 	void						_showOrHideToolbars(void);
 	void						_showOrHideStatusbar(void);
 
@@ -50,8 +53,10 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	void _translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
-	void _setXScrollRange(AP_FrameData * pData, AV_View *pView);
-	void _setYScrollRange(AP_FrameData * pData, AV_View *pView);
+	virtual void 				_setXScrollRange(AP_FrameData * pData, AV_View *pView);
+	virtual void 				_setYScrollRange(AP_FrameData * pData, AV_View *pView);
+	virtual void 				_scrollFuncX(UT_sint32 xoff, UT_sint32 xlimit);
+	virtual void 				_scrollFuncY(UT_sint32 yoff, UT_sint32 ylimit);
 
 	static bool _RegisterClass(XAP_Win32App * app);
 
@@ -62,6 +67,9 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	HWND						_getHwndDocument(void)  {  return m_hwndDocument;  }
 	HWND						_getHwndHScroll(void)   {  return m_hWndHScroll;   }
 	HWND						_getHwndVScroll(void)   {  return m_hWndVScroll;   }
+
+	void						_updateContainerWindow(void) { UpdateWindow(_getHwndContainer()); }
+	GR_Win32Graphics *			_createDocWnd_GR_Graphics(void) { return new GR_Win32Graphics(GetDC(_getHwndDocument()), _getHwndDocument(), XAP_App::getApp()); }
 
 	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
 	void						_getVerticalScrollInfo(SCROLLINFO * psi);
@@ -74,6 +82,12 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	HWND						_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParent,
 													   UT_uint32 iLeft, UT_uint32 iTop,
 													   UT_uint32 iWidth);
+
+	// helper methods for helper methods for _showDocument (meta-helper-methods?) :-)
+	void						_getDocumentArea(RECT &r);
+	virtual 					UT_sint32 _getDocumentAreaWidth(void);
+	virtual 					UT_sint32 _getDocumentAreaHeight(void);
+
 /***************************************/
 
  private:

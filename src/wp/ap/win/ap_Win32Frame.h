@@ -39,24 +39,28 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 	virtual XAP_Frame *			cloneFrame(void);
 
-	virtual void				setXScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_setXScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
-	virtual void				setYScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_setYScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
+	virtual void				setXScrollRange(void) {  getAPWin32FrameImpl()->_setXScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
+	virtual void				setYScrollRange(void) {  getAPWin32FrameImpl()->_setYScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
 
 	virtual void				setStatusMessage(const char * szMsg) {  static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);  }
 
 	static bool 				RegisterClass(XAP_Win32App * app) {  return AP_Win32FrameImpl::_RegisterClass(app); }
 
 	virtual void 				toggleRuler(bool bRulerOn)     {  toggleTopRuler(bRulerOn);  toggleLeftRuler(bRulerOn);  }
-	virtual void				toggleTopRuler(bool bRulerOn)  {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_toggleTopRuler(this, bRulerOn);  }
-	virtual void				toggleLeftRuler(bool bRulerOn) {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_toggleLeftRuler(this, bRulerOn);  }
+	virtual void				toggleTopRuler(bool bRulerOn)  {  getAPWin32FrameImpl()->_toggleTopRuler(this, bRulerOn);  }
+	virtual void				toggleLeftRuler(bool bRulerOn) {  getAPWin32FrameImpl()->_toggleLeftRuler(this, bRulerOn);  }
 
-	virtual HWND				getTopLevelWindow(void) const {  return static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_getTopLevelWindow();  }
+	virtual HWND				getTopLevelWindow(void) const {  return getAPWin32FrameImpl()->_getTopLevelWindow();  }
 
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32				getZoomPercentage(void);
 
-	void 						toggleBar(UT_uint32 iBarNb, bool bBarOn);
+	void 						toggleBar(UT_uint32 iBarNb, bool bBarOn) { getAPWin32FrameImpl()->_toggleBar(iBarNb, bBarOn); }
 	void 						toggleStatusBar(bool bStatusBarOn);
+
+	// save from thousands of casts
+	AP_Win32FrameImpl *			getAPWin32FrameImpl(void) const { return static_cast<AP_Win32FrameImpl *>(getFrameImpl()); }
+	AP_FrameData *				getAPFrameData(void) const { return static_cast<AP_FrameData*>(getFrameData()); }
 
  protected:
 	// helper methods for _showDocument
@@ -67,7 +71,7 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 				      ap_Scrollbar_ViewListener *& pScrollbarViewListener,
 				      AV_ListenerId &lid, 
 				      AV_ListenerId &lidScrollbarViewListener);	
-	virtual void _bindToolbars(AV_View *pView);
+	virtual void _bindToolbars(AV_View *pView) { getAPWin32FrameImpl()->_bindToolbars(pView); }
 	virtual void _replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 			  AV_View *pView, AV_ScrollObj * pScrollObj,
 			  ap_ViewListener *pViewListener, AD_Document *pOldDoc,
@@ -76,10 +80,14 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 			  UT_uint32 iZoom);
 
 	// helper methods for helper methods for _showDocument (meta-helper-methods?) :-)
-	virtual UT_sint32 _getDocumentAreaWidth();
-	virtual UT_sint32 _getDocumentAreaHeight();
+	virtual UT_sint32 _getDocumentAreaWidth(void) { return getAPWin32FrameImpl()->_getDocumentAreaWidth(); }
+	virtual UT_sint32 _getDocumentAreaHeight(void) { return getAPWin32FrameImpl()->_getDocumentAreaHeight(); }
 
  private:
+	 UT_Vector					m_vecToolbars;
+	UT_Vector					m_vecToolbarLayoutNames;
+	void						_showOrHideToolbars(void);
+	void						_showOrHideStatusbar(void);
 
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);

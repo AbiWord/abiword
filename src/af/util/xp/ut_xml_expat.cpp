@@ -113,7 +113,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 
       if (!XML_Parse (parser, buffer, length, done))
 	{
-	  UT_DEBUGMSG (("%s at line %d\n", XML_ErrorString (XML_GetErrorCode (parser)), XML_GetCurrentLineNumber (parser)));
+	  UT_WARNINGMSG(("Parse error loading file %s, %s at line %d\n", szFilename, XML_ErrorString (XML_GetErrorCode (parser)), XML_GetCurrentLineNumber (parser)));
 	  ret = UT_IE_IMPORTERROR;
 	  break;
 	}
@@ -158,7 +158,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   if (!XML_Parse (parser, buffer, (int) length, 1))
     {
-      UT_DEBUGMSG (("%s at line %d\n", XML_ErrorString (XML_GetErrorCode (parser)), XML_GetCurrentLineNumber (parser)));
+      UT_WARNINGMSG(("Parse error, %s at line %d\n", XML_ErrorString (XML_GetErrorCode (parser)), XML_GetCurrentLineNumber (parser)));
       ret = UT_IE_IMPORTERROR;
     }
 

@@ -23,8 +23,9 @@
 #include "ut_debugmsg.h"
 
 #include "gr_Win32Graphics.h"
-#include "xav_View.h"
 #include "xad_Document.h"
+#include "xav_View.h"
+#include "xap_ViewListener.h"
 #include "xap_Scrollbar_ViewListener.h"
 
 #ifdef _MSC_VER
@@ -67,98 +68,15 @@ bool AP_Win32Frame::initialize(XAP_FrameMode frameMode)
 									AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
 		return false;
 
-	AP_Win32FrameImpl * pFrameImpl = static_cast<AP_Win32FrameImpl *>(getFrameImpl());
-
-	pFrameImpl->_showOrHideToolbars();
-	pFrameImpl->_showOrHideStatusbar();
+	getAPWin32FrameImpl()->_showOrHideToolbars();
+	getAPWin32FrameImpl()->_showOrHideStatusbar();
 
 	return true;
 }
 
-void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
-{
-	UT_DEBUGMSG(("AP_Win32Frame::toggleBar %d, %d\n", iBarNb, bBarOn));
-
-#if INPROGRESS
-	// TMN: Yes, this cast is correct. We store EV_Win32Toolbar in
-	// m_vecToolbars, but we only need the EV_Toolbar part of it.
-	// Tomas (Jan 25, 2003): I have removed the m_vecToolbars, etc. from this class,
-	// since they hide the members in the base classs (which is what
-	// we should be accessing)
-	EV_Toolbar* pToolbar = (EV_Toolbar*)m_vecToolbars.getNthItem(iBarNb);
-
-	UT_ASSERT(pToolbar);
-
-	if (!pToolbar)	// release build paranoia
-	{
-		return;
-	}
-
-	if (bBarOn)
-	{
-		pToolbar->show();
-	}
-	else
-	{
-		pToolbar->hide();
-	}
-
-	int iToolbarCount = 0;
-	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
-	{
-		EV_Win32Toolbar *pThisToolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(i);
-
-		UT_ASSERT(pThisToolbar);
-
-		if (pThisToolbar)	// release build paranoia
-			if ( pThisToolbar->bVisible() )
-				iToolbarCount++;
-	}
-
-	if( !iToolbarCount || ((iToolbarCount == 1) && bBarOn) )
-	{
-		RECT r;
-
-		ShowWindow( m_hwndRebar, (iToolbarCount ? SW_SHOW : SW_HIDE) );
-
-		MoveWindow(m_hwndRebar, 0, 0, (iToolbarCount ? m_iSizeWidth : 1),
-									  (iToolbarCount ? m_iSizeHeight : 1), TRUE);
-
-		if( iToolbarCount )
-		{
-			GetClientRect(m_hwndRebar, &r);
-			m_iBarHeight = r.bottom - r.top + 6;
-		}
-		else
-			m_iBarHeight = 1;
-
-		GetClientRect(m_hwndContainer, &r);
-		_onSize(r.right - r.left, r.bottom - r.top);
-	}
-
-	// We *need* to make the window recalc its layout after adding/removing a
-	// toolbar in the rebar control. Since we have no "recalcLayout" I'm
-	// aware of we use this not-so-good-but-old idiom of resizing the window.
-	RECT rc;
-	GetWindowRect(m_hwndFrame, &rc);
-	const int cx = rc.right - rc.left;
-	const int cy = rc.bottom - rc.top;
-	const UINT fFlags =
-		SWP_FRAMECHANGED	|
-		SWP_NOACTIVATE		|
-		SWP_NOCOPYBITS		|
-		SWP_NOMOVE			|
-		SWP_NOOWNERZORDER	|
-		SWP_NOZORDER;
-	SetWindowPos(m_hwndFrame, 0, 0, 0, cx - 1, cy - 1, fFlags | SWP_NOREDRAW);
-	SetWindowPos(m_hwndFrame, 0, 0, 0, cx, cy, fFlags);
-
-#endif /* INPROGRESS */
-}
-
 void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 {
-	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
+	AP_FrameData *pFrameData = getAPFrameData();
 	UT_return_if_fail(pFrameData);
 	UT_return_if_fail(pFrameData->m_pStatusBar);
 
@@ -171,7 +89,7 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 		pFrameData->m_pStatusBar->hide();
 	}
 
-	UpdateWindow(static_cast<AP_Win32FrameImpl *>(getFrameImpl())->_getHwndContainer());
+	getAPWin32FrameImpl()->_updateContainerWindow();
 }
 
 
@@ -182,14 +100,13 @@ void AP_Win32Frame::setZoomPercentage(UT_uint32 iZoom)
 
 UT_uint32 AP_Win32Frame::getZoomPercentage(void)
 {
-	return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();
+	return getAPFrameData()->m_pG->getZoomPercentage();
 }
 
 /************** helper methods for _showDocument ************************/
 bool AP_Win32Frame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
-	HWND hwndDocument = static_cast<AP_Win32FrameImpl *>(getFrameImpl())->_getHwndDocument();
-	pG = new GR_Win32Graphics(GetDC(hwndDocument), hwndDocument, getApp());
+	pG = getAPWin32FrameImpl()->_createDocWnd_GR_Graphics();
 	UT_return_val_if_fail(pG, false);
 
 	pG->setZoomPercentage(iZoom);
@@ -236,7 +153,6 @@ bool AP_Win32Frame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& p
 	pScrollObj = new AV_ScrollObj(this, _scrollFuncX, _scrollFuncY);
 	UT_return_val_if_fail(pScrollObj, false);
 
-#if INPROGRESS
 	pViewListener = new ap_ViewListener(this);
 	UT_return_val_if_fail(pViewListener, false);
 
@@ -246,17 +162,11 @@ bool AP_Win32Frame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& p
 	if (!pView->addListener(pViewListener,&lid) ||
 		!pView->addListener(pScrollbarViewListener, &lidScrollbarViewListener))
 	{
-		UT_ASSERT(0);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-#endif
 
 	return true;
-}
-
-void AP_Win32Frame::_bindToolbars(AV_View *pView)
-{
-	static_cast<AP_Win32FrameImpl *>(getFrameImpl())->_bindToolbars(pView);
 }
 
 void AP_Win32Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
@@ -303,86 +213,28 @@ void AP_Win32Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 			props[0] = "lang";
 			props[1] = doc_locale;
 			props[2] = 0;
-			static_cast<FV_View *>(m_pView)->setCharFormat(props);
+			static_cast<FV_View *>(pView)->setCharFormat(props);
 		}
 		
-		static_cast<FV_View *>(m_pView)->notifyListeners(AV_CHG_ALL);
-		static_cast<FV_View *>(m_pView)->focusChange(AV_FOCUS_HERE);
+		static_cast<FV_View *>(pView)->notifyListeners(AV_CHG_ALL);
+		static_cast<FV_View *>(pView)->focusChange(AV_FOCUS_HERE);
 	}	
 }
 
-
-/*** helper methods for helper methods for _showDocument (meta-helper-methods?) :-) ***/
-/* called by AP_Frame::_replaceView which is called by AP_Frame::_showDocument
- * Prior to refactoring this was:
-	RECT r;
-	GetClientRect(hwnd, &r);
-	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
-	InvalidateRect(hwnd, NULL, TRUE);
- * oh well
- */
-
-UT_sint32 AP_Win32Frame::_getDocumentAreaWidth(void)
-{
-	HWND hwnd = static_cast<AP_Win32FrameImpl *>(getFrameImpl())->_getHwndDocument();
-	RECT r;
-	GetClientRect(hwnd, &r);
-	InvalidateRect(hwnd, NULL, TRUE);
-	return r.right - r.left;
-}
-
-UT_sint32 AP_Win32Frame::_getDocumentAreaHeight(void)
-{
-	HWND hwnd = static_cast<AP_Win32FrameImpl *>(getFrameImpl())->_getHwndDocument();
-	RECT r;
-	GetClientRect(hwnd, &r);
-	InvalidateRect(hwnd, NULL, TRUE);
-	return r.bottom - r.top;
-}
-
-
-void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 /*ylimit*/)
+void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 ylimit)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
-
-	// scroll event came in (probably from an EditMethod (like a PageDown
-	// or insertData or something).  update the on-screen scrollbar and
-	// then warp the document window contents.
-
-	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
-	UT_ASSERT(pWin32Frame);
-	AP_Win32FrameImpl * pWin32FrameImpl = static_cast<AP_Win32FrameImpl *>(pWin32Frame->getFrameImpl());
-	UT_ASSERT(pWin32FrameImpl);
-
-	SCROLLINFO si = { 0 };
-	si.cbSize = sizeof(si);
-	si.fMask = SIF_ALL;
-
-	pWin32FrameImpl->_getVerticalScrollInfo(&si);
-	si.nPos = _UD(yoff);
-	pWin32FrameImpl->_setVerticalScrollInfo(&si);
-	pWin32FrameImpl->_getVerticalScrollInfo(&si); // values may have been clamped
-	pWin32Frame->m_pView->setYScrollOffset(_UL(si.nPos));
-}
-
-void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 /*xlimit*/)
-{
-	// this is a static callback function and doesn't have a 'this' pointer.
-
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
 	UT_ASSERT(pWin32Frame);
 
-	SCROLLINFO si = { 0 };
-	si.cbSize = sizeof(si);
-	si.fMask = SIF_ALL;
-
-	HWND hwndH = static_cast<AP_Win32FrameImpl *>(pWin32Frame->getFrameImpl())->_getHwndHScroll();
-	GetScrollInfo(hwndH, SB_CTL, &si);
-
-	si.nPos = _UD(xoff);
-	SetScrollInfo(hwndH, SB_CTL, &si, TRUE);
-
-	GetScrollInfo(hwndH, SB_CTL, &si);	// may have been clamped
-	pWin32Frame->m_pView->setXScrollOffset(_UL(si.nPos));
+	pWin32Frame->getAPWin32FrameImpl()->_scrollFuncY(yoff, ylimit);
 }
 
+void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 xlimit)
+{
+	// this is a static callback function and doesn't have a 'this' pointer.
+	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
+	UT_ASSERT(pWin32Frame);
+
+	pWin32Frame->getAPWin32FrameImpl()->_scrollFuncX(xoff, xlimit);
+}

@@ -39,8 +39,26 @@ void _UT_OutputMessage(const char *s, ...)
 	vsprintf(sBuf, s, marker);
 #else
 	// MPritchett or others: REVERT THIS IF NECESSARY
-	_vsnprintf(sBuf, 1024, s, marker);
+	_vsnprintf(sBuf, sizeof(sBuf), s, marker);
 #endif
 
 	OutputDebugString(sBuf);
+}
+
+
+#ifdef _UT_WarningMessage
+#undef _UT_WarningMessage
+#endif
+/*
+ * Similar to UT_DEBUGMSG, except exists even in production (non-debug) builds
+ */
+void _UT_WarningMessage(const char *s, ...)
+{
+	char sBuf[1024];
+	va_list marker;
+
+	va_start(marker, s);
+	_vsnprintf(sBuf, sizeof(sBuf), s, marker);
+
+	MessageBox(NULL, sBuf, "Warning", MB_OK | MB_ICONWARNING);
 }
