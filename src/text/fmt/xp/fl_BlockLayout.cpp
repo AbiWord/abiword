@@ -3238,7 +3238,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	//const XML_Char* pszParam = NULL;
 	pSpanAP->getAttribute("type", pszType);
 	//pSpanAP->getAttribute("param", pszParam);
-	UT_ASSERT(pszType);
+	UT_return_val_if_fail(pszType, false);
 
 	// Create the field run.
 
