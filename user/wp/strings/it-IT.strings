@@ -80,7 +80,7 @@ DLG_UP_PrintIn="Stampa: "
 DLG_UP_BlackWhite="In Bianco e Nero"
 DLG_UP_Grayscale="A Toni di Grigio"
 DLG_UP_Color="A Colori"
-DDLG_Insert_SymbolTitle="Inserisci Simbolo"
+DLG_Insert_SymbolTitle="Inserisci Simbolo"
 />
 
 <Strings	class="AP"
