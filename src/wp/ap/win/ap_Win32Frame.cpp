@@ -1122,6 +1122,13 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 	}
+	case WM_IME_CHAR:
+	{
+		ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+		if (pWin32Keyboard->onIMEChar(pView,hwnd,iMsg,wParam,lParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	}
 
 	case WM_MOUSEMOVE:
 		if (f->_isTracking())

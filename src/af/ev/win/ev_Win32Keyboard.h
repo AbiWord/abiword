@@ -37,17 +37,24 @@ public:
 
 	bool onKeyDown(AV_View * pView,
 					  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
+
+	bool onIMEChar(AV_View * pView,
+					  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
+
 	bool onChar(AV_View * pView,
 				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
-	
+
 protected:
 	EV_EditBits			_getModifierState(void);
 	void				_translateMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	void				_emitChar(AV_View * pView,
 								  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
-								  BYTE b, EV_EditModifierState ems);
+								  WCHAR b, EV_EditModifierState ems);
+	int					_scanCodeToChars(UINT nVirtKey, UINT wScanCode,
+										 CONST PBYTE lpKeyState, LPWSTR pwszBuff, int cchBuff);
 	HKL					m_hKeyboardLayout;
 	UT_iconv_t			m_iconv; /* Selected translation to Unicode */
+	bool				m_bIsUnicodeInput;
 };
 
 #endif /* EV_WIN32KEYBOARD_H */

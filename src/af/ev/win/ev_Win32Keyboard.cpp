@@ -168,6 +168,7 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 {
 	m_hKeyboardLayout = 0;
 	m_iconv = (UT_iconv_t)-1;
+	m_bIsUnicodeInput = false;
 	remapKeyboard(GetKeyboardLayout(0));
 }
 
@@ -179,7 +180,7 @@ ev_Win32Keyboard::~ev_Win32Keyboard()
 
 void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 {
-	char  szCodePage[10];
+	char  szCodePage[16];
 
 	if( m_iconv != (UT_iconv_t)-1 )
 	{
@@ -191,6 +192,19 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 		strcpy( szCodePage, "CP" );
 		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
 		{
+			// Unicode locale?
+			// TODO Would UCS-2-LE / UCS-2-BE be preferable?
+			// TODO Does NT use UCS-2-BE internally on non-Intel CPUs?
+			if( !strcmp( szCodePage, "CP0" ) )
+			{
+				m_bIsUnicodeInput = true;
+				strcpy( szCodePage, "UCS-2-INTERNAL" );
+			}
+			else
+				m_bIsUnicodeInput = false;
+
+			UT_DEBUGMSG(("New keyboard codepage: %s\n",szCodePage));
+
 			m_iconv = UT_iconv_open( "UCS-2-INTERNAL", szCodePage );
 		}
 
@@ -371,12 +385,13 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	// an unnamed-virtual-key -- a character key possibly with some sugar on it.
 
 	BYTE keyState[256];
-	BYTE buffer[2];
+	WCHAR buffer[2] = {0,0};
 	int count;
 
 	unsigned int scancode = (keyData & 0x00ff0000)>>16;
 	GetKeyboardState(keyState);
-	count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,m_hKeyboardLayout);
+
+	count = _scanCodeToChars(nVirtKey,scancode,keyState,buffer,sizeof(buffer));
 
 	if (count == -1)
 	{
@@ -405,7 +420,7 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		keyState[VK_RCONTROL] &= ~0x80;
 		keyState[VK_RMENU] &= ~0x80;
 
-		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,m_hKeyboardLayout);
+		count = _scanCodeToChars(nVirtKey,scancode,keyState,buffer,sizeof(buffer));
 
 		if (count == 1)
 		{
@@ -477,7 +492,7 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		keyState[VK_RCONTROL] &= ~0x80;
 		keyState[VK_RMENU] &= ~0x80;
 		
-		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,m_hKeyboardLayout);
+		count = _scanCodeToChars(nVirtKey,scancode,keyState,buffer,sizeof(buffer));
 
 		if (count == 1)
 		{
@@ -499,9 +514,22 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	}
 }
 
+bool ev_Win32Keyboard::onIMEChar(AV_View * pView,
+									HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	WCHAR b = wParam;
+
+	// 2nd byte of MBCS is in high byte of word
+	if (!m_bIsUnicodeInput && (wParam & 0xff00))
+		b = ((BYTE)(wParam >> 8)) | ((BYTE)wParam << 8);
+	
+	_emitChar(pView,hWnd,iMsg,wParam,lParam,b,0);
+	return true;
+}
+
 void ev_Win32Keyboard::_emitChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
-								 BYTE b, EV_EditModifierState ems)
+								 WCHAR b, EV_EditModifierState ems)
 {
 	// do the dirty work of pumping this character thru the state machine.
 
@@ -510,7 +538,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	//			 (ems&EV_EMS_CONTROL)?"control":"",
 	//			 (ems&EV_EMS_ALT)?"alt":""));
 
-	UT_uint16 charData;
+	UT_uint16 charData[2];
 	if( m_iconv != (UT_iconv_t)-1 )
 	{
 		// convert to 8bit string and null terminate
@@ -518,12 +546,18 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 		const char *In = (const char *)&b;
 		char *Out = (char *)&charData;
 
-		len_in = 1;
-		len_out = 2;
-		UT_iconv( m_iconv, &In, &len_in, &Out, &len_out );
+		// 2 bytes for Unicode and MBCS
+		len_in = (m_bIsUnicodeInput || (nVirtKey & 0xff00)) ? 2 : 1;
+		len_out = 4;
+
+		if (UT_iconv( m_iconv, &In, &len_in, &Out, &len_out ) == -1)
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	else
-		charData = b;
+	{
+		charData[0] = b;
+		charData[1] = 0;
+	}
 
 	EV_EditMethod * pEM;
 	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|b,&pEM);
@@ -545,7 +579,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeKeyboardMethod(pView,pEM,&charData,1);
+		invokeKeyboardMethod(pView,pEM,charData,1);
 		break;
 
 	case EV_EEMR_INCOMPLETE:
@@ -608,6 +642,15 @@ void ev_Win32Keyboard::_translateMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 	new_msg.pt.y = 0;
 	TranslateMessage(&new_msg);
 }
+
+int ev_Win32Keyboard::_scanCodeToChars(UINT nVirtKey, UINT wScanCode, CONST PBYTE lpKeyState,
+									   LPWSTR pwszBuff, int cchBuff)
+{
+	if (m_bIsUnicodeInput)
+		return ToUnicodeEx(nVirtKey,wScanCode,lpKeyState,pwszBuff,cchBuff,0,m_hKeyboardLayout);
+	else
+		return ToAsciiEx(nVirtKey,wScanCode,lpKeyState,pwszBuff,0,m_hKeyboardLayout);
+};
 
 /*****************************************************************/
 /*****************************************************************/
