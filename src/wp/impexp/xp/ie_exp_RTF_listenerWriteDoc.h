@@ -90,6 +90,8 @@ protected:
 	void                _close_table(void);
 	void                _open_cell(PT_AttrPropIndex api);
 	void                _open_table(PT_AttrPropIndex api);
+	void                _export_AbiWord_Table_props(PT_AttrPropIndex api);
+	void                _export_AbiWord_Cell_props(PT_AttrPropIndex api);
 	void                _newRow(void);
 	void                _outputTableBorders(UT_sint32 iThick);
 	void                _outputCellBorders(UT_sint32 iThick);

@@ -603,6 +603,10 @@ private:
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
 
+	bool HandleAbiTable(void);
+	bool HandleAbiCell(void);
+	bool HandleAbiEndTable(void);
+	bool HandleAbiEndCell(void);
 	bool HandleAbiLists(void);
 	bool HandleLists(_rtfListTable & rtfListTable );
         UT_uint32 mapID(UT_uint32 id);

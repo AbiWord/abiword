@@ -896,6 +896,248 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 }
 }
 
+
+/*!
+ * This exports all the properties in a cell strux by extending rtf with
+ * a \*\abicellproperties keyword.
+ * Code mostly copied for fl_TableLayout::_lookupProperties. This code should
+ * should be updated when new properties are defined.
+ */
+void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api)
+{
+//
+// Export abiword table properties as an extension
+// Use these for cutting and pasting within abiword.
+//
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	UT_String sCellProps;
+	const PP_AttrProp* pSectionAP = NULL;
+	m_pDocument->getAttrProp(api, &pSectionAP);
+	const char* pszHomogeneous = NULL;
+	pSectionAP->getProperty("homogeneous", (const XML_Char *&)pszHomogeneous);
+	UT_String sPropVal;
+	UT_String sProp;
+	const char* pszLeftOffset = NULL;
+	const char* pszTopOffset = NULL;
+	const char* pszRightOffset = NULL;
+	const char* pszBottomOffset = NULL;
+	pSectionAP->getProperty("cell-margin-left", (const XML_Char *&)pszLeftOffset);
+	pSectionAP->getProperty("cell-margin-top", (const XML_Char *&)pszTopOffset);
+	pSectionAP->getProperty("cell-margin-right", (const XML_Char *&)pszRightOffset);
+	pSectionAP->getProperty("cell-margin-bottom", (const XML_Char *&)pszBottomOffset);
+
+	if(pszLeftOffset && pszLeftOffset[0])
+	{
+		sProp = "cell-margin-left";
+		sPropVal= pszLeftOffset;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	if(pszTopOffset && pszTopOffset[0])
+	{
+		sProp = "cell-margin-top";
+		sPropVal= pszTopOffset;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	if(pszRightOffset && pszRightOffset[0])
+	{
+		sProp = "cell-margin-right";
+		sPropVal= pszRightOffset;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	if(pszBottomOffset && pszBottomOffset[0])
+	{
+		sProp = "cell-margin-bottom";
+		sPropVal= pszBottomOffset;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	const char* pszLeftAttach = NULL;
+	const char* pszRightAttach = NULL;
+	const char* pszTopAttach = NULL;
+	const char* pszBottomAttach = NULL;
+	pSectionAP->getProperty("left-attach", (const XML_Char *&)pszLeftAttach);
+	pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
+	pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
+	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBottomAttach);
+	xxx_UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
+	if(pszLeftAttach && pszLeftAttach[0])
+	{
+		sProp = "left-attach";
+		sPropVal= pszLeftAttach;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if(pszRightAttach && pszRightAttach[0])
+	{
+		sProp = "right-attach";
+		sPropVal= pszRightAttach;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if(pszTopAttach && pszTopAttach[0])
+	{
+		sProp = "top-attach";
+		sPropVal= pszTopAttach;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if(pszBottomAttach && pszBottomAttach[0])
+	{
+		sProp = "bot-attach";
+		sPropVal= pszBottomAttach;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	/* cell-border properties:
+	 */
+	const char * pszColor = NULL;
+	pSectionAP->getProperty ("color", reinterpret_cast<const XML_Char *>(pszColor));
+	if (pszColor)
+	{
+		sProp = "color";
+		sPropVal= pszColor;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	const char * pszBorderColor = NULL;
+	const char * pszBorderStyle = NULL;
+	const char * pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("bot-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "bot-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	pSectionAP->getProperty ("bot-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "bot-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	pSectionAP->getProperty ("bot-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "bot-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("left-color",      reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("left-style",      reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("left-thickness",  reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "left-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "left-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "left-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("right-color",     reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("right-style",     reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("right-thickness", reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "right-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "right-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "right-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("top-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("top-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("top-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "top-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "top-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "top-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	/* cell fill
+	 */
+	const char * pszBgStyle = NULL;
+	const char * pszBgColor = NULL;
+	const char * pszBackgroundColor = NULL;
+
+	pSectionAP->getProperty ("bg-style",         reinterpret_cast<const XML_Char *>(pszBgStyle));
+	if (pszBgStyle && *pszBgStyle)
+	{
+		sProp = "bg-style";
+		sPropVal= pszBgStyle;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	pSectionAP->getProperty ("bgcolor",          reinterpret_cast<const XML_Char *>(pszBgColor));
+	if (pszBgColor && *pszBgColor)
+	{
+		sProp = "bgcolor";
+		sPropVal= pszBgColor;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+	pSectionAP->getProperty ("background-color", reinterpret_cast<const XML_Char *>(pszBackgroundColor));
+	if (pszBackgroundColor && *pszBackgroundColor)
+	{
+		sProp = "background-color";
+		sPropVal= pszBackgroundColor;
+		UT_String_setProperty(sCellProps,sProp,sPropVal);
+	}
+
+	UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
+	m_pie->_rtf_keyword("abicellprops ",sCellProps.c_str());
+
+	m_pie->_rtf_close_brace();
+}
+
 void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 {
 //
@@ -906,6 +1148,8 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	{
 		_open_table(api);
 	}
+	_export_AbiWord_Cell_props(api);
+
 	UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
 	m_Table.OpenCell(api);
@@ -1268,6 +1512,295 @@ double s_RTF_ListenerWriteDoc::_getColumnWidthInches(void)
 	return colWidth;
 }
 
+/*!
+ * This exports all the properties in atable strux by extend rtf with
+ * a \*\abitableproperties keyword.
+ * Code mostly copied for fl_TableLayout::_lookupProperties. This code should
+ * should be updated when new properties are defined.
+ */
+void s_RTF_ListenerWriteDoc::_export_AbiWord_Table_props(PT_AttrPropIndex api)
+{
+//
+// Export abiword table properties as an extension
+// Use these for cutting and pasting within abiword.
+//
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	UT_String sTableProps;
+	const PP_AttrProp* pSectionAP = NULL;
+	m_pDocument->getAttrProp(api, &pSectionAP);
+	const char* pszHomogeneous = NULL;
+	pSectionAP->getProperty("homogeneous", (const XML_Char *&)pszHomogeneous);
+	UT_String sPropVal;
+	UT_String sProp;
+	if (pszHomogeneous && pszHomogeneous[0])
+	{
+		if(atoi(pszHomogeneous) == 1)
+		{
+			sProp = "homogeneous";
+			sPropVal= "1";
+			UT_String_setProperty(sTableProps,sProp,sPropVal);
+		}
+	}
+	const char* pszLeftOffset = NULL;
+	const char* pszTopOffset = NULL;
+	const char* pszRightOffset = NULL;
+	const char* pszBottomOffset = NULL;
+	pSectionAP->getProperty("table-margin-left", (const XML_Char *&)pszLeftOffset);
+	pSectionAP->getProperty("table-margin-top", (const XML_Char *&)pszTopOffset);
+	pSectionAP->getProperty("table-margin-right", (const XML_Char *&)pszRightOffset);
+	pSectionAP->getProperty("table-margin-bottom", (const XML_Char *&)pszBottomOffset);
+
+	if(pszLeftOffset && pszLeftOffset[0])
+	{
+		sProp = "table-margin-left";
+		sPropVal= pszLeftOffset;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	if(pszTopOffset && pszTopOffset[0])
+	{
+		sProp = "table-margin-top";
+		sPropVal= pszTopOffset;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	if(pszRightOffset && pszRightOffset[0])
+	{
+		sProp = "table-margin-right";
+		sPropVal= pszRightOffset;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	if(pszBottomOffset && pszBottomOffset[0])
+	{
+		sProp = "table-margin-bottom";
+		sPropVal= pszBottomOffset;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	const char * pszLineThick = NULL;
+	pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
+	if(pszLineThick && *pszLineThick)
+	{
+		sProp = "table-line-thickness";
+		sPropVal= pszLineThick;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	const char * pszTableColSpacing = NULL;
+	const char * pszTableRowSpacing = NULL;
+	pSectionAP->getProperty("table-col-spacing", (const XML_Char *&)pszTableColSpacing);
+	pSectionAP->getProperty("table-row-spacing", (const XML_Char *&)pszTableRowSpacing);
+	if(pszTableColSpacing && *pszTableColSpacing)
+	{
+		sProp = "table-col-spacing";
+		sPropVal= pszTableColSpacing;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if(pszTableRowSpacing && *pszTableRowSpacing)
+	{
+		sProp = "table-row-spacing";
+		sPropVal= pszTableRowSpacing;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	const char * pszLeftColPos = NULL;
+	const char * pszColumnProps = NULL;
+	pSectionAP->getProperty("table-column-leftpos", (const XML_Char *&)pszLeftColPos);
+	pSectionAP->getProperty("table-column-props", (const XML_Char *&)pszColumnProps);
+	if(pszLeftColPos && *pszLeftColPos)
+	{
+		sProp = "table-column-leftpos";
+		sPropVal= pszLeftColPos;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if(pszColumnProps && *pszColumnProps)
+	{
+		sProp = "table-column-props";
+		sPropVal= pszColumnProps;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+//
+// global row height type
+//
+	const char * pszRowHeightType = NULL;
+	const char * pszRowHeight = NULL;
+	pSectionAP->getProperty("table-row-height-type",(const XML_Char *&) pszRowHeightType);
+	if(pszRowHeightType && *pszRowHeightType)
+	{
+		sProp = "table-row-height-type";
+		sPropVal= pszRowHeightType;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	pSectionAP->getProperty("table-row-height",(const XML_Char *&) pszRowHeight);
+	if(pszRowHeight && *pszRowHeight)
+	{
+		sProp = "table-row-height";
+		sPropVal= pszRowHeight;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+//
+// Positioned row controls
+//
+	const char * pszRowHeights = NULL;
+	pSectionAP->getProperty("table-row-heights", (const XML_Char *&)pszRowHeights);
+	if(pszRowHeights && *pszRowHeights)
+	{
+		sProp = "table-row-heights";
+		sPropVal= pszRowHeights;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	/* table-border properties:
+	 */
+	const char * pszColor = NULL;
+	pSectionAP->getProperty ("color", reinterpret_cast<const XML_Char *>(pszColor));
+	if (pszColor)
+	{
+		sProp = "color";
+		sPropVal= pszColor;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	const char * pszBorderColor = NULL;
+	const char * pszBorderStyle = NULL;
+	const char * pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("bot-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "bot-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	pSectionAP->getProperty ("bot-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "bot-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	pSectionAP->getProperty ("bot-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "bot-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("left-color",      reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("left-style",      reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("left-thickness",  reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "left-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "left-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "left-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("right-color",     reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("right-style",     reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("right-thickness", reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "right-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "right-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "right-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("top-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("top-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("top-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+	if (pszBorderColor && *pszBorderColor)
+	{
+		sProp = "top-color";
+		sPropVal= pszBorderColor;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if (pszBorderStyle && *pszBorderStyle)
+	{
+		sProp = "top-style";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	if (pszBorderWidth && *pszBorderWidth)
+	{
+		sProp = "top-thickness";
+		sPropVal= pszBorderStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
+	/* table fill
+	 */
+	const char * pszBgStyle = NULL;
+	const char * pszBgColor = NULL;
+	const char * pszBackgroundColor = NULL;
+
+	pSectionAP->getProperty ("bg-style",         reinterpret_cast<const XML_Char *>(pszBgStyle));
+	if (pszBgStyle && *pszBgStyle)
+	{
+		sProp = "bg-style";
+		sPropVal= pszBgStyle;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	pSectionAP->getProperty ("bgcolor",          reinterpret_cast<const XML_Char *>(pszBgColor));
+	if (pszBgColor && *pszBgColor)
+	{
+		sProp = "bgcolor";
+		sPropVal= pszBgColor;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	pSectionAP->getProperty ("background-color", reinterpret_cast<const XML_Char *>(pszBackgroundColor));
+	if (pszBackgroundColor && *pszBackgroundColor)
+	{
+		sProp = "background-color";
+		sPropVal= pszBackgroundColor;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+	UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
+	m_pie->_rtf_keyword("abitableprops ",sTableProps.c_str());
+
+	m_pie->_rtf_close_brace();
+}
+
+
 void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 {
 	m_Table.OpenTable(m_sdh,api);
@@ -1276,11 +1809,15 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 	m_iRight = -1;
 	m_iTop = -1;
 	m_iBot = -1;
+//
+// Export the AbiWord table Properties as RTF extension
+//
+	_export_AbiWord_Table_props(api);
+
 	if(m_Table.getNestDepth() > 1)
 	{
 		m_pie->_rtf_open_brace();
 	}
-
 }
 
 void s_RTF_ListenerWriteDoc::_close_cell(void)
@@ -1297,6 +1834,11 @@ void s_RTF_ListenerWriteDoc::_close_cell(void)
 	{
 		m_pie->_rtf_keyword("nestcell");
 	}
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword("abiendcell");
+	m_pie->_rtf_close_brace();
+
 	m_Table.CloseCell();
 }
 
@@ -1335,6 +1877,10 @@ void s_RTF_ListenerWriteDoc::_close_table(void)
 		m_iTop = m_Table.getTop();
 		m_iBot = m_Table.getBot();
 	}
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword("abiendtable");
+	m_pie->_rtf_close_brace();
 }
 
 

@@ -4380,6 +4380,46 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						{
 							return HandleListTag(parameter_star);
 						}
+						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abicellprops") == 0)
+						{
+							if(m_pImportFile != NULL)
+							{
+								UT_DEBUGMSG (("ignoring abicellprops on file import \n"));
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							return HandleAbiCell();
+						}
+						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abitableprops") == 0)
+						{
+							if(m_pImportFile != NULL)
+							{
+								UT_DEBUGMSG (("ignoring abictableprops on file import \n"));
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							return HandleAbiTable();
+						}
+						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendtable") == 0)
+						{
+							if(m_pImportFile != NULL)
+							{
+								UT_DEBUGMSG (("ignoring abiendtable on file import \n"));
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							return HandleAbiEndTable();
+						}
+						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendcell") == 0)
+						{
+							if(m_pImportFile != NULL)
+							{
+								UT_DEBUGMSG (("ignoring abiendcell on file import \n"));
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							return HandleAbiEndCell();
+						}
 						else if (strcmp(reinterpret_cast<char*>(keyword_star),"shppict") == 0)
 						{
 							UT_DEBUGMSG (("ignoring shppict\n"));
@@ -7454,8 +7494,85 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 	// Put the '}' back into the input stream
 	return SkipBackChar(ch);
 }
+///////////////////////////////////////////////////////////////////////////
+// Handle copy and paste of tables by extending RTF. These handlers do that
+///////////////////////////////////////////////////////////////////////////
+
+bool IE_Imp_RTF::HandleAbiTable(void)
+{
+	UT_String sProps;
+	unsigned char ch;
+	if (!ReadCharFromFile(&ch))
+		return false;
+	while(ch == ' ')
+	{
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	while (ch != '}') // Outer loop
+	{
+		sProps += ch;
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	UT_DEBUGMSG(("RTF_Import: Paste: Tables props are: %s \n",sProps.c_str()));
+	const XML_Char * attrs[3] = {"props",NULL,NULL};
+	attrs[1] = sProps.c_str();
+//
+// insert a block to terminate the text before this.
+//
+	PT_DocPosition pointBreak = m_dposPaste;
+	PT_DocPosition pointTable = 0;
+	bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+//
+// Insert the table strux at the same spot. This will make the table link correctly in the
+// middle of the broken text.
+	getDoc()->insertStrux(m_dposPaste,PTX_SectionTable,attrs,NULL);
+	m_dposPaste++;	
+	return true;
+}
 
 
+bool IE_Imp_RTF::HandleAbiCell(void)
+{
+	UT_String sProps;
+	unsigned char ch;
+	if (!ReadCharFromFile(&ch))
+		return false;
+	while(ch == ' ')
+	{
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	while (ch != '}') // Outer loop
+	{
+		sProps += ch;
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	UT_DEBUGMSG(("RTF_Import: Paste: Cell props are: %s \n",sProps.c_str()));
+	const XML_Char * attrs[3] = {"props",NULL,NULL};
+	attrs[1] = sProps.c_str();
+ 	getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);
+	m_dposPaste++;	
+ 	getDoc()->insertStrux(m_dposPaste,PTX_Block);
+	m_dposPaste++;	
+	return true;
+}
+
+bool IE_Imp_RTF:: HandleAbiEndTable(void)
+{
+	getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
+	m_dposPaste++;	
+	return true;
+}
+
+bool IE_Imp_RTF:: HandleAbiEndCell(void)
+{
+	getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
+	m_dposPaste++;	
+	return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // AbiList table reader
