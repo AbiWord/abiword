@@ -32,6 +32,7 @@
 #include "ap_Win32Dialog_FormatFootnotes.h"
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
+#include "xap_Win32LabelledSeparator.h"
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_##c,pSS->getValue(XAP_STRING_ID_##s))
@@ -65,6 +66,7 @@ void AP_Win32Dialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 	
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 
 	LPCTSTR lpTemplate = NULL;
 	
@@ -136,10 +138,12 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	_DSX(BTN_CANCEL,		DLG_Cancel);				
 	_DS(RADIO_RSEL, 		DLG_FormatFootnotes_FootRestartSec);	
 	_DS(RADIO_PAGE,			DLG_FormatFootnotes_FootRestartPage);
+	_DS(STATIC_INITFOOTVAL,	DLG_FormatFootnotes_FootInitialVal);
 	_DS(STATIC_FSTYLES1,	DLG_FormatFootnotes_FootStyle);
 	_DS(STATIC_FSTYLES2,	DLG_FormatFootnotes_FootStyle);
 	_DS(RADIO_ENDDOC,		DLG_FormatFootnotes_EndPlaceEndDoc);	
 	_DS(RADIO_ENDSEC,		DLG_FormatFootnotes_EndPlaceEndSec);	
+	_DS(STATIC_INITENDVAL,	DLG_FormatFootnotes_EndInitialVal);
 	_DS(STATIC_ESTYLES1,	DLG_FormatFootnotes_EndStyle);
 	_DS(STATIC_ESTYLES2, 	DLG_FormatFootnotes_EndStyle);
 	_DS(RADIO_ERSTSEC, 		DLG_FormatFootnotes_EndRestartSec);
