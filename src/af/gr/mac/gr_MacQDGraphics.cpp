@@ -223,6 +223,7 @@ bool GR_MacGraphics::queryProperties(GR_Graphics::Properties gp) const
 	case DGP_SCREEN:
 		return true;
 	case DGP_PAPER:
+	case DGP_POSTSCRIPT:
 		return false;
 	default:
 		UT_ASSERT(0);

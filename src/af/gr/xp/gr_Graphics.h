@@ -51,6 +51,7 @@ public:
 										   FontFamilyEnum * pff,
 										   FontPitchEnum * pfp,
 										   bool * pbTrueType);
+	
 };
 
 /*
@@ -129,7 +130,7 @@ public:
 						UT_sint32 width, UT_sint32 height) = 0;
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	
-	typedef enum { DGP_SCREEN, DGP_PAPER } Properties;
+	typedef enum { DGP_SCREEN, DGP_PAPER, DGP_POSTSCRIPT } Properties;
 	
 	virtual bool queryProperties(GR_Graphics::Properties gp) const = 0;
 	virtual UT_sint32 getScreenResolution(void) {return 100;} //subclasses to overide

@@ -153,6 +153,8 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 		return (m_pPrintContext) ? false : true;
 	case DGP_PAPER:
 		return (m_pPrintContext) ? true : false;
+	case DGP_POSTSCRIPT:
+		return false;
 	default:
 		UT_ASSERT(0);
 		return false;
