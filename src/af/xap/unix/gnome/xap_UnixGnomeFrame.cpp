@@ -433,9 +433,16 @@ bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View *  pView, const char * szMe
  		// button_release_event and we won't know to release our
  		// grab.  so let's do it here.  (when raised from a keyboard
  		// context menu, we may not have a grab, but that should be ok.
-                pUnixPopup->refreshMenu(pView);
+		pUnixPopup->refreshMenu(pView);
+//
+// OK lets not immediately drop the menu if the user releases the mouse button.
+// From the gtk FAQ.
+//
+
+		GdkEvent * event = gtk_get_current_event();
+		GdkEventButton *bevent = (GdkEventButton *) event; 
 		gnome_popup_menu_do_popup_modal (GTK_WIDGET (pUnixPopup->getMenuHandle ()),
-										 NULL, NULL, NULL, NULL);
+										 NULL, NULL,bevent,(void *) bevent);
  	}
 
  	DELETEP(pUnixPopup);
