@@ -120,4 +120,6 @@ ABI_FE		= Unix
 
 ABIPKGDIR	= freebsd
 
+__FreeBSD__ = 1 #fix wchar.h stuff
+
 # End of freebsd defs
