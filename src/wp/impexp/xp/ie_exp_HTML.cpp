@@ -4146,14 +4146,24 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		m_utf8_1 += szType;
 		m_utf8_1 += "\"";
 
-		UT_UTF8String footnoteAIDString;
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
 		{
+			UT_UTF8String footnoteAIDString;
 			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (m_footnoteNum));
-			m_utf8_1 += footnoteAIDString;	
+			m_utf8_1 += footnoteAIDString;
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 		}
-		
+		else if (UT_strcmp (szType, "footnote_ref") == 0)
+		{
+			UT_UTF8String footnoteRIDString;
+			UT_UTF8String_sprintf(footnoteRIDString, " id=\"fnR%d\"", (m_footnoteRNum));
+			m_utf8_1 += footnoteRIDString;
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+		}
+		else
+		{
 		tagOpen (TT_SPAN, m_utf8_1, ws_None);
+		}
 		
 		if (UT_strcmp (szType, "footnote_ref") == 0)
 		{
@@ -4165,22 +4175,28 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			tagOpen (TT_A, m_utf8_1, ws_None);
 			UT_UTF8String_sprintf(footnoteRNString, "%d", (m_footnoteRNum));
 			m_pie->write (footnoteRNString.utf8_str (), footnoteRNString.byteLength ());
-		}
-		
-		// TODO: Have the anchor link back to the reference.  Should be totally trivial.
-		
-		if (UT_strcmp (szType, "footnote_anchor") == 0)
-		{
-			UT_UTF8String footnoteAnchorString;
-			UT_UTF8String_sprintf(footnoteAnchorString, "[%d]", (m_footnoteNum));
-			m_pie->write (footnoteAnchorString.utf8_str (), footnoteAnchorString.byteLength ());
-		}
 			textUntrusted (field->getValue ());
-
-		if (UT_strcmp (szType, "footnote_ref") == 0)
-		{
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
+			m_footnoteRNum++;
+		}
+		else if (UT_strcmp (szType, "footnote_anchor") == 0)
+		{
+			UT_UTF8String footnoteANString;
+			UT_UTF8String footnoteALString;
+			m_utf8_1 = "a";
+			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (m_footnoteNum));
+			m_utf8_1 += footnoteALString;
+			tagOpen (TT_A, m_utf8_1, ws_None);
+			UT_UTF8String_sprintf(footnoteANString, "[%d]", (m_footnoteNum));
+			m_pie->write (footnoteANString.utf8_str (), footnoteANString.byteLength ());
+			textUntrusted (field->getValue ());
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
+		else
+		{
+			textUntrusted (field->getValue ());
 		}
 		
 		m_utf8_1 = "span";
