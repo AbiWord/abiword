@@ -715,14 +715,18 @@ void AP_UnixApp::loadAllPlugins ()
 			  }
 			  if (pluginIsBundle)
 			  {
+#if 0
 				  if (XAP_ModuleManager::instance().loadBundle (plugin.c_str(), namelist[n]->d_name))
 				  {
 					  UT_DEBUGMSG(("FJF: loaded bundle: %s\n", namelist[n]->d_name));
 				  }
 				  else
 				  {
+#endif
 					  UT_DEBUGMSG(("FJF: didn't load bundle: %s\n", namelist[n]->d_name));
+#if 0
 				  }
+#endif
 				  free(namelist[n]);
 				  continue;
 			  }

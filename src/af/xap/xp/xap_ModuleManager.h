@@ -25,8 +25,10 @@
 
 #include "ut_types.h"
 
-class XAP_Module;
 class UT_Vector;
+
+class XAP_Spider;
+class XAP_Module;
 
 class ABI_EXPORT XAP_ModuleManager
 {
@@ -40,20 +42,25 @@ public:
 
 	static XAP_ModuleManager & instance ();
 
-	bool         loadBundle (const char * szFilename, const char * szBundlename);
 	bool         loadModule (const char * szFilename);
-	bool         unloadModule (XAP_Module * module);
+	UT_uint32    registerPending ();
+	void         unloadModule (XAP_Module * module);
+private:
+	void         unloadModule (UT_sint32 ndx);
+public:
+	void         unloadUnregistered ();
 	void         unloadAllPlugins ();
 
-	const UT_Vector *  enumModules () const;
+	const UT_Vector * enumModules () const;
 
 private:
 
 	XAP_ModuleManager(const XAP_ModuleManager &);		// no impl
 	void operator=(const XAP_ModuleManager &);	        // no impl
 
-	UT_Vector *m_modules;
+	XAP_Spider * m_spider;
 
+	UT_Vector * m_modules;
 };
 
 #endif /* XAP_MODULE_MANAGER_H */

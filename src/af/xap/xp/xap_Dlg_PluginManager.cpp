@@ -42,33 +42,28 @@ bool XAP_Dialog_PluginManager::activatePlugin (const char * szName) const
 bool XAP_Dialog_PluginManager::deactivatePlugin (XAP_Module * which) const
 {
 	UT_ASSERT (which);
-	return XAP_ModuleManager::instance ().unloadModule (which);
+	XAP_ModuleManager::instance ().unloadModule (which);
+	return true;
 }
 
 bool XAP_Dialog_PluginManager::deactivateAllPlugins () const
 {
 	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+
 	UT_ASSERT (pVec);
+	if (pVec == 0) return false;
 
-	bool bAllIsWell = true;
-
-	UT_uint32 size = pVec->size();
-
-	for (UT_uint32 i = 0; i < size; i++)
+	while (UT_uint32 size = pVec->size ())
 	{
-	  // we always get the 0th item because deactivatePlugin alters the
-	  // vector's size by ultimately calling deleteNthItem
-		XAP_Module * pMod = (XAP_Module *)(pVec->getNthItem (0));
-
-		if (!pMod)
+		if (XAP_Module * pMod = reinterpret_cast<XAP_Module *>(pVec->getNthItem (0)))
 		{
-			// how did this happen? well, let's just continue
-			continue;
+			deactivatePlugin (pMod);
 		}
-
-		if (!deactivatePlugin (pMod))
-			bAllIsWell = false;
+		if (pVec->size () == size) // huh?
+		{
+			UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
 	}
-
-	return bAllIsWell;
+	return true;
 }
