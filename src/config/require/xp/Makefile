@@ -46,7 +46,7 @@ _EXPAT_:
 			$(EXPAT_PLATFORM_DEFS) ./configure --disable-shared --enable-static; 	\
 		fi; 							\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
-	elif [ -e /usr/include/expat.h -o -e /usr/local/include/expat.h ]; then 	\
+	elif [ -f /usr/include/expat.h -o -f /usr/local/include/expat.h ]; then 	\
 		echo "*** Found a shared library version of expat.  I'm going to use "; \
 		echo "*** that.  If it doesn't work, you should use the version "; 	\
 		echo "*** distributed with AbiWord."; 					\
