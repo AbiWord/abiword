@@ -458,20 +458,6 @@ void AP_Win32Dialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 	_previewExposed();
 }
 
-void AP_Win32Dialog_Lists::notifyCloseFrame(XAP_Frame *pFrame)
-{
-	// Check that our hWnd still is valid. This is not always the case,
-	// such as when shutting down the application.
-	if (IsWindow(m_hThisDlg))
-	{
-		if (_win32Dialog.isParentFrame(*pFrame))
-		{
-			setbisCustomized(false);
-			setActiveFrame(getActiveFrame());
-		}
-		_updateCaption();
-	}
-}
 
 void AP_Win32Dialog_Lists::_enableControls(void)
 {
