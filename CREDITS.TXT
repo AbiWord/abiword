@@ -85,6 +85,7 @@ Bryan Prusha <bryanp@wolfram.com>               Mac Port Work
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
 Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint, IA64
+Gaetan Ryckeboer <gaetan.ryckeboer@microfox.fr> CSS/HTML script
 Gilles Saint-Denis <stdenisg@cedep.net>         fixes for bugs 787, 282, others
 Pierre Sarrazin <ps@cam.org>
 David Schmitter <dls@globalinitiative.org>      Online Help
