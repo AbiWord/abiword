@@ -265,15 +265,6 @@
                 <SETTING><NAME>SystemSearchPaths</NAME>
                     <SETTING>
                         <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:MacOS Support:Headers:Universal Headers:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
                             <SETTING><NAME>Path</NAME><VALUE>:MSL:</VALUE></SETTING>
                             <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
                             <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
@@ -283,34 +274,7 @@
                     </SETTING>
                     <SETTING>
                         <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:MacOS Support:MacHeaders:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:MacOS Support:Libraries:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
                             <SETTING><NAME>Path</NAME><VALUE>:MacOS Support:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:</VALUE></SETTING>
                             <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
                             <SETTING><NAME>PathRoot</NAME><VALUE>CodeWarrior</VALUE></SETTING>
                         </SETTING>
@@ -659,6 +623,10 @@
                     <SETTING><NAME>PathFormat</NAME><VALUE>Generic</VALUE></SETTING>
                     <SETTING><NAME>PathRoot</NAME><VALUE>Absolute</VALUE></SETTING>
                 </SETTING>
+                <SETTING><NAME>StopAtTempBPOnLaunch</NAME><VALUE>true</VALUE></SETTING>
+                <SETTING><NAME>CacheSymbolics</NAME><VALUE>true</VALUE></SETTING>
+                <SETTING><NAME>TempBPFunctionName</NAME><VALUE>main</VALUE></SETTING>
+                <SETTING><NAME>TempBPType</NAME><VALUE>false</VALUE></SETTING>
 
                 <!-- Settings for "C/C++ Compiler" panel -->
                 <SETTING><NAME>MWFrontEnd_C_cplusplus</NAME><VALUE>0</VALUE></SETTING>
@@ -680,7 +648,7 @@
                 <SETTING><NAME>MWFrontEnd_C_multibyteaware</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWFrontEnd_C_unsignedchars</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWFrontEnd_C_autoinline</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWFrontEnd_C_booltruefalse</NAME><VALUE>0</VALUE></SETTING>
+                <SETTING><NAME>MWFrontEnd_C_booltruefalse</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWFrontEnd_C_direct_to_som</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWFrontEnd_C_som_env_check</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWFrontEnd_C_alwaysinline</NAME><VALUE>0</VALUE></SETTING>
@@ -703,100 +671,6 @@
                 <SETTING><NAME>MWWarning_C_warn_notinlined</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWWarning_C_warn_structclass</NAME><VALUE>0</VALUE></SETTING>
 
-                <!-- Settings for "FTP Panel" panel -->
-                <SETTING><NAME>MWFTP_Post_hostName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_username</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_password</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_remoteDir</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_uploadDir</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_ftp_port</NAME><VALUE>21</VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_SendBin</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_ShouldLog</NAME><VALUE>0</VALUE></SETTING>
-
-                <!-- Settings for "Java Command Line" panel -->
-                <SETTING><NAME>MWCommandLine_Java_clsName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWCommandLine_Java_args</NAME><VALUE></VALUE></SETTING>
-
-                <!-- Settings for "Java Language" panel -->
-                <SETTING><NAME>MWJava_Language_optimize</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_warnDeprecated</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_emitMap</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_strictFileNames</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_strictFileHierarchy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_emitHeaders</NAME><VALUE>NoNativeHeaders</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_packageFilter</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_genComments</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_genHeaders</NAME><VALUE>0</VALUE></SETTING>
-
-                <!-- Settings for "Java MacOS Settings" panel -->
-                <SETTING><NAME>MWJava_MacOS_type</NAME><VALUE>JBindery</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_grow</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_profile</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_verify</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_useHttpProxy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_useFTPProxy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_useFirewallProxy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_outfile</NAME><VALUE>JBoundApp</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_outcreator</NAME><VALUE>1061109567</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_maxMem</NAME><VALUE>1048576</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_minMem</NAME><VALUE>524288</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_red</NAME><VALUE>65535</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_green</NAME><VALUE>65535</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_blue</NAME><VALUE>65535</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdoutType</NAME><VALUE>1464421956</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdinType</NAME><VALUE>1853189228</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_httpProxyPort</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_fTPProxyPort</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_firewallProxyPort</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_httpProxy</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_fTPProxy</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_firewallProxy</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_merge</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_write_old_rsrcs</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_jbindrundebug</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdoutfile</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdinfile</NAME><VALUE></VALUE></SETTING>
-
-                <!-- Settings for "Java Output" panel -->
-                <SETTING><NAME>MWJava_Output_outputtype</NAME><VALUE>JarFile</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_outfile</NAME><VALUE>JavaClasses.jar</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_ftype</NAME><VALUE>1514754080</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_fcreator</NAME><VALUE>1297570384</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_compress</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_genManifest</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_trunctype</NAME><VALUE>Front</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_deleteClasses</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_consoleApp</NAME><VALUE>1</VALUE></SETTING>
-
-                <!-- Settings for "Java Project" panel -->
-                <SETTING><NAME>MWJava_Proj_projtype</NAME><VALUE>Applet</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_runtimeArgs</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_mainClassName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_HTMLAppCreator</NAME><VALUE>1297303877</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_HTMLAppName</NAME><VALUE>Internet Explorer</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_HTMLAppWin32Name</NAME><VALUE>Iexplore.exe</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_compress</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_useVM</NAME><VALUE>1967802708</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_workingDir</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_vmarguments</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_vmName</NAME><VALUE></VALUE></SETTING>
-
-                <!-- Settings for "JavaDoc Project" panel -->
-                <SETTING><NAME>MWJavaDoc_Proj_Version</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Depricated</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Author</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Index</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Tree</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_SunResolveToSame</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Shortnames</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Folder</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_GenerateAPILinks</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_scope</NAME><VALUE>Public</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_fcreator</NAME><VALUE>1297303877</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_encodingName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_decodingName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_javaPackagePath</NAME><VALUE>http://java.sun.com/products/jdk/1.1/docs/api/</VALUE></SETTING>
-
                 <!-- Settings for "MacOS Merge Panel" panel -->
                 <SETTING><NAME>MWMerge_MacOS_projectType</NAME><VALUE>Application</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_outputName</NAME><VALUE>Merge Out</VALUE></SETTING>
@@ -807,9 +681,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>Ä	`</VALUE></SETTING>
-                    <SETTING><VALUE>%ˆ</VALUE></SETTING>
-                    <SETTING><VALUE>²(@</VALUE></SETTING>
+                    <SETTING><VALUE>….</VALUE></SETTING>
+                    <SETTING><VALUE>Î,ø</VALUE></SETTING>
+                    <SETTING><VALUE>1Çp</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "PPC CodeGen" panel -->
@@ -826,8 +700,6 @@
                 <SETTING><NAME>MWCodeGen_PPC_altivec</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWCodeGen_PPC_vectortocdata</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWCodeGen_PPC_vrsave</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWCodeGen_PPC_autovectorize</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWCodeGen_PPC_usebuiltins</NAME><VALUE>0</VALUE></SETTING>
 
                 <!-- Settings for "PPC Disassembler" panel -->
                 <SETTING><NAME>MWDisassembler_PPC_showcode</NAME><VALUE>1</VALUE></SETTING>
@@ -2475,9 +2347,16 @@
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>AbiWord.rsrc</PATH>
+                    <PATH>FSpCompat.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Resource</FILEKIND>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS>Debug</FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>FullPath.c</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
             </FILELIST>
@@ -3604,7 +3483,12 @@
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>AbiWord.rsrc</PATH>
+                    <PATH>FSpCompat.c</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>FullPath.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </LINKORDER>
@@ -4274,6 +4158,10 @@
                     <SETTING><NAME>PathFormat</NAME><VALUE>Generic</VALUE></SETTING>
                     <SETTING><NAME>PathRoot</NAME><VALUE>Absolute</VALUE></SETTING>
                 </SETTING>
+                <SETTING><NAME>StopAtTempBPOnLaunch</NAME><VALUE>true</VALUE></SETTING>
+                <SETTING><NAME>CacheSymbolics</NAME><VALUE>true</VALUE></SETTING>
+                <SETTING><NAME>TempBPFunctionName</NAME><VALUE>main</VALUE></SETTING>
+                <SETTING><NAME>TempBPType</NAME><VALUE>false</VALUE></SETTING>
 
                 <!-- Settings for "C/C++ Compiler" panel -->
                 <SETTING><NAME>MWFrontEnd_C_cplusplus</NAME><VALUE>0</VALUE></SETTING>
@@ -4318,100 +4206,6 @@
                 <SETTING><NAME>MWWarning_C_warn_notinlined</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWWarning_C_warn_structclass</NAME><VALUE>0</VALUE></SETTING>
 
-                <!-- Settings for "FTP Panel" panel -->
-                <SETTING><NAME>MWFTP_Post_hostName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_username</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_password</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_remoteDir</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_uploadDir</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_ftp_port</NAME><VALUE>21</VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_SendBin</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWFTP_Post_ShouldLog</NAME><VALUE>0</VALUE></SETTING>
-
-                <!-- Settings for "Java Command Line" panel -->
-                <SETTING><NAME>MWCommandLine_Java_clsName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWCommandLine_Java_args</NAME><VALUE></VALUE></SETTING>
-
-                <!-- Settings for "Java Language" panel -->
-                <SETTING><NAME>MWJava_Language_optimize</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_warnDeprecated</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_emitMap</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_strictFileNames</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_strictFileHierarchy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_emitHeaders</NAME><VALUE>NoNativeHeaders</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_packageFilter</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_genComments</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Language_genHeaders</NAME><VALUE>0</VALUE></SETTING>
-
-                <!-- Settings for "Java MacOS Settings" panel -->
-                <SETTING><NAME>MWJava_MacOS_type</NAME><VALUE>JBindery</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_grow</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_profile</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_verify</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_useHttpProxy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_useFTPProxy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_useFirewallProxy</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_outfile</NAME><VALUE>JBoundApp</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_outcreator</NAME><VALUE>1061109567</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_maxMem</NAME><VALUE>1048576</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_minMem</NAME><VALUE>524288</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_red</NAME><VALUE>65535</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_green</NAME><VALUE>65535</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_blue</NAME><VALUE>65535</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdoutType</NAME><VALUE>1464421956</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdinType</NAME><VALUE>1853189228</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_httpProxyPort</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_fTPProxyPort</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_firewallProxyPort</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_httpProxy</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_fTPProxy</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_firewallProxy</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_merge</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_write_old_rsrcs</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_jbindrundebug</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdoutfile</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_MacOS_stdinfile</NAME><VALUE></VALUE></SETTING>
-
-                <!-- Settings for "Java Output" panel -->
-                <SETTING><NAME>MWJava_Output_outputtype</NAME><VALUE>JarFile</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_outfile</NAME><VALUE>JavaClasses.jar</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_ftype</NAME><VALUE>1514754080</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_fcreator</NAME><VALUE>1297570384</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_compress</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_genManifest</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_trunctype</NAME><VALUE>Front</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_deleteClasses</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Output_consoleApp</NAME><VALUE>1</VALUE></SETTING>
-
-                <!-- Settings for "Java Project" panel -->
-                <SETTING><NAME>MWJava_Proj_projtype</NAME><VALUE>Applet</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_runtimeArgs</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_mainClassName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_HTMLAppCreator</NAME><VALUE>1297303877</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_HTMLAppName</NAME><VALUE>Internet Explorer</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_HTMLAppWin32Name</NAME><VALUE>Iexplore.exe</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_compress</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_useVM</NAME><VALUE>1967802708</VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_workingDir</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_vmarguments</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJava_Proj_vmName</NAME><VALUE></VALUE></SETTING>
-
-                <!-- Settings for "JavaDoc Project" panel -->
-                <SETTING><NAME>MWJavaDoc_Proj_Version</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Depricated</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Author</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Index</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Tree</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_SunResolveToSame</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Shortnames</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_Folder</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_GenerateAPILinks</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_scope</NAME><VALUE>Public</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_fcreator</NAME><VALUE>1297303877</VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_encodingName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_decodingName</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>MWJavaDoc_Proj_javaPackagePath</NAME><VALUE>http://java.sun.com/products/jdk/1.1/docs/api/</VALUE></SETTING>
-
                 <!-- Settings for "MacOS Merge Panel" panel -->
                 <SETTING><NAME>MWMerge_MacOS_projectType</NAME><VALUE>Application</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_outputName</NAME><VALUE>Merge Out</VALUE></SETTING>
@@ -4422,9 +4216,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>Ä	`</VALUE></SETTING>
-                    <SETTING><VALUE>%ˆ</VALUE></SETTING>
-                    <SETTING><VALUE>²(@</VALUE></SETTING>
+                    <SETTING><VALUE>….</VALUE></SETTING>
+                    <SETTING><VALUE>Î,ø</VALUE></SETTING>
+                    <SETTING><VALUE>1Çp</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "PPC CodeGen" panel -->
@@ -4441,8 +4235,6 @@
                 <SETTING><NAME>MWCodeGen_PPC_altivec</NAME><VALUE>0</VALUE></SETTING>
                 <SETTING><NAME>MWCodeGen_PPC_vectortocdata</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWCodeGen_PPC_vrsave</NAME><VALUE>1</VALUE></SETTING>
-                <SETTING><NAME>MWCodeGen_PPC_autovectorize</NAME><VALUE>0</VALUE></SETTING>
-                <SETTING><NAME>MWCodeGen_PPC_usebuiltins</NAME><VALUE>0</VALUE></SETTING>
 
                 <!-- Settings for "PPC Disassembler" panel -->
                 <SETTING><NAME>MWDisassembler_PPC_showcode</NAME><VALUE>1</VALUE></SETTING>
@@ -4592,13 +4384,6 @@
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>AbiWord.rsrc</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Resource</FILEKIND>
-                    <FILEFLAGS></FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>xap_MacDlg_About.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Text</FILEKIND>
@@ -4642,6 +4427,20 @@
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
                     <PATH>newMain.c</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS></FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>FSpCompat.c</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS></FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>FullPath.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS></FILEFLAGS>
@@ -4700,11 +4499,6 @@
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>AbiWord.rsrc</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>xap_MacDlg_About.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
@@ -4736,6 +4530,16 @@
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
                     <PATH>newMain.c</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>FSpCompat.c</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>FullPath.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </LINKORDER>
@@ -5410,6 +5214,20 @@
                     <PATH>ut_MacTimer.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
+                <GROUP><NAME>morefiles</NAME>
+                    <FILEREF>
+                        <TARGETNAME>AbiWord Debug</TARGETNAME>
+                        <PATHTYPE>Name</PATHTYPE>
+                        <PATH>FSpCompat.c</PATH>
+                        <PATHFORMAT>MacOS</PATHFORMAT>
+                    </FILEREF>
+                    <FILEREF>
+                        <TARGETNAME>AbiWord Debug</TARGETNAME>
+                        <PATHTYPE>Name</PATHTYPE>
+                        <PATH>FullPath.c</PATH>
+                        <PATHFORMAT>MacOS</PATHFORMAT>
+                    </FILEREF>
+                </GROUP>
                 <FILEREF>
                     <TARGETNAME>AbiWord Debug</TARGETNAME>
                     <PATHTYPE>Name</PATHTYPE>
@@ -6135,12 +5953,6 @@
             </FILEREF>
         </GROUP>
         <GROUP><NAME>Resources</NAME>
-            <FILEREF>
-                <TARGETNAME>AbiWord Debug</TARGETNAME>
-                <PATHTYPE>Name</PATHTYPE>
-                <PATH>AbiWord.rsrc</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
         </GROUP>
         <GROUP><NAME>Mac Libraries</NAME>
             <FILEREF>
