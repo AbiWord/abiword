@@ -90,6 +90,8 @@ public:
 					  UT_sint32 width, UT_sint32 height);
   virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
   
+  virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight);
+  
   virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
   virtual UT_Bool startPrint(void);
   virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,

@@ -23,6 +23,7 @@
 #define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
 #define	AP_CLIPBOARD_TEXTPLAIN_UNICODE 		"text-unicode"
 #define AP_CLIPBOARD_RTF 					"rtf"
+#define AP_CLIPBOARD_IMAGE					"image"
 #define AP_CLIPBOARD_UNKNOWN 				"unknown"
 
 #include "ut_types.h"

@@ -504,3 +504,9 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 
 	UT_ASSERT(res != ERROR);
 }
+
+void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
+{
+	UT_ASSERT(UT_TODO);
+}
+

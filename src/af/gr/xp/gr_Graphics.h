@@ -22,6 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
+#include "gr_Image.h"
 
 class UT_RGBColor;
 
@@ -71,6 +72,10 @@ public:
 				UT_sint32 * piLeft,
 				UT_uint32 * piWidth) const;
 
+	void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	
+	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight) = 0;
+	
 	/* For drawLine() and xorLine():
 	**   x0,y0 give the starting pixel.
 	**   x1,y1 give the first pixel ***not drawn***.

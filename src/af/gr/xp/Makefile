@@ -23,7 +23,8 @@ ABI_DEPTH = ../../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 EXPORT_HEADERS=		gr_DrawArgs.h				\
-			gr_Graphics.h
+			gr_Graphics.h				\
+			gr_Image.h
 
 HEADERS=		$(EXPORT_HEADERS)
 
@@ -31,7 +32,8 @@ RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
 CPPSRCS=		gr_DrawArgs.cpp			\
-			gr_Graphics.cpp			
+			gr_Graphics.cpp			\
+			gr_Image.cpp
 
 TARGETS=		$(OBJS)
 

@@ -36,7 +36,8 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)
+		xp/$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/gr_Image.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

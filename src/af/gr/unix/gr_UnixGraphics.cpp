@@ -553,3 +553,8 @@ UT_Bool GR_UNIXGraphics::endPrint(void)
 	return UT_FALSE;
 }
 
+void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
+{
+	UT_ASSERT(UT_TODO);
+}
+

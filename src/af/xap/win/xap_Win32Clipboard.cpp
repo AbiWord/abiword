@@ -69,6 +69,10 @@ UT_uint32	AP_Win32Clipboard::_convertFormatString(char* format)
 	{
 		return m_cfRTF;
 	}
+	else if (0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE))
+	{
+		return CF_DIB;
+	}
 	else
 	{
 		return 0;	// unknown format
@@ -85,14 +89,24 @@ UT_Bool		AP_Win32Clipboard::addData(char* format, void* pData, UT_sint32 iNumByt
 		return UT_FALSE;
 	}
 	
-	HANDLE hData;
+	HANDLE hData = NULL;
 
-	hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, iNumBytes);
-	// TODO handle outofmem
-	void* p = GlobalLock(hData);
-	memcpy(p, pData, iNumBytes);
-	GlobalUnlock(hData);
-	
+	if (iFormat == CF_DIB)
+	{
+		/*
+		  TODO munge the image data format given to use
+		  into a DIB
+		*/
+	}
+	else
+	{
+		hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, iNumBytes);
+		// TODO handle outofmem
+		void* p = GlobalLock(hData);
+		memcpy(p, pData, iNumBytes);
+		GlobalUnlock(hData);
+	}
+
 	if (SetClipboardData(iFormat, hData))
 	{
 		return UT_TRUE;
@@ -133,7 +147,22 @@ UT_sint32	AP_Win32Clipboard::getDataLen(char* format)
 	HANDLE hData = GetClipboardData(iFormat);
 	if (hData)
 	{
-		return GlobalSize(hData);
+		if (iFormat == CF_DIB)
+		{
+			/*
+			  TODO convert the given image from DIB
+			  to our common image format, and return
+			  the size of that.
+			*/
+
+			UT_ASSERT(UT_TODO);
+			
+			return -1;
+		}
+		else
+		{
+			return GlobalSize(hData);
+		}
 	}
 	else
 	{
@@ -152,15 +181,29 @@ UT_Bool		AP_Win32Clipboard::getData(char* format, void* pData)
 	HANDLE hData = GetClipboardData(iFormat);
 	if (hData)
 	{
-		// TODO error check the following stuff
+		if (iFormat == CF_DIB)
+		{
+			/*
+			  TODO convert the DIB to our common
+			  image format and return that.
+			*/
+
+			UT_ASSERT(UT_TODO);
+			
+			return UT_FALSE;
+		}
+		else
+		{
+			// TODO error check the following stuff
 		
-		UT_uint32 iLen = GlobalSize(hData);
-		void* p = GlobalLock(hData);
+			UT_uint32 iLen = GlobalSize(hData);
+			void* p = GlobalLock(hData);
 
-		memcpy(pData, p, iLen);
-		GlobalUnlock(hData);
+			memcpy(pData, p, iLen);
+			GlobalUnlock(hData);
 
-		return UT_TRUE;
+			return UT_TRUE;
+		}
 	}
 	else
 	{
@@ -193,6 +236,10 @@ char*		AP_Win32Clipboard::getNthFormat(UT_sint32 n)
 			case CF_UNICODETEXT:
 				return AP_CLIPBOARD_TEXTPLAIN_UNICODE;
 
+			// should we add CF_BITMAP here too?  (probably not)
+			case CF_DIB:
+				return AP_CLIPBOARD_IMAGE;
+				
 			default:
 				if (iCurFormat == m_cfRTF)
 				{
