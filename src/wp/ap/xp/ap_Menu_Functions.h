@@ -43,6 +43,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ScriptsActive);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AutoRevision);
