@@ -2561,7 +2561,7 @@ void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock)
 		{
 			pBlock = pBlNext;
 		}
-		while( pBlock != NULL && pBlock->getPosition() <= endpos)
+		while( pBlock != NULL && pBlock->getPosition(true) <= endpos)
 		{
 			if(pBlock->getContainerType()== FL_CONTAINER_BLOCK)
 			{

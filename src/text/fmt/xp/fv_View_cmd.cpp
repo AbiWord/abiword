@@ -2715,6 +2715,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
+	UT_sint32 numRows = getNumRowsInSelection();
 	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();
@@ -2751,19 +2752,23 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // column if the cell spans just the width of the column..
 //
 	UT_sint32 i =0;
-	for(i=0; i <numCols; i++)
+	UT_sint32 j = 0;
+	for(j=0; j<numRows; j++)
 	{
-		PT_DocPosition posCell = findCellPosAt(posTable,iTop,i);
-		UT_sint32 Left,Right,Top,Bot;
-		getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
-		UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
-		if((Bot - Top) == 1)
+		for(i=0; i <numCols; i++)
 		{
-			_deleteCellAt(posTable,iTop, i);
+			PT_DocPosition posCell = findCellPosAt(posTable,iTop+j,i);
+			UT_sint32 Left,Right,Top,Bot;
+			getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+			UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+			if((Bot - Top) == 1)
+			{
+				_deleteCellAt(posTable,iTop, i);
+			}
 		}
 	}
 //
-// OK now subtract one from all the row coordinates in the table with iTop,iBot > iTop
+// OK now subtract numRows from all the row coordinates in the table with iTop,iBot > iTop
 // do this by running through the linked list of SectionCell fragments in the piecetable
 //
 // We stop when the position of the endCell strux is just before the position of
@@ -2799,12 +2804,12 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 		if(iCurTop > iTop)
 		{
 			bChange = true;
-			iNewTop--;
+			iNewTop -= numRows;
 		}
 		if(iCurBot > iTop)
 		{
 			bChange = true;
-			iNewBot--;
+			iNewBot -= numRows;
 		}
 		if(bChange)
 		{
