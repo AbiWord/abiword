@@ -240,6 +240,25 @@ PP_PropertyMap::TypeBackground PP_PropertyMap::background_type (const char * pro
 	return background;
 }
 
+static const char * s_linestyle[4] = {
+	"none",
+	"solid",
+	"dotted",
+	"dashed"
+};
+
+const char * PP_PropertyMap::linestyle_for_CSS (const char * property)
+{
+	if (property == 0) return s_linestyle[0];
+
+	unsigned char u = static_cast<unsigned char>(*property);
+	if (!isdigit ((int) u)) return property;
+
+	if ((*property > '0') && (*property < '4')) return s_linestyle[*property - '0'];
+
+	return s_linestyle[0];
+}
+
 PP_PropertyMap::Line::Line () :
 	m_t_color(color__unset),
 	m_t_linestyle(linestyle__unset),

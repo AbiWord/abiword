@@ -2014,11 +2014,23 @@ static void s_border_properties (const char * border_color, const char * border_
 	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
 	if (line.m_t_thickness == PP_PropertyMap::thickness_length)
 		{
-			line.m_thickness = UT_convertToLogicalUnits (border_width);
+			if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
+				{
+					double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
+					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+				}
+			else
+				line.m_thickness = UT_convertToLogicalUnits (border_width);
+
 			if (!line.m_thickness)
-				if (UT_convertToInches (border_width) > 0.0001)
-					line.m_thickness = 1;
+				{
+					double thickness = UT_LAYOUT_RESOLUTION;
+					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+				}
 		}
-	else
-		line.m_thickness = 1;
+	else // ??
+		{
+			double thickness = UT_LAYOUT_RESOLUTION;
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+		}
 }

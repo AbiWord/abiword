@@ -51,6 +51,7 @@
 #include "pd_Style.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
+#include "pp_PropertyMap.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
@@ -1476,6 +1477,9 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			m_utf8_1 = "td";
 			styleOpen (m_utf8_1);
 
+			m_utf8_1 = "collapse";
+			styleNameValue ("border-collapse", m_utf8_1);
+
 			m_utf8_1 = "left";
 			styleNameValue ("text-align", m_utf8_1);
 
@@ -2744,6 +2748,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	const char * prop = m_TableHelper.getTableProp ("table-line-thickness");
 
 	UT_sint32 border = (prop ? atoi (prop) : 1);
+
+	UT_UTF8String border_default = "1px";
+	if (prop) border_default = prop;
 #if 0
 	const XML_Char * pszTableColSpacing = 0;
 	const XML_Char * pszTableRowSpacing = 0;
@@ -2759,9 +2766,157 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pSectionAP->getProperty ("cell-margin-right",  pszRightOffset);
 	pSectionAP->getProperty ("cell-margin-bottom", pszBottomOffset);
 #endif
+	UT_UTF8String styles;
+
+	const char * pszBgColor = m_TableHelper.getTableProp ("bgcolor");
+	if (pszBgColor == NULL)
+		pszBgColor = m_TableHelper.getTableProp ("background-color");
+	if (pszBgColor)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "background-color: ";
+
+			UT_HashColor color;
+			const char * hash = color.setHashIfValid (pszBgColor);
+			if (hash)
+				styles += hash;
+			else
+				styles += pszBgColor;
+		}
+
+	const char * pszBorderColor = NULL;
+
+	pszBorderColor = m_TableHelper.getTableProp ("color");
+	if (pszBorderColor)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "color: ";
+
+			UT_HashColor color;
+			const char * hash = color.setHashIfValid (pszBorderColor);
+			if (hash)
+				styles += hash;
+			else
+				styles += pszBorderColor;
+		}
+	pszBorderColor = m_TableHelper.getTableProp ("bot-color");
+	if (pszBorderColor)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-bottom-color: ";
+
+			UT_HashColor color;
+			const char * hash = color.setHashIfValid (pszBorderColor);
+			if (hash)
+				styles += hash;
+			else
+				styles += pszBorderColor;
+		}
+	pszBorderColor = m_TableHelper.getTableProp ("left-color");
+	if (pszBorderColor)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-left-color: ";
+
+			UT_HashColor color;
+			const char * hash = color.setHashIfValid (pszBorderColor);
+			if (hash)
+				styles += hash;
+			else
+				styles += pszBorderColor;
+		}
+	pszBorderColor = m_TableHelper.getTableProp ("right-color");
+	if (pszBorderColor)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-right-color: ";
+
+			UT_HashColor color;
+			const char * hash = color.setHashIfValid (pszBorderColor);
+			if (hash)
+				styles += hash;
+			else
+				styles += pszBorderColor;
+		}
+	pszBorderColor = m_TableHelper.getTableProp ("top-color");
+	if (pszBorderColor)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-top-color: ";
+
+			UT_HashColor color;
+			const char * hash = color.setHashIfValid (pszBorderColor);
+			if (hash)
+				styles += hash;
+			else
+				styles += pszBorderColor;
+		}
+
+	const char * pszBorderStyle = NULL;
+
+	pszBorderStyle = m_TableHelper.getTableProp ("bot-style");
+	if (pszBorderStyle)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-bottom-style: ";
+			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		}
+	pszBorderStyle = m_TableHelper.getTableProp ("left-style");
+	if (pszBorderStyle)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-left-style: ";
+			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		}
+	pszBorderStyle = m_TableHelper.getTableProp ("right-style");
+	if (pszBorderStyle)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-right-style: ";
+			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		}
+	pszBorderStyle = m_TableHelper.getTableProp ("top-style");
+	if (pszBorderStyle)
+		{
+			if (styles.byteLength ()) styles += "; ";
+			styles += "border-top-style: ";
+			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		}
+
+	const char * pszBorderWidth = NULL;
+
+	if (styles.byteLength ()) styles += "; ";
+
+	pszBorderWidth = m_TableHelper.getTableProp ("bot-thickness");
+	styles += "border-bottom-width: ";
+	if (pszBorderWidth)
+		styles += pszBorderWidth;
+	else
+		styles += border_default;
+	pszBorderWidth = m_TableHelper.getTableProp ("left-thickness");
+	styles += "; border-left-width: ";
+	if (pszBorderWidth)
+		styles += pszBorderWidth;
+	else
+		styles += border_default;
+	pszBorderWidth = m_TableHelper.getTableProp ("right-thickness");
+	styles += "; border-right-width: ";
+	if (pszBorderWidth)
+		styles += pszBorderWidth;
+	else
+		styles += border_default;
+	pszBorderWidth = m_TableHelper.getTableProp ("top-thickness");
+	styles += "; border-top-width: ";
+	if (pszBorderWidth)
+		styles += pszBorderWidth;
+	else
+		styles += border_default;
+
 	m_utf8_1  = "table cellpadding=\"";
 	m_utf8_1 += UT_UTF8String_sprintf ("%d\" border=\"%d", cellPadding, border);
-	m_utf8_1 += "\" rules=\"all\"";
+	m_utf8_1 += "\" rules=\"all\" style=\"";
+	m_utf8_1 += styles;
+	m_utf8_1 += "\"";
 
 	tagOpen (TT_TABLE, m_utf8_1);
 
@@ -2777,7 +2932,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 	tagOpenClose (m_utf8_1, false);
 
-	m_utf8_1 = "tbody";
+	m_utf8_1 = "tbody style=\"border: inherit\"";
 	tagOpen (TT_TBODY, m_utf8_1);
 }
 
@@ -2808,22 +2963,156 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 
 			if (m_TableHelper.getLeft () == 0) // beginning of a new row
 				{
-					m_utf8_1 = "tr";
+					m_utf8_1 = "tr style=\"border: inherit\"";
 					tagOpen (TT_TR, m_utf8_1);
 				}
 
 			UT_UTF8String styles;
 
 			const char * pszBgColor = m_TableHelper.getCellProp ("bgcolor");
+			if (pszBgColor == NULL)
+				pszBgColor = m_TableHelper.getCellProp ("background-color");
 			if (pszBgColor)
 				{
-					unsigned char u = *pszBgColor;
-					if (isdigit (static_cast<int>(u)))
-						{
-							if (styles.byteLength ()) styles += "; ";
-							styles += "bgcolor:#";
-							styles += pszBgColor;
-						}
+					if (styles.byteLength ()) styles += "; ";
+					styles += "background-color: ";
+
+					UT_HashColor color;
+					const char * hash = color.setHashIfValid (pszBgColor);
+					if (hash)
+						styles += hash;
+					else
+						styles += pszBgColor;
+				}
+
+			const char * pszBorderColor = NULL;
+
+			pszBorderColor = m_TableHelper.getCellProp ("color");
+			if (pszBorderColor)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "color: ";
+
+					UT_HashColor color;
+					const char * hash = color.setHashIfValid (pszBorderColor);
+					if (hash)
+						styles += hash;
+					else
+						styles += pszBorderColor;
+				}
+			pszBorderColor = m_TableHelper.getCellProp ("bot-color");
+			if (pszBorderColor)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-bottom-color: ";
+
+					UT_HashColor color;
+					const char * hash = color.setHashIfValid (pszBorderColor);
+					if (hash)
+						styles += hash;
+					else
+						styles += pszBorderColor;
+				}
+			pszBorderColor = m_TableHelper.getCellProp ("left-color");
+			if (pszBorderColor)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-left-color: ";
+
+					UT_HashColor color;
+					const char * hash = color.setHashIfValid (pszBorderColor);
+					if (hash)
+						styles += hash;
+					else
+						styles += pszBorderColor;
+				}
+			pszBorderColor = m_TableHelper.getCellProp ("right-color");
+			if (pszBorderColor)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-right-color: ";
+
+					UT_HashColor color;
+					const char * hash = color.setHashIfValid (pszBorderColor);
+					if (hash)
+						styles += hash;
+					else
+						styles += pszBorderColor;
+				}
+			pszBorderColor = m_TableHelper.getCellProp ("top-color");
+			if (pszBorderColor)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-top-color: ";
+
+					UT_HashColor color;
+					const char * hash = color.setHashIfValid (pszBorderColor);
+					if (hash)
+						styles += hash;
+					else
+						styles += pszBorderColor;
+				}
+
+			const char * pszBorderStyle = NULL;
+
+			pszBorderStyle = m_TableHelper.getCellProp ("bot-style");
+			if (pszBorderStyle)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-bottom-style: ";
+					styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+				}
+			pszBorderStyle = m_TableHelper.getCellProp ("left-style");
+			if (pszBorderStyle)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-left-style: ";
+					styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+				}
+			pszBorderStyle = m_TableHelper.getCellProp ("right-style");
+			if (pszBorderStyle)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-right-style: ";
+					styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+				}
+			pszBorderStyle = m_TableHelper.getCellProp ("top-style");
+			if (pszBorderStyle)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-top-style: ";
+					styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+				}
+
+			const char * pszBorderWidth = NULL;
+
+			pszBorderWidth = m_TableHelper.getCellProp ("bot-thickness");
+			if (pszBorderWidth)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-bottom-width: ";
+					styles += pszBorderWidth;
+				}
+			pszBorderWidth = m_TableHelper.getCellProp ("left-thickness");
+			if (pszBorderWidth)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-left-width: ";
+					styles += pszBorderWidth;
+				}
+			pszBorderWidth = m_TableHelper.getCellProp ("right-thickness");
+			if (pszBorderWidth)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-right-width: ";
+					styles += pszBorderWidth;
+				}
+			pszBorderWidth = m_TableHelper.getCellProp ("top-thickness");
+			if (pszBorderWidth)
+				{
+					if (styles.byteLength ()) styles += "; ";
+					styles += "border-top-width: ";
+					styles += pszBorderWidth;
 				}
 
 			m_utf8_1 = "td";

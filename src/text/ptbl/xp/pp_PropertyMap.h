@@ -170,6 +170,8 @@ public:
 	static TypeThickness thickness_type (const char * property);
 	static TypeBackground background_type (const char * property);
 
+	static const char * linestyle_for_CSS (const char * property);
+
 	class Line
 	{
 	public:
