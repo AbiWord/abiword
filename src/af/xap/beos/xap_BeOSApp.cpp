@@ -144,15 +144,19 @@ void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
                 XAP_App::_setAbiSuiteLibDir(p);
                 return;
         }
+	
+		//For BeOS we use /boot/apps/AbiSuite (expect it to be installed there)
+		strcpy(buf, "/boot/apps/AbiSuite");
 
+#if 0
         // TODO what to do ??  try the current directory...
-
         UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory...."));
-
         getcwd(buf,sizeof(buf));
         int len = strlen(buf);
         if (buf[len-1]=='/')                            // trim trailing slash
                 buf[len-1] = 0;
+#endif
+
         XAP_App::_setAbiSuiteLibDir(buf);
         return;
 }
