@@ -3966,6 +3966,7 @@ Defun1(insPageNo)
 	return UT_TRUE;
 }
 
+#ifdef UT_DEBUG
 static UT_Bool s_doField(FV_View * pView)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -3985,25 +3986,27 @@ static UT_Bool s_doField(FV_View * pView)
 	if (pDialog->getAnswer() == AP_Dialog_Field::a_OK)
 	{
 		// TODO - Insert field correctly
-//		char szTmp[CURRENT_FIELD_SIZE];
-//		UT_UCSChar *NewField = NULL;
-
-//		strncpy(szTmp,pDialog->GetFieldFormat(),CURRENT_FIELD_SIZE);
-//		UT_UCS_cloneString_char(&NewField,szTmp);
-//		pView->cmdCharInsert(NewField,UT_UCS_strlen(NewField));
 		pView->cmdInsertField(pDialog->GetFieldFormat());
-//		FREEP(NewField);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
 
 	return UT_TRUE;
 }
+#endif
 
 Defun1(insField)
 {
+#ifdef UT_DEBUG
 	ABIWORD_VIEW;
 	return s_doField(pView);
+#else
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Insert field dialog", __LINE__);
+	return UT_TRUE;
+#endif
 }
 
 Defun1(insSymbol)
