@@ -772,7 +772,7 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		switch (*pData)
 		{
 		case '\\':
-			sBuf += "\\ensuremath{\\backslash}}";
+			sBuf += "\\ensuremath{\\backslash}";
 			pData++;
 			break;
 			
