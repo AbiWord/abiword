@@ -22,8 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBWV_ _UNIXFONTS_ _ABIDISTFILES_ _GNOME_
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_
+REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBWV_ _UNIXFONTS_ _ABIDISTFILES_ _GNOME_ _LIBICONV_
+REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
 TARGET=		build
@@ -149,6 +149,25 @@ _ABIDISTFILES_:
 		echo ;						\
 	fi
 
+# Right now, we can only build libiconv as a peer, not in the
+# system directories, to work on most Unix boxes (that have old
+# C libraries)
+
+_LIBICONV_:
+	@if [ -d $(ABI_ROOT)/../libiconv ]; then                        \
+		echo Found libiconv in peer directory;                  \
+		if [ ! -r $(ABI_ROOT)/../libiconv/src/config.h ]; then  \
+			cd $(ABI_ROOT)/../libiconv;                     \
+			./configure;                                    \
+		fi;                                                     \
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;     \
+	else                                                            \
+		echo libiconv not found;                                \
+		echo TODO provide a nicer error message;                \
+		echo TODO with instructions for obtaining it;           \
+		exit 1;                                                 \
+	fi
+
 #################################################################
 
 clean_ZLIB_:
@@ -164,4 +183,8 @@ clean_LIBPNG_:
 clean_LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../wv clean;	\
+
+clean_LIBWV_:
+	@if [ -d $(ABI_ROOT)/../libiconv ]; then              \
+		$(MAKE) -C $(ABI_ROOT)/../libiconv clean;     \
 
