@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -159,7 +159,7 @@ public:
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
-	
+
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
@@ -256,7 +256,7 @@ public:
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 
-    PL_StruxDocHandle       findHdrFtrStrux(const XML_Char * pszHdtFtr, 
+    PL_StruxDocHandle       findHdrFtrStrux(const XML_Char * pszHdtFtr,
 											const XML_Char * pszHdrFtrID);
 	bool                    verifySectionID(const XML_Char * pszId);
 	PL_StruxDocHandle       getLastSectionSDH(void);
@@ -269,7 +269,7 @@ public:
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	PD_Style *				getStyleFromSDH(PL_StruxDocHandle sdh);
-	PL_StruxDocHandle       getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh);	
+	PL_StruxDocHandle       getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh);
 	size_t                  getStyleCount(void);
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
@@ -290,7 +290,7 @@ public:
 	UT_uint32				getLastOpenedType() { return m_lastOpenedType; }
 	XAP_App *				getApp() { return m_pApp; }
 	bool					updateFields(void);
-	bool					getField(PL_StruxDocHandle sdh, 
+	bool					getField(PL_StruxDocHandle sdh,
 									 UT_uint32 offset,
                                      fd_Field * &pField);
 	po_Bookmark * 			getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset);
@@ -300,12 +300,12 @@ public:
 	bool					isPieceTableChanging(void);
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
-	
+
 	// List Functions
 	fl_AutoNum *			getListByID(UT_uint32 id) const;
-	fl_AutoNum *			getNthList(UT_uint32 i) const; 
+	fl_AutoNum *			getNthList(UT_uint32 i) const;
 	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
-	UT_uint32				getListsCount(void) const; 
+	UT_uint32				getListsCount(void) const;
 	void					addList(fl_AutoNum * pAutoNum);
 	bool					appendList(const XML_Char ** attributes);
 	bool					fixListHierarchy(void);
@@ -331,7 +331,7 @@ public:
 	void					setDefaultPageSize(void);
 	const char *			getDefaultPageSize(void);
 	bool					setPageSizeFromFile(const XML_Char ** attributes);
-	
+
 	bool					isBookmarkUnique(const XML_Char * pName) const;
 	bool					isBookmarkRelativeLink(const XML_Char * pName) const;
 	UT_uint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}
@@ -339,7 +339,8 @@ public:
 	void					addBookmark(const XML_Char * pName);
 	void					removeBookmark(const XML_Char * pName);
 
-
+	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
+	void                    toggleMarkRevisions(){m_bMarkRevisions = m_bMarkRevisions ? false : true;}
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 	pt_PieceTable *			getPieceTable(void) const
@@ -349,7 +350,7 @@ public:
 #endif
 
 	// If we're using styles to format a document, prevent accidental use of other formatting
-        // tools.  Disable all explicit formatting tools (font, color, boldness, etc.) 
+        // tools.  Disable all explicit formatting tools (font, color, boldness, etc.)
 	inline bool areStylesLocked () const { return m_bLockedStyles; }    // See also lockStyles
 	inline void lockStyles(bool b) { m_bLockedStyles = b; }             // See also areStylesLocked
 
@@ -374,7 +375,7 @@ private:
 	UT_Vector				m_vecListeners;
 	UT_Vector				m_vecLists;
 	bool                    m_bHasListStopped;
-	
+
 	UT_StringPtrMap		    m_hashDataItems;
 
 	IEFileType				m_lastOpenedType;
@@ -385,10 +386,12 @@ private:
 	bool					m_bAllowInsertPointChange;
 	bool                    m_bRedrawHappenning;
 	bool                    m_bLoading;
-	bool m_bForcedDirty;
+	bool                    m_bForcedDirty;
 	UT_Vector				m_vBookmarkNames;
-	bool m_bLockedStyles;
-	UT_StringPtrMap m_metaDataMap;
+	bool                    m_bLockedStyles;
+	UT_StringPtrMap         m_metaDataMap;
+	bool                    m_bMarkRevisions;
+
 };
 
 #endif /* PD_DOCUMENT_H */

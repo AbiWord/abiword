@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -24,7 +24,7 @@
 #include "xap_Menu_ActionSet.h"
 #include "ap_Menu_Functions.h"
 #include "ap_Menu_Id.h"
-	
+
 EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 {
 	// This should only be called once by the application.
@@ -59,12 +59,12 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	//              and any other platform-specific decoration.  if this function returns
 	//              a null string, we temporarily hide/remove this item from the layout.
 	//              (this feature is used by the window list manager.)
-	
+
 #define _s(id,bHoldsSubMenu,bRaisesDialog,bCheckable,szMethodName,pfnGetState,pfnGetLabel)	\
 	pActionSet->setAction(id,bHoldsSubMenu,bRaisesDialog,bCheckable,szMethodName,pfnGetState,pfnGetLabel)
 
 	//( __id__,          bSub,bDlg,bCheck,  szMethodName,       fnGetState,         fnGetLabel)
-	
+
 	_s(AP_MENU_ID__BOGUS1__,		0,0,0,	NULL,				NULL,					NULL);
 
 	_s(AP_MENU_ID_FILE,				1,0,0,	NULL,				NULL,					NULL);
@@ -79,7 +79,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	"closeWindow",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	"pageSetup",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,	"print",			NULL,					NULL);
-#ifdef HAVE_GNOME_DIRECT_PRINT	
+#ifdef HAVE_GNOME_DIRECT_PRINT
 	_s(AP_MENU_ID_FILE_PRINT_DIRECTLY,		0,1,0,	"printDirectly",			NULL,					NULL);
 #endif
 	_s(AP_MENU_ID_FILE_PRINT_PREVIEW, 0,1,0, "printPreview", NULL, NULL);
@@ -198,6 +198,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_SCRIPTS,	1,0,0,	"scriptPlay", ap_GetState_ScriptsActive, NULL);
 
+	_s(AP_MENU_ID_TOOLS_REVISIONS,  1,0,0,  NULL,               NULL,                   NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_MARK, 0,0,1, "toggleMarkRevisions", ap_GetState_MarkRevisions,NULL);
+
 	_s(AP_MENU_ID_WINDOW,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,	"newWindow",		NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_1,			0,0,0,	"activateWindow_1",	ap_GetState_Window,		ap_GetLabel_Window);
@@ -210,8 +213,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_8,			0,0,0,	"activateWindow_8",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"dlgMoreWindows",	NULL,					ap_GetLabel_WindowMore);
-	
-	_s(AP_MENU_ID_WEB, 1,0,0, NULL, NULL, NULL); 
+
+	_s(AP_MENU_ID_WEB, 1,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_WEB_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
 	_s(AP_MENU_ID_WEB_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
 
@@ -272,7 +275,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_AUTOTEXT_MAIL_6, 0,0,0, "insAutotext_mail_6", NULL, ap_GetLabel_Autotext);
 	_s(AP_MENU_ID_AUTOTEXT_MAIL_7, 0,0,0, "insAutotext_mail_7", NULL, ap_GetLabel_Autotext);
 	_s(AP_MENU_ID_AUTOTEXT_MAIL_8, 0,0,0, "insAutotext_mail_8", NULL, ap_GetLabel_Autotext);
- 
+
 	_s(AP_MENU_ID_AUTOTEXT_REFERENCE_1, 0,0,0, "insAutotext_reference_1", NULL, ap_GetLabel_Autotext);
 	_s(AP_MENU_ID_AUTOTEXT_REFERENCE_2, 0,0,0, "insAutotext_reference_2", NULL, ap_GetLabel_Autotext);
 	_s(AP_MENU_ID_AUTOTEXT_REFERENCE_3, 0,0,0, "insAutotext_reference_3", NULL, ap_GetLabel_Autotext);
@@ -283,7 +286,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_AUTOTEXT_SALUTATION_4, 0,0,0, "insAutotext_salutation_4", NULL, ap_GetLabel_Autotext);
 
 	_s(AP_MENU_ID_AUTOTEXT_SUBJECT_1, 0,0,0, "insAutotext_subject_1", NULL, ap_GetLabel_Autotext);
- 
+
 	_s(AP_MENU_ID_AUTOTEXT_EMAIL_1, 0,0,0, "insAutotext_email_1", NULL, ap_GetLabel_Autotext);
 	_s(AP_MENU_ID_AUTOTEXT_EMAIL_2, 0,0,0, "insAutotext_email_2", NULL, ap_GetLabel_Autotext);
 	_s(AP_MENU_ID_AUTOTEXT_EMAIL_3, 0,0,0, "insAutotext_email_3", NULL, ap_GetLabel_Autotext);
@@ -292,10 +295,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_AUTOTEXT_EMAIL_6, 0,0,0, "insAutotext_email_6", NULL, ap_GetLabel_Autotext);
 
 	// ... add others here ...
-	
+
 	_s(AP_MENU_ID__BOGUS2__,		0,0,0,	NULL,				NULL,					NULL);
 
 #undef _s
-	
+
 	return pActionSet;
 }

@@ -11108,7 +11108,7 @@ void FV_View::setHdrFtrEdit(fl_HdrFtrShadow * pShadow)
 
 
 /*!
- *	This method clears the bool variable which tells 
+ *	This method clears the bool variable which tells
  *  getEditableBounds we are
  *	editting a header/Footer.
 */
@@ -12135,3 +12135,15 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 	return MyMin(	calculateZoomPercentForPageWidth(),
 					calculateZoomPercentForPageHeight());
 }
+
+/* Revision related functions */
+void FV_View::toggleMarkRevisions()
+{
+	m_pDoc->toggleMarkRevisions();
+}
+
+bool FV_View::isMarkRevisions()
+{
+	return m_pDoc->isMarkRevisions();
+}
+

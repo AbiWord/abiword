@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -119,7 +119,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
 
-                /* the autotext submenus */     
+                /* the autotext submenus */
 
                 BeginSubMenu(AP_MENU_ID_INSERT_AUTOTEXT)
                      BeginSubMenu(AP_MENU_ID_AUTOTEXT_ATTN)
@@ -189,7 +189,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 #endif
 
-#ifdef HAVE_GNOME 
+#ifdef HAVE_GNOME
                 // only enabled for GNOME builds in the 0.9.x releases
                 Separator()
                 BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
@@ -245,7 +245,11 @@ BeginLayout(Main,0)
                 EndSubMenu()
                 MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
-	    Separator()
+
+	    BeginSubMenu(AP_MENU_ID_TOOLS_REVISIONS)
+ 	    MenuItem(AP_MENU_ID_TOOLS_REVISIONS_MARK)
+	    EndSubMenu()
+
 	    MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
 	    MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
 		Separator()
@@ -286,7 +290,7 @@ BeginLayout(Main,0)
      MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
 #endif /* HAVE_GNOME */
      MenuItem(AP_MENU_ID_HELP_CREDITS)
-		MenuItem(AP_MENU_ID_HELP_ABOUT) 
+		MenuItem(AP_MENU_ID_HELP_ABOUT)
 EndSubMenu()
 
 EndLayout()

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 /*****************************************************************
@@ -53,7 +53,7 @@ menuitem(FILE_PROPERTIES)
 menuitem(FILE_PAGESETUP)
 menuitem(FILE_PRINT)
 menuitem(FILE_PRINT_PREVIEW)
-menuitem(FILE_PRINT_DIRECTLY)	
+menuitem(FILE_PRINT_DIRECTLY)
 menuitem(FILE_RECENT_1)		// _recent_1 thru _recent_9 must be contiguous
 menuitem(FILE_RECENT_2)
 menuitem(FILE_RECENT_3)
@@ -159,7 +159,8 @@ menuitem(TOOLS_PLUGINS)
 menuitem(TOOLS_SCRIPTS)
 menuitem(TOOLS_OPTIONS)
 menuitem(TOOLS_LANGUAGE)
-
+menuitem(TOOLS_REVISIONS)
+menuitem(TOOLS_REVISIONS_MARK)
 menuitem(ALIGN)
 menuitem(ALIGN_LEFT)
 menuitem(ALIGN_CENTER)

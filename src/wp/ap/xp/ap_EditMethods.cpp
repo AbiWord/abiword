@@ -167,7 +167,7 @@ public:
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
-		static EV_EditMethod_Fn contextImage;
+	static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextText;
@@ -263,7 +263,7 @@ public:
 	// TODO here are a few that i started.
 
 	static EV_EditMethod_Fn fileNew;
-  static EV_EditMethod_Fn fileRevert;
+    static EV_EditMethod_Fn fileRevert;
 	static EV_EditMethod_Fn toolbarNew;
 	static EV_EditMethod_Fn fileOpen;
 	static EV_EditMethod_Fn fileSave;
@@ -310,14 +310,14 @@ public:
 	static EV_EditMethod_Fn dlgZoom;
 	static EV_EditMethod_Fn viewFullScreen;
 
-  static EV_EditMethod_Fn zoom100;
-  static EV_EditMethod_Fn zoom200;
-  static EV_EditMethod_Fn zoom75;
-  static EV_EditMethod_Fn zoom50;
-  static EV_EditMethod_Fn zoomWidth;
-  static EV_EditMethod_Fn zoomWhole;
-  static EV_EditMethod_Fn zoomIn;
-  static EV_EditMethod_Fn zoomOut;
+	static EV_EditMethod_Fn zoom100;
+	static EV_EditMethod_Fn zoom200;
+	static EV_EditMethod_Fn zoom75;
+	static EV_EditMethod_Fn zoom50;
+	static EV_EditMethod_Fn zoomWidth;
+	static EV_EditMethod_Fn zoomWhole;
+	static EV_EditMethod_Fn zoomIn;
+	static EV_EditMethod_Fn zoomOut;
 
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
@@ -331,7 +331,7 @@ public:
 	static EV_EditMethod_Fn dlgSpellPrefs;
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
-  static EV_EditMethod_Fn dlgMetaData;
+    static EV_EditMethod_Fn dlgMetaData;
 
 	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
@@ -423,16 +423,16 @@ public:
 	static EV_EditMethod_Fn helpSearch;
 	static EV_EditMethod_Fn helpCheckVer;
 	static EV_EditMethod_Fn helpAboutOS;
-  static EV_EditMethod_Fn helpAboutGnu;
-  static EV_EditMethod_Fn helpAboutGnomeOffice;
-  static EV_EditMethod_Fn helpCredits;
-  static EV_EditMethod_Fn helpReportBug;
+	static EV_EditMethod_Fn helpAboutGnu;
+	static EV_EditMethod_Fn helpAboutGnomeOffice;
+	static EV_EditMethod_Fn helpCredits;
+	static EV_EditMethod_Fn helpReportBug;
 
 	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
 	static EV_EditMethod_Fn cycleWindowsBck;
 	static EV_EditMethod_Fn closeWindow;
-  static EV_EditMethod_Fn closeWindowX;
+	static EV_EditMethod_Fn closeWindowX;
 	static EV_EditMethod_Fn querySaveAndExit;
 
 	static EV_EditMethod_Fn setEditVI;
@@ -532,6 +532,8 @@ public:
 
 	static EV_EditMethod_Fn lockGUI;
 	static EV_EditMethod_Fn unlockGUI;
+
+	static EV_EditMethod_Fn toggleMarkRevisions;
 
 	static EV_EditMethod_Fn noop;
 
@@ -871,27 +873,28 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(spellSuggest_7),		0,	""),
 	EV_EditMethod(NF(spellSuggest_8),		0,	""),
 	EV_EditMethod(NF(spellSuggest_9),		0,	""),
-	EV_EditMethod(NF(style),				_D_,	""),
+	EV_EditMethod(NF(style),				_D_,""),
 
 	// t
-	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
-	EV_EditMethod(NF(toggleBold),			0,		""),
-	EV_EditMethod(NF(toggleBottomline), 	0,		""),
-	EV_EditMethod(NF(toggleDirOverrideLTR), 	0,		""),
-	EV_EditMethod(NF(toggleDirOverrideRTL), 	0,		""),
-	EV_EditMethod(NF(toggleDomDirection),	0,		""),
-	EV_EditMethod(NF(toggleIndent), 0, ""),
-	EV_EditMethod(NF(toggleInsertMode), 		0,	""),
-	EV_EditMethod(NF(toggleItalic), 		0,		""),
-	EV_EditMethod(NF(toggleOline),			0,		""),
-	EV_EditMethod(NF(togglePlain),			0,		""),
-	EV_EditMethod(NF(toggleStrike), 		0,		""),
-	EV_EditMethod(NF(toggleSub),			0,		""),
-	EV_EditMethod(NF(toggleSuper),			0,		""),
-	EV_EditMethod(NF(toggleTopline),		0,		""),
-	EV_EditMethod(NF(toggleUline),			0,		""),
-	EV_EditMethod(NF(toggleUnIndent), 0, ""),
-	EV_EditMethod(NF(toolbarNew), 0, ""),
+	EV_EditMethod(NF(toggleAutoSpell),      0,  ""),
+	EV_EditMethod(NF(toggleBold),			0,	""),
+	EV_EditMethod(NF(toggleBottomline), 	0,	""),
+	EV_EditMethod(NF(toggleDirOverrideLTR), 0,	""),
+	EV_EditMethod(NF(toggleDirOverrideRTL), 0,	""),
+	EV_EditMethod(NF(toggleDomDirection),	0,	""),
+	EV_EditMethod(NF(toggleIndent),         0,  ""),
+	EV_EditMethod(NF(toggleInsertMode), 	0,  ""),
+	EV_EditMethod(NF(toggleItalic), 		0,	""),
+	EV_EditMethod(NF(toggleMarkRevisions),  0,  ""),
+	EV_EditMethod(NF(toggleOline),			0,  ""),
+	EV_EditMethod(NF(togglePlain),			0,	""),
+	EV_EditMethod(NF(toggleStrike), 		0,	""),
+	EV_EditMethod(NF(toggleSub),			0,	""),
+	EV_EditMethod(NF(toggleSuper),			0,	""),
+	EV_EditMethod(NF(toggleTopline),		0,	""),
+	EV_EditMethod(NF(toggleUline),			0,	""),
+	EV_EditMethod(NF(toggleUnIndent),       0,  ""),
+	EV_EditMethod(NF(toolbarNew),           0,  ""),
 
 	// u
 	EV_EditMethod(NF(undo), 				0,	""),
@@ -2542,15 +2545,15 @@ Defun(dlgMetaData)
 
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   XAP_App * pApp = pFrame->getApp();
   UT_ASSERT(pApp);
-  
+
   pFrame->raise();
-  
+
   XAP_DialogFactory * pDialogFactory
     = (XAP_DialogFactory *)(pFrame->getDialogFactory());
-  
+
   AP_Dialog_MetaData * pDialog
     = (AP_Dialog_MetaData *)(pDialogFactory->requestDialog(AP_DIALOG_ID_METADATA));
   UT_ASSERT(pDialog);
@@ -2558,7 +2561,7 @@ Defun(dlgMetaData)
     return false;
 
   // get the properties
-   
+
   PD_Document * pDocument = pView->getDocument();
 
   UT_String prop ( "" ) ;
@@ -2614,7 +2617,7 @@ Defun(dlgMetaData)
 
       // TODO: set the document as dirty when something changed
     }
-  
+
   // release the dialog
 
   pDialogFactory->releaseDialog(pDialog);
@@ -9385,5 +9388,13 @@ Defun(hyperlinkStatusBar)
 		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
 
 	pView->cmdHyperlinkStatusBar(pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
+Defun1(toggleMarkRevisions)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->toggleMarkRevisions();
 	return true;
 }

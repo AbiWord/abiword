@@ -435,6 +435,10 @@ public:
 
 	inline PD_Document * getDocument (void) const {return m_pDoc;}
 
+	/* Revision related functions */
+	void                toggleMarkRevisions();
+	bool                isMarkRevisions();
+
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);

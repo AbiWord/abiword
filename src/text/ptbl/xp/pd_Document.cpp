@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -74,20 +74,21 @@ struct _dataItemPair
 // but now we just depend on save() never being called without
 // a previous saveAs() (which specifies a type)
 PD_Document::PD_Document(XAP_App *pApp)
-	: AD_Document(),  
+	: AD_Document(),
 	m_docPageSize(getDefaultPageSize()),
 	m_ballowListUpdates(false),
 	m_pPieceTable(0),
 	m_hashDataItems(11),
-  m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
-  m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
+	m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
+    m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
 	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
 	m_bAllowInsertPointChange(true),
 	m_bRedrawHappenning(false),
-  m_bLoading(false),
-  m_bForcedDirty(false),
-  m_bLockedStyles(false)        // same as lockStyles(false)
+    m_bLoading(false),
+    m_bForcedDirty(false),
+    m_bLockedStyles(false),        // same as lockStyles(false)
+	m_bMarkRevisions(false)
 {
 	m_pApp = pApp;
 
@@ -145,7 +146,7 @@ bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp )
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Error PD_Document::importFile(const char * szFilename, int ieft, 
+UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 				 bool markClean)
 {
 	if (!szFilename || !*szFilename)
@@ -184,7 +185,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
-	
+
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	m_bLoading = false;
 	updateFields();
@@ -239,7 +240,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not import file\n"));
 		return errorCode;
 	}
-	
+
 	UT_ASSERT(!m_szFilename);
 	if (!UT_cloneString((char *&)m_szFilename, szFilename))
 	{
@@ -261,7 +262,7 @@ UT_Error PD_Document::newDocument(void)
   // the globally installed normal.awt file
   UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
   global_normal_awt += "/templates/normal.awt";
-  
+
   if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
     {
       if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
@@ -271,11 +272,11 @@ UT_Error PD_Document::newDocument(void)
 	    {
 	      return UT_NOPIECETABLE;
 	    }
-	  
+
 	  m_pPieceTable->setPieceTableState(PTS_Loading);
-	  
+
 	  // add just enough structure to empty document so we can edit
-	  
+
 	  appendStrux(PTX_Section,NULL);
 	  appendStrux(PTX_Block, NULL);
 
@@ -289,12 +290,12 @@ UT_Error PD_Document::newDocument(void)
 	      props[0] = "lang";
 	      props[1] = doc_locale;
 	      props[2] = 0;
-	      
+
 	      // insert a format mark since we're not putting anything inside of the block
 	      appendFmt((const XML_Char **)props);
 	      appendFmtMark () ;
 	      UT_DEBUGMSG(("DOM: new document set lang to %s\n", doc_locale));
-	    }   
+	    }
 
 	  m_pPieceTable->setPieceTableState(PTS_Editing);
 	}
@@ -302,10 +303,10 @@ UT_Error PD_Document::newDocument(void)
 	{
 	}
     }
-  
+
   // set the default page size from preferences, regardless of template values
   setDefaultPageSize();
-  
+
   // mark the document as not-dirty
   _setClean();
 
@@ -321,7 +322,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 {
 	if (!szFilename)
 		return UT_SAVE_NAMEERROR;
-	
+
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
 	IEFileType newFileType;
@@ -454,7 +455,7 @@ bool PD_Document::deleteSpan(PT_DocPosition dpos1,
 							 PP_AttrProp *p_AttrProp_Before)
 {
 	return m_pPieceTable->deleteSpan(dpos1, dpos2, p_AttrProp_Before);
-}												 
+}
 
 bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								PT_DocPosition dpos1,
@@ -531,7 +532,7 @@ bool PD_Document::appendFmt(const XML_Char ** attributes)
 bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
 {
 	UT_ASSERT(m_pPieceTable);
-	
+
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendFmt(pVecAttributes);
@@ -540,7 +541,7 @@ bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
 bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	UT_ASSERT(m_pPieceTable);
-	
+
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendSpan(pbuf,length);
@@ -549,7 +550,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
-	
+
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendObject(pto,attributes);
@@ -558,7 +559,7 @@ bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 bool PD_Document::appendFmtMark(void)
 {
 	UT_ASSERT(m_pPieceTable);
-	
+
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendFmtMark();
@@ -652,7 +653,7 @@ PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
 
 
 /*!
- * This method scans the document to check that the id of a header/footer 
+ * This method scans the document to check that the id of a header/footer
  *  section actually exists in a section somewhere in the document.
  */
 bool PD_Document::verifySectionID(const XML_Char * pszId)
@@ -712,7 +713,7 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 				 {
 					 return true;
 				 }
-				 
+
 		     }
 		}
 //
@@ -732,7 +733,7 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 \params const char * pszHdrFtrID the unique string to match with Docsection.
 \returns a PL_StruxDocHandle of the matching frag or NULL if none found.
  */
-PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr, 
+PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 											const XML_Char * pszHdrFtrID)
 {
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
@@ -772,7 +773,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 /*!
  * This method scans the document for all styles used in the document, including
  * styles in the basedon heiracy and the followedby list
- * 
+ *
  */
 void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 {
@@ -786,7 +787,7 @@ void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 // get indexAP
 // get PT_STYLE_ATTRIBUTE_NAME
 // if it matches style name or is contained in a basedon name or followedby
-// 
+//
 //
 // All this code is used to find if this frag has a style in it.
 //
@@ -851,11 +852,11 @@ void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 //
 // Done!
 //
-}		
-					
+}
+
 /*!
  * This method removes the style of name pszName from the styles definition and removes
- * all instances of it from the document including the basedon heiracy and the 
+ * all instances of it from the document including the basedon heiracy and the
  * followed-by sequences.
  */
 bool PD_Document::removeStyle(const XML_Char * pszName)
@@ -916,7 +917,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 // get indexAP
 // get PT_STYLE_ATTRIBUTE_NAME
 // if it matches style name or is contained in a basedon name or followedby
-// 
+//
 //
 // All this code is used to find if this strux has our style in it
 //
@@ -925,7 +926,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 		{
 			pfs = static_cast<pf_Frag_Strux *>(currentFrag);
 			indexAP = static_cast<pf_Frag_Strux *>(currentFrag)->getIndexAP();
-			posLastStrux = pos; 
+			posLastStrux = pos;
 		}
 		else if(currentFrag->getType()  == pf_Frag::PFT_Text)
 		{
@@ -950,7 +951,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 		if(pszStyleName != NULL && strcmp(pszStyleName,pszName)==0)
 		{
 			prevStuff *  pStuff = new prevStuff;
-			pf_Frag::PFType cType = currentFrag->getType();		
+			pf_Frag::PFType cType = currentFrag->getType();
 			pStuff->fragType = cType;
 			pStuff->thisFrag = currentFrag;
 			pStuff->indexAPFrag = indexAP;
@@ -1076,7 +1077,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 //
 	m_pPieceTable->removeStyle(pszName);
 //
-// Alright now we replace all the instances of fragSrux using the style to be 
+// Alright now we replace all the instances of fragSrux using the style to be
 // deleted.
 //
 	UT_sint32 countChanges = vFrag.getItemCount();
@@ -1127,12 +1128,12 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 //  		{
 //  			UT_uint32 blockoffset = (UT_uint32) (pStuff->thisPos - pStuff->thisStruxPos -1);
 //  			pf_Frag_Text * pft = (pf_Frag_Text *) pStuff->thisFrag;
-//  			PX_ChangeRecord_SpanChange * pcr = 
+//  			PX_ChangeRecord_SpanChange * pcr =
 //  				new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 //  											   pStuff->thisPos,
 //  											   pStuff->indexAPFrag,
-//  											   indexNormal, 
-//  											   m_pPieceTable->getVarSet().getBufIndex(pft->getBufIndex(),0), 
+//  											   indexNormal,
+//  											   m_pPieceTable->getVarSet().getBufIndex(pft->getBufIndex(),0),
 //  											   pStuff->fragLength,
 //  											   blockoffset);
 //  			notifyListeners(pStuff->lastFragStrux, pcr);
@@ -1153,7 +1154,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 bool PD_Document::appendStyle(const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
-	
+
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendStyle(attributes);
@@ -1182,7 +1183,7 @@ bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * 
 	UT_ASSERT(pListener);
 	UT_ASSERT(m_pPieceTable);
 	UT_ASSERT(pDocRange && pDocRange->m_pDoc==this);
-	
+
 	return m_pPieceTable->tellListenerSubset(pListener,pDocRange);
 }
 
@@ -1193,7 +1194,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 	UT_uint32 k=0;
 
 	// see if we can recycle a cell in the vector.
-	
+
 	for (k=0; k<kLimit; k++)
 		if (m_vecListeners.getNthItem(k) == 0)
 		{
@@ -1202,7 +1203,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 		}
 
 	// otherwise, extend the vector for it.
-	
+
 	if (m_vecListeners.addItem(pListener,&k) != 0)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1215,7 +1216,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 	UT_ASSERT(m_pPieceTable);
 
 	// give our vector index back to the caller as a "Listener Id".
-	
+
 	*pListenerId = k;
 	UT_ASSERT(pListener);
 	m_pPieceTable->addListener(pListener,k);
@@ -1235,7 +1236,7 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 	// for each listener in our vector, we send a notification.
 	// we step over null listners (for listeners which have been
 	// removed (views that went away)).
-	
+
 	for (lid=0; lid<lidCount; lid++)
 	{
 		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
@@ -1251,7 +1252,7 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
 	// notify listeners of a change.
-	
+
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
@@ -1262,7 +1263,7 @@ bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * p
 	// for each listener in our vector, we send a notification.
 	// we step over null listners (for listeners which have been
 	// removed (views that went away)).
-	
+
 	for (lid=0; lid<lidCount; lid++)
 	{
 		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
@@ -1311,14 +1312,14 @@ bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
-	
+
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
 	// for each listener in our vector, we send a notification.
 	// we step over null listeners (for listeners which have been
 	// removed (views that went away)).
-	
+
 	for (lid=0; lid<lidCount; lid++)
 	{
 		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
@@ -1350,7 +1351,7 @@ const UT_UCSChar * PD_Document::getPointer(PT_BufIndex bi) const
 	// the pointer that we return is NOT a zero-terminated
 	// string.  the caller is responsible for knowing how
 	// long the data is within the span/fragment.
-	
+
 	return m_pPieceTable->getPointer(bi);
 }
 
@@ -1398,7 +1399,7 @@ po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
-	
+
 	UT_uint32 cumOffset = 0;
 	pf_Frag_Object * pfo = NULL;
 	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
@@ -1419,7 +1420,7 @@ po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
 	}
 	return NULL;
 }
-	
+
 bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
                                fd_Field * & pField)
 {
@@ -1436,7 +1437,7 @@ bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
 		cumOffset += pfTemp->getLength();
 		if (offset < cumOffset)
 		{
-			switch (pfTemp->getType()) 
+			switch (pfTemp->getType())
 			{
 			case pf_Frag::PFT_Text:
 			case pf_Frag::PFT_Object:
@@ -1483,7 +1484,7 @@ bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
 }
 
 ///
-/// Return the sdh of type pts immediately prior to sdh 
+/// Return the sdh of type pts immediately prior to sdh
 ///
 bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * prevsdh)
@@ -1503,13 +1504,13 @@ bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 		}
 
 	// did not find it.
-	
+
 	return false;
 }
 
 
 ///
-/// Return the sdh of type pts immediately after sdh 
+/// Return the sdh of type pts immediately after sdh
 ///
 bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * nextsdh)
@@ -1529,11 +1530,11 @@ bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 		}
 
 	// did not find it.
-	
+
 	return false;
 }
 
-  
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -1598,13 +1599,13 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	// data is Base64 encoded.
 
 	UT_ASSERT(pByteBuf);
-	
+
 	struct _dataItemPair* pPair = NULL;
-	
+
 	UT_ByteBuf * pNew = new UT_ByteBuf();
 	if (!pNew)
 		return false;
-	
+
 	if (bBase64)
 	{
 		if (!UT_Base64Decode(pNew,pByteBuf))
@@ -1621,20 +1622,20 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	{
 		goto Failed;
 	}
-	
+
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
 	m_hashDataItems.insert(szName, (void *)pPair);
 
 	// give them back a handle if they want one
-	
+
 	if (ppHandle)
 	{
 		const void *pHashEntry = m_hashDataItems.pick(szName);
 		UT_ASSERT(pHashEntry);
 		*ppHandle = (void *)pHashEntry;
 	}
-	
+
 	return true;
 
 Failed:
@@ -1642,10 +1643,10 @@ Failed:
 	{
 		delete pNew;
 	}
-	
+
 	// we also have to free the pToken, which was created by UT_strdup
 	FREEP(pToken);
-	
+
 	return false;
 }
 
@@ -1655,14 +1656,14 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 										   void ** ppHandle) const
 {
 	UT_ASSERT(szName && *szName);
-	
+
 	const void *pHashEntry = m_hashDataItems.pick(szName);
 	if (!pHashEntry)
 		return false;
 
 	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry;
 	UT_ASSERT(pPair);
-	
+
 	if (ppByteBuf)
 	{
 		*ppByteBuf = pPair->pBuf;
@@ -1677,7 +1678,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	{
 		*ppHandle = (void *)pHashEntry;
 	}
-	
+
 	return true;
 }
 
@@ -1685,12 +1686,12 @@ bool PD_Document::setDataItemToken(void * pHandle,
 									  void* pToken)
 {
 	UT_ASSERT(pHandle);
-	
+
 	struct _dataItemPair* pPair = (struct _dataItemPair*) pHandle;
 	UT_ASSERT(pPair);
 
 	pPair->pToken = pToken;
-	
+
 	return true;
 }
 
@@ -1700,10 +1701,10 @@ bool PD_Document::getDataItemData(void * pHandle,
 									 void** ppToken) const
 {
 	UT_ASSERT(pHandle);
-	
+
 	struct _dataItemPair* pPair = (struct _dataItemPair*) pHandle;
 	UT_ASSERT(pPair);
-	
+
 	if (ppByteBuf)
 	{
 		*ppByteBuf = pPair->pBuf;
@@ -1720,7 +1721,7 @@ bool PD_Document::getDataItemData(void * pHandle,
 		*pszName = 0;
 		//*pszName = pHashEntry->pszLeft;
 	}
-	
+
 	return true;
 }
 
@@ -1732,7 +1733,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	UT_uint32 kLimit = m_hashDataItems.size();
 	if (k >= kLimit)
 		return false;
-	
+
 	UT_StringPtrMap::UT_Cursor c(&m_hashDataItems);
 	const void *pHashEntry = NULL;
 	UT_uint32 i;
@@ -1748,7 +1749,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 
 	struct _dataItemPair* pPair = (struct _dataItemPair*)pHashEntry;
 	UT_ASSERT(pPair);
-	
+
 	if (ppByteBuf)
 	{
 		*ppByteBuf = pPair->pBuf;
@@ -1758,12 +1759,12 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	{
 		*ppToken = pPair->pToken;
 	}
-	
+
 	if (pszName)
 	{
 		*pszName = c.key().c_str();
 	}
-	
+
 	return true;
 }
 
@@ -1788,9 +1789,9 @@ void PD_Document::_destroyDataItemData(void)
 	}
 }
 
-/*! 
+/*!
   Synchronize the last opened/last saves filetypes.
- \param bReadLastSavedAsType True to write last opened and read last 
+ \param bReadLastSavedAsType True to write last opened and read last
            saved type; otherwise, write last saved type from last opened type.
 
  There are actually two filetypes - one for importers and one for
@@ -1831,7 +1832,7 @@ bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -1855,7 +1856,7 @@ bool	PD_Document::addStyleProperty(const char * szStyleName, const char * szProp
 	PD_Style ** ppS = &pS;
 	if(!m_pPieceTable->getStyle(szStyleName, ppS))
 		return false;
-		
+
 	return (*ppS)->addProperty(szPropertyName, szPropertyValue);
 }
 
@@ -1870,7 +1871,7 @@ bool	PD_Document::addStyleProperties(const XML_Char * szStyleName, const XML_Cha
 	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
 }
 
-/*! 
+/*!
  * This methods changes the attributes of a style (basedon,followedby)
  *
 \param szStyleName the const XML_Char * name of the style
@@ -1892,8 +1893,8 @@ bool	PD_Document::addStyleAttributes(const XML_Char * szStyleName, const XML_Cha
 	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
 }
 
-/*! 
- * The method returns the style defined in a sdh. If there is no style it returns 
+/*!
+ * The method returns the style defined in a sdh. If there is no style it returns
  * NULL
  */
 PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
@@ -1979,10 +1980,10 @@ PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh
 	return foundSDH;
 }
 
-	
+
 
 //
-/*! 
+/*!
  * This methods changes the attributes /properties of a style (basedon,followedby)
  * plus the properties. We have to save the indexAP of the pre-existing style
  * and broadcast it out witht e change records.
@@ -2058,7 +2059,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 }
 
 /*!
- * This method scans the document forwards for a strux with the style name 
+ * This method scans the document forwards for a strux with the style name
  * szStyle in it.
 \params pStyle a pointer to style to be scanned for.
 \params pos the document position to start from.
@@ -2113,7 +2114,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 \param szStyle the name of style that has changed.
 \param isParaStyle true if the style is a paragraph type.
 */
-bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle, 
+bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 											bool isParaStyle)
 {
 	PT_DocPosition pos = 0;
@@ -2356,19 +2357,19 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 			return pAutoNum;
 		i++;
 	}
-	
+
 	return (fl_AutoNum *) NULL;
 }
 
-bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum) 
+bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
 {
 	UT_uint32 kLimit = m_vecLists.getItemCount();
 	if (k >= kLimit)
 		return false;
-	
+
 	if (pAutoNum)
 		*pAutoNum = (fl_AutoNum *)m_vecLists[k];
-	
+
 	return true;
 }
 
@@ -2442,7 +2443,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 	const XML_Char * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
 	UT_uint32 id, parent_id, start;
 	List_Type type;
-	
+
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{
 		if (UT_XML_stricmp(a[0],"id") == 0)
@@ -2488,7 +2489,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 
 	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this);
 	addList(pAutoNum);
-	
+
 	return true;
 }
 
@@ -2496,17 +2497,17 @@ bool PD_Document::areListUpdatesAllowed(void)
 {
         return m_ballowListUpdates;
 }
- 
+
 void PD_Document::disableListUpdates(void)
 {
         m_ballowListUpdates = false;
 }
-   
+
 void PD_Document::enableListUpdates(void)
 {
         m_ballowListUpdates = true;
 }
-  
+
 void PD_Document::updateDirtyLists(void)
 {
 	UT_uint32 iNumLists = m_vecLists.getItemCount();
@@ -2584,7 +2585,7 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 		PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
 #endif
 		notifyListeners(pfs, pcr);
-		delete pcr;						  
+		delete pcr;
 		m_vecLists.deleteNthItem(ndx);
 	}
 }
@@ -2639,7 +2640,7 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 	double height=0.0;
 	double scale =1.0;
 	UT_Dimension u = DIM_IN;
-	
+
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{
 		if (UT_XML_stricmp(a[0],"pagetype") == 0)
@@ -2714,7 +2715,7 @@ void PD_Document::removeBookmark(const XML_Char * pName)
 	}
 }
 
-/*! Returns true if pName doesn't correspond to a 
+/*! Returns true if pName doesn't correspond to a
  *  currently existing bookmark. */
 bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 {
