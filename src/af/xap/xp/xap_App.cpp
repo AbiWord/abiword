@@ -48,6 +48,9 @@ AP_App::~AP_App(void)
 
 	DELETEP(m_pEMC);
 	DELETEP(m_pMenuActionSet);
+
+	if (m_pJSInterp)
+		js_destroy_interp (m_pJSInterp);
 }
 
 UT_Bool AP_App::initialize(int * /*pArgc*/, char *** /*pArgv*/)
