@@ -1654,7 +1654,7 @@ void FV_View::_moveInsPtNextPrevPage(bool bNext)
 	_moveInsPtToPage(pPage);
 }
 
-void FV_View::_moveInsPtNextPrevScreen(bool bNext)
+void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 {
 	fl_BlockLayout * pBlock;
 	fp_Run * pRun;
@@ -1678,141 +1678,76 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 		warpInsPtToXY(0,0,false);
 	}
 	UT_sint32 xoff,yoff;
-//
-// get Screen coordinates of the top of the page and add the y location to this.
-//
+
+    // get Screen coordinates of the top of the page and add the y location to this.
 	getPageScreenOffsets(pPage, xoff,yoff);
 	yoff = y - yoff;
-	bool bSuccess = true;
-	if(bNext)
+
+	UT_sint32 iDir = bMovingDown ? 1 : -1;
+
+	iYnext = yoff + getWindowHeight() * iDir;
+	iYscroll = m_yScrollOffset + (getWindowHeight() * iDir);
+	if (iYscroll < 0) return;
+
+	xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Yoff %d iYnext %d page %x \n",yoff,iYnext,pPage));
+
+	while (pPage && (bMovingDown ? (iYnext > pPage->getHeight())
+					             : (iYnext < 0)))
 	{
-		iYnext = yoff + getWindowHeight();
-		iYscroll = m_yScrollOffset + getWindowHeight();
-		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Yoff %d iYnext %d page %x \n",yoff,iYnext,pPage));
-		while(pPage && (iYnext > pPage->getHeight()))
+		iYnext -= (pPage->getHeight() + getPageViewSep()) * iDir;
+		pPage = bMovingDown ? pPage->getNext() : pPage->getPrev();
+	}
+
+	xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Set to iYnext %d page %x \n",iYnext,pPage));
+
+	if (pPage == NULL) pPage = pLine->getPage ();
+	if (iYnext < 0) iYnext = 0;
+
+	// convert the iYnext back into a point position, namely iNewPoint.
+	pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+
+	UT_sint32 newX,newY;
+	UT_uint32 newHeight;
+	
+	_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
+	if(!pRun)
+	{
+		_moveInsPtNextPrevLine(bMovingDown);
+		return;
+	}
+
+	fp_Line * pNewLine = static_cast<fp_Line *>(pRun->getLine());
+
+	if(pNewLine == NULL ||
+	   (pNewLine->getPage() == pLine->getPage()) && 
+	   (bMovingDown ? (pNewLine->getY() < pLine->getY())
+             		: (pNewLine->getY() > pLine->getY())))
+	{
+		_moveInsPtNextPrevLine(bMovingDown);
+		return;
+	}
+
+    // Couldn't advance! Try scanning x across the page at this new iYnext.
+	if(pLine == pNewLine)
+	{
+		UT_sint32 step = pPage->getWidth()/20 + 1;
+
+		for (x=0; x < pPage->getWidth(); x += step)
 		{
-			iYnext -= pPage->getHeight();
-			iYnext -= getPageViewSep();
-			pPage = pPage->getNext();
-		}
-		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Set to iYnext %d page %x \n",iYnext,pPage));
-		if(pPage == NULL)
-		{
-			pPage = pLine->getPage ();
-		}
-		if(iYnext < 0)
-		{
-			iYnext = 0;
-		}
-		UT_sint32 newX,newY;
-		UT_uint32 newHeight;
-		pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
-		_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
-		if(!pRun)
-		{
-			_moveInsPtNextPrevLine(bNext);
-			return;
-		}
-		fp_Line * pNewLine = static_cast<fp_Line *>(pRun->getLine());
-		if(pNewLine == NULL)
-		{
-			_moveInsPtNextPrevLine(bNext);
-			return;
-		}
-		if((pNewLine->getPage() == pLine->getPage()) && (pNewLine->getY() < pLine->getY()))
-		{
-			_moveInsPtNextPrevLine(bNext);
-			return;
+			pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
+			_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
+			pNewLine = static_cast<fp_Line *>(pRun->getLine());
+			if(pLine != pNewLine)
+				break;
 		}
 
-//
-// Couldn't advance! Try scanning x across the page at this new iYnext.
-//
-		if(pLine == pNewLine)
+		if (pLine == pNewLine)
 		{
-			bSuccess = false;
-			UT_sint32 width = pPage->getWidth();
-			UT_sint32 step = width/20 + 1;
-			for(x=0; (x < width) && !bSuccess; x += step)
-			{
-				pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
-				_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
-				pNewLine = static_cast<fp_Line *>(pRun->getLine());
-				if(pLine != pNewLine)
-				{
-					bSuccess = true;
-				}
-			}
-		}
-		if(!bSuccess)
-		{
-			_moveInsPtNextPrevLine(bNext);
+			_moveInsPtNextPrevLine(bMovingDown);
 			return;
 		}
 	}
-	else
-	{
-		iYnext = yoff  - getWindowHeight();
-		iYscroll = m_yScrollOffset - getWindowHeight();
-		if(iYscroll < 0)
-		{
-			return;
-		}
-		while(pPage && (iYnext < 0))
-		{
-			iYnext += pPage->getHeight();
-			iYnext += getPageViewSep();
-			pPage = pPage->getPrev();
-		}
-		if(pPage == NULL)
-		{
-			pPage = pLine->getPage ();
-		}
-		pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
-		UT_sint32 newX,newY;
-		UT_uint32 newHeight;
-		_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
-		if(!pRun)
-		{
-			_moveInsPtNextPrevLine(bNext);
-			return;
-		}
-		fp_Line * pNewLine = static_cast<fp_Line *>(pRun->getLine());
-		if(pNewLine == NULL)
-		{
-			_moveInsPtNextPrevLine(bNext);
-			return;
-		}
-		if((pNewLine->getPage() == pLine->getPage()) && (pNewLine->getY() > pLine->getY()))
-		{
-			_moveInsPtNextPrevLine(bNext);
-			return;
-		}
-//
-// Couldn't advance! Try scanning x across the page at this new iYnext.
-//
-		if(pNewLine == pLine)
-		{
-			bSuccess = false;
-			UT_sint32 width = pPage->getWidth();
-			UT_sint32 step = width/20 + 1;
-			for(x=0; (x < width) && !bSuccess; x += step)
-			{
-				pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
-				_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
-				fp_Line * pNewLine = static_cast<fp_Line *>(pRun->getLine());
-				if(pLine != pNewLine)
-				{
-					bSuccess = true;
-				}
-			}
-		}
-		if(!bSuccess)
-		{
-			_moveInsPtNextPrevLine(bNext);
-			return;
-		}
-	}
+
 	_setPoint(iNewPoint);
 	sendVerticalScrollEvent(iYscroll);
 	if (!_ensureInsertionPointOnScreen())
@@ -3400,7 +3335,7 @@ void FV_View::_fixInsertionPointCoords()
 		{
 			UT_sint32 negY  = -m_yPoint;
 			yoff = negY + 1;
-			if(negY > m_iPointHeight)
+			if(negY > (UT_sint32)m_iPointHeight)
 			{
 				m_iPointHeight = 0;
 				yoff = 0;
