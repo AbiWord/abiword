@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -87,11 +87,6 @@ XAP_CocoaNSView * AP_CocoaLeftRuler::createWidget(void)
 void AP_CocoaLeftRuler::setView(AV_View * pView)
 {
 	AP_LeftRuler::setView(pView);
-
-	// We really should allocate m_pG in createWidget(), but
-	// unfortunately, the actual window (m_wLeftRuler->window)
-	// is not created until the frame's top-level window is
-	// shown.
 	
 	DELETEP(m_pG);
 
@@ -100,9 +95,6 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 	UT_ASSERT(m_pG);
 	[m_wLeftRuler setEventDelegate:[[[AP_CocoaLeftRulerDelegate alloc] init] autorelease]];
 	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
-
-//	GtkWidget * ruler = gtk_vruler_new ();
-// TODO	pG->init3dColors(get_ensured_style (ruler));
 }
 
 void AP_CocoaLeftRuler::getWidgetPosition(int * x, int * y)
@@ -226,7 +218,8 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
 	pt.y = [sender bounds].size.height - pt.y;
-	pCocoaLeftRuler->mousePress(ems, emb, (UT_uint32) pt.x, (UT_uint32) pt.y);
+	GR_Graphics* pGr = pCocoaLeftRuler->getGraphics();
+	pCocoaLeftRuler->mousePress(ems, emb, (UT_uint32)pGr->tluD(pt.x), (UT_uint32)pGr->tluD(pt.y));
 }
 
 
@@ -244,7 +237,8 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
 	pt.y = [sender bounds].size.height - pt.y;
-	pCocoaLeftRuler->mouseMotion(ems,(UT_sint32)pt.x, (UT_sint32)pt.y);
+	GR_Graphics* pGr = pCocoaLeftRuler->getGraphics();
+	pCocoaLeftRuler->mouseMotion(ems,(UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
 }
 
 
@@ -264,6 +258,7 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
 	pt.y = [sender bounds].size.height - pt.y;
-	pCocoaLeftRuler->mouseRelease(ems, emb, (UT_sint32)pt.x, (UT_sint32)pt.y);
+	GR_Graphics* pGr = pCocoaLeftRuler->getGraphics();
+	pCocoaLeftRuler->mouseRelease(ems, emb, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
 }
 @end

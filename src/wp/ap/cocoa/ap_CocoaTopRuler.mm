@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -242,7 +242,8 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
 	pt.y = [sender bounds].size.height - pt.y;
-	pCocoaTopRuler->mousePress(ems, emb, (UT_uint32) pt.x, (UT_uint32) pt.y);
+	GR_Graphics* pGr = pCocoaTopRuler->getGraphics();
+	pCocoaTopRuler->mousePress(ems, emb, (UT_uint32)pGr->tluD(pt.x), (UT_uint32)pGr->tluD(pt.y));
 }
 
 
@@ -260,8 +261,9 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
 	pt.y = [sender bounds].size.height - pt.y;
-	pCocoaTopRuler->mouseMotion(ems, (UT_sint32)pt.x, (UT_sint32)pt.y);
-	pCocoaTopRuler->isMouseOverTab((UT_uint32) pt.x,(UT_uint32)pt.y);
+	GR_Graphics* pGr = pCocoaTopRuler->getGraphics();
+	pCocoaTopRuler->mouseMotion(ems, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
+	pCocoaTopRuler->isMouseOverTab((UT_uint32)pGr->tluD(pt.x),(UT_uint32)pGr->tluD(pt.y));
 }
 
 
@@ -281,6 +283,7 @@ void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
 	pt.y = [sender bounds].size.height - pt.y;
-	pCocoaTopRuler->mouseRelease(ems, emb, (UT_sint32)pt.x, (UT_sint32)pt.y);
+	GR_Graphics* pGr = pCocoaTopRuler->getGraphics();
+	pCocoaTopRuler->mouseRelease(ems, emb, (UT_sint32)pGr->tluD(pt.x), (UT_sint32)pGr->tluD(pt.y));
 }
 @end
