@@ -30,6 +30,8 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
+#define DELETEP(p)	do { if (p) delete p; } while (0)
+
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,
 														 AP_Dialog_Id id)
@@ -42,7 +44,6 @@ AP_UnixDialog_FontChooser::AP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFact
 												   AP_Dialog_Id id)
 	: AP_Dialog_FontChooser(pDlgFactory,id)
 {
-	bAbusingTheFontSize = UT_FALSE;
 }
 
 AP_UnixDialog_FontChooser::~AP_UnixDialog_FontChooser(void)
@@ -67,191 +68,264 @@ static void s_cancel_clicked(GtkWidget * widget,
 
 /*****************************************************************/
 
-void AP_UnixDialog_FontChooser::buildXLFD(char * buf)
+// Glade helper function
+GtkWidget * AP_UnixDialog_FontChooser::get_widget(GtkWidget * widget, gchar * widget_name)
 {
-	// relevant X properties
-	char * 	family;
-	char * 	weight;
-	char 	slant;
-	char 	size[10];
-	
-	// family
-	if (m_pFontFamily)
-	{
-		if (!UT_stricmp(m_pFontFamily, "Times New Roman"))
-			family = "times";
-		else
-			family = m_pFontFamily;
-	}
-	else
-		family = "*";
+	GtkWidget *found_widget;
 
-	// weight
-	if (m_pFontWeight)
-		if (!UT_stricmp(m_pFontWeight, "normal"))
-			weight = "medium";
-		else
-			weight = m_pFontWeight;
-	else
-		family = "*";
-
-	// slant
-	if (m_pFontStyle)
-	{
-		if (!UT_stricmp(m_pFontStyle, "italic"))
-			slant = 'i';
-		else if (!UT_stricmp(m_pFontStyle, "oblique"))
-			slant = 'o';
-	    else
-			slant = 'r';
-	}
-	else
-		slant = '*';
-
-	// size
-	if (m_pFontSize)
-	{
-		int numSize;
-		sscanf(m_pFontSize, "%d", &numSize);
-		numSize *= 10;
-
-		sprintf(size, "%d", numSize);
-	}
-	else
-	{
-		// This is incredibly ugly.  It's a hack because the GTK
-		// font selector behaves oddly.  If you pass a "blank"
-		// font point size, it goes ahead and selects a default
-		// one for you anyway, which is usually something like 8.
-		// Now, there's no way for us to know whether it's changed
-		// or not if we can't both set it blank and get it back
-		// blank (for spans of text with multiple point sizes.).
-		//
-		// We just peek into the entry and make it blank, if it's
-		// blank, and hope we don't break things on the way out.
-		bAbusingTheFontSize = UT_TRUE;
-		strcpy(size, "*");
-	}
-	
-	sprintf(buf, "-*-%s-%s-%c-normal-*-*-%s-75-75-*-*-*-*",
-			family, weight, slant, size);
+	if (widget->parent)
+		widget = gtk_widget_get_toplevel (widget);
+	found_widget = (GtkWidget*) gtk_object_get_data (GTK_OBJECT (widget),
+													 widget_name);
+	if (!found_widget)
+		g_warning ("Widget not found: %s", widget_name);
+	return found_widget;
 }
 
-void AP_UnixDialog_FontChooser::parseXLFD(char * buf)
+// Glade helper function
+void AP_UnixDialog_FontChooser::set_notebook_tab(GtkWidget * notebook, gint page_num,
+												 GtkWidget * widget)
 {
-	// duplicate and tokenize the XLFD
-	gchar * cloneString = strdup(buf);
-	UT_ASSERT(cloneString);
+	GtkNotebookPage *page;
+	GtkWidget *notebook_page;
 
-	// first call gets foundry, which we ignore
-	gchar * token = strtok(cloneString, "-");
-
-	// font family name
-	if ((token = strtok(NULL, "-")))
-	{
-		if (!m_pFontFamily || UT_stricmp(m_pFontFamily, token))
-		{
-			setFontFamily(token);
-			m_bChangedFontFamily = UT_TRUE;
-		}
-	}
-
-	/* weight (X has lots of defined weights, we just
-	   cast them to bold or normal for now)
-	*/
-	if ((token = strtok(NULL, "-")))
-	{
-		// this is icky, but we have to test every case
-		if (!UT_stricmp(token, "black"))
-			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
-			{
-				setFontWeight("bold");
-				m_bChangedFontWeight = UT_TRUE;
-			}
-		else if (!UT_stricmp(token, "bold"))
-			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
-			{
-				setFontWeight("bold");
-				m_bChangedFontWeight = UT_TRUE;
-			}
-		else if (!UT_stricmp(token, "demibold"))
-			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
-			{
-				setFontWeight("bold");
-				m_bChangedFontWeight = UT_TRUE;
-			}
-		else if (!UT_stricmp(token, "medium"))
-			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
-			{
-				setFontWeight("normal");
-				m_bChangedFontWeight = UT_TRUE;
-			}
-		else if (!UT_stricmp(token, "regular"))
-			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
-			{
-				setFontWeight("normal");
-				m_bChangedFontWeight = UT_TRUE;
-			}
-		else
-			if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
-			{
-				setFontWeight("normal");
-				m_bChangedFontWeight = UT_TRUE;
-			}
-	}
-	
-	// slant (X has i,o,r, which we cast to italic or normal)
-	if ((token = strtok(NULL, "-")))
-	{
-		if (!UT_stricmp(token, "i"))
-			if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
-			{
-				setFontStyle("italic");
-				m_bChangedFontStyle = UT_TRUE;
-			}
-		else if (!UT_stricmp(token, "o"))
-			if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "oblique"))
-			{
-				setFontStyle("oblique");
-				m_bChangedFontStyle = UT_TRUE;
-			}
-		else // o and r
-			if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
-			{
-				setFontStyle("normal");
-				m_bChangedFontStyle = UT_TRUE;
-			}
-	}
-
-	// sWidth
-	strtok(NULL, "-");
-	// adStyle
-	strtok(NULL, "-");
-
-	// pxlStyle
-	strtok(NULL, "-");
-
-// This is handled as part of the main procedure, because the XLFD
-// will often have an incorrect size.
-#if 0
-	// point size
-	char buf_size[5];
-	if ((token = strtok(NULL, "-")))
-	{
-		sprintf(buf_size, "%dpt", (atoi(token) / 10));
-		if (!m_pFontSize || UT_stricmp(m_pFontSize, buf_size))
-		{
-			setFontSize(buf_size);
-			m_bChangedFontSize = UT_TRUE;
-		}
-	}
-#endif
-	
-	if (cloneString)
-		free(cloneString);
+	page = (GtkNotebookPage*) g_list_nth (GTK_NOTEBOOK (notebook)->children, page_num)->data;
+	notebook_page = page->child;
+	gtk_widget_ref (notebook_page);
+	gtk_notebook_remove_page (GTK_NOTEBOOK (notebook), page_num);
+	gtk_notebook_insert_page (GTK_NOTEBOOK (notebook), notebook_page,
+							  widget, page_num);
+	gtk_widget_unref (notebook_page);
 }
 
-	
+// Glade generated dialog, using fixed widgets to closely match
+// the Windows layout, with some changes for color selector
+GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
+{
+	GtkWidget *windowFontSelection;
+	GtkWidget *vboxMain;
+	GtkWidget *notebookMain;
+	GtkWidget *fixedFont;
+	GtkWidget *labelFont;
+	GtkWidget *labelStyle;
+	GtkWidget *frameFonts;
+	GtkWidget *listFonts;
+	GtkWidget *labelSize;
+	GtkWidget *frameEffects;
+	GtkWidget *vbox2;
+	GtkWidget *checkbuttonStrikeout;
+	GtkWidget *checkbuttonUnderline;
+	GtkWidget *frameStyle;
+	GtkWidget *listStyles;
+	GtkWidget *frameSize;
+	GtkWidget *listSizes;
+	GtkWidget *fixedColor;
+	GtkWidget *hbox1;
+	GtkWidget *colorSelector;
+	GtkWidget *labelTabFont;
+	GtkWidget *labelTabColor;
+	GtkWidget *frame4;
+	GtkWidget *entryPreview;
+	GtkWidget *fixedButtons;
+	GtkWidget *buttonOK;
+	GtkWidget *buttonCancel;
+
+	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
+	gtk_window_set_title (GTK_WINDOW (windowFontSelection), "Font");
+	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, FALSE, FALSE);
+
+	vboxMain = gtk_vbox_new (FALSE, 0);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "vboxMain", vboxMain);
+	gtk_widget_show (vboxMain);
+	gtk_container_add (GTK_CONTAINER (windowFontSelection), vboxMain);
+	gtk_widget_set_usize (vboxMain, 453, -1);
+
+	notebookMain = gtk_notebook_new ();
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "notebookMain", notebookMain);
+	gtk_widget_show (notebookMain);
+	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, FALSE, FALSE, 0);
+	gtk_widget_set_usize (notebookMain, 418, 247);
+	gtk_container_border_width (GTK_CONTAINER (notebookMain), 8);
+
+	fixedFont = gtk_fixed_new ();
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "fixedFont", fixedFont);
+	gtk_widget_show (fixedFont);
+	gtk_container_add (GTK_CONTAINER (notebookMain), fixedFont);
+	gtk_widget_set_usize (fixedFont, -1, 191);
+
+	labelFont = gtk_label_new ("Font:");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelFont", labelFont);
+	gtk_widget_show (labelFont);
+	gtk_fixed_put (GTK_FIXED (fixedFont), labelFont, 8, 8);
+	gtk_widget_set_usize (labelFont, 34, 16);
+
+	labelStyle = gtk_label_new ("Style:");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelStyle", labelStyle);
+	gtk_widget_show (labelStyle);
+	gtk_fixed_put (GTK_FIXED (fixedFont), labelStyle, 216, 8);
+	gtk_widget_set_usize (labelStyle, 34, 16);
+
+	frameFonts = gtk_scrolled_window_new(NULL, NULL);
+	gtk_object_set_data(GTK_OBJECT(windowFontSelection), "frameFonts", frameFonts);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameFonts), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+	gtk_fixed_put(GTK_FIXED(fixedFont), frameFonts, 8, 24);
+	gtk_widget_set_usize(frameFonts, 195, 167);
+	gtk_widget_show(frameFonts);
+
+	listFonts = gtk_clist_new (1);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "listFonts", listFonts);
+	gtk_clist_set_selection_mode (GTK_CLIST(listFonts), GTK_SELECTION_SINGLE);
+	gtk_clist_set_shadow_type (GTK_CLIST(listFonts), GTK_SHADOW_IN);
+	gtk_widget_show (listFonts);
+	gtk_container_add (GTK_CONTAINER (frameFonts), listFonts);
+
+	labelSize = gtk_label_new ("Size:");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelSize", labelSize);
+	gtk_widget_show (labelSize);
+	gtk_fixed_put (GTK_FIXED (fixedFont), labelSize, 356, 8);
+	gtk_widget_set_usize (labelSize, 34, 16);
+
+	frameEffects = gtk_frame_new ("Effects");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "frameEffects", frameEffects);
+	gtk_widget_show (frameEffects);
+	gtk_fixed_put (GTK_FIXED (fixedFont), frameEffects, 216, 127);
+	gtk_widget_set_usize (frameEffects, 206, 65);
+
+	vbox2 = gtk_vbox_new (FALSE, 0);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "vbox2", vbox2);
+	gtk_widget_show (vbox2);
+	gtk_container_add (GTK_CONTAINER (frameEffects), vbox2);
+
+	checkbuttonStrikeout = gtk_check_button_new_with_label ("Strikeout");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "checkbuttonStrikeout", checkbuttonStrikeout);
+	gtk_widget_show (checkbuttonStrikeout);
+	gtk_box_pack_start (GTK_BOX (vbox2), checkbuttonStrikeout, TRUE, TRUE, 0);
+
+	checkbuttonUnderline = gtk_check_button_new_with_label ("Underline");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "checkbuttonUnderline", checkbuttonUnderline);
+	gtk_widget_show (checkbuttonUnderline);
+	gtk_box_pack_start (GTK_BOX (vbox2), checkbuttonUnderline, TRUE, TRUE, 0);
+
+	frameStyle = gtk_scrolled_window_new(NULL, NULL);
+	gtk_object_set_data(GTK_OBJECT(windowFontSelection), "frameStyle", frameStyle);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameStyle), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+	gtk_fixed_put(GTK_FIXED(fixedFont), frameStyle, 216, 24);
+	gtk_widget_set_usize(frameStyle, 126, 95);
+	gtk_widget_show(frameStyle);
+
+	listStyles = gtk_clist_new (1);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "listStyles", listStyles);
+	gtk_clist_set_selection_mode (GTK_CLIST(listStyles), GTK_SELECTION_SINGLE);
+	gtk_clist_set_shadow_type (GTK_CLIST(listStyles), GTK_SHADOW_IN);
+	gtk_widget_show (listStyles);
+	gtk_container_add (GTK_CONTAINER (frameStyle), listStyles);
+
+	frameSize = gtk_scrolled_window_new(NULL, NULL);
+	gtk_object_set_data(GTK_OBJECT(windowFontSelection), "frameSize", frameSize);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameSize), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+	gtk_fixed_put(GTK_FIXED(fixedFont), frameSize, 356, 24);
+	gtk_widget_set_usize(frameSize, 66, 95);
+	gtk_widget_show(frameSize);
+
+	listSizes = gtk_clist_new (1);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "listSizes", listSizes);
+	gtk_clist_set_selection_mode (GTK_CLIST(listSizes), GTK_SELECTION_SINGLE);
+	gtk_clist_set_shadow_type (GTK_CLIST(listSizes), GTK_SHADOW_IN);
+	gtk_widget_show (listSizes);
+	gtk_container_add (GTK_CONTAINER (frameSize), listSizes);
+
+	fixedColor = gtk_fixed_new ();
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "fixedColor", fixedColor);
+	gtk_widget_show (fixedColor);
+	gtk_container_add (GTK_CONTAINER (notebookMain), fixedColor);
+	gtk_widget_set_usize (fixedColor, 421, 187);
+
+	hbox1 = gtk_hbox_new (FALSE, 0);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "hbox1", hbox1);
+	gtk_widget_show (hbox1);
+	gtk_fixed_put (GTK_FIXED (fixedColor), hbox1, 8, 8);
+	gtk_widget_set_usize (hbox1, 425, 190);
+
+	colorSelector = gtk_color_selection_new ();
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "colorSelector", colorSelector);
+	gtk_widget_show (colorSelector);
+	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
+
+	labelTabFont = gtk_label_new ("   Font   ");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelTabFont", labelTabFont);
+	gtk_widget_show (labelTabFont);
+	set_notebook_tab (notebookMain, 0, labelTabFont);
+
+	labelTabColor = gtk_label_new ("   Color   ");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelTabColor", labelTabColor);
+	gtk_widget_show (labelTabColor);
+	set_notebook_tab (notebookMain, 1, labelTabColor);
+
+	frame4 = gtk_frame_new (NULL);
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "frame4", frame4);
+	gtk_widget_show (frame4);
+	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, TRUE, 0);
+	gtk_widget_set_usize (frame4, -1, 53);
+	gtk_container_border_width (GTK_CONTAINER (frame4), 8);
+	gtk_frame_set_shadow_type (GTK_FRAME (frame4), GTK_SHADOW_NONE);
+
+	entryPreview = gtk_entry_new ();
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "entryPreview", entryPreview);
+	gtk_widget_show (entryPreview);
+	gtk_container_add (GTK_CONTAINER (frame4), entryPreview);
+	gtk_widget_set_usize (entryPreview, -1, 40);
+	gtk_entry_set_editable (GTK_ENTRY (entryPreview), FALSE);
+	gtk_widget_set_sensitive(entryPreview, FALSE);
+	gtk_entry_set_text (GTK_ENTRY (entryPreview), "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz");
+
+	fixedButtons = gtk_fixed_new ();
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "fixedButtons", fixedButtons);
+	gtk_widget_show (fixedButtons);
+	gtk_box_pack_start (GTK_BOX (vboxMain), fixedButtons, FALSE, TRUE, 0);
+	gtk_widget_set_usize (fixedButtons, -1, 43);
+
+	buttonOK = gtk_button_new_with_label ("OK");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonOK", buttonOK);
+	gtk_widget_show (buttonOK);
+	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 276, 0);
+	gtk_widget_set_usize (buttonOK, 82, 35);
+	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
+	gtk_widget_grab_default (buttonOK);
+
+	buttonCancel = gtk_button_new_with_label ("Cancel");
+	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
+	gtk_widget_show (buttonCancel);
+	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 369, 6);
+	gtk_widget_set_usize (buttonCancel, 72, 24);
+
+	// save out to members for callback and class access
+    m_fontList = listFonts;
+	m_styleList = listStyles;
+	m_sizeList = listSizes;
+	m_colorSelector = colorSelector;
+	m_previewEntry = entryPreview;
+	m_checkStrikeout = checkbuttonStrikeout;
+	m_checkUnderline = checkbuttonUnderline;
+
+	// bind signals to things
+	gtk_signal_connect(GTK_OBJECT(windowFontSelection),
+					   "destroy",
+					   GTK_SIGNAL_FUNC(NULL),
+					   NULL);
+	gtk_signal_connect(GTK_OBJECT(buttonOK),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   (void *) &m_answer);
+	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   (void *) &m_answer);
+
+	return windowFontSelection;
+}
+
+// the real runModal()	
 void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
@@ -274,64 +348,51 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	guint BLUE = 2;
 	gdouble currentColor[3] = { 0, 0, 0 };
 
-	GtkFontSelectionDialog * cf;
-	gchar * selectedFont = NULL;
-
 	// Set up our own color space so we work well on 8-bit
 	// displays.
     gtk_widget_push_visual(gtk_preview_get_visual());
     gtk_widget_push_colormap(gtk_preview_get_cmap());
+
+	// build the dialog
+	GtkWidget * cf = create_windowFontSelection();
+	UT_ASSERT(cf);
 	
-	// TODO move this title to resources?
-	cf = (GtkFontSelectionDialog *) gtk_font_selection_dialog_new("Font Selection");
+	// Retrieve all the fonts
+	AP_App * app = m_pUnixFrame->getApp();
+	AP_UnixApp * unixapp = static_cast<AP_UnixApp *> (app);
+	m_fontManager = unixapp->getFontManager();
 
-	// To match the Windows dialog, we add a "color" tab to the font dialog
-	// This is built up top to satisfy the requirement that these widgets
-	// exist to set their properties.  :)
-	GtkWidget * colorSelector = gtk_color_selection_new();
-	UT_ASSERT(colorSelector);
+	gtk_clist_clear(GTK_CLIST(m_fontList));
 
-	gtk_widget_show(colorSelector);
+	// to sort out dupes
+	UT_HashTable fontHash(256);
 
-	// Padded with spaces to fake min size without gtk_widget_set_usize()
-	GtkWidget * tabLabel = gtk_label_new("        Color        ");
-	UT_ASSERT(tabLabel);
-	gtk_widget_show(tabLabel);
-	
-	GtkFontSelection * fontsel = GTK_FONT_SELECTION(cf->fontsel);
-	UT_ASSERT(fontsel);
+	// throw them in the hash save duplicates
+	AP_UnixFont ** fonts = m_fontManager->getAllFonts();
+	for (UT_uint32 i = 0; i < m_fontManager->getCount(); i++)
+	{
+		if (!fontHash.findEntry(fonts[i]->getName()))
+			fontHash.addEntry((char *) fonts[i]->getName(),
+							  (char *) fonts[i]->getName(), NULL);
+	}
+	DELETEP(fonts);
 
-	gtk_notebook_insert_page(&fontsel->notebook,
-							 colorSelector,
-							 tabLabel,
-							 3); // 0 based index
+	gchar * text[2] = {NULL, NULL};
 
-    // Connect the signals to the buttons
-	gtk_signal_connect(GTK_OBJECT(cf->ok_button),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   &m_answer);
-	gtk_signal_connect(GTK_OBJECT(cf->cancel_button),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   &m_answer);
-	// TIP: bind something (null at least) to "destroy" or you'll
-	// never get out of gtk_main();
-	gtk_signal_connect(GTK_OBJECT(cf),
-					   "destroy",
-					   GTK_SIGNAL_FUNC(NULL),
-					   NULL);
+	// fetch them out
+	UT_HashTable::UT_HashEntry * entry;
+	for (UT_uint32 k = 0; k < (UT_uint32) fontHash.getEntryCount(); k++)
+	{
+		entry = fontHash.getNthEntry((int) k);
+		UT_ASSERT(entry);
+		text[0] = (gchar *) entry->pszLeft;
+		gtk_clist_append(GTK_CLIST(m_fontList), text);
+	}
 
-	// build an XLFD to try out
-	gchar * buf = new char[1024];	// anyone know the max size for an XLFD?
-	UT_ASSERT(buf);
+	// resize column to fit the new data
+	gtk_clist_set_column_auto_resize(GTK_CLIST(m_fontList), 0, TRUE);
 
-	// suck member variables into a buffer in XLFD format
-	buildXLFD(buf);
-
-	UT_DEBUGMSG(("Priming dialog with XLFD: [%s]\n", buf));
-	
-	// Set color in the color selector, since this can't be done via XLFD
+	// Set color in the color selector
 	if (m_pColor)
 	{
 		UT_RGBColor c;
@@ -341,28 +402,9 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
 		currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
+		// TODO set the color
+		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
 	}
-
-	if (!gtk_font_selection_dialog_set_font_name(cf, buf))
-	{
-		UT_DEBUGMSG(("Couldn't hint to font selection dialog to use XLFD.  "
-					 "An exact match for this XLFD was not found on this X server."));
-	}
-
-	if (bAbusingTheFontSize)
-	{
-		UT_DEBUGMSG(("\tAbusing the font selector size list; setting blank to match font."));
-		// peek into the constructed dialog and fix what it set wrong
-		gtk_clist_unselect_all(GTK_CLIST(GTK_FONT_SELECTION(cf->fontsel)->size_clist));
-		gtk_entry_set_text(GTK_ENTRY(GTK_FONT_SELECTION(cf->fontsel)->size_entry), "");
-
-		bAbusingTheFontSize = UT_FALSE;
-	}
-	
-	// Set up a nice sample string
-	gchar * sampleString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijlkmnopqrstuvwxyz";
-	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
 	// get top level window and it's GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -378,6 +420,7 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	gtk_main();
 
+	/*
 	if (m_answer == AP_Dialog_FontChooser::a_OK)
 	{
 
@@ -427,13 +470,11 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			}
 		}
 	}
-
+	*/
 	gtk_widget_destroy (GTK_WIDGET(cf));
 
     gtk_widget_pop_visual();
     gtk_widget_pop_colormap();
-	
-	delete [] buf;
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
 				 ((m_pFontFamily) ? m_pFontFamily : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),

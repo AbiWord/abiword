@@ -20,6 +20,7 @@
 #ifndef AP_UNIXDIALOG_FONTCHOOSER_H
 #define AP_UNIXDIALOG_FONTCHOOSER_H
 
+#include "xap_UnixFontManager.h"
 #include "xap_Dialog_FontChooser.h"
 class XAP_UnixFrame;
 
@@ -37,13 +38,24 @@ public:
 
 protected:
 
-	void buildXLFD(char * buf);
-	void parseXLFD(char * buf);
+	// these are Glade helper or Glade generated functions
+	GtkWidget * 		get_widget(GtkWidget * widget, gchar * widget_name);
+	void 				set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);
+	GtkWidget * 		create_windowFontSelection(void);
 
-	UT_Bool bAbusingTheFontSize;
+	AP_UnixFontManager * m_fontManager;
 	
-	XAP_UnixFrame *			m_pUnixFrame;
-	
+	// pointers to widgets which need to import/export class data
+	GtkWidget * 		m_fontList;
+	GtkWidget * 		m_styleList;
+	GtkWidget * 		m_sizeList;
+	GtkWidget * 		m_checkStrikeout;
+	GtkWidget *			m_checkUnderline;
+	GtkWidget *			m_colorSelector;
+	GtkWidget * 		m_previewEntry;
+
+	// parent frame
+	XAP_UnixFrame *		m_pUnixFrame;
 };
 
 #endif /* AP_UNIXDIALOG_FONTCHOOSER_H */
