@@ -716,6 +716,27 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	return selection;
 }
 
+- (NSString *)selectedText
+{
+	NSString * selection = nil;
+
+	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
+		if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView()))
+			{
+				if (!pView->isSelectionEmpty())
+					{
+						UT_UCS4Char * ucs4 = 0;
+						pView->getSelectionText(ucs4);
+						if (ucs4)
+							{
+								UT_UTF8String utf8(ucs4);
+								selection = [NSString stringWithUTF8String:(utf8.utf8_str())];
+							}
+					}
+			}
+	return selection;
+}
+
 - (void)insertText:(NSString *)text
 {
 	if (text)
