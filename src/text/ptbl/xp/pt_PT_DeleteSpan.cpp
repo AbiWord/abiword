@@ -119,7 +119,6 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			PTStruxType eStruxType;
 
 			bool bHasEndStrux = false;
-
 			if(eType == pf_Frag::PFT_Text)
 			{
 				if(!getAttrProp(static_cast<pf_Frag_Text*>(pf1)->getIndexAP(),&pAP))
@@ -166,12 +165,23 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				if(!getAttrProp(static_cast<pf_Frag_Object*>(pf1)->getIndexAP(),&pAP))
 					return false;
 			}
+			else if(eType == pf_Frag:: PFT_FmtMark)
+			{
+				iLen = 0;
+				if(!getAttrProp(static_cast<pf_Frag_Object*>(pf1)->getIndexAP(),&pAP))
+					return false;
+				// something that does not carry AP
+			}
+			else if (eType == pf_Frag:: PFT_EndOfDoc)
+			{
+				break;
+			}
 			else
 			{
-				// something that does not carry AP
-				continue;
+				UT_ASSERT(0); // Dunno what this could be
+				break;
 			}
-
+					 
 			if(!pAP->getAttribute(name, pRevision))
 				pRevision = NULL;
 
