@@ -42,7 +42,7 @@ zip:
 	$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	rm -rf $(DIST)/tmp
 	$(subst xxxx,$(DIST)/tmp,$(VERIFY_DIRECTORY))
-	(cd $(OUTDIR); tar -cf - AbiSuite) | (cd $(DIST)/tmp;          tar -xf -)
-	(cd $(OUTDIR); tar -cf - bin/Abi*) | (cd $(DIST)/tmp/AbiSuite; tar -xf -)
+	(cd $(OUTDIR); tar cf - AbiSuite) | (cd $(DIST)/tmp;          tar xf -)
+	(cd $(OUTDIR); tar cf - bin/Abi*) | (cd $(DIST)/tmp/AbiSuite; tar xf -)
 	(cd $(DIST)/tmp; zip -r ../$(PKGBASENAME)-$(SUFFIX).zip AbiSuite)
 	(cd $(DIST); rm -rf tmp)

@@ -50,7 +50,7 @@ pkg: install
 	@rm -f $(DIST)/Prototype
 	@rm -f $(DIST)/pkginfo
 	@echo "Compressing pkg into .tar.gz format..."
-	@(cd $(DIST); tar -cf - abisuite | gzip -c > \
+	@(cd $(DIST); tar cf - abisuite | gzip -c > \
 		$(DIST)/abisuite.$(ABI_BUILD_VERSION).$(OS_ARCH).SunOS.$(OS_RELEASE).pkg.tar.gz)
 	@rm -rf $(DIST)/abisuite
 	@echo "Removing installation..."

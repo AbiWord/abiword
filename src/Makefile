@@ -63,7 +63,7 @@ canonical:
 			unzip -o $$k;				\
 			rm $$k;					\
 		done)
-#	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
+#	(cd $(ABI_ROOT)/../abidistfiles; tar cf - dictionary/*.hash) | (cd $(CANONDIR); tar xf -)
 ifeq ($(ABI_NATIVE),unix)
 # each Unix installer requires both unixfonts and abidistfiles, 
 # so we check for those here (TODO : move them somewhere else?)
