@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: art-lojban\n"
 "POT-Creation-Date: 2003-09-02 23:02-0400\n"
-"PO-Revision-Date: 2003-09-07 19:13-0400\n"
+"PO-Revision-Date: 2003-09-11 08:16-0400\n"
 "Last-Translator: Pierre Abbat <phma@webjockey.net>\n"
 "Language-Team: Lojban\n"
 "MIME-Version: 1.0\n"
@@ -101,7 +101,7 @@ msgstr "zmiku cabgau"
 #: po/tmp/ap_String_Id.h.h:73
 #, c-format
 msgid "% of normal size"
-msgstr "% lei fadni nilbra"
+msgstr "% le fadni nilbra"
 
 #. MENU_LABEL_SPELL_SUGGEST_1
 #. MENU_LABEL_SPELL_SUGGEST_2
@@ -287,7 +287,7 @@ msgstr "&sirji"
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h.h:169
 msgid "&All"
-msgstr "ro"
+msgstr "&ro"
 
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:171
@@ -302,7 +302,7 @@ msgstr "&vi :"
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:175
 msgid "&Auto Spellcheck"
-msgstr "lerfu &zmidragau "
+msgstr "&zmiku lerdragau "
 
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:177
@@ -427,7 +427,6 @@ msgstr "sel&papri"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:226
-#, fuzzy
 msgid "&Documents"
 msgstr "sel&papri"
 
@@ -469,7 +468,6 @@ msgstr "&vlavau"
 
 #. DLG_Field_Fields_No_Colon
 #: po/tmp/ap_String_Id.h.h:243
-#, fuzzy
 msgid "&Fields"
 msgstr "&vlavau:"
 
@@ -633,9 +631,8 @@ msgstr "&selmri cenba"
 
 #. MENU_LABEL_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:310
-#, fuzzy
 msgid "&Mail Merge Field"
-msgstr "&selmri cenba"
+msgstr "&selmri cenba datnyvau"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:312
@@ -1534,12 +1531,12 @@ msgstr "na ka'e setca lo tersepli lo cartu"
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:672
 msgid "Cannot delete this style"
-msgstr "Ne peut détruire ce style"
+msgstr ""
 
 #. DLG_Styles_ErrStyleBuiltin
 #: po/tmp/ap_String_Id.h.h:674
 msgid "Cannot modify a builtin style"
-msgstr "Ne peut modifier un style incorporé"
+msgstr ""
 
 #. PRINT_CANNOTSTARTPRINTJOB
 #: po/tmp/ap_String_Id.h.h:676
@@ -1653,7 +1650,7 @@ msgstr "Change le nombre de colonnes"
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:721
 msgid "Change the printing options"
-msgstr "Modifie la mise en page du document"
+msgstr ""
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_1
 #. MENU_STATUSLINE_SPELL_SUGGEST_2
@@ -1666,32 +1663,32 @@ msgstr "Modifie la mise en page du document"
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:731
 msgid "Change to this suggested spelling"
-msgstr "Change pour le texte suggéré"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:733
 msgid "Change your document's background color"
-msgstr "Change la couleur de fond du document"
+msgstr ""
 
 #. DLG_Styles_ModifyCharacter
 #: po/tmp/ap_String_Id.h.h:735
 msgid "Character"
-msgstr "Caractère"
+msgstr "lerfu"
 
 #. FIELD_Numbers_CharCount
 #: po/tmp/ap_String_Id.h.h:737
 msgid "Character Count"
-msgstr "Caractères"
+msgstr "xokau lerfu"
 
 #. FIELD_Numbers_NbspCount
 #: po/tmp/ap_String_Id.h.h:739
 msgid "Character Count (w/o spaces)"
-msgstr "Caractères (sans espaces)"
+msgstr "xokau lerfu jenai me me'o kunti bu"
 
 #. DLG_Styles_CharPrev
 #: po/tmp/ap_String_Id.h.h:741
 msgid "Character Preview"
-msgstr "Aperçu de caractère"
+msgstr ""
 
 #. DLG_WordCount_Characters_No
 #: po/tmp/ap_String_Id.h.h:743
@@ -1706,22 +1703,22 @@ msgstr "lerfu ja me me'o kunti bu"
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:747
 msgid "Check &Spelling"
-msgstr "&Orthographe"
+msgstr ""
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:749
 msgid "Check &Version"
-msgstr "&Vérifier la version"
+msgstr ""
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:751
 msgid "Check s&pelling as you type"
-msgstr "&Vérifier au cours de la frappe"
+msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:753
 msgid "Check the document for incorrect spelling"
-msgstr "Vérifie l'orthographe du document"
+msgstr ""
 
 #. DLG_NEW_Choose
 #: po/tmp/ap_String_Id.h.h:755
@@ -1731,12 +1728,12 @@ msgstr "cuxna"
 #. DLG_Options_Label_ChooseForTransparent
 #: po/tmp/ap_String_Id.h.h:757
 msgid "Choose Screen Color"
-msgstr "Choisir la couleur d'écran"
+msgstr ""
 
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:759
 msgid "Choose screen color for AbiWord"
-msgstr "Choisir la couleur d'écran pour AbiWord"
+msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:761
@@ -1761,47 +1758,47 @@ msgstr ""
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:765
 msgid "Cle&ar"
-msgstr "E&ffacer"
+msgstr ""
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:767
 msgid "Clear"
-msgstr "&Effacer"
+msgstr ""
 
 #. DLG_Tab_Button_ClearAll
 #: po/tmp/ap_String_Id.h.h:769
 msgid "Clear &All"
-msgstr "Effacer &tout"
+msgstr ""
 
 #. DLG_Background_ClearClr
 #: po/tmp/ap_String_Id.h.h:771
 msgid "Clear Background Color"
-msgstr "Effacer la couleur de fond"
+msgstr ""
 
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:773
 msgid "Clear Highlight Color"
-msgstr "Effacer la couleur de mise en évidence"
+msgstr ""
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:775
 msgid "Close all windows and exit?"
-msgstr "Fermer toutes les fenêtres et quitter?"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:777
 msgid "Close all windows in the application and exit"
-msgstr "Ferme toutes les fenêtres et quitte l'application"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:779
 msgid "Close the document"
-msgstr "Ferme le document actif"
+msgstr ""
 
 #. MENU_LABEL_AUTOTEXT_CLOSING
 #: po/tmp/ap_String_Id.h.h:781
 msgid "Closing:"
-msgstr "Formule de politesse"
+msgstr ""
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:783
@@ -1822,7 +1819,7 @@ msgstr "rajypau"
 #: po/tmp/ap_String_Id.h.h:789
 #, c-format
 msgid "Column Gap [%s]"
-msgstr "Intervalle entre colonnes [%s]"
+msgstr "%s jbini le'i rajypau"
 
 #. ColumnStatus
 #: po/tmp/ap_String_Id.h.h:791
@@ -1833,7 +1830,7 @@ msgstr "rajypau [%d]"
 #. DLG_Column_ColumnTitle
 #: po/tmp/ap_String_Id.h.h:793
 msgid "Columns"
-msgstr "Colonnes"
+msgstr "rajypau"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h.h:795
@@ -1858,17 +1855,17 @@ msgstr "piktcita le velfarvi:"
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Compile Date"
-msgstr "Date de compilation"
+msgstr ""
 
 #. FIELD_Application_CompileTime
 #: po/tmp/ap_String_Id.h.h:805
 msgid "Compile Time"
-msgstr "Heure de compilation"
+msgstr ""
 
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h.h:807
 msgid "Con&tinuous"
-msgstr "C&ontinu"
+msgstr ""
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h.h:809
@@ -1896,41 +1893,41 @@ msgstr "fukygau"
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:819
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Copie la sélection et la place dans le presse-papiers"
+msgstr ""
 
 #. AUTOTEXT_CLOSING_3
 #: po/tmp/ap_String_Id.h.h:821
 msgid "Cordially,"
-msgstr "Cordialement, "
+msgstr ""
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:823
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "Ne peut ouvrir le fichier %s en écriture"
+msgstr ""
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h.h:825
 #, c-format
 msgid "Could not open file %s."
-msgstr "Impossible d'ouvrir le fichier %s."
+msgstr ""
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:827
 #, c-format
 msgid "Could not write to file %s"
-msgstr "Ne peut écrire dans le fichier %s"
+msgstr ""
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h.h:829
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Impossible d'écrire dans le fichier %s."
+msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:831
 msgid "Count the number of words in the document"
-msgstr "Statistiques du document"
+msgstr ""
 
 #. FIELD_Document_Coverage
 #: po/tmp/ap_String_Id.h.h:833
@@ -1945,19 +1942,19 @@ msgstr "nilgacri:"
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h.h:837
 msgid "Create a fax"
-msgstr "Créer une télécopie"
+msgstr ""
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h.h:839
 msgid "Create a new blank document"
-msgstr "Créer un document vierge"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_NEW
 #. TOOLBAR_STATUSLINE_FILE_NEW
 #. TOOLBAR_TOOLTIP_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:843
 msgid "Create a new document"
-msgstr "Crée un nouveau document"
+msgstr ""
 
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h.h:845
@@ -1977,7 +1974,7 @@ msgstr "finti"
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:851
 msgid "Cu&t"
-msgstr "&Couper"
+msgstr ""
 
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h.h:853
@@ -1987,27 +1984,27 @@ msgstr "cabna detri"
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h.h:855
 msgid "Current Font"
-msgstr "Police actuelle"
+msgstr ""
 
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h.h:857
 msgid "Current List Label"
-msgstr "Etiquette de liste actuel"
+msgstr ""
 
 #. DLG_Lists_Current_List_Type
 #: po/tmp/ap_String_Id.h.h:859
 msgid "Current List Type"
-msgstr "Type de liste actuel"
+msgstr ""
 
 #. MSG_EmptySelection
 #: po/tmp/ap_String_Id.h.h:861
 msgid "Current Selection is Empty"
-msgstr "La sélection est vide"
+msgstr ""
 
 #. DLG_Styles_DefCurrent
 #: po/tmp/ap_String_Id.h.h:863
 msgid "Current Settings"
-msgstr "Réglages actuels"
+msgstr ""
 
 #. FIELD_Datetime_CurrentTime
 #: po/tmp/ap_String_Id.h.h:865
@@ -2017,12 +2014,12 @@ msgstr "cabna tcika"
 #. DLG_Options_Label_ViewCursorBlink
 #: po/tmp/ap_String_Id.h.h:867
 msgid "Cursor &blink"
-msgstr "&Clignotement du curseur"
+msgstr ""
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h.h:869
 msgid "Custom Dictionary:"
-msgstr "Dictionnaire &personnel :"
+msgstr "steci vlaste"
 
 #. FIELD_DateTime_Custom
 #: po/tmp/ap_String_Id.h.h:871
@@ -2032,7 +2029,7 @@ msgstr "tamcu'aka'e detytcika"
 #. DLG_Lists_Customize
 #: po/tmp/ap_String_Id.h.h:873
 msgid "Customized List"
-msgstr "Personnalisé"
+msgstr ""
 
 #. TOOLBAR_LABEL_EDIT_CUT
 #. TOOLBAR_STATUSLINE_EDIT_CUT
@@ -2044,12 +2041,12 @@ msgstr "ka'arvi'u"
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:879
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Efface la sélection et la place dans le presse-papiers"
+msgstr ""
 
 #. DLG_Lists_Dashed_List
 #: po/tmp/ap_String_Id.h.h:881 po/tmp/xap_String_Id.h.h:191
 msgid "Dashed List"
-msgstr "Liste avec pointillée"
+msgstr ""
 
 #. FIELD_Document_Date
 #: po/tmp/ap_String_Id.h.h:883
@@ -2069,22 +2066,22 @@ msgstr "detytcika"
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:889
 msgid "Day # in the year"
-msgstr "Numéro du jour dans l'année"
+msgstr ""
 
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h.h:891
 msgid "De&faults"
-msgstr "Dé&fauts"
+msgstr ""
 
 #. AUTOTEXT_SALUTATION_1
 #: po/tmp/ap_String_Id.h.h:893
 msgid "Dear Mom and Dad,"
-msgstr "Chers Maman et Papa, "
+msgstr ""
 
 #. AUTOTEXT_SALUTATION_2
 #: po/tmp/ap_String_Id.h.h:895
 msgid "Dear Sir or Madam:"
-msgstr "Madame, Monsieur, "
+msgstr ""
 
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h.h:897
@@ -2094,7 +2091,7 @@ msgstr "sacli"
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:899
 msgid "Decimal Tab"
-msgstr "Tabulation décimale"
+msgstr ""
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
@@ -2106,39 +2103,39 @@ msgstr ""
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:905
 msgid "Default date (w/o time)"
-msgstr "La date du jour (sans l'heure)"
+msgstr ""
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h.h:907
 msgid "Default date representation"
-msgstr "La date du jour courant"
+msgstr ""
 
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:909
 msgid "Default page size"
-msgstr "Taille de la page par défaut :"
+msgstr ""
 
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:911
 msgid "Default tab stops:"
-msgstr "&Valeur par défaut :"
+msgstr ""
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:913
 msgid "Default to right-to-left direction of text"
-msgstr "Direction du texte de droite à gauche par défaut"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:916
 msgid "Define or apply style for the selection"
-msgstr "Définit ou applique un style à la sélection"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:919 po/tmp/xap_String_Id.h.h:199
 msgid "Delete"
-msgstr "Supprimer"
+msgstr ""
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:921
@@ -2186,7 +2183,7 @@ msgstr "vimcu lo rajypau"
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:940
 msgid "Delete hyperlink"
-msgstr "Efface l'hyperlien"
+msgstr ""
 
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:942
@@ -2196,7 +2193,7 @@ msgstr "vimcu lo pinpau"
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:944
 msgid "Delete the selection"
-msgstr "Efface la selection"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_DELETE_COLUMN
 #. TOOLBAR_TOOLTIP_DELETE_COLUMN
@@ -2215,7 +2212,7 @@ msgstr "vimcu ti poi pinpau ge'u le ri cartu"
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h.h:954
 msgid "Description"
-msgstr "Description :"
+msgstr ""
 
 #. DLG_MetaData_Description_LBL
 #: po/tmp/ap_String_Id.h.h:956 po/tmp/xap_String_Id.h.h:201
@@ -2225,7 +2222,7 @@ msgstr "velski:"
 #. DLG_Lists_Diamond_List
 #: po/tmp/ap_String_Id.h.h:958 po/tmp/xap_String_Id.h.h:203
 msgid "Diamond List"
-msgstr "Liste avec losange"
+msgstr ""
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:960
@@ -2269,49 +2266,47 @@ msgstr ""
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:974
 msgid "Display Credits"
-msgstr "Affiche la mention des contributions"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:976
 msgid "Display Help Contents"
-msgstr "Affiche le sommaire de l'aide"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:978
 msgid "Display Help Index"
-msgstr "Affiche l'index de l'aide"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:980
 msgid "Display information about Open Source"
-msgstr "Affiche des informations sur le concept Open Source"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:982
 msgid "Display non-printing characters"
-msgstr "Affiche ou masque les caractères non-imprimables"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:984
 msgid "Display program information, version number, and copyright"
 msgstr ""
-"Affiche des informations sur le programme, le numéro de version et le "
-"copyright"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:986
 msgid "Display program version number"
-msgstr "Affiche le numéro de version du programme"
+msgstr ""
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:988
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr "Voulez-vous remplacer les mots ignorés de tous les documents?"
+msgstr ""
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h.h:990
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "Voulez-vous remplacer les mots ignorés du document actuel?"
+msgstr ""
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h.h:992
@@ -2331,7 +2326,7 @@ msgstr "na ke'urcfari"
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:998
 msgid "Double"
-msgstr "Double"
+msgstr ""
 
 #. TOOLBAR_LABEL_DOUBLE_SPACE
 #: po/tmp/ap_String_Id.h.h:1000
@@ -2368,17 +2363,17 @@ msgstr "galfi le sedytcita"
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1017
 msgid "Edit text at the top or bottom of every page"
-msgstr "Edite le texte de l'en-tête et du pied de page"
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:1019
 msgid "Edit the Footer on the current page"
-msgstr "Edite le pied de la page"
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:1021
 msgid "Edit the Header on the current page"
-msgstr "Edite l'en-tête de la page"
+msgstr ""
 
 #. MENU_LABEL_AUTOTEXT_EMAIL
 #: po/tmp/ap_String_Id.h.h:1023
@@ -2398,47 +2393,46 @@ msgstr ""
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1029
 msgid "Endnote anchor"
-msgstr "Signet pour note en fin de document"
+msgstr ""
 
 #. FIELD_Numbers_EndnoteReference
 #: po/tmp/ap_String_Id.h.h:1031
 msgid "Endnote reference"
-msgstr "Référence pour note en fin de document"
+msgstr ""
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h.h:1033
-#, fuzzy
 msgid "Endnote style"
-msgstr "rebytcita selci'a"
+msgstr "rebytcita tamtadji"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:1035
 msgid "Error calculating value!"
-msgstr "Erreur lors du calcul de la valeur!"
+msgstr ""
 
 #. SCRIPT_CANTRUN
 #: po/tmp/ap_String_Id.h.h:1037
 #, c-format
 msgid "Error executing script %s"
-msgstr "Ne peut exécuter le script &quot;%s&quot;."
+msgstr ""
 
 #. MSG_ImportError
 #: po/tmp/ap_String_Id.h.h:1039
 #, c-format
 msgid "Error importing file %s."
-msgstr "Erreur pendant l'importation du fichier %s."
+msgstr ""
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h.h:1041
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr "Impossible d'écrire dans le fichier %s."
+msgstr ""
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:1043
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "Impossible d'écrire dans le fichier %s."
+msgstr ""
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h.h:1045
@@ -2448,12 +2442,12 @@ msgstr "zuk- mid-"
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:1047
 msgid "Exactly"
-msgstr "Exactement"
+msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1049
 msgid "Execute helper scripts"
-msgstr "Exécute un script"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_SCRIPT_PLAY
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
@@ -2474,27 +2468,27 @@ msgstr "za'umei cuxselkai"
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h.h:1058
 msgid "Extra Toolbar"
-msgstr "Barre d'outils s&upplémentaires"
+msgstr ""
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h.h:1060
 msgid "Extra parameters:"
-msgstr "Paramètres supplémentaires :"
+msgstr ""
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:1062
 msgid "F&ormat"
-msgstr "F&ormat"
+msgstr ""
 
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1064
 msgid "F&ull Screen"
-msgstr "Plein é&cran"
+msgstr ""
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:1066
 msgid "Fi&nd what:"
-msgstr "R&echercher :"
+msgstr ""
 
 #. DLG_MailMerge_Insert_No_Colon
 #: po/tmp/ap_String_Id.h.h:1068
@@ -2510,51 +2504,51 @@ msgstr "vlavau cmene:"
 #: po/tmp/ap_String_Id.h.h:1072
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr "Le fichier %s n'est pas d'un type actuellement supporté"
+msgstr ""
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h.h:1074
 #, c-format
 msgid "File %s is not of the type it claims to be"
-msgstr "Le fichier %s n'est pas du type qu'il prétend être"
+msgstr ""
 
 #. MSG_IE_UnknownType
 #: po/tmp/ap_String_Id.h.h:1076
 #, c-format
 msgid "File %s is of unknown type"
-msgstr "Le fichier %s est d'un type inconnu"
+msgstr ""
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h.h:1078
 #, c-format
 msgid "File %s not found"
-msgstr "Fichier %s non trouvé"
+msgstr ""
 
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:1080
 msgid "File Name"
-msgstr "Nom de fichier"
+msgstr ""
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:1082
 msgid "Find"
-msgstr "Rechercher"
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:1084
 msgid "Find the specified text"
-msgstr "Recherche le texte spécifié"
+msgstr ""
 
 #. FirstLineIndentStatus
 #: po/tmp/ap_String_Id.h.h:1086
 #, c-format
 msgid "First Line Indent [%s]"
-msgstr "Indentation de première ligne [%s]"
+msgstr ""
 
 #. DLG_Para_SpecialFirstLine
 #: po/tmp/ap_String_Id.h.h:1088
 msgid "First line"
-msgstr "Positif"
+msgstr ""
 
 #. DLG_InsertTable_FixedColSize
 #: po/tmp/ap_String_Id.h.h:1090
@@ -2567,8 +2561,8 @@ msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr ""
-"Paragraphe suivant Paragraphe suivant Paragraphe suivant Paragraphe suivant "
-"Paragraphe suivant Paragraphe suivant Paragraphe suivant"
+"ni'o nitla'i jufygri .i nitla'i jufygri .i nitla'i jufygri .i nitla'i jufygri .i nitla'i jufygri "
+" .i nitla'i jufygri .i nitla'i jufygri .i nitla'i jufygri .i nitla'i jufygri .i nitla'i jufygri"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -2576,7 +2570,7 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:1097 po/tmp/xap_String_Id.h.h:263
 msgid "Font"
-msgstr "Police"
+msgstr "lermontai"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
@@ -2595,12 +2589,12 @@ msgstr "selci'a selska"
 #. DLG_Lists_ButtonFont
 #: po/tmp/ap_String_Id.h.h:1107
 msgid "Font..."
-msgstr "&Police..."
+msgstr ""
 
 #. DLG_Lists_Font
 #: po/tmp/ap_String_Id.h.h:1109 po/tmp/xap_String_Id.h.h:265
 msgid "Font:"
-msgstr "Police :"
+msgstr ""
 
 #. MENU_LABEL_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1111
@@ -2610,12 +2604,12 @@ msgstr "&rebypinka"
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h.h:1113
 msgid "Footer"
-msgstr "Bas de page (pied de page)"
+msgstr ""
 
 #. DLG_HdrFtr_FooterFrame
 #: po/tmp/ap_String_Id.h.h:1115
 msgid "Footer Properties"
-msgstr "Propriétés de pied de page"
+msgstr ""
 
 #. FooterStatus
 #: po/tmp/ap_String_Id.h.h:1117
@@ -2719,54 +2713,54 @@ msgstr "mi'e: "
 #. AUTOTEXT_EMAIL_6
 #: po/tmp/ap_String_Id.h.h:1158
 msgid "Fwd:"
-msgstr "Tr : "
+msgstr ""
 
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
 #: po/tmp/ap_String_Id.h.h:1161
 msgid "General"
-msgstr "Général"
+msgstr ""
 
 #. DLG_Goto_Btn_Goto
 #: po/tmp/ap_String_Id.h.h:1163
 msgid "Go To"
-msgstr "&Atteindre"
+msgstr ""
 
 #. DLG_Goto_Label_What
 #: po/tmp/ap_String_Id.h.h:1165
 msgid "Go To &What:"
-msgstr "&Cible :"
+msgstr ""
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h.h:1167
 msgid "Go to..."
-msgstr "Atteindre"
+msgstr ""
 
 #. DLG_Lists_Hand_List
 #: po/tmp/ap_String_Id.h.h:1169 po/tmp/xap_String_Id.h.h:309
 msgid "Hand List"
-msgstr "Liste avec main"
+msgstr ""
 
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h.h:1171
 msgid "Hanging"
-msgstr "Négatif"
+msgstr ""
 
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h.h:1173
 msgid "Header"
-msgstr "Haut de page (en-tête)"
+msgstr ""
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:1175
 msgid "Header Properties"
-msgstr "Propriétés d'en-tête"
+msgstr ""
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h.h:1177
 #, c-format
 msgid "Header [%s]"
-msgstr "En-tête [%s]"
+msgstr ""
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1179
@@ -2789,7 +2783,7 @@ msgstr ""
 #. DLG_Lists_Heart_List
 #: po/tmp/ap_String_Id.h.h:1183 po/tmp/xap_String_Id.h.h:321
 msgid "Heart List"
-msgstr "Liste avec coeur"
+msgstr ""
 
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h.h:1185
@@ -2806,7 +2800,7 @@ msgstr "sidju"
 #. MENU_LABEL_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:1191
 msgid "Help &Contents"
-msgstr "&Sommaire"
+msgstr ""
 
 #. MENU_LABEL_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:1193
@@ -2816,12 +2810,12 @@ msgstr "djunoi jo'u se ninja'o"
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:1195
 msgid "Hide"
-msgstr "Masquer"
+msgstr ""
 
 #. DLG_Options_Label_SpellHideErrors
 #: po/tmp/ap_String_Id.h.h:1197
 msgid "Hide &spelling errors in the document"
-msgstr "&Masquer les fautes d'orthographe"
+msgstr ""
 
 #. TOOLBAR_LABEL_COLOR_BACK
 #. TOOLBAR_STATUSLINE_COLOR_BACK
@@ -2833,37 +2827,37 @@ msgstr "basna selska"
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h.h:1203
 msgid "I&gnore All"
-msgstr "Ignorer &toujours"
+msgstr ""
 
 #. InsertModeFieldINS
 #: po/tmp/ap_String_Id.h.h:1205
 msgid "INS"
-msgstr "INS"
+msgstr "SE'A"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h.h:1207
 msgid "Icons"
-msgstr "Icones"
+msgstr ""
 
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:1209
 msgid "Ignore"
-msgstr "Ignorer"
+msgstr ""
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1211
 msgid "Ignore all occurrences of this word in the document"
-msgstr "Ignore le mot chaque fois qu'on le rencontre dans le document"
+msgstr ""
 
 #. DLG_Options_Label_SpellIgnoredWord
 #: po/tmp/ap_String_Id.h.h:1213
 msgid "Ignored words:"
-msgstr "Mots ignorés :"
+msgstr ""
 
 #. DLG_Lists_Implies_List
 #: po/tmp/ap_String_Id.h.h:1215 po/tmp/xap_String_Id.h.h:359
 msgid "Implies List"
-msgstr "Liste avec implies"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:1217
@@ -2873,17 +2867,17 @@ msgstr "nerbe'i le @@@ fo lo selpapri"
 #. DLG_Styles_LBL_InUse
 #: po/tmp/ap_String_Id.h.h:1219
 msgid "In Use"
-msgstr "Utilisé"
+msgstr ""
 
 #. AUTOTEXT_REFERENCE_1
 #: po/tmp/ap_String_Id.h.h:1221
 msgid "In reply to:"
-msgstr "En réponse à : "
+msgstr ""
 
 #. WORD_PassInvalid
 #: po/tmp/ap_String_Id.h.h:1223
 msgid "Incorrect Password"
-msgstr "Mot de passe erronné"
+msgstr "naldrani sivyvla"
 
 #. TOOLBAR_LABEL_INDENT
 #. TOOLBAR_STATUSLINE_INDENT
@@ -2895,7 +2889,7 @@ msgstr ""
 #. DLG_Para_LabelIndentation
 #: po/tmp/ap_String_Id.h.h:1229
 msgid "Indentation"
-msgstr "Retrait"
+msgstr ""
 
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:1231
@@ -2906,7 +2900,7 @@ msgstr "KumtyLe'u"
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h.h:1233
 msgid "Initial Endnote value"
-msgstr ""
+msgstr "krasi ke fampinka selylai"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h.h:1235
@@ -2938,7 +2932,7 @@ msgstr "setca lo &cartu"
 #. TOOLBAR_LABEL_FMT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:1247
 msgid "Insert Bookmark"
-msgstr "Signet"
+msgstr ""
 
 #. DLG_Break_BreakTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1249
@@ -2953,7 +2947,7 @@ msgstr "setca lo &selci"
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1253
 msgid "Insert Clipboard contents"
-msgstr "Insère le contenu du presse-papiers au point d'insertion"
+msgstr ""
 
 #. DLG_DateTime_DateTimeTitle
 #: po/tmp/ap_String_Id.h.h:1255
@@ -2970,7 +2964,7 @@ msgstr "setca lo datnyvei"
 #. TOOLBAR_LABEL_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1260
 msgid "Insert Hyperlink"
-msgstr "Hyperlien"
+msgstr ""
 
 #. TOOLBAR_LABEL_IMG
 #: po/tmp/ap_String_Id.h.h:1262
@@ -2998,7 +2992,7 @@ msgstr "setca lo terxrutcita le datnyvei"
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:1273
 msgid "Insert a calculated field"
-msgstr "Insère un champ calculé"
+msgstr ""
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h.h:1275
@@ -3037,12 +3031,12 @@ msgstr "setca lo cnino cartu le do selpapri"
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:1290
 msgid "Insert a page, column, or section break"
-msgstr "Insère un saut de page, de colonne ou de section"
+msgstr ""
 
 #. MENU_STATUSLINE_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:1292
 msgid "Insert a picture"
-msgstr "Insère une image"
+msgstr "setca lo pixra"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h.h:1294
@@ -3058,22 +3052,22 @@ msgstr "setci lo rajypau ni'a"
 #. MENU_STATUSLINE_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1299
 msgid "Insert a symbol or other special character"
-msgstr "Insère un symbole ou un caractère spécial"
+msgstr ""
 
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1301
 msgid "Insert an automatically-updated page number"
-msgstr "Insère un numéro de page mis à jour automatiquement"
+msgstr ""
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:1303
 msgid "Insert an endnote"
-msgstr "Insère une note à la fin du document"
+msgstr ""
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:1305
 msgid "Insert an existing picture from another file"
-msgstr "Insère une image existante à partir d'un autre fichier"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_IMG
 #. TOOLBAR_TOOLTIP_IMG
@@ -3084,7 +3078,7 @@ msgstr "setca lo pixra le selpapri"
 #. MENU_STATUSLINE_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:1310
 msgid "Insert bookmark"
-msgstr "Insère un signet"
+msgstr ""
 
 #. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h.h:1312
@@ -3094,7 +3088,7 @@ msgstr "setca lo tersepli"
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:1314
 msgid "Insert clipart"
-msgstr "Insère un graphique prédessiné"
+msgstr ""
 
 #. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h.h:1316
@@ -3104,7 +3098,7 @@ msgstr "setca lo datnyvei"
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1318
 msgid "Insert hyperlink"
-msgstr "Insère un hyperlien"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
@@ -3120,17 +3114,17 @@ msgstr "setca lo cartu"
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1325
 msgid "Insert the contents of another file"
-msgstr "Insère le contenu d'un autre fichier"
+msgstr ""
 
 #. MENU_STATUSLINE_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:1327
 msgid "Insert the date and/or time"
-msgstr "Insère la date et/ou l'heure"
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1329
 msgid "Insert unformatted clipboard contents"
-msgstr "Insère le contenu du presse-papiers sans son format"
+msgstr ""
 
 #. DLG_Options_Label_SpellInternet
 #: po/tmp/ap_String_Id.h.h:1331
@@ -3140,19 +3134,19 @@ msgstr "toljundi lo balnirci'e ja &datnyvei cmene"
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1333
 msgid "Invisible &Layout Marks"
-msgstr "Caractères non imprimables"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_ITALIC
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:1337 po/tmp/xap_String_Id.h.h:389
 msgid "Italic"
-msgstr "Italique"
+msgstr ""
 
 #. DLG_Para_AlignJustified
 #: po/tmp/ap_String_Id.h.h:1339
 msgid "Justified"
-msgstr "Justifié"
+msgstr ""
 
 #. TOOLBAR_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:1341
@@ -3168,17 +3162,17 @@ msgstr "le jufygri cu mlasirji re mlana"
 #. MENU_STATUSLINE_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:1346
 msgid "Justify the paragraph"
-msgstr "Justifie le paragraphe à droite et à gauche"
+msgstr ""
 
 #. DLG_Para_PushKeepWithNext
 #: po/tmp/ap_String_Id.h.h:1348
 msgid "Keep with ne&xt"
-msgstr "P&aragraphes solidaires"
+msgstr ""
 
 #. FIELD_PieceTable_Test
 #: po/tmp/ap_String_Id.h.h:1350
 msgid "Kevins Test"
-msgstr "Test de Kevin"
+msgstr ""
 
 #. FIELD_Document_Keywords
 #: po/tmp/ap_String_Id.h.h:1352
@@ -3193,19 +3187,19 @@ msgstr "selsisku valsi"
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1356
 msgid "Label Align:"
-msgstr "Align. &indent. :"
+msgstr ""
 
 #. AUTOTEXT_SALUTATION_3
 #: po/tmp/ap_String_Id.h.h:1358
 msgid "Ladies and Gentlemen:"
-msgstr "Mesdames, Messieurs, "
+msgstr ""
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
 #. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h.h:1362
 msgid "Language"
-msgstr "Langue"
+msgstr "bangu"
 
 #. DLG_Options_Label_LangSettings
 #: po/tmp/ap_String_Id.h.h:1364
@@ -3220,12 +3214,12 @@ msgstr "bangu:"
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h.h:1368
 msgid "Layout"
-msgstr "Disposition"
+msgstr ""
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:1370
 msgid "Leader"
-msgstr "Points de suite"
+msgstr ""
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -3233,30 +3227,30 @@ msgstr "Points de suite"
 #. TOOLBAR_LABEL_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1375
 msgid "Left"
-msgstr "Gauche"
+msgstr ""
 
 #. LeftIndentStatus
 #: po/tmp/ap_String_Id.h.h:1377
 #, c-format
 msgid "Left Indent [%s]"
-msgstr "Indentation gauche [%s]"
+msgstr ""
 
 #. LeftIndentTextIndentStatus
 #: po/tmp/ap_String_Id.h.h:1379
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
-msgstr "Indentation gauche [%s] Indentation de première ligne [%s]"
+msgstr ""
 
 #. LeftMarginStatus
 #: po/tmp/ap_String_Id.h.h:1381
 #, c-format
 msgid "Left Margin [%s]"
-msgstr "Marge gauche [%s]"
+msgstr ""
 
 #. TabToggleLeftTab
 #: po/tmp/ap_String_Id.h.h:1383
 msgid "Left Tab"
-msgstr "Tabulation à gauche"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_ALIGN_LEFT
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
@@ -3272,27 +3266,27 @@ msgstr "zulstogau le jufygri"
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h.h:1390
 msgid "Level Delimiter:"
-msgstr "Délimiteur :"
+msgstr ""
 
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h.h:1392
 msgid "Level:"
-msgstr "&Niveau :"
+msgstr ""
 
 #. DLG_Para_LabelLineSpacing
 #: po/tmp/ap_String_Id.h.h:1394
 msgid "Li&ne spacing:"
-msgstr "I&nterligne :"
+msgstr ""
 
 #. DLG_Goto_Target_Line
 #: po/tmp/ap_String_Id.h.h:1396
 msgid "Line"
-msgstr "Ligne"
+msgstr ""
 
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h.h:1398
 msgid "Line Count"
-msgstr "Lignes"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:1400
@@ -3302,7 +3296,7 @@ msgstr "le linji cu gapru le selcuxpau (nafyga'i)"
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1402
 msgid "Line and &Page Breaks"
-msgstr "Ligne et saut de &page"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1404
@@ -3323,7 +3317,7 @@ msgstr "xokau linji"
 #. DLG_Styles_List
 #: po/tmp/ap_String_Id.h.h:1410
 msgid "List"
-msgstr "Liste"
+msgstr "liste"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h.h:1412
@@ -3333,12 +3327,12 @@ msgstr "liste tcita"
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:1414
 msgid "Lists for "
-msgstr "Puces et numéros"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1416
 msgid "Lock the layout of the current toolbars"
-msgstr "stogau le cabna tcigrana morna"
+msgstr "stogau le cabna tcigarna morna"
 
 #. AUTOTEXT_CLOSING_4
 #: po/tmp/ap_String_Id.h.h:1418
@@ -3374,17 +3368,17 @@ msgstr "gasnu lenu le selcuxpau cu rotsu (nafyga'i)"
 #. MENU_STATUSLINE_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:1431
 msgid "Make the selection italic (toggle)"
-msgstr "Met la sélection en italique (bascule)"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:1433
 msgid "Make the selection subscript (toggle)"
-msgstr "Met la sélection en indice (bascule)"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:1435
 msgid "Make the selection superscript (toggle)"
-msgstr "Met la sélection en exposant (bascule)"
+msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:1437
@@ -3394,7 +3388,7 @@ msgstr "rejgau fi le velfarvi"
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:1439
 msgid "Manage plugins"
-msgstr "Gestionnaire de modules"
+msgstr ""
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1441
@@ -3414,7 +3408,7 @@ msgstr "cipra pe la martin"
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h.h:1447
 msgid "Max Column size"
-msgstr "Taille maximum de colonne :"
+msgstr ""
 
 #. DLG_MergeCells_Above
 #: po/tmp/ap_String_Id.h.h:1449
@@ -3507,12 +3501,12 @@ msgstr "vrici"
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:1489
 msgid "Modify Styles"
-msgstr "Modifier les styles"
+msgstr ""
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h.h:1491
 msgid "Modify..."
-msgstr "Modifier..."
+msgstr ""
 
 #. FIELD_DateTime_MonthDayYear
 #: po/tmp/ap_String_Id.h.h:1493
@@ -3522,7 +3516,7 @@ msgstr "masti ce djedi ce nanca"
 #. MENU_STATUSLINE_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:1495
 msgid "Move the insertion point to a specific location"
-msgstr "Déplace le point d'insertion à l'endroit spécifié"
+msgstr ""
 
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h.h:1497
@@ -3532,7 +3526,7 @@ msgstr "mast ce djedi ce nanca"
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h.h:1499
 msgid "Multiple"
-msgstr "Multiple"
+msgstr ""
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:1501
@@ -3547,7 +3541,7 @@ msgstr "cnino selpapri"
 #. DLG_Lists_New_List_Label
 #: po/tmp/ap_String_Id.h.h:1505
 msgid "New List Label"
-msgstr "Nouvelle étiquette de liste"
+msgstr ""
 
 #. DLG_Lists_New_List_Type
 #: po/tmp/ap_String_Id.h.h:1507
@@ -3555,8 +3549,6 @@ msgid ""
 "New List \n"
 "Type"
 msgstr ""
-"Nouvelle liste \n"
-"Type"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h.h:1509
@@ -3564,13 +3556,11 @@ msgid ""
 "New Starting \n"
 "Value"
 msgstr ""
-"Débuter une nouvelle \n"
-"valeur"
 
 #. DLG_Styles_NewTitle
 #: po/tmp/ap_String_Id.h.h:1511
 msgid "New Style"
-msgstr "Nouveau tyle"
+msgstr ""
 
 #. DLG_Styles_New
 #: po/tmp/ap_String_Id.h.h:1513
@@ -3585,7 +3575,7 @@ msgstr "&selyli'e >>"
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h.h:1517
 msgid "No File"
-msgstr "Pas de fichier"
+msgstr ""
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1519
@@ -3593,19 +3583,17 @@ msgid ""
 "No Style selected \n"
 " so it cannot be modified"
 msgstr ""
-"Aucun style sélectionné \n"
-" alors il ne peut être modifié"
 
 #. SCRIPT_NOSCRIPTS
 #: po/tmp/ap_String_Id.h.h:1521
 msgid "No scripts found"
-msgstr "Scripts non trouvés"
+msgstr ""
 
 #. DLG_Styles_DefNone
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h.h:1524
 msgid "None"
-msgstr "Aucun"
+msgstr ""
 
 #. TOOLBAR_LABEL_PARA_0BEFORE
 #: po/tmp/ap_String_Id.h.h:1526
@@ -3615,27 +3603,27 @@ msgstr "lo nomei cu lidne"
 #. MENU_STATUSLINE_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:1528
 msgid "Normal View"
-msgstr "Vue normale"
+msgstr ""
 
 #. DLG_Spell_UnknownWord
 #: po/tmp/ap_String_Id.h.h:1530
 msgid "Not in dictionary&:"
-msgstr "A&bsent du dictionnaire :"
+msgstr ""
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:1532
 msgid "Number of Columns"
-msgstr "Nombre de colonnes :"
+msgstr ""
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h.h:1534
 msgid "Number of Pages"
-msgstr "Nombre de pages"
+msgstr ""
 
 #. DLG_Column_Number
 #: po/tmp/ap_String_Id.h.h:1536
 msgid "Number of columns"
-msgstr "Nombre de colonnes"
+msgstr ""
 
 #. DLG_InsertTable_NumCols
 #: po/tmp/ap_String_Id.h.h:1538
@@ -3650,12 +3638,12 @@ msgstr "terkancu le pinpau:"
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h.h:1542
 msgid "Numbered"
-msgstr "Numéroté"
+msgstr ""
 
 #. DLG_Lists_Numbered_List
 #: po/tmp/ap_String_Id.h.h:1544 po/tmp/xap_String_Id.h.h:451
 msgid "Numbered List"
-msgstr "Liste numérotée"
+msgstr ""
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
@@ -3664,27 +3652,27 @@ msgstr "Liste numérotée"
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h.h:1550
 msgid "Numbering"
-msgstr "Numérotation"
+msgstr ""
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h.h:1552
 msgid "Numbers"
-msgstr "Nombres"
+msgstr ""
 
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h.h:1554
 msgid "OVR"
-msgstr "RFP"
+msgstr "BAS"
 
 #. DLG_Column_One
 #: po/tmp/ap_String_Id.h.h:1556
 msgid "One"
-msgstr "&Une"
+msgstr "pa"
 
 #. MENU_LABEL_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:1558
 msgid "Op&en Copy"
-msgstr "I&mporter"
+msgstr ""
 
 #. TOOLBAR_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:1560
@@ -3694,7 +3682,7 @@ msgstr "cpacu"
 #. MENU_LABEL_OPEN_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1562
 msgid "Open Template"
-msgstr "Ouvrir un modèle"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:1564
@@ -3712,12 +3700,12 @@ msgstr "cpacu lo puzi selpli selpapri"
 #. TOOLBAR_TOOLTIP_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:1571
 msgid "Open an existing document"
-msgstr "Ouvrir un document"
+msgstr ""
 
 #. MENU_STATUSLINE_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:1573
 msgid "Open another window for the document"
-msgstr "Ouvre une nouvelle fenêtre sur le document actif"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_RECENT_1
 #. MENU_STATUSLINE_FILE_RECENT_2
@@ -3730,35 +3718,35 @@ msgstr "Ouvre une nouvelle fenêtre sur le document actif"
 #. MENU_STATUSLINE_FILE_RECENT_9
 #: po/tmp/ap_String_Id.h.h:1583
 msgid "Open this document"
-msgstr "Ouvre ce document"
+msgstr ""
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h.h:1585
 msgid "Orientation..."
-msgstr "Orientation"
+msgstr ""
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h.h:1587
 msgid "Other"
-msgstr "Autre"
+msgstr ""
 
 #. MSG_IE_NoMemory
 #: po/tmp/ap_String_Id.h.h:1589
 #, c-format
 msgid "Out of memory attempting to open %s"
-msgstr "Pas assez de mémoire à la tentative d'ouverture de %s"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:1593 po/tmp/xap_String_Id.h.h:463
 msgid "Overline"
-msgstr "Barré &haut"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:1595
 msgid "Overline the selection (toggle)"
-msgstr "Barre la sélection en haut (bascule)"
+msgstr ""
 
 #. MENU_LABEL_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:1597
@@ -3768,7 +3756,7 @@ msgstr "ckaji"
 #. AUTOTEXT_MAIL_3
 #: po/tmp/ap_String_Id.h.h:1599
 msgid "PERSONAL"
-msgstr "PERSONEL"
+msgstr ""
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1601
@@ -3779,22 +3767,22 @@ msgstr "tam&vi'u setca"
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h.h:1604
 msgid "Page"
-msgstr "Page"
+msgstr ""
 
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h.h:1606
 msgid "Page &break before"
-msgstr "Sa&ut de page avant"
+msgstr ""
 
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1608
 msgid "Page N&umbers"
-msgstr "N&uméros de page"
+msgstr ""
 
 #. FIELD_Numbers_PageNumber
 #: po/tmp/ap_String_Id.h.h:1610
 msgid "Page Number"
-msgstr "Numéro de la page"
+msgstr ""
 
 #. DLG_HdrFtr_PageNumberProperties
 #: po/tmp/ap_String_Id.h.h:1612
@@ -3804,28 +3792,28 @@ msgstr "papri porna'u ckaji"
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h.h:1614
 msgid "Page Numbers"
-msgstr "Numéros de page"
+msgstr ""
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h.h:1616
 msgid "Page Reference"
-msgstr "Référence à la page"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:1618
 msgid "Page Set&up"
-msgstr "Mise en &page"
+msgstr ""
 
 #. DLG_PageSetup_Title
 #: po/tmp/ap_String_Id.h.h:1620
 msgid "Page Setup"
-msgstr "Mise en page"
+msgstr ""
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h.h:1622
 #, c-format
 msgid "Page: %d/%d"
-msgstr "Page : %d/%d"
+msgstr ""
 
 #. DLG_WordCount_Pages
 #: po/tmp/ap_String_Id.h.h:1624
@@ -3835,38 +3823,38 @@ msgstr "xokau papri"
 #. DLG_Para_LabelPagination
 #: po/tmp/ap_String_Id.h.h:1626
 msgid "Pagination"
-msgstr "Pagination"
+msgstr ""
 
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h.h:1628
 msgid "Paper Si&ze:"
-msgstr "&Taille :"
+msgstr ""
 
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h.h:1630
 msgid "Paper..."
-msgstr "Format du papier"
+msgstr ""
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
 #: po/tmp/ap_String_Id.h.h:1633
 msgid "Paragraph"
-msgstr "Paragraphe"
+msgstr ""
 
 #. FIELD_Numbers_ParaCount
 #: po/tmp/ap_String_Id.h.h:1635
 msgid "Paragraph Count"
-msgstr "Paragraphes"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_DOM_DIRECTION
 #: po/tmp/ap_String_Id.h.h:1637
 msgid "Paragraph Direction"
-msgstr "jufgri farna"
+msgstr "jufygri farna"
 
 #. DLG_Styles_ParaPrev
 #: po/tmp/ap_String_Id.h.h:1639
 msgid "Paragraph Preview"
-msgstr "Aperçu de paragraphe"
+msgstr ""
 
 #. DLG_WordCount_Paragraphs
 #: po/tmp/ap_String_Id.h.h:1641
@@ -3876,7 +3864,7 @@ msgstr "xokau jufygri"
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h.h:1643
 msgid "Password required, this is an encrypted document"
-msgstr "Mot de passe requis, ceci est un document chiffré"
+msgstr ""
 
 #. TOOLBAR_LABEL_EDIT_PASTE
 #. TOOLBAR_STATUSLINE_EDIT_PASTE
@@ -3893,12 +3881,12 @@ msgstr "selcurmi"
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h.h:1651
 msgid "Picture"
-msgstr "Image"
+msgstr ""
 
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h.h:1653
 msgid "Piece Table"
-msgstr "Piece Table"
+msgstr ""
 
 #. DLG_FormatFootnotes_EndPlaceEndDoc
 #: po/tmp/ap_String_Id.h.h:1655
@@ -3923,7 +3911,7 @@ msgstr "selzva"
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1663
 msgid "Position:"
-msgstr "&Position :"
+msgstr ""
 
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:1665
@@ -3934,12 +3922,12 @@ msgstr "selcu&xna"
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1668
 msgid "Preference Schemes"
-msgstr "Thème préféré"
+msgstr ""
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1670
 msgid "Preferences"
-msgstr "Options"
+msgstr ""
 
 #. DLG_Styles_ModifyPreview
 #. DLG_Para_LabelPreview
@@ -3949,20 +3937,20 @@ msgstr "Options"
 #. DLG_PageNumbers_Preview
 #: po/tmp/ap_String_Id.h.h:1677 po/tmp/xap_String_Id.h.h:487
 msgid "Preview"
-msgstr "Aperçu"
+msgstr ""
 
 #. MENU_STATUSLINE_WEB_WEBPREVIEW
 #. MENU_STATUSLINE_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1680
 msgid "Preview the document as a web page"
-msgstr "Aperçu du document comme une page web"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1684
 msgid "Preview the document before printing"
-msgstr "Aperçu du document avant impression"
+msgstr ""
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1686
@@ -3970,8 +3958,6 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
-"Paragraphe précédent Paragraphe précédent Paragraphe précédent Paragraphe "
-"précédent Paragraphe précédent Paragraphe précédent Paragraphe précédent"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1688 po/tmp/xap_String_Id.h.h:492
@@ -3981,17 +3967,17 @@ msgstr "prigau"
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1690
 msgid "Print &directly"
-msgstr "Imprimer &directement"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:1692
 msgid "Print Layout"
-msgstr "Disposition pour impression"
+msgstr ""
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1694
 msgid "Print P&review"
-msgstr "&Aperçu avant impression"
+msgstr ""
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1696
@@ -4001,7 +3987,7 @@ msgstr "prina prujvinu"
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1698
 msgid "Print all or part of the document"
-msgstr "Imprime tout ou partie du document"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_FILE_PRINT
 #. TOOLBAR_TOOLTIP_FILE_PRINT
@@ -4012,7 +3998,7 @@ msgstr "prinygau fi le datnyvei"
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1703
 msgid "Print using the internal PS driver"
-msgstr "Imprime en utilisant le pilote PostScript interne"
+msgstr ""
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1705
@@ -4023,7 +4009,7 @@ msgstr "ca'o prinygau"
 #: po/tmp/ap_String_Id.h.h:1707
 #, c-format
 msgid "Printing page %d of %d"
-msgstr "Impression de la page %d de %d"
+msgstr ""
 
 #. FIELD_Document_Publisher
 #: po/tmp/ap_String_Id.h.h:1709
@@ -4038,22 +4024,22 @@ msgstr "gubgau:"
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1713
 msgid "R&eplace"
-msgstr "R&emplacer"
+msgstr ""
 
 #. AUTOTEXT_REFERENCE_2
 #: po/tmp/ap_String_Id.h.h:1715
 msgid "RE:"
-msgstr "RE : "
+msgstr ""
 
 #. AUTOTEXT_MAIL_4
 #: po/tmp/ap_String_Id.h.h:1717
 msgid "REGISTERED MAIL"
-msgstr "COURRIER ENREGISTRE"
+msgstr ""
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1719
 msgid "Re&place with:"
-msgstr "Remplacer &par :"
+msgstr ""
 
 #. DLG_FR_ReverseFind
 #: po/tmp/ap_String_Id.h.h:1721
@@ -4084,24 +4070,24 @@ msgstr "ke'urzu'e"
 #. MENU_STATUSLINE_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1732
 msgid "Redo previously undone editing"
-msgstr "Refait l'action précédemment annulée"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_MENU
 #. MENU_STATUSLINE_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:1735
 msgid "Reduce or enlarge the document display"
-msgstr "Règle le facteur d'agrandissement"
+msgstr ""
 
 #. AUTOTEXT_REFERENCE_3
 #. MENU_LABEL_AUTOTEXT_REFERENCE
 #: po/tmp/ap_String_Id.h.h:1738
 msgid "Reference:"
-msgstr "Référence : "
+msgstr ""
 
 #. AUTOTEXT_CLOSING_5
 #: po/tmp/ap_String_Id.h.h:1740
 msgid "Regards,"
-msgstr "Amitiés, "
+msgstr ""
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h.h:1742
@@ -4111,7 +4097,7 @@ msgstr "terki'i:"
 #. DLG_Styles_RemoveButton
 #: po/tmp/ap_String_Id.h.h:1744
 msgid "Remove"
-msgstr "Enlever"
+msgstr ""
 
 #. MENU_LABEL_EDIT_REMOVEFOOTER
 #. TOOLBAR_LABEL_EDIT_REMOVEFOOTER
@@ -4119,7 +4105,7 @@ msgstr "Enlever"
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1749
 msgid "Remove Footer"
-msgstr "Enlever le pied de page"
+msgstr ""
 
 #. MENU_LABEL_EDIT_REMOVEHEADER
 #. TOOLBAR_LABEL_EDIT_REMOVEHEADER
@@ -4127,22 +4113,22 @@ msgstr "Enlever le pied de page"
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1754
 msgid "Remove Header"
-msgstr "Enlever l'en-tête"
+msgstr ""
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h.h:1756
 msgid "Remove Property from Style"
-msgstr "Enlever les propriétés du style :"
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1758
 msgid "Remove the Footer on this page from the Document"
-msgstr "Enlever le pied de page de cette page du document"
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1760
 msgid "Remove the Header on this page from the Document"
-msgstr "Enlever l'en-tête de cette page du document"
+msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:1762
@@ -4158,17 +4144,17 @@ msgstr "fukygau lo sedytcita lo rajypau"
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1767
 msgid "Replace"
-msgstr "Remplacer"
+msgstr ""
 
 #. DLG_FR_ReplaceAllButton
 #: po/tmp/ap_String_Id.h.h:1769
 msgid "Replace &All"
-msgstr "Remplacer &tout"
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1771
 msgid "Replace the specified text with different text"
-msgstr "Recherche et remplace le texte spécifié par un différent"
+msgstr ""
 
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1773
@@ -4183,7 +4169,7 @@ msgstr "skita'a lo sretarti gi'e sidju fi lenu la .Abiuord. cu xagze'a"
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1777
 msgid "Reset the current toolbar layout to its defaults"
-msgstr "xruti le cabna tcigrana morna le kratcini"
+msgstr "xruti le cabna tcigarna morna le kratcini"
 
 #. MENU_LABEL_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:1779
@@ -4198,17 +4184,17 @@ msgstr "stika le vi pixra le nilbra"
 #. AUTOTEXT_CLOSING_6
 #: po/tmp/ap_String_Id.h.h:1783
 msgid "Respectfully yours,"
-msgstr "Amicalement, "
+msgstr ""
 
 #. AUTOTEXT_CLOSING_7
 #: po/tmp/ap_String_Id.h.h:1785
 msgid "Respectfully,"
-msgstr "Affectueusement, "
+msgstr ""
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1787
 msgid "Restart numbering at:"
-msgstr "Redémarrer la &numérotation à :"
+msgstr ""
 
 #. DLG_FormatFootnotes_FootRestartPage
 #: po/tmp/ap_String_Id.h.h:1789
@@ -4229,7 +4215,7 @@ msgstr "te'e ro pagbu le papri porna'u cu refcfari"
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1796
 msgid "Resume Previous List"
-msgstr "Reprendre la liste précédente"
+msgstr ""
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1798
@@ -4239,13 +4225,13 @@ msgstr "kraxrukla xu le prula'i na'e selralte velfarvi?"
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1800
 msgid "Revert the document to the last saved state"
-msgstr "Revient à la version précédente du document"
+msgstr ""
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1802
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr "Ouvrir '%s' tel qu'il était au dernier enregistrement?"
+msgstr ""
 
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:1804
@@ -4258,24 +4244,24 @@ msgstr "velfarvi cmene"
 #. TOOLBAR_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1809
 msgid "Right"
-msgstr "Droite"
+msgstr ""
 
 #. RightIndentStatus
 #: po/tmp/ap_String_Id.h.h:1811
 #, c-format
 msgid "Right Indent [%s]"
-msgstr "Indentation droite [%s]"
+msgstr ""
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h.h:1813
 #, c-format
 msgid "Right Margin [%s]"
-msgstr "Marge droite [%s]"
+msgstr ""
 
 #. TabToggleRightTab
 #: po/tmp/ap_String_Id.h.h:1815
 msgid "Right Tab"
-msgstr "Tabulation à droite"
+msgstr ""
 
 #. TOOLBAR_STATUSLINE_ALIGN_RIGHT
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
@@ -4291,7 +4277,7 @@ msgstr "pritu sirgau le jufygri"
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:1822
 msgid "Right-to-left &dominant"
-msgstr "D&ominant de droite à gauche"
+msgstr ""
 
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h.h:1824
@@ -4331,17 +4317,17 @@ msgstr "&fendi lo selci"
 #. AUTOTEXT_MAIL_5
 #: po/tmp/ap_String_Id.h.h:1838
 msgid "SPECIAL DELIVERY"
-msgstr "LIVRAISON SPECIALE"
+msgstr ""
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h.h:1840
 msgid "Sa&ve"
-msgstr "&Enregistrer"
+msgstr ""
 
 #. MENU_LABEL_AUTOTEXT_SALUTATION
 #: po/tmp/ap_String_Id.h.h:1842
 msgid "Salutation:"
-msgstr "Salutation"
+msgstr ""
 
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1844
@@ -4356,7 +4342,7 @@ msgstr "sropu'i"
 #. MENU_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1848
 msgid "Save &As"
-msgstr "En&registrer sous"
+msgstr ""
 
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1850
@@ -4379,7 +4365,7 @@ msgstr "sropu'i xu le terstika be la'o dy. %s .dy pu lenu sisti?"
 #. TOOLBAR_TOOLTIP_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:1858
 msgid "Save the document"
-msgstr "Enregistre le document actif"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_SAVE_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1860
@@ -4391,12 +4377,12 @@ msgstr "sropu'i le selpapri tai lo tarmi"
 #. TOOLBAR_TOOLTIP_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1864
 msgid "Save the document under a different name"
-msgstr "Enregistre le document actif sous un nouveau nom"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1866
 msgid "Save the document without changing the current name"
-msgstr "Enregistre le document sans changer de nom"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
 #: po/tmp/ap_String_Id.h.h:1868
@@ -4406,27 +4392,27 @@ msgstr "sropu'i le selcuxna pixra lo datnyvei"
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1870
 msgid "Save visual glyph shapes"
-msgstr "Enregistrer la forme du glyphe"
+msgstr ""
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:1872
 msgid "Scale..."
-msgstr "Echelle"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:1874
 msgid "Search for help about..."
-msgstr "Recherche de l'aide à propos de..."
+msgstr ""
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:1876
 msgid "Seconds between updates"
-msgstr "Secondes entre mises à jour"
+msgstr ""
 
 #. FIELD_DateTime_Epoch
 #: po/tmp/ap_String_Id.h.h:1878
 msgid "Seconds since the epoch"
-msgstr "Secondes depuis epoch"
+msgstr ""
 
 #. DLG_Break_SectionBreaks_Capital
 #: po/tmp/ap_String_Id.h.h:1880
@@ -4436,7 +4422,7 @@ msgstr "pagbu tersepli"
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h.h:1882
 msgid "Section breaks"
-msgstr "Sauts de &section"
+msgstr ""
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:1884
@@ -4446,7 +4432,7 @@ msgstr "cuxna"
 #. MENU_LABEL_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1886
 msgid "Select A&ll"
-msgstr "Selectio&nner tout"
+msgstr ""
 
 #. MENU_STATUSLINE_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:1888
@@ -4476,12 +4462,12 @@ msgstr "cuxna lo cartu"
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:1898
 msgid "Select a target bookmark from the list."
-msgstr "Sélectionnez un signet dans la liste."
+msgstr ""
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1900
 msgid "Select the entire document"
-msgstr "Selectionne le document entier"
+msgstr ""
 
 #. DLG_FormatTable_Apply_To_Selection
 #: po/tmp/ap_String_Id.h.h:1902 po/tmp/xap_String_Id.h.h:536
@@ -4491,22 +4477,22 @@ msgstr "selcu'a"
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:1904
 msgid "Sentence case"
-msgstr "Casse de la &phrase"
+msgstr ""
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:1906
 msgid "Set"
-msgstr "&Fixer"
+msgstr ""
 
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:1908
 msgid "Set &Language"
-msgstr "&Langue"
+msgstr ""
 
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:1910
 msgid "Set Default Values"
-msgstr "Fixer les paramètres par &défaut"
+msgstr ""
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:1912
@@ -4516,47 +4502,47 @@ msgstr "cuxna le bacydatni ckaji"
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:1914
 msgid "Set preferences"
-msgstr "Configure les différentes options"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:1916
 msgid "Set tab stops"
-msgstr "Définit les tabulations"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:1918
 msgid "Set the types of Footnotes and Endnotes"
-msgstr "cuxna le rebypinka ja fampinka jutsi"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1920
 msgid "Set the types of Headers and Footers"
-msgstr "Définit les types d'en-tête et de pied de page"
+msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1922
 msgid "Set your spelling preferences"
-msgstr "Configure les options de vérification orthographique"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:1924
 msgid "Setup your document's page properties such as page size and margins"
-msgstr "Définit les propriétés du document comme la taille de la page et les marges"
+msgstr ""
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1926
 msgid "Shortcut Key"
-msgstr "Raccourci"
+msgstr ""
 
 #. DLG_Options_Label_Show
 #: po/tmp/ap_String_Id.h.h:1928
 msgid "Show"
-msgstr "Afficher"
+msgstr ""
 
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1930
 msgid "Show &Ruler"
-msgstr "&Règles"
+msgstr ""
 
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1932
@@ -4576,37 +4562,37 @@ msgstr "jarco le mulno liste be le'i selpapri"
 #. MENU_STATUSLINE_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:1938
 msgid "Show or hide the extra toolbar"
-msgstr "Affiche ou masque la barre d'outils extra"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:1940
 msgid "Show or hide the formatting toolbar"
-msgstr "Affiche ou masque la barre d'outils de mise en forme"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1942
 msgid "Show or hide the rulers"
-msgstr "Affiche ou masque les règles"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:1944
 msgid "Show or hide the standard toolbar"
-msgstr "Affiche ou masque la barre d'outils standard"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:1946
 msgid "Show or hide the status bar"
-msgstr "Affiche ou masque la barre d'état"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_TB_TABLE
 #: po/tmp/ap_String_Id.h.h:1948
 msgid "Show or hide the table toolbar"
-msgstr "jarco jonai mipri le cartu tcigrana"
+msgstr "jarco jonai mipri le cartu tcigarna"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:1950
 msgid "Show the AbiWord splash screen on application startup"
-msgstr "Montrer l'écran fugitif d'AbiWord au démarrage de l'application"
+msgstr ""
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1952
@@ -4622,12 +4608,12 @@ msgstr "jarco jonai mipri le tarmi barna"
 #. AUTOTEXT_CLOSING_8
 #: po/tmp/ap_String_Id.h.h:1957
 msgid "Sincerely yours,"
-msgstr "À bientôt, "
+msgstr ""
 
 #. DLG_Para_SpacingSingle
 #: po/tmp/ap_String_Id.h.h:1959
 msgid "Single"
-msgstr "Simple"
+msgstr ""
 
 #. TOOLBAR_LABEL_SINGLE_SPACE
 #: po/tmp/ap_String_Id.h.h:1961
@@ -4658,24 +4644,24 @@ msgstr "krasi:"
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:1972
 msgid "Space after Column"
-msgstr "Espace après la colonne :"
+msgstr "rajypau selyli'e kutyjbi"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h.h:1975
 msgid "Space before: 12 pt"
-msgstr ""
+msgstr "le gapla'i kutyjbi cu cmalergucti li 12"
 
 #. TOOLBAR_STATUSLINE_PARA_0BEFORE
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
 #: po/tmp/ap_String_Id.h.h:1978
 msgid "Space before: None"
-msgstr ""
+msgstr "le gapla'i kutyjbi cu cmalergucti li 0"
 
 #. DLG_Para_LabelSpacing
 #: po/tmp/ap_String_Id.h.h:1980
 msgid "Spacing"
-msgstr "Espacement"
+msgstr ""
 
 #. TOOLBAR_LABEL_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:1982
@@ -4692,12 +4678,12 @@ msgstr "lerfu dragau le selpapri"
 #. DLG_Options_TabLabel_Spelling
 #: po/tmp/ap_String_Id.h.h:1988
 msgid "Spelling"
-msgstr "Ortographe"
+msgstr ""
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1990
 msgid "Spelling &Options"
-msgstr "&Options"
+msgstr ""
 
 #. MENU_LABEL_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:1992
@@ -4728,38 +4714,38 @@ msgstr "fendi le selci"
 #. DLG_Lists_Square_List
 #: po/tmp/ap_String_Id.h.h:2003 po/tmp/xap_String_Id.h.h:560
 msgid "Square List"
-msgstr "Liste avec carré"
+msgstr ""
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:2005
 msgid "St&yle"
-msgstr "&Style"
+msgstr ""
 
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:2007
 msgid "Standard Toolbar"
-msgstr "&Barre d'outils standard"
+msgstr ""
 
 #. DLG_Lists_Star_List
 #: po/tmp/ap_String_Id.h.h:2009 po/tmp/xap_String_Id.h.h:562
 msgid "Star List"
-msgstr "Liste avec étoile"
+msgstr ""
 
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:2011
 msgid "Start At:"
-msgstr "Dé&buter à :"
+msgstr ""
 
 #. DLG_Lists_Start_New_List
 #. DLG_Lists_Start_New
 #: po/tmp/ap_String_Id.h.h:2014
 msgid "Start New List"
-msgstr "&Nouvelle liste"
+msgstr ""
 
 #. DLG_Lists_Start_Sub
 #: po/tmp/ap_String_Id.h.h:2016
 msgid "Start Sublist"
-msgstr "Débuter une sous liste"
+msgstr ""
 
 #. DLG_MarkRevisions_Check2Label
 #: po/tmp/ap_String_Id.h.h:2018
@@ -4769,84 +4755,84 @@ msgstr "cnino velfarvi"
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:2020
 msgid "Statistics:"
-msgstr "Statistiques :"
+msgstr ""
 
 #. DLG_Lists_Stop_Current_List
 #: po/tmp/ap_String_Id.h.h:2022
 msgid "Stop Current List"
-msgstr "Arrêter la liste actuelle"
+msgstr ""
 
 #. MENU_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:2024
 msgid "Stri&ke"
-msgstr "&Barré"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_STRIKE
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:2028 po/tmp/xap_String_Id.h.h:564
 msgid "Strike"
-msgstr ""
+msgstr "greli'i"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:2030
 msgid "Strikeout the selection (toggle)"
-msgstr "Barre la sélection (bascule)"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
 #. TOOLBAR_TOOLTIP_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:2034
 msgid "Style"
-msgstr ""
+msgstr "tamtadji"
 
 #. DLG_Styles_ErrNotTitle1
 #: po/tmp/ap_String_Id.h.h:2036
 msgid "Style Name - "
-msgstr "Nom du style - "
+msgstr ""
 
 #. DLG_Styles_ModifyName
 #: po/tmp/ap_String_Id.h.h:2038
 msgid "Style Name:"
-msgstr "Nom du style :"
+msgstr ""
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h.h:2040
 msgid "Style Type"
-msgstr "Type de style :"
+msgstr ""
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h.h:2042
 msgid "Style for following paragraph"
-msgstr "Style pour le paragraphe suivant :"
+msgstr ""
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h.h:2044
 msgid "Style name cannot be left blank"
-msgstr "Le nom ce style ne peut être laissé en blanc"
+msgstr ""
 
 #. DLG_Lists_Style
 #: po/tmp/ap_String_Id.h.h:2046 po/tmp/xap_String_Id.h.h:566
 msgid "Style:"
-msgstr "&Style :"
+msgstr ""
 
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h.h:2048
 msgid "Styles"
-msgstr "Styles"
+msgstr ""
 
 #. FIELD_Document_Subject
 #. AUTOTEXT_SUBJECT_1
 #: po/tmp/ap_String_Id.h.h:2051
 msgid "Subject"
-msgstr "Sujet"
+msgstr ""
 
 #. DLG_MetaData_Subject_LBL
 #. AUTOTEXT_EMAIL_3
 #. MENU_LABEL_AUTOTEXT_SUBJECT
 #: po/tmp/ap_String_Id.h.h:2055
 msgid "Subject:"
-msgstr "Objet : "
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_SUBSCRIPT
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
@@ -4858,12 +4844,12 @@ msgstr "&ni'arci'a"
 #. DLG_Spell_Suggestions
 #: po/tmp/ap_String_Id.h.h:2061
 msgid "Sugg&estions:"
-msgstr "Sugg&estions :"
+msgstr ""
 
 #. DLG_Options_Label_SpellMainOnly
 #: po/tmp/ap_String_Id.h.h:2063
 msgid "Suggest from &main dictionary only"
-msgstr "Suggérer à partir du dictionnaire principal uniquement"
+msgstr ""
 
 #. DLG_MetaData_TAB_Summary
 #: po/tmp/ap_String_Id.h.h:2065
@@ -4873,7 +4859,7 @@ msgstr "torvelski"
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:2067
 msgid "Supe&rscript"
-msgstr "&Exposant"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_SUPERSCRIPT
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
@@ -4885,7 +4871,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:2073
 msgid "Sy&mbol"
-msgstr "Caractères s&péciaux"
+msgstr ""
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:2075
@@ -4901,17 +4887,17 @@ msgstr "&cartu"
 #: po/tmp/ap_String_Id.h.h:2079
 #, c-format
 msgid "Tab Stop [%s]"
-msgstr "Tabulation [%s]"
+msgstr ""
 
 #. DLG_Tab_Label_TabPosition
 #: po/tmp/ap_String_Id.h.h:2081
 msgid "Tab stop position:"
-msgstr "&Position :"
+msgstr ""
 
 #. DLG_Tab_Label_TabToClear
 #: po/tmp/ap_String_Id.h.h:2083
 msgid "Tab stops to be cleared:"
-msgstr "Tabulation à effacer :"
+msgstr ""
 
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
@@ -4933,12 +4919,12 @@ msgstr "cartu nilbra"
 #. DLG_Tab_TabTitle
 #: po/tmp/ap_String_Id.h.h:2093
 msgid "Tabs"
-msgstr "Tabulations"
+msgstr ""
 
 #. AUTOTEXT_CLOSING_9
 #: po/tmp/ap_String_Id.h.h:2095
 msgid "Take care,"
-msgstr "Merci, "
+msgstr ""
 
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2097
@@ -4948,27 +4934,27 @@ msgstr "selci'a tam&stika"
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h.h:2099
 msgid "Text"
-msgstr "Texte"
+msgstr ""
 
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h.h:2101
 msgid "Text Align:"
-msgstr "Align. &liste :"
+msgstr ""
 
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:2103
 msgid "Text and Icon"
-msgstr "Texte et Icones"
+msgstr ""
 
 #. AUTOTEXT_CLOSING_10
 #: po/tmp/ap_String_Id.h.h:2105
 msgid "Thank you,"
-msgstr "Je vous remercie, "
+msgstr ""
 
 #. AUTOTEXT_CLOSING_11
 #: po/tmp/ap_String_Id.h.h:2107
 msgid "Thanks,"
-msgstr "Veuillez agréer, ..., l'expression de mes sentiments distingués. "
+msgstr ""
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2109
@@ -4978,7 +4964,7 @@ msgstr "le selcu'a korbi cu dukse le nilbra le papri"
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:2111
 msgid "The spelling check is complete."
-msgstr "La vérification orthographique est terminée."
+msgstr ""
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:2113
@@ -4986,8 +4972,6 @@ msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"Le texte ciblé par l'hyperlien doit être contenu à l'intérieur d'un seul "
-"paragraphe."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:2115
@@ -5000,8 +4984,6 @@ msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
 msgstr ""
-"Les changements prendront effet au prochain redémarrage d'AbiWord ou à la "
-"création d'un nouveau document."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2119
@@ -5010,10 +4992,9 @@ msgid ""
 "see text from your document used in this preview, position your cursor in a "
 "document paragraph with some text in it and open this dialog."
 msgstr ""
-"Ce paragraphe représente des mots tel qu'ils devraient apparaître dans votre "
-"document.  Pour voir le texte de votre document utilisé dans cet aperçu, "
-"positionnez votre curseur dans un paragraphe du document qui contient du "
-"texte et ouvrez ce dialogue."
+"ni'o dei noi jufygri cu krati lo valsi poi da'i nenri le do selpapri .i tezu'e lenu viska lo selci'a "
+"bene'i le do selpapri be'o bene'i le prujvina ko punji le zvajarco lo selpapri jufygri "
+"poi vasru lo selci'a gi'e jarco le datnycpe canko"
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2121
@@ -5021,59 +5002,57 @@ msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
 msgstr ""
-"Ce style n'existe pas \n"
-" alors il ne peut être modifié"
 
 #. DLG_Column_Three
 #: po/tmp/ap_String_Id.h.h:2123
 msgid "Three"
-msgstr "&Trois"
+msgstr "ci"
 
 #. DLG_Lists_Tick_List
 #: po/tmp/ap_String_Id.h.h:2125 po/tmp/xap_String_Id.h.h:590
 msgid "Tick List"
-msgstr "Liste avec tic"
+msgstr ""
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:2127
 msgid "Time Zone"
-msgstr "Fuseau horaire"
+msgstr "veltcika"
 
 #. FIELD_Document_Title
 #: po/tmp/ap_String_Id.h.h:2129
 msgid "Title"
-msgstr ""
+msgstr "ckucme"
 
 #. DLG_ToggleCase_TitleCase
 #: po/tmp/ap_String_Id.h.h:2131
 msgid "Title Case"
-msgstr "Casse De &Titre"
+msgstr ""
 
 #. DLG_MetaData_Title_LBL
 #: po/tmp/ap_String_Id.h.h:2133
 msgid "Title:"
-msgstr ""
+msgstr "ckucme:"
 
 #. AUTOTEXT_SALUTATION_4
 #: po/tmp/ap_String_Id.h.h:2135
 msgid "To Whom It May Concern:"
-msgstr "A qui de droit : "
+msgstr ""
 
 #. AUTOTEXT_EMAIL_1
 #: po/tmp/ap_String_Id.h.h:2137
 msgid "To:"
-msgstr "A : "
+msgstr ""
 
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h.h:2139
 msgid "Toolbars"
-msgstr "Barres d'outils"
+msgstr "tcigarna"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h.h:2141
 #, c-format
 msgid "Top Margin [%s]"
-msgstr "Marge du haut [%s]"
+msgstr ""
 
 #. MENU_LABEL_FMT_TOPLINE
 #. TOOLBAR_LABEL_FMT_TOPLINE
@@ -5081,17 +5060,17 @@ msgstr "Marge du haut [%s]"
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:2146 po/tmp/xap_String_Id.h.h:592
 msgid "Topline"
-msgstr "Ligne au &dessus"
+msgstr ""
 
 #. DLG_Lists_Triangle_List
 #: po/tmp/ap_String_Id.h.h:2148 po/tmp/xap_String_Id.h.h:594
 msgid "Triangle List"
-msgstr "Liste avec triangle"
+msgstr ""
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:2150
 msgid "Two"
-msgstr "&Deux"
+msgstr "re"
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h.h:2152
@@ -5100,31 +5079,30 @@ msgstr "klesi"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2154
-#, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Entrez un nom de signet ou sélectionnez-le dans la liste."
+msgstr "ko batkyci'a le cmene ca'e be le terxrutcita gi'a cuxna lo cmima be le liste"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:2156
 msgid "Type:"
-msgstr "&Type :"
+msgstr ""
 
 #. DLG_ToggleCase_UpperCase
 #: po/tmp/ap_String_Id.h.h:2158
 msgid "UPPERCASE"
-msgstr "M&AJUSCULE"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_UNDERLINE
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:2162 po/tmp/xap_String_Id.h.h:612
 msgid "Underline"
-msgstr "S&ouligné"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:2164
 msgid "Underline the selection (toggle)"
-msgstr "Souligne la sélection (bascule)"
+msgstr ""
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2166
@@ -5136,22 +5114,22 @@ msgstr "&fatyzu'e"
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2170
 msgid "Undo editing"
-msgstr "Annule la dernière action"
+msgstr ""
 
 #. DLG_Lists_Upper_Case_List
 #: po/tmp/ap_String_Id.h.h:2172 po/tmp/xap_String_Id.h.h:646
 msgid "Upper Case List"
-msgstr "Liste en majuscule"
+msgstr ""
 
 #. DLG_Lists_Upper_Roman_List
 #: po/tmp/ap_String_Id.h.h:2174 po/tmp/xap_String_Id.h.h:648
 msgid "Upper Roman List"
-msgstr "Liste en majuscule Romain"
+msgstr ""
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2176
 msgid "Use RTL Order"
-msgstr "&Ordonné de droite à gauche"
+msgstr ""
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2178
@@ -5160,14 +5138,13 @@ msgstr ""
 
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2180
-#, fuzzy
 msgid "User Interface Language"
-msgstr "cuxna le bangu"
+msgstr "cuxna le bangu be fi le pilno trotci"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2182
 msgid "User-defined styles"
-msgstr "Styles définis par l'usager"
+msgstr ""
 
 #. AUTOTEXT_MAIL_6
 #: po/tmp/ap_String_Id.h.h:2184
@@ -5187,17 +5164,17 @@ msgstr "BAVLAMDEI MRILU"
 #. FIELD_Application_Version
 #: po/tmp/ap_String_Id.h.h:2190
 msgid "Version"
-msgstr "Version :"
+msgstr "velfarvi"
 
 #. DLG_Options_TabLabel_View
 #: po/tmp/ap_String_Id.h.h:2192
 msgid "View"
-msgstr "Vue"
+msgstr "jvina"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:2194
 msgid "View the document in full screen mode"
-msgstr "Affiche le document en mode plein écran"
+msgstr ""
 
 #. MENU_STATUSLINE_WINDOW_1
 #. MENU_STATUSLINE_WINDOW_2
@@ -5209,14 +5186,13 @@ msgstr "Affiche le document en mode plein écran"
 #. MENU_STATUSLINE_WINDOW_8
 #. MENU_STATUSLINE_WINDOW_9
 #: po/tmp/ap_String_Id.h.h:2204
-#, fuzzy
 msgid "View this document"
-msgstr "Ouvre ce document"
+msgstr "catlu ti poi selpapri"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:2206
 msgid "View tooltips"
-msgstr "Voir les astuces"
+msgstr ""
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:2208
@@ -5226,28 +5202,28 @@ msgstr "jvinu"
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:2210
 msgid "Visible"
-msgstr "Visible"
+msgstr ""
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h.h:2212
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr "Avertissement : le signet &quot;%s&quot; n'existe pas."
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:2214
 msgid "Web Layout"
-msgstr "Disposition sous forme Web"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:2216
 msgid "What Hath God Wrought"
-msgstr "le do zilcrino tu'a do co'u jimpe ge'ecu'idai"
+msgstr "o'i mu xagji sofybakni cu zvati le purdi"
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:2218
 msgid "With extension:"
-msgstr "Avec extension :"
+msgstr ""
 
 #. DLG_WordCount_WordCountTitle
 #. FIELD_Numbers_WordCount
@@ -5258,19 +5234,17 @@ msgstr "valsi terkancu"
 #. DLG_NEW_Tab1
 #: po/tmp/ap_String_Id.h.h:2223
 msgid "Wordprocessing"
-msgstr "Traitement de texte"
+msgstr ""
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2225
-#, fuzzy
 msgid "Words in &UPPERCASE"
-msgstr "Ignorer les mots en &MAJUSCULES"
+msgstr "me me'o &GA'E valsi"
 
 #. DLG_Options_Label_SpellNumbers
 #: po/tmp/ap_String_Id.h.h:2227
-#, fuzzy
 msgid "Words with num&bers"
-msgstr "Ignorer les &nombres"
+msgstr "valsi fi'o lerfu lo &nacle'u"
 
 #. DLG_WordCount_Words
 #: po/tmp/ap_String_Id.h.h:2229
@@ -5287,17 +5261,17 @@ msgstr "le datnyvei po'u la'o dy. %s .dy na ka'e se ciska"
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h.h:2233
 msgid "You have changed the default direction."
-msgstr "Vous avez changé l'orientation par défaut."
+msgstr ""
 
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h.h:2235
 msgid "You have changed the direction mode."
-msgstr "Vous avez changé le mode d'orientation de texte."
+msgstr ""
 
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2237
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Vous devez sélectionner une portion du document avant d'insérer un hyperlien."
+msgstr ""
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2239
@@ -5307,19 +5281,19 @@ msgstr ".e'o ko cuxna le zmiku ralte nilcafne li 1 bi'i 120"
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h.h:2241
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "do cirko ja ralte le do terga'i"
 
 #. AUTOTEXT_CLOSING_12
 #: po/tmp/ap_String_Id.h.h:2243
 msgid "Yours truly,"
-msgstr "Veuillez agréer, ..., mes salutations distinguées. "
+msgstr ""
 
 #. TOOLBAR_LABEL_ZOOM
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #: po/tmp/ap_String_Id.h.h:2247 po/tmp/xap_String_Id.h.h:690
 msgid "Zoom"
-msgstr "Zoom"
+msgstr ""
 
 #. MENU_LABEL_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2249
@@ -5344,32 +5318,32 @@ msgstr "&75%"
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2257
 msgid "Zoom to 100%"
-msgstr "Règle le facteur d'agrandissement à 100%"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:2259
 msgid "Zoom to 200%"
-msgstr "Règle le facteur d'agrandissement à 200%"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:2261
 msgid "Zoom to 50%"
-msgstr "Règle le facteur d'agrandissement à 50%"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:2263
 msgid "Zoom to 75%"
-msgstr "Règle le facteur d'agrandissement à 75%"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:2265
 msgid "Zoom to page width"
-msgstr "Règle le facteur d'agrandissement à la largeur de page"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:2267
 msgid "Zoom to whole page"
-msgstr "Règle le facteur d'agrandissement à la page entière"
+msgstr ""
 
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:2269
@@ -5413,7 +5387,7 @@ msgstr "lermontai"
 #. DLG_UP_To
 #: po/tmp/xap_String_Id.h.h:9
 msgid " to "
-msgstr " à "
+msgstr ""
 
 #. DLG_Zoom_100
 #: po/tmp/xap_String_Id.h.h:11
@@ -5437,14 +5411,13 @@ msgstr "papri &pintermre"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h.h:21
-#, fuzzy
 msgid "&Set Language"
-msgstr "&Langue"
+msgstr "&bangu"
 
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:25
 msgid "&Whole page"
-msgstr "&Toute la page"
+msgstr ""
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:27
@@ -5724,7 +5697,7 @@ msgstr "le jungo la me EUC-TW"
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr ""
+msgstr "le jungo le 950moi papri pe la .uindoz."
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:151
@@ -5825,12 +5798,12 @@ msgstr ""
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:193
 msgid "Deactivate all plugins"
-msgstr ""
+msgstr "cadgau ro nermutmi'i"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:195
 msgid "Deactivate plugin"
-msgstr ""
+msgstr "cadgau le nermutmi'i"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:197
@@ -5840,7 +5813,7 @@ msgstr ""
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:205
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "xu do djica lenu vimcu le vi snixra le tcigrana"
+msgstr "xu do djica lenu vimcu le vi snixra le tcigarna"
 
 #. DLG_HashDownloader_AskFirstTryFailed
 #: po/tmp/xap_String_Id.h.h:207
@@ -5855,7 +5828,7 @@ msgstr ""
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:209
 msgid "Dutch (Netherlands)"
-msgstr ""
+msgstr "le dizgu'e bangrnederlanda"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:211
@@ -5976,7 +5949,7 @@ msgstr "datnyvei"
 #: po/tmp/xap_String_Id.h.h:257
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "le datnyvei po'u la'o dy. %s .dy ca zasti .i basygau xu ?"
+msgstr "le datnyvei po'u la'o dy. %s .dy ca zasti .i basygau xu?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:259
@@ -6026,7 +5999,7 @@ msgstr "le bangrfrisi"
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:281
 msgid "From: "
-msgstr "De : "
+msgstr ""
 
 #. LANG_GL_ES
 #: po/tmp/xap_String_Id.h.h:283
@@ -6264,7 +6237,7 @@ msgstr "setca lo snile'u"
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Install new plugin"
-msgstr ""
+msgstr "nerpu'i lo cnino nermutmi'i"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:381
@@ -6368,9 +6341,8 @@ msgstr "le bangrmarcali pe la naurun"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:427
-#, fuzzy
 msgid "Name:"
-msgstr "c&mene:"
+msgstr "cmene:"
 
 #. DLG_HashDownloader_Dlg_Title
 #: po/tmp/xap_String_Id.h.h:429
@@ -6409,9 +6381,8 @@ msgstr "la ninorsk"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h.h:443
-#, fuzzy
 msgid "Not available"
-msgstr "porpu'i le cartu"
+msgstr "na selcpaka'e"
 
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:445
@@ -6446,7 +6417,7 @@ msgstr "cpacu le datnyvei"
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Open file as type:"
-msgstr ""
+msgstr "cpacu le datnyvei le'a"
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:461
@@ -6460,9 +6431,8 @@ msgstr "&centi:"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:467
-#, fuzzy
 msgid "Page Width"
-msgstr "papri &pintermre"
+msgstr "papri pintermre"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:469
@@ -6481,7 +6451,6 @@ msgstr "lunbe selci'a"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:475
-#, fuzzy
 msgid "Plugin Details:"
 msgstr "nermutmi'i tcila"
 
@@ -6507,7 +6476,6 @@ msgstr "le porto porto"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h.h:485
-#, fuzzy
 msgid "Preserve aspect ratio"
 msgstr "ralte le cimde parbi"
 
@@ -6529,12 +6497,12 @@ msgstr "prinyci'a le datnyvei le'a"
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:498
 msgid "Print in: "
-msgstr "Imprimer en : "
+msgstr "prinyci'a ne'i"
 
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h.h:500
 msgid "Print to: "
-msgstr "Imprimer vers : "
+msgstr "prinyci'a seka'a"
 
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h.h:502
@@ -6594,7 +6562,7 @@ msgstr ""
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:524
 msgid "Save file as type:"
-msgstr "ralte le datnyvei fi'o klesi"
+msgstr "ralte le datnyvei le'a"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:526
@@ -6628,9 +6596,8 @@ msgstr "le bangrserbi"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h.h:540
-#, fuzzy
 msgid "Set Language"
-msgstr "&Langue"
+msgstr "bangu"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:542
@@ -6680,7 +6647,7 @@ msgstr "le spano spano"
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:572
 msgid "Swedish"
-msgstr "zvero"
+msgstr "le zvero"
 
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:576
@@ -6690,12 +6657,12 @@ msgstr "selci'a selska"
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:578
 msgid "Thai"
-msgstr "bangrtai"
+msgstr "le bangrtai"
 
 #. ENC_THAI_MAC
 #: po/tmp/xap_String_Id.h.h:580
 msgid "Thai, Macintosh"
-msgstr "le bangrtai pe la MAkintoc."
+msgstr "le bangrtai la MAkintoc."
 
 #. ENC_THAI_TIS
 #: po/tmp/xap_String_Id.h.h:582
@@ -6716,7 +6683,7 @@ msgstr "le datnyveiste po'u %s cu selbandu fi le nunci'a"
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:588
 msgid "The print command string is not valid."
-msgstr "La commande d'impression n'est pas valide."
+msgstr "le prina selmi'e na ka'e se zukti"
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:596
@@ -6832,7 +6799,7 @@ msgstr "le munje la .IUnikod. pe la me UTF-8"
 #: po/tmp/xap_String_Id.h.h:642
 #, c-format
 msgid "Untitled%d"
-msgstr "Document%d"
+msgstr "cmecau%d"
 
 #. DLG_Update
 #: po/tmp/xap_String_Id.h.h:644
@@ -6842,13 +6809,12 @@ msgstr "cabgau"
 #. LANG_UR_PK
 #: po/tmp/xap_String_Id.h.h:650
 msgid "Urdu"
-msgstr ""
+msgstr "le xurdo"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #: po/tmp/xap_String_Id.h.h:652
-#, fuzzy
 msgid "Version:"
-msgstr "Version :"
+msgstr "velfarvi:"
 
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:654
@@ -6872,20 +6838,18 @@ msgstr "le vietnama le 1258moi papri pe la .uindoz."
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:662
-#, fuzzy
 msgid "View Document"
-msgstr "sel&papri"
+msgstr "jarco le selpapri"
 
 #. DLG_MW_Activate
 #: po/tmp/xap_String_Id.h.h:664
-#, fuzzy
 msgid "View:"
-msgstr "Vue"
+msgstr "jvina"
 
 #. LANG_CY_GB
 #: po/tmp/xap_String_Id.h.h:666
 msgid "Welsh"
-msgstr "la kymraig"
+msgstr "le mraigo"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:668
@@ -6914,9 +6878,8 @@ msgstr "le sicropno le 1252moi papri pe la .uindoz."
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:678
-#, fuzzy
 msgid "Whole Page"
-msgstr "&mulno papri"
+msgstr "mulno papri"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:680
@@ -6926,7 +6889,7 @@ msgstr "nilganra:"
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:682
 msgid "Width:  "
-msgstr "Largeur :  "
+msgstr "nilganra :  "
 
 #. DLG_QNXMB_Yes
 #: po/tmp/xap_String_Id.h.h:684
@@ -6952,17 +6915,17 @@ msgstr ""
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:692
 msgid "Zoom to"
-msgstr "Facteur de zoom"
+msgstr "brapi'i"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h.h:694
 msgid "_No"
-msgstr "_Non"
+msgstr "_nago'i"
 
 #. DLG_UnixMB_Yes
 #: po/tmp/xap_String_Id.h.h:696
 msgid "_Yes"
-msgstr "_Oui"
+msgstr "_go'i"
 
 #. DLG_Unit_cm
 #: po/tmp/xap_String_Id.h.h:698
@@ -6972,7 +6935,7 @@ msgstr "cm"
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:700
 msgid "inch"
-msgstr "pouce"
+msgstr "degygutci"
 
 #. DLG_Unit_mm
 #: po/tmp/xap_String_Id.h.h:702
@@ -6982,12 +6945,12 @@ msgstr "mm"
 #. DLG_Unit_pica
 #: po/tmp/xap_String_Id.h.h:704
 msgid "pica"
-msgstr ""
+msgstr "gutcrpika"
 
 #. DLG_Unit_points
 #: po/tmp/xap_String_Id.h.h:706
 msgid "points"
-msgstr "points"
+msgstr "cmalergutci"
 
 #. DLG_HashDownloader_Dict
 #: po/tmp/xap_String_Id.h.h:708
@@ -6997,7 +6960,7 @@ msgstr "le vlaste"
 #. DLG_HashDownloader_DictList
 #: po/tmp/xap_String_Id.h.h:710
 msgid "the dictionary-list"
-msgstr "le liste be le vlaste"
+msgstr "le liste be le'i vlaste"
 
 #~ msgid "&More Windows"
 #~ msgstr "&za'u canko"
