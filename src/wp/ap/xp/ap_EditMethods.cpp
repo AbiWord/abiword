@@ -7191,6 +7191,7 @@ Defun1(viewPara)
 
 	pScheme->setValueBool(AP_PREF_KEY_ParaVisible, pFrameData->m_bShowPara);
 #endif
+	pView->notifyListeners(AV_CHG_ALL);
 
 	return true;
 }

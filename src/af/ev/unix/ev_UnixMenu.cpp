@@ -56,6 +56,9 @@
 
 static bool s_init = false;
 
+#define ACTIVATE_ACCEL "activate-item"
+#define ACCEL_FLAGS (GtkAccelFlags)(GTK_ACCEL_LOCKED)
+
 /*****************************************************************/
 
 class _wd								// a private little class to help
@@ -466,6 +469,7 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_FILE_IMPORT, "Menu_AbiWord_Import"},
 		{AP_MENU_ID_FILE_SAVE, GTK_STOCK_SAVE},
 		{AP_MENU_ID_FILE_SAVEAS, GTK_STOCK_SAVE_AS},
+		{AP_MENU_ID_FILE_SAVE_TEMPLATE, GTK_STOCK_SAVE_AS},
 		{AP_MENU_ID_FILE_EXPORT, "Menu_AbiWord_Export"},
 		{AP_MENU_ID_FILE_CLOSE, GTK_STOCK_CLOSE},
 		{AP_MENU_ID_FILE_PROPERTIES, GTK_STOCK_PROPERTIES},
@@ -685,12 +689,14 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				// bind to parent item's accel group
 				if ((keyCode != GDK_VoidSymbol))
 				{
+#if 0
 					gtk_widget_add_accelerator(w,
-											   "activate-item",
+											   ACTIVATE_ACCEL,
 											   GTK_MENU(wParent)->accel_group,
 											   keyCode,
 											   (GdkModifierType)0,
-											   GTK_ACCEL_LOCKED);
+											   ACCEL_FLAGS);
+#endif
 				}
 
 				// item is created, add to class vector
@@ -810,21 +816,23 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 						if (wParent == wMenuRoot)
 						{
 							gtk_widget_add_accelerator(w,
-													   "activate-item",
+													   ACTIVATE_ACCEL,
 													   m_accelGroup,
 													   keyCode,
 													   GDK_MOD1_MASK,
-													   GTK_ACCEL_LOCKED);
+													   ACCEL_FLAGS);
 						}
 						else
 						{
+#if 0
 							// just bind to be triggered by parent
 							gtk_widget_add_accelerator(w,
-													   "activate-item",
+													   ACTIVATE_ACCEL,
 													   GTK_MENU(wParent)->accel_group,
 													   keyCode,
 													   (GdkModifierType)0,
-													   GTK_ACCEL_LOCKED);
+													   ACCEL_FLAGS);
+#endif
 						}
 
 						// TODO: Should these happen for every widget, even if
@@ -1098,7 +1106,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 #if ABI_GTK_DEPRECATED
 				// unbind all accelerators
 				gtk_widget_remove_accelerators(item,
-											   "activate-item",
+											   ACTIVATE_ACCEL
 											   FALSE);
 #endif
 				// wipe it out
@@ -1144,7 +1152,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 #ifdef ABI_GTK_DEPRECATED
 					// unbind all accelerators
 					gtk_widget_remove_accelerators(item,
-												   "activate-item",
+												   ACTIVATE_ACCEL,
 												   FALSE);
 #endif
 						
@@ -1175,12 +1183,14 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// bind to parent item's accel group
 				if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
 				{
+#if 0
 					gtk_widget_add_accelerator(item,
-											   "activate-item",
+											   ACTIVATE_ACCEL,
 											   GTK_MENU(item->parent)->accel_group,
 											   keyCode,
 											   (GdkModifierType)0,
-											   GTK_ACCEL_LOCKED);
+											   ACCEL_FLAGS);
+#endif
 				}
 
 				// finally, enable/disable and/or check/uncheck it.
