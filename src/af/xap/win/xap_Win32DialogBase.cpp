@@ -391,16 +391,13 @@ void XAP_Win32DialogBase::localizeControlText(UT_sint32 controlId, UT_uint32 str
 	setControlText( controlId, m_pSS->getValue(stringId) );
 }
 
-extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
+extern bool helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
 
 BOOL XAP_Win32DialogBase::_callHelp()
 {
-
-	XAP_Frame * pFrame = m_pDlg->getApp()->findValidFrame();
-
 	if ( m_pDlg->getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ( pFrame, "AbiWord/help", m_pDlg->getHelpUrl().c_str(), "http://www.abisource.com/help/" );
+		helpLocalizeAndOpenURL ("AbiWord/help", m_pDlg->getHelpUrl().c_str(), "http://www.abisource.com/help/" );
     }
 	else
     {

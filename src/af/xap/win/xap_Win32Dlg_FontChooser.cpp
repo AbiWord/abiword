@@ -421,15 +421,13 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	}
 }
 
-extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
+extern bool helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
 
 BOOL XAP_Win32Dialog_FontChooser::_callHelp()
 {
-	XAP_Frame *pFrame = m_pApp->findValidFrame();
-	
 	if ( getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ( pFrame, "AbiWord/help", getHelpUrl().c_str(), "http://www.abisource.com/help/" );
+		helpLocalizeAndOpenURL ("AbiWord/help", getHelpUrl().c_str(), "http://www.abisource.com/help/" );
     }
 	else
     {
