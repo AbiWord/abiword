@@ -106,6 +106,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	 {"dumpstrings", 'd', POPT_ARG_NONE, NULL, 0, "Dump strings to file", NULL},
 #endif
 	 {"to", 't', POPT_ARG_STRING, NULL, 0, "The target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
+	 {"to-png", '\0', POPT_ARG_NONE, NULL, 0, "Convert the incoming file to a PNG image", ""},
 	 {"verbose", 'v', POPT_ARG_INT, NULL, 0, "The verbosity level (0, 1, 2)", "LEVEL"},
 	 {"print", 'p', POPT_ARG_STRING, NULL, 0, "print this file to a file or printer", "FILE or |lpr"},
 	 {"show", '\0', POPT_ARG_NONE, NULL, 0, "If you really want to start the GUI (even if you use the --to option)", ""},
@@ -141,6 +142,15 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
   				bShowSplash = false;
   				break;
   			}
+
+  	for (k = 1; k < Args.m_argc; k++)
+  		if (*Args.m_argv[k] == '-')
+		  if ((UT_stricmp(Args.m_argv[k],"--to-png") == 0))
+		    {
+		      bShowApp = false;
+		      bShowSplash = false;
+		      break;
+		    }
 
 	for (k = 1; k < Args.m_argc; k++)
   		if (*Args.m_argv[k] == '-')
@@ -257,6 +267,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	char *geometry = NULL;
 	char *file = NULL;
 	char *to = NULL;
+	int topng = 0;
 	char *printto = NULL;
 	int verbose = 1;
 	int show = 0;
@@ -278,6 +289,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	  "HACK", NULL},
 #endif
 	 {"to", 't', POPT_ARG_STRING, &to, 0, "HACK", "HACK"},
+	 {"to-png", '\0', POPT_ARG_NONE, &topng, 0, "HACK", "HACK"},
 	 {"print", 'p', POPT_ARG_STRING, &printto, 0, "HACK", "HACK"},
 	 {"verbose", 'v', POPT_ARG_INT, &verbose, 0, "HACK", "HACK"},
 	 {"show", '\0', POPT_ARG_NONE, &show, 0, "HACK", NULL},
@@ -352,6 +364,18 @@ bool AP_UnixGnomeApp::parseCommandLine()
 		  return false;
 	}
 	
+	if (topng) {
+	  AP_Convert * conv = new AP_Convert( getApp() ) ;
+	  conv->setVerbose(verbose);
+	  while ((file = poptGetArg (poptcon)) != NULL) {
+	    conv->convertToPNG(file);
+	  }
+	  delete conv;
+	  
+	  if (!show)
+	    return false;
+	}
+
 	if (printto) {
 	  if ((file = poptGetArg (poptcon)) != NULL)
 	    {

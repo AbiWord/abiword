@@ -1232,6 +1232,11 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 				bTo = true;
 
 			// Do a quick and dirty find for "-to"
+			if ((strcmp(Args.m_argv[k],"-to-png") == 0)
+				|| (strcmp(Args.m_argv[k],"--to-png") == 0))
+				bTo = true;
+
+			// Do a quick and dirty find for "-to"
 			else if ((strcmp(Args.m_argv[k],"-p") == 0)
 				|| (strcmp(Args.m_argv[k],"--print") == 0))
 				bTo = true;
@@ -1380,6 +1385,7 @@ bool AP_UnixApp::parseCommandLine()
     int k;
     int kWindowsOpened = 0;
     char *to = NULL;
+    bool topng = false ;
     int verbose = 1;
     bool show = false;
 
@@ -1450,12 +1456,19 @@ bool AP_UnixApp::parseCommandLine()
 				to = m_pArgs->m_argv[k];
 				UT_DEBUGMSG(("DOM: got --to: %s\n", to));
 			}
+			else if ((strcmp (m_pArgs->m_argv[k],"-to-png") == 0)
+					 || (strcmp (m_pArgs->m_argv[k],"--to-png") == 0))
+			{
+				k++;
+				to = m_pArgs->m_argv[k];
+				UT_DEBUGMSG(("DOM: got --to-png: %s\n", to));
+			}
 			else if ((strcmp (m_pArgs->m_argv[k],"-plugin") == 0)
 					 || (strcmp (m_pArgs->m_argv[k],"--plugin") == 0))
 			{
 				k++;
 				plugin = m_pArgs->m_argv[k];
-				UT_DEBUGMSG(("DOM: got --to: %s\n", to));
+				UT_DEBUGMSG(("DOM: got --plugin: %s\n", to));
 			}
 			else if ((strcmp (m_pArgs->m_argv[k],"-print") == 0)
 					 || (strcmp (m_pArgs->m_argv[k],"--print") == 0))
@@ -1521,6 +1534,14 @@ bool AP_UnixApp::parseCommandLine()
 				conv->convertTo(m_pArgs->m_argv[k], to);
 				delete conv;
 			}
+			else if ( topng )
+			  {
+				AP_Convert * conv = new AP_Convert(getApp());
+				UT_DEBUGMSG(("DOM: inside --to-png\n"));
+				conv->setVerbose(verbose);
+				conv->convertToPNG(m_pArgs->m_argv[k]);
+				delete conv;
+			  }
 			else if (printto)
 			  {
 			    const char * file = m_pArgs->m_argv[k];
