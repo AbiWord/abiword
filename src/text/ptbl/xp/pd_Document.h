@@ -483,6 +483,8 @@ public:
 	// Functions for dealing with revisions
 	//
 	virtual void            setMarkRevisions(bool bMark);
+	// primarly for use by the PieceTable
+	void                    setMarkRevisionsNoNotify(bool bMark) {AD_Document::setMarkRevisions(bMark);}
 	
 	virtual bool            acceptRejectRevision(bool bReject,
 												 UT_uint32 iStart,
