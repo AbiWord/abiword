@@ -49,7 +49,17 @@
 
 #ifdef HAVE_GNOME
 #include <gnome.h>
-#endif
+
+// gal stuff
+#include <gal/widgets/gtk-combo-text.h>
+#include <gal/widgets/widget-color-combo.h>
+#include <gal/widgets/color-group.h>
+#include <gal/widgets/e-colors.h>
+
+// hack to get the icons we need for the color combos
+#include "../../../wp/ap/xp/ToolbarIcons/tb_text_fgcolor.xpm"
+#include "../../../wp/ap/xp/ToolbarIcons/tb_text_bgcolor.xpm"
+#endif // HAVE_GNOME
 
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
@@ -354,6 +364,29 @@ public:									// we create...
 	bool				m_blockSignal;
 	char 				m_comboEntryBuffer[1024];
 };
+
+#ifdef HAVE_GNOME
+#define COLOR_NORMALIZE(c) (gint)(c >> 8)
+
+static void
+s_color_changed (ColorCombo * combo, GdkColor * color, gboolean custom, gboolean by_user, gboolean is_default, _wd * wd)
+{
+	// if nothing has been set, color will be null
+	// and we don't want to dereference null do we ;)
+	if (!color || !combo || !wd)
+	  return;
+
+	gchar str [7];
+	g_snprintf (str, 7, "%02x%02x%02x", COLOR_NORMALIZE (color->red), COLOR_NORMALIZE (color->green), COLOR_NORMALIZE (color->blue));
+
+	UT_DEBUGMSG(("DOM: the color is '%s'\n", str));
+
+	wd->m_pUnixToolbar->toolbarEvent(wd, (UT_UCSChar *)str, strlen (str));
+}
+
+#undef COLOR_NORMALIZE
+#endif // HAVE_GNOME
+
 /*****************************************************************/
 
 EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp, 
@@ -370,6 +403,10 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp,
 	m_pViewListener = 0;
 	m_wToolbar = 0;
 	m_lid = 0;							// view listener id
+
+#ifdef HAVE_GNOME
+	e_color_init ();
+#endif
 }
 
 EV_UnixToolbar::~EV_UnixToolbar(void)
@@ -656,14 +693,10 @@ bool EV_UnixToolbar::synthesize(void)
 			{
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 				GtkWidget * wPixmap;
-#if !defined(NDEBUG)
-				bool bFoundIcon =
-#endif
-					getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-									   &wTLW->style->bg[GTK_STATE_NORMAL],
-									   pLabel->getIconName(),
-									   &wPixmap);
-				UT_ASSERT(bFoundIcon);
+				getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+								   &wTLW->style->bg[GTK_STATE_NORMAL],
+								   pLabel->getIconName(),
+								   &wPixmap);
 
 				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
 				{
@@ -713,14 +746,10 @@ bool EV_UnixToolbar::synthesize(void)
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
-#if !defined(NDEBUG)
-					bool bFoundIcon =
-#endif
-						getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-										   &wTLW->style->bg[GTK_STATE_NORMAL],
-										   pLabel->getIconName(),
-										   &wPixmap);
-					UT_ASSERT(bFoundIcon);
+					getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+									   &wTLW->style->bg[GTK_STATE_NORMAL],
+									   pLabel->getIconName(),
+									   &wPixmap);
 
 					wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
 															  GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
@@ -843,38 +872,47 @@ bool EV_UnixToolbar::synthesize(void)
 			{
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 				GtkWidget * wPixmap;
-#if !defined(NDEBUG)
-				bool bFoundIcon =
-#endif
-					getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-									   &wTLW->style->bg[GTK_STATE_NORMAL],
-									   pLabel->getIconName(),
-									   &wPixmap);
-				UT_ASSERT(bFoundIcon);
+				getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+								   &wTLW->style->bg[GTK_STATE_NORMAL],
+								   pLabel->getIconName(),
+								   &wPixmap);
 
+#ifdef HAVE_GNOME
+			    GtkWidget * combo;
+				GdkPixbuf * pixbuf;
+			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
+					pixbuf = gdk_pixbuf_new_from_xpm_data (tb_text_fgcolor_xpm);
+					combo = color_combo_new (pixbuf, szToolTip, &e_black, color_group_fetch("foreground_color", NULL));
+			    }
+				else {
+					pixbuf = gdk_pixbuf_new_from_xpm_data (tb_text_bgcolor_xpm);
+					combo = color_combo_new (pixbuf, szToolTip, NULL, color_group_fetch("background_color", NULL));
+				}
+			    gtk_combo_box_set_title (GTK_COMBO_BOX (combo),
+										 szToolTip);
+
+				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+											 combo,
+											 szToolTip,
+											 (const char *)NULL);
+			    wd->m_widget = combo;
+			    g_signal_connect (G_OBJECT (combo), "color-changed",
+								  G_CALLBACK (s_color_changed), wd);
+#else
 				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
 													   pLabel->getToolbarLabel(),
 													   szToolTip,static_cast<const char *>(NULL),
 													   wPixmap,
 													   G_CALLBACK(_wd::s_ColorCallback),
 													   wd);
+#endif
 				//
 				// Add in a right drag method
 				//
 				GtkWidget * wwd = wd->m_widget;
 				g_object_set_data(G_OBJECT(wwd),
-									"wd_pointer",
-									wd);
-				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
-									s_AbiTBTargets,1,
-									GDK_ACTION_COPY);
-				setDragIcon(wwd, GTK_IMAGE(wPixmap));
-				gtk_drag_dest_set(wwd,static_cast<GtkDestDefaults>(GTK_DEST_DEFAULT_ALL),
-									s_AbiTBTargets,1,
-									GDK_ACTION_COPY);
-				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
-				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
-				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
+								  "wd_pointer",
+								  wd);
 			}
 			break;
 				

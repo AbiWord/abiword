@@ -614,6 +614,19 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 	return pFont;
 }
 
+void XAP_UnixGnomePrintGraphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 iheight)
+{
+	UT_ASSERT (UT_TODO);
+}
+
+void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
+													JoinStyle inJoinStyle,
+													CapStyle inCapStyle,
+													LineStyle inLineStyle)
+{
+	UT_ASSERT (UT_TODO);
+}
+
 /***********************************************************************/
 /*                Private Scaling Conversion Routines                  */
 /***********************************************************************/
