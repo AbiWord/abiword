@@ -276,7 +276,9 @@ public:
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar * 	getSelectionText(void);
-		
+#if 0	
+	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
+#endif
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp);
 	void 			moveInsPtTo(PT_DocPosition dp);

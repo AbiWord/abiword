@@ -42,6 +42,7 @@
 #include "fp_Column.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_TextRun.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "pd_Document.h"
@@ -364,62 +365,166 @@ bool FV_View::_isSpaceBefore(PT_DocPosition pos)
 
 void FV_View::toggleCase (ToggleCase c)
 {
-  // 1. get selection
-  // 2. toggle case
-  // 3. clear and replace
-
-  // TODO: we currently lose *all* formatting information. Fix this.
-
+	// if there is no selection, select the current word	
 	if (isSelectionEmpty())
-		return;
+		cmdSelect(FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
+	
+	PT_DocPosition low, high;
+	
+	if(m_iInsPoint < m_iSelectionAnchor)
+	{
+		low  = m_iInsPoint;
+		high = m_iSelectionAnchor;
+	}
+	else
+	{
+		high = m_iInsPoint;
+		low  = m_iSelectionAnchor;
+	}
+	
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+	bool bDirection;
+	
+	fl_BlockLayout * pBL =  m_pLayout->findBlockAtPosition(low);
+	fp_Run * pRun;
 
-	UT_UCSChar * cur, * replace;
-	UT_GrowBuf buffer;
-
-	cur = getSelectionText();
-	PT_DocPosition low = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
-
-	if (!cur)
-		return;
-
-	UT_uint32 replace_len = UT_UCS_strlen (cur);
-	replace = new UT_UCSChar [replace_len + 1];
-
-	UT_UCS_strcpy(replace,cur);
-
-	switch (c)
-    {
-
-    case CASE_SENTENCE: _toggleSentence (cur, replace, replace_len);
-		break;
-
-    case CASE_LOWER: _toggleLower (cur, replace, replace_len);
-		break;
-
-    case CASE_UPPER: _toggleUpper (cur, replace, replace_len);
-		break;
-
-    case CASE_TITLE: _toggleTitle (cur, replace, replace_len, _isSpaceBefore(low));
-		break;
-
-    case CASE_TOGGLE: _toggleToggle (cur, replace, replace_len);
-		break;
-
-    default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-    }
-
+	// create a temp buffer of a reasonable size (will realloc if too small)
+	UT_uint32    iTempLen = 150;
+	UT_UCSChar * pTemp = new UT_UCSChar[iTempLen];
+	UT_ASSERT(pTemp);
+	
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
 
-	cmdCharInsert (replace, replace_len, true);
+	while(pBL && low < high)
+	{
+		UT_GrowBuf buffer;
+		pBL->getBlockBuf(&buffer);
 
+		PT_DocPosition offset = low - pBL->getPosition(false);
+		
+		const PP_AttrProp * pSpanAPAfter = NULL;
+		pBL->getSpanAttrProp(offset,false,&pSpanAPAfter);
+		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
+
+		xxx_UT_DEBUGMSG(("fv_View::toggleCase: pBL 0x%x, offset %d, pSpanAPAfter 0x%x\n", pBL, offset, pSpanAPAfter));
+		//fp_Run * pLastRun = pBL->getLastLine()->getLastRun();
+		//PT_DocPosition lastPos = pBL->getPosition(false) + pLastRun->getBlockOffset() + pLastRun->getLength() - 1;
+		pRun = pBL->findPointCoords(low, false, xPoint,
+										   yPoint, xPoint2, yPoint2,
+										   iPointHeight, bDirection);
+		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
+		
+		bool bBlockDone = false;
+			
+		while(!bBlockDone && (low < high) /*&& (low < lastPos)*/)
+		{
+			UT_uint32 iLenToCopy = MIN(high - low, buffer.getLength() - offset);
+
+			xxx_UT_DEBUGMSG(("fv_View::toggleCase: iLenToCopy %d, low %d\n", iLenToCopy, low));
+				
+			if(!pRun || pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+				break;
+									
+			if(iLenToCopy > iTempLen)
+			{
+				delete[] pTemp;
+				pTemp = new UT_UCSChar[iLenToCopy];
+				iTempLen = iLenToCopy;
+				UT_ASSERT(pTemp);
+			}
+			
+			while(pRun && pRun->getBlockOffset() < iLenToCopy)
+			{
+				UT_uint32 iLen = 0;
+
+				UT_ASSERT(pRun);
+		
+				while( pRun
+					&& pRun->getBlockOffset() < iLenToCopy
+					&& pRun->getType() != FPRUN_TEXT)
+				{
+					offset += pRun->getLength();
+					low += pRun->getLength();
+					pRun = pRun->getNext();
+				}
+				
+				fp_TextRun * pPrevTR = NULL;
+				
+				while(pRun
+					&& pRun->getBlockOffset() < iLenToCopy
+					&& pRun->getType() == FPRUN_TEXT)
+				{
+					// in order not to loose formating, we will only replace
+					// runs that can be merged in a single go	
+					if(pPrevTR && !pPrevTR->canMergeWithNext())
+						break;
+					iLen += pRun->getLength();
+					pPrevTR = static_cast<fp_TextRun*>(pRun);
+					pRun = pRun->getNext();
+				}
+				
+				if(!iLen) // sequence of 0-len runs only
+				{
+					UT_DEBUGMSG(("fv_View::toggleCase: sequence of 0-width runs only, next run type %d\n", pRun->getType()));
+					continue;
+				}
+				
+				UT_ASSERT(iLen + offset + pBL->getPosition(false) <= high);
+				
+				memmove(pTemp, buffer.getPointer(offset), iLen * sizeof(UT_UCSChar));
+			
+				switch (c)
+			    {
+           		
+		    		case CASE_SENTENCE:
+		    			_toggleSentence (pTemp, pTemp, iLen);
+						break;
+   	
+				    case CASE_LOWER:
+				    	_toggleLower (pTemp, pTemp, iLen);
+						break;
+
+			    	case CASE_UPPER:
+			    		_toggleUpper (pTemp, pTemp, iLen);
+						break;
+
+				    case CASE_TITLE:
+				    	_toggleTitle (pTemp, pTemp, iLen, _isSpaceBefore(low));
+						break;
+
+			    	case CASE_TOGGLE:
+			    		_toggleToggle (pTemp, pTemp, iLen);
+						break;
+
+				    default:
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    			}
+
+    			// get the props after our segment
+				pBL->getSpanAttrProp(offset+iLen,false,&pSpanAPAfter);
+    			UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
+				
+				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL);
+				UT_ASSERT(bResult);
+				bResult = m_pDoc->insertSpan(low, pTemp, iLen, pSpanAPNow);
+				
+				// now remember the props for the next round
+				pSpanAPNow = const_cast<PP_AttrProp*>(pSpanAPAfter);
+				
+				UT_ASSERT(bResult);
+				low += iLen;
+				offset += iLen;
+			}
+		}
+		pBL = pBL->getNext();
+		low = pBL->getPosition(false);
+	}
+
+	delete[] pTemp;
 	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_restorePieceTableState();
-
-	FREEP(cur);
-	delete[] replace;
 }
 
 void FV_View::setPaperColor(const XML_Char* clr)
@@ -3738,6 +3843,52 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	return NULL;
 }
+#if 0
+// this function has not been debugged
+UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
+{
+
+	UT_ASSERT(pos2 > pos1);
+	
+ 	UT_GrowBuf buffer;	
+
+  	UT_uint32 iLength = pos2 - pos1;
+  	UT_uint32 curLen = 0;
+  	
+    PT_DocPosition curPos = pos1;
+
+	// get the current block the insertion point is in
+	fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(curPos);
+
+	UT_UCSChar * bufferRet = new UT_UCSChar[iLength];
+	
+	UT_ASSERT(bufferRet);
+	if(!bufferRet)
+		return NULL;
+		
+	UT_UCSChar * buff_ptr = bufferRet;
+	
+	while(pBlock && curPos < pos2)
+	{
+		pBlock->getBlockBuf(&buffer);
+
+		PT_DocPosition offset = curPos - pBlock->getPosition(false);
+		UT_uint32 iLenToCopy = MIN(pos2 - curPos, buffer.getLength() - offset);
+		while(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
+		{
+			memmove(buff_ptr, buffer.getPointer(offset), iLenToCopy * sizeof(UT_UCSChar));
+			offset   += iLenToCopy;
+			buff_ptr += iLenToCopy;
+			curPos	 += iLenToCopy;
+		}
+		
+		pBlock = pBlock->getNext();
+	}
+	
+	UT_ASSERT(curPos == pos2);
+	return bufferRet;
+}
+#endif
 
 bool FV_View::isTabListBehindPoint(void)
 {
