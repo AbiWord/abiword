@@ -418,9 +418,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	GtkWidget *checkbuttonUnderline;
 	GtkWidget *checkbuttonOverline;
 	GtkWidget *checkbuttonHidden;
-//	GtkWidget *labelEncoding;
-//	GtkWidget *comboEncoding;
-	GtkWidget *listStyles;
+ 	GtkWidget *listStyles;
 	GtkWidget *listSizes;
 	GtkWidget *hbox1;
 	GtkWidget *colorSelector;
@@ -429,14 +427,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	GtkWidget *labelTabColor;
 	GtkWidget *labelTabBGColor;
 	GtkWidget *frame4;
-
-	/*
-	  GtkWidget *fixedFont;
-	  GtkWidget *frameStyle;
-	  GtkWidget *frameFonts;
-	  GtkWidget *frameSize;
-	  GtkWidget *fixedColor;
-	*/
 
 	// the entry is a special drawing area full of one
 	// of our graphics contexts
@@ -628,42 +618,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (checkbuttonHidden);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonHidden, TRUE, TRUE, 0);
 
-
-#if 0
-	hboxForEncoding = gtk_hbox_new (FALSE, 0);
-	gtk_widget_set_name (hboxForEncoding, "hboxForEncoding");
-	gtk_widget_ref (hboxForEncoding);
-	g_object_set_data_full (G_OBJECT (window1), "hboxForEncoding", hboxForEncoding,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
-	gtk_widget_show (hboxForEncoding);
-	gtk_box_pack_start (GTK_BOX (vboxmisc), hboxForEncoding, TRUE, TRUE, 0);
-
-	labelEncoding = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_EncodingLabel).c_str());
-	g_object_set_data (parent, "labelEncoding", labelEncoding);
-	gtk_widget_show (labelEncoding);
-	gtk_box_pack_start (GTK_BOX (hboxForEncoding), labelEncoding, 1,1, 2);
-	gtk_label_set_justify (GTK_LABEL (labelEncoding), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelEncoding), 0, 0.5);
-
-	comboEncoding = gtk_combo_new ();
-	g_object_set_data (parent, "comboEncoding", comboEncoding);
-	gtk_widget_show (comboEncoding);
-	gtk_box_pack_start(GTK_BOX (hboxForEncoding), comboEncoding, 1, 1, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (GTK_COMBO (comboEncoding)->popup),
-									GTK_POLICY_NEVER,
-									GTK_POLICY_AUTOMATIC);
-	GList * comboEncoding_items = NULL;
-	comboEncoding_items = g_list_append (comboEncoding_items, static_cast<void *>("Placeholder"));
-//	comboEncoding_items = g_list_append (comboEncoding_items, "Canadian");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "British");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "Irish");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "Broken English");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");
-	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
-	g_list_free (comboEncoding_items);
-
-#endif
-
 	/* Notebook page for ForeGround Color Selector */
 
 	hbox1 = gtk_hbox_new (FALSE, 0);
@@ -784,27 +738,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					   G_CALLBACK(s_select_row_size),
 					   static_cast<gpointer>(this));
 
-#if ABI_GTK_DEPRECATED
-	// we catch the color tab's wheel click event so we can do some nasty
-	// trickery with the value slider, so that when the user first does
-	// some wheel work, the value soars to 100%, instead of 0%, so the
-	// color they get is not always black
-	//
-	// also, we must do connect_after() so we get the information before
-	// any other native color selector events get the chance to change
-	// things on us
-	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorSelector)->wheel_area),
-			       "event",
-			       G_CALLBACK(s_color_wheel_clicked),
-			       static_cast<gpointer>(GTK_COLOR_SELECTION(colorSelector)->wheel_area));
-	
-	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorBGSelector)->wheel_area),
-			       "event",
-			       G_CALLBACK(s_color_wheel_clicked),
-			       static_cast<gpointer>(GTK_COLOR_SELECTION(colorSelector)->wheel_area));
-#endif //ABI_GTK_DEPRECATED	
-
-
 	// This is a catch-all color selector callback which catches any
 	// real-time updating of the color so we can refresh our preview
 	// text
@@ -922,36 +855,24 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	foundAt = searchCList(GTK_CLIST(m_fontList), const_cast<char *>(getVal("font-family")));
 
 	if (foundAt >= 0)
-	{
 		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
-	}
 
 	// this is pretty messy
 	listStyle st = LIST_STYLE_NORMAL;
 	if (!getVal("font-style") || !getVal("font-weight"))
-	{
-	        st = LIST_STYLE_NONE;
-	}
+		st = LIST_STYLE_NONE;
 	else if (!UT_stricmp(getVal("font-style"), "normal") &&
 			 !UT_stricmp(getVal("font-weight"), "normal"))
-	{
 		st = LIST_STYLE_NORMAL;
-	}
 	else if (!UT_stricmp(getVal("font-style"), "normal") &&
 			 !UT_stricmp(getVal("font-weight"), "bold"))
-	{
 		st = LIST_STYLE_BOLD;
-	}
 	else if (!UT_stricmp(getVal("font-style"), "italic") &&
 			 !UT_stricmp(getVal("font-weight"), "normal"))
-	{
 		st = LIST_STYLE_ITALIC;
-	}
 	else if (!UT_stricmp(getVal("font-style"), "italic") &&
 			 !UT_stricmp(getVal("font-weight"), "bold"))
-	{
 		st = LIST_STYLE_BOLD_ITALIC;
-	}
 	else
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -963,9 +884,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	foundAt = searchCList(GTK_CLIST(m_sizeList), const_cast<char *>(XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString)));
 
 	if (foundAt >= 0)
-	{
 		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
-	}
 
 	// Set color in the color selector
 	if (getVal("color"))
@@ -978,7 +897,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_currentFGColor[BLUE] = (static_cast<gdouble>(c.m_blu) / static_cast<gdouble>(255.0));
 
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
-		UT_DEBUGMSG(("%d %d %d\n", c.m_red, c.m_grn, c.m_blu));
 	}
 	else
 	{
@@ -1002,18 +920,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_currentBGColor[BLUE] = (static_cast<gdouble>(c.m_blu) / static_cast<gdouble>(255.0));
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
-		UT_DEBUGMSG(("%d %d %d\n", c.m_red, c.m_grn, c.m_blu));
 	}
 	else
-	{
-		// if we have no color, use a placeholder of funky values
-		// the user can't pick interactively.  This catches ALL
-		// the cases except where the user specifically enters -1 for
-		// all Red, Green and Blue attributes manually.  This user
-		// should expect it not to touch the color.  :)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_funkyColor);
-	}
 
 	// set the strikeout and underline check buttons
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeout);
@@ -1089,9 +998,7 @@ void XAP_UnixDialog_FontChooser::updatePreview(void)
 	  event_previewExposed(entryString);
 	}
 	else
-	{
 		event_previewClear();
-	}
 }
 
 
