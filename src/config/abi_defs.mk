@@ -132,23 +132,30 @@ if test ! -d xxxx; then rm -rf xxxx; mkdir -p  xxxx; fi
 endef
 
 ifeq ($(OS_NAME), WIN32)
-CYGWIN_ROOT := $(shell cygpath -w / | sed 's|\\|/|g')
- ifneq (,$(findstring  ,$(shell uname -r)))
-  define TRANSFORM_TO_DOS_PATH
-  sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
-  endef
+ ifeq ($(OS_RELEASE), 4.0) 
+  # HACK: for old B19 users
+  define TRANSFORM_TO_DOS_PATH 
+  sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g' 
+  endef 
  else
-  ifneq (,$(findstring cygdrive,$(ABI_ROOT)))
+CYGWIN_ROOT := $(shell cygpath -w / | sed 's|\\|/|g')
+  ifneq (,$(findstring  ,$(shell uname -r)))
    define TRANSFORM_TO_DOS_PATH
-   sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' | sed 's|/|\\\\|g'
+   sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
    endef
   else
-   define TRANSFORM_TO_DOS_PATH
-   sed 's|/|$(CYGWIN_ROOT)|' | sed 's| /| $(CYGWIN_ROOT)|g' | sed 's|/|\\\\|g'
-   endef
+   ifneq (,$(findstring cygdrive,$(ABI_ROOT)))
+    define TRANSFORM_TO_DOS_PATH
+    sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' | sed 's|/|\\\\|g'
+    endef
+   else
+    define TRANSFORM_TO_DOS_PATH
+    sed 's|/|$(CYGWIN_ROOT)|' | sed 's| /| $(CYGWIN_ROOT)|g' | sed 's|/|\\\\|g'
+    endef
+   endif
   endif
  endif
-endif
+endif 
 
 ##################################################################
 ##################################################################
