@@ -4913,3 +4913,147 @@ void FV_View::_fixInsertionPointAfterRevision()
 		_fixInsertionPointCoords();
 	}
 }
+
+bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
+{
+	// see if prefs specify we should set language based on kbd layout
+	UT_return_val_if_fail(m_pApp, false);
+	bool bSetLang = false;
+	m_pApp->getPrefsValueBool(static_cast<const XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &bSetLang);
+
+	const UT_LangRecord * pLR = NULL;
+
+	if(bSetLang)
+		pLR = m_pApp->getKbdLanguage();
+
+	
+	bool bResult = true;
+	// So this gets rid of the annoying cursor flash at the beginning
+	// of the line upon character insertion, but it's the wrong thing to
+	// do.  The right thing to do is to either delay calculation, or to
+	// not make the wrong number come up; disabling the caret is wrong. -PL
+ 	GR_CaretDisabler caretDisabler(m_pG->getCaret());
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		bool bOK = true;
+		if(!isPointLegal() && bOK)
+		{
+//
+// If we're in an illegal position move forward till we're safe.
+//
+			bOK = _charMotion(true,1);
+		}
+
+		if(pLR)
+			AttrProp_Before.setProperty("lang", pLR->m_szLangCode);
+		
+		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		bool bOverwrite = (!m_bInsertMode && !bForce);
+
+		if (bOverwrite)
+		{
+			// we need to glob when overwriting
+			m_pDoc->beginUserAtomicGlob();
+			cmdCharDelete(true,count);
+		}
+		bool doInsert = true;
+		if(text[0] == UCS_TAB && count == 1)
+		{
+			//
+			// Were inserting a TAB. Handle special case of TAB
+			// right after a list-label combo
+			//
+			if((   isTabListBehindPoint() == true || isTabListAheadPoint() == true)
+			    && getCurrentBlock()->isFirstInList() == false)
+			{
+				//
+				// OK now start a sublist of the same type as the
+				// current list if the list type is of numbered type
+				fl_BlockLayout * pBlock = getCurrentBlock();
+				FL_ListType curType = pBlock->getListType();
+//
+// Now increase list level for bullet lists too
+//
+				{
+					UT_uint32 curlevel = pBlock->getLevel();
+					UT_uint32 currID = pBlock->getAutoNum()->getID();
+					curlevel++;
+					fl_AutoNum * pAuto = pBlock->getAutoNum();
+					const XML_Char * pszAlign = pBlock->getProperty("margin-left",true);
+					const XML_Char * pszIndent = pBlock->getProperty("text-indent",true);
+					const XML_Char * pszFieldF = pBlock->getProperty("field-font",true);
+					float fAlign = static_cast<float>(atof(pszAlign));
+					float fIndent = static_cast<float>(atof(pszIndent));
+//
+// Convert pixels to inches.
+//
+					float maxWidthIN = static_cast<float>((static_cast<float>(pBlock->getFirstContainer()->getContainer()->getWidth()))/100. -0.6);
+					if(fAlign + static_cast<float>(LIST_DEFAULT_INDENT) < maxWidthIN)
+					{
+						fAlign += static_cast<float>(LIST_DEFAULT_INDENT);
+					}
+					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),pszFieldF,fAlign,fIndent, currID,curlevel);
+					doInsert = false;
+				}
+			}
+		}
+		
+		if (doInsert == true)
+		{
+			if(pLR)
+			{
+				PP_AttrProp AP;
+				AP.setProperty("lang", pLR->m_szLangCode);
+				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
+			}
+
+			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
+
+			if(!bResult)
+			{
+				const fl_BlockLayout * pBL = getCurrentBlock();
+				const PP_AttrProp *pBlockAP = NULL;
+				pBL->getAP(pBlockAP);
+
+				bResult = m_pDoc->insertSpan(getPoint(), text, count,
+											 const_cast<PP_AttrProp *>(pBlockAP));
+				UT_ASSERT(bResult);
+			}
+		}
+
+		if (bOverwrite)
+		{
+			m_pDoc->endUserAtomicGlob();
+		}
+	}
+
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_setPoint(getPoint());
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+
+	return bResult;
+}

@@ -714,6 +714,8 @@ protected:
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
+	bool			    _charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
+	
 private:
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
