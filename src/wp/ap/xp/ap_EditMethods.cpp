@@ -5984,6 +5984,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     UT_uint32 nToPage, UT_uint32 nFromPage)
 {
 	UT_uint32 j,k;
+
 	//
 	// Lock out operations on this document
 	//
@@ -5991,10 +5992,6 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 
 	if(pGraphics->startPrint())
 	{
-	  // lazy-fill the layouts
-	  pPrintView->getLayout()->fillLayouts();
-	  pPrintView->getLayout()->formatAll();
-
 	  fp_PageSize ps = pPrintView->getPageSize();	  
 	  bool orient = ps.isPortrait ();
 	  pGraphics->setPortrait (orient);
@@ -6016,10 +6013,13 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 				for (k=nFromPage; (k <= nToPage); k++)
 				{
 					sprintf (msgBuf, msgTmpl, k, nToPage);
-					pFrame->setStatusMessage ( msgBuf );
-					pFrame->nullUpdate();
 
-			  // NB we will need a better way to calc
+					if(pFrame) {
+					  pFrame->setStatusMessage ( msgBuf );
+					  pFrame->nullUpdate();
+					}
+
+					// NB we will need a better way to calc
 					// pGraphics->m_iRasterPosition when
 					// iHeight is allowed to vary page to page
 					pGraphics->m_iRasterPosition = (k-1)*iHeight;
@@ -6033,8 +6033,11 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 				for (j=1; (j <= nCopies); j++)
 				{
 					sprintf (msgBuf, msgTmpl, k, nToPage);
-					pFrame->setStatusMessage ( msgBuf );
-					pFrame->nullUpdate();
+
+					if(pFrame) {
+					  pFrame->setStatusMessage ( msgBuf );
+					  pFrame->nullUpdate();
+					}
 
 					// NB we will need a better way to calc
 					// pGraphics->m_iRasterPosition when
@@ -6045,7 +6048,9 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 				}
 		}
 		pGraphics->endPrint();
-		pFrame->setStatusMessage (""); // reset/0 out status bar
+		
+		if(pFrame)
+		  pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
 	s_pLoadingDoc = NULL;
 	return true;
@@ -6073,8 +6078,8 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
 	pDialog->setDocumentPathname((doc->getFilename())
-								 ? doc->getFilename()
-								 : pFrame->getNonDecoratedTitle());
+				     ? doc->getFilename()
+				     : pFrame->getNonDecoratedTitle());
 	pDialog->setEnablePageRangeButton(true,1,pLayout->countPages());
 	pDialog->setEnablePrintSelection(false);	// TODO change this when we know how to do it.
 	pDialog->setEnablePrintToFile(true);
@@ -6108,7 +6113,8 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 		FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
-		// delay filling layouts...
+		pPrintView->getLayout()->fillLayouts();
+		pPrintView->getLayout()->formatAll();
 
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);

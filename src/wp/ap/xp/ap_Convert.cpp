@@ -33,6 +33,7 @@
 #include "gr_Graphics.h"
 #include "fv_View.h"
 #include "fl_BlockLayout.h"
+#include "ap_EditMethods.h"
 
 // needed for convertToPNG
 #include "ie_impGraphic.h"
@@ -180,7 +181,6 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 
   // get the current document
   PD_Document *pDoc = new PD_Document(getApp());
-
   pDoc->readFromFile(szFile, IEFT_Unknown);
 
   // create a new layout and view object for the doc
@@ -196,29 +196,11 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
   psGr->setPageSize(printView.getPageSize().getPredefinedName());
 #endif
 
-  if(pGraphics->startPrint())
-    {
-      bool orient = printView.getPageSize().isPortrait();
-      pGraphics->setPortrait (orient);  
-
-      // setup the drawing args
-      dg_DrawArgs da;
-      memset(&da, 0, sizeof(da));
-      da.pG = NULL;
-
-      // get the width, height, orient
-      UT_sint32 iWidth = pDocLayout->getWidth();
-      UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
-
-      // iterate over the pages, printing each one
-      for (UT_uint32 k = 1; (k <= pDocLayout->countPages()); k++)
-	{
-	  pGraphics->m_iRasterPosition = (k-1)*iHeight;
-	  pGraphics->startPage(szFile, k, orient, iWidth, iHeight);
-	  printView.draw(k-1, &da);
-	}
-      pGraphics->endPrint();
-    }
+  s_actuallyPrint (pDoc, pGraphics, 
+		   &printView, szFile, 
+		   1, true, 
+		   pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+		   1, pDocLayout->countPages());
 
   DELETEP(pDocLayout);
   UNREFP(pDoc);

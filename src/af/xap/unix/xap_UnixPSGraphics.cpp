@@ -184,13 +184,6 @@ UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
   UT_ASSERT(gfi);
 
-//#if 0
-//  e = _scaleFont(psfnt, gfi->ascender);
-  //#if 0
-  //  e = _scaleFont(psfnt, gfi->fontBBox.ury);
-  //#endif
-    
-
   XAP_UnixFont * pUFont = psfnt->getUnixFont();
   UT_sint32 iSize = psfnt->getSize();
   if(pUFont->isSizeInCache(iSize))
@@ -266,15 +259,6 @@ void PS_Graphics::getCoverage(UT_Vector& coverage)
 UT_uint32 PS_Graphics::getFontHeight(GR_Font * fnt)
 {
 	UT_sint32 height = getFontAscent(fnt) + getFontDescent(fnt);
-
-#if 0
-	UT_DEBUGMSG(("SEVIOR: Font height in PS-print = %d \n",height));
-	PSFont * pFont = static_cast<PSFont *>(fnt);
-	XAP_UnixFont *uf          = pFont->getUnixFont();
-	char *abi_name            = (char*)uf->getName();
-	UT_DEBUGMSG(("SEVIOR: Font size in PS-print = %d Font Name %s \n",pFont->getSize(),abi_name));
-#endif
-
 	return height;
 }
 
@@ -340,35 +324,6 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	}
 #endif
 }
-#if 0
-/*
-    WARNING: this code doesn't support non-latin1 chars.
-*/
-UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset, 
-									int num, unsigned short* pWidths)
-{
-	UT_ASSERT(m_pCurrentFont);
-	UT_ASSERT(s);
-	const UT_UCSChar * p = s+iOffset;
-	const UT_uint16 * cwi = m_pCurrentFont->getUniWidths();
-
-	UT_uint32 iCharWidth = 0;
-	for (int k=0; k<num; k++)
-	{
-		//UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
-	
-    	register int x;
-		UT_UCSChar currentChar;
-		currentChar = remapGlyph(p[k], false);
-		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
-		
-		iCharWidth += x;
-		pWidths[k] = x;
-	}
-		
-	return iCharWidth;
-}
-#endif
 #endif //#ifndef WITH_PANGO
 
 
@@ -970,20 +925,6 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 	const UT_UCSChar * pEnd = pS+iLength;
 	UT_UCSChar currentChar;
 
-#if 0
-//
-// Debugging code. Disable when printing works.
-//
-	UT_String sChar;
-	const UT_UCSChar * pT = pS;
-	for(UT_uint32 j=0; j< iLength; j++)
-	{
-		sChar += (char) *pT;
-		pT++;
-	}
-	UT_DEBUGMSG(("PSGraphics UTF8 draw| %s x %d y %d \n",sChar.c_str(),xoff,yoff));
-#endif
-
 	//when printing 8-bit chars we enclose them in brackets, but 16-bit
 	//chars must be printed by name without brackets
 	
@@ -1064,22 +1005,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				using_names = false;
 			}
 
-#if 0			
-		    switch (currentChar)
-		    {
-				case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
-				case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
-				case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
-				case UCS_FF:	*pD++ = '\\';	*pD++ = 'f';	break;
-				case UCS_CR:	*pD++ = '\\';	*pD++ = 'r';	break;
-				case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
-				case '(':		*pD++ = '\\';	*pD++ = '(';	break;
-				case ')':		*pD++ = '\\';	*pD++ = ')';	break;
-				default:		*pD++ = (char)currentChar; 	break;
-	    	}
-#else
 			*pD++ = (char)currentChar;
-#endif
 		}
 		curwidth += measureUnRemappedChar(currentChar);
 		xxx_UT_DEBUGMSG((" width %d curwidth %d xoff %d curwidth+xoff %d char %c \n", measureUnRemappedChar(currentChar),curwidth, xoff,xoff+curwidth,(char) currentChar));
@@ -1355,10 +1281,7 @@ bool PS_Graphics::_startDocument(void)
 	m_ps->formatComment("BeginProlog");
 
 	_emit_PrologMacros();
-
-#if !defined(USE_XFT)
 	_emit_FontMacros();
-#endif	
 
 	// TODO add rest of prolog
 
@@ -1477,8 +1400,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
             
             // only include each font name once
 #ifdef USE_XFT
-			UT_String pName(psf->getUnixFont()->getPostscriptName());
-			UT_DEBUGMSG(("_ps: 3 Looking at font %d name %s \n",k,pName.c_str()));
+	    UT_String pName(psf->getUnixFont()->getPostscriptName());
 #else	
             const char * pName = psf->getMetricsData()->gfi->fontName;
 #endif
@@ -1498,10 +1420,9 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
             
             if(!bFound)
 #ifdef USE_XFT
-				UT_DEBUGMSG(("_ps:1 Adding font %s tp list to embed \n",pName.c_str()));
-    		    vec.addItem(UT_strdup(pName.c_str()));
+	      vec.addItem(UT_strdup(pName.c_str()));
 #else
-    		    vec.addItem((void*) pName);
+	    vec.addItem((void*) pName);
 #endif
         }
 	}
@@ -1540,15 +1461,13 @@ void PS_Graphics::_emit_IncludeResource(void)
     		char buf[128];
 
     		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
-   		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
 
     		// Instead of including the resources, we actually splat the fonts
     		// into the document.  This looks really slow... perhaps buffer line
     		// by line or in larger chunks the font data.
     		XAP_UnixFont * unixfont = psf->getUnixFont();
 
-			UT_DEBUGMSG(("_ps: Look at Enebdding font number %k name %s \n",k,unixfont->getFontKey()));
-
+		UT_DEBUGMSG(("ps: Look at Embedding font number %d name %s \n",k,unixfont->getFontKey()));
 		
     		if(unixfont->is_CJK_font())
 		      continue;
@@ -1764,7 +1683,7 @@ void PS_Graphics::_emit_SetColor(void)
   // used for any averaging
   unsigned char newclr;
 
-	char * old_locale = setlocale(LC_NUMERIC,"C");
+	const char * old_locale = setlocale(LC_NUMERIC,"C");
 	switch(m_cs)
 	{
 	case GR_Graphics::GR_COLORSPACE_COLOR:
@@ -1979,17 +1898,10 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 		// TODO : I get from a simple average or adding the YIQ
 		// TODO : weights.  Look at Netscape for something better.
 		
-#if 0
-		// We can use the Y channel from the YIQ spec, which weights
-		// the R, G, and B channels to be perceptually more balanced.
-		g_snprintf((char *) hexbuf, sizeof(hexbuf), "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (0.299) +
-															   (float) (*cursor++) * (float) (0.587) +
-															   (float) (*cursor++) * (float) (0.114) ) ) ));
-#endif
 		g_snprintf((char *) hexbuf, sizeof(hexbuf), "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (1) +
-															   (float) (*cursor++) * (float) (1) +
-															   (float) (*cursor++) * (float) (1) ) /
-															 (float) (3.0) )) );
+										    (float) (*cursor++) * (float) (1) +
+										    (float) (*cursor++) * (float) (1) ) /
+										  (float) (3.0) )) );
 
 		m_ps->writeBytes(hexbuf, 2);
 		if (col == 38)
@@ -2105,12 +2017,7 @@ void PS_Graphics::_emit_SetFont(PSFont *pFont)
   if (m_bStartPage && pFont && pFont->getIndex () < m_vecFontList.size())
     {
       char buf[1024];
-#if !defined(USE_XFT)
       g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());
-#else
-      //g_snprintf(buf, 1024, "/%s FF %d F\n", pFont->getUnixFont()->getPostscriptName().c_str(), pFont->getSize());
-      g_snprintf(buf, 1024, "/%s findfont %d scalefont setfont\n", pFont->getUnixFont()->getPostscriptName().c_str(), pFont->getSize());
-#endif
       m_ps->writeBytes(buf);
     }
 }
