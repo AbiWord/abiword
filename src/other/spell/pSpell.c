@@ -34,20 +34,24 @@ extern const char * xap_encoding_manager_get_language_iso_name(void);
 /**********************************************************************/
 static PspellManager *spell_manager = NULL;
 
+/* defined in ut_string.[cpp,h] */
+extern int unichar_to_utf8 (int c, unsigned char *outbuf);
+
 /*
  * Pspell's author tells me that we probably don't need these
  * Two methods because Pspell can detect and handle utf16
  * Character strings, so long as they're *double null terminated*
  */
-static void utf16_to_utf8(const unsigned short *word16, char * word8,
+static void utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
 			  int length)
 {
-  char *p;
+  unsigned char *pC = word8;
+  unsigned short *pS = (unsigned short*)word16;
   int i;
 
-  for (i = 0, p = word8; i < length; i++)
-    *p++ = (unsigned char)*word16++;
-  *p = '\0';
+  for (i = 0; i < length; i++, pS++)
+    pC += unichar_to_utf8(*pS, pC);
+  *pC++ = 0;
 }
 
 static void utf8_to_utf16(const char *word8, unsigned short *word16, 
@@ -56,6 +60,7 @@ static void utf8_to_utf16(const char *word8, unsigned short *word16,
   unsigned short *p;
   int i;
 
+  /* this should work since UTF8 is a subset of UTF16 */
   for(i = 0, p = word16; i < length; i++)
     *p++ = (unsigned short)*word8++;
   *p = 0;
@@ -98,10 +103,10 @@ void SpellCheckCleanup(void)
  */
 int SpellCheckNWord16(const unsigned short *word16, int length)
 {
-  char  word8[256];
+  unsigned char  word8[256];
 
   utf16_to_utf8(word16, word8, length);
-  return pspell_manager_check(spell_manager, word8);
+  return pspell_manager_check(spell_manager, (char*)word8);
 }
 
 int SpellCheckSuggestNWord16(const unsigned short *word16, 
@@ -110,11 +115,11 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
   PspellStringEmulation *suggestions = NULL;
   const PspellWordList *word_list = NULL;
   const char *new_word = NULL;
-  char word8[256];
+  unsigned char word8[256];
   int count = 0, i = 0;
 
   utf16_to_utf8(word16, word8, length);
-  word_list   = pspell_manager_suggest(spell_manager, word8);
+  word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
   suggestions = pspell_word_list_elements(word_list);
   count       = pspell_word_list_size(word_list);
 
