@@ -226,6 +226,48 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA)
 }
 
 /*!
+ * Return the topmost table in this structure. The one embedded in the 
+ * column.
+ */
+fp_TableContainer * fp_CellContainer::getTopmostTable() const
+{
+	fp_Container * pUp = getContainer();
+	fp_Container * pPrev = pUp;
+	while(pUp->getContainerType() != FP_CONTAINER_COLUMN)
+	{
+		pPrev = pUp;
+		pUp = pUp->getContainer();
+	}
+	if(pPrev->getContainerType() == FP_CONTAINER_TABLE)
+	{
+		return (fp_TableContainer *) pPrev;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return NULL;
+}
+
+/*!
+ * Return the x coordinate offset of this cell. 
+ * We need to know the line for situations where the cell is broken over
+ * different pages.
+ */
+UT_sint32 fp_CellContainer::getCellX(fp_Line * pLine) const
+{
+	return 0;
+}
+
+/*!
+ * Return the y coordinate offset of this cell. 
+ * We need to know the line for situations where the cell is broken over
+ * different pages.
+ */
+UT_sint32 fp_CellContainer::getCellY(fp_Line * pLine) const
+{
+	fp_TableContainer * pTab = getTopmostTable();
+	return pTab->getY();
+}
+
+/*!
  Draw container content
  \param pDA Draw arguments
  */
@@ -365,7 +407,6 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 			}
 			height = height + pReq.height;
 		}
-		UT_DEBUGMSG(("Sevior: line %d height  %d width %d \n",i,height,width));
 	}
 	if(pRequest)
 	{
@@ -742,12 +783,12 @@ void fp_TableContainer::setToAllocation(void)
 	setWidthInLayoutUnits(m_MyAllocation.width);
 	setHeightLayoutUnits(m_MyAllocation.height);
 	setMaxHeightInLayoutUnits(m_MyAllocation.height);
-	setYInLayoutUnits(m_MyAllocation.y);
-	setX(m_MyAllocation.x * SCALE_TO_SCREEN);
+//	setYInLayoutUnits(m_MyAllocation.y);
+//	setX(m_MyAllocation.x * SCALE_TO_SCREEN);
 	setWidth(m_MyAllocation.width * SCALE_TO_SCREEN);
 	setHeight(m_MyAllocation.height);
 	setMaxHeight(m_MyAllocation.height);
-	setY(m_MyAllocation.y);
+//	setY(m_MyAllocation.y);
 
 	fp_CellContainer * pCon = (fp_CellContainer *) getNthCon(0);
 	UT_DEBUGMSG(("SEVIOR: Doing set to Alloc pCon is %x \n",pCon));
@@ -783,6 +824,32 @@ void  fp_TableContainer::_size_request_init(void)
 
 void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 {
+    UT_ASSERT(pDA->pG == getGraphics());
+	UT_ASSERT(getPage());
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	if(getPage()->getDocLayout()->getView() == NULL)
+	{
+		return;
+	}
+    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
+        UT_sint32 xoffBegin = pDA->xoff - 1 + getX();
+        UT_sint32 yoffBegin = pDA->yoff - 1;
+        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() + 2;
+        UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
+
+		UT_RGBColor clrShowPara(127,127,127);
+		getGraphics()->setColor(clrShowPara);
+		UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
+		UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+    }
+
 }
 
 
@@ -827,14 +894,16 @@ void  fp_TableContainer::clearScreen(void)
 	}
 }
 
-void fp_TableContainer::draw(dg_DrawArgs* dg)
+void fp_TableContainer::draw(dg_DrawArgs* pDA)
 {
 	fp_Container * pCell = (fp_Container *) getNthCon(0);
 	while(pCell)
 	{
-		pCell->draw(dg);
+		pCell->draw(pDA);
 		pCell = (fp_Container *) pCell->getNext();
 	}
+    _drawBoundaries(pDA);
+
 }
 
 void  fp_TableContainer::_size_request_pass2(void)
@@ -1524,6 +1593,14 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 	m_MyAllocation.height = pAllocation->height;
 	m_MyAllocation.x = pAllocation->x;
 	m_MyAllocation.y = pAllocation->y;
+	if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN)
+	{
+//
+// This is the topmost container. All offsets are reltive to this. Come
+// drawing time the cells will be passed an offset relative to this.
+//
+		m_MyAllocation.y = 0;
+	}
 	UT_DEBUGMSG(("SEVIOR: Initial allocation height is %d \n", pAllocation->height));
 	
 	_size_allocate_init ();

@@ -87,6 +87,7 @@ class fl_HdrFtrShadow;
 class fp_Page;
 class PP_AttrProp;
 class GR_Graphics;
+class fp_TableContainer;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
@@ -116,6 +117,9 @@ public:
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
+	fp_TableContainer * getTopmostTable(void) const;
+	UT_sint32           getCellX(fp_Line * pLine) const; 
+	UT_sint32           getCellY(fp_Line * pLine) const; 
     UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
     UT_sint32           getRightAttach(void) const

@@ -705,6 +705,10 @@ fl_CellLayout::~fl_CellLayout()
 	while(pTC)
 	{
 		fp_CellContainer * pNext = (fp_CellContainer *) pTC->getNext();
+		if(pTC == (fp_CellContainer *) getLastContainer());
+		{
+			pNext = NULL;
+		}
 		delete pTC;
 		pTC = pNext;
 	}
@@ -960,23 +964,23 @@ void fl_CellLayout::_lookupProperties(void)
 	switch(dim)
 	{
 	case DIM_IN:
-		defaultOffset = "0.25in";
+		defaultOffset = "0.05in";
 		break;
 
 	case DIM_CM:
-		defaultOffset = "0.35cm";
+		defaultOffset = "0.127cm";
 		break;
 
 	case DIM_PI:
-		defaultOffset = "1.5pi";
+		defaultOffset = "0.3pi";
 		break;
 
 	case DIM_PT:
-		defaultOffset= "18.0pt";
+		defaultOffset= "3.6pt";
 		break;
 
 	case DIM_MM:
-		defaultOffset= "3.5mm";
+		defaultOffset= "1.27mm";
 		break;
 
 		// TODO: PX, and PERCENT
@@ -988,7 +992,7 @@ void fl_CellLayout::_lookupProperties(void)
 #endif
 	case DIM_none:
 	default:
-		defaultOffset = "0.25in";	// TODO: what to do with this.
+		defaultOffset = "0.05in";	// TODO: what to do with this.
 		break;
 
 	}

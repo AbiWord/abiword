@@ -429,15 +429,16 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 
 	fp_ContainerObject* pContainer = NULL;
 	int i = 0;
-	// Find first line that has its lower level below the desired Y
+	// Find first container that contains the point. First has its lower level below the desired Y
 	// position. Note that X-positions are completely ignored here.
-	do {
+	do 
+	{
 		pContainer = (fp_ContainerObject*) getNthCon(i++);
 	} while ((i < count)
 			 && (y > (pContainer->getY() + pContainer->getHeight())));
 	// Undo the postincrement.
 	i--;
-	// Now check if the position is actually between the found line
+	// Now check if the position is actually between the found container
 	// and the line before it (ignore check on the top-most line).
 	if (i > 0 && y < pContainer->getY())
 	{
@@ -752,7 +753,6 @@ void fp_Column::layout(void)
 			pContainer->clearScreen();
 		}
 		pContainer->setY(iY);
-
 #ifndef WITH_PANGO
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
 		iYLayoutUnits += iContainerHeightLayoutUnits;

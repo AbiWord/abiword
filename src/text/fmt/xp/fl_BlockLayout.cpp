@@ -1028,29 +1028,8 @@ void fl_BlockLayout::collapse(void)
 void fl_BlockLayout::purgeLayout(void)
 {
 	fp_Line* pLine = (fp_Line *) getFirstContainer();
-	//		   if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
-//		{
-//		  // Sevior.
-//		  // TODO. Investigate whether this causes a memory leak.
-//			  // This delete appears to clash with the line delete from the shadows
-//			  // Apparently the fact that both the first page shadow and this overall
-//		  // hdrftrSection are attached to the same container causes conflicts.
-//		  // Maybe we should implement a virtual header/footer container for the
-//		  // overall hdrftrSectionLayout. Anyway right now doing this prsvents
-//		  // a crash on closing windows.
-//		  //
-//				while (m_pFirstRun)
-//				{
-//				   fp_Run* pNext = m_pFirstRun->getNext();
-//				   delete m_pFirstRun;
-//				   m_pFirstRun = pNext;
-//			}
-//			return;
-//	}
-	UT_DEBUGMSG(("SEVIOR: Block %x First line of purge %x \n",this,pLine));
 	while (pLine)
 	{
-		UT_DEBUGMSG(("SEVIOR: purging line %x \n",pLine));
 		_purgeLine(pLine);
 		pLine = (fp_Line *) getFirstContainer();
 	}
