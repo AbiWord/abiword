@@ -53,12 +53,13 @@ LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)
 
-INSTALL	= install
+INSTALL		= install
 
-# Include the proper platform defs.  Add another if clause for
-# any new platforms you port to.
 
-# CYGWIN32 is WINNT; WINNT is CYGWIN32, etc.
+#### Include the proper platform defs.  Add another if clause for
+#### any new platforms you port to.
+
+# Defer CYGWIN32 to the normal NT build process
 ifeq ($(OS_NAME), CYGWIN32_NT)
 OS_NAME = WINNT
 endif
@@ -79,7 +80,13 @@ endif
 ifeq ($(OS_NAME), SunOS)
 include $(ABI_DEPTH)/config/platforms/sunos.mk
 endif
-# End of platform defs
+#### End of platform defs
+
+# Generic Unix includes for Gtk, as it moves about installation paths.
+# glib/gtk 1.1.X and up stick glibconfig.h in this directory.
+ifeq ($(ABI_FE), Unix)
+CFLAGS	+= -I/usr/local/lib/glib/include
+endif
 
 define MAKE_OBJDIR
 if test ! -d $(@D); then rm -rf $(@D); $(INSTALL) -d $(@D); fi
