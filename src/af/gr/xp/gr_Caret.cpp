@@ -23,8 +23,6 @@
 
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
-#include "ap_Frame.h"
-#include "ap_FrameData.h"
 #include "ut_sleep.h"
 
 #include "ut_debugmsg.h"
@@ -44,22 +42,21 @@
 // there's another draw that happens to take place before 10ms, then
 // your scheduled _blink gets cancelled.
 
-GR_Caret::GR_Caret(GR_Graphics * pG, XAP_Frame * pFrame)
+GR_Caret::GR_Caret(GR_Graphics * pG)
 	:   m_pClr(NULL),
 	    m_pG(pG),
 	    m_nDisableCount(1),
 	    m_bCursorBlink(true),
 	    m_bCursorIsOn(false),
 	    m_bPositionSet(false),
-		m_bRecursiveDraw(false),
-		m_bSplitCaret(false),
-		m_bCaret1OnScreen(false),
-		m_bCaret2OnScreen(false),
-		m_clrInsert(0,0,0),
-		m_clrOverwrite(255,0,0)
+	    m_bRecursiveDraw(false),
+	    m_bSplitCaret(false),
+	    m_bCaret1OnScreen(false),
+	    m_bCaret2OnScreen(false),
+	    m_clrInsert(0,0,0),
+	    m_clrOverwrite(255,0,0),
+	    m_insertMode (true)
 {
-
-	m_pListener = new GR_Caret_Listener(pFrame);
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_work, this, UT_WorkerFactory::TIMER, outMode, pG));
@@ -81,7 +78,6 @@ GR_Caret::~GR_Caret()
 	DELETEP(m_enabler);
 
 	xxx_UT_DEBUGMSG(("DOM: deleting caret %p\n", this));
-	DELETEP(m_pListener);
 }
 
 void GR_Caret::s_work(UT_Worker * _w)
@@ -263,7 +259,7 @@ void GR_Caret::_blink(bool bExplicit)
 				m_bSplitCaret = false;
 
 			//static const UT_RGBColor black (0,0,0);
-			if(static_cast<GR_Caret_Listener*>(getListener())->getInsertMode())
+			if(m_insertMode)
 				m_pG->setColor(m_clrInsert);
 			else
 				m_pG->setColor(m_clrOverwrite);
@@ -340,25 +336,4 @@ void GR_Caret::_blink(bool bExplicit)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-GR_Caret_Listener::GR_Caret_Listener(XAP_Frame * pFrame):
-	m_pFrame(pFrame),
-	m_bInsertMode(true)
-{
-	UT_ASSERT( m_pFrame );
-}
 
-
-
-bool GR_Caret_Listener::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
-{
-    if (m_pFrame && (mask & (AV_CHG_INSERTMODE)))
-    {
-		AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
-		if (pData) {
-			m_bInsertMode = pData->m_bInsertMode;
-			xxx_UT_DEBUGMSG(("GR_Caret_Listener: InsertMode %d\n", m_bInsertMode));
-			return true;
-		}
-    }
-	return false;
-}

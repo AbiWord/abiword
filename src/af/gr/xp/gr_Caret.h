@@ -26,31 +26,13 @@
 #include "ut_timer.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
-#include "xav_Listener.h"
 
 class GR_Graphics;
-class XAP_Frame;
-
-class GR_Caret_Listener : public AV_Listener
-{
-public:
-	GR_Caret_Listener(XAP_Frame * pFrame);
-	
-	virtual bool		       notify(AV_View * pView, const AV_ChangeMask mask);
-	virtual AV_ListenerType    getType(void) {return AV_LISTENER_CARET;}
-	bool                       getInsertMode() const {return m_bInsertMode;}
-	void                       setFrame(XAP_Frame * pFrame) {m_pFrame = pFrame;}
-
-private:
-	XAP_Frame *	m_pFrame;
-	bool        m_bInsertMode;
-};
-
 
 class ABI_EXPORT GR_Caret
 {
 public:
-	explicit GR_Caret(GR_Graphics * pG, XAP_Frame * pFrame);
+	explicit GR_Caret(GR_Graphics * pG);
 	~GR_Caret();
 	
 	void enable();
@@ -71,7 +53,8 @@ public:
 				   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0,
 				   bool bPointDirection = false, UT_RGBColor * pClr = NULL);
 
-	AV_Listener * getListener() const {return m_pListener;}
+	bool getInsertMode () {return m_insertMode;}
+	void setInsertMode (bool mode) {m_insertMode = mode;}
 	
 private:
 	static void s_work(UT_Worker * w);
@@ -112,8 +95,7 @@ private:
 	UT_RGBColor m_clrInsert;
 	UT_RGBColor m_clrOverwrite;
 	
-
-	AV_Listener * m_pListener;
+	bool m_insertMode;
 };
 
 class GR_CaretDisabler

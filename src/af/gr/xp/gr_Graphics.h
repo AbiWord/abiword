@@ -442,10 +442,10 @@ class ABI_EXPORT GR_Graphics
 							 return true;
 						 }
 
-	void              createCaret(XAP_Frame * pFrame)
+	void              createCaret()
 		{
 			UT_ASSERT(!m_pCaret);
-			m_pCaret = new GR_Caret(this, pFrame);
+			m_pCaret = new GR_Caret(this);
 		}
 	GR_Caret *        getCaret() { return m_pCaret; }
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;

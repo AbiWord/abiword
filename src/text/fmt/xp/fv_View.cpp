@@ -67,6 +67,9 @@
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 
+#include "ap_Frame.h"
+#include "ap_FrameData.h"
+
 #include "xap_EncodingManager.h"
 
 #include "pp_Revision.h"
@@ -95,6 +98,32 @@ public:
 
 	const XML_Char *	m_prop;
 	const XML_Char *	m_val;
+};
+
+class FV_Caret_Listener : public AV_Listener
+{
+public:
+  FV_Caret_Listener(XAP_Frame * pFrame, GR_Graphics * pGr) : m_pFrame (pFrame), m_pGraphics(pGr) {}
+  virtual ~FV_Caret_Listener (){}
+
+  virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
+  {
+    if (m_pFrame && (mask & (AV_CHG_INSERTMODE)))
+      {
+	AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
+	if (pData) {
+	  m_pGraphics->getCaret()->setInsertMode(pData->m_bInsertMode);
+	  return true;
+	}
+      }
+    return false;
+  }
+
+  virtual AV_ListenerType    getType(void) {return AV_LISTENER_CARET;}
+
+private:
+  XAP_Frame   * m_pFrame;
+  GR_Graphics * m_pGraphics;
 };
 
 /****************************************************************/
@@ -371,9 +400,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	if( pFrame )
 	  {
 	    pFrame->repopulateCombos();
-	    m_pG->createCaret(pFrame);
-		AV_ListenerId listID;
-		addListener(m_pG->getCaret()->getListener(), & listID);
+	    m_pG->createCaret();
+
+	    AV_ListenerId listID;
+	    m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
+	    addListener(m_caretListener, &listID);
 	  }
 }
 
@@ -383,6 +414,7 @@ FV_View::~FV_View()
 	m_pApp->getPrefs()->removeListener( _prefsListener, this );
 
 	DELETEP(m_pAutoScrollTimer);
+	DELETEP(m_caretListener);
 
 	FREEP(_m_findNextString);
 

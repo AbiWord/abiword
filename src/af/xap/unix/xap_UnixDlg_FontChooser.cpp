@@ -1026,6 +1026,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_currentFGColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
+		UT_DEBUGMSG(("%d %d %d\n", c.m_red, c.m_grn, c.m_blu));
 	}
 	else
 	{
@@ -1049,6 +1050,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_currentBGColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
+		UT_DEBUGMSG(("%d %d %d\n", c.m_red, c.m_grn, c.m_blu));
 	}
 	else
 	{

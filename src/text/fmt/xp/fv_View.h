@@ -63,6 +63,7 @@ class fp_PageSize;
 class AP_TopRuler;
 class AP_LeftRuler;
 class SpellChecker;
+class FV_Caret_Listener;
 
 typedef enum _FVDocPos
 {
@@ -740,6 +741,8 @@ private:
 	AP_TopRuler *       m_pTopRuler;
 	AP_LeftRuler *      m_pLeftRuler;
 	bool                m_bInFootnote;
+
+	FV_Caret_Listener * m_caretListener;
 };
 
 #endif /* FV_VIEW_H */
