@@ -54,7 +54,7 @@ protected:
 	void                _convertString2Accel(const char *s, guint &accel_key, GdkModifierType &ac_mods);
 
 	// static functions
-	static void         s_getStockPixmapFromName (const char *name, char *pixmap_name, int n);
+	static void         s_getStockPixmapFromName (int id, const char *name, char *pixmap_name, int n);
 	static void         s_onMenuItemSelect(GtkWidget * widget, gpointer data);
 	static void         s_onMenuItemDeselect(GtkWidget * widget, gpointer data);
 	static void         s_onInitMenu(GtkMenuItem * menuItem, gpointer data);

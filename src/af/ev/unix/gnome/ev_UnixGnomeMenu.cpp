@@ -40,8 +40,13 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 
-// hack to get the print-preview menu icon
+// get the print-preview menu icon
 #include "tb_menu_print_preview.xpm"
+#include "tb_menu_insert_graphic.xpm"
+
+// hack for international menus - goes against our XAP design
+// I don't like it, but I like non-gnome menus even more
+#include "../../../../wp/ap/xp/ap_Menu_Id.h"
 
 static UT_Bool s_init = UT_FALSE;
 
@@ -156,6 +161,7 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 				gchar **xpm_data;
 			} const entry_names [] = {
 				{ 16, 16, "Menu_AbiWord_PrintPreview", tb_menu_print_preview_xpm },
+				{ 16, 16, "Menu_AbiWord_InsertGraphic", tb_menu_insert_graphic_xpm },
 				{ 0, 0, NULL, NULL}
 			};
 
@@ -181,45 +187,76 @@ EV_UnixGnomeMenu::~EV_UnixGnomeMenu(void)
 
 /**********************************************************************/
 
+struct mapping {
+	int id;
+	char * gnome;
+};
+
 /**
  * This function tries to find the "gnome_stock" name of the pixmap
  * associate to the name of the menu entry.  Usually the name of the
  * gnome stock pixmap is only Menu_"name", but there are some exceptions
  * that are listed in the static exceptions var.
  */
-void EV_UnixGnomeMenu::s_getStockPixmapFromName (const char *name,
+void EV_UnixGnomeMenu::s_getStockPixmapFromName (int id, const char *name,
 												 char *pixmap_name,
 												 int n)
 {
 	char *true_name;
 	char *tmp;
 	int i = 0, j = 0;
-	static char *exceptions[][2] = {
-		{"_1 ", GNOME_STOCK_MENU_NEW},
-		{"_2 ", GNOME_STOCK_MENU_NEW},
-		{"_3 ", GNOME_STOCK_MENU_NEW},
-		{"_4 ", GNOME_STOCK_MENU_NEW},
-		{"E_xit", GNOME_STOCK_MENU_QUIT},
-		{"_Find...", GNOME_STOCK_MENU_SEARCH},
-		{"R_eplace...", GNOME_STOCK_MENU_SRCHRPL},
-		{"_Go To...", GNOME_STOCK_MENU_JUMP_TO},
-		{"_Spelling...", GNOME_STOCK_MENU_SPELLCHECK},
-		{"_Options...", GNOME_STOCK_MENU_PREF},
-		{"Date and _Time...", GNOME_STOCK_MENU_TIMER},
-		{"Page Set_up...", GNOME_STOCK_MENU_PRINT},
-		{"Print P_review", "Menu_AbiWord_PrintPreview"},
-		{"_About", GNOME_STOCK_MENU_ABOUT},
-		{NULL, NULL}
+
+	static struct mapping exceptions[] = {
+		{AP_MENU_ID_FILE_NEW, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_FILE_OPEN, GNOME_STOCK_MENU_OPEN},
+		{AP_MENU_ID_FILE_SAVE, GNOME_STOCK_MENU_SAVE},
+		{AP_MENU_ID_FILE_SAVEAS, GNOME_STOCK_MENU_SAVE_AS},
+		{AP_MENU_ID_FILE_CLOSE, GNOME_STOCK_MENU_CLOSE},
+		{AP_MENU_ID_FILE_PAGESETUP, GNOME_STOCK_MENU_PRINT},
+		{AP_MENU_ID_FILE_PRINT, GNOME_STOCK_MENU_PRINT},
+		{AP_MENU_ID_FILE_PRINT_PREVIEW, "Menu_AbiWord_PrintPreview"},
+		{AP_MENU_ID_FILE_EXIT, GNOME_STOCK_MENU_QUIT},
+
+		{AP_MENU_ID_FILE_RECENT_1, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_FILE_RECENT_2, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_FILE_RECENT_3, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_FILE_RECENT_4, GNOME_STOCK_MENU_NEW},
+
+		{AP_MENU_ID_EDIT_UNDO, GNOME_STOCK_MENU_UNDO},
+		{AP_MENU_ID_EDIT_REDO, GNOME_STOCK_MENU_REDO},
+		{AP_MENU_ID_EDIT_CUT, GNOME_STOCK_MENU_CUT},
+		{AP_MENU_ID_EDIT_COPY, GNOME_STOCK_MENU_COPY},
+		{AP_MENU_ID_EDIT_PASTE, GNOME_STOCK_MENU_PASTE},
+		{AP_MENU_ID_EDIT_FIND, GNOME_STOCK_MENU_SEARCH},
+		{AP_MENU_ID_EDIT_REPLACE, GNOME_STOCK_MENU_SRCHRPL},
+		{AP_MENU_ID_EDIT_GOTO, GNOME_STOCK_MENU_JUMP_TO},
+
+		{AP_MENU_ID_INSERT_DATETIME, GNOME_STOCK_MENU_TIMER},
+		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_InsertGraphic"},
+
+		{AP_MENU_ID_FMT_FONT, GNOME_STOCK_MENU_FONT},
+
+		{AP_MENU_ID_TOOLS_SPELL, GNOME_STOCK_MENU_SPELLCHECK},
+		{AP_MENU_ID_TOOLS_OPTIONS, GNOME_STOCK_MENU_PREF},
+
+		{AP_MENU_ID_WINDOW_1, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_WINDOW_2, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_WINDOW_3, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_WINDOW_4, GNOME_STOCK_MENU_NEW},
+
+		{AP_MENU_ID_HELP_ABOUT, GNOME_STOCK_MENU_ABOUT},
+		
+		{AP_MENU_ID__BOGUS2__, NULL}
 	};
 
 	do {
-		if (g_strncasecmp (name, exceptions[i][0], strlen (exceptions[i][0])) == 0) {
-			strncpy (pixmap_name, exceptions[i][1], n);
+		if (id == exceptions[i].id) {
+			strncpy (pixmap_name, exceptions[i].gnome, n);
 			return;
 		}
 		else
 			i++;
-	} while (exceptions[i][0] != NULL);
+	} while (exceptions[i].id != AP_MENU_ID__BOGUS2__);
 
 	true_name = g_new0 (char, n);
 
@@ -406,7 +443,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 					retval[i].type = GNOME_APP_UI_ITEM;
 					retval[i].pixmap_type = GNOME_APP_PIXMAP_STOCK;
 					retval[i].pixmap_info = g_new0 (char, 64);
-					s_getStockPixmapFromName (buf, (char *) retval[i].pixmap_info, 64);
+					s_getStockPixmapFromName (id, buf, (char *) retval[i].pixmap_info, 64);
 				}
 				else {
 					retval[i].type = GNOME_APP_UI_TOGGLEITEM;
