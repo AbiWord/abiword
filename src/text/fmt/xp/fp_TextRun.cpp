@@ -509,19 +509,10 @@ bool fp_TextRun::alwaysFits(void) const
  \param bForce Force a split at first opportunity (max width)
  \return True if split point was found in this Run, otherwise false.
 */
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
-#else
 bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
-#endif
 {
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-	UT_sint32 iRightWidth = getWidthInLayoutUnits();
-#else
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_sint32 iRightWidth = getWidth();
-#endif
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 	if(pCharWidths == NULL)
 	{
@@ -605,11 +596,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 
 	if (
 		(si.iOffset == -1)
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		|| (si.iLeftWidth == getWidthInLayoutUnits())
-#else
 		|| (si.iLeftWidth == getWidth())
-#endif
 		)
 	{
 		// there were no split points which fit.

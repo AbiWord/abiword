@@ -92,7 +92,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			m_pLastRunToKeep = NULL;
 			
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			m_iMaxLineWidth = pLine->getMaxWidthInLayoutUnits();
+			m_iMaxLineWidth = pLine->getMaxWidth();
 #else
 			m_iMaxLineWidth = pLine->getMaxWidth();
 #endif
@@ -155,7 +155,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 					break;
 				
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				m_iWorkingLineWidth += pCurrentRun->getWidthInLayoutUnits();
+				m_iWorkingLineWidth += pCurrentRun->getWidth();
 #else
 				m_iWorkingLineWidth += pCurrentRun->getWidth();
 #endif
@@ -234,7 +234,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 					FL_WHICH_TABSTOP eUseTabStop;
 					
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-					m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
+					m_iWorkingLineWidth -= pCurrentRun->getWidth();
 #else
 					m_iWorkingLineWidth -= pCurrentRun->getWidth();
 #endif
@@ -337,7 +337,7 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 		if(!pCurrentRun->doesContainNonBlankData())
 		{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iTrailingBlank += pCurrentRun->getWidthInLayoutUnits();
+			iTrailingBlank += pCurrentRun->getWidth();
 #else
 			iTrailingBlank += pCurrentRun->getWidth();
 #endif
@@ -345,7 +345,7 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 		else
 		{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iTrailingBlank += pCurrentRun->findTrailingSpaceDistanceInLayoutUnits();
+			iTrailingBlank += pCurrentRun->findTrailingSpaceDistance();
 #else
 			iTrailingBlank += pCurrentRun->findTrailingSpaceDistance();
 #endif
@@ -371,8 +371,8 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 
 	// Set m_iWorkingLineWidth to length including this run.
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	m_iWorkingLineWidth += pCurrentRun->findTrailingSpaceDistanceInLayoutUnits();
-	m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
+	m_iWorkingLineWidth += pCurrentRun->findTrailingSpaceDistance();
+	m_iWorkingLineWidth -= pCurrentRun->getWidth();
 #else
 	m_iWorkingLineWidth += pCurrentRun->findTrailingSpaceDistance();
 	m_iWorkingLineWidth -= pCurrentRun->getWidth();
@@ -384,7 +384,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 
 	bool bFoundBreakAfter = false;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
+	bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
 #else
 	bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
 #endif
@@ -437,7 +437,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 				  something which will fit.
 				*/
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				bFoundSplit = pRunLookingBackwards->findMaxLeftFitSplitPointInLayoutUnits(pRunLookingBackwards->getWidthInLayoutUnits(), splitInfo);
+				bFoundSplit = pRunLookingBackwards->findMaxLeftFitSplitPoint(pRunLookingBackwards->getWidth(), splitInfo);
 #else
 				bFoundSplit = pRunLookingBackwards->findMaxLeftFitSplitPoint(pRunLookingBackwards->getWidth(), splitInfo);
 #endif
@@ -464,7 +464,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 		  to force a split of the Offending Run.
 		*/
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, true);
+		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, true);
 #else
 		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, true);
 #endif
@@ -549,7 +549,7 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 //							pRunToSplit->recalcWidth();
 //							pOtherHalfOfSplitRun->recalcWidth();
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_ASSERT((UT_sint32)pRunToSplit->getWidthInLayoutUnits() == splitInfo.iLeftWidth);
+	UT_ASSERT((UT_sint32)pRunToSplit->getWidth() == splitInfo.iLeftWidth);
 #else
 	UT_ASSERT((UT_sint32)pRunToSplit->getWidth() == splitInfo.iLeftWidth);
 #endif

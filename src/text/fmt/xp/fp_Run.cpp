@@ -235,21 +235,12 @@ void fp_Run::lookupProperties()
  This implementation simply returns false, forcing line breaker to
  look for a split point in previous Runs.
 */
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-bool fp_Run::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */,
-												   fp_RunSplitInfo& /* si */,
-												   bool /* bForce */)
-{
-	return false;
-}
-#else
 bool fp_Run::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */,
 									  fp_RunSplitInfo& /* si */,
 									  bool /* bForce */)
 {
 	return false;
 }
-#endif
 
 bool fp_Run::hasLayoutProperties(void) const
 {
