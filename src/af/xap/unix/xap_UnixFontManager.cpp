@@ -199,6 +199,8 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 	// NOTE this adds more time to program startup and steals it from the
 	// NOTE first printing
 
+	// for the above reason (speed) we don't do this now
+#if 0	
 	AP_UnixFont ** allfonts = getAllFonts();
 	for (UT_uint32 k = 0; k < getCount(); k++)
 	{
@@ -207,7 +209,8 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			return UT_FALSE;
 	}
 	DELETEP(allfonts);
-
+#endif
+	
 	return UT_TRUE;
 }
 
