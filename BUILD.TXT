@@ -143,40 +143,148 @@ macos.xml if you don't have version 6.0 of CodeWarrior).
 It will work with MPW 3.5 GM. Currently Metrowerks MPW compilers are not supported.
 
 
-Build Instructions -- MacOS X
------------------------------
+Build Instructions -- darwin: MacOS X | XDarwin
+-----------------------------------------------
 
-Only MacOS X final is supported. MacOS Public Beta is no longer.
-Two options to build Abiword. With make or with autoconf.
+There are two ways to build AbiWord for MacOS X:
 
-*Make
+(1) The native port, which uses the Carbon API to provide a delicious
+    Aqua interface. No Mac enthusiast should put up with anything less.
+    (Only MacOS X final is supported. MacOS Public Beta is no longer...)
 
-NOTE: this is no longer the recommended process for MacOS X. See autoconf.
-Building on MacOS X is similar to the other UNIX platforms. We rely on the
-GNU command line tools like zsh, sed, make, etc. that are provided on 
-MacOS X. Currently this will be the system to build a Carbon version
-of AbiWord under MacOS X. Currently only Mach-O binary format is 
-supported (like on NeXTStep). 
+(2) The UNIX build. Although this lacks the silky, sexy finish of the
+    native port, it has the undeniable advantage that it works. If your
+    X server is set up rootless then the burden of interface is light.
 
-You'll need to check out the following extra modules from abi CVS:
--libpng
--libiconv
-They'll get build by the make system.
+Whichever you're building, or trying to, here are a few guidelines:
 
-*autoconf
+(a) There are two options to build Abiword - with make, or with
+    configure then make. Use the latter. The former is no longer the
+    recommended process for MacOS X (none of the developers use it with
+    MacOS X, so you'd be on your own).
 
-Prior to build Abiword with the autoconf build system, you need to compile
-and install the following libraries:
--libpng (from the official tarball since abi CVS version will not work)
-	<http://libpng.sourceforge.net/>
--libiconv (from the official tarball since abi CVS version will not work)
-	<ftp://ftp.ilog.fr/pub/Users/haible/gnu/libiconv-1.6.1.tar.gz>
-Then you need to build the following peer libraries (from abi CVS)
--wv
--psiconv
--expat
-If you use code from CVS, you need to get automake 1.4. (version 1.5 has
-bugs that makes it incompatible with our system.
+(b) If building from CVS:
+    MacOS X ships with autoconf (2.13). You will also need automake.
+
+    * * * WARNING * * *
+
+    Don't use automake-1.5, cos it don't work. Any of the automake-1.4
+    releases should be fine.
+
+(c) It's probably safe to ignore this next bit of advice, but come back
+    to it if you experience mysterious problems...
+
+    Learn to be very paranoid about /bin/sh. Paranoia can be healthy.
+    darwin ships with a /bin/sh which is zsh, which behaves like sh
+    99.99% of the time - it is, of course, the other 0.01% that causes
+    problems.
+
+    I strongly recommend that you install bash. Rumour has it that even
+    Apple wants to use bash. The compile options are a little
+    intimidating, I know, but I never do it the same way twice and I've
+    never had any problems. Put your faith in GNU...
+
+    Once you've got bash installed, in for example /oss/bin/bash, add
+    the following lines to your .bashrc:
+
+	export SHELL=/oss/bin/bash
+	export CONFIG_SHELL=/oss/bin/bash
+
+    (replacing /oss/bin/bash with whatever path you've used) and start
+    bash.
+
+    When running build scripts like autogen.sh or configure, use bash
+    explicitly:
+
+	[ENVIRONMENT] /oss/bin/bash autogen.sh
+	[ENVIRONMENT] /oss/bin/bash configure [OPTIONS]
+
+    Note to experts: if the configure script has been created with
+    autoconf >= 2.50, it may be worth adding SHELL=/oss/bin/bash to
+    [ENVIRONMENT], e.g.:
+
+	PLATFORM=NetBSD /oss/bin/bash configure SHELL=/oss/bin/bash ...
+
+    If you think you know better than Apple (which, let's face it, in
+    this instance you probably do) you can save yourself all of this
+    stuff and bother by replacing /bin/sh with bash - just don't expect
+    any sympathy from me if Software Update complains about it.
+
+(d) Next, and no one said this was going to be easy, there are a few
+    libraries you will need to install before you start on AbiWord.
+
+    If you prefer, you can get them precompiled, either via fink or
+    GNU-Darwin or MacOSX-forked.net or one of their cousins. (There's
+    a new one every day.) If you're only interested in AbiWord, then
+    fjf's Crazy Wormhole collection may be better:
+
+	http://www.crazy-wormhole.com/
+
+    WARNING: Use Crazy Wormhole *only* if you plan to make a bundle.
+
+    Most recent releases of libraries are darwin-friendly, though there
+    are exceptions. Adding -no-cpp-precomp to CPPFLAGS solves a few
+    problems here and there.
+
+    You require libpng and libiconv, and it's best to get the latest
+    releases. An optional extra is libjpeg. For the XDarwin build you
+    require gettext, glib and gtk+ as well.
+
+    You will also need either expat or libxml2. (I think there's a
+    version of expat burrowed deep inside the MacOS X frameworks, but I
+    don't know how to use it.) expat gets distributed with AbiWord, but
+    I [fjf] prefer libxml2 because it has HTML support (even if AbiWord
+    can't quite use it yet). libxml2 is released frequently; make sure
+    to get a recent release.
+
+	libpng		http://www.libpng.org/pub/png/libpng.html
+	libiconv	ftp://ftp.gnu.org/pub/gnu/libiconv/
+	gettext		ftp://ftp.gnu.org/pub/gnu/gettext/
+	glib & gtk+	http://www.gtk.org/
+	expat		http://sourceforge.net/projects/expat
+	libxml2		ftp://ftp.gnome.org/pub/GNOME/stable/sources/libxml/
+
+Building AbiWord
+
+If you are building from CVS, you must first run autogen.sh:
+
+	./autogen.sh
+
+or, if you are taking my paranoid advice from (c) above:
+
+	/oss/bin/bash autogen.sh
+
+Then, or otherwise, run configure. To build for Carbon & Aqua:
+
+	./configure --prefix=/Users/me/wherever CPPFLAGS="-no-cpp-precomp"
+
+or '/oss/bin/bash configure etc.'. To build for XDarwin:
+
+	PLATFORM=NetBSD ./configure --prefix=/Users/me/wherever CPPFLAGS="-no-cpp-precomp"
+
+and similarly. Depending on where you installed the various libraries,
+you will probably need to add these to the search paths:
+
+	./configure CPPFLAGS="-no-cpp-precomp -I/Users/me/wherever/include" LDFLAGS="-L/Users/me/wherever/lib"
+
+and so on and so forth. It looks horribly messy, but it's not so bad once
+you get to know it. Kinda like mature cheddar. Or mature whisky, if you
+prefer. [Stop being silly. - Ed.]
+
+Finally, or almost so, and you thought we'd never get there, type
+
+	make
+
+(or 'make SHELL=/oss/bin/bash'), sit back with a wedge and a dram, and
+contemplate with pleasure the owning of a Mac.
+
+On successful completion of the make process (it has been known), finish
+with:
+
+	make install
+
+If you're building for XDarwin, and you don't want to build a bundle,
+then you're done. Enjoy!
 
 =======================================================================================
 FAQ
