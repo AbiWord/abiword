@@ -391,7 +391,7 @@ float GR_CocoaGraphics::_measureUnRemappedCharCached(const UT_UCSChar c)
 	
 	\return width in Layout Unit
  */
-UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	// measureString() could be defined in terms of measureUnRemappedChar()
 	// but its not (for presumed performance reasons).  Also, a difference

@@ -48,7 +48,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void        clearFont(void) { m_pFont = NULL;}
 	virtual UT_uint32	getFontHeight();
 
-	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
+	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
 	virtual void getCoverage(UT_Vector& coverage);
 
 	virtual void		setColor(const UT_RGBColor& clr);
