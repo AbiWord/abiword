@@ -34,6 +34,7 @@
 #include "ut_string.h"
 
 #include "xap_App.h"
+#include "xap_CocoaAppController.h"
 #include "xap_CocoaModule.h"
 #include "xap_CocoaPlugin.h"
 #include "xap_ModuleManager.h"
@@ -42,21 +43,14 @@ XAP_CocoaModule::XAP_CocoaModule () :
 	m_szname("??"),
 	m_module_path("??"),
 	m_module(0),
-	m_cocoa_plugin(0),
-	m_bLoaded(false),
-	m_bBundle(false),
-	m_bCocoa(false)
+	m_bLoaded(false)
 {
 	// 
 }
 
 XAP_CocoaModule::~XAP_CocoaModule (void)
 {
-	if (m_cocoa_plugin)
-	{
-		XAP_CocoaPlugin * cocoa_plugin = (XAP_CocoaPlugin *) m_cocoa_plugin;
-		[cocoa_plugin release];
-	}
+	// 
 }
 
 bool XAP_CocoaModule::getModuleName (char ** dest) const
@@ -81,45 +75,17 @@ bool XAP_CocoaModule::load (const char * name)
 
 	m_module_path = name;
 
-	XAP_CocoaPlugin * cocoa_plugin = [[XAP_CocoaPlugin alloc] initWithPath:[NSString stringWithUTF8String:(m_module_path.utf8_str())]];
-	if (!cocoa_plugin)
-		return false;
-
-	if (m_module_path.byteLength() > 4)
-		if (strcmp(m_module_path.utf8_str() + m_module_path.byteLength() - 4, ".Abi") == 0)
-		{
-			/* This is a bundle-plugin. [TODO]
-			 */
-			m_bLoaded = false;
-			m_bBundle = true;
-			m_bCocoa  = true;
-
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
-			return false;
-		}
-
 	if (m_module_path.byteLength() > 7)
 		if (strcmp(m_module_path.utf8_str() + m_module_path.byteLength() - 7, ".so-abi") == 0)
 		{
 			/* This is an ordinary plugin.
 			 */
 			m_bLoaded = false;
-			m_bBundle = false;
-			m_bCocoa  = false; // ??
 
 			if (m_module = g_module_open(name, (GModuleFlags) 0))
 			{
 				m_bLoaded = true;
 				UT_DEBUGMSG(("FJF: plugin loaded: \"%s\"\n", m_module_path.utf8_str()));
-
-				int (*plugin_cocoa_func) (XAP_CocoaPlugin * cocoa_plugin);
-
-				if (resolveSymbol("abi_plugin_cocoa", reinterpret_cast<void **>(&plugin_cocoa_func)))
-				{
-					m_bCocoa = true;
-					plugin_cocoa_func(cocoa_plugin);
-					m_cocoa_plugin = (void *) cocoa_plugin;
-				}
 
 				UT_UTF8String config_path(m_module_path.utf8_str(), m_module_path.byteLength() - 6);
 
@@ -136,11 +102,6 @@ bool XAP_CocoaModule::load (const char * name)
 					{
 						plugin_preconfigure_func(config_path.utf8_str());
 					}
-
-					if (m_bCocoa)
-					{
-						[cocoa_plugin configure:[NSString stringWithUTF8String:(config_path.utf8_str())]];
-					}
 				}
 			}
 #if 0
@@ -150,10 +111,6 @@ bool XAP_CocoaModule::load (const char * name)
 			}
 #endif
 		}
-
-	if (!m_cocoa_plugin)
-		[cocoa_plugin release];
-
 	return m_bLoaded;
 }
 
@@ -161,15 +118,6 @@ bool XAP_CocoaModule::unload (void)
 {
 	if (!m_bLoaded || !m_module)
 		return false;
-
-	if (m_bCocoa) // mustn't unload a plugin which has ObjC code
-		return false;
-
-	if (m_bBundle)
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // bundles are Cocoa - see above
-		return false;
-	}
 
 	if (g_module_close((GModule *) m_module))
 	{
@@ -188,17 +136,7 @@ bool XAP_CocoaModule::resolveSymbol (const char * symbol_name, void ** symbol)
 	if (!symbol_name || !symbol)
 		return false;
 
-	bool bResolved = false;
-
-	if (m_bBundle)
-	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-	}
-	else
-	{
-		bResolved = (g_module_symbol((GModule *) m_module, symbol_name, symbol) ? true : false);
-	}
-	return bResolved;
+	return (g_module_symbol((GModule *) m_module, symbol_name, symbol) ? true : false);
 }
 
 bool XAP_CocoaModule::getErrorMsg (char ** dest) const
@@ -211,16 +149,8 @@ bool XAP_CocoaModule::getErrorMsg (char ** dest) const
 
 	bool bError = false;
 
-	if (m_bBundle)
-	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-	}
-	else
-	{
-		*dest = (char *) UT_strdup(g_module_error());
-		bError = (*dest ? true : false);
-	}
-	return bError;
+	*dest = (char *) UT_strdup(g_module_error());
+	return (*dest ? true : false);
 }
 
 /* return > 0 for directory entries ending in ".Abi"
@@ -384,6 +314,8 @@ void XAP_CocoaModule::loadAllPlugins ()
 					continue;
 				}
 
+			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
 			UT_UTF8String plugin_path;
 			while (n--)
 				{
@@ -391,16 +323,30 @@ void XAP_CocoaModule::loadAllPlugins ()
 					plugin_path += '/';
 					plugin_path += namelist[n]->d_name;
 
-					UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.utf8_str()));
-					if (XAP_ModuleManager::instance().loadModule (plugin_path.utf8_str()))
+					UT_DEBUGMSG(("FJF: loading plugin %s\n", plugin_path.utf8_str()));
+
+					bool bLoaded = false;
+
+					if (plugin_path.length() > 4)
+						if (strcmp(plugin_path.utf8_str() + plugin_path.length() - 4, ".Abi") == 0)
+							{
+								NSString * path = [NSString stringWithUTF8String:(plugin_path.utf8_str())];
+								XAP_CocoaPlugin * plugin = [pController loadPlugin:path];
+								bLoaded = [[plugin delegate] pluginActivate] ? true : false;
+							}
+					if (plugin_path.length() > 7)
+						if (strcmp(plugin_path.utf8_str() + plugin_path.length() - 7, ".so-abi") == 0)
+							{
+								bLoaded = XAP_ModuleManager::instance().loadModule (plugin_path.utf8_str());
+							}
+					if (bLoaded)
 						{
-							UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
+							UT_DEBUGMSG(("FJF: loaded plug-in: %s\n", namelist[n]->d_name));
 						}
 					else
 						{
-							UT_DEBUGMSG(("DOM: didn't load plug-in: %s\n", namelist[n]->d_name));
+							UT_DEBUGMSG(("FJF: didn't load plug-in: %s\n", namelist[n]->d_name));
 						}
-
 					free (namelist[n]);
 				}
 			free (namelist);
