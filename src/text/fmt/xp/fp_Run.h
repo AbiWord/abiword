@@ -620,7 +620,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);
-	
+	virtual UT_UCSChar *    getValue(void) const { return (UT_UCSChar *) m_sFieldValue;}
 	virtual UT_uint32		needsFrequentUpdates() {return 0;}
 	
 protected:

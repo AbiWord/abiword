@@ -662,6 +662,7 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 //
 // Look if we have a pending expose left over.
 //
+	xxx_UT_DEBUGMSG(("SEVIOR: Starting doRepaint \n"));
 	while(isSpawnedRedraw())
 	{
 		UT_usleep(100);
@@ -671,7 +672,7 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 //
 	setDontRedraw(true);
 //
-// Gte a lock on the expose rectangle
+// Get a lock on the expose rectangle
 //
 	while(isExposedAreaAccessed())
 	{
@@ -709,6 +710,7 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 // Allow the repainter to paint
 //
 	setDontRedraw(false);
+	xxx_UT_DEBUGMSG(("SEVIOR: Finished doRepaint \n"));
 //
 // OK this event is handled.
 //

@@ -78,6 +78,8 @@ protected:
 	void				_writeImageInRTF(const PX_ChangeRecord_Object * pcro);
 	void                _writeBookmark(const PX_ChangeRecord_Object * pcro);
     void                _writeFieldPreamble(const PP_AttrProp * pSpanAP);
+	const UT_UCSChar *  _getFieldValue(void);
+	void                _writeFieldTrailer(void);
  private:
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
@@ -93,6 +95,7 @@ protected:
 	UT_Wctomb		m_wctomb;
 	PL_StruxDocHandle       m_sdh;
 	UT_uint32           m_currID;
+	PT_DocPosition      m_posDoc;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

@@ -6557,7 +6557,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 	propsArray [2] = NULL;
 	
 	// TODO get text props to apply them to the field
-	ok = FlushStoredChars ();
+	ok = FlushStoredChars (true);
 	UT_ASSERT (ok);
 	getDoc()->appendObject (PTO_Field, propsArray);
 	return ok;

@@ -410,7 +410,7 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		GR_Graphics * pG = pView->getGraphics();
 		pG->doRepaint(&rClip);
 	}
-	return 0;
+	return 0; 
 }
 
 /*!
@@ -453,7 +453,7 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 //
 		pG->setExposePending(false);
 		pG->setExposedAreaAccessed(false);
-//			UT_DEBUGMSG(("Painting area:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
+		xxx_UT_DEBUGMSG(("Painting area:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
 		xxx_UT_DEBUGMSG(("SEVIOR: Repaint now \n"));
 		pV->draw(&localCopy);
 	}

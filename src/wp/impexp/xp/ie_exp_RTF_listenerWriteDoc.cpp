@@ -45,6 +45,9 @@
 #include "px_CR_Strux.h"
 #include "fl_AutoNum.h"
 #include "fl_AutoLists.h"
+#include "fl_BlockLayout.h"
+#include "fp_Run.h"
+#include "fl_Layout.h"
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
@@ -320,6 +323,7 @@ s_RTF_ListenerWriteDoc::~s_RTF_ListenerWriteDoc()
 bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
+	m_posDoc = pcr->getPosition();
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
@@ -393,6 +397,10 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 	}
 }
 
+/*!
+ * This method writes out the all the boiler plate needed before every field
+ * definition.
+ */
 void s_RTF_ListenerWriteDoc::_writeFieldPreamble(const PP_AttrProp * pSpanAP)
 {
 	const PP_AttrProp * pBlockAP = NULL;
@@ -409,6 +417,70 @@ void s_RTF_ListenerWriteDoc::_writeFieldPreamble(const PP_AttrProp * pSpanAP)
 	m_pie->_rtf_open_brace();
 	m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 	m_pie->write(" ");
+}
+
+
+/*!
+ * This method writes out the current field value and closes all the braces.
+ */
+void s_RTF_ListenerWriteDoc::_writeFieldTrailer(void)
+{
+	const UT_UCSChar * szFieldValue = _getFieldValue();
+	if(szFieldValue == NULL)
+	{
+		m_pie->_rtf_close_brace();
+		return;
+	}
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("fldrslt");
+	m_pie->write(" ");
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("noproof");
+	m_pie->write(" ");
+	UT_uint32 len = UT_UCS_strlen(szFieldValue);
+	_outputData(szFieldValue,len);
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+}
+	
+/*!
+ * This method returns the field value at the current document location.
+ * If there is not a field at the current document location return NULL.
+ */
+const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
+{
+//
+// Grab the first format handle in the PieceTable and turn it into a layout class.
+// Check that is it a block.
+//
+	PL_StruxFmtHandle sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
+	fl_Layout * pL = (fl_Layout *) sfh;
+	if(pL->getType() != PTX_Block)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
+	}
+	fl_BlockLayout* pBL = (fl_BlockLayout *) pL;
+	bool bDirection;
+	UT_sint32 x, y, x2, y2, height;
+	fp_Run * pRun = pBL->findPointCoords(m_posDoc,false,x,y,x2,y2,height,bDirection);
+//
+// Check the run to make sure it is a field.
+//
+	while(pRun && pRun->getType() == FPRUN_FMTMARK)
+	{
+		pRun = pRun->getNext();
+	}
+	if((pRun== NULL) || pRun->getType() != FPRUN_FIELD )
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
+	}
+//
+// Now get the value of this field
+//
+	return ((fp_FieldRun *) pRun)->getValue();
 }
 
 void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuffix,
@@ -433,7 +505,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write(" MERGEFORMAT ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"time") == 0)
@@ -444,11 +516,15 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write(" MERGEFORMAT ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_ref") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifield-page_ref"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 UT_DEBUGMSG(("SEVIOR: Page ref field here \n"));
 			 return;
 		 }
@@ -467,12 +543,12 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"date") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("DATE  \\");
-			 m_pie->_rtf_keyword("*");
-			 m_pie->write(" MERGEFORMAT ");
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" TIME \\@ MMMM d, yyyy ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_mmddyy") == 0)
@@ -483,7 +559,18 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write(" dddd, MMMM dd, yyyy");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"date_ddmmyy") == 0)
+		 {
+			 _writeFieldPreamble(pSpanAP);
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" dddd, MMMM dd, yyyy");
              m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_mdy") == 0)
@@ -494,7 +581,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write(" MMM dd, yyy");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_mthdy") == 0)
@@ -505,7 +592,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write(" MMMM dd, yy");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_dfl") == 0)
@@ -524,8 +611,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write(" dddd");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
-			 return;
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_doy") == 0)
@@ -556,12 +642,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write(" MERGEFORMAT ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-
-             m_pie->_rtf_open_brace();
-			 m_pie->_rtf_keyword("fldrslt");
-			 m_pie->write(" ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"char_count") == 0)
@@ -572,7 +653,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
   			 m_pie->write(" MERGEFORMAT ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"line_count") == 0)
@@ -631,6 +712,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
 
+	m_posDoc = pcrx->getPosition();
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
@@ -922,6 +1004,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	else
 		m_pie->_rtf_keyword("ltrsect");
 #endif
+
 }
 
 //////////////////////////////////////////////////////////////////
