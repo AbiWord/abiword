@@ -35,6 +35,7 @@ protected:
 	virtual void		showProgressStart(XAP_Frame *pFrame, CURL *ch);
 	virtual	void		showProgressStop(XAP_Frame *pFrame, CURL *ch);
 
+	virtual UT_sint32	execCommand(const char *szCommand) = 0;
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload) = 0;
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;
 	virtual UT_sint32	installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm) = 0;

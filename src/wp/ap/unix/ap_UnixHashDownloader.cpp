@@ -23,20 +23,25 @@
 #include <sys/times.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <errno.h>
 
 #include "zlib.h"
 
-#include "xap_App.h"
 #include "ut_string_class.h"
-
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_rand.h"
 
+#include "xap_App.h"
 #include "xap_Frame.h"
+
 #include "ap_UnixHashDownloader.h"
 
 #include "ispell_checker.h"
+
+
+extern char **environ;
 
 
 AP_UnixHashDownloader::AP_UnixHashDownloader()
@@ -56,21 +61,29 @@ AP_UnixHashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *end
 	FILE *fp;
 	gzFile gzfp;
 	struct stat statBuf;
-	
+
+#ifdef CURLHASH_NO_CACHING_OF_LIST
+	forceDownload = 1;
+#endif
+
 	sprintf(szFName, "abispell-list.%s.xml.gz", endianess);
 	sprintf(szURL, "http://www.abisource.com/~fjf/%s", szFName);
 	sprintf(szPath, "%s/%s", XAP_App::getApp()->getUserPrivateDirectory(), szFName);
 	
 
+#ifdef CURLHASH_NEVER_UPDATE_LIST
+	if (stat(szPath, &statBuf)) {
+#else
 	if (forceDownload || stat(szPath, &statBuf) || statBuf.st_mtime + dictionaryListMaxAge < time(NULL)) {
+#endif	
 		if (fileData.data)
 			free(fileData.data);
 		fileData.data = NULL;
 		if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
 			if (dlg_askFirstTryFailed(pFrame))
 				if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
-					pFrame->showMessageBox("Download of the dictionary-list failed!\n"
-							, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+					pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictlistDLFail
+							, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 					return(-1);
 				}
 		}
@@ -82,7 +95,6 @@ AP_UnixHashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *end
 		fwrite(fileData.data, fileData.s, 1, fp);
 		fclose(fp);
 	}
-	
 	
 	if (!(gzfp = gzopen(szPath, "rb"))) {
 		perror("downloadDictionaryList(): failed to open compressed dictionarylist");
@@ -119,10 +131,9 @@ AP_UnixHashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *end
 UT_sint32
 AP_UnixHashDownloader::dlg_askInstallSystemwide(XAP_Frame *pFrame)
 {
-	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(
-				"You seem to have permission to install the dictionary system-wide.\n"
-				"Would you like to do that?"
-				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES))
+	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_AskInstallGlobal
+				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES
+				, pFrame->getApp()->getAbiSuiteLibDir()))
 		return(0);
 
 	return(1);
@@ -139,18 +150,48 @@ AP_UnixHashDownloader::isRoot()
 }
 
 
+UT_sint32
+AP_UnixHashDownloader::execCommand(const char *szCommand)
+{
+	int pid, status;
+	char *argv[10];
+
+	if (!szCommand)
+		return -1;
+		
+	if ((pid = fork()) == -1)
+		return -1;
+		
+	if (pid == 0) {
+		argv[0] = "sh";
+		argv[1] = "-c";
+		argv[2] = (char *)szCommand;
+		argv[3] = 0;
+		execve("/bin/sh", argv, environ);
+		exit(127);
+	}
+	do {
+		if (waitpid(pid, &status, 0) == -1) {
+			if (errno != EINTR)
+				return -1;
+		} else
+			return status;
+	} while(1);
+}
+
+
 XAP_HashDownloader::tPkgType 
 AP_UnixHashDownloader::wantedPackageType(XAP_Frame *pFrame)
 {
 	installSystemwide = 0;
 	
-#ifdef LET_ROOT_INSTALL_SYSTEMWIDE
-#ifdef IS_RUNNING_ON_RPM_SYSTEM
+#ifdef CURLHASH_INSTALL_SYSTEMWIDE
+#ifdef CURLHASH_USE_RPM
 	if (isRoot() && dlg_askInstallSystemwide(pFrame)) {
 		installSystemwide = 1;
 		return(pkgType_RPM);
 	}
-#endif /* IS_RUNNING_ON_RPM_SYSTEM */
+#endif /* CURLHASH_USE_RPM */
 
 	if (isRoot() && dlg_askInstallSystemwide(pFrame))
 		installSystemwide = 1;
@@ -170,7 +211,7 @@ AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, co
 	
 	if (pkgType == pkgType_RPM) {
 		sprintf(buff, "rpm -Uvh %s", szFName);
-		ret = mySystem(buff);
+		ret = execCommand(buff);
 	}
 
 
@@ -193,19 +234,19 @@ AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, co
 		sprintf(tmpDir, "/tmp/abiword_abispell-install-%d/", ret);
 		
 		sprintf(buff, "mkdir -p %s", tmpDir);
-		if ((ret = mySystem(buff))) {
+		if ((ret = execCommand(buff))) {
 			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while making tmp directory\n");
 			return(ret);
 		}
 		
 		sprintf(buff, "cd %s; gzip -dc %s | tar xf -", tmpDir, szFName);
-		if ((ret = mySystem(buff))) {
+		if ((ret = execCommand(buff))) {
 			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while unpacking the tarball\n");
 			return(ret);
 		}
 
 		sprintf(buff, "mkdir -p %s", name);
-		if ((ret = mySystem(buff))) {
+		if ((ret = execCommand(buff))) {
 			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while creating dictionary-directory\n");
 			return(ret);
 		}
@@ -215,9 +256,9 @@ AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, co
 		 * contain the whole path usr/shate/AbiSuite/dictionary/
 		 */
 		sprintf(buff, "cd %susr/share/AbiSuite/dictionary/; mv %s %s-encoding %s", tmpDir, hname, hname, name);
-		if ((ret = mySystem(buff))) {
+		if ((ret = execCommand(buff))) {
 			sprintf(buff, "cd %s; mv %s %s-encoding %s", tmpDir, hname, hname, name);
-			if ((ret = mySystem(buff))) {
+			if ((ret = execCommand(buff))) {
 				fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while moving dictionary into place\n");
 				return(ret);
 			}
@@ -225,7 +266,7 @@ AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, co
 
 
 		sprintf(buff, "rm -rf %s", tmpDir);
-		if ((ret = mySystem(buff))) {
+		if ((ret = execCommand(buff))) {
 			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while removing tmp directory\n");
 			return(ret);
 		}

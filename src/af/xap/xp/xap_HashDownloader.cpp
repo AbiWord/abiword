@@ -17,46 +17,27 @@
  * 02111-1307, USA.
  */
 
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <errno.h>
-
-#include <stdio.h>
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
-#include <expat.h>
 
-#include "ispell.h"
-#include "ut_iconv.h"
-
-#include "sp_spell.h"
-
-#include "xap_App.h"
-#include "ut_string_class.h"
-
-#include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_endian.h"
 
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Strings.h"
-#include "ap_StatusBar.h"
-#include "ap_FrameData.h"
-
-#include "ispell_checker.h"
+#include "xap_Prefs.h"
 #include "xap_HashDownloader.h"
 
-
-extern char **environ;
+#include "ispell_checker.h"
 
 
 extern "C" {
 size_t
 writeCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
-	fileData_t *mem = (fileData_t *)data;
+	XAP_HashDownloader::fileData_t *mem = (XAP_HashDownloader::fileData_t *)data;
 
 	if (!mem->data)
 		mem->data = (char *)malloc(size * nmemb + 1);
@@ -77,7 +58,7 @@ writeCallback(void *ptr, size_t size, size_t nmemb, void *data)
 
 XAP_HashDownloader::XAP_HashDownloader()
 {
-	dictionaryListMaxAge = 60*60*1;	/* One hour */
+	dictionaryListMaxAge = CURLHASH_LISTCACHE_MAX_AGE;
 }
 
 XAP_HashDownloader::~XAP_HashDownloader()
@@ -124,6 +105,12 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 				strncpy(host, atts[i + 1], 255);
 				host[255] = 0;
 			}
+
+			/* Secondary host to download dictionaries from */
+			if (!strcasecmp(atts[i], "host2")) {
+				strncpy(host2, atts[i + 1], 255);
+				host2[255] = 0;
+			}
 			
 			/* Flag to indicate if we should use this featur.
 			   This allows us to disable the feature later on if we
@@ -135,7 +122,7 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 			}
 		}
 
-		UT_DEBUGMSG(("<DictionaryList v=%s h=%s use=%d>\n", listVersion, host, doUse));
+		UT_DEBUGMSG(("<DictionaryList v=%s h=%s h2=%s use=%d>\n", listVersion, host, host2, doUse));
 	}
 
 	if (!strcasecmp(name, "Dict") && xmlParseDepth == 1) {
@@ -207,6 +194,7 @@ XAP_HashDownloader::initData()
 
 	listVersion[0] = 0;
 	host[0] = 0;
+	host2[0] = 0;
 }
 
 UT_sint32
@@ -234,8 +222,13 @@ XAP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szFName, fileDat
 	else
 		curl_easy_setopt(ch, CURLOPT_NOPROGRESS, TRUE);
 
+	UT_DEBUGMSG(("Starting download of %s\n", szFName));
 	/* get it! */
-	ret = curl_easy_perform(ch);
+	if ((ret = curl_easy_perform(ch))) {
+		UT_DEBUGMSG(("Download of %s failed! (ret=%d)\n", szFName, ret));
+	} else {
+		UT_DEBUGMSG(("Done downloading %s\n", szFName));
+	}
 
 	if (show_progress)
 		showProgressStop(pFrame, ch);
@@ -292,7 +285,7 @@ XAP_HashDownloader::getComparableBuildDate()
 	char *buildDate = (char *)XAP_App::getApp()->s_szBuild_CompileDate;
 	char month[4], day[3], year[5], all[20];
 	char *endptr;
-	UT_sint32 i, nMonth, nDay, nYear;
+	UT_sint32 i, nMonth;
 	
 	memcpy(month, buildDate, 3);
 	month[3] = 0;
@@ -320,46 +313,11 @@ XAP_HashDownloader::getComparableBuildDate()
 	return(i);
 }
 
-UT_sint32
-XAP_HashDownloader::mySystem(const char *szCommand)
-{
-	int pid, status;
-	char *argv[10];
-
-	if (!szCommand)
-		return -1;
-		
-	if ((pid = fork()) == -1)
-		return -1;
-		
-	if (pid == 0) {
-		argv[0] = "sh";
-		argv[1] = "-c";
-		argv[2] = (char *)szCommand;
-		argv[3] = 0;
-		execve("/bin/sh", argv, environ);
-		exit(127);
-	}
-	do {
-		if (waitpid(pid, &status, 0) == -1) {
-			if (errno != EINTR)
-				return -1;
-		} else
-			return status;
-	} while(1);
-}
-
-
 UT_uint32
 XAP_HashDownloader::dlg_askDownload(XAP_Frame *pFrame, const char *szLang)
 {
-	char msg[512];
-	
-	sprintf(msg, "I could not find a dictionary for the language %s.\n"
-		"Would you like me to try downloading it from the Internet?", szLang);
-			
-	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(
-				msg, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES))
+	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_AskDownload
+				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES, szLang))
 		return(0);
 
 	return(1);
@@ -369,11 +327,8 @@ XAP_HashDownloader::dlg_askDownload(XAP_Frame *pFrame, const char *szLang)
 UT_uint32
 XAP_HashDownloader::dlg_askFirstTryFailed(XAP_Frame *pFrame)
 {
-	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(
-				"Download failed!\n"
-				"Would you like to try again?\n"
-				"If yes, make sure you are connected to the Internet."
-				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES))
+	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_AskFirstTryFailed
+				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES, NULL))
 		return(0);
 
 	return(1);
@@ -391,7 +346,7 @@ XAP_HashDownloader::dlg_askFirstTryFailed(XAP_Frame *pFrame)
 UT_sint32
 XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 {
-	char buff[512], szFName[256], *endptr;
+	char buff[512], buff2[512], szFName[256], *endptr;
 	UT_sint32 i, ret;
 	FILE *fp;
 	tPkgType pkgType;
@@ -434,18 +389,17 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 		   From now on this function will exit at getPref() since
 		   this value is saved as a preference */
 		if (doUse == -1)
-			pFrame->showMessageBox("I'm sorry. This feature is not available anymore."
-					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+			pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_FeatureDisabled
+					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 		else
-			pFrame->showMessageBox("I'm sorry. This feature is only available to newer versions of Abiword.\n"
-						"You are recommended to upgrade your version of Abiword."
-					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+			pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_FeatureDisabledForThis
+					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 		return(0);
 	}
 	
 	if (!version[i]) {
-		pFrame->showMessageBox("I'm sorry. The wanted dictionary is not available for download.\n"
-				, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictNotAvailable
+				, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 		return(-1);
 	}
 	
@@ -454,9 +408,8 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 		if (endptr == mrd[i])
 			return(-1);
 		if (ret > getComparableBuildDate()) {
-			pFrame->showMessageBox("I'm sorry. The wanted dictionary is only available to newer versions of Abiword.\n"
-						"You are recommended to upgrade your version of Abiword."
-					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+			pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictNotForThis
+					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 			return(-1);
 		}
 	}
@@ -479,11 +432,12 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	}
 
 	sprintf(buff, "%s%s", host, szFName);
-	if ((ret = downloadFile(pFrame, buff, &fileData, 1)))
+	sprintf(buff2, "%s%s", host2, szFName);
+	if ((ret = downloadFile(pFrame, buff, &fileData, 1)) && (host2[0] != 0 && (ret = downloadFile(pFrame, buff2, &fileData, 1))))
 		if (dlg_askFirstTryFailed(pFrame))
-			if ((ret = downloadFile(pFrame, buff, &fileData, 1))) {
-				pFrame->showMessageBox("Download of the dictionary failed!\n"
-						, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+			if ((ret = downloadFile(pFrame, buff, &fileData, 1)) && (host2[0] != 0 && (ret = downloadFile(pFrame, buff2, &fileData, 1)))) {
+				pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictDLFail
+						, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 				return(-1);
 			}
 
@@ -495,10 +449,9 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	fwrite(fileData.data, fileData.s, 1, fp);
 	fclose(fp);
 
-	ret = installPackage(pFrame, buff, szLang, pkgType, RM_SUCCESS | RM_FAILURE);
-	if (ret) {
-		pFrame->showMessageBox("Installation of the dictionary failed!\n"
-				, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+	if (installPackage(pFrame, buff, szLang, pkgType, RM_SUCCESS | RM_FAILURE)) {
+		pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictInstallFail
+				, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 		return(-2);
 	}
 

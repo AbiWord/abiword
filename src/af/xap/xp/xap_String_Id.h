@@ -213,6 +213,27 @@ dcl(DLG_ABOUT_Title,					"About %s")
 dcl(DLG_Options_Label_UnixFontWarning, "Show font warning at start up")
 dcl(DLG_Options_Label_ModifyUnixFontPath, "Modify Unix Font Path")
 
+/* HashDownloader dialogs */
+dcl(DLG_HashDownloader_AskDownload, 		"I could not find a dictionary for %s.\n"
+						"Would you like me to try downloading it from the internet?")
+dcl(DLG_HashDownloader_AskFirstTryFailed, 	"Download failed!\n"
+						"Would you like me to try again?\n"
+						"If yes, please make sure you are connected to the internet.")
+dcl(DLG_HashDownloader_AskInstallGlobal, 	"You seem to have permission to install the dictionary system-wide.\n"
+						"Would you like to do that?\n"
+						"If yes, I will install the dictionary in %s")
+dcl(DLG_HashDownloader_DictlistDLFail, 		"Sorry! I seem unable to download the dictionary-list.")
+dcl(DLG_HashDownloader_DictDLFail, 		"Sorry! I seem unable to download the dictionary.")
+dcl(DLG_HashDownloader_DictInstallFail, 	"Sorry! I seem unable to install the dictionary.")
+dcl(DLG_HashDownloader_DictNotAvailable, 	"I'm sorry. The wanted dictionary is not available for download.")
+dcl(DLG_HashDownloader_DictNotForThis, 		"I'm sorry. The wanted dictionary is not available for this release.\n"
+						"Please consider upgrading AbiWord.")
+dcl(DLG_HashDownloader_FeatureDisabled, 	"I'm sorry. This feature is not available anymore.")
+dcl(DLG_HashDownloader_FeatureDisabledForThis, 	"I'm sorry. This feature is disabled for this release.\n"
+						"Please consider upgrading AbiWord.")
+
+
+
 /*
 	  Language property in different languages; alphabetical except English first.
 	  Please when translating the first entry, put it also into parenthesis

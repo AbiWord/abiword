@@ -17,35 +17,16 @@
  * 02111-1307, USA.
  */
 
-#include <sys/types.h>
-// this XP file -- you cannot include unix-only stuff !!!
-//#include <unistd.h>
-//#include <sys/wait.h>
-#include <errno.h>
-
-#include <stdio.h>
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
-#include <expat.h>
 
-#include "ispell.h"
-#include "ut_iconv.h"
-
-#include "sp_spell.h"
-
-#include "xap_App.h"
-#include "ut_string_class.h"
-
-#include "ut_string.h"
 #include "ut_debugmsg.h"
 
 #include "xap_Frame.h"
-#include "xap_Strings.h"
+
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
-
-#include "ispell_checker.h"
 #include "ap_HashDownloader.h"
 
 

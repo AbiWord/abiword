@@ -24,28 +24,26 @@
 #include <curl/types.h>
 
 
-/* WARNING!
- * Do not enable this unless you know what you do!
- * It works, but don't come screaming if Abiword destroyed your harddrive while
- * you where running it as root
+/*
+ * If there exists a local copy of the dictionary-list, never downlaod a 
+ * updated version.
+ * Overrides CURLHASH_NO_CACHING_OF_LIST
  */
-/*#define LET_ROOT_INSTALL_SYSTEMWIDE*/
+/*#define CURLHASH_NEVER_UPDATE_LIST */
 
 /*
- * If you've enabled the above option and are running a rpm system, you can
- * enable this. If current user is root it will try to install an rpm instead
- * of a tar.gz
+ * Always download a updated version of the dictionary-list, no matter how new
+ * the existing one is.
  */
-/*#define IS_RUNNING_ON_RPM_SYSTEM*/
+/*#define CURLHASH_NO_CACHING_OF_LIST */
 
+/*
+ * Maximum allowed age of dictionary-list before a updated version is to be
+ * downloaded. In seconds.
+ */
+#define CURLHASH_LISTCACHE_MAX_AGE 60*60*1
 
 #define MAX_NUM_LANGUAGES 100
-
-
-typedef struct fileData_t {
-	char *data;
-	size_t s;
-};
 
 
 class ABI_EXPORT XAP_HashDownloader : public UT_XML::Listener
@@ -70,6 +68,11 @@ public:
 		pkgType_None
 	} tPkgType;
 
+	typedef struct fileData_t {
+		char *data;
+		size_t s;
+	};
+
 protected:
 	UT_sint32 	getLangNum(const char *szName);
 	void 		startElement(const XML_Char* name, const XML_Char **atts);
@@ -80,13 +83,13 @@ protected:
 	UT_sint32	setPref(XAP_Frame *pFrame, UT_sint32 newVal);
 	UT_sint32	getComparableBuildDate(void);
 	void 		initData(void);
-	UT_sint32	mySystem(const char *szCommand);
 	UT_uint32	dlg_askDownload(XAP_Frame *pFrame, const char *szLang);
 	UT_uint32	dlg_askFirstTryFailed(XAP_Frame *pFrame);
 	
 	virtual	void	showProgressStart(XAP_Frame *pFrame, CURL *ch) = 0;
 	virtual	void	showProgressStop(XAP_Frame *pFrame, CURL *ch) = 0;
 
+	virtual UT_sint32	execCommand(const char *szCommand) = 0;
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload) = 0;
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;
 	virtual UT_sint32	installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm) = 0;
@@ -98,13 +101,13 @@ protected:
 	UT_sint32 	doUse;
 
 private:
-
 	UT_sint32 	xmlParseDepth;
 	char 		version[MAX_NUM_LANGUAGES][16];
 	char 		release[MAX_NUM_LANGUAGES][16];
 	char 		mrd[MAX_NUM_LANGUAGES][10];
 	char 		listVersion[16];
 	char 		host[256];
+	char 		host2[256];
 };
 
 

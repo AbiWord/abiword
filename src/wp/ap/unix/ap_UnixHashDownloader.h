@@ -24,6 +24,22 @@
 #include "ap_HashDownloader.h"
 
 
+/* 
+ * WARNING!
+ * Do not enable this unless you know what you do!
+ * It works, but don't come screaming if Abiword destroyed your harddrive while
+ * you where running it as root
+ */
+/*#define CURLHASH_INSTALL_SYSTEMWIDE */
+
+/*
+ * If you've enabled the above option and are running a rpm system, you can
+ * enable this. If current user is root it will try to install an rpm instead
+ * of a tar.gz
+ */
+/*#define CURLHASH_USE_RPM */
+
+
 class ABI_EXPORT AP_UnixHashDownloader : public AP_HashDownloader
 {
 public:
@@ -33,7 +49,8 @@ public:
 protected:
 	virtual UT_sint32	dlg_askInstallSystemwide(XAP_Frame *pFrame);
 	virtual UT_sint32	isRoot(void);
-
+	
+	virtual UT_sint32	execCommand(const char *szCommand);
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload);
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame);
 	virtual UT_sint32	installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm);

@@ -93,10 +93,6 @@ XAP_App::~XAP_App()
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
 
-#ifdef HAVE_CURLHASH	
-	DELETEP(m_pHashDownloader);
-#endif
-
 	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);
 	DELETEP(m_pBindingSet);

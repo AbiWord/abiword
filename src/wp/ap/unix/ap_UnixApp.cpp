@@ -146,6 +146,10 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 */
 AP_UnixApp::~AP_UnixApp(void)
 {
+#ifdef HAVE_CURLHASH	
+    DELETEP(m_pHashDownloader);
+#endif
+
     DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
 
