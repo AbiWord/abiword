@@ -74,10 +74,19 @@ class ABI_EXPORT XAP_UnixFont
 	
 	~XAP_UnixFont(void);
 
+#ifndef USE_XFT
 	bool 					openFileAs(const char * fontfile,
 									   const char * metricfile,
 									   const char * xlfd,
 									   XAP_UnixFont::style s);
+#else
+	bool 					openFileAs(const char * fontfile,
+									   const char * metricfile,
+									   const char * family,
+									   const char * xlfd,
+									   XAP_UnixFont::style s);
+#endif
+
 	void					setName(const char * name);
 	const char * 			getName(void) const;
 

@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
+
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
 
@@ -681,6 +682,10 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager * pFM, FcPattern* fp)
 	// create the string representing our Pattern
 	char* xlfd = (char*) FcNameUnparse(fp);
 
+	// get the family of the font
+	unsigned char *family;
+	FcPatternGetString(fp, FC_FAMILY, 0, &family);
+
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
 	switch (slant)
@@ -699,7 +704,7 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager * pFM, FcPattern* fp)
 	}
 			
 	XAP_UnixFont* font = new XAP_UnixFont(pFM);
-	if (!font->openFileAs((char*) fontFile, metricFile.c_str(), xlfd, s))
+	if (!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, s))
 	{
 		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
 		font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
@@ -709,11 +714,11 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager * pFM, FcPattern* fp)
 // If this was an attempt to get bold/italic/bold-italic that failed, fallback
 // to normal.
 //
-	if((font == NULL) && (s != XAP_UnixFont::STYLE_NORMAL))
+	if ((font == NULL) && (s != XAP_UnixFont::STYLE_NORMAL))
 	{
 		s = XAP_UnixFont::STYLE_NORMAL;
 		font = new XAP_UnixFont(pFM);
-		if (!font->openFileAs((char*) fontFile, metricFile.c_str(), xlfd, s))
+		if (!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, s))
 		{
 			UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
 			font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself

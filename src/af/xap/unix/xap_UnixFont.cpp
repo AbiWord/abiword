@@ -194,8 +194,7 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 
 	m_fontKey = NULL;
 
-	openFileAs(copy.getFontfile(),
-		   copy.getMetricfile(), copy.getXLFD(), copy.getStyle());
+	openFileAs(copy.getFontfile(), copy.getMetricfile(), copy.getName(), copy.getXLFD(), copy.getStyle());
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 	if (copy.getEncodingTable())
@@ -315,30 +314,14 @@ XAP_UnixFont::~XAP_UnixFont(void)
 
 #ifdef USE_XFT
 
-bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, const char *xlfd,	// xft_pattern
-			      XAP_UnixFont::style s)
+bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, const char* family, const char *xlfd,
+							  XAP_UnixFont::style s)
 {
 	if (!fontfile || !metricfile || !xlfd)
 		return false;
 
-	// m_name is the font family
-	XftResult result;
-	FcPattern *fp = XftNameParse(xlfd);
-	FcPattern *result_fp =
-		XftFontMatch(GDK_DISPLAY(), DefaultScreen(GDK_DISPLAY()), fp,
-			     &result);
-	FcPatternDestroy(fp);
-
-	// if that fails, it means that we're building the pattern the wrong way
-	UT_ASSERT(result_fp);
-
-	// get the family name and store it
-	unsigned char *family;
 	FREEP(m_name);
-	FcPatternGetString(result_fp, FC_FAMILY, 0, &family);
 	UT_cloneString(m_name, (const char *)family);
-
-	FcPatternDestroy(result_fp);
 
 	// save to memebers
 	FREEP(m_fontfile);
@@ -1125,6 +1108,7 @@ bool XAP_UnixFont::closePFA(void)
 	return false;
 }
 
+
 char XAP_UnixFont::getPFAChar(void)
 {
 	UT_ASSERT(m_PFFile);
@@ -1244,6 +1228,7 @@ bool XAP_UnixFont::isSizeInCache(UT_uint32 pixelsize)
 	return false;
 }
 
+
 #ifdef USE_XFT
 XftFont *XAP_UnixFont::getFontFromCache(UT_uint32 pixelsize) const
 {
@@ -1292,6 +1277,7 @@ XftFont *XAP_UnixFont::getXftFont(UT_uint32 pixelsize) const
 		  FcPattern *fp = XftNameParse(m_xlfd);
 		  FcResult result;
 		  FcPattern *result_fp =
+
 			  XftFontMatch(GDK_DISPLAY(),
 				       DefaultScreen(GDK_DISPLAY()), fp,
 				       &result);
