@@ -2356,7 +2356,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 
 /*****************************************************************/
 
-void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
+void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
 {
 	if (m_bValidMouseClick && m_draggingWhat == DW_TABTOGGLE)
 	{
@@ -2886,69 +2886,142 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_String sColWidths;
 			UT_sint32 i;
 			bool bDragRightMost = false;
+			bool bDragLeftMost = false;
 			UT_sint32 leftDrag = -100000;
-			if(m_draggingCell == static_cast<UT_sint32>(m_infoCache.m_vecTableColInfo->getItemCount()))
+			UT_sint32 rightDrag = -100000;
+			if(ems == EV_EMS_SHIFT)
 			{
-				bDragRightMost = true;
-			}
-			else
-			{
-				pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell));
-				leftDrag = pTInfo->m_iLeftCellPos ;
-			}
-			
-			for(i=1; i <= static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount());i++)
-			{
-				UT_sint32 left =0;
-				UT_sint32 right = 0;
+//
+// shift-drag-release keep the width of the table constant
+//
+				if(m_draggingCell == static_cast<UT_sint32>(m_infoCache.m_vecTableColInfo->getItemCount()))
+				{
+					bDragRightMost = true;
+				}
+				else
+				{
+					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell));
+					leftDrag = pTInfo->m_iLeftCellPos ;
+				}
+				
+				for(i=1; i <= static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount());i++)
+				{
+					UT_sint32 left =0;
+					UT_sint32 right = 0;
 				
 				//
-				pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-				bool bOnDraggingRight = false;
-				UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
-				if(leftDrag != pTInfo->m_iLeftCellPos)
-					left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
-				else
-					left =  m_draggingCenter;
-				if(i < static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()))
-				{
-					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i));
-					bOnDraggingRight = (leftDrag == pTInfo->m_iLeftCellPos);
-				}
+					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
+					bool bOnDraggingRight = false;
+					UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
+					if(leftDrag != pTInfo->m_iLeftCellPos)
+						left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+					else
+						left =  m_draggingCenter;
+					if(i < static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()))
+					{
+						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i));
+						bOnDraggingRight = (leftDrag == pTInfo->m_iLeftCellPos);
+					}
 //
 // Now set the right marker
 //
-				if(i != static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bOnDraggingRight)
-				{
-					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i));
-					right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+					if(i != static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bOnDraggingRight)
+					{
+						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i));
+						right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+					}
+					else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bDragRightMost)
+					{
+						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
+						right = pTInfo->m_iRightCellPos + xAbsLeft - pTInfo->m_iLeftSpacing;
+					}
+					else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && bDragRightMost )
+					{
+						right = m_draggingCenter;
+					}
+					else
+						right = m_draggingCenter;
+					
+					xxx_UT_DEBUGMSG(("SEVIOR i %d iCell %d left %d right %d \n",i,m_draggingCell,left,right));
+					UT_sint32 width = right - left;
+					if(width > 0)
+					{
+						dxrel = tick.scalePixelDistanceToUnits(width);
+					}
+					else
+					{
+						width = pTInfo->m_iRightCellPos - pTInfo->m_iLeftCellPos - pTInfo->m_iLeftSpacing - pTInfo->m_iRightSpacing;
+						dxrel = tick.scalePixelDistanceToUnits(width);
+					}
+					UT_String sTmp = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
+					sColWidths += sTmp;
+					sColWidths += '/';
 				}
-				else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bDragRightMost)
+			}
+			else
+			{
+//
+// Just change the width of the cell to the left of marker unless is the
+// first cell
+//
+				UT_sint32 iNumCells =  static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount());
+				if(m_draggingCell == 0)
 				{
+					bDragLeftMost = true;
+				}
+				else if(m_draggingCell == iNumCells)
+				{
+					bDragRightMost = true;
+					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell-1));
+					rightDrag = pTInfo->m_iRightCellPos ;
+				}
+				else
+				{
+					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell-1));
+					rightDrag = pTInfo->m_iRightCellPos ;
+				}
+				for(i=1; i <= iNumCells ;i++)
+				{
+					UT_sint32 left =0;
+					UT_sint32 right = 0;
+					UT_sint32 width = 0;
+				//
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-					right = pTInfo->m_iRightCellPos + xAbsLeft - pTInfo->m_iLeftSpacing;
-				}
-				else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && bDragRightMost )
-				{
-					right = m_draggingCenter;
-				}
-				else
-					right = m_draggingCenter;
-				
-				xxx_UT_DEBUGMSG(("SEVIOR i %d iCell %d left %d right %d \n",i,m_draggingCell,left,right));
-				UT_sint32 width = right - left;
-				if(width > 0)
-				{
+					UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
+					if(rightDrag != pTInfo->m_iRightCellPos)
+					{
+						left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+						if(i < iNumCells)
+						{
+							pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(i));
+							right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+						}
+						else
+						{
+							right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iRightSpacing;
+						}
+						width = right - left;
+						if(width < 3*pTInfo->m_iLeftSpacing)
+						{
+							width = 3*pTInfo->m_iLeftSpacing;
+						}
+					}
+					else
+					{
+						right =  m_draggingCenter;
+						left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+						width = right - left;
+						if(width < 3*pTInfo->m_iLeftSpacing)
+						{
+							width = 3*pTInfo->m_iLeftSpacing;
+						}
+					}
 					dxrel = tick.scalePixelDistanceToUnits(width);
+					UT_String sTmp = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
+					sColWidths += sTmp;
+					sColWidths += '/';
 				}
-				else
-				{
-					width = pTInfo->m_iRightCellPos - pTInfo->m_iLeftCellPos - pTInfo->m_iLeftSpacing - pTInfo->m_iRightSpacing;
-					dxrel = tick.scalePixelDistanceToUnits(width);
-				}
-				UT_String sTmp = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
-				sColWidths += sTmp;
-				sColWidths += '/';
+
 			}
 			UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
 			m_draggingWhat = DW_NOTHING;
@@ -2970,6 +3043,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				props[2] = "table-column-leftpos";
 				props[3] = sCellPos.c_str();
 			}
+
 //
 // Now do manipulations to find the position of the table we're about to 
 // change.

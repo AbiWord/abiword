@@ -9814,7 +9814,7 @@ Defun1(toggleIndent)
 	  return true;
 
   fl_BlockLayout * pBL = pView->getCurrentBlock();
-  if(pBL && pBL->isListItem() || !pView->isSelectionEmpty() )
+  if(pBL && (!pBL->isListItem() || !pView->isSelectionEmpty()) )
   {
 	  doLists = false;
   }
@@ -9845,7 +9845,7 @@ Defun1(toggleUnIndent)
   if ( allowed <= 0. )
 	  return true ;
 
-  if(pBL && !pBL->isListItem() || !pView->isSelectionEmpty() )
+  if(pBL && (!pBL->isListItem() || !pView->isSelectionEmpty()) )
   {
 	 doLists = false;
   }
