@@ -59,7 +59,6 @@ noinst_HEADERS += \
 	gr_Abi_InkArea.h \
 	gr_Abi_MathGraphicDevice.h \
 	gr_Abi_RenderingContext.h \
-	gr_MathView_config.h \
 	$(NULL)
 endif
 

@@ -10,3 +10,13 @@ AC_DEFUN([ABI_MATHVIEW],[
 	abi_mathview_message="$abi_mathview"
 	AM_CONDITIONAL(HAVE_MATHVIEW, test $abi_mathview = yes)
 ])
+
+AC_DEFUN([ABI_HASHMAP],[
+
+	AC_LANG_PUSH(C++)
+	AC_CHECK_HEADERS(hash_map)
+	AC_CHECK_HEADERS(ext/hash_map)
+	AC_LANG_POP(C++)
+
+])
+

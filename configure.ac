@@ -345,6 +345,7 @@ ABI_LIBPNG
 
 dnl check for MathView
 ABI_MATHVIEW
+ABI_HASHMAP
 
 dnl check for popt.
 ABI_POPT

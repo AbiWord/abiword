@@ -19,7 +19,6 @@
 
 #include <cassert>
 
-#include "gr_MathView_config.h"
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 #include "gr_Abi_RenderingContext.h"

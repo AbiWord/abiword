@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include "gr_MathView_config.h"
-
 #include <cassert>
 
 #include <MathView/MathMLElement.hh>

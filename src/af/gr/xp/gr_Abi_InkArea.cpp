@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include "gr_MathView_config.h"
-
 #include "gr_Abi_InkArea.h"
 #include "gr_Abi_RenderingContext.h"
 

@@ -17,15 +17,13 @@
  * 02111-1307, USA.
  */
 
-#include "gr_MathView_config.h"
-
 #include <cassert>
 
 #include <MathView/ShapingResult.hh>
 #include <MathView/MathGraphicDevice.hh>
 #include <MathView/MathMLElement.hh>
 
-#include "gr_Abi_CharArea.h"
+#include "gr_Abi_AreaFactory.h"
 #include "gr_Abi_DefaultShaper.h"
 
 GR_Abi_DefaultShaper::GR_Abi_DefaultShaper()
@@ -76,8 +74,8 @@ GR_Abi_DefaultShaper::shapeString(const MathFormattingContext& ctxt, const UT_UC
 AreaRef
 GR_Abi_DefaultShaper::shapeChar(const MathFormattingContext& ctxt, UT_UCSChar ch) const
 {
-  // shouldn't this use the factory method in AreaFactory to create the char area?
+  SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(ctxt.getDevice()->getFactory());
   // do NOT use getGUIFont but find the appropriate font depending on the
   // font size and font variant
-  return GR_Abi_CharArea::create(m_pGraphics, m_pGraphics->getGUIFont(), ch);
+  return factory->charArea(m_pGraphics, m_pGraphics->getGUIFont(), ch);
 }
