@@ -25,20 +25,21 @@
 #include "ut_types.h"
 #include "ut_pool.h"
 
+struct ut_HashBucket;
+
+struct UT_HashEntry
+{
+	char*	pszLeft;
+	char*	pszRight;
+	void*	pData;
+};
+
 class UT_HashTable
 {
 public:
-
-	struct UT_HashEntry
-	{
-		char*	pszLeft;
-		char*	pszRight;
-		void*	pData;
-	};
-
 	UT_HashTable(int iBuckets);
 	UT_sint32 addEntry(const char* psLeft, const char* psRight, void* pData);
-	UT_sint32 setEntry(UT_HashTable::UT_HashEntry* pEntry, const char* pszRight, void* pData);
+	UT_sint32 setEntry(UT_HashEntry* pEntry, const char* pszRight, void* pData);
 	~UT_HashTable();
 	inline int getEntryCount(void) const { return m_iEntryCount; }
 	UT_HashEntry* getNthEntry(int n) const;
@@ -52,19 +53,8 @@ protected:
 	int grow();
 	int calcNewSpace();
 
-	struct UT_HashEntryListNode
-	{
-		int						iEntry;
-		UT_HashEntryListNode*	pNext;
-	};
-
-	struct UT_HashBucket
-	{
-		UT_HashEntryListNode* pHead;
-	};
-
 	int				m_iBuckets;
-	UT_HashBucket*	m_pBuckets;
+	ut_HashBucket*	m_pBuckets;
 	UT_HashEntry*	m_pEntries;
 	int				m_iEntrySpace;
 	int				m_iEntryCount;
@@ -74,7 +64,7 @@ protected:
 // NB: this macro is useful only in destructors
 #define UT_HASH_PURGEDATA(d, h)							\
 	do	{	int uth_max = h.getEntryCount();			\
-			UT_HashTable::UT_HashEntry* uth_e;			\
+			UT_HashEntry* uth_e;						\
 			for (int uth=uth_max-1; uth>=0; uth--)		\
 			{											\
 				uth_e = h.getNthEntry(uth);				\

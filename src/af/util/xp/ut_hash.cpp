@@ -27,6 +27,17 @@
 
 #define CHUNK_NUM_ENTRIES		8
 
+struct ut_HashEntryListNode
+{
+	int						iEntry;
+	ut_HashEntryListNode*	pNext;
+};
+
+struct ut_HashBucket
+{
+	ut_HashEntryListNode* pHead;
+};
+
 /*****************************************************************
 ** WARNING: if we ever put in code to properly delete
 ** WARNING: things from the m_pEntries array, we will
@@ -52,11 +63,11 @@ UT_HashTable::~UT_HashTable()
 
 	for (int i=0; i < m_iBuckets; i++)
 	{
-		UT_HashEntryListNode* pHELN = m_pBuckets[i].pHead;
+		ut_HashEntryListNode* pHELN = m_pBuckets[i].pHead;
 
 		while (pHELN)
 		{
-			UT_HashEntryListNode* pTmp = pHELN->pNext;
+			ut_HashEntryListNode* pTmp = pHELN->pNext;
 			delete pHELN;
 			pHELN = pTmp;
 		}
@@ -87,7 +98,7 @@ UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void
 
 	int iBucket = hashFunc(pszLeft);
 
-	UT_HashEntryListNode* pHELN = new UT_HashEntryListNode();
+	ut_HashEntryListNode* pHELN = new ut_HashEntryListNode();
 	pHELN->iEntry = m_iEntryCount;
 	pHELN->pNext = m_pBuckets[iBucket].pHead;
 	m_pBuckets[iBucket].pHead = pHELN;
@@ -96,7 +107,7 @@ UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void
 	return 0;
 }
 
-UT_sint32 UT_HashTable::setEntry(UT_HashTable::UT_HashEntry* pEntry, const char* pszRight, void* pData)
+UT_sint32 UT_HashTable::setEntry(UT_HashEntry* pEntry, const char* pszRight, void* pData)
 {
 	if (pszRight)
 		pEntry->pszRight = m_pool.addString(pszRight);	// TODO this can fail, right?
@@ -106,7 +117,7 @@ UT_sint32 UT_HashTable::setEntry(UT_HashTable::UT_HashEntry* pEntry, const char*
 	return 0;
 }
 
-UT_HashTable::UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
+UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
 {
 	if (!m_pBuckets)
 	{
@@ -115,7 +126,7 @@ UT_HashTable::UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
 
 	UT_ASSERT(m_pBuckets);
 	int iBucket = hashFunc(pszLeft);
-	UT_HashEntryListNode* pHELN = m_pBuckets[iBucket].pHead;
+	ut_HashEntryListNode* pHELN = m_pBuckets[iBucket].pHead;
 	while (pHELN)
 	{
 		UT_HashEntry* pEntry = m_pEntries + pHELN->iEntry;
@@ -130,7 +141,7 @@ UT_HashTable::UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
 	return NULL;
 }
 
-UT_HashTable::UT_HashEntry* UT_HashTable::getNthEntry(int n) const
+UT_HashEntry* UT_HashTable::getNthEntry(int n) const
 {
 	UT_ASSERT((n>=0) && (n<m_iEntryCount));
 
@@ -141,7 +152,7 @@ int UT_HashTable::firstAlloc()
 {
 	UT_ASSERT(!m_pEntries);
 
-	m_pBuckets = (UT_HashTable::UT_HashBucket*) calloc(m_iBuckets, sizeof(UT_HashTable::UT_HashBucket));
+	m_pBuckets = (ut_HashBucket*) calloc(m_iBuckets, sizeof(ut_HashBucket));
 	if (!m_pBuckets)
 	{
 		return -1;
@@ -149,7 +160,7 @@ int UT_HashTable::firstAlloc()
 
 	m_iEntryCount = 0;
 	m_iEntrySpace = CHUNK_NUM_ENTRIES;
-	m_pEntries = (UT_HashTable::UT_HashEntry*) calloc(m_iEntrySpace, sizeof(UT_HashTable::UT_HashEntry));
+	m_pEntries = (UT_HashEntry*) calloc(m_iEntrySpace, sizeof(UT_HashEntry));
 	if (!m_pEntries)
 	{
 		free(m_pBuckets);
@@ -166,13 +177,13 @@ int UT_HashTable::firstAlloc()
 int UT_HashTable::grow()
 {
 	int iNewSpace = calcNewSpace();
-	UT_HashTable::UT_HashEntry *pNewEntries = (UT_HashTable::UT_HashEntry *) calloc(iNewSpace, sizeof(UT_HashTable::UT_HashEntry));
+	UT_HashEntry *pNewEntries = (UT_HashEntry *) calloc(iNewSpace, sizeof(UT_HashEntry));
 	if (!pNewEntries)
 	{
 		return -1;
 	}
 
-	memcpy(pNewEntries, m_pEntries, m_iEntryCount*sizeof(UT_HashTable::UT_HashEntry));
+	memcpy(pNewEntries, m_pEntries, m_iEntryCount*sizeof(UT_HashEntry));
 	free(m_pEntries);
 	m_iEntrySpace = iNewSpace;
 	m_pEntries = pNewEntries;

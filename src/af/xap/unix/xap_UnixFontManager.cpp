@@ -231,7 +231,7 @@ XAP_UnixFont ** XAP_UnixFontManager::getAllFonts(void)
 
 	UT_ASSERT(table);
 
-	UT_HashTable::UT_HashEntry * entry = NULL;
+	UT_HashEntry * entry = NULL;
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		entry = m_fontHash.getNthEntry(i);
@@ -276,7 +276,7 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 
 	FREEP(copy);
 	
-	UT_HashTable::UT_HashEntry * entry = m_fontHash.findEntry(keyBuffer);
+	UT_HashEntry * entry = m_fontHash.findEntry(keyBuffer);
 
 	//UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	

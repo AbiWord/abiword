@@ -54,7 +54,7 @@ UT_Bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
 
 UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 {
-	UT_HashTable::UT_HashEntry * pEntry = m_hash.findEntry(szKey);
+	UT_HashEntry * pEntry = m_hash.findEntry(szKey);
 	if (pEntry)
 	{
 		if (UT_stricmp(szValue,pEntry->pszRight) == 0)
@@ -72,7 +72,7 @@ UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szVal
 
 UT_Bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
-	UT_HashTable::UT_HashEntry * pEntry = m_hash.findEntry(szKey);
+	UT_HashEntry * pEntry = m_hash.findEntry(szKey);
 	if (!pEntry)
 		return UT_FALSE;
 
@@ -88,7 +88,7 @@ UT_Bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, cons
 	if (k >= (UT_uint32)m_hash.getEntryCount())
 		return UT_FALSE;
 	
-	UT_HashTable::UT_HashEntry * pEntry = m_hash.getNthEntryAlpha(k);
+	UT_HashEntry * pEntry = m_hash.getNthEntryAlpha(k);
 
 	if (!pEntry)
 		return UT_FALSE;

@@ -611,7 +611,7 @@ UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const 
 	
 	if (ppHandle)
 	{
-		UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
+		UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
 		UT_ASSERT(pHashEntry);
 		*ppHandle = (void *)pHashEntry;
 	}
@@ -631,7 +631,7 @@ UT_Bool PD_Document::getDataItemDataByName(const char * szName,
 {
 	UT_ASSERT(szName && *szName);
 	
-	UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
+	UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
 	if (!pHashEntry)
 		return UT_FALSE;
 
@@ -661,7 +661,7 @@ UT_Bool PD_Document::setDataItemToken(void * pHandle,
 {
 	UT_ASSERT(pHandle);
 	
-	UT_AlphaHashTable::UT_HashEntry * pHashEntry = (UT_AlphaHashTable::UT_HashEntry *)pHandle;
+	UT_HashEntry * pHashEntry = (UT_HashEntry *)pHandle;
 
 	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
 	UT_ASSERT(pPair);
@@ -678,7 +678,7 @@ UT_Bool PD_Document::getDataItemData(void * pHandle,
 {
 	UT_ASSERT(pHandle);
 	
-	UT_AlphaHashTable::UT_HashEntry * pHashEntry = (UT_AlphaHashTable::UT_HashEntry *)pHandle;
+	UT_HashEntry * pHashEntry = (UT_HashEntry *)pHandle;
 
 	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
 	UT_ASSERT(pPair);
@@ -710,7 +710,7 @@ UT_Bool PD_Document::enumDataItems(UT_uint32 k,
 	if (k >= kLimit)
 		return UT_FALSE;
 	
-	const UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.getNthEntryAlpha(k);
+	const UT_HashEntry * pHashEntry = m_hashDataItems.getNthEntryAlpha(k);
 	UT_ASSERT(pHashEntry);
 
 	if (ppHandle)
@@ -743,7 +743,7 @@ void PD_Document::_destroyDataItemData(void)
 
 	for (UT_uint32 k=0; (k<kLimit); k++)
 	{
-		UT_HashTable::UT_HashEntry * pHE = m_hashDataItems.getNthEntry(k);
+		UT_HashEntry * pHE = m_hashDataItems.getNthEntry(k);
 		
 		struct _dataItemPair* pPair = (struct _dataItemPair*) pHE->pData;
 		UT_ASSERT(pPair);

@@ -176,7 +176,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	char key[500];
 	sprintf(key,"%s;%s;%s;%s;%s;%s",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 	
-	UT_HashTable::UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
+	UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,

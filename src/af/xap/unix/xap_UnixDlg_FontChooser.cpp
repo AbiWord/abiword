@@ -699,7 +699,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	DELETEP(fonts);
 
 	// fetch them out
-	UT_HashTable::UT_HashEntry * entry;
+	UT_HashEntry * entry;
 	for (UT_uint32 k = 0; k < (UT_uint32) fontHash.getEntryCount(); k++)
 	{
 		entry = fontHash.getNthEntry((int) k);

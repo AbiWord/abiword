@@ -169,7 +169,7 @@ UT_Bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	if (pCloneOf)
 	{
 		// locate vector of this frame's clones
-		UT_HashTable::UT_HashEntry* pEntry = m_hashClones.findEntry(pCloneOf->getViewKey());
+		UT_HashEntry* pEntry = m_hashClones.findEntry(pCloneOf->getViewKey());
 
 		UT_Vector * pvClones = NULL;
 
@@ -228,7 +228,7 @@ UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	if (pFrame->getViewNumber() > 0)
 	{
 		// locate vector of this frame's clones
-		UT_HashTable::UT_HashEntry* pEntry = m_hashClones.findEntry(pFrame->getViewKey());
+		UT_HashEntry* pEntry = m_hashClones.findEntry(pFrame->getViewKey());
 		UT_ASSERT(pEntry);
 
 		if (pEntry)
@@ -297,7 +297,7 @@ UT_Bool XAP_App::updateClones(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-	UT_HashTable::UT_HashEntry* pEntry = m_hashClones.findEntry(pFrame->getViewKey());
+	UT_HashEntry* pEntry = m_hashClones.findEntry(pFrame->getViewKey());
 	UT_ASSERT(pEntry);
 
 	if (pEntry)

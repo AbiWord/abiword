@@ -200,7 +200,7 @@ UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szVal
 		}
 	}
 
-	UT_HashTable::UT_HashEntry* pEntry = m_pProperties->findEntry(szName);
+	UT_HashEntry* pEntry = m_pProperties->findEntry(szName);
 	if (pEntry)
 		return (m_pProperties->setEntry(pEntry, szValue, NULL) == 0);
 	else
@@ -213,7 +213,7 @@ UT_Bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XM
 		return UT_FALSE;
 	if (ndx >= m_pAttributes->getEntryCount())
 		return UT_FALSE;
-	UT_HashTable::UT_HashEntry * pEntry = m_pAttributes->getNthEntryAlpha(ndx);
+	UT_HashEntry * pEntry = m_pAttributes->getNthEntryAlpha(ndx);
 	if (!pEntry)
 		return UT_FALSE;
 	szName = pEntry->pszLeft;
@@ -227,7 +227,7 @@ UT_Bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML
 		return UT_FALSE;
 	if (ndx >= m_pProperties->getEntryCount())
 		return UT_FALSE;
-	UT_HashTable::UT_HashEntry * pEntry = m_pProperties->getNthEntryAlpha(ndx);
+	UT_HashEntry * pEntry = m_pProperties->getNthEntryAlpha(ndx);
 	if (!pEntry)
 		return UT_FALSE;
 	szName = pEntry->pszLeft;
@@ -240,7 +240,7 @@ UT_Bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szVa
 	if (!m_pProperties)
 		return UT_FALSE;
 	
-	UT_HashTable::UT_HashEntry* pEntry = m_pProperties->findEntry(szName);
+	UT_HashEntry* pEntry = m_pProperties->findEntry(szName);
 	if (!pEntry)
 		return UT_FALSE;
 
@@ -254,7 +254,7 @@ UT_Bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szV
 	if (!m_pAttributes)
 		return UT_FALSE;
 	
-	UT_HashTable::UT_HashEntry* pEntry = m_pAttributes->findEntry(szName);
+	UT_HashEntry* pEntry = m_pAttributes->findEntry(szName);
 	if (!pEntry)
 		return UT_FALSE;
 
@@ -392,8 +392,8 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 	for (k=0; (k < countMyAttrs); k++)
 	{
-		UT_HashTable::UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
-		UT_HashTable::UT_HashEntry * pMatchEntry = pMatch->m_pAttributes->getNthEntryAlpha(k);
+		UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
+		UT_HashEntry * pMatchEntry = pMatch->m_pAttributes->getNthEntryAlpha(k);
 		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
 			return UT_FALSE;
 		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
@@ -402,8 +402,8 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 	for (k=0; (k < countMyProps); k++)
 	{
-		UT_HashTable::UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
-		UT_HashTable::UT_HashEntry * pMatchEntry = pMatch->m_pProperties->getNthEntryAlpha(k);
+		UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
+		UT_HashEntry * pMatchEntry = pMatch->m_pProperties->getNthEntryAlpha(k);
 		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
 			return UT_FALSE;
 		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
@@ -575,14 +575,14 @@ void PP_AttrProp::_computeCheckSum(void)
 	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->getEntryCount() : 0);
 	for (k=0; (k < countMyAttrs); k++)
 	{
-		UT_HashTable::UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
+		UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
 		m_checkSum += UT_XML_strlen(pMyEntry->pszLeft);
 		m_checkSum += UT_XML_strlen(pMyEntry->pszRight);
 	}
 	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->getEntryCount() : 0);
 	for (k=0; (k < countMyProps); k++)
 	{
-		UT_HashTable::UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
+		UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
 		m_checkSum += UT_XML_strlen(pMyEntry->pszLeft);
 		m_checkSum += UT_XML_strlen(pMyEntry->pszRight);
 	}

@@ -134,7 +134,7 @@ UT_Bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	UT_ASSERT(szName && *szName);
 	
-	UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashStyles.findEntry(szName);
+	UT_HashEntry * pHashEntry = m_hashStyles.findEntry(szName);
 	if (!pHashEntry)
 		return UT_FALSE;
 
@@ -158,7 +158,7 @@ UT_Bool pt_PieceTable::enumStyles(UT_uint32 k,
 	if (k >= kLimit)
 		return UT_FALSE;
 	
-	const UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashStyles.getNthEntryAlpha(k);
+	const UT_HashEntry * pHashEntry = m_hashStyles.getNthEntryAlpha(k);
 	UT_ASSERT(pHashEntry);
 
 	PD_Style * pStyle = (PD_Style *) pHashEntry->pData;

@@ -155,7 +155,7 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 			for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
 				bufPixel[kPx] = *p++;
 
-			UT_HashTable::UT_HashEntry * pEntry = hash.findEntry(bufPixel);
+			UT_HashEntry * pEntry = hash.findEntry(bufPixel);
 			*pPixel++ = ((UT_Byte)(pEntry->pData)) - 1;
 		}
 

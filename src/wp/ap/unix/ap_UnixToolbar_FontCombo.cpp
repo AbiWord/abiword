@@ -89,7 +89,7 @@ UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 	int totalStringsInHash = stringTable.getEntryCount();
 	for (int hashIndex = 0; hashIndex < totalStringsInHash; hashIndex++)
 	{
-		UT_HashTable::UT_HashEntry * item = stringTable.getNthEntry(hashIndex);
+		UT_HashEntry * item = stringTable.getNthEntry(hashIndex);
 		
 		if (item && item->pData)
 			m_vecContents.addItem(item->pData);
