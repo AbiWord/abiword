@@ -495,6 +495,15 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	DRAW_END
 }
 
+void GR_QNXGraphics::getCoverage(UT_Vector &coverage)
+{
+FontQueryInfo *info;
+coverage.clear();
+
+PfQueryFontInfo(m_pFont->getFont(),info);
+coverage.push_back((void*)info->lochar);
+coverage.push_back((void*)(info->lochar - info->hichar));
+}
 void GR_QNXGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	m_iLineWidth = iLineWidth;
