@@ -2014,14 +2014,21 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 UT_Bool FV_View::cmdStartList(const XML_Char * style)
 {
 	m_pDoc->beginUserAtomicGlob();
-        fl_BlockLayout * pBlock = getCurrentBlock();
+	fl_BlockLayout * pBlock = getCurrentBlock();
 	pBlock->StartList( style);
 	m_pDoc->endUserAtomicGlob();
 
 	return UT_TRUE;
 }
 
-void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32 startv, XML_Char * pszDelim, XML_Char * pszDecimal, XML_Char * pszFont, float Align, float Indent)
+void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
+									List_Type lType,
+									UT_uint32 startv,
+									const XML_Char* pszDelim,
+									const XML_Char* pszDecimal,
+									const XML_Char* pszFont,
+									float Align,
+									float Indent)
 {
 	UT_Bool bRet;
 	UT_uint32 i=0;
@@ -2032,25 +2039,25 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 
 	if(lType == NOT_A_LIST)
 	{
-	  // Stop lists in all elements
-	       i = 0;
-	       sdh =  pAuto->getNthBlock(i);
-	       while(sdh != NULL)
-               {
-		      vb.addItem((void *) sdh);
-	              i++;
-		      sdh = pAuto->getNthBlock(i);
-	       }
-	       for(i=0; i< vb.getItemCount(); i++)
-	       {
-	              PL_StruxDocHandle  sdh =  ( PL_StruxDocHandle) vb.getNthItem(i);
-	              m_pDoc->listUpdate(sdh);
-	              m_pDoc->StopList(sdh);
+		// Stop lists in all elements
+		i = 0;
+		sdh =  pAuto->getNthBlock(i);
+		while(sdh != NULL)
+		{
+			vb.addItem((void *) sdh);
+			i++;
+			sdh = pAuto->getNthBlock(i);
 		}
-	       m_pDoc->enableListUpdates();
-	       m_pDoc->updateDirtyLists();
-	       _generalUpdate();
-	       return;
+		for(i=0; i< vb.getItemCount(); i++)
+		{
+			PL_StruxDocHandle  sdh =  ( PL_StruxDocHandle) vb.getNthItem(i);
+			m_pDoc->listUpdate(sdh);
+			m_pDoc->StopList(sdh);
+		}
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+		_generalUpdate();
+		return;
 	}
 
 	XML_Char * style = getCurrentBlock()->getListStyleString(lType);
@@ -2073,17 +2080,17 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	pAuto->setStartValue(startv);
 	if(pszDelim != NULL)
 	{
-	        vp.addItem( (void *) "list-delim"); vp.addItem( (void *) pszDelim);
+		vp.addItem( (void *) "list-delim"); vp.addItem( (void *) pszDelim);
 		pAuto->setDelim(pszDelim);
 	}
 	if(pszDecimal != NULL)
 	{
-	        vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) pszDecimal);
+		vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) pszDecimal);
 		pAuto->setDecimal(pszDecimal);
 	}
 	if(pszFont != NULL)
 	{
-	        vp.addItem( (void *) "field-font"); vp.addItem( (void *) pszFont);
+		vp.addItem( (void *) "field-font"); vp.addItem( (void *) pszFont);
 	}
 	//
 	// Assemble the List attributes
@@ -2107,16 +2114,16 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	props[i] = (XML_Char *) NULL;
 
  	//const XML_Char * attrib_list[] = {"style", style, 0 };
-        _eraseInsertionPoint();
+	_eraseInsertionPoint();
 	i = 0;
 	sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
 	while(sdh != NULL)
-        {
-	       PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
-	       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);  
-	       i++;
-	       sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
-	       _generalUpdate();
+	{
+		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);  
+		i++;
+		sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
+		_generalUpdate();
 	}
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();

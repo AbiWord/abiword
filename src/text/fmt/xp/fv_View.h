@@ -160,9 +160,9 @@ public:
 	UT_Bool setSectionFormat(const XML_Char * properties[]);
 	UT_Bool getSectionFormat(const XML_Char *** properties);
 
-        UT_Bool isCursorOn(void);
-        void    eraseInsertionPoint(void);
-        void    drawInsertionPoint(void);
+	UT_Bool isCursorOn(void);
+	void    eraseInsertionPoint(void);
+	void    drawInsertionPoint(void);
 
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
@@ -176,11 +176,18 @@ public:
 	UT_Bool isCurrentListBlockEmpty(void);
 	UT_Bool cmdStartList(const XML_Char * style);
 	UT_Bool cmdStopList(void);
-	void    changeListStyle( fl_AutoNum * pAuto,  List_Type lType, UT_uint32 startv, XML_Char * pszDelim, XML_Char * pszDecimal, XML_Char * pszFormat, float Aligm, float Indent);
+	void    changeListStyle(fl_AutoNum* pAuto,
+							List_Type lType,
+							UT_uint32 startv,
+							const XML_Char* pszDelim,
+							const XML_Char* pszDecimal,
+							const XML_Char* pszFormat,
+							float Aligm,
+							float Indent);
 
-        void    setDontChangeInsPoint(void);
-        void    allowChangeInsPoint(void);
-        UT_Bool isDontChangeInsPoint(void);
+	void    setDontChangeInsPoint(void);
+	void    allowChangeInsPoint(void);
+	UT_Bool isDontChangeInsPoint(void);
 
 
 	UT_Bool setCharFormat(const XML_Char * properties[]);
@@ -189,7 +196,7 @@ public:
 	UT_Bool setStyle(const XML_Char * style);
 	UT_Bool getStyle(const XML_Char ** style);
 
-	UT_uint32               getCurrentPageNumber(void);
+	UT_uint32		getCurrentPageNumber(void);
 
 	void insertParagraphBreak(void);
 	void insertParagraphBreaknoListUpdate(void);
@@ -200,7 +207,7 @@ public:
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
-    UT_Bool         cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce = UT_FALSE);
+    UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce = UT_FALSE);
 	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar * 	getSelectionText(void);
