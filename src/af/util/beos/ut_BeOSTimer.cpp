@@ -63,12 +63,12 @@ UT_BeOSTimer::~UT_BeOSTimer()
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer destructor\n"));
 	if (getIdentifier()!=-1)
 	{
-		UT_DEBUGMSG("Killing off thread\n");
+		UT_DEBUGMSG(("Killing off thread\n"));
 		kill_thread(getIdentifier());
 	}
 	else
 	{
-		UT_DEBUGMSG("No thread to kill off, me thinks\n");
+		UT_DEBUGMSG(("No thread to kill off, me thinks\n"));
 	}
 }
 
@@ -101,7 +101,7 @@ void UT_BeOSTimer::resetIfStarted(void)
 {
 	/*if (m_bStarted)
 		set(m_iMilliseconds);*/
-	UT_DEBUGMSG("resetIfStarted called\n");
+	UT_DEBUGMSG(("resetIfStarted called\n"));
 }
 
 UT_sint32 UT_BeOSTimer::set(UT_uint32 iMilliseconds)
@@ -119,10 +119,10 @@ UT_sint32 UT_BeOSTimer::set(UT_uint32 iMilliseconds)
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer set %d ms\n", iMilliseconds));
 	if (m_bStarted) 
 	{
-		UT_DEBUGMSG("Killing off old timer, starting new\n");
+		UT_DEBUGMSG(("Killing off old timer, starting new\n"));
 		kill_thread(getIdentifier());
 	}
-	UT_DEBUGMSG("Timer set\n");
+	UT_DEBUGMSG(("Timer set\n"));
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
 	thread_id idTimer = spawn_thread(_Timer_Proc, "Timer", 
@@ -139,13 +139,13 @@ void UT_BeOSTimer::stop(void)
 	thread_id id;
 	if ((id = getIdentifier()) !=-1 ) 
 	{
-		UT_DEBUGMSG("Timer stopped:%d\n",id);
+		UT_DEBUGMSG(("Timer stopped:%d\n",id));
 		UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
 		m_bStarted=UT_FALSE;
 		suspend_thread(id); 
 	}
 	else {
-		UT_DEBUGMSG("Stopping non-existant timer \n");
+		UT_DEBUGMSG(("Stopping non-existant timer \n"));
 	}
 }
 
@@ -155,12 +155,12 @@ void UT_BeOSTimer::start(void)
 	UT_ASSERT(m_iMilliseconds > 0);
 	if (getIdentifier()==-1)
 	{
-		UT_DEBUGMSG("Creating new timer in start()\n");
+		UT_DEBUGMSG(("Creating new timer in start()\n"));
 		set(m_iMilliseconds);
 	}
 	else if (!m_bStarted)
 	{
-		UT_DEBUGMSG("Restarted old timer\n");
+		UT_DEBUGMSG(("Restarted old timer\n"));
 		m_bStarted=UT_TRUE;
 		resume_thread(getIdentifier());
 	}
