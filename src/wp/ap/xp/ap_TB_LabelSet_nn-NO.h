@@ -70,6 +70,7 @@ BeginSet(nn,NO,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Understreking",tb_text_underline_xpm,	NULL, "Understreking")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overstreking",tb_text_overline_xpm,	NULL, "Overstreking")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Gjennomstreking",   tb_text_strikeout_xpm,	NULL, "Gjennomstreking")
+        ToolbarLabel(AP_TOOLBAR_ID_HELP, "Hjelp", tb_help_xpm, NULL, "Hjelp")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Heva skrift",	tb_text_superscript_xpm,	NULL, "Heva skrift")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Senka skrift",	tb_text_subscript_xpm,		NULL, "Senka skrift")
@@ -100,7 +101,10 @@ BeginSet(nn,NO,true)
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Reduser innrykk", tb_text_unindent_xpm, NULL, "Reduserer avsnittsinnrykk")
 	
      // ... add others here ...
-
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Tekstretning",	tb_text_direction_rtl_xpm,	NULL, "Endrar tekstretninga")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Avsnittsretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endrar hovudtekstretning for avsnitt")
+#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

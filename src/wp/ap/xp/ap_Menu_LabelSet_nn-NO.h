@@ -109,7 +109,9 @@ BeginSet(nn,NO,true)
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Se&nka skrift",		"Aktiverer/deaktiverer bruk av senka skrift i det merkte området")
 
 	MenuLabel(AP_MENU_ID_TOOLS,				"V&erktøy",			NULL)   
+        MenuLabel(AP_MENU_ID_TOOLS_SPELLING, "&Stavekontroll", NULL)
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavekontroll ",		"Stavekontrollerer dokumentet")
+        MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL, "&Fortløpande stavekontroll", "Forløpande stavekontroll av dokumentet")
 	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"Ordt&elling ",		"Tel talet på ord i dokumentet")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Innstillingar ",			"Endrar innstillingar")
 
