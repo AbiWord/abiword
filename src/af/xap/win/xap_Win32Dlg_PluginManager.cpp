@@ -148,7 +148,7 @@ BOOL XAP_Win32Dialog_PluginManager::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));
 
 	// localize controls
-		// No controls except the CLOSE button???
+	_DSX(PLUGIN_MANAGER_BTN_CLOSE, DLG_Close);
 
 	// setup the tabs
 	{

@@ -354,8 +354,8 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PAGE_SETUP_LBL_WITDH,			DLG_PageSetup_Width);			
 			_DS(PAGE_SETUP_LBL_HEIGHT,			DLG_PageSetup_Height);			
 			_DS(PAGE_SETUP_LBL_UNITS,			DLG_PageSetup_Units);			
-			_DS(PAGE_SETUP_LBL_PORTRAIT,		DLG_PageSetup_Portrait);			
-			_DS(PAGE_SETUP_LBL_LANDSCAPE,		DLG_PageSetup_Landscape);			
+			_DS(PAGE_SETUP_RDO_PORTRAIT,		DLG_PageSetup_Portrait);			
+			_DS(PAGE_SETUP_RDO_LANDSCAPE,		DLG_PageSetup_Landscape);			
 			_DS(PAGE_SETUP_LBL_ADJUSTTO,		DLG_PageSetup_Adjust);			
 			_DS(PAGE_SETUP_LBL_PERCENTOFSIZE,	DLG_PageSetup_Percent);			
 
@@ -444,6 +444,7 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 	case AP_RID_DIALOG_PAGE_SETUP_MARGINS:
 		{
 			// Localize Controls
+			_DS(PAGE_SETUP_LBL_UNITS,			DLG_PageSetup_Units);			
 			_DS(PAGE_SETUP_LBL_TOP,				DLG_PageSetup_Top);
 			_DS(PAGE_SETUP_LBL_BOTTOM,			DLG_PageSetup_Bottom);
 			_DS(PAGE_SETUP_LBL_LEFT,	     	DLG_PageSetup_Left);
