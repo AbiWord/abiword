@@ -263,6 +263,7 @@ if test "$PLATFORM" = unix -a "$gnome" = true ; then
 	    AC_MSG_RESULT(not found: disabling gnome)
             gnome=false
         fi
+	AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
 fi
 
 if test "$PLATFORM" = unix -a "$gnome" = true ; then
@@ -281,6 +282,7 @@ if test "$PLATFORM" = unix -a "$gnome" = true ; then
 	    AC_MSG_RESULT(not found: disabling gnome)
             gnome=false
         fi
+	AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
 fi
 
 if test "$PLATFORM" = unix -a "$gnome" = true ; then
