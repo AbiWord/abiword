@@ -266,6 +266,9 @@ Damon Allen Davison <allolex@users.sourceforge.net>	German
 Masayuki Hatta <mhatta@gnu.org>				Japanese
 Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
 Mugurel Tudor <mugurelu@go.ro>				Romanian
+pclouds <pclouds@users.sourceforge.net>			Vietnamese
+Ivica Bogosavlevic <ivica84@ptt.yu>			Serbian
+
 unsung heroes
 -------------
 Mary Eppich
