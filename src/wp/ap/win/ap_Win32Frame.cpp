@@ -200,7 +200,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	ENSUREP(pView);
 
 //	pDocLayout->fillLayouts();
-	
+
 
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
@@ -313,12 +313,16 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
 	InvalidateRect(hwnd, NULL, TRUE);
 
-	setXScrollRange();
-	setYScrollRange();
-
 	updateTitle();
 
 	pDocLayout->fillLayouts();
+
+	// we cannot do this before we fill the layout, because if we are
+	// running in default RTL mode, the X scroll needs to be able to
+	// have a valid block for its calculations
+	setXScrollRange();
+	setYScrollRange();
+
 	if (m_pView != NULL)
 	{
 		// we cannot just set the insertion position to that of the previous
@@ -1413,7 +1417,7 @@ void AP_Win32Frame::toggleLeftRuler(bool bRulerOn)
 
 	if (bRulerOn)
 	{
-		// 
+		//
 		// If There is an old ruler just return
 		//
 		if(m_hwndLeftRuler)
@@ -1581,7 +1585,7 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 		pFrameData->m_pStatusBar->hide();
 	}
 
-	UpdateWindow(m_hwndContainer);	
+	UpdateWindow(m_hwndContainer);
 }
 
 void AP_Win32Frame::_showOrHideToolbars(void)
