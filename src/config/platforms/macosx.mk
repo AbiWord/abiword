@@ -61,8 +61,14 @@ OBJ_DIR_SFX	= OBJ
 endif
 
 # Includes
-OS_INCLUDES		= -I/usr/local/include -I/System/Library/Frameworks/Carbon.framework/Versions/A/Headers
-G++INCLUDES		= -I/usr/include/g++
+OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include \
+		-I/usr/local/include \
+		-I/System/Library/Frameworks/Carbon.framework/Headers \
+		-I/System/Library/Frameworks/CarbonCore.framework/Headers \
+		-I/System/Library/Frameworks/QD.framework/Headers \
+		-I/System/Library/Frameworks/HIToolbox.framework/Headers \
+		-I/System/Library/Frameworks/AE.framework/Headers
+G++INCLUDES		= -I$(ABI_ROOT)/../libiconv/include -I/usr/include/g++
 
 # Compiler flags
 PLATFORM_FLAGS		= -fpascal-strings -DCARBON_ON_MACH_O=1 -DXP_MAC_TARGET_CARBON -DNO_SYS_ERRLIST $(OS_INCLUDES)
