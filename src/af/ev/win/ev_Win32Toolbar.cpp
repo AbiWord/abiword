@@ -175,6 +175,10 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 		case EV_TLF_Normal:
 			{
 				// TODO figure out who destroys hBitmap...
+				// TODO add code to create these once per application
+				// TODO and reference them in each toolbar instance
+				// TODO rather than create them once for each window....
+				
 				HBITMAP hBitmap;
 				UT_Bool bFoundIcon = m_pWin32ToolbarIcons->getBitmapForIcon(m_hwnd,
 																			MY_MAXIMUM_BITMAP_X,
