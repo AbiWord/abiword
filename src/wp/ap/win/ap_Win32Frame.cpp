@@ -922,7 +922,7 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 				// We need to get a mouse down signal.
 				// windows is not activated so send a mouse down if the mouse is pressed.
 
-				UT_DEBUGMSG(("Need to set mouse down"));
+				UT_DEBUGMSG(("%s(%d): Need to set mouse down\n", __FILE__, __LINE__));
 
 //				GetKeyState
 			}
