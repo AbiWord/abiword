@@ -158,7 +158,7 @@ bool EV_EditMethodContainer::removeEditMethod(EV_EditMethod * pem)
 	UT_sint32 pos = m_vecDynamicEditMethods.findItem ( pem ) ;
 
 	if ( pos >= 0 )
-	    deleteNthItem(pos);
+	    m_vecDynamicEditMethods.deleteNthItem(pos);
 	return (pos >= 0) ;
 }
 
