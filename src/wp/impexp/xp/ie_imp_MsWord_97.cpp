@@ -1583,11 +1583,16 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   // suck the data into the ByteBuffer
 
   int data = 0;
+
+#if 0
+  // will load Caolan's example graphic inclusion stuff
+  while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+#else
+    // will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
   while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
+#endif
     pictData->append((UT_Byte*)&data, 1);
   
-  fclose (((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream);
-
   error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
   if ((error != UT_OK) || !importer)
     {
