@@ -42,7 +42,7 @@ realclean::
 ## non-installed layout.
 
 ## Set the following to a list of pathnames to be copied to $(CANONDIR)
-CANON_TOPLEVELFILES=	$(ABI_DEPTH)/../COPYING
+CANON_TOPLEVELFILES=	$(ABI_DEPTH)/../COPYING $(ABI_DEPTH)/../user/wp/readme.txt
 
 ## Set the following to a list of directories (probably a subset of DIRS)
 ## that have work to do.
