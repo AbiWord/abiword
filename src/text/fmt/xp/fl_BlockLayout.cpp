@@ -246,7 +246,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	//
 	if(!m_bIsTOC)
 	{
-		if(!isEmbeddedType())
+		if(!isNotTOCable())
 		{
 			m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 		}
@@ -865,7 +865,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	//
 	if(!m_bIsTOC && !(sNewStyle == sOldStyle))
 	{
-		if(!isEmbeddedType())
+		if(!isNotTOCable())
 		{
 			if(m_bStyleInTOC)
 			{
@@ -892,7 +892,7 @@ fl_BlockLayout::~fl_BlockLayout()
 //		}
 	if(!m_bIsTOC)
 	{
-		if(!isEmbeddedType())
+		if(!isNotTOCable())
 		{
 			m_pLayout->removeBlockFromTOC(this);
 		}
@@ -919,6 +919,46 @@ bool fl_BlockLayout::isEmbeddedType(void)
 	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) )
 	{
 		return true;
+	}
+	return false;
+}
+
+
+/*!
+ * This method returns true if the block is contained with a section embedded
+ * that should not be included in TOC like, footnote,endnotes,HdrFtr's 
+ * and other TOC's.
+ */
+bool fl_BlockLayout::isNotTOCable(void)
+{
+	fl_ContainerLayout * pCL = myContainingLayout();
+	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE 
+			   || pCL->getContainerType() == FL_CONTAINER_ENDNOTE 
+			   || pCL->getContainerType() == FL_CONTAINER_HDRFTR 
+			   || pCL->getContainerType() == FL_CONTAINER_TOC 
+			   || pCL->getContainerType() == FL_CONTAINER_SHADOW
+			   ) )
+	{
+		return true;
+	}
+	if(pCL == NULL)
+	{
+		return true;
+	}
+	if(pCL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		pCL = pCL->myContainingLayout(); // should be a table
+		if(pCL == NULL)
+		{
+			return true;
+		}
+		pCL = pCL->myContainingLayout(); // is it a Hdrftr?
+		if(pCL && (pCL->getContainerType() == FL_CONTAINER_HDRFTR
+			   || pCL->getContainerType() == FL_CONTAINER_SHADOW
+			   ) )
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -5283,7 +5323,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	//
 	// OK Now do the insertSpan for any TOC's that shadow this block.
 	//
-	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
+	if(!isNotTOCable() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
@@ -5687,7 +5727,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	//
 	// OK Now do the deleteSpan for any TOC's that shadow this block.
 	//
-	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
+	if(!isNotTOCable() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
@@ -7293,7 +7333,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	//
 	// OK Now do the insertSpan for any TOC's that shadow this block.
 	//
-	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
+	if(!isNotTOCable() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
@@ -7382,7 +7422,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	//
 	// OK Now do the deleteObject for any TOC's that shadow this block.
 	//
-	if(!isEmbeddedType() && !m_bIsTOC && m_bStyleInTOC)
+	if(!isNotTOCable() && !m_bIsTOC && m_bStyleInTOC)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
