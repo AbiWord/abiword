@@ -307,6 +307,11 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
 	bool bDirection,bEOL;
+
+	bDirection = bEOL = false;
+	UT_DEBUGMSG(("MSEVIOR: TODO: initialize bDirection && bEOL (bug 7428)\n"));
+	UT_ASSERT(UT_TODO);
+
 	m_pView->_findPositionCoords(newPos, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
 	m_recCursor.left = xLow;
 	m_recCursor.top = yLow;
