@@ -69,8 +69,8 @@ public:
 	UT_sint32				simpleRecalcWidth(UT_sint32 iLength = Calculate_full_width);
 
 	void					resetJustification();
-	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
-	UT_sint32				countJustificationPoints() const;
+	void					justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
+	UT_sint32				countJustificationPoints(bool bLast) const;
 
 	bool					getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const;
 	UT_sint32				findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const;
@@ -159,15 +159,6 @@ protected:
 									  const UT_GrowBuf * pgbCharWidths,
 									  UT_Rect & rect,
 									  GR_Graphics * pG);
-#if 0
-	enum
-	{
-	    JUSTIFICATION_NOT_USED = -1,
-		JUSTIFICATION_FAKE = -2
-	};
-#endif
-	UT_sint32              _getSpaceWidthBeforeJustification();
-	void                   _setSpaceWidthBeforeJustification(UT_sint32 iWidth);
 
 private:
 
@@ -194,8 +185,6 @@ private:
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *		m_pLanguage;
 	bool					m_bIsOverhanging;
-	bool                    m_bIsJustified;
-	UT_sint32               m_iSpaceWidthBeforeJustification;
 
 	bool                    m_bKeepWidths;
 

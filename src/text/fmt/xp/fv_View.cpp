@@ -473,6 +473,20 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	}
 }
 
+void FV_View::replaceGraphics(GR_Graphics * pG)
+{
+	if(m_pG)
+	{
+		delete m_pG;
+		m_pG = NULL;
+	}
+
+	setGraphics(pG);
+
+	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+}
+
+
 //-------------------------
 // Visual Drag stuff
 //

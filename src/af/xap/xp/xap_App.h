@@ -219,8 +219,7 @@ public:
 
 	GR_GraphicsFactory *       getGraphicsFactory() const {return m_pGraphicsFactory;}
 	void                       setDefaultGraphicsId(UT_uint32 i) {m_iDefaultGraphicsId = i;}
-	GR_Graphics *              newGraphics() const;
-	GR_Graphics *              newGraphics(UT_uint32 iClassId) const;
+	GR_Graphics *              newGraphics(UT_uint32 iClassId, void *param) const;
 	
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;

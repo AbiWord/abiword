@@ -66,7 +66,6 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_bSquiggled(false),
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
-	m_bIsJustified(false),
 	m_bKeepWidths(false),
 	m_pRenderInfo(NULL),
 	m_eScriptType(GRScriptType_Undefined)
@@ -348,7 +347,7 @@ bool fp_TextRun::canBreakAfter(void) const
 
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 
-		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
+		if (getGraphics()->canBreakAt(text.getChar()))
 		{
 			return true;
 		}
@@ -375,7 +374,7 @@ bool fp_TextRun::canBreakBefore(void) const
 
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 
-		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
+		if (getGraphics()->canBreakAt(text.getChar()))
 		{
 			return true;
 		}
@@ -830,9 +829,11 @@ bool fp_TextRun::canMergeWithNext(void)
 															   //non-null but different
 		|| (pNext->getVisibility() != getVisibility())
 
+#if 0
 		// I do not think this should happen at all
-		|| ((pNext->m_bIsJustified && m_bIsJustified)
+		|| ((pNext->m_bRenderInfo->isJustified() && m_bRenderInfo->isJustified())
 			&& (pNext->m_iSpaceWidthBeforeJustification != m_iSpaceWidthBeforeJustification))
+#endif
 		)
 	{
 		return false;
@@ -860,18 +861,6 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_fPosition == pNext->m_fPosition);
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
-
-	// if either run was justified, the merged one needs to be as well
-	if(m_bIsJustified && pNext->m_bIsJustified)
-	{
-		UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
-	}
-	else if(!m_bIsJustified && pNext->m_bIsJustified)
-	{
-		m_iSpaceWidthBeforeJustification = pNext->m_iSpaceWidthBeforeJustification;
-	}
-
-	m_bIsJustified |= pNext->m_bIsJustified;
 
 	_setField(pNext->getField());
 
@@ -1000,9 +989,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->setVisDirection(iVisDirection);
 
 	pNew->_setHyperlink(this->getHyperlink());
-
-	pNew->m_bIsJustified = m_bIsJustified;
-	pNew->m_iSpaceWidthBeforeJustification = m_iSpaceWidthBeforeJustification;
 
 	// when revisions are present, this gets bit trickier
 	if(getRevisions() != NULL)
@@ -1324,8 +1310,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 // and we have full justification we abort, reformat the paragraph and redraw.
 //
 	bool bRefresh = _refreshDrawBuffer();
-	if(bRefresh && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY
-)
+#if 0
+	// this is extremely expensive; all we need to do is to restore
+	// the justification info in _refereshDrawBuffer();
+	if(bRefresh && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
 	{
 		UT_DEBUGMSG(("_refreshDrawBuffer called on Justified run - reformat and abort \n"));
 		getBlock()->setNeedsReformat(0);
@@ -1335,6 +1323,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		markAsDirty();
 		return;
 	}
+#endif
+	
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
 					 this, m_iVisDirection, _getDirection()));
 
@@ -1816,7 +1806,8 @@ bool fp_TextRun::_refreshDrawBuffer()
 
 		GR_ShapingInfo si(text,iLen, GRScriptType_Undefined, m_pLanguage, iVisDir,
 						  GR_Font::s_doesGlyphExist, (void*)getFont(),
-						  m_pRenderInfo ? m_pRenderInfo->m_eShapingResult : GRSR_Unknown);
+						  m_pRenderInfo ? m_pRenderInfo->m_eShapingResult : GRSR_Unknown,
+						  _getFont());
 
 		getGraphics()->shape(si, m_pRenderInfo);
 		
@@ -2211,44 +2202,24 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 void fp_TextRun::resetJustification()
 {
-	UT_sint32 iAccumDiff = 0;
+	if(!m_pRenderInfo)
+		return;
+	
 	UT_sint32 iWidth = getWidth();
 	xxx_UT_DEBUGMSG(("reset Justification of run %x \n", this));
-	if(m_bIsJustified)
-	{
-		UT_sint32 iSpaceWidthBefore = _getSpaceWidthBeforeJustification();
 
-		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-		if(pCharWidths == NULL)
-		{
-			return;
-		}
-		UT_sint32 i = findCharacter(0, UCS_SPACE);
+	m_pRenderInfo->m_iLength = getLength();
 
-		// if for some reason the width after justification is the
-		// same as it was, we do not need to do this at all
-		while (i >= 0)
-		{
-			// not all spaces have been necessarily adjusted,
-			// sometimes, due to rounding errors, we run out of the extra
-			// width before we reach the start of the line
-			if(pCharWidths[i] != iSpaceWidthBefore)
-			{
-				iAccumDiff += iSpaceWidthBefore - pCharWidths[i];
-				pCharWidths[i] = iSpaceWidthBefore;
-				_setRecalcWidth(true);
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(getBlockOffset());
 
-			}
-
-			// keep looping
-			i = findCharacter(i+1-getBlockOffset(), UCS_SPACE);
-		}
-
-		m_bIsJustified = false;
-	}
+	m_pRenderInfo->m_pWidths = pCharWidths;
+	
+	UT_sint32 iAccumDiff = getGraphics()->resetJustification(*m_pRenderInfo);
+	
 	if(iAccumDiff != 0)
 	{
+		_setRecalcWidth(true); // not sure this is needed
 		_setWidth(iWidth + iAccumDiff);
 	}
 }
@@ -2261,26 +2232,10 @@ void fp_TextRun::resetJustification()
     \param UT_uint32 iSpacesInRun : the number of spaces in this run
 
 */
-void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
+void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 {
-	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-
-	if(pCharWidths == NULL)
-	{
-		UT_DEBUGMSG(("No pCharWidths! IndistributeJustificationAmongstSpaces  \n"));
-		return;
-	}
-#if 0
-	if(!iAmount && !iSpacesInRun)
-	{
-		// I suspect this might now be redundant ...
-		_setSpaceWidthBeforeJustification(JUSTIFICATION_FAKE);
-		return;
-	}
-#endif
-	xxx_UT_DEBUGMSG(("In AmongstSpaces amount %d spacesinrun %d run %x line %x \n",iAmount,iSpacesInRun,this,getLine()));
-
+	UT_return_if_fail(m_pRenderInfo);
+	
 	if(!iAmount)
 	{
 		// this can happend near the start of the line (the line is
@@ -2293,39 +2248,26 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 		return;
 	}
 
-	UT_uint32 iBlockOffset = getBlockOffset();
-
 	if(iSpacesInRun && getLength() > 0)
 	{
-		_setWidth(getWidth() + iAmount);
-		xxx_UT_DEBUGMSG(("Run %x has width set to %d \n",this,getWidth()));
-		// NB: i is block offset, not run offset !!!
-		UT_sint32 i = findCharacter(0, UCS_SPACE);
+		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(getBlockOffset());
 
-		UT_ASSERT( i>=0 );
-
-		m_bIsJustified = true;
-
-		_setSpaceWidthBeforeJustification(pCharWidths[i]);
-
-		while ((i >= 0) && (iSpacesInRun))
+		if(pCharWidths == NULL)
 		{
-			UT_sint32 iThisAmount = iAmount / iSpacesInRun;
-
-			pCharWidths[i] += iThisAmount;
-
-			xxx_UT_DEBUGMSG(("Space at loc %d new width %d given extra width %d \n",i,pCharWidths[i],iThisAmount));
-			iAmount -= iThisAmount;
-
-			iSpacesInRun--;
-
-			// keep looping
-			if(iSpacesInRun > 0)
-			{
-				i = findCharacter(i+1-iBlockOffset, UCS_SPACE);
-			}
+			UT_DEBUGMSG(("fp_TextRun::justify: No pCharWidths!\n"));
+			return;
 		}
+
+		m_pRenderInfo->m_pWidths = pCharWidths;
+		m_pRenderInfo->m_iLength = getLength();
+	
+		_setWidth(getWidth() + iAmount);
+		m_pRenderInfo->m_iJustificationPoints = iSpacesInRun;
+		m_pRenderInfo->m_iJustificationAmount = iAmount;
+		getGraphics()->justify(*m_pRenderInfo);
 	}
+	
 }
 
 UT_uint32 fp_TextRun::countTrailingSpaces(void) const
@@ -2361,40 +2303,13 @@ UT_uint32 fp_TextRun::countTrailingSpaces(void) const
    doesContainNonBlankData() in a couple of loops in fp_Line
 */
 
-UT_sint32 fp_TextRun::countJustificationPoints(void) const
+UT_sint32 fp_TextRun::countJustificationPoints(bool bLast) const
 {
-	UT_sint32 iCount = 0;
-	bool bNonBlank = false;
-	UT_sint32 iOldI;
+	UT_return_val_if_fail(m_pRenderInfo, 0);
+	m_pRenderInfo->m_iLength = getLength();
 
-	if(getLength() > 0)
-	{
-		UT_sint32 i = findCharacter(0, UCS_SPACE);
-		iOldI = getBlockOffset() - 1;
-
-		while (i >= 0)
-		{
-			if(iOldI < i-1) // i.e., something between the two spaces
-				bNonBlank = true;
-
-			iCount++;
-			iOldI = i;
-
-			// keep looping
-			i = findCharacter(i+1-getBlockOffset(), UCS_SPACE);
-		}
-	}
-
-	UT_ASSERT(iCount >= 0);
-
-	if(!bNonBlank)
-	{
-		return -iCount;
-	}
-	else
-	{
-		return iCount;
-	}
+	m_pRenderInfo->m_bLastOnLine = bLast;
+	return getGraphics()->countJustificationPoints(*m_pRenderInfo);
 }
 
 bool fp_TextRun::_canContainPoint(void) const
@@ -2775,29 +2690,6 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 		pRun = static_cast<fp_TextRun*>(pRun->getNextRun());
 		iPrevType = iType;
 	}
-}
-
-
-/*!
-    returns the original width of space before justification or -1 if
-    justification is not used
-*/
-UT_sint32 fp_TextRun::_getSpaceWidthBeforeJustification()
-{
-	UT_return_val_if_fail(m_bIsJustified, 0);
-
-	return m_iSpaceWidthBeforeJustification;
-}
-
-/*!
-    sets the width of space before justification to iWidth
-    \param UT_sint32 iWidth -- width of spaces in this run before
-    justification was applied
-*/
-void fp_TextRun::_setSpaceWidthBeforeJustification(UT_sint32 iWidth)
-{
-	UT_ASSERT(m_bIsJustified);
-	m_iSpaceWidthBeforeJustification = iWidth;
 }
 
 

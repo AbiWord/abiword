@@ -130,6 +130,11 @@ XAP_Win32FrameImpl::~XAP_Win32FrameImpl(void)
 	
 	DELETEP(m_pWin32Menu);
 	DELETEP(m_pWin32Popup);
+
+	// have to reset the window long, so our message functions do not
+	// try to derefernce it
+	SetWindowLong(m_hwndFrame, GWL_USERDATA,0);
+
 }
 
 

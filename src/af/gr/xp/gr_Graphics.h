@@ -134,6 +134,9 @@ enum GR_GraphicsId
 	GRID_WIN32,
 	GRID_UNIX,
 	GRID_UNIX_PS,
+	GRID_UNIX_NULL,
+	GRID_UNIX_PANGO,
+	GRID_WIN32_UNISCRIBE,
 	
 	GRID_LAST_BUILT_IN = 0x0000ffff,
 
@@ -141,6 +144,17 @@ enum GR_GraphicsId
 	
 	GRID_UNKNOWN = 0xffffffff
 };
+
+// or-able graphics type
+enum GR_Capability
+{
+	GRCAP_UNKNOWN            = 0,
+	GRCAP_SCREEN_ONLY        = 1,
+	GRCAP_PRINTER_ONLY       = 2,
+	GRCAP_SCREEN_AND_PRINTER = 3
+};
+
+
 
 /*
    The purpose of GR_GraphicsFactory is to allow us to have parallel
@@ -160,12 +174,15 @@ class GR_GraphicsFactory
 
 	UT_uint32     getClassCount() const {return m_vClassIds.getItemCount();}
 
-	bool          registerClass(GR_Graphics * (*allocator)(bool),
+	bool          registerClass(GR_Graphics * (*allocator)(void*),
 								const char *  (*descriptor)(void),
 								UT_uint32 iClassId);
+
+	UT_uint32     registerPluginClass(GR_Graphics * (*allocator)(void*),
+									  const char *  (*descriptor)(void));
 	
-	void          unregisterClass(UT_uint32 iClassId);
-	GR_Graphics * newGraphics(UT_uint32 iClassId, bool bPrint=false) const;
+	bool          unregisterClass(UT_uint32 iClassId);
+	GR_Graphics * newGraphics(UT_uint32 iClassId, void * param) const;
 	const char *  getClassDescription(UT_uint32 iClassId) const;
 	
 	
@@ -192,9 +209,19 @@ class ABI_EXPORT GR_Graphics
  public:
 	virtual ~GR_Graphics();
 
-	static UT_uint32 getClassId() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
-	static const char *    graphicsDescriptor(){UT_ASSERT(UT_NOT_IMPLEMENTED); return "???";}
+	// the static method allows us to retrive the the class id for
+	// purposes of registration; we also need the virtual to identify
+	// the class from a generic GR_Graphics pointer
+	static UT_uint32 s_getClassId() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
+	virtual UT_uint32 getClassId() {return s_getClassId();}
 	
+	virtual GR_Capability getCapability() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
+#if 0
+	// the following two static functions have to be implemented by all
+	// derrived classes and registered with GR_GraphicsFactory 
+	static const char *    graphicsDescriptor(void){UT_ASSERT(UT_NOT_IMPLEMENTED); return "???";}
+	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+#endif
 	
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
 	UT_sint32	tlu(UT_sint32 deviceUnits) const;
@@ -434,7 +461,8 @@ class ABI_EXPORT GR_Graphics
 
 
 	///////////////////////////////////////////////////////////////////
-	// complex script processing
+	// complex script processing; see default implementations of these
+	// functions for documentation
 	//
 	virtual bool itemize(UT_TextIterator & text, GR_Itemization & I);
 
@@ -451,6 +479,11 @@ class ABI_EXPORT GR_Graphics
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri, UT_GrowBufElement* pCharWidths);
 	
+	virtual bool canBreakAt(UT_UCS4Char c);
+
+	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
+	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
+	virtual void justify(GR_RenderInfo & ri);
 	
  protected:
 

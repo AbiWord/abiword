@@ -33,6 +33,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_uuid.h"
+#include "gr_BeOSGraphics.h"
 
 
 /*****************************************************************/
@@ -46,6 +47,26 @@ XAP_BeOSApp::XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_UUIDGenerator());
+
+	// register graphics allocator
+	GR_GraphicsFactory * pGF = getGraphicsFactory();
+	UT_ASSERT( pGF );
+
+	if(pGF)
+	{
+		bool bSuccess = pGF->registerClass(GR_BeOSGraphics::graphicsAllocator,
+										   GR_BeOS32Graphics::graphicsDescriptor,
+										   GR_BeOSGraphics::s_getClassId());
+
+		// we are in deep trouble if this did not succeed
+		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(GR_BeOSGraphics::graphicsAllocator,
+									  GR_BeOSGraphics::graphicsDescriptor,
+									  GRID_DEFAULT);
+
+		UT_ASSERT( bSuccess );
+	}
 }
 
 XAP_BeOSApp::~XAP_BeOSApp(void)

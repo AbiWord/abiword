@@ -47,6 +47,9 @@
 #include "xap_UnixFontManager.h"
 
 #include "xap_UnixNullGraphics.h"
+#include "xap_UnixPSGraphics.h"
+#include "gr_UnixGraphics.h"
+
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 
 /*****************************************************************/
@@ -76,6 +79,34 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_UUIDGenerator());
 
+	// register graphics allocator
+	GR_GraphicsFactory * pGF = getGraphicsFactory();
+	UT_ASSERT( pGF );
+
+	if(pGF)
+	{
+		bool bSuccess = pGF->registerClass(GR_UnixGraphics::graphicsAllocator,
+										   GR_UnixGraphics::graphicsDescriptor,
+										   GR_UnixGraphics::s_getClassId());
+
+		// we are in deep trouble if this did not succeed
+		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(GR_UnixGraphics::graphicsAllocator,
+									  GR_UnixGraphics::graphicsDescriptor,
+									  GRID_DEFAULT);
+
+		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(PS_Graphics::graphicsAllocator,
+									  PS_Graphics::graphicsDescriptor,
+									  PS_Graphics::s_getClassId());
+
+		UT_ASSERT( bSuccess );
+
+		// I am not going to register UnixNull_Graphics since that
+		// only gets called when we run as cmd line tool
+	}
 }
 
 XAP_UnixApp::~XAP_UnixApp()

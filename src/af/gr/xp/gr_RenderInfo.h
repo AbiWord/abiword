@@ -121,7 +121,10 @@ class GR_RenderInfo
  		  m_eState(GRSR_Unknown), m_eScriptType(type),
 		  m_pText(NULL), m_iVisDir(FRIBIDI_TYPE_LTR),
 	      m_xoff(0), m_yoff(), m_pWidths(NULL),
-	      m_pGraphics(NULL), m_pFont(NULL){};
+	      m_pGraphics(NULL), m_pFont(NULL),
+		  m_iJustificationPoints(0),
+		  m_iJustificationAmount(0),
+		  m_bLastOnLine(false){};
 	
 	
 	virtual ~GR_RenderInfo(){};
@@ -134,6 +137,9 @@ class GR_RenderInfo
 
 	virtual bool canAppend(GR_RenderInfo &ri) const
 	              {return (m_eScriptType == ri.m_eScriptType);}
+
+	virtual bool isJustified() const = 0;
+	
 	
 	UT_uint32           m_iOffset;
 	UT_uint32           m_iLength;
@@ -148,6 +154,10 @@ class GR_RenderInfo
 
 	GR_Graphics *       m_pGraphics;
 	GR_Font     *       m_pFont;
+
+	UT_uint32           m_iJustificationPoints;
+	UT_sint32           m_iJustificationAmount;
+	bool                m_bLastOnLine;
 	
 
  private:
@@ -182,6 +192,8 @@ class GR_XPRenderInfo : public GR_RenderInfo
 	virtual bool split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false);
 	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
 
+	virtual bool isJustified() const {return (m_iSpaceWidthBeforeJustification >= 0);}
+	
 	void prepareToRenderChars();
 	
 
@@ -190,6 +202,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 	UT_uint32           m_iBufferSize;
 	UT_uint32 *         m_pSegmentOffset;
 	UT_uint32           m_iSegmentCount;
+	UT_sint32           m_iSpaceWidthBeforeJustification; // <0 for not justified
 
 	// these can be static as for now we do not want to chache anything
 	static UT_uint32	    s_iClassInstanceCount;
@@ -216,11 +229,13 @@ class GR_ShapingInfo
 				   GR_ScriptType type, const char * pLang,
 				   FriBidiCharType iVisDir,
 				   bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom),
-				   void * param, GRShapingResult eShapingRequired)
+				   void * param, GRShapingResult eShapingRequired,
+				   GR_Font * pFont)
 		:m_Text(text), m_Type(type), m_iLength(iLen), m_pLang(pLang), m_iVisDir(iVisDir),
 	     m_isGlyphAvailable(isGlyphAvailable), m_param(param),
 		 m_eShapingRequired(eShapingRequired),
-	     m_pGraphics(NULL), m_pFont(NULL){};
+	     m_pFont(pFont),
+	     m_iJustifyBy(0){};
 	
 	virtual ~GR_ShapingInfo() {};
 
@@ -233,8 +248,9 @@ class GR_ShapingInfo
 	void *              m_param;
 	GRShapingResult     m_eShapingRequired;
 
-	GR_Graphics *       m_pGraphics;
-	GR_Font *          m_pFont;
+	GR_Font *           m_pFont;
+
+	UT_uint32           m_iJustifyBy;
 	
 };
 

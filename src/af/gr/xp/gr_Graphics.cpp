@@ -24,6 +24,7 @@
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
+#include "xap_EncodingManager.h"
 #include "gr_Graphics.h"
 #include "gr_CharWidths.h"
 #include "ut_assert.h"
@@ -690,9 +691,18 @@ void GR_Graphics::xorRect(const UT_Rect& r)
 
 #endif
 
-/*
-    this is a default implementation that only deals with bidi
-    reordering
+/////////////////////////////////////////////////////////////////////////////////
+//
+//  COMPLEX SCRIPT PROCESSING FUNCTIONS
+//
+//
+
+/*!
+    itemize() analyses text represented by text, notionally dividing
+    it into segments that from the point of the shaper are uniform;
+    this notional division is stored in GR_Itemization I.
+    
+    The default implementation that only deals with bidi reordering
 
     derrived classes can either provide entirely different
     implementation, or call the default implementation first and then
@@ -842,7 +852,22 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	return true;
 }
 
-// process information encapsulated by si and store results in ri
+/*!
+    shape() processes the information encapsulated by GR_ShapingInfo
+    si and stores results in GR_*RenderInfo* pri.
+
+    If the contents of pri are NULL the function must create a new
+    instance of GR_*RenderInfo of the appropriate type and store the
+    pointer in pri; it also must store pointer to this graphics
+    instance in pri->m_pGraphics.
+
+    If ri indicates that the text is justified, appropriate processing
+    needs to be done
+
+    This function is tied closely together to a class derrived from
+    GR_RenderInfo which may contain caches of various data that will
+    speed subsequent calls to prepareToRenderChars() and renderChars()
+*/
 bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 {
 	if(si.m_Type == GRScriptType_Void)
@@ -852,6 +877,7 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 	{
 		pri = new GR_XPRenderInfo(si.m_Type);
 		UT_return_val_if_fail(pri, false);
+		pri->m_pGraphics = this;
 	}
 
 	GR_XPRenderInfo * pRI = (GR_XPRenderInfo *)pri;
@@ -894,7 +920,13 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 
 	pRI->m_eState = GRSR_BufferClean;
 	
-	return (pRI->m_eShapingResult != GRSR_Error);
+	if(pRI->m_eShapingResult == GRSR_Error)
+		return false;
+
+	if(pRI->isJustified())
+		justify(*pRI);
+
+	return true;
 }
 
 void GR_Graphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const
@@ -943,16 +975,24 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri, UT_GrowBufElemen
 	
 }
 
-/*
-   do any preprocessing necessary prior to the actual output on screen
+/*!
+   prepareToRenderChars() does any preprocessing necessary immediately
+   prior to the actual output on screen (which is done by
+   renderChars()), and must be always called before renderChars().
 
-   This function is always called before renderChars() and should take
-   care of refreshing any buffers that might need to be refreshed,
-   etc. This is to limit the number of processing if the caller needs
-   to make several calls to renderChars() with the same GR_RenderInfo
-   (for example, fp_TextRun::_draw() makes up to three calls to
-   renderChars() because it can draw the text in three segments -- we
-   do not want to recalculate the static buffers three times)
+   What this function does is entirely dependend of the specific
+   shaping engine (and in some cases might not do anthing at all). For
+   example, this function might refresh any temporary buffers,
+   etc.
+
+   The reason for dividing the actual drawing into two steps (prepare
+   and render) is to limit the amount of processing in cases where the
+   caller needs to make several calls to renderChars() with the same
+   GR_RenderInfo. For example, fp_TextRun::_draw() draws the text in
+   one, two or three segments depending whether there is a selection
+   and where in the run it is. It will make one call to
+   prepareToRenderChars() and then 1-3 calls to renderChars() chaning
+   the background and text colour in between those calls.
 */
 void GR_Graphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
@@ -961,7 +1001,13 @@ void GR_Graphics::prepareToRenderChars(GR_RenderInfo & ri)
 	RI.prepareToRenderChars();
 }
 
+/*!
+   renderChars() outputs textual data represented by ri onto the device (screen,
+   priter, etc.).
 
+   The output starts at ri.m_iOffset, is ri.m_iLength
+   long and the drawing starts at ri.m_xoff, ri.m_yoff
+*/
 void GR_Graphics::renderChars(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_XP);
@@ -972,18 +1018,202 @@ void GR_Graphics::renderChars(GR_RenderInfo & ri)
 	
 };
 
+/*!
+    return true if linebreak at character c is permissible
+*/
+bool GR_Graphics::canBreakAt(UT_UCS4Char c)
+{
+	return XAP_EncodingManager::get_instance()->can_break_at(c);
+}
 
-/*
+/*!
+   resetJustification() makes the data represented by ri unjustified
+   and returns value by which the total width changed as a result such
+   that OriginalWidth + ReturnValue = NewWidth (i.e., the return
+   value should normally be negative).
+*/
+UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri)
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+
+	UT_return_val_if_fail(RI.m_pChars && RI.m_pWidths, 0);
+	
+	UT_sint32 iAccumDiff = 0;
+
+	if(RI.isJustified())
+	{
+		UT_sint32 iSpaceWidthBefore = RI.m_iSpaceWidthBeforeJustification;
+
+		if(RI.m_pWidths == NULL)
+		{
+			return 0;
+		}
+
+		for(UT_uint32 i = 0; i < RI.m_iLength; ++i)
+		{
+			if(RI.m_pChars[i] != UCS_SPACE)
+				continue;
+
+			if(RI.m_pWidths[i] != iSpaceWidthBefore)
+			{
+				iAccumDiff += iSpaceWidthBefore - RI.m_pWidths[i];
+				RI.m_pWidths[i] = iSpaceWidthBefore;
+			}
+		}
+		
+		RI.m_iSpaceWidthBeforeJustification = 0xffffffff;
+	}
+	
+
+	return iAccumDiff;
+}
+
+/*!
+   countJustificationPoints() counts the number of points between
+   which any extra justification width could be distributed (in Latin
+   text these are typically spaces).spaces in the text;
+
+   The function returns the count as negative value if
+   the run contains only blank data (i.e., only spaces in Latin text).
+*/
+UT_sint32 GR_Graphics::countJustificationPoints(const GR_RenderInfo & ri) const
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+
+	UT_return_val_if_fail(RI.m_pChars, 0);
+
+	UT_sint32 iCount = 0;
+	bool bNonBlank = false;
+	UT_sint32 iOldI = -1;
+
+	for(UT_sint32 i = (UT_sint32)RI.m_iLength-1; i >= 0; --i)
+	{
+		if(RI.m_pChars[i] != UCS_SPACE)
+			continue;
+		
+		if(iOldI > i+1) // i.e., something between the two spaces
+			bNonBlank = true;
+
+		// only count this space if this is not last run, or if we
+		// have found something other than spaces
+		if(!ri.m_bLastOnLine || bNonBlank)
+			iCount++;
+		
+		iOldI = i;
+	}
+
+	if(!bNonBlank)
+	{
+		return -iCount;
+	}
+	else
+	{
+		return iCount;
+	}
+}
+
+/*!
+   justify() distributes justification information into the text.
+
+   The justification information consists of ri.m_iJustificationPoints and
+   m_iJustificationAmount
+
+   NB: This function must not modify the original values in
+   ri.m_iJustificationAmount and ri.m_iJustificationPoints
+*/
+void GR_Graphics::justify(GR_RenderInfo & ri)
+{
+	UT_return_if_fail(ri.getType() == GRRI_XP);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+
+	UT_return_if_fail(RI.m_pChars && RI.m_pWidths);
+
+	// need to leave the original values alone ...
+	UT_uint32 iPoints = ri.m_iJustificationPoints;
+	UT_sint32 iAmount = ri.m_iJustificationAmount;
+	
+	
+	if(!iAmount)
+	{
+		// this can happend near the start of the line (the line is
+		// processed from back to front) due to rounding errors in
+		// the  algorithm; we simply mark the run as one that does not
+		// use justification
+
+		// not needed, since we are always called after ::resetJustification()
+		// resetJustification();
+		return;
+	}
+
+	if(iPoints)
+	{
+		for(UT_uint32 i = 0; i < RI.m_iLength; ++i)
+		{
+			if(RI.m_pChars[i] != UCS_SPACE)
+				continue;
+			
+			RI.m_iSpaceWidthBeforeJustification = RI.m_pWidths[i];
+		
+			UT_sint32 iThisAmount = iAmount / iPoints;
+
+			RI.m_pWidths[i] += iThisAmount;
+
+			xxx_UT_DEBUGMSG(("Space at loc %d new width %d given extra width %d \n",
+							 i,pCharWidths[i],iThisAmount));
+		
+			iAmount -= iThisAmount;
+
+			iPoints--;
+
+			if(!iPoints)
+				break;
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  IMPLEMNATION OF GR_GraphicsFactory
+//
+//  GR_GraphicsFactory allows parallel existence of differnt
+//  implementations of GR_Graphics class, so that the graphics
+//  class used by the application can be changed at runtime.
+//
+//  The factory is accessed via XAP_App functions.
+//
+//  Each derrived class needs to be registered with the factory using
+//  the registerClass() function; new instances of the graphics class
+//  are obtained by newGraphics()
+//
+//  
+//  
+
+
+/*!
    Registers the class allocator and descriptor functions with the
-   factory. Returns true on success, false if requested id is already
+   factory.
+
+   allocator is a static intermediary to the graphics constructor; it
+   takes a parameter of type void*, which should point to any data the
+   allocator needs to pass onto the constructor.
+
+   descriptor is a static function that returns a string that
+   describes the graphics class in human-readable manner (e.g., to be
+   shown in dialogues).
+   
+   Returns true on success, false if requested id is already
    registered.
 
-   In case of failure the plugin should try with a different id.
-
+   This function is to be used only by built-in classes; plugins
+   should use registerPluginClass().
+   
    The default platform implementation of the graphics class should
    register itself twice, once with its predefined id and once with GRID_DEFAULT.
 */
-bool GR_GraphicsFactory::registerClass(GR_Graphics * (*allocator)(bool),
+bool GR_GraphicsFactory::registerClass(GR_Graphics * (*allocator)(void*),
 									   const char *  (*descriptor)(void),
 									   UT_uint32 iClassId)
 {
@@ -999,19 +1229,60 @@ bool GR_GraphicsFactory::registerClass(GR_Graphics * (*allocator)(bool),
 	return true;
 }
 
-void GR_GraphicsFactory::unregisterClass(UT_uint32 iClassId)
+/*!
+   As registerClass() but to be used by plugins; it automatically
+   allocates an id for the class by which it will be identified
+
+   \return id > 0 on success, 0 on failure
+*/
+UT_uint32 GR_GraphicsFactory::registerPluginClass(GR_Graphics * (*allocator)(void*),
+												  const char *  (*descriptor)(void))
 {
+	static UT_uint32 iLastId = GRID_LAST_BUILT_IN;
+	iLastId++;
+
+	while(iLastId < GRID_UNKNOWN && !registerClass(allocator,descriptor, iLastId))
+		iLastId++;
+
+	if(iLastId != GRID_UNKNOWN)
+		return iLastId;
+
+	return 0;
+}
+
+
+/*!
+    Unregisteres class with the given id; this function is only to be
+    used by plugins.
+
+    Returns true on success.
+
+    The caller must never try to unregister any other class that
+    itself.
+
+    The built-in graphics classes cannot be unregistered.
+*/
+bool GR_GraphicsFactory::unregisterClass(UT_uint32 iClassId)
+{
+	UT_return_val_if_fail(iClassId > GRID_LAST_BUILT_IN, false);
+
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
 	if(indx < 0)
-		return;
+		return false;
 
 	m_vClassIds.deleteNthItem(indx);
 	m_vAllocators.deleteNthItem(indx);
 	m_vDescriptors.deleteNthItem(indx);
+
+	return true;
 }
-	
-GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, bool bPrint) const
+
+/*!
+   Creates an instance of the graphics class represented by iClassId,
+   passing param to the class allocator.
+*/
+GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, void * param) const
 {
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
@@ -1019,13 +1290,13 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, bool bPrint) c
 		return NULL;
 				
 					
-	GR_Graphics * (*alloc)(bool)
-		= (GR_Graphics * (*)(bool))m_vAllocators.getNthItem(indx);
+	GR_Graphics * (*alloc)(void*)
+		= (GR_Graphics * (*)(void*))m_vAllocators.getNthItem(indx);
 				
 	if(!alloc)
 		return NULL;
 
-	return alloc(bPrint);
+	return alloc(param);
 }
 
 const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const

@@ -49,6 +49,13 @@ class GR_UnixGraphics : public GR_Graphics
 	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 	virtual ~GR_UnixGraphics();
 
+	static UT_uint32 s_getClassId() {return GRID_UNIX;}
+	virtual UT_uint32 getClassId() {return s_getClassId();}
+	
+	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
+	static const char *    graphicsDescriptor(void){return "Unix Default";}
+	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) {m_pFont = NULL;} 
 	virtual UT_uint32	getFontHeight();

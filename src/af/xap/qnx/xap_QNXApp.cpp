@@ -35,6 +35,7 @@
 #include "xap_QNXToolbar_Icons.h"
 #include "xap_QNX_TB_CFactory.h"
 #include "xap_Prefs.h"
+#include "gr_QNXGraphics.h"
 
 /*****************************************************************/
 
@@ -49,6 +50,26 @@ XAP_QNXApp::XAP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_UUIDGenerator());
+
+	// register graphics allocator
+	GR_GraphicsFactory * pGF = getGraphicsFactory();
+	UT_ASSERT( pGF );
+
+	if(pGF)
+	{
+		bool bSuccess = pGF->registerClass(GR_QNXGraphics::graphicsAllocator,
+										   GR_QNXGraphics::graphicsDescriptor,
+										   GR_QNXGraphics::s_getClassId());
+
+		// we are in deep trouble if this did not succeed
+		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(GR_QNXGraphics::graphicsAllocator,
+									  GR_QNXGraphics::graphicsDescriptor,
+									  GRID_DEFAULT);
+
+		UT_ASSERT( bSuccess );
+	}
 }
 
 XAP_QNXApp::~XAP_QNXApp(void)

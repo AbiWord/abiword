@@ -127,7 +127,7 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 	  m_iExtraWidth = pLine->getMaxWidth() - iWidth;
 
 	  xxx_UT_DEBUGMSG(("fb_Alignment_justify::initialize (0x%x), iWidth %d, m_iExtraWidth %d\n",this,iWidth,m_iExtraWidth));
-	  pLine->distributeJustificationAmongstSpaces(m_iExtraWidth);
+	  pLine->justify(m_iExtraWidth);
 
 	  if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
 	  {

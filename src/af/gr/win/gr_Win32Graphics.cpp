@@ -1822,3 +1822,23 @@ GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r) {
 	img->setDIB((BITMAPINFO *)ConvertDDBToDIB(hBit, NULL, BI_RGB));
 	return img;
 	}
+
+
+GR_Graphics * GR_Win32Graphics::graphicsAllocator(void* info)
+{
+	UT_return_val_if_fail(info, NULL);
+	
+	GR_Win32AllocInfo *pAI = (GR_Win32AllocInfo*)info;
+
+	if(pAI->m_pDocInfo)
+	{
+		// printer graphics required
+		return new GR_Win32Graphics(pAI->m_hdc, pAI->m_pDocInfo, pAI->m_pApp, pAI->m_hDevMode);
+	}
+	else
+	{
+		// screen graphics required
+		return new GR_Win32Graphics(pAI->m_hdc, pAI->m_hwnd, pAI->m_pApp);
+	}
+}
+

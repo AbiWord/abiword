@@ -39,6 +39,13 @@ public:
 	UnixNull_Graphics(XAP_UnixFontManager * fontManager,XAP_App *pApp);
 	virtual ~UnixNull_Graphics();
 
+	static UT_uint32 s_getClassId() {return GRID_UNIX_NULL;}
+	virtual UT_uint32 getClassId() {return s_getClassId();}
+	
+	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
+	static const char *    graphicsDescriptor(void) return "Unix Null Graphics";}
+	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+
 	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 
 						   int iCharOffset, int iLength,

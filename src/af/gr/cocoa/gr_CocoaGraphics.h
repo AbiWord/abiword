@@ -38,6 +38,15 @@ class GR_CocoaGraphics : public GR_Graphics
 	GR_CocoaGraphics(NSView * view, /*XAP_CocoaFontManager * fontManager,*/ XAP_App *app);
 	~GR_CocoaGraphics();
 
+
+	static UT_uint32 s_getClassId() {return GRID_COCOA;}
+	virtual UT_uint32 getClassId() {return s_getClassId();}
+	
+	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRTCAP_UNKNOWN;}
+	
+	static const char *    graphicsDescriptor(void){return "Cocoa Default";}
+	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	
     // HACK: I need more speed
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) 
 		{ UT_ASSERT (UT_NOT_IMPLEMENTED); };

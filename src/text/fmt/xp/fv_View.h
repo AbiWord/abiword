@@ -152,6 +152,8 @@ public:
 
 	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
 	void  setGraphics(GR_Graphics *pG);
+	void  replaceGraphics(GR_Graphics *pG);
+	
 	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
 	PT_DocPosition	getSelectionAnchor(void) const;
 

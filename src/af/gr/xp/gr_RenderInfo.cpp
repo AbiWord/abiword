@@ -46,7 +46,8 @@ GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 		 m_pAdvances(NULL),
 		 m_iBufferSize(0),
 		 m_pSegmentOffset(NULL),
-		 m_iSegmentCount(0)
+		 m_iSegmentCount(0),
+		 m_iSpaceWidthBeforeJustification(0xffffffff)
 {
 	_constructorCommonCode();
 }
@@ -62,7 +63,8 @@ GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 		 m_pAdvances(pAdv),
 		 m_iBufferSize(iBufferSize),
 		 m_pSegmentOffset(NULL),
-		 m_iSegmentCount(0)
+		 m_iSegmentCount(0),
+		 m_iSpaceWidthBeforeJustification(0xffffffff)
 {
 	m_iOffset = offset;
 	m_iLength = len;
@@ -100,7 +102,12 @@ GR_XPRenderInfo::~GR_XPRenderInfo()
 	delete [] m_pAdvances;	
 }
 
+/*!
+    append data represented by ri to ourselves
 
+    NB: combine the justification information
+
+*/
 bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 {
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
@@ -165,9 +172,28 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		*(m_pChars + m_iLength + RI.m_iLength) = 0;
 	}
 
+	if( RI.m_iSpaceWidthBeforeJustification == 0xffffffff
+		|| m_iSpaceWidthBeforeJustification != 0xffffffff)
+	{
+		// the text is justified, merge the justification information
+		if(m_iSpaceWidthBeforeJustification == 0xffffffff)
+			m_iSpaceWidthBeforeJustification = RI.m_iSpaceWidthBeforeJustification;
+	
+		m_iJustificationPoints += ri.m_iJustificationPoints;
+		m_iJustificationAmount += ri.m_iJustificationAmount;
+	}
+
 	return true;
 }
 
+/*!
+    creates a new instance of GR_*RenderInfo and splits data between
+    ourselves and it at offset
+
+    bReverse == true indicates data in RTL order
+
+    we also calculate justification info for the two parts
+*/
 bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse)
 {
 	UT_ASSERT( !pri );
@@ -223,6 +249,53 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bRever
 	m_pAdvances = (UT_sint32*)pAB;
 
 	pRI->m_eShapingResult = m_eShapingResult;
+
+	// Deal with justification
+	// this has to be always done (used by isJustified())
+	pRI->m_iSpaceWidthBeforeJustification = m_iSpaceWidthBeforeJustification;
+
+	if(!isJustified())
+	{
+		// we are done
+		return true;
+	}
+	
+	
+	UT_return_val_if_fail(m_pGraphics, false);
+	pRI->m_pGraphics = m_pGraphics;
+
+	UT_sint32 iPoints = m_pGraphics->countJustificationPoints(*pRI);
+	pRI->m_iJustificationPoints = abs(iPoints);
+
+	if(!iPoints)
+	{
+		// the latter section has no justification points, all stays
+		// as is
+		pRI->m_iJustificationAmount = 0;
+		return true;
+	}
+
+	iPoints = m_pGraphics->countJustificationPoints(*this);
+
+	if(!iPoints)
+	{
+		// all justification is done in the latter section
+		pRI->m_iJustificationAmount = m_iJustificationAmount;
+		pRI->m_iJustificationPoints = m_iJustificationPoints;
+
+		m_iJustificationAmount = 0;
+		m_iJustificationPoints = 0;
+
+		return true;
+	}
+	
+	// work out how much of the original amount falls on the new pRI
+	UT_return_val_if_fail(m_iJustificationPoints, false);
+	UT_sint32 iAmount = m_iJustificationAmount * pRI->m_iJustificationPoints / m_iJustificationPoints;
+	pRI->m_iJustificationAmount = iAmount;
+
+	m_iJustificationAmount -= iAmount;
+	m_iJustificationPoints = abs(iPoints);
 	
 	return true;
 }
@@ -696,4 +769,5 @@ bool GR_XPRenderInfo::_checkAndFixStaticBuffers()
 
 	return true;
 }
+
 

@@ -58,6 +58,14 @@ class GR_QNXGraphics : public GR_Graphics
 	GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App * app);
 	~GR_QNXGraphics();
 
+	static UT_uint32 s_getClassId() {return GRID_QNX;}
+	virtual UT_uint32 getClassId() {return s_getClassId();}
+
+	virtual GR_Capability getCapability() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
+	
+	static const char *    graphicsDescriptor(void){return "QNX Default";}
+	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	
 	virtual void		drawGlyph(UT_uint32 glyph_idx,UT_sint32 xoff,UT_sint32 yoff);
 	virtual void 		drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void 		drawChars(const UT_UCSChar* pChars, int iCharOffset,

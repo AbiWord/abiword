@@ -99,6 +99,20 @@ private:
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+class GR_Win32AllocInfo
+{
+  public:
+	GR_Win32AllocInfo():
+		m_hdc(0), m_hwnd(0), m_pApp(NULL), m_pDocInfo(NULL), m_hDevMode(NULL) {};
+	
+	HDC               m_hdc;
+	HWND              m_hwnd;
+	XAP_App *         m_pApp;
+	const DOCINFO *   m_pDocInfo;
+	HGLOBAL           m_hDevMode;
+};
+
+
 class ABI_EXPORT GR_Win32Graphics : public GR_Graphics
 {
 public:
@@ -106,8 +120,13 @@ public:
 	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);	/* for printing */
 	~GR_Win32Graphics();
 
-	static UT_uint32 getClassId() {return GRID_WIN32;}
-	static const char *    graphicsDescriptor(){return "Win32";}
+	static UT_uint32 s_getClassId() {return GRID_WIN32;}
+	virtual UT_uint32 getClassId() {return s_getClassId();}
+	
+	virtual GR_Capability getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
+	
+	static const char *    graphicsDescriptor(){return "Win32 Default";}
+	static GR_Graphics *   graphicsAllocator(void*);
 	
 	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);

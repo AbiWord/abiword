@@ -2799,7 +2799,7 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 		else if (pRun->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
-			UT_sint32 iPointCount = pTR->countJustificationPoints();
+			UT_sint32 iPointCount = pTR->countJustificationPoints(!bStartFound);
 			if(bStartFound)
 			{
 				iSpaceCount += abs(iPointCount);
@@ -2808,6 +2808,7 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 			{
 				if(iPointCount >= 0)
 				{
+					// we found our first non-blank run; the point
 					iSpaceCount += iPointCount;
 					bStartFound = true;
 				}
@@ -2862,7 +2863,7 @@ void fp_Line::resetJustification()
 }
 
 
-void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
+void fp_Line::justify(UT_sint32 iAmount)
 {
 	if(iAmount > 0)
 	{
@@ -2913,7 +2914,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 				{
 					fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 
-					UT_sint32 iSpacesInText = pTR->countJustificationPoints();
+					UT_sint32 iSpacesInText = pTR->countJustificationPoints(!bFoundStart);
 
 					if(!bFoundStart && iSpacesInText >= 0)
 						bFoundStart = true;
@@ -2929,16 +2930,18 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 							iJustifyAmountForRun = iAmount;
 
 						if (iSpaceCount == 1) iJustifyAmountForRun = 0;
-						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iMySpaces);
+						pTR->justify(iJustifyAmountForRun, iMySpaces);
 
 						iAmount -= iJustifyAmountForRun;
 						iSpaceCount -= iMySpaces;
 					}
 					else if(!bFoundStart && iSpacesInText)
 					{
-						// trailing space, need to do this so that the trailing spaces do not get merged
-						// with the last non-blank run (see fp_TextRun::distributeJustificationAmongstSpaces()
-						pTR->distributeJustificationAmongstSpaces(0, 0);
+						// trailing space, need to do this so that the
+						// trailing spaces do not get included when
+						// this run is merged with previous one
+						
+						pTR->justify(0, 0);
 					}
 				}
 			}

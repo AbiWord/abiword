@@ -44,6 +44,7 @@
 #include "xap_Cocoa_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_CocoaEncodingManager.h"
+#include "gr_CocoaGraphics.h"
 
 /*****************************************************************/
 
@@ -75,6 +76,27 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_UUIDGenerator());
+
+	// register graphics allocator
+	GR_GraphicsFactory * pGF = getGraphicsFactory();
+	UT_ASSERT( pGF );
+
+	if(pGF)
+	{
+		bool bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
+										   GR_CocoaGraphics::graphicsDescriptor,
+										   GR_CocoaGraphics::s_getClassId());
+
+		// we are in deep trouble if this did not succeed
+		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
+									  GR_CocoaGraphics::graphicsDescriptor,
+									  GRID_DEFAULT);
+
+		UT_ASSERT( bSuccess );
+	}
+
 }
 
 XAP_CocoaApp::~XAP_CocoaApp()

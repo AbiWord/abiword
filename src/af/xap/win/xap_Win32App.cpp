@@ -34,6 +34,8 @@
 #include "xap_Win32Slurp.h"
 #include "xap_Win32EncodingManager.h"
 #include "xap_Prefs.h"
+#include "gr_Win32Graphics.h"
+
 #include <locale.h>
 
 #ifdef _MSC_VER
@@ -85,12 +87,85 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 	GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SENGCOUNTRY, &buf[0], 100);
 	s += buf;
 	setlocale(LC_ALL, s.c_str());
+
+	// register graphics allocator
+	GR_GraphicsFactory * pGF = getGraphicsFactory();
+	UT_ASSERT( pGF );
+
+	if(pGF)
+	{
+		bool bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
+										   GR_Win32Graphics::graphicsDescriptor,
+										   GR_Win32Graphics::s_getClassId());
+
+		// we are in deep trouble if this did not succeed
+		UT_ASSERT( bSuccess );
+
+		// try to load Uniscribe
+		m_hUniscribe = LoadLibrary("usp10.dll");
+
+		if(m_hUniscribe)
+		{
+#ifdef DEBUG
+			char FileName[250];
+			if(GetModuleFileName(m_hUniscribe,&FileName[0],250))
+			{
+				DWORD dummy;
+				DWORD iSize = GetFileVersionInfoSize(FileName,&dummy);
+
+				if(iSize)
+				{
+					char * pBuff = (char*)malloc(iSize);
+					if(pBuff && GetFileVersionInfo(FileName, 0, iSize, pBuff))
+					{
+						LPVOID buff2;
+						UINT   buff2size;
+					
+						if(VerQueryValue(pBuff,"\\",
+										 &buff2,
+										 &buff2size))
+						{
+							VS_FIXEDFILEINFO * pFix = (VS_FIXEDFILEINFO *) buff2;
+							UT_uint32 iV1 = (pFix->dwFileVersionMS & 0xffff0000) >> 16;
+							UT_uint32 iV2 = pFix->dwFileVersionMS & 0x0000ffff;
+							UT_uint32 iV3 = (pFix->dwFileVersionLS & 0xffff0000) >> 16;
+							UT_uint32 iV4 = pFix->dwFileVersionLS & 0x0000ffff;
+							
+							UT_DEBUGMSG(("XAP_Win32App: Uniscribe version %d.%d.%d.%d",
+										 iV1, iV2, iV3, iV4));
+						}
+					}
+					free(pBuff);
+				}
+			}
+#endif
+			// register Uniscribe graphics and make it the default
+			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
+										  GR_Win32Graphics::graphicsDescriptor,
+										  GRID_DEFAULT);
+			UT_ASSERT( bSuccess );
+		}
+		else
+		{
+			UT_DEBUGMSG(("XAP_Win32App: could not load Uniscribe library"));
+			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
+										  GR_Win32Graphics::graphicsDescriptor,
+										  GRID_DEFAULT);
+
+			UT_ASSERT( bSuccess );
+		}
+	}
 }
 
 XAP_Win32App::~XAP_Win32App(void)
 {
 	m_pSlurp->disconnectSlurper();
 	DELETEP(m_pSlurp);
+
+	if(m_hUniscribe)
+	{
+		FreeLibrary(m_hUniscribe);
+	}
 }
 
 HINSTANCE XAP_Win32App::getInstance() const
