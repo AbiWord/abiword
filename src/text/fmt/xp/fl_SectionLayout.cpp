@@ -1501,6 +1501,7 @@ UT_uint32 fl_DocSectionLayout::getColumnOrder(void) const
 
 void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_TableLayout * pTL)
 {
+	UT_DEBUGMSG(("Doing delete broken tables from here \n"));
 	if(m_bDeleteingBrokenContainers)
 	{
 		return;

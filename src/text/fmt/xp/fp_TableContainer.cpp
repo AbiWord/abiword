@@ -2396,42 +2396,59 @@ UT_sint32 fp_TableContainer::getBrokenBot(void)
 	return m_iBrokenBottom;
 }
 
+
+/*!
+ * This static function is used to compare cells' position for the
+ * UT_Vector::binarysearch
+\param vX1 pointer to a Point value.
+\param vX2 pointer to a fp_CellContainer object
+*/
+static UT_sint32 compareCellPosBinary(const void * vX1, const void * vX2)
+{
+	const UT_Point *pt = static_cast<const UT_Point *>(vX1);
+	const fp_ContainerObject *pc = *(fp_ContainerObject **)(vX2);
+	const fp_CellContainer *pCell = static_cast<const fp_CellContainer *>(pc);
+
+	// compare cell's top and bottom first
+	if (pCell->getTopAttach() > pt->y)
+	{
+		return -1;
+	}
+	if (pCell->getBottomAttach() <= pt->y)
+	{
+		return 1;
+	}
+	// then compare cell's left and right next
+	if (pCell->getLeftAttach() > pt->x)
+	{
+		return -1;
+	}
+	if (pCell->getRightAttach() <= pt->x)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 /*!
  * Return the cell container at the specified row and column
  */
 fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint32 col)
 {
-	UT_sint32 count = static_cast<UT_sint32>(countCons());
-	UT_sint32 i =0;
-	fp_CellContainer * pCell = NULL;
-	fp_CellContainer * pSmall = NULL;
-	bool bFound = false;
-	for(i=0; i < count && !bFound; i++)
+	UT_Point pt;
+	pt.x = col;
+	pt.y = row;
+
+	UT_sint32 u = binarysearchCons(&pt, compareCellPosBinary);
+	if (u != -1)
 	{
-		pCell = static_cast<fp_CellContainer *>(getNthCon(i));
-		xxx_UT_DEBUGMSG(("getCellAtRowColumn: left %d ,right %d, top %d, bot %d \n",pCell->getLeftAttach(),pCell->getRightAttach(),pCell->getTopAttach(),pCell->getBottomAttach()));
-		if(pCell->getLeftAttach() <= col && pCell->getRightAttach() > col &&
-		   pCell->getTopAttach() <= row && pCell->getBottomAttach() > row)
-		{
-			bFound = true;
-			if(pSmall == NULL)
+		fp_CellContainer *pSmall = static_cast<fp_CellContainer *>(getNthCon(u));
+		if((pSmall->getTopAttach() > row) || (pSmall->getBottomAttach() < row)
+		   || (pSmall->getLeftAttach() > col) || (pSmall->getRightAttach() < col))
 			{
-				pSmall = pCell;
+				return NULL;
 			}
-#if 0
-			else
-			{
-				if((pSmall->getLeftAttach() > pCell->getLeftAttach()) && 
-				   (pSmall->getTopAttach() > pCell->getTopAttach()))
-				{
-					pSmall = pCell;
-				}
-			}
-#endif
-		}
-	}
-	if(bFound)
-	{
 		return pSmall;
 	}
 	return NULL;

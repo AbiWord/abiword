@@ -89,7 +89,8 @@ fp_Container::fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLay
 			m_pContainer(NULL),
 			m_pNext(NULL),
 			m_pPrev(NULL),
-			m_pMyBrokenContainer(NULL),
+			m_pMyBrokenContainer(NULL), 
+			m_cBrokenContainers(0),
 			m_FillType(NULL,this,FG_FILL_TRANSPARENT)
 {
 	m_vecContainers.clear();
@@ -124,6 +125,13 @@ fp_Container * fp_Container::getMyBrokenContainer(void) const
 void fp_Container::setMyBrokenContainer(fp_Container * pMyBroken)
 {
 	m_pMyBrokenContainer = pMyBroken;
+    fp_Container * pc = this;
+
+	while (NULL != pc)
+	{
+		pc->incBrokenCount();
+		pc = pc->getContainer();
+	}
 }
 
 /*!
@@ -131,18 +139,40 @@ void fp_Container::setMyBrokenContainer(fp_Container * pMyBroken)
  */
 void fp_Container::clearBrokenContainers(void)
 {
-        if(m_pMyBrokenContainer)  // avoid unnecessarily dirtying of memory pages
-	        m_pMyBrokenContainer = NULL;
-
-	UT_uint32 i =0;
-	for(i=0;i<countCons();i++)
+	if(m_pMyBrokenContainer) 
 	{
-		fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
-		if(pCon)
+		fp_Container * pc = this;
+		
+		while (NULL != pc)
 		{
-			pCon->clearBrokenContainers();
+			pc->decBrokenCount();
+			pc = pc->getContainer();
+		}
+		m_pMyBrokenContainer = NULL;
+	}
+	if (0 != getBrokenCount())
+	{
+		UT_uint32 i =0;
+
+		for(i=0;(i<countCons()) && (0 != getBrokenCount());i++)
+		{
+			fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
+			if (pCon && (0 != pCon->getBrokenCount()))
+			{
+				pCon->clearBrokenContainers();
+			}
 		}
 	}
+	m_cBrokenContainers = 0;
+}
+
+
+UT_uint32 fp_Container::binarysearchCons(void * key, int (*compar)(const 
+void *, const void *))
+{
+	UT_uint32 u = m_vecContainers.binarysearch(key, compar);
+
+	return u;
 }
 
 /*!
