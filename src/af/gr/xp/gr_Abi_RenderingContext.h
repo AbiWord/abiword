@@ -1,27 +1,24 @@
-// Copyright (C) 2000-2004, Luca Padovani <luca.padovani@cs.unibo.it>.
-//
-// This file is part of GtkMathView, a Gtk widget for MathML.
-// 
-// GtkMathView is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// GtkMathView is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with GtkMathView; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-// 
-// For details, see the GtkMathView World-Wide-Web page,
-// http://helm.cs.unibo.it/mml-widget/, or send a mail to
-// <lpadovan@cs.unibo.it>
+/* AbiWord
+ * Copyright (C) 2004 Luca Padovani <lpadovan@cs.unibo.it>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
 
-#ifndef __Abi_RenderingContext_h__
-#define __Abi_RenderingContext_h__
+#ifndef __gr_Abi_RenderingContext_h__
+#define __gr_Abi_RenderingContext_h__
 
 #include <MathView/scaled.hh>
 #include <MathView/BoundingBox.hh>
@@ -30,13 +27,13 @@
 
 #include "ut_misc.h" // for UT_RGBColor
 
-class Abi_RenderingContext : public RenderingContext
+class GR_Abi_RenderingContext : public RenderingContext
 {
 public:
-  Abi_RenderingContext(class GR_Graphics*);
-  virtual ~Abi_RenderingContext();
+  GR_Abi_RenderingContext(class GR_Graphics*);
+  virtual ~GR_Abi_RenderingContext();
 
-  class GR_Graphics* getGraphics(void) const { return graphics; }
+  class GR_Graphics* getGraphics(void) const { return m_pGraphics; }
 
   void setColor(const RGBColor& c) { setColor(toAbiColor(c)); }
   void setColor(const UT_RGBColor&);
@@ -74,8 +71,8 @@ public:
   { return UT_RGBColor(c.red, c.green, c.blue, c.transparent); }
 
 private:
-  class GR_Graphics* graphics;
-  class GR_Painter* painter;
+  class GR_Graphics* m_pGraphics;
+  class GR_Painter* m_pPainter;
 };
 
-#endif // __Abi_RenderingContext_h__
+#endif // __gr_Abi_RenderingContext_h__

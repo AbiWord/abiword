@@ -41,24 +41,25 @@ noinst_HEADERS =
 
 if HAVE_MATHVIEW
 libGr_xp_a_SOURCES += \
-	Abi_CharArea.cpp \
-	Abi_ColorArea.cpp \
-	Abi_DefaultShaper.cpp \
-	Abi_GlyphArea.cpp \
-	Abi_InkArea.cpp \
-	Abi_MathGraphicDevice.cpp \
-	Abi_RenderingContext.cpp \
+	gr_Abi_CharArea.cpp \
+	gr_Abi_ColorArea.cpp \
+	gr_Abi_DefaultShaper.cpp \
+	gr_Abi_GlyphArea.cpp \
+	gr_Abi_InkArea.cpp \
+	gr_Abi_MathGraphicDevice.cpp \
+	gr_Abi_RenderingContext.cpp \
 	$(NULL)
 
 noinst_HEADERS += \
-	Abi_AreaFactory.h \
-	Abi_CharArea.h \
-	Abi_ColorArea.h \
-	Abi_DefaultShaper.h \
-	Abi_GlyphArea.h \
-	Abi_InkArea.h \
-	Abi_MathGraphicDevice.h \
-	Abi_RenderingContext.h \
+	gr_Abi_AreaFactory.h \
+	gr_Abi_CharArea.h \
+	gr_Abi_ColorArea.h \
+	gr_Abi_DefaultShaper.h \
+	gr_Abi_GlyphArea.h \
+	gr_Abi_InkArea.h \
+	gr_Abi_MathGraphicDevice.h \
+	gr_Abi_RenderingContext.h \
+	gr_MathView_config.h \
 	$(NULL)
 endif
 
