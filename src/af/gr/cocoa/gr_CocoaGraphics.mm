@@ -702,10 +702,7 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::setClipRect()\n"));
-	DELETEP(m_pRect);
-	if (pRect) {
-		m_pRect = new UT_Rect(pRect);
-	}
+	m_pRect = pRect;
 	if (m_viewLocker) {
 		/* if we are painting, restart the painting to reset the clipping view */
 		_restartPaint();
