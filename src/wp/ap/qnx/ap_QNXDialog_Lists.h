@@ -42,21 +42,28 @@ public:
 
 	// CALLBACKS 
 
-	virtual void 			startChanged(void);
-	virtual void			stopChanged(void);
-	virtual void			applyClicked(void);
-	virtual void			startvChanged(void);
-
-	// Just Plain Useful Functions 
-
-	void                    setAllSensitivity(void);
-	void                    updateDialog(void);
-	static void             autoupdateLists(UT_Timer * pTimer);
+    void                            customChanged(void);
+	void                            applyClicked(void);
+	void                            typeChanged( gint type);
+	void                            previewExposed(void);
+	void                            setMemberVariables(void);
+	/* Just Plain Useful Functions */
+	void                            fillWidgetFromDialog(void);
+	void                            setAllSensitivity(void);
+	void                            updateDialog(void);
+	static void                     autoupdateLists(UT_Timer * pTimer);
 
 protected:
 	PtWidget_t *	_constructWindow(void);
 	void			_populateWindowData(void);
 
+	void                            _fillNumberedStyleMenu( PtWidget_t *listmenu);
+	void                            _fillBulletedStyleMenu( PtWidget_t *listmenu);
+	void                            _fillNoneStyleMenu( PtWidget_t *listmenu);
+	void                            _setData(void);
+	void                            _gatherData(void);
+
+#if 0
 	UT_Bool     m_bDestroy_says_stopupdating;
 	UT_Bool     m_bAutoUpdate_happening_now;
 	UT_Timer *  m_pAutoUpdateLists;
@@ -83,7 +90,56 @@ protected:
 
 	PtWidget_t * m_wPreviewGroup, *m_wPreview;
 	GR_QNXGraphics * m_qnxGraphics;
+#else
+	GR_QNXGraphics *               m_pPreviewWidget;
 
+	UT_Bool                         m_bDestroy_says_stopupdating;
+	UT_Bool                         m_bAutoUpdate_happening_now;
+	UT_Bool                         m_bisCustomFrameHidden;
+	UT_Timer *                      m_pAutoUpdateLists;
+
+	PtWidget_t *				m_mainWindow;
+
+	//List things ...
+	PtWidget_t * m_wListStyleNumbered_menu;
+	PtWidget_t * m_wListStyleBulleted_menu;
+	PtWidget_t * m_wListStyleNone_menu;
+    PtWidget_t * m_wListStyle_menu;
+	PtWidget_t * m_wListTypeBox;
+	PtWidget_t * m_wListType_menu;
+
+	PtWidget_t * m_wMenu_None;
+	PtWidget_t * m_wMenu_Bull;
+	PtWidget_t * m_wMenu_Num;
+
+	//Custom box
+	PtWidget_t * m_wCustomFrame;
+	//PtWidget_t * m_wCustomArrow;
+	PtWidget_t * m_wCustomLabel;
+	//Custom box entries
+	PtWidget_t * m_wListStyleBox;
+	PtWidget_t * m_wLevelSpin;
+	PtWidget_t * m_wStartSpin;
+	PtWidget_t * m_wAlignListSpin;
+	PtWidget_t * m_wIndentAlignSpin;
+	PtWidget_t * m_wFontOptions;
+	PtWidget_t * m_wFontOptions_menu;
+
+	//Preview pieces
+	PtWidget_t * m_wPreviewGroup;
+	PtWidget_t * m_wPreviewArea;
+
+	//Radio buttons
+	PtWidget_t * m_wStartNewList;
+	PtWidget_t * m_wApplyCurrent;
+	PtWidget_t * m_wStartSubList;
+	PtWidget_t * m_wResumeList;
+	//PtWidget_t * m_wStartNew_label;
+	//PtWidget_t * m_wStartSub_label;
+
+	//Action buttons
+	PtWidget_t * m_wApply;
+	PtWidget_t * m_wClose;
 protected:
 
 };

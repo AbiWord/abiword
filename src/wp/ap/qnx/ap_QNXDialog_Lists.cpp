@@ -54,26 +54,42 @@ AP_QNXDialog_Lists::~AP_QNXDialog_Lists(void)
 
 /**********************************************************************/
 
-static int s_startChanged (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+static int s_customChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
-	dlg->startChanged ();
+	dlg->customChanged ();
 	return Pt_CONTINUE;
 }
 
-static int s_stopChanged (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+static int s_typeChangedNone(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
-	dlg->stopChanged ();
+	dlg->typeChanged(0);
 	return Pt_CONTINUE;
 }
 
-static int s_startvChanged (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+static int s_typeChangedBullet(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
-	dlg->startvChanged ();
+	dlg->typeChanged(1);
 	return Pt_CONTINUE;
 }
+
+static int s_typeChangedNumbered (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
+	dlg->typeChanged(2);
+	return Pt_CONTINUE;
+}
+
+static int s_styleChanged (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
+	dlg->setMemberVariables();
+	dlg->previewExposed();
+	return Pt_CONTINUE;
+}
+
 
 static int s_applyClicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
@@ -96,15 +112,6 @@ static int s_deleteClicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 	return Pt_CONTINUE;
 }
 
-static int s_update (void)
-{
-/*
-	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
-	Current_Dialog->updateDialog();
-*/
-	return UT_TRUE;
-}
-
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
 	PtArg_t args[1];
@@ -123,10 +130,19 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 
 	UT_ASSERT(pQNXDlg);
 	printf("Calling expose area ... \n");
-	pQNXDlg->event_PreviewAreaExposed();
+	pQNXDlg->previewExposed();
 
     PtClipRemove();
 	return Pt_CONTINUE;
+}
+
+static int s_update (void)
+{
+/*
+	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
+	Current_Dialog->updateDialog();
+*/
+	return UT_TRUE;
 }
 
 
@@ -187,17 +203,14 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 		UT_ASSERT(m_wPreview);
 
 		// make a new QNX GC
-		m_qnxGraphics = new GR_QNXGraphics(m_mainWindow, m_wPreview, pFrame->getApp());
+		m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow, m_wPreview, pFrame->getApp());
 		unsigned short w, h;
 
 		// let the widget materialize
 		UT_QNXGetWidgetArea(m_wPreview, NULL, NULL, &w, &h);
-		_createPreviewFromGC(m_qnxGraphics, w, h);
+		_createPreviewFromGC(m_pPreviewWidget, w, h);
 
 	}
-
-
-
 
 	// Populate the dialog
 	updateDialog();
@@ -220,179 +233,170 @@ void    AP_QNXDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 	AP_QNXDialog_Lists * pDialog =  (AP_QNXDialog_Lists *) pTimer->getInstanceData();
 	// Handshaking code
 
+#if 0
 	if( pDialog->m_bDestroy_says_stopupdating != UT_TRUE)
 	{
 		pDialog->m_bAutoUpdate_happening_now = UT_TRUE;
 		pDialog->updateDialog();
 		pDialog->m_bAutoUpdate_happening_now = UT_FALSE;
 	}
+#endif
+}
+
+void  AP_QNXDialog_Lists::typeChanged(int style)
+{
+  // 
+  // code to change list list
+  //
+	//gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
+	if(style == 0)
+	{
+	  //     gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
+/*
+	  	m_wListStyleNone_menu = gtk_menu_new();
+		m_wListStyle_menu = m_wListStyleNone_menu;
+		_fillNoneStyleMenu(m_wListStyleNone_menu);
+		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), m_wListStyleNone_menu);
+*/
+	}
+	else if(style == 1)
+	{
+	  //    gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
+/*
+       		m_wListStyleBulleted_menu = gtk_menu_new();
+		m_wListStyle_menu = m_wListStyleBulleted_menu;
+        _fillBulletedStyleMenu(m_wListStyleBulleted_menu);
+		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), m_wListStyleBulleted_menu);
+*/
+	}
+	else if(style == 2)
+	{
+	  //  gtk_widget_destroy(GTK_WIDGET(m_wListStyleNumbered_menu));
+/*
+	  	m_wListStyleNumbered_menu = gtk_menu_new();
+		m_wListStyle_menu = m_wListStyleNumbered_menu;
+        _fillNumberedStyleMenu(m_wListStyleNumbered_menu);
+		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), m_wListStyleNumbered_menu);
+*/
+	}
+
+/*
+	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
+	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+*/
+	previewExposed();
+}
+
+void  AP_QNXDialog_Lists::setMemberVariables(void)
+{
+	//
+	// Failsafe code to make sure the start, stop and change flags are set
+        // as shown on the GUI.
+	//
+#if 0	
+	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
+	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+	if(m_bisCustomized == UT_TRUE)
+	{
+	        _gatherData();
+	}
+	if (GTK_TOGGLE_BUTTON (m_wStartNewList)->active)
+	{
+	        m_bStartNewList = UT_TRUE;
+		m_bApplyToCurrent = UT_FALSE;
+                m_bStartSubList = UT_FALSE;
+	}
+	else if (GTK_TOGGLE_BUTTON (m_wApplyCurrent)->active)
+	{
+	        m_bStartNewList = UT_FALSE;
+		m_bApplyToCurrent = UT_TRUE;
+                m_bStartSubList = UT_FALSE;
+	}
+	else if (GTK_TOGGLE_BUTTON (m_wStartSubList)->active)
+	{
+	        m_bStartNewList = UT_FALSE;
+		m_bApplyToCurrent = UT_FALSE;
+                m_bStartSubList = UT_TRUE;
+	}
+#endif
 }
 
 
 void  AP_QNXDialog_Lists::applyClicked(void)
 {
-#if 0
-    char * szStartValue;
-	PtWidget_t * wlisttype;
-
-	//
-	// Failsafe code to make sure the start, stop and change flags are set
-    // as shown on the GUI.
-	//
-
-       if (GTK_TOGGLE_BUTTON (m_wCheckstartlist)->active)
-       {
-	       wlisttype=gtk_menu_get_active(GTK_MENU(m_wOption_types_menu));
-	       m_iListType = (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
-	       szStartValue =gtk_entry_get_text( GTK_ENTRY (m_wNew_startingvaluev) );
-	       m_bStartList = UT_TRUE;
-	       if(m_iListType == NUMBERED_LIST)
-	       {
-		      m_newStartValue = atoi(szStartValue);
-		      strcpy((gchar *) m_newListType, "%*%d.");
-	       }
-	       else if (m_iListType == LOWERCASE_LIST)
-	       {
-		      m_newStartValue = atoi(szStartValue);
-		      strcpy((gchar *) m_newListType,"%*%a.");
-	       }
-	       else if (m_iListType == UPPERCASE_LIST)
-	       {
-		      m_newStartValue = atoi(szStartValue);
-		      strcpy((gchar *) m_newListType,"%*%A.");
-	       }
-	       else if (m_iListType == BULLETED_LIST)
-	       {
-		 //	      gchar c = *szStartValue;
-		      m_newStartValue = 1;
-		      strcpy((gchar *) m_newListType, "%b");
-	       }
-       }
-       else
-	       m_bStartList = UT_FALSE;
-
-       if (GTK_TOGGLE_BUTTON (m_wCheckstoplist)->active)
-	       m_bStopList = UT_TRUE;
-       else
-	       m_bStopList = UT_FALSE;
-
-       if (GTK_TOGGLE_BUTTON (m_wCur_changestart_button)->active)
-       {
-	       m_bChangeStartValue = UT_TRUE;
-	       wlisttype=gtk_menu_get_active(GTK_MENU(m_wCur_Option_types_menu));
-	       m_iListType = (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
-	       szStartValue =gtk_entry_get_text( GTK_ENTRY (m_wCur_startingvaluev) );
-	       m_bStartList = UT_TRUE;
-	       if(m_iListType == NUMBERED_LIST)
-	       {
-		      m_curStartValue = atoi(szStartValue);
-		      strcpy((gchar *) m_newListType, "%*%d.");
-	       }
-	       else if (m_iListType == LOWERCASE_LIST)
-	       {
-		      m_curStartValue = atoi(szStartValue);
-		      strcpy((gchar *) m_newListType,"%*%a.");
-	       }
-	       else if (m_iListType == UPPERCASE_LIST)
-	       {
-		      m_curStartValue = atoi(szStartValue);
-		      strcpy((gchar *) m_newListType,"%*%A.");
-	       }
-	       else if (m_iListType == BULLETED_LIST)
-	       {
-		 //	      gchar c = *szStartValue;
-		      m_curStartValue = 1;
-		      strcpy((gchar *) m_newListType, "%b");
-	       }
-       }
-       else
-	       m_bChangeStartValue = UT_FALSE;
-
+	setMemberVariables();
+	previewExposed();
 	Apply();
-
-	// Make all checked buttons inactive 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstartlist),FALSE);
-	setAllSensitivity();
-#endif
 }
 
-void  AP_QNXDialog_Lists::startChanged(void)
+void  AP_QNXDialog_Lists::customChanged(void)
 {
-#if 0
-	if (GTK_TOGGLE_BUTTON (m_wCheckstartlist)->active)
+	if(m_bisCustomFrameHidden == UT_TRUE)
 	{
-	       m_bStartList = UT_TRUE;
-	       m_bStopList = UT_FALSE;
-	       m_bChangeStartValue = UT_FALSE;
-           gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
-           gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
-           gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
-    }
-    else
-    {
-		m_bStartList = UT_FALSE;
-	}
-	setAllSensitivity();
-#endif
-}
-
-
-void  AP_QNXDialog_Lists::stopChanged(void)
-{
-#if 0
-	if (GTK_TOGGLE_BUTTON (m_wCheckstoplist)->active)
-	{
-		m_bStopList = UT_TRUE;
-		m_bChangeStartValue = UT_FALSE;
-		m_bStartList = UT_FALSE;
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstartlist),FALSE);
+		fillWidgetFromDialog();
+/*
+		gtk_widget_show(m_wCustomFrame);
+		gtk_arrow_set(GTK_ARROW(m_wCustomArrow),GTK_ARROW_DOWN,GTK_SHADOW_OUT);
+*/
+		m_bisCustomFrameHidden = UT_FALSE;
+		m_bisCustomized = UT_TRUE;
+		setMemberVariables();
+		previewExposed();
 	}
 	else
 	{
-		m_bStopList = UT_FALSE;
+/*
+		gtk_widget_hide(m_wCustomFrame);
+		gtk_arrow_set(GTK_ARROW(m_wCustomArrow),GTK_ARROW_RIGHT,GTK_SHADOW_OUT);
+*/
+		m_bisCustomFrameHidden = UT_TRUE;
+		m_bisCustomized = UT_FALSE;
+		_setData();
 	}
-	setAllSensitivity();
-#endif
 }
 
 
-void  AP_QNXDialog_Lists::startvChanged(void)
+void AP_QNXDialog_Lists::fillWidgetFromDialog(void)
 {
-#if 0
-	if (GTK_TOGGLE_BUTTON (m_wCur_changestart_button)->active)
-	{
-		m_bChangeStartValue = UT_TRUE;
-		m_bStartList = UT_FALSE;
-		m_bStopList = UT_FALSE;
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstartlist),FALSE);
-	}
-	else
-	{
-		m_bChangeStartValue = UT_FALSE;
-	}
-	setAllSensitivity();
-#endif
+ 	PopulateDialogData();
+	_setData();
 }
-
 
 void AP_QNXDialog_Lists::updateDialog(void)
 {
-	_populateWindowData();
-	setAllSensitivity();
+	List_Type oldlist = m_iListType;
+	if(m_bisCustomized == UT_FALSE)
+		_populateWindowData();
+	if((oldlist != m_iListType) && (m_bisCustomized == UT_FALSE))
+		m_newListType = m_iListType;
+	if(m_bisCustomized == UT_FALSE)
+		_setData();
 }
+
+void AP_QNXDialog_Lists::setAllSensitivity(void)
+{ 
+	PopulateDialogData();
+	if(m_isListAtPoint == UT_TRUE) 
+	{
+	}
+}
+
 
 PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	PtWidget_t *window, *vgroup;
+	PtWidget_t *lblStyle, *listStyle;
+	PtWidget_t *lblType, *listType;
+	PtWidget_t *togCustomize, *grpCustomize;
+	PtWidget_t *lblFormat;
+	PtWidget_t *numListLevel, *numListAlign, *numIndentAlign, *numStart;
+	PtWidget_t *radnewlist, *radexisting, *radsublist, *radresumelist;
+	PtWidget_t *butOK, *butCancel;
 
-	PtArg_t args[10];
-	int n;
+   	PtArg_t    	args[10];
+	int			n;
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	n = 0;
 	ConstructWindowName();
@@ -401,118 +405,111 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	m_mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
 
-
-	/* Everything goes into a vertical group */
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-			Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
-			Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtWidget_t *vgroup = PtCreateWidget(PtGroup, m_mainWindow, n, args);
+   	vgroup = PtCreateWidget(PtGroup, window, n, args);
 
-	/* Create the labels across the top */
+	PtWidget_t *hgroup;
 	n = 0;
-	PtWidget_t *hlabelgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, 10, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, 10, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
+	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
+	/*** Create the controls in a vertical group here ***/
+	PtWidget_t *ctlgroup;
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Current_List_Type), 0);
-	m_wCur_listtype = PtCreateWidget(PtLabel, hlabelgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 10, 0);
+	ctlgroup = PtCreateWidget(PtGroup, hgroup, n, args);
 
+	PtWidget_t *group;
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxx", 0);
-	m_wCur_listtypev = PtCreateWidget(PtLabel, hlabelgroup, n, args);
-
+	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Current_List_Label), 0);
-	m_wCur_listlabel = PtCreateWidget(PtLabel, hlabelgroup, n, args);
-
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Style:", 0);
+	lblStyle = PtCreateWidget(PtLabel, group, n, args);	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxx", 0);
-	m_wCur_listlabelv = PtCreateWidget(PtLabel, hlabelgroup, n, args);
-
-	/* Create the radio groupings for the actions  ... */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-	PtWidget_t *hradiogroup = PtCreateWidget(PtGroup, vgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	listStyle = PtCreateWidget(PtComboBox, group, n, args);	
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-					"Start New List",
-					/* pSS->getValue(AP_STRING_ID_DLG_Lists_Cur_Change_Start), */ 
-					0);
-	m_wCheckstartlist = PtCreateWidget(PtToggleButton, hradiogroup, n, args);
+	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Type:", 0);
+	lblType = PtCreateWidget(PtLabel, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	listType = PtCreateWidget(PtComboBox, group, n, args);	
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-					"Change Current List",
-					/* pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New_List), */
-					 0);
-	m_wCheckcurlist = PtCreateWidget(PtToggleButton, hradiogroup, n, args);
-
-	/* Create the actual button actions here */
-	n = 0;
-	PtWidget_t *hactiongroup = PtCreateWidget(PtGroup, vgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Customize ...", 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_OUTLINE, 0);
+	togCustomize = PtCreateWidget(PtToggleButton, ctlgroup, n, args);	
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "List Type:", 0);
-	m_wMenuListTypeLabel = PtCreateWidget(PtLabel, hactiongroup, n, args);
+#define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
+                                           Pt_BOTTOM_OUTLINE | Pt_BOTTOM_BEVEL | \
+                                           Pt_LEFT_OUTLINE | Pt_LEFT_BEVEL | \
+                                           Pt_RIGHT_OUTLINE | Pt_RIGHT_BEVEL)
+	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
+	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
+	grpCustomize = PtCreateWidget(PtGroup, ctlgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_wMenuListType = PtCreateWidget(PtComboBox, hactiongroup, n, args);
-	const char *item;
-	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List);
-	PtListAddItems(m_wMenuListType, &item, 1, 0);
-	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List);
-	PtListAddItems(m_wMenuListType, &item, 1, 0);
-	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List);
-	PtListAddItems(m_wMenuListType, &item, 1, 0);
-	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List);
-	PtListAddItems(m_wMenuListType, &item, 1, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
+	group = PtCreateWidget(PtGroup, grpCustomize, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Label:", 0);
+	PtCreateWidget(PtLabel, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "", 0);
+	PtCreateWidget(PtLabel, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Level:", 0);
+	PtCreateWidget(PtLabel, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Start At:", 0);
+	PtCreateWidget(PtLabel, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "List Align:", 0);
+	PtCreateWidget(PtLabel, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Indent Align:", 0);
+	PtCreateWidget(PtLabel, group, n, args);	
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Start Value:", 0);
-	m_wStartValueLabel = PtCreateWidget(PtLabel, hactiongroup, n, args);
-
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	group = PtCreateWidget(PtGroup, grpCustomize, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_wStartValue = PtCreateWidget(PtText, hactiongroup, n, args);
-
-
-	/* Buttons for the bottom */
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	lblFormat = PtCreateWidget(PtText, group, n, args);	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
-	PtWidget_t *hbutgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Font ...", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtCreateWidget(PtButton, group, n, args);	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Stop", 0);
-	m_wStop = PtCreateWidget(PtButton, hbutgroup, n, args);
-
+	numListLevel = PtCreateWidget(PtNumericInteger, group, n, args);	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Resume", 0);
-	m_wResume = PtCreateWidget(PtButton, hbutgroup, n, args);
-
+	numStart = PtCreateWidget(PtNumericInteger, group, n, args);	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Apply), 0);
-	m_wApply = PtCreateWidget(PtButton, hbutgroup, n, args);
-	PtAddCallback(m_wApply, Pt_CB_ACTIVATE, s_applyClicked, this);
-
+	numListAlign = PtCreateWidget(PtNumericInteger, group, n, args);	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Close), 0);
-	m_wClose = PtCreateWidget(PtButton, hbutgroup, n, args);
-	PtAddCallback(m_wClose, Pt_CB_ACTIVATE, s_closeClicked, this);
+	numIndentAlign = PtCreateWidget(PtNumericInteger, group, n, args);	
 
-	/*** JAM THE PREVIEW DOWN HERE ***/
+	/*** Create the preview in the next dialog ***/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 300, 0);
+	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_WHITE, 0);
+	PtCreateWidget(PtLabel, hgroup, n, args);
+
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  300, 0);
-	m_wPreviewGroup = PtCreateWidget(PtGroup, vgroup, n, args);
+	m_wPreviewGroup = PtCreateWidget(PtGroup, hgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
@@ -520,89 +517,413 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	void *data = (void *)this;
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
-	m_wPreview = PtCreateWidget(PtRaw, m_wPreviewGroup, n, args);
+	m_wPreviewArea = PtCreateWidget(PtRaw, m_wPreviewGroup, n, args);
+
+	/*** Create the radio buttons below this group ***/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
+	group = PtCreateWidget(PtGroup, vgroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Start new list", 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
+	radnewlist = PtCreateWidget(PtToggleButton, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Apply to current list", 0);
+	radexisting = PtCreateWidget(PtToggleButton, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Start sub list", 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
+	radsublist = PtCreateWidget(PtToggleButton, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Resume current list", 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
+	radresumlist = PtCreateWidget(PtToggleButton, group, n, args);	
+		
+	/*** Then we have the final cancellation buttons ***/
+	n = 0;
+	group = PtCreateWidget(PtGroup, vgroup, n, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
+	PtCreateWidget(PtLabel, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "OK", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	butOK = PtCreateWidget(PtButton, group, n, args);	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Cancel", 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	butCancel = PtCreateWidget(PtButton, group, n, args);	
+
+	/** Done **/
+	m_wCustomFrame = grpCustomize;
+	m_wCustomLabel = togCustomize;
+
+	m_wListStyleBox = lblFormat;
+	m_wLevelSpin = numListLevel;
+	m_wStartSpin = numStart;
+	m_wAlignListSpin = numListSpin;
+	m_wIndentAlignSpin = numIndentAlign;
+
+	m_wStartNewList = radnewlist;
+	m_wApplyCurrent = radexisting;
+	m_wStartSubList = radsublist;
+	m_wResumeList = radresumelist;
+
+	m_wApply = butOK;
+	m_wClose = butCancel;
 
 	return m_mainWindow;
 }
 
+void AP_QNXDialog_Lists::_fillNoneStyleMenu( GtkWidget *listmenu)
+{
+#if 0
+        GtkWidget *glade_menuitem;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Type_none));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) NOT_A_LIST ));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+#endif
+}
+
+void AP_QNXDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
+{
+#if 0
+        GtkWidget *glade_menuitem;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) NUMBERED_LIST ));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+        glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) LOWERCASE_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) UPPERCASE_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Roman_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) LOWERROMAN_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Roman_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) UPPERROMAN_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+#endif
+}
+
+
+void AP_QNXDialog_Lists::_fillBulletedStyleMenu( GtkWidget *listmenu)
+{
+#if 0
+        GtkWidget *glade_menuitem;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) BULLETED_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Dashed_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) DASHED_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Square_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) SQUARE_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Triangle_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) TRIANGLE_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Diamond_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) DIAMOND_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Star_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) STAR_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Implies_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) IMPLIES_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Tick_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) TICK_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Box_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) BOX_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Hand_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) HAND_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Heart_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+(gint) HEART_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+					GTK_SIGNAL_FUNC (s_styleChanged), this);
+
+#endif
+}
 
 void AP_QNXDialog_Lists::_populateWindowData (void) 
 {
-	PopulateDialogData();
-
+#if 0
+  //	char *tmp;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+        PopulateDialogData();
+	if(m_isListAtPoint == UT_TRUE)
+	{
+	  // Button 0 is stop list, button 2 is startsub list
+	       gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List));
+	       gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Start_Sub));
 
-	/* We are inside a current list, new & change are enabled */
-	if(m_isListAtPoint == UT_TRUE) {
-		int *flags = NULL;
+	}
+	else
+	{
+	  // Button 0 is Start New List, button 2 is resume list
+	       gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New));
+	       gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Resume));
+	}
+#endif
+}
 
-		PtSetResource(m_wCur_listlabelv, Pt_ARG_TEXT_STRING, m_curListLabel, 0);
-		PtSetResource(m_wCur_listtypev, Pt_ARG_TEXT_STRING, m_curListType, 0);
+void AP_QNXDialog_Lists::_connectSignals(void)
+{
+#if 0
+	gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
+							 "destroy",
+							 NULL,
+							 NULL);
+	//
+        // Don't use connect_after in modeless dialog
+	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+						     "delete_event",
+						     GTK_SIGNAL_FUNC(s_deleteClicked), (gpointer) this);
 
-		PtGetResource(m_wCheckcurlist, Pt_ARG_FLAGS, &flags, 0);
-		if (!flags && *flags & Pt_SET) { 	/* Change current selected */
-			char tmp[20];
-			int  pos;
-		
-			sprintf(tmp, "%d", m_curStartValue);
-			PtSetResource(m_wStartValue, Pt_ARG_TEXT_STRING, tmp, 0);
-		
-			if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List)))
-					pos = 1;
-			else if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List)))
-					pos = 2;
-			else if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List)))
-					pos = 3;
-			else if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List)))
-					pos = 4;
+	gtk_signal_connect (GTK_OBJECT (m_wApply), "clicked",
+						GTK_SIGNAL_FUNC (s_applyClicked), this);
+	gtk_signal_connect (GTK_OBJECT (m_wClose), "clicked",
+						GTK_SIGNAL_FUNC (s_closeClicked), this);
+	gtk_signal_connect (GTK_OBJECT (m_wCustomLabel), "clicked",
+						GTK_SIGNAL_FUNC (s_customChanged), this);
+	gtk_signal_connect (GTK_OBJECT (m_wMenu_None), "activate",
+					GTK_SIGNAL_FUNC (s_typeChangedNone), this);
+	gtk_signal_connect (GTK_OBJECT (m_wMenu_Bull), "activate",
+					GTK_SIGNAL_FUNC (s_typeChangedBullet), this);
+	gtk_signal_connect (GTK_OBJECT (m_wMenu_Num), "activate",
+					GTK_SIGNAL_FUNC (s_typeChangedNumbered), this);
+	gtk_signal_connect (GTK_OBJECT (m_oStartSpin_adj), "value_changed",
+				      GTK_SIGNAL_FUNC (s_styleChanged), this);
+	gtk_signal_connect (GTK_OBJECT (m_oLevelSpin_adj), "value_changed",
+				      GTK_SIGNAL_FUNC (s_styleChanged), this);
+	gtk_signal_connect (GTK_OBJECT (m_oAlignList_adj), "value_changed",
+				      GTK_SIGNAL_FUNC (s_styleChanged), this);
+	gtk_signal_connect (GTK_OBJECT (m_oIndentAlign_adj), "value_changed",
+				      GTK_SIGNAL_FUNC (s_styleChanged), this);
+	gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "changed",
+				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 
-			UT_QNXComboSetPos(m_wMenuListType, pos);
+
+	// the expose event of the preview
+	             gtk_signal_connect(GTK_OBJECT(m_wPreviewArea),
+					   "expose_event",
+					   GTK_SIGNAL_FUNC(s_preview_exposed),
+					   (gpointer) this);
+
+	
+		     gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
+		     					 "expose_event",
+		     				 GTK_SIGNAL_FUNC(s_window_exposed),
+		    					 (gpointer) this);
+
+#endif
+}
+
+void AP_QNXDialog_Lists::_setData(void)
+{
+#if 0
+  //
+  // This function reads the various elements in customize box and loads
+  // the member variables with them
+  //
+        gint i;
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wLevelSpin), (float) m_iLevel);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wAlignListSpin),m_fAlign);
+	float indent = m_fAlign + m_fIndent;
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin),indent);
+	if( (m_fIndent + m_fAlign) < 0.0)
+	{
+	         m_fIndent = - m_fAlign;
+                 gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), 0.0);
+
+	}
+	//
+	// Code to work out which is active Font
+	//
+	if(strcmp((char *) m_pszFont,"NULL") == 0 )
+	{
+                gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
+	}
+	else
+	{
+	        for(i=0; i < (gint) g_list_length(m_glFonts);i++)
+		{
+		         if(strcmp((char *) m_pszFont,(char *) g_list_nth_data(m_glFonts,i)) == 0)
+		                 break;
+		}
+		if(i < (gint) g_list_length(m_glFonts))
+		{
+                         gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), i+ 1 );
+		}
+		else
+		{
+                         gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
 		}
 	}
-	/* We are not inside a current list, change disabled, new enabled */
-	else {
-		PtSetResource(m_wCur_listlabelv, Pt_ARG_TEXT_STRING, "NONE", 0);
-		PtSetResource(m_wCur_listtypev, Pt_ARG_TEXT_STRING, "NONE", 0);
-	}
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wStartSpin),(float) m_iStartValue);
+	// first, we stop the entry from sending the changed signal to our handler
+	gtk_signal_handler_block_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
 
+	gtk_entry_set_text( GTK_ENTRY(m_wDelimEntry), (const gchar *) m_pszDelim);
+	// turn signals back on
+	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
+#endif
 }
 
-void AP_QNXDialog_Lists::setAllSensitivity(void)
-{ 
-	PopulateDialogData();
 
-	/* If we are at a point, then all things are valid */
-	if(m_isListAtPoint == UT_TRUE) {
-		PtSetResource(m_wMenuListType, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wMenuListTypeLabel, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wStartValue, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wStartValueLabel, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wStop, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
-	}
-	else {
-		PtSetResource(m_wMenuListType, Pt_ARG_FLAGS, 
-				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wMenuListTypeLabel, Pt_ARG_FLAGS, 
-				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wStartValue, Pt_ARG_FLAGS, 
-				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wStartValueLabel, Pt_ARG_FLAGS, 
-				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wStop, Pt_ARG_FLAGS, 
-				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
-		PtSetResource(m_wResume, Pt_ARG_FLAGS, 
-				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+void AP_QNXDialog_Lists::_gatherData(void)
+{
+#if 0
+  //
+  // This function reads the various elements in customize box and loads
+  // the member variables with them
+  //
+        m_iLevel =  gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wLevelSpin));
+	m_fAlign = gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_wAlignListSpin));
+	float indent = gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON( m_wIndentAlignSpin));
+	m_fIndent = indent - m_fAlign;
+	if( (m_fIndent + m_fAlign) < 0.0)
+	{
+	         m_fIndent = - m_fAlign;
+                 gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), 0.0);
 
 	}
-
-	if(m_previousListExistsAtPoint == UT_TRUE) {
-		PtSetResource(m_wResume, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
+	GtkWidget * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
+	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wfont)));
+	if(ifont == 0)
+	{
+                 UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  "NULL");
 	}
-	else {
-		PtSetResource(m_wResume, Pt_ARG_FLAGS, 
-				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+	else
+	{
+                 UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  g_list_nth_data(m_glFonts, ifont-1));
 	}
+	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+	m_iStartValue =  gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wStartSpin));
+	gchar * pszDel = gtk_entry_get_text( GTK_ENTRY(m_wDelimEntry));
+        UT_XML_strncpy((XML_Char *)m_pszDelim, 80, (const XML_Char *) pszDel);
+#endif
 }
-
 
 
