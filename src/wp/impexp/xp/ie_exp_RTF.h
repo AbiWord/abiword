@@ -22,6 +22,7 @@
 #define IE_EXP_RTF_H
 
 #include "ie_exp.h"
+#include "ut_exception.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_misc.h"
@@ -115,6 +116,7 @@ protected:
         void                            _write_style_fmt(const PD_Style *);
 	void                            _write_stylesheets(void);
 
+	UT_sint32			_findFont(const s_RTF_AttrPropAdapter * apa) const;
 	UT_sint32			_findFont(const _rtf_font_info * pfi) const;
 	void				_addFont(const _rtf_font_info * pfi);
 
@@ -136,11 +138,13 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
+class _rtf_no_font {};
+
 /* This struct contains the RTF font info as needed for the 
    font table. */
 struct _rtf_font_info
 {
-    _rtf_font_info(const s_RTF_AttrPropAdapter & apa);
+    _rtf_font_info(const s_RTF_AttrPropAdapter & apa) UT_THROWS((_rtf_no_font));
     bool _is_same(const _rtf_font_info & fi) const;
     
     /* Neither of the char variables should be freed. */

@@ -733,9 +733,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		}
 	}
 
-   	_rtf_font_info fi(apa);
-	UT_sint32 ndxFont = _findFont(&fi);
-	UT_ASSERT(ndxFont != -1);
+	UT_sint32 ndxFont = _findFont(&apa);
 	if(ndxFont != -1)
 		_rtf_keyword("f",ndxFont);	// font index in fonttbl
 
@@ -925,9 +923,15 @@ void IE_Exp_RTF::_selectStyles()
 			if(pns == NULL)
 			{
 				m_hashStyles.insert(szName, new NumberedStyle(pStyle, ++nStyleNumber));
-				_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle));
-				if (_findFont(&fi) == -1)
-					_addFont(&fi);
+				UT_TRY
+				{
+					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle));
+					if (_findFont(&fi) == -1)
+						_addFont(&fi);
+				}
+				UT_CATCH(_rtf_no_font)
+				{
+				}
 			}
 		}
     }
@@ -1036,6 +1040,21 @@ UT_sint32 IE_Exp_RTF::_findFont(const _rtf_font_info * pfi) const
 	return -1;
 }
 
+UT_sint32 IE_Exp_RTF::_findFont(const s_RTF_AttrPropAdapter * apa) const
+{
+	static UT_sint32 ifont = 0;
+	UT_TRY
+	{
+		ifont = _findFont(&(_rtf_font_info(*apa)));
+		return ifont;
+	}
+	UT_CATCH(_rtf_no_font)
+	{
+		return -1;
+	}
+	UT_END_CATCH;
+}
+
 /*!
  * Add a font to the font table. The font must not be present
  * in the font table at the start of the call.
@@ -1050,11 +1069,13 @@ void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 	return;
 }
 
-_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa)
+_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa) 
+	UT_THROWS((_rtf_no_font))
 {
     // Not a typo. The AbiWord "font-family" property is what RTF
     // calls font name. It has values like "Courier New".
     szName = apa.getProperty("font-family");
+	if (szName == NULL) UT_THROWS(_rtf_no_font());
     
     static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
     GR_Font::FontFamilyEnum ff;
