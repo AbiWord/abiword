@@ -112,7 +112,10 @@ PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset
 				}
 				else
 				{
-//					diff |= PT_Diff_Right;
+					// I'm not sure why we don't set the _Right flag here
+					// like we do for the fragOffset==0 case.  It should
+					// probably be symmetric, but I'm not sure.
+					// diff |= PT_Diff_Right;
 				}
 			}
 			else
