@@ -284,6 +284,12 @@ protected:
 									m_pColorHL = c;
 									return o != c;
 								}
+
+	bool                    _setColorHL(const char *pszColor)
+	                            {
+		                            return m_pColorHL.setColor(pszColor);
+								}
+	
 	void					_setLine(fp_Line* pLine) { m_pLine = pLine; }
 	void					_setHeight(UT_sint32 iHeight)
 								{ m_iHeight = iHeight;}

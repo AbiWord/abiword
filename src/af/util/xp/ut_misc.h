@@ -37,7 +37,7 @@ class ABI_EXPORT UT_RGBColor
 {
 public:
 	UT_RGBColor();
-	UT_RGBColor(unsigned char, unsigned char, unsigned char);
+	UT_RGBColor(unsigned char, unsigned char, unsigned char, bool bTransparent = false);
 	UT_RGBColor(const UT_RGBColor&);
 	bool operator != (const UT_RGBColor &op1)
 	{
@@ -88,12 +88,17 @@ public:
 		return *this;
 	}
 
+	inline bool isTransparent() const {return m_bIsTransparent;}
+	bool setColor(const char * pszColor);
+
 	unsigned char m_red;
 	unsigned char m_grn;
 	unsigned char m_blu;
+	bool m_bIsTransparent;
+	
 };
 
-void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b);
+void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b, bool bTransparent = false);
 ABI_EXPORT void UT_parseColor(const char*, UT_RGBColor&);
 
 class ABI_EXPORT UT_HashColor

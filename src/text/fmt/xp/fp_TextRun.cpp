@@ -163,10 +163,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_ASSERT(p_color);
 	_setColorFG(p_color->getColor());
 
-
-	bChanged |= updateHighlightColor();
-	bChanged |= updatePageColor();
-
 	const XML_Char* pszStyle = NULL;
 	if(pSpanAP && pSpanAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
 	{

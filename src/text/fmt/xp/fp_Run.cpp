@@ -121,12 +121,15 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iOverlineXoff(0),
 		m_pHyperlink(0),
 		m_pRevisions(NULL),
-		m_eHidden(FP_VISIBLE)
+		m_eHidden(FP_VISIBLE),
+		m_pColorHL(255,255,255,true) // set highlight colour to transparent
 {
         // set the default background color and the paper color of the
 	    // section owning the run.
-	updateHighlightColor();
-	updatePageColor();
+
+	// will do this in ::lookupProperties
+	//updateHighlightColor();
+	//updatePageColor();
 }
 
 fp_Run::~fp_Run()
@@ -170,6 +173,14 @@ void fp_Run::lookupProperties()
 		setVisibility(FP_VISIBLE);
 	}
 
+	// here we handle background colour -- we parse the property into
+	// m_pColorHL and then call updateHighlightColor() to overlay any
+	// colour from higher layout elements
+	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	_setColorHL(pszBGcolor);
+
+	updateHighlightColor();
+	updatePageColor();
 
 	_lookupProperties(pSpanAP, pBlockAP, pSectionAP);
 
@@ -316,34 +327,10 @@ fp_Run::_inheritProperties(void)
  */
 bool fp_Run::updateHighlightColor(void)
 {
-	UT_RGBColor oldColor = m_pColorHL;
-	
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
-
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
-	xxx_UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",getBlock(),this,getBlockOffset()));
-//	UT_ASSERT(pSpanAP); // Sevior put this back to track down interesting
-	// Section change bug.
-	getBlock()->getAttrProp(&pBlockAP);
-
-	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
-	static UT_RGBColor sClr;
-
-//
-// FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this
-// no prexisting docs will be able to change the Highlight color in paragraphs
-// with lists. I think this is a good solution for now. However it does mean
-// field-color of "ffffff", ie pure white is actually transparent.
-//
-	if(pszBGcolor && UT_strcmp(pszBGcolor,"transparent")!= 0  && UT_strcmp(pszBGcolor,"ffffff") != 0)
+	if(m_pColorHL.isTransparent())
 	{
-		UT_parseColor (pszBGcolor, m_pColorHL);
-		return m_pColorHL != oldColor;
-	}
-	else
-	{
+		UT_RGBColor oldColor = m_pColorHL;
+
 		fp_Page * pPage = NULL;
 		fp_Line * pLine = getLine();
 		if(pLine != NULL)
@@ -357,7 +344,7 @@ bool fp_Run::updateHighlightColor(void)
 				{
 					m_pColorHL = ((fp_CellContainer *) pCon)->getBgColor();
 					return m_pColorHL != oldColor;
-				} 
+				}
 				pPage = pCon->getPage();
 			}
 		}
@@ -381,6 +368,8 @@ bool fp_Run::updateHighlightColor(void)
 
 		return m_pColorHL != oldColor;
 	}
+
+	return false;
 }
 
 /*!
@@ -395,20 +384,20 @@ bool fp_Run::updatePageColor(void)
 	UT_RGBColor * pClr = NULL;
 	fp_Page * pPage = NULL;
 	fp_Line * pLine = getLine();
-	
+
 	if(pLine != NULL)
 	{
 		fp_Container * pCon = pLine->getContainer();
 		if(pCon)
 		{
-			
+
 			// Check if we are in a table cell which has a NON-transparent background
 			// if it is, then use the cell backgound color
 			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 			{
 				m_pColorPG = ((fp_CellContainer *) pCon)->getBgColor();
 				return m_pColorPG != oldColor;
-			} 
+			}
 			pPage = pCon->getPage();
 		}
 	}
@@ -785,7 +774,7 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 
 const UT_RGBColor fp_Run::getPageColor(void)
 {
-	updatePageColor();
+	updatePageColor(); // TODO -- why ??? Tomas
 	return _getColorPG();
 }
 
@@ -1265,7 +1254,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 								  const PP_AttrProp * pSectionAP)
 {
 	bool bChanged = false;
-	
+
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -1273,9 +1262,6 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_RGBColor clrFG;
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
 	bChanged |= _setColorFG(clrFG);
-	bChanged |= updateHighlightColor(); // Highlight color
-	bChanged |= updatePageColor(); // update Page Color member variable.
-
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
@@ -1367,7 +1353,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	if(bChanged)
 		clearScreen();
-	
+
 }
 
 bool fp_TabRun::canBreakAfter(void) const
@@ -3026,7 +3012,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 			// should not be, since lookupProperties is called on
 			// formatting changes - Tomas
 			// lookupProperties();
-			
+
 #ifndef WITH_PANGO
 			getGR()->setFont(m_pFont);
 #else
@@ -3080,9 +3066,6 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_RGBColor clrFG;
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
 	_setColorFG(clrFG);
-
-	updateHighlightColor();
-	updatePageColor();
 
 	const char * pszFieldColor = NULL;
 	pszFieldColor = PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);

@@ -187,6 +187,7 @@ static struct colorToRGBMapping s_Colors[] =
 	{ "dimgray",			105, 105, 105 },
 	{ "dimgrey",			105, 105, 105 },
 	{ "dodgerblue",			 30, 144, 255 },
+	{ "ffffff",             255, 255, 255 },
 	{ "firebrick",			178,  34,  34 },
 	{ "floralwhite",		255, 250, 240 },
 	{ "forestgreen",		 34, 139,  34 },
@@ -282,6 +283,7 @@ static struct colorToRGBMapping s_Colors[] =
 	{ "teal",			  0, 128, 128 },
 	{ "thistle",			216, 191, 216 },
 	{ "tomato",			255,  99,  71 },
+	{ "transparent",    255, 255, 255 },
 	{ "turquoise",			 64, 224, 208 },
 	{ "violet",			238, 130, 238 },
 	{ "wheat",			245, 222, 179 },
@@ -509,13 +511,15 @@ UT_RGBColor::UT_RGBColor()
 	m_red = 0;
 	m_grn = 0;
 	m_blu = 0;
+	m_bIsTransparent = false;
 }
 
-UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu)
+UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu, bool bTransparent)
 {
 	m_red = red;
 	m_grn = grn;
 	m_blu = blu;
+	m_bIsTransparent = bTransparent;
 }
 
 UT_RGBColor::UT_RGBColor(const UT_RGBColor &c)
@@ -523,13 +527,34 @@ UT_RGBColor::UT_RGBColor(const UT_RGBColor &c)
 	m_red = c.m_red;
 	m_grn = c.m_grn;
 	m_blu = c.m_blu;
+	m_bIsTransparent = c.m_bIsTransparent;
 }
 
-void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b)
+bool UT_RGBColor::setColor(const char * pszColor)
+{
+	unsigned char r = m_red, g = m_grn, b = m_blu;
+	
+	if(!pszColor || !strcmp(pszColor,"transparent") || !strcmp(pszColor,"ffffff"))
+	{
+		m_red = m_grn = m_blu = 255;
+		m_bIsTransparent = true;
+	}
+	else
+	{
+		UT_parseColor(pszColor, *this);
+		m_bIsTransparent = false;
+	}
+	
+	return (r != m_red || g != m_grn || b != m_blu);
+}
+
+
+void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b, bool bTransparent)
 {
 	col.m_red = r;
 	col.m_grn = g;
 	col.m_blu = b;
+	col.m_bIsTransparent = bTransparent;
 }
 
 void UT_parseColor(const char *p, UT_RGBColor& c)
@@ -550,6 +575,14 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 	    return ;
 	  }
 
+
+	if(!strcmp(p,"transparent") || !strcmp(p,"ffffff"))
+	{
+		c.m_red = c.m_grn = c.m_blu = 255;
+		c.m_bIsTransparent = true;
+		return;
+	}
+	
 	UT_HashColor hash;
 
 	if (hash.setColor (p))
@@ -565,6 +598,7 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 	    UT_DEBUGMSG(("String = %s \n",p));
 	    UT_ASSERT(UT_NOT_IMPLEMENTED);
 	  }
+
 }
 
 #ifdef WIN32
