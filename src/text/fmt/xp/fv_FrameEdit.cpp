@@ -927,6 +927,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 // If we've just selected the frame, ignore this event.
 //
+	UT_DEBUGMSG(("Doing mouse release now! \n"));
 	if(FV_FrameEdit_EXISTING_SELECTED == m_iFrameEditMode)
 	{
 		UT_DEBUGMSG(("Existing Frame selected now released button \n"));
@@ -1329,7 +1330,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // Delete the frame
 
 		posStart = m_pFrameLayout->getPosition(true);
-		posEnd = posStart + m_pFrameLayout->getLength();
+		posEnd = posStart + m_pFrameLayout->getLength()-1;
 		UT_uint32 iRealDeleteCount;
 		PP_AttrProp * p_AttrProp_Before = NULL;
 
@@ -1465,7 +1466,7 @@ void FV_FrameEdit::deleteFrame(void)
 	getDoc()->setDontImmediatelyLayout(true);
 
 	PT_DocPosition posStart = m_pFrameLayout->getPosition(true);
-	PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength();
+	PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength() -1;
 	UT_uint32 iRealDeleteCount;
 
 	getDoc()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);

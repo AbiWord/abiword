@@ -9239,20 +9239,20 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			{
 				styleNumber = parameter;
 				styleType = styleTypeP;
-				UT_DEBUGMSG(("Stylesheet RTF Found style number %d Paragraph type \n",styleNumber));
+				xxx_UT_DEBUGMSG(("Stylesheet RTF Found style number %d Paragraph type \n",styleNumber));
 			}
 			if (strcmp(reinterpret_cast<char*>(&keyword[0]), "cs") == 0)
 			{
 				styleNumber = parameter;
 				styleType = styleTypeC;
-				UT_DEBUGMSG(("Stylesheet: RTF Found style number %d Character type \n",styleNumber));
+				xxx_UT_DEBUGMSG(("Stylesheet: RTF Found style number %d Character type \n",styleNumber));
 			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "*") == 0)
 			{
 //
 // Get next keyword
 //
-				UT_DEBUGMSG(("Found * in StyleSheet reading \n"));
+				xxx_UT_DEBUGMSG(("Found * in StyleSheet reading \n"));
 			}
 			else
 			{
@@ -9422,7 +9422,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		// need to test that we have a name, as there are some malformed docs around ...
 		if(szName && *szName)
 		{
-			UT_DEBUGMSG(("Looking at style %s \n",szName));
+			xxx_UT_DEBUGMSG(("Looking at style %s \n",szName));
 			PD_Style * pStyle = NULL;
 			if(getDoc()->getStyle(szName, &pStyle))
 			{

@@ -2040,7 +2040,7 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bo
 		sBot = UT_String_sprintf("%d",iBot);
 		UT_String_setProperty(sCellProps,sBotAttach,sBot);
 	}
-	UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
+	xxx_UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
 	m_pie->_rtf_keyword("abicellprops ",sCellProps.c_str());
@@ -2690,14 +2690,14 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
 	UT_sint32 iOldRight = m_iRight;
-	UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
+	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	PT_AttrPropIndex prevAPI = api;
 	m_Table.OpenCell(api);
 	bool bNewRow = false;
-	UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
+	xxx_UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
 	if(	(m_Table.getLeft() < iOldRight) || m_bNewTable)
 	{
-		UT_DEBUGMSG(("NEW ROW DETECTED !!!!!!!!!!!!!!!!!\n"));
+		xxx_UT_DEBUGMSG(("NEW ROW DETECTED !!!!!!!!!!!!!!!!!\n"));
 		if(m_bNewTable)
 		{
 			m_pie->_rtf_open_brace();
@@ -2762,7 +2762,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 // reset api. It may have been screwed in _newRow
 //
-	UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
+	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	m_Table.OpenCell(api);
 	if(bNewRow)
 	{
@@ -2784,7 +2784,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 		{
 			for(i = 0; i < m_Table.getLeft(); i++)
 			{
-				UT_DEBUGMSG(("Writing nestcell in wrong spot 1 \n"));
+				xxx_UT_DEBUGMSG(("Writing nestcell in wrong spot 1 \n"));
 				m_pie->_rtf_keyword("nestcell");
 			}
 		}
@@ -2814,7 +2814,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 			{
 				for(i = m_iRight; i < m_Table.getLeft(); i++)
 				{
-					UT_DEBUGMSG(("Writing nestcell in wrong spot 2 \n"));
+					xxx_UT_DEBUGMSG(("Writing nestcell in wrong spot 2 \n"));
 					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),i);
 					if(iRight == (i +1))
 					{
@@ -2981,7 +2981,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	for(i=0; i < m_Table.getNumCols(); i = iNext)
 	{
 		m_Table.setCellRowCol(row,i);
-		UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
+		xxx_UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
 		if(m_Table.getRight() <= i)
 		{
 			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,
@@ -3159,7 +3159,7 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Table_props(PT_AttrPropIndex api)
 	UT_String sTableProps;
 	sTableProps.clear();
 	_fillTableProps(api,sTableProps);
-	UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
+	xxx_UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
 	m_pie->_rtf_keyword("abitableprops ",sTableProps.c_str());
 	m_pie->_rtf_close_brace();
 }
@@ -3730,7 +3730,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = sdh;
 			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("footnote");
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Footnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Footnote \n"));
 			return true;
 		}
 	case PTX_EndFootnote:
@@ -3741,7 +3741,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = m_sdhSavedBlock;
 			m_apiThisBlock = m_apiSavedBlock;
 			m_pie->_rtf_close_brace();
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
 			return true;
 		}
 	case PTX_SectionFrame:
@@ -3795,7 +3795,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("footnote");
 			m_pie->_rtf_keyword("ftnalt");
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Endnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Endnote \n"));
 			return true;
 		}
 	case PTX_EndEndnote:
@@ -3806,7 +3806,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = m_sdhSavedBlock;
 			m_apiThisBlock = m_apiSavedBlock;
 			m_pie->_rtf_close_brace();
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Endnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Endnote \n"));
 			return true;
 		}
 	case PTX_SectionTable:
@@ -3816,7 +3816,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_open_table(pcr->getIndexAP());
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned table \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned table \n"));
 			return true;
 		}
 	case PTX_SectionCell:
@@ -3856,7 +3856,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
 			m_bBlankLine = true;	
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
 		return true;
 		}
 

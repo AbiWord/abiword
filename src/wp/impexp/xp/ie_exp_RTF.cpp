@@ -539,10 +539,10 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 	const char * current = pbuf;
 	UT_uint32 count = 0;
 
-	UT_DEBUGMSG(("Buffer length = %d \n",buflen));
+	xxx_UT_DEBUGMSG(("Buffer length = %d \n",buflen));
 	if(buflen < 400)
 	{ 
-		UT_DEBUGMSG(("data = %s\n", pbuf));
+		xxx_UT_DEBUGMSG(("data = %s\n", pbuf));
 	}
 	if (m_bLastWasKeyword)
 	{
@@ -603,7 +603,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	if (langcode)
 	{
 		const char* cpgname = wvLIDToCodePageConverter(langcode);
-		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
+		xxx_UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
 		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2]))
 		{
 			int cpg;
@@ -628,7 +628,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 					wrote_cpg = 1;
 				}
 			}
-			UT_DEBUGMSG(("Belcon:after XAP_EncodingManager::get_instance()->CodepageFromCharset(%s),codepage=%s\n",cpgname,codepage));
+			xxx_UT_DEBUGMSG(("Belcon:after XAP_EncodingManager::get_instance()->CodepageFromCharset(%s),codepage=%s\n",cpgname,codepage));
 		}
 	};
 	if (!wrote_cpg)
@@ -1221,7 +1221,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	const XML_Char * szLang = _getStyleProp(pADStyle,&apa,"lang");
 	if ( szLang )
 	  {
-	    UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
+	    xxx_UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
 	    _rtf_keyword("lang", wvLangToLIDConverter(szLang));
 	  }
 
@@ -1544,7 +1544,7 @@ void IE_Exp_RTF::_write_listtable(void)
 // Found a child of pList97, it must be a multi-level list.
 //
 				{
-					UT_DEBUGMSG(("SEVIOR: Adding %x to multi-level \n",pAuto));
+					xxx_UT_DEBUGMSG(("SEVIOR: Adding %x to multi-level \n",pAuto));
 					m_vecMultiLevel.addItem((void *) new ie_exp_RTF_MsWord97ListMulti(pAuto));
 					bFoundChild = true;
 					break;
@@ -1552,7 +1552,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			}
 			if(!bFoundChild)
 			{
-				UT_DEBUGMSG(("SEVIOR: Adding %x to simple \n",pAuto));
+				xxx_UT_DEBUGMSG(("SEVIOR: Adding %x to simple \n",pAuto));
 				m_vecSimpleList.addItem((void *) new ie_exp_RTF_MsWord97ListSimple(pAuto));
 			}
 		}
@@ -1581,7 +1581,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			if(!bFoundAtPrevLevel)
 			{
 				ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pList97->getAuto());
-				UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
+				xxx_UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
 				pList97->addLevel(depth, pCur97);
 			}
 			else
@@ -1599,7 +1599,7 @@ void IE_Exp_RTF::_write_listtable(void)
 					{
 						bFoundAtPrevLevel = true;
 						ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pAuto);
-						UT_DEBUGMSG(("SEVIOR: Adding level %x at depth %d \n",pCur97,depth));
+						xxx_UT_DEBUGMSG(("SEVIOR: Adding level %x at depth %d \n",pCur97,depth));
 						pList97->addLevel(depth, pCur97);
 					}
 				}
@@ -1607,7 +1607,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			if(!bFoundAtPrevLevel)
 			{
 				ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pList97->getAuto());
-				UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
+				xxx_UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
 				pList97->addLevel(depth, pCur97);
 			}
 
@@ -1803,7 +1803,7 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
 		_rtf_nonascii_hex2(lenText,tmp);
 		tmp += LevelText;
 		tmp += ";";
-		UT_DEBUGMSG(("SEVIOR: Final level text string is %s \n",tmp.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Final level text string is %s \n",tmp.c_str()));
 		write(tmp.c_str());
 		_rtf_close_brace();
 		_rtf_open_brace();
@@ -1832,17 +1832,17 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
  */
 void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel)
 {
-	UT_DEBUGMSG(("SEVIOR: pAuto %x \n",pAuto));
+	xxx_UT_DEBUGMSG(("SEVIOR: pAuto %x \n",pAuto));
 	if(pAuto)
 	{
-		UT_DEBUGMSG(("SEVIOR: pAuto-getParent() %x \n",pAuto->getParent()));
+		xxx_UT_DEBUGMSG(("SEVIOR: pAuto-getParent() %x \n",pAuto->getParent()));
 	}
 	if(pAuto && (pAuto->getParent() == NULL))
 	{
 		UT_String LeftSide = pAuto->getDelim();
 		UT_String RightSide;
 		_get_LeftRight_Side(LeftSide,RightSide);
-		UT_DEBUGMSG(("SEVIOR: Top - leftside = %s rightside = %s \n",LeftSide.c_str(),RightSide.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Top - leftside = %s rightside = %s \n",LeftSide.c_str(),RightSide.c_str()));
 		UT_String place;
 		UT_uint32 locPlace = (UT_uint32) LeftSide.size();
 		_rtf_nonascii_hex2(locPlace+1,place);
@@ -1861,7 +1861,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 			LevelText += RightSide;
 		}
 		lenText = LeftSide.size() + RightSide.size() + 1;
-		UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
 		return;
 	}
 	else if((pAuto != NULL) && ( pAuto->getParent() != NULL))
@@ -1879,7 +1879,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 		{
 			if(RightSide.size() > 0)
 			{
-				UT_DEBUGMSG(("SEVIOR: RightSide =%s last char = %c \n",RightSide.c_str(),RightSide[RightSide.size()-1]));
+				xxx_UT_DEBUGMSG(("SEVIOR: RightSide =%s last char = %c \n",RightSide.c_str(),RightSide[RightSide.size()-1]));
 			}
 			if(RightSide.size()== 0)
 			{
@@ -1901,7 +1901,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 		LevelText += LeftSide;
 		LevelText += str;
 		LevelText += RightSide;
-		UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
 		return;
 	}
 	else
@@ -1941,12 +1941,12 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 void IE_Exp_RTF::_get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide)
 {
 	const char * psz = strstr(LeftSide.c_str(),"%L");
-	UT_DEBUGMSG(("SEVIOR: Substring = %s Total is %s \n",psz,LeftSide.c_str()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Substring = %s Total is %s \n",psz,LeftSide.c_str()));
 	if(psz != NULL)
 	{
 		UT_uint32 index = (UT_uint32) (psz - LeftSide.c_str());
 		UT_uint32 len = (UT_uint32) strlen(LeftSide.c_str());
-		UT_DEBUGMSG(("SEVIOR: index = %d len =%d \n",index,len));
+		xxx_UT_DEBUGMSG(("SEVIOR: index = %d len =%d \n",index,len));
 		if(index+2 < len)
 		{
 			RightSide = LeftSide.substr(index+2,len);
