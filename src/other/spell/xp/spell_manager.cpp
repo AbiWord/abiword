@@ -32,6 +32,8 @@ typedef EnchantChecker SpellCheckerClass;
 typedef ISpellChecker SpellCheckerClass;
 #endif
 
+bool SpellChecker::s_bCheckInProgress = false;
+
 /*!
  * Abstract constructor
  */
@@ -50,7 +52,14 @@ typedef ISpellChecker SpellCheckerClass;
 
 bool SpellChecker::requestDictionary (const char * szLang)
 {
+	// do not attempt to retrieve a dictionary if we are in the middle of checking a word
+	// (see 7197)
+	if(s_bCheckInProgress)
+		return false;
+
+	s_bCheckInProgress = true;
 	bool bSuccess = _requestDictionary(szLang);
+	s_bCheckInProgress = false;
 
 	m_BarbarismChecker.load(szLang);
 
@@ -59,11 +68,16 @@ bool SpellChecker::requestDictionary (const char * szLang)
 
 SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, size_t len)
 {
+	// do not attempt to check word half-way through another word being checked (see 7197)
+	if(s_bCheckInProgress)
+		return LOOKUP_FAILED;
+	
 	SpellChecker::SpellCheckResult ret;
 
 	m_bIsBarbarism = false;
 	m_bIsDictionaryWord = false;
-
+	s_bCheckInProgress = true;
+	
     if (m_BarbarismChecker.checkWord (word, len))
 	{
 		UT_DEBUGMSG(("SPELL:  spell %lx %s barb \"%s\"\n", this, getLanguage().c_str(), UT_UTF8String (word, len).utf8_str()));
@@ -72,6 +86,8 @@ SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, s
 
 	ret = _checkWord(word, len);
 
+	s_bCheckInProgress = false;
+	
 	if (ret == SpellChecker::LOOKUP_SUCCEEDED && m_bIsBarbarism)
 		ret = SpellChecker::LOOKUP_FAILED;
 

@@ -49,6 +49,7 @@
 #include "ut_timer.h"
 #include "ut_string.h"
 #include "xap_Frame.h"
+#include "spell_manager.h"
 
 #define REDRAW_UPDATE_MSECS	500
 
@@ -69,7 +70,6 @@ const char * s_FootnoteTypeDesc[] = {
 	"(I), (II), (III),...",
 	NULL
 };
-
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 {
@@ -104,6 +104,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 		m_pRedrawUpdateTimer->start();
 	}
 	m_iFilled = 0;
+	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
 	// TODO and are not allowed to report failure.
@@ -2456,6 +2457,10 @@ FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
 bool
 FL_DocLayout::checkPendingWordForSpell(void)
 {
+	// do not attempt to check a word if check is already in progress (see 7197)
+	if(SpellChecker::isCheckInProgress())
+		return false;
+
 	bool bUpdate = false;
 
 	xxx_UT_DEBUGMSG(("FL_DocLayout::checkPendingWordForSpell\n"));
