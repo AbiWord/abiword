@@ -624,7 +624,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				break;
 			else
 			{
-				if((pLastContainerToKeep!=NULL) && (_getNext(pCurContainer)))
+				if((pLastContainerToKeep!=NULL) && (_getNext(pCurContainer) == NULL))
 				{
 					UT_DEBUGMSG(("Non null LastContainerToKeep yet next container is NULL!!!!!!!!!!!! \n"));
 					UT_DEBUGMSG((" CurContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
