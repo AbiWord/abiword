@@ -3375,7 +3375,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 								 c));
 					
 					// take a peek at what follows
-					for(UT_uint32 j = i+1; j < len; j++)
+					for(UT_uint32 j = i+1; j < len - (curOffset-blockOffset); j++)
 					{
 						UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET + j];
 						UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
