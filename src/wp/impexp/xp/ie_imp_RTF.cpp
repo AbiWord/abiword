@@ -9406,7 +9406,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	props [3] = bookmarkName.utf8_str();
 	props [4] = NULL;
 	UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
-	if(m_bCellBlank || m_bEndTableOpen)
+	if(m_bCellBlank || m_bEndTableOpen || !m_bSectionHasPara)
 	{
 		UT_DEBUGMSG(("Insert/Append block 3 \n"));
 		if (m_newSectionFlagged)
@@ -9425,6 +9425,8 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		}
 		m_bCellBlank = false;
 		m_bEndTableOpen = false;
+		m_bSectionHasPara = true;
+		m_newParaFlagged = false;
 	}
 
 	if (!bUseInsertNotAppend()) 
@@ -9531,7 +9533,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		// tell that we are parsing headers and footers
 		m_parsingHdrFtr = true;
 		m_newParaFlagged = true;
-		m_bSectionHasPara = true;
+		m_bSectionHasPara = false;
 		_parseFile (NULL);
 		m_parsingHdrFtr = false;
 	}
