@@ -29,8 +29,8 @@
 
 #define AP_RID_ICON_APPLICATION_32		10000
 #define AP_RID_ICON_APPLICATION_16		10001
-#define AP_RID_ICON_DOCUMENT_32			10002
-#define AP_RID_ICON_DOCUMENT_16			10003
+#define AP_RID_ICON_DOCUMENT			10002
+
 
 #ifdef RC_INVOKED
 
@@ -56,20 +56,10 @@ AP_RID_BITMAP_UNDO			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu
 
 
 			
-#ifdef ABISOURCE_LICENSED_TRADEMARKS
-
-AP_RID_ICON_APPLICATION_32           ICON    DISCARDABLE     "abiword_app_32_tm.ico"
-AP_RID_ICON_APPLICATION_16           ICON    DISCARDABLE     "abiword_app_16_tm.ico"
-AP_RID_ICON_DOCUMENT_32              ICON    DISCARDABLE     "abiword_doc_32_tm.ico"
-AP_RID_ICON_DOCUMENT_16              ICON    DISCARDABLE     "abiword_doc_16_tm.ico"
-
-#else
-
 AP_RID_ICON_APPLICATION_32           ICON    DISCARDABLE     "abiword_app_32.ico"
 AP_RID_ICON_APPLICATION_16           ICON    DISCARDABLE     "abiword_app_16.ico"
-AP_RID_ICON_DOCUMENT_32              ICON    DISCARDABLE     "abiword_doc_32.ico"
-AP_RID_ICON_DOCUMENT_16              ICON    DISCARDABLE     "abiword_doc_16.ico"
+AP_RID_ICON_DOCUMENT             ICON    DISCARDABLE     "abiword_doc.ico"
 
-#endif
+
 
 #endif /* RC_INVOKED */
