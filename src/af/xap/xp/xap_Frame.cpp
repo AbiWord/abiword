@@ -883,6 +883,7 @@ void XAP_Frame::quickZoom(void)
 		quickZoom( newZoom );
 		break;
 	default:
+		m_pView->updateScreen(false);
        ;
    }
 }
