@@ -30,3 +30,19 @@
 #endif
 #include "xap_MacApp.h"
 #include "ap_MacFrame.h"
+
+
+
+AP_MacTopRuler::AP_MacTopRuler(XAP_Frame * pFrame)
+	: AP_TopRuler(pFrame)
+{
+
+}
+
+
+
+AP_MacTopRuler::~AP_MacTopRuler(void)
+{
+
+}
+

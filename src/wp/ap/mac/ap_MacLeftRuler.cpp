@@ -31,3 +31,20 @@
 #include "xap_MacApp.h"
 #include "ap_MacFrame.h"
 
+
+
+
+AP_MacLeftRuler::AP_MacLeftRuler(XAP_Frame * pFrame)
+	: AP_LeftRuler(pFrame)
+{
+}
+
+
+AP_MacLeftRuler::~AP_MacLeftRuler(void)
+{
+
+}
+
+
+
+
