@@ -298,7 +298,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 				|| bForce
 				)
 			{
-				if (iLeftWidth <= iMaxLeftWidth)
+				if (iLeftWidth - pCharWidths[i + offset] <= iMaxLeftWidth)
 				{
 					si.iLeftWidth = iLeftWidth;
 					si.iRightWidth = iRightWidth;
@@ -332,8 +332,6 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 		return UT_FALSE;
 	}
 
-	UT_ASSERT(si.iLeftWidth <= iMaxLeftWidth);
-	UT_ASSERT(si.iLeftWidth < m_iWidthLayoutUnits);
 
 	return UT_TRUE;
 }
