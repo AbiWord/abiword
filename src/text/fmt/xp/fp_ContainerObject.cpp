@@ -318,7 +318,8 @@ void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 			{
 				fl_BlockLayout * pBL = pLine->getBlock();
 				fl_BlockLayout * pNextBL = static_cast<fp_Line *>(pNext)->getBlock();
-				UT_ASSERT(pNextBL->getPosition() >= pBL->getPosition());
+				if(pBL->canContainPoint() && pNextBL->canContainPoint())
+					UT_ASSERT(pNextBL->getPosition() >= pBL->getPosition());
 			}
 		}
 	}

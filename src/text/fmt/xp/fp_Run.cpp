@@ -1250,6 +1250,21 @@ void fp_Run::setVisibility(FPVisibility eVis)
 	if(m_eVisibility == eVis)
 		return;
 
+	if(eVis == FP_HIDDEN_TEXT && !_wouldBeHidden(eVis) && m_iWidth == 0)
+	{
+		// we are asked to mark text as hidden, and under the present settings it would be
+		// visible, but its width == 0. While the 0 width could be legitimate, it is more
+		// likely that the run was previously hidden due to ShowPara == false and now is
+		// being shown -- we need to make sure everything gets updated
+		// (this case avoids the logic below, because of the way that lookupProperties()
+		// works -- it might be worth redesigning that
+		m_bIsCleared = true;
+		m_bDirty = true;
+		m_bRecalcWidth = true;
+		m_eVisibility = eVis;
+		return;
+	}
+	
 	if(    (isHidden() && _wouldBeHidden(eVis))
 	    || (!isHidden() && !_wouldBeHidden(eVis)))
 	{
