@@ -802,12 +802,173 @@ void IE_Imp_MsWord_97::_flush ()
 
   if (m_pTextRun.size())
   {
-	  if (!getDoc()->appendSpan(m_pTextRun.ucs4_str(), m_pTextRun.size()))
+	  // bidi adjustments for neutrals
+	  // 
+	  // We have a problem in bidi documents caused by the fact that
+	  // Word does not use the Unicode bidi algorithm, but rather one of
+	  // its own, which adds keyboard language to the equation. We get
+	  // around this by issuing an explicit direction override on the
+	  // neutral characters. We do it here in the _flush() function
+	  // because when we have both left and right context available
+	  // for these characters we can tell if the override is
+	  // superfluous, which it is most of the time; omitting the
+	  // sufperfluous overrides allows us to import documents in a
+	  // manner that will make them feel more like native AW docs.
+	  // (This does not get rid of all the unnecessary overrides, for
+	  // that we would need to have the text of an entire paragraph)
+	  //
+	  // I goes without saying that it would be highly desirable to be
+	  // able to determine at the start if a document is pure LTR (as
+	  // we do in the RTF importer), since that would save us lot of
+	  // extra processing
+	  // Tomas, May 8, 2003
+	  
+	  if(m_bBidiDocument)
 	  {
-		  UT_DEBUGMSG(("DOM: error appending text run\n"));
-		  return;
+		  const XML_Char* pProps = "props";
+		  UT_String prop_basic = m_charProps;
+
+		  UT_String prop_ltr = prop_basic;
+		  UT_String prop_rtl = prop_basic;
+
+		  if(prop_basic.size())
+		  {
+			  prop_ltr += ";";
+			  prop_rtl += ";";
+		  }
+		  else
+		  {
+			  // if the char props are empty, we need replace them
+			  // with the following to avoid asserts in PP_AttrProp
+			  prop_basic = "dir-override:";
+		  }
+		  
+		  
+		  prop_ltr += "dir-override:ltr";
+		  prop_rtl += "dir-override:rtl";
+	
+		  const XML_Char rev[] ="revision";
+
+		  const XML_Char* propsArray[5];
+		  propsArray[0] = pProps;
+		  propsArray[1] = prop_basic.c_str();
+		  propsArray[2] = NULL;
+		  propsArray[3] = NULL;
+		  propsArray[4] = NULL;
+
+		  if(m_charRevs.size())
+		  {
+			  propsArray[2] = &rev[0];
+			  propsArray[3] = m_charRevs.c_str();
+		  }
+		  
+		  const UT_UCS4Char * p;
+		  const UT_UCS4Char * pStart = m_pTextRun.ucs4_str();
+		  UT_uint32 iLen = m_pTextRun.size();
+		  
+		  FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
+		  UT_uint32 iLast = 0;
+		  UT_UCS4Char c = *pStart;
+	
+		  cType = fribidi_get_type(c);
+	
+		  for(UT_uint32 i = 0; i < iLen; i++)
+		  {
+			  if(i < iLen - 1 )
+			  {
+				  c = *(pStart+i+1);
+				  cNextType = fribidi_get_type(c);
+			  }
+			  else
+			  {
+				  cNextType = FRIBIDI_TYPE_UNSET;
+			  }
+		
+		
+			  if(FRIBIDI_IS_NEUTRAL(cType))
+			  {
+				  if(m_bLTRCharContext
+					 && iOverride != FRIBIDI_TYPE_LTR
+					 && (cLastType != FRIBIDI_TYPE_LTR || cNextType != FRIBIDI_TYPE_LTR))
+				  {
+					  if(i - iLast > 0)
+					  {
+						  p = pStart + iLast;
+						  if(!getDoc()->appendFmt(propsArray))
+							  return;
+					
+						  if(!getDoc()->appendSpan(p, i - iLast))
+							  return;
+					  }
+					  iOverride = FRIBIDI_TYPE_LTR;
+					  propsArray[1] = prop_ltr.c_str();
+					  iLast = i;
+				  }
+				  else if(!m_bLTRCharContext
+						  && iOverride != FRIBIDI_TYPE_RTL
+						  && (cLastType != FRIBIDI_TYPE_RTL || cNextType != FRIBIDI_TYPE_RTL))
+				  {
+					  if(i - iLast > 0)
+					  {
+						  p = pStart + iLast;
+						  if(!getDoc()->appendFmt(propsArray))
+							  return;
+
+						  if(!getDoc()->appendSpan(p, i - iLast))
+							  return;
+					  }
+					  iOverride = FRIBIDI_TYPE_RTL;
+					  propsArray[1] = prop_rtl.c_str();
+					  iLast = i;
+				  }
+			  }
+			  else
+			  {
+				  // strong character; if we previously issued an override,
+				  // we need to cancel it
+				  if(iOverride != FRIBIDI_TYPE_UNSET)
+				  {
+					  if(i - iLast > 0)
+					  {
+						  p = pStart + iLast;
+						  if(!getDoc()->appendFmt(propsArray))
+							  return;
+					
+						  if(!getDoc()->appendSpan(p, i - iLast))
+							  return;
+					  }
+					  iOverride = FRIBIDI_TYPE_UNSET;
+					  propsArray[1] = prop_basic.c_str();
+					  iLast = i;
+				  }
+			  }
+
+			  cLastType = cType;
+			  cType = cNextType;
+		  }
+
+		  // insert what is left over
+		  if(iLen - iLast > 0)
+		  {
+			  p = pStart + iLast;
+			  if(!getDoc()->appendFmt(propsArray))
+				  return;
+					
+			  if(!getDoc()->appendSpan(p, iLen - iLast))
+				  return;
+		  }
 	  }
-	  m_pTextRun.clear ();
+	  else
+	  {
+		  // non-bidi document, just do it the easy way
+		  if (!getDoc()->appendSpan(m_pTextRun.ucs4_str(), m_pTextRun.size()))
+		  {
+			  UT_DEBUGMSG(("DOM: error appending text run\n"));
+			  return;
+		  }
+	  }
+	  
+	  m_pTextRun.clear();
   }
 }
 
@@ -1141,101 +1302,6 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
 
-	// bidi adjustments for neutrals
-	// 
-	// We have a problem in bidi documents caused by the fact that
-	// Word does not use the Unicode bidi algorithm, but rather one of
-	// its own, which adds keyboard language to the equation. I have
-	// no intention of emulating this proprietary algorithm fully, as
-	// that would mean using explicit overrides all the time, but
-	// there are some cases when we need to jump through hoops to get
-	// sensible layout out of the document.
-
-	// It seems that we will have to use the overrides after all,
-	// there is just no way we can catch all the cases (Tomas, May 7, 2003)
-
-	if(m_bBidiDocument)
-	{
-		FriBidiCharType cType = fribidi_get_type(static_cast<FriBidiChar>(eachchar));
-		if(FRIBIDI_IS_NEUTRAL(cType))
-		{
-			this->_flush();
-
-			const XML_Char * propsArray[5];
-			memset (propsArray, 0, sizeof(propsArray));
-
-			XML_Char prop[]="props";
-			XML_Char rev[] ="revision";
-
-			UT_String props = m_charProps;
-
-			if(m_bLTRCharContext && m_iOverrideIssued != FRIBIDI_TYPE_LTR)
-			{
-				props +=";dir-override:ltr";
-				m_iOverrideIssued = FRIBIDI_TYPE_LTR;
-			}
-			else if(!m_bLTRCharContext && m_iOverrideIssued != FRIBIDI_TYPE_RTL)
-			{
-				props +=";dir-override:rtl";
-				m_iOverrideIssued = FRIBIDI_TYPE_RTL;
-			}
-			else
-			{
-				goto override_not_needed;
-			}
-			
-			propsArray[0] = static_cast<const XML_Char*>(&prop[0]);
-			propsArray[1] = props.c_str();
-
-			if(m_charRevs.size())
-			{
-				propsArray[2] = static_cast<const XML_Char*>(&rev[0]);
-				propsArray[3] = m_charRevs.c_str();
-			}
-
-			if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
-			{
-				UT_DEBUGMSG(("#TF: error appending bidi override\n"));
-			}
-		}
-		else
-		{
-			// strong character; if we previously issued an override,
-			// we need to cancel it
-			if(m_iOverrideIssued != FRIBIDI_TYPE_UNSET)
-			{
-				m_iOverrideIssued = FRIBIDI_TYPE_UNSET;
-
-				this->_flush();
-
-				const XML_Char * propsArray[5];
-				memset (propsArray, 0, sizeof(propsArray));
-
-				XML_Char prop[]="props";
-				XML_Char rev[] ="revision";
-
-				UT_String props = m_charProps;
-
-				props +=";dir-override:";
-			
-				propsArray[0] = static_cast<const XML_Char*>(&prop[0]);
-				propsArray[1] = props.c_str();
-
-				if(m_charRevs.size())
-				{
-					propsArray[2] = static_cast<const XML_Char*>(&rev[0]);
-					propsArray[3] = m_charRevs.c_str();
-				}
-
-				if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
-				{
-					UT_DEBUGMSG(("#TF: error appending bidi override\n"));
-				}
-			}
-		}
-	}
-override_not_needed:
-	
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 	m_iDocPosition++;
 
