@@ -166,6 +166,10 @@ ifeq ($(OS_NAME), NetBSD)
 include $(ABI_DEPTH)/config/platforms/netbsd.mk
 endif
 
+ifeq ($(OS_NAME), BeOS)
+include $(ABI_DEPTH)/config/platforms/beos.mk
+endif
+
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
 include $(ABI_DEPTH)/config/platforms/sunos.mk
@@ -226,8 +230,12 @@ EXTRA_LIBS	=	-L$(DIST)/lib 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
 			$(addprefix -l,$(ABI_LIBS))					\
-			`gtk-config --libs`						\
 			-lpng -lz
+endif
+
+#We should change this since not all unix's will use gtk 
+ifeq ($(ABI_NATIVE), unix))
+EXTRA_LIBS	+=	`gtk-config --libs`
 endif
 
 ##################################################################
