@@ -32,7 +32,7 @@
 ##			platform ones like rpmfonts.mk)
 
 # extract the build version from the fonts package source
-ABI_FONTS_BUILD_VERSION	= $(shell cat $(OUTDIR)/AbiSuite/fonts/BUILD)
+ABI_FONTS_BUILD_VERSION	= $(shell cat $(OUTDIR)/AbiSuite/fonts/scripts/BUILD)
 
 # this supercedes the PKGBASENAME stuff defined in abi_defs.mk.
 # fonts are only needed on Unix and need different names

@@ -18,23 +18,24 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=../..
-include $(ABI_DEPTH)/config/abi_defs_wp.mk
-include $(ABI_DEPTH)/config/abi_rules.mk
-
 ##################################################################
-## makefile target to make binary distribution for this platform.
+## debfonts -- the Unix fonts package in Debian .deb format.
 
-# Each distribution format we include (like tgz, rpm, deb) will
-# take care of making its own font packages.
-distribution:	tgz #deb
+# get the package names we'll use to build with
+ABI_DEPTH=../..
+include $(ABI_DEPTH)/pkg/common/unix/allfonts.mk
 
-# things covered by all unix platform code
+font_files = 	README \
+	  	INSTALL \
+		readme.abw \
+		COPYING \
+		install.sh \
+		fonts
 
-# tgz
-include $(ABI_DEPTH)/pkg/common/unix/tgz.mk
-
-# things only Linux does
-
-# deb
-#include deb.mk
+tgz_fonts:
+	@echo "* Building .tar.gz package [fonts] ..."
+	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
+	@$(subst xxxx,$(DIST)/$(ABI_FONTS_PKGBASENAME),$(VERIFY_DIRECTORY))
+	(cd $(OUTDIR)/AbiSuite/fonts; tar cf - $(font_files))| (cd $(DIST)/$(ABI_FONTS_PKGBASENAME); tar xf -)
+	(cd $(DIST); tar cf - $(ABI_FONTS_PKGBASENAME) | gzip - - > $(ABI_FONTS_PKGBASENAME).tar.gz)
+	(cd $(DIST); rm -rf $(ABI_FONTS_PKGBASENAME))

@@ -18,22 +18,13 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-##################################################################
-# THIS MAKEFILE IS A STANDARD SET OF INSTALL TARGETS AND WILL BE 
-# INCLUDED BY ACTUAL PLATFORM PKG MAKEFILES.  REFERENCES TO SHARED
-# (COMMON) RESOURCES SHOULD BE DONE FROM A LOCATION "INSIDE" THE
-# INCLUDING MAKEFILE.  BE SURE TO INCLUDE THIS MAKEFILE AFTER 
-# YOU HAVE ALREADY INCLUDED THE ABI_DEFS.MK AND ABI_RULES.MK.
-##################################################################	
-
-# tgz fonts are handled by these rules
-ABI_DEPTH=../..
-include $(ABI_DEPTH)/pkg/common/unix/tgzfonts.mk
+# deb fonts are handled by these rules
+include debfonts.mk
 
 ##################################################################
-## tgz -- this is a very simple tree of the essentials.  this is
-##		just a tar of everything and can be put in /usr/local
-##		and with a few symbolic links should work just fine....
+## deb -- a Debian package of AbiSuite applications.  the locations
+##		of these packages follow default Debian 2.1 locations
+##		not the 
 ##		the install script included with this package should
 ##		handle installation issues for all Unix platforms.
 
@@ -76,9 +67,6 @@ ifdef UNIX_CAN_BUILD_DYNAMIC
 	(cd $(OUTDIR); tar cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); tar xf -)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); mv -f bin AbiSuite)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite/bin/*_s)
-	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite/fonts/scripts)
-	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); mv -f AbiSuite/fonts/data/* AbiSuite/fonts)	
-	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite/fonts/data)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); strip AbiSuite/bin/*_d;)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS)/AbiSuite; tar cf ../data.tar .)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite)
@@ -112,9 +100,6 @@ ifdef UNIX_CAN_BUILD_STATIC
 	(cd $(OUTDIR); tar cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); tar xf -)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); mv -f bin AbiSuite)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite/bin/*_d)
-	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite/fonts/scripts)
-	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); mv -f AbiSuite/fonts/data/* AbiSuite/fonts)	
-	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite/fonts/data)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); strip AbiSuite/bin/*_s;)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS)/AbiSuite; tar cf ../data.tar .)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite)

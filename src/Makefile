@@ -60,17 +60,12 @@ canonical:
 ifeq ($(ABI_NATIVE),unix)
 # font stuff for installation
 	@$(subst xxxx,$(CANONDIR)/fonts,$(VERIFY_DIRECTORY))
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/BUILD $(CANONDIR)/fonts
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/README $(CANONDIR)/fonts
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/INSTALL $(CANONDIR)/fonts
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/COPYING $(CANONDIR)/fonts
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/readme.abw $(CANONDIR)/fonts
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/install.sh $(CANONDIR)/fonts
+	@$(subst xxxx,$(CANONDIR)/fonts/scripts,$(VERIFY_DIRECTORY))
+	echo $(CANONDIR)/fonts/scripts
+	(cd $(ABI_ROOT)/../unixfonts; tar -cf - BUILD README INSTALL COPYING readme.abw install.sh) | (cd $(CANONDIR)/fonts/scripts; tar -xf -)
 # font data
-	@$(subst xxxx,$(CANONDIR)/fonts/fonts,$(VERIFY_DIRECTORY))
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/fonts/fonts.dir $(CANONDIR)/fonts/fonts
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/fonts/*.pfa $(CANONDIR)/fonts/fonts
-	$(ABICOPY) $(ABI_ROOT)/../unixfonts/fonts/*.afm $(CANONDIR)/fonts/fonts
+	@$(subst xxxx,$(CANONDIR)/fonts/data,$(VERIFY_DIRECTORY))
+	(cd $(ABI_ROOT)/../unixfonts/fonts; tar -cf - fonts.dir *.pfa *.afm) | (cd $(CANONDIR)/fonts/data; tar -xf -)
 endif
 
 ##################################################################
