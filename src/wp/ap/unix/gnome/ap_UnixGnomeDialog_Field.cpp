@@ -56,6 +56,13 @@ AP_UnixGnomeDialog_Field::~AP_UnixGnomeDialog_Field(void)
 {
 }
 
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_Field * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->event_Cancel();
+}
+
 /*****************************************************************/
 
 GtkWidget * AP_UnixGnomeDialog_Field::_constructWindow(void)
@@ -76,6 +83,11 @@ GtkWidget * AP_UnixGnomeDialog_Field::_constructWindow(void)
 	// Now the two buttons
    	m_buttonOK = GTK_WIDGET (g_list_first (GNOME_DIALOG (m_windowMain)->buttons)->data);
    	m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_windowMain)->buttons)->data);
+
+	gtk_signal_connect (GTK_OBJECT(m_windowMain),
+			    "close",
+			    GTK_SIGNAL_FUNC(cb_close),
+			    (gpointer) this);
 
 	// connect all the signals
 	_connectSignals ();

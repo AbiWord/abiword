@@ -27,6 +27,12 @@
 
 #include "ap_UnixGnomeDialog_Styles.h"
 
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_Styles * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->event_Cancel();
+}
 
 AP_UnixGnomeDialog_Styles::AP_UnixGnomeDialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id) : AP_UnixDialog_Styles(pDlgFactory, id)
 {
@@ -67,6 +73,11 @@ GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 	gnome_dialog_append_button(GNOME_DIALOG(windowStyles), GNOME_STOCK_BUTTON_CANCEL);
 	m_wbuttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowStyles)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_wbuttonCancel, GTK_CAN_DEFAULT);
+
+	gtk_signal_connect (GTK_OBJECT (windowStyles),
+			    "close",
+			    GTK_SIGNAL_FUNC(cb_close),
+			    (gpointer) this);
 
 	_connectsignals();
 	return windowStyles;

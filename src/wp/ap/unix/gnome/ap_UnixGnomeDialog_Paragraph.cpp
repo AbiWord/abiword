@@ -42,6 +42,13 @@
 
 /*****************************************************************/
 
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_Paragraph * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->event_Cancel();
+}
+
 XAP_Dialog * AP_UnixGnomeDialog_Paragraph::static_constructor(XAP_DialogFactory * pFactory,
 														 XAP_Dialog_Id id)
 {
@@ -86,6 +93,11 @@ GtkWidget * AP_UnixGnomeDialog_Paragraph::_constructWindow(void)
 	m_buttonTabs = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 0));
 	m_buttonOK = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 1));
 	m_buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 2));
+
+	gtk_signal_connect (GTK_OBJECT(m_windowMain),
+			    "close",
+			    GTK_SIGNAL_FUNC(cb_close),
+			    (gpointer)this);
 
 	return m_windowMain;
 }

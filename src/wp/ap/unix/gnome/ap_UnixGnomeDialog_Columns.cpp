@@ -27,6 +27,12 @@
 
 #include "ap_UnixGnomeDialog_Columns.h"
 
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_Columns * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->event_Cancel();
+}
 
 AP_UnixGnomeDialog_Columns::AP_UnixGnomeDialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id) : AP_UnixDialog_Columns(pDlgFactory, id)
 {
@@ -63,6 +69,11 @@ GtkWidget * AP_UnixGnomeDialog_Columns::_constructWindow(void)
 	gnome_dialog_append_button(GNOME_DIALOG(windowColumns), GNOME_STOCK_BUTTON_CANCEL);
 	m_wbuttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowColumns)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_wbuttonCancel, GTK_CAN_DEFAULT);
+
+	gtk_signal_connect (GTK_OBJECT(windowColumns),
+			    "close",
+			    GTK_SIGNAL_FUNC(cb_close),
+			    (gpointer) this);
 
 	_connectsignals();
 	return windowColumns;

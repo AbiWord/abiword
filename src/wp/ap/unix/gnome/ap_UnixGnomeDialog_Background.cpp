@@ -90,6 +90,9 @@ GtkWidget * AP_UnixGnomeDialog_Background::_constructWindow (void)
   gtk_signal_connect (GTK_OBJECT(cancel), "clicked", 
 		      GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
 
+  gtk_signal_connect (GTK_OBJECT(dlg), "close", 
+		      GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
+
   gtk_signal_connect_after(GTK_OBJECT(dlg),
 			   "destroy",
 			   NULL,

@@ -225,6 +225,11 @@ GtkWidget * AP_UnixGnomeDialog_Break::_constructWindow(void)
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) this);
 
+	gtk_signal_connect(GTK_OBJECT(windowBreak),
+			   "close",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   (gpointer) this);
+
 	// the catch-alls
 	
 	gtk_signal_connect(GTK_OBJECT(windowBreak),

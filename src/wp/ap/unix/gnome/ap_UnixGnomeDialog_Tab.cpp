@@ -76,6 +76,11 @@ GtkWidget* AP_UnixGnomeDialog_Tab::_constructWindow (void )
 	gtk_widget_show_all(GNOME_DIALOG(windowTabs)->vbox);
 	gtk_widget_show_all(windowTabs);
 
+	gtk_signal_connect (GTK_OBJECT(windowTabs),
+			    "close",
+			    GTK_SIGNAL_FUNC(s_cancel_clicked),
+			    (gpointer)this);
+
 	return windowTabs;
 }
 

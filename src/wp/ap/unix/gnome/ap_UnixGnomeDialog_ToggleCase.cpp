@@ -115,5 +115,10 @@ GtkWidget * AP_UnixGnomeDialog_ToggleCase::_constructWindow(void)
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
 			   (gpointer) this);
 	
+	gtk_signal_connect (GTK_OBJECT(windowMain),
+			    "close",
+			    GTK_SIGNAL_FUNC(s_cancel_clicked),
+			    (gpointer) this);
+
 	return windowMain;
 }

@@ -127,6 +127,11 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 			   (gpointer) this);
 	
 	
+	gtk_signal_connect(GTK_OBJECT(windowOptions),
+			   "close",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   (gpointer)this);
+
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 	

@@ -51,6 +51,13 @@ AP_UnixGnomeDialog_Lists::~AP_UnixGnomeDialog_Lists(void)
 {
 }
 
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_Lists * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->destroy();
+}
+
 GtkWidget * AP_UnixGnomeDialog_Lists::_constructWindow(void)
 {
 	GtkWidget *wMainWindow;
@@ -77,6 +84,11 @@ GtkWidget * AP_UnixGnomeDialog_Lists::_constructWindow(void)
 	wClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (wMainWindow)->buttons)->data);
 	gtk_widget_show (wClose);
 	_setCloseButton(wClose);
+
+	gtk_signal_connect (GTK_OBJECT (wMainWindow),
+			    "close",
+			    GTK_SIGNAL_FUNC(cb_close),
+			    (gpointer)this);
 
 	//gtk_widget_show_all(wMainWindow);
 	_connectSignals();

@@ -385,6 +385,11 @@ GtkWidget * XAP_UnixGnomeDialog_Zoom::_constructWindow(void)
 							 NULL,
 							 NULL);
 
+	gtk_signal_connect(GTK_OBJECT(windowZoom),
+			   "close",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   (gpointer) this);
+
 	// the expose event off the preview
 	gtk_signal_connect(GTK_OBJECT(drawingareaPreview),
 					   "expose_event",

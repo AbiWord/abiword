@@ -67,6 +67,13 @@ XAP_UnixGnomeDialog_Insert_Symbol::~XAP_UnixGnomeDialog_Insert_Symbol(void)
 {
 }
 
+static void
+cb_close (GtkWidget * w, XAP_UnixGnomeDialog_Insert_Symbol * dlg)
+{
+  UT_ASSERT (dlg);
+  dlg->event_Cancel();
+}
+
 /*****************************************************************/
 
 GtkWidget * XAP_UnixGnomeDialog_Insert_Symbol::_constructWindow(void)
@@ -113,6 +120,9 @@ GtkWidget * XAP_UnixGnomeDialog_Insert_Symbol::_constructWindow(void)
 
 	gtk_object_set_data (GTK_OBJECT (m_windowMain), "buttonOK", m_buttonOK);
 	gtk_object_set_data (GTK_OBJECT (m_windowMain), "buttonCancel", m_buttonCancel);
+
+	gtk_signal_connect (GTK_OBJECT(m_windowMain), "close",
+			    GTK_SIGNAL_FUNC(cb_close), (gpointer)this);
 
 	_connectSignals ();
 

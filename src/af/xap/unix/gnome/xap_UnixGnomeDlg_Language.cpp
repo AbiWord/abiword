@@ -101,5 +101,10 @@ GtkWidget * XAP_UnixGnomeDialog_Language::constructWindow(void)
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
 			   (gpointer) &m_answer);
 	
+	gtk_signal_connect(GTK_OBJECT(windowLangSelection),
+			   "close",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   (gpointer) &m_answer);
+
 	return windowLangSelection;
 }

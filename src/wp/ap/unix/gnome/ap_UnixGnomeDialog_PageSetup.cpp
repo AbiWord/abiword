@@ -22,6 +22,13 @@
 #include "ap_Strings.h"
 #include "ut_debugmsg.h"
 
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_PageSetup * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->event_Cancel();
+}
+
 AP_UnixGnomeDialog_PageSetup::AP_UnixGnomeDialog_PageSetup(XAP_DialogFactory * pDlgFactory, 
 			       XAP_Dialog_Id id) :
   AP_UnixDialog_PageSetup (pDlgFactory, id)
@@ -50,6 +57,11 @@ GtkWidget * AP_UnixGnomeDialog_PageSetup::_constructWindow (void)
 
   gnome_dialog_append_button (GNOME_DIALOG (m_window), GNOME_STOCK_BUTTON_CANCEL);
   m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_window)->buttons)->data);
+
+  gtk_signal_connect(GTK_OBJECT(m_window),
+		     "close",
+		     GTK_SIGNAL_FUNC(cb_close), 
+		     (gpointer)this);
 
   _connectSignals ();
   return m_window;

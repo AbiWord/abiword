@@ -35,6 +35,13 @@
 #include "ap_UnixGnomeDialog_Spell.h"
 
 /*****************************************************************/
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_Spell * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->event_Cancel();
+}
+
 XAP_Dialog * AP_UnixGnomeDialog_Spell::static_constructor(XAP_DialogFactory * pFactory,
 							  XAP_Dialog_Id id)
 {
@@ -60,6 +67,11 @@ GtkWidget * AP_UnixGnomeDialog_Spell::_constructWindow (void)
 	UT_ASSERT(m_windowMain);
 
 	_constructWindowContents (GNOME_DIALOG (m_windowMain)->vbox);
+
+	gtk_signal_connect (GTK_OBJECT(m_windowMain),
+			    "close",
+			    GTK_SIGNAL_FUNC(cb_close),
+			    (gpointer)this);
 
 	_connectSignals ();
 	gtk_widget_show_all (m_windowMain);

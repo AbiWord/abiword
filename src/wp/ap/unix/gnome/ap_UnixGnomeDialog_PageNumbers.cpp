@@ -38,6 +38,13 @@ XAP_Dialog * AP_UnixGnomeDialog_PageNumbers::static_constructor(XAP_DialogFactor
   return dlg;
 }
 
+static void
+cb_close (GtkWidget * w, AP_UnixGnomeDialog_PageNumbers * dlg)
+{
+  UT_ASSERT(dlg);
+  dlg->event_Cancel();
+}
+
 GtkWidget * AP_UnixGnomeDialog_PageNumbers::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -50,6 +57,11 @@ GtkWidget * AP_UnixGnomeDialog_PageNumbers::_constructWindow (void)
 
   gnome_dialog_append_button (GNOME_DIALOG (m_window), GNOME_STOCK_BUTTON_CANCEL);
   m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_window)->buttons)->data);
+
+  gtk_signal_connect (GTK_OBJECT(m_window),
+		      "close",
+		      GTK_SIGNAL_FUNC(cb_close),
+		      (gpointer)this);
 
   _connectSignals ();
   return m_window;

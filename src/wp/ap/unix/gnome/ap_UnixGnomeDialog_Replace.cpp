@@ -299,6 +299,10 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   this);
+	gtk_signal_connect(GTK_OBJECT(windowReplace),
+			   "close",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   this);
 
 	// Window events
 	//	gtk_signal_connect_after(GTK_OBJECT(windowReplace),

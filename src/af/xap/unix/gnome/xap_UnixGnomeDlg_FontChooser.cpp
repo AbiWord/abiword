@@ -123,5 +123,10 @@ GtkWidget * XAP_UnixGnomeDialog_FontChooser::constructWindow(void)
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) &m_answer);
 
+	gtk_signal_connect(GTK_OBJECT(windowFontSelection),
+					   "close",
+					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   (gpointer) &m_answer);
+
 	return windowFontSelection;
 }
