@@ -80,7 +80,9 @@ PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)	\
 endif
 
 ifeq ($(ABI_FE), QNX)
-PLATFORM_OBJS +=  	$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX)
+PLATFORM_OBJS +=  	$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX)
+
 endif
 
 ifeq ($(ABI_FE), Unix)
