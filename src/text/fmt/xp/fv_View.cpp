@@ -97,6 +97,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_iSelectionAnchor = _getPoint();
 	_resetSelection();
 	_fixInsertionPointCoords();
+	//spellCheckTimer = NULL;
 
 	findReset();
 }
@@ -107,6 +108,8 @@ FV_View::~FV_View()
 
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
+
+	DELETEP(spellCheckTimer);
 }
 	
 FL_DocLayout* FV_View::getLayout() const
@@ -1543,6 +1546,62 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	}
 }
 
+
+static void _spellCheckBlockCallBack(UT_Timer * pTimer)
+{
+	fl_BlockLayout *pB;
+	UT_DLList  * listOfBlocksToBeSpellChecked = (UT_DLList *) 
+							pTimer->getInstanceData();
+	UT_ASSERT(listOfBlocksToBeSpellChecked);
+
+	pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked->head();
+
+	if (pB != NULL)
+	{
+		pB->checkSpelling();
+		listOfBlocksToBeSpellChecked->remove();
+	}
+
+	return;
+}
+
+#define SPELL_CHECK_MSECS 100
+
+void FV_View::addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked)
+{
+	fl_BlockLayout *pB;
+
+	/* this routine called when a block has been invalidated, and should
+		be spell checked at some later time... */
+
+	if (spellCheckTimer == NULL)
+	{
+		/* initialize */
+		spellCheckTimer = UT_Timer::static_constructor(
+										_spellCheckBlockCallBack, 
+									&listOfBlocksToBeSpellChecked);
+									
+
+		spellCheckTimer->set(SPELL_CHECK_MSECS);
+	}
+
+	pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked.head();
+	while ( pB != NULL)
+	{
+		if (pB == pBlockToBeChecked)
+		{
+			/* this block is already on the list, so forget about it... */
+			return;
+		}
+
+		pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked.next();
+	}
+	
+	listOfBlocksToBeSpellChecked.append(pBlockToBeChecked);
+}
+
+
+
 fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& yClick)
 {
 	yClick = yPos + m_yScrollOffset - fl_PAGEVIEW_MARGIN_Y;
@@ -2446,6 +2505,7 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 	}
 }
 
+
 void FV_View::draw(const UT_Rect* pClipRect)
 {
 	if (pClipRect)
@@ -2453,6 +2513,7 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	else
 		draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_FALSE);
 }
+
 
 void FV_View::draw(UT_sint32 x, UT_sint32 y,
 				   UT_sint32 width, UT_sint32 height,
