@@ -41,7 +41,7 @@ class PD_Document;
 class ABI_EXPORT PD_DocumentRange
 {
 public:
-	//! Dummy constructure.
+	//! Dummy constructor.
 	//! Resulting range is invalid until it is initialized with set
 	PD_DocumentRange(void)
 		{
