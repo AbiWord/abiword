@@ -67,12 +67,10 @@ public:
 	
 protected:
 	UT_Timer();		// should only be called from static_constructor()
-	static UT_Vector & _getVecTimers () 
-		{ return static_vecTimers; };
- private:
-	UT_uint32 m_iIdentifier;
+	static UT_Vector & _getVecTimers ();
 
-	static UT_Vector static_vecTimers;
+ private:
+	UT_uint32 m_iIdentifier;	
 };
 
 #endif /* UT_TIMER_H */

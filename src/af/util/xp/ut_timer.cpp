@@ -21,6 +21,9 @@
 #include "ut_timer.h"
 #include "ut_assert.h"
 
+// declare static member
+static UT_Vector static_vecTimers;
+
 UT_Timer::UT_Timer()
 	: m_iIdentifier(0)
 {
@@ -38,8 +41,10 @@ UT_Timer::~UT_Timer()
 	}
 }
 
-// declare static member
-UT_Vector UT_Timer::static_vecTimers;
+UT_Vector & UT_Timer::_getVecTimers ()
+{ 
+	return static_vecTimers;
+}
 
 void UT_Timer::setIdentifier(UT_uint32 iIdentifier)
 {
