@@ -1030,23 +1030,23 @@ bool PD_Document::enumStyles(UT_uint32 k,
 	return m_pPieceTable->enumStyles(k, pszName, ppStyle);
 }
 
-bool	PD_Document::setStyleProperty(const char * szStyleName, const char * szPropertyName, const char * szPropertyValue)
+bool	PD_Document::addStyleProperty(const char * szStyleName, const char * szPropertyName, const char * szPropertyValue)
 {
 	PD_Style * pS;
 	PD_Style ** ppS = &pS;
 	if(!m_pPieceTable->getStyle(szStyleName, ppS))
 		return false;
 		
-	return (*ppS)->setProperty(szPropertyName, szPropertyValue);
+	return (*ppS)->addProperty(szPropertyName, szPropertyValue);
 }
 
-bool	PD_Document::setStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties)
+bool	PD_Document::addStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties)
 {
 	PD_Style * pS;
 	PD_Style ** ppS = &pS;
 	if(!m_pPieceTable->getStyle(szStyleName, ppS))
 		return false;
-	if(!(*ppS)->setProperties(pProperties))
+	if(!(*ppS)->addProperties(pProperties))
 		return false;
 	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
 }
@@ -1057,13 +1057,41 @@ bool	PD_Document::setStyleProperties(const XML_Char * szStyleName, const XML_Cha
 \param szStyleName the const XML_Char * name of the style
 \param pAttribs The list of attributes of the updated style.
 */
-bool	PD_Document::setStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs)
+bool	PD_Document::addStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs)
 {
 	PD_Style * pS;
 	PD_Style ** ppS = &pS;
 	if(!m_pPieceTable->getStyle(szStyleName, ppS))
 		return false;
-	if(!(*ppS)->setAttributes(pAttribs))
+	if(!(*ppS)->addAttributes(pAttribs))
+		return false;
+//
+// These functions just set the new member variable pointers in the class
+//
+	(*ppS)->getBasedOn();
+	(*ppS)->getFollowedBy();
+	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
+}
+
+
+/*! 
+ * This methods changes the attributes /properties of a style (basedon,followedby)
+ * plus the properties. We have to save the indexAP of the pre-existing style
+ * and broadcast it out witht e change records.
+ *
+\param szStyleName the const XML_Char * name of the style
+\param pAttribs The list of attributes/properties of the updated style.
+*/
+bool	PD_Document::setAllStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs)
+{
+	PD_Style * pS;
+	PD_Style ** ppS = &pS;
+	if(!m_pPieceTable->getStyle(szStyleName, ppS))
+		return false;
+//
+// Sevior May need this code
+//	PT_AttrPropIndex oldindexAp = (*pss)->getIndexAP();
+	if(!(*ppS)->setAllAttributes(pAttribs))
 		return false;
 //
 // These functions just set the new member variable pointers in the class

@@ -177,9 +177,10 @@ public:
 	size_t                                  getStyleCount(void);
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
-	bool					setStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
-	bool					setStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
-	bool	                setStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
+	bool					addStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
+	bool					addStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
+	bool	                setAllStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
+	bool	                addStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
 	bool					updateDocForStyleChange(const XML_Char * szStyleName,
 													bool isParaStyle);
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);

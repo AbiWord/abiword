@@ -748,9 +748,8 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	}
 	else
 	{
-		getLDoc()->setStyleProperties("tmp",props);
+		getLDoc()->addStyleProperties("tmp",props);
 		getLDoc()->updateDocForStyleChange("tmp",true);
-
 	}
 	getLView()->setPoint(m_posFocus+1);
 	getLView()->setStyle("tmp");
@@ -833,27 +832,31 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 		props[i] = (const XML_Char *) m_vecAllProps.getNthItem(i);
 	}
 	props[i] = NULL;
-	UT_uint32 counta = m_vecAllAttribs.getItemCount() + 1;
+	UT_uint32 counta = m_vecAllAttribs.getItemCount() + 3;
 	const XML_Char ** attribs = NULL;
 	attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
-	counta--;
-	for(i=0; i<counta; i++)
+	counta = counta -3;
+	UT_sint32 iatt;
+	for(iatt=0; iatt<counta; iatt++)
 	{
-		attribs[i] = (const XML_Char *) m_vecAllAttribs.getNthItem(i);
+		attribs[iatt] = (const XML_Char *) m_vecAllAttribs.getNthItem(iatt);
 	}
-	attribs[i] = NULL;
+	attribs[iatt++] = "props";
 //
 // clear out old description
 //
 	m_curStyleDesc.clear();
-	for(i=0; i<countp; i+=2)
+	UT_sint32 j;
+	for(j=0; j<countp; j+=2)
 	{
-		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i);
+		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(j);
 		m_curStyleDesc += ":";
-		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i+1);
-		if(i+2<countp)
+		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(j+1);
+		if(j+2<countp)
 			m_curStyleDesc += "; ";
 	}
+	attribs[iatt++] = m_curStyleDesc.c_str();
+	attribs[iatt] = NULL;
 //
 // Update the description in the Main Dialog.
 //
@@ -864,8 +867,15 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	const XML_Char * szStyle = getCurrentStyle();
 	if(szStyle == NULL)
 		return false;
-	bool bres = getDoc()->setStyleAttributes(szStyle,attribs);
-	bres = getDoc()->setStyleProperties(szStyle,props);
+//
+// This creates a new indexAP from the attributes/properties here.
+// This allows properties to be removed from a pre-existing style
+//
+	for(i=0; attribs[i] != NULL; i = i + 2)
+	{
+		UT_DEBUGMSG(("SEVIOR: name %s , value %s \n",attribs[i],attribs[i+1]));
+	}
+	bool bres = getDoc()->setAllStyleAttributes(szStyle,attribs);
 	DELETEP(props);
 	DELETEP(attribs);
 	return bres;
@@ -1116,7 +1126,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	}
 	else
 	{
-		getLDoc()->setStyleProperties("tmp",lprop);
+		getLDoc()->addStyleProperties("tmp",lprop);
 	}
 
 	getLView()->setStyle("tmp");

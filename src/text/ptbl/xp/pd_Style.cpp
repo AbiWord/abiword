@@ -130,7 +130,7 @@ PD_Style * PD_Style::getFollowedBy(void)
 }
 
 
-bool PD_Style::setProperty(const XML_Char * szName, const XML_Char * szValue)
+bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
 {
 	PP_AttrProp * pAP = NULL;
 	
@@ -140,7 +140,13 @@ bool PD_Style::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		return pAP->setProperty(szName, szValue);
 }
 
-bool PD_Style::setProperties(const XML_Char ** pProperties)
+/*!
+ * This method adds the properties defined in pProperties to the already
+ * defined set. If a property already exists in the definition, its value is
+ * replaced.
+\param const XML_Char ** pProperties string of properties
+*/
+bool PD_Style::addProperties(const XML_Char ** pProperties)
 {
 	PP_AttrProp * pAP = NULL;
 	
@@ -150,7 +156,23 @@ bool PD_Style::setProperties(const XML_Char ** pProperties)
 		return pAP->setProperties(pProperties);
 }
 
-bool PD_Style::setAttributes(const XML_Char ** pAtts)
+/*!
+ * This method replaces the previous set of attributes/properties with
+ * a new one defined in pAtts. It is imperitive that updateDocForStyleChange
+ * be called after this method.
+ \param const XML_Char ** pAtts list of attributes with an extended properties
+ *                        string
+ */
+bool PD_Style::setAllAttributes(const XML_Char ** pAtts)
+{
+	bool bres =	m_pPT->getVarSet().storeAP(pAtts, &m_indexAP);
+	m_pFollowedBy = NULL;
+	m_pBasedOn = NULL;
+	return bres;
+}
+
+
+bool PD_Style::addAttributes(const XML_Char ** pAtts)
 {
 	PP_AttrProp * pAP = NULL;
 	bool bres = false;
