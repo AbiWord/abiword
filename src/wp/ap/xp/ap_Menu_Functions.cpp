@@ -1096,7 +1096,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-	if(!pView->isInFootnote())
+	if(!pView->isInFootnote() && !pView->isHdrFtrEdit())
 	{
 		return EV_MIS_ZERO;
 	}
