@@ -1909,11 +1909,17 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// the page.
 			
 			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
-			pFrameCon->setX(xFpos);
-			pFrameCon->setY(yFpos);
-			if(pPage->findFrameContainer(pFrameCon) < 0)
+			//
+			// The frame container may not yet be created.
+			//
+			if(pFrameCon)
 			{
-				pPage->insertFrameContainer(pFrameCon);
+				pFrameCon->setX(xFpos);
+				pFrameCon->setY(yFpos);
+				if(pPage->findFrameContainer(pFrameCon) < 0)
+				{
+					pPage->insertFrameContainer(pFrameCon);
+				}
 			}
 		}
 		else
