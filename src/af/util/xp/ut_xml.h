@@ -25,7 +25,7 @@
 #include "ut_types.h"
 #include "ut_bytebuf.h"
 
-#ifdef HAVE_LIBXML2
+#if defined(HAVE_LIBXML2) || defined(ABI_PLUGIN_SOURCE)
   /* XML_Char is the expat char def, xmlChar is the libxml2 def.
    * xmlChar is unsigned char - which is a real pain in the ass for AbiWord,
    * so I'm going to mis-define it here and use the correct sign only internally...

@@ -60,7 +60,8 @@ XAP_UnixDialog_Zoom::XAP_UnixDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 	m_buttonOK = NULL;
 	m_buttonCancel = NULL;
 
-	m_previewFrame = 	NULL;
+// aiken: get rid of preview frame.    
+//	m_previewFrame = 	NULL;
 	m_previewArea = 	NULL;
 	
 	m_radio200 = 		NULL;
@@ -296,7 +297,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	GtkWidget * spinbuttonPercent;
 
 	GtkWidget * framePreview;
-	GtkWidget * frameSampleText;
+// aiken: rmeove frame around sample text
+// GtkWidget * frameSampleText;
 	GtkWidget * drawingareaPreview;
 
 	GtkWidget * hbuttonboxZoom;
@@ -407,24 +409,32 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (hboxFrames), framePreview, TRUE, TRUE, 0);
 
 	// TODO: do something dynamically here?  How do we set this "sample" font?
-	frameSampleText = gtk_frame_new ("10 pt Times New Roman");
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "frameSampleText", frameSampleText);
-	gtk_widget_show (frameSampleText);
-	gtk_container_add (GTK_CONTAINER (framePreview), frameSampleText);
+    // 
+    // aiken: remove frame around preview text
+	//frameSampleText = gtk_frame_new ("10 pt Times New Roman");
+	//gtk_object_set_data (GTK_OBJECT (windowZoom), "frameSampleText", frameSampleText);
+	//gtk_widget_show (frameSampleText);
+	//gtk_container_add (GTK_CONTAINER (framePreview), frameSampleText);
 #if 0	
 	/*setting size of 'frameSampleText' makes no sense - VH*/
 	gtk_widget_set_usize (frameSampleText, 221, 97);
 #endif	
-	gtk_container_border_width (GTK_CONTAINER (frameSampleText), 10);
-
+	//gtk_container_border_width (GTK_CONTAINER (frameSampleText), 10);
+    
+    // aiken: add padding around the preview area.
+    GtkWidget* padding = gtk_frame_new(0);
+    gtk_container_set_border_width(GTK_CONTAINER(padding), 10);
+    gtk_container_add(GTK_CONTAINER(framePreview), padding);
+    gtk_frame_set_shadow_type(GTK_FRAME(padding), GTK_SHADOW_NONE);
+    gtk_widget_show(padding); 
+    
 	// *** This is how we do a preview widget ***
-	{
-		drawingareaPreview = createDrawingArea ();
-		gtk_object_set_data (GTK_OBJECT (windowZoom), "drawingareaPreview", drawingareaPreview);
-		gtk_widget_show (drawingareaPreview);
-		gtk_container_add (GTK_CONTAINER (frameSampleText), drawingareaPreview);
-		gtk_widget_set_usize (drawingareaPreview, 149, 10);
-   	}
+    drawingareaPreview = createDrawingArea ();
+	gtk_object_set_data (GTK_OBJECT (windowZoom), "drawingareaPreview", drawingareaPreview);
+	gtk_widget_show (drawingareaPreview);
+    // aiken: change container to padding instead of frameSampleText
+	gtk_container_add (GTK_CONTAINER (padding), drawingareaPreview);
+	gtk_widget_set_usize (drawingareaPreview, 149, 10);  	
 	
 	hbuttonboxZoom = gtk_hbutton_box_new ();
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "hbuttonboxZoom", hbuttonboxZoom);
@@ -513,7 +523,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
 
-	m_previewFrame = 	frameSampleText;
+// aiken: remove preview frame.    
+//	m_previewFrame = 	frameSampleText;
 	m_previewArea = 	drawingareaPreview;
 	
 	m_radio200 = 		radiobutton200;

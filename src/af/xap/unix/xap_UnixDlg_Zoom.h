@@ -67,7 +67,8 @@ protected:
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
-	GtkWidget * m_previewFrame;
+// aiken: get rid of preview frame.    
+//	GtkWidget * m_previewFrame;
 	GtkWidget * m_previewArea;
 	
 	GtkWidget * m_radio200;
