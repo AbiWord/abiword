@@ -71,8 +71,9 @@ BeginSet(it,IT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overline",tb_text_overline_xpm,	NULL, "Mette una linea sopra i caratteri")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrato",		tb_text_strikeout_B_xpm,	NULL, "Barrato")
 
-        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Apice",  tb_text_superscript_xpm,        NULL, "Apice")
-        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,       "Pedice",    tb_text_subscript_xpm,          NULL, "Pedice")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Apice",  	tb_text_superscript_xpm,        NULL, "Apice")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,       "Pedice",    	tb_text_subscript_xpm,          NULL, "Pedice")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Simbolo",	tb_symbol_xpm,		NULL, "Inserisci simbolo")
 		
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Sinistra",		tb_text_align_left_xpm,	NULL, "Allineamento a sinistra")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centro",		tb_text_center_xpm,		NULL, "Allineamento al centro")
@@ -92,9 +93,10 @@ BeginSet(it,IT,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",			NoIcon,			NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Liste",		tb_lists_xpm,		NULL,		"Liste ed elenchi puntati")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Liste numerate",		tb_lists_numbers_xpm,		NULL,		"Inizia/Termina liste numerate")
 	
 	// ... add others here ...
 
-	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,			NULL,NULL)
+	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()
