@@ -4583,7 +4583,11 @@ bool IE_Imp_RTF::ReadFontTable()
 	if (m_fontTable.getItemCount() != 0) {
 		UT_DEBUGMSG (("Font table already contains %d items !\n", m_fontTable.getItemCount()));
 	}
-	UT_VECTOR_PURGEALL(RTFFontTableItem*, m_fontTable);	
+	
+// don't purge the vector as we may have several fonttable....
+// just handle dupes as seen below.
+
+//	UT_VECTOR_PURGEALL(RTFFontTableItem*, m_fontTable);	
 
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
