@@ -275,9 +275,52 @@ protected:
 
 #define FPFIELD_MAX_LENGTH	63
 
+/*
 #define FPFIELD_TIME		1
 #define FPFIELD_PAGE_NUMBER	2
 #define FPFIELD_PAGE_COUNT	3
+*/
+
+#define  _FIELD(type,desc,tag)  /*nothing*/
+#define  _FIELDTYPE(type,desc)  FPFIELDTYPE_##type,
+
+enum fp_FieldTypesEnum { FPFIELDTYPE_START,
+
+#include "fp_Fields.h"
+
+FPFIELDTYPE_END };
+
+#undef  _FIELD
+#undef  _FIELDTYPE
+
+#define  _FIELD(type,desc,tag)  FPFIELD_##tag,
+#define  _FIELDTYPE(type,desc)  /*nothing*/
+
+enum fp_FieldsEnum { FPFIELD_start,
+
+#include "fp_Fields.h"
+
+FPFIELD_end };
+
+#undef  _FIELD
+#undef  _FIELDTYPE
+
+struct fp_FieldTypeData
+{
+    fp_FieldTypesEnum  m_Type;
+	char*              m_Desc;
+};
+
+struct fp_FieldData
+{
+    fp_FieldTypesEnum  m_Type;
+    fp_FieldsEnum      m_Num;
+	char*              m_Desc;
+	char*              m_Tag;
+};
+
+extern const fp_FieldTypeData fp_FieldTypes[];
+extern const fp_FieldData fp_FieldFmts[];
 
 class fp_FieldRun : public fp_Run
 {
@@ -301,7 +344,7 @@ protected:
 	GR_Font*				m_pFontLayout;
 	UT_RGBColor				m_colorFG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
-	unsigned char			m_iFieldType;
+	fp_FieldsEnum			m_iFieldType;
 };
 
 class fp_FmtMarkRun : public fp_Run

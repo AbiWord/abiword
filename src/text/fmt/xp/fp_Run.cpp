@@ -664,6 +664,35 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+#define  _FIELD(type,desc,tag)  /*nothing*/
+#define  _FIELDTYPE(type,desc)  { FPFIELDTYPE_##type, desc },
+
+const fp_FieldTypeData fp_FieldTypes[] = {
+
+#include "fp_Fields.h"
+
+{ FPFIELDTYPE_END, NULL } };
+
+#undef  _FIELD
+#undef  _FIELDTYPE
+
+// The way to turn macro argument into string constant
+#define xstr2(x) #x
+#define xstr(x) xstr2(x)
+#define _FIELD(type,desc,tag)  { FPFIELDTYPE_##type, FPFIELD_##tag, desc, xstr(tag) },
+#define _FIELDTYPE(type,desc)  /*nothing*/
+
+const fp_FieldData fp_FieldFmts[] = {
+
+#include "fp_Fields.h"
+
+{ FPFIELDTYPE_END, FPFIELD_end, NULL, NULL } };
+
+#undef  xstr2
+#undef  xstr
+#undef  _FIELD
+#undef  _FIELDTYPE
+
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
 {
 	m_pFont = NULL;
@@ -683,7 +712,7 @@ UT_Bool fp_FieldRun::calculateValue(void)
 	
 	switch (m_iFieldType)
 	{
-	case FPFIELD_TIME:
+	case FPFIELD_time:
 	{
 		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
@@ -695,7 +724,7 @@ UT_Bool fp_FieldRun::calculateValue(void)
 		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 		break;
 	}
-	case FPFIELD_PAGE_NUMBER:
+	case FPFIELD_page_number:
 	{
 		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
@@ -729,7 +758,7 @@ UT_Bool fp_FieldRun::calculateValue(void)
 		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 		break;
 	}
-	case FPFIELD_PAGE_COUNT:
+	case FPFIELD_page_count:
 	{
 		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 		
@@ -816,19 +845,16 @@ void fp_FieldRun::lookupProperties(void)
 	pSpanAP->getAttribute("type", pszType);
 	UT_ASSERT(pszType);
 
-	if (0 == UT_stricmp(pszType, "time"))
+	int i;
+	for( i = 0; fp_FieldFmts[i].m_Tag != NULL; i++ )
 	{
-		m_iFieldType = FPFIELD_TIME;
+		if (0 == UT_stricmp(pszType, fp_FieldFmts[i].m_Tag))
+		{
+			m_iFieldType = fp_FieldFmts[i].m_Num;
+			break;
+		}
 	}
-	else if (0 == UT_stricmp(pszType, "page_number"))
-	{
-		m_iFieldType = FPFIELD_PAGE_NUMBER;
-	}
-	else if (0 == UT_stricmp(pszType, "page_count"))
-	{
-		m_iFieldType = FPFIELD_PAGE_COUNT;
-	}
-	else
+	if( fp_FieldFmts[i].m_Tag == NULL )
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
