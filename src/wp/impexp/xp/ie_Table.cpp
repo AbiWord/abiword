@@ -510,7 +510,9 @@ ie_imp_cell::ie_imp_cell(ie_imp_table * pImpTable, PD_Document * pDoc,
 	m_iRow(iRow),
 	m_bMergeAbove(false),
 	m_bMergeRight(false),
-	m_bFirstVertical(false)
+	m_bMergeLeft(false),
+	m_bFirstVertical(false),
+	m_bFirstHori(false)
 {
 	m_sCellProps.clear();
 }
@@ -1056,7 +1058,7 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 	for(i=0; i< static_cast<UT_sint32>(m_vecCells.getItemCount());i++)
 	{
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
-		if(!pCell->isMergedAbove() && !pCell->isMergedRight())
+		if(!pCell->isMergedAbove() && !pCell->isMergedRight() && !pCell->isMergedLeft())
 		{
 			UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 			pCell->writeCellPropsInDoc();
@@ -1064,6 +1066,11 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
 		{
 			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged above cell! removing it \n"));
+			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
+		}
+		if(pCell->isMergedLeft() && (pCell->getCellSDH() != NULL))
+		{
+			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged left cell! removing it \n"));
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 		}
 #if DEBUG
@@ -1195,13 +1202,18 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	UT_sint32 i =0;
 	bool bFound = false;
 	UT_sint32 iFound = 0;
+	UT_sint32 iSub = 0;
 	for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecCellX.getItemCount())); i++)
 	{
 		UT_sint32 icellx = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(i));
+		if(icellx == -1)
+		{
+			iSub++;
+		}
 		if(doCellXMatch(icellx,cellx))
 		{
 			bFound = true;
-			iFound = i;
+			iFound = i -iSub;
 		}
 	}
 	if(bFound)
@@ -1221,7 +1233,7 @@ ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
 	{
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		UT_sint32 icellx = pCell->getCellX();
-		if((icellx == cellX) && (pCell->getRow() == iRow))
+		if(doCellXMatch(icellx,cellX) && (pCell->getRow() == iRow))
 		{
 			bfound = true;
 			break;
@@ -1265,6 +1277,7 @@ void ie_imp_table::buildTableStructure(void)
 		bool bSkipThis = false;
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		cellx = pCell->getCellX();
+		xxx_UT_DEBUGMSG(("i %d cellx %d iLeft %d iRight %d \n",i,cellx,iLeft,iRight));
 		if(i==0 || (pCell->getRow() > curRow))
 		{
 			curRow = pCell->getRow();
@@ -1279,7 +1292,18 @@ void ie_imp_table::buildTableStructure(void)
 			iLeft = getColNumber(pCell);
 			bSkipThis = true;
 		}
-		iRight = getColNumber(pCell);
+		if(pCell->isMergedLeft())
+		{
+//
+// This cell is Horizontally merged. Advance the left pointer to the position after this cell. Increment iRight
+//
+			UT_DEBUGMSG(("SEVIOR: This cell is meregd Left!!!!!!!!! cellx %d \n",cellx));
+			bSkipThis = true;
+		}
+		else
+		{
+			iRight = getColNumber(pCell);
+		}
 		iTop = curRow;
 		if(pCell->isFirstVerticalMerged())
 		{
@@ -1310,6 +1334,8 @@ void ie_imp_table::buildTableStructure(void)
 		//
 		if(!bSkipThis)
 		{
+			UT_ASSERT(iRight>iLeft);
+			UT_ASSERT(iBot>iTop);
 			pCell->setLeft(iLeft);
 			pCell->setRight(iRight);
 			pCell->setTop(iTop);
@@ -1350,7 +1376,7 @@ void ie_imp_table::CloseCell(void)
 
 /*!
  * This method scans the vector of cells and removes cells and their sdh's if they
- * do no have cellc defined.
+ * do no have cellx defined.
  */
 void ie_imp_table::removeExtraneousCells(void)
 {
@@ -1359,9 +1385,8 @@ void ie_imp_table::removeExtraneousCells(void)
 	for(i= static_cast<UT_sint32>(m_vecCells.getItemCount()) -1; i >=0 ; i--)
 	{
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
-		if(pCell->getCellX() == -1)
+		if(pCell->getCellX() == -1 && (pCell->getCellSDH() != NULL))
 		{
-			UT_ASSERT(0);
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 			delete pCell;
 			m_vecCells.deleteNthItem(i);
@@ -1505,6 +1530,7 @@ ie_imp_table_control::~ie_imp_table_control(void)
 		m_sLastTable.pop(reinterpret_cast<void **>(&pT));
 		if(pT->wasTableUsed())
 		{
+//			pT->removeExtraneousCells();
 			pT->buildTableStructure();
 			pT->writeTablePropsInDoc();
 			pT->writeAllCellPropsInDoc();
@@ -1539,6 +1565,7 @@ void ie_imp_table_control::CloseTable(void)
 	m_sLastTable.pop(reinterpret_cast<void **>(&pT));
 	if(pT->wasTableUsed())
 	{
+//		pT->removeExtraneousCells();
 		pT->buildTableStructure();
 		pT->writeTablePropsInDoc();
 		pT->writeAllCellPropsInDoc();

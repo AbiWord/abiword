@@ -1229,6 +1229,8 @@ RTFProps_CellProps::RTFProps_CellProps()
 {
 	m_bVerticalMerged = false;
 	m_bVerticalMergedFirst = false;
+	m_bHorizontalMerged = false;
+	m_bHorizontalMergedFirst = false;
 	m_iCellx = 0;
 }
 
@@ -1238,6 +1240,8 @@ RTFProps_CellProps& RTFProps_CellProps::operator=(const RTFProps_CellProps& othe
 	{
 		 m_bVerticalMerged = other.m_bVerticalMerged;
 		 m_bVerticalMergedFirst = other. m_bVerticalMergedFirst;
+		 m_bHorizontalMerged = other.m_bHorizontalMerged;
+		 m_bHorizontalMergedFirst = other. m_bHorizontalMergedFirst;
 		 m_iCellx = other.m_iCellx;
 	}
 	return *this;
@@ -1597,7 +1601,7 @@ void IE_Imp_RTF::HandleCell(void)
 	}
 	UT_DEBUGMSG(("SEVIOR: set cell sdh %x  at pos %d on row %d \n",sdh,getTable()->getPosOnRow(),getTable()->getRow()));
 	getTable()->setNthCellOnThisRow(getTable()->getPosOnRow());
-	if(!getCell()->isMergedAbove())
+	if(!getCell()->isMergedAbove() && !getCell()->isMergedLeft())
 	{
 		getCell()->setCellSDH(sdh);
 		UT_DEBUGMSG(("SEVIOR: At posOnRow %d cellx %d \n",getTable()->getPosOnRow(),getCell()->getCellX()));
@@ -1634,6 +1638,9 @@ void IE_Imp_RTF::FlushCellProps(void)
 
 	getCell()->setMergeAbove( m_currentRTFState.m_cellProps.m_bVerticalMerged );
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
+	getCell()->setFirstHorizontalMerge( m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst );
+	getCell()->setMergeLeft( m_currentRTFState.m_cellProps.m_bHorizontalMerged );
+	
 }
 
 
@@ -1663,13 +1670,14 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 // Look to see if a cell with cellx already exists on the current row. If so set the
 // current cell pointer to point to it.
 //
-
+	UT_DEBUGMSG(("Original cellx %d \n",cellx));
 	iRow = getTable()->getRow();
 	ie_imp_cell * pOldCell = getTable()->getCellAtRowColX(iRow,cellx);
-	if(pOldCell)
+	if(pOldCell && !m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst && !m_currentRTFState.m_cellProps.m_bHorizontalMerged )
 	{
 		bNewCell = false;
 		getTable()->setCell(pOldCell);
+		cellx = pOldCell->getCellX();
 	}
 	if(!pOldCell)
 	{
@@ -1686,6 +1694,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 		getTable()->OpenCell();
 		UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
 	}
+	UT_ASSERT(cellx>1);
 	getTable()->setCellX(cellx);
 	UT_DEBUGMSG(("set cellx for class %x to %d \n",getCell(),cellx));
 	FlushCellProps();
@@ -2107,6 +2116,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	bool ok = true;
 	if (m_newSectionFlagged && (forceInsertPara || (m_gbBlock.getLength() > 0)) )
 	{
+		m_bContentFlushed = true;
 		ok = ApplySectionAttributes();
 		m_newSectionFlagged = false;
 	}
@@ -2127,6 +2137,8 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 			}
 		}
 		m_newParaFlagged = false;
+		m_bContentFlushed = true;
+
 	}
 
 	if (ok  &&  (m_gbBlock.getLength() > 0))
@@ -2149,6 +2161,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	{
 		if(m_pImportFile)
 		{
+			m_bContentFlushed = true;
 			if(m_bNoteIsFNote)
 				getDoc()->appendStrux(PTX_EndFootnote,NULL);
 			else
@@ -2163,11 +2176,11 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 				ok = getDoc()->insertStrux(m_dposPaste,PTX_EndEndnote);
 				
 			m_dposPaste++;
+			m_bContentFlushed = true;
 		}
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
 	}
-	m_bContentFlushed = true;
 	return ok;
 }
 
@@ -3875,6 +3888,16 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clvmgf") == 0)
 		{
 			m_currentRTFState.m_cellProps.m_bVerticalMergedFirst = true;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clmrg") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_bHorizontalMerged = true;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clmrgf") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst = true;
 			return true;
 		}
 		break;

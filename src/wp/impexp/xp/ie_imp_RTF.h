@@ -160,6 +160,8 @@ struct ABI_EXPORT RTFProps_CellProps
 	RTFProps_CellProps & operator=(const RTFProps_CellProps&);
 	bool      m_bVerticalMerged;
 	bool      m_bVerticalMergedFirst;
+	bool      m_bHorizontalMerged;
+	bool      m_bHorizontalMergedFirst;
 	UT_sint32 m_iCellx;
 };
 

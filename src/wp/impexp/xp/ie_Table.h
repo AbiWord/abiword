@@ -133,10 +133,14 @@ class ABI_EXPORT ie_imp_cell
 	UT_sint32        getRow(void) { return m_iRow;}
 	void             setMergeAbove(bool bAbove) { m_bMergeAbove = bAbove;}
 	void             setMergeRight(bool bRight) {m_bMergeRight = bRight;}
+	void             setMergeLeft(bool bLeft) {m_bMergeLeft = bLeft;}
+	void             setFirstHorizontalMerge(bool bHori) {m_bFirstHori = bHori;}
 	void             setFirstVerticalMerge( bool bVert) {m_bFirstVertical = bVert;}
 	bool             isMergedAbove(void) const {return m_bMergeAbove;}
 	bool             isMergedRight(void) const {return m_bMergeRight;}
+	bool             isMergedLeft(void) const {return m_bMergeLeft;}
 	bool             isFirstVerticalMerged(void) const {return m_bFirstVertical;}
+	bool             isFirstHorizontalMerged(void) const {return m_bFirstHori;}
 	void             copyCell(ie_imp_cell * pCell);
 	void             setImpTable(ie_imp_table * pTable) { m_pImpTable = pTable;}
 	void             setRow(UT_sint32 row) { m_iRow = row;}
@@ -153,7 +157,9 @@ class ABI_EXPORT ie_imp_cell
 	UT_sint32             m_iRow;
 	bool                  m_bMergeAbove;
 	bool                  m_bMergeRight;
+	bool                  m_bMergeLeft;
 	bool                  m_bFirstVertical;
+	bool                  m_bFirstHori;
 	UT_String             m_sCellProps;
 };			
 
