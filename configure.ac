@@ -402,14 +402,12 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/GNUmakefile
  src/af/ev/GNUmakefile
  src/af/ev/xp/GNUmakefile
- src/af/ev/cocoa/GNUmakefile
  src/af/ev/unix/GNUmakefile
  src/af/ev/unix/gnome/GNUmakefile
  src/af/ev/mac/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
  src/af/gr/mac/GNUmakefile
- src/af/gr/cocoa/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
@@ -417,7 +415,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
- src/af/xap/cocoa/GNUmakefile
  src/af/xap/mac/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
@@ -434,18 +431,15 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
- src/wp/ap/cocoa/GNUmakefile
  src/wp/ap/mac/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
  src/wp/impexp/GNUmakefile
- src/wp/impexp/cocoa/GNUmakefile
  src/wp/impexp/unix/GNUmakefile
  src/wp/impexp/unix/gnome/GNUmakefile
  src/wp/impexp/xp/GNUmakefile
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
- src/wp/main/cocoa/GNUmakefile
  src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/main/unix/gnome/GNUmakefile
@@ -475,7 +469,7 @@ case "$PLATFORM" in
      "qnx" )
        AC_MSG_RESULT([Configured to build on a QNX RTOS platform.]) ;;
      "cocoa" )
-       AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) ;;
+       AC_MSG_ERROR([Not configured to build on a Mac OS X platform using Cocoa.]) ;;
      "mac" )
        AC_MSG_RESULT([Configured to build on a Mac OS X platform using Carbon.]) ;;
 esac
