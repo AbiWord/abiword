@@ -280,6 +280,7 @@ else
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
 		$(RM) $(ABI_ROOT)/../expat/config.h;	\
 		$(RM) $(ABI_ROOT)/../expat/lib/config.h;	\
+		$(RM) $(ABI_ROOT)/../expat/lib/expat.h;	\
 	fi
 endif
 
