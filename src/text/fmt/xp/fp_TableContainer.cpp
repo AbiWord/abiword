@@ -91,6 +91,7 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_iRightAttach(0),
 	  m_iTopAttach(0),
 	  m_iBottomAttach(0),
+	  m_borderColorNone(127,127,127),
 	  m_iLeftPad(0),
 	  m_iRightPad(0),
 	  m_iTopPad(0),
@@ -632,8 +633,6 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot)
 {
-	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none) return;
-
 	GR_Graphics * pGr = getGraphics ();
 
 	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
@@ -641,6 +640,9 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 
 	switch (style.m_t_linestyle)
 	{
+		case PP_PropertyMap::linestyle_none:
+			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_DOTTED);
+			break;
 		case PP_PropertyMap::linestyle_dotted:
 			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_DOTTED);
 			break;
@@ -655,12 +657,19 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 	}
 
 	pGr->setLineWidth (static_cast<UT_sint32>(style.m_thickness));
-	pGr->setColor (style.m_color);
+	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
+	{
+		pGr->setColor (m_borderColorNone);
+	}
+	else
+	{
+		pGr->setColor (style.m_color);
+	}
 
 	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
 
 	pGr->drawLine (left, top, right, bot);
-
+	
 	pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
 }
 
@@ -4409,7 +4418,3 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 //	sizeRequest(&pReq);
 //	m_MyAllocation.height = pReq.height;
 }
-
-
-
-

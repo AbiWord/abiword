@@ -253,6 +253,11 @@ private:
 // m_iBottomAttach is the row immediately below the cell.
 
 	UT_sint32           m_iBottomAttach;
+	
+// a default color to use the a cell border style is set to "off"
+
+	UT_RGBColor			m_borderColorNone;
+	
 //
 // Padding left,right, top and bottom
 //
@@ -493,12 +498,3 @@ private:
 };
 
 #endif /* TABLECONTAINER_H */
-
-
-
-
-
-
-
-
-
