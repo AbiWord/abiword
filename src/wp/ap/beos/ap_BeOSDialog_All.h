@@ -37,6 +37,7 @@
 #include "xap_BeOSDlg_WindowMore.h"
 #include "xap_BeOSDlg_Zoom.h"
 #include "xap_BeOSDlg_About.h"
+#include "xap_BeOSDialog_Insert_Symbol.h"
 
 #include "ap_BeOSDialog_Replace.h"
 #include "ap_BeOSDialog_Break.h"
@@ -44,7 +45,6 @@
 #include "ap_BeOSDialog_Spell.h"
 #include "ap_BeOSDialog_Options.h"
 #include "ap_BeOSDialog_WordCount.h"
-#include "ap_BeOSDialog_Insert_Symbol.h"
 
 	// ... add new dialogs here ...
 
