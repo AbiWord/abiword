@@ -125,10 +125,13 @@ void UT_Stringbuf::swap(UT_Stringbuf& rhs)
 
 void UT_Stringbuf::clear()
 {
-	delete[] m_psz;
-	m_psz = 0;
-	m_pEnd = 0;
-	m_size = 0;
+	if (m_psz != 0)
+	{
+		delete[] m_psz;
+		m_psz = 0;
+		m_pEnd = 0;
+		m_size = 0;
+	}
 }
 
 #if 0 // Mike growing functions
