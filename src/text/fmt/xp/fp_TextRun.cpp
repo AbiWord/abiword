@@ -48,12 +48,16 @@
 #include "fribidi.h"
 #include "ut_contextGlyph.h"
 #include "ap_Prefs.h"
-#define CONTEXT_BUFF_SIZE 5
 #endif
 
 /*****************************************************************/
 
 #ifdef BIDI_ENABLED
+//the size of temp buffers used for evaluation of the context of glyphs
+#define CONTEXT_BUFF_SIZE 5
+
+//we cache pref value UseContextGlyphs; the following defines how often
+//to refresh the cache (in miliseconds)
 #define PREFS_REFRESH_MSCS 2000
 //inicialise the static members of the class
 bool fp_TextRun::s_bUseContextGlyphs = true;
@@ -89,8 +93,11 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	{
 		lookupProperties();
 	}
-
+	m_iOldLen = 0;
+	m_pOldScreenFont = 0;
 #ifdef BIDI_ENABLED
+	m_pOldNext = NULL;
+	m_pOldPrev = NULL;
 //in order to be able to print rtl runs on GUI that does not support this,
 //we will need to make a copy of the run and strrev it; this is a static
 //buffer shared by all the instances;
@@ -812,8 +819,15 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	m_pLine->insertRunAfter(pNew, this);
 
+#ifdef BIDI_ENABLED
+	// recalcWidth is much more efficient in the bidi build than two
+	// separate calls to simpleRecalc
+	recalcWidth();
+#else
 	m_iWidth = simpleRecalcWidth(Width_type_display);
 	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
+#endif
+
 #ifdef BIDI_ENABLED
 	//bool bDomDirection = m_pBL->getDominantDirection();
 	
@@ -830,9 +844,15 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iX = m_iX + m_iWidth;
 #endif
 	pNew->m_iY = m_iY;
+
+#ifdef BIDI_ENABLED
+	// recalcWidth is much more efficient in the bidi build than two
+	// separate calls to simpleRecalc
+	pNew->recalcWidth();
+#else
 	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
 	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
-	
+#endif	
 	return true;
 }
 
@@ -983,6 +1003,24 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 
 bool fp_TextRun::recalcWidth(void)
 {
+/*
+	The width can only change if the font has changed, or the run has
+	changed physically, i.e., it has been either split or merged; all
+	we need to test is the length -- if the length is the same, it could
+	not have changed -- and the screen font
+	
+	In the Bidi build though when using the automatic glyph shape selection
+	the width can also change when the context changes, i.e., we have a new
+	next or new prev run. Since the change of length would also result
+	in change of context (we either merged or split), we only need to test the
+	context (note that there is never a TextRun with context 0,0, since it is
+	always followed by at least the EndOfParagraph run)
+	
+	Further, we can seriously speed up things for the bidi build, if we
+	calculate width here directly, rather than calling simpleRecalcWidth
+	since it allows us to carry out only a sinle evaluation of the context
+*/
+#if 0
 	UT_sint32 iWidth = simpleRecalcWidth(Width_type_display);
 	
 	if (iWidth == m_iWidth)
@@ -1000,6 +1038,117 @@ bool fp_TextRun::recalcWidth(void)
 	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
 
 	return true;
+#else
+	bool bIsDirty = false;
+	
+#ifdef BIDI_ENABLED
+	UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_pOldPrev 0x%x, m_pOldNext 0x%x, m_iOldLen %d\n"
+	             "       m_pPrev 0x%x, m_pNext 0x%x, m_iLen %d\n"
+	             "       m_pOldScreenFont 0x%x, m_pScreenFont 0x%x\n",
+	             this,m_pOldPrev, m_pOldNext, m_iOldLen, m_pPrev, m_pNext, m_iLen, m_pOldScreenFont,m_pScreenFont));
+	if(s_bUseContextGlyphs)
+	{
+		bIsDirty = (m_pOldNext != m_pNext || m_pOldPrev != m_pPrev || m_pOldScreenFont != m_pScreenFont);
+	}
+	else
+#endif
+		bIsDirty = (m_iOldLen != m_iLen || m_pOldScreenFont != m_pScreenFont);
+		
+	if(bIsDirty)
+	{
+#ifdef BIDI_ENABLED
+		m_pOldPrev = m_pPrev;
+		m_pOldNext = m_pNext;
+#endif
+		m_iOldLen = m_iLen;
+		m_pOldScreenFont = m_pScreenFont;
+		
+#ifdef BIDI_ENABLED		
+		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
+		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+
+		UT_uint16* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
+		UT_uint16* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0);
+		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
+	
+		UT_sint32 iWidthD = 0, iWidthL = 0;
+
+		const UT_UCSChar* pSpan;
+		UT_uint32 lenSpan;
+		UT_uint32 offset = m_iOffsetFirst;
+		UT_uint32 len = m_iLen;
+		bool bContinue = true;
+
+		while (bContinue)
+		{
+			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			if (!bContinue)		// if this fails, we are out of sync with the PTbl.
+			{					// this probably means we are the right half of a split
+				break;			// made to break a paragraph.
+			}
+			UT_ASSERT(lenSpan>0);
+
+			UT_uint32 iTrueLen;
+			if (lenSpan > len)
+			{
+				iTrueLen = len;
+			}
+			else
+				iTrueLen = lenSpan;
+			
+			UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
+			UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
+
+			if(s_bUseContextGlyphs)
+				_getContext(pSpan,lenSpan,len,offset,&prev[0],&next[0]);
+			
+			for (UT_uint32 i=0; i<iTrueLen; i++)
+			{
+				if(s_bUseContextGlyphs)
+				{
+					UT_UCSChar c = _getContextGlyph(pSpan,iTrueLen,i,&prev[0],&next[0]);
+					
+					m_pG->setFont(m_pLayoutFont);
+					m_pG->measureString((const UT_UCSChar *)&c, 0, 1, (UT_uint16*)pCharWidthsLayout + offset+i);
+					
+					m_pG->setFont(m_pScreenFont);
+					m_pG->measureString((const UT_UCSChar *)&c, 0, 1, (UT_uint16*)pCharWidthsDisplay + offset+i);
+				
+				}
+				iWidthD += pCharWidthsDisplay[i + offset];
+				iWidthL += pCharWidthsLayout[i + offset];
+
+			}
+
+			if (len <= lenSpan)
+			{
+				bContinue = false;
+			}
+			else
+			{
+				offset += iTrueLen;
+				len -= iTrueLen;
+			}
+		}
+		
+		m_iWidth = iWidthD;
+		m_iWidthLayoutUnits = iWidthL;
+#else
+		m_iWidth = simpleRecalcWidth(Width_type_display);
+		m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
+#endif
+		if(m_iWidth)
+			// this is really needed ...
+			clearScreen();
+		UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_iWidth %d, m_iWidthLayoutUnits %d\n",this,m_iWidth, m_iWidthLayoutUnits));
+		return true;
+	}
+	else
+	{
+		UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): the run has not changed\n",this));
+		return false;
+	}
+#endif
 }
 
 void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
@@ -1454,15 +1603,12 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 			{
 				// now we will retrieve 5 characters that follow this part of the run
 				// and two chars that precede it
-				#define BUFF_SIZE 5
 				
-				UT_uint32 lenPrev = CONTEXT_BUFF_SIZE, lenNext = CONTEXT_BUFF_SIZE;
-			
 				// tree small buffers, one to keep the chars past this part
 				// and one that we will use to create the "trailing" chars
 				// for each character in this fragment
-				UT_UCSChar next[BUFF_SIZE + 1];
-				UT_UCSChar prev[BUFF_SIZE + 1];
+				UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
+				UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
 				
 				_getContext(pSpan,lenSpan,len,offset,&prev[0],&next[0]);
 				// how many trailing chars at most can we copy from our span?

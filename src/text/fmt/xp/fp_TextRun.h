@@ -190,6 +190,14 @@ protected:
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *			m_pLanguage;
+	
+#ifdef BIDI_ENABLED
+	fp_Run* m_pOldPrev;
+	fp_Run* m_pOldNext;
+#endif
+	UT_uint32 m_iOldLen;
+	GR_Font *m_pOldScreenFont;
+	
 };
 
 #endif /* FP_TEXTRUN_H */
