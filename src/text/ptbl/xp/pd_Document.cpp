@@ -2611,35 +2611,38 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 	if(!szOrientation)
 		return false;
 	m_docPageSize.Set((const char *)szPageSize);
-	if(UT_XML_stricmp(szOrientation,"portrait")==0)
-	{
-		m_docPageSize.setPortrait();
-	}
-	else if(UT_XML_stricmp(szOrientation,"landscape")==0)
-	{
-		m_docPageSize.setLandscape();
-	}
-	else
-		return false;
-	if( !szWidth || !szHeight || !szUnits || !szPageScale)
-		return false;
-	else
-	{
-		width = UT_convertDimensionless(szWidth);
-		height = UT_convertDimensionless(szHeight);
-		scale =  UT_convertDimensionless(szPageScale);
-		if(UT_XML_stricmp(szUnits,"cm") == 0)
-			u = DIM_CM;
-		else if(UT_XML_stricmp(szUnits,"mm") == 0)
-			u = DIM_MM;
-		else if(UT_XML_stricmp(szUnits,"inch") == 0)
-			u = DIM_IN;
+
+	if( szWidth && szHeight && szUnits && szPageScale)
+	  {
 		if(UT_XML_stricmp(szPageSize,"Custom") == 0)
-		{
-			m_docPageSize.Set(width,height,u);
-		}
+		  {
+		    width = UT_convertDimensionless(szWidth);
+		    height = UT_convertDimensionless(szHeight);
+		    if(UT_XML_stricmp(szUnits,"cm") == 0)
+		      u = DIM_CM;
+		    else if(UT_XML_stricmp(szUnits,"mm") == 0)
+		      u = DIM_MM;
+		    else if(UT_XML_stricmp(szUnits,"inch") == 0)
+		      u = DIM_IN;
+		    m_docPageSize.Set(width,height,u);
+		  }
+
+		scale =  UT_convertDimensionless(szPageScale);
 		m_docPageSize.setScale(scale);
-	}
+	  }
+
+	// set portrait by default
+	m_docPageSize.setPortrait();
+
+	// custom page sizes are always in "Portrait" mode
+	if ( UT_XML_stricmp(szPageSize,"Custom") != 0 )
+	  {
+	    if( UT_XML_stricmp(szOrientation,"landscape") == 0 )
+	      {
+		m_docPageSize.setLandscape();
+	      }
+	  }
+
 	return true;
 }
 
