@@ -61,6 +61,8 @@ dnl actually MacOS X build does not want some of them because of
 dnl precompiled Mac headers.... with Apple's GCC.
 if test "$PLATFORM" = "mac"; then
 	WARNING_CFLAGS=""
+elif test "$OS_NAME" = "FreeBSD"; then
+	WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
 else
 	WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe"
 fi
@@ -90,53 +92,8 @@ else
 fi
 AC_SUBST(ICONV_INCLUDES)
 
-if test "$PLATFORM" = "unix"; then
-	dnl ******************************
-	dnl glib checking
-	dnl ******************************
-	AC_MSG_CHECKING(for glib >= 1.2.0)
-	if glib-config --version > /dev/null 2>&1; then 
-	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`glib-config --version | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-	    if test "$vers" -ge 1002000; then
-	        AC_MSG_RESULT(found)
-	    else
-	        AC_MSG_ERROR(You need at least glib 1.2.0 for this version of AbiWord)
-	    fi
-	else
-	    AC_MSG_ERROR(Did not find glib installed)
-	fi
-
-	dnl AM_PATH_GLIB(1.2.0)
-	GMODULE_CFLAGS=`glib-config --cflags gmodule`
-	AC_SUBST(GMODULE_CFLAGS)
-	GMODULE_LIBS=`glib-config --libs gmodule`
-	AC_SUBST(GMODULE_LIBS)
-
-	dnl ******************************
-	dnl gtk+ checking
-	dnl ******************************
-	AC_MSG_CHECKING(for GTK >= 1.2.2)
-	if gtk-config --version > /dev/null 2>&1; then 
-	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`gtk-config --version | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-	    if test "$vers" -ge 1002002; then
-	        AC_MSG_RESULT(found)
-	    else
-	        AC_MSG_ERROR(You need at least GTK+ 1.2.2 for this version of AbiWord)
-	    fi
-	else
-	    AC_MSG_ERROR(Did not find GTK+ installed)
-	fi
-
-	dnl AM_PATH_GTK(1.2.2)
-	GTK_CFLAGS=`gtk-config --cflags`
-	AC_SUBST(GTK_CFLAGS)
-	GTK_LIBS=`gtk-config --libs`
-	AC_SUBST(GTK_LIBS)
-
-	dnl GNOME_INIT
-fi
+dnl locate glib and gtk
+ABI_GLIB_GTK
 
 ABIWORD_APP_NAME="AbiWord"
 AC_SUBST(ABIWORD_APP_NAME)
