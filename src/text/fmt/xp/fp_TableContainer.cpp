@@ -1442,10 +1442,14 @@ void fp_CellContainer::setLineMarkers(void)
 			}
 		}
 	}
-	if(getBottomAttach() < pTab->getNumRows())
+	UT_DEBUGMSG(("getBottomAttach %d \n",getBottomAttach()));
+	if(getBottomAttach() <= pTab->getNumRows())
 	{
 		m_iBotY = pTab->getYOfRow(getBottomAttach());
-		m_iBotY += pTab->getNthRow(getBottomAttach())->spacing/2;
+		if(getBottomAttach() < pTab->getNumRows()) 
+		{
+			m_iBotY += pTab->getNthRow(getBottomAttach())->spacing/2;
+		}
 	}
 	else
 	{
@@ -1459,7 +1463,7 @@ void fp_CellContainer::setLineMarkers(void)
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
 	
-	xxx_UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
+	UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
 
 }
 
@@ -1490,7 +1494,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iRightOffset(0),
 	  m_iTopOffset(0),
 	  m_iBottomOffset(0),
-	  m_iLineThickness(1)
+	  m_iLineThickness(1),
+	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
+	  m_iRowHeight(0)
 {
 }
 
@@ -1644,26 +1650,42 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
  */
 UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
 {
-	UT_sint32 maxY = 0;
 	UT_sint32 i =0;
 	UT_sint32 numCols = getNumCols();
-	if(row >= getNumRows())
+	if(row > getNumRows())
 	{
 		return 0;
 	}
+	UT_sint32 iYRow = 0;
 	for(i=0; i< numCols; i++)
 	{
-		fp_CellContainer * pCell = getCellAtRowColumn(row,i);
+		fp_CellContainer * pCell = getCellAtRowColumn(0,i);
 		if(pCell)
 		{
 			UT_sint32 Y = pCell->getY();
-			if(Y > maxY)
+			if(Y < iYRow)
 			{
-				maxY = Y;
+				iYRow = Y;
 			}
 		}
 	}
-	return maxY;
+	if(row == 0)
+	{
+		return iYRow;
+	}
+	xxx_UT_DEBUGMSG(("Looking for row %d numrows %d \n",row,getNumRows()));
+	for(i=0; i < row; i++)
+	{
+		iYRow += getNthRow(i)->allocation;
+		iYRow += getNthRow(i)->spacing;
+		xxx_UT_DEBUGMSG((" row %d Height here %d \n",i,iYRow));
+	}
+	if(row < getNumRows())
+	{
+		iYRow -= getNthRow(i-1)->spacing;
+		iYRow += getNthRow(i-1)->spacing/2;
+	}
+	return iYRow;
 }
 
 /*!
@@ -1739,6 +1761,122 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 	}
 	return NULL;
 }
+
+/* 
+ * This method looks up the various propeties of the table and returns the
+ * height of a given row. The input parameter iMeasHeight is the height 
+ * the row would have if it's height was automatically calculated from the
+ * height of the rows.
+ */
+UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
+{
+	fl_TableLayout * pTL = (fl_TableLayout *) getSectionLayout();
+	UT_ASSERT(pTL);
+	const UT_Vector * pVecRow = pTL->getVecRowProps();
+	if((UT_sint32) pVecRow->getItemCount() < (iRow + 1))
+	{
+		if(m_iRowHeight == 0)
+		{
+			return iMeasHeight;
+		}
+		if(m_iRowHeightType == FL_ROW_HEIGHT_EXACTLY)
+		{
+			return m_iRowHeight;
+		}
+		if(m_iRowHeightType == FL_ROW_HEIGHT_AT_LEAST)
+		{
+			if(iMeasHeight < m_iRowHeight)
+			{
+				return m_iRowHeight;
+			}
+			else
+			{
+				return iMeasHeight;
+			}
+		}
+		return iMeasHeight;
+	}
+	fl_RowProps * pRowProps = (fl_RowProps *) pVecRow->getNthItem(iRow);
+	UT_sint32 iRowHeight = pRowProps->m_iRowHeight;
+	FL_RowHeightType rowType = pRowProps->m_iRowHeightType;
+	if(rowType == FL_ROW_HEIGHT_EXACTLY )
+	{
+		return iRowHeight;
+	}
+	if(rowType == FL_ROW_HEIGHT_AT_LEAST)
+	{
+		if(iMeasHeight < iRowHeight)
+		{
+			return iRowHeight;
+		}
+		else
+		{
+			return iMeasHeight;
+		}
+	}
+	if(rowType == FL_ROW_HEIGHT_AUTO)
+	{
+		return iMeasHeight;
+	}
+//
+// Here is the row type is undefined
+//
+	if(m_iRowHeightType == FL_ROW_HEIGHT_EXACTLY)
+	{
+		if(m_iRowHeight == 0 )
+		{
+			if(iRowHeight > 0)
+			{
+				return iRowHeight;
+			}
+			else
+			{
+				return iMeasHeight;
+			}
+		}
+		else
+		{
+			return m_iRowHeight;
+		}
+	}
+	if(m_iRowHeightType == FL_ROW_HEIGHT_AT_LEAST)
+	{
+		if(m_iRowHeight > 0)
+		{
+			if(iMeasHeight < m_iRowHeight)
+			{
+				return m_iRowHeight;
+			}
+			else
+			{
+				return iMeasHeight;
+			}
+			return iMeasHeight;
+		}
+		if(iMeasHeight > iRowHeight)
+		{
+			return iMeasHeight;
+		}
+		else
+		{
+			return iRowHeight;
+		}
+	}
+	if(m_iRowHeightType == FL_ROW_HEIGHT_AUTO)
+	{
+		return iMeasHeight;
+	}
+//
+// Undefined on undefined with a defined height - assume AT_LEAST
+//
+	if(iMeasHeight > iRowHeight)
+	{
+		return iMeasHeight;
+	}
+	return iRowHeight;
+}
+
+
 /*!
   Find document position from X and Y coordinates
  \param  x X coordinate
@@ -3616,6 +3754,13 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	  
 	  for (row = 0; row < child->getTopAttach(); row++)
 	  {
+		  UT_sint32 iOldAlloc = getNthRow(row)->allocation;
+		  UT_sint32 iNewAlloc = getRowHeight(row,iOldAlloc);
+		  if(iNewAlloc > iOldAlloc)
+		  {
+			  iNewAlloc -= getNthRow(row)->spacing;
+		  }
+		  getNthRow(row)->allocation = iNewAlloc;
 		  y += getNthRow(row)->allocation;
 		  y += getNthRow(row)->spacing;
 		  xxx_UT_DEBUGMSG(("SEVIOR: Adding Height %d spacing is %d \n", getNthRow(row)->allocation,getNthRow(row)->spacing));
@@ -3705,16 +3850,25 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   {
 	  pRequisition->width += getNthCol(col)->spacing;
   }
+//  for (row = 0; row + 1 < m_iRows; row++)
+  for (row = 0; row < m_iRows; row++)
+  {
+	  UT_sint32 iOldReq = getNthRow(row)->requisition;
+	  UT_sint32 iNewReq = getRowHeight(row,iOldReq);
+	  if(iNewReq > iOldReq)
+	  {
+		  iNewReq -= getNthRow(row)->spacing;
+	  }
+	  getNthRow(row)->requisition = iNewReq;
+	  pRequisition->height += getNthRow(row)->spacing;
+
+	  xxx_UT_DEBUGMSG(("SEVIOR: requisition spacing 2 is %d \n", getNthRow(row)->spacing));
+	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height 2 is %d \n", pRequisition->height));
+  }
   for (row = 0; row < m_iRows; row++)
   {
 	  pRequisition->height += getNthRow(row)->requisition;
 	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height %d \n", pRequisition->height));
-  }
-  for (row = 0; row + 1 < m_iRows; row++)
-  {
-	  pRequisition->height += getNthRow(row)->spacing;
-	  xxx_UT_DEBUGMSG(("SEVIOR: requisition spacing 2 is %d \n", getNthRow(row)->spacing));
-	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height 2 is %d \n", pRequisition->height));
   }
   pRequisition->height += (UT_sint32) (2.0 * SCALE_TO_SCREEN*((double) m_iBorderWidth));
 

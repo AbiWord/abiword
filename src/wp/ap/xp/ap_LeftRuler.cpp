@@ -70,7 +70,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	s_iFixedHeight = _UL(32);
 	s_iFixedWidth = _UL(32);
 	m_lfi = NULL;
-	
+	m_draggingDocPos = 0;
 	// install top_ruler_prefs_listener as this lister for this func
 	pFrame->getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, (void *)this );
 }
@@ -385,11 +385,99 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		}
 		break;
 	case DW_CELLMARK:
-		{
-			UT_DEBUGMSG(("CellMark not handled yet \n"));
+	    {
+			UT_DEBUGMSG(("Handling CellMark \n"));
+/*
+   These will be heights applied to all rows.
+ 
+   The format of the string of Heights is:
+
+   table-row-heights:1.2in/3.0in/1.3in/;
+
+   So we read back in pszRowHeights
+   1.2in/3.0in/1.3in/
+
+   The "/" characters will be used to delineate different row entries.
+   if there are not enough heights defined for the entire table then the 
+   rows after the last defined height do not a fixed height.
+*/
+//
+// OK, strategy is to read in all the current row heights and only change
+// The height of the cell before the current marker unless the marker is the 
+// zeroth in which case we change first cell too..
+//
+// So new cell i height = mark of (i) - mark of (i-1)
+//
+			if(m_infoCache.m_vecTableRowInfo == NULL)
+			{
+				pView->getLeftRulerInfo(m_draggingDocPos,&m_infoCache);
+				if(m_infoCache.m_vecTableRowInfo == NULL)
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					m_draggingDocPos =0;
+					return;
+				}
+			}
+			UT_String sHeights;
+			double dHeight  =0;			
+			double dNewHeight  =0;
+			UT_sint32 iHeight = 0;
+			UT_sint32 posPrev =0;
+			UT_Rect rCell;
+			if(m_draggingCell == 0)
+			{
+				posPrev = m_draggingCenter -2;
+				_getCellMarkerRects(&m_infoCache, 0,rCell);
+				iHeight = rCell.top + rCell.height - posPrev;
+				dNewHeight  = tick.scalePixelDistanceToUnits(iHeight);
+			}
+			else
+			{
+				_getCellMarkerRects(&m_infoCache, m_draggingCell-1,rCell);
+				posPrev = rCell.top + 2;
+				iHeight = m_draggingCenter - posPrev;
+				dNewHeight  = tick.scalePixelDistanceToUnits(iHeight);
+			}
+//
+// Fill the heights string Now
+//
+			UT_uint32 i =0;
+			_getCellMarkerRects(&m_infoCache, i,rCell);
+			posPrev = rCell.top;
+			UT_DEBUGMSG(("Cell height set to %f for row %d  number item %d \n",dNewHeight,m_draggingCell,m_infoCache.m_vecTableRowInfo->getItemCount()));
+			
+			for(i=1;i<=m_infoCache.m_vecTableRowInfo->getItemCount();i++)
+			{
+				_getCellMarkerRects(&m_infoCache, i,rCell);
+				if(((m_draggingCell == 0) || (m_draggingCell == 1)) && i==1)
+				{
+					sHeights += m_pG->invertDimension(tick.dimType,dNewHeight);
+					sHeights += "/";
+					posPrev = rCell.top;
+					UT_DEBUGMSG(("new cell (2) height is %f set at i = %d \n",dNewHeight,i));
+				}
+				else if(m_draggingCell == (UT_sint32) i )
+				{
+					sHeights += m_pG->invertDimension(tick.dimType,dNewHeight);
+					sHeights += "/";
+					posPrev = rCell.top;
+					UT_DEBUGMSG(("new cell (3) height is %f set at i = %d \n",dNewHeight,i));
+				}
+				else
+				{
+					iHeight = rCell.top - posPrev;
+					posPrev = rCell.top;
+					dHeight  = tick.scalePixelDistanceToUnits(iHeight);
+					sHeights += m_pG->invertDimension(tick.dimType,dHeight);
+					sHeights += "/";
+				}
+			}
+			UT_DEBUGMSG(("cell marker string is %s \n",sHeights.c_str()));
+			const char * props[3] = {"table-row-heights",sHeights.c_str(),NULL};
+			pView->setTableFormat(props);
+			m_draggingDocPos =0;
 			return;
 		}
-		break;
 	}
 
 	properties[1] = m_pG->invertDimension(tick.dimType,dyrel);
@@ -486,7 +574,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 				m_draggingCell = i;
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 				m_draggingCenter = rCell.top +2;
-
+				m_draggingDocPos = pos;
 				return (UT_sint32)(m_iWidth/2);
 			}
 		}

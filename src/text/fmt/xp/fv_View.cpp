@@ -5499,7 +5499,7 @@ bool FV_View::setTableFormat(PT_DocPosition pos, const XML_Char * properties[])
 	_generalUpdate();
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
-	notifyListeners(AV_CHG_MOTION);
+	AV_View::notifyListeners(AV_CHG_MOTION);
 	return bRet;
 }
 
@@ -5908,7 +5908,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 		bool isFootnote = false;
 		xxx_UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
-		fp_Page * pPage =  pContainer->getPage();
+		fp_Page * pPage =  pRun->getLine()->getPage();
 		if(pPage == NULL)
 		{
 			pInfo->m_yPageStart = 0;

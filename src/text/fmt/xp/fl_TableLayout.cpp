@@ -85,8 +85,9 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iColSpacing(0),
 	  m_iRowSpacing(0),
 	  m_iLeftColPos(0),
-	  m_bRecursiveFormat(false)
-
+	  m_bRecursiveFormat(false),
+	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
+	  m_iRowHeight(0)
 {
 	UT_ASSERT(pLayout);
 	m_vecColProps.clear();
@@ -170,6 +171,8 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setTopOffset(m_iTopOffset);
 	pTab->setBottomOffset(m_iBottomOffset);
 	pTab->setLineThickness(m_iLineThickness);
+	pTab->setRowHeightType(m_iRowHeightType);
+	pTab->setRowHeight(m_iRowHeight);
 }
 
 
@@ -939,6 +942,113 @@ void fl_TableLayout::_lookupProperties(void)
 	{
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
 		m_vecColProps.clear();
+	}
+
+//
+// global row height type
+//
+	const char * pszRowHeightType = NULL;
+	const char * pszRowHeight = NULL;
+	pSectionAP->getProperty("table-row-height-type",(const XML_Char *&) pszRowHeightType);
+	if(pszRowHeightType && *pszRowHeightType)
+	{
+		if(strcmp(pszRowHeightType,"undefined") == 0)
+		{
+			m_iRowHeightType = 	FL_ROW_HEIGHT_NOT_DEFINED;
+		}
+		else if(strcmp(pszRowHeightType,"auto") == 0)
+		{
+			m_iRowHeightType = 	FL_ROW_HEIGHT_AUTO;
+		}
+		else if(strcmp(pszRowHeightType,"at-least") == 0)
+		{
+			m_iRowHeightType = 	FL_ROW_HEIGHT_AT_LEAST;
+		}
+		else if(strcmp(pszRowHeightType,"exactly") == 0)
+		{
+			m_iRowHeightType = 	FL_ROW_HEIGHT_EXACTLY;
+		}
+		else
+		{
+			m_iRowHeightType = 	FL_ROW_HEIGHT_NOT_DEFINED;
+		}
+	}
+	else
+	{
+		m_iRowHeightType = 	FL_ROW_HEIGHT_NOT_DEFINED;
+	}
+	pSectionAP->getProperty("table-row-height",(const XML_Char *&) pszRowHeight);
+	if(pszRowHeight && *pszRowHeight)
+	{
+		m_iRowHeight = atoi(pszRowHeight);
+	}
+	else
+	{
+		m_iRowHeight = 0;
+	}
+//
+// Positioned row controls
+//
+	const char * pszRowHeights = NULL;
+	pSectionAP->getProperty("table-row-heights", (const XML_Char *&)pszRowHeights);
+	if(pszRowHeights && *pszRowHeights)
+	{
+/*
+   These will be heights applied to all rows.
+ 
+   The format of the string of Heights is:
+
+   table-row-heights:1.2in/3.0in/1.3in/;
+
+   So we read back in pszRowHeights
+   1.2in/3.0in/1.3in/
+
+   The "/" characters will be used to delineate different row entries.
+   if there are not enough heights defined for the entire table then the 
+   rows after the last defined height do not a fixed height.
+*/
+		UT_DEBUGMSG(("Processing Row Height string %s \n",pszRowHeights));
+		UT_String sProps = pszRowHeights;
+		UT_sint32 sizes = sProps.size();
+		UT_sint32 i =0;
+		UT_sint32 j =0;
+		UT_sint32 iProp = 0;
+		fl_RowProps * pRowP = NULL;
+		while(i < sizes)
+		{
+			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if((j+1)>i && sProps[j] == '/')
+			{
+				UT_String sSub = sProps.substr(i,(j-i));
+				i = j + 1;
+				bool bNew = false;
+				if(iProp >= (UT_sint32) m_vecRowProps.getItemCount())
+				{
+					bNew = true;
+					pRowP = new fl_RowProps;
+				}
+				else
+				{
+					pRowP = (fl_RowProps *) m_vecRowProps.getNthItem(iProp);
+				}
+				pRowP->m_iRowHeight = m_pLayout->getGraphics()->convertDimension(sSub.c_str());
+				if(bNew)
+				{
+					m_vecRowProps.addItem((void *) pRowP);
+				}
+				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pRowP->m_iRowHeight));
+				iProp++;
+			}
+		}
+ 	}
+	else
+	{
+		UT_uint32 i = 0;
+		for(i=0; i< m_vecRowProps.getItemCount(); i++)
+		{
+			fl_RowProps * pRowP = (fl_RowProps *) m_vecRowProps.getNthItem(i);
+			pRowP->m_iRowHeight = 0;
+		}
 	}
 }
 

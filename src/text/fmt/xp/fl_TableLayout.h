@@ -43,6 +43,14 @@ enum  FL_TableJustification
     FL_TABLE_FULL
 };
 
+enum FL_RowHeightType
+{
+	FL_ROW_HEIGHT_NOT_DEFINED,
+	FL_ROW_HEIGHT_AUTO,
+	FL_ROW_HEIGHT_AT_LEAST,
+	FL_ROW_HEIGHT_EXACTLY
+};
+
 class fp_Page;
 class FL_DocLayout;
 class fl_Layout;
@@ -82,7 +90,16 @@ public:
 class fl_RowProps
 {
 public:
-	UT_sint32 m_iRowHeight;
+	fl_RowProps(void)
+	{
+		m_iRowHeight = 0;
+		m_iRowHeightType = FL_ROW_HEIGHT_NOT_DEFINED;
+	}
+	virtual ~fl_RowProps(void)
+	{
+	}
+	UT_sint32          m_iRowHeight;
+	FL_RowHeightType   m_iRowHeightType;
 };
 
 
@@ -222,6 +239,8 @@ private:
 	bool                   m_bRecursiveFormat;
 	UT_Vector              m_vecColProps;
 	UT_Vector              m_vecRowProps;
+	FL_RowHeightType       m_iRowHeightType;
+	UT_sint32              m_iRowHeight;
 };
 
 

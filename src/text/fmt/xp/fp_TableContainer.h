@@ -60,6 +60,7 @@
 #include "fp_ContainerObject.h"
 #include "fp_Column.h"
 #include "gr_Graphics.h"
+#include "fl_TableLayout.h"
 
 class fl_TableLayout;
 
@@ -251,16 +252,18 @@ void setTopThickness(UT_uint32 i) {
 UT_sint32 getRightThickness(void) const {
 	return m_iRightThickness;
 	}
-void setRightThickness(UT_uint32 i) {
-	m_iRightThickness = i;
-	}
-UT_sint32 getBottomThickness(void) const {
-	return m_iBottomThickness;
-	}
-void setBottomThickness(UT_uint32 i) {
-	m_iBottomThickness = i;
-	}
-			
+void setRightThickness(UT_uint32 i) 
+	 {
+		 m_iRightThickness = i;
+	 }
+UT_sint32 getBottomThickness(void) const 
+	 {
+		 return m_iBottomThickness;
+	 }
+void setBottomThickness(UT_uint32 i) 
+     {
+		 m_iBottomThickness = i;
+	 }
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -451,6 +454,7 @@ public:
 	void                adjustBrokenTables(void);
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
+	UT_sint32           getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight);
 	void                setRedrawLines(void)
 		{ m_bRedrawLines = true;}
 	bool                doRedrawLines(void) const
@@ -463,6 +467,14 @@ public:
 		{ m_iBrokenTop = iTop;}
 	void                    setBrokenBot(UT_sint32 iBot) 
 		{ m_iBrokenBottom = iBot;}
+	void setRowHeightType(FL_RowHeightType iType)
+		{
+	      m_iRowHeightType = iType;
+		}		
+	void setRowHeight(UT_sint32 iHeight)
+		{
+	      m_iRowHeight = iHeight;
+		}		
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -516,6 +528,12 @@ private:
 	UT_sint32               m_iTopOffset;
 	UT_sint32               m_iBottomOffset;
 	UT_sint32               m_iLineThickness;
+
+// Global row height type
+	FL_RowHeightType    m_iRowHeightType;
+
+// Global row height
+	UT_sint32           m_iRowHeight;
 };
 
 #endif /* TABLECONTAINER_H */

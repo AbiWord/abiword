@@ -909,11 +909,11 @@ void fp_Page::_reformatColumns(void)
 			}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			UT_sint32 iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
-			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
+			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)  || (countFootnoteContainers() > 0) ||  (pNext->countFootnoteContainers() > 0);
 			if(!bIsTable && (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - getFootnoteHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 #else
 			UT_sint32 iYNext = pFirstNextContainer->getHeight();
-			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
+			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)  || (countFootnoteContainers() > 0) || (pNext->countFootnoteContainers() > 0);
 			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - getFootnoteHeight() - iBottomMargin))
 #endif
 			{

@@ -208,6 +208,7 @@ private:
 	bool				m_bEventIgnored;
 	UT_Rect             m_draggingRect;
 	UT_sint32           m_minPageLength;
+	PT_DocPosition       m_draggingDocPos;
 };
 
 #endif /* AP_LEFTRULER_H */
