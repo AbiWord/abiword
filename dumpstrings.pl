@@ -33,9 +33,19 @@ foreach my $file (qw(./src/wp/ap/xp/ap_String_Id.h ./src/af/xap/xp/xap_String_Id
 ## Read in each of the other language files 
 ## and process them apropriatly
 $stringsdir = "./user/wp/strings";
-opendir(DIR, $stringsdir) || die "can't opendir $stringsdir: $!";
-my @lang = grep { s/\.strings//  } readdir(DIR);
-closedir DIR;
+my @lang;
+if(scalar @ARGV) {
+  @lang = @ARGV;
+} else {
+  opendir(DIR, $stringsdir) || die "can't opendir $stringsdir: $!";
+  @lang = grep { s/\.strings//  } readdir(DIR);
+  closedir DIR;
+}
+
+#$stringsdir = "./user/wp/strings";
+#opendir(DIR, $stringsdir) || die "can't opendir $stringsdir: $!";
+#my @lang = grep { s/\.strings//  } readdir(DIR);
+#closedir DIR;
 
  foreach my $lang (@lang) {
   open(STRINGS, "< $stringsdir/$lang.strings") 
