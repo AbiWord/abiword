@@ -419,6 +419,17 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 	return;
 }
 
+UT_Bool AP_TopRuler::_isInBottomBoxOfLeftIndent(UT_uint32 y)
+{
+	// return true if in the lower box of the left-indent pair
+	
+	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_uint32 yBottom = yTop + yBar;
+
+	return (y > yBottom);
+}
+
 void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * pInfo,
 										   UT_sint32 leftCenter,
 										   UT_sint32 rightCenter,
@@ -453,6 +464,21 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 							 leftCenter, rightCenter, firstLineCenter,
 							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
 
+	if (m_draggingWhat == DW_LEFTINDENTWITHFIRST)
+	{
+		_drawLeftIndentMarker(rLeftIndent, UT_FALSE); // draw hollow version at old location
+		_drawFirstLineIndentMarker(rFirstLineIndent, UT_FALSE);
+		_drawLeftIndentMarker(m_draggingRect, UT_TRUE);	// draw sculpted version at mouse
+		_drawFirstLineIndentMarker(m_dragging2Rect, UT_TRUE);
+	}
+	else if (bDrawAll)
+	{
+		if (!pClipRect || rLeftIndent.intersectsRect(pClipRect))
+			_drawLeftIndentMarker(rLeftIndent, UT_TRUE); // draw sculpted version at current location		
+		if (!pClipRect || rFirstLineIndent.intersectsRect(pClipRect))
+			_drawFirstLineIndentMarker(rFirstLineIndent, UT_TRUE);
+	}
+	
 	if (m_draggingWhat == DW_LEFTINDENT)
 	{
 		_drawLeftIndentMarker(rLeftIndent, UT_FALSE); // draw hollow version at old location
@@ -743,7 +769,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	{
 		//UT_DEBUGMSG(("hit left indent block\n"));
 		m_bValidMouseClick = UT_TRUE;
-		m_draggingWhat = DW_LEFTINDENT;
+		m_draggingWhat = ((_isInBottomBoxOfLeftIndent(y)) ? DW_LEFTINDENTWITHFIRST : DW_LEFTINDENT);
 		m_bBeforeFirstMotion = UT_TRUE;
 		return;
 	}
@@ -843,6 +869,45 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		
 	case DW_LEFTINDENT:
 		{
+			// we are dragging only the left-indent and not the first-line.
+			// so, when we drop the left-indent, we need to reset the first-line
+			// so that the absolute position of the first-line has not changed.
+			// first-line is stored in relative terms, so we need to update it.
+
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+			double dxrel  = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
+
+			UT_sint32 xdelta = (m_draggingCenter-xAbsLeft) - m_infoCache.m_xrLeftIndent;
+			double dxrel2 = _scalePixelDistanceToUnits(m_infoCache.m_xrFirstLineIndent - xdelta,tick);
+
+			// invertDimension() returns pointer to static buffer, so
+			// we need to copy these for later use.
+			
+			char buf1[50];
+			strcpy(buf1,m_pG->invertDimension(tick.dimType,dxrel));
+			char buf2[50];
+			strcpy(buf2,m_pG->invertDimension(tick.dimType,dxrel2));
+			
+			const XML_Char * properties[5];
+			properties[0] = "margin-left";
+			properties[1] = buf1;
+			properties[2] = "text-indent";
+			properties[3] = buf2;
+			properties[4] = 0;
+			UT_DEBUGMSG(("TopRuler: LeftIndent [%s] TextIndent [%s]\n",
+						 properties[1],properties[3]));
+
+			m_draggingWhat = DW_NOTHING;
+			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+		}
+		return;
+
+	case DW_LEFTINDENTWITHFIRST:
+		{
+			// we are dragging both the left-indent and first-line in sync
+			// so that we do not change the first-line-indent relative to
+			// the paragraph.  since first-line-indent is stored in the
+			// document in relative coordinates, we don't need to do anything.
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
 
@@ -964,6 +1029,12 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 		
 	case DW_LEFTINDENT:
 		{
+			// we are dragging the left-indent box **without** the
+			// first-line-indent.  this keeps the same absolute
+			// location for the first-line, but means that we need
+			// to update it (since it is stored in relative to the
+			// paragraph in the document).
+			
 			// TODO what upper/lower bound should we place on this ?
 			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
@@ -977,6 +1048,39 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getParagraphMarkerRects(&m_infoCache,m_draggingCenter,0,0,&m_draggingRect,NULL,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
+			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+		}
+		m_bBeforeFirstMotion = UT_FALSE;
+		return;
+		
+	case DW_LEFTINDENTWITHFIRST:
+		{
+			// we are dragging the left-indent box with the
+			// first-line-indent in sync -- this keeps a constant
+			// first-line-indent (since it is stored in relative
+			// terms.
+			
+			// TODO what upper/lower bound should we place on this ?
+			
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
+			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
+			UT_sint32 xgridTagAlong = xgrid + m_infoCache.m_xrFirstLineIndent;
+			double dgrid = _scalePixelDistanceToUnits(xrel,tick);
+			UT_DEBUGMSG(("SettingLeftIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+			UT_sint32 oldDraggingCenter = m_draggingCenter;
+			UT_Rect oldDraggingRect = m_draggingRect;
+			UT_Rect oldDragging2Rect = m_dragging2Rect;
+			m_draggingCenter  = xAbsLeft + xgrid;
+			m_dragging2Center = xAbsLeft + xgridTagAlong;
+			_getParagraphMarkerRects(&m_infoCache,
+									 m_draggingCenter,0,m_dragging2Center,
+									 &m_draggingRect,NULL,&m_dragging2Rect);
+			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
+			{
+				draw(&oldDraggingRect,&m_infoCache);
+				draw(&oldDragging2Rect,&m_infoCache);
+			}
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;

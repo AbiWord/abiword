@@ -54,7 +54,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	if (e->state & GDK_MOD1_MASK)
 		state |= EV_EMS_ALT;
 
-	UT_DEBUGMSG(("KeyPressEvent: keyval=%04lx state=%04lx\n",e->keyval,state));
+	//UT_DEBUGMSG(("KeyPressEvent: keyval=%04lx state=%04lx\n",e->keyval,state));
 	
 	if (s_isVirtualKeyCode(e->keyval))
 	{

@@ -154,6 +154,7 @@ protected:
 	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawRightIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawFirstLineIndentMarker(UT_Rect & r, UT_Bool bFilled);
+	UT_Bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 		
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
@@ -174,12 +175,15 @@ protected:
 								 DW_COLUMNGAP,
 								 DW_LEFTINDENT,
 								 DW_RIGHTINDENT,
-								 DW_FIRSTLINEINDENT 
+								 DW_FIRSTLINEINDENT,
+								 DW_LEFTINDENTWITHFIRST
 	} DraggingWhat;
 
 	DraggingWhat		m_draggingWhat;
-	UT_sint32			m_draggingCenter;
-	UT_Rect				m_draggingRect;
+	UT_sint32			m_draggingCenter; /* center of primary thing being dragged */
+	UT_Rect				m_draggingRect;	/* rectangle of primary thing being dragged */
+	UT_sint32			m_dragging2Center; /* center of drag-along */
+	UT_Rect				m_dragging2Rect; /* rect of drag-along */
 	UT_Bool				m_bBeforeFirstMotion;
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
