@@ -169,6 +169,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 				delete [] s_pJustify;  s_pJustify  = NULL;
 				delete [] s_pLogAttr;  s_pLogAttr  = NULL;
 				delete [] s_pChars;    s_pChars    = NULL;
+				delete [] s_pGoffsets; s_pGoffsets = NULL;
 				s_iAdvancesSize = 0;
 
 				s_pOwnerDraw = NULL;
@@ -201,7 +202,11 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 			if(s_pChars) { delete [] s_pChars; s_pChars = NULL; }
 			s_pChars    = new WCHAR[iSize];
 
-			UT_return_val_if_fail(s_pAdvances && s_pJustifiedAdvances && s_pJustify && s_pLogAttr && s_pChars, false);
+			if(s_pGoffsets) { delete [] s_pGoffsets; s_pGoffsets = NULL; }
+			s_pGoffsets  = new GOFFSET[iSize];
+			
+			UT_return_val_if_fail(s_pAdvances && s_pJustifiedAdvances && s_pJustify &&
+								  s_pLogAttr && s_pChars && s_pGoffsets, false);
 
 			s_iAdvancesSize = iSize;
 			
@@ -245,6 +250,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	static int *     s_pJustify;
 	static SCRIPT_LOGATTR * s_pLogAttr;
 	static WCHAR *   s_pChars;
+	static GOFFSET * s_pGoffsets;
 	
 	// static buffer ownerhip: we use static buffers to store various positioning information; the
 	// following members identify the instance that last modified these buffers
@@ -265,6 +271,7 @@ WCHAR *         GR_Win32USPRenderInfo::s_pChars             = NULL;
 GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerDraw         = NULL;
 GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerCP           = NULL;
 GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = NULL;
+GOFFSET *       GR_Win32USPRenderInfo::s_pGoffsets          = NULL;
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
@@ -1158,6 +1165,12 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 		iNextAdvance = (UT_sint32)((double)_tduX(iWidth) * m_fXYRatio);
 		RI.s_pAdvances[i] = iNextAdvance - iAdvance;
 		iAdvance = iNextAdvance;
+
+		// I use tdu here, not _tduX, _tduY, because the goffsets are adjustments relative
+		// to the x,y offsets of the character
+		RI.s_pGoffsets[i].du = (long)((double)tdu(RI.m_pGoffsets[i].du) * m_fXYRatio);
+		RI.s_pGoffsets[i].dv = tdu(RI.m_pGoffsets[i].dv);
+		
 		
 		if(RI.m_pJustify)
 		{
@@ -1255,7 +1268,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 								  iGlyphCount,
 								  RI.s_pAdvances + iGlyphOffset,
 								  pJustify,
-								  RI.m_pGoffsets);
+								  RI.s_pGoffsets + iGlyphOffset);
 
 	pItem->m_si.a.eScript = eScript;
 	//RI.m_bRejustify = false; -- the docs are misleading; rejustification is always needed
@@ -1335,8 +1348,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	if(!RI.m_pAdvances)
 		RI.m_pAdvances = new int[RI.m_iIndicesSize];
 
-		if(!RI.m_pGoffsets)
-			RI.m_pGoffsets = new GOFFSET[RI.m_iIndicesSize];
+	if(!RI.m_pGoffsets)
+		RI.m_pGoffsets = new GOFFSET[RI.m_iIndicesSize];
 
 	UT_uint32 iZoom = getZoomPercentage();
 	
