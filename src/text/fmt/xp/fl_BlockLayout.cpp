@@ -6591,6 +6591,13 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 			_delete(blockOffset, 1);
 			break;
 		}
+		case PTO_Math:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Math:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset, 1);
+			break;
+		}
 
 		case PTO_Field:
 		{
@@ -6740,6 +6747,42 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 					pFieldRun->clearScreen();
 				}
 				pFieldRun->lookupProperties();
+
+				goto done;
+			}
+			pRun = pRun->getNextRun();
+		}
+
+		return false;
+	}
+	case PTO_Math:
+	{
+		UT_DEBUGMSG(("Edit:ChangeObject:Math:\n"));
+		blockOffset = pcroc->getBlockOffset();
+		fp_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			if (pRun->getBlockOffset() == blockOffset && (pRun->getType()!= FPRUN_FMTMARK))
+			{
+				if(pRun->getType()!= FPRUN_MATH)
+				{
+					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
+					while(pRun && pRun->getType() == FPRUN_FMTMARK)
+					{
+						pRun = pRun->getNextRun();
+					}
+				}
+				if(!pRun || pRun->getType() != FPRUN_MATH)
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
+				}
+				fp_MathRun* pMathRun = static_cast<fp_MathRun*>(pRun);
+				if(!isHdrFtr())
+				{
+					pMathRun->clearScreen();
+				}
+				pMathRun->lookupProperties();
 
 				goto done;
 			}

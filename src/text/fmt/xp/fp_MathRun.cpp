@@ -308,11 +308,43 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
 
+	// need to draw to the full height of line to join with line above.
+	UT_sint32 xoff= 0, yoff=0, DA_xoff = pDA->xoff;
+
+	getLine()->getScreenOffsets(this, xoff, yoff);
+
+	// need to clear full height of line, in case we had a selection
+
+	UT_sint32 iFillHeight = getLine()->getHeight();
+	UT_sint32 iFillTop = pDA->yoff - getLine()->getAscent();
+
+	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+	UT_uint32 iPoint = pView->getPoint();
+
+	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+
+	UT_ASSERT(iSel1 <= iSel2);
+
+	UT_uint32 iRunBase = getBlock()->getPosition() + getOffsetFirstVis();
+
 	// Fill with background, then redraw.
 
 	UT_sint32 iLineHeight = getLine()->getHeight();
-	Fill(getGraphics(),pDA->xoff, pDA->yoff, getWidth(), iLineHeight);
+	GR_Painter painter(pG);
+	if ( isInSelectedTOC() ||
+	    /* pView->getFocus()!=AV_FOCUS_NONE && */
+		(iSel1 <= iRunBase)
+		&& (iSel2 > iRunBase)
+		)
+	{
+		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 
+	}
+	else
+	{
+		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+	}
 	scaled x = getAbiContext()->fromAbiX(-pDA->xoff);
 	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff); // should be fromAbiY()
 	m_pMathView->render(*getAbiContext(), x, y);

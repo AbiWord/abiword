@@ -4043,12 +4043,16 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
  */
 bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
 {
-	const XML_Char * atts[5]={"dataid",NULL,PT_STYLE_ATTRIBUTE_NAME,NULL,NULL};
 
+	const XML_Char * atts[5]={"dataid",NULL,NULL,NULL,NULL};
 	atts[1] = static_cast<const XML_Char *>(szFileName);
-	const XML_Char *cur_style;
+	const XML_Char *cur_style = NULL;
 	getStyle(&cur_style);
-	atts[3] = cur_style;
+	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
+	{
+		atts[2] = PT_STYLE_ATTRIBUTE_NAME;
+		atts[3] = cur_style;
+	}
 	bool bDidGlob = false;
 	const XML_Char ** props = NULL;
 
