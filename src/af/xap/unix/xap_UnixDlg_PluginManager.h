@@ -39,7 +39,8 @@ public:
 
 	void event_DeactivateAll ();
 	void event_Deactivate ();
-	void event_Load();
+	void event_Load ();
+	void event_Select1 ();
 
 protected:
 	GtkWidget * m_windowMain;
@@ -49,6 +50,8 @@ protected:
 
 private:
 	void _refreshAll ();
+	void _refreshTab1 ();
+	void _refreshTab2 ();
 
 	GtkWidget * m_clist;
 	GtkWidget * m_name;

@@ -22,7 +22,6 @@
 
 #include "ut_vector.h"
 #include "ut_assert.h"
-#include "ut_debugmsg.h"
 
 XAP_Dialog_PluginManager::XAP_Dialog_PluginManager (XAP_DialogFactory * pDlgFactory, 
 													XAP_Dialog_Id id)
@@ -55,12 +54,8 @@ bool XAP_Dialog_PluginManager::deactivateAllPlugins () const
 
 	UT_uint32 size = pVec->size();
 
-	UT_DEBUGMSG(("DOM: #plugins is %d\n", size));
-
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		UT_DEBUGMSG(("DOM: unloading plugin %d\n", i));
-
 		XAP_Module * pMod = (XAP_Module *)(pVec->getNthItem (i));
 
 		if (!pMod)

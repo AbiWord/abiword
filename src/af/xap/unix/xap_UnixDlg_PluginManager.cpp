@@ -44,15 +44,9 @@ static void _errorMessage (XAP_Frame * pFrame, const char * msg)
 {
 	// just a little simple error message box
 
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *) pFrame->getDialogFactory();
-
-	XAP_Dialog_MessageBox * pDialog = (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT (pDialog);
-	
-	pDialog->setButtons (XAP_Dialog_MessageBox::b_O);
-	pDialog->setMessage (msg);
-	pDialog->runModal (pFrame);
+	pFrame->showMessageBox (msg,
+							XAP_Dialog_MessageBox::b_O,
+							XAP_Dialog_MessageBox::a_OK);
 }
 
 /*****************************************************************/
@@ -80,15 +74,12 @@ XAP_UnixDialog_PluginManager::~XAP_UnixDialog_PluginManager(void)
 
 void XAP_UnixDialog_PluginManager::event_DeactivateAll ()
 {
-	UT_DEBUGMSG(("DOM: event_DeactivateAll()\n"));
 	deactivateAllPlugins ();
 	_refreshAll ();
 }
 
 void XAP_UnixDialog_PluginManager::event_Deactivate ()
 {
-	UT_DEBUGMSG(("DOM: event_Deactivate()\n"));
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	XAP_Module * pModule = 0;
@@ -132,8 +123,6 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 
 void XAP_UnixDialog_PluginManager::event_Load ()
 {
-	UT_DEBUGMSG(("DOM: event_Load()\n"));
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	XAP_DialogFactory * pDialogFactory
@@ -175,8 +164,6 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 		const char * szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
 		{
-			UT_DEBUGMSG(("DOM: about to load plugin '%s'\n",
-						 szResultPathname));
 			if (activatePlugin (szResultPathname))
 			{
 				// worked!
@@ -198,7 +185,24 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	pDialogFactory->releaseDialog(pDialog);
 }
 
+void XAP_UnixDialog_PluginManager::event_Select1 ()
+{
+	_refreshTab2 ();
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 void XAP_UnixDialog_PluginManager::_refreshAll ()
+{
+	_refreshTab1();
+
+	gtk_clist_select_row (GTK_CLIST(m_clist), 0, 0);
+
+	_refreshTab2();
+}
+
+void XAP_UnixDialog_PluginManager::_refreshTab1 ()
 {
 	gchar * text[2] = {NULL, NULL};
 	XAP_Module * pModule = 0;
@@ -209,8 +213,6 @@ void XAP_UnixDialog_PluginManager::_refreshAll ()
 	
 	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
 
-	UT_DEBUGMSG(("DOM: _refresh for %d names\n", pVec->size()));
-
 	for (UT_uint32 i = 0; i < pVec->size(); i++)
 	{
 		pModule = (XAP_Module *)pVec->getNthItem (i);
@@ -219,7 +221,10 @@ void XAP_UnixDialog_PluginManager::_refreshAll ()
 	}
 
 	gtk_clist_thaw (GTK_CLIST (m_clist));
+}
 
+void XAP_UnixDialog_PluginManager::_refreshTab2 ()
+{
 	gint txt_len = gtk_text_get_length (GTK_TEXT(m_desc));
 	gint txt_pos = 0;
 	if (txt_len > 0) {
@@ -227,7 +232,7 @@ void XAP_UnixDialog_PluginManager::_refreshAll ()
 								  txt_len);
 	}
 
-	pModule = 0;
+	XAP_Module * pModule = 0;
 	GList * selectedRow = 0;
 	selectedRow = GTK_CLIST(m_clist)->selection;
 	if (selectedRow)
@@ -262,9 +267,6 @@ void XAP_UnixDialog_PluginManager::_refreshAll ()
 							  desc,
 							  strlen (desc),
 							  &txt_pos);
-
-	// select the 1st row
-	gtk_clist_select_row(GTK_CLIST(m_clist), 0, 0);
 }
 
 /*****************************************************************/
@@ -305,6 +307,15 @@ static void s_load_clicked (GtkWidget * w,
 {
 	UT_ASSERT (dlg);
 	dlg->event_Load ();
+}
+
+static void s_clist_selected (GtkWidget * w,
+							  gint /* row */,
+							  gint /* column */,
+							  GdkEventButton * /* event */,
+							  XAP_UnixDialog_PluginManager * dlg)
+{
+	dlg->event_Select1 ();
 }
 
 /*****************************************************************/
@@ -520,6 +531,10 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
 
 	gtk_signal_connect (GTK_OBJECT(btnInstall), "clicked",
 						GTK_SIGNAL_FUNC(s_load_clicked), 
+						(gpointer)this);
+
+	gtk_signal_connect (GTK_OBJECT(clistPlugins), "select_row",
+						GTK_SIGNAL_FUNC(s_clist_selected),
 						(gpointer)this);
 
 	// assign pointers to important widgets

@@ -30,11 +30,11 @@ class XAP_ModuleManager
 {
 	friend class XAP_Module;
 
-protected:
+private:
 	XAP_ModuleManager ();
-	~XAP_ModuleManager ();
 
 public:
+	~XAP_ModuleManager (); // grrr
 
 	static XAP_ModuleManager & instance ();
 
