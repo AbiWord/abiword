@@ -46,9 +46,7 @@ LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 
 ABI_APPLIBS=		$(LoadOrder)
 ABI_LIBS=		z
-
-ABI_APPLIBS+=		$(LoadOrder) $(LoadOrder)
-ABI_LIBS+=		
+ABI_APPLIBDEP=		$(LoadOrder)
 
 TARGETS=		$(PROGRAM)
 
