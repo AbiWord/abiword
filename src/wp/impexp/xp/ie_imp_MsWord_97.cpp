@@ -392,7 +392,9 @@ s_mapPageIdToString (UT_uint16 id)
 
 	switch (id)
 	{
-		case 0:  return "Letter";
+		case 0:  
+		case 1:
+			return "Letter";
 		case 5:  return "Legal";
 		case 7:  return NULL; //"Executive";
 		case 9:  return "A4";
