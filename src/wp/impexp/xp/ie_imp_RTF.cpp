@@ -1177,7 +1177,7 @@ RTFProps_ImageProps::RTFProps_ImageProps()
 {
 	sizeType = ipstNone;
 	wGoal = hGoal = width = height = 0;
-	scaleX = scaleY = 0;
+	scaleX = scaleY = 100;
 };
 
 
@@ -1217,6 +1217,7 @@ RTFStateStore::RTFStateStore()
 	m_unicodeInAlternate = 0;
 }
 
+#if 0
 static double _twips2inch (const char * szTwips)
 {
 	if (!szTwips)
@@ -1226,6 +1227,7 @@ static double _twips2inch (const char * szTwips)
 
 	return (twips/720);
 }
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -1281,10 +1283,10 @@ IE_Imp_RTF::~IE_Imp_RTF()
 
 	size = m_styleTable.getItemCount();
 	for (i = 0; i < size; i++)
-		{
-			char * pItem = (char *) m_styleTable.getNthItem(i);
-			FREEP(pItem);
-		}
+	{
+		char * pItem = (char *) m_styleTable.getNthItem(i);
+		FREEP(pItem);
+	}
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
@@ -1996,6 +1998,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name,
 	else
 	{
 		// if we're not inserting a graphic, we should destroy the buffer
+		UT_DEBUGMSG (("no translator found: %d\n", error));
 		delete pictData;
 	}
 
@@ -2211,7 +2214,7 @@ bool IE_Imp_RTF::HandlePicture()
 				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
 					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale)) 
 				{
-					if (parameterUsed) 
+					if ((parameterUsed) && (parameter != 100))
 					{
 						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
 						imageProps.scaleX = parameter;
@@ -2223,7 +2226,7 @@ bool IE_Imp_RTF::HandlePicture()
 				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
 					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale)) 
 				{
-					if (parameterUsed) 
+					if ((parameterUsed) && (parameter != 100))
 					{
 						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
 						imageProps.scaleY = parameter;
