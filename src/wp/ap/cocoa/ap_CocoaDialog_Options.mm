@@ -118,29 +118,7 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
     _populateWindowData();
 	_initCocoaOnlyPrefs();
 
-    do {
-		[NSApp runModalForWindow:win];
-
-		switch ( m_answer )
-		{
-		case AP_Dialog_Options::a_OK:
-			_storeWindowData();
-			break;
-	
-		case AP_Dialog_Options::a_APPLY:
-			UT_DEBUGMSG(("Applying changes\n"));
-			_storeWindowData();
-			break;
-	
-		case AP_Dialog_Options::a_CANCEL:
-			break;
-	
-		default:
-			UT_ASSERT_NOT_REACHED();
-			break;
-		};
-
-    } while ( m_answer == AP_Dialog_Options::a_APPLY );
+	[NSApp runModalForWindow:win];
 
 	[m_dlg close];		// close before release because of the NSTableView data source
 	[m_dlg release];
@@ -149,18 +127,6 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 
 #if 0
-
-void AP_CocoaDialog_Options::event_clistClicked (int row, int col)
-{
-  GtkCList * clist = GTK_CLIST (m_toolbarClist);
-  bool b = (bool)GPOINTER_TO_INT(gtk_clist_get_row_data (clist, row));
-
-  g_object_set_user_data (G_OBJECT(m_checkbuttonViewShowTB), GINT_TO_POINTER(row));
-  xxx_UT_DEBUGMSG (("DOM: setting row %d to %d\n", row, b));
-
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonViewShowTB), (b ? TRUE : FALSE));
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonViewHideTB), (b ? FALSE : TRUE));
-}
 
 ///
 /// All this color selection code is stolen from the ap_CocoaDialog_Background
@@ -289,6 +255,7 @@ void AP_CocoaDialog_Options::event_AllowTransparentColor(void)
 void AP_CocoaDialog_Options::event_OK(void)
 {
     m_answer = AP_Dialog_Options::a_OK;
+	_storeWindowData();
 	[NSApp stopModal];
 }
 
@@ -301,7 +268,7 @@ void AP_CocoaDialog_Options::event_Cancel(void)
 void AP_CocoaDialog_Options::event_Apply(void)
 {
     m_answer = AP_Dialog_Options::a_APPLY;
-	[NSApp stopModal];
+	_storeWindowData();
 }
 
 /*!
@@ -478,49 +445,6 @@ void    AP_CocoaDialog_Options::_setNotebookPageNum(int pn)
 	dlg->event_AllowTransparentColor();
 }
 
-
-// these function will allow multiple widget to tie into the same logic
-// function (at the AP level) to enable/disable stuff
-/*static*/ void AP_CocoaDialog_Options::s_checkbutton_toggle( GtkWidget *w, gpointer data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(dlg);
-	UT_ASSERT(w && GTK_IS_WIDGET(w));
-
-	int i = (int) g_object_get_data( G_OBJECT(w), "tControl" );
-	UT_DEBUGMSG(("s_checkbutton_toggle: control id = %d\n", i));
-	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
-}
-
-/*static*/ gint AP_CocoaDialog_Options::s_menu_item_activate(GtkWidget * widget, gpointer data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-
-	UT_ASSERT(widget && dlg);
-
-	GtkWidget *option_menu = (GtkWidget *)g_object_get_data(G_OBJECT(widget),
-												 WIDGET_MENU_OPTION_PTR);
-	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
-
-	gpointer p = g_object_get_data( G_OBJECT(widget),
-												WIDGET_MENU_VALUE_TAG);
-
-	g_object_set_data( G_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
-
-	//TODO: This code is now shared between RulerUnits and DefaultPaperSize
-	//so anyone who wants to resurect this msg. needs to add a conditional
-	//UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
-
-	return TRUE;
-}
-
-/* static */ void AP_CocoaDialog_Options::s_clist_clicked (GtkWidget *w, gint row, gint col,
-							  GdkEvent *evt, gpointer d)
-{
-  AP_CocoaDialog_Options * dlg = static_cast <AP_CocoaDialog_Options *>(d);
-  dlg->event_clistClicked (row, col);
-}
-
 #endif
 
 void AP_CocoaDialog_Options::_initCocoaOnlyPrefs()
@@ -596,12 +520,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	LocalizeControl(m_spellIgnoreUppercaseBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellUppercase);
 	LocalizeControl(m_spellIgnoreWordsWithNumBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellNumbers);
 	LocalizeControl(m_spellIgnoreFileAddrBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellInternet);
-	LocalizeControl(m_spellIgnoredWordLabel, pSS, AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord);
-	LocalizeControl(m_spellDictionaryPopup, pSS, AP_STRING_ID_DLG_Options_Label_CustomDict);
-	LocalizeControl(m_spellCustomDictLabel, pSS, AP_STRING_ID_DLG_Options_Label_SpellCustomDict);
-	LocalizeControl(m_spellDictEditBtn, pSS, AP_STRING_ID_DLG_Options_Btn_CustomDict);
-	LocalizeControl(m_spellIgnoreEditBtn, pSS, AP_STRING_ID_DLG_Options_Btn_IgnoreEdit);
-	LocalizeControl(m_spellResetDictBtn, pSS, AP_STRING_ID_DLG_Options_Btn_IgnoreReset);
 	// layout tab
 	LocalizeControl(m_layoutShowHideBox, pSS, AP_STRING_ID_DLG_Options_Label_ViewShowHide);
 	LocalizeControl(m_layoutRulerBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewRuler);
@@ -612,30 +530,12 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	LocalizeControl(m_layoutHiddenTextBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewHiddenText);
 	LocalizeControl(m_layoutInvisbleMarksBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewUnprintable);
 	// ruler unit menu
-	NSMenuItem* item;
-	NSMenu* menu;
 	[m_layoutUnitsPopup removeAllItems];
-	menu = [m_layoutUnitsPopup menu];
-	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_inch)
-									action:nil keyEquivalent:@""];
-	[item setTag:DIM_IN];
-	[menu addItem:item];
-	[item release];
-	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_cm)
-									action:nil keyEquivalent:@""];
-	[item setTag:DIM_CM];
-	[menu addItem:item];
-	[item release];
-	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_points)
-									action:nil keyEquivalent:@""];
-	[item setTag:DIM_PT];
-	[menu addItem:item];
-	[item release];
-	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_pica)
-									action:nil keyEquivalent:@""];
-	[item setTag:DIM_PI];
-	[menu addItem:item];
-	[item release];
+	AppendLocalizedMenuItem(m_layoutUnitsPopup, pSS, XAP_STRING_ID_DLG_Unit_inch, DIM_IN);
+	AppendLocalizedMenuItem(m_layoutUnitsPopup, pSS, XAP_STRING_ID_DLG_Unit_cm, DIM_CM);
+	AppendLocalizedMenuItem(m_layoutUnitsPopup, pSS, XAP_STRING_ID_DLG_Unit_points, DIM_PT);
+	AppendLocalizedMenuItem(m_layoutUnitsPopup, pSS, XAP_STRING_ID_DLG_Unit_pica, DIM_PI);
+	AppendLocalizedMenuItem(m_layoutUnitsPopup, pSS, XAP_STRING_ID_DLG_Unit_inch, DIM_IN);
 
 	LocalizeControl(m_layoutUnitsLabel, pSS, AP_STRING_ID_DLG_Options_Label_ViewUnits);
 	LocalizeControl(m_layoutEnableSmartQuotesBtn, pSS, AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable);

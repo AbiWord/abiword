@@ -72,18 +72,12 @@ class AP_CocoaDialog_Options;
     IBOutlet NSTextField *m_prefsWithExtLabel;
     IBOutlet NSButton *m_spellAlwaysSuggBtn;
     IBOutlet NSButton *m_spellCheckAsTypeBtn;
-    IBOutlet NSTextField *m_spellCustomDictLabel;
-    IBOutlet NSButton *m_spellDictEditBtn;
-    IBOutlet NSPopUpButton *m_spellDictionaryPopup;
     IBOutlet NSBox *m_spellGeneralBox;
     IBOutlet NSButton *m_spellHideErrBtn;
     IBOutlet NSBox *m_spellIgnoreBox;
-    IBOutlet NSTextField *m_spellIgnoredWordLabel;
-    IBOutlet NSButton *m_spellIgnoreEditBtn;
     IBOutlet NSButton *m_spellIgnoreFileAddrBtn;
     IBOutlet NSButton *m_spellIgnoreUppercaseBtn;
     IBOutlet NSButton *m_spellIgnoreWordsWithNumBtn;
-    IBOutlet NSButton *m_spellResetDictBtn;
     IBOutlet NSButton *m_spellSuggFromMainDictBtn;
     IBOutlet NSTabView *m_tab;
     IBOutlet NSBox *m_tlbBtnStylBox;
@@ -104,13 +98,10 @@ class AP_CocoaDialog_Options;
 - (NSView *)_lookupWidget:(AP_Dialog_Options::tControl)controlId;
 - (IBAction)applyAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
-- (IBAction)chooseDictAction:(id)sender;
 - (IBAction)chooseScreenAction:(id)sender;
 - (IBAction)defaultAction:(id)sender;
-- (IBAction)editDictAction:(id)sender;
 - (IBAction)increaseMinutesAction:(id)sender;
 - (IBAction)okAction:(id)sender;
-- (IBAction)resetDictAction:(id)sender;
 - (IBAction)autoSaveStepperAction:(id)sender;
 - (IBAction)autoSaveFieldAction:(id)sender;
 @end
@@ -119,12 +110,12 @@ class AP_CocoaDialog_Options;
 class AP_CocoaDialog_Options: public AP_Dialog_Options
 {
 public:
-	AP_CocoaDialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_Options(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 	
 	AP_CocoaFrame * _getFrame()
 		{ return static_cast<AP_CocoaFrame*>(m_pFrame); };
@@ -141,7 +132,7 @@ public:
     void _initCocoaOnlyPrefs();
     virtual void _storeWindowData(void);
 
-	virtual void _controlEnable( tControl id, bool value );
+	virtual void _controlEnable( tControl ctlid, bool value );
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
@@ -192,86 +183,6 @@ public:
 
 #undef SET_GATHER
 
- protected:
-#if 0
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	GtkWidget *         _constructWindowContents(GtkWidget *);
-
-	// pointers to widgets we need to query/set
-	// there are a ton of them in this dialog
-
-	GtkWidget * m_windowMain;
-	GtkWidget * m_notebook;
-
-    GtkWidget * m_checkbuttonSpellCheckAsType;
-    GtkWidget * m_checkbuttonSpellHideErrors;
-    GtkWidget * m_checkbuttonSpellSuggest;
-    GtkWidget * m_checkbuttonSpellMainOnly;
-    GtkWidget * m_checkbuttonSpellUppercase;
-    GtkWidget * m_checkbuttonSpellNumbers;
-    GtkWidget * m_checkbuttonSpellInternet;
-	GtkWidget * m_listSpellDicts;
-	GtkWidget * m_listSpellDicts_menu;
-	GtkWidget * m_buttonSpellDictionary;
-	GtkWidget * m_buttonSpellIgnoreEdit;
-	GtkWidget * m_buttonSpellIgnoreReset;
-
-    GtkWidget * m_checkbuttonSmartQuotesEnable;
-    GtkWidget * m_listDefaultPageSize;
-
-    GtkWidget * m_checkbuttonPrefsAutoSave;
-	GtkWidget * m_comboPrefsScheme;
-
-    GtkWidget * m_checkbuttonViewShowRuler;
-    GtkWidget * m_listViewRulerUnits;
-    GtkWidget * m_listViewRulerUnits_menu;
-    GtkWidget * m_checkbuttonViewCursorBlink;
-    GtkWidget * m_checkbuttonViewShowStatusBar;
-
-	GtkWidget * m_checkbuttonTransparentIsWhite;
-	GtkWidget * m_pushbuttonNewTransparentColor;
-
-	GtkWidget * m_checkbuttonAllowCustomToolbars;
-	GtkWidget * m_checkbuttonAutoLoadPlugins;
-
-    GtkWidget * m_checkbuttonViewShowTB;
-    GtkWidget * m_checkbuttonViewHideTB;
-    GtkWidget * m_toolbarClist;
-
-    GtkWidget * m_checkbuttonViewAll;
-    GtkWidget * m_checkbuttonViewHiddenText;
-    GtkWidget * m_checkbuttonViewUnprintable;
-
-    GtkWidget * m_checkbuttonOtherDirectionRtl;
-    GtkWidget * m_checkbuttonOtherSaveContextGlyphs;
-    GtkWidget * m_checkbuttonOtherHebrewContextGlyphs;
-
-	GtkWidget * m_checkbuttonAutoSaveFile;
-	GtkWidget * m_textAutoSaveFilePeriod;
-	GtkWidget * m_textAutoSaveFileExt;
-	GtkWidget * m_checkbuttonShowSplash;
-	GtkWidget * m_checkbuttonFontWarning;
-	GtkWidget * m_checkbuttonFontPath;
-	GtkWidget * m_buttonDefaults;
-	GtkWidget * m_buttonApply;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
-protected:
-	// Cocoa call back handlers
-	static void s_delete_clicked		( GtkWidget *, GdkEvent *, gpointer );
-	static void s_allowTransparentColor ( GtkWidget *, gpointer );
-	static void s_color_changed(GtkWidget * csel,  AP_CocoaDialog_Options * dlg);
-	static void s_clist_clicked (GtkWidget *, gint, gint, GdkEvent *, gpointer);
-
-	static void s_checkbutton_toggle	( GtkWidget *, gpointer );
-	static gint s_menu_item_activate	( GtkWidget *, gpointer );
-
-	// callbacks can fire these events
-    virtual void event_WindowDelete(void);
-    virtual void event_clistClicked (int row, int col);
-#endif
 private:
 	friend class AP_CocoaDialog_OptionsController_proxy;	// this private class is to allow accessing protected methods 
 	                                                        // from the Obj-C interfaces.
