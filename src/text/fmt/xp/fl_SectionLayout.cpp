@@ -569,7 +569,24 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 				pPrevSL->format();
 			}
 			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
-			if (m_bForceNewPage)
+			UT_sint32 iMaxColHeight = pPrevCol->getMaxHeightInLayoutUnits();
+			UT_sint32 iCurColHeight =  0;
+			fp_Column * pLeader = pPrevCol->getLeader();
+			fp_Column *pMaxCol = NULL;
+			while(pLeader != NULL)
+			{
+				if( pLeader->getHeightInLayoutUnits() > iCurColHeight)
+				{
+					pMaxCol = pLeader;
+					iCurColHeight =  pLeader->getHeightInLayoutUnits();
+				}
+				pLeader = pLeader->getFollower();
+			}
+			UT_sint32 iLastLineHeight = 0;
+			if(pMaxCol->getLastLine() != NULL)
+				iLastLineHeight = pMaxCol->getLastLine()->getHeightInLayoutUnits();
+			bool bForce = (iCurColHeight + iLastLineHeight) >= iMaxColHeight;
+			if (m_bForceNewPage || bForce)
 			{
 				if (pTmpPage->getNext())
 				{
