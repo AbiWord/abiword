@@ -1181,6 +1181,27 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
 
 	synthesizeMenu(m_wMenuPopup);
+
+#if 0
+	/* Need to create one of these with each frame or keyboard or something
+	 */
+	text_view->im_context = gtk_im_multicontext_new ();
+
+	menuitem = gtk_separator_menu_item_new ();
+	gtk_widget_show (menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (text_view->popup_menu), menuitem);
+	
+	menuitem = gtk_menu_item_new_with_mnemonic (_("Input _Methods"));
+	gtk_widget_show (menuitem);
+	submenu = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), submenu);
+	gtk_menu_shell_append (GTK_MENU_SHELL (text_view->popup_menu), menuitem);
+	
+	gtk_im_multicontext_append_menuitems (GTK_IM_MULTICONTEXT (text_view->im_context),
+										  GTK_MENU_SHELL (submenu));
+	
+#endif
+
 	return true;
 }
 
