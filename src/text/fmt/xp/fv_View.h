@@ -32,6 +32,8 @@
 #include "ev_EditBits.h"
 #include "ie_types.h"
 
+#define AUTO_DRAW_POINT 600
+
 class FL_DocLayout;
 class fl_DocListener;
 class fl_BlockLayout;
@@ -250,6 +252,7 @@ protected:
 	UT_Bool				_insertGraphic(FG_Graphic*, const char*);
 
 	static void			_autoScroll(UT_Timer * pTimer);
+	static void			_autoDrawPoint(UT_Timer * pTimer);
 
 	// localize handling of insertion point logic
 	void				_setPoint(UT_uint32 pt, UT_Bool bEOL = UT_FALSE);
@@ -282,6 +285,9 @@ protected:
 	UT_sint32			m_xLastMouse;
 	UT_sint32			m_yLastMouse;
 
+	UT_Timer *			m_pAutoPointTimer;
+	UT_Bool				m_pointIsOn;
+	
 	fv_ChangeState		m_chg;
 
 	// find and replace stuff

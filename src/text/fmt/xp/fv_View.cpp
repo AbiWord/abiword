@@ -85,8 +85,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_bPointEOL = UT_FALSE;
 	m_bSelection = UT_FALSE;
 //	m_bPointAP = UT_FALSE;
-	m_pAutoScrollTimer = NULL;
-
+	m_pAutoScrollTimer 	= NULL;
+	m_pAutoPointTimer  	= NULL;
+	
 	// initialize change cache
 	m_chg.bUndo = UT_FALSE;
 	m_chg.bRedo = UT_FALSE;
@@ -115,7 +116,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 FV_View::~FV_View()
 {
 	DELETEP(m_pAutoScrollTimer);
-
+	DELETEP(m_pAutoPointTimer);
+	
 	FREEP(_m_findNextString);
 	
 	FREEP(m_chg.propsChar);
@@ -3331,13 +3333,14 @@ void FV_View::_xorInsertionPoint()
 		UT_RGBColor clr(255,255,255);
 
 		m_pG->setColor(clr);
+		m_pG->xorLine(m_xPoint-1, m_yPoint, m_xPoint-1, m_yPoint + m_iPointHeight);
 		m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
 	}
 }
 
 void FV_View::_eraseInsertionPoint()
 {
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() || !m_pointIsOn)
 	{
 		return;
 	}
@@ -3347,6 +3350,14 @@ void FV_View::_eraseInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
+	if (m_pAutoPointTimer == NULL) {
+		m_pAutoPointTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
+		m_pAutoPointTimer->set(AUTO_DRAW_POINT);
+		m_pAutoPointTimer->start();
+	}
+
+	m_pointIsOn = UT_TRUE;
+	
 	if (m_iWindowHeight <= 0)
 	{
 		return;
@@ -3358,6 +3369,26 @@ void FV_View::_drawInsertionPoint()
 	}
 
 	_xorInsertionPoint();
+}
+
+void FV_View::_autoDrawPoint(UT_Timer * pTimer)
+{
+	UT_ASSERT(pTimer);
+
+	FV_View * pView = (FV_View *) pTimer->getInstanceData();
+	UT_ASSERT(pView);
+
+	if (pView->m_iWindowHeight <= 0)
+	{
+		return;
+	}
+	
+	if (!pView->isSelectionEmpty())
+	{
+		return;
+	}
+	pView->_xorInsertionPoint();
+	pView->m_pointIsOn = !pView->m_pointIsOn;
 }
 
 void FV_View::setXScrollOffset(UT_sint32 v)
