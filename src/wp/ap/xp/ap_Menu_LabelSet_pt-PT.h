@@ -47,11 +47,7 @@ BeginSet(pt,PT,UT_TRUE)
     MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"Gra&var como",		"Gravar ficheiro atruindo um nome")
     MenuLabel(AP_MENU_ID_FILE_PAGESETUP,	"&Paginação",		"Modificar o paginamento")
     MenuLabel(AP_MENU_ID_FILE_PRINT,		"&Imprimir",		"Imprimir o documento")
-
-#ifdef HAVE_GNOME
     MenuLabel(AP_MENU_ID_FILE_PRINT_PREVIEW,	"Ver Antes",		"Ver o documento antes de o imprimir")
-#endif
-
     MenuLabel(AP_MENU_ID_FILE_RECENT_1,		"&1 %s",		"Último ficheiro aberto")
     MenuLabel(AP_MENU_ID_FILE_RECENT_2,		"&2 %s",		"Segundo ficheiro aberto")
     MenuLabel(AP_MENU_ID_FILE_RECENT_3,		"&3 %s",		"Terceiro ficheiro aberto")

@@ -35,7 +35,7 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
 		MenuItem(AP_MENU_ID_FILE_PRINT)
-#ifdef HAVE_GNOME
+#if defined(HAVE_GNOME)
                 MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		Separator()

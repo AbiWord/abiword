@@ -48,11 +48,7 @@ BeginSet(da,DK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FILE_SAVE,			"&Gem", 			"Gem dokumentet")
 	MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"Gem &som", 			"Gem dokumentet under et andet navn")
 	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,		"&Sideopsætning",		"Ændr sideopsætning")
-
-#ifdef HAVE_GNOME
-     MenuLabel(AP_MENU_ID_FILE_PRINT_PREVIEW, "Vis udskrift", "Vis dokumentet før den udskrives")
-#endif
-
+        MenuLabel(AP_MENU_ID_FILE_PRINT_PREVIEW, "Vis udskrift", "Vis dokumentet før den udskrives")
 	MenuLabel(AP_MENU_ID_FILE_PRINT,		"&Udskriv",			"Udskriv hele dokumentet")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_1,		"&1 %s",			"Åbn dette dokument")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_2,		"&2 %s",			"Åbn dette dokument")

@@ -46,11 +46,7 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"Save &As", 		"Save the document under a different name")
 	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,	"Page Set&up",		"Change the printing options")
 	MenuLabel(AP_MENU_ID_FILE_PRINT,		"&Print",			"Print all or part of the document")
-
-#ifdef HAVE_GNOME
-     MenuLabel(AP_MENU_ID_FILE_PRINT_PREVIEW, "Print P&review", "Preview the document before printing")
-#endif
-
+        MenuLabel(AP_MENU_ID_FILE_PRINT_PREVIEW, "Print P&review", "Preview the document before printing")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_1,		"&1 %s",			"Open this document")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_2,		"&2 %s",			"Open this document")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_3,		"&3 %s",			"Open this document")

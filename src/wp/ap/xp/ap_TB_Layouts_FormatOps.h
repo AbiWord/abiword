@@ -49,7 +49,7 @@ BeginLayout(FormatOps)
         ToolbarItem(AP_TOOLBAR_ID_UNINDENT)
         ToolbarItem(AP_TOOLBAR_ID_INDENT)
 
-#ifdef HAVE_GNOME
+#if defined(HAVE_GNOME)
      /* TODO: these should be moved out into the general public */
      Spacer()
      ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
