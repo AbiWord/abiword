@@ -2387,8 +2387,11 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	if (isSelectionEmpty())
 	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 	else
 	{
@@ -2411,8 +2414,11 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	if (isSelectionEmpty())
 	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 	else
 	{
