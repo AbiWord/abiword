@@ -46,6 +46,8 @@ class ABI_EXPORT ie_PartTable
 	UT_sint32        getBot(void);
 	const char *     getTableProp(const char * pPropName);
 	const char *     getCellProp(const char * pPropName);
+	PT_AttrPropIndex getTableAPI(void) const {return m_apiTable;}
+	PT_AttrPropIndex getCellAPI(void) const { return m_apiCell;}
 	UT_sint32        getNumRows(void);
 	UT_sint32        getNumCols(void);
 	PL_StruxDocHandle getTableSDH(void)
@@ -96,6 +98,8 @@ class ABI_EXPORT ie_Table
 	PL_StruxDocHandle getTableSDH(void);
 	void             setCellJustOpenned(bool b);
 	bool             isCellJustOpenned(void);
+	PT_AttrPropIndex getTableAPI(void);
+	PT_AttrPropIndex getCellAPI(void);
  private:
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;

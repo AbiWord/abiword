@@ -452,6 +452,29 @@ UT_sint32 ie_Table::getNestDepth(void)
 
 
 /*!
+ * Return the api of the current Table.
+ */
+ PT_AttrPropIndex ie_Table::getTableAPI(void)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	UT_return_val_if_fail(pPT,0);
+	return pPT->getTableAPI();
+}
+
+/*!
+ * Return the api of the current Cell.
+ */
+ PT_AttrPropIndex ie_Table::getCellAPI(void)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	UT_return_val_if_fail(pPT,0);
+	return pPT->getCellAPI();
+}
+
+
+/*!
  * Return the value of the property named *pProp of the current Table.
  */
 const char * ie_Table::getTableProp(const char * pProp)

@@ -23,6 +23,7 @@
 #include "ut_wctomb.h"
 #include "ut_stack.h"
 #include "ie_Table.h"
+#include "pp_PropertyMap.h"
 
 class ie_Table;
 class PX_ChangeRecord_Object;
@@ -91,7 +92,12 @@ protected:
 	void                _open_cell(PT_AttrPropIndex api);
 	void                _open_table(PT_AttrPropIndex api);
 	void                _export_AbiWord_Table_props(PT_AttrPropIndex api);
+	void                _fillTableProps(PT_AttrPropIndex api, UT_String & sTableProps);
 	void                _export_AbiWord_Cell_props(PT_AttrPropIndex api);
+	void                _fillCellProps(PT_AttrPropIndex api, UT_String & sCellProps);
+	void                _exportCellProps(PT_AttrPropIndex  api, UT_String & sTableProps);
+	void                _exportTableProps(PT_AttrPropIndex  api);
+	void                _getPropString(const UT_String sPropString, const char * szProp, UT_String & sVal);
 	void                _newRow(void);
 	void                _outputTableBorders(UT_sint32 iThick);
 	void                _outputCellBorders(UT_sint32 iThick);
@@ -125,6 +131,8 @@ protected:
 	PT_AttrPropIndex	m_apiSavedBlock;
 	PL_StruxDocHandle   m_sdhSavedBlock;
 	bool                m_bOpennedFootnote;
+	PP_PropertyMap::TypeLineStyle    m_LastLinestyle;
+	UT_String           m_sLastColor;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

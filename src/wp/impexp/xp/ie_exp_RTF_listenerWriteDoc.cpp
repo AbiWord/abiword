@@ -391,6 +391,8 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_iRight = -1;
 	m_iTop = -1;
 	m_iBot = -1;
+	m_LastLinestyle = PP_PropertyMap::linestyle_solid;
+	m_sLastColor = "000000";
 	_setTabEaten(false);
 	_setListBlock(false);
 
@@ -912,6 +914,415 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api)
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
 	UT_String sCellProps;
+	sCellProps.clear();
+	_fillCellProps(api, sCellProps);	
+	UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
+	m_pie->_rtf_keyword("abicellprops ",sCellProps.c_str());
+	m_pie->_rtf_close_brace();
+}
+
+/*!
+ * Convience function to lookup a property via const char * string.
+ * If the property is not present sVal is returned with zero size.
+ */
+void s_RTF_ListenerWriteDoc::_getPropString(const UT_String sPropString, const char * szProp, UT_String & sVal)
+{
+	sVal.clear();
+	const UT_String sProp(szProp);
+	sVal = UT_String_getPropVal(sPropString,sProp);
+}
+
+/*!
+ * Export all the properties of this cell to the RTF stream.
+ * api is the Attribute Property Index.
+ * sTableProps is the UT_String containing all the Table Properties defined
+ * for the table. 
+ */
+void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String & sTableProps)
+{
+	UT_String sCellProps;
+	UT_String sWork;
+	UT_sint32 iThick =1;
+	UT_sint32 iColor =0;
+	bool bDrawBorder = true;
+	_fillCellProps(api,sCellProps);
+
+//
+// Alignements of cells
+//
+	m_pie->_rtf_keyword("clvertalt"); // only top alignment for now.
+//
+// Other aligments are:
+// \clvertalc Vertical center alignment.
+// \clvertalb Virtical Bottom alignemnt.
+//
+// Text flow:
+//
+	m_pie->_rtf_keyword("cltxlrtb"); // Only left to right, top to bottom now
+//
+// Others:
+// \cltxtbrl Text in a cell flows right to left and top to bottom.
+// \cltxbtlr Text in a cell flows left to right and bottom to top.
+// \cltxlrtbv Text in a cell flows left to right and top to bottom, vertical.
+// \cltxtbrlv Text in a cell flows top to bottom and right to left, vertical.
+
+//
+// Top Border definitions
+//
+	_getPropString(sCellProps,"top-style",sWork);
+	bDrawBorder = true;
+	if(sWork.size()>0)
+	{
+		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
+		if(linestyle == PP_PropertyMap::linestyle_inherit)
+		{
+			linestyle = m_LastLinestyle;
+		}
+		else if (linestyle == PP_PropertyMap::linestyle_none)
+		{
+			bDrawBorder = false;
+		}
+		m_LastLinestyle = linestyle;
+		if(bDrawBorder)
+		{
+			m_pie->_rtf_keyword("clbrdrt"); // cell top border
+			if(linestyle == PP_PropertyMap::linestyle_solid)
+			{
+				m_pie->_rtf_keyword("brdrs"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dotted)
+			{
+				m_pie->_rtf_keyword("brdrdot"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dashed)
+			{
+				m_pie->_rtf_keyword("brdrdash"); // plain border
+			}
+		}
+
+	}
+	else
+	{
+		m_pie->_rtf_keyword("clbrdrt"); // cell top border
+		m_pie->_rtf_keyword("brdrs"); // plain border
+	}
+	if(bDrawBorder)
+	{
+		_getPropString(sCellProps,"top-thickness",sWork);
+		if(sWork.size()>0)
+		{
+			m_pie->_rtf_keyword_ifnotdefault_twips("brdrw",sWork.c_str(),-1);
+		}
+		else
+		{
+			m_pie->_rtf_keyword("brdrw",10*iThick); //border thickness
+		}
+		_getPropString(sCellProps,"top-color",sWork);
+		if(sWork.size()>0)
+		{
+			bool bWriteColor = true;
+			if (strcmp (sWork.c_str(), "inherit") == 0)
+			{
+				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
+			}
+			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			{
+				bWriteColor = false;
+				iColor = m_pie->_findOrAddColor(sWork.c_str());
+			}
+			else
+			{
+				iColor =  m_pie->_findOrAddColor(sWork.c_str());
+			}
+			m_sLastColor = sWork;
+			if(bWriteColor)
+			{
+				m_pie->_rtf_keyword("brdrcf",iColor);
+			}
+		}
+	}
+	m_pie->write(" ");											
+
+//
+//write out the background colour of the cell
+//
+	_getPropString(sCellProps,"background-color",sWork);
+	if(sWork.size()>0)
+	{
+		bool bWriteColor = true;
+		if (strcmp (sWork.c_str(), "inherit") == 0)
+		{
+			iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
+		}
+		else if(strcmp (sWork.c_str(), "transperent") == 0)
+		{
+			bWriteColor = false;
+			iColor = m_pie->_findOrAddColor(sWork.c_str());
+		}
+		else
+		{
+			iColor =  m_pie->_findOrAddColor(sWork.c_str());
+		}
+		m_sLastColor = sWork;
+
+		if(bWriteColor)
+		{
+			m_pie->_rtf_keyword("clcbpat",iColor); // cell background color
+		}
+	}
+//
+// Background style
+//
+	_getPropString(sCellProps,"bg-style",sWork);
+	if(sWork.size() > 0)
+	{
+//
+// We haven't implemented this yet
+//
+// Allowed patterns are:
+// \clbghoriz,\clbgvert,\clbgfdiag,clbgbdiag,\clbgcross,\clbgdcross,
+// \clbgdkhor,\clbgdkvert,\clbgdkfdiag,clbgdkbdiag,\clbgdkcross,\clbgdkdcross
+//
+// Pattern Line color is
+//
+// \clcfpatN
+	}
+
+//
+// Left Border Definitions
+//
+	_getPropString(sCellProps,"left-style",sWork);
+	bDrawBorder = true;
+	if(sWork.size()>0)
+	{
+		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
+		if(linestyle == PP_PropertyMap::linestyle_inherit)
+		{
+			linestyle = m_LastLinestyle;
+		}
+		else if (linestyle == PP_PropertyMap::linestyle_none)
+		{
+			bDrawBorder = false;
+		}
+		m_LastLinestyle = linestyle;
+		if(bDrawBorder)
+		{
+			m_pie->_rtf_keyword("clbrdrl"); // cell left border
+			if(linestyle == PP_PropertyMap::linestyle_solid)
+			{
+				m_pie->_rtf_keyword("brdrs"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dotted)
+			{
+				m_pie->_rtf_keyword("brdrdot"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dashed)
+			{
+				m_pie->_rtf_keyword("brdrdash"); // plain border
+			}
+		}
+
+	}
+	else
+	{
+		m_pie->_rtf_keyword("clbrdrl"); // cell left border
+		m_pie->_rtf_keyword("brdrs"); // plain border
+	}
+	if(bDrawBorder)
+	{
+		_getPropString(sCellProps,"left-thickness",sWork);
+		if(sWork.size()>0)
+		{
+			m_pie->_rtf_keyword_ifnotdefault_twips("brdrw",sWork.c_str(),-1);
+		}
+		else
+		{
+			m_pie->_rtf_keyword("brdrw",10*iThick); //border thickness
+		}
+		_getPropString(sCellProps,"left-color",sWork);
+		if(sWork.size()>0)
+		{
+			bool bWriteColor = true;
+			if (strcmp (sWork.c_str(), "inherit") == 0)
+			{
+				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
+			}
+			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			{
+				bWriteColor = false;
+				iColor = m_pie->_findOrAddColor(sWork.c_str());
+			}
+			else
+			{
+				iColor =  m_pie->_findOrAddColor(sWork.c_str());
+			}
+			m_sLastColor = sWork;
+			if(bWriteColor)
+			{
+				m_pie->_rtf_keyword("brdrcf",iColor);
+			}
+		}
+	}
+	m_pie->write(" ");											
+//
+// Bottom Border Definitions
+//
+	_getPropString(sCellProps,"bot-style",sWork);
+	bDrawBorder = true;
+	if(sWork.size()>0)
+	{
+		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
+		if(linestyle == PP_PropertyMap::linestyle_inherit)
+		{
+			linestyle = m_LastLinestyle;
+		}
+		else if (linestyle == PP_PropertyMap::linestyle_none)
+		{
+			bDrawBorder = false;
+		}
+		m_LastLinestyle = linestyle;
+		if(bDrawBorder)
+		{
+			m_pie->_rtf_keyword("clbrdrb"); // cell bottom border
+			if(linestyle == PP_PropertyMap::linestyle_solid)
+			{
+				m_pie->_rtf_keyword("brdrs"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dotted)
+			{
+				m_pie->_rtf_keyword("brdrdot"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dashed)
+			{
+				m_pie->_rtf_keyword("brdrdash"); // plain border
+			}
+		}
+
+	}
+	else
+	{
+		m_pie->_rtf_keyword("clbrdrb"); // cell bottom border
+		m_pie->_rtf_keyword("brdrs"); // plain border
+	}
+	if(bDrawBorder)
+	{
+		_getPropString(sCellProps,"bot-thickness",sWork);
+		if(sWork.size()>0)
+		{
+			m_pie->_rtf_keyword_ifnotdefault_twips("brdrw",sWork.c_str(),-1);
+		}
+		else
+		{
+			m_pie->_rtf_keyword("brdrw",10*iThick); //border thickness
+		}
+		_getPropString(sCellProps,"bot-color",sWork);
+		if(sWork.size()>0)
+		{
+			bool bWriteColor = true;
+			if (strcmp (sWork.c_str(), "inherit") == 0)
+			{
+				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
+			}
+			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			{
+				bWriteColor = false;
+				iColor = m_pie->_findOrAddColor(sWork.c_str());
+			}
+			else
+			{
+				iColor =  m_pie->_findOrAddColor(sWork.c_str());
+			}
+			m_sLastColor = sWork;
+			if(bWriteColor)
+			{
+				m_pie->_rtf_keyword("brdrcf",iColor);
+			}
+		}
+	}
+	m_pie->write(" ");											
+//
+// Right Border Definitions
+//
+	_getPropString(sCellProps,"right-style",sWork);
+	bDrawBorder = true;
+	if(sWork.size()>0)
+	{
+		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
+		if(linestyle == PP_PropertyMap::linestyle_inherit)
+		{
+			linestyle = m_LastLinestyle;
+		}
+		else if (linestyle == PP_PropertyMap::linestyle_none)
+		{
+			bDrawBorder = false;
+		}
+		m_LastLinestyle = linestyle;
+		if(bDrawBorder)
+		{
+			m_pie->_rtf_keyword("clbrdrr"); // cell right border
+			if(linestyle == PP_PropertyMap::linestyle_solid)
+			{
+				m_pie->_rtf_keyword("brdrs"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dotted)
+			{
+				m_pie->_rtf_keyword("brdrdot"); // plain border
+			}
+			else if( linestyle == PP_PropertyMap::linestyle_dashed)
+			{
+				m_pie->_rtf_keyword("brdrdash"); // plain border
+			}
+		}
+
+	}
+	else
+	{
+		m_pie->_rtf_keyword("clbrdrr"); // cell right border
+		m_pie->_rtf_keyword("brdrs"); // plain border
+	}
+	if(bDrawBorder)
+	{
+		_getPropString(sCellProps,"right-thickness",sWork);
+		if(sWork.size()>0)
+		{
+			m_pie->_rtf_keyword_ifnotdefault_twips("brdrw",sWork.c_str(),-1);
+		}
+		else
+		{
+			m_pie->_rtf_keyword("brdrw",10*iThick); //border thickness
+		}
+		_getPropString(sCellProps,"right-color",sWork);
+		if(sWork.size()>0)
+		{
+			bool bWriteColor = true;
+			if (strcmp (sWork.c_str(), "inherit") == 0)
+			{
+				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
+			}
+			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			{
+				bWriteColor = false;
+				iColor = m_pie->_findOrAddColor(sWork.c_str());
+			}
+			else
+			{
+				iColor =  m_pie->_findOrAddColor(sWork.c_str());
+			}
+			m_sLastColor = sWork;
+			if(bWriteColor)
+			{
+				m_pie->_rtf_keyword("brdrcf",iColor);
+			}
+		}
+	}
+	m_pie->write(" ");											
+}
+
+/*!
+ * Fill the supplied UT_String with all the properties defined for a cell
+ */
+void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sCellProps)
+{
 	const PP_AttrProp* pSectionAP = NULL;
 	m_pDocument->getAttrProp(api, &pSectionAP);
 	const XML_Char* pszHomogeneous = NULL;
@@ -1131,12 +1542,8 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api)
 		sPropVal= pszBackgroundColor;
 		UT_String_setProperty(sCellProps,sProp,sPropVal);
 	}
-
-	UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
-	m_pie->_rtf_keyword("abicellprops ",sCellProps.c_str());
-
-	m_pie->_rtf_close_brace();
 }
+
 
 void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 {
@@ -1342,6 +1749,10 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	double dcells = static_cast<double>(m_Table.getNumCols());
 	colwidth = (_getColumnWidthInches() - dColSpace*0.5)/dcells;
 	UT_sint32 iNext = 1;
+	UT_String sTableProps;
+	PT_AttrPropIndex tableAPI = m_Table.getTableAPI();
+	_fillTableProps(tableAPI,sTableProps);
+	
 	for(i=0; i < m_Table.getNumCols(); i = iNext)
 	{
 		m_Table.setCellRowCol(row,i);
@@ -1361,18 +1772,11 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		{
 			iNext = m_Table.getRight();
 		}
-
-		m_pie->_rtf_keyword("clvertalt"); // Top aligned vertical alignment. ONly one for now
-		if(iThick > 0)
-		{
-			_outputCellBorders(iThick);
-		}
-		else if(iThick < 0)
-		{
-			_outputCellBorders(1);
-		}
-		m_pie->_rtf_keyword("cltxlrtb"); // Text flow left to right, top to bottom
-		                                 // Hardwired for now.
+//
+// Export all the properties of the cell
+//
+		PT_AttrPropIndex cellAPI = m_Table.getCellAPI();
+		_exportCellProps(cellAPI,sTableProps);
 //
 // Look if we have a vertically merged cell at this (row,i)
 //
@@ -1527,6 +1931,19 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Table_props(PT_AttrPropIndex api)
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
 	UT_String sTableProps;
+	sTableProps.clear();
+	_fillTableProps(api,sTableProps);
+	UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
+	m_pie->_rtf_keyword("abitableprops ",sTableProps.c_str());
+	m_pie->_rtf_close_brace();
+}
+
+/*!
+ * This method fills the suppiled string with all the properties of the 
+ * table given by api
+ */
+void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & sTableProps)
+{
 	const PP_AttrProp* pSectionAP = NULL;
 	m_pDocument->getAttrProp(api, &pSectionAP);
 	const XML_Char* pszHomogeneous = NULL;
@@ -1798,12 +2215,7 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Table_props(PT_AttrPropIndex api)
 	{
 		sTableProps += " ";
 	}
-	UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
-	m_pie->_rtf_keyword("abitableprops ",sTableProps.c_str());
-
-	m_pie->_rtf_close_brace();
 }
-
 
 void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 {

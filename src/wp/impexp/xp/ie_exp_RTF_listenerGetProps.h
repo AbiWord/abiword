@@ -64,7 +64,8 @@ protected:
 	void				_compute_span_properties(const PP_AttrProp * pSpanAP,
 												 const PP_AttrProp * pBlockAP,
 												 const PP_AttrProp * pSectionAP);
-
+	void                _searchTableAPI(PT_AttrPropIndex api);
+	void                _searchCellAPI(PT_AttrPropIndex api);
  private:	
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;

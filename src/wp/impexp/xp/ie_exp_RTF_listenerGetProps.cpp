@@ -210,6 +210,8 @@ bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 		}
 	case PTX_SectionTable:
 	    {
+			_closeSpan();
+			_searchTableAPI(pcr->getIndexAP());
 			return true;
 		}
 	case PTX_SectionFootnote:
@@ -225,16 +227,33 @@ bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			m_apiThisBlock = m_apiSavedBlock;
 			return true;
 		}
+	case PTX_SectionEndnote:
+	    {
+			_closeSpan();
+			m_apiSavedBlock = m_apiThisBlock;
+			return true;
+		}
+	case PTX_EndEndnote:
+	    {
+			_closeSpan();
+			_closeBlock();
+			m_apiThisBlock = m_apiSavedBlock;
+			return true;
+		}
 	case PTX_SectionCell:
 	    {
+			_closeSpan();
+			_searchCellAPI(pcr->getIndexAP());
 			return true;
 		}
 	case PTX_EndTable:
 	    {
+			_closeSpan();
 			return true;
 		}
 	case PTX_EndCell:
 	    {
+			_closeSpan();
 			return true;
 		}
 
@@ -276,6 +295,149 @@ bool s_RTF_ListenerGetProps::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT_NOT_REACHED();
 	return false;
+}
+
+void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
+{
+
+	const PP_AttrProp * pTableAP = NULL;
+	m_pDocument->getAttrProp(api,&pTableAP);
+	const XML_Char * szColor = NULL;
+	UT_sint32 ndxColor;
+
+// Background
+
+	szColor = PP_evalProperty("background-color",pTableAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && UT_stricmp (szColor, "transparent") != 0)
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// bgcolor
+
+	szColor = PP_evalProperty("bgcolor",pTableAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && UT_stricmp (szColor, "transparent") != 0)
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// Left
+
+	szColor = PP_evalProperty("left-color",pTableAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// Right
+
+	szColor = PP_evalProperty("right-color",pTableAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// Bottom
+
+	szColor = PP_evalProperty("bot-color",pTableAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// top
+
+	szColor = PP_evalProperty("top-color",pTableAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+}
+
+
+void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
+{
+
+	const PP_AttrProp * pCellAP = NULL;
+	m_pDocument->getAttrProp(api,&pCellAP);
+	const XML_Char * szColor = NULL;
+	UT_sint32 ndxColor;
+
+// top
+
+	szColor = PP_evalProperty("top-color",pCellAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// left
+
+	szColor = PP_evalProperty("left-color",pCellAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// right
+
+	szColor = PP_evalProperty("right-color",pCellAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// Bottom
+
+	szColor = PP_evalProperty("bot-color",pCellAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+// Background
+
+	szColor = PP_evalProperty("background-color",pCellAP,NULL,NULL,m_pDocument,true);
+
+	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	{
+		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+		if (ndxColor == -1)
+			m_pie->_addColor(static_cast<const char*>(szColor));
+	}
+
+
 }
 
 void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanAP,
