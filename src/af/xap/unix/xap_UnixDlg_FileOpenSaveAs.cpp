@@ -359,49 +359,28 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, c
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	return (ans == XAP_Dialog_MessageBox::a_YES);
+	return (pFrame->showMessageBox(XAP_STRING_ID_DLG_OverwriteFile,
+										XAP_Dialog_MessageBox::b_YN,
+										XAP_Dialog_MessageBox::a_NO, // should this be YES?
+										fileName)
+						== XAP_Dialog_MessageBox::a_YES);
 }
 	
 void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, XAP_String_Id sid)
 {
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	pDialog->setMessage(pSS->getValue(sid));
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
-	pDialog->runModal(pFrame);
-
-	pDialogFactory->releaseDialog(pDialog);
+	pFrame->showMessageBox(sid,
+							XAP_Dialog_MessageBox::b_O,
+							XAP_Dialog_MessageBox::a_OK);
 }
 
 void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 														XAP_String_Id sid,
 														const char * sz1)
 {
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	pDialog->setMessage(pSS->getValue(sid),sz1);
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
-	pDialog->runModal(pFrame);
-
-	pDialogFactory->releaseDialog(pDialog);
+	pFrame->showMessageBox(sid,
+							XAP_Dialog_MessageBox::b_O,
+							XAP_Dialog_MessageBox::a_OK,
+							sz1);
 }
 
 /*****************************************************************/

@@ -285,18 +285,7 @@ void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 
 void AP_Dialog_Replace::_messageBox(char * message)
 {
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(m_pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	pDialog->setMessage(message);
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
-	pDialog->runModal(m_pFrame);
-
-	pDialogFactory->releaseDialog(pDialog);
+	m_pFrame->showMessageBox(message,
+								XAP_Dialog_MessageBox::b_O,
+								XAP_Dialog_MessageBox::a_OK);
 }

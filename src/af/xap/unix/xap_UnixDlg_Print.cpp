@@ -38,22 +38,9 @@
 
 static void _notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
 {
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	pDialog->setMessage(message);
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
-	pDialog->runModal(pFrame);
-
-//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
+	pFrame->showMessageBox(message,
+								XAP_Dialog_MessageBox::b_O,
+								XAP_Dialog_MessageBox::a_OK);
 }
 
 /*****************************************************************/

@@ -24,6 +24,10 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xav_Listener.h"	// for AV_ListenerID
+#include "xap_Dlg_MessageBox.h"
+#include "xap_Strings.h"
+
+
 
 class XAP_App;
 class XAP_DialogFactory;
@@ -127,6 +131,14 @@ public:
 	
    	EV_Mouse *					getMouse(void);
 	EV_Keyboard *				getKeyboard(void);
+
+	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
+											  XAP_Dialog_MessageBox::tButtons buttons,
+											  XAP_Dialog_MessageBox::tAnswer default_answer,
+											  const char *p_str1 = NULL);
+	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const char *szMessage,
+											  XAP_Dialog_MessageBox::tButtons buttons,
+											  XAP_Dialog_MessageBox::tAnswer default_answer);
 
 protected:
 	virtual void				_createToolbars(void);

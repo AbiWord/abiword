@@ -772,163 +772,82 @@ Defun1(fileNew)
 
 static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	XAP_String_Id String_id;
 	
 	if (errorCode == -201) // We have a write error
-	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailedWrite), fileName);
+	  String_id = AP_STRING_ID_MSG_SaveFailedWrite;
 
 	else if (errorCode == -202) // We have a name error
-	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailedName), fileName);
+	  String_id = AP_STRING_ID_MSG_SaveFailedName;
 
 	else if (errorCode == -203) // We have an export error
-	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailedExport), fileName);
+	  String_id = AP_STRING_ID_MSG_SaveFailedExport;
 	
 	else // The generic case - should be eliminated eventually
-	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailed), fileName);
+	  String_id = AP_STRING_ID_MSG_SaveFailed;
 
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
-	pDialog->runModal(pFrame);
-
-	pDialogFactory->releaseDialog(pDialog);
+	pFrame->showMessageBox(String_id,
+								XAP_Dialog_MessageBox::b_O,
+								XAP_Dialog_MessageBox::a_OK,
+								fileName);
 }
 
 static void s_TellSpellDone(XAP_Frame * pFrame)
 {
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	
-	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SpellDone));
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
-	pDialog->runModal(pFrame);
-
-	pDialogFactory->releaseDialog(pDialog);
+	pFrame->showMessageBox(AP_STRING_ID_MSG_SpellDone,
+								XAP_Dialog_MessageBox::b_O,
+								XAP_Dialog_MessageBox::a_OK);
 }
 
 static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
 {
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-        pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_DlgNotImp), szWhat, __FILE__, iLine);
+	const char *p_message = pSS->getValue(AP_STRING_ID_MSG_DlgNotImp);
 
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-	pDialog->runModal(pFrame);
+	UT_uint32 joinedSize = strlen(p_message) + strlen(szWhat) + strlen(__FILE__) + 4 + 10; // The 4 is for the line #
+	char *szMessage = (char *)malloc(joinedSize * sizeof(char));
+	if (!szMessage)
+	{
+		UT_DEBUGMSG(("Could not allocate string for [%s %s %s %d]\n", p_message, szWhat));
+		return;
+	}
 
-//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+	sprintf(szMessage, p_message, szWhat, __FILE__, iLine);
 
-	pDialogFactory->releaseDialog(pDialog);
+	pFrame->showMessageBox(szMessage, 
+							XAP_Dialog_MessageBox::b_O,
+							XAP_Dialog_MessageBox::a_OK);
+
+	FREEP(szMessage);
 }
 
 static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 {
 	// return UT_TRUE if we should revert the file (back to the saved copy).
 
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-
-	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_RevertBuffer), pFrame->getFilename());
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_YN);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_YES);
-
-	pDialog->runModal(pFrame);
-
-	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
-
-	return (ans == XAP_Dialog_MessageBox::a_YES);
+	return (pFrame->showMessageBox(AP_STRING_ID_MSG_RevertBuffer,
+										XAP_Dialog_MessageBox::b_YN,
+										XAP_Dialog_MessageBox::a_YES,
+										pFrame->getFilename())
+						== XAP_Dialog_MessageBox::a_YES);
 }
 
 static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 {
 	// return UT_TRUE if we should quit.
 
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-
-	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_QueryExit));
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_YN);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO);
-
-	pDialog->runModal(pFrame);
-
-	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
-
-	return (ans == XAP_Dialog_MessageBox::a_YES);
+	return (pFrame->showMessageBox(AP_STRING_ID_MSG_QueryExit,
+										XAP_Dialog_MessageBox::b_YN,
+										XAP_Dialog_MessageBox::a_NO)
+						== XAP_Dialog_MessageBox::a_YES);
 }
 
 static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-
-	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ConfirmSave), pFrame->getTitle(200));
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_YNC);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_YES);
-
-	pDialog->runModal(pFrame);
-
-	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
-
-	return (ans);
+	return pFrame->showMessageBox(AP_STRING_ID_MSG_ConfirmSave,
+										XAP_Dialog_MessageBox::b_YNC,
+										XAP_Dialog_MessageBox::a_YES,
+										pFrame->getTitle(200));
 }
 
 static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
@@ -1149,64 +1068,50 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 
 static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode)
 {
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	XAP_String_Id String_id;
 
 	switch (errorCode)
 	  {
 	  case -301:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_FileNotFound;
 	    break;
 
 	  case -302:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_NoMemory;
 	    break;
 
 	  case -303:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_UnknownType;
 	    break;
 
 	  case -304:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_BogusDocument;
 	    break;
 
 	  case -305:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_CouldNotOpen;
 	    break;
 
 	  case -306:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_CouldNotWrite;
 	    break;
 
 	  case -307:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_FakeType;
 	    break;
 
 	  case -311:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),pNewFile);
+	    String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
 	    break;
 
 	  default:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),pNewFile);
+	    String_id = AP_STRING_ID_MSG_ImportError;
 	  }
-	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
-	pDialog->runModal(pFrame);
-
-	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
-
-	return (ans);
+	return pFrame->showMessageBox(String_id, 
+									XAP_Dialog_MessageBox::b_O,
+									XAP_Dialog_MessageBox::a_OK,
+									pNewFile);
 }
 
 UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)

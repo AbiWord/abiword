@@ -293,23 +293,11 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 
 	// TODO:  shack@uiuc.edu: waiting for a vote for reset strings...
 
-    XAP_DialogFactory * pDialogFactory
-        = (XAP_DialogFactory *)(m_pFrame->getDialogFactory());
-
-    XAP_Dialog_MessageBox * pDialog
-        = (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-    UT_ASSERT(pDialog);
-
-    const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	// Ask "Do you want to reset ignored words in the current document?" 
-    pDialog->setMessage(pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent));
-    pDialog->setButtons(XAP_Dialog_MessageBox::b_YNC);
-    pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO); // should this be YES?
+    XAP_Dialog_MessageBox::tAnswer ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent,
+								XAP_Dialog_MessageBox::b_YNC,
+								XAP_Dialog_MessageBox::a_NO); // should this be YES?
 
-    pDialog->runModal(m_pFrame);
-
-    XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	// if hit cancel, go no further
 	// if no hit, don't do anything else, even prompt for other docs
@@ -317,7 +305,6 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 		ans == XAP_Dialog_MessageBox::a_NO )
 	{
 		UT_DEBUGMSG(("No/Canceled\n"));
-		pDialogFactory->releaseDialog(pDialog);
 		return;
 	}
 
@@ -332,19 +319,15 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 	if (pApp->getFrameCount() > 1)
 	{
 		
-		pDialog->setMessage(pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetAll));
-		pDialog->setButtons(XAP_Dialog_MessageBox::b_YNC);
-		pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO); // should this be YES?
+		ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetAll,
+									XAP_Dialog_MessageBox::b_YNC,
+									XAP_Dialog_MessageBox::a_NO); // should this be YES?
 
-		pDialog->runModal(m_pFrame);
-
-		ans = pDialog->getAnswer();
 
 		// if cancel, don't to ANYTHING	
 		if (ans == XAP_Dialog_MessageBox::a_CANCEL )
 		{
 			UT_DEBUGMSG(("No/Canceled\n"));
-			pDialogFactory->releaseDialog(pDialog);
 			return;
 		}
 	} 
@@ -373,8 +356,6 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 
 	// TODO : recheck spelling
 
-	// clean up
-    pDialogFactory->releaseDialog(pDialog);
 }
 
 void AP_Dialog_Options::_event_IgnoreEdit(void)

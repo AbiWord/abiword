@@ -45,6 +45,8 @@
 #include "ev_Mouse.h"
 #include "ev_Toolbar.h"
 #include "xap_Strings.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dialog_Id.h"
 
 /*****************************************************************/
 
@@ -487,6 +489,72 @@ EV_Mouse * XAP_Frame::getMouse(void)
 EV_Keyboard * XAP_Frame::getKeyboard(void)
 {
 	return m_pKeyboard;
+}
+
+XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char *szMessage,
+											  XAP_Dialog_MessageBox::tButtons buttons,
+											  XAP_Dialog_MessageBox::tAnswer default_answer)
+{
+	raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(getDialogFactory());
+
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage(szMessage);
+
+	pDialog->setButtons(buttons);
+	pDialog->setDefaultAnswer(default_answer);
+
+	pDialog->runModal(this);
+
+	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return ans;
+}
+
+
+XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
+											  XAP_Dialog_MessageBox::tButtons buttons,
+											  XAP_Dialog_MessageBox::tAnswer default_answer,
+											  const char *p_str1)
+{
+	raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(getDialogFactory());
+
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	const XAP_StringSet * pSS = getApp()->getStringSet();
+
+	if(p_str1)
+	{
+		pDialog->setMessage(pSS->getValue(id), p_str1);
+	}
+	else
+	{
+		pDialog->setMessage(pSS->getValue(id));
+	}
+
+
+	pDialog->setButtons(buttons);
+	pDialog->setDefaultAnswer(default_answer);
+
+	pDialog->runModal(this);
+
+	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return ans;
 }
 
 //////////////////////////////////////////////////////////////////
