@@ -192,7 +192,9 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 //
 // Fill the Page with the page color
 //
-	if(!bAlwaysUseWhiteBackground)
+#if 0
+	// only print background color to the screen, not to paper
+	if(!bAlwaysUseWhiteBackground && pDA->pG->queryProperties (GR_Graphics::DGP_SCREEN))
 	{
 		UT_RGBColor * pClr = getOwningSection()->getPaperColor();
 		double ScaleLayoutUnitsToScreen;
@@ -203,6 +205,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		UT_sint32 width = (UT_sint32) ((double)getWidthInLayoutUnits() * ScaleLayoutUnitsToScreen);
 		pDA->pG->fillRect(*pClr,xmin,ymin,width,height);
 	}
+#endif
 
     _drawCropMarks(pDA);
 
