@@ -1234,6 +1234,8 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	UT_Vector vBlock;
 	getListBlocksInSelection( &vBlock);
   	UT_uint32 i;
+	m_pDoc->disableListUpdates();
+
 	m_pDoc->beginUserAtomicGlob();
 
 	for(i=0; i< vBlock.getItemCount(); i++)
@@ -1242,7 +1244,7 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		if(pBlock->getListType() == listType)
 		{
-	              m_pDoc->listUpdate(sdh);
+		  //	              m_pDoc->listUpdate(sdh);
 	              m_pDoc->StopList(sdh);
 		}
 		else
@@ -1250,18 +1252,23 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	              fl_BlockLayout * pPrev = pBlock->getPrev();
 		      if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == listType)
 		      {
-	                     m_pDoc->listUpdate(sdh);
+			//          m_pDoc->listUpdate(sdh);
 		             pBlock->resumeList(pPrev);
 		      }
 		      else if(pBlock->isListItem()== NULL)
 		      {
-	                     m_pDoc->listUpdate(sdh);
+			//         m_pDoc->listUpdate(sdh);
 			     XML_Char* cType = pBlock->getListStyleString(listType);
 		             pBlock->StartList(cType);
 		      } 
 		}
 	}
 	m_pDoc->endUserAtomicGlob();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
 }
 
 
@@ -5790,7 +5797,6 @@ UT_Error FV_View::cmdInsertField(const char* szName)
 		"type", szName,
 		NULL, NULL
 	};
-	UT_DEBUGMSG(("SEVIOR: field type= %s \n",szName));
 
 /*
         currently unused

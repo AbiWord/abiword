@@ -2247,7 +2247,6 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	UT_uint32 	iNormalBase = 0;
 	UT_Bool		bNormal = UT_FALSE;
 	UT_uint32 i;
-	UT_DEBUGMSG(("SEVIOR: in fl_BlockLayout populate span \n"));
 	for (i=0; i<len; i++)
 	{
 		switch (pChars[i])
@@ -3704,11 +3703,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		_delete(blockOffset, 1);
 		if(m_pAutoNum)
 		{
-		  UT_DEBUGMSG(("SEVIOR: Looking label field \n"));
 		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE)
 		       {
 			     remItemFromList();
-		  UT_DEBUGMSG(("SEVIOR: Found it removing it from list \n"));
 		       }
 		}
 		break;
@@ -4345,7 +4342,6 @@ void fl_BlockLayout::remItemFromList(void)
 	UT_Vector vp;
         if( m_bListLabelCreated == UT_TRUE)
         {
-	  UT_DEBUGMSG(("SEVIOR: m_bListLabelCreated is true \n"));
 	        m_bListLabelCreated = UT_FALSE;
 	        FV_View* pView = m_pLayout->getView();
 	        UT_ASSERT(pView);
@@ -4454,18 +4450,18 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		if (szAlign)
 			fAlign = (float)atof(szAlign);
 		else
-			fAlign = (float)0.25;
+ 		        fAlign = LIST_DEFAULT_INDENT;
 		if (szIndent)
 			fIndent = (float)atof(szIndent);
 		else
-			fIndent = (float)-0.25;
+			fIndent =  -LIST_DEFAULT_INDENT;
 	}
 	else
 	{
 		szDelim = "%L";
 		startv = 1;
-		fAlign = 0.25;
-		fIndent = -0.25;
+		fAlign =  LIST_DEFAULT_INDENT;
+		fIndent =  -LIST_DEFAULT_INDENT;
 	}
 	
 	if (m_pAutoNum)
@@ -4762,8 +4758,8 @@ void    fl_BlockLayout::StopList(void)
 			}
 			else
 			{
-				fAlign = (float)(0.25 * level);
-				fIndent = (float)-0.25;
+				fAlign =  LIST_DEFAULT_INDENT * level;
+				fIndent = - LIST_DEFAULT_INDENT;
 				sprintf(align, "%fin", fAlign);
 				sprintf(indent, "%fin", fIndent);
 			}
@@ -5019,7 +5015,6 @@ void fl_BlockLayout::listUpdate(void)
   //
   // Update the list on the screen to reflect changes made. 
   //
-  	UT_DEBUGMSG(("Entering listUpdate\n"));
 	if (m_pAutoNum == NULL)
 		return;
 	
@@ -5075,7 +5070,6 @@ void fl_BlockLayout::transferListFlags(void)
 
 UT_Bool  fl_BlockLayout::isListLabelInBlock( void)
 {
-	UT_DEBUGMSG(("Entering isListLabelInBlock\n"));
         fp_Run * pRun = m_pFirstRun;
 	UT_Bool bListLabel = UT_FALSE;
 	while( (pRun!= NULL) && (bListLabel == UT_FALSE))
@@ -5088,7 +5082,6 @@ UT_Bool  fl_BlockLayout::isListLabelInBlock( void)
 		}
 		pRun = pRun->getNext();
 	}
-	UT_DEBUGMSG(("Exiting isListLabel in Block with bListLabel: %i\n", bListLabel));
 	return bListLabel;
 }
 
@@ -5106,7 +5099,6 @@ void fl_BlockLayout::_createListLabel(void)
   //
   // Put the current list label into this block.
   //
-  	UT_DEBUGMSG(("Entering _createListLabel\n"));
 	if(!m_pFirstRun)
 		return;
 	if (isListLabelInBlock() == UT_TRUE)
@@ -5137,7 +5129,6 @@ void fl_BlockLayout::_createListLabel(void)
 		pView->_drawInsertionPoint();
 	}
 	m_bListLabelCreated = UT_TRUE;
-	UT_DEBUGMSG(("Exiting _createListLabel\n"));
 }
 
 void fl_BlockLayout::deleteListLabel(void)

@@ -770,7 +770,6 @@ UT_Bool pt_PieceTable::deleteFieldFrag(pf_Frag * pf)
 
 	UT_Bool bSuccess = UT_TRUE;
 	UT_Stack stDelayStruxDelete;
-        UT_uint32 recnt = m_history.getUndoPos();
 
 	PT_DocPosition dpos1 = getFragPosition(pf);
         UT_ASSERT(dpos1);
@@ -781,13 +780,6 @@ UT_Bool pt_PieceTable::deleteFieldFrag(pf_Frag * pf)
         //  need to worry about much of the bookkeeping of a complex
         //  delete.
         bSuccess = _deleteComplexSpan_norec(dpos1, dpos2);
-        UT_uint32 recnta = m_history.getUndoPos();
-	UT_DEBUGMSG(("SEVIOR: Change records after _deleteComplexSpan_norec before = %d after %d \n",recnt,recnta));
-	if(recnt != recnta)
-	  {
-	    UT_DEBUGMSG(("SEVIOR: Change records after _deleteComplexSpan_norec before = %d after %d \n",recnt,recnta));
-	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	  }
 	return bSuccess;
 }
 

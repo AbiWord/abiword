@@ -406,7 +406,6 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
      
 		        if(pf->getField() != NULL)
 			{
-		                UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
 				return UT_FALSE;
 			}
 
@@ -420,7 +419,6 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
      
                 if(pf->getField() != NULL)
 		{
-		       UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
 		       return UT_FALSE;
 		}
 
@@ -475,7 +473,6 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
   // We need this to getupdate fields working correctly
 
 	UT_ASSERT(m_pts==PTS_Editing);
-        UT_uint32 recnt = m_history.getUndoPos();
 	// get the fragment at the given document position.
 	
 	pf_Frag * pf = NULL;
@@ -603,7 +600,6 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
      
 		        if(pf->getField() != NULL)
 			{
-		                UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
 				return UT_FALSE;
 			}
 
@@ -617,7 +613,6 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
      
                 if(pf->getField() != NULL)
 		{
-		       UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
 		       return UT_FALSE;
 		}
 
@@ -651,8 +646,6 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 Finish:
 	if (bNeedGlob)
 		endMultiStepGlob();
-        UT_uint32 recnta = m_history.getUndoPos();
-	UT_DEBUGMSG(("SEVIOR: Change records after _InsertSpan_norec before = %d after %d \n",recnt,recnta));	
 	return bSuccess;
 }
 

@@ -53,6 +53,8 @@ public:
 	void                            setAllSensitivity(void);
 	void                            updateDialog(void);
 	static void                     autoupdateLists(UT_Timer * pTimer);
+	UT_Bool                         m_bDoExpose;
+
 protected:
 	virtual GtkWidget *		_constructWindow(void);
 	GtkWidget *				_constructWindowContents(void);
@@ -70,10 +72,12 @@ protected:
 
 	GR_UnixGraphics *               m_pPreviewWidget;
 
+	UT_Bool                         m_bManualListStyle;
 	UT_Bool                         m_bDestroy_says_stopupdating;
 	UT_Bool                         m_bAutoUpdate_happening_now;
 	UT_Bool                         m_bisCustomFrameHidden;
-		UT_Timer *                      m_pAutoUpdateLists;
+	
+	UT_Timer *                      m_pAutoUpdateLists;
 
 	GtkWidget *				m_wMainWindow;
 

@@ -467,10 +467,7 @@ UT_Bool pt_PieceTable::undoCmd(void)
 			break;
 
 	} while (m_history.getUndo(&pcr));
-	UT_uint32 recnt = m_history.getUndoPos();
         m_pDocument->updateFields();
-	UT_uint32 recnta = m_history.getUndoPos();
-	UT_DEBUGMSG(("SEVIOR: history pos before update = %d history pos after update = %d \n",recnt,recnta));
 	return UT_TRUE;
 }
 

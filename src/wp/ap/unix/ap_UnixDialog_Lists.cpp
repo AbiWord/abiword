@@ -46,6 +46,8 @@ AP_UnixDialog_Lists::AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory,
 	m_wMainWindow = NULL;
 	Current_Dialog = this;
 	m_pPreviewWidget = NULL;
+	m_bManualListStyle = UT_TRUE;
+        m_bDoExpose = UT_TRUE;
 }
 
 XAP_Dialog * AP_UnixDialog_Lists::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -207,8 +209,11 @@ void AP_UnixDialog_Lists::previewExposed(void)
 {
         if(m_pPreviewWidget)
         {
-	  //	        setMemberVariables();
-                event_PreviewAreaExposed();
+	        if(m_bDoExpose == UT_TRUE)
+		{
+                        event_PreviewAreaExposed();
+		}
+		m_bDoExpose = UT_TRUE;
 	}
 } 
 
@@ -253,6 +258,7 @@ void  AP_UnixDialog_Lists::typeChanged(gint style)
   // 
   // code to change list list
   //
+
 	gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
 	if(style == 0)
 	{
@@ -281,8 +287,11 @@ void  AP_UnixDialog_Lists::typeChanged(gint style)
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 					  m_wListStyleNumbered_menu);
 	}
-	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
-	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+	if(m_bManualListStyle == UT_TRUE)
+	{
+	        GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
+		m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+	}
 	previewExposed();
 }
 
@@ -359,13 +368,24 @@ void AP_UnixDialog_Lists::fillWidgetFromDialog(void)
 
 void AP_UnixDialog_Lists::updateDialog(void)
 {
-        List_Type oldlist = m_iListType;
+
+        UT_uint32 oldID = m_iID;
+	m_bDoExpose = UT_FALSE;
+	m_bManualListStyle = UT_FALSE;
         if(m_bisCustomized == UT_FALSE)
-	         _populateWindowData();
-        if((oldlist != m_iListType) && (m_bisCustomized == UT_FALSE))
+	{
+                _populateWindowData();
+	}
+        if((oldID != m_iID  || m_newListType != m_iListType) && (m_bisCustomized == UT_FALSE))
+	{               
                  m_newListType = m_iListType;
-        if(m_bisCustomized == UT_FALSE)
-  	         _setData();
+                 m_bDoExpose = UT_TRUE;
+	}
+	if(m_bisCustomized == UT_FALSE)
+	{
+	         _setData();
+	}
+	m_bManualListStyle = UT_TRUE;
 }
 
 void AP_UnixDialog_Lists::setAllSensitivity(void)
@@ -1114,8 +1134,8 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 void AP_UnixDialog_Lists::_setData(void)
 {
   //
-  // This function reads the various elements in customize box and loads
-  // the member variables with them
+  // This function reads the various memeber variables and loads them into
+  // into the dialog variables.
   //
         gint i;
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wLevelSpin), (float) m_iLevel);
@@ -1158,6 +1178,23 @@ void AP_UnixDialog_Lists::_setData(void)
 	gtk_entry_set_text( GTK_ENTRY(m_wDelimEntry), (const gchar *) m_pszDelim);
 	// turn signals back on
 	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
+	//
+	// Now set the list type and style
+	if(m_newListType == NOT_A_LIST)
+	{
+	        typeChanged(0);
+		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),0);
+	}
+	else if(m_newListType >= BULLETED_LIST)
+	{
+	        typeChanged(1);
+		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),(gint)( m_newListType - BULLETED_LIST));
+	}
+	else
+	{
+	        typeChanged(2);
+		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),(gint) m_newListType);
+	}
 }
 
 

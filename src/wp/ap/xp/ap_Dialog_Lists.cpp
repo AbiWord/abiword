@@ -105,7 +105,11 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics * gc,
 	// preview
         //
 	generateFakeLabels();
-
+        m_isListAtPoint = getBlock()->isListItem();
+        if(m_isListAtPoint == UT_FALSE)
+	{
+                 m_newListType = NOT_A_LIST;
+	}
 	/* This is Thomas Code. I'll do a fake preview instead
 // Martin
  // free any attached preview
@@ -225,7 +229,7 @@ void  AP_Dialog_Lists::Apply(void)
 	      if(getAutoNum() != NULL)
 	      {
 		      getAutoNum()->update(0);
-	              getBlock()->listUpdate();
+		      //  getBlock()->listUpdate();
 	      }
 	      return;
        }
@@ -236,35 +240,27 @@ void  AP_Dialog_Lists::Apply(void)
 		      if(getBlock()->isListItem() == UT_TRUE)
 		      {
 			      getBlock()->StopList();
-	                      getBlock()->listUpdate();
 		      }
 		      return;
 	      }
 	      else if (m_bisCustomized == UT_TRUE)
 	      {
 	              getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
-	              getBlock()->listUpdate();
 	              return;
 	      }
 	      else if (m_bisCustomized == UT_FALSE)
 	      {
 	      	      getBlock()->StartList(getBlock()->getListStyleString(m_newListType));
-		      getBlock()->listUpdate();
 	      }
        }
        if(m_bStartSubList == UT_TRUE && m_newListType != NOT_A_LIST )
        { 
 	      if(m_isListAtPoint == UT_TRUE)
 	      {
-		//      getBlock()->StopList();
 		      UT_uint32 curlevel = getBlock()->getLevel();
 		      UT_uint32 currID = getBlock()->getAutoNum()->getID();
 		      curlevel++;
-		      if (m_bisCustomized == UT_TRUE)
-		      	getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel); 
-		      else if (m_bisCustomized == UT_FALSE)
-		      	getBlock()->StartList(getBlock()->getListStyleString(m_newListType));
-		      getBlock()->listUpdate();
+		      getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
 		      return;
 	      }
 	      else
@@ -304,13 +300,36 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	        m_iLevel = 1;
        }
        UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       m_fAlign = (float)(0.25 *(float) m_iLevel);
-       m_fIndent = -0.25;
-       if( m_newListType < BULLETED_LIST)
+       m_fAlign =  LIST_DEFAULT_INDENT *(float) m_iLevel;
+       m_fIndent = - LIST_DEFAULT_INDENT;
+
+       if( m_newListType == NUMBERED_LIST)
        {   
                UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
                UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 	       m_iStartValue = 1;
+	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L.");
+       }
+       else if( m_newListType == LOWERCASE_LIST)
+       {   
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+	       m_iStartValue = 1;
+	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
+       }
+       else if( m_newListType == UPPERCASE_LIST)
+       {   
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+	       m_iStartValue = 1;
+	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
+       }
+       else if( m_newListType < BULLETED_LIST)
+       {   
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+	       m_iStartValue = 1;
+	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
        }
        else
        {
@@ -443,7 +462,7 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else
 		{
-                         m_fAlign = (float)0.25;
+                         m_fAlign = LIST_DEFAULT_INDENT;
 		}
 
 		i = findVecItem(&vp,"text-indent");
@@ -453,7 +472,7 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else
 		{
-	                 m_fIndent = (float)-0.25;
+	                 m_fIndent = - LIST_DEFAULT_INDENT;
 		}
 
 		if(getAutoNum() != NULL)
@@ -516,7 +535,10 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 		m_iListType = getAutoNum()->getType();
        }
        else
+       {	       
 	        m_iID = 0;
+		m_iListType = NOT_A_LIST;
+       }
 }
 
 void  AP_Dialog_Lists::PopulateDialogData(void)
@@ -525,11 +547,12 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
        m_isListAtPoint = getBlock()->isListItem();
        if(m_isListAtPoint == UT_TRUE)
        {   
-			fillDialogFromBlock();
+	       fillDialogFromBlock();
+
        }
        else
        {
-			m_newListType = NOT_A_LIST;
+	 //		m_newListType = NOT_A_LIST;
 			fillUncustomizedValues();
        }
        if(m_isListAtPoint == UT_TRUE)
@@ -539,7 +562,7 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
               m_curListLevel = getBlock()->getLevel();
               m_curStartValue = getAutoNum()->getStartValue32();
               m_iStartValue = getAutoNum()->getStartValue32();
-	      //              m_iListType =  getAutoNum()->getType();
+	      m_iListType =  getAutoNum()->getType();
 	      //	      m_newListType =  getAutoNum()->getType();
 	      if(m_iListType == NUMBERED_LIST)
 	      {
@@ -576,7 +599,7 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
        }
        else
        {
-			m_iListType = NUMBERED_LIST;
+			m_iListType = NOT_A_LIST;
 			m_curStartValue = 1;
        }
 

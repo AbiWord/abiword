@@ -64,7 +64,6 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  PL_StruxDocHandle pFirst,
 	m_pParentItem = NULL; // set it later 
         m_bUpdate = UT_TRUE;
 	
-	UT_DEBUGMSG(("JORDAN: Creating fl_AutoNum\n"));
 }
 
 fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_uint32 start, const XML_Char * lDelim, PD_Document * pDoc)
@@ -310,7 +309,8 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	}
 	
 	//if (depth == 0)
-	if( m_List_Type < BULLETED_LIST)
+	if( m_List_Type < BULLETED_LIST && 
+	    (UT_XML_strnicmp(m_pszDecimal,rightDelim,4) != 0 || depth == 0) )
 	{
 		psz = UT_XML_strlen(rightDelim);
 		for (i = 0; i < psz; i++)
