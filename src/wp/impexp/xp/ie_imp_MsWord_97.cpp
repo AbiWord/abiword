@@ -24,6 +24,8 @@
 #include <string.h>
 #include <locale.h>
 
+#include <zlib.h>
+
 #include "wv.h"
 
 #include "ut_string_class.h"
@@ -3353,19 +3355,25 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	UT_ByteBuf * buf		= 0;
 	UT_ByteBuf * pictData 	= new UT_ByteBuf();
 
+        UT_String propBuffer;
+        UT_String propsName;
+
   // suck the data into the ByteBuffer
 
   MSWord_ImageType imgType = s_determineImageType ( b );
 
   wvStream *pwv;
+  bool decompress = false;
 
   if ( imgType == MSWord_RasterImage )
 	{
 	  pwv = b->blip.bitmap.m_pvBits;
+
 	}
   else if ( imgType == MSWord_VectorImage )
 	{
 	  pwv = b->blip.metafile.m_pvBits;
+	  decompress = (b->blip.metafile.m_fCompression == msocompressionDeflate);
 	}
   else
 	{
@@ -3379,11 +3387,32 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   char *data = new char[size];
   wvStream_rewind(pwv);
   wvStream_read(data,size,sizeof(char),pwv);
-  pictData->append(reinterpret_cast<const UT_Byte*>(data), size);
-  delete [] data;
 
-  UT_String propBuffer;
-  UT_String propsName;
+  if (decompress)
+  {
+
+    unsigned long uncomprLen, comprLen;
+    comprLen = size;
+    uncomprLen = b->blip.metafile.m_cb;
+    char *uncompr = new char[uncomprLen];
+    int  err = uncompress (uncompr, &uncomprLen, data, comprLen);
+    if (err != Z_OK)
+      {
+	UT_DEBUGMSG(("Could not uncompress image\n"));
+        DELETEP(uncompr);
+	DELETEP(pictData);
+	FREEP(mimetype);
+	goto Cleanup;
+      }
+      pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
+      DELETEP(uncompr);
+  }
+  else
+  {
+    pictData->append(reinterpret_cast<const UT_Byte*>(data), size);
+  }
+
+  delete [] data;
 
   if(!pictData->getPointer(0))
 	  error =  UT_ERROR;
