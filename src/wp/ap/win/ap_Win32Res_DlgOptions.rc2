@@ -61,6 +61,7 @@
 #define AP_RID_DIALOG_OPTIONS_COMBO_UNITS				1033
 #define AP_RID_DIALOG_OPTIONS_LBL_SHOWHIDE				1034
 #define AP_RID_DIALOG_OPTIONS_LBL_VIEWFRAME				1035
+#define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable		1036
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -163,6 +164,15 @@ BEGIN
     CONTROL         "Un&printable characters",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,130,291,10
+END
+
+// The sub-dialog for the SMARTQUOTES tab of the Options dialog
+AP_RID_DIALOG_OPT_SMARTQUOTES DIALOG DISCARDABLE  0, 0, 322, 220
+STYLE DS_CONTROL | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+	AUTOCHECKBOX    "Enable smart quotes",
+                    AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable, 7, 11, 300, 10
 END
 
 #endif /* RC_INVOKED */

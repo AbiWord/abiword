@@ -216,6 +216,7 @@ struct {
 #define SPELL_INDEX		0
 #define PREF_INDEX		1
 #define VIEW_INDEX		2
+#define SMARTQUOTES_INDEX 3
 
 BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -265,6 +266,10 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		tie.lParam = AP_RID_DIALOG_OPT_VIEW;
 		TabCtrl_InsertItem(m_hwndTab, VIEW_INDEX, &tie); 
 
+		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_SmartQuotes); 
+		tie.lParam = AP_RID_DIALOG_OPT_SMARTQUOTES;
+		TabCtrl_InsertItem(m_hwndTab, SMARTQUOTES_INDEX, &tie); 
+
 		// finally, create the (modeless) child dialogs
 		
 		tp.which = AP_RID_DIALOG_OPT_SPL;
@@ -284,6 +289,14 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
 
 		tp.which = AP_RID_DIALOG_OPT_VIEW;
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
+										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+		UT_ASSERT((w
+				   && (m_vecSubDlgHWnd.getItemCount()>0)
+				   && (w == m_vecSubDlgHWnd.getLastItem())));
+		
+		tp.which = AP_RID_DIALOG_OPT_SMARTQUOTES;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
 										(DLGPROC)s_tabProc, (LPARAM)&tp); 
@@ -405,6 +418,12 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	
+	case AP_RID_DIALOG_OPT_SMARTQUOTES:
+		{
+			_DS(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
+		}
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -451,6 +470,8 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 		return 0;
 
 	case AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave:		_enableDisableLogic(id_CHECK_PREFS_AUTO_SAVE);		return 0;
+
+	case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	_enableDisableLogic(id_CHECK_SMART_QUOTES_ENABLE);	return 0;
 
 	case AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME:
 		return 0;
@@ -572,6 +593,10 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, UT_Bool value )
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable),value);
 		return;
 		
+	case id_CHECK_SMART_QUOTES_ENABLE:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(SMARTQUOTES_INDEX),id_CHECK_SMART_QUOTES_ENABLE),value);
+		return;
+		
 	default:
 //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -598,6 +623,8 @@ DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellMainOnly);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellUppercase);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellNumbers);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellInternet);
+
+DEFINE_GET_SET_BOOL(SMARTQUOTES_INDEX,SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 

@@ -53,6 +53,8 @@ public:
  	SET_GATHER			(SpellNumbers,		UT_Bool );
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
+	SET_GATHER			(SmartQuotesEnable,	UT_Bool ); 
+
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
