@@ -51,6 +51,7 @@ void IE_Imp_RTF::_initialKeywordSort(void)
 //
 bool IE_Imp_RTF::PushRTFState(void)
 {
+	xxx_UT_DEBUGMSG(("Push RTF state \n"));
 	// Create a new object to store the state in
 	RTFStateStore* pState = new RTFStateStore;
 	if (pState == NULL)	{
@@ -71,6 +72,7 @@ bool IE_Imp_RTF::PushRTFState(void)
 //
 bool IE_Imp_RTF::PopRTFState(void)
 {
+	xxx_UT_DEBUGMSG(("Pop RTF state depth %d \n",m_stateStack.getDepth()));
 	RTFStateStore* pState = NULL;
 	m_stateStack.pop(reinterpret_cast<void**>(&pState));
 

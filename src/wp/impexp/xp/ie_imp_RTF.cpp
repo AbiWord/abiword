@@ -2348,6 +2348,12 @@ UT_Error IE_Imp_RTF::_parseText()
 				ok = PopRTFState();
 				if (!ok) {
 					UT_DEBUGMSG(("PopRTFState()\n"));
+					bool b = ReadCharFromFile(&c);
+					if(!b) // reached end of file with extra "}"
+					{
+						ok = true;
+						break;
+					}
 				}
 				if(m_bFrameOpen &&  static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame)
 				{
