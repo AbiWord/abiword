@@ -1,29 +1,36 @@
-36
-a010013l.pfa    -AbiSource-goth-regular-r-normal--0-0-0-0-p-0-iso8859-1
-a010015l.pfa    -AbiSource-goth-bold-r-normal--0-0-0-0-p-0-iso8859-1
-a010033l.pfa    -AbiSource-goth-regular-i-normal--0-0-0-0-p-0-iso8859-1
-a010035l.pfa    -AbiSource-goth-bold-i-normal--0-0-0-0-p-0-iso8859-1
-b018012l.pfa    -AbiSource-bookman-regular-r-normal--0-0-0-0-p-0-iso8859-1
-b018015l.pfa    -AbiSource-bookman-bold-r-normal--0-0-0-0-p-0-iso8859-1
-b018032l.pfa    -AbiSource-bookman-regular-i-normal--0-0-0-0-p-0-iso8859-1
-b018035l.pfa    -AbiSource-bookman-bold-i-normal--0-0-0-0-p-0-iso8859-1
-bchb.pfa        -AbiSource-bitstream charter-bold-r-normal--0-0-0-0-p-0-iso8859-1
-bchbi.pfa       -AbiSource-bitstream charter-bold-i-normal--0-0-0-0-p-0-iso8859-1
-bchr.pfa        -AbiSource-bitstream charter-regular-r-normal--0-0-0-0-p-0-iso8859-1
-bchri.pfa       -AbiSource-bitstream charter-regular-i-normal--0-0-0-0-p-0-iso8859-1
-c059013l.pfa    -AbiSource-century schoolbook-regular-r-normal--0-0-0-0-p-0-iso8859-1
-c059016l.pfa    -AbiSource-century schoolbook-bold-r-normal--0-0-0-0-p-0-iso8859-1
-c059033l.pfa    -AbiSource-century schoolbook-regular-i-normal--0-0-0-0-p-0-iso8859-1
-c059036l.pfa    -AbiSource-century schoolbook-bold-i-normal--0-0-0-0-p-0-iso8859-1
-d050000l.pfa    -AbiSource-dingbats-regular-r-normal--0-0-0-0-p-0-adobe-fontspecific
+56
+a010013l.pfa    -AbiSource-Goth-regular-r-normal--0-0-0-0-p-0-iso8859-1
+a010015l.pfa    -AbiSource-Goth-bold-r-normal--0-0-0-0-p-0-iso8859-1
+a010033l.pfa    -AbiSource-Goth-regular-i-normal--0-0-0-0-p-0-iso8859-1
+a010035l.pfa    -AbiSource-Goth-bold-i-normal--0-0-0-0-p-0-iso8859-1
+b018012l.pfa    -AbiSource-Bookman-regular-r-normal--0-0-0-0-p-0-iso8859-1
+b018015l.pfa    -AbiSource-Bookman-bold-r-normal--0-0-0-0-p-0-iso8859-1
+b018032l.pfa    -AbiSource-Bookman-regular-i-normal--0-0-0-0-p-0-iso8859-1
+b018035l.pfa    -AbiSource-Bookman-bold-i-normal--0-0-0-0-p-0-iso8859-1
+b018012l.pfa    -AbiSource-Times New Roman-regular-r-normal--0-0-0-0-p-0-iso8859-1
+b018015l.pfa    -AbiSource-Times New Roman-bold-r-normal--0-0-0-0-p-0-iso8859-1
+b018032l.pfa    -AbiSource-Times New Roman-regular-i-normal--0-0-0-0-p-0-iso8859-1
+b018035l.pfa    -AbiSource-Times New Roman-bold-i-normal--0-0-0-0-p-0-iso8859-1
+bchb.pfa        -AbiSource-Bitstream Charter-bold-r-normal--0-0-0-0-p-0-iso8859-1
+bchbi.pfa       -AbiSource-Bitstream Charter-bold-i-normal--0-0-0-0-p-0-iso8859-1
+bchr.pfa        -AbiSource-Bitstream Charter-regular-r-normal--0-0-0-0-p-0-iso8859-1
+bchri.pfa       -AbiSource-Bitstream Charter-regular-i-normal--0-0-0-0-p-0-iso8859-1
+c059013l.pfa    -AbiSource-Century Schoolbook-regular-r-normal--0-0-0-0-p-0-iso8859-1
+c059016l.pfa    -AbiSource-Century Schoolbook-bold-r-normal--0-0-0-0-p-0-iso8859-1
+c059033l.pfa    -AbiSource-Century Schoolbook-regular-i-normal--0-0-0-0-p-0-iso8859-1
+c059036l.pfa    -AbiSource-Century Schoolbook-bold-i-normal--0-0-0-0-p-0-iso8859-1
+d050000l.pfa    -AbiSource-Dingbats-regular-r-normal--0-0-0-0-p-0-adobe-fontspecific
+d050000l.pfa    -AbiSource-Dingbats-bold-r-normal--0-0-0-0-p-0-adobe-fontspecific
+d050000l.pfa    -AbiSource-Dingbats-regular-i-normal--0-0-0-0-p-0-adobe-fontspecific
+d050000l.pfa    -AbiSource-Dingbats-bold-i-normal--0-0-0-0-p-0-adobe-fontspecific
 n019003l.pfa    -AbiSource-Nimbus Sans-regular-r-normal--0-0-0-0-p-0-iso8859-1
 n019004l.pfa    -AbiSource-Nimbus Sans-bold-r-normal--0-0-0-0-p-0-iso8859-1
 n019023l.pfa    -AbiSource-Nimbus Sans-regular-i-normal--0-0-0-0-p-0-iso8859-1
 n019024l.pfa    -AbiSource-Nimbus Sans-bold-i-normal--0-0-0-0-p-0-iso8859-1
-n019043l.pfa    -AbiSource-Nimbus Sans-regular-r-condensed--0-0-0-0-p-0-iso8859-1
-n019044l.pfa    -AbiSource-Nimbus Sans-bold-r-condensed--0-0-0-0-p-0-iso8859-1
-n019063l.pfa    -AbiSource-Nimbus Sans-regular-i-condensed--0-0-0-0-p-0-iso8859-1
-n019064l.pfa    -AbiSource-Nimbus Sans-bold-i-condensed--0-0-0-0-p-0-iso8859-1
+n019043l.pfa    -AbiSource-Nimbus Sans Condensed-regular-r-normal--0-0-0-0-p-0-iso8859-1
+n019044l.pfa    -AbiSource-Nimbus Sans Condensed-bold-r-normal--0-0-0-0-p-0-iso8859-1
+n019063l.pfa    -AbiSource-Nimbus Sans Condensed-regular-i-normal--0-0-0-0-p-0-iso8859-1
+n019064l.pfa    -AbiSource-Nimbus Sans Condensed-bold-i-normal--0-0-0-0-p-0-iso8859-1
 n021003l.pfa    -AbiSource-Nimbus Roman-regular-r-normal--0-0-0-0-p-0-iso8859-1
 n021004l.pfa    -AbiSource-Nimbus Roman-bold-r-normal-medium-0-0-0-0-p-0-iso8859-1
 n021023l.pfa    -AbiSource-Nimbus Roman-regular-i-normal--0-0-0-0-p-0-iso8859-1
@@ -32,8 +39,19 @@ n022003l.pfa    -AbiSource-Nimbus Mono-regular-r-normal--0-0-0-0-p-0-iso8859-1
 n022004l.pfa    -AbiSource-Nimbus Mono-bold-r-normal--0-0-0-0-p-0-iso8859-1
 n022023l.pfa    -AbiSource-Nimbus Mono-regular-i-normal--0-0-0-0-p-0-iso8859-1
 n022024l.pfa    -AbiSource-Nimbus Mono-bold-i-normal--0-0-0-0-p-0-iso8859-1
-p052003l.pfa    -AbiSource-palladio-regular-r-normal--0-0-0-0-p-0-iso8859-1
-p052004l.pfa    -AbiSource-palladio-bold-r-normal--0-0-0-0-p-0-iso8859-1
-p052023l.pfa    -AbiSource-palladio-regular-i-normal--0-0-0-0-p-0-iso8859-1
-p052024l.pfa    -AbiSource-palladio-bold-i-normal--0-0-0-0-p-0-iso8859-1
-s050000l.pfa    -AbiSource-standard symbols-regular-r-normal--0-0-0-0-p-0-AbiSource-fontspecific
+n022003l.pfa    -AbiSource-Courier-regular-r-normal--0-0-0-0-p-0-iso8859-1
+n022004l.pfa    -AbiSource-Courier-bold-r-normal--0-0-0-0-p-0-iso8859-1
+n022023l.pfa    -AbiSource-Courier-regular-i-normal--0-0-0-0-p-0-iso8859-1
+n022024l.pfa    -AbiSource-Courier-bold-i-normal--0-0-0-0-p-0-iso8859-1
+n022003l.pfa    -AbiSource-Courier New-regular-r-normal--0-0-0-0-p-0-iso8859-1
+n022004l.pfa    -AbiSource-Courier New-bold-r-normal--0-0-0-0-p-0-iso8859-1
+n022023l.pfa    -AbiSource-Courier New-regular-i-normal--0-0-0-0-p-0-iso8859-1
+n022024l.pfa    -AbiSource-Courier New-bold-i-normal--0-0-0-0-p-0-iso8859-1
+p052003l.pfa    -AbiSource-Palladio-regular-r-normal--0-0-0-0-p-0-iso8859-1
+p052004l.pfa    -AbiSource-Palladio-bold-r-normal--0-0-0-0-p-0-iso8859-1
+p052023l.pfa    -AbiSource-Palladio-regular-i-normal--0-0-0-0-p-0-iso8859-1
+p052024l.pfa    -AbiSource-Palladio-bold-i-normal--0-0-0-0-p-0-iso8859-1
+s050000l.pfa    -AbiSource-Standard Symbol-regular-r-normal--0-0-0-0-p-0-AbiSource-fontspecific
+s050000l.pfa    -AbiSource-Standard Symbols-bold-r-normal--0-0-0-0-p-0-AbiSource-fontspecific
+s050000l.pfa    -AbiSource-Standard Symbols-regular-i-normal--0-0-0-0-p-0-AbiSource-fontspecific
+s050000l.pfa    -AbiSource-Standard Symbols-bold-i-normal--0-0-0-0-p-0-AbiSource-fontspecific
