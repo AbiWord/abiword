@@ -91,7 +91,7 @@ UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 		m_pCharWidths = GR_CharWidthsCache::getCharWidthCache()->getWidthsForFont(this);
 	}
 	iWidth = m_pCharWidths->getWidth(c);
-	if ((iWidth == GR_CW_UNKNOWN) || (iWidth == GR_UNKNOWN_BYTE)) {
+	if (iWidth == GR_CW_UNKNOWN) {
 		iWidth = measureUnremappedCharForCache(c);
 		m_pCharWidths->setWidth(c, iWidth);
 	}
