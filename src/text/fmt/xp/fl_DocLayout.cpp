@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include "ut_types.h"
+#include "ut_sleep.h"
 #include "fl_DocListener.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
@@ -115,7 +116,7 @@ FL_DocLayout::~FL_DocLayout()
 		m_pBackgroundCheckTimer->stop();
 		while(m_bImSpellCheckingNow == true)
 		{
-#ifdef __BEOS
+#ifdef __BEOS__
 			/* On BeOS, we must release the cpu as timers are
 			   run on separate threads */
 			UT_usleep(10000);
