@@ -2498,7 +2498,7 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 		UT_DEBUGMSG(("Edit:InsertObject:Image:\n"));
 		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
 		_doInsertImageRun(blockOffset, pcro);
-		return UT_TRUE;
+		break;
 	}
 		
 	case PTO_Field:
@@ -2506,12 +2506,25 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 		UT_DEBUGMSG(("Edit:InsertObject:Field:\n"));
 		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
 		_doInsertFieldRun(blockOffset, pcro);
-		return UT_TRUE;
-	}		
+		break;
+	}
+	
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
+	
+	format();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_resetSelection();
+		pView->_setPoint(pcro->getPosition());
+		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
+	}
+
+	return UT_TRUE;
 }
 
 UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcro)
@@ -2524,8 +2537,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 
 		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
 		_delete(blockOffset, 1);
-		
-		return UT_TRUE;
+		break;
 	}
 	
 	case PTO_Field:
@@ -2534,13 +2546,25 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 
 		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
 		_delete(blockOffset, 1);
-		
-		return UT_TRUE;
+		break;
 	}		
+
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
+	
+	format();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_resetSelection();
+		pView->_setPoint(pcro->getPosition());
+		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
+	}
+
+	return UT_TRUE;
 }
 
 UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc)
@@ -2568,17 +2592,31 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 				pFieldRun->lookupProperties();
 				pFieldRun->calcWidths(&m_gbCharWidths);
 
-				return UT_TRUE;
+				goto done;
 			}
 			pRun = pRun->getNext();
 		}
 	
 		return UT_FALSE;
 	}		
+
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
+
+done:
+	format();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_resetSelection();
+		pView->_setPoint(pcroc->getPosition());
+		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
+	}
+
+	return UT_TRUE;
 }
 
 UT_Bool fl_BlockLayout::recalculateFields(void)
