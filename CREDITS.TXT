@@ -32,6 +32,7 @@ Bill Carpenter <bill-abisource@carpenter.org>   Smart Quotes
 Heath D. Carr <heath@abisource.com>
 Chema Celorio <chema@celorio.com>               Help w/ Gnome-Print
 Allan Clark <shark@blueyonder.co.uk>            StringPool fixes, Find algorithm
+John L. Clark <jlc6@po.cwru.edu>		XHMTL Export fixes
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
