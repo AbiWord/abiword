@@ -56,8 +56,7 @@ bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
-	bool bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.

@@ -37,6 +37,7 @@
 #include "px_ChangeRecord.h"
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
+#include "pd_Style.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -172,6 +173,36 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		// any props at the frag level, which might trigger coalescing, 
 		// thus this version of the loop is more complex.
 
+//
+// OK for styles we expand out all defined properties including BasedOn styles
+// Then we use these to eliminate any specfic properties in the current strux
+// Then properties in the current strux will resolve to those defined in the
+// style (they exist there) to specifc values in strux (if not overridden by 
+// the style) then finally to default value.
+//
+		const XML_Char * szStyle = UT_getAttribute("style",attributes);
+		PD_Style * pStyle = NULL;
+		getDocument()->getStyle(szStyle,&pStyle);
+		UT_ASSERT(pStyle);
+		UT_Vector vProps;
+//
+// Get the vector of properties
+//
+		pStyle->getAllProperties(&vProps,0);
+//
+// Finally make the const XML_Char * array of properties
+//
+		const XML_Char ** sProps = NULL;
+		UT_uint32 countp = vProps.getItemCount() + 1;
+		sProps = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+		countp--;
+		UT_uint32 i;
+		for(i=0; i<countp; i++)
+		{
+			sProps[i] = (const XML_Char *) vProps.getNthItem(i);
+		}
+		sProps[i] = NULL;
+
 		PT_DocPosition dpos = getFragPosition(pfs_First);
 		pf_Frag_Strux * pfsContainer = pfs_First;
 		pf_Frag * pfNewEnd;
@@ -202,7 +233,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 					if (!bEndSeen && (pfsContainer->getStruxType() == pts))
 					{
 						bool bResult;
-						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,properties);
+						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps);
 						UT_ASSERT(bResult);
 					}
 
@@ -216,9 +247,10 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_Text:
 				{
 					bool bResult;
+							
 					bResult = _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf),
 												   0,dpos,lengthThisStep,
-												   NULL,NULL,
+													   attributes,sProps,
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 					UT_ASSERT(bResult);
 					if (fragOffsetNewEnd > 0)
@@ -238,7 +270,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 					bool bResult;
 					bResult = _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf),
 													 0,dpos,lengthThisStep,
-													 NULL,NULL,
+														 attributes,sProps,
 													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 					UT_ASSERT(bResult);
 					UT_ASSERT(fragOffsetNewEnd == 0);
@@ -249,13 +281,13 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 				{
 					bool bResult;
 				 	bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf),
-													  dpos, NULL,NULL,
+														  dpos, 
+														  attributes,sProps,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 					UT_ASSERT(bResult);
 				}
 				break;
 			}
-
 			dpos += lengthThisStep;
 			
 			// since _fmtChange{Span,FmtMark,...}WithNotify(), can delete pf, mess with the
@@ -268,6 +300,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			if (!pf)
 				bFinished = true;
 		}
+		FREEP(sProps);
 	}
 
 	if (!bSimple)

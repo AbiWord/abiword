@@ -63,8 +63,10 @@ PP_AttrProp::~PP_AttrProp()
 
 size_t PP_AttrProp::getPropertyCount (void) const
 {
-  // return m_pProperties->getEntryCount();
-        return m_pAttributes->getEntryCount();
+	return m_pProperties->getEntryCount();
+//
+// sevior 24/5/2001  was why???
+///        return m_pAttributes->getEntryCount();
 }
 
 bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
@@ -574,7 +576,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 			const XML_Char ** p = properties;
 			while (*p)
 			{
-				if (UT_XML_stricmp(n,p[0])!=0)		// found it, so we don't put it in the result.
+				if (UT_XML_stricmp(n,p[0])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeProperty;
 				p += 2;
 			}

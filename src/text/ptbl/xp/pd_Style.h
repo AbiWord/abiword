@@ -55,7 +55,7 @@ public:
 	bool					addProperties(const XML_Char ** pProperties);
 	bool					setAllAttributes(const XML_Char ** pAtts);
 	bool					addAttributes(const XML_Char ** pAtts);
-
+	bool                    getAllProperties( UT_Vector * vProps, UT_sint32 depth);
 	size_t getPropertyCount(void) const;
 	bool getNthProperty (int ndx, const XML_Char *&szName,
 			     const XML_Char *&szValue) const;

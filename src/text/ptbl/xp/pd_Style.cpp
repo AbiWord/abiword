@@ -20,6 +20,8 @@
 #include "ut_string.h"
 #include "pd_Style.h"
 #include "pt_PieceTable.h"
+#include "pp_Property.cpp"
+#include "ut_vector.h"
 
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP)
 {
@@ -206,6 +208,45 @@ bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
 	  {
 	        return pAP->getNthProperty(ndx, szName, szValue);
 	  }
+}
+
+/*!
+ * This method fills a vector structure with all the properties defined
+ * in this style, including the basedon style.
+\param vProps the vector containing const XML_Char * (name,value) pairs
+*/
+
+bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
+{
+//
+// This method will be recursively called to basedon style
+//
+	UT_uint32 count = getPropertyCount();
+	UT_uint32 i,j;
+	const XML_Char * szName = NULL;
+	const XML_Char * szValue = NULL;
+	for(i=0; i < count; i++)
+	{
+		getNthProperty(i, szName, szValue);
+		bool bfound = false;
+//
+// Only keep the most recently defined properties
+//
+		for(j = 0; (j < vProps->getItemCount()) && !bfound ; j += 2)
+		{
+			bfound = (0 == strcmp(szName, (const char *) vProps->getNthItem(j)));
+		}
+		if(!bfound)
+		{
+			vProps->addItem((void *) szName);
+			vProps->addItem((void *) szValue);
+		}
+	}
+	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
+	{
+		getBasedOn()->getAllProperties(vProps,depth +1);
+	}
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////

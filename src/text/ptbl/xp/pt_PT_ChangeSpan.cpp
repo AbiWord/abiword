@@ -38,7 +38,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
-
+#include "pd_Style.h"
 
 #define SETP(p,v)	do { if (p) (*(p)) = (v); } while (0)
 
@@ -262,6 +262,7 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
 	bool bMerged;
+
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT(bMerged);
 
@@ -312,9 +313,48 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	
 	UT_ASSERT(m_pts==PTS_Editing);
     _tweakFieldSpan(dpos1,dpos2);
+
+//
+// Deal with addStyle
+//
+	bool bApplyStyle = (PTC_AddStyle == ptc);
+	const XML_Char ** sProps = NULL;
+	const XML_Char ** lProps = properties;
+	if(bApplyStyle)
+	{
+//
+// OK for styles we expand out all defined properties including BasedOn styles
+// Then we use these to eliminate any specfic properties in the current strux
+// Then properties in the current strux will resolve to those defined in the
+// style (they exist there) to specifc values in strux (if not overridden by 
+// the style) then finally to default value.
+//
+		const XML_Char * szStyle = UT_getAttribute("style",attributes);
+		PD_Style * pStyle = NULL;
+		getDocument()->getStyle(szStyle,&pStyle);
+		UT_ASSERT(pStyle);
+		UT_Vector vProps;
+//
+// Get the vector of properties
+//
+		pStyle->getAllProperties(&vProps,0);
+//
+// Finally make the const XML_Char * array of properties
+//
+		UT_uint32 countp = vProps.getItemCount() + 1;
+		sProps = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+		countp--;
+		UT_uint32 i;
+		for(i=0; i<countp; i++)
+		{
+			sProps[i] = (const XML_Char *) vProps.getNthItem(i);
+		}
+		sProps[i] = NULL;
+		lProps = sProps;
+	}
 	if (dpos1 == dpos2) 		// if length of change is zero, then we have a toggle format.
 	{
-		bool bRes = _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,properties);
+		bool bRes = _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,lProps);
 		// Won't be a persistant change if it's just a toggle
 		PX_ChangeRecord *pcr=0;
 		m_history.getUndo(&pcr);
@@ -324,13 +364,17 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			pcr->setPersistance(false);
 			m_history.setSavePosition(m_history.getSavePosition()+1);
 		}
+		if(bApplyStyle)
+		{
+			FREEP(sProps);
+		}
 		return bRes;
 	}
 	
 	UT_ASSERT(dpos1 < dpos2);
 	bool bHaveAttributes, bHaveProperties;
 	bHaveAttributes = (attributes && *attributes);
-	bHaveProperties = (properties && *properties);
+	bHaveProperties = (lProps && *lProps);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
     
 	pf_Frag * pf_First;
@@ -398,6 +442,10 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		default:
 			UT_DEBUGMSG(("fragment type: %d\n",pf_First->getType()));
 			UT_ASSERT(0);
+			if(bApplyStyle)
+			{
+				FREEP(sProps);
+			}
 			return false;
 			
 		case pf_Frag::PFT_Strux:
@@ -423,7 +471,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 				bool bResult;
 				bResult	= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf_First),
 											   fragOffset_First,dpos1,lengthThisStep,
-											   attributes,properties,
+											   attributes,lProps,
 											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
 			}
@@ -441,7 +489,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 				bool bResult;
 				bResult	= _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf_First),
 												 fragOffset_First,dpos1,lengthThisStep,
-												 attributes,properties,
+												 attributes,lProps,
 												 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
 			}
@@ -458,7 +506,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 
 				bool bResult;
 				bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf_First),
-												  dpos1, attributes,properties,
+												  dpos1, attributes,lProps,
 												  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
 			}
@@ -479,6 +527,10 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		if (!pf_First)
 			length = 0;
 		fragOffset_First = fragOffsetNewEnd;
+	}
+	if(bApplyStyle)
+	{
+		FREEP(sProps);
 	}
 
 	if (!bSimple)

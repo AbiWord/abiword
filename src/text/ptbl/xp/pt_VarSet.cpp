@@ -182,10 +182,6 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	// referenced in apiOld, just return it.
 	// return false only if we had an error.
 
-//
-// Modification by Sevior 16/5/2001. If ptc is an addstyle and the basedon
-// style is a NULL, do a merge of the current properties with the style 
-//
 	const PP_AttrProp * papOld = getAP(apiOld);
 	switch (ptc)
 	{
@@ -222,31 +218,18 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// one (with its props cleared) and the a/p given in 
 			// the args.  we then use it to find an existing match 
 			// or use the new one.
-			
 //
-// Look if the "basedon" style exists. If it doesn't do a merge
+// This is a bit tricky because we want to replace any attributes with one's
+// from our style but we will remove any explict defined properties that are 
+// contained in the style. So first clonewithreplace then cloneWithElmination
+// This code assumes that the properties passed in the PTC_AddStyle are the
+// properties from the fully expanded style.
 //
-			if(attributes && *attributes)
-			{
-				const char * pszStyle = UT_getAttribute("style",attributes);
-				if(pszStyle)
-				{
-					PD_Style * pStyle = NULL;
-					pDoc->getStyle(pszStyle,&pStyle);
-					PD_Style *pBasedOn = pStyle->getBasedOn();
-					if(pBasedOn == NULL)
-					{
-						PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, false);
-						if (!pNew)
-							return false;
-
-						pNew->markReadOnly();
-						return addIfUniqueAP(pNew,papiNew);
-					}
-				}
-			}
-
-			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, true);
+			PP_AttrProp * pNew1 = papOld->cloneWithReplacements(attributes,NULL, false);
+			if (!pNew1)
+				return false;
+			PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,properties);
+			delete pNew1;
 			if (!pNew)
 				return false;
 
