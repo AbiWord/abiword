@@ -93,6 +93,7 @@ protected:
 
 	UT_Bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 										PT_BufIndex bi, UT_uint32 length);
+	void					_deleteTextFrag(pf_Frag_Text * pft);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

@@ -205,6 +205,34 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	return UT_TRUE;
 }
 
+void pt_PieceTable::_deleteTextFrag(pf_Frag_Text * pft)
+{
+	// delete the given fragment from the fragment list.
+	// also, see if the adjacent fragments can be coalesced.
+
+	pf_Frag * pp = pft->getPrev();
+
+	m_fragments.unlinkFrag(pft);
+	delete pft;
+
+	if (   pp
+		&& pp->getType()==pf_Frag::PFT_Text
+		&& pp->getNext()
+		&& pp->getNext()->getType()==pf_Frag::PFT_Text)
+	{
+		pf_Frag_Text * ppt = static_cast<pf_Frag_Text *> (pp);
+		pf_Frag_Text * pnt = static_cast<pf_Frag_Text *> (pp->getNext());
+		UT_uint32 prevLength = ppt->getLength();
+		if (   ppt->getIndexAP() == pnt->getIndexAP()
+			&& m_varset.isContiguous(ppt->getBufIndex(),prevLength,pnt->getBufIndex()))
+		{
+			ppt->changeLength(prevLength+pnt->getLength());
+			m_fragments.unlinkFrag(pnt);
+			delete pnt;
+		}
+	}
+}
+
 UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 								   PT_BufIndex bi, UT_uint32 length)
 {
@@ -220,9 +248,9 @@ UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 		if (length == pft->getLength())
 		{
 			// the change exactly matches the fragment, just delete the fragment.
-			
-			m_fragments.unlinkFrag(pft);
-			delete pft;
+			// as we delete it, see if the fragments around it can be coalesced.
+
+			_deleteTextFrag(pft);
 			return UT_TRUE;
 		}
 
