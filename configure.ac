@@ -261,11 +261,12 @@ if test "$PLATFORM" = unix -a "$gnome" = true ; then
 	    if test "$vers" -ge 1002000; then
 	        AC_MSG_RESULT(found)
 	    else
-	       AC_MSG_RESULT(You need at least gnome-libs 1.2.0: disabling gnome)
+	    	AC_MSG_RESULT(You need at least gnome-libs 1.2.0: disabling gnome)
+          	gnome=false
 	    fi
 	else
 	    AC_MSG_RESULT(not found: disabling gnome)
-           gnome=false
+            gnome=false
         fi
 	AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
 fi
@@ -279,11 +280,12 @@ if test "$PLATFORM" = unix -a "$gnome" = true ; then
 	    if test "$vers" -ge 5; then
 	        AC_MSG_RESULT(found)
 	    else
-	       AC_MSG_RESULT(You need at least gal 0.5: disabling gnome)
+	    	AC_MSG_RESULT(You need at least gal 0.5: disabling gnome)
+            	gnome=false
 	    fi
 	else
-	    AC_MSG_RESULT(not found: disabling gnome)
-           gnome=false
+		AC_MSG_RESULT(not found: disabling gnome)
+        	gnome=false
         fi
 	AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
 fi
