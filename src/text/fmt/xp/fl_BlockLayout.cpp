@@ -4415,7 +4415,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		else
 		{
 			pPrevBL->m_pFirstRun = m_pFirstRun;
-			offset = pPrevBL->getPosition();
+			offset = m_pFirstRun->getBlockOffset();
 		}
 		UT_DEBUGMSG(("deleteStrux: offset = %d \n",offset));
 		// Merge charwidths
