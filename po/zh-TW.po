@@ -14,7 +14,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 0.9.6\n"
-"PO-Revision-Date: 2001-12-03 06:28 +0800\n"
+"PO-Revision-Date: 2001-12-05 18:22 +0800\n"
 "Last-Translator: Anthony Fok <anthony@thizlinux.com>\n"
 "Language-Team: Traditional Chinese <zh-l10n@linux.org.tw>\n"
 "MIME-Version: 1.0\n"
@@ -187,7 +187,7 @@ msgstr "套用"
 
 #: DLG_Background_ClearClr
 msgid "Clear Background Color"
-msgstr "清除背景顏色"
+msgstr "清除背景色彩"
 
 #: DLG_Background_ClearHighlight
 msgid "Clear Highlight Color"
@@ -195,7 +195,7 @@ msgstr "清除醒目提示色彩"
 
 #: DLG_Background_Title
 msgid "Change Background Color"
-msgstr "變更背景顏色"
+msgstr "變更背景色彩"
 
 #: DLG_Background_TitleFore
 msgid "Change Text Color"
@@ -299,7 +299,7 @@ msgstr "兩欄"
 
 #: DLG_DateTime_AvailableFormats
 msgid "&Available formats:"
-msgstr "預設格式(&A)"
+msgstr "可用格式(&A)"
 
 #: DLG_DateTime_DateTimeTitle
 msgid "Date and Time"
@@ -391,11 +391,11 @@ msgstr "取代為(&P)"
 
 #: DLG_Field_FieldTitle
 msgid "Field"
-msgstr "Field"
+msgstr "功能變數"
 
 #: DLG_Field_Fields
 msgid "&Fields:"
-msgstr "Fields(&F):"
+msgstr "功能變數(&F):"
 
 #: DLG_Field_Parameters
 msgid "Extra parameters:"
@@ -403,7 +403,7 @@ msgstr "額外參數:"
 
 #: DLG_Field_Types
 msgid "&Types:"
-msgstr "類型(&T)"
+msgstr "類別(&T)"
 
 #: DLG_Goto_Btn_Goto
 msgid "Go To"
@@ -483,11 +483,11 @@ msgstr "最後一頁使用不同的頁首"
 
 #: DLG_HdrFtr_RestartCheck
 msgid "Restart Page Numbers on new Sections"
-msgstr "Restart Page Numbers on new Sections"
+msgstr "每節重新編號"
 
 #: DLG_HdrFtr_RestartNumbers
 msgid "Restart numbering at:"
-msgstr "Restart numbering at:"
+msgstr "起始編號:"
 
 #: DLG_HdrFtr_Title
 msgid "Format Header/Footers"
@@ -535,7 +535,7 @@ msgstr "插入(&I)"
 
 #: DLG_InsertBookmark_Msg
 msgid "Type a name for the bookmark, or select existing one from the list."
-msgstr "鍵入書籤名稱，或從清單中選擇一個"
+msgstr "鍵入書籤名稱，或從清單中選擇一個。"
 
 #: DLG_InsertBookmark_Title
 msgid "Insert Bookmark"
@@ -563,7 +563,7 @@ msgstr "文字對位"
 
 #: DLG_Lists_Apply_Current
 msgid "Apply to Current List"
-msgstr "套用至目前項目清單"
+msgstr "套用至目前清單"
 
 #: DLG_Lists_Box_List
 msgid "Box List"
@@ -663,11 +663,11 @@ msgstr "預覽"
 
 #: DLG_Lists_Resume
 msgid "Attach to Previous List"
-msgstr "連結至上一個項目清單"
+msgstr "連結至上一個清單"
 
 #: DLG_Lists_Resume_Previous_List
 msgid "Resume Previous List"
-msgstr "恢復上一個項目清單"
+msgstr "恢復上一個清單"
 
 #: DLG_Lists_SetDefault
 msgid "Set Default Values"
@@ -851,15 +851,15 @@ msgstr "自動載入所有找到的 plugins"
 
 #: DLG_Options_Label_CheckWhiteForTransparent
 msgid "Allow screen colors other than white"
-msgstr "允許白色以外的螢幕顏色"
+msgstr "允許白色以外的螢幕色彩"
 
 #: DLG_Options_Label_ChooseForTransparent
 msgid "Choose Screen Color"
-msgstr "選擇螢幕顏色"
+msgstr "選擇螢幕色彩"
 
 #: DLG_Options_Label_ColorChooserLabel
 msgid "Choose screen color for AbiWord"
-msgstr "選擇 AbiWord 的螢幕顏色"
+msgstr "選擇 AbiWord 的螢幕色彩"
 
 #: DLG_Options_Label_CustomDict
 msgid "custom.dic"
@@ -931,7 +931,7 @@ msgstr "程式啟動時顯示 AbiWord 歡迎畫面"
 
 #: DLG_Options_Label_SmartQuotesEnable
 msgid "&Enable smart quotes"
-msgstr "啟用智能引號(&E)"
+msgstr "啟用智慧引號(&E)"
 
 #: DLG_Options_Label_SpellAutoReplace
 msgid "Auto replace misspelled words"
@@ -1531,11 +1531,11 @@ msgstr "這個樣式不存在 \n 所以不能修改"
 
 #: DLG_Styles_LBL_All
 msgid "All"
-msgstr "全部"
+msgstr "所有樣式"
 
 #: DLG_Styles_LBL_InUse
 msgid "In Use"
-msgstr "使用中"
+msgstr "使用中的樣式"
 
 #: DLG_Styles_LBL_TxtMsg
 msgid "What Hath God Wrought"
@@ -1543,7 +1543,7 @@ msgstr "What Hath God Wrought"
 
 #: DLG_Styles_LBL_UserDefined
 msgid "User-defined styles"
-msgstr "使用者自訂樣式"
+msgstr "使用者定義的樣式"
 
 #: DLG_Styles_List
 msgid "List"
@@ -1559,7 +1559,7 @@ msgstr "自動更新"
 
 #: DLG_Styles_ModifyBasedOn
 msgid "Based On:"
-msgstr "基於:"
+msgstr "根據樣式:"
 
 #: DLG_Styles_ModifyCharacter
 msgid "Character"
@@ -1567,7 +1567,7 @@ msgstr "字元"
 
 #: DLG_Styles_ModifyDescription
 msgid "Description"
-msgstr "描述"
+msgstr "敘述"
 
 #: DLG_Styles_ModifyFollowing
 msgid "Style for following paragraph"
@@ -1763,11 +1763,11 @@ msgstr "行底線"
 
 #: DLG_UFS_ColorLabel
 msgid "Color:"
-msgstr "顏色:"
+msgstr "色彩:"
 
 #: DLG_UFS_ColorTab
 msgid "Text Color"
-msgstr "文字顏色"
+msgstr "文字色彩"
 
 #: DLG_UFS_Direction
 msgid "Right-to-left"
@@ -1907,7 +1907,7 @@ msgstr "列印"
 
 #: DLG_UP_PrintIn
 msgid "Print in: "
-msgstr "Print in: "
+msgstr "黑白或彩色列印: "
 
 #: DLG_UP_PrintPreviewTitle
 msgid "AbiWord: Print Preview"
@@ -2423,11 +2423,11 @@ msgstr "字元數"
 
 #: FIELD_Numbers_EndnoteAnchor
 msgid "Endnote anchor"
-msgstr "Endnote anchor"
+msgstr "章節附註 anchor"
 
 #: FIELD_Numbers_EndnoteReference
 msgid "Endnote reference"
-msgstr "Endnote reference"
+msgstr "章節附註參照"
 
 #: FIELD_Numbers_LineCount
 msgid "Line Count"
@@ -2943,7 +2943,7 @@ msgstr "移除頁首"
 
 #: MENU_LABEL_EDIT_REPLACE
 msgid "R&eplace"
-msgstr "代替(&E)"
+msgstr "取代(&E)"
 
 #: MENU_LABEL_EDIT_SELECTALL
 msgid "Select A&ll"
@@ -3179,7 +3179,7 @@ msgstr "回報程式錯誤(&B)"
 
 #: MENU_LABEL_HELP_SEARCH
 msgid "&Search for Help"
-msgstr "搜索說明(&S)"
+msgstr "搜尋說明(&S)"
 
 #: MENU_LABEL_INSERT
 msgid "&Insert"
@@ -3203,7 +3203,7 @@ msgstr "美工圖案(&C)"
 
 #: MENU_LABEL_INSERT_DATETIME
 msgid "Date and &Time"
-msgstr "日期/時間(&T)"
+msgstr "日期及時間(&T)"
 
 #: MENU_LABEL_INSERT_DELETE_HYPERLINK
 msgid "&Delete hyperlink"
@@ -3215,7 +3215,7 @@ msgstr "Endnote(&E)"
 
 #: MENU_LABEL_INSERT_FIELD
 msgid "&Field"
-msgstr "區間(&F)"
+msgstr "功能參數(&F)"
 
 #: MENU_LABEL_INSERT_FILE
 msgid "&Insert File"
@@ -3487,19 +3487,19 @@ msgstr "MISSING"
 
 #: MENU_STATUSLINE_ALIGN_CENTER
 msgid "Center-align the paragraph"
-msgstr "置中對齊"
+msgstr "段落置中對齊"
 
 #: MENU_STATUSLINE_ALIGN_JUSTIFY
 msgid "Justify the paragraph"
-msgstr "根據文章對齊"
+msgstr "段落左右對齊"
 
 #: MENU_STATUSLINE_ALIGN_LEFT
 msgid "Left-justify the paragraph"
-msgstr "靠左對齊"
+msgstr "段落靠左對齊"
 
 #: MENU_STATUSLINE_ALIGN_RIGHT
 msgid "Right-justify the paragraph"
-msgstr "靠右對齊"
+msgstr "段落靠右對齊"
 
 #: MENU_STATUSLINE_AUTOTEXT_ATTN
 msgid " "
@@ -3715,7 +3715,7 @@ msgstr "插入未格式化的剪貼簿內容"
 
 #: MENU_STATUSLINE_EDIT_REDO
 msgid "Redo previously undone editing"
-msgstr "重做"
+msgstr "重做之前復原了的編輯"
 
 #: MENU_STATUSLINE_EDIT_REMOVEFOOTER
 msgid "Remove the Footer on this page from the Document"
@@ -3767,11 +3767,11 @@ msgstr "開啟舊檔"
 
 #: MENU_STATUSLINE_FILE_PAGESETUP
 msgid "Change the printing options"
-msgstr "改變輸出選項"
+msgstr "改變列印選項"
 
 #: MENU_STATUSLINE_FILE_PRINT
 msgid "Print all or part of the document"
-msgstr "列印出所有或部份文件"
+msgstr "列印出文件的全部或部份"
 
 #: MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 msgid "Print using the internal PS driver"
@@ -3831,7 +3831,7 @@ msgstr "將檔案存為其它的檔名"
 
 #: MENU_STATUSLINE_FMT_BACKGROUND
 msgid "Change your document's background color"
-msgstr "改變您文件的背景顏色"
+msgstr "改變您文件的背景色彩"
 
 #: MENU_STATUSLINE_FMT_BOLD
 msgid "Make the selection bold (toggle)"
@@ -3895,11 +3895,11 @@ msgstr "為選取區文字定義或套用樣式"
 
 #: MENU_STATUSLINE_FMT_SUBSCRIPT
 msgid "Make the selection subscript (toggle)"
-msgstr "使選取區文字成為下標字"
+msgstr "使選取區文字成為下標字 (切換)"
 
 #: MENU_STATUSLINE_FMT_SUPERSCRIPT
 msgid "Make the selection superscript (toggle)"
-msgstr "使選取區文字成為上標字"
+msgstr "使選取區文字成為上標字 (切換)"
 
 #: MENU_STATUSLINE_FMT_TABS
 msgid "Set tab stops"
@@ -3963,7 +3963,7 @@ msgstr "回報程式錯誤，以幫助 AbiWord 成為一個更好的產品"
 
 #: MENU_STATUSLINE_HELP_SEARCH
 msgid "Search for help about..."
-msgstr "MISSING"
+msgstr "在說明搜尋關於..."
 
 #: MENU_STATUSLINE_INSERT
 msgid " "
@@ -3995,11 +3995,11 @@ msgstr "刪除超連結"
 
 #: MENU_STATUSLINE_INSERT_ENDNOTE
 msgid "Insert an endnote"
-msgstr "MISSING"
+msgstr "插入註腳"
 
 #: MENU_STATUSLINE_INSERT_FIELD
 msgid "Insert a calculated field"
-msgstr "插入一個計算區間"
+msgstr "插入一個計算功能參數"
 
 #: MENU_STATUSLINE_INSERT_FILE
 msgid "Insert the contents of another file"
@@ -4251,11 +4251,11 @@ msgstr "把這個視窗放在最上面"
 
 #: MENU_STATUSLINE_WINDOW_MORE
 msgid "Show full list of windows"
-msgstr "顯視所有視窗列表"
+msgstr "顯視整份視窗列表"
 
 #: MENU_STATUSLINE_WINDOW_NEW
 msgid "Open another window for the document"
-msgstr "將此份文章以另一視窗開啟"
+msgstr "將此份文件在另一視窗開啟"
 
 #: MENU_STATUSLINE__BOGUS1__
 msgid " "
@@ -4267,7 +4267,7 @@ msgstr "MISSING"
 
 #: MSG_AfterRestartNew
 msgid "This change will only take effect when you restart AbiWord or create a new document."
-msgstr "This change will only take effect when you restart AbiWord or create a new document."
+msgstr "這項變更要等到您重新啟動 AbiWord 或開啟新文件後才會生效。"
 
 #: MSG_BookmarkNotFound
 msgid "Bookmark \"%s\" was not found in this document."
@@ -4379,7 +4379,7 @@ msgstr "儲存 %s 時發生寫入錯誤"
 
 #: MSG_ShowUnixFontWarning
 msgid "AbiWord was not able to add its fonts to the X "
-msgstr "AbiWord 不能成功把它的字型加進 X "
+msgstr "AbiWord 不能成功地把它的字型加進 X "
 
 #: MSG_SpellDone
 msgid "The spelling check is complete."
