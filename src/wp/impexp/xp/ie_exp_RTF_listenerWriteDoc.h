@@ -72,6 +72,8 @@ protected:
 	UT_Bool				m_bInSection;
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
+	UT_Bool				m_bJustStartingDoc;
+	UT_Bool				m_bJustStartingSection;
 	PT_AttrPropIndex	m_apiLastSpan;
 
 	PT_AttrPropIndex	m_apiThisSection;

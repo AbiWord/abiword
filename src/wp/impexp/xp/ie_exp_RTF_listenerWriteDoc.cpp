@@ -222,7 +222,9 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_apiLastSpan = 0;
 	m_apiThisSection = NULL;
 	m_apiThisBlock = NULL;
-
+	m_bJustStartingDoc = UT_TRUE;
+	m_bJustStartingSection = UT_TRUE;
+	
 	// TODO emit <info> if desired
 
 	_rtf_docfmt();						// deal with <docfmt>
@@ -258,6 +260,8 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 #if 0
+			// TODO deal with inline objects....
+			
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
@@ -433,7 +437,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	// TODO add other properties here
 
 	m_pie->_rtf_nl();
-	m_pie->_rtf_keyword("sect");								// begin a new section
+
+	if (m_bJustStartingDoc)			// 'sect' is a delimiter, rather than a plain start
+		m_bJustStartingDoc = UT_FALSE;
+	else
+		m_pie->_rtf_keyword("sect");							// begin a new section
+	m_bJustStartingSection = UT_TRUE;
+
 	m_pie->_rtf_keyword("sectd");								// restore all defaults for this section
 	m_pie->_rtf_keyword("sbknone");								// no page break implied
 	m_pie->_rtf_keyword_ifnotdefault("cols",szColumns,1);
@@ -495,7 +505,12 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	// TODO add other properties here
 
 	m_pie->_rtf_nl();
-	m_pie->_rtf_keyword("par");			// begin a new paragraph
+
+	if (m_bJustStartingSection)			// 'par' is a delimiter, rather than a plain start.
+		m_bJustStartingSection = UT_FALSE;
+	else
+		m_pie->_rtf_keyword("par");		// begin a new paragraph
+	
 	m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 
 	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
