@@ -691,12 +691,25 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 		if (fimpl->m_pWin32Popup)
 		{
-			fimpl->m_pWin32Popup->onDrawItem(hwnd, wParam,lParam);
+			fimpl->m_pWin32Popup->onDrawItem(hwnd,wParam,lParam);
 		}
 		else 
-			fimpl->m_pWin32Menu->onDrawItem(hwnd, wParam,lParam);
+			fimpl->m_pWin32Menu->onDrawItem(hwnd,wParam,lParam);
 
 		return 0;					
+	}
+
+	case WM_MENUSELECT:
+	{
+		if (fimpl->m_pWin32Popup)
+		{
+			fimpl->m_pWin32Popup->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam);
+		}
+		else 
+			fimpl->m_pWin32Menu->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam);
+
+		return 0;					
+
 	}
 
 	case WM_NOTIFY:

@@ -25,6 +25,7 @@
 #include "xap_Types.h"
 #include "ev_Menu.h"
 #include "ut_misc.h"
+//#include "ap_Win32FrameImpl.h"
 
 class AV_View;
 class XAP_Win32App;
