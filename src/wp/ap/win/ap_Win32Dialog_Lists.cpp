@@ -1097,6 +1097,6 @@ void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pWorker)
 
 const XML_Char* AP_Win32Dialog_Lists::_getDingbatsFontName() const
 {
-	return "Wingdings";
+	return "Dingbats";
 }
 
