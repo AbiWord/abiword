@@ -433,7 +433,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
 
   EV_Menu_ItemState s = EV_MIS_ZERO ;
 
-  if(pView->isHdrFtrEdit())
+  if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
     s = EV_MIS_Gray;
 
   return s;
@@ -477,10 +477,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
 
   EV_Menu_ItemState s = EV_MIS_ZERO ;
 
-  if(pView->isHdrFtrEdit())
+  if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
   {
     s = EV_MIS_Gray;
   }
+  if(pView->isInHdrFtr(pView->getPoint()))
+  {
+    s = EV_MIS_Gray;
+  }
+
   else if(pView->isInTable()) // isintable includes first
   {
     s = EV_MIS_Gray;
@@ -751,17 +756,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 		break;
 
 	case AP_MENU_ID_TABLE_INSERT:
-		if (pView->isHdrFtrEdit())
+		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
 			s = EV_MIS_Gray;
 		break;
 
 	case AP_MENU_ID_TABLE_INSERT_TABLE:
-		if (pView->isHdrFtrEdit())
+		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
 			s = EV_MIS_Gray;
 		break;
 
 	case AP_MENU_ID_TABLE_INSERTTABLE:
-		if (pView->isHdrFtrEdit())
+		if (pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
 			s = EV_MIS_Gray;
 		break;
 
@@ -1378,7 +1383,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable() && pView->isHdrFtrEdit())
+	if(pView->isInTable() && (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint())))
 	{
 		return EV_MIS_Gray;
 	}
@@ -1423,7 +1428,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInFrame(pView->getPoint()) 
+	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
 		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
@@ -1494,7 +1499,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
-	else if(pView->isHdrFtrEdit())
+	else if(pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
 	{
 		return EV_MIS_Gray;
 	}
@@ -1578,7 +1583,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, EV_MIS_ZERO);
 
-	if(pView->getDocument()->areStylesLocked() || pView->isHdrFtrEdit())
+	if(pView->getDocument()->areStylesLocked() || pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
 	{
 		return EV_MIS_Gray;
 	}

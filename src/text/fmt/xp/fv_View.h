@@ -380,6 +380,7 @@ public:
 // ----------------------
 // Stuff for edittable Headers/Footers
 //
+	bool                isInHdrFtr(PT_DocPosition pos);
 	void				setHdrFtrEdit(fl_HdrFtrShadow * pShadow);
 	void				clearHdrFtrEdit(void);
 	bool				isHdrFtrEdit(void);

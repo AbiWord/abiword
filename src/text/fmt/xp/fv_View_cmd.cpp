@@ -3628,6 +3628,15 @@ void FV_View::cmdRedo(UT_uint32 count)
 	{
 		_charMotion(true,1);
 	}
+	if(getPoint() > posEnd)
+	{
+		setPoint(posEnd);
+	}
+	while(!isPointLegal() && (getPoint() > 2))
+	{
+		_charMotion(false,1);
+	}
+
 	setCursorToContext();
 
 	_updateInsertionPoint();

@@ -1997,6 +1997,7 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 	// Signal PieceTable Changes have ended
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
+	notifyListeners(AV_CHG_ALL);
 }
 
 void FV_View::insertSectionBreak(void)
@@ -9666,6 +9667,24 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
 		}
 	}
 	return pClosest;
+}
+
+bool FV_View::isInHdrFtr(PT_DocPosition pos)
+{
+	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
+	fl_ContainerLayout * pCL = pBL->myContainingLayout();
+	while(pCL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+				  && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)
+				  && (pCL->getContainerType() != FL_CONTAINER_SHADOW)))
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	if(pCL && ( (pCL->getContainerType() == FL_CONTAINER_HDRFTR)
+				|| (pCL->getContainerType() == FL_CONTAINER_SHADOW)))
+	{
+		return true;
+	}
+	return false;
 }
 
 /*! 

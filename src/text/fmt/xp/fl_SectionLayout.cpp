@@ -3777,10 +3777,6 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 	bool bResult = true;
 	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
-	if(iCount <=0)
-	{
-		UT_ASSERT(0);
-	}
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
