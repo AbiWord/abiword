@@ -511,12 +511,14 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// is this safe with an XML_Char * string?
 	foundAt = searchCList(GTK_CLIST(m_fontList), (char *) m_pFontFamily);
-	if (foundAt == -1)
-		gtk_clist_select_row(GTK_CLIST(m_fontList), 0, 0);
-	else
-		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
+	UT_ASSERT(foundAt >= 0);
 
+	gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
+	gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
+
+	
 	// this is pretty messy
+	listStyle st = LIST_STYLE_NORMAL;
 	if (!m_pFontStyle || !m_pFontWeight)
 	{
 		// select nothing
@@ -524,34 +526,38 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	else if (!UT_stricmp(m_pFontStyle, "normal") &&
 			 !UT_stricmp(m_pFontWeight, "normal"))
 	{
-		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_NORMAL, 0);
+		st = LIST_STYLE_NORMAL;
 	}
 	else if (!UT_stricmp(m_pFontStyle, "normal") &&
 			 !UT_stricmp(m_pFontWeight, "bold"))
 	{
-		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_BOLD, 0);
+		st = LIST_STYLE_BOLD;
 	}
 	else if (!UT_stricmp(m_pFontStyle, "italic") &&
 			 !UT_stricmp(m_pFontWeight, "normal"))
 	{
-		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_ITALIC, 0);
+		st = LIST_STYLE_ITALIC;		
 	}
 	else if (!UT_stricmp(m_pFontStyle, "italic") &&
 			 !UT_stricmp(m_pFontWeight, "bold"))
 	{
-		gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_BOLD_ITALIC, 0);
+		st = LIST_STYLE_BOLD_ITALIC;		
 	}
 	else
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-
+	gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
+	gtk_clist_moveto(GTK_CLIST(m_fontList), st, 0, 0, -1);
+	
 	double size = UT_convertToPoints(m_pFontSize);
 	snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
 	foundAt = searchCList(GTK_CLIST(m_sizeList), sizeString);
-	if (foundAt >= 0)
-		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);		
-	
+	UT_ASSERT(foundAt >= 0);
+
+	gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
+	gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
+		
 	// Set color in the color selector
 	if (m_pColor)
 	{
@@ -562,7 +568,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
 		currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 
-		// TODO set the color
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
 	}
 
@@ -809,7 +814,7 @@ void AP_UnixDialog_FontChooser::updatePreview(void)
 			(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
 			(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
 
-	// what will we do with these?
+	// TODO what will we do with these?
 //	UT_Bool bStrikeOut = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
 //	UT_Bool bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
 
