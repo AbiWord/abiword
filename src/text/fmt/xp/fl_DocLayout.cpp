@@ -76,8 +76,6 @@ const char * s_FootnoteTypeDesc[] = {
 
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) 
-	:	m_pMathGraphicDevice(GR_Abi_MathGraphicDevice::create()),
-		m_pAbiContext(new GR_Abi_RenderingContext(pG))
 {
 	m_pDoc = doc;
 	m_pG = pG;
@@ -135,6 +133,13 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_bRestartEndSection = false;
 	m_bPlaceAtDocEnd = true;
 	m_bPlaceAtSecEnd = false;
+
+	// MathView-related stuff
+	SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create();
+	m_pMathGraphicDevice = mathGraphicDevice;
+	m_pMathGraphicDevice->ref();
+	m_pAbiContext = new GR_Abi_RenderingContext(pG);
+
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -151,7 +156,6 @@ FL_DocLayout::~FL_DocLayout()
 	}
 
 	DELETEP(m_pDocListener);
-	DELETEP(m_pAbiContext);
 	if (m_pBackgroundCheckTimer)
 	{
 		m_bStopSpellChecking = true;
@@ -199,12 +203,20 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
+
+	// MathView-related stuff
+	m_pMathGraphicDevice->unref();
+	m_pMathGraphicDevice = 0;
+	DELETEP(m_pAbiContext);
+	m_pAbiContext = 0;
 }
 
+#if 0
 SmartPtr<GR_Abi_MathGraphicDevice> FL_DocLayout::getMathGraphicDevice(void) const
 {
 	return m_pMathGraphicDevice; 
 }
+#endif
 
 /*! 
  * little helper method for lookup properties

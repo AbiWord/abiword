@@ -29,8 +29,6 @@
 #include "fl_Layout.h"
 #include "ut_units.h"
 #include "xav_Listener.h"
-#include <MathView/SmartPtr.hh>
-
 
 typedef enum _FootnoteType
 {
@@ -268,10 +266,8 @@ public:
 		{ return m_iDocSize;}
 
 	void            notifyListeners(AV_ChangeMask mask);
-	SmartPtr<GR_Abi_MathGraphicDevice> getMathGraphicDevice(void) const;
-
-	GR_Abi_RenderingContext * getAbiContext(void) const
-		{ return m_pAbiContext;}
+	GR_Abi_MathGraphicDevice * getMathGraphicDevice(void) const { return m_pMathGraphicDevice; }
+	GR_Abi_RenderingContext * getAbiContext(void) const { return m_pAbiContext; }
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;
@@ -340,7 +336,7 @@ private:
 	UT_uint32           m_iGraphicTick;
 	UT_GenericVector<fl_TOCLayout *> m_vecTOC;
 	PT_DocPosition      m_iDocSize;
-	SmartPtr<GR_Abi_MathGraphicDevice>   m_pMathGraphicDevice;
+	GR_Abi_MathGraphicDevice *   m_pMathGraphicDevice;
 	GR_Abi_RenderingContext *  m_pAbiContext;
 };
 

@@ -19,7 +19,7 @@
 
 #include <MathView/MathMLElement.hh>
 #include <MathView/ShaperManager.hh>
-#include <MathView/SpaceShaper.hh>
+//#include <MathView/SpaceShaper.hh>
 
 #include "gr_Abi_AreaFactory.h"
 #include "gr_Abi_MathGraphicDevice.h"
