@@ -36,6 +36,8 @@ my $tag;
 my $str;
 my $cont 	= "0";
 
+$lang =~ s/_/-/g;
+
 print "Porting the PO translation back to AbiWord XP format\n";
 
 if (! -s "$lang.po") { print "Error: file $lang.po does not exist!\n"; exit; }
