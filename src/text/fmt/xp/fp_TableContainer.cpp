@@ -140,12 +140,26 @@ fp_CellContainer::~fp_CellContainer()
 
 void fp_CellContainer::setHeight(UT_sint32 iHeight)
 {
+	xxx_UT_DEBUGMSG(("cell: Height was %d \n",getHeight()));
 	if (iHeight == getHeight())
 	{
 		return;
 	}
 	clearScreen();
+	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
+	if(getBottomAttach() == pTab->getNumRows())
+	{
+		fp_CellContainer * pCell = pTab->getCellAtRowColumn(pTab->getNumRows() -1,0);
+		while(pCell)
+		{
+			pCell->clearScreen();
+			pCell->getSectionLayout()->setNeedsRedraw();
+			pCell->getSectionLayout()->markAllRunsDirty();
+			pCell = (fp_CellContainer *) pCell->getNext();
+		}
+	}
 	fp_VerticalContainer::setHeight(iHeight);
+	xxx_UT_DEBUGMSG(("cell: Height set to %d \n",getHeight()));
 	fl_SectionLayout * pSL = getSectionLayout();
 	pSL = (fl_SectionLayout *) pSL->myContainingLayout();
 	UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_TABLE);
@@ -249,17 +263,50 @@ void fp_CellContainer::clearScreen(void)
 			_clear(pBroke);
 			return;
 		}
+		if(!m_bLinesDrawn)
+		{
+			return;
+		}
 		while(pBroke)
 		{
+			xxx_UT_DEBUGMSG(("cell:clearscreean looking at pBroke %x Ybreak %d spannedHeight %d getY %d \n",pBroke,pBroke->getYBreak(),getSpannedHeight(),getY()));
 			if((getY() >= pBroke->getYBreak() && getY() < pBroke->getYBottom())
-				|| ( (getY()+getHeight()) >= pBroke->getYBreak() && 
-					 (getY() + getHeight()) < pBroke->getYBottom()))
+				|| ( (getY()+getSpannedHeight()) >= pBroke->getYBreak() && 
+					 (getY()  < pBroke->getYBreak())))
 			{
 				_clear(pBroke);
+				m_bLinesDrawn = true;
 			}
 			pBroke = (fp_TableContainer *) pBroke->getNext();
 		}
+		m_bLinesDrawn = false;
 	}
+}
+
+UT_sint32 fp_CellContainer::getSpannedHeight(void)
+{
+	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getBottomAttach(),getLeftAttach());
+	UT_sint32 height = 0;
+	if(pCell)
+	{
+		height = pTab->getYOfRow(getBottomAttach()) - getY();
+	}
+	else
+	{
+		fp_CellContainer * pCell = pTab->getCellAtRowColumn(pTab->getNumRows() -1,0);
+		fp_CellContainer * pMaxH = pCell;
+		while(pCell)
+		{
+			if(pCell->getHeight() > pMaxH->getHeight())
+			{
+				pMaxH = pCell;
+			}
+			pCell = (fp_CellContainer *) pCell->getNext();
+		}
+		height = pMaxH->getY() - getY() + pMaxH->getHeight();
+	}
+	return height;
 }
 
 void fp_CellContainer::_clear(fp_TableContainer * pBroke)
@@ -310,7 +357,6 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 					fp_Column * pCol = (fp_Column *) pBroke->getColumn();
 					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
 					getGraphics()->drawLine(bRec.left, col_y, bRec.left + bRec.width,  col_y);
-//					pBroke->setBrokenTop(-1);
 				}
 			}
 			if(m_iRightStyle != LS_OFF)
@@ -319,15 +365,16 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			}
 			if(m_iBottomStyle != LS_OFF)
 			{	
-				getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height); 
+				getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height);
+				xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
 				{
 					UT_sint32 col_x,col_y;
 					fp_Column * pCol = (fp_Column *) pBroke->getColumn();
 					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
 					UT_sint32 bot = col_y + pCol->getHeight();
+					xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
 					getGraphics()->drawLine(bRec.left, bot, bRec.left + bRec.width,  bot);
-//					pBroke->setBrokenBot(-1);
 				}
 
 			}
@@ -538,7 +585,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		}
 		iTop -= pBroke->getYBreak();
 		iBot -= pBroke->getYBreak();
-		xxx_UT_DEBUGMSG(("SEVIOR: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
+		xxx_UT_DEBUGMSG(("drawLines: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
 		if(iTop < col_y)
 		{
 			iTop = col_y;
@@ -704,9 +751,6 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 
 	m_bDrawBot = (pTab->getNumRows() == getBottomAttach());
 
-// draw right if this cell is the rightmost of the table
-
-	m_bDrawRight = (pTab->getNumCols() == getRightAttach());
 	m_bDrawLeft = true;
 
 	UT_sint32 count = countCons();
@@ -719,7 +763,7 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
         ybot += ytop + 1;
-		UT_DEBUGMSG(("SEVIOR: clip top %d clip bot %d \n",ytop,ybot));
+		xxx_UT_DEBUGMSG(("SEVIOR: clip top %d clip bot %d \n",ytop,ybot));
 	}
 	else
 	{
@@ -788,11 +832,11 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	}
 // draw bottom if this cell is the last of the table and fully contained on the page
 
-	m_bDrawBot = (pTab->getNumRows() == getBottomAttach());
+	m_bDrawBot = (pTab->getCellAtRowColumn(getBottomAttach(),getLeftAttach()) == NULL);
 
 // draw right if this cell is the rightmost of the table
 
-	m_bDrawRight = (pTab->getNumCols() == getRightAttach());
+	m_bDrawRight = (pTab->getCellAtRowColumn(getTopAttach(),getRightAttach()) == NULL);
 	m_bDrawLeft = true;
    
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
@@ -813,7 +857,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	
 	bool bStop = false;
 	bool bStart = false;
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing broken cell %x x %d, y %d width %d height %d ncons %d \n",this,getX(),getY(),getWidth(),getHeight(),count));
+	xxx_UT_DEBUGMSG(("drawBroken: Drawing broken cell %x x %d, y %d width %d height %d ncons %d \n",this,getX(),getY(),getWidth(),getHeight(),count));
 
 //
 // Now draw the cell background.
@@ -1229,9 +1273,9 @@ void fp_CellContainer::setLineMarkers(void)
 
 	m_iLeft = getX();
 	m_iLeft -=  (UT_sint32) (SCALE_TO_SCREEN * ((double) pTab->getNthCol(getLeftAttach())->spacing));
-	if(getRightAttach() < pTab->getNumCols())
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
+	if(pCell)
 	{
-		fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
 		m_iRight = pCell->getX();
 		m_iRight -= (UT_sint32) (SCALE_TO_SCREEN * ((double) pTab->getNthCol(getRightAttach())->spacing));
 	}
@@ -1255,7 +1299,14 @@ void fp_CellContainer::setLineMarkers(void)
 		for(cLeft = getLeftAttach(); cLeft < getRightAttach(); cLeft++)
 		{
 			fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach() -1,cLeft);
-			pCell->m_iBotY = m_iTopY;
+			if(pCell)
+			{
+				pCell->m_iBotY = m_iTopY;
+			}
+			else
+			{
+				break;
+			}
 		}
 	}
 	if(getBottomAttach() < pTab->getNumRows())
@@ -1508,7 +1559,11 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 			bFound = true;
 		}
 	}
-	return pCell;
+	if(bFound)
+	{
+		return pCell;
+	}
+	return NULL;
 }
 /*!
   Find document position from X and Y coordinates
@@ -2099,7 +2154,7 @@ void fp_TableContainer::tableAttach (fp_CellContainer *child)
 	{
 		resize (child->getBottomAttach(), m_iCols);
 	}
-	UT_DEBUGMSG(("SEVIOR: Attaching cell %x to table \n",child));
+	xxx_UT_DEBUGMSG(("tableAttach: Attaching cell %x to table \n",child));
 	addContainer(child);
 	child->setContainer((fp_Container *) this);
 	queueResize();

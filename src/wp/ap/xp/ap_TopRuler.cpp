@@ -2483,7 +2483,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_String sColWidths;
 			UT_sint32 i;
 			bool bDragRightMost = false;
-			UT_sint32 leftDrag = -1;
+			UT_sint32 leftDrag = -100000;
 			if(m_draggingCell == m_infoCache.m_vecTableColInfo->getItemCount())
 			{
 				bDragRightMost = true;
@@ -2502,6 +2502,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				//
 				pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i-1);
 				bool bOnDraggingRight = false;
+				xxx_UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
 				if(leftDrag != pTInfo->m_iLeftCellPos)
 				{
 					left = pTInfo->m_iLeftCellPos + xAbsLeft +pTInfo->m_iLeftSpacing;

@@ -124,6 +124,7 @@ public:
 	fp_TableContainer * getTopmostTable(void) const;
 	UT_sint32           getCellX(fp_Line * pLine) const; 
 	UT_sint32           getCellY(fp_Line * pLine) const;
+	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
     UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}

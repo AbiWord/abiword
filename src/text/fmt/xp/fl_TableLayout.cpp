@@ -278,7 +278,8 @@ void fl_TableLayout::format(void)
 		markAllRunsDirty();
 		m_bIsDirty = false;
 	}
-	m_bNeedsReformat = m_bIsDirty;
+//	m_bNeedsReformat = m_bIsDirty;
+	m_bNeedsReformat = false;
 	if(m_bNeedsReformat)
 	{
 		UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
@@ -1717,7 +1718,7 @@ void fl_CellLayout::_localCollapse(void)
 	// ClearScreen on our Cell. One Cell per layout.
 
 	fp_CellContainer *pCell = (fp_CellContainer *) getFirstContainer();
-	UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x CellContainer %x \n",this,pCell));
+	xxx_UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x CellContainer %x \n",this,pCell));
 	if (pCell)
 	{
 		pCell->clearScreen();
@@ -1727,7 +1728,7 @@ void fl_CellLayout::_localCollapse(void)
 	fl_ContainerLayout*	pCL = getFirstLayout();
 	while (pCL != NULL)
 	{
-		UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x Contained Layout %x \n",this,pCL));
+		xxx_UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x Contained Layout %x \n",this,pCL));
 		pCL->collapse();
 		pCL = pCL->getNext();
 	}

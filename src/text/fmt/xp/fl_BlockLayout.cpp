@@ -1169,7 +1169,7 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 		pTempRun = pTempRun->getNext();
 	}
 	UT_ASSERT(pLine->getContainer());
-	UT_DEBUGMSG(("SEVIOR: Containing container for line is %x \n",pLine->getContainer()));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout: Containing container for line is %x \n",pLine->getContainer()));
 	pLine->recalcMaxWidth();
 }
 

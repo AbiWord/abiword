@@ -5528,10 +5528,13 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		{
 			pCur = pTab->getCellAtRowColumn(0,i);
 			UT_sint32 j =0;
-			while(((pCur->getLeftAttach()+1) != pCur->getRightAttach()) && j <= numrows)
+			while(pCur && ((pCur->getLeftAttach()+1) != pCur->getRightAttach()) && j <= numrows)
 			{
 				pCur = pTab->getCellAtRowColumn(j,i);
-				j++;
+				if(pCur)
+				{
+					j++;
+				}
 			}
 			UT_sint32 ioff_x = 0;
 			fp_Container * pCon = (fp_Container*) pTab->getContainer();
