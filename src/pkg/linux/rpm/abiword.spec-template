@@ -271,6 +271,7 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/icons
 %{_datadir}/%{AbiSuite}/templates
 %{_datadir}/pixmaps/*
+%{_datadir}/icons/*
 %{_datadir}/applications/abiword.desktop
 
 
