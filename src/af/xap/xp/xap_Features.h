@@ -45,4 +45,14 @@
 # define XAP_SINGLE_XAPAPP 0
 #endif
 
+/*
+	Define to 1 if you don't inline XPMs into code but load them from disk files.
+	MacOS X store them as PNG inside the bundle.
+	
+	In the future, this should be 1 for UNIX as well.
+ */
+#ifndef XAP_DONT_INLINE_XPM
+# define XAP_DONT_INLINE_XPM 0
+#endif
+
 #endif

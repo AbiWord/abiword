@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copryight (C) 2003 Hubert Figuiere
+ * Copryight (C) 2003-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +18,8 @@
  * 02111-1307, USA.
  */
 
+
+#include "xap_Features.h"
 #include "ut_types.h"
 #include "ut_string.h"
 #include "xap_Toolbar_Icons.h"
@@ -29,9 +31,10 @@
 ** allow themselves to be included more than one time.
 ******************************************************************
 *****************************************************************/
-
-#include "ap_Toolbar_Icons_All.h"
-
+#if XAP_DONT_INLINE_XPM
+#else
+# include "ap_Toolbar_Icons_All.h"
+#endif
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to construct a table of
@@ -46,16 +49,17 @@ struct _it
 	UT_uint32					m_sizeofVariable;
 };
 
+#if XAP_DONT_INLINE_XPM
+#else
 #define DefineToolbarIcon(name)		{ #name, (const char **) name, sizeof(name)/sizeof(name[0]) },
 
 static struct _it s_itTable[] =
 {
-
 #include "ap_Toolbar_Icons_All.h"
-	
 };
 
 #undef DefineToolbarIcon
+#endif	
 
 /*****************************************************************
 ******************************************************************
@@ -142,6 +146,8 @@ bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName
 
 
 
+#if XAP_DONT_INLINE_XPM
+#else
 bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 											  const char *** pIconData,
 											  UT_uint32 * pSizeofData)
@@ -177,4 +183,5 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	// Not found - no icon available.
 	return false;
 }
+#endif
 
