@@ -11,6 +11,7 @@
 #include "pt_PieceTable.h"
 #include "pl_Listener.h"
 #include "ie_imp.h"
+#include "ie_exp.h"
 #include "pf_Frag_Strux.h"
 
 PD_Document::PD_Document()
@@ -46,10 +47,10 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 	}
 
 	IE_Imp * pie = NULL;
-	IE_Imp::IEStatus ies;
+	IEStatus ies;
 
 	ies = IE_Imp::constructImporter(this,szFilename,&pie);
-	if (ies != IE_Imp::IES_OK)
+	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
 		return UT_FALSE;
@@ -59,7 +60,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 	ies = pie->importFile(szFilename);
 	delete pie;
 
-	if (ies != IE_Imp::IES_OK)
+	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not import file\n"));
 		return UT_FALSE;
@@ -82,7 +83,7 @@ UT_Bool PD_Document::newDocument(void)
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
 	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct piece table\n"));
+		UT_DEBUGMSG(("PD_Document::newDocument -- could not construct piece table\n"));
 		return UT_FALSE;
 	}
 
@@ -117,6 +118,40 @@ UT_Bool PD_Document::newDocument(void)
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	setClean();							// mark the document as not-dirty
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
+{
+	// TODO do this.
+	return UT_FALSE;
+}
+
+UT_Bool PD_Document::save(IEFileType ieft)
+{
+	if (!m_szFilename || !*m_szFilename)
+		return UT_FALSE;
+
+	IE_Exp * pie = NULL;
+	IEStatus ies;
+
+	ies = IE_Exp::constructExporter(this,m_szFilename,ieft,&pie);
+	if (ies != IES_OK)
+	{
+		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
+		return UT_FALSE;
+	}
+
+	ies = pie->writeFile(m_szFilename);
+	delete pie;
+
+	if (ies != IES_OK)
+	{
+		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
+		return UT_FALSE;
+	}
+
+	setClean();
 	return UT_TRUE;
 }
 
@@ -294,6 +329,15 @@ UT_Bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
 	return m_pPieceTable->getSpanPtr(sdh,offset,ppSpan,pLength);
+}
+
+const UT_UCSChar * PD_Document::getPointer(PT_BufIndex bi) const
+{
+	// the pointer that we return is NOT a zero-terminated
+	// string.  the caller is responsible for knowing how
+	// long the data is within the span/fragment.
+	
+	return m_pPieceTable->getPointer(bi);
 }
 
 PT_DocPosition PD_Document::getStruxPosition(PL_StruxDocHandle sdh) const

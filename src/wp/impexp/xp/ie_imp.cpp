@@ -16,9 +16,9 @@ IE_Imp::~IE_Imp()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp::IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
-										   const char * szFilename,
-										   IE_Imp ** ppie)
+IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
+								   const char * szFilename,
+								   IE_Imp ** ppie)
 {
 	// construct an importer of the right type.
 	// caller is responsible for deleting the importer object
@@ -37,8 +37,8 @@ IE_Imp::IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 
 	IE_Imp_AbiWord_1 * p = new IE_Imp_AbiWord_1(pDocument);
 	if (!p)
-		return IE_Imp::IES_NoMemory;
+		return IES_NoMemory;
 
 	*ppie = p;
-	return IE_Imp::IES_OK;
+	return IES_OK;
 }

@@ -39,6 +39,8 @@
 #include "pd_Document.h"
 #include "dg_Graphics.h"
 #include "dg_DrawArgs.h"
+#include "ie_types.h"
+
 
 FV_View::FV_View(FL_DocLayout* pLayout)
 {
@@ -1631,3 +1633,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 	m_pDoc->redoCmd(count);
 }
 
+void FV_View::cmdSave(void)
+{
+	m_pDoc->save(IEFT_AbiWord_1);
+}

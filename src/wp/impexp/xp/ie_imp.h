@@ -3,6 +3,7 @@
 #define IE_IMP_H
 
 #include "ut_types.h"
+#include "ie_types.h"
 class PD_Document;
 
 // IE_Imp defines the abstract base class for file importers.
@@ -10,12 +11,6 @@ class PD_Document;
 class IE_Imp
 {
 public:
-	typedef enum _IEStatus { IES_OK,
-							 IES_Error,
-							 IES_FileNotFound,
-							 IES_NoMemory,
-							 IES_UnknownType,
-							 IES_BogusDocument } IEStatus;
 
 	// constructs an importer of the right type based upon
 	// either the filename or sniffing the file.  caller is

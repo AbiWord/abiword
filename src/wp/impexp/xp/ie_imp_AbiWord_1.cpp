@@ -35,7 +35,7 @@ static void charData(void* userData, const XML_Char *s, int len)
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp::IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
+IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
 	XML_Parser parser = NULL;
 	FILE *fp = NULL;
@@ -46,7 +46,7 @@ IE_Imp::IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
 	if (!fp)
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		m_iestatus = IE_Imp::IES_FileNotFound;
+		m_iestatus = IES_FileNotFound;
 		goto Cleanup;
 	}
 	
@@ -65,18 +65,18 @@ IE_Imp::IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
 			UT_DEBUGMSG(("%s at line %d\n",
 						 XML_ErrorString(XML_GetErrorCode(parser)),
 						 XML_GetCurrentLineNumber(parser)));
-			m_iestatus = IE_Imp::IES_BogusDocument;
+			m_iestatus = IES_BogusDocument;
 			goto Cleanup;
 		}
 
-		if (m_iestatus != IE_Imp::IES_OK)
+		if (m_iestatus != IES_OK)
 		{
 			UT_DEBUGMSG(("Problem reading document\n"));
 			goto Cleanup;
 		}
 	} 
 	
-	m_iestatus = IE_Imp::IES_OK;
+	m_iestatus = IES_OK;
 
 Cleanup:
 	if (parser)
@@ -93,7 +93,7 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 	: IE_Imp(pDocument)
 {
-	m_iestatus = IE_Imp::IES_OK;
+	m_iestatus = IES_OK;
 	m_parseState = _PS_Init;
 }
 
@@ -141,19 +141,19 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
-#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))					\
-									  {  m_iestatus = IE_Imp::IES_BogusDocument;	\
+#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))			\
+									  {  m_iestatus = IES_BogusDocument;	\
 										 return; } } while (0)
 
-#define X_CheckDocument(b)		do {  if (!(b))										\
-									  {  m_iestatus = IE_Imp::IES_BogusDocument;	\
+#define X_CheckDocument(b)		do {  if (!(b))								\
+									  {  m_iestatus = IES_BogusDocument;	\
 										 return; } } while (0)
 
-#define X_CheckError(v)			do {  if (!(v))										\
-									  {  m_iestatus = IE_Imp::IES_Error;			\
+#define X_CheckError(v)			do {  if (!(v))								\
+									  {  m_iestatus = IES_Error;			\
 										 return; } } while (0)
 
-#define	X_EatIfAlreadyError()	do {  if (m_iestatus != IE_Imp::IES_OK) return; } while (0)
+#define	X_EatIfAlreadyError()	do {  if (m_iestatus != IES_OK) return; } while (0)
 
 /*****************************************************************/
 /*****************************************************************/
@@ -205,7 +205,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
-		m_iestatus = IE_Imp::IES_BogusDocument;
+		m_iestatus = IES_BogusDocument;
 		return;
 	}
 }
@@ -254,7 +254,7 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
-		m_iestatus = IE_Imp::IES_BogusDocument;
+		m_iestatus = IES_BogusDocument;
 		return;
 	}
 }

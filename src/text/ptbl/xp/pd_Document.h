@@ -10,6 +10,7 @@
 #include "xmlparse.h"
 #include "pt_Types.h"
 #include "pl_Listener.h"
+#include "ie_types.h"
 class pt_PieceTable;
 class PP_AttrProp;
 class pf_Frag_Strux;
@@ -24,6 +25,8 @@ public:
 	~PD_Document();
 
 	UT_Bool					readFromFile(const char * szFilename);
+	UT_Bool					saveAs(const char * szFilename, IEFileType ieft);
+	UT_Bool					save(IEFileType ieft);
 	UT_Bool					newDocument(void);
 	const char *			getFilename(void) const;
 	UT_Bool					isDirty(void) const;
@@ -73,6 +76,7 @@ public:
 											const PP_AttrProp ** ppAP) const;
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
+	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
 	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,

@@ -94,6 +94,7 @@ public:
 
 	void			cmdUndo(UT_uint32 count);
 	void			cmdRedo(UT_uint32 count);
+	void			cmdSave(void);
 	
 	void			Test_Dump(void);	/* TODO remove this */
 // ----------------------

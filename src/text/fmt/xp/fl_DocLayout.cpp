@@ -45,6 +45,10 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
 	m_pG = pG;
 	m_pView = NULL;
 
+	// TODO the following (both the new() and the addListener() cause
+	// TODO malloc's to occur.  we are currently inside a constructor
+	// TODO and cannot report failure.
+	
 	m_pDocListener = new fl_DocListener(doc, this);
 
 	if (doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid))
