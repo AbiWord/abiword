@@ -24,11 +24,12 @@
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
 
-// we either use an ispell or pspell based backend
-
 #ifdef HAVE_PSPELL
 #include "pspell_checker.h"
 typedef PSpellChecker SpellCheckerClass;
+#elif HAVE_ENCHANT
+#include "enchant_checker.h"
+typedef EnchantChecker SpellCheckerClass;
 #else
 #include "ispell_checker.h"
 typedef ISpellChecker SpellCheckerClass;

@@ -39,8 +39,9 @@ if test $abi_spell = check; then
 fi
 
 if test $abi_spell = enchant; then
-	SPELL_CFLAGS="$_abi_enchant_CFLAGS"
+	SPELL_CFLAGS="$_abi_enchant_CFLAGS -DHAVE_ENCHANT=1"
 	SPELL_LIBS="$_abi_enchant_LIBS"
+	abi_spell_message="enchant"
 else
 	ABI_SPELL_CHECK
 fi

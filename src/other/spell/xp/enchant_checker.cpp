@@ -74,11 +74,11 @@ EnchantChecker::_checkWord (const UT_UCSChar * ucszWord, size_t len)
 {
 	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
 
-	UT_return_val_if_fail ( m_dict, SpellChecker::LOOKUP_ERROR );
-	UT_return_val_if_fail ( ucszWord, SpellChecker::LOOKUP_ERROR );
-	UT_return_val_if_fail ( len, SpellChecker::LOOKUP_ERROR );
+	UT_return_val_if_fail (m_dict, SpellChecker::LOOKUP_ERROR);
+	UT_return_val_if_fail (ucszWord, SpellChecker::LOOKUP_ERROR);
+	UT_return_val_if_fail (len, SpellChecker::LOOKUP_ERROR);
 
-	UT_UTF8String utf8 (ucszWord);
+	UT_UTF8String utf8 (ucszWord, len);
 
 	if (enchant_dict_check (m_dict, utf8.utf8_str(), utf8.byteLength()) == 0)
 		return SpellChecker::LOOKUP_SUCCEEDED;
@@ -95,7 +95,7 @@ EnchantChecker::_suggestWord (const UT_UCSChar *ucszWord, size_t len)
 
 	UT_Vector * pvSugg = new UT_Vector ();
 
-	UT_UTF8String utf8 (ucszWord);
+	UT_UTF8String utf8 (ucszWord, len);
 
 	char ** suggestions;
 	size_t n_suggestions;
