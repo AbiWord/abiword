@@ -2290,25 +2290,27 @@ void PD_Document::_destroyDataItemData(void)
 */
 bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 {
-	const char *szDescription;
+	const char *szSuffixes;
+
+	// used to operate on description. now operates on suffixes
 
 	if (bReadSaveWriteOpen)
-	  szDescription = IE_Exp::descriptionForFileType(m_lastSavedAsType);
+	  szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
 	else
-	  szDescription = IE_Imp::descriptionForFileType(m_lastOpenedType);
+	  szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
 
-	if (!szDescription)
+	if (!szSuffixes)
 	  return false;
 
 	IEFileType ieft;
 	if (bReadSaveWriteOpen)
 	{
-		ieft = IE_Imp::fileTypeForDescription(szDescription);
+		ieft = IE_Imp::fileTypeForSuffixes(szSuffixes);
 		m_lastOpenedType = ieft;
 	}
 	else
 	{
-		ieft = IE_Exp::fileTypeForDescription(szDescription);
+		ieft = IE_Exp::fileTypeForSuffixes(szSuffixes);
 		m_lastSavedAsType = ieft;
 	}
 

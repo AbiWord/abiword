@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "ut_assert.h"
 #include "ut_types.h"
@@ -36,6 +37,7 @@
 #include "ie_exp_AbiWord_1.h"
 
 #include "pd_Document.h"
+#include "ut_string_class.h"
 
 static UT_Vector m_sniffers(20);
 
@@ -313,6 +315,41 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 	// for default export.
 	return IE_Exp::fileTypeForSuffix(".abw");
 	
+}
+
+IEFileType IE_Exp::fileTypeForSuffixes(const char * suffixList)
+{
+	IEFileType ieft = IEFT_Unknown;
+	if (!suffixList)
+		return ieft;
+
+	UT_String utSuffix (suffixList);
+	const size_t len = strlen(suffixList);
+	size_t i = 0;
+
+	while (true)
+		{
+			while (i < len && suffixList[i] != '.')
+				i++;
+
+			// will never have all-space extension
+
+			const size_t start = i;
+			while (i < len && suffixList[i] != ';')
+				i++;
+
+			if (i <= len) {
+				UT_String suffix (utSuffix.substr(start, i-start).c_str());
+				UT_DEBUGMSG(("DOM: suffix: %s\n", suffix.c_str()));
+				
+				ieft = fileTypeForSuffix (suffix.c_str());
+				if (ieft != IEFT_Unknown || i == len)
+					return ieft;
+
+				i++;
+			}
+		}
+	return ieft;
 }
 
 /*! 

@@ -21,6 +21,7 @@
 
 
 #include <string.h>
+#include <ctype.h>
 
 #include "ut_string.h"
 #include "ut_vector.h"
@@ -33,6 +34,7 @@
 #include "pd_Document.h"
 
 #include "ut_debugmsg.h"
+#include "ut_string_class.h"
 
 static const UT_uint32 importer_size_guess = 20;
 static UT_Vector m_sniffers (importer_size_guess);
@@ -257,6 +259,41 @@ IEFileType IE_Imp::fileTypeForDescription(const char * szDescription)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
+	return ieft;
+}
+
+IEFileType IE_Imp::fileTypeForSuffixes(const char * suffixList)
+{
+	IEFileType ieft = IEFT_Unknown;
+	if (!suffixList)
+		return ieft;
+
+	UT_String utSuffix (suffixList);
+	const size_t len = strlen(suffixList);
+	size_t i = 0;
+
+	while (true)
+		{
+			while (i < len && suffixList[i] != '.')
+				i++;
+
+			// will never have all-space extension
+
+			const size_t start = i;
+			while (i < len && suffixList[i] != ';')
+				i++;
+
+			if (i <= len) {
+				UT_String suffix (utSuffix.substr(start, i-start).c_str());
+				UT_DEBUGMSG(("DOM: suffix: %s\n", suffix.c_str()));
+				
+				ieft = fileTypeForSuffix (suffix.c_str());
+				if (ieft != IEFT_Unknown || i == len)
+					return ieft;
+				
+				i++;
+			}
+		}
 	return ieft;
 }
 
