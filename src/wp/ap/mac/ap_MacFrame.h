@@ -47,6 +47,7 @@ public:
 
 	virtual void 				setStatusMessage(const char * szMsg);
 
+	XAP_App *m_pMacApp;
 };
 
 #endif /* AP_MACFRAME_H */
