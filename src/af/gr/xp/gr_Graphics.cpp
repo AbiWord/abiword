@@ -1096,20 +1096,46 @@ void GR_Graphics::renderChars(GR_RenderInfo & ri)
 
 /*!
     return true if linebreak at character c is permissible
-    the built-in class is too simple to differentiate between breaks before and after character
 */
-bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool /* bAfter */)
+bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
 {
+	UT_UCS4Char c[2];
+
 	iNext = -1; // we do not bother with this
 	UT_return_val_if_fail(ri.m_pText && ri.m_pText->getStatus() == UTIter_OK, false);
 	
 	*(ri.m_pText) += ri.m_iOffset;
 	UT_return_val_if_fail(ri.m_pText->getStatus() == UTIter_OK, false);
 	
-	UT_UCS4Char c = ri.m_pText->getChar();
-
 	UT_return_val_if_fail(getApp(), false);
-	return getApp()->getEncodingManager()->can_break_at(c);
+
+
+	if (bAfter) 
+	{
+		// Look up this character and the next.
+		c[0] = ri.m_pText->getChar();
+		++(*ri.m_pText);
+		c[1] = ri.m_pText->getChar();
+		// Check for end of document.
+		if (c[1] == UT_IT_ERROR) 
+			return true;
+
+		return getApp()->getEncodingManager()->canBreakBetween(c);
+	}
+	else
+	{
+		// Look up this character and the one before.
+		c[1] = ri.m_pText->getChar();
+		--(*ri.m_pText);
+		c[0] = ri.m_pText->getChar();
+		// Check for beginning of document.
+		if (c[0] == UT_IT_ERROR) 
+			return true;
+
+		return getApp()->getEncodingManager()->canBreakBetween(c);
+	}
+	// Control should never reach here.
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 /*!

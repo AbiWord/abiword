@@ -646,16 +646,6 @@ static const _rmap langcode_to_cjk[]=
 };
 
 
-/*
- TODO I'm pretty sure you can't break Korean at any character.
- TODO And what about Japanese Katakana and Hiragana?
-*/
-static const _rmap can_break_words_data[]=
-{
-	{"0"}, /* default value - can't break words at any character. */    
-	{"1",cjk_languages},
-	{NULL}
-};
 
 /*
  This table is useful since some iconv implementations don't know some cpNNNN 
@@ -959,6 +949,156 @@ const XAP_LangInfo XAP_EncodingManager::langinfo[] =
     {{   NULL,                "",       "",       "",                                  "" 	   }}
 };
 
+/* 
+ * Line Breaking tables 
+ */
+
+
+enum EUniCat {
+	NONATOMIC=0, 
+	ATOMIC=1, 
+	PUNCNOEND=2, 
+	PUNCNOSTART=3, 
+	PUNCFORCE=4,
+	UNKNOWN=5
+};
+// Prototype.
+static enum EUniCat categoriseUniChar(UT_UCS4Char c);
+
+struct SCatRange {
+	UT_UCS4Char start;
+	UT_UCS4Char end;
+	enum EUniCat cat;
+};
+
+/* 
+ * This table catagorises all known Unicode characters.
+ * The entries are inclusive ranges which must be in numerical order.
+ *
+ * Defaults should be provided by access functions for unknown characters.
+ */
+struct SCatRange UniCharCats[] = {
+	{0x20, 0x20, PUNCFORCE},   // Space
+	{0x21, 0x21, PUNCNOSTART}, // !
+	{0x22, 0x27, NONATOMIC},   // "#$%&'
+	{0x28, 0x28, PUNCNOEND},   // ( 
+	{0x29, 0x29, PUNCNOSTART},  // ) 
+	{0x2a, 0x2b, NONATOMIC},   // *+
+	{0x2c, 0x2e, PUNCNOSTART},  // ,-.
+	{0x2f, 0x2f, NONATOMIC},   // /
+	{0x30, 0x39, NONATOMIC},   // Western numerals.
+	{0x3a, 0x3b, PUNCNOSTART}, // :;
+	{0x3c, 0x3c, PUNCNOEND},   // <
+	{0x3d, 0x3d, NONATOMIC},   // =
+	{0x3e, 0x3f, PUNCNOSTART}, // >?
+	{0x40, 0x40, NONATOMIC},   // @
+	{0x41, 0x5a, NONATOMIC},   // Western A-Z.
+	{0x5b, 0x5b, PUNCNOEND},   // [ 
+	{0x5c, 0x5c, NONATOMIC},   // "\"
+	{0x5d, 0x5d, PUNCNOSTART}, // ]
+	{0x5e, 0x60, NONATOMIC},   // ^_`
+	{0x61, 0x7a, NONATOMIC},   // Western a-z.
+	{0x7b, 0x7b, PUNCNOEND},   // {
+	{0x7c, 0x7c, NONATOMIC},   // "\" 
+	{0x7d, 0x7d, PUNCNOSTART}, // }
+	{0x7e, 0x7e, NONATOMIC},   // ~ 
+
+	/* General punctuation */
+	{0x2002, 0x2003, PUNCFORCE},     // en-space, em-space
+	{0x2010, 0x2010, PUNCNOSTART},   // Hyphen
+	{0x2013, 0x2014, PUNCFORCE},     // en-dash, em-dash
+	{0x2018, 0x2018, PUNCNOEND},     // Open single quote
+	{0x2019, 0x2019, PUNCNOSTART},   // Close single quote
+	{0x201c, 0x201c, PUNCNOEND},     // Open double quote
+	{0x201d, 0x201d, PUNCNOSTART},   // Close double quote
+	{0x2020, 0x2021, PUNCNOSTART},   // Long cross, double dagger
+	{0x2026, 0x2026, PUNCNOSTART},   // ...
+	{0x2030, 0x2031, PUNCNOSTART},   // Per mille/10000 signs
+	{0x2032, 0x2034, PUNCNOSTART},   // Single, double, triple primes
+
+	/* CJK Blocks */
+
+	{0x3002, 0x3002, PUNCNOSTART},   //  Ideographic full stop
+	{0x3008, 0x3008, PUNCNOEND},     //  CJK <
+	{0x3009, 0x3009, PUNCNOSTART},   //  CJK >
+	{0x300a, 0x300a, PUNCNOEND},     //  CJK <<
+	{0x300b, 0x300b, PUNCNOSTART},   //  CJK >>
+	{0x300c, 0x300c, PUNCNOEND},     //  CJK quote open
+	{0x300d, 0x300d, PUNCNOSTART},   //  CJK quote close
+	{0x300e, 0x300e, PUNCNOEND},     //  CJK thick quote open
+	{0x300f, 0x300f, PUNCNOSTART},   //  CJK thick quote close
+	{0x3010, 0x3010, PUNCNOEND},     //  CJK |(
+	{0x3011, 0x3011, PUNCNOSTART},   //  CJK )|
+	{0x3014, 0x3014, PUNCNOEND},     //  CJK [
+	{0x3015, 0x3015, PUNCNOSTART},   //  CJK ]
+	{0x3016, 0x3016, PUNCNOEND},     //  CJK [(
+	{0x3015, 0x3017, PUNCNOSTART},   //  CJK )]
+	{0x3018, 0x3018, PUNCNOEND},     //  CJK [[
+	{0x3019, 0x3019, PUNCNOSTART},   //  CJK ]]
+	{0x301a, 0x301a, PUNCNOEND},     //  CJK ]|
+	{0x301d, 0x301d, PUNCNOEND},     //  CJK ``
+	{0x301e, 0x301e, PUNCNOSTART},   //  CJK ''
+	{0x301b, 0x301b, PUNCNOSTART},   //  CJK |[
+	{0x3200, 0x32ff, ATOMIC},        // Enclosed CJK Letters and Months
+	{0x3300, 0x33ff, ATOMIC},        // CJK Compatibility
+	{0x3400, 0x34ff, ATOMIC},        // CJK Unified Ideographs Ext. A
+	{0x4e00, 0x9faf, ATOMIC},        // CJK Unified Ideographs 
+
+	/* Halfwidth and Fullwidth Forms. */
+	{0xff01, 0xff01, PUNCNOSTART},   // !
+	{0xff02, 0xff02, ATOMIC},        // "
+	{0xff05, 0xff05, PUNCNOSTART},   // %
+	{0xff06, 0xff07, ATOMIC},        // &'
+	{0xff08, 0xff08, PUNCNOEND},     // (
+	{0xff09, 0xff09, PUNCNOSTART},   // )
+	{0xff0a, 0xff0b, ATOMIC},        // *+
+	{0xff0c, 0xff0c, PUNCNOSTART},   // ,
+	{0xff0d, 0xff0d, ATOMIC},        // -
+	{0xff0e, 0xff0e, PUNCNOSTART},   // .
+	{0xff0f, 0xff0f, ATOMIC},        // /
+	{0xff10, 0xff19, ATOMIC},        // Numerals
+	{0xff1a, 0xff1b, PUNCNOSTART},   // :;
+	{0xff1c, 0xff1c, PUNCNOEND},     // <
+	{0xff1d, 0xff1d, ATOMIC},        // =
+	{0xff1e, 0xff1e, PUNCNOSTART},   // >
+	{0xff1f, 0xff1f, PUNCNOSTART},   // ?
+	{0xff20, 0xff20, ATOMIC},        // @
+	{0xff21, 0xff3a, ATOMIC},        // A-Z
+	{0xff3b, 0xff3b, PUNCNOEND},     // [
+	{0xff3c, 0xff3c, ATOMIC},        // "\" 
+	{0xff3d, 0xff3d, PUNCNOSTART},   // ]
+	{0xff3e, 0xff5a, ATOMIC},        // ^_`a-z
+	{0xff5b, 0xff4b, PUNCNOEND},     // {
+	{0xff5c, 0xff5c, ATOMIC},        // |
+	{0xff5d, 0xff5d, PUNCNOSTART},   // }
+	{0xff5e, 0xff5e, ATOMIC},        // ~
+	{0xff61, 0xff61, PUNCNOSTART},   // Ideographic full stop
+	{0xff62, 0xff62, PUNCNOEND},     // Halfwidth left corner bracket
+	{0xff63, 0xff63, PUNCNOSTART},   // Halfwidth right corner bracket
+	{0xff64, 0xff64, PUNCNOSTART},   // Halfwidth ideographic comma
+	{0xffe0, 0xffe0, PUNCNOEND},     // Fullwidth Cent sign
+	{0xffe1, 0xffe1, PUNCNOEND},     // Fullwidth Pound sign
+	{0xffe5, 0xffe5, PUNCNOEND},     // Fullwidth Yen sign
+
+    /* More CJK blocks. */
+	
+	{0xf900,  0xfaff, ATOMIC},       // CJK Compatibility Ideographs
+	{0x20000, 0x2a6df, ATOMIC},      // CJK Unified Ideographs Ext. B
+	{0x2f800, 0x2fa1f, ATOMIC},      // CJK Compatibility Ideographs Sup.
+	{0,0,ATOMIC}
+};
+
+/*
+ * Boolean rules for whether a line break is allowed between all possible
+ * combinations of two categories.
+ */
+static bool blineBreakRules[] = {false, true,  false, false, true,
+                                 true,  true,  true,  false, true,
+                                 false, false, false, false, true,
+                                 true,  true,  true,  false, true,
+                                 true,  true,  true,  true,  true};
+
+
 /* ************************* here end tables *************************/
 
 const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangInfo::fieldidx idx)
@@ -1111,8 +1251,6 @@ void XAP_EncodingManager::initialize()
 	{	
 	    const char* str = search_rmap_with_opt_suffix(langcode_to_cjk,SEARCH_PARAMS);
 	    is_cjk_ = *str == '1';
-	    str = search_rmap_with_opt_suffix(can_break_words_data,SEARCH_PARAMS);
-	    can_break_words_ = *str == '1';
 	}
 	{
 	    if (cjk_locale()) {
@@ -1160,11 +1298,6 @@ void XAP_EncodingManager::initialize()
 
 int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
 
-bool XAP_EncodingManager::can_break_words() const
-{
-    return can_break_words_;
-}
-
 /*
     I'm not sure whether any non-cjk language doesn't make distinction
     between upper and lower case of the letter, but let's be prepared.
@@ -1191,19 +1324,22 @@ bool XAP_EncodingManager::noncjk_letters(const UT_UCSChar* str,int len) const
 }
 
 /*
-    This one correlates with can_break_words() very tightly.
-        Under CJK locales it returns 1 for cjk letters. 
-    Under non-CJK locales returns 0.
-*/
-bool XAP_EncodingManager::can_break_at(const UT_UCSChar c) const
+ * Returns true or false depending on whether a break between c[0] and c[1]
+ * is permissible.
+ */
+bool XAP_EncodingManager::canBreakBetween(const UT_UCS4Char c[2]) const
 {
-    if (c == UCS_SPACE 
-	 || c == UCS_MINUS 
-	 || c == UCS_HYPHEN
-	 || c == UCS_EN_DASH
-	 || c == UCS_EM_DASH)
-	return 1;
-    return is_cjk_letter(c);
+	UT_uint8 rule;
+
+	// CJK special case: Can't break between two em dashes.
+	if (c[0] == UCS_EM_DASH && c[1] == UCS_EM_DASH)
+		return false;
+
+	// Find rule number based on character categories.
+	rule = categoriseUniChar(c[0]) * 5 + categoriseUniChar(c[1]);
+
+	// Return corresponding answer.
+	return blineBreakRules[rule];
 }
 
 
@@ -1267,7 +1403,7 @@ void 	XAP_EncodingManager::describe()
 		"--->8--------------\n"
 		
 		"	WinLanguageCode is 0x%04x, WinCharsetCode is %d\n"
-		"	cjk_locale %d, can_break_words %d, swap_utos %d, swap_stou %d\n",
+		"	cjk_locale %d, swap_utos %d, swap_stou %d\n",
 		getLanguageISOName(), getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
 		getNativeEncodingName(),getNativeSystemEncodingName(),
 		getNative8BitEncodingName(),getNativeNonUnicodeEncodingName(),
@@ -1275,7 +1411,7 @@ void 	XAP_EncodingManager::describe()
 		fallbackChar(1072),
 		getTexPrologue(),
 		getWinLanguageCode(), getWinCharsetCode(),
-		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)
+		int(cjk_locale()), int(swap_utos),int(swap_stou)
 		));
 	UT_ASSERT( UT_iconv_isValid(iconv_handle_N2U) && UT_iconv_isValid(iconv_handle_U2N) );
 }
@@ -1351,3 +1487,59 @@ const char * xap_encoding_manager_get_language_iso_name(void)
 }
 
 }
+
+
+/*!
+ * Return the line breaking catagory that "c" belongs to.
+ *
+ * Note: For performance reasons this function assumes that the entries
+ *       in UniCharCats are in NUMERICAL ORDER starting with the smallest 
+ *       value.
+ */
+
+static int s_compare_unichar_cats(const void * pC, const void *puc)
+{
+	UT_UCS4Char c = *((UT_UCS4Char*)pC);
+	SCatRange * pUC = (SCatRange*) puc;
+
+	if(c < pUC->start)
+		return -1;
+	else if(c > pUC->end)
+		return 1;
+
+	return 0;
+}
+
+static enum EUniCat categoriseUniChar(UT_UCS4Char c) {
+	UT_uint32 i=0;
+	enum EUniCat cat=UNKNOWN;
+
+	// use linear search for the bottom (western part of the table, and bsearch for the
+	// rest
+
+	SCatRange * pUC = (SCatRange*)bsearch(&c, UniCharCats, NrElements(UniCharCats), sizeof(SCatRange),
+											  s_compare_unichar_cats);
+
+	if(pUC)
+		cat = pUC->cat;
+
+	/*
+	 * Crude defaults:
+	 *
+	 * If the character is not listed then assume it's nonatomic (like western
+	 * letters) for all code blocks below "Armenian". If it belongs to the
+	 * "Armenian" block or above we assume CJK like atomic letters.
+	 *
+	 * This is not sensible, but it should at least mean that Greek, Cyrillic,
+	 * maybe Korean, Chinese and maybe Japanese get handled OK.
+	 */
+	if (cat == UNKNOWN)
+	{
+		if (c <0x0530) 
+			cat = NONATOMIC;
+		else
+			cat = ATOMIC;
+	}
+	return cat;
+}
+

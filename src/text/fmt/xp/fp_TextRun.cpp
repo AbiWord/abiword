@@ -355,7 +355,14 @@ bool fp_TextRun::canBreakAfter(void) const
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-		text.setUpperLimit(text.getPosition() + getLength() - 1);
+
+		// in order to allow proper decision on breaking at the end of run, we will try to
+		// set the upper limit one character pass the end of this run
+
+		if(getNextRun())
+			text.setUpperLimit(text.getPosition() + getLength());
+		else
+			text.setUpperLimit(text.getPosition() + getLength() - 1);
 		
 		UT_return_val_if_fail(m_pRenderInfo, false);
 		m_pRenderInfo->m_pText = &text;
@@ -389,7 +396,14 @@ bool fp_TextRun::canBreakBefore(void) const
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET );
 
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-		text.setUpperLimit(text.getPosition() + getLength() - 1);
+
+		// in order to allow proper decision on breaking at the end of run, we will try to
+		// set the upper limit one character pass the end of this run
+
+		if(getNextRun())
+			text.setUpperLimit(text.getPosition() + getLength());
+		else
+			text.setUpperLimit(text.getPosition() + getLength() - 1);
 		
 		UT_return_val_if_fail(m_pRenderInfo, false);
 		m_pRenderInfo->m_pText = &text;
@@ -532,7 +546,14 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 						  offset + fl_BLOCK_STRUX_OFFSET);
 
 	m_pRenderInfo->m_pText = &text;
-	text.setUpperLimit(text.getPosition() + getLength() - 1);
+	// in order to allow proper decision on breaking at the end of run, we will try to
+	// set the upper limit one character pass the end of this run
+
+	if(getNextRun())
+		text.setUpperLimit(text.getPosition() + getLength());
+	else
+		text.setUpperLimit(text.getPosition() + getLength() - 1);
+
 	UT_uint32 iPosStart = text.getPosition();
 	
 	//bool bReverse = (getVisDirection() == UT_BIDI_RTL);

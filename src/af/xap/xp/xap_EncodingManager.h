@@ -166,11 +166,6 @@ public:
 	*/
 	inline virtual bool cjk_locale() const { return is_cjk_; }
 
-	/*  whether words can be broken at any character of the word (wide 
-	    character, not byte). True for japanese.
-	*/
-	virtual bool can_break_words() const;
-
 	/*
 	    returns true if there is no distinction between upper and lower
 	    letters.
@@ -185,11 +180,9 @@ public:
 	virtual bool noncjk_letters(const UT_UCSChar* str,int len) const;
 
 	/*
-	    This one correlates with can_break_words() very tightly.
-		Under CJK locales it returns 1 for cjk letters. 
-	    Under non-CJK locales returns 0.
-	*/
-	virtual bool can_break_at(const UT_UCSChar c) const;
+	 * Returns true if a break between c[0] and c[1] is permissible.
+	 */
+	virtual bool canBreakBetween(const UT_UCS4Char c[2]) const;
 
 	/*
 	    This should be as precise as possible.
@@ -285,7 +278,7 @@ private:
 
 	const char* TexPrologue;
 	UT_uint32 WinLanguageCode,WinCharsetCode;
-	bool is_cjk_,can_break_words_,m_bIsUnicodeLocale;
+	bool is_cjk_,m_bIsUnicodeLocale;
 };
 
 /*
