@@ -26,9 +26,10 @@
 #include "pt_Types.h"
 
 #define XAP_ABOUT_COPYRIGHT "Copyright 1998, 1999 AbiSource, Inc."
-#define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GPL.\nYou are free to redistribute this product"
-#define XAP_ABOUT_GPL "%s is available for use under the therms\nof the GNU General Public License"
-#define XAP_ABOUT_URL "For source and support: http://www.abisource.com/"
+#define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."
+#define XAP_ABOUT_GPL "%s is available for use under the the terms\nof the GNU General Public License"
+#define XAP_ABOUT_URL "For more information: http://www.abisource.com/"
+#define XAP_ABOUT_TITLE "About %s"
 
 class AP_Dialog_About : public AP_Dialog_NonPersistent
 {

@@ -81,9 +81,12 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	
 	XAP_App* pApp = pFrame->getApp();
 	
+	char buf[2048];
+	sprintf(buf, XAP_ABOUT_TITLE, pApp->getApplicationName());
+	
 	dialog = gtk_dialog_new ();
 	gtk_object_set_data (GTK_OBJECT (dialog), "About AbiWord", dialog);
-	gtk_window_set_title (GTK_WINDOW (dialog), "dialog");
+	gtk_window_set_title (GTK_WINDOW (dialog), buf);
 	gtk_window_set_policy (GTK_WINDOW (dialog), TRUE, TRUE, FALSE);
 	gtk_container_border_width(GTK_CONTAINER(dialog), 5);
     gtk_window_set_policy(GTK_WINDOW(dialog), FALSE, FALSE, TRUE);
@@ -112,7 +115,6 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(frame);
 	gtk_box_pack_start(GTK_BOX(vbox1), frame, TRUE, TRUE, 0);
 	
-	char buf[2048];
 	sprintf(buf, XAP_ABOUT_DESCRIPTION, pApp->getApplicationName());
 			
 	label5 = gtk_label_new (buf);
