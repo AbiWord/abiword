@@ -705,8 +705,16 @@ void AP_CocoaApp::loadAllPlugins ()
 		if (NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"])
 			{
 				support_dir[support_dir_count] = [plugin_path UTF8String];
-				UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",support_dir[support_dir_count].utf8_str()));
-				support_dir_count++;
+
+				if (s_dir_exists (support_dir[support_dir_count].utf8_str()))
+					{
+						UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",support_dir[support_dir_count].utf8_str()));
+						support_dir_count++;
+					}
+				else
+					{
+						UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s (not found)\n",support_dir[support_dir_count].utf8_str()));
+					}
 			}
 
 	/* create the system plugins directory - if we can...
@@ -757,10 +765,16 @@ void AP_CocoaApp::loadAllPlugins ()
 			struct dirent ** namelist = 0;
 			int n = scandir (support_dir[i].utf8_str(), &namelist, s_Abi_only, alphasort);
 			UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].utf8_str()));
-			if (n == 0) {
-				FREEP (namelist);
-				continue;
-			}
+			if (n < 0)
+				{
+					continue;
+				}
+			if (n == 0)
+				{
+					FREEP (namelist);
+					continue;
+				}
+
 			UT_UTF8String plugin_path;
 			while (n--)
 				{
