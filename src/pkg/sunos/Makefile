@@ -46,7 +46,7 @@ pkg: install
 	@echo "i pkginfo" > $(DIST)/Prototype
 	@find /usr/local/AbiSuite /usr/local/bin/AbiWord /usr/local/bin/abiword -print \
 		| pkgproto >> $(DIST)/Prototype
-	@(cd $(DIST); pkgmk -o -r / -d $(DIST) -f Prototype
+	@(cd $(DIST); pkgmk -o -r / -d $(DIST) -f Prototype)
 	@rm -f $(DIST)/Prototype
 	@rm -f $(DIST)/pkginfo
 	@tar -cf - abisuite | gzip -c > \
