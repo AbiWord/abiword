@@ -42,7 +42,7 @@ class GR_UnixGraphics : public GR_Graphics
 #else
  	GR_UnixGraphics(GdkWindow * win, XAP_App *app);
 #endif
-	~GR_UnixGraphics();
+	virtual ~GR_UnixGraphics();
 
 #ifndef WITH_PANGO 
 	virtual void        drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
