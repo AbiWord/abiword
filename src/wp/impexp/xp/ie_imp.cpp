@@ -32,6 +32,7 @@
 #include "ie_imp_AbiWord_1.h"
 #include "ie_imp_GraphicAsDocument.h"
 #include "pd_Document.h"
+#include "pf_Frag_Strux.h"
 
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
@@ -96,10 +97,13 @@ bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendStruxFmt(pfs, attributes);
-
-	/* there is no insertStruxFmt call, unfortunately */
-	UT_ASSERT_NOT_REACHED();
-	return false;
+	else {
+		bool bRes = m_pDocument->changeStruxFmt(PTC_AddFmt,
+												m_dpos, m_dpos,
+												attributes, NULL,
+												pfs->getStruxType());
+		return bRes;
+	}
 }
 
 bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
@@ -131,16 +135,29 @@ bool IE_Imp::appendFmt(const XML_Char ** attributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendFmt (attributes);
-	UT_ASSERT (UT_TODO);
-	return true;
+	else {
+		bool bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
+											   m_dpos, m_dpos,
+											   attributes, NULL);
+
+		return bRes;
+	}
 }
 
 bool IE_Imp::appendFmt(const UT_Vector * pVecAttributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendFmt (pVecAttributes);
-	UT_ASSERT (UT_TODO);
-	return true;
+	else {
+		const XML_Char ** attributes;
+
+		attributes = (const XML_Char **)pVecAttributes->getNthItem(0);
+
+		bool bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
+											   m_dpos, m_dpos,
+											   attributes, NULL);
+		return bRes;
+	}
 }
 
 /*****************************************************************/
