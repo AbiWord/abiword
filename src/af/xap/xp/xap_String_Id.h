@@ -142,7 +142,7 @@ dcl(DLG_ULANG_LangLabel,				"Select Language:")
 dcl(DLG_ULANG_LangTitle,				"Language")
 
 /* Language property in different languages; keep sorted by the numerical id's */
-dcl(LANG_0,								"-none-")
+dcl(LANG_0,								"no proofing")
 dcl(LANG_1,								"English (AU)")
 dcl(LANG_2,								"English (GB)")
 dcl(LANG_3,								"English (US)")
