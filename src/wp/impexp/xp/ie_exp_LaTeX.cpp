@@ -396,12 +396,13 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
 	const PP_AttrProp* pAP = NULL;
+	bool bMustEmitMulticol = false;
+	const XML_Char* pszNbCols = NULL;
 
 	m_bMultiCols = false;
 
 	if (m_pDocument->getAttrProp(api, &pAP) && pAP)
 	{
-		const XML_Char* pszNbCols = NULL;
 		const XML_Char* pszPageMarginLeft = NULL;
 		const XML_Char* pszPageMarginRight = NULL;
 
@@ -412,9 +413,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		if (pszNbCols != NULL && ((0 == UT_strcmp(pszNbCols, "2"))
 								  || (0 == UT_strcmp(pszNbCols, "3"))))
 		{
-			m_pie->write("\\begin{multicols}{");
-			m_pie->write(static_cast<const char *> (pszNbCols));
-			m_pie->write("}\n");
+			bMustEmitMulticol = true;
 			m_bMultiCols = true;
 		}
 		if (pszPageMarginLeft != NULL)
@@ -438,6 +437,13 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 	{
 		m_pie->write ("\n\n\\begin{document}\n");
 		m_bFirstSection = false;
+	}
+
+	if (bMustEmitMulticol)
+	{
+		m_pie->write("\\begin{multicols}{");
+		m_pie->write(static_cast<const char *> (pszNbCols));
+		m_pie->write("}\n");
 	}
 }
 
