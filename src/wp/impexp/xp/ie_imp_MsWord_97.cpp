@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 #include "wv.h"
 #include "ie_imp_MsWord_97.h"
@@ -1506,10 +1507,13 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
 	XML_Char propBuffer[128];
 	propBuffer[0] = 0;
+
+	setlocale(LC_NUMERIC, "C");
 	sprintf(propBuffer, "width:%fin; height:%fin", 
 			(double)width / (double)1440, 
 			(double)height / (double)1440);
-	
+	setlocale(LC_NUMERIC, "");
+
 	XML_Char propsName[32];
 	propsName[0] = 0;
 	sprintf(propsName, "image%d", m_iImageCount++);
