@@ -173,7 +173,7 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,148,291,10
     CONTROL         "&Hidden text",AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,165,291,10
-    CONTROL         "Un&printable characters",
+    CONTROL         "Invisible &layout marks",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,182,291,10
 END

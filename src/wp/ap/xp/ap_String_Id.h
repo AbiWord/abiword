@@ -211,7 +211,7 @@ dcl(DLG_Options_Label_ViewStatusBar,		"Status bar")
 dcl(DLG_Options_Label_ViewViewFrame,	"View...")
 dcl(DLG_Options_Label_ViewAll,			"&All")
 dcl(DLG_Options_Label_ViewHiddenText,	"&Hidden Text")
-dcl(DLG_Options_Label_ViewUnprintable,	"Un&printable characters")
+dcl(DLG_Options_Label_ViewUnprintable,	"Invisible &Layout Marks")
 
 dcl(DLG_Options_Prompt_IgnoreResetCurrent,	"Do you want to reset ignored words in the current document?" )
 dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in all the documents?" )
