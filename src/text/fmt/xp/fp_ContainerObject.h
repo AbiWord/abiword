@@ -141,7 +141,7 @@ public:
 	FG_Fill_Type   getFillType(void) const;
 	FL_DocLayout * getDocLayout(void);
 	UT_RGBColor *  getColor(void);
-	void           setDocImage(GR_Image ** pDocPage);
+	void           setImagePointer(GR_Image ** pDocPage);
 private:
     void        	     _regenerateImage(GR_Graphics * pG);
 	fg_FillType *        m_pParent;

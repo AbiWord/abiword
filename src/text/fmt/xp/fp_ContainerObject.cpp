@@ -403,7 +403,7 @@ void fg_FillType::setColor(const char * pszColor)
  * enables many pages to share the same image without having to generate
  * a new image for every page.
  */
-void fg_FillType::setDocImage(GR_Image ** pDocImage)
+void fg_FillType::setImagePointer(GR_Image ** pDocImage)
 {
 	if(pDocImage != NULL)
 	{

@@ -67,7 +67,13 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_pLayout(pLayout),
 	  m_bIsCollapsed(true),
 	  m_bNeedsReformat(true),
-	  m_bNeedsRedraw(true)
+	  m_bNeedsRedraw(true),	
+	  m_pGraphicImage(NULL),
+	  m_pImageImage(NULL),
+	  m_iGraphicTick(0),
+	  m_iDocImageWidth(0),
+	  m_iDocImageHeight(0)
+
 {
 	UT_ASSERT(pLayout);
 	m_pDoc = pLayout->getDocument();
@@ -75,6 +81,8 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 
 fl_SectionLayout::~fl_SectionLayout()
 {
+	DELETEP(m_pGraphicImage);
+	DELETEP(m_pImageImage);
 }
 
 FL_DocLayout* fl_SectionLayout::getDocLayout(void) const
@@ -304,65 +312,77 @@ bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, con
 	return bres;
 }
 
+
+void fl_SectionLayout::checkGraphicTick(GR_Graphics * pG)
+{
+	if(m_pImageImage && (getDocLayout()->getGraphicTick() != m_iGraphicTick))
+	{
+		DELETEP(m_pImageImage);
+		m_pImageImage = m_pGraphicImage->regenerateImage(pG);
+		const UT_Rect rec(0,0,m_iDocImageWidth,m_iDocImageHeight);	
+		m_pImageImage->scaleImageTo(pG,rec);
+		m_iGraphicTick = getDocLayout()->getGraphicTick();
+	}
+}
+
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 #ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
 #endif
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
-	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION,PTX_Section, this)
+	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION,PTX_Section, this),
+	  m_pHeaderSL(NULL),
+	  m_pFooterSL(NULL),
+	  m_pHeaderEvenSL(NULL),
+	  m_pFooterEvenSL(NULL),
+	  m_pHeaderFirstSL(NULL),
+	  m_pFooterFirstSL(NULL),
+	  m_pHeaderLastSL(NULL),
+	  m_pFooterLastSL(NULL),
+	  m_iNumColumns(1),
+	  m_iColumnGap(0),
+	  m_bColumnLineBetween(false),
+	  m_iColumnOrder(0),
+	  m_iSpaceAfter(0),
+	  m_bRestart(false),
+	  m_iRestartValue(0),
+
+	  m_iLeftMargin(0),
+	  m_dLeftMarginUserUnits(0.0),
+	  m_iRightMargin(0),
+	  m_dRightMarginUserUnits(0.0),
+	  m_iTopMargin(0),
+	  m_dTopMarginUserUnits(0.0),
+	  m_iBottomMargin(0),
+	  m_dBottomMarginUserUnits(0.0),
+	  m_iFooterMargin(0),
+	  m_dFooterMarginUserUnits(0.0),
+	  m_iHeaderMargin(0),
+	  m_dHeaderMarginUserUnits(0.0),
+	  m_iMaxSectionColumnHeight(0),
+	  m_dMaxSectionColumnHeight(0.0),
+	  m_iFootnoteLineThickness(0),
+
+	  m_bForceNewPage(false),
+	  m_pFirstColumn(NULL),
+	  m_pLastColumn(NULL),
+	  m_pFirstOwnedPage(NULL),
+
+	  m_bNeedsFormat(false),
+	  m_bNeedsRebuild(false),
+	  m_bNeedsSectionBreak(true),
+	  m_pFirstEndnoteContainer(NULL),
+	  m_pLastEndnoteContainer(NULL),
+	  m_bDeleteingBrokenContainers(false)
 {
 	UT_ASSERT(iType == FL_SECTION_DOC);
 
-	m_pHeaderSL = NULL;
-	m_pFooterSL = NULL;
-	m_pHeaderEvenSL = NULL;
-	m_pFooterEvenSL = NULL;
-	m_pHeaderFirstSL = NULL;
-	m_pFooterFirstSL = NULL;
-	m_pHeaderLastSL = NULL;
-	m_pFooterLastSL = NULL;
-	m_pFirstColumn = NULL;
-	m_pLastColumn = NULL;
-	m_bForceNewPage = false;
-	m_pFirstOwnedPage = NULL;
-	m_bNeedsFormat = false;
-	m_bNeedsRebuild = false;
-	m_bNeedsSectionBreak = true;
-	m_pFirstEndnoteContainer = NULL;
-	m_pLastEndnoteContainer = NULL;
-	m_pDoc = pLayout->getDocument();
-	m_bDeleteingBrokenContainers = false;	
-	m_iNumColumns = 1;
-	m_iColumnGap = 0;
-	m_bColumnLineBetween = 0;
-	m_iColumnOrder = 0;
-
-    m_iSpaceAfter = 0;
-	m_bRestart = false;
-	m_iRestartValue = 0;
-	m_iLeftMargin = 0;
-	m_dLeftMarginUserUnits = 0.0;
-	m_iRightMargin = 0;
-	m_dRightMarginUserUnits = 0.0;
-	m_iTopMargin = 0;
-	m_dTopMarginUserUnits = 0.0;
-	m_iBottomMargin = 0;
-	m_dBottomMarginUserUnits = 0.0;
-	m_iFooterMargin = 0;
-	m_dFooterMarginUserUnits = 0.0;
-	m_iHeaderMargin = 0;
-	m_dHeaderMarginUserUnits = 0.0;
-	m_iMaxSectionColumnHeight = 0;
-	m_dMaxSectionColumnHeight = 0.0;
-	m_iFootnoteLineThickness = 0;
+	m_pDoc= pLayout->getDocument();
+	
 	m_sPaperColor.clear();
 	m_sScreenColor.clear();
-	m_pPageImage = NULL;
-	m_pDocImage = NULL;
-	m_iGraphicTick = 0;
-	m_iDocImageWidth = 0;
-	m_iDocImageHeight = 0;
 	_lookupProperties();
 }
 
@@ -390,8 +410,6 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 
 		pCol = pNext;
 	}
-	DELETEP(m_pPageImage);
-	DELETEP(m_pDocImage);
 }
 
 void fl_DocSectionLayout::setFirstEndnoteContainer(fp_EndnoteContainer * pECon)
@@ -1349,11 +1367,11 @@ void fl_DocSectionLayout::_lookupProperties(void)
 
 	const XML_Char * pszDataID = NULL;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
-	DELETEP(m_pPageImage);
-	DELETEP(m_pDocImage);
+	DELETEP(m_pGraphicImage);
+	DELETEP(m_pImageImage);
 	if(pszDataID && *pszDataID)
 	{
-		m_pPageImage = FG_Graphic::createFromStrux(this);
+		m_pGraphicImage = FG_Graphic::createFromStrux(this);
 	}
 	setPaperColor();
 	m_bForceNewPage = false;
@@ -1704,18 +1722,6 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	return true;
 }
 
-void fl_DocSectionLayout::checkGraphicTick(GR_Graphics * pG)
-{
-	if(m_pDocImage && (getDocLayout()->getGraphicTick() != m_iGraphicTick))
-	{
-		DELETEP(m_pDocImage);
-		m_pDocImage = m_pPageImage->regenerateImage(pG);
-		const UT_Rect rec(0,0,m_iDocImageWidth,m_iDocImageHeight);	
-		m_pDocImage->scaleImageTo(pG,rec);
-		m_iGraphicTick = getDocLayout()->getGraphicTick();
-	}
-}
-
 void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 {
 	// TODO do we really need the vecOwnedPages member? YES!!!
@@ -1724,21 +1730,21 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 		m_pFirstOwnedPage = pPage;
 	fp_Page * pPrev = m_pFirstOwnedPage;
 	pPage->getFillType()->setDocLayout(getDocLayout());
-	if(m_pPageImage)
+	if(m_pGraphicImage)
 	{
-		if(m_pDocImage == NULL)
+		if(m_pImageImage == NULL)
 		{
 			const PP_AttrProp * pAP = NULL;
 			getAttrProp(&pAP);
-			GR_Image * pImage = m_pPageImage->generateImage(getDocLayout()->getGraphics(),pAP,pPage->getWidth(),pPage->getHeight());
+			GR_Image * pImage = m_pGraphicImage->generateImage(getDocLayout()->getGraphics(),pAP,pPage->getWidth(),pPage->getHeight());
 			m_iDocImageWidth = pPage->getWidth();
 			m_iDocImageHeight = pPage->getHeight();
 			m_iGraphicTick = getDocLayout()->getGraphicTick();
 			UT_Rect rec(0,0,pPage->getWidth(),pPage->getHeight());
 			pImage->scaleImageTo(getDocLayout()->getGraphics(),rec);
-			m_pDocImage = pImage;
+			m_pImageImage = pImage;
 		}
-		pPage->getFillType()->setDocImage(&m_pDocImage);
+		pPage->getFillType()->setImagePointer(&m_pImageImage);
 	}
 	else if(m_sPaperColor.size() > 0)
 	{

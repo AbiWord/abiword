@@ -159,6 +159,8 @@ public:
 	virtual bool bl_doclistener_deleteFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
 	virtual bool bl_doclistener_changeFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 
+	virtual void         checkGraphicTick(GR_Graphics * pG);
+
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
@@ -174,6 +176,11 @@ protected:
 	bool                m_bIsCollapsed;
 	bool                m_bNeedsReformat;
 	bool                m_bNeedsRedraw;
+	FG_Graphic *        m_pGraphicImage;
+	GR_Image *          m_pImageImage;
+	UT_uint32           m_iGraphicTick;
+	UT_sint32           m_iDocImageWidth;
+	UT_sint32           m_iDocImageHeight;
 };
 
 class ABI_EXPORT fl_DocSectionLayout : public fl_SectionLayout
@@ -269,7 +276,7 @@ public:
 	fp_Container *      getFirstEndnoteContainer(void);
 	fp_Container *      getLastEndnoteContainer(void);
 	void                deleteBrokenTablesFromHere(fl_TableLayout * pTL);
-	void                checkGraphicTick(GR_Graphics * pG);
+
 private:
 	virtual void		_lookupProperties(void);
 	fb_ColumnBreaker    m_ColumnBreaker;
@@ -325,11 +332,6 @@ private:
 	bool                m_bDeleteingBrokenContainers;
 	UT_String           m_sPaperColor;
 	UT_String           m_sScreenColor;
-	FG_Graphic *        m_pPageImage;
-	GR_Image *          m_pDocImage;
-	UT_uint32           m_iGraphicTick;
-	UT_sint32           m_iDocImageWidth;
-	UT_sint32           m_iDocImageHeight;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout
