@@ -57,10 +57,6 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
-
-#if HAVE_GNOME_DIRECT_PRINT
-		MenuItem(AP_MENU_ID_FILE_PRINT_DIRECTLY)
-#endif
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_CLOSE)
 		MenuItem(AP_MENU_ID_FILE_EXIT)
@@ -104,7 +100,6 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_VIEW_STATUSBAR)
 		Separator()
 		MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
-//		MenuItem(AP_MENU_ID_VIEW_HEADFOOT)
         Separator()
         MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
            BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
@@ -319,12 +314,14 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_HELP_ABOUTOS)
                 MenuItem(AP_MENU_ID_HELP_ABOUT_GNU)
-                Separator()
 #ifdef HAVE_GNOME
      MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
-#endif /* HAVE_GNOME */
+#endif
+                Separator()
+#ifndef HAVE_GNOME
      MenuItem(AP_MENU_ID_HELP_CREDITS)
 	Separator()
+#endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 EndSubMenu()
 
