@@ -39,8 +39,9 @@ libWpAp_xp_a_SOURCES=	ap_Convert.cpp			\
 		ap_Dialog_Styles.cpp		\
 		ap_Dialog_Columns.cpp		\
 		ap_Dialog_Tab.cpp		\
-		ap_Dialog_ToggleCase.cpp		\
+		ap_Dialog_ToggleCase.cpp	\
 		ap_Dialog_PageSetup.cpp         \
+		ap_Dialog_New.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\
