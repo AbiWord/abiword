@@ -1438,6 +1438,7 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 	
 	m_iLen = 1;
 	m_bDirty = true;
+	m_iWidth = 0;
 #ifdef BIDI_ENABLED
 	UT_ASSERT((pBL));
 	m_iDirection = pBL->getDominantDirection();
@@ -1477,7 +1478,7 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 											   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 			m_pG->setFont(pFont);
 		}
-		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+		m_iDrawWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
 		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", m_iWidth));
 	}
 	else
@@ -1492,7 +1493,7 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 		// paragraphs is shifted by the width of the pilcrow.
 		// this required some additional changes to the _draw function
 		// Tomas
-		m_iWidth = 0;
+		m_iDrawWidth = 0;
 	}
 }
 
@@ -1568,7 +1569,15 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, m_pLine->getHeight());
+	
+#ifdef BIDI_ENABLED
+	if(m_pBL->getDominantDirection())
+	{
+		xoff -= m_iDrawWidth;
+	}
+#endif
+	
+	m_pG->fillRect(m_colorPG, xoff, yoff, m_iDrawWidth, m_pLine->getHeight());
 }
 
 /*!
@@ -1589,11 +1598,11 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	FV_View* pView = m_pBL->getDocLayout()->getView();
     if(!pView || !pView->getShowPara())
     {
-    	if(m_iWidth)
+    	if(m_iDrawWidth)
     	{
-    		m_iWidth = 0;
-    		m_pLine->layout();
-    		m_pLine->redrawUpdate();
+    		m_iDrawWidth = 0;
+    		//m_pLine->layout();
+    		//m_pLine->redrawUpdate();
     	}
     	return;
     }
@@ -1652,32 +1661,39 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	// if we currently have a 0 width, i.e., we draw in response to the
 	// showPara being turned on, then we obtain the new width, and then
 	// tell the line to redo its layout and redraw instead of drawing ourselves
-	bool bWidthChange = false;
-	if(!m_iWidth)
-		bWidthChange = true;
+//	bool bWidthChange = false;
+//	if(!m_iDrawWidth)
+//		bWidthChange = true;
 
-	m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
- 	if(bWidthChange)
-	{
-		m_pLine->layout();
-		m_pLine->redrawUpdate();
-		return;
-	}
+	m_iDrawWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+// 	if(bWidthChange)
+//	{
+//		m_pLine->layout();
+//		m_pLine->redrawUpdate();
+//		return;
+//	}
 	
 	m_iHeight = m_pG->getFontHeight();
 	m_iXoffText = pDA->xoff;
-	
+
+#ifdef BIDI_ENABLED
+	if(m_pBL->getDominantDirection())
+	{
+		m_iXoffText -= m_iDrawWidth;
+	}
+#endif
+		
 	m_iYoffText = pDA->yoff - iAscent;
-	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
+	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iDrawWidth));
 
 	if (bIsSelected)
 	{
-		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
+		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
 	}
 	else
 	{
-		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
+		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
 	}
 	if (pView->getShowPara())
 	{

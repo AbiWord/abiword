@@ -906,7 +906,8 @@ void fp_Line::redrawUpdate(void)
 
 void fp_Line::draw(GR_Graphics* pG)
 {
-	UT_ASSERT(m_iWidth <= m_iMaxWidth);
+	//line can be wider than the max width due to trailing spaces
+	//UT_ASSERT(m_iWidth <= m_iMaxWidth);
 	
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG \n"));
 	UT_sint32 my_xoff = 0, my_yoff = 0;
@@ -1565,8 +1566,9 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 		}
 		//UT_DEBUGMSG(("calculateWidthOfLine: run[%d] (type %d) width=%d total=%d\n", i, pRun->getType(), pRun->getWidth(),iX));
 	}
-
-	UT_ASSERT(iX <= m_iMaxWidth);
+    // this is a wrong assert, since line can include trailing spaces
+    // that are out of the margins.
+	//UT_ASSERT(iX <= m_iMaxWidth);
 
 	m_iWidth = iX;
 
