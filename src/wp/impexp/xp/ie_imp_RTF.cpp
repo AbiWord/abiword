@@ -3386,6 +3386,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return _appendField ("time");
 		}
+		else if (strcmp((char*)pKeyword, "chdpl") == 0)
+		{
+			const XML_Char * attribs[3] ={"param",NULL,NULL};
+			attribs[1] = "%A, %B %d, %Y";
+			return _appendField ("datetime_custom", attribs);
+		}
+		else if (strcmp((char*)pKeyword, "chdpa") == 0)
+		{
+			const XML_Char * attribs[3] ={"param",NULL,NULL};
+			attribs[1] = "%a, %b %d, %Y";
+			return _appendField ("datetime_custom");
+		}
 		else if (strcmp((char*)pKeyword, "chpgn") == 0)
 		{
 			return _appendField ("page_number");
