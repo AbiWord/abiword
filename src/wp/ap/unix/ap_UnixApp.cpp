@@ -587,6 +587,13 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 #if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
 	|| defined(_AIX)
 static int so_only (struct dirent *d)
+#elif defined(__osf__)
+// The Tru64 UNIX vendor C++ compiler will complain when scandir is
+// called in loadAllPlugins because it expects the third argument to
+// scandir to be a pointer to a function with C linkage.  Since that's
+// the case, make the function extern "C".
+extern "C" {
+static int so_only (struct dirent *d)
 #else
 static int so_only (const struct dirent *d)
 #endif
@@ -611,6 +618,9 @@ static int so_only (const struct dirent *d)
     }
   return 0;
 }
+#if defined(__osf__)
+} // extern "C"
+#endif
 
 void AP_UnixApp::loadAllPlugins ()
 {
