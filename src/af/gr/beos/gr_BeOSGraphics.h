@@ -47,6 +47,7 @@ public:
 				  unsigned short* pWidths);
   virtual UT_uint32 _getResolution(void) const;
   virtual void setColor(UT_RGBColor& clr);
+  virtual void setColor3D(GR_Color3D c);
   virtual GR_Font* getGUIFont(void);
   virtual GR_Font* findFont(
 		const char* pszFontFamily, 
@@ -62,6 +63,9 @@ public:
   virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
   virtual void fillRect(UT_RGBColor& c, UT_Rect &r);
   virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+  virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+  virtual void fillRect(GR_Color3D c, UT_Rect &r);
+
   virtual void invertRect(const UT_Rect* pRect);
   virtual void setClipRect(const UT_Rect* pRect);
   virtual void scroll(UT_sint32, UT_sint32);
@@ -86,10 +90,6 @@ public:
   virtual GR_Graphics::Cursor getCursor(void) const;
 
 
-  virtual void                                    setColor3D(GR_Color3D c);
-  virtual void                                    fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-  virtual void                                    fillRect(GR_Color3D c, UT_Rect &r);
-  
 	//Added for local updating of the View
 	void	ResizeBitmap(BRect r);
 	BBitmap *ShadowBitmap()		{ return(m_pShadowBitmap); };

@@ -454,7 +454,7 @@ void GR_BEOSGraphics::fillRect(UT_RGBColor& c, UT_Rect &r) {
 
 
 void GR_BEOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
-							UT_sint32 w, UT_sint32 h)
+						UT_sint32 w, UT_sint32 h)
 {
 	DPRINTF(printf("GR: Flll Rect\n"));
 	m_pShadowView->Window()->Lock();
@@ -654,17 +654,36 @@ GR_Graphics::Cursor GR_BEOSGraphics::getCursor(void) const
 
 void GR_BEOSGraphics::setColor3D(GR_Color3D c)
 {
-	// TODO
+/*
+        UT_ASSERT(c < COUNT_3D_COLORS);
+        _setColor(m_3dColors[c]);
+*/
 }
 
-void GR_BEOSGraphics::fillRect(GR_Color3D c, 
-		UT_sint32 x, UT_sint32 y,
-		UT_sint32 w, UT_sint32 h)
+/*
+void GR_BEOSGraphics::init3dColors(GtkStyle * pStyle)
 {
-	// TODO
+        m_3dColors[CLR3D_Foreground] = pStyle->fg[GTK_STATE_NORMAL];
+        m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
+        m_3dColors[CLR3D_BevelUp] = pStyle->light[GTK_STATE_NORMAL];
+        m_3dColors[CLR3D_BevelDown] = pStyle->dark[GTK_STATE_NORMAL];
+        m_3dColors[CLR3D_Highlight] = pStyle->bg[GTK_STATE_PRELIGHT];
+}        
+*/
+
+void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
+ w, UT_sint32 h)
+{
+/*
+        UT_ASSERT(c < COUNT_3D_COLORS);
+        gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
+        gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
+*/
 }
 
 void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
-	// TODO
-}
+        UT_ASSERT(c < COUNT_3D_COLORS);
+        fillRect(c,r.left,r.top,r.width,r.height);
+}                               
+
