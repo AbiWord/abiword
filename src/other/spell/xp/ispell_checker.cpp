@@ -99,7 +99,30 @@ UT_Vector & ISpellChecker::getMapping()
 /***************************************************************************/
 
 ISpellChecker::ISpellChecker()
-  : deftflag(-1), prefstringchar(-1), m_bSuccessfulInit(false)
+  : deftflag(-1),
+	prefstringchar(-1),
+	m_bSuccessfulInit(false),
+	m_BC(NULL),
+	m_cd(NULL),
+	m_cl(NULL),
+	m_cm(NULL),
+	m_ho(NULL),
+	m_nd(NULL),
+	m_so(NULL),
+	m_se(NULL),
+	m_ti(NULL),
+	m_te(NULL),
+	m_hashstrings(NULL),
+	m_hashtbl(NULL),
+	m_pflaglist(NULL),
+	m_sflaglist(NULL),
+    m_chartypes(NULL),
+	m_infile(NULL),
+	m_outfile(NULL),
+	m_askfilename(NULL),
+	m_translate_in((UT_iconv_t)-1),
+	m_translate_out((UT_iconv_t)-1)
+
 {
   if (mRefCnt == 0)
     {
