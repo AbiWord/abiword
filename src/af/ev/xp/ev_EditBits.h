@@ -48,6 +48,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_FIELD			((EV_EditMouseContext) 0x70000000)
 #define EV_EMC_HYPERLINK		((EV_EditMouseContext) 0x80000000)
 #define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x90000000)
+#define EV_EMC_REVISION		    ((EV_EditMouseContext) 0xa0000000)
 
 // NB: the following two values are not included in EV_COUNT_EMC
 // because they are not used in the bindings, and are, therefore,

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 /*****************************************************************
 ******************************************************************
 ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
@@ -25,11 +24,22 @@
 ******************************************************************
 *****************************************************************/
 
-// Include each menu layout that we want to build.
+BeginLayout(ContextRevision,EV_EMC_REVISION)
 
-#include "ap_Menu_Layouts_MainMenu.h"
-#include "ap_ML_ContextText.h"
-#include "ap_ML_ContextSquiggle.h"
-#include "ap_ML_ContextHyperlink.h"
-#include "ap_ML_ContextImage.h"
-#include "ap_ML_ContextRevision.h"
+	BeginPopupMenu()
+		MenuItem(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION)
+		MenuItem(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION)
+		Separator()
+		MenuItem(AP_MENU_ID_EDIT_CUT)
+		MenuItem(AP_MENU_ID_EDIT_COPY)
+		MenuItem(AP_MENU_ID_EDIT_PASTE)
+	    MenuItem(AP_MENU_ID_EDIT_PASTE_SPECIAL)
+		Separator()
+		MenuItem(AP_MENU_ID_FMT_FONT)
+	    MenuItem(AP_MENU_ID_FMT_LANGUAGE)
+		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
+	    MenuItem(AP_MENU_ID_FMT_BULLETS)
+	EndPopupMenu()
+
+EndLayout()
+

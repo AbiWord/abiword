@@ -437,6 +437,8 @@ public:
 
 	/* Revision related functions */
 	void                toggleMarkRevisions();
+	void                cmdAcceptRevision();
+	void                cmdRejectRevision();
 	bool                isMarkRevisions();
 
 protected:

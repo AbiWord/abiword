@@ -238,6 +238,9 @@ public:
 	fp_Run *				getNextVisual();
 	fp_Run *				getPrevVisual();
 
+	bool                    containsRevisions(){return (m_pRevisions != NULL);}
+
+
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif

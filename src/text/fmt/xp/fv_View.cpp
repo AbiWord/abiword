@@ -9938,6 +9938,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
+	if(pRun->containsRevisions())
+	{
+		return EV_EMC_REVISION;
+	}
+
 	if(pRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
@@ -10115,6 +10120,11 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	if (!pRun)
 	{
 		return EV_EMC_UNKNOWN;
+	}
+
+	if(pRun->containsRevisions())
+	{
+		return EV_EMC_REVISION;
 	}
 
 	if(pRun->getHyperlink() != NULL)
@@ -12318,5 +12328,16 @@ void FV_View::toggleMarkRevisions()
 bool FV_View::isMarkRevisions()
 {
 	return m_pDoc->isMarkRevisions();
+}
+
+void FV_View::cmdAcceptRevision()
+{
+	UT_DEBUGMSG(( "FV_View::cmdAcceptRevision\n" ));
+
+}
+
+void FV_View::cmdRejectRevision()
+{
+	UT_DEBUGMSG(( "FV_View::cmdRejectRevision\n" ));
 }
 

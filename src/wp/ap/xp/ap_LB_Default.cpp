@@ -58,6 +58,7 @@
 #define _CZ		EV_EMC_IMAGESIZE
 #define _CF		EV_EMC_FIELD
 #define _CH		EV_EMC_HYPERLINK
+#define _CV		EV_EMC_REVISION
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -143,6 +144,8 @@ ap_bs_Mouse MouseTable[] =
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
 	{_CH _B3,	{ "contextHyperlink",		"",			"",		"",			"",			""				}},
+
+	{_CV _B3,	{ "contextRevision",		"",			"",		"",			"",			""				}},
 
 //  Button-4, Mouse wheel (3 lines up)... yes, a hack.
 	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},

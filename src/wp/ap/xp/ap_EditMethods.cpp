@@ -170,6 +170,7 @@ public:
 	static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
+	static EV_EditMethod_Fn contextRevision;
 	static EV_EditMethod_Fn contextText;
 	static EV_EditMethod_Fn contextMisspellText;
 
@@ -534,6 +535,8 @@ public:
 	static EV_EditMethod_Fn unlockGUI;
 
 	static EV_EditMethod_Fn toggleMarkRevisions;
+	static EV_EditMethod_Fn revisionAccept;
+	static EV_EditMethod_Fn revisionReject;
 
 	static EV_EditMethod_Fn noop;
 
@@ -596,6 +599,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextImage), 0, ""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
+	EV_EditMethod(NF(contextRevision),	    0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
 	EV_EditMethod(NF(cursorDefault),		0,	""),
@@ -832,6 +836,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,""),
+	EV_EditMethod(NF(revisionAccept),		0,  ""),
+	EV_EditMethod(NF(revisionReject),		0,  ""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
 
 	// s
@@ -3522,6 +3528,15 @@ Defun(contextText)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
 	return s_doContextMenu(EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+Defun(contextRevision)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_ASSERT(pFrame);
+	return s_doContextMenu(EV_EMC_REVISION,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextMisspellText)
@@ -9396,5 +9411,21 @@ Defun1(toggleMarkRevisions)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->toggleMarkRevisions();
+	return true;
+}
+
+Defun1(revisionAccept)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdAcceptRevision();
+	return true;
+}
+
+Defun1(revisionReject)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdRejectRevision();
 	return true;
 }
