@@ -70,19 +70,19 @@ private:
 };
 
 // helpers
-bool operator==(const UT_String& s1, const UT_String& s2);
-bool operator==(const UT_String& s1, const char*      s2);
-bool operator==(const char*      s1, const UT_String& s2);
-bool operator!=(const UT_String& s1, const UT_String& s2);
-bool operator!=(const UT_String& s1, const char*      s2);
-bool operator!=(const char*      s1, const UT_String& s2);
+ABI_EXPORT bool operator==(const UT_String& s1, const UT_String& s2);
+ABI_EXPORT bool operator==(const UT_String& s1, const char*      s2);
+ABI_EXPORT bool operator==(const char*      s1, const UT_String& s2);
+ABI_EXPORT bool operator!=(const UT_String& s1, const UT_String& s2);
+ABI_EXPORT bool operator!=(const UT_String& s1, const char*      s2);
+ABI_EXPORT bool operator!=(const char*      s1, const UT_String& s2);
 
-UT_uint32 hashcode(const UT_String& string);
+ABI_EXPORT UT_uint32 hashcode(const UT_String& string);
 
 // strcmp ordering
-bool operator<(const UT_String& s1, const UT_String& s2);
+ABI_EXPORT bool operator<(const UT_String& s1, const UT_String& s2);
 
-UT_String operator+(const UT_String& s1, const UT_String& s2);
+ABI_EXPORT UT_String operator+(const UT_String& s1, const UT_String& s2);
 
 /***************************************************************************/
 
