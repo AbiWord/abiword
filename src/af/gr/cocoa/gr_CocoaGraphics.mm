@@ -804,9 +804,12 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 //   	UT_sint32 iImageWidth = pCocoaImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pCocoaImage->getDisplayHeight();
+	NSSize size = [image size];
 
 	LOCK_CONTEXT__;
-	[image compositeToPoint:NSMakePoint(xDest, yDest + iImageHeight) operation:NSCompositeCopy fraction:1.0f];
+	[image drawInRect:NSMakeRect(xDest, yDest, pCocoaImage->getDisplayWidth(), iImageHeight)
+	           fromRect:NSMakeRect(0, 0, size.width, size.height) operation:NSCompositeCopy fraction:1.0f];
+//	[image compositeToPoint:NSMakePoint(xDest, yDest + iImageHeight) operation:NSCompositeCopy fraction:1.0f];
 }
 
 

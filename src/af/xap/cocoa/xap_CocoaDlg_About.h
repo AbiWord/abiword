@@ -66,9 +66,6 @@ public:
 
 	virtual void			event_OK(void);
 	virtual void			event_URL(void);
-
-	GR_CocoaImage * m_pGrImageSidebar;
-
 private:
 	XAP_Frame * m_pFrame;
 	XAP_CocoaDlg_AboutController * m_dlg;

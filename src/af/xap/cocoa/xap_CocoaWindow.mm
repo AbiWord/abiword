@@ -25,7 +25,7 @@
 
 #include "xap_CocoaWindow.h"
 
-static UT_uint32 s_ToolbarHeight = 0;
+static float s_ToolbarHeight = 0.0;
 
 @interface XAP_CocoaWindowDelegate : NSWindowController
 {
@@ -46,19 +46,14 @@ static UT_uint32 s_ToolbarHeight = 0;
 
 - (void)windowDidResize:(NSNotification *)aNotification
 {
-	if (m_window) m_window->_windowResized ();
+	if (m_window) 
+		m_window->_windowResized ();
 }
 
 @end
 
-XAP_CocoaWindow::WindowException::WindowException (WindowError we) : m_we(we)
-{
-	// 
-}
 
-/* throws WindowException, and possibly others, who knows...
- */
-XAP_CocoaWindow::XAP_CocoaWindow (WindowStyle ws, UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height) :
+XAP_CocoaWindow::XAP_CocoaWindow (WindowStyle ws, const NSRect & frameRect) :
 	m_styleMask(NSBorderlessWindowMask),
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
@@ -66,22 +61,16 @@ XAP_CocoaWindow::XAP_CocoaWindow (WindowStyle ws, UT_sint32 x, UT_sint32 y, UT_u
 	m_view(0),
 	m_isToolbar(false)
 {
-	NSRect frame = [[NSScreen mainScreen] frame];
+	NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
 
-	UT_sint32 diff_width  = static_cast<UT_sint32>(frame.size.width)  - width;
-	UT_sint32 diff_height = static_cast<UT_sint32>(frame.size.height) - height;
+	float diff_width  = screenFrame.size.width  - frameRect.size.width;
+	float diff_height = screenFrame.size.height - frameRect.size.height;
 
-	m_frame.origin.x = static_cast<float>(static_cast<UT_sint32>(frame.origin.x) + diff_width  / 2);
-	m_frame.origin.y = static_cast<float>(static_cast<UT_sint32>(frame.origin.y) + diff_height / 2);
-
-	m_frame.size.width  = static_cast<float>(width);
-	m_frame.size.height = static_cast<float>(height);
-
+	m_frame = NSMakeRect (screenFrame.origin.x + diff_width  / 2, screenFrame.origin.y + diff_height / 2,
+							frameRect.size.width, frameRect.size.height);
 	_init (ws);
 }
 
-/* throws WindowException, and possibly others, who knows...
- */
 XAP_CocoaWindow::XAP_CocoaWindow () :
 	m_styleMask(NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask),
 	m_backingType(NSBackingStoreBuffered),
@@ -90,30 +79,23 @@ XAP_CocoaWindow::XAP_CocoaWindow () :
 	m_view(0),
 	m_isToolbar(false)
 {
-	NSRect frame = [[NSScreen mainScreen] frame];
+	NSRect frame = [[NSScreen mainScreen] visibleFrame];
 
-	UT_uint32 width  = static_cast<UT_uint32>(frame.size.width);
-	UT_uint32 height = static_cast<UT_uint32>(frame.size.height) - s_ToolbarHeight;
+	float width  = frame.size.width;
+	float height = frame.size.height - s_ToolbarHeight;
 
-	UT_sint32 x = width  >> 4;
-	UT_sint32 y = height >> 4;
+	float x = width / 16.0;
+	float y = height / 16.0;
 
-	width  -= width  >> 3;
-	height -= height >> 3;
+	width  -= width  / 8.0;
+	height -= height / 8.0;
 
-	m_frame.origin.x = static_cast<float>(x);
-	m_frame.origin.y = static_cast<float>(y + height);
-
-	m_frame.size.width  = static_cast<float>(width);
-	m_frame.size.height = static_cast<float>(height);
+	m_frame = NSMakeRect(x, y + height, width, height);
 
 	_init (ws_Frame);
 }
 
-/* throws WindowException, and possibly others, who knows...
- * (special case for toolbar)
- */
-XAP_CocoaWindow::XAP_CocoaWindow (UT_uint32 height) :
+XAP_CocoaWindow::XAP_CocoaWindow (float height) :
 	m_styleMask(NSBorderlessWindowMask),
 	m_backingType(NSBackingStoreBuffered),
 	m_controller(0),
@@ -123,99 +105,85 @@ XAP_CocoaWindow::XAP_CocoaWindow (UT_uint32 height) :
 {
 	m_frame = [[NSScreen mainScreen] visibleFrame];
 
-	m_frame.origin.y = static_cast<float>((static_cast<UT_uint32>(m_frame.size.height) - 0) - height);
-	m_frame.size.height = static_cast<float>(height);
+	m_frame.origin.y = m_frame.size.height - height;
+	m_frame.size.height = height;
 
 	_init (ws_Raw);
 
 	s_ToolbarHeight = height;
 }
 
-/* throws WindowException, and possibly others, who knows...
- */
 void XAP_CocoaWindow::_init (WindowStyle ws)
 {
-	XAP_CocoaWindowDelegate * delegate = [XAP_CocoaWindowDelegate alloc];
-	if (delegate == 0)
-		{
-			UT_THROW (WindowError(we_NoController));
-			return;
-		}
-	m_window = (NSWindow *) [NSWindow alloc];
-	if (m_window == 0)
-		{
-			// [m_controller dealloc];
-			// m_controller = 0;
-			UT_THROW (WindowError(we_NoWindow));
-			return;
-		}
-
 	switch (ws)
-		{
-		case ws_Raw:
-			m_styleMask = NSBorderlessWindowMask;
-			break;
+	{
+	case ws_Raw:
+		m_styleMask = NSBorderlessWindowMask;
+		break;
 
-		case ws_Normal:
-		default: // ??
-			m_styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
-			break;
-		}
-
-	[m_window initWithContentRect:m_frame styleMask:m_styleMask backing:m_backingType defer:YES];
-
-	m_controller = (NSWindowController *) [delegate initWithWindow:m_window withXAPWindow:this];
-
+	case ws_Normal:
+	default: // ??
+		m_styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
+		break;
+	}
+	m_window = [[NSWindow alloc] initWithContentRect:m_frame styleMask:m_styleMask backing:m_backingType defer:YES];
+	UT_ASSERT (m_window);;
+	
+	m_controller = [[XAP_CocoaWindowDelegate alloc] initWithWindow:m_window withXAPWindow:this];
 	[m_window setDelegate:m_controller];
 
-	m_view = [m_window contentView];
+	m_view = [[m_window contentView] retain];
 }
 
 XAP_CocoaWindow::~XAP_CocoaWindow ()
 {
-	if (m_controller) [m_controller close];
-	//	if (m_controller) [m_controller dealloc];
+	if (m_controller) {
+		[m_controller close];
+	}
+	[m_view release];		// m_view has been retained to be valid during the whole object life
+	[m_controller release];
+	[m_window release];
+	
 
-	//	if (m_window) [m_window dealloc];
-
-	m_controller = 0;
-	m_window = 0;
-	m_view = 0;
-
-	if (m_isToolbar) s_ToolbarHeight = 0;
+	if (m_isToolbar) 
+		s_ToolbarHeight = 0.0;
 }
 
 void XAP_CocoaWindow::_show ()
 {
 	UT_ASSERT(m_controller);
-	if (m_controller == 0) return;
+	if (m_controller == 0) 
+		return;
 
 	[m_controller showWindow:m_controller]; // what object should we really be passing?
 
 	[m_window setFrame:m_frame display:YES];
 }
 
-void XAP_CocoaWindow::_moveto (UT_sint32 x, UT_sint32 y)
+/* assume that window position is top-left, not bottom-left */
+void XAP_CocoaWindow::_moveto (const NSPoint & position)
 {
-	// TODO
+	[m_window setFrameTopLeftPoint:position];
 }
 
-void XAP_CocoaWindow::_resize (UT_uint32 width, UT_uint32 height)
+void XAP_CocoaWindow::_resize (const NSSize & size)
 {
-	// TODO
+	[m_window setContentSize:size];
 }
 
-void XAP_CocoaWindow::_resize (UT_uint32 height) // special case for toolbar
+void XAP_CocoaWindow::_resize (float height) // special case for toolbar
 {
-	if (!m_isToolbar) return;
+	if (!m_isToolbar) 
+		return;
 
 	UT_ASSERT(m_window);
-	if (m_window == 0) return;
+	if (m_window == 0) 
+		return;
 
 	m_frame = [[NSScreen mainScreen] visibleFrame];
 
-	m_frame.origin.y = static_cast<float>((static_cast<UT_uint32>(m_frame.size.height) - 0) - height);
-	m_frame.size.height = static_cast<float>(height);
+	m_frame.origin.y = m_frame.size.height - height;
+	m_frame.size.height = height;
 
 	[m_window setContentSize:m_frame.size];
 

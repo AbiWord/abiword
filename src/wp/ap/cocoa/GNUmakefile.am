@@ -40,8 +40,10 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_MetaData.mm	\
 	ap_CocoaDialog_Options.mm	\
 	ap_CocoaFrame.mm		\
+	ap_CocoaFrameImpl.mm		\
 	ap_CocoaLeftRuler.mm		\
 	ap_CocoaPrefs.mm		\
+	ap_Cocoa_ResourceIDs.mm	\
 	ap_CocoaSplash.mm		\
 	ap_CocoaStatusBar.mm		\
 	ap_CocoaToolbar_StyleCombo.mm	\
@@ -56,4 +58,5 @@ libWpAp_cocoa_a_SOURCES=\
 EXTRA_DIST = \
 	ap_CocoaDialog_Break.nib \
 	ap_CocoaDialog_MetaData.nib \
+	ap_CocoaDialog_Options.nib \
 	ap_CocoaFrame.nib

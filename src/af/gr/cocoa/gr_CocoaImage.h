@@ -48,25 +48,28 @@ public:
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-	void			setData(Fatmap * image) { m_image = image; }
-   	Fatmap *			getData(void) const { return m_image; }
+//	void			setData(Fatmap * image) { m_image = image; }
 
    	virtual GRType		getType() const { return m_grtype; }
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
-	NSImage * getNSImage ();
+	NSImage * getNSImage ()
+		{ return m_image; };
 
-	static NSImage * imageFromPNG (const UT_ByteBuf * pBB_PNG, UT_uint32 & image_width, UT_uint32 & image_height);
+	static NSImage * imageFromPNG (NSData * data, UT_uint32 & image_width, UT_uint32 & image_height);
 
 private:
-	Fatmap * m_image;
+	NSImage*	m_image;
+	NSData*		m_pngData;
 
 	GRType m_grtype;
 
 	UT_sint32 m_iDisplayWidth;
 	UT_sint32 m_iDisplayHeight;
 
-	bool _convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	bool _convertPNGFromBuffer(const NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+
+//	bool _convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 };
 
 #endif /* GR_COCOAIMAGE_H */

@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
+ * Copyright (C) 2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,19 +19,13 @@
  * 02111-1307, USA.
  */
 
-#include "ut_bytebuf.h"
-#include "ut_debugmsg.h"
-#include "ut_exception.h"
+#import "ut_assert.h"
+#import "ut_debugmsg.h"
+#import "ut_exception.h"
 
-#include "gr_CocoaImage.h"
+#import "ap_CocoaSplash.h"
 
-#include "ap_CocoaSplash.h"
-
-/* build system converts PNG to static array;
- * see build-generated file ap_wp_splash.cpp
- */
-extern unsigned char g_pngSplash[];
-extern unsigned long g_pngSplash_sizeof;
+#import "ap_Cocoa_ResourceIDs.h"
 
 static AP_CocoaSplash * s_Splash = 0;
 
@@ -46,7 +40,8 @@ static AP_CocoaSplash * s_Splash = 0;
 - GoodBye:(NSTimer *)timer
 {
 	AP_CocoaSplash * splash = AP_CocoaSplash::instance ();
-	if (splash) delete splash;
+	if (splash) 
+		delete splash;
 	return self;
 }
 @end
@@ -55,60 +50,44 @@ static Wave * wave = 0;
 
 AP_CocoaSplash * AP_CocoaSplash::instance (bool instantiate)
 {
-	if (s_Splash) return s_Splash;
+	if (s_Splash) 
+		return s_Splash;
 
-	if (!instantiate) return 0; // the default is to instantiate the splash
+	if (!instantiate) 
+		return NULL; // the default is to instantiate the splash
 
-	if (wave) return 0; // hmm, must have done the splash thing already
-	wave = [Wave alloc];
-	if (wave == 0) return 0;
-	[wave init];
+	if (wave) 
+		return NULL; // hmm, must have done the splash thing already
+	wave = [[Wave alloc] init];
+	UT_ASSERT(wave);
 
-	UT_ByteBuf * pBB = 0;
-	UT_TRY
-		{
-			pBB = new UT_ByteBuf();
-		}
-	UT_CATCH (...)
-		{
-			pBB = 0;
-		}
-	if (pBB == 0) return 0;
-
-	if (!pBB->ins (0, g_pngSplash, g_pngSplash_sizeof))
-		{
-			DELETEP (pBB);
-			return 0;
-		}
-
-	UT_uint32 width = 0;
-	UT_uint32 height = 0;
-
-	NSImage * image = GR_CocoaImage::imageFromPNG (pBB, width, height);
-	DELETEP (pBB);
-	if (image == 0) return 0;
+	NSImage*	image = [NSImage imageNamed:AP_COCOA_SPLASH_RESOURCE_NAME];
+	UT_ASSERT (image);
+	NSSize	size = [image size];
 
 	UT_TRY
-		{
-			s_Splash = new AP_CocoaSplash(width,height,image);
-		}
+	{
+		s_Splash = new AP_CocoaSplash(size, image);
+	}
 	UT_CATCH (...)
-		{
-			s_Splash = 0;
-		}
+	{
+		s_Splash = NULL;
+	}
 	if (s_Splash)
-		{
-			NSTimeInterval s = 2;
-			[NSTimer scheduledTimerWithTimeInterval:s target:wave selector:@selector(GoodBye:) userInfo:nil repeats:NO];
-		}
+	{
+		NSTimeInterval s = 2;
+		[NSTimer scheduledTimerWithTimeInterval:s target:wave selector:@selector(GoodBye:) userInfo:nil repeats:NO];
+	}
 
 	return s_Splash;
 }
 
-AP_CocoaSplash::AP_CocoaSplash (UT_uint32 width, UT_uint32 height, NSImage * image) :
-	XAP_CocoaWindow(ws_Raw,100,100,width,height), // fix position later
+AP_CocoaSplash::AP_CocoaSplash (const NSSize & size, NSImage * image) :
+	XAP_CocoaWindow(ws_Raw,NSMakeRect(100.0,100.0,size.width,size.height)), // fix position later
 	m_statusbar(0)
 {
+	[image retain];
+	
     [m_window setHidesOnDeactivate:NO];
     [m_window setExcludedFromWindowsMenu:YES];
     [m_window setAlphaValue:0.8];
@@ -117,34 +96,24 @@ AP_CocoaSplash::AP_CocoaSplash (UT_uint32 width, UT_uint32 height, NSImage * ima
 #endif
 
 	NSRect box;
-
-	NSImageView * iview = [NSImageView alloc];
-	if (iview)
-		{
-			box.origin.x = static_cast<float>(0);
-			box.origin.y = static_cast<float>(0);
-			box.size.width  = static_cast<float>(width);
-			box.size.height = static_cast<float>(height);
-			[iview initWithFrame:box];
-
-			[iview setImage:image];
-
-			[m_view addSubview:iview];
-		}
-
+	
+	box = NSMakeRect(0.0, 0.0, size.width, size.height);
+	NSImageView * iview = [[NSImageView alloc] initWithFrame:box];
+	UT_ASSERT (iview);
+	[iview setImage:image];
+	[m_view addSubview:iview];
+	[iview release];
+	
+	[image release];
+	
 	_show ();
 
-	m_statusbar = (NSText *) [NSText alloc];
-	if (m_statusbar == 0) return;
-
-	box.origin.x = static_cast<float>(4);
-	box.origin.y = static_cast<float>(8);
-	box.size.width  = static_cast<float>(width - 8);
-	box.size.height = static_cast<float>(12);
-	[m_statusbar initWithFrame:box];
-
-	[m_view addSubview:m_statusbar];
-
+	box = NSMakeRect(4.0, 8.0, size.width - 8.0, 12.0);
+	m_statusbar = [[NSText alloc] initWithFrame:box];
+	UT_ASSERT(m_statusbar);
+	
+	[m_view addSubview:m_statusbar];	/* m_statusbar will be released in destructor of this */
+										/* that allow the view to be detached safely */
 	XAP_StatusBar::setStatusBar (this);
 }
 
@@ -152,6 +121,7 @@ AP_CocoaSplash::~AP_CocoaSplash ()
 {
 	XAP_StatusBar::unsetStatusBar (this);
 
+	[m_view release];
 	s_Splash = 0;
 }
 
@@ -159,15 +129,17 @@ void AP_CocoaSplash::statusMessage (const char * utf8str, bool urgent)
 {
 	if (m_statusbar == 0) return;
 
-	if (urgent)
+	if (urgent) {
 		[m_statusbar setTextColor:[NSColor redColor]];
-	else
+	}
+	else {
 		[m_statusbar setTextColor:[NSColor blackColor]];
+	}
 
 	NSString * str = [NSString stringWithUTF8String:utf8str];
 	if (str)
-		{
-			[m_statusbar setString:str];
-			[m_statusbar display];
-		}
+	{
+		[m_statusbar setString:str];
+		[m_statusbar display];
+	}
 }

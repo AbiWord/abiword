@@ -48,22 +48,11 @@ public:
 		we_NoWindow
 	};
 
-	class WindowException
-	{
-	public:
-		WindowException (WindowError we);
-		WindowError m_we;
-	};
-
 protected:
-	/* throws WindowException, and possibly others, who knows...
-	 */
-	XAP_CocoaWindow (WindowStyle ws, UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height);
+	XAP_CocoaWindow (WindowStyle ws, const NSRect & frameRect);
 	XAP_CocoaWindow (); // special case for document/frame
-	XAP_CocoaWindow (UT_uint32 height); // special case for toolbar
+	XAP_CocoaWindow (float height); // special case for toolbar
 private:
-	/* throws WindowException, and possibly others, who knows...
-	 */
 	void _init (WindowStyle ws);
 public:
 	virtual ~XAP_CocoaWindow ();
@@ -75,10 +64,10 @@ public:
 protected:
 	void					_show (); // this should be called only from the child's constructor, I think
 
-	void					_moveto (UT_sint32 x, UT_sint32 y);
+	void					_moveto (const NSPoint & position);
 
-	void					_resize (UT_uint32 width, UT_uint32 height);
-	void					_resize (UT_uint32 height); // special case for toolbar
+	void					_resize (const NSSize & size);
+	void					_resize (float height); // special case for toolbar
 
 protected:
 	unsigned int			m_styleMask;

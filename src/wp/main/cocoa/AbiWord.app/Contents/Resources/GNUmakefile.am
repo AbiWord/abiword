@@ -22,7 +22,7 @@ include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 
 CLEANFILES = AbiWord.icns ABWDocument.icns ABWPlugin.icns abiword_48.tif
 
-resources_DATA = AbiWord.icns ABWDocument.icns ABWPlugin.icns abiword_48.tif
+resources_DATA = AbiWord.icns ABWDocument.icns ABWPlugin.icns abiword_48.tif sidebar.png splash.png
 
 AbiWord.icns:$(mainsrcdir)/bundle/AbiWord.icns
 	cp -f $(mainsrcdir)/bundle/AbiWord.icns AbiWord.icns
@@ -35,3 +35,10 @@ ABWPlugin.icns:$(mainsrcdir)/bundle/ABWPlugin.icns
 
 abiword_48.tif:$(mainsrcdir)/bundle/abiword_48.tif
 	cp -f $(mainsrcdir)/bundle/abiword_48.tif abiword_48.tif
+
+splash.png:$(top_srcdir)/src/wp/ap/xp/splash.png
+	cp -f $(top_srcdir)src/wp/ap/xp/splash.png splash.png
+
+sidebar.png:$(top_srcdir)/src/wp/ap/xp/sidebar.png
+	cp -f $(top_srcdir)src/wp/ap/xp/sidebar.png sidebar.png
+

@@ -348,9 +348,8 @@ void AP_CocoaFrame::setYScrollRange(void)
 
 
 AP_CocoaFrame::AP_CocoaFrame(XAP_CocoaApp * app)
-	: AP_Frame (app)
+	: AP_Frame (new AP_CocoaFrameImpl(this, app), app)
 {
-	m_pFrameImpl = new AP_CocoaFrameImpl(this, app);
 	m_pData = NULL;
 //	static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
 }
@@ -859,4 +858,13 @@ void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
 	}
 }
 
+UT_sint32 AP_CocoaFrame::_getDocumentAreaWidth()
+{
+	return (UT_sint32)[static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->m_docAreaGRView frame].size.width;
+}
+
+UT_sint32 AP_CocoaFrame::_getDocumentAreaHeight()
+{
+	return (UT_sint32)[static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->m_docAreaGRView frame].size.height;
+}
 

@@ -35,14 +35,9 @@
 #include "xap_CocoaDlg_About.h"
 
 #include "gr_CocoaGraphics.h"
-#include "gr_CocoaImage.h"
-#include "ut_bytebuf.h"
-#include "ut_png.h"
 
-/*****************************************************************/
+#import "xap_Cocoa_ResourceIDs.h"
 
-extern unsigned char g_pngSidebar[];		// see ap_wp_sidebar.cpp
-extern unsigned long g_pngSidebar_sizeof;	// see ap_wp_sidebar.cpp
 
 /*****************************************************************/
 
@@ -58,12 +53,10 @@ XAP_CocoaDialog_About::XAP_CocoaDialog_About(XAP_DialogFactory * pDlgFactory,
 											 XAP_Dialog_Id dlgid)
 	: XAP_Dialog_About(pDlgFactory,dlgid)
 {
-	m_pGrImageSidebar = NULL;
 }
 
 XAP_CocoaDialog_About::~XAP_CocoaDialog_About(void)
 {
-	DELETEP(m_pGrImageSidebar);
 }
 
 /*****************************************************************/
@@ -114,22 +107,9 @@ void XAP_CocoaDialog_About::event_URL(void)
 	[m_licenseText setStringValue:[NSString stringWithFormat:@"%s\n\n%@", XAP_ABOUT_COPYRIGHT, 
 	                               [NSString stringWithFormat:@XAP_ABOUT_GPL_LONG_LF,
 	                 pFrame->getApp()->getApplicationName()]]];
-	
-	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
-	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
 
-	UT_sint32 iImageWidth;
-	UT_sint32 iImageHeight;
-		
-	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-	
-	m_xap->m_pGrImageSidebar = new GR_CocoaImage(NULL);
-	m_xap->m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
-	NSImage *image = m_xap->m_pGrImageSidebar->getNSImage ();
+	NSImage*	image = [NSImage imageNamed:XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME];
 	[m_imageView setImage:image];
-	
-	DELETEP(pBB);
-
 }
 
 - (void)setXAPOwner:(XAP_CocoaDialog_About *)owner

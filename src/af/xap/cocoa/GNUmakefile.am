@@ -25,6 +25,7 @@ noinst_LIBRARIES = libXap_cocoa.a
 
 libXap_cocoa_a_SOURCES =		\
 	xap_CocoaApp.mm			\
+	xap_CocoaAbiConversions.mm \
 	xap_CocoaClipboard.mm		\
 	xap_CocoaDialog_Utilities.mm	\
 	xap_CocoaDlg_PrintPreview.mm	\
@@ -34,12 +35,13 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaEncodingManager.mm	\
 	xap_CocoaFont.mm		\
 	xap_CocoaFontManager.mm		\
-	xap_CocoaFrame.mm		\
+	xap_CocoaFrameImpl.mm		\
 	xap_CocoaModule.mm		\
 	xap_CocoaTimer.mm		\
 	xap_CocoaToolbarWindow.mm	\
 	xap_CocoaToolbar_Icons.mm	\
 	xap_CocoaWindow.mm		\
+	xap_Cocoa_ResourceIDs.mm	\
 	xap_GenericListChooser_Controller.mm
 
 EXTRA_DIST = \

@@ -58,7 +58,6 @@ protected:
 	virtual ~XAP_FrameImpl();
 
 	friend class XAP_Frame;
-	XAP_Frame * m_pFrame;
 
 	void _startViewAutoUpdater(void);
 	static void viewAutoUpdater(UT_Worker *wkr);
@@ -102,6 +101,8 @@ protected:
 
 	const char * m_szMenuLayoutName;
 	const char * m_szMenuLabelSetName;		/* language for menus */
+private:
+	XAP_Frame * m_pFrame;
 };
 #endif
 
