@@ -46,40 +46,6 @@ current table via ie_Table::get* methods.
 #include "ie_Table.h"
 #include "pp_AttrProp.h"
 
-class ABI_EXPORT ie_PartTable
-{
- public:
-	ie_PartTable(PD_Document * pDoc);
-	virtual ~ie_PartTable(void);
-	void             setDoc(PD_Document * pDoc);
-	void             setTableApi(PL_StruxDocHandle sdh,PT_AttrPropIndex iApi);
-	void             setCellApi(PT_AttrPropIndex iApi);
-	UT_sint32        getLeft(void);
-	UT_sint32        getRight(void);
-	UT_sint32        getTop(void);
-	UT_sint32        getBot(void);
-	const char *     getTableProp(const char * pPropName);
-	const char *     getCellProp(const char * pPropName);
-	UT_sint32        getNumRows(void);
-	UT_sint32        getNumCols(void);
- private:
-	void                  _setRowsCols(void);
-	void                  _clearAll(void);
-	void                  _clearAllCell(void);
-	PD_Document *         m_pDoc;
-	PT_AttrPropIndex      m_apiTable;			
-	PT_AttrPropIndex      m_apiCell;
-	const PP_AttrProp *   m_TableAttProp;
-	const PP_AttrProp *   m_CellAttProp;
-	UT_sint32             m_iNumRows;
-	UT_sint32             m_iNumCols;
-	UT_sint32             m_iLeft;
-	UT_sint32             m_iRight;
-	UT_sint32             m_iTop;
-	UT_sint32             m_iBot;
-	PL_StruxDocHandle     m_TableSDH;
-};			
-
 /*!
  * Class to hold a particular table and cell.
  */
@@ -279,73 +245,9 @@ const char * ie_PartTable::getCellProp(const char * pProp)
 */
 void ie_PartTable::_setRowsCols(void)
 {
-	PT_DocPosition posTable = m_pDoc->getStruxPosition(m_TableSDH) + 1;
-	PT_DocPosition posEndTable,posCell,posEndCell;
-	UT_sint32 Right,Bot;
-	PL_StruxDocHandle cellSDH,endTableSDH,endCellSDH;
-	bool  bRes = m_pDoc->getNextStruxOfType(m_TableSDH,PTX_EndTable,&endTableSDH);
-	if(!bRes)
-	{
-		//
-		// Disaster! the table structure in the piecetable is screwed.
-		// we're totally stuffed now.
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-	posEndTable = m_pDoc->getStruxPosition(endTableSDH);
-	bool bEnd = false;
-	posCell = posTable +1;
-	bRes = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
-	posCell = m_pDoc->getStruxPosition(cellSDH);
-//
-// Do the scan
-//
-	while(!bEnd)
-	{
-		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
-		if(!bRes)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			bEnd = true;
-			break;
-		}
-		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
-		if(posEndCell+1 >= posEndTable)
-		{
-			bEnd = true;
-		}
-		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		const char * szRight = NULL;
-		bool bres = m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&szRight);
-		if(szRight && *szRight)
-		{
-			Right = atoi(szRight);
-		}
-		const char * szBot = NULL;
-		bres = m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
-		if(szBot && *szBot)
-		{
-			Bot = atoi(szBot);
-		}
-
-		if(m_iNumCols < Right)
-		{
-			m_iNumCols = Right;
-		}
-		if(m_iNumRows < Bot)
-		{
-			m_iNumRows = Bot;
-		}
-		if(!bEnd)
-		{
-			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
-			if(!bRes)
-			{
-				bEnd = true;
-				break;
-			}
-		}
-	}
+	m_pDoc->getRowsColsFromTableSDH(m_TableSDH, &m_iNumRows, &m_iNumCols);
 }
+
 /*--------------------------------------------------------------------------------*/
 
 ie_Table::ie_Table(PD_Document * pDoc) :
@@ -501,12 +403,12 @@ UT_sint32 ie_Table::getNumCols(void)
 
 
 /*!
- * RTF expects an unnested table to have a nest depth of 1. Since we push NULL
- * at the start this matches nicely witht he getDepth method.
+ * RTF expects an unnested table to have a nest depth of 0. Since we push NULL
+ * at the start we have to subtract this from the depth calculation.
  */
 UT_sint32 ie_Table::getNestDepth(void)
 {
-	return m_sLastTable.getDepth();
+	return m_sLastTable.getDepth() -1;
 }
 
 
