@@ -1441,9 +1441,125 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, m_infoCache.u.c.m_xaRightMargin);
 		return true;
 	}
+
+// Now the Cells
+
+	UT_Rect rCell;
+	UT_sint32 nCells =  m_infoCache.m_vecTableColInfo.getItemCount();
+	UT_sint32 iCell =0;
+	for(iCell = 0; iCell <= nCells; iCell++)
+	{
+		_getCellMarkerRect(&m_infoCache,(UT_uint32) iCell, &rCell);
+		if(rCell.containsPoint(x,y))
+		{
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			if(iCell < nCells)
+			{
+				AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo.getNthItem(iCell); 
+				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, pCellInfo->m_iLeftCellPos);
+			}
+			else
+			{
+				AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo.getNthItem(iCell-1); 
+				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, pCellInfo->m_iRightCellPos);
+			}
+			return true;
+		}
+	}
+
+
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 	pFrameData->m_pStatusBar->setStatusMessage("");
 	return false;
+}
+
+void AP_TopRuler::_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell, 
+								   UT_Rect * prCell)
+{
+	UT_sint32 nCells = pInfo->m_vecTableColInfo.getItemCount();
+	if(kCell < nCells)
+	{
+		AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo.getNthItem(kCell);
+		UT_sint32 pos = pCellInfo->m_iLeftCellPos;
+		UT_sint32 ileft = s_iFixedHeight/2;
+		prCell->set(pos-ileft,0,s_iFixedHeight,s_iFixedHeight); // left/top/width/height
+	}
+	else if(nCells > 0)
+	{
+		AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo.getNthItem(kCell-1);
+		UT_sint32 pos = pCellInfo->m_iRightCellPos;
+		UT_sint32 ileft = s_iFixedHeight/2;
+		prCell->set(pos-ileft,0,s_iFixedHeight,s_iFixedHeight); // left/top/width/height
+	}
+
+}
+
+void AP_TopRuler::_drawCellMark(UT_Rect * prDrag)
+{
+//
+// Grey background
+//
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, *prDrag);
+//
+// Draw square inside
+//
+	UT_sint32 left = prDrag->left + 2 ;
+	UT_sint32 right = left + prDrag->width - 4;
+	UT_sint32 top = prDrag->top + 2;
+	UT_sint32 bot = top + prDrag->height - 4;
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	m_pG->drawLine(left,top,left,bot);
+	m_pG->drawLine(left,bot,right,bot);
+	m_pG->drawLine(right,bot,right,top);
+	m_pG->drawLine(right,top,left,top);
+}
+
+void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
+									  AP_TopRulerInfo * pInfo,
+									  UT_uint32 kCell, bool bDrawAll)
+{
+	if (m_draggingWhat == DW_CELLMARK)
+	{
+//
+// Just deal with the cell being dragged.
+//
+		UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		if(pView->getViewMode() != VIEW_PRINT)
+		{
+			xFixed = s_iFixedWidth;
+		}
+		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)xFixed)
+			_drawCellMark(&m_draggingRect);
+	}
+
+	/*
+		NOTE: even during cell drags, we might need to draw other column marks
+		that got revealed after being obscured by the dragged column
+	*/
+	UT_Rect rCell;
+	if (bDrawAll)
+	{
+		// loop over all explicit cells
+#if 0
+
+// might need this code...
+
+		UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
+		UT_sint32 left = xAbsLeft + pInfo->m_xrLeftIndent;
+#endif
+		for (UT_sint32 i = 0; i < pInfo->m_iTabStops; i++)
+		{
+			if ((m_draggingWhat == DW_CELLMARK) &&
+				(m_draggingCell == (UT_sint32) i))
+				continue;
+			_getCellMarkerRect(pInfo, i, &rCell);
+
+			if (!pClipRect || rCell.intersectsRect(pClipRect))
+				_drawCellMark(&rCell);
+		}
+	}
+
 }
 
 void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,

@@ -99,6 +99,7 @@ static PP_Property _props[] =
 
 	{ "height", "0in",	false, NULL},
 
+	{ "homogeneuos","1", false,NULL},
 	{ "keep-together", "", false, NULL},
 	{ "keep-with-next", "",	false, NULL},
 
@@ -129,6 +130,22 @@ static PP_Property _props[] =
 	{ "section-restart-value",  "",                 false,NULL},
 	{ "section-space-after",	"0.25in",			false, NULL},
    	{ "start-value",			"1",				true, NULL},
+
+	{"table-border", "0.1in",false,NULL},
+
+	{"table-col-spacing", "0.1in",false,NULL},
+	{"table-columns", "",false,NULL},
+
+	{"table-line-thickness", "1",false,NULL},
+	{"table-line-type", "1",false,NULL},
+
+ 	{"table-margin-left", "0.1in", false, NULL},
+	{"table-margin-top", "0.1in", false, NULL},
+	{"table-margin-right", "0.1in", false, NULL},
+	{"table-margin-bottom", "0.1in", false, NULL},
+
+	{"table-row-spacing", "0.1in",false,NULL},
+	{"table-rows", "",false,NULL},
 
 	{ "tabstops", "", false, NULL},
 	{ "text-align", text_align,	true, NULL},

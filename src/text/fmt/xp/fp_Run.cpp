@@ -43,6 +43,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
+#include "fp_TableContainer.h"
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
@@ -838,7 +839,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		getGR()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 
 	}
-
 	_setDirty(false);
 }
 

@@ -1054,6 +1054,18 @@ void fp_Line::draw(GR_Graphics* pG)
 		da.xoff -= pRun->getX();
 		da.yoff -= pRun->getY();
 	}
+//
+// Check if this is in a cell, if so redraw the lines around it.
+//
+#if 0
+	fp_Container * pCon = getContainer();
+	if(pCon->getContainerType() == FP_CONTAINER_CELL)
+	{
+		fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+		pCell->drawLinesAdjacent();
+	}
+#endif
+
 }
 
 void fp_Line::draw(dg_DrawArgs* pDA)
@@ -1101,6 +1113,17 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		da.yoff += pRun->getY();
 		pRun->draw(&da);
 	}
+//
+// Check if this is in a cell, if so redraw the lines around it.
+//
+#if 0
+	fp_Container * pCon = getContainer();
+	if(pCon->getContainerType() == FP_CONTAINER_CELL)
+	{
+		fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+		pCell->drawLinesAdjacent();
+	}
+#endif
 }
 
 //this is a helper function for getRunWith; it works out working direction and

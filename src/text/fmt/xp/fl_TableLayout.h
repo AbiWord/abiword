@@ -142,6 +142,8 @@ UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 		{ m_bDontImmediatelyLayout = b;}
 	bool                     isDontImmediateLayout(void)
 		{ return m_bDontImmediatelyLayout;}
+	UT_sint32                getLineType(void) const;
+	UT_sint32                getLineThickness(void) const;
 
 protected:
 	virtual void		        _lookupProperties(void);
@@ -171,6 +173,8 @@ private:
 	bool                   m_bRowsPositionedOnPage;
 	bool                   m_bIsDirty;
 	bool                   m_bDontImmediatelyLayout;
+	UT_sint32              m_iLineType;
+	UT_sint32              m_iLineThickness;
 };
 
 

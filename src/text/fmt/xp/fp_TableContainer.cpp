@@ -100,7 +100,15 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bXshrink(false),
 	  m_bYshrink(true),
 	  m_bXfill(true),
-	  m_bYfill(false)
+	  m_bYfill(false),
+	  m_iLeft(0),
+	  m_iRight(0),
+	  m_iTopY(0),
+	  m_iBotY(0),
+	  m_bDrawLeft(false),
+	  m_bDrawTop(false),
+	  m_bDrawBot(false),
+	  m_bDrawRight(false)
 {
 }
 
@@ -129,6 +137,7 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 	static_cast<fl_TableLayout *>(pSL)->setDirty();
 }
 
+
 void fp_CellContainer::clearScreen(void)
 {
 	fp_Container * pCon = NULL;
@@ -138,6 +147,95 @@ void fp_CellContainer::clearScreen(void)
 		pCon = (fp_Container *) getNthCon(i);
 		pCon->clearScreen();
 	}
+	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
+	if(pTab)
+	{
+		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+		if(pBroke == NULL)
+		{
+			return;
+		}
+		while(pBroke)
+		{
+			if((getY() >= pBroke->getYBreak() && getY() < pBroke->getYBottom())
+				|| ( (getY()+getHeight()) >= pBroke->getYBreak() && 
+					 (getY() + getHeight()) < pBroke->getYBottom()))
+			{
+				clearLines(pBroke);
+			}
+			pBroke = (fp_TableContainer *) pBroke->getNext();
+		}
+	}
+}
+
+void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
+{
+
+// Lookup table properties to see if we need to clear lines around the cell.
+   
+	fl_TableLayout * pTab = (fl_TableLayout *) getSectionLayout()->myContainingLayout();
+	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
+	fp_Page * pPage = NULL;
+	fp_Column * pCol;
+	UT_sint32 col_y =0,col_x =0;
+	UT_sint32 iLeft = m_iLeft;
+	UT_sint32 iRight = m_iRight;
+	UT_sint32 iTop = m_iTopY;
+	UT_sint32 iBot = m_iBotY;
+	if(pBroke)
+	{
+		pPage = pBroke->getPage();
+		if(pPage)
+		{
+			pCol = (fp_Column *) pBroke->getColumn();
+			pPage->getScreenOffsets(pCol,col_x,col_y);
+			UT_sint32 off =0;
+			if(pBroke->getMasterTable())
+			{
+				if(pBroke->getMasterTable()->getFirstBrokenTable() == pBroke)
+				{
+					off = pBroke->getMasterTable()->getY();
+				}
+				else
+				{
+					off = 0;
+				}
+			}
+			else
+			{
+				off = pBroke->getY();
+			}
+			col_y = col_y - pBroke->getYBreak() + off;
+			if(pBroke->getMasterTable())
+			{
+				off = pBroke->getMasterTable()->getX();
+			}
+			else
+			{
+				off = pBroke->getX();
+			}
+			col_x += off;
+			iLeft += col_x;
+			iRight += col_x;
+			iTop += col_y;
+			iBot += col_y;
+		}
+	}
+	else
+	{
+		pPage = getPage();
+	}
+	if(pTab->getLineType() != 0 && pPage != NULL)
+	{
+		UT_RGBColor * pColor = pPage->getOwningSection()->getPaperColor();
+		getGraphics()->setColor(*pColor);
+		getGraphics()->setLineWidth(pTab->getLineThickness());
+		getGraphics()->drawLine(iLeft, iTop, iLeft,   iBot);
+		getGraphics()->drawLine(iLeft, iTop, iRight,  iTop);
+		getGraphics()->drawLine(iRight, iTop, iRight, iBot);
+		getGraphics()->drawLine(iLeft, iBot,  iRight, iBot);
+	}
+
 }
 
 /*!
@@ -209,10 +307,153 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 }
 
 /*!
+ * Draw lines around a cell in a broken table.
+ */
+void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
+{
+	UT_ASSERT(getPage());
+	if(getPage() == NULL)
+	{
+		return;
+	}
+
+// Lookup table properties to see if we need to draw lines around the cell.
+
+	fl_TableLayout * pTab = (fl_TableLayout *) getSectionLayout()->myContainingLayout();
+	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
+	if(pTab->getLineType() == 0)
+	{
+		return;
+	}
+
+	UT_RGBColor clrBlack(0,0,0);
+	getGraphics()->setColor(clrBlack);
+	getGraphics()->setLineWidth(pTab->getLineThickness());
+//
+// Now correct if iTop or iBot is off the page.
+//
+	UT_sint32 col_x,col_y;
+	bool bDrawTop = true;
+	bool bDrawBot = true;
+	UT_sint32 offy =0;
+	UT_sint32 offx =0;
+	fp_Column * pCol = (fp_Column *) pBroke->getColumn();
+	pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+	if(pBroke->getMasterTable())
+	{
+		if(pBroke->getMasterTable()->getFirstBrokenTable() == pBroke)
+		{
+			offy = pBroke->getMasterTable()->getY();
+		}
+		else
+		{
+			offy = 0;
+		}
+	}
+	else
+	{
+		offy = pBroke->getY();
+	}
+	offy = offy - pBroke->getYBreak();
+	if(pBroke->getMasterTable())
+	{
+		offx = pBroke->getMasterTable()->getX();
+	}
+	else
+	{
+		offx = pBroke->getX();
+	}
+
+	UT_sint32 iLeft = col_x + m_iLeft + offx;
+	UT_sint32 iRight = col_x + m_iRight + offx;
+	UT_sint32 iTop = col_y + m_iTopY + offy;
+	UT_sint32 iBot = col_y + m_iBotY + offy;
+
+	if(pBroke != NULL)
+	{
+		if(m_iBotY < pBroke->getYBreak())
+		{
+//
+// Cell is above this page
+//
+			return;
+		}
+		if(m_iTopY > pBroke->getYBottom())
+		{
+//
+// Cell is below this page
+//
+			return;
+		}
+		if(iTop < col_y)
+		{
+			iTop = col_y;
+			bDrawTop = false;
+		}
+		if(iBot > col_y + pCol->getHeight())
+		{
+			iBot =  col_y + pCol->getHeight();
+			bDrawBot = false;
+		}
+		if(m_bDrawLeft)
+		{
+			getGraphics()->drawLine(iLeft,iTop, iLeft, iBot);
+		}
+		if(m_bDrawTop && bDrawTop)
+		{
+			getGraphics()->drawLine(iLeft, iTop, iRight, iTop);
+		}
+		if(m_bDrawRight)
+		{
+			getGraphics()->drawLine(iRight, iTop, iRight, iBot);
+		}
+		if(m_bDrawBot && bDrawBot)
+		{
+			getGraphics()->drawLine(iLeft, iBot, iRight, iBot);
+		}
+	}
+}
+
+/*!
+ * Draw lines around neighbouring cells. Use to fix artifacts of editting.
+ */
+void fp_CellContainer::drawLinesAdjacent(void)
+{
+	UT_sint32 row = getTopAttach();
+	UT_sint32 col_right = getRightAttach();
+	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
+	if(pTab == NULL)
+	{
+		return;
+	}
+	bool bDoRight = false;
+	if(col_right < pTab->getNumCols())
+	{
+		bDoRight = true;
+	}
+	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+	while(pBroke)
+	{
+		drawLines(pBroke);
+		if(bDoRight)
+		{
+			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_right);
+			if(pCell)
+			{
+				pCell->drawLines(pBroke);
+			}
+		}
+		pBroke = (fp_TableContainer *) pBroke->getNext();
+	}
+}
+
+	
+/*!
  Draw container outline
  \param pDA Draw arguments
+ \param pBroke fp_TableContainer pointer to broken table
  */
-void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA)
+void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBroke)
 {
     UT_ASSERT(pDA->pG == getGraphics());
 	UT_ASSERT(getPage());
@@ -224,6 +465,7 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA)
 	{
 		return;
 	}
+
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff + getX();
         UT_sint32 yoffBegin = pDA->yoff + getY();
@@ -337,7 +579,7 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 		}
 	}
 
-    _drawBoundaries(pDA);
+    _drawBoundaries(pDA,NULL);
 }
 
 
@@ -349,6 +591,29 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
 	UT_sint32 count = countCons();
+	m_iTopY = 0;
+	m_iBotY = 0;
+	m_iLeft = 0;
+	m_iRight = 0;
+	m_bDrawLeft = false;
+	m_bDrawTop = false;
+	fp_TableContainer * pTab = NULL;
+	if(pBroke && pBroke->isThisBroken())
+	{
+		pTab = pBroke->getMasterTable();
+	}
+	else
+	{
+		pTab = (fp_TableContainer *) getContainer();
+	}
+// draw bottom if this cell is the last of the table and fully contained on the page
+
+	m_bDrawBot = (pTab->getNumRows() == getBottomAttach());
+
+// draw right if this cell is the rightmost of the table
+
+	m_bDrawRight = (pTab->getNumCols() == getRightAttach());
+   
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
@@ -364,16 +629,54 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		ytop = 0;
 		ybot = imax;
 	}
+	fp_CellContainer * pCell = NULL;
+	UT_sint32 iOff = 0;
+	m_iLeft = getX();
+	m_iRight = getX() + getWidth();
+	m_iTopY = getY();
+	UT_sint32 iHeight = 0;
+	if(getBottomAttach() < pTab->getNumRows())
+	{
+		iHeight = pTab->getYOfRow(getBottomAttach()) - getY();
+		m_iBotY = getY() + iHeight;
+	}
+	else
+	{
+//
+// Have to cast the MasterTable to a vertical container to get the full height of a broken
+// table. Otherwise we just get height of the first broken table.
+//
+		fp_VerticalContainer * pVert = (fp_VerticalContainer *) pTab;
+		iHeight = pVert->getHeight() - (UT_sint32 ) (1.5 * SCALE_TO_SCREEN * (double) pTab->getBorderWidth());
+		m_iBotY = pTab->getYOfRow(0) + iHeight;
+	}
+
+	if(getLeftAttach() != 0)
+	{
+		pCell = pTab->getCellAtRowColumn(getTopAttach(),getLeftAttach() -1);
+		iOff = (getX() - pCell->getX() - pCell->getWidth())/2;
+		m_iLeft -= iOff;
+	}
+	else
+	{
+		m_iLeft -= (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double) pTab->getBorderWidth()));
+	}
+	if(getTopAttach() == 0)
+	{
+		m_iTopY -= (UT_sint32) ( 0.5 * SCALE_TO_SCREEN * ((double) pTab->getBorderWidth()));
+	}
+	
 	bool bStop = false;
 	bool bStart = false;
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing broken cell %x x %d, y %d width %d height %d ncons %d \n",this,getX(),getY(),getWidth(),getHeight(),count));
+
 //
 // Only draw the lines in the clipping region.
 //
+
 	for ( i = 0; (i<count && !bStop); i++)
 	{
 		fp_Container* pContainer = (fp_Container*) getNthCon(i);
-//		ip = pContainer->getY();
 		if(pBroke->isInBrokenTable(this, pContainer))
 		{
 			dg_DrawArgs da = *pDA;
@@ -390,8 +693,16 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 			if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
 			{
+//
+// Draw the top of the cell if the cell starts on this page.
+//
+				if(i == 0)
+				{
+					m_bDrawTop = true;
+				}
 				bStart = true;
 				pContainer->draw(&da);
+				m_bDrawLeft = true;
 			}
 			else if(bStart)
 			{
@@ -409,8 +720,18 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			xxx_UT_DEBUGMSG(("SEVIOR: Skipping line: height %d ytop %d ybot %d \n",pContainer->getY(),ytop,ybot));
 		}
 	}
-
-    _drawBoundaries(pDA);
+	if(!m_bDrawRight)
+	{
+		pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
+		iOff = (pCell->getX() - getX() - getWidth())/2;
+		m_iRight += iOff;
+	}
+	else
+	{
+		m_iRight += (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double)pTab->getBorderWidth()));
+	}
+	drawLines(pBroke);
+    _drawBoundaries(pDA,pBroke);
 }
 
 /*!
@@ -766,6 +1087,29 @@ fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
 	return m_pFirstBrokenTable;
 }
 
+/*
+ * Just draw the lines around a table
+ */
+void fp_TableContainer::drawLines(void)
+{
+	if(isThisBroken())
+	{
+		getMasterTable()->drawLines();
+		return;
+	}
+	fp_CellContainer * pCell = (fp_CellContainer *) getNthCon(0);
+	while(pCell)
+	{
+		fp_TableContainer * pBroke = getFirstBrokenTable();
+		while(pBroke)
+		{
+			pCell->drawLines(pBroke);
+			pBroke = (fp_TableContainer *) pBroke->getNext();
+		}
+		pCell = (fp_CellContainer *) pCell->getNext();
+	}
+}
+
 fp_TableContainer * fp_TableContainer::getLastBrokenTable(void) const
 {
 	if(isThisBroken())
@@ -794,6 +1138,53 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
 	m_pLastBrokenTable = pBroke;
 }
 
+/*!
+ * Return the Y location of row number row
+ */
+UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
+{
+	UT_sint32 maxY = 0;
+	UT_sint32 i =0;
+	UT_sint32 numCols = getNumCols();
+	if(row >= getNumRows())
+	{
+		return 0;
+	}
+	for(i=0; i< numCols; i++)
+	{
+		fp_CellContainer * pCell = getCellAtRowColumn(row,i);
+		if(pCell)
+		{
+			UT_sint32 Y = pCell->getY();
+			if(Y > maxY)
+			{
+				maxY = Y;
+			}
+		}
+	}
+	return maxY;
+}
+
+/*!
+ * Return the cell container at the specified row and column
+ */
+fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint32 col)
+{
+	UT_sint32 count = (UT_sint32 )countCons();
+	UT_sint32 i =0;
+	fp_CellContainer * pCell = NULL;
+	bool bFound = false;
+	for(i=0; i < count && !bFound; i++)
+	{
+		pCell = (fp_CellContainer *) getNthCon(i);
+		if(pCell->getLeftAttach() <= col && pCell->getRightAttach() > col &&
+		   pCell->getTopAttach() <= row && pCell->getBottomAttach() > row)
+		{
+			bFound = true;
+		}
+	}
+	return pCell;
+}
 /*!
   Find document position from X and Y coordinates
  \param  x X coordinate
@@ -1147,7 +1538,6 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 //
 // Now do the case of breaking a broken table.
 //
-	bool bMakeNext = false;
 	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 	setLastBrokenTable(pBroke);
 	UT_DEBUGMSG(("SEVIOR!!!!!!!!!!!  New broken table %x \n",getLastBrokenTable()));
@@ -1604,6 +1994,17 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	}
     _drawBoundaries(pDA);
 
+}
+
+UT_sint32 fp_TableContainer::getNumRows(void) const
+{
+	return (UT_sint32) m_vecRows.getItemCount();
+}
+
+
+UT_sint32 fp_TableContainer::getNumCols(void) const
+{
+	return (UT_sint32) m_vecColumns.getItemCount();
 }
 
 /*! 

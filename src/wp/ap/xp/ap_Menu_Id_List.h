@@ -171,6 +171,36 @@ menuitem(ALIGN_CENTER)
 menuitem(ALIGN_RIGHT)
 menuitem(ALIGN_JUSTIFY)
 
+
+menuitem(TABLE)
+menuitem(TABLE_INSERT)
+menuitem(TABLE_INSERT_TABLE)
+menuitem(TABLE_INSERT_COLUMNS_LEFT)
+menuitem(TABLE_INSERT_COLUMNS_RIGHT)
+menuitem(TABLE_INSERT_ROWS_ABOVE)
+menuitem(TABLE_INSERT_ROWS_BELOW)
+menuitem(TABLE_INSERT_CELLS)
+
+menuitem(TABLE_DELETE)
+menuitem(TABLE_DELETE_TABLE)
+menuitem(TABLE_DELETE_COLUMNS)
+menuitem(TABLE_DELETE_ROWS)
+menuitem(TABLE_DELETE_CELLS)
+
+menuitem(TABLE_SELECT)
+menuitem(TABLE_SELECT_TABLE)
+menuitem(TABLE_SELECT_COLUMN)
+menuitem(TABLE_SELECT_ROW)
+menuitem(TABLE_SELECT_CELL)
+
+menuitem(TABLE_MERGE_CELLS)
+menuitem(TABLE_SPLIT_CELLS)
+menuitem(TABLE_SPLIT_TABLE)
+menuitem(TABLE_FORMAT)
+menuitem(TABLE_AUTOFIT)
+menuitem(TABLE_HEADING_ROWS_REPEAT)
+menuitem(TABLE_SORT)
+
 menuitem(WINDOW)
 menuitem(WINDOW_NEW)
 menuitem(WINDOW_1)		// _window_1 thru _window_9 must be contiguous

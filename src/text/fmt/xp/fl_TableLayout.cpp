@@ -79,7 +79,9 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	  m_bColumnsPositionedOnPage(false),
 	  m_bRowsPositionedOnPage(false),
 	  m_bIsDirty(true),
-	  m_bDontImmediatelyLayout(false)
+	  m_bDontImmediatelyLayout(false),
+	  m_iLineType(0),
+	  m_iLineThickness(0)
 {
 	createTableContainer();
 	fp_TableContainer * pTableContainer = (fp_TableContainer *) getFirstContainer();
@@ -499,6 +501,38 @@ void fl_TableLayout::_lookupProperties(void)
 #endif
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
+	const char * pszLineType = NULL;
+	const char * pszLineThick = NULL;
+	pSectionAP->getProperty("table-line-type", (const XML_Char *&)pszLineType);
+	pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
+	if(pszLineThick && *pszLineThick)
+	{
+		m_iLineThickness = atoi(pszLineThick);
+	}
+	else
+	{
+		m_iLineThickness = 1;
+	}
+	if(pszLineType && *pszLineType)
+	{
+		UT_DEBUGMSG(("SEVIOR: Line Type string %s \n",pszLineType));
+		m_iLineType = atoi(pszLineType);
+	}
+	else
+	{
+		m_iLineType = 1;
+	}
+	UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup linetype %d lineThickness %d \n",m_iLineType,m_iLineThickness));
+}
+
+UT_sint32 fl_TableLayout::getLineType(void) const
+{
+	return m_iLineType;
+}
+
+UT_sint32 fl_TableLayout::getLineThickness(void) const
+{
+	return m_iLineThickness;
 }
 
 UT_sint32 fl_TableLayout::getTopOffset(void) const

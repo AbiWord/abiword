@@ -40,7 +40,7 @@ class XAP_Prefs;
 class UT_StringPtrMap;
 class AV_ScrollObj;
 class UT_Timer;
-
+class fp_CellContainer;
 /*****************************************************************/
 /*****************************************************************/
 
@@ -74,6 +74,10 @@ public:
 	UT_uint32				m_iCurrentColumn;
 	UT_uint32				m_iNumColumns;
 
+// Column information for current table
+
+	UT_Vector               m_vecTableColInfo;
+	UT_sint32               m_iTablePadding;
 	union _u {
 
 		struct _c {
@@ -98,6 +102,17 @@ public:
 		} t;									/* valid when table mode */
 
 	} u;
+};
+
+/*****************************************************************/
+class AP_TopRulerTableInfo
+{
+public:
+	UT_sint32 m_iLeftCellPos;
+	UT_sint32 m_iLeftSpacing;
+	UT_sint32 m_iRightCellPos;
+	UT_sint32 m_iRightSpacing;
+	fp_CellContainer * m_pCell;
 };
 
 /*****************************************************************/
@@ -178,7 +193,12 @@ protected:
 	void		_drawColumnProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo,
 									  UT_uint32 kCol);
-
+	void		_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell, 
+								   UT_Rect * prCell);
+	void		_drawCellProperties(const UT_Rect * pClipRect,
+									  AP_TopRulerInfo * pInfo,
+									  UT_uint32 kCol, bool bDrawAll);
+	void        _drawCellMark(UT_Rect * prDrag);
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
@@ -243,7 +263,8 @@ private:
 								 DW_FIRSTLINEINDENT,
 								 DW_LEFTINDENTWITHFIRST,
 								 DW_TABSTOP,
-								 DW_TABTOGGLE
+								 DW_TABTOGGLE,
+								 DW_CELLMARK
 	} DraggingWhat;
 
 	DraggingWhat		m_draggingWhat;
@@ -259,7 +280,7 @@ private:
 	UT_sint32			m_oldX; /* Only for dragging; used to see if object has moved */
 
 	eTabType			m_iDefaultTabType;
-
+	UT_sint32           m_draggingCell; // index of cell being dragged
 	bool				m_bGuide;	/* true ==> guide line XORed onscreen */
 	UT_sint32			m_xGuide;	/* valid iff m_bGuide */
 	UT_sint32			m_xOtherGuide;

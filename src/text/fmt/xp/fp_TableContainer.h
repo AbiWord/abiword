@@ -102,13 +102,15 @@ public:
 	void				layout(void);
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
-
+	void                clearLines(fp_TableContainer * pBroke);
+	void                drawLines(fp_TableContainer * pBroke);
+	void                drawLinesAdjacent(void);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void        setWidth(UT_sint32 iWidth);
 	virtual void        setHeight(UT_sint32 iHeight);
-	        void        _drawBoundaries(dg_DrawArgs* pDA);
+	        void        _drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer *pBroke);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32);
@@ -179,6 +181,17 @@ public:
 		{ m_bXfill = b;}
 	void                setYfill(bool b)
 		{ m_bYfill = b;}
+	UT_sint32           getStartY(void) const
+		{ return m_iTopY;}
+	UT_sint32           getStopY(void) const
+		{ return m_iBotY;}
+	UT_sint32           getLeftPos(void) const
+		{  return m_iLeft; }
+	UT_sint32           getRightPos(void) const
+		{  return m_iRight; }
+			
+
+			
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -232,6 +245,17 @@ private:
 
 	fp_Allocation       m_MyAllocation;
 	fp_Requisition      m_MyRequest;
+
+// Coordinates of the cell used for drawing lines around it.
+
+	UT_sint32           m_iLeft;
+	UT_sint32           m_iRight;
+	UT_sint32           m_iTopY;
+	UT_sint32           m_iBotY;
+	bool                m_bDrawLeft;
+	bool                m_bDrawTop;
+	bool                m_bDrawBot;
+	bool                m_bDrawRight;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -254,6 +278,7 @@ public:
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+	void                drawLines();
     virtual void        clearScreen(void);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
@@ -270,7 +295,11 @@ public:
 	void                setRowSpacing (UT_sint32 row, UT_sint32  spacing);
 	void                resize(UT_sint32 n_rows, UT_sint32 n_cols);
 	void                setBorderWidth(UT_sint32 i);
+	UT_sint32           getBorderWidth(void) const
+		{ return m_iBorderWidth;}
 	void                queueResize(void);
+	UT_sint32           getYOfRow(UT_sint32 row);
+	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getMasterTable(void) const
@@ -298,6 +327,8 @@ public:
 	void                setLastBrokenTable(fp_TableContainer * pBroke);
 	void                deleteBrokenTables(void);
 	void                adjustBrokenTables(void);
+	UT_sint32           getNumRows(void) const;
+	UT_sint32           getNumCols(void) const;
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
