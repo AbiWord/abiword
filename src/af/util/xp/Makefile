@@ -11,6 +11,7 @@ EXPORT_HEADERS=		ut_assert.h		\
 			ut_pool.h		\
 			ut_string.h		\
 			ut_types.h		\
+			ut_units.h		\
 			ut_vector.h
 
 HEADERS=		$(EXPORT_HEADERS)
@@ -22,6 +23,7 @@ CPPSRCS=		ut_hash.cpp		\
 			ut_misc.cpp		\
 			ut_pool.cpp		\
 			ut_string.cpp		\
+			ut_units.cpp		\
 			ut_vector.cpp
 
 INCLUDES=		-I$(DIST)/include -I.
