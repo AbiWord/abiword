@@ -17,6 +17,11 @@
  * 02111-1307, USA.
  */
 
+#undef GDK_DISABLE_DEPRECATED
+#undef GDK_PIXBUF_DISABLE_DEPRECATED
+#undef GTK_DISABLE_DEPRECATED
+#warning POKEY FIX ME I AM DEPRECATED!
+
 #include "xap_Frame.h"
 #include "xap_Frame.h"
 #include "ut_debugmsg.h"

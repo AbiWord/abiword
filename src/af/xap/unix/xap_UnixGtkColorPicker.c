@@ -26,6 +26,11 @@
  * Ported to GTK2 by: Marc Maurer <j.m.maurer@student.utwente.nl>
  */
 
+#undef GDK_DISABLE_DEPRECATED
+#undef GDK_PIXBUF_DISABLE_DEPRECATED
+#undef GTK_DISABLE_DEPRECATED
+#warning POKEY FIX ME I AM DEPRECATED!
+
 #include <gtk/gtkmain.h>
 #include <gtk/gtkalignment.h>
 #include <gtk/gtkcolorsel.h>

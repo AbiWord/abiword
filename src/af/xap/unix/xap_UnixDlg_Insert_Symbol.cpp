@@ -17,6 +17,11 @@
  * 02111-1307, USA.
  */
 
+#undef GDK_DISABLE_DEPRECATED
+#undef GDK_PIXBUF_DISABLE_DEPRECATED
+#undef GTK_DISABLE_DEPRECATED
+#warning POKEY FIX ME I AM DEPRECATED!
+
 #ifdef USE_GUCHARMAP
 #include <gucharmap/gucharmap.h>
 #endif
