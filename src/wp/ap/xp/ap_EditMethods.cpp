@@ -3643,6 +3643,10 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 			for (j=1; (j <= nCopies); j++)
 				for (k=nFromPage; (k <= nToPage); k++)
 				{
+					// NB we will need a better way to calc 
+					// pGraphics->m_iRasterPosition when 
+					// iHeight is allowed to vary page to page
+					pGraphics->m_iRasterPosition = (k-1)*iHeight;
 					pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
 				}
@@ -3652,6 +3656,10 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 			for (k=nFromPage; (k <= nToPage); k++)
 				for (j=1; (j <= nCopies); j++)
 				{
+					// NB we will need a better way to calc
+					// pGraphics->m_iRasterPosition when 
+					// iHeight is allowed to vary page to page
+					pGraphics->m_iRasterPosition = (k-1)*iHeight;
 					pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
 				}

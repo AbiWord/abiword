@@ -170,6 +170,18 @@ public:
 	virtual void					fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
 	virtual void					fillRect(GR_Color3D c, UT_Rect &r) = 0;
 
+	// Line #172
+	// Postscript context positions graphics wrt top of current PAGE, NOT
+	// wrt top of document. The screen graphics engine, though positions
+	// graphics wrt the top of the document, therefore if we are printing
+	// page 5 we need to adjust the vertical position of the graphic in the 
+	// postscript image printing routine by (current_page_number-1) * page_height
+	// I'm going to call this variable m_iRasterPosition, for want of a better name,
+	// it's not acutally a rasterposition --- any better names would be a good idea,
+	// I jusy can't think of one right now.
+	UT_uint32 m_iRasterPosition;
+
+
 protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	

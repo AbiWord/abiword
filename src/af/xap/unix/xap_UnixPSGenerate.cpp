@@ -67,7 +67,7 @@ UT_Bool ps_Generate::openFile(UT_Bool bIsFile)
 	}
 
 	
-	return writeBytes("%!PS-Adobe-3.0\n");
+	return writeBytes("%!PS-Adobe-2.0\n");
 }
 
 void ps_Generate::closeFile(void)
