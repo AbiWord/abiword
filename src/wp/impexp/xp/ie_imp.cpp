@@ -134,7 +134,7 @@ bool IE_Imp::appendFmt(const UT_Vector * pVecAttributes)
 // default impl, meant to abort
 
 void	  IE_Imp::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				  unsigned char * pData, 
+				  const unsigned char * pData, 
 				  UT_uint32 lenData, 
 				  const char * szEncoding)
 {

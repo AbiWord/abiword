@@ -131,7 +131,7 @@ public:
 
 	// default impl
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-						unsigned char * pData, 
+						const unsigned char * pData, 
 						UT_uint32 lenData, 
 						const char * szEncoding = 0);
 	
