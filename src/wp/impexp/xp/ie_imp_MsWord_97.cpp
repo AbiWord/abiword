@@ -334,7 +334,6 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   }
 		   
 		   // widowed lines
-		   UT_DEBUGMSG(( "apap->fWidowControl = %d\n", apap->fWidowControl));
 		   if (!apap->fWidowControl) {
 		      // I believe Word only allows control of
 		      // widows/orphans with a single flag. I believe 
@@ -345,8 +344,8 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   }
 		   
 		   // tabs
-		   UT_DEBUGMSG(( "apap->itbdMac = %d\n", apap->itbdMac));
 		   if (apap->itbdMac) {
+		      strcat(propBuffer, "tabstops:");
 		      for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
 			 sprintf(propBuffer + strlen(propBuffer),
 				 "%s/",
@@ -367,7 +366,6 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		      }
 		      // replace final comma with semi-colon
 		      propBuffer[strlen(propBuffer)-1] = ';';
-		      UT_DEBUGMSG(("tab string: %s", propBuffer));
 		   }
 			 
 		   // remove trailing semi-colon
