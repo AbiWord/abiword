@@ -269,6 +269,189 @@ const XAP_StringSet * AP_Win32App::getStringSet(void) const
 
 /*****************************************************************/
 
+#define SPLASH 1
+
+#if SPLASH
+#include "gr_Graphics.h"
+#include "gr_Win32Graphics.h"
+#include "gr_Image.h"
+#include "ut_ByteBuf.h"
+#include "ut_png.h"
+
+static HWND hwndSplash = NULL;
+static GR_Image * pSplash = NULL;
+static char s_SplashWndClassName[256];
+
+static void _hideSplash(void)
+{
+	if (hwndSplash)
+	{
+		DestroyWindow(hwndSplash);
+		hwndSplash = NULL;
+	}
+	
+	DELETEP(pSplash);
+}
+
+static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    PAINTSTRUCT ps;
+    HDC hdc;
+    
+    switch (message) 
+	{
+    case WM_CREATE:
+        // Set the timer for the specified number of ms
+        SetTimer(hWnd, 0, 2000, NULL);  
+        break;
+
+#if 0		
+	// Handle the palette messages in case 
+	// another app takes over the palette
+    case WM_PALETTECHANGED:
+        if ((HWND) wParam == hWnd)
+            return 0;
+    case WM_QUERYNEWPALETTE:
+        InvalidateRect(hWnd, NULL, FALSE);
+		UpdateWindow(hWnd);
+		return TRUE;
+#endif     
+
+    // Destroy the window if... 
+    case WM_LBUTTONDOWN:      // ...the user pressed the left mouse button
+    case WM_RBUTTONDOWN:      // ...the user pressed the right mouse button
+    case WM_TIMER:            // ...the timer timed out
+        _hideSplash();		  // Close the window
+        break;
+        
+        // Draw the window
+    case WM_PAINT:
+        hdc = BeginPaint(hWnd, &ps);
+		{
+			GR_Graphics * pG = new GR_Win32Graphics(hdc, hwndSplash);
+			pG->drawImage(pSplash, 0, 0);
+			DELETEP(pG);
+		}
+        EndPaint(hWnd, &ps);
+        break;
+        
+    default:
+        return (DefWindowProc(hWnd, message, wParam, lParam));
+    }
+    return (0);
+}
+
+static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
+{
+	hwndSplash = NULL;
+	pSplash = NULL;
+
+	UT_ByteBuf* pBB = NULL;
+	UT_Bool bShowSplash = UT_TRUE;
+	const char * szFile = "splash.png";
+
+	// Win32 does not put the program name in argv[0], so [0] is the first argument
+	int nFirstArg = 0;
+	int k;
+	
+	// scan args for splash-related stuff
+	for (k=nFirstArg; (k<pArgs->m_argc); k++)
+	{
+		if (*pArgs->m_argv[k] == '-')
+		{
+			if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0)
+			{
+				bShowSplash = UT_FALSE;
+				break;
+			}
+#if DEBUG
+			else if (UT_stricmp(pArgs->m_argv[k],"-splash") == 0)
+			{
+				// [-splash filename]
+				szFile = pArgs->m_argv[k+1];
+				break;
+
+				// NOTE: this switch is just for debugging artwork, so 
+				// it's OK that the filename also gets opened as a document
+			}
+#endif
+		}
+
+		// TODO: platform-specific reasons to not show splash?
+		// TODO: for example, if being launched via DDE or OLE??
+	}
+
+	if (!bShowSplash)
+		goto Done;
+
+	pBB = new UT_ByteBuf();
+	if (pBB->insertFromFile(0, szFile))
+	{
+		// NB: can't access 'this' members from a static member function
+		WNDCLASSEX  wndclass;
+		ATOM a;
+	
+		sprintf(s_SplashWndClassName, "%sSplash", szAppName /* app->getApplicationName() */);
+
+		// register class for the splash window
+		wndclass.cbSize        = sizeof(wndclass);
+		wndclass.style         = 0;
+		wndclass.lpfnWndProc   = _SplashWndProc;
+		wndclass.cbClsExtra    = 0;
+		wndclass.cbWndExtra    = 0;
+		wndclass.hInstance     = hInstance /* app->getInstance() */;
+		wndclass.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
+		wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+		wndclass.hbrBackground = GetStockObject(NULL_BRUSH);
+		wndclass.lpszMenuName  = NULL;
+		wndclass.lpszClassName = s_SplashWndClassName;
+		wndclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+
+		a = RegisterClassEx(&wndclass);
+		UT_ASSERT(a);
+
+		// get the extents of the desktop window
+		RECT rect;
+		GetWindowRect(GetDesktopWindow(), &rect);
+
+		// get splash size
+		UT_sint32 iSplashWidth;
+		UT_sint32 iSplashHeight;
+		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
+
+		// create a centered window the size of our bitmap
+		hwndSplash = CreateWindow(s_SplashWndClassName, 
+								  NULL, WS_POPUP /* | WS_BORDER */,
+								  (rect.right  / 2) - (iSplashWidth  / 2),
+								  (rect.bottom / 2) - (iSplashHeight / 2),
+								  iSplashWidth,
+								  iSplashHeight,
+								  NULL, NULL, hInstance, NULL);
+		UT_ASSERT(hwndSplash);
+    
+		if (hwndSplash) 
+		{
+			// create image first
+			GR_Graphics * pG = new GR_Win32Graphics(GetDC(hwndSplash), hwndSplash);
+			pSplash = pG->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
+			DELETEP(pG);
+
+			// now bring the window up front & center
+			SetWindowPos(hwndSplash, HWND_TOPMOST, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE); 
+			ShowWindow(hwndSplash, SW_SHOWNORMAL);
+			UpdateWindow(hwndSplash);
+		}
+	}
+
+	DELETEP(pBB);
+
+Done:
+	return pSplash;
+}
+#endif
+
+/*****************************************************************/
+
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -289,11 +472,19 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// initialize our application.
 
 	XAP_Args Args = XAP_Args(szCmdLine);
+
+#if SPLASH
+	_showSplash(hInstance, &Args, szAppName);
+#endif
 	
 	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
 
 	pMyWin32App->ParseCommandLine(iCmdShow);
+
+#if 0 /* SPLASH */
+	_hideSplash();
+#endif
 	
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
