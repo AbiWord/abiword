@@ -2893,7 +2893,15 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 		fp_TableContainer * m_pBrokenTable;
 		fp_Line * m_pLine;
 	};
-	UT_ASSERT(iPos1 < iPos2);
+	
+	// make sure iPos1 < iPos2
+	if (iPos1 >= iPos2)
+	{
+		PT_DocPosition tmp = iPos1;
+		iPos1 = iPos2;
+		iPos2 = tmp;
+	}
+	
 //	CHECK_WINDOW_SIZE
 	xxx_UT_DEBUGMSG(("Draw between positions %d to %d \n",iPos1,iPos2));
 	fp_Run* pRun1;
