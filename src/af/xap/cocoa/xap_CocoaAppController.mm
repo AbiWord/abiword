@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2003-2004 Hubert Figuiere
  * 
@@ -22,6 +24,7 @@
 
 #include "ev_EditMethod.h"
 #include "xap_CocoaApp.h"
+#include "xap_CocoaToolPalette.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 
@@ -72,6 +75,15 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 		UT_DEBUGMSG(("No file opened during launch, so opening untitled document:\n"));
 		[self applicationOpenUntitledFile:NSApp];
 	}
+	[XAP_CocoaToolPalette instance:self];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)aNotification
+{
+	if ([XAP_CocoaToolPalette instantiated])
+		{
+			[[XAP_CocoaToolPalette instance:self] close];
+		}
 }
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename

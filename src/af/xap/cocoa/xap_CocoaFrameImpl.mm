@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2004 Hubert Figuiere
@@ -39,6 +41,7 @@
 #import "xap_CocoaApp.h"
 #import "xap_CocoaFrameImpl.h"
 #import "xap_CocoaTextView.h"
+#import "xap_CocoaToolPalette.h"
 #import "xap_CocoaTimer.h"
 #import "xap_FrameImpl.h"
 #import "xap_Frame.h"
@@ -566,9 +569,12 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 {
 	UT_DEBUGMSG(("windowDidBecomeKey: '%s'\n", [[[self window] title] UTF8String]));
 
-	XAP_Frame * frame = m_frame->getFrame ();
-	XAP_App * App = frame->getApp ();
-	App->rememberFocussedFrame (static_cast<void *>(frame));
+	XAP_Frame * pFrame = m_frame->getFrame ();
+	AV_View * pView = pFrame->getCurrentView();
+
+	XAP_App::getApp()->rememberFocussedFrame (static_cast<void *>(pFrame));
+
+	[[XAP_CocoaToolPalette instance:self] setCurrentView:pView inFrame:pFrame];
 
 	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
 			object:self];
@@ -588,6 +594,8 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	XAP_Frame * frame = m_frame->getFrame ();
 	XAP_App * App = frame->getApp ();
 	App->clearLastFocussedFrame ();
+
+	[[XAP_CocoaToolPalette instance:self] setCurrentView:0 inFrame:0];
 
 //	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar 
 //			object:self];

@@ -100,6 +100,7 @@ public:
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	EV_CocoaMenuBar*				getCocoaMenuBar(void) const { return m_pCocoaMenu; };
 	XAP_Frame * 					_getFrontFrame(void);
+	AP_CocoaToolbar_Icons *			getToolbarIcons () const { return m_pCocoaToolbarIcons; }
 protected:
 	bool							_loadFonts();
 	void							_setAbiSuiteLibDir();

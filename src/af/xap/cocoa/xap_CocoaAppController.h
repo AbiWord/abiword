@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2003 Hubert Figuiere
  * 
@@ -37,6 +39,8 @@
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
+
+- (void)applicationWillTerminate:(NSNotification *)aNotification;
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
 - (BOOL)application:(NSApplication *)theApplication openTempFile:(NSString *)filename;
