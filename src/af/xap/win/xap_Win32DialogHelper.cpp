@@ -2,20 +2,20 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -89,7 +89,7 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 	// This is a static function.
 
 	XAP_Win32DialogHelper * pThis;
-	
+
 	switch (msg)
 	{
 	case WM_INITDIALOG:
@@ -98,7 +98,7 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		_assertValidDlgHandle(hWnd);
 		SetWindowLong(hWnd,DWL_USER,lParam);
 		return pThis->m_pDialog->_onInitDialog(hWnd,wParam,lParam);
-		
+
 	case WM_COMMAND:
 		pThis = (XAP_Win32DialogHelper *)GetWindowLong(hWnd,DWL_USER);
 		if(pThis)
@@ -243,6 +243,12 @@ int XAP_Win32DialogHelper::getControlInt(UT_sint32 controlId) const
 {
 	_assertValidDlgHandle(m_hDlg);
 	return GetDlgItemInt(m_hDlg, controlId, NULL, FALSE);
+}
+
+void XAP_Win32DialogHelper::selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end)
+{
+	_assertValidDlgHandle(m_hDlg);
+	SendDlgItemMessage(m_hDlg, controlId, EM_SETSEL, start,end);
 }
 
 int XAP_Win32DialogHelper::isChecked(UT_sint32 controlId) const

@@ -1,6 +1,4 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2001 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,13 +16,12 @@
  * 02111-1307, USA.
  */
 
-
-
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "ie_impexp_Register.h"
 
 void IE_ImpExp_RegisterPlatform ()
 {
+
+
 }
-    

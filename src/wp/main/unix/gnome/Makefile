@@ -47,7 +47,7 @@ LoadOrder += Abi_fribidi
 endif
 
 
-ifdef ABI_REQUIRE_PEER_ICONV
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 LoadOrder+= Abi_libiconv
 endif
 

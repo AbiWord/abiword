@@ -162,12 +162,14 @@ static bool fallback_used;
 		text[0] = (unsigned char)c;			\
 		text_length = 1;				\
 		fallback_used = 0;				\
+		DELETEP(w);					\
 	} else	{\
 		fallback_used = 0;	\
 		if (!w->wctomb(text,text_length,(wchar_t)c)) {	\
 		    w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
 		    fallback_used = 1;	\
 		}	\
+	DELETEP(w);      \
 	}	
 
 
@@ -213,7 +215,6 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	if (!m_pFontManager)
 		return;
 	UT_ASSERT(m_pFont);
-	WCTOMB_DECLS;
 	GdkFont *font;
 	UT_sint32 x;
 	
@@ -345,6 +346,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		else
 		{
+			WCTOMB_DECLS;
 			CONVERT_TO_MBS(actual);
 			gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,text,text_length);
 			x+=gdk_text_width(font, text, text_length);
@@ -361,6 +363,25 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	// but it's currently faster to shortcut
 	// than to call explodeGdkFonts
 	// TODO: turn this off when our text runs get a bit smarter
+
+ 	// this probably is not safe. It was observed in the win32 build that
+ 	// identity of font pointer does not imply identity of font, i.e.,
+ 	// code like this
+ 	// 
+ 	//   f1 = new GR_Font();
+ 	//   delete f1;
+ 	//   f2 = new GR_Font(); /* different font altogether */
+ 	//
+ 	//   can result in f1 == f2 and since the allocation and
+ 	//   deallocation of fonts happens outside of the graphics class,
+ 	//   the chached m_pFont could well be pointing to
+ 	//   a different font than intended (or something completely
+ 	//   different. I am not sure whether this is or is not the case
+ 	//   on Unix, really depends on where the font pointer comes from,
+ 	//   so I will not meddle with this, but it needs to be
+ 	//   investigated by someone who knows better -- Tomas
+
+
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) && 
 	   (pUFont->getSize() == m_pFont->getSize()))
 	  return;

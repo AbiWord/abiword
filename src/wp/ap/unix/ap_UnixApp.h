@@ -88,7 +88,6 @@ public:
 	static int main (const char * szAppName, int argc, char ** argv);
 
 	void							catchSignals(int sig_num);
-
 	void loadAllPlugins ();
 
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
@@ -114,3 +113,4 @@ protected:	// JCA: Why in the hell we have so many (any) protected variables?
 void signalWrapper(int);
 
 #endif /* AP_UNIXAPP_H */
+

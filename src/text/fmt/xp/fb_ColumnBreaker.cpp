@@ -43,7 +43,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 		
 	fp_Column* pCurColumn = pSL->getFirstColumn();
 	UT_ASSERT(pCurColumn);
-
+        pSL->setNeedsSectionBreak(false);
 	while (pCurColumn)
 	{
 		fp_Line* pFirstLineToKeep = pCurrentLine;

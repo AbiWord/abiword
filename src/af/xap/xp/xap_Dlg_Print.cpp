@@ -38,6 +38,7 @@ XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_bPersistValid = false;
 	m_persistNrCopies = 1;
 	m_persistCollate = false;
+	m_persistReverse = false;
 	m_persistColorSpace = GR_Graphics::GR_COLORSPACE_COLOR;	/* full color is default */
 	m_persistPrintToFile = false;
 
@@ -202,7 +203,14 @@ bool XAP_Dialog_Print::getCollate(void) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
-	return m_persistCollate;
+	return m_bCollate;
+}
+
+bool XAP_Dialog_Print::getReverse(void) const
+{
+	UT_ASSERT(m_answer == a_OK);
+
+	return m_bReverse;
 }
 
 GR_Graphics::ColorSpace XAP_Dialog_Print::getColorSpace(void) const

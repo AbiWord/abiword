@@ -839,6 +839,8 @@ __try
 	      	// has its own way of decoding keyboard accelerators
 	      	if (pMyWin32App->handleModelessDialogMessage(&msg)) 
 				continue;
+				
+			TranslateMessage(&msg);	
 	    	DispatchMessage(&msg);	
 	    	
 			// Check for idle condition
@@ -1049,10 +1051,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 
 					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
 					//pFirstWin32Frame->show();
-					if (kWindowsOpened > 1) // only set 1st opened window to stored state
-						ShowWindow(hwnd, iCmdShow);
-					else
-						ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
+					ShowWindow(hwnd, iCmdShow);
 					UpdateWindow(hwnd);
 				}
 				else
@@ -1067,10 +1066,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 					kWindowsOpened++;
 					pFirstWin32Frame->loadDocument(NULL, _getFileTypeFromDesc(iftDesc));
 					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-					if (kWindowsOpened > 1) // only set 1st opened window to stored state
 					ShowWindow(hwnd, iCmdShow);
-					else
-						ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
 					UpdateWindow(hwnd);
 #else
 					delete pFirstWin32Frame;
@@ -1093,7 +1089,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 		pFirstWin32Frame->loadDocument(NULL, _getFileTypeFromDesc(iftDesc));
 
 		HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-		ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
+		ShowWindow(hwnd, iCmdShow);
 		UpdateWindow(hwnd);
 	}
 

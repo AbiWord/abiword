@@ -36,7 +36,7 @@
 #include "ut_OverstrikingChars.h"
 #endif
 // static class member initializations
-bool GR_Graphics::m_bRemapGlyphsMasterSwitch = true;
+bool GR_Graphics::m_bRemapGlyphsMasterSwitch = false;
 bool GR_Graphics::m_bRemapGlyphsNoMatterWhat = false;
 UT_UCSChar GR_Graphics::m_ucRemapGlyphsDefault = 0xB0;
 UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableSrc = 0;
@@ -49,9 +49,12 @@ UT_uint32 GR_Graphics::m_uTick = 0;
 UT_uint32 GR_Graphics::m_instanceCount = 0;
 UT_uint32 GR_Graphics::s_iScreenResolution = 100;
 
+UT_uint32 GR_Font::s_iAllocCount = 0;
 
 GR_Font::GR_Font() 
 {
+ 	s_iAllocCount++;
+ 	m_iAllocNo = s_iAllocCount;
 }
 
 GR_Font::~GR_Font() 
@@ -73,6 +76,8 @@ GR_Graphics::GR_Graphics()
 	m_bIsExposedAreaAccessed = false;
 	m_bDontRedraw = false;
 	m_bDoMerge = false;
+
+	m_iFontAllocNo = 0;
 }
 
 

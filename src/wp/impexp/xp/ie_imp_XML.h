@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  * 
@@ -29,6 +31,9 @@
 #include "ut_stack.h"
 #include "ie_imp.h"
 #include "ut_bytebuf.h"
+
+class UT_StringPtrMap;
+
 class PD_Document;
 
 struct ABI_EXPORT xmlToIdMapping {
@@ -69,24 +74,24 @@ public:
      * can provide your own via an implementation of UT_XML::Reader here:
      */
 protected:
-    void setReader (UT_XML::Reader * pReader) { m_pReader = pReader; }
+	void setReader (UT_XML::Reader * pReader) { m_pReader = pReader; }
 private:
-    UT_XML::Reader * m_pReader;
+	UT_XML::Reader * m_pReader;
 
 public:
-    void		incOperationCount(void) { m_iOperationCount++; }
-    UT_uint32		getOperationCount(void) const { return m_iOperationCount; }
+	void		incOperationCount(void) { m_iOperationCount++; }
+	UT_uint32	getOperationCount(void) const { return m_iOperationCount; }
 
 protected:
-    int _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
+	int			_mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
 
-    const XML_Char *            _getXMLPropValue(const XML_Char *name, const XML_Char **atts);
+	const XML_Char *	_getXMLPropValue (const XML_Char * name, const XML_Char ** atts);
 
-    UT_uint32			_getInlineDepth(void) const;
-    bool			_pushInlineFmt(const XML_Char ** atts);
-    void			_popInlineFmt(void);
+	UT_uint32		_getInlineDepth (void) const;
+	bool			_pushInlineFmt (const XML_Char ** atts);
+	void			_popInlineFmt (void);
 
-    typedef enum _parseState { _PS_Init,
+	typedef enum _parseState { _PS_Init,
 			       _PS_Doc,
 			       _PS_Sec,
 			       _PS_Block,
@@ -100,32 +105,43 @@ protected:
 			       _PS_List,
 			       _PS_Field,
 			       _PS_PageSize
-    } ParseState;
+	} ParseState;
+
+ private:
+	UT_StringPtrMap *	m_tokens;
 
  protected:
    
     // TODO: make us private, refactor code
-    UT_Error m_error;
-    ParseState                  m_parseState;
+	UT_Error	m_error;
+	ParseState	m_parseState;
 
-    bool			m_bLoadIgnoredWords;
-    XML_Char			m_charDataSeen[4];
-    UT_uint32			m_lenCharDataSeen;
-    UT_uint32			m_lenCharDataExpected;
-    UT_uint32			m_iOperationCount;
-    bool			m_bSeenCR;
-    bool                     m_bWhiteSignificant;
-    bool                     m_bWasSpace;
+	bool		m_bLoadIgnoredWords;
+	XML_Char	m_charDataSeen[4];
+	UT_uint32	m_lenCharDataSeen;
+	UT_uint32	m_lenCharDataExpected;
+	UT_uint32	m_iOperationCount;
+	bool		m_bSeenCR;
+	bool		m_bWhiteSignificant;
+	bool		m_bWasSpace;
 
-    UT_Vector			m_vecInlineFmt;
-    UT_Stack			m_stackFmtStartIndex;
+	UT_Vector	m_vecInlineFmt;
+	UT_Stack	m_stackFmtStartIndex;
 
-    UT_ByteBuf			m_currentDataItem;
-    XML_Char *			m_currentDataItemName;
-    XML_Char *			m_currentDataItemMimeType;
-    bool			m_currentDataItemEncoded;
+	UT_ByteBuf	m_currentDataItem;
+	XML_Char *	m_currentDataItemName;
+	XML_Char *	m_currentDataItemMimeType;
+	bool		m_currentDataItemEncoded;
 
-    FILE *			m_fp;
+	FILE *		m_fp;
+
+private:
+	UT_uint32	m_iCharCount;
+	bool		m_bStripLeading;
+
+protected:
+	UT_uint32	_data_CharCount () const { return m_iCharCount; }
+	void		_data_NewBlock ();
 };
 
 #endif /* IE_IMP_XML_H */

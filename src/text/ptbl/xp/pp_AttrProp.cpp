@@ -184,6 +184,8 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	
 	if (0 == UT_strcmp(szName, PT_PROPS_ATTRIBUTE_NAME))	// PROPS -- cut value up into properties
 	{
+		if (*szValue == 0) return true; // empty props="" string
+
 		char * pOrig = NULL;
 		if (!UT_cloneString(pOrig,szValue))
 		{

@@ -40,9 +40,18 @@ if test "x$abi_sys_wv" != "xno"; then
 	else
 		AC_PATH_PROG(WVLIBCFG,wv-libconfig,,[$PATH])
 	fi
-	if [ test "x$WVLIBCFG" = "x" ]; then
-		AC_MSG_WARN([* * * Can't find wv-libconfig, so I'm just going to guess what libs I need. * * *])
-		abi_wv_libs="-lwv -lpng -lz"
+	if test "x$WVLIBCFG" = "x"; then
+		if test "x$abi_sys_wv" != "xyes"; then
+			AC_PATH_PROG(LIBWV_CONFIG,libwv-config,,["$abi_sys_wv"/bin:$PATH])
+		else
+			AC_PATH_PROG(LIBWV_CONFIG,libwv-config,,[$PATH])
+		fi
+		if test "x$LIBWV_CONFIG" = "x"; then
+			AC_MSG_WARN([* * * Can't find wv-libconfig or libwv-config - going to guess what libs I need. * * *])
+			abi_wv_libs="-lwv -lpng -lz"
+		else
+			abi_wv_libs=`$LIBWV_CONFIG --libs`
+		fi
 	else
 		abi_wv_libs=`$WVLIBCFG`
 	fi

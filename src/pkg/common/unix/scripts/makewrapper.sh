@@ -101,7 +101,7 @@ then
 fi
 
 # Set run-time font path
-if [ -d \$ABISUITE_FONT_HOME ]
+if [ -d \$ABISUITE_FONT_HOME -a -z "\$currentFonts" ]
 then
     xset fp+ \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
 fi
@@ -123,7 +123,7 @@ else
     exit
 fi
 
-#Check to make sure we don't stomp on anything
+# Check to make sure we don't stomp on anything
 if [ -z "\$currentFonts" ]
 then
     # Set post run-time font path
