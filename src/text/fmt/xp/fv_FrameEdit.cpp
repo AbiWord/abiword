@@ -30,6 +30,7 @@
 #include "pf_Frag_Strux.h"
 #include "fp_FrameContainer.h"
 #include "fv_View.h"
+#include "gr_Painter.h"
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: m_pView (pView), 
@@ -1087,6 +1088,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	}
 	else
 	{
-		getGraphics()->drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
+		GR_Painter painter (getGraphics());
+		painter.drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
 	}
 }

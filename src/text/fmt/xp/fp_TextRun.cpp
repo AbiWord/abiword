@@ -50,6 +50,7 @@
 #include <fribidi.h>
 #include "ut_contextGlyph.h"
 #include "ap_Prefs.h"
+#include "gr_Painter.h"
 
 /*****************************************************************/
 
@@ -1408,6 +1409,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		return;
 
 	GR_Graphics * pG = pDA->pG;
+	
+	GR_Painter painter(pG);
+
 	_refreshDrawBuffer();
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
 					 this, m_iVisDirection, _getDirection()));
@@ -1705,11 +1709,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(iVisDir == FRIBIDI_TYPE_RTL)
 			iX -= iSegmentWidth[iSegment];
 
-		pG->drawChars(s_pCharBuff,
-						   iMyOffset,
-						   iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
-						   iX,
-						   yTopOfRun,s_pCharAdvance + iMyOffset);
+		painter.drawChars(s_pCharBuff,
+						  iMyOffset,
+						  iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
+						  iX,
+						  yTopOfRun,s_pCharAdvance + iMyOffset);
 
 		if(iVisDir == FRIBIDI_TYPE_LTR)
 			iX += iSegmentWidth[iSegment];
@@ -1753,7 +1757,9 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = getLine()->getHeight();
 		r.top = r.top + getAscent() - getLine()->getAscent();
-		pG->fillRect(clr, r.left, r.top, r.width, r.height);
+
+		GR_Painter painter(getGraphics());
+		painter.fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
 
@@ -1909,16 +1915,18 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 
 	FriBidiCharType iVisDirection = getVisDirection();
 
+	GR_Painter painter(pG);
+
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
 		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
-		pG->drawChars(m_pSpanBuff, getLength() - 1, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
+		painter.drawChars(m_pSpanBuff, getLength() - 1, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
 	}
 	else
 	{
 		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
-		pG->drawChars(m_pSpanBuff, iPos, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
+		painter.drawChars(m_pSpanBuff, iPos, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
 	}
 }
 
@@ -1930,6 +1938,8 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection,
 	// have to sent font (and colour!), since we were called from a run using different font
 	pG->setFont(_getFont());
 
+	GR_Painter painter(pG);
+
 	if(bSelection)
 	{
 		pG->setColor(_getView()->getColorSelForeground());
@@ -1940,12 +1950,12 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection,
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
-		pG->drawChars(m_pSpanBuff, 0, 1, xoff, yoff);
+		painter.drawChars(m_pSpanBuff, 0, 1, xoff, yoff);
 	}
 	else
 	{
 		UT_uint32 iPos = getVisDirection() == FRIBIDI_TYPE_RTL ? getLength() - 1 : 0;
-		pG->drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
+		painter.drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
 	}
 }
 
@@ -1981,11 +1991,13 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 	// we will process this in visual order, keeping in mind that the
 	// width buffer is in logical order
 
+	GR_Painter painter(getGraphics());
+
 	for (UT_uint32 i=0; i < iLen; i++)
 	{
 		if(m_pSpanBuff[i] == UCS_SPACE)
 		{
-			getGraphics()->fillRect(pView->getColorShowPara(), xoff + iWidth + (pCharWidths[iWidthOffset] - iRectSize) / 2,iY,iRectSize,iRectSize);
+			painter.fillRect(pView->getColorShowPara(), xoff + iWidth + (pCharWidths[iWidthOffset] - iRectSize) / 2,iY,iRectSize,iRectSize);
 		}
 		UT_uint32 iCW = pCharWidths[iWidthOffset] > 0
 			         && pCharWidths[iWidthOffset] < GR_OC_MAX_WIDTH ?
@@ -2009,6 +2021,8 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 	{
 		return;
 	}
+
+	GR_Painter painter(getGraphics());
 
 	m_bSquiggled = true;
 
@@ -2048,7 +2062,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 		points[nPoints-1].y = top + getGraphics()->tlu(1);
 	}
 
-	getGraphics()->polyLine(points, nPoints);
+	painter.polyLine(points, nPoints);
 
 	if (points != scratchpoints) delete[] points;
 }

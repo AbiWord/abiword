@@ -35,6 +35,7 @@
 #include "ut_assert.h"
 #include "fl_FootnoteLayout.h"
 #include "fv_View.h"
+#include "gr_Painter.h"
 
 /*!
   Create Footnote container
@@ -187,7 +188,9 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		pDA->pG->setLineWidth(iLineThick);
 		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
 		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-		pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
+
+		GR_Painter painter (pDA->pG);
+		painter.drawLine(xoffStart, yline, xoffEnd, yline);
 	}
 	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 

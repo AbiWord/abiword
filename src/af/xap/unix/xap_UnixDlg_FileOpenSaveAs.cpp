@@ -49,6 +49,7 @@
 #include "fg_GraphicRaster.h"
 
 #include "gr_UnixImage.h"
+#include "gr_Painter.h"
 
 #include <sys/stat.h>
 
@@ -833,7 +834,9 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	// attach and clear the area immediately
 	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
 	
-	pGr->clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
+	GR_Painter painter(pGr);
+
+	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
 	const gchar * buf = gtk_file_selection_get_filename (m_FS);
 
@@ -856,7 +859,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if (!buf)
 	  {
-	    pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+	    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 	    goto Cleanup;
 	  }
 
@@ -864,12 +867,12 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	struct stat st;
 	if (!stat (buf, &st)) {
 		if (!S_ISREG(st.st_mode)) {
-			pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+			painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 			goto Cleanup;
 		}
 	}
 	else {
-		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 		goto Cleanup;
 	}
 
@@ -882,7 +885,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if ((errorCode != UT_OK) || !pIEG)
 	{
 		DELETEP(pBB);
-		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 		goto Cleanup;
 	}
 
@@ -890,7 +893,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if ((errorCode != UT_OK) || !pGraphic)
 	  {
-		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 	    goto Cleanup;
 	  }
 
@@ -912,7 +915,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 		pImage->convertFromBuffer(png, scaled_width, scaled_height);
 		
-		pGr->drawImage(pImage,
+		painter.drawImage(pImage,
 			       pGr->tlu(static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2)),
 			       pGr->tlu(static_cast<int>((m_preview->allocation.height - scaled_height) / 2)));
 		

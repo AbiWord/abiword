@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,6 +26,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "gr_Graphics.h"
+#include "gr_Painter.h"
 
 #include "xap_Draw_Symbol.h"
 
@@ -135,6 +135,8 @@ void XAP_Draw_Symbol::draw(void)
 	UT_ASSERT(m_gc);
 	UT_uint32 wwidth, wheight, yoff, xoff, x, y;
 	size_t i;
+
+	GR_Painter painter(m_gc);
 	
 	wwidth = m_drawWidth;
 	wheight = m_drawHeight;
@@ -142,7 +144,7 @@ void XAP_Draw_Symbol::draw(void)
 	UT_uint32 tmph = wheight / 7;
 	yoff = wheight / 14;
 	xoff = wwidth / 64;
-	m_gc->clearArea(0, 0, wwidth, wheight);
+	painter.clearArea(0, 0, wwidth, wheight);
 	int pos = 0;
 	
 	for (i = 0; i < m_vCharSet.size(); i += 2)
@@ -155,7 +157,7 @@ void XAP_Draw_Symbol::draw(void)
 			unsigned short w = m_gc->measureUnRemappedChar(j);
 			UT_uint32 x = (pos % 32) * tmpw + (tmpw - w) / 2;
 			UT_uint32 y = pos / 32 * tmph;
-			m_gc->drawChars(&j, 0, 1, x, y);
+			painter.drawChars(&j, 0, 1, x, y);
 			++pos;
 		}
 	}
@@ -163,14 +165,14 @@ void XAP_Draw_Symbol::draw(void)
 	y = 0;
 	for(i = 0; i <= 6; i++)
 	{
-		m_gc->drawLine(0, y, wwidth - m_areagc->tlu(1), y);
+		painter.drawLine(0, y, wwidth - m_areagc->tlu(1), y);
 		y += tmph;
 	}
 
 	x = 0;
 	for(i = 0; i <= 31; i++)
 	{
-		m_gc->drawLine(x, 0, x, wheight - m_areagc->tlu(1));
+		painter.drawLine(x, 0, x, wheight - m_areagc->tlu(1));
 		x += tmpw;
 	}
 }
@@ -250,6 +252,9 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	UT_uint32 wwidth,wheight,x,y,cx,cy,px,py,swidth,sheight;
 	UT_uint32 cx1,cy1,px1,py1;
 
+	GR_Painter areaPainter(m_areagc);
+	GR_Painter painter(m_gc);
+
 	wwidth = m_drawareaWidth;
 	wheight = m_drawareaHeight;
 
@@ -262,8 +267,8 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	x = (m_drawareaWidth - w1) / 2;
 	y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;
 
-	m_areagc->clearArea(0, 0, wwidth, wheight);
-	m_areagc->drawChars(&c, 0, 1, x, y);
+	areaPainter.clearArea(0, 0, wwidth, wheight);
+	areaPainter.drawChars(&c, 0, 1, x, y);
 
 	//
 	// Calculate the cordinates of the current and previous symbol
@@ -292,13 +297,13 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	py1 = py + tmph;
 
 	// Redraw the Previous Character in black on White
-	m_gc->clearArea(px + m_areagc->tlu(1), py + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
-	m_gc->drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
+	painter.clearArea(px + m_areagc->tlu(1), py + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
+	painter.drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
 
 	// Redraw the Current Character in black on Blue
 	UT_RGBColor colour(128, 128, 192);
-	m_gc->fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
-	m_gc->drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
+	painter.fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
+	painter.drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
 }
 
 void XAP_Draw_Symbol::onLeftButtonDown(UT_sint32 x, UT_sint32 y)

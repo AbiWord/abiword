@@ -36,6 +36,7 @@
 #include "fp_Column.h"
 #include "fp_Run.h"
 #include "fv_View.h"
+#include "gr_Painter.h"
 
 /*!
   Create container
@@ -668,6 +669,8 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 //
 // Have to adjust for spacing between cells
 //
+	GR_Painter painter(pG);
+
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_CELL))
 	{
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(m_pContainer);
@@ -741,17 +744,17 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 dest.height = height;
 			 if(m_pDocImage == NULL)
 			 {
-				 pG->fillRect(m_pImage,src,dest);
+				 painter.fillRect(m_pImage,src,dest);
 			 }
 			 else if(*m_pDocImage)
 			 {
-				 pG->fillRect(*m_pDocImage,src,dest);
+				 painter.fillRect(*m_pDocImage,src,dest);
 			 }
 			 return;
 		 }
 		 if(m_FillType == FG_FILL_COLOR && m_bColorSet)
 		 {
-			 pG->fillRect(m_color,x,y,width,height);
+			 painter.fillRect(m_color,x,y,width,height);
 			 return;
 		 }
 		 return;
@@ -769,13 +772,13 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 }
 		 xxx_UT_DEBUGMSG(("Fill type transparent but no parent ! \n"));
 		 UT_RGBColor white(255,255,255);
-		 pG->fillRect(white,x,y,width,height);
+		 painter.fillRect(white,x,y,width,height);
 		 return;
 	 }
 	 if(m_FillType == FG_FILL_COLOR && m_bColorSet)
 	 {
 		 xxx_UT_DEBUGMSG(("Fill type Color ! \n"));
-		 pG->fillRect(m_color,x,y,width,height);
+		 painter.fillRect(m_color,x,y,width,height);
 		 return;
 	 }
 	 if(m_FillType == FG_FILL_IMAGE)
@@ -791,7 +794,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 UT_sint32 iX = -srcX;
 			 srcX = 0;
 			 UT_RGBColor white(255,255,255);
-			 pG->fillRect(white,x,y,iX,height);
+			 painter.fillRect(white,x,y,iX,height);
 			 width -= iX;
 		 }
 		 
@@ -800,7 +803,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 UT_sint32 iY = -srcY;
 			 srcY = 0;
 			 UT_RGBColor white(255,255,255);
-			 pG->fillRect(white,x,y,width,iY);
+			 painter.fillRect(white,x,y,width,iY);
 			 height -= iY;
 		 }
 		src.left = srcX;
@@ -869,22 +872,22 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 
 		if(m_pDocImage == NULL)
 		{
-			pG->fillRect(m_pImage,src,dest);
+			painter.fillRect(m_pImage,src,dest);
 		}
 		else if(*m_pDocImage)
 		{
-			pG->fillRect(*m_pDocImage,src,dest);
+			painter.fillRect(*m_pDocImage,src,dest);
 		}
 		else
 		{
 			UT_RGBColor white(255,255,255);
-			pG->fillRect(white,x,y,width,height);
+			painter.fillRect(white,x,y,width,height);
 		}
 	}		
 	 if(m_FillType == FG_FILL_COLOR && m_bTransColorSet)
 	 {
 		 xxx_UT_DEBUGMSG(("Fill type Trans Color ! \n"));
-		 pG->fillRect(m_TransColor,x,y,width,height);
+		 painter.fillRect(m_TransColor,x,y,width,height);
 		 return;
 	 }
 	return;

@@ -28,6 +28,7 @@
 #include "fl_TableLayout.h"
 #include "fp_TableContainer.h"
 #include "fv_View.h"
+#include "gr_Painter.h"
 
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 
@@ -438,4 +439,6 @@ void FV_VisualDragText::drawImage(void)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-	getGraphics()->drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);}
+	GR_Painter painter(getGraphics());
+	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
+}

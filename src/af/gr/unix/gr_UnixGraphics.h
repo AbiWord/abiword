@@ -47,10 +47,6 @@ class GR_UnixGraphics : public GR_Graphics
  	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
 	virtual ~GR_UnixGraphics();
 
-	virtual void        drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
-	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
-								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
-								  int * pCharWidths = NULL);
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) {m_pFont = NULL;} 
 	virtual UT_uint32	getFontHeight();
@@ -69,22 +65,14 @@ class GR_UnixGraphics : public GR_Graphics
 
 	virtual void		getCoverage(UT_Vector& coverage);
 
-	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		setLineWidth(UT_sint32);
-	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
-	virtual void		fillRect(const UT_RGBColor& c,
-								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
-	virtual void		invertRect(const UT_Rect* pRect);
+
 	virtual void		setClipRect(const UT_Rect* pRect);
 	virtual void		scroll(UT_sint32, UT_sint32);
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 							   UT_sint32 x_src, UT_sint32 y_src,
 							   UT_sint32 width, UT_sint32 height);
-	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-  
-	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+
 	virtual GR_Image*	createNewImage(const char* pszName, const UT_ByteBuf* pBB,
 					       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					       GR_Image::GRType = GR_Image::GRT_Raster);
@@ -107,12 +95,6 @@ class GR_UnixGraphics : public GR_Graphics
 
 	virtual void		setColor3D(GR_Color3D c);
 	void				init3dColors(GtkStyle * pStyle);
-	virtual void		fillRect(GR_Color3D c,
-								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
-	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
-	
-	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 
 	void                createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 											 GdkBitmap * mask);
@@ -134,6 +116,25 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual UT_uint32 	getDeviceResolution(void) const;
 
  protected:
+
+	virtual void        drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
+								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								  int * pCharWidths = NULL);
+	virtual void		fillRect(GR_Color3D c,
+								 UT_sint32 x, UT_sint32 y,
+								 UT_sint32 w, UT_sint32 h);
+	virtual void		fillRect(GR_Color3D c, UT_Rect &r);   
+	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
+	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);  
+	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
+	virtual void		fillRect(const UT_RGBColor& c,
+								 UT_sint32 x, UT_sint32 y,
+								 UT_sint32 w, UT_sint32 h);
+	virtual void		invertRect(const UT_Rect* pRect);
+	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
 	virtual GR_Font*	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 

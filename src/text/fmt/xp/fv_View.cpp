@@ -70,6 +70,7 @@
 #include "ap_FrameData.h"
 #include "fp_FrameContainer.h"
 #include "xap_EncodingManager.h"
+#include "gr_Painter.h"
 
 #include "pp_Revision.h"
 
@@ -9899,6 +9900,8 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 	GR_Image * pImage = (static_cast<fp_ImageRun *>(m_pDraggedImageRun))->getImage();
 	UT_ASSERT(pImage);
 
+	GR_Painter painter(getGraphics());
+
 	// calculate the new image boundaries
 	UT_Rect bounds = UT_Rect(xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top), m_dragImageRect.width, m_dragImageRect.height);
 	
@@ -9944,7 +9947,7 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 					  );
 	draw(&clipRect);
 	
-	m_pG->drawImage(pImage, bounds.left, bounds.top);
+	painter.drawImage(pImage, bounds.left, bounds.top);
 	m_curImageSel = bounds;
 }
 

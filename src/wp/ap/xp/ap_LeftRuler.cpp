@@ -40,6 +40,8 @@
 #include "pd_Document.h"
 
 #include "pp_AttrProp.h"
+#include "gr_Painter.h"
+
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
@@ -1270,35 +1272,37 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
 	_getMarginMarkerRects(pInfo,rTop,rBottom);
 	
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, rTop);
+	GR_Painter painter(m_pG);
+
+	painter.fillRect(GR_Graphics::CLR3D_Background, rTop);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rTop.left,  rTop.top, rTop.left + rTop.width, rTop.top);
-	m_pG->drawLine( rTop.left + rTop.width,  rTop.top, rTop.left + rTop.width, rTop.top + rTop.height);
-	m_pG->drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
-	m_pG->drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
+	painter.drawLine( rTop.left,  rTop.top, rTop.left + rTop.width, rTop.top);
+	painter.drawLine( rTop.left + rTop.width,  rTop.top, rTop.left + rTop.width, rTop.top + rTop.height);
+	painter.drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
+	painter.drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rTop.left + onePX,  rTop.top + onePX, rTop.left + rTop.width - onePX, rTop.top + onePX);
-	m_pG->drawLine( rTop.left + onePX,  rTop.top + rTop.height - m_pG->tlu(2), rTop.left + onePX, rTop.top + onePX);
+	painter.drawLine( rTop.left + onePX,  rTop.top + onePX, rTop.left + rTop.width - onePX, rTop.top + onePX);
+	painter.drawLine( rTop.left + onePX,  rTop.top + rTop.height - m_pG->tlu(2), rTop.left + onePX, rTop.top + onePX);
 	
 	// TODO: this isn't the right place for this logic. But it works.
 	if (hdrftr && !hdr)
 		return;
 
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, rBottom);
+	painter.fillRect(GR_Graphics::CLR3D_Background, rBottom);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rBottom.left,  rBottom.top, rBottom.left + rBottom.width, rBottom.top);
-	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top, rBottom.left + rBottom.width, rBottom.top + rBottom.height);
-	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
-	m_pG->drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
+	painter.drawLine( rBottom.left,  rBottom.top, rBottom.left + rBottom.width, rBottom.top);
+	painter.drawLine( rBottom.left + rBottom.width,  rBottom.top, rBottom.left + rBottom.width, rBottom.top + rBottom.height);
+	painter.drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
+	painter.drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rBottom.left + onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + onePX);
-	m_pG->drawLine( rBottom.left + onePX,  rBottom.top + rBottom.height - m_pG->tlu(2), rBottom.left + onePX, rBottom.top + onePX);
+	painter.drawLine( rBottom.left + onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + onePX);
+	painter.drawLine( rBottom.left + onePX,  rBottom.top + rBottom.height - m_pG->tlu(2), rBottom.left + onePX, rBottom.top + onePX);
 #if 0
     m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + rBottom.height - onePX);
-	m_pG->drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + rBottom.height - onePX, rBottom.left + onePX, rBottom.top + rBottom.height - onePX);
+	painter.drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + rBottom.height - onePX);
+	painter.drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + rBottom.height - onePX, rBottom.left + onePX, rBottom.top + rBottom.height - onePX);
 #endif
 }
 
@@ -1518,22 +1522,25 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 	{
 		return;
 	}
+
+	GR_Painter painter(m_pG);
+
 	UT_sint32 left = prDrag->left;
 	UT_sint32 right = left + prDrag->width - m_pG->tlu(1);
 	UT_sint32 top = prDrag->top;
 	UT_sint32 bot = top + prDrag->height - m_pG->tlu(1); // For the clever people: this gives the rect a height of 5 pixels (eg. top:10, bot:14 is 5 pixels)!
 	
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, left, top, prDrag->width, prDrag->height);
+	painter.fillRect(GR_Graphics::CLR3D_Background, left, top, prDrag->width, prDrag->height);
 	
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine(left,top,right,top);
-	m_pG->drawLine(left,top,left,bot);
-	m_pG->drawLine(left,bot,right,bot);
-	m_pG->drawLine(right,top,right,bot);
+	painter.drawLine(left,top,right,top);
+	painter.drawLine(left,top,left,bot);
+	painter.drawLine(left,bot,right,bot);
+	painter.drawLine(right,top,right,bot);
 	
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
-	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
+	painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
+	painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
 }
 
 /*****************************************************************/
@@ -1558,6 +1565,9 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 {
 	if (!m_pG)
 		return;
+
+	GR_Painter painter(m_pG);
+
 	UT_ASSERT(lfi->m_yTopMargin >= 0);
 	UT_Rect r;
 	UT_Rect * pClipRect = NULL;
@@ -1583,8 +1593,8 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	UT_ASSERT(m_iWidth);
 	// draw the background
 	
-	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,
-		       getWidth(),getHeight());
+	painter.fillRect(GR_Graphics::CLR3D_Background,0,0,
+					 getWidth(),getHeight());
 
 	UT_uint32 xLeft = m_pG->tlu(s_iFixedWidth)/4;
 	UT_uint32 xBar  = m_pG->tlu(s_iFixedWidth)/2;
@@ -1603,7 +1613,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 		y = yScrolledOrigin;
 		h = lfi->m_yTopMargin - m_pG->tlu(1);
-		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
+		painter.fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += lfi->m_yTopMargin + m_pG->tlu(1);
@@ -1614,7 +1624,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 		y = yScrolledOrigin;
 		h = docWithinMarginHeight - m_pG->tlu(1);
-		m_pG->fillRect(GR_Graphics::CLR3D_Highlight,xLeft,y,xBar,h);
+		painter.fillRect(GR_Graphics::CLR3D_Highlight,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += docWithinMarginHeight + m_pG->tlu(1);
@@ -1626,7 +1636,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 		y = yScrolledOrigin;
 		h = lfi->m_yBottomMargin - m_pG->tlu(1);
-		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
+		painter.fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
 	// draw 3D frame around top margin + document + bottom margin rects
@@ -1659,7 +1669,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 w = ((k % tick.tickLong) 
 							   ? m_pG->tlu(2) : m_pG->tlu(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
-				m_pG->drawLine(x,y,x+w,y);
+				painter.drawLine(x,y,x+w,y);
 			}
 			else if (pFont)
 			{
@@ -1678,7 +1688,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 				UT_uint32 x = xLeft + (xBar-w)/2;
 
-				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
+				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
 	}
@@ -1697,7 +1707,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 w = ((k % tick.tickLong) ? 
 							   m_pG->tlu(2) : m_pG->tlu(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
-				m_pG->drawLine(x,y,x+w,y);
+				painter.drawLine(x,y,x+w,y);
 			}
 			else if (pFont)
 			{
@@ -1716,7 +1726,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 				UT_uint32 x = xLeft + (xBar-w)/2;
 
-				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
+				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
 	}
@@ -1749,6 +1759,8 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
 	UT_ASSERT(pG);
 
+	GR_Painter painter(pG);
+
 	// TODO we need to query the document window to see what the actual
 	// TODO background color is so that we can compose the proper color so
 	// TODO that we can XOR on it and be guaranteed that it will show up.
@@ -1764,14 +1776,14 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 			return;		// avoid flicker
 
 		// erase old guide
-		pG->xorLine(0, m_yGuide, w, m_yGuide);
+		painter.xorLine(0, m_yGuide, w, m_yGuide);
 		m_bGuide = false;
 	}
 
 	if (!bClear)
 	{
 		UT_ASSERT(m_bValidMouseClick);
-		pG->xorLine(0, y, w, y);
+		painter.xorLine(0, y, w, y);
 
 		// remember this for next time
 		m_yGuide = y;

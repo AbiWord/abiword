@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "gr_Graphics.h"
+#include "gr_Painter.h"
 #include "xap_Preview_Zoom.h"
 
 XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
@@ -35,9 +36,7 @@ XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 	m_zoomPercent = 100;
 	setFont(XAP_Preview_Zoom::font_NORMAL);
 	setDrawAtPosition(XAP_Preview_Zoom::pos_CENTER);
-
 }
-
 
 XAP_Preview_Zoom::~XAP_Preview_Zoom()
 {
@@ -120,12 +119,14 @@ void XAP_Preview_Zoom::draw(void)
 	UT_ASSERT(m_gc);
 	UT_ASSERT(m_string);
 	
+	GR_Painter painter(m_gc);
+
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
+	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
 
 	pageRect.left += m_gc->tlu(5);
 	pageRect.top += m_gc->tlu(5);
@@ -135,7 +136,7 @@ void XAP_Preview_Zoom::draw(void)
 	// set the cliprect to our page size, so we don't draw over our borders
 	m_gc->setClipRect(&pageRect);
 
-	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), pageRect.left, pageRect.top);
+	painter.drawChars(m_string, 0, UT_UCS4_strlen(m_string), pageRect.left, pageRect.top);
 
 	UT_Rect rr (0, 0, iWidth, iHeight);
 	m_gc->setClipRect(&rr);

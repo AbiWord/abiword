@@ -64,6 +64,7 @@
 #include "fl_FootnoteLayout.h"
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
+#include "gr_Painter.h"
 
 fp_TableRowColumn::fp_TableRowColumn(void) :
 		requisition(0),
@@ -822,7 +823,9 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 
 	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
 
-	pGr->drawLine (left, top, right, bot);
+	GR_Painter painter(pGr);
+
+	painter.drawLine (left, top, right, bot);
 	
 	pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
 }
@@ -1265,12 +1268,15 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBr
         UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight();
 
 		UT_RGBColor clrShowPara(127,127,127);
+
+		GR_Painter painter(getGraphics());
+
 		getGraphics()->setColor(clrShowPara);
 		xxx_UT_DEBUGMSG(("SEVIOR: cell boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -1744,6 +1750,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // Now draw the cell background.
 //
 
+	GR_Painter painter(pG);
+
 	if (((m_bIsSelected == false) || (!pG->queryProperties(GR_Graphics::DGP_SCREEN))) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
 	{
 		UT_sint32 srcX = 0;
@@ -1761,7 +1769,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
 			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 		FV_View * pView = getPage()->getDocLayout()->getView();
-		pG->fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
+		painter.fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
 	}
 
 //
@@ -3660,10 +3668,13 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 		getGraphics()->setColor(clrShowPara);
 		xxx_UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
 		xxx_UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+
+		GR_Painter painter (getGraphics());
+
+        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 
 }
@@ -4157,10 +4168,13 @@ void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 		getGraphics()->setColor(clrShowPara);
 		xxx_UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
 		xxx_UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+
+		GR_Painter painter (getGraphics());
+
+        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 
 }

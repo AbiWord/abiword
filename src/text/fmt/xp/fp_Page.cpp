@@ -41,7 +41,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
-
+#include "gr_Painter.h"
 
 fp_Page::fp_Page(FL_DocLayout* pLayout,
 		 FV_View* pView,
@@ -382,10 +382,11 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 	   && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN)
 	   && countColumnLeaders() > 0)
 	{
+		GR_Painter painter(pDA->pG);
+
         fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
         fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 		UT_ASSERT(m_pOwner == pFirstSectionLayout);
-
 
         UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
         UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
@@ -409,17 +410,17 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 									 GR_Graphics::CAP_BUTT,
 									 GR_Graphics::LINE_SOLID);
 
-        pDA->pG->drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
-        pDA->pG->drawLine(xoffStart, yoffStart, xoffStart - iLeftWidth, yoffStart);
+        painter.drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
+        painter.drawLine(xoffStart, yoffStart, xoffStart - iLeftWidth, yoffStart);
 
-        pDA->pG->drawLine(xoffEnd, yoffStart - iTopHeight, xoffEnd, yoffStart);
-        pDA->pG->drawLine(xoffEnd, yoffStart, xoffEnd + iRightWidth, yoffStart);
+        painter.drawLine(xoffEnd, yoffStart - iTopHeight, xoffEnd, yoffStart);
+        painter.drawLine(xoffEnd, yoffStart, xoffEnd + iRightWidth, yoffStart);
 
-        pDA->pG->drawLine(xoffStart, yoffEnd, xoffStart, yoffEnd + iBottomHeight);
-        pDA->pG->drawLine(xoffStart - iLeftWidth, yoffEnd, xoffStart, yoffEnd);
+        painter.drawLine(xoffStart, yoffEnd, xoffStart, yoffEnd + iBottomHeight);
+        painter.drawLine(xoffStart - iLeftWidth, yoffEnd, xoffStart, yoffEnd);
 
-        pDA->pG->drawLine(xoffEnd, yoffEnd, xoffEnd, yoffEnd + iBottomHeight);
-        pDA->pG->drawLine(xoffEnd, yoffEnd, xoffEnd + iRightWidth, yoffEnd);
+        painter.drawLine(xoffEnd, yoffEnd, xoffEnd, yoffEnd + iBottomHeight);
+        painter.drawLine(xoffEnd, yoffEnd, xoffEnd + iRightWidth, yoffEnd);
     }
 }
 
@@ -460,6 +461,9 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 	// draw each column on the page
 	count = m_vecColumnLeaders.getItemCount();
+
+	GR_Painter painter(pDA->pG);
+
 	for (i=0; i<count; i++)
 	{
 		fp_Column* pCol = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
@@ -479,7 +483,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 				UT_sint32 x = pDA->xoff + (pCol->getX() + pCol->getWidth() + pNextCol->getX()) / 2;
 				UT_sint32 y = pDA->yoff + pCol->getY();
 				pDA->pG->setColor(m_pView->getColorColumnLine());
-				pDA->pG->drawLine(x, y, x, y + pCol->getHeight());
+				painter.drawLine(x, y, x, y + pCol->getHeight());
 			}
 
 			pCol = pNextCol;

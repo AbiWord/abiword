@@ -53,6 +53,7 @@
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
+#include "gr_Painter.h"
 
 #include "ut_sleep.h"
 
@@ -1046,7 +1047,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		return;
 	}
 	
-	
 	m_bIsCleared = false;
 	if (getLine())
 		getLine()->setScreenCleared(false);
@@ -1058,6 +1058,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	long imax = (1 << 15) - 1;
 	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
+
+	GR_Painter painter(pG);
 
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -1091,21 +1093,21 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 			if(r_type == PP_REVISION_ADDITION)
 			{
-				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
-				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
 							 iWidth, getGraphics()->tlu(1));
 
 			}
 			else if(r_type == PP_REVISION_FMT_CHANGE)
 			{
 				// draw a thick line underneath
-				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
 			}
 			else
 			{
 				// draw a strike-through line
 
-				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
 							 iWidth, getGraphics()->tlu(2));
 			}
 		}
@@ -1121,7 +1123,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
 
-		pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 	}
 
 	if(m_eVisibility == FP_HIDDEN_TEXT || m_eVisibility == FP_HIDDEN_REVISION_AND_TEXT)
@@ -1132,7 +1134,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_DOTTED);
 
-		pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 
 	}
 	_setDirty(false);
@@ -1298,6 +1300,8 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 		return;
 	}
 
+	GR_Painter painter(pG);
+
 	const UT_sint32 old_LineWidth = m_iLineWidth;
 	UT_sint32 cur_linewidth = pG->tlu(1) + UT_MAX(pG->tlu(10),static_cast<UT_sint32>(getAscent())-pG->tlu(10))/8;
 //
@@ -1401,13 +1405,13 @@ be drawn.
 		{
 			iDrop = UT_MAX( getMaxUnderline(), iDrop);
 			UT_sint32 totx = getUnderlineXoff();
-			pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 		if ( b_Overline)
 		{
 			iDrop = UT_MIN( getMinOverline(), iDrop);
 			UT_sint32 totx = getOverlineXoff();
-			pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 	}
 	/*
@@ -1423,7 +1427,7 @@ is drawn later.
 		     {
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
 				 UT_sint32 totx = getUnderlineXoff();
-				 pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				 painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		     }
 		     else
 		     {
@@ -1436,7 +1440,7 @@ is drawn later.
 			{
 				iDrop = UT_MIN( getMinOverline(), iDrop);
 				UT_sint32 totx = getOverlineXoff();
-				pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 			}
 			else
 			{
@@ -1451,7 +1455,7 @@ text so we can keep the original code.
 	if ( b_Strikethrough)
 	{
 		iDrop = yoff + getAscent() * 2 / 3;
-		pG->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
+		painter.drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
 	}
 	/*
 	   Restore the previous line width.
@@ -1484,14 +1488,14 @@ text so we can keep the original code.
 	if ( b_Topline)
 	{
 		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + pG->tlu(1);
-		pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
+		painter.fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
 	  We always draw bottomline right at the bottom so there is no ambiguity
 	*/
 	if ( b_Bottomline)
 	{
-		pG->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+pG->tlu(1), getWidth(), ithick);
+		painter.fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+pG->tlu(1), getWidth(), ithick);
 	}
 }
 
@@ -1593,8 +1597,9 @@ UT_sint32 fp_Run::getToplineThickness(void)
 */
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
-
     GR_Font *pFont = getGraphics()->getGUIFont();
+
+	GR_Painter painter(getGraphics());
     getGraphics()->setFont(pFont);
 
     UT_uint32 iTextLen = UT_UCS4_strlen(pText);
@@ -1604,12 +1609,12 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
     UT_uint32 yoffText = yoff - getGraphics()->getFontAscent(pFont) * 2 / 3;
 
-    getGraphics()->drawLine(xoff,yoff,xoff + iWidth,yoff);
+    painter.drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight))
 	{
 		Fill(getGraphics(),xoffText,yoffText,iTextWidth,iTextHeight);
-        getGraphics()->drawChars(pText,0,iTextLen,xoffText,yoffText);
+        painter.drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
 
@@ -1896,8 +1901,10 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     points[5].x = points[0].x;
     points[5].y = points[0].y;
 
+	GR_Painter painter(getGraphics());
+
     UT_RGBColor clrShowPara(_getView()->getColorShowPara());
-    getGraphics()->polygon(clrShowPara,points,NPOINTS);
+    painter.polygon(clrShowPara,points,NPOINTS);
 
     xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
     			iLeft, iyAxis, cur_linewidth, iMaxWidth));
@@ -1907,11 +1914,11 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0)
 	    if(getVisDirection() == FRIBIDI_TYPE_LTR)
 		{
-		    getGraphics()->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		    painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 		else
 		{
-	    	getGraphics()->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	    	painter.fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 #undef NPOINTS
 }
@@ -1952,13 +1959,15 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	getBlock()->getAttrProp(&pBlockAP);
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 	
+	GR_Painter painter(pG);
+
 	if (
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		pG->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
@@ -2012,7 +2021,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
-		pG->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
+		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
 	}
 //
 // Draw underline/overline/strikethough
@@ -2030,12 +2039,10 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 //
 // Scale the vertical line thickness for printers
 //
-		UT_sint32 ithick =  getToplineThickness();
-		pG->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
+		UT_sint32 ithick = getToplineThickness();
+		painter.fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
-
-
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -2183,6 +2190,8 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     	return;
     }
 
+	GR_Painter painter(getGraphics());
+
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
@@ -2254,8 +2263,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
     {
-
-		getGraphics()->fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
+		painter.fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	else
     {
@@ -2265,11 +2273,10 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     {
 		// Draw pilcrow
 		getGraphics()->setColor(clrShowPara);
-		getGraphics()->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
+		painter.drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
     }
 
 }
-
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -2538,9 +2545,10 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     points[3].x = points[0].x;
     points[3].y = points[0].y;
 
-
     UT_RGBColor clrShowPara(_getView()->getColorShowPara());
-    pG->polygon(clrShowPara,points,NPOINTS);
+
+	GR_Painter painter(pG);
+    painter.polygon(clrShowPara,points,NPOINTS);
     #undef NPOINTS
 
 }
@@ -2856,6 +2864,8 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
+	GR_Painter painter(getGraphics());
+
 	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
 	UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
 	UT_sint32 iAscent;
@@ -2910,7 +2920,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		getGraphics()->fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		painter.fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	else
 	{
@@ -2922,7 +2932,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		// use the hard-coded colour only if not revised
 		if(!getRevisions() || !pView->isShowRevisions())
 			getGraphics()->setColor(pView->getColorShowPara());
-        getGraphics()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
+        painter.drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }
 
@@ -3140,6 +3150,8 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	UT_sint32 top = box.top;
 	UT_sint32 right = box.left + box.width - getGraphics()->tlu(1);
 	UT_sint32 bottom = box.top + box.height - getGraphics()->tlu(1);
+
+	GR_Painter painter(getGraphics());
 	
 	getGraphics()->setLineProperties(1.0,
 								 GR_Graphics::JOIN_MITER,
@@ -3148,18 +3160,18 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	
 	// draw some really fancy box here
 	getGraphics()->setColor(UT_RGBColor(98,129,131));
-	getGraphics()->drawLine(left, top, right, top);
-	getGraphics()->drawLine(left, top, left, bottom);
+	painter.drawLine(left, top, right, top);
+	painter.drawLine(left, top, left, bottom);
 	getGraphics()->setColor(UT_RGBColor(230,234,238));
-	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
-	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	painter.drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
+	painter.drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
 	getGraphics()->setColor(UT_RGBColor(98,129,131));
-	getGraphics()->drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	getGraphics()->drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	painter.drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	painter.drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
 	getGraphics()->setColor(UT_RGBColor(49,85,82));
-	getGraphics()->drawLine(right, top, right, bottom);
-	getGraphics()->drawLine(left, bottom, right, bottom);
-	getGraphics()->fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
+	painter.drawLine(right, top, right, bottom);
+	painter.drawLine(left, bottom, right, bottom);
+	painter.fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
@@ -3216,11 +3228,14 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	FV_View* pView = _getView();
+
+	GR_Painter painter(pG);
+
 	if (m_pImage)
 	{
 		// draw the image (always)
 		xxx_UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
-		pG->drawImage(m_pImage, xoff, yoff);
+		painter.drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw some pretty selection markers
 		if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -3264,7 +3279,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		pG->fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
+		painter.fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
 	}
 
 	// unf*ck clipping rect
@@ -3796,6 +3811,8 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	// lookupProperties();
 	UT_sint32 xoff = 0, yoff = 0;
 
+	GR_Painter painter(pG);
+
 	// need screen locations of this run
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
@@ -3838,7 +3855,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		{
 			UT_RGBColor color(_getView()->getColorSelBackground());
 			color -= _getView()->getColorFieldOffset();
-			pG->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			painter.fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 		}
 		else
@@ -3850,7 +3867,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	pG->setFont(_getFont());
 	pG->setColor(_getColorFG());
 
-	pG->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	painter.drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 //
 // Draw underline/overline/strikethough
 //

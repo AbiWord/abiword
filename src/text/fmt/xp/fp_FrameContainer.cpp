@@ -37,6 +37,7 @@
 #include "fl_FrameLayout.h"
 #include "fp_TableContainer.h"
 #include "fv_View.h"
+#include "gr_Painter.h"
 
 /*!
   Create Frame container
@@ -188,6 +189,7 @@ fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
 void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pGr)
 {
+	GR_Painter painter(getGraphics());
 
 	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
 		return; // do not draw	
@@ -216,7 +218,7 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 
 	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
 
-	pGr->drawLine (left, top, right, bot);
+	painter.drawLine (left, top, right, bot);
 	
 	pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
 }
@@ -270,6 +272,8 @@ void fp_FrameContainer::_drawHandleBox(UT_Rect box)
 	UT_sint32 right = box.left + box.width - getGraphics()->tlu(1);
 	UT_sint32 bottom = box.top + box.height - getGraphics()->tlu(1);
 	
+	GR_Painter painter(getGraphics());
+
 	getGraphics()->setLineProperties(1.0,
 								 GR_Graphics::JOIN_MITER,
 								 GR_Graphics::CAP_BUTT,
@@ -277,18 +281,18 @@ void fp_FrameContainer::_drawHandleBox(UT_Rect box)
 	
 	// draw some really fancy box here
 	getGraphics()->setColor(UT_RGBColor(98,129,131));
-	getGraphics()->drawLine(left, top, right, top);
-	getGraphics()->drawLine(left, top, left, bottom);
+	painter.drawLine(left, top, right, top);
+	painter.drawLine(left, top, left, bottom);
 	getGraphics()->setColor(UT_RGBColor(230,234,238));
-	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
-	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	painter.drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
+	painter.drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
 	getGraphics()->setColor(UT_RGBColor(98,129,131));
-	getGraphics()->drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	getGraphics()->drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	painter.drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	painter.drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
 	getGraphics()->setColor(UT_RGBColor(49,85,82));
-	getGraphics()->drawLine(right, top, right, bottom);
-	getGraphics()->drawLine(left, bottom, right, bottom);
-	getGraphics()->fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
+	painter.drawLine(right, top, right, bottom);
+	painter.drawLine(left, bottom, right, bottom);
+	painter.fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
 
 }
 

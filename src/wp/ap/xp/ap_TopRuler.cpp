@@ -39,6 +39,8 @@
 #include "fp_TableContainer.h"
 
 #include "pp_AttrProp.h"
+#include "gr_Painter.h"
+
 enum TABINDEX
   {
     tr_TABINDEX_NEW  = -1,
@@ -388,7 +390,8 @@ void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 
 	// draw the background
 
-	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,getWidth (),getHeight ());
+	GR_Painter painter(m_pG);
+	painter.fillRect(GR_Graphics::CLR3D_Background,0,0,getWidth (),getHeight ());
 
 	// draw the foreground
 
@@ -438,8 +441,10 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 	if (xAbsRight > xAbsLeft)
 	{
 		UT_Rect r(xAbsLeft,yTop,(xAbsRight-xAbsLeft),yBar);
-		if (!pClipRect || r.intersectsRect(pClipRect))
-			m_pG->fillRect(clr3d,r);
+		if (!pClipRect || r.intersectsRect(pClipRect)) {
+			GR_Painter painter(m_pG);
+			painter.fillRect(clr3d,r);
+		}
 	}
 }
 
@@ -450,6 +455,8 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 {
 	UT_sint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
 	UT_sint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
+
+	GR_Painter painter(m_pG);
 
 	if (pClipRect)
 	{
@@ -467,7 +474,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		UT_uint32 h = ((k % tick.tickLong) ? m_pG->tlu(2) : m_pG->tlu(6));
 		UT_sint32 y = yTop + (yBar-h)/2;
 		m_pG->setColor3D(clr3d);
-		m_pG->drawLine(xTick,y,xTick,y+h);
+		painter.drawLine(xTick,y,xTick,y+h);
 	}
 	else if (pFont)
 	{
@@ -496,7 +503,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths);
 		UT_sint32 y = yTop + (yBar-static_cast<UT_sint32>(iFontHeight))/2;
 
-		m_pG->drawChars(span, 0, len, xTick - w/2, y);
+		painter.drawChars(span, 0, len, xTick - w/2, y);
 	}
 }
 
@@ -957,12 +964,13 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- just in case
 			{
 				UT_sint32 iPos = xAbsLeft;
+				GR_Painter painter(m_pG);
 				for (;iPos < xAbsRight; iPos += pInfo->m_iDefaultTabInterval)
 				{
 					if (iPos <= left)
 						continue;
 
-					m_pG->drawLine(iPos, yBottom + m_pG->tlu(1), iPos, yBottom + m_pG->tlu(4));
+					painter.drawLine(iPos, yBottom + m_pG->tlu(1), iPos, yBottom + m_pG->tlu(4));
 				}
 			}
 		}
@@ -1115,26 +1123,28 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
 	_getMarginMarkerRects(pInfo,rLeft,rRight);
 
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, rLeft);
+	GR_Painter painter(m_pG);
+
+	painter.fillRect(GR_Graphics::CLR3D_Background, rLeft);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
-	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
-	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
-	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
+	painter.drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
+	painter.drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
+	painter.drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
+	painter.drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(2), rLeft.top + m_pG->tlu(1));
-	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(2));
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
+	painter.drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(2), rLeft.top + m_pG->tlu(1));
+	painter.drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(2));
+	painter.fillRect(GR_Graphics::CLR3D_Background, rRight);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
-	m_pG->drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
-	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
-	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
+	painter.drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
+	painter.drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
+	painter.drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
+	painter.drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(2), rRight.top + m_pG->tlu(1));
-	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(2));
+	painter.drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(2), rRight.top + m_pG->tlu(1));
+	painter.drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(2));
 }
 
 /*****************************************************************/
@@ -1389,24 +1399,27 @@ void AP_TopRuler::_xorGuide(bool bClear)
 
 	UT_sint32 h = m_pView->getWindowHeight();
 
+	GR_Painter painter(pG);
+
 	if (m_bGuide)
 	{
 		if (!bClear && (x == m_xGuide))
 			return;		// avoid flicker
 
 		// erase old guide
-		pG->xorLine(m_xGuide, 0, m_xGuide, h);
+		painter.xorLine(m_xGuide, 0, m_xGuide, h);
 		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
-			pG->xorLine(m_xOtherGuide, 0, m_xOtherGuide, h);
+			painter.xorLine(m_xOtherGuide, 0, m_xOtherGuide, h);
 		m_bGuide = false;
 	}
 
 	if (!bClear)
 	{
 		UT_ASSERT(m_bValidMouseClick);
-		pG->xorLine(x, 0, x, h);
+
+		painter.xorLine(x, 0, x, h);
 		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
-			pG->xorLine(xOther, 0, xOther, h);
+			painter.xorLine(xOther, 0, xOther, h);
 
 		// remember this for next time
 		m_xGuide = x;
@@ -1652,15 +1665,17 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 	if(m_pG == NULL)
 		return;
 
+	GR_Painter painter(m_pG);
+
 	UT_sint32 left = prDrag->left + m_pG->tlu(2);
 	UT_sint32 right = left + prDrag->width -m_pG->tlu(4);
 	UT_sint32 top = prDrag->top + m_pG->tlu(2);
 	UT_sint32 bot = top + prDrag->height - m_pG->tlu(4);
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine(left,top,left,bot);
-	m_pG->drawLine(left,bot,right,bot);
-	m_pG->drawLine(right,bot,right,top);
-	m_pG->drawLine(right,top,left,top);
+	painter.drawLine(left,top,left,bot);
+	painter.drawLine(left,bot,right,bot);
+	painter.drawLine(right,bot,right,top);
+	painter.drawLine(right,top,left,top);
 	if(bUp)
 	{
 //
@@ -1671,14 +1686,14 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 		top += m_pG->tlu(1);
 		right -= m_pG->tlu(1);
 		bot -= m_pG->tlu(1);
-		m_pG->drawLine(left,top,left,bot);
-		m_pG->drawLine(right,top,left,top);
+		painter.drawLine(left,top,left,bot);
+		painter.drawLine(right,top,left,top);
 //
 // Fill with Background?? color
 //
 		left += m_pG->tlu(1);
 		top += m_pG->tlu(1);
-		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right-left+m_pG->tlu(1),bot-top+m_pG->tlu(1));
+		painter.fillRect(GR_Graphics::CLR3D_Background,left,top,right-left+m_pG->tlu(1),bot-top+m_pG->tlu(1));
 	}
 }
 
@@ -1830,16 +1845,18 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 		top = m_pG->tlu(s_iFixedHeight) / 4;
 		height =  m_pG->tlu(s_iFixedHeight) / 2;
 		
+		GR_Painter painter(m_pG);
+
 		if(cCell.width >= 0)
 		{	
 			lCell.set(left, top, m_pG->tlu(1), height);
 			cCell.set(left + m_pG->tlu(1), top, right - left - m_pG->tlu(2), height);
 			rCell.set(right - m_pG->tlu(1), top, m_pG->tlu(1), height);
 			
-			m_pG->fillRect(GR_Graphics::CLR3D_Background, lCell);
+			painter.fillRect(GR_Graphics::CLR3D_Background, lCell);
 			if (cCell.width > 0)
-				m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, cCell);
-			m_pG->fillRect(GR_Graphics::CLR3D_Background, rCell);
+				painter.fillRect(GR_Graphics::CLR3D_BevelDown, cCell);
+			painter.fillRect(GR_Graphics::CLR3D_Background, rCell);
 		}
 	}
 }
@@ -3921,33 +3938,36 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
 	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+
+	GR_Painter painter(m_pG);
+
 	if(bRTL)
 	{
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
-		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
-		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		painter.drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		painter.drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
 		
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
+		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		painter.drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
 
 	}
 	else
@@ -3955,36 +3975,36 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(10), l+m_pG->tlu(10), t+m_pG->tlu(10));
-		m_pG->drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(9),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
-		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
-		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(10), l+m_pG->tlu(10), t+m_pG->tlu(10));
+		painter.drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(9),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		painter.drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		painter.drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(1),  t+m_pG->tlu(13));
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(1),  t+m_pG->tlu(13));
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
 		
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
-		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(10), t+m_pG->tlu(14));
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
+		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
+		painter.drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(10), t+m_pG->tlu(14));
+		painter.drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
     }
 }
 
@@ -3998,69 +4018,72 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
 	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+
+	GR_Painter painter(m_pG);
+
 	if(bRTL)
 	{
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(10), l+m_pG->tlu(10), t+m_pG->tlu(10));
-		m_pG->drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(9),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
-		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
-		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(10), l+m_pG->tlu(10), t+m_pG->tlu(10));
+		painter.drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(9),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		painter.drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		painter.drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(1),  t+m_pG->tlu(13));
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(1),  t+m_pG->tlu(13));
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6));
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6));
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6));
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6));
 		
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
-		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(10), t+m_pG->tlu(14));
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
+		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
+		painter.drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(10), t+m_pG->tlu(14));
+		painter.drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
 	}
 	else
 	{
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
-		m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
-		m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		painter.drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+		painter.drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(3),  l+m_pG->tlu(8), t+m_pG->tlu(3) );
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(2),  l+m_pG->tlu(7), t+m_pG->tlu(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
-		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
+		painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
+		painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
-		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
 		
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
+		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		painter.drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
     }
 }
 
@@ -4072,32 +4095,34 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
+	GR_Painter painter(m_pG);
+
 	// fill in the body
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(1),  l+m_pG->tlu(10), t+m_pG->tlu(1) );
-	m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(2),  l+m_pG->tlu(10), t+m_pG->tlu(2) );
-	m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(3),  l+m_pG->tlu(10), t+m_pG->tlu(3) );
-	m_pG->drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
-	m_pG->drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(5),  l+m_pG->tlu(8),  t+m_pG->tlu(5) );
-	m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(6),  l+m_pG->tlu(7),  t+m_pG->tlu(6) );
+	painter.drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(1),  l+m_pG->tlu(10), t+m_pG->tlu(1) );
+	painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(2),  l+m_pG->tlu(10), t+m_pG->tlu(2) );
+	painter.drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(3),  l+m_pG->tlu(10), t+m_pG->tlu(3) );
+	painter.drawLine( l+m_pG->tlu(3),   t+m_pG->tlu(4),  l+m_pG->tlu(9),  t+m_pG->tlu(4) );
+	painter.drawLine( l+m_pG->tlu(4),   t+m_pG->tlu(5),  l+m_pG->tlu(8),  t+m_pG->tlu(5) );
+	painter.drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(6),  l+m_pG->tlu(7),  t+m_pG->tlu(6) );
 
 	// draw 3d highlights
 
 	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(9),  t+m_pG->tlu(1) );
-	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(2),  l+m_pG->tlu(1),  t+m_pG->tlu(4) );
-	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(8) );
+	painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(9),  t+m_pG->tlu(1) );
+	painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(2),  l+m_pG->tlu(1),  t+m_pG->tlu(4) );
+	painter.drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(8) );
 
 	// draw border
 
 	m_pG->setColor3D(clr3dBorder);
-	m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(3),  l+m_pG->tlu(4),  t+m_pG->tlu(9));
-	m_pG->drawLine(	l,     t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(9));
+	painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(3),  l+m_pG->tlu(4),  t+m_pG->tlu(9));
+	painter.drawLine(	l,     t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(9));
 	
-	m_pG->drawLine(	l,     t,    l,    t+m_pG->tlu(3));
-	m_pG->drawLine(	l+m_pG->tlu(10),  t,    l+m_pG->tlu(10), t+m_pG->tlu(3));
-	m_pG->drawLine(	l,     t,    l+m_pG->tlu(10), t);
+	painter.drawLine(	l,     t,    l,    t+m_pG->tlu(3));
+	painter.drawLine(	l+m_pG->tlu(10),  t,    l+m_pG->tlu(10), t+m_pG->tlu(3));
+	painter.drawLine(	l,     t,    l+m_pG->tlu(10), t);
 
 }
 
@@ -4110,6 +4135,8 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 	UT_Rect rect;
 	_getTabToggleRect(&rect);
 
+	GR_Painter painter(m_pG);
+
 	if (!pClipRect || rect.intersectsRect(pClipRect) || bErase)
 	{
 		UT_sint32 left = rect.left;
@@ -4120,15 +4147,15 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 		// first draw the frame
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-		m_pG->drawLine(left,top,right,top);
-		m_pG->drawLine(left,top,left,bot);
-		m_pG->drawLine(left,bot,right,bot);
-		m_pG->drawLine(right,top,right,bot);
+		painter.drawLine(left,top,right,top);
+		painter.drawLine(left,top,left,bot);
+		painter.drawLine(left,bot,right,bot);
+		painter.drawLine(right,top,right,bot);
 		
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
-		m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
-		m_pG->drawLine( left, bot + m_pG->tlu(1), right, bot + m_pG->tlu(1));
+		painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
+		painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
+		painter.drawLine( left, bot + m_pG->tlu(1), right, bot + m_pG->tlu(1));
 
 		// now draw the default tab style
 
@@ -4137,7 +4164,7 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 		// fill first if needed
 
 		if (bErase)
-			m_pG->fillRect(GR_Graphics::CLR3D_Background, rect);
+			painter.fillRect(GR_Graphics::CLR3D_Background, rect);
 
 		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= m_pG->tlu(2);
 		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += m_pG->tlu(2);
@@ -4158,13 +4185,15 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 	UT_sint32 t = rect.top;
 	UT_sint32 r = rect.left + rect.width;
 
+	GR_Painter painter (m_pG);
+
 	// stroke the vertical first
-	m_pG->fillRect(clr3d, l+m_pG->tlu(4),   t,    m_pG->tlu(2),    m_pG->tlu(4));
+	painter.fillRect(clr3d, l+m_pG->tlu(4),   t,    m_pG->tlu(2),    m_pG->tlu(4));
 
 	if (iType == FL_TAB_DECIMAL)
 	{
 		// add the dot
-		m_pG->fillRect(clr3d, l+ m_pG->tlu(7),   t+ m_pG->tlu(1),    m_pG->tlu(2),   m_pG->tlu(2));
+		painter.fillRect(clr3d, l+ m_pG->tlu(7),   t+ m_pG->tlu(1),    m_pG->tlu(2),   m_pG->tlu(2));
 	}
 
 	// figure out the bottom
@@ -4195,7 +4224,7 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 			break;
 	}
 
-	m_pG->fillRect(clr3d, l,     t+ m_pG->tlu(4),  r-l,  m_pG->tlu(2));
+	painter.fillRect(clr3d, l,     t+ m_pG->tlu(4),  r-l,  m_pG->tlu(2));
 }
 
 void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
@@ -4208,38 +4237,40 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	UT_sint32 w = rect.width;
 	UT_sint32 w2 = w/2 - m_pG->tlu(1);
 
+	GR_Painter painter(m_pG);
+
 	// fill in the body
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(1),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(1) );
-	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(2),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(2) );
-	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(3),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(3) );
-	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(4),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(4) );
-	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(3),  l+ m_pG->tlu(2),     t+ m_pG->tlu(8) );
-	m_pG->drawLine(l+ m_pG->tlu(3),   t+ m_pG->tlu(3),  l+ m_pG->tlu(3),     t+ m_pG->tlu(7) );
-	m_pG->drawLine(l+ m_pG->tlu(4),   t+ m_pG->tlu(3),  l+ m_pG->tlu(4),     t+ m_pG->tlu(6) );
-	m_pG->drawLine(l+w- m_pG->tlu(2), t+ m_pG->tlu(3),  l+w- m_pG->tlu(2),   t+ m_pG->tlu(9) );
-	m_pG->drawLine(l+w- m_pG->tlu(3), t+ m_pG->tlu(3),  l+w- m_pG->tlu(3),   t+ m_pG->tlu(8) );
-	m_pG->drawLine(l+w- m_pG->tlu(4), t+ m_pG->tlu(3),  l+w- m_pG->tlu(4),   t+ m_pG->tlu(7) );
-	m_pG->drawLine(l+w- m_pG->tlu(5), t+ m_pG->tlu(3),  l+w- m_pG->tlu(5),   t+ m_pG->tlu(6) );
+	painter.drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(1),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(1) );
+	painter.drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(2),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(2) );
+	painter.drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(3),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(3) );
+	painter.drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(4),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(4) );
+	painter.drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(3),  l+ m_pG->tlu(2),     t+ m_pG->tlu(8) );
+	painter.drawLine(l+ m_pG->tlu(3),   t+ m_pG->tlu(3),  l+ m_pG->tlu(3),     t+ m_pG->tlu(7) );
+	painter.drawLine(l+ m_pG->tlu(4),   t+ m_pG->tlu(3),  l+ m_pG->tlu(4),     t+ m_pG->tlu(6) );
+	painter.drawLine(l+w- m_pG->tlu(2), t+ m_pG->tlu(3),  l+w- m_pG->tlu(2),   t+ m_pG->tlu(9) );
+	painter.drawLine(l+w- m_pG->tlu(3), t+ m_pG->tlu(3),  l+w- m_pG->tlu(3),   t+ m_pG->tlu(8) );
+	painter.drawLine(l+w- m_pG->tlu(4), t+ m_pG->tlu(3),  l+w- m_pG->tlu(4),   t+ m_pG->tlu(7) );
+	painter.drawLine(l+w- m_pG->tlu(5), t+ m_pG->tlu(3),  l+w- m_pG->tlu(5),   t+ m_pG->tlu(6) );
 
 	// draw 3d highlights
 
 	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+w2,    t+m_pG->tlu(1) );
-	m_pG->drawLine(l+w2+m_pG->tlu(1),t+m_pG->tlu(1),  l+w-m_pG->tlu(1),   t+m_pG->tlu(1) );
-	m_pG->drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(1),     t+m_pG->tlu(10));
-	m_pG->drawLine(l+w2+m_pG->tlu(1),t+m_pG->tlu(1),  l+w2+m_pG->tlu(1),  t+m_pG->tlu(5) );
+	painter.drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+w2,    t+m_pG->tlu(1) );
+	painter.drawLine(l+w2+m_pG->tlu(1),t+m_pG->tlu(1),  l+w-m_pG->tlu(1),   t+m_pG->tlu(1) );
+	painter.drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(1),     t+m_pG->tlu(10));
+	painter.drawLine(l+w2+m_pG->tlu(1),t+m_pG->tlu(1),  l+w2+m_pG->tlu(1),  t+m_pG->tlu(5) );
 
 	// draw border
 
 	m_pG->setColor3D(clr3dBorder);
-	m_pG->drawLine(l,     t,    l+w,     t   );
-	m_pG->drawLine(l,     t,    l,       t+ m_pG->tlu(11));
-	m_pG->drawLine(l+w- m_pG->tlu(1), t,    l+w- m_pG->tlu(1),   t+ m_pG->tlu(11));
-	m_pG->drawLine(l,     t+ m_pG->tlu(10), l+ m_pG->tlu(5),     t+ m_pG->tlu(5));
-	m_pG->drawLine(l+w- m_pG->tlu(1), t+ m_pG->tlu(10), l+w- m_pG->tlu(6),   t+ m_pG->tlu(5));
-	m_pG->drawLine(l+ m_pG->tlu(5),   t+ m_pG->tlu(5),  l+w- m_pG->tlu(5),   t+ m_pG->tlu(5));
+	painter.drawLine(l,     t,    l+w,     t   );
+	painter.drawLine(l,     t,    l,       t+ m_pG->tlu(11));
+	painter.drawLine(l+w- m_pG->tlu(1), t,    l+w- m_pG->tlu(1),   t+ m_pG->tlu(11));
+	painter.drawLine(l,     t+ m_pG->tlu(10), l+ m_pG->tlu(5),     t+ m_pG->tlu(5));
+	painter.drawLine(l+w- m_pG->tlu(1), t+ m_pG->tlu(10), l+w- m_pG->tlu(6),   t+ m_pG->tlu(5));
+	painter.drawLine(l+ m_pG->tlu(5),   t+ m_pG->tlu(5),  l+w- m_pG->tlu(5),   t+ m_pG->tlu(5));
 }
 
 /*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )

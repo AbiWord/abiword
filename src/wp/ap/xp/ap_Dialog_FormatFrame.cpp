@@ -44,6 +44,7 @@
 #include "fg_GraphicVector.h"
 #include "ap_Dialog_FormatFrame.h"
 #include "ut_png.h"
+#include "gr_Painter.h"
 
 AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
@@ -697,12 +698,14 @@ AP_FormatFrame_preview::~AP_FormatFrame_preview()
 
 void AP_FormatFrame_preview::draw(void)
 {
+	GR_Painter painter(m_gc);
+	
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
+	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
 	
 	
 	UT_RGBColor tmpCol;
@@ -745,7 +748,7 @@ void AP_FormatFrame_preview::draw(void)
 
 		UT_Rect rec(pageRect.left + border, pageRect.top + border, 
 					pageRect.width - 2*border, pageRect.height - 2*border);
-		m_gc->drawImage(pImg,pageRect.left + border, pageRect.top + border);
+		painter.drawImage(pImg,pageRect.left + border, pageRect.top + border);
 		delete pImg;
 	}
 	else
@@ -755,7 +758,7 @@ void AP_FormatFrame_preview::draw(void)
 		if (pszBGCol && *pszBGCol)
 		{
 			UT_parseColor(pszBGCol, tmpCol);
-			m_gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
+			painter.fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 		}
 	}
 
@@ -766,27 +769,27 @@ void AP_FormatFrame_preview::draw(void)
 	m_gc->setColor(UT_RGBColor(127,127,127));
 	
 	// top left corner
-	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
+	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
 				   pageRect.left + border, pageRect.top + border);
-	m_gc->drawLine(pageRect.left + border, pageRect.top + border  - cornerLength,
+	painter.drawLine(pageRect.left + border, pageRect.top + border  - cornerLength,
 				   pageRect.left + border, pageRect.top + border);
 
 	// top right corner
-	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + border,
+	painter.drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + border,
 				   pageRect.left + pageRect.width - border, pageRect.top + border);
-	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border - cornerLength,
+	painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border - cornerLength,
 				   pageRect.left + pageRect.width - border, pageRect.top + border);
 
 	// bottom left corner
-	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + pageRect.height - border,
+	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + pageRect.height - border,
 				   pageRect.left + border, pageRect.top + pageRect.height - border);
-	m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border + cornerLength,
+	painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border + cornerLength,
 				   pageRect.left + border, pageRect.top + pageRect.height - border);
 
 	// bottom right corner
-	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + pageRect.height - border,
+	painter.drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + pageRect.height - border,
 				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
-	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border + cornerLength,
+	painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border + cornerLength,
 				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 
 //
@@ -805,7 +808,7 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
+		painter.drawLine(pageRect.left + border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + border);
 	}
 
@@ -821,7 +824,7 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
+		painter.drawLine(pageRect.left + border, pageRect.top + border,
 					   pageRect.left + border, pageRect.top + pageRect.height - border);
 	}
 
@@ -837,7 +840,7 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
+		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 	
@@ -853,7 +856,7 @@ void AP_FormatFrame_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
+		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 }

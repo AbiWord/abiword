@@ -29,6 +29,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "gr_Painter.h"
 
 fp_DirectionMarkerRun::fp_DirectionMarkerRun(fl_BlockLayout* pBL,
 					  UT_uint32 iOffsetFirst,
@@ -184,6 +185,8 @@ void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
+	GR_Painter painter(getGraphics());
+
 	if(getWidth())
 	{
 		UT_sint32 xoff = 0, yoff = 0;
@@ -193,7 +196,7 @@ void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 		{
 			xoff -= m_iDrawWidth;
 		}
-		getGraphics()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
+		painter.fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 	}
 }
 
@@ -212,6 +215,8 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
     {
     	return;
     }
+
+	GR_Painter painter(getGraphics());
 
 	UT_ASSERT(pDA->pG == getGraphics());
 
@@ -267,7 +272,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		getGraphics()->fillRect(_getView()->getColorSelBackground(),
+		painter.fillRect(_getView()->getColorSelBackground(),
 						  m_iXoffText,
 						  m_iYoffText,
 						  m_iDrawWidth,
@@ -275,7 +280,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		getGraphics()->fillRect(_getColorPG(),
+		painter.fillRect(_getColorPG(),
 						  m_iXoffText,
 						  m_iYoffText,
 						  m_iDrawWidth,
@@ -287,6 +292,6 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 		// use the hard-coded colour only if not revised
 		if(!getRevisions())
 			getGraphics()->setColor(pView->getColorShowPara());
-        getGraphics()->drawChars(&cM, 0, 1, m_iXoffText, m_iYoffText);
+        painter.drawChars(&cM, 0, 1, m_iXoffText, m_iYoffText);
 	}
 }

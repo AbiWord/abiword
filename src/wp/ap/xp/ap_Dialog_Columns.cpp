@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "fp_PageSize.h"
+#include "gr_Painter.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -347,7 +348,9 @@ void AP_Dialog_Columns::setSpaceAfter(const char * szAfter)
 
 void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns)
 {
-	gc->clearArea(rect.left, rect.top, rect.width, rect.height);
+	GR_Painter painter(gc);
+
+	painter.clearArea(rect.left, rect.top, rect.width, rect.height);
 
 	rect.left += gc->tdu(2);
 	rect.width -= gc->tdu(4);
@@ -393,6 +396,8 @@ AP_Columns_preview::~AP_Columns_preview()
 
 void AP_Columns_preview::draw(void)
 {
+	GR_Painter painter(m_gc);
+
 	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu(getWindowHeight());
 
@@ -400,21 +405,21 @@ void AP_Columns_preview::draw(void)
 	double SpacePercent = m_pColumns->getSpaceAfterPercent();
 	UT_Rect pageRect(m_gc->tlu(5), m_gc->tlu(5), iWidth - m_gc->tlu(10), iHeight - m_gc->tlu(10));
 
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width,
+	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	painter.clearArea(pageRect.left, pageRect.top, pageRect.width,
 					pageRect.height);
 
 	m_gc->setLineWidth(m_gc->tlu(1));
-	m_gc->drawLine(pageRect.left, pageRect.top,
+	painter.drawLine(pageRect.left, pageRect.top,
 		       pageRect.left + pageRect.width, pageRect.top);
-	m_gc->drawLine(pageRect.left, pageRect.top,
+	painter.drawLine(pageRect.left, pageRect.top,
 		       pageRect.left, pageRect.top + pageRect.height);
 
 	m_gc->setLineWidth(m_gc->tlu(3));
-	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + m_gc->tlu(1),
+	painter.drawLine(pageRect.left + pageRect.width, pageRect.top + m_gc->tlu(1),
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
-	m_gc->drawLine(pageRect.left + m_gc->tlu(1), pageRect.top + pageRect.height,
+	painter.drawLine(pageRect.left + m_gc->tlu(1), pageRect.top + pageRect.height,
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
 
@@ -429,6 +434,7 @@ void AP_Columns_preview::draw(void)
 
 void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLineBetween, double maxHeightPercent, double SpacePercent)
 {
+	GR_Painter painter(gc);
 
 	UT_sint32 iHalfColumnGap = gc->tlu (rect.width / gc->tlu(20));
 
@@ -468,7 +474,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 					curskip = 0;
 					y += iSpace;
 			}
-			gc->drawLine(xLeft, y, xRight, y);
+			painter.drawLine(xLeft, y, xRight, y);
 		}
 	}
 
@@ -478,7 +484,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 		for (UT_sint32 j = 2; j <= iColumns; j++)
 		{
 			UT_sint32 x = rect.left + (j-1) * rect.width / iColumns;
-			gc->drawLine(x, y_start, x, y_end);
+			painter.drawLine(x, y_start, x, y_end);
 		}
 	}
 }

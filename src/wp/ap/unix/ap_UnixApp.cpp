@@ -99,6 +99,7 @@
 #include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
 #include "ut_sleep.h"
+#include "gr_Painter.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -1071,7 +1072,8 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 {
     if (pUnixGraphics && pSplashImage)
     {
-		pUnixGraphics->drawImage(pSplashImage, 0, 0);
+		GR_Painter painter (pUnixGraphics);
+		painter.drawImage(pSplashImage, 0, 0);
 
 		// on the first full paint of the image, start a 2 second timer
 		if (!firstExpose)

@@ -171,10 +171,10 @@ void GR_Graphics::_destroyFonts ()
 
 void GR_Graphics::beginPaint ()
 {
-	m_paintCount++;
-
-	if (m_paintCount == 1)
+	if (m_paintCount == 0)
 		_beginPaint ();
+
+	m_paintCount++;
 }
 
 void GR_Graphics::endPaint ()
@@ -671,16 +671,16 @@ void GR_Graphics::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
-void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Graphics::xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	pG->xorLine(x,     y,     x + w, y);
-	pG->xorLine(x + w, y,     x + w, y + h);
-	pG->xorLine(x + w, y + h, x,     y + h);
-	pG->xorLine(x,     y + h, x,     y);
+	xorLine(x,     y,     x + w, y);
+	xorLine(x + w, y,     x + w, y + h);
+	xorLine(x + w, y + h, x,     y + h);
+	xorLine(x,     y + h, x,     y);
 }
 
-void xorRect(GR_Graphics* pG, const UT_Rect& r)
+void GR_Graphics::xorRect(const UT_Rect& r)
 {
-	xorRect(pG, r.left, r.top, r.width, r.height);
+	xorRect(r.left, r.top, r.width, r.height);
 }
 

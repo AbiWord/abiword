@@ -115,6 +115,7 @@
 #include "ut_Script.h"
 #include "ut_path.h"
 #include "ie_mailmerge.h"
+#include "gr_Painter.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -11707,13 +11708,15 @@ Defun(resizeImage)
 		
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
+
+		GR_Painter painter(pG);
 		if (bIsResizing)
 		{
 			UT_DEBUGMSG(("MARCM: Clearing old line\n"));
-			xorRect(pG, pView->getCurImageSel());
+			painter.xorRect(pView->getCurImageSel());
 		}
 		pView->setCurImageSel(r);
-		xorRect(pG, r);
+		painter.xorRect(r);
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 				
 		UT_DEBUGMSG(("MARCM: image display size: (w:%d,h:%d) - total change (w:%d,h:%d)\n",r.width,r.height,xDiff, yDiff));
@@ -11766,7 +11769,9 @@ Defun(endResizeImage)
 		// clear the resizing line
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
-		xorRect(pG, pView->getCurImageSel());
+
+		GR_Painter painter(pG);
+		painter.xorRect(pView->getCurImageSel());
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));

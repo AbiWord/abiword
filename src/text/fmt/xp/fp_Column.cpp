@@ -32,6 +32,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fv_View.h"
+#include "gr_Painter.h"
 
 /*!
   Create container
@@ -658,12 +659,15 @@ void fp_VerticalContainer::_drawBoundaries(dg_DrawArgs* pDA)
         UT_sint32 yoffEnd = pDA->yoff + m_iMaxHeight + getGraphics()->tlu(2);
 
 		UT_RGBColor clrShowPara(127,127,127);
+
+		GR_Painter painter(getGraphics());
+
 		getGraphics()->setColor(clrShowPara);
 
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -1155,15 +1159,17 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 		}
 		UT_sint32 yoffEnd = pDA->yoff + iHeight + getGraphics()->tlu(2);
 
+		GR_Painter painter(getGraphics());
+
 		getGraphics()->setLineProperties(getGraphics()->tlu(1),
 											GR_Graphics::JOIN_MITER,
 											GR_Graphics::CAP_BUTT,
 											GR_Graphics::LINE_SOLID);
 
-       	getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-		getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+       	painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+		painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -1573,10 +1579,12 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 	m_ixoffEnd = pDA->xoff + getWidth() + getGraphics()->tlu(1);
 	m_iyoffEnd = pDA->yoff + getMaxHeight() - getGraphics()->tlu(1);
 
-	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
-	getGraphics()->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
-	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
-	getGraphics()->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+	GR_Painter painter(getGraphics());
+
+	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	painter.drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	painter.drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
     m_bHdrFtrBoxDrawn = true;
 }
@@ -1595,10 +1603,13 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 //
 // Paint over the previous lines with the page color
 //
-	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
-	getGraphics()->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
-	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
-	getGraphics()->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+
+	GR_Painter painter(getGraphics());
+
+	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	painter.drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	painter.drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	m_bHdrFtrBoxDrawn = false;
 }
