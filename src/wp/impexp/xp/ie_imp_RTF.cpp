@@ -2036,11 +2036,19 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		return m_pDocument->appendStrux(PTX_Section, propsArray);
 	else
 	{
-		bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Section);
-		m_dposPaste++;
+		// Add a block before the section so there's something content
+		// can be inserted into.
+		bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
 		if (bSuccess)
-			bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
-												   propsArray,NULL,PTX_Section);
+		{
+			bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Section);
+			if (bSuccess)
+			{
+				m_dposPaste++;
+				bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
+													   propsArray,NULL,PTX_Section);
+			}
+		}
 		return bSuccess;
 	}
 }
