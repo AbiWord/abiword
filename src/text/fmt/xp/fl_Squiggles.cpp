@@ -62,6 +62,12 @@ information of the offset where squiggles from the second block should
 be joined onto the first block. The word at the merge point is made
 the pending word.
 
+\fixme There's one known buglet: typing "gref' " correctly squiggles
+       the word when typing ' since it's a word separator. However,
+       deleting the s in "gref's" leaves gref unsquiggled because the
+       word gref was not pending when the ' changed from a word
+       character to a word delimiter. (hard to explain - just try it)
+
 */
 
 
@@ -225,22 +231,33 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 	{
 		m_vecSquiggles.addItem(pPOB);
 	}
-	// Handle extending of existing squiggles. This happens because '
-	// changes from being a word separator to not being one when
-	// characters are added after it. So while typing "gest'" >gest<
-	// will be squiggled, and after "gest's" we get to squiggle the
-	// entire >gest's<.
-	if (iIndex > 0 && pPOB->getOffset() == getNth(iIndex-1)->getOffset())
+	// Handle extension / merging of squiggles
+	if (iIndex > 0)
 	{
-		getNth(iIndex-1)->setLength(pPOB->getLength());
-		_deleteNth(iIndex);
+		fl_PartOfBlock* pPrev = getNth(iIndex-1);
+
+		if (pPOB->getOffset() == pPrev->getOffset())
+		{
+			// Handle extension of existing squiggles. This happens
+			// because ' changes from being a word separator to not
+			// being one when characters are added after it. So while
+			// typing "gest'" >gest< will be squiggled, and after
+			// "gest's" the entire >gest's< is squiggled.
+			pPrev->setLength(pPOB->getLength());
+			_deleteNth(iIndex--);
+		}
+		else if (pPOB->getOffset() == pPrev->getOffset() + pPrev->getLength())
+		{
+			// Handle merging of two squiggles - this happens e.g. in
+			// overwrite mode when two misspelled words are joined by
+			// typing a character ' between them.
+			pPrev->setLength(pPrev->getLength() + pPOB->getLength());
+			_deleteNth(iIndex--);
+		}
 	}
 #if UT_DEBUG
 	UT_sint32 iSquiggles = _getCount();
 	if (iSquiggles <= 1) return;
-
-	// Adjust iIndex if this was an added extension
-	if (iSquiggles == iIndex) iIndex--;
 
 	if (iIndex > 0)
 	{

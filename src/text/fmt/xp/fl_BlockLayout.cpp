@@ -2073,7 +2073,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 
 	UT_uint32 iFirst = iOffset;
 	UT_uint32 iAbs = (UT_uint32) ((chg >= 0) ? chg : -chg);
-	UT_uint32 iLen = ((chg > 0) ? iAbs : 0);
+	UT_sint32 iLen = ((chg > 0) ? iAbs : 0);
 
 	// We expand this region outward until we get a word delimiter on
 	// each side.
@@ -2128,6 +2128,20 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		// Deletion or update - everything's already set up, so just
 		// fall through
 		UT_ASSERT(chg <= 0);
+	}
+
+	// Skip any word delimiters; handling the case where a word
+	// is split by space - without this check, the space would
+	// become part of the pending word.
+	UT_uint32 eor = pgb.getLength();
+	while (iLen > 0 && iFirst < eor)
+	{
+		UT_UCSChar currentChar = pBlockText[iFirst];
+		UT_UCSChar followChar = (((iFirst + 1) < eor) ?
+								 pBlockText[iFirst + + 1]  : UCS_UNKPUNK);
+		if (!UT_isWordDelimiter(currentChar, followChar)) break;
+		iFirst++;
+		iLen--;
 	}
 
 	// Is there a pending word left? If so, record the details.
