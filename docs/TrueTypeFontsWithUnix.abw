@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
-<abiword xmlns:awml="http://www.abisource.com/awml.dtd" version="unnumbered" fileformat="1.0">
+<abiword xmlns:awml="http://www.abisource.com/awml.dtd" version="tinderbox_bidi_UTC:11-10-2001:02:37:42" fileformat="1.0">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -10,56 +10,90 @@
 
 <pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="inch" page-scale="1.000000"/>
 <section>
+<p props="text-align:center"><c props="lang:en-US"></c></p>
 <p props="text-align:center"></p>
-<p props="text-align:center"></p>
-<p props="text-align:center"><c props="lang:en-US; font-weight:bold; font-size:18pt">Using TrueType Fonts with AbiWord under Unix</c></p>
+<p props="text-align:center"><c props="lang:en-US; font-size:18pt; font-weight:bold">Using TrueType Fonts with AbiWord under Unix</c></p>
 <p></p>
 <p props="text-align:center"><c props="font-size:14pt">Tomas Frydrych &lt;tomas@frydrych.uklinux.net&gt;</c></p>
 <p></p>
-<p></p>
+<p>This file contains two sections, one dealing with installation of TrueType fonts for use with AbiWord, and the other with the “AbiWord messes up fonts for other applications” problem.</p>
+<p><c></c></p>
+<p><c props="font-weight:bold; font-size:14pt">TrueType Installation Guide</c></p>
 <p>This is a step-by-step guide to how to set up TrueType fonts for use with AbiWord under Unix. The locale assumed by the following guide is cs_CZ, but the procedure is exactly same for any other locale, you just need to use encoding appropriate to you (the only exception are locales using encoding ISO-8859-1, in which case you can skip steps 4 and 5, and install your fonts directly into the AbiWord fonts directory).</p>
-<p><c></c></p>
-<p><c></c>The command prompt will be indicated by ‘#’, and all commands will be in bold type.</p>
-<p><c></c></p>
+<p></p>
+<p>The command prompt will be indicated by ‘#’, and all commands will be in bold type.</p>
+<p></p>
 <p><c props="font-weight:bold">(1)</c> Your X-server must support TTF fonts, and must be configured to do so. If it does not, you should consult your distribution documentation on how to set it up.</p>
-<p><c></c></p>
+<p></p>
 <p><c props="font-weight:bold">(2)</c> Change into the <c props="font-style:italic">AbiSuite</c> directory, usually, <c props="font-style:italic">/usr/share/AbiSuite</c></p>
 <p><c props="font-weight:bold"># cd /usr/share/AbiSuite</c></p>
-<p><c></c></p>
+<p></p>
 <p><c props="font-weight:bold">(3)</c> This directory contains a number of subdirectories, one of which is called <c props="font-style:italic">fonts</c> -- change into it.</p>
 <p><c props="font-weight:bold"># cd fonts</c></p>
-<p><c></c></p>
+<p></p>
 <p><c props="font-weight:bold">(4)</c> Before proceeding any further, examine your LANG variable:</p>
-<p><c props="font-weight:bold"># echo $LANG</c><c props="font-weight:normal"></c></p>
+<p><c props="font-weight:bold"># echo $LANG</c></p>
 <p><c props="font-weight:normal">You should get back something like </c><c props="font-style:italic; font-weight:normal">cs_CZ.ISO-8859-2. </c><c props="font-style:normal; font-weight:normal">If you do not, you will need to set your LANG variable before running AbiWord, you can do that by</c></p>
 <p><c props="font-weight:bold; font-style:normal"># LANG=cs_CZ.ISO-8859-2</c></p>
-<p><c props="font-style:normal; font-weight:bold"># export LANG</c><c props="font-weight:normal; font-style:normal"></c></p>
+<p><c props="font-style:normal; font-weight:bold"># export LANG</c></p>
 <p><c props="font-weight:normal; font-style:normal">Please note that for things to work correctly, </c><c props="font-style:italic; font-weight:bold">the LANG variable must explicitly specify the encoding your locale uses</c><c props="font-weight:normal; font-style:normal">, i.e., there has to be the part after the dot, in the example </c><c props="font-style:italic; font-weight:normal">ISO-8859-2</c></p>
-<p><c props="font-style:normal; font-weight:normal">(the exact encoding will, of course, depend your locale).</c></p>
-<p><c props="font-style:normal; font-weight:normal"></c></p>
+<p><c props="font-style:normal; font-weight:normal">(the exact encoding will, of course, depend on your locale).</c></p>
+<p></p>
 <p><c props="font-weight:bold; font-style:normal">(5)</c><c props="font-style:normal; font-weight:normal"> In the fonts directory create a subdirectory with the name identical to the encoding part of the LANG variable, i.e., if you set your LANG to </c><c props="font-style:italic; font-weight:normal">cs_CZ.ISO-8859-2</c><c props="font-style:normal; font-weight:normal">, you need to create directory called ISO-8859-2.</c></p>
 <p><c props="font-weight:bold; font-style:normal"># mkdir ISO-8859-2</c></p>
 <p><c props="font-weight:normal; font-style:normal">(Please note carefully, the name of the directory has to be </c><c props="font-style:italic; font-weight:bold">exactly</c><c props="font-weight:normal; font-style:normal"> the same as the encoding part of LANG, including capitalisation, etc.)</c></p>
 <p><c props="font-weight:bold; font-style:normal">(6)</c><c props="font-weight:normal; font-style:normal"> Change into this new directory. All fonts you want to use with AbiWord have to be copied or symbolically linked into here. In my case they are actually located on a Windows partition of my drive which is mounted under the directory /windows, so for the font Times New Roman I do</c></p>
 <p><c props="font-weight:bold; font-style:normal"># cd ISO-8859-2</c></p>
-<p><c props="font-weight:bold; font-style:normal"># ln -s /windows/windows/fonts/times.ttf times.ttf</c><c props="font-weight:normal; font-style:normal"></c></p>
+<p><c props="font-weight:bold; font-style:normal"># ln -s /windows/windows/fonts/times.ttf times.ttf</c></p>
 <p><c props="font-weight:normal; font-style:normal">(You have to do this for all fonts and all variants of each font you want use (i.e., timesb.ttf for the bold Times New Roman, etc.)</c></p>
-<p><c props="font-weight:normal; font-style:normal"></c></p>
+<p></p>
 <p><c props="font-weight:bold; font-style:normal">(7)</c><c props="font-weight:normal; font-style:normal"> Now you need to set up the </c><c props="font-style:italic; font-weight:normal">fonts.scale</c><c props="font-weight:normal; font-style:normal"> and </c><c props="font-style:italic; font-weight:normal">fonts.dir</c><c props="font-weight:normal; font-style:normal"> files for this directory. You will need the programme ttmkfdir for that, and you will find details of how to do that in the programme’s documentation and your distribution’s documentation (this has to do with the X server, not AbiWord). Once these files have been generated, you should open them in a plain text editor. You will see that for each font there are multiple entries that differ only in the encoding specified at the very end of each line. Delete all lines that do not have the encoding of your locale, i.e., in our case delete all lines that do not end in </c><c props="font-style:italic; font-weight:normal">iso8859-2 </c><c props="font-style:normal; font-weight:normal">(note that there is a slight difference between the look of your LANG encoding [</c><c props="font-style:italic; font-weight:normal">ISO-8859-2</c><c props="font-style:normal; font-weight:normal">] and the encoding format used by the fonts.dir and fonts.scale files [</c><c props="font-style:italic; font-weight:normal">iso8859-2</c><c props="font-style:normal; font-weight:normal">]; this is nothing to worry about).</c></p>
-<p><c props="font-style:normal; font-weight:normal"></c></p>
+<p></p>
 <p><c props="font-weight:bold; font-style:normal">(8)</c><c props="font-weight:normal; font-style:normal"> Now change to the </c><c props="font-style:italic; font-weight:normal">bin </c><c props="font-style:normal; font-weight:normal">subdirectory of the </c><c props="font-style:italic; font-weight:normal">AbiSuite</c><c props="font-style:normal; font-weight:normal"> directory, and execute the following command:</c></p>
-<p><c props="font-weight:bold; font-style:normal"># cd /usr/share/AbiSuite/bin</c><c props="font-weight:normal; font-style:normal"></c></p>
-<p><c props="font-weight:bold; font-style:normal"># ./ttftool -e print</c><c props="font-weight:normal; font-style:normal"></c></p>
+<p><c props="font-weight:bold; font-style:normal"># cd /usr/share/AbiSuite/bin</c></p>
+<p><c props="font-weight:bold; font-style:normal"># ./ttftool -e print</c></p>
 <p><c props="font-weight:normal; font-style:normal">You will get back a list of encodings known to the ttftool programme; check if your encoding is there (the encoding of your LANG and the encoding used by ttftool must correspond exactly, i.e., in our case we are looking for </c><c props="font-style:italic; font-weight:normal">ISO-8859-2</c><c props="font-weight:normal; font-style:normal">). </c><c props="font-weight:bold; font-style:normal">If your encoding is not there, all is not lost. Drop me an email, and I will add it to the programme, this is very simple to do.</c><c props="font-weight:normal; font-style:normal"> If your encoding is there, then proceed to the next step.</c></p>
-<p><c props="font-weight:normal; font-style:normal"></c></p>
+<p></p>
 <p><c props="font-weight:bold; font-style:normal">(9)</c><c props="font-weight:normal; font-style:normal"> Now execute the following command, supplying the directory and encoding that are appropriate for your set up</c></p>
-<p><c props="font-weight:bold; font-style:normal"># ./ttfadmin.sh /usr/share/AbiSuite/fonts/ISO-8859-2 ISO-8859-2</c><c props="font-weight:normal; font-style:normal"></c></p>
+<p><c props="font-weight:bold; font-style:normal"># ./ttfadmin.sh /usr/share/AbiSuite/fonts/ISO-8859-2 ISO-8859-2</c></p>
 <p><c props="font-weight:normal; font-style:normal">The script </c><c props="font-style:italic; font-weight:normal">ttfadmin.sh </c><c props="font-weight:normal; font-style:normal">will call the programme </c><c props="font-style:italic; font-weight:normal">ttftool </c><c props="font-style:normal; font-weight:normal">for each ttf font in your directory; there should not be any errors, providing you have the necessary permissions for the directory (but since you just created it, you should).</c></p>
-<p><c props="font-style:normal; font-weight:normal"></c></p>
+<p></p>
 <p><c props="font-weight:bold; font-style:normal">(10)</c><c props="font-style:normal; font-weight:normal"> Switch to your locale-specific font directory and have a look at the contents</c></p>
 <p><c props="font-weight:bold; font-style:normal"># cd /usr/share/AbiSuite/fonts/ISO-8859-2</c></p>
-<p><c props="font-weight:bold; font-style:normal"># ls</c><c props="font-weight:normal; font-style:normal"></c></p>
+<p><c props="font-weight:bold; font-style:normal"># ls</c></p>
 <p><c props="font-weight:normal; font-style:normal">You should see two new files for each font file, one with extension .afm and one with extension .u2g. That’s it. You are done. Start AbiWord, not forgetting to set the LANG variable beforehand if necessary.</c></p>
+<p></p>
+<p></p>
+<p><c props="font-weight:bold; font-size:14pt">“Abiword Messes Up My Fonts”  Problem</c></p>
+<p><c props="font-weight:bold">The symptoms:</c> when I start up application XXX while AbiWord is running, its fonts go pearshape; (in the more extreme case, e.g. RedHat setup, this happens even when AbiWord is not running).</p>
+<p><c></c></p>
+<p><c props="font-weight:bold">The cause:</c> there are Type1 (pfa/pfb) fonts on your system that have a name identical to the AbiWord fonts, and the application XXX is using the AbiWord fonts instead of the fonts it used to use.</p>
+<p><c></c></p>
+<p><c props="font-weight:bold">The solution</c><c props="font-weight:normal"></c></p>
+<p><c props="font-weight:normal">If you do not want the other applications to use AbiWord fonts, you have to make AbiWord use the fonts that are already available on your system; AbiWord can handle  Type1 and TrueType fonts. Here come the step by step instructions:</c></p>
+<p><c props="font-weight:normal"></c></p>
+<p><c props="font-weight:normal">(1) Change to the AW font directory, usually </c><c props="font-style:italic; font-weight:normal">/usr/share/AbiSuite/fonts</c><c props="font-weight:normal"> or </c><c props="font-style:italic; font-weight:normal">/usr/local/AbiSuite/fonts</c><c props="font-weight:normal">.</c></p>
+<p><c props="font-weight:bold"></c></p>
+<p><c props="font-weight:normal">(2) Open the file </c><c props="font-style:italic; font-weight:normal">fonts.dir </c><c props="font-style:normal; font-weight:normal">in your favorite text editor.</c></p>
+<p><c props="font-style:normal; font-weight:normal"></c></p>
+<p><c props="font-style:normal; font-weight:normal">(3) Identify the offending font(s). Say, for instance, that you have the nice MS Arial font installed, but AbiWord is causing your applications to use some other Arial you think is much uglier. In that case locate the line following lines:</c></p>
+<p><c props="font-style:normal; font-weight:normal"></c></p>
+<p><c props="font-weight:bold; font-style:normal">n019003l.pfa    -AbiSource-Arial-regular-r-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal">n019004l.pfa    -AbiSource-Arial-bold-r-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal">n019023l.pfa    -AbiSource-Arial-regular-i-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal">n019024l.pfa    -AbiSource-Arial-bold-i-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal"></c></p>
+<p><c props="font-style:normal; font-weight:normal">and change them to whatever is appropriate for your font (since you have the font installed somewhere, there is also a </c><c props="font-style:italic; font-weight:normal">fonts.dir </c><c props="font-style:normal; font-weight:normal">file in that directory with all the information you need); in the Arial case should be:</c></p>
+<p><c props="font-style:normal; font-weight:normal"></c></p>
+<p><c props="font-weight:bold; font-style:normal">arial.ttf      -monotype-Arial-medium-r-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal">arialb.ttf    -monotype-Arial-bold-r-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal">ariali.ttf     -monotype-Arial-medium-i-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal">arialbi.ttf   -monotype-Arial-bold-i-normal--0-0-0-0-p-0-iso8859-1</c></p>
+<p><c props="font-weight:bold; font-style:normal"></c></p>
+<p><c props="font-weight:normal; font-style:normal">(4) Create symbolic links called </c><c props="font-style:italic; font-weight:normal">arial.ttf</c><c props="font-weight:normal; font-style:normal">, </c><c props="font-style:italic; font-weight:normal">arialb.ttf</c><c props="font-weight:normal; font-style:normal">, etc., in the AbiWord fonts directory, pointing to where you have the actual font files. If the font in question is a Type1 (pfa/pfb) font, you also have to create a symbolic link to the font’s </c><c props="font-style:italic; font-weight:normal">afm</c><c props="font-weight:normal; font-style:normal"> file, which should be located in the same directory as the font itself; if the font in question is a TrueType font, as in the example above, you have to follow the instructions in the first section of this document.</c></p>
 <p><c props="font-weight:normal; font-style:normal"></c></p>
+<p><c props="font-weight:normal; font-style:normal">(5) You can do this for all the fonts in the AbiWord </c><c props="font-style:italic; font-weight:normal">fonts.dir</c><c props="font-weight:normal; font-style:normal"> file, although replacing the symbol fonts might create problems with the bulleted lists in AbiWord. Also, note that if AbiWord cannot find a font requested by a document, it will try to use </c><c props="font-weight:bold; font-style:italic">Times New Roman</c><c props="font-weight:normal; font-style:normal"> instead, and if it cannot find it either, it will take the first font it finds. So, if you get rid off the </c><c props="font-weight:bold; font-style:italic">Times New Roman</c><c props="font-style:normal; font-weight:bold"> </c><c props="font-weight:normal; font-style:normal">entry, make sure that the very first font listed in </c><c props="font-style:normal; font-weight:normal">the </c><c props="font-style:italic; font-weight:normal">fonts.dir</c><c props="font-style:normal; font-weight:normal"> file is some sensible font (e.g., not a symbol font).</c></p>
+<p><c props="font-style:normal; font-weight:normal"></c></p>
+<p><c props="font-style:normal; font-weight:normal">(6) If you are not using any of the original fonts, i.e., all the fonts listed in your </c><c props="font-style:italic; font-weight:normal">fonts.dir</c><c props="font-style:normal; font-weight:normal"> are physically located somewhere else then in the AbiWord font directory, and are already accessible to your applications through X, it is not necessary or desirable to modify the X font path; to stop AbiWord from doing so, go to </c><c props="font-style:italic; font-weight:normal">Tools-&gt;Preferences</c><c props="font-style:normal; font-weight:normal"> and on the </c><c props="font-style:italic; font-weight:normal">Preference Schemes</c><c props="font-style:normal; font-weight:normal"> tab clear the </c><c props="font-weight:bold; font-style:italic">Modify Unix Font Path</c><c props="font-style:normal; font-weight:normal"> checkbox.</c></p>
 </section>
 </abiword>

@@ -87,6 +87,7 @@ tt {  color: #000099}
 					<LI><A HREF="#2.13">Is it possible to import KWord documents?</A>
 					<LI><A HREF="#2.14">Is it possible to compile AbiWord on Windows?</A>
 			                <LI><A href="#2.15">Unix Font Warning</A></LI>
+			                <LI><A href="#2.16">AbiWord Messes up Fonts on my Unix Machine</A></LI>
 				</UL>
 				<LI><A HREF="#3"><B>Remarks</B></A>
 				<UL>
@@ -265,6 +266,10 @@ tt {  color: #000099}
 			add the AbiWord font folder to the font server's configuration, please see your distribution's documentation. Once you do, you can 
 			turn the warning off by clearing the <b>Show Unix Font Warning</b> check box on the <i>Preferences Schemes</i> tab of the <i>Preferences</i>
 			dialog. You can stop AbiWord from attempting to modify your font path by clearing the <b>Modify Unix Font Path</b>.
+	                <p><b><A name="2.16">AbiWord Messes up Fonts on my Unix Machine</A></b><br>
+			This happens because your other applications start using AbiWord fonts instead of the fonts they used
+			to use. Please see the document <i>TrueTypeFontsWithUnix.abw</i> in the <i>doc</i> directory of the AbiWord
+			tree for detailed instructions on how to deal with this.
 			<P>
 <HR ALIGN="CENTER">
 
