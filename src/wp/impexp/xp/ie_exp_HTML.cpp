@@ -212,7 +212,6 @@ protected:
 	bool				m_bInBlock;
 	bool				m_bInSpan;
 	bool				m_bNextIsSpace;
-	bool				m_bInList;
 	bool				m_bWroteText;
 	bool				m_bFirstWrite;
 	const PP_AttrProp*	m_pAP_Span;
@@ -221,6 +220,8 @@ protected:
   
 	UT_uint16		m_iBlockType;	// BT_*
 	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
+	UT_uint16		m_iPrevListDepth;
+	UT_Stack		m_utsListType;
         UT_uint16               m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
 };
@@ -270,6 +271,7 @@ static bool is_CSS(const char* property)
 										"font-variant", "font-weight",
 										"height", "margin-bottom", 
 										"margin-left", "margin-right",
+										"margin-top",
 										"orphans", "text-align", 
 										"text-decoration", "text-indent",
 										"widows", "width"};
@@ -372,122 +374,198 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
-		//const XML_Char * szLevel;
+		const XML_Char * szDefault = "Normal";
+		const XML_Char * szLevel;
 		const XML_Char * szListID;
+		const XML_Char * szStyleType;
+		UT_uint16 *popped, *pushed;
 
 		if (
-		   (pAP->getAttribute("style", szValue))
+		   (pAP->getAttribute("style", szValue) ||
+		    pAP->getAttribute("listid", szListID))
 		   )
 		{
-			char * value = removeWhiteSpace((char*) szValue);
 			if(pAP->getAttribute("listid", szListID) &&
 			   0 != UT_strcmp(szListID, "0"))
 			{	// we're in a list
-				if(!m_bInList)
+				if(!pAP->getAttribute("style", szValue)) szValue = szDefault;
+				pAP->getAttribute("level", szLevel);
+				m_iListDepth = atoi((const char*) szLevel);
+				if(!pAP->getProperty("list-style", szStyleType))
 				{
-					if(0 != UT_strcmp(value, "BulletList"))
+					szStyleType = szValue;
+				}
+				if(m_iListDepth > m_iPrevListDepth)
+				{
+					if(UT_strcmp((const char*) szStyleType, "Bullet List") != 0)
 					{
 						m_iBlockType = BT_NUMBEREDLIST;
-						m_pie->write("<ol class=\"");
+						m_pie->write("\n<ol class=\"");
 					}
 					else 
 					{
 						m_iBlockType = BT_BULLETLIST;
-						m_pie->write("<ul class=\"");
+						m_pie->write("\n<ul class=\"");
 					}
-					_outputInheritanceLine((const char*) value);
+					_outputInheritanceLine((const char*) szValue);
 					m_pie->write("\">\n");
-					m_bInList = true;
+					pushed = new UT_uint16(m_iBlockType);
+					m_utsListType.push(pushed);
+				}
+				else if(m_iPrevListDepth > 0 && (
+					(m_iBlockType == BT_BULLETLIST && (
+					 UT_strcmp((const char*) szStyleType, 
+					 	"Numbered List") == 0 ||
+					 _inherits((const char*) szStyleType, "NumberedList"))) ||
+					(m_iBlockType == BT_NUMBEREDLIST && (
+					 UT_strcmp((const char*) szStyleType, 
+					 	"Bullet List") == 0 ||
+					 _inherits((const char*) szStyleType, "BulletList"))) ) )
+				{						/* list type switched */
+					m_pie->write("</li>\n");
+					if(m_iBlockType == BT_NUMBEREDLIST)
+					{
+						m_iBlockType = BT_BULLETLIST;
+						m_pie->write("</ol>\n<ul class=\"");
+					}
+					else
+					{
+						m_iBlockType = BT_NUMBEREDLIST;
+						m_pie->write("</ul>\n<ol class=\"");
+					}
+					_outputInheritanceLine((const char*) szValue);
+					m_pie->write("\">\n");
+					m_utsListType.pop((void**) &popped);
+					DELETEP(popped);
+					pushed = new UT_uint16(m_iBlockType);
+					m_utsListType.push(pushed);
 				}
 				else
 				{
 					m_pie->write("</li>\n");
+					for(UT_uint16 i = 0; i < m_iPrevListDepth - m_iListDepth;
+						i++)
+					{
+						if(m_utsListType.pop((void**) &popped) &&
+							*popped == BT_NUMBEREDLIST)
+						{
+							m_pie->write("</ol>\n");
+						}
+						else
+						{
+							m_pie->write("</ul>\n");
+						}
+						DELETEP(popped);
+						m_pie->write("</li>\n");
+					}
 				}
 				m_pie->write("<li");
+				m_iPrevListDepth = m_iListDepth;
 				wasWritten = true;	
 			}
 			else 
 			{
-				if(m_bInList)
+				for(UT_uint16 i = 0; i < m_iPrevListDepth; i++)
 				{	// we're no longer in a list, close it
-					if(m_iBlockType == BT_NUMBEREDLIST)
+					if(m_utsListType.pop((void**) &popped) &&
+						*popped == BT_NUMBEREDLIST)
+					{
 						m_pie->write("</li>\n</ol>\n");
-					else if(m_iBlockType == BT_BULLETLIST)
+					}
+					else
+					{
 						m_pie->write("</li>\n</ul>\n");
-					m_bInList = false;
+					}
+					DELETEP(popped);
 				}
+				m_iPrevListDepth = m_iListDepth = 0;
 
-				if(0 == UT_strcmp(value, "Heading1") ||
-					_inherits((const char*) value, "Heading1")) 
+				if(UT_strcmp((const char*) szValue, "Heading 1") == 0 ||
+					_inherits((const char*) szValue, "Heading1")) 
 				{
 					// <p style="Heading 1"> ...
 
 					m_iBlockType = BT_HEADING1;
 					m_pie->write("\n<h1");
-					if(_inherits((const char*) value, "Heading1"))
+					if(_inherits((const char*) szValue, "Heading1"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) value);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(value, "Heading2") ||
-					_inherits((const char*) value, "Heading2")) 
+				else if(UT_strcmp((const char*) szValue, "Heading 2") == 0 ||
+					_inherits((const char*) szValue, "Heading2")) 
 				{
 					// <p style="Heading 2"> ...
 
 					m_iBlockType = BT_HEADING2;
 					m_pie->write("\n<h2");
-					if(_inherits((const char*) value, "Heading2"))
+					if(_inherits((const char*) szValue, "Heading2"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) value);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(value, "Heading3") ||
-					_inherits((const char*) value, "Heading3")) 
+				else if(UT_strcmp((const char*) szValue, "Heading 3") == 0 ||
+					_inherits((const char*) szValue, "Heading3")) 
 				{
 					// <p style="Heading 3"> ...
 
 					m_iBlockType = BT_HEADING3;
 					m_pie->write("\n<h3");
-					if(_inherits((const char*) value, "Heading3"))
+					if(_inherits((const char*) szValue, "Heading3"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) value);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(value, "BlockText") || 
-					_inherits((const char*) value, "BlockText"))
+				else if(UT_strcmp((const char*) szValue, "Block Text") == 0 ||
+					_inherits((const char*) szValue, "BlockText"))
 				{
 					// <p style="Block Text"> ...
 
 					m_iBlockType = BT_BLOCKTEXT;
 					m_pie->write("<blockquote");
-					if(_inherits((const char*) value, "BlockText"))
+					if(_inherits((const char*) szValue, "BlockText"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) value);
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(value, "PlainText") ||
-					_inherits((const char*) value, "PlainText"))
+				else if(UT_strcmp((const char*) szValue, "Plain Text") == 0 ||
+					_inherits((const char*) szValue, "PlainText"))
 				{
 					// <p style="Plain Text"> ...
 
 					m_iBlockType = BT_PLAINTEXT;
 					m_pie->write("<pre");
-					if(_inherits((const char*) value, "PlainText"))
+					if(_inherits((const char*) szValue, "PlainText"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) value);
+						_outputInheritanceLine((const char*) szValue);
+						m_pie->write("\"");
+					}
+					wasWritten = true;
+				}
+				else if(UT_strcmp((const char*) szValue, "Normal") == 0 ||
+					_inherits((const char*) szValue, "Normal"))
+				{
+					// <p style="Normal"> ...
+
+					m_iBlockType = BT_NORMAL;
+					m_pie->write("<p");
+					if(_inherits((const char*) szValue, "Normal"))
+					{
+						m_pie->write(" class=\"");
+						_outputInheritanceLine((const char*) szValue);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
@@ -498,23 +576,29 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 			        m_iBlockType = BT_NORMAL;
 			      	m_pie->write("<p class=\"");
-					m_pie->write(value);
+					_outputInheritanceLine((const char*) szValue);
 					m_pie->write("\"");
 					wasWritten = true;
 				}	
 			}
-			FREEP(value);
 		}
 		else 
 		{
-			if(m_bInList)
+			for(UT_uint16 i = 0; i < m_iPrevListDepth; i++)
 			{	// we're no longer in a list, close it
-				if(m_iBlockType == BT_NUMBEREDLIST)
+				if(m_utsListType.pop((void**) &popped) &&
+					*popped == BT_NUMBEREDLIST)
+				{
 					m_pie->write("</li>\n</ol>\n");
-				else if(m_iBlockType == BT_BULLETLIST)
+				}
+				else
+				{
 					m_pie->write("</li>\n</ul>\n");
-				m_bInList = false;
+				}
+				DELETEP(popped);
 			}
+			m_iPrevListDepth = m_iListDepth = 0;
+
 			// <p> with no style attribute ...
 
 			m_iBlockType = BT_NORMAL;
@@ -958,6 +1042,8 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			m_pDocument->getStyle((char*) pStyle, &s);
 		}
 
+		m_bInSpan = true;
+
 		if (span)
 		{
 			m_pie->write("\"");
@@ -975,13 +1061,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			_outputInheritanceLine(szStyle);
 			m_pie->write("\">");
 		}
-		/* else
-		{
-			m_pie->write("<span>");
-		} */
+		else
+		{	/* a span was opened which didn't contain any information
+			to be exported to html */
+			m_bInSpan = false;
+		}
 		FREEP(szStyle);
 		
-		m_bInSpan = true;
 		m_pAP_Span = pAP;
 	}
 }
@@ -1186,6 +1272,10 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
+/*!	This function returns true if the name of the PD_Style which style is based
+	on, without whitespace, is the same as `from`, and otherwise returns false.
+ */
+
 bool s_HTML_Listener::_inherits(const char* style, const char* from)
 {
 	bool bret = false;
@@ -1236,7 +1326,9 @@ void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 		}
 	}
 
+	ClassName = removeWhiteSpace(ClassName);
 	m_pie->write(ClassName);
+	FREEP(ClassName);
 }
 
 void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
@@ -1309,19 +1401,74 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
 	m_pie->write("<head>\n");
 #if 0
-	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html\"; charset=\"");
+	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html\" charset=\"");
 	// TODO Use charset of document instead of charset of machine.
 	m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	m_pie->write("\" />\n");
 #else
 	// we always encode as UTF-8
-	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html\"; charset=\"UTF-8\" />\n");
+	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html\" charset=\"UTF-8\" />\n");
 #endif
 	m_pie->write("<title>");
 	m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!--\n");
+	m_pie->write("body\n{\n\t");
+	if(bHaveProp && pAP)
+	{							// global page styles refer to the <body> tag
+		PD_Style *pStyle = NULL;
+		m_pDocument->getStyle("Normal", &pStyle);
+		if(pStyle)				// Add normal styles to body styles for
+		{						// global effect
+			const XML_Char *szName, *szValue;
+			for(UT_uint16 i = 0; i < pStyle->getPropertyCount(); i++)
+			{
+				pStyle->getNthProperty(i, szName, szValue);
+				if(!is_CSS(static_cast<const char*>(szName)))
+					continue;
+
+				m_pie->write(szName);
+				m_pie->write(": ");
+				m_pie->write(szValue);
+				m_pie->write(";\n\t");
+			}
+		}
+
+		const XML_Char * szValue;
+
+		szValue = PP_evalProperty("background-color",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("background-color: ");
+		char color[16];
+		_convertColor(color, szValue);
+		if (*szValue != '#')
+			m_pie->write("#");
+		m_pie->write(color);
+		m_pie->write(";\n}\n\n@print\n{\n\tbody\n\t{\n\t\t");
+		
+		szValue = PP_evalProperty("page-margin-top",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("padding-top: ");
+		m_pie->write(szValue);
+
+		szValue = PP_evalProperty("page-margin-bottom",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("; padding-bottom: ");
+		m_pie->write(szValue);
+		
+		szValue = PP_evalProperty("page-margin-left",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write(";\n\t\tpadding-left: ");
+		m_pie->write(szValue);
+
+		szValue = PP_evalProperty("page-margin-right",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("; padding-right: ");
+		m_pie->write(szValue);
+		
+		m_pie->write(";\n\t}\n}\n\n");
+	}
 
 	const PD_Style* p_pds;
 	const XML_Char* szName;
@@ -1335,14 +1482,8 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		PT_AttrPropIndex api = p_pds->getIndexAP();
 		bool bHaveProp = m_pDocument->getAttrProp(api,&pAP_style);
 
-		if(bHaveProp && pAP_style /*&& p_pds->isUsed()*/)
+		if(bHaveProp && pAP_style && p_pds->isUsed())
 		{	
-			/*	The isUsed() test above is commented out because
-			 *	it's currently broken.  I'd like to use it when
-			 *	it gets fixed, but all the functionality remains,
-			 *	regardless.
-			 */
-
 			char * myStyleName = removeWhiteSpace ((const char *)szStyleName);
 
 			if(UT_strcmp(myStyleName, "Heading1") == 0)
@@ -1411,45 +1552,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		
 	m_pie->write("//-->\n</style>\n");
 	m_pie->write("</head>\n");
-	m_pie->write("<body");
-	if(bHaveProp && pAP)
-	{								// global page styles go in the <body> tag
-		const XML_Char * szValue;
-
-		m_pie->write(" style=\"");
-
-		szValue = PP_evalProperty("background-color",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("background-color: ");
-		char color[16];
-		_convertColor(color, szValue);
-		if (*szValue != '#')
-			m_pie->write("#");
-		m_pie->write(color);
-		
-		szValue = PP_evalProperty("page-margin-top",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write(";\n    margin-top: ");
-		m_pie->write(szValue);
-
-		szValue = PP_evalProperty("page-margin-bottom",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("; margin-bottom: ");
-		m_pie->write(szValue);
-		
-		szValue = PP_evalProperty("page-margin-left",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("; margin-left: ");
-		m_pie->write(szValue);
-
-		szValue = PP_evalProperty("page-margin-right",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("; margin-right: ");
-		m_pie->write(szValue);
-		
-		m_pie->write("\"");
-	}
-	m_pie->write(">\n");
+	m_pie->write("<body>");
 
 	m_bFirstWrite = false;
 }
@@ -1463,10 +1566,10 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bInBlock = false;
 	m_bInSpan = false;
 	m_bNextIsSpace = false;
-	m_bInList = false;
 	m_bWroteText = false;
 	m_bFirstWrite = true;
 	m_iListDepth = 0;
+	m_iPrevListDepth = 0;
 	m_iImgCnt = 0;
 }
 
@@ -1474,7 +1577,7 @@ s_HTML_Listener::~s_HTML_Listener()
 {
 	_closeSpan();
 	_closeTag();
-	if(m_bInList)
+	if(m_iListDepth > 0)
 	{
 		m_pie->write("</li>\n");
 		if(m_iBlockType == BT_NUMBEREDLIST)
@@ -1484,6 +1587,12 @@ s_HTML_Listener::~s_HTML_Listener()
 	}
 	_closeSection();
 	_handleDataItems();
+
+	UT_uint16 *popped;
+	while(m_utsListType.pop((void**) &popped))
+	{
+		DELETEP(popped);
+	}
 	
 	m_pie->write("</body>\n");
 	m_pie->write("</html>\n");

@@ -26,8 +26,10 @@
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "pp_Property.h"
+#include "pp_AttrProp.h"
 #include "gr_Graphics.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
 
@@ -136,6 +138,14 @@ void fp_TextRun::lookupProperties(void)
 
 	getHighlightColor();
 	getPageColor();
+
+	const XML_Char* pszStyle = NULL;
+	if(pSpanAP && pSpanAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
+	{
+		PD_Style *pStyle = NULL;
+		pDoc->getStyle((const char*) pszStyle, &pStyle);
+		if(pStyle) pStyle->used(1);
+	}
 
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 

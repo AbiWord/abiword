@@ -25,7 +25,7 @@
 #include "ut_debugmsg.h"
 
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName) :
-  m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), 
+  m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_iUsed(0),
   m_pBasedOn(NULL), m_pFollowedBy(NULL)
 {
   if (szName)
@@ -79,13 +79,24 @@ bool PD_Style::getAttribute(const XML_Char * szName, const XML_Char *& szValue) 
 		return pAP->getAttribute(szName, szValue);
 }
 
+void PD_Style::used(UT_sint32 count)
+{
+	m_iUsed += count;
+	if(m_iUsed < 0) m_iUsed = 0;
+}
+
 bool PD_Style::isUsed(void) const
 {
 	// TODO: we need some way of refcounting
 	// TODO: what if this document is a template
+	// NOTE: Re: the above - 
+	//	Not sure how to know when a style that was
+	// 	being used isn't anymore.  For the second
+	//	point, I think a m_bTemplateStyle member
+	//	might suffice.
 
-	// for now, we cheat
-	return isUserDefined();
+	// marginally better
+	return m_iUsed > 0;
 }
 
 bool PD_Style::isCharStyle(void) const

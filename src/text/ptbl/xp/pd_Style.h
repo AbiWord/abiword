@@ -48,6 +48,7 @@ public:
 	PD_Style *				getFollowedBy(void);
 
 	virtual bool			isUserDefined(void) const { return true; };
+	void					used(UT_sint32 count);
 	bool					isUsed(void) const;
 	bool					isCharStyle(void) const;
 	
@@ -67,7 +68,8 @@ protected:
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;
 
-	char * m_szName;
+	char * 					m_szName;
+	UT_sint32				m_iUsed;
 
 	// lazily-bound attribute caches to speed lookups
 	PD_Style *				m_pBasedOn;

@@ -174,6 +174,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pFirstLine = NULL;
 	m_pLastLine = NULL;
 	m_pAutoNum = NULL;
+	m_szStyle = NULL;
 
 	m_bNeedsReformat = true;
 	m_bNeedsRedraw = false;
@@ -208,6 +209,20 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		m_pNext->m_pPrev = this;
 	}
 
+	if(m_szStyle != NULL)
+	{
+		PD_Style * pStyle = NULL;
+		m_pDoc->getStyle((const char*) m_szStyle, &pStyle);
+		if(pStyle != NULL)
+		{
+			pStyle->used(1);
+			if(pStyle->getBasedOn() != NULL)
+			{
+				pStyle->getBasedOn()->used(1);
+			}
+		}
+	}
+
 	_lookupProperties();
 
 	_insertEndOfParagraphRun();
@@ -229,6 +244,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pFirstLine = NULL;
 	m_pLastLine = NULL;
 	m_pAutoNum = NULL;
+	m_szStyle = NULL;
 
 	m_bNeedsReformat = true;
 	m_bNeedsRedraw = false;
@@ -264,6 +280,20 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	}
 
 	_lookupProperties();
+
+	if(m_szStyle != NULL)
+	{
+		PD_Style * pStyle = NULL;
+		m_pDoc->getStyle((const char*) m_szStyle, &pStyle);
+		if(pStyle != NULL)
+		{
+			pStyle->used(1);
+			if(pStyle->getBasedOn() != NULL)
+			{
+				pStyle->getBasedOn()->used(1);
+			}
+		}
+	}
 
 	_insertEndOfParagraphRun();
 }
