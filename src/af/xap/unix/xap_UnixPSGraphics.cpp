@@ -34,6 +34,7 @@
 
 #include "xap_UnixFont.h"
 #include "xap_UnixFontManager.h"
+#include "xap_UnixFontXLFD.h"
 
 // the resolution that we report to the application (pixels per inch).
 #define PS_RESOLUTION		7200
@@ -634,13 +635,31 @@ void PS_Graphics::_emit_IncludeResource(void)
 
 		unixfont->closePFA();
 
-		// after each font, change the encoding vector to ISO Latin1
-		g_snprintf(buf, 128, "/%s findfont\n"
-				 "LAT\n"
-				 "/%s EXC\n",
-				 psf->getMetricsData()->gfi->fontName,
-				 psf->getMetricsData()->gfi->fontName);
+		// NOTE : here's an internationalization process step.  If the font
+		// NOTE : encoding is NOT "iso8859", we do not emit this macro.
+		// NOTE : this keeps fonts like Standard Symbols, and really
+		// NOTE : any other encoding, from being mangled.  however, it's
+		// NOTE : not intended to guarantee that these other encodings
+		// NOTE : actually work.  that requires more design work.
+
+		// Fetch an XLFD object from the font
+		XAP_UnixFontXLFD myXLFD(unixfont->getXLFD());
+
+		// write findfont
+		g_snprintf(buf, 128, "/%s findfont\n", psf->getMetricsData()->gfi->fontName);
 		m_ps->writeBytes(buf);
+
+		// Compare with iso8859, and emit LAT for that font
+		if (!UT_stricmp(myXLFD.getRegistry(), "iso8859") && !UT_stricmp(myXLFD.getEncoding(), "1"))
+		{
+			g_snprintf(buf, 128, "LAT\n");
+			m_ps->writeBytes(buf);
+		}
+
+		// exec the swapper macro
+		g_snprintf(buf, 128, "/%s EXC\n", psf->getMetricsData()->gfi->fontName);
+		m_ps->writeBytes(buf);
+
 	}
 
 	// TODO add any other IncludeResource's here
