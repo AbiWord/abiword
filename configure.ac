@@ -25,7 +25,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite,1.0.1)
+AM_INIT_AUTOMAKE(AbiSuite,1.1.0)
 
 abs_srcdir="`cd $srcdir && pwd`"
 
