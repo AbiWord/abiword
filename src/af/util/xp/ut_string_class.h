@@ -85,11 +85,25 @@ ABI_EXPORT bool operator<(const UT_String& s1, const UT_String& s2);
 
 ABI_EXPORT UT_String operator+(const UT_String& s1, const UT_String& s2);
 
-ABI_EXPORT void UT_String_sprintf(UT_String & inStr, const char * inFormat, ...);
-ABI_EXPORT void UT_String_vprintf (UT_String & inStr, const char *format,
+/****************************************************************************/
+
+/*!
+ * Fill \inStr with the results of evaulating the printf formatted string 
+ * \inFormat and return the reference to \inStr
+ */
+ABI_EXPORT UT_String& UT_String_sprintf(UT_String & inStr, const char * inFormat, ...);
+ABI_EXPORT UT_String& UT_String_vprintf (UT_String & inStr, const char *format,
 				   va_list      args1);
-ABI_EXPORT void UT_String_vprintf (UT_String & inStr, const UT_String & format,
-				   va_list      args1);
+ABI_EXPORT UT_String& UT_String_vprintf (UT_String & inStr, const UT_String & format,
+					 va_list      args1);
+
+/*!
+ * Returns a new UT_String object with the results of evaluating the printf
+ * formatted string \inFormat
+ */
+ABI_EXPORT UT_String UT_String_sprintf(const char * inFormat, ...);
+ABI_EXPORT UT_String UT_String_vprintf(const char * inFormat, va_list args1);
+ABI_EXPORT UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1);
 
 /***************************************************************************/
 

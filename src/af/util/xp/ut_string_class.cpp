@@ -310,8 +310,8 @@ UT_printf_string_upper_bound (const char* format,
 #  endif /* va_list is a pointer */
 #endif /* !VA_COPY */
 
-void UT_String_vprintf (UT_String & inStr, const char *format,
-			va_list      args1)
+UT_String& UT_String_vprintf (UT_String & inStr, const char *format,
+			      va_list      args1)
 {
   char *buffer;
   va_list args2;
@@ -325,20 +325,48 @@ void UT_String_vprintf (UT_String & inStr, const char *format,
   inStr = buffer;
 
   delete [] buffer;
+
+  return inStr;
 }
 
-void UT_String_vprintf (UT_String & inStr, const UT_String & format,
+UT_String& UT_String_vprintf (UT_String & inStr, const UT_String & format,
 			va_list      args1)
 {
-  UT_String_vprintf ( inStr, format.c_str(), args1 ) ;
+  return UT_String_vprintf ( inStr, format.c_str(), args1 ) ;
 }
 
-void UT_String_sprintf(UT_String & inStr, const char * inFormat, ...)
+UT_String& UT_String_sprintf(UT_String & inStr, const char * inFormat, ...)
 {
   va_list args;
   va_start (args, inFormat);
   UT_String_vprintf (inStr, inFormat, args);
   va_end (args);
+
+  return inStr;
+}
+
+UT_String UT_String_sprintf(const char * inFormat, ...)
+{
+  UT_String outStr ("");
+
+  va_list args;
+  va_start (args, inFormat);
+  UT_String_vprintf (outStr, inFormat, args);
+  va_end (args);
+
+  return outStr;
+}
+
+UT_String UT_String_vprintf(const char * inFormat, va_list args1)
+{
+  UT_String outStr ("");  
+  return UT_String_vprintf( outStr, inFormat, args1 );
+}
+
+UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1)
+{
+  UT_String outStr ("");
+  return UT_String_vprintf( outStr, inFormat, args1 );
 }
 
 //////////////////////////////////////////////////////////////////
