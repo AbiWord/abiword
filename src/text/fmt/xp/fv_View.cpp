@@ -6355,6 +6355,8 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	notifyListeners(AV_CHG_EMPTYSEL);
 }
 
+#define IS_SELECTALL(a, b) ((a) == FV_DOCPOS_BOD && (b) == FV_DOCPOS_EOD)
+
 void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
 {
 	UT_DEBUGMSG(("SEVIOR: Double click on mouse \n"));
@@ -6363,7 +6365,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 //
 	fp_Page * pPage = getCurrentPage();
 	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
-	if(pPage->getHeaderP() == NULL)
+	if(pPage->getHeaderP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
 	{
 //
 // No header. Look to see if the user has clicked in the header region.
@@ -6377,7 +6379,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 			return;
 		}
 	}
-	if(pPage->getFooterP() == NULL)
+	if(pPage->getFooterP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
 	{
 //
 // No Footer. Look to see if the user has clicked in the footer region.
