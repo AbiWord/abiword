@@ -57,6 +57,9 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	void setShowDocLocked(bool bShowDocLocked) { m_bShowDocLocked = bShowDocLocked; }
 	bool getShowDocLocked() { return m_bShowDocLocked; }
 
+private:
+	void _setGeometry ();
+
 protected:
 	virtual bool _close();
 	virtual bool _raise();

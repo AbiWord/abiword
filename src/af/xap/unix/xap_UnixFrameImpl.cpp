@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2002 William Lachance 
@@ -48,10 +50,6 @@
 /*****************************************************************/
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
-
-// TODO: make into $UserPref - if true, stop shrinking windows @ toolbar width. else
-// TODO: let GTK+ decide for itself
-static const bool cap_resize = true;
 
 static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboolean * push_in, gpointer user_data)
 {
@@ -731,26 +729,7 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 						GINT_TO_POINTER(FALSE));
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow), this); 
 
-	{
-	  XAP_App * pApp = m_pUnixApp->XAP_App::getApp();
-	  UT_sint32 x, y ; 
-	  UT_uint32 w, h, f ;
-	  x = y = w = h = f = 0 ;
-
-	  // ignore flags, x, y as the WM will set them for us just fine
-	  pApp->getGeometry ( &x, &y, &w, &h, &f ) ;
-	  
-	  // This is now done with --geometry parsing.
-	  if ( !w || !h )
-	    {
-	      w = 800; h = 600;
-	    }
-
-	  if (cap_resize)
-	    gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), w, h);
-	  else
-	    gtk_widget_set_usize(m_wTopLevelWindow, w, h);
-	}
+	_setGeometry ();
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
 					   G_CALLBACK(_fe::realize), NULL);
@@ -830,64 +809,115 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	// set the icon
 	_setWindowIcon();
 
-	// set geometry hints as the user requested
-	gint x, y;
-	guint width, height;
-	UT_uint32 f;
+	// we let our caller decide when to show m_wTopLevelWindow.
+	return;
+}
 
-	m_pUnixApp->getWinGeometry(&x, &y, &width, &height, &f);
+void XAP_UnixFrameImpl::_setGeometry ()
+{
+	UT_sint32 app_x = 0;
+	UT_sint32 app_y = 0;
+	UT_uint32 app_w = 0;
+	UT_uint32 app_h = 0;
+	UT_uint32 app_f = 0;
+
+	XAP_App * pApp = m_pUnixApp->XAP_App::getApp ();
+	pApp->getGeometry (&app_x, &app_y, &app_w, &app_h, &app_f);
+	// (ignore app_x, app_y & app_f since the WM will set them for us just fine)
+	  
+	// This is now done with --geometry parsing.
+	if (app_w == 0) app_w = 760;
+	if (app_h == 0) app_h = 520;
+
+	UT_DEBUGMSG(("xap_UnixFrameImpl: app-width=%lu, app-height=%lu\n",
+				 (unsigned long)app_w,(unsigned long)app_h));
+
+	// set geometry hints as the user requested
+	gint user_x = 0;
+	gint user_y = 0;
+	guint user_w = (guint) app_w;
+	guint user_h = (guint) app_h;
+	UT_uint32 user_f = 0;
+
+	m_pUnixApp->getWinGeometry (&user_x, &user_y, &user_w, &user_h, &user_f);
+
+	UT_DEBUGMSG(("xap_UnixFrameImpl: user-width=%u, user-height=%u\n",
+				 (unsigned)user_w,(unsigned)user_h));
 
 	// Get fall-back defaults from preferences
-	UT_uint32 pref_flags, pref_width, pref_height;
-	UT_sint32 pref_x, pref_y;
-	m_pUnixApp->getPrefs()->getGeometry(&pref_x, &pref_y, &pref_width,
-										&pref_height, &pref_flags);
-	if (!(f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
-		&& (pref_flags & PREF_FLAG_GEOMETRY_SIZE))
-	{
-		width = pref_width;
-		height = pref_height;
-		f |= XAP_UnixApp::GEOMETRY_FLAG_SIZE;
-	}
-	if (!(f & XAP_UnixApp::GEOMETRY_FLAG_POS)
-		&& (pref_flags & PREF_FLAG_GEOMETRY_POS))
-	{
-		x = pref_x;
-		y = pref_y;
-		f |= XAP_UnixApp::GEOMETRY_FLAG_POS;
-	}
+	UT_sint32 pref_x = 0;
+	UT_sint32 pref_y = 0;
+	UT_uint32 pref_w = (UT_uint32) app_w;
+	UT_uint32 pref_h = (UT_uint32) app_h;
+	UT_uint32 pref_f = 0;
 
-	// Set the size if requested
+	m_pUnixApp->getPrefs()->getGeometry (&pref_x, &pref_y, &pref_w, &pref_h, &pref_f);
 
-	if (f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
-	{
-		gint abi_width = (gint)width;
-		gint abi_height = (gint)height;
+	UT_DEBUGMSG(("xap_UnixFrameImpl: pref-width=%lu, pref-height=%lu\n",
+				 (unsigned long)pref_w,(unsigned long)pref_h));
 
-		if(cap_resize)
-		  gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), abi_width, abi_height);
-		else
-		  gtk_widget_set_usize(m_wTopLevelWindow, abi_width, abi_height);
-	}
+	if (!(user_f & XAP_UnixApp::GEOMETRY_FLAG_SIZE))
+		if (pref_f & PREF_FLAG_GEOMETRY_SIZE)
+			{
+				user_w = (guint) pref_w;
+				user_h = (guint) pref_h;
+				user_f |= XAP_UnixApp::GEOMETRY_FLAG_SIZE;
+			}
+	if (!(user_f & XAP_UnixApp::GEOMETRY_FLAG_POS))
+		if (pref_f & PREF_FLAG_GEOMETRY_POS)
+			{
+				user_x = (gint) pref_x;
+				user_y = (gint) pref_y;
+				user_f |= XAP_UnixApp::GEOMETRY_FLAG_POS;
+			}
+
+	UT_DEBUGMSG(("xap_UnixFrameImpl: user-x=%d, user-y=%d\n",
+				 (int)user_x,(int)user_y));
+
+	if (!(user_f & XAP_UnixApp::GEOMETRY_FLAG_SIZE))
+		{
+			user_w = (guint) app_w;
+			user_h = (guint) app_h;
+		}
+
+	GdkGeometry geom;
+	geom.min_width   = 100;
+	geom.min_height  = 100;
+	geom.base_width  = user_w;
+	geom.base_height = user_h;
+	geom.width_inc  = 10; // ??
+	geom.height_inc = 10;
+
+	gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
+								   GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC);
+
+	gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
+
+#if 0
+	bool cap_resize = false;
+	const XAP_Prefs * pPrefs = m_pUnixApp->getPrefs ();
+	if (pPrefs) pPrefs->getPrefsValueBool (XAP_PREF_KEY_CapResize, &cap_resize);
+
+	if (cap_resize)
+	    gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), w, h);
+	else
+	    gtk_widget_set_usize(m_wTopLevelWindow, w, h); // deprecated
+#endif
 
 	// Because we're clever, we only honor this flag when we
 	// are the first (well, only) top level frame available.
 	// This is so the user's window manager can find better
 	// places for new windows, instead of having our windows
 	// pile upon each other.
-	if (m_pUnixApp->getFrameCount() <= 1)
-	{
-		if (f & XAP_UnixApp::GEOMETRY_FLAG_POS)
-		{
-			gtk_widget_set_uposition(m_wTopLevelWindow, x, y);
-		}
-	}
+
+	if (m_pUnixApp->getFrameCount () <= 1)
+		if (user_f & XAP_UnixApp::GEOMETRY_FLAG_POS)
+			{
+				gtk_widget_set_uposition (m_wTopLevelWindow, user_x, user_y);
+			}
 
 	// Remember geometry settings for next time
-	m_pUnixApp->getPrefs()->setGeometry(x, y, width, height, f);
-
-	// we let our caller decide when to show m_wTopLevelWindow.
-	return;
+	m_pUnixApp->getPrefs()->setGeometry (user_x, user_y, user_w, user_h, user_f);
 }
 
 /*!
