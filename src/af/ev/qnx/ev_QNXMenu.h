@@ -65,7 +65,7 @@ protected:
 	UT_Vector			m_vecMenuWidgets;
 
 private:
-	virtual bool		_doAddMenuItem(XAP_Menu_Id id) { /* TODO */ }
+	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 };
 
 /*****************************************************************/

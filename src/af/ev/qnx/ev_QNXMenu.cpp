@@ -699,6 +699,22 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 	return true;
 }
 
+/*!
+ * See unix menu code for comment
+ */
+bool EV_QNXMenu::_doAddMenuItem(UT_uint32 layout_pos)
+{
+	if (layout_pos > 0)
+	{
+		UT_sint32 err = m_vecMenuWidgets.insertItemAt(NULL, layout_pos);
+		return !err;
+	}
+
+	return false;
+}
+
+
+
 /*****************************************************************/
 
 EV_QNXMenuBar::EV_QNXMenuBar(XAP_QNXApp * pQNXApp,
