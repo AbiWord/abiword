@@ -4234,6 +4234,7 @@ UT_Error FV_View::cmdInsertTOC(void)
 				_restorePieceTableState();
 				_generalUpdate();
 				notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+				return bRet;
 			}
 		}
 		else
@@ -4244,6 +4245,7 @@ UT_Error FV_View::cmdInsertTOC(void)
 			_restorePieceTableState();
 			_generalUpdate();
 			notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+			return bRet;
 		}
 	}
 //
@@ -4267,6 +4269,30 @@ UT_Error FV_View::cmdInsertTOC(void)
 		insertParagraphBreak();
 		pBL = getCurrentBlock();
 		pos = pBL->getPosition(true);
+	}
+	if(pBL != NULL)
+	{
+		fl_ContainerLayout * pCL = pBL->myContainingLayout();
+		if(pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+		{
+			m_pDoc->endUserAtomicGlob();
+
+				// Signal piceTable is stable again
+			_restorePieceTableState();
+			_generalUpdate();
+			notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+			return bRet;
+		}
+	}
+	else
+	{
+		m_pDoc->endUserAtomicGlob();
+		
+		// Signal piceTable is stable again
+		_restorePieceTableState();
+		_generalUpdate();
+		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+		return bRet;
 	}
 	m_pDoc->insertStrux(pos,PTX_SectionTOC);
 	pos++;
