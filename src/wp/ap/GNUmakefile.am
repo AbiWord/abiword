@@ -16,19 +16,21 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+include $(top_srcdir)/includes.mk
+
 SUBDIRS= xp @PLATFORM@
 
 noinst_LIBRARIES= libAp.a
 
 if WITH_GNOME
-libAp.a:
+libAp.a: $(ABI_GNOME_OBJECTS)
 	rm -f libAp.a
-	ar cru libAp.a xp/*.o @PLATFORM@/*.o @PLATFORM@/gnome/*.o
+	ar cru libAp.a $(ABI_GNOME_OBJECTS)
 	ranlib libAp.a
 else
-libAp.a:
+libAp.a: $(ABI_OBJECTS)
 	rm -f libAp.a
-	ar cru libAp.a xp/*.o @PLATFORM@/*.o 
+	ar cru libAp.a $(ABI_OBJECTS)
 	ranlib libAp.a
 endif
 

@@ -2,3 +2,4 @@ dist
 configure
 config.h.in
 GNUmakefile.in
+aclocal.m4

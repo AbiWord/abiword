@@ -30,7 +30,7 @@ AM_ACLOCAL_INCLUDE(macros)
 
 
 dnl It would be nice to eventually add -Werror
-dnl FIXME these flags are gcc-specific, and need to be fixes
+dnl FIXME these flags are gcc-specific, and need to be fixed
 WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe"
 AC_SUBST(WARNING_CFLAGS)
 
@@ -53,9 +53,6 @@ GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME"
 AC_SUBST(GNOME_CFLAGS)
 GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
 AC_SUBST(GNOME_LIBS)
-
-EXPAT_INCLUDES=-I'$(top_srcdir)/../expat/lib'
-AC_SUBST(EXPAT_INCLUDES)
 
 ICONV_INCLUDES=-I'$(top_srcdir)/../iconv'
 AC_SUBST(ICONV_INCLUDES)
@@ -183,7 +180,7 @@ AC_ARG_ENABLE(scripting,
      esac],[script=false])
 
 dnl this isn't actually used anywhere, but we provide it anyway
-AM_CONDITIONAL(SCRIPT, test x$script =xtrue)
+AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
 
 case "$script" in
      "true" ) 
@@ -201,8 +198,6 @@ AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(PSPELL_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
-AC_SUBST(XML_CFLAGS)
-AC_SUBST(XML_LIBS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(BIDI_CFLAGS)
@@ -215,6 +210,14 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
+
+
+dnl the neon detector only does libxml1
+if test "$libxml2" = "false"; then
+   NEON_NEED_XML_PARSER=yes
+   NEON_XML_PARSER(../expat)
+fi
+
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
@@ -301,6 +304,10 @@ case "$script" in
      "true" )
         AC_MSG_RESULT([Configured with scripting support.]) ;;
 esac
+
+cat <<EOF
+  XML Parser:      ${neon_xml_parser_message}
+EOF
 
 echo
 AC_MSG_RESULT([Type 'make' to build AbiWord.])

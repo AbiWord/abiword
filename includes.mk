@@ -93,8 +93,7 @@ ABI_GNOME_PREFIX = Gnome
 # PSPELL_LIBS is empty if pspell is not enabled
 OTHER_LIBS=-lpng -lz @PSPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@
 
-PEER_LIBS=$(top_srcdir)/../expat/lib/.libs/libexpat.a
-PEER_LIBS+=$(top_srcdir)/../wv/libwv.a
+PEER_LIBS=$(top_srcdir)/../wv/libwv.a
 PEER_LIBS+=$(top_srcdir)/../psiconv/psiconv/.libs/libpsiconv.a
 
 ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a 
@@ -110,7 +109,7 @@ ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 # we don't assume that WITH_GNOME => unix, on the off chance that
 # someday it won't
 if WITH_GNOME
-ABI_OBJS=xp/*.o @PLATFORM@/*.o @PLATFORM@/gnome/*.o
-else
-ABI_OBJS=xp/*.o @PLATFORM@/*.o 
+ABI_GNOME_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/gnome/*.o
 endif 
+
+ABI_OBJECTS=xp/*.o @PLATFORM@/*.o 

@@ -22,8 +22,8 @@ SUBDIRS = xp @PLATFORM@
 
 noinst_LIBRARIES= libUtil.a
 
-libUtil.a: 
+libUtil.a: $(ABI_OBJECTS)
 	rm -f libUtil.a
-	ar cru libUtil.a xp/*.o @PLATFORM@/*.o 
+	ar cru libUtil.a $(ABI_OBJECTS)
 	ranlib libUtil.a
 
