@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es-ES\n"
 "POT-Creation-Date: 2003-10-01 06:25+0200\n"
-"PO-Revision-Date: 2003-10-01 06:29+0200\n"
+"PO-Revision-Date: 2003-10-06 17:04+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1885,7 +1885,7 @@ msgstr "Copia"
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:815
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Copiaa la selección al portapapeles"
+msgstr "Copia la selección al portapapeles"
 
 #. AUTOTEXT_CLOSING_3
 #: po/tmp/ap_String_Id.h.h:817
@@ -2988,7 +2988,7 @@ msgstr "Insertar tabla"
 #. MENU_STATUSLINE_INSERT_INSERTFOOTER
 #: po/tmp/ap_String_Id.h.h:1272
 msgid "Insert a Footer"
-msgstr "Inserta un  pie de página"
+msgstr "Inserta un pie de página"
 
 #. MENU_STATUSLINE_INSERT_INSERTHEADER
 #: po/tmp/ap_String_Id.h.h:1274
