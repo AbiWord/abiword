@@ -1132,24 +1132,35 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		bShowSplash = false;
     
     AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
+    
+    if (bShowApp)
+    {
+		// if the initialize fails, we don't have icons, fonts, etc.
+		if (!pMyUnixApp->initialize())
+		{
+			delete pMyUnixApp;
+			return -1;	// make this something standard?
+		}
+    }
+	
 
     // HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
     // HACK : but need to be here to throw the splash screen as
     // HACK : soon as possible.
 
-    const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
-
-    bool bSplashPref = true;
-    if (pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-      {
-	bShowSplash = bShowSplash && bSplashPref;
-      }
-	
     if (bShowSplash || bShowApp)
     {
 		gtk_set_locale();
 		gtk_init(&Args.m_argc,&Args.m_argv);
     }
+
+    const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
+	UT_ASSERT(pPrefs);
+    bool bSplashPref = true;
+    if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+	{
+		bShowSplash = bShowSplash && bSplashPref;
+	}
     
     if (bShowSplash)
 		_showSplash(2000);
@@ -1185,16 +1196,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     sigaction(SIGQUIT, &sa, NULL);
     sigaction(SIGFPE, &sa, NULL);
     // TODO: handle SIGABRT
-    
-    if (bShowApp)
-    {
-		// if the initialize fails, we don't have icons, fonts, etc.
-		if (!pMyUnixApp->initialize())
-		{
-			delete pMyUnixApp;
-			return -1;	// make this something standard?
-		}
-    }
     
     // this function takes care of all the command line args.
     // if some args are botched, it returns false and we should
