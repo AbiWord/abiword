@@ -6458,6 +6458,11 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 					
 					// we use the document methods, not the importer methods intentionally 
 					UT_DEBUGMSG(("Direct Appending HdrFtr in MSWord_import \n"));
+					if(!m_bInPara)
+					{
+						getDoc()->appendStrux(PTX_Block, NULL);
+						m_bInPara = true;
+					}
 					getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
 					m_bInSect = true;
 					m_bInHeaders = true;
