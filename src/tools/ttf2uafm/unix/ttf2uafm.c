@@ -49,7 +49,7 @@ typedef struct {
 typedef struct {
     TTF_USHORT endCode;
     TTF_USHORT startCode;
-    TTF_USHORT idDelta;
+    TTF_SHORT idDelta;
     TTF_USHORT idRangeOffset;
 } seg_entry;
 
@@ -475,9 +475,9 @@ void read_font()
             else
             	k = 0; /*not found*/
 #if 0
-            if(i == 0x002c || i == 0x00ad)
+            if(i == 0x05d0 || i == 0x0161)
             {
-            	printf("mapping ucs 0x%04x, segment: start 0x%04x, end 0x%04x, k %d\n", i,s->startCode,s->endCode,k);
+            	printf("mapping ucs 0x%04x, segment: start 0x%04x, end 0x%04x, idDelta 0x%04x, idRangeOffset 0x%04x, k %d\n", i,s->startCode,s->endCode,s->idDelta,s->idRangeOffset,k);
             }
 #endif
 			if(uni_map[k] == 0 || k == 0)
@@ -488,7 +488,7 @@ void read_font()
         }
 
         for (i = 0; i < nglyphs; i++)
-			mtx_tab[i].uni = uni_map[i+1]; /*the +1 is required, but I have no idea why*/
+			mtx_tab[i].uni = uni_map[i];
      }
 
         break;
