@@ -926,6 +926,7 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 	}
 
 	pRI->m_iLength = si.m_iLength;
+	pRI->m_iTotalLength = si.m_iLength;
 	pRI->m_eScriptType = si.m_pItem->getType();
 	pRI->m_pItem = si.m_pItem;
 	
@@ -973,10 +974,14 @@ UT_sint32 GR_Graphics::getTextWidth(const GR_RenderInfo & ri) const
 	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
 
+	// NB: the width array is in VISUAL order, but offset is a logical offset
+	bool bReverse = (ri.m_iVisDir == UT_BIDI_RTL);
+	
 	UT_sint32 iWidth = 0;
 	for (UT_uint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
 	{
-		UT_uint32 iCW = RI.m_pWidths[i] > 0 ? RI.m_pWidths[i] : 0;
+		UT_uint32 k = bReverse ? RI.m_iTotalLength - i - 1 : i;
+		UT_uint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
 		iWidth += iCW;
 	}
 

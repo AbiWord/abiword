@@ -285,6 +285,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 	UT_uint32 *         m_pSegmentOffset;
 	UT_uint32           m_iSegmentCount;
 	UT_sint32           m_iSpaceWidthBeforeJustification; // <0 for not justified
+	UT_uint32           m_iTotalLength;
 
 	// these can be static as for now we do not want to chache anything
 	static UT_uint32	    s_iClassInstanceCount;

@@ -56,7 +56,8 @@ GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 		 m_iBufferSize(0),
 		 m_pSegmentOffset(NULL),
 		 m_iSegmentCount(0),
-		 m_iSpaceWidthBeforeJustification(0xffffffff)
+		 m_iSpaceWidthBeforeJustification(0xffffffff),
+		 m_iTotalLength(0)
 {
 	_constructorCommonCode();
 }
@@ -203,7 +204,7 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		s_pOwner = NULL;
 
 	m_bLastOnLine = RI.m_bLastOnLine;
-	
+	m_iTotalLength = m_iTotalLength + RI.m_iTotalLength;
 	return true;
 }
 
@@ -230,7 +231,10 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	UT_uint32 iPart1Len = m_iLength - iPart2Len;
 
 	m_iLength = iPart1Len;
+	m_iTotalLength = iPart1Len;
+	
 	pRI->m_iLength = iPart2Len;
+	pRI->m_iTotalLength = iPart2Len;
 
 	// the question is whether we want to shrink the buffer here (and
 	// save memory) or leave it too big (and save time); go for memory
@@ -351,6 +355,8 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 	bool bLigatures = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_Ligatures) != 0);
 	bool bContext = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_ContextSensitive) != 0);
 
+	m_iTotalLength -= iLen;
+	
 	GR_ContextGlyph cg;
 
 	UT_uint32 pos = m_pText->getPosition();
