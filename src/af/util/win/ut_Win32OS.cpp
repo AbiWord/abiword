@@ -80,7 +80,7 @@ bool UT_IsWin95(void)
  This function is used by the various tabbed dialogs to load
  the sub-dialogs.
  */
-DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName)
+DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName)
 { 
     HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
     HGLOBAL hglb = LoadResource(hinst, hrsrc); 

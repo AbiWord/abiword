@@ -29,6 +29,6 @@ bool UT_IsWinNT(void);
 bool UT_IsWin2K(void);
 bool UT_IsWin95(void);
 
-DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName);
+DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName);
 
 #endif /* UT_Win32OS_H */

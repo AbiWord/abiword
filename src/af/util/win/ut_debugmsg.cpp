@@ -42,7 +42,7 @@ void _UT_OutputMessage(const char *s, ...)
 	_vsnprintf(sBuf, sizeof(sBuf), s, marker);
 #endif
 
-	OutputDebugString(sBuf);
+	OutputDebugStringA(sBuf); //!TODO Using ANSI function
 }
 
 
@@ -60,5 +60,5 @@ void _UT_WarningMessage(const char *s, ...)
 	va_start(marker, s);
 	_vsnprintf(sBuf, sizeof(sBuf), s, marker);
 
-	MessageBox(NULL, sBuf, "Warning", MB_OK | MB_ICONWARNING);
+	MessageBoxA(NULL, sBuf, "Warning", MB_OK | MB_ICONWARNING); //!TODO Using ANSI function
 }

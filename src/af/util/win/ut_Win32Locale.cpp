@@ -56,8 +56,8 @@ bool UT_getISO639Language(char * szLanguage)
 
 	UT_ASSERT(szLanguage);
 
-	GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVLANGNAME,szWinLang,4);
-	GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SISO639LANGNAME,szISOLang,3);
+	GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SABBREVLANGNAME,szWinLang,4); //!TODO Using ANSI function
+	GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SISO639LANGNAME,szISOLang,3); //!TODO Using ANSI function
 
 	// TODO Even Windows 2000 returns ISO 639-1 instead of ISO 639-2
 	// TODO Make sure we return correct ISO 639-2 for at least the locales Abi supports.
@@ -114,7 +114,7 @@ bool UT_getISO3166Country(char *szCountry)
 
 	UT_ASSERT(szCountry);
 
-	if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SISO3166CTRYNAME,szCountry,3))
+	if (GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SISO3166CTRYNAME,szCountry,3)) //!TODO Using ANSI function
 	{
 		// Fix Serbia
 		if (!UT_stricmp(szCountry, "SP"))
@@ -124,7 +124,7 @@ bool UT_getISO3166Country(char *szCountry)
 
 		bSuccess = true;
 	}
-	else if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVCTRYNAME,szTmp,4))
+	else if (GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SABBREVCTRYNAME,szTmp,4)) //!TODO Using ANSI function
 	{
 		// Convert to ISO 3166
 		char *psz;

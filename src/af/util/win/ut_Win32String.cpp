@@ -52,10 +52,10 @@ char * UT_tmpnam(char * pszBase)
 	UT_ASSERT(pszBase);
 
 	// Get a path to a temp directory...
-	GetTempPath( 1024, szTempPath );
+	GetTempPathA( 1024, szTempPath ); //!TODO Using ANSI function
 
 	// Then get a temp file name in the temp directory we just got.
-	GetTempFileName( szTempPath, "abi", 0, pszBase );
+	GetTempFileNameA( szTempPath, "abi", 0, pszBase ); //!TODO Using ANSI function
 
 	return pszBase;
 }
