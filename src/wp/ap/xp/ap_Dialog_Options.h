@@ -88,23 +88,35 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
 
 	AP_Dialog_Options::tAnswer	getAnswer(void) const;
+	
+	void _populateWindowData(void);
+		// to be called when a control is toggled/changed
+	void _enableDisableLogic( tControl id );
+	
+	virtual void _storeWindowData(void);	// calls the following functions to
+									// lookup values to set as preferences
+									
+	void _event_SetDefaults(void);									
+
+	//
+	// Screen Color stuff
+	//
+	const XML_Char * _gatherColorForTransparent(void);									
+	void _setColorForTransparent(const XML_Char * pzsColorForTransparent);
 
  protected:
 
 		// to enable/disable a control
 	virtual void _controlEnable( tControl id, bool value )=0;
 
-		// to be called when a control is toggled/changed
-	void _enableDisableLogic( tControl id );
+	
 
 		// disable controls appropriately
 	void _initEnableControls();
 
-	void _populateWindowData(void);
+	
 	void _eventSave(void);
 
-	virtual void _storeWindowData(void);	// calls the following functions to
-									// lookup values to set as preferences
 
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
 						virtual void	_set##a(const u) = 0
@@ -166,20 +178,13 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
  protected:
 
 
-//
-// Screen Color stuff
-	const XML_Char * _gatherColorForTransparent(void);
-	void _setColorForTransparent(const XML_Char * pzsColorForTransparent);
-
-
 	tAnswer 			m_answer;
 	XAP_Frame * 		m_pFrame;
 	XML_Char			m_CurrentTransparentColor[10];
 
 	int m_pageNum;
 
-	// AP level handlers
-	void _event_SetDefaults(void);
+	// AP level handlers	
 	void _event_IgnoreReset(void);
 	void _event_IgnoreEdit(void);
 	void _event_DictionaryEdit(void);

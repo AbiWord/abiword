@@ -22,9 +22,161 @@
 
 #include "ut_vector.h"
 #include "ap_Dialog_Options.h"
+#include "xap_Win32PropertySheet.h"
 #include "xap_Frame.h"
 
+
 class UT_String;
+class AP_Win32Dialog_Options;
+enum PSH_PAGES {PG_TOOLBARS, PG_SPELL, PG_LANG, PG_PREF, PG_LAYOUT};
+
+/*
+	Sheet
+*/
+class AP_Win32Dialog_Options_Sheet: public XAP_Win32PropertySheet
+{
+	
+public:	
+		AP_Win32Dialog_Options_Sheet();				
+		void _onInitDialog(HWND hwnd);
+		
+		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
+		AP_Win32Dialog_Options* getParent(){return m_pParent;};
+		void _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		
+private:		
+	
+		AP_Win32Dialog_Options*	m_pParent;
+};
+
+/*
+	Toolbar page
+*/
+class AP_Win32Dialog_Options_Toolbars: public XAP_Win32PropertyPage
+{
+	
+public:		
+								AP_Win32Dialog_Options_Toolbars();
+								~AP_Win32Dialog_Options_Toolbars();	
+
+	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
+	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
+	void						transferData();
+	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);	
+	
+private:
+
+	void						_onInitDialog();
+	void						_onKillActive(){};
+	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		
+	AP_Win32Dialog_Options*		m_pParent;	
+	
+};
+
+/*
+	Spelling page
+*/
+class AP_Win32Dialog_Options_Spelling: public XAP_Win32PropertyPage
+{
+	
+public:		
+								AP_Win32Dialog_Options_Spelling();
+								~AP_Win32Dialog_Options_Spelling();	
+
+	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
+	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
+	void						transferData();
+	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	
+private:
+
+	void						_onInitDialog();
+	void						_onKillActive(){};
+	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		
+	AP_Win32Dialog_Options*		m_pParent;	
+	
+};
+
+/*
+	Lang
+*/
+class AP_Win32Dialog_Options_Lang: public XAP_Win32PropertyPage
+{
+	
+public:		
+								AP_Win32Dialog_Options_Lang();
+								~AP_Win32Dialog_Options_Lang();	
+
+	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
+	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
+	void						transferData();
+	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	
+private:
+
+	void						_onInitDialog();
+	void						_onKillActive(){};
+	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		
+	AP_Win32Dialog_Options*		m_pParent;	
+	UT_Vector*					m_pVecUILangs;
+	
+};
+
+/*
+	Layout page
+*/
+class AP_Win32Dialog_Options_Layout: public XAP_Win32PropertyPage
+{
+	
+public:		
+								AP_Win32Dialog_Options_Layout();
+								~AP_Win32Dialog_Options_Layout();	
+
+	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
+	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
+	void						transferData();
+	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	
+private:
+
+	void						_onInitDialog();
+	void						_onKillActive(){};
+	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		
+	AP_Win32Dialog_Options*		m_pParent;	
+	
+};
+
+/*
+	Preferences page
+*/
+class AP_Win32Dialog_Options_Pref: public XAP_Win32PropertyPage
+{
+	
+public:	
+								AP_Win32Dialog_Options_Pref();
+								~AP_Win32Dialog_Options_Pref();	
+
+	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
+	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
+	void						transferData();
+	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	
+private:
+
+	void						_onInitDialog();
+	void						_onKillActive(){};
+	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		
+	AP_Win32Dialog_Options*		m_pParent;	
+	
+};
+
+
+
 
 /*****************************************************************/
 class AP_Win32Dialog_Options: public AP_Dialog_Options
@@ -36,10 +188,21 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
-
-	void ShowPage(int nPage);
+	
+	HWND					getPage(PSH_PAGES page);
+	void 					_initializeTransperentToggle(void);
+	XAP_DialogFactory * 	getDialogFactory() {return	m_pDialogFactory;};
+	XAP_Frame *				getFrame() {return	m_pFrame;};
+	
+	
  protected:
+ 
+ 	AP_Win32Dialog_Options_Toolbars		m_toolbars;
+ 	AP_Win32Dialog_Options_Spelling		m_spelling;
+ 	AP_Win32Dialog_Options_Layout		m_layout; 	
+ 	AP_Win32Dialog_Options_Lang			m_lang;
+ 	AP_Win32Dialog_Options_Pref			m_pref;
+ 	
 
 	virtual void _controlEnable( tControl id, bool value );
 
@@ -86,7 +249,7 @@ public:
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);
-	void _initializeTransperentToggle(void);
+	
 	
 	virtual void _gatherDocLanguage(UT_String &stRetVal);
 	virtual void _setDocLanguage(const UT_String &stExt);
@@ -97,10 +260,6 @@ public:
 #undef SET_GATHER
 
  protected:
-	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
-	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
 	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
