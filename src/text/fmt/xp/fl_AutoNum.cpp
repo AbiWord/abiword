@@ -26,12 +26,15 @@
 #include "fl_BlockLayout.h"
 #include "fp_Run.h"
 #include "fp_Line.h"
+#include "pd_Document.h"
+#include "pt_PieceTable.h"
+#include "pf_Frag.h"
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-
+class pf_Frag;
 
 fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  PL_StruxDocHandle pFirst, fl_AutoNum * pParent, const XML_Char * lDelim, const XML_Char * lDecimal, List_Type lType, PD_Document * pDoc)
 {
@@ -124,6 +127,86 @@ fl_AutoNum::~fl_AutoNum()
 		DELETEP(m_pParent);
 }
 
+static PD_Document * pCurDoc;
+
+static int compareListItems(const void* p1, const void* p2)
+{
+  //
+  // Fun with (void *) pointers!
+  // 
+  //	pf_Frag * pf1 = (pf_Frag *) p1;
+  //	PD_Document * pDoc = pf1->getPieceTable()->getDocument();
+	PL_StruxDocHandle sdh1 = (PL_StruxDocHandle) p1;
+	PL_StruxDocHandle sdh2 = (PL_StruxDocHandle) p2;
+	PT_DocPosition pos1 = pCurDoc->getStruxPosition(sdh1);
+	PT_DocPosition pos2 = pCurDoc->getStruxPosition(sdh2);
+	if(pos1 < pos2)
+	{
+	        return -1;
+	}
+	if(pos1 > pos2)
+	{
+	        return 1;
+	}
+	return 0;
+}
+
+void    fl_AutoNum::fixListOrder(void)
+{
+        pCurDoc = m_pDoc;
+        m_pItems.qsort(compareListItems);
+        m_bDirty = UT_TRUE;
+}
+
+void    fl_AutoNum::markAsDirty(void)
+{
+         m_bDirty = UT_TRUE;
+}
+
+void    fl_AutoNum::findAndSetParentItem(void)
+{
+        if(m_pParent != NULL)
+	{
+	  //        fixListOrder();
+	  //	m_pParent->fixListOrder();
+		m_pParent->update(0);
+                PL_StruxDocHandle pCurFirst =  (PL_StruxDocHandle) m_pItems.getFirstItem();
+		if(pCurFirst == NULL)
+		       return;
+		PT_DocPosition posCur = m_pDoc->getStruxPosition(pCurFirst);
+
+		UT_uint32 i=0;
+		PL_StruxDocHandle pParentItem = m_pParent->getNthBlock(i);
+		PT_DocPosition posParent=0;
+		if(pParentItem != NULL)
+		{
+		       posParent = m_pDoc->getStruxPosition(pParentItem);
+		}
+		while(pParentItem != NULL && (posParent < posCur))
+		{
+		       i++;
+		       pParentItem = m_pParent->getNthBlock(i);
+		       if(pParentItem != NULL)
+		       {
+		               posParent = m_pDoc->getStruxPosition(pParentItem);
+		       }
+		}
+		if(pParentItem != NULL && i > 0)
+		{
+		       i--;
+		       m_pParentItem = m_pParent->getNthBlock(i);
+		}
+		else
+		{
+		       m_pParentItem = NULL;
+		       m_pParent = NULL;
+		       m_iParentID = 0;
+		       m_iLevel = 1;
+		}
+		m_bDirty = UT_TRUE;
+		update(0);
+	}
+}
 
 void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint, 
 				  UT_uint32 depth, PL_StruxDocHandle pLayout)  

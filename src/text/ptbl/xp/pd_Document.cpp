@@ -977,6 +977,8 @@ void PD_Document::allowChangeInsPoint(void)
 ////////////////////////////////////////////////////////////////
 // List Vector Functions
 
+
+
 fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 {
 	UT_uint16 i = 0;
@@ -1155,6 +1157,11 @@ void PD_Document::updateDirtyLists(void)
 		 {
 		         pAutoNum->update(0);
 		 }
+	}
+	for(i=0; i< iNumLists; i++)
+	{
+	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		 pAutoNum->findAndSetParentItem();
 	}
 }
 

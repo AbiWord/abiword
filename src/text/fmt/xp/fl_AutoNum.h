@@ -74,6 +74,9 @@ public:
 	fl_AutoNum *			getParent(void) { return m_pParent; }
 	fl_AutoNum * 			getActiveParent(void) ;
 	fl_AutoNum *                    getAutoNumFromSdh(PL_StruxDocHandle sdh);
+	void                            fixListOrder(void);
+	void                            markAsDirty(void);
+	void                            findAndSetParentItem(void);
 	void				setParent(fl_AutoNum *);
 	void                            setUpdatePolicy(UT_Bool bUpdate);
 	void			      	setAsciiOffset(UT_uint32 new_asciioffset);

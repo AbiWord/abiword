@@ -53,6 +53,7 @@ public:
 	pf_Frag *				setPrev(pf_Frag * pPrev);
 
 	inline UT_uint32		getLength(void) const	{ return m_length; }
+        pt_PieceTable *            getPieceTable(void) { return m_pPieceTable;}
 	fd_Field *                 getField(void); 
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and
