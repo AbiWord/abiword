@@ -73,7 +73,7 @@ endif
 
 # Compiler and shared library flags 
 
-ifdef ABI_OPT_DEBUG
+ifeq ($(ABI_OPT_DEBUG),1)
 
 ifndef OPTIMIZER_DEBUG
 OPTIMIZER 	= -Od -Z7 -Ob1

@@ -66,7 +66,7 @@ AR		= ar cr $@
 # NOTE:  warnings.  -Wall includes the very useful warnings, -W includes
 # NOTE:  more stylistic warnings.  -pedantic just gets really picky about
 # NOTE:  ANSI things.
-ifdef ABI_OPT_DEBUG
+ifeq ($(ABI_OPT_DEBUG),1)
 OPTIMIZER	= -g -Wall -W -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG

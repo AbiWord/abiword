@@ -62,7 +62,7 @@ canonical:
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
 	done
 # copy the various dictionary hash files, only used in non-pspell builds
-ifdef ABI_OPT_PSPELL	
+ifeq ($(ABI_OPT_PSPELL),1)
 	echo "Using Pspell build, not installing ispell hash files"
 else
 	@$(subst xxxx,$(CANONDIR)/dictionary,$(VERIFY_DIRECTORY))

@@ -119,7 +119,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)                 \
 		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)                 
 
-ifdef ABI_OPT_BIDI_ENABLED
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 OBJS +=	$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
 endif
 

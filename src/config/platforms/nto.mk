@@ -50,7 +50,7 @@ DLL_SUFFIX	= so
 AR		= qcc -a $@
 
 # Compiler flags
-ifdef ABI_OPT_DEBUG
+ifeq ($(ABI_OPT_DEBUG),1)
 OPTIMIZER	= -g 
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG

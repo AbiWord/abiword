@@ -62,7 +62,7 @@ AR		= ar cr $@
 
 # Compiler flags
 
-ifdef ABI_OPT_PROF
+ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER   	= -pg -Wall -ansi -pedantic -fprofile-arcs -ftest-coverage
 DEFINES  	= 
 OBJ_DIR_SFX	= PRF
@@ -71,7 +71,7 @@ ABI_OPT_OPTIMIZE= ""
 ABI_OPTIONS	+= Profile:On
 else
 
-	ifdef ABI_OPT_OPTIMIZE
+	ifeq ($(ABI_OPT_OPTIMIZE),1)
 	OPTIMIZER	= -O3 -Wall -ansi -pedantic
 	DEFINES		=
 	OBJ_DIR_SFX	= OPT
@@ -79,12 +79,12 @@ else
 	ABI_OPT_DEBUG	= ""
 	else #/* OPTIMIZE*/	
 
-	ifdef ABI_OPT_DEBUG
+	ifeq ($(ABI_OPT_DEBUG),1)
 	OPTIMIZER	= -g -Wall -ansi -pedantic 
 	DEFINES		= -DDEBUG -UNDEBUG
 	OBJ_DIR_SFX	= DBG
-		ifdef ABI_OPT_GNOME
-			ifdef ABI_OPT_LIBXML2
+		ifeq ($(ABI_OPT_GNOME),1)
+			ifeq ($(ABI_OPT_LIBXML2),1)
 			OBJ_DIR_SFX	= GNOME_XML
 			else
 			OBJ_DIR_SFX	= GNOME
@@ -97,21 +97,21 @@ else
 	OBJ_DIR_SFX	= OBJ
 	endif #/* DEBUG */ 
 	endif #/* OPTIMIZE */
-	ifdef ABI_OPT_GNOME
-		ifdef ABI_OPT_LIBXML2
+	ifeq ($(ABI_OPT_GNOME),1)
+		ifeq ($(ABI_OPT_LIBXML2),1)
 		OBJ_DIR_SFX	= GNOME_XML
 		else
 		OBJ_DIR_SFX	= GNOME
 		endif #/* LIBXML2 */
 	else #/* GNOME */
-		ifdef ABI_OPT_LIBXML2
+		ifeq ($(ABI_OPT_LIBXML2),1)
 		OBJ_DIR_SFX	= GTK_XML
 		endif #/* LIBXML2 */
 	endif #/* GNOME */
 
 endif #/* PROF */
 
-ifdef ABI_OPT_WAY_TOO_MANY_WARNINGS
+ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
 	OPTIMIZER 	+= -Weffc++
 endif #/* WAY_TOO_MANY_WARNINGS */
 

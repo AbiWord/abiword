@@ -100,7 +100,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 endif
 endif
 
-ifdef ABI_OPT_WIDGET
+ifeq ($(ABI_OPT_WIDGET),1)
 PLATFORM_OBJS+= $(OBJDIR)/abiwidget.$(OBJ_SUFFIX)
 endif
 

@@ -298,7 +298,7 @@ ABI_XAP_INCS=	/config						\
                 /wp/impexp/xp \
                 /wp/ap/xp/ToolbarIcons
 
-ifdef ABI_OPT_GNOME
+ifeq ($(ABI_OPT_GNOME),1)
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR) 
 endif
@@ -314,7 +314,7 @@ ifeq ($(OS_NAME), WIN32)
 ABI_OTH_INCS+=	/../../wv/glib-wv 
 endif
 
-ifdef ABI_OPT_LIBXML2
+ifeq ($(ABI_OPT_LIBXML2),1)
 ABI_PEER_INCS=
 else
 ABI_PEER_INCS=	/../../expat/lib

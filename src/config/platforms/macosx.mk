@@ -53,7 +53,7 @@ DLL_SUFFIX	= so
 AR		= ar cr $@
 
 # Compiler flags
-ifdef ABI_OPT_DEBUG
+ifeq ($(ABI_OPT_DEBUG),1)
 OPTIMIZER	= -g -Wall
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
@@ -91,7 +91,7 @@ LDFLAGS			= -framework Carbon -framework CoreServices \
 
 # Actually pspell is only available statically, so a the needed support
 # for static linkage.
-ifdef ABI_OPT_PSPELL
+ifeq ($(ABI_OPT_PSPELL),1)
 LDFLAGS      += -lpspell-modules -lstdc++
 endif
 

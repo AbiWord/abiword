@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 # fribidi library
-ifdef ABI_OPT_BIDI_ENABLED
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 DIRS=		spell fribidi
 else
 DIRS=		spell
