@@ -612,7 +612,8 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			// legal break offset is; we just scroll through the
 			// characters in between; i-th char has been processed
 			// already
-			for(UT_uint32 n = i+1; n < (UT_uint32)iNext; ++n)
+			UT_uint32 n = 0;
+			for(n= i+1; n < (UT_uint32)iNext; ++n)
 			{
 				// getTextWidth() takes LOGICAL offset
 				m_pRenderInfo->m_iOffset = n;
