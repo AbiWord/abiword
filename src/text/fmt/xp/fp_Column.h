@@ -45,6 +45,7 @@ public:
 	fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout);
 	~fp_Container();
 
+	//! Simple accessor
 	inline UT_uint32	getType(void) const { return m_iType; }
 	
 	void				setPage(fp_Page*);
@@ -56,17 +57,27 @@ public:
 	void				setX(UT_sint32);
 	void				setY(UT_sint32);
 	
+	//! Simple accessor
 	inline				UT_sint32			getMaxHeight(void) const 		{ return m_iMaxHeight; }
+	//! Simple accessor
 	inline				UT_sint32			getMaxHeightInLayoutUnits(void) const 	{ return m_iMaxHeightLayoutUnits; }
+	//! Simple accessor
 	inline				UT_sint32			getWidth(void) const 			{ return m_iWidth; }
+	//! Simple accessor
 	inline				UT_sint32			getWidthInLayoutUnits(void) const 	{ UT_ASSERT(m_iWidthLayoutUnits); return m_iWidthLayoutUnits; }
+	//! Simple accessor
 	inline				UT_sint32			getX(void) const 				{ return m_iX; }
+	//! Simple accessor
 	inline				UT_sint32			getY(void) const				{ return m_iY; }
+	//! Simple accessor
 	inline				fp_Page*			getPage(void) const				{ return m_pPage; }
+	//! Simple accessor
 	inline				fl_SectionLayout*	getSectionLayout(void) const	{ return m_pSectionLayout; }
+	//! Simple accessor
 	inline				UT_sint32			getHeight(void) const			{ return m_iHeight; }
+	//! Simple accessor
 	inline				UT_sint32			getHeightInLayoutUnits(void) const	{ return m_iHeightLayoutUnits; }
-
+	//! Get column gap from page the container is located on
 	inline				UT_sint32			getColumnGap(void) const			{ return m_pPage->getColumnGap(); }
 
 
@@ -79,7 +90,6 @@ public:
 	void				removeLine(fp_Line*);
 	UT_Bool				isEmpty(void) const;
 	
-	UT_Bool 			containsPoint(UT_sint32 x, UT_sint32 y);
 	UT_uint32 			distanceFromPoint(UT_sint32 x, UT_sint32 y);
 
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
@@ -90,24 +100,38 @@ public:
 	void				clearScreen(void);
 
 protected:
+	//! Container type
+	//! \bug Surely this should be an enum?!?
 	UT_uint32				m_iType;
 	
+	//! Page this container is located on
 	fp_Page*				m_pPage;
 
+	//! Width of the container
 	UT_sint32 				m_iWidth;
+	//! Width in layout units of the container
 	UT_sint32 				m_iWidthLayoutUnits;
+	//! Height of the container
 	UT_sint32 				m_iHeight;
+	//! Maximum height of the container
 	UT_sint32				m_iMaxHeight;
+	//! Height in layout units of the container
 	UT_sint32 				m_iHeightLayoutUnits;
+	//! Maximum height in layout units of the container
 	UT_sint32				m_iMaxHeightLayoutUnits;
 
+	//! X coordinate of container
 	UT_sint32				m_iX;
+	//! Y coordinate of container
 	UT_sint32				m_iY;
 
+	//! Vector of lines (fp_Line) in containter
 	UT_Vector				m_vecLines;
 	
+	//! Section layout type used for this container
 	fl_SectionLayout*		m_pSectionLayout;
 
+	//! GR_Graphics this container is drawn on
 	GR_Graphics*			m_pG;
 
     void                    _drawBoundaries(dg_DrawArgs* pDA);
