@@ -36,6 +36,7 @@ Allan Clark <shark@blueyonder.co.uk>            StringPool fixes, Find algorithm
 John L. Clark <jlc6@po.cwru.edu>		XHMTL Export fixes
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
+Andrew Dunbar <falconsquire@start.com.au>	UTF-8 text recognition
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Paul Egli <pegli@sourcegear.com>
 Danny Faught <faught@rstcorp.com>
