@@ -6441,6 +6441,10 @@ Defun(dlgBackground)
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 #else
-	return false;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Background dialog on Win32", __LINE__);
+	return true;
 #endif
 }
