@@ -198,7 +198,8 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
    IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
 
    Blip blip;
-   FILE *fil;
+   wvStream *fil;		// Should we really be seeing the internal structure
+   						// of wv here?
    long pos;
    FSPA * fspa;
    PICF picf;
@@ -234,20 +235,20 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	   return 0;
 	}
 	
-	pos = ftell(ps->data);
+	pos = wvStream_tell(ps->data);
 	
-	fseek(ps->data, achp->fcPic_fcObj_lTagObj, SEEK_SET);
+	wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
 	
 	wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, ps->data);
 	
-	fil = (FILE*)picf.rgb;
+	fil = (wvStream *) picf.rgb;
 	
 	if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
 	  {
 	     pDocReader->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
 	  }
 	
-	fseek(ps->data, pos, SEEK_SET);
+	wvStream_goto(ps->data, pos);
 
 	return 0;
 	break;
