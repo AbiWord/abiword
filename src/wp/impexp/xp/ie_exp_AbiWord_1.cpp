@@ -148,7 +148,6 @@ public:
 															PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
-	virtual PLListenerType getType() const {return PTL_AbiWordExp;}
 
 	/* implementation of XAP_[Internal]Resource[Manager]::Writer
 	 */

@@ -473,7 +473,6 @@ public:
 												 PL_StruxFmtHandle sfhNew));
 
 	bool	signal (UT_uint32 iSignal);
-	virtual PLListenerType getType() const {return PTL_HTMLExp;}
 
 private:
 	void 	_outputBegin (PT_AttrPropIndex api);

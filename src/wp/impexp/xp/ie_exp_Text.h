@@ -130,7 +130,6 @@ public:
 															PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
-	virtual PLListenerType getType() const {return PTL_TextExp;}
 
 protected:
 	virtual int			_wctomb(char * pC, int & length, UT_UCS4Char wc) { return m_wctomb.wctomb(pC,length,wc); }

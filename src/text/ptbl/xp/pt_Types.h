@@ -99,22 +99,15 @@ typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;
 //! ChangeFormat types
 typedef enum _PTChangeFmt { PTC_AddFmt=0, PTC_RemoveFmt=1, PTC_AddStyle=2 } PTChangeFmt;
 
-//! ID of a listener - this is its location in m_vecListeners
-typedef UT_uint32 PL_ListenerId;
-
 typedef enum _PLListenerType
 {
 	PTL_UNKNOWN,
-	PTL_DocLayout,
-	PTL_ShadowLayout,
-	PTL_AbiWordExp,
-	PTL_HTMLExp,
-	PTL_MSWord97Exp,
-	PTL_RTFExpGetProps,
-	PTL_RTFExpWriteDoc,
-	PTL_TextExp
-}PLListenerType;
+	PTL_DocLayout
+	/* add more types here ONLY as necessary */
+} PLListenerType;
 
+//! ID of a listener - this is its location in m_vecListeners
+typedef UT_uint32 PL_ListenerId;
 
 //! opaque document data
 typedef const void * PL_StruxDocHandle;

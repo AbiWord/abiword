@@ -23,7 +23,6 @@
 
 #include "ut_types.h"
 #include "pt_Types.h"
-#include "ut_assert.h"
 class PX_ChangeRecord;
 
 #ifdef __sgi
@@ -100,9 +99,6 @@ public:
 	virtual bool		signal(UT_uint32 iSignal) = 0;
 	virtual PLListenerType getType() const
 		{
-			// if you get this assert, you need to implement getType()
-			// in the derrived class
-			UT_ASSERT( UT_NOT_IMPLEMENTED );
 			return PTL_UNKNOWN;
 		}
 };
