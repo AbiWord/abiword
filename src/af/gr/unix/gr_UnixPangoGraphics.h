@@ -41,7 +41,7 @@ class GR_UnixPangoGraphics;
 class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 {
   public:
-	GR_UnixPangoFont(PangoFontDescription * pDesc, GR_UnixPangoGraphics *);
+	GR_UnixPangoFont(PangoFontDescription * pDesc, GR_UnixPangoGraphics * pG);
 	virtual ~GR_UnixPangoFont();
 
 	/*!

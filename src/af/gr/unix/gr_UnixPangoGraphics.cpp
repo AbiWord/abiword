@@ -88,11 +88,16 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 {
   public:
 	GR_UnixPangoRenderInfo(GR_ScriptType t):
-		GR_RenderInfo(t),m_pGlyphs(NULL)
+		GR_RenderInfo(t),
+		m_pGlyphs(NULL),
+		m_pJustify(NULL)
 	{
 	};
 	
-	virtual ~GR_UnixPangoRenderInfo();
+	virtual ~GR_UnixPangoRenderInfo()
+	{
+		delete [] m_pJustify;
+	};
 
 	virtual GRRI_Type getType() const {return GRRI_UNIX_PANGO;}
 	virtual bool      append(GR_RenderInfo &ri, bool bReverse = false);
@@ -103,6 +108,8 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
   public:
 
 	PangoGlyphString* m_pGlyphs;
+	int *             m_pJustify;
+
 	
 };
 
@@ -378,21 +385,111 @@ UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri, bool bPer
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
-#if 0
-	if(!RI.m_pJustify)
-		return 0;
-#endif
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, 0 );
+
+	UT_sint32 iWidth2 = 0;
+	for(UT_sint32 i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
+	{
+		iWidth2 += RI.m_pJustify[i];
+	}
+
+	if(bPermanent)
+	{
+		delete [] RI.m_pJustify;
+		RI.m_pJustify = NULL;
+	}
+	else
+	{
+		memset(RI.m_pJustify, 0, RI.m_pGlyphs->num_glyphs * sizeof(int));
+	}
+	
+	return -iWidth2;
 }
+
 
 UT_sint32 GR_UnixPangoGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, 0 );
+	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
+
+	UT_return_val_if_fail(RI.m_pText, 0);
+	UT_TextIterator & text = *RI.m_pText;
+	UT_uint32 iPosEnd   = text.getUpperLimit();
+
+	text.setPosition(iPosEnd);
+	UT_return_val_if_fail( text.getStatus()== UTIter_OK, 0 );
+	
+
+	UT_sint32 iCount = 0;
+	bool bNonBlank = false;
+
+	for(; text.getStatus() == UTIter_OK; --text)
+	{
+		UT_UCS4Char c = text.getChar();
+		
+		if(c != UCS_SPACE)
+		{
+			bNonBlank = true;
+			continue;
+		}
+		
+		// only count this space if this is not last run, or if we
+		// have found something other than spaces
+		if(!ri.m_bLastOnLine || bNonBlank)
+			iCount++;
+	}
+
+	if(!bNonBlank)
+	{
+		return -iCount;
+	}
+	else
+	{
+		return iCount;
+	}
 }
 
+/*!
+    We take the same approach as with Uniscribe; we store the justification amount in a
+    separate array of the ri and add it to the offsets before we draw. We will probably
+    need some static buffers to speed things up
+ */
 void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 {
-	UT_return_if_fail( UT_NOT_IMPLEMENTED );
+	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &) ri;
+	if(!RI.m_iJustificationPoints || !RI.m_iJustificationAmount || !RI.m_pGlyphs)
+		return;
+	
+	if(!RI.m_pJustify)
+		RI.m_pJustify = new int[RI.m_pGlyphs->num_glyphs];
+	
+	UT_return_if_fail(RI.m_pJustify);
+	memset(RI.m_pJustify, 0, RI.m_pGlyphs->num_glyphs * sizeof(int));
+	
+	UT_uint32 iExtraSpace = RI.m_iJustificationAmount;
+	UT_uint32 iPoints     = RI.m_iJustificationPoints;
+
+	UT_return_if_fail( RI.m_pText );
+	UT_TextIterator & text = *RI.m_pText;
+	
+	for(UT_sint32 i = 0; text.getStatus() == UTIter_OK && i < RI.m_iLength; ++text, ++i)
+	{
+		UT_UCS4Char c = text.getChar();
+		
+		if(c == UCS_SPACE)
+		{
+			UT_uint32 iSpace = iExtraSpace/iPoints;
+			iExtraSpace -= iSpace;
+			iPoints--;
+
+			RI.m_pJustify[i] = iSpace;
+
+			if(!iPoints)
+				break;
+		}
+	}
+
+	UT_ASSERT_HARMLESS( !iExtraSpace );
 }
 
 UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
@@ -488,6 +585,7 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 
 GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily)
 {
+	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, NULL );
 }
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
@@ -615,6 +713,7 @@ UT_sint32 GR_UnixPangoFont::measureUnremappedCharForCache(UT_UCS4Char cChar) con
 	// this is not implemented because we do not use the width cache (when shaping, it is
 	// not possible to measure characters, only glyphs)
 	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	return 0;
 }
 
 /*
