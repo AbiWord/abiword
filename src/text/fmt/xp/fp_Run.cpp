@@ -1679,7 +1679,11 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		getGR()->fillRect(clrNormalBackground, /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		if (!_getColorPG().isTransparent ())
+			getGR()->fillRect(_getColorPG(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		if (!_getColorHL().isTransparent ())	
+			getGR()->fillRect(_getColorHL(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
