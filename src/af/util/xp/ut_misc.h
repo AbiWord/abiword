@@ -77,7 +77,7 @@ public:
 };
 
 void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b);
-void UT_parseColor(const char*, UT_RGBColor&);
+ABI_EXPORT void UT_parseColor(const char*, UT_RGBColor&);
 
 class ABI_EXPORT UT_HashColor
 {

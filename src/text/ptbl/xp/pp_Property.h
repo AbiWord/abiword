@@ -147,7 +147,7 @@ const PP_Property * PP_lookupProperty(const XML_Char * pszName);
 void PP_resetInitialBiDiValues(const XML_Char * pszValue);
 #endif
 
-const XML_Char * PP_evalProperty(const XML_Char * pszName,
+ABI_EXPORT const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
@@ -155,7 +155,7 @@ const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 bool bExpandStyles=false);
 
 
-const PP_PropertyType * PP_evalPropertyType(const XML_Char * pszName,
+ABI_EXPORT const PP_PropertyType * PP_evalPropertyType(const XML_Char * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
