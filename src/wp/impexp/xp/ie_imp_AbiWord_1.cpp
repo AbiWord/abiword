@@ -748,7 +748,7 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
 	for (const XML_Char ** a = atts; (*a); a++)
 		if (UT_XML_stricmp(a[0],"name") == 0)
 			return a[1];
-	return NULL;
+	return "";
 }
 
 const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
@@ -759,7 +759,7 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 	for (const XML_Char ** a = atts; (*a); a++)
 		if (UT_XML_stricmp(a[0],"mime-type") == 0)
 			return a[1];
-	return NULL;
+	return "";
 }
 
 UT_Bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
