@@ -117,7 +117,7 @@ public:
 	  \return Type
 	*/
 	FP_ContainerType	getContainerType(void) const { return m_iType; }
-
+	bool                isColumnType(void) const;
 	virtual void		setWidth(UT_sint32) = 0;
 	virtual void		setHeight(UT_sint32) = 0 ;
 	virtual void		setX(UT_sint32, bool bDontClearIfNeeded = false) = 0;

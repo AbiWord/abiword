@@ -855,15 +855,13 @@ void fl_TableLayout::collapse(void)
 		pCL = pCL->getNext();
 	}
 
-	// delete our Table
-	pTab = (fp_TableContainer *) getFirstContainer();
+	if(pTab)
+	{
 //
 // Remove from the container it comes from
 //
-	fp_VerticalContainer * pUpCon = (fp_VerticalContainer *)pTab->getContainer();
-	pUpCon->removeContainer(pTab);
-	if (pTab)
-	{
+		fp_VerticalContainer * pUpCon = (fp_VerticalContainer *)pTab->getContainer();
+		pUpCon->removeContainer(pTab);
 		delete pTab;
 	}
 	setFirstContainer(NULL);
@@ -1718,8 +1716,9 @@ void fl_CellLayout::_localCollapse(void)
 
 	// get rid of all the layout information for every containerLayout
 	fl_ContainerLayout*	pCL = getFirstLayout();
-	while (pCL)
+	while (pCL != NULL)
 	{
+		UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x Contained Layout %x \n",this,pCL));
 		pCL->collapse();
 		pCL = pCL->getNext();
 	}

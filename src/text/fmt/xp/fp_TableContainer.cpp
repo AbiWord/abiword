@@ -60,7 +60,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
-#define SCALE_TO_SCREEN (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS
+#define SCALE_TO_SCREEN ((double)(getGraphics()->getResolution()) / UT_LAYOUT_UNITS)
 
 fp_TableRowColumn::fp_TableRowColumn(void) :
 		requisition(0),
@@ -152,7 +152,8 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	fl_TableLayout * pTab = (fl_TableLayout *) getSectionLayout()->myContainingLayout();
 	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
 	fp_Column * pCol;
-	UT_sint32 col_y =0,col_x =0;
+	UT_sint32 col_y =0;
+	UT_sint32 col_x =0;
 	UT_sint32 iLeft = m_iLeft;
 	UT_sint32 iRight = m_iRight;
 	UT_sint32 iTop = m_iTopY;
@@ -199,6 +200,22 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	else
 	{
 		pPage = getPage();
+		if(pPage)
+		{
+			pCol = (fp_Column *) getColumn();
+			pPage->getScreenOffsets(pCol,col_x,col_y);
+			fp_Container * pCon = (fp_Container *) getContainer();
+			while(!pCon->isColumnType())
+			{
+				col_x += pCon->getX();
+				col_y += pCon->getY();
+				pCon = pCon->getContainer();
+			}
+			iLeft += col_x;
+			iRight += col_x;
+			iTop += col_y;
+			iBot += col_y;
+		}
 	}
 	
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
@@ -224,6 +241,7 @@ void fp_CellContainer::clearScreen(void)
 		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
 		if(pBroke == NULL)
 		{
+			_clear(pBroke);
 			return;
 		}
 		while(pBroke)
@@ -245,7 +263,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	{
 		return;
 	}
-
+	fp_Container * pCon = getContainer();
+	if(pCon->getContainer() && !pCon->getContainer()->isColumnType())
+	{
+		UT_DEBUGMSG(("SEVIOR: Clearing nested cell lines \n"));
+	}
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec);	
@@ -440,8 +462,9 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	UT_sint32 offx =0;
 	fp_Column * pCol = (fp_Column *) pBroke->getColumn();
 	pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-	if(pBroke->getMasterTable())
+	if(pBroke->getMasterTable() && !bNested)
 	{
+		offx = pBroke->getMasterTable()->getX();
 		if(pBroke->getMasterTable()->getFirstBrokenTable() == pBroke)
 		{
 			offy = pBroke->getMasterTable()->getY();
@@ -454,43 +477,18 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	else
 	{
 		fp_Container * pCon = pBroke;
-		while((pCon->getContainer()->getContainerType() != FP_CONTAINER_COLUMN) &&
-			  (pCon->getContainer()->getContainerType() != FP_CONTAINER_COLUMN_SHADOW))
+		while(!pCon->isColumnType())
 		{
 			offy += pCon->getY();
-			if(pCon->getContainerType() == FP_CONTAINER_TABLE)
-			{
-				fp_TableContainer *  pT = (fp_TableContainer *) pCon; 
-				offy += (UT_sint32) (SCALE_TO_SCREEN * ((double)pT->getBorderWidth()));
-			}
-			pCon = pCon->getContainer();
-		}
-	}
-	offy = offy - pBroke->getYBreak();
-	if(pBroke->getMasterTable())
-	{
-		offx = pBroke->getMasterTable()->getX();
-	}
-	else
-	{
-		fp_Container * pCon = pBroke;
-		while((pCon->getContainer()->getContainerType() != FP_CONTAINER_COLUMN) &&
-			  (pCon->getContainer()->getContainerType() != FP_CONTAINER_COLUMN_SHADOW))
-		{
 			offx += pCon->getX();
-			if(pCon->getContainerType() == FP_CONTAINER_TABLE)
-			{
-				fp_TableContainer *  pT = (fp_TableContainer *) pCon; 
-				offx += (UT_sint32) (SCALE_TO_SCREEN * ((double)pT->getBorderWidth()));
-			}
 			pCon = pCon->getContainer();
 		}
 	}
-
 	UT_sint32 iLeft = col_x + m_iLeft + offx;
 	UT_sint32 iRight = col_x + m_iRight + offx;
 	UT_sint32 iTop = col_y + m_iTopY + offy;
 	UT_sint32 iBot = col_y + m_iBotY + offy;
+	m_bLinesDrawn = true;
 
 	if(pBroke != NULL)
 	{
@@ -535,7 +533,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
 		}
 	}
-	m_bLinesDrawn = true;
 }
 
 /*!
@@ -1290,6 +1287,7 @@ void fp_TableContainer::drawLines(void)
 		}
 		pCell = (fp_CellContainer *) pCell->getNext();
 	}
+	m_bRedrawLines = false;
 }
 
 fp_TableContainer * fp_TableContainer::getLastBrokenTable(void) const
@@ -2028,6 +2026,14 @@ void fp_TableContainer::setBorderWidth(UT_sint32 iBorder)
 void fp_TableContainer::queueResize(void)
 {
 	static_cast<fl_TableLayout *>(getSectionLayout())->setDirty();
+	if(getContainer() && getContainer()->getContainerType() == FP_CONTAINER_CELL)
+	{
+		fp_TableContainer * pTab = (fp_TableContainer *) getContainer()->getContainer();
+		if(pTab && pTab->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			pTab->queueResize();
+		}
+	}
 }
 void fp_TableContainer::layout(void)
 {

@@ -5564,12 +5564,19 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 			{
 				pInfo->m_iCurCell = i;
 			}
+			UT_sint32 ioff_x = 0;
+			fp_Container * pCon = (fp_Container*) pTab->getContainer();
+			while(!pCon->isColumnType())
+			{
+				ioff_x += pCon->getX();
+				pCon = (fp_Container *) pCon->getContainer();
+			}
 			if(pCur)
 			{
 				AP_TopRulerTableInfo *pTInfo = new  AP_TopRulerTableInfo;
 				pTInfo->m_pCell = pCur;
-				pTInfo->m_iLeftCellPos = pCur->getLeftPos();
-				pTInfo->m_iRightCellPos = pCur->getRightPos();
+				pTInfo->m_iLeftCellPos = pCur->getLeftPos() +ioff_x;
+				pTInfo->m_iRightCellPos = pCur->getRightPos() +ioff_x;
 				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
 				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());

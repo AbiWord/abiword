@@ -50,6 +50,19 @@ fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout*
 fp_ContainerObject::~fp_ContainerObject()
 {
 }
+
+
+/*!
+ * return true is this container is of column type
+ */
+bool fp_ContainerObject::isColumnType(void) const
+{
+  bool b = (m_iType == FP_CONTAINER_COLUMN) 
+	  || (m_iType == FP_CONTAINER_COLUMN_SHADOW)
+	  || (m_iType == FP_CONTAINER_COLUMN_POSITIONED);
+  return b;
+}
+
 /*
  *----------------------------------------------------------------------
  */
@@ -102,7 +115,7 @@ fp_Container * fp_Container::getContainer(void) const
 fp_Container* fp_Container::getColumn(void) const
 {
 	const fp_Container * pCon = this;
-	while(pCon && ((pCon->getContainerType() != FP_CONTAINER_COLUMN) && (pCon->getContainerType() != FP_CONTAINER_COLUMN_POSITIONED) &&  (pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)) )
+	while(pCon && ((!pCon->isColumnType())) )
 	{
 		pCon = pCon->getContainer();
 	}
