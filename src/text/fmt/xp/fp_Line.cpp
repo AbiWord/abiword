@@ -702,9 +702,26 @@ void fp_Line::draw(GR_Graphics* pG)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		da.xoff += pRun->getX();
+		FP_RUN_TYPE rType = pRun->getType();
+
+		// for these two types of runs, we want to draw for the
+		// entire line-width on the next line. see bug 1301
+		if (rType == FPRUN_FORCEDCOLUMNBREAK ||
+			rType == FPRUN_FORCEDPAGEBREAK)
+		{
+			// there's no need to reset anything - a page or column
+			// break is logically always the last thing on a line or 
+			// a page
+			da.xoff = my_xoff;
+		}
+		else
+		{
+			da.xoff += pRun->getX();
+		}
+
 		da.yoff += pRun->getY();
 		pRun->draw(&da);
+
 		da.xoff -= pRun->getX();
 		da.yoff -= pRun->getY();
 	}
@@ -719,9 +736,23 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	for (int i=0; i<count; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		FP_RUN_TYPE rType = pRun->getType();
 
 		dg_DrawArgs da = *pDA;
-		da.xoff += pRun->getX();
+
+		// for these two types of runs, we want to draw for the
+		// entire line-width on the next line. see bug 1301
+		if (rType == FPRUN_FORCEDCOLUMNBREAK ||
+			rType == FPRUN_FORCEDPAGEBREAK)
+		{
+			UT_sint32 my_xoff = 0, my_yoff = 0;
+			m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);			
+			da.xoff = my_xoff;
+		}
+		else
+		{
+			da.xoff += pRun->getX();
+		}
 		da.yoff += pRun->getY();
 		pRun->draw(&da);
 	}

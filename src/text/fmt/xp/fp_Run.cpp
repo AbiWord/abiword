@@ -525,7 +525,6 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
 
     m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
-    UT_DEBUGMSG(("DOM: drawTextLine\n"));
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
         m_pG->fillRect(m_colorHL,xoffText,yoffText,iTextWidth,iTextHeight);
         m_pG->drawChars(pText,0,iTextLen,xoffText,yoffText);
@@ -2612,11 +2611,11 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
         return;
     }
 
-    UT_sint32 iLineWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
+    UT_sint32 iLineWidth  = m_pLine->getMaxWidth();
 
     UT_UCSChar *pColumnBreak;
     UT_UCS_cloneString_char(&pColumnBreak,"Column Break");
-    _drawTextLine(pDA->xoff,pDA->yoff - m_pLine->getAscent() / 3,iLineWidth,m_pLine->getHeight(),pColumnBreak);
+	_drawTextLine(pDA->xoff,pDA->yoff+m_pLine->getAscent(),iLineWidth,m_pLine->getHeight(),pColumnBreak);
     FREEP(pColumnBreak);
 }
 
@@ -2721,11 +2720,12 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
         return;
     }
 
-    UT_sint32 iLineWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
+    UT_sint32 iLineWidth  = m_pLine->getMaxWidth();
 
     UT_UCSChar *pPageBreak;
     UT_UCS_cloneString_char(&pPageBreak,"Page Break");
-    _drawTextLine(pDA->xoff,pDA->yoff - m_pLine->getAscent() / 3,iLineWidth,m_pLine->getHeight(),pPageBreak);
+
+	_drawTextLine(pDA->xoff,pDA->yoff+m_pLine->getAscent(),iLineWidth,m_pLine->getHeight(),pPageBreak);
     FREEP(pPageBreak);
 }
 
