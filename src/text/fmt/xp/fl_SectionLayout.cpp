@@ -482,6 +482,15 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 		fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 		if (pPrevSL)
 		{
+		  //
+		  // Sevior this code should not be needed!
+		  //
+		        fp_Column * pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
+			if(pPrevCol == NULL)
+			{
+			        UT_DEBUGMSG(("BUG! BUG! Prev section has no last container! Attempting to fix this \n"));
+				pPrevSL->format();
+			}
 			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
 			if (m_bForceNewPage)
 			{
