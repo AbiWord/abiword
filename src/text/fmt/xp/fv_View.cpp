@@ -7927,19 +7927,12 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	const fp_PageSize pageSize = getPageSize();
 	double pageWidth = pageSize.Width(DIM_IN);
 
-	// Set graphics zoom to 100 so we can get the display resolution.
-	GR_Graphics *pG = getGraphics();
-	UT_uint32 temp_zoom = pG->getZoomPercentage();
-	pG->setZoomPercentage(100);
-	UT_uint32 resolution = pG->getResolution();
-	pG->setZoomPercentage(temp_zoom);
-
 	// Verify scale as a positive non-zero number else return old zoom
 	if ( ( getWindowWidth() - 2 * getPageViewLeftMargin() ) <= 0 )
-		return temp_zoom;
+		return getGraphics()->getZoomPercentage();
 
 	double scale = static_cast<double>(getWindowWidth() - 2 * getPageViewLeftMargin()) /
-		(pageWidth * static_cast<double>(resolution));
+		(pageWidth * static_cast<double>(getGraphics()->getResolution()));
 	return static_cast<UT_uint32>(scale * 100.0);
 }
 
@@ -7949,19 +7942,12 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	const fp_PageSize pageSize = getPageSize();
 	double pageHeight = pageSize.Height(DIM_IN);
 
-	// Set graphics zoom to 100 so we can get the display resolution.
-	GR_Graphics *pG = getGraphics();
-	UT_uint32 temp_zoom = pG->getZoomPercentage();
-	pG->setZoomPercentage(100);
-	UT_uint32 resolution = pG->getResolution();
-	pG->setZoomPercentage(temp_zoom);
-
 	// Verify scale as a positive non-zero number else return old zoom
 	if ( ( getWindowHeight() - 2 * getPageViewTopMargin() ) <= 0 )
-		return temp_zoom;
+		return getGraphics()->getZoomPercentage();
 
 	double scale = static_cast<double>(getWindowHeight() - 2 * getPageViewTopMargin()) /
-		(pageHeight * static_cast<double>(resolution));
+		(pageHeight * static_cast<double>(getGraphics()->getResolution()));
 	return static_cast<UT_uint32>(scale * 100.0);
 }
 
