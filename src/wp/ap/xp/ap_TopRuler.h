@@ -171,7 +171,7 @@ public:
 	UT_uint32		getHeight(void) const;
 	void			setWidth(UT_uint32 iWidth);
 	UT_uint32		getWidth(void) const;
-	GR_Graphics *	getGraphics(void) const { return m_pG;}
+	GR_Graphics *	getGR(void) const { return m_pG;}
 	void			draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo = NULL);
 	void			scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 

@@ -186,8 +186,8 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 
 	UT_DEBUGMSG(("SEVIOR: e->button = %x \n",e->button));
 	pUnixTopRuler->mousePress(ems, emb, 
-				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
+				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
 	return 1;
 }
 
@@ -216,8 +216,8 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 		emb = EV_EMB_BUTTON3;
 
 	pUnixTopRuler->mouseRelease(ems, emb, 
-				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
+				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -258,10 +258,10 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	//s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
 
 	pUnixTopRuler->mouseMotion(ems, 
-				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
-	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->m_pG->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->m_pG->tlu((UT_uint32) e->y));
+				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
+	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
+				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
 
 	return 1;
 
@@ -295,10 +295,10 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		return 0;
 	}
 	UT_Rect rClip;
-	rClip.left = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.x);
-	rClip.top = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.y);
-	rClip.width = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.width);
-	rClip.height = pUnixTopRuler->m_pG->tlu(pExposeEvent->area.height);
+	rClip.left = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.x);
+	rClip.top = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.y);
+	rClip.width = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.width);
+	rClip.height = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.height);
 
 	pUnixTopRuler->draw(&rClip);
 	return 0;
