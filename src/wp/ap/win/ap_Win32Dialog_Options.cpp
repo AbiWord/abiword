@@ -70,7 +70,7 @@ AP_Win32Dialog_Options::AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Options(pDlgFactory,id),m_pDialogFactory(pDlgFactory)
 {
-	
+	m_langchanged = FALSE;	
 }
 
 AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
@@ -78,8 +78,20 @@ AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
 	
 }
 
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+void AP_Win32Dialog_Options::checkLanguageChange()
+{
+	UT_String sLang;
+
+	_gatherUILanguage(sLang);	
+
+	if (m_curLang!=sLang)
+		m_langchanged = TRUE;						 	
+		
+}
 
 void AP_Win32Dialog_Options::_initEnableControlsPlatformSpecific()
 {
@@ -124,6 +136,14 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 		m_answer = a_OK;
 	else		
 		m_answer = a_CANCEL;
+
+	if (m_langchanged) 
+	{
+		const XAP_StringSet * pSS = getApp()->getStringSet();	
+		::MessageBox(NULL, pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_YouMustRestart), 
+			"Abiword",MB_OK);
+	}
+	
 }	
 
 struct {
@@ -469,6 +489,9 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 			break;
 		}
 	}		
+
+	if (!m_curLang.size())
+		m_curLang = stExt;
 }
 
 
@@ -519,13 +542,15 @@ int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLong(hWnd, GWL_USERDATA);					
 		HWND hWndPref = t->getParent()->getPage(PG_PREF);
 		AP_Win32Dialog_Options_Pref * prefPag = (AP_Win32Dialog_Options_Pref *) GetWindowLong(hWndPref, GWL_USERDATA);							
-		
+				
 		if (!prefPag->isAutoSaveInRange()) return 0;
 		
 		if(IsDlgButtonChecked((HWND)t->getParent()->getPage(PG_LAYOUT), AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) != BST_CHECKED )
 			t->getParent()->_setColorForTransparent("ffffff");
 			
 		t->getParent()->_storeWindowData(); 					// remember current settings
+		t->getParent()->checkLanguageChange();
+		
 	}
 	
 	if (wID==ID_APPLY_NOW)	// Save default button

@@ -417,6 +417,7 @@ dcl(DLG_Options_Label_CheckWhiteForTransparent, "Allow screen colors other than 
 dcl(DLG_Options_Label_ChooseForTransparent, "Choose Screen Color")
 dcl(DLG_Options_Label_ColorChooserLabel,	"Choose screen color for AbiWord")
 dcl(DLG_Options_Label_InvalidRangeForAutoSave,	"You should choose a range from 1 to 120 for the auto save frequency")
+dcl(DLG_Options_Prompt_YouMustRestart,	"The new user interface language will take effect the next time that you start the application")
 
 dcl(DLG_Options_Prompt_IgnoreResetCurrent,	"Do you want to reset ignored words in the current document?")
 dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in all the documents?")
