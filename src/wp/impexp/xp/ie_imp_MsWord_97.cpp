@@ -624,12 +624,12 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			   if(f==fname)
 				 {
 				   FREEP(fname);
-				   fname=strdup("song");
+				   fname=UT_strdup("song");
 				 }
 			   else
 				 {
 				   FREEP(fname);
-				   fname=strdup(f);
+				   fname=UT_strdup(f);
 				 }			   
 		      }
 		   }
@@ -854,11 +854,11 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 	// this is just a BMP file, so we'll use the BMP image importer
 	// to convert it to a PNG for us.
 	err = IE_ImpGraphic::constructImporter("", IEGFT_DIB, &converter);
-	mimetype = strdup("image/png");
+	mimetype = UT_strdup("image/png");
 	break;
       case msoblipPNG:
 	// conveniently, PNG is the internal format, so we do nothing here
- 	mimetype = strdup("image/png");
+ 	mimetype = UT_strdup("image/png");
 	break;
       case msoblipWMF:
       case msoblipEMF:
