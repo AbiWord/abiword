@@ -87,7 +87,7 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 //////////////////////////////////////////////////////////////////
 
 UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf, 
-										   UT_uint32 iNumbytes)
+													  UT_uint32 iNumbytes)
 {
 	if ( iNumbytes < 5 )
 	{
@@ -1211,21 +1211,7 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 #ifdef BIDI_ENABLED
 	m_dir = FRIBIDI_TYPE_UNSET;
 #endif
-};                  
-
-
-RTFProps_SectionProps& RTFProps_SectionProps::operator=(const RTFProps_SectionProps& other)
-{
-	if (this != &other)
-	{
-		m_numCols = other.m_numCols;
-		m_breakType = other.m_breakType;
-		m_pageNumFormat = other.m_pageNumFormat;
-		m_bColumnLine = other.m_bColumnLine;
-	}
-
-	return *this;
-}
+};
 
 RTFStateStore::RTFStateStore()
 {
@@ -1234,18 +1220,6 @@ RTFStateStore::RTFStateStore()
 	m_unicodeAlternateSkipCount = 1;
 	m_unicodeInAlternate = 0;
 }
-
-#if 0
-static double _twips2inch (const char * szTwips)
-{
-	if (!szTwips)
-		return 0;
-
-	UT_sint32 twips = atoi (szTwips);
-
-	return (twips/720);
-}
-#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -3255,31 +3229,49 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			getDoc()->setEncodingName("MacRoman");
 			return true;
 		}
-		if( strcmp((char *)pKeyword, "marglsxn") == 0 || strcmp((char *)pKeyword, "margl") == 0)
+
+
+		if( strcmp((char *)pKeyword, "marglsxn") == 0 )
 		{
 			// Left margin of section
 			m_currentRTFState.m_sectionProps.m_leftMargTwips = param;
 		}
-		else if( strcmp((char *)pKeyword, "margrsxn") == 0 || strcmp((char *)pKeyword, "margr") == 0)
+		else if ( strcmp((char *)pKeyword, "margl") == 0 )
+			{
+				m_sectdProps.m_leftMargTwips = param ;
+			}
+
+		else if( strcmp((char *)pKeyword, "margrsxn") == 0 )
 		{
 			// Right margin of section
 			m_currentRTFState.m_sectionProps.m_rightMargTwips = param;
 		}
-		else if( strcmp((char *)pKeyword, "margtsxn") == 0 || strcmp((char *)pKeyword, "margt") == 0)
+		else if ( strcmp((char *)pKeyword, "margr") == 0 )
+			{
+				m_sectdProps.m_rightMargTwips = param;
+			}
+
+		else if ( strcmp((char *)pKeyword, "margtsxn") == 0 )
 		{
 			// top margin of section
 			m_currentRTFState.m_sectionProps.m_topMargTwips = param;
 		}
-		else if( strcmp((char *)pKeyword, "margbsxn") == 0 || strcmp((char *)pKeyword, "margb") == 0)
+		else if ( strcmp((char *)pKeyword, "margt") == 0 )
+			{
+				m_sectdProps.m_topMargTwips = param;
+			} 
+
+		else if( strcmp((char *)pKeyword, "margbsxn") == 0 )
 		{
 			// bottom margin of section
 			m_currentRTFState.m_sectionProps.m_bottomMargTwips = param;
 		}
-		else if ( strcmp((char *)pKeyword, "margl") == 0)
+		else if( strcmp((char *)pKeyword, "margb") == 0 )
 			{
-
+				m_sectdProps.m_bottomMargTwips = param;
 			}
 		break;
+
 	case 'o': 
 		if (strcmp((char*)pKeyword,"ol") == 0)
 		{
@@ -4623,7 +4615,7 @@ bool IE_Imp_RTF::ResetSectionAttributes()
 	
 	// margr, margl, margt, margb, paperh, gutter
 
-	m_currentRTFState.m_sectionProps = RTFProps_SectionProps();
+	m_currentRTFState.m_sectionProps = m_sectdProps ;
 
 	return ok;
 }
