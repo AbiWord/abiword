@@ -23,18 +23,81 @@
 // TODO move these declarations into platform directories.
 
 #ifdef WIN32
+// The 'cool' win32 assert, at least with VC6, corrups memory (probably calling sprintf on
+// a static buffer without checking bounds), so we implement our own assert dialog, which
+// is even cooler. TF
 
-// Win32 assert() is cool, so we use it as is.
-#if !defined(_MSC_VER)
-#	include <assert.h>
-#	define UT_ASSERT assert
+#ifdef NDEBUG
+#  define UT_ASSERT(x)
 #else
-// TMN: But the default Microsoft version is not thread-safe, and to add to
-// the "coolness" factor, and usability, the following is way cooler.
-#	include <stdlib.h>
-#	include <crtdbg.h>
-#	define UT_ASSERT _ASSERTE
-#endif
+// This function is implemented in ut_Win32Misc.cpp. It is not declared in any header file (it is
+// only to be referenced from here and we want to reduce the files we include here to a
+// bare minimum for performance reasons, as this file gets included from pretty much
+// everywhere).
+extern int UT_Win32ThrowAssert(const char * pCondition, const char * pFile, int iLine, int iCount);
+
+// The best way of stepping into debugger is by generating the appropriate interupt
+// instruction, so if we are on Intel x86, we will issue int 3.  If we are not on x86, we
+// will use the win32 DebugBreak() function (the disadvantage of that is that the
+// execution is interupted not in our code, but in one of the system libs, so you have to
+// step out of that system function to get into our code; its rather non-intuitive.
+
+#  undef UT_DEBUG_BREAK
+
+// I am not sure which is the standard GCC macro for the x86 platform; we are supposed to
+// be able to get all the predefined macros by running 'cpp -dM' but it would not work on
+// my cygwin
+#  if defined(__GNUC__) && (defined(_X86) || defined(__i386) || defined(i386))
+//   Inline assembly for GCC on x86
+#    define UT_DEBUG_BREAK asm("int 3");
+#  elif defined(_MSC_VER) && defined(_M_IX86)
+//   inline assmebly for MSVC on x86
+#    define UT_DEBUG_BREAK _asm {int 3}
+#  endif
+
+# ifndef UT_DEBUG_BREAK
+// Some compiler/architecture for which we do not know how to generate inline assembly to pass
+// control to the debugger; we use win32s DebugBreak().
+// 
+// TODO !!! This currently does not work; if someone one day wants to build AW on non-x86
+// win32 architecture, they will need to fix this (including <windows.h> from here, which
+// is what would work, screws up things in MS Word importer, because the wv library
+// redefines some of the win32 structures; but we probably do not want to include
+// windows.h from here anyway because of the overhead -- ut_assert.h gets included in
+// almost everything.). Really, we want to do something similar as we do for x86.
+#  error "Proper implementation needed for this compiler/architecture"
+
+#    ifndef _WINBASE_
+       __declspec(dllimport) void __stdcall DebugBreak(void);
+#    endif /* ifdef _WINBASE_ */
+
+#    define UT_DEBUG_BREAK DebugBreak();
+#  endif /* ifndef UT_DEBUG_BREAK */
+
+// We want to track the number of times we have been through this assert and have the
+// option of disabling this assert for the rest of the session; we use the __iCount and
+// __bOnceOnly vars for this (this adds a few bytes to the code and footprint, but on
+// large scale of things, this is quite negligible for the debug build).
+#define UT_ASSERT(x)                                                        \
+{                                                                           \
+	static bool __bOnceOnly = false;                                        \
+	static long __iCount = 0;                                               \
+	if(!__bOnceOnly && !(x))                                                \
+	{                                                                       \
+		__iCount++;                                                         \
+		int __iRet = UT_Win32ThrowAssert(#x,__FILE__, __LINE__, __iCount);  \
+        if(__iRet == 0)                                                     \
+		{                                                                   \
+		   UT_DEBUG_BREAK                                                   \
+		}                                                                   \
+		else if(__iRet < 0)                                                 \
+		{                                                                   \
+			__bOnceOnly = true;                                             \
+		}                                                                   \
+	}                                                                       \
+}
+
+#endif // ifdef NDEBUG
 
 #elif defined(__BEOS__)
 	// A BeOS variant.
