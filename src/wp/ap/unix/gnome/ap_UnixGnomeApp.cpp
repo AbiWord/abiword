@@ -357,8 +357,8 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	      // couldn't load document
 	      UT_DEBUGMSG(("DOM: Couldn't load frame\n"));
 	    }
-	  if (!show)
-	    return true;
+	  shutDown ();
+	  delete this;
 	}
 	
 	while ((file = poptGetArg (poptcon)) != NULL) {

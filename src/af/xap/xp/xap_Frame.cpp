@@ -115,6 +115,17 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 
 XAP_Frame::~XAP_Frame(void)
 {
+  // if we're auto-saving files and now we're exiting normally
+  // delete/unlink the file
+  bool autosave = true;
+  getApp()->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, &autosave);
+  if (autosave)
+    {
+      UT_String backupName = makeBackupName ();
+      UT_DEBUGMSG(("DOM: removing backup file %s\n", backupName.c_str()));
+      UT_unlink ( backupName.c_str() );
+    }
+
 	// only delete the things that we created...
   	DELETEP(m_pKeyboard);
 	DELETEP(m_pMouse);
@@ -729,37 +740,47 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
 	return ans;
 }
 
+UT_String XAP_Frame::makeBackupName(const char* szExt)
+{
+  UT_String ext(szExt ? szExt : m_stAutoSaveExt);
+  UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
+  UT_String backupName;
+  
+  if (oldName.empty())
+    {
+      const XAP_StringSet * pSS = m_app->getStringSet();
+      const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument);
+      int iLen = strlen(szTmp) + 10;
+      char *szTmp2 = new char[iLen];
+      
+      sprintf(szTmp2, szTmp, m_iUntitled);
+      oldName = szTmp2;
+      delete[] (szTmp2);
+      UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
+    }
+  else
+    UT_DEBUGMSG(("Filename [%s]\n", oldName.c_str()));
+  
+  backupName = oldName + ext;
+
+  UT_DEBUGMSG(("DOM: created backup filename %s\n", backupName.c_str()));
+
+  return backupName;
+}
+
 /**
  * It saves the current document with an extension stExt.
  * If the extension is empty, then it save the document with
  * the default extension (as defined in the preferences dialog box)
  */
-UT_Error XAP_Frame::backup(const char* stExt)
+UT_Error XAP_Frame::backup(const char* szExt)
 {
 	if (m_bBackupRunning)
 		return UT_OK;
 	m_bBackupRunning = true;
 
-	UT_String ext(stExt ? stExt : m_stAutoSaveExt);
-	UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
-	UT_String backupName;
+	UT_String backupName = makeBackupName ( szExt );
 
-	if (oldName.empty())
-	{
-		const XAP_StringSet * pSS = m_app->getStringSet();
-		const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument);
-		int iLen = strlen(szTmp) + 10;
-		char *szTmp2 = new char[iLen];
-
-		sprintf(szTmp2, szTmp, m_iUntitled);
-		oldName = szTmp2;
-		delete[] (szTmp2);
-		UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
-	}
-	else
-		UT_DEBUGMSG(("Filename [%s]\n", oldName.c_str()));
-
-	backupName = oldName + ext;
 	UT_Error error = m_pDoc->saveAs(backupName.c_str(), m_pDoc->getLastSavedAsType(), false);
 	UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
 

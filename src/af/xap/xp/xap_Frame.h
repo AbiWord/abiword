@@ -159,7 +159,8 @@ public:
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer);
 
-	UT_Error					backup(const char* stExt = 0);
+	UT_Error	    backup(const char* stExt = 0);
+	UT_String makeBackupName (const char * szExt = 0);
 
 	// Useful to refresh the size of the Frame.  For instance,
 	// when the user selects hide statusbar, the Frame has to be

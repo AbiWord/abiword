@@ -199,9 +199,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 //
 // Update the combo boxes on the frame with this documents info.
 //
-	XAP_Frame * pFrame = (XAP_Frame *) getParentData();
-	UT_ASSERT((pFrame));
-	pFrame->repopulateCombos();
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if( pFrame )
+	  pFrame->repopulateCombos();
 
 	// what we want to do here is to set the default language
 	// that we're editing in
