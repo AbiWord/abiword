@@ -56,10 +56,8 @@ void ap_csb_TextListener::notify()
 	UT_ASSERT(m_pLabel);
 
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
-	const UT_UCS4Char * buf = textInfo->getBufUCS();
-	UT_UTF8String utf8 (buf);	
 
-	NSString* str = [[NSString alloc] initWithUTF8String:utf8.utf8_str()];
+	NSString* str = [[NSString alloc] initWithUTF8String:textInfo->getBuf().utf8_str()];
 	[m_pLabel setStringValue:str];
 	[str release];
 
