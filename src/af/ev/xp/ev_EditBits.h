@@ -43,8 +43,8 @@ typedef UT_uint32 EV_EditModifierState;								/* may be ORed */
 #define EV_EMS_ALT				((EV_EditModifierState) 0x04000000)
 #define EV_EMS_ToNumber(ems)			(((ems)&EV_EMS__MASK__)>>24)
 #define EV_EMS_ToNumberNoShift(ems)		(((ems)&EV_EMS__MASK__)>>25)	/* exclude shift */
-#define EV_EMS_FromNumber(n)			(((n<<24)&EV_EMS__MASK__))
-#define EV_EMS_FromNumberNoShift(n)		(((n<<25)&EV_EMS__MASK__))
+#define EV_EMS_FromNumber(n)			((((n)<<24)&EV_EMS__MASK__))
+#define EV_EMS_FromNumberNoShift(n)		((((n)<<25)&EV_EMS__MASK__))
 
 
 typedef UT_uint32 EV_EditKeyPress;									/* may be ORed */
@@ -71,7 +71,7 @@ typedef UT_uint32 EV_EditMouseOp;									/* may not be ORed */
 #define EV_EMO_DRAG				((EV_EditMouseOp)		0x00030000)
 #define EV_EMO_RELEASE			((EV_EditMouseOp)		0x00040000)
 #define EV_EMO_ToNumber(emb)	(((emb)&EV_EMO__MASK__)>>16)
-#define EV_EMO_FromNumber(n)	(((n<<16)&EV_EMO__MASK__))
+#define EV_EMO_FromNumber(n)	((((n)<<16)&EV_EMO__MASK__))
 
 
 typedef UT_uint32 EV_EditVirtualKey;								/* may not be ORed */
