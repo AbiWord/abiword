@@ -3831,6 +3831,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_styleIndent(0),
 		m_fdCSS(0),
 		m_bIgnoreTillEnd(false),
+	    m_bIgnoreTillNextSection(false),
 		m_iEmbedStartPos(0),
 		m_dPageWidthInches(0.0),
 		m_dSecLeftMarginInches(0.0),
