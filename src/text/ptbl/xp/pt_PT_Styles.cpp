@@ -118,10 +118,13 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 	if (getStyle(szName,&pStyle) == true)
 		return false;		// duplicate name
 
-	pStyle = new PD_BuiltinStyle(this, indexAP);
+	pStyle = new PD_BuiltinStyle(this, indexAP, szName);
 	if (pStyle)
-		m_hashStyles.insert((UT_HashTable::HashKeyType)szName,
-							(UT_HashTable::HashValType)pStyle);
+	  {
+	    UT_DEBUGMSG(("DOM: insert style name: %s\n", szName));
+		m_hashStyles.insert(szName,
+				    (void *)pStyle);
+	  }
 	return true;
 }
 
@@ -164,13 +167,13 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	else
 	{
 		// this is a new name
-		pStyle = new PD_Style(this, indexAP);
+		pStyle = new PD_Style(this, indexAP, szName);
 		UT_DEBUGMSG(("SEVIOR: Creating new style %s \n",szName));
 //
 //TODO: Learn how to use Dom's AbiObject instead of this hack.
 //
 		if (pStyle)
-			m_hashStyles.insert( (UT_HashTable::HashKeyType) UT_strdup(szName),(UT_HashTable::HashValType)pStyle);
+			m_hashStyles.insert(szName,(void *)pStyle);
 //
 // Diagonostic on Append...
 //
@@ -202,7 +205,7 @@ bool pt_PieceTable::removeStyle (const XML_Char * szName)
 		
 		delete pStyle;
 
-		m_hashStyles.remove ((UT_HashTable::HashKeyType)szName, 0);
+		m_hashStyles.remove (szName, NULL);
 		return true;
 	}
 
@@ -213,7 +216,7 @@ bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	UT_ASSERT(szName && *szName);
 	
-	UT_HashTable::HashValType pHashEntry = m_hashStyles.pick ((UT_HashTable::HashKeyType)szName);
+	const void * pHashEntry = m_hashStyles.pick (szName);
 	if (!pHashEntry)
 		return false;
 
@@ -243,8 +246,8 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 	
-	UT_HashTable::UT_HashCursor c (&m_hashStyles);
-	UT_HashTable::HashValType val = c.first();
+	UT_StringPtrMap::UT_Cursor c (&m_hashStyles);
+	const void * val = c.first();
 	UT_uint32 i = 0;
 
 	while (i != k)
@@ -265,9 +268,8 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 
 	if (pszName)
 	{
-		*pszName = (XML_Char *)c.key();
+	  *pszName = pStyle->getName();
 	}
 	UT_ASSERT(*pszName);
 	return true;
 }
-	

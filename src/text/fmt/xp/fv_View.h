@@ -51,7 +51,7 @@ class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
 class XAP_App;
 class XAP_Prefs;
-class UT_HashTable;
+class UT_StringPtrMap;
 class PP_AttrProp;
 class fl_AutoNum;
 class fp_PageSize;
@@ -510,7 +510,7 @@ protected:
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 
 	// prefs listener - to change cursor blink on/off (and possibly others)
-	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_HashTable *, void *);
+	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_StringPtrMap *, void *);
 
 	bool		m_bShowPara;
 	ViewMode        m_viewMode;

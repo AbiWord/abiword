@@ -82,8 +82,8 @@ public:
 protected:
 	void _computeCheckSum(void);
 	
-	UT_HashTable * m_pAttributes;
-	UT_HashTable * m_pProperties;
+	UT_StringPtrMap * m_pAttributes;
+	UT_StringPtrMap * m_pProperties;
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 };

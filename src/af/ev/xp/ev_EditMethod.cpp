@@ -30,10 +30,10 @@
 /*****************************************************************/
 
 EV_EditMethodCallData::EV_EditMethodCallData()
-	: m_xPos(0),
-	  m_yPos(0),
-	  m_dataLength(0),
-	  m_bAllocatedData(false)
+	:  m_dataLength(0),
+	   m_bAllocatedData(false),
+	   m_xPos(0),
+	   m_yPos(0)
 {
 	  m_pData = NULL;
 }
@@ -177,9 +177,9 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 
 	// first, see if it's in our hashtable
 	// TODO: should this be class-wide instead of static here?
-	static UT_HashTable emHash (m_countStatic);
+	static UT_StringPtrMap emHash (m_countStatic);
 
-	UT_HashTable::HashValType entry = emHash.pick ((UT_HashTable::HashKeyType)szName);
+	const void * entry = emHash.pick (szName);
 	if (entry)
 	  {
 	    return (EV_EditMethod *)entry;
@@ -187,16 +187,16 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 
 	// nope, bsearch for it in our private array
 	mthd = (EV_EditMethod *)bsearch(szName, 
-									m_arrayStaticEditMethods, 
-									m_countStatic, 
-									sizeof (EV_EditMethod),
-									ev_compar);
+					m_arrayStaticEditMethods, 
+					m_countStatic, 
+					sizeof (EV_EditMethod),
+					ev_compar);
 
 	if (mthd)
 	  {
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
-	    emHash.insert((UT_HashTable::HashKeyType)szName, (UT_HashTable::HashValType)mthd);
+	    emHash.insert(szName, (void *)mthd);
 	    return mthd;
 	  }
 

@@ -20,10 +20,6 @@
 #ifndef XAP_UNIXFONTMANAGER_H
 #define XAP_UNIXFONTMANAGER_H
 
-//////////////////////////////////////////////////////////////////
-// TODO rename this class with XAP_ prefix
-//////////////////////////////////////////////////////////////////
-
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
@@ -60,7 +56,7 @@ protected:
 	// perhaps this should be a hash to avoid duplicates?
 	UT_Vector				m_searchPaths;
 
-	UT_HashTable 			m_fontHash;
+	UT_StringPtrMap 			m_fontHash;
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */

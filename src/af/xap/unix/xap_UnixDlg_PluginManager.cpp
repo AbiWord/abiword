@@ -335,6 +335,8 @@ void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(cf);
 	connectFocus(GTK_WIDGET(cf),pFrame);
 
+	gtk_widget_set_usize(cf, 350, 210);
+
 	// get top level window and its GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);

@@ -187,7 +187,7 @@ protected:
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
-									   class UT_HashTable *, void *);
+									   class UT_StringPtrMap *, void *);
 
 
 	static void			_redrawUpdate(UT_Timer * pTimer);
@@ -202,7 +202,7 @@ protected:
 	fl_DocSectionLayout*m_pFirstSection;
 	fl_DocSectionLayout*m_pLastSection;
 	
-	UT_HashTable		m_hashFontCache;
+	UT_StringPtrMap		m_hashFontCache;
 
 	// spell check stuff
 	UT_Vector			m_vecUncheckedBlocks;

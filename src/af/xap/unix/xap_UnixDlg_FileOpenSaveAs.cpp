@@ -623,7 +623,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
 
-	gtk_file_selection_hide_fileop_buttons(pFS);
+	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE) // only hide the buttons if we're opening a file/picture
+	  gtk_file_selection_hide_fileop_buttons(pFS);
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.

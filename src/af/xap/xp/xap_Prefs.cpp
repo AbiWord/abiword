@@ -87,21 +87,21 @@ bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
 bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 {
 	++m_uTick;
-	UT_HashTable::HashValType pEntry = m_hash.pick((UT_HashTable::HashKeyType)szKey);
+	const void * pEntry = m_hash.pick(szKey);
 	if (pEntry)
 	{
 		if (strcmp((const char*)szValue,(const char *)pEntry) == 0)
 			return true;				// equal values, no changes required
 		
 		FREEP(pEntry);
-		m_hash.set ((UT_HashTable::HashKeyType)szKey, 
-					(UT_HashTable::HashValType)UT_strdup (szValue));
+		m_hash.set (szKey, 
+			    (void *)UT_strdup (szValue));
 	}
 	else
 	{
 		// otherwise, need to add a new entry
-		m_hash.insert((UT_HashTable::HashKeyType)szKey,
-					  (UT_HashTable::HashValType)UT_strdup(szValue));
+		m_hash.insert(szKey,
+			      (void *)UT_strdup(szValue));
 	}
 
 	m_pPrefs->_markPrefChange( szKey );
@@ -116,7 +116,7 @@ bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, bool bValue)
 
 bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
-	UT_HashTable::HashValType pEntry = m_hash.pick((UT_HashTable::HashKeyType)szKey);
+	const void *pEntry = m_hash.pick(szKey);
 	if (!pEntry)
 		return false;
 
@@ -127,7 +127,7 @@ bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValu
 
 bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
 {
-	UT_HashTable::HashValType pEntry = m_hash.pick((UT_HashTable::HashKeyType)stKey.c_str());
+	const void * pEntry = m_hash.pick(stKey);
 	if (!pEntry)
 		return false;
 
@@ -170,8 +170,8 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 		return false;
 
 	UT_uint32 i = 0;
-	UT_HashTable::UT_HashCursor c (&m_hash);
-	UT_HashTable::HashValType v = c.first();
+	UT_StringPtrMap::UT_Cursor c (&m_hash);
+	const void *v = c.first();
 
 	if (!v)
 		return false;
@@ -180,7 +180,7 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 	{
 		if (i == k)
 		{
-			*pszKey = (const XML_Char *)c.key();
+			*pszKey = (const XML_Char *)c.key().c_str();
 			*pszValue = (const XML_Char *)v;
 			return true;
 		}
@@ -1362,21 +1362,21 @@ void XAP_Prefs::_markPrefChange( const XML_Char *szKey )
 {
 	if ( m_bInChangeBlock )
 	{
-		UT_HashTable::HashValType uth_e = m_ahashChanges.pick((UT_HashTable::HashKeyType) szKey );
+		const void * uth_e = m_ahashChanges.pick(szKey );
 
 		if ( uth_e ) 
-			uth_e = (UT_HashTable::HashValType)1;
+			uth_e = (const void *)1;
 		else
-			m_ahashChanges.insert((UT_HashTable::HashKeyType) szKey, (UT_HashTable::HashValType)1);	
+			m_ahashChanges.insert(szKey, (void *)1);	
 
 		// notify later
 	}
 	else
 	{
-		UT_HashTable	changes(3);
-		changes.insert((UT_HashTable::HashKeyType) szKey, (UT_HashTable::HashValType)1 );	
+		UT_StringPtrMap	changes(3);
+		changes.insert(szKey, (void *)1);	
 
-		_sendPrefsSignal( (UT_HashTable *)&changes );
+		_sendPrefsSignal(&changes);
 	}
 }
 
@@ -1394,7 +1394,7 @@ void XAP_Prefs::endBlockChange()
 	}
 }
 
-void XAP_Prefs::_sendPrefsSignal( UT_HashTable *hash  )
+void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 {
 	UT_uint32	index;
 	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )

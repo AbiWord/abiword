@@ -415,7 +415,7 @@ protected:
 	void					_purgeEndOfParagraphRun(void);
 	void					_breakLineAfterRun(fp_Run* /*pRun*/);
 
-	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_HashTable * /*phChanges*/, void * data);
+	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void * data);
 
 	void					_createListLabel(void);
 	void					_deleteListLabel(void);

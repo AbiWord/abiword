@@ -29,9 +29,8 @@
 // fwd. decls.
 static  UT_uint32 _Recommended_hash_size(UT_uint32	size);
 static  UT_uint32 _Recommended_hash_size(UT_uint32	numslots,
-										 UT_uint32	slotsize,
-										 UT_uint32	max_tablesize);
-
+					 UT_uint32	slotsize,
+					 UT_uint32	max_tablesize);
 
 // Here we declare a couple of classes internal to the hashtable's impl
 
@@ -40,23 +39,18 @@ class key_wrapper
 {
 public:
 	key_wrapper() 
-		: m_val(0), m_hashval(0) { }
+		: m_hashval(0) { }
 	~key_wrapper() { }
 	
 	inline void die() 
-		{ m_val = 0;}
+		{ m_val.clear(); }
 	
-	inline bool eq(const UT_HashTable::HashKeyType key) const
+	inline bool eq(const UT_String &key) const
 	{
-			//return m_val == key;
-		if (m_val && key)
-		{
-			return (strcmp(key, m_val) ? false : true);
-		}
-		return false;
+		return (m_val == key);
 	}
 	
-	inline void operator=(const UT_HashTable::HashKeyType k)	
+	inline void operator=(const UT_String &k)	
 		{ m_val = k; }
 	
 	inline UT_uint32 hashval() const		
@@ -64,34 +58,24 @@ public:
 	inline void set_hashval(UT_uint32 h)	
 		{ m_hashval = h; }
 	
-	inline operator const UT_HashTable::HashKeyType() const	
-		{ return m_val; }
-	inline UT_HashTable::HashKeyType value(void) 
+	inline UT_String &value(void) 
 		{return m_val;}
 
 	inline void operator=(const key_wrapper& rhs)
 		{ m_val = rhs.m_val; m_hashval = rhs.m_hashval; }
 
-	static inline UT_uint32 compute_hash(const UT_HashTable::HashKeyType key) 
+	static inline UT_uint32 compute_hash(const UT_String &key) 
 		{
 #if 0
-			// 9987001 is a reasnonably large prime
+			// 9987001 is a reasnonably large prime, for void *
 			return reinterpret_cast<UT_uint32>(key) * 0x9863b9; 
 #else
-			// g_str_hash from glib's sources seemed to be nice
-			const char *p = key;
-			UT_uint32 h = *p;
-			
-			if (h)
-				for (p += 1; *p != '\0'; p++)
-					h = (h << 5) - h + *p;
-			
-			return h;
+			return hashcode (key); // UT_String::hashcode
 #endif
 		}
 
 private:
-	UT_HashTable::HashKeyType		m_val;
+	UT_String m_val;
 	UT_uint32 m_hashval;
 };
 
@@ -106,16 +90,16 @@ public:
 
 	inline void make_deleted()
 		{
-			m_value = (char*)this;
+			m_value = static_cast<void *>(this);
 			m_key.die();
 		}
 	inline void make_empty() 
 		{ m_value = 0; }
 
-	inline UT_HashTable::HashValType value() const 
+	inline const void * value() const 
 		{ return m_value; }
 
-	inline void insert(const UT_HashTable::HashValType v, const UT_HashTable::HashKeyType k, UT_uint32 h)
+	inline void insert(const void * v, const UT_String &k, UT_uint32 h)
 		{
 			m_value = v;
 			m_key = k;
@@ -131,32 +115,31 @@ public:
 	inline bool empty() const 
 		{ return (m_value == 0); }
 
-	inline bool deleted(const UT_HashTable::HashValType delval) const
+	inline bool deleted(const void * delval) const
 		{
-			return ((delval ? delval : (void *)this) == (UT_HashTable::HashValType)m_value);
+			return ((delval ? false : static_cast<const void *>(this)) ==  (m_value));
 		}
 
-	inline bool key_eq(const UT_HashTable::HashKeyType test, size_t h) const
+	inline bool key_eq(const UT_String &test, size_t h) const
 		{
-#if 0
+#if 1
 			return m_key.eq(test);
 #else
 			return m_key.hashval() == h;
 #endif
 		}
 	
-	UT_HashTable::HashValType		m_value;
+	const void *	m_value;
 	key_wrapper	m_key;	
 };
 
 
-// TODO: sane memory ownership characteristics for hashtables,
-// TODO: presumably done via AbiObjects
-
 /*!
- * This class represents a mapping between key/value pairs
+ * This class represents a mapping between key/value pairs where the keys are
+ * represented by UT_String (a wrapper around char*) and the values may be of
+ * any pointer type (void *)
  */
-UT_HashTable::UT_HashTable(size_t expected_cardinality)
+UT_StringPtrMap::UT_StringPtrMap(size_t expected_cardinality)
 	:	n_keys(0),
 		n_deleted(0),
 		m_nSlots(_Recommended_hash_size(expected_cardinality)),
@@ -167,7 +150,7 @@ UT_HashTable::UT_HashTable(size_t expected_cardinality)
 }
 
 
-UT_HashTable::~UT_HashTable()
+UT_StringPtrMap::~UT_StringPtrMap()
 {
 	delete[] m_pMapping;
 }
@@ -177,7 +160,13 @@ UT_HashTable::~UT_HashTable()
  * Find the value associated with the key \k
  * \return 0 if key not found, object if found
  */
-const UT_HashTable::HashValType UT_HashTable::pick(const HashKeyType k) const
+const void * UT_StringPtrMap::pick(const char * k) const
+{
+  UT_String aKey = k;
+  return pick (aKey);
+}
+
+const void * UT_StringPtrMap::pick(const UT_String & k) const
 {
 	hash_slot*		sl = 0;
 	bool			key_found = false;
@@ -185,26 +174,31 @@ const UT_HashTable::HashValType UT_HashTable::pick(const HashKeyType k) const
 	size_t			hashval;
 	
 	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
-	return key_found ? (HashValType)sl->value() : 0;
+	return key_found ? sl->value() : 0;
 }
-
 
 /*!
  * See if the map contains the (key, value) pair represented by (\k, \v)
  * If \v is null, just see if the key \k exists
  * \return truth
  */
-bool UT_HashTable::contains(const HashKeyType k, const HashValType v) const
+bool UT_StringPtrMap::contains(const char * k, const void * v) const
+{
+  UT_String aKey = k;
+  return contains (aKey, v);
+}
+
+bool UT_StringPtrMap::contains(const UT_String & k, const void * v) const
 {
 	hash_slot * sl = 0;
 	bool key_found = false;
 	bool v_found = false;
-	size_t slot;
-	size_t hashval;
+	size_t slot = 0;
+	size_t hashval = 0;
 
 #if 0
 	sl = find_slot (k, _CM_LOOKUP, slot, key_found,
-					hashval, v, &v_found, 0, 0);
+			hashval, v, &v_found, 0, 0);
 	return v_found;
 #else
 	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
@@ -218,14 +212,20 @@ bool UT_HashTable::contains(const HashKeyType k, const HashValType v) const
 /*!
  * Insert this key/value pair into the map
  */
-void UT_HashTable::insert(const HashKeyType key, const HashValType value)
+void UT_StringPtrMap::insert(const char * key, const void * value)
+{
+  UT_String aKey = key;
+  insert (aKey, value);
+}
+
+void UT_StringPtrMap::insert(const UT_String & key, const void * value)
 {
 	size_t		slot = 0;
 	bool		key_found = false;
 	size_t		hashval = 0;
 
 	hash_slot* sl = find_slot(key, _CM_INSERT, slot, key_found, 
-							  hashval, 0, 0, 0, 0);
+				  hashval, 0, 0, 0, 0);
 	sl->insert(value, key, hashval);
 	++n_keys;
 	
@@ -242,16 +242,22 @@ void UT_HashTable::insert(const HashKeyType key, const HashValType value)
  * Set the item determined by \key to the value \value
  * If item(\key) does not exist, insert it into the map
  */
-void UT_HashTable::set(const HashKeyType key, const HashValType value)
+void UT_StringPtrMap::set(const char * key, const void * value)
+{
+  UT_String aKey = key;
+  set (aKey, value);
+}
+
+void UT_StringPtrMap::set(const UT_String & key, const void * value)
 {
 	size_t		slot = 0;
 	bool		key_found = false;
 	size_t		hashval = 0;
 	
 	hash_slot* sl = find_slot(key, _CM_LOOKUP, slot, key_found, 
-							  hashval, 0, 0, 0, 0);
+				  hashval, 0, 0, 0, 0);
 	
-	if (!sl || !key_found) // insert instead or just return?
+	if (!sl || !key_found) // TODO: should we insert or just return?
 	{
 #if 1
 		insert(key, value);
@@ -266,13 +272,13 @@ void UT_HashTable::set(const HashKeyType key, const HashValType value)
  * Return a UT_Vector of elements in the HashTable that you must
  * Later free with a call to delete
  */
-UT_Vector * UT_HashTable::enumerate (void) const
+UT_Vector * UT_StringPtrMap::enumerate (void) const
 {
 	UT_Vector * pVec = new UT_Vector (size());
 
-	UT_HashCursor cursor(this);
+	UT_Cursor cursor(this);
 
-	HashValType val = cursor.first ();
+	const void * val = cursor.first ();
 
 	while (true) {
 		// we don't allow nulls since so much of our code depends on this
@@ -292,7 +298,13 @@ UT_Vector * UT_HashTable::enumerate (void) const
 /*!
  * Remove the item referenced by \key in the map
  */
-void UT_HashTable::remove(const HashKeyType key, const HashValType)
+void UT_StringPtrMap::remove(const char * key, const void *)
+{
+  UT_String aKey = key;
+  remove (aKey, 0);
+}
+
+void UT_StringPtrMap::remove(const UT_String & key, const void *)
 {
 	size_t slot = 0, hashval;
 	bool found = false;
@@ -311,7 +323,7 @@ void UT_HashTable::remove(const HashKeyType key, const HashValType)
 /*!
  * Remove all key/value pairs from the map
  */
-void UT_HashTable::clear()
+void UT_StringPtrMap::clear()
 {
 	hash_slot* slots = m_pMapping;
 	for (size_t x=0; x < m_nSlots; x++) {
@@ -331,7 +343,7 @@ void UT_HashTable::clear()
 /*********************************************************************/
 
 
-void UT_HashTable::assign_slots(hash_slot* p, size_t old_num_slot)
+void UT_StringPtrMap::assign_slots(hash_slot* p, size_t old_num_slot)
 {
 	size_t target_slot = 0;
 	
@@ -354,19 +366,19 @@ void UT_HashTable::assign_slots(hash_slot* p, size_t old_num_slot)
 	}
 }
 
-size_t UT_HashTable::compute_reorg_threshold(size_t nSlots)
+size_t UT_StringPtrMap::compute_reorg_threshold(size_t nSlots)
 {
 	return nSlots * 7 / 10;	// reorg threshold = 70% of nSlots
 }
 
 
 hash_slot*
-UT_HashTable::find_slot(const HashKeyType	k,
+UT_StringPtrMap::find_slot(const UT_String & k,
 						_CM_search_type	search_type,
 						size_t&			slot,
 						bool&			key_found,
 						size_t&			hashval,
-						const HashValType	v,
+						const void*	        v,
 						bool*			v_found,
 						void*			vi,
 						size_t			hashval_in) const
@@ -375,7 +387,7 @@ UT_HashTable::find_slot(const HashKeyType	k,
 
 	int nSlot = hashval % m_nSlots;
 
-	xxx_UT_DEBUGMSG(("DOM: hashval for \"%s\" is %d (#%dth slot)\n", k, hashval, nSlot));
+	xxx_UT_DEBUGMSG(("DOM: hashval for \"%s\" is %d (#%dth slot)\n", k.c_str(), hashval, nSlot));
 
 	hash_slot* sl = &m_pMapping[nSlot];
 	
@@ -438,7 +450,7 @@ UT_HashTable::find_slot(const HashKeyType	k,
 			key_found = true;
 			
 			if (v) {
-				*v_found = (sl->value() == (HashValType)v) ? true : false;
+				*v_found = (sl->value() == (void *)v) ? true : false;
 			}
 			break;
 		}
@@ -449,14 +461,14 @@ UT_HashTable::find_slot(const HashKeyType	k,
 }
 
 
-void UT_HashTable::grow()
+void UT_StringPtrMap::grow()
 {
 	size_t slots_to_allocate = ::_Recommended_hash_size(m_nSlots / 2 + m_nSlots);
 	reorg(slots_to_allocate);
 }
 
 
-void UT_HashTable::reorg(size_t slots_to_allocate)
+void UT_StringPtrMap::reorg(size_t slots_to_allocate)
 {
 	hash_slot* pOld = m_pMapping;
 	
@@ -477,15 +489,14 @@ void UT_HashTable::reorg(size_t slots_to_allocate)
 
 	n_deleted = 0;
 
-	// todo: aren't these redundant?
-#if 0
+#if 0 	// todo: aren't these redundant?
 	memset(pOld, 0, old_map_size);
 #endif
 	delete[] pOld;
 }
 
 
-const UT_HashTable::HashValType UT_HashTable::_first(UT_HashCursor* c) const
+const void * UT_StringPtrMap::_first(UT_Cursor* c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
@@ -494,25 +505,24 @@ const UT_HashTable::HashValType UT_HashTable::_first(UT_HashCursor* c) const
 			break;
 	}
 	if (x < m_nSlots) {
-		c->_set_index(x);	// c = 'UT_HashCursor etc'
-		return (HashValType)map[x].value();
+		c->_set_index(x);	// c = 'UT_Cursor etc'
+		return map[x].value();
 	}
 	
 	c->_set_index(-1);
 	return 0;
 }
 
-const UT_HashTable::HashKeyType UT_HashTable::_key(UT_HashCursor* c) const
+const UT_String & UT_StringPtrMap::_key(UT_Cursor* c) const
 {
 	hash_slot slot = m_pMapping[c->_get_index()];
 
 	if (!slot.empty() && !slot.deleted(0))
-		return (HashKeyType)slot.m_key;
-	
-	return 0;
+		return slot.m_key.value();
+	// should never happen
 }
 
-const UT_HashTable::HashValType UT_HashTable::_next(UT_HashCursor* c) const
+const void * UT_StringPtrMap::_next(UT_Cursor* c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
@@ -522,7 +532,7 @@ const UT_HashTable::HashValType UT_HashTable::_next(UT_HashCursor* c) const
 	}
 	if (x < m_nSlots) {
 		c->_set_index(x);
-		return (HashValType)map[x].value();
+		return map[x].value();
 	}
 
 	c->_set_index(-1);
@@ -530,7 +540,7 @@ const UT_HashTable::HashValType UT_HashTable::_next(UT_HashCursor* c) const
 }
 
 
-const UT_HashTable::HashValType UT_HashTable::_prev(UT_HashCursor *c) const
+const void * UT_StringPtrMap::_prev(UT_Cursor *c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
@@ -540,7 +550,7 @@ const UT_HashTable::HashValType UT_HashTable::_prev(UT_HashCursor *c) const
 	}
 	if (x >= 0) {
 		c->_set_index(x);
-		return (HashValType)map[x].value();
+		return map[x].value();
 	}
 	
 	c->_set_index(-1);
@@ -723,8 +733,8 @@ static UT_uint32 _Recommended_hash_size(UT_uint32 size)	// Verifies reasonably
 }
 
 static UT_uint32 _Recommended_hash_size(UT_uint32 numslots, 
-										UT_uint32 slotsize, 
-										UT_uint32 max_tablesize)
+					UT_uint32 slotsize, 
+					UT_uint32 max_tablesize)
 {
 	UT_uint32 lo = 0;
 	UT_uint32 hi = _Hash_n_magic_numbers - 1;

@@ -23,16 +23,17 @@
 #include "pp_Property.h"
 #include "ut_vector.h"
 
-PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP)
+PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName) :
+  m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), 
+  m_pBasedOn(NULL), m_pFollowedBy(NULL)
 {
-	m_pPT = pPT;
-	m_indexAP = indexAP;
-	m_pBasedOn = NULL;
-	m_pFollowedBy = NULL;
+  if (szName)
+    m_szName = UT_strdup (szName);
 }
 
 PD_Style::~PD_Style()
 {
+  FREEP(m_szName);
 }
 
 bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
@@ -253,10 +254,9 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 // a sub-class to wrap the compiled-in styles
 //////////////////////////////////////////////////////////////////
 
-PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP)
-	: PD_Style(pPT, indexAP)
+PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName)
+  : PD_Style(pPT, indexAP, szName), m_indexAPOrig(indexAP)
 {
-	m_indexAPOrig = indexAP;
 }
 
 PD_BuiltinStyle::~PD_BuiltinStyle()

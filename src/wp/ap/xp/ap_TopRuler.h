@@ -36,7 +36,7 @@
 class XAP_App;
 class XAP_Frame;
 class XAP_Prefs;
-class UT_HashTable;
+class UT_StringPtrMap;
 class AV_ScrollObj;
 class UT_Timer;
 
@@ -199,7 +199,7 @@ protected:
 	void        _refreshView(void);
 
 	// must be static so that I can pass as a functional arg - shack
-	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_HashTable *phChanges, void *data );
+	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_StringPtrMap *phChanges, void *data );
 
 	// autoscroll stuff
 	static void			_autoScroll(UT_Timer * pTimer);

@@ -7,6 +7,9 @@
 #include "ispell_checker.h"
 #include "ut_vector.h"
 
+#include "xap_App.h"
+#include "ut_string_class.h"
+
 #	define UCS_2_INTERNAL "UCS-2"
 
 /***************************************************************************/
@@ -314,12 +317,31 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 	return sgvec;
 }
 
+typedef struct {
+  char * dict;
+  char * lang;
+} Ispell2Lang_t;
+
+static const Ispell2Lang_t m_mapping[] = {
+  { "american.hash", "en-US" },
+  { "british.hash", "en-GB" }
+};
+
 bool
 ISpellChecker::requestDictionary(const char *szLang)
 {
-	// WARNING: Brain-damaged implementation!
-	// by now I just pick american.hash dictionary
-	const char *hashname = "american.hash";
+        char *hashname = NULL;
+
+	for (int i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
+	  {
+	    if (!strcmp (szLang, m_mapping[i].lang)) {
+	      UT_String hName = XAP_App::getApp()->getAbiSuiteLibDir();
+	      hName += "/dictionary/";
+	      hName += m_mapping[i].dict;
+	      hashname = UT_strdup (hName.c_str());
+	      break;
+	    }
+	  }
 
 #if defined(DONT_USE_GLOBALS)
 	m_pISpellState = alloc_ispell_struct();
@@ -327,6 +349,7 @@ ISpellChecker::requestDictionary(const char *szLang)
     if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
     {
         /* TODO gripe -- could not load the dictionary */
+      FREEP(hashname);
         return false;
     }
 
@@ -384,5 +407,6 @@ ISpellChecker::requestDictionary(const char *szLang)
     else
         DEREF(m_pISpellState, defdupchar) = prefstringchar;
 
+    FREEP(hashname);
 	return true;
 }

@@ -34,7 +34,7 @@ class pt_PieceTable;
 class PD_Style
 {
 public:
-	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP);
+	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName = NULL);
 	virtual ~PD_Style();
 
 	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
@@ -60,10 +60,14 @@ public:
 	bool getNthProperty (int ndx, const XML_Char *&szName,
 			     const XML_Char *&szValue) const;
 
+	inline const char * getName (void) const {return m_szName;}
+
 protected:
 
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;
+
+	char * m_szName;
 
 	// lazily-bound attribute caches to speed lookups
 	PD_Style *				m_pBasedOn;
@@ -77,7 +81,7 @@ protected:
 class PD_BuiltinStyle : public PD_Style
 {
 public:
-	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP);
+	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName);
 	virtual ~PD_BuiltinStyle();
 
 	virtual bool			isUserDefined(void) const { return (m_indexAP != m_indexAPOrig); };

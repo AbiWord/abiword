@@ -155,8 +155,8 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
    UT_ASSERT(bRes);
    
-   m_pChangeAll = new UT_HashTable(7); // is 7 buckets adequate? too much?
-   m_pIgnoreAll = new UT_HashTable(7);
+   m_pChangeAll = new UT_StringPtrMap(7); // is 7 buckets adequate? too much?
+   m_pIgnoreAll = new UT_StringPtrMap(7);
 
    UT_DEBUGMSG(("modal spell dialog: xp init complete\n"));
 }
@@ -383,7 +383,7 @@ bool AP_Dialog_Spell::inChangeAll(void)
    char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
    UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
    FREEP(bufferUnicode);
-   UT_HashTable::HashValType ent = m_pChangeAll->pick((UT_HashTable::HashKeyType)bufferNormal);
+   const void * ent = m_pChangeAll->pick(bufferNormal);
    FREEP(bufferNormal);
 
    if (ent == NULL) return false;
@@ -405,8 +405,8 @@ bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
    UT_UCSChar * newword2 = (UT_UCSChar*) calloc(UT_UCS_strlen(newword) + 1, sizeof(UT_UCSChar));
    UT_UCS_strcpy(newword2, newword);
    
-   m_pChangeAll->insert((UT_HashTable::HashKeyType)bufferNormal, 
-						(UT_HashTable::HashValType) newword2);
+   m_pChangeAll->insert(bufferNormal, 
+			(void *) newword2);
 
    FREEP(bufferNormal);
    

@@ -31,7 +31,7 @@ AD_Document::AD_Document()
 
 	// TODO do we need to auto-increase the bucket count,
    	// TODO if the ignore list gets long?
-	m_pIgnoreList = new UT_HashTable(11);
+	m_pIgnoreList = new UT_StringPtrMap(11);
 }
 
 AD_Document::~AD_Document()
@@ -109,8 +109,8 @@ bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 		// the squiggles in the background for a while.  Then, you "ignore all"
 		// that word (or another instance of it) again, and ka-bloom, the 
 		// hash table stuff asserts on a duplicate entry.
-		m_pIgnoreList->insert((UT_HashTable::HashKeyType)key, 
-							  (UT_HashTable::HashValType) copy);
+		m_pIgnoreList->insert(key, 
+				      (void *) copy);
 	}
 
 	if (key != _key) DELETEPV(key);
@@ -135,7 +135,7 @@ bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 	}
 	key[len] = 0;
 
-	UT_HashTable::HashValType pHE = m_pIgnoreList->pick((UT_HashTable::HashKeyType)key);
+	const void * pHE = m_pIgnoreList->pick(key);
 
 	if (key != _key) DELETEPV(key);
 
@@ -158,10 +158,10 @@ bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar **pszWord) const
 
 	UT_Vector * v = m_pIgnoreList->enumerate();
 
-	UT_HashTable::HashValType pHE = v->getNthItem(k);	
+	const void * pHE = v->getNthItem(k);	
 	UT_ASSERT(pHE);
    
-	*pszWord = (UT_UCSChar*) pHE;
+	*pszWord = (const UT_UCSChar*) pHE;
 
 	return true;
 }
@@ -184,7 +184,7 @@ bool AD_Document::clearIgnores(void)
 	DELETEP(pVec);
 	DELETEP(m_pIgnoreList);
    
-	m_pIgnoreList = new UT_HashTable(11);
+	m_pIgnoreList = new UT_StringPtrMap(11);
 	UT_ASSERT(m_pIgnoreList);
    
 	return true;

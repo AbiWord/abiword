@@ -40,7 +40,7 @@ enum {
 typedef void (*PrefsListener) (
 	XAP_App				*pApp,
 	XAP_Prefs			*pPrefs,
-	UT_HashTable	    *phChanges,
+	UT_StringPtrMap	    *phChanges,
 	void				*data
 	);
 
@@ -81,7 +81,7 @@ public:
 	
 protected:
 	XML_Char *			m_szName;
-	UT_HashTable	    m_hash;
+	UT_StringPtrMap	    m_hash;
 	XAP_Prefs *			m_pPrefs;
 	UT_uint32			m_uTick;   // ticks up every time setValue() or setValueBool() is called
 };
@@ -152,9 +152,9 @@ protected:
 	UT_Vector				m_vecRecent;		/* vector of (char *) */
 
 	UT_Vector				m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
-	UT_HashTable		    m_ahashChanges;
+	UT_StringPtrMap		    m_ahashChanges;
 	bool					m_bInChangeBlock;
-	void					_sendPrefsSignal( UT_HashTable *hash );
+	void					_sendPrefsSignal( UT_StringPtrMap *hash );
 
 	typedef struct {
 		UT_uint32				m_width, m_height;	/* Default width and height */

@@ -77,8 +77,8 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    bool addToDict(void);
 
    // change/ignore all hash tables
-   UT_HashTable * m_pChangeAll;
-   UT_HashTable * m_pIgnoreAll;
+   UT_StringPtrMap * m_pChangeAll;
+   UT_StringPtrMap * m_pIgnoreAll;
    
    // these variables keep track of the current
    // location/state of the search through the

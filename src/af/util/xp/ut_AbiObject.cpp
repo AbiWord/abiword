@@ -51,9 +51,9 @@ UT_AbiObject::~UT_AbiObject ()
  * Increases the reference count of the object
  * /return the current #references
  */
-size_t UT_AbiObject::ref ()
+UT_uint32 UT_AbiObject::ref ()
 {
-	size_t cpy = ++m_refs;
+	UT_uint32 cpy = ++m_refs;
 	return cpy;
 }
 
@@ -62,9 +62,9 @@ size_t UT_AbiObject::ref ()
  * If the reference count == 0, deletes the object
  * /return the #references still valid
  */
-size_t UT_AbiObject::unref ()
+UT_uint32 UT_AbiObject::unref ()
 {
-	size_t cpy = --m_refs; // make a copy so that in case we delete 'this'
+	UT_uint32 cpy = --m_refs; // make a copy so that in case we delete 'this'
 	if (!m_refs)
 		delete this;
 
@@ -74,7 +74,7 @@ size_t UT_AbiObject::unref ()
 /*!
  * /return the #references on the object
  */
-size_t UT_AbiObject::count ()
+UT_uint32 UT_AbiObject::count ()
 {
 	return m_refs;
 }
@@ -102,10 +102,10 @@ bool UT_AbiObject::equal (UT_AbiObject * other) const
  * Should be overridden by subclasses that care or can
  * Generate better hash codes
  */
-size_t UT_AbiObject::hashcode () const
+UT_uint32 UT_AbiObject::hashcode () const
 {
 	// 9987001 is a reasnonably large prime
-	return (size_t) (reinterpret_cast<size_t>(this) * 0x9863b9);
+	return (UT_uint32) (reinterpret_cast<UT_uint32>(this) * 0x9863b9);
 }
 
 /****************************************************************************/

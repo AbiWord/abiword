@@ -2516,7 +2516,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	m_pG->drawLine(l+5,   t+5,  l+w-5,   t+5);
 }
 
-/*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_HashTable * /*phChanges*/, void *data )
+/*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {
 	AP_TopRuler *pTopRuler = (AP_TopRuler *)data;
 	UT_ASSERT( data && pPrefs );

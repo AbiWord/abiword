@@ -1025,7 +1025,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_blockUpdate = true;
 
 	// to sort out dupes
-	UT_HashTable fontHash(256);
+	UT_StringPtrMap fontHash(256);
 
 	// throw them in the hash save duplicates
 	UT_Vector * fonts = m_fontManager->getAllFonts();
@@ -1033,9 +1033,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		XAP_UnixFont * pFont = (XAP_UnixFont *)fonts->getNthItem(i);
 		const char * fName = pFont->getName();
-		if (!fontHash.contains((UT_HashTable::HashKeyType) fName, 0))
-			fontHash.insert((UT_HashTable::HashKeyType) fName,
-							(UT_HashTable::HashValType) fName);
+		if (!fontHash.contains(fName, NULL))
+			fontHash.insert(fName,
+					(void *) fName);
 	}
 	DELETEP(fonts);
 

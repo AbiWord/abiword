@@ -72,11 +72,11 @@ extern "C" { // for MRC compiler (Mac)
 int IE_Imp_XML::_mapNameToToken (const char * name, 
 								 struct xmlToIdMapping * idlist, int len)
 {
-	static UT_HashTable tokens(30);
+	static UT_StringPtrMap tokens(30);
 
 	xmlToIdMapping * id = NULL;
 
-	UT_HashTable::HashValType pEntry = tokens.pick ((UT_HashTable::HashKeyType)name);
+	const void * pEntry = tokens.pick (name);
 
 	if (pEntry)
 	{
@@ -87,7 +87,7 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 									sizeof (xmlToIdMapping), s_str_compare);
 	if (id)
     {
-		tokens.insert ((UT_HashTable::HashKeyType)name, (UT_HashTable::HashValType)id->m_type);
+		tokens.insert (name, (void *)id->m_type);
 		return id->m_type;
     }
 	return -1;

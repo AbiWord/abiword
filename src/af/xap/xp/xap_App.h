@@ -163,7 +163,7 @@ protected:
 	XAP_Prefs *								m_prefs;			/* populated in AP_<platform>App::initialize() */
 
 	UT_Vector								m_vecFrames;
-	UT_HashTable							m_hashClones;
+	UT_StringPtrMap							m_hashClones;
 	XAP_Frame *								m_lastFocussedFrame;
 
 	struct modeless_pair 

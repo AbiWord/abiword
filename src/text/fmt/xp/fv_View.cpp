@@ -7853,7 +7853,7 @@ void FV_View::cmdContextAdd(void)
 }
 
 
-/*static*/ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_HashTable * /*phChanges*/, void *data )
+/*static*/ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {
 	FV_View *pView = (FV_View *)data;
 	bool b;

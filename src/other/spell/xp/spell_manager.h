@@ -72,8 +72,8 @@ private:
 	SpellManager ();
 
 private:
-	UT_HashTable m_map;
-	SpellChecker * m_lastDict;
+	UT_StringPtrMap m_map;
+	SpellChecker *  m_lastDict;
 };
 
 #endif /* SPELL_MANAGER_H */

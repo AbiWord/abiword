@@ -27,8 +27,7 @@
 #include "ut_string_class.h"
 
 // fwd. decl.
-class UT_HashTable;
-
+class UT_StringPtrMap;
 
 class AD_Document
 {
@@ -71,7 +70,7 @@ protected:
 	const char *	m_szFilename;
 	UT_String		m_szEncodingName;
 
-	UT_HashTable *	m_pIgnoreList;
+	UT_StringPtrMap *	m_pIgnoreList;
 };
 
 

@@ -58,7 +58,7 @@ protected:
 	const char *		m_szFilename;
 
 	bool				m_bDirty;
-	UT_HashTable	    m_hashWords;
+	UT_StringPtrMap	    m_hashWords;
 
 private:
 	FILE *				m_fp;

@@ -94,6 +94,7 @@ typedef	UT_sint32		UT_Error;
 #define UT_NOPIECETABLE         ((UT_Error) -309)
 #define UT_IE_ADDLISTENERERROR  ((UT_Error) -310)
 #define UT_IE_UNSUPTYPE         ((UT_Error) -311)
+#define UT_IE_PROTECTED         ((UT_Error) -312)       // (pass) protected doc
 #define UT_IE_IMPORTERROR       ((UT_Error) -300) 	/* The general case */
 
 

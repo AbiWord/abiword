@@ -196,8 +196,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	if (pCloneOf)
 	{
 		// locate vector of this frame's clones
-		UT_HashTable::HashValType pEntry = m_hashClones.pick((UT_HashTable::HashKeyType)pCloneOf->getViewKey());
-
+		const void * pEntry = m_hashClones.pick(pCloneOf->getViewKey());
 		UT_Vector * pvClones = NULL;
 
 		if (pEntry)
@@ -214,7 +213,8 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 				pvClones->addItem(pCloneOf);
 
 				// reuse this slot
-				m_hashClones.set((UT_HashTable::HashKeyType)pEntry, (UT_HashTable::HashValType)pvClones);
+				m_hashClones.set(pCloneOf->getViewKey(), 
+						 (void *)pvClones);
 			}
 		}
 		else
@@ -226,7 +226,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 			pvClones->addItem(pCloneOf);
 
 			// add it to the hash table
-			m_hashClones.insert((UT_HashTable::HashKeyType)pCloneOf->getViewKey(), (UT_HashTable::HashValType)pvClones);
+			m_hashClones.insert(pCloneOf->getViewKey(), (void *)pvClones);
 		}
 
 		pvClones->addItem(pFrame);
@@ -264,7 +264,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	if (pFrame->getViewNumber() > 0)
 	{
 		// locate vector of this frame's clones
-		UT_HashTable::HashValType pEntry = m_hashClones.pick((UT_HashTable::HashKeyType)pFrame->getViewKey());
+		const void * pEntry = m_hashClones.pick(pFrame->getViewKey());
 		UT_ASSERT(pEntry);
 
 		if (pEntry)
@@ -296,7 +296,8 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 				f->updateTitle();
 
 				// remove this entry from hashtable
-				m_hashClones.remove((UT_HashTable::HashKeyType)pEntry, 0);
+				m_hashClones.remove(f->getViewKey(), 
+						    NULL);
 				delete pvClones;
 			}
 			else
@@ -358,7 +359,7 @@ bool XAP_App::getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame)
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-    UT_HashTable::HashValType pEntry = m_hashClones.pick((UT_HashTable::HashKeyType)pFrame->getViewKey());
+	const void * pEntry = m_hashClones.pick(pFrame->getViewKey());
 	UT_ASSERT(pEntry);
 
 	UT_Vector * pvClones = (UT_Vector *) pEntry;
@@ -373,7 +374,7 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-	UT_HashTable::HashValType pEntry = m_hashClones.pick((UT_HashTable::HashKeyType)pFrame->getViewKey());
+	const void * pEntry = m_hashClones.pick(pFrame->getViewKey());
 	UT_ASSERT(pEntry);
 
 	if (pEntry)

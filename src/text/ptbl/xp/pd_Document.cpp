@@ -1148,13 +1148,13 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
 	
-	m_hashDataItems.insert((UT_HashTable::HashKeyType)UT_strdup(szName), (UT_HashTable::HashValType)pPair);
+	m_hashDataItems.insert(szName, (void *)pPair);
 
 	// give them back a handle if they want one
 	
 	if (ppHandle)
 	{
-		UT_HashTable::HashValType pHashEntry = m_hashDataItems.pick((UT_HashTable::HashKeyType)szName);
+		const void *pHashEntry = m_hashDataItems.pick(szName);
 		UT_ASSERT(pHashEntry);
 		*ppHandle = (void *)pHashEntry;
 	}
@@ -1174,7 +1174,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 {
 	UT_ASSERT(szName && *szName);
 	
-	UT_HashTable::HashValType pHashEntry = m_hashDataItems.pick((UT_HashTable::HashKeyType)szName);
+	const void *pHashEntry = m_hashDataItems.pick(szName);
 	if (!pHashEntry)
 		return false;
 
@@ -1251,8 +1251,8 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 	
-	UT_HashTable::UT_HashCursor c(&m_hashDataItems);
-	UT_HashTable::HashValType pHashEntry = c.first();
+	UT_StringPtrMap::UT_Cursor c(&m_hashDataItems);
+	const void *pHashEntry = c.first();
 	UT_uint32 i = 0;
 
 	do
@@ -1281,7 +1281,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	
 	if (pszName)
 	{
-		*pszName = c.key();
+		*pszName = c.key().c_str();
 	}
 	
 	return true;
@@ -1292,17 +1292,16 @@ void PD_Document::_destroyDataItemData(void)
 	if (m_hashDataItems.size() == 0)
 		return;
 
-	UT_HashTable::UT_HashCursor c(&m_hashDataItems);
-	UT_HashTable::HashValType val = c.first();
+	UT_StringPtrMap::UT_Cursor c(&m_hashDataItems);
+	const void *val = c.first();
 
 	while (true && val)
 	{
 		UT_DEBUGMSG(("DOM: deleting\n"));
 		struct _dataItemPair* pPair = (struct _dataItemPair*) val;
 		UT_ASSERT(pPair);
-		char * key = c.key();
-		m_hashDataItems.remove (key, 0);
-		FREEP(key); // free what we allocate
+		UT_String key = c.key();
+		m_hashDataItems.remove (key, NULL);
 		delete pPair->pBuf;
 		FREEP(pPair->pToken);
 		delete pPair;

@@ -26,33 +26,35 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_string_class.h"
 
 // fwd. decl.
 class hash_slot;
 
-class UT_HashTable
+class UT_StringPtrMap
 {
 public:
-	UT_HashTable(size_t expected_cardinality = 11);
-	~UT_HashTable();
-
-	// our key/value pair types
-	typedef char *HashKeyType;
-	typedef void *HashValType;
+	UT_StringPtrMap(size_t expected_cardinality = 11);
+	~UT_StringPtrMap();
 
 	// insertion/addition
-	void insert(const HashKeyType key, const HashValType value);
+	void insert(const char * key, const void * value);
+	void insert(const UT_String & key, const void * value);
 
-	void set (const HashKeyType key, const HashValType val);
+	void set (const char * key, const void * val);
+	void set (const UT_String & key, const void * val);
 
 	// "find"
-	const HashValType pick(const HashKeyType key) const;
+	const void * pick(const char * key) const;
+	const void * pick(const UT_String & key) const;
 	
 	// contains - if contains(key) val will be the result of the lookup
-	bool contains(const HashKeyType key, const HashValType val) const;
+	bool contains(const char * key, const void * val) const;
+	bool contains(const UT_String & key, const void * val) const;
 
 	// these are for removal
-	void remove(const HashKeyType key, const HashValType /* ignored */);
+	void remove(const char * key, const void * /* ignored */);
+	void remove(const UT_String & key, const void * /* ignored */);
 	void clear();
 	
 	UT_Vector * enumerate (void) const;
@@ -62,27 +64,27 @@ public:
 	inline size_t size() const { return n_keys; }
 
 	// Like a std cursor
-	class UT_HashCursor
+	class UT_Cursor
 	{
-		friend class UT_HashTable;
+		friend class UT_StringPtrMap;
 		
 	public:
-		UT_HashCursor(const UT_HashTable * owner)
+		UT_Cursor(const UT_StringPtrMap * owner)
 			:	m_d(owner), m_index(-1)
 			{
 				//m_d._first(this);
 			}
 		
-		~UT_HashCursor() { }
+		~UT_Cursor() { }
 		
 		// these can't be const since we're passing a non-const this ptr
-		inline HashKeyType  key()
+		inline const UT_String  &key()
 			{return m_d->_key(this); }
-		inline HashValType	first()
+		inline const void *	first()
 			{ return m_d->_first(this);	}
-		inline HashValType	next()
+		inline const void *	next()
 			{ return m_d->_next(this); }
-		inline HashValType  prev()
+		inline const void *  prev()
 			{ return m_d->_prev(this); }
 		inline bool	more()
 			{ return (m_index != -1); }
@@ -94,10 +96,10 @@ public:
 		inline int	_get_index()		
 			{ return m_index; }
 		
-		const UT_HashTable	* m_d;
-		int		m_index;
+		const UT_StringPtrMap	* m_d;
+		UT_sint32		m_index;
 	};
-	friend class UT_HashCursor;
+	friend class UT_Cursor;
 
 private:
 
@@ -124,21 +126,21 @@ private:
 	inline bool exceeds_n_delete_threshold() const
 		{ return n_deleted > (reorg_threshold / 2); }
 	
-	hash_slot* find_slot(const HashKeyType		k,
-						 _CM_search_type search_type,
-						 size_t&			slot,
-						 bool&			key_found,
-						 size_t&			hashval,
-						 const HashValType		v,
-						 bool*			v_found,
-						 void*			vi,
-						 size_t			hashval_in) const;
-
+	hash_slot* find_slot(const UT_String &		k,
+			     _CM_search_type search_type,
+			     size_t&			slot,
+			     bool&			key_found,
+			     size_t&			hashval,
+			     const void *		v,
+			     bool*			v_found,
+			     void*			vi,
+			     size_t			hashval_in) const;
+	
 	// enumeration of the elements
-	const HashValType _first(UT_HashCursor* c) const;
-	const HashValType _next(UT_HashCursor* c) const;
-	const HashValType _prev(UT_HashCursor* c) const;
-	const HashKeyType _key(UT_HashCursor* c) const;
+	const void * _first(UT_Cursor* c) const;
+	const void * _next(UT_Cursor* c) const;
+	const void * _prev(UT_Cursor* c) const;
+	const UT_String & _key(UT_Cursor* c) const;
 	
 	// data
 	hash_slot* m_pMapping;
@@ -152,7 +154,7 @@ private:
 
 
 #define UT_HASH_PURGEDATA(type, hash, reaper) \
-do { UT_HashTable::UT_HashCursor _hc1 (hash); \
+do { UT_StringPtrMap::UT_Cursor _hc1 (hash); \
 type _hval1 = (type) _hc1.first(); \
 while (true) { \
    if (_hval1) \

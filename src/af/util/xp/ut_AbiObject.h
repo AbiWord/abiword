@@ -22,6 +22,7 @@
 #define UT_ABIOBJECT_H
 
 #include <stdlib.h>	// size_t
+#include "ut_types.h"
 
 // uncomment this for memory management (experimental)
 //#define MANAGE_MEMORY 1
@@ -33,13 +34,13 @@ class UT_AbiObject {
   UT_AbiObject ();
   virtual ~UT_AbiObject ();
 
-  virtual size_t hashcode () const;
+  virtual UT_uint32 hashcode () const;
 
   virtual bool equal (UT_AbiObject * other) const;
 
-  size_t ref ();
-  size_t unref ();
-  size_t count ();
+  UT_uint32 ref ();
+  UT_uint32 unref ();
+  UT_uint32 count ();
   void   sink ();
 
 #ifdef MANAGE_MEMORY
@@ -52,7 +53,7 @@ class UT_AbiObject {
   UT_AbiObject (const UT_AbiObject &);   // no impl
   void operator=(const UT_AbiObject &);   // no impl
 
-  size_t m_refs;
+  UT_uint32 m_refs;
 };
 
 #endif /* UT_ABIOBJECT_H */

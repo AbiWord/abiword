@@ -361,15 +361,66 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /****************************************************************************/
 /****************************************************************************/
 
+#define ErrCleanupAndExit(code)  do {wvOLEFree (); return (code);} while(0)
+
+// TODO: DOM: *actually define these*
+#define GetPassword() NULL
+#define ErrorMessage(x)
+
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
 	wvParseStruct ps;
-	if (wvInitParser (&ps, (char *)szFilename))
-	{
-		UT_DEBUGMSG (("Could not open file %s\n",szFilename));
-		wvOLEFree ();
-		return UT_IE_BOGUSDOCUMENT;
-	}
+
+	int ret = wvInitParser (&ps, (char *)szFilename);
+
+	if (ret & 0x8000)		/* Password protected? */
+	  {
+	    char * password = NULL;
+
+	    // TODO: obtain password from user, error message boxes
+
+	    password = GetPassword();
+
+	    if ((ret & 0x7fff) == WORD8)
+	      {
+		ret = 0;
+		if (password == NULL)
+		  {
+		    ErrorMessage("Password required, this is an encrypted document\n");
+		    ErrCleanupAndExit(UT_IE_PROTECTED);
+		  }
+		else
+		  {
+		    wvSetPassword (password, &ps);
+		    if (wvDecrypt97 (&ps))
+		      {
+			ErrorMessage("Incorrect Password\n");
+			ErrCleanupAndExit(UT_IE_PROTECTED);
+		      }
+		  }
+	      }
+	    else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
+	      {
+		ret = 0;
+		if (password == NULL)
+		  {
+		    ErrorMessage("Password required, this is an encrypted document\n");
+		    ErrCleanupAndExit(UT_IE_PROTECTED);
+		  }
+		else
+		  {
+		    wvSetPassword (password, &ps);
+		    if (wvDecrypt95 (&ps))
+		      {
+			//("Incorrect Password\n"));
+			ErrCleanupAndExit(UT_IE_PROTECTED);
+		      }
+		  }
+	      }
+	  }
+
+	if (ret)
+	  ErrCleanupAndExit(UT_IE_BOGUSDOCUMENT);
 
 	// register ourself as the userData
 	ps.userData = this;
@@ -1027,7 +1078,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	}
 
 	// remove the trailing semi-colon
-	props = props.substr (0, props.size()-1);
+	props [props.size()-1] = 0;
 
 	xxx_UT_DEBUGMSG(("Dom: the paragraph properties are: '%s'\n",props.c_str()));
 	

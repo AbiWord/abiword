@@ -245,7 +245,7 @@ protected:
 	UT_Vector				m_vecListeners;
 	UT_Vector				m_vecLists;
 	
-	UT_HashTable		    m_hashDataItems;
+	UT_StringPtrMap		    m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;
 	XAP_App *				m_pApp;

@@ -386,7 +386,7 @@ protected:
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
-	UT_HashTable		    m_hashStyles;
+	UT_StringPtrMap		    m_hashStyles;
 	
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;
