@@ -80,7 +80,7 @@ UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 		while ( *p != '\n' && *p != '\r' )
 		{
 			iBytesScanned++ ; p++ ;
-			if( iBytesScanned+2 >= iNumbytes ) return(UT_CONFIDENCE_PERFECT);
+			if( iBytesScanned+2 >= iNumbytes ) return(UT_CONFIDENCE_ZILCH);
 		}
 		/*  Seek past the next newline:  */
 		if ( *p == '\n' || *p == '\r' )
