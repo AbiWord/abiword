@@ -66,7 +66,8 @@
 #define DRAW_END	_ptdraw.x *= -1; 							\
 			_ptdraw.y *= -1; 									\
 			PgSetUserClip(NULL);								\
-			PgSetTranslation(&_ptdraw, 0); 						
+			PgSetTranslation(&_ptdraw, 0); 						\
+			/* Debugging PgFlush(); */
 
 #endif
 
@@ -76,6 +77,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw)
 	m_pDraw = draw;
 	m_pFont = NULL;
 	m_pFontGUI = NULL;
+	m_iLineWidth = 1;
 	m_currentColor = Pg_BLACK;
 
 	m_FontCount =  PfQueryFonts(' ', PHFONT_ALL_FONTS, NULL, 0) + 1;
@@ -667,28 +669,30 @@ GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* 
 
 void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
-	printf("GR: drawImage \n");
-#if 0
 	UT_ASSERT(pImg);
 	
-	GR_QNXImage * pQNXImage = static_cast<GR_QNXImage *>(pImg);
-
+	GR_QNXImage * pQNXImage = (GR_QNXImage *)(pImg);
 	Fatmap * image = pQNXImage->getData();
+	PhPoint_t pos;
+	PhDim_t   size;
 
-	UT_sint32 iImageWidth = pQNXImage->getDisplayWidth();
-	UT_sint32 iImageHeight = pQNXImage->getDisplayHeight();
+	size.w = pQNXImage->getDisplayWidth();
+	size.h = pQNXImage->getDisplayHeight();
 
-	gdk_draw_rgb_image(m_pWin,
-					   m_pGC,
-					   xDest,
-					   yDest,
-					   iImageWidth,
-					   iImageHeight,
-					   GDK_RGB_DITHER_NORMAL,
-					   image->data,
-					   image->width * 3); // This parameter is the total bytes across one row,
-	                                      // which is pixels * 3 (we use 3 bytes per pixel).
-#endif
+	DRAW_START 
+
+	pos.x = xDest; pos.y = yDest;
+
+	UT_ASSERT(image->data);
+	PgDrawImagemx(image->data,			/* Data */
+				Pg_IMAGE_DIRECT_888,  	/* Type */ 
+				&pos,					/* Position */
+				&size,					/* Size */
+				3 /* 24 bit image */ * size.w,	/* BPL */
+				0);						/* tag (CRC) */
+	PgFlush();
+
+	DRAW_END
 }
 
 void GR_QNXGraphics::flush(void)
