@@ -22,8 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=		_ZLIB_ _LIBPNG_ _LIBWV_ _ABIDISTFILES_ _LIBICONV_
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_
+REQUIRE=		_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _ABIDISTFILES_ 
+REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBICONV clean_LIBWV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
 TARGET=		build
