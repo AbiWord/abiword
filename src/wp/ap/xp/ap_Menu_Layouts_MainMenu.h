@@ -120,7 +120,6 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_ALIGN_JUSTIFY)
 		EndSubMenu()
 		MenuItem(AP_MENU_ID_FMT_STYLE)
-		Separator()
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)
