@@ -470,9 +470,10 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 
 	memset(m_bufUCS, 0, sizeof(m_bufUCS));
 
-	if (pBufUCS && *pBufUCS) {
-		UT_ASSERT(UT_UCS4_strlen(pBufUCS) < AP_MAX_MESSAGE_FIELD);
-		UT_UCS4_strcpy(m_bufUCS, pBufUCS);
+	if (pBufUCS && *pBufUCS)
+	{
+		UT_UCS4_strncpy(m_bufUCS, pBufUCS, AP_MAX_MESSAGE_FIELD);
+		m_bufUCS[AP_MAX_MESSAGE_FIELD];
 	}
 	
  	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
@@ -488,18 +489,43 @@ void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 	}
 
 	UT_uint32 len = ((pBuf && *pBuf) ? strlen(pBuf) : 0);
-	UT_ASSERT(len*MB_LEN_MAX < AP_MAX_MESSAGE_FIELD);
 
-	UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD];
+	// This is the kind of a bad assert that creates segfaults and
+	// unnecessary work!!! 
+	// UT_ASSERT(len*MB_LEN_MAX < AP_MAX_MESSAGE_FIELD);
 
-	if (len)
+	char * t = NULL;
+	if(len*MB_LEN_MAX >= AP_MAX_MESSAGE_FIELD)
+	{
+		t = new char[AP_MAX_MESSAGE_FIELD/MB_LEN_MAX + 1];
+		// leave 4 empty spaces at the end
+		// this might leave a broken char at the end, but it will not
+		// crash ...
+		strncpy(t,pBuf,AP_MAX_MESSAGE_FIELD/MB_LEN_MAX - 4);
+		t[AP_MAX_MESSAGE_FIELD/MB_LEN_MAX - 4] = ' ';
+		t[AP_MAX_MESSAGE_FIELD/MB_LEN_MAX - 3] = '.';
+		t[AP_MAX_MESSAGE_FIELD/MB_LEN_MAX - 2] = '.';
+		t[AP_MAX_MESSAGE_FIELD/MB_LEN_MAX - 1] = '.';
+		t[AP_MAX_MESSAGE_FIELD/MB_LEN_MAX] = 0;
+	}
+	
+	UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD+1];
+
+	if (len && !t)
 		UT_UCS4_strcpy_utf8_char(bufUCS,pBuf);
+	else if(len && t)
+		UT_UCS4_strcpy_utf8_char(bufUCS,t);
 	else
 		memset(bufUCS,0,sizeof(bufUCS));
 
  	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
  	if(pf) {
 		pf->update(bufUCS);
+	}
+
+	if(t)
+	{
+		delete [] t;
 	}
 }
 
