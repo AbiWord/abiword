@@ -947,31 +947,43 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
  		{
  			// Get delta
  			const int iDelta = (short) HIWORD(wParam);
+			const int cWheelLines = _getMouseWheelLines()();
 
- 			// Calculate the movement offset to an integer resolution
- 			const int iMove = (iDelta * _getMouseWheelLines()) / WHEEL_DELTA;
+			if (WHEEL_PAGESCROLL == cWheelLines)
+			{
+				WORD wDir = (iDelta < 0) ? SB_PAGEDOWN : SB_PAGEUP;
+				SendMessage(hwnd,
+							WM_VSCROLL,
+							MAKELONG(wDir, 0),
+							NULL);
+			}
+			else
+			{
+				// Calculate the movement offset to an integer resolution
+				const int iMove = (iDelta * cWheelLines) / WHEEL_DELTA;
 
-	 		// Get current scroll position
- 			SCROLLINFO si = { 0 };
+				// Get current scroll position
+				SCROLLINFO si = { 0 };
 
- 			si.cbSize = sizeof(si);
- 			si.fMask = SIF_ALL;
- 			fImpl->_getVerticalScrollInfo(&si);
+				si.cbSize = sizeof(si);
+				si.fMask = SIF_ALL;
+				fImpl->_getVerticalScrollInfo(&si);
 
-	 		// Clip new position to limits
- 			int iNewPos = si.nPos - (((iMove)?iMove:1) * SCROLL_LINE_SIZE);
- 			if (iNewPos > si.nMax) iNewPos = si.nMax;
- 			if (iNewPos < si.nMin) iNewPos = si.nMin;
+				// Clip new position to limits
+				int iNewPos = si.nPos - (((iMove)?iMove:1) * SCROLL_LINE_SIZE);
+				if (iNewPos > si.nMax) iNewPos = si.nMax;
+				if (iNewPos < si.nMin) iNewPos = si.nMin;
 
- 			if (iNewPos != si.nPos)
- 			{
- 				// If position has changed set new position
- 				SendMessage(hwnd,
- 						WM_VSCROLL,
- 						MAKELONG(SB_THUMBPOSITION, iNewPos),
- 						NULL);
- 			}
-
+				if (iNewPos != si.nPos)
+				{
+					// If position has changed set new position
+					iNewPos >>= fImpl->m_vScale;
+					SendMessage(hwnd,
+							WM_VSCROLL,
+							MAKELONG(SB_THUMBPOSITION, iNewPos),
+							NULL);
+				}
+			}
 			return 0;
 		}
 
