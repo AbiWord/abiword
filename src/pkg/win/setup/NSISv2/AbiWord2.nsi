@@ -33,11 +33,12 @@
 !ifndef VERSION_MICRO
 !define VERSION_MICRO "0"
 !endif
-!ifndef VERSION
-!define VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}"
+!ifdef VERSION
+!undef VERSION
 !endif
+!define VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}"
+
 !define INSTALLERNAME "setup_abiword.${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_MICRO}.exe"
-;!define INSTALLERNAME "setup_abiword.exe"
 
 !define APPSET  "AbiSuite"
 !define PROGRAMEXE "AbiWord.exe"
@@ -101,7 +102,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !include "Mui.nsh"
 
   ; specify where to get resources from for UI elements (default)
-  !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"  ; modern2
+  !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"
 
   ; specify the pages and order to show to user
 
@@ -329,6 +330,10 @@ Section "$(TITLE_section_abi)" section_abi
 		File "libAbiWord.dll"
 	!endif
 
+	; We need BMP plugin for cut-n-paste of images on Windows
+	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	File "..\plugins\libAbi_IEG_BMP.dll"
+
 	SetOutPath $INSTDIR\${PRODUCT}
 	File "..\AbiSuite\AbiWord\system.*"
 	File /r "..\AbiSuite\AbiWord\strings"
@@ -366,15 +371,15 @@ Section "$(TITLE_section_abi)" section_abi
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\${PROGRAMEXE}" "" '"$INSTDIR\${MAINPROGRAM}"'
 
 
-        ; Write the start menu entry (if user selected to do so)
-        !ifndef CLASSIC_UI
-          !insertmacro MUI_STARTMENU_WRITE_BEGIN
-  	  ;SetShellVarContext current|all???
-	  !insertmacro lngCreateSMGroup  "$MUI_STARTMENU_FOLDER"
-	  !insertmacro lngCreateShortCut "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-	  !insertmacro lngCreateShortCut "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
-          !insertmacro MUI_STARTMENU_WRITE_END
-        !endif
+	; Write the start menu entry (if user selected to do so)
+	!ifndef CLASSIC_UI
+	  !insertmacro MUI_STARTMENU_WRITE_BEGIN
+		;SetShellVarContext current|all???
+		!insertmacro lngCreateSMGroup  "$MUI_STARTMENU_FOLDER"
+		!insertmacro lngCreateShortCut "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+		!insertmacro lngCreateShortCut "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
+	  !insertmacro MUI_STARTMENU_WRITE_END
+	!endif
 
 	; New Uninstaller
 	WriteUninstaller "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
@@ -535,7 +540,7 @@ Function ConnectInternet
 	IfErrors noie3
     
 	Pop $0	; $0 is set to "online"
-	StrCmp $R0 "online" connected
+	StrCmp $0 "online" connected
 		DetailPrint "Unable to establish Internet connection, aborting download"
 		;MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet."
      
@@ -982,15 +987,18 @@ Function .onInit
 !endif
 
 ; Disable Windows 95 specific sections
-!ifdef OPT_CRTL_URL
-    Call GetWindowsVersion
-    Pop $R0
-    StrCpy $R0 '95'
-    ;MessageBox MB_OKCANCEL "WinVer: $R0" IDOK 0
-    StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
+Call GetWindowsVersion
+Pop $R0
+;StrCpy $R0 '95'
+;MessageBox MB_OKCANCEL "WinVer: $R0" IDOK 0
+StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
+  !ifdef OPT_CRTL_URL
     !insertmacro SectionDisable ${section_crtlib_dl}
-    skipW95dl:
-!endif
+  !endif
+  !ifdef OPT_CRTL_LOCAL
+    !insertmacro SectionDisable ${section_crtlib_local}
+  !endif
+skipW95dl:
 
 FunctionEnd
 
@@ -1136,4 +1144,3 @@ FunctionEnd
 !endif
 
 ; End of File
-
