@@ -29,7 +29,10 @@
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 class XAP_Frame;
-#include "fv_View.h"					// TODO remove this
+#include "fv_View.h"					// TODO remove this.  we need to
+										// TODO add the various pView->...()
+										// TODO methods that we use to the
+										// TODO the xav_View base class.
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
@@ -705,15 +708,35 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		
 	case DW_LEFTMARGIN:
 	case DW_RIGHTMARGIN:
+		return;
+
 	case DW_COLUMNGAP:
+		{
+			// TODO what upper/lower bound should we place on this ?
+			
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(m_infoCache);
+			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+			UT_sint32 xrel = ((UT_sint32)x) - xAbsRight;
+
+			double dxrel = _scalePixelDistanceToUnits(xrel,tick);
+
+			const XML_Char * properties[3];
+			properties[0] = "column-gap";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("TopRuler: ColumnGap [%s]\n",properties[1]));
+
+			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
+		}
 		return;
 		
 	case DW_LEFTINDENT:
 		{
 			// TODO what upper/lower bound should we place on this ?
 			
-			UT_sint32 xrel = _mapLeftIndentToColumnRelative(m_infoCache,x);
-			double dxrel = _scaleColumnRelativeToUnits(xrel,tick);
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(m_infoCache);
+			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
+			double dxrel = _scalePixelDistanceToUnits(xrel,tick);
 
 			const XML_Char * properties[3];
 			properties[0] = "margin-left";
@@ -729,8 +752,11 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		{
 			// TODO what upper/lower bound should we place on this ?
 			
-			UT_sint32 xrel = _mapRightIndentToColumnRelative(m_infoCache,x);
-			double dxrel = _scaleColumnRelativeToUnits(xrel,tick);
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(m_infoCache);
+			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+			UT_sint32 xrel = xAbsRight - ((UT_sint32)x);
+
+			double dxrel = _scalePixelDistanceToUnits(xrel,tick);
 
 			const XML_Char * properties[3];
 			properties[0] = "margin-right";
@@ -746,11 +772,12 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		{
 			// TODO what upper/lower bound should we place on this ?
 			
-			UT_sint32 xrel = _mapLeftIndentToColumnRelative(m_infoCache,x);
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(m_infoCache);
+			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
 			// first-line-indent is relative to the left-indent
 			// not the left edge of the column.
 			UT_sint32 xrel2 = xrel - m_infoCache.m_xrLeftIndent;
-			double dxrel = _scaleColumnRelativeToUnits(xrel2,tick);
+			double dxrel = _scalePixelDistanceToUnits(xrel2,tick);
 			const XML_Char * properties[3];
 			properties[0] = "text-indent";
 			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
@@ -779,9 +806,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 
 /*****************************************************************/
 
-double AP_TopRuler::_scaleColumnRelativeToUnits(UT_sint32 xColRel, ap_RulerTicks & tick)
+double AP_TopRuler::_scalePixelDistanceToUnits(UT_sint32 xDist, ap_RulerTicks & tick)
 {
-	UT_sint32 xrel = xColRel * tick.tickUnitScale;
+	// convert pixel distance to actual dimensioned units
+	
+	UT_sint32 xrel = xDist * tick.tickUnitScale;
 	if (xrel > 0)
 		xrel =   (( xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
 	else
@@ -791,8 +820,10 @@ double AP_TopRuler::_scaleColumnRelativeToUnits(UT_sint32 xColRel, ap_RulerTicks
 	return dxrel;
 }
 
-UT_sint32 AP_TopRuler::_mapLeftIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x)
+UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo &info)
 {
+	// return absolute pixel value for the first pixel in this column.
+
 	// compute page-relative coordinate of the left edge of this column
 	
 	UT_sint32 xTickOrigin = m_infoCache.u.c.m_xaLeftMargin;
@@ -804,28 +835,7 @@ UT_sint32 AP_TopRuler::_mapLeftIndentToColumnRelative(AP_TopRulerInfo &info, UT_
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	UT_sint32 xAbsLeft = xFixed + info.m_xPageViewMargin + xTickOrigin - m_xScrollOffset;
 
-	// return distance from left edge of column
-	
-	return (((UT_sint32)x) - xAbsLeft);
-}
-
-UT_sint32 AP_TopRuler::_mapRightIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x)
-{
-	// compute page-relative coordinate of the right edge of this column
-	
-	UT_sint32 xTickOrigin = m_infoCache.u.c.m_xaLeftMargin;
-	if (m_infoCache.m_iCurrentColumn > 0)
-		xTickOrigin += m_infoCache.m_iCurrentColumn * (m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xColumnGap);
-
-	// map page-relative to window absolute
-	
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	UT_sint32 xAbsLeft = xFixed + info.m_xPageViewMargin + xTickOrigin - m_xScrollOffset;
-	UT_sint32 xAbsRight = xAbsLeft + info.u.c.m_xColumnWidth;
-
-	// return distance from right edge of column
-	
-	return (xAbsRight - ((UT_sint32)x));
+	return xAbsLeft;
 }
 
 void AP_TopRuler::_ignoreEvent(void)
