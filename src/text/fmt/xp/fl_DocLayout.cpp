@@ -62,7 +62,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bSpellCheckNumbers = UT_TRUE;
 	m_bSpellCheckInternet = UT_TRUE;
 	m_pPrefs = NULL;
-
+	m_bStopSpellChecking = UT_FALSE;
+	m_bImSpellCheckingNow = UT_FALSE;
 	m_uBackgroundCheckReasons = 0;
 
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
@@ -100,7 +101,11 @@ FL_DocLayout::~FL_DocLayout()
 
 	if (m_pBackgroundCheckTimer)
 	{
+	        m_bStopSpellChecking = UT_TRUE;
 		m_pBackgroundCheckTimer->stop();
+		while(m_bImSpellCheckingNow == UT_TRUE)
+		{
+		}
 	}
 	
 	DELETEP(m_pBackgroundCheckTimer);
@@ -625,17 +630,22 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 		return;
 	}
 
+        if(pDocLayout->m_bStopSpellChecking == UT_TRUE || pDocLayout->m_bImSpellCheckingNow == UT_TRUE)
+	{
+	  UT_DEBUGMSG(("SEVIOR: Spell checking disabled coz m_bStopSpellChecking  m_bImSpellCheckingNow = %d %d\n",pDocLayout->m_bStopSpellChecking, pDocLayout->m_bImSpellCheckingNow));
+	        return;
+	}
 	// SEVIOR: Code added to hold spell checks during block insertions
 
 	if(pDocLayout->m_pView->dontSpellCheckRightNow() == UT_TRUE)
 	{
 	        return;
 	}
-	
+	pDocLayout->m_bImSpellCheckingNow = UT_TRUE;
 
 	// prevent getting a new timer hit before we've finished this one by
 	// temporarily disabling the timer
-	pDocLayout->m_pBackgroundCheckTimer->stop();
+	//pDocLayout->m_pBackgroundCheckTimer->stop();
 
 	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
 	UT_ASSERT(vecToCheck);
@@ -683,11 +693,12 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 		}
 	}
 
-	if (i != 0)
+	if (i != 0 && pDocLayout->m_bStopSpellChecking == UT_FALSE)
 	{
 		// restart timer unless it's not needed any more
-		pDocLayout->m_pBackgroundCheckTimer->start();
+	  //pDocLayout->m_pBackgroundCheckTimer->start();
 	}
+	pDocLayout->m_bImSpellCheckingNow = UT_FALSE;
 }
 
 void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, UT_Bool bHead)
@@ -705,6 +716,8 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	}
 	else
 	{
+	  //		m_pBackgroundCheckTimer->stop();
+	        m_bStopSpellChecking = UT_FALSE;
 		m_pBackgroundCheckTimer->start();
 	}
 
@@ -744,7 +757,11 @@ void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	// when queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
+	        m_bStopSpellChecking = UT_TRUE;
 		m_pBackgroundCheckTimer->stop();
+		while(m_bImSpellCheckingNow == UT_TRUE)
+		{
+		}
 	}
 }
 

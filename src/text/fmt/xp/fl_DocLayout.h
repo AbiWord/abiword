@@ -221,6 +221,8 @@ protected:
 	UT_Bool				m_bSpellCheckNumbers;
 	UT_Bool				m_bSpellCheckInternet;
 
+	UT_Bool                         m_bStopSpellChecking; // Handshaking
+	UT_Bool                         m_bImSpellCheckingNow; // Variables
 	// smart quote latent instance
 	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if NULL, ignore m_uOffsetForSmartQuote
 	UT_uint32           m_uOffsetForSmartQuote;
@@ -237,3 +239,5 @@ protected:
 };
 
 #endif /* DOCLAYOUT_H */
+
+
