@@ -184,7 +184,7 @@ clean_LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../wv clean;	\
 
-clean_LIBWV_:
+clean_LIBICONV_:
 	@if [ -d $(ABI_ROOT)/../libiconv ]; then              \
 		$(MAKE) -C $(ABI_ROOT)/../libiconv clean;     \
 
