@@ -97,7 +97,7 @@ void XAP_UnixDialog_Image::event_Ok ()
 {
 	setAnswer(XAP_Dialog_Image::a_OK);
 	setTitle (gtk_entry_get_text (GTK_ENTRY(m_wTitleEntry)));
-	setAlt (gtk_entry_get_text (GTK_ENTRY(m_wAltEntry)));
+	setDescription (gtk_entry_get_text (GTK_ENTRY(m_wDescriptionEntry)));
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbInLine)))
 	{
 		setWrapping(WRAP_INLINE);
@@ -397,7 +397,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_wAspectCheck = glade_xml_get_widget(xml, "ckAspect");
 
 	m_wTitleEntry = glade_xml_get_widget(xml, "entryTitle");
-	m_wAltEntry = glade_xml_get_widget(xml, "entryAlt");
+	m_wDescriptionEntry = glade_xml_get_widget(xml, "entryAlt");
 
 	m_bAspect = getPreserveAspect();
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
@@ -422,7 +422,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	localizeLabel(glade_xml_get_widget(xml,"lblHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
 	localizeLabel(glade_xml_get_widget(xml,"lblWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
 	localizeLabel(glade_xml_get_widget(xml,"lblTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
-	localizeLabel(glade_xml_get_widget(xml,"lblAlt"), pSS, XAP_STRING_ID_DLG_Image_LblAlt);
+	localizeLabel(glade_xml_get_widget(xml,"lblAlt"), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
 
 	localizeLabel(glade_xml_get_widget(xml,"lblInLine"), pSS, XAP_STRING_ID_DLG_Image_InLine);
 	localizeLabel(glade_xml_get_widget(xml,"lblWrappedRight"), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
@@ -454,7 +454,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
 
 	gtk_entry_set_text (GTK_ENTRY(m_wTitleEntry), getTitle().utf8_str());
-	gtk_entry_set_text (GTK_ENTRY(m_wAltEntry), getAlt().utf8_str());
+	gtk_entry_set_text (GTK_ENTRY(m_wDescriptionEntry), getDescription().utf8_str());
 
 	_connectSignals ();
 	

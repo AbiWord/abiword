@@ -109,12 +109,12 @@ public:
 		return m_title;
 	}
 
-	void setAlt(const UT_UTF8String & alt) {
-		m_alt = alt;
+	void setDescription(const UT_UTF8String & description) {
+		m_description = description;
 	}
 
-	const UT_UTF8String & getAlt() const {
-		return m_alt;
+	const UT_UTF8String & getDescription() const {
+		return m_description;
 	}
 
 
@@ -136,7 +136,7 @@ public:
 	UT_Dimension m_PreferedUnits;
 
 	UT_UTF8String m_title;
-	UT_UTF8String m_alt;
+	UT_UTF8String m_description;
 
 	void setWidth (double w, bool checkaspect);
 	void setHeight (double h, bool checkaspect);

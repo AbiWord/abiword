@@ -9168,11 +9168,11 @@ UT_return_val_if_fail(pDialog, false);
 	  const XML_Char* szHeight = UT_getAttribute("height", props_in);
 
 	  const XML_Char* szTitle = 0;
-	  const XML_Char* szAlt = 0;
+	  const XML_Char* szDescription = 0;
 
 	  if (pAP) {
 		  pAP->getAttribute ("title", szTitle);
-		  pAP->getAttribute ("alt", szAlt);
+		  pAP->getAttribute ("alt", szDescription);
 	  }
 
 	  if (szTitle) {
@@ -9180,10 +9180,10 @@ UT_return_val_if_fail(pDialog, false);
 		  pDialog->setTitle (title);
 		  FREEP(title);
 	  }
-	  if (szAlt) {
-		  char * alt = UT_XML_Decode (szAlt);
-		  pDialog->setAlt (alt);
-		  FREEP(alt);
+	  if (szDescription) {
+		  char * description = UT_XML_Decode (szDescription);
+		  pDialog->setDescription (description);
+		  FREEP(description);
 	  }
 
 	  // 72.0 is pixels/inch
@@ -9282,14 +9282,14 @@ UT_return_val_if_fail(pDialog, false);
 			  properties[3] = heightBuf;
 
 			  UT_UTF8String title (pDialog->getTitle());
-			  UT_UTF8String alt (pDialog->getAlt());
+			  UT_UTF8String description (pDialog->getDescription());
 
 			  title.escapeXML();
-			  alt.escapeXML();
+			  description.escapeXML();
 
 			  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
 			  attribs[1] = title.utf8_str();
-			  attribs[3] = alt.utf8_str();
+			  attribs[3] = description.utf8_str();
 
 			  pView->setCharFormat(properties, attribs);
 			  pView->updateScreen();
