@@ -27,19 +27,7 @@ dnl AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE(AbiSuite,0.99.3)
 
-dnl APR [ Apache Portable Runtime ] does it this way, but I don't know
-dnl why.  I figure they probably have a good reason. 
-
-abs_builddir=`pwd`
 abs_srcdir="`cd $srcdir && pwd`"
-
-if test -n "$BUILD_BASE"; then
-  top_builddir="$BUILD_BASE"
-else
-  top_builddir="$abs_builddir"
-fi
-AC_SUBST(top_builddir)
-
 
 dnl Checks for programs.
 AC_PROG_CXX
