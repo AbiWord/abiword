@@ -153,6 +153,10 @@ void GR_UNIXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				   iLength);
 
 	delete pNChars;
+
+#if 1
+	flush();
+#endif	
 }
 
 void GR_UNIXGraphics::setFont(GR_Font* pFont)
@@ -570,7 +574,16 @@ UT_Bool GR_UNIXGraphics::endPrint(void)
 	return UT_FALSE;
 }
 
-void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
+GR_Image* GR_UNIXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+	GR_UnixImage* pImg = new GR_UnixImage(NULL, pszName);
+
+	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
+
+	return pImg;
+}
+
+void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
 	
@@ -578,14 +591,9 @@ void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
 	Fatmap * image = pUnixImage->getData();
 
-	UT_sint32 iImageWidth = pUnixImage->getWidth();
-	UT_sint32 iImageHeight = pUnixImage->getHeight();
+	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
+	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 
-	/*
-	  TODO fix this to handle automatic stretching of the
-	  image into the destination width/height.
-	*/
-	
 	gdk_draw_rgb_image(m_pWin,
 					   m_pGC,
 					   xDest,
@@ -596,4 +604,9 @@ void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 					   image->data,
 					   image->width * 3); // This parameter is the total bytes across one row,
 	                                      // which is pixels * 3 (we use 3 bytes per pixel).
+}
+
+void GR_UNIXGraphics::flush(void)
+{
+	gdk_flush();
 }

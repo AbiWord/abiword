@@ -102,7 +102,7 @@ static char *ident = NULL; /* storage buffer for keywords */
  * "recognize" procedure to calculate how many possible keys there are.
  */
 
-static enum parseKey {
+enum parseKey {
   ASCENDER, CHARBBOX, CODE, COMPCHAR, CAPHEIGHT, COMMENT, 
   DESCENDER, ENCODINGSCHEME, ENDCHARMETRICS, ENDCOMPOSITES, 
   ENDFONTMETRICS, ENDKERNDATA, ENDKERNPAIRS, ENDTRACKKERN, 
@@ -215,8 +215,8 @@ static char *linetoken(stream)
  *  The algorithm is a standard Knuth binary search.
  */
 
-static enum parseKey recognize(ident)
-  register char *ident;
+static enum parseKey recognize(_ident)
+  register char *_ident;
 {
     int lower = 0, upper = (int) NOPE, midpoint, cmpvalue;
     BOOL found = FALSE;
@@ -225,7 +225,7 @@ static enum parseKey recognize(ident)
     {
         midpoint = (lower + upper)/2;
         if (keyStrings[midpoint] == NULL) break;
-        cmpvalue = strncmp(ident, keyStrings[midpoint], MAX_NAME);
+        cmpvalue = strncmp(_ident, keyStrings[midpoint], MAX_NAME);
         if (cmpvalue == 0) found = TRUE;
         else if (cmpvalue < 0) upper = midpoint - 1;
         else lower = midpoint + 1;

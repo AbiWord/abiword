@@ -81,10 +81,7 @@ UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidth
 	return UT_TRUE;
 }
 
-void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void GR_Graphics::flush(void)
 {
-	UT_ASSERT(pImg);
-	
-	drawImage(pImg, xDest, yDest, pImg->getWidth(), pImg->getHeight());
+	// default implementation does nothing
 }
-

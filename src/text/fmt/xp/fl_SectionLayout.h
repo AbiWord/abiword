@@ -30,6 +30,7 @@
 class FL_DocLayout;
 class fl_BlockLayout;
 class fb_LineBreaker;
+class fb_ColumnBreaker;
 class fp_Column;
 class PD_Document;
 class PP_AttrProp;
@@ -52,10 +53,15 @@ public:
 	void				format();
 	void				updateLayout();
 
-	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
-	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
-	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
-	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
+	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
+	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
+	inline UT_sint32			getTopMargin(void) const { return m_iTopMargin; }
+	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
+	inline fl_SectionLayout*	getPrev(void) const { return m_pPrev; }
+	inline fl_SectionLayout*	getNext(void) const { return m_pNext; }
+
+	void				setPrev(fl_SectionLayout*);
+	void				setNext(fl_SectionLayout*);
 	
 	UT_uint32			getNumColumns(void) const;
 	UT_uint32			getColumnGap(void) const;
@@ -64,7 +70,8 @@ public:
 	fl_BlockLayout *	getLastBlock(void) const;
 	fl_BlockLayout *	appendBlock(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP);
 	fl_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP);
-	fl_BlockLayout *	removeBlock(fl_BlockLayout * pBL);
+	void				addBlock(fl_BlockLayout* pBL);
+	void				removeBlock(fl_BlockLayout * pBL);
 
 	void				deleteEmptyColumns(void);
 	UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
@@ -81,8 +88,12 @@ protected:
 	fb_LineBreaker *	_getLineBreaker(void);
 	void				_lookupProperties(void);
 
+	fl_SectionLayout*	m_pPrev;
+	fl_SectionLayout*	m_pNext;
+	
 	FL_DocLayout*		m_pLayout;
 	fb_LineBreaker*		m_pLB;
+	fb_ColumnBreaker*	m_pCB;
 
 	fl_BlockLayout*		m_pFirstBlock;
 	fl_BlockLayout*		m_pLastBlock;

@@ -39,10 +39,10 @@ public:
 	GR_UnixImage(Fatmap * image, const char* pszName);
 	~GR_UnixImage();
 
-	virtual UT_sint32	getWidth(void) const;
-	virtual UT_sint32	getHeight(void) const;
-	virtual UT_Bool		getByteBuf(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB);
+	virtual UT_sint32	getDisplayWidth(void) const;
+	virtual UT_sint32	getDisplayHeight(void) const;
+	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 	Fatmap *			getData(void) const { return m_image; }
 	
@@ -50,12 +50,5 @@ protected:
 
 	Fatmap * m_image;
 };
-
-class GR_UnixImageFactory : public GR_ImageFactory
-{
-public:
-	virtual GR_Image*	createNewImage(const char* pszName);
-};
-
 
 #endif /* GR_UNIXIMAGE_H */

@@ -23,7 +23,6 @@
 #include "xap_Args.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Clipboard.h"
-#include "gr_Win32Image.h"
 #include "xap_Win32Frame.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32Toolbar_ControlFactory.h"
@@ -50,7 +49,6 @@ AP_Win32App::~AP_Win32App(void)
 
 	DELETEP(m_pWin32ToolbarIcons);
 	DELETEP(_pClipboard);
-	DELETEP(_pImageFactory);
 }
 
 HINSTANCE AP_Win32App::getInstance() const
@@ -79,7 +77,6 @@ UT_Bool AP_Win32App::initialize(void)
 	// do anything else we need here...
 
 	_pClipboard = new AP_Win32Clipboard();
-	_pImageFactory = new GR_Win32ImageFactory();
 
 	/*
 	  TODO for now, we assume the dictionary

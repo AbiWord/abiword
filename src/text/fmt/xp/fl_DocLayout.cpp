@@ -49,6 +49,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 	m_pView = NULL;
 	m_pSpellCheckTimer = NULL;
 	m_pPendingWord = NULL;
+	m_pFirstSection = NULL;
+	m_pLastSection = NULL;
 	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -61,17 +63,22 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 FL_DocLayout::~FL_DocLayout()
 {
 	if (m_pDoc)
+	{
 		m_pDoc->removeListener(m_lid);
+	}
 
 	DELETEP(m_pDocListener);
 
 	if (m_pSpellCheckTimer)
+	{
 		m_pSpellCheckTimer->stop();
+	}
+	
 	DELETEP(m_pSpellCheckTimer);
 	DELETEP(m_pPendingWord);
 
 	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
-	UT_VECTOR_PURGEALL(fl_SectionLayout *, m_vecSectionLayouts);
+	// TODO -- UT_VECTOR_PURGEALL(fl_SectionLayout *, m_vecSectionLayouts);
 
 	UT_HASH_PURGEDATA(GR_Font *, m_hashFontCache);
 }
@@ -188,15 +195,21 @@ fp_Page* FL_DocLayout::getNthPage(int n)
 
 fp_Page* FL_DocLayout::getFirstPage()
 {
-	UT_ASSERT(m_vecPages.getItemCount() > 0);
-
+	if (m_vecPages.getItemCount() == 0)
+	{
+		return NULL;
+	}
+	
 	return (fp_Page*) m_vecPages.getNthItem(0);
 }
 
 fp_Page* FL_DocLayout::getLastPage()
 {
-	UT_ASSERT(m_vecPages.getItemCount() > 0);
-
+	if (m_vecPages.getItemCount() == 0)
+	{
+		return NULL;
+	}
+	
 	return (fp_Page*) m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
 }
 
@@ -291,48 +304,15 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 	return pBL;
 }
 
-fl_SectionLayout* FL_DocLayout::getPrevSection(fl_SectionLayout* pSL) const
-{
-	fl_SectionLayout* pPrev = NULL;
-
-	UT_sint32 ndx = m_vecSectionLayouts.findItem(pSL);
-	UT_ASSERT(ndx >= 0);
-
-	if (ndx > 0)
-	{
-		pPrev = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(ndx-1);
-		UT_ASSERT(pPrev);
-	}
-
-	return pPrev;
-}
-
-fl_SectionLayout* FL_DocLayout::getNextSection(fl_SectionLayout* pSL) const
-{
-	fl_SectionLayout* pNext = NULL;
-
-	UT_sint32 ndx = m_vecSectionLayouts.findItem(pSL);
-	UT_ASSERT(ndx >= 0);
-
-	if (m_vecSectionLayouts.getItemCount() > (UT_uint32)(ndx+1))
-	{
-		pNext = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(ndx+1);
-		UT_ASSERT(pNext);
-	}
-
-	return pNext;
-}
-
 void FL_DocLayout::deleteEmptyColumnsAndPages(void)
 {
 	int i;
-	
-	int countSections = m_vecSectionLayouts.getItemCount();
-	for (i=0; i<countSections; i++)
-	{
-		fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
 
+	fl_SectionLayout* pSL = m_pFirstSection;
+	while (pSL)
+	{
 		pSL->deleteEmptyColumns();
+		pSL = pSL->getNext();
 	}
 
 	int iCountPages = m_vecPages.getItemCount();
@@ -351,12 +331,12 @@ void FL_DocLayout::formatAll()
 {
 	UT_ASSERT(m_pDoc);
 
-	int countSections = m_vecSectionLayouts.getItemCount();
-	for (int i=0; i<countSections; i++)
+	fl_SectionLayout* pSL = m_pFirstSection;
+	while (pSL)
 	{
-		fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
-		
 		pSL->format();
+		
+		pSL = pSL->getNext();
 	}
 }
 
@@ -364,12 +344,12 @@ void FL_DocLayout::updateLayout()
 {
 	UT_ASSERT(m_pDoc);
 
-	int countSections = m_vecSectionLayouts.getItemCount();
-	for (int i=0; i<countSections; i++)
+	fl_SectionLayout* pSL = m_pFirstSection;
+	while (pSL)
 	{
-		fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
-		
 		pSL->updateLayout();
+		
+		pSL = pSL->getNext();
 	}
 }
 
@@ -475,9 +455,72 @@ void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
 	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
 
 	if (i>=0)
+	{
 		m_vecUncheckedBlocks.deleteNthItem(i);
+	}
 
 	// when queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
+	{
 		m_pSpellCheckTimer->stop();
+	}
 }
+
+void FL_DocLayout::addSection(fl_SectionLayout* pSL)
+{
+	if (m_pLastSection)
+	{
+		UT_ASSERT(m_pFirstSection);
+		UT_ASSERT(m_pLastSection->getNext() == NULL);
+
+		pSL->setNext(NULL);
+		m_pLastSection->setNext(pSL);
+		pSL->setPrev(m_pLastSection);
+		m_pLastSection = pSL;
+	}
+	else
+	{
+		pSL->setPrev(NULL);
+		pSL->setNext(NULL);
+		m_pFirstSection = pSL;
+		m_pLastSection = m_pFirstSection;
+	}
+}
+
+void FL_DocLayout::removeSection(fl_SectionLayout * pSL)
+{
+	UT_ASSERT(pSL);
+	UT_ASSERT(m_pFirstSection);
+	
+	if (pSL->getPrev())
+	{
+		pSL->getPrev()->setNext(pSL->getNext());
+	}
+
+	if (pSL->getNext())
+	{
+		pSL->getNext()->setPrev(pSL->getPrev());
+	}
+	
+	if (pSL == m_pFirstSection)
+	{
+		m_pFirstSection = m_pFirstSection->getNext();
+		if (!m_pFirstSection)
+		{
+			m_pLastSection = NULL;
+		}
+	}
+
+	if (pSL == m_pLastSection)
+	{
+		m_pLastSection = m_pLastSection->getPrev();
+		if (!m_pLastSection)
+		{
+			m_pFirstSection = NULL;
+		}
+	}
+
+	pSL->setNext(NULL);
+	pSL->setPrev(NULL);
+}
+

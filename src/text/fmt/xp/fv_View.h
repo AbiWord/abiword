@@ -72,6 +72,7 @@ class FV_View : public AV_View
 {
 	friend class fl_DocListener;
 	friend class fl_BlockLayout;
+	friend class fl_SectionLayout;
 	
 public:
 	FV_View(void*, FL_DocLayout*);

@@ -115,7 +115,8 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				UT_DEBUGMSG(("no memory for SectionLayout"));
 				return UT_FALSE;
 			}
-			m_pLayout->m_vecSectionLayouts.addItem(pSL);
+			
+			m_pLayout->addSection(pSL);
 
 			*psfh = (PL_StruxFmtHandle)pSL;
 		}
@@ -124,9 +125,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_Block:
 		{
 			// locate the last SectionLayout
-			int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
-			UT_ASSERT(countSections > 0);
-			fl_SectionLayout* pSL = (fl_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
+			fl_SectionLayout* pSL = m_pLayout->getLastSection();
 			UT_ASSERT(pSL);
 
 			// append a new BlockLayout to that SectionLayout
@@ -268,7 +267,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			return pSL->doclistener_deleteStrux(pcrx);
 		}
-					
 		case PTX_Block:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;

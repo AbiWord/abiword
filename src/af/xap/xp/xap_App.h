@@ -38,7 +38,6 @@ class EV_EditBindingMap;
 class EV_Menu_ActionSet;
 class EV_Toolbar_ActionSet;
 class AP_Clipboard;
-class GR_ImageFactory;
 class XAP_BindingSet;
 
 /*****************************************************************
@@ -90,7 +89,6 @@ public:
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void) = 0;
 
 	static AP_Clipboard*					getClipboard(void);
-	static GR_ImageFactory*			getImageFactory(void);
 
 protected:
 	AP_Args *						m_pArgs;
@@ -115,7 +113,6 @@ protected:
 
 	// TODO give this a s_ prefix like all other static variables
 	static AP_Clipboard*			_pClipboard;
-	static GR_ImageFactory*			_pImageFactory;
 };
 
 #endif /* AP_APP_H */

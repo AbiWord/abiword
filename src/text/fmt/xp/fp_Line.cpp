@@ -23,6 +23,7 @@
 #include "fp_Column.h"
 #include "fl_BlockLayout.h"
 #include "fp_Run.h"
+#include "fp_TextRun.h"
 #include "gr_DrawArgs.h"
 #include "fl_DocLayout.h"
 #include "gr_Graphics.h"
@@ -206,60 +207,64 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	for (int i=0; i<count; i++)
 	{
 		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
-		UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
-		if ((x >= (UT_sint32) pRun2->getX()) && (x < (UT_sint32) (pRun2->getX() + pRun2->getWidth())))
+
+		if (pRun2->canContainPoint())
 		{
-			// when hit testing runs within a line, we ignore the Y coord
+			UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
+			if ((x >= (UT_sint32) pRun2->getX()) && (x < (UT_sint32) (pRun2->getX() + pRun2->getWidth())))
+			{
+				// when hit testing runs within a line, we ignore the Y coord
 //			if (((y2) >= 0) && ((y2) < (pRun2->getHeight())))
-			{
-				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
-
-				return;
-			}
-		}
-		else if (((x - pRun2->getX()) == 0) && (pRun2->getWidth() == 0))
-		{
-			// zero-length run
-			{
-				// this only happens in an empty line, right?
-				UT_ASSERT(m_iWidth==0);
-				UT_ASSERT(i==0);
-				UT_ASSERT(count==1);
-
-				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
-
-				return;
-			}
-		}
-
-		if (!pClosestRun)
-		{
-			pClosestRun = pRun2;
-			if (x < pRun2->getX())
-			{
-				iClosestDistance = pRun2->getX() - x;
-			}
-			else if (x >= pRun2->getX() + pRun2->getWidth())
-			{
-				iClosestDistance = x - (pRun2->getX() + pRun2->getWidth());
-			}
-		}
-		else
-		{
-			if (x < pRun2->getX())
-			{
-				if ((pRun2->getX() - x) < iClosestDistance)
 				{
-					iClosestDistance = pRun2->getX() - x;
-					pClosestRun = pRun2;
+					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
+
+					return;
 				}
 			}
-			else if (x >= (pRun2->getX() + pRun2->getWidth()))
+			else if (((x - pRun2->getX()) == 0) && (pRun2->getWidth() == 0))
 			{
-				if (x - ((pRun2->getX() + pRun2->getWidth())) < iClosestDistance)
+				// zero-length run
+				{
+					// this only happens in an empty line, right?
+					UT_ASSERT(m_iWidth==0);
+					UT_ASSERT(i==0);
+					UT_ASSERT(count==1);
+
+					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
+
+					return;
+				}
+			}
+
+			if (!pClosestRun)
+			{
+				pClosestRun = pRun2;
+				if (x < pRun2->getX())
+				{
+					iClosestDistance = pRun2->getX() - x;
+				}
+				else if (x >= pRun2->getX() + pRun2->getWidth())
 				{
 					iClosestDistance = x - (pRun2->getX() + pRun2->getWidth());
-					pClosestRun = pRun2;
+				}
+			}
+			else
+			{
+				if (x < pRun2->getX())
+				{
+					if ((pRun2->getX() - x) < iClosestDistance)
+					{
+						iClosestDistance = pRun2->getX() - x;
+						pClosestRun = pRun2;
+					}
+				}
+				else if (x >= (pRun2->getX() + pRun2->getWidth()))
+				{
+					if (x - ((pRun2->getX() + pRun2->getWidth())) < iClosestDistance)
+					{
+						iClosestDistance = x - (pRun2->getX() + pRun2->getWidth());
+						pClosestRun = pRun2;
+					}
 				}
 			}
 		}
@@ -357,12 +362,6 @@ void fp_Line::recalcHeight()
 		m_iHeight = iNewHeight;
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
-
-		if (m_pColumn)
-		{
-			// We need to let our column know that we changed height.
-			m_pColumn->lineHeightChanged(this, iOldHeight, m_iHeight);
-		}
 	}
 }
 
@@ -545,9 +544,9 @@ UT_Bool fp_Line::isLastLineInBlock(void) const
 
 UT_sint32 fp_Line::getMarginBefore(void) const
 {
-	if (isFirstLineInBlock() && getBlock()->getPrev(UT_FALSE))
+	if (isFirstLineInBlock() && getBlock()->getPrev())
 	{
-		fp_Line* pPrevLine = getBlock()->getPrev(UT_FALSE)->getLastLine();
+		fp_Line* pPrevLine = getBlock()->getPrev()->getLastLine();
 		UT_ASSERT(pPrevLine);
 		UT_ASSERT(pPrevLine->isLastLineInBlock());
 					
@@ -565,9 +564,9 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 
 UT_sint32 fp_Line::getMarginAfter(void) const
 {
-	if (isLastLineInBlock() && getBlock()->getNext(UT_FALSE))
+	if (isLastLineInBlock() && getBlock()->getNext())
 	{
-		fp_Line* pNextLine = getBlock()->getNext(UT_FALSE)->getFirstLine();
+		fp_Line* pNextLine = getBlock()->getNext()->getFirstLine();
 		UT_ASSERT(pNextLine);
 		UT_ASSERT(pNextLine->isFirstLineInBlock());
 					
@@ -647,4 +646,81 @@ void fp_Line::recalcMaxWidth()
 	}
 	
 	setMaxWidth(iMaxWidth);
+}
+
+fp_Line*	fp_Line::getNextLineInSection(void) const
+{
+	if (m_pNext)
+	{
+		return m_pNext;
+	}
+
+	fl_BlockLayout* pNextBlock = m_pBlock->getNext();
+	if (pNextBlock)
+	{
+		return pNextBlock->getFirstLine();
+	}
+
+	return NULL;
+}
+
+fp_Line*	fp_Line::getPrevLineInSection(void) const
+{
+	if (m_pPrev)
+	{
+		return m_pPrev;
+	}
+
+	fl_BlockLayout* pPrevBlock = m_pBlock->getPrev();
+	if (pPrevBlock)
+	{
+		return pPrevBlock->getLastLine();
+	}
+
+	return NULL;
+}
+
+UT_Bool	fp_Line::containsForcedColumnBreak(void) const
+{
+	fp_Run* pRun = getLastRun();
+	if (pRun->getType() == FPRUN_FORCEDCOLUMNBREAK)
+	{
+		return UT_TRUE;
+	}
+	else
+	{
+		return UT_FALSE;
+	}
+}
+
+UT_Bool fp_Line::containsForcedPageBreak(void) const
+{
+	fp_Run* pRun = getLastRun();
+	if (pRun->getType() == FPRUN_FORCEDPAGEBREAK)
+	{
+		return UT_TRUE;
+	}
+	else
+	{
+		return UT_FALSE;
+	}
+}
+
+void fp_Line::coalesceRuns(void)
+{
+	UT_uint32 count = m_vecRuns.getItemCount();
+	for (UT_uint32 i=0; i<(count-1); i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		if (pRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun* pTR;
+			if (pTR->canMergeWithNext())
+			{
+				pTR->mergeWithNext();
+				count--;
+			}
+		}
+	}
 }

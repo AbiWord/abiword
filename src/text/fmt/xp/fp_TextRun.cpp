@@ -359,7 +359,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 
 void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
-	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
+//	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	
 	UT_sint32 xoff;
 	UT_sint32 yoff;
@@ -382,9 +382,43 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	height = m_iHeight;
 }
 
+UT_Bool fp_TextRun::canMergeWithNext(void)
+{
+	if (
+		(!m_pNext)
+		|| (m_pNext->getType() != FPRUN_TEXT)
+		)
+	{
+		return UT_FALSE;
+	}
+
+	if (
+		!(m_pLine)
+	    || !(m_pNext->getLine())
+		)
+	{
+		return UT_FALSE;
+	}
+	
+	fp_TextRun* pNext = (fp_TextRun*) m_pNext;
+	if (
+		(pNext->m_iOffsetFirst != (m_iOffsetFirst + m_iLen))
+		|| (pNext->m_fDecorations != m_fDecorations)
+		|| (pNext->m_pFont != m_pFont)
+		|| (m_iHeight != pNext->m_iHeight)
+		)
+	{
+		return UT_FALSE;
+	}
+	
+	return UT_TRUE;
+}
+
 void fp_TextRun::mergeWithNext(void)
 {
 	UT_ASSERT(m_pNext && (m_pNext->getType() == FPRUN_TEXT));
+	UT_ASSERT(m_pLine);
+	UT_ASSERT(m_pNext->getLine());
 
 	fp_TextRun* pNext = (fp_TextRun*) m_pNext;
 
@@ -426,6 +460,7 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iHeight = this->m_iHeight;
 	pNew->m_iLineWidth = this->m_iLineWidth;
 	pNew->m_bDirty = this->m_bDirty;
+//	pNew->m_bDirty = UT_FALSE;
 
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
@@ -529,7 +564,10 @@ UT_Bool fp_TextRun::recalcWidth(void)
 		return UT_FALSE;
 	}
 
-	clearScreen();
+	if (m_iWidth)
+	{
+		clearScreen();
+	}
 	
 	m_iWidth = iWidth;
 

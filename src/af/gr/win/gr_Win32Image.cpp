@@ -26,6 +26,8 @@
 GR_Win32Image::GR_Win32Image(BITMAPINFO* pDIB, const char* szName)
 {
 	m_pDIB = pDIB;
+	
+	setDisplaySize(m_pDIB->bmiHeader.biWidth, m_pDIB->bmiHeader.biHeight);
 
 	if (szName)
 	{
@@ -52,7 +54,7 @@ static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 	p->iCurPos += length;
 }
 
-UT_Bool GR_Win32Image::convertFromPNG(const UT_ByteBuf* pBB)
+UT_Bool GR_Win32Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -129,6 +131,14 @@ UT_Bool GR_Win32Image::convertFromPNG(const UT_ByteBuf* pBB)
 		return UT_FALSE;
 	}
 
+	/*
+	  Note that we do NOT create a DIB of iDisplayWidth,iDisplayHeight, since
+	  DIBs can be stretched automatically by the Win32 API.  So we simply remember
+	  the display size for drawing later.
+	*/
+
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
+	
 	m_pDIB->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	m_pDIB->bmiHeader.biWidth = width;
 	m_pDIB->bmiHeader.biHeight = height;
@@ -165,12 +175,12 @@ GR_Win32Image::~GR_Win32Image()
 	delete m_pDIB;
 }
 
-UT_sint32	GR_Win32Image::getWidth(void) const
+UT_sint32	GR_Win32Image::getDisplayWidth(void) const
 {
 	return m_pDIB->bmiHeader.biWidth;
 }
 
-UT_sint32	GR_Win32Image::getHeight(void) const
+UT_sint32	GR_Win32Image::getDisplayHeight(void) const
 {
 	return m_pDIB->bmiHeader.biHeight;
 }
@@ -194,7 +204,7 @@ static void _png_error(png_structp png_ptr, png_const_charp message)
 {
 }
 
-UT_Bool GR_Win32Image::getByteBuf(UT_ByteBuf** ppBB) const
+UT_Bool GR_Win32Image::convertToPNG(UT_ByteBuf** ppBB) const
 {
 	/*
 	  The purpose of this routine is to convert our DIB (m_pDIB)
@@ -434,7 +444,3 @@ UT_Bool GR_Win32Image::getByteBuf(UT_ByteBuf** ppBB) const
 	return UT_TRUE;
 }
 
-GR_Image* GR_Win32ImageFactory::createNewImage(const char* pszName)
-{
-	return new GR_Win32Image(NULL, pszName);
-}

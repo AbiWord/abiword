@@ -54,8 +54,6 @@ fp_Column::fp_Column(fl_SectionLayout* pSectionLayout)
 	m_iMaxHeight = 0;
 	m_iX = 0;
 	m_iY = 0;
-
-	m_bNeedsLayout = UT_FALSE;
 }
 
 fp_Column::~fp_Column()
@@ -66,19 +64,9 @@ fp_Column::~fp_Column()
 	*/
 }
 
-fl_SectionLayout* fp_Column::getSectionLayout(void) const
-{
-	return m_pSectionLayout;
-}
-
 void fp_Column::setPage(fp_Page* pPage)
 {
 	m_pPage = pPage;
-}
-
-UT_sint32 fp_Column::getHeight(void) const
-{
-	return m_iHeight;
 }
 
 void fp_Column::setWidth(UT_sint32 iWidth)
@@ -118,13 +106,6 @@ void fp_Column::setMaxHeight(UT_sint32 iMaxHeight)
 	}
 	
 	m_iMaxHeight = iMaxHeight;
-	m_bNeedsLayout = UT_TRUE;
-	updateLayout();
-}
-
-fp_Page* fp_Column::getPage(void) const
-{
-	return m_pPage;
 }
 
 void fp_Column::setLeader(fp_Column* p)
@@ -137,16 +118,6 @@ void fp_Column::setFollower(fp_Column* p)
 	m_pNextFollower = p;
 }
 
-fp_Column* fp_Column::getLeader(void) const
-{
-	return m_pLeader;
-}
-
-fp_Column* fp_Column::getFollower(void) const
-{
-	return m_pNextFollower;
-}
-
 void fp_Column::setNext(fp_Column*p)
 {
 	m_pNext = p;
@@ -155,16 +126,6 @@ void fp_Column::setNext(fp_Column*p)
 void fp_Column::setPrev(fp_Column*p)
 {
 	m_pPrev = p;
-}
-
-fp_Column* fp_Column::getNext(void) const
-{
-	return m_pNext;
-}
-
-fp_Column* fp_Column::getPrev(void) const
-{
-	return m_pPrev;
 }
 
 void fp_Column::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
@@ -185,11 +146,6 @@ void fp_Column::getScreenOffsets(fp_Line* pLine,
 	yoff = my_yoff + pLine->getY();
 }
 
-void fp_Column::setNeedsLayoutUpdate(void)
-{
-	m_bNeedsLayout = UT_TRUE;
-}
-
 void fp_Column::removeLine(fp_Line* pLine)
 {
 	UT_sint32 ndx = m_vecLines.findItem(pLine);
@@ -198,86 +154,64 @@ void fp_Column::removeLine(fp_Line* pLine)
 	m_vecLines.deleteNthItem(ndx);
 
 	// don't delete the line here, it's deleted elsewhere.
-
-	m_bNeedsLayout = UT_TRUE;
 }
 
-UT_sint32 fp_Column::getSpaceAtBottom(void) const
+UT_Bool fp_Column::insertLine(fp_Line* pNewLine)
 {
-	fp_Line* pLine = getLastLine();
-	if (pLine)
-	{
-		return m_iMaxHeight - (pLine->getY() + pLine->getHeight());
-	}
-	else
-	{
-		return m_iMaxHeight;
-	}
-}
-
-UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_sint32 iHeight)
-{
-	if (pNewLine->getHeight() > 0)
-	{
-		iHeight = pNewLine->getHeight();
-	}
-
-	fl_BlockLayout* pBL = pNewLine->getBlock();
-	
-	if (pAfterLine)
-	{
-		UT_ASSERT(m_iMaxHeight > 0);
-		UT_ASSERT(pAfterLine->isLastLineInBlock() || (pBL == pAfterLine->getBlock()));
-
-		UT_sint32 iMargin = pNewLine->getMarginBefore();
-
-#if 0
-		if ((pAfterLine->getY() + pAfterLine->getHeight() + iMargin + iHeight) > m_iMaxHeight)
-		{
-			pNewLine->setColumn(NULL);
-
-			if (pAfterLine != getLastLine())
-			{
-				fp_Line* pLastLine = getLastLine();
-
-				UT_ASSERT((pLastLine->getHeight() + pLastLine->getMarginBefore()) < (iHeight + iMargin));
-			}
-			
-			return UT_FALSE;
-		}
-#endif		
-
-		UT_uint32 ndx = m_vecLines.findItem(pAfterLine);
-		UT_ASSERT(ndx >= 0);
-
-		if (ndx == (m_vecLines.getItemCount() - 1))
-		{
-			m_vecLines.addItem(pNewLine);
-		}
-		else
-		{
-			m_vecLines.insertItemAt(pNewLine, ndx+1);
-			m_bNeedsLayout = UT_TRUE;
-		}
-
-		pNewLine->setY(pAfterLine->getY() + pAfterLine->getHeight() + iMargin);
-	}
-	else
-	{
-		UT_ASSERT(pNewLine->isFirstLineInBlock()
-				  || (getPrev()
-					  && getPrev()->getLastLine()
-					  && (getPrev()->getLastLine()->getBlock() == pBL)
-					  )
-			);
+	m_vecLines.insertItemAt(pNewLine, 0);
 		
-		m_vecLines.insertItemAt(pNewLine, 0);
-		pNewLine->setY(0);
+	pNewLine->setColumn(this);
 
-		if (m_vecLines.getItemCount() > 1)
-		{
-			m_bNeedsLayout = UT_TRUE;
-		}
+	pNewLine->recalcMaxWidth();
+
+	return UT_TRUE;
+}
+
+UT_Bool fp_Column::addLine(fp_Line* pNewLine)
+{
+	m_vecLines.addItem(pNewLine);
+		
+	pNewLine->setColumn(this);
+
+	pNewLine->recalcMaxWidth();
+
+	return UT_TRUE;
+}
+
+void fp_Column::layout(void)
+{
+	UT_sint32 iY = 0;
+
+	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	for (UT_uint32 i=0; i < iCountLines; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		
+		UT_sint32 iLineHeight = pLine->getHeight();
+//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
+		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
+
+//		iY += iLineMarginBefore;
+		pLine->setY(iY);
+		iY += iLineHeight;
+		iY += iLineMarginAfter;
+	}
+
+	m_iHeight = iY;
+}
+
+UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
+{
+	UT_uint32 ndx = m_vecLines.findItem(pAfterLine);
+	UT_ASSERT(ndx >= 0);
+
+	if (ndx == (m_vecLines.getItemCount() - 1))
+	{
+		m_vecLines.addItem(pNewLine);
+	}
+	else
+	{
+		m_vecLines.insertItemAt(pNewLine, ndx+1);
 	}
 
 	pNewLine->setColumn(this);
@@ -290,324 +224,6 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 UT_Bool fp_Column::isEmpty(void) const
 {
 	return (m_vecLines.getItemCount() == 0);
-}
-
-void fp_Column::moveLineFromNextColumn(fp_Line* pLine)
-{
-	fp_Column* pOtherCol = pLine->getColumn();
-	UT_ASSERT(pOtherCol);
-	UT_ASSERT(pLine->getColumn()->getFirstLine() == pLine);
-
-	pLine->clearScreen();
-	
-	pOtherCol->removeLine(pLine);
-	insertLineAfter(pLine, getLastLine(), pLine->getHeight());
-	UT_ASSERT(pLine->getColumn() == this);
-	UT_ASSERT(getLastLine() == pLine);
-}
-
-void fp_Column::moveLineToNextColumn(fp_Line* pLine)
-{
-	UT_sint32 ndx = m_vecLines.findItem(pLine);
-	UT_ASSERT(ndx >= 0);
-
-	moveLineToNextColumn(ndx);
-}
-
-void fp_Column::moveLineToNextColumn(UT_uint32 iBump)
-{
-	UT_ASSERT(m_vecLines.getItemCount() > 0);
-	UT_ASSERT(iBump == (m_vecLines.getItemCount() - 1));
-	
-	fp_Column* pNextColumn = getNext();
-	if (!pNextColumn)
-	{
-		pNextColumn = m_pSectionLayout->getNewColumn();
-	}
-					
-	fp_Line* pBumpLine = (fp_Line*) m_vecLines.getNthItem(iBump);
-
-	m_vecLines.deleteNthItem(iBump);
-
-	pNextColumn->insertLineAfter(pBumpLine, NULL, pBumpLine->getHeight());
-	UT_ASSERT(pBumpLine->getColumn() == pNextColumn);
-	UT_ASSERT(pNextColumn->getFirstLine() == pBumpLine);
-}
-
-void fp_Column::bumpLinesToNextColumn(UT_uint32 iFirstToBump)
-{
-	UT_uint32 iCountLines = m_vecLines.getItemCount();
-	UT_uint32 i;
-
-	for (i=iCountLines-1; i >= iFirstToBump; i--)
-	{
-		moveLineToNextColumn(i);
-	}
-}
-
-void fp_Column::checkForWidowsAndOrphans(void)
-{
-	fp_Line* pLine;
-	
-	pLine = getFirstLine();
-	if (pLine)
-	{
-		fl_BlockLayout* pBlock = pLine->getBlock();
-		UT_ASSERT(pBlock);
-		pBlock->checkForWidowsAndOrphans();
-	}
-	
-	pLine = getLastLine();
-	if (pLine)
-	{
-		fl_BlockLayout* pBlock = pLine->getBlock();
-		UT_ASSERT(pBlock);
-		pBlock->checkForWidowsAndOrphans();
-	}
-}
-
-void fp_Column::updateLayout(void)
-{
-	if (m_bNeedsLayout)
-	{
-		m_bNeedsLayout = UT_FALSE;
-		
-		UT_Bool bBumpedSomething = UT_FALSE;
-		UT_Bool bDoNotSlurp = UT_FALSE;
-		UT_sint32 iCurY = 0;
-		UT_uint32 count = m_vecLines.getItemCount();
-		UT_uint32 i;
-
-		UT_ASSERT(m_iMaxHeight > 0);
-		
-		for (i = 0; i<count; i++)
-		{
-			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-
-			UT_sint32 iMargin = 0;
-			if (i > 0)
-			{
-				iMargin = pLine->getMarginBefore();
-				iCurY += iMargin;
-			}
-			
-			if ((iCurY + pLine->getHeight()) > m_iMaxHeight)
-			{
-				/*
-				  We're out of room.  This line, as well as any others after
-				  it, must move to the next column.
-				*/
-
-				int iFirstToBump = i;
-
-				int iBump = count-1;
-				while (iBump >= iFirstToBump)
-				{
-					moveLineToNextColumn(iBump);
-					
-					bBumpedSomething = UT_TRUE;
-					
-					iBump--;
-				}
-
-				if (bBumpedSomething)
-				{
-					fp_Column* pNextColumn = getNext();
-					UT_ASSERT(pNextColumn);
-					pNextColumn->updateLayout();
-
-					pNextColumn->getFirstLine()->getBlock()->checkForWidowsAndOrphans();
-				}
-				
-				break;
-			}
-
-			pLine->setY(iCurY);
-			iCurY += pLine->getHeight();
-		}
-
-#if 0
-		count = m_vecLines.getItemCount();
-		if (count > 0)
-		{
-			for (i = 0; i<count; i++)
-			{
-				fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-				fp_Run* pLastRunOnLine = pLine->getLastRun();
-
-				if (
-					(pLastRunOnLine->getType() == FPRUN_FORCEDCOLUMNBREAK)
-					)
-				{
-					if ((i+1) < count)
-					{
-						bumpLinesToNextColumn(i+1);
-						bBumpedSomething = UT_TRUE;
-					}
-					bDoNotSlurp = UT_TRUE;
-					break;
-				}
-			}
-		}
-#endif
-		
-		if (bBumpedSomething)
-		{
-			bDoNotSlurp = UT_TRUE;
-		}
-		
-		if (
-			!bDoNotSlurp
-			&& (iCurY < m_iMaxHeight)
-			)
-		{
-			fp_Column* pNextColumn = getNext();
-				
-			if (pNextColumn)
-			{
-				UT_ASSERT(pNextColumn->getWidth() == getWidth());
-				
-				UT_Bool bDone = UT_FALSE;
-
-				while (!bDone)
-				{
-					fp_Line* pFirstLineInNextCol = NULL;
-					while (pNextColumn && !pFirstLineInNextCol)
-					{
-						pFirstLineInNextCol = pNextColumn->getFirstLine();
-						if (!pFirstLineInNextCol)
-						{
-							pNextColumn = pNextColumn->getNext();
-						}
-					}
-					
-					UT_Bool bSlurpedSomething = UT_FALSE;
-					UT_sint32 iMargin = 0;
-					
-					if (pFirstLineInNextCol)
-					{
-						fl_BlockLayout* pBlock = pFirstLineInNextCol->getBlock();
-						
-						iMargin = pFirstLineInNextCol->getMarginBefore();
-
-						fp_Line* pTmpLine = pFirstLineInNextCol;
-						UT_uint32 iNumBlockLines = 0;
-						while (pTmpLine && (pTmpLine->getColumn() == pNextColumn))
-						{
-							iNumBlockLines++;
-							
-							pTmpLine = pTmpLine->getNext();
-						}
-						
-						pTmpLine = pFirstLineInNextCol;
-						UT_uint32 iSlurpHeight = 0;
-						UT_uint32 iNumLinesThatFit = 0;
-						UT_uint32 iSpace = getSpaceAtBottom();
-						while (iNumLinesThatFit < iNumBlockLines)
-						{
-							UT_sint32 iMarg2 = pTmpLine->getMarginBefore();
-								
-							if ((iSlurpHeight + iMarg2 + pTmpLine->getHeight()) <= iSpace)
-							{
-								iSlurpHeight += (iMarg2 + pTmpLine->getHeight());
-								iNumLinesThatFit++;
-							}
-							else
-							{
-								break;
-							}
-
-							pTmpLine = pTmpLine->getNext();
-						}
-
-						if (iNumLinesThatFit > 0)
-						{
-							if (iNumLinesThatFit < iNumBlockLines)
-							{
-								while (
-									((iNumBlockLines - iNumLinesThatFit) < pBlock->getWidowsProperty())
-									&& (iNumLinesThatFit > 0)
-									)
-								{
-									iNumLinesThatFit--;
-								}
-							}
-
-							if (iNumLinesThatFit > 0)
-							{
-								UT_uint32 iNumLinesAlreadyHere = 0;
-								pTmpLine = getLastLine();
-								if (pTmpLine && (pTmpLine->getBlock() == pFirstLineInNextCol->getBlock()))
-								{
-									while (pTmpLine && (pTmpLine->getColumn() == this))
-									{
-										iNumLinesAlreadyHere++;
-										
-										pTmpLine = pTmpLine->getPrev();
-									}
-								}
-
-								if (
-									(iNumLinesThatFit == iNumBlockLines)
-									|| ((iNumLinesThatFit + iNumLinesAlreadyHere) >= pBlock->getOrphansProperty())
-									)
-								{
-									/*
-									  OK.  We can slurp
-									*/
-
-									fp_Line* pMoveLine = pFirstLineInNextCol;
-									for (i=0; i<iNumLinesThatFit; i++)
-									{
-										moveLineFromNextColumn(pMoveLine);
-										pMoveLine = pMoveLine->getNext();
-										
-										bSlurpedSomething = UT_TRUE;
-									}
-								}
-								else
-								{
-									bDone = UT_TRUE;
-								}
-							}
-							else
-							{
-								bDone = UT_TRUE;
-							}
-						}
-						else
-						{
-							bDone = UT_TRUE;
-						}
-					}
-					else
-					{
-						bDone = UT_TRUE;
-					}
-
-					if (bSlurpedSomething)
-					{
-						pNextColumn->updateLayout();
-					}
-				}
-			}
-		}
-
-		{
-			fp_Line* pLastLine = getLastLine();
-
-			if (pLastLine)
-			{
-				if ((pLastLine->getY() + pLastLine->getHeight()) != m_iHeight)
-				{
-					m_iHeight = (pLastLine->getY() + pLastLine->getHeight());
-					UT_ASSERT(m_pPage);
-			
-					m_pPage->columnHeightChanged(this);
-				}
-			}
-		}
-	}
 }
 
 void fp_Column::clearScreen(void)
@@ -758,26 +374,6 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	UT_uint32 dist = (UT_uint32) (sqrt((dx * dx) + (dy * dy)));
 
 	return dist;
-}
-
-void fp_Column::lineHeightChanged(fp_Line* pLine, UT_sint32 iOldHeight, UT_sint32 iNewHeight)
-{
-	m_bNeedsLayout = UT_TRUE;
-}
-
-UT_sint32 fp_Column::getWidth(void) const
-{
-	return m_iWidth;
-}
-
-UT_sint32 fp_Column::getX(void) const
-{
-	return m_iX;
-}
-
-UT_sint32 fp_Column::getY(void) const
-{
-	return m_iY;
 }
 
 void fp_Column::setX(UT_sint32 iX)

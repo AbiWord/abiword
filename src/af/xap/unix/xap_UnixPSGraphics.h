@@ -30,6 +30,8 @@
 #include "xap_UnixPSFont.h"
 #include "xap_UnixPSGenerate.h"
 
+class UT_ByteBuf;
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -78,7 +80,8 @@ public:
 						UT_sint32 width, UT_sint32 height);
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	
-	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight);
+	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
 	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
 	

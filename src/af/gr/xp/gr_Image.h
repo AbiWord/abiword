@@ -32,15 +32,32 @@ public:
 	GR_Image();
 	virtual ~GR_Image();
 	
-	virtual UT_sint32	getWidth(void) const = 0;
-	virtual UT_sint32	getHeight(void) const = 0;
-	virtual UT_Bool		getByteBuf(UT_ByteBuf** ppBB) const = 0;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB) = 0;
+	virtual UT_sint32	getDisplayWidth(void) const = 0;
+	virtual UT_sint32	getDisplayHeight(void) const = 0;
+
+	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const = 0;
+	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
 
 	void				getName(char* szName) const;
 	
 protected:
 	char				m_szName[GR_IMAGE_MAX_NAME_LEN+1];
+};
+
+class GR_StretchableImage : public GR_Image
+{
+public:
+	GR_StretchableImage();
+	virtual ~GR_StretchableImage();
+
+	void				setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	
+	virtual UT_sint32	getDisplayWidth(void) const { return m_iDisplayWidth; }
+	virtual UT_sint32	getDisplayHeight(void) const { return m_iDisplayHeight; }
+
+protected:
+	UT_sint32			m_iDisplayWidth;
+	UT_sint32			m_iDisplayHeight;
 };
 
 class GR_ImageFactory

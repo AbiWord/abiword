@@ -97,6 +97,8 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 
 	pLayout->setView(this);
 		
+	pLayout->formatAll();
+	
 	moveInsPtTo(FV_DOCPOS_BOD);
 	m_iSelectionAnchor = getPoint();
 	_resetSelection();
@@ -573,11 +575,11 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 			if (iPos == pBlock->getPosition())
 			{
 				// yep.  is there a prior block?
-				if (!pBlock->getPrev(UT_TRUE))
+				if (!pBlock->getPrevBlockInDocument())
 					break;
 
 				// yep.  look there instead
-				pBlock = pBlock->getPrev(UT_TRUE);
+				pBlock = pBlock->getPrevBlockInDocument();
 			}
 
 			iPos = pBlock->getPosition();
@@ -586,10 +588,10 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 	case FV_DOCPOS_EOB:
 		{
-			if (pBlock->getNext(UT_TRUE))
+			if (pBlock->getNextBlockInDocument())
 			{
 				// BOB for next block
-				pBlock = pBlock->getNext(UT_TRUE);
+				pBlock = pBlock->getNextBlockInDocument();
 				iPos = pBlock->getPosition();
 			}
 			else
@@ -620,7 +622,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 					break;
 
 				// is there a prior block?
-				pBlock = pBlock->getPrev(UT_TRUE);
+				pBlock = pBlock->getPrevBlockInDocument();
 
 				if (!pBlock)
 					break;
@@ -679,7 +681,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 					break;
 
 				// is there a next block?
-				pBlock = pBlock->getNext(UT_TRUE);
+				pBlock = pBlock->getNextBlockInDocument();
 
 				if (!pBlock)
 					break;
@@ -1040,7 +1042,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 			if (!pRun)
 			{
 				// go to first run of next block
-				pBlock = pBlock->getNext(UT_TRUE);
+				pBlock = pBlock->getNextBlockInDocument();
 
 				if (!pBlock)
 				{
@@ -1210,7 +1212,7 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 			const PP_AttrProp * pAP;
 			UT_Bool bCheck = UT_FALSE;
 
-			pSection = m_pLayout->getNextSection(pSection);
+			pSection = pSection->getNext();
 
 			if (!pSection)
 			{
@@ -1333,7 +1335,7 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 			const PP_AttrProp * pAP;
 			UT_Bool bCheck = UT_FALSE;
 
-			pBlock = pBlock->getNext(UT_TRUE);
+			pBlock = pBlock->getNextBlockInDocument();
 
 			if (!pBlock)
 			{
@@ -1594,7 +1596,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		else if (pOldSL->getLastColumn()->getLeader() == pOldLeader)
 		{
 			// move to next section
-			fl_SectionLayout* pSL = m_pLayout->getNextSection(pOldSL);
+			fl_SectionLayout* pSL = pOldSL->getNext();
 			if (pSL)
 			{
 				yPoint = pSL->getFirstColumn()->getY();
@@ -1629,7 +1631,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		else if (pOldSL->getFirstColumn() == pOldLeader)
 		{
 			// move to prev section
-			fl_SectionLayout* pSL = m_pLayout->getPrevSection(pOldSL);
+			fl_SectionLayout* pSL = pOldSL->getPrev();
 			if (pSL)
 			{
 				fp_Column* pTmpCol = pSL->getLastColumn()->getLeader();
@@ -1764,7 +1766,15 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 	{
 		_setSelectionAnchor();
 		_moveInsPtNextPrevLine(bNext);
-		_drawSelection();
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+		else
+		{
+			_drawSelection();
+		}
 	}
 	else
 	{
@@ -2239,7 +2249,7 @@ UT_UCSChar * FV_View::_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPos
 	if (*offset >= buffer.getLength())
 	{
 		// then return a fresh new block's buffer
-		newBlock = (*block)->getNext(UT_TRUE);
+		newBlock = (*block)->getNextBlockInDocument();
 
 		// are we at the end of the document?
 		if (!newBlock)
@@ -2801,7 +2811,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		{
 			fl_BlockLayout* pNextBlock;
 			
-			pNextBlock = pBlock->getNext(UT_TRUE);
+			pNextBlock = pBlock->getNextBlockInDocument();
 			if (pNextBlock)
 			{
 				pCurRun = pNextBlock->getFirstRun();
@@ -2862,7 +2872,7 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 			fl_BlockLayout* pBlock = pCurRun->getBlock();
 			UT_ASSERT(pBlock);
 
-			pNextBlock = pBlock->getNext(UT_TRUE);
+			pNextBlock = pBlock->getNextBlockInDocument();
 			if (pNextBlock)
 			{
 				pCurRun = pNextBlock->getFirstRun();
@@ -2942,8 +2952,6 @@ void FV_View::_xorInsertionPoint()
 	if (m_iPointHeight > 0)
 	{
 		UT_RGBColor clr(255,255,255);
-
-		UT_DEBUGMSG(("_xorInsertionPoint\n"));
 
 		m_pG->setColor(clr);
 		m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
@@ -3725,7 +3733,7 @@ void FV_View::cmdCopy(void)
 		}
 		else
 		{
-			pCurBlock = pCurBlock->getNext(UT_TRUE);
+			pCurBlock = pCurBlock->getNextBlockInDocument();
 		}
 	}
 
@@ -3794,7 +3802,7 @@ void FV_View::cmdCopy(void)
 		}
 		else
 		{
-			pCurBlock = pCurBlock->getNext(UT_TRUE);
+			pCurBlock = pCurBlock->getNextBlockInDocument();
 		}
 	}
 	
@@ -3845,7 +3853,9 @@ void FV_View::_doPaste(void)
 		// TODO support paste of RTF
 
 		/*
-		  TODO Should we prefer the insert of an image over text?
+		  TODO Is this correct, to prefer the insert of an image over text?
+		  What if the clipboard had both image and text on it?  Which one
+		  prevails?
 		*/
 		if (pClip->hasFormat(AP_CLIPBOARD_IMAGE))
 		{
@@ -3874,10 +3884,10 @@ void FV_View::_doPaste(void)
 			  Get the byte buffer for this image.
 			*/
 			UT_ByteBuf* pBB = NULL;
-			pImg->getByteBuf(&pBB);
+			pImg->convertToPNG(&pBB);
 
-			UT_sint32	iImageWidth = pImg->getWidth();
-			UT_sint32	iImageHeight = pImg->getHeight();
+			UT_sint32	iImageWidth = pImg->getDisplayWidth();
+			UT_sint32	iImageHeight = pImg->getDisplayHeight();
 
 			_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
 

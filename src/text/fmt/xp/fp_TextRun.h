@@ -45,7 +45,8 @@ class fp_TextRun : public fp_Run
 
 	virtual void			fetchCharWidths(UT_GrowBuf * pgbCharWidths);
 	virtual UT_Bool			recalcWidth(void);
-	
+
+	UT_Bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 	
 protected:

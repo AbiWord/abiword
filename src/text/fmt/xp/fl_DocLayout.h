@@ -64,10 +64,8 @@ struct fl_PartOfBlock;
 	a FL_DocLayout is also a list of Pages, each of which was constructed 
 	during the process of formatting the document.  In turn, 
 	
-		each fp_Page is a list of SectionSlices.  
-		Each fp_SectionSlice is a list of Columns.  
-		Each fp_Column is a list of BlockSlices.
-		Each fp_BlockSlice is a list of Lines.  
+		each fp_Page is a list of fp_Columns
+		Each fp_Column is a list of fp_Lines
 		Each fp_Line is a list of Runs.  
 		
 	Finally, each fp_Run contains some fragment of content from the original 
@@ -102,8 +100,6 @@ public:
 	UT_uint32	countPages();
 
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
-	fl_SectionLayout* getPrevSection(fl_SectionLayout* pSL) const;
-	fl_SectionLayout* getNextSection(fl_SectionLayout* pSL) const;
 	void deleteEmptyColumnsAndPages(void);
 	void		deletePage(fp_Page*);
 
@@ -112,6 +108,12 @@ public:
 
 	void 		queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
 	void 		dequeueBlock(fl_BlockLayout *pBlock);
+
+	void		addSection(fl_SectionLayout*);
+	void		removeSection(fl_SectionLayout*);
+	
+	inline		fl_SectionLayout* getFirstSection(void) const { return m_pFirstSection; }
+	inline		fl_SectionLayout* getLastSection(void) const { return m_pLastSection; }
 
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
@@ -127,7 +129,9 @@ protected:
 	PL_ListenerId		m_lid;
 
 	UT_Vector			m_vecPages;
-	UT_Vector			m_vecSectionLayouts;
+	fl_SectionLayout*	m_pFirstSection;
+	fl_SectionLayout*	m_pLastSection;
+	
 	UT_HashTable		m_hashFontCache;
 
 	// spell check stuff

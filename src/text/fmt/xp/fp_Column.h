@@ -51,40 +51,36 @@ public:
 	void 				setNext(fp_Column*);
 	void 				setPrev(fp_Column*);
 	void				setPage(fp_Page*);
-	void				setNeedsLayoutUpdate(void);
+	void				setWidth(UT_sint32);
+	void				setMaxHeight(UT_sint32);
+	void				setHeight(UT_sint32);
+	void				setX(UT_sint32);
+	void				setY(UT_sint32);
 	
-	fl_SectionLayout* 	getSectionLayout(void) const;
-	
-	fp_Column*			getLeader(void) const;
-	fp_Column*			getFollower(void) const;
-	fp_Column* 			getNext(void) const;
-	fp_Column* 			getPrev(void) const;
-	fp_Page*			getPage(void) const;
+	inline				UT_sint32			getMaxHeight(void) const 		{ return m_iMaxHeight; }
+	inline				UT_sint32			getWidth(void) const 			{ return m_iWidth; }
+	inline				UT_sint32			getX(void) const 				{ return m_iX; }
+	inline				UT_sint32			getY(void) const				{ return m_iY; }
+	inline				fp_Column*			getLeader(void) const 			{ return m_pLeader; }
+	inline				fp_Column*			getFollower(void) const 		{ return m_pNextFollower; }
+	inline				fp_Column*			getNext(void) const				{ return m_pNext; }
+	inline				fp_Column*			getPrev(void) const				{ return m_pPrev; }
+	inline				fp_Page*			getPage(void) const				{ return m_pPage; }
+	inline				fl_SectionLayout*	getSectionLayout(void) const	{ return m_pSectionLayout; }
+	inline				UT_sint32			getHeight(void) const			{ return m_iHeight; }
 
 	UT_Bool				isEmpty(void) const;
 	
 	fp_Line*			getFirstLine(void) const;
 	fp_Line*			getLastLine(void) const;
 	
-	UT_sint32			getWidth(void) const;
-	void				setWidth(UT_sint32);
-	
-	UT_sint32			getHeight(void) const;
-	void				setMaxHeight(UT_sint32);
-	void				setHeight(UT_sint32);
-
-	void				checkForWidowsAndOrphans(void);
-	UT_Bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine, UT_sint32 iHeight);
+	UT_Bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine);
+	UT_Bool				insertLine(fp_Line*);
+	UT_Bool				addLine(fp_Line*);
 	void				removeLine(fp_Line*);
-	void				lineHeightChanged(fp_Line* pLine, UT_sint32 iOldHeight, UT_sint32 iNewHeight);
-	void				updateLayout(void);
-	void 				moveLineToNextColumn(UT_uint32 iBump);
-	void				moveLineToNextColumn(fp_Line* pLine);
-	void				bumpLinesToNextColumn(UT_uint32 iFirstToBump);
-	void				moveLineFromNextColumn(fp_Line* pLine);
-	UT_sint32			getSpaceAtBottom(void) const;
-
-	UT_uint32		 	getTopOffset(UT_uint32 iLineHeight);
+	
+	void				layout(void);
+	
 	UT_Bool 			containsPoint(UT_sint32 x, UT_sint32 y);
 	UT_uint32 			distanceFromPoint(UT_sint32 x, UT_sint32 y);
 
@@ -95,17 +91,10 @@ public:
 	void				draw(dg_DrawArgs*);
 	void 				dump();
 
-	UT_sint32			getX(void) const;
-	UT_sint32			getY(void) const;
-	void				setX(UT_sint32);
-	void				setY(UT_sint32);
-
 	void				clearScreen(void);
 	
 protected:
 	UT_uint32 				_getBottomOfLastLine(void) const;
-
-	UT_Bool					m_bNeedsLayout;
 
 	fp_Page*				m_pPage;
 

@@ -74,9 +74,8 @@ public:
 				UT_sint32 * piLeft,
 				UT_uint32 * piWidth) const;
 
-	void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	
-	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight) = 0;
+	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest) = 0;
+	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
 	
 	/* For drawLine() and xorLine():
 	**   x0,y0 give the starting pixel.
@@ -107,6 +106,8 @@ public:
 	virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) = 0;
 	virtual UT_Bool endPrint(void) = 0;
+
+	virtual void flush(void);
 };
 
 #endif /* GR_GRAPHICS_H */

@@ -28,6 +28,7 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fb_LineBreaker.h"
+#include "fb_ColumnBreaker.h"
 #include "fp_Page.h"
 #include "fp_Column.h"
 #include "pd_Document.h"
@@ -38,6 +39,7 @@
 #include "px_ChangeRecord_StruxChange.h"
 #include "fv_View.h"
 
+#include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
 
@@ -49,8 +51,11 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
 	m_pLB = NULL;
+	m_pCB = new fb_ColumnBreaker();
 	m_pFirstBlock = NULL;
 	m_pLastBlock = NULL;
+	m_pNext = NULL;
+	m_pPrev = NULL;
 
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
@@ -72,6 +77,10 @@ void fl_SectionLayout::_lookupProperties(void)
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
 	  the blockLayout does?
+
+	  Yes, since PP_evalProperty does a fallback to the
+	  last-chance defaults, whereas the code below is
+	  hard-coding its own defaults.  Bad idea.
 	*/
 	
 	pSectionAP->getProperty("columns", pszNumColumns);
@@ -125,6 +134,18 @@ fl_SectionLayout::~fl_SectionLayout()
 	{
 		delete m_pLB;
 	}
+
+	delete m_pCB;
+}
+
+void fl_SectionLayout::setNext(fl_SectionLayout* pSL)
+{
+	m_pNext = pSL;
+}
+
+void fl_SectionLayout::setPrev(fl_SectionLayout* pSL)
+{
+	m_pPrev = pSL;
 }
 
 void fl_SectionLayout::deleteEmptyColumns(void)
@@ -247,7 +268,7 @@ fp_Column* fl_SectionLayout::getNewColumn(void)
 		  we start our section on the first page.  If there is no
 		  first page, then we need to create one.
 		*/
-		fl_SectionLayout* pPrevSL = m_pLayout->getPrevSection(this);
+		fl_SectionLayout* pPrevSL = getPrev();
 		if (pPrevSL)
 		{
 			fp_Page* pTmpPage = pPrevSL->getLastColumn()->getPage();
@@ -347,16 +368,10 @@ void fl_SectionLayout::format()
 	while (pBL)
 	{
 		pBL->format();
-		pBL = pBL->getNext(UT_FALSE);
+		pBL = pBL->getNext();
 	}
-	
-	fp_Column* pCol = getFirstColumn();
-	while (pCol)
-	{
-		pCol->updateLayout();
-		
-		pCol = pCol->getNext();
-	}
+
+	m_pCB->breakSection(this);
 }
 
 void fl_SectionLayout::updateLayout()
@@ -369,16 +384,10 @@ void fl_SectionLayout::updateLayout()
 			pBL->format();
 		}
 		
-		pBL = pBL->getNext(UT_FALSE);
+		pBL = pBL->getNext();
 	}
 
-	fp_Column* pCol = getFirstColumn();
-	while (pCol)
-	{
-		pCol->updateLayout();
-		
-		pCol = pCol->getNext();
-	}
+	m_pCB->breakSection(this);
 }
 
 void fl_SectionLayout::_purgeLayout()
@@ -389,7 +398,7 @@ void fl_SectionLayout::_purgeLayout()
 	{
 		fl_BlockLayout* pNuke = pBL;
 
-		pBL = pBL->getNext(UT_FALSE);
+		pBL = pBL->getNext();
 
 		delete pNuke;
 	}
@@ -412,11 +421,35 @@ fl_BlockLayout * fl_SectionLayout::appendBlock(PL_StruxDocHandle sdh, PT_AttrPro
 	return insertBlock(sdh, m_pLastBlock, indexAP);
 }
 
+void fl_SectionLayout::addBlock(fl_BlockLayout* pBL)
+{
+	if (m_pLastBlock)
+	{
+		UT_ASSERT(m_pLastBlock->getNext() == NULL);
+		
+		pBL->setNext(NULL);
+		pBL->setPrev(m_pLastBlock);
+		m_pLastBlock->setNext(pBL);
+		m_pLastBlock = pBL;
+	}
+	else
+	{
+		UT_ASSERT(!m_pFirstBlock);
+		
+		pBL->setNext(NULL);
+		pBL->setPrev(NULL);
+		m_pFirstBlock = pBL;
+		m_pLastBlock = m_pFirstBlock;
+	}
+}
+
 fl_BlockLayout * fl_SectionLayout::insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP)
 {
 	fl_BlockLayout*	pBL = new fl_BlockLayout(sdh, _getLineBreaker(), pPrev, this, indexAP);
 	if (!pBL)
+	{
 		return pBL;
+	}
 
 	if (!m_pLastBlock)
 	{
@@ -436,20 +469,41 @@ fl_BlockLayout * fl_SectionLayout::insertBlock(PL_StruxDocHandle sdh, fl_BlockLa
 	return pBL;
 }
 
-fl_BlockLayout * fl_SectionLayout::removeBlock(fl_BlockLayout * pBL)
+void fl_SectionLayout::removeBlock(fl_BlockLayout * pBL)
 {
-	if (!pBL)
-		return pBL;
-
-	UT_ASSERT(pBL != m_pFirstBlock);
-	UT_ASSERT(m_pLastBlock);
-
-	if (m_pLastBlock == pBL)
+	UT_ASSERT(pBL);
+	UT_ASSERT(m_pFirstBlock);
+	
+	if (pBL->getPrev())
 	{
-		m_pLastBlock = pBL->getPrev(UT_FALSE);
+		pBL->getPrev()->setNext(pBL->getNext());
 	}
 
-	return pBL;
+	if (pBL->getNext())
+	{
+		pBL->getNext()->setPrev(pBL->getPrev());
+	}
+	
+	if (pBL == m_pFirstBlock)
+	{
+		m_pFirstBlock = m_pFirstBlock->getNext();
+		if (!m_pFirstBlock)
+		{
+			m_pLastBlock = NULL;
+		}
+	}
+
+	if (pBL == m_pLastBlock)
+	{
+		m_pLastBlock = m_pLastBlock->getPrev();
+		if (!m_pLastBlock)
+		{
+			m_pFirstBlock = NULL;
+		}
+	}
+
+	pBL->setNext(NULL);
+	pBL->setPrev(NULL);
 }
 
 fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
@@ -511,7 +565,7 @@ UT_Bool fl_SectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	{
 		pBL->collapse();
 
-		pBL = pBL->getNext(UT_FALSE);
+		pBL = pBL->getNext();
 	}
 
 	// delete all our columns
@@ -527,6 +581,12 @@ UT_Bool fl_SectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
+
+	/*
+	  TODO to more closely mirror the architecture we're using for BlockLayout, this code
+	  should probably just set a flag, indicating the need to reformat this section.  Then,
+	  when it's time to update everything, we'll actually do the format.
+	*/
 	
 	format();
 	
@@ -571,8 +631,85 @@ UT_Bool fl_SectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
-	UT_ASSERT(UT_TODO);
 
-	return UT_FALSE;
+	fl_SectionLayout* pPrevSL = m_pPrev;
+	if (!pPrevSL)
+	{
+		// TODO shouldn't this just assert?
+		UT_DEBUGMSG(("no prior SectionLayout"));
+		return UT_FALSE;
+	}
+	
+	// clear all the columns
+	fp_Column* pCol = m_pFirstColumn;
+	while (pCol)
+	{
+		pCol->clearScreen();
+
+		pCol = pCol->getNext();
+	}
+
+	// remove all the columns from their pages
+	pCol = m_pFirstColumn;
+	while (pCol)
+	{
+		if (pCol->getLeader() == pCol)
+		{
+			pCol->getPage()->removeColumnLeader(pCol);
+		}
+
+		pCol = pCol->getNext();
+	}
+
+	// get rid of all the layout information for every block
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->collapse();
+
+		pBL = pBL->getNext();
+	}
+
+	// delete all our columns
+	pCol = m_pFirstColumn;
+	while (pCol)
+	{
+		fp_Column* pNext = pCol->getNext();
+
+		delete pCol;
+
+		pCol = pNext;
+	}
+
+	m_pFirstColumn = NULL;
+	m_pLastColumn = NULL;
+
+	while (m_pFirstBlock)
+	{
+		pBL = m_pFirstBlock;
+		removeBlock(pBL);
+		pPrevSL->addBlock(pBL);
+	}
+	
+	pPrevSL->m_pNext = m_pNext;
+							
+	if (m_pNext)
+	{
+		m_pNext->m_pPrev = pPrevSL;
+	}
+
+	m_pLayout->removeSection(this);
+
+	pPrevSL->format();
+	
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_setPoint(pcrx->getPosition());
+	}
+
+	delete this;			// TODO whoa!  this construct is VERY dangerous.
+	
+	return UT_TRUE;
 }
 

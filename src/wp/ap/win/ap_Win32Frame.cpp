@@ -88,7 +88,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
   
-	pDocLayout->formatAll();
+//	pDocLayout->formatAll();
 	
 	pView = new FV_View(this,pDocLayout);
 	ENSUREP(pView);

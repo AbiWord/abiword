@@ -34,6 +34,8 @@
 // for all its work.  GR_Font is an empty class, it only
 // serves as a typing tool, but it breaks my xap stuff.
 
+class UT_ByteBuf;
+
 class GR_UnixFont : public GR_Font
 {
 public:
@@ -92,13 +94,16 @@ public:
 					  UT_sint32 width, UT_sint32 height);
   virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
   
-  virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight);
+  virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+  virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
   
   virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
   virtual UT_Bool startPrint(void);
   virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
   virtual UT_Bool endPrint(void);
+
+  virtual void flush(void);
   
 protected:
   AP_UnixFontManager * 	m_pFontManager;

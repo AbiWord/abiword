@@ -24,27 +24,19 @@
 
 #include "gr_Image.h"
 
-class GR_Win32Image : public GR_Image
+class GR_Win32Image : public GR_StretchableImage
 {
 public:
 	GR_Win32Image(BITMAPINFO* pDIB, const char* szName);
 	~GR_Win32Image();
 
-	virtual UT_sint32	getWidth(void) const;
-	virtual UT_sint32	getHeight(void) const;
-	virtual UT_Bool		getByteBuf(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB);
+	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
 
 protected:
     BITMAPINFO*		m_pDIB;
-};
-
-class GR_Win32ImageFactory : public GR_ImageFactory
-{
-public:
-	virtual GR_Image*	createNewImage(const char* pszName);
 };
 
 #endif /* GR_WIN32IMAGE_H */

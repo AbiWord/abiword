@@ -68,23 +68,14 @@ PS_Image::~PS_Image()
 	}
 }
 
-UT_sint32	PS_Image::getWidth(void) const
+UT_Bool		PS_Image::convertToPNG(UT_ByteBuf** ppBB) const
 {
-	return m_image->width;
-}
-
-UT_sint32	PS_Image::getHeight(void) const
-{
-	return m_image->height;
-}
-
-UT_Bool		PS_Image::getByteBuf(UT_ByteBuf** ppBB) const
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	return UT_FALSE;
 }
 
-UT_Bool	PS_Image::convertFromPNG(const UT_ByteBuf* pBB)
+UT_Bool	PS_Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -163,6 +154,14 @@ UT_Bool	PS_Image::convertFromPNG(const UT_ByteBuf* pBB)
 		m_image = NULL;
 	}
 
+	/*
+	  Note that we do NOT create a PSFatmap of iDisplayWidth,iDisplayHeight, since
+	  PostScript images can be stretched automatically.  So we simply remember
+	  the display size for drawing later.
+	*/
+
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
+	
 	m_image = new PSFatmap;
 	m_image->width = width;
 	m_image->height = height;
@@ -199,7 +198,3 @@ UT_Bool	PS_Image::convertFromPNG(const UT_ByteBuf* pBB)
 	return UT_TRUE;
 }
 
-GR_Image* PS_ImageFactory::createNewImage(const char* pszName)
-{
-	return new PS_Image(NULL, pszName);
-}

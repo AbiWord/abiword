@@ -69,6 +69,12 @@ public:
 	void		setColumn(fp_Column*);
 	void		setBlock(fl_BlockLayout*);
 
+	fp_Line*	getNextLineInSection(void) const;
+	fp_Line*	getPrevLineInSection(void) const;
+
+	UT_Bool		containsForcedColumnBreak(void) const;
+	UT_Bool		containsForcedPageBreak(void) const;
+	
 	void 		addRun(fp_Run*);
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
@@ -97,6 +103,7 @@ public:
 	UT_Bool		recalculateFields(void);
 	void		recalcHeight();
 	void		recalcMaxWidth();
+	void		coalesceRuns(void);
 	
 	UT_Bool		isEmpty(void) const;
 	UT_Bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);

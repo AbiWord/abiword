@@ -44,6 +44,7 @@
 #include "fv_View.h"
 #include "xap_App.h"
 #include "xap_Clipboard.h"
+#include "ut_png.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -64,6 +65,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 	m_bNeedsReformat = UT_TRUE;
 	m_bFixCharWidths = UT_FALSE;
+	m_bKeepTogether = UT_FALSE;
+	m_bKeepWithNext = UT_FALSE;
 
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
@@ -127,6 +130,24 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 
+	{
+		const char* pszKeepTogether = getProperty("keep-together");
+		if (pszKeepTogether
+			&& (0 == UT_stricmp("yes", pszKeepTogether))
+			)
+		{
+			m_bKeepTogether = UT_TRUE;
+		}
+	
+		const char* pszKeepWithNext = getProperty("keep-with-next");
+		if (pszKeepWithNext
+			&& (0 == UT_stricmp("yes", pszKeepWithNext))
+			)
+		{
+			m_bKeepWithNext = UT_TRUE;
+		}
+	}
+	
 	GR_Graphics* pG = m_pLayout->getGraphics();
 	
 	m_iTopMargin = pG->convertDimension(getProperty("margin-top"));
@@ -269,41 +290,6 @@ fl_BlockLayout::~fl_BlockLayout()
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 }
 
-void fl_BlockLayout::_fixColumns(void)
-{
-#if 0
-	if (!m_pFirstLine)
-	{
-		return;
-	}
-	
-	fp_Column* pCol = NULL;
-	fp_Line* pLine = m_pFirstLine;
-	while (pLine)
-	{
-		if (pLine->getColumn() != pCol)
-		{
-			pCol = pLine->getColumn();
-			pCol->updateLayout();
-		}
- 
-		pLine = pLine->getNext();
-	}
-
-	fp_Column* pPrevCol = m_pFirstLine->getColumn()->getPrev();
-	if (pPrevCol)
-	{
-		pPrevCol->updateLayout();
-	}
-
-	fp_Column* pNextCol = m_pLastLine->getColumn()->getNext();
-	if (pNextCol)
-	{
-		pNextCol->updateLayout();
-	}
-#endif	
-}
-
 void fl_BlockLayout::clearScreen(GR_Graphics* pG)
 {
 	fp_Line* pLine = m_pFirstLine;
@@ -337,6 +323,15 @@ void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerg
 
 void fl_BlockLayout::coalesceRuns(void)
 {
+#if 0
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
+	{
+		pLine->coalesceRuns();
+		
+		pLine = pLine->getNext();
+	}
+#else	
 	fp_Run* pFirstRunInChain = NULL;
 	UT_uint32 iNumRunsInChain = 0;
 	
@@ -397,6 +392,7 @@ void fl_BlockLayout::coalesceRuns(void)
 	{
 		_mergeRuns(pFirstRunInChain, pLastRun);
 	}
+#endif	
 }
 
 void fl_BlockLayout::collapse(void)
@@ -517,6 +513,35 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	return UT_TRUE;
 }
 
+void fl_BlockLayout::checkForEndOnForcedBreak(void)
+{
+	fp_Line* pLastLine = getLastLine();
+	fp_Run* pLastRun = pLastLine->getLastRun();
+	if (pLastRun->canContainPoint())
+	{
+		return;
+	}
+
+	/*
+	  We add a zero-length text run on a line by itself.
+	*/
+
+	fp_Line* pNewLine;
+	
+	GR_Graphics* pG = m_pLayout->getGraphics();
+	fp_TextRun* pNewRun = new fp_TextRun(this, pG, pLastRun->getBlockOffset() + pLastRun->getLength(), 0);
+	pNewRun->setPrev(pLastRun);
+	pLastRun->setNext(pNewRun);
+
+	pNewLine = getNewLine(m_pFirstRun->getHeight());
+	UT_ASSERT(pNewLine == m_pLastLine);
+
+	// the line just contains the empty run
+	pNewLine->addRun(pNewRun);
+
+	pNewLine->layout();
+}
+
 int fl_BlockLayout::format()
 {
 	if (m_bFixCharWidths)
@@ -546,8 +571,10 @@ int fl_BlockLayout::format()
 		}
 
 		recalculateFields();
+//		debug_dumpRunList();
 		m_pBreaker->breakParagraph(this);
 		_removeAllEmptyLines();
+		checkForEndOnForcedBreak();
 	}
 	else
 	{
@@ -569,10 +596,6 @@ int fl_BlockLayout::format()
 		m_pFirstLine->layout();
 	}
 
-	_fixColumns();
-
-	checkForWidowsAndOrphans();
-
 	m_bNeedsReformat = UT_FALSE;
 
 	return 0;	// TODO return code
@@ -587,15 +610,6 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 {
 	UT_ASSERT(iHeight > 0);
 
-	/*
-	  Calling fixColumns every time we need to create a new line
-	  is a bit heavy, but it seems to be necessary.  Specifically,
-	  there are cases where we are inserting a new line into a column
-	  which is not updated, and the resulting calculations become
-	  very wrong.
-	*/
-	_fixColumns();
-	
 	fp_Line* pLine = new fp_Line();
 	UT_ASSERT(pLine);
 
@@ -617,23 +631,7 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 
 		pCol = pOldLastLine->getColumn();
 
-		if (!(pCol->insertLineAfter(pLine, pOldLastLine, iHeight)))
-		{
-			fp_Column* pNextCol = pCol->getNext();
-			if (!pNextCol)
-			{
-				pNextCol = m_pSectionLayout->getNewColumn();
-			}
-			UT_ASSERT(pNextCol);
-
-			while (pCol->getLastLine() != pOldLastLine)
-			{
-				pCol->moveLineToNextColumn(pCol->getLastLine());
-			}
-			
-			pNextCol->insertLineAfter(pLine, NULL, iHeight);
-			UT_ASSERT(pLine->getColumn() == pNextCol);
-		}
+		pCol->insertLineAfter(pLine, pOldLastLine);
 	}
 	else
 	{
@@ -662,19 +660,7 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 			pCol = m_pSectionLayout->getNewColumn();
 		}
 		
-		if (!(pCol->insertLineAfter(pLine, pPrevLine, iHeight)))
-		{
-			pCol = pCol->getNext();
-			if (!pCol)
-			{
-				pCol = m_pSectionLayout->getNewColumn();
-			}
-
-			UT_ASSERT(pCol);
-		
-			pCol->insertLineAfter(pLine, NULL, iHeight);
-			UT_ASSERT(pLine->getColumn() == pCol);
-		}
+		pCol->insertLineAfter(pLine, pPrevLine);
 	}
 
 	return pLine;
@@ -711,16 +697,6 @@ void fl_BlockLayout::getLineSpacing(double& dSpacing, UT_Bool& bExact) const
 {
 	dSpacing = m_dLineSpacing;
 	bExact = m_bExactSpacing;
-}
-
-UT_uint32 fl_BlockLayout::getOrphansProperty(void) const
-{
-	return m_iOrphansProperty;
-}
-
-UT_uint32 fl_BlockLayout::getWidowsProperty(void) const
-{
-	return m_iWidowsProperty;
 }
 
 UT_Bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
@@ -823,7 +799,7 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 		}
 		else
 		{
-			fl_SectionLayout* pSL = m_pLayout->getPrevSection(m_pSectionLayout);
+			fl_SectionLayout* pSL = m_pSectionLayout->getPrev();
 
 			if (!pSL)
 			{
@@ -856,7 +832,7 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 	else
 	{
 		// there is no next line in this section, try the next
-		fl_SectionLayout* pSL = m_pLayout->getNextSection(m_pSectionLayout);
+		fl_SectionLayout* pSL = m_pSectionLayout->getNext();
 
 		if (!pSL)
 		{
@@ -873,13 +849,15 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 	return NULL;
 }
 
-fl_BlockLayout* fl_BlockLayout::getNext(UT_Bool bKeepGoing) const
+fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 {
-	if (m_pNext || !bKeepGoing)
+	if (m_pNext)
+	{
 		return m_pNext;
+	}
 
 	// keep going (check next section)
-	fl_SectionLayout* pSL = m_pLayout->getNextSection(m_pSectionLayout);
+	fl_SectionLayout* pSL = m_pSectionLayout->getNext();
 	fl_BlockLayout* pBL = NULL;
 
 	if (pSL)
@@ -891,13 +869,13 @@ fl_BlockLayout* fl_BlockLayout::getNext(UT_Bool bKeepGoing) const
 	return pBL;
 }
 
-fl_BlockLayout* fl_BlockLayout::getPrev(UT_Bool bKeepGoing) const
+fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
 {
-	if (m_pPrev || !bKeepGoing)
+	if (m_pPrev)
 		return m_pPrev;
 
 	// keep going (check prev section)
-	fl_SectionLayout* pSL = m_pLayout->getPrevSection(m_pSectionLayout);
+	fl_SectionLayout* pSL = m_pSectionLayout->getPrev();
 	fl_BlockLayout* pBL = NULL;
 
 	if (pSL)
@@ -1400,7 +1378,44 @@ UT_Bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 
 	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
-	return _doInsertRun(pNewRun);
+	if (_doInsertRun(pNewRun))
+	{
+#if 0
+		/*
+		  This code is an attempt to coalesce text runs on the fly.
+		  It fails because the newly merged run is half-dirty,
+		  half-not.  The newly inserted portion is clearly dirty.
+		  It has not even been drawn on screen yet.  The previously
+		  existent portion is not dirty.  If we want to do this
+		  merge, then we have two choices.  First, we could
+		  erase the old portion, merge, and consider the result
+		  to be dirty.  OR, we could draw the new portion on
+		  screen, merge, and consider the result to be NOT
+		  dirty.  The first approach causes flicker.  The second
+		  approach won't work now since we don't know the
+		  position of the layout.
+		*/
+		
+		fp_Run* pPrev = pNewRun->getPrev();
+		if (
+			pPrev
+			&& (pPrev->getType() == FPRUN_TEXT)
+			)
+		{
+			fp_TextRun* pPrevTextRun = (fp_TextRun*) pPrev;
+			
+			if (pPrevTextRun->canMergeWithNext())
+			{
+				pPrevTextRun->mergeWithNext();
+			}
+		}
+#endif
+		return UT_TRUE;
+	}
+	else
+	{
+		return UT_FALSE;
+	}
 }
 
 UT_Bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
@@ -1458,10 +1473,49 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 			UT_Bool bFoundDataItem = m_pDoc->getDataItemDataByName(pszDataID, &pBB, NULL, NULL);
 			if (bFoundDataItem && pBB)
 			{
-				GR_ImageFactory* pIF = AP_App::getImageFactory();
+				GR_Graphics* pG = m_pLayout->getGraphics();
 
-				pImage = pIF->createNewImage(pszDataID);
-				pImage->convertFromPNG(pBB);
+				/*
+				  Now we need to know the display size of the new image.
+				*/
+
+				const XML_Char *pszWidth;
+				const XML_Char *pszHeight;
+				UT_Bool bFoundWidthProperty = pSpanAP->getProperty("width", pszWidth);
+				UT_Bool bFoundHeightProperty = pSpanAP->getProperty("height", pszHeight);
+
+				UT_sint32 iDisplayWidth = 0;
+				UT_sint32 iDisplayHeight = 0;
+				if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
+				{
+					iDisplayWidth = pG->convertDimension(pszWidth);
+					iDisplayHeight = pG->convertDimension(pszHeight);
+				}
+				else
+				{
+					UT_sint32 iImageWidth;
+					UT_sint32 iImageHeight;
+
+					UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	
+					if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
+					{
+						iDisplayWidth = iImageWidth;
+						iDisplayHeight = iImageHeight;
+					}
+					else
+					{
+						double fScale = pG->getResolution() / 72.0;
+			
+						iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
+						iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
+					}
+				}
+
+				UT_ASSERT(iDisplayWidth > 0);
+				UT_ASSERT(iDisplayHeight > 0);
+
+				pImage = pG->createNewImage(pszDataID, pBB, iDisplayWidth, iDisplayHeight);
 			}
 		}
 	}
@@ -2287,19 +2341,12 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 	_lookupProperties();
 
-	fp_Column* pCol = NULL;
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
 		pLine->recalcHeight();	// line-height
 		pLine->recalcMaxWidth();
 
-		if (pLine->getColumn() != pCol)
-		{
-			pCol = pLine->getColumn();
-			pCol->setNeedsLayoutUpdate();	// line-height, margin-top, margin-bottom
-		}
- 
 		pLine = pLine->getNext();
 	}
 	
@@ -2429,8 +2476,6 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	truncateLayout(pFirstNewRun);
 
 	pNewBL->setNeedsReformat();
-	
-	checkForWidowsAndOrphans();
 
 	coalesceRuns();
 	
@@ -2514,211 +2559,6 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 			(static_cast<fp_TextRun*>(pRun))->drawSquiggle(iStart, iLen);
 		}
-	}
-}
-
-void fl_BlockLayout::checkForWidowsAndOrphans(void)
-{
-start_over:
-	UT_uint32 iCountLines = 0;
-	UT_uint32 iCountColumns = 0;
-	fp_Column* pLastColSeen = NULL;
-
-	fp_Line* pLine = m_pFirstLine;
-	while (pLine)
-	{
-		iCountLines++;
-
-		if (pLine->getColumn() != pLastColSeen)
-		{
-			iCountColumns++;
-
-			UT_ASSERT(!pLastColSeen || (pLastColSeen->getLastLine() == pLine->getPrev()));
-			
-			pLastColSeen = pLine->getColumn();
-		}
-		
-		pLine = pLine->getNext();
-	}
-
-	if (iCountLines > 0)
-	{
-		if (
-			(m_pFirstLine->getColumn()->getFirstLine() == m_pFirstLine)
-			&& (m_pFirstLine->getColumn()->getPrev())
-			&& (
-				(iCountLines <= getOrphansProperty())
-				|| (iCountLines >= (getOrphansProperty() + getWidowsProperty()))
-				)
-			)
-		{
-			/*
-			  Our first line is at the top of a column.  We should check
-			  to see if the first few lines can be moved backwards into the previous
-			  column.
-			*/
-
-			UT_uint32 iCounter = 0;
-			pLine = m_pFirstLine;
-			UT_sint32 iHeightNeeded = 0;
-			
-			while (pLine && (iCounter < getOrphansProperty()))
-			{
-				iHeightNeeded += pLine->getHeight();
-				pLine = pLine->getNext();
-				iCounter++;
-			}
-
-			fp_Column* pSecondColumn = m_pFirstLine->getColumn();
-			fp_Column* pPrevCol = pSecondColumn->getPrev();
-			UT_sint32 iSpace = pPrevCol->getSpaceAtBottom();
-			UT_sint32 iMargin = m_pFirstLine->getMarginBefore();
-
-			if (iSpace >= (iHeightNeeded + iMargin))
-			{
-				fp_Line* pMoveLine = m_pFirstLine;
-				UT_uint32 iNumLinesToPushBack = getOrphansProperty();
-				if (iNumLinesToPushBack > iCountLines)
-				{
-					iNumLinesToPushBack = iCountLines;
-				}
-				
-				for (UT_uint32 i=0; i<iNumLinesToPushBack; i++)
-				{
-					pPrevCol->moveLineFromNextColumn(pMoveLine);
-					pMoveLine = pMoveLine->getNext();
-				}
-
-				pSecondColumn->updateLayout();
-			}
-		}
-		
-		// TODO should we put an else here?
-		
-		if (iCountColumns > 1)
-		{
-			pLastColSeen = NULL;
-			pLine = m_pFirstLine;
-			UT_uint32 iCountLinesInColumn = 0;
-			while (pLine)
-			{
-				if (pLine->getColumn() != pLastColSeen)
-				{
-					if (pLastColSeen)
-					{
-						if (iCountLinesInColumn < getOrphansProperty())
-						{
-							fp_Line* pMoveLine = pLine->getPrev();
-							for (UT_uint32 i=0; i<iCountLinesInColumn; i++)
-							{
-								UT_ASSERT(pMoveLine->getColumn() == pLastColSeen);
-								UT_ASSERT(pLastColSeen->getLastLine() == pMoveLine);
-								
-								pLastColSeen->moveLineToNextColumn(pMoveLine);
-								pMoveLine = pMoveLine->getPrev();
-							}
-
-							pLastColSeen->getNext()->updateLayout();
-
-							goto start_over;
-						}
-					}
-
-					pLastColSeen = pLine->getColumn();
-					iCountLinesInColumn = 1;
-				}
-				else
-				{
-					iCountLinesInColumn++;
-				}
-		
-				pLine = pLine->getNext();
-			}
-
-			if (iCountLinesInColumn < getWidowsProperty())
-			{
-				// widow problem
-				
-				fp_Column* pPrevCol = pLastColSeen->getPrev();
-				UT_ASSERT(pPrevCol);
-				
-				pLine = pPrevCol->getLastLine();
-				UT_ASSERT(pLine->getBlock() == this);
-				
-				UT_uint32 iCountLinesInPrevColumn = 0;
-				while (pLine && (pLine->getColumn() == pPrevCol))
-				{
-					iCountLinesInPrevColumn++;
-					pLine = pLine->getPrev();
-				}
-
-				UT_uint32 iNumLinesToBeMoved;
-				
-				if (
-					(iCountLinesInPrevColumn > getOrphansProperty())
-					&& ((iCountLinesInPrevColumn - getOrphansProperty() + iCountLinesInColumn) >= getWidowsProperty())
-					)
-				{
-					/*
-					  Move just enough
-					*/
-					iNumLinesToBeMoved = getWidowsProperty() - iCountLinesInColumn;
-				}
-				else
-				{
-					/*
-					  There aren't enough lines in the prev column to
-					  move just a few.  Move 'em all!
-					*/
-
-					iNumLinesToBeMoved = iCountLinesInPrevColumn;
-				}
-
-				fp_Line* pMoveLine = pPrevCol->getLastLine();
-				UT_ASSERT(pMoveLine->getBlock() == this);
-				for (UT_uint32 i=0; i<iNumLinesToBeMoved; i++)
-				{
-					UT_ASSERT(pMoveLine->getColumn() == pPrevCol);
-								
-					pPrevCol->moveLineToNextColumn(pMoveLine);
-					pMoveLine = pMoveLine->getPrev();
-				}
-
-				pPrevCol->getNext()->updateLayout();
-			}
-		}
-	}
-}
-
-UT_uint32 fl_BlockLayout::canSlurp(fp_Line* pLine) const
-{
-	UT_ASSERT(pLine);
-	UT_ASSERT(pLine->getColumn());
-	UT_ASSERT(pLine->getColumn()->getFirstLine() == pLine);
-	
-	UT_uint32 iCountLinesInBlock = 0;
-	fp_Column* pCol = pLine->getColumn();
-	fp_Line* pOrigLine = pLine;
-	while (pLine && pLine->getColumn() == pCol)
-	{
-		iCountLinesInBlock++;
-		pLine = pLine->getNext();
-	}
-
-	if ((pLine == NULL)
-		&& (pOrigLine == m_pFirstLine)
-		)
-	{
-		return iCountLinesInBlock;
-	}
-	
-	if (iCountLinesInBlock > getWidowsProperty())
-	{
-		return (iCountLinesInBlock - getWidowsProperty());
-	}
-	else
-	{
-		return 0;
 	}
 }
 
@@ -2943,3 +2783,26 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_s
 
 	return UT_FALSE;
 }
+
+void fl_BlockLayout::setNext(fl_BlockLayout* pBL)
+{
+	m_pNext = pBL;
+}
+
+void fl_BlockLayout::setPrev(fl_BlockLayout* pBL)
+{
+	m_pPrev = pBL;
+}
+
+#ifndef NDEBUG
+void fl_BlockLayout::debug_dumpRunList(void)
+{
+	fp_Run* pRun = m_pFirstRun;
+	while (pRun)
+	{
+		pRun->debug_dump();
+		
+		pRun = pRun->getNext();
+	}
+}
+#endif

@@ -548,7 +548,16 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	UT_ASSERT(res != ERROR);
 }
 
-void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
+GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+	GR_Win32Image* pImg = new GR_Win32Image(NULL, pszName);
+
+	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
+
+	return pImg;
+}
+
+void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
 	
@@ -562,12 +571,12 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	int iRes = StretchDIBits(m_hdc,
 							 xDest,
 							 yDest,
-							 iDestWidth,
-							 iDestHeight,
+							 pWin32Img->getDisplayWidth(),
+							 pWin32Img->getDisplayHeight(),
 							 0,
 							 0,
-							 pWin32Img->getWidth(),
-							 pWin32Img->getHeight(),
+							 pDIB->bmiHeader.biWidth,
+							 pDIB->bmiHeader.biHeight,
 							 pBits,
 							 pDIB,
 							 DIB_RGB_COLORS,

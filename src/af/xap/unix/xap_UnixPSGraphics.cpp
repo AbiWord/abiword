@@ -109,7 +109,11 @@ UT_uint32 PS_Graphics::getFontAscent()
 	GlobalFontInfo * gfi = m_pCurrentFont->getMetricsData()->gfi;
 	UT_ASSERT(gfi);
 
+#if 0
 	return _scale(gfi->ascender);
+#else
+	return _scale(gfi->fontBBox.ury);
+#endif	
 }
 
 UT_uint32 PS_Graphics::getFontDescent()
@@ -119,8 +123,13 @@ UT_uint32 PS_Graphics::getFontDescent()
 	GlobalFontInfo * gfi = m_pCurrentFont->getMetricsData()->gfi;
 	UT_ASSERT(gfi);
 
+#if 0	
 	UT_ASSERT(gfi->descender <= 0);
 	return _scale(-gfi->descender);
+#else
+	UT_ASSERT(gfi->fontBBox.lly <= 0);
+	return _scale(-(gfi->fontBBox.lly));
+#endif	
 }
 
 UT_uint32 PS_Graphics::getFontHeight()
@@ -130,10 +139,14 @@ UT_uint32 PS_Graphics::getFontHeight()
 	GlobalFontInfo * gfi = m_pCurrentFont->getMetricsData()->gfi;
 	UT_ASSERT(gfi);
 
-	// TODO who takes care of leading ??
-	
+#if 0
 	UT_ASSERT(gfi->descender <= 0);
 	return _scale(gfi->ascender - gfi->descender);
+#else
+	UT_ASSERT(gfi->fontBBox.lly <= 0);
+	UT_ASSERT((gfi->fontBBox.ury - gfi->fontBBox.lly) >= (gfi->ascender - gfi->descender));
+	return _scale(gfi->fontBBox.ury - gfi->fontBBox.lly);
+#endif
 }
 	
 UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset, 
@@ -671,9 +684,21 @@ void PS_Graphics::_emit_SetColor(void)
 	m_ps->writeBytes(buf);
 }
 
-void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
+GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+	PS_Image* pImg = new PS_Image(NULL, pszName);
+
+	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
+
+	return pImg;
+}
+
+void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
+
+	UT_sint32 iDestWidth = pImg->getDisplayWidth();
+	UT_sint32 iDestHeight = pImg->getDisplayHeight();
 	
 	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
 

@@ -331,7 +331,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			*/
 
 			pLine->layout();
-			  
+
 		} /* if countruns > 0 */
 		
 		pLine = pLine->getNext();

@@ -87,8 +87,15 @@ public:
 		the normal flow, in order.
 	*/
 
-	fl_BlockLayout* getNext(UT_Bool bKeepGoing) const;
-	fl_BlockLayout* getPrev(UT_Bool bKeepGoing) const;
+	inline fl_BlockLayout* getNext(void) const { return m_pNext; }
+	inline fl_BlockLayout* getPrev(void) const { return m_pPrev; }
+
+	void setNext(fl_BlockLayout*);
+	void setPrev(fl_BlockLayout*);
+
+	fl_BlockLayout* getNextBlockInDocument(void) const;
+	fl_BlockLayout* getPrevBlockInDocument(void) const;
+	
 	fp_Line* getFirstLine();
 	fp_Line* getLastLine();
 	fp_Line* findPrevLineInDocument(fp_Line*);
@@ -122,9 +129,12 @@ public:
 
 	void getLineSpacing(double& dSpacing, UT_Bool& bExact) const;
 
-	UT_uint32 getOrphansProperty(void) const;
-	UT_uint32 getWidowsProperty(void) const;
-	void checkForWidowsAndOrphans(void);
+	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
+	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
+	inline UT_Bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
+	inline UT_Bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
+
+	void checkForEndOnForcedBreak(void);
 
 	void checkSpelling(void);
 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
@@ -160,6 +170,10 @@ public:
 	void					setNeedsReformat(void) { m_bNeedsReformat = UT_TRUE; }
 	inline UT_Bool			needsReformat(void) const { return m_bNeedsReformat; }
 	
+#ifndef NDEBUG
+	void					debug_dumpRunList(void);
+#endif
+	
 protected:
 
 #ifndef NDEBUG
@@ -180,7 +194,6 @@ protected:
 	UT_Bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	
 	void					_lookupProperties(void);
-	void			 		_fixColumns(void);
 	void					_removeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 
@@ -222,6 +235,8 @@ protected:
 	UT_uint32				m_iAlignment;
 	double					m_dLineSpacing;
 	UT_Bool					m_bExactSpacing;
+	UT_Bool					m_bKeepTogether;
+	UT_Bool					m_bKeepWithNext;
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;

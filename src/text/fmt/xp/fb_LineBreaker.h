@@ -22,10 +22,9 @@
 #ifndef LINEBREAKER_H
 #define LINEBREAKER_H
 
-#include "ut_vector.h"
+#include "ut_types.h"
 
 class fl_BlockLayout;
-class fp_Line;
 
 class fb_LineBreaker
 {

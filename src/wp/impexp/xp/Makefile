@@ -24,6 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		ie_exp.cpp		\
 			ie_exp_AbiWord_1.cpp	\
+			ie_exp_HTML.cpp		\
 			ie_exp_Text.cpp		\
 			ie_imp.cpp		\
 			ie_imp_AbiWord_1.cpp	\

@@ -46,28 +46,22 @@ static PP_Property _props[] =
 	{ "font-style",				"normal",			1},
 	{ "font-variant",			"normal",			1},
 	{ "font-weight",			"normal",			1},
+	{ "text-decoration",		"none",				1},
+	
 	{ "margin-bottom",			"0in",				0},	// EWS -- I changed these to
 	{ "margin-top",				"0in",				0}, // zero to be consistent with other WPs
 	{ "margin-left",			"0in",				0},
 	{ "margin-right",			"0in",				0},
 	{ "text-indent",			"0in",				0},
 	{ "text-align",				"left",				1},
-	{ "text-decoration",		"none",				1},
 
 	{ "width",					"",					0},
 	{ "height",					"",					0},
 	
 	{ "background-color",		"transparent",		0},
 	{ "line-height",			"1.0",				0},
-	{ "line-break-after",		"auto",				0},
-	{ "line-break-before",		"auto",				0},
-	{ "line-break-inside",		"auto",				0},
-	{ "column-break-after",		"auto",				0},
-	{ "column-break-before",	"auto",				0},
-	{ "column-break-inside",	"auto",				0},
-	{ "page-break-after",		"auto",				0},
-	{ "page-break-before",		"auto",				0},
-	{ "page-break-inside",		"auto",				0},
+	{ "keep-together",			"",					0},
+	{ "keep-with-next",			"",					0},
 
 	{ "orphans",				"2",				0},
 	{ "widows",					"2",				0},

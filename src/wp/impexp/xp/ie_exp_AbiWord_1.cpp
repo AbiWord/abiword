@@ -29,6 +29,7 @@
 #include "px_ChangeRecord_Object.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_Strux.h"
+#include "xap_App.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -116,6 +117,7 @@ void IE_Exp_AbiWord_1::write(const char * sz, UT_uint32 length)
 /*****************************************************************/
 /*****************************************************************/
 
+// TODO is the spelling mistake in the following line intentional? --EWS
 class s_Abword_1_Listener : public PL_Listener
 {
 public:
@@ -329,6 +331,53 @@ s_Abword_1_Listener::s_Abword_1_Listener(PD_Document * pDocument,
 	m_bInSection = UT_FALSE;
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
+	
+	m_pie->write("<!-- ================================================================================  -->\n");
+	m_pie->write("<!-- This file is an AbiWord document.                                                 -->\n");
+	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                    -->\n");
+	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com                -->\n");
+	m_pie->write("<!-- You should not edit this file by hand.                                            -->\n");
+	m_pie->write("<!-- ================================================================================  -->\n");
+	m_pie->write("\n");
+
+	if (AP_App::s_szBuild_ID && AP_App::s_szBuild_ID[0])
+	{
+		m_pie->write("<!--         Build_ID          = ");
+		m_pie->write(AP_App::s_szBuild_ID);
+		m_pie->write(" -->\n");
+	}
+	if (AP_App::s_szBuild_Version && AP_App::s_szBuild_Version[0])
+	{
+		m_pie->write("<!--         Build_Version     = ");
+		m_pie->write(AP_App::s_szBuild_Version);
+		m_pie->write(" -->\n");
+	}
+	if (AP_App::s_szBuild_Options && AP_App::s_szBuild_Options[0])
+	{
+		m_pie->write("<!--         Build_Options     = ");
+		m_pie->write(AP_App::s_szBuild_Options);
+		m_pie->write(" -->\n");
+	}
+	if (AP_App::s_szBuild_Target && AP_App::s_szBuild_Target[0])
+	{
+		m_pie->write("<!--         Build_Target      = ");
+		m_pie->write(AP_App::s_szBuild_Target);
+		m_pie->write(" -->\n");
+	}
+	if (AP_App::s_szBuild_CompileTime && AP_App::s_szBuild_CompileTime[0])
+	{
+		m_pie->write("<!--         Build_CompileTime = ");
+		m_pie->write(AP_App::s_szBuild_CompileTime);
+		m_pie->write(" -->\n");
+	}
+	if (AP_App::s_szBuild_CompileDate && AP_App::s_szBuild_CompileDate[0])
+	{
+		m_pie->write("<!--         Build_CompileDate = ");
+		m_pie->write(AP_App::s_szBuild_CompileDate);
+		m_pie->write(" -->\n");
+	}
+	
+	m_pie->write("\n");
 	
 	m_pie->write("<awml>\n");
 }

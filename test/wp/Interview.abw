@@ -1,6 +1,6 @@
 <awml>
 <section PROPS="columns:1">
-<p PROPS="font-size:18pt; font-weight:bold; line-height:1.0; margin-top:12pt; text-align:center">Interview with AbiSource Founder Eric Sink</p>
+<p PROPS="line-height:1.0; margin-top:12pt; text-align:center"><c PROPS="font-size:18pt; font-weight:bold">Interview with AbiSource Founder Eric Sink</c></p>
 </section>
 <section PROPS="column-gap:0.25in; columns:2">
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in"><c PROPS="font-weight:bold">Dale: Eric, tell me a bit about yourself and how you were involved with Mosaic development at Spyglass?</c></p>

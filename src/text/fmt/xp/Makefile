@@ -24,6 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		fv_View.cpp			\
 			fv_View_TestRoutines.cpp	\
+			fb_ColumnBreaker.cpp		\
 			fb_LineBreaker.cpp		\
 			fl_BlockLayout.cpp		\
 			fl_DocLayout.cpp		\

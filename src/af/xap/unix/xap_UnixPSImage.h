@@ -34,16 +34,14 @@ struct PSFatmap
 	guchar * data;
 };
 
-class PS_Image : public GR_Image
+class PS_Image : public GR_StretchableImage
 {
 public:
 	PS_Image(PSFatmap * image, const char* pszName);
 	~PS_Image();
 
-	virtual UT_sint32	getWidth(void) const;
-	virtual UT_sint32	getHeight(void) const;
-	virtual UT_Bool		getByteBuf(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB);
+	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 	PSFatmap *			getData(void) const { return m_image; }
 	
@@ -51,12 +49,5 @@ protected:
 
 	PSFatmap * m_image;
 };
-
-class PS_ImageFactory : public GR_ImageFactory
-{
-public:
-	virtual GR_Image *	createNewImage(const char* pszName);
-};
-
 
 #endif /* XAP_UNIXPSIMAGE_H */

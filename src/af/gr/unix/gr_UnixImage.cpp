@@ -79,17 +79,17 @@ GR_UnixImage::~GR_UnixImage()
 	}
 }
 
-UT_sint32	GR_UnixImage::getWidth(void) const
+UT_sint32	GR_UnixImage::getDisplayWidth(void) const
 {
 	return m_image->width;
 }
 
-UT_sint32	GR_UnixImage::getHeight(void) const
+UT_sint32	GR_UnixImage::getDisplayHeight(void) const
 {
 	return m_image->height;
 }
 
-UT_Bool		GR_UnixImage::getByteBuf(UT_ByteBuf** ppBB) const
+UT_Bool		GR_UnixImage::convertToPNG(UT_ByteBuf** ppBB) const
 {
 	/*
 	  The purpose of this routine is to convert our internal 24-bit
@@ -195,7 +195,7 @@ UT_Bool		GR_UnixImage::getByteBuf(UT_ByteBuf** ppBB) const
 	return UT_TRUE;
 }
 
-UT_Bool	GR_UnixImage::convertFromPNG(const UT_ByteBuf* pBB)
+UT_Bool	GR_UnixImage::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -258,36 +258,20 @@ UT_Bool	GR_UnixImage::convertFromPNG(const UT_ByteBuf* pBB)
 
 	UT_uint32 iBytesInRow = width * 3;
 
-	// should NOT already be set
-	UT_ASSERT(!m_image);
-
-	if (m_image)
-	{
-		// free the data in it too
-		if (m_image->data)
-		{
-			free(m_image->data);
-			m_image->data = NULL;
-		}
-		
-		delete m_image;
-		m_image = NULL;
-	}
-
-	m_image = new Fatmap;
-	m_image->width = width;
-	m_image->height = height;
+	Fatmap* pFM = new Fatmap;
+	pFM->width = width;
+	pFM->height = height;
 
 	// allocate for 3 bytes each pixel (one for R, G, and B)
-	m_image->data = (guchar *) calloc(m_image->width * m_image->height * 3, sizeof(guchar));
+	pFM->data = (guchar *) calloc(pFM->width * pFM->height * 3, sizeof(guchar));
 	
-	if (!m_image->data)
+	if (!pFM->data)
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		return UT_FALSE;
 	}
 
-	UT_Byte * pBits = (UT_Byte *) m_image->data;
+	UT_Byte * pBits = (UT_Byte *) pFM->data;
 
 	UT_Byte ** pRowStarts = (UT_Byte **) calloc(height, sizeof(UT_Byte *));
 
@@ -307,10 +291,116 @@ UT_Bool	GR_UnixImage::convertFromPNG(const UT_ByteBuf* pBB)
 	/* clean up after the read, and free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
+	if (
+		(((UT_sint32) width) != iDisplayWidth)
+		|| (((UT_sint32) height) != iDisplayHeight)
+		)
+	{
+		Fatmap* pDisplayFM = new Fatmap;
+		Fatmap* pOtherFM = pFM;
+
+		pDisplayFM->width = iDisplayWidth;
+		pDisplayFM->height = iDisplayHeight;
+
+		// allocate for 3 bytes each pixel (one for R, G, and B)
+		pDisplayFM->data = (guchar *) calloc(pDisplayFM->width * pDisplayFM->height * 3, sizeof(guchar));
+	
+		if (!pDisplayFM->data)
+		{
+			delete pDisplayFM;
+			free(pOtherFM->data);
+			delete pOtherFM;
+			return UT_FALSE;
+		}
+
+		// stretch the pixels from pOtherFM into pDisplayFM
+
+		/*
+		  TODO this code came from imlib.  It's not exactly
+		  a match for our coding standards, so it needs a
+		  certain amount of cleanup.  However, it seems
+		  to be working nicely.
+		*/
+		
+		{
+			int                 x, y, *xarray;
+			unsigned char     **yarray, *ptr, *ptr2, *ptr22;
+			int                 pos, inc, w3;
+
+			xarray = (int*) malloc(sizeof(int) * iDisplayWidth);
+
+			if (!xarray)
+			{
+				// TODO outofmem
+				return UT_FALSE;
+			}
+			yarray = (unsigned char**) malloc(sizeof(unsigned char *) * iDisplayHeight);
+
+			if (!yarray)
+			{
+				// TODO outofmem
+				return UT_FALSE;
+			}
+			
+			ptr22 = pOtherFM->data;
+			w3 = pOtherFM->width * 3;
+
+			// set up xarray
+			inc = ((pOtherFM->width) << 16) / iDisplayWidth;
+			pos = 0;
+			for (x = 0; x < iDisplayWidth; x++)
+			{
+				xarray[x] = (pos >> 16) + (pos >> 16) + (pos >> 16);
+				pos += inc;
+			}
+
+			// set up yarray
+			inc = ((pOtherFM->height) << 16) / iDisplayHeight;
+			pos = 0;
+			for (x = 0; x < iDisplayHeight; x++)
+			{
+				yarray[x] = ptr22 + ((pos >> 16) * w3);
+				pos += inc;
+			}
+
+			// crunch the data
+			ptr = pDisplayFM->data;
+			for (y = 0; y < iDisplayHeight; y++)
+			{
+				for (x = 0; x < iDisplayWidth; x++)
+				{
+					ptr2 = yarray[y] + xarray[x];
+					*ptr++ = (int)*ptr2++;
+					*ptr++ = (int)*ptr2++;
+					*ptr++ = (int)*ptr2;
+				}
+			}
+		}
+
+		pFM = pDisplayFM;
+
+		free(pOtherFM->data);
+		delete pOtherFM;
+	}
+
+	// should NOT already be set
+	UT_ASSERT(!m_image);
+
+	if (m_image)
+	{
+		// free the data in it too
+		if (m_image->data)
+		{
+			free(m_image->data);
+			m_image->data = NULL;
+		}
+		
+		delete m_image;
+		m_image = NULL;
+	}
+
+	m_image = pFM;
+		
 	return UT_TRUE;
 }
 
-GR_Image* GR_UnixImageFactory::createNewImage(const char* pszName)
-{
-	return new GR_UnixImage(NULL, pszName);
-}

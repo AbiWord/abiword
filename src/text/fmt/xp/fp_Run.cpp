@@ -74,6 +74,24 @@ fp_Run::~fp_Run()
 {
 }
 
+#ifndef NDEBUG
+void	fp_Run::debug_dump(void)
+{
+	UT_DEBUGMSG(("fp_Run:  0x%p\n\tm_iType = %d\n\tm_iOffsetFirst = %d\n\tm_iLen = %d\n\tm_bDirty = %d\n\tm_iX = %d\n\tm_iY = %d\n\tm_iWidth = %d\n\tm_iHeight = %d\n\tm_pNext = 0x%p\n\tm_pPrev = 0x%p\n",
+				 this,
+				 m_iType,
+				 m_iOffsetFirst,
+				 m_iLen,
+				 m_bDirty,
+				 m_iX,
+				 m_iY,
+				 m_iWidth,
+				 m_iHeight,
+				 m_pNext,
+				 m_pPrev));
+}
+#endif
+
 void	fp_Run::setX(UT_sint32 iX)
 {
 	if (iX == m_iX)
@@ -200,6 +218,11 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	_draw(pDA);
 
 	m_bDirty = UT_FALSE;
+}
+
+UT_Bool fp_Run::canContainPoint(void) const
+{
+	return UT_TRUE;
 }
 
 UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
@@ -362,30 +385,47 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
-	lookupProperties();
 }
 
 void fp_ForcedLineBreakRun::lookupProperties(void)
 {
 }
 
+UT_Bool fp_ForcedLineBreakRun::canContainPoint(void) const
+{
+	return UT_FALSE;
+}
+
+UT_uint32 fp_ForcedLineBreakRun::containsOffset(UT_uint32 iOffset)
+{
+	return FP_RUN_NOT;
+}
+
 UT_Bool fp_ForcedLineBreakRun::canBreakAfter(void) const
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	return UT_FALSE;
 }
 
 UT_Bool fp_ForcedLineBreakRun::canBreakBefore(void) const
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	return UT_FALSE;
 }
 
 UT_Bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	return UT_FALSE;
 }
 
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
 	bBOL = UT_FALSE;
 	bEOL = UT_FALSE;
@@ -393,6 +433,8 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_Doc
 
 void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
 	UT_sint32 yoff;
@@ -440,60 +482,19 @@ fp_ImageRun::~fp_ImageRun()
 
 void fp_ImageRun::lookupProperties(void)
 {
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
-
-	const XML_Char *pszWidth = PP_evalProperty("width",pSpanAP,pBlockAP,pSectionAP);
-	const XML_Char *pszHeight = PP_evalProperty("height",pSpanAP,pBlockAP,pSectionAP);
-
-	UT_sint32 iWidth = 0;
-	UT_sint32 iHeight = 0;
-	if (pszWidth && pszHeight)
+	if (m_pImage)
 	{
-		iWidth = m_pG->convertDimension(pszWidth);
-		iHeight = m_pG->convertDimension(pszHeight);
-	}
-
-	if ((iWidth == 0) || (iHeight == 0))
-	{
-		UT_sint32 iImageWidth;
-		UT_sint32 iImageHeight;
-		
-		if (m_pImage)
-		{
-			iImageWidth = m_pImage->getWidth();
-			iImageHeight = m_pImage->getHeight();
-		}
-		else
-		{
-			// If we have no image, we simply insert a one-inch-square "slug"
-			
-			iImageWidth = m_pG->convertDimension("1in");
-			iImageHeight = m_pG->convertDimension("1in");
-		}
-		
-		if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		{
-			m_iWidth = iImageWidth;
-			m_iHeight = iImageHeight;
-		}
-		else
-		{
-			double fScale = m_pG->getResolution() / 72.0;
-			
-			m_iWidth = (UT_sint32) (iImageWidth * fScale);
-			m_iHeight = (UT_sint32) (iImageHeight * fScale);
-		}
+		m_iWidth = m_pImage->getDisplayWidth();
+		m_iHeight = m_pImage->getDisplayHeight();
 	}
 	else
 	{
-		m_iWidth = iWidth;
-		m_iHeight = iHeight;
+		// If we have no image, we simply insert a one-inch-square "slug"
+			
+		m_iWidth = m_pG->convertDimension("1in");
+		m_iHeight = m_pG->convertDimension("1in");
 	}
-
+		
 	UT_ASSERT(m_iWidth > 0);
 	UT_ASSERT(m_iHeight > 0);
 
@@ -568,7 +569,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 
 	if (m_pImage)
 	{
-		m_pG->drawImage(m_pImage, xoff, yoff, m_iWidth, m_iHeight);
+		m_pG->drawImage(m_pImage, xoff, yoff);
 	}
 	else
 	{
@@ -764,25 +765,40 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 
 fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
 {
-	lookupProperties();
 }
 
 void fp_ForcedColumnBreakRun::lookupProperties(void)
 {
 }
 
+UT_Bool fp_ForcedColumnBreakRun::canContainPoint(void) const
+{
+	return UT_FALSE;
+}
+
+UT_uint32 fp_ForcedColumnBreakRun::containsOffset(UT_uint32 iOffset)
+{
+	return FP_RUN_NOT;
+}
+
 UT_Bool fp_ForcedColumnBreakRun::canBreakAfter(void) const
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	return UT_FALSE;
 }
 
 UT_Bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	return UT_FALSE;
 }
 
 UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
 	return UT_FALSE;
 }
 
@@ -825,6 +841,16 @@ fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* p
 
 void fp_ForcedPageBreakRun::lookupProperties(void)
 {
+}
+
+UT_Bool fp_ForcedPageBreakRun::canContainPoint(void) const
+{
+	return UT_FALSE;
+}
+
+UT_uint32 fp_ForcedPageBreakRun::containsOffset(UT_uint32 iOffset)
+{
+	return FP_RUN_NOT;
 }
 
 UT_Bool fp_ForcedPageBreakRun::canBreakAfter(void) const
