@@ -10434,7 +10434,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 // Do this first
 //
-	if(m_pDoc->isTOCAtPos(getPoint()))
+	if(m_pDoc->isTOCAtPos(getPoint()-1))
 	{
 		if(getPoint() ==2 || (pSL->getPosition(true) >= (getPoint() -2)))
 		{
