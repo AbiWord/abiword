@@ -119,6 +119,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 	{
 	case AP_TOOLBAR_ID_EDIT_CUT:
 	case AP_TOOLBAR_ID_EDIT_COPY:
+	case AP_TOOLBAR_ID_FMT_HYPERLINK:
 		if (pView->isSelectionEmpty())
 			s = EV_TIS_Gray;
 		break;
@@ -155,10 +156,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	    s = EV_TIS_Gray;
 	  break;
 
-	case AP_TOOLBAR_ID_FMT_HYPERLINK:
-	  s = ( (!pView->isSelectionEmpty()) ? EV_TIS_ZERO : EV_TIS_Gray );
-	  break;
-	  
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

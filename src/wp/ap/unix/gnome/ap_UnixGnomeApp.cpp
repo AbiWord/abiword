@@ -44,7 +44,6 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xav_View.h"
-#include "ap_Command.h"
 #include "xap_ModuleManager.h"
 #include "xap_Module.h"
 #include "ev_EditMethod.h"
