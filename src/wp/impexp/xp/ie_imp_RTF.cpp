@@ -2299,6 +2299,8 @@ UT_Error IE_Imp_RTF::_parseText()
 			UT_DEBUGMSG(("FlushStoredChars()\n"));
 		}
 	}
+//	UT_DEBUGMSG(("dumping document\n"));
+//	getDoc()->__dump(stderr);
 	return ok ? UT_OK : UT_ERROR;
 
 }
@@ -4418,7 +4420,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_nonshppict:
 		// we ignore this one since we handle shppict.
 		UT_DEBUGMSG(("Hub: skipping nonshppict\n"));
-		SkipCurrentGroup();
+		SkipCurrentGroup(false);
 		break;
 	case RTF_KW_noproof:
 		// Set language to none for \noproof

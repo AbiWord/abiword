@@ -573,9 +573,9 @@ private:
 public:
 	bool PushRTFState();
 	bool PopRTFState();
+	bool ParseChar(UT_UCSChar ch,bool no_convert=1);
 private:
 	bool ParseRTFKeyword();
-	bool ParseChar(UT_UCSChar ch,bool no_convert=1);
 	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	bool ReadCharFromFile(unsigned char* pCh);
 	UT_UCS4Char ReadHexChar(void);

@@ -516,7 +516,7 @@ bool IE_Imp_RTF::HandlePicture()
 				SkipBackChar(ch);
 
 				if (!LoadPictData(format, image_name.utf8_str(), imageProps, isBinary, binaryLen))
-					if (!SkipCurrentGroup())
+					if (!SkipCurrentGroup(false))
 						return false;
 
 				bPictProcessed = true;
@@ -770,9 +770,9 @@ public:
 
  	virtual bool tokenOpenBrace(IE_Imp_RTF * ie);
 	virtual bool tokenCloseBrace(IE_Imp_RTF * ie);
-//	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
+	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
 	
-//	virtual bool finalizeParse(void);
+	virtual bool finalizeParse(void);
 };
 
 
@@ -799,6 +799,29 @@ bool IE_Imp_TextParaPropParser::tokenCloseBrace(IE_Imp_RTF * ie)
 	return IE_Imp_RTFGroupParser::tokenCloseBrace(ie);
 }
 
+bool IE_Imp_TextParaPropParser::tokenData(IE_Imp_RTF * ie, UT_UTF8String & data)
+{
+	UT_DEBUGMSG(("IE_Imp_TextParPropParser::tokenData()\n"));	
+	const char * str = data.utf8_str();
+	bool ok = true;
+
+	while(*str && ok) {
+		// This code is actually unsage FIXME
+        // because str supposedly points to UTF-8
+        // but ParseChar() is completely flawed in that regard.
+		ok = ie->ParseChar(*str);
+		str++;
+	}
+
+	return ok;
+}
+
+
+bool IE_Imp_TextParaPropParser::finalizeParse(void)
+{
+//	ie->FlushStoredChars(true);
+	return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -881,6 +904,7 @@ void IE_Imp_RTF::HandleShape(void)
 	StandardKeywordParser(parser);
 
 	// Formely in HandleEndFrame()
+	UT_DEBUGMSG((">>>>End frame\n"));
 	if(!bUseInsertNotAppend()) {
 		getDoc()->appendStrux(PTX_EndFrame, NULL);
 		m_newParaFlagged = true;
@@ -906,6 +930,7 @@ void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 
 // Flush any stored chars now.
 	FlushStoredChars(true);
+
 	UT_DEBUGMSG(("Doing Handle shptxt \n"));
 
 // OK Assemble the attributes/properties for the Frame
@@ -957,6 +982,7 @@ void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 	attribs[1] = sPropString.utf8_str();
 
 
+	UT_DEBUGMSG(("Start Frame\n"));
 	if(!bUseInsertNotAppend())
 	{
 		getDoc()->appendStrux(PTX_SectionFrame,attribs);
@@ -1091,7 +1117,7 @@ bool IE_Imp_RTF::HandleObject()
 				break;
 			case RTF_KW_nonshppict:
 				UT_DEBUGMSG(("Hub: skip nonshppict in \\object\n"));
-				SkipCurrentGroup();
+				SkipCurrentGroup(false);
 				break;
 			default:
 				break;
