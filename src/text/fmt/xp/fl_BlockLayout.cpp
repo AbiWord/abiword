@@ -6728,10 +6728,14 @@ void fl_BlockLayout::_createListLabel(void)
 	UT_ASSERT(m_pAutoNum);
 
 	FV_View* pView = m_pLayout->getView();
-	PT_DocPosition offset = pView->getPoint() - getPosition();
+	PT_DocPosition offset =0;
+	if(pView)
+	{
+		offset = pView->getPoint() - getPosition();
+	}
 #if 1
 	const  XML_Char ** blockatt;
-	pView->getCharFormat(&blockatt,true);
+	pView->getCharFormat(&blockatt,true,getPosition());
 //	pView->setBlockFormat(blockatt);
 //	FREEP(blockatt);
 #endif
@@ -6754,12 +6758,14 @@ void fl_BlockLayout::_createListLabel(void)
 	};
 	bool bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
 	//	pView->_generalUpdate();
+	PT_DocPosition diff = 1;
 	if(m_pDoc->isDoingPaste() == false)
 	{
 		UT_UCSChar c = UCS_TAB;
 		bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
+		diff = 2;
 	}
-	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+2,NULL,(const char **)blockatt);
+	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+diff,NULL,(const char **)blockatt);
 	FREEP(blockatt);
 
 	if (pView && (pView->isActive() || pView->isPreview()))

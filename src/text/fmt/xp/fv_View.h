@@ -257,6 +257,7 @@ public:
 
 	bool	setCharFormat(const XML_Char * properties[]);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
+	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles, PT_DocPosition posStart);
 
 	bool	setStyle(const XML_Char * style, bool bDontGeneralUpdate=false);
 	bool	setStyleAtPos(const XML_Char * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);

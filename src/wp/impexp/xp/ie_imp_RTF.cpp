@@ -1274,6 +1274,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 		UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	}
 	m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->getNativeEncodingName());
+	m_bAppendAnyway = false;
 }
 
 
@@ -1335,6 +1336,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 	if (!error)
 	{
 		error = _parseFile(fp);
+		m_bAppendAnyway = true;
 		_appendHdrFtr ();
 	}
 
@@ -4297,8 +4299,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			UT_UCSChar cTab = UCS_TAB;
 			getDoc()->insertSpan(m_dposPaste,&cTab,1);
 			m_dposPaste++;
-			PL_StruxDocHandle sdh_cur,sdh_next;
-			PT_DocPosition pos_next;
+			PL_StruxDocHandle sdh_cur;
 			UT_uint32 j;
 			fl_AutoNum * pAuto = getDoc()->getListByID(id);
 			if(pAuto == NULL) 
@@ -4330,38 +4331,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			///
 			/// Now insert this into the pAuto List
 			///
-			if(pAuto->isEmpty() == true)
-			{
-				pAuto->addItem(sdh_cur);
-			}
-			else
-			{
-				j= 0;
-				sdh_next = pAuto->getNthBlock(j);
-				pos_next = getDoc()->getStruxPosition(sdh_next);
-				while(sdh_next != NULL && pos_next < m_dposPaste)
-				{
-					j++;
-					sdh_next = pAuto->getNthBlock(j);
-					if(sdh_next != NULL)
-						pos_next = getDoc()->getStruxPosition(sdh_next);
-				}
-				if(sdh_next != NULL)
-				{
-					pAuto->prependItem(sdh_cur,sdh_next);
-				}
-				else
-				{
-					pAuto->addItem(sdh_cur);
-				}
-			}
-			UT_uint32 npid = 0;
+			pAuto->addItem(sdh_cur);
 			if(pid != 0)
 			{
 				pAuto->findAndSetParentItem();
 				pAuto->markAsDirty();
-				npid = pAuto->getParentID();
-				UT_String_sprintf(szParentID,"%d",npid);
 			}
 			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
 		}
@@ -6464,7 +6438,8 @@ void IE_Imp_RTF::_appendHdrFtr ()
 	UT_String tempBuffer;
 	const XML_Char* szType = NULL;
 
-	
+	UT_ASSERT(m_pImportFile);
+
 	numHdrFtr = m_hdrFtrTable.getItemCount();
 
 	for (i = 0; i < numHdrFtr; i++)
@@ -6560,7 +6535,15 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
 	UT_ASSERT (ok);
-	getDoc()->appendObject (PTO_Field, propsArray);
+	if (m_pImportFile != NULL || m_bAppendAnyway) 
+	{	
+		getDoc()->appendObject(PTO_Field, propsArray);
+	}
+	else 
+	{
+		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
+		m_dposPaste++;
+	}
 	return ok;
 }
 
@@ -6904,11 +6887,6 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			getDoc()->appendStyle(attribs);
 		}
-		for(j=0; j< nAtts; j++)
-		{
-			char * sz = (char *) pCurStyleVec->getNthItem(j);
-		}
-
 //
 // OK Now delete all this allocated memory...
 //

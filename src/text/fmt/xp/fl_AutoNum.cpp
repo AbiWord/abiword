@@ -113,6 +113,7 @@ void fl_AutoNum::addItem(PL_StruxDocHandle pItem)
     if(i < 0 )
     {
 		m_pItems.addItem(const_cast<void *>(pItem));
+		fixListOrder();
     }
     m_bDirty = true;
 }
@@ -218,7 +219,6 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	else if( m_pParent == NULL)
 	{
 		_setParent(m_pDoc->getListByID(m_iParentID));
-		UT_ASSERT(0);
 	}
 	else
 	{

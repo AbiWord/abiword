@@ -2159,6 +2159,10 @@ bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
 	pBlock->getAttrProp(&pBlockAP);
 	const XML_Char* pszCurStyle = NULL;
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszCurStyle);
+	if(pszCurStyle == NULL)
+	{
+		return false;
+	}
 	PD_Style * pCurStyle = NULL;
 	m_pDoc->getStyle((char*)pszCurStyle, &pCurStyle);
 	UT_uint32 depth = 0;
@@ -3287,6 +3291,11 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 
 bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 {
+	return getCharFormat(pProps,bExpandStyles,0);
+}
+
+bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_DocPosition posStart)
+{
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
@@ -3308,16 +3317,21 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	  at the beginning of the selection, load 'em all into a vector, and
 	  then prune any property that collides.
 	*/
-	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-	bool bSelEmpty = isSelectionEmpty();
- 
-	if (!bSelEmpty)
+	bool bSelEmpty = true;
+	if(posStart == 0)
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
-		else
-			posEnd = m_iSelectionAnchor;
+		posStart = getPoint();
+		posEnd = posStart;
+		bSelEmpty = isSelectionEmpty();
+		
+		if (!bSelEmpty)
+		{
+			if (m_iSelectionAnchor < posStart)
+				posStart = m_iSelectionAnchor;
+			else
+				posEnd = m_iSelectionAnchor;
+		}
 	}
 
 	// 1. assemble complete set at insertion point
