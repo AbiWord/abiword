@@ -1036,6 +1036,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 		else
 		{
 			// cancel the FileOpen.
+			bRes = UT_TRUE;		// don't remove from recent list
 		}
 		
 		return bRes;
