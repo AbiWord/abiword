@@ -196,7 +196,7 @@ public:
 	void 					_initializeTransperentToggle(void);
 	XAP_DialogFactory * 	getDialogFactory() {return	m_pDialogFactory;};
 	XAP_Frame *				getFrame() {return	m_pFrame;};
-	
+	void					checkLanguageChange();	
 	
  protected:
  
@@ -205,6 +205,8 @@ public:
  	AP_Win32Dialog_Options_Layout		m_layout; 	
  	AP_Win32Dialog_Options_Lang			m_lang;
  	AP_Win32Dialog_Options_Pref			m_pref;
+	UT_String							m_curLang;
+	BOOL								m_langchanged;
  	
 
 	virtual void _controlEnable( tControl id, bool value );
