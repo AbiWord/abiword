@@ -87,7 +87,8 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// (most likely, all of LC_* are the same)
 	
 	const char * szNewLang = "en-US"; // default to US English
-#if defined (LC_MESSAGES)
+#if defined (LC_MESSAGES) && defined (UNDEF) // raphael
+// #if defined (LC_MESSAGES)
 	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
 #else
 	char * lc_ctype = getenv("LANG");
@@ -103,7 +104,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// we'll try this quick conversion
 	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) 
 	{
-		lc_ctype[2] = '-';
+		// lc_ctype[2] = '-'; // commented out Raphael
 
 		char* modifier = strrchr(lc_ctype,'@');
 		/*
