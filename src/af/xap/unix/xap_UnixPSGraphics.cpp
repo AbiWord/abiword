@@ -28,6 +28,7 @@
 #include "ut_misc.h"
 #include "ut_wctomb.h"
 #include "ut_dialogHelper.h"
+#include "ut_endian.h"
 
 #include "xap_UnixPSGenerate.h"
 #include "xap_UnixPSGraphics.h"
@@ -48,6 +49,17 @@
 
 // the resolution that we report to the application (pixels per inch).
 #define PS_RESOLUTION		7200
+
+#if 1
+#include <gdk/gdkprivate.h>
+static bool isFontUnicode(GdkFont *font)
+{
+	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
+	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
+	
+	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
+}
+#endif
 
 static
 UT_uint32 _scaleFont(PSFont * pFont, UT_uint32 units)
@@ -246,12 +258,30 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	{	
 		if(pUFont->isSizeInCache(iSize))
 		{
+			UT_UCSChar Wide_char = c;
+			
 			XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
 			GdkFont* font = pHndl->getGdkFont();
-			gchar gc = (gchar) c;
-			UT_uint32 width = gdk_text_width(font, (gchar*)&gc, 1);
+			
+			if(isFontUnicode(font))
+			{
+				//this is a unicode font
+				LE2BE16(&c,&Wide_char)
+				return gdk_text_width(font, (gchar*) &Wide_char, 2);
+			}
+			else
+			{
+				//this is not a unicode font
+				if(c > 0xff) //a non unicode font contains only 256 chars
+					return 0;
+				else
+				{
+					gchar gc = (gchar) c;
+					return gdk_text_width(font, (gchar*)&gc, 1);
+				}		
+			}
+
 			delete pHndl;
-			return width;
 		}
 		else
 		{
@@ -515,7 +545,8 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 	{
 		if (pD-buf > OUR_LINE_LIMIT)
 		{
-			*pD++ = '\\';
+			if(!using_names)
+				*pD++ = '\\';
 			*pD++ = '\n';
 			*pD++ = 0;
 			m_ps->writeBytes(buf);
@@ -543,7 +574,7 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 			// ' /glyph GS '
 			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
 			{
-				*pD++ = '\\';
+				//*pD++ = '\\';
 				*pD++ = '\n';
 				*pD++ = 0;
 				m_ps->writeBytes(buf);
@@ -634,7 +665,8 @@ void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 	{
 		if (pD-buf > OUR_LINE_LIMIT)
 		{
-			*pD++ = '\\';
+			if(!using_names)
+				*pD++ = '\\';
 			*pD++ = '\n';
 			*pD++ = 0;
 			m_ps->writeBytes(buf);
@@ -650,7 +682,8 @@ void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 		pWctomb->wctomb_or_fallback(_bytes,_bytes_len,*pS);
 		if (pD+_bytes_len-buf > OUR_LINE_LIMIT)
 		{
-		    *pD++ = '\\';
+			if(!using_names)
+			    *pD++ = '\\';
 		    *pD++ = '\n';
 		    *pD++ = 0;
 		    m_ps->writeBytes(buf);
@@ -717,7 +750,8 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 	{
 		if (pD-buf > OUR_LINE_LIMIT)
 		{
-			*pD++ = '\\';
+			if(!using_names)
+				*pD++ = '\\';
 			*pD++ = '\n';
 			*pD++ = 0;
 			m_ps->writeBytes(buf);
@@ -803,7 +837,8 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 	{
 		if (pD-buf > OUR_LINE_LIMIT)
 		{
-			*pD++ = '\\';
+			if(!using_names)
+				*pD++ = '\\';
 			*pD++ = '\n';
 			*pD++ = 0;
 			m_ps->writeBytes(buf);
@@ -831,7 +866,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			// ' /glyph GS '
 			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
 			{
-				*pD++ = '\\';
+				//*pD++ = '\\';
 				*pD++ = '\n';
 				*pD++ = 0;
 				m_ps->writeBytes(buf);
