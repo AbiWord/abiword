@@ -37,8 +37,13 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-protected:
+	virtual void			setAnswer(XAP_Dialog_Language::tAnswer ans);
 
+protected:
+	virtual PtWidget_t *    constructWindow(void);
+
+	PtWidget_t 				*m_pLanguageList;
+	int						 done;
 };
 
 #endif /* XAP_QNXDIALOG_LANGUAGE_H */
