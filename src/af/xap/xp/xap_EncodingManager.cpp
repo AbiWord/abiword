@@ -219,9 +219,21 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 {
 	if (!charset || !*charset || !in || !*in || !buf)
 		return in; /*won't translate*/
-
+#if 0
+	// TODO this gets around the fact that gtk 1.2 cannot handle utf-8 input
+	// when we move to gtk 2 this original branch needs to be enabled
 	UT_iconv_t iconv_handle = UT_iconv_open(
 		bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName(), charset);
+#else
+	UT_iconv_t iconv_handle;
+	char * pNative =  bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName();
+	
+	if(!strcmp(pNative, "utf-8") || !strcmp(pNative, "UTF-8"))
+		pNative = getNative8BitEncodingName();
+
+	iconv_handle = UT_iconv_open(pNative, charset);
+	xxx_UT_DEBUGMSG(("xap_EncodingManager::strToNative: pNative %s, iconv_handle 0x%x\n",pNative, iconv_handle));
+#endif
 
 	if (!UT_iconv_isValid(iconv_handle))
 		return in;
@@ -1045,6 +1057,7 @@ void 	XAP_EncodingManager::describe()
 {
 	UT_DEBUGMSG(("EncodingManager reports the following:\n"
 		"	NativeEncodingName is %s, LanguageISOName is %s,\n"
+		"   Native8BitEncodingName is %s,\n"
 		"	LanguageISOTerritory is %s,  fallbackchar is '%c'\n"		
 		"	TexPrologue follows:\n"
 		"---8<--------------\n" 
@@ -1053,7 +1066,7 @@ void 	XAP_EncodingManager::describe()
 		
 		"	WinLanguageCode is 0x%04x, WinCharsetCode is %d\n"
 		"	cjk_locale %d, can_break_words %d, swap_utos %d, swap_stou %d\n"
-		,getNativeEncodingName(),getLanguageISOName(),
+		,getNativeEncodingName(),getLanguageISOName(),getNative8BitEncodingName(),
 		getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
 		fallbackChar(1072), getTexPrologue(),getWinLanguageCode(),
 		 getWinCharsetCode(),
