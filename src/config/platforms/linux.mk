@@ -75,7 +75,6 @@ OPTIMIZER	= -O2
 ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER   	= -pg -fprofile-arcs -ftest-coverage
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
-ABI_OPT_DEBUG 	= 0
 ABI_OPT_OPTIMIZE= 1
 ABI_OPTIONS	+= Profile:On
 endif
