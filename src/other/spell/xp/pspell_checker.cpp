@@ -1,4 +1,4 @@
-ms/* AbiSuite
+/* AbiSuite
  * UT_DEBUGMESG(
  * Copyright (C) 2001 AbiSource, Inc.
  * 
