@@ -4748,6 +4748,15 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				if(pRun->getType()!= FPRUN_IMAGE)
 				{
 					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
+					while(pRun && pRun->getType() == FPRUN_FMTMARK)
+					{
+						pRun = pRun->getNext();
+					}
+				}
+				if(!pRun || pRun->getType() != FPRUN_IMAGE)
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
 				}
 				fp_ImageRun* pImageRun = static_cast<fp_ImageRun*>(pRun);
 				if(!isHdrFtr())
@@ -4775,7 +4784,16 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 			{
 				if(pRun->getType()!= FPRUN_FIELD)
 				{
-					UT_DEBUGMSG(("!!! run type NOT Field, instead = %d !!!! \n",pRun->getType()));
+					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
+					while(pRun && pRun->getType() == FPRUN_FMTMARK)
+					{
+						pRun = pRun->getNext();
+					}
+				}
+				if(!pRun || pRun->getType() != FPRUN_FIELD)
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
 				}
 				fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
 				if(!isHdrFtr())

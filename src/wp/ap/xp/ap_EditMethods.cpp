@@ -7195,8 +7195,10 @@ Defun(dlgFmtImage)
 		}
 		else
 		{
-			pos++;
-			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+			while(pRun && pRun->getType() != FPRUN_IMAGE)
+			{
+				pRun = pRun->getNext();
+			}
 			if(pRun && pRun->getType() == FPRUN_IMAGE)
 			{
 				UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
