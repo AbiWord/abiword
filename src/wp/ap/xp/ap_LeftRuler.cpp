@@ -134,6 +134,14 @@ UT_uint32 AP_LeftRuler::getWidth(void) const
 
 /*****************************************************************/
 
+static UT_Bool s_IsOnDifferentPage(const AP_LeftRulerInfo * p1, const AP_LeftRulerInfo * p2)
+{
+	return (   (p1->m_yPageStart    != p2->m_yPageStart)
+			|| (p1->m_yPageSize     != p2->m_yPageSize)
+			|| (p1->m_yTopMargin    != p2->m_yTopMargin)
+			   || (p1->m_yBottomMargin != p2->m_yBottomMargin));
+}
+	
 UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.
@@ -149,13 +157,8 @@ UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 		AP_LeftRulerInfo lfi;
 		(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
 
-		if (   (lfi.m_yPageStart != m_lfi.m_yPageStart)
-			|| (lfi.m_yPageSize != m_lfi.m_yPageSize)
-			|| (lfi.m_yTopMargin != m_lfi.m_yTopMargin)
-			|| (lfi.m_yBottomMargin != m_lfi.m_yBottomMargin))
-		{
+		if (s_IsOnDifferentPage(&lfi, &m_lfi))
 			draw(NULL,lfi);
-		}
 	}
 	
 	return UT_TRUE;
@@ -188,6 +191,8 @@ void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
 void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 {
 	//UT_DEBUGMSG(("LeftRuler:: scroll [y %d]\n",yoff));
+	UT_Rect rClip;
+	UT_Rect * prClip;
 
 	if (ylimit > 0)
 		m_yScrollLimit = ylimit;
@@ -199,24 +204,43 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 	if (!dy)
 		return;
 
-	UT_Rect rClip;
-	rClip.left = 0;
-	rClip.width = s_iFixedWidth;
+	AP_LeftRulerInfo lfi;
+	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
 
-	if (dy > 0)
+	if (s_IsOnDifferentPage(&lfi, &m_lfi))
 	{
-		rClip.top = m_iHeight - dy;
-		rClip.height = dy;
+		// if the current page has changed we override the clipping
+		// and redraw everything.
+
+		prClip = NULL;
 	}
 	else
 	{
-		rClip.top = 0;
-		rClip.height = -dy;
+		// the current page is the same as the last call to draw().
+		// all we need to draw is the area exposed by the scroll.
+		
+		rClip.left = 0;
+		rClip.width = s_iFixedWidth;
+
+		if (dy > 0)
+		{
+			rClip.top = m_iHeight - dy;
+			rClip.height = dy;
+		}
+		else
+		{
+			rClip.top = 0;
+			rClip.height = -dy;
+		}
+
+		prClip = &rClip;
 	}
+
+	// now scroll and draw what we need to.
 	
 	m_pG->scroll(0,dy);
 	m_yScrollOffset = yoff;
-	draw(&rClip);
+	draw(prClip);
 }
 
 /*****************************************************************/
@@ -238,8 +262,15 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 		return;
 	
 	if (pClipRect)
+	{
+		//UT_DEBUGMSG(("LeftRuler:: draw [clip %ld %ld %ld %ld]\n",pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height));
 		m_pG->setClipRect(pClipRect);
-
+	}
+	else
+	{
+		//UT_DEBUGMSG(("LeftRuler:: draw [no clip]\n"));
+	}
+	
 	// draw the background
 	
 	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,m_iWidth,m_iHeight);

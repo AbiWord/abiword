@@ -180,7 +180,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 	
 	UT_Bool bNeedNewString = UT_FALSE;
 	
-	if (mask && (AV_CHG_PAGECOUNT))
+	if (mask & (AV_CHG_PAGECOUNT))
 	{
 		UT_uint32 newPageCount = pView->getLayout()->countPages();
 
@@ -191,7 +191,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 		}
 	}
 
-	if (mask && (AV_CHG_MOTION | AV_CHG_PAGECOUNT))
+	if (mask & (AV_CHG_MOTION | AV_CHG_PAGECOUNT))
 	{
 		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar();
 
@@ -345,7 +345,7 @@ void ap_sb_Field_InputMode::draw(void)
 
 void ap_sb_Field_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
-	if (mask && (AV_CHG_INPUTMODE))
+	if (mask & (AV_CHG_INPUTMODE))
 	{
 		const char * szInputMode = m_pSB->getFrame()->getInputMode();
 		m_lenBufUCS = strlen(szInputMode);
@@ -435,7 +435,12 @@ void AP_StatusBar::setView(AV_View * pView)
 #undef DclField
 		m_bInitFields = UT_TRUE;
 	}
-			
+
+	// force a full notify of all fields so that they all
+	// completely update themselves.
+	
+	notify(pView,AV_CHG_ALL);
+	
 	return;
 }
 
