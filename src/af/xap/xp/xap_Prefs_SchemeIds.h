@@ -135,6 +135,9 @@
 #define XAP_PREF_KEY_AllowCustomToolbars "AllowCustomToolbars"
 #define XAP_PREF_DEFAULT_AllowCustomToolbars		 "0"
 
+#define XAP_PREF_KEY_HaveCustomToolbars "HaveCustomToolbars"
+#define XAP_PREF_DEFAULT_HaveCustomToolbars		 "0"
+
 #define XAP_PREF_KEY_AutoLoadPlugins				 "AutoLoadPlugins"
 #define XAP_PREF_DEFAULT_AutoLoadPlugins			 "1"
 
@@ -186,6 +189,7 @@ dcl(ColorForRevision8)
 dcl(ColorForRevision9)
 dcl(ColorForRevision10)
 dcl(AllowCustomToolbars)
+dcl(HaveCustomToolbars)
 dcl(AutoLoadPlugins)
 dcl(ZoomType)
 dcl(ZoomPercentage)

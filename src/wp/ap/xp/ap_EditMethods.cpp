@@ -357,6 +357,8 @@ public:
 	static EV_EditMethod_Fn viewFormat;
 	static EV_EditMethod_Fn viewExtra;
 	static EV_EditMethod_Fn viewTable;
+	static EV_EditMethod_Fn lockToolbarLayout;
+	static EV_EditMethod_Fn defaultToolbarLayout;
 	static EV_EditMethod_Fn viewRuler;
 	static EV_EditMethod_Fn viewStatus;
 	static EV_EditMethod_Fn viewPara;
@@ -687,6 +689,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cycleWindowsBck),		0,	""),
 
 	// d
+	EV_EditMethod(NF(defaultToolbarLayout),			0,	""),
 	EV_EditMethod(NF(delBOB),				0,	""),
 	EV_EditMethod(NF(delBOD),				0,	""),
 	EV_EditMethod(NF(delBOL),				0,	""),
@@ -898,6 +901,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// l
 	EV_EditMethod(NF(language), 		0,	""),
 	EV_EditMethod(NF(lockGUI), 		0,	""),
+	EV_EditMethod(NF(lockToolbarLayout),	0,	""),
 
 	// m
 	EV_EditMethod(NF(mailMerge), 0, ""),
@@ -7774,6 +7778,60 @@ Defun1(viewExtra)
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
+
+	return true;
+}
+
+Defun(lockToolbarLayout)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	bool b;
+
+	b = pApp->areToolbarsCustomizable();
+
+	pApp->setToolbarsCustomizable (!b);
+
+	pScheme->setValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_AllowCustomToolbars), !b);
+
+	return true;
+}
+
+Defun(defaultToolbarLayout)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
+	pApp->resetToolbarsToDefault();
+	pApp->setToolbarsCustomized(false);
+
+	// we don't want to change their visibility, just the layout
+	pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
+	pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
+	pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
+	pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
 
 	return true;
 }

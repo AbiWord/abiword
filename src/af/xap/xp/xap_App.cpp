@@ -71,6 +71,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_pToolbarFactory(NULL),
 	  m_pHashDownloader(NULL),
 	  m_bAllowCustomizing(true),
+	  m_bAreCustomized(true),
 	  m_bDebugBool(false),
 	  m_bBonoboRunning(false)
 {
@@ -213,14 +214,12 @@ bool XAP_App::initialize()
 	bool bAllowCustom = true;
 	getPrefsValueBool(XAP_PREF_KEY_AllowCustomToolbars, &bAllowCustom);
 	if(bAllowCustom)
-	{
-		m_pToolbarFactory->restoreToolbarsFromCurrentScheme();
 		setToolbarsCustomizable(true);
-	}
 	else
-	{
 		setToolbarsCustomizable(false);
-	}
+
+	m_pToolbarFactory->restoreToolbarsFromCurrentScheme();
+
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
 	//
@@ -232,38 +231,46 @@ bool XAP_App::initialize()
 	return true;
 }
 
-void XAP_App::setToolbarsCustomizable(bool b)
+void XAP_App::resetToolbarsToDefault(void)
 {
-	if(m_bAllowCustomizing && !b)
+	//
+	// Set all the frames to default toolbars
+	//
+	m_pToolbarFactory->resetAllToolbarsToDefault();
+	UT_uint32 count = m_vecFrames.getItemCount();
+	UT_Vector vClones;
+	UT_uint32 i = 0;
+	for(i=0; i< count; i++)
 	{
-//
-// Set all the frames to default toolbars
-//
-		m_bAllowCustomizing = b;
-		m_pToolbarFactory->resetAllToolbarsToDefault();
-		UT_uint32 count = m_vecFrames.getItemCount();
-		UT_Vector vClones;
-		UT_uint32 i = 0;
-		for(i=0; i< count; i++)
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_vecFrames.getNthItem(i));
+		if(pFrame->getViewNumber() > 0)
 		{
-			XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_vecFrames.getNthItem(i));
-			if(pFrame->getViewNumber() > 0)
+			getClones(&vClones,pFrame);
+			UT_uint32 j=0;
+			for(j=0; j < vClones.getItemCount(); j++)
 			{
-				getClones(&vClones,pFrame);
-				UT_uint32 j=0;
-				for(j=0; j < vClones.getItemCount(); j++)
-				{
-					XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(j));
-					f->rebuildAllToolbars();
-				}
-			}
-			else
-			{
-				pFrame->rebuildAllToolbars();
+				XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(j));
+				f->rebuildAllToolbars();
 			}
 		}
+		else
+		{
+			pFrame->rebuildAllToolbars();
+		}
 	}
-	m_bAllowCustomizing = b;
+	setToolbarsCustomized (true);
+}
+
+void XAP_App::setToolbarsCustomizable(bool b)
+{
+	if(m_bAllowCustomizing != b)
+		m_bAllowCustomizing = b;
+}
+
+void XAP_App::setToolbarsCustomized(bool b)
+{
+	if(m_bAreCustomized != b)
+		m_bAreCustomized = b;
 }
 
 const char * XAP_App::getApplicationTitleForTitleBar() const

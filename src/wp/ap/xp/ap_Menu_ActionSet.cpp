@@ -121,7 +121,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_TB_FORMAT,	0,0,1,0,	"viewFormat",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_TB_EXTRA,	0,0,1,0,	"viewExtra",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_TB_TABLE,	0,0,1,0,	"viewTable",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_RULER,		0,0,1,0,	"viewRuler",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_LOCK_TB_LAYOUT, 0,0,1,0,	"lockToolbarLayout", ap_GetState_View,			NULL);
+	_s(AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT, 0,0,0,0,	"defaultToolbarLayout", ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_RULER,	0,0,1,0,	"viewRuler",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_STATUSBAR,	0,0,1,0,	"viewStatus",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_LOCKSTYLES,	0,0,1,0,	"viewLockStyles",   ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,0,	"viewPara",			ap_GetState_View,		NULL);

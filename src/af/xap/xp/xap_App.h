@@ -178,7 +178,11 @@ public:
     virtual BidiSupportType                 theOSHasBidiSupport() const {return BIDI_SUPPORT_NONE;}
 	bool                                    areToolbarsCustomizable(void) const 
 		                                             { return m_bAllowCustomizing;}
+	bool                                    areToolbarsCustomized(void) const 
+		                                             { return m_bAreCustomized;}
+    void                                    resetToolbarsToDefault(void);
     void                                    setToolbarsCustomizable(bool b);
+    void                                    setToolbarsCustomized(bool b);
     
 	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
 	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
@@ -213,6 +217,7 @@ protected:
         
 	static XAP_App *						m_pApp;
 	bool                                    m_bAllowCustomizing;
+	bool                                    m_bAreCustomized;
 	bool                                    m_bDebugBool;
 	bool                                    m_bBonoboRunning;
 private:

@@ -863,14 +863,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	XAP_Frame *pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
-	EV_Menu_ItemState s = EV_MIS_ZERO;
+	XAP_App *pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
 
+	EV_Menu_ItemState s = EV_MIS_ZERO;
 
 	switch(id)
 	{
@@ -915,6 +917,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
+		break;
+	case AP_MENU_ID_VIEW_LOCK_TB_LAYOUT:
+		if ( !pApp->areToolbarsCustomizable() )
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
+		break;
+	case AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT:
+		if ( !pApp->areToolbarsCustomizable() || !pApp->areToolbarsCustomized() )
+			s = EV_MIS_Gray;
 		break;
 	case AP_MENU_ID_VIEW_STATUSBAR:
               if ( pFrameData->m_bShowStatusBar &&

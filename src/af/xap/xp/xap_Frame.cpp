@@ -1015,6 +1015,7 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 			{
 				m_pFrameImpl->_rebuildToolbar(m_idestTBNr);
 			}
+		getApp()->setToolbarsCustomized(true);
 		}
 	}
 //
@@ -1823,7 +1824,7 @@ void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
 		pScheme->setValue(XAP_PREF_KEY_ZoomType,sZoom.c_str());
 	}
 	UT_DEBUGMSG(("zoom is set to %s \n",sZoom.c_str()));
-	pScheme->setValue(XAP_PREF_KEY_ZoomPercentage(sZoom);
+	pScheme->setValue(XAP_PREF_KEY_ZoomPercentage(sZoom));
 }
 
 UT_uint32 XAP_Frame::getZoomPercentage(void)
