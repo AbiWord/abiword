@@ -34,6 +34,7 @@
 #include "xap_Win32Slurp.h"
 #include "xap_Win32EncodingManager.h"
 #include "xap_Prefs.h"
+#include <locale.h>
 
 #ifdef _MSC_VER
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
@@ -66,6 +67,24 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_Win32UUIDGenerator());
+
+	// for some reason on win32 the locale used by things like
+	// strftime is not set correctly; what's worse, MS setlocale does
+	// not recognise standard ISO language and country codes. So, here
+	// we retrieve the long language and country name for the users
+	// default locale and pass these to setlocale. As long as folk use
+	// UT_LocaleTransactor to temporarily change to some other locale,
+	// this will ensure the C lib uses correct locale. Tomas Feb 5, 2004
+	UT_String s;
+	char buf[100];
+
+	GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SENGLANGUAGE, &buf[0], 100);
+	s += buf;
+	s += "_";
+	
+	GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SENGCOUNTRY, &buf[0], 100);
+	s += buf;
+	setlocale(LC_ALL, s.c_str());
 }
 
 XAP_Win32App::~XAP_Win32App(void)
