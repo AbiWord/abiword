@@ -82,6 +82,11 @@ enum
 // abiword extensions to the dublin core element set
 #define PD_META_KEY_KEYWORDS     "abiword.keywords"
 
+// proper prefixes for the 3 namespaces that we support
+#define DC_META_PREFIX      "dc."
+#define ABIWORD_META_PREFIX "abiword."
+#define CUSTOM_META_PREFIX  "custom."
+
 /*!
  PD_Document is the representation for a document.
 */
