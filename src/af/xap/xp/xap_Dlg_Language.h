@@ -41,7 +41,7 @@ INSTRUCTIONS FOR DESIGN OF THE PLATFORM VERSIONS OF THIS DIALOGUE
 
 
 
-class XAP_Dialog_Language : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_Language : public XAP_Dialog_NonPersistent
 {
 public:
 	typedef enum { a_OK, a_CANCEL, a_YES, a_NO }	tAnswer;

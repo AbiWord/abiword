@@ -77,7 +77,7 @@ struct ABI_EXPORT UT_Point
 
 const char * UT_pathSuffix(const char * path);
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar);
-const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
+ABI_EXPORT const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
 UT_sint32 signedHiWord(UT_uint32 dw);
 UT_sint32 signedLoWord(UT_uint32 dw);
