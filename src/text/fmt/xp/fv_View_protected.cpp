@@ -1378,7 +1378,7 @@ void FV_View::_insertSectionBreak(void)
 	{
 		setPoint(pBL->getPosition());
 	}
-	else
+	else if(bLooked)
 	{
 		setPoint(2); // Start of document 
 	}
