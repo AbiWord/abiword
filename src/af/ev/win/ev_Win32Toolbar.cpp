@@ -428,6 +428,8 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 							
 							t->toolbarEvent(id, pData, dataLength);
 						}
+
+						SetFocus(static_cast<XAP_Win32FrameImpl*>(t->m_pWin32Frame->getFrameImpl())->getTopLevelWindow());
 					}	
 					else
 					{
