@@ -970,12 +970,7 @@ Defun1(fileOpen)
 		// see if requested file is already open in another frame
 		UT_sint32 ndx = pApp->findFrame(pNewFile);
 
-		if (ndx < 0)
-		{
-			// nope, make a new one
-			pNewFrame = pApp->newFrame();
-		}
-		else
+		if (ndx >= 0)
 		{
 			// yep, reuse it
 			pNewFrame = pApp->getFrame(ndx);
@@ -996,6 +991,19 @@ Defun1(fileOpen)
 				return UT_FALSE;
 			}
 #endif /* DLGHACK */
+		}
+		else if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+		{
+			/*
+				We generally open documents in a new frame, which keeps the 
+				contents of the current frame available.  
+				
+				However, as a convenience we do replace the contents of the 
+				current frame if it's the only top-level view on an empty, 
+				untitled document.  
+			*/
+			pNewFrame = pApp->newFrame();
+			UT_ASSERT(pNewFrame);
 		}
 
 		if (pNewFrame)

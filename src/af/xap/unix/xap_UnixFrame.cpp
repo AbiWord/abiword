@@ -464,12 +464,12 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 
 UT_Bool AP_UnixFrame::_showDocument(void)
 {
-
 	UNIXGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	FV_View * pView = NULL;
 	FV_ScrollObj * pScrollObj = NULL;
 	ap_ViewListener * pViewListener = NULL;
+	PD_Document * pOldDoc = NULL;
 
 	int height, pageLen;
 	UT_uint32 nrToolbars;
@@ -508,15 +508,17 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 		
 		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecUnixToolbars.getNthItem(k);
 		pUnixToolbar->bindListenerToView(pView);
-
-		// force a refresh of the toolbar by masking everything
-		FV_ChangeMask mask = 255;
-		pUnixToolbar->refreshToolbar(pView, mask);
 	}
 	
 	// switch to new view, cleaning up previous settings
+	if (m_pDocLayout)
+	{
+		pOldDoc = m_pDocLayout->getDocument();
+	}
+
 	REPLACEP(m_pG, pG);
 	REPLACEP(m_pDocLayout, pDocLayout);
+	DELETEP(pOldDoc);
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);

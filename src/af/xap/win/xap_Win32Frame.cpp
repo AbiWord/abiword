@@ -366,6 +366,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	FV_View * pView = NULL;
 	FV_ScrollObj * pScrollObj = NULL;
 	ap_ViewListener * pViewListener = NULL;
+	PD_Document * pOldDoc = NULL;
 
 	UT_uint32 iWindowHeight, iHeight;
 	UT_uint32 nrToolbars, k;
@@ -408,8 +409,14 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	}
 	
 	// switch to new view, cleaning up previous settings
+	if (m_pDocLayout)
+	{
+		pOldDoc = m_pDocLayout->getDocument();
+	}
+
 	REPLACEP(m_pG, pG);
 	REPLACEP(m_pDocLayout, pDocLayout);
+	DELETEP(pOldDoc);
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);

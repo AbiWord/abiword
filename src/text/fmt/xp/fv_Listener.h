@@ -35,6 +35,7 @@ typedef UT_Byte FV_ChangeMask;
 #define FV_CHG_FILENAME		((FV_ChangeMask) 0x08)		// getFilename
 #define FV_CHG_FMTBLOCK		((FV_ChangeMask) 0x10)		// getBlockFormat
 #define FV_CHG_FMTCHAR		((FV_ChangeMask) 0x20)		// getCharFormat
+#define FV_CHG_ALL			((FV_ChangeMask) 0xFF) 
 
 #define FV_CHG_SAVE			((FV_ChangeMask) (FV_CHG_DO | FV_CHG_DIRTY | FV_CHG_FILENAME))
 #define FV_CHG_TYPING		((FV_ChangeMask) (FV_CHG_DO | FV_CHG_DIRTY | FV_CHG_EMPTYSEL))

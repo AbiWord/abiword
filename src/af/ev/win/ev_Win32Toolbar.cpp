@@ -296,6 +296,8 @@ UT_Bool EV_Win32Toolbar::bindListenerToView(FV_View * pView)
 	UT_Bool bResult = pView->addListener(static_cast<FV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
+	refreshToolbar(pView, FV_CHG_ALL);
+
 	return UT_TRUE;
 }
 
