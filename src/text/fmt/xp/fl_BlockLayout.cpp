@@ -603,9 +603,13 @@ const char*	fl_BlockLayout::getProperty(const XML_Char * pszName)
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP);
 }
 
-UT_uint32 fl_BlockLayout::getPosition() const
+UT_uint32 fl_BlockLayout::getPosition(UT_Bool bActualBlockPos) const
 {
 	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);
+
+	// it's usually more useful to know where the runs start
+	if (!bActualBlockPos)
+		pos += fl_BLOCK_STRUX_OFFSET;
 
 	return pos;
 }
@@ -618,7 +622,7 @@ UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
 
 UT_Bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
-	return m_pDoc->getSpanPtr(m_sdh, offset, ppSpan, pLength);
+	return m_pDoc->getSpanPtr(m_sdh, offset+fl_BLOCK_STRUX_OFFSET, ppSpan, pLength);
 }
 
 fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_uint32& x, UT_uint32& y, UT_uint32& height)

@@ -125,7 +125,7 @@ void fp_Run::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
 	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
 	
 	// TODO -- note that we currently assume font-family to be a single name,
@@ -297,13 +297,20 @@ int fp_Run::split(fp_RunSplitInfo& si)
 	return 1;
 }
 
-UT_Bool fp_Run::split(UT_uint32 splitOffset)
+UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 {
 	UT_ASSERT(splitOffset >= m_iOffsetFirst);
 	UT_ASSERT(splitOffset < (m_iOffsetFirst + m_iLen));
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	
+	/*
+		NOTE: When inserting a block between these two runs, we need to 
+		temporarily "fix" its offset so that the calcwidths calculation
+		will work in place within the old block's charwidths buffer. 
+	*/
+	UT_uint32 offsetNew = (bInsertBlock ? splitOffset + fl_BLOCK_STRUX_OFFSET: splitOffset);
 
-	fp_Run* pNew = new fp_Run(m_pBL, m_pG, splitOffset, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
+	fp_Run* pNew = new fp_Run(m_pBL, m_pG, offsetNew, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
 	UT_ASSERT(pNew);
 	pNew->m_pFont = this->m_pFont;
 	pNew->m_fDecorations = this->m_fDecorations;
@@ -325,7 +332,11 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset)
 	
 	calcWidths(pgbCharWidths);
 	pNew->calcWidths(pgbCharWidths);
-	
+
+	// clean up immediately after doing the charwidths calculation 
+	if (bInsertBlock)
+		pNew->m_iOffsetFirst -= fl_BLOCK_STRUX_OFFSET;
+
 	// TODO who deals with iLineBreak{Before,After},bCanSplit,iExtraWidth,etc...
 	
 	return UT_TRUE;

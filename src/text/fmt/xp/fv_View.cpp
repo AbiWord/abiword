@@ -211,9 +211,11 @@ UT_Bool FV_View::_isSelectionEmpty()
 	return UT_FALSE;
 }
 
+#define fv_VIEW_POS_BOD  2
+
 void FV_View::moveInsPtToBOD()
 {
-	PT_DocPosition posCur = 2;			// TODO PAUL, check/macro this...
+	PT_DocPosition posCur = fv_VIEW_POS_BOD;
 
 	if (!_isSelectionEmpty())
 	{
@@ -1379,9 +1381,9 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	else
 		m_iInsPoint -= countChars;
 
-	if ((UT_sint32) m_iInsPoint < 0)
+	if ((UT_sint32) m_iInsPoint < fv_VIEW_POS_BOD)
 	{
-		m_iInsPoint = 0;
+		m_iInsPoint = fv_VIEW_POS_BOD;
 		return UT_FALSE;
 	}
 

@@ -171,6 +171,8 @@ void fp_Column::removeBlockSlice(fp_BlockSlice* p)
 	if (pNode->pNext)
 		pNode->pNext->pPrev = pPrev;
 
+	delete pNode;
+
 	_repositionSlices();
 }
 

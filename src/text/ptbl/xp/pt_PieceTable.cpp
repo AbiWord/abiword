@@ -323,10 +323,10 @@ UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 		if (pf->getType() == pf_Frag::PFT_Strux)
 			pfLastStrux = pf;
 
+		sum += pf->getLength();
+
 		if (sum >= docPos)
 			goto FoundIt;
-
-		sum += pf->getLength();
 	}
 
 	// if we fall out of the loop, we didn't have a text node

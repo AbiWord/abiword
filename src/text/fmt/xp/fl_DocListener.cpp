@@ -71,12 +71,11 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	case PTX_Block:
 		{
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
-			PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 
 			fp_Run * pRun = pBL->m_pFirstRun;
 			fp_Run * pLastRun = NULL;
-			UT_uint32 offset = 1;		// TODO PAUL, check/macro this -- first text in Paragraph is 1 from block.
+			UT_uint32 offset = 0;
 
 			while (pRun)
 			{
@@ -238,8 +237,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				{
 					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 					FV_View* pView = m_pLayout->m_pView;
-					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
-					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 					UT_uint32 len = pcrs->getLength();
 					UT_ASSERT(len>0);
 
@@ -340,8 +338,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			case PTX_Block:
 				{
 					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
-					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 					UT_uint32 len = pcrs->getLength();
 					UT_ASSERT(len>0);
 
@@ -421,8 +418,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			case PTX_Block:
 				{
 					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
-					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 					UT_uint32 len = pcrsc->getLength();
 
 					if (len > 0)
@@ -728,8 +724,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					*/
 
 					// figure out where the breakpoint is
-					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
-					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 
 					fp_Run* pRun = pBL->m_pFirstRun;
 					while (pRun)
@@ -742,7 +737,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 								(blockOffset == 0))
 							{
 								// split here
-								pRun->split(blockOffset);
+								pRun->split(blockOffset, UT_TRUE);
 							}
 							break;
 						}
@@ -802,6 +797,10 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 					pNewBL->format();
 					pNewBL->draw(m_pLayout->getGraphics());
+
+					FV_View* pView = m_pLayout->m_pView;
+					if (pView)
+						pView->_setPoint(pcr->getPosition()+fl_BLOCK_STRUX_OFFSET);
 				}
 				return UT_TRUE;
 					

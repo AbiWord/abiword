@@ -196,6 +196,9 @@ void fp_BlockSlice::removeLine(fp_Line* pLine, void* p)
 	{
 		m_vecLineInfos.deleteNthItem(ndx);
 
+		UT_ASSERT(m_iTotalLineHeight >= pLine->getHeight());
+		m_iTotalLineHeight -= pLine->getHeight();
+
 		delete pLI->pLine;
 		delete pLI;
 	}
@@ -282,6 +285,8 @@ void fp_BlockSlice::verifyColumnFit()
 		fp_Sliver* pSliver = getNthSliver(i);
 		m_iHeight += pSliver->iHeight;
 	}
+
+	UT_ASSERT(m_iTotalLineHeight <= m_iHeight);
 }
 
 void fp_BlockSlice::returnExtraSpace()
@@ -333,8 +338,8 @@ void fp_BlockSlice::returnExtraSpace()
 		}
 
 		m_iHeight = iMaxY;
-		UT_ASSERT(m_iHeight == getHeight());
-	
+		UT_ASSERT(m_iTotalLineHeight <= getHeight());
+
 		m_pColumn->reportSliceHeightChanged(this, getHeight());
 	}
 }
