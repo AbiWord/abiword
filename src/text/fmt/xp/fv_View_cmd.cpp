@@ -3114,7 +3114,15 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	// Silently fail (TODO: pop up message) if we try to nest hyperlinks.
 	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
 		return false;
-
+//
+// Under sum1 induced conditions posEnd could give the same block pointer
+// despite being past the end of the block. This extra fail-safe code
+// prevents this.
+//
+	if((pBl1->getPosition() + pBl1->getLength() -1) < posEnd)
+	{
+		return false;
+	}
 	XML_Char * pAttr[4];
 
 	UT_uint32 target_len = UT_XML_strlen(szName);
