@@ -112,29 +112,18 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 	
 	bool bNeedNewString = false;
 
-	if (mask & (AV_CHG_PAGECOUNT))
+	if (mask & (AV_CHG_MOTION | AV_CHG_PAGECOUNT))
 	{
-		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar(); // experiment: ripped out of area below
+		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar(); 
 		UT_uint32 newPageCount = pView->getLayout()->countPages();
 
 		if (newPageCount != m_nrPages)
 		{
 			bNeedNewString = true;
 			m_nrPages = newPageCount;
-			m_pageNr = currentPage; // experimented: ripped out of commented area below
+			m_pageNr = currentPage; 
 		}
 	}
-
-// 	if (mask & (AV_CHG_MOTION | AV_CHG_PAGECOUNT))
-// 	{
-// 		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar();
-
-// 		if (currentPage != m_pageNr)
-// 		{
-// 			bNeedNewString = true;
-// 			m_pageNr = currentPage;
-// 		}
-// 	}
 
 	if (bNeedNewString)
 	{
