@@ -48,6 +48,10 @@ struct _fcache {
 } *g_pFCache = NULL;	
 
 
+/***
+ Initialization/Teardown for drawing on a widget outside of the normal 
+ stream of "damage" events
+***/
 int GR_QNXGraphics::DrawSetup() {
 
 	//Don't do any of this if you are printing
@@ -138,6 +142,9 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	DELETEP(m_pFontGUI);
 }
 
+/***
+ Miscellaneous functions 
+***/
 bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
@@ -152,6 +159,26 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+UT_uint32 GR_QNXGraphics::_getResolution(void) const
+{
+	/*Photon comment
+	   This resolution should be variable between the printer
+	   and the screen.  For now we return a fixed value of 
+	   72 and use that for the source resolution when printing. 
+	  Unix uses a fixed value of 100
+	*/
+
+	return 72 /* 100 */;
+}
+
+void GR_QNXGraphics::flush(void)
+{
+	PgFlush();
+}
+
+/***
+ Character Operations 
+***/
 /*
  This function gets called a lot ... ideally it should be as fast as
 possible, but due to the fact that we call it outside of the normal 
@@ -198,9 +225,13 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	}
 
 	//Faster to copy and not flush or to not copy and flush?
+/*
+	Each flush causes two messages to be sent.  Since AbiWord is stupid about sending
+    entire runs of text, we don't do this but do the copy instead if it is required.  
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
-	//PgDrawText(pNChars, ipos, &pos, 0);
+*/
+	PgDrawText(pNChars, ipos, &pos, 0);
 
 	if (pNChars != utb) {
 		delete [] pNChars;
@@ -212,61 +243,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	drawChars(&Char, 0, 1, xoff, yoff);
-}
-
-
-void GR_QNXGraphics::setFont(GR_Font * pFont)
-{
-	QNXFont *qnxFont = (QNXFont *)pFont;
-	const char *backupfont = { "helv10" };
-	const char *font;
-
-	if (!qnxFont || !(font = qnxFont->getFont())) {
-		UT_DEBUGMSG(("No font found, using helv10 as default"));
-		UT_ASSERT(0);
-		font = backupfont;
-	}
-
-	if (m_pFont && strcmp(m_pFont->getFont(), font) == 0) {
-		return;
-	} else if (m_pFont) {
-		delete(m_pFont);
-	}
-
-	m_pFont = new QNXFont(font);
-
-	/* At the same time, load the font metrics into
-       a local cache to speed up access as we use them! */
-	struct _fcache *tmp;
-	for (tmp = g_pFCache; tmp; tmp = tmp->next) {
-		if (strcmp(tmp->name, font) == 0) {
-			break;
-		}
-	}
-	if (tmp == NULL &&
-		(tmp = (struct _fcache *)malloc(sizeof(*tmp))) != NULL) {
-		strcpy(tmp->name, font);
-		tmp->next = g_pFCache;
-		tmp->prev = NULL;
-		g_pFCache = tmp;	
-
-		PfLoadMetrics(font);
-	} else if (tmp && tmp->prev) {
-		if ((tmp->prev->next = tmp->next)) {
-			tmp->next->prev = tmp->prev;
-		}
-		if ((tmp->next = g_pFCache)) {
-			g_pFCache->prev = tmp;
-		}
-		tmp->prev = NULL;
-	}
-
-	m_iAscentCache = m_iDescentCache = -1;
-}
-
-UT_uint32 GR_QNXGraphics::getFontHeight()
-{
-	return getFontAscent() + getFontDescent();
 }
 
 /*
@@ -301,7 +277,7 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 				  &indices,		/* Where to get pen pos from */
 				  &penpos, 		/* Where to store pen pos */
 				  1,			/* Number of indices */
-				  0,			/* Flags TODO: PF_WIDE_CHARS and save convert? */
+				  0,		/* Flags TODO: PF_WIDE_CHARS and save convert? */
 				  len,			/* Length of buffer (0 = use strlen) */
 				  0, 			/* Number of characters to skip */
 				  NULL);		/* Clipping rectangle? */
@@ -312,29 +288,9 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return penpos;
 }
 
-UT_uint32 GR_QNXGraphics::_getResolution(void) const
-{
-	//Unix comment
-	// this is hard-coded at 100 for X now, since 75 (which
-	// most X servers return when queried for a resolution)
-	// makes for tiny fonts on modern resolutions.
-
-	/*Photon comment
-	   This resolution should be variable between the printer
-	   and the screen.  For now we return a fixed value of 
-	   72 and use that for the source resolution when printing. 
-	*/
-
-	return 72 /* 100 */;
-}
-
-void GR_QNXGraphics::setColor(UT_RGBColor& clr)
-{
-	//printf("GR: setColor %d %d %d \n", clr.m_red, clr.m_blu, clr.m_grn);
-	m_currentColor = PgRGB(clr.m_red, clr.m_grn, clr.m_blu);
-	//Defer actually setting the color until we stroke something
-}
-
+/*** 
+ Font Operations 
+***/
 GR_Font * GR_QNXGraphics::getGUIFont(void)
 {
 	if (!m_pFontGUI) {
@@ -394,22 +350,59 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	return(new QNXFont(fname));
 }
 
+void GR_QNXGraphics::setFont(GR_Font * pFont)
+{
+	QNXFont *qnxFont = (QNXFont *)pFont;
+	const char *backupfont = { "helv10" };
+	const char *font;
+
+	if (!qnxFont || !(font = qnxFont->getFont())) {
+		UT_DEBUGMSG(("No font found, using helv10 as default"));
+		UT_ASSERT(0);
+		font = backupfont;
+	}
+
+	if (m_pFont && strcmp(m_pFont->getFont(), font) == 0) {
+		return;
+	} else if (m_pFont) {
+		delete(m_pFont);
+	}
+
+	m_pFont = new QNXFont(font);
+
+	/* At the same time, load the font metrics into
+       a local cache to speed up access as we use them! */
+	struct _fcache *tmp;
+	for (tmp = g_pFCache; tmp; tmp = tmp->next) {
+		if (strcmp(tmp->name, font) == 0) {
+			break;
+		}
+	}
+	if (tmp == NULL &&
+		(tmp = (struct _fcache *)malloc(sizeof(*tmp))) != NULL) {
+		strcpy(tmp->name, font);
+		tmp->next = g_pFCache;
+		tmp->prev = NULL;
+		g_pFCache = tmp;	
+
+		PfLoadMetrics(font);
+	} else if (tmp && tmp->prev) {
+		if ((tmp->prev->next = tmp->next)) {
+			tmp->next->prev = tmp->prev;
+		}
+		if ((tmp->next = g_pFCache)) {
+			g_pFCache->prev = tmp;
+		}
+		tmp->prev = NULL;
+	}
+
+	m_iAscentCache = m_iDescentCache = -1;
+}
+
 UT_uint32 GR_QNXGraphics::getFontAscent()
 {
 	if(m_iAscentCache == -1) {
-		FontQueryInfo info;
-
-		if (!m_pFont || !m_pFont->getFont()) {
-			UT_ASSERT(0);
-			return(0);
-		}
-
-		if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
-			UT_ASSERT(0);
-			return(0);
-		}
-		m_iAscentCache = MY_ABS(info.ascender);
-		m_iDescentCache = MY_ABS(info.descender);
+		m_iAscentCache = getFontAscent(m_pFont);
 	}
 
 	return m_iAscentCache;
@@ -418,23 +411,109 @@ UT_uint32 GR_QNXGraphics::getFontAscent()
 UT_uint32 GR_QNXGraphics::getFontDescent()
 {
 	if (m_iDescentCache == -1) {
-		FontQueryInfo info;
-
-		if (!m_pFont || !m_pFont->getFont()) {
-			UT_ASSERT(0);
-			return(0);
-		}
-	
-		if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
-			UT_ASSERT(0);
-			return(0);
-		}
-		m_iDescentCache = MY_ABS(info.descender);
-		m_iAscentCache = MY_ABS(info.ascender);
+		m_iDescentCache = getFontDescent(m_pFont);
 	}
 
 	return m_iDescentCache;
 }
+
+UT_uint32 GR_QNXGraphics::getFontHeight()
+{
+	return getFontAscent() + getFontDescent();
+}
+
+//These versions take the font that we have provided
+UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
+{
+	QNXFont *pQNXFont = (QNXFont *)fnt;
+	UT_ASSERT(pQNXFont);
+		
+	FontQueryInfo info;
+
+	if (PfQueryFont(pQNXFont->getFont(), &info) == -1) {
+		UT_ASSERT(0);
+		return(0);
+	}
+
+	return MY_ABS(info.ascender);
+}
+
+UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
+{
+	QNXFont *pQNXFont = (QNXFont *)fnt;
+	UT_ASSERT(pQNXFont);
+		
+	FontQueryInfo info;
+
+	if (PfQueryFont(pQNXFont->getFont(), &info) == -1) {
+		UT_ASSERT(0);
+		return(0);
+	}
+
+	return MY_ABS(info.descender);
+}
+
+UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
+{
+/*
+	return getFontAscent(fnt)+getFontDescent(fnt);
+*/
+	QNXFont *pQNXFont = (QNXFont *)fnt;
+	UT_ASSERT(pQNXFont);
+		
+	FontQueryInfo info;
+
+	if (PfQueryFont(pQNXFont->getFont(), &info) == -1) {
+		UT_ASSERT(0);
+		return(0);
+	}
+
+	return MY_ABS(info.descender) + MY_ABS(info.ascender);
+}
+
+
+//////////////////////////////////////////////////////////////////
+// This is a static method in the GR_Font base class implemented
+// in platform code.
+//////////////////////////////////////////////////////////////////
+void GR_Font::s_getGenericFontProperties(const char *szFontName, FontFamilyEnum * pff, FontPitchEnum * pfp, bool * pbTrueType)
+{
+#if 0
+   switch (xx & 0xf0)
+   {
+   default:
+   case FF_DONTCARE:   *pff = FF_Unknown;      break;
+   case FF_ROMAN:      *pff = FF_Roman;        break;
+   case FF_SWISS:      *pff = FF_Swiss;        break;
+   case FF_MODERN:     *pff = FF_Modern;       break;
+   case FF_SCRIPT:     *pff = FF_Script;       break;
+   case FF_DECORATIVE: *pff = FF_Decorative;   break;
+   }
+
+   if ((xx & TMPF_FIXED_PITCH) == TMPF_FIXED_PITCH)
+       *pfp = FP_Variable;             // yes these look backwards
+   else                                // but that is how windows
+       *pfp = FP_Fixed;                // defines the bits...
+
+   *pbTrueType = ((xx & TMPF_TRUETYPE) == TMPF_TRUETYPE);
+#endif
+	printf("SET GENERIC FONT ... WHY HERE?\n");
+	*pff = FF_Unknown;
+	*pfp = FP_Variable;
+	*pbTrueType = 0;
+}
+
+
+/***
+ Draw Operations
+***/
+void GR_QNXGraphics::setColor(UT_RGBColor& clr)
+{
+	//printf("GR: setColor %d %d %d \n", clr.m_red, clr.m_blu, clr.m_grn);
+	m_currentColor = PgRGB(clr.m_red, clr.m_grn, clr.m_blu);
+	//Defer actually setting the color until we stroke something
+}
+
 
 void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 			      UT_sint32 x2, UT_sint32 y2)
@@ -548,6 +627,7 @@ void GR_QNXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	DRAW_START
 	PgSetFillColor(newc);
 	PgSetStrokeColor(newc);
+	//printf("fillRect RGB %d,%d %d/%d w/ %08x\n", x, y, w, h, newc);
 	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL_STROKE);
 	DRAW_END
 }
@@ -668,9 +748,13 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 				 UT_sint32 width, UT_sint32 height)
 {
 	UT_RGBColor clrWhite(255,255,255);
+	//printf("clearArea %d,%d %d/%d w/ %08x\n", x, y, width, height, clrWhite);
 	fillRect(clrWhite, x, y, width, height);
 }
 
+/***
+ Image operations
+***/
 GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
 	/* GR_QNXImage* pImg = NULL; */
@@ -715,11 +799,6 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	PgFlush();
 
 	DRAW_END
-}
-
-void GR_QNXGraphics::flush(void)
-{
-	PgFlush();
 }
 
 void GR_QNXGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
@@ -835,6 +914,7 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 
 	DRAW_START
 	PgSetFillColor(m_3dColors[c]);
 	PgSetStrokeColor(m_3dColors[c]);
+	//printf("FillRect 3D %d,%d %d/%d w %08x\n", x, y, x+w, y+w, m_3dColors[c]);
 	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL_STROKE);
 	DRAW_END
 }
@@ -845,42 +925,9 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
-//////////////////////////////////////////////////////////////////
-// This is a static method in the GR_Font base class implemented
-// in platform code.
-//////////////////////////////////////////////////////////////////
-
-void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
-										 FontFamilyEnum * pff,
-										 FontPitchEnum * pfp,
-										 bool * pbTrueType)
-{
-#if 0
-   switch (xx & 0xf0)
-   {
-   default:
-   case FF_DONTCARE:   *pff = FF_Unknown;      break;
-   case FF_ROMAN:      *pff = FF_Roman;        break;
-   case FF_SWISS:      *pff = FF_Swiss;        break;
-   case FF_MODERN:     *pff = FF_Modern;       break;
-   case FF_SCRIPT:     *pff = FF_Script;       break;
-   case FF_DECORATIVE: *pff = FF_Decorative;   break;
-   }
-
-   if ((xx & TMPF_FIXED_PITCH) == TMPF_FIXED_PITCH)
-       *pfp = FP_Variable;             // yes these look backwards
-   else                                // but that is how windows
-       *pfp = FP_Fixed;                // defines the bits...
-
-   *pbTrueType = ((xx & TMPF_TRUETYPE) == TMPF_TRUETYPE);
-#endif
-	printf("SET GENERIC FONT ... WHY HERE?\n");
-	*pff = FF_Unknown;
-	*pfp = FP_Variable;
-	*pbTrueType = 0;
-}
-
-/*** Printing functions ***/
+/*** 
+ Printing operations
+***/
 PpPrintContext_t * GR_QNXGraphics::getPrintContext() {
 	return m_pPrintContext;
 }
