@@ -1,4 +1,4 @@
-/* AbiSuite
+ms/* AbiSuite
  * UT_DEBUGMESG(
  * Copyright (C) 2001 AbiSource, Inc.
  * 
@@ -35,8 +35,6 @@
 #include "xap_EncodingManager.h"
 #include "ut_iconv.h"
 #include "ut_string.h"
-
-#define UCS_2_INTERNAL "UCS-2BE"
 
 /*!
  * Convert an UTF16 string to an UTF8 string

@@ -34,6 +34,11 @@ class UT_GrowBuf;
 UT_BEGIN_EXTERN_C
 
 ///////////////////////////////////////////////////////////////////////////////
+// UCS 2 Internally
+const char * ucs2Internal();
+#define UCS_2_INTERNAL ucs2Internal()
+
+///////////////////////////////////////////////////////////////////////////////
 // UTFXX->UTF8 character conversion
 int unichar_to_utf8 (int c, unsigned char *outbuf);
 

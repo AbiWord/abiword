@@ -10,9 +10,8 @@
 #include "xap_App.h"
 #include "ut_string_class.h"
 
+#include "ut_string.h"
 #include "ut_debugmsg.h"
-
-#define UCS_2_INTERNAL "UCS-2BE"
 
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */

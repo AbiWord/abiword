@@ -893,9 +893,9 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 //
 // Connect signals
 //
-	_connectModifySignals();
-
 	m_wModifyDialog = modifyDialog;
+
+	_connectModifySignals();
 	return modifyDialog;
 }
 
