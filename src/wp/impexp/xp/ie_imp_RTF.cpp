@@ -464,7 +464,11 @@ RTF_msword97_list::~RTF_msword97_list(void)
 
 RTF_msword97_listOverride::RTF_msword97_listOverride(IE_Imp_RTF * pie_rtf )
 {
-	m_RTF_listID = 0;
+	// Ideally, the default ID should be 0 which is a reserved ID in
+	// the spec, but OpenOffice uses it, so use -1 instead (which
+	// should be OK: spec sez 1-2000 is valid).
+	m_RTF_listID = (UT_uint32)-1;
+
 	m_OverrideCount = 0;
 	m_pParaProps = NULL;
 m_pParaProps = NULL;
@@ -3171,6 +3175,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter((unsigned short)param);
 			return true;
 		}
+		else if( strcmp((char*)pKeyword,"listoverridetable") == 0)
+		{
+			return ReadListOverrideTable();
+		}
 		else if (strcmp((char*)pKeyword, "listtext") == 0)
 		{
 			// This paragraph is a member of a list.
@@ -4026,23 +4034,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	{
 		iOverride = m_currentRTFState.m_paraProps.m_iOverride;
 		iLevel = m_currentRTFState.m_paraProps.m_iOverrideLevel;
-		if(iOverride < 1)
-		{
-			iOverride = m_icurOverride;
-			iLevel = m_icurOverrideLevel;
-		}
-		UT_ASSERT_HARMLESS(iOverride); // see bug #2173
-//
-// Now get the properties we've painstakingly put together.
-//
-		if ( iOverride > 0 && iOverride <= m_vecWord97ListOverride.size () )
-		{
-			pOver = (RTF_msword97_listOverride *) m_vecWord97ListOverride.getNthItem(iOverride - 1);
-		}
-		else
-		{
-			UT_ASSERT_NOT_REACHED(); //wtf is going on here? see bug 2173
-		}
+		pOver = _getTableListOverride(iOverride);
 	}
 
 	// tabs
@@ -5448,6 +5440,8 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 }
 
 
+
+
 bool IE_Imp_RTF::ReadListOverrideTable(void)
 {
 //
@@ -5487,6 +5481,38 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 	return true;
 }
 
+/*!
+  Get list override of given id
+  \param id Id of list override
+  \return List override or NULL if not found
+
+  The old code in ApplyParagraphAttributes would use the given
+  id as an index to the vector of list overrides. But these
+  can be given arbitrary ids from 1 to 2000, so the code
+  would not always have worked. Also, and more relevant,
+  this function handles an id of 0, as output by 
+  StarWriter/OpenOffice
+  even though it is not allowed in the spec.
+*/
+RTF_msword97_listOverride*
+IE_Imp_RTF::_getTableListOverride(UT_uint32 id)
+{
+	UT_sint32 i;
+	RTF_msword97_listOverride* pLOver;
+
+	for (i = 0; i < m_vecWord97ListOverride.size(); i++)
+	{
+		pLOver = (RTF_msword97_listOverride *)m_vecWord97ListOverride.getNthItem(i);
+		if (id == pLOver->m_RTF_listID)
+		{
+			return pLOver;
+		}
+	}
+
+	// Client requested a list override that was not defined.
+	UT_ASSERT_NOT_REACHED();
+	return NULL;
+}
 
 bool IE_Imp_RTF::HandleTableListOverride(void)
 {
@@ -5546,7 +5572,7 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 			}
 			else if(strcmp((char *)keyword,"ls")== 0)
 			{
-				pLOver->m_OverrideCount = (UT_uint32) parameter;
+				pLOver->m_RTF_listID = (UT_uint32) parameter;
 			}
 		    else
 			{

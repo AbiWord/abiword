@@ -636,6 +636,8 @@ private:
 	UT_Vector m_vecAbiListTable;
 	_rtfAbiListTable * getAbiList( UT_uint32 i) {return (_rtfAbiListTable *) m_vecAbiListTable.getNthItem(i);}
 
+	RTF_msword97_listOverride* _getTableListOverride(UT_uint32 id);
+
 	UT_uint32 m_numLists;
 	bool m_bisAbiList;
 	bool m_bisNOTList; // true if the current stream does not have  abi list extensions
