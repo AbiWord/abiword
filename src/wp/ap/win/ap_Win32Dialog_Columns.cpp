@@ -37,6 +37,8 @@
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32Toolbar_Icons.h"
 
+#define BUFSIZE 1024
+
 /*****************************************************************/
 
 XAP_Dialog * AP_Win32Dialog_Columns::static_constructor(XAP_DialogFactory * pFactory,
@@ -66,6 +68,7 @@ AP_Win32Dialog_Columns::~AP_Win32Dialog_Columns(void)
 void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
+	setViewAndDoc(pFrame);
 
 	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_COLUMNS, AP_RID_DIALOG_COLUMNS, this);
 
@@ -105,6 +108,9 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_DS(COLUMN_TEXT_TWO,				DLG_Column_Two);
 	_DS(COLUMN_TEXT_THREE,				DLG_Column_Three);
 	_DS(COLUMN_CHECK_LINE_BETWEEN,		DLG_Column_Line_Between);
+	_DS(COLUMN_TEXT_NUMCOLUMNS,			DLG_Column_Number_Cols);
+	_DS(COLUMN_TEXT_SPACEAFTER,			DLG_Column_Space_After);
+	_DS(COLUMN_TEXT_MAXSIZE,			DLG_Column_Size);
 
 	RECT rect;
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE), &rect);
@@ -132,9 +138,13 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 
 	// set initial state
+	char buf[BUFSIZE];
 	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE + getColumns() - 1, BST_CHECKED);
 	enableLineBetweenControl(getColumns() != 1);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, getLineBetween() ? BST_CHECKED : BST_UNCHECKED);
+	SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS,itoa(getColumns(),buf,10));
+	SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
+	SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
 
 	HWND hRTL = GetDlgItem( hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER );
 	ShowWindow( hRTL, SW_HIDE );
@@ -164,6 +174,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
+	char buf[BUFSIZE];
 
 	switch (wId)
 	{
@@ -179,22 +190,60 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		setColumns(1);
 		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, BST_UNCHECKED);
 		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, BST_UNCHECKED);
+		SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_RADIO_TWO:
 		setColumns(2);
 		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, BST_UNCHECKED);
 		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, BST_UNCHECKED);
+		SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_RADIO_THREE:
 		setColumns(3);
 		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, BST_UNCHECKED);
 		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, BST_UNCHECKED);
+		SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN:
 		setLineBetween( (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN) == BST_CHECKED) );
+		return 1;
+
+	case AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );		
+			if( atoi( buf ) > 0 && atoi(buf) != (signed) getColumns() )
+			{
+				setColumns( atoi(buf) );
+			}
+			SetDlgItemText(hWnd, wId, itoa(getColumns(),buf,10));
+			CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, (getColumns()==1)?BST_CHECKED:BST_UNCHECKED);
+			CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2)?BST_CHECKED:BST_UNCHECKED);
+			CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3)?BST_CHECKED:BST_UNCHECKED);
+		}
+		return 1;
+
+	case AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			setSpaceAfter( buf );
+			SetDlgItemText(hWnd, wId, getSpaceAfterString());
+		}
+		return 1;
+
+	case AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE:
+		if( wNotifyCode == EN_KILLFOCUS )
+		{
+			char buf[BUFSIZE];
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			setMaxHeight( buf );
+			SetDlgItemText(hWnd, wId, getHeightString());
+		}
 		return 1;
 
 #ifdef BIDI_ENABLED
@@ -211,5 +260,52 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 {
-	return 0;
+	char buf[BUFSIZE];
+	switch( pnmud->hdr.idFrom )
+	{
+	case AP_RID_DIALOG_COLUMN_SPIN_NUMCOLUMNS:
+		if( pnmud->iDelta < 0 )
+		{
+			setColumns( getColumns() + 1 );
+		}
+		else
+		{
+			if( getColumns() > 1 )
+			{
+				setColumns( getColumns() - 1 );
+			}
+		}
+		SetDlgItemText(m_hThisDlg, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS,itoa(getColumns(),buf,10));
+		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_ONE, (getColumns()==1)?BST_CHECKED:BST_UNCHECKED);
+		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2)?BST_CHECKED:BST_UNCHECKED);
+		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3)?BST_CHECKED:BST_UNCHECKED);
+		return 1;
+			
+	case AP_RID_DIALOG_COLUMN_SPIN_SPACEAFTER:
+		if( pnmud->iDelta < 0 )
+		{
+			incrementSpaceAfter( true );
+		}
+		else
+		{
+			incrementSpaceAfter( false );
+		}
+		SetDlgItemText(m_hThisDlg, AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
+		return 1;
+
+	case AP_RID_DIALOG_COLUMN_SPIN_MAXSIZE:
+		if( pnmud->iDelta < 0 )
+		{
+			incrementMaxHeight( true );
+		}
+		else
+		{
+			incrementMaxHeight( false );
+		}
+		SetDlgItemText(m_hThisDlg, AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
+		return 1;
+
+	default:
+		return 0;
+	}
 }
