@@ -699,8 +699,8 @@ UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 	   case 25: // 0x19 (deletable hard EOL at EOP)	
 	     X_CheckWordPerfectError(_handleHardEndOfLine());
 	     break;
-	   case 9: // hard EOP (TODO: implement me)
-	   case 28: // deletable hard EOP (TODO: treat as a hard end-of-page)
+	   case 9: // hard EOP
+	   case 28: // deletable hard EOP
 	     { 
 	       UT_UCSChar ucs = UCS_FF;
 	       X_CheckDocumentError(getDoc()->appendSpan(&ucs,1));
@@ -800,14 +800,51 @@ UT_Error IE_Imp_WordPerfect::_handleTabGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a tab group\n"));
  
-   long startPosition;
+   long startPosition = ftell(m_importFile);
    unsigned char tabDefinition;   
    UT_uint16 size;
    unsigned char flags;
    
-   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, tabDefinition, size, flags));
+   X_CheckFileReadElementError(fread(&tabDefinition, sizeof(unsigned char), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
+
+   if(!m_undoOn)
+     {
+        // TODO: soft type (tab, align, centerm and so forth), (uses tab set definition type)
+        if (tabDefinition & 0x01) { }
+        // TODO: dot leader 
+        if (tabDefinition & 0x02) { }
+        // TODO: generic search (only used in search code, ignore bits 0 and 1 when comparing)
+        if (tabDefinition & 0x04) { }    
+	
+        switch ((tabDefinition & 0xF8) >> 3)
+	  {
+	   case  0: // 00000b = back tab
+	   case  1: // 00001b = table tab
+	   case  2: // 00010b = left tab
+	   case  4: // 00100b = bar tab
+	   case  6: // 00110b = left indent
+	   case  7: // 00111b = left/right indent
+	   case  8: // 01000b = center on margins
+	   case  9: // 01001b = center on current position
+	   case 10: // 01010b = center tab
+	   case 16: // 10000b = flush right
+	   case 18: // 10010b = right tab
+	   case 26: // 11010b = decimal tab
+	     // TODO: fix stupid default implementation of adding just a TAB char without looking what it actually should be
+	     {
+		wchar_t wc = 0;
+	        m_Mbtowc.mbtowc(wc, '\t');
+	        m_textBuf.append( (UT_uint16 *)&wc, 1);
+	     }
+	     break;
+	   default: // something else shouldn't be possible according to the documentation
+	     break;
+	  }
+     }
+
    X_CheckWordPerfectError(_skipGroup(startPosition, size));
-   
+
    return UT_OK;
 }
 
