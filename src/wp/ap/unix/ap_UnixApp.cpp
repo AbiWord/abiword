@@ -1252,7 +1252,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     pMyUnixApp->shutdown();
     delete pMyUnixApp;
     
-    poptFreeContext (Args.poptcon);
     return 0;
 }
 
