@@ -44,7 +44,7 @@ EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 	m_pMacFrame = pMacFrame;
 	m_pViewListener = NULL;
 	m_lid = 0;							// view listener id
-//	m_hwnd = NULL;
+	m_hwnd = pMacFrame->_getMacWindow ();
 }
 
 EV_MacToolbar::~EV_MacToolbar(void)
@@ -528,7 +528,8 @@ UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * p
 {
 	const char * szState = 0;
 	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
-		
+
+        UT_ASSERT (UT_NOT_IMPLEMENTED); 
 #if 0
 	UINT u = WmCommandFromItemId(id);
 
@@ -602,6 +603,8 @@ UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * p
 
 UT_Bool EV_MacToolbar::getToolTip(long lParam)
 {
+        UT_ASSERT (UT_NOT_IMPLEMENTED); 
+
 #if 0
 	UT_ASSERT(lParam);
 	LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT) lParam;
