@@ -243,6 +243,11 @@ AC_ARG_ENABLE(scripting,
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-scripting) ;;
      esac],[script=false])
 
+if test "x$script" = "xtrue"; then
+	AC_MSG_WARN([scripting not currently supported - please contact your priest for details])
+	script=false
+fi
+
 dnl this isn't actually used anywhere, but we provide it anyway
 AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
 
