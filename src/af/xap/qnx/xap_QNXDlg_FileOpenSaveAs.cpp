@@ -91,6 +91,13 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
 		break;
 	}
+	case XAP_DIALOG_ID_INSERT_FILE:
+	{
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		bCheckWritePermission = false;
+		break;
+	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);

@@ -502,7 +502,6 @@ void GR_Font::s_getGenericFontProperties(const char *szFontName, FontFamilyEnum 
 
    *pbTrueType = ((xx & TMPF_TRUETYPE) == TMPF_TRUETYPE);
 #endif
-	printf("SET GENERIC FONT ... WHY HERE?\n");
 	*pff = FF_Roman;
 	*pfp = FP_Variable;
 	*pbTrueType = 0;

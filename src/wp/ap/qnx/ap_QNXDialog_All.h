@@ -91,7 +91,7 @@
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,XAP_QNXDialog_ClipArt)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,XAP_QNXDialog_Encoding)
 	DeclareDialog(XAP_DIALOG_ID_IMAGE,XAP_QNXDialog_Image)
-
+	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,XAP_QNXDialog_FileOpenSaveAs)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)
