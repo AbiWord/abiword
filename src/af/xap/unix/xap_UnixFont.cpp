@@ -65,22 +65,18 @@ static int s_compareUniWidthsChar(const void * c, const void * w)
 /*******************************************************************/
 
 XAP_UnixFontHandle::XAP_UnixFontHandle()
+  : m_font(NULL), m_size(0)
 {
-	m_font = NULL;
-	m_size = 0;
 }
 
 XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size)
+  : m_font(font), m_size(size)
 {
-	m_font = font;
-	m_size = size;
 }
 
 XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFontHandle & copy)
-	: GR_Font(copy)
+  : GR_Font(copy), m_font(copy.m_font), m_size(copy.m_size)
 {
-	m_font = copy.m_font;
-	m_size = copy.m_size;
 }
 
 XAP_UnixFontHandle::~XAP_UnixFontHandle()
@@ -140,28 +136,18 @@ void XAP_UnixFontHandle::explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_on
 /*******************************************************************/		
 
 XAP_UnixFont::XAP_UnixFont(void)
+  :  m_fontKey(NULL), m_name(NULL), m_style(STYLE_LAST),
+     m_xlfd(NULL), m_metricsData(NULL), m_uniWidths(NULL),
+     m_fontfile(NULL), m_metricfile(NULL), m_PFFile(NULL),
+     m_PFB(false), m_bufpos(0), m_pEncodingTable(NULL),
+     m_iEncodingTableSize(0), m_is_cjk(false), m_fontType(FONT_TYPE_UNKNOWN),
+     m_bisCopy(false)
 {
 	//UT_DEBUGMSG(("XAP_UnixFont:: constructor (void)\n"));	
-	m_is_cjk=0;
-	m_name = NULL;
-	m_style = STYLE_LAST;
-	m_xlfd = NULL;
-	
-	m_fontfile = NULL;
-	m_metricfile = NULL;
 
-	m_metricsData = NULL;
-	m_uniWidths = NULL;
-	
-	m_PFFile = NULL;
-	
-	m_fontKey = NULL;
-	
-	m_pEncodingTable = NULL;
-	m_iEncodingTableSize = 0;
-	m_fontType = FONT_TYPE_UNKNOWN;
-	m_bisCopy = false;
-
+	m_cjk_font_metric.ascent  = 0;
+	m_cjk_font_metric.descent = 0;
+	m_cjk_font_metric.width   = 0;
 }
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
