@@ -4176,6 +4176,10 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	m_iPieceTableState = 0;
 	// Move insertion point out of field run if it is in one
 	//
+	if(m_pDoc->isFrameAtPos(getPoint()))
+	{
+	  _setPoint(getPoint()+1);
+	}
 	_charMotion(true, 0);
 
 //
@@ -4635,6 +4639,16 @@ UT_Error FV_View::cmdInsertTOC(void)
 	if(getHyperLinkRun(getPoint()) != NULL)
 	{
 		return false;
+	}
+	if(!isPointLegal())
+	{
+	  _charMotion(true,1);
+	}
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	if(getPoint() >= posEnd && !isPointLegal())
+	{
+	  _charMotion(false,1);
 	}
 //
 // Close off the current block

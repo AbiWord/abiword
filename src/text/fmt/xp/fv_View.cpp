@@ -546,6 +546,7 @@ void FV_View::_pasteFromLocalTo(PT_DocPosition pos)
 	UT_uint32 iLen = m_pLocalBuf->getLength();
 
 	pImpRTF->pasteFromBuffer(&docRange,pData,iLen);
+
 	delete pImpRTF;
 }
 
@@ -556,8 +557,13 @@ void FV_View::pasteFromLocalTo(PT_DocPosition pos)
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
+	m_pDoc->setDoingPaste();
+	setCursorWait();
+	m_pDoc->setDontImmediatelyLayout(true);
 
 	_pasteFromLocalTo(pos);
+	clearCursorWait();
+	m_pDoc->clearDoingPaste();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -569,6 +575,9 @@ void FV_View::pasteFromLocalTo(PT_DocPosition pos)
 	_restorePieceTableState();
 	_generalUpdate();
 	m_pDoc->endUserAtomicGlob();
+	// Move insertion point out of field run if it is in one
+	//
+	_charMotion(true, 0);
 	_fixInsertionPointCoords();
 	if (isSelectionEmpty())
 	{
@@ -10461,6 +10470,10 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	  return false;
 	}
 	if(pos == posEnd && m_pDoc->isEndFrameAtPos(pos-1))
+	{
+	  return false;
+	}
+	if(((pos+1) == posEnd) && m_pDoc->isTOCAtPos(pos-1))
 	{
 	  return false;
 	}
