@@ -21,6 +21,8 @@
 #define UTCONTEXTGLYPH_H
 
 #include "ut_misc.h"
+#include "xap_App.h"
+#include "xap_Prefs.h"
 
 #define CONTEXT_BUFF_SIZE 5
 
@@ -44,28 +46,41 @@ enum GlyphContext {GC_ISOLATE,GC_INITIAL,GC_MEDIAL,GC_FINAL,GC_NOT_SET};
 
 class UT_contextGlyph
 {
-	public:
-		UT_contextGlyph();
-		UT_UCSChar getGlyph(const UT_UCSChar * code,
-							const UT_UCSChar * prev,
-							const UT_UCSChar * next) const;
+public:
+	UT_contextGlyph();
+	UT_UCSChar getGlyph(const UT_UCSChar * code,
+						const UT_UCSChar * prev,
+						const UT_UCSChar * next,
+						const XML_Char   * pLang) const;
 		
-		void renderString(const UT_UCSChar * src,
-							UT_UCSChar *dest,
-							UT_uint32 len,
-							const UT_UCSChar * prev,
-							const UT_UCSChar * next) const;
+	void renderString(const UT_UCSChar * src,
+					  UT_UCSChar *dest,
+					  UT_uint32 len,
+					  const UT_UCSChar * prev,
+					  const UT_UCSChar * next,
+					  const XML_Char   * pLang) const;
 		
-	private:
-		GlyphContext _evalGlyphContext( const UT_UCSChar * code,
-										const UT_UCSChar * prev,
-										const UT_UCSChar * next) const;
+	const Letter * UT_contextGlyph::smartQuote(UT_UCS4Char c,
+											   const XML_Char * pLang) const;
+	
+		
+		private:
+	GlyphContext _evalGlyphContext( const UT_UCSChar * code,
+									const UT_UCSChar * prev,
+									const UT_UCSChar * next) const;
+
+	static void _prefsListener(	XAP_App *pApp,
+								XAP_Prefs *pPrefs,
+								UT_StringPtrMap *phChanges,
+								void *data);
 										
-		static Letter		*s_pGlyphTable;
-		static UCSRange 	*s_pIgnore;
-		static Letter		*s_pLigature;
-		static Letter		*s_pLigRev;
-		static bool 		s_bInit;
-		static UT_uint32	s_iGlyphTableSize;
+	static Letter		*s_pGlyphTable;
+	static UCSRange 	*s_pIgnore;
+	static Letter		*s_pLigature;
+	static Letter		*s_pLigRev;
+	static bool 		s_bInit;
+	static UT_uint32	s_iGlyphTableSize;
+	static bool         s_bSmartQuotes;
+	static const XML_Char * s_pEN_US;
 };
 #endif

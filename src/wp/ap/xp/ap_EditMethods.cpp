@@ -253,6 +253,8 @@ public:
 
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
+	static EV_EditMethod_Fn insertNBZWSpace;
+	static EV_EditMethod_Fn insertZWJoiner;
 
 	static EV_EditMethod_Fn insertGraveData; // for certain european keys
 	static EV_EditMethod_Fn insertAcuteData;
@@ -797,6 +799,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertLineBreak),		0,	""),
 	EV_EditMethod(NF(insertMacronData), 	_D_,	""),
 	EV_EditMethod(NF(insertNBSpace),		0,	""),
+	EV_EditMethod(NF(insertNBZWSpace),		0,	""),
 	EV_EditMethod(NF(insertOgonekData), 	_D_,	""),
 	EV_EditMethod(NF(insertPageBreak),		0,	""),
 	EV_EditMethod(NF(insertParagraphBreak), 0,	""),
@@ -808,6 +811,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertTab),			0,	""),
 	EV_EditMethod(NF(insertTable),          0,  ""),
 	EV_EditMethod(NF(insertTildeData),		_D_,	""),
+	EV_EditMethod(NF(insertZWJoiner),		0,	""),
 
 	// j
 
@@ -4360,6 +4364,26 @@ Defun1(insertNBSpace)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_NBSP;			// decimal 160 is NBS
+	pView->cmdCharInsert(&c,1);
+	return true;
+}
+
+// non-breaking, zerrow width 
+Defun1(insertNBZWSpace)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_UCSChar c = 0xFEFF;
+	pView->cmdCharInsert(&c,1);
+	return true;
+}
+
+// zero width joiner
+Defun1(insertZWJoiner)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_UCSChar c = 0x200D;
 	pView->cmdCharInsert(&c,1);
 	return true;
 }

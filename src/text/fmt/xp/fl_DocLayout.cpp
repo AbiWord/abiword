@@ -1761,7 +1761,7 @@ looking.  I think we need a mechanism for dealing with that, but I
 want to save proposals for that to be separate from the basic
 algorithm.
 */
-
+#if 0
 // The following are descriptions of the thing before or after a
 // character being considered for smart quote promotion.  The thing
 // is either a structural break in a document, or it is a literal
@@ -1940,9 +1940,10 @@ static void s_swapQuote(UT_UCSChar & c)
     else if(c == UCS_RDBLQUOTE)
         c = UCS_LDBLQUOTE;
 }
-
+#endif
 void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset)
 {
+#if 0
 	if (!block)
 		return;
 	if (m_pView->isHdrFtrEdit())
@@ -2083,6 +2084,9 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			// for similar reasons.
 		}
 	}
+#else
+	return;
+#endif
 }
 
 void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)

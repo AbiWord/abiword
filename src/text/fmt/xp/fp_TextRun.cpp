@@ -2293,7 +2293,7 @@ inline UT_UCSChar fp_TextRun::_getContextGlyph(const UT_UCSChar * pSpan,
 		default: prev[1] = pSpan[offset-2]; prev[0] = pSpan[offset-1];
 	}
 
-	return cg.getGlyph(&pSpan[offset],&prev[0],&next[0]);
+	return cg.getGlyph(&pSpan[offset],&prev[0],&next[0], m_pLanguage);
 }
 
 inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
@@ -2312,7 +2312,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	prev[1] = 0;
 	prev[2] = 0;
 
-	if(getBlockOffset() > 1)
+	if(offset > 1)
 	{
 		if(getBlock()->getSpanPtr(offset - 2, &pPrev, &lenPrev))
 		{
@@ -2327,7 +2327,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 			prev[0] = *pPrev;
 		}
 	}
-	else if(getBlockOffset() > 0)
+	else if(offset > 0)
 	{
 		if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
 			prev[0] = *pPrev;
@@ -2349,7 +2349,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	// for anything that we miss, we need to get it the hard way
 	// as it is located in different spans
 
-	while(i < CONTEXT_BUFF_SIZE && getBlock()->getSpanPtr(offset + len + i, &pNext, &lenAfter))
+	while(i < CONTEXT_BUFF_SIZE && getBlock()->getSpanPtr(offset + UT_MIN(len,lenSpan) + i, &pNext, &lenAfter))
 	{
 		for(UT_uint32 j = 0; j < lenAfter && (UT_uint32)i < CONTEXT_BUFF_SIZE; j++,i++)
 			after[i] = pNext[j];
@@ -2415,7 +2415,7 @@ void fp_TextRun::_refreshDrawBuffer()
 
 					// NB: _getContext requires block offset
 					_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
-					cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0]);
+					cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0],m_pLanguage);
 				}
 				else //do not use context glyphs
 				{

@@ -23,8 +23,7 @@
 #include "ut_contextGlyph.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "xap_App.h"
-#include "xap_Prefs_SchemeIds.h"
+#include "ut_Language.h"
 
 struct LigatureData
 {
@@ -316,6 +315,10 @@ static Letter s_table[] =
 
 static UCSRange s_ignore[] =
 {
+	// straight quotes
+	{0x0022, 0x0022},
+	{0x0027, 0x0027},
+	
 	// Hebrew overstriking characters
 	{0x0591,0x05A1},
 	{0x05A3,0x05B9},
@@ -327,7 +330,10 @@ static UCSRange s_ignore[] =
 	// Arabic overstriking characters
 	{0x064B,0x0655},
 	{0x06D6,0x06E8},
-	{0x06EA,0x06ED}
+	{0x06EA,0x06ED},
+
+	// smart quotes
+	{0x2018,0x201F}
 };
 
 // comparison function for bsearch
@@ -399,20 +405,79 @@ static int s_comp_qlig(const void *a, const void *b)
 	return ret;
 }
 
-Letter* UT_contextGlyph::s_pGlyphTable = &s_table[0];
-UCSRange * UT_contextGlyph::s_pIgnore = &s_ignore[0];
-Letter* UT_contextGlyph::s_pLigature = &s_ligature[0];
-Letter* UT_contextGlyph::s_pLigRev = &s_lig_rev[0];
-bool UT_contextGlyph::s_bInit = false;
-UT_uint32 UT_contextGlyph::s_iGlyphTableSize = sizeof(s_table);
+
+/*
+   This is how the smart quotes work: each type of smart quote is
+   described by a Letter structure in which the first two fields are
+   unused; these are named after one of the languages that uses them
+   and the character, e.g. s_sq__single_en_us.
+
+   The main table is made up of SmartQuote structures, it contains all
+   languages that behave differently than en_US; if the language does
+   not want smart quotes, the pGlyphs pointer is set to NULL,
+   otherwise it point to one of the s_sg_*_* definitions; please check
+   that a given definition is not already present before creating a
+   new one!
+
+*/
+typedef struct
+{
+	const XML_Char *   pLang;
+	UT_UCS4Char  character;
+	Letter *     pGlyphs;
+}SmartQuote;
+
+	// 0, 0, initial, medial, final, alone
+
+static Letter s_sq_single_en_us =
+	{0, 0, 0x2018, 0x2019, 0x2019, 0x0027};
+
+static Letter s_sq_double_en_us =
+	{0, 0, 0x201C, 0x201D, 0x201D, 0x0022};
+
+
+
+static Letter s_sq_single_cs_cz = 
+	{0, 0, 0x201A, 0x2019, 0x2019, 0x0027};
+
+static Letter s_sq_double_cs_cz = 
+	{0, 0, 0x201E, 0x201D, 0x201D, 0x0022};
+
+
+// NB: the lang strings get replaced by pointers into the static table
+// of UT_Language; this speeds up comparisons
+static SmartQuote s_smart_quotes[] =
+{	
+	{"cs-CZ", 0x0027, &s_sq_single_cs_cz},
+	{"cs-CZ", 0x0022, &s_sq_double_cs_cz},
+	{"sk-SK", 0x0027, &s_sq_single_cs_cz},
+	{"sk-SK", 0x0022, &s_sq_double_cs_cz}
+};
+
+static SmartQuote s_smart_quotes_default[] =
+{	
+	{NULL, 0x0027, &s_sq_single_en_us},
+	{NULL, 0x0022, &s_sq_double_en_us}
+};
+
+
+Letter*    UT_contextGlyph::s_pGlyphTable     = &s_table[0];
+UCSRange * UT_contextGlyph::s_pIgnore         = &s_ignore[0];
+Letter*    UT_contextGlyph::s_pLigature       = &s_ligature[0];
+Letter*    UT_contextGlyph::s_pLigRev         = &s_lig_rev[0];
+bool       UT_contextGlyph::s_bInit           = false;
+UT_uint32  UT_contextGlyph::s_iGlyphTableSize = sizeof(s_table);
+bool       UT_contextGlyph::s_bSmartQuotes    = true;
+const XML_Char *UT_contextGlyph::s_pEN_US     = NULL;
+
 
 UT_contextGlyph::UT_contextGlyph()
 {
 	if(!s_bInit)
 	{
 		bool bHebrewContextGlyphs = false;
-		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs, &bHebrewContextGlyphs);
-		UT_DEBUGMSG(("UT_contextGlyph Constructor: bHebrewContextGlyphs %d\n",bHebrewContextGlyphs));
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs,
+											 &bHebrewContextGlyphs);
 		if(!bHebrewContextGlyphs)
 		{
 			s_iGlyphTableSize -= (HEBREW_END - HEBREW_START + 1) * sizeof(Letter);
@@ -421,9 +486,63 @@ UT_contextGlyph::UT_contextGlyph()
 
 		memcpy(s_pLigRev,s_pLigature, sizeof(s_ligature));
 		qsort(s_pLigRev,NrElements(s_lig_rev), sizeof(Letter),s_comp_qlig);
+
+		// init the smart quote tables
+		UT_Language lang;
+		s_pEN_US = lang.getPropertyFromProperty("en-US");
+		for(UT_uint32 i = 0; i < NrElements(s_smart_quotes); i++)
+		{
+			s_smart_quotes[i].pLang = lang.getPropertyFromProperty(s_smart_quotes[i].pLang);
+		}
+
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,
+											 &s_bSmartQuotes);
+
+		XAP_App::getApp()->getPrefs()->addListener(_prefsListener,NULL);
 		s_bInit = true;
 	}
 }
+
+
+void UT_contextGlyph::_prefsListener(	XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
+{
+	UT_return_if_fail(pApp);
+	pApp->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable, &s_bSmartQuotes);
+}
+
+/*!
+    Finds the description for the smart quote for given language and character
+    IMPORTANT: pLang must a pointer directly into the static table of
+    UT_Language, not just an arbitrary pointer !!!
+*/
+const Letter * UT_contextGlyph::smartQuote(UT_UCS4Char c, const XML_Char * pLang) const
+{
+	UT_uint32 i;
+	if(!pLang)
+	{
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		return NULL;
+	}
+	
+	if(pLang != s_pEN_US)
+	{
+		for(i = 0; i < NrElements(s_smart_quotes); i++)
+		{
+			if(s_smart_quotes[i].pLang == pLang && c == s_smart_quotes[i].character)
+				return s_smart_quotes[i].pGlyphs;
+		}
+	}
+	
+	// got this far, requires generic (en_US) behaviour
+	for(i = 0; i < NrElements(s_smart_quotes_default); i++)
+	{
+		if(c == s_smart_quotes_default[i].character)
+			return s_smart_quotes_default[i].pGlyphs;
+	}
+
+	return NULL;
+}
+
 
 inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, const UT_UCSChar * prev, const UT_UCSChar * next) const
 {
@@ -506,86 +625,97 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 */
 UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 									 const UT_UCSChar * prev,
-									 const UT_UCSChar * next) const
+									 const UT_UCSChar * next,
+									 const XML_Char   * pLang) const
 {
 
 	UT_ASSERT(code);
 
-	// first, decide if this is a part of a ligature
-	// first check for a ligature form
 	LigatureData Lig;
-	Letter *pL = 0;
+	const Letter *pL = 0;
 	bool bIsSecond = false;
 	GlyphContext context = GC_NOT_SET;
 
-	Lig.next = next ? *next : 0;
-	Lig.code = *code;
-
-	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
-
-	if(pL)
+	// first, deal with smart quotes
+	if(s_bSmartQuotes)
 	{
-		next++;
-		xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));
+		pL = smartQuote(*code,pLang);
 	}
-	else
+
+	if(!pL)
 	{
-		Lig.next = prev ? *prev : 0;
-		pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
+		// decide if this is a part of a ligature
+		// check for a ligature form
+	
+		Lig.next = next ? *next : 0;
+		Lig.code = *code;
+
+		pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
+
 		if(pL)
 		{
-			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
-			bIsSecond = true;
+			next++;
+			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));
 		}
-	}
-
-	// if this is a ligature, handle it
-	if(pL)
-	{
-		context = bIsSecond ? _evalGlyphContext(prev, prev+1, next)
-											: _evalGlyphContext(code, prev, next);
-		UT_UCSChar glyph = 0;
-		switch (context)
+		else
 		{
-			case GC_INITIAL:
-				glyph = pL->initial;
-				break;
-			case GC_MEDIAL:
-				glyph = pL->medial;
-				break;
-			case GC_FINAL:
-				glyph = pL->final;
-				break;
-			case GC_ISOLATE:
-				glyph = pL->alone;
-				break;
-			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			Lig.next = prev ? *prev : 0;
+			pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
+			if(pL)
+			{
+				xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
+				bIsSecond = true;
+			}
 		}
 
-		UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
-		if(!bIsSecond && glyph != 1) //first part of a ligature
-			return glyph;
-		if(bIsSecond && glyph != 1)
+		// if this is a ligature, handle it
+		if(pL)
 		{
-			// a special ligature glyph was used, map this to a 0-width non breaking space
-			return 0xFEFF;
+			context = bIsSecond ? _evalGlyphContext(prev, prev+1, next)
+				: _evalGlyphContext(code, prev, next);
+			UT_UCSChar glyph = 0;
+			switch (context)
+			{
+				case GC_INITIAL:
+					glyph = pL->initial;
+					break;
+				case GC_MEDIAL:
+					glyph = pL->medial;
+					break;
+				case GC_FINAL:
+					glyph = pL->final;
+					break;
+				case GC_ISOLATE:
+					glyph = pL->alone;
+					break;
+				default:
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+
+			UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
+			if(!bIsSecond && glyph != 1) //first part of a ligature
+				return glyph;
+			if(bIsSecond && glyph != 1)
+			{
+				// a special ligature glyph was used, map this to a 0-width non breaking space
+				return 0xFEFF;
+			}
+
+			// if we got here, the glyph was 1, which means this form is to be just
+			// treated as an ordinary letter, also if this was a first part of the ligature
+			// we already know its context, but not if it was a second part of lig.
 		}
 
-		// if we got here, the glyph was 1, which means this form is to be just
-		// treated as an ordinary letter, also if this was a first part of the ligature
-		// we already know its context, but not if it was a second part of lig.
-	}
 
+		// if we have no pL we are dealing with an ordinary letter
+		pL = (Letter*) bsearch((void*)code, (void*)s_pGlyphTable, s_iGlyphTableSize/sizeof(Letter),sizeof(Letter),s_comp);
 
-	// if we have no pL we are dealing with an ordinary letter
-	pL = (Letter*) bsearch((void*)code, (void*)s_pGlyphTable, s_iGlyphTableSize/sizeof(Letter),sizeof(Letter),s_comp);
-
-	// if we still have no pL, it means the letter has only one form
-	// so we return it back
-	if(!pL)
-		return *code;
-
+		// if we still have no pL, it means the letter has only one form
+		// so we return it back
+		if(!pL)
+			return *code;
+	} // was not a smart quote
+	
 	if(context == GC_NOT_SET || bIsSecond)
 		context = _evalGlyphContext(code, prev, next);
 
@@ -607,10 +737,11 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 }
 
 void UT_contextGlyph::renderString(const UT_UCSChar * src,
-							UT_UCSChar *dest,
-							UT_uint32 len,
-							const UT_UCSChar * prev,
-							const UT_UCSChar * next) const
+								   UT_UCSChar *dest,
+								   UT_uint32 len,
+								   const UT_UCSChar * prev,
+								   const UT_UCSChar * next,
+								   const XML_Char   * pLang) const
 {
 	UT_ASSERT(src);
 	UT_ASSERT(dest);
@@ -625,13 +756,11 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 
 	for(UT_uint32 i = 0; i < len; i++, src_ptr++)
 	{
-		// first, decide if this is a part of a ligature
-		// first check for a ligature form
 		LigatureData Lig;
-		Letter *pL = 0;
+		const Letter *pL = 0;
 		bool bIsSecond = false;
 		GlyphContext context = GC_NOT_SET;
-
+		
 		//get the current context
 		if(len > CONTEXT_BUFF_SIZE && i < len - CONTEXT_BUFF_SIZE)
 			next_ptr = src_ptr + 1;
@@ -660,94 +789,107 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			//no need to set prev_ptr, since this has been done when i == 1
 		}
 
-		Lig.next = next_ptr ? *next_ptr : 0;
-		Lig.code = *src_ptr;
-
-		pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
-
-		if(pL)
+		// first, deal with smart quotes
+		if(s_bSmartQuotes)
 		{
-			// we need the context of the whole pair not just of this character
-			next_ptr++;
-			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));
-		}
-		else
-		{
-			//we only check that this is not a second part of a ligature for the
-			//first character, for the rest we will handle that in the previous
-			//cycle of the loop
-			if(i == 0)
-			{
-				Lig.next = prev ? *prev : 0;
-				pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
-				if(pL)
-				{
-					xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
-					bIsSecond = true;
-				}
-			}
+			pL = smartQuote(*src_ptr,pLang);
 		}
 
-		// if this is a ligature, handle it
-		if(pL)
-		{
-			context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
-											: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
-			switch (context)
-			{
-				case GC_INITIAL:
-					glyph = pL->initial;
-					break;
-				case GC_MEDIAL:
-					glyph = pL->medial;
-					break;
-				case GC_FINAL:
-					glyph = pL->final;
-					break;
-				case GC_ISOLATE:
-					glyph = pL->alone;
-					break;
-				default:
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			}
-
-			UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
-			if(!bIsSecond && glyph != 1) //first part of a ligature
-			{
-				// we set both this and the next char if we can
-				*dst_ptr++ = glyph;
-				if(i < len - 1)
-				{
-					*dst_ptr++ = 0xFEFF;
-					src_ptr++;
-					i++;
-					continue;
-				}
-				continue;
-			}
-			else if(bIsSecond && glyph != 1)
-			{
-				// a special ligature glyph was used, map this to a 0-width non breaking space
-				*dst_ptr++ = 0xFEFF;
-				continue;
-			}
-
-			// if we got here, the glyph was 1, which means this form is to be just
-			// treated as an ordinary letter, also if this was a first part of the ligature
-			// we already know its context, but not if it was a second part of lig.
-		}
-
-
-		// if we have no pL we are dealing with an ordinary letter
-		pL = (Letter*) bsearch((void*)src_ptr, (void*)s_pGlyphTable, s_iGlyphTableSize/sizeof(Letter),sizeof(Letter),s_comp);
-
-		// if we still have no pL, it means the letter has only one form
-		// so we return it back
+		// if this is a smart quote, than we are of the hook
 		if(!pL)
 		{
-			*dst_ptr++ = *src_ptr;
-			continue;
-		}
+			// decide if this is a part of a ligature
+			// check for a ligature form
+			
+			Lig.next = next_ptr ? *next_ptr : 0;
+			Lig.code = *src_ptr;
+
+			pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
+
+			if(pL)
+			{
+				// we need the context of the whole pair not just of this character
+				next_ptr++;
+				xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));
+			}
+			else
+			{
+				//we only check that this is not a second part of a ligature for the
+				//first character, for the rest we will handle that in the previous
+				//cycle of the loop
+				if(i == 0)
+				{
+					Lig.next = prev ? *prev : 0;
+					pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
+					if(pL)
+					{
+						xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
+						bIsSecond = true;
+					}
+				}
+			}
+
+			// if this is a ligature, handle it
+			if(pL)
+			{
+				context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
+					: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
+				switch (context)
+				{
+					case GC_INITIAL:
+						glyph = pL->initial;
+						break;
+					case GC_MEDIAL:
+						glyph = pL->medial;
+						break;
+					case GC_FINAL:
+						glyph = pL->final;
+						break;
+					case GC_ISOLATE:
+						glyph = pL->alone;
+						break;
+					default:
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				}
+
+				UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
+				if(!bIsSecond && glyph != 1) //first part of a ligature
+				{
+					// we set both this and the next char if we can
+					*dst_ptr++ = glyph;
+					if(i < len - 1)
+					{
+						*dst_ptr++ = 0xFEFF;
+						src_ptr++;
+						i++;
+						continue;
+					}
+					continue;
+				}
+				else if(bIsSecond && glyph != 1)
+				{
+					// a special ligature glyph was used, map this to a 0-width non breaking space
+					*dst_ptr++ = 0xFEFF;
+					continue;
+				}
+
+				// if we got here, the glyph was 1, which means this form is to be just
+				// treated as an ordinary letter, also if this was a first part of the ligature
+				// we already know its context, but not if it was a second part of lig.
+			}
+		
+			// if we have no pL we are dealing with an ordinary letter
+			pL = (Letter*) bsearch((void*)src_ptr, (void*)s_pGlyphTable, s_iGlyphTableSize/sizeof(Letter),sizeof(Letter),s_comp);
+
+			// if we still have no pL, it means the letter has only one form
+			// so we return it back
+			if(!pL)
+			{
+				*dst_ptr++ = *src_ptr;
+				continue;
+			}
+		} // was not a smart quote
+		
 
 		if(context == GC_NOT_SET || bIsSecond)
 			context = _evalGlyphContext(src_ptr, prev_ptr, next_ptr);

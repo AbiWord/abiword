@@ -216,7 +216,7 @@ ap_bs_NVK NVKTable[] =
 	{EV_NVK_BACKSPACE,	{ "delLeft", 			"delLeft",			"delBOW",		"",
 						  "",					"",					"",				""					}},
 	{EV_NVK_SPACE,		{ "insertSpace",		"insertSpace",		"togglePlain",	"insertNBSpace",
-						  "",					"",					"",				""					}},
+						  "insertNBZWSpace",	"insertZWJoiner",					"",				""					}},
 	{EV_NVK_TAB,		{ "insertTab",			"",					"cycleWindows",	"cycleWindowsBck",
 						  "",					"",					"",				""					}},
 	{EV_NVK_RETURN,		{ "insertParagraphBreak", "insertLineBreak", "insertPageBreak", "insertColumnBreak",
