@@ -311,6 +311,11 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
+#ifdef DEBUG
+	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping block AP\n"));
+	if(pBlockAP)
+		pBlockAP->miniDump(pDoc);
+#endif
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
 	if(m_pRevisions)
@@ -333,6 +338,12 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	}
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 
+#ifdef DEBUG
+	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping span AP\n"));
+	if(pSpanAP)
+		pSpanAP->miniDump(pDoc);
+#endif
+	
 	//evaluate the "display" property and superimpose it over anything
 	//we got as the result of revisions
 	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
@@ -3534,7 +3545,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setColorHL(r);
 	}
 
-
+	
 	const XML_Char* pszType = NULL;
 	const XML_Char* pszParam = NULL;
 
@@ -3640,8 +3651,8 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		}
 		q = strtok(NULL, " ");
 	}
-	free(p);
 
+	free(p);
 }
 
 
