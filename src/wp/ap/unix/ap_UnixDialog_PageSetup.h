@@ -35,7 +35,6 @@ public:
 
 	virtual void event_OK (void);
 	virtual void event_Cancel (void);
-	virtual void event_WindowDelete (void);
 
 	virtual void event_PageSizeChanged (fp_PageSize::Predefined pageSize);
 	virtual void event_PageUnitsChanged ();
@@ -52,9 +51,13 @@ public:
 
 	// pointers to all the action items
 	GtkWidget * m_window;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
 
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
  private:
 	// pointers to widgets that we may need to query
 	GtkWidget * m_optionPageSize;
