@@ -531,6 +531,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
 	  return EV_MIS_Gray;
   }
+  else if(pView->getHyperLinkRun(pView->getPoint()) != NULL)
+  {
+	  return EV_MIS_Gray;
+  }
   return s;
 }
 
@@ -1433,6 +1437,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	{
 		return EV_MIS_Gray;
 	}
+	else if(pView->getHyperLinkRun(pView->getPoint()) != NULL)
+	{
+		return EV_MIS_Gray;
+	}
     return EV_MIS_ZERO;
 }
 
@@ -1465,16 +1473,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 {
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
-
+	if(pView->getHyperLinkRun(pView->getPoint()) != NULL)
+	{
+		return EV_MIS_Gray;
+	}
 	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
 		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
 	}
-	else
-	{
-		return EV_MIS_Gray;
-	}
+	return EV_MIS_Gray;
+
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
@@ -1542,6 +1551,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 		return EV_MIS_Gray;
 	}
 	else if(pView->getSelectionMode() >= FV_SelectionMode_Multiple)
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->getHyperLinkRun(pView->getPoint()) != NULL)
 	{
 		return EV_MIS_Gray;
 	}

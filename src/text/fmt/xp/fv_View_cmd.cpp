@@ -2968,6 +2968,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 		return 0;
 	}
+
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
 //
@@ -2990,6 +2991,17 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 		m_pDoc->setDontImmediatelyLayout(true);
 	}
+	if(getHyperLinkRun(getPoint()) != NULL)
+	{
+
+	// Signal PieceTable Changes have finished
+	// restore updates and clean up dirty lists
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+		_restorePieceTableState();
+		return 0;
+	}
+
 //
 // insert a block to terminate the text before this.
 //

@@ -10099,6 +10099,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
+	if(getHyperLinkRun(getPoint()) != NULL)
+	{
+		return false;
+	}
+
 //
 // Do this first
 //
