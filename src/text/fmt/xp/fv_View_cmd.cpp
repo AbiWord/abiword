@@ -3438,7 +3438,20 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
-
+	if(iPosLeft > iPosRight)
+	{
+		return;
+	}
+	if(!isInFrame(iPosLeft) && isInFrame(iPosRight))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iPosRight);
+		iPosRight =pFL->getPosition(true)-1;
+	}
+	if(isInFrame(iPosLeft) && !isInFrame(iPosRight))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iPosLeft);
+		iPosRight =pFL->getPosition(true) + pFL->getLength() -1;
+	}
 	if(iPosLeft == iPosRight) return;
 //
 // Code to select a paragraph break on selectLine if on first line of a Block.

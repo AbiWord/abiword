@@ -401,6 +401,17 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 			bDeleteTables = true;
 		}
 	}
+	if(!isInFrame(iLow) && isInFrame(iHigh))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iHigh);
+		iHigh =pFL->getPosition(true)-1;
+	}
+	if(isInFrame(iLow) && !isInFrame(iHigh))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iLow);
+		iHigh =pFL->getPosition(true) + pFL->getLength() -1;
+	}
+
 	_resetSelection();
 
 	if(!bNoUpdate)
@@ -955,9 +966,19 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		if (pBlock->getNextBlockInDocument())
 		{
+			fl_BlockLayout * pPrev = pBlock;
 			// BOB for next block
 			pBlock = pBlock->getNextBlockInDocument();
-			iPos = pBlock->getPosition();
+			if((pBlock->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) && 
+			   (pPrev->myContainingLayout()->getContainerType() != FL_CONTAINER_FRAME))
+			{
+				fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pBlock->myContainingLayout());
+				iPos = pFL->getPosition(true) -1;
+			}
+			else
+			{
+				iPos = pBlock->getPosition();
+			}
 		}
 		else
 		{
@@ -5506,7 +5527,7 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	fl_BlockLayout * pBlock = _findBlockAtPosition(iDocPos);
 
 	UT_return_if_fail( pBlock );
-	if(pBlock->getLength() <  iDocPos - pBlock->getPosition())
+	if(static_cast<UT_uint32>(pBlock->getLength()) <  iDocPos - pBlock->getPosition())
 	{
 		return;
 	}
@@ -5531,7 +5552,7 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 
 		fl_BlockLayout * pEndBlock = _findBlockAtPosition(iOrigEndOffset);
 		UT_return_if_fail( pEndBlock );
-		if(pEndBlock->getLength() <  iOrigEndOffset - pEndBlock->getPosition())
+		if(static_cast<UT_uint32>(pEndBlock->getLength()) <  iOrigEndOffset - pEndBlock->getPosition())
 		{
 			return;
 		}
