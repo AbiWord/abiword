@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2002 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,15 +18,13 @@
  * 02111-1307, USA.
  */
 
+#import <Cocoa/Cocoa.h>
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
 
 #include "gr_CocoaGraphics.h"
 
@@ -41,11 +40,37 @@
 
 #include "ap_CocoaDialog_Options.h"
 
-/*****************************************************************/
+/*!
+	This class is a proxy class to allow accessing some members
+	that are protected in AP_CocoaDialog_Options.
+	
+	Note: the whole class methods are inline static and not meant 
+	to be constructed.
+ */
+class AP_CocoaDialog_OptionsController_proxy
+{
+public:
+	static void _event_DictionaryEdit(AP_CocoaDialog_Options *obj)
+		{
+			obj->_event_DictionaryEdit();
+		};
+	static void _event_SetDefaults(AP_CocoaDialog_Options *obj)
+		{
+			obj->_event_SetDefaults();
+		};
+	static void _event_IgnoreEdit(AP_CocoaDialog_Options *obj)
+		{
+			obj->_event_IgnoreEdit();
+		};
+	static void _event_IgnoreReset(AP_CocoaDialog_Options *obj)
+		{
+			obj->_event_IgnoreReset();
+		};
+private:
+	AP_CocoaDialog_OptionsController_proxy ();	//don't allow contruction
+};
 
-#define WIDGET_MENU_OPTION_PTR		"menuoptionptr"
-#define WIDGET_MENU_VALUE_TAG		"value"
-
+#if 0
 /*****************************************************************/
 
 //
@@ -68,17 +93,18 @@ static void s_radio_toggled (GtkWidget * w, GtkWidget * c)
 
   gtk_clist_set_row_data (clist, row, GINT_TO_POINTER(b));
 }
+#endif
 
 XAP_Dialog * AP_CocoaDialog_Options::static_constructor(XAP_DialogFactory * pFactory,
-                                                         XAP_Dialog_Id id)
+                                                         XAP_Dialog_Id dlgid)
 {
-    AP_CocoaDialog_Options * p = new AP_CocoaDialog_Options(pFactory,id);
+    AP_CocoaDialog_Options * p = new AP_CocoaDialog_Options(pFactory,dlgid);
     return p;
 }
 
 AP_CocoaDialog_Options::AP_CocoaDialog_Options(XAP_DialogFactory * pDlgFactory,
-					     XAP_Dialog_Id id)
-  : AP_Dialog_Options(pDlgFactory,id)
+					     XAP_Dialog_Id dlgid)
+  : AP_Dialog_Options(pDlgFactory, dlgid)
 {
 }
 
@@ -90,64 +116,48 @@ AP_CocoaDialog_Options::~AP_CocoaDialog_Options(void)
 
 void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 {
-    // Build the window's widgets and arrange them
-    GtkWidget * mainWindow = _constructWindow();
-    UT_ASSERT(mainWindow);
+	m_dlg = [AP_CocoaDialog_OptionsController loadFromNib];
+	[m_dlg setXAPOwner:this];
+	
 
-    connectFocus(GTK_WIDGET(mainWindow),pFrame);
+//    connectFocus(GTK_WIDGET(mainWindow),pFrame);
     // save for use with event
     m_pFrame = pFrame;
 
+	NSWindow *win = [m_dlg window];		// force the window to be loaded.
     // Populate the window's data items
     _populateWindowData();
 	_initCocoaOnlyPrefs();
 
-    // To center the dialog, we need the frame of its parent.
-    XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-    UT_ASSERT(pCocoaFrame);
-
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
-
     // Run into the GTK event loop for this window.
     do {
-	gtk_main();
+		[NSApp runModalForWindow:win];
 
-	switch ( m_answer )
-	{
-	case AP_Dialog_Options::a_OK:
-	    _storeWindowData();
-	    break;
-
-	case AP_Dialog_Options::a_APPLY:
-	    UT_DEBUGMSG(("Applying changes\n"));
-	    _storeWindowData();
-	    break;
-
-	case AP_Dialog_Options::a_CANCEL:
-	    break;
-
-	default:
-	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	    break;
-	};
+		switch ( m_answer )
+		{
+		case AP_Dialog_Options::a_OK:
+			_storeWindowData();
+			break;
+	
+		case AP_Dialog_Options::a_APPLY:
+			UT_DEBUGMSG(("Applying changes\n"));
+			_storeWindowData();
+			break;
+	
+		case AP_Dialog_Options::a_CANCEL:
+			break;
+	
+		default:
+			UT_ASSERT_NOT_REACHED();
+			break;
+		};
 
     } while ( m_answer == AP_Dialog_Options::a_APPLY );
-
-    if (mainWindow && GTK_IS_WIDGET(mainWindow))
-	gtk_widget_destroy(mainWindow);
+	m_dlg = nil;
 }
+
+
+#if 0
 
 void AP_CocoaDialog_Options::event_clistClicked (int row, int col)
 {
@@ -185,9 +195,11 @@ void AP_CocoaDialog_Options::event_clistClicked (int row, int col)
 }
 
 #undef CTI
+#endif
 
 void AP_CocoaDialog_Options::event_ChooseTransparentColor(void)
 {
+#if 0
 //
 // Run the Background dialog over the options? No the title is wrong.
 //
@@ -264,9 +276,10 @@ void AP_CocoaDialog_Options::event_ChooseTransparentColor(void)
 //
 	if(dlg && GTK_IS_WIDGET(dlg))
 		gtk_widget_destroy(dlg);
-
+#endif
 }
 
+#if 0
 void AP_CocoaDialog_Options::event_AllowTransparentColor(void)
 {
 //
@@ -281,24 +294,26 @@ void AP_CocoaDialog_Options::event_AllowTransparentColor(void)
 		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,TRUE);
 }
 
+#endif
 void AP_CocoaDialog_Options::event_OK(void)
 {
     m_answer = AP_Dialog_Options::a_OK;
-    gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_Options::event_Cancel(void)
 {
     m_answer = AP_Dialog_Options::a_CANCEL;
-    gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_Options::event_Apply(void)
 {
     m_answer = AP_Dialog_Options::a_APPLY;
-    gtk_main_quit();
+	[NSApp stopModal];
 }
 
+#if 0
 void AP_CocoaDialog_Options::event_WindowDelete(void)
 {
     m_answer = AP_Dialog_Options::a_CANCEL;
@@ -1195,171 +1210,39 @@ GtkWidget* AP_CocoaDialog_Options::_constructWindow ()
 	return mainWindow;
 }
 
-GtkWidget *AP_CocoaDialog_Options::_lookupWidget ( tControl id )
+#endif
+/*!
+	Enable a control
+ */
+void AP_CocoaDialog_Options::_controlEnable( tControl ctlid, bool value )
 {
-	switch (id)
-	{
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// spell
-	case id_CHECK_SPELL_CHECK_AS_TYPE:
-		return m_checkbuttonSpellCheckAsType;
+	UT_ASSERT (m_dlg);
+	NSControl *w = [m_dlg _lookupWidget:ctlid];
 
-	case id_CHECK_SPELL_HIDE_ERRORS:
-		return m_checkbuttonSpellHideErrors;
-
-	case id_CHECK_SPELL_SUGGEST:
-		return m_checkbuttonSpellSuggest;
-
-	case id_CHECK_SPELL_MAIN_ONLY:
-		return m_checkbuttonSpellMainOnly;
-
-	case id_CHECK_SPELL_UPPERCASE:
-		return m_checkbuttonSpellUppercase;
-
-	case id_CHECK_SPELL_NUMBERS:
-		return m_checkbuttonSpellNumbers;
-
-	case id_CHECK_SPELL_INTERNET:
-		return m_checkbuttonSpellInternet;
-
-	case id_LIST_DICTIONARY:
-		return m_listSpellDicts;
-
-	case id_BUTTON_DICTIONARY_EDIT:
-		return m_buttonSpellDictionary;
-
-	case id_BUTTON_IGNORE_RESET:
-		return m_buttonSpellIgnoreReset;
-
-	case id_BUTTON_IGNORE_EDIT:
-		return m_buttonSpellIgnoreEdit;
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// other
-	case id_CHECK_SMART_QUOTES_ENABLE:
-		return m_checkbuttonSmartQuotesEnable;
-
-	case id_LIST_DEFAULT_PAGE_SIZE:
-		return m_listDefaultPageSize;
-
-	case id_SHOWSPLASH:
-		return m_checkbuttonShowSplash;
-
-	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
-		return m_checkbuttonOtherDirectionRtl;
-
-	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherUseContextGlyphs;
-
-	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherSaveContextGlyphs;
-
-	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherHebrewContextGlyphs;
-
-	case id_CHECK_AUTO_SAVE_FILE:
-		return m_checkbuttonAutoSaveFile;
-
-	case id_TEXT_AUTO_SAVE_FILE_EXT:
-		return m_textAutoSaveFileExt;
-
-	case id_TEXT_AUTO_SAVE_FILE_PERIOD:
-		return m_textAutoSaveFilePeriod;
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// prefs
-	case id_CHECK_PREFS_AUTO_SAVE:
-		return m_checkbuttonPrefsAutoSave;
-
-	case id_COMBO_PREFS_SCHEME:
-		return m_comboPrefsScheme;
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// view
-	case id_CHECK_VIEW_SHOW_RULER:
-		return m_checkbuttonViewShowRuler;
-
-	case id_LIST_VIEW_RULER_UNITS:
-		return m_listViewRulerUnits;
-
-	case id_CHECK_VIEW_CURSOR_BLINK:
-		return m_checkbuttonViewCursorBlink;
-
-	case id_CHECK_VIEW_SHOW_STATUS_BAR:
-		return m_checkbuttonViewShowStatusBar;
-
-	case id_CHECK_VIEW_ALL:
-		return m_checkbuttonViewAll;
-
-	case id_CHECK_VIEW_HIDDEN_TEXT:
-		return m_checkbuttonViewHiddenText;
-
-	case id_CHECK_VIEW_UNPRINTABLE:
-		return m_checkbuttonViewUnprintable;
-
-	case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
-		return m_checkbuttonAllowCustomToolbars;
-
-	case id_CHECK_AUTO_LOAD_PLUGINS:
-		return m_checkbuttonAutoLoadPlugins;
-
-	case id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
-		return  m_checkbuttonTransparentIsWhite;
-
-	case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
-		return  m_pushbuttonNewTransparentColor;
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// general
-
-	case id_BUTTON_DEFAULTS:
-		return m_buttonDefaults;
-
-	case id_BUTTON_OK:
-		return m_buttonOK;
-
-	case id_BUTTON_CANCEL:
-		return m_buttonCancel;
-
-	case id_BUTTON_APPLY:
-		return m_buttonApply;
-
-		// not implemented
-	case id_BUTTON_SAVE:
-	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
-	  return 0;
-
-	default:
-		UT_ASSERT("Unknown Widget");
-		return 0;
+	if (w) {
+	  [w setEnabled:(value?YES:NO)];
 	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return 0;
-}
-
-void AP_CocoaDialog_Options::_controlEnable( tControl id, bool value )
-{
-	GtkWidget *w = _lookupWidget(id);
-
-	if (w && GTK_IS_WIDGET (w))
-	  gtk_widget_set_sensitive( w, value );
 }
 
 
 #define DEFINE_CLIST_GET_SET_BOOL(itm, row) \
 bool AP_CocoaDialog_Options::_gather##itm(void) { \
-        UT_ASSERT (m_toolbarClist); \
-        bool b = (bool)GPOINTER_TO_INT (gtk_clist_get_row_data (GTK_CLIST (m_toolbarClist), row)); \
-        xxx_UT_DEBUGMSG(("DOM: _gather %d %d\n", row, b)); \
+		NSTableView * list = [m_dlg _lookupWidget:id_LIST_VIEW_TOOLBARS]; \
+        UT_ASSERT (list); \
+		bool b = [list isRowSelected:row]; \
+        UT_DEBUGMSG(("Hub: _gather %d %d\n", row, b)); \
         return b; \
 } \
 void AP_CocoaDialog_Options::_set##itm(bool b) { \
-        UT_ASSERT (m_toolbarClist); \
-        xxx_UT_DEBUGMSG(("DOM: _set %d %d\n", row, b)); \
-        gtk_clist_set_row_data (GTK_CLIST (m_toolbarClist), row, GINT_TO_POINTER(b)); \
+ 		NSTableView * list = [m_dlg _lookupWidget:id_LIST_VIEW_TOOLBARS]; \
+		UT_ASSERT (list); \
+        UT_DEBUGMSG(("Hub: _set %d %d\n", row, b)); \
+		if (b) { \
+			[list selectRow:row byExtendingSelection:YES]; \
+		} \
+		else { \
+			[list deselectRow:row]; \
+		} \
 }
 
 DEFINE_CLIST_GET_SET_BOOL(ViewShowStandardBar, 0);
@@ -1368,90 +1251,102 @@ DEFINE_CLIST_GET_SET_BOOL(ViewShowExtraBar, 2);
 #undef DEFINE_CLIST_GET_SET_BOOL
 
 
-#define DEFINE_GET_SET_BOOL(button) \
+#define DEFINE_GET_SET_BOOL(button, btnId) \
 bool     AP_CocoaDialog_Options::_gather##button(void) {				\
-	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
-	return gtk_toggle_button_get_active(								\
-				GTK_TOGGLE_BUTTON(m_checkbutton##button) ); }			\
+	NSButton * btn = [m_dlg _lookupWidget:btnId]; \
+	UT_ASSERT(btn); \
+	return ([btn state] != NSOffState); }\
 void        AP_CocoaDialog_Options::_set##button(bool b) {	\
-	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
-	gtk_toggle_button_set_active (										\
-				GTK_TOGGLE_BUTTON(m_checkbutton##button), b ); }
+	NSButton * btn = [m_dlg _lookupWidget:btnId]; \
+	UT_ASSERT(btn); \
+	[btn setState:(b?NSOnState:NSOffState)]; }
 
-#define DEFINE_GET_SET_TEXT(widget) \
+#define DEFINE_GET_SET_TEXT(widget, btnId) \
 char *		AP_CocoaDialog_Options::_gather##widget() {				\
-	UT_ASSERT(m_text##widget && GTK_IS_EDITABLE(m_text##widget));	\
-	return gtk_editable_get_chars(GTK_EDITABLE(m_text##widget), 0, -1); }			\
+	NSButton * txt = [m_dlg _lookupWidget:btnId]; \
+	UT_ASSERT(txt); \
+	NSString * str = [txt textValue]; \
+	return [str cString]; }			\
 \
 void		AP_CocoaDialog_Options::_set##widget(const char *t) {	\
-	int pos = 0;													\
-	UT_ASSERT(m_text##widget && GTK_IS_EDITABLE(m_text##widget));	\
-	gtk_editable_delete_text(GTK_EDITABLE(m_text##widget), 0, -1);				\
-	gtk_editable_insert_text(GTK_EDITABLE(m_text##widget), t, strlen(t), &pos);	\
+	NSButton * txt = [m_dlg _lookupWidget:btnId]; \
+	UT_ASSERT(txt); \
+	NSString * str = [NSString stringWithCString:t]; \
+	[txt setTextValue:str]; \
 }
 
-DEFINE_GET_SET_BOOL(SpellCheckAsType);
-DEFINE_GET_SET_BOOL(SpellHideErrors);
-DEFINE_GET_SET_BOOL(SpellSuggest);
-DEFINE_GET_SET_BOOL(SpellMainOnly);
-DEFINE_GET_SET_BOOL(SpellUppercase);
-DEFINE_GET_SET_BOOL(SpellNumbers);
-DEFINE_GET_SET_BOOL(SpellInternet);
-DEFINE_GET_SET_BOOL(SmartQuotesEnable);
+DEFINE_GET_SET_BOOL(SpellCheckAsType, id_CHECK_SPELL_CHECK_AS_TYPE);
+DEFINE_GET_SET_BOOL(SpellHideErrors, id_CHECK_SPELL_HIDE_ERRORS);
+DEFINE_GET_SET_BOOL(SpellSuggest, id_CHECK_SPELL_SUGGEST);
+DEFINE_GET_SET_BOOL(SpellMainOnly, id_CHECK_SPELL_MAIN_ONLY);
+DEFINE_GET_SET_BOOL(SpellUppercase, id_CHECK_SPELL_UPPERCASE);
+DEFINE_GET_SET_BOOL(SpellNumbers, id_CHECK_SPELL_NUMBERS);
+DEFINE_GET_SET_BOOL(SpellInternet, id_CHECK_SPELL_INTERNET);
+DEFINE_GET_SET_BOOL(SmartQuotesEnable, id_CHECK_SMART_QUOTES_ENABLE);
 
-DEFINE_GET_SET_BOOL(OtherDirectionRtl);
-DEFINE_GET_SET_BOOL(OtherUseContextGlyphs);
-DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs);
-DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs);
+DEFINE_GET_SET_BOOL(OtherDirectionRtl, id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);
+DEFINE_GET_SET_BOOL(OtherUseContextGlyphs, id_CHECK_OTHER_USE_CONTEXT_GLYPHS);
+DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs, id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);
+DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs, id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);
 
-DEFINE_GET_SET_BOOL(AutoSaveFile);
-DEFINE_GET_SET_BOOL(ShowSplash);
-DEFINE_GET_SET_BOOL(PrefsAutoSave);
-DEFINE_GET_SET_BOOL(ViewShowRuler);
-DEFINE_GET_SET_BOOL(ViewShowStatusBar);
+DEFINE_GET_SET_BOOL(AutoSaveFile, id_CHECK_AUTO_SAVE_FILE);
+DEFINE_GET_SET_BOOL(ShowSplash, id_SHOWSPLASH);
+DEFINE_GET_SET_BOOL(PrefsAutoSave, id_CHECK_PREFS_AUTO_SAVE);
+DEFINE_GET_SET_BOOL(ViewShowRuler, id_CHECK_VIEW_SHOW_RULER);
+DEFINE_GET_SET_BOOL(ViewShowStatusBar, id_CHECK_VIEW_SHOW_STATUS_BAR);
 
 void AP_CocoaDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
-	UT_ASSERT(m_textAutoSaveFileExt && GTK_IS_EDITABLE(m_textAutoSaveFileExt));
-	char *tmp = gtk_editable_get_chars(GTK_EDITABLE(m_textAutoSaveFileExt), 0, -1);
-	stRetVal = tmp;
-	g_free(tmp);
+	NSTextField * txt = [m_dlg _lookupWidget:id_TEXT_AUTO_SAVE_FILE_EXT];
+	NSString * str = [txt stringValue];
+	stRetVal = [str cString];
 }
 
 void AP_CocoaDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 {
-	int pos = 0;
-	UT_ASSERT(m_textAutoSaveFileExt && GTK_IS_EDITABLE(m_textAutoSaveFileExt));
-	gtk_editable_delete_text(GTK_EDITABLE(m_textAutoSaveFileExt), 0, -1);
-	gtk_editable_insert_text(GTK_EDITABLE(m_textAutoSaveFileExt), stExt.c_str(), stExt.size(), &pos);
+	NSTextField * txt = [m_dlg _lookupWidget:id_TEXT_AUTO_SAVE_FILE_EXT];
+	NSString * str = [NSString stringWithCString:stExt.c_str()];
+	[txt setStringValue:str];
 }
+
 
 void AP_CocoaDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 {
-	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_SPIN_BUTTON(m_textAutoSaveFilePeriod));
-	char nb[12];
-	int val = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod));
-	g_snprintf(nb, 12, "%d", val);
-	stRetVal = nb;
+	NSTextField * txt = [m_dlg _lookupWidget:AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD];
+	NSNumberFormatter * formatter = [txt formatter];
+	
+//	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_SPIN_BUTTON(m_textAutoSaveFilePeriod));
+//	char nb[12];
+//	int val = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod));
+//	g_snprintf(nb, 12, "%d", val);
+//	stRetVal = nb;
 }
 
 void AP_CocoaDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 {
-	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_EDITABLE(m_textAutoSaveFilePeriod));
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod), atoi(stPeriod.c_str()));
+	NSTextField * txt = [m_dlg _lookupWidget:AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD];
+	NSNumberFormatter * formatter = [txt formatter];
+
+//	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_EDITABLE(m_textAutoSaveFilePeriod));
+//	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod), atoi(stPeriod.c_str()));
 }
+
 
 UT_Dimension AP_CocoaDialog_Options::_gatherViewRulerUnits(void)
 {
-	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits));
-	return (UT_Dimension)((gint)g_object_get_data( G_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG ));
+	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_VIEW_RULER_UNITS];
+	NSMenuItem * item = [popup itemAtIndex:[popup indexOfSelectedItem]];
+	return (UT_Dimension)[item tag];
 }
 
 fp_PageSize::Predefined AP_CocoaDialog_Options::_gatherDefaultPageSize(void)
 {
-	UT_ASSERT(m_listDefaultPageSize && GTK_IS_OPTION_MENU(m_listDefaultPageSize));
-	return (fp_PageSize::Predefined) ((gint)g_object_get_data( G_OBJECT(m_listDefaultPageSize), WIDGET_MENU_VALUE_TAG ));
+	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_DEFAULT_PAGE_SIZE];
+	NSMenuItem * item = [popup itemAtIndex:[popup indexOfSelectedItem]];
+	return (fp_PageSize::Predefined)[item tag];
 }
+
+#if 0
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // This function will lookup a option box by the value stored in the
@@ -1509,70 +1404,57 @@ int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key 
 
 	return data.found;
 }
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void    AP_CocoaDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 {
-	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits));
+#if 0
+	UT_ASSERT(m_listViewRulerUnits);
 
 	int r = option_menu_set_by_key ( m_listViewRulerUnits, (gpointer)dim, WIDGET_MENU_VALUE_TAG );
 	UT_ASSERT( r != -1 );
+#endif
 }
 
 void AP_CocoaDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
 {
-	UT_ASSERT(m_listDefaultPageSize && GTK_IS_OPTION_MENU(m_listDefaultPageSize));
+#if 0
+	UT_ASSERT(m_listDefaultPageSize);
 
 	int r = option_menu_set_by_key ( m_listDefaultPageSize, (gpointer)pre, WIDGET_MENU_VALUE_TAG );
 	UT_ASSERT( r != -1 );
+#endif
 }
 
-DEFINE_GET_SET_BOOL	(ViewCursorBlink);
 
-DEFINE_GET_SET_BOOL	(ViewAll);
-DEFINE_GET_SET_BOOL	(ViewHiddenText);
-DEFINE_GET_SET_BOOL	(ViewUnprintable);
-DEFINE_GET_SET_BOOL (AllowCustomToolbars);
-DEFINE_GET_SET_BOOL (AutoLoadPlugins);
+DEFINE_GET_SET_BOOL	(ViewCursorBlink, id_CHECK_VIEW_CURSOR_BLINK);
+
+DEFINE_GET_SET_BOOL	(ViewAll, id_CHECK_VIEW_ALL);
+DEFINE_GET_SET_BOOL	(ViewHiddenText, id_CHECK_VIEW_HIDDEN_TEXT);
+DEFINE_GET_SET_BOOL	(ViewUnprintable, id_CHECK_VIEW_UNPRINTABLE);
+DEFINE_GET_SET_BOOL (AllowCustomToolbars, id_CHECK_ALLOW_CUSTOM_TOOLBARS);
+DEFINE_GET_SET_BOOL (AutoLoadPlugins, id_CHECK_AUTO_LOAD_PLUGINS);
 
 #undef DEFINE_GET_SET_BOOL
 
+
 int AP_CocoaDialog_Options::_gatherNotebookPageNum(void)
 {
-	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook));
-	return gtk_notebook_get_current_page( GTK_NOTEBOOK(m_notebook) );
+	NSTabView * tab = [m_dlg _lookupWidget:AP_Dialog_Options::id_NOTEBOOK];
+	return [tab indexOfTabViewItem:[tab selectedTabViewItem]];
 }
 
 void    AP_CocoaDialog_Options::_setNotebookPageNum(int pn)
 {
-	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook));
-	gtk_notebook_set_page( GTK_NOTEBOOK(m_notebook), pn );
+	NSTabView * tab = [m_dlg _lookupWidget:AP_Dialog_Options::id_NOTEBOOK];
+	[tab selectTabViewItemAtIndex:pn];
 }
+
+#if 0
 
 /*****************************************************************/
-
-// sample callback function
-/*static*/ void AP_CocoaDialog_Options::s_ok_clicked(GtkWidget * /*widget*/, gpointer data)
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(dlg);
-	dlg->event_OK();
-}
-
-/*static*/ void AP_CocoaDialog_Options::s_cancel_clicked(GtkWidget * widget, gpointer data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
-/*static*/ void AP_CocoaDialog_Options::s_apply_clicked(GtkWidget * widget, gpointer data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_Apply();
-}
 
 /*static*/ void AP_CocoaDialog_Options::s_delete_clicked(GtkWidget * /* widget */, GdkEvent * /*event*/, gpointer data )
 {
@@ -1582,42 +1464,6 @@ void    AP_CocoaDialog_Options::_setNotebookPageNum(int pn)
 	dlg->event_WindowDelete();
 }
 
-
-/*static*/ void AP_CocoaDialog_Options::s_ignore_reset_clicked( GtkWidget * /* widget */, gpointer  data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(dlg);
-	dlg->_event_IgnoreReset();
-}
-
-/*static*/ void AP_CocoaDialog_Options::s_ignore_edit_clicked( GtkWidget * /* widget */, gpointer  data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(dlg);
-	dlg->_event_IgnoreEdit();
-}
-
-/*static*/ void AP_CocoaDialog_Options::s_dict_edit_clicked( GtkWidget * /* widget */, gpointer  data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(dlg);
-	dlg->_event_DictionaryEdit();
-}
-
-/*static*/ void AP_CocoaDialog_Options::s_defaults_clicked( GtkWidget *widget, gpointer data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->_event_SetDefaults();
-}
-
-
-/*static*/ void AP_CocoaDialog_Options::s_chooseTransparentColor( GtkWidget *widget, gpointer data )
-{
-	AP_CocoaDialog_Options * dlg = (AP_CocoaDialog_Options *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_ChooseTransparentColor();
-}
 
 
 /*static*/ void AP_CocoaDialog_Options::s_allowTransparentColor( GtkWidget *widget, gpointer data )
@@ -1670,42 +1516,14 @@ void    AP_CocoaDialog_Options::_setNotebookPageNum(int pn)
   dlg->event_clistClicked (row, col);
 }
 
+#endif
+
 void AP_CocoaDialog_Options::_initCocoaOnlyPrefs()
 {
-	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), FALSE);
-	}
-	else
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), TRUE);
-	}
-
-	bool bFontWarning;
-	bool bRet = m_pApp->getPrefsValueBool(XAP_PREF_KEY_ShowCocoaFontWarning, &bFontWarning);
-    UT_DEBUGMSG(("bRet %d, bFontWarning %d\n",bRet,bFontWarning));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning), bFontWarning);
-
-	bRet = m_pApp->getPrefsValueBool(XAP_PREF_KEY_ModifyCocoaFontPath, &bFontWarning);
-    UT_DEBUGMSG(("bRet %d, FontPath %d\n",bRet,bFontWarning));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_checkbuttonFontPath), bFontWarning);
 }
 
 void AP_CocoaDialog_Options::_saveCocoaOnlyPrefs()
 {
-	XAP_Prefs *pPrefs = m_pApp->getPrefs();
-	UT_ASSERT(pPrefs);
-
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_ASSERT(pPrefsScheme);
-
-	bool bRet = pPrefsScheme->setValueBool(XAP_PREF_KEY_ShowCocoaFontWarning,
-			       gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning)));
-	UT_DEBUGMSG(("bRet %d, Font warning %d\n",bRet,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning))));
-
-	bRet = pPrefsScheme->setValueBool(XAP_PREF_KEY_ModifyCocoaFontPath,
-			       gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontPath)));
-	UT_DEBUGMSG(("bRet %d, Font path %d\n",bRet,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontPath))));
 }
 
 void AP_CocoaDialog_Options::_storeWindowData(void)
@@ -1713,3 +1531,244 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	_saveCocoaOnlyPrefs();
 	AP_Dialog_Options::_storeWindowData();
 }
+
+
+@implementation AP_CocoaDialog_OptionsController
+
++ (AP_CocoaDialog_OptionsController *)loadFromNib
+{
+	AP_CocoaDialog_OptionsController * dlg = [[AP_CocoaDialog_OptionsController alloc] initWithWindowNibName:@"ap_CocoaDlg_Options"];
+	return [dlg autorelease];
+}
+
+- (void)windowDidLoad
+{
+	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
+	// we get all our strings from the application string set
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+
+	// insert translation code here.
+	
+	//set Tab label
+	[[m_tab tabViewItemAtIndex:0] 
+	     setLabel:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Toolbars)]];
+	[m_tlbTlbBox setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Toolbars)]];
+	// add the items
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB)
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB)
+	
+	[m_tlbVisibleBox setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Visible)]];
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Show
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Hide
+	[m_tlbBtnStylBox setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Look)]];
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Icons)
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Text)
+	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Both)
+	[m_tlbViewTooltipBtn setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewTooltips)]];
+	
+}
+
+- (void)setXAPOwner:(AP_CocoaDialog_Options *)owner
+{
+	m_xap = owner;
+}
+
+- (NSView *)_lookupWidget:(AP_Dialog_Options::tControl)controlId
+{
+	switch (controlId)
+	{
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// spell
+	case AP_Dialog_Options::id_CHECK_SPELL_CHECK_AS_TYPE:
+		return m_spellCheckAsTypeBtn;
+
+	case AP_Dialog_Options::id_CHECK_SPELL_HIDE_ERRORS:
+		return m_spellHideErrBtn;
+
+	case AP_Dialog_Options::id_CHECK_SPELL_SUGGEST:
+		return m_spellAlwaysSuggBtn;
+
+	case AP_Dialog_Options::id_CHECK_SPELL_MAIN_ONLY:
+		return m_spellSuggFromMainDictBtn;
+
+	case AP_Dialog_Options::id_CHECK_SPELL_UPPERCASE:
+		return m_spellIgnoreUppercaseBtn;
+
+	case AP_Dialog_Options::id_CHECK_SPELL_NUMBERS:
+		return m_spellIgnoreWordsWithNumBtn;
+
+	case AP_Dialog_Options::id_CHECK_SPELL_INTERNET:
+		return m_spellIgnoreFileAddrBtn;
+
+	case AP_Dialog_Options::id_LIST_DICTIONARY:
+		return m_spellDictionaryPopup;
+
+	case AP_Dialog_Options::id_BUTTON_DICTIONARY_EDIT:
+		return m_spellDictEditBtn;	
+
+	case AP_Dialog_Options::id_BUTTON_IGNORE_RESET:
+		return m_spellResetDictBtn;
+
+	case AP_Dialog_Options::id_BUTTON_IGNORE_EDIT:
+		return m_spellIgnoreEditBtn;  
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// other
+	case AP_Dialog_Options::id_CHECK_SMART_QUOTES_ENABLE:
+		return m_layoutEnableSmartQuotesBtn;
+
+	case AP_Dialog_Options::id_LIST_DEFAULT_PAGE_SIZE:
+		return m_layoutDefaultPageSizePopup;
+
+	case AP_Dialog_Options::id_SHOWSPLASH:
+		return m_prefsShowSplashBtn;
+
+	case AP_Dialog_Options::id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
+		return m_prefsDefaultToRTLBtn;
+
+	case AP_Dialog_Options::id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
+		return m_prefsOtherUseContextGlyphsBtn;
+
+/* FIXME. Currently not implemented according to the ap_UnixDialog.
+	case AP_Dialog_Options::id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
+		return m_checkbuttonOtherSaveContextGlyphs;
+*/
+	case AP_Dialog_Options::id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
+		return m_prefsOtherHebrwContextGlyphBtn;
+
+	case AP_Dialog_Options::id_CHECK_AUTO_SAVE_FILE:
+		return m_prefsAutoSaveCurrentBtn;
+
+	case AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_EXT:
+		return m_prefsWithExtField;
+
+	case AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD:
+		return m_prefsAutoSaveMinField;
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// prefs
+	case AP_Dialog_Options::id_CHECK_PREFS_AUTO_SAVE:
+		return m_prefsAutoSavePrefsBtn;
+
+	case AP_Dialog_Options::id_COMBO_PREFS_SCHEME:
+		return m_prefsCurrentSetCombo;
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// view
+	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_RULER:
+		return m_layoutRulerBtn;
+
+	case AP_Dialog_Options::id_LIST_VIEW_RULER_UNITS:
+		return m_layoutUnitsPopup;
+
+	case AP_Dialog_Options::id_CHECK_VIEW_CURSOR_BLINK:
+		return m_layoutCursorBlinkBtn;
+
+	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_STATUS_BAR:
+		return m_layoutStatusBarBtn;
+
+	case AP_Dialog_Options::id_CHECK_VIEW_ALL:
+		return m_layoutViewAllBtn;
+
+	case AP_Dialog_Options::id_CHECK_VIEW_HIDDEN_TEXT:
+		return m_layoutHiddenTextBtn;
+
+	case AP_Dialog_Options::id_CHECK_VIEW_UNPRINTABLE:
+		return m_layoutInvisbleMarksBtn;
+
+	case AP_Dialog_Options::id_CHECK_ALLOW_CUSTOM_TOOLBARS:
+		return m_layoutCustomToolbarBtn;
+
+	case AP_Dialog_Options::id_CHECK_AUTO_LOAD_PLUGINS:
+		return m_prefsLoadAllPluginsBtn;
+
+	case AP_Dialog_Options::id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
+		return  m_layoutAllowScreenColorsBtn;
+
+	case AP_Dialog_Options::id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
+		return  m_layoutChooseScreenBtn;
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// general
+
+	case AP_Dialog_Options::id_BUTTON_DEFAULTS:
+		return m_defaultsBtn;
+
+	case AP_Dialog_Options::id_BUTTON_OK:
+		return m_okBtn;
+
+	case AP_Dialog_Options::id_BUTTON_CANCEL:
+		return m_cancelBtn;
+
+	case AP_Dialog_Options::id_BUTTON_APPLY:
+		return m_applyBtn;
+
+		// not implemented
+	case AP_Dialog_Options::id_BUTTON_SAVE:
+	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
+	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
+	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
+	  return nil;
+	
+	case AP_Dialog_Options::id_LIST_VIEW_TOOLBARS:
+		return m_tlbTlbList;
+	
+	case AP_Dialog_Options::id_NOTEBOOK:
+		return m_tab;
+		
+	default:
+		UT_ASSERT("Unknown Widget");
+		return 0;
+	}
+
+	UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	return 0;
+}
+
+
+- (IBAction)applyAction:(id)sender
+{
+	m_xap->event_Apply();
+}
+
+- (IBAction)cancelAction:(id)sender
+{
+	m_xap->event_Cancel();	
+}
+
+- (IBAction)chooseDictAction:(id)sender
+{
+	AP_CocoaDialog_OptionsController_proxy::_event_DictionaryEdit(m_xap);
+}
+
+- (IBAction)chooseScreenAction:(id)sender
+{
+	m_xap->event_ChooseTransparentColor();
+}
+
+- (IBAction)defaultAction:(id)sender
+{
+	AP_CocoaDialog_OptionsController_proxy::_event_SetDefaults(m_xap);
+}
+
+- (IBAction)editDictAction:(id)sender
+{
+	AP_CocoaDialog_OptionsController_proxy::_event_IgnoreEdit(m_xap);
+}
+
+- (IBAction)increaseMinutesAction:(id)sender
+{
+}
+
+- (IBAction)okAction:(id)sender
+{
+	m_xap->event_OK();	
+}
+
+- (IBAction)resetDictAction:(id)sender
+{
+	AP_CocoaDialog_OptionsController_proxy::_event_IgnoreReset(m_xap);
+}
+
+@end

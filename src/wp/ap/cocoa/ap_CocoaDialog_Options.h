@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,11 +21,95 @@
 #ifndef AP_COCOADIALOG_OPTIONS_H
 #define AP_COCOADIALOG_OPTIONS_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "xap_CocoaFontManager.h"
 
 #include "ap_Dialog_Options.h"
 
 class XAP_CocoaFrame;
+class AP_CocoaDialog_Options;
+
+
+@interface AP_CocoaDialog_OptionsController : NSWindowController
+{
+    IBOutlet NSButton *m_applyBtn;
+    IBOutlet NSButton *m_cancelBtn;
+    IBOutlet NSButton *m_defaultsBtn;
+    IBOutlet NSButton *m_layoutAllowScreenColorsBtn;
+    IBOutlet NSButton *m_layoutChooseScreenBtn;
+    IBOutlet NSButton *m_layoutCursorBlinkBtn;
+    IBOutlet NSButton *m_layoutCustomToolbarBtn;
+    IBOutlet NSTextField *m_layoutDefaultPageSizeLabel;
+    IBOutlet NSPopUpButton *m_layoutDefaultPageSizePopup;
+    IBOutlet NSButton *m_layoutEnableSmartQuotesBtn;
+    IBOutlet NSButton *m_layoutHiddenTextBtn;
+    IBOutlet NSButton *m_layoutInvisbleMarksBtn;
+    IBOutlet NSButton *m_layoutRulerBtn;
+    IBOutlet NSBox *m_layoutShowHideBox;
+    IBOutlet NSButton *m_layoutStatusBarBtn;
+    IBOutlet NSTextField *m_layoutUnitsLabel;
+    IBOutlet NSPopUpButton *m_layoutUnitsPopup;
+    IBOutlet NSButton *m_layoutViewAllBtn;
+    IBOutlet NSBox *m_layoutViewBox;
+    IBOutlet NSButton *m_okBtn;
+    IBOutlet NSBox *m_prefsAutoSaveBox;
+    IBOutlet NSButton *m_prefsAutoSaveCurrentBtn;
+    IBOutlet NSTextField *m_prefsAutoSaveMinField;
+    IBOutlet NSButton *m_prefsAutoSavePrefsBtn;
+    IBOutlet NSBox *m_prefsBidiBox;
+    IBOutlet NSComboBox *m_prefsCurrentSetCombo;
+    IBOutlet NSTextField *m_prefsCurrentSetLabel;
+    IBOutlet NSButton *m_prefsDefaultToRTLBtn;
+    IBOutlet NSButton *m_prefsLoadAllPluginsBtn;
+    IBOutlet NSTextField *m_prefsMinutesLabel;
+    IBOutlet NSBox *m_prefsMiscBox;
+    IBOutlet NSButton *m_prefsOtherHebrwContextGlyphBtn;
+    IBOutlet NSButton *m_prefsOtherUseContextGlyphsBtn;
+    IBOutlet NSBox *m_prefsPrefsBox;
+    IBOutlet NSButton *m_prefsShowSplashBtn;
+    IBOutlet NSTextField *m_prefsWithExtField;
+    IBOutlet NSTextField *m_prefsWithExtLabel;
+    IBOutlet NSButton *m_spellAlwaysSuggBtn;
+    IBOutlet NSButton *m_spellCheckAsTypeBtn;
+    IBOutlet NSTextField *m_spellCustomDictLabel;
+    IBOutlet NSButton *m_spellDictEditBtn;
+    IBOutlet NSPopUpButton *m_spellDictionaryPopup;
+    IBOutlet NSBox *m_spellGeneralBox;
+    IBOutlet NSButton *m_spellHideErrBtn;
+    IBOutlet NSBox *m_spellIgnoreBox;
+    IBOutlet NSTextField *m_spellIgnoredWordLabel;
+    IBOutlet NSButton *m_spellIgnoreEditBtn;
+    IBOutlet NSButton *m_spellIgnoreFileAddrBtn;
+    IBOutlet NSButton *m_spellIgnoreUppercaseBtn;
+    IBOutlet NSButton *m_spellIgnoreWordsWithNumBtn;
+    IBOutlet NSButton *m_spellResetDictBtn;
+    IBOutlet NSButton *m_spellSuggFromMainDictBtn;
+    IBOutlet NSTabView *m_tab;
+    IBOutlet NSBox *m_tlbBtnStylBox;
+    IBOutlet NSMatrix *m_tlbBtnStylGroup;
+    IBOutlet NSMatrix *m_tlbShowHideGroup;
+    IBOutlet NSBox *m_tlbTlbBox;
+    IBOutlet NSTableView *m_tlbTlbList;
+    IBOutlet NSButton *m_tlbViewTooltipBtn;
+    IBOutlet NSBox *m_tlbVisibleBox;
+	
+	AP_CocoaDialog_Options * m_xap;
+}
++ (AP_CocoaDialog_OptionsController *)loadFromNib;
+- (void)windowDidLoad;
+- (void)setXAPOwner:(AP_CocoaDialog_Options *)owner;
+- (NSView *)_lookupWidget:(AP_Dialog_Options::tControl)controlId;
+- (IBAction)applyAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)chooseDictAction:(id)sender;
+- (IBAction)chooseScreenAction:(id)sender;
+- (IBAction)defaultAction:(id)sender;
+- (IBAction)editDictAction:(id)sender;
+- (IBAction)increaseMinutesAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)resetDictAction:(id)sender;
+@end
 
 /*****************************************************************/
 class AP_CocoaDialog_Options: public AP_Dialog_Options
@@ -37,15 +121,22 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+	XAP_CocoaFrame * _getFrame()
+		{ return static_cast<XAP_CocoaFrame*>(m_pFrame); };
 	//void initializeTransperentToggle(void);
 	void event_ChooseTransparentColor(void);
 	void event_AllowTransparentColor(void);
 
- protected:
+    virtual void event_OK(void);
+    virtual void event_Cancel(void);
+    virtual void event_Apply(void);
 
-#if 0
-	GtkWidget *_lookupWidget( tControl id );
-#endif
+ protected:
+    void _saveCocoaOnlyPrefs();
+    void _initCocoaOnlyPrefs();
+    virtual void _storeWindowData(void);
+
 	virtual void _controlEnable( tControl id, bool value );
 
 	// we implement these so the XP dialog can set/grab our data
@@ -168,15 +259,7 @@ public:
 
 protected:
 	// Cocoa call back handlers
-	static void s_ok_clicked			( GtkWidget *, gpointer );
-	static void s_cancel_clicked		( GtkWidget *, gpointer );
-	static void s_apply_clicked			( GtkWidget *, gpointer );
 	static void s_delete_clicked		( GtkWidget *, GdkEvent *, gpointer );
-	static void s_ignore_reset_clicked	( GtkWidget *, gpointer );
-	static void s_ignore_edit_clicked	( GtkWidget *, gpointer );
-	static void s_dict_edit_clicked		( GtkWidget *, gpointer );
-	static void s_defaults_clicked		( GtkWidget *, gpointer );
-	static void s_chooseTransparentColor( GtkWidget *, gpointer );
 	static void s_allowTransparentColor ( GtkWidget *, gpointer );
 	static void s_color_changed(GtkWidget * csel,  AP_CocoaDialog_Options * dlg);
 	static void s_clist_clicked (GtkWidget *, gint, gint, GdkEvent *, gpointer);
@@ -185,15 +268,13 @@ protected:
 	static gint s_menu_item_activate	( GtkWidget *, gpointer );
 
 	// callbacks can fire these events
-    virtual void event_OK(void);
-    virtual void event_Cancel(void);
-    virtual void event_Apply(void);
     virtual void event_WindowDelete(void);
     virtual void event_clistClicked (int row, int col);
-    void _saveCocoaOnlyPrefs();
-    void _initCocoaOnlyPrefs();
-    virtual void _storeWindowData(void);
 #endif
+private:
+	friend class AP_CocoaDialog_OptionsController_proxy;	// this private class is to allow accessing protected methods 
+	                                                        // from the Obj-C interfaces.
+	AP_CocoaDialog_OptionsController*	m_dlg;
 };
 
 #endif /* AP_COCOADIALOG_OPTIONS_H */
