@@ -2822,11 +2822,12 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 {  
   _cell_close();
   _row_close();
+
+  UT_String props("table-column-props:");
    
   if (m_vecColumnWidths.size()) {
     // build column width properties string
     UT_String propBuffer;
-    UT_String props = "table-column-props:";
     
     const char * loc = setlocale(LC_NUMERIC,"C");
 
@@ -2837,27 +2838,17 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 			);
       props += propBuffer;
     }
-
-    props += UT_String_sprintf("; table-line-thickness:0; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
-
     setlocale(LC_NUMERIC, loc);
-    
-    XML_Char* pProps = "props";
-    const XML_Char* propsArray[3];
-    propsArray[0] = pProps;
-    propsArray[1] = props.c_str();
-    propsArray[2] = NULL;
-    
-    // apply properties
-    PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
-    
-    pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
-    PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
-    const PP_AttrProp * pAP = NULL;
-    getDoc()->getPieceTable()->getAttrProp(indexAP,&pAP);	
-    
-    ((PP_AttrProp *)pAP)->setAttributes(propsArray);
+
+    props += "; ";
+    m_vecColumnWidths.clear ();
   }
+
+  props += UT_String_sprintf("table-line-ignore:0; table-line-type:1; table-line-thickness:0px; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
+  
+  // apply properties
+  PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
+  getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());  
   
   // end-of-table
   getDoc()->appendStrux(PTX_EndTable, NULL);
@@ -2903,14 +2894,25 @@ enum
 static int
 sConvertLineStyle (short lineType)
 {
-  // TODO - convert msword line styles to ours
   switch (lineType) 
     {
     case 0: return LS_OFF;
-    case 1: return LS_NORMAL;
-      // more cases here
+    case 1: 
+      return LS_NORMAL;
+      
+      // TODO: more cases here
+    default:
+      return LS_NORMAL;
     }
-  return LS_OFF;
+}
+
+static double
+brc_to_pixel (int x)
+{
+  // each unit is 1/8 of a pixel. abi only deals with whole numbers, 
+  if(x == 255)
+    return  0.;
+  return x/8.;
 }
 
 void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap) 
@@ -2925,7 +2927,6 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
     int width = apap->ptap.rgdxaCenter[i] - apap->ptap.rgdxaCenter[i - 1];
     if (width <= 0)
       break;
-
     columnWidths.addItem((void *)width);
   }
   
@@ -2960,27 +2961,27 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
     propBuffer += "bg-style:1;";
   
-  // each unit is 1/8 of a pixel. abi only deals with whole numbers
-#define BRC_TO_PIXEL(x) ((x) == 255 ? 0 : (int)(((x)+.5)/8.))
-  
-  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%d; top-style:%d;", 
+  const char * old_locale = setlocale(LC_NUMERIC, "C");
+
+  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;", 
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.ico).c_str(),
-				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.brcType));
-  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%d; left-style:%d;", 
+  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%fpx; left-style:%d;", 
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.ico).c_str(),
-				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.dptLineWidth),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.brcType));
-  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%d; bot-style:%d;", 
+  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%fpx; bot-style:%d;", 
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.ico).c_str(),
-				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.dptLineWidth),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.brcType));
-  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%d; right-style:%d", 
+  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%fpx; right-style:%d", 
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.ico).c_str(),
-				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
+				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
-#undef BRC_TO_PIXEL
-  
+
+  setlocale (LC_NUMERIC, old_locale);
+
   const XML_Char* propsArray[3];
   propsArray[0] = (XML_Char*)"props";
   propsArray[1] = propBuffer.c_str();
