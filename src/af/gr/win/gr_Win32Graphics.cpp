@@ -400,17 +400,19 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	if (x1 == x2 || y1 == y2) {
+	if (x1 == x2 || y1 == y2)
+	{
 		// TMN: A little bloaty, though a TREMENDOUS speedup (like 45 TIMES
 		// last I checked).
 		UT_RGBColor color(	GetRValue(m_clrCurrent),
 							GetGValue(m_clrCurrent),
 							GetBValue(m_clrCurrent));
 		const bool bVert = x1 == x2;
+		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : 1;
 		fillRect(	color,
 					x1, y1,
-					m_iLineWidth + (bVert ? 1 : x2 - x1),
-					m_iLineWidth + (bVert ? y2 - y1 : 1));
+					nLineWidth + (!bVert ? x2 - x1 : 0),
+					nLineWidth + ( bVert ? y2 - y1 : 0));
 		return;
 	}
 
