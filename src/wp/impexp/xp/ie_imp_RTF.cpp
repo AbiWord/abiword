@@ -4691,7 +4691,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 //
 		if(true/*m_currentRTFState.m_sectionProps.m_topMargTwips != 0*/)
 		{
-			sheader = m_currentRTFState.m_sectionProps.m_topMargTwips - m_currentRTFState.m_sectionProps.m_headerYTwips;
+			sheader = m_currentRTFState.m_sectionProps.m_headerYTwips;
 			if(sheader < 0)
 			{
 				sheader = 0;
@@ -4716,7 +4716,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 //
 		if(true /*m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0*/)
 		{
-			sfooter = m_currentRTFState.m_sectionProps.m_bottomMargTwips - m_currentRTFState.m_sectionProps.m_headerYTwips;
+			sfooter = m_currentRTFState.m_sectionProps.m_bottomMargTwips - m_currentRTFState.m_sectionProps.m_footerYTwips;
 			if(sfooter < 0)
 			{
 				sfooter = 0;
