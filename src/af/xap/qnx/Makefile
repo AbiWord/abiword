@@ -24,21 +24,20 @@ ABI_ROOT:=$(shell pwd)/../../../..
 #include $(ABI_ROOT)/src/config/abi_defs.mk
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-CPPSRCS=		xap_QNXApp.cpp				\
-			xap_QNXClipboard.cpp			\
-			xap_QNXDlg_About.cpp			\
-			xap_QNXDlg_FileOpenSaveAs.cpp		\
-			xap_QNXDlg_FontChooser.cpp		\
-			xap_QNXDlg_MessageBox.cpp		\
-			xap_QNXDlg_Print.cpp			\
-			xap_QNXDlg_WindowMore.cpp		\
-			xap_QNXDlg_Zoom.cpp		\
-			xap_QNXFrame.cpp			\
-			xap_QNXToolbar_Icons.cpp		\
-			xap_QNX_Insert_Symbol.cpp
+CPPSRCS=	xap_QNXApp.cpp                  \
+			xap_QNXClipboard.cpp            \
+			xap_QNXDlg_About.cpp            \
+			xap_QNXDlg_FileOpenSaveAs.cpp   \
+			xap_QNXDlg_FontChooser.cpp      \
+			xap_QNXDlg_MessageBox.cpp       \
+			xap_QNXDlg_Print.cpp            \
+			xap_QNXDlg_WindowMore.cpp       \
+			xap_QNXDlg_Zoom.cpp             \
+			xap_QNXDlg_Insert_Symbol.cpp    \
+			xap_QNXFrame.cpp                \
+			xap_QNXToolbar_Icons.cpp        \
 
 TARGETS=		$(OBJS)
-INCLUDES=		-I/usr/X11R6/include
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

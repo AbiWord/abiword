@@ -1,5 +1,5 @@
-/* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+/* AbiSource Application Framework
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,14 @@
 #ifndef XAP_QNXDIALOG_INSERT_SYMBOL_H
 #define XAP_QNXDIALOG_INSERT_SYMBOL_H
 
-#include "xap_Dialog_Insert_Symbol.h"
+#include "xap_Dlg_Insert_Symbol.h"
+
+static UT_uint32 xap_QNXDlg_Insert_Symbol_first = 0;
+static UT_UCSChar m_CurrentSymbol;
+static UT_UCSChar m_PreviousSymbol;
+
+#define DEFAULT_QNX_SYMBOL_FONT "Standard Symbols"
+
 class XAP_QNXFrame;
 
 /*****************************************************************/
@@ -34,9 +41,52 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+	// callbacks can fire these events
+
+	virtual void			event_OK(void);
+	virtual void			event_Cancel(void);
+	virtual void			SymbolMap_exposed( void);
+	virtual void			Symbolarea_exposed( void);
+	virtual void			SymbolMap_clicked(void * event);
+	virtual void			Key_Pressed(void * e);
+	virtual void            New_Font( void);
+	virtual void			event_WindowDelete(void);
+
 	
 protected:
 
+	GR_QNXGraphics	* 		m_unixGraphics;
+	GR_QNXGraphics *       m_unixarea;
+
+	// private construction functions
+	PtWidget_t * _constructWindow(void);
+
+	// pointers to widgets we need to query/set
+	PtWidget_t * m_windowMain;
+
+	PtWidget_t * m_SymbolMap;
+
+	PtWidget_t * m_areaCurrentSym;
+	PtWidget_t * m_fontcombo;
+	
+	PtWidget_t * m_buttonOK;
+	PtWidget_t * m_buttonCancel;
+#if 0
+	GList * m_InsertS_Font_list;
+	gchar * m_fontlist[100];
+#endif
+	UT_uint32 m_Insert_Symbol_no_fonts;
 };
 
 #endif /* XAP_QNXDIALOG_INSERT_SYMBOL_H */
+
+
+
+
+
+
+
+
+
+
