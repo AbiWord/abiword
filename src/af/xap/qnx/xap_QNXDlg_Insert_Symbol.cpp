@@ -152,9 +152,11 @@ static int s_CurrentSymbol_clicked(PtWidget_t *widget, void *data, PtCallbackInf
 
 static int s_new_font(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
+	if(info->reason_subtype == Pt_LIST_SELECTION_FINAL){
 	XAP_QNXDialog_Insert_Symbol *dlg = (XAP_QNXDialog_Insert_Symbol *)data;
 	UT_ASSERT(widget && dlg);
 	dlg->New_Font();
+	}
 	return Pt_CONTINUE;
 }
 
@@ -272,7 +274,9 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	if ( xap_QNXDlg_Insert_Symbol_first == 0) //BOGUS: the gcs need a font.
 	{
 #endif
-		iDrawSymbol->setSelectedFont( DEFAULT_QNX_SYMBOL_FONT);
+		char **items;
+		PtGetResource(m_fontcombo,Pt_ARG_ITEMS,&items,0);
+		iDrawSymbol->setSelectedFont(items[0] );
 		m_CurrentSymbol = ' ';
 		m_PreviousSymbol = ' ';
 		xap_QNXDlg_Insert_Symbol_first = 1;
@@ -280,8 +284,6 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	}
 #endif
 
-    // Put the current font in the entry box
-	//char * iSelectedFont = iDrawSymbol->getSelectedFont();
 
 	// Show the Previously selected symbol
 	m_PreviousSymbol = m_CurrentSymbol;
@@ -412,9 +414,11 @@ void XAP_QNXDialog_Insert_Symbol::New_Font(void )
   The text extraction code was stolen from ev_GnomeQNXToolbar.
 */
 	//TODO: Get the list from the combo box
-	char * buffer = "Symbol";
-
-	iDrawSymbol->setSelectedFont(buffer);
+	char **buffer;
+	unsigned short *item;
+	PtGetResource(m_fontcombo,Pt_ARG_ITEMS,&buffer,0);
+	PtGetResource(m_fontcombo,Pt_ARG_CBOX_SEL_ITEM,&item,0);
+	iDrawSymbol->setSelectedFont(buffer[*item-1]);
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
@@ -474,13 +478,24 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	fontcombo = PtCreateWidget(PtComboBox, vboxInsertS, n, args);
-	PtAddCallback(fontcombo, Pt_CB_CBOX_ACTIVATE, s_new_font, this);
+	PtAddCallback(fontcombo, Pt_CB_SELECTION, s_new_font, this);
 
-	const char *sz = "Symbol";
+	FontDetails *font_list;
+	int alloc = PfQueryFonts(PHFONT_ALL_SYMBOLS,PHFONT_SCALABLE, NULL, 0);
+
+	if (!(font_list = (FontDetails *)malloc(alloc * sizeof(*font_list)))) {
+		fprintf(stderr, "ERROR GETTING FONT LIST \n");
+		return false;
+	}
+	memset(font_list, 0, alloc * sizeof(*font_list));
+
+	PfQueryFonts(PHFONT_ALL_SYMBOLS,PHFONT_SCALABLE, font_list, alloc);
+	for(int i=0;i<alloc;i++) {
+	const char *sz = font_list[i].desc;
 	PtListAddItems(fontcombo, &sz, 1, 0);
-	UT_QNXComboSetPos(fontcombo, 1);
-	//m_Insert_Symbol_no_fonts++;			//Only one font handled now
-
+	}
+	PtSetResource(fontcombo,Pt_ARG_CBOX_SEL_ITEM,1,0);
+	free(font_list);
 	// Then put the main symbol area in the center vertically 
 	// *** Code Stolen from the preview widget ***
 	{	
