@@ -122,7 +122,13 @@ WordPerfectByteTag::WordPerfectByteTag(unsigned char byte, UT_Error (IE_Imp_Word
    m_func = func;
 }
 
-
+WordPerfectHeaderPacket::WordPerfectHeaderPacket(unsigned int PID, unsigned char type, long packetPosition, bool hasChildren)
+{
+   m_PID = PID;
+   m_type = type;
+   m_packetPosition = packetPosition;
+   m_hasChildren = hasChildren;
+}
 
 /****************************************************************************/
 /****************************************************************************/
@@ -279,8 +285,12 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_DECREMENT_NUMBER_GROUP, &IE_Imp_WordPerfect::_handleDecrementNumberGroup));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_STYLE_GROUP, &IE_Imp_WordPerfect::_handleStyleGroup));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_BOX_GROUP, &IE_Imp_WordPerfect::_handleBoxGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_PLATFORM_GROUP, &IE_Imp_WordPerfect::_handlePlatformGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_FORMATTER_GROUP, &IE_Imp_WordPerfect::_handleFormatterGroup));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_TAB_GROUP, &IE_Imp_WordPerfect::_handleTabGroup));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_CHARACTER_GROUP, &IE_Imp_WordPerfect::_handleCharacterGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_CROSSREFERENCE_GROUP, &IE_Imp_WordPerfect::_handleCrossReferenceGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_HEADER_FOOTER_GROUP, &IE_Imp_WordPerfect::_handleHeaderFooterGroup));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_FOOTENDNOTE_GROUP, &IE_Imp_WordPerfect::_handleFootEndNoteGroup));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_UNDO_GROUP, &IE_Imp_WordPerfect::_handleUndo));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_ATTRIBUTE_ON, &IE_Imp_WordPerfect::_handleAttributeOn));
@@ -291,6 +301,7 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
 IE_Imp_WordPerfect::~IE_Imp_WordPerfect() 
 {
    UT_VECTOR_PURGEALL(WordPerfectFontDescriptor *, m_fontDescriptorList);
+   UT_VECTOR_PURGEALL(WordPerfectHeaderPacket *, m_headerPacketList);
 }
 
 /****************************************************************************/
@@ -383,13 +394,16 @@ UT_Error IE_Imp_WordPerfect::_parseIndexHeader()
 	unsigned char flags, packetType;
 	UT_uint16 packetUseCount, hiddenCount;
 	UT_uint32 dataPacketSize, dataPointer;
+	bool hasChildren = false;
 	X_CheckFileReadElementError(fread(&flags, sizeof(unsigned char), 1, m_importFile));
+	if (flags & WP_INDEX_HEADER_ELEMENT_CHILD_PACKET_BIT)
+	  hasChildren = true;
 	X_CheckFileReadElementError(fread(&packetType, sizeof(unsigned char), 1, m_importFile));
 	X_CheckFileReadElementError(fread(&packetUseCount, sizeof(UT_uint16), 1, m_importFile));
 	X_CheckFileReadElementError(fread(&hiddenCount, sizeof(UT_uint16), 1, m_importFile));
 	X_CheckFileReadElementError(fread(&dataPacketSize, sizeof(UT_uint32), 1, m_importFile));
 	X_CheckFileReadElementError(fread(&dataPointer, sizeof(UT_uint32), 1, m_importFile));
-	UT_DEBUGMSG(("WordPerfect: (Packet Element %i: flags: %i, type: %i, use count: %i, hidden count: %i, size: %i, pointer: %i) \n", (int)i, (int)flags, (int)packetType, (int)packetUseCount, (int)hiddenCount, (int)dataPacketSize, (int)dataPointer));
+	UT_DEBUGMSG(("WordPerfect: (Packet Element %i: flags: %i, type: %i, use count: %i, hidden count: %i, size: %i, pointer: %i hasChildren: %i) \n", (int)i, (int)flags, (int)packetType, (int)packetUseCount, (int)hiddenCount, (int)dataPacketSize, (int)dataPointer, (int) hasChildren));
 
 	switch (packetType)
 	  {
@@ -401,6 +415,11 @@ UT_Error IE_Imp_WordPerfect::_parseIndexHeader()
 	     break;
 	  }
 	
+	// insert into a generic list of header packets, for later use
+	// (we include the font descriptors in this list because it makes it
+	// trivial to look up the right PID..)
+	WordPerfectHeaderPacket *headerPacket = new WordPerfectHeaderPacket(i, packetType, dataPointer, hasChildren);
+	m_headerPacketList.addItem(headerPacket); // todo: check for error? how?
      }
    
    return UT_OK;
@@ -459,6 +478,99 @@ UT_Error IE_Imp_WordPerfect::_parseFontDescriptorPacket(int packetID, UT_uint32 
    return UT_OK;
 }
 
+UT_Error IE_Imp_WordPerfect::_handleBoxGroupContent(int boxContentPID)
+{
+   // find the appropriate packet
+   WordPerfectHeaderPacket *boxContentPacket = (WordPerfectHeaderPacket *)m_headerPacketList.getNthItem((boxContentPID - 1)); // wp packets start at 1, we start at 0
+   
+   // FIXME: we should really handle externally declared files. but we don't.
+   if( !boxContentPacket->m_hasChildren )
+	  return UT_IE_IMPORTERROR;
+   
+   long documentParsePosition = ftell(m_importFile); // keep track of where we were
+	   
+   if (fseek(m_importFile, boxContentPacket->m_packetPosition, SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+   
+   UT_uint16 numChildPackets;
+   X_CheckFileReadElementError(fread(&numChildPackets, sizeof(UT_uint16), 1, m_importFile));
+   UT_uint16 *graphicContentPIDs = new UT_uint16[numChildPackets];
+   for( unsigned int i=0; i<numChildPackets; i++ )
+     X_CheckFileReadElementError(fread(&graphicContentPIDs[i], sizeof(UT_uint16), 1, m_importFile));
+   
+   UT_DEBUGMSG(("WordPerfect: Parsed box group content with %i childpackets\n", numChildPackets));
+   
+   // FIXME: for now, we only handle one packet of graphic content
+   if( numChildPackets > 0 )
+     X_CheckWordPerfectError(_handleGraphicsData(graphicContentPIDs[0]))
+   
+   // return to where we were before
+   if (fseek(m_importFile, documentParsePosition, SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+   
+   delete(graphicContentPIDs);
+   
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_handleGraphicsData(int graphicPID)
+{
+   // find the appropriate packet - wp packets start at 1, we start at 0
+   //WordPerfectHeaderPacket *graphicPacket = (WordPerfectHeaderPacket *)m_headerPacketList.getNthItem((graphicPID - 1)); 
+   // (TODO: Finish Me)
+															    
+   return UT_OK;
+}
+
+
+UT_Error IE_Imp_WordPerfect::_handleBoxGroupTemplate(int boxGroupTemplatePID)
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a box group template (currently disabled)\n"));
+   /*
+   // find the appropriate packet
+   WordPerfectHeaderPacket *boxTemplatePacket = (WordPerfectHeaderPacket *)m_headerPacketList.getNthItem((boxGroupTemplatePID - 1)); // wp packets start at 1, we start at 0
+   
+   // we're only going to bother with graphics for now
+   if (boxTemplatePacket->m_type == WP_INDEX_HEADER_GRAPHICS_BOX_STYLE)
+     {
+	long documentParsePosition = ftell(m_importFile); // keep track of where we were
+	   
+	if (fseek(m_importFile, boxTemplatePacket->m_packetPosition, SEEK_SET) != 0)
+	  return UT_IE_IMPORTERROR;
+	
+	// now we read out a list of (possible) child packets to parse
+	UT_uint16 numPrefixPacketIDs;
+	UT_uint16 dataPrefixIDs;
+	UT_uint16 counterPrefixIDs;
+	UT_uint16 positioningDataPrefixIDs;
+	UT_uint16 contentPrefixIDs;
+	UT_uint16 captionPrefixIDs;
+	UT_uint16 borderPrefixIDs;
+	UT_uint16 fillPrefixIDs;
+	UT_uint16 wrapPrefixIDs;
+	UT_uint16 hyperTextPrefixIDs;
+	
+  	X_CheckFileReadElementError(fread(&numPrefixPacketIDs, sizeof(UT_uint16), 1, m_importFile));   
+	X_CheckFileReadElementError(fread(&dataPrefixIDs, sizeof(UT_uint16), 1, m_importFile));   
+	X_CheckFileReadElementError(fread(&counterPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&positioningDataPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&contentPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&captionPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&borderPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&fillPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&wrapPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&hyperTextPrefixIDs, sizeof(UT_uint16), 1, m_importFile));
+	UT_DEBUGMSG(("WordPerfect: Read Box Template Packet Header (numPrefixPacketIDs: %i, dataPrefixIDs: %i, counterPrefixIDs: %i, positioningDataPrefixIDs: %i, contentPrefixIDs: %i, captionPrefixIDs: %i, borderPrefixIDs: %i, fillPrefixIDs: %i, wrapPrefixIDs: %i, hypertextPrefixIDs: %i\n",
+		     (int)numPrefixPacketIDs, (int)dataPrefixIDs, (int)counterPrefixIDs, (int)positioningDataPrefixIDs, (int)contentPrefixIDs, (int)captionPrefixIDs, (int)borderPrefixIDs, (int)fillPrefixIDs, (int)wrapPrefixIDs, (int) hyperTextPrefixIDs));
+	
+	// return to where we were before
+	if (fseek(m_importFile, documentParsePosition, SEEK_SET) != 0)
+	  return UT_IE_IMPORTERROR;
+     }
+   */
+   return UT_OK;
+  
+}
 
 UT_Error IE_Imp_WordPerfect::_parseDocument()
 {
@@ -483,7 +595,6 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
 	  }
 	else if(readVal > 0 && readVal < 32 && !m_undoOn) // International Characters
 	  {
-	     UT_DEBUGMSG((" current char = %i \n",(int)readVal));
 	     UT_UCSChar internationalCharacter = wp_internationalCharacterMapping[(readVal-1)];
 	     m_textBuf.append( &internationalCharacter, 1);	     
 	  }
@@ -504,7 +615,7 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
    
 
    
-   UT_DEBUGMSG(("WordPerfect: File Pointer at %i exceeds document length of %i\n", (int)ftell(m_importFile), (int)m_documentEnd));
+   UT_DEBUGMSG(("WordPerfect: File Pointer at %i equals or exceeds document length of %i\n", (int)ftell(m_importFile), (int)m_documentEnd));
    
    if(m_textBuf.getLength() > 0)
      X_CheckWordPerfectError(_flushText());
@@ -555,14 +666,19 @@ UT_Error IE_Imp_WordPerfect::_handleHardEndOfLine()
 UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a EOL group\n"));
-   
-   int type = fgetc(m_importFile); 
-   X_CheckFileError(type);   
+
+   unsigned char subGroup;   
+   UT_uint16 size;
+   long startPosition = ftell(m_importFile);
+
+   X_CheckFileReadElementError(fread(&subGroup, sizeof(unsigned char), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
+
    wchar_t wc = 0;
 
    if(!m_undoOn)
      {
-	switch (type)
+	switch(subGroup)
 	  {
 	   case 0: // 0x00 (beginning of file)
 	     break; // ignore
@@ -590,7 +706,7 @@ UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 	  }
      }
    
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_EOL_GROUP));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
 
    return UT_OK;
 }
@@ -600,7 +716,13 @@ UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 UT_Error IE_Imp_WordPerfect::_handlePageGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a page group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_PAGE_GROUP));
+   long startPosition;
+   unsigned char subGroup;   
+   UT_uint16 size;
+   unsigned char flags;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));   
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
 
    return UT_OK;
 }
@@ -610,7 +732,13 @@ UT_Error IE_Imp_WordPerfect::_handlePageGroup()
 UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a column group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_COLUMN_GROUP));
+   long startPosition;
+   unsigned char subGroup;   
+   UT_uint16 size;
+   unsigned char flags;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));   
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -621,17 +749,13 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a paragraph group\n"));
 
-   // flush what's come before this change
-   //X_CheckWordPerfectError(_flushText());
-   unsigned char subGroup;   
+   long startPosition;
+   unsigned char subGroup, flags;
    UT_uint16 size;
-   unsigned char flags;
    UT_uint16 nonDeletableInfoSize;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));   
    
-   X_CheckFileReadElementError(fread(&subGroup, sizeof(unsigned char), 1, m_importFile));
-   // variables common to all the different subgroups (although they may be blank)
-   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
-   X_CheckFileReadElementError(fread(&flags, sizeof(unsigned char), 1, m_importFile)); 
    X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
 
    // dispatch to subgroup to handle the rest of the relevant properties within the
@@ -643,7 +767,7 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
 	break;
      }
    
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_PARAGRAPH_GROUP));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -654,7 +778,13 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
 UT_Error IE_Imp_WordPerfect::_handleStyleGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a style group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_STYLE_GROUP));
+   long startPosition;
+   unsigned char subGroup;   
+   UT_uint16 size;
+   unsigned char flags;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));   
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -664,8 +794,45 @@ UT_Error IE_Imp_WordPerfect::_handleStyleGroup()
 UT_Error IE_Imp_WordPerfect::_handleTabGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a tab group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_TAB_GROUP));
+ 
+   long startPosition;
+   unsigned char tabDefinition;   
+   UT_uint16 size;
+   unsigned char flags;
    
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, tabDefinition, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
+   
+   return UT_OK;
+}
+
+// handles a platform group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handlePlatformGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a platform group\n"));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
+   
+   return UT_OK;
+}
+
+// handles a formatter group
+// (undocumented in corel's documentation, we have to skip)
+UT_Error IE_Imp_WordPerfect::_handleFormatterGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a formatter group\n"));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
+
    return UT_OK;
 }
 
@@ -674,7 +841,12 @@ UT_Error IE_Imp_WordPerfect::_handleTabGroup()
 UT_Error IE_Imp_WordPerfect::_handleFootEndNoteGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a foot/endnote group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_FOOTENDNOTE_GROUP));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -684,7 +856,12 @@ UT_Error IE_Imp_WordPerfect::_handleFootEndNoteGroup()
 UT_Error IE_Imp_WordPerfect::_handleSetNumberGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a set number group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_SET_NUMBER_GROUP));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -694,7 +871,12 @@ UT_Error IE_Imp_WordPerfect::_handleSetNumberGroup()
 UT_Error IE_Imp_WordPerfect::_handleNumberingMethodGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a numbering method group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_NUMBERING_METHOD_GROUP));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -705,7 +887,12 @@ UT_Error IE_Imp_WordPerfect::_handleNumberingMethodGroup()
 UT_Error IE_Imp_WordPerfect::_handleDisplayNumberReferenceGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a display number rerference group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_DISPLAY_NUMBER_REFERENCE_GROUP));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -715,7 +902,12 @@ UT_Error IE_Imp_WordPerfect::_handleDisplayNumberReferenceGroup()
 UT_Error IE_Imp_WordPerfect::_handleIncrementNumberGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling an increment number group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_INCREMENT_NUMBER_GROUP));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -726,7 +918,25 @@ UT_Error IE_Imp_WordPerfect::_handleIncrementNumberGroup()
 UT_Error IE_Imp_WordPerfect::_handleDecrementNumberGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a decrement number group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_DECREMENT_NUMBER_GROUP));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
+   
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_handleMergeGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a merge group\n"));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
@@ -734,16 +944,67 @@ UT_Error IE_Imp_WordPerfect::_handleDecrementNumberGroup()
 UT_Error IE_Imp_WordPerfect::_handleBoxGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a box group\n"));
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_BOX_GROUP));
+   unsigned char subGroup, prefixIndex;
+   long startPosition;
+   UT_uint16 size;
+
+   unsigned char numPIDs;
+   UT_uint16 numNonDeletableBytes;
+   // (14 reserved bytes)
+   UT_uint16 sizeOverrideAndWrapRectangleData;
+   UT_uint16 sizeOverrideData;
+   UT_uint16 boxOverrideFlags;
+   UT_uint16 numWrapRectangles;
+   UT_uint16 leftOffset;
+   UT_uint16 rightOffset;
+   UT_uint16 topOffset;
+   UT_uint16 bottomOffset;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, prefixIndex));
+   
+   X_CheckFileReadElementError(fread(&numPIDs, sizeof(unsigned char), 1, m_importFile));
+   if( numPIDs < 1 )
+     return UT_IE_IMPORTERROR;
+   UT_uint16 *boxPIDs = new UT_uint16[numPIDs];
+   for( unsigned int i=0; i<numPIDs; i++ )
+        X_CheckFileReadElementError(fread(&boxPIDs[i], sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&numNonDeletableBytes, sizeof(UT_uint16), 1, m_importFile));
+   if (fseek(m_importFile, WP_BOX_GROUP_NUM_RESERVED_BYTES, SEEK_CUR) != 0)
+     return UT_IE_IMPORTERROR;
+   X_CheckFileReadElementError(fread(&sizeOverrideAndWrapRectangleData, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&sizeOverrideData, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&boxOverrideFlags, sizeof(UT_uint16), 1, m_importFile));   
+   
+   X_CheckFileReadElementError(fread(&numWrapRectangles, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&leftOffset, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&rightOffset, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&topOffset, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&bottomOffset, sizeof(UT_uint16), 1, m_importFile));
+   
+   UT_DEBUGMSG(("WordPerfect: Box Group: subGroup: %i, prefixIndex: %i, numPIDs: %i\n", (int) subGroup, (int)prefixIndex, (int) numPIDs));
+   UT_DEBUGMSG(("WordPerfect: Box Group: sizeOverrideAndWrapRectangleData: %i, sizeOverrideData: %i, boxOverrideFlags: %i, numWrapRectangles: %i\n", (int) sizeOverrideAndWrapRectangleData, (int) sizeOverrideData, (int)boxOverrideFlags, (int) numWrapRectangles));
+   UT_DEBUGMSG(("WordPerfect: Box Group: leftOffset: %i, rightOffset: %i, topOffset: %i, bottomOffset: %i\n", (int) leftOffset, (int) rightOffset, (int) topOffset, (int) bottomOffset));
+   
+   int j=1;
+   if( boxOverrideFlags & WP_BOX_GROUP_OVERRIDE_FLAGS_BOX_CONTENT )
+     {
+	UT_DEBUGMSG(("WordPerfect: Override flags set for content. Content PID: %i\n", boxPIDs[j]));
+	j++;
+     }
+   
+   X_CheckWordPerfectError(_handleBoxGroupTemplate(boxPIDs[0]));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
 }
 
-// handles an attribute "on" byte in wordperfect. turns a formatting/style
+// handles an attribute "on" group in wordperfect. turns a formatting/style
 // property on.
 UT_Error IE_Imp_WordPerfect::_handleAttributeOn()
 {   
    UT_DEBUGMSG(("WordPerfect: Handling an attribute ON\n"));
+   long startPosition = ftell(m_importFile);
+   
    int readVal = fgetc(m_importFile); // TODO: handle case that we get eof?
    X_CheckFileError(readVal);
    
@@ -769,7 +1030,7 @@ UT_Error IE_Imp_WordPerfect::_handleAttributeOn()
  	X_CheckWordPerfectError(_appendCurrentTextProperties());
      }
       
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_ATTRIBUTE_ON));
+   X_CheckWordPerfectError(_skipGroup(startPosition, WP_ATTRIBUTE_ON_GROUP_SIZE));
    return UT_OK;
 }
 
@@ -778,6 +1039,8 @@ UT_Error IE_Imp_WordPerfect::_handleAttributeOn()
 UT_Error IE_Imp_WordPerfect::_handleAttributeOff()
 {   
    UT_DEBUGMSG(("WordPerfect: Handling an attribute OFF\n"));
+   long startPosition = ftell(m_importFile);
+
    int readVal = fgetc(m_importFile); // TODO: handle case that we get eof?
    X_CheckFileError(readVal);
    
@@ -803,7 +1066,7 @@ UT_Error IE_Imp_WordPerfect::_handleAttributeOff()
  	X_CheckWordPerfectError(_appendCurrentTextProperties());
      }
       
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_ATTRIBUTE_OFF));
+   X_CheckWordPerfectError(_skipGroup(startPosition, WP_ATTRIBUTE_OFF_GROUP_SIZE));
    return UT_OK;
 }
 
@@ -811,15 +1074,13 @@ UT_Error IE_Imp_WordPerfect::_handleCharacterGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a character group\n"));
 
+   long startPosition;
    unsigned char subGroup;
    UT_uint16 size;
    unsigned char flags;
    
-   X_CheckFileReadElementError(fread(&subGroup, sizeof(unsigned char), 1, m_importFile));
-   // variables common to all the different subgroups (although they may be blank)
-   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
-   X_CheckFileReadElementError(fread(&flags, sizeof(unsigned char), 1, m_importFile)); 
-   
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+     
    switch(subGroup)
      {
       case WP_CHARACTER_GROUP_FONT_FACE_CHANGE:
@@ -832,7 +1093,37 @@ UT_Error IE_Imp_WordPerfect::_handleCharacterGroup()
 	break;
      }
 			       
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_CHARACTER_GROUP));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
+   return UT_OK;
+}
+
+// handles a cross reference group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handleCrossReferenceGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a crossreference group\n"));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
+
+   return UT_OK;
+}
+
+// handles a header/footer group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handleHeaderFooterGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a header/footer group\n"));
+   unsigned char subGroup, flags;
+   long startPosition;
+   UT_uint16 size;
+
+   X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));
+   X_CheckWordPerfectError(_skipGroup(startPosition, size));
+
    return UT_OK;
 }
 
@@ -934,13 +1225,11 @@ UT_Error IE_Imp_WordPerfect::_handleUndo()
    // this function isn't very well documented and could very well be buggy
    // it is based off of my interpretation of a single test file
    UT_DEBUGMSG(("WordPerfect: Handling an undo group\n"));
+   long startPosition = ftell(m_importFile);
 
    int undoType = fgetc(m_importFile);
    X_CheckFileError(undoType);
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_UNDO_GROUP));
-   
-   //X_CheckWordPerfectError(_flushText()); // flush text before the undo
-   
+      
    if(undoType==0 && !m_undoOn)
      {	
 	m_undoOn=true;
@@ -952,7 +1241,8 @@ UT_Error IE_Imp_WordPerfect::_handleUndo()
 	m_undoOn=false;
 	UT_DEBUGMSG(("WordPerfect: undo is now OFF\n"));
      }
-   
+
+   X_CheckWordPerfectError(_skipGroup(startPosition, WP_UNDO_GROUP_SIZE));
    return UT_OK;
 }
 
@@ -992,25 +1282,27 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroupJustification()
    return UT_OK;
 }
 
-
-// skips over a group (sequences of bytes which begin with a value and end with a value) of
-// bytes until we hit the end byte. This may be useful either for skipping entire groups
-// outright or, more practically, skipping over garbage contained in the remainder of a group
-UT_Error IE_Imp_WordPerfect::_skipGroup(int groupByte)
+// _handleVariableGroupHeader: gets the info common to all groups
+UT_Error IE_Imp_WordPerfect::_handleVariableGroupHeader(long &startPosition, unsigned char &subGroup, UT_uint16 &size, unsigned char &flags)
 {
-   UT_DEBUGMSG(("WordPerfect: Skipping a group\n"));
+   startPosition = ftell(m_importFile);
    
-   int readVal = fgetc(m_importFile);
-   X_CheckFileError(readVal);
-   while(readVal != groupByte)
-     {
-	//UT_DEBUGMSG(("WP: %i\n",readVal));
-	readVal = fgetc(m_importFile);
-	X_CheckFileError(readVal);
-     }  
+   X_CheckFileReadElementError(fread(&subGroup, sizeof(unsigned char), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); 
+   X_CheckFileReadElementError(fread(&flags, sizeof(unsigned char), 1, m_importFile));
    
    return UT_OK;
 }
+
+UT_Error IE_Imp_WordPerfect::_skipGroup(long startPosition, UT_uint16 groupSize)
+{
+   UT_DEBUGMSG(("WordPerfect: Skipping a group\n"));
+   if (fseek(m_importFile, (startPosition + groupSize - 1), SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+
+   return UT_OK;
+}
+
 
 // insert the text in the current textbuf to the document, taking its
 // style into account

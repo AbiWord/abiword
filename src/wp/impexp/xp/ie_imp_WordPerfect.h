@@ -51,6 +51,8 @@
 #define WP_INDEX_HEADER_INDICES_POSITION 14
 #define WP_INDEX_HEADER_FONT_TYPEFACE_DESCRIPTOR_POOL 32
 #define WP_INDEX_HEADER_DESIRED_FONT_DESCRIPTOR_POOL 85
+#define WP_INDEX_HEADER_GRAPHICS_BOX_STYLE 65
+#define WP_INDEX_HEADER_ELEMENT_CHILD_PACKET_BIT 1
 
 #define WP_TOP_SOFT_SPACE 128
 #define WP_TOP_HARD_HYPHEN 132 // (0x84)
@@ -62,6 +64,8 @@
 #define WP_TOP_COLUMN_GROUP 210 // (0xd2)
 #define WP_TOP_PARAGRAPH_GROUP 211 // (0xd3)
 #define WP_TOP_CHARACTER_GROUP 212 // (0xd4)
+#define WP_TOP_CROSSREFERENCE_GROUP 215 // (0xd5)
+#define WP_TOP_HEADER_FOOTER_GROUP 214 // (0xd6)
 #define WP_TOP_FOOTENDNOTE_GROUP 215 // (0xd7)
 #define WP_TOP_SET_NUMBER_GROUP 216  // (0xd8)
 #define WP_TOP_NUMBERING_METHOD_GROUP 217 // (0xd9)
@@ -69,12 +73,19 @@
 #define WP_TOP_INCREMENT_NUMBER_GROUP 219 // (0xdb)
 #define WP_TOP_DECREMENT_NUMBER_GROUP 220 // (0xdc)
 #define WP_TOP_STYLE_GROUP 221 // (0xdd)
-#define WP_TOP_BOX_GROUP 222 // (0xde)
+#define WP_TOP_MERGE_GROUP 222 // (0xde)
+#define WP_TOP_BOX_GROUP 223 // (0xdf)
 #define WP_TOP_TAB_GROUP 224 // (0xe0)
+#define WP_TOP_PLATFORM_GROUP 225 // (0xe1)
+#define WP_TOP_FORMATTER_GROUP 226 // (0xe2)
 #define WP_TOP_EXTENDED_CHARACTER 240// (0xf0)
 #define WP_TOP_UNDO_GROUP 241 // (0xf1)
 #define WP_TOP_ATTRIBUTE_ON 242 // (0xf2)
 #define WP_TOP_ATTRIBUTE_OFF 243 // (0xf3)
+
+#define WP_UNDO_GROUP_SIZE 5
+#define WP_ATTRIBUTE_ON_GROUP_SIZE 3
+#define WP_ATTRIBUTE_OFF_GROUP_SIZE 3
 
 #define WP_CHARACTER_GROUP_FONT_FACE_CHANGE 26 // 0x1a
 #define WP_CHARACTER_GROUP_FONT_SIZE_CHANGE 27 // 0x1b
@@ -86,6 +97,9 @@
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION_RIGHT 3
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL_ALL_LINES 4
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION_RESERVED 5
+
+#define WP_BOX_GROUP_NUM_RESERVED_BYTES 14
+#define WP_BOX_GROUP_OVERRIDE_FLAGS_BOX_CONTENT 8192
 
 // Character properties
 class ABI_EXPORT WordPerfectTextAttributes
@@ -175,6 +189,15 @@ struct ABI_EXPORT WordPerfectParagraphProperties
    // (TODO: paragraph character count) 0xd31a
 };
 
+struct WordPerfectHeaderPacket
+{
+   WordPerfectHeaderPacket(unsigned int PID, unsigned char type, long packetPosition, bool hasChildren);
+   unsigned int m_PID;
+   unsigned char m_type;
+   long m_packetPosition;
+   bool m_hasChildren;
+};
+
 class ABI_EXPORT IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
@@ -207,6 +230,9 @@ public:
    UT_Error _parseHeader();
    UT_Error _parseIndexHeader();
    UT_Error _parseFontDescriptorPacket(int packetID, UT_uint32 dataPacketSize, UT_uint32 dataPointer);
+   UT_Error _handleBoxGroupTemplate(int boxGroupTemplatePID);
+   UT_Error _handleBoxGroupContent(int boxContentPID);
+   UT_Error _handleGraphicsData(int graphicPID);
    UT_Error _parseDocument();
    UT_Error _insertSpace();
    UT_Error _insertHyphen();
@@ -222,9 +248,14 @@ public:
    UT_Error _handleIncrementNumberGroup();
    UT_Error _handleDecrementNumberGroup();
    UT_Error _handleStyleGroup();
+   UT_Error _handleMergeGroup();
    UT_Error _handleBoxGroup();
    UT_Error _handleTabGroup();
+   UT_Error _handlePlatformGroup();
+   UT_Error _handleFormatterGroup();
    UT_Error _handleCharacterGroup();
+   UT_Error _handleCrossReferenceGroup();
+   UT_Error _handleHeaderFooterGroup();
    UT_Error _handleFootEndNoteGroup();
    UT_Error _handleFontFaceChange();
    UT_Error _handleFontSizeChange();
@@ -232,7 +263,8 @@ public:
    UT_Error _handleUndo();
    UT_Error _handleAttributeOn();
    UT_Error _handleAttributeOff();
-   UT_Error _skipGroup(int groupByte);
+   UT_Error _handleVariableGroupHeader(long &startPosition, unsigned char &subGroup, UT_uint16 &size, unsigned char &flags);
+   UT_Error _skipGroup(long startPosition, UT_uint16 groupSize);
    UT_Error _appendCurrentTextProperties();
    UT_Error _appendCurrentParagraphProperties();
    UT_Error _flushText();
@@ -248,6 +280,7 @@ public:
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
    UT_Vector m_fontDescriptorList;
+   UT_Vector m_headerPacketList;
    UT_Vector m_wordPerfectDispatchBytes;
    WordPerfectTextAttributes m_textAttributes;
    WordPerfectParagraphProperties m_paragraphProperties;
