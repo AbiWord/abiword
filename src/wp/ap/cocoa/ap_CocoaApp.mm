@@ -1259,11 +1259,12 @@ void AP_CocoaApp::catchSignals(int sig_num)
     UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
 	
     UT_uint32 i = 0;
+	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {
 		AP_CocoaFrame * curFrame = (AP_CocoaFrame*) m_vecFrames[i];
 		UT_ASSERT(curFrame);
-		curFrame->backup(".CRASHED");
+		curFrame->backup(".CRASHED", abiType);
     }
     
     fflush(stdout);
