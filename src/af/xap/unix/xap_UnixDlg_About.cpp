@@ -132,8 +132,8 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our glade file is located
-	AP_UnixApp * unixApp = static_cast<AP_UnixApp*>(m_pApp);
-	UT_String glade_path( unixApp->getAbiSuiteAppGladeDir() );
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);	
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
 	glade_path += "/ap_UnixDlg_About.glade";
 	
 	// load the dialog from the glade file
@@ -142,7 +142,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDlg_About");
-	m_gc = glade_xml_get_widget(xml, "daLogo");
+	//m_gc = glade_xml_get_widget(xml, "daLogo");
 	
 	abiDialogSetTitle(window, m_pApp->getApplicationName());
 

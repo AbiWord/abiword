@@ -99,8 +99,8 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our glade file is located
-	AP_UnixApp * unixApp = static_cast<AP_UnixApp*>(m_pApp);
-	UT_String glade_path( unixApp->getAbiSuiteAppGladeDir() );
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
 	glade_path += "/ap_UnixDialog_Break.glade";
 	
 	// load the dialog from the glade file
