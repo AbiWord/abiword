@@ -882,7 +882,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
   m_pDocument->setMetaDataProp ( PD_META_KEY_GENERATOR, "AbiWord" ) ;
   m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT, "application/x-abiword" ) ;
-  m_pDocument->setMetaDataProp ( PD_META_KEY_LAST_CHANGED, ctime(time(NULL)) ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_DATE_LAST_CHANGED, ctime(time(NULL)) ) ;
 
   // TODO: set dc.date and abiword.date_created if document is new (i.e. first save)
 
