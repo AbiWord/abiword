@@ -45,6 +45,225 @@
 #include <X11/Xlib.h>
 #endif
 
+static UT_uint32 adobeSUni[185][2] =
+	{
+		32,32,
+		33,33,
+		34,8704,
+		35,35,
+		36,8707,
+		37,37,
+		38,38,
+		39,8715,
+		40,40,
+		41,41,
+		42,8727,
+		43,43,
+		44,44,
+		45,8722,
+		46,46,
+		47,47,
+		48,48,
+		49,49,
+		50,50,
+		51,51,
+		52,52,
+		53,53,
+		54,54,
+		55,55,
+		56,56,
+		57,57,
+		58,58,
+		59,59,
+		60,60,
+		61,61,
+		62,62,
+		63,63,
+		64,8773,
+		65,913,
+		66,914,
+		67,935,
+		68,8710,
+		69,917,
+		70,934,
+		71,915,
+		72,919,
+		73,921,
+		74,977,
+		75,922,
+		76,923,
+		77,924,
+		78,925,
+		79,927,
+		80,928,
+		81,920,
+		82,929,
+		83,931,
+		84,932,
+		85,933,
+		86,962,
+		87,8486,
+		88,926,
+		89,936,
+		90,918,
+		91,91,
+		92,8756,
+		93,93,
+		94,8869,
+		95,95,
+		96,63717,
+		97,945,
+		98,946,
+		99,967,
+		100,948,
+		101,949,
+		102,966,
+		103,947,
+		104,951,
+		105,953,
+		106,981,
+		107,954,
+		108,955,
+		109,181,
+		110,957,
+		111,959,
+		112,960,
+		113,952,
+		114,961,
+		115,963,
+		116,964,
+		117,965,
+		119,969,
+		120,958,
+		121,968,
+		122,950,
+		123,123,
+		124,124,
+		125,125,
+		126,8764,
+		163,8804,
+		164,8260,
+		165,8734,
+		166,402,
+		167,9827,
+		168,9830,
+		169,9829,
+		170,9824,
+		171,8596,
+		172,8592,
+		173,8593,
+		174,8594,
+		175,8595,
+		176,176,
+		177,177,
+		179,8805,
+		180,215,
+		181,8733,
+		182,8706,
+		183,8226,
+		184,247,
+		185,8800,
+		186,8801,
+		187,8776,
+		188,8230,
+		189,63718,
+		190,63719,
+		191,8629,
+		192,8501,
+		193,8465,
+		194,8476,
+		195,8472,
+		196,8855,
+		197,8853,
+		198,8709,
+		199,8745,
+		200,8746,
+		201,8835,
+		202,8839,
+		203,8836,
+		204,8834,
+		205,8838,
+		206,8712,
+		207,8713,
+		208,8736,
+		209,8711,
+		210,0,
+		211,63193,
+		212,63195,
+		213,8719,
+		214,8730,
+		215,8901,
+		216,172,
+		217,8743,
+		218,8744,
+		219,8660,
+		220,8656,
+		221,8657,
+		222,8658,
+		223,8659,
+		224,9674,
+		225,9001,
+		226,0,
+		227,63721,
+		228,63722,
+		229,8721,
+		230,63723,
+		231,63724,
+		232,63725,
+		233,63726,
+		234,63727,
+		235,63728,
+		236,63729,
+		237,63730,
+		238,0,
+		239,63732,
+		241,9002,
+		242,8747,
+		243,8992,
+		244,63733,
+		245,8993,
+		246,63734,
+		247,63735,
+		248,63736,
+		249,63737,
+		250,63738,
+		251,63739,
+		252,63740,
+		253,63741,
+		254,63742,
+		255,100000
+	};
+
+static UT_uint32 adobeToUnicode(UT_uint32 iAdobe)
+{
+	UT_uint32 low = adobeSUni[0][0];
+	UT_uint32 high = adobeSUni[183][0];
+	if(iAdobe < low)
+	{
+		return iAdobe;
+	}
+	if(iAdobe > high)
+	{
+		return iAdobe;
+	}
+	UT_sint32 slow = (UT_sint32) iAdobe - 72;
+	if(slow < 0)
+	{ 
+		slow = 0;
+	}
+	while(adobeSUni[slow][0] != iAdobe && slow < 255)
+	{
+		xxx_UT_DEBUGMSG(("char at %d is %d value %d \n",slow,adobeSUni[slow][0],adobeSUni[slow][1]));
+		slow++;
+	}
+	xxx_UT_DEBUGMSG(("Input %d return %d \n",iAdobe,adobeSUni[slow][1]));
+	if(slow > 255)
+	{
+		return iAdobe;
+	}
+	return adobeSUni[slow][1];
+}
+
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
 										 const char* pszFontVariant,
@@ -276,11 +495,17 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 #ifndef WITH_PANGO
 void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-  _UUD(xoff);
-  _UUD(yoff);
+	_UUD(xoff);
+	_UUD(yoff);
 
 #ifdef USE_XFT
-	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent, &Char, 1);
+	UT_uint32 iChar = Char;
+	if(m_bIsSymbolFont && iChar < 255  && iChar >= 32)
+	{
+		iChar = adobeToUnicode(Char);
+		UT_DEBUGMSG(("DrawGlyph remapped %d to %d \n",Char,iChar));
+	}
+	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent, &iChar, 1);
 #else
 	UT_UCSChar Wide_char = remapGlyph(Char, false);
 	if(Wide_char == 0x200B || Wide_char == 0xFEFF) //zero width spaces
@@ -328,10 +553,35 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		return;
 	
 	yoff += m_pXftFont->ascent;
-	
+	if(m_bIsSymbolFont && pCharWidths == NULL)
+	{
+		UT_DEBUGMSG(("FIXME: Put some code here!!! \n"));
+	}
+
 	if (!pCharWidths)
-		XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
-						const_cast<XftChar32*> (pChars + iCharOffset), iLength);
+	{
+		if(!m_bIsSymbolFont)
+		{
+			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
+							const_cast<XftChar32*> (pChars + iCharOffset), iLength);
+		}
+		else
+		{
+			UT_uint32 * uChars = new UT_uint32[iLength];
+			for(UT_uint32 i = (UT_uint32) iCharOffset; i< iLength; i++)
+			{
+				uChars[i] = (UT_uint32) pChars[i];
+				if(uChars[i] < 255 && uChars[i] >= 32)
+				{
+					uChars[i] = adobeToUnicode(uChars[i]);
+					UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
+				}
+			}
+			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
+							const_cast<XftChar32*> (uChars + iCharOffset), iLength);
+			delete [] uChars;
+		}
+	}
 	else
 	{
 		XftCharSpec aCharSpec[256];
@@ -341,11 +591,21 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			pCharSpec = new XftCharSpec[iLength];
 
 		pCharSpec[0].ucs4 = (FT_UInt) pChars[iCharOffset];
+		UT_uint32 uChar = (UT_uint32) pCharSpec[0].ucs4;
 		pCharSpec[0].x = xoff;
 		pCharSpec[0].y = yoff;
-
+		if(m_bIsSymbolFont && uChar < 255 && uChar >=32)
+		{
+			pCharSpec[0].ucs4 = (FT_UInt) adobeToUnicode(uChar);
+			UT_DEBUGMSG(("DrawGlyph remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
+		}
 		for (int i = 1; i < iLength; ++i)
 		{
+			uChar = (UT_uint32) pCharSpec[i].ucs4;
+			if(m_bIsSymbolFont && uChar < 255 && uChar >=32)
+			{
+				pCharSpec[i].ucs4 = (FT_UInt) adobeToUnicode(uChar);
+			}
 			pCharSpec[i].ucs4 = (FT_UInt) pChars[i + iCharOffset];
 			pCharSpec[i].x = (short) (pCharSpec[i - 1].x + pCharWidths[i - 1]);
 			pCharSpec[i].y = yoff;
@@ -536,9 +796,16 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 		return;
 
 	m_pFont = pUFont;
-
+	const char * szFontName = m_pFont->getUnixFont()->getName();
+	m_bIsSymbolFont = false;
+	m_bIsDingbatFont = false;
 #ifdef USE_XFT
 	UT_uint32 size = pUFont->getSize();
+	if(strstr(szFontName,"Symbol") != NULL)
+	{
+		m_bIsSymbolFont = true;
+		UT_DEBUGMSG(("unixGraphics: Found Symbol Font! \n"));
+	}
 	if (size < MAX_ABI_GDK_FONT_SIZE)
 	{
 		m_bLayoutUnits = false;
@@ -595,17 +862,30 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// character cells.
 
 #ifdef USE_XFT
+	float width;
 	if (m_bLayoutUnits)
 	{
 		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in layout units\n"));
-		float width = m_pFont->getUnixFont()->measureUnRemappedChar(c, m_pFont->getSize());
+		if(!m_bIsSymbolFont)
+		{
+			width = m_pFont->getUnixFont()->measureUnRemappedChar(c, m_pFont->getSize());
+		}
+		else
+		{
+			width = m_pFont->getUnixFont()->measureUnRemappedChar((UT_UCSChar) adobeToUnicode(c), m_pFont->getSize());
+		}
 		return (UT_uint32) _UL((width + 0.5));
 	}
 	else
 	{
 		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in screen units\n"));
 		XGlyphInfo extents;
-		XftTextExtents32(GDK_DISPLAY(), m_pXftFont, const_cast<XftChar32*> (&c), 1, &extents);
+		UT_UCSChar cc = c;
+		if(m_bIsSymbolFont)
+		{
+			cc = adobeToUnicode((UT_uint32) cc);
+		}
+		XftTextExtents32(GDK_DISPLAY(), m_pXftFont, static_cast<XftChar32*> (&cc), 1, &extents);
 		return _UL(extents.xOff);
 	}
 

@@ -2978,7 +2978,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
 
   setlocale (LC_NUMERIC, old_locale);
- UT_DEBUGMSG(("propbuffer: %s \n",propBuffer.c_str()));
+  xxx_UT_DEBUGMSG(("propbuffer: %s \n",propBuffer.c_str()));
  
   const XML_Char* propsArray[3];
   propsArray[0] = (XML_Char*)"props";

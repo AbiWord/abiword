@@ -722,7 +722,16 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 	FcResult result;
 
 	UT_DEBUGMSG(("searchFont [%s]\n", pszXftName));
-	fp = XftNameParse(pszXftName);
+	UT_String sXftName = pszXftName;
+	if(strstr(pszXftName,"Symbol") != NULL)
+	{
+		const char * szLocm = strstr(pszXftName,"-");
+		UT_String sLeft("Standard Symbols L");
+		sLeft += szLocm;
+		sXftName = sLeft;
+		UT_DEBUGMSG(("searchFont:: Symbol replaced with %s \n",sXftName.c_str()));
+	}
+	fp = XftNameParse(sXftName.c_str());
 
 	FcConfigSubstitute (m_pConfig, fp, FcMatchPattern);
 	result_fp = FcFontSetMatch (m_pConfig, &m_pFontSet, 1, fp, &result);
