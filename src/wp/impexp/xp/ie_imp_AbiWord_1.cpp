@@ -152,10 +152,11 @@ UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 #define TT_OTHER		0
 #define TT_DOCUMENT		1
 #define TT_SECTION		2
-#define TT_BLOCK		3
-#define TT_INLINE		4
-#define TT_IMAGE		5
-#define TT_FIELD		6
+#define TT_BLOCK		3		// a paragraph <p>
+#define TT_INLINE		4		// inline span of text <c>
+#define TT_IMAGE		5		// an image object <i>
+#define TT_FIELD		6		// a computed field object <f>
+#define TT_BREAK		7		// a forced line-break <br>
 
 struct _TokenTable
 {
@@ -170,6 +171,7 @@ static struct _TokenTable s_Tokens[] =
 	{	"c",			TT_INLINE		},
 	{	"i",			TT_IMAGE		},
 	{	"f",			TT_FIELD		},
+	{	"br",			TT_BREAK		},
 	{	"*",			TT_OTHER		}};	// must be last
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -253,6 +255,26 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
 		return;
+
+		// Forced Line Breaks are not containers.  Therefore we don't
+		// push the ParseState (_PS_...).  Breaks are marked with a
+		// tag, but are translated into character data (LF).  This may
+		// seem a little odd (perhaps an &lf; entity would be better).
+		// Anyway, this distinction from ordinary LF's in the document
+		// (which get mapped into SPACE) keeps the file sanely editable.
+
+	case TT_BREAK:
+		X_VerifyParseState(_PS_Block);
+		// TODO decide if we should push and pop the attr's
+		// TODO that came in with the <br/>.  that is, decide
+		// TODO if <br/>'s will have any attributes or will
+		// TODO just inherit everything from the surrounding
+		// TODO spans.
+		{
+			UT_UCSChar ucs = 0x000a;	// LF
+			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+		}
+		return;
 		
 	case TT_OTHER:
 	default:
@@ -298,6 +320,10 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		return;
 
 	case TT_FIELD:						// not a container, so we don't pop stack
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_BREAK:						// not a container, so we don't pop stack
 		X_VerifyParseState(_PS_Block);
 		return;
 

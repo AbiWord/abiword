@@ -281,6 +281,15 @@ void ie_Exp_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			*pBuf++ = ';';
 			pData++;
 			break;
+
+		case 0x000a:					// LF -- representing a Forced-Line-Break
+			*pBuf++ = '<';				// these get mapped to <br/>
+			*pBuf++ = 'b';
+			*pBuf++ = 'r';
+			*pBuf++ = '/';
+			*pBuf++ = '>';
+			pData++;
+			break;
 			
 		default:
 			*pBuf++ = (UT_Byte)*pData++;
