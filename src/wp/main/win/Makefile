@@ -41,8 +41,8 @@ ifeq ($(OS_NAME), MINGW32)
 MINGRES_INCS=--include-dir=$(ABI_ROOT)/src/wp/ap/win --include-dir=$(ABI_ROOT)/src/af/xap/win
 CPPSRCS+=		dummy.cpp
 
-ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 ole32
+ABI_LIBS=		unicows kernel32 user32 gdi32 winspool comdlg32 advapi32 \
+			shell32 uuid comctl32 ole32 unicows
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv fribidi \
@@ -65,7 +65,7 @@ ABI_APPLIBDEP=		$(ABI_APPLIBS)
 
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
-ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
+ABI_LIBS=		unicows kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 			shell32 uuid comctl32 msvcprt ole32
 
 GARBAGE=		AbiWord.map AbiWord.pdb

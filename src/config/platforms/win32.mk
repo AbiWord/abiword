@@ -102,7 +102,8 @@ endif
 
 ABI_REQUIRE_PEER_ICONV = 1
 
-OS_LIBS		= kernel32.lib \
+OS_LIBS		= unicows.lib \
+              kernel32.lib \
               user32.lib \
               gdi32.lib \
               winspool.lib \

@@ -522,9 +522,9 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 	MSG msg;
 	for( int i = 0 ; i < 10 ; i++ )
 	{
-		if( PeekMessage( &msg, (HWND) NULL, 0, 0, PM_REMOVE) )
+		if( PeekMessageW( &msg, (HWND) NULL, 0, 0, PM_REMOVE) )
 		{
-			DispatchMessage(&msg); 
+			DispatchMessageW(&msg); 
 		} 
 	}
 }
@@ -554,10 +554,12 @@ UT_RGBColor XAP_Win32FrameImpl::getColorSelForeground () const
 	return clr;
 };
 
-
+#define MAXAPPNAME 256
 bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 {
-	WNDCLASSEX wndclass;
+	WNDCLASSEXW wndclass;
+	WCHAR strAppName[MAXAPPNAME];
+	_snwprintf(strAppName, MAXAPPNAME, L"%S", app->getApplicationName());
 
 	// register class for the frame window
 	wndclass.cbSize			= sizeof(wndclass);
@@ -570,10 +572,10 @@ bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	wndclass.hCursor			= LoadCursor(NULL, IDC_ARROW);
 	wndclass.hbrBackground		= (HBRUSH)(COLOR_BTNFACE+1);
 	wndclass.lpszMenuName		= NULL;
-	wndclass.lpszClassName		= app->getApplicationName();
+	wndclass.lpszClassName		= strAppName;
 	wndclass.hIconSm			= app->getSmallIcon();
 
-	ATOM a = RegisterClassEx(&wndclass);
+	ATOM a = RegisterClassExW(&wndclass);
 	UT_return_val_if_fail(a, false);
 
 	return true;

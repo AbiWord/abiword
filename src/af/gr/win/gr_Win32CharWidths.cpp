@@ -64,7 +64,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					else
 					{
 						ABC abc;
-						int iRes = GetCharABCWidths(hdc,k,k,&abc);
+						int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
 						UT_ASSERT( iRes );
 						
 
@@ -135,7 +135,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 						else
 						{
 							ABC abc;
-							int iRes = GetCharABCWidths(hdc,k,k,&abc);
+							int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
 							UT_ASSERT( iRes );
 
 							if(iOver == UT_OVERSTRIKING_LEFT)

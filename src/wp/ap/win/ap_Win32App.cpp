@@ -1069,7 +1069,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 //	
 
 
-#if  !defined(__MINGW32__) /* && !defined(DEBUG) */
+#if  !defined(__MINGW32__)  && !defined(DEBUG) 
 __try
 #endif	
 {		
@@ -1089,7 +1089,7 @@ __try
 		}	
 
 		// do dispatch loop
-		while( GetMessage(&msg, NULL, 0, 0) )
+		while( GetMessageW(&msg, NULL, 0, 0) )
 	    {
    	      	// TranslateMessage is not called because AbiWord
 	      	// has its own way of decoding keyboard accelerators
@@ -1097,11 +1097,11 @@ __try
 				continue;
 				
 			TranslateMessage(&msg);	
-	    	DispatchMessage(&msg);	
+	    	DispatchMessageW(&msg);	
 	    	
 			// Check for idle condition
 			while( !UT_Win32Idle::_isEmpty() &&
-                   !PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
+                   !PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
 			{
 				// Fire idle functions when no pending messages
 		    	UT_Win32Idle::_fireall();
@@ -1127,7 +1127,7 @@ __try
 // If an exception happens, with "catch" the block
 // and then the save it into disk
 //
-#if  !defined(__MINGW32__) /* && !defined(DEBUG) */
+#if  !defined(__MINGW32__)  && !defined(DEBUG) 
 __except (1)
 {
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
