@@ -122,7 +122,7 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 		{
 			for(j =0; j< static_cast<UT_sint32>(pColumn->countCons()) && !bFound;i++)
 			{
-				fp_Container * pCon = pColumn->getNthCon(i);
+				fp_Container * pCon = static_cast<fp_Container*>(pColumn->getNthCon(i));
 				if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
 					fp_TableContainer * pCurTab = static_cast<fp_TableContainer *>(pCon);
