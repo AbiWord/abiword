@@ -260,6 +260,39 @@ XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 	return &m_dialogFactory;
 }
 
+
+#if defined(USE_CARBON_EVENTS)
+pascal OSStatus XAP_MacFrame::HandleCarbonWindowEvent (EventHandlerCallRef nextHandler, 
+	                                          EventRef theEvent, void* userData)
+{
+	OSStatus err = noErr;
+	UInt32 eventKind = ::GetEventKind (theEvent);
+	XAP_MacFrame *frame = (XAP_MacFrame *)userData;
+	UT_ASSERT (frame);
+	
+	switch (eventKind) {
+	case kEventWindowClose:
+		frame->close ();
+		break;
+	case kEventWindowUpdate:
+		frame->_macUpdate ();
+		break;
+	case kEventWindowBoundsChanged:
+		err = ::CallNextEventHandler (nextHandler, theEvent);
+		UT_ASSERT (err == noErr);
+		if (err == noErr) {
+			frame->_macGrow ();
+		}
+		break;
+	default:
+		err = ::CallNextEventHandler (nextHandler, theEvent);
+		break;
+	}
+	return err;
+}
+#endif
+
+
 EV_Toolbar * XAP_MacFrame::_newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage)
 {
     
@@ -274,8 +307,32 @@ void XAP_MacFrame::_createTopLevelWindow(void)
 	Rect winBounds;
 
 	::SetRect(&winBounds, 100, 100, 500, 500);
+#if defined(USE_CARBON_EVENTS)
+	WindowAttributes windowAttrs = kWindowStandardDocumentAttributes      // Standard document window
+	                               | kWindowStandardHandlerAttribute;  // Use standard event handler
+	::CreateNewWindow (kDocumentWindowClass, windowAttrs,  // Create the window
+                       &winBounds, &m_MacWindow);
+      
+	::SetWindowTitleWithCFString (m_MacWindow, CFSTR("Untitled")); // Set title
+#else
+	// legacy support
 	m_MacWindow = ::NewCWindow(NULL, &winBounds, "\pUntitled", 0, zoomDocProc, (WindowPtr) -1, true, (long) this);
+#endif
 	UT_ASSERT (m_MacWindow != NULL);
+
+#if defined(USE_CARBON_EVENTS)
+	EventTypeSpec eventTypes[2];
+	eventTypes[0].eventClass = kEventClassWindow;
+	eventTypes[0].eventKind = kEventWindowClose;
+	eventTypes[1].eventClass = kEventClassWindow;
+	eventTypes[1].eventKind = kEventWindowUpdate;
+	eventTypes[2].eventClass = kEventClassWindow;
+	eventTypes[2].eventKind = kEventWindowBoundsChanged;
+	EventHandlerRef handlerRef;
+	EventHandlerUPP handlerUPP = NewEventHandlerUPP (HandleCarbonWindowEvent);
+	err = ::InstallWindowEventHandler (m_MacWindow, handlerUPP, 3, eventTypes, (void*)this, &handlerRef);
+#endif	
+	
 	err = ::CreateRootControl (m_MacWindow, &m_rootControl);
 	UT_ASSERT (err == noErr);
 #if TARGET_API_MAC_CARBON

@@ -80,6 +80,8 @@ XAP_MacApp::~XAP_MacApp(void)
 
 bool XAP_MacApp::initialize(void)
 {
+	OSStatus err;
+
 	// let our base class do it's thing.
 	
 	XAP_App::initialize();
@@ -94,7 +96,16 @@ bool XAP_MacApp::initialize(void)
 	// do anything else we need here...
 
 	// _pClipboard = new AP_MacClipboard();
-	
+
+#if defined(USE_CARBON_EVENTS)
+	EventTypeSpec eventTypes[1];
+	eventTypes[0].eventClass = kEventClassCommand;
+	eventTypes[0].eventKind = kEventCommandProcess;
+	EventHandlerRef handlerRef;
+	EventHandlerUPP handlerUPP = NewEventHandlerUPP (HandleCarbonMenus);
+	err = ::InstallApplicationEventHandler (handlerUPP, 1, eventTypes, (void*)this, &handlerRef);
+#endif
+
 	return true;
 }
 
@@ -122,7 +133,8 @@ XAP_Toolbar_ControlFactory * XAP_MacApp::getControlFactory(void)
 	return &m_controlFactory;
 }
 
-const char * XAP_MacApp::getUserPrivateDirectory(void) {
+const char * XAP_MacApp::getUserPrivateDirectory(void) 
+{
         /* return a pointer to a static buffer */
 	short vRefNum;
 	long dirID;
@@ -212,7 +224,45 @@ void XAP_MacApp::InitializeMacToolbox ()
 	}
 }
 
+#if defined(USE_CARBON_EVENTS)
+/*!
+	Carbon event handler
+ */
+pascal OSStatus XAP_MacApp::HandleCarbonMenus (EventHandlerCallRef nextHandler, 
+											EventRef theEvent, void* userData)
+{
+	OSStatus err = noErr;
+	XAP_MacApp *	myApp = (XAP_MacApp *)userData;
+	UT_ASSERT (myApp);
+	UInt32			eventKind;
+	HICommand		cmd;
+	
+	eventKind = ::GetEventKind (theEvent);
+	if (eventKind == kEventCommandProcess) {
+		XAP_Menu_Id xapId;
+		GetEventParameter (theEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof (HICommand), NULL, &cmd);
 
+		xapId = cmd.commandID;
+		
+		XAP_MacFrame *theFrame = dynamic_cast<XAP_MacFrame *>(myApp->getLastFocussedFrame ());
+		UT_ASSERT (theFrame);
+		
+		EV_MacMenu *menu = theFrame->getMenu();
+		UT_ASSERT (menu);
+
+		menu->onCommand (xapId);
+	}
+	
+	err = CallNextEventHandler (nextHandler, theEvent);
+	return err;
+}
+
+
+#else
+/*!
+	Dispatch the event.
+	Classic events only 
+*/
 void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 {
 	WindowPtr	targetWin;
@@ -322,7 +372,7 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 	} 
 }
 
-
+/* Classic events only */
 void XAP_MacApp::HandleMenus (long menuSelection)
 {
 	short id, item;
@@ -342,7 +392,7 @@ void XAP_MacApp::HandleMenus (long menuSelection)
 	}	
 	HiliteMenu(0);
 }
-
+#endif
 
 
 /*
@@ -353,10 +403,14 @@ void XAP_MacApp::run ()
 	unsigned short mask = everyEvent;
 	EventRecord theEvent;
 	unsigned long delay = ::GetCaretTime();
+#if defined(USE_CARBON_EVENTS)
+	RunApplicationEventLoop ();
+#else
 	while (!m_finished) {
 		while (::WaitNextEvent(mask, &theEvent, delay, NULL))
 		{
 			DispatchEvent (theEvent);
 		}
 	}
+#endif
 }

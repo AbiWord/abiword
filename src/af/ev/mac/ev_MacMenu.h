@@ -54,7 +54,9 @@ public:
 
 	bool synthesizeMenuBar(void);
     
+#if !defined(USE_CARBON_EVENTS)
     XAP_Menu_Id findMenuId (short menu, short item);
+#endif
 private:
 	enum {
 		EV_MAC_MENUBAR,

@@ -105,6 +105,10 @@ public:
 		{ return m_visibleRgnTop; };
 	void                        _setVisibleRgnTop (short top);
 	virtual EV_Menu*			getMainMenu();
+#if defined(USE_CARBON_EVENTS)
+	static pascal OSStatus HandleCarbonWindowEvent (EventHandlerCallRef nextHandler, 
+	                                          EventRef theEvent, void* userData);
+#endif
 
 protected:
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);

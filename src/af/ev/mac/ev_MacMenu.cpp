@@ -398,7 +398,11 @@ OSErr EV_MacMenu::_insertAppleMenu(void)
 	return ose; 
 }
 
-// Find the XAP_Menu_Id stored for the item #<item> on the menu ID <menu>.
+#if !defined(USE_CARBON_EVENTS)
+/*!
+	Find the XAP_Menu_Id stored for the item #<item> on the menu ID <menu>.
+	Classic Event only
+ */
 XAP_Menu_Id EV_MacMenu::findMenuId (short menu, short item)
 {
 	MenuHandle h;
@@ -416,6 +420,7 @@ XAP_Menu_Id EV_MacMenu::findMenuId (short menu, short item)
 	UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	return 0;
 }
+#endif
 
 
 

@@ -30,7 +30,7 @@
 
 class XAP_Args;
 class XAP_MacFontManager;
-class XAP_MacToolbar_Icons;
+class AP_MacToolbar_Icons;
 
 /*****************************************************************
 ******************************************************************
@@ -73,15 +73,20 @@ protected:
 protected:
 #endif
 	/* Mac Event handling */
+#if defined(USE_CARBON_EVENTS)
+	static pascal OSStatus HandleCarbonMenus (EventHandlerCallRef nextHandler, 
+	                                          EventRef theEvent, void* userData);
+#else
 	void DispatchEvent (const EventRecord & theEvent);
 	void HandleMenus (long menuSelection);
+#endif
 
 	bool		_loadFonts (void);
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	bool					m_finished;
 	XAP_MacFontManager *		m_pMacFontManager;
 	
-	XAP_MacToolbar_Icons *		m_pMacToolbarIcons;
+	AP_MacToolbar_Icons *		m_pMacToolbarIcons;
 	AP_MacDialogFactory			m_dialogFactory;
 	AP_MacToolbar_ControlFactory	m_controlFactory;
 };

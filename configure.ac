@@ -313,7 +313,7 @@ fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "mac"; then
 	PLATFORM_LIBS="-liconv -framework Carbon -framework CoreServices -framework ApplicationServices"
-	PLATFORM_CFLAGS=-I'$(top_builddir)/src/af/util/unix'\ -fpascal-strings\ -DCARBON_ON_MACH_O=1\ -DNO_SYS_ERRLIST\ -I/Developer/Headers/FlatCarbon
+	PLATFORM_CFLAGS=-I'$(top_builddir)/src/af/util/unix'\ -fpascal-strings\ -DUSE_CARBON_EVENTS\ -DCARBON_ON_MACH_O=1\ -DNO_SYS_ERRLIST\ -I/Developer/Headers/FlatCarbon
 fi
 
 
