@@ -379,6 +379,11 @@ UT_Bool	fp_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
 		UT_ASSERT(lenSpan>0);
 
+		if (lenSpan > len)
+		{
+			lenSpan = len;
+		}
+		
 		for (UT_uint32 i=0; i<lenSpan; i++)
 		{
 			iLeftWidth += pCharWidths[i + offset];

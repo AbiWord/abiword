@@ -1543,7 +1543,6 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	if (isSelectionEmpty())
 	{
 		_resetSelection();
-//		_setSelectionAnchor();
 		_drawInsertionPoint();
 	}
 }
@@ -1798,7 +1797,9 @@ void FV_View::_xorInsertionPoint()
 	if (m_iPointHeight > 0)
 	{
 		UT_RGBColor clr(255,255,255);
-		
+
+		UT_DEBUGMSG(("_xorInsertionPoint\n"));
+
 		m_pG->setColor(clr);
 		m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
 	}
@@ -1862,6 +1863,12 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 void FV_View::setYScrollOffset(UT_sint32 v)
 {
 	UT_sint32 dy = v - m_yScrollOffset;
+
+	if (dy == 0)
+	{
+		return;
+	}
+	
 	if (dy != 0)
 	{
 		m_pG->scroll(0, dy);
