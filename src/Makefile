@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-DIRS=		config tools other af text wp ask
+DIRS=		config tools other af text wp 
 REQUIRECLEAN=
 ifdef ($(ABI_OPT_PEER_EXPAT),1)
 REQUIRECLEAN+=clean_EXPAT_
