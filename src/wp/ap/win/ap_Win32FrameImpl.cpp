@@ -438,7 +438,6 @@ void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 			DestroyWindow(m_hwndTopRuler);
 
 		DELETEP(pFrameData->m_pTopRuler);
-		static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
 
 		m_hwndTopRuler = NULL;
 	}

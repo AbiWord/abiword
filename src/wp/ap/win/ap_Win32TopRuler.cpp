@@ -50,6 +50,7 @@ AP_Win32TopRuler::AP_Win32TopRuler(XAP_Frame * pFrame)
 
 AP_Win32TopRuler::~AP_Win32TopRuler(void)
 {
+	reinterpret_cast<FV_View *>(getView())->setTopRuler(NULL);
 	DELETEP(m_pG);
 }
 
