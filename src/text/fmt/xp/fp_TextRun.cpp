@@ -51,6 +51,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_pFont = NULL;
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
+	m_bSquiggled = UT_FALSE;
 
 	if (bLookupProperties)
 	{
@@ -572,6 +573,7 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 
 	if (
 		bFullLineHeightRect
+		|| m_bSquiggled
 		|| (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE | TEXT_DECOR_LINETHROUGH))
 		|| !(
 			(iSel2 < iRunBase)
@@ -690,6 +692,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	_drawDecors(pDA->xoff, yTopOfRun);
 
 	// TODO: draw this underneath (ie, before) the text and decorations
+	m_bSquiggled = UT_FALSE;
 	m_pBL->findSquigglesForRun(this);
 }
 
@@ -858,6 +861,8 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 	{
 		return;
 	}
+
+	m_bSquiggled = UT_TRUE;
 	
 	UT_sint32 nPoints = (right - left + 3)/2;
 	UT_ASSERT(nPoints > 1);

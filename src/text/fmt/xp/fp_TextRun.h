@@ -94,6 +94,7 @@ protected:
 	*/
 	GR_Font*				m_pFont;
 	UT_RGBColor				m_colorFG;
+	UT_Bool					m_bSquiggled;
 };
 
 #endif /* FP_TEXTRUN_H */
