@@ -27,6 +27,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <locale.h>
+#include <time.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -204,7 +205,7 @@ IE_Exp_MHTML_Sniffer::IE_Exp_MHTML_Sniffer ()
 
 bool IE_Exp_MHTML_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (!(UT_stricmp (szSuffix, ".mhtml")));
+	return (!(UT_stricmp (szSuffix, ".mht")));
 }
 
 UT_Error IE_Exp_MHTML_Sniffer::constructExporter (PD_Document * pDocument,
@@ -220,8 +221,8 @@ bool IE_Exp_MHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
-	*pszDesc = "Multipart HTML (.mhtml)";
-	*pszSuffixList = "*.mhtml";
+	*pszDesc = "Multipart HTML (.mht)";
+	*pszSuffixList = "*.mht";
 	*ft = getFileType();
 	return true;
 }
@@ -300,11 +301,6 @@ static UT_UTF8String s_string_to_url (UT_String & str)
 			ptr++;
 		}
 	return url;
-}
-
-static UT_UTF8String s_cid_new ()
-{
-	return UT_UTF8String_sprintf ("dev.null.%lu@abiword.com", (unsigned long) UT_newNumber ());
 }
 
 /*!	This function returns true if the given property is a valid CSS
@@ -436,7 +432,9 @@ private:
 	
 	void	_writeImage (const UT_ByteBuf * pByteBuf,
 						 const UT_String & imagedir, const UT_String & filename);
+	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
 	void	_handleImage (PT_AttrPropIndex api);
+	void	_handlePendingImages ();
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
@@ -498,6 +496,8 @@ private:
 	void			tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 							  WhiteSpace ws = ws_Both);
 	void			tagClose (UT_uint32 tagID);
+	void			tagOpenBroken  (const UT_UTF8String & content);
+	void			tagCloseBroken (const UT_UTF8String & content);
 	UT_uint32		tagTop ();
 	void			tagPI (const char * target, const UT_UTF8String & content);
 	void			tagComment (const UT_UTF8String & content);
@@ -511,7 +511,7 @@ private:
 	void			textTrusted (const UT_UTF8String & text);
 	void			textUntrusted (const char * text);
 
-	void			multiHeader ();
+	void			multiHeader (const UT_UTF8String & title);
 	void			multiBoundary (bool end = false);
 	void			multiField (const char * name, const UT_UTF8String & value);
 	void			multiBreak ();
@@ -552,7 +552,6 @@ private:
 	const PP_AttrProp * m_pAPStyles;
 
 	UT_UTF8String	m_utf8_css_path; // Multipart HTML: cache for content location
-	UT_UTF8String	m_utf8_css_cid;  // Multipart HTML: cache for content ID
 
 	UT_Stack		m_tagStack;
 
@@ -566,6 +565,7 @@ private:
 
 	UT_StringPtrMap	m_BodyStyle;
 	UT_StringPtrMap	m_BlockStyle;
+	UT_StringPtrMap	m_SavedURLs;
 };
 
 const char * s_HTML_Listener::bodyStyle (const char * key)
@@ -754,6 +754,28 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID)
 	UT_DEBUGMSG(("WARNING: possible tag mis-match in XHTML output!\n"));
 }
 
+/* use with *extreme* caution! (this is used by images with data-URLs)
+ */
+void s_HTML_Listener::tagOpenBroken (const UT_UTF8String & content)
+{
+	tagNewIndent ();
+
+	m_utf8_0 += "<";
+	m_utf8_0 += content;
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+}
+
+/* use with *extreme* caution! (this is used by images with data-URLs)
+ */
+void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content)
+{
+	m_utf8_0  = content;
+	m_utf8_0 += " />\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+}
+
 UT_uint32 s_HTML_Listener::tagTop ()
 {
 	void * vptr = 0;
@@ -917,11 +939,28 @@ void s_HTML_Listener::textUntrusted (const char * text)
 
 static const char * s_boundary = "AbiWord_multipart_boundary____________";
 
-void s_HTML_Listener::multiHeader ()
+void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
 {
-	m_utf8_1  = "multipart/related; boundary=\"";
+	m_utf8_1 = "<Saved by AbiWord>";
+	multiField ("From", m_utf8_1);
+
+	multiField ("Subject", title);
+
+	time_t tim = time (NULL);
+	struct tm * pTime = localtime (&tim);
+	char timestr[64];
+	strftime (timestr, 63, "%a, %d %b %Y %H:%M:%S +0100", pTime); // hmm, hard-code time zone
+	timestr[63] = 0;
+
+	m_utf8_1 = timestr;
+	multiField ("Date", m_utf8_1);
+
+	m_utf8_1 = "1.0";
+	multiField ("MIME-Version", m_utf8_1);
+
+	m_utf8_1  = "multipart/related;\r\n\tboundary=\"";
 	m_utf8_1 += s_boundary;
-	m_utf8_1 += "\"; type=\"";
+	m_utf8_1 += "\";\r\n\ttype=\"";
 
 	if (get_HTML4 ())
 		m_utf8_1 += IE_MIME_HTML;
@@ -992,7 +1031,17 @@ static const char * s_Header[3] = {
 
 void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 {
-	if (get_Multipart ()) multiHeader ();
+	UT_UTF8String titleProp;
+
+#ifdef HTML_META_SUPPORTED
+	m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp);
+
+	if (titleProp.byteLength () == 0) titleProp = m_pie->getFileName ();
+#else
+	titleProp = m_pie->getFileName ();
+#endif
+
+	if (get_Multipart ()) multiHeader (titleProp);
 
 	/* print XML header
 	 */
@@ -1052,14 +1101,9 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	tagOpen (TT_TITLE, m_utf8_1, ws_Pre);
 
 #ifdef HTML_META_SUPPORTED
-	UT_UTF8String titleProp;
-
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp) && titleProp.size ())
-		textTrusted (titleProp.escapeXML ());
-	else
-		textUntrusted (m_pie->getFileName ());
+	textTrusted (titleProp.escapeXML ()); // TODO: back-port this method?
 #else
-	textUntrusted (m_pie->getFileName ());
+	textUntrusted (titleProp.utf8_str ());
 #endif
 
 	tagClose (TT_TITLE, m_utf8_1, ws_Post);
@@ -1129,7 +1173,7 @@ void s_HTML_Listener::_outputEnd ()
 		{
 			if (m_pAPStyles) _outputStyles (m_pAPStyles);
 
-			// TODO: images
+			_handlePendingImages ();
 
 			multiBoundary (true);
 		}
@@ -1146,7 +1190,7 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 
 	imagedir += "/style.css";
 
-	if (m_utf8_css_cid.byteLength ()) // Multipart HTML: style-sheet segment
+	if (m_utf8_css_path.byteLength ()) // Multipart HTML: style-sheet segment
 		{
 			multiBoundary ();
 
@@ -1154,12 +1198,6 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 			m_utf8_1 += "; charset=\"UTF-8\"";
 
 			multiField ("Content-Type",     m_utf8_1);
-
-			m_utf8_1  = "<";
-			m_utf8_1 += m_utf8_css_cid;
-			m_utf8_1 += ">";
-
-			multiField ("Content-ID",       m_utf8_1);
 			multiField ("Content-Location", m_utf8_css_path);
 			multiBreak ();
 		}
@@ -1200,24 +1238,19 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 
 			if (!_openStyleSheet (css_path)) return;
 
-			if (!get_Multipart () || (m_utf8_css_cid.byteLength () == 0))
+			if (!get_Multipart () || (m_utf8_css_path.byteLength () == 0))
 				{
 					m_utf8_1  = "link href=\"";
+					m_utf8_1 += css_path;
+					m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
+
+					tagOpenClose (m_utf8_1, get_HTML4 ());
 
 					if (get_Multipart ())
 						{
 							m_utf8_css_path = css_path;
-							m_utf8_css_cid  = s_cid_new ();
-
-							m_utf8_1 += "cid:";
-							m_utf8_1 += m_utf8_css_cid;
+							return;
 						}
-					else m_utf8_1 += css_path;
-
-					m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
-					tagOpenClose (m_utf8_1, get_HTML4 ());
-
-					if (get_Multipart ()) return;
 				}
 
 			/* first line of style sheet is an encoding declaration
@@ -2021,7 +2054,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			pAP->getAttribute ("level", szLevel);
 			m_iListDepth = atoi ((const char *) szLevel);
 
-			/* TODO: why can m_iListDepth be zero sometimes ??
+			/* TODO: why can m_iListDepth be zero sometimes ?? (numbered headings?)
 			 */
 			if (m_iListDepth == 0) m_iListDepth = 1;
 
@@ -2966,6 +2999,31 @@ void s_HTML_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
 		}
 }
 
+void s_HTML_Listener::_writeImageBase64 (const UT_ByteBuf * pByteBuf)
+{
+	char buffer[75];
+	char * bufptr = 0;
+	size_t buflen;
+	size_t imglen = pByteBuf->getLength ();
+	const char * imgptr = reinterpret_cast<const char *>(pByteBuf->getPointer (0));
+
+	buffer[0] = '\r';
+	buffer[1] = '\n';
+
+	while (imglen)
+		{
+			buflen = 72;
+			bufptr = buffer + 2;
+
+			UT_UTF8_Base64Encode (bufptr, buflen, imgptr, imglen);
+
+			*bufptr = 0;
+
+			m_utf8_1 = buffer;
+			textTrusted (m_utf8_1);
+		}
+}
+
 void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = 0;
@@ -3045,18 +3103,28 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	url += "/";
 	url += s_string_to_url (filename);
 
+	if (get_Multipart ())
+		{
+			UT_UTF8String * save_url = new UT_UTF8String(url);
+			if (save_url == 0) return;
+
+			if (!m_SavedURLs.insert (szDataID, save_url)) // arg. failed. skip image
+				{
+					DELETEP(save_url);
+					return;
+				}
+		}
+
 	/* szDataID is the raw string with the data ID
 	 * imagedir is the name of the directory in which we'll write the image
 	 * filename is the name of the file to which we'll write the image
 	 * url      is the URL which we'll use
 	 */
-	_writeImage (pByteBuf, imagedir, filename);
-
+	if (!get_Embed_Images () && !get_Multipart ())
+		{
+			_writeImage (pByteBuf, imagedir, filename);
+		}
 	m_utf8_1 = "img";
-
-	m_utf8_1 += " src=\"";
-	m_utf8_1 += url;
-	m_utf8_1 += "\"";
 
 	const XML_Char * szWidth  = 0;
 	const XML_Char * szHeight = 0;
@@ -3081,7 +3149,73 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 			m_utf8_1 += "\"";
 		}
 
-	tagOpenClose (m_utf8_1, get_HTML4 (), ws_None);
+	if (!get_Embed_Images () || get_Multipart ())
+		{
+			m_utf8_1 += " src=\"";
+			m_utf8_1 += url;
+			m_utf8_1 += "\"";
+
+			tagOpenClose (m_utf8_1, get_HTML4 (), ws_None);
+
+			return;
+		}
+
+	m_utf8_1 += " src=\"data:image/png;base64,";
+	tagOpenBroken (m_utf8_1);
+
+	_writeImageBase64 (pByteBuf);
+
+	m_utf8_1 = "\"";
+	tagCloseBroken (m_utf8_1);
+}
+
+void s_HTML_Listener::_handlePendingImages ()
+{
+	UT_StringPtrMap::UT_Cursor cursor (&m_SavedURLs);
+
+	const void * val = 0;
+	for (val = cursor.first (); cursor.is_valid (); val = cursor.next ())
+		{
+			const char * dataid = cursor.key().c_str ();
+
+			const UT_UTF8String * saved_url = reinterpret_cast<const UT_UTF8String *>(val);
+			UT_UTF8String * url = const_cast<UT_UTF8String *>(saved_url);
+
+			const char * szName = 0;
+			const char * szMimeType = 0;
+
+			const UT_ByteBuf * pByteBuf = 0;
+
+			UT_uint32 k = 0;
+			while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, (void**) &szMimeType))
+				{
+					k++;
+					if (szName == 0) continue;
+					if (UT_strcmp (dataid, szName) == 0) break;
+
+					szName = 0;
+					szMimeType = 0;
+					pByteBuf = 0;
+				}
+			if (pByteBuf) // this should always be found, but just in case...
+				{
+					multiBoundary ();
+
+					m_utf8_1 = "image/png";
+					multiField ("Content-Type", m_utf8_1);
+
+					m_utf8_1 = "base64";
+					multiField ("Content-Transfer-Encoding", m_utf8_1);
+
+					multiField ("Content-Location", *url);
+
+					_writeImageBase64 (pByteBuf);
+
+					multiBreak ();
+				}
+			DELETEP(url);
+		}
+	m_SavedURLs.clear ();
 }
 
 void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
