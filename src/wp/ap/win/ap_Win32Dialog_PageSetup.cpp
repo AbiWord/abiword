@@ -719,7 +719,7 @@ BOOL AP_Win32Dialog_PageSetup::_onNotifyTab(HWND hWnd, LPARAM lParam)
 	{
 	case UDN_DELTAPOS:
 		doSpinControl( lpnmud->hdr.idFrom, -lpnmud->iDelta );
-		break;
+		return 0;
 	default:
 		UT_DEBUGMSG(("WM_Nofify for id %ld for sub-dialog\n", lpnmud->hdr.code));
 		return 0;
