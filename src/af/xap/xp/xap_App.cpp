@@ -299,7 +299,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	if(getPrefsValue(XAP_PREF_KEY_DefaultGraphics, &pszGraphics))
 	{
 		UT_uint32 iID = 0;
-		sscanf(pszGraphics,"%i", &iID);
+		sscanf(pszGraphics,"%u", &iID);
 		if(iID != 0)
 		{
 			UT_DEBUGMSG(("Graphics %d requested as default\n", iID));

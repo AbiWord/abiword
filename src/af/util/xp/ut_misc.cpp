@@ -1070,5 +1070,8 @@ bool UT_parseBool (const char * param, bool dfl)
 
 const UT_UTF8String & UT_VersionInfo::getString() const
 {
-	return UT_UTF8String_sprintf("%d.%d.%d.%d", m_iMajor, m_iMinor, m_iMicro, m_iNano);
+	static UT_UTF8String vers = UT_UTF8String_sprintf("%d.%d.%d.%d", 
+													  m_iMajor, m_iMinor, 
+													  m_iMicro, m_iNano);
+	return vers;
 }
