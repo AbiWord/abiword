@@ -134,6 +134,16 @@ private:
 	XAP_CocoaFrameController *		m_frameController;
 
 	AP_CocoaDialogFactory		m_dialogFactory;
+
+	UT_uint32					m_iAbiRepaintID;
+
+protected:
+	class _fe
+	{
+	public:
+		static int XAP_CocoaFrame::_fe::abi_expose_repaint(void * p);
+	};
+	friend class _fe;
 };
 
 #endif /* XAP_COCOAFRAME_H */

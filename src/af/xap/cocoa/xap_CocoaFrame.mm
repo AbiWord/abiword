@@ -34,6 +34,7 @@
 #include "xap_ViewListener.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
+#include "xap_CocoaTimer.h"
 #include "ev_CocoaKeyboard.h"
 #include "ev_CocoaMouse.h"
 #include "ev_CocoaMenuBar.h"
@@ -307,12 +308,47 @@ gint XAP_CocoaFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	return 0;
 }
 
+void XAP_CocoaFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
+{
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
+	AV_View * pView = pCocoaFrame->getCurrentView();
+	
+	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
+	
+	if (pView)
+		pView->sendVerticalScrollEvent((UT_sint32) w->value);
+}
+	
+void XAP_CocoaFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
+{
+	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
+	AV_View * pView = pCocoaFrame->getCurrentView();
+	
+	if (pView)
+		pView->sendHorizontalScrollEvent((UT_sint32) w->value);
+}
+	
+void XAP_CocoaFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
+{
+	// I think this is right:
+	// 	We shouldn't have to call gtk_main_quit() here because
+	//  this signal catcher is only inserted before the GTK
+	//  default handler (which will continue to destroy the window
+	//  if we don't return TRUE).
+	//
+	//  This function should be for things to happen immediately
+	//  before a frame gets hosed once and for all.
+	
+	//gtk_main_quit ();
+}
+#endif
+
 /*!
  * Background abi repaint function.
 \param XAP_CocoaFrame * p pointer to the Frame that initiated this background
        repainter.
  */
-gint XAP_CocoaFrame::_fe::abi_expose_repaint( gpointer p)
+int XAP_CocoaFrame::_fe::abi_expose_repaint(void * p)
 {
 //
 // Grab our pointer so we can do useful stuff.
@@ -357,53 +393,19 @@ gint XAP_CocoaFrame::_fe::abi_expose_repaint( gpointer p)
 	pG->setSpawnedRedraw(false);
 	return TRUE;
 }
-
-void XAP_CocoaFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	AV_View * pView = pCocoaFrame->getCurrentView();
-	
-	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
-	
-	if (pView)
-		pView->sendVerticalScrollEvent((UT_sint32) w->value);
-}
-	
-void XAP_CocoaFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	AV_View * pView = pCocoaFrame->getCurrentView();
-	
-	if (pView)
-		pView->sendHorizontalScrollEvent((UT_sint32) w->value);
-}
-	
-void XAP_CocoaFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// I think this is right:
-	// 	We shouldn't have to call gtk_main_quit() here because
-	//  this signal catcher is only inserted before the GTK
-	//  default handler (which will continue to destroy the window
-	//  if we don't return TRUE).
-	//
-	//  This function should be for things to happen immediately
-	//  before a frame gets hosed once and for all.
-	
-	//gtk_main_quit ();
-}
-#endif
 	
 /*****************************************************************/
 
 XAP_CocoaFrame::XAP_CocoaFrame(XAP_CocoaApp * app)
 	: XAP_Frame(static_cast<XAP_App *>(app)),
-	  m_dialogFactory(this, static_cast<XAP_App *>(app))
+	  m_dialogFactory(this, static_cast<XAP_App *>(app)),
+	  m_pCocoaApp(app),
+	  m_pCocoaMenu(NULL),
+	  m_pCocoaPopup(NULL),
+	  m_frameController(nil),
+	  m_iAbiRepaintID(0)
 {
-	m_pCocoaApp = app;
-	m_pCocoaMenu = NULL;
-	m_pCocoaPopup = NULL;
 	m_pView = NULL;
-	m_frameController = nil;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -412,13 +414,14 @@ XAP_CocoaFrame::XAP_CocoaFrame(XAP_CocoaApp * app)
 
 XAP_CocoaFrame::XAP_CocoaFrame(XAP_CocoaFrame * f)
 	: XAP_Frame(static_cast<XAP_Frame *>(f)),
-	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pCocoaApp))
+	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pCocoaApp)),
+	  m_pCocoaApp(f->m_pCocoaApp),
+	  m_pCocoaMenu(NULL),
+	  m_pCocoaPopup(NULL),
+	  m_frameController(nil),
+	  m_iAbiRepaintID(0)
 {
-	m_pCocoaApp = f->m_pCocoaApp;
-	m_pCocoaMenu = NULL;
-	m_pCocoaPopup = NULL;
 	m_pView = NULL;
-	m_frameController = nil;
 }
 
 XAP_CocoaFrame::~XAP_CocoaFrame(void)
@@ -461,6 +464,18 @@ bool XAP_CocoaFrame::initialize(const char * szKeyBindingsKey, const char * szKe
 	m_pMouse = new EV_CocoaMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
+//
+// Start background repaint
+//
+	if(m_iAbiRepaintID == 0)
+	{
+		m_iAbiRepaintID = XAP_newCocoaTimer(100, _fe::abi_expose_repaint, this);
+	}
+	else
+	{
+		XAP_stopCocoaTimer(m_iAbiRepaintID);
+		m_iAbiRepaintID = XAP_newCocoaTimer(100, _fe::abi_expose_repaint, this);
+	}
 	return true;
 }
 

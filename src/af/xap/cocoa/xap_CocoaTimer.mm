@@ -25,10 +25,11 @@
 #include "ut_map.h"
 #include "ut_mutex.h"
 #include "ut_pair.h"
+#include "ut_debugmsg.h"
 
 static UT_Mutex s_timerMutex;
 static UT_Map s_timerIds;
-static int s_lastTimerId = 0;
+static int s_lastTimerId = 1;
 
 @interface XAP_TimerInvocation: NSInvocation {
 	int (*proc)(void *);
