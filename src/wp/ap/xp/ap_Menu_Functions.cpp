@@ -34,6 +34,7 @@
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
 #include "xav_View.h"
+#include "xap_Toolbar_Layouts.h"
 #include "fv_View.h"
 #include "ap_FrameData.h"
 #include "ap_Prefs.h"
@@ -151,6 +152,35 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 
 	return c;
 }
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
+{
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id >= AP_MENU_ID_VIEW_TB_1);
+	UT_ASSERT(id <= AP_MENU_ID_VIEW_TB_4);
+
+	UT_uint32 ndx = (id - AP_MENU_ID_VIEW_TB_1);
+	const UT_Vector & vec = pApp->getToolbarFactory()->getToolbarNames();
+
+
+	if (ndx <= vec.getItemCount())
+	{
+		const char * szFormat = pLabel->getMenuLabel();
+		static char buf[128];	
+		
+		const char * szRecent = reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(ndx))->utf8_str();
+
+		snprintf(buf,sizeof(buf),szFormat,szRecent);
+		return buf;
+	}
+
+	return NULL;
+}
+
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 {
@@ -929,25 +959,25 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 			s = EV_MIS_Toggled;
 		break;
-	case AP_MENU_ID_VIEW_TB_STD:
+	case AP_MENU_ID_VIEW_TB_1:
 		if ( pFrameData->m_bShowBar[0] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_FORMAT:
+	case AP_MENU_ID_VIEW_TB_2:	
 		if ( pFrameData->m_bShowBar[1] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_TABLE:
+	case AP_MENU_ID_VIEW_TB_3:	
 		if ( pFrameData->m_bShowBar[2] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_EXTRA:
+	case AP_MENU_ID_VIEW_TB_4:	
 		if ( pFrameData->m_bShowBar[3] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else

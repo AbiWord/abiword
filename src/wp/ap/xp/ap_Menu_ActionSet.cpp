@@ -121,10 +121,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_WEB,    0,0,0,1, "viewWebLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_PRINT,  0,0,0,1, "viewPrintLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_TOOLBARS,	1,0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_VIEW_TB_STD,		0,0,1,0,	"viewStd",			ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_FORMAT,	0,0,1,0,	"viewFormat",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_EXTRA,	0,0,1,0,	"viewExtra",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_TABLE,	0,0,1,0,	"viewTable",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_TB_1,		0,0,1,0,	"viewTB1",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_2,		0,0,1,0,	"viewTB2",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_3,		0,0,1,0,	"viewTB3",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_4,		0,0,1,0,	"viewTB4",			ap_GetState_View,		ap_GetLabel_Toolbar);
 	_s(AP_MENU_ID_VIEW_LOCK_TB_LAYOUT, 0,0,1,0,	"lockToolbarLayout", ap_GetState_View,			NULL);
 	_s(AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT, 0,0,0,0,	"defaultToolbarLayout", ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_RULER,	0,0,1,0,	"viewRuler",		ap_GetState_View,		NULL);

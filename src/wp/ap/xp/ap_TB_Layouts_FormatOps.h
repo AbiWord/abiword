@@ -25,7 +25,7 @@
 ******************************************************************
 *****************************************************************/
 
-BeginLayout(FormatOps)
+BeginLayout(FormatOps, AP_STRING_ID_TB_Format, AP_PREF_KEY_FormatBarVisible)
 
 	ToolbarItem(AP_TOOLBAR_ID_FMT_STYLE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_FONT)

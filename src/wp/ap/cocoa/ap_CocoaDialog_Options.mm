@@ -32,6 +32,7 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 #include "xap_Prefs.h"
+#include "xap_Toolbar_Layouts.h"
 #include "xap_CocoaDialog_Utilities.h"
 
 #include "ap_Dialog_Id.h"
@@ -284,29 +285,25 @@ void AP_CocoaDialog_Options::_controlEnable( tControl ctlid, bool value )
 	}
 }
 
-
-#define DEFINE_CLIST_GET_SET_BOOL(itm, row) \
-bool AP_CocoaDialog_Options::_gather##itm(void) { \
-		NSTableView * list = [m_dlg _lookupWidget:id_LIST_VIEW_TOOLBARS]; \
-        UT_ASSERT (list); \
-		bool b = [list isRowSelected:row]; \
-        return b; \
-} \
-void AP_CocoaDialog_Options::_set##itm(bool b) { \
- 		NSTableView * list = [m_dlg _lookupWidget:id_LIST_VIEW_TOOLBARS]; \
-		UT_ASSERT (list); \
-		if (b) { \
-			[list selectRow:row byExtendingSelection:YES]; \
-		} \
-		else { \
-			[list deselectRow:row]; \
-		} \
+bool AP_CocoaDialog_Options::_gatherViewShowToolbar(UT_uint32 row)
+{
+	NSTableView * list = [m_dlg _lookupWidget:id_LIST_VIEW_TOOLBARS];
+	UT_ASSERT (list);
+	bool b = [list isRowSelected:row];
+	return b;
 }
 
-DEFINE_CLIST_GET_SET_BOOL(ViewShowStandardBar, 0);
-DEFINE_CLIST_GET_SET_BOOL(ViewShowFormatBar, 1);
-DEFINE_CLIST_GET_SET_BOOL(ViewShowExtraBar, 2);
-#undef DEFINE_CLIST_GET_SET_BOOL
+void AP_CocoaDialog_Options::_setViewShowToolbar(UT_uint32 row, bool b) 
+{
+	NSTableView * list = [m_dlg _lookupWidget:id_LIST_VIEW_TOOLBARS];
+	UT_ASSERT (list);
+	if (b) {
+		[list selectRow:row byExtendingSelection:YES];
+	}
+	else {
+		[list deselectRow:row];
+	} 
+}
 
 
 #define DEFINE_GET_SET_BOOL(button, btnId) \
@@ -497,9 +494,15 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	
 	// toolbar tab
 	m_tlbTlbListDataSource = [[XAP_StringListDataSource alloc] init];
-	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)]];
-	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB)]];
-	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB)]];
+	const UT_Vector & vec = XAP_App::getApp()->getToolbarFactory()->getToolbarNames();
+	UT_uint32 i;
+	for (i = 0; i < vec.getItemCount(); i++) {
+		[m_tlbTlbListDataSource addUT_UTF8String:*reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(i))];
+	
+	}
+//	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)]];
+//	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB)]];
+//	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB)]];
 	[m_tlbTlbList setDataSource:m_tlbTlbListDataSource];	// setDataSource DO NOT retain the data source
 	
 	LocalizeControl(m_tlbVisibleBox, pSS, AP_STRING_ID_DLG_Options_Label_Visible);
@@ -680,9 +683,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 
 		// not implemented
 	case AP_Dialog_Options::id_BUTTON_SAVE:
-	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-	case AP_Dialog_Options::id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
 	  return nil;
 	
 	case AP_Dialog_Options::id_LIST_VIEW_TOOLBARS:

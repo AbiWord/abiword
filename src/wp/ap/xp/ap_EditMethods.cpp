@@ -383,6 +383,10 @@ public:
 	static EV_EditMethod_Fn viewFormat;
 	static EV_EditMethod_Fn viewExtra;
 	static EV_EditMethod_Fn viewTable;
+	static EV_EditMethod_Fn viewTB1;
+	static EV_EditMethod_Fn viewTB2;
+	static EV_EditMethod_Fn viewTB3;
+	static EV_EditMethod_Fn viewTB4;
 	static EV_EditMethod_Fn lockToolbarLayout;
 	static EV_EditMethod_Fn defaultToolbarLayout;
 	static EV_EditMethod_Fn viewRuler;
@@ -1127,6 +1131,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
 	EV_EditMethod(NF(viewTable),			0,		""),
+	EV_EditMethod(NF(viewTB1),			0,		""),
+	EV_EditMethod(NF(viewTB2),			0,		""),
+	EV_EditMethod(NF(viewTB3),			0,		""),
+	EV_EditMethod(NF(viewTB4),			0,		""),
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
@@ -7937,6 +7945,70 @@ Defun1(dlgSpellPrefs)
 /*****************************************************************/
 /*****************************************************************/
 
+/* the array below is a HACK. FIXME */
+static XML_Char* s_TBPrefsKeys [] = {
+	AP_PREF_KEY_StandardBarVisible,
+	AP_PREF_KEY_FormatBarVisible,
+	AP_PREF_KEY_TableBarVisible,
+	AP_PREF_KEY_ExtraBarVisible
+};
+
+static bool
+_viewTBx(AV_View* pAV_View, int num) 
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
+	// toggle the ruler bit
+	pFrameData->m_bShowBar[num] = ! pFrameData->m_bShowBar[num];
+
+	// actually do the dirty work
+	pFrame->toggleBar(num, pFrameData->m_bShowBar[num] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(static_cast<XML_Char*>(s_TBPrefsKeys[num]), pFrameData->m_bShowBar[num]);
+
+	return true;
+}
+
+
+Defun1(viewTB1)
+{
+	return _viewTBx(pAV_View, 0);
+}
+
+Defun1(viewTB2)
+{
+	return _viewTBx(pAV_View, 1);
+}
+
+Defun1(viewTB3)
+{
+	return _viewTBx(pAV_View, 2);
+}
+
+Defun1(viewTB4)
+{
+	return _viewTBx(pAV_View, 3);
+}
+
+
+
 Defun1(viewStd)
 {
 	CHECK_FRAME;
@@ -8001,6 +8073,7 @@ Defun1(viewFormat)
 
 	return true;
 }
+
 
 Defun1(viewTable)
 {
