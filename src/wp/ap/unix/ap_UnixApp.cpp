@@ -1286,7 +1286,10 @@ bool AP_UnixApp::parseCommandLine(void)
 	    {
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();
-		UT_Error error = pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+
+		// try to read the document from disk, or create a new one
+		// with the given name
+		UT_Error error = pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown, true);
 		if (!error)
 		{
 		    kWindowsOpened++;

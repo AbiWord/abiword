@@ -420,8 +420,11 @@ void AP_UnixFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft)
+UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft,
+				     bool createNew)
 {
+  UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", szFilename, ieft, createNew));
+
 	// are we replacing another document?
 	if (m_pDoc)
 	{
@@ -445,6 +448,15 @@ UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 	errorCode = pNewDoc->readFromFile(szFilename, ieft);
 	if (!errorCode)
 		goto ReplaceDocument;
+
+	if (createNew)
+	  {
+	    // we have a file name but couldn't load it
+	    pNewDoc->newDocument();
+	    errorCode = pNewDoc->saveAs(szFilename, ieft);
+	  }
+	if (!errorCode)
+	  goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
 	UNREFP(pNewDoc);
@@ -486,7 +498,8 @@ Cleanup:
 	return NULL;
 }
 
-UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
+UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft,
+				    bool createNew)
 {
 	bool bUpdateClones;
 	UT_Vector vClones;
@@ -498,7 +511,7 @@ UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 		pApp->getClones(&vClones, this);
 	}
 	UT_Error errorCode;
-	errorCode =  _loadDocument(szFilename, (IEFileType) ieft);
+	errorCode =  _loadDocument(szFilename, (IEFileType) ieft, createNew);
 	if (errorCode)
 	{
 		// we could not load the document.
@@ -523,6 +536,11 @@ UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 	}
 
 	return _showDocument();
+}
+
+UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
+{
+  return loadDocument(szFilename, ieft, false);
 }
 
 void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)

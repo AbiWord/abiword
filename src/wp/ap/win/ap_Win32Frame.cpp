@@ -650,6 +650,12 @@ void AP_Win32Frame::_createRulers(void)
 	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
 }
 
+UT_Error AP_Win32Frame::loadDocument(const char * szFilename, int ieft, bool createNew)
+{
+  UT_ASSERT(UT_TODO);
+  return UT_OK;
+}
+
 UT_Error AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
 {
 	UT_Vector vClones;

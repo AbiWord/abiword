@@ -472,6 +472,12 @@ Cleanup:
 	return NULL;
 }
 
+UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
+{
+  UT_ASSERT(UT_TODO);
+  return UT_OK;
+}
+
 UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
 {
 	bool bUpdateClones;

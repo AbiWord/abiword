@@ -306,7 +306,7 @@ bool AP_UnixGnomeApp::parseCommandLine(void)
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();
 
-		UT_Error error = pFirstUnixFrame->loadDocument(file, IEFT_Unknown);
+		UT_Error error = pFirstUnixFrame->loadDocument(file, IEFT_Unknown, true);
 		if (!error)
 		{
 			kWindowsOpened++;

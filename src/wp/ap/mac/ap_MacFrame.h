@@ -38,6 +38,7 @@ public:
 	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
+	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew);
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 

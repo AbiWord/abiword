@@ -102,6 +102,12 @@ void AP_MacFrame::setStatusMessage(const char * szMsg)
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }                                                                        
 
+UT_Error AP_MacFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
+{
+  UT_ASSERT(UT_TODO);
+  return UT_OK;
+}
+
 UT_Error AP_MacFrame::loadDocument(const char * szFilename, int ieft)
 {
 	bool bUpdateClones;

@@ -57,6 +57,7 @@ public:
 
 	virtual	XAP_Frame *			cloneFrame(void)=0;
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft)=0;
+	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew)=0;
 	virtual bool				close(void);
 	virtual bool				raise(void);
 	virtual bool				show(void);
