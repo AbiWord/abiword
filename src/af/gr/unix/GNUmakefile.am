@@ -24,4 +24,6 @@ noinst_LIBRARIES = libGr_unix.a
 
 libGr_unix_a_SOURCES=\
 	gr_UnixGraphics.cpp	\
-	gr_UnixImage.cpp
+	gr_UnixImage.cpp \
+	gr_UnixPangoGraphics.cpp
+

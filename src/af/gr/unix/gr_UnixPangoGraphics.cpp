@@ -842,6 +842,50 @@ UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pFont)
 	return i;
 }
 	
+const char* GR_UnixPangoGraphics::findNearestFont(const char* pszFontFamily,
+												  const char* pszFontStyle,
+												  const char* pszFontVariant,
+												  const char* pszFontWeight,
+												  const char* pszFontStretch,
+												  const char* pszFontSize)
+{
+	UT_String s = "'";
+	s += pszFontFamily;
+	s += "' ";
+	s += pszFontStyle;
+	s += " ";
+	s += pszFontVariant;
+	s += " ";
+	s += pszFontWeight;
+	s += " ";
+	s += pszFontStretch;
+	s += " ";
+	s += pszFontSize;
+
+	const char * cs = s.c_str() + s.length() - 2;
+
+	if(!UT_strcmp(cs, "pt"))
+	   s[s.length()-2] = 0;
+
+	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
+	UT_return_val_if_fail( pfd, NULL );
+
+	PangoFont *pf = pango_context_load_font(getContext(), pfd);
+
+	pango_font_description_free(pfd);
+	pfd = pango_font_describe(pf);
+	
+	const char* face = pango_font_description_get_family(pfd);
+
+	static char buffer[100];
+	strncpy(buffer, face, 99);
+	buffer[99] = 0;
+	
+	pango_font_description_free(pfd);
+	
+	return buffer;
+}
+
 
 GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 										 const char* pszFontStyle,

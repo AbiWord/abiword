@@ -127,6 +127,13 @@ public:
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
 
+	virtual const char* findNearestFont(const char* pszFontFamily,
+										const char* pszFontStyle,
+										const char* pszFontVariant,
+										const char* pszFontWeight,
+										const char* pszFontStretch,
+										const char* pszFontSize);
+
 	virtual GR_Font* _findFont(const char* pszFontFamily,
 							   const char* pszFontStyle,
 							   const char* pszFontVariant,
