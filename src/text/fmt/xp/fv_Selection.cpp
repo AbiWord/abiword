@@ -127,6 +127,7 @@ void FV_Selection::pasteRowOrCol(void)
 		pos = m_pView->getPoint();
 		PT_DocPosition posTable,posCell;
 		UT_sint32 iLeft,iRight,iTop,iBot;
+		posCell = 0;
 		m_pView->getCellParams(pos, &iLeft, &iRight,&iTop,&iBot);
 		bool bRes = getDoc()->getStruxOfTypeFromPosition(pos,PTX_SectionCell,&cellSDH);
 		bRes = getDoc()->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
