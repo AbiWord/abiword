@@ -996,7 +996,9 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 {
 	const UT_uint32 iCountRuns		  = m_vecRuns.getItemCount();
 	UT_sint32 iXLreal, iXreal;
-	static UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
+	const UT_sint32 Screen_resolution =
+		m_pBlock->getDocLayout()->getGraphics()->getResolution();
+		
 	iXreal = iWidthLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
 	
 	//work out the real index based on working direction
@@ -1077,6 +1079,8 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 {
 	if(!pRun)
 		return;
+	
+	const UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
 
 	switch(pRun->getType())
 	{
@@ -1086,7 +1090,6 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			// i.e, width = font_ascent * iFixedWidthMlt / iFixedWidthDiv
 			const UT_uint32 iFixedWidthMlt = 2;
 			const UT_uint32 iFixedWidthDiv = 1;
-			static UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
 			UT_uint32 iWidth = 0;
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
 	
@@ -1138,7 +1141,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			UT_sint32 iXprev;
 			iXprev = iX;		
 				
-			xxx_UT_DEBUGMSG(("pf_Line::_calculateWidthOfRun(): tab: iX %d, iXLayout %d, iPosLayout %d\n",iX,iXLayoutUnits,iPosLayoutUnits));
+			xxx_UT_DEBUGMSG(("pf_Line::_calculateWidthOfRun(): tab: iX %d, iXLayout %d, iPosLayout %d, resolution %d\n",iX,iXLayoutUnits,iPosLayoutUnits,Screen_resolution));
 			
 #ifdef BIDI_ENABLED				
 			FriBidiCharType iVisDirection = pTabRun->getVisDirection();
@@ -1828,7 +1831,7 @@ void fp_Line::layout(void)
 	const UT_sint32 iStartX				= pAlignment->getStartPosition();
 	const UT_sint32 iStartXLayoutUnits	= pAlignment->getStartPositionInLayoutUnits();
 	const UT_sint32 Screen_resolution =
-		getBlock()->getDocLayout()->getGraphics()->getResolution();
+		m_pBlock->getDocLayout()->getGraphics()->getResolution();
 
 	UT_sint32 iX			= iStartX;
 	UT_sint32 iXLayoutUnits	= iStartXLayoutUnits;
