@@ -37,6 +37,7 @@ libXap_xp_a_SOURCES=\
 	xap_Dlg_FontChooser.cpp		\
 	xap_Dlg_Language.cpp		\
 	xap_Dlg_MessageBox.cpp		\
+	xap_Dlg_PluginManager.cpp	\
 	xap_Dlg_Print.cpp		\
 	xap_Dlg_WindowMore.cpp		\
 	xap_Dlg_Zoom.cpp		\
@@ -46,6 +47,8 @@ libXap_xp_a_SOURCES=\
 	xap_Frame.cpp			\
 	xap_LoadBindings.cpp		\
 	xap_Log.cpp			\
+	xap_Module.cpp			\
+	xap_ModuleManager.cpp		\
 	xap_Prefs.cpp			\
 	xap_Preview.cpp			\
 	xap_Preview_Zoom.cpp		\

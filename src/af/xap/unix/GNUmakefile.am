@@ -45,6 +45,7 @@ libXap_unix_a_SOURCES=\
 	xap_UnixFrame.cpp			\
 	xap_UnixModule.cpp			\
 	xap_UnixToolbar_Icons.cpp		\
+	xap_UnixDlg_PluginManager.cpp		\
 	xap_UnixPSFont.cpp			\
 	xap_UnixPSGenerate.cpp			\
 	xap_UnixPSParseAFM.c			\

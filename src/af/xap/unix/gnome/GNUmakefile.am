@@ -35,4 +35,5 @@ libXap_Gnome_a_SOURCES=\
 	xap_UnixGnomeDlg_Zoom.cpp          \
 	xap_UnixGnomeFrame.cpp 	           \
 	xap_UnixGnomeDlg_Language.cpp	   \
+	xap_UnixGnomeDlg_PluginManager.cpp	\
 	xap_UnixGnomePrintGraphics.cpp
