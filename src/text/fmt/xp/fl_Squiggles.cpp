@@ -375,6 +375,10 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 void
 fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 {
+	// Ignore operations on shadow blocks
+	if (m_pOwner->isHdrFtr())
+		return;
+
 	// Return if auto spell-checking disabled
 	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
 		return;
@@ -418,6 +422,10 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 void
 fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 {
+	// Ignore operations on shadow blocks
+	if (m_pOwner->isHdrFtr())
+		return;
+
 	// Return if auto spell-checking disabled
 	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
 		return;
@@ -477,6 +485,10 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 void
 fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 {
+	// Ignore operations on shadow blocks
+	if (m_pOwner->isHdrFtr())
+		return;
+
 	// Return if auto spell-checking disabled
 	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
 		return;
@@ -576,6 +588,10 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 void
 fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 {
+	// Ignore operations on shadow blocks
+	if (m_pOwner->isHdrFtr())
+		return;
+
 	// Return if auto spell-checking disabled
 	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
 		return;
