@@ -274,6 +274,10 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	{
 		m_pDoc = pDoc;
 	}
+	if(!pView->isTOCSelected())
+	{
+		return;
+	}
 	PT_DocPosition pos = pView->getSelectionAnchor();
 	PL_StruxDocHandle sdhTOC = NULL;
 	m_pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTOC, &sdhTOC);

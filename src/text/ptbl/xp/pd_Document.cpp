@@ -1320,7 +1320,16 @@ bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf->getLength() == 0)
 		pf = pf->getPrev();
-	return m_pPieceTable->isFootnote(pf);
+	bool b = m_pPieceTable->isFootnote(pf);
+	if(b)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_SectionTOC)
+		{
+			return false;
+		}
+	}
+	return b;
 }
 
 
@@ -1335,7 +1344,16 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf->getLength() == 0)
 		pf = pf->getPrev();
-	return m_pPieceTable->isEndFootnote(pf);
+	bool b = m_pPieceTable->isEndFootnote(pf);
+	if(b)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_EndTOC)
+		{
+			return false;
+		}
+	}
+	return b;
 }
 
 //============================================================================

@@ -3900,16 +3900,21 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// code.
 	UT_sint32 xold,yold,x2old,y2old;
 	bool bDirectionOld;
+	UT_DEBUGMSG(("Count Chars %d \n",countChars));
 	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirectionOld, &pBlock, &pRun);
 	if (bForward)
 	{
+		UT_DEBUGMSG(("Just before First forward _setPoint %d \n",m_iInsPoint));
 		_setPoint(m_iInsPoint + countChars);
+		UT_DEBUGMSG(("Just After First forward _setPoint %d \n",m_iInsPoint));
 //
 // Scan past any strux boundaries (like table controls
 //
 		while(getPoint() < posEOD && !isPointLegal())
 		{
+			UT_DEBUGMSG(("Forward scan past illegal point pos 1 %d \n",m_iInsPoint));
 			_setPoint(m_iInsPoint + 1);
+			UT_DEBUGMSG(("Forward scan past illegal point pos 2 %d \n",m_iInsPoint));
 		}
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
@@ -3927,8 +3932,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 														 (x2 == x2old) && (y2 == y2old) &&
 														 (bDirection == bDirectionOld))))
 		{
-			UT_DEBUGMSG(("fv_View_protected: (2) pRun = %x \n",pRun));
+			UT_DEBUGMSG(("fv_View_protected: (2) pRun = %x pos %d\n",pRun,m_iInsPoint));
 			_setPoint(m_iInsPoint+1);
+			UT_DEBUGMSG(("fv_View_protected: (3) pRun = %x pos %d \n",pRun,m_iInsPoint));
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 			bExtra = true;
 		}
@@ -3956,6 +3962,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		while(getPoint() > posBOD && !isPointLegal())
 		{
 			_setPoint(m_iInsPoint - 1);
+			UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
 		}
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
@@ -4034,7 +4041,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// get the next run that can contain insertion point
 		pRun = pRun->getNextRun();
 		while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
+		{
+			UT_DEBUGMSG(("_charMotion: Sweep forward through runs %d \n",pRun->getLength()));
 			pRun = pRun->getNextRun();
+		}
 		if(pRun)
 		{
 			_setPoint(1 + pBlock->getPosition(false) + pRun->getBlockOffset());
@@ -4052,7 +4062,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// this is much simpler, since the findPointCoords will return the
 	// run on the left of the requested position, so we just need to move
 	// to its end if the position does not fall into that run
-	xxx_UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
+	UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
 	if(!bForward && (iRunEnd < m_iInsPoint) && (pRun->getBlockOffset() > 0))
 	{
 		_setPoint(iRunEnd - 1);
@@ -4067,6 +4077,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 			bool bSweep = false;
 			while(m_iInsPoint <= posEOD && ( (iOldDepth < getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint())))
 			{ 
+				UT_DEBUGMSG(("_charMotion: Sweep forward -1 %d \n",m_iInsPoint));
 				bSweep = true;
 				m_iInsPoint++;
 			}
@@ -4084,6 +4095,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 			bool bSweep = false;
 			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
 			{
+				UT_DEBUGMSG(("_charMotion: Sweep backward -1 %d \n",m_iInsPoint));
 				m_iInsPoint--;
 				bSweep = true;
 			}
@@ -4101,6 +4113,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 			bool bSweep = false;
 			while(((iOldDepth < getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) ) && (m_iInsPoint >= posBOD))
 			{ 
+				UT_DEBUGMSG(("_charMotion: Sweep backward -2 %d \n",m_iInsPoint));
 				bSweep = true;
 				m_iInsPoint--;
 			}
@@ -4118,6 +4131,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 			bool bSweep = false;
 			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint()))
 			{
+				UT_DEBUGMSG(("_charMotion: Sweep forward -2 %d \n",m_iInsPoint));
 				m_iInsPoint++;
 				bSweep = true;
 			}
