@@ -4111,7 +4111,7 @@ Defun1(pageSetup)
 	UT_ASSERT(pFrame);
 
 	// TODO: synch this implementation with ap_GetState_View
-	s_TellNotImplemented(pFrame, "View Headers and Footers", __LINE__);
+	s_TellNotImplemented(pFrame, "Page Setup", __LINE__);
 	return UT_TRUE;
 #else
 	ABIWORD_VIEW;
