@@ -65,13 +65,12 @@ ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 
 static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
 {
-	int len;
+  int len = 0 ;
 	char buf[3000];
 	FILE* f;
 	if (strlen(hashname)>(3000-15))
 		return;
-	sprintf(buf,"%s-%s",hashname,"encoding");
-	f = fopen(buf,"r");
+	f = fopen(UT_String_sprintf("%s-%s",hashname,"encoding").c_str(), "r");
 	if (!f)
 		return;
 	len = fread(buf,1,sizeof(buf),f);
@@ -322,11 +321,8 @@ static void couldNotLoadDictionary ( const char * szLang )
 
   const XAP_StringSet * pSS    = XAP_App::getApp()->getStringSet ();
 
-  char buf[1024]; // evil hardcoded buffer size
   const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
-  snprintf(buf, 1024, text, szLang);
-
-  pFrame->showMessageBox (buf,
+  pFrame->showMessageBox (UT_String_sprintf(text, szLang).c_str(),
 			  XAP_Dialog_MessageBox::b_O,
 			  XAP_Dialog_MessageBox::a_OK);
 }
@@ -362,7 +358,7 @@ ISpellChecker::requestDictionary(const char *szLang)
       return false;
     }
 
-    UT_DEBUGMSG(("DOM: loaded dictionary (%s %s)\n", hashname, szLang));
+    xxx_UT_DEBUGMSG(("DOM: loaded dictionary (%s %s)\n", hashname, szLang));
 
     g_bSuccessfulInit = true;
 
@@ -377,18 +373,18 @@ ISpellChecker::requestDictionary(const char *szLang)
     /* Test for "latinN" */
     if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
-        char teststring[64];
+      UT_String teststring;
         int n1;
 
         /* Look for "altstringtype" names from latin1 to latin15 */
         for(n1 = 1; n1 <= 15; n1++)
         {
-            sprintf(teststring, "latin%u", n1);
-            prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) teststring, 1, deftflag < 0 ? &deftflag : (int *) NULL);
+            UT_String_sprintf(teststring, "latin%u", n1);
+            prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
             if (prefstringchar >= 0)
             {
-                DEREF(m_pISpellState, translate_in) = UT_iconv_open(teststring, UCS_2_INTERNAL);
-                DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, teststring);
+                DEREF(m_pISpellState, translate_in) = UT_iconv_open(teststring.c_str(), UCS_2_INTERNAL);
+                DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, teststring.c_str());
                 break;
             }
         }

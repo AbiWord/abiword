@@ -43,6 +43,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.3  2002/03/22 14:31:57  dom
+ * fix mg's compile problem
+ *
  * Revision 1.2  2001/05/12 16:05:42  thomasf
  * Big pseudo changes to ispell to make it pass around a structure rather
  * than rely on all sorts of gloabals willy nilly here and there.  Also
@@ -742,12 +745,7 @@ int icharncmp (s1, s2, n)
 
 #endif /* ICHAR_IS_CHAR */
 
-int findfiletype (FIRST_ARG(istate) char *name, int searchnames, int *deformatter)
-#if 0
-    char *		name;		/* Name to look up in suffix table */
-    int			searchnames;	/* NZ to search name field of table */
-    int *		deformatter;	/* Where to set deformatter type */
-#endif
+int findfiletype (FIRST_ARG(istate) const char *name, int searchnames, int *deformatter)
     {
     char *		cp;		/* Pointer into suffix list */
     int			cplen;		/* Length of current suffix */

@@ -47,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.7  2002/03/22 14:31:57  dom
+ * fix mg's compile problem
+ *
  * Revision 1.6  2002/03/05 16:55:52  dom
  * compound word support, tested against swedish
  *
@@ -856,7 +859,7 @@ struct dent * ispell_lookup (FIRST_ARG(istate) ichar_t* s, int dotree);
 int strtoichar (FIRST_ARG(istate) ichar_t* out, char* in, int outlen, int canonical);
 int ichartostr (FIRST_ARG(istate) char* out, ichar_t* in, int outlen, int canonical);
 char * ichartosstr (FIRST_ARG(istate) ichar_t* in, int canonical);
-int	findfiletype (FIRST_ARG(istate) char * name, int searchnames, int * deformatter);
+int	findfiletype (FIRST_ARG(istate) const char * name, int searchnames, int * deformatter);
 long whatcap (FIRST_ARG(istate) ichar_t* word);
 
 /*
