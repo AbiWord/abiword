@@ -72,6 +72,8 @@ char * AP_Dialog_MarkRevisions::getRadio1Label()
 {
 	_initRevision();
 
+	if(!m_pRev)
+		return NULL;
 
 	UT_return_val_if_fail(m_pSS,NULL);
 	const char * pLabel = m_pSS->getValue(AP_STRING_ID_DLG_MarkRevisions_Check1Label);
@@ -79,8 +81,6 @@ char * AP_Dialog_MarkRevisions::getRadio1Label()
 	UT_return_val_if_fail(pLabel,NULL);
 	char * pBuff = (char*)UT_calloc(strlen(pLabel) + 35, sizeof(char));
 
-	if(!m_pRev)
-		return pBuff;
 	
 	sprintf(pBuff, pLabel, m_pRev->getId());
 
@@ -95,12 +95,12 @@ const char * AP_Dialog_MarkRevisions::getRadio2Label()
 
 char * AP_Dialog_MarkRevisions::getComment1()
 {
-	bool bFree = false;
-
 	_initRevision();
 
 	if(!m_pRev)
 		return NULL;
+
+	bool bFree = false;
 
 	const UT_UCS4Char * pC = m_pRev->getDescription();
 
