@@ -41,7 +41,6 @@
 #include "ut_OverstrikingChars.h"
 #ifdef USE_XFT
 #include <X11/Xlib.h>
-#include <Xft2/X11/Xft/Xft.h>
 #endif
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
