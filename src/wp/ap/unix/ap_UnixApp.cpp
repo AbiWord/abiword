@@ -289,18 +289,16 @@ static gint s_hideSplash(gpointer /*data*/)
 	return TRUE;
 }
 
-/* These events don't ever get triggered on a POPUP type window */
-#if 0
-static void s_key_event(GtkWidget * /*window*/, GdkEventKey * /*key*/)
-{
-	s_hideSplash(NULL);
-}
+// GTK never seems to let me have this event on a pop-up style window
+//static void s_key_event(GtkWidget * /*window*/, GdkEventKey * /*key*/)
+//{
+//	s_hideSplash(NULL);
+//}
 
 static void s_button_event(GtkWidget * /*window*/)
 {
 	s_hideSplash(NULL);
 }
-#endif
 
 static gint s_drawingarea_expose(GtkWidget * /* widget */,
 								 GdkEventExpose * /* pExposeEvent */)
@@ -378,14 +376,14 @@ static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
 		// create a drawing area
 		GtkWidget * da = gtk_drawing_area_new ();
 		gtk_object_set_data(GTK_OBJECT(wSplash), "da", da);
-		gtk_widget_set_events(da, GDK_EXPOSURE_MASK);
+		gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
 		gtk_widget_set_usize(da, iSplashWidth, iSplashHeight);
 		gtk_signal_connect(GTK_OBJECT(da), "expose_event",
 						   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
 //		gtk_signal_connect(GTK_OBJECT(da), "key_press_event",
 //						   GTK_SIGNAL_FUNC(s_key_event), NULL);
-//		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
-//						   GTK_SIGNAL_FUNC(s_button_event), NULL);
+		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
+						   GTK_SIGNAL_FUNC(s_button_event), NULL);
 		gtk_widget_show(da);
 		gtk_container_add(GTK_CONTAINER(wSplash), da);
 
