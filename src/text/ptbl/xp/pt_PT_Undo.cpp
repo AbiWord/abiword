@@ -203,29 +203,19 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 	case PX_ChangeRecord::PXT_DeleteStrux:
 		{
 			const PX_ChangeRecord_Strux * pcrStrux = static_cast<const PX_ChangeRecord_Strux *>(pcr);
+			UT_Bool (pt_PieceTable::* pmUnlink)(pf_Frag_Strux * pfs,
+												pf_Frag ** ppfEnd,
+												UT_uint32 * pfragOffsetEnd);
+			pmUnlink = NULL;
+
 			switch (pcrStrux->getStruxType())
 			{
 			case PTX_Block:
-				{
-					pf_Frag * pf = NULL;
-					PT_BlockOffset fragOffset = 0;
-					UT_Bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
-					UT_ASSERT(bFoundFrag);
-					UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+				pmUnlink = &pt_PieceTable::_unlinkStrux_Block;
+				break;
 
-					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-#ifndef PT_NOTIFY_BEFORE_DELETES
-					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
-#endif					
-					m_pDocument->notifyListeners(pfs,pcr);
-#ifdef PT_NOTIFY_BEFORE_DELETES
-					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
-#endif					
-					UT_ASSERT(bResult);
-					DONE();
-
-					delete pfs;
-				}
+			case PTX_Section:
+				pmUnlink = &pt_PieceTable::_unlinkStrux_Section;
 				break;
 				
 			default:
@@ -233,6 +223,27 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 				UT_ASSERT(0);
 				return UT_FALSE;
 			}
+
+			UT_ASSERT(pmUnlink);
+			
+			pf_Frag * pf = NULL;
+			PT_BlockOffset fragOffset = 0;
+			UT_Bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFoundFrag);
+			UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+#ifndef PT_NOTIFY_BEFORE_DELETES
+			UT_Bool bResult = (this->*pmUnlink)(pfs,NULL,NULL);
+#endif					
+			m_pDocument->notifyListeners(pfs,pcr);
+#ifdef PT_NOTIFY_BEFORE_DELETES
+			UT_Bool bResult = (this->*pmUnlink)(pfs,NULL,NULL);
+#endif					
+			UT_ASSERT(bResult);
+			DONE();
+			
+			delete pfs;
 		}
 		return UT_TRUE;
 

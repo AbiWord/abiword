@@ -878,12 +878,10 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 void FV_View::insertSectionBreak(void)
 {
-	UT_Bool bDidGlob = UT_FALSE;
-	
+	m_pDoc->beginUserAtomicGlob();
+
 	if (!isSelectionEmpty())
 	{
-		bDidGlob = UT_TRUE;
-		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
 	else
@@ -899,8 +897,7 @@ void FV_View::insertSectionBreak(void)
 	m_pDoc->insertStrux(iPoint, PTX_Block);
 	m_pDoc->insertStrux(iPoint, PTX_Section);
 
-	if (bDidGlob)
-		m_pDoc->endUserAtomicGlob();
+	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 	
