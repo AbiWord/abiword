@@ -31,7 +31,6 @@
 #include "fl_BlockLayout.h"
 #include "fp_SectionSlice.h"
 #include "fp_BlockSlice.h"
-#include "pp_Property.h"
 #include "pp_AttrProp.h"
 #include "dg_Graphics.h"
 #include "dg_DrawArgs.h"
@@ -190,14 +189,10 @@ int FP_Column::insertBlockSliceAfter(FP_BlockSlice*	pBS, FP_BlockSlice*	pAfter, 
 		UT_ASSERT(pPrevNode->pSlice == pAfter);
 		
 		UT_sint32 iPrevBottomMargin =
-			m_pG->convertDimension(pPrevNode->pSlice->getBlock()->getProperty(
-				PP_lookupProperty("margin-bottom")
-				));
+			m_pG->convertDimension(pPrevNode->pSlice->getBlock()->getProperty("margin-bottom"));
 		
 		UT_sint32 iMyTopMargin =
-			m_pG->convertDimension(pBS->getBlock()->getProperty(
-				PP_lookupProperty("margin-top")
-				));
+			m_pG->convertDimension(pBS->getBlock()->getProperty("margin-top"));
 		
 		UT_sint32 iMargin = UT_MAX(iPrevBottomMargin, iMyTopMargin);
 
@@ -261,14 +256,10 @@ UT_uint32 FP_Column::_calcSliceOffset(fp_BlockSliceInfo* pBSI, UT_uint32 iLineHe
 	if (pBSI->pPrev)
 	{
 		UT_sint32 iPrevBottomMargin =
-			m_pG->convertDimension(pBSI->pPrev->pSlice->getBlock()->getProperty(
-				PP_lookupProperty("margin-bottom")
-				));
+			m_pG->convertDimension(pBSI->pPrev->pSlice->getBlock()->getProperty("margin-bottom"));
 		
 		UT_sint32 iMyTopMargin =
-			m_pG->convertDimension(pBSI->pSlice->getBlock()->getProperty(
-				PP_lookupProperty("margin-top")
-				));
+			m_pG->convertDimension(pBSI->pSlice->getBlock()->getProperty("margin-top"));
 		
 		UT_sint32 iMargin = UT_MAX(iPrevBottomMargin, iMyTopMargin);
 

@@ -26,10 +26,12 @@
 
 #include "ut_types.h"
 #include "fl_DocListener.h"
+#include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_ColumnSetLayout.h"
 #include "fl_ColumnLayout.h"
+#include "fl_BlockLayout.h"
 #include "fp_Page.h"
 #include "pd_Document.h"
 #include "dg_Graphics.h"
@@ -45,8 +47,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
 
 	m_pDocListener = new fl_DocListener(doc, this);
 
-	PL_ListenerId lid;
-	if (doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&lid))
+	if (doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid))
 	{
 		FILE * fpDump1 = fopen("dump1","w");
 		doc->dump(fpDump1);
@@ -56,6 +57,9 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
 
 FL_DocLayout::~FL_DocLayout()
 {
+	if (m_pDoc)
+		m_pDoc->removeListener(m_lid);
+
 	UT_VECTOR_PURGEALL(FP_Page, m_vecPages);
 	UT_VECTOR_PURGEALL(FL_SectionLayout, m_vecSectionLayouts);
 
@@ -150,6 +154,36 @@ FP_Page* FL_DocLayout::addNewPage()
 	m_vecPages.addItem(pPage);
 
 	return pPage;
+}
+
+FL_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
+{
+	FL_BlockLayout* pBL = NULL;
+	PL_StruxFmtHandle sfh;
+
+	if (m_pDoc->getStruxFromPosition(m_lid, pos, &sfh))
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		switch (pL->getType())
+		{
+		case PTX_Block:
+			pBL = static_cast<FL_BlockLayout *>(pL);
+			break;
+				
+		case PTX_Section:
+		case PTX_ColumnSet:
+		case PTX_Column:
+		default:
+			UT_ASSERT((0));
+		}
+	}
+	else
+	{
+		UT_ASSERT((0));
+	}
+
+
+	return pBL;
 }
 
 int FL_DocLayout::formatAll()

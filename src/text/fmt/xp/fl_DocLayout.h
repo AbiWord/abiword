@@ -26,9 +26,11 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class DG_LayoutView;
 class fl_DocListener;
+class FL_BlockLayout;
 class FP_Page;
 class PD_Document;
 class DG_Graphics;
@@ -79,6 +81,8 @@ public:
 	FP_Page*	getNthPage(int n);
 	int			countPages();
 
+	FL_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
+
 	int			formatAll();
 	int			reformat();
 
@@ -90,6 +94,7 @@ protected:
 	PD_Document*		m_pDoc;
 	DG_LayoutView*      m_pLayoutView;
 	fl_DocListener*		m_pDocListener;
+	PL_ListenerId		m_lid;
 
 	UT_Vector		m_vecPages;
 	UT_Vector		m_vecSectionLayouts;

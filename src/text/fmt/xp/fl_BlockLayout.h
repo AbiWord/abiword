@@ -24,6 +24,7 @@
 #ifndef BLOCKLAYOUT_H
 #define BLOCKLAYOUT_H
 
+#include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_growbuf.h"
@@ -113,7 +114,7 @@ public:
 	int	requestLineSpace(int iHeight);
 	int	addLine(FP_Line*);
 
-	const char*	getProperty(const PP_Property* pProp);
+	const char*	getProperty(const XML_Char * pszName);
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_uint32 getAlignment();
 

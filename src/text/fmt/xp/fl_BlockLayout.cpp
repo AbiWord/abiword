@@ -243,8 +243,8 @@ void FL_BlockLayout::setAlignment(UT_uint32 iAlignCmd)
 
 UT_uint32 FL_BlockLayout::getAlignment()
 {
-#ifdef PROPERTY
-	const char* pszAlign = m_sdh->getProperty(lookupProperty("text-align"));
+	const char* pszAlign = getProperty("text-align");
+
 	if (0 == UT_stricmp(pszAlign, "left"))
 	{
 		return DG_ALIGN_BLOCK_LEFT;
@@ -266,10 +266,6 @@ UT_uint32 FL_BlockLayout::getAlignment()
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
-#else
-	// HACK something for now
-	return DG_ALIGN_BLOCK_LEFT;
-#endif
 }
 
 void FL_BlockLayout::_align()
@@ -590,21 +586,22 @@ UT_Bool FL_BlockLayout::needsReformat()
 	return m_bNeedsReformat;
 }
 
-const char*	FL_BlockLayout::getProperty(const PP_Property* pProp)
+const char*	FL_BlockLayout::getProperty(const XML_Char * pszName)
 {
-#ifdef PROPERTY
-	return m_sdh->getProperty(pProp);
-#endif
-	return NULL;
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
+	
+	getAttrProp(&pBlockAP);
+	
+	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP);
 }
 
 UT_uint32 FL_BlockLayout::getPosition() const
 {
-#ifdef BUFFER	// getPosition
-	return m_pBuffer->getMarkerPosition(m_sdh);
-#endif
-	UT_ASSERT(UT_TODO);
-	return 0;
+	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);
+
+	return pos;
 }
 
 UT_GrowBuf * FL_BlockLayout::getCharWidths(void)
@@ -621,7 +618,7 @@ UT_Bool FL_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan,
 FP_Run* FL_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height)
 {
 	// find the run which has this position inside it.
-	UT_ASSERT(iPos > getPosition());
+	UT_ASSERT(iPos >= getPosition());
 	UT_uint32 iRelOffset = iPos - getPosition();
 
 	FP_Run* pRun = m_pFirstRun;

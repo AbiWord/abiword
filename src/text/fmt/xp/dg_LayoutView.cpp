@@ -326,41 +326,7 @@ void DG_LayoutView::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 
 FL_BlockLayout* DG_LayoutView::_findBlockAtPosition(PT_DocPosition pos)
 {
-#ifdef BUFFER	// _findBlockAtPosition
-	UT_uint32 posMarker;
-	DG_DocMarkerId idMarker;
-	DG_DocMarker* pMarker = NULL;
-	DG_DocMarker* pBlockMarker = NULL;
-
-	posMarker = pos;
-	for (;;)
-	{
-		if (m_pBuffer->findMarker(UT_FALSE, posMarker, &posMarker, &idMarker, &pMarker))
-		{
-			DG_DocMarkerType dmt = pMarker->getType();
-			if ((dmt & DG_MT_BLOCK) && !(dmt & DG_MT_END))
-			{
-				pBlockMarker = pMarker;
-				break;
-			}
-		}
-		else
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			
-			break;
-		}
-	}
-
-	if (pBlockMarker)
-	{
-		return (FL_BlockLayout*) pBlockMarker->getBlock();
-	}
-	else
-#endif
-	{
-		return NULL;
-	}
+	return m_pLayout->findBlockAtPosition(pos);
 }
 
 UT_Bool DG_LayoutView::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
@@ -1385,9 +1351,7 @@ void DG_LayoutView::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 		pPage = pPage->getNext();
 	}
 
-#ifdef POSITION
 	_drawSelectionOrInsertionPoint();
-#endif
 }
 
 // TODO remove this later

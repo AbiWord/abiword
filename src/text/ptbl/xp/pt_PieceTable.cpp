@@ -395,11 +395,11 @@ UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 	{
 		if (pf->getType() == pf_Frag::PFT_Text)
 		{
-			if (sum >= docPos)
-				goto FoundIt;
-
 			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
 			sum += pfText->getLength();
+
+			if (sum >= docPos)
+				goto FoundIt;
 		}
 		else if (pf->getType() == pf_Frag::PFT_Strux)
 		{
