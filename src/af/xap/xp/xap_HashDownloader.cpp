@@ -1,5 +1,5 @@
-/* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+/* AbiSource Application Framework
+ * Copyright (C) 2002 Gabriel
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -135,7 +135,7 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 			}
 		}
 
-		fprintf(stderr, "<DictionaryList v=%s h=%s use=%d>\n", listVersion, host, doUse);
+		UT_DEBUGMSG(("<DictionaryList v=%s h=%s use=%d>\n", listVersion, host, doUse));
 	}
 
 	if (!strcasecmp(name, "Dict") && xmlParseDepth == 1) {
@@ -171,7 +171,7 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 				}
 			}
 			
-			fprintf(stderr, "	<Dict v=%s r=%s mrd=%s>\n", version[l], release[l], mrd[l]);
+			UT_DEBUGMSG(("	<Dict v=%s r=%s mrd=%s>\n", version[l], release[l], mrd[l]));
 		}
 		
 		
@@ -380,10 +380,14 @@ XAP_HashDownloader::dlg_askFirstTryFailed(XAP_Frame *pFrame)
 }
 
 
-/* ret:	0 == no, thankyou
-	1 == ok, done, all OK
-	< 0 == error
-*/
+/*
+ * If the option "SpellUseHashDownloader" is == 1 or is nonexistant:
+ * Show a messagebox for the user that suggests letting Abiword download
+ * the wanted dictionary and install it. If user answers Yes, do it.
+ * return:	0  - no, thankyou
+ *		1  - ok, done, all OK
+ *		<0 - error
+ */
 UT_sint32
 XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 {

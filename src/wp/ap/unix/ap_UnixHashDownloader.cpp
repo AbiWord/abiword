@@ -210,11 +210,19 @@ AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, co
 			return(ret);
 		}
 		
+		/*
+		 * Handles packages that either have just the files, or that also
+		 * contain the whole path usr/shate/AbiSuite/dictionary/
+		 */
 		sprintf(buff, "cd %susr/share/AbiSuite/dictionary/; mv %s %s-encoding %s", tmpDir, hname, hname, name);
 		if ((ret = mySystem(buff))) {
-			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while moving dictionary into place\n");
-			return(ret);
+			sprintf(buff, "cd %s; mv %s %s-encoding %s", tmpDir, hname, hname, name);
+			if ((ret = mySystem(buff))) {
+				fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while moving dictionary into place\n");
+				return(ret);
+			}
 		}
+
 
 		sprintf(buff, "rm -rf %s", tmpDir);
 		if ((ret = mySystem(buff))) {

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 2002 Gabriel
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,11 +53,16 @@ extern char **environ;
 
 extern "C" {
 int 
-dlProgressCallback(AP_StatusBar *statusBar, double t, double d, double ultotal, double ulnow)
+dlProgressCallback(AP_StatusBar *statusBar, double total, double dl, double ultotal, double ulnow)
 {
-	/*  printf("%d / %d (%g %%)\n", d, t, d*100.0/t);*/
-	statusBar->setStatusProgressType(0, (int)(t), PROGRESS_START | PROGRESS_SHOW_PERCENT);
-	statusBar->setStatusProgressValue((int)(d));
+	/* 
+	 * During the first seconds of download this function may be called with total==0
+	 * This would turn on "constant-progress" on the progressbar, we don't want that
+	 */
+	if ( (int)(total) != 0) {
+		statusBar->setStatusProgressType(0, (int)(total), PROGRESS_START | PROGRESS_SHOW_PERCENT);
+		statusBar->setStatusProgressValue((int)(dl));
+	}
 	
 	return 0;
 }

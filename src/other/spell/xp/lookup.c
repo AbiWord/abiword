@@ -47,6 +47,13 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.8  2002/05/03 09:49:43  fjfranklin
+ * o hash downloader update (Gabriel Gerhardsson)
+ * - Comment out the "Can't open <dictionary>" printf.
+ * - Make the progressbar more clean at the begining of the download.
+ * - Add support for tarballs that doesn't have the full path included
+ * - Fix copyright headers on the newly added files (*HashDownloader.*)
+ *
  * Revision 1.7  2001/08/27 19:06:30  dom
  * Lots of compilation fixes
  *
@@ -181,7 +188,7 @@ char *hashname; /* name of the hash file (dictionary) */
 
     if ((fpHash = fopen (hashname, "rb")) == NULL)
 	{
-	(void) fprintf (stderr, CANT_OPEN, hashname);
+/*	(void) fprintf (stderr, CANT_OPEN, hashname);*/
 	return (-1);
 	}
 
