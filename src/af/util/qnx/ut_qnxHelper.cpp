@@ -199,6 +199,8 @@ int pretty_group(PtWidget_t *w, const char *title) {
 	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
 	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
+	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
+											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
 
 	PtSetResources(w, n, args);
 
