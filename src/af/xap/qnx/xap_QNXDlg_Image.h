@@ -36,9 +36,20 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-protected:
+	void event_Cancel();
+	void event_OK();
+	void event_AspectCheckbox();
+	void SetWidth();
+	void SetHeight();
+	void event_Numeric(PtWidget_t *w);
 
+protected:
+	PtWidget_t * _constructWindow(void);
+	PtWidget_t * m_width;
+	PtWidget_t *m_height;
+	PtWidget_t *m_aspectToggle;
+
+	int done;
 };
 
 #endif /* XAP_QNXDIALOG_IMAGE_H */

@@ -57,30 +57,219 @@ void XAP_QNXDialog_Image::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
+	PtWidget_t *mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
+	connectFocus(mainWindow,pFrame);
 	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+   // To center the dialog, we need the frame of its parent.
+    XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+    UT_ASSERT(pQNXFrame);
+    
+    // Get the Window of the parent frame
+    PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+    UT_ASSERT(parentWindow);
+    
+    // Center our new dialog in its parent and make it a transient
+    // so it won't get lost underneath
+    // Make it modal, and stick it up top
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
+    // Show the top level dialog,
+	PtRealizeWidget(mainWindow);
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+    // Run the event loop for this window.
+	int count;
+	count = PtModalStart();
+	done=0;
+	do {
+    		PtProcessEvent();
+	} while (!done);
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	PtModalEnd(MODAL_END_ARG(count));
+	UT_QNXBlockWidget(parentWindow,0);
+	PtDestroyWidget(mainWindow);
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+}
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+int ph_event_toggle(PtWidget_t *w,void *data,PtCallbackInfo_t *cb)
+{
+XAP_QNXDialog_Image *dlg=(XAP_QNXDialog_Image*)data;
+dlg->event_AspectCheckbox();
+return Pt_CONTINUE;
+}
+
+void XAP_QNXDialog_Image::event_AspectCheckbox()
+{
+
+if(PtWidgetFlags(m_aspectToggle) & Pt_SET)
+{
+setPreserveAspect(true);
+}else
+{
+setPreserveAspect(false);
+}
+}
+
+
+int ph_event_ok(PtWidget_t *w,void *data,PtCallbackInfo_t *cb)
+{
+XAP_QNXDialog_Image *dlg=(XAP_QNXDialog_Image*)data;
+dlg->event_OK();
+return Pt_CONTINUE;
+}
+
+void XAP_QNXDialog_Image::event_OK()
+{
+event_AspectCheckbox();
+//SetWidth();
+//SetHeight();
+setAnswer(XAP_Dialog_Image::a_OK);
+done=1;
+}
+
+int ph_event_cancel(PtWidget_t *w,void *data,PtCallbackInfo_t *cb)
+{
+XAP_QNXDialog_Image *dlg=(XAP_QNXDialog_Image*)data;
+
+dlg->event_Cancel();
+return Pt_CONTINUE;
+}
+
+void XAP_QNXDialog_Image::event_Cancel()
+{
+setAnswer(XAP_Dialog_Image::a_Cancel);
+done=1;
+}
+
+int ph_event_numeric_change(PtWidget_t *w,void *data,PtCallbackInfo_t *cb)
+{
+XAP_QNXDialog_Image *dlg= (XAP_QNXDialog_Image*)data;
+dlg->event_Numeric(w);
+return Pt_CONTINUE;
+}
+
+void XAP_QNXDialog_Image::event_Numeric(PtWidget_t *w)
+{
+float *value;
+float val=0;
+
+PtGetResource(w,Pt_ARG_NUMERIC_VALUE,&value,0);
+
+if(w == m_width)
+{
+setWidth(*value);
+if(PtWidgetFlags(m_aspectToggle) & Pt_SET)
+{
+	val=UT_convertToInches(getHeightString());
+	PtSetResource(m_height,Pt_ARG_NUMERIC_VALUE,&val,0);
+
+}
+}
+else if( w == m_height)
+{
+setHeight(*value);
+if(PtWidgetFlags(m_aspectToggle) & Pt_SET)
+{	
+	val=UT_convertToInches(getWidthString());
+	PtSetResource(m_width,Pt_ARG_NUMERIC_VALUE,&val,0);
+}
+}
+
+}
+
+
+PtWidget_t *XAP_QNXDialog_Image::_constructWindow()
+{
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+	PtWidget_t *mainwindow;
+	PtWidget_t *btnOK;
+	PtWidget_t *btnCancel;
+	PtWidget_t *width;
+	PtWidget_t *height;
+	PtWidget_t *aspectToggle;	
+	char buff[30];
+		const PtArg_t args[] = {
+		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValue(XAP_STRING_ID_DLG_Image_Title),0),
+		Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
+		Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
+  	};
+
+	 const PhArea_t area1 = { { 10, 11 }, { 80, 21 } };
+	 const PtArg_t args1[] = {
+		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Image_Height), 0 ),
+		};
+
+	 const PhArea_t area2 = { { 10, 44 }, { 95, 21 } };
+	 const PtArg_t args2[] = {
+		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Image_Width), 0 ),
+		};
+
+	 const PhArea_t area3 = { { 10, 77 }, { 205, 24 } };
+	 const PtArg_t args3[] = {
+		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Image_Aspect), 0 ),
+		};
+
+	 const PhArea_t area4 = { { 102, 5 }, { 113, 27 } };
+	 const PtArg_t args4[] = {
+		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
+		};
+
+	 const PhArea_t area5 = { { 102, 38 }, { 113, 27 } };
+	 const PtArg_t args5[] = {
+		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
+		};
+
+	 const PhArea_t area6 = { { 168, 108 }, { 50, 27 } };
+	 const PtArg_t args6[] = {
+		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0 ),
+		};
+
+	 const PhArea_t area7 = { { 111, 108 }, { 52, 27 } };
+	 const PtArg_t args7[] = {
+		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0 ),
+		};
+
+	mainwindow=PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
+		PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_cancel,this);
+
+	PtCreateWidget( PtLabel, NULL, sizeof(args1) / sizeof(PtArg_t), args1 );
+
+	PtCreateWidget( PtLabel, NULL, sizeof(args2) / sizeof(PtArg_t), args2 );
+
+	aspectToggle=PtCreateWidget( PtToggleButton, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
+		PtAddCallback(aspectToggle,Pt_CB_ACTIVATE,ph_event_toggle,this);
+
+	width=PtCreateWidget( PtNumericFloat, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
+		PtAddCallback(width,Pt_CB_NUMERIC_CHANGED,ph_event_numeric_change,this);
+
+	height=PtCreateWidget( PtNumericFloat, NULL, sizeof(args5) / sizeof(PtArg_t), args5 );
+		PtAddCallback(height,Pt_CB_NUMERIC_CHANGED,ph_event_numeric_change,this);
+
+	btnOK=PtCreateWidget( PtButton, NULL, sizeof(args6) / sizeof(PtArg_t), args6 );
+		PtAddCallback(btnOK,Pt_CB_ACTIVATE,ph_event_ok,this);
+
+	btnCancel=PtCreateWidget( PtButton, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
+		PtAddCallback(btnCancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
+
+if(getPreserveAspect()) {
+PtSetResource(aspectToggle,Pt_ARG_FLAGS,Pt_TRUE,Pt_SET);
+} else 
+	PtSetResource(aspectToggle,Pt_ARG_FLAGS,Pt_FALSE,Pt_SET);
+double val=UT_convertToInches(getHeightString());
+PtSetResource(height,Pt_ARG_NUMERIC_VALUE,&val,0);
+
+val=UT_convertToInches(getWidthString());
+PtSetResource(width,Pt_ARG_NUMERIC_VALUE,&val,0);
+
+m_width=width;
+m_height=height;
+m_aspectToggle=aspectToggle;
+
+return mainwindow;
 }
