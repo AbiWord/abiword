@@ -549,6 +549,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 
 	switch(id)
 	{
+	case AP_MENU_ID_EDIT_PASTE_SPECIAL:
 	case AP_MENU_ID_EDIT_PASTE:
 		s = ( (pView->getApp()->canPasteFromClipboard()) ? EV_MIS_ZERO : EV_MIS_Gray );
 		break;

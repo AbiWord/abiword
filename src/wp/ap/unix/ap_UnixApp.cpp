@@ -555,6 +555,9 @@ static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
 											 AP_CLIPBOARD_STRING,
 											 AP_CLIPBOARD_TEXTPLAIN_8BIT,
 											 0 /* must be last */ };
+static const char * txtszFormatsAccepted[] = { AP_CLIPBOARD_STRING,
+											   AP_CLIPBOARD_TEXTPLAIN_8BIT,
+											   0 };
 
 /*!
   paste from the system clipboard using the best-for-us format
@@ -568,7 +571,8 @@ static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
   unifying things -- or it might not -- this is probably an area
   for investigation or some usability testing.
 */
-void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
+void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard,
+									bool bHonorFormatting)
 {
     XAP_UnixClipboard::T_AllowGet tFrom = ((bUseClipboard)
 										   ? XAP_UnixClipboard::TAG_ClipboardOnly
@@ -585,7 +589,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		return;
     }
 	
-    if (strcmp(szFormatFound,AP_CLIPBOARD_RTF) == 0)
+    if (strcmp(szFormatFound,AP_CLIPBOARD_RTF) == 0 && bHonorFormatting)
     {
 		iLen = MyMin(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -596,6 +600,14 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
 		return;
     }
+
+	bFoundOne = m_pClipboard->getData(tFrom,txtszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);	
+
+	if (!bFoundOne)
+	{
+		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
+		return;
+	}
 
     if (   (strcmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
 		   || (strcmp(szFormatFound,AP_CLIPBOARD_STRING) == 0))

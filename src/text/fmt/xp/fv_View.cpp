@@ -6947,7 +6947,7 @@ void FV_View::cmdCopy(void)
 	notifyListeners(AV_CHG_CLIPBOARD);
 }
 
-void FV_View::cmdPaste(void)
+void FV_View::cmdPaste(bool bHonorFormatting)
 {
 	// set UAG markers around everything that the actual paste does
 	// so that undo/redo will treat it as one step.
@@ -6962,7 +6962,7 @@ void FV_View::cmdPaste(void)
 	//
 	m_pDoc->disableListUpdates();
 	m_pDoc->setDoingPaste();
-	_doPaste(true);
+	_doPaste(true, bHonorFormatting);
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -6995,7 +6995,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	if (!isSelectionEmpty())
 		m_pApp->cacheCurrentSelection(this);
 	warpInsPtToXY(xPos,yPos,true);
-	_doPaste(false);
+	_doPaste(false, true);
 	m_pApp->cacheCurrentSelection(NULL);
 
 	// Signal PieceTable Changes have finished
@@ -7004,7 +7004,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	m_pDoc->endUserAtomicGlob();
 }
 
-void FV_View::_doPaste(bool bUseClipboard)
+void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 {
 	// internal portion of paste operation.
 	
@@ -7015,7 +7015,7 @@ void FV_View::_doPaste(bool bUseClipboard)
 
 	_clearIfAtFmtMark(getPoint());
 	PD_DocumentRange dr(m_pDoc,getPoint(),getPoint());
-	m_pApp->pasteFromClipboard(&dr,bUseClipboard);
+	m_pApp->pasteFromClipboard(&dr,bUseClipboard,bHonorFormatting);
 
 	_generalUpdate();
 	

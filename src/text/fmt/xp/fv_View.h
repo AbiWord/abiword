@@ -170,7 +170,7 @@ public:
 
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
-	virtual void	cmdPaste(void);
+	virtual void	cmdPaste(bool bHonorFormatting = true);
 	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
@@ -432,7 +432,7 @@ protected:
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	bool				_charMotion(bool bForward,UT_uint32 countChars);
-	void				_doPaste(bool bUseClipboard);
+	void				_doPaste(bool bUseClipboard, bool bHonorFormatting = true);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
 	void				_checkPendingWordForSpell(void);
