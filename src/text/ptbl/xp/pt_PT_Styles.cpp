@@ -311,5 +311,8 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	  *pszName = pStyle->getName();
 	}
 	UT_ASSERT(*pszName);
+
+	delete vStyle;
+
 	return true;
 }

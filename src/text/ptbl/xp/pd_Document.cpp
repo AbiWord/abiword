@@ -95,7 +95,9 @@ PD_Document::~PD_Document()
 		delete m_pPieceTable;
 
 	_destroyDataItemData();
-	
+
+	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
+
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 }

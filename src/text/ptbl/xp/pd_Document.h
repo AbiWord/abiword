@@ -245,6 +245,8 @@ protected:
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bOpenedFromSaved);
+
+private:
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
@@ -257,8 +259,6 @@ protected:
 	XAP_App *				m_pApp;
 	bool					m_bPieceTableChanging;
 	bool					m_bDoingPaste;
-
-private:
 	bool					m_bAllowInsertPointChange;
 };
 
