@@ -2318,6 +2318,7 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	//
 	fp_Run * pRun = pBlock->getFirstRun();
 	UT_uint32 ifield =0;
+	UT_uint32 iTab = 0;
 	while((bEmpty == true) && (pRun != NULL))
 	{
 		FP_RUN_TYPE runtype = static_cast<FP_RUN_TYPE>(pRun->getType());
@@ -2330,6 +2331,15 @@ bool FV_View::isCurrentListBlockEmpty(void)
 			{
 				ifield++;
 				if(ifield > 1)
+				{
+					bEmpty = false;
+					break;
+				}
+			}
+			else if(runtype == FPRUN_TAB)
+			{
+				iTab++;
+				if(iTab > 1)
 				{
 					bEmpty = false;
 					break;
