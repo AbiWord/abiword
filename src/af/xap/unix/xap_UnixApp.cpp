@@ -19,7 +19,6 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-#include <glade/glade.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -74,8 +73,7 @@ bool XAP_UnixApp::initialize(void)
 	// initialize GTK first.
 	
 	gtk_set_locale();
-	gtk_init(&m_pArgs->m_argc, &m_pArgs->m_argv);
-	glade_init (); // HACK -- It doesn't come here...
+	gtk_init(&m_pArgs->m_argc,&m_pArgs->m_argv);
 
 	// let our base class do it's thing.
 	

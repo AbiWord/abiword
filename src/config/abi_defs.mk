@@ -541,7 +541,7 @@ ABI_OPT_GNOME=
 GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
 CFLAGS 		+=	$(GTK_CFLAGS)
-EXTRA_LIBS	+=	$(GTK_LIBS) -lglade
+EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
 endif
 

@@ -70,7 +70,7 @@ PD_Document::PD_Document()
 	// a previous saveAs() (which specifies a type)
 	m_lastSavedAsType = IEFT_AbiWord_1;
 	m_ballowListUpdates = false;
-	m_bPieceTableChanging = false;
+        m_bPieceTableChanging = false;
 	m_bDoingPaste = false;
 }
 

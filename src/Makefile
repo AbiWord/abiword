@@ -100,11 +100,6 @@ ifeq ($(ABI_NATIVE),unix)
 # font stuff for installation
 	@$(subst xxxx,$(CANONDIR)/fonts,$(VERIFY_DIRECTORY))
 	(cd $(ABI_ROOT)/../unixfonts/fonts ; cp *.* $(CANONDIR)/fonts)
-# glade files
-	@$(subst xxxx,$(CANONDIR)/glade,$(VERIFY_DIRECTORY))
-	(cd $(ABI_ROOT)/src/glade ; cp *.glade $(CANONDIR)/glade)
-	@$(subst xxxx,$(CANONDIR)/glade/gnome,$(VERIFY_DIRECTORY))
-	(cd $(ABI_ROOT)/src/glade/gnome ; cp *.glade $(CANONDIR)/glade/gnome)
 endif
 
 ##################################################################

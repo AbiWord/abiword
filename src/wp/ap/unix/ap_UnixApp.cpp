@@ -1181,13 +1181,13 @@ void AP_UnixApp::catchSignals(int sig_num)
 	// (not that it matters - this is mostly for race conditions)
 	signal(SIGSEGV, signalWrapper);
 
-	s_signal_count = s_signal_count + 1;
-	if(s_signal_count > 1)
-	{
-		UT_DEBUGMSG(("Segfault during filesave - no file saved  \n"));
-		fflush(stdout);
-		abort();
-	}
+        s_signal_count = s_signal_count + 1;
+        if(s_signal_count > 1)
+        {
+                UT_DEBUGMSG(("Segfault during filesave - no file saved  \n"));
+                fflush(stdout);
+                abort();
+        }
 
 	UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
 

@@ -28,8 +28,6 @@ endif
 
 CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixClipboard.cpp			\
-			xap_UnixDialogBuilder.cpp		\
-			xap_UnixDlg_About.cpp			\
 			xap_UnixDlg_FileOpenSaveAs.cpp		\
 			xap_UnixDlg_FontChooser.cpp		\
 			xap_UnixDlg_MessageBox.cpp		\
@@ -37,7 +35,6 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixDlg_WindowMore.cpp		\
 			xap_UnixDlg_Zoom.cpp			\
 			xap_UnixDlg_Insert_Symbol.cpp		\
-			xap_UnixDialogBuilder.cpp		\
 			xap_UnixFontXLFD.cpp			\
 			xap_UnixFont.cpp			\
 			xap_UnixPSFont.cpp			\
@@ -59,7 +56,7 @@ endif
 
 TARGETS=		$(OBJS)
 INCLUDES=      -I/usr/X11R6/include
-
+ 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

@@ -53,9 +53,7 @@ XAP_UnixGnomeApp::~XAP_UnixGnomeApp(void)
 
 bool XAP_UnixGnomeApp::initialize(void)
 {
-	// TODO: We need a VERSION define
-	gnome_init(m_szAppName, "0.7.13", m_pArgs->m_argc, m_pArgs->m_argv);
-	glade_gnome_init ();
+	gnome_init(m_szAppName, "0.0", m_pArgs->m_argc, m_pArgs->m_argv);
 
 	// let the base class of XAP_UnixApp do it's thing.
 	
