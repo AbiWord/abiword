@@ -415,7 +415,7 @@ class UT_Win32AssertDlg
 	
   private:
 	UT_Win32AssertDlg(const char * pCond, const char * pFile, int iLine, int iCount)
-		: m_pCond(pCond), m_pFile(pFile), m_iLine(iLine), m_iCount(iCount){};
+		: m_pCond(pCond), m_pFile(pFile), m_iLine(iLine), m_iCount(iCount), m_myHWND(NULL){};
 	~UT_Win32AssertDlg(){};
 
 	static BOOL CALLBACK  s_dlgProc(HWND,UINT,WPARAM,LPARAM);
@@ -426,6 +426,9 @@ class UT_Win32AssertDlg
 	enum answer {AN_Debug, AN_Ignore, AN_IgnoreAll, AN_Abort};
 	
 	answer runModal();
+
+	static BOOL CALLBACK s_DisableWindows(HWND hwnd,	LPARAM lParam);
+	void enableWindows();
 	
 	int  m_iLine;
 	const char * m_pCond;
@@ -433,6 +436,9 @@ class UT_Win32AssertDlg
 	int  m_iCount;
 
 	answer m_answer;
+
+	HWND m_myHWND;
+	UT_GenericVector<HWND> m_vecDisabledWnds;
 };
 
 /*!
@@ -526,14 +532,49 @@ BOOL UT_Win32AssertDlg::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		default:
 			return 0;
 	}
+
+	enableWindows();
 	
 	EndDialog(hWnd,0);
 	return 1;
 
 }
 
+BOOL CALLBACK UT_Win32AssertDlg::s_DisableWindows(HWND hwnd,	LPARAM lParam)
+{
+	UT_Win32AssertDlg * pThis = (UT_Win32AssertDlg*)lParam;
+
+	if(pThis && (pThis->m_myHWND != hwnd) && IsWindowEnabled(hwnd))
+	{
+		pThis->m_vecDisabledWnds.addItem(hwnd);
+		EnableWindow(hwnd, FALSE);
+	}
+
+	// give me another one
+	return TRUE;
+}
+
+void UT_Win32AssertDlg::enableWindows()
+{
+	for(UT_uint32 i = 0; i < m_vecDisabledWnds.getItemCount(); i++)
+	{
+		EnableWindow(m_vecDisabledWnds.getNthItem(i), TRUE);
+	}
+
+	m_vecDisabledWnds.clear();
+}
+
 BOOL UT_Win32AssertDlg::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	// We need to make this dlg 'Task Modal' (equivalent to MB_TASKMODAL of the
+	// MessageBox() function), otherwise mutliple assert boxes can potentially be created
+	// in response to things like mouse movement. The idea how to do this came from the
+	// WINE mailing list (http://www.winehq.com/hypermail/wine-devel/2004/11/0320.html)
+	// Basically, we disable all windows that belong to our thread, and remember which
+	// windows we did disable, so we can enable them before the dlg box closes.
+	m_myHWND = hWnd;
+	EnumThreadWindows(GetCurrentThreadId(),	s_DisableWindows, lParam);
+
 	// set initial state
 	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_FILE,m_pFile);
 	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_CONDITION,m_pCond);
