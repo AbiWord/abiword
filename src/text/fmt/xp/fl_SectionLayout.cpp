@@ -3039,6 +3039,14 @@ bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux
 		pPrevSL->add(pBL);
 	}
 //
+// Remove the pointer to this hdrftr
+//
+//
+// Null out pointer to this HdrFtrSection in the attached DocLayoutSection
+// This prevent a new page being created in the format statement that follows.
+//
+	m_pDocSL->setHdrFtr(m_iHFType, NULL);
+//
 // Format the new section containing the blocks.
 //
 	pPrevSL->format();

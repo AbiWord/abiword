@@ -1490,7 +1490,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
     //
     // Check for point > 0 to allow multi-threaded loads
     //
-	if (m_pView && !bDontNotify && m_pView->getPoint() > 0)
+	if (m_pView && !bDontNotify && (m_pView->getPoint() > 0) && !m_pDoc->isPieceTableChanging())
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}

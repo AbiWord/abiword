@@ -222,6 +222,54 @@ UT_uint32 fl_FrameLayout::getLength(void)
 }
 
 
+/*!
+ * This code actually inserts a block AFTER the frame in the docsectionlayout
+ * Code copied from tablelayout
+ */
+bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* pLBlock,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
+
+	fl_ContainerLayout * pNewCL = NULL;
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	pNewCL = pMyCL->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
+	fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(pNewCL);
+//
+// Set the sectionlayout of this frame to that of the block since it is that scope
+//
+	pBlock->setSectionLayout(static_cast<fl_SectionLayout *>(myContainingLayout()));
+	pNewCL->setContainingLayout(myContainingLayout());
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+	pfnBindHandles(sdh,lid,sfhNew);
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	return true;
+}
+
 bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,

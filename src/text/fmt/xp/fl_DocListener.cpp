@@ -2124,10 +2124,30 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // will become the first block of the Frame.
 
 			  UT_DEBUGMSG(("Inserting block into frame \n"));
+//
+// Actually the block could be being inserted right *after* the frame.
+// We need to detect this and deal with this. We can do this in fl_FrameLayout
+//
 			  fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			  UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_FRAME);
-			  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
-			  return bResult;
+			  fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pL);
+			  if(!pFL->isEndFrameIn())
+			  {
+				  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+				  return bResult;
+			  }
+			  PT_DocPosition posEnd = pFL->getPosition(true) + pFL->getLength()-1;
+			  if(posEnd >= pcrx->getPosition())
+			  {
+				  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+				  return bResult;
+			  }
+			  else
+			  {
+				  bool bResult = pFL->insertBlockAfter(NULL, pcrx,sdh,lid,pfnBindHandles);
+				  return bResult;
+
+			  }
 		   }
 		case PTX_SectionHdrFtr:
 		   {
