@@ -18,7 +18,6 @@
  */
 
 
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -36,6 +35,10 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 
+
+#define FREEP(p)	do { if (p) free(p); } while (0)
+
+/*****************************************************************/
 
 fp_Run::fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties)
 {
@@ -1027,6 +1030,41 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 	return UT_TRUE;
 }
 
+void fp_Run::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
+{
+	UT_sint32 nPoints = (right - left + 3)/2;
+	UT_ASSERT(nPoints > 1);
+
+	/*
+		NB: This array gets recopied inside the polyLine implementation
+			to move the coordinates into a platform-specific point 
+			structure.  They're all x, y but different widths.  Bummer. 
+	*/
+	UT_Point * points = (UT_Point *)calloc(nPoints, sizeof(UT_Point));
+	UT_ASSERT(points);
+
+	points[0].x = left;
+	points[0].y = top;
+
+	UT_Bool bTop = UT_FALSE;
+
+	for (UT_sint32 i = 1; i < nPoints; i++, bTop = !bTop)
+	{
+		points[i].x = points[i-1].x + 2;
+		points[i].y = (bTop ? top : top + 2);
+	}
+
+	if (points[nPoints-1].x > right)
+	{
+		points[nPoints-1].x = right;
+		points[nPoints-1].y = top + 1;
+	}
+
+	m_pG->polyLine(points, nPoints);
+
+	FREEP(points);
+}
+
 void fp_Run::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
 	UT_ASSERT(iLen > 0);
@@ -1042,8 +1080,12 @@ void fp_Run::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
 	_getPartRect( &r, xoff, yoff + m_iAscent, iOffset, iLen, pgbCharWidths);
 
+#if 0
 	m_pG->drawLine(r.left,
 				   r.top + m_iAscent + 1, 
 				   r.left + r.width,
 				   r.top + m_iAscent + 1);
+#else
+	_drawSquiggle(r.top + m_iAscent + 1, r.left, r.left + r.width); 
+#endif
 }

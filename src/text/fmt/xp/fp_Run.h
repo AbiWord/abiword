@@ -117,6 +117,7 @@ class fp_Run
 	
  protected:
 	void					_drawDecors(UT_sint32, UT_sint32);
+	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
 	void 					_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 										 const UT_GrowBuf * pgbCharWidths);
 	UT_uint32				_sumPartWidth(UT_uint32 iStart, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths);

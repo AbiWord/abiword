@@ -77,6 +77,8 @@ public:
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 
+	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
+
 	/* For fillRect() and ??:
 	**   begin fill at x0,y0,
 	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??

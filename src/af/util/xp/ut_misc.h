@@ -57,6 +57,13 @@ public:
 protected:
 };
 
+// ----------------------------------------------------------------
+struct UT_Point
+{
+	UT_sint32	x;
+	UT_sint32	y;
+};
+
 #define UT_MAX(A,B)	(((A) > (B)) ? (A) : (B))
 #define UT_MIN(A,B)	(((A) < (B)) ? (A) : (B))
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )

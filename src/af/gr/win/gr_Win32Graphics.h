@@ -58,6 +58,7 @@ public:
 	virtual UT_uint32 getFontDescent();
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void invertRect(const UT_Rect* pRect);
 	virtual void setClipRect(const UT_Rect* pRect);

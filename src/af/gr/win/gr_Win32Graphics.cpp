@@ -18,13 +18,16 @@
  */
 
 
-
 #include <windows.h>
 
 #include "gr_Win32Graphics.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+
+#define FREEP(p)	do { if (p) free(p); } while (0)
+
+/*****************************************************************/
 
 static UT_Bool __isWinNT(void)
 {
@@ -336,6 +339,28 @@ void Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 
 	(void) SelectObject(m_hdc, hOldPen);
 	DeleteObject(hPen);
 	(void) SetROP2(m_hdc, iROP);
+}
+
+void Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+{
+	// TODO do we really want the line width to ALWAYS be 1?
+	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
+	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
+
+	POINT * points = (POINT *)calloc(nPoints, sizeof(POINT));
+	UT_ASSERT(points);
+
+	for (UT_uint32 i = 0; i < nPoints; i++)
+	{
+		points[i].x = pts[i].x;
+		points[i].y = pts[i].y;
+	}
+
+	Polyline(m_hdc, points, nPoints);
+
+	(void) SelectObject(m_hdc, hOldPen);
+	DeleteObject(hPen);
+	FREEP(points);
 }
 
 void Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)

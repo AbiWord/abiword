@@ -31,6 +31,10 @@
 #include "ut_misc.h"
 #include "ut_string.h"
 
+#define FREEP(p)	do { if (p) free(p); } while (0)
+
+/*****************************************************************/
+
 UNIXFont::UNIXFont(GdkFont* pFont)
 {
 	UT_ASSERT(pFont);
@@ -400,6 +404,22 @@ void UNIXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	gdk_draw_line(m_pWin, m_pXORGC, x1, y1, x2, y2);
+}
+
+void UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+{
+	GDKPoint * points = (GDKPoint *)calloc(nPoints, sizeof(GDKPoint));
+	UT_ASSERT(points);
+
+	for (UT_uint32 i = 0; i < nPoints; i++)
+	{
+		points[i].x = pts[i].x;
+		points[i].y = pts[i].y;
+	}
+
+	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
+
+	FREEP(points);
 }
 
 void UNIXGraphics::invertRect(const UT_Rect* pRect)
