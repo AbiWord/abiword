@@ -560,7 +560,6 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_recCurFrame.top = yy;
 		fp_Line * pNext = pLineLow;
 		UT_sint32 width = 0;
-		UT_sint32 iRightpos = 0;
 		while(pNext && (pNext != pLineHigh))
 		{
 			pRun = pNext->getFirstRun();

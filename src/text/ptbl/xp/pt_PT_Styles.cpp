@@ -393,7 +393,7 @@ size_t pt_PieceTable::getStyleCount (void)
   return (size_t) m_hashStyles.size();
 }
 
-
+#if 0 // currentl unused. suppress warning
 ///////////////////////////////////////////////////////////////////////
 /*!
  * compareStyleNames this function is used to compare the char * strings names
@@ -410,6 +410,7 @@ static UT_sint32 compareStyleNames(const void * vS1, const void * vS2)
 	const char * sz2 = (*pS2)->getName();
 	return UT_stricmp(sz1, sz2);
 }
+#endif
 
 bool pt_PieceTable::enumStyles(UT_uint32 k,
 							   const char ** pszName,

@@ -485,7 +485,6 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	{
 		setPoint(origPos);
 	}
-	UT_sint32 iCount = 0;
 	if(isTabListAheadPoint() == true)
 	{
 		UT_uint32 iRealDeleteCount2;
@@ -2684,8 +2683,6 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 				if(sdhEnd)
 				{
 					PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
-					PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
-					UT_uint32 iSize = posEnd - posStart + 1;
 					PL_StruxFmtHandle  psfh = NULL;
 					getDocument()->getStruxOfTypeFromPosition((*pBlock)->getDocLayout()->getLID(),posStart,PTX_Block, &psfh);
 					newBlock = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
@@ -5367,12 +5364,10 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 //
 // Need this to remove the HdrFtr attributes in the section strux.
 //
-	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
 	const XML_Char * pszHdrFtrType = NULL;
 	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
 	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
 	m_pDoc->getAttributeFromSDH(sdhHdrFtr,isShowRevisions(),getRevisionLevel(),PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
-	PT_DocPosition	posDSL = m_pDoc->getStruxPosition(pDSL->getStruxDocHandle());
 //
 // Remove the header/footer strux
 //

@@ -865,7 +865,7 @@ void FL_DocLayout::removeEndnoteContainer(fp_EndnoteContainer * pECon)
 	{
 		pECon->getNext()->setPrev(pECon->getPrev());
 	}
-	fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
+//	fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
 //	pDSL = static_cast<fl_DocSectionLayout *>(pEL->myContainingLayout());
 //	if(!pDSL->isCollapsing())
 	{

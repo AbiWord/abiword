@@ -464,7 +464,7 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 	UT_sint32 iXlow = pDA->xoff - m_iXpad;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 
-	UT_Rect box(iXlow + pDA->pG->tlu(2), iYlow + pDA->pG->tlu(2), getFullWidth() - pDA->pG->tlu(4), getFullHeight() - pDA->pG->tluD(4));
+	UT_Rect box(iXlow + pDA->pG->tlu(2), iYlow + pDA->pG->tlu(2), getFullWidth() - pDA->pG->tlu(4), getFullHeight() - pDA->pG->tlu(4));
 	getView()->drawSelectionBox(box, true);
 }
 

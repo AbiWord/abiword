@@ -763,7 +763,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 		}
 		vecBlocks.addItem(pB);
 	}
-	UT_sint32 iBlk = 0;
+	UT_uint32 iBlk = 0;
 	fl_BlockLayout * pBL = vecBlocks.getNthItem(iBlk);
 	fp_Line * pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 	bool bLoop = true;
