@@ -60,11 +60,10 @@ canonical:
 	done
 # copy the various dictionary hash files
 	@$(subst xxxx,$(CANONDIR)/dictionary,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/$(OS_ENDIAN).*.hash.zip $(CANONDIR)/dictionary
+	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/$(OS_ENDIAN).*.hash.gz $(CANONDIR)/dictionary
 	@(cd $(CANONDIR)/dictionary; 				\
-		for k in *.zip; do				\
-			unzip -o $$k;				\
-			rm $$k;					\
+		for k in *.gz; do				\
+			gzip -dc $$k > american.hash;		\
 		done)
 #	(cd $(ABI_ROOT)/../abidistfiles; tar cf - dictionary/*.hash) | (cd $(CANONDIR); tar xf -)
 ifeq ($(ABI_NATIVE),unix)
