@@ -1221,6 +1221,8 @@ void s_HTML_Listener::multiBreak ()
 /* intermediate methods
  */
 
+static const char * s_DTD_XHTML_AWML = "!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\"";
+
 static const char * s_DTD_XHTML = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"";
 
 static const char * s_DTD_HTML4 = "!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"";
@@ -1266,7 +1268,10 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 			m_utf8_1 = "version=\"1.0\"";
 			tagPI ("xml", m_utf8_1);
 		}
-		m_utf8_1 = s_DTD_XHTML;
+		if (get_Allow_AWML ())
+			m_utf8_1 = s_DTD_XHTML_AWML;
+		else
+			m_utf8_1 = s_DTD_XHTML;
 		tagOpenClose (m_utf8_1, true);
 	}
 	else
@@ -1281,7 +1286,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	if (!get_HTML4 ())
 	{
 		m_utf8_1 += " xmlns=\"http://www.w3.org/1999/xhtml\"";
-		if (get_Allow_AWML ()) m_utf8_1 += " xmlns:awml=\"http://www.abisource.com/awml.dtd\"";
+		if (get_Allow_AWML ()) m_utf8_1 += " xmlns:awml=\"http://www.abisource.com/2004/xhtml-awml/\"";
 	}
 	tagOpen (TT_HTML, m_utf8_1);
 	
