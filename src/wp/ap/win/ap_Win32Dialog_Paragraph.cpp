@@ -281,6 +281,14 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 #define _ID(s)	(AP_STRING_ID_##s)
 
+// TODO: decide whether to use 0-based XP enum as key, instead of the ID
+#define _CAS(w, s)	\
+	{				\
+		SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GV(s));	\
+		SendMessage(w, CB_SETITEMDATA, i, (LPARAM) _ID(s));	\
+		i++;												\
+	}	
+
 BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -314,45 +322,35 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PARA_TEXT_LEAD,			DLG_Para_LabelLineSpacing);
 			_DS(PARA_TEXT_AT,			DLG_Para_LabelAt);
 
-			// set initial state
+			// populate fixed choices
 			{
+				UT_uint32 i;
+
 				HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_ALIGN);  
+				i = 0;
+				_CAS(hwndAlign, DLG_Para_AlignLeft);
+				_CAS(hwndAlign, DLG_Para_AlignCentered);
+				_CAS(hwndAlign, DLG_Para_AlignRight);
+				_CAS(hwndAlign, DLG_Para_AlignJustified);
 
-				UT_uint32 i = 0;
+				HWND hwndHang = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_HANG);  
+				i = 0;
+				_CAS(hwndHang, DLG_Para_SpecialNone);
+				_CAS(hwndHang, DLG_Para_SpecialFirstLine);
+				_CAS(hwndHang, DLG_Para_SpecialHanging);
 
-				// TODO: macroize this better
-				// TODO: decide whether to use the ID as key, or XP enum
-				SendMessage(hwndAlign, LB_ADDSTRING, 0, (LPARAM) _GV(DLG_Para_AlignLeft)); 
-				SendMessage(hwndAlign, LB_SETITEMDATA, i, (LPARAM) _ID(DLG_Para_AlignLeft));  
-				i++;
-
-				SendMessage(hwndAlign, LB_ADDSTRING, 0, (LPARAM) _GV(DLG_Para_AlignCentered)); 
-				SendMessage(hwndAlign, LB_SETITEMDATA, i, (LPARAM) _ID(DLG_Para_AlignCentered));  
-				i++;
-
-				SendMessage(hwndAlign, LB_ADDSTRING, 0, (LPARAM) _GV(DLG_Para_AlignRight)); 
-				SendMessage(hwndAlign, LB_SETITEMDATA, i, (LPARAM) _ID(DLG_Para_AlignRight));  
-				i++;
-
-				SendMessage(hwndAlign, LB_ADDSTRING, 0, (LPARAM) _GV(DLG_Para_AlignJustified)); 
-				SendMessage(hwndAlign, LB_SETITEMDATA, i, (LPARAM) _ID(DLG_Para_AlignJustified));  
-				i++;
+				HWND hwndLead = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_LEAD);  
+				i = 0;
+				_CAS(hwndLead, DLG_Para_SpacingSingle);
+				_CAS(hwndLead, DLG_Para_SpacingHalf);
+				_CAS(hwndLead, DLG_Para_SpacingDouble);
+				_CAS(hwndLead, DLG_Para_SpacingAtLeast);
+				_CAS(hwndLead, DLG_Para_SpacingExactly);
+				_CAS(hwndLead, DLG_Para_SpacingMultiple);
 			}		
 
+			// set initial state
 #if 0
-
-#define AP_RID_DIALOG_PARA_COMBO_HANG			1022
-dcl(DLG_Para_SpecialNone,		"(none)")
-dcl(DLG_Para_SpecialFirstLine,	"First line")
-dcl(DLG_Para_SpecialHanging,	"Hanging")
-
-#define AP_RID_DIALOG_PARA_COMBO_LEAD			1034
-dcl(DLG_Para_SpacingSingle,		"Single")
-dcl(DLG_Para_SpacingHalf,		"1.5 lines")
-dcl(DLG_Para_SpacingDouble,		"Double")
-dcl(DLG_Para_SpacingAtLeast,	"At least")
-dcl(DLG_Para_SpacingExactly,	"Exactly")
-dcl(DLG_Para_SpacingMultiple,	"Multiple")
 
 #define AP_RID_DIALOG_PARA_EDIT_LEFT			1016
 #define AP_RID_DIALOG_PARA_SPIN_LEFT			1017
