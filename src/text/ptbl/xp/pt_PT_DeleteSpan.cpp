@@ -330,9 +330,19 @@ UT_Bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 				//  it might be the first block of the section.  So, we 
 				//  want to delete the '...' first, and then get around
 				//  to deleting the block later.
-				dpos2 -= pf_Last->getLength();
-				pstDelayStruxDelete->push(pf_Before);
-				return UT_TRUE;
+
+				pf_Frag_Strux * pfs_BeforeSection, * pfs_LastSection;
+				_getStruxOfTypeFromPosition(dpos1 - 1, 
+											PTX_Section, &pfs_BeforeSection);
+				_getStruxOfTypeFromPosition(dpos2 - 1, 
+											PTX_Section, &pfs_LastSection);
+
+				if (pfs_BeforeSection == pfs_LastSection)
+				{
+					dpos2 -= pf_Last->getLength();
+					pstDelayStruxDelete->push(pf_Before);
+					return UT_TRUE;
+				}
 			}
 		}
 	}
