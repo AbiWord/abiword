@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: es-ES\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-08-29 08:48+0200\n"
-"PO-Revision-Date: 2003-08-29 10:08+0200\n"
+"PO-Revision-Date: 2003-08-29 20:27+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -341,7 +341,7 @@ msgstr "&Negrita"
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h.h:189
 msgid "&Bottom:"
-msgstr "&Pie de página:"
+msgstr "&Inferior:"
 
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:191
@@ -786,7 +786,7 @@ msgstr "&Restablecer"
 #. MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:370
 msgid "&Reset to default layout"
-msgstr "&Reestablecer a la disposición predeterminada"
+msgstr "&Restablecer la distribución predeterminada"
 
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:372
@@ -863,7 +863,7 @@ msgstr "&Ortografía"
 #. MENU_LABEL_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:402
 msgid "&Standard"
-msgstr "&Vista normal"
+msgstr "E&stándar"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:404
@@ -3130,7 +3130,7 @@ msgstr "Inserta los contenidos del portapapeles sin formato"
 #. DLG_Options_Label_SpellInternet
 #: po/tmp/ap_String_Id.h.h:1331
 msgid "Internet and &file addresses"
-msgstr "Direcciones de Internet y &ficheros"
+msgstr "Direcciones de Internet y &archivos"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1333
@@ -3332,7 +3332,7 @@ msgstr "Listas para "
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1416
 msgid "Lock the layout of the current toolbars"
-msgstr "Bloquea la disposición de las barras de herramientas actuales"
+msgstr "Bloquea la distribución de las barras de herramientas actuales"
 
 #. AUTOTEXT_CLOSING_4
 #: po/tmp/ap_String_Id.h.h:1418
@@ -4062,7 +4062,7 @@ msgstr "Re&vertir"
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h.h:1725
 msgid "Recent &Files"
-msgstr "&Ficheros recientes"
+msgstr "&Archivos recientes"
 
 #. TOOLBAR_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1727
@@ -4600,7 +4600,7 @@ msgstr "Mostrar u ocultar la barra de tablas"
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:1950
 msgid "Show the AbiWord splash screen on application startup"
-msgstr "Mostrar la pantalla de inicio de AbiWord al inicio de la aplicación"
+msgstr "Mostrar la pantalla de bienvenida de AbiWord al inicio de la aplicación"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1952
@@ -4895,7 +4895,7 @@ msgstr "&Tabla"
 #: po/tmp/ap_String_Id.h.h:2079
 #, c-format
 msgid "Tab Stop [%s]"
-msgstr "Parada de tabulación [%s]"
+msgstr "Posición de tabulación [%s]"
 
 #. DLG_Tab_Label_TabPosition
 #: po/tmp/ap_String_Id.h.h:2081
@@ -5499,7 +5499,7 @@ msgstr "Todos los documentos"
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:51
 msgid "All Image Files"
-msgstr "Todos los ficheros de imagen"
+msgstr "Todos los archivos de imagen"
 
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:53
@@ -5509,7 +5509,7 @@ msgstr "Permitir marcado adicional en espacio de nombres AWML"
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h.h:55
 msgid "Amharic (Ethiopia)"
-msgstr "Amharico (Etiopía)"
+msgstr "Amhárico (Etiopía)"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:59
@@ -6950,22 +6950,22 @@ msgstr "_Sí"
 #. DLG_Unit_cm
 #: po/tmp/xap_String_Id.h.h:698
 msgid "cm"
-msgstr "cm"
+msgstr "centímetros"
 
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:700
 msgid "inch"
-msgstr "pulgada"
+msgstr "pulgadas"
 
 #. DLG_Unit_mm
 #: po/tmp/xap_String_Id.h.h:702
 msgid "mm"
-msgstr "mm"
+msgstr "milímetros"
 
 #. DLG_Unit_pico
 #: po/tmp/xap_String_Id.h.h:704
 msgid "pica"
-msgstr "pica"
+msgstr "picas"
 
 #. DLG_Unit_points
 #: po/tmp/xap_String_Id.h.h:706

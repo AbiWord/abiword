@@ -5476,7 +5476,7 @@ msgstr "Norve¹ki (Bokmal)"
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:395
 msgid "Norwegian Nynorsk"
-msgstr "Norve¹ki (Nyorsk)"
+msgstr "Norve¹ki (Nynorsk)"
 
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:397

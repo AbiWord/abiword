@@ -4320,7 +4320,7 @@ msgstr "Norueguês Bokmal"
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:297
 msgid "Norwegian Nynorsk"
-msgstr "Norueguês Nyorsk"
+msgstr "Norueguês Nynorsk"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h.h:299
