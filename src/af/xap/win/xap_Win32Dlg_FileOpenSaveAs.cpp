@@ -262,6 +262,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	case XAP_DIALOG_ID_FILE_OPEN:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
+		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
 
@@ -285,6 +286,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.hInstance      = pWin32App->getInstance();
 		ofn.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_PICTURE);
 		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookInsertPicProc;
+		ofn.nFilterIndex   = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLETEMPLATE;
 		ofn.Flags |= OFN_ENABLEHOOK;
@@ -292,7 +294,8 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	case XAP_DIALOG_ID_FILE_IMPORT:
-		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+		ofn.lpstrTitle   = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
