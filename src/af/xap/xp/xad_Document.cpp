@@ -43,6 +43,9 @@ AD_Document::AD_Document() :
 	m_szFilename(NULL),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
 	m_lastSavedTime(time(NULL)),
+	m_lastOpenedTime(time(NULL)),
+    m_iEditTime(0),
+    m_iVersion(0),
 	m_bPieceTableChanging(false)
 {	// TODO: clear the ignore list
 	

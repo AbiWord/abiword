@@ -75,6 +75,15 @@ public:
 	 */
 	UT_uint32       getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
 	time_t          getLastSavedTime() const {return m_lastSavedTime;}
+
+	UT_uint32       getTimeSinceOpen () const { return (time(NULL) - m_lastOpenedTime); }
+	time_t          getLastOpenedTime() const {return m_lastOpenedTime;}
+
+	UT_uint32       getEditTime()const {return (m_iEditTime + (time(NULL) - m_lastOpenedTime));}
+	void            setEditTime(UT_uint32 t) {m_iEditTime = t;}
+
+	void            setDocVersion(UT_uint32 i){m_iVersion = i;}
+	UT_uint32       getDocVersion() const {return m_iVersion;}
 	
 	void					setEncodingName(const char * szEncodingName);
 	const char *			getEncodingName() const;
@@ -91,6 +100,9 @@ protected:
 	UT_String		m_szEncodingName;
 
 	time_t          m_lastSavedTime;
+	time_t          m_lastOpenedTime;
+	UT_uint32       m_iEditTime;     // previous edit time (up till open)
+	UT_uint32       m_iVersion;
 	bool			m_bPieceTableChanging;
 };
 
