@@ -151,10 +151,7 @@ ABI_XAP_INCS=	/config						\
 		/af/xap/xp		/af/xap/$(ABI_NATIVE)	\
 		/af/ev/xp		/af/ev/$(ABI_NATIVE)	\
 		/af/util/xp		/af/util/$(ABI_NATIVE)	\
-		/af/gr/xp		/af/gr/$(ABI_NATIVE)	\
-		/wp/impexp/xp		/wp/ap/xp
-
-# TODO ACK HACK CHOKE! The line above should NOT be including wp stuff here
+		/af/gr/xp		/af/gr/$(ABI_NATIVE)
 
 ifdef ABI_OPT_GNOME
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
