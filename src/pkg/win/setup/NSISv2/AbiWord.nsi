@@ -1,5 +1,5 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
-;FileDesc       Primary NSIS installer script
+;FileDesc       Primary NSIS v2 installer script
 ;Author         Kenneth J. Davis <jeremyd@computer.org> (2002,2003)
 ;Copyright      Alan Horkan <horkana@tcd.ie> (2002)
 ;               Michael D. Pritchett <mpritchett@attglobal.net> (2002)
@@ -240,6 +240,16 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 !include "abi_lng_Spanish.nsh"
 !include "abi_lng_TradChinese.nsh"
 ;!include "abi_lng_Ukrainian.nsh"
+
+
+VIProductVersion "${VERSION}.0"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "${PRODUCT}"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "http://www.abisource.com/"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" ""
+VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "AbiWord, AbiSource are trademarks of SourceGear Inc."
+VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© AbiSource"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" ""
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
 
 
 ; Install types 
