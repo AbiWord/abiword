@@ -1502,7 +1502,10 @@ abi_widget_turn_on_cursor(AbiWidget * abi)
 	{
 		g_return_if_fail (abi != 0);
 		FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
-		pV->focusChange(AV_FOCUS_HERE);
+		if(pV)
+		{
+			pV->focusChange(AV_FOCUS_HERE);
+		}
 	}
 }
 
@@ -1710,7 +1713,11 @@ abi_widget_draw (AbiWidget * w)
 		// obtain a valid view
 		g_return_if_fail (w != NULL);
 		FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
-		view->draw();
+		UT_ASSERT(view);
+		if(view)
+		{
+			view->draw();
+		}
 	}
 }
 
@@ -1729,6 +1736,10 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
   g_return_val_if_fail ( fname != NULL, FALSE );
 
   FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+  if(view == NULL)
+  {
+	  return false;
+  }
   PD_Document * doc = view->getDocument () ;
 
   // start out saving as abiword format by default

@@ -107,8 +107,21 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 	    // open it. in those cases, we do not wish to overwrite the
 	    // existing documents, but instead open a new blank document. 
 	    // this fixes bug 1668 - DAL
-	    if ( UT_IE_FILENOTFOUND == errorCode )
-	      errorCode = pNewDoc->saveAs(szFilename, ieft);
+
+		UT_DEBUGMSG(("Could not open the document - create new istead error code is %d \n", errorCode));
+	    if ( UT_IE_FILENOTFOUND == errorCode ||  UT_INVALIDFILENAME == errorCode  )
+		{
+			UT_DEBUGMSG(("File NOT found!! Create new doc \n"));
+			if( UT_IE_FILENOTFOUND == errorCode)
+			{
+				errorCode = pNewDoc->saveAs(szFilename, ieft);
+			}
+			else
+			{
+				errorCode = 0;
+			}
+			UT_DEBUGMSG(("errocode after save is \n",errorCode));
+		}
 	  }
 	if (!errorCode)
 	  goto ReplaceDocument;
@@ -119,7 +132,7 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
-
+	UT_DEBUGMSG(("Doing replace document \n"));
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
 	return UT_OK;
