@@ -372,7 +372,7 @@ void XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		move = 1;
 		break;
         case GDK_Return:
-	        g_signal_emit_stop_by_name((G_OBJECT(m_windowMain)),
+	        gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
 					     "key_press_event");
 			event_OK();
 		break;
@@ -389,8 +389,8 @@ void XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 			iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 		}
 
-		g_signal_emit_stop_by_name((G_OBJECT(m_windowMain)),
-									 "key_press_event");
+		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
+					     "key_press_event");
 	}
 }
 
@@ -424,7 +424,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
   The text extraction code was stolen from ev_GnomeUnixToolbar.
 */
 
-	gchar * buffer = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
+	const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
 
 	iDrawSymbol->setSelectedFont( (char *) buffer);
 	iDrawSymbol->draw();
@@ -469,7 +469,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * tmp = NULL;
 
-	m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
+	m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
         
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
@@ -684,8 +684,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	// Look for "changed" signal on the entry part of the combo box.
 	// Code stolen from ev_UnixGnomeToolbar.cpp
 	GtkEntry * blah = GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry);
-	GtkEditable * yuck = GTK_EDITABLE(blah);
-	g_signal_connect(G_OBJECT(&yuck->widget),
+	g_signal_connect(G_OBJECT(&blah->widget),
 					   "changed",
 					   G_CALLBACK(s_new_font),
 					   (gpointer) this);

@@ -100,7 +100,6 @@ protected:
 
 	// these are Glade helper or Glade generated functions
 	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
-	void 					set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);
 	virtual GtkWidget *             constructWindow(void);
 	GtkWidget *                     constructWindowContents(GtkWidget *);
 

@@ -313,7 +313,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 	gtk_widget_show (label);
 	
-	GObject * adjustment = gtk_adjustment_new(1, 1, 200, 1, 5, 0.0);
+	GtkObject * adjustment = gtk_adjustment_new(1, 1, 200, 1, 5, 0.0);
 	spinCopies  = gtk_spin_button_new( GTK_ADJUSTMENT(adjustment), 1, 0 );
 	//gtk_scale_set_digits(GTK_SCALE(spinCopies), 0);
 	gtk_box_pack_start (GTK_BOX (hbox), spinCopies, FALSE, TRUE, 0);
@@ -352,8 +352,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_widget_show (radioColor);
 	
 	// append the buttons
-	gtk_dialog_append_button ( GTK_DIALOG(window), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-	gtk_dialog_append_button ( GTK_DIALOG(window), GTK_STOCK_PRINT, BUTTON_PRINT ) ;
+	gtk_dialog_add_button ( GTK_DIALOG(window), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	gtk_dialog_add_button ( GTK_DIALOG(window), GTK_STOCK_PRINT, BUTTON_PRINT ) ;
 	
 	// fill a little callback struct to hide some private data pointers in
 	m_callbackData.entry = entryPrint;
@@ -422,11 +422,11 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonEmbedFonts), m_bEmbedFonts);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 	
-	switch ( abiRunModalDialog ( window, pFrame, this, false ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(window), pFrame, this, false ) )
 	  {
 	  case BUTTON_PRINT:
 	    {
-	      m_answer = XAP_Dialog_Print::a_OK
+	      m_answer = XAP_Dialog_Print::a_OK;
 	      break ;
 	    }
 	  default:

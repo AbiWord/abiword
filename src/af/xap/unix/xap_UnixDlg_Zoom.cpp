@@ -122,7 +122,7 @@ gint XAP_UnixDialog_Zoom::s_preview_exposed(GtkWidget * /* widget */,
 					    GdkEventExpose * /* pExposeEvent */,
 					    XAP_UnixDialog_Zoom * dlg)
 {
-  UT_return_if_fail(dlg);
+  UT_return_val_if_fail(dlg, false);
   dlg->event_PreviewAreaExposed();
   return FALSE;
 }
@@ -164,10 +164,10 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
   // HACK : trigger a preview
   _populateWindowData();
 
-  switch ( abiRunModalDialog ( mainWindow, pFrame, this, false )
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, false ) )
     {
     case BUTTON_OK:
-      event_Ok () ; break ;
+      event_OK () ; break ;
     default:
       event_Cancel () ; break ;
     }
@@ -264,7 +264,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   GtkWidget * radiobuttonPageWidth;
   GtkWidget * radiobuttonWholePage;
   GtkWidget * radiobuttonPercent;
-  GObject * spinbuttonPercent_adj;
+  GtkObject * spinbuttonPercent_adj;
   GtkWidget * spinbuttonPercent;
   
   GtkWidget * framePreview;
@@ -372,15 +372,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_container_add (GTK_CONTAINER (padding), drawingareaPreview);
   gtk_widget_set_usize (drawingareaPreview, 149, 10);  	
   
-  hbuttonboxZoom = gtk_hbutton_box_new ();
-  gtk_widget_show (hbuttonboxZoom);
-  gtk_box_pack_start (GTK_BOX (vboxZoom), hbuttonboxZoom, FALSE, TRUE, 0);
-  gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxZoom), GTK_BUTTONBOX_END);
-  gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxZoom), 10);
-  gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxZoom), 85, 24);
-
-  gtk_dialog_append_button(GTK_DIALOG(windowZoom), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_append_button(GTK_DIALOG(windowZoom), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  gtk_dialog_add_button(GTK_DIALOG(windowZoom), GTK_STOCK_OK, BUTTON_OK);
+  gtk_dialog_add_button(GTK_DIALOG(windowZoom), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   
   // the radio buttons
   g_signal_connect(G_OBJECT(radiobutton200),

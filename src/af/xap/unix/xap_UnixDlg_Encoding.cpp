@@ -75,7 +75,7 @@ void XAP_UnixDialog_Encoding::runModal(XAP_Frame * pFrame)
   // Populate the window's data items
   _populateWindowData();
   
-  switch ( abiRunModalDialog ( mainWindow, pFrame, this ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this ) )
     {
     case BUTTON_OK:
       event_Ok (); break;
@@ -85,7 +85,7 @@ void XAP_UnixDialog_Encoding::runModal(XAP_Frame * pFrame)
   abiDestroyWidget ( mainWindow ) ;
 }
 
-void XAP_UnixDialog_Encoding::event_OK(void)
+void XAP_UnixDialog_Encoding::event_Ok(void)
 {
   // Query the list for its selection.
   gint row = _getFromList();
@@ -134,7 +134,7 @@ gint XAP_UnixDialog_Encoding::_getFromList(void)
 	{
 	  // We have a selection but no rows in it...
 	  // funny.
-	  UT_ASSERT_NOT_REACED();
+	  UT_ASSERT_NOT_REACHED();
 	  return -1;
 	}
     }
@@ -162,10 +162,6 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
   // The child of the scrollable area is our list of windows
   GtkWidget *clistWindows;
   
-  // These are the buttons.
-  GtkWidget *buttonOK;
-  GtkWidget *buttonCancel;
-  
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
   windowMain = abiDialogNew ( TRUE, pSS->getValue(XAP_STRING_ID_DLG_UENC_EncTitle) ) ;
@@ -173,8 +169,8 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
   vboxMain = GTK_DIALOG(windowMain)->vbox ;
 
 
-  gtk_dialog_append_button(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_append_button(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  gtk_dialog_add_button(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
+  gtk_dialog_add_button(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   
   labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UENC_EncLabel));
   gtk_widget_show (labelActivate);

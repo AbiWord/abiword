@@ -49,6 +49,13 @@ public:
 
 	void event_Ok ();
 	void event_Cancel ();
+	
+	void event_Return () ;
+
+	static void s_return_hit ( GtkWidget * entry, XAP_UnixDialog_Password * me )
+	  {
+	    me->event_Return () ;
+	  }
 
 	void _constructWindowContents (GtkWidget * container);
 	virtual GtkWidget * _constructWindow ();

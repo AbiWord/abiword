@@ -787,7 +787,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	
 	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
 
-	gchar * buf = gtk_file_selection_get_filename (m_FS);
+	const gchar * buf = gtk_file_selection_get_filename (m_FS);
 
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);

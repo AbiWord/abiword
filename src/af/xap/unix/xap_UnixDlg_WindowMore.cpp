@@ -86,7 +86,7 @@ void XAP_UnixDialog_WindowMore::runModal(XAP_Frame * pFrame)
   // Populate the window's data items
   _populateWindowData();
 
-  switch ( abiRunModalDialog ( mainWindow, pFrame, this, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, false ) )
     {
     case BUTTON_OK:
       event_OK () ; break ;
@@ -180,8 +180,8 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
   windowMain = abiDialogNew (TRUE, pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));  
   vboxMain = GTK_DIALOG(windowMain)->vbox;
   
-  gtk_dialog_append_button(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_append_button(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  gtk_dialog_add_button(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
+  gtk_dialog_add_button(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
   // create contents
 

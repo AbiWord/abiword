@@ -234,10 +234,10 @@ void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)
 	  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), FALSE);
   }	  
 
-  switch ( abiRunModalDialog ( cf, pFrame, this ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this ) )
     {
     case BUTTON_OK:
-      event_OK (); break;
+      event_Ok (); break;
     default:
       event_Cancel (); break;
     }
@@ -305,7 +305,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   GtkWidget * hboxSpinHeight = gtk_hbox_new (FALSE, 0);
   gtk_widget_show(hboxSpinHeight);
 
-  GObject * HeightSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+  GtkObject * HeightSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
   GtkWidget * HeightEntry = gtk_entry_new();
   gtk_widget_show (HeightEntry);
   gtk_box_pack_start (GTK_BOX (hboxSpinHeight), HeightEntry, TRUE, TRUE, 0);
@@ -326,7 +326,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   GtkWidget * hboxSpinWidth = gtk_hbox_new (FALSE, 0);
   gtk_widget_show(hboxSpinWidth);
 
-  GObject * WidthSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+  GtkObject * WidthSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
   GtkWidget * WidthEntry = gtk_entry_new();
   gtk_widget_show (WidthEntry);
   gtk_box_pack_start (GTK_BOX (hboxSpinWidth), WidthEntry, TRUE, TRUE, 0);
@@ -375,8 +375,8 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
   _constructWindowContents ( dialog_vbox1 );
 
-  gtk_dialog_append_button(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_append_button(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
+  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
   mMainWindow = dialog1;
   _connectSignals ();

@@ -46,6 +46,11 @@ void XAP_UnixDialog_Password::event_Ok ()
   setAnswer(XAP_Dialog_Password::a_OK);
 }
 
+void XAP_UnixDialog_Password::event_Return()
+{
+  gtk_dialog_response ( GTK_DIALOG ( mMainWindow ), BUTTON_OK ) ;
+}
+
 void XAP_UnixDialog_Password::event_Cancel ()
 {
   setAnswer(XAP_Dialog_Password::a_Cancel);
@@ -75,7 +80,7 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 
   gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
   
-  switch ( abiRunModalDialog ( cf, pFrame, this, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, false ) )
     {
     case BUTTON_OK:
       event_Ok() ; break ;
@@ -107,7 +112,7 @@ void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
   gtk_widget_grab_focus(password);
 
   g_signal_connect (G_OBJECT(password), "activate",
-		    G_CALLBACK(s_ok_clicked),
+		    G_CALLBACK(s_return_hit),
 		    (gpointer)this);
 
   mTextEntry = password;
@@ -132,8 +137,8 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 
   _constructWindowContents (hbox1);
 
-  gtk_dialog_append_button(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_append_button(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
+  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
   mMainWindow = dialog1;
 

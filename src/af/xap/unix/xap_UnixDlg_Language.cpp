@@ -62,10 +62,10 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
   vboxMain = constructWindowContents(windowLangSelection);
   gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
   
-  gtk_dialog_append_button ( GTK_DIALOG(windowLangSelection),
-			     GTK_STOCK_OK, BUTTON_OK ) ;
-  gtk_dialog_append_button ( GTK_DIALOG(windowLangSelection),
-			     GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+  gtk_dialog_add_button ( GTK_DIALOG(windowLangSelection),
+			  GTK_STOCK_OK, BUTTON_OK ) ;
+  gtk_dialog_add_button ( GTK_DIALOG(windowLangSelection),
+			  GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
   
   return windowLangSelection;
 }
@@ -146,12 +146,12 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
       gtk_clist_select_row(GTK_CLIST(m_pLanguageList), foundAt, 0);
     }
   
-  switch ( abiRunModalDialog ( cf, pFrame, this, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, false ) )
     {
     case BUTTON_OK:
       m_answer = XAP_Dialog_Language::a_OK; break ;
     default:
-      m_answer = XAP_Dialog_Language::a_Cancel; break ;
+      m_answer = XAP_Dialog_Language::a_CANCEL; break ;
     }
   
   if (m_answer == XAP_Dialog_Language::a_OK)

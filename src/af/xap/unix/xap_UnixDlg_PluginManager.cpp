@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#define GTK_ENABLE_BROKEN
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -44,7 +46,7 @@
 static void _errorMessage (XAP_Frame * pFrame, const char * msg)
 {
   // just a little simple error message box
-  UT_return_if_fail(pFrame & msg);
+  UT_return_if_fail(pFrame && msg);
   pFrame->showMessageBox (msg,
 			  XAP_Dialog_MessageBox::b_O,
 			  XAP_Dialog_MessageBox::a_OK);
@@ -327,7 +329,7 @@ void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
   gtk_clist_select_row(GTK_CLIST(m_clist), 0, 0);
   _refreshAll();
   
-  abiRunModalDialog (cf, pFrame, this);
+  abiRunModalDialog (GTK_DIALOG(cf), pFrame, this);
 }
 
 /*****************************************************************/
@@ -531,7 +533,7 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
   gtk_widget_show (dialog_vbox1);
   gtk_container_set_border_width (GTK_CONTAINER (dialog_vbox1), 3);
   
-  gtk_dialog_append_button(GTK_DIALOG(windowPlugins), GTK_STOCK_CLOSE, BUTTON_CLOSE);
+  gtk_dialog_add_button(GTK_DIALOG(windowPlugins), GTK_STOCK_CLOSE, BUTTON_CANCEL);
 
   m_windowMain = windowPlugins;
   _constructWindowContents (dialog_vbox1);
