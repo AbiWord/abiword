@@ -2999,6 +2999,8 @@ UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			_moveInsPtToPage (pPage);
 		}
 
+		notifyListeners(AV_CHG_MOTION);
+
 		break;
 	}
 	case AP_JUMPTARGET_LINE:
@@ -3046,6 +3048,9 @@ UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			PT_DocPosition dp = frun->getBlockOffset () + fblock->getPosition ();
 			moveInsPtTo (dp);
 		}
+	
+		notifyListeners(AV_CHG_MOTION);
+		
 		break;
 	case AP_JUMPTARGET_PICTURE:
 		// TODO
