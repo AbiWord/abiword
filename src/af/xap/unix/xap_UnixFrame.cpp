@@ -70,30 +70,9 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 
-	// TODO I've commented out the following block and the
-	// TODO call to draw() a little further down, since it
-	// TODO seems to cause excessive flashing -- a flash of
-	// TODO white before we redraw the page-view.  When we
-	// TODO were just doing a normal-view, this was not
-	// TODO noticable, but it is now.  The call to draw()
-	// TODO also caused us to completely redraw the page,
-	// TODO but this is unnecessary since we'll get one or
-	// TODO two (don't ask me why) expose events shortly.
-	// TODO I've left the code here, until we've verified
-	// TODO this doesn't mess anything up -- Jeff 1/4/99
-//		GdkColor clr;
-//		clr.red = 255 << 8;
-//		clr.green = 255 << 8;
-//		clr.blue = 255 << 8;
-//		GdkColormap*  pColormap = gdk_colormap_get_system();
-//		gdk_color_alloc(pColormap, &clr);
-//		gdk_window_set_background(w->window, &clr);
-	
 	if (pView)
-	{
 		pView->setWindowSize(e->width, e->height);
-//		pView->draw();
-	}
+
 	return 1;
 }
 	
