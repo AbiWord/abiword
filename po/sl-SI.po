@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
-"POT-Creation-Date: 2001-07-15 15:54+0200\n"
+"POT-Creation-Date: 2001-07-15 15:30+0200\n"
 "PO-Revision-Date: 2000-07-07 12:30+0200\n"
 "Last-Translator: Andraz Tori <andraz.tori1@guest.arnes.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2214,7 +2214,7 @@ msgstr "Aktiviraj:"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:33
 msgid "Active Plugins"
-msgstr "Aktiviraj vtiènike"
+msgstr "Aktivni vtièniki"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:35
@@ -2359,7 +2359,7 @@ msgstr "Tradicionalen kitajski, BIG5"
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:95
 msgid "Chinese Traditional, EUC-TW"
-msgstr "Tradicionalek kitajski, EUC-TW"
+msgstr "Tradicionalen kitajski, EUC-TW"
 
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:97
@@ -2540,17 +2540,17 @@ msgstr "Od: "
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Georgian"
-msgstr ""
+msgstr "Gruzijski"
 
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:175
 msgid "Georgian, Academy"
-msgstr ""
+msgstr "Gruzijski, univerzitetni"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:177
 msgid "Georgian, PS"
-msgstr ""
+msgstr "Gruzijski, PS"
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:179
