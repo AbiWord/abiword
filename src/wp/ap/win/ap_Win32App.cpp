@@ -160,40 +160,8 @@ bool AP_Win32App::initialize(void)
 	IE_ImpExp_RegisterXP ();
 
 	//////////////////////////////////////////////////////////////////
-	// initializes the spell checker.
-	//////////////////////////////////////////////////////////////////
-	
-	{
-#ifdef AW_WIN32_USE_NEW_SPELL_CHECKER
-		SpellManager::instance().requestDictionary(xap_encoding_manager_get_language_iso_name());
-#else
-		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
-		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
-
-		const char * szSpellCheckWordList = NULL;
-		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
-		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
-		
-		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
-		UT_ASSERT(szPathname);
-		
-		sprintf(szPathname,"%s%s%s",
-				szISpellDirectory,
-				((szISpellDirectory[strlen(szISpellDirectory)-1]=='\\') ? "" : "\\"),
-				szSpellCheckWordList);
-
-		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
-		SpellCheckInit(szPathname);
-		free(szPathname);
-#endif	
-		// we silently go on if we cannot load it....
-	}
-	
-	//////////////////////////////////////////////////////////////////
 	// load the dialog and message box strings
 	//////////////////////////////////////////////////////////////////
-	
 	{
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
@@ -241,6 +209,8 @@ bool AP_Win32App::initialize(void)
 			free(szPathname);
 		}
 	}
+
+
 	// Now we have the strings loaded we can populate the field names correctly
 	int i;
 	
@@ -1007,6 +977,36 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 		UpdateWindow(hwnd);
 	}
 
+	//////////////////////////////////////////////////////////////////
+	// initializes the spell checker.
+	//////////////////////////////////////////////////////////////////
+	
+	{
+#ifdef AW_WIN32_USE_NEW_SPELL_CHECKER
+		SpellManager::instance().requestDictionary(xap_encoding_manager_get_language_iso_name());
+#else
+		const char * szISpellDirectory = NULL;
+		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
+		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
+
+		const char * szSpellCheckWordList = NULL;
+		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
+		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
+		
+		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
+		UT_ASSERT(szPathname);
+		
+		sprintf(szPathname,"%s%s%s",
+				szISpellDirectory,
+				((szISpellDirectory[strlen(szISpellDirectory)-1]=='\\') ? "" : "\\"),
+				szSpellCheckWordList);
+
+		UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
+		SpellCheckInit(szPathname);
+		free(szPathname);
+#endif	
+		// we silently go on if we cannot load it....
+	}
 	return;
 }
 
