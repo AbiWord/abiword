@@ -658,6 +658,15 @@ else
 ABI_OPTIONS+=Pspell:Off
 endif
 
+# Perl scripting support
+ifdef ABI_OPT_JS
+EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts)
+ABI_OPTIONS+=Scripting:On
+CFLAGS += -DABI_OPT_JS $(shell perl -MExtUtils::Embed -e ccopts) -Ubool
+else
+ABI_OPTIONS+=Scripting:Off
+endif
+
 # conditionally enable stl-based implementations of our
 # UT_XXX classes. We may need to link against certain
 # libraries, but we don't on linux. Add these as necessary.

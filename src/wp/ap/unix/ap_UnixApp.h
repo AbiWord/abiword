@@ -40,6 +40,11 @@
 #define XAP_UNIXBASEAPP XAP_UnixApp
 #endif
 
+#ifdef ABI_OPT_JS
+#include <EXTERN.h>
+#include <perl.h>
+#endif
+
 class XAP_StringSet;
 class AV_View;
 
@@ -47,7 +52,7 @@ class AP_UnixApp : public XAP_UNIXBASEAPP
 {
 public:
 	AP_UnixApp(XAP_Args * pArgs, const char * szAppName);
-	virtual ~AP_UnixApp(void);
+	virtual ~AP_UnixApp();
 
 	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
@@ -74,7 +79,7 @@ public:
 
 	/*!
 	  Gets the View Selection
-	  /return The View currently selected.
+	  \return The View currently selected.
 	*/
 	inline virtual AV_View *                        getViewSelection(void)
 	  { return m_pViewSelection; }
@@ -87,6 +92,10 @@ public:
 	static int main (const char * szAppName, int argc, char ** argv);
 
 	void                                             catchSignals(int sig_num);
+#ifdef ABI_OPT_JS
+	void											perlEvalFile(const char * filename);
+	PerlInterpreter *								getPerlInterp();
+#endif
 
 protected:
 
@@ -103,6 +112,11 @@ protected:
 	XAP_Frame *				m_pFrameSelection;
 	UT_ByteBuf				m_selectionByteBuf;
 	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
+
+private: // JCA: Why in the hell we have so many (any) protected variable?
+#ifdef ABI_OPT_JS
+	static PerlInterpreter *m_pPerlInstance;
+#endif
 };
 
 // HACK What follows is an ugly hack. It is neccessitated by the 

@@ -34,7 +34,7 @@ Heath D. Carr <heath@abisource.com>
 Chema Celorio <chema@celorio.com>               Help w/ Gnome-Print
 Allan Clark <shark@blueyonder.co.uk>            StringPool fixes, Find algorithm
 John L. Clark <jlc6@po.cwru.edu>		XHMTL Export fixes
-Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
+Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter, perl bindings, misc. fixes
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Andrew Dunbar <falconsquire@start.com.au>	UTF-8 text recognition
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
@@ -76,6 +76,7 @@ Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk>  GTK Window Autosize
 Mike Meyer <mwm@mired.org>                      ParseAFM isspace() fix
+Paolo Molaro <lupus@lettere.unipd.it>		Perl bindings
 James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integration
 David Nay                                       PalmDoc exporter
 Tom Newton <Tom.Newton@gtl.com>
@@ -157,6 +158,7 @@ Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
 Javier Yáñez <javier@cibal.es>                  Spanish
+Joaquín Cuenca Abela <cuenca@celium.net>	Spanish
 hj <huangj@citiz.net>                           Chinese (zh-CN)
 John Profic <profic@linux.ru.net>               Russian
 Vadim Frolov <vadim@krug.uch.net>               Ukrainian (uk-UA)

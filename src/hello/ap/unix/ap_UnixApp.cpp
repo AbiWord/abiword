@@ -18,7 +18,8 @@
  */
 
 #ifdef ABI_OPT_JS
-#include <js.h>
+#include <EXTERN.h>
+#include <perl.h>
 #endif /* ABI_OPT_JS */
 
 #include <stdio.h>
@@ -41,7 +42,12 @@
 
 #define DELETEP(p)      do { if (p) delete(p); (p)=NULL; } while (0)
 
+PerlInterpreter *AP_UnixApp::m_pPerlInstance = 0;
+
 static bool s_createDirectoryIfNecessary(const char * szDir);
+#ifdef ABI_OPT_JS
+static void s_perlEvalFile(PerlInterpreter *my_perl, const char *filename);
+#endif
 
 AP_UnixApp::AP_UnixApp(XAP_Args* pArgs, const char* szAppName)
 	: XAP_UnixApp(pArgs, szAppName)
@@ -49,33 +55,50 @@ AP_UnixApp::AP_UnixApp(XAP_Args* pArgs, const char* szAppName)
 	m_pStringSet = NULL;
 }
 
-AP_UnixApp::~AP_UnixApp(void)
+AP_UnixApp::~AP_UnixApp()
 {
 	DELETEP(m_pStringSet);
+#ifdef ABI_OPT_JS
+	if (m_pPerlInstance != 0)
+	{
+		perl_destruct(m_pPerlInstance);
+		perl_free(m_pPerlInstance);
+	}
+#endif
 }
 
 static bool s_createDirectoryIfNecessary(const char * szDir)
 {
-        struct stat statbuf;
+	struct stat statbuf;
 
-        if (stat(szDir,&statbuf) == 0)
-                // if it exists
-        {
-                if (S_ISDIR(statbuf.st_mode))
-                // and is a directory
-                        return true;
-
-                UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-                return false;
-        }
-
-        if (mkdir(szDir,0700) == 0)
-                return true;
-
-
-        UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-        return false;
+	if (stat(szDir,&statbuf) == 0)
+		// if it exists
+	{
+		if (S_ISDIR(statbuf.st_mode))
+			// and is a directory
+			return true;
+		
+		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
+		return false;
+	}
+	
+	if (mkdir(szDir,0700) == 0)
+		return true;
+	
+	
+	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
+	return false;
 }
+
+#ifdef ABI_OPT_JS
+static void s_perlEvalFile(PerlInterpreter *my_perl, const char *filename)
+{
+	char *argv[] = { "", filename };
+	int argc = 2;
+	perl_parse(my_perl, NULL, argc, argv, (char **)NULL);
+	perl_run(my_perl);
+}
+#endif
 
 bool AP_UnixApp::initialize(void)
 {
@@ -174,7 +197,8 @@ int AP_UnixApp::main(const char* szAppName, int argc, char** argv)
 			i++;
 			
 #ifdef ABI_OPT_JS
-			js_eval_file(pMyUnixApp->getInterp(), argv[i]);
+			s_perlEvalFile(pMyUnixApp->getPerlInterp(), argv[i]);
+//			js_eval_file(pMyUnixApp->getInterp(), argv[i]);
 #endif /* ABI_OPT_JS */
 		}
 		else
@@ -214,3 +238,15 @@ bool	AP_UnixApp::getCurrentSelection(const char** formatList,
 					const char **pszFormatFound){}
 void AP_UnixApp::cacheCurrentSelection(AV_View *){}
 
+#ifdef ABI_OPT_JS
+PerlInterpreter *AP_UnixApp::getPerlInterp()
+{
+	if (m_pPerlInstance == 0)
+	{
+		m_pPerlInstance = perl_alloc();
+		perl_construct(m_pPerlInstance);
+	}
+
+	return m_pPerlInstance;
+}
+#endif

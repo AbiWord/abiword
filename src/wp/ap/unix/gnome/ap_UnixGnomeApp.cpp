@@ -22,8 +22,9 @@
 *****************************************************************/
 
 #ifdef ABI_OPT_JS
-#include <js.h>
-#endif /* ABI_OPT_JS */
+#include <EXTERN.h>
+#include <perl.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -263,7 +264,7 @@ bool AP_UnixGnomeApp::parseCommandLine(void)
 #ifdef ABI_OPT_JS
 	if (script)
 	{
-		// By now, do nothing (we don't have script support right now)
+		perlEvalFile(script);
 	}
 #endif
 

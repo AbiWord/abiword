@@ -94,9 +94,9 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     GtkWidget * mainWindow = _constructWindow();
     UT_ASSERT(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	// save for use with event
-	m_pFrame = pFrame;
+    connectFocus(GTK_WIDGET(mainWindow),pFrame);
+    // save for use with event
+    m_pFrame = pFrame;
 
     // Populate the window's data items
     _populateWindowData();
@@ -121,32 +121,32 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     gtk_grab_add(mainWindow);
 
     // Run into the GTK event loop for this window.
-	do {
-		gtk_main();
-
-		switch ( m_answer )
-		{
-		case AP_Dialog_Options::a_OK:
-			_storeWindowData();
-			break;
-
-		case AP_Dialog_Options::a_APPLY:
-			UT_DEBUGMSG(("Applying changes\n"));
-			_storeWindowData();
-			break;
-
-		case AP_Dialog_Options::a_CANCEL:
-			break;
-
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		};
-
-	} while ( m_answer == AP_Dialog_Options::a_APPLY );	
+    do {
+	gtk_main();
 	
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	switch ( m_answer )
+	{
+	case AP_Dialog_Options::a_OK:
+	    _storeWindowData();
+	    break;
+	    
+	case AP_Dialog_Options::a_APPLY:
+	    UT_DEBUGMSG(("Applying changes\n"));
+	    _storeWindowData();
+	    break;
+	    
+	case AP_Dialog_Options::a_CANCEL:
+	    break;
+	    
+	default:
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    break;
+	};
+	
+    } while ( m_answer == AP_Dialog_Options::a_APPLY );	
+    
+    if (mainWindow && GTK_IS_WIDGET(mainWindow))
+	gtk_widget_destroy(mainWindow);
 }
 
 void AP_UnixDialog_Options::event_clistClicked (int row, int col)
@@ -317,11 +317,11 @@ void AP_UnixDialog_Options::event_WindowDelete(void)
 }
 
 /*****************************************************************/
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
-        do {												\
+#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)			\
+        do {							\
 	        gtk_signal_connect(GTK_OBJECT(w), "activate",	\
                 GTK_SIGNAL_FUNC(s_menu_item_activate),		\
-                (gpointer) this);							\
+                (gpointer) this);				\
         } while (0)
 
 GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)

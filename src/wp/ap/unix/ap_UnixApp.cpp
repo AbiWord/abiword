@@ -29,6 +29,11 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+#ifdef ABI_OPT_JS
+#include <EXTERN.h>
+#include <perl.h>
+#endif
+
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
@@ -79,6 +84,10 @@
 
 /*****************************************************************/
 
+#ifdef ABI_OPT_JS
+PerlInterpreter *AP_UnixApp::m_pPerlInstance = 0;
+#endif
+
 /*!
   Construct an AP_UnixApp.
   /param pArgs Arguments from command line
@@ -86,17 +95,15 @@
 	Currently always AbiWord (I think).
 */
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
-    : XAP_UNIXBASEAPP(pArgs,szAppName)
+    : XAP_UNIXBASEAPP(pArgs,szAppName),
+	  m_pStringSet(0),
+	  m_pClipboard(0),
+	  m_bHasSelection(false),
+	  m_bSelectionInFlux(false),
+	  m_pViewSelection(0),
+	  m_pFrameSelection(0),
+	  m_cacheSelectionView(0)
 {
-    m_pStringSet = NULL;
-    m_pClipboard = NULL;
-    
-    m_bHasSelection = false;
-    m_bSelectionInFlux = false;
-    m_cacheDeferClear = false;
-    m_pViewSelection = NULL;
-    m_pFrameSelection = NULL;
-    m_cacheSelectionView = NULL;
 }
 
 /*!
@@ -109,6 +116,14 @@ AP_UnixApp::~AP_UnixApp(void)
     
     DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
+
+#ifdef ABI_OPT_JS
+ 	if (m_pPerlInstance != 0)
+ 	{
+ 		perl_destruct(m_pPerlInstance);
+ 		perl_free(m_pPerlInstance);
+ 	}
+#endif
 }
 
 /*!
@@ -126,27 +141,68 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
     
     if (stat(szDir,&statbuf) == 0)								// if it exists
     {
-	if (S_ISDIR(statbuf.st_mode))							// and is a directory
-	    return true;
+		if (S_ISDIR(statbuf.st_mode))							// and is a directory
+			return true;
 
-	UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-	return false;
+		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
+		return false;
     }
     
     if (mkdir(szDir,0700) == 0)
-	return true;
+		return true;
     
     
     UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
     return false;
 }	
 
+#ifdef ABI_OPT_JS
+void AP_UnixApp::perlEvalFile(const char* filename)
+{
+	char * code = g_strdup_printf("do \"%s\"", filename);
+	getPerlInterp();
+	perl_eval_pv(code, TRUE);
+	g_free(code);
+}
+
+#ifdef __cplusplus
+#  define EXTERN_C extern "C"
+#else
+#  define EXTERN_C extern
+#endif
+
+EXTERN_C void boot_DynaLoader (CV* cv);
+EXTERN_C void boot_abi (CV* cv);
+
+static void 
+xs_init () {
+	char *file = __FILE__;
+	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+	/* we want to link to the module code, but until it's stable
+	it's better to have it dynamically loaded...
+	newXS("abi::boot_abi", boot_abi, file);*/
+}
+
+PerlInterpreter *AP_UnixApp::getPerlInterp()
+{
+	if (m_pPerlInstance == 0)
+	{
+		char *argv[] = { "", "-Mabi", "-e", "0" };
+		m_pPerlInstance = perl_alloc();
+		perl_construct(m_pPerlInstance);
+		perl_parse(m_pPerlInstance, xs_init, 4, argv, (char **)NULL);
+	}
+
+	return m_pPerlInstance;
+}
+#endif
+
 /*!
   Initailize the application.  This involves preferences, keybindings,
   toolbars, graphics, spelling and everything else.  
-  /return True if successfully initalized, False otherwise. if false
+  \return True if successfully initalized, False otherwise. if false
   the app is unusable, and loading should not continue.   
-  /bug This function is 136 lines - way too long.  Needs to be
+  \bug This function is 136 lines - way too long.  Needs to be
   refactored, to use a buzzword.  
 */
 bool AP_UnixApp::initialize(void)
@@ -179,7 +235,7 @@ bool AP_UnixApp::initialize(void)
     UT_ASSERT(m_pToolbarActionSet);
     
     if (! XAP_UNIXBASEAPP::initialize())
-	return false;
+		return false;
     
     //////////////////////////////////////////////////////////////////
     // initializes the spell checker.
@@ -194,50 +250,50 @@ bool AP_UnixApp::initialize(void)
     //////////////////////////////////////////////////////////////////
 	
     {
-	// assume we will be using the builtin set (either as the main
-	// set or as the fallback set).
+		// assume we will be using the builtin set (either as the main
+		// set or as the fallback set).
 	    
-	AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
-	UT_ASSERT(pBuiltinStringSet);
-	m_pStringSet = pBuiltinStringSet;
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
+		UT_ASSERT(pBuiltinStringSet);
+		m_pStringSet = pBuiltinStringSet;
 	    
-	// see if we should load an alternative set from the disk
+		// see if we should load an alternative set from the disk
 	    
-	const char * szDirectory = NULL;
-	const char * szStringSet = NULL;
+		const char * szDirectory = NULL;
+		const char * szStringSet = NULL;
 	    
-	if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-			      (const XML_Char**)&szStringSet))
-	       && (szStringSet)
-	       && (*szStringSet)
-	       && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
-	{
-	    getPrefsValueDirectory(true,
-				   (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
-				   (const XML_Char**)&szDirectory);
-	    UT_ASSERT((szDirectory) && (*szDirectory));
+		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
+							  (const XML_Char**)&szStringSet))
+			   && (szStringSet)
+			   && (*szStringSet)
+			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+		{
+			getPrefsValueDirectory(true,
+								   (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
+								   (const XML_Char**)&szDirectory);
+			UT_ASSERT((szDirectory) && (*szDirectory));
 
-	    UT_String szPathname = szDirectory;
-	    if (szDirectory[szPathname.size()-1]!='/')
-	      szPathname += "/";
-	    szPathname += szStringSet;
-	    szPathname += ".strings";
+			UT_String szPathname = szDirectory;
+			if (szDirectory[szPathname.size()-1]!='/')
+				szPathname += "/";
+			szPathname += szStringSet;
+			szPathname += ".strings";
 		
-	    AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
-	    UT_ASSERT(pDiskStringSet);
+			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
+			UT_ASSERT(pDiskStringSet);
 		
-	    if (pDiskStringSet->loadStringsFromDisk(szPathname.c_str()))
-	    {
-		pDiskStringSet->setFallbackStringSet(m_pStringSet);
-		m_pStringSet = pDiskStringSet;
-		UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname.c_str()));
-	    }
-	    else
-	    {
-		DELETEP(pDiskStringSet);
-		UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname.c_str()));
-	    }
-	}
+			if (pDiskStringSet->loadStringsFromDisk(szPathname.c_str()))
+			{
+				pDiskStringSet->setFallbackStringSet(m_pStringSet);
+				m_pStringSet = pDiskStringSet;
+				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname.c_str()));
+			}
+			else
+			{
+				DELETEP(pDiskStringSet);
+				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname.c_str()));
+			}
+		}
     }
 	
     // Now we have the strings loaded we can populate the field names correctly
@@ -245,14 +301,14 @@ bool AP_UnixApp::initialize(void)
 	
     for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
     {
-	(&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
-	UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
+		(&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
+		UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
     }
 
     for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
     {
-	(&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
-	UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
+		(&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
+		UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
     }
 
     //////////////////////////////////////////////////////////////////
@@ -269,7 +325,7 @@ XAP_Frame * AP_UnixApp::newFrame(void)
     AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
 
     if (pUnixFrame)
-	pUnixFrame->initialize();
+		pUnixFrame->initialize();
 
     return pUnixFrame;
 }
@@ -285,7 +341,7 @@ XAP_Frame * AP_UnixApp::newFrame(void)
 bool AP_UnixApp::shutdown(void)
 {
     if (m_prefs->getAutoSavePrefs())
-	m_prefs->savePrefsFile();
+		m_prefs->savePrefsFile();
 
     return true;
 }
@@ -304,19 +360,19 @@ bool AP_UnixApp::shutdown(void)
   \todo support meaningful return values.
 */
 bool AP_UnixApp::getPrefsValueDirectory(bool bAppSpecific,
-					const XML_Char * szKey, const XML_Char ** pszValue) const
+										const XML_Char * szKey, const XML_Char ** pszValue) const
 {
     if (!m_prefs)
-	return false;
+		return false;
 
     const XML_Char * psz = NULL;
     if (!m_prefs->getPrefsValue(szKey,&psz))
-	return false;
+		return false;
 
     if (*psz == '/')
     {
-	*pszValue = psz;
-	return true;
+		*pszValue = psz;
+		return true;
     }
 
     const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
@@ -377,9 +433,9 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
     IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
     if (pExpRtf)
     {
-	pExpRtf->copyToBuffer(pDocRange,&bufRTF);
-	DELETEP(pExpRtf);
-	UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",bufRTF.getLength()));
+		pExpRtf->copyToBuffer(pDocRange,&bufRTF);
+		DELETEP(pExpRtf);
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",bufRTF.getLength()));
     }
 
     // create raw 8bit text buffer to put on the clipboard
@@ -387,9 +443,9 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
     IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
     if (pExpText)
     {
-	pExpText->copyToBuffer(pDocRange,&bufTEXT);
-	DELETEP(pExpText);
-	UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",bufTEXT.getLength()));
+		pExpText->copyToBuffer(pDocRange,&bufTEXT);
+		DELETEP(pExpText);
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",bufTEXT.getLength()));
     }
 
     // NOTE: this clearData() will actually release our ownership of
@@ -400,9 +456,9 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
     // m_pClipboard->clearData(true,false);
 	
     if (bufRTF.getLength() > 0)
-	m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
+		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
     if (bufTEXT.getLength() > 0)
-	m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
+		m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
 
     return;
 }
@@ -414,9 +470,9 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
   doesn't - hvv.
 */
 static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
-					     AP_CLIPBOARD_STRING,
-					     AP_CLIPBOARD_TEXTPLAIN_8BIT,
-					     0 /* must be last */ };
+											 AP_CLIPBOARD_STRING,
+											 AP_CLIPBOARD_TEXTPLAIN_8BIT,
+											 0 /* must be last */ };
 
 /*!
   paste from the system clipboard using the best-for-us format
@@ -433,8 +489,8 @@ static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
 void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
     XAP_UnixClipboard::T_AllowGet tFrom = ((bUseClipboard)
-					   ? XAP_UnixClipboard::TAG_ClipboardOnly
-					   : XAP_UnixClipboard::TAG_PrimaryOnly);
+										   ? XAP_UnixClipboard::TAG_ClipboardOnly
+										   : XAP_UnixClipboard::TAG_PrimaryOnly);
 
     const char * szFormatFound = NULL;
     unsigned char * pData = NULL;
@@ -443,33 +499,33 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
     if (!bFoundOne)
     {
-	UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
-	return;
+		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
+		return;
     }
 	
     if (strcmp(szFormatFound,AP_CLIPBOARD_RTF) == 0)
     {
-	iLen = MyMin(iLen,strlen((const char *)pData));
-	UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
+		iLen = MyMin(iLen,strlen((const char *)pData));
+		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
-	IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
-	pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
-	DELETEP(pImpRTF);
+		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
+		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImpRTF);
 
-	return;
+		return;
     }
 
     if (   (strcmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-	   || (strcmp(szFormatFound,AP_CLIPBOARD_STRING) == 0))
+		   || (strcmp(szFormatFound,AP_CLIPBOARD_STRING) == 0))
     {
-	iLen = MyMin(iLen,strlen((const char *)pData));
-	UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
+		iLen = MyMin(iLen,strlen((const char *)pData));
+		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
-	IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
-	pImpText->pasteFromBuffer(pDocRange,pData,iLen);
-	DELETEP(pImpText);
+		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
+		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImpText);
 
-	return;
+		return;
     }
 
     return;
@@ -496,7 +552,7 @@ bool AP_UnixApp::canPasteFromClipboard(void)
     // first, try to see if we can paste from the clipboard
     bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
     if (bFoundOne)
-	return true;
+		return true;
 
     // didn't work, try out the primary selection
     tFrom = XAP_UnixClipboard::TAG_PrimaryOnly;
@@ -528,18 +584,18 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 {
 
     if (m_bSelectionInFlux)
-	return;
+		return;
     m_bSelectionInFlux = true;
 
     bool bSelectionStateInThisView = ( ! pView->isSelectionEmpty() );
 	
     if (m_pViewSelection && m_pFrameSelection && m_bHasSelection && (pView != m_pViewSelection))
     {
-	// one window has a selection currently and another window just
-	// asserted one.  we force clear the old one to enforce the X11
-	// style.
+		// one window has a selection currently and another window just
+		// asserted one.  we force clear the old one to enforce the X11
+		// style.
 
-	((FV_View *)m_pViewSelection)->cmdUnselectSelection();
+		((FV_View *)m_pViewSelection)->cmdUnselectSelection();
     }
 
     // now fill in all of our variables for this window
@@ -554,22 +610,22 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 
     if (bSelectionStateInThisView)
     {
-	m_bHasSelection = bSelectionStateInThisView;
-	m_pClipboard->assertSelection();
+		m_bHasSelection = bSelectionStateInThisView;
+		m_pClipboard->assertSelection();
     }
     else if (pView == m_cacheSelectionView)
     {
-	// if we are going to use the cache, we do not
-	// clear m_bHasSelection now.  rather, we defer
-	// this and the server notification until afterwards.
+		// if we are going to use the cache, we do not
+		// clear m_bHasSelection now.  rather, we defer
+		// this and the server notification until afterwards.
 		
-	UT_ASSERT(m_bHasSelection);
-	m_cacheDeferClear = true;
+		UT_ASSERT(m_bHasSelection);
+		m_cacheDeferClear = true;
     }
     else
     {
-	m_bHasSelection = bSelectionStateInThisView;
-	m_pClipboard->clearData(false,true);
+		m_bHasSelection = bSelectionStateInThisView;
+		m_pClipboard->clearData(false,true);
     }
 	
     UT_DEBUGMSG(("here we go whooooo\n"));
@@ -608,9 +664,9 @@ bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
 
     if (m_pFrameSelection && (pFrame==m_pFrameSelection))
     {
-	m_pClipboard->clearData(false,true);
-	m_pFrameSelection = NULL;
-	m_pViewSelection = NULL;
+		m_pClipboard->clearData(false,true);
+		m_pFrameSelection = NULL;
+		m_pViewSelection = NULL;
     }
 	
     return XAP_App::forgetFrame(pFrame);
@@ -634,15 +690,15 @@ bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
 void AP_UnixApp::clearSelection(void)
 {
     if (m_bSelectionInFlux)
-	return;
+		return;
     m_bSelectionInFlux = true;
 	
     if (m_pViewSelection && m_pFrameSelection && m_bHasSelection)
     {
-	UT_DEBUGMSG(("crash2\n"));
-	FV_View *pView = static_cast<FV_View *>(m_pViewSelection);
-	pView->cmdUnselectSelection();
-	m_bHasSelection = false;
+		UT_DEBUGMSG(("crash2\n"));
+		FV_View *pView = static_cast<FV_View *>(m_pViewSelection);
+		pView->cmdUnselectSelection();
+		m_bHasSelection = false;
     }
 	
     m_bSelectionInFlux = false;
@@ -653,33 +709,33 @@ void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
 {
     if (pView)
     {
-	// remember a temporary copy of the extent of the current
-	// selection in the given view.  this is intended for the
-	// X11 middle mouse trick -- where we need to warp to a
-	// new location and paste the current selection (not the
-	// clipboard) and the act of warping clears the selection.
+		// remember a temporary copy of the extent of the current
+		// selection in the given view.  this is intended for the
+		// X11 middle mouse trick -- where we need to warp to a
+		// new location and paste the current selection (not the
+		// clipboard) and the act of warping clears the selection.
+		
+		// TODO if we ever support multiple view types, we'll have to
+		// TODO change this.
+		FV_View * pFVView = static_cast<FV_View *>(pView);
+		pFVView->getDocumentRangeOfCurrentSelection(&m_cacheDocumentRangeOfSelection);
 
-	// TODO if we ever support multiple view types, we'll have to
-	// TODO change this.
-	FV_View * pFVView = static_cast<FV_View *>(pView);
-	pFVView->getDocumentRangeOfCurrentSelection(&m_cacheDocumentRangeOfSelection);
-
-	m_cacheSelectionView = pView;
-	UT_DEBUGMSG(("Clipboard::cacheCurrentSelection: [view %p][range %d %d]\n",
-		     pFVView,
-		     m_cacheDocumentRangeOfSelection.m_pos1,
-		     m_cacheDocumentRangeOfSelection.m_pos2));
-	m_cacheDeferClear = false;
+		m_cacheSelectionView = pView;
+		UT_DEBUGMSG(("Clipboard::cacheCurrentSelection: [view %p][range %d %d]\n",
+					 pFVView,
+					 m_cacheDocumentRangeOfSelection.m_pos1,
+					 m_cacheDocumentRangeOfSelection.m_pos2));
+		m_cacheDeferClear = false;
     }
     else
     {
-	if (m_cacheDeferClear)
-	{
-	    m_cacheDeferClear = false;
-	    m_bHasSelection = false;
-	    m_pClipboard->clearData(false,true);
-	}
-	m_cacheSelectionView = NULL;
+		if (m_cacheDeferClear)
+		{
+			m_cacheDeferClear = false;
+			m_bHasSelection = false;
+			m_pClipboard->clearData(false,true);
+		}
+		m_cacheSelectionView = NULL;
     }
 
     return;
@@ -697,8 +753,8 @@ void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
   \return True if successful, false otherwise.
 */
 bool AP_UnixApp::getCurrentSelection(const char** formatList,
-				     void ** ppData, UT_uint32 * pLen,
-				     const char **pszFormatFound)
+									 void ** ppData, UT_uint32 * pLen,
+									 const char **pszFormatFound)
 {
     int j;
 	
@@ -707,55 +763,55 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
     *pszFormatFound = NULL;
 	
     if (!m_pViewSelection || !m_pFrameSelection || !m_bHasSelection)
-	return false;		// can't do it, give up.
+		return false;		// can't do it, give up.
 
     PD_DocumentRange dr;
 
     if (m_cacheSelectionView == m_pViewSelection)
     {
-	dr = m_cacheDocumentRangeOfSelection;
-	UT_DEBUGMSG(("Clipboard::getCurrentSelection: *using cached values* [range %d %d]\n",dr.m_pos1,dr.m_pos2));
+		dr = m_cacheDocumentRangeOfSelection;
+		UT_DEBUGMSG(("Clipboard::getCurrentSelection: *using cached values* [range %d %d]\n",dr.m_pos1,dr.m_pos2));
     }
     else
     {
-	// TODO if we ever support multiple view types, we'll have to
-	// TODO change this.
-	FV_View * pFVView = static_cast<FV_View *>(m_pViewSelection);
+		// TODO if we ever support multiple view types, we'll have to
+		// TODO change this.
+		FV_View * pFVView = static_cast<FV_View *>(m_pViewSelection);
 	
-	pFVView->getDocumentRangeOfCurrentSelection(&dr);
-	UT_DEBUGMSG(("Clipboard::getCurrentSelection: [view %p][range %d %d]\n",pFVView,dr.m_pos1,dr.m_pos2));
+		pFVView->getDocumentRangeOfCurrentSelection(&dr);
+		UT_DEBUGMSG(("Clipboard::getCurrentSelection: [view %p][range %d %d]\n",pFVView,dr.m_pos1,dr.m_pos2));
     }
 	
     m_selectionByteBuf.truncate(0);
 
     for (j=0; (formatList[j]); j++)
     {
-	UT_DEBUGMSG(("Clipboard::getCurrentSelection: considering format [%s]\n",formatList[j]));
+		UT_DEBUGMSG(("Clipboard::getCurrentSelection: considering format [%s]\n",formatList[j]));
 
-	if (strcmp(formatList[j],AP_CLIPBOARD_RTF) == 0)
-	{
-	    IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
-	    if (!pExpRtf)
-		return false;		// give up on memory errors
+		if (strcmp(formatList[j],AP_CLIPBOARD_RTF) == 0)
+		{
+			IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
+			if (!pExpRtf)
+				return false;		// give up on memory errors
 
-	    pExpRtf->copyToBuffer(&dr,&m_selectionByteBuf);
-	    DELETEP(pExpRtf);
-	    goto ReturnThisBuffer;
-	}
+			pExpRtf->copyToBuffer(&dr,&m_selectionByteBuf);
+			DELETEP(pExpRtf);
+			goto ReturnThisBuffer;
+		}
 			
-	if (   (strcmp(formatList[j],AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-	       || (strcmp(formatList[j],AP_CLIPBOARD_STRING) == 0))
-	{
-	    IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
-	    if (!pExpText)
-		return false;
+		if (   (strcmp(formatList[j],AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+			   || (strcmp(formatList[j],AP_CLIPBOARD_STRING) == 0))
+		{
+			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
+			if (!pExpText)
+				return false;
 
-	    pExpText->copyToBuffer(&dr,&m_selectionByteBuf);
-	    DELETEP(pExpText);
-	    goto ReturnThisBuffer;
-	}
+			pExpText->copyToBuffer(&dr,&m_selectionByteBuf);
+			DELETEP(pExpText);
+			goto ReturnThisBuffer;
+		}
 
-	// TODO add other formats as necessary
+		// TODO add other formats as necessary
     }
 
     UT_DEBUGMSG(("Clipboard::getCurrentSelection: cannot create anything in one of requested formats.\n"));
@@ -763,7 +819,7 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 
  ReturnThisBuffer:
     UT_DEBUGMSG(("Clipboard::getCurrentSelection: copying %d bytes in format [%s].\n",
-		 m_selectionByteBuf.getLength(),formatList[j]));
+				 m_selectionByteBuf.getLength(),formatList[j]));
     *ppData = (void *)m_selectionByteBuf.getPointer(0);
     *pLen = m_selectionByteBuf.getLength();
     *pszFormatFound = formatList[j];
@@ -791,11 +847,11 @@ static gint s_hideSplash(gpointer /*data*/)
 {
     if (wSplash)
     {
-	gtk_timeout_remove(death_timeout_handler);
-	gtk_widget_destroy(wSplash);
-	wSplash = NULL;
-	DELETEP(pUnixGraphics);
-	DELETEP(pSplashImage);
+		gtk_timeout_remove(death_timeout_handler);
+		gtk_widget_destroy(wSplash);
+		wSplash = NULL;
+		DELETEP(pUnixGraphics);
+		DELETEP(pSplashImage);
     }
     return TRUE;
 }
@@ -817,19 +873,19 @@ static void s_button_event(GtkWidget * /*window*/)
 	return TRUE, not FALSE.  
 */
 static gint s_drawingarea_expose(GtkWidget * /* widget */,
-				 GdkEventExpose * /* pExposeEvent */)
+								 GdkEventExpose * /* pExposeEvent */)
 {
     if (pUnixGraphics && pSplashImage)
     {
-	pUnixGraphics->drawImage(pSplashImage, 0, 0);
+		pUnixGraphics->drawImage(pSplashImage, 0, 0);
 
-	// on the first full paint of the image, start a 2 second timer
-	if (!firstExpose)
-	{
-	    firstExpose = true;
-	    // kill the window after splashTimeoutValue ms
-	    death_timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
-	}
+		// on the first full paint of the image, start a 2 second timer
+		if (!firstExpose)
+		{
+			firstExpose = true;
+			// kill the window after splashTimeoutValue ms
+			death_timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
+		}
     }
 
     return FALSE;
@@ -892,16 +948,16 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
     char * buf;
 
     if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
-	buf = NULL;
+		buf = NULL;
     else
     {
-	buf = (char *)malloc(strlen(szDirectory) + strlen(szFile) + 2);
-	memset(buf,0,sizeof(buf));
-	strcpy(buf,szDirectory);
-	int len = strlen(buf);
-	if ( (len == 0) || (buf[len-1] != '/') )
-	    strcat(buf,"/");
-	strcat(buf,szFile);
+		buf = (char *)malloc(strlen(szDirectory) + strlen(szFile) + 2);
+		memset(buf,0,sizeof(buf));
+		strcpy(buf,szDirectory);
+		int len = strlen(buf);
+		if ( (len == 0) || (buf[len-1] != '/') )
+			strcat(buf,"/");
+		strcat(buf,szFile);
     }
 #endif
 		
@@ -914,61 +970,61 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
     pBB = new UT_ByteBuf();
     if (
 #ifdef DEBUG
-	(pBB->insertFromFile(0, buf)) || 
+		(pBB->insertFromFile(0, buf)) || 
 #endif
-	(pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
-	)
+		(pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
+		)
     {
-	// get splash size
-	UT_sint32 iSplashWidth;
-	UT_sint32 iSplashHeight;
-	{
-	    bool pngReturnVal = UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
-	    if(!pngReturnVal)
-	    {
+		// get splash size
+		UT_sint32 iSplashWidth;
+		UT_sint32 iSplashHeight;
+		{
+			bool pngReturnVal = UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
+			if(!pngReturnVal)
+			{
 				// uh oh
-		UT_DEBUGMSG(("That image caused an error in the PNG library."));
-		return NULL;
-	    }
-	}
-	// create a centered window the size of our image
-	wSplash = gtk_window_new(GTK_WINDOW_POPUP);
-	gtk_window_set_default_size (GTK_WINDOW (wSplash),
-				     iSplashWidth, iSplashHeight);
-	gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
+				UT_DEBUGMSG(("That image caused an error in the PNG library."));
+				return NULL;
+			}
+		}
+		// create a centered window the size of our image
+		wSplash = gtk_window_new(GTK_WINDOW_POPUP);
+		gtk_window_set_default_size (GTK_WINDOW (wSplash),
+									 iSplashWidth, iSplashHeight);
+		gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
 
-	// create a frame to add depth
-	GtkWidget * frame = gtk_frame_new(NULL);
-	gtk_container_add(GTK_CONTAINER(wSplash), frame);
-	gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
-	gtk_widget_show(frame);
+		// create a frame to add depth
+		GtkWidget * frame = gtk_frame_new(NULL);
+		gtk_container_add(GTK_CONTAINER(wSplash), frame);
+		gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
+		gtk_widget_show(frame);
 
-	// create a drawing area
-	GtkWidget * da = gtk_drawing_area_new ();
-	gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
-	gtk_drawing_area_size(GTK_DRAWING_AREA (da), iSplashWidth, iSplashHeight);
-	gtk_signal_connect(GTK_OBJECT(da), "expose_event",
-			   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
-	gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
-			   GTK_SIGNAL_FUNC(s_button_event), NULL);
-	gtk_container_add(GTK_CONTAINER(frame), da);
-	gtk_widget_show(da);
+		// create a drawing area
+		GtkWidget * da = gtk_drawing_area_new ();
+		gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
+		gtk_drawing_area_size(GTK_DRAWING_AREA (da), iSplashWidth, iSplashHeight);
+		gtk_signal_connect(GTK_OBJECT(da), "expose_event",
+						   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
+		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
+						   GTK_SIGNAL_FUNC(s_button_event), NULL);
+		gtk_container_add(GTK_CONTAINER(frame), da);
+		gtk_widget_show(da);
 
-	// now bring the window up front & center
-	gtk_window_set_position(GTK_WINDOW(wSplash), WIN_POS);
+		// now bring the window up front & center
+		gtk_window_set_position(GTK_WINDOW(wSplash), WIN_POS);
 
-	// create the window so we can attach a GC to it
-	gtk_widget_show(wSplash);
+		// create the window so we can attach a GC to it
+		gtk_widget_show(wSplash);
 		
-	// create image context
-	pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
-	pSplashImage = pUnixGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
+		// create image context
+		pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
+		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
 
-	// another for luck (to bring it up forward and paint)
-	gtk_widget_show(wSplash);
+		// another for luck (to bring it up forward and paint)
+		gtk_widget_show(wSplash);
 
-	// trigger an expose event to get us started
-	s_drawingarea_expose(da, NULL);
+		// trigger an expose event to get us started
+		s_drawingarea_expose(da, NULL);
     }
 
     DELETEP(pBB);
@@ -1004,37 +1060,37 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     bool bHelp = false;
     
     for (int k = 1; k < Args.m_argc; k++)
-	if (*Args.m_argv[k] == '-')
-	{
-	    // Do a quick and dirty find for "-to"
-	    if ((strcmp(Args.m_argv[k],"-to") == 0)
-		|| (strcmp(Args.m_argv[k],"--to") == 0))
-		bTo = true;
+		if (*Args.m_argv[k] == '-')
+		{
+			// Do a quick and dirty find for "-to"
+			if ((strcmp(Args.m_argv[k],"-to") == 0)
+				|| (strcmp(Args.m_argv[k],"--to") == 0))
+				bTo = true;
 		
 		// Do a quick and dirty find for "-show"
-	    else if ((strcmp(Args.m_argv[k],"-show") == 0)
-		     || (strcmp(Args.m_argv[k],"--show") == 0))
-		bShow = true;
+			else if ((strcmp(Args.m_argv[k],"-show") == 0)
+					 || (strcmp(Args.m_argv[k],"--show") == 0))
+				bShow = true;
 		
 		// Do a quick and dirty find for "-nosplash"
-	    else if ((strcmp(Args.m_argv[k],"-nosplash") == 0)
-		     || (strcmp(Args.m_argv[k],"--nosplash") == 0))
-		bNoSplash = true;
+			else if ((strcmp(Args.m_argv[k],"-nosplash") == 0)
+					 || (strcmp(Args.m_argv[k],"--nosplash") == 0))
+				bNoSplash = true;
 		
 		// Do a quick and dirty find for "-help",
 		// "--help" or "-h"
-	    else if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
-		     strncmp(Args.m_argv[k],"--h",3) == 0)
-		bHelp = true;
-	}
+			else if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
+					 strncmp(Args.m_argv[k],"--h",3) == 0)
+				bHelp = true;
+		}
     
     if((bTo && !bShow) || bHelp)
     {
-	bShowSplash = false;
-	bShowApp = false;
+		bShowSplash = false;
+		bShowApp = false;
     }
     else if (bNoSplash)
-	bShowSplash = false;
+		bShowSplash = false;
     
     // HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
     // HACK : but need to be here to throw the splash screen as
@@ -1042,22 +1098,22 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	
     if (bShowSplash || bShowApp)
     {
-	gtk_set_locale();
-	gtk_init(&Args.m_argc,&Args.m_argv);
+		gtk_set_locale();
+		gtk_init(&Args.m_argc,&Args.m_argv);
     }
     
     if (bShowSplash)
-	_showSplash(2000);
+		_showSplash(2000);
     
     AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
     
     if(bHelp)
     {
-	/* there's no need to stay around any longer than
-	   neccessary.  */
-	pMyUnixApp->_printUsage();
-	delete pMyUnixApp;
-	return 0;
+		/* there's no need to stay around any longer than
+		   neccessary.  */
+		pMyUnixApp->_printUsage();
+		delete pMyUnixApp;
+		return 0;
     }
     
     // Setup signal handlers, primarily for segfault
@@ -1123,232 +1179,249 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
   \return False if an unknow command line option was used, true
   otherwise.  
 */
-bool AP_UnixApp::parseCommandLine(void)
+bool AP_UnixApp::parseCommandLine()
 {
-    
     int nFirstArg = 1;
     int k;
     int kWindowsOpened = 0;
     char *to = NULL;
     int verbose = 1;
     bool show = false;
-    
+#ifdef ABI_OPT_JS
+    bool script = false;
+#endif
+
     for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
     {
-	if (*m_pArgs->m_argv[k] == '-')
-	{
-	    
+		if (*m_pArgs->m_argv[k] == '-')
+		{
 #if 0
-	    // This code is currently unused.
-	    // We don't load libraries, and we don't
-	    // have scripts
-	    
-	    if ((strcmp(m_pArgs->m_argv[k],"-script") == 0)
-		|| (strcmp(m_pArgs->m_argv[k],"--script") == 0))
-	    {
-		// [-script scriptname]
-		k++;
-	    }
-	    else if ((strcmp(m_pArgs->m_argv[k],"-lib") == 0)
-		     || (strcmp(m_pArgs->m_argv[k],"--lib") == 0))
-	    {
-		// [-lib <AbiSuiteLibDirectory>]
-		// we've already processed this when we initialized the App class
-		k++;
-	    }
+			// This code is currently unused.
+			// We don't load libraries
+			if ((strcmp(m_pArgs->m_argv[k],"-lib") == 0)
+					 || (strcmp(m_pArgs->m_argv[k],"--lib") == 0))
+			{
+				// [-lib <AbiSuiteLibDirectory>]
+				// we've already processed this when we initialized the App class
+				k++;
+			}
 #endif
 	    
-	    if ((strcmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
-		|| (strcmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
-	    {
-		// [-dumpstrings]
+			if ((strcmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
+				|| (strcmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
+			{
+				// [-dumpstrings]
 #ifdef DEBUG
-       		// dump the string table in english as a template for translators.
-		// see abi/docs/AbiSource_Localization.abw for details.
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
-		pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-		delete pBuiltinStringSet;
+				// dump the string table in english as a template for translators.
+				// see abi/docs/AbiSource_Localization.abw for details.
+				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
+				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
+				delete pBuiltinStringSet;
 #endif
-	    }
-	    else if ((strcmp(m_pArgs->m_argv[k],"-nosplash") == 0)
-		     || (strcmp(m_pArgs->m_argv[k],"--nosplash") == 0))
-	    {
-		// we've alrady processed this before we initialized the App class
-	    }
-	    else if ((strcmp(m_pArgs->m_argv[k],"-geometry") == 0)
-		     || (strcmp(m_pArgs->m_argv[k],"--geometry") == 0))
-	    {
-		// [-geometry <X geometry string>]
-		// let us at the next argument
-		k++;
+			}
+			else if ((strcmp(m_pArgs->m_argv[k],"-nosplash") == 0)
+					 || (strcmp(m_pArgs->m_argv[k],"--nosplash") == 0))
+			{
+				// we've alrady processed this before we initialized the App class
+			}
+			else if ((strcmp(m_pArgs->m_argv[k],"-geometry") == 0)
+					 || (strcmp(m_pArgs->m_argv[k],"--geometry") == 0))
+			{
+				// [-geometry <X geometry string>]
+				// let us at the next argument
+				k++;
 		
-		// TODO : does X have a dummy geometry value reserved for this?
-		gint dummy = 1 << ((sizeof(gint) * 8) - 1);
-		gint x = dummy;
-		gint y = dummy;
-		guint width = 0;
-		guint height = 0;
+				// TODO : does X have a dummy geometry value reserved for this?
+				gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+				gint x = dummy;
+				gint y = dummy;
+				guint width = 0;
+				guint height = 0;
 		    
-		XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
+				XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
 		
-		// use both by default
-		XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
-		    (XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
-		     | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
+				// use both by default
+				XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
+					(XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
+					 | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
 		
-		// if pos (x and y) weren't provided just use size
-		if (x == dummy || y == dummy)
-		    f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
+				// if pos (x and y) weren't provided just use size
+				if (x == dummy || y == dummy)
+					f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
 		    
-      		// if size (width and height) weren't provided just use pos
-		if (width == 0 || height == 0)
-		    f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
+				// if size (width and height) weren't provided just use pos
+				if (width == 0 || height == 0)
+					f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
 		
-		// set the xap-level geometry for future frame use
-		setGeometry(x, y, width, height, f);
-	    }
-	    else if ((strcmp (m_pArgs->m_argv[k],"-to") == 0)
-		     || (strcmp (m_pArgs->m_argv[k],"--to") == 0))
-	    {
-		k++;
-		to = m_pArgs->m_argv[k];
-	    }
-	    else if ((strcmp (m_pArgs->m_argv[k], "-show") == 0)
-		     || (strcmp (m_pArgs->m_argv[k], "--show") == 0))
-	    {
-		show = true;
-	    }
-	    else if ((strcmp (m_pArgs->m_argv[k], "-verbose") == 0)
-		     || (strcmp (m_pArgs->m_argv[k], "--verbose") == 0))
-	    {
-		k++;
-		if(k<m_pArgs->m_argc)
-		{
-		    /* if we don't check we segfault
-		       when there aren't any numbers
-		       after --verbose
-		    */
-		    verbose = atoi (m_pArgs->m_argv[k]);
+				// set the xap-level geometry for future frame use
+				setGeometry(x, y, width, height, f);
+			}
+			else if ((strcmp (m_pArgs->m_argv[k],"-to") == 0)
+					 || (strcmp (m_pArgs->m_argv[k],"--to") == 0))
+			{
+				k++;
+				to = m_pArgs->m_argv[k];
+			}
+			else if ((strcmp (m_pArgs->m_argv[k], "-show") == 0)
+					 || (strcmp (m_pArgs->m_argv[k], "--show") == 0))
+			{
+				show = true;
+			}
+			else if ((strcmp (m_pArgs->m_argv[k], "-verbose") == 0)
+					 || (strcmp (m_pArgs->m_argv[k], "--verbose") == 0))
+			{
+				k++;
+				if(k<m_pArgs->m_argc)
+				{
+					/* if we don't check we segfault
+					   when there aren't any numbers
+					   after --verbose
+					*/
+					verbose = atoi (m_pArgs->m_argv[k]);
 			
-		}
-	    }
-	    else  
-	    {
-		UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
+				}
+			}
+#ifdef ABI_OPT_JS
+			else if ((strcmp(m_pArgs->m_argv[k],"-script") == 0)
+				|| (strcmp(m_pArgs->m_argv[k],"--script") == 0))
+			{
+				k++;
+				// [-script]
+				if (k < m_pArgs->m_argc)
+				{
+					perlEvalFile(m_pArgs->m_argv[k]);
+					script = true;
+				}
+				else
+					UT_DEBUGMSG(("No script file to execute in --script option\n"));
+			}
+#endif
+			else  
+			{
+				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
 				// TODO don't know if it has a following argument or not -- assume not
-		_printUsage();
-		return false;
-	    }
-	}
-	else
-	{
-	    // [filename]
-	    if (to) 
-	    {
-		AP_Convert * conv = new AP_Convert(getApp());
-		conv->setVerbose(verbose);
-		conv->convertTo(m_pArgs->m_argv[k], to);
-		delete conv;
-	    }
-	    else
-	    {
-		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-		pFirstUnixFrame->initialize();
-
-		// try to read the document from disk, or create a new one
-		// with the given name
-		UT_Error error = pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown, true);
-		if (!error)
-		{
-		    kWindowsOpened++;
+				_printUsage();
+				return false;
+			}
 		}
 		else
 		{
-		    // TODO: warn user that we couldn't open that file
+			// [filename]
+			if (to) 
+			{
+				AP_Convert * conv = new AP_Convert(getApp());
+				conv->setVerbose(verbose);
+				conv->convertTo(m_pArgs->m_argv[k], to);
+				delete conv;
+			}
+			else
+			{
+				AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+				pFirstUnixFrame->initialize();
+
+				// try to read the document from disk, or create a new one
+				// with the given name
+				UT_Error error = pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown, true);
+				if (!error)
+				{
+					kWindowsOpened++;
+				}
+				else
+				{
+					// TODO: warn user that we couldn't open that file
 		    
 #if 1
-		    // TODO we crash if we just delete this without putting something
-		    // TODO in it, so let's go ahead and open an untitled document
-		    // TODO for now.  this would cause us to get 2 untitled documents
-		    // TODO if the user gave us 2 bogus pathnames....
-		    kWindowsOpened++;
-		    pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+					// TODO we crash if we just delete this without putting something
+					// TODO in it, so let's go ahead and open an untitled document
+					// TODO for now.  this would cause us to get 2 untitled documents
+					// TODO if the user gave us 2 bogus pathnames....
+					kWindowsOpened++;
+					pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 		    
-		    pFirstUnixFrame->raise();
+					pFirstUnixFrame->raise();
 		    
-		    XAP_DialogFactory * pDialogFactory
-			= (XAP_DialogFactory *)(pFirstUnixFrame->getDialogFactory());
+					XAP_DialogFactory * pDialogFactory
+						= (XAP_DialogFactory *)(pFirstUnixFrame->getDialogFactory());
 		    
-		    XAP_Dialog_MessageBox * pDialog
-			= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-		    UT_ASSERT(pDialog);
+					XAP_Dialog_MessageBox * pDialog
+						= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+					UT_ASSERT(pDialog);
 		    
-		    const XAP_StringSet * pSS = pFirstUnixFrame->getApp()->getStringSet();
+					const XAP_StringSet * pSS = pFirstUnixFrame->getApp()->getStringSet();
 		    
-		    switch (error)
-		    {
-		    case -301:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),m_pArgs->m_argv[k]);
-			break;
+					switch (error)
+					{
+					case -301:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),m_pArgs->m_argv[k]);
+						break;
 			
-		    case -302:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),m_pArgs->m_argv[k]);
-			break;
+					case -302:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),m_pArgs->m_argv[k]);
+						break;
 			
-		    case -303:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),m_pArgs->m_argv[k]);
-			break;
+					case -303:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),m_pArgs->m_argv[k]);
+						break;
 			
-		    case -304:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),m_pArgs->m_argv[k]);
-			break;
+					case -304:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),m_pArgs->m_argv[k]);
+						break;
 			
-		    case -305:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),m_pArgs->m_argv[k]);
-			break;
+					case -305:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),m_pArgs->m_argv[k]);
+						break;
 			
-		    case -306:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),m_pArgs->m_argv[k]);
-			break;
+					case -306:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),m_pArgs->m_argv[k]);
+						break;
 			
-		    case -307:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),m_pArgs->m_argv[k]);
-			break;
+					case -307:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),m_pArgs->m_argv[k]);
+						break;
 			
-		    case -311:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),m_pArgs->m_argv[k]);
-			break;
+					case -311:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),m_pArgs->m_argv[k]);
+						break;
 			
-		    default:
-			pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_ImportError),m_pArgs->m_argv[k]);
-		    }
-		    pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
-		    pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
+					default:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_ImportError),m_pArgs->m_argv[k]);
+					}
+					pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+					pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 		    
-		    pDialog->runModal(pFirstUnixFrame);
+					pDialog->runModal(pFirstUnixFrame);
 		    
-		    //XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+					//XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 		    
-		    pDialogFactory->releaseDialog(pDialog);
+					pDialogFactory->releaseDialog(pDialog);
 		    
 #else
-		    delete pFirstUnixFrame;
+					delete pFirstUnixFrame;
 #endif
+				}
+			}
 		}
-	    }
-	}
     }
 	
     // command-line conversion may not open any windows at all
     if (to && !show)
-	return true;
+		return true;
     
     if (kWindowsOpened == 0)
     {
-		// no documents specified or were able to be opened, open an untitled one
-		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-		pFirstUnixFrame->initialize();
+		// no documents specified or were able to be opened,
+		// and we're not executing a script, open an untitled document
+#ifdef ABI_OPT_JS
+		if (script == false)
+		{
+			XAP_Frame *pFirstUnixFrame = newFrame();
+			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+		}
+#else
+		XAP_Frame *pFirstUnixFrame = newFrame();
 		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+#endif
+		
     }
     
     return true;
@@ -1359,6 +1432,9 @@ bool AP_UnixApp::parseCommandLine(void)
   be global so that we can pass a function pointer to it to C code
   that handles signals.  
   \todo Could this be a static member function?
+  JCA: No, but it can be extern "C" { static void signalWrapper(int) }
+  JCA: (well, there is a way to use a static member function and to remain
+  JCA: correct, but it's a bit cumbersome.)
 */
 void signalWrapper(int sig_num)
 {
@@ -1384,9 +1460,9 @@ void AP_UnixApp::catchSignals(int sig_num)
     s_signal_count = s_signal_count + 1;
     if(s_signal_count > 1)
     {
-	UT_DEBUGMSG(("Segfault during filesave - no file saved  \n"));
-	fflush(stdout);
-	abort();
+		UT_DEBUGMSG(("Segfault during filesave - no file saved  \n"));
+		fflush(stdout);
+		abort();
     }
     
     UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
@@ -1394,9 +1470,9 @@ void AP_UnixApp::catchSignals(int sig_num)
     UT_uint32 i = 0;
     for(;i<m_vecFrames.getItemCount();i++)
     {
-	AP_UnixFrame * curFrame = (AP_UnixFrame*) m_vecFrames[i];
-	UT_ASSERT(curFrame);
-	curFrame->backup();
+		AP_UnixFrame * curFrame = (AP_UnixFrame*) m_vecFrames[i];
+		UT_ASSERT(curFrame);
+		curFrame->backup();
     }
     
     fflush(stdout);

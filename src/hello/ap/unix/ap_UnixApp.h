@@ -25,6 +25,9 @@
 #include "ap_UnixPrefs.h"
 
 class XAP_StringSet;
+#ifdef ABI_OPT_JS
+class PerlInterpreter;
+#endif
 
 class AP_UnixApp : public XAP_UnixApp
 {
@@ -49,13 +52,17 @@ class AP_UnixApp : public XAP_UnixApp
 														void ** ppData, UT_uint32 * pLen,
 														const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);
-
-
+#ifdef ABI_OPT_JS
+	PerlInterpreter *				getPerlInterp();
+#endif
 			
 	static int                     main(const char* szAppName, int argc, char** argv);
 	
- protected:
+protected:
 	XAP_StringSet*                 m_pStringSet;
+
+private:
+	static PerlInterpreter *	   m_pPerlInstance;
 };
 
 #endif // AP_UNIXAPP_H
