@@ -354,7 +354,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 
 UT_uint32 IE_Imp_XML::_getInlineDepth(void) const
 {
-	return m_stackFmtStartIndex.getDepth();
+	return m_nstackFmtStartIndex.getDepth();
 }
 
 bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
@@ -370,7 +370,7 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 		if (m_vecInlineFmt.addItem(p)!=0)
 			return false;
 	}
-	if (!m_stackFmtStartIndex.push(reinterpret_cast<void*>(start)))
+	if (!m_nstackFmtStartIndex.push(reinterpret_cast<void*>(start)))
 		return false;
 	return true;
 }
@@ -378,7 +378,7 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 void IE_Imp_XML::_popInlineFmt(void)
 {
 	UT_uint32 start;
-	if (!m_stackFmtStartIndex.pop(reinterpret_cast<void **>(&start)))
+	if (!m_nstackFmtStartIndex.pop(&start))
 		return;
 	UT_uint32 k;
 	UT_uint32 end = m_vecInlineFmt.getItemCount();
