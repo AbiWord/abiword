@@ -90,7 +90,8 @@ class be_Window: public BWindow {
 		
 		//Be Function overrides
 		virtual bool QuitRequested(void);
-
+		virtual void MessageReceived(BMessage *pMsg);
+		
 		be_DocView		*m_pbe_DocView;
 		EV_BeOSMenu 		*m_pBeOSMenu;
 		XAP_BeOSApp 		*m_pBeOSApp;

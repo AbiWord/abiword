@@ -334,19 +334,50 @@ bool be_Window::QuitRequested(void) {
 	return(true);
 }
 
+void be_Window::MessageReceived(BMessage *pMsg)
+{
+	float smallStep, bigStep;
+	float deltaX, deltaY;
+	
+	switch(pMsg->what)
+	{
+		case 'inme': // Inme is a "Create Menu" message sent when the view is established.
+			m_pBeOSMenu->synthesize();
+			break;
+		
+		case B_MOUSE_WHEEL_CHANGED:
+		
+			if( pMsg->FindFloat("be:wheel_delta_y" , &deltaY) == B_OK)
+			{		
+			m_vScroll->GetSteps(&smallStep, &bigStep);
+			m_vScroll->SetValue(m_vScroll->Value() + smallStep * deltaY);
+			}
+			
+			if( pMsg->FindFloat("be:wheel_delta_x" , &deltaX) == B_OK)
+			{
+			m_hScroll->GetSteps(&smallStep, &bigStep);
+			m_hScroll->SetValue(m_hScroll->Value() + smallStep * deltaX);
+			}
+
+			break;
+	}
+	
+	BWindow::MessageReceived(pMsg);
+}
+
 bool be_Window::_createWindow(const char *szMenuLayoutName,
 			   const char *szMenuLabelSetName) {
 	BRect r;
-	
+
 	m_winRectAvailable = Bounds();
 	//printf("Initial Available Rect: "); m_winRectAvailable.PrintToStream();
-
 	//Add the menu
+	
 	m_pBeOSMenu = new EV_BeOSMenu(m_pBeOSApp, m_pBeOSFrame,
 				      szMenuLayoutName, szMenuLabelSetName);
-	UT_ASSERT(m_pBeOSMenu);
-	UT_Bool bResult = m_pBeOSMenu->synthesize();
-	UT_ASSERT(bResult);
+	
+	m_pBeOSMenu->synthesizeMenuBar();
+		
 	//printf("After Adding Menu Available Rect: "); m_winRectAvailable.PrintToStream();
 	
 	//Add the toolbars

@@ -107,7 +107,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	ENSUREP(pView);
 
 	pView->focusChange(AV_FOCUS_HERE);
-	
+
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
 	// from both the scroll-related edit methods
@@ -208,7 +208,9 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	m_pView->setWindowSize(m_pBeDocView->Bounds().Width(),
 			       m_pBeDocView->Bounds().Height());
 	m_pBeDocView->Window()->Unlock();
-
+	
+	m_pBeDocView->Window()->PostMessage('inme');
+	
 	setXScrollRange();
 	setYScrollRange();
 	updateTitle();
@@ -570,7 +572,8 @@ void AP_BeOSFrame::setStatusMessage(const char * szMsg)
  which sits in the xap code.  In the worse case we just create a
  plain view, in the best case we actually put neat stuff here
 *****/
-be_DocView *be_Window::_createDocumentWindow() {
+be_DocView *be_Window::_createDocumentWindow() 
+{
 	BRect r;
 	
         //Set up the scroll bars on the outer edges of the document area
@@ -628,6 +631,7 @@ be_DocView *be_Window::_createDocumentWindow() {
         //Without this we never get any key inputs
         m_pbe_DocView->WindowActivated(true); // So the cursor shows up.
         m_pbe_DocView->MakeFocus(true);
+        
         return(m_pbe_DocView);                                    
 }
 
