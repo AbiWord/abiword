@@ -648,6 +648,8 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtCreateWidget( PtSeparator, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
 
 	listAlignment = PtCreateWidget( PtComboBox, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
+	litem[0] = " ";
+	PtListAddItems(listAlignment, litem, 1, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignLeft,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listAlignment, litem, 1, 0); FREEP(unixstr);
@@ -682,6 +684,8 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	listSpecial = PtCreateWidget( PtComboBox, NULL, sizeof(args10) / sizeof(PtArg_t), args10 );
 	PtListDeleteAllItems(listSpecial);
+	litem[0] = " ";
+	PtListAddItems(listSpecial, litem, 1, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listSpecial, litem, 1, 0); FREEP(unixstr);
@@ -728,6 +732,8 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	listLineSpacing = PtCreateWidget( PtComboBox, NULL, sizeof(args21) / sizeof(PtArg_t), args21 );
 	PtListDeleteAllItems(listLineSpacing);
+	litem[0] = " ";
+	PtListAddItems(listLineSpacing, litem, 1, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingSingle,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
