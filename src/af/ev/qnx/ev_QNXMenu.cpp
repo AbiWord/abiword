@@ -30,6 +30,7 @@
 #include "ev_QNXMenu.h"
 #include "xap_QNXApp.h"
 #include "xap_QNXFrameImpl.h"
+#include "ap_QNXFrameImpl.h"
 #include "xap_Frame.h"
 #include "ev_QNXKeyboard.h"
 #include "ev_Menu_Layouts.h"
@@ -218,14 +219,14 @@ static int s_menu_select(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 	
 static int s_menu_deselect(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
-		struct _cb_menu *mcb = (struct _cb_menu *)data;
+		EV_QNXMenu *pQNXMenu = (EV_QNXMenu *)data;
 
-		UT_ASSERT(mcb && mcb->qnxmenu);
-
-		XAP_Frame * pFrame = mcb->qnxmenu->getFrame();
+		XAP_Frame * pFrame = pQNXMenu->getFrame();
 		UT_ASSERT(pFrame);
 
 		pFrame->setStatusMessage(NULL);
+		static_cast<AP_QNXFrameImpl *>(pFrame->getFrameImpl())->setDocumentFocus();
+
 		return Pt_CONTINUE;
 }
 
@@ -364,7 +365,6 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				mcb->qnxmenu = this;
 				PtAddCallback(wbutton, Pt_CB_ACTIVATE, s_menu_activate, mcb);
 				PtAddCallback(wbutton, Pt_CB_ARM, s_menu_select, mcb);
-				PtAddCallback(wbutton, Pt_CB_DISARM, s_menu_deselect, mcb);
 
 				if (szMnemonicName && *szMnemonicName && get_hotkey_key(szMnemonicName) != '\0') {
 					PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow),
@@ -416,6 +416,7 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				if ((PtGetParent(wParent,PtMenuBar) && wParent == wMenuRoot)) {
 					PtAddCallback(wbutton, Pt_CB_ARM, s_menu_init, this);
 					PtAddCallback(wbutton, Pt_CB_ARM, s_menu_appear, wmenu);
+					PtAddCallback(wmenu,Pt_CB_UNREALIZED,s_menu_deselect,this);
 					PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow), 
 										tolower(accel[0]), Pk_KM_Alt, 
 										0, wmenu, s_menu_appear); 
@@ -615,7 +616,6 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						mcb->qnxmenu = this;
 						PtAddCallback(item, Pt_CB_ACTIVATE, s_menu_activate, mcb);
 						PtAddCallback(item, Pt_CB_ARM, s_menu_select, mcb);
-						PtAddCallback(item, Pt_CB_DISARM, s_menu_deselect, mcb);
 
 						//Now that we have an item, add it to the vector
 						m_vecMenuWidgets.setNthItem(k, item, NULL);
@@ -712,9 +712,12 @@ EV_QNXMenuBar::~EV_QNXMenuBar(void)
 
 bool EV_QNXMenuBar::synthesizeMenuBar(void)
 {
+	 PtArg_t args[2];
+	 int		 n=0;
 	 XAP_QNXFrameImpl *pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl()); 
 
-	m_wMenuBar = PtCreateWidget(PtMenuBar, pQNXFrameImpl->getTBGroupWidget(), 0, NULL);
+	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
+	m_wMenuBar = PtCreateWidget(PtMenuBar, pQNXFrameImpl->getTBGroupWidget(), n, args);
 	synthesizeMenu(m_wMenuBar);
 	return true;
 }
@@ -772,6 +775,8 @@ static int popup_unrealized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	PtSetArg(&arg, Pt_ARG_FLAGS,Pt_FALSE, Pt_BLOCKED);
 	PtSetResources(top, 1, &arg);
 
+	pFrame->setStatusMessage(NULL);
+	static_cast<AP_QNXFrameImpl *>(pFrame->getFrameImpl())->setDocumentFocus();
 	static_cast<XAP_QNXFrameImpl *>(pFrame->getFrameImpl())->setPopupDone(1);
 
 	return Pt_CONTINUE;
@@ -783,7 +788,6 @@ bool EV_QNXMenuPopup::synthesizeMenuPopup()
     PtArg_t args[10];
 	int 	n = 0;
 	 PtWidget_t *top =(static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow()); 
-	
 	m_wMenuPopup = PtCreateWidget(PtMenu, 
 								  top,
 								  n, args);
