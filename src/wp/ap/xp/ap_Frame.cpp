@@ -18,9 +18,9 @@
  */
 
 #include "ut_types.h"
+#include "ap_Frame.h"
 
 #if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__))
-#include "ap_Frame.h"
 #include "ap_FrameData.h"
 #include "fv_View.h"
 #include "xad_Document.h"
