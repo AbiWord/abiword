@@ -115,9 +115,7 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 		for ( UT_uint32 i=0; i < m_iLangCount;  i++ )
 		{
 			const XML_Char* s = m_ppLanguages[i];
-
             SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
-            SendMessage(hwndList, LB_SETITEMDATA, i, (LPARAM) i);  
         }
 		
 		// Initialize data based on m_pLangauge
@@ -137,7 +135,7 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
 	HWND hWndList = NULL; 
-	int nItem;
+	UT_sint32 nItem;
 
 	switch (wId)
 	{
