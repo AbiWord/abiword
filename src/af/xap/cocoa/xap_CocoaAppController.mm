@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+
+
+#include "ut_debugmsg.h"
+
+#include "xap_App.h"
+#include "xap_Frame.h"
+
+#include "ie_types.h"
 
 #import "xap_CocoaAppController.h"
 
@@ -44,6 +52,60 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	}
 	return XAP_AppController_Instance;
 }
+
+- (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key
+{
+	return [key isEqualToString:@"orderedDocuments"];
+}
+
+
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
+{
+	bool result;
+	UT_DEBUGMSG(("Requested to open %s\n", [filename UTF8String]));
+	XAP_App * pApp = XAP_App::getApp();
+	XAP_Frame * pNewFrame = pApp->newFrame();
+
+	result = pNewFrame->loadDocument([filename UTF8String], IEFT_Unknown);
+	/*
+		TODO: check what we should really do now
+	*/
+	pNewFrame->show();
+	return result;
+}
+
+- (BOOL)application:(NSApplication *)theApplication openTempFile:(NSString *)filename
+{
+	/*
+		TODO: really open temp file. ie, delete it when done
+	 */
+	UT_DEBUGMSG(("Requested to open temp file %s\n", [filename UTF8String]));
+	return [self application:theApplication openFile:filename];
+}
+
+- (BOOL)application:(NSApplication *)theApplication printFile:(NSString *)filename
+{
+	/*
+		TODO: really print the file.
+	 */
+	UT_DEBUGMSG(("Requested to print %s\n", [filename UTF8String]));
+	return [self application:theApplication openFile:filename];
+}
+
+- (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
+{
+	UT_DEBUGMSG(("Requested a new file\n"));
+	XAP_App * pApp = XAP_App::getApp();
+	XAP_Frame * pNewFrame = pApp->newFrame();
+	pNewFrame->show();
+	return YES;
+}
+
+- (NSMenu *)applicationDockMenu:(NSApplication *)sender
+{
+	return nil;
+}
+
 
 - (NSMenu *)getMenuBar
 {
