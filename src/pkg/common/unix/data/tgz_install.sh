@@ -23,6 +23,17 @@ DEFAULT_PREFIX=/usr/local
 DEFAULT_HOME=AbiSuite
 DEFAULT_LINK_DIR=/usr/local/bin
 
+# Test for SysV echo; NECHO is defined for "no newline" echos
+if [ "`echo 'echo\c'`" = "echo\c" ]
+then
+    NECHO="echo -n"
+    POSTNECHO=""
+else
+    NECHO="echo"
+    POSTNECHO="\c"
+fi
+ECHO="echo"
+
 # Program execution
 cat <<EOF
 
@@ -35,12 +46,12 @@ cat <<EOF
 EOF
 
 # Make sure the data file is really here
-if [ ! -f ${INSTALL_DATA_FILE} ]
+if [ ! -f $INSTALL_DATA_FILE ]
 then
-    echo ""
-    echo "Fatal error: can't find the file [${INSTALL_DATA_FILE}]"
-    echo "which contains AbiSuite program and data files."
-    echo ""
+    $ECHO ""
+    $ECHO "Fatal error: can't find the file [$INSTALL_DATA_FILE]"
+    $ECHO "which contains AbiSuite program and data files."
+    $ECHO ""
     exit 1
 fi
 
@@ -48,63 +59,63 @@ fi
 cat <<EOF
 
   Please specify the directory into which you would like to install AbiSuite.
-  The default directory is [${DEFAULT_PREFIX}/${DEFAULT_HOME}], 
+  The default directory is [$DEFAULT_PREFIX/$DEFAULT_HOME], 
   but you may provide an alternate path if you wish.  Hit "Enter" to use
   the default value.
 EOF
 
 GO=1
-while test ${GO} -eq 1
+while test $GO -eq 1
 do
-    echo ""
-    echo -n "Installation path for AbiSuite software [${DEFAULT_PREFIX}/${DEFAULT_HOME}]: "
+    $ECHO ""
+    $NECHO "Installation path for AbiSuite software [$DEFAULT_PREFIX/$DEFAULT_HOME]: $POSTNECHO"
     read INSTALL_BASE
 
     # did they use tildes for home dirs?
-    if [ ! -z "`echo ${INSTALL_BASE} | grep '~'`" ]
+    if [ ! -z "`echo $INSTALL_BASE | grep '~'`" ]
     then
-	INSTALL_BASE = `echo ${INSTALL_BASE} | sed "s:~:${HOME}:"`
+	LINK_DIR=`echo $INSTALL_BASE | sed "s:~:$HOME:"`
     fi
 
     # did they just hit enter?
-    if [ -z "${INSTALL_BASE}" ]
+    if [ -z "$INSTALL_BASE" ]
     then
-	INSTALL_BASE="${DEFAULT_PREFIX}/${DEFAULT_HOME}"
+	INSTALL_BASE="$DEFAULT_PREFIX/$DEFAULT_HOME"
     fi
 
     # GO off, passed tests
     GO=0
-    if [ ! -d ${INSTALL_BASE} ]
+    if [ ! -d $INSTALL_BASE ]
     then
-	echo ""
-	echo -n "The directory [${INSTALL_BASE}] does not exist; would you like to create it now? (y/n) [y]: "
+	$ECHO ""
+	$NECHO "The directory [$INSTALL_BASE] does not exist; would you like to create it now? (y/n) [y]: $POSTNECHO"
 	read CREATE_DIR
-	if [ "${CREATE_DIR}" = "n" -o "${CREATE_DIR}" = "N" ]
+	if [ "$CREATE_DIR" = "n" -o "$CREATE_DIR" = "N" ]
 	then
 	    GO=1
 	else
-	    mkdir -p ${INSTALL_BASE}
+	    mkdir -p $INSTALL_BASE
 	    if [ $? -ne 0 ]
 	    then
-		echo ""
-		echo "I couldn't create [${INSTALL_BASE}].  You are probably seeing this error"
- 		echo "because you do not have sufficient permission to perform this operation."
-		echo "You will most likely have to run this script as superuser to write to"
-		echo "system directories."
+		$ECHO ""
+		$ECHO "I couldn't create [$INSTALL_BASE].  You are probably seeing this error"
+ 		$ECHO "because you do not have sufficient permission to perform this operation."
+		$ECHO "You will most likely have to run this script as superuser to write to"
+		$ECHO "system directories."
 		# loop around again
 		GO=1
 	    fi
 	fi
     else
-	echo ""
-	echo "  I found an existing directory called [${INSTALL_BASE}].  You can choose"
-	echo "  to install into this directory, but existing files will be modified or"
-	echo "  replaced.  You can also choose not to install into this directory, and"
-	echo "  you will be prompted for another."
-	echo ""
-	echo -n "Do you want to install into [${INSTALL_BASE}]? (y/n) [y]: "
+	$ECHO ""
+	$ECHO "  I found an existing directory called [$INSTALL_BASE].  You can choose"
+	$ECHO "  to install into this directory, but existing files will be modified or"
+	$ECHO "  replaced.  You can also choose not to install into this directory, and"
+	$ECHO "  you will be prompted for another."
+	$ECHO ""
+	$NECHO "Do you want to install into [$INSTALL_BASE]? (y/n) [y]: $POSTNECHO"
 	read INSTALL_OVER
-	if [ "${INSTALL_OVER}" = "n" -o "${INSTALL_OVER}" = "N" ]
+	if [ "$INSTALL_OVER" = "n" -o "$INSTALL_OVER" = "N" ]
 	then
 	    GO=1
 	fi
@@ -115,10 +126,10 @@ done
 # Blow up our data file
 ########################################################################
 
-echo ""
-echo "Installing AbiSuite software in [${INSTALL_BASE}]..."
-cd ${INSTALL_BASE}
-tar xf ${INSTALL_DATA_FILE}
+$ECHO ""
+$ECHO "Installing AbiSuite software in [$INSTALL_BASE]..."
+cd $INSTALL_BASE
+tar xf $INSTALL_DATA_FILE
 
 ########################################################################
 # If we're on Solaris, do the PostScript resource thing.  This script
@@ -129,17 +140,17 @@ tar xf ${INSTALL_DATA_FILE}
 OS_NAME=`uname -s`
 OS_RELEASE_MAJOR=`uname -r | sed -e "s/\..*//"`
 
-if [ "${OS_NAME}" = "SunOS" -a "${OS_RELEASE_MAJOR}" = "5" ]
+if [ "$OS_NAME" = "SunOS" -a "$OS_RELEASE_MAJOR" = "5" ]
 then
-    if [ -d ${INSTALL_BASE}/fonts ]
+    if [ -d $INSTALL_BASE/fonts ]
     then
-	echo ""
-	echo "Building PostScript font resource database for installed fonts..."
-	cd ${INSTALL_BASE}/fonts
+	$ECHO ""
+	$ECHO "Building PostScript font resource database for installed fonts..."
+	cd $INSTALL_BASE/fonts
 	/usr/openwin/bin/makepsres
     fi
 fi
-cd ${INSTALL_BASE}
+cd $INSTALL_BASE
 
 ########################################################################
 # Dynamically construct a wrapper for AbiSuite binaries
@@ -147,13 +158,13 @@ cd ${INSTALL_BASE}
 
 # do AbiWord
 
-cat >${INSTALL_BASE}/bin/AbiWord<<EOF
+cat >$INSTALL_BASE/bin/AbiWord<<EOF
 #!/bin/sh
 
 # AbiWord wrapper script.
 
 # Change this if you move the AbiSuite tree.
-ABISUITE_HOME=${INSTALL_BASE}
+ABISUITE_HOME=$INSTALL_BASE
 export ABISUITE_HOME
 
 # Change this if you move your fonts
@@ -173,11 +184,11 @@ elif [ -f \$ABISUITE_HOME/bin/AbiWord_s ]
 then
     \$ABISUITE_HOME/bin/AbiWord_s \$*
 else
-    echo "Error: can't find AbiWord executables:"
-    echo "    \$ABISUITE_HOME/bin/AbiWord_d"
-    echo "    -or-"
-    echo "    \$ABISUITE_HOME/bin/AbiWord_s"
-    echo ""
+    $ECHO "Error: can't find AbiWord executables:"
+    $ECHO "    \$ABISUITE_HOME/bin/AbiWord_d"
+    $ECHO "    -or-"
+    $ECHO "    \$ABISUITE_HOME/bin/AbiWord_s"
+    $ECHO ""
     exit
 fi
 
@@ -188,7 +199,7 @@ then
 fi
 EOF
 
-chmod 755 ${INSTALL_BASE}/bin/AbiWord
+chmod 755 $INSTALL_BASE/bin/AbiWord
 
 ########################################################################
 # Ask the user if he would like to set up symlinks to the script
@@ -198,77 +209,77 @@ chmod 755 ${INSTALL_BASE}/bin/AbiWord
 cat <<EOF
 
   AbiSuite programs are now installed:
-      ${INSTALL_BASE}/bin/AbiWord
+      $INSTALL_BASE/bin/AbiWord
 
   As a convenience, I can install symbolic links to the installed
   executables so you and other users do not have to modify
   your paths to execute the AbiSuite programs.  For example, if you
-  proceed and specify "${DEFAULT_LINK_DIR}", I will create symbolic links like
-  "${DEFAULT_LINK_DIR}/AbiWord" and point them to the executable I just
+  proceed and specify "$DEFAULT_LINK_DIR", I will create symbolic links like
+  "$DEFAULT_LINK_DIR/AbiWord" and point them to the executable I just
   previously installed.
 EOF
 
 # go for symlinks
 GO=1
 ASKED_LINKS=0
-while test ${GO} -eq 1
+while test $GO -eq 1
 do
-    if [ ${ASKED_LINKS} -eq 0 ]
+    if [ $ASKED_LINKS -eq 0 ]
     then
 	ASKED_LINKS=1
-	echo ""
-	echo -n "Do you want to provide a directory for these symbolic links? (y/n) [y]: "
+	$ECHO ""
+	$NECHO "Do you want to provide a directory for these symbolic links? (y/n) [y]: $POSTNECHO"
 	read MAKE_LINKS
-	if [ "${MAKE_LINKS}" = "n" -o "${MAKE_LINKS}" = "N" ]
+	if [ "$MAKE_LINKS" = "n" -o "$MAKE_LINKS" = "N" ]
 	then
-	    echo ""
-	    echo "Installation complete."
-	    echo ""
+	    $ECHO ""
+	    $ECHO "Installation complete."
+	    $ECHO ""
 	    exit
 	fi
     fi
 
-    echo ""
-    echo "In which directory shall I install the symbolic links?"
-    echo -n "[${DEFAULT_LINK_DIR}]: "
+    $ECHO ""
+    $ECHO "In which directory shall I install the symbolic links?"
+    $NECHO "[$DEFAULT_LINK_DIR]: $POSTNECHO"
     read LINK_DIR
 
     # did they use tildes for home dirs?
-    if [ ! -z "`echo ${LINK_DIR} | grep '~'`" ]
+    if [ ! -z "`echo $LINK_DIR | grep '~'`" ]
     then
-	LINK_DIR=`echo ${LINK_DIR} | sed "s:~:${HOME}:"`
+	LINK_DIR=`echo $LINK_DIR | sed "s:~:$HOME:"`
     fi
 
     # did they just hit enter?
-    if [ -z "${LINK_DIR}" ]
+    if [ -z "$LINK_DIR" ]
     then
-	LINK_DIR="${DEFAULT_LINK_DIR}"
+	LINK_DIR="$DEFAULT_LINK_DIR"
     fi
 
     # GO off, passed tests
     GO=0
-    if [ ! -d ${LINK_DIR} ]
+    if [ ! -d $LINK_DIR ]
     then
-	echo ""
-	echo -n "The directory [${LINK_DIR}] does not exist; would you like to create it now? (y/n) [y]: "
+	$ECHO ""
+	$NECHO "The directory [$LINK_DIR] does not exist; would you like to create it now? (y/n) [y]: $POSTNECHO"
 	read CREATE_DIR
-	if [ "${CREATE_DIR}" = "n" -o "${CREATE_DIR}" = "N" ]
+	if [ "$CREATE_DIR" = "n" -o "$CREATE_DIR" = "N" ]
 	then
 	    GO=1
 	else
-	    mkdir -p ${LINK_DIR}
+	    mkdir -p $LINK_DIR
 	    if [ $? -ne 0 ]
 	    then
-		echo ""
-		echo "  I couldn't create [${LINK_DIR}].  You are probably seeing this error"
- 		echo "  because you do not have sufficient permission to perform this operation."
-		echo "  You will most likely have to run this script as superuser to write to"
-		echo "  system directories."
-		echo ""
-		echo "  If you wish, you can manually create these links at a later time."
-		echo "  You may cancel the installation of these links by issuing a"
-		echo "  terminal interrupt (usually Control-C), or you can provide another"
-		echo "  directory now."
+		$ECHO ""
+		$ECHO "  I couldn't create [$LINK_DIR].  You are probably seeing this error"
+ 		$ECHO "  because you do not have sufficient permission to perform this operation."
+		$ECHO "  You will most likely have to run this script as superuser to write to"
+		$ECHO "  system directories."
+		$ECHO ""
+		$ECHO "  If you wish, you can manually create these links at a later time."
+		$ECHO "  You may cancel the installation of these links by issuing a"
+		$ECHO "  terminal interrupt (usually Control-C), or you can provide another"
+		$ECHO "  directory now."
 		# loop again
 		GO=1
 	    fi
@@ -281,12 +292,15 @@ done
 # proper caps and one for the strong proponents of lowercase naming.
 #
 # Add more pairs here for any more binaries we install.
-ln -fs ${INSTALL_BASE}/bin/AbiWord ${LINK_DIR}/AbiWord
-ln -fs ${INSTALL_BASE}/bin/AbiWord ${LINK_DIR}/abiword
+
+# NOTE : Solaris ln doesn't seem to honor the -f (force flag), so
+# NOTE : we have to remove them first.
+rm -f $LINK_DIR/AbiWord; ln -s $INSTALL_BASE/bin/AbiWord $LINK_DIR/AbiWord
+rm -f $LINK_DIR/abiword; ln -s $INSTALL_BASE/bin/AbiWord $LINK_DIR/abiword
 
 ########################################################################
 # Bye!
 ########################################################################
-echo ""
-echo "Installation complete and symbolic links installed."
-echo ""
+$ECHO ""
+$ECHO "Installation complete and symbolic links installed."
+$ECHO ""
