@@ -63,6 +63,8 @@ public:
 
 	UT_Bool					getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
+	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
+											const PP_AttrProp ** ppAP) const;
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;

@@ -98,28 +98,32 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 	return NULL;
 }
 
-const char * PP_evalProperty(const PP_Property * pProp,
-							 const PP_AttrProp * pFmtNodeAttrProp,
-							 const PP_AttrProp * pBlockAttrProp,
-							 const PP_AttrProp * pSectionAttrProp)
+const XML_Char * PP_evalProperty(const XML_Char *  pszName,
+								 const PP_AttrProp * pSpanAttrProp,
+								 const PP_AttrProp * pBlockAttrProp,
+								 const PP_AttrProp * pSectionAttrProp)
 {
-	// TODO this routine needs to return an XML_Char
-
-	const char * szValue;
-
 	// find the value for the given property
 	// by evaluating it in the contexts given.
 	// use the CSS inheritance as necessary.
 
-	if (!pProp)
+	if (!pszName || !*pszName)
 	{
 		UT_DEBUGMSG(("PP_evalProperty: null property given\n"));
 		return NULL;
 	}
 
-	// see if the property is on the FmtNode item.
+	const XML_Char * szValue;
+	const PP_Property * pProp = PP_lookupProperty(pszName);
+	if (!pProp)
+	{
+		UT_DEBUGMSG(("PP_evalProperty: unknown property\n"));
+		return NULL;
+	}
 	
-	if (pFmtNodeAttrProp && pFmtNodeAttrProp->getProperty(pProp->getName(),szValue))
+	// see if the property is on the Span item.
+	
+	if (pSpanAttrProp && pSpanAttrProp->getProperty(pProp->getName(),szValue))
 		return szValue;
 
 	// otherwise, see if we can inherit it from the containing block or the section.

@@ -37,11 +37,16 @@ PT_VarSetIndex pf_Frag_Text::getVSindex(void) const
 	return m_vsIndex;
 }
 
+PT_AttrPropIndex pf_Frag_Text::getIndexAP(void) const
+{
+	return m_indexAP;
+}
+
 UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 {
 	UT_ASSERT(ppcr);
 	
-	PT_DocPosition docPos = 0;			// TODO
+	PT_DocPosition docPos = m_pPieceTable->getFragPosition(this);
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   UT_FALSE,UT_FALSE,docPos,m_vsIndex,

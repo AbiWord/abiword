@@ -45,8 +45,8 @@ public:
 };
 
 const PP_Property * PP_lookupProperty(const XML_Char * pszName);
-const XML_Char * PP_evalProperty(const PP_Property * pProp,
-								 const PP_AttrProp * pFmtNodeAttrProp,
+const XML_Char * PP_evalProperty(const XML_Char * pszName,
+								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp);
 

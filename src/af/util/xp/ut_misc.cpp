@@ -72,6 +72,7 @@ UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu
 }
 
 // TODO shouldn't we have a #000000 syntax like CSS?
+// TODO shouldn't we accept stock names (vga) colors, too?
 void UT_parseColor(const char *p, UT_RGBColor& c)
 {
 	UT_ASSERT(strlen(p) == 6);

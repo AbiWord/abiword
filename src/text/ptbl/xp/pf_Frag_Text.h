@@ -25,7 +25,8 @@ public:
 	pt_BufPosition			getOffset(void) const;
 	UT_uint32				getLength(void) const;
 	PT_VarSetIndex			getVSindex(void) const;
-
+	PT_AttrPropIndex		getIndexAP(void) const;
+	
 	virtual void			dump(FILE * fp) const;
 
 protected:

@@ -124,40 +124,32 @@ UT_uint32 FP_Run::getBlockOffset() const
 
 void FP_Run::lookupProperties(void)
 {
-#ifdef BUFFER	// lookupProperties
-	UT_uint32 iAbsolute = m_pBL->getPosition() + m_iOffsetFirst;
-	UT_uint32 posMarker;
-	DG_DocMarkerId idMarker;
-	DG_DocMarker* pMarker = NULL;
-	UT_Bool bResult;
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
+	
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,&pSpanAP);
+	m_pBL->getAttrProp(&pBlockAP);
+	
+	// TODO -- note that we currently assume font-family to be a single name,
+	// TODO -- not a list.  This is broken.
 
-	bResult = m_pBuffer->findMarker(UT_FALSE, iAbsolute, &posMarker, &idMarker, &pMarker);
-	UT_ASSERT(bResult);
-	UT_ASSERT(pMarker);
-	if (pMarker->getType() & DG_MT_END)
-	{
-		pMarker = pMarker->getParent();
-	}
+	m_pFont = m_pG->findFont(PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP),
+							 PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP),
+							 PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP),
+							 PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP),
+							 PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP),
+							 PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP));
+
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP), m_colorFG);
+
+	const XML_Char *pszDecor = PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP);
 
 	/*
-	  TODO -- note that we currently assume font-family to be a single name,
-	  not a list.  This is broken.
-	*/
-
-	m_pFont = m_pG->findFont(pMarker->getProperty(PP_lookupProperty("font-family")),
-							 pMarker->getProperty(PP_lookupProperty("font-style")),
-							 pMarker->getProperty(PP_lookupProperty("font-variant")),
-							 pMarker->getProperty(PP_lookupProperty("font-weight")),
-							 pMarker->getProperty(PP_lookupProperty("font-stretch")),
-							 pMarker->getProperty(PP_lookupProperty("font-size")));
-
-	UT_parseColor(pMarker->getProperty(PP_lookupProperty("color")), m_colorFG);
-
-	const char *pszDecor = pMarker->getProperty(PP_lookupProperty("text-decoration"));
-	/*
-	  m_fDecorations supports multiple simultanous decors.  Unfortunately,
+	  TODO -- m_fDecorations supports multiple simultanous decors.  Unfortunately,
 	  our use of UT_stricmp only allows one.
 	*/
+	
 	m_fDecorations = 0;
 	if (0 == UT_stricmp(pszDecor, "underline"))
 	{
@@ -171,15 +163,6 @@ void FP_Run::lookupProperties(void)
 	{
 		m_fDecorations |= TEXT_DECOR_LINETHROUGH;
 	}
-#else
-	// HACK something for now
-	m_pFont = m_pG->findFont("Times New Roman",
-							 "normal",
-							 "normal",
-							 "normal",
-							 "normal",
-							 "14pt");
-#endif /* BUFFER */
 
 	m_pG->setFont(m_pFont);
 	m_iAscent = m_pG->getFontAscent();	

@@ -177,7 +177,7 @@ UT_Bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 	if (pVecAttributes && (pVecAttributes->getItemCount() > 0))
 		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(pVecAttributes,
 													  &loading.m_indexCurrentInlineAP))
-		return UT_FALSE;
+			return UT_FALSE;
 
 	return UT_TRUE;
 }
@@ -273,6 +273,42 @@ UT_Bool pt_PieceTable::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex inde
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
+									   const PP_AttrProp ** ppAP) const
+{
+	UT_ASSERT(sdh);
+	UT_ASSERT(ppAP);
+
+	pf_Frag * pf = (pf_Frag *)sdh;
+	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+
+	UT_uint32 cumOffset = 0;
+	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
+	{
+		if (pfTemp->getType() != pf_Frag::PFT_Text)
+			continue;
+
+		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
+		
+		// TODO consider moving the guts of this loop to pf_Frag_Text.cpp
+		
+		if ((offset >= cumOffset) && (offset < cumOffset+pfText->getLength()))
+		{
+			const PP_AttrProp * pAP = m_vs[pfText->getVSindex()].m_tableAttrProp.getAP(pfText->getIndexAP());
+			if (!pAP)
+				return UT_FALSE;
+
+			*ppAP = pAP;
+			return UT_TRUE;
+		}
+
+		cumOffset += pfText->getLength();
+	}
+	return UT_FALSE;
+}
+
 const UT_UCSChar * pt_PieceTable::getPointer(PT_VarSetIndex vsIndex, pt_BufPosition bufPos) const
 {
 	UT_ASSERT(vsIndex < NrElements(m_vs));
@@ -318,6 +354,32 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 	return UT_FALSE;
 }
 
+PT_DocPosition pt_PieceTable::getStruxPosition(PL_StruxDocHandle sdh) const
+{
+	// return absolute document position of the given handle.
+
+	pf_Frag * pfToFind = (pf_Frag *)sdh;
+
+	return getFragPosition(pfToFind);
+}
+
+PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
+{
+	PT_DocPosition sum = 0;
+
+	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	{
+		if (pf == pfToFind)
+			return sum;
+		if (pf->getType() == pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
+			sum += pfText->getLength();
+		}
+	}
+	UT_ASSERT(0);
+	return 0;
+}
 
 void pt_PieceTable::dump(FILE * fp) const
 {

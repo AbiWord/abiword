@@ -47,6 +47,7 @@ public:
 	PTStruxType			getType(void) const;
 	void				setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex);
 	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
+	UT_Bool				getSpanAttrProp(UT_uint32 offset, const PP_AttrProp ** ppAP) const;
 	
 protected:
 	PTStruxType				m_type;
