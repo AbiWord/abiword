@@ -18,9 +18,11 @@
  */
 
 #include <locale.h>
+#include <ctype.h>
 
 #include "ut_string.h"
 #include "ut_types.h"
+#include "ut_misc.h"
 #include "ut_units.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -574,7 +576,7 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 	// FIXME: put something useful here
 	m_pie->write(" columnspacing=\"0\"");
 	
-	char buf[20]; // FIXME: EVIL! Bad! No hard-coded buffers!
+	char buf[20]; 
 	m_pie->write(" width=\"");
 	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(kword_1_unit));
 	m_pie->write((char *)buf);
@@ -707,7 +709,7 @@ void s_KWord_1_Listener::_openSection(PT_AttrPropIndex api)
 	// These make the frame act like a normal main document frame
 	m_pie->write(" autoCreateNewFrame=\"1\"");
 	m_pie->write(" newFrameBehaviour=\"0\"");
-	m_pie->write("/>");
+	m_pie->write("/>\n");
 }
 
 // FIXME: prototype this
@@ -1042,15 +1044,34 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 		// query and output properties
 		const XML_Char * szValue;
 
-#if 0
 		// <COLOR red="" green="" blue=""/> er, what is the range for these?
 		if (pAP->getProperty("color", szValue))
 		{
-			USED();
-			m_pie->write("color=\"#");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
+		  char red[4], green[4], blue[4];
+		  UT_RGBColor rgb;
+
+		  // convert from hex/decimal
+
+		  UT_parseColor(szValue, rgb);
+
+		  memset(red, 0, sizeof(red));
+		  memset(green, 0, sizeof(green));
+		  memset(blue, 0, sizeof(blue));
+		  
+		  sprintf(red, "%d", rgb.m_red);
+		  sprintf(green, "%d", rgb.m_grn);
+		  sprintf(blue, "%d", rgb.m_blu);
+
+		  m_sFormats += "<COLOR red=\"";
+		  m_sFormats += red;
+		  m_sFormats += "\" green=\"";
+		  m_sFormats += green;
+		  m_sFormats += "\" blue=\"";
+		  m_sFormats += blue;
+		  m_sFormats += "\"/>\n";
 		}
+
+#if 0
 
 		// FIXME: does KWord support background color for spans of text?
 		if (pAP->getProperty("bgcolor", szValue))
