@@ -18,16 +18,14 @@
 
 include $(top_srcdir)/includes.mk
 
-SUBDIRS= xp @PLATFORM@
+INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
+        $(TEXT_INCLUDES) $(AF_INCLUDES)  $(ICONV_INCLUDES) \
+        $(LIBPNG_INCLUDES) $(OTHER_INCLUDES)	 \
+	@GMODULE_CFLAGS@ @GTK_CFLAGS@ @GNOME_CFLAGS@
 
-noinst_LIBRARIES= libImpExp.a
 
-if WITH_GNOME
-objects = $(ABI_GNOME_OBJECTS)
-else
-objects = $(ABI_OBJECTS)
-endif
+noinst_LIBRARIES = libImpExp_Gnome.a
 
-libImpExp_a_SOURCES = 
-
-libImpExp_a_LIBADD = $(objects)
+libImpExp_Gnome_a_SOURCES=\
+	ie_impGraphic_GdkPixbuf.cpp	\
+	ie_impexp_RegisterGnome.cpp

@@ -35,10 +35,10 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 
 ifdef ABI_OPT_LIBXML2
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
+			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv
 else 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
+			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv
 endif
 
 # fribidi library

@@ -1,5 +1,7 @@
-## AbiSource Applications
-## Copyright (C) 2001 Sam Tobin-Hochstadt
+#! gmake
+
+## AbiWord
+## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -16,18 +18,15 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-include $(top_srcdir)/includes.mk
+ABI_ROOT:=$(shell pwd)/../../../../..
 
-SUBDIRS= xp @PLATFORM@
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-noinst_LIBRARIES= libImpExp.a
 
-if WITH_GNOME
-objects = $(ABI_GNOME_OBJECTS)
-else
-objects = $(ABI_OBJECTS)
-endif
+CPPSRCS=		ie_impGraphic_GdkPixbuf.cpp  ie_impexp_RegisterGnome.cpp
 
-libImpExp_a_SOURCES = 
+TARGETS=		$(OBJS)
 
-libImpExp_a_LIBADD = $(objects)
+include $(ABI_ROOT)/src/config/abi_rules.mk
+
+build:: $(TARGETS)

@@ -24,19 +24,14 @@ else
 JPEG_SUPPORT_OBJ=
 endif
 
-if WITH_GNOME
-PIXBUF_SUPPORT_OBJ=ie_impGraphic_GdkPixbuf.cpp	
-else
-PIXBUF_SUPPORT_OBJ=
-endif
 
 INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 	$(TEXT_INCLUDES) $(AF_INCLUDES) $(WV_INCLUDES) $(ICONV_INCLUDES) \
 	$(LIBPNG_INCLUDES) $(OTHER_INCLUDES)
 
-noinst_LIBRARIES = libImpexp.a
+noinst_LIBRARIES = libImpExp_xp.a
 
-libImpexp_a_SOURCES=\
+libImpExp_xp_a_SOURCES=\
 	ie_impexp_Register.cpp			\
 	ie_impexp_MSWrite.cpp			\
 	ie_exp.cpp				\
@@ -81,7 +76,6 @@ libImpexp_a_SOURCES=\
 	ie_impGraphic_BMP.cpp			\
 	ie_impGraphic_WMF.cpp			\
 	$(JPEG_SUPPORT_OBJ)			\
-	$(PIXBUF_SUPPORT_OBJ)			\
 	ie_imp_Psion.cpp			\
 	ie_imp_PalmDoc.cpp			\
 	ie_imp_ISCII.cpp			\

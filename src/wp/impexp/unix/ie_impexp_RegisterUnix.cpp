@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,12 +19,23 @@
  */
 
 
-#ifndef IE_IMPEXP_REGISTER_H
-#define IE_IMPEXP_REGISTER_H
 
+#include "ie_imp.h"
+#include "ie_exp.h"
+#include "ie_impexp_Register.h"
 
-void IE_ImpExp_RegisterXP ();
-void IE_ImpExp_RegisterPlatform ();	// must be implemented by the platform
-void IE_ImpExp_UnRegisterXP ();
-
+#if defined(HAVE_GNOME)
+	void IE_ImpExp_RegisterGnome (void);
 #endif
+
+/*!
+  Register all GNOME Importer and Exporter
+  Should be called from AP_<FE>App
+ */
+void IE_ImpExp_RegisterPlatform ()
+{
+#if defined(HAVE_GNOME)
+	IE_ImpExp_RegisterGnome ();
+#endif
+}
+    

@@ -78,14 +78,8 @@ ifeq ($(ABI_OPT_LIBJPEG),1)
 CPPSRCS += ie_impGraphic_JPEG.cpp
 endif
 
-ifeq ($(ABI_OPT_GNOME),1)
-CPPSRCS += ie_impGraphic_GdkPixbuf.cpp
-endif
 
-
-LIBRARY_NAME=		AbiImpExp
-LIBRARY_VERSION=	$(ABI_VERSION)
-TARGETS=		$(LIBRARY)
+TARGETS=		$(OBJS)
 
 ifeq ($(OS_NAME), WIN32) 
 INCLUDES= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../wv/exporter -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../libiconv/include -I$(ABI_XX_ROOT)/../psiconv

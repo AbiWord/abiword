@@ -78,9 +78,6 @@
 #include "ie_impGraphic_JPEG.h"
 #endif
 
-#ifdef HAVE_GNOME
-#include "ie_impGraphic_GdkPixbuf.h"
-#endif
 
 void IE_ImpExp_UnRegisterXP ()
 {
@@ -105,9 +102,6 @@ void IE_ImpExp_RegisterXP ()
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicSVG_Sniffer ());
 #ifdef HAVE_LIBWMF
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicWMF_Sniffer ());
-#endif
-#ifdef HAVE_GNOME
-  IE_ImpGraphic::registerImporter(new IE_ImpGraphicPixbufGraphic_Sniffer ());
 #endif
   /* now text-file types */
 
@@ -160,5 +154,7 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
+	/* Register platform specific. */
+	IE_ImpExp_RegisterPlatform ();
 }
     
