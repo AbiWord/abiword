@@ -212,7 +212,7 @@ void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 	}
 }
 
-void AP_Dialog_Styles::_populatePreviews(void)
+void AP_Dialog_Styles::_populatePreviews(bool isModify)
 {
 	PD_Style * pStyle = NULL;
 	const char * szStyle = NULL;
@@ -239,7 +239,11 @@ void AP_Dialog_Styles::_populatePreviews(void)
 	if (m_pDoc->getStyle (szStyle, &pStyle))
 	{
 		UT_uint32 i;
-		UT_String strDesc;
+//
+// Clear any previous stuff from our style description. This description must
+// persist beyond this method because we want to modify it.
+//
+		m_curStyleDesc = "";
 
 	    // first loop through and pass out each property:value combination for paragraphs
 		for(i = 0; i < nParaFlds; i++)
@@ -254,10 +258,10 @@ void AP_Dialog_Styles::_populatePreviews(void)
 					continue;
 				}
 				
-			strDesc += (const char *)szName;
-			strDesc += ":";
-			strDesc += (const char *)szValue;
-			strDesc += "; ";
+			m_curStyleDesc += (const char *)szName;
+			m_curStyleDesc += ":";
+			m_curStyleDesc += (const char *)szValue;
+			m_curStyleDesc += "; ";
 
 			paraValues[i] = szValue;
 		}
@@ -280,10 +284,10 @@ void AP_Dialog_Styles::_populatePreviews(void)
 					continue;
 				}
 
-			strDesc += (const char *)szName;
-			strDesc += ":";
-			strDesc += (const char *)szValue;
-			strDesc += "; ";
+			m_curStyleDesc += (const char *)szName;
+			m_curStyleDesc += ":";
+			m_curStyleDesc += (const char *)szValue;
+			m_curStyleDesc += "; ";
 
 			charValues[i] = szValue;
 //
@@ -294,21 +298,29 @@ void AP_Dialog_Styles::_populatePreviews(void)
 					
 		}
 
-		if (!strDesc.empty())
+		if (!m_curStyleDesc.empty())
 		{
-			setDescription (strDesc.c_str());
-
+			if(!isModify)
+			{
+				setDescription (m_curStyleDesc.c_str());
+			}
+			else
+			{
+				setModifyDescription (m_curStyleDesc.c_str());
+			}
 			// these aren't set at a style level, but we need to put them in there anyway
 			const XML_Char ** props_in = NULL;
 			m_pView->getSectionFormat(&props_in);
-
-			event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in), 
+			
+			if(!isModify)
+				event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in), 
 									 UT_getAttribute("page-margin-right", props_in),
 									 (const XML_Char *)paraValues[0], (const XML_Char *)paraValues[1],
 									 (const XML_Char *)paraValues[2], (const XML_Char *)paraValues[3], 
 									 (const XML_Char *)paraValues[4], (const XML_Char *)paraValues[5],
 									 (const XML_Char *)paraValues[6]);
-			event_charPreviewUpdated();
+			if(!isModify)
+				event_charPreviewUpdated();
 		}
 	}
 }

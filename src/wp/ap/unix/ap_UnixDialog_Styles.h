@@ -59,8 +59,16 @@ public:
 	virtual void event_ModifyClicked(void);
 	virtual void event_ClistClicked(int row, int col);
 	virtual void event_ListClicked(const char * which);
-
 	virtual void			event_WindowDelete(void);
+
+/////////////////////////////////////////////////////////////////////////
+// Modify window
+/////////////////////////////////////////////////////////////////////////
+
+	void         event_Modify_OK(void);
+	void         event_Modify_Cancel(void);
+	void         event_ModifyDelete(void);
+	void         modifyRunModal(void);
 
 protected:
 
@@ -76,7 +84,7 @@ protected:
 
 	GR_UnixGraphics	* 		m_pParaPreviewWidget;
 	GR_UnixGraphics	* 		m_pCharPreviewWidget;
-	
+
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
@@ -95,6 +103,38 @@ protected:
 
 	gint m_whichRow, m_whichCol;
 	StyleType m_whichType;
+
+//////////////////////////////////////////////////////////////////////////
+// Modify window
+/////////////////////////////////////////////////////////////////////////
+
+	GtkWidget * _constructModifyDialog(void);
+	void        _constructGnomeModifyButtons( GtkWidget * dialog_sction_area1);
+	void        _constructFormatList(GtkWidget * FormatMenu);
+	void        _connectModifySignals(void);
+	void        _constructModifyDialogContents(GtkWidget * modifyDialog);
+	virtual void setModifyDescription( const char * desc);
+	void        _populateModify(void);
+
+	GtkWidget *	m_wModifyDialog;
+	GtkWidget *	m_wStyleNameEntry;
+	GtkWidget *	m_wBasedOnCombo;
+	GtkWidget *	m_wBasedOnEntry;
+	GtkWidget * m_wFollowingCombo;
+	GtkWidget *	m_wFollowingEntry;
+	GtkWidget *	m_wModifyDrawingArea;
+	GtkWidget *	m_wLabDescription;
+
+	GtkWidget *	m_wModifyOk;
+	GtkWidget *	m_wModifyCancel;
+	GtkWidget *	m_wFormatMenu;
+	GtkWidget *	m_wModifyShortCutKey;
+
+	GtkWidget *	m_wFormat;
+	GtkWidget *	m_wModifyParagraph;
+	GtkWidget *	m_wModifyFont;
+	GtkWidget *	m_wModifyNumbering;
+
 };
 
 #endif /* AP_UnixDialog_Styles_H */

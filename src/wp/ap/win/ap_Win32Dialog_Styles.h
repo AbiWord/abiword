@@ -39,6 +39,7 @@ protected:
 
 	virtual const char * getCurrentStyle (void) const {return (const char *)NULL;}
 	virtual void setDescription (const char * desc) const {}
+	virtual void setModifyDescription (const char * desc) {}
 
 };
 
