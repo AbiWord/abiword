@@ -88,12 +88,13 @@ UT_sint32 UT_BEOSTimer::set(UT_uint32 iMilliseconds)
 	  for other platforms.
 	*/
 
-	UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer set\n"));
+	UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer set %d ms\n", iMilliseconds));
 
 /*
 	UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
 	setIdentifier(idTimer);
 */
+	setIdentifier(0);
 	
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
@@ -112,7 +113,7 @@ void UT_BEOSTimer::stop(void)
 */
 	m_bStarted = UT_FALSE;
 
-	//UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
+	UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
 }
 
 void UT_BEOSTimer::start(void)
