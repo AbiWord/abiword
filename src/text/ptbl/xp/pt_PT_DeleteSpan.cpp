@@ -396,7 +396,6 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
                 //  if we delete a whole lot of blank lines. These get popped off then deleted
                 //  only to find the same pointer waiting to come off the stack.
 				pf_Frag * pScan = pf_Before->getNext();
-				UT_uint32 count = 0;
 				while(pScan && pScan != pf_Last && (pScan->getType() != pf_Frag::PFT_Strux))
 				{
 					pScan = pScan->getNext();
