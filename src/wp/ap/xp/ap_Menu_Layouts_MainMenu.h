@@ -79,12 +79,12 @@ BeginLayout(Main,0)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_VIEW)
-#ifdef DEBUG
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
+#ifdef DEBUG
 		MenuItem(AP_MENU_ID_VIEW_WEB)
+#endif
 		MenuItem(AP_MENU_ID_VIEW_PRINT)
 		Separator()
-#endif
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
 			MenuItem(AP_MENU_ID_VIEW_TB_STD)
 			MenuItem(AP_MENU_ID_VIEW_TB_FORMAT)
@@ -174,7 +174,9 @@ BeginLayout(Main,0)
 
                 Separator()
                 BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
-	                    MenuItem(AP_MENU_ID_INSERT_CLIPART)
+#ifdef HAVE_GNOME // only enabled for GNOME builds in the 0.9.0 release
+	                MenuItem(AP_MENU_ID_INSERT_CLIPART)
+#endif
                         MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
                 EndSubMenu()
 	EndSubMenu()
