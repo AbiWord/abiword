@@ -288,6 +288,7 @@ protected:
 	UT_Bool					_computeFmtMarkForNewBlock(pf_Frag_Strux * pfsBlock,
 													   PT_AttrPropIndex * pFmtMarkAP);
 	UT_Bool					_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const;
+	UT_Bool					_lastUndoIsThisFmtMark(PT_DocPosition dpos);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

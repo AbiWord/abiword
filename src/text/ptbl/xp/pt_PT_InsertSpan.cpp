@@ -235,6 +235,30 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
+{
+	PX_ChangeRecord * pcr;
+	UT_Bool bHaveUndo = m_history.getUndo(&pcr);
+
+	// since we don't load _FmtMarks from disk this one must be from an edit operation.
+	UT_ASSERT(bHaveUndo && pcr);	
+
+	if (!pcr)
+		return UT_FALSE;
+	if (pcr->getPosition() != dpos)
+		return UT_FALSE;
+	
+	switch (pcr->getType())
+	{
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+	case PX_ChangeRecord::PXT_ChangeFmtMark:
+		return UT_TRUE;
+
+	default:
+		return UT_FALSE;
+	}
+}
+
 UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
 								  UT_uint32 length)
@@ -280,34 +304,70 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	
 	if ( (fragOffset==0) && (pf->getPrev()) )
 	{
-		bNeedGlob = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
-		if (bNeedGlob)
+		UT_Bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
+		if (bRightOfFmtMark)
 		{
 			// if we're just to the right of a _FmtMark, we want to replace
 			// it with a _Text frag with the same attr/prop (we
 			// only used the _FmtMark to remember a toggle format
 			// before we had text for it).
 
-			// NOTE: this messes up the undo coalescing.  that is, if the user
-			// NOTE: hits the BOLD button and then starts typing and then hits
-			// NOTE: UNDO, we erase all of the typing except for the first character.
-			// NOTE: the second UNDO, erases the first character and restores the
-			// NOTE: FmtMark.  (the third UNDO would clear the FmtMark.)
-			//
-			// TODO decide if we like this...
-			//
-			// TODO really it's the globbing that messes things up.  perhaps we
-			// TODO should consider as an alternative not putting these two events
-			// TODO into a glob -- do an UNDO on the FmtMark (but remember the
-			// TODO settings) and then the insert (using the remembered settings).
-			// TODO them the user would see a single UNDO to erase all of the
-			// TODO typing (and the FmtChange), subsequent input would be like
-			// TODO the surrounding text....
-			
 			pf_Frag_FmtMark * pfPrevFmtMark = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
 			indexAP = pfPrevFmtMark->getIndexAP();
-			beginMultiStepGlob();
-			_deleteFmtMarkWithNotify(dpos,pfPrevFmtMark,pfs,&pf,&fragOffset);
+
+			if (_lastUndoIsThisFmtMark(dpos))
+			{
+				// if the last thing in the undo history is the insertion of this
+				// _FmtMark, then let's remember the indexAP, do an undo, and then
+				// insert the text.  this way the only thing remaining in the undo
+				// is the insertion of this text (with no globbing around it).  then
+				// a user-undo will undo all of the coalesced text back to this point
+				// and leave the insertion point as if the original InsertFmtMark
+				// had never happened.
+				//
+				// we don't allow consecutive FmtMarks, but the undo may be a
+				// changeFmtMark and thus just re-change the mark frag rather
+				// than actually deleting it.  so we loop here to get back to
+				// the original insertFmtMark (this is the case if the user hit
+				// BOLD then ITALIC then UNDERLINE then typed a character).
+
+				do { undoCmd(); } while (_lastUndoIsThisFmtMark(dpos));
+			}
+			else
+			{
+				// for some reason, something else has happened to the document
+				// since this _FmtMark was inserted (perhaps it was one that we
+				// inserted when we did a paragraph break and inserted several
+				// to remember the current inline formatting).
+				//
+				// here we have to do it the hard way and use a glob and an
+				// explicit deleteFmtMark.  note that this messes up the undo
+				// coalescing.  that is, if the user starts typing at this
+				// position and then hits UNDO, we will erase all of the typing
+				// except for the first character.  the second UNDO, will erase
+				// the first character and restores the current FmtMark.  if the
+				// user BACKSPACES instead of doing the second UNDO, both the
+				// first character and the FmtMark would be gone.
+				//
+				// TODO decide if we like this...
+
+				bNeedGlob = UT_TRUE;
+				beginMultiStepGlob();
+				_deleteFmtMarkWithNotify(dpos,pfPrevFmtMark,pfs,&pf,&fragOffset);
+			}
+
+			// we now need to consider pf invalid, since the fragment list may have
+			// been coalesced as the FmtMarks were deleted.  let's recompute them
+			// but with a few shortcuts.
+
+			bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+			UT_ASSERT(bFound);
+			bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			UT_ASSERT(bFoundStrux);
+
+			// with the FmtMark now gone, we make a minor adjustment so that we
+			// try to append text to the previous rather than prepend to the current.
+			// this makes us consistent with other places in the code.
 
 			if ( (fragOffset==0) && (pf->getPrev()) && (pf->getPrev()->getType() == pf_Frag::PFT_Text) )
 			{
