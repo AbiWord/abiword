@@ -271,6 +271,12 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 
 const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision)
 {
+	if (!sz)
+	{
+		//catch NULLs and make them 0 
+		sz = "0.0in";
+		UT_DEBUGMSG(("UT_reformatDimensionString just made the assumption null = 0.0in\n"));
+	}
 	double d = UT_convertDimensionless(sz);
 
 	// if needed, switch unit systems and round off

@@ -43,15 +43,13 @@
 
 /*****************************************************************/
 
-XAP_Dialog * AP_UnixDialog_Columns::static_constructor(XAP_DialogFactory * pFactory,
-													   XAP_Dialog_Id id)
+XAP_Dialog * AP_UnixDialog_Columns::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
 	AP_UnixDialog_Columns * p = new AP_UnixDialog_Columns(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
+AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_Columns(pDlgFactory,id)
 {
 	m_windowMain = NULL;

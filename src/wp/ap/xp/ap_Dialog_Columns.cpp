@@ -158,12 +158,19 @@ double AP_Dialog_Columns::getIncrement(const char * sz)
 */
 void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 {
+	XML_Char  pszAfter[25];
+	XML_Char  pszMaxHeight[25];
+	
 	m_pView = (FV_View *) pFrame->getCurrentView();
 	m_pDoc = m_pView->getDocument();
 	const XML_Char ** pszSecProps = NULL;
 	m_pView->getSectionFormat(&pszSecProps);
-	const XML_Char * pszAfter = UT_getAttribute("section-space-after",pszSecProps);
-	const XML_Char * pszMaxHeight =  UT_getAttribute("section-max-column-height",pszSecProps);
+		
+	_convertToPreferedUnits( pFrame, (const XML_Char *)
+	UT_getAttribute("section-space-after",pszSecProps), (const XML_Char *)pszAfter);
+	_convertToPreferedUnits( pFrame, (const XML_Char *)
+	UT_getAttribute("section-max-column-height",pszSecProps), (const XML_Char *)pszMaxHeight);	
+	
 	if(pszAfter && *pszAfter)
 	{
 		m_SpaceAfterString =  (const char *) pszAfter;
@@ -350,6 +357,24 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 	rect.top += 2;
 	rect.height -= 4;
 	m_previewDrawer.draw(gc, rect, iColumns, false, 0.0, 0.0);
+}
+
+/*!
+ * Converts the string sz into the units seleced for the ruler.
+\params XAP_Frame * pFrame defined the frame of the application
+\params const char * sz is the string containing the old value
+\params const XML_Char * pRet is the string to which the new value is copied.
+*/
+void AP_Dialog_Columns::_convertToPreferedUnits(XAP_Frame * pFrame,const char *sz, const XML_Char *pRet)
+{
+	UT_Dimension PreferedUnits = DIM_none;
+	const XML_Char * pszRulerUnits = NULL;
+	
+	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
+	{
+		PreferedUnits = UT_determineDimension((char *)pszRulerUnits);
+	};
+	UT_XML_strncpy((XML_Char *) pRet, 25, (const XML_Char *) UT_reformatDimensionString(PreferedUnits,sz));
 }
 
 	

@@ -31,6 +31,11 @@ class AP_Dialog_Columns;
 
 #include "xap_Preview.h"
 
+// this is needed to get the ruler units.
+#include "ap_StatusBar.h"
+#include "ut_units.h"
+
+
 class AP_Columns_preview_drawer
 {
 public:
@@ -100,7 +105,8 @@ protected:
 							UT_uint32 width,
 							UT_uint32 height);
 	void			   _drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns);
-
+	void			_convertToPreferedUnits(XAP_Frame * pFrame,const
+	char *sz, const XML_Char *pRet);
 	AP_Dialog_Columns::tAnswer m_answer;
 	AP_Columns_preview *	   m_pColumnsPreview;
 	AP_Columns_preview_drawer  m_previewDrawer;
