@@ -1001,6 +1001,10 @@ Defun1(fileOpen)
 
 		bRes = pFrame->loadDocument(pNewFile);
 
+		// HACK: at least make something show
+		if (!bRes)
+			bRes = pFrame->loadDocument(NULL);
+
 		if (pNewFrame)
 			pNewFrame->show();
 
@@ -1648,6 +1652,14 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		cf.rgbColors = rgbCurrent;
 	}
 
+	UT_Bool bClobberXLFD = UT_FALSE;
+
+	s = UT_getAttribute("font-xlfd", props_in);
+	if (s)
+	{
+		bClobberXLFD = UT_TRUE;
+	}
+
 	free(props_in);
 
 	// raise the dialog
@@ -1743,13 +1755,16 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		props_out[i+1] = buf_color;
 		i += 2;
 		
-		/*
-		  XLFD is set to emtpy ("") on Windows so that X will
-		  force it self to read from the "updated" CSS-style
-		  properties first.
-		*/
-		props_out[i] = "font-xlfd";
-		props_out[i+2] = "";
+		if (bClobberXLFD)
+		{
+			/*
+			  XLFD is set to something bogus on Windows so that X will
+			  force it self to read from the "updated" CSS-style
+			  properties first.
+			*/
+			props_out[i] = "font-xlfd";
+			props_out[i+1] = "hack";
+		}
 		
 		pView->setCharFormat(props_out);
 
