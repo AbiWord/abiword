@@ -1683,7 +1683,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
  */
 void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 {
-	UT_Rect greyBit;
+	UT_Rect lCell, cCell, rCell;
 	UT_sint32 left,right,top,height;
 	if(pInfo->m_vecTableColInfo)
 	{
@@ -1698,7 +1698,7 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 			if(iCell == 0)
 			{
-				left = xAbsLeft +  pCellInfo->m_iLeftCellPos -  pCellInfo->m_iLeftSpacing;
+				left = xAbsLeft + pCellInfo->m_iLeftCellPos -  pCellInfo->m_iLeftSpacing;
 			}
 			else
 			{
@@ -1711,17 +1711,20 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 		{
 			AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo->getNthItem(nCells-1);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
-			right = xAbsLeft +  pCellInfo->m_iRightCellPos;
-			left = right  - pCellInfo->m_iRightSpacing;
+			right = xAbsLeft + pCellInfo->m_iRightCellPos;
+			left = right - pCellInfo->m_iRightSpacing;
 			right +=  pCellInfo->m_iRightSpacing;
 		}
 		top = s_iFixedHeight / 4;
 		height =  s_iFixedHeight / 2;
-		greyBit.set(left, top, right - left,height);
-//
-// Grey background
-//
-		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, greyBit);
+		
+		lCell.set(left, top, 2, height);
+		cCell.set(left + 2, top, right - left - 2 * 2,height);
+		rCell.set(right - 2, top, 2, height);
+		
+		m_pG->fillRect(GR_Graphics::CLR3D_Background, lCell);
+		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, cCell);
+		m_pG->fillRect(GR_Graphics::CLR3D_Background, rCell);
 	}
 }
 
@@ -1955,6 +1958,35 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			if(rCell.containsPoint(x,y))
 			{
 				bFound = true;
+				
+				// determine the range in which this cell marker can be dragged
+				UT_sint32 nCells = m_infoCache.m_vecTableColInfo->getItemCount();
+				UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+				UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+				UT_sint32 xExtraMargin = 3; // keep an extra margin 3 pixels; there must be some space left to enter text in
+				if (i == 0)
+				{
+					AP_TopRulerTableInfo * pCurrentCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i);
+					
+					m_iMinCellPos = xAbsLeft;
+					m_iMaxCellPos = xAbsLeft + pCurrentCellInfo->m_iRightCellPos - pCurrentCellInfo->m_iRightSpacing - pCurrentCellInfo->m_iLeftSpacing - xExtraMargin;
+				}
+				else if (i == m_infoCache.m_iCells)
+				{
+					AP_TopRulerTableInfo * pPrevCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+					
+					m_iMinCellPos = xAbsLeft + pPrevCellInfo->m_iLeftCellPos + pPrevCellInfo->m_iLeftSpacing + pPrevCellInfo->m_iRightSpacing + xExtraMargin;
+					m_iMaxCellPos = xAbsRight;
+				}
+				else
+				{
+					AP_TopRulerTableInfo * pPrevCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+					AP_TopRulerTableInfo * pCurrentCellInfo = (AP_TopRulerTableInfo *)m_infoCache.m_vecTableColInfo->getNthItem(i);
+					
+					m_iMinCellPos = xAbsLeft + pPrevCellInfo->m_iLeftCellPos + pPrevCellInfo->m_iLeftSpacing + pPrevCellInfo->m_iRightSpacing + xExtraMargin;
+					m_iMaxCellPos = xAbsLeft + pCurrentCellInfo->m_iRightCellPos - pCurrentCellInfo->m_iRightSpacing - pCurrentCellInfo->m_iLeftSpacing - xExtraMargin;
+				}
+
 				break;
 			}
 		}
@@ -2407,6 +2439,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			{
 				UT_sint32 left =0;
 				UT_sint32 right = 0;
+				
+				//
+				// MARCM: THE CODE BELOW WORKS BUT IS JUST PLAIN WRONG; I SUSPECT AN ERROR IN  
+				// MARCM: THE LAYOUT ENGINE INSTEAD
 				if((i - 1) != m_draggingCell)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
@@ -2414,23 +2450,31 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				}
 				else
 				{
-					left =  m_draggingCenter - xAbsLeft + pTInfo->m_iLeftSpacing;
+					left = m_draggingCenter - xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
 				if(i != nCells && i != m_draggingCell)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
 					right = pTInfo->m_iLeftCellPos - pTInfo->m_iLeftSpacing;
 				}
-				else if( i == nCells && i != m_draggingCell)
+				else if(i == nCells && i != m_draggingCell)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
 					right = pTInfo->m_iRightCellPos;
+				}
+				else if(i == nCells)
+				{
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+					right = m_draggingCenter - xAbsLeft;
 				}
 				else
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
 					right = m_draggingCenter - xAbsLeft - pTInfo->m_iLeftSpacing;
 				}
+				// BROKEN CODE ABOVE
+				//
+				
 				UT_DEBUGMSG(("SEVIOR i %d iCell %d left %d right %d \n",i,m_draggingCell,left,right));
 				UT_sint32 width = right - left;
 				dxrel = tick.scalePixelDistanceToUnits(width);
@@ -3297,6 +3341,12 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xStartPixel + xrel;
+			
+			// disalow that a cell marker is dragged over other cell markers
+			if (m_draggingCenter < m_iMinCellPos)
+					m_draggingCenter = m_iMinCellPos;
+			if (m_draggingCenter > m_iMaxCellPos)
+					m_draggingCenter = m_iMaxCellPos;
 //
 // set the dragging cell marker rectangle here
 //
@@ -3436,6 +3486,10 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 		}
 		break;
 
+	case DW_CELLMARK:
+		_drawCellProperties(NULL,&m_infoCache,true);
+		break;
+		
 	case DW_NOTHING:
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
