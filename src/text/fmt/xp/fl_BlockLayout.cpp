@@ -7394,6 +7394,21 @@ fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
 	}
 }
 
+/*!
+ * Draw all the grammar squiggles in the Block.
+ */
+void fl_BlockLayout::drawGrammarSquiggles(void)
+{
+	fp_Run * pRun = getFirstRun();
+	while(pRun)
+	{
+		if(pRun->getType() == FPRUN_TEXT)
+		{
+			findGrammarSquigglesForRun(pRun);
+		}
+		pRun = pRun->getNextRun();
+	}
+}
 
 /*!
  Draw grammar squiggles intersecting with Run

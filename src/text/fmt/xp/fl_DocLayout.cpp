@@ -2382,6 +2382,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
      //
 							pApp->notifyListeners(pDocLayout->getView(),AV_CHG_BLOCKCHECK,reinterpret_cast<void *>(pB));
 							pB->removeBackgroundCheckReason(mask);
+							pB->drawGrammarSquiggles();
 							break;
 						}
 

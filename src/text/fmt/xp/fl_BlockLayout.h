@@ -197,6 +197,7 @@ public:
 	inline fl_BlockLayout * getParentItem(void);
 
 	void findSpellSquigglesForRun(fp_Run* pRun);
+	void drawGrammarSquiggles(void);
 	void findGrammarSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
