@@ -101,12 +101,7 @@ void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
 			}
 			PtModalEnd(MODAL_END_ARG(count));
 		 
-			for (int i = 0; i < m_Suggestions.count; i++) {
-				FREEP(m_Suggestions.word[i]);
-			}
-	 		FREEP(m_Suggestions.word);
-	 		FREEP(m_Suggestions.score);
-	 		m_Suggestions.count = 0;
+			_purgeSuggestions();
 	 
 	 		if (m_bCancelled) {
 				break;
@@ -382,15 +377,15 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 0, 0);
 	PtSetResources(m_textWord, n, args);
    
-   UT_UCSChar *p;
-   char 		*str;
-   int		   len;
+	UT_UCSChar *p;
+	char 		*str;
+	int		   len;
 
-   // insert start of sentence
-   p = _getPreWord();
-   str = _convertToMB(p);
-   len = mbstrlen(str, 0, NULL);
-   FREEP(p);
+	// insert start of sentence
+	p = _getPreWord();
+	str = _convertToMB(p);
+	len = mbstrlen(str, 0, NULL);
+	FREEP(p);
 	PtMultiTextAttributes_t attrs;
 	memset(&attrs, 0, sizeof(attrs));
 	attrs.text_color = Pg_BLACK;
@@ -403,11 +398,11 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 						  Pt_MT_TEXT_COLOR);		    /* Flags on which attrs to use */				
    FREEP(str);
    
-   // insert misspelled word (in highlight color)
-   p = _getCurrentWord();
-   str = _convertToMB(p);
-   len = mbstrlen(str, 0, NULL);
-   FREEP(p);
+	// insert misspelled word (in highlight color)
+	p = _getCurrentWord();
+	str = _convertToMB(p);
+	len = mbstrlen(str, 0, NULL);
+	FREEP(p);
 	attrs.text_color = Pg_RED;
   	PtMultiTextModifyText(m_textWord, 	/* Widget */
 						  0, 0,			/* start, end positions */
@@ -417,13 +412,13 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 						  &attrs,		/* Attributes */
 						  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
    
-   FREEP(str);
+	FREEP(str);
 
-   // insert end of sentence
-   p = _getPostWord();
-   str = _convertToMB(p);
-   len = mbstrlen(str, 0, NULL);
-   FREEP(p);
+	// insert end of sentence
+	p = _getPostWord();
+	str = _convertToMB(p);
+	len = mbstrlen(str, 0, NULL);
+	FREEP(p);
 	attrs.text_color = Pg_BLACK;
   	PtMultiTextModifyText(m_textWord, 	/* Widget */
 						  0, 0,			/* start, end positions */
@@ -432,30 +427,28 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 						  len,			/* length of text */
 						  &attrs,		/* Attributes */
 						  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
-   FREEP(str);
+	FREEP(str);
     
-   // TODO: set scroll position so misspelled word is centered
+	// TODO: set scroll position so misspelled word is centered
 
+	char *suggest[2] = {NULL, NULL};
 
-   char *suggest[2] = {NULL, NULL};
-
-   PtListDeleteAllItems(m_clistSuggestions); 
-   for (int i = 0; i < m_Suggestions.count; i++) {
-	  suggest[0] = _convertToMB((UT_UCSChar *)m_Suggestions.word[i]);
-      PtListAddItems(m_clistSuggestions, (const char **)suggest, 1, 0);
-	  if (i==0) {
-		set_text_string(m_entryChange, suggest[0]);
-	  }
-	  FREEP(suggest[0]);
-   }
+	PtListDeleteAllItems(m_clistSuggestions); 
+	for (int i = 0; i < m_Suggestions->getItemCount(); i++) {
+		suggest[0] = _convertToMB((UT_UCSChar *)m_Suggestions->getNthItem(i));
+		PtListAddItems(m_clistSuggestions, (const char **)suggest, 1, 0);
+		if (i==0) {
+			set_text_string(m_entryChange, suggest[0]);
+		}
+		FREEP(suggest[0]);
+	}
   
-   if (!m_Suggestions.count) {
+   if (!m_Suggestions->getItemCount()) {
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
+		UT_XML_cloneNoAmpersands(suggest[0], pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
 
-      const XAP_StringSet * pSS = m_pApp->getStringSet();
-      UT_XML_cloneNoAmpersands(suggest[0], pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
-
-      PtListAddItems(m_clistSuggestions, (const char **)&suggest[0], 1, 0);
-      FREEP(suggest[0]);
+		PtListAddItems(m_clistSuggestions, (const char **)&suggest[0], 1, 0);
+		FREEP(suggest[0]);
 	  	n = 0;
 	  	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_BLOCKED, Pt_BLOCKED);
 		PtSetResources(m_clistSuggestions, n, args);
@@ -465,11 +458,10 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 		PtSetResources(m_entryChange, n, args);
 
       	m_iSelectedRow = -1;
-   } else {
+	} else {
       	// select first on the list; signal handler should update our entry box
 		PtListSelectPos(m_clistSuggestions, 1);
-   }
-   
+	}
 }
 
 void AP_QNXDialog_Spell::_populateWindowData(void)
@@ -489,7 +481,7 @@ void AP_QNXDialog_Spell::event_Change()
 	UT_UCSChar * replace = NULL;
 
    	if (m_iSelectedRow != -1) {
-		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		changeWordWith(replace);
 	}
 	else {
@@ -510,7 +502,7 @@ void AP_QNXDialog_Spell::event_ChangeAll()
 	UT_UCSChar * replace = NULL;
 
 	if (m_iSelectedRow != -1) {
-		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		addChangeAll(replace);
 		changeWordWith(replace);
 	}

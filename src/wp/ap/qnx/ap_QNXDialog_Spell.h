@@ -76,8 +76,8 @@ class AP_QNXDialog_Spell: public AP_Dialog_Spell
 
    //GdkColor m_highlight;
 
-   int m_listHandlerID;
-   int m_replaceHandlerID;
+	int m_listHandlerID;
+	int m_replaceHandlerID;
 	int done;
 };
 
