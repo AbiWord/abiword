@@ -2186,10 +2186,9 @@ FV_View::_findNext(UT_uint32* pPrefix,
 			FREEP(buffer);
 			return true;
 		}
-
 		// Didn't find anything, so set the offset to the end of the
 		// current area
-		offset += UT_UCS4_strlen(buffer);
+		offset += UT_MAX(UT_UCS4_strlen(buffer),1);
 
 		// Must clean up buffer returned for search
 		FREEP(buffer);
@@ -3008,7 +3007,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 					{
 						vecTables.addItem(static_cast<void *>(pTab));
 					}
-					else if(vecTables.findItem(pTab) < 0)
+					else if(vecTables.findItem(pTab) <0)
 					{
 						vecTables.addItem(static_cast<void *>(pTab));
 					}

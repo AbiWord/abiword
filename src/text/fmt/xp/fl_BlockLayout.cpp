@@ -2364,11 +2364,39 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 {
 	fl_ContainerLayout * pNext = getNext();
+	fl_ContainerLayout * pOld = NULL;
+	UT_uint32 depth = 0;
+	if(pNext == NULL)
+	{
+		while((pNext == NULL) && ((pOld != NULL) || (depth == 0)))
+	    {
+			fl_ContainerLayout * pPrevOld = pOld;
+			if(depth > 0)
+			{
+				pOld = pOld->myContainingLayout();
+			}
+			else
+			{
+				pOld = myContainingLayout();
+			}
+			depth++;
+			pNext = pOld->getNext();
+			if(pPrevOld == pOld)
+			{
+				pOld = NULL;
+			}
+		}
+	}
 	while(pNext)
 	{
+		pOld = pNext;
 		if(pNext->getContainerType() == FL_CONTAINER_BLOCK)
 		{
 			return static_cast<fl_BlockLayout *>(pNext);
+		}
+		else if(pNext->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			pNext = pNext->getFirstLayout();
 		}
 		else if(pNext->getContainerType() == FL_CONTAINER_TABLE)
 		{
@@ -2382,45 +2410,87 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 		{
 			pNext = pNext->getNext();
 		}
+		else if(pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
+		{
+			pNext = pNext->getNext();
+		}
 		else
 		{
 			pNext = NULL;
+			break;
+		}
+		if(pNext == NULL)
+		{
+			pNext = pOld->myContainingLayout()->getNext();
 		}
 	}
-
-	// keep going (check next section)
-	fl_ContainerLayout * pCL = m_pSectionLayout->getNext();
-	fl_BlockLayout* pBL = NULL;
-	if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
-	{
-		pBL = static_cast<fl_BlockLayout *>(pCL);
-	}
-	else if(pCL)
-	{
-		fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(pCL);
-		pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
-		UT_ASSERT(pBL);
-	}
-	return pBL;
+	return NULL;
 }
 
 fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
 {
-// FIXME: Handle other container types like get next block in doc
-	if (getPrev())
-		return static_cast<fl_BlockLayout *>(getPrev());
-
-	// keep going (check prev section)
-	fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(m_pSectionLayout->getPrev());
-	fl_BlockLayout* pBL = NULL;
-
-	if (pSL)
+	fl_ContainerLayout * pPrev = getPrev();
+	fl_ContainerLayout * pOld = NULL;
+	UT_uint32 depth = 0;
+	if(pPrev == NULL)
 	{
-		pBL = static_cast<fl_BlockLayout *>(pSL->getLastLayout());
-		UT_ASSERT(pBL);
+		while((pPrev == NULL) && ((pOld != NULL) || (depth == 0)))
+	    {
+			fl_ContainerLayout * pPrevOld = pOld;
+			if(depth > 0)
+			{
+				pOld = pOld->myContainingLayout();
+			}
+			else
+			{
+				pOld = myContainingLayout();
+			}
+			depth++;
+			pPrev = pOld->getPrev();
+			if(pPrevOld == pOld)
+			{
+				pOld = NULL;
+			}
+		}
 	}
-
-	return pBL;
+	while(pPrev)
+	{
+		pOld = pPrev;
+		if(pPrev->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			return static_cast<fl_BlockLayout *>(pPrev);
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_TABLE)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_CELL)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else
+		{
+			pPrev = NULL;
+			break;
+		}
+		if(pPrev == NULL)
+		{
+			pPrev = pOld->myContainingLayout()->getPrev();
+		}
+	}
+	return NULL;
 }
 
 /*****************************************************************/

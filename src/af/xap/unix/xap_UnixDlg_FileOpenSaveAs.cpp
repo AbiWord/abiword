@@ -469,7 +469,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 //
 // Hard code a suffix
 //
-	if(nFileType == 10)
+	if(strstr(sSuffix.c_str(),"gz") != NULL)
 	{
 		sSuffix = ".zabw";
 	}
@@ -675,7 +675,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					
 					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
 					thismenuitem = gtk_menu_item_new_with_label(buffer);
-
 					g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(m_nTypeList[i]));
 					gtk_widget_show(thismenuitem);
 					gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
