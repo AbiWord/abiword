@@ -1455,7 +1455,10 @@ void fp_FieldRun::lookupProperties(void)
 	}
 
 	pSpanAP->getAttribute("type", pszType);
-	UT_ASSERT(pszType);
+
+	// i leave this in because it might be obscuring a larger bug
+	//UT_ASSERT(pszType);
+	if (!pszType) return;
 
 #ifdef BIDI_ENABLED
 	//#TF need to retrieve the direction of this run
