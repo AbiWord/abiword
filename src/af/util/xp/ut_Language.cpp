@@ -17,22 +17,22 @@
 static lang_entry s_Table[] = 
 {
 	//the property value, the localised translation, the numerical id
-        //{"-none-",	        NULL, XAP_STRING_ID_LANG_0},
-	{"cs_CZ",		NULL, XAP_STRING_ID_LANG_4},
-	{"da_DK",		NULL, XAP_STRING_ID_LANG_13},
-	{"da_NL",		NULL, XAP_STRING_ID_LANG_14},
-	//{"de_AU",		NULL, XAP_STRING_ID_LANG_5},
-	{"de_DE",		NULL, XAP_STRING_ID_LANG_6},
-	{"en_AU",		NULL, XAP_STRING_ID_LANG_1},
-	{"en_GB",		NULL, XAP_STRING_ID_LANG_2},
-	{"en_US",		NULL, XAP_STRING_ID_LANG_3},
-	{"es_ES",		NULL, XAP_STRING_ID_LANG_10},
-	{"fi_FI",			NULL, XAP_STRING_ID_LANG_15},
-	{"fr_FR",		NULL, XAP_STRING_ID_LANG_7},
-	//{"Hebrew",			NULL, XAP_STRING_ID_LANG_8},
-	{"it_IT",		NULL, XAP_STRING_ID_LANG_9},
-	{"pt_PT",	NULL, XAP_STRING_ID_LANG_11},
-	{"ru_RU",		NULL, XAP_STRING_ID_LANG_12}
+        {"-none-",	        NULL, XAP_STRING_ID_LANG_0},
+	{"cs-CZ",		NULL, XAP_STRING_ID_LANG_4},
+	{"da-DK",		NULL, XAP_STRING_ID_LANG_13},
+	{"da-NL",		NULL, XAP_STRING_ID_LANG_14},
+	//{"de-AU",		NULL, XAP_STRING_ID_LANG_5},
+	{"de-DE",		NULL, XAP_STRING_ID_LANG_6},
+	{"en-AU",		NULL, XAP_STRING_ID_LANG_1},
+	{"en-GB",		NULL, XAP_STRING_ID_LANG_2},
+	{"en-US",		NULL, XAP_STRING_ID_LANG_3},
+	{"es-ES",		NULL, XAP_STRING_ID_LANG_10},
+	{"fi-FI",		NULL, XAP_STRING_ID_LANG_15},
+	{"fr-FR",		NULL, XAP_STRING_ID_LANG_7},
+	{"it-IT",		NULL, XAP_STRING_ID_LANG_9},
+	{"iw-IL",		NULL, XAP_STRING_ID_LANG_8},
+	{"pt-PT",		NULL, XAP_STRING_ID_LANG_11},
+	{"ru-RU",		NULL, XAP_STRING_ID_LANG_12}
 };
 
 static int s_compareQ(const void * a, const void *b)
