@@ -1688,7 +1688,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	if (
-		pView->getFocus()!=AV_FOCUS_NONE &&
+	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
 		)
@@ -1885,7 +1885,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
 	UT_RGBColor clrShowPara = pView->getColorShowPara();
@@ -2196,7 +2196,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
 	getGR()->setColor(_getView()->getColorShowPara());
@@ -2541,7 +2541,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
 	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
@@ -2895,7 +2895,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			UT_ASSERT(iSel1 <= iSel2);
 
 			if (
-				pView->getFocus()!=AV_FOCUS_NONE &&
+			    /* pView->getFocus()!=AV_FOCUS_NONE && */
 				(iSel1 <= iRunBase)
 				&& (iSel2 > iRunBase)
 				)
@@ -3500,7 +3500,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		UT_ASSERT(iSel1 <= iSel2);
 
 		if (
-			pView->getFocus()!=AV_FOCUS_NONE &&
+		    /* pView->getFocus()!=AV_FOCUS_NONE && */
 			(iSel1 <= iRunBase)
 			&& (iSel2 > iRunBase)
 			)

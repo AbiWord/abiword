@@ -2018,7 +2018,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_ASSERT(iSel1 <= iSel2);
 
-	if (pView->getFocus()!=AV_FOCUS_NONE && iSel1 != iSel2)
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2)
 	{
 		if (iSel1 <= iRunBase)
 		{

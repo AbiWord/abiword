@@ -6253,7 +6253,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			UT_ASSERT(iSel1 <= iSel2);
 	
 			if (
-				getFocus()!=AV_FOCUS_NONE &&
+			    /* getFocus()!=AV_FOCUS_NONE && */
 				(iSel1 <= iRunBase)
 				&& (iSel2 > iRunBase)
 				)
@@ -6485,7 +6485,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 			UT_ASSERT(iSel1 <= iSel2);
 	
 			if (
-				getFocus()!=AV_FOCUS_NONE &&
+			    /* getFocus()!=AV_FOCUS_NONE && */
 				(iSel1 <= iRunBase)
 				&& (iSel2 > iRunBase)
 				)
