@@ -157,16 +157,16 @@ protected:
 	void	_getTabToggleRect(UT_Rect * prToggle);
 	void	_drawTabToggle(const UT_Rect * pClipRect, bool bErase);
 
-	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_sint32 k, UT_sint32 * pTab, eTabType & iType);
+	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_sint32 k, UT_sint32 * pTab, eTabType & iType, eTabLeader & iLeader);
 	void	_getTabStopRect(AP_TopRulerInfo * pInfo, UT_sint32 anchor, UT_Rect * pRect);
 	void	_drawTabProperties(const UT_Rect * pClipRect,
 								   AP_TopRulerInfo * pInfo,
 								   bool bDrawAll = true);
 
-	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, eTabType & iType);
+	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, eTabType & iType, eTabLeader & iLeader);
 	const char *	_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k);
 	void			_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone);
-	void			_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, bool bDelete);
+	void			_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iLeader, bool bDelete);
 
 	UT_sint32	_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol, UT_sint32 xCenter,
@@ -238,6 +238,7 @@ protected:
 	UT_Rect				m_dragging2Rect; /* rect of drag-along */
 	UT_sint32			m_draggingTab;	/* index of tab being dragged */
 	eTabType			m_draggingTabType;
+	eTabLeader			m_draggingTabLeader;
 	UT_sint32			m_dragStart;
 	bool				m_bBeforeFirstMotion;
 
