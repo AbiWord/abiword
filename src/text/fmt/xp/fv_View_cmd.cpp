@@ -617,7 +617,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_sint32 numCols = 0;
 	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
 //
-// Got all we need, now set things up to do the delete nicely
+// Got all we need, now set things up to do the insert nicely
 //
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -639,21 +639,21 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
 	pszTable[0] = "list-tag";
-	const char * szLineType = NULL;
-	UT_String sLineType;
-	UT_sint32 iLineType;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == '\0')
+	const char * szListTag = NULL;
+	UT_String sListTag;
+	UT_sint32 iListTag;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	if(szListTag == NULL || *szListTag == '\0')
 	{
-		iLineType = 0;
+		iListTag = 0;
 	}
 	else
 	{
-		iLineType = atoi(szLineType);
-		iLineType -= 1;
+		iListTag = atoi(szListTag);
+		iListTag -= 1;
 	}
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
@@ -903,7 +903,12 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		}
 		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
-		if(posEndCell+1 >= posEndTable)
+		if(posEndCell+1 > posEndTable)
+		{
+			bEnd = true;
+			break;
+		}
+		if(posEndCell+1 == posEndTable)
 		{
 			bEnd = true;
 		}
@@ -968,9 +973,9 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 // with the restored line-type property it has before.
 //
-	iLineType += 1;
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
+	iListTag += 1;
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
@@ -1059,21 +1064,21 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	//
 	const char * pszTable[3] = {NULL,NULL,NULL};
 	pszTable[0] = "list-tag";
-	const char * szLineType = NULL;
-	UT_String sLineType;
-	UT_sint32 iLineType;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == '\0')
+	const char * szListTag = NULL;
+	UT_String sListTag;
+	UT_sint32 iListTag;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	if(szListTag == NULL || *szListTag == '\0')
 	{
-		iLineType = 0;
+		iListTag = 0;
 	}
 	else
 	{
-		iLineType = atoi(szLineType);
-		iLineType -= 1;
+		iListTag = atoi(szListTag);
+		iListTag -= 1;
 	}
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
 	UT_DEBUGMSG(("Sevior: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
   
@@ -1208,10 +1213,14 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		}
 		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
-		if(posEndCell+1 >= posEndTable)
+		if(posEndCell+1 > posEndTable)
 		{
 			bEnd = true;
 			break;
+		}
+		if(posEndCell+1 == posEndTable)
+		{
+			bEnd = true;
 		}
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
 		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
@@ -1239,9 +1248,9 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
     // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
     // with the restored line-type property it has before.
     //
-    iLineType += 1;
-    UT_String_sprintf(sLineType,"%d",iLineType);
-    pszTable[1] = sLineType.c_str();
+    iListTag += 1;
+    UT_String_sprintf(sListTag,"%d",iListTag);
+    pszTable[1] = sListTag.c_str();
     UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
     m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 
@@ -1338,21 +1347,21 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
 	pszTable[0] = "list-tag";
-	const char * szLineType = NULL;
-	UT_String sLineType;
-	UT_sint32 iLineType;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == '\0')
+	const char * szListTag = NULL;
+	UT_String sListTag;
+	UT_sint32 iListTag;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	if(szListTag == NULL || *szListTag == '\0')
 	{
-		iLineType = 0;
+		iListTag = 0;
 	}
 	else
 	{
-		iLineType = atoi(szLineType);
-		iLineType -= 1;
+		iListTag = atoi(szListTag);
+		iListTag -= 1;
 	}
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
@@ -1445,9 +1454,9 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 // with the restored line-type property it has before.
 //
-	iLineType += 1;
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
+	iListTag += 1;
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
@@ -1603,21 +1612,21 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
 	pszTable[0] = "list-tag";
-	const char * szLineType = NULL;
-	UT_String sLineType;
-	UT_sint32 iLineType;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == '\0')
+	const char * szListTag = NULL;
+	UT_String sListTag;
+	UT_sint32 iListTag;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	if(szListTag == NULL || *szListTag == '\0')
 	{
-		iLineType = 0;
+		iListTag = 0;
 	}
 	else
 	{
-		iLineType = atoi(szLineType);
-		iLineType -= 1;
+		iListTag = atoi(szListTag);
+		iListTag -= 1;
 	}
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
@@ -1710,9 +1719,9 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 // with the restored line-type property it has before.
 //
-	iLineType += 1;
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
+	iListTag += 1;
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
