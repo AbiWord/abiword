@@ -134,12 +134,14 @@ void  AP_Dialog_Replace::ConstructWindowName(void)
 	// conditionally set title
 	if (m_id == AP_DIALOG_ID_FIND)
 	{
-                UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
+				UT_String sTitle(pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle));	
+                UT_XML_cloneNoAmpersands(tmp, sTitle.c_str());
                 title_width = 30;
 	}
 	else
 	{
-                UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));	
+				UT_String sTitle(pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle));	
+                UT_XML_cloneNoAmpersands(tmp, sTitle.c_str());	
                 title_width = 60;
 	}
         BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);

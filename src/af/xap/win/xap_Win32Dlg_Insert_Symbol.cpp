@@ -36,6 +36,7 @@
 #include "gr_Win32Graphics.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32Resources.rc2"
+#include "ap_Win32App.h"
 
 /*****************************************************************/
 
@@ -98,7 +99,7 @@ void XAP_Win32Dialog_Insert_Symbol::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hDlg, m_WindowName);
+	SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str());
 
 	iResult = ShowWindow( m_hDlg, SW_SHOW );
 
@@ -117,7 +118,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hDlg, m_WindowName);
+		SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str());
 
 		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
@@ -214,7 +215,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	// Update the caption
 	ConstructWindowName();
-	setDialogTitle((LPCSTR)m_WindowName);
+	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str());
 	centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()

@@ -36,6 +36,7 @@
 #include "ap_Win32Dialog_Replace.h"
 #include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
+#include "ap_Win32App.h"
 
 /*****************************************************************/
 XAP_Dialog * AP_Win32Dialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
@@ -62,7 +63,7 @@ void AP_Win32Dialog_Replace::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, m_WindowName);
+	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
 
 	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND) );
 
@@ -117,7 +118,7 @@ void AP_Win32Dialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hWnd, m_WindowName);
+		SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
 
 		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
@@ -167,7 +168,7 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, m_WindowName);
+	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
 
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 

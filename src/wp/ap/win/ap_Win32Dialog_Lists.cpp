@@ -41,6 +41,7 @@
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32Dlg_FontChooser.h"
 #include "xap_Win32DialogHelper.h"
+#include "ap_Win32App.h"
 
 #ifdef _MSC_VER
 // MSVC++ warns about using 'this' in initializer list.
@@ -775,7 +776,7 @@ void AP_Win32Dialog_Lists::_enableCustomControls(bool bEnable)
 void AP_Win32Dialog_Lists::_updateCaption()
 {
 	ConstructWindowName();
-	_win32Dialog.setDialogTitle(getWindowName());
+	_win32Dialog.setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToAnsi( getWindowName())).c_str());	
 }
 
 void AP_Win32Dialog_Lists::_previewExposed()

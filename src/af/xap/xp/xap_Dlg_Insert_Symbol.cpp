@@ -155,9 +155,10 @@ void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)
 void  XAP_Dialog_Insert_Symbol::ConstructWindowName()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
+	XML_Char * tmp = NULL;											 
+	UT_String sTitle(pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle));
 
-	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle, m_pApp->getDefaultEncoding()).c_str());
+	UT_XML_cloneNoAmpersands(tmp, sTitle.c_str());
         BuildWindowName((char *) m_WindowName,(char*)tmp,80);
         FREEP(tmp);
 }

@@ -34,6 +34,7 @@
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
 #include "fv_View.h"
+#include "ap_Win32App.h"
 
 /*****************************************************************/
 
@@ -197,7 +198,7 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(hWnd, m_WindowName);
+	SetWindowText(hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
 
 	// Disable the Go To button until something has been entered into the Number box
 	EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
