@@ -1777,8 +1777,10 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 		// boolean and return for this case
 		if (m_bWrappedEndBuffer)
 		{
-			if (m_cycleBeganAtBlock == block->getPosition(UT_FALSE) &&
-				m_iFindBufferOffset >= m_cycleBeganAtOffset)
+			if ((block->getPosition(UT_FALSE) > m_cycleBeganAtBlock)
+				||
+				((block->getPosition(UT_FALSE) == m_cycleBeganAtBlock) &&
+				(m_iFindBufferOffset >= m_cycleBeganAtOffset)) )
 			{
 				if (bDoneEntireDocument)
 					*bDoneEntireDocument = UT_TRUE;
