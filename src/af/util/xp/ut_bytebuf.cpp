@@ -215,6 +215,7 @@ bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, FILE * fp)
 							 iLengthOfFile - iBytesRead, fp);
 	
 	}
+	return true;
 }
 
 bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
