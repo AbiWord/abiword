@@ -475,11 +475,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 			iBot =  col_y + pCol->getHeight();
 			bDrawBot = false;
 		}
-		
-		//
-		// TODO MARCM: Clean this code up below; it uses
-		// TODO MARCM: four times almost identical code, juk!
-		//
 		if(m_bDrawLeft)
 		{
 			_drawLine(m_cLeftColor, m_iLeftStyle, iLeft,iTop, iLeft, iBot);
