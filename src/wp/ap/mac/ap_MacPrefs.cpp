@@ -20,6 +20,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "ap_MacPrefs.h"
+#include "FullPath.h"
 
 /*****************************************************************/
 
@@ -32,8 +33,6 @@ const char * AP_MacPrefs::getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
 
-#if 0	// TODO construct a pathname that can be used for application preferences
-
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
@@ -41,27 +40,28 @@ const char * AP_MacPrefs::getPrefsPathname(void) const
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 	
-	char * szHome = getenv("HOME");
-	if (!szHome)
-		szHome = "./";
-	char * szFile = ".abiword";
+	short	foundVRefNum, pathLen;
+	long	foundDirID;
+	OSErr err = FindFolder(kOnSystemDisk, kPreferencesFolderType, kCreateFolder,
+							&foundVRefNum, &foundDirID);
+	
+	Handle bufHdl = NewHandle(PATH_MAX);
+	GetFullPath(foundVRefNum, foundDirID, NULL, &pathLen, &bufHdl);
+	strncpy(buf, *bufHdl, pathLen);
+	DisposeHandle(bufHdl);
+	
+	char * szFile = "AbiWord";
 
-	if (strlen(szHome) + strlen(szFile) + 2 >= PATH_MAX)
+	if(pathLen >= PATH_MAX || pathLen == 0)
 		return NULL;
-
-	strcpy(buf,szHome);
-	int len = strlen(buf);
-	if ((len > 0) && (buf[len-1] == '/'))
+	
+	if(pathLen && (buf[pathLen-1] == ':'))
 		;
 	else
-		strcat(buf,"/");
+		strcat(buf,":");
 	strcat(buf,szFile);
 
 	return buf;
-
-#else
-	return NULL;
-#endif
 }
 
 void AP_MacPrefs::overlayEnvironmentPrefs(void)
