@@ -402,7 +402,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	XML_SetUserData(parser, this);
 	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement, (XML_EndElementHandler)endElement);
 	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
-	XML_SetUnknownEncodingHandler(parser,(XML_UnknownEncodingHandler)XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,(XML_UnknownEncodingHandler)NULL);
+	XML_SetUnknownEncodingHandler(parser,(XML_UnknownEncodingHandler)XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
 
 	while (!done)
 	{
