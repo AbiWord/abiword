@@ -131,25 +131,11 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
 		pView->setWindowSize(cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 
-				     cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
+				             cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
 	}
 
 	// Dynamic Zoom Implimentation
-	UT_uint32 newZoom = 100;
-	switch(pQNXFrame->getZoomType())
-	{
-	case XAP_Frame::z_PAGEWIDTH:
-		newZoom = pfView->calculateZoomPercentForPageWidth();
-		pQNXFrame->setZoomPercentage(newZoom);
-		break;
-	case XAP_Frame::z_WHOLEPAGE:
-		newZoom = pfView->calculateZoomPercentForWholePage();
-		pQNXFrame->setZoomPercentage(newZoom);
-		break;
-	default:
-		break;
-	}
-
+	pQNXFrame->updateZoom();
 
 	return Pt_CONTINUE;
 }

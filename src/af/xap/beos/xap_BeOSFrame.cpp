@@ -445,6 +445,9 @@ void be_DocView::FrameResized(float new_width, float new_height) {
 	}
 //	pBWin->EnableUpdates();
 	pBWin->Sync(); //Maybe Sync? We'll see
+
+	// Dynamic Zoom Implimentation
+	pBWin->m_pBeOSFrame->updateZoom();
 }
 
 void be_DocView::Draw(BRect updateRect) {
