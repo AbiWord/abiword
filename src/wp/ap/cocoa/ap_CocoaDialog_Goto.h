@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,18 +21,22 @@
 #ifndef AP_COCOADIALOG_GOTO_H
 #define AP_COCOADIALOG_GOTO_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "ap_Dialog_Goto.h"
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_GotoController;
+@protocol XAP_CocoaDialogProtocol;
 
 /*****************************************************************/
 
 class AP_CocoaDialog_Goto: public AP_Dialog_Goto
 {
 public:
-	AP_CocoaDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id flgid);
 	virtual ~AP_CocoaDialog_Goto(void);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
@@ -41,46 +45,39 @@ public:
 	void					setSelectedRow(int row);
 	int						getSelectedRow(void);
 
-#if 0
-	/* CALLBACKS */
-	static void				s_targetChanged(GtkWidget *clist, gint row, gint column,
-											GdkEventButton *event, AP_CocoaDialog_Goto *me);
-	static void				s_dataChanged (GtkWidget *widget, AP_CocoaDialog_Goto * me);
-	static void				s_goto (const char *number, AP_CocoaDialog_Goto * me);
-	static void				s_gotoClicked (GtkWidget * widget, AP_CocoaDialog_Goto * me);
-	static void				s_nextClicked (GtkWidget * widget, AP_CocoaDialog_Goto * me);
-	static void				s_prevClicked (GtkWidget * widget, AP_CocoaDialog_Goto * me);
-	static void				s_closeClicked (GtkWidget * widget, AP_CocoaDialog_Goto * me);
-	static void				s_deleteClicked (GtkWidget * widget, gpointer /* data */ , AP_CocoaDialog_Goto * me);
-	static void				s_blist_clicked(GtkWidget *clist, gint row, gint column,
-										  GdkEventButton *event, AP_CocoaDialog_Goto *me);
+	void					doGoto(const char *number);
 	
-	/* Widgets members.  Publics to make them accesible to the callbacks */
-	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */
-	GtkWidget *				m_wMainWindow;
-	GtkWidget *				m_wEntry;
-	GtkWidget *				m_wPrev;
-	GtkWidget *				m_wNext;
-	GtkWidget *				m_wGoto;
-	GtkWidget *				m_wClose;
-	GtkAccelGroup *			m_accelGroup;
-	int						m_iRow;
-	GtkWidget *				m_swindow;
-	GtkWidget *				m_dlabel;
-#endif
-	const XML_Char **		m_pBookmarks;
-	
-	
-protected:
-#if 0
-	virtual GtkWidget *		_constructWindow(void);
-	GtkWidget *				_constructWindowContents(void);
-	void					_populateWindowData(void);
-	void					_connectSignals(void);
-
-	static char *			s_convert(const char * st);
-#endif
+	void 					event_goto(const char *number);
+	void 					event_backward(void);
+	void 					event_forward(void);
+	void					event_valueChanged(void);
+	void					event_targetChanged(int row);
+	const char * getWindowName(void) { return m_WindowName; };
+private:
+	int m_iRow;
+	AP_CocoaDialog_GotoController* m_dlg;
 };
+
+
+@interface AP_CocoaDialog_GotoController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *backBtn;
+    IBOutlet NSButton *forwardBtn;
+    IBOutlet NSButton *jumpToBtn;
+    IBOutlet NSComboBox *valueCombo;
+    IBOutlet NSTextField *valueLabel;
+    IBOutlet NSTextField *whatLabel;
+    IBOutlet NSPopUpButton *whatPopup;
+	AP_CocoaDialog_Goto* _xap;
+}
+- (NSString*)stringValue;
+- (IBAction)backAction:(id)sender;
+- (IBAction)closeAction:(id)sender;
+- (IBAction)forwardAction:(id)sender;
+- (IBAction)jumpToAction:(id)sender;
+- (IBAction)valueComboAction:(id)sender;
+- (IBAction)whatPopupAction:(id)sender;
+@end
 
 #endif /* AP_COCOADIALOG_GOTO_H */
 
