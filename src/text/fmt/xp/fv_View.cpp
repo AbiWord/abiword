@@ -2175,11 +2175,11 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 //
 	else if(bHasNumberedHeading)
 	{
-		fl_BlockLayout*  currBlock = _findBlockAtPosition(getPoint());
+		fl_BlockLayout*  currBlock = (fl_BlockLayout *) vBlock.getNthItem(0);
 		PT_DocPosition pos = currBlock->getPosition(true) -1;
+		PL_StruxDocHandle curSdh = currBlock->getStruxDocHandle();
 		if(pos < 2 )
 			pos = 2;
-		PL_StruxDocHandle curSdh = currBlock->getStruxDocHandle();
 //
 // Look backwards to see if there is a heading before here.
 //
@@ -2189,12 +2189,13 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 //
 // If not, Look forward to see if there one ahead of this block
 //
-		if(!bFoundPrevHeadingBackwards)
+		if(!bFoundPrevHeadingBackwards || (curSdh == sdh))
 		{
 //
-// Start looking from the block following and skip throgh to end of Doc.
+// Start looking from the block following and skip through to end of Doc.
 //
-			fl_BlockLayout * pNext = currBlock->getNext();
+			fl_BlockLayout * pNext = (fl_BlockLayout *) vBlock.getLastItem();
+			pNext = pNext->getNext();
 			if(pNext)
 			{
 				PT_DocPosition nextPos = pNext->getPosition(false);
@@ -2206,7 +2207,14 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 //
 		if(sdh == NULL || (sdh == curSdh))
 		{
-			currBlock->StartList(style);
+			for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+			{
+				pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+				if(i == 0)
+					pBL->StartList(style);
+				else
+					pBL->resumeList(pBL->getPrev());
+			}
 		}
 //
 // Insert into pre-existing List.
@@ -2241,7 +2249,14 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 				}
 			}
 			UT_ASSERT(sfh);
-			currBlock->resumeList(pBlock);
+			for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+			{
+				pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+				if(i == 0)
+					pBL->resumeList(pBlock);
+				else
+					pBL->resumeList(pBL->getPrev());
+			}
 		}
 //
 // Prepend onto a pre-existing List.
@@ -2276,9 +2291,15 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 				}
 			}
 			UT_ASSERT(sfh);
-			currBlock->prependList(pBlock);
+			for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+			{
+				pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+				if(i == 0)
+					pBL->prependList(pBlock);
+				else
+					pBL->resumeList(pBL->getPrev());
+			}
 		}
-
 	}
 	if(!bDontGeneralUpdate)
 	{
