@@ -135,8 +135,8 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_ALIGN_JUSTIFY,		"&Justify",			"Justify the paragraph")
 
 	MenuLabel(AP_MENU_ID_WEB, "We&b", NULL)
-	MenuLabel(AP_MENU_ID_FILE_SAVEASWEB,    "Save as &web",		"Save the document as a web page")
-	MenuLabel(AP_MENU_ID_FILE_WEBPREVIEW,   "Pre&view web page", "Preview the document as a web page")
+	MenuLabel(AP_MENU_ID_WEB_SAVEASWEB,    "Save as &web",		"Save the document as a web page")
+	MenuLabel(AP_MENU_ID_WEB_WEBPREVIEW,   "Pre&view web page", "Preview the document as a web page")
 
 	MenuLabel(AP_MENU_ID_WINDOW,			"&Window",			NULL)
 	MenuLabel(AP_MENU_ID_WINDOW_NEW,		"&New Window",		"Open another window for the document")

@@ -138,8 +138,8 @@ BeginSet(it,IT,true)
 	MenuLabel(AP_MENU_ID_ALIGN_JUSTIFY,		"&Giustificato",		"Giustifica il paragrafo")
 
 	MenuLabel(AP_MENU_ID_WEB, "We&b", NULL)
-	MenuLabel(AP_MENU_ID_FILE_SAVEASWEB,    "Salva come pagina &web",		"Salva il documento come pagina web")
-	MenuLabel(AP_MENU_ID_FILE_WEBPREVIEW,   "Ante&prima pagina web", "Anteprima del documento come pagina web")
+	MenuLabel(AP_MENU_ID_WEB_SAVEASWEB,    "Salva come pagina &web",		"Salva il documento come pagina web")
+	MenuLabel(AP_MENU_ID_WEB_WEBPREVIEW,   "Ante&prima pagina web", "Anteprima del documento come pagina web")
 
 	MenuLabel(AP_MENU_ID_WINDOW,			"&Finestra",			NULL)
 	MenuLabel(AP_MENU_ID_WINDOW_NEW,		"&Nuova finestra",		"Apre un'altra finestra per il documento")

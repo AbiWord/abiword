@@ -47,8 +47,7 @@ BeginSet(ca,ES,true)
 	MenuLabel(AP_MENU_ID_FILE_CLOSE,		"&Tanca", 			"Tanca el document")
 	MenuLabel(AP_MENU_ID_FILE_SAVE,			"&Desa", 			"Desa el document")
 	MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"&Anomena i desa", 		"Desa el document amb un altre nom")
-	MenuLabel(AP_MENU_ID_FILE_SAVEASWEB,            "Desa-ho com a &web", 		"Desa el document com una pàgina web")
-     	MenuLabel(AP_MENU_ID_FILE_WEBPREVIEW,           "&Mostra-ho com a pàgina web", 	"Previsualitza la pàgina web")
+
 	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,		"Config&uració de la pàgina",	"Canvia les opcions d'impressió")
 	MenuLabel(AP_MENU_ID_FILE_PRINT,		"Im&primeix",			"Imprimeix el document o una part d'ell")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_1,		"&1 %s",			"Obre aquest document")
@@ -126,6 +125,10 @@ BeginSet(ca,ES,true)
 	MenuLabel(AP_MENU_ID_ALIGN_CENTER,		"&Centre",			"Centra el paràgraf")
 	MenuLabel(AP_MENU_ID_ALIGN_RIGHT,		"&Dreta",			"Alinea el paràgraf a la dreta")
 	MenuLabel(AP_MENU_ID_ALIGN_JUSTIFY,		"&Justificada",			"Justifica el paràgraf")
+
+
+	MenuLabel(AP_MENU_ID_WEB_SAVEASWEB,            "Desa-ho com a &web", 		"Desa el document com una pàgina web")
+     	MenuLabel(AP_MENU_ID_WEB_WEBPREVIEW,           "&Mostra-ho com a pàgina web", 	"Previsualitza la pàgina web")
 
 	MenuLabel(AP_MENU_ID_WINDOW,			"&Finestra",			NULL)
 	MenuLabel(AP_MENU_ID_WINDOW_NEW,		"&Nova finestra",		"Obre una altra finestra per al document")

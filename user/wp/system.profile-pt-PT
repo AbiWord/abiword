@@ -1,0 +1,86 @@
+<!-- =====================================================================  -->
+<!-- This file contains AbiSuite Preferences.  AbiSuite is a suite of Open  -->
+<!-- Source desktop applications developed by AbiSource, Inc.  Information  -->
+<!-- about this application can be found at http://www.abisource.com        -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<AbiPreferences app="AbiWord" ver="1.0">
+
+	<Select
+	    scheme="_custom_"
+	    autosaveprefs="1"
+	    useenvlocale="1"
+	/>
+
+	<!-- The following scheme, _builtin_, contains the built-in application
+	**** defaults and adjusted by the installation system defaults.  This scheme
+	**** is only written here as a reference.  Any schemes following this one
+	**** only list values that deviate from the built-in values.
+	**** Items values must observe XML encoding for double quote (&quot;),
+	**** ampersand (&amp;), and angle brackets (&lt; and &gt;).
+	-->
+
+	<Scheme
+		name="_builtin_"
+		AutoSaveFile="0"
+		AutoSaveFileExt=".bak"
+		AutoSaveFilePeriod="5"
+		AutoSpellCheck="0"
+		CursorBlink="1"
+		DefaultPageSize="A4"
+		EmbedFontsInPs="1"
+		ExtraBarVisible="0"
+		FormatBarVisible="1"
+		InsertMode="1"
+		InsertModeToggle="1"
+		KeyBindings="default"
+		KeyBindingsCycle="0"
+		layoutMode="1"
+		MenuLabelSet="pt-PT"
+		MenuLayouts="Main"
+		OptionsTabNumber="0"
+		ParaVisible="1"
+		RemapGlyphsDefault="&#xb0;"
+		RemapGlyphsMasterSwitch="1"
+		RemapGlyphsNoMatterWhat="0"
+		RemapGlyphsTable="&#x2018;`&#x2019;'&#x201c;&quot;&#x201d;&quot;"
+		RulerUnits="cm"
+		RulerVisible="1"
+		SmartQuotesEnable="1"
+		SpellCheckCaps="1"
+		SpellCheckDirectory="dictionary"
+		SpellCheckIgnoredWordsLoad="1"
+		SpellCheckIgnoredWordsSave="1"
+		SpellCheckInternet="1"
+		SpellCheckNumbers="1"
+		SpellCheckWordList="american.hash"
+		StandardBarVisible="1"
+		StatusBarVisible="1"
+		StringSet="pt-PT"
+		StringSetDirectory="strings"
+		ToolbarAppearance="icon"
+		ToolbarLabelSet="pt-PT"
+		ToolbarLayouts="FileEditOps FormatOps ExtraOps"
+		TransparentColor="ffffff"
+		UnixFontPath="fonts"
+		UseSuffix="1"
+		/>
+
+	<Scheme
+		name="_custom_"
+		/>
+
+	<Recent
+		max="4"
+		/>
+
+	<Geometry
+		width="0"
+		height="0"
+		posx="0"
+		posy="0"
+		flags="0"
+		/>
+
+</AbiPreferences>
