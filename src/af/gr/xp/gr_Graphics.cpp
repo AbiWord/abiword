@@ -115,6 +115,13 @@ void GR_Graphics::setStaticScreenResolution(UT_uint32 iRes)
   s_iScreenResolution = iRes;
 }
 
+void GR_Graphics::setLineProperties ( double    inWidthPixels, 
+				      JoinStyle inJoinStyle,
+				      CapStyle  inCapStyle,
+				      LineStyle inLineStyle )
+{
+  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
 
 #ifndef WITH_PANGO
 void GR_Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)

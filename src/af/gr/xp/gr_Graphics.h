@@ -223,6 +223,32 @@ class ABI_EXPORT GR_Graphics
 
 	typedef enum { DGP_SCREEN, DGP_PAPER, DGP_OPAQUEOVERLAY } Properties;
 
+	typedef enum
+	  {
+	    JOIN_MITER,
+	    JOIN_ROUND,
+	    JOIN_BEVEL
+	  } JoinStyle ;
+
+	typedef enum
+	  {
+	    CAP_BUTT,
+	    CAP_ROUND,
+	    CAP_PROJECTING
+	  } CapStyle ;
+
+	typedef enum
+	  {
+	    LINE_SOLID,
+	    LINE_ON_OFF_DASH,
+	    LINE_DOUBLE_DASH
+	  } LineStyle ;
+
+	virtual void setLineProperties ( double inWidthPixels, 
+					 JoinStyle inJoinStyle = JOIN_MITER,
+					 CapStyle inCapStyle   = CAP_BUTT,
+					 LineStyle inLineStyle = LINE_SOLID ) ;
+
 	virtual bool      queryProperties(GR_Graphics::Properties gp) const = 0;
 	virtual UT_sint32 getScreenResolution(void) {return 100;} //subclasses to overide
 	static  UT_uint32 s_getScreenResolution();

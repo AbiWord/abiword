@@ -153,6 +153,59 @@ bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
+{
+  switch ( in )
+    {
+    case GR_Graphics::CAP_ROUND :
+      return GDK_CAP_ROUND ;
+    case GR_Graphics::CAP_PROJECTING :
+      return GDK_CAP_PROJECTING ;
+    case GR_Graphics::CAP_BUTT :
+    default:
+      return GDK_CAP_BUTT ;
+    }
+}
+
+static GdkLineStyle mapLineStyle ( GR_Graphics::LineStyle in )
+{
+  switch ( in )
+    {
+    case GR_Graphics::LINE_ON_OFF_DASH :
+      return GDK_LINE_ON_OFF_DASH ;
+    case GR_Graphics::LINE_DOUBLE_DASH :
+      return GDK_LINE_DOUBLE_DASH ;
+    case GR_Graphics::LINE_SOLID :
+    default:
+      return GDK_LINE_SOLID ;
+    }
+}
+
+static GdkJoinStyle mapJoinStyle ( GR_Graphics::JoinStyle in )
+{
+  switch ( in )
+    {
+    case GR_Graphics::JOIN_ROUND :
+      return GDK_JOIN_ROUND ;
+    case GR_Graphics::JOIN_BEVEL :
+      return GDK_JOIN_BEVEL ;
+    case GR_Graphics::JOIN_MITER :
+    default:
+      return GDK_JOIN_MITER ;
+    }
+}
+
+void GR_UnixGraphics::setLineProperties ( double inWidthPixels, 
+					  GR_Graphics::JoinStyle inJoinStyle,
+					  GR_Graphics::CapStyle inCapStyle,
+					  GR_Graphics::LineStyle inLineStyle )
+{
+  gdk_gc_set_line_attributes ( m_pGC, (gint)inWidthPixels,
+			       mapLineStyle ( inLineStyle ),
+			       mapCapStyle ( inCapStyle ),
+			       mapJoinStyle ( inJoinStyle ) ) ;
+}
+
 #ifndef WITH_PANGO
 /* let's cache this, since construction of UT_Wctomb is rather slow */
 static UT_Wctomb* w = NULL;

@@ -450,10 +450,6 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 	// return TRUE if each attribute and property is already present
 	// and has the same value as what we have.
 
-	// TODO consider using the fact that we are now (Dec 12 1998) using
-	// TODO alpha-hash-table rather than just a hash-table to optimize
-	// TODO these loops somewhat.
-
 	if (attributes && *attributes)
 	{
 		const XML_Char ** p = attributes;

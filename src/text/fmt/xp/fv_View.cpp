@@ -2036,7 +2036,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 				if(pAttrProp)
 				{
 					*pMyAP = *pAttrProp;
-					pMyAP->setAttribute("revision", NULL);
+					pMyAP->setAttribute("revision", "");
 				}
 
 			}

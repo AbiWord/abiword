@@ -107,6 +107,11 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 
+	virtual void setLineProperties ( double inWidthPixels, 
+					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
+					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
+					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID ) ;
+
 #ifndef WITH_PANGO 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
 	virtual UT_uint32 getFontAscent(GR_Font *);

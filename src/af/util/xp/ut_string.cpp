@@ -51,8 +51,7 @@
 // probably not 100% correct, but better than !stricmp(http://), ...
 bool UT_isUrl ( const char * szName )
 {
-  if (!szName)
-    return false;
+  UT_return_val_if_fail(szName, false);
 
   int len = strlen ( szName );
   int mailto_len = strlen ( "mailto:" );
@@ -128,7 +127,7 @@ unichar_to_utf8 (int c, unsigned char *outbuf)
 
 char * UT_strdup(const char * szSource)
 {
-	UT_ASSERT(szSource);
+  UT_return_val_if_fail(szSource, NULL);
 
 	int len = strlen(szSource)+1;
 	if(char * ret = (char *)UT_calloc(len, sizeof(char)))
@@ -139,8 +138,8 @@ char * UT_strdup(const char * szSource)
 
 UT_sint32 UT_stricmp(const char * s1, const char * s2)
 {
-	UT_ASSERT(s1);
-	UT_ASSERT(s2);
+  UT_return_val_if_fail(s1, 1);
+  UT_return_val_if_fail(s2, -1);
 
 	// Lifted from glibc.  Looks better (in a constant-factor sort of way)
 	// than what we had before.  Ideally this should be per-platform.
@@ -167,8 +166,8 @@ UT_sint32 UT_stricmp(const char * s1, const char * s2)
 // platforms.  I don't know.
 UT_sint32 UT_strnicmp(const char *s1, const char *s2, int n)
 {
-	UT_ASSERT(s1);
-	UT_ASSERT(s2);
+  UT_return_val_if_fail(s1, 1);
+  UT_return_val_if_fail(s2, -1);
 
 	const unsigned char *p1 = (const unsigned char *) s1;
 	const unsigned char *p2 = (const unsigned char *) s2;

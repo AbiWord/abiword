@@ -1577,18 +1577,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		//UT_uint32 iId = pDoc->getRevisionId();
 		UT_RGBColor clrRevision(255,0,0);
 		const PP_Revision * r = m_pRevisions->getLastRevision();
-		PP_RevisionType r_type = r->getType();
 
-		if(r_type == PP_REVISION_ADDITION)
-		{
+		if (r != NULL)
+		  {		    
+		    PP_RevisionType r_type = r->getType();
+		    
+		    if(r_type == PP_REVISION_ADDITION)
+		      {
 			UT_setColor(clrRevision,0,255,0);
-		}
-		else if(r_type == PP_REVISION_FMT_CHANGE)
-		{
+		      }
+		    else if(r_type == PP_REVISION_FMT_CHANGE)
+		      {
 			UT_setColor(clrRevision,171,15,233);
-		}
-
-		m_pG->setColor(clrRevision);
+		      }
+		    
+		    m_pG->setColor(clrRevision);
+		  }
 	}
 	else if(!m_pHyperlink || !m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		m_pG->setColor(m_colorFG); // set colour just in case we drew a first/last char with a diff colour
