@@ -148,6 +148,12 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32	tlu(UT_sint32 deviceUnits) const;
 	double	    tduD(double layoutUnits) const;
 	double  	tluD(double deviceUnits) const;
+	/*!
+		Font units to layout units. Returns the dimension in layout units since font
+		are not Zoomed
+	 */
+	UT_sint32	ftlu(UT_sint32 fontUnits) const;
+	double		ftluD(double fontUnits) const;
 
 #ifndef WITH_PANGO
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;

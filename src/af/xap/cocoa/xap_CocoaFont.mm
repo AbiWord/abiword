@@ -90,7 +90,7 @@ UT_uint32 XAP_CocoaFont::getSize(void)
 
 const char * XAP_CocoaFont::getName(void)
 {
-	return [[m_font fontName] cString];
+	return [[m_font fontName] UTF8String];
 }
 
 

@@ -169,6 +169,7 @@ private:
 
 	// our currently requested font by handle
 	XAP_CocoaFont *	m_pFont;
+	NSFont*						m_fontForGraphics;
 
 	static XAP_CocoaFont*	s_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
@@ -185,7 +186,7 @@ public:		//HACK
 private:
 	/* private implementations. Allow esasy selection accross various ways */
 	void _initMetricsLayouts(void);
-	UT_uint32 _measureUnRemappedCharCached(const UT_UCSChar c);
+	float _measureUnRemappedCharCached(const UT_UCSChar c);
 	//private font metrics objects
 	NSTextStorage *m_fontMetricsTextStorage;
     NSLayoutManager *m_fontMetricsLayoutManager;

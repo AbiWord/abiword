@@ -177,6 +177,16 @@ double GR_Graphics::tluD(double deviceUnits) const
 	return (deviceUnits * getResolution() / getDeviceResolution()) * 100.0 / getZoomPercentage();
 }
 
+UT_sint32	GR_Graphics::ftlu(UT_sint32 fontUnits) const
+{
+	return (fontUnits * getResolution() / getDeviceResolution());
+}
+
+double	GR_Graphics::ftluD(double fontUnits) const
+{
+	return (fontUnits * getResolution() / getDeviceResolution() + 0.5);
+}
+
 void GR_Graphics::setLineProperties ( double    inWidthPixels, 
 				      JoinStyle inJoinStyle,
 				      CapStyle  inCapStyle,

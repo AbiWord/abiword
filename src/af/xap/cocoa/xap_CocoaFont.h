@@ -54,7 +54,7 @@ class XAP_CocoaFont : public GR_Font
 	virtual UT_sint32 			measureUnremappedCharForCache(UT_UCSChar cChar) const;
 private:
 	NSFont*						m_font;
-	mutable NSFont*						m_fontForCache;
+	mutable NSFont*			m_fontForCache;
 	mutable NSMutableDictionary*		m_fontProps;
 	void						_resetMetricsCache();
 	static void				_initMetricsLayouts(void);
