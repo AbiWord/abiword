@@ -52,6 +52,8 @@ public:
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
 
+	UT_Bool		copy(UT_Vector *pVec);
+
 protected:
 	UT_uint32		calcNewSpace();
 	UT_sint32		grow(UT_uint32);

@@ -51,6 +51,7 @@ protected:
 	UT_Bool						_showDocument(UT_uint32 zoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+	UT_Bool						_replaceDocument(AD_Document * pDoc);
 
 /*
 	GtkAdjustment *				m_pVadj;

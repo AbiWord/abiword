@@ -237,3 +237,18 @@ void UT_Vector::qsort(int (*compar)(const void *, const void *))
 	::qsort(m_pEntries, m_iCount, sizeof(void*), compar);
 }
 
+UT_Bool UT_Vector::copy(UT_Vector *pVec)
+{
+	clear();
+
+	for (UT_uint32 i=0; i < pVec->m_iCount; i++)
+	{
+		UT_sint32 err;
+
+		err = addItem(pVec->m_pEntries[i]);
+		if(err == -1)
+			return err;
+	}
+
+	return 0;
+}

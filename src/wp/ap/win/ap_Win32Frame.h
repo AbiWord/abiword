@@ -67,6 +67,8 @@ protected:
 	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
 	void						_getVerticalScrollInfo(SCROLLINFO * psi);
 
+	UT_Bool						_replaceDocument(AD_Document * pDoc);
+
 	HWND						m_hwndTopRuler;
 	HWND						m_hwndLeftRuler;
 	HWND						m_hwndDeadLowerRight;

@@ -291,6 +291,43 @@ UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	return UT_TRUE;
 }
 
+UT_Bool XAP_App::forgetClones(XAP_Frame * pFrame)
+{
+	UT_ASSERT(pFrame);
+
+	if (pFrame->getViewNumber() == 0)
+	{
+		return forgetFrame(pFrame);
+	}
+
+	UT_Vector vClones;
+	getClones(&vClones, pFrame);
+	
+	for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+	{
+		XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+		forgetFrame(f);
+	}
+
+	return UT_TRUE;
+}
+
+UT_Bool XAP_App::getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame)
+{
+	UT_ASSERT(pvClonesCopy);
+	UT_ASSERT(pFrame);
+	UT_ASSERT(pFrame->getViewNumber() > 0);
+
+	// locate vector of this frame's clones
+	UT_HashEntry* pEntry = m_hashClones.findEntry(pFrame->getViewKey());
+	UT_ASSERT(pEntry);
+
+	UT_Vector * pvClones = (UT_Vector *) pEntry->pData;
+	UT_ASSERT(pvClones);
+
+	return pvClonesCopy->copy(pvClones);
+}
+
 UT_Bool XAP_App::updateClones(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);

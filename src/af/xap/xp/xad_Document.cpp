@@ -18,16 +18,37 @@
  */
 
 
+#include "ut_assert.h"
 #include "xad_Document.h"
 
 AD_Document::AD_Document()
 {
+	m_iRefCount = 1;
 	m_szFilename = NULL;
 }
 
 AD_Document::~AD_Document()
 {
+	UT_ASSERT(m_iRefCount == 0);
+
 	// NOTE: let subclass clean up m_szFilename, so it matches the alloc mechanism
+}
+
+void AD_Document::ref(void)
+{
+	UT_ASSERT(m_iRefCount > 0);
+
+	m_iRefCount++;
+}
+
+void AD_Document::unref(void)
+{
+	UT_ASSERT(m_iRefCount > 0);
+
+	if (--m_iRefCount == 0)
+	{
+		delete this;
+	}
 }
 
 const char * AD_Document::getFilename(void) const

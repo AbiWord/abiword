@@ -169,7 +169,7 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
 	if (pOldDoc != m_pDoc)
 	{
-		DELETEP(pOldDoc);
+		UNREFP(pOldDoc);
 	}
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
@@ -229,7 +229,7 @@ Cleanup:
 	DELETEP(pScrollbarViewListener);
 
 	// change back to prior document
-	DELETEP(m_pDoc);
+	UNREFP(m_pDoc);
 	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 
 	return UT_FALSE;
@@ -370,11 +370,13 @@ UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 		goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-	delete pNewDoc;
+	UNREFP(pNewDoc);
 	return UT_FALSE;
 
 ReplaceDocument:
-	// NOTE: prior document is bound to ((AP_FrameData*)m_pData)->m_pDocLayout, which gets discarded by subclass
+	getApp()->forgetClones(this);
+
+	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
 	return UT_TRUE;
 }
@@ -407,6 +409,16 @@ Cleanup:
 
 UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 {
+	UT_Bool bUpdateClones;
+	UT_Vector vClones;
+	XAP_App * pApp = getApp();
+
+	bUpdateClones = (getViewNumber() > 0);
+	if (bUpdateClones)
+	{
+		pApp->getClones(&vClones, this);
+	}
+
 	if (! _loadDocument(szFilename, (IEFileType) ieft))
 	{
 		// we could not load the document.
@@ -414,6 +426,20 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 		// if the app is fully up yet.  we force our caller
 		// to deal with the problem.
 		return UT_FALSE;
+	}
+
+	pApp->rememberFrame(this);
+	if (bUpdateClones)
+	{
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		{
+			AP_UnixFrame * pFrame = (AP_UnixFrame *) vClones.getNthItem(i);
+			if(pFrame != this)
+			{
+				pFrame->_replaceDocument(m_pDoc);
+				pApp->rememberFrame(pFrame, this);
+			}
+		}
 	}
 
 	return _showDocument();
@@ -603,3 +629,10 @@ void AP_UnixFrame::setStatusMessage(const char * szMsg)
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }
 
+UT_Bool AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
+{
+	// NOTE: prior document is discarded in _showDocument()
+	m_pDoc = REFP(pDoc);
+
+	return _showDocument();
+}

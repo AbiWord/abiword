@@ -68,6 +68,8 @@ public:
 	virtual UT_Bool					initialize(void);
 	virtual UT_Bool					rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf=(XAP_Frame*)NULL);
 	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
+	virtual UT_Bool					forgetClones(XAP_Frame * pFrame);
+	virtual UT_Bool					getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame);
 	virtual XAP_Frame * 			newFrame(void) = 0;
 	virtual void					reallyExit(void) = 0;
 

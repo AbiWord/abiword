@@ -58,7 +58,6 @@ class PD_Document : public AD_Document
 {
 public:
 	PD_Document();
-	~PD_Document();
 
 	virtual UT_Bool			readFromFile(const char * szFilename, int ieft);
 	virtual UT_Bool			newDocument(void);
@@ -164,6 +163,8 @@ public:
 #endif
 	
 protected:
+	~PD_Document();
+
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 

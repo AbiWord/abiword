@@ -29,7 +29,8 @@ class AD_Document
 {
 public:
 	AD_Document();
-	virtual ~AD_Document();
+	void				ref(void);
+	void				unref(void);
 
 	const char *			getFilename(void) const;
 
@@ -42,6 +43,9 @@ public:
 	virtual UT_Bool			redoCmd(UT_uint32 repeatCount) = 0;
 	
 protected:
+	virtual ~AD_Document();		//  Use unref() instead.
+
+	int				m_iRefCount;
 	const char *			m_szFilename;
 };
 

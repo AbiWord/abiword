@@ -72,7 +72,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 {
 	// only clone a few things
 	m_app = f->m_app;
-	m_pDoc = f->m_pDoc;
+	m_pDoc = REFP(f->m_pDoc);
 	m_iUntitled = f->m_iUntitled;
 
 	// everything else gets recreated
@@ -105,8 +105,7 @@ XAP_Frame::~XAP_Frame(void)
 	DELETEP(m_pView);
 	DELETEP(m_pViewListener);
 
-	if (m_nView==0)
-		DELETEP(m_pDoc);
+	UNREFP(m_pDoc);
 
 	DELETEP(m_pScrollObj);
 	DELETEP(m_pInputModes);
