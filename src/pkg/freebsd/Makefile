@@ -48,16 +48,19 @@ ifneq ($(findstring pkg,$(ABI_DIST_TARGET)),)
 endif
 
 # Native FreeBSD package
-pkg::
+pkg: install
 	@echo "Producing native FreeBSD PKG from PLIST in $(DIST)..."
 	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin OUTFILE=$(DIST)/PLIST \
 		$(ABI_ROOT)/src/pkg/freebsd/scripts/mkplist.sh
 	@echo "Producing package to" \
-		"$(DIST)/AbiWord-$(ABI_BUILD_VERSION).tgz"
+		"$(DIST)/AbiSuite-$(ABI_BUILD_VERSION).tgz"
 	@pkg_create -c pkg/COMMENT -d pkg/COMMENT -D pkg/MESSAGE \
-		-f $(DIST)/PLIST $(DIST)/AbiWord-$(ABI_BUILD_VERSION).tgz
+		-f $(DIST)/PLIST $(DIST)/AbiSuite-$(ABI_BUILD_VERSION).tgz
 	@echo "Cleaning up..."
 	@rm -f $(DIST)/PLIST
+	@rm -rf $(prefix)/AbiSuite
+	@rm -f $(prefix)/bin/AbiWord
+	@rm -f $(prefix)/bin/abiword
 
 # tgz target is provided by a common Unix makefile
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
