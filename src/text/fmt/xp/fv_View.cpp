@@ -2033,25 +2033,25 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 }
 
 #if defined(PT_TEST) || defined(FMT_TEST)
+static int _s_Test_Dump_counter = 0;
+
 void FV_View::Test_Dump(void)
 {
-	static int x = 0;
-
-#if defined(PT_TEST)
 	char buf[100];
-	sprintf(buf,"dump.ptbl.%d",x);
+	int x = _s_Test_Dump_counter++;
+	
+#if defined(PT_TEST)
+	sprintf(buf,"dump.ptbl.%ld",x);
 	FILE * fpDumpPTbl = fopen(buf,"w");
 	m_pDoc->__dump(fpDumpPTbl);
 	fclose(fpDumpPTbl);
 #endif
 #if defined(FMT_TEST)
-	sprintf(buf,"dump.fmt.%d",x);
+	sprintf(buf,"dump.fmt.%ld",x);
 	FILE * fpDumpFmt = fopen(buf,"w");
 	m_pLayout->__dump(fpDumpFmt);
 	fclose(fpDumpFmt);
 #endif
-		
-	x++;
 }
 #endif
 

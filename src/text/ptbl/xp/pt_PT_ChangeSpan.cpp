@@ -61,12 +61,59 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 	if ((fragOffset == 0) && (length == pft->getLength()))
 	{
 		// we have an exact match (we are changing the entire fragment).
-		// let's just overwrite the indexAP and return.
 
-		// TODO check for coalesing.
+		// try to coalesce this modified fragment with one of its neighbors.
+		// first we try the pft->next -- if that works, we can stop because
+		// the unlink will take care of checking pft->next with pft->prev.
+		// if it doesn't work, we then try pft->prev.
+		
+		pf_Frag * pfNext = pft->getNext();
+		if (pfNext && pfNext->getType()==pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pfNext);
+			if (   (pftNext->getIndexAP() == indexNewAP)
+				&& (m_varset.isContiguous(pft->getBufIndex(),length,pftNext->getBufIndex())))
+			{
+				// the pft given and the pft->next can be coalesced.
+				// let's donate all of our document data to pft->next,
+				// set pft to be empty and then let _unlinkFrag() take
+				// care of all the other details (like checking to see
+				// if pft->next and pft->prev can be coalesced after pft
+				// is out of the way....)
+
+				pftNext->adjustOffsetLength(pft->getBufIndex(),length+pftNext->getLength());
+				// we could do a: pft->changeLength(0); but it causes an assert and
+				// besides _unlinkFrag() doesn't look at it and we're going to delete it.
+				_unlinkFrag(pft,ppfNewEnd,pfragOffsetNewEnd);
+				delete pft;
+				return UT_TRUE;
+			}
+		}
+
+		pf_Frag * pfPrev = pft->getPrev();
+		if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
+			if (   (pftPrev->getIndexAP() == indexNewAP)
+				&& (m_varset.isContiguous(pftPrev->getBufIndex(),pftPrev->getLength(),pft->getBufIndex())))
+			{
+				// the pft given and the pft->prev can be coalesced.
+				// let's donate all of our document data to the pft->prev,
+				// set pft to be empty and then let _unlinkFrag() take
+				// care of the dirty work.
+
+				pftPrev->changeLength(pftPrev->getLength()+length);
+				// we could do a: pft->changeLength(0); but it causes an assert and
+				// besides _unlinkFrag() doesn't look at it and we're going to delete it.
+				_unlinkFrag(pft,ppfNewEnd,pfragOffsetNewEnd);
+				delete pft;
+				return UT_TRUE;
+			}
+		}
+
+		// otherwise, we just overwrite the indexAP on this fragment.
 		
 		pft->setIndexAP(indexNewAP);
-
 		SETP(ppfNewEnd, pft->getNext());
 		SETP(pfragOffsetNewEnd, 0);
 		
@@ -75,20 +122,43 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 
 	if (fragOffset == 0)
 	{
-		// the change is at the beginning of the fragment, we cut
-		// the existing fragment into 2 parts and apply the new
-		// formatting to the new one.
+		// the change is at the beginning of the fragment.
+		// we need to split the existing fragment into 2 parts
+		// and apply the new formatting to the new first half.
+		// before we actually create the new one, we see if we
+		// can coalesce the first half (with the new formatting)
+		// with the previous fragment.  if not, then we cut
+		// the existing fragment into 2 parts.
 
 		UT_uint32 len_1 = length;
 		UT_uint32 len_2 = pft->getLength() - len_1;
 		PT_BufIndex bi_1 = m_varset.getBufIndex(pft->getBufIndex(),0);
 		PT_BufIndex bi_2 = m_varset.getBufIndex(pft->getBufIndex(),len_1);
+
+		pf_Frag * pfPrev = pft->getPrev();
+		if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
+			if (   (pftPrev->getIndexAP() == indexNewAP)
+				&& (m_varset.isContiguous(pftPrev->getBufIndex(),pftPrev->getLength(),pft->getBufIndex())))
+			{
+				// yes we can coalesce.  move the first half into the previous fragment.
+
+				pftPrev->changeLength(pftPrev->getLength()+length);
+				pft->adjustOffsetLength(bi_2,len_2);
+				SETP(ppfNewEnd, pft);
+				SETP(pfragOffsetNewEnd, 0);
+		
+				return UT_TRUE;
+			}
+		}
+
+		// otherwise, we need to actually split this one....
+		
 		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_1,len_1,indexNewAP);
 		if (!pftNew)
 			return UT_FALSE;
 
-		// TODO check for coalesing.
-		
 		pft->adjustOffsetLength(bi_2,len_2);
 		m_fragments.insertFrag(pft->getPrev(),pftNew);
 
@@ -102,17 +172,38 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 	{
 		// the change is at the end of the fragment, we cut
 		// the existing fragment into 2 parts and apply the new
-		// formatting to the new one.
+		// formatting to the new second half.  before we actually
+		// create the new one, we see if we can coalesce the
+		// second half (with the new formatting) with the next
+		// fragment.
 
 		UT_uint32 len_1 = fragOffset;
 		UT_uint32 len_2 = length;
 		PT_BufIndex bi_2 = m_varset.getBufIndex(pft->getBufIndex(),len_1);
+
+		pf_Frag * pfNext = pft->getNext();
+		if (pfNext && pfNext->getType()==pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pfNext);
+			if (   (pftNext->getIndexAP() == indexNewAP)
+				&& (m_varset.isContiguous(bi_2,len_2,pftNext->getBufIndex())))
+			{
+				// yes we can coalesce.  move the second half into the next fragment.
+
+				pftNext->adjustOffsetLength(bi_2,len_2+pftNext->getLength());
+				pft->changeLength(len_1);
+				SETP(ppfNewEnd,pftNext);
+				SETP(pfragOffsetNewEnd,len_2);
+				return UT_TRUE;
+			}
+		}
+
+		// otherwise, we actually need to split this one....
+
 		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_2,len_2,indexNewAP);
 		if (!pftNew)
 			return UT_FALSE;
 
-		// TODO check for coalesing.
-		
 		pft->changeLength(len_1);
 		m_fragments.insertFrag(pft,pftNew);
 

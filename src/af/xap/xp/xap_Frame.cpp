@@ -62,6 +62,8 @@ AP_Frame::AP_Frame(AP_App * app)
 	m_pScrollbarViewListener = NULL;
 	
 	m_app->rememberFrame(this);
+	memset(m_szTitle,0,sizeof(m_szTitle));
+	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 AP_Frame::AP_Frame(AP_Frame * f)
@@ -216,6 +218,7 @@ const char * AP_Frame::getViewKey(void) const
 const char * AP_Frame::getTitle(int len) const
 {
 	// TODO: chop down to fit desired size?
+	UT_ASSERT((int)strlen(m_szTitle) < len);
 	return m_szTitle;
 }
 
