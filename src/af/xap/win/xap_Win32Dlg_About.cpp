@@ -73,7 +73,7 @@ XAP_Win32Dialog_About::~XAP_Win32Dialog_About(void)
 #define HEADING_HEIGHT		36
 #define VERSION_HEIGHT		24
 #define COPYRIGHT_HEIGHT	24
-#define GPL_HEIGHT			200
+#define GPL_HEIGHT			180
 
 #define	ID_BUTTON_URL	3000
 
@@ -209,7 +209,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 											 XAP_ABOUT_COPYRIGHT,
 											 WS_CHILD | WS_VISIBLE | SS_LEFT,
 											 iImageWidth + BUTTON_GAP,
-											 BUTTON_GAP + HEADING_HEIGHT + BUTTON_GAP + VERSION_HEIGHT + 4*BUTTON_GAP,
+											 BUTTON_GAP + HEADING_HEIGHT + BUTTON_GAP + VERSION_HEIGHT + 1*BUTTON_GAP,
 											 iWidth - 2*BUTTON_GAP - iImageWidth,
 											 COPYRIGHT_HEIGHT,
 											 hwndAbout,
@@ -222,7 +222,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 									   buf,
 									   WS_CHILD | WS_VISIBLE | SS_LEFT,
 									   iImageWidth + BUTTON_GAP,
-									   BUTTON_GAP + HEADING_HEIGHT + BUTTON_GAP + VERSION_HEIGHT + 4*BUTTON_GAP + VERSION_HEIGHT + BUTTON_GAP,
+									   BUTTON_GAP + HEADING_HEIGHT + BUTTON_GAP + VERSION_HEIGHT + 1*BUTTON_GAP + VERSION_HEIGHT + BUTTON_GAP,
 									   iWidth - 2*BUTTON_GAP - iImageWidth,
 									   GPL_HEIGHT,
 									   hwndAbout,

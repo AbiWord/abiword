@@ -33,7 +33,7 @@
 #define XAP_ABOUT_VERSION "Version: %s"
 #define XAP_ABOUT_BUILD "Build options: %s"
 #define XAP_ABOUT_URL "For more information: http://www.abisource.com/"
-#define XAP_ABOUT_GPL_LONG "%s is free software; you can redistribute it and/or \
+#define XAP_ABOUT_GPL_LONG "AbiWord and AbiSource are trademarks of AbiSource, Inc.\r\n\r\n%s is free software; you can redistribute it and/or \
 modify it under the terms of the GNU General Public License \
 as published by the Free Software Foundation; either version 2 \
 of the License, or (at your option) any later version.\r\n\r\n\
@@ -42,7 +42,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of \
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details."
 
-#define XAP_ABOUT_GPL_LONG_LINE_BROKEN "%s is free software; you can redistribute it\n \
+#define XAP_ABOUT_GPL_LONG_LINE_BROKEN "AbiWord and AbiSource are trademarks of\nAbiSource, Inc.\n\n%s is free software; you can redistribute it\n \
 and/or modify it under the terms of the GNU General\n \
 Public License as published by the Free Software\n \
 Foundation; either version 2 of the License, or (at your\n \
