@@ -838,6 +838,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iWidth = UT_convertToLogicalUnits(pszWidth);
 	}
+	if(m_iWidth < m_pLayout->getGraphics()->tlu(2))
+	{
+		m_iWidth = m_pLayout->getGraphics()->tlu(2);
+	}
 	UT_DEBUGMSG(("Width %s \n",pszWidth));
 // Height
 
@@ -848,6 +852,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iHeight = UT_convertToLogicalUnits(pszHeight);
+	}
+	if(m_iHeight < m_pLayout->getGraphics()->tlu(2))
+	{
+		m_iHeight = m_pLayout->getGraphics()->tlu(2);
 	}
 	UT_DEBUGMSG(("Height %s \n",pszHeight));
 

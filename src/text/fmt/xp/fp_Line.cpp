@@ -1715,7 +1715,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			{
 				//if we are using the tabstops, we go through the hoops,
 				UT_sint32	iPos = 0;
-				eTabType	iTabType =FL_TAB_NONE ;
+				eTabType	iTabType =FL_TAB_LEFT ;
 				eTabLeader	iTabLeader = FL_LEADER_NONE;
 				bool bRes = false;
 				if(pTabRun->isTOCTab())
