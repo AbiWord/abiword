@@ -28,6 +28,8 @@ class XAP_BeOSFrame;
 
 class AP_BeOSDialog_Tab: public AP_Dialog_Tab
 {
+	friend class TabWindow;
+	
 public:
 	AP_BeOSDialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_BeOSDialog_Tab(void);
@@ -37,7 +39,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
-	virtual void                    _controlEnable( tControl id, UT_Bool value ) { };
+	virtual void                    _controlEnable( tControl id, UT_Bool value );
 	virtual void                    _setTabList( UT_uint32 count );
 	virtual void                    _clearList();
 	eTabType                        _gatherAlignment();
@@ -50,6 +52,8 @@ protected:
 	void                            _setSelectTab( UT_sint32 v );
 	const char *                    _gatherTabEdit();
 	void                            _setTabEdit( const char *pszStr );
+	
+	class TabWindow* newwin;
 };
 
 #endif /* AP_BEOSDIALOG_TAB_H */
