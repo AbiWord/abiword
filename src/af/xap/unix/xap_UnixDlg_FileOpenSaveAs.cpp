@@ -508,14 +508,19 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			}
 
 			// Set menu item to default type from index (i) above if we're a SAVEAS
-			// dialog; open dialog always does auto-detect
-			if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
-				gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
 				
 			gtk_widget_show(menu);
 			
 			// add menu to the option menu widget
 			gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
+
+			// dialog; open dialog always does auto-detect
+			// TODO: should this also apply to the open dialog?
+			if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
+			  {
+				gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
+				gtk_option_menu_set_history (GTK_OPTION_MENU(filetypes_pulldown), activeItemIndex + 1);
+			  }
 		}
 	}
 	

@@ -978,7 +978,17 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
 
 	// AbiWord uses IEFT_AbiWord_1 as the default
-	pDialog->setDefaultFileType((UT_sint32) IEFT_AbiWord_1);
+
+	#define BAD_FILETYPE (UT_sint32)(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) - 1
+
+	// try to remember the previous file type
+	static UT_sint32 dflFileType = BAD_FILETYPE;
+	if (dflFileType == BAD_FILETYPE)
+	  dflFileType = (UT_sint32) IEFT_AbiWord_1;
+
+	#undef BAD_FILETYPE
+
+	pDialog->setDefaultFileType(dflFileType);
 		
 	pDialog->runModal(pFrame);
 
@@ -992,6 +1002,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 			UT_cloneString(*ppPathname,szResultPathname);
 
 		UT_sint32 type = pDialog->getFileType();
+		dflFileType = type;
 
 		// If the number is negative, it's a special type.
 		// Some operating systems which depend solely on filename
