@@ -168,9 +168,8 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
-	PgFlush();		/* Just to clear out any drawing to be done ... */
 
-#if 0	//Our widecharacter support doesn't work for printing
+#if 0	//Photon widecharacter support doesn't work for printing
 	UT_UCSChar *pNChars, utb[150];  // arbitrary biggish size for utb
 	if (iLength < (sizeof(utb) / sizeof(utb[0]))) {
 		pNChars = utb;
