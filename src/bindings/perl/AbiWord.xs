@@ -304,8 +304,8 @@ getCurrentView(pFrame)
 void
 setPageSize(pFrame, iWidth, iHeight)
 	XAP_Frame* pFrame
-	int iWidth
-	int iHeight
+	double iWidth
+	double iHeight
 	CODE:
 		// THIS METHOD DOESN'T WORK
 		AD_Document* ad_doc = pFrame->getCurrentDoc();
