@@ -159,6 +159,10 @@
 #define XAP_PREF_KEY_ZoomType		"ZoomType"
 #define XAP_PREF_DEFAULT_ZoomType	"Width" /* 100, Width, Page */
 
+
+#define XAP_PREF_KEY_ZoomPercentage		"ZoomPercentage"
+#define XAP_PREF_DEFAULT_ZoomPercentage	"100"
+
 #define XAP_PREF_KEY_ShowUnixFontWarning "ShowUnixFontWarning"
 #define XAP_PREF_DEFAULT_ShowUnixFontWarning "1"
 
@@ -226,6 +230,7 @@ dcl(DocumentLocale)
 dcl(AllowCustomToolbars)
 dcl(AutoLoadPlugins)
 dcl(ZoomType)
+dcl(ZoomPercentage)
 dcl(DefaultSaveDirectory)
 dcl(ShowUnixFontWarning)
 dcl(ModifyUnixFontPath)

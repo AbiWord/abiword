@@ -1436,7 +1436,7 @@ extern "C" void
 abi_widget_map_to_screen(AbiWidget * abi)
 {
   g_return_if_fail (abi != 0);
-
+  UT_DEBUGMSG(("Doing map_to_screen \n"));
   GtkWidget * widget = GTK_WIDGET(abi);
 
   // now we can set up Abi inside of this GdkWindow

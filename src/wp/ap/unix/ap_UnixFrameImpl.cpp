@@ -18,8 +18,19 @@
 #endif
 
 AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp) :
-	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame), static_cast<AP_App *>(pUnixApp)) 
+	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame), static_cast<AP_App *>(pUnixApp)),
+	m_dArea(NULL),
+	m_pVadj(NULL),
+	m_pHadj(NULL),
+	m_hScroll(NULL),
+	m_vScroll(NULL),
+	m_topRuler(NULL),
+	m_leftRuler(NULL),
+	m_table(NULL),
+	m_innertable(NULL),
+	m_wSunkenBox(NULL)
 {
+	UT_DEBUGMSG(("Created AP_UnixFrameImpl %x \n",this));
 }
 
 XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
@@ -164,6 +175,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	// create a drawing area in the for our document window.
 	m_dArea = createDrawingArea ();
+	UT_DEBUGMSG(("!!! drawing area m_dArea created! %x for %x \n",m_dArea,this));
 	GTK_WIDGET_SET_FLAGS (m_dArea, GTK_CAN_FOCUS);	// allow it to be focussed
 
 	gtk_object_set_user_data(GTK_OBJECT(m_dArea), this);

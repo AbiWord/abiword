@@ -597,15 +597,31 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // from the m_wTopLevelWindow widget.
 // -- MES
 //
-		GtkWindow * pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
-		gint gwidth,gheight;
-		gtk_window_get_size(pWin,&gwidth,&gheight);
-		pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+		if(pFrame->getFrameMode() == XAP_NormalFrame)
+		{
+			GtkWindow * pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
+			gint gwidth,gheight;
+			gtk_window_get_size(pWin,&gwidth,&gheight);
+			pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
 
 		// Dynamic Zoom Implimentation
-		if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
+			if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
+			{
+				pUnixFrameImpl->m_iZoomUpdateID = g_idle_add((GSourceFunc) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
+			}
+		}
+		else
 		{
-			pUnixFrameImpl->m_iZoomUpdateID = g_idle_add((GSourceFunc) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
+			GdkWindow * pWin = pUnixFrameImpl->m_wTopLevelWindow->window;
+			gint gwidth,gheight;
+			gdk_window_get_size(pWin,&gwidth,&gheight);
+			pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+
+		// Dynamic Zoom Implimentation
+			if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
+			{
+				pUnixFrameImpl->m_iZoomUpdateID = g_idle_add((GSourceFunc) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
+			}
 		}
 	}
 	return 1;
@@ -1331,10 +1347,13 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	geom.width_inc  = 10; // ??
 	geom.height_inc = 10;
 
-	gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
-								   (GdkWindowHints)(GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC));
+	if(getFrame()->getFrameMode() == XAP_NormalFrame)
+	{
+		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
+									   (GdkWindowHints)(GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC));
 
-	gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
+		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
+	}
 
 #if 0
 	bool cap_resize = false;
@@ -1457,9 +1476,10 @@ bool XAP_UnixFrameImpl::_updateTitle()
 	const char * szTitle = getFrame()->getTitle(len);
 
 	sprintf(buf, "%s - %s", szTitle, szAppName);
-
-	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
-
+	if(getFrame()->getFrameMode() == XAP_NormalFrame)
+	{
+		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
+	}
 	return true;
 }
 

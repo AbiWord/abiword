@@ -95,7 +95,9 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 
 void AP_Win32Frame::setZoomPercentage(UT_uint32 iZoom)
 {
+	XAP_Frame::setZoomPercentage(iZoom);
 	_showDocument(iZoom);
+
 }
 
 UT_uint32 AP_Win32Frame::getZoomPercentage(void)

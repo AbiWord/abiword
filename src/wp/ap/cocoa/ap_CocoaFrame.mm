@@ -64,6 +64,7 @@
 
 void AP_CocoaFrame::setZoomPercentage(UT_uint32 iZoom)
 {
+	XAP_Frame::setZoomPercentage(iZoom);
 	_showDocument(iZoom);
 }
 

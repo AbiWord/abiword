@@ -31,6 +31,7 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "ap_StatusBar.h"
+#include "xap_Dlg_Zoom.h"
 
 /*****************************************************************/
 
@@ -185,11 +186,15 @@ XAP_Frame * AP_Frame::buildFrame(XAP_Frame * pF)
 {
 	UT_Error error = UT_OK;
 	AP_Frame * pClone = static_cast<AP_Frame *>(pF);
+	XAP_Frame::tZoomType iZoomType = pF->getZoomType();;
+	setZoomType(iZoomType);
+	UT_uint32 iZoom = XAP_Frame::getZoomPercentage();
 	ENSUREP_C(pClone);
 	if (!pClone->initialize())
 		goto Cleanup;
 
-	error = pClone->_showDocument();
+
+	error = pClone->_showDocument(iZoom);
 	if (error)
 		goto Cleanup;
 
@@ -227,7 +232,9 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 		// to deal with the problem.
 		return errorCode;
 	}
-
+	XAP_Frame::tZoomType iZoomType;
+	UT_uint32 iZoom = getNewZoom(&iZoomType);
+	setZoomType(iZoomType);
 	pApp->rememberFrame(this);
 	if (bUpdateClones)
 	{
@@ -242,7 +249,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 		}
 	}
 
-	return _showDocument();
+	return _showDocument(iZoom);
 }
 
 UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft)
@@ -281,16 +288,80 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 			}
 		}
 	}
+	XAP_Frame::tZoomType iZoomType;
+	UT_uint32 iZoom = getNewZoom(&iZoomType);
+	setZoomType(iZoomType);
+	return _showDocument(iZoom);
+}
 
-	return _showDocument();
+/*!
+ * This method returns the zoomPercentage of the new frame.
+ * Logic goes like this.
+ * If there is a valid last focussed frame return the zoom and zoom type 
+ * for that.
+ * Otherwise use the preference value.
+ */
+UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
+{
+	UT_Vector vecClones;
+	XAP_Frame *pF = NULL;
+	XAP_App * pApp = getApp();
+	UT_ASSERT(pApp);
+	XAP_Frame * pLastFrame = pApp->getLastFocussedFrame();
+	UT_uint32 iZoom = 100;
+	if(pLastFrame == NULL)
+	{
+		UT_String sZoom;
+		pApp->getPrefsValue(XAP_PREF_KEY_ZoomType, sZoom);
+		*tZoom = getZoomType();
+		if( (UT_stricmp( sZoom.c_str(), "Width" ) == 0 ) || (UT_stricmp( sZoom.c_str(), "Page" ) == 0 ))
+		{
+			iZoom = 100;
+		}
+		else
+		{
+			iZoom =  atoi( sZoom.c_str() );
+		}
+		return iZoom;
+	}
+	else
+	{
+		UT_uint32 nFrames = getViewNumber();
+
+		if(nFrames == 0)
+		{
+			iZoom = pLastFrame->getZoomPercentage();
+			*tZoom = pLastFrame->getZoomType();
+			return iZoom;
+		}
+		getApp()->getClones(&vecClones,this);
+		UT_uint32 i =0;
+		bool bMatch = false;
+		for (i=0; !bMatch && (i< vecClones.getItemCount()); i++)
+		{
+			XAP_Frame *pF = static_cast<XAP_Frame *>(vecClones.getNthItem(i));
+			bMatch = (pF == pLastFrame);
+		}
+		if(bMatch)
+		{
+			iZoom = pLastFrame->getZoomPercentage();
+			*tZoom = pLastFrame->getZoomType();
+			return iZoom;
+		}
+	}
+	iZoom = pF->getZoomPercentage();
+	*tZoom = pF->getZoomType();
+	return iZoom;
 }
 
 UT_Error AP_Frame::_replaceDocument(AD_Document * pDoc)
 {
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = REFP(pDoc);
-
-	return _showDocument();
+	XAP_Frame::tZoomType iZoomType;
+	UT_uint32 iZoom = getNewZoom(&iZoomType);
+	setZoomType(iZoomType);
+	return _showDocument(iZoom);
 }
 
 UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
@@ -328,6 +399,12 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 
 	xxx_UT_DEBUGMSG(("_showDocument: Initial m_pView %x \n",m_pView));
 
+	if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+		iZoom = 100;
+	else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+		iZoom = 100;
+	UT_DEBUGMSG(("!!!!!!!!! _showdOCument: Initial izoom is %d \n",iZoom));
+
 	if (!_createViewGraphics(pG, iZoom))
 		goto Cleanup;
 
@@ -336,7 +413,19 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP_C(pView);
-
+	
+	if(getZoomType() == XAP_Frame::z_PAGEWIDTH)
+	{
+		iZoom = pView->calculateZoomPercentForPageWidth();
+		pG->setZoomPercentage(iZoom);
+	}
+	else if(getZoomType() == XAP_Frame::z_WHOLEPAGE)
+	{
+		iZoom = pView->calculateZoomPercentForWholePage();
+		pG->setZoomPercentage(iZoom);
+	}
+	UT_DEBUGMSG(("!!!!!!!!! _showdOCument: izoom is %d \n",iZoom));
+	XAP_Frame::setZoomPercentage(iZoom);
 	_setViewFocus(pView);
 
 	if (!_createScrollBarListeners(pView, pScrollObj, pViewListener, pScrollbarViewListener,

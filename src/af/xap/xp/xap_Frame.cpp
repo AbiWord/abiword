@@ -86,7 +86,8 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_bShowStatusbar(true),
 	  m_bShowMenubar(true),
 	  m_bIsFrameLocked(false),
-	  m_pFrameImpl(pFrameImpl)
+	  m_pFrameImpl(pFrameImpl),
+	  m_iZoomPercentage(100)
 {
 	m_pApp->rememberFrame(this);
 }
@@ -116,7 +117,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_bHasDroppedTB(false),
 	m_bFirstDraw(false),
 	m_bIsFrameLocked(false),
-	m_pFrameImpl(f->m_pFrameImpl->createInstance(this, f->m_pApp))
+	m_pFrameImpl(f->m_pFrameImpl->createInstance(this, f->m_pApp)),
+	m_iZoomPercentage(f->m_iZoomPercentage)
 {
 	m_pApp->rememberFrame(this, f);
 }
@@ -313,39 +315,75 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	// select the default zoom settings
 	//////////////////////////////////////////////////////////////////
 	pApp->getPrefsValue(XAP_PREF_KEY_ZoomType, stTmp);
+	UT_DEBUGMSG(("Zoom type from prefs is %s \n",stTmp.c_str()));
+	UT_uint32 iZoom = 100;
 	if( UT_stricmp( stTmp.c_str(), "100" ) == 0 )
 	{
 		m_zoomType = z_100;
+		iZoom = 100;
 	}
 	else if( UT_stricmp( stTmp.c_str(), "75" ) == 0 )
 	{
 		m_zoomType = z_75;
+		iZoom = 75;
 	}
 	else if( UT_stricmp( stTmp.c_str(), "200" ) == 0 )
 	{
 		m_zoomType = z_200;
+		iZoom = 200;
 	}
 	else if( UT_stricmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
+		const XML_Char * szZoom = NULL;
+		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
+							  (const XML_Char**)&szZoom);
+		if(szZoom)
+		{
+			iZoom = atoi(szZoom);
+			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+				iZoom = 100;
+			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+				iZoom = 100;
+		}
+		else
+		{
+			iZoom = 100;
+		}
 	}
 	else if( UT_stricmp( stTmp.c_str(), "Page" ) == 0 )
 	{
 		m_zoomType = z_WHOLEPAGE;
+		const XML_Char * szZoom = NULL;
+		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
+							  (const XML_Char**)&szZoom);
+		if(szZoom)
+		{
+			iZoom = atoi(szZoom);
+			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+				iZoom = 100;
+			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+				iZoom = 100;
+		}
+		else
+		{
+			iZoom = 100;
+		}
 	}
 	else
 	{
-		UT_uint32 iZoom = atoi( stTmp.c_str() );
+		iZoom = atoi( stTmp.c_str() );
 
 		// These limits are defined in xap_Dlg_Zoom.h
 		if ((iZoom <= XAP_DLG_ZOOM_MAXIMUM_ZOOM) && (iZoom >= XAP_DLG_ZOOM_MINIMUM_ZOOM)) 
 		{
 			m_zoomType = z_PERCENT;
-			setZoomPercentage( iZoom );
+			XAP_Frame::setZoomPercentage( iZoom );
 		}
 		else
 		  m_zoomType = z_100;
 	}
+	XAP_Frame::setZoomPercentage( iZoom );
 
 	
 	//////////////////////////////////////////////////////////////////
@@ -612,14 +650,36 @@ const char * XAP_Frame::getNonDecoratedTitle() const
 	return m_sNonDecoratedTitle.utf8_str();
 }
 
-void XAP_Frame::setZoomPercentage(UT_uint32 /* iZoom */)
+void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
 {
-	// default does nothing.  see subclasses for override
+	m_iZoomPercentage = iZoom;
+	XAP_App * pApp = getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+	UT_String sZoom;
+	UT_String_sprintf(sZoom,"%d",iZoom);
+	if(getZoomType() == z_PAGEWIDTH)
+	{
+		pScheme->setValue(XAP_PREF_KEY_ZoomType,"Width");
+	}
+	else if(getZoomType() == z_WHOLEPAGE)
+	{
+		pScheme->setValue(XAP_PREF_KEY_ZoomType,"Page");
+	}
+	else
+	{
+		pScheme->setValue(XAP_PREF_KEY_ZoomType,sZoom.c_str());
+	}
+	UT_DEBUGMSG(("zoom is set to %s \n",sZoom.c_str()));
+	pScheme->setValue(XAP_PREF_KEY_ZoomPercentage,sZoom.c_str());
 }
 
 UT_uint32 XAP_Frame::getZoomPercentage(void)
 {
-	return 100;	// default implementation
+	return m_iZoomPercentage;
 }
 
 EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
@@ -855,12 +915,14 @@ void XAP_Frame::updateZoom(void)
 		newZoom = m_pView->calculateZoomPercentForPageWidth();
 		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
 		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		XAP_Frame::setZoomPercentage( newZoom );
 		setZoomPercentage( newZoom );
 		break;
 	case z_WHOLEPAGE:
 		newZoom = m_pView->calculateZoomPercentForWholePage() ;
 		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
 		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		XAP_Frame::setZoomPercentage( newZoom );
 		setZoomPercentage( newZoom );
 		break;
 	default:
@@ -1373,22 +1435,27 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	if( UT_stricmp( stTmp.c_str(), "100" ) == 0 )
 	{
 		m_zoomType = z_100;
+		XAP_Frame::setZoomPercentage(100);
 	}
 	else if( UT_stricmp( stTmp.c_str(), "75" ) == 0 )
 	{
 		m_zoomType = z_75;
+		XAP_Frame::setZoomPercentage(75);
 	}
 	else if( UT_stricmp( stTmp.c_str(), "200" ) == 0 )
 	{
 		m_zoomType = z_200;
+		XAP_Frame::setZoomPercentage(200);
 	}
 	else if( UT_stricmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
+		XAP_Frame::setZoomPercentage(100);
 	}
 	else if( UT_stricmp( stTmp.c_str(), "Page" ) == 0 )
 	{
 		m_zoomType = z_WHOLEPAGE;
+		XAP_Frame::setZoomPercentage(100);
 	}
 	else
 	{
@@ -1398,10 +1465,13 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		if ((iZoom <= XAP_DLG_ZOOM_MAXIMUM_ZOOM) && (iZoom >= XAP_DLG_ZOOM_MINIMUM_ZOOM)) 
 		{
 			m_zoomType = z_PERCENT;
-			setZoomPercentage( iZoom );
+			XAP_Frame::setZoomPercentage( iZoom );
 		}
 		else
-		  m_zoomType = z_100;
+		{
+			m_zoomType = z_100;
+			XAP_Frame::setZoomPercentage(100);
+		}
 	}
 
 	
@@ -1725,14 +1795,36 @@ bool XAP_Frame::updateTitle()
 	return true;
 }
 
-void XAP_Frame::setZoomPercentage(UT_uint32 /* iZoom */)
+void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
 {
-	// default does nothing.  see subclasses for override
+	m_iZoomPercentage = iZoom;
+	XAP_App * pApp = getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+	UT_String sZoom;
+	UT_String_sprintf(sZoom,"%d",iZoom);
+	if(getZoomType() = z_PAGEWIDTH)
+	{
+		pScheme->setValue(XAP_PREF_KEY_ZoomType,"Width");
+	}
+	else if(getZoomType() = z_WHOLEPAGE)
+	{
+		pScheme->setValue(XAP_PREF_KEY_ZoomType,"Page");
+	}
+	else
+	{
+		pScheme->setValue(XAP_PREF_KEY_ZoomType,sZoom.c_str());
+	}
+	UT_DEBUGMSG(("zoom is set to %s \n",sZoom.c_str()));
+	pScheme->setValue(XAP_PREF_KEY_ZoomPercentage(sZoom);
 }
 
 UT_uint32 XAP_Frame::getZoomPercentage(void)
 {
-	return 100;	// default implementation
+	return m_iZoomPercentage;
 }
 
 EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
@@ -1971,12 +2063,14 @@ void XAP_Frame::updateZoom(void)
 		newZoom = m_pView->calculateZoomPercentForPageWidth();
 		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
 		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		XAP_Frame::setZoomPercentage( newZoom );
 		setZoomPercentage( newZoom );
 		break;
 	case z_WHOLEPAGE:
 		newZoom = m_pView->calculateZoomPercentForWholePage() ;
 		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
 		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		XAP_Frame::setZoomPercentage( newZoom );
 		setZoomPercentage( newZoom );
 		break;
 	default:

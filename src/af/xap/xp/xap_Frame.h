@@ -295,6 +295,7 @@ private:
 	bool                        m_bIsFrameLocked;
 
 	XAP_FrameImpl *           m_pFrameImpl; /* set by platform specific code */
+	UT_uint32                   m_iZoomPercentage;
 };
 #else
 typedef enum _FrameModes

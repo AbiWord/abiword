@@ -66,7 +66,7 @@
 #include "ut_rand.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
-
+#include "xap_Dlg_Zoom.h"
 #include "ap_Frame.h"
 #include "ap_FrameData.h"
 
@@ -461,7 +461,7 @@ UT_RGBColor FV_View::getColorSelForeground ()
 }
 
 // TODO i18n All of these case functions are too simplistic:
-// TODO i18n French uppercase letters must not show accents
+// TODO i18n French uppercase letters must not showaccents
 // TODO i18n German single-letter "sharp s" uppercases to double-letter "SS"
 // TODO i18n Turkish "i" uppercases to capital "I" with dot
 // TODO i18n Turkish "I" lowercases to lower "i" without dot
@@ -8008,7 +8008,7 @@ bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 
 const fp_PageSize & FV_View::getPageSize(void) const
 {
-	return m_pLayout->getFirstPage()->getPageSize();
+	return m_pDoc->m_docPageSize;
 }
 
 
@@ -8018,16 +8018,37 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	double pageWidth = pageSize.Width(DIM_IN);
 
 	// Verify scale as a positive non-zero number else return old zoom
-	if ( ( getWindowWidth() - 2 * getPageViewLeftMargin() ) <= 0 )
+	UT_uint32 iZoom = 100;
+	UT_sint32 iWindowWidth =  getWindowWidth();
+	UT_DEBUGMSG(("----------------WindowWidth in FV_View %d \n",iWindowWidth));
+	if(iWindowWidth == 0)
+	{
+	// Get fall-back defaults for zoom from prefs
+		const XML_Char * szZoom = NULL;
+		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
+							   (const XML_Char**)&szZoom);
+		UT_DEBUGMSG(("!!!! Zoom percentage  %s \n",szZoom));
+		if(szZoom)
+		{
+			iZoom = atoi(szZoom);
+			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+				iZoom = 100;
+			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+				iZoom = 100;
+			return iZoom;
+		}
+		return getGraphics()->getZoomPercentage();
+	}
+	if ( ( iWindowWidth - 2 * getPageViewLeftMargin() ) <= 0 )
 		return getGraphics()->getZoomPercentage();
 
 	double scale = (getWindowWidth() - 2 * getPageViewLeftMargin()) /
 		(pageWidth * static_cast<double>(getGraphics()->getResolution() / 
 								   getGraphics()->getZoomPercentage() * 100.0));
 
-	// Don't do the change if it's less than 5% from current percentage - PL
+	// Don't do the change if it's less than 10% from current percentage - PL
 	if (abs(static_cast<int>(scale * 100.0) - 
-			getGraphics()->getZoomPercentage()) < 5)
+			getGraphics()->getZoomPercentage()) < 10)
 		return getGraphics()->getZoomPercentage();
 
 	return static_cast<UT_uint32>(scale * 100.0);
@@ -8038,18 +8059,38 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 
 	const fp_PageSize pageSize = getPageSize();
 	double pageHeight = pageSize.Height(DIM_IN);
-
+	UT_uint32 iZoom = 100;
+	UT_sint32 iWindowHeight =  getWindowHeight();
+	UT_DEBUGMSG(("----------------WindowHeight in FV_View %d \n",iWindowHeight));
+	if(iWindowHeight == 0)
+	{
+	// Get fall-back defaults for zoom from prefs
+		const XML_Char * szZoom = NULL;
+		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
+							   (const XML_Char**)&szZoom);
+		if(szZoom)
+		{
+			iZoom = atoi(szZoom);
+			UT_DEBUGMSG(("!!!! Zoom percentage  %s \n",szZoom));
+			if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
+				iZoom = 100;
+			else if (iZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) 
+				iZoom = 100;
+			return iZoom;
+		}
+		return getGraphics()->getZoomPercentage();
+	}
 	// Verify scale as a positive non-zero number else return old zoom
-	if ( ( getWindowHeight() - 2 * getPageViewTopMargin() ) <= 0 )
+	if ( ( iWindowHeight - 2 * getPageViewTopMargin() ) <= 0 )
 		return getGraphics()->getZoomPercentage();
 
 	double scale = (getWindowHeight() - 2 * getPageViewTopMargin()) /
 		(pageHeight * static_cast<double>(getGraphics()->getResolution() /
 		                         getGraphics()->getZoomPercentage() * 100.0));
 
-	// Don't do the change if it's less than 5% from current percentage - PL
+	// Don't do the change if it's less than 10% from current percentage - PL
 	if (abs(static_cast<int>(scale * 100.0) -
-			getGraphics()->getZoomPercentage()) < 5)
+			getGraphics()->getZoomPercentage()) < 10)
 		return getGraphics()->getZoomPercentage();
 
 	return static_cast<UT_uint32>(scale * 100.0);

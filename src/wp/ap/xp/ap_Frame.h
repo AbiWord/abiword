@@ -40,7 +40,7 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual UT_Error                        importDocument(const char * szFilename, int ieft, bool markClean);
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
-  
+	UT_uint32                   getNewZoom(XAP_Frame::tZoomType * tZoom);
  protected:
 
 	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);

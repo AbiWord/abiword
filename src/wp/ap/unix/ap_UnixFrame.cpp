@@ -59,6 +59,7 @@
 
 void AP_UnixFrame::setZoomPercentage(UT_uint32 iZoom)
 {
+	XAP_Frame::setZoomPercentage(iZoom);
 	_showDocument(iZoom);
 }
 
@@ -165,7 +166,7 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 #if DEBUG
 	if(frameMode == XAP_NormalFrame)
 	{
-		UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! NormalFrame \n"));
+		UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! NormalFrame this %x \n",this));
 	}
 	else if(frameMode == XAP_NoMenusWindowLess)
 	{
@@ -180,7 +181,10 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 	setFrameLocked(false);
 
 	if (!initFrameData())
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
+	}
 	UT_DEBUGMSG(("AP_UnixFrame:: Initializing base classes!!!! \n"));
 
 	if (!XAP_Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
@@ -188,8 +192,10 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 				   AP_PREF_KEY_StringSet, AP_PREF_KEY_StringSet,
 				   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 				   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
-
+	}
 	UT_DEBUGMSG(("AP_UnixFrame:: Creating Toplevel Window!!!! \n"));	
 	pFrameImpl->_createWindow();
 
@@ -429,7 +435,10 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 	//WL: experimentally hiding this
 	//gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);
-	pG = new GR_UnixGraphics(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea->window, fontManager, getApp());
+	AP_UnixFrameImpl * pImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
+	UT_ASSERT(pImpl);
+	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",pImpl,pImpl->m_dArea));
+	pG = new GR_UnixGraphics(pImpl->m_dArea->window, fontManager, getApp());
 	ENSUREP_RF(pG);
 	pG->setZoomPercentage(iZoom);
 
