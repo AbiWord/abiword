@@ -46,6 +46,7 @@ Section "Abiword.exe (required)"
 
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\dictionary"
+	File /r "..\AbiSuite\templates"
 	File /oname=copying.txt "..\AbiSuite\Copying"
 	File "..\AbiSuite\readme.txt"
   
