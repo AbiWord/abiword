@@ -1,3 +1,4 @@
 GNUmakefile.in
 GNUmakefile
 .deps
+ttftool

@@ -2,3 +2,5 @@ abi_ver.cpp
 GNUmakefile.in
 GNUmakefile
 .deps
+AbiWord_d
+AbiWord_s
