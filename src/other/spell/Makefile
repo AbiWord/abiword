@@ -31,10 +31,14 @@ LIBRARY_NAME=		AbiSpell
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
+# Win32 must build libiconv as a peer, Unix should either
+# have iconv.h available as part of its C library (GNU libc
+# systems) or have it installed as part of the libiconv-1.0
+# package.
 ifeq ($(OS_NAME), WIN32)
 INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
 else
-INCLUDES=		-I$(ABI_ROOT)/../libiconv/include
+INCLUDES=
 endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
