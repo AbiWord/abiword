@@ -173,7 +173,6 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	  }
 
 	_deleteEncodingTable();
-
 }
 
 bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, const char* family, const char *xlfd,
@@ -309,6 +308,9 @@ const encoding_pair *XAP_UnixFont::loadEncodingFile()
 {
 	if (!m_pXftFont)
 		return 0;
+
+	if (m_pEncodingTable)
+		return m_pEncodingTable;
 
 	XftFaceLocker locker(m_pXftFont);
 	FT_Face face = locker.getFace();
