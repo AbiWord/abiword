@@ -19,4 +19,6 @@ typedef UT_uint32 PL_ListenerId;
 typedef const void * PL_StruxDocHandle;	/* opaque document data */
 typedef const void * PL_StruxFmtHandle;	/* opaque layout data */
 
+#define PT_PROPS_ATTRIBUTE_NAME		((const XML_Char *)"PROPS")
+
 #endif /* PT_TYPES_H */

@@ -142,15 +142,15 @@ UT_Bool pp_TableAttrProp::cloneWithReplacements(const PP_AttrProp * papOld,
 	k = 0;
 	while (papOld->getNthAttribute(k++,n,v))
 	{
-		// TODO decide if/whether to allow STYLE here.  The issue
-		// TODO is: we use it to store the CSS properties and when
-		// TODO we see it, we expand the value into one or more
+		// TODO decide if/whether to allow PT_PROPS_ATTRIBUTE_NAME here.
+		// TODO The issue is: we use it to store the CSS properties and
+		// TODO when we see it, we expand the value into one or more
 		// TODO properties.  if we allow it to be given here, should
 		// TODO we blowaway all of the existing properties and create
 		// TODO them from this?  or should we expand it and override
 		// TODO individual properties?  
 		// TODO for now, we just barf on it.
-		UT_ASSERT(UT_XML_stricmp(n,"STYLE")!=0); // cannot handle style here
+		UT_ASSERT(UT_XML_stricmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
 		if (!papNew->getAttribute(n,vNew))
 			if (!papNew->setAttribute(n,v))
 				return UT_FALSE;

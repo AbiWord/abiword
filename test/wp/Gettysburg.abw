@@ -4,7 +4,7 @@
   <Column type="Circle" left="0in" top="0in" radius="2.54in"/>
 </ColumnModel>
 
-<P style="text-align:center">
+<P PROPS="text-align:center">
 Four score and seven years ago our fathers 
 brought forth on this  
 continent a new nation, conceived in liberty and dedicated to the  

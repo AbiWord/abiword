@@ -3,8 +3,8 @@
 <COLUMNMODEL>
 <COLUMN type="box" left=".5in" top="0in" width="4in" height="*"/>
 </COLUMNMODEL>
-<P STYLE="font-size:18pt; font-weight:bold; text-align:center">The Cathedral and the Bazaar           </P>
-<P STYLE="font-decoration:underline; text-align:right">by Eric S. Raymond </P>
+<P PROPS="font-size:18pt; font-weight:bold; text-align:center">The Cathedral and the Bazaar</P>
+<P PROPS="font-decoration:underline; text-align:right">by Eric S. Raymond </P>
 <P>Linux is subversive. Who would have thought even five years ago that a world-class operating system could coalesce as if by magic out of part-time hacking by several thousand developers scattered all over the planet, connected only by the tenuous strands of the Internet?  </P>
 <P>Certainly not I. By the time Linux swam onto my radar screen in early 1993, I had already been involved in Unix and open-source development for ten years. I was one of the first GNU contributors in the mid-1980s. I had released a good deal of open-source software onto the net, developing or co-developing several programs (nethack, Emacs VC and GUD modes, xlife, and others) that are still in wide use today. I thought I knew how it was done.  </P>
 <P> Linux overturned much of what I thought I knew. I had been preaching the Unix gospel of small tools, rapid prototyping and evolutionary programming for years. But I also believed there was a certain critical complexity above which a more centralized, a priori approach was required. I believed that the most important software (operating systems and really large tools like Emacs) needed to be built like cathedrals, carefully crafted by individual wizards or small bands of mages working in splendid isolation, with no beta to be released before its time.  </P>

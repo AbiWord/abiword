@@ -10,6 +10,7 @@
 #include "ut_string.h"
 #include "ut_vector.h"
 #include "xmlparse.h"
+#include "pt_Types.h"
 #include "pp_AttrProp.h"
 
 PP_AttrProp::PP_AttrProp()
@@ -73,9 +74,10 @@ UT_Bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 
 UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue)
 {
-	UT_ASSERT(sizeof(char)==sizeof(XML_Char)); // TODO when this fails, switch this file to use UT_XML_ version of str*() functions.
+	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
+	UT_ASSERT(sizeof(char)==sizeof(XML_Char));
 	
-	if (0 == UT_stricmp(szName, "STYLE"))			// STYLE -- cut value up into properties
+	if (0 == UT_stricmp(szName, PT_PROPS_ATTRIBUTE_NAME))	// PROPS -- cut value up into properties
 	{
 		char *pOrig = strdup(szValue);
 		if (!pOrig)
@@ -134,7 +136,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 		free(pOrig);
 		return UT_TRUE;
 	}
-	else								// not "STYLE" -- add to attribute list
+	else								// not "PRPOS" -- add to attribute list
 	{
 		if (!m_pAttributes)
 		{

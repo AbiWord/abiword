@@ -1,4 +1,5 @@
 
+#include "pt_Types.h"
 #include "ie_exp_AbiWord_1.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
@@ -173,7 +174,9 @@ void ie_Exp_Listener::_openTag(const char * szPrefix, const char * szSuffix,
 		}
 		if (pAP->getNthProperty(0,szName,szValue))
 		{
-			m_pie->write(" style=\"");
+			m_pie->write(" ");
+			m_pie->write(PT_PROPS_ATTRIBUTE_NAME);
+			m_pie->write("=\"");
 			m_pie->write(szName);
 			m_pie->write(":");
 			m_pie->write(szValue);

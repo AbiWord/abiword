@@ -4,11 +4,11 @@
   <Column type="Box" left="0in" top="0in" width="3in" height="9in"/>
   <Column type="Box" left="3.5in" top="0in" width="3in" height="9in"/>
 </ColumnModel>
-<P STYLE="font-weight:bold;font-size:18pt; text-align:center">
+<P PROPS="font-weight:bold;font-size:18pt; text-align:center">
 Interview with AbiSource Founder Eric Sink
 </P>
 
-<P><C STYLE="font-weight:bold">Dale:  Eric,  tell me a bit about yourself and how you were
+<P><C PROPS="font-weight:bold">Dale:  Eric,  tell me a bit about yourself and how you were
 involved with Mosaic development at Spyglass?</C></P>
 
 <P>Eric: I was with Spyglass early on, before it was an Internet
@@ -18,7 +18,7 @@ Project Lead.  Anyway, Mosaic turned out to be a string of great
 technical successes, interleaved with a string of great marketing
 failures.  Both were excellent learning experiences for me.</P>
 
-<P><C STYLE="font-weight:bold">Dale: So, tell me about your new company.</C></P>
+<P><C PROPS="font-weight:bold">Dale: So, tell me about your new company.</C></P>
 
 <P>Eric: We got started in January of 1997 as a contracting firm, with
 no specific plan for doing products.  Contracting is lucrative, and
@@ -29,7 +29,7 @@ its momentum, earlier this year.  In a matter of two months, we
 constructed a plan for our Open Source products, hired five new
 people, and changed our name to AbiSource.</P>
 
-<P><C STYLE="font-weight:bold">Dale:  What got you interested in Open Source?</C></P>
+<P><C PROPS="font-weight:bold">Dale:  What got you interested in Open Source?</C></P>
 
 <P>Eric: I've been a fan of Open Source software for over a decade, but
 I'll confess that prior to this past Spring, it had never occurred to
@@ -41,7 +41,7 @@ software use licenses.  Although I don't consider my views to be as
 extreme as Richard Stallman's, I began to realize that the Open Source
 philosophy of software has a tremendous future.</P>
 
-<P><C STYLE="font-weight:bold">Dale: But the concept of Open Source is not at all new.  Why is the
+<P><C PROPS="font-weight:bold">Dale: But the concept of Open Source is not at all new.  Why is the
 future so bright now?</C></P>
 
 <P>Eric: It's important to recognize the role of the Internet as a key
@@ -56,7 +56,7 @@ on what is really important.  The reason that the Open Source movement
 can happen now is that the Internet is finally ubiquitous enough to
 serve as a distribution medium to very large markets.</P>
 
-<P><C STYLE="font-weight:bold">Dale:  What kind of Open Source products are you building?</C></P>
+<P><C PROPS="font-weight:bold">Dale:  What kind of Open Source products are you building?</C></P>
 
 <P>Eric: We're focused on desktop productivity tools, including word
 processors, spreadsheets, end-user databases, and so on.  Our first
@@ -66,7 +66,7 @@ early developer release of this app is being made available on August
 ready for end-users, around the end of the year, we'll be making our
 announcements to a much larger audience.</P>
 
-<P><C STYLE="font-weight:bold">Dale: Since you are producing "user" products, what if any is the
+<P><C PROPS="font-weight:bold">Dale: Since you are producing "user" products, what if any is the
 appeal of Open Source software to the end user?  Do they care?</C></P>
 
 <P>Eric: They definitely care.  Users are tired of the crazy upgrade
@@ -101,7 +101,7 @@ isn't just about source code.  It's a better way to build software,
 and it's a way to build better software.  Users care a lot about those
 things.</P>
 
-<P><C STYLE="font-weight:bold">Dale: What made you think there was an opportunity to do something
+<P><C PROPS="font-weight:bold">Dale: What made you think there was an opportunity to do something
 that traditional software product companies have given up on -- which
 is to say -- challenge Microsoft on the Desktop.</C></P>
 
@@ -122,7 +122,7 @@ terminology from Geoffrey Moore, if Open Source is going to "cross the
 chasm", we first have to target our products at the "pragmatists in
 pain".</P>
 
-<P><C STYLE="font-weight:bold">Dale: Next logical question is what makes you think that you can
+<P><C PROPS="font-weight:bold">Dale: Next logical question is what makes you think that you can
 form a company around "free software."  You're not a team of
 developers working for free on your spare time.  You hope to make a go
 of it as a company?</C></P>
@@ -134,7 +134,7 @@ products, and we can sustain a viable, growing company, even if only a
 small percentage of our user base become paid subscribers to our
 services.</P>
 
-<P><C STYLE="font-weight:bold">Dale: The key question is how will you fund the team to continue
+<P><C PROPS="font-weight:bold">Dale: The key question is how will you fund the team to continue
 developing the software that you are going to release?</C></P>
 
 <P>Our company is in transition, and to some extent, the profitability of
@@ -144,7 +144,7 @@ need working capital to fund our operations until our new business is
 profitable.  We have some outside investors, and we're in the process
 of looking for others.</P>
 
-<P><C STYLE="font-weight:bold">Dale: How will you know that your products are catching on?  What
+<P><C PROPS="font-weight:bold">Dale: How will you know that your products are catching on?  What
 will be the signs of success that you are looking for?</C></P>
 
 <P>Eric: There are lots of signs that I'm looking forward to.  I'm kind

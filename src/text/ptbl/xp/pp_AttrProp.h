@@ -11,8 +11,8 @@
 // Attributes/Properties for a piece of the document.
 // These are generally created by the file-reader.  Attributes
 // represent all of the attribute/value pairs in the XML with
-// the exception of the "STYLE" attribute.  The value of the
-// "STYLE" attribute is parsed into CSS properties.
+// the exception of the PT_PROPS_ATTRIBUTE_NAME attribute.
+// The value of the this attribute is parsed into CSS properties.
 // PP_AttrProp just provides a pair of association lists
 // (one for attributes and one for properties), it does not
 // know the meaning of any of them.
