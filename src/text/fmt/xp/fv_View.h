@@ -282,6 +282,7 @@ public:
 #if 0	
 	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
 #endif
+	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp);
 	void			moveInsPtTo(PT_DocPosition dp);
