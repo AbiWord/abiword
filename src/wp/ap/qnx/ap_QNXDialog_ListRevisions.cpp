@@ -228,7 +228,9 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);
 	PtAddCallback(btnCancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
 	PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
-	
+
+	m_lstRevision = lstRevisions;
+		
 return mainwindow;
 }
 

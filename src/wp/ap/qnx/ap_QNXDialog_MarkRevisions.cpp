@@ -254,7 +254,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	static const PhArea_t area9 = { { 30, 144 }, { 241, 27 } };
 	static const PtArg_t args9[] = {
 		Pt_ARG( Pt_ARG_AREA, &area9, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "Text String 1", 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
 		};
       
 	mainwindow = PtCreateWidget( PtWindow,NULL,sizeof(args) / sizeof(PtArg_t), args);
