@@ -54,9 +54,6 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 # we override the $(PROGRAM) rule.
 RESOURCES=$(shell ls *.rsrc)
-define ATTACH_RESOURCE
-for i in xxxx; do echo "Adding Resource $$i"; xres -o tmprsrc.in $$i; copyres tmprsrc.in $(@); done; listres $(@); rm -f tmprsrc.in
-endef
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
