@@ -26,6 +26,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_Dialog_Id.h"
+#include "xad_Document.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Prefs.h"
@@ -95,22 +96,29 @@ void AP_Dialog_Options::_storeWindowData(void)
 		pPrefs->setCurrentScheme( new_name );
 	}
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// save the values to the Prefs classes
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoSpellCheck, _gatherSpellCheckAsType() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckInternet, _gatherSpellInternet() );
 
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// save ruler units value
+	pPrefsScheme->setValue( AP_PREF_KEY_RulerUnits, UT_dimensionName( _gatherViewRulerUnits()) );
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// allow XAP_Prefs to notify all the listeners of changes
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// TODO: change to snprintf
 	XML_Char szBuffer[40];
 	sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
 	pPrefsScheme->setValue( AP_PREF_KEY_OptionsTabNumber, szBuffer );
 
-	// save ruler units value
-	pPrefsScheme->setValue( AP_PREF_KEY_RulerUnits, UT_dimensionName( _gatherViewRulerUnits()) );
-
-	// allow XAP_Prefs to notify all the listeners of changes
+	// allow the prefListeners to receive their calls
 	pPrefs->endBlockChange();
 
 	// if we hit the Save button, then force a save after the gather
@@ -160,6 +168,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 	// ------------ View
 	if (pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
+
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink,&b))
+		_setViewCursorBlink (b);
 
 	// ------------ the page tab number 
 	if (pPrefs->getPrefsValue(AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
@@ -255,7 +266,6 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreReset"));
 	UT_ASSERT( m_pFrame );
 
-#if 0
 	// TODO:  shack@uiuc.edu: waiting for a vote for reset strings...
 
     XAP_DialogFactory * pDialogFactory
@@ -267,7 +277,8 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    pDialog->setMessage(pSS->getValue(AP_STRING_ID_DLG_Options_Spell_IgnoreResetAll));
+	// Ask "Do you want to reset ignored words in the current document?" 
+    pDialog->setMessage(pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent));
     pDialog->setButtons(XAP_Dialog_MessageBox::b_YNC);
     pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO); // should this be YES?
 
@@ -275,22 +286,63 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 
     XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
-    pDialogFactory->releaseDialog(pDialog);
-
 	// if hit cancel, go no further
-	if (ans == XAP_Dialog_MessageBox::a_CANCEL)
+	// if no hit, don't do anything else, even prompt for other docs
+	if (ans == XAP_Dialog_MessageBox::a_CANCEL ||
+		ans == XAP_Dialog_MessageBox::a_NO )
 	{
-		UT_DEBUGMSG(("Canceled"));
+		UT_DEBUGMSG(("No/Canceled"));
+		pDialogFactory->releaseDialog(pDialog);
 		return;
 	}
 
-    if (ans == XAP_Dialog_MessageBox::a_YES)
-	{
-		UT_DEBUGMSG(("Yes"));
-		// do it
+	// do it
+	UT_DEBUGMSG(("Yes"));
+	UT_ASSERT(ans == XAP_Dialog_MessageBox::a_YES );
 
+	// ask another question : "Do you want to reset ignored words in all the
+	// documents?" , but only if # frames > 1
+	XAP_App *pApp = m_pFrame->getApp();
+	UT_ASSERT(pApp);
+	if (pApp->getFrameCount() > 1)
+	{
+		
+		pDialog->setMessage(pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetAll));
+		pDialog->setButtons(XAP_Dialog_MessageBox::b_YNC);
+		pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO); // should this be YES?
+
+		pDialog->runModal(m_pFrame);
+
+		ans = pDialog->getAnswer();
+
+		// if cancel, don't to ANYTHING	
+		if (ans == XAP_Dialog_MessageBox::a_CANCEL )
+		{
+			UT_DEBUGMSG(("No/Canceled"));
+			pDialogFactory->releaseDialog(pDialog);
+			return;
+		}
+	} 
+
+	// ------------------------- actually do it
+	if ( ans == XAP_Dialog_MessageBox::a_NO )
+	{
+		// if no to all documents, then just reset current (because we made it
+		// this far
+		m_pFrame->getCurrentDoc()->clearIgnores();
+	}	
+	else 
+	{
+		// reset all doc's ignored words
+		UT_uint32 ndx;
+		for ( ndx = 0; ndx < pApp->getFrameCount(); ndx++ )
+			pApp->getFrame(ndx)->getCurrentDoc()->clearIgnores();
 	}
-#endif
+
+	// TODO : recheck spelling
+
+	// clean up
+    pDialogFactory->releaseDialog(pDialog);
 }
 
 void AP_Dialog_Options::_event_IgnoreEdit(void)

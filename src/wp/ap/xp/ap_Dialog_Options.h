@@ -51,8 +51,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
-				   id_CHECK_VIEW_SHOW_TOOLBARS, id_CHECK_VIEW_ALL, 
-				   id_CHECK_VIEW_HIDDEN_TEXT, id_CHECK_VIEW_UNPRINTABLE,
+				   id_CHECK_VIEW_CURSOR_BLINK, id_CHECK_VIEW_SHOW_TOOLBARS, 
+				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT, 
+				   id_CHECK_VIEW_UNPRINTABLE,
 
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS, 
 				   id_BUTTON_OK, id_BUTTON_CANCEL,
@@ -97,6 +98,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
 	SET_GATHER			(ViewShowRuler,		UT_Bool);
  	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewCursorBlink,	UT_Bool);
 	SET_GATHER			(ViewShowToolbars,	UT_Bool);
 
 	SET_GATHER			(ViewAll,			UT_Bool);
@@ -113,10 +115,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	tAnswer				m_answer;
 	XAP_Frame *			m_pFrame;
 
-public:
-	// NOTE: Theses have been changed to "public" so we can use static call
-	// back handlers under GTK.  This will allow greater protection from
-	// conflicting function names
+	// AP level handlers
 	void _event_SetDefaults(void);
 	void _event_IgnoreReset(void);
 	void _event_IgnoreEdit(void);
