@@ -36,659 +36,431 @@ fb_SimpleLineBreaker::fb_SimpleLineBreaker()
 {
 }
 
-/*
-  The lines have already been created for this paragraph.  Rather
-  than just trash them all and start over, we actually need to iterate
-  over the lines so we can figure out if the runs contained in the line
-  have moved on the screen.  If they have indeed moved, we need to repaint
-  them.
-*/
-int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
+int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 {
-	UT_Bool bDone = UT_FALSE;
 	fp_Line* pLine = pBlock->getFirstLine();
+	UT_ASSERT(pLine);
+
 	fp_RunSplitInfo si;
-	
-	while (pLine && (bDone == UT_FALSE))
+	UT_Bool bRepeatThisLine = UT_FALSE;
+	UT_Bool bForcedLastLine = UT_FALSE;
+
+	while (pLine)
 	{
-		UT_sint32 iMaxWidth = pLine->getMaxWidth();
-		UT_Bool bAddLine = UT_FALSE;
-		
-		// This line has been affected by the edit ...
-		if (pLine->m_bDirty)
+		bRepeatThisLine = UT_FALSE;
+
 		{
-			pLine->m_bDirty = UT_FALSE;
+			UT_sint32 iMaxLineWidth = pLine->getMaxWidth();
+			UT_sint32 iCurLineWidth = pLine->getWidth();
 
-			int iWidth = 0;
-			if (pLine->getWidth() > pLine->getMaxWidth())
+			if (iCurLineWidth > iMaxLineWidth)
 			{
-				/*
-				  This line no longer fits in its available space.
-				*/
-				fp_Run* pRun = pLine->getFirstRun();
-				fp_Run* pLastRun = pLine->getLastRun();
-				fp_Run* pNewLastRun = NULL;
+				fp_Run* pFirstRunOnLine = pLine->getFirstRun();
+				fp_Run* pLastRunOnLine = pLine->getLastRun();
 				
-				while (pRun && (pRun != pLastRun->getNext()))
+				/*
+				  the current line is too long.  we need to break it
+				*/
+			
+				fp_Run* pOffendingRun = NULL;
+
+				/*
+				  Regardless of what happens, this line is too long, and
+				  we're going to break it, if at all possible.  Whatever
+				  gets broken is going to move to the next line.  So,
+				  we're going to need to know what our next line is.  If
+				  there is no next line, we'll create one.
+				*/
+				fp_Line* pNextLine = pLine->getNext();
+				fp_Line* pNewLine = NULL;
+				if (!pNextLine)
 				{
-					iWidth += pRun->getWidth();
-
-					// This is the run that needs to be broken
-					if (iWidth > iMaxWidth)
-					{
-						// subtract the width back off for breaking ...
-						UT_sint32 rWidth = iWidth - pRun->getWidth();
-
-						int bFoundSplit = pRun->findMaxLeftFitSplitPoint(iMaxWidth - rWidth, si);
-
-						pNewLastRun = pRun;
-						
-						if (bFoundSplit)
-						{
-							// it fits.  split it and move on
-							pRun->split(si);	// TODO err check this
-							UT_ASSERT((UT_sint32)pRun->getWidth() == si.iLeftWidth);
-
-							// We've found a split, but it's not our last
-							// run - remove all runs after this one.
-							if (pRun != pLine->getLastRun())
-							{
-								fp_Run *tmp = pRun->getNext();
-
-								while (tmp != pLine->getLastRun())
-								{
-									pLine->removeRun(tmp);
-									tmp = tmp->getNext();
-								}
-								pLine->removeRun(pLine->getLastRun());
-							}
-							pRun = pRun->getNext();
-							pLine->shrink(pRun->getWidth());
-						}
-						else
-						{
-							// this run can't be split - remove it and
-							// all following runs to the next line.
-
-							if (pRun == pLine->getFirstRun())
-							{
-								// this is the first run on the line, and it doesn't fit, and we can't break it.
-								// force it.
-
-								bFoundSplit = pRun->findMaxLeftFitSplitPoint(iMaxWidth - rWidth, si, UT_TRUE);
-								if (bFoundSplit)
-								{
-									pRun->split(si);	// TODO err check this
-									UT_ASSERT((UT_sint32)pRun->getWidth() == si.iLeftWidth);
-
-									pRun = pRun->getNext();
-									pLine->shrink(pRun->getWidth());
-									pLine->m_bDirty = UT_TRUE;
-								}
-								else
-								{
-									// this should be ultra-rare.
-									pLine->align();
-									pLine->draw(pRun->getGraphics());
-									return 0;
-								}
-							}
-							 
-							UT_ASSERT(pLastRun == pLine->getLastRun());
+					UT_uint32 iGuessLineHeight = pFirstRunOnLine->getHeight();
 							
-							pNewLastRun = pRun->getPrev();
-
-							// This is the last run on the line - just remove
-							// it
-							if (pRun == pLastRun)
-							{
-								pLine->removeRun(pRun);
-							}
-							else
-							{
-								fp_Run* pTmpRun = pLastRun;
+					UT_uint32 iNewLineWidth = pBlock->requestLineSpace(iGuessLineHeight);
+					UT_ASSERT(iNewLineWidth > 0);
 							
-								UT_ASSERT(pLastRun == pLine->getLastRun());
-								while (pTmpRun != pNewLastRun)
-								{
-									pLine->removeRun(pTmpRun);
-									pTmpRun = pTmpRun->getPrev();
-								}
-							}
-						}
-						
-						// after a split, there is always a next.
-						UT_ASSERT(pRun);
-
-						pLine->align();
-						pLine->draw(pRun->getGraphics());
-						
-						pLine = pLine->getNext();
-
-						if (!pLine)
-						{
-							UT_uint32 iGuessLineHeight = pRun->getHeight();
+					pNewLine = new fp_Line(iNewLineWidth);
+					UT_ASSERT(pNewLine);	// TODO check for outofmem
 							
-							UT_uint32 iMaxLineWidth = pBlock->requestLineSpace(iGuessLineHeight);
-							UT_ASSERT(iMaxLineWidth > 0);
-							
-							pLine = new fp_Line(iMaxLineWidth);
-							UT_ASSERT(pLine);	// TODO check for outofmem
-							pLine->m_bDirty = UT_TRUE;
-							bAddLine = UT_TRUE;
-						}
-						
-						UT_ASSERT(pLine);
-
-						iMaxWidth = pLine->getMaxWidth();
-
-						fp_Run* pTmpRun = pLastRun;
-							
-						/*
-						  if this is the newly created run from
-						  a split, we need to create a new
-						  line data pointer for it
-						*/
-						if (pLastRun == pNewLastRun && bFoundSplit)
-						{
-							pLine->insertRun(pRun, (bAddLine == UT_FALSE), UT_TRUE);
-						}
-
-						while (pTmpRun != pNewLastRun)
-						{
-							if (!pTmpRun->getLineData())
-							{
-								pLine->insertRun(pTmpRun,
-												 (bAddLine == UT_FALSE),
-												 UT_TRUE);
-							}
-							else
-							{
-								pLine->insertRun(pTmpRun,
-												 (bAddLine == UT_FALSE),
-												 UT_FALSE);
-							}
-
-							pTmpRun = pTmpRun->getPrev();
-						}
-
-						if (bAddLine)
-						{
-							pBlock->addLine(pLine);
-							bAddLine = UT_FALSE;
-						}
-						
-						pLine->m_bDirty = UT_TRUE;
-
-						iWidth = 0;
-						pLastRun = pLine->getLastRun();
-						continue;
-					}
-
-					pRun = pRun->getNext();
+					pNextLine = pNewLine;
 				}
 
-				// if width < maxWidth, we're done for this line, now
-				// check the runs on the next line to see if they will fit
-				if (iWidth <= iMaxWidth)
-				{
-					pLine->align();
-					pLine->draw(pLine->getFirstRun()->getGraphics());
-					return 0;
-				}
-			}
-			else
-			{
 				/*
-				  The line fits.  So, we need to check and see if anything
-				  from the subsequent line can be slurped onto this one.
+				  Our first goal is to find the first run which pushes the
+				  length of the line over the limit.  We'll call this the
+				  OffendingRun.  If it can be split in such a way that the
+				  line will fit, then we consider ourselves lucky and move
+				  on.
 				*/
-				fp_Line* pRealNextLine = pLine->getNext();
-				fp_Line* pNextLine = pRealNextLine;
-				UT_uint32 iWidthLooking = 0;
-				UT_uint32 iSpaceLeft = pLine->getMaxWidth() - pLine->getWidth();
-				
-				if (pRealNextLine)
+				UT_sint32 iWorkingLineWidth = 0;
+				fp_Run* pWorkingRun = pFirstRunOnLine;
+				UT_Bool bFoundSplit = UT_FALSE;
+				UT_Bool bFoundBreakAfter = UT_FALSE;
+			
+				while (pWorkingRun && (pWorkingRun != pLastRunOnLine->getNext()))
 				{
-					while (pNextLine && pNextLine->countRuns() == 0)
+					if ((iWorkingLineWidth + (UT_sint32) pWorkingRun->getWidth()) > iMaxLineWidth)
 					{
-						pNextLine->m_bDirty = UT_TRUE;
-						pNextLine = pNextLine->getNext();
-					}
-
-					if (!pNextLine)
-					{
-						// TODO: remove empty lines from
-						// TODO: pRealNextLine to pNextLine
-
-						return 0;
-					}
-
-					fp_Run* pCurRun = pNextLine->getFirstRun();
-					fp_Run* pRunLooking = pCurRun;
-					fp_Run* pLastRun = pNextLine->getLastRun();
+						// This is the first run which doesn't fit on the line
+						pOffendingRun = pWorkingRun;
 					
-					while (iWidthLooking < iSpaceLeft &&
-						   pRunLooking != pLastRun->getNext())
-					{
-						iWidthLooking += pRunLooking->getWidth();
+						bFoundSplit = pWorkingRun->findMaxLeftFitSplitPoint(iMaxLineWidth - iWorkingLineWidth, si);
+						break;
+					}
 
-						// This run will fit in the space we have left
-						// snarf it up if we can break after it
-						if (iSpaceLeft >= iWidthLooking)
+					iWorkingLineWidth += pWorkingRun->getWidth();
+				
+					pWorkingRun = pWorkingRun->getNext();
+				}
+
+				UT_ASSERT(iWorkingLineWidth <= iMaxLineWidth);
+
+				if (!bFoundSplit)
+				{
+					/*
+					  The run we wanted to split (the one which pushes
+					  this line over the limit) cannot be split.  We need
+					  to work backwards along the line to find a split
+					  point.  As we stop at each run along the way, we'll
+					  first check to see if we can break the line after
+					  that run.  If not, we'll try to split that run.
+					*/
+
+					while (pWorkingRun != pFirstRunOnLine)
+					{
+						pWorkingRun = pWorkingRun->getPrev();
+
+						if (pWorkingRun->canBreakAfter())
 						{
 							/*
-							  We snarf it up if it's the last run in the block,
-							  OR if we can break after it,
-							  OR if it's the only run on the line.
-
-							  TODO should we also snarf it if there are NO runs on the current line?
+							  OK, we can break after this
+							  run.  Move all the runs after this one
+							  onto the next line.
 							*/
-							if (!pRunLooking->getNext()
-								|| pRunLooking->canBreakAfter()
-								|| (pRunLooking->isOnlyRunOnLine())
-								)
-							{
-								pNextLine->clearScreen();
-								
-								// snarf up any runs previous to us who
-								// said they couldn't be broken after ...
-								fp_Run* pTmp = pCurRun;
-								while (pTmp != pRunLooking)
-								{
-									pNextLine->removeRun(pTmp);
-									pLine->addRun(pTmp);
-									pTmp = pTmp->getNext();
-								}
-								pNextLine->removeRun(pRunLooking);
-								pLine->addRun(pRunLooking);
 
-								if (pRealNextLine != pNextLine)
-								{
-									pRealNextLine->clearScreen();
-									pRealNextLine->align();
-									pRealNextLine->draw(pRunLooking->getGraphics());
-								}
-								
-								pNextLine->align();
-								pNextLine->draw(pRunLooking->getGraphics());
-								pLine->align();
-								pLine->draw(pRunLooking->getGraphics());
-								
-								pRealNextLine->m_bDirty = UT_TRUE;
-								pNextLine->m_bDirty = UT_TRUE;
+							bFoundBreakAfter = UT_TRUE;
 
-								if (pRunLooking != pLastRun)
-									pRunLooking = pRunLooking->getNext();
-								else
-								{
-									pLine->m_bDirty = UT_TRUE;
-									break;
-								}
-								
-								pCurRun = pRunLooking;
-
-								if ((iSpaceLeft - iWidthLooking) == 0)
-								{
-									pLine->m_bDirty = UT_FALSE;
-									break;
-								}
-								else
-								{
-									pLine->m_bDirty = UT_TRUE;
-								}
-
-								if (!pCurRun)
-								{
-									UT_ASSERT(0);
-									return 0;
-								}
-
-#if 0
-								if (pNextLine->countRuns() == 0)
-								{
-									pLine->m_bDirty = UT_TRUE;
-									break;
-								}
-#endif
-							}
-							else
-							{
-								iWidthLooking += pRunLooking->getWidth();
-								pRunLooking = pRunLooking->getNext();
-								pLine->m_bDirty = UT_TRUE;
-							}
-						}
-						else if	(pRunLooking->findMaxLeftFitSplitPoint(iSpaceLeft - (iWidthLooking - pRunLooking->getWidth()), si))
-						{
-							pNextLine->clearScreen();
-							
-							pNextLine->removeRun(pRunLooking);
-							
-							pRunLooking->split(si);
-							
-							fp_Run* pOtherRun = pRunLooking->getNext();
-							UT_ASSERT(pOtherRun);
-							
-							fp_Run* pTmp = pCurRun;
-							while (pTmp != pRunLooking)
-							{
-								pNextLine->removeRun(pTmp);
-								iSpaceLeft -= pTmp->getWidth();
-								pLine->addRun(pTmp);
-								pTmp = pTmp->getNext();
-							}
-
-							pLine->addRun(pRunLooking);
-							
-							pLine->align();
-							pLine->draw(pCurRun->getGraphics());
-							
-							pRealNextLine->insertRun(pOtherRun, UT_TRUE,
-													 UT_TRUE);
-							
-							if (pRealNextLine != pNextLine)
-							{
-								pRealNextLine->align();
-								pRealNextLine->draw(pOtherRun->getGraphics());
-							}
-							
-							pNextLine->align();
-							pNextLine->draw(pOtherRun->getGraphics());
-
-							pRealNextLine->m_bDirty = UT_TRUE;
-							pLine->m_bDirty = UT_FALSE;
-							pNextLine->m_bDirty = UT_TRUE;
-							
 							break;
 						}
 						else
 						{
 							/*
-							  The run doesn't fit, nor can it be cleanly broken in such
-							  a way that it will fit.
-
-							  Before we give up, we need to check another case
-
-							  -  If the last run on the current line was forced, then we need
-							  to check the first run on the next line to try and force it.
+							  Can't break after this run.  Let's
+							  see if we can split this run to get
+							  something which will fit.
 							*/
-							if (
-								(pRunLooking->isFirstRunOnLine())
-								&& (!(pLine->getLastRun()->canBreakAfter()))
-								&& (pRunLooking->findMaxLeftFitSplitPoint(iSpaceLeft - (iWidthLooking - pRunLooking->getWidth()), si, UT_TRUE))
-								)
+							bFoundSplit = pWorkingRun->findMaxLeftFitSplitPoint(pWorkingRun->getWidth(), si);
+
+							if (bFoundSplit)
 							{
-								pNextLine->clearScreen();
-							
-								pNextLine->removeRun(pRunLooking);
-							
-								pRunLooking->split(si);
-							
-								fp_Run* pOtherRun = pRunLooking->getNext();
-								UT_ASSERT(pOtherRun);
-							
-								fp_Run* pTmp = pCurRun;
-								while (pTmp != pRunLooking)
-								{
-									pNextLine->removeRun(pTmp);
-									iSpaceLeft -= pTmp->getWidth();
-									pLine->addRun(pTmp);
-									pTmp = pTmp->getNext();
-								}
-
-								pLine->addRun(pRunLooking);
-							
-								pLine->align();
-								pLine->draw(pCurRun->getGraphics());
-							
-								pRealNextLine->insertRun(pOtherRun, UT_TRUE,
-														 UT_TRUE);
-							
-								if (pRealNextLine != pNextLine)
-								{
-									pRealNextLine->align();
-									pRealNextLine->draw(pOtherRun->getGraphics());
-								}
-							
-								pNextLine->align();
-								pNextLine->draw(pOtherRun->getGraphics());
-
-								pRealNextLine->m_bDirty = UT_TRUE;
-								pLine->m_bDirty = UT_FALSE;
-								pNextLine->m_bDirty = UT_TRUE;
-							
+								// a suitable split was found.
 								break;
-							}
-							else
-							{
-								pLine->align();
-								pLine->draw(pCurRun->getGraphics());
-							
-								pLine->m_bDirty = UT_FALSE;
 							}
 						}
 					}
-					
-					if (pLine->countRuns() != 0)
-					{
-						pLine->align();
-						pLine->draw(pLine->getFirstRun()->getGraphics());
-					}
+				}
 
-					pLine = pLine->getNext();
+				if (bFoundSplit || bFoundBreakAfter)
+				{
+					bForcedLastLine = UT_FALSE;
 				}
 				else
 				{
-					if (pLine->countRuns() != 0)
+					/*
+					  OK.  There are no valid break points on this line,
+					  anywhere.  We can't break after any of the runs, nor
+					  can we split any of the runs.  We're going to need
+					  to force a split of the Offending Run.
+					*/
+
+					pWorkingRun = pOffendingRun;
+					bFoundSplit = pWorkingRun->findMaxLeftFitSplitPoint(iMaxLineWidth - iWorkingLineWidth, si, UT_TRUE);
+					if (bFoundSplit)
 					{
-						pLine->align();
-						pLine->draw(pLine->getFirstRun()->getGraphics());
+						bForcedLastLine = UT_TRUE;
+					}
+					else
+					{
+						/*
+						  Wow!  This is a very resilient run.  It is the
+						  run which no longer fits, and yet it cannot be
+						  split.  It might be a single-character run.
+						  Perhaps it's an image.  Anyway, we still have to
+						  try as hard as we can to find a line break.
+						*/
+
+						if (pWorkingRun != pFirstRunOnLine)
+						{
+							/*
+							  Force a break right before the offending run.
+							*/
+							pWorkingRun = pWorkingRun->getPrev();
+
+							bFoundBreakAfter = UT_TRUE;
+							bForcedLastLine = UT_TRUE;
+						}
+					}
+				}
+
+				/*
+				  All attempts to find a line break are complete.  It is
+				  conceivable, although unlikely, that no suitable line
+				  break location was found.  For example, if the line
+				  contains only one run, and that run cannot be split
+				  even with a force, and if that run is wider than the
+				  maximum line width, then there is nothing we can do.
+				  This case should be very rare, but it will come up
+				  more often when we have embedded images supported.
+				*/
+			
+				if (pWorkingRun != pLastRunOnLine)
+				{
+					/*
+					  If the offending run was not the last one on the line,
+					  we need to move the ones after it onto the next line.
+					*/
+					fp_Run* pTempRun = pLastRunOnLine;
+					while (pTempRun != pWorkingRun)
+					{
+						pLine->removeRun(pTempRun);
+						pNextLine->insertRun(pTempRun);
+							
+						pTempRun = pTempRun->getPrev();
+					}
+				}
+
+				if (bFoundSplit)
+				{
+					UT_ASSERT(!bFoundBreakAfter);
+				
+					pWorkingRun->split(si);	// TODO err check this
+					UT_ASSERT((UT_sint32)pWorkingRun->getWidth() == si.iLeftWidth);
+
+					fp_Run* pFirstBumpedRun = pWorkingRun->getNext();
+					UT_ASSERT(pFirstBumpedRun);
+					UT_ASSERT(!(pFirstBumpedRun->getLine()));
+						
+					pLine->shrink(pFirstBumpedRun->getWidth());
+
+					UT_ASSERT(pNextLine);
+
+					/*
+					  The other half of the run we split must be
+					  inserted into the next line.
+					*/
+					pLine->removeRun(pFirstBumpedRun);
+					pNextLine->insertRun(pFirstBumpedRun);
+					UT_ASSERT(pLine->getWidth() <= pLine->getMaxWidth());
+				}
+		
+				if (pNewLine)
+				{
+					UT_ASSERT(pNewLine == pNextLine);
+					pBlock->addLine(pNewLine);
+					UT_ASSERT(pLine->getNext() == pNewLine);
+				}
+			}
+			else if (iCurLineWidth < iMaxLineWidth)
+			{
+				/*
+				  The current line has extra room in it.  we should check
+				  to see if something from the next line can be slurped
+				  into this one.  Of course, if there is no next line,
+				  then there's not much we can do, is there?  :-)
+				*/
+
+				fp_Line* pTmpLine = pLine->getNext();
+				while (pTmpLine && (pTmpLine->countRuns() == 0))
+				{
+					pTmpLine = pTmpLine->getNext();
+				}
+
+				if (pTmpLine)
+				{
+					UT_sint32 iExtraLineWidth = iMaxLineWidth - iCurLineWidth;
+
+					{
+						UT_sint32 iWorkingWidth = 0;
+						fp_Run* pFirstRun = pTmpLine->getFirstRun();
+						fp_Run* pWorkingRun = pFirstRun;
+						fp_Run* pBoundaryRun = NULL;
+						UT_Bool bFoundSplit = UT_FALSE;
+						UT_Bool bFoundBreakAfter = UT_FALSE;
+
+						while (pWorkingRun)
+						{
+							if ((iWorkingWidth + (UT_sint32) pWorkingRun->getWidth()) > iExtraLineWidth)
+							{
+								// We've gone too far.  This one won't fit.
+								pBoundaryRun = pWorkingRun;
+					
+								bFoundSplit = pWorkingRun->findMaxLeftFitSplitPoint(iExtraLineWidth - iWorkingWidth, si);
+								break;
+							}
+
+							iWorkingWidth += pWorkingRun->getWidth();
+				
+							pWorkingRun = pWorkingRun->getNext();
+						}
+
+						if (!pBoundaryRun)
+						{
+							// Apparently, all of the remaining runs in the block will fit in our extra space.
+						
+							UT_ASSERT(!pWorkingRun);
+							UT_ASSERT(iWorkingWidth <= iExtraLineWidth);
+						
+							fp_Run* pTempRun = pFirstRun;
+							while (pTempRun)
+							{
+								fp_Line* pTempLine = pTempRun->getLine();
+								pTempLine->removeRun(pTempRun);
+								pLine->addRun(pTempRun);
+							
+								pTempRun = pTempRun->getNext();
+							}
+						}
+						else
+						{
+							/*
+							  OK.  We found a boundary run.
+							*/
+
+							if (!bFoundSplit)
+							{
+								/*
+								  The boundary run wouldn't split.  We'll have to look
+								  backwards for a break point.
+								*/
+								pWorkingRun = pBoundaryRun;
+								while (pWorkingRun != pFirstRun)
+								{
+									pWorkingRun = pWorkingRun->getPrev();
+
+									if (pWorkingRun->canBreakAfter())
+									{
+										/*
+										  OK, we can break after this
+										  run.
+										*/
+
+										bFoundBreakAfter = UT_TRUE;
+										break;
+									}
+									else
+									{
+										/*
+										  Can't break after this run.  Let's
+										  see if we can split this run to get
+										  something which will fit.
+										*/
+										bFoundSplit = pWorkingRun->findMaxLeftFitSplitPoint(pWorkingRun->getWidth(), si);
+
+										if (bFoundSplit)
+										{
+										// a suitable split was found.
+											break;
+										}
+									}
+								}
+							}
+
+							/*
+							  OK, our slurp search is done.
+							*/
+
+							if (bFoundSplit || bFoundBreakAfter)
+							{
+								bForcedLastLine = UT_FALSE;
+							
+								fp_Run* pTempRun = pFirstRun;
+								while (pTempRun)
+								{
+									if ((pTempRun == pWorkingRun) && bFoundSplit)
+									{
+										break;
+									}
+									
+									fp_Line* pTempLine = pTempRun->getLine();
+									pTempLine->removeRun(pTempRun);
+									pLine->addRun(pTempRun);
+
+									if (pTempRun == pWorkingRun)
+									{
+										break;
+									}
+							
+									pTempRun = pTempRun->getNext();
+								}
+
+								if (bFoundSplit)
+								{
+									UT_ASSERT(!bFoundBreakAfter);
+				
+									fp_Line* pLineOfSplitRun = pWorkingRun->getLine();
+									pLineOfSplitRun->removeRun(pWorkingRun);
+									UT_ASSERT(!(pWorkingRun->getLine()));
+				
+									pWorkingRun->split(si);	// TODO err check this
+									UT_ASSERT((UT_sint32)pWorkingRun->getWidth() == si.iLeftWidth);
+
+									fp_Run* pRightHalfOfSplitRun = pWorkingRun->getNext();
+									UT_ASSERT(pRightHalfOfSplitRun);
+									UT_ASSERT(!(pRightHalfOfSplitRun->getLine()));
+
+									pLine->addRun(pWorkingRun);
+									pLineOfSplitRun->insertRun(pRightHalfOfSplitRun);
+				
+									UT_ASSERT(pLine->getWidth() <= pLine->getMaxWidth());
+								}
+							}
+							else
+							{
+								if (!bForcedLastLine && (pLine->countRuns() > 0) && !(pLine->getLastRun()->canBreakAfter()))
+								{
+									/*
+									  The last run on this line is telling us that a
+									  line break cannot be placed after it.
+									  Nonetheless, there already IS a line break after
+									  it.
+									*/
+
+									fp_Run* pTempRun = pFirstRun;
+									while (pTempRun)
+									{
+										fp_Line* pTempLine = pTempRun->getLine();
+										pTempLine->removeRun(pTempRun);
+										pLine->addRun(pTempRun);
+
+										if (pTempRun == pBoundaryRun)
+										{
+											break;
+										}
+							
+										pTempRun = pTempRun->getNext();
+									}
+
+									bRepeatThisLine = UT_TRUE;
+								}
+							}
+						}
 					}
 				}
 			}
+			else
+			{
+				UT_ASSERT(iCurLineWidth == iMaxLineWidth);
+				bForcedLastLine = UT_FALSE;
+			}
 		}
-		else
+		
+		if (!bRepeatThisLine)
 		{
 			pLine = pLine->getNext();
 		}
 	}
-	
-	return 0;
-}
 
-int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
-{
-	fp_Run*	pCurRun = pBlock->getFirstRun();
-
-	/*
-	  As long as there are runs left, we try to build lines.
-	*/
-	while (pCurRun)
-	{
-		// start a new line
-		UT_uint32 iGuessLineHeight = pCurRun->getHeight();
-
-		UT_uint32 iMaxLineWidth = pBlock->requestLineSpace(iGuessLineHeight);
-		UT_ASSERT(iMaxLineWidth > 0);
-
-		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
-		
-		UT_Bool bDoneWithLine = 0;
-		UT_uint32 iCurLineWidth = 0;
-		fp_RunSplitInfo si;
-
-		fp_Run*		pRunLooking = pCurRun;
-		UT_uint32	iWidthLooking = 0;
-		
-		while (!bDoneWithLine)
-		{
-			if (!pRunLooking)
-			{
-				if (iWidthLooking > 0)
-				{
-					UT_ASSERT(pCurRun);
-					
-					iCurLineWidth += iWidthLooking;
-					
-					fp_Run* pRunLoop = pCurRun;
-
-					while (pRunLoop)
-					{
-						pLine->addRun(pRunLoop);
-						pRunLoop = pRunLoop->getNext();
-					}
-				}
-					
-				pCurRun = NULL;
-				break;
-			}
-			
-			// find the next place we can put a line break
-			UT_uint32 iRunWidth = pRunLooking->getWidth();
-			if ((iCurLineWidth + iWidthLooking + iRunWidth) <= iMaxLineWidth)
-			{
-				// this run would fit.  can we break after it?
-				if (pRunLooking->canBreakAfter())
-				{
-					/*
-					  we can break after this run, and everything we've
-					  been looking through will fit.  Add it all
-					  to the line.
-					*/
-					
-					iCurLineWidth += iWidthLooking;
-					iCurLineWidth += iRunWidth;
-					
-					fp_Run* pRunLoop = pCurRun;
-
-					for (;;)
-					{
-						pLine->addRun(pRunLoop);
-						if (pRunLoop == pRunLooking)
-						{
-							break;
-						}
-						pRunLoop = pRunLoop->getNext();
-					}
-					
-					pCurRun = pRunLooking->getNext();
-					pRunLooking = pCurRun;
-					iWidthLooking = 0;
-				}
-				else
-				{
-					// keep looking
-					iWidthLooking += iRunWidth;
-					pRunLooking = pRunLooking->getNext();
-				}
-			}
-			else
-			{
-				// the run won't fit.  Can we split it?
-				int bFoundSplit = pRunLooking->findMaxLeftFitSplitPoint(iMaxLineWidth - (iCurLineWidth + iWidthLooking), si);
-
-				if (bFoundSplit)
-				{
-					// we found a split which fits.  split it and move on
-					pRunLooking->split(si);	// TODO err check this
-					UT_ASSERT((UT_sint32)pRunLooking->getWidth() == si.iLeftWidth);
-					UT_ASSERT(pRunLooking->getNext());
-
-					iCurLineWidth += iWidthLooking;
-					iCurLineWidth += iRunWidth;
-					
-					fp_Run* pRunLoop = pCurRun;
-
-					for (;;)
-					{
-						UT_ASSERT(pRunLoop);
-						pLine->addRun(pRunLoop);
-						if (pRunLoop == pRunLooking)
-						{
-							break;
-						}
-						pRunLoop = pRunLoop->getNext();
-					}
-					
-					pCurRun = pRunLooking->getNext();
-					pRunLooking = pCurRun;
-					iWidthLooking = 0;
-
-					// if we had to split, then we should just assume that the line is done
-					bDoneWithLine = UT_TRUE;
-				}
-				else
-				{
-					/*
-					  Nothing in this run will fit on this line.
-					*/
-
-					iWidthLooking = 0;
-					bDoneWithLine = UT_TRUE;
-
-					if (pLine->countRuns() == 0)
-					{
-						/*
-						  nothing at all was placed on this line.  We should try harder.
-						*/
-						
-						bFoundSplit = pCurRun->findMinLeftFitSplitPoint(si);
-
-						if (bFoundSplit)		
-						{
-							// it fits.  split it and move on
-							pCurRun->split(si);	// TODO err check this
-
-							pLine->addRun(pCurRun);
-							iCurLineWidth += pCurRun->getWidth();
-
-							pCurRun = pCurRun->getNext();
-							UT_ASSERT(pCurRun);	// after a split, there is always a next.
-							bDoneWithLine = UT_TRUE;
-						}
-						else
-						{
-							// nothing could be split.  We just force it and add anyway.  this is a bug.
-							bFoundSplit = pRunLooking->findMaxLeftFitSplitPoint(iMaxLineWidth - (iCurLineWidth + iWidthLooking), si, UT_TRUE);
-							if (bFoundSplit)
-							{
-								pCurRun->split(si);	// TODO err check this
-
-								pLine->addRun(pCurRun);
-								iCurLineWidth += pCurRun->getWidth();
-
-								pCurRun = pCurRun->getNext();
-								UT_ASSERT(pCurRun);	// after a split, there is always a next.
-								bDoneWithLine = UT_TRUE;
-							}
-							else
-							{
-								pLine->addRun(pCurRun);
-								pCurRun = pCurRun->getNext();
-								bDoneWithLine = UT_TRUE;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		UT_ASSERT(pLine->getHeight() > 0);
-		UT_ASSERT((pLine->getWidth() > 0) || (iCurLineWidth==0));
-
-		// The line is done.  Let's see if the size is going to be okay.
-		if (pLine->getHeight() > iGuessLineHeight)
-		{
-			// Ooops!!!	TODO - we really should check to see if this is still okay.  This is a bug
-			pBlock->addLine(pLine);
-		}
-		else
-		{
-			pBlock->addLine(pLine);
-		}
-	}
-
-	return 0;	// TODO return code
+	return 0; // TODO return code
 }
 

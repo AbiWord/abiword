@@ -378,12 +378,6 @@ void FV_View::_deleteSelection(void)
 	// delete the current selection.
 	// NOTE: this must clear the selection.
 
-	/*
-	  This is a particularly heavy-handed approach to deleting the
-	  selection.  But, it seems to work.  We can find a more optimized
-	  way later.
-	*/
-	
 	UT_ASSERT(!isSelectionEmpty());
 
 	PT_DocPosition iPoint = _getPoint();
@@ -402,7 +396,15 @@ void FV_View::_deleteSelection(void)
 		m_pDoc->deleteSpan(m_iSelectionAnchor, iPoint);
 	}
 
+	_updateScreen();
+
 	_resetSelection();
+	
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 
 	return;
 }
@@ -736,6 +738,8 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
 
+	_updateScreen();
+	
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -762,6 +766,8 @@ void FV_View::insertParagraphBreak()
 	// ==>: we *don't* call _clearPointAP() in this case 
 
 	m_pDoc->insertStrux(_getPoint(), PTX_Block);
+	
+	_updateScreen();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -795,6 +801,8 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 	}
 
 	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
+
+	_updateScreen();
 
 	if (isSelectionEmpty())
 	{
@@ -1033,6 +1041,8 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
+	_updateScreen();
+	
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -1285,6 +1295,8 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 			m_pDoc->deleteSpan(posCur, posCur+amt);
 		}
 
+		_updateScreen();
+	
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
 			_fixInsertionPointCoords();
@@ -1890,7 +1902,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 				}
 						
 				// this could get ugly, and should be optimized out
-				draw();
+				draw(UT_FALSE);
 
 				// Here's where Word does performs some tricks with
 				// the cursor.  If we're doing a "Find", then we
@@ -2560,22 +2572,22 @@ void FV_View::setXScrollOffset(UT_sint32 v)
     {
 		if (dx >= m_iWindowWidth)
 		{
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_FALSE, UT_TRUE);
 		}
 		else
 		{
-			draw(m_iWindowWidth - dx, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+			_draw(m_iWindowWidth - dx, 0, m_iWindowWidth, m_iWindowHeight, UT_FALSE, UT_TRUE);
 		}
     }
 	else
     {
 		if (dx <= -m_iWindowWidth)
 		{
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_FALSE, UT_TRUE);
 		}
 		else
 		{
-			draw(0, 0, -dx, m_iWindowHeight, UT_TRUE);
+			_draw(0, 0, -dx, m_iWindowHeight, UT_FALSE, UT_TRUE);
 		}
     }
 }
@@ -2594,22 +2606,22 @@ void FV_View::setYScrollOffset(UT_sint32 v)
     {
 		if (dy >= m_iWindowHeight)
 		{
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_FALSE, UT_TRUE);
 		}
 		else
 		{
-			draw(0, m_iWindowHeight - dy, m_iWindowWidth, dy, UT_TRUE);
+			_draw(0, m_iWindowHeight - dy, m_iWindowWidth, dy, UT_FALSE, UT_TRUE);
 		}
     }
 	else
     {
 		if (dy <= -m_iWindowHeight)
 		{
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_FALSE, UT_TRUE);
 		}
 		else
 		{
-			draw(0, 0, m_iWindowWidth, -dy, UT_TRUE);
+			_draw(0, 0, m_iWindowWidth, -dy, UT_FALSE, UT_TRUE);
 		}
     }
 }
@@ -2630,15 +2642,23 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 void FV_View::draw(const UT_Rect* pClipRect)
 {
 	if (pClipRect)
-		draw(pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height,UT_TRUE);
+	{
+		_draw(pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height,UT_FALSE,UT_TRUE);
+	}
 	else
-		draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_FALSE);
+	{
+		_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_FALSE,UT_FALSE);
+	}
 }
 
+void FV_View::_updateScreen(void)
+{
+	_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_TRUE,UT_FALSE);
+}
 
-void FV_View::draw(UT_sint32 x, UT_sint32 y,
+void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				   UT_sint32 width, UT_sint32 height,
-				   UT_Bool bClip)
+				   UT_Bool bDirtyRunsOnly, UT_Bool bClip)
 {
 	UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 				 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
@@ -2680,22 +2700,25 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 	// TODO: handle variable-size pages (envelope, landscape, etc.)
 
 	/*
-		In page view mode, so draw outside decorations first, then each 
-		page with its decorations.  
+	  In page view mode, so draw outside decorations first, then each 
+	  page with its decorations.  
 	*/
 
 	UT_RGBColor clrMargin(127,127,127);		// dark gray
 
-	if (m_xScrollOffset < fl_PAGEVIEW_MARGIN_X)
+	if (!bDirtyRunsOnly)
 	{
-		// fill left margin
-		m_pG->fillRect(clrMargin, 0, 0, fl_PAGEVIEW_MARGIN_X - m_xScrollOffset, m_iWindowHeight);
-	}
+		if (m_xScrollOffset < fl_PAGEVIEW_MARGIN_X)
+		{
+			// fill left margin
+			m_pG->fillRect(clrMargin, 0, 0, fl_PAGEVIEW_MARGIN_X - m_xScrollOffset, m_iWindowHeight);
+		}
 
-	if (m_yScrollOffset < fl_PAGEVIEW_MARGIN_Y)
-	{
-		// fill top margin
-		m_pG->fillRect(clrMargin, 0, 0, m_iWindowWidth, fl_PAGEVIEW_MARGIN_Y - m_yScrollOffset);
+		if (m_yScrollOffset < fl_PAGEVIEW_MARGIN_Y)
+		{
+			// fill top margin
+			m_pG->fillRect(clrMargin, 0, 0, m_iWindowWidth, fl_PAGEVIEW_MARGIN_Y - m_yScrollOffset);
+		}
 	}
 
 	UT_sint32 curY = fl_PAGEVIEW_MARGIN_Y;
@@ -2712,10 +2735,10 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			// of the window, so we don't need to draw it.
 
 			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
-						 iPageHeight,
-						 curY,
-						 m_yScrollOffset,
-						 m_iWindowHeight));
+							 iPageHeight,
+							 curY,
+							 m_yScrollOffset,
+							 m_iWindowHeight));
 
 			// since all other pages are below this one, we
 			// don't need to draw them either.  exit loop now.
@@ -2727,10 +2750,10 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			// the window, so we don't need to draw it.
 
 			xxx_UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
-						 iPageHeight,
-						 curY,
-						 m_yScrollOffset,
-						 m_iWindowHeight));
+							 iPageHeight,
+							 curY,
+							 m_yScrollOffset,
+							 m_iWindowHeight));
 		}
 		else if (adjustedTop > y + height)
 		{
@@ -2739,11 +2762,11 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			// to draw it.
 
 			xxx_UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
-						 iPageHeight,
-						 curY,
-						 m_yScrollOffset,
-						 m_iWindowHeight,
-						 y,height));
+							 iPageHeight,
+							 curY,
+							 m_yScrollOffset,
+							 m_iWindowHeight,
+							 y,height));
 		}
 		else if (adjustedBottom < y)
 		{
@@ -2752,11 +2775,11 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			// to draw it.
 
 			xxx_UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
-						 iPageHeight,
-						 curY,
-						 m_yScrollOffset,
-						 m_iWindowHeight,
-						 y,height));
+							 iPageHeight,
+							 curY,
+							 m_yScrollOffset,
+							 m_iWindowHeight,
+							 y,height));
 		}
 		else
 		{
@@ -2764,10 +2787,11 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			// so we *DO* draw it.
 
 			xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
-						 iPageHeight,curY,m_yScrollOffset,m_iWindowHeight,y,height));
+							 iPageHeight,curY,m_yScrollOffset,m_iWindowHeight,y,height));
 
 			dg_DrawArgs da;
-			
+
+			da.bDirtyRunsOnly = bDirtyRunsOnly;
 			da.pG = m_pG;
 			da.xoff = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
 			da.yoff = adjustedTop;
@@ -2798,8 +2822,11 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 
 			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
 
-			UT_RGBColor clrPaper(255,255,255);
-			m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+			if (!bDirtyRunsOnly)
+			{
+				UT_RGBColor clrPaper(255,255,255);
+				m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+			}
 
 			pPage->draw(&da);
 
@@ -2847,8 +2874,11 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 		m_pG->fillRect(clrMargin, 0, y, m_iWindowWidth, h);
 	}
 
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
+	if (!bDirtyRunsOnly)
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 
 	if (bClip)
 	{
@@ -3147,6 +3177,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	m_pDoc->undoCmd(count);
 
+	_updateScreen();
+	
 	if (isSelectionEmpty())
 	{
 		if (!_ensureThatInsertionPointIsOnScreen())
@@ -3174,6 +3206,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	m_pDoc->redoCmd(count);
 
+	_updateScreen();
+	
 	if (isSelectionEmpty())
 	{
 		if (!_ensureThatInsertionPointIsOnScreen())
@@ -3272,9 +3306,12 @@ void FV_View::cmdCopy(void)
 			iBlockPos1 = iPos1 - iBlockOffset;
 		}
 
+		UT_Bool bCRLF = UT_FALSE;
+		
 		if (iPos2 > (iBlockOffset + iBlockLength))
 		{
 			iBlockPos2 = iBlockLength;
+			bCRLF = UT_TRUE;
 		}
 		else
 		{
@@ -3282,7 +3319,10 @@ void FV_View::cmdCopy(void)
 		}
 
 		iTotalDataLength += (iBlockPos2 - iBlockPos1);
-		iTotalDataLength += 2;	// for the CR/LF at the end of every para
+		if (bCRLF)
+		{
+			iTotalDataLength += 2;	// for the CR/LF at the end of every para
+		}
 		
 		if (pCurBlock == pBlock2)
 		{
@@ -3324,9 +3364,12 @@ void FV_View::cmdCopy(void)
 			iBlockPos1 = iPos1 - iBlockOffset;
 		}
 
+		UT_Bool bCRLF = UT_FALSE;
+		
 		if (iPos2 > (iBlockOffset + iBlockLength))
 		{
 			iBlockPos2 = iBlockLength;
+			bCRLF = UT_TRUE;
 		}
 		else
 		{
@@ -3343,9 +3386,12 @@ void FV_View::cmdCopy(void)
 			pData[iDataLen++] = (char) ch;
 		}
 
-		// now add the CRLF
-		pData[iDataLen++] = 13;
-		pData[iDataLen++] = 10;
+		if (bCRLF)
+		{
+			// now add the CRLF
+			pData[iDataLen++] = 13;
+			pData[iDataLen++] = 10;
+		}
 		
 		if (pCurBlock == pBlock2)
 		{
@@ -3389,13 +3435,13 @@ void FV_View::_doPaste(void)
 {
 	// internal portion of paste operation.
 	
-	/*
-	  This method of doing a paste is lame.  It results in a lot of screen
-	  flicker activity.  TODO
-	*/
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
 	}
 
 	AP_Clipboard* pClip = AP_App::getClipboard();
@@ -3443,8 +3489,8 @@ void FV_View::_doPaste(void)
 					|| (*pCur == 10)
 					)
 				{
-					insertParagraphBreak();
-
+					m_pDoc->insertStrux(_getPoint(), PTX_Block);
+	
 					if (*pCur == 13)
 					{
 						pCur++;
@@ -3480,7 +3526,16 @@ void FV_View::_doPaste(void)
 		}
 		pClip->close();
 	}
+
+	_updateScreen();
+	
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 }
+
 #if 0
 void FV_View::_drawRuler(void)
 {

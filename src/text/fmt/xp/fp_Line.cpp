@@ -38,21 +38,13 @@ fp_Line::fp_Line(UT_sint32 maxWidth)
 	m_bDirty = UT_FALSE;
 }
 
-fp_RunInfo::fp_RunInfo(fp_Run* p)
-{
-	pRun = p;
-	xoff = 0;
-	yoff = 0;
-}
-
 fp_Line::~fp_Line()
 {
-	UT_VECTOR_PURGEALL(fp_RunInfo *, m_vecRunInfos);
 }
 
 UT_Bool fp_Line::isEmpty(void) const
 {
-	return ((m_vecRunInfos.getItemCount()) == 0);
+	return ((m_vecRuns.getItemCount()) == 0);
 }
 
 void fp_Line::setBlockSlice(fp_BlockSlice* pBlockSlice, void* p)
@@ -103,39 +95,39 @@ fp_Line* fp_Line::getPrev() const
 
 int fp_Line::countRuns() const
 {
-	return m_vecRunInfos.getItemCount();
+	return m_vecRuns.getItemCount();
 }
 
 fp_Run* fp_Line::getFirstRun() const
 {
-	fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getFirstItem();
+	fp_Run* pRun = (fp_Run*) m_vecRuns.getFirstItem();
 
-	return pRI->pRun;
+	return pRun;
 }
 
 fp_Run* fp_Line::getLastRun() const
 {
-	fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getLastItem();
+	fp_Run* pRun = (fp_Run*) m_vecRuns.getLastItem();
 
-	return pRI->pRun;
+	return pRun;
 }
 
 UT_Bool fp_Line::removeRun(fp_Run* pRun)
 {
-	int numRuns = m_vecRunInfos.getItemCount();
+	int numRuns = m_vecRuns.getItemCount();
 	UT_Bool bAdjust = UT_FALSE;
 	UT_sint32 iAdjust = 0;
 	int i;
 
 	for (i = 0; i < numRuns; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
 
 		if (bAdjust)
 		{
-			pRI->xoff -= iAdjust;
+			pRun2->setX(pRun2->getX() - iAdjust);
 		}
-		else if (pRI->pRun == pRun)
+		else if (pRun2 == pRun)
 		{
 			iAdjust = pRun->getWidth();
 			bAdjust = UT_TRUE;
@@ -144,12 +136,12 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun)
 
 	for (i = 0; i < numRuns; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		if (pRI->pRun == pRun)
+		if (pRun2 == pRun)
 		{
-			m_vecRunInfos.deleteNthItem(i);
-			delete pRI;
+			m_vecRuns.deleteNthItem(i);
+			
 			UT_ASSERT(((signed)m_iWidth) >= iAdjust);
 			m_iWidth -= iAdjust;
 
@@ -162,41 +154,28 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun)
 	return UT_FALSE;
 }
 
-void fp_Line::insertRun(fp_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
+void fp_Line::insertRun(fp_Run* pRun)
 {
-	fp_RunInfo* pRI = (fp_RunInfo*) pRun->getLineData();
-	
-	if (bNewData == UT_TRUE)
-	{
-		pRI = new fp_RunInfo(pRun);
-		UT_ASSERT(pRI);	// TODO check for outofmem
-	}
+	pRun->setLine(this, NULL);
 
-	pRun->setLine(this, pRI);
+	m_vecRuns.insertItemAt(pRun, 0);
 
-	m_vecRunInfos.insertItemAt(pRI, 0);
-
-	UT_sint32 count = m_vecRunInfos.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 width = pRun->getWidth();
 
 	m_iWidth += width;
 	
 	for (UT_sint32 i = 0; i < count; i++)
 	{
-		fp_RunInfo *p = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run *pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		if ((bClear == UT_TRUE) && (p->pRun != pRun))
-		{
-			p->pRun->clearScreen();
-		}
-		
 		if (i == 0)
 		{
-			p->xoff = 0;
+			pRun2->setX(0);
 		}
 		else
 		{
-			p->xoff += width;
+			pRun2->setX(pRun2->getX() + width);
 		}
 	}
 	
@@ -205,13 +184,10 @@ void fp_Line::insertRun(fp_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 
 void fp_Line::addRun(fp_Run* pRun)
 {
-	fp_RunInfo* pRI;
-	
-	pRI = new fp_RunInfo(pRun);
-	pRun->setLine(this, pRI);
-	pRI->xoff = m_iWidth;
+	pRun->setLine(this, NULL);
+	pRun->setX(m_iWidth);
 
-	m_vecRunInfos.addItem(pRI);
+	m_vecRuns.addItem(pRun);
 	
 	m_iWidth += pRun->getWidth();
 
@@ -222,22 +198,18 @@ void fp_Line::splitRunInLine(fp_Run* pRun1, fp_Run* pRun2)
 {
 	// insert run2 after run1 in the current line.
 	
-	fp_RunInfo* pRunInfo1 = (fp_RunInfo*) pRun1->getLineData();
-	fp_RunInfo* pRI;
-	
-	pRI = new fp_RunInfo(pRun2);
-	pRun2->setLine(this, pRI);
-	pRI->xoff = pRunInfo1->xoff + pRun1->getWidth();
+	pRun2->setLine(this, NULL);
+	pRun2->setX(pRun1->getX() + pRun1->getWidth());
 
-	UT_sint32 count = m_vecRunInfos.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 k;
 	for (k=0; k<count; k++)
 	{
-		fp_RunInfo * p = (fp_RunInfo *)m_vecRunInfos.getNthItem(k);
-		UT_ASSERT(p);
-		if (p->pRun == pRun1)
+		fp_Run* pRun3 = (fp_Run*) m_vecRuns.getNthItem(k);
+		UT_ASSERT(pRun3);
+		if (pRun3 == pRun1)
 		{
-			m_vecRunInfos.insertItemAt(pRI,k+1);
+			m_vecRuns.insertItemAt(pRun2, k+1);
 			return;
 		}
 	}
@@ -250,22 +222,20 @@ UT_uint32 fp_Line::getNumChars() const
 {
 	UT_uint32 iCountChars = 0;
 	
-	int iCountRuns = m_vecRunInfos.getItemCount();
+	int iCountRuns = m_vecRuns.getItemCount();
 	for (int i=0; i<iCountRuns; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		iCountChars += pRI->pRun->getLength();
+		iCountChars += pRun->getLength();
 	}
 
 	return iCountChars;
 }
 
-void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
+void fp_Line::runSizeChanged(fp_Run* pRun, UT_sint32 oldWidth, UT_sint32 newWidth)
 {
-	fp_RunInfo* pRI = (fp_RunInfo*) p;
-
-	//UT_ASSERT(newWidth);
+	UT_ASSERT(pRun);
 	
 	// we've changed ...
 	m_bDirty = UT_TRUE;
@@ -274,33 +244,33 @@ void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 
 	if (dx != 0)
 	{
-		if (pRI)
+		UT_sint32 count = m_vecRuns.getItemCount();
+
+		UT_Bool bIncr = UT_FALSE;
+
+		/*
+		  TODO is the following approach correct for a line which
+		  is centered?
+		*/
+		
+		/*
+		  search thru the list of runs.  when we find the current run,
+		  we need to increment all the runs that follow us
+		*/
+		
+		for (UT_sint32 i = 0; i < count; i++)
 		{
-			UT_sint32 count = m_vecRunInfos.getItemCount();
+			fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
 
-			UT_Bool bIncr = UT_FALSE;
-
-			// search thru the list of runs.  when we find the current run,
-			// we need to increment all the runs that follow us
-			for (UT_sint32 i = 0; i < count; i++)
+			if (pRun == pRun2)
 			{
-				fp_RunInfo* pInfo = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+				bIncr = UT_TRUE;
+				continue;
+			}
 
-				if (bIncr)
-				{
-					pInfo->pRun->clearScreen();
-				}
-
-				if (pRI == pInfo)
-				{
-					bIncr = UT_TRUE;
-					continue;
-				}
-
-				if (bIncr)
-				{
-					pInfo->xoff += dx;
-				}
+			if (bIncr)
+			{
+				pRun2->setX(pRun2->getX() + dx);
 			}
 		}
 
@@ -343,24 +313,24 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	}
 
 	// check all of the runs.
-	int count = m_vecRunInfos.getItemCount();
+	int count = m_vecRuns.getItemCount();
 
 	for (int i=0; i<count; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		UT_sint32 y2 = y - pRI->yoff - m_iAscent + pRI->pRun->getAscent();
-		if ((x >= (UT_sint32)pRI->xoff) && (x < (UT_sint32)(pRI->xoff + pRI->pRun->getWidth())))
+		UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
+		if ((x >= (UT_sint32) pRun2->getX()) && (x < (UT_sint32) (pRun2->getX() + pRun2->getWidth())))
 		{
 			// when hit testing runs within a line, we ignore the Y coord
-//			if (((y2) >= 0) && ((y2) < (pRI->pRun->getHeight())))
+//			if (((y2) >= 0) && ((y2) < (pRun2->getHeight())))
 			{
-				pRI->pRun->mapXYToPosition(x - pRI->xoff, y2, pos, bBOL, bEOL);
+				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
 				return;
 			}
 		}
-		else if (((x - pRI->xoff) == 0) && (pRI->pRun->getWidth() == 0))
+		else if (((x - pRun2->getX()) == 0) && (pRun2->getWidth() == 0))
 		{
 			// zero-length run
 			{
@@ -369,7 +339,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 				UT_ASSERT(i==0);
 				UT_ASSERT(count==1);
 
-				pRI->pRun->mapXYToPosition(x - pRI->xoff, y2, pos, bBOL, bEOL);
+				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
 				return;
 			}
@@ -387,11 +357,8 @@ void fp_Line::getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff
 
 	m_pBlockSlice->getOffsets(this, m_pBlockSliceData, my_xoff, my_yoff);
 	
-	fp_RunInfo* pRI = (fp_RunInfo*) p;
-	UT_ASSERT(pRI->pRun == pRun);
-
-	xoff = my_xoff + pRI->xoff;
-	yoff = my_yoff + pRI->yoff + m_iAscent - pRun->getAscent();
+	xoff = my_xoff + pRun->getX();
+	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
 }
 
 void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
@@ -404,15 +371,12 @@ void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
 	m_pBlockSlice->getScreenOffsets(this, m_pBlockSliceData, my_xoff,
 									my_yoff, width, height);
 	
-	fp_RunInfo* pRI = (fp_RunInfo*) p;
-	UT_ASSERT(pRI->pRun == pRun);
-
-	xoff = my_xoff + pRI->xoff;
+	xoff = my_xoff + pRun->getX();
 
 	if (bLineHeight)
 		yoff = my_yoff;
 	else
-		yoff = my_yoff + pRI->yoff + m_iAscent - pRun->getAscent();
+		yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
 
 	width = m_iWidth;
 	height = m_iHeight;
@@ -433,7 +397,7 @@ void fp_Line::getAbsoluteCoords(UT_sint32& x, UT_sint32& y)
 
 void fp_Line::_recalcHeight()
 {
-	UT_sint32 count = m_vecRunInfos.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i;
 
 	UT_uint32 iMaxAscent = 0;
@@ -445,9 +409,9 @@ void fp_Line::_recalcHeight()
 	{
 		UT_uint32 iAscent;
 
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		iAscent = pRI->pRun->getAscent();
+		iAscent = pRun->getAscent();
 		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 	}
 
@@ -455,9 +419,9 @@ void fp_Line::_recalcHeight()
 	{
 		UT_uint32 iDescent;
 
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		iDescent = pRI->pRun->getDescent();
+		iDescent = pRun->getDescent();
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
 	}
 
@@ -486,27 +450,27 @@ void fp_Line::expandWidthTo(UT_uint32 iNewWidth)
 
 	UT_uint32 iMoreWidth = iNewWidth - iPrevWidth;
 
-	int count = m_vecRunInfos.getItemCount();
+	int count = m_vecRuns.getItemCount();
 	UT_sint32 i;
 	
 	for (i=0; i<count; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		UT_uint32 iCurSpanWidth = pRI->pRun->getWidth();
+		UT_uint32 iCurSpanWidth = pRun->getWidth();
 		UT_uint32 iNewSpanWidth = 
 			iCurSpanWidth 
 			+ ((UT_uint32) ((iCurSpanWidth / ((double) iPrevWidth)) * iMoreWidth));
-		pRI->pRun->expandWidthTo(iNewSpanWidth);
+		pRun->expandWidthTo(iNewSpanWidth);
 	}
 
 	m_iWidth = 0;
 	for (i=0; i<count; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
-		pRI->xoff = m_iWidth;
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		pRun->setX(m_iWidth);
 
-		m_iWidth += pRI->pRun->getWidth();
+		m_iWidth += pRun->getWidth();
 	}
 }
 
@@ -518,13 +482,13 @@ void fp_Line::shrink(UT_sint32 width)
 
 void fp_Line::clearScreen()
 {
-	int count = m_vecRunInfos.getItemCount();
+	int count = m_vecRuns.getItemCount();
 
 	for (int i=0; i < count; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		pRI->pRun->clearScreen();
+		pRun->clearScreen();
 	}
 }
 
@@ -551,19 +515,19 @@ void fp_Line::draw(DG_Graphics* pG)
 	// TODO: The following line means that no selection will be drawn.  Is this right?
 	da.iSelPos1 = da.iSelPos2 = 0;
 	
-	int count = m_vecRunInfos.getItemCount();
+	int count = m_vecRuns.getItemCount();
 
 	my_yoff += m_iAscent;
 
 	for (int i=0; i < count; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		da.xoff += pRI->xoff;
-		da.yoff += pRI->yoff;
-		pRI->pRun->draw(&da);
-		da.xoff -= pRI->xoff;
-		da.yoff -= pRI->yoff;
+		da.xoff += pRun->getX();
+		da.yoff += pRun->getY();
+		pRun->draw(&da);
+		da.xoff -= pRun->getX();
+		da.yoff -= pRun->getY();
 	}
 }
 
@@ -572,7 +536,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	const UT_sint32 height = pDA->height;
 	const UT_sint32 y = pDA->y;
 	
-	int count = m_vecRunInfos.getItemCount();
+	int count = m_vecRuns.getItemCount();
 
 	UT_sint32 yOff = pDA->yoff;
 	
@@ -580,20 +544,20 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 
 	for (int i=0; i<count; i++)
 	{
-		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
-		UT_sint32 rHeight = pRI->pRun->getHeight();
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		UT_sint32 rHeight = pRun->getHeight();
 
 		// TODO adjust this clipping to draw lines which are partially visible
 		// TODO - X clipping - for now, just clip against y
-		if (((((UT_sint32)pRI->yoff + yOff) >= y) &&
-		     (((UT_sint32)pRI->yoff + yOff) <= (y + height))) ||
-		    ((((UT_sint32)pRI->yoff + yOff) <= y) &&
-		     (((UT_sint32)pRI->yoff + yOff + rHeight) > y)))
+		if (((((UT_sint32)pRun->getY() + yOff) >= y) &&
+		     (((UT_sint32)pRun->getY() + yOff) <= (y + height))) ||
+		    ((((UT_sint32)pRun->getY() + yOff) <= y) &&
+		     (((UT_sint32)pRun->getY() + yOff + rHeight) > y)))
 		{
 			dg_DrawArgs da = *pDA;
-			da.xoff += pRI->xoff;
-			da.yoff += pRI->yoff;
-		    pRI->pRun->draw(&da);
+			da.xoff += pRun->getX();
+			da.yoff += pRun->getY();
+		    pRun->draw(&da);
 		}
 	}
 }
@@ -605,10 +569,35 @@ void fp_Line::align()
 	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
 }
 
-void fp_Line::dumpRunInfo(const fp_Run* pRun, void *p)
+UT_sint32 fp_Line::getX(void) const
 {
-	fp_RunInfo* pRI = (fp_RunInfo*) p;
-	UT_ASSERT(pRI->pRun == pRun);
-
-	UT_DEBUGMSG(("Run: %p xoff=%d\n", pRun, pRI->xoff));
+	return m_iX;
 }
+
+UT_sint32 fp_Line::getY(void) const
+{
+	return m_iY;
+}
+
+UT_sint32 fp_Line::getBaseX(void) const
+{
+	return m_iBaseX;
+}
+
+void fp_Line::setX(UT_sint32 iX)
+{
+	m_iX = iX;
+}
+
+void fp_Line::setY(UT_sint32 iY)
+{
+	m_iY = iY;
+}
+
+void fp_Line::setBaseX(UT_sint32 iBaseX)
+{
+	m_iBaseX = iBaseX;
+}
+
+
+

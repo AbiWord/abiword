@@ -37,6 +37,7 @@ struct dg_DrawArgs
 	UT_sint32		y;
 	UT_sint32		width;
 	UT_sint32		height;
+	UT_Bool			bDirtyRunsOnly;
 
 	// actually the following are PT_DocPosition
 	UT_uint32		iSelPos1;

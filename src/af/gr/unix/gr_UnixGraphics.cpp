@@ -426,7 +426,7 @@ void UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 		points[i].x = pts[i].x;
 		// It seems that Windows draws each pixel along the the Y axis
 		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (???)).  Subtracting one clears this up so
+		// systems start at 0,0 (?)).  Subtracting one clears this up so
 		// that the poly line is in the correct place relative to where
 		// the rest of UNIXGraphics:: does things (drawing text, clearing
 		// areas, etc.).

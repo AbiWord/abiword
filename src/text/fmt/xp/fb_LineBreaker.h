@@ -57,7 +57,6 @@ class fb_LineBreaker
 {
 public:
 	fb_LineBreaker();
-	virtual int reLayoutParagraph(fl_BlockLayout* pBlock) = 0;
 	virtual int breakParagraph(fl_BlockLayout*) = 0;
 };
 
@@ -66,8 +65,6 @@ class fb_SimpleLineBreaker : public fb_LineBreaker
 public:
 	fb_SimpleLineBreaker(); 
 	virtual int breakParagraph(fl_BlockLayout*);
-	virtual int reLayoutParagraph(fl_BlockLayout* pBlock);
-
 };
 
 #endif /* LINEBREAKER_H */

@@ -53,6 +53,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	m_iLen = iLen;
 	m_iWidth = 0;
 	m_iHeight = 0;
+	m_iX = 0;
+	m_iY = 0;
 	m_pNext = NULL;
 	m_pPrev = NULL;
 	m_pLine = NULL;
@@ -60,7 +62,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	m_iExtraWidth = 0;
 	m_pFont = NULL;
 	m_fDecorations = 0;
-	m_bDirty = UT_FALSE;
+	m_bDirty = UT_TRUE;		// a run which has just been created is not onscreen, therefore it is dirty
 
 	if (bLookupProperties)
 	{
@@ -68,8 +70,44 @@ fp_Run::fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	}
 }
 
+UT_sint32 fp_Run::getX() const
+{
+	return m_iX;
+}
+
+UT_sint32 fp_Run::getY() const
+{
+	return m_iY;
+}
+
+void	fp_Run::setX(UT_sint32 iX)
+{
+	if (iX == m_iX)
+	{
+		return;
+	}
+
+	clearScreen();
+	
+	m_iX = iX;
+}
+
+void	fp_Run::setY(UT_sint32 iY)
+{
+	if (iY == m_iY)
+	{
+		return;
+	}
+	
+	clearScreen();
+	
+	m_iY = iY;
+}
+	
 void fp_Run::setLine(fp_Line* pLine, void* p)
 {
+	clearScreen();
+	
 	m_pLine = pLine;
 	m_pLineData = p;
 }
@@ -323,6 +361,8 @@ int fp_Run::split(fp_RunSplitInfo& si)
 	UT_ASSERT(si.iLeftWidth >= 0);
 	UT_ASSERT(si.iRightWidth >= 0);
 
+	clearScreen();
+	
 	fp_Run* pNew = new fp_Run(m_pBL, m_pG, si.iOffset+1, m_iLen - (si.iOffset - m_iOffsetFirst) - 1, UT_FALSE);
 	UT_ASSERT(pNew);
 	pNew->m_pFont = this->m_pFont;
@@ -331,6 +371,9 @@ int fp_Run::split(fp_RunSplitInfo& si)
 	pNew->m_iAscent = this->m_iAscent;
 	pNew->m_iDescent = this->m_iDescent;
 	pNew->m_iHeight = this->m_iHeight;
+
+	// NOTE (EWS) -- after a split, the new run is dirty, meaning that it does not need to be cleared off screen
+	pNew->m_bDirty = UT_TRUE;
 	
 	pNew->m_iWidth = si.iRightWidth;
 	
@@ -374,6 +417,8 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 	pNew->m_iAscent = this->m_iAscent;
 	pNew->m_iDescent = this->m_iDescent;
 	pNew->m_iHeight = this->m_iHeight;
+	
+	pNew->m_bDirty = UT_TRUE;
 	
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
@@ -519,6 +564,7 @@ UT_Bool	fp_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 				si.iLeftWidth = iLeftWidth;
 				si.iRightWidth = iRightWidth;
 				si.iOffset = i + offset;
+
 				bContinue = UT_FALSE;
 				break;
 			}
@@ -556,6 +602,8 @@ void fp_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 	UT_uint32 len = m_iLen;
 	UT_Bool bContinue = UT_TRUE;
 
+	clearScreen();
+	
 	m_iWidth = 0;
 
 	// that's enough for zero-length run
@@ -596,7 +644,7 @@ void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
 	// let our parent know that we are changing underneath them ...
 	if (m_pLine)
 	{
-		m_pLine->runSizeChanged(m_pLineData, iOldWidth, m_iWidth);
+		m_pLine->runSizeChanged(this, iOldWidth, m_iWidth);
 	}
 }
 
@@ -714,8 +762,17 @@ void fp_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 void fp_Run::clearScreen(void)
 {
 	if (m_bDirty)
+	{
+		// no need to clear if we've already done so.
 		return;
+	}
 
+	if (!m_pLine)
+	{
+		// nothing to clear if this run is not currently on a line
+		return;
+	}
+	
 	// make sure we only get erased once
 	m_bDirty = UT_TRUE;
 
@@ -749,6 +806,14 @@ void fp_Run::_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32
 
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
+	if (pDA->bDirtyRunsOnly)
+	{
+		if (!m_bDirty)
+		{
+			return;
+		}
+	}
+	
 	m_bDirty = UT_FALSE;
 	UT_ASSERT(pDA->pG == m_pG);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
@@ -953,7 +1018,6 @@ void fp_Run::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 void fp_Run::dumpRun(void) const
 {
 	UT_DEBUGMSG(("Run: %p offset %8d length %4d  width=%d\n",this,m_iOffsetFirst,m_iLen,m_iWidth));
-	m_pLine->dumpRunInfo(this, m_pLineData);
 	
 	return;
 }
@@ -1011,6 +1075,7 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 		return UT_FALSE;
 	}
 
+	// TODO why is the following call to clearScreen here? --EWS
 	clearScreen();
 	
 	if (iOffset >= m_iOffsetFirst)

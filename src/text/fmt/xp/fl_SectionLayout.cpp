@@ -185,7 +185,6 @@ UT_Bool fl_SectionLayout::reformat()
 		if (pBL->needsCompleteReformat())
 		{
 			pBL->complete_format();
-			pBL->draw(m_pLayout->getGraphics());
 
 			pBL->fixColumns();
 			

@@ -38,15 +38,6 @@ struct dg_DrawArgs;
 	Runs.
 */
 
-struct fp_RunInfo
-{
-	fp_RunInfo(fp_Run*);
-
-	fp_Run*	pRun;
-	UT_uint32 xoff;
-	UT_uint32 yoff;
-};
-
 class fp_Line
 {
 public:
@@ -60,6 +51,14 @@ public:
 	UT_uint32 	getWidth() const;
 	UT_uint32 	getMaxWidth() const;
 
+	UT_sint32	getX(void) const;
+	UT_sint32	getY(void) const;
+	UT_sint32	getBaseX(void) const;
+
+	void		setX(UT_sint32);
+	void		setY(UT_sint32);
+	void		setBaseX(UT_sint32);
+
 	fp_Line*	getNext() const;
 	void		setNext(fp_Line*);
 	void        setPrev(fp_Line*);
@@ -67,13 +66,13 @@ public:
 
 	void 		addRun(fp_Run*);
 	void		splitRunInLine(fp_Run* pRun1, fp_Run* pRun2);
-	void        insertRun(fp_Run*, UT_Bool bClear, UT_Bool bNewData = UT_FALSE);
+	void        insertRun(fp_Run*);
     UT_Bool     removeRun(fp_Run*);
 	int 		countRuns() const;
 	fp_Run*     getFirstRun() const;
 	fp_Run*     getLastRun() const;
 	UT_uint32	getNumChars() const;
- 	void        runSizeChanged(void*, UT_sint32 oldWidth, UT_sint32 newWidth);
+ 	void        runSizeChanged(fp_Run*, UT_sint32 oldWidth, UT_sint32 newWidth);
 	void		remove();
 
 	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
@@ -91,8 +90,6 @@ public:
 	void		align();
 	UT_uint32	getAscent(void) const;
 	
-	void		dumpRunInfo(const fp_Run* pRun, void* p);
-
 	UT_Bool		isEmpty(void) const;
 	
 	UT_Bool         m_bDirty;	// line contents changed, needs to be reformatted
@@ -107,7 +104,12 @@ protected:
 	UT_uint32	 	m_iMaxWidth;
 	UT_uint32 		m_iHeight;
 	UT_uint32 		m_iAscent;
-	UT_Vector		m_vecRunInfos;
+
+	UT_sint32		m_iX;
+	UT_sint32		m_iY;
+	UT_sint32		m_iBaseX;
+	
+	UT_Vector		m_vecRuns;
 
 	fp_Line*		m_pNext;
 	fp_Line*        m_pPrev;

@@ -110,12 +110,18 @@ class fp_Run
 	UT_Bool 				ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex indexAP);
 	UT_Bool 				del(UT_uint32 iOffset, UT_uint32 iCount);
 
-	void                    clearScreen(void);
 	void					draw(dg_DrawArgs*);
 	void					dumpRun(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
+
+	UT_sint32				getX() const;
+	UT_sint32				getY() const;
+	void					setX(UT_sint32);
+	void					setY(UT_sint32);
+
+	void                    clearScreen(void);
 	
- protected:
+protected:
 	void					_drawDecors(UT_sint32, UT_sint32);
 	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
 	void 					_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
@@ -135,6 +141,8 @@ class fp_Run
 	UT_uint32				m_iLen;
 	UT_sint32				m_iWidth;
 	UT_sint32				m_iHeight;
+	UT_sint32				m_iX;
+	UT_sint32				m_iY;
 	UT_uint32				m_iAscent;
 	UT_uint32				m_iDescent;
 	UT_uint32				m_iExtraWidth;

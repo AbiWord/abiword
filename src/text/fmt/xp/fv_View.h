@@ -96,7 +96,6 @@ public:
 	FL_DocLayout* getLayout() const;
 
 	void draw(int page, dg_DrawArgs* da);
-	void draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bClip=UT_FALSE);
 
 	// TODO some of these functions should move into protected
 	
@@ -165,6 +164,9 @@ public:  // but probably should not be.  :-)
 	void				_drawInsertionPoint();
 	
 protected:
+	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bDirtyRunsOnly, UT_Bool bClip=UT_FALSE);
+	void				_updateScreen(void);
+	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);

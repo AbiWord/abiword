@@ -516,7 +516,7 @@ int fl_BlockLayout::minor_reformat()
 
 	if (m_pFirstRun)
 	{
-		m_pBreaker->reLayoutParagraph(this);
+		m_pBreaker->breakParagraph(this);
 
 		/*
 		  A delete could mean that there are empty lines
@@ -650,7 +650,7 @@ int fl_BlockLayout::complete_format()
 		  to stomp them too, then we should just call _purgeLayout().
 		*/
 	}
-
+	
 #if 0
 	_createRuns();
 	_verifyCurrentSlice(); // this is helpful for empty paragraphs
@@ -658,7 +658,25 @@ int fl_BlockLayout::complete_format()
 
 	if (m_pFirstRun)
 	{
-		// we have content ... break it up
+		UT_ASSERT(m_pFirstLine == NULL);
+		
+		// start a new line
+		UT_uint32 iGuessLineHeight = m_pFirstRun->getHeight();
+
+		UT_uint32 iMaxLineWidth = requestLineSpace(iGuessLineHeight);
+		UT_ASSERT(iMaxLineWidth > 0);
+
+		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
+
+		fp_Run* pTempRun = m_pFirstRun;
+		while (pTempRun)
+		{
+			pLine->addRun(pTempRun);
+			pTempRun = pTempRun->getNext();
+		}
+		
+		addLine(pLine);
+		
 		m_pBreaker->breakParagraph(this);
 	}
 	else
@@ -1118,6 +1136,7 @@ void fl_BlockLayout::_destroySpellCheckLists(void)
 	}
 }
 
+#if 0
 /* if two regions touch or overlap, return true, else false */
 static UT_Bool doesTouch(fl_PartOfBlock *pPOB, UT_uint32 offset, UT_uint32 length)
 {
@@ -1149,6 +1168,7 @@ static UT_Bool doesTouch(fl_PartOfBlock *pPOB, UT_uint32 offset, UT_uint32 lengt
 
 	return UT_FALSE;
 }
+#endif
 
 void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 {
@@ -1415,6 +1435,14 @@ void fl_BlockLayout::_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen)
 
 void fl_BlockLayout::checkSpelling(void)
 {
+	/*
+	  NOTE -- for the moment, I've disabled the spell checker
+	  by inserting the 'return' below.  It crashes a lot, and
+	  its handling of redraws is horrible.  --EWS
+	*/
+
+	return;
+	
 	// -----------------------------
 	// -----------------------------
 	// -----------------------------
@@ -1545,6 +1573,9 @@ void fl_BlockLayout::checkSpelling(void)
 	  TODO we don't REALLY want to redraw the whole block after every spell check.
 	  This is causing display dirt, since the insertion point gets erased outside
 	  the context of the code which manages it.  So, thus, the following hack.
+
+	  TODO now that I've cleaned up the rest of the redraw scenarios, the importance
+	  of cleaning this one up is even higher.  This redraw MUST go.  -EWS
 	*/
 	m_pLayout->getView()->_eraseInsertionPoint();
 	draw(m_pLayout->getGraphics());
@@ -1688,11 +1719,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 
 	minor_reformat();
 	fixColumns();
-					
-	// TODO the following draw should not be necessary.
-	draw(m_pLayout->getGraphics());
-
-	// in case anything else moved
 	m_pLayout->reformat();
 
 	if (pView)
@@ -1999,11 +2025,6 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 
 	minor_reformat();
 	fixColumns();
-						
-	// TODO the following draw should not be necessary.
-	draw(m_pLayout->getGraphics());
-
-	// in case anything else moved
 	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
@@ -2148,7 +2169,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 
 	pPrevBL->_destroySpellCheckLists();
 	m_pLayout->addBlockToSpellCheckQueue(pPrevBL);
-	pPrevBL->draw(pPrevBL->m_pLayout->getGraphics());
 							
 	// in case anything else moved
 	pPrevBL->m_pLayout->reformat();
@@ -2160,6 +2180,11 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
 	}
 
+	/*
+	  TODO if this block is currently on the spell check
+	  queue, we have to remove it!
+	*/
+	
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 	
 	return UT_TRUE;
@@ -2180,14 +2205,14 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 	fixColumns();
 					
-	draw(m_pLayout->getGraphics());
-					
 	// in case anything else moved
 	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
+	{
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTBLOCK);
+	}
 
 	return UT_TRUE;
 }
@@ -2300,10 +2325,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 
 	m_pLayout->addBlockToSpellCheckQueue(this);
 	
-	// update the display
-
-	getLastLine()->draw(m_pLayout->getGraphics());
-
 	// Note that in the case below, we really DO need to call complete_format().
 	pNewBL->complete_format();
 
@@ -2312,8 +2333,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 
 	m_pLayout->addBlockToSpellCheckQueue(pNewBL);
 	
-	pNewBL->draw(m_pLayout->getGraphics());
-					
 	// in case anything else moved
 	m_pLayout->reformat();
 

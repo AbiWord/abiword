@@ -489,18 +489,6 @@ int fp_Column::_repositionSlices()
 						}
 					}
 				}
-
-				/*
-				  Finally, if we get through all the checks above and
-				  the block does NOT need a reformat, we assume that
-				  simply moving it was okay, and nothing more needs
-				  to be done.  However, we erased it earlier, so we
-				  now need to redraw it.
-				*/
-				if (!pListNode->pSlice->getBlock()->needsCompleteReformat())
-				{
-					pListNode->pSlice->draw(m_pG);
-				}
 			}
 
 			pListNode = pListNode->pNext;
