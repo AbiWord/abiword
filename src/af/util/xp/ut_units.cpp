@@ -82,6 +82,10 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
   // p should now point to the unit
   if (p && *p)
     {
+		// chomp spaces
+		while(isspace(*p))
+			p++;
+		
       if (STR_COMPARE(p,"in") == 0 || STR_COMPARE(p, "inch") == 0)
 	return DIM_IN;
       
