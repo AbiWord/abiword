@@ -2610,7 +2610,6 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	if (m_pImage)
 	{
-		UT_DEBUGMSG(("plam: image has height %d\n", getGR()->tlu(m_pImage->getDisplayHeight())));
 		_setWidth(getGR()->tlu(m_pImage->getDisplayWidth()));
 		_setHeight(getGR()->tlu(m_pImage->getDisplayHeight()));
 	}
@@ -2736,18 +2735,18 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	
 	// draw some really fancy box here
 	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(left, box.top, right-1, box.top);
-	getGR()->drawLine(left, box.top, left, bottom-1);
+	getGR()->drawLine(left, box.top, right-getGR()->tlu(1), box.top);
+	getGR()->drawLine(left, box.top, left, bottom-getGR()->tlu(1));
 	getGR()->setColor(UT_RGBColor(230,234,238));
-	getGR()->drawLine(box.left+1, box.top+1, right - 2, top+1);
-	getGR()->drawLine(box.left+1, box.top+1, left+1, bottom - 2);
+	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), right - getGR()->tlu(2), top+getGR()->tlu(1));
+	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), left + getGR()->tlu(1), bottom - getGR()->tlu(2));
 	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(right-2, top+1, right-2, bottom-2);
-	getGR()->drawLine(left+1, bottom-2, right, bottom-2);
+	getGR()->drawLine(right - getGR()->tlu(2), top + getGR()->tlu(1), right - getGR()->tlu(2), bottom - getGR()->tlu(2));
+	getGR()->drawLine(left + getGR()->tlu(1), bottom - getGR()->tlu(2), right - getGR()->tlu(1), bottom - getGR()->tlu(2));
 	getGR()->setColor(UT_RGBColor(49,85,82));
-	getGR()->drawLine(right-1, top, right-1, bottom-1);
-	getGR()->drawLine(left, bottom-1, right, bottom-1);
-	getGR()->fillRect(UT_RGBColor(156,178,180),box.left + 2, box.top + 2, box.width - 4, box.height - 4);
+	getGR()->drawLine(right - getGR()->tlu(1), top, right - getGR()->tlu(1), bottom - getGR()->tlu(1));
+	getGR()->drawLine(left, bottom - getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
+	getGR()->fillRect(UT_RGBColor(156,178,180),box.left + getGR()->tlu(2), box.top + getGR()->tlu(2), box.width - getGR()->tlu(4), box.height - getGR()->tlu(4));
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
@@ -2804,8 +2803,8 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			{
 				UT_uint32 top = yoff;
 				UT_uint32 left = xoff;
-				UT_uint32 right = xoff + getWidth() - 1;
-				UT_uint32 bottom = yoff + getHeight() - 1;
+				UT_uint32 right = xoff + getWidth() - getGR()->tlu(1);
+				UT_uint32 bottom = yoff + getHeight() - getGR()->tlu(1);
 
 				UT_sint32 boxSize = pView->getImageSelInfo();
 			
@@ -2813,11 +2812,11 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	
 				_drawResizeBox(UT_Rect(left, top, boxSize, boxSize));
 				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, top, boxSize, boxSize)); 				// North
-				_drawResizeBox(UT_Rect(right-boxSize+1, top, boxSize, boxSize)); 									// North East
-				_drawResizeBox(UT_Rect(right-boxSize+1, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); // East
-				_drawResizeBox(UT_Rect(right-boxSize+1, bottom - boxSize + 1, boxSize, boxSize)); 					// South East
-				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + 1, boxSize, boxSize));// South
-				_drawResizeBox(UT_Rect(left, bottom - boxSize + 1, boxSize, boxSize)); 								// South West
+				_drawResizeBox(UT_Rect(right-boxSize+getGR()->tlu(1), top, boxSize, boxSize)); 									// North East
+				_drawResizeBox(UT_Rect(right-boxSize+getGR()->tlu(1), top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); // East
+				_drawResizeBox(UT_Rect(right-boxSize+getGR()->tlu(1), bottom - boxSize + getGR()->tlu(1), boxSize, boxSize)); 					// South East
+				_drawResizeBox(UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + getGR()->tlu(1), boxSize, boxSize));// South
+				_drawResizeBox(UT_Rect(left, bottom - boxSize + getGR()->tlu(1), boxSize, boxSize)); 								// South West
 				_drawResizeBox(UT_Rect(left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize)); 			// West
 			}
 		}

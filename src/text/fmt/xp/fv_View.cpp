@@ -171,7 +171,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iViewRevision(0),
 		m_bWarnedThatRestartNeeded(false),
 		m_selImageRect(-1,-1,-1,-1),
-		m_iImageSelBoxSize(10),
+		m_iImageSelBoxSize(m_pG->tlu(10)),
 		m_imageSelCursor(GR_Graphics::GR_CURSOR_IBEAM),
 		m_ixResizeOrigin(0),
 		m_iyResizeOrigin(0),

@@ -10461,8 +10461,8 @@ Defun(endResizeImage)
 		// an approximate... TODO: make me more accurate
 		const fp_PageSize & page = pView->getPageSize ();		
 		double max_width = 0., max_height = 0.;
-		max_width  = page.Width (DIM_IN) * 72.0;
-		max_height = page.Height (DIM_IN) * 72.0;
+		max_width  = page.Width (DIM_PX);
+		max_height = page.Height (DIM_PX);
 		
 		// some range checking stuff
 		newImgBounds.width = abs(newImgBounds.width);
@@ -10521,12 +10521,8 @@ Defun(endResizeImage)
 		// TODO: set format
 		const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
 		char * old_locale = setlocale(LC_NUMERIC, "C");
-		double fwidth=pView->getGraphics()->tluD(newImgBounds.width);
-		double fheight=pView->getGraphics()->tluD(newImgBounds.height);
-		UT_sint32 iwidth = (UT_sint32) fwidth;
-		UT_sint32 iheight = (UT_sint32) fheight;
-		sprintf(widthBuf, "%fin", UT_convertDimToInches(iwidth, DIM_PX));
-		sprintf(heightBuf, "%fin", UT_convertDimToInches(iheight, DIM_PX));
+		sprintf(widthBuf, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
+		sprintf(heightBuf, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
 		setlocale(LC_NUMERIC, old_locale);
 		
 		UT_DEBUGMSG(("MARCM: nw:%s nh:%s\n", widthBuf, heightBuf));
