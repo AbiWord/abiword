@@ -886,7 +886,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		rCell.set(0,0,0,0);
 		return;
 	}
-	fp_Column * pCol = pBroke->getColumn();
+	fp_Column * pCol = (fp_Column *)pBroke->getColumn();
 	UT_sint32 iColOffset = pCol->getY();
 	yOrigin += iColOffset;
 	UT_sint32 yoff = pBroke->getYBreak();
