@@ -50,7 +50,10 @@ ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 /*this is used for converting form unsigned short to UCS-2*/
 static unsigned short  ucs2[INPUTWORDLEN + MAXAFFIXLEN];
 
+extern "C" {
 extern int XAP_EncodingManager__swap_utos, XAP_EncodingManager__swap_stou;
+}
+
 /*this one fills ucs2 with values that iconv will treat as UCS-2. */
 static void toucs2(const unsigned short *word16, int length)
 {
