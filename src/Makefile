@@ -75,7 +75,7 @@ endif
 ## format.
 
 install: build canonical
-ifeq ($(ABI_NATIVE),ufnix)
+ifeq ($(ABI_NATIVE),unix)
 	@echo
 	@echo Putting things in [$(PREFIX)]...
 	@echo
