@@ -255,7 +255,6 @@ public:
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
   
-
    	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
 	static EV_EditMethod_Fn dlgBullets;
@@ -282,6 +281,10 @@ public:
 	static EV_EditMethod_Fn alignCenter;
 	static EV_EditMethod_Fn alignRight;
 	static EV_EditMethod_Fn alignJustify;
+
+	static EV_EditMethod_Fn setStyleHeading1;
+	static EV_EditMethod_Fn setStyleHeading2;
+	static EV_EditMethod_Fn setStyleHeading3;
 
 	static EV_EditMethod_Fn paraBefore0;
 	static EV_EditMethod_Fn paraBefore12;
@@ -572,6 +575,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(alignCenter),			0,		""),
 	EV_EditMethod(NF(alignRight),			0,		""),
 	EV_EditMethod(NF(alignJustify),			0,		""),
+
+	EV_EditMethod(NF(setStyleHeading1),			0,		""),
+	EV_EditMethod(NF(setStyleHeading2),			0,		""),
+	EV_EditMethod(NF(setStyleHeading3),			0,		""),
 
 	EV_EditMethod(NF(paraBefore0),			0,		""),
 	EV_EditMethod(NF(paraBefore12),			0,		""),
@@ -4518,6 +4525,31 @@ Defun1(alignJustify)
 	return UT_TRUE;
 }
 
+Defun1(setStyleHeading1)
+{
+	ABIWORD_VIEW;
+	const XML_Char * style = "Heading 1";
+	pView->setStyle(style);
+	return UT_TRUE;
+}
+
+
+Defun1(setStyleHeading2)
+{
+	ABIWORD_VIEW;
+	const XML_Char * style = "Heading 2";
+	pView->setStyle(style);
+	return UT_TRUE;
+}
+
+Defun1(setStyleHeading3)
+{
+	ABIWORD_VIEW;
+	const XML_Char * style = "Heading 3";
+	pView->setStyle(style);
+	return UT_TRUE;
+}
+
 Defun1(sectColumns1)
 {
 	ABIWORD_VIEW;
@@ -4918,4 +4950,3 @@ Defun(viCmd_yy)
 	//copy current line
 	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(copy) );
 }
-
