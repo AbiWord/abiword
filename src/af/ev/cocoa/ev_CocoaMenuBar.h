@@ -41,7 +41,7 @@ public:
 				   const char * szMenuLabelSetName);
 	virtual ~EV_CocoaMenuBar();
 
-	virtual bool		synthesizeMenuBar();
+	virtual bool		synthesizeMenuBar(NSMenu *menuBar);
 	virtual bool		rebuildMenuBar();
 	virtual bool		refreshMenu(AV_View * pView);
     virtual void        destroy(void);

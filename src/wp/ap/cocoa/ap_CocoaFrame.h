@@ -39,6 +39,8 @@ class GR_Graphics;
 }
 - (IBAction)changeTabType:(id)sender;
 - (IBAction)rulerClick:(id)sender;
+- (NSControl *)getVRuler;
+- (NSControl *)getHRuler;
 @end
 
 
@@ -69,9 +71,9 @@ public:
 	virtual void                            toggleLeftRuler(bool bRulerOn);
 	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
 	virtual void				toggleStatusBar(bool bStatusBarOn);
+	virtual NSString *			_getNibName ();
 
 protected:
-	virtual NSString *			_getNibName ();
 	virtual NSWindow *			_createDocumentWindow(void);
 	virtual NSControl *			_createStatusBarWindow(void);
 	virtual void				_setWindowIcon(void);

@@ -56,7 +56,7 @@ class XAP_CocoaFont
 
 	
 	XAP_CocoaFont(void);
-	XAP_CocoaFont(XAP_CocoaFont & copy);
+	XAP_CocoaFont(const XAP_CocoaFont & copy);
 	
 	~XAP_CocoaFont(void);
 
@@ -114,7 +114,7 @@ class XAP_CocoaFontHandle : public GR_Font
  public:
 
 	XAP_CocoaFontHandle();
-	XAP_CocoaFontHandle(XAP_CocoaFont * font, UT_uint32 size);	
+	XAP_CocoaFontHandle(const XAP_CocoaFont * font, UT_uint32 size);	
 	XAP_CocoaFontHandle(const XAP_CocoaFontHandle & copy);
 	~XAP_CocoaFontHandle();
 
@@ -122,7 +122,7 @@ class XAP_CocoaFontHandle : public GR_Font
 	UT_uint32		getSize(void);
 	
 
-	inline XAP_CocoaFont *getCocoaFont()	const{ return m_font; }
+	inline const XAP_CocoaFont *getCocoaFont()	const { return m_font; }
 //	inline NSFont      *getMatchNSFont()	{ return m_font? m_font->getMatchNSFont(m_size): NULL; }
 	
 //	void explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	

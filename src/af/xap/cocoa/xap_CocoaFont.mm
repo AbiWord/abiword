@@ -74,18 +74,21 @@ XAP_CocoaFontHandle::XAP_CocoaFontHandle()
 {
 }
 
-XAP_CocoaFontHandle::XAP_CocoaFontHandle(XAP_CocoaFont * font, UT_uint32 size)
-  : m_font(font), m_size(size)
+XAP_CocoaFontHandle::XAP_CocoaFontHandle(const XAP_CocoaFont * font, UT_uint32 size)
+  : m_size(size)
 {
+	m_font = new XAP_CocoaFont (*font);
 }
 
 XAP_CocoaFontHandle::XAP_CocoaFontHandle(const XAP_CocoaFontHandle & copy)
-  : GR_Font(copy), m_font(copy.m_font), m_size(copy.m_size)
+  : GR_Font(copy),  m_size(copy.m_size)
 {
+	m_font = new XAP_CocoaFont (*copy.m_font);
 }
 
 XAP_CocoaFontHandle::~XAP_CocoaFontHandle()
 {
+	DELETEP (m_font);
 }
 
 NSFont * XAP_CocoaFontHandle::getNSFont(void)
@@ -148,7 +151,7 @@ XAP_CocoaFont::XAP_CocoaFont(void)
 	//UT_DEBUGMSG(("XAP_CocoaFont:: constructor (void)\n"));	
 }
 
-XAP_CocoaFont::XAP_CocoaFont(XAP_CocoaFont & copy)
+XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
 {
 	//UT_DEBUGMSG(("XAP_CocoaFont:: copy constructor\n"));
 

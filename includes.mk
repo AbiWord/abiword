@@ -1,5 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
+## Copyright (C) 2001 Hubert Figuiere <hfiguiere@teaser.fr>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -28,7 +29,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
@@ -40,7 +41,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
@@ -83,8 +84,19 @@ ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PSICONV_CFLAGS@ @WV_CFLAGS@ @LIBWMF_CFLAGS@ @LIBJPEG_CFLAGS@ @LIBPNG_CFLAGS@
 
 if WITH_MACOSX
-PLATFORM_CFLAGS=@PLATFORM_CFLAGS@ -DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_CARBON \
--DXP_MAC_TARGET_QUARTZ 
+MACOSX_CFLAGS=-DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_QUARTZ 
+else
+MACOSX_CFLAGS=
+endif
+
+if WITH_CARBON
+PLATFORM_CFLAGS=@PLATFORM_CFLAGS@ -DXP_MAC_TARGET_CARBON $(MACOSX_CFLAGS)
+else
+PLATFORM_CFLAGS=@PLATFORM_CFLAGS@
+endif
+
+if WITH_COCOA
+PLATFORM_CFLAGS=@PLATFORM_CFLAGS@ -DXP_TARGET_COCOA $(MACOSX_CFLAGS)
 else
 PLATFORM_CFLAGS=@PLATFORM_CFLAGS@
 endif
@@ -93,6 +105,7 @@ CXXFLAGS=$(ABI_CFLAGS) $(PLATFORM_CFLAGS) -DABI_BUILD_VERSION=\"@VERSION@\"
 CFLAGS=$(ABI_CFLAGS) $(PLATFORM_CFLAGS)
 
 ABI_FE = @ABI_FE@
+ABI_BE = @ABI_BE@
 ABI_GNOME_PREFIX = Gnome
 
 # PSPELL_LIBS is empty if pspell is not enabled
@@ -123,6 +136,10 @@ endif
 
 ABI_OBJECTS=xp/*.o @PLATFORM@/*.o 
 
+SUFFIXES=.mm
+.mm.o:
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) $<
+	
 # MacOS X resource compiling
 # TODO add autoconf macros to detect Rez, ResMerger and other stuff. 
 #      currently we use the hardcode locations

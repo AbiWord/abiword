@@ -18,14 +18,14 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include "ap_CocoaApp.h"
 
 int main (int argc, char **argv)
 {
-	NSAutoReleasepool * pool = [[NSAutoreleasePool alloc] init];
-	int ret = AP_CocoaApp::CocoaMain(ABIWORD_APP_NAME, argc, argv);
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	int ret = AP_CocoaApp::main(ABIWORD_APP_NAME, argc, argv);
 	[pool release];
 	
 	return ret;

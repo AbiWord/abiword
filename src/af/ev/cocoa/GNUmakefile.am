@@ -28,6 +28,6 @@ libEv_cocoa_a_SOURCES=		\
 	 ev_CocoaMenu.mm		\
 	 ev_CocoaMouse.mm		\
 	 ev_CocoaToolbar.mm		\
-	 ev_CocoaTlbr_ViewListener.mm
+	 ev_CocoaToolbar_ViewListener.mm
 
 

@@ -18,8 +18,7 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
-
+#import <Cocoa/Cocoa.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ut_string.h"
@@ -48,15 +47,15 @@ extern unsigned long g_pngSidebar_sizeof;	// see ap_wp_sidebar.cpp
 /*****************************************************************/
 
 XAP_Dialog * XAP_CocoaDialog_About::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id dlogId)
+													 XAP_Dialog_Id dlgid)
 {
-	XAP_CocoaDialog_About * p = new XAP_CocoaDialog_About(pFactory,dlogId);
+	XAP_CocoaDialog_About * p = new XAP_CocoaDialog_About(pFactory,dlgid);
 	return p;
 }
 
 XAP_CocoaDialog_About::XAP_CocoaDialog_About(XAP_DialogFactory * pDlgFactory,
-											 XAP_Dialog_Id dlogId)
-	: XAP_Dialog_About(pDlgFactory,dlogId)
+											 XAP_Dialog_Id dlgid)
+	: XAP_Dialog_About(pDlgFactory,dlgid)
 {
 #if 0
 	m_windowMain = NULL;
@@ -75,6 +74,7 @@ XAP_CocoaDialog_About::~XAP_CocoaDialog_About(void)
 }
 
 /*****************************************************************/
+
 #if 0
 // These are all static callbacks, bound to GTK or GDK events.
 
@@ -114,11 +114,13 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 	return FALSE;
 }
 #endif
+
 /*****************************************************************/
 
 void XAP_CocoaDialog_About::runModal(XAP_Frame * pFrame)
 {
-#if 0
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+#if 0	
 	// stash away the frame
 	m_pFrame = static_cast<XAP_CocoaFrame *>(pFrame);
 
@@ -133,9 +135,8 @@ void XAP_CocoaDialog_About::runModal(XAP_Frame * pFrame)
 	// To center the dialog, we need the frame of its parent.
 	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
 	UT_ASSERT(pCocoaFrame);
-	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
+	NSWindow * parentWindow = pCocoaFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	
 	// Center our new dialog in its parent and make it a transient
@@ -162,6 +163,7 @@ void XAP_CocoaDialog_About::runModal(XAP_Frame * pFrame)
 
 void XAP_CocoaDialog_About::event_OK(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 #if 0
 	gtk_main_quit();
 #endif
@@ -174,6 +176,7 @@ void XAP_CocoaDialog_About::event_URL(void)
 
 void XAP_CocoaDialog_About::event_WindowDelete(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 #if 0
 	gtk_main_quit();
 #endif
@@ -187,37 +190,12 @@ void XAP_CocoaDialog_About::event_DrawingAreaExpose(void)
 	m_gc->drawImage(m_pGrImageSidebar, 0, 0);
 }
 
-#if 0
 /*****************************************************************/
-GtkWidget * XAP_CocoaDialog_About::_constructButtonOK(void)
-{
-	GtkWidget *buttonOK;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show (buttonOK);
-	gtk_widget_set_usize (buttonOK, 85, 24);
-
-	return buttonOK;
-}
-
-GtkWidget * XAP_CocoaDialog_About::_constructButtonURL(void)
-{
-	GtkWidget *buttonURL;
-
-	buttonURL = gtk_button_new_with_label ("www.abisource.com");
-	gtk_widget_show (buttonURL);
-	gtk_widget_set_usize (buttonURL, 140, 24);
-
-	return buttonURL;
-}
-#endif
-
 NSWindow * XAP_CocoaDialog_About::_constructWindow(void)
 {
-	NSWindow *windowAbout = nil;
-	
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 #if 0
+	GtkWidget *windowAbout;
 	GtkWidget *hboxAbout;
 	GtkWidget *drawingareaGraphic;
 	GtkWidget *vboxInfo;
@@ -342,9 +320,10 @@ NSWindow * XAP_CocoaDialog_About::_constructWindow(void)
 	m_buttonOK = buttonOK;
 	m_buttonURL = buttonURL;
 	m_drawingareaGraphic = drawingareaGraphic;
-
 #endif
-	return windowAbout;
+
+//	return windowAbout;
+	return nil;
 }
 
 void XAP_CocoaDialog_About::_preparePicture(void)

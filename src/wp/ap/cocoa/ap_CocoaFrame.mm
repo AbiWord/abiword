@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,18 +18,14 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
+#include <AppKit/AppKit.h>
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "xap_ViewListener.h"
 #include "ap_FrameData.h"
-#ifdef HAVE_GNOME
-#include "xap_CocoaGnomeFrame.h"
-#else
 #include "xap_CocoaFrame.h"
-#endif
 #include "ev_CocoaToolbar.h"
 #include "xav_View.h"
 #include "xad_Document.h"
@@ -44,7 +41,6 @@
 #include "xap_CocoaFontManager.h"
 #include "ap_CocoaStatusBar.h"
 #include "ap_CocoaViewListener.h"
-#include "xap_CocoaDialogHelper.h"
 #if 1
 #include "ev_CocoaMenuBar.h"
 #include "ev_Menu_Layouts.h"
@@ -52,10 +48,12 @@
 #include "ev_Menu_Actions.h"
 #endif
 
+#if 0
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 #include "abiword_48_tm.xpm"
 #else
 #include "abiword_48.xpm"
+#endif
 #endif
 
 /*****************************************************************/
@@ -100,11 +98,13 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
 	UT_uint32 k = 0;
+	
+	NSRect rect;
 
-	gboolean bFocus;
+	bool bFocus;
 	XAP_CocoaFontManager * fontManager = ((XAP_CocoaApp *) getApp())->getFontManager();
 	
-	pG = new GR_CocoaGraphics(m_dArea->window, fontManager, getApp());
+	pG = new GR_CocoaGraphics([_getController() getMainView], fontManager, getApp());
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 	
@@ -120,8 +120,10 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	}
 	ENSUREP(pView);
 
-	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
+//	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
+#if 0
 	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
+#endif
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
 	// from both the scroll-related edit methods
@@ -229,9 +231,9 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
-	
-	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
-						   GTK_WIDGET(m_dArea)->allocation.height);
+
+	rect = [[_getController() getWindow] frame];
+	m_pView->setWindowSize(rect.size.width , rect.size.height);
 	setXScrollRange();
 	setYScrollRange();
 	updateTitle();
@@ -287,7 +289,8 @@ Cleanup:
 void AP_CocoaFrame::setXScrollRange(void)
 {
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	int windowWidth = GTK_WIDGET(m_dArea)->allocation.width;
+	NSRect rect = [[_getController() getMainView] frame];
+	int windowWidth = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
@@ -295,7 +298,7 @@ void AP_CocoaFrame::setXScrollRange(void)
 		newvalue = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-
+#if 0
 	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
 	bool bDifferentLimits = ((width-windowWidth) != (int)(m_pHadj->upper-m_pHadj->page_size));
 	
@@ -305,16 +308,20 @@ void AP_CocoaFrame::setXScrollRange(void)
 	m_pHadj->step_increment = 20.0;
 	m_pHadj->page_increment = (gfloat) windowWidth;
 	m_pHadj->page_size = (gfloat) windowWidth;
-	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
-
+#endif
+	UT_ASSERT (UT_TODO);
+//	[[_getController() getMainView] drawIfNeeded];
+#if 0
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendHorizontalScrollEvent(newvalue, (int)(m_pHadj->upper-m_pHadj->page_size));
+#endif
 }
 
 void AP_CocoaFrame::setYScrollRange(void)
 {
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	int windowHeight = GTK_WIDGET(m_dArea)->allocation.height;
+	NSRect rect = [[_getController() getMainView] frame];
+	int windowHeight = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
@@ -323,6 +330,7 @@ void AP_CocoaFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
+#if 0
 	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
 	bool bDifferentLimits ((height-windowHeight) != (int)(m_pVadj->upper-m_pVadj->page_size));
 	
@@ -332,22 +340,25 @@ void AP_CocoaFrame::setYScrollRange(void)
 	m_pVadj->step_increment = 20.0;
 	m_pVadj->page_increment = (gfloat) windowHeight;
 	m_pVadj->page_size = (gfloat) windowHeight;
-	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
-
+#endif
+	UT_ASSERT (UT_TODO);
+//	[[_getController() getMainView] drawIfNeeded];
+#if 0
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendVerticalScrollEvent(newvalue, (int)(m_pVadj->upper-m_pVadj->page_size));
+#endif
 }
 
 
 AP_CocoaFrame::AP_CocoaFrame(XAP_CocoaApp * app)
-	: XAP_UNIXBASEFRAME(app)
+	: XAP_CocoaFrame (app)
 {
 	// TODO
 	m_pData = NULL;
 }
 
 AP_CocoaFrame::AP_CocoaFrame(AP_CocoaFrame * f)
-	: XAP_UNIXBASEFRAME(static_cast<XAP_UNIXBASEFRAME *>(f))
+	: XAP_CocoaFrame(static_cast<XAP_CocoaFrame *>(f))
 {
 	// TODO
 	m_pData = NULL;
@@ -364,7 +375,7 @@ bool AP_CocoaFrame::initialize()
 	if (!initFrameData())
 		return false;
 
-	if (!XAP_UNIXBASEFRAME::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+	if (!XAP_CocoaFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
@@ -377,27 +388,9 @@ bool AP_CocoaFrame::initialize()
 	// TODO: get rid of cursed flicker caused by initially
 	// TODO: showing these and then hiding them (esp.
 	// TODO: noticable in the gnome build with a toolbar disabled)
-	gtk_widget_show(m_wTopLevelWindow);
+//	gtk_widget_show(m_wTopLevelWindow);
 	_showOrHideToolbars();
 	_showOrHideStatusbar();
-#endif
-
-#if 0
-	EV_Menu_Layout* pLayout = getMainMenu()->getLayout();
-	EV_Menu_LabelSet* pLabelSet = getMainMenu()->getLabelSet();
-	EV_Menu_ActionSet* pActionSet = getApp()->getMenuActionSet();
-	UT_ASSERT(pLayout && pLabelSet && pActionSet);
-
-	XAP_Menu_Id id = EV_searchMenuLabel(pLabelSet, "&Tools");
-	if (id == 0)
-	{
-		// TODO: What can I do here?
-		UT_DEBUGMSG(("JCA: Ugh, this menu doesn't have an entry \"&Tools\""));
-	}
-
-	XAP_Menu_Id new_id = pLayout->addLayoutItem(pLayout->getLayoutIndex(id) + 1, EV_MLF_Normal);
-	pActionSet->addAction(new EV_Menu_Action(new_id, false, false, false, "executeScript", NULL, NULL, "toto"));
-	pLabelSet->addLabel(new EV_Menu_Label(new_id, "&Toto", "Execute perl script toto"));
 #endif
 	return true;
 }
@@ -435,7 +428,7 @@ bool AP_CocoaFrame::initFrameData()
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	AP_FrameData* pData = new AP_FrameData(m_pCocoaApp);
+	AP_FrameData* pData = new AP_FrameData(_getApp());
 
 	m_pData = (void*)pData;
 	return (pData ? true : false);
@@ -577,7 +570,7 @@ Cleanup:
 	// clean up anything we created here
 	if (pClone)
 	{
-		m_pCocoaApp->forgetFrame(pClone);
+		_getApp()->forgetFrame(pClone);
 		delete pClone;
 	}
 
@@ -676,13 +669,14 @@ void AP_CocoaFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrang
 	// a keyboard motion).  push the new values into the scrollbar widgets
 	// (with clamping).  then cause the view to scroll.
 	
-	gfloat yoffNew = (gfloat)yoff;
-	gfloat yoffMax = pCocoaFrame->m_pVadj->upper - pCocoaFrame->m_pVadj->page_size;
+	float yoffNew = (float)yoff;
+	float yoffMax = 0;
+//TODO	float yoffMax = pCocoaFrame->m_pVadj->upper - pCocoaFrame->m_pVadj->page_size;
 	if (yoffMax <= 0)
 		yoffNew = 0;
 	else if (yoffNew > yoffMax)
 		yoffNew = yoffMax;
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(pCocoaFrame->m_pVadj),yoffNew);
+//TODO	gtk_adjustment_set_value(GTK_ADJUSTMENT(pCocoaFrame->m_pVadj),yoffNew);
 	pView->setYScrollOffset((UT_sint32)yoffNew);
 }
 
@@ -697,17 +691,24 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 	// a keyboard motion).  push the new values into the scrollbar widgets
 	// (with clamping).  then cause the view to scroll.
 
-	gfloat xoffNew = (gfloat)xoff;
-	gfloat xoffMax = pCocoaFrame->m_pHadj->upper - pCocoaFrame->m_pHadj->page_size;
+	float xoffNew = (float)xoff;
+	float xoffMax = 0;
+//TODO	float xoffMax = pCocoaFrame->m_pHadj->upper - pCocoaFrame->m_pHadj->page_size;
 	if (xoffMax <= 0)
 		xoffNew = 0;
 	else if (xoffNew > xoffMax)
 		xoffNew = xoffMax;
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(pCocoaFrame->m_pHadj),xoffNew);
+//TODO	gtk_adjustment_set_value(GTK_ADJUSTMENT(pCocoaFrame->m_pHadj),xoffNew);
 	pView->setXScrollOffset((UT_sint32)xoffNew);
 }
 
-GtkWidget * AP_CocoaFrame::_createDocumentWindow()
+NSString *	AP_CocoaFrame::_getNibName ()
+{
+	return @"AP_CocoaFrame";
+}
+
+
+NSWindow * AP_CocoaFrame::_createDocumentWindow()
 {
 	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
 
@@ -719,32 +720,27 @@ GtkWidget * AP_CocoaFrame::_createDocumentWindow()
 	{
 		pCocoaTopRuler = new AP_CocoaTopRuler(this);
 		UT_ASSERT(pCocoaTopRuler);
-		m_topRuler = pCocoaTopRuler->createWidget();
+//		m_topRuler = pCocoaTopRuler->createWidget();
 		
-		if (static_cast<AP_FrameData*> (m_pData)->m_pViewMode == VIEW_PRINT)
-		  {
+		if (static_cast<AP_FrameData*> (m_pData)->m_pViewMode == VIEW_PRINT) {
 		    pCocoaLeftRuler = new AP_CocoaLeftRuler(this);
 		    UT_ASSERT(pCocoaLeftRuler);
-		    m_leftRuler = pCocoaLeftRuler->createWidget();
+//		    m_leftRuler = pCocoaLeftRuler->createWidget();
 
 		    // get the width from the left ruler and stuff it into the top ruler.
 		    pCocoaTopRuler->setOffsetLeftRuler(pCocoaLeftRuler->getWidth());
-		  }
-		else
-		  {
-		    m_leftRuler = NULL;
+		}
+		else {
+//		    m_leftRuler = NULL;
 		    pCocoaTopRuler->setOffsetLeftRuler(0);
-		  }
-	}
-	else
-	{
-		m_topRuler = NULL;
-		m_leftRuler = NULL;
+		}
 	}
 
 	((AP_FrameData*)m_pData)->m_pTopRuler = pCocoaTopRuler;
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pCocoaLeftRuler;
 
+	UT_ASSERT (UT_TODO);
+#if 0
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
@@ -861,14 +857,16 @@ GtkWidget * AP_CocoaFrame::_createDocumentWindow()
 	gtk_widget_show(m_dArea);
 	gtk_widget_show(m_innertable);
 	gtk_widget_show(m_table);
+#endif
 
-	return m_wSunkenBox;
+	return nil;
 }
 
 void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 {
 	// translate the given document mouse coordinates into absolute screen coordinates.
-
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+#if 0
 	Window child;
 	gint tx;
 	gint ty;
@@ -879,18 +877,19 @@ void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
   
 	x = tx;
 	y = ty;
+#endif
 }
 
-GtkWidget * AP_CocoaFrame::_createStatusBarWindow()
+NSControl * AP_CocoaFrame::_createStatusBarWindow()
 {
 	AP_CocoaStatusBar * pCocoaStatusBar = new AP_CocoaStatusBar(this);
 	UT_ASSERT(pCocoaStatusBar);
 
 	((AP_FrameData *)m_pData)->m_pStatusBar = pCocoaStatusBar;
 	
-	GtkWidget * w = pCocoaStatusBar->createWidget();
+//	GtkWidget * w = pCocoaStatusBar->createWidget();
 
-	return w;
+	return [_getController() getStatusBar];
 }
 
 void AP_CocoaFrame::setStatusMessage(const char * szMsg)
@@ -901,9 +900,9 @@ void AP_CocoaFrame::setStatusMessage(const char * szMsg)
 void AP_CocoaFrame::_setWindowIcon()
 {
 	// attach program icon to window
-	GtkWidget * window = getTopLevelWindow();
+	NSWindow * window = getTopLevelWindow();
 	UT_ASSERT(window);
-
+#if 0
 	// create a pixmap from our included data
 	GdkBitmap * mask;
 	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window,
@@ -914,6 +913,8 @@ void AP_CocoaFrame::_setWindowIcon()
 		
 	gdk_window_set_icon(window->window, NULL, pixmap, mask);
 	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
+#endif
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
 UT_Error AP_CocoaFrame::_replaceDocument(AD_Document * pDoc)
@@ -926,6 +927,7 @@ UT_Error AP_CocoaFrame::_replaceDocument(AD_Document * pDoc)
 
 void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 		
@@ -934,6 +936,7 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleTopRuler %d, %d\n", 
 		     bRulerOn, pFrameData->m_pTopRuler));
 
+#if 0
 	if ( bRulerOn )
 	{
 		UT_ASSERT(!pFrameData->m_pTopRuler);
@@ -959,18 +962,19 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 		pCocoaTopRuler->setView(m_pView);
 	}
 	else
-	  {
+	{
 		// delete the actual widgets
 		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
 		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
 		m_topRuler = NULL;
-	  }
-
+	}
+#endif
 	((AP_FrameData*)m_pData)->m_pTopRuler = pCocoaTopRuler;
 }
 
 void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 
@@ -979,6 +983,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleLeftRuler %d, %d\n", 
 		     bRulerOn, pFrameData->m_pLeftRuler));
 
+#if 0
 	if (bRulerOn)
 	  {
 		pCocoaLeftRuler = new AP_CocoaLeftRuler(this);
@@ -1001,6 +1006,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 	  }
 
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pCocoaLeftRuler;
+#endif
 }
 
 void AP_CocoaFrame::toggleRuler(bool bRulerOn)
@@ -1008,7 +1014,7 @@ void AP_CocoaFrame::toggleRuler(bool bRulerOn)
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 
-        toggleTopRuler(bRulerOn);
+	toggleTopRuler(bRulerOn);
 	toggleLeftRuler(bRulerOn && (pFrameData->m_pViewMode == VIEW_PRINT));
 }
 
@@ -1051,5 +1057,16 @@ void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
 - (IBAction)rulerClick:(id)sender
 {
 }
+
+- (NSControl *)getVRuler
+{
+	return vRuler;
+}
+
+- (NSControl *)getHRuler
+{
+	return hRuler;
+}
+
 
 @end

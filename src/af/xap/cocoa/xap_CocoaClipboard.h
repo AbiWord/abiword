@@ -42,8 +42,10 @@ public:
 	virtual bool			clearClipboard(void);
 
 	virtual bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
-	virtual bool			getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen);
+	virtual bool			getClipboardData(const char** formatAccepted, void ** ppData, UT_uint32 * pLen, const char ** szFormatFound);
 	virtual bool			hasFormat(const char* format);
+	
+	NSPasteboard		*_getPasteboard () { return m_pasteboard; };
 private:
 	NSPasteboard		*m_pasteboard;
 };

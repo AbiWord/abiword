@@ -257,7 +257,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				str = @"";
 			}
 			menuItem = [[[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""] autorelease];
-			[str dealloc];
+			[str release];
 			
 			NSMenu * wParent;
 			bResult = stack.viewTop((void **)&wParent);
@@ -286,7 +286,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				str = @"";
 			}
 			menuItem = [[[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""] autorelease];
-			[str dealloc];
+			[str release];
 			
 			NSMenu * wParent;
 			bResult = stack.viewTop((void **)&wParent);
@@ -710,11 +710,11 @@ void  EV_CocoaMenuBar::destroy(void)
 {
 }
 
-bool EV_CocoaMenuBar::synthesizeMenuBar()
+bool EV_CocoaMenuBar::synthesizeMenuBar(NSMenu *menu)
 {
 	// Just create, don't show the menu bar yet.  It is later added
 	// to a 3D handle box and shown
-	m_wMenuBar = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+	m_wMenuBar = menu;
 
 	synthesizeMenu(m_wMenuBar);
 	

@@ -79,11 +79,19 @@ case "$OS_NAME" in
 	WIN32) PLATFORM="win" ;;
 	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS) PLATFORM="unix" ;;
 	QNX|procnto) PLATFORM="qnx" ;;
-	MACOSX) PLATFORM="mac" ;;
+	# used to be mac. Now it is cocoa
+	MACOSX) PLATFORM="cocoa" ;;
 	BeOS) PLATFORM="beos" ;;
 esac
 
+if test "$PLATFORM" = "cocoa"; then
+	BE_PLATFORM="unix"
+else
+	BE_PLAFORN="$PLATFORM"
+fi
+
 AC_SUBST(PLATFORM)
+AC_SUBST(BE_PLATFORM)
 AC_SUBST(OS_NAME)
 
 ])

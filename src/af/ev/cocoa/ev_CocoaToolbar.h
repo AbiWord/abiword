@@ -45,7 +45,7 @@ public:
 	
 	virtual ~EV_CocoaToolbar(void);
 
-	bool toolbarEvent(_wd * wd, UT_UCSChar * pData, UT_uint32 dataLength);
+	bool toolbarEvent(/*_wd * wd,*/ UT_UCSChar * pData, UT_uint32 dataLength);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);

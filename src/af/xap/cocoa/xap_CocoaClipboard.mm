@@ -54,7 +54,7 @@ bool XAP_CocoaClipboard::addData(const char* format, void* pData, UT_sint32 iNum
 	return false;
 }
 
-bool XAP_CocoaClipboard::getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen)
+bool XAP_CocoaClipboard::getClipboardData(const char** formatAccepted, void ** ppData, UT_uint32 * pLen, const char ** szFormatFound)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
 	return false;

@@ -392,7 +392,7 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	}
 
 	// Request the appropriate XAP_CocoaFont
-	XAP_CocoaFont * cocoafont = m_pFontManager->getFont(pszFontFamily, s);	
+	const XAP_CocoaFont * cocoafont = m_pFontManager->getFont(pszFontFamily, s);	
 	if (!cocoafont)
 	{
 		// Oops!  We don't have that font here.

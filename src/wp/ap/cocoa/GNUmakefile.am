@@ -1,5 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
+## Copyright (C) 2001 Hubert Figuiere
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -26,4 +27,17 @@ INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 noinst_LIBRARIES = libWpAp_cocoa.a
 
 libWpAp_cocoa_a_SOURCES=\
-	ap_CocoaFrame.mm
+	ap_CocoaApp.mm		\
+	ap_CocoaClipboard.mm	\
+	ap_CocoaDialogFactory.mm	\
+	ap_CocoaLeftRuler.mm		\
+	ap_CocoaPrefs.mm		\
+	ap_CocoaToolbar_StyleCombo.mm	\
+	ap_CocoaToolbar_FontCombo.mm	\
+	ap_CocoaToolbar_SizeCombo.mm	\
+	ap_CocoaToolbar_ZoomCombo.mm	\
+	ap_CocoaTopRuler.mm		\
+	ap_CocoaStatusBar.mm		\
+	ap_CocoaViewListener.mm		\
+	ap_CocoaFrame.mm			\
+	ap_Cocoa_TB_CFactory.mm

@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
+INCLUDES= @GLIB_CFLAGS@ $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LIBRARIES = libXap_cocoa.a
 
@@ -27,6 +27,11 @@ libXap_cocoa_a_SOURCES=		\
 	xap_CocoaDlg_PrintPreview.mm	\
 	xap_CocoaClipboard.mm	\
 	xap_CocoaDlg_About.mm	\
+	xap_CocoaEncodingManager.mm	\
+	xap_CocoaFont.mm		\
 	xap_CocoaFontManager.mm	\
-	xap_CocoaFrame.mm
+	xap_CocoaFrame.mm		\
+	xap_CocoaModule.mm		\
+	xap_CocoaTimer.mm		\
+	xap_CocoaToolbar_Icons.mm
 

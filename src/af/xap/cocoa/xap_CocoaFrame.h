@@ -54,10 +54,11 @@ class XAP_CocoaFrame;
 	IBOutlet id menuBar;
 }
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
-- (void)initWith:(XAP_CocoaFrame *)frame;
+- (XAP_CocoaFrameController*)initWith:(XAP_CocoaFrame *)frame;
 - (NSWindow *)getWindow;
 - (NSControl *)getMainView;
 - (NSMenu *)getMenuBar;
+- (NSControl *)getStatusBar;
 @end
 
 
@@ -104,15 +105,16 @@ public:
 	virtual void                rebuildMenus(void);
     virtual void                rebuildToolbar(UT_uint32 ibar);
 	void                        _setController (XAP_CocoaFrameController * ctrl);
+	XAP_CocoaFrameController *	_getController () { return m_frameController; };
+	XAP_CocoaApp *				_getApp () { return m_pCocoaApp; };
+	virtual NSString *			_getNibName () = 0;
 protected:
-	virtual XAP_CocoaFrameController * _createFrameController () = 0;
 //	virtual NSWindow *			_createDocumentWindow() = 0;
 //	virtual NSControl *			_createStatusBarWindow() = 0;
 	virtual void				_createTopLevelWindow();
 	virtual void				_setWindowIcon() = 0;
 
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
-	
 private:
 	XAP_CocoaApp *				m_pCocoaApp;
 	EV_CocoaMenuBar *			m_pCocoaMenu;

@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -186,8 +186,8 @@ bool XAP_CocoaApp::_loadFonts()
 
 	// let it loose
 
-	if (!m_fontManager->scavengeFonts())
-		return false;
+//TODO	if (!m_fontManager->scavengeFonts())
+//		return false;
 
 	return true;
 }

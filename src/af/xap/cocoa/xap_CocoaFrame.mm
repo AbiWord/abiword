@@ -546,7 +546,7 @@ void XAP_CocoaFrame::nullUpdate() const
 void XAP_CocoaFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
-	m_frameController = _createFrameController ();
+	m_frameController = [[XAP_CocoaFrameController createFrom:this] autorelease];
 
 	NSWindow * theWindow = [m_frameController getWindow];
 	NSString * str = [[NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()] autorelease];
@@ -904,13 +904,13 @@ EV_Toolbar * XAP_CocoaFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 							   szLayout, szLanguage));
 }
 
-#if 0
 void XAP_CocoaFrame::queue_resize()
 {
-	xxx_UT_DEBUGMSG(("XAP_CocoaFrame::queue_resize\n"));	
-	gtk_widget_queue_resize(m_wTopLevelWindow);
+	UT_DEBUGMSG(("XAP_CocoaFrame::queue_resize\n"));	
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+//	gtk_widget_queue_resize(m_wTopLevelWindow);
 }
-#endif
+
 
 EV_Menu* XAP_CocoaFrame::getMainMenu()
 {
@@ -936,16 +936,16 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
  */
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame
 {
-	XAP_CocoaFrameController *obj = [XAP_CocoaFrameController alloc];
-	[obj initWith:frame];
-	return obj;
+	return [[XAP_CocoaFrameController alloc] initWith:frame];
 }
 
 
-- (void)initWith:(XAP_CocoaFrame *)frame
+- (XAP_CocoaFrameController *)initWith:(XAP_CocoaFrame *)frame
 {
+	[super initWithWindowNibName:frame->_getNibName() owner:[NSApplication sharedApplication]];
 	m_frame = frame;
 	frame->_setController (self);
+	return self;
 }
 
 - (NSWindow *)getWindow
@@ -959,10 +959,14 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	return mainView;
 }
 
-- (NSControl *)getMenuBar
+- (NSMenu *)getMenuBar
 {
 	return menuBar;
 }
 
+- (NSControl *)getStatusBar
+{
+	return statusBar;
+}
 
 @end

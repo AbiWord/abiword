@@ -159,7 +159,7 @@ if test "$PLATFORM" = "unix"; then
         AC_SUBST(GMODULE_CFLAGS)
         AC_SUBST(GMODULE_LIBS)
 
-elif test "$PLATFORM" = "mac"; then
+elif test "$PLATFORM" = "mac" -o "$PLATFORM" = "cocoa"; then
 	ABI_GLIB12_OPT(0,yes)
 
 	if [ test "x$abi_glib_opt" = "xno" ]; then

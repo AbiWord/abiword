@@ -54,7 +54,7 @@ UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p)
 
 
 
-void UT_stopCocoaTimer (UT_uint32 timer)
+void XAP_stopCocoaTimer (UT_uint32 timer)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 /*

@@ -22,7 +22,7 @@
 #define XAP_COCOADIALOG_ABOUT_H
 
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include "xap_Dlg_About.h"
 #include "xap_CocoaFrame.h"

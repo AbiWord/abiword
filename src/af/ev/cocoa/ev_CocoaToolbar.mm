@@ -259,17 +259,17 @@ EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCoc
 	m_pCocoaApp = pCocoaApp;
 	m_pCocoaFrame = pCocoaFrame;
 	m_pViewListener = 0;
-	m_wToolbar = 0;
+//	m_wToolbar = 0;
 	m_lid = 0;							// view listener id
 }
 
 EV_CocoaToolbar::~EV_CocoaToolbar(void)
 {
-	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
+//	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 	_releaseListener();
 }
 
-bool EV_CocoaToolbar::toolbarEvent(_wd * wd,
+bool EV_CocoaToolbar::toolbarEvent(/* _wd * wd,*/
 									 UT_UCSChar * pData,
 									 UT_uint32 dataLength)
 
@@ -339,6 +339,9 @@ bool EV_CocoaToolbar::toolbarEvent(_wd * wd,
  */
 UT_sint32 EV_CocoaToolbar::destroy(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	return 0;
+#if 0
 	GtkWidget * wVBox = m_pCocoaFrame->getVBoxWidget();
 	UT_sint32  pos = 0;
 //
@@ -372,6 +375,7 @@ UT_sint32 EV_CocoaToolbar::destroy(void)
 //
 	gtk_widget_destroy(m_wHandleBox);
 	return pos;
+#endif
 }
 
 /*!
@@ -380,6 +384,8 @@ UT_sint32 EV_CocoaToolbar::destroy(void)
  */
 void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+#if 0
   //
   // Build the toolbar, place it in a handlebox at an arbitary place on the 
   // the frame.
@@ -392,11 +398,15 @@ void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
 //
 	AV_View * pView = getFrame()->getCurrentView();
 	bindListenerToView(pView);
+#endif
 }
 
 
 bool EV_CocoaToolbar::synthesize(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	return false;
+#if 0
 	// create a GTK toolbar from the info provided.
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
@@ -772,6 +782,7 @@ bool EV_CocoaToolbar::synthesize(void)
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
 
 	return true;
+#endif
 }
 
 void EV_CocoaToolbar::_releaseListener(void)
@@ -800,6 +811,10 @@ bool EV_CocoaToolbar::bindListenerToView(AV_View * pView)
 
 bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	return false;
+#if 0
+
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
 	
@@ -936,6 +951,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	}
 
 	return true;
+#endif
 }
 
 XAP_CocoaApp * EV_CocoaToolbar::getApp(void)
@@ -950,14 +966,22 @@ XAP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 
 void EV_CocoaToolbar::show(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+#if 0
+
 	if (m_wToolbar)
 		gtk_widget_show (m_wToolbar->parent);
+#endif
 }
 
 void EV_CocoaToolbar::hide(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+#if 0
+
 	if (m_wToolbar)
 		gtk_widget_hide (m_wToolbar->parent);
+#endif
 }
 
 /*!
@@ -967,6 +991,10 @@ void EV_CocoaToolbar::hide(void)
  */
 bool EV_CocoaToolbar::repopulateStyles(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	return false;
+#if 0
+
 //
 // First off find the Styles combobox in a toolbar somewhere
 //
@@ -1027,6 +1055,7 @@ bool EV_CocoaToolbar::repopulateStyles(void)
 // I think we've finished!
 //
 	return true;
+#endif
 }
 
 
