@@ -53,6 +53,7 @@
 #include "xap_Frame.h"
 #include "xap_App.h"
 #include "xap_Prefs.h"
+#include "ap_Prefs.h"
 #include "ut_units.h"
 #include "ut_string_class.h"
 #include "ut_sleep.h"
@@ -334,61 +335,78 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 
 UT_Error PD_Document::newDocument(void)
 {
-  // the locally installed normal.awt (per-user basis)
-  UT_String users_normal_awt (XAP_App::getApp()->getUserPrivateDirectory());
-  users_normal_awt += "/templates/normal.awt";
-  // the globally installed normal.awt file
-  UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
-  global_normal_awt += "/templates/normal.awt";
+	// the locally installed normal.awt (per-user basis)
+	UT_String users_normal_awt (XAP_App::getApp()->getUserPrivateDirectory());
+	users_normal_awt += "/templates/normal.awt";
+	// the globally installed normal.awt file
+	UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
+	global_normal_awt += "/templates/normal.awt";
 
-  if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
+	if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
     {
-      if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
-	{
-	  m_pPieceTable = new pt_PieceTable(this);
-	  if (!m_pPieceTable)
-	    {
-	      return UT_NOPIECETABLE;
-	    }
+		if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
+		{
+			m_pPieceTable = new pt_PieceTable(this);
+			if (!m_pPieceTable)
+			{
+				return UT_NOPIECETABLE;
+			}
 
-	  m_pPieceTable->setPieceTableState(PTS_Loading);
+			m_pPieceTable->setPieceTableState(PTS_Loading);
 
-	  // add just enough structure to empty document so we can edit
+			// add just enough structure to empty document so we can edit
+			appendStrux(PTX_Section,NULL);
+			appendStrux(PTX_Block, NULL);
 
-	  appendStrux(PTX_Section,NULL);
-	  appendStrux(PTX_Block, NULL);
+			// set standard document properties, such as dtd, etc.
+			// this also initializes m_indexAP
+			setAttrProp(NULL);
 
-	  // what we want to do here is to set the default language
-	  // that we're editing in
+			// set dominant direction from preferences
+			const XML_Char r[] = "rtl";
+			const XML_Char l[] = "ltr";
+			const XML_Char p[] = "dom-dir";
+			const XML_Char * props[3] = {p,l,NULL};
 
-	  const XML_Char * doc_locale = NULL;
-	  if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
-	    {
-	      const XML_Char * props[3];
-	      props[0] = "lang";
-	      props[1] = doc_locale;
-	      props[2] = 0;
+			bool bRTL = false;
+			XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&bRTL);
 
-	      // insert a format mark since we're not putting anything inside of the block
-	      appendFmt((const XML_Char **)props);
-	      appendFmtMark () ;
-	      UT_DEBUGMSG(("DOM: new document set lang to %s\n", doc_locale));
-	    }
+			if(bRTL)
+				props[1] = r;
 
-	  m_pPieceTable->setPieceTableState(PTS_Editing);
-	}
-      else
-	{
-	}
+			setProperties(props);
+
+			// what we want to do here is to set the default language
+			// that we're editing in
+
+			const XML_Char * doc_locale = NULL;
+			if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
+			{
+				const XML_Char * props[3];
+				props[0] = "lang";
+				props[1] = doc_locale;
+				props[2] = 0;
+
+				// insert a format mark since we're not putting anything inside of the block
+				appendFmt((const XML_Char **)props);
+				appendFmtMark () ;
+				UT_DEBUGMSG(("DOM: new document set lang to %s\n", doc_locale));
+			}
+
+			m_pPieceTable->setPieceTableState(PTS_Editing);
+		}
+		else
+		{
+		}
     }
 
-  // set the default page size from preferences, regardless of template values
-  setDefaultPageSize();
+	// set the default page size from preferences, regardless of template values
+	setDefaultPageSize();
 
-  // mark the document as not-dirty
-  _setClean();
+	// mark the document as not-dirty
+	_setClean();
 
-  return UT_OK;
+	return UT_OK;
 }
 
 UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
@@ -2844,13 +2862,16 @@ const PP_AttrProp * PD_Document::getAttrProp() const
 
 bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 {
-	// this method can only be used while loading ...
+	// this method can only be used while loading  ...
 	if(m_pPieceTable->getPieceTableState() != PTS_Loading)
 	{
 		UT_return_val_if_fail(0,false);
 	}
 
-	return VARSET.storeAP(ppAttr, &m_indexAP);
+	bool bRet = VARSET.storeAP(ppAttr, &m_indexAP);
+
+	if(!bRet)
+		return false;
 
 	const XML_Char * attr[21];
 	attr[20] = NULL;
@@ -2890,7 +2911,7 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	else
 		attr[18] = NULL;
 
-	setAttributes(attr);
+	return setAttributes(attr);
 }
 
 bool PD_Document::setAttributes(const XML_Char ** ppAttr)
