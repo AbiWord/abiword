@@ -73,7 +73,8 @@ filter_result MouseFilter::Filter(BMessage *message, BHandler **target) {
 
 ev_BeOSMouse::ev_BeOSMouse(EV_EditEventMapper * pEEM) : EV_Mouse(pEEM)
 {
-	; //Do nothing yet ...
+	m_clickState = 0;
+	m_contextState = 0;
 }
 
 bool ev_BeOSMouse::synthesize(XAP_BeOSApp * pBeOSApp, 
@@ -107,8 +108,8 @@ void ev_BeOSMouse::mouseUp(AV_View* pView, BMessage *msg)
 	msg->FindInt32("buttons", &buttons);
 	msg->FindInt32("modifiers", &mod);
 	msg->FindPoint("where", &pt);
-
-	//printf("MOUSE: Up \n");
+	
+//	UT_DEBUGMSG(("mouseUp: [x=%f y=%f]\n",pt.x, pt.y));
 
 	if (mod & B_SHIFT_KEY)
 		ems |= EV_EMS_SHIFT;
@@ -171,7 +172,7 @@ void ev_BeOSMouse::mouseClick(AV_View* pView, BMessage *msg)
 	msg->FindInt32("modifiers", &mod);
 	msg->FindPoint("where", &pt);
 
-	//printf("MOUSE: Click \n");
+//	UT_DEBUGMSG(("mouseClick: [x=%f y=%f]\n",pt.x, pt.y));
 
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON1;
@@ -187,6 +188,7 @@ void ev_BeOSMouse::mouseClick(AV_View* pView, BMessage *msg)
 	if (mod & B_OPTION_KEY)
 		state |= EV_EMS_ALT;
 
+	mop = 0;
 	if (clicks == 1)
 		mop = EV_EMO_SINGLECLICK;
 	else if (clicks == 2)
@@ -243,11 +245,9 @@ void ev_BeOSMouse::mouseMotion(AV_View* pView, BMessage *msg)
 	msg->FindInt32("clicks", &clicks);
 	msg->FindInt32("buttons", &buttons);
 	msg->FindInt32("modifiers", &mod);
-	//Note with R4 the where became a screen point, use view_where
-	//msg->FindPoint("where", &pt);
 	msg->FindPoint("be:view_where", &pt);
 
-	//printf("MOUSE: Move \n");
+//	UT_DEBUGMSG(("mouseMotion: [x=%f y=%f]\n",pt.x, pt.y));
 	
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON1;

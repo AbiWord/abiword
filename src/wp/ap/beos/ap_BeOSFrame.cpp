@@ -202,9 +202,16 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
-	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
-	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
+	{
+		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+			((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
+			((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+	}                      
+
+        if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
+		((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);  
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
@@ -734,6 +741,19 @@ void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 		pToolbar->show();
 	else	// turning toolbar off
 		pToolbar->hide();
+}
+
+void AP_BeOSFrame::toggleStatusBar(bool bStatusBarOn)
+{
+        UT_DEBUGMSG(("AP_BeOSFrame::toggleStatusBar %d\n", bStatusBarOn));
+
+        AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+        UT_ASSERT(pFrameData);
+
+        if (bStatusBarOn)
+                pFrameData->m_pStatusBar->show();
+        else    // turning status bar off
+                pFrameData->m_pStatusBar->hide();
 }
 
 void AP_BeOSFrame::toggleRuler(bool bRulerOn)

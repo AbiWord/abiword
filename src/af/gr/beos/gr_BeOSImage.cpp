@@ -35,10 +35,10 @@ GR_BeOSImage::GR_BeOSImage(const char* szName)
 	m_image = NULL;
 	
 	if (szName) {
-	  m_szName = szName;
+	  setName(szName);
 	}
 	else {
-	  m_szName = "BeOSImage";
+	  setName("BeOSImage");
 	}
 }
 
@@ -50,11 +50,11 @@ GR_BeOSImage::~GR_BeOSImage() {
 }
 
 UT_sint32 GR_BeOSImage::getDisplayWidth(void) const {
-	return (m_image) ? m_image->Bounds().Width() : 0;
+	return (m_image) ? ((UT_sint32)m_image->Bounds().Width()) : 0;
 }
 
 UT_sint32 GR_BeOSImage::getDisplayHeight(void) const {
-	return (m_image) ? m_image->Bounds().Height() : 0;
+	return (m_image) ? ((UT_sint32)m_image->Bounds().Height()) : 0;
 }
 
 bool	GR_BeOSImage::convertToBuffer(UT_ByteBuf** ppBB) const {

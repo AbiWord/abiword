@@ -51,6 +51,7 @@ public:
 	virtual void				toggleTopRuler(bool bRulerOn);
 	virtual void				toggleLeftRuler(bool bRulerOn);
 	virtual void 				toggleBar(UT_uint32 iBarNb, bool bToolBarOn);
+	virtual void 				toggleStatusBar(bool bStatusBarOn);
 	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
 protected:
