@@ -83,8 +83,8 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 + (XAP_CocoaDlg_MessageBoxController *)loadFromNibWithButtons:(XAP_Dialog_MessageBox::tButtons)buttons
 {
-	m_buttons = buttons;
 	XAP_CocoaDlg_MessageBoxController * box = [[XAP_CocoaDlg_MessageBoxController alloc] initWithWindowNibName:@"xap_CocoaDlg_MessageBox"];
+	[box setButtons:buttons];
 	return [box autorelease];
 }
 
@@ -126,6 +126,13 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }
+
+
+- (void)setButtons:(XAP_Dialog_MessageBox::tButtons)buttons
+{
+	m_buttons = buttons;
+}
+
 
 /*
 	Set owner (XAP class) so that IBAction can do something...

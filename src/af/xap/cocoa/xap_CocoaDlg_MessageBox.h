@@ -42,6 +42,7 @@ class XAP_CocoaDialog_MessageBox;
 }
 + (XAP_CocoaDlg_MessageBoxController *)loadFromNibWithButtons:(XAP_Dialog_MessageBox::tButtons)buttons;
 - (void)windowDidLoad;
+- (void)setButtons:(XAP_Dialog_MessageBox::tButtons)buttons;
 
 - (void)setXAPOwner:(XAP_CocoaDialog_MessageBox *)owner;
 - (void)setOkBtnLabel:(NSString *)label;
