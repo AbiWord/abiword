@@ -1479,10 +1479,13 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			if (Args->m_expProps)
 				conv.setExpProps (Args->m_expProps);
 
-			PS_GraphicsFactory printFactory (Args->m_sPrintTo);
+			PS_Graphics pGraphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
+								   Args->m_sPrintTo, 
+								   pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
+								   (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
 
 			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, printFactory);
+			conv.print (Args->m_sFile, &pGraphics);
 	    }
 		else
 	    {

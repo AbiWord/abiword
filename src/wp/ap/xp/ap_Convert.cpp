@@ -113,15 +113,17 @@ class Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 public:
 
 	explicit Print_MailMerge_Listener (PD_Document * pd,
-									   GR_GraphicsFactory & factory,
+									   GR_Graphics * pGraphics,
 									   const UT_UTF8String & szFile)
 		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pd),
-		  m_szFile(szFile), m_factory(factory)
+		  m_szFile(szFile), m_pGraphics(pGraphics), m_bPrintedFirstPage(false), m_iter(1)
 		{
 		}
 
 	virtual ~Print_MailMerge_Listener ()
 		{
+			if (m_bPrintedFirstPage)
+				m_pGraphics->endPrint();
 		}
 		
 	virtual PD_Document* getMergeDocument () const
@@ -131,26 +133,38 @@ public:
 	
 	virtual bool fireUpdate () 
 		{
-			GR_Graphics *pGraphics = m_factory.getGraphics();
-
-			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,pGraphics);
+			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,m_pGraphics);
 			FV_View printView(XAP_App::getApp(),0,pDocLayout);
 			pDocLayout->setView (&printView);
 			pDocLayout->fillLayouts();
 			pDocLayout->formatAll();
 			
 #ifdef XP_UNIX_TARGET_GTK
-			PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
-			psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-			psGr->setPageSize(printView.getPageSize().getPredefinedName());
+			if (!m_bPrintedFirstPage) {
+				PS_Graphics *psGr = static_cast<PS_Graphics*>(m_pGraphics);
+				psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+				psGr->setPageSize(printView.getPageSize().getPredefinedName());
 #endif
-			
-			s_actuallyPrint (m_doc, pGraphics, 
-							 &printView, m_szFile.utf8_str(), 
-							 1, true, 
-							 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-							 pDocLayout->countPages(), 1);
-			
+				
+				if (m_pGraphics->startPrint())
+					m_bPrintedFirstPage = true;
+			}
+
+			if (m_bPrintedFirstPage) {
+
+				dg_DrawArgs da;
+				memset(&da, 0, sizeof(da));
+				da.pG = m_pGraphics;
+				
+				for (UT_uint32 k = 1; (k <= pDocLayout->countPages()); k++)
+				{
+					UT_uint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
+					m_pGraphics->m_iRasterPosition = (k-1)*iHeight;
+					m_pGraphics->startPage(m_szFile.utf8_str(), m_iter++, printView.getPageSize().isPortrait(), pDocLayout->getWidth(), iHeight);
+					printView.draw(k-1, &da);
+				}
+			}
+
 			DELETEP(pDocLayout);
 			
 			// sure, we'll process more data if it exists
@@ -161,7 +175,10 @@ private:
 	PD_Document *m_doc;
 	UT_UTF8String m_szFile;
 
-	GR_GraphicsFactory & m_factory;
+	GR_Graphics * m_pGraphics;
+
+	bool m_bPrintedFirstPage;
+	UT_uint32 m_iter;
 };
 
 static void handleMerge(const char * szMailMergeFile,
@@ -334,20 +351,18 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 	printf ("Conversion to PNG failed\n");
 }
 
-void AP_Convert::print(const char * szFile, GR_GraphicsFactory & pFactory)
+void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
 	pDoc->readFromFile(szFile, IEFT_Unknown, m_impProps.utf8_str());
 
 	if (m_mergeSource.size()){
-		IE_MailMerge::IE_MailMerge_Listener * listener = new Print_MailMerge_Listener(pDoc, pFactory, szFile);
+		IE_MailMerge::IE_MailMerge_Listener * listener = new Print_MailMerge_Listener(pDoc, pGraphics, szFile);
 		
 		handleMerge (m_mergeSource.utf8_str(), *listener);
 		DELETEP(listener);
 	} else {
-							 
-		GR_Graphics *pGraphics = pFactory.getGraphics ();
 		
 		// create a new layout and view object for the doc
 		FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
@@ -369,7 +384,6 @@ void AP_Convert::print(const char * szFile, GR_GraphicsFactory & pFactory)
 						 pDocLayout->countPages(), 1);
 		
 		DELETEP(pDocLayout);
-		DELETEP(pGraphics);
 	}
 
 	UNREFP(pDoc);
