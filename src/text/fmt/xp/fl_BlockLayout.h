@@ -148,6 +148,7 @@ public:
 	void clearScreen(DG_Graphics*);
 
 	void dump();
+	void align();
 
 	/*
 		Blocks are stored in a linked list which contains all of the blocks in
@@ -161,7 +162,6 @@ protected:
 	void _addSlice(fp_BlockSlice*);
 	void _createNewSlice();
 	void _createRuns();
-	void _align();
 	void					_purgeLayout(UT_Bool bVisible);
 
 	int						m_bNeedsReformat;

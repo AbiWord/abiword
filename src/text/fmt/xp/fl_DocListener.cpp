@@ -224,566 +224,588 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_GlobMarker:
+	{
+		UT_ASSERT(sfh == 0);							// globs are not strux-relative
+		const PX_ChangeRecord_Glob * pcrg = static_cast<const PX_ChangeRecord_Glob *> (pcr);
+		switch (pcrg->getFlags())
 		{
-			UT_ASSERT(sfh == 0);							// globs are not strux-relative
-			const PX_ChangeRecord_Glob * pcrg = static_cast<const PX_ChangeRecord_Glob *> (pcr);
-			switch (pcrg->getFlags())
-			{
-			default:
-			case PX_ChangeRecord_Glob::PXF_Null:			// not a valid glob type
-				UT_ASSERT(0);
-				return UT_FALSE;
+		default:
+		case PX_ChangeRecord_Glob::PXF_Null:			// not a valid glob type
+			UT_ASSERT(0);
+			return UT_FALSE;
 				
-			case PX_ChangeRecord_Glob::PXF_MultiStepStart:	// TODO add code to inhibit screen updates
-			case PX_ChangeRecord_Glob::PXF_MultiStepEnd:	// TODO until we get the end.
-				return UT_TRUE;
+		case PX_ChangeRecord_Glob::PXF_MultiStepStart:	// TODO add code to inhibit screen updates
+		case PX_ChangeRecord_Glob::PXF_MultiStepEnd:	// TODO until we get the end.
+			return UT_TRUE;
 				
-			case PX_ChangeRecord_Glob::PXF_UserAtomicStart:	// TODO decide what (if anything) we need
-			case PX_ChangeRecord_Glob::PXF_UserAtomicEnd:	// TODO to do here.
-				return UT_TRUE;
-			}
+		case PX_ChangeRecord_Glob::PXF_UserAtomicStart:	// TODO decide what (if anything) we need
+		case PX_ChangeRecord_Glob::PXF_UserAtomicEnd:	// TODO to do here.
+			return UT_TRUE;
 		}
-		break;
+	}
+	break;
 			
 	case PX_ChangeRecord::PXT_InsertSpan:
+	{
+		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		switch (pL->getType())
 		{
-			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+		case PTX_Block:
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			FV_View* pView = m_pLayout->m_pView;
+			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
+			UT_uint32 len = pcrs->getLength();
+			UT_ASSERT(len>0);
 
-			fl_Layout * pL = (fl_Layout *)sfh;
-			switch (pL->getType())
-			{
-			case PTX_Block:
-				{
-					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-					FV_View* pView = m_pLayout->m_pView;
-					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
-					UT_uint32 len = pcrs->getLength();
-					UT_ASSERT(len>0);
+			pBL->m_gbCharWidths.ins(blockOffset, len);
 
-					pBL->m_gbCharWidths.ins(blockOffset, len);
-
-					AV_ChangeMask mask = AV_CHG_TYPING;
+			AV_ChangeMask mask = AV_CHG_TYPING;
 	
-					fp_Run* pRun = pBL->m_pFirstRun;
-					/*
-						Having fixed the char widths array, we need to update 
-						all the run offsets.  We call each run individually to 
-						update its offsets.  It returns true if its size changed, 
-						thus requiring us to remeasure it.
-					*/
-					while (pRun)
-					{					
-						if (pRun->ins(blockOffset, len, pcrs->getIndexAP()))
-						{
-							if (pcrs->isDifferentFmt() & (PT_Diff_Left|PT_Diff_Right))
-							{
-								// TODO break up this section to do a left- and right-split
-								// TODO seperately.
-								/*
-									The format changed too, so this needs to 
-									wind up in its own run.
-
-									Since the pRun->ins() already widened it, 
-									we just need to split it up.
-									
-									Note that split() calls calcWidths for us.
-								*/
-
-								mask |= AV_CHG_FMTCHAR;
-
-								UT_Bool bRight = UT_FALSE;
-
-								if (blockOffset+len < pRun->m_iOffsetFirst+pRun->m_iLen)
-								{
-									// first split off the right part
-									bRight = UT_TRUE;
-									pRun->split(blockOffset+len);
-								}
-
-								if (blockOffset > pRun->m_iOffsetFirst)
-								{
-									// split off the left part
-									pRun->split(blockOffset);
-
-									// skip over the left part
-									pRun = pRun->getNext();
-								}
-
-								// pick up new formatting for this run
-								pRun->clearScreen();
-								pRun->lookupProperties();
-								pRun->calcWidths(&pBL->m_gbCharWidths);
-
-								// skip over the right part
-								if (bRight)
-									pRun = pRun->getNext();
-
-								// all done, so clear any temp formatting
-								if (pView && pView->_isPointAP())
-								{
-									UT_ASSERT(pcrs->getIndexAP()==pView->_getPointAP());
-									pView->_clearPointAP(UT_FALSE);
-								}
-							}
-							else
-							{
-								pRun->calcWidths(&pBL->m_gbCharWidths);
-							}
-						}
-
-						pRun = pRun->getNext();
-					}
-
-					pBL->minor_reformat();
-					
-					pBL->fixColumns();
-					
-					// TODO the following draw should not be necessary.
-					pBL->draw(m_pLayout->getGraphics());
-
-					// in case anything else moved
-					m_pLayout->reformat();
-
-					if (pView)
-					{
-						pView->_setPoint(pcr->getPosition()+len);
-					}
-
-					pView->notifyListeners(mask);
-				}
-				return UT_TRUE;
-					
-			case PTX_Section:
-			case PTX_ColumnSet:
-			case PTX_Column:
-			default:
-				UT_ASSERT((0));
-				return UT_FALSE;
-			}
-		}
-		break;
-
-	case PX_ChangeRecord::PXT_DeleteSpan:
-		{
-			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
-
-			fl_Layout * pL = (fl_Layout *)sfh;
-			switch (pL->getType())
-			{
-			case PTX_Block:
+			fp_Run* pRun = pBL->m_pFirstRun;
+			/*
+			  Having fixed the char widths array, we need to update 
+			  all the run offsets.  We call each run individually to 
+			  update its offsets.  It returns true if its size changed, 
+			  thus requiring us to remeasure it.
+			*/
+			while (pRun)
+			{					
+				if (pRun->ins(blockOffset, len, pcrs->getIndexAP()))
 				{
-					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
-					UT_uint32 len = pcrs->getLength();
-					UT_ASSERT(len>0);
-
-					pBL->m_gbCharWidths.del(blockOffset, len);
-	
-					fp_Run* pRun = pBL->m_pFirstRun;
-					/*
-						Having fixed the char widths array, we need to update 
-						all the run offsets.  We call each run individually to 
-						update its offsets.  It returns true if its size changed, 
-						thus requiring us to remeasure it.
-					*/
-					while (pRun)
-					{					
-						if (pRun->del(blockOffset, len))
-							pRun->calcWidths(&pBL->m_gbCharWidths);
-
-						if (pRun->getLength() == 0)
-						{
-							// remove empty runs from their line
-							fp_Line* pLine = pRun->getLine();
-							UT_ASSERT(pLine);
-
-							pLine->removeRun(pRun);
-
-							fp_Run* pNuke = pRun;
-							fp_Run* pPrev = pNuke->getPrev();
-
-							// sneak in our iterator here  :-)
-							pRun = pNuke->getNext();
-
-							// detach from run sequence
-							if (pRun)
-								pRun->m_pPrev = pPrev;
-
-							if (pPrev)
-								pPrev->m_pNext = pRun;
-
-							if (pBL->m_pFirstRun == pNuke)
-								pBL->m_pFirstRun = pRun;
-							
-							// delete it
-							delete pNuke;
-						}
-						else
-						{
-							pRun = pRun->getNext();
-						}
-					}
-
-					pBL->minor_reformat();
-
-					pBL->fixColumns();
-					
-					// in case anything else moved
-					m_pLayout->reformat();
-
-					FV_View* pView = m_pLayout->m_pView;
-					if (pView)
+					if (pcrs->isDifferentFmt() & (PT_Diff_Left|PT_Diff_Right))
 					{
-						pView->_resetSelection();
-						pView->_setPoint(pcr->getPosition());
-						pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
-					}
-				}
-				return UT_TRUE;
-					
-			case PTX_Section:
-			case PTX_ColumnSet:
-			case PTX_Column:
-			default:
-				UT_ASSERT((0));
-				return UT_FALSE;
-			}
-		}
-		break;
-
-	case PX_ChangeRecord::PXT_ChangeSpan:
-		{
-			const PX_ChangeRecord_SpanChange * pcrsc = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
-
-			fl_Layout * pL = (fl_Layout *)sfh;
-			switch (pL->getType())
-			{
-			case PTX_Block:
-				{
-					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
-					UT_uint32 len = pcrsc->getLength();
-					UT_ASSERT(len > 0);
-					
-					if (len > 0)
-					{
+						// TODO break up this section to do a left- and right-split
+						// TODO seperately.
 						/*
-							The idea here is to invalidate the charwidths for 
-							the entire span whose formatting has changed.
-							
-							We may need to split runs at one or both ends.
+						  The format changed too, so this needs to 
+						  wind up in its own run.
+
+						  Since the pRun->ins() already widened it, 
+						  we just need to split it up.
+									
+						  Note that split() calls calcWidths for us.
 						*/
-						fp_Run* pRun = pBL->m_pFirstRun;
-						while (pRun)
+
+						mask |= AV_CHG_FMTCHAR;
+
+						UT_Bool bRight = UT_FALSE;
+
+						if (blockOffset+len < pRun->m_iOffsetFirst+pRun->m_iLen)
 						{
-							UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
-							if ((iWhere == FP_RUN_INSIDE) && 
-								((blockOffset+len) > pRun->m_iOffsetFirst))
-							{
-								// split at right end of span
-								pRun->split(blockOffset+len);
-							}
+							// first split off the right part
+							bRight = UT_TRUE;
+							pRun->split(blockOffset+len);
+						}
 
-							iWhere = pRun->containsOffset(blockOffset);
-							if ((iWhere == FP_RUN_INSIDE) && 
-								(blockOffset > pRun->m_iOffsetFirst))
-							{
-								// split at left end of span
-								pRun->split(blockOffset);
-							}
+						if (blockOffset > pRun->m_iOffsetFirst)
+						{
+							// split off the left part
+							pRun->split(blockOffset);
 
-							if ((pRun->m_iOffsetFirst >= blockOffset) && 
-								(pRun->m_iOffsetFirst < blockOffset + len))
-							{
-								pRun->clearScreen();
-								pRun->lookupProperties();
-								pRun->calcWidths(&pBL->m_gbCharWidths);
-							}
-
+							// skip over the left part
 							pRun = pRun->getNext();
 						}
 
-						pBL->minor_reformat();
+						// pick up new formatting for this run
+						pRun->clearScreen();
+						pRun->lookupProperties();
+						pRun->calcWidths(&pBL->m_gbCharWidths);
 
-						pBL->fixColumns();
-						
-						// TODO the following draw should not be necessary.
-						pBL->draw(m_pLayout->getGraphics());
+						// skip over the right part
+						if (bRight)
+							pRun = pRun->getNext();
 
-						// in case anything else moved
-						m_pLayout->reformat();
-
-						FV_View* pView = m_pLayout->m_pView;
-						if (pView)
+						// all done, so clear any temp formatting
+						if (pView && pView->_isPointAP())
 						{
-							pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
+							UT_ASSERT(pcrs->getIndexAP()==pView->_getPointAP());
+							pView->_clearPointAP(UT_FALSE);
 						}
 					}
 					else
 					{
-						UT_ASSERT(0);
+						pRun->calcWidths(&pBL->m_gbCharWidths);
 					}
 				}
-				return UT_TRUE;
+
+				pRun = pRun->getNext();
+			}
+
+			pBL->minor_reformat();
 					
-			case PTX_Section:
-			case PTX_ColumnSet:
-			case PTX_Column:
-			default:
-				UT_ASSERT((0));
-				return UT_FALSE;
+			pBL->fixColumns();
+					
+			// TODO the following draw should not be necessary.
+			pBL->draw(m_pLayout->getGraphics());
+
+			// in case anything else moved
+			m_pLayout->reformat();
+
+			if (pView)
+			{
+				pView->_setPoint(pcr->getPosition()+len);
+			}
+
+			pView->notifyListeners(mask);
+		}
+		return UT_TRUE;
+					
+		case PTX_Section:
+		case PTX_ColumnSet:
+		case PTX_Column:
+		default:
+			UT_ASSERT((0));
+			return UT_FALSE;
+		}
+	}
+	break;
+
+	case PX_ChangeRecord::PXT_DeleteSpan:
+	{
+		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		switch (pL->getType())
+		{
+		case PTX_Block:
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
+			UT_uint32 len = pcrs->getLength();
+			UT_ASSERT(len>0);
+
+			pBL->m_gbCharWidths.del(blockOffset, len);
+	
+			fp_Run* pRun = pBL->m_pFirstRun;
+			/*
+			  Having fixed the char widths array, we need to update 
+			  all the run offsets.  We call each run individually to 
+			  update its offsets.  It returns true if its size changed, 
+			  thus requiring us to remeasure it.
+			*/
+			while (pRun)
+			{					
+				if (pRun->del(blockOffset, len))
+					pRun->calcWidths(&pBL->m_gbCharWidths);
+
+				if (pRun->getLength() == 0)
+				{
+					// remove empty runs from their line
+					fp_Line* pLine = pRun->getLine();
+					UT_ASSERT(pLine);
+
+					pLine->removeRun(pRun);
+
+					fp_Run* pNuke = pRun;
+					fp_Run* pPrev = pNuke->getPrev();
+
+					// sneak in our iterator here  :-)
+					pRun = pNuke->getNext();
+
+					// detach from run sequence
+					if (pRun)
+						pRun->m_pPrev = pPrev;
+
+					if (pPrev)
+						pPrev->m_pNext = pRun;
+
+					if (pBL->m_pFirstRun == pNuke)
+						pBL->m_pFirstRun = pRun;
+							
+					// delete it
+					delete pNuke;
+				}
+				else
+				{
+					pRun = pRun->getNext();
+				}
+			}
+
+			pBL->minor_reformat();
+
+			pBL->fixColumns();
+					
+			// in case anything else moved
+			m_pLayout->reformat();
+
+			FV_View* pView = m_pLayout->m_pView;
+			if (pView)
+			{
+				pView->_resetSelection();
+				pView->_setPoint(pcr->getPosition());
+				pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 			}
 		}
-		break;
+		return UT_TRUE;
+					
+		case PTX_Section:
+		case PTX_ColumnSet:
+		case PTX_Column:
+		default:
+			UT_ASSERT((0));
+			return UT_FALSE;
+		}
+	}
+	break;
 
-	case PX_ChangeRecord::PXT_TempSpanFmt:
+	case PX_ChangeRecord::PXT_ChangeSpan:
+	{
+		const PX_ChangeRecord_SpanChange * pcrsc = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		switch (pL->getType())
 		{
-			const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
-			if (pcrTSF->getEnabled())
+		case PTX_Block:
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
+			UT_uint32 len = pcrsc->getLength();
+			UT_ASSERT(len > 0);
+					
+			if (len > 0)
 			{
 				/*
-				  This is just a temporary change at the insertion 
-				  point.  It won't take effect unless something's 
-				  typed -- but it will cause the toolbars and etc.
-				  to be updated.
+				  The idea here is to invalidate the charwidths for 
+				  the entire span whose formatting has changed.
+							
+				  We may need to split runs at one or both ends.
 				*/
+				fp_Run* pRun = pBL->m_pFirstRun;
+				while (pRun)
+				{
+					UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
+					if ((iWhere == FP_RUN_INSIDE) && 
+						((blockOffset+len) > pRun->m_iOffsetFirst))
+					{
+						// split at right end of span
+						pRun->split(blockOffset+len);
+					}
+
+					iWhere = pRun->containsOffset(blockOffset);
+					if ((iWhere == FP_RUN_INSIDE) && 
+						(blockOffset > pRun->m_iOffsetFirst))
+					{
+						// split at left end of span
+						pRun->split(blockOffset);
+					}
+
+					if ((pRun->m_iOffsetFirst >= blockOffset) && 
+						(pRun->m_iOffsetFirst < blockOffset + len))
+					{
+						pRun->clearScreen();
+						pRun->lookupProperties();
+						pRun->calcWidths(&pBL->m_gbCharWidths);
+					}
+
+					pRun = pRun->getNext();
+				}
+
+				pBL->minor_reformat();
+
+				pBL->fixColumns();
+						
+				// TODO the following draw should not be necessary.
+				pBL->draw(m_pLayout->getGraphics());
+
+				// in case anything else moved
+				m_pLayout->reformat();
 
 				FV_View* pView = m_pLayout->m_pView;
 				if (pView)
 				{
-					UT_ASSERT(pView->isSelectionEmpty());
-					pView->_setPoint(pcrTSF->getPosition());
-					pView->_setPointAP(pcrTSF->getIndexAP());
 					pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 				}
 			}
 			else
 			{
-				// we have been asked to turn off the temporary change at the
-				// insertion point.  we need to update any toolbars.
+				UT_ASSERT(0);
+			}
+		}
+		return UT_TRUE;
+					
+		case PTX_Section:
+		case PTX_ColumnSet:
+		case PTX_Column:
+		default:
+			UT_ASSERT((0));
+			return UT_FALSE;
+		}
+	}
+	break;
+
+	case PX_ChangeRecord::PXT_TempSpanFmt:
+	{
+		const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
+		if (pcrTSF->getEnabled())
+		{
+			/*
+			  This is just a temporary change at the insertion 
+			  point.  It won't take effect unless something's 
+			  typed -- but it will cause the toolbars and etc.
+			  to be updated.
+			*/
+
+			FV_View* pView = m_pLayout->m_pView;
+			if (pView)
+			{
+				UT_ASSERT(pView->isSelectionEmpty());
+				pView->_setPoint(pcrTSF->getPosition());
+				pView->_setPointAP(pcrTSF->getIndexAP());
+				pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
+			}
+		}
+		else
+		{
+			// we have been asked to turn off the temporary change at the
+			// insertion point.  we need to update any toolbars.
+
+			FV_View* pView = m_pLayout->m_pView;
+			if (pView)
+			{
+				UT_ASSERT(pView->isSelectionEmpty());
+				// TODO decide if we need to call "pView->_setPoint(pcrTSF->getPosition());"
+				// TODO and if so, add AV_CHG_TYPING to the following notifyListeners().
+				pView->_clearPointAP(UT_FALSE);
+				pView->notifyListeners(AV_CHG_FMTCHAR);
+			}
+		}
+	}
+	break;
+
+	case PX_ChangeRecord::PXT_DeleteStrux:
+	{
+		const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+
+		switch (pcrx->getStruxType())
+		{
+		case PTX_Section:
+		case PTX_ColumnSet:
+		case PTX_Column:
+			UT_ASSERT(UT_TODO);
+			return UT_FALSE;
+					
+		case PTX_Block:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			switch (pL->getType())
+			{
+			case PTX_Block:
+			{
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+				fl_BlockLayout*	pPrevBL = pBL->m_pPrev;
+				if (!pPrevBL)
+				{
+					UT_DEBUGMSG(("no prior BlockLayout"));
+					return UT_FALSE;
+				}
+
+				// erase the old version
+				pBL->clearScreen(m_pLayout->getGraphics());
+
+				if ((pPrevBL->m_pFirstRun)
+					&& !(pPrevBL->m_pFirstRun->getNext())
+					&& (pPrevBL->m_pFirstRun->getLength() == 0))
+				{
+					// we have a fake run in pPrevBL.  Kill it.
+					fp_Run * pNuke = pPrevBL->m_pFirstRun;
+
+					// detach from their line
+					fp_Line* pLine = pNuke->getLine();
+					UT_ASSERT(pLine);
+										
+					pLine->removeRun(pNuke);
+										
+					delete pNuke;
+					pPrevBL->m_pFirstRun = NULL;
+				}
+
+				{
+					/*
+					  The idea here is to append the runs of the deleted block,
+					  if any, at the end of the previous block.
+					*/
+					if (pBL->m_pFirstRun)
+					{
+						// figure out where the merge point is
+						fp_Run * pRun = pPrevBL->m_pFirstRun;
+						fp_Run * pLastRun = NULL;
+						UT_uint32 offset = 0;
+
+						while (pRun)
+						{
+							pLastRun = pRun;
+							offset += pRun->m_iLen;
+							pRun = pRun->getNext();
+						}
+
+						// link them together
+						if (pLastRun)
+						{
+							// skip over any zero-length runs
+							pRun = pBL->m_pFirstRun;
+
+							while (pRun && pRun->m_iLen == 0)
+							{
+								fp_Run * pNuke = pRun;
+
+								pRun = pNuke->getNext();
+
+										// detach from their line
+								fp_Line* pLine = pNuke->getLine();
+								UT_ASSERT(pLine);
+										
+								pLine->removeRun(pNuke);
+										
+								delete pNuke;
+							}
+
+							pBL->m_pFirstRun = pRun;
+
+							// then link what's left
+							pLastRun->setNext(pBL->m_pFirstRun);
+
+							if (pBL->m_pFirstRun)
+								pBL->m_pFirstRun->setPrev(pLastRun);
+						}
+						else
+						{
+							pPrevBL->m_pFirstRun = pBL->m_pFirstRun;
+						}
+
+						// merge charwidths
+						UT_uint32 lenNew = pBL->m_gbCharWidths.getLength();
+
+						pPrevBL->m_gbCharWidths.ins(offset, pBL->m_gbCharWidths.getPointer(0), lenNew);
+
+						// tell all the new runs where they live
+						pRun = pBL->m_pFirstRun;
+						while (pRun)
+						{
+							pRun->m_iOffsetFirst += offset;
+							pRun->m_pBL = pPrevBL;
+
+							// detach from their line
+							fp_Line* pLine = pRun->getLine();
+							UT_ASSERT(pLine);
+									
+							pLine->removeRun(pRun);
+									
+							pRun->calcWidths(&pPrevBL->m_gbCharWidths);
+							
+							pRun = pRun->getNext();
+						}
+
+						// runs are no longer attached to this block
+						pBL->m_pFirstRun = NULL;
+					}
+
+					// get rid of everything else about the block
+					pBL->_purgeLayout(UT_TRUE);
+
+					pPrevBL->m_pNext = pBL->m_pNext;
+							
+					if (pBL->m_pNext)
+						pBL->m_pNext->m_pPrev = pPrevBL;
+
+					fl_SectionLayout* pSL = pBL->m_pSectionLayout;
+					UT_ASSERT(pSL);
+					pSL->removeBlock(pBL);
+					delete pBL;
+
+					// update the display
+					pPrevBL->complete_format();
+
+					pPrevBL->fixColumns();
+							
+					pPrevBL->draw(m_pLayout->getGraphics());
+				}
+							
+				// in case anything else moved
+				m_pLayout->reformat();
 
 				FV_View* pView = m_pLayout->m_pView;
 				if (pView)
 				{
-					UT_ASSERT(pView->isSelectionEmpty());
-					// TODO decide if we need to call "pView->_setPoint(pcrTSF->getPosition());"
-					// TODO and if so, add AV_CHG_TYPING to the following notifyListeners().
-					pView->_clearPointAP(UT_FALSE);
-					pView->notifyListeners(AV_CHG_FMTCHAR);
+					pView->_setPoint(pcr->getPosition());
+					pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
 				}
 			}
-		}
-		break;
-
-	case PX_ChangeRecord::PXT_DeleteStrux:
-		{
-			const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-
-			switch (pcrx->getStruxType())
-			{
+			return UT_TRUE;
+							
 			case PTX_Section:
 			case PTX_ColumnSet:
 			case PTX_Column:
-				UT_ASSERT(UT_TODO);
-				return UT_FALSE;
-					
-			case PTX_Block:
-				{
-					fl_Layout * pL = (fl_Layout *)sfh;
-					switch (pL->getType())
-					{
-					case PTX_Block:
-						{
-							fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-							fl_BlockLayout*	pPrevBL = pBL->m_pPrev;
-							if (!pPrevBL)
-							{
-								UT_DEBUGMSG(("no prior BlockLayout"));
-								return UT_FALSE;
-							}
-
-							// erase the old version
-							pBL->clearScreen(m_pLayout->getGraphics());
-
-							/*
-								The idea here is to append the runs of the deleted block,
-								if any, at the end of the previous block.
-							*/
-							if (pBL->m_pFirstRun)
-							{
-								// figure out where the merge point is
-								fp_Run * pRun = pPrevBL->m_pFirstRun;
-								fp_Run * pLastRun = NULL;
-								UT_uint32 offset = 0;
-
-								while (pRun)
-								{
-									pLastRun = pRun;
-									offset += pRun->m_iLen;
-									pRun = pRun->getNext();
-								}
-
-								// link them together
-								if (pLastRun)
-								{
-									// skip over any zero-length runs
-									pRun = pBL->m_pFirstRun;
-
-									while (pRun && pRun->m_iLen == 0)
-									{
-										fp_Run * pNuke = pRun;
-
-										pRun = pNuke->getNext();
-
-										// detach from their line
-										fp_Line* pLine = pNuke->getLine();
-										UT_ASSERT(pLine);
-										
-										pLine->removeRun(pNuke);
-										
-										delete pNuke;
-									}
-
-									pBL->m_pFirstRun = pRun;
-
-									// then link what's left
-									pLastRun->setNext(pBL->m_pFirstRun);
-
-									if (pBL->m_pFirstRun)
-										pBL->m_pFirstRun->setPrev(pLastRun);
-								}
-								else
-								{
-									pPrevBL->m_pFirstRun = pBL->m_pFirstRun;
-								}
-
-								// tell all the new runs where they live
-								pRun = pBL->m_pFirstRun;
-								while (pRun)
-								{
-									pRun->m_iOffsetFirst += offset;
-									pRun->m_pBL = pPrevBL;
-
-									// detach from their line
-									fp_Line* pLine = pRun->getLine();
-									UT_ASSERT(pLine);
-									
-									pLine->removeRun(pRun);
-									
-									pRun = pRun->getNext();
-								}
-
-								// merge charwidths
-								UT_uint32 lenNew = pBL->m_gbCharWidths.getLength();
-
-								pPrevBL->m_gbCharWidths.ins(offset, pBL->m_gbCharWidths.getPointer(0), lenNew);
-
-								// runs are no longer attached to this block
-								pBL->m_pFirstRun = NULL;
-							}
-
-							// get rid of everything else about the block
-							pBL->_purgeLayout(UT_TRUE);
-
-							pPrevBL->m_pNext = pBL->m_pNext;
-							
-							if (pBL->m_pNext)
-								pBL->m_pNext->m_pPrev = pPrevBL;
-
-							fl_SectionLayout* pSL = pBL->m_pSectionLayout;
-							UT_ASSERT(pSL);
-							pSL->removeBlock(pBL);
-							delete pBL;
-
-							// update the display
-							// TODO call minor, not complete
-							pPrevBL->complete_format();
-							pPrevBL->draw(m_pLayout->getGraphics());
-
-							pPrevBL->fixColumns();
-							
-							// in case anything else moved
-							m_pLayout->reformat();
-
-							FV_View* pView = m_pLayout->m_pView;
-							if (pView)
-							{
-								pView->_setPoint(pcr->getPosition());
-								pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
-							}
-						}
-						return UT_TRUE;
-							
-					case PTX_Section:
-					case PTX_ColumnSet:
-					case PTX_Column:
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return UT_FALSE;
-					}
-				}
-				break;
-
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return UT_FALSE;
 			}
 		}
 		break;
+
+		default:
+			UT_ASSERT(0);
+			return UT_FALSE;
+		}
+	}
+	break;
 		
 					
 	case PX_ChangeRecord::PXT_ChangeStrux:
+	{
+		const PX_ChangeRecord_StruxChange * pcrxc = static_cast<const PX_ChangeRecord_StruxChange *> (pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+
+		// TODO getOldIndexAP() is only intended for use by the document.
+		// TODO this assert is probably wrong.
+		UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
+		UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
+
+		switch (pL->getType())
 		{
-			const PX_ChangeRecord_StruxChange * pcrxc = static_cast<const PX_ChangeRecord_StruxChange *> (pcr);
-
-			fl_Layout * pL = (fl_Layout *)sfh;
-
-			// TODO getOldIndexAP() is only intended for use by the document.
-			// TODO this assert is probably wrong.
-			UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
-			UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
-
-			switch (pL->getType())
-			{
-			case PTX_Section:
-			case PTX_ColumnSet:
-			case PTX_Column:
-				pL->setAttrPropIndex(pcr->getIndexAP());
-				UT_ASSERT(UT_TODO);
-				return UT_FALSE;
+		case PTX_Section:
+		case PTX_ColumnSet:
+		case PTX_Column:
+			pL->setAttrPropIndex(pcr->getIndexAP());
+			UT_ASSERT(UT_TODO);
+			return UT_FALSE;
 					
-			case PTX_Block:
-				{
-					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		case PTX_Block:
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 
-					// erase the old version
-					pBL->clearScreen(m_pLayout->getGraphics());
+			// erase the old version
+			pBL->clearScreen(m_pLayout->getGraphics());
 
-					pL->setAttrPropIndex(pcr->getIndexAP());
+			pL->setAttrPropIndex(pcr->getIndexAP());
 
-					// TODO: may want to figure out the specific change and do less work
-					// TODO right, don't reformat anything on a simple align operation.  Just erase, re-align, and draw.
-					// TODO and in fact, we probably should not do a COMPLETE format ever.  Check for all the cases.
-					pBL->complete_format();
-					pBL->draw(m_pLayout->getGraphics());
+			// TODO: may want to figure out the specific change and do less work
+			// TODO right, don't reformat anything on a simple align operation.  Just erase, re-align, and draw.
+			pBL->minor_reformat();
+			pBL->align();
 
-					pBL->fixColumns();
+			pBL->fixColumns();
 					
-					// in case anything else moved
-					m_pLayout->reformat();
-
-					FV_View* pView = m_pLayout->m_pView;
-					if (pView)
-						pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTBLOCK);
-				}
-				return UT_TRUE;
+			pBL->draw(m_pLayout->getGraphics());
 					
-			default:
-				UT_ASSERT(0);
-				return UT_FALSE;
-			}
+			// in case anything else moved
+			m_pLayout->reformat();
+
+			FV_View* pView = m_pLayout->m_pView;
+			if (pView)
+				pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTBLOCK);
 		}
-		break;
+		return UT_TRUE;
+					
+		default:
+			UT_ASSERT(0);
+			return UT_FALSE;
+		}
+	}
+	break;
 
 
 	case PX_ChangeRecord::PXT_InsertStrux:

@@ -266,7 +266,7 @@ void fl_BlockLayout::setAlignment(UT_uint32 /*iAlignCmd*/)
 	}
 #endif
 
-	_align();
+	align();
 }
 
 UT_uint32 fl_BlockLayout::getAlignment()
@@ -296,7 +296,7 @@ UT_uint32 fl_BlockLayout::getAlignment()
 	}
 }
 
-void fl_BlockLayout::_align()
+void fl_BlockLayout::align()
 {
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=0; i<countSlices; i++)
@@ -525,7 +525,12 @@ int fl_BlockLayout::minor_reformat()
 
 	UT_DEBUGMSG(("END reformat block: 0x%x\n", this));
 
+#if 0	
+	// NOTE we no longer clear the bNeedsCompleteReformat flag
+	// on a minor reformat.  See me for the reason.  -EWS
+
 	setNeedsCompleteReformat(UT_FALSE);
+#endif	
 	
 	m_bFormatting = UT_FALSE;
 	return 0;
@@ -640,7 +645,7 @@ int fl_BlockLayout::complete_format()
 		pSlice->returnExtraSpace();
 	}
 
-	_align();
+	align();
 
 	m_bFormatting = UT_FALSE;
 

@@ -692,6 +692,8 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 		}
 
 		returnExtraSpace();
+
+		m_pBlock->setNeedsCompleteReformat(UT_TRUE);
 	}
 }
 

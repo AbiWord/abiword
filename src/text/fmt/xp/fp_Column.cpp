@@ -564,23 +564,6 @@ UT_uint32 fp_Column::_getBottomOfLastSlice(void) const
 	return pListNode->yoff + pListNode->pSlice->getHeight();
 }
 
-void fp_Column::dump()
-{
-	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
-	while (pListNode)
-	{
-		UT_DEBUGMSG(("fp_Column::dump(0x%x) - fp_BlockSlice 0x%x in FL_BlockLayout 0x%x.  Offset=%d, height=%d\n", 
-			this, 
-			pListNode->pSlice, 
-			pListNode->pSlice->getBlock(), 
-			pListNode->yoff, 
-			pListNode->pSlice->getHeight()));
-		//pListNode->pSlice->dump();
-
-		pListNode = pListNode->pNext;
-	}
-}
-
 const XML_Char * fp_BoxColumn::myTypeName(void)
 {
 	return "Box";

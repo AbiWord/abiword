@@ -150,6 +150,12 @@ void fp_SectionSlice::draw(dg_DrawArgs* pDA)
 #ifdef FMT_TEST
 void fp_SectionSlice::__dump(FILE * fp) const
 {
-	fprintf(fp,"\t\tfp_SectionSlice::dump(0x%08lx) - TODO\n",(UT_uint32)this);
+	int count = m_vecColumnInfos.getItemCount();
+	for (int i=0; i<count; i++)
+	{
+		fp_ColumnInfo* pCI = (fp_ColumnInfo*) m_vecColumnInfos.getNthItem(i);
+
+		// TODO
+	}
 }
 #endif

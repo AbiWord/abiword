@@ -623,6 +623,8 @@ void fp_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
+	UT_ASSERT(m_pLine);
+	
 	m_pLine->getOffsets(this, m_pLineData, xoff, yoff);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
