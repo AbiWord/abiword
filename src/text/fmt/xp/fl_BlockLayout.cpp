@@ -455,8 +455,8 @@ int fl_BlockLayout::minor_reformat()
 		{
 			fp_Line* pLine = m_pLastLine;
 		
-			pLine->remove();
 			m_pLastLine = pLine->getPrev();
+			pLine->remove();
 
 			// note that we do NOT delete pLine here.  It is deleted elsewhere.
 		}
