@@ -543,6 +543,13 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 	    return ;
 	  }
 
+	if(!strcmp(p,"transparent") /* || !strcmp(p,"ffffff") */)
+	{
+		c.m_red = c.m_grn = c.m_blu = 255;
+		//c.m_bIsTransparent = true;
+		return;
+	}
+
 	UT_HashColor hash;
 
 	if (hash.setColor (p))
