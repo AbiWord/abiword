@@ -73,7 +73,8 @@ public:									/* TODO these should be protected */
 	static const char* s_szBuild_Target;
 	static const char* s_szBuild_CompileTime;
 	static const char* s_szBuild_CompileDate;
-
+	static const char* s_szAbiSuite_Home;
+	
  public:
 	static const char* getBuildId ();
 	static const char* getBuildVersion ();
@@ -81,6 +82,7 @@ public:									/* TODO these should be protected */
 	static const char* getBuildTarget ();
 	static const char* getBuildCompileTime ();
 	static const char* getBuildCompileDate ();
+	static const char* getAbiSuiteHome ();
 
 public:
 	XAP_App(XAP_Args * pArgs, const char * szAppName);

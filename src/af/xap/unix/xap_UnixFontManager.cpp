@@ -559,10 +559,7 @@ invalid_old_path:
 	if (totaldirs == 0)
 	{
 		// TODO this is not big enough for a really big list of fonts!
-	        UT_String message = "AbiWord could not find any local font files in its font path.  Often this error is the\n"
-				   "result of invoking AbiWord directly instead of through its wrapper\n"
-				   "shell script.  The script sets the environment variable $ABISUITE_HOME which\n"
-				   "should point to the directory where AbiSuite components reside.\n"
+	        UT_String message = "AbiWord could not find any local font files in its font path.\n"
 				   "\n"
 				   "The current font path contains the following directories:\n\n";
 		{

@@ -298,10 +298,13 @@ bool XAP_UnixApp::_loadFonts()
 }
 #endif //#ifndef WITH_PANGO
 
+
+
 void XAP_UnixApp::_setAbiSuiteLibDir()
 {
+	// FIXME: this code sucks hard
+
 	char buf[PATH_MAX];
-//	char buf2[PATH_MAX]; // not used?
 
 	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
 
@@ -341,15 +344,9 @@ void XAP_UnixApp::_setAbiSuiteLibDir()
 		return;
 	}
 
-	// TODO what to do ??  try the current directory...
-	
-	UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory....\n"));
+	// otherwise, use the hard-coded value
+	XAP_App::_setAbiSuiteLibDir(getAbiSuite_Home());
 
-	getcwd(buf,sizeof(buf));
-	int len = strlen(buf);
-	if (buf[len-1]=='/')				// trim trailing slash
-		buf[len-1] = 0;
-	XAP_App::_setAbiSuiteLibDir(buf);
 	return;
 }
 

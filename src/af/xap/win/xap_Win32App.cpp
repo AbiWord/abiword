@@ -313,9 +313,8 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 			return;
 		}
 
-		// [win32 only] if none of this works, just leave it the exe directory.
-
-		XAP_App::_setAbiSuiteLibDir(buf);
+		// otherwise, use the hard-coded value
+		XAP_App::_setAbiSuiteLibDir(getAbiSuite_Home());
 		return;
 	}
 

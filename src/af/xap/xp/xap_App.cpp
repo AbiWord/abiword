@@ -145,6 +145,11 @@ const char* XAP_App::getBuildCompileDate ()
 	return s_szBuild_ID;
 }
 
+const char* XAP_App::getAbiSuiteHome ()
+{
+	return s_szBuild_ID;
+}
+
 /*! this function is silly */
 const XAP_EncodingManager* XAP_App::getEncodingManager() const 
 { 

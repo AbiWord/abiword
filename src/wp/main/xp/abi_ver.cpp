@@ -36,6 +36,7 @@
 #endif /* ABI_BUILD_TARGET */
 
 const char* XAP_App::s_szBuild_ID = ABI_BUILD_ID;
+const char* XAP_App::s_szAbiSuite_Home = ABISUITE_HOME;
 const char* XAP_App::s_szBuild_Version = ABI_BUILD_VERSION;
 const char* XAP_App::s_szBuild_Options = ABI_BUILD_OPTIONS;
 const char* XAP_App::s_szBuild_Target = ABI_BUILD_TARGET;
