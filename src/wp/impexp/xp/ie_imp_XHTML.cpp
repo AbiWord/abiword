@@ -283,6 +283,8 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 #define TT_TITLE                38              // title tag
 #define TT_STYLE                39              // style tag
 
+#define TT_PRE					40				// preformatted tag
+
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
 static struct xmlToIdMapping s_Tokens[] =
@@ -312,6 +314,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{       "meta",                 TT_META                 },
 	{       "ol",                   TT_OL                   },
 	{	"p",			TT_P	        	},
+	{		"pre",					TT_PRE					},
 	{       "q",                    TT_Q                    },
 	{       "s",                    TT_S                    },
 	{       "samp",                 TT_SAMP                 },
@@ -826,6 +829,11 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  // these tags are ignored for the time being
 	  return;
 
+	case TT_PRE:
+		X_VerifyParseState(_PS_Block);
+		m_bWhiteSignificant = true;
+		return;
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -935,6 +943,13 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	case TT_META:
 	case TT_STYLE:
 	  return;
+
+	case TT_PRE:
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		X_CheckDocument(_getInlineDepth()==0);
+		m_bWhiteSignificant = false;
+		return;
 
 	case TT_OTHER:
 	default:
