@@ -711,6 +711,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							delete pBL;
 
 							// update the display
+							// TODO call minor, not complete
 							pPrevBL->complete_format();
 							pPrevBL->draw(m_pLayout->getGraphics());
 
@@ -774,6 +775,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					pL->setAttrPropIndex(pcr->getIndexAP());
 
 					// TODO: may want to figure out the specific change and do less work
+					// TODO right, don't reformat anything on a simple align operation.  Just erase, re-align, and draw.
+					// TODO and in fact, we probably should not do a COMPLETE format ever.  Check for all the cases.
 					pBL->complete_format();
 					pBL->draw(m_pLayout->getGraphics());
 
@@ -932,9 +935,11 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					}
 
 					// update the display
+					// TODO just call align on this block, right?
 					pBL->minor_reformat();
 					pBL->draw(m_pLayout->getGraphics());
 
+					// Note that in the case below, we really DO need to call complete_format().
 					pNewBL->complete_format();
 					pNewBL->draw(m_pLayout->getGraphics());
 

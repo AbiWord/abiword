@@ -354,14 +354,27 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 		m_pFirstRun = NULL;
 	}
 
-	// remove runs from lines
-	fp_Run* pRun = pTruncRun;
+	fp_Run* pRun;
+	
+	// remove runs from screen
+	pRun = pTruncRun;
 	while (pRun)
 	{
 		fp_Line* pLine = pRun->getLine();
 		UT_ASSERT(pLine);
 
 		pRun->clearScreen();
+
+		pRun = pRun->getNext();
+	}
+
+	// remove runs from lines
+	pRun = pTruncRun;
+	while (pRun)
+	{
+		fp_Line* pLine = pRun->getLine();
+		UT_ASSERT(pLine);
+
 		pLine->removeRun(pRun);
 
 		pRun = pRun->getNext();
