@@ -1094,8 +1094,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    XML_Char propBuffer[128];
    propBuffer[0] = 0;
    sprintf(propBuffer, "width:%fin; height:%fin", 
-	   (double)width / (double)1440, 
-	   (double)height / (double)1440);
+		   (double)width / (double)1440, 
+		   (double)height / (double)1440);
 
    XML_Char propsName[32];
    propsName[0] = 0;

@@ -42,6 +42,9 @@
 #include "fg_GraphicVector.h"
 #include "ut_bytebuf.h"
 
+#include "xap_App.h"
+#include "fv_View.h"
+
 class fl_AutoNum;
 
 
@@ -879,44 +882,74 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 	{
 		// TODO: investigate whether pictData is leaking memory or not
 
-		const char * mimetype = NULL;
-		mimetype = UT_strdup("image/png");
+		IE_ImpGraphic * m_pGraphicImporter = new IE_ImpGraphic_PNG();
 
-		UT_DEBUGMSG(("DOM: importing image1\n"));
+		FG_Graphic* pFG;
+
+		// TODO: according with IE_ImpGraphic header, we shouldn't free
+		// TODO: the buffer. Confirm that.
+		UT_Error error = m_pGraphicImporter->importGraphic(pictData, &pFG);
+		DELETEP(m_pGraphicImporter);
+
+		if (error != UT_OK) 
+		{
+			UT_DEBUGMSG(("Error parsing embedded PNG\n"));
+			delete pictData;
+			return false;
+		}
+
+		UT_ByteBuf * buf;
+		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 
 		// Not sure whether this is the right way, but first, we should
 		// insert any pending chars
 		if (!FlushStoredChars(true))
 		{
-			UT_DEBUGMSG(("Error just before inserting a picture\n"));
-			FREEP (mimetype);
+			UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
+			delete pictData;
 			return false;
 		} 
+	   
+		if (m_pImportFile != NULL)
+		{	
+			// non-null file, we're importing a doc
+			// Now, we should insert the picture into the document
 			
-		// Now, we should insert the picture in the document
-		
-		const XML_Char* propsArray[3];
-		propsArray[0] = (XML_Char *)"DATAID";
-		propsArray[1] = (XML_Char *) image_name;
-		propsArray[2] = NULL;
-			
-		if (!m_pDocument->appendObject(PTO_Image, propsArray)) 
-		{
-			delete pictData;
-			FREEP (mimetype);
-			UT_DEBUGMSG(("DOM: importing image2\n"));
-			return UT_IE_NOMEMORY;
-		}
+			const char * mimetype = NULL;
+			mimetype = UT_strdup("image/png");
 
-		if (!m_pDocument->createDataItem(image_name, false,
-										 pictData, (void*)mimetype, NULL)) 
-		{
-			delete pictData;
+			const XML_Char* propsArray[3];
+			propsArray[0] = (XML_Char *)"DATAID";
+			propsArray[1] = (XML_Char *) image_name;
+			propsArray[2] = NULL;
+			
+			if (!m_pDocument->appendObject(PTO_Image, propsArray)) 
+			{
+				delete pictData;
+				FREEP (mimetype);
+				UT_DEBUGMSG(("DOM: importing image2\n"));
+				return UT_IE_NOMEMORY;
+			}
+			
+			if (!m_pDocument->createDataItem(image_name, false,
+											 buf, (void*)mimetype, NULL)) 
+			{
+				delete pictData;
+				FREEP (mimetype);
+				UT_DEBUGMSG(("DOM: importing image3\n"));
+				return UT_IE_NOMEMORY;
+			}
+
 			FREEP (mimetype);
-			UT_DEBUGMSG(("DOM: importing image3\n"));
-			return UT_IE_NOMEMORY;
 		}
-		FREEP (mimetype);
+		else
+		{
+			// null file, we're pasting an image. this really makes
+			// quite a difference to the piece table
+			XAP_App * pApp = XAP_App::getApp();
+			FV_View * pView = static_cast<FV_View *>(pApp->getViewSelection());
+			pView->cmdInsertGraphic(pFG, image_name);
+		}
 	} 
 	else
 	{
