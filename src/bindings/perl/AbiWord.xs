@@ -3,6 +3,9 @@
 #include "perl.h"
 #include "XSUB.h"
 
+/* perl sux */
+#undef ref
+
 #include "../../af/xap/xp/xap_App.h"
 #include "../../af/xap/xp/xap_Frame.h"
 #include "../../af/xap/xp/xad_Document.h"
@@ -190,7 +193,6 @@ void
 editBody(pView)
 	FV_View *pView
 	CODE:
-		pView->eraseInsertionPoint();
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0, 0, false);
 

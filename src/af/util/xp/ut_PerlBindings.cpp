@@ -62,21 +62,21 @@ extern "C" {
 #endif
 
 extern "C" {
-//	void boot_DynaLoader (pTHXo_ CV* cv);
-//	void boot_AbiWord (pTHXo_ CV* cv);
-	void xs_init();
-	void boot_DynaLoader(CV* cv);
-//	void boot_AbiWord(CV* cv);
 
-//	void xs_init (pTHXo) {
-	void xs_init()
-	{
-		char *file = __FILE__;
-		newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
-		/* we want to link to the module code, but until it's stable
-		   it's better to have it dynamically loaded...
-		   newXS("abi::boot_AbiWord", boot_AbiWord, file);*/
-	}
+  void boot_DynaLoader(PerlInterpreter *pi, CV* cv);
+
+#ifdef NOT_PERL_5_8
+  void xs_init ()
+#else
+  void xs_init(PerlInterpreter * my_perl)
+#endif
+  {
+    char *file = __FILE__;
+    newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+    /* we want to link to the module code, but until it's stable
+       it's better to have it dynamically loaded...
+       newXS("abi::boot_AbiWord", boot_AbiWord, file);*/
+  }
 }
 
 //////////////////////////////////////////////////
@@ -161,7 +161,7 @@ UT_PerlBindings::UT_PerlBindings()
 	  scriptList[0] = scriptDir;
 
 	  // the user-local script directory
-	  scriptDir = getUserPrivateDirectory ();
+	  scriptDir = XAP_App::getApp()->getUserPrivateDirectory ();
 	  scriptDir += "/AbiWord/scripts/";
 	  scriptList[1] = scriptDir;
 
@@ -176,7 +176,7 @@ UT_PerlBindings::UT_PerlBindings()
 		{
 		  while(n--) 
 		    {
-		      UT_String script (script + namelist[n]->d_name);
+		      UT_String script (scriptDir + namelist[n]->d_name);
 		      
 		      UT_DEBUGMSG(("DOM: loading PERL script %s\n", script.c_str()));
 
@@ -217,6 +217,10 @@ UT_PerlBindings::errmsg() const
 bool
 UT_PerlBindings::evalFile(const UT_String& filename)
 {
+#ifndef NOT_PERL_5_8
+	PerlInterpreter * my_perl = impl_->pPerlInt;
+#endif
+
 	UT_String code("require \"");
 
 	for (size_t i = 0; i < filename.size(); ++i)
@@ -233,7 +237,7 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 
 	if (!SvOK(retval))
 	{
-		if (SvTRUE(ERRSV))
+	  if (SvTRUE(ERRSV))
 		{
 			UT_DEBUGMSG(("Error compiling perl script.\n"));
 			
@@ -244,8 +248,8 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 				warpString(impl_->errmsg, 50);
 			}
 		}
-
-		return false;
+	  
+	  return false;
 	}
 	else
 	{
@@ -280,10 +284,14 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 bool
 UT_PerlBindings::runCallback(const char* method)
 {
+#ifndef NOT_PERL_5_8
+	PerlInterpreter * my_perl = impl_->pPerlInt;
+#endif
+
 	dSP;
 	PUSHMARK(SP);
-	perl_call_pv(const_cast<char*> (method),
-				 G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
+	Perl_call_pv(my_perl, const_cast<char*> (method),
+		     G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
 
 	if (SvTRUE(ERRSV))
 	{
@@ -324,9 +332,6 @@ UT_PerlBindings::registerCallback(const char* pszFunctionName,
 	}
 
 	app->getMenuActionSet()->addAction(new EV_Menu_Action(id, false, bRaisesDialog, false, "executeScript", 0, 0, pszFunctionName));
-	// const EV_EditEventMapper * pEEM = pUnixFrame->getEditEventMapper();
-	// UT_ASSERT(pEEM);
-	// const char * string = pEEM->getShortcutFor(pEM);
 }
 
 /***************************************************************************/
