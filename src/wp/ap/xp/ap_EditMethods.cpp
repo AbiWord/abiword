@@ -4712,8 +4712,23 @@ Defun1(insertColsBefore)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	PT_DocPosition insPoint;
+	PT_DocPosition insAnchor;
+	if(pView->isSelectionEmpty())
+	{
+		insPoint = pView->getPoint();
+	}
+	else
+	{
+		insPoint = pView->getPoint();
+		insAnchor = pView->getSelectionAnchor();
+		if(insAnchor < insPoint)
+		{
+			insPoint = insAnchor;
+		}
+	}
 
-	pView->cmdInsertCol(pView->getPoint(),true); // is before
+	pView->cmdInsertCol(insPoint,true); // is before
 	return true;
 }
 
@@ -4722,8 +4737,23 @@ Defun1(insertColsAfter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	PT_DocPosition insPoint;
+	PT_DocPosition insAnchor;
+	if(pView->isSelectionEmpty())
+	{
+		insPoint = pView->getPoint();
+	}
+	else
+	{
+		insPoint = pView->getPoint();
+		insAnchor = pView->getSelectionAnchor();
+		if(insAnchor < insPoint)
+		{
+			insPoint = insAnchor;
+		}
+	}
 
-	pView->cmdInsertCol(pView->getPoint(),false); // is After
+	pView->cmdInsertCol(insPoint,false); // is After
 	return true;
 }
 
@@ -4732,8 +4762,22 @@ Defun1(insertRowsBefore)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-	pView->cmdInsertRow(pView->getPoint(),true); // is before
+	PT_DocPosition insPoint;
+	PT_DocPosition insAnchor;
+	if(pView->isSelectionEmpty())
+	{
+		insPoint = pView->getPoint();
+	}
+	else
+	{
+		insPoint = pView->getPoint();
+		insAnchor = pView->getSelectionAnchor();
+		if(insAnchor < insPoint)
+		{
+			insPoint = insAnchor;
+		}
+	}
+	pView->cmdInsertRow(insPoint,true); // is before
 	return true;
 }
 
@@ -4742,8 +4786,22 @@ Defun1(insertRowsAfter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-	pView->cmdInsertRow(pView->getPoint(),false); // is before
+	PT_DocPosition insPoint;
+	PT_DocPosition insAnchor;
+	if(pView->isSelectionEmpty())
+	{
+		insPoint = pView->getPoint();
+	}
+	else
+	{
+		insPoint = pView->getPoint();
+		insAnchor = pView->getSelectionAnchor();
+		if(insAnchor > insPoint)
+		{
+			insPoint = insAnchor;
+		}
+	}
+	pView->cmdInsertRow(insPoint,false); // is After
 	return true;
 }
 

@@ -568,6 +568,11 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell,posFirstInsert;
 
+	UT_sint32 numColsForInsertion = getNumColumnsInSelection();
+	if(numColsForInsertion == 0)
+	{
+		return false;
+	}
 	posFirstInsert = 0;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
@@ -589,7 +594,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	{
 		for(i=0;i<numRows;i++)
 		{
-			posCell = findCellPosAt(posTable,i,iLeft);
+			posCell = findCellPosAt(posTable,i,iLeft+ numColsForInsertion-1);
 			UT_sint32 jLeft,jRight,jTop,jBot;
 			getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
 			if((jRight -1) > iColInsertAt)
@@ -625,9 +630,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty())
 	{
-//
-// Fixme: Put code in here to detect how many columns to insert.
-//
+		_clearSelection();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -658,321 +661,331 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // column if the cell spans just the width of the column..
 //
 	UT_sint32 oldTop = -1;
-	for(i=0; i <numRows; i++)
+	UT_sint32 ii = 0;
+	for(ii=0; ii<numColsForInsertion;ii++)
 	{
-		if(iColInsertAt >= numCols)
+		oldTop = -1;
+		for(i=0; i <numRows; i++)
 		{
-			posCell = findCellPosAt(posTable,i,numCols-1);
-		}
-		else
-		{
-			posCell = findCellPosAt(posTable,i,iColInsertAt);
-		}
-		UT_ASSERT(posCell > 0);
-		bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
-		UT_sint32 Left,Right,Top,Bot;
-		getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
-		UT_DEBUGMSG(("SEVIOR: Before Insert column left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
-		const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-		UT_String sRowTop = "top-attach";
-		UT_String sRowBot = "bot-attach";
-		UT_String sColLeft = "left-attach";
-		UT_String sColRight = "right-attach";
-		UT_String sTop,sBot,sLeft,sRight;
-		UT_String_sprintf(sTop,"%d",i);
-		UT_String_sprintf(sBot,"%d",i+1);
-		props[0] = sRowTop.c_str();
-		props[1] = sTop.c_str();
-		props[2] = sRowBot.c_str();
-		props[3] = sBot.c_str();
-		bool bBBefore = false;
-		bool bAfter = false;
-		if(((Bot - Top) > 1) && (oldTop != Top))
-		{
-			oldTop = Top;
-		}
-		if((Bot - Top) == 1)
-		{
-			if(bBefore)
+			if(iColInsertAt >= numCols)
 			{
-				if(iColInsertAt > 0)
-				{
-					PT_DocPosition posCellLeft = findCellPosAt(posTable,i,iColInsertAt-1);
-					UT_sint32 jLeft,jRight,jTop,jBot;
-					getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
-					UT_String_sprintf(sLeft,"%d",jRight);
-					UT_String_sprintf(sRight,"%d",jRight+1);
-				}
-				else
-				{
-					UT_String_sprintf(sLeft,"%d",0);
-					UT_String_sprintf(sRight,"%d",1);
-				}
-				props[4] = sColLeft.c_str();
-				props[5] = sLeft.c_str();
-				props[6] = sColRight.c_str();
-				props[7] = sRight.c_str();
-				bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
-				bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
-				if(i == 0)
-				{
-					posFirstInsert = posCell + 1;
-				}
-				bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+				posCell = findCellPosAt(posTable,i,numCols-1);
 			}
 			else
 			{
+				posCell = findCellPosAt(posTable,i,iColInsertAt);
+			}
+			UT_ASSERT(posCell > 0);
+			bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
+			UT_sint32 Left,Right,Top,Bot;
+			getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+			UT_DEBUGMSG(("SEVIOR: Before Insert column left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+			const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+			UT_String sRowTop = "top-attach";
+			UT_String sRowBot = "bot-attach";
+			UT_String sColLeft = "left-attach";
+			UT_String sColRight = "right-attach";
+			UT_String sTop,sBot,sLeft,sRight;
+			UT_String_sprintf(sTop,"%d",i);
+			UT_String_sprintf(sBot,"%d",i+1);
+			props[0] = sRowTop.c_str();
+			props[1] = sTop.c_str();
+			props[2] = sRowBot.c_str();
+			props[3] = sBot.c_str();
+			bool bBBefore = false;
+			bool bAfter = false;
+			if(((Bot - Top) > 1) && (oldTop != Top))
+			{
+				oldTop = Top;
+			}
+			if((Bot - Top) == 1)
+			{
+				if(bBefore)
+				{
+					if(iColInsertAt > 0)
+					{
+						PT_DocPosition posCellLeft = findCellPosAt(posTable,i,iColInsertAt-1);
+						UT_sint32 jLeft,jRight,jTop,jBot;
+						getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
+						UT_String_sprintf(sLeft,"%d",jRight);
+						UT_String_sprintf(sRight,"%d",jRight+1);
+					}
+					else
+					{
+						UT_String_sprintf(sLeft,"%d",0);
+						UT_String_sprintf(sRight,"%d",1);
+					}
+					props[4] = sColLeft.c_str();
+					props[5] = sLeft.c_str();
+					props[6] = sColRight.c_str();
+					props[7] = sRight.c_str();
+					bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
+					bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+					if(i == 0)
+					{
+						posFirstInsert = posCell + 1;
+					}
+					bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+				}
+				else
+				{
 //
 // iColInsertAt gives the cell just to the right of the requested cell.
 // We need to insert just before this point - unless this is the last column
 // on the row in which case we need to insert after the endCell strux.
 //
-				PT_DocPosition posCellLeft = 0;
-				posCellLeft = findCellPosAt(posTable,i,iColInsertAt);
-				bRes = m_pDoc->getStruxOfTypeFromPosition(posCellLeft+1,PTX_SectionCell,&cellSDH);
-				endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
-				posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-				posCellLeft = posEndCell+1;
-				UT_sint32 jLeft,jRight,jTop,jBot;
-				getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
-				UT_String_sprintf(sLeft,"%d",iColInsertAt+1);
-				UT_String_sprintf(sRight,"%d",iColInsertAt+2);
-				props[4] = sColLeft.c_str();
-				props[5] = sLeft.c_str();
-				props[6] = sColRight.c_str();
-				props[7] = sRight.c_str();
-				UT_DEBUGMSG(("SEVIOR: Inserting cell strux %s %s %s %s %s %s %s %s \n",props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7]));
-				bRes = m_pDoc->insertStrux(posCellLeft,PTX_SectionCell,NULL,props);
-				bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
-				if(i == 0)
-				{
-					posFirstInsert = posCellLeft + 1;
+					PT_DocPosition posCellLeft = 0;
+					posCellLeft = findCellPosAt(posTable,i,iColInsertAt);
+					bRes = m_pDoc->getStruxOfTypeFromPosition(posCellLeft+1,PTX_SectionCell,&cellSDH);
+					endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
+					posEndCell = m_pDoc->getStruxPosition(endCellSDH);
+					posCellLeft = posEndCell+1;
+					UT_sint32 jLeft,jRight,jTop,jBot;
+					getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
+					UT_String_sprintf(sLeft,"%d",iColInsertAt+1);
+					UT_String_sprintf(sRight,"%d",iColInsertAt+2);
+					props[4] = sColLeft.c_str();
+					props[5] = sLeft.c_str();
+					props[6] = sColRight.c_str();
+					props[7] = sRight.c_str();
+					UT_DEBUGMSG(("SEVIOR: Inserting cell strux %s %s %s %s %s %s %s %s \n",props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7]));
+					bRes = m_pDoc->insertStrux(posCellLeft,PTX_SectionCell,NULL,props);
+					bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
+					if(i == 0)
+					{
+						posFirstInsert = posCellLeft + 1;
+					}
+					
+					bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
+					
 				}
-
-				bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
-
 			}
-		}
-		else
-		{
+			else
+			{
 //
 // OK we have to work to find the right place to insert the cell.
 //
-			UT_sint32 jLeft,jRight,jTop,jBot;
-			if(bBefore)
-			{
+				UT_sint32 jLeft,jRight,jTop,jBot;
+				if(bBefore)
+				{
 //
 // find first cell on this row with left coordinate == or greater than 
 // iInsertColAt.
 //
-				UT_sint32 j =0;
-				UT_sint32 k = i;
-				for(k=i; k < numRows && !bBBefore; k++)
-				{
-					if( k == i)
+					UT_sint32 j =0;
+					UT_sint32 k = i;
+					for(k=i; k < numRows && !bBBefore; k++)
 					{
-						j = iColInsertAt;
-					}
-					else
-					{
-						j = 0;
-					}
-					while(j < numCols && !bBBefore)
-					{
-						posCell = findCellPosAt(posCol,k,j);
-						getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
-						if(jTop == i)
-						{ 
-							bBBefore = true;
-							UT_String_sprintf(sLeft,"%d",iColInsertAt);
-							UT_String_sprintf(sRight,"%d",iColInsertAt+1);
-							props[4] = sColLeft.c_str();
-							props[5] = sLeft.c_str();
-							props[6] = sColRight.c_str();
-							props[7] = sRight.c_str();
+						if( k == i)
+						{
+							j = iColInsertAt;
+						}
+						else
+						{
+							j = 0;
+						}
+						while(j < numCols && !bBBefore)
+						{
+							posCell = findCellPosAt(posCol,k,j);
+							getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
+							if(jTop == i)
+							{ 
+								bBBefore = true;
+								UT_String_sprintf(sLeft,"%d",iColInsertAt);
+								UT_String_sprintf(sRight,"%d",iColInsertAt+1);
+								props[4] = sColLeft.c_str();
+								props[5] = sLeft.c_str();
+								props[6] = sColRight.c_str();
+								props[7] = sRight.c_str();
 //
 // Insert at Previous cell it will push that cell to one position later.
 //
-							bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
-							bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
-							if(i == 0)
-							{
-								posFirstInsert = posCell + 1;
+								bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
+								bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+								if(i == 0)
+								{
+									posFirstInsert = posCell + 1;
+								}
+								bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 							}
-							bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+							j++;
 						}
-						j++;
 					}
+					UT_ASSERT(bBBefore);
 				}
-				UT_ASSERT(bBBefore);
-			}
 //
 // Insert column after this column
 //
-			else
-			{
+				else
+				{
 //
 // OK we have to work to find the right place to insert the cell.
 //
-				UT_sint32 jLeft,jRight,jTop,jBot;
+					UT_sint32 jLeft,jRight,jTop,jBot;
 //
 // Now look after this cell for a column to place this.
 //
-				bAfter = false;
-				bBBefore = false;
-				UT_sint32 j=0;
-				UT_sint32 k =i;
-				for(k=i; k < numRows && !bAfter; k++)
-				{
-					if(k == i)
+					bAfter = false;
+					bBBefore = false;
+					UT_sint32 j=0;
+					UT_sint32 k =i;
+					for(k=i; k < numRows && !bAfter; k++)
 					{
-						j = iColInsertAt;
-					}
-					else
-					{
-						j = 0;
-					}
-					while((j< numCols) && !bAfter)
-					{
-						posCell = findCellPosAt(posCol,k,j);
-						getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
-						if(jTop == i)
+						if(k == i)
 						{
-							bAfter = true;
+							j = iColInsertAt;
+						}
+						else
+						{
+							j = 0;
+						}
+						while((j< numCols) && !bAfter)
+						{
+							posCell = findCellPosAt(posCol,k,j);
+							getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
+							if(jTop == i)
+							{
+								bAfter = true;
 //
 // iColInsertAt gives the cell just to the right of the requested cell.
 // We need to insert just before this point - unless this is the last column
 // on the row in which case we need to insert after the endCell strux.
 //
-							PT_DocPosition posCellLeft = 0;
-							posCellLeft = findCellPosAt(posTable,k,j);
-							bRes = m_pDoc->getStruxOfTypeFromPosition(posCellLeft+1,PTX_SectionCell,&cellSDH);
-							if(jLeft <= iColInsertAt)
-							{
+								PT_DocPosition posCellLeft = 0;
+								posCellLeft = findCellPosAt(posTable,k,j);
+								bRes = m_pDoc->getStruxOfTypeFromPosition(posCellLeft+1,PTX_SectionCell,&cellSDH);
+								if(jLeft <= iColInsertAt)
+								{
+									endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
+									posEndCell = m_pDoc->getStruxPosition(endCellSDH);
+									posCellLeft = posEndCell+1;
+								}
 								endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 								posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-								posCellLeft = posEndCell+1;
+								UT_String_sprintf(sLeft,"%d",iColInsertAt+1);
+								UT_String_sprintf(sRight,"%d",iColInsertAt+2);
+								props[4] = sColLeft.c_str();
+								props[5] = sLeft.c_str();
+								props[6] = sColRight.c_str();
+								props[7] = sRight.c_str();
+								bRes = m_pDoc->insertStrux(posCellLeft,PTX_SectionCell,NULL,props);
+								bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
+								if(i == 0)
+								{
+									posFirstInsert = posCellLeft + 1;
+								}
+								bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
 							}
-							endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
-							posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-							UT_String_sprintf(sLeft,"%d",iColInsertAt+1);
-							UT_String_sprintf(sRight,"%d",iColInsertAt+2);
-							props[4] = sColLeft.c_str();
-							props[5] = sLeft.c_str();
-							props[6] = sColRight.c_str();
-							props[7] = sRight.c_str();
-							bRes = m_pDoc->insertStrux(posCellLeft,PTX_SectionCell,NULL,props);
-							bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
-							if(i == 0)
-							{
-								posFirstInsert = posCellLeft + 1;
-							}
-							bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
+							j++;
 						}
-						j++;
 					}
+					UT_ASSERT(bAfter);
 				}
-				UT_ASSERT(bAfter);
 			}
 		}
-	}
 //
 // OK now increment the cell container attach points for the cells after the inserted cells
 //
-	bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
-	if(!bRes)
-	{
-		//
-		// Disaster! the table structure in the piecetable is screwed.
-		// we're totally stuffed now.
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-	PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
-	bool bEnd = false;
-	UT_sint32 iCurLeft,iCurRight,iCurTop,iCurBot,iNewLeft,iNewRight;
-	UT_sint32 iPrevLeft,iPrevRight,iPrevTop,iPrevBot;
-	cellSDH = tableSDH;
-	bool bFirst = true;
-	PT_DocPosition iLastChangedPos = 0;
-	if(bBefore && iColInsertAt > 0)
-	{
-		iColInsertAt--;
-	}
-    while(!bEnd)
-	{
-		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+		bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
 		if(!bRes)
 		{
-			bEnd = true;
-			break;
+			//
+		// Disaster! the table structure in the piecetable is screwed.
+		// we're totally stuffed now.
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
-		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
-		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
-		if(posEndCell+1 > posEndTable)
+		UT_sint32 iCurInsertAt = iColInsertAt;
+		PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+		bool bEnd = false;
+		UT_sint32 iCurLeft,iCurRight,iCurTop,iCurBot,iNewLeft,iNewRight;
+		UT_sint32 iPrevLeft,iPrevRight,iPrevTop,iPrevBot;
+		cellSDH = tableSDH;
+		bool bFirst = true;
+		PT_DocPosition iLastChangedPos = 0;
+		if(bBefore && iCurInsertAt > 0)
 		{
-			bEnd = true;
-			break;
+			iCurInsertAt--;
 		}
-		if(posEndCell+1 == posEndTable)
+		while(!bEnd)
 		{
-			bEnd = true;
-		}
-		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+			if(!bRes)
+			{
+				bEnd = true;
+				break;
+			}
+			endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
+			posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
+			if(posEndCell+1 > posEndTable)
+			{
+				bEnd = true;
+				break;
+			}
+			if(posEndCell+1 == posEndTable)
+			{
+				bEnd = true;
+			}
+			posCell =  m_pDoc->getStruxPosition(cellSDH);
+			getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 //
 // OK after inserting, we simply increment all left/right attaches greater 
-// than the iColInsertAt by one. Or if there are two cells on the row with 
+// than the iCurInsertAt by the number of columns we insert. 
+// Or if there are two cells on the row with 
 // same left attach, increment the second one.
 //
 //
-		bool bChange = false;
-		iNewLeft = iCurLeft;
-		iNewRight = iCurRight;
-		if(!bFirst)
-		{
-			bRes = m_pDoc->getPrevStruxOfType(cellSDH,PTX_SectionCell,&prevCellSDH);
-			posPrevCell =  m_pDoc->getStruxPosition(prevCellSDH);
-			getCellParams(posPrevCell+1, &iPrevLeft, &iPrevRight,&iPrevTop,&iPrevBot);
-			if(iPrevLeft == iCurLeft && (iPrevTop == iCurTop) && (iLastChangedPos != posCell))
+			bool bChange = false;
+			iNewLeft = iCurLeft;
+			iNewRight = iCurRight;
+			if(!bFirst)
 			{
-				iLastChangedPos = posCell;
-				bChange = true;
-				iNewLeft++;
-				iNewRight++;
+				bRes = m_pDoc->getPrevStruxOfType(cellSDH,PTX_SectionCell,&prevCellSDH);
+				posPrevCell =  m_pDoc->getStruxPosition(prevCellSDH);
+				getCellParams(posPrevCell+1, &iPrevLeft, &iPrevRight,&iPrevTop,&iPrevBot);
+				if(iPrevLeft == iCurLeft && (iPrevTop == iCurTop) && (iLastChangedPos != posCell))
+				{
+					iLastChangedPos = posCell;
+					bChange = true;
+					iNewLeft+= 1;
+					iNewRight+= 1;
+				}
 			}
-		}
-		if(!bChange)
-		{
-			if((iCurLeft > iColInsertAt +1) && (iLastChangedPos != posCell))
+			if(!bChange)
 			{
-				iLastChangedPos = posCell;
-				bChange = true;
-				iNewLeft++;
-				iNewRight++;
+				if((iCurLeft > iCurInsertAt +1) && (iLastChangedPos != posCell))
+				{
+					iLastChangedPos = posCell;
+					bChange = true;
+					iNewLeft+=1;
+					iNewRight+=1;
+				}
 			}
+			UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d bChange %d \n",iCurLeft,iCurRight,iCurTop,iCurBot,bChange));
+			if(bChange)
+			{
+				UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iNewLeft,iNewRight,iCurTop,iCurBot));
+				const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+				UT_String sLeft,sRight,sTop,sBot;
+				props[0] = "left-attach";
+				UT_String_sprintf(sLeft,"%d",iNewLeft);
+				props[1] = sLeft.c_str();
+				props[2] = "right-attach";
+				UT_String_sprintf(sRight,"%d",iNewRight);
+				props[3] = sRight.c_str();
+				props[4] = "top-attach";
+				UT_String_sprintf(sTop,"%d",iCurTop);
+				props[5] = sTop.c_str();
+				props[6] = "bot-attach";
+				UT_String_sprintf(sBot,"%d",iCurBot);
+				props[7] = sBot.c_str();
+				UT_DEBUGMSG(("SEVIOR: Changing cell strux %s %s %s %s %s %s %s %s \n",props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7]));
+				bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
+			}
+			bFirst= false;
 		}
-		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d bChange %d \n",iCurLeft,iCurRight,iCurTop,iCurBot,bChange));
-		if(bChange)
-		{
-			UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iNewLeft,iNewRight,iCurTop,iCurBot));
-			const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-			UT_String sLeft,sRight,sTop,sBot;
-			props[0] = "left-attach";
-			UT_String_sprintf(sLeft,"%d",iNewLeft);
-			props[1] = sLeft.c_str();
-			props[2] = "right-attach";
-			UT_String_sprintf(sRight,"%d",iNewRight);
-			props[3] = sRight.c_str();
-			props[4] = "top-attach";
-			UT_String_sprintf(sTop,"%d",iCurTop);
-			props[5] = sTop.c_str();
-			props[6] = "bot-attach";
-			UT_String_sprintf(sBot,"%d",iCurBot);
-			props[7] = sBot.c_str();
-			UT_DEBUGMSG(("SEVIOR: Changing cell strux %s %s %s %s %s %s %s %s \n",props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7]));
-			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
-		}
-		bFirst= false;
+//
+// End of multiple column insert.
+//
 	}
 //
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
@@ -1007,11 +1020,25 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	return true;
 }
 
-
+/*!
+ * posRow is the position of the start of the selection in the table.
+ * insert rows into the table.
+ */
 bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell;
+	UT_sint32 numRowsForInsertion = getNumRowsInSelection();
+	if(numRowsForInsertion == 0)
+	{
+		return false;
+	}
+
+	if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
 	
@@ -1057,13 +1084,6 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty())
-	{
-		m_pDoc->beginUserAtomicGlob();
-		PP_AttrProp AttrProp_Before;
-		_deleteSelection(&AttrProp_Before);
-		m_pDoc->endUserAtomicGlob();
-	}
 	m_pDoc->setDontImmediatelyLayout(true);
   
 	//
@@ -1165,35 +1185,40 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 // 
 	PT_DocPosition posInsert = 0;
 	UT_sint32 i =0;
-	for(i=0; i < numCols; i++)
+	UT_sint32 j = 0;
+	for(j=0; j< numRowsForInsertion; j++)
 	{
-		const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-		UT_String sRowTop = "top-attach";
-		UT_String sRowBot = "bot-attach";
-		UT_String sColLeft = "left-attach";
-		UT_String sColRight = "right-attach";
-		UT_String sTop,sBot,sLeft,sRight;
-		UT_String_sprintf(sTop,"%d",prevTop);
-		UT_String_sprintf(sBot,"%d",prevTop+1);
-		UT_String_sprintf(sLeft,"%d",i);
-		UT_String_sprintf(sRight,"%d",i+1);
-		props[0] = sRowTop.c_str();
-		props[1] = sTop.c_str();
-		props[2] = sRowBot.c_str();
-		props[3] = sBot.c_str();
-		props[4] = sColLeft.c_str();
-		props[5] = sLeft.c_str();
-		props[6] = sColRight.c_str();
-		props[7] = sRight.c_str();
-		bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
-		bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
-		if(i == 0)
+		for(i=0; i < numCols; i++)
 		{
-			posInsert = posCell+2;
+			const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+			UT_String sRowTop = "top-attach";
+			UT_String sRowBot = "bot-attach";
+			UT_String sColLeft = "left-attach";
+			UT_String sColRight = "right-attach";
+			UT_String sTop,sBot,sLeft,sRight;
+			UT_String_sprintf(sTop,"%d",prevTop);
+			UT_String_sprintf(sBot,"%d",prevTop+1);
+			UT_String_sprintf(sLeft,"%d",i);
+			UT_String_sprintf(sRight,"%d",i+1);
+			props[0] = sRowTop.c_str();
+			props[1] = sTop.c_str();
+			props[2] = sRowBot.c_str();
+			props[3] = sBot.c_str();
+			props[4] = sColLeft.c_str();
+			props[5] = sLeft.c_str();
+			props[6] = sColRight.c_str();
+			props[7] = sRight.c_str();
+			bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
+			bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+			if(i == 0)
+			{
+				posInsert = posCell+2;
+			}
+			bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+			posCell += 3;
 		}
-		bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
-		posCell += 3;
-    }
+		prevTop++;
+	}
 //
 // OK! now starting immediately after this insert loop through the table adding 1 to top and bottom
 //
@@ -1233,8 +1258,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		}
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
 		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
-		iCurTop++;
-		iCurBot++;
+		iCurTop+=numRowsForInsertion;
+		iCurBot+=numRowsForInsertion;
 		UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
 		const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 		UT_String sLeft,sRight,sTop,sBot;

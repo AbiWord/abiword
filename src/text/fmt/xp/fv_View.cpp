@@ -1802,6 +1802,77 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	}
 }
 
+/*!
+ * This returns the number of distinct columns in a selection. If part of the 
+ * the selection is outside a table, it returns 0.
+ */
+UT_sint32 FV_View::getNumColumnsInSelection(void)
+{
+	UT_Vector vecBlocks;
+	getBlocksInSelection(&vecBlocks);
+	UT_sint32 i =0;
+	UT_sint32 iNumCols = 0;
+	UT_sint32 iCurCol = -1;
+	fl_BlockLayout * pBlock = NULL;
+	fl_CellLayout * pCell = NULL;
+	fp_CellContainer * pCellCon = NULL;
+	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
+	{
+		pBlock = static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(i));
+		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
+		{
+			return 0;
+		}
+		pCell = static_cast<fl_CellLayout *>(pBlock->myContainingLayout());
+		pCellCon = static_cast<fp_CellContainer *>(pCell->getFirstContainer());
+		if(pCellCon == NULL)
+		{
+			return 0;
+		}
+		if(pCellCon->getLeftAttach() > iCurCol)
+		{
+			iNumCols++;
+			iCurCol = pCellCon->getLeftAttach();
+		}
+	}
+	return iNumCols;
+}
+
+/*!
+ * This returns the number of distinct rows in a selection. If part of the 
+ * the selection is outside a table, it returns 0.
+ */
+UT_sint32 FV_View::getNumRowsInSelection(void)
+{
+	UT_Vector vecBlocks;
+	getBlocksInSelection(&vecBlocks);
+	UT_sint32 i =0;
+	UT_sint32 iNumRows = 0;
+	UT_sint32 iCurRow = -1;
+	fl_BlockLayout * pBlock = NULL;
+	fl_CellLayout * pCell = NULL;
+	fp_CellContainer * pCellCon = NULL;
+	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
+	{
+		pBlock = static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(i));
+		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
+		{
+			return 0;
+		}
+		pCell = static_cast<fl_CellLayout *>(pBlock->myContainingLayout());
+		pCellCon = static_cast<fp_CellContainer *>(pCell->getFirstContainer());
+		if(pCellCon == NULL)
+		{
+			return 0;
+		}
+		if(pCellCon->getTopAttach() > iCurRow)
+		{
+			iNumRows++;
+			iCurRow = pCellCon->getTopAttach();
+		}
+	}
+	return iNumRows;
+}
 
 void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 {
@@ -1844,7 +1915,7 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 		{
 			vBlock->addItem(pBlock);
 		}
-		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
+		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());
 	}
 	return;
 }

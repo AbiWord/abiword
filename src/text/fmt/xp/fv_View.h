@@ -264,6 +264,8 @@ public:
 	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(List_Type listType);
 	void	getBlocksInSelection( UT_Vector * vBlock);
+	UT_sint32 getNumColumnsInSelection(void);
+	UT_sint32 getNumRowsInSelection(void);
 	void	getAllBlocksInList( UT_Vector * vBlock);
 	bool	isPointBeforeListLabel(void);
 	bool	isCurrentListBlockEmpty(void);
