@@ -56,5 +56,6 @@ void
 GR_Abi_CharArea::render(RenderingContext& c, const scaled& x, const scaled& y) const
 {
   GR_Abi_RenderingContext& context = dynamic_cast<GR_Abi_RenderingContext&>(c);
-  context.drawChar(x, y, m_pFont, m_ch);
+  context.drawChar(x, y + m_box.height, m_pFont, m_ch);
+  //context.drawBox(x, y, m_box);
 }

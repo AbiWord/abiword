@@ -50,16 +50,18 @@ public:
 
   void drawGlyph(const scaled&, const scaled&, class GR_Font*, UT_uint32) const;
   void drawChar(const scaled&, const scaled&, class GR_Font*, UT_UCS4Char) const;
+  void drawBox(const scaled&, const scaled&, const BoundingBox&) const;
 
   // AbiWord layout units:
-  // 1 inch = UT_LAYOUT_RESOLUTION units
+  // 1 inch = UT_LAYOUT_RESOLUTION dots
   // 1 inch = 72.27 points
-  // 72.27 points = UT_LAYOUT_RESOLUTION units
-  // 1 point = UT_LAYOUT_RESOLUTION / 72.27 units
+  // 72.27 points = UT_LAYOUT_RESOLUTION dots
+  // 1 point = UT_LAYOUT_RESOLUTION / 72.27 dots
+  // 1 dot = 72.27 / UT_LAYOUT_RESOLUTION points
   static UT_sint32 toAbiLayoutUnits(const scaled& s)
-  { return round(s * (72.27 / UT_LAYOUT_RESOLUTION)).toInt(); }
+  { return round((s * UT_LAYOUT_RESOLUTION) / 72.27).toInt(); }
   static scaled fromAbiLayoutUnits(UT_sint32 s)
-  { return scaled(s * (UT_LAYOUT_RESOLUTION / 72.27)); }
+  { return scaled((s * 72.27) / UT_LAYOUT_RESOLUTION); }
 
   static UT_sint32 toAbiX(const scaled& x)
   { return toAbiLayoutUnits(x); }

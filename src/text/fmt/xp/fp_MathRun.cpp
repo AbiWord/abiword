@@ -61,6 +61,7 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 
 fp_MathRun::~fp_MathRun(void)
 {
+  m_pMathView->ref();
 }
 
 SmartPtr<GR_Abi_MathGraphicDevice> fp_MathRun::getMathDevice(void)
@@ -299,8 +300,8 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	GR_Graphics *pG = pDA->pG;
 	UT_DEBUGMSG(("Draw with class %x \n",pG));
 	UT_DEBUGMSG(("Contents of fp MathRun \n %s \n",m_sMathML.utf8_str()));
-	scaled x = getAbiContext()->fromAbiLayoutUnits(pDA->xoff);
-	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff+getAscent());
+	scaled x = getAbiContext()->fromAbiX(pDA->xoff);
+	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff+getAscent()); // should be fromAbiY()
 	m_pMathView->render(*getAbiContext(), x, y);
 }
 

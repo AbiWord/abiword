@@ -30,7 +30,7 @@ GR_Abi_RenderingContext::GR_Abi_RenderingContext(GR_Graphics* pGr)
 
 GR_Abi_RenderingContext::~GR_Abi_RenderingContext()
 {
-  DELETEP( m_pPainter);
+  DELETEP(m_pPainter);
 }
 
 void
@@ -52,6 +52,10 @@ GR_Abi_RenderingContext::getColor(RGBColor& c) const
 void
 GR_Abi_RenderingContext::fill(const UT_RGBColor& color, const scaled& x, const scaled& y, const BoundingBox& box) const
 {
+  xxx_UT_DEBUGMSG(("GR_Abi_RenderingContext::fill: color = %d %d %d at (%d,%d) box = [%d,%d,%d]\n",
+		   color.m_red, color.m_grn, color.m_blu,
+		   toAbiLayoutUnits(x), toAbiLayoutUnits(y),
+		   toAbiLayoutUnits(box.width), toAbiLayoutUnits(box.height), toAbiLayoutUnits(box.depth)));
   m_pPainter->fillRect(color,
 		       GR_Abi_RenderingContext::toAbiX(x),
 		       GR_Abi_RenderingContext::toAbiY(y + box.height),
@@ -83,4 +87,19 @@ GR_Abi_RenderingContext::drawChar(const scaled& x, const scaled& y, GR_Font* f, 
   m_pPainter->drawChars(&c, 0, 1,
 			GR_Abi_RenderingContext::toAbiX(x),
 			GR_Abi_RenderingContext::toAbiY(y));
+}
+
+void
+GR_Abi_RenderingContext::drawBox(const scaled& x, const scaled& y, const BoundingBox& box) const
+{
+  const UT_sint32 x0 = toAbiX(x);
+  const UT_sint32 x1 = toAbiX(x + box.width);
+  const UT_sint32 y0 = toAbiY(y);
+  const UT_sint32 y1 = toAbiY(y + box.height);
+  const UT_sint32 y2 = toAbiY(y - box.depth);
+  m_pPainter->drawLine(x0, y0, x1, y0);
+  m_pPainter->drawLine(x0, y1, x0, y2);
+  m_pPainter->drawLine(x1, y1, x1, y2);
+  m_pPainter->drawLine(x0, y1, x1, y1);
+  m_pPainter->drawLine(x0, y2, x1, y2);
 }
