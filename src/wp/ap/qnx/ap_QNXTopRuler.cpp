@@ -64,28 +64,26 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 //	pQNXFrameImpl->m_AvailableArea.size.h -= area.size.h + 3;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
 	UT_DEBUGMSG(("TR: Offset %d,%d Size %d/%d ", area.pos.x, area.pos.y, area.size.w, area.size.h));
-	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
 #define _TR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
                          Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TR_ANCHOR_, _TR_ANCHOR_);
 #define _TR_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _TR_STRETCH_, _TR_STRETCH_); 
-	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 2); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED|Pt_DELAY_REALIZE, Pt_HIGHLIGHTED|Pt_DELAY_REALIZE);
 	m_wTopRulerGroup = PtCreateWidget(PtGroup, m_rootWindow, n, args);
 	PtAddCallback(m_wTopRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
-	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 0);
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-    PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
+   PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_ARG_FLAGS, Pt_GETS_FOCUS); 
 	m_wTopRuler = PtCreateWidget(PtRaw, m_wTopRulerGroup, n, args);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
 								  _fe::motion_notify_event, this);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
+
 	return m_wTopRulerGroup;
 }
 
@@ -304,7 +302,8 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 {
 	PtArg_t args[1];
 	PhRect_t rect;
-	PtBasicWidgetCanvas(w, &rect);
+
+	PtCalcCanvas(w, &rect);
 
 	AP_QNXTopRuler ** ppQNXRuler = NULL, *pQNXRuler = NULL;
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXRuler, 0);
@@ -325,15 +324,7 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 
 
 				PtWidgetOffset(w, &shift);
-				PhDeTranslateRect(&damage->rect, &shift);
-
-        rClip.left = damage->rect.ul.x;
-        rClip.top = damage->rect.ul.y;
-        rClip.width = damage->rect.lr.x - damage->rect.ul.x;
-        rClip.height = damage->rect.lr.y - damage->rect.ul.y;
-
-		pQNXRuler->draw(&rClip);
-
+			pQNXRuler->draw(NULL);
 	return 0;
 }
 

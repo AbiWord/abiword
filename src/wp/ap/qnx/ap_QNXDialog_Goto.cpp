@@ -222,7 +222,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_Number )), 0);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_MULTITEXT_ROWS, 10, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_SET | Pt_HIGHLIGHTED);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_FALSE, Pt_SET | Pt_HIGHLIGHTED);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Label_Help), 0);
 	PtCreateWidget(PtMultiText, vlabelgroup, n, args);
 

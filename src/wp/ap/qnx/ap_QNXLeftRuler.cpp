@@ -64,21 +64,18 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
 	UT_DEBUGMSG(("LR: Offset %d,%d Size %d/%d ",
                 area.pos.x, area.pos.y, area.size.w, area.size.h));
-	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); 
 #define _LR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_LEFT | \
                          Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _LR_ANCHOR_, _LR_ANCHOR_); 
 #define _LR_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _LR_STRETCH_, _LR_STRETCH_); 
-	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 0); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE|Pt_HIGHLIGHTED, Pt_HIGHLIGHTED|Pt_DELAY_REALIZE); 
 	m_wLeftRulerGroup = PtCreateWidget(PtGroup, pQNXFrameImpl->getTopLevelWindow(), n, args);
 	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
-	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); 
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 0);
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 
@@ -256,7 +253,7 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	PhRect_t rect;
 	UT_Rect rClip;
 
-	PtBasicWidgetCanvas(w, &rect);
+	PtCalcCanvas(w, &rect);
 
 	AP_QNXLeftRuler ** ppQNXRuler = NULL, *pQNXRuler = NULL;
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXRuler, 0);
@@ -268,13 +265,9 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 
 		PhPoint_t shift;
 		PtWidgetOffset(w, &shift);
-		PhDeTranslateRect(&damage->rect, &shift);
 
-   rClip.left = damage->rect.ul.x;
-   rClip.top = damage->rect.ul.y;
-   rClip.width = damage->rect.lr.x - damage->rect.ul.x;
-   rClip.height = damage->rect.lr.y - damage->rect.ul.y;
-   pQNXRuler->draw(&rClip);
+   pQNXRuler->draw(NULL);
+
 	return 0;
 }
 	
