@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include "xap_clipboard.h"
+#include "xap_Clipboard.h"
 
 AP_Clipboard::AP_Clipboard()
 {
