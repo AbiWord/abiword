@@ -38,7 +38,7 @@
 #define AP_RID_DIALOG_OPT_SPL					208		// tab-sub-dlg
 #define AP_RID_DIALOG_OPT_PREF					209		// tab-sub-dlg
 #define AP_RID_DIALOG_OPT_VIEW					210		// tab-sub-dlg
-#define AP_RID_DIALOG_INSERT_DATETIME			211  
+#define AP_RID_DIALOG_DATETIME					211  
 
 #include "ap_Win32Resources_DialogReplace.rc2"
 #include "ap_Win32Res_DlgBreak.rc2"

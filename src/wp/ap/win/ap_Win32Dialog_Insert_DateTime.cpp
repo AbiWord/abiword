@@ -64,7 +64,7 @@ void AP_Win32Dialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 
     UT_ASSERT(m_id == AP_DIALOG_ID_INSERT_DATETIME);
 
-    lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_INSERT_DATETIME);
+    lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_DATETIME);
 
     int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
                 pWin32Frame->getTopLevelWindow(),
@@ -101,17 +101,39 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
     time_t  tim = time(NULL);
     struct tm *pTime = localtime(&tim);
 
+// debug code to produce widest possible string (in English, at least)
+#if 0				
+	struct tm wide = { 42, 3, 8, 27, 8, 100, 3 };	// Wednesday, September 27, 2000
+	pTime = &wide;
+#endif
+
     for (i = 0;InsertDateTimeFmts[i] != NULL;i++) {
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
         SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)szCurrentDateTime);
     }
 }
 
+
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 BOOL AP_Win32Dialog_Insert_DateTime::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-    m_hwndFormats = GetDlgItem(hWnd, AP_RID_DIALOG_INSERT_DATETIME_FORMAT_LISTBOX);
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
+
+	// localize controls
+	_DSX(DATETIME_BTN_OK,			DLG_OK);
+	_DSX(DATETIME_BTN_CANCEL,		DLG_Cancel);
+
+	_DS(DATETIME_TEXT_FORMATS,		DLG_DateTime_AvailableFormats);
+
+	// set initial state
+    m_hwndFormats = GetDlgItem(hWnd, AP_RID_DIALOG_DATETIME_LIST_FORMATS);
     SetFormatsList();
     SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
+
     return 1;             // 1 == we did not call SetFocus()
 }
 
@@ -122,14 +144,14 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
     HWND hWndCtrl = (HWND)lParam;
 
     switch (wId){
-    case IDCANCEL:            // also AP_RID_DIALOG_BREAK_BTN_CANCEL
+    case IDCANCEL:            // also AP_RID_DIALOG_DATETIME_BTN_CANCEL
         m_answer = a_CANCEL;
         // fall through
 
-    case IDOK:              // also AP_RID_DIALOG_BREAK_BTN_OK
+    case IDOK:              // also AP_RID_DIALOG_DATETIME_BTN_OK
         EndDialog(hWnd,0);
         return 1;
-    case AP_RID_DIALOG_INSERT_DATETIME_FORMAT_LISTBOX:
+    case AP_RID_DIALOG_DATETIME_LIST_FORMATS:
         switch (HIWORD(wParam)){
             case LBN_SELCHANGE:
                 _FormatListBoxChange();
@@ -153,6 +175,5 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 void AP_Win32Dialog_Insert_DateTime::_FormatListBoxChange(void)
 {
     m_iFormatIndex = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0);
-//    SendMessage(m_hwndFormats,LB_GETTEXT,iSelectedRow,(LPARAM)m_szCurrentDateTime);
 }
 
