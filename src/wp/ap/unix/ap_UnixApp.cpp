@@ -46,6 +46,13 @@
 #include "ie_imp.h"
 #include "ie_types.h"
 
+#include "gr_Graphics.h"
+#include "gr_UnixGraphics.h"
+#include "gr_Image.h"
+#include "ut_bytebuf.h"
+#include "ut_png.h"
+#include "ut_dialogHelper.h"
+
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
@@ -263,6 +270,148 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 
 /*****************************************************************/
 
+
+static GtkWidget * wSplash = NULL;
+static GR_Image * pSplashImage = NULL;
+static GR_UnixGraphics * pUnixGraphics = NULL;
+static guint timeout_handler = 0;
+
+static gint s_hideSplash(gpointer /*data*/)
+{
+	if (wSplash)
+	{
+		gtk_timeout_remove(timeout_handler);
+		gtk_widget_destroy(wSplash);
+		wSplash = NULL;
+		DELETEP(pUnixGraphics);
+		DELETEP(pSplashImage);
+	}
+	return TRUE;
+}
+
+/* These events don't ever get triggered on a POPUP type window */
+#if 0
+static void s_key_event(GtkWidget * /*window*/, GdkEventKey * /*key*/)
+{
+	s_hideSplash(NULL);
+}
+
+static void s_button_event(GtkWidget * /*window*/)
+{
+	s_hideSplash(NULL);
+}
+#endif
+
+static gint s_drawingarea_expose(GtkWidget * /* widget */,
+								 GdkEventExpose * /* pExposeEvent */)
+{
+	if (pUnixGraphics && pSplashImage)
+	{
+		pUnixGraphics->drawImage(pSplashImage, 0, 0);
+	}
+		return FALSE;
+}
+
+static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
+{
+	wSplash = NULL;
+	pSplashImage = NULL;
+
+	UT_ByteBuf* pBB = NULL;
+	UT_Bool bShowSplash = UT_TRUE;
+	const char * szFile = "splash.png";
+
+	// Unix does put the program name in argv[0], unlike Win32, so [1] is the first argument
+	int nFirstArg = 1;
+	int k;
+	
+	// scan args for splash-related stuff
+	for (k=nFirstArg; (k<pArgs->m_argc); k++)
+	{
+		if (*pArgs->m_argv[k] == '-')
+		{
+			if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0)
+			{
+				bShowSplash = UT_FALSE;
+				break;
+			}
+#if DEBUG
+			else if (UT_stricmp(pArgs->m_argv[k],"-splash") == 0)
+			{
+				// [-splash filename]
+				szFile = pArgs->m_argv[k+1];
+				break;
+
+				// NOTE: this switch is just for debugging artwork, so 
+				// it's OK that the filename also gets opened as a document
+			}
+#endif
+		}
+
+		// TODO: platform-specific reasons to not show splash?
+		// TODO: for example, if being launched via DDE or OLE??
+	}
+
+	if (!bShowSplash)
+		goto Done;
+
+	extern unsigned char g_pngSplash[];		// see ap_wp_Splash.cpp
+	extern unsigned long g_pngSplash_sizeof;	// see ap_wp_Splash.cpp
+
+	pBB = new UT_ByteBuf();
+	if (
+		(pBB->insertFromFile(0, szFile))
+		|| (pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
+		)
+	{
+		// get splash size
+		UT_sint32 iSplashWidth;
+		UT_sint32 iSplashHeight;
+		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
+
+		// create a centered window the size of our image
+		wSplash = gtk_window_new(GTK_WINDOW_POPUP);
+		gtk_object_set_data(GTK_OBJECT(wSplash), "wSplash", wSplash);
+		gtk_widget_set_usize(wSplash, iSplashWidth, iSplashHeight);
+		gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
+
+		// create a drawing area
+		GtkWidget * da = gtk_drawing_area_new ();
+		gtk_object_set_data(GTK_OBJECT(wSplash), "da", da);
+		gtk_widget_set_events(da, GDK_EXPOSURE_MASK);
+		gtk_widget_set_usize(da, iSplashWidth, iSplashHeight);
+		gtk_signal_connect(GTK_OBJECT(da), "expose_event",
+						   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
+//		gtk_signal_connect(GTK_OBJECT(da), "key_press_event",
+//						   GTK_SIGNAL_FUNC(s_key_event), NULL);
+//		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
+//						   GTK_SIGNAL_FUNC(s_button_event), NULL);
+		gtk_widget_show(da);
+		gtk_container_add(GTK_CONTAINER(wSplash), da);
+
+		// now bring the window up front & center
+		//GdkWindowPrivate * root = getRootWindow(wSplash);
+		gtk_window_set_position(GTK_WINDOW(wSplash), GTK_WIN_POS_CENTER);
+		
+		// show it out front (this sucks; this should happen after the slow process of creating a new GC)
+		gtk_widget_show(wSplash);
+
+		// create image context
+		pUnixGraphics = new GR_UnixGraphics(da->window, NULL);
+		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
+
+		// do timeout handler (so it automatically disappears in 2 seconds)
+		timeout_handler = gtk_timeout_add(2000, s_hideSplash, NULL);
+	}
+
+	DELETEP(pBB);
+
+Done:
+	return pSplashImage;
+}
+
+/*****************************************************************/
+
 int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {
 	// This is a static function.
@@ -273,7 +422,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	UT_DEBUGMSG(("Build Target: \t%s\n", XAP_App::s_szBuild_Target));
 	UT_DEBUGMSG(("Compile Date:\t%s\n", XAP_App::s_szBuild_CompileDate));
 	UT_DEBUGMSG(("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime));
-	
+
 	// initialize our application.
 
 	XAP_Args Args = XAP_Args(argc,argv);
@@ -286,11 +435,13 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	}
+	_showSplash(&Args, szAppName);
 
 	pMyUnixApp->ParseCommandLine();
 
+//	s_hideSplash(NULL);
+
 	// turn over control to gtk
-	
 	gtk_main();
 	
 	// destroy the App.  It should take care of deleting all frames.
