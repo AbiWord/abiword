@@ -156,26 +156,43 @@ ap_bs_Mouse MouseTable[] =
 	
 //  Button-4, Mouse wheel (3 lines up)... yes, a hack.
 	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CU _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CT _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CT _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CL _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CL _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 #ifdef BIDI_ENABLED
 	{_CR _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 #endif	
 	{_CM _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CM _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CI _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CI _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CZ _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CZ _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CF _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CF _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CH _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CH _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
+
 
 //  Button-5, Mouse wheel (3 lines down)
 	{_CU _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CU _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CT _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CT _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CL _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CL _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CM _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CM _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CI _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CI _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CZ _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CZ _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CF _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CF _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CH _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CH _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},

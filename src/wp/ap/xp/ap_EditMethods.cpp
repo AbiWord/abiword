@@ -317,6 +317,8 @@ public:
   static EV_EditMethod_Fn zoom50;
   static EV_EditMethod_Fn zoomWidth;
   static EV_EditMethod_Fn zoomWhole;
+  static EV_EditMethod_Fn zoomIn;
+  static EV_EditMethod_Fn zoomOut;
 
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
@@ -979,8 +981,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(zoom200), 0, ""),
 	EV_EditMethod(NF(zoom50), 0, ""),
 	EV_EditMethod(NF(zoom75), 0, ""),
+	EV_EditMethod(NF(zoomIn), 0, ""),
+	EV_EditMethod(NF(zoomOut), 0, ""), 
 	EV_EditMethod(NF(zoomWhole), 0, ""),
-	EV_EditMethod(NF(zoomWidth), 0, "") 
+	EV_EditMethod(NF(zoomWidth), 0, "")
 };
 
 
@@ -6003,6 +6007,44 @@ Defun1(zoomWhole)
   pFrame->setZoomType( XAP_Frame::z_WHOLEPAGE );
 
   UT_uint32 newZoom = pView->calculateZoomPercentForWholePage();
+
+  s_StartStopLoadingCursor(true, pFrame);
+  pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
+  return true;
+}
+
+Defun1(zoomIn)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  UT_uint32 newZoom = pFrame->getZoomPercentage() + 10;
+  pFrame->setZoomType( XAP_Frame::z_PERCENT );
+
+  s_StartStopLoadingCursor(true, pFrame);
+  pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
+  return true;
+}
+
+Defun1(zoomOut)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  UT_uint32 newZoom = pFrame->getZoomPercentage() - 10;
+  pFrame->setZoomType( XAP_Frame::z_PERCENT );
 
   s_StartStopLoadingCursor(true, pFrame);
   pFrame->setZoomPercentage(newZoom);
