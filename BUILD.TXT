@@ -147,6 +147,9 @@ Build Instructions -- MacOS X
 -----------------------------
 
 Only MacOS X final is supported. MacOS Public Beta is no longer.
+Two options to build Abiword. With make or with autoconf.
+
+*Make
 
 Building on MacOS X is similar to the other UNIX platforms. We rely on the
 GNU command line tools like zsh, sed, make, etc. that are provided on 
@@ -158,6 +161,17 @@ You'll need to check out the following extra modules from abi CVS:
 -libpng
 -libiconv
 They'll get build by the make system.
+
+*autoconf
+
+Prior to build Abiword with the autoconf build system, you need to compile
+and install the following libraries:
+-libpng
+-libiconv
+Then you need to build the following peer libraries
+-wv
+-psiconv
+-expat
 
 =======================================================================================
 FAQ
