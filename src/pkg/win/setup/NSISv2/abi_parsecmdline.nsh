@@ -95,9 +95,9 @@ Var v_opt_enable_win95only
   ${Select} ${cmdarg}
     ${Case2} "/HELP" "/?"
       ${DoHelpCmd}
-    $(Case) "/S"
+    ${Case} "/S"
       StrCpy $v_silent "1"
-    $(Case2) "/RESPONSEFILE" "/R"
+    ${Case2} "/RESPONSEFILE" "/R"
       StrCpy $v_responsefile "${optval}"
     ${Case2} "/MODIFYINSTALL" "/M"
       StrCpy $v_modifyinstall "1"              ; set installer into change/modify mode
