@@ -13,7 +13,5 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-        DocumentLocale="en-AU"
         RulerUnits="cm"
-        DefaultPageSize="A4"
 />

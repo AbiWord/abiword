@@ -13,8 +13,6 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    DocumentLocale="div-MV"
     DefaultDirectionRtl="1"
     RulerUnits="cm"
-    DefaultPageSize="A4"
 />

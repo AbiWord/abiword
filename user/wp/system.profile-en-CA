@@ -13,7 +13,5 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-	DocumentLocale="en-CA"
-	RulerUnits="inch"
-	DefaultPageSize="Letter"
+	RulerUnits="cm"
 />

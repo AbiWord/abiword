@@ -19,6 +19,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
+#include <locale.h>
 #include "ut_locale.h"
 
 // don't like XAP in UT, but oh well...

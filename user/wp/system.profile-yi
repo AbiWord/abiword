@@ -13,8 +13,6 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    DocumentLocale="yi"
     DefaultDirectionRtl="1"
     RulerUnits="cm"
-    DefaultPageSize="A4"
 />

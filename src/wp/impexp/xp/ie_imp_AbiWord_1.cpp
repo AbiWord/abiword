@@ -188,10 +188,7 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 /* Quick hack for GZipAbiWord */
 UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
-	UT_Error bret = IE_Imp_XML::importFile(szFilename);
-	if(!bret && !m_bDocHasPageSize)
-		getDoc()->setDefaultPageSize();
-	return bret;
+	return IE_Imp_XML::importFile(szFilename);
 }
 
 /*****************************************************************/

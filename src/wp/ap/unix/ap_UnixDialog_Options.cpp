@@ -48,16 +48,6 @@
 
 /*****************************************************************/
 
-//
-// For Screen color picker
-	enum
-	{
-		RED,
-		GREEN,
-		BLUE,
-		OPACITY
-	};
-
 static void s_radio_toggled (GtkWidget * w, GtkWidget * c)
 {
   GtkCList * clist = GTK_CLIST (c);
@@ -72,13 +62,12 @@ static void s_radio_toggled (GtkWidget * w, GtkWidget * c)
 XAP_Dialog * AP_UnixDialog_Options::static_constructor(XAP_DialogFactory * pFactory,
                                                          XAP_Dialog_Id id)
 {
-    AP_UnixDialog_Options * p = new AP_UnixDialog_Options(pFactory,id);
-    return p;
+	return new AP_UnixDialog_Options(pFactory,id);
 }
 
 AP_UnixDialog_Options::AP_UnixDialog_Options(XAP_DialogFactory * pDlgFactory,
 					     XAP_Dialog_Id id)
-  : AP_Dialog_Options(pDlgFactory,id), m_pageSize(fp_PageSize::psLetter)
+  : AP_Dialog_Options(pDlgFactory,id)
 {
 }
 
@@ -101,11 +90,10 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     _populateWindowData();
     _initUnixOnlyPrefs();
 
-    switch ( abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_OK, false ) )
+    switch ( abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, GTK_RESPONSE_OK, false ) )
       {
-      case BUTTON_OK:
       default:
-	event_OK (); break ;
+		  event_OK (); break;
       }
 
     abiDestroyWidget ( mainWindow ) ;
@@ -140,21 +128,12 @@ void AP_UnixDialog_Options::event_clistClicked (int row, int col)
   gdouble cur [4];
 
   gtk_color_selection_get_color (w, cur);
-  sprintf(color,"#%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
+  sprintf(color,"#%02x%02x%02x",CTI(cur, 1), CTI(cur, 2), CTI(cur, 3));
 
   strncpy(dlg->m_CurrentTransparentColor,static_cast<const XML_Char *>(color),9);
 }
 
 #undef CTI
-
-static void s_page_size_changed (GtkWidget * w, GtkWidget * child,
-				 AP_UnixDialog_Options *dlg)
-{
-  UT_ASSERT(w && dlg);
-
-  fp_PageSize::Predefined pos = (fp_PageSize::Predefined)gtk_list_child_position (GTK_LIST(w), child);
-  dlg->event_PageSizeChanged (pos);
-}
 
 void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 {
@@ -180,9 +159,9 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
   UT_parseColor(m_CurrentTransparentColor,c);
 
   gdouble currentColor[4] = { 0, 0, 0, 0 };
-  currentColor[RED] = (static_cast<gdouble>(c.m_red) / static_cast<gdouble>(255.0));
-  currentColor[GREEN] = (static_cast<gdouble>(c.m_grn) / static_cast<gdouble>(255.0));
-  currentColor[BLUE] = (static_cast<gdouble>(c.m_blu) / static_cast<gdouble>(255.0));
+  currentColor[0] = (static_cast<gdouble>(c.m_red) / static_cast<gdouble>(255.0));
+  currentColor[1] = (static_cast<gdouble>(c.m_grn) / static_cast<gdouble>(255.0));
+  currentColor[2] = (static_cast<gdouble>(c.m_blu) / static_cast<gdouble>(255.0));
 
   gtk_color_selection_set_color (GTK_COLOR_SELECTION(colorsel),
 				 currentColor);
@@ -322,8 +301,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *table4;
 	GtkWidget *ruler_units;
 	GtkWidget *ruler_units_menu;
-	GtkWidget *page_size;
-	GtkWidget *label22;
 	GtkWidget *label21;
 	GtkWidget *vbox58;
 	GtkWidget *enable_sq;
@@ -722,32 +699,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (ruler_units), ruler_units_menu);
 
-	// the page size menu
-	page_size = gtk_combo_new();
-	gtk_widget_show (page_size);
-	gtk_table_attach (GTK_TABLE (table4), page_size, 1, 2, 1, 2,
-			  (GtkAttachOptions) (GTK_FILL),
-			  (GtkAttachOptions) (GTK_EXPAND), 0, 0);
-	GList *popdown_items = NULL;
-	for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_);
-		 i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++)
-	{
-	  popdown_items = g_list_append (popdown_items, const_cast<void *>(reinterpret_cast<const void*>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i))) );
-	}
-	gtk_combo_set_popdown_strings (GTK_COMBO (page_size), popdown_items);
-
-	GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(page_size)->list);
-	gtk_list_select_item (optionPageSizeList, static_cast<gint>(m_pageSize));
-	g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",
-			   G_CALLBACK(s_page_size_changed), static_cast<gpointer>(this));
-
-	label22 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DefaultPageSize).c_str());
-	gtk_widget_show (label22);
-	gtk_table_attach (GTK_TABLE (table4), label22, 0, 1, 1, 2,
-			  (GtkAttachOptions) (GTK_FILL),
-			  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (label22), GTK_JUSTIFY_LEFT);
-
 	label21 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnits).c_str());
 	gtk_widget_show (label21);
 	gtk_table_attach (GTK_TABLE (table4), label21, 0, 1, 0, 1,
@@ -954,7 +905,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_checkbuttonAutoLoadPlugins      = checkAutoLoadPlugins;
 
 	m_checkbuttonSmartQuotesEnable	        = enable_sq;
-	m_listDefaultPageSize			= page_size;
 
 	m_checkbuttonPrefsAutoSave		= save_scheme;
 	m_comboPrefsScheme			= current_scheme;
@@ -1064,7 +1014,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 			   static_cast<gpointer>(this));
 #endif
 
-	buttonOk = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CLOSE, BUTTON_OK);
+	buttonOk = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CLOSE, GTK_RESPONSE_OK);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -1141,9 +1091,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	// other
 	case id_CHECK_SMART_QUOTES_ENABLE:
 		return m_checkbuttonSmartQuotesEnable;
-
-	case id_LIST_DEFAULT_PAGE_SIZE:
-		return m_listDefaultPageSize;
 
 	case id_SHOWSPLASH:
 		return m_checkbuttonShowSplash;
@@ -1410,19 +1357,6 @@ static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gcha
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-fp_PageSize::Predefined AP_UnixDialog_Options::_gatherDefaultPageSize(void)
-{
-	return (fp_PageSize::Predefined)m_pageSize;
-}
-
-void AP_UnixDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
-{
-	UT_ASSERT(m_listDefaultPageSize);
-	m_pageSize = pre;
-	GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_listDefaultPageSize)->list);
-	gtk_list_select_item (optionPageSizeList, static_cast<gint>(pre));
-}
 
 void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 {

@@ -13,8 +13,6 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    DocumentLocale="ps"
     DefaultDirectionRtl="1"
     RulerUnits="cm"
-    DefaultPageSize="A4"
 />

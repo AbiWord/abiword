@@ -70,9 +70,6 @@
 /* append suffixes to saved files */
 #define XAP_PREF_DEFAULT_UseSuffix					"1"
 
-#define XAP_PREF_KEY_DefaultPageSize				"DefaultPageSize"
-#define XAP_PREF_DEFAULT_DefaultPageSize			 "Letter"
-
 #define XAP_PREF_KEY_DefaultDirectionRtl	"DefaultDirectionRtl"
 
 #ifndef BIDI_RTL_DOMINANT
@@ -147,9 +144,6 @@
 #define XAP_PREF_KEY_ColorForRevision10				"ColorRevision10"
 #define XAP_PREF_DEFAULT_ColorForRevision10			"ff0000"
 
-#define XAP_PREF_KEY_DocumentLocale "DocumentLocale"
-#define XAP_PREF_DEFAULT_DocumentLocale "en-US"
-
 #define XAP_PREF_KEY_DefaultSaveDirectory "DefaultSaveDirectory"
 #define XAP_PREF_DEFAULT_DefaultSaveDirectory "" /* empty for $PWD basically */
 
@@ -190,7 +184,6 @@ dcl(RemapGlyphsDefault)
 dcl(RemapGlyphsTable)
 dcl(SmartQuotesEnable)
 dcl(UseSuffix)
-dcl(DefaultPageSize)
 dcl(DefaultDirectionRtl)
 dcl(UseContextGlyphs)
 dcl(SaveContextGlyphs)
@@ -219,7 +212,6 @@ dcl(ColorForRevision7)
 dcl(ColorForRevision8)
 dcl(ColorForRevision9)
 dcl(ColorForRevision10)
-dcl(DocumentLocale)
 dcl(AllowCustomToolbars)
 dcl(AutoLoadPlugins)
 dcl(ZoomType)

@@ -21,7 +21,6 @@
 #define AP_UNIXDIALOG_OPTIONS_H
 
 #include "xap_UnixFontManager.h"
-
 #include "ap_Dialog_Options.h"
 
 class XAP_UnixFrame;
@@ -39,10 +38,6 @@ public:
 	//void initializeTransperentToggle(void);
 	void event_ChooseTransparentColor(void);
 	void event_AllowTransparentColor(void);
-	void event_PageSizeChanged (fp_PageSize::Predefined pre)
-	  {
-	    m_pageSize = pre;
-	  }
 
  protected:
 
@@ -64,7 +59,6 @@ public:
  	SET_GATHER			(ShowSplash,	bool);
 
 	SET_GATHER			(SmartQuotesEnable,	bool );
-	SET_GATHER			(DefaultPageSize,  fp_PageSize::Predefined);
 
  	SET_GATHER			(PrefsAutoSave,		bool );
 
@@ -85,7 +79,7 @@ public:
  	SET_GATHER			(ViewUnprintable,	bool );
     SET_GATHER          (AllowCustomToolbars, bool);
     SET_GATHER          (AutoLoadPlugins,    bool);
- 	SET_GATHER			(NotebookPageNum,	int );
+ 	SET_GATHER			(NotebookPageNum,	int);
 
 	SET_GATHER			(OtherDirectionRtl, bool);
 	SET_GATHER			(OtherUseContextGlyphs, bool);
@@ -102,14 +96,8 @@ public:
 
  protected:
 
-	enum
-	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
-	  } ResponseId ;
-
 	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
+	GtkWidget * _constructWindow(void);
 	GtkWidget *         _constructWindowContents(GtkWidget *);
 
 	// pointers to widgets we need to query/set
@@ -132,7 +120,6 @@ public:
 	GtkWidget * m_buttonSpellIgnoreReset;
 
     GtkWidget * m_checkbuttonSmartQuotesEnable;
-    GtkWidget * m_listDefaultPageSize;
 
     GtkWidget * m_checkbuttonPrefsAutoSave;
 	GtkWidget * m_comboPrefsScheme;
@@ -171,7 +158,7 @@ public:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 
-protected:
+private:
 	// Unix call back handlers
 	static void s_apply_clicked			( GtkWidget *, gpointer );
 	static void s_defaults_clicked		( GtkWidget *, gpointer );
@@ -187,15 +174,13 @@ protected:
 	static gint s_menu_item_activate	( GtkWidget *, gpointer );
 
 	// callbacks can fire these events
-    virtual void event_OK(void);
-    virtual void event_Cancel(void);
-    virtual void event_Apply(void);
-    virtual void event_clistClicked (int row, int col);
+    void event_OK(void);
+    void event_Cancel(void);
+    void event_Apply(void);
+    void event_clistClicked (int row, int col);
     void _saveUnixOnlyPrefs();
     void _initUnixOnlyPrefs();
     virtual void _storeWindowData(void);
-
-    fp_PageSize::Predefined m_pageSize;
 };
 
 #endif /* AP_UNIXDIALOG_OPTIONS_H */

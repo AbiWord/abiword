@@ -13,8 +13,5 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    DocumentLocale="zh-CN"
     RulerUnits="cm"
-    DefaultPageSize="A4"
-    SmartQuotesEnable="0"
 />

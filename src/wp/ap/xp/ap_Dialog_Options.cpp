@@ -122,8 +122,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, _gatherDirMarkerAfterClosingParenthesis());
 	
-	
-#if 1
 	// JOAQUIN - fix this: Dom
 	UT_DEBUGMSG(("Saving Auto Save File [%i]\n", _gatherAutoSaveFile()));
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoSaveFile, _gatherAutoSaveFile() );
@@ -138,12 +136,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, stVal.c_str());
 	
 	// Jordi: win32 specific for now
-	_gatherDocLanguage(stVal);
-	if (stVal.length())
-	{
-		UT_DEBUGMSG(("Setting default document language to [%s]\n", stVal.c_str()));
-		pPrefsScheme->setValue(XAP_PREF_KEY_DocumentLocale, stVal.c_str());
-	}
 	
 	_gatherUILanguage(stVal);
 	if (stVal.length())
@@ -152,8 +144,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 		pPrefsScheme->setValue(AP_PREF_KEY_StringSet, stVal.c_str());
 	}
 	
-	
-#endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
@@ -212,13 +202,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// save ruler units value
 	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
 				   (XML_Char*)UT_dimensionName( _gatherViewRulerUnits()) );
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// save default paper size
-	UT_ASSERT(sizeof(XML_Char) && sizeof(char));
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_DefaultPageSize,
-				   (XML_Char*)fp_PageSize::PredefinedToName( _gatherDefaultPageSize()) );
-
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save screen color
@@ -296,11 +279,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,&b))
 		_setSmartQuotesEnable (b);
 
-	if (pPrefs->getPrefsValue((XML_Char*)XAP_PREF_KEY_DefaultPageSize, &pszBuffer)) {
-		UT_ASSERT(sizeof(XML_Char) == sizeof(char));
-		_setDefaultPageSize (fp_PageSize::NameToPredefined((char*) pszBuffer));
-	}
-
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
 
@@ -340,7 +318,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoLoadPlugins,&b))
 		_setAutoLoadPlugins(b);
 
-#if 1
 	// TODO: JOAQUIN FIX THIS
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFile,&b))
 		_setAutoSaveFile (b);
@@ -353,14 +330,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setAutoSaveFilePeriod(stBuffer);
 		
 	//Just for win32 
-	if (pPrefs->getPrefsValue(XAP_PREF_KEY_DocumentLocale, stBuffer))
-		_setDocLanguage(stBuffer);
-		
 	if (pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, stBuffer))
 		_setUILanguage(stBuffer);
 		
-#endif
-
 	// ------------ Screen Color
 
 	const XML_Char * pszColorForTransparent = NULL;

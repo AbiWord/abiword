@@ -13,8 +13,6 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    DocumentLocale="fa-IR"
     DefaultDirectionRtl="1"
     RulerUnits="cm"
-    DefaultPageSize="A4"
 />

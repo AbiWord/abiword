@@ -20,7 +20,6 @@
 #ifndef UT_LOCALE_H
 #define UT_LOCALE_H
 
-#include <locale.h>
 #include "ut_string_class.h"
 
 class UT_LocaleTransactor

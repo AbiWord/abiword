@@ -391,8 +391,6 @@ public:
 
 	// PageSize functions
 	fp_PageSize				m_docPageSize;
-	void					setDefaultPageSize(void);
-	const char *			getDefaultPageSize(void);
 	bool					setPageSizeFromFile(const XML_Char ** attributes);
 
 	bool					isBookmarkUnique(const XML_Char * pName) const;

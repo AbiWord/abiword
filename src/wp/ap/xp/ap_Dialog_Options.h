@@ -53,7 +53,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_BUTTON_DICTIONARY_EDIT, id_BUTTON_IGNORE_RESET,
 				   id_BUTTON_IGNORE_EDIT, id_BUTTON_SPELL_AUTOREPLACE,
 
-				   id_CHECK_SMART_QUOTES_ENABLE, id_LIST_DEFAULT_PAGE_SIZE,
+				   id_CHECK_SMART_QUOTES_ENABLE,
 
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
 				   id_CHECK_OTHER_USE_CONTEXT_GLYPHS,
@@ -134,13 +134,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
 	SET_GATHER			(SpellInternet, 	bool);
-#if 0
-	SET_GATHER			(SpellAutoReplace,	bool);
-#endif
 
 	SET_GATHER			(ShowSplash,bool);
 	SET_GATHER			(SmartQuotesEnable, bool);
-	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
 
 	SET_GATHER			(PrefsAutoSave, 	bool);
 
@@ -171,8 +167,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	
 	// Jordi: For now this is just implemented in win32, we should make it
 	// an abstract member if we decide to implemented in all platforms
-	virtual void _gatherDocLanguage(UT_String &stRetVal){stRetVal.clear();};
-	virtual void _setDocLanguage(const UT_String &stExt) {};
 	virtual void _gatherUILanguage(UT_String &stRetVal){stRetVal.clear();};
 	virtual void _setUILanguage(const UT_String &stExt) {};
 	virtual bool _gatherLanguageWithKeyboard() {return false;}

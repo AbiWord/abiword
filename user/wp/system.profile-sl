@@ -13,7 +13,5 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    DocumentLocale="sl-SI"
     RulerUnits="cm"
-    DefaultPageSize="A4"
 />

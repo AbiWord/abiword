@@ -54,6 +54,7 @@
 #include "ut_string_class.h"
 #include "ut_sleep.h"
 #include "ut_path.h"
+#include "ut_locale.h"
 
 // these are needed because of the exportGetVisDirectionAtPosition() mechanism
 #include "fp_Run.h"
@@ -81,30 +82,30 @@ struct _dataItemPair
 // a previous saveAs() (which specifies a type)
 PD_Document::PD_Document(XAP_App *pApp)
 	: AD_Document(),
-	m_docPageSize(getDefaultPageSize()),
-	m_ballowListUpdates(false),
-	m_pPieceTable(0),
-	m_hashDataItems(11),
-	m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
-    m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
-	m_bDoingPaste(false),
-	m_bAllowInsertPointChange(true),
-	m_bRedrawHappenning(false),
-    m_bLoading(false),
-    m_bForcedDirty(false),
-    m_bLockedStyles(false),        // same as lockStyles(false)
-    m_bMarkRevisions(false),
-	m_iRevisionID(1),
-	m_bDontImmediatelyLayout(false),
-	m_iLastDirMarker(0),
-	m_pVDBl(NULL),
-	m_pVDRun(NULL),
-	m_iVDLastPos(0xffffffff)
+	  m_docPageSize("A4"),
+	  m_ballowListUpdates(false),
+	  m_pPieceTable(0),
+	  m_hashDataItems(11),
+	  m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
+	  m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
+	  m_bDoingPaste(false),
+	  m_bAllowInsertPointChange(true),
+	  m_bRedrawHappenning(false),
+	  m_bLoading(false),
+	  m_bForcedDirty(false),
+	  m_bLockedStyles(false),        // same as lockStyles(false)
+	  m_bMarkRevisions(false),
+	  m_iRevisionID(1),
+	  m_bDontImmediatelyLayout(false),
+	  m_iLastDirMarker(0),
+	  m_pVDBl(NULL),
+	  m_pVDRun(NULL),
+	  m_iVDLastPos(0xffffffff)
 {
 	m_pApp = pApp;
-
+	
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
-
+	
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
@@ -391,28 +392,50 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	updateFields();
 	_setClean();							// mark the document as not-dirty
 
-	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+	if (!strstr(szFilename, "normal.awt"))
+		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
 	return UT_OK;
 }
 
 UT_Error PD_Document::newDocument(void)
 {
-	// the locally installed normal.awt (per-user basis)
-	UT_String users_normal_awt (XAP_App::getApp()->getUserPrivateDirectory());
-	users_normal_awt += "/templates/normal.awt";
-	// the globally installed normal.awt file
-	UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
-	global_normal_awt += "/templates/normal.awt";
+	UT_LocaleInfo locale(UT_LocaleInfo::system());
 
-	if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
-    {
-		if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
-		{
+	UT_String lang (locale.getLanguage());
+	UT_String terr (locale.getTerritory());
+
+	/* try *6* combinations of the form:
+	   1) /templates/normal.awt-en_US
+	   2) /templates/normal.awt-en
+	   3) /templates/normal.awt
+	   4) /templates/normal.awt-en_US
+	   5) /templates/normal.awt-en
+	   6) /templates/normal.awt
+	*/
+
+	UT_String user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
+	user_template_base += "/templates/normal.awt";
+
+	UT_String global_template_base (XAP_App::getApp()->getAbiSuiteLibDir());
+	global_template_base += "/templates/normal.awt";
+
+	UT_String template_list[6];
+	template_list[0] = user_template_base; // always try to load user's normal.awt first
+	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.c_str(), terr.c_str());
+	template_list[2] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.c_str());
+	template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.c_str(), terr.c_str());
+	template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.c_str());
+	template_list[5] = global_template_base; // always try to load global normal.awt last
+
+	bool success = false;
+
+	for (UT_uint32 i = 0; i < 6 && !success; i++)
+		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true) == UT_OK);
+
+	if (!success) {
 			m_pPieceTable = new pt_PieceTable(this);
 			if (!m_pPieceTable)
-			{
 				return UT_NOPIECETABLE;
-			}
 
 			m_pPieceTable->setPieceTableState(PTS_Loading);
 
@@ -428,14 +451,7 @@ UT_Error PD_Document::newDocument(void)
 			setAttrProp(NULL);
 
 			m_pPieceTable->setPieceTableState(PTS_Editing);
-		}
-		else
-		{
-		}
-    }
-
-	// set the default page size from preferences, regardless of template values
-	setDefaultPageSize();
+	}
 
 	// mark the document as not-dirty
 	_setClean();
@@ -3426,32 +3442,6 @@ bool  PD_Document::isDoingPaste(void)
          return m_bDoingPaste;
 }
 
-void     PD_Document::setDefaultPageSize(void)
-{
-	XAP_App *pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-
-	const XML_Char * szDefaultPageSize = NULL;
-	pApp->getPrefsValue(XAP_PREF_KEY_DefaultPageSize,
-	                      &szDefaultPageSize);
-	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	m_docPageSize.Set(  static_cast<const char *>(szDefaultPageSize));
-}
-
-const char *  PD_Document::getDefaultPageSize(void)
-{
-	XAP_App *pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-
-	const XML_Char * szDefaultPageSize = NULL;
-	pApp->getPrefsValue(XAP_PREF_KEY_DefaultPageSize,
-	                      &szDefaultPageSize);
-	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return static_cast<const char *>(szDefaultPageSize);
-}
-
 bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 {
 	const XML_Char * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
@@ -3662,17 +3652,19 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 
 	if(docAP && !docAP->getProperty("lang", doc_lang))
 	{
-		const XML_Char * doc_locale = NULL;
-		if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
-		{
-			const XML_Char * props[3];
-			props[0] = "lang";
-			props[1] = doc_locale;
-			props[2] = 0;
-			UT_DEBUGMSG(( "pd_Document::setAttrProp: setting lang to %s\n", doc_locale ));
+		UT_LocaleInfo locale;
 
-			bRet = setProperties(props);
+		UT_String lang(locale.getLanguage());
+		if (locale.getTerritory().size()) {
+			lang += "-";
+			lang += locale.getTerritory();
 		}
+
+		const XML_Char * props[3];
+		props[0] = "lang";
+		props[1] = lang.c_str();
+		props[2] = 0;
+		bRet = setProperties(props);
 	}
 	else
 	{
