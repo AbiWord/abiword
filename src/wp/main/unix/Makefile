@@ -24,7 +24,7 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		UnixMain.cpp
 
-INCLUDES=		`gtk-config --cflags`
+INCLUDES=		`$(GTK_CONFIG) --cflags`
 
 PROGRAM=		$(BINDIR)/AbiWord_d
 PROGRAM_S=		$(BINDIR)/AbiWord_s
