@@ -37,4 +37,4 @@ include $(ABI_DEPTH)/pkg/common/unix/tgz.mk
 # things only Linux does
 
 # deb
-#include deb.mk
+#include deb/deb.mk
