@@ -1260,7 +1260,7 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 
 
 	setAttrPropIndex(pcrxc->getIndexAP());
-	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
+//	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
 	collapse();
 //	pTL->collapse();
 	updateCell();

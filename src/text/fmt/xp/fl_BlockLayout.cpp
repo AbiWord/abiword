@@ -4523,7 +4523,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 	UT_sint32 iFirst, iLast;
 	if (m_pSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
 	{
-		UT_sint32 iStart, iEnd;
+		UT_sint32 iStart = 0, iEnd;
 		fl_PartOfBlock* pPOB;
 		UT_sint32 i = iFirst;
 

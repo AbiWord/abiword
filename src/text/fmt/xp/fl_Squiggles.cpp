@@ -686,7 +686,7 @@ fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
 	UT_sint32 iSquiggles = _getCount();
 	if (0 == iSquiggles) return false;
 
-	fl_PartOfBlock* pPOB;
+	fl_PartOfBlock* pPOB = 0;
 	UT_sint32 s, e;
 	// Look for the first POB.start that is higher than the end offset
 	_findFirstAfter(iEnd, e);

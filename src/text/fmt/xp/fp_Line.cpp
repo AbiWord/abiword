@@ -280,7 +280,7 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 {
 	// need to tell the previous run to redraw, in case this run contained
 	// overstriking characters
-	fp_Run* pPrevRun  = pRun->getPrev();
+//	fp_Run* pPrevRun  = pRun->getPrev();
 //	if(pPrevRun)
 //		pPrevRun->clearScreen();
 
@@ -383,7 +383,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	fp_Run* pFirstRun;
 	bool bHidden;
 	FPVisibility eHidden;
