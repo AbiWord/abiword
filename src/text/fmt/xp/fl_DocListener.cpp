@@ -269,8 +269,14 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 								*/
 								bFormat = UT_TRUE;
 
-								// first split off the right part
-								pRun->split(blockOffset+len);
+								UT_Bool bRight = UT_FALSE;
+
+								if (blockOffset+len < pRun->m_iOffsetFirst+pRun->m_iLen)
+								{
+									// first split off the right part
+									bRight = UT_TRUE;
+									pRun->split(blockOffset+len);
+								}
 
 								if (blockOffset > pRun->m_iOffsetFirst)
 								{
@@ -287,7 +293,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 								pRun->calcWidths(&pBL->m_gbCharWidths);
 
 								// skip over the right part
-								pRun = pRun->getNext();
+								if (bRight)
+									pRun = pRun->getNext();
 
 								// all done, so clear any temp formatting
 								if (pView && pView->_isPointAP())
@@ -311,7 +318,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						pBL->draw(m_pLayout->getGraphics());
 					}
 					else
-						pBL->reformat();
+						pBL->setNeedsReformat(UT_TRUE);
+
+					// in case anything else moved
+					m_pLayout->reformat();
 
 					if (pView)
 						pView->_setPoint(pcr->getPosition()+len);
@@ -520,6 +530,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 								return UT_FALSE;
 							}
 
+							// erase the old version
+							pBL->clearScreen(m_pLayout->getGraphics());
+
 							/*
 								The idea here is to append the runs of the deleted block,
 								if any, at the end of the previous block.
@@ -590,6 +603,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							// update the display
 							pPrevBL->format();
 							pPrevBL->draw(m_pLayout->getGraphics());
+
+							// in case anything else moved
+							m_pLayout->reformat();
 
 							FV_View* pView = m_pLayout->m_pView;
 							if (pView)
@@ -757,6 +773,10 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					{
 						pFirstNewRun = pRun->getNext();
 
+						// last line of old block is dirty
+						pRun->m_pLine->clearScreen();
+						pRun->m_pLine->m_bDirty = UT_TRUE;
+
 						// break run sequence
 						pRun->m_pNext = NULL;
 						if (pFirstNewRun)
@@ -799,6 +819,9 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 					pNewBL->format();
 					pNewBL->draw(m_pLayout->getGraphics());
+
+					// in case anything else moved
+					m_pLayout->reformat();
 
 					FV_View* pView = m_pLayout->m_pView;
 					if (pView)

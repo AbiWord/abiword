@@ -254,6 +254,7 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 	// return the frag at the given doc position.
 
 	PT_DocPosition sum = 0;
+	pf_Frag * pfLast = NULL;
 	
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
@@ -266,16 +267,27 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 		}
 
 		sum += pf->getLength();
+		pfLast = pf;
 	}
 
 	// if we fall out of the loop, we didn't have a node
 	// at or around the document position requested.
+#if 1
 	// TODO this looks like it should be an error, for now we bail
 	// TODO and see if it ever goes off.  later we can just return
 	// TODO the last node in the list.
-	
+
 	UT_ASSERT(0);
 	return UT_FALSE;
+#else
+	// TODO: Jeff, I tried this, but it made things even worse
+	UT_ASSERT(docPos==sum);	
+
+	*ppf = pfLast;
+	if (pBlockOffset)
+		*pBlockOffset = docPos - sum;
+	return UT_TRUE;
+#endif 
 }
 	
 UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,

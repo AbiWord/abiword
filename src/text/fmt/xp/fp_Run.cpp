@@ -595,7 +595,7 @@ UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 
 void fp_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
 {
-	// UT_ASSERT(FP_RUN_INSIDE == containsOffset(iOffset));
+	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	
 	UT_sint32 xoff;
 	UT_sint32 yoff;
@@ -604,7 +604,9 @@ void fp_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
-	for (UT_uint32 i=m_iOffsetFirst; i<iOffset; i++)
+	UT_uint32 offset = UT_MIN(iOffset, m_iOffsetFirst + m_iLen);
+
+	for (UT_uint32 i=m_iOffsetFirst; i<offset; i++)
 	{
 		xoff += pCharWidths[i];
 	}

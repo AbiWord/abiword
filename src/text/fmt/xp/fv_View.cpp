@@ -342,8 +342,6 @@ void FV_View::insertParagraphBreak()
 	// as the previous (or none if the first paragraph in the section).
 
 	m_pDoc->insertStrux(_getPoint(), PTX_Block);
-
-	m_pLayout->reformat();
 	
 	_drawSelectionOrInsertionPoint();
 }
