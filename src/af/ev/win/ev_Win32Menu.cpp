@@ -712,14 +712,11 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 
 	// Retrieve the width and height of the item's string 
 	GetTextExtentPoint32(hdc, item->szText, lstrlen(item->szText), &size); 
-
-	UT_DEBUGMSG(("EV_Win32Menu::onMeasureItem->%s\n", item->szText));
-	
-	if (lpmis->itemHeight<item->pMenu->m_nBitmapCY)
+		
+	if (size.cy < item->pMenu->m_nBitmapCY)
 		lpmis->itemHeight = item->pMenu->m_nBitmapCY;
 	else
 		lpmis->itemHeight = size.cy;
-
 
 	lpmis->itemWidth =  size.cx + item->pMenu->m_nBitmapCX + SPACE_ICONTEXT;
 
