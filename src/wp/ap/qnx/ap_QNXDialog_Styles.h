@@ -21,7 +21,6 @@
 #define AP_QNXDIALOG_STYLES_H
 
 #include "ap_Dialog_Columns.h"
-#include "xap_QNXFontManager.h"
 #include "gr_QNXGraphics.h"
 
 #include "ut_types.h"
@@ -101,8 +100,8 @@ protected:
 	virtual const char * getCurrentStyle (void) const;
 	virtual void setDescription (const char * desc) const;
 
-	GR_QNXGraphics	* 		m_pParaPreviewWidget;
-	GR_QNXGraphics	* 		m_pCharPreviewWidget;
+	GR_QNXGraphics	* 		m_pParaPreviewGR;
+	GR_QNXGraphics	* 		m_pCharPreviewGR;
 
 	// pointers to widgets we need to query/set
 	PtWidget_t * m_windowMain;
@@ -120,7 +119,7 @@ protected:
 	PtWidget_t * m_wlistTypes;
 	PtWidget_t * m_wlabelDesc;
 
-	gint m_whichRow, m_whichCol;
+	int m_whichRow, m_whichCol;
 	StyleType m_whichType;
 
 //////////////////////////////////////////////////////////////////////////
@@ -135,7 +134,7 @@ protected:
 	virtual void setModifyDescription( const char * desc);
 	bool        _populateModify(void);
 
-	GR_QNXGraphics	* 		m_pAbiPreviewWidget;
+	GR_QNXGraphics	* 	m_pAbiPreviewGR;
 
 	PtWidget_t *	m_wModifyDialog;
 	PtWidget_t *	m_wStyleNameEntry;
@@ -174,6 +173,7 @@ protected:
 private:
 	bool m_bIsNew;
 	bool m_bBlockModifySignal;
+	int  done, modifydone;
 };
 
 #endif /* AP_QNXDialog_Styles_H */

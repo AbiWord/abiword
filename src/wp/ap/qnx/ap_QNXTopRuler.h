@@ -38,15 +38,15 @@ class AP_QNXTopRuler : public AP_TopRuler
 {
 public:
 	AP_QNXTopRuler(XAP_Frame * pFrame);
-	virtual ~AP_QNXTopRuler(void);
+	virtual	~AP_QNXTopRuler(void);
 
 	PtWidget_t *		createWidget(void);
-	virtual void	setView(AV_View * pView);
+	virtual void		setView(AV_View * pView);
 
 	// cheats for the callbacks
-	void 	getWidgetPosition(int * x, int * y);
-	void * 	getWidget(void) { return m_wTopRuler; };
-	void * 	getRootWindow(void);
+	void				getWidgetPosition(int * x, int * y);
+	void *				getWidget(void) { return m_wTopRuler; };
+	void *				getRootWindow(void);
 			
 protected:
 	PtWidget_t *	m_wTopRuler;

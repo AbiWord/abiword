@@ -297,10 +297,10 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 50, 0);
 	//Disable this choice for now
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_BLOCKED, Pt_SELECTABLE | Pt_BLOCKED);
-#if 0
 	m_tree = PtCreateWidget(PtTree, hgroup, n, args);
 
 	PtTreeItem_t *item, *brother;
+#if 0
 	for (UT_uint32 i = 0; i < getNumTabs(); i++) {
 		const TemplateData * td = getListForTab (i+1);
 		

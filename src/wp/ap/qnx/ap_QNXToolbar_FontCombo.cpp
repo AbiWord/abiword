@@ -49,10 +49,12 @@ AP_QNXToolbar_FontCombo::AP_QNXToolbar_FontCombo(EV_Toolbar * pToolbar,
 
 	m_nPixels = 175;		// TODO: do a better calculation
 	m_nLimit = 32;			// TODO: honor this?  :)
+	m_vecContents.clear();
 }
 
 AP_QNXToolbar_FontCombo::~AP_QNXToolbar_FontCombo(void)
 {
+	printf("Purge the fonts! \n");
 	// nothing to purge.  contents are static strings
 }
 
@@ -85,7 +87,7 @@ bool AP_QNXToolbar_FontCombo::populate(void)
 	m_vecContents.clear();
 	for (index = 0; index < count; index++) {
 		if (*font_list[index].desc) {
-			m_vecContents.addItem(font_list[index].desc);
+			m_vecContents.addItem(strdup(font_list[index].desc));
 		}
 	}
 

@@ -40,12 +40,15 @@ public:
 	AP_QNXLeftRuler(XAP_Frame * pFrame);
 	virtual ~AP_QNXLeftRuler(void);
 
-	PtWidget_t *	createWidget(void);
-	virtual void	setView(AV_View * pView);
+	PtWidget_t *		createWidget(void);
+	virtual void		setView(AV_View * pView);
 	
+	void *				getRootWindow(void);
+
 protected:
 	PtWidget_t *		m_wLeftRuler;
 	PtWidget_t *		m_wLeftRulerGroup;
+	PtWidget_t *		m_rootWindow;
 
 protected:
 	class _fe

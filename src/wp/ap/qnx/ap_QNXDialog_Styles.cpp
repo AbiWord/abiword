@@ -23,10 +23,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for QNX dialogs,
-// like centering them, measuring them, etc.
-#include "ut_dialogHelper.h"
-
 #include "xap_App.h"
 #include "xap_QNXApp.h"
 #include "xap_QNXFrame.h"
@@ -39,6 +35,8 @@
 #include "fv_View.h"
 #include "pd_Style.h"
 #include "ut_string_class.h"
+
+#include "ut_qnxHelper.h"
 
 XAP_Dialog * AP_QNXDialog_Styles::static_constructor(XAP_DialogFactory * pFactory,
 													   XAP_Dialog_Id id)
@@ -57,9 +55,9 @@ AP_QNXDialog_Styles::AP_QNXDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wbuttonCancel = NULL;
 	m_wGnomeButtons = NULL;
 	m_wParaPreviewArea = NULL;
-	m_pParaPreviewWidget = NULL;
+	m_pParaPreviewGR = NULL;
 	m_wCharPreviewArea = NULL;
-	m_pCharPreviewWidget = NULL;
+	m_pCharPreviewGR = NULL;
 
 	m_wclistStyles = NULL;
 	m_wlistTypes = NULL;
@@ -75,7 +73,7 @@ AP_QNXDialog_Styles::AP_QNXDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wStyleTypeEntry = NULL;
 	m_wLabDescription = NULL;
 
-	m_pAbiPreviewWidget = NULL;
+	m_pAbiPreviewGR = NULL;
 	m_wModifyDrawingArea = NULL;
 
 	m_wModifyOk = NULL;
@@ -88,34 +86,43 @@ AP_QNXDialog_Styles::AP_QNXDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wModifyFont = NULL;
 	m_wModifyNumbering = NULL;
 	m_wModifyLanguage = NULL;
-	m_gbasedOnStyles = NULL;
-	m_gfollowedByStyles = NULL;
-	m_gStyleType = NULL;
+	//m_gbasedOnStyles = NULL;
+	//m_gfollowedByStyles = NULL;
+	//m_gStyleType = NULL;
 	m_bBlockModifySignal = false;
 
 }
 
 AP_QNXDialog_Styles::~AP_QNXDialog_Styles(void)
 {
-	DELETEP (m_pParaPreviewWidget);
-	DELETEP (m_pCharPreviewWidget);
-	DELETEP (m_pAbiPreviewWidget);
+	DELETEP (m_pParaPreviewGR);
+	DELETEP (m_pCharPreviewGR);
+	DELETEP (m_pAbiPreviewGR);
 }
 
 /*****************************************************************/
 
 static int s_clist_clicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
-	AP_QNXDialog_Styles * dlg = static_cast <AP_QNXDialog_Styles *>(d);
 	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	dlg->event_ClistClicked (row, col);
+	PtListCallback_t *cblist = (PtListCallback_t *)info->cbdata;
+
+	if(info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
+		return Pt_CONTINUE;
+	}
+	dlg->event_ClistClicked (cblist->item_pos - 1 /*row*/, 0 /*col*/);
 	return Pt_CONTINUE;
 }
 
 static int s_typeslist_changed (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	dlg->event_ListClicked (gtk_entry_get_text (GTK_ENTRY(w)));
+	PtListCallback_t *cblist = (PtListCallback_t *)info->cbdata;
+
+	if(info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
+		return Pt_CONTINUE;
+	}
+	dlg->event_ListClicked(cblist->item);
 	return Pt_CONTINUE;
 }
 
@@ -152,7 +159,7 @@ static int s_style_nadlg(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
 	UT_ASSERT(widget && dlg);
-	dlg->new_styleNadlg();
+	dlg->new_styleName();
 	return Pt_CONTINUE;
 }
 
@@ -184,7 +191,7 @@ static int s_styletype(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
 	UT_ASSERT(widget && dlg);
 	if(dlg->isModifySignalBlocked())
-		return;
+		return Pt_CONTINUE;
 	dlg->event_styleType();
 	return Pt_CONTINUE;
 }
@@ -222,53 +229,71 @@ static int s_modify_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInf
 	return Pt_CONTINUE;
 }
 
-#if 0
-static gboolean s_paraPreview_exposed(PtWidget_t * widget, gpointer /* data */, AP_QNXDialog_Styles * dlg)
+static int s_paraPreview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_paraPreviewExposed();
-	return FALSE;
+	PtArg_t args[1];
+
+   	PhRect_t rect;
+   	PtSuperClassDraw(PtBasic, w, damage);
+   	PtBasicWidgetCanvas(w, &rect);
+	//clip to our basic canvas (it's only polite).
+    PtClipAdd( w, &rect );
+
+	AP_QNXDialog_Styles *pQNXDlg, **ppQNXDlg = NULL;
+	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
+	PtGetResources(w, 1, args);
+	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+
+	UT_ASSERT(pQNXDlg);
+	pQNXDlg->event_paraPreviewExposed();
+
+    PtClipRemove();
+	return Pt_CONTINUE;
 }
 
-
-static gboolean s_charPreview_exposed(PtWidget_t * widget, gpointer /* data */, AP_QNXDialog_Styles * dlg)
+static int s_charPreview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_paraPreviewExposed();
-	return FALSE;
+	PtArg_t args[1];
+
+   	PhRect_t rect;
+   	PtSuperClassDraw(PtBasic, w, damage);
+   	PtBasicWidgetCanvas(w, &rect);
+	//clip to our basic canvas (it's only polite).
+    PtClipAdd( w, &rect );
+
+	AP_QNXDialog_Styles *pQNXDlg, **ppQNXDlg = NULL;
+	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
+	PtGetResources(w, 1, args);
+	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+
+	UT_ASSERT(pQNXDlg);
+	pQNXDlg->event_charPreviewExposed();
+
+    PtClipRemove();
+	return Pt_CONTINUE;
 }
 
-
-static gboolean s_modifyPreview_exposed(PtWidget_t * widget, gpointer /* data */, AP_QNXDialog_Styles * dlg)
+static int s_modifyPreview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_ModifyPreviewExposed();
-	return FALSE;
+	PtArg_t args[1];
+
+   	PhRect_t rect;
+   	PtSuperClassDraw(PtBasic, w, damage);
+   	PtBasicWidgetCanvas(w, &rect);
+	//clip to our basic canvas (it's only polite).
+    PtClipAdd( w, &rect );
+
+	AP_QNXDialog_Styles *pQNXDlg, **ppQNXDlg = NULL;
+	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
+	PtGetResources(w, 1, args);
+	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+
+	UT_ASSERT(pQNXDlg);
+	pQNXDlg->event_ModifyPreviewExposed();
+
+    PtClipRemove();
+	return Pt_CONTINUE;
 }
-
-
-static gboolean s_modify_window_exposed(PtWidget_t * widget, gpointer /* data */, AP_QNXDialog_Styles * dlg)
-{
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_ModifyPreviewExposed();
-	return FALSE;
-}
-
-
-static gboolean s_window_exposed(PtWidget_t * widget, gpointer /* data */, AP_QNXDialog_Styles * dlg)
-{
-	AP_QNXDialog_Styles * dlg = (AP_QNXDialog_Styles *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_paraPreviewExposed();
-	dlg->event_charPreviewExposed();
-	return FALSE;
-}
-#endif
-
 
 static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
@@ -335,11 +360,9 @@ static int s_modify_tabs(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 
 void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 {
-
 //
 // Get View and Document pointers. Place them in member variables
 //
-
 	setFrame(pFrame);
 	setView((FV_View *) pFrame->getCurrentView());
 	UT_ASSERT(getView());
@@ -361,8 +384,7 @@ void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-
+	connectFocus(mainWindow,pFrame);
 		
 	//Center and show the window
 	UT_QNXCenterWindow(parentWindow, mainWindow);
@@ -375,58 +397,26 @@ void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
 
-#if 0
-	XAP_QNXApp * unixapp = static_cast<XAP_QNXApp *> (m_pApp);
-	UT_ASSERT(unixapp);
+	unsigned short w, h;
+	XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
+
+	UT_ASSERT(app);
+	UT_ASSERT(m_wParaPreviewArea);
+
+	// make a new QNX GC for Paragraph Preview
+	DELETEP (m_pParaPreviewGR);
+	m_pParaPreviewGR = new GR_QNXGraphics(mainWindow, m_wParaPreviewArea, m_pApp);
 	
-	UT_ASSERT(m_wParaPreviewArea && m_wParaPreviewArea->window);
+	UT_QNXGetWidgetArea(m_wParaPreviewArea, NULL, NULL, &w, &h);
+	_createParaPreviewFromGC(m_pParaPreviewGR, w, h);
 
-	// make a new QNX GC
-	DELETEP (m_pParaPreviewWidget);
-	m_pParaPreviewWidget = new GR_QNXGraphics(m_wParaPreviewArea->window, unixapp->getFontManager(), m_pApp);
-	
-        // let the widget materialize
+	// make a new QNX GC for Character Preview
+	DELETEP (m_pCharPreviewGR);
+	m_pCharPreviewGR = new GR_QNXGraphics(mainWindow, m_wCharPreviewArea, m_pApp);
 
-	_createParaPreviewFromGC(m_pParaPreviewWidget,
-							 (UT_uint32) m_wParaPreviewArea->allocation.width, 
-							 (UT_uint32) m_wParaPreviewArea->allocation.height);
+	UT_QNXGetWidgetArea(m_wCharPreviewArea, NULL, NULL, &w, &h);
+	_createCharPreviewFromGC(m_pCharPreviewGR, w, h);
 
-	
-	UT_ASSERT(m_wCharPreviewArea && m_wCharPreviewArea->window);
-
-	// make a new QNX GC
-	DELETEP (m_pCharPreviewWidget);
-	m_pCharPreviewWidget = new GR_QNXGraphics(m_wCharPreviewArea->window, unixapp->getFontManager(), m_pApp);
-
-	// let the widget materialize
-
-	_createCharPreviewFromGC(m_pCharPreviewWidget,
-							 (UT_uint32) m_wCharPreviewArea->allocation.width, 
-							 (UT_uint32) m_wCharPreviewArea->allocation.height);
-	// the expose event of the preview
-	gtk_signal_connect(GTK_OBJECT(m_wParaPreviewArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_paraPreview_exposed),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wCharPreviewArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_charPreview_exposed),
-					   (gpointer) this);
-	
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "expose_event",
-							 GTK_SIGNAL_FUNC(s_window_exposed),
-							 (gpointer) this);
-
-	// connect the select_row signal to the clist
-	gtk_signal_connect (GTK_OBJECT (m_wclistStyles), "select_row",
-						GTK_SIGNAL_FUNC (s_clist_clicked), (gpointer)this);
-#endif
-
-//
-// Draw the previews!!
-//
 	// Populate the window's data items
 	_populateWindowData();
 
@@ -441,8 +431,8 @@ void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 	}
 	PtModalEnd(MODAL_END_ARG(count));
 
-	DELETEP (m_pParaPreviewWidget);
-	DELETEP (m_pCharPreviewWidget);
+	DELETEP (m_pParaPreviewGR);
+	DELETEP (m_pCharPreviewGR);
 	
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
@@ -461,19 +451,19 @@ void AP_QNXDialog_Styles::event_OK(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	count++;
+	done++;
 }
 
 void AP_QNXDialog_Styles::event_Cancel(void)
 {
-	if(!count++) {
+	if(!done++) {
 		m_answer = AP_Dialog_Styles::a_CANCEL;
 	}
 }
 
 void AP_QNXDialog_Styles::event_WindowDelete(void)
 {
-	if(!count++) {
+	if(!done++) {
 		m_answer = AP_Dialog_Styles::a_CANCEL;
 	}
 }
@@ -567,7 +557,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
 
-	PtWidget_t * vgroup, hgroup;
+	PtWidget_t * vgroup, * hgroup;
 	PtWidget_t * vboxTopLeft;
 	PtWidget_t * vboxTopRight;
 
@@ -598,6 +588,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	PtArg_t args[10];
+	void *data;
 	int n;
 
 	n = 0;
@@ -605,7 +596,6 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 		pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	windowStyles = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowStyles, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
@@ -618,8 +608,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
 											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
-	vgroup = PtCreateWidget(PtGroup, windowBreak, n, args);
+	vgroup = PtCreateWidget(PtGroup, windowStyles, n, args);
 
 	/*** ***/
 
@@ -634,13 +623,16 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	top_vgrouplist = PtCreateWidget(PtGroup, hgroup, n, args);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 120, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 120, 0);
-	listStyles = PtCreateWidget(PtList, top_vgrouplist, n, args);
+#define PREVIEW_WIDTH 175
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 120, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 200, 0);
+	listStyles = PtCreateWidget(PtList, top_vgrouplist, n, args);
+	PtAddCallback(listStyles, Pt_CB_SELECTION, s_clist_clicked, this);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	comboList = PtCreateWidget(PtComboBox, top_vgrouplist, n, args);
 	//frameList = gtk_frame_new( pSS->getValue(AP_STRING_ID_DLG_Styles_List));
 	const char *items[3];
@@ -648,15 +640,8 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	items[1] = pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_All);
 	items[2] = pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined);
 	PtListAddItems(comboList, items, 3, 0);  
-	PtSetResourve(comboList, Pt_ARG_CBOX_SEL_ITEM, m_whichType, 0);
-
-#if 0
-	// connect signal for this list
-	gtk_signal_connect (GTK_OBJECT(GTK_COMBO(comboList)->entry), 
-						"changed",
-						GTK_SIGNAL_FUNC(s_typeslist_changed),
-						(gpointer)this);
-#endif
+	UT_QNXComboSetPos(comboList, 1);
+	PtAddCallback(comboList, Pt_CB_SELECTION, s_typeslist_changed, this);
 
 	/* Previewing and description goes in the top right */
 	n = 0;
@@ -664,28 +649,35 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	top_vgroupshow = PtCreateWidget(PtGroup, hgroup, n, args);
 
 	n = 0;
-	//frameParaPrev = gtk_frame_new(pSS->getValue(AP_STRING_ID_DLG_Styles_ParaPrev));
 	frameParaPrev = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
+	pretty_group(frameParaPrev, pSS->getValue(AP_STRING_ID_DLG_Styles_ParaPrev));
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 300, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 70, 0);
+	data = (void *)this;
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_paraPreview_exposed, 1); 
 	ParaPreviewArea = PtCreateWidget(PtRaw, frameParaPrev, n, args);
 
 	n = 0;
-	//frameCharPrev = gtk_frame_new( pSS->getValue(AP_STRING_ID_DLG_Styles_CharPrev));
 	frameCharPrev = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
+	pretty_group(frameCharPrev, pSS->getValue(AP_STRING_ID_DLG_Styles_CharPrev));
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 300, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 50, 0);
+	data = (void *)this;
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_charPreview_exposed, 1); 
 	CharPreviewArea = PtCreateWidget(PtRaw, frameCharPrev, n, args);
 
 	n = 0;
-	//frameDescription = gtk_frame_new( pSS->getValue(AP_STRING_ID_DLG_Styles_Description));
-	frameCharDescription = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
+	frameDescription = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
+	pretty_group(frameDescription, pSS->getValue(AP_STRING_ID_DLG_Styles_Description));
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 300, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 60, 0);
-	DescriptionArea = PtCreateWidget(PtLabel, frameCharPrev, n, args);
+	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_Y_DISPLAY, Pt_AS_REQUIRED, Pt_AS_REQUIRED);
+	DescriptionArea = PtCreateWidget(PtMultiText, frameDescription, n, args);
 
 	//gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
 	//gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
@@ -698,19 +690,19 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Styles_New), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_New), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonNew = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonNew, Pt_CB_ACTIVATE, s_newbtn_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Styles_Modify), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_Modify), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonModify = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonModify, Pt_CB_ACTIVATE, s_modifybtn_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Styles_Delete), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_Delete), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonDelete = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonDelete, Pt_CB_ACTIVATE, s_deletebtn_clicked, this);
@@ -789,30 +781,29 @@ void AP_QNXDialog_Styles::_populateWindowData(void)
 void AP_QNXDialog_Styles::setDescription(const char * desc) const
 {
 	UT_ASSERT(m_wlabelDesc);
-	PtSetResource(m_wlabelDesc, Pt_ARG_TEXT_STRING, desc);
+	PtSetResource(m_wlabelDesc, Pt_ARG_TEXT_STRING, desc, 0);
 }
 
 const char * AP_QNXDialog_Styles::getCurrentStyle (void) const
 {
 	static UT_String szStyleBuf;
+	int ret;
+	char **items;
 
 	UT_ASSERT(m_wclistStyles);
 
 	if (m_whichRow < 0 || m_whichCol < 0)
 		return NULL;
 
-	char * szStyle = NULL;
+	items = NULL;
+	PtGetResource(m_wclistStyles, Pt_ARG_ITEMS, &items, 0);
 
-/*
-	int ret = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
-								  m_whichRow, m_whichCol, &szStyle);
-*/
-	ret = 0;
-
-	if (!ret)
+	if(!items) {
 		return NULL;
+	}
 
-	szStyleBuf = szStyle;
+	szStyleBuf = items[m_whichRow + 1];
+
 	return szStyleBuf.c_str();
 }
 
@@ -823,7 +814,7 @@ const char * AP_QNXDialog_Styles::getCurrentStyle (void) const
 PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 {
 	PtWidget_t *windowModify;
-	PtWidget_t *vgroup, hgroup;
+	PtWidget_t *vgroup, *hgroup;
 
 	PtWidget_t *dialog_vbox1 = NULL;
 	PtWidget_t *OverallVbox = NULL;
@@ -853,6 +844,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	PtArg_t args[10];
+	void *data;
 	int n;
 
 	n = 0;
@@ -865,9 +857,8 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	}
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	windowModify = PtCreateWidget(PtWindow, NULL, n, args);
-	PtAddCallback(windowStyles, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
+	PtAddCallback(windowModify, Pt_CB_WINDOW_CLOSING, s_modify_delete_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -878,13 +869,12 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
 											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	vgroup = PtCreateWidget(PtGroup, windowModify, n, args);
 
-/*****/
 	/* User selection portion */
 	n = 0;
     PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
+    PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
@@ -900,9 +890,10 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 
 	n = 0;
 	if(isNew()) {
-		//Make this a combo box
+		styleTypeEntry = PtCreateWidget(PtComboBox, hgroup, n, args);
+	} else {
+		styleTypeEntry = PtCreateWidget(PtText, hgroup, n, args);
 	}
-	styleTypeEntry = PtCreateWidget(PtText, hgroup, n, args);
 
 
 	n = 0;
@@ -914,7 +905,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	followingLabel = PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
-	basedNameEntry = PtCreateWidget(PtText, hgroup, n, args);
+	basedOnEntry = PtCreateWidget(PtText, hgroup, n, args);
 
 	n = 0;
 	followingEntry = PtCreateWidget(PtText, hgroup, n, args);
@@ -923,30 +914,26 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	n = 0;
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 	n = 0;
-	//previewFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyPreview));
 	previewFrame = PtCreateWidget(PtGroup, hgroup, n, args);
+	pretty_group(previewFrame, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyPreview));
 	n = 0;
-	//PtSetArg(&args[n++], Pt_ARG_WIDTH, , 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 120, 0);
+	data = (void *)this;
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_modifyPreview_exposed, 1); 
 	modifyDrawingArea = PtCreateWidget(PtRaw, previewFrame, n, args);
 
 	/* Description portion */
 	n = 0;
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 	n = 0;
-	//PtWidget_t * descriptionFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyDescription));
 	descriptionFrame = PtCreateWidget(PtGroup, hgroup, n, args);
+	pretty_group(descriptionFrame, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyDescription));
 	n = 0;
-	//PtSetArg(&args[n++], Pt_ARG_WIDTH, , 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 120, 0);
-	descriptionText = PtCreateWidget(PtLabel, previewFrame, n, args);
-
-	//gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
-	//gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
-	//gtk_container_add(GTK_CONTAINER(frameDescription), DescriptionArea);
-	//gtk_misc_set_alignment(GTK_MISC(DescriptionArea), 0, 0);
-	//gtk_misc_set_padding(GTK_MISC(DescriptionArea), 8, 6);
-
+	descriptionText = PtCreateWidget(PtMultiText, previewFrame, n, args);
 
 	/* Remove the following properties */
 	n = 0;
@@ -964,12 +951,13 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_RemoveButton), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	deletePropButton = PtCreateWidget(PtButton, hgroup, n, args);
+	PtAddCallback(deletePropButton, Pt_CB_ACTIVATE, s_remove_property, this);
 
+#if 0
 	checkBoxRow = gtk_hbox_new (FALSE, 3);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkBoxRow), 2);
 
-#if 0
 	checkAddTo = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTemplate));
 	gtk_widget_show (checkAddTo);
 	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAddTo, TRUE, TRUE, 0);
@@ -982,7 +970,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	/* Add the bottom group of buttons */
 	PtWidget_t *bottomButtons;
 	PtWidget_t *buttonOK;
-	PtWidget_t *cancelButton;
+	PtWidget_t *buttonCancel;
 	PtWidget_t *FormatMenu;
 	PtWidget_t *shortCutButton;
 
@@ -993,13 +981,13 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
-	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_modify_cancel_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
-	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_modify_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -1011,7 +999,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyShortCut), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	shortCutButton = PtCreateWidget(PtButton, hgroup, n, args);
-	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
+	PtAddCallback(shortCutButton, Pt_CB_ACTIVATE, s_modify_ok_clicked, this);
 
 	m_wStyleNameEntry = styleNameEntry;
 	m_wBasedOnCombo = basedOnCombo;
@@ -1021,14 +1009,14 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	m_wStyleTypeCombo = styleTypeCombo;
 	m_wStyleTypeEntry = styleTypeEntry;
 	m_wModifyDrawingArea = modifyDrawingArea;
-	m_wLabDescription = DescriptionText;
-	m_wModifyDialog = modifyDialog;
+	m_wLabDescription = descriptionText;
+	m_wModifyDialog = windowModify;
 	m_wDeletePropCombo = deletePropCombo;
 	m_wDeletePropEntry = deletePropEntry;
 	m_wDeletePropButton = deletePropButton;
 
 	m_wModifyOk = buttonOK;
-	m_wModifyCancel = cancelButton;
+	m_wModifyCancel = buttonCancel;
 	m_wFormatMenu = FormatMenu;
 	m_wModifyShortCutKey = shortCutButton;
 	
@@ -1043,22 +1031,22 @@ void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)
 	const char *item;
 
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFormat);
-	PtAddListItem(FormatMenu, &item, 1, 0);
+	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph);
-	PtAddListItem(FormatMenu, &item, 1, 0);
+	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont);
-	PtAddListItem(FormatMenu, &item, 1, 0);
+	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs);
-	PtAddListItem(FormatMenu, &item, 1, 0);
+	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyNumbering);
-	PtAddListItem(FormatMenu, &item, 1, 0);
+	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage);
-	PtAddListItem(FormatMenu, &item, 1, 0);
+	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	m_wFormat = 
 	m_wModifyParagraph = 
@@ -1071,17 +1059,6 @@ void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)
 void AP_QNXDialog_Styles::_connectModifySignals(void)
 {
 #if 0
-
-	gtk_signal_connect(GTK_OBJECT(m_wModifyOk),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_modify_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(m_wModifyCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_modify_cancel_clicked),
-					   (gpointer) this);
-
 	gtk_signal_connect(GTK_OBJECT(m_wModifyParagraph),
 					   "activate",
 					   GTK_SIGNAL_FUNC(s_modify_paragraph),
@@ -1114,11 +1091,6 @@ void AP_QNXDialog_Styles::_connectModifySignals(void)
 					   GTK_SIGNAL_FUNC(s_modifyPreview_exposed),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wDeletePropButton),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_remove_property),
-					   (gpointer) this);
-
 	gtk_signal_connect(GTK_OBJECT(m_wStyleNameEntry),
 					   "changed",
 					   GTK_SIGNAL_FUNC(s_style_name),
@@ -1145,17 +1117,6 @@ void AP_QNXDialog_Styles::_connectModifySignals(void)
 							 GTK_SIGNAL_FUNC(s_modify_window_exposed),
 							 (gpointer) this);
 
-	// the catch-alls
-	
-	gtk_signal_connect(GTK_OBJECT(m_wModifyDialog),
-					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_modify_delete_clicked),
-					   (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(m_wModifyDialog),
-							 "destroy",
-							 NULL,
-							 NULL);
 #endif
 }
 
@@ -1164,7 +1125,7 @@ void AP_QNXDialog_Styles::event_Modify_OK(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	done++;
+	modifydone++;
 }
 
 /*!
@@ -1276,72 +1237,76 @@ void AP_QNXDialog_Styles::event_styleType(void)
 
 void AP_QNXDialog_Styles::event_Modify_Cancel(void)
 {
-	if(!done++) {
+	if(!modifydone++) {
 		m_answer = AP_Dialog_Styles::a_CANCEL;
 	}
 }
 
 void AP_QNXDialog_Styles::event_ModifyDelete(void)
 {
-	if(!done++) {
-	m_answer = AP_Dialog_Styles::a_CANCEL;
+	if(!modifydone++) {
+		m_answer = AP_Dialog_Styles::a_CANCEL;
 	}
 }
 
-void  AP_QNXDialog_Styles::modifyRunModal(void)
-{
-#if 0
-//
-// OK Construct the new dialog and make it modal.
-//
 //
 // pointer to the widget is stored in m_wModifyDialog
 //
-// Center our new dialog in its parent and make it a transient
+void  AP_QNXDialog_Styles::modifyRunModal(void)
+{
+	PtWidget_t *mainWindow;
 
-	_constructModifyDialog();
+	// To center the dialog, we need the frame of its parent.
+	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)getFrame();
+	UT_ASSERT(pQNXFrame);
+	
+	// Get the Window of the parent frame
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	PtSetParentWidget(parentWindow);
 
-	connectFocus(GTK_WIDGET(m_wModifyDialog),getFrame());
-//
-// populate the dialog with useful info
-//
+	m_wModifyDialog =
+	mainWindow = _constructModifyDialog();
+
+	connectFocus(m_wModifyDialog, getFrame());
+
     if(!_populateModify())
 	{
-		if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
-			gtk_widget_destroy(m_wModifyDialog);
+		PtDestroyWidget(m_wModifyDialog);
 		return;
 	}
 
-	// so it won't get lost underneath
-	centerDialog(m_windowMain, m_wModifyDialog);
-
-	// Show the top level dialog,
-	gtk_widget_show(m_wModifyDialog);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(m_wModifyDialog);
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
+	PtRealizeWidget(mainWindow);
 
 	// make a new QNX GC
-	XAP_QNXApp * unixapp = static_cast<XAP_QNXApp *> (m_pApp);
-	UT_ASSERT(unixapp);
+	unsigned short w, h;
+	XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
 
-	DELETEP (m_pAbiPreviewWidget);
-	m_pAbiPreviewWidget = new GR_QNXGraphics(m_wModifyDrawingArea->window, unixapp->getFontManager(), m_pApp);
+	UT_ASSERT(app);
+	UT_ASSERT(m_wModifyDrawingArea);
+
+	DELETEP (m_pAbiPreviewGR);
+	m_pAbiPreviewGR = new GR_QNXGraphics(mainWindow, m_wModifyDrawingArea, m_pApp);
 	
-        // let the widget materialize
+	UT_QNXGetWidgetArea(m_wModifyDrawingArea, NULL, NULL, &w, &h);
+	_createAbiPreviewFromGC(m_pAbiPreviewGR, w, h);
 
-	_createAbiPreviewFromGC(m_pAbiPreviewWidget,
-							 (UT_uint32) m_wModifyDrawingArea->allocation.width, 
-							 (UT_uint32) m_wModifyDrawingArea->allocation.height);
     _populateAbiPreview(isNew());
 	event_ModifyPreviewExposed();
-	gtk_main();
 
+	int count;
+	count = PtModalStart();
+	modifydone = 0;
+	while(!modifydone) {
+		PtProcessEvent();
+	}
+	PtModalEnd(MODAL_END_ARG(count));
+
+#if 0
 	if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
 	{
-//
-// Free the old glists
-//
 		if(m_gbasedOnStyles != NULL)
 		{	
 			g_list_free (m_gbasedOnStyles);
@@ -1359,14 +1324,14 @@ void  AP_QNXDialog_Styles::modifyRunModal(void)
 			g_list_free (m_gStyleType);
 			m_gStyleType = NULL;
 		}
-	    gtk_widget_destroy(m_wModifyDialog);
 	}
-//
-// Have to delete this now since the destructor is not run till later
-//	
-	destroyAbiPreview();
-	DELETEP(m_pAbiPreviewWidget);
 #endif
+
+	destroyAbiPreview();
+	DELETEP(m_pAbiPreviewGR);
+
+	UT_QNXBlockWidget(parentWindow, 0);
+	PtDestroyWidget(mainWindow);
 }
 
 void AP_QNXDialog_Styles::event_ModifyPreviewExposed(void)
@@ -1376,6 +1341,7 @@ void AP_QNXDialog_Styles::event_ModifyPreviewExposed(void)
 
 void AP_QNXDialog_Styles::event_ModifyClicked(void)
 {
+#if 0
 	PD_Style * pStyle = NULL;
 	const char * szCurrentStyle = getCurrentStyle ();
 	
@@ -1435,16 +1401,17 @@ void AP_QNXDialog_Styles::event_ModifyClicked(void)
 //
 	gtk_widget_show( m_windowMain);
 #endif
+#endif
 }
 
 void  AP_QNXDialog_Styles::setModifyDescription( const char * desc)
 {
-	UT_ASSERT(m_wlabelDesc);
-	gtk_label_set_text (GTK_LABEL(m_wLabDescription), desc);
+	PtSetResource(m_wLabDescription, Pt_ARG_TEXT_STRING, desc, 0);
 }
 
 bool  AP_QNXDialog_Styles::_populateModify(void)
 {
+#if 0
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 //
 // Don't do any callback while setting up stuff here.
@@ -1596,10 +1563,14 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 	rebuildDeleteProps();
 	gtk_entry_set_text(GTK_ENTRY(m_wDeletePropEntry),"");
 	return true;
+#else
+	return true;
+#endif
 }
 
 void   AP_QNXDialog_Styles::event_ModifyParagraph()
 {
+#if 0
 #ifndef HAVE_GNOME
 //
 // Hide this window
@@ -1623,10 +1594,12 @@ void   AP_QNXDialog_Styles::event_ModifyParagraph()
 // This applies the changes to current style and displays them
 //
 	updateCurrentStyle();
+#endif
 }
 
 void   AP_QNXDialog_Styles::event_ModifyFont()
 {
+#if 0
 #ifndef HAVE_GNOME
 //
 // Hide this window
@@ -1650,10 +1623,12 @@ void   AP_QNXDialog_Styles::event_ModifyFont()
 // This applies the changes to current style and displays them
 //
 	updateCurrentStyle();
+#endif
 }
 
 void AP_QNXDialog_Styles::event_ModifyLanguage()
 {
+#if 0
 #ifndef HAVE_GNOME
 	gtk_widget_hide (m_wModifyDialog);
 #endif
@@ -1665,10 +1640,12 @@ void AP_QNXDialog_Styles::event_ModifyLanguage()
 #endif
 
 	updateCurrentStyle();
+#endif
 }
 
 void   AP_QNXDialog_Styles::event_ModifyNumbering()
 {
+#if 0
 #ifndef HAVE_GNOME
 //
 // Hide this window
@@ -1693,11 +1670,13 @@ void   AP_QNXDialog_Styles::event_ModifyNumbering()
 //
 	updateCurrentStyle();
 
+#endif
 }
 
 
 void   AP_QNXDialog_Styles::event_ModifyTabs()
 {
+#if 0
 #ifndef HAVE_GNOME
 //
 // Hide this window
@@ -1721,6 +1700,7 @@ void   AP_QNXDialog_Styles::event_ModifyTabs()
 // This applies the changes to current style and displays them
 //
 	updateCurrentStyle();
+#endif
 }
 
 bool  AP_QNXDialog_Styles::isModifySignalBlocked(void) const

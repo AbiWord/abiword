@@ -482,7 +482,7 @@ void AP_QNXFrame::killFrameData(void)
 
 UT_Error AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft, bool createNew)
 {
-	UT_DEBUGMSG(("Frame: _loadDocument %s (%d,%d)\n", szFilename, ieft, createNew));
+	UT_DEBUGMSG(("Frame: _loadDocument %s (%d,%d)\n", (szFilename) ? szFilename : "", ieft, createNew));
 
 	// are we replacing another document?
 	if (m_pDoc)

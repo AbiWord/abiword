@@ -34,6 +34,7 @@
 AP_QNXLeftRuler::AP_QNXLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame)
 {
+	m_rootWindow = NULL;
 	m_wLeftRuler = NULL;
 	m_pG = NULL;
 }
@@ -52,7 +53,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	UT_ASSERT(!m_pG && !m_wLeftRuler);
 
 	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)m_pFrame;
-	UT_ASSERT(m_pFrame);
+	m_rootWindow = pQNXFrame->getTopLevelWindow();
 
 	area.pos.x = 0;
 	area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
@@ -104,6 +105,21 @@ void AP_QNXLeftRuler::setView(AV_View * pView)
 	m_pG = pG;
 	pG->init3dColors();
 }
+
+void * AP_QNXLeftRuler::getRootWindow(void)
+{
+	// TODO move this function somewhere more logical, like
+	// TODO the XAP_Frame level, since that's where the
+	// TODO root window is common to all descendants.
+	if (m_rootWindow)
+		return m_rootWindow;
+
+	if (m_pFrame)
+		return (m_rootWindow = ((XAP_QNXFrame *)m_pFrame)->getTopLevelWindow()) ;
+
+	return NULL;
+}
+
 
 /*****************************************************************/
 #if 0
