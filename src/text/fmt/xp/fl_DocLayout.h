@@ -48,7 +48,8 @@ class fl_AutoNum;
 #define fl_PAGEVIEW_MARGIN_Y	25		
 
 // ----------------------------------------------------------------
-/*
+/*! \mainpage
+
 	FL_DocLayout is a formatted representation of a specific PD_Document, 
 	formatted for a specific GR_Graphics context.  
 
