@@ -71,6 +71,11 @@ ST_LOCALISED_STYLES stLocalised[] =
 	{"Heading 1",           	XAP_STRING_ID_STYLE_HEADING1},		
 	{"Heading 2",           	XAP_STRING_ID_STYLE_HEADING2},		
 	{"Heading 3",           	XAP_STRING_ID_STYLE_HEADING3},		
+	{"Heading 4",           	XAP_STRING_ID_STYLE_HEADING4},		
+	{"Contents 1",              XAP_STRING_ID_STYLE_TOCHEADING1},		
+	{"Contents 2",              XAP_STRING_ID_STYLE_TOCHEADING2},		
+	{"Contents 3",              XAP_STRING_ID_STYLE_TOCHEADING3},		
+	{"Contents 4",              XAP_STRING_ID_STYLE_TOCHEADING4},		
 	{"Normal",         	        XAP_STRING_ID_STYLE_NORMAL},		              
 	{"Block Text",              XAP_STRING_ID_STYLE_BLOCKTEXT},	
 	{"Lower Case List",         XAP_STRING_ID_STYLE_LOWERCASELIST},
@@ -169,6 +174,7 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Heading 2",	"P", "Normal", "Normal", stTmp.c_str());
 	UT_String_sprintf(stTmp, szFmt, pszFamily, 12);
 	_s("Heading 3",	"P", "Normal", "Normal", stTmp.c_str());
+	_s("Heading 4",	"P", "Normal", "Normal", stTmp.c_str());
 	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New");
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
 
@@ -228,6 +234,12 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
     _s("Numbered Heading 1","P","Heading 1","Normal", stTmp.c_str());
     _s("Numbered Heading 2","P","Heading 2","Normal", stTmp.c_str());
     _s("Numbered Heading 3","P","Heading 3","Normal", stTmp.c_str());
+
+    _s("Contents 1","P","Normal","Normal", stTmp.c_str());
+    _s("Contents 2","P","Normal","Normal", stTmp.c_str());
+    _s("Contents 3","P","Normal","Normal", stTmp.c_str());
+    _s("Contents 4","P","Normal","Normal", stTmp.c_str());
+
 
 	szFmt = "tabstops:1.1in/L0; list-style:Numbered List; "
 		"start-value:1; margin-left:0.0in; text-indent:0.0in; "

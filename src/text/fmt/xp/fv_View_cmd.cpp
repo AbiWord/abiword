@@ -3785,7 +3785,7 @@ UT_Error FV_View::cmdInsertTOC(void)
 // insert just before this block to make the TOC get inserted just BEFORE
 // the Block we just created.
 //
-	PT_DocPosition pos = getPoint()-2; 
+	PT_DocPosition pos = getPoint(); 
 	m_pDoc->insertStrux(pos,PTX_SectionTOC);
 	pos++;
 	m_pDoc->insertStrux(pos,PTX_EndTOC);

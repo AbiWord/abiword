@@ -394,12 +394,8 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-
-		// Don't check for id of the endnote strux. It should match the
-		// id of the endnote reference.
-
 		X_CheckError(appendStrux(PTX_SectionTOC,atts));
-		xxx_UT_DEBUGMSG(("Finished Append TOC strux \n"));
+		UT_DEBUGMSG(("Finished Append TOC strux \n"));
 		return;
 	}
 	case TT_BLOCK:
@@ -831,9 +827,9 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_TOC:
 		X_VerifyParseState(_PS_Sec);
+		m_bWroteSection = true;
 		X_CheckError(appendStrux(PTX_EndTOC,NULL));
-		xxx_UT_DEBUGMSG(("Finished Append End TOC strux \n"));
-		m_parseState = _PS_Block;
+		UT_DEBUGMSG(("Finished Append End TOC strux \n"));
 		return;
 
 	case TT_TABLE:

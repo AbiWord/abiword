@@ -1106,6 +1106,11 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 		pDSL = static_cast<fl_DocSectionLayout *>( m_pSectionLayout);
 		return pDSL;
 	}
+	else if	(getSectionLayout()->getType() == FL_SECTION_TOC)
+	{
+		pDSL = static_cast<fl_TOCLayout *>(getSectionLayout())->getDocSectionLayout();
+		return pDSL;
+	}
 	else if	(getSectionLayout()->getType() == FL_SECTION_FOOTNOTE)
 	{
 		pDSL = static_cast<fl_FootnoteLayout *>(getSectionLayout())->getDocSectionLayout();
@@ -2297,8 +2302,8 @@ const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 UT_sint32 fl_BlockLayout::getLength()
 {
 	PT_DocPosition posThis = getPosition(true);
-	PL_StruxDocHandle nextSDH;
-	m_pDoc->getNextStrux(getStruxDocHandle(),& nextSDH);
+	PL_StruxDocHandle nextSDH =NULL;
+	m_pDoc->getNextStrux(getStruxDocHandle(),&nextSDH);
 	PT_DocPosition posNext = m_pDoc->getStruxPosition(nextSDH);
 	UT_sint32 length = static_cast<UT_sint32>(posNext) - static_cast<UT_sint32>(posThis);
 	return length;

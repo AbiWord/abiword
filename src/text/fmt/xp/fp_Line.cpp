@@ -2553,6 +2553,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
 			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
+			getContainer()->getContainerType() == FP_CONTAINER_TOC||
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
 			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{

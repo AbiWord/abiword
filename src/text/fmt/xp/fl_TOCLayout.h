@@ -31,6 +31,7 @@
 #include "ut_debugmsg.h"
 
 class PD_Style;
+class fp_TOCContainer;
 
 // We have one fl_TOCLayout for each Table of Contents.
 
@@ -85,7 +86,7 @@ private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
 	void                     _createTOCContainer(void);
-	void                     _insertTOCContainer(fp_Container * pNewFC);
+	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);
 	void                     _localCollapse();
 	void                      _addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks, UT_UTF8String & sStyle);
 	bool                     m_bNeedsRebuild;

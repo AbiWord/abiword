@@ -26,6 +26,8 @@
 
 #include "ap_Prefs.h"
 #include "fl_SectionLayout.h"
+#include "fl_TableLayout.h"
+#include "fp_TableContainer.h"
 #include "fl_TOCLayout.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
@@ -64,8 +66,8 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 	  m_bHasEndTOC(false)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
-//  m_pLayout->addTOC(this);  // Not implemented yet
 	_createTOCContainer();
+	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
 }
 
 fl_TOCLayout::~fl_TOCLayout()
@@ -246,7 +248,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
 	PT_DocPosition posStart,posEnd;
 	posStart = pBlock->getPosition(true);
-	posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength()) -1;
+	posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength());
 	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
 	m_pDoc->tellListenerSubset(pListen, docRange);
 	delete docRange;
@@ -523,40 +525,92 @@ fp_Container* fl_TOCLayout::getNewContainer(fp_Container *)
 {
 	UT_DEBUGMSG(("creating new TOC Physical container\n"));
 	_createTOCContainer();
+	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
 	return static_cast<fp_Container *>(getLastContainer());
 }
 
-void fl_TOCLayout::_insertTOCContainer(fp_Container * pNewTOC)
+
+/*!
+ * This method inserts the given TOCContainer into its correct place in the
+ * Vertical container.
+ */
+void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 {
-	UT_DEBUGMSG(("inserting TOC container into container list\n"));
 	fl_ContainerLayout * pUPCL = myContainingLayout();
-	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(m_pLayout->findBlockAtPosition(getDocPosition()-1));
+	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(getPrev());
 	fp_Container * pPrevCon = NULL;
 	fp_Container * pUpCon = NULL;
-	fp_Page * pPage = NULL;
-
-	// get the owning container
 	if(pPrevL != NULL)
 	{
-		pPrevCon = pPrevL->getLastContainer();
-		pUpCon = pPrevCon->getContainer();
+		while(pPrevL && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE) || pPrevL->getContainerType() == FL_CONTAINER_ENDNOTE))
+		{
+			pPrevL = pPrevL->getPrev();
+		}
+		if(pPrevL)
+		{
+			if(pPrevL->getContainerType() == FL_CONTAINER_TABLE)
+			{
+//
+// Handle if prev container is table that is broken across a page
+//
+				fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pPrevL);
+				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+				fp_TableContainer * pFirst = pTC->getFirstBrokenTable();
+				fp_TableContainer * pLast = pTC->getLastBrokenTable();
+				if((pLast != NULL) && pLast != pFirst)
+				{
+					pPrevCon = static_cast<fp_Container *>(pLast);
+					pUpCon = pLast->getContainer();
+				}
+				else
+				{
+					pPrevCon = pPrevL->getLastContainer();
+					pUpCon = pPrevCon->getContainer();
+				}
+			}
+			else
+			{
+				pPrevCon = pPrevL->getLastContainer();
+				pUpCon = pPrevCon->getContainer();
+			}
+		}
+		else
+		{
+			pUpCon = pUPCL->getLastContainer();
+		}
+		UT_ASSERT(pUpCon);
 	}
 	else
 	{
 		pUpCon = pUPCL->getLastContainer();
+		UT_ASSERT(pUpCon);
 	}
-	if(pPrevCon)
+	if(pPrevL == NULL)
 	{
-		pPage = pPrevCon->getPage();
+		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New TOC %x added into %x \n",pNewTOC,pUpCon));
+		pUpCon->addCon(pNewTOC);
+		pNewTOC->setContainer(pUpCon);
+;
 	}
 	else
 	{
-		pPage = pUpCon->getPage();
+		UT_sint32 i = pUpCon->findCon(pPrevCon);
+		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New TOC %x inserted into %x \n",pNewTOC,pUpCon));
+		if(i >= 0 && (i+1) < static_cast<UT_sint32>(pUpCon->countCons()))
+		{
+			pUpCon->insertConAt(pNewTOC,i+1);
+			pNewTOC->setContainer(pUpCon);
+		}
+		else if( i >=0 &&  (i+ 1) == static_cast<UT_sint32>(pUpCon->countCons()))
+		{
+			pUpCon->addCon(pNewTOC);
+			pNewTOC->setContainer(pUpCon);
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
-//
-// FIXME
-//
-	pNewTOC->setContainer(NULL);
 }
 
 
@@ -607,6 +661,80 @@ void fl_TOCLayout::_lookupProperties(void)
 	{
 		m_iTOCPID = atoi(pszTOCPID);
 	}
+	const XML_Char *pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-source-style-1",pszTOCSRC))
+	{
+		m_sSourceStyle1 = "Heading 1";
+	}
+	else
+	{
+		m_sSourceStyle1 = pszTOCSRC;
+	}
+	pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-source-style-2",pszTOCSRC))
+	{
+		m_sSourceStyle2 = "Heading 2";
+	}
+	else
+	{
+		m_sSourceStyle2 = pszTOCSRC;
+	}
+	pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-source-style-3",pszTOCSRC))
+	{
+		m_sSourceStyle3 = "Heading 3";
+	}
+	else
+	{
+		m_sSourceStyle3 = pszTOCSRC;
+	}
+	pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-source-style-4",pszTOCSRC))
+	{
+		m_sSourceStyle4 = "Heading 4";
+	}
+	else
+	{
+		m_sSourceStyle4 = pszTOCSRC;
+	}
+	const XML_Char * pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-dest-style-1",pszTOCDEST))
+	{
+		m_sDestStyle1 = "Contents 1";
+	}
+	else
+	{
+		m_sDestStyle1 = pszTOCDEST;
+	}
+	pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-dest-style-2",pszTOCDEST))
+	{
+		m_sDestStyle2 = "Contents 2";
+	}
+	else
+	{
+		m_sDestStyle2 = pszTOCDEST;
+	}
+	pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-dest-style-3",pszTOCDEST))
+	{
+		m_sDestStyle3 = "Contents 3";
+	}
+	else
+	{
+		m_sDestStyle3 = pszTOCDEST;
+	}
+	pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("toc-dest-style-4",pszTOCDEST))
+	{
+		m_sDestStyle4 = "Contents 4";
+	}
+	else
+	{
+		m_sDestStyle4 = pszTOCDEST;
+	}
+	pszTOCDEST = NULL;
+
 }
 
 void fl_TOCLayout::_localCollapse(void)
@@ -757,7 +885,7 @@ bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pTOCL);
-	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
+	UT_DEBUGMSG(("fl_TOCListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	PT_AttrPropIndex iTOC = m_pStyle->getIndexAP();
