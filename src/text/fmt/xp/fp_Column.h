@@ -101,7 +101,7 @@ public:
 	*/
 	virtual inline UT_sint32	getHeightInLayoutUnits(void) const
 		{ return m_iHeightLayoutUnits; }
-	inline UT_sint32	getColumnGap(void) const;
+	UT_sint32	getColumnGap(void) const;
 	
 	/*!
 	  Get container's intentionally empty flag
