@@ -1296,7 +1296,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 	// UT_basename returns a point INSIDE the passed string.
 	// the trick is to truncate the string by setting the char pointed 
 	// by tmp to NULL. This IS useful code. (2 LOC)
-	const char * tmp = UT_basename (m_szFileDirName);
+	char * tmp = (char *)UT_basename (m_szFileDirName);
 	*tmp = 0;
 	FILE *fp = fopen(szFilename, "r");
 	if (!fp)
