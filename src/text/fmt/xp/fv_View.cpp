@@ -2557,7 +2557,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	{
 		getBlocksInSelection( &vBlock);
 	}
-
+	setScreenUpdateOnGeneralUpdate( false);
 	bool bCharStyle = pStyle->isCharStyle();
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
@@ -2806,6 +2806,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			}
 		}
 	}
+	setScreenUpdateOnGeneralUpdate( true);
 	if(!bDontGeneralUpdate)
 	{
 		_generalUpdate();
@@ -2827,6 +2828,11 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	m_pDoc->endUserAtomicGlob();
 	UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
 	_restorePieceTableState();
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 	return bRet;
 }
 
