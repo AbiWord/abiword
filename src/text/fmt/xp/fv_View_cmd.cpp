@@ -1714,7 +1714,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	// TODO -- why does this function return UT_Error? If bool is
 	// sufficient, it should return bool, and if not, than the
 	// UT_Error & bool operations below are probably not safe
-	UT_Error e;
+	UT_Error e = UT_OK;
 	if(numRows == 0 || numCols==0)
 	{
 		return 0; 

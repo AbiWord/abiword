@@ -748,6 +748,10 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		setVisibility(FP_HIDDEN_TEXT);
 	}
+	else
+	  {
+	    setVisibility(FP_VISIBLE);
+	  }
 
 	// latter we will need to add here revision handling ...
 }
