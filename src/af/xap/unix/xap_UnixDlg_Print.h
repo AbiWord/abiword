@@ -20,6 +20,7 @@
 #ifndef AP_UNIXDIALOG_PRINT_H
 #define AP_UNIXDIALOG_PRINT_H
 
+#include "xap_UnixFrame.h"
 #include "xap_Dialog_Print.h"
 class AP_UnixFrame;
 class PS_Graphics;
@@ -42,7 +43,9 @@ public:
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
-	void					_raisePrintDialog(void);
+
+	void 					_centerWindow(AP_Frame * parent, GtkWidget * child);
+	void					_raisePrintDialog(AP_Frame * pFrame);
 	void					_getGraphics(void);
 	
 	AP_UnixFrame *			m_pUnixFrame;

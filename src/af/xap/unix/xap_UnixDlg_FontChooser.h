@@ -36,6 +36,11 @@ public:
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
+
+    // this should probably go in a base class, but the Unix dialogs don't inherit
+    // from a common Unix dialog base class.  That kinda sucks.
+	void _centerWindow(AP_Frame * parent, GtkWidget * child);
+	
 	void buildXLFD(char * buf);
 	void parseXLFD(char * buf);
 

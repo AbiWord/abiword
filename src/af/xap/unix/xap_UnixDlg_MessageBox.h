@@ -49,7 +49,11 @@ protected:
 		guint key;
 		AP_Dialog_MessageBox::tAnswer answer;
 	};
-			
+
+    // this should probably go in a base class, but the Unix dialogs don't inherit
+    // from a common Unix dialog base class.  That kinda sucks.
+	void _centerWindow(AP_Frame * parent, GtkWidget * child);
+
 	void _bindKey(guint key, AP_Dialog_MessageBox::tAnswer answer);
 	
 };

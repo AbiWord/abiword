@@ -66,6 +66,50 @@ static void s_cancel_clicked(GtkWidget * widget,
 
 /*****************************************************************/
 
+// this should probably go in a base class, but the Unix dialogs don't inherit
+// from a common Unix dialog base class.  That kinda sucks.
+void AP_UnixDialog_FontChooser::_centerWindow(AP_Frame * parent, GtkWidget * child)
+{
+	UT_ASSERT(parent);
+	UT_ASSERT(child);
+	
+	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(parent);
+	UT_ASSERT(frame);
+	
+	// parent frame's geometry
+	GtkWidget * topLevelWindow = frame->getTopLevelWindow();
+	UT_ASSERT(topLevelWindow);
+	UT_ASSERT(topLevelWindow->window);
+	gint parentx = 0;
+	gint parenty = 0;
+	gint parentwidth = 0;
+	gint parentheight = 0;
+	gdk_window_get_origin(topLevelWindow->window, &parentx, &parenty);
+	gdk_window_get_size(topLevelWindow->window, &parentwidth, &parentheight);
+	UT_ASSERT(parentwidth > 0 && parentheight > 0);
+
+	// this message box's geometry (it won't have a ->window yet, so don't assert it)
+	gint width = 0;
+	gint height = 0;
+	gtk_widget_size_request(child, &child->requisition);
+	width = child->requisition.width;
+	height = child->requisition.height;
+	UT_ASSERT(width > 0 && height > 0);
+
+	// set new place
+	gint newx = parentx + ((parentwidth - width) / 2);
+	gint newy = parenty + ((parentheight - height) / 2);
+
+	// measure the root window
+	gint rootwidth = gdk_screen_width();
+	gint rootheight = gdk_screen_height();
+	// if the dialog won't fit on the screen, panic and center on the root window
+	if ((newx + width) > rootwidth || (newy + height) > rootheight)
+		gtk_window_position(GTK_WINDOW(child), GTK_WIN_POS_CENTER);
+	else
+		gtk_widget_set_uposition(child, newx, newy);
+}
+
 void AP_UnixDialog_FontChooser::buildXLFD(char * buf)
 {
 	// relevant X properties
@@ -357,8 +401,9 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	gchar * sampleString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijlkmnopqrstuvwxyz";
 	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
+	_centerWindow(pFrame, GTK_WIDGET(cf));
+
 	// Run the dialog
-	gtk_window_position(GTK_WINDOW(cf), GTK_WIN_POS_CENTER);
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 

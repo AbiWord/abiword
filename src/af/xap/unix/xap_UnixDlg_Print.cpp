@@ -100,6 +100,50 @@ void AP_UnixDialog_Print::releasePrinterGraphicsContext(DG_Graphics * pGraphics)
 
 /*****************************************************************/
 
+// this should probably go in a base class, but the Unix dialogs don't inherit
+// from a common Unix dialog base class.  That kinda sucks.
+void AP_UnixDialog_Print::_centerWindow(AP_Frame * parent, GtkWidget * child)
+{
+	UT_ASSERT(parent);
+	UT_ASSERT(child);
+	
+	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(parent);
+	UT_ASSERT(frame);
+	
+	// parent frame's geometry
+	GtkWidget * topLevelWindow = frame->getTopLevelWindow();
+	UT_ASSERT(topLevelWindow);
+	UT_ASSERT(topLevelWindow->window);
+	gint parentx = 0;
+	gint parenty = 0;
+	gint parentwidth = 0;
+	gint parentheight = 0;
+	gdk_window_get_origin(topLevelWindow->window, &parentx, &parenty);
+	gdk_window_get_size(topLevelWindow->window, &parentwidth, &parentheight);
+	UT_ASSERT(parentwidth > 0 && parentheight > 0);
+
+	// this message box's geometry (it won't have a ->window yet, so don't assert it)
+	gint width = 0;
+	gint height = 0;
+	gtk_widget_size_request(child, &child->requisition);
+	width = child->requisition.width;
+	height = child->requisition.height;
+	UT_ASSERT(width > 0 && height > 0);
+
+	// set new place
+	gint newx = parentx + ((parentwidth - width) / 2);
+	gint newy = parenty + ((parentheight - height) / 2);
+
+	// measure the root window
+	gint rootwidth = gdk_screen_width();
+	gint rootheight = gdk_screen_height();
+	// if the dialog won't fit on the screen, panic and center on the root window
+	if ((newx + width) > rootwidth || (newy + height) > rootheight)
+		gtk_window_position(GTK_WINDOW(child), GTK_WIN_POS_CENTER);
+	else
+		gtk_widget_set_uposition(child, newx, newy);
+}
+
 void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
 {
 	m_pUnixFrame = static_cast<AP_UnixFrame *>(pFrame);
@@ -115,7 +159,7 @@ void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
 	}
 	else
 	{
-		_raisePrintDialog();
+		_raisePrintDialog(pFrame);
 		if (m_answer == a_OK)
 			_getGraphics();
 	}
@@ -145,7 +189,7 @@ static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 	gtk_widget_grab_focus (entry);
 }
 
-void AP_UnixDialog_Print::_raisePrintDialog(void)
+void AP_UnixDialog_Print::_raisePrintDialog(AP_Frame * pFrame)
 {
 	// raise the actual dialog and wait for an answer.
 	// return true if they hit ok.
@@ -376,7 +420,8 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 		gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 
-	gtk_window_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
+
+	_centerWindow(pFrame, GTK_WIDGET(window));
 	gtk_widget_show (window);
 
 	gtk_main();
