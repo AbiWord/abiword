@@ -518,29 +518,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		// select nothing
 	}
-/*	
-	else if (m_pFontStyle && !m_pFontWeight)
-	{
-		if (!UT_stricmp(m_pFontStyle, "normal"))
-		{
-			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_NORMAL, 0);
-		}
-		else if (!UT_stricmp(m_pFontStyle, "italic"))
-		{
-			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_ITALIC, 0);
-		}
-	}
-	else if (!m_pFontStyle && m_pFontWeight)
-	{
-		if (!UT_stricmp(m_pFontWeight, "normal"))
-		{
-			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_NORMAL, 0);
-		}
-		else if (!UT_stricmp(m_pFontStyle, "italic"))
-		{
-			gtk_clist_select_row(GTK_CLIST(m_styleList), LIST_STYLE_ITALIC, 0);
-		}
-*/		
 	else if (!UT_stricmp(m_pFontStyle, "normal") &&
 			 !UT_stricmp(m_pFontWeight, "normal"))
 	{
@@ -569,9 +546,7 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	double size = UT_convertToPoints(m_pFontSize);
 	snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
 	foundAt = searchCList(GTK_CLIST(m_sizeList), sizeString);
-	if (foundAt == -1)
-		gtk_clist_select_row(GTK_CLIST(m_sizeList), 2, 0);
-	else
+	if (foundAt >= 0)
 		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);		
 	
 	// Set color in the color selector
@@ -612,7 +587,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		gint rowNumber = 0;
 		
 		selectedRow = GTK_CLIST(m_fontList)->selection;
-
 		if (selectedRow)
 		{
 			rowNumber = GPOINTER_TO_INT(selectedRow->data);
@@ -626,7 +600,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 		
 		selectedRow = GTK_CLIST(m_styleList)->selection;
-
 		if (selectedRow)
 		{
 			rowNumber = GPOINTER_TO_INT(selectedRow->data);
@@ -694,7 +667,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 		
 		selectedRow = GTK_CLIST(m_sizeList)->selection;
-
 		if (selectedRow)
 		{
 			rowNumber = GPOINTER_TO_INT(selectedRow->data);
