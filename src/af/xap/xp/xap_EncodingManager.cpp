@@ -27,13 +27,31 @@
 #include <string.h>
 
 
+static 	iconv_t iconv_handle_N2U = NULL, iconv_handle_U2N = NULL,
+	iconv_handle_U2Win = NULL ,iconv_handle_Win2U = NULL;
+
 XAP_EncodingManager*	XAP_EncodingManager::instance = NULL;
+
 const char* XAP_EncodingManager::getNativeEncodingName() const
 {
     return "ISO-8859-1"; /* this will definitely work*/
 }
 
-XAP_EncodingManager::~XAP_EncodingManager() {};
+XAP_EncodingManager::~XAP_EncodingManager()
+{
+  if(iconv_handle_N2U)
+    iconv_close(iconv_handle_N2U);
+
+  if(iconv_handle_U2N)
+    iconv_close(iconv_handle_U2N);
+
+  if(iconv_handle_U2Win)
+    iconv_close(iconv_handle_U2Win);
+  
+  if(iconv_handle_Win2U)
+    iconv_close(iconv_handle_Win2U);
+}
+
 XAP_EncodingManager::XAP_EncodingManager() { instance = this; initialize(); }
 
 const char* XAP_EncodingManager::getLanguageISOName() const 
@@ -176,11 +194,6 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 	return 1;
 };
 #endif
-
-static 	iconv_t iconv_handle_N2U,iconv_handle_U2N,
-	iconv_handle_U2Win,iconv_handle_Win2U;
-
-
 
 extern "C" { char *wvLIDToCodePageConverter(unsigned short lid); }
 static void init_values(const XAP_EncodingManager* that)

@@ -761,7 +761,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   propsArray[0] = pProps;
 		   propsArray[1] = propBuffer;
 		   propsArray[2] = NULL;
-		   UT_DEBUGMSG(("the paragraph propBuffer is %s\n",propBuffer));
+		   UT_DEBUGMSG(("the paragraph propBuffer is: '%s'\n",propBuffer));
 		   X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, propsArray));
 		   break;
 

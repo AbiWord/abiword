@@ -97,7 +97,7 @@ EV_Toolbar_LabelSet::~EV_Toolbar_LabelSet(void)
 
 	UT_uint32 k, kLimit;
 	for (k=0, kLimit=(m_last-m_first+1); (k<kLimit); k++)
-		DELETEP(m_labelTable[k]);
+	  DELETEP(m_labelTable[k]);
 	FREEP(m_labelTable);
 }
 

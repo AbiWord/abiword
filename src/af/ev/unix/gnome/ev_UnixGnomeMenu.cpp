@@ -376,7 +376,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 				if ( !pAction->isCheckable() ) {
 					retval[i].type = GNOME_APP_UI_ITEM;
 					retval[i].pixmap_type = GNOME_APP_PIXMAP_STOCK;
-					retval[i].pixmap_info = g_new (char, 64);
+					retval[i].pixmap_info = g_new0 (char, 64);
 					s_getStockPixmapFromName (buf, (char *) retval[i].pixmap_info, 64);
 				}
 				else {
@@ -386,7 +386,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 				retval[i].label = g_strdup (buf);
 				retval[i].hint = g_strdup (tooltip);
 				retval[i].moreinfo = (void*)menuEvent;
-				retval[i].user_data = g_malloc (sizeof(__Aux));
+				retval[i].user_data = g_new0 (__Aux, 1);
 				((__Aux *) retval[i].user_data)->me = this;
 				((__Aux *) retval[i].user_data)->id = id;
 			}
@@ -406,16 +406,16 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 			if (szLabelName && *szLabelName)
 			{
 				char buf[1024];
-				const char *tooltip;
+				//const char *tooltip;
 				
 				// convert label into underscored version
 				_ev_convert(buf, szLabelName);
-				tooltip = pLabel->getMenuStatusMessage();
+				//tooltip = pLabel->getMenuStatusMessage();
 
 				retval[i].type = GNOME_APP_UI_SUBTREE;
 				retval[i].label = g_strdup (buf);
 				
-				retval[i].user_data = g_malloc (sizeof(__Aux));
+				retval[i].user_data = g_new0 (__Aux, 1);
 				((__Aux *) retval[i].user_data)->me = this;
 				((__Aux *) retval[i].user_data)->id = id;
 				retval[i].moreinfo = _convertMenu2UIInfo (++pos);

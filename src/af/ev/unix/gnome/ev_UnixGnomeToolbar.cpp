@@ -53,6 +53,8 @@ extern "C" {
 #include <gal/widgets/gtk-combo-text.h>
 }
 
+#define NUM_TOOLBARS_PER_APP 3
+
 int EV_UnixGnomeToolbar::nbBands = 0;
 
 /*****************************************************************/
@@ -191,13 +193,12 @@ EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGn
 	: EV_UnixToolbar(static_cast<XAP_UnixApp *> (pUnixApp), static_cast<XAP_UnixFrame *> (pUnixFrame),
 					 szToolbarLayoutName,
 					 szToolbarLabelSetName),
-	  nbToolbarsInBand(0)
+			   nbToolbarsInBand(0)
 {
 }
 
 EV_UnixGnomeToolbar::~EV_UnixGnomeToolbar(void)
 {
-	UT_VECTOR_PURGEALL(GtkWidget *, m_vecToolbars);
 }
 
 void
@@ -213,29 +214,17 @@ EV_UnixGnomeToolbar::_orient_changed(GtkToolbar *toolbar,
 	// if we get sent vertical, and show them again
 	// when we go horizontal
 
-	// TODO: something similar could probably be put into
-	// TODO: the GTK build too
-
-	if (dir == GTK_ORIENTATION_HORIZONTAL)
+	// [show | hide] the large widgets
+	for(i = 0; i < len; i++)
 	  {
-	    // show the large widgets
-	    for(i = 0; i < len; i++)
+	    wd = (_wd*)m_vecToolbarWidgets.getNthItem(i);
+	    w = wd->m_widget;
+	    if (GTK_IS_COMBO_TEXT (w))
 	      {
-		wd = (_wd*)m_vecToolbarWidgets.getNthItem(i);
-		w = wd->m_widget;
-		if (GTK_IS_COMBO_TEXT(w))
-		  gtk_widget_show(w);
-	      }
-	  } 
-	else  // GTK_ORIENTATION_VERTICAL
-	  {
-	    // hide the large widgets
-	    for(i = 0; i < len; i++)
-	      {
-		wd = (_wd*)m_vecToolbarWidgets.getNthItem(i);
-		w = wd->m_widget;
-		if (GTK_IS_COMBO_TEXT(w))
-		  gtk_widget_hide(w);
+		if (dir == GTK_ORIENTATION_HORIZONTAL)
+		  gtk_widget_show (w);
+		else // dir == GTK_ORIENTATION_VERTICAL
+		  gtk_widget_hide (w);
 	      }
 	  }
 }
@@ -446,30 +435,35 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 
 	// add the toolbar to the band
 	_addToolbar(m_wToolbar);
-	nbBands++;
 
 	return UT_TRUE;
 }
 
 UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 {
-	GnomeDockItemBehavior beh;
-	char *name;
+	char *name = 0;
+	int beh;
 
 	// an arbitrary padding to make our document not run into our buttons
 	gtk_container_set_border_width(GTK_CONTAINER(toolbar), 2);
 	beh = GNOME_DOCK_ITEM_BEH_NORMAL;
 
 	if (!gnome_preferences_get_toolbar_detachable())
-		beh = GNOME_DOCK_ITEM_BEH_LOCKED;
+		beh |= GNOME_DOCK_ITEM_BEH_LOCKED;
 
-	name = g_strdup_printf("Toolbar %d-%d", nbBands, ++nbToolbarsInBand);
+	name = g_strdup_printf("Abi-Toolbar-%d", nbBands);
+	//UT_DEBUGMSG(("DOM: beh:%d name:%s num:%d\n", beh, name,(nbBands % NUM_TOOLBARS_PER_APP)+1));
+
 	//	g_print ("Toolbar style = %d\n", static_cast<int> (toolbar->style));
 	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
-						  GTK_TOOLBAR (toolbar), name, beh, GNOME_DOCK_TOP,
-						  nbBands + 1, nbToolbarsInBand - 1, 0);
+			      GTK_TOOLBAR (toolbar), name, (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
+			      (nbBands % NUM_TOOLBARS_PER_APP)+1, 0, 0);
 	m_vecToolbars.addItem(toolbar);
 	g_free(name);
+
+	// increment the number of bands
+	nbBands++;
+
 	return UT_TRUE;
 }
 
@@ -490,12 +484,12 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 		m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
 		UT_ASSERT((szValue) && (*szValue));
 		
-		if (UT_XML_stricmp(szValue,"icon") == 0)
-			style = GTK_TOOLBAR_ICONS;
-		else if (UT_XML_stricmp(szValue,"text") == 0)
+		if (UT_XML_stricmp(szValue,"text") == 0)
 			style = GTK_TOOLBAR_TEXT;
 		else if (UT_XML_stricmp(szValue,"both") == 0)
 			style = GTK_TOOLBAR_BOTH;
+		else
+	  	        style = GTK_TOOLBAR_ICONS; // default case
 	}
 		
 	toolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
@@ -503,9 +497,11 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 
 	gtk_toolbar_set_button_relief(GTK_TOOLBAR (toolbar), GTK_RELIEF_NONE);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR (toolbar), TRUE);
-	gtk_toolbar_set_space_size(GTK_TOOLBAR (toolbar), 10);
 	gtk_toolbar_set_space_style(GTK_TOOLBAR (toolbar), GTK_TOOLBAR_SPACE_LINE);
-	
+
+	// TODO: this really shouldn't be determined by us
+	gtk_toolbar_set_space_size(GTK_TOOLBAR (toolbar), 10);
+
 	return toolbar;
 }
 
