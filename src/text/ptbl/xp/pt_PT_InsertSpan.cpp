@@ -143,7 +143,8 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 
 		if (pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
 		{
-			pft = static_cast<pf_Frag_Text *>(pf->getPrev());
+			pf = pf->getPrev();
+			pft = static_cast<pf_Frag_Text *>(pf);
 			fragOffset = pft->getLength();
 			break;
 		}
