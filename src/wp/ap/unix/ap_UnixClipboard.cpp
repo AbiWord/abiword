@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2002 Dom Lachowicz 
+ * Copyright (C) 2002-2003 Dom Lachowicz 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,8 +22,6 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-#include <gdk/gdk.h>
-
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_vector.h"
@@ -34,7 +32,7 @@
 //////////////////////////////////////////////////////////////////
 
 // RichText: cut and paste
-#define AP_CLIPBOARD_TXT_RTF 			"text/rtf"
+#define AP_CLIPBOARD_TXT_RTF 			        "text/rtf"
 #define AP_CLIPBOARD_APPLICATION_RTF            "application/rtf"
 
 // HTML: cut only
@@ -95,6 +93,7 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_SVG_XML,
   0 } ;
 
+/*
 static const char * txtszFormatsAccepted[] = {
   AP_CLIPBOARD_TEXT_UTF8_STRING,
   AP_CLIPBOARD_TEXT,
@@ -102,6 +101,7 @@ static const char * txtszFormatsAccepted[] = {
   AP_CLIPBOARD_TEXT_PLAIN,
   AP_CLIPBOARD_TEXT_COMPOUND,
   0 } ;
+*/
 
 AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   : XAP_UnixClipboard(pApp)
@@ -180,49 +180,49 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 {
 
   // give priority to rich text, html, then images, then text
-  if (getData(tFrom, rtfszFormatsAccepted, ppData, pLen, pszFormatFound))
+  if (getData(tFrom, rtfszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
     return true;
-  else if (getData(tFrom, imgszFormatsAccepted, ppData, pLen, pszFormatFound))
+  else if (getData (tFrom, htmlszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
+	  return true;
+  else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
     return true;  
   else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
     return true;
-  else if (getData (tFrom, htmlszFormatsAccepted, ppData, pLen, pszFormatFound))
-	  return true;
-
   return false;
 }
 
 bool  AP_UnixClipboard::getTextData(T_AllowGet tFrom,
-				    const void ** ppData, UT_uint32 * pLen,
-				    const char **pszFormatFound)
+									const void ** ppData, UT_uint32 * pLen,
+									const char **pszFormatFound)
 {
-  return getData(tFrom, txtszFormatsAccepted, ppData,pLen, pszFormatFound);
+	bool rval = XAP_UnixClipboard::getTextData(tFrom, (void**)ppData, pLen);
+	*pszFormatFound = "text/plain";
+	return rval;
 }
 
 bool  AP_UnixClipboard::getRichTextData(T_AllowGet tFrom,
 					const void ** ppData, UT_uint32 * pLen,
 					const char **pszFormatFound)
 {
-  return getData( tFrom, rtfszFormatsAccepted, ppData, pLen, pszFormatFound ) ;
+  return getData( tFrom, rtfszFormatsAccepted, (void**)ppData, pLen, pszFormatFound ) ;
 }
 
 bool AP_UnixClipboard::getImageData(T_AllowGet tFrom,
-				    const void ** ppData, UT_uint32 * pLen,
-				    const char **pszFormatFound)
+									const void ** ppData, UT_uint32 * pLen,
+									const char **pszFormatFound)
 {
-  return getData ( tFrom, imgszFormatsAccepted, ppData, pLen, pszFormatFound );
+  return getData ( tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound );
 }
 
 bool AP_UnixClipboard::isTextTag ( const char * tag )
 {
   if ( !tag || !strlen(tag) )
     return false ;
-
-  // getTextData will only return this because it's sort-of a hack
-  if ( !UT_stricmp( tag, AP_CLIPBOARD_TEXT_UTF8_STRING ) ||
+  
+  if ( !UT_stricmp( tag, AP_CLIPBOARD_TEXT_PLAIN ) ||
+	   !UT_stricmp( tag, AP_CLIPBOARD_TEXT_UTF8_STRING ) ||
        !UT_stricmp( tag, AP_CLIPBOARD_TEXT ) ||
        !UT_stricmp( tag, AP_CLIPBOARD_TEXT_STRING ) ||
-       !UT_stricmp( tag, AP_CLIPBOARD_TEXT_PLAIN ) ||
        !UT_stricmp( tag, AP_CLIPBOARD_TEXT_COMPOUND ) )
     return true ;
   return false ;

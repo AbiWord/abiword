@@ -44,8 +44,8 @@ public:
 			      const char **pszFormatFound);
 
 	bool  getTextData(T_AllowGet tFrom,
-			  const void ** ppData, UT_uint32 * pLen,
-			  const char **pszFormatFound);
+					  const void ** ppData, UT_uint32 * pLen,
+					  const char **pszFormatFound);
 
 	bool  getRichTextData(T_AllowGet tFrom,
 			      const void ** ppData, UT_uint32 * pLen,

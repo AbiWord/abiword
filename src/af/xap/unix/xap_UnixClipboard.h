@@ -47,12 +47,16 @@ public:
 	void				initialize();
 	bool				assertSelection();
 
-	bool				addData(T_AllowGet tTo, const char* format, const void* pData, UT_sint32 iNumBytes);
+	bool				addData(T_AllowGet tTo, const char* format, const void* pData, 
+								UT_sint32 iNumBytes);
 
 	void				clearData(bool bClipboard, bool bPrimary);
 	bool				getData(T_AllowGet tFrom, const char** formatList,
-						const void ** ppData, UT_uint32 * pLen,
-						const char **pszFormatFound);
+								void ** ppData, UT_uint32 * pLen,
+								const char **pszFormatFound);
+
+	bool				getTextData(T_AllowGet tFrom, void ** ppData, 
+									UT_uint32 * pLen);
 
 	bool canPaste(T_AllowGet tFrom);
 
@@ -63,7 +67,7 @@ public:
  private:
 
 	bool				_getDataFromServer(T_AllowGet tFrom, const char** formatList,
-							   const void ** ppData, UT_uint32 * pLen,
+							   void ** ppData, UT_uint32 * pLen,
 							   const char **pszFormatFound);
 	bool				_getDataFromFakeClipboard(T_AllowGet tFrom, const char** formatList,
 								  void ** ppData, UT_uint32 * pLen,
