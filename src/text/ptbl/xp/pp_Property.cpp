@@ -134,7 +134,8 @@ static PP_Property _props[] =
 	{"table-border", "0.1in",false,NULL},
 
 	{"table-col-spacing", "0.1in",false,NULL},
-	{"table-columns", "",false,NULL},
+	{"table-column-leftpos", "0.0in",false,NULL},
+	{"table-column-props", "",false,NULL},
 
 	{"table-line-thickness", "1",false,NULL},
 	{"table-line-type", "1",false,NULL},
@@ -145,7 +146,7 @@ static PP_Property _props[] =
 	{"table-margin-top", "0.1in", false, NULL},
 
 	{"table-row-spacing", "0.1in",false,NULL},
-	{"table-rows", "",false,NULL},
+	{"table-row-props", "",false,NULL},
 
 	{ "tabstops", "", false, NULL},
 	{ "text-align", text_align,	true, NULL},

@@ -73,6 +73,19 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 
+class fl_ColProps
+{
+public:
+	UT_sint32 m_iColWidth;
+};
+
+class fl_RowProps
+{
+public:
+	UT_sint32 m_iRowHeight;
+};
+
+
 class ABI_EXPORT fl_TableLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
@@ -144,6 +157,14 @@ UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 		{ return m_bDontImmediatelyLayout;}
 	UT_sint32                getLineType(void) const;
 	UT_sint32                getLineThickness(void) const;
+	UT_sint32                getColSpacing(void) const;
+	UT_sint32                getRowSpacing(void) const;
+	UT_sint32                getLeftColPos(void) const
+		{ return m_iLeftColPos;}
+	const UT_Vector *        getVecColProps(void) const
+		{ return &m_vecColProps;}
+	const UT_Vector *        getVecRowProps(void) const
+		{ return &m_vecRowProps;}
 
 protected:
 	virtual void		        _lookupProperties(void);
@@ -175,6 +196,11 @@ private:
 	bool                   m_bDontImmediatelyLayout;
 	UT_sint32              m_iLineType;
 	UT_sint32              m_iLineThickness;
+	UT_sint32              m_iColSpacing;
+	UT_sint32              m_iRowSpacing;
+	UT_sint32              m_iLeftColPos; 
+	UT_Vector              m_vecColProps;
+	UT_Vector              m_vecRowProps;
 };
 
 

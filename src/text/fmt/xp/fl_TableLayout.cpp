@@ -81,8 +81,13 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	  m_bIsDirty(true),
 	  m_bDontImmediatelyLayout(false),
 	  m_iLineType(0),
-	  m_iLineThickness(0)
+	  m_iLineThickness(0),
+	  m_iColSpacing(0),
+	  m_iRowSpacing(0),
+	  m_iLeftColPos(0)
 {
+	m_vecColProps.clear();
+	m_vecRowProps.clear();
 	createTableContainer();
 	fp_TableContainer * pTableContainer = (fp_TableContainer *) getFirstContainer();
 	fl_ContainerLayout * pCL = myContainingLayout();
@@ -101,6 +106,8 @@ fl_TableLayout::~fl_TableLayout()
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+	UT_VECTOR_PURGEALL(fl_ColProps *, m_vecColProps);
+	UT_VECTOR_PURGEALL(fl_RowProps *, m_vecRowProps);
 }
 
 /*!
@@ -139,6 +146,8 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setHomogeneous(m_bIsHomogeneous);
 	UT_sint32 borderWidth = m_iLeftOffsetLayoutUnits + m_iRightOffsetLayoutUnits;
 	pTab->setBorderWidth(borderWidth);
+	pTab->setColSpacings(m_iColSpacing);
+	pTab->setRowSpacings(m_iRowSpacing);
 }
 
 
@@ -528,6 +537,109 @@ void fl_TableLayout::_lookupProperties(void)
 		m_iLineType = 1;
 	}
 	UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup linetype %d lineThickness %d \n",m_iLineType,m_iLineThickness));
+	const char * pszTableColSpacing = NULL;
+	const char * pszTableRowSpacing = NULL;
+	pSectionAP->getProperty("table-col-spacing", (const XML_Char *&)pszTableColSpacing);
+	pSectionAP->getProperty("table-row-spacing", (const XML_Char *&)pszTableRowSpacing);
+	if(pszTableColSpacing && *pszTableColSpacing)
+	{
+//
+// Note to TF from MS. It was too hard to propagate 3 different sets of layout units
+// into the Table Layout code so what I did instead was the worst of all worlds.
+//
+// Structures are layed horizontally in LAYOUT units and vertically in screen units.
+// That is what all those SCALE_TO_SCREEN macros are about. We should think through
+// how to transition to pango layout.
+//
+// Anyway column spacing being horizontal is layout units.
+//
+		m_iColSpacing = UT_convertToLayoutUnits(pszTableColSpacing);
+	}
+	else
+	{
+		m_iColSpacing =  UT_convertToLayoutUnits("0.1in");
+	}
+	if(pszTableRowSpacing && *pszTableRowSpacing)
+	{
+//
+// Row spacing being vertical is screen units
+//
+		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension(pszTableRowSpacing);
+	}
+	else
+	{
+		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension("0.1in");
+	}
+//
+// Positioned columns controls
+//
+	const char * pszLeftColPos = NULL;
+	const char * pszColumnProps = NULL;
+	pSectionAP->getProperty("table-column-leftpos", (const XML_Char *&)pszLeftColPos);
+	pSectionAP->getProperty("table-column-props", (const XML_Char *&)pszColumnProps);
+	if(pszLeftColPos && *pszLeftColPos)
+	{
+//
+// Anyway column positioning being horizontal is layout units.
+//
+		m_iLeftColPos = UT_convertToLayoutUnits(pszLeftColPos);
+	}
+	else
+	{
+		m_iLeftColPos =  0;
+	}
+	if(pszColumnProps && *pszColumnProps)
+	{
+/*
+   These will be properties applied to all columns. To start with, just the 
+    widths of each column are specifed. These are translated to layout units.
+ 
+   The format of the string of properties is:
+
+   table-column-props:1.2in/3.0in/1.3in/;
+
+   So we read back in pszColumnProps
+   1.2in/3.0in/1.3in/
+
+   The "/" characters will be used to delineate different column entries.
+   As new properties for each column are defined these will be delineated with "_"
+   characters. But we'll cross that bridge later.
+*/
+		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
+		UT_String sProps = pszColumnProps;
+		UT_String sSub;
+		UT_sint32 sizes = sProps.size();
+		UT_sint32 i =0;
+		UT_sint32 j =0;
+		while(i < sizes)
+		{
+			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if((j+1)>i && sProps[j] == '/')
+			{
+				sSub = sProps.substr(i,(j-i));
+				i = j + 1;
+				fl_ColProps * pColP = new fl_ColProps;
+				pColP->m_iColWidth = UT_convertToLayoutUnits(sSub.c_str());
+				m_vecColProps.addItem((void *) pColP);
+			}
+		}
+ 	}
+	else
+	{
+		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
+	}
+	
+}
+
+UT_sint32 fl_TableLayout::getColSpacing(void) const
+{
+	return m_iColSpacing;
+}
+
+
+UT_sint32 fl_TableLayout::getRowSpacing(void) const
+{
+	return m_iRowSpacing;
 }
 
 UT_sint32 fl_TableLayout::getLineType(void) const

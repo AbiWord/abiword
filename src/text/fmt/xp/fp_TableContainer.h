@@ -123,7 +123,8 @@ public:
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getTopmostTable(void) const;
 	UT_sint32           getCellX(fp_Line * pLine) const; 
-	UT_sint32           getCellY(fp_Line * pLine) const; 
+	UT_sint32           getCellY(fp_Line * pLine) const;
+	void                setLineMarkers(void);
     UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
     UT_sint32           getRightAttach(void) const
@@ -189,7 +190,7 @@ public:
 		{  return m_iLeft; }
 	UT_sint32           getRightPos(void) const
 		{  return m_iRight; }
-			
+ 
 
 			
 #ifdef FMT_TEST
@@ -333,14 +334,13 @@ public:
 		{ m_bRedrawLines = true;}
 	bool                doRedrawLines(void) const
 		{ return m_bRedrawLines;}
-	
+	fp_TableRowColumn *     getNthCol(UT_sint32 i);
+	fp_TableRowColumn *     getNthRow(UT_sint32 i);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
 
 private:
-	fp_TableRowColumn *     getNthCol(UT_sint32 i);
-	fp_TableRowColumn *     getNthRow(UT_sint32 i);
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
 	void                    _size_request_pass2(void);

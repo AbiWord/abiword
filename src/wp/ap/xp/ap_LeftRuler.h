@@ -81,6 +81,7 @@ public:
 				}
 				delete m_vecTableRowInfo;
 			}
+			m_vecTableRowInfo = NULL;
 		}		
 		
 	Mode					m_mode;
@@ -116,7 +117,7 @@ public:
 	void				setWidth(UT_uint32 iWidth);
 	UT_uint32			getWidth(void) const;
 	void				draw(const UT_Rect * pClipRect);
-	void				draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi);
+	void				draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi);
 	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
 	void			    mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y);
@@ -167,7 +168,7 @@ private:
 	void                _xorGuide(bool bClear=false);
 	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 
-	AP_LeftRulerInfo	m_lfi;					/* the values we last drew with */
+	AP_LeftRulerInfo  * m_lfi;					/* the values we last drew with */
 
 	// scrolling objects
 	AV_ScrollObj *		m_pScrollObj;
@@ -183,7 +184,7 @@ private:
 	UT_uint32			m_iHeight;		/* size of window */
 	UT_uint32			m_iWidth;		/* size of window */
 
-	AP_LeftRulerInfo	m_infoCache;
+	AP_LeftRulerInfo *	m_infoCache;
 
 	UT_sint32			m_oldY; /* Only for dragging; used to see if object has moved */
 

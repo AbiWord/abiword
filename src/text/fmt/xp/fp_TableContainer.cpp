@@ -591,10 +591,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
 	UT_sint32 count = countCons();
-	m_iTopY = 0;
-	m_iBotY = 0;
-	m_iLeft = 0;
-	m_iRight = 0;
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
 	fp_TableContainer * pTab = NULL;
@@ -629,42 +625,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	{
 		ytop = 0;
 		ybot = imax;
-	}
-	fp_CellContainer * pCell = NULL;
-	UT_sint32 iOff = 0;
-	m_iLeft = getX();
-	m_iRight = getX() + getWidth();
-	m_iTopY = getY();
-	UT_sint32 iHeight = 0;
-	if(getBottomAttach() < pTab->getNumRows())
-	{
-		iHeight = pTab->getYOfRow(getBottomAttach()) - getY();
-		m_iBotY = getY() + iHeight;
-	}
-	else
-	{
-//
-// Have to cast the MasterTable to a vertical container to get the full height of a broken
-// table. Otherwise we just get height of the first broken table.
-//
-		fp_VerticalContainer * pVert = (fp_VerticalContainer *) pTab;
-		iHeight = pVert->getHeight() - (UT_sint32 ) (1.5 * SCALE_TO_SCREEN * (double) pTab->getBorderWidth());
-		m_iBotY = pTab->getYOfRow(0) + iHeight;
-	}
-
-	if(getLeftAttach() != 0)
-	{
-		pCell = pTab->getCellAtRowColumn(getTopAttach(),getLeftAttach() -1);
-		iOff = (getX() - pCell->getX() - pCell->getWidth())/2;
-		m_iLeft -= iOff;
-	}
-	else
-	{
-		m_iLeft -= (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double) pTab->getBorderWidth()));
-	}
-	if(getTopAttach() == 0)
-	{
-		m_iTopY -= (UT_sint32) ( 0.5 * SCALE_TO_SCREEN * ((double) pTab->getBorderWidth()));
 	}
 	
 	bool bStop = false;
@@ -719,16 +679,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Skipping line: height %d ytop %d ybot %d \n",pContainer->getY(),ytop,ybot));
 		}
-	}
-	if(!m_bDrawRight)
-	{
-		pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
-		iOff = (pCell->getX() - getX() - getWidth())/2;
-		m_iRight += iOff;
-	}
-	else
-	{
-		m_iRight += (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double)pTab->getBorderWidth()));
 	}
 	drawLines(pBroke);
 	pTab->setRedrawLines();
@@ -1008,10 +958,68 @@ void fp_CellContainer::setToAllocation(void)
 	setHeight(m_MyAllocation.height);
 	setYInLayoutUnits(m_MyAllocation.y);
 	setX(m_MyAllocation.x * SCALE_TO_SCREEN);
-	xxx_UT_DEBUGMSG(("SEVIOR: set to width %d, height %d,y %d,x %d \n", m_MyAllocation.width,m_MyAllocation.height,m_MyAllocation.y,m_MyAllocation.x));
+	UT_DEBUGMSG(("SEVIOR: set to width %d, height %d,y %d,x %d \n", m_MyAllocation.width,m_MyAllocation.height,m_MyAllocation.y,m_MyAllocation.x));
 	setMaxHeight(m_MyAllocation.height);
 	setY(m_MyAllocation.y);
 	layout();
+}
+
+/*!
+ * This method sets the line markers between the rows and columns. It must be called after
+ * the setToAllocation() for all cells.
+ */
+void fp_CellContainer::setLineMarkers(void)
+{
+//
+// Set the boundary markers for line draing.
+//
+	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
+	m_iLeft = getX();
+	if(getLeftAttach() > 0)
+	{
+		m_iLeft -= (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double) pTab->getNthCol(getLeftAttach() - 1)->spacing));
+	}
+	else
+	{
+		m_iLeft -= (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double)pTab->getBorderWidth()));
+	}
+	if(getRightAttach() < pTab->getNumCols())
+	{
+		fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
+		m_iRight = pCell->getX();
+		m_iRight -= (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double) pTab->getNthCol(pCell->getLeftAttach() - 1)->spacing));
+	}
+	else
+	{
+		m_iRight = getX() + getWidth();
+		m_iRight += (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double)pTab->getBorderWidth()));
+	}
+	m_iTopY = pTab->getYOfRow(getTopAttach());
+	if(getTopAttach() == 0)
+	{
+		m_iTopY -= (UT_sint32) (0.5 * SCALE_TO_SCREEN * ((double) pTab->getBorderWidth()));
+	}
+	else
+	{
+		m_iTopY -= pTab->getNthRow(getTopAttach())->spacing/2;
+	}
+	if(getBottomAttach() < pTab->getNumRows())
+	{
+		m_iBotY = pTab->getYOfRow(getBottomAttach());
+		m_iBotY -= pTab->getNthRow(getBottomAttach())->spacing/2;
+	}
+	else
+	{
+//
+// Have to cast the MasterTable to a vertical container to get the full height of a broken
+// table. Otherwise we just get height of the first broken table.
+//
+		fp_VerticalContainer * pVert = (fp_VerticalContainer *) pTab;
+		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight();
+		m_iBotY -= (UT_sint32) (1.5 * SCALE_TO_SCREEN * ((double) pTab->getBorderWidth()));
+	}
+
+
 }
 
 //---------------------------------------------------------------------
@@ -1807,11 +1815,6 @@ void fp_TableContainer::setBorderWidth(UT_sint32 iBorder)
 		return;
 	}
 	m_iBorderWidth = iBorder;
-//
-// FIXME: Should these add the previous spacings?
-//
-	setColSpacings(iBorder);
-	setRowSpacings(iBorder * SCALE_TO_SCREEN);
 	queueResize();
 }
 
@@ -1860,6 +1863,12 @@ void fp_TableContainer::setToAllocation(void)
 	while(pCon)
 	{
 		pCon->setToAllocation();
+		pCon = (fp_CellContainer *) pCon->getNext();
+	}
+	pCon = (fp_CellContainer *) getNthCon(0);
+	while(pCon)
+	{
+		pCon->setLineMarkers();
 		pCon = (fp_CellContainer *) pCon->getNext();
 	}
 	if(bDeleteBrokenTables)
@@ -1929,7 +1938,9 @@ void  fp_TableContainer::_size_request_pass1(void)
   fp_CellContainer * child = (fp_CellContainer *) getNthCon(0);
   while (child)
   {
-
+//
+// OK send down
+//
 	  fp_Requisition child_requisition;
 	  child->sizeRequest(&child_requisition);
 
@@ -2711,6 +2722,16 @@ void  fp_TableContainer::_size_allocate_pass2(void)
   UT_sint32 x, y;
   UT_sint32 row, col;
   fp_Allocation allocation;
+  fl_TableLayout * pTL = (fl_TableLayout *) getSectionLayout();
+  const UT_Vector * pVecColProps = pTL->getVecColProps();
+  if(pVecColProps->getItemCount() > 0)
+  {
+	  for (col = 0; col < getNumCols(); col++)
+	  {
+		  fl_ColProps * pColProp = (fl_ColProps *) pVecColProps->getNthItem(col);
+		  getNthCol(col)->allocation = pColProp->m_iColWidth;
+	  }
+  }
   
   child = (fp_CellContainer *) getNthCon(0);
   while (child)
@@ -2802,7 +2823,13 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   
   pRequisition->width = 0;
   pRequisition->height = 0;
-  
+  bool bDefinedColWidth = false;
+  fl_TableLayout * pTL = (fl_TableLayout *) getSectionLayout();
+  const UT_Vector * pVecColProps = pTL->getVecColProps();
+  if(pVecColProps->getItemCount() > 0)
+  {
+	  bDefinedColWidth = true;
+  }
   _size_request_init ();
   _size_request_pass1 ();
   _size_request_pass2 ();
@@ -2811,6 +2838,11 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   
   for (col = 0; col < m_iCols; col++)
   {
+	  if(bDefinedColWidth)
+	  {
+		  fl_ColProps * pColProp = (fl_ColProps *) pVecColProps->getNthItem(col);
+		  getNthCol(col)->requisition = pColProp->m_iColWidth;
+	  }
 	  pRequisition->width += getNthCol(col)->requisition;
   }
   for (col = 0; col + 1 < m_iCols; col++)
