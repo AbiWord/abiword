@@ -24,6 +24,10 @@
 
 #include "ut_timer.h"
 
+#ifdef XP_TARGET_COCOA
+# include "ut_map.h"
+#endif
+
 class UT_UNIXTimer : public UT_Timer
 {
 public:
@@ -33,10 +37,18 @@ public:
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
 	virtual void stop();
 	virtual void start();
-	
 private:
 	UT_sint32 m_iMilliseconds;
 	UT_uint32 m_iGtkTimerId;
+#ifdef XP_TARGET_COCOA
+	/* these are here for Cocoa timer */
+	static UT_Mutex s_timerMutex;
+	static UT_Map s_timerIds;
+	static int s_lastTimerId;
+
+	friend void XAP_stopCocoaTimer (UT_uint32 timerId);
+	friend UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p);
+#endif
 };
 
 #endif /* UT_UNIXTIMER_H */

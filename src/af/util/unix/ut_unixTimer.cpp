@@ -20,7 +20,9 @@
 #ifndef XP_TARGET_COCOA
 #include <gtk/gtk.h>
 #else
-#include "xap_CocoaTimer.h"
+# include "ut_map.h"
+# include "ut_mutex.h"
+# include "xap_CocoaTimer.h"
 #endif
 
 #include "ut_unixTimer.h"
@@ -28,7 +30,7 @@
 #include "ut_debugmsg.h"
 
 /*****************************************************************/
-	
+
 UT_Timer* UT_Timer::static_constructor(UT_WorkerCallback pCallback, void* pData, GR_Graphics * /*pG*/)
 {
 	UT_ASSERT(pCallback);

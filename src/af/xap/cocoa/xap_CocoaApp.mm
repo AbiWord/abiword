@@ -28,6 +28,8 @@
 
 #include <sys/stat.h>
 
+#include <glib.h>
+
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 
@@ -74,9 +76,9 @@ XAP_CocoaApp::~XAP_CocoaApp()
 
 bool XAP_CocoaApp::initialize()
 {
-	// initialize GTK first.
-	
-//	gtk_set_locale();
+	if (!g_thread_supported ()) {
+		g_thread_init(NULL);
+	}
 
 	// let our base class do it's thing.
 	
