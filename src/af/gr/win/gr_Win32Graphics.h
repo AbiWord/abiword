@@ -166,7 +166,7 @@ public:
 	virtual UT_uint32		getFontHeight(GR_Font *);
 	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void		  restoreRectangle(UT_uint32 iIndx);
-	
+	virtual void 		  flush(void);
 	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
 	
 	

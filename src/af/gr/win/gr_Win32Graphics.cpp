@@ -726,6 +726,8 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	UT_DEBUGMSG(("GR_Win32Graphics::xorLine %u %u %u %u\n", x1,  y1, x2,  y2));	
 	#endif
 	
+	GR_CaretDisabler caretDisabler(getCaret());
+	
 	/*
 	  Note that we always use a pixel width of 1 for xorLine, since
 	  this should always be done to the screen.
@@ -759,6 +761,8 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::polyLine %u\n", nPoints));	
 	#endif
+	
+	GR_CaretDisabler caretDisabler(getCaret());
 		
 	HPEN hPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
@@ -909,7 +913,7 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	UT_DEBUGMSG(("GR_Win32Graphics::clearArea %u %u %u %u\n",  x, y, width, height));	
 	#endif
 	
-	 GR_CaretDisabler caretDisabler(getCaret());
+	GR_CaretDisabler caretDisabler(getCaret());
 	 
 	_UUD(x);
 	_UUD(y);
@@ -1562,4 +1566,9 @@ void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx)
 	BitBlt(m_hdc, x, y, iWidth, iHeight, hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);		
+}
+
+void GR_Win32Graphics::flush(void)
+{	
+	GdiFlush();	
 }
