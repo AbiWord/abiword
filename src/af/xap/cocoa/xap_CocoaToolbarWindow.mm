@@ -26,11 +26,27 @@
 #import "xap_CocoaFrameImpl.h"
 
 
-static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
+static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
+
+
+@interface XAP_CocoaToolbarWindow : NSWindow
+- (BOOL)canBecomeKeyWindow;
+@end
 
 @implementation XAP_CocoaToolbarWindow
 
-+ (XAP_CocoaToolbarWindow *)create
+- (BOOL)canBecomeKeyWindow
+{
+	return YES;
+}
+
+
+@end
+
+
+@implementation XAP_CocoaToolbarWindow_Controller
+
++ (XAP_CocoaToolbarWindow_Controller *)create
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaToolbarWindow create\n"));
 
@@ -41,7 +57,7 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 	windowFrame.size.width = screenFrame.size.width;
 	windowFrame.origin.x = screenFrame.origin.x;
 	windowFrame.origin.y = screenFrame.origin.y + (screenFrame.size.height - windowFrame.size.height);		
-	NSWindow * myWindow = [[NSWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask 
+	NSWindow * myWindow = [[XAP_CocoaToolbarWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask 
 											backing:NSBackingStoreBuffered defer:YES];
 	UT_ASSERT (myWindow);
 	[myWindow setHidesOnDeactivate:YES];
@@ -49,16 +65,16 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 	[myWindow setExcludedFromWindowsMenu:YES];
 	[myWindow setCanHide:YES];
 	
-	XAP_CocoaToolbarWindow * tlbr = [[XAP_CocoaToolbarWindow alloc] initWithWindow:myWindow];
+	XAP_CocoaToolbarWindow_Controller * tlbr = [[XAP_CocoaToolbarWindow_Controller alloc] initWithWindow:myWindow];
 
 	return tlbr;
 }
 
-+ (XAP_CocoaToolbarWindow *)sharedToolbar
++ (XAP_CocoaToolbarWindow_Controller *)sharedToolbar
 {
 	if (pSharedToolbar == nil) {
 		/* no toolbar created. create one and show it */
-		pSharedToolbar = [XAP_CocoaToolbarWindow create];
+		pSharedToolbar = [XAP_CocoaToolbarWindow_Controller create];
 		[pSharedToolbar showWindow:pSharedToolbar];
 		xxx_UT_DEBUGMSG (("Toolbar is visible ? : %d\n", [myWindow isVisible]));
 	}

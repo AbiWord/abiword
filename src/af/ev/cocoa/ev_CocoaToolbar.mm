@@ -271,7 +271,7 @@ bool EV_CocoaToolbar::synthesize(void)
 
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
-	XAP_CocoaToolbarWindow * pToolbarWinCtrl = [XAP_CocoaToolbarWindow sharedToolbar];
+	XAP_CocoaToolbarWindow_Controller * pToolbarWinCtrl = [XAP_CocoaToolbarWindow_Controller sharedToolbar];
 	UT_ASSERT (pToolbarWinCtrl);
 	NSView * toolbarParent = [[pToolbarWinCtrl window] contentView];
 	UT_ASSERT (toolbarParent);
@@ -645,14 +645,14 @@ AP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 void EV_CocoaToolbar::show(void)
 {
 	EV_Toolbar::show();
-	[[XAP_CocoaToolbarWindow sharedToolbar] redisplayToolbars:
+	[[XAP_CocoaToolbarWindow_Controller sharedToolbar] redisplayToolbars:
 		static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getController()];
 }
 
 void EV_CocoaToolbar::hide(void)
 {
 	EV_Toolbar::hide();
-	[[XAP_CocoaToolbarWindow sharedToolbar] redisplayToolbars:
+	[[XAP_CocoaToolbarWindow_Controller sharedToolbar] redisplayToolbars:
 		static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getController()];
 }
 
