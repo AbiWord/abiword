@@ -93,13 +93,18 @@
 <p style="Plain Text"><c props="font-size:8pt">Found strings for language [FiFI].</c></p>
 <p style="Plain Text"><c props="font-size:8pt">Using StringSet [C:\work\abi\user\wp\strings\FiFI.strings]</c></p>
 <p style="Plain Text"></p>
+<p style="Normal">If you are missing any strings in the .strings file, you'll see warning like the following:</p>
+<p style="Plain Text"></p>
+<p style="Plain Text"><c props="font-size:8pt">WARNING: Translation for id [DLG_Zoom_ZoomTitle] not found.</c></p>
+<p style="Plain Text"><c props="font-size:8pt">WARNING: Translation for id [DLG_Zoom_RadioFrameCaption] not found.</c></p>
+<p style="Plain Text"></p>
 <p style="Normal">[6] At this point, you have a **mostly** localized user-interface -- there are still some rough edges and places we still need help with, but all-in-all, this is a pretty good start.</p>
 <p style="Normal"></p>
 <p style="Normal">[7] email a patch file to me or to the abiword-dev mailing list and we'll get it into the next version of the source.</p>
 <p style="Plain Text"></p>
 <p><c props="font-weight:bold">5.  Maintenance Issues</c></p>
 <p></p>
-<p>At present, AbiWord is still growing and evolving and occasionally there is a need to add new strings to the application.  The code is set to use the selected language strings, if available, and to fall back to the builtin English strings when items are missing from the translation.  The code is also set to issue warnings at startup should there be an incomplete translation.</p>
+<p>At present, AbiWord is still growing and evolving and occasionally there is a need to add new strings to the application.  The code is set to use the selected language strings, if available, and to fall back to the builtin English strings when items are missing from the translation.  The code is also set to issue warnings or asserts at startup should there be an incomplete translation.</p>
 <p></p>
 <p>We'll need your help to occasionally review the translation files and update them as things change in the English version.  Thanks.</p>
 <p></p>
