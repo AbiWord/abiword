@@ -2627,7 +2627,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				xxx_UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
 				if(leftDrag != pTInfo->m_iLeftCellPos)
 				{
-					left = pTInfo->m_iLeftCellPos + xAbsLeft +pTInfo->m_iLeftSpacing;
+					left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
 				else
 				{
@@ -2649,11 +2649,11 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bDragRightMost)
 				{
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-					right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
+					right = pTInfo->m_iRightCellPos + xAbsLeft;
 				}
 				else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && bDragRightMost )
 				{
-					right =   m_draggingCenter;
+					right = m_draggingCenter;
 				}
 				else
 				{
