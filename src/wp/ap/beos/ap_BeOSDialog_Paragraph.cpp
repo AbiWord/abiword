@@ -90,3 +90,14 @@ void AP_BeOSDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// TODO build the dialog, attach events, etc., etc.
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
+
+void AP_BeOSDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+{ 
+	// let parent sync any member variables first
+
+	AP_Dialog_Paragraph::_syncControls(changed, bAll);
+
+	// sync the display
+
+	// TODO: see the latest version of the Win32 implementation for ideas
+}

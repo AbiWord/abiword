@@ -64,6 +64,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 				   id_CHECK_SUPPRESS, id_CHECK_NO_HYPHENATE,
 				   id_CHECK_KEEP_NEXT } tControl;
 
+	typedef enum { op_INIT = 0, op_UICHANGE, op_SYNC } tOperation;
+
 	struct _sControlData
 	{
 		void * pData;
@@ -74,15 +76,18 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// handle the XP-job of attaching something to our m_paragraphPreview
 	void _createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 
-	void 			   	_setMenuItemValue(tControl item, UT_sint32 value, UT_Bool bToggleDirty = UT_TRUE);
+	void 			   	_setMenuItemValue(tControl item, UT_sint32 value, tOperation = op_UICHANGE);
 	UT_uint32 			_getMenuItemValue(tControl item);
-	void 				_setCheckItemValue(tControl item, tCheckState value, UT_Bool bToggleDirty = UT_TRUE);
+	void 				_setCheckItemValue(tControl item, tCheckState value, tOperation = op_UICHANGE);
 	tCheckState 		_getCheckItemValue(tControl item);
-	void 				_setSpinItemValue(tControl item, const XML_Char * value, UT_Bool bToggleDirty = UT_TRUE);
+	void 				_setSpinItemValue(tControl item, const XML_Char * value, tOperation = op_UICHANGE);
 	const XML_Char * 	_getSpinItemValue(tControl item);
 
+	void				_doSpin(tControl edit, UT_sint32 amt);
+	virtual void		_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+
 	UT_Bool				_wasChanged(tControl item);
-	
+
 #if 0
 	// string manipulators for spinbutton filtering
 	const XML_Char * _incrementUnitQuantity(const XML_Char * input);

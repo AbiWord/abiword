@@ -209,6 +209,14 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_tabProc(HWND hWnd,UINT msg,WPARAM wPar
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
+	case WM_NOTIFY:
+		pThis = GWL(hWnd);
+		switch (((LPNMHDR)lParam)->code)
+		{
+		case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
+		default:				return 0;
+		}
+
 	default:
 		return 0;
 	}
@@ -278,6 +286,10 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	// HACK: make sure the first tab is visible
 	// TODO: trigger selchange logic instead
 	ShowWindow(m_hwndSpacing, SW_SHOW);
+
+	// sync all controls once to get started
+	// HACK: the first arg gets ignored
+	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -474,8 +486,6 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	_CHECK(PARA_CHECK_SUPPRESS,	id_CHECK_SUPPRESS);
 	_CHECK(PARA_CHECK_NOHYPHEN,	id_CHECK_NO_HYPHENATE);
 
-	// TODO: the _SPIN cases
-
 	case IDCANCEL:						// also AP_RID_DIALOG_PARA_BTN_CANCEL
 		m_answer = a_CANCEL;
 		EndDialog(hWnd,0);
@@ -497,3 +507,96 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	}
 }
 
+/*****************************************************************/
+
+#define _SPIN(c,i)				\
+	case AP_RID_DIALOG_##c:		\
+		_doSpin(i, (0 - (UT_sint32) pnmud->iDelta));	\
+		break;					\
+
+BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	// respond to WM_NOTIFY/UDN_DELTAPOS message
+	// return TRUE to prevent the change from happening
+	// return FALSE to allow it to occur
+	// we may alter the change by changing the fields in pnmud.
+
+	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
+				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
+
+	switch(pnmud->hdr.idFrom)
+	{
+	_SPIN(PARA_SPIN_LEFT,	id_SPIN_LEFT_INDENT);
+	_SPIN(PARA_SPIN_RIGHT,	id_SPIN_RIGHT_INDENT);
+	_SPIN(PARA_SPIN_BY,		id_SPIN_SPECIAL_INDENT);
+	_SPIN(PARA_SPIN_BEFORE,	id_SPIN_BEFORE_SPACING);
+	_SPIN(PARA_SPIN_AFTER,	id_SPIN_AFTER_SPACING);
+	_SPIN(PARA_SPIN_AT,		id_SPIN_SPECIAL_SPACING);
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return FALSE;
+}
+
+/*****************************************************************/
+
+#define _syncSPIN(w,c,i)	\
+		case i:				\
+			SetDlgItemText(w,AP_RID_DIALOG_##c,_getSpinItemValue(i));	\
+			break;			\
+
+void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+{ 
+	// let parent sync any member variables first
+
+	AP_Dialog_Paragraph::_syncControls(changed, bAll);
+
+	// sync the display
+
+	if (bAll || (changed == id_SPIN_SPECIAL_SPACING))
+	{
+		// typing in the control can change the associated combo
+		if (_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
+		{
+			HWND h = GetDlgItem(m_hwndSpacing, AP_RID_DIALOG_PARA_COMBO_LEAD);							
+			SendMessage(h, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_SPACING), 0);
+		}
+	}
+
+	if (bAll || (changed == id_MENU_SPECIAL_SPACING))
+	{
+		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
+		{
+		case spacing_SINGLE:
+		case spacing_ONEANDHALF:
+		case spacing_DOUBLE:
+			// clear the spin control
+			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, NULL);
+			break;
+
+		default:
+			// set the spin control
+			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_AT, _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			break;
+		}
+	}
+
+	if (!bAll)
+	{
+		// spin controls only sync when spun
+		switch (changed)
+		{
+		_syncSPIN(m_hwndSpacing, PARA_EDIT_LEFT,	id_SPIN_LEFT_INDENT)
+		_syncSPIN(m_hwndSpacing, PARA_EDIT_RIGHT,	id_SPIN_RIGHT_INDENT)
+		_syncSPIN(m_hwndSpacing, PARA_EDIT_BY,		id_SPIN_SPECIAL_INDENT)
+		_syncSPIN(m_hwndSpacing, PARA_EDIT_BEFORE,	id_SPIN_BEFORE_SPACING)
+		_syncSPIN(m_hwndSpacing, PARA_EDIT_AFTER,	id_SPIN_AFTER_SPACING)
+		_syncSPIN(m_hwndSpacing, PARA_EDIT_AT,		id_SPIN_SPECIAL_SPACING)
+		default:
+			break;
+		}
+	}
+}

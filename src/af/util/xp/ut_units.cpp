@@ -52,6 +52,9 @@ const char * UT_dimensionName(UT_Dimension dim)
 	case DIM_PT:
 		return "pt";
 
+	case DIM_none:
+		return "";
+
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		return "in";
@@ -60,19 +63,49 @@ const char * UT_dimensionName(UT_Dimension dim)
 
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
-	if (UT_stricmp(sz,"in") == 0)
-		return DIM_IN;
+	const char *p = sz;
+	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
+	{
+		p++;
+	}
 
-	if (UT_stricmp(sz,"cm") == 0)
-		return DIM_CM;
-	
-	if (UT_stricmp(sz,"pi") == 0)
-		return DIM_PI;
+	// p should now point to the unit
+	if (*p)
+	{
+		if (UT_stricmp(p,"in") == 0)
+			return DIM_IN;
 
-	if (UT_stricmp(sz,"pt") == 0)
-		return DIM_PT;
+		if (UT_stricmp(p,"cm") == 0)
+			return DIM_CM;
+		
+		if (UT_stricmp(p,"pi") == 0)
+			return DIM_PI;
+
+		if (UT_stricmp(p,"pt") == 0)
+			return DIM_PT;
+
+		UT_ASSERT(UT_TODO);
+	}
 
 	return fallback;
+}
+
+double UT_convertInchesToDimension(double inches, UT_Dimension dim)
+{
+	double valueScaled = inches;
+	
+	switch (dim)
+	{
+	case DIM_IN:	valueScaled = inches;			break;
+	case DIM_CM:	valueScaled = (inches * 2.54);	break;
+	case DIM_PI:	valueScaled = (inches * 6);		break;
+	case DIM_PT:	valueScaled = (inches * 72);	break;
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		break;
+	}
+
+	return valueScaled;
 }
 
 const char * UT_convertToDimensionString(UT_Dimension dim, double value, const char * szPrecision)
@@ -113,6 +146,11 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value, const c
 	case DIM_PT:
 		valueScaled = (value * 72);
 		sprintf(bufFormat,"%%%sfpt",((szPrecision && *szPrecision) ? szPrecision : ".0"));
+		break;
+
+	case DIM_none:
+		valueScaled = value;
+		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 
 	default:

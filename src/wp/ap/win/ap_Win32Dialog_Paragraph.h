@@ -42,10 +42,12 @@ public:
 protected:
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	BOOL						_onDeltaPos(NM_UPDOWN * pnmud);
 
 	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
-
 	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	virtual void				_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
 
 	XAP_Win32PreviewWidget *	m_pPreviewWidget;
 

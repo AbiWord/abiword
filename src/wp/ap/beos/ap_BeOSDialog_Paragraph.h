@@ -37,6 +37,8 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
+	virtual void			_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+
 };
 
 #endif /* XAP_BEOSDIALOG_PARAGRAPH_H */

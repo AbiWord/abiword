@@ -74,6 +74,8 @@ public:
 	void		_enablePercentSpin(UT_Bool enable);
 	void 		_storeWindowData(void);
 
+	virtual void	_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog
 	

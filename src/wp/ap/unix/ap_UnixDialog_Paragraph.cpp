@@ -1140,3 +1140,14 @@ void AP_UnixDialog_Paragraph::_storeWindowData(void)
 	// the caller requests the percent
 /*	m_zoomPercent = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_spinPercent)); */
 }
+
+void AP_UnixDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+{ 
+	// let parent sync any member variables first
+
+	AP_Dialog_Paragraph::_syncControls(changed, bAll);
+
+	// sync the display
+
+	// TODO: see the latest version of the Win32 implementation for ideas
+}

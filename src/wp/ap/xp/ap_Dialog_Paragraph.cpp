@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "ut_units.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -127,16 +128,16 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			else
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-			_setMenuItemValue(id_MENU_ALIGNMENT, t, UT_FALSE);			
+			_setMenuItemValue(id_MENU_ALIGNMENT, t, op_INIT);			
 		}
 								 
 		sz = UT_getAttribute("margin-left", pProps);
 		if (sz)
-			_setSpinItemValue(id_SPIN_LEFT_INDENT, sz, UT_FALSE);
+			_setSpinItemValue(id_SPIN_LEFT_INDENT, sz, op_INIT);
 
 		sz = UT_getAttribute("margin-right", pProps);
 		if (sz)
-			_setSpinItemValue(id_SPIN_RIGHT_INDENT, sz, UT_FALSE);
+			_setSpinItemValue(id_SPIN_RIGHT_INDENT, sz, op_INIT);
 
 		sz = UT_getAttribute("text-indent", pProps);
 		if (sz)
@@ -150,59 +151,59 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			if (UT_convertDimensionless(sz) > (double) 0)
 			{
 				// if text-indent is greater than margin-left, we have a "first line" case
-				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, UT_FALSE);
+				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_INIT);
 			}
 			else if (UT_convertDimensionless(sz) < (double) 0)
 			{
 				// if text-indent is less than margin-left, we have a "hanging" case
-				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_HANGING, UT_FALSE);
+				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_HANGING, op_INIT);
 			}
 			else
 			{
 				// they're equal then there's nothing special about them
-				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_NONE, UT_FALSE);
+				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_NONE, op_INIT);
 			}
 
 			// TODO : FLIP THE SIGN ON THIS FIELD IF THE CASE IS "HANGING"!
 			
 			// set the value regardless; dialog will enable/disable field
 			// if spacing is "NONE"
-			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, sz, UT_FALSE);
+			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, sz, op_INIT);
 		}
 
 		sz = UT_getAttribute("line-height", pProps);
 		if (sz)
 		{
 			UT_uint32 nLen = strlen(sz);
-			if (nLen > 1)
+			if (nLen > 0)
 			{
 				char * pPlusFound = strrchr(sz, '+');
 				if (pPlusFound && *(pPlusFound + 1) == 0)
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, UT_FALSE);
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, op_INIT);
 				else if(UT_hasDimensionComponent(sz))
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_EXACTLY, UT_FALSE);
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_EXACTLY, op_INIT);
 				else if(UT_strcmp("1.0", sz) == 0)
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_SINGLE, UT_FALSE);
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_SINGLE, op_INIT);
 				else if(UT_strcmp("1.5", sz) == 0)
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ONEANDHALF, UT_FALSE);
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ONEANDHALF, op_INIT);
 				else if(UT_strcmp("2.0", sz) == 0)
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, UT_FALSE);
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, op_INIT);
 				else
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, UT_FALSE);
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, op_INIT);
 			}
 
 			// set the spin contents regardless of menu content; platforms will
 			// enable or disable the spin item for varying states of menu
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, sz, UT_FALSE);
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, sz, op_INIT);
 		}
 
 		sz = UT_getAttribute("margin-top", pProps);
 		if (sz)
-			_setSpinItemValue(id_SPIN_BEFORE_SPACING, sz, UT_FALSE);
+			_setSpinItemValue(id_SPIN_BEFORE_SPACING, sz, op_INIT);
 			
 		sz = UT_getAttribute("margin-bottom", pProps);
 		if (sz)
-			_setSpinItemValue(id_SPIN_AFTER_SPACING, sz, UT_FALSE);
+			_setSpinItemValue(id_SPIN_AFTER_SPACING, sz, op_INIT);
 		
 		{
 			// NOTE : "orphans" and "widows" hold a number specifying the number
@@ -229,34 +230,34 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 				bNoWidows = UT_TRUE;
 
 			if (bNoOrphans && bNoWidows)
-				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_INDETERMINATE, UT_FALSE);
+				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_INDETERMINATE, op_INIT);
 			else if (orphans > 0 || widows > 0)
-				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_TRUE, UT_FALSE);
+				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_TRUE, op_INIT);
 			else
-				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_FALSE, UT_FALSE);
+				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_FALSE, op_INIT);
 		}
 
 		sz = UT_getAttribute("keep-together", pProps);
 		if (sz)
 		{
 			if (UT_stricmp(sz, "yes") == 0)
-				_setCheckItemValue(id_CHECK_KEEP_LINES, check_TRUE, UT_FALSE);
+				_setCheckItemValue(id_CHECK_KEEP_LINES, check_TRUE, op_INIT);
 			else
-				_setCheckItemValue(id_CHECK_KEEP_LINES, check_FALSE, UT_FALSE);
+				_setCheckItemValue(id_CHECK_KEEP_LINES, check_FALSE, op_INIT);
 		}
 		else
-			_setCheckItemValue(id_CHECK_KEEP_LINES, check_INDETERMINATE, UT_FALSE);
+			_setCheckItemValue(id_CHECK_KEEP_LINES, check_INDETERMINATE, op_INIT);
 
 		sz = UT_getAttribute("keep-with-next", pProps);
 		if (sz)
 		{
 			if (UT_stricmp(sz, "yes") == 0)
-				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_TRUE, UT_FALSE);
+				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_TRUE, op_INIT);
 			else
-				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_FALSE, UT_FALSE);
+				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_FALSE, op_INIT);
 		}
 		else
-			_setCheckItemValue(id_CHECK_KEEP_NEXT, check_INDETERMINATE, UT_FALSE);
+			_setCheckItemValue(id_CHECK_KEEP_NEXT, check_INDETERMINATE, op_INIT);
 			
 		// TODO : add these to PP_Property (pp_Property.cpp) !!!
 		// TODO : and to FV_View::getBlockFormat (or else they won't come in)
@@ -574,7 +575,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 }
 
 void AP_Dialog_Paragraph::_setMenuItemValue(tControl item, UT_sint32 value,
-											UT_Bool bToggleChanged /* = UT_FALSE */)
+											tOperation op /* = op_UICHANGE */)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
@@ -584,8 +585,12 @@ void AP_Dialog_Paragraph::_setMenuItemValue(tControl item, UT_sint32 value,
 	// menu items have integers as data, so store it in a pointer
 	pItem->pData = (void *) value;
 
-	if (bToggleChanged)
+	if ((op == op_UICHANGE) || (op == op_SYNC))
 		pItem->bChanged = UT_TRUE;
+
+	// for UI-driven changes, may need to sync other controls
+	if (op == op_UICHANGE)
+		_syncControls(item);
 }
 
 
@@ -600,7 +605,7 @@ UT_uint32 AP_Dialog_Paragraph::_getMenuItemValue(tControl item)
 }
 		
 void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
-											 UT_Bool bToggleChanged /* = UT_FALSE */)											 
+											tOperation op /* = op_UICHANGE */)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
@@ -610,8 +615,12 @@ void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
 	// check buttons have integers as data, so store it in a pointer
 	pItem->pData = (void *) value;
 
-	if (bToggleChanged)
+	if ((op == op_UICHANGE) || (op == op_SYNC))
 		pItem->bChanged = UT_TRUE;
+
+	// for UI-driven changes, may need to sync other controls
+	if (op == op_UICHANGE)
+		_syncControls(item);
 }
 
 AP_Dialog_Paragraph::tCheckState AP_Dialog_Paragraph::_getCheckItemValue(tControl item)
@@ -627,7 +636,7 @@ AP_Dialog_Paragraph::tCheckState AP_Dialog_Paragraph::_getCheckItemValue(tContro
 }
 
 void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * value,
-											UT_Bool bToggleChanged /* = UT_FALSE */)											
+											tOperation op /* = op_UICHANGE */)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
@@ -639,8 +648,12 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 	UT_ASSERT(pItem->pData && value);
 	UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, value);
 
-	if (bToggleChanged)
+	if ((op == op_UICHANGE) || (op == op_SYNC))
 		pItem->bChanged = UT_TRUE;
+
+	// for UI-driven changes, may need to sync other controls
+	if (op == op_UICHANGE)
+		_syncControls(item);
 }
 
 const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
@@ -651,6 +664,135 @@ const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 	UT_ASSERT(pItem && pItem->pData);
 	
 	return (const XML_Char *) pItem->pData;
+}
+
+#define SPIN_INCR_IN	0.1
+#define SPIN_INCR_CM	0.5
+#define SPIN_INCR_PI	6.0
+#define SPIN_INCR_PT	1.0
+#define SPIN_INCR_none	0.1
+
+void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
+{
+	UT_ASSERT(amt); // zero makes no sense
+
+	// get current value from member
+	const XML_Char* szOld = _getSpinItemValue(edit);
+	double d = UT_convertDimensionless(szOld);
+
+	// figure out which dimension and units to spin in
+	UT_Dimension dimSpin = m_dim;
+	double dSpinUnit = SPIN_INCR_PT;
+
+	switch (edit)
+	{
+	case id_SPIN_BEFORE_SPACING:
+	case id_SPIN_AFTER_SPACING:
+		dimSpin = DIM_PT;
+		break;
+
+	case id_SPIN_SPECIAL_SPACING:
+		// TODO: see if we need more smarts here
+		dimSpin = UT_determineDimension(szOld, DIM_none);
+		break;
+
+	case id_SPIN_LEFT_INDENT:
+	case id_SPIN_RIGHT_INDENT:
+	case id_SPIN_SPECIAL_INDENT:
+		dimSpin = m_dim;
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	switch (dimSpin)
+	{
+	case DIM_IN:	dSpinUnit = SPIN_INCR_IN;	break;
+	case DIM_CM:	dSpinUnit = SPIN_INCR_CM;	break;
+	case DIM_PI:	dSpinUnit = SPIN_INCR_PI;	break;
+	case DIM_PT:	dSpinUnit = SPIN_INCR_PT;	break;
+	case DIM_none:	dSpinUnit = SPIN_INCR_none;	break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	// figure out spin precision, too
+	const char * szPrecision = ".1";
+	if ((dimSpin == DIM_PT) || 
+		(dimSpin == DIM_PI))
+		szPrecision = ".0";
+
+	// if needed, switch unit systems and round off
+	UT_Dimension dimOld = UT_determineDimension(szOld, dimSpin);
+
+	if (dimOld != dimSpin)
+	{
+		double dInches = UT_convertToInches(szOld);
+		d = UT_convertInchesToDimension(dInches, dimSpin); 
+	}
+
+	// value is now in desired units, so change it
+	d += (dSpinUnit * amt);
+	const XML_Char* szNew = UT_convertToDimensionString(dimSpin, d, szPrecision); 
+
+	_setSpinItemValue(edit, szNew);
+}
+
+void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+{
+	if (changed == id_SPIN_SPECIAL_SPACING)
+	{
+		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
+		{
+		case spacing_SINGLE:
+		case spacing_ONEANDHALF:
+		case spacing_DOUBLE:
+			_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, op_SYNC);
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	if (changed == id_MENU_SPECIAL_SPACING)
+	{
+		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
+		{
+		case spacing_SINGLE:
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.0", op_SYNC);
+			break;
+
+		case spacing_ONEANDHALF:
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.5", op_SYNC);
+			break;
+
+		case spacing_DOUBLE:
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "2.0", op_SYNC);
+			break;
+
+		case spacing_ATLEAST:
+		case spacing_EXACTLY:
+			// TODO: if dimensionless, convert to pt
+			break;
+
+		case spacing_MULTIPLE:
+			// TODO: if dimensioned, convert to multiple
+			break;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+	}
+
+	// TODO: does id_MENU_SPECIAL_INDENT have similar behavior? 
+
+	// update the preview, too
+	m_paragraphPreview->draw();
 }
 
 UT_Bool AP_Dialog_Paragraph::_wasChanged(tControl item)
