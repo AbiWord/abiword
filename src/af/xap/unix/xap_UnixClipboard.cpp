@@ -189,6 +189,8 @@ bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pDat
 
 void XAP_UnixClipboard::clearData(bool bClipboard, bool bPrimary)
 {
+  UT_DEBUGMSG(("DOM: clearData: [CLIPBOARD: %d] [PRIMARY: %d]\n", bClipboard, bPrimary));
+
   // User requested us to clear the clipboard
   if (bClipboard)
     {
@@ -209,6 +211,8 @@ bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 {
   // Fetch data from the clipboard (using the allowable source(s)) in one of
   // the prioritized list of formats.  Return pointe to clipboard's buffer. 
+
+  UT_DEBUGMSG(("DOM: getData attempt\n"));
 
   *pszFormatFound = NULL;
   *ppData = NULL;

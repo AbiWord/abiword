@@ -808,7 +808,7 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
     else
       {
 	m_bHasSelection = false;
-	m_pClipboard->clearData(false,true);
+	//m_pClipboard->clearData(false,true);
     }
 	
     setViewSelection(pView);
