@@ -37,6 +37,7 @@
 #include "fv_View.h"
 #include "ap_FrameData.h"
 #include "ap_Prefs.h"
+#include "pd_Document.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -488,6 +489,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 
 	switch(id)
 	{
+	case AP_MENU_ID_FILE_SAVE:
+	  if (!pView->getDocument()->isDirty() || !pView->canDo(true))
+	    s = EV_MIS_Gray;
+	  break;
 	case AP_MENU_ID_FILE_REVERT:
 	case AP_MENU_ID_EDIT_UNDO:
 		if (!pView->canDo(true))

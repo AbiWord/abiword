@@ -34,6 +34,29 @@
 #include "xap_EncodingManager.h"
 #include "ut_misc.h"
 
+/*****************************************************************/	
+/*****************************************************************/	
+
+#define X_TestParseState(ps)	((m_parseState==(ps)))
+
+#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))			\
+									  {  m_error = UT_IE_BOGUSDOCUMENT;	\
+										 return; } } while (0)
+
+#define X_CheckDocument(b)		do {  if (!(b))								\
+									  {  m_error = UT_IE_BOGUSDOCUMENT;	\
+										 return; } } while (0)
+
+#define X_CheckError(v)			do {  if (!(v))								\
+									  {  m_error = UT_ERROR;			\
+										 return; } } while (0)
+
+#define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
+
+#define X_VerifyInsideBlockOrField()  do { if(!(X_TestParseState(_PS_Block) || X_TestParseState(_PS_Field))) \
+                                                                          {  m_error = UT_IE_BOGUSDOCUMENT;  \
+                                                                             return; } } while (0)
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -100,13 +123,16 @@ UT_Error IE_Imp_AbiWord_1_Sniffer::constructImporter (PD_Document * pDocument,
 
 IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 {
+  if ( !m_bWroteSection )
+    X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
+  if ( !m_bWroteParagraph )
+    X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, true)
+  : IE_Imp_XML(pDocument, true), m_bWroteSection (false),
+    m_bWroteParagraph(false), m_bDocHasLists(false), m_bDocHasPageSize(false)
 {
-	m_bDocHasLists = false;
-	m_bDocHasPageSize = false;
 }
 
 /* Quick hack for GZipAbiWord */
@@ -188,32 +214,6 @@ static struct xmlToIdMapping s_Tokens[] =
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
 
-/*****************************************************************/	
-/*****************************************************************/	
-
-#define X_TestParseState(ps)	((m_parseState==(ps)))
-
-#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))			\
-									  {  m_error = UT_IE_BOGUSDOCUMENT;	\
-										 return; } } while (0)
-
-#define X_CheckDocument(b)		do {  if (!(b))								\
-									  {  m_error = UT_IE_BOGUSDOCUMENT;	\
-										 return; } } while (0)
-
-#define X_CheckError(v)			do {  if (!(v))								\
-									  {  m_error = UT_ERROR;			\
-										 return; } } while (0)
-
-#define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
-
-#define X_VerifyInsideBlockOrField()  do { if(!(X_TestParseState(_PS_Block) || X_TestParseState(_PS_Field))) \
-                                                                          {  m_error = UT_IE_BOGUSDOCUMENT;  \
-                                                                             return; } } while (0)
-
-/*****************************************************************/
-/*****************************************************************/
-
 void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 {
 	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
@@ -232,6 +232,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
 		X_CheckError(getDoc()->appendStrux(PTX_Section,atts));
 		return;
 
@@ -239,6 +240,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	{
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
+		m_bWroteParagraph = true;
 		X_CheckError(getDoc()->appendStrux(PTX_Block,atts));
 		return;
 	}

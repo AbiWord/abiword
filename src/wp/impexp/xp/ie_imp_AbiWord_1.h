@@ -66,6 +66,8 @@ protected:
     bool		_getDataItemEncoded(const XML_Char ** atts);
 
  private:
+    bool m_bWroteSection;
+    bool m_bWroteParagraph;
     bool			m_bDocHasLists;
     bool			m_bDocHasPageSize;
     UT_uint32		m_iInlineStart;

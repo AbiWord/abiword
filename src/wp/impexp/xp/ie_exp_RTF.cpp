@@ -131,7 +131,35 @@ bool IE_Exp_RTF_attic_Sniffer::getDlgLabels(const char ** pszDesc,
 	*ft = getFileType();
 	return true;
 }
-	  
+	
+
+#if !defined(DEBUG)
+
+bool IE_Exp_MsWord_Hack_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!UT_stricmp(szSuffix,".doc"));
+}
+
+UT_Error IE_Exp_MsWord_Hack_Sniffer::constructExporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
+{
+	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument,1);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_MsWord_Hack_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
+{
+	*pszDesc = "Microsoft Word (.doc)";
+	*pszSuffixList = "*.doc";
+	*ft = getFileType();
+	return true;
+}
+
+#endif
+  
 /*****************************************************************/
 /*****************************************************************/
 

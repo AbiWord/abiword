@@ -1442,7 +1442,7 @@ void fp_Line::layout(void)
 #ifdef DEBUG
 	const UT_uint32 iDefinesLine = __LINE__;
 #endif
-	#define STATIC_BUFFER_INCREMENT 20
+	#define STATIC_BUFFER_INCREMENT 30
 	#define STATIC_BUFFER_INITIAL 5 * STATIC_BUFFER_INCREMENT
 	static UT_sint32 *pOldXs = new UT_sint32[STATIC_BUFFER_INITIAL];
 	static UT_uint32 iOldXsSize = STATIC_BUFFER_INITIAL;

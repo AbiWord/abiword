@@ -886,3 +886,4 @@ void s_MsWord_97_Listener::_convertFontFace  (char * szDest, const char * szFrom
 	//
 	strcpy (szDest, szFrom);
 }
+

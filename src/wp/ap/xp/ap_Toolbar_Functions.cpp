@@ -39,6 +39,7 @@
 #include "fl_BlockLayout.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "ap_FrameData.h"
+#include "pd_Document.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -57,6 +58,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 
 	switch (id)
 	{
+	case AP_TOOLBAR_ID_FILE_SAVE:
+	  if (!pView->getDocument()->isDirty() || !pView->canDo(true))
+	    s = EV_TIS_Gray;
+	  break;
 	case AP_TOOLBAR_ID_EDIT_UNDO:
 		if (!pView->canDo(true))
 			s = EV_TIS_Gray;

@@ -65,7 +65,7 @@
 
 #define XAP_PREF_KEY_SmartQuotesEnable				"SmartQuotesEnable"
 /* substitute curly smart quotes on the fly */
-#define XAP_PREF_DEFAULT_SmartQuotesEnable			"1"
+#define XAP_PREF_DEFAULT_SmartQuotesEnable			"0"
 
 #define XAP_PREF_KEY_UseSuffix                      "UseSuffix"
 /* append suffixes to saved files */

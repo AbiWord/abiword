@@ -77,13 +77,13 @@ public:
 
 // hack for "msword" export
 
-class ABI_EXPORT IE_Exp_MsWord_97_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_MsWord_Hack_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
 public:
-	IE_Exp_MsWord_97_Sniffer () {}
-	virtual ~IE_Exp_MsWord_97_Sniffer () {}
+	IE_Exp_MsWord_Hack_Sniffer () {}
+	virtual ~IE_Exp_MsWord_Hack_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
