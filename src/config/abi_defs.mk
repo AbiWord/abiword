@@ -190,20 +190,20 @@ include $(ABI_ROOT)/src/config/platforms/irix.mk
 endif
 
 ifeq ($(OS_NAME), IRIX64)
-include $(ABI_DEPTH)/config/platforms/irix64.mk
+include $(ABI_ROOT)/src/config/platforms/irix64.mk
 endif
 
 # not HP-UX since sed applies s/-.*// to uname
 ifeq ($(OS_NAME), HP)
-include $(ABI_DEPTH)/config/platforms/hpux.mk
+include $(ABI_ROOT)/src/config/platforms/hpux.mk
 endif
 
 ifeq ($(OS_NAME), AIX)
-include $(ABI_DEPTH)/config/platforms/aix.mk
+include $(ABI_ROOT)/src/config/platforms/aix.mk
 endif
 
 ifeq ($(OS_NAME), OSF1)
-include $(ABI_DEPTH)/config/platforms/osf1.mk
+include $(ABI_ROOT)/src/config/platforms/osf1.mk
 endif
 
 # Catch all for undefined platform (CC will always be defined on a working platform)
