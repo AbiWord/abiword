@@ -105,6 +105,7 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 	// the OK/Cancel buttons and the Tab-control).
 
 	AP_Win32Dialog_Options * pThis;
+	HWND hWndTab = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_TAB);
 
 	switch (msg)
 	{
@@ -112,7 +113,7 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 		pThis = (AP_Win32Dialog_Options *)lParam;
 		SWL(hWnd,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
+	
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
@@ -120,11 +121,14 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 	case WM_NOTIFY:
 		pThis = GWL(hWnd);
 		return pThis->_onNotify(hWnd,lParam);
-
+	
+	
 	default:
 		return 0;
+	
 	}
-}
+}	
+	
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -174,7 +178,7 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_tabProc(HWND hWnd,UINT msg,WPARAM wParam
 	// This is a pseudo-dialog procedure for the tab-control.
 
 	AP_Win32Dialog_Options * pThis;
-
+	
 	switch (msg)
 	{
 	case WM_INITDIALOG:
@@ -235,6 +239,65 @@ struct {
 #define SPELL_INDEX 		1
 #define LAYOUT_INDEX		2
 #define PREF_INDEX			3
+
+ WNDPROC gLong;
+
+LRESULT CALLBACK tabWindowProc(
+  HWND hwnd,      // handle to window
+  UINT uMsg,      // message identifier
+  WPARAM wParam,  // first message parameter
+  LPARAM lParam)   // second message parameter
+
+{	
+	
+	//	
+	// allow sheet to translate Ctrl+Tab, Shift+Ctrl+Tab,
+	//  Ctrl+PageUp, and Ctrl+PageDown
+	//
+	if (uMsg==WM_KEYDOWN)
+	{
+		int nSel =	TabCtrl_GetCurSel(hwnd);
+		HWND hParent = GetParent(hwnd);
+		AP_Win32Dialog_Options * pParent  = GWL(hParent);
+			
+		if (GetKeyState(VK_CONTROL) & 0x8000)
+		{			
+			int nSel =	TabCtrl_GetCurSel(hwnd);
+
+			switch (wParam)
+			{
+			   case VK_NEXT:
+			   {			   	
+			   	if (nSel>= TabCtrl_GetItemCount(hwnd)-1)
+			   		nSel = 0;
+			   	else
+			   		nSel++;			   		
+			   	
+			   	pParent->ShowPage(nSel);			   	
+			   	break;
+				}
+				
+				case VK_PRIOR:
+			   {			   	
+			   	if (nSel==0)
+			   		nSel = TabCtrl_GetItemCount(hwnd)-1;
+			   	else
+			   		nSel--;			   		
+			   	
+			   	pParent->ShowPage(nSel);
+			   	break;
+				}				
+			   	
+			   	default:
+			   		break;
+			}			
+		}		
+	}
+	
+	return CallWindowProc(gLong, hwnd, uMsg, wParam, lParam);
+
+}
+
 
 BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -330,10 +393,24 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_initializeTransperentToggle();
 
 	// Use the InitialPageNum to determine which tab is selected.
-	TabCtrl_SetCurSel( m_hwndTab, getInitialPageNum() );
-	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem( getInitialPageNum() ), SW_SHOW);
+	ShowPage(getInitialPageNum());
+		
+	//Subclass
+	gLong = (WNDPROC) SetWindowLong(m_hwndTab, GWL_WNDPROC, (long)tabWindowProc);
 
 	return 1;							// 1 == we did not call SetFocus()
+}
+
+//
+//
+//
+void AP_Win32Dialog_Options::ShowPage(int nPage)
+{
+	UT_uint32 iTo = TabCtrl_GetCurSel( m_hwndTab);
+	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(iTo), SW_HIDE);
+
+	TabCtrl_SetCurSel( m_hwndTab, nPage);
+	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(nPage), SW_SHOW);
 }
 
 //////////////////////////////////////////////////////////////////

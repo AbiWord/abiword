@@ -38,6 +38,7 @@ public:
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 
+	void ShowPage(int nPage);
  protected:
 
 	virtual void _controlEnable( tControl id, bool value );
