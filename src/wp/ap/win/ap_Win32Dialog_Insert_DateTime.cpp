@@ -19,10 +19,12 @@
 
 #include <windows.h>
 #include <time.h>
+#include <locale.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
@@ -105,6 +107,9 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 	struct tm wide = { 42, 3, 8, 27, 8, 100, 3 };	// Wednesday, September 27, 2000
 	pTime = &wide;
 #endif
+
+	UT_LocaleInfo localeInfo;                                               
+	UT_LocaleTransactor (LC_ALL, localeInfo.getLanguage().utf8_str());
 
     for (i = 0;InsertDateTimeFmts[i] != NULL;i++) {
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
