@@ -352,7 +352,6 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				accel[0] = _ev_convert(buf, szLabelName);
 				accel[1] = '\0';
 
-
 				int n = 0;
 				PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0); 
 				PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0); 
@@ -497,7 +496,7 @@ static void set_menu_enabled(PtWidget_t *w, int enabled, int checked) {
 //      any case it is on the TODO list.
 bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 {
-	PtWidget_t *item, *wParent;
+	PtWidget_t *item, *wParent, *wPrev;
 
 	// update the status of stateful items on menu bar.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pQNXApp->getMenuActionSet();
@@ -563,6 +562,7 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						UT_ASSERT(0);
 						break;
 					}
+					wPrev = item;
 					set_menu_enabled(item, bEnable, bCheck);
 				}
 
@@ -619,6 +619,9 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						} else {
 							item = PtCreateWidget(PtMenuButton, wParent, n, args); 
 						}
+						if(wPrev) {
+							PtWidgetInsert(item, wPrev, 0);
+						}
 						PtRealizeWidget(item);
 
 						struct _cb_menu *mcb;
@@ -646,14 +649,16 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 					}
 
 					PtSetResource(item, Pt_ARG_TEXT_STRING, labelbuf, 0);
-					//PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0);
+					PtSetResource(item, Pt_ARG_ACCEL_KEY, accel, 0); 
 					set_menu_enabled(item, bEnable, bCheck);
+					wPrev = item;
 				}
 			}
 			break;
 
 		case EV_MLF_Separator:
 			nPositionInThisMenu++;
+			wPrev = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
 			break;
 
 		case EV_MLF_BeginSubMenu:
@@ -663,6 +668,7 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
 			item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
+			wPrev = NULL;
 			UT_ASSERT(item);
 			stack.push(item);
 			break;
