@@ -659,3 +659,16 @@ void pt_PieceTable::clearIfAtFmtMark(PT_DocPosition dpos)
 		undoCmd();
 	}
 }
+
+UT_Bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
+{
+	PX_ChangeRecord * pcr
+		= new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangePoint,
+							  dpos, 0);
+	UT_ASSERT(pcr);
+
+	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(NULL, pcr);
+
+	return UT_TRUE;
+}

@@ -297,7 +297,23 @@ UT_Bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const 
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 {
-	return pBL->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
+	if (pBL)
+	{
+		return pBL->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
+	}
+	else
+	{
+		//  Insert the block at the beginning of the section
+		fl_BlockLayout*	pNewBL = insertBlock(sdh, NULL, pcrx->getIndexAP());
+		if (!pNewBL)
+		{
+			UT_DEBUGMSG(("no memory for BlockLayout\n"));
+			return UT_FALSE;
+		}
+
+		return pNewBL->doclistener_insertFirstBlock(pcrx, sdh, 
+													lid, pfnBindHandles);
+	}
 }
 
 UT_Bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,

@@ -108,6 +108,8 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	case PX_ChangeRecord::PXT_ChangeFmtMark:
 		return PX_ChangeRecord::PXT_ChangeFmtMark;			// we are our own inverse
 
+	case PX_ChangeRecord::PXT_ChangePoint:
+		return PX_ChangeRecord::PXT_ChangePoint;
 
 	default:
 		UT_ASSERT(0);

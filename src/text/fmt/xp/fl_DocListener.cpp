@@ -477,6 +477,14 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		bResult = pBLSL->bl_doclistener_changeObject(pBL, pcroc);
 		goto finish_up;
 	}
+
+	case PX_ChangeRecord::PXT_ChangePoint:
+	{
+		FV_View* pView = m_pLayout->getView();
+		if (pView)
+			pView->_setPoint(pcr->getPosition());
+		goto finish_up;
+	}
 		
 	default:
 		UT_ASSERT(0);
@@ -524,12 +532,21 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			return UT_FALSE;
 				
 		case PTX_Block:					// we are inserting a block.
-			// the immediately prior strux is a section.  this probably cannot
-			// happen because the insertion point would have been immediately
-			// after the existing first block in the section rather than between
-			// the section and block.
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return UT_FALSE;
+		{
+			// the immediately prior strux is a section.  So, this will
+			// become the first block of the section and have no text.
+
+			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			UT_Bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+			if (0 == m_iGlobCounter)
+			{
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+				m_pLayout->updateLayout();
+#endif
+			}
+	
+			return bResult;
+		}
 
 		default:						// unknown strux.
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -408,6 +408,12 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 	///////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////
 
+	case PX_ChangeRecord::PXT_ChangePoint:
+		DONE();
+		m_pDocument->notifyListeners(NULL, pcr);
+
+		return UT_TRUE;
+
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;

@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
+#include "ut_stack.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
 #include "pf_Frag_FmtMark.h"
@@ -229,8 +230,9 @@ UT_Bool pt_PieceTable::_isSimpleDeleteSpan(PT_DocPosition dpos1,
 	return (pf_First == pf_End);
 }
 
-UT_Bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1, 
-										PT_DocPosition & dpos2) const
+UT_Bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1, 
+											PT_DocPosition & dpos2,
+											UT_Stack * pstDelayStruxDelete) const
 {
 	//  Our job is to adjust the end positions of the delete
 	//  operating to delete those structural object that the 
@@ -267,7 +269,7 @@ UT_Bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 		// the block we have will then be slurped into the previous
 		// section.
 		dpos1 -= pfsContainer->getLength();
-		return _tweakDeleteSpan(dpos1, dpos2);
+		return UT_TRUE;
 
 	case PTX_Block:
 		// if the previous container is a block, we're ok.
@@ -295,13 +297,69 @@ UT_Bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 				UT_ASSERT(pf_Other->getType() == pf_Frag::PFT_Strux);
 				UT_ASSERT(((static_cast<pf_Frag_Strux *>(pf_Other))->getStruxType() == PTX_Block));
 				dpos2 += pf_Other->getLength();
-				return _tweakDeleteSpan(dpos1, dpos2);
+				return UT_TRUE;
 			}
 			break;
 		}
 	}
 
+	if (fragOffset_First == 0 && fragOffset_End == 0 && pf_First != pf_End)
+	{
+		pf_Frag * pf_Before = pf_First->getPrev();
+		while (pf_Before && pf_Before->getType() == pf_Frag::PFT_FmtMark)
+			pf_Before = pf_Before->getPrev();
+		pf_Frag * pf_Last = pf_End->getPrev();
+		while (pf_Last && pf_Last->getType() == pf_Frag::PFT_FmtMark)
+			pf_Last = pf_Last->getPrev();
+		
+		if (pf_Before && pf_Before->getType() == pf_Frag::PFT_Strux &&
+			pf_Last && pf_Last->getType() == pf_Frag::PFT_Strux)
+		{
+			PTStruxType pt_BeforeType = static_cast<pf_Frag_Strux *>(pf_Before)->getStruxType();
+			PTStruxType pt_LastType = static_cast<pf_Frag_Strux *>(pf_Last)->getStruxType();
+
+			if (pt_BeforeType == PTX_Block && pt_LastType == PTX_Block)
+			{
+				//  If we are the structure of the document is
+				//  '[Block] ... [Block]' and we are deleting the
+				//  '... [Block]' part, then the user is probably expecting
+				//  us to delete '[Block] ... ' instead, so that any text
+				//  following the second block marker retains its properties.
+				//  The problem is that it might not be safe to delete the
+				//  first block marker until the '...' is deleted because 
+				//  it might be the first block of the section.  So, we 
+				//  want to delete the '...' first, and then get around
+				//  to deleting the block later.
+				dpos2 -= pf_Last->getLength();
+				pstDelayStruxDelete->push(pf_Before);
+				return UT_TRUE;
+			}
+		}
+	}
+
 	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1, 
+										PT_DocPosition & dpos2,
+										UT_Stack * pstDelayStruxDelete) const
+{
+	//  We want to keep tweaking the delete span until there is nothing
+	//  more to tweak.  We check to see if nothing has changed in the
+	//  last tweak, and if so, we are done. 
+	while (1)
+	{
+		PT_DocPosition old_dpos1 = dpos1;
+		PT_DocPosition old_dpos2 = dpos2;
+		UT_uint32 old_iStackSize = pstDelayStruxDelete->getDepth();
+
+		if(!_tweakDeleteSpanOnce(dpos1, dpos2, pstDelayStruxDelete))
+			return UT_FALSE;
+
+		if (dpos1 == old_dpos1 && dpos2 == old_dpos2
+			&& pstDelayStruxDelete->getDepth() == old_iStackSize)
+			return UT_TRUE;
+	}
 }
 
 UT_Bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
@@ -457,17 +515,21 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	UT_ASSERT(dpos2 > dpos1);
 
 	UT_Bool bSuccess = UT_TRUE;
+	UT_Stack stDelayStruxDelete;
+
+	PT_DocPosition old_dpos2 = dpos2;
 
 	//  Before we begin the delete proper, we might want to adjust the ends 
 	//  of the delete slightly to account for expected behavior on 
 	//  structural boundaries.
-	bSuccess = _tweakDeleteSpan(dpos1, dpos2);
+	bSuccess = _tweakDeleteSpan(dpos1, dpos2, &stDelayStruxDelete);
 	if (!bSuccess)
 	{
 		return UT_FALSE;
 	}
 
-	if (_isSimpleDeleteSpan(dpos1, dpos2))
+	if (_isSimpleDeleteSpan(dpos1, dpos2) 
+		&& stDelayStruxDelete.getDepth() == 0)
 	{
 		//  If the delete is sure to be within a fragment, we don't 
 		//  need to worry about much of the bookkeeping of a complex
@@ -481,13 +543,28 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		//  first, and then the actual spans.  Also, glob all
 		//  changes together.
 		beginMultiStepGlob();
+		_changePointWithNotify(old_dpos2);
+
 		bSuccess = _deleteFormatting(dpos1, dpos2);
 		if (bSuccess)
-		{
 			bSuccess = _deleteComplexSpan(dpos1, dpos2);
+
+		while (bSuccess && stDelayStruxDelete.getDepth() > 0) {
+			pf_Frag_Strux * pfs;
+			stDelayStruxDelete.pop((void **)&pfs);
+
+			_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
+
+ 			pf_Frag *pf;
+			PT_DocPosition dp;
+			bSuccess = _deleteStruxWithNotify(dpos1 - pfs->getLength(), pfs,
+											  &pf, &dp);
 		}
+
+		_changePointWithNotify(dpos1);
 		endMultiStepGlob();
 	}
 
 	return bSuccess;
 }
+

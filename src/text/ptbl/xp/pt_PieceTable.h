@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_growbuf.h"
 #include "ut_alphahash.h"
+#include "ut_stack.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
 #include "px_ChangeHistory.h"
@@ -207,8 +208,12 @@ protected:
 	UT_Bool					_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const;
 	UT_Bool					_isSimpleDeleteSpan(PT_DocPosition dpos1,
 												PT_DocPosition dpos2) const;
+	UT_Bool					_tweakDeleteSpanOnce(PT_DocPosition& dpos1, 
+												 PT_DocPosition& dpos2,
+												 UT_Stack * pstDelayStruxDelete) const;
 	UT_Bool					_tweakDeleteSpan(PT_DocPosition& dpos1, 
-											 PT_DocPosition& dpos2) const;
+											 PT_DocPosition& dpos2,
+											 UT_Stack * pstDelayStruxDelete) const;
 	UT_Bool					_deleteFormatting(PT_DocPosition dpos1,
 											  PT_DocPosition dpos2);
 	UT_Bool					_deleteComplexSpan(PT_DocPosition dpos1,
@@ -297,6 +302,8 @@ protected:
 													   PT_AttrPropIndex * pFmtMarkAP);
 	UT_Bool					_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const;
 	UT_Bool					_lastUndoIsThisFmtMark(PT_DocPosition dpos);
+
+	UT_Bool					_changePointWithNotify(PT_DocPosition dpos);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

@@ -92,14 +92,15 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	{
 		m_pNext = pPrev->m_pNext;
 		m_pPrev->m_pNext = this;
-		if (m_pNext)
-		{
-			m_pNext->m_pPrev = this;
-		}
 	}
 	else
 	{
-		m_pNext = NULL;
+		m_pNext = pSectionLayout->getFirstBlock();
+	}
+
+	if (m_pNext)
+	{
+		m_pNext->m_pPrev = this;
 	}
 }
 
@@ -2173,14 +2174,35 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	fl_BlockLayout*	pPrevBL = m_pPrev;
 	if (!pPrevBL)
 	{
-		UT_DEBUGMSG(("no prior BlockLayout\n"));
-		return UT_FALSE;
+		if (m_pFirstRun && IsZeroLengthTextRun(m_pFirstRun))
+		{
+			// we have a fake run.  Kill it.
+			fp_Run * pNuke = m_pFirstRun;
+
+			// detach from their line
+			fp_Line* pLine = pNuke->getLine();
+			UT_ASSERT(pLine);
+										
+			pLine->removeRun(pNuke);
+			delete pNuke;
+		
+			m_pFirstRun = NULL;
+		}
+
+		//  The only case where we can get away with deleting the first block
+		//  of a section is when it actually has no content.
+		UT_ASSERT(!m_pFirstRun);
+		if (m_pFirstRun)
+		{
+			UT_DEBUGMSG(("no prior BlockLayout\n"));
+			return UT_FALSE;
+		}
 	}
 
 	// erase the old version
 	clearScreen(m_pLayout->getGraphics());
 
-	if ((pPrevBL->m_pFirstRun)
+	if (pPrevBL && (pPrevBL->m_pFirstRun)
 		&& !(pPrevBL->m_pFirstRun->getNext())
 		&& (IsZeroLengthTextRun(pPrevBL->m_pFirstRun)))
 	{
@@ -2283,7 +2305,10 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	// get rid of everything else about the block
 	purgeLayout();
 
-	pPrevBL->m_pNext = m_pNext;
+	if (pPrevBL)
+	{
+		pPrevBL->m_pNext = m_pNext;
+	}
 							
 	if (m_pNext)
 	{
@@ -2294,25 +2319,39 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	UT_ASSERT(pSL);
 	pSL->removeBlock(this);
 
+	if (pPrevBL)
+	{	
 #if 1
-	// move all squiggles to previous block
-	_deleteSquiggles(0, offset, pPrevBL);
-	// TODO: instead, merge squiggles from the two blocks
-	// TODO: just check boundary word
+		// move all squiggles to previous block
+		_deleteSquiggles(0, offset, pPrevBL);
+		// TODO: instead, merge squiggles from the two blocks
+		// TODO: just check boundary word
 #else
-	m_pLayout->queueBlockForSpell(pPrevBL);
+		m_pLayout->queueBlockForSpell(pPrevBL);
 #endif 
-	// in case we've never checked this one
-	m_pLayout->dequeueBlock(this);
+		// in case we've never checked this one
+		m_pLayout->dequeueBlock(this);
 
-	// update the display
-//	pPrevBL->_lookupProperties();	// TODO: this may be needed
-	pPrevBL->setNeedsReformat();
+		// update the display
+//		pPrevBL->_lookupProperties();	// TODO: this may be needed
+		pPrevBL->setNeedsReformat();
 
-	FV_View* pView = pPrevBL->m_pLayout->getView();
-	if (pView)
+		FV_View* pView = pSL->getDocLayout()->getView();
+		if (pView)
+		{
+			pView->_setPoint(pcrx->getPosition());
+		}
+	}
+	else
 	{
-		pView->_setPoint(pcrx->getPosition());
+		// in case we've never checked this one
+		m_pLayout->dequeueBlock(this);
+		
+		FV_View* pView = pSL->getDocLayout()->getView();
+		if (pView)
+		{
+			pView->_setPoint(pcrx->getPosition());
+		}
 	}
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
@@ -2361,6 +2400,29 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	}
 	
 	setNeedsReformat();
+
+	return UT_TRUE;
+}
+
+UT_Bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * pcrx,
+													 PL_StruxDocHandle sdh,
+													 PL_ListenerId lid,
+													 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																			 PL_ListenerId lid,
+																			 PL_StruxFmtHandle sfhNew))
+{
+	//  Exchange handles with the piece table
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)this;
+	pfnBindHandles(sdh,lid,sfhNew);
+	
+	_insertFakeTextRun();
+	setNeedsReformat();
+	
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_setPoint(pcrx->getPosition());
+	}
 
 	return UT_TRUE;
 }
