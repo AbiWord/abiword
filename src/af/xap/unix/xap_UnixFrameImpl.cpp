@@ -131,6 +131,9 @@ XAP_UnixFrameImpl::~XAP_UnixFrameImpl()
 
 	DELETEP(m_pUnixMenu);
 	DELETEP(m_pUnixPopup);
+
+	// unref the input method context
+	g_object_unref (G_OBJECT (m_imContext));
 }
 
 
