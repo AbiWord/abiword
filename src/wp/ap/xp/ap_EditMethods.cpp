@@ -4039,7 +4039,7 @@ Defun1(dlgBullets)
 #else
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	s_TellNotImplemented(pFrame, "Numbering and Bullets dialog", __LINE__);
-
+	return UT_TRUE;
 #endif
 }
 

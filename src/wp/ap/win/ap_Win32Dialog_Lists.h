@@ -32,8 +32,8 @@ public:
 	virtual ~AP_Win32Dialog_Lists(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			Activate(XAP_Frame * pFrame);
-	virtual void			Destroy(XAP_Frame * pFrame);
+	virtual void			activate(void);
+	virtual void			destroy(void);
  
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 

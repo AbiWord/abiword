@@ -168,9 +168,9 @@ public:
 	virtual void listUpdate(void); 
 	XML_Char * getListLabel(void);
 	void transferListFlags(void);
-	inline UT_uint32 getLevel(void);
-	inline void setStarting( UT_Bool bValue);
-	inline void setStopping( UT_Bool bValue);
+	UT_uint32 getLevel(void);
+	void setStarting( UT_Bool bValue);
+	void setStopping( UT_Bool bValue);
 
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;

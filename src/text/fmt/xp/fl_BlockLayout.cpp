@@ -4084,19 +4084,19 @@ inline void fl_BlockLayout::_addBlockToPrevList(void)
 	m_pAutoNum->insertItem(this, m_pPrev);
 }
 
-inline UT_uint32 fl_BlockLayout::getLevel(void)
+UT_uint32 fl_BlockLayout::getLevel(void)
 {
 	if (!m_pAutoNum)
 		return 0;
 	else return m_pAutoNum->getLevel();
 }
 
-inline void fl_BlockLayout::setStarting( UT_Bool bValue )
+void fl_BlockLayout::setStarting( UT_Bool bValue )
 {
 	m_bStartList = bValue;
 }
 
-inline void fl_BlockLayout::setStopping( UT_Bool bValue)
+void fl_BlockLayout::setStopping( UT_Bool bValue)
 {
 	m_bStopList = bValue;
 }
