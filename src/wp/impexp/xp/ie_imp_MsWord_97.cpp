@@ -164,41 +164,74 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 	switch(tag)
 		{
 		case PARABEGIN:
-                        apap = (PAP*)props;
-		        strcat(propBuffer, "text-align:");
-			switch(apap->jc)
-				{
-				case 0:
-					strcat(propBuffer, "left");
-					break;
-				case 1:
-					strcat(propBuffer, "center");
-					break;
-				case 2:
-					strcat(propBuffer, "right");
-					break;
-				case 3:
-					strcat(propBuffer, "justify");
-					break;
-				case 4:			
-				/* this type of justification is of unknown purpose and is 
-				undocumented , but it shows up in asian documents so someone
-				should be able to tell me what it is someday C. */
-					strcat(propBuffer, "justify");
-					break;
-				}
-			//strcat(propBuffer, "; ");
-			propsArray[0] = pProps;
-			propsArray[1] = propBuffer;
-			propsArray[2] = NULL;
-			UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
-			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, propsArray));
-			/*
-			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block,NULL));
-			*/
+		   apap = (PAP*)props;
+
+		   // paragraph alignment
+		   strcat(propBuffer, "text-align:");
+		   switch(apap->jc)
+		     {
+		      case 0:
+			strcat(propBuffer, "left");
 			break;
+		      case 1:
+			strcat(propBuffer, "center");
+			break;
+		      case 2:
+			strcat(propBuffer, "right");
+			break;
+		      case 3:
+			strcat(propBuffer, "justify");
+			break;
+		      case 4:			
+			/* this type of justification is of unknown purpose and is 
+			 * undocumented , but it shows up in asian documents so someone
+			 * should be able to tell me what it is someday C. */
+			strcat(propBuffer, "justify");
+			break;
+		     }
+		   strcat(propBuffer, ";");
+		   // line spacing (single-spaced, double-spaced, etc.)
+		   if (apap->lspd.fMultLinespace) {
+		      strcat(propBuffer, "line-height:");
+		      sprintf(propBuffer + strlen(propBuffer),
+			      "%1.1f;", (((float)apap->lspd.dyaLine) / 240));
+		   } else { 
+		      // I'm not sure Abiword currently handles the other method
+		      // which requires setting the height of the lines exactly
+		   }
+		   // margins
+		   // -right
+		   if (apap->dxaRight) {
+		      strcat(propBuffer, "margin-right:");
+		      sprintf(propBuffer + strlen(propBuffer),
+			      "%1.4fin;", (((float)apap->dxaRight) / 1440));
+		   }
+		   // -left
+		   if (apap->dxaLeft) {
+		      strcat(propBuffer, "margin-left:");
+		      sprintf(propBuffer + strlen(propBuffer),
+			      "%1.4fin;", (((float)apap->dxaLeft) / 1440));
+		   }
+		   // -left first line (indent)
+		   if (apap->dxaLeft1) {
+		      strcat(propBuffer, "text-indent:");
+		      sprintf(propBuffer + strlen(propBuffer),
+			      "%1.4fin;", (((float)apap->dxaLeft1) / 1440));
+		   }
+		      
+		   // remove trailing ;
+		   propBuffer[strlen(propBuffer)-1] = 0;
+
+		   propsArray[0] = pProps;
+		   propsArray[1] = propBuffer;
+		   propsArray[2] = NULL;
+		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
+		   X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, propsArray));
+		   /* X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block,NULL)); */
+		   break;
 		case CHARPROPBEGIN:
 		   achp = (CHP*)props;
+
 		   // bold text
 		   if (achp->fBold) { 
 		      strcat(propBuffer, "font-weight:bold;");
@@ -260,9 +293,10 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   sprintf(propBuffer + strlen(propBuffer), 
 			   "font-size:%dpt;", (achp->hps/2));
 
-		   propsArray[0] = pProps;
 		   // remove trailing ;
 		   propBuffer[strlen(propBuffer)-1] = 0;
+
+		   propsArray[0] = pProps;
 		   propsArray[1] = propBuffer;
 		   propsArray[2] = NULL;
 		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
