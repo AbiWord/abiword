@@ -164,6 +164,9 @@ UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 {
 	const UT_uint32 old_iSpace = m_iSpace;
 
+	// skip realloc in cases where we are removing an entry, as its probably an error
+	UT_return_val_if_fail(!((ndx >= m_iSpace) && (pNew == NULL) && (ppOld == NULL)), -1)
+
 	if (ndx >= m_iSpace)
 	{
 		const UT_sint32 err = grow(ndx+1);
