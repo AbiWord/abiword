@@ -168,7 +168,7 @@ bool IE_Exp_MsWord_Hack_Sniffer::recognizeSuffix(const char * szSuffix)
 UT_Error IE_Exp_MsWord_Hack_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
-	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument,1);
+	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
