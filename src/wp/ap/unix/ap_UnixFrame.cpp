@@ -61,6 +61,9 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	AV_ScrollObj * pScrollObj = NULL;
 	ap_ViewListener * pViewListener = NULL;
 	AD_Document * pOldDoc = NULL;
+	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
+	
+	AV_ListenerId lidScrollbarViewListener;
 
 	UT_uint32 nrToolbars;
 
@@ -99,6 +102,26 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecUnixToolbars.getNthItem(k);
 		pUnixToolbar->bindListenerToView(pView);
 	}
+
+	// add a Scrollbar-View-Listener to help up keep the scrollbar up-to-date.
+	//
+	// TODO we ***really*** need to re-do the whole scrollbar thing.
+	// TODO we have an addScrollListener() using an m_pScrollObj
+	// TODO and a View-Listener, and a bunch of other widget stuff.
+	// TODO and its very confusing.
+
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
+	ENSUREP(pScrollbarViewListener);
+	pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
+					   &lidScrollbarViewListener);
+
+	/****************************************************************
+	*****************************************************************
+	** If we reach this point, everything for the new document has
+	** been created.  We can now safely replace the various fields
+	** within the structure.  Nothing below this point should fail.
+	*****************************************************************
+	****************************************************************/
 	
 	// switch to new view, cleaning up previous settings
 	if (m_pData->m_pDocLayout)
@@ -113,24 +136,13 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
 	m_lid = lid;
+	REPLACEP(m_pScrollbarViewListener,pScrollbarViewListener);
+	m_lidScrollbarViewListener = lidScrollbarViewListener;
 
 	m_pView->addScrollListener(m_pScrollObj);
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
-
-	// add a Scrollbar-View-Listener to help up keep the scrollbar up-to-date.
-	//
-	// TODO we ***really*** need to re-do the whole scrollbar thing.
-	// TODO we have an addScrollListener() using an m_pScrollObj
-	// TODO and a View-Listener, and a bunch of other widget stuff.
-	// TODO and its very confusing.
-
-	m_pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,m_pView);
-	UT_ASSERT(m_pScrollbarViewListener);
-	m_pView->addListener(static_cast<AV_Listener *>(m_pScrollbarViewListener),
-						 &m_lidScrollbarViewListener);
 	setYScrollRange();
-
 	updateTitle();
 
 	m_pView->draw();
@@ -144,6 +156,7 @@ Cleanup:
 	DELETEP(pView);
 	DELETEP(pViewListener);
 	DELETEP(pScrollObj);
+	DELETEP(pScrollbarViewListener);
 
 	// change back to prior document
 	DELETEP(m_pDoc);
