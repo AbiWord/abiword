@@ -101,11 +101,17 @@ void AP_QNXPrefs::overlayEnvironmentPrefs(void)
 	// which goes to the Abiword format:
 	// en-US, es-ES, pt-PT
 
+/*
+ TF NOTE: This quick conversion doesn't work for whatever reason
+ the locale returned from this procedure is POSIX ... what does
+ that mean?  For now we just use the default of en-US.
+
 	// we'll try this quick conversion
 	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) {
 	   lc_ctype[2] = '-';
 	   szNewLang = lc_ctype;
 	}
+*/
 
 	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));
 	m_builtinScheme->setValue(AP_PREF_KEY_MenuLabelSet,szNewLang);

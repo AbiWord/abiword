@@ -47,7 +47,10 @@ public:
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage(void);
 	virtual void				setStatusMessage(const char * szMsg);
+
 	virtual void 				toggleRuler(UT_Bool bRulerOn);
+	virtual void 				toggleBar(UT_uint32 iBarNb, UT_Bool bRulerOn);
+	virtual void 				toggleStatusBar(UT_Bool bStatusBarOn);
 
 protected:
 	virtual PtWidget_t *		_createDocumentWindow(void);

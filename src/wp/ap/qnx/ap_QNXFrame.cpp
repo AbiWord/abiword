@@ -790,6 +790,14 @@ UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
 	return _showDocument();
 }
 
+void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn) {
+	UT_DEBUGMSG(("TODO: Toggle toolbar %d state %d ", iBarNb, bBarOn));
+}
+
 void AP_QNXFrame::toggleRuler(UT_Bool bRulerOn) {
 	UT_DEBUGMSG(("TODO: Toggle ruler code "));
+}
+
+void AP_QNXFrame::toggleStatusBar(UT_Bool bStatusBarOn) {
+	UT_DEBUGMSG(("TODO: Toggle status code "));
 }
