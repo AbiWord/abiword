@@ -348,10 +348,10 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 {
 	gc->clearArea(rect.left, rect.top, rect.width, rect.height);
 
-	rect.left += 2;
-	rect.width -= 4;
-	rect.top += 2;
-	rect.height -= 4;
+	rect.left += _UL(2);
+	rect.width -= _UL(4);
+	rect.top += _UL(2);
+	rect.height -= _UL(4);
 	m_previewDrawer.draw(gc, rect, iColumns, false, 0.0, 0.0);
 }
 
