@@ -1,4 +1,4 @@
-/* The AbiWord Widget
+/* The AbiWord Widget 
  *
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001,2002 Dom Lachowicz <cinamod@hotmail.com>
@@ -40,13 +40,6 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 
-#ifdef HAVE_GNOME
-#include <gnome.h>
-#include <libbonoboui.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <bonobo/bonobo-macros.h>
-#include <bonobo/bonobo-object.h>
-#endif
 
 static UT_Vector vecAbi;
 
@@ -91,6 +84,9 @@ struct _AbiPrivData {
 	bool                 m_bMappedEventProcessed;
     bool                 m_bUnlinkFileAfterLoad;
 	gint                 m_iNumFileLoads;
+#ifdef HAVE_GNOME
+	BonoboUIComponent    * m_uic;
+#endif
 };
 
 /**************************************************************************/
@@ -1310,6 +1306,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 #ifdef HAVE_GNOME
 	else
 	{
+		
 		if (GTK_OBJECT_CLASS(parent_class)->destroy)
 			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
 	// chain up
@@ -2384,6 +2381,20 @@ abi_widget_get_frame ( AbiWidget * w )
   return w->priv->m_pFrame ;
 }
 
+#ifdef HAVE_GNOME
+extern "C" void
+abi_widget_set_Bonobo_uic(AbiWidget * w, BonoboUIComponent * uic)
+{
+	w->priv->m_uic = uic;
+}
+
+extern "C" BonoboUIComponent *
+abi_widget_get_Bonobo_uic(AbiWidget * w)
+{
+	return 	w->priv->m_uic;
+}
+
+#endif
 /**
  * abi_widget_invoke()
  *

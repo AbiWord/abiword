@@ -1282,6 +1282,8 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 	const char * szRight = NULL;
 	const char * szBot = NULL;
 	PL_StruxDocHandle cellSDH;
+	*numRows = 0;
+	*numCols = 0;
 //
 // Do the scan
 //

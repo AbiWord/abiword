@@ -28,6 +28,14 @@
 #include "ap_UnixApp.h"
 #endif
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#include <libbonoboui.h>
+#include <libgnomevfs/gnome-vfs.h>
+#include <bonobo/bonobo-macros.h>
+#include <bonobo/bonobo-object.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* c++ */
@@ -210,7 +218,10 @@ extern "C" {
   gboolean abi_widget_save ( AbiWidget * w, const char * fname );
   gboolean abi_widget_save_ext ( AbiWidget * w, const char * fname,
 				 const char * extension ) ;
-  
+#ifdef HAVE_GNOME
+	void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
+    BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  
+#endif
 #ifdef ABIWORD_INTERNAL
   /* these functions are used by abiword internally and really aren't exported to the rest of the world */
   GtkWidget * abi_widget_new_with_app (AP_UnixApp * pApp);

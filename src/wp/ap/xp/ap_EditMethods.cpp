@@ -227,6 +227,9 @@ public:
 	static EV_EditMethod_Fn selectLine;
 	static EV_EditMethod_Fn selectBlock;
 	static EV_EditMethod_Fn selectObject;
+	static EV_EditMethod_Fn selectTable;
+	static EV_EditMethod_Fn selectRow;
+	static EV_EditMethod_Fn selectCell;
 
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -246,6 +249,7 @@ public:
 	static EV_EditMethod_Fn deleteHyperlink;
 	static EV_EditMethod_Fn deleteRows;
 	static EV_EditMethod_Fn deleteTable;
+
 
 	static EV_EditMethod_Fn insertBookmark;
 	static EV_EditMethod_Fn insertHyperlink;
@@ -956,8 +960,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(sectColumns3), 		0,		""),
 	EV_EditMethod(NF(selectAll),			0,	""),
 	EV_EditMethod(NF(selectBlock),			0,	""),
+	EV_EditMethod(NF(selectCell),			0,	""),
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
+	EV_EditMethod(NF(selectRow),			0,	""),
+	EV_EditMethod(NF(selectTable),			0,	""),
 	EV_EditMethod(NF(selectWord),			0,	""),
 	EV_EditMethod(NF(setEditVI),			0,	""),
 	EV_EditMethod(NF(setInputVI),			0,	""),
@@ -4043,6 +4050,96 @@ Defun(selectBlock)
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
 	return true;
 }
+
+Defun1(selectTable)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	PT_DocPosition posStartTab,posEndTab;
+	PL_StruxDocHandle tableSDH,endTableSDH;
+	PD_Document * pDoc = pView->getDocument();
+	bool bRes = pDoc->getStruxOfTypeFromPosition(pView->getPoint(),PTX_SectionTable,&tableSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posStartTab = pDoc->getStruxPosition(tableSDH) - 1;
+	bRes = pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posEndTab = pDoc->getStruxPosition(endTableSDH)+1;
+	pView->cmdSelect(posStartTab,posEndTab);
+	return true;
+}
+
+
+Defun1(selectRow)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	PT_DocPosition posTable,posStartRow,posEndRow;
+	PL_StruxDocHandle rowSDH,endRowSDH,tableSDH;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+
+	PD_Document * pDoc = pView->getDocument();
+	pView->getCellParams(pView->getPoint(), &iLeft, &iRight,&iTop,&iBot);
+	
+	bool bRes = pDoc->getStruxOfTypeFromPosition(pView->getPoint(),PTX_SectionTable,&tableSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posTable = pDoc->getStruxPosition(tableSDH) + 1;
+  
+	//
+	// Now find the number of rows and columns inthis table.
+    //
+	UT_sint32 numRows,numCols;
+	bRes = pDoc->getRowsColsFromTableSDH(tableSDH,&numRows,&numCols);
+	if(!bRes)
+	{
+		return false;
+	}
+	rowSDH = pDoc->getCellSDHFromRowCol(tableSDH,iTop,0);
+	posStartRow = pDoc->getStruxPosition(rowSDH) - 1;
+	endRowSDH = pDoc->getCellSDHFromRowCol(tableSDH,iTop,numCols -1);
+	posEndRow = pDoc->getStruxPosition(endRowSDH);
+	bRes = pDoc->getNextStruxOfType(endRowSDH,PTX_EndCell,&endRowSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posEndRow = pDoc->getStruxPosition(endRowSDH)+1;
+	pView->cmdSelect(posStartRow,posEndRow);
+	return true;
+}
+
+
+Defun1(selectCell)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	PT_DocPosition posStartCell,posEndCell;
+	PL_StruxDocHandle cellSDH,endCellSDH;
+	PD_Document * pDoc = pView->getDocument();
+	bool bRes = pDoc->getStruxOfTypeFromPosition(pView->getPoint(),PTX_SectionCell,&cellSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posStartCell = pDoc->getStruxPosition(cellSDH) - 1;
+	bRes = pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+	if(!bRes)
+	{
+		return false;
+	}
+	posEndCell = pDoc->getStruxPosition(endCellSDH)+1;
+	pView->cmdSelect(posStartCell,posEndCell);
+	return true;
+}
+
 
 Defun1(delLeft)
 {

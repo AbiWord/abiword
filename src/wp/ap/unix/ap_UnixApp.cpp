@@ -1195,7 +1195,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 #ifdef LOGFILE
-	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
+	UT_String sLogFile = getUserPrivateDirectory();
+	sLogFile += "abiLogFile"
+	logfile = fopen(sLogFile.c_str(),"a+");
 	fprintf(logfile,"About to do gtk_set_locale \n");
 #endif
     
@@ -1697,6 +1699,99 @@ static void set_prop (BonoboPropertyBag 	*bag,
 		g_free (const_cast<void*>(static_cast<const void*>(g_value_get_string(&gVal))));
 	}
 }
+
+
+/****************************************************************
+ Whole bunch of bonobo UI verb implementations to enable useful things
+ to be done from a merged menuBar.
+**********************************************************************/
+static void
+verb_Undo_cb (BonoboUIComponent *uic, gpointer data, const char *name)
+{
+
+	g_return_if_fail (IS_ABI_WIDGET(data));
+
+	AbiWidget * abi = ABI_WIDGET (G_OBJECT(data));
+	GObject * object = G_OBJECT(abi);
+	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+	abi_klazz->undo(abi);
+}
+
+static void
+verb_generic_cb (BonoboUIComponent *uic, gpointer data, const char *name)
+{
+
+	g_return_if_fail (IS_ABI_WIDGET(data));
+
+	AbiWidget * abi = ABI_WIDGET (G_OBJECT(data));
+	GObject * object = G_OBJECT(abi);
+	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+	if(UT_strcmp(name,"redo") == 0)
+	{
+		abi_klazz->redo(abi);
+	}
+	else if(UT_strcmp(name,"copy") == 0)
+	{
+		abi_klazz->copy(abi);
+	}
+	else if(UT_strcmp(name,"cut") == 0)
+	{
+		abi_klazz->cut(abi);
+	}
+	else if(UT_strcmp(name,"paste") == 0)
+	{
+		abi_klazz->paste(abi);
+	}
+	else if(UT_strcmp(name,"print") == 0)
+	{
+		abi_widget_invoke(abi,"print");
+	}
+	else if(UT_strcmp(name,"printPreview") == 0)
+	{
+		abi_widget_invoke(abi,"printPreview");
+	}
+	else if(UT_strcmp(name,"fileSave") == 0)
+	{
+		abi_widget_invoke(abi,"fileSave");
+	}
+	else if(UT_strcmp(name,"fileSaveAs") == 0)
+	{
+		abi_widget_invoke(abi,"fileSaveAs");
+	}
+}
+
+static BonoboUIVerb abi_nautilus_verbs[] = {
+	BONOBO_UI_VERB ("fileSave",            verb_generic_cb),
+	BONOBO_UI_VERB ("fileSaveAs",          verb_generic_cb),
+	BONOBO_UI_VERB ("print",               verb_generic_cb),
+	BONOBO_UI_VERB ("printPreview",        verb_generic_cb),
+	BONOBO_UI_VERB ("undo",                verb_Undo_cb),
+	BONOBO_UI_VERB ("redo",                verb_generic_cb),
+	BONOBO_UI_VERB ("copy",                verb_generic_cb),
+	BONOBO_UI_VERB ("cut",                 verb_generic_cb),
+	BONOBO_UI_VERB ("paste",                 verb_generic_cb),
+	BONOBO_UI_VERB_END
+};
+
+static void
+abi_nautilus_view_create_ui (AbiWidget *abi)
+{
+
+	g_return_if_fail (IS_ABI_WIDGET(abi));
+	BonoboUIComponent * uic = abi_widget_get_Bonobo_uic(abi);
+
+	/* Set up the UI from XML file. 
+	   Have to find a way to get this from a global
+	installation
+	*/
+	AP_UnixApp * pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
+	const char * szDir =   pApp->getUserPrivateDirectory();
+	bonobo_ui_util_set_ui (uic, szDir,
+			       "abi-nautilus-view-file.xml", "AbiWordNautilusView", NULL);
+	bonobo_ui_component_add_verb_list_with_data (uic, abi_nautilus_verbs,
+						     abi);
+}
+
 
 /*****************************************************************/
 /* Implements the Bonobo/Persist:1.0, Bonobo/PersistStream:1.0,
@@ -2233,6 +2328,11 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 //	fprintf(logfile," After zoomable connects ref count %d \n",  bonobo_object_get_ao_ref_count(BONOBO_OBJECT(to_aggregate)));
 	fprintf(logfile," After zoomable connects gobject ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
 #endif
+
+/* UI Component */
+	BonoboUIComponent * uic = bonobo_ui_component_new ("AbiWordNautilusView");
+	abi_widget_set_Bonobo_uic(abiwidget,uic);
+	abi_nautilus_view_create_ui (abiwidget);
 
 	return to_aggregate;
 }
