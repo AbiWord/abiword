@@ -1,6 +1,8 @@
-; This is a file for creating an installer for Abiword using NSIS 
+; This is a file for creating an installer for Abiword using NSIS v1 series
 ; by Alan Horkan <horkana@tcd.ie>
 ; modified by Michael D. Pritchett <mpritchett@attglobal.net>
+; Kenneth J. Davis <jeremyd@computer.org> (2002)
+; [add your name here]
 
 ; Do a Cyclic Redundancy Check to make sure the installer 
 ; was not corrupted by the download.  
@@ -107,7 +109,7 @@ SectionEnd
 
 ; OPTIONAL Start Menu Shortcut for the current user profile
 Section "Start Menu Shortcuts (Current User)"
-	SectionIn 1 3
+	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	CreateDirectory "$SMPROGRAMS\Abiword"
 	CreateShortCut "$SMPROGRAMS\Abiword\Uninstall Abiword.lnk" "$INSTDIR\UninstallAbiWord.exe" "" "$INSTDIR\UninstallAbiWord.exe" 0
@@ -116,7 +118,7 @@ SectionEnd
 
 ; OPTIONAL Desktop Shortcut for the current user profile
 Section "Desktop Shortcut (Current User)"
-	SectionIn 1 3
+	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	CreateShortCut "$DESKTOP\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
 SectionEnd
