@@ -765,7 +765,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 			m_pLine->getScreenOffsets(this, xoff, yoff);
 			UT_uint32 iWidth = getDrawingWidth();
 
-			m_pG->fillRect(m_colorPG,xoff, yoff + 4, iWidth, 3);
+			m_pG->fillRect(m_colorPG,xoff, yoff + _UL(4), iWidth, _UL(3));
 #endif
 			// make sure we only get erased once
 			_setDirty(true);

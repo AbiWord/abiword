@@ -1126,7 +1126,8 @@ void fp_TextRun::mergeWithNext(void)
 
 	setLength(getLength() + pNext->getLength());
 	_setDirty(isDirty() || pNext->isDirty());
-	setNext(pNext->getNext());
+	
+	setNext(pNext->getNext(), false);
 	if (getNext())
 	{
 		// do not mark anything dirty
@@ -1157,7 +1158,14 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	FriBidiCharType iVisDirection = getVisDirection();
 	fp_TextRun* pNew = new fp_TextRun(getBlock(), getGR(), iSplitOffset, getLength() - (iSplitOffset - getBlockOffset()), false);
 
+
 	UT_ASSERT(pNew);
+
+	// when spliting the run, we do not want to recalculated the draw
+	// buffer if the current one is up to date
+	pNew->_setRefreshDrawBuffer(_getRefreshDrawBuffer());
+	pNew->_setRecalcWidth(_getRecalcWidth());
+	
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pNew->_setScreenFont(this->_getScreenFont());
 	pNew->_setLayoutFont(this->_getLayoutFont());
@@ -1347,15 +1355,15 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		}
 	}
 
-
-	pNew->setPrev(this);
-	pNew->setNext(this->getNext());
+	// do not force recalculation of the draw buffer and widths
+	pNew->setPrev(this, false);
+	pNew->setNext(this->getNext(), false);
 	if (getNext())
 	{
 		// do not mark anything dirty
 		getNext()->setPrev(pNew, false);
 	}
-	setNext(pNew);
+	setNext(pNew, false);
 
 	setLength(iSplitOffset - getBlockOffset());
 
@@ -2320,7 +2328,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 			if(lenPrev > 1)
 				prev[0] = *(pPrev+1);
 			else if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
-				prev[0] = *(pPrev+1);
+				prev[0] = *pPrev;
 		}
 		else if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
 		{
