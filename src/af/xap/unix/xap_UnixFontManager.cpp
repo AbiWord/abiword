@@ -164,11 +164,11 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 	UT_sint32 k;
 	for (k = ((UT_sint32)m_vecFontCache.getItemCount())-1; k >= 1; k-=2)
 	{
-		XAP_UnixFont * pFont = m_vecFontCache.getNthItem(k);
+		XAP_UnixFont * pFont = (XAP_UnixFont *)m_vecFontCache.getNthItem(k);
 		pFont->setFontManager(NULL);
 		DELETEP(pFont);
 		m_vecFontCache.deleteNthItem(k);
-		char * fdescr = m_vecFontCache.getNthItem(k-1);
+		char * fdescr = (char *)m_vecFontCache.getNthItem(k-1);
 		FREEP(fdescr);
 		m_vecFontCache.deleteNthItem(k-1);
 	}
@@ -933,7 +933,7 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f) co
 	xxx_UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont\n"));
 
 	static bool fontInitted = false ;
-	static XAP_UnixFont m_f(this);
+	static XAP_UnixFont m_f((XAP_UnixFontManager *)this);
 
 	if ( !fontInitted )
 	{
