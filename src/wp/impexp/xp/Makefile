@@ -46,7 +46,7 @@ LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
 ifeq ($(OS_NAME), WIN32)
-INCLUDES=		-I$(ABI_XX_ROOT)/../wv
+INCLUDES=		-I$(ABI_XX_ROOT)/../wv	-I$(ABI_XX_ROOT)/../zlib
 else
 INCLUDES=		-I$(ABI_ROOT)/../wv
 endif

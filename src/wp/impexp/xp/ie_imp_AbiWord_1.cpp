@@ -59,7 +59,7 @@ static void charData(void* userData, const XML_Char *s, int len)
 UT_Bool IE_Imp_AbiWord_1::_openFile(const char * szFilename) 
 {
     m_fp = fopen(szFilename, "r");
-    return (m_fp);
+    return (m_fp != NULL);
 }
 
 UT_uint32 IE_Imp_AbiWord_1::_readBytes(char * buf, UT_uint32 length) 

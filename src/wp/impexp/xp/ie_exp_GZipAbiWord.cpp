@@ -19,6 +19,8 @@
 
 
 #include <zlib.h>
+#include "string.h"
+
 #include "ie_exp_GZipAbiWord.h"
 #include "ut_assert.h"
 #include "ut_string.h"
