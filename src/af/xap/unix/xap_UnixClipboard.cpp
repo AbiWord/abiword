@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (C) 1998-2002 AbiSource, Inc.
+ * Copyright (C) 2002 Dom Lachowicz
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -244,23 +245,15 @@ void XAP_UnixClipboard::initialize(void)
    m_timeOnServer = 0;
    m_databuftype = GDK_NONE;
 
-   m_atomClipboard = gdk_atom_intern("CLIPBOARD", FALSE);
+   m_atomClipboard = GDK_SELECTION_CLIPBOARD;
    UT_DEBUGMSG(("Clipboard: property [%s atom %lu]\n","CLIPBOARD", m_atomClipboard));
-   m_atomPrimary = gdk_atom_intern("PRIMARY", FALSE);
+   m_atomPrimary = GDK_SELECTION_PRIMARY;
    UT_DEBUGMSG(("Clipboard: property [%s atom %lu]\n","PRIMARY", m_atomPrimary));
 
    m_atomTargets = gdk_atom_intern("TARGETS", FALSE);
    UT_DEBUGMSG(("Clipboard: target [%s atom %lu]\n","TARGETS",m_atomTargets));
    m_atomTimestamp = gdk_atom_intern("TIMESTAMP", FALSE);
    UT_DEBUGMSG(("Clipboard: target [%s atom %lu]\n","TIMESTAMP",m_atomTimestamp));
-   
-
-#ifdef DEBUG
-   for (int j=0, jLimit=m_vecFormat_AP_Name.getItemCount(); (j<jLimit); j++)
-	   UT_DEBUGMSG(("Clipboard: target [%s atom %lu]\n",
-					(char *)m_vecFormat_AP_Name.getNthItem(j),
-					(GdkAtom)m_vecFormat_GdkAtom.getNthItem(j)));
-#endif
    
    // create hidden/private window to use with the clipboard
    
@@ -353,7 +346,9 @@ bool XAP_UnixClipboard::getTextUTF8(T_AllowGet tFrom, void ** ppData, UT_uint32 
 	
 bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pData, UT_sint32 iNumBytes)
 {
-  // TODO: HONOR tFrom!!!!! CLIPBOARD VS PRIMARY
+  // TODO: CLIPBOARD vs. PRIMARY selections
+  if ( tFrom != TAG_ClipboardOnly )
+    return true;
 
 	// This is an EXPLICIT Cut or Copy from the User.
 	// First, we stick a copy of the data onto our internal clipboard.

@@ -793,22 +793,22 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 
     if (bSelectionStateInThisView)
     {
-		m_bHasSelection = bSelectionStateInThisView;
-		m_pClipboard->assertSelection();
+      m_bHasSelection = true;
+      m_pClipboard->assertSelection();
     }
     else if (pView == m_cacheSelectionView)
     {
-		// if we are going to use the cache, we do not
-		// clear m_bHasSelection now.  rather, we defer
-		// this and the server notification until afterwards.
-		
-		UT_ASSERT(m_bHasSelection);
-		m_cacheDeferClear = true;
+      // if we are going to use the cache, we do not
+      // clear m_bHasSelection now.  rather, we defer
+      // this and the server notification until afterwards.
+      
+      UT_ASSERT(m_bHasSelection);
+      m_cacheDeferClear = true;
     }
     else
-    {
-		m_bHasSelection = bSelectionStateInThisView;
-		m_pClipboard->clearData(false,true);
+      {
+	m_bHasSelection = false;
+	m_pClipboard->clearData(false,true);
     }
 	
     setViewSelection(pView);
@@ -867,7 +867,6 @@ void AP_UnixApp::clearSelection(void)
 	
     if (m_pViewSelection && m_pFrameSelection && m_bHasSelection)
     {
-		UT_DEBUGMSG(("crash2\n"));
 		FV_View *pView = static_cast<FV_View *>(m_pViewSelection);
 		pView->cmdUnselectSelection();
 		m_bHasSelection = false;
