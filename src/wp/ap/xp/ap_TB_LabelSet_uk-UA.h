@@ -112,9 +112,11 @@ BeginSetEnc(uk,UA,true,"koi8-u")
 
      ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, "Застосувати формат", tb_stock_paint_xpm, NULL, "Застосувати попередньо скоп╕йований формат до вид╕леного абзацу")
 
+#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Примусити напрямок зл╕ва направо",		tb_text_direction_ltr_xpm,	NULL, "Примусити напрямок тексту зл╕ва направо")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Примусити напрямок справа нал╕во",		tb_text_direction_rtl_xpm,	NULL, "Примусити напрямок тексту справа нал╕во")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Напрямок абзацу",	tb_text_dom_direction_rtl_xpm,	NULL, "Зм╕нити дом╕нантний напрямок абзацу")
+#endif
 
      // ... add others here ...
 
