@@ -40,22 +40,23 @@
 // Note: constant "NoIcon" in that column.
 
 // Polish translated by Sercxemulo <explo@poczta.wp.pl>
-// Since December '01 maintained by Piotr Banski <bansp@bigfoot.com>
-// Last update: 21-jan-2002
+// Since December 2001 maintained by Piotr Banski <bansp@bigfoot.com>
+// Since February 2002 Andrzej Pruszynski <ap@ignis.pl> joined
+// Last update: 05-mar-2002
 BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nowy", 		tb_new_xpm,		NULL, "Stwórz nowy dokument")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nowy", 		tb_new_xpm,		NULL, "Utwórz nowy dokument")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Otwórz",		tb_open_xpm,	NULL, "Otwórz istniej±cy dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Zapisz", 	tb_save_xpm,	NULL, "Zapisz dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Zapisz jako", 	tb_save_as_xpm,	NULL, "Zapisz dokument pod inn± nazw±")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Drukuj",	tb_print_xpm,	NULL, "Drukuj dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,	"Podgl±d",	tb_print_preview_xpm, NULL, "Wy¶wietl podgl±d wydruku")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Cofnij",		tb_undo_xpm,	NULL, "Cofnij ostatni± czynno¶æ")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Ponów",		tb_redo_xpm,	NULL, "Ponów ostatni± czynno¶æ")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Ponów",		tb_redo_xpm,	NULL, "Anuluj cofniêcie ostatniej czynno¶ci")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Wytnij",		tb_cut_xpm,		NULL, "Wytnij zaznaczony tekst i umie¶æ go w Schowku")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiuj",		tb_copy_xpm,	NULL, "Umie¶æ zaznaczony tekst w Schowku")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Wklej",	tb_paste_xpm,	NULL, "Wklej ze Schowka")
@@ -97,7 +98,7 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Kolumny",		tb_2column_xpm,			NULL, "2 Kolumny")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Kolumny",		tb_3column_xpm,			NULL, "3 Kolumny")
 
-	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Poka¿ wszystko",			tb_view_showpara_xpm,		NULL, "Poka¿/ukryj znaki niedrukowane")
+	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Poka¿ wszystko",			tb_view_showpara_xpm,		NULL, "Poka¿/ukryj znaki niedrukowalne")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Powiêkszenie",		NoIcon,			NULL, "Zmiana skali podgl±du")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Wypunktowanie",			tb_lists_bullets_xpm,	NULL, "Lista wypunktowana")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numerowanie",		tb_lists_numbers_xpm,	NULL, "Lista numerowana")
