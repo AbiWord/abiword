@@ -125,56 +125,72 @@ static int s_replace_entry_activate(PtWidget_t *w, void *data, PtCallbackInfo_t 
 }
 /*****************************************************************/
 
-void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
+void AP_QNXDialog_Replace::activate(void)
 {
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the GtkWindow of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	PtSetParentWidget(parentWindow);
-	
-	// Build the window's widgets and arrange them
-	PtWidget_t * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+        UT_ASSERT(m_windowMain);
+        ConstructWindowName();
+//        gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+//        gdk_window_raise(m_windowMain->window);
+}
 
-	// Populate the window's data items
-	_populateWindowData();
-	
-
-#if 0
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-#endif
-
-	// this dialogs needs this
-	setView((FV_View *) (pFrame->getCurrentView()));
-
-	UT_QNXCenterWindow(parentWindow, m_windowMain);
-	UT_QNXBlockWidget(parentWindow, 1);
-
-	PtRealizeWidget(m_windowMain);
-	int count = PtModalStart();
-	done = 0;
-	while(!done) {
-		PtProcessEvent();
+void AP_QNXDialog_Replace::destroy(void)
+{
+	if (!m_windowMain) {
+		return;
 	}
-	PtModalEnd(MODAL_END_ARG(count));
 
 	_storeWindowData();
-	
-	UT_QNXBlockWidget(parentWindow, 0);
-	PtDestroyWidget(mainWindow);
+	modeless_cleanup();
+
+	PtWidget_t *win = m_windowMain;
+	m_windowMain = NULL;
+	PtDestroyWidget(win);
+}
+
+void AP_QNXDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
+{
+	UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+//       gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+}
+
+void AP_QNXDialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
+{
+	UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+//       gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+}
+
+
+
+void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
+{
+	UT_ASSERT(0);
+}
+
+void AP_QNXDialog_Replace::runModeless(XAP_Frame * pFrame)
+{
+        // get the Dialog Id number
+        UT_sint32 sid =(UT_sint32)  getDialogId();
+
+        // Build the window's widgets and arrange them
+        PtWidget_t * mainWindow = _constructWindow();
+        UT_ASSERT(mainWindow);
+
+        // Save dialog the ID number and pointer to the Dialog
+        m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
+
+        // This magic command displays the frame where strings will be found
+        connectFocusModeless(mainWindow ,m_pApp);
+
+        // Populate the window's data items
+        _populateWindowData();
+
+        // this dialog needs this
+        setView((FV_View *) (getActiveFrame()->getCurrentView()));
+
+	//UT_QNXCenterWindow(parentWindow, m_windowMain);
+	PtRealizeWidget(m_windowMain);
 }
 
 static char *s_get_text_string(PtWidget_t *w) {
@@ -217,7 +233,6 @@ void AP_QNXDialog_Replace::event_Replace(void)
 	if (!findEntryText || !replaceEntryText) {
 		return;
 	}
-	printf("Find [%s] Replace w/ [%s] \n", findEntryText, replaceEntryText);
 	
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
@@ -244,7 +259,6 @@ void AP_QNXDialog_Replace::event_ReplaceAll(void)
 	if (!findEntryText || !replaceEntryText) {
 		return;
 	}
-	printf("Find [%s] Replace w/ [%s] \n", findEntryText, replaceEntryText);
 		
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
@@ -263,19 +277,26 @@ void AP_QNXDialog_Replace::event_ReplaceAll(void)
 
 void AP_QNXDialog_Replace::event_MatchCaseToggled(void)
 {
-	//setMatchCase(m_checkbuttonMatchCase));
+	UT_ASSERT(m_checkbuttonMatchCase);
+
+	//TODO: Turn this into a helper function
+	int *flags = NULL;
+	PtGetResource(m_checkbuttonMatchCase, Pt_ARG_FLAGS, &flags, 0);
+	setMatchCase((flags && *flags & Pt_SET) ? UT_TRUE: UT_FALSE);
 }
 
 void AP_QNXDialog_Replace::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Replace::a_CANCEL;
 	done = 1;
+	destroy();
 }
 
 void AP_QNXDialog_Replace::event_WindowDelete(void)
 {
 	m_answer = AP_Dialog_Replace::a_CANCEL;	
 	done = 1;
+	destroy();
 }
 
 /*****************************************************************/
@@ -455,7 +476,6 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 
 void AP_QNXDialog_Replace::_populateWindowData(void)
 {
-#if 0
 	UT_ASSERT(m_entryFind && m_checkbuttonMatchCase);
 
 	// last used find string
@@ -465,8 +485,7 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		gtk_entry_set_text(GTK_ENTRY(m_entryFind), bufferNormal);
-		gtk_entry_select_region(GTK_ENTRY(m_entryFind), 0, -1);
+		PtSetResource(m_entryFind, Pt_ARG_TEXT_STRING, bufferNormal, 0);
 
 		FREEP(bufferNormal);
 	}
@@ -482,17 +501,16 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		gtk_entry_set_text(GTK_ENTRY(m_entryReplace), bufferNormal);
+		PtSetResource(m_entryReplace, Pt_ARG_TEXT_STRING, bufferNormal, 0);
 
 		FREEP(bufferNormal);
 	}
 
 	// match case button
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkbuttonMatchCase), getMatchCase());
+	PtSetResource(m_checkbuttonMatchCase, Pt_ARG_FLAGS, (getMatchCase()) ? Pt_SET : 0, Pt_SET); 
 
 	// Find entry should have focus, for immediate typing
-	gtk_widget_grab_focus(m_entryFind);	
-#endif
+	//gtk_widget_grab_focus(m_entryFind);	
 }
 
 void AP_QNXDialog_Replace::_storeWindowData(void)

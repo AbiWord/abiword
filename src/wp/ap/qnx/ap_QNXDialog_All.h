@@ -52,6 +52,7 @@
 #	include "ap_QNXDialog_Insert_DateTime.h"
 #	include "ap_QNXDialog_WordCount.h"
 #	include "ap_QNXDialog_Field.h"
+#	include "ap_QNXDialog_Lists.h"
 
 	// ... add new dialogs here ...
 
@@ -72,14 +73,15 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_QNXDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_QNXDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_QNXDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)	
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME, AP_QNXDialog_Insert_DateTime)
-
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_QNXDialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_QNXDialog_Field)
+	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_QNXDialog_Lists)
 
 	// ... also add new dialogs here ...
 

@@ -36,13 +36,20 @@ public:
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			activate();
 	virtual void			destroy();
+	virtual void            notifyActiveFrame(XAP_Frame *pFrame);
 
-	// public so callbacks can access them
-   	PtWidget_t *				targetList;
-	PtWidget_t *				targetEntry;
+	virtual void 			processGoto (const char *number);
 
 protected:
+	virtual PtWidget_t *	_constructWindow(void);
 
+	PtWidget_t *			m_mainWindow;
+	PtWidget_t *			m_wEntry;
+	PtWidget_t *			m_wPrev;
+	PtWidget_t *			m_wNext;
+	PtWidget_t *			m_wGoto;
+	PtWidget_t *			m_wClose;
+	
 };
 
 #endif /* AP_QNXDIALOG_GOTO_H */

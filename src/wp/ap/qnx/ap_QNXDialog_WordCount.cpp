@@ -121,8 +121,10 @@ void AP_QNXDialog_WordCount::destroy(void)
 	m_pAutoUpdateWC->stop();
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	modeless_cleanup();
-	PtDestroyWidget(m_windowMain);
+
+	PtWidget_t *win = m_windowMain;
 	m_windowMain = NULL;
+	PtDestroyWidget(win);
 	DELETEP(m_pAutoUpdateWC);
 }
 
