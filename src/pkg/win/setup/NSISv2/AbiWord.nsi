@@ -382,9 +382,10 @@ SectionEnd
 Section "$(TITLE_section_abi_req)" section_abi_req
 	SectionIn 1 2 3 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
-	; We need BMP plugin for cut-n-paste of images on Windows
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
-	File "..\plugins\libAbi_IEG_BMP.dll"
+	; Image plugin for importers & cut-n-paste of 
+      ; various standard image formats (BMP, WMF, JPEG) on Windows
+	SetOutPath $INSTDIR\AbiWord\plugins
+	File "..\plugins\Abi_IEG_Win32Native.dll"
 
 	SetOutPath $INSTDIR\${PRODUCT}
 	File "..\AbiSuite\AbiWord\system.*"
