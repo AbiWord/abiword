@@ -34,7 +34,6 @@ static inline size_t priv_max(size_t a, size_t b)
 	return a < b ? b : a;
 }
 
-
 UT_Stringbuf::UT_Stringbuf()
 :	m_psz(0),
 	m_pEnd(0),
@@ -126,13 +125,44 @@ void UT_Stringbuf::swap(UT_Stringbuf& rhs)
 
 void UT_Stringbuf::clear()
 {
-	if (m_psz) {
+	delete[] m_psz;
+	m_psz = 0;
+	m_pEnd = 0;
+	m_size = 0;
+}
+
+#if 0 // Mike growing functions
+void UT_Stringbuf::grow_nocopy(size_t n)
+{
+	++n;	// allow for zero termination
+	if (n > capacity()) {
+		const size_t nCurSize = size();
 		delete[] m_psz;
-		m_psz = 0;
-		m_pEnd = 0;
-		m_size = 0;
+		n += g_nGrowExtraBytes;
+		m_psz  = new char_type[n];
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
 	}
 }
+
+void UT_Stringbuf::grow_copy(size_t n)
+{
+	++n;	// allow for zero termination
+	if (n > capacity()) {
+		n += g_nGrowExtraBytes;
+		char_type* p = new char_type[n];
+		const size_t nCurSize = size();
+		if (m_psz) {
+			memcpy(p, m_psz, size() + 1);
+			delete[] m_psz;
+		}
+		m_psz  = p;
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
+	}
+}
+
+#else // JCA growing functions
 
 void UT_Stringbuf::grow_nocopy(size_t n)
 {
@@ -163,4 +193,5 @@ void UT_Stringbuf::grow_copy(size_t n)
 		m_size = n;
 	}
 }
+#endif
 
