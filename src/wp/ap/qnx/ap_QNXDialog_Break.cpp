@@ -197,8 +197,10 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 
 
 	/* TODO: Add all these items to a group */
+/*
 	n = 0
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
+*/
 
 #define LABEL_WIDTH  100
 #define RADIO_WIDTH  150 

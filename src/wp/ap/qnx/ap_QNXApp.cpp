@@ -754,6 +754,7 @@ static GR_Image * _showSplash(UT_uint32 delay)
 
 /*****************************************************************/
 AP_QNXApp * gQNXApp = NULL; 
+PtWidget_t	*gTimerWidget = NULL;
 
 int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 {
@@ -791,6 +792,14 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 	
 	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&Args, szAppName);
 	gQNXApp = pMyQNXApp;
+
+	//This is used by all the timer classes
+	PtArg_t args[2];
+	PtSetArg(&args[0], Pt_ARG_REGION_FIELDS, Ph_REGION_EV_SENSE, Ph_REGION_EV_SENSE);
+	PtSetArg(&args[1], Pt_ARG_REGION_SENSE, Ph_EV_TIMER, Ph_EV_TIMER);
+	PtSetParentWidget(NULL);
+	gTimerWidget = PtCreateWidget(PtRegion, NULL, 2, args);
+	PtRealizeWidget(gTimerWidget);
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	printf("App: Calling initialize \n");
@@ -971,23 +980,3 @@ void AP_QNXApp::_printUsage(void)
 	printf("\n");
 }
 
-PtWidget_t *get_window() {
-	int 		 i;
-    XAP_QNXFrame *frame;
-
-	if (!gQNXApp) {
-		return NULL;
-	}
-
-	frame = NULL;	
-	for (i = 0; i < gQNXApp->getFrameCount(); i++) {
-    	if ((frame = (XAP_QNXFrame *)gQNXApp->getFrame(i))) {
-			break;
-		}
-	}
-	if (!frame) {
-		return NULL;
-	}
-
-    return frame->getTopLevelWindow();
-}
