@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 
 // TODO change this file to not reference GR_Graphics.
@@ -39,7 +39,7 @@
 #if 0
 // WRONG !!! -- the resolution depends on the system, and has to be
 // obtained from the Graphics class at runtime !!!
-// the CSS 1 spec recommends 90 but abi assumes 100. 
+// the CSS 1 spec recommends 90 but abi assumes 100.
 // let's stay internally consistent
 static const double DPI_PER_PIXEL = 100.0 ;
 #endif
@@ -56,7 +56,7 @@ const char * UT_dimensionName(UT_Dimension dim)
 
 	case DIM_MM:
 	   	return "mm";
-	   
+
 	case DIM_PI:
 		return "pi";
 
@@ -65,10 +65,10 @@ const char * UT_dimensionName(UT_Dimension dim)
 
 	case DIM_PX:
 	   	return "px";
-	   
+
 	case DIM_PERCENT:
 		return "%";
-	   
+
 	case DIM_none:
 		return "";
 
@@ -124,7 +124,7 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 {
 	double valueScaled = inches;
-	
+
 	switch (dim)
 	{
 	case DIM_IN:	valueScaled = inches;			break;
@@ -134,9 +134,9 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	case DIM_PT:	valueScaled = (inches * 72.0);	break;
 #if 0
 	case DIM_PX:    valueScaled = (inches * DPI_PER_PIXEL); break;
-#else	
+#else
 	case DIM_PX:    valueScaled = (inches * GR_Graphics::s_getScreenResolution()); break;
-#endif		
+#endif
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
@@ -160,11 +160,11 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 
 	// TODO what should the decimal precision of each different
 	// TODO unit of measurement be ??
-	
+
 	static char buf[100];
 	char bufFormat[100];
 	double valueScaled;
-	
+
 	switch (dim)
 	{
 	case DIM_IN:
@@ -221,7 +221,7 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 	sprintf(buf,bufFormat,valueScaled);
 	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
 	setlocale(LC_NUMERIC,""); // restore original locale
-	
+
 	return buf;
 }
 
@@ -234,10 +234,10 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 
 	// TODO what should the decimal precision of each different
 	// TODO unit of measurement be ??
-	
+
 	static char buf[100];
 	char bufFormat[100];
-	
+
 	switch (dim)
 	{
 	case DIM_IN:
@@ -284,7 +284,7 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 	setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,value);
 	setlocale(LC_NUMERIC,""); // restore original locale
-	
+
 	return buf;
 }
 
@@ -304,7 +304,7 @@ const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const 
 	if (dimOld != dim)
 	{
 		double dInches = UT_convertToInches(sz);
-		d = UT_convertInchesToDimension(dInches, dim); 
+		d = UT_convertInchesToDimension(dInches, dim);
 	}
 
 	return UT_formatDimensionString(dim, d, szPrecision);
@@ -331,17 +331,17 @@ double UT_convertToInches(const char* s)
 	// NOTE: and assume that the locale is set to english.
 	// NOTE: all other places where we deal with these values
 	// NOTE: are wrapped with locale code.
-	
+
 	double result = 0;
 
 	if (!s || !*s)
 		return 0;
 
 	double f = UT_convertDimensionless(s);
-	
+
 	if (f == 0)
 	    return 0;
-	
+
 	const char *p = s;
 	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.') || isspace(*p)))
 	{
@@ -416,6 +416,7 @@ double UT_convertToPoints(const char* s)
 	return result;
 }
 
+#ifndef WITH_PANGO
 UT_sint32 UT_convertToLayoutUnits(const char* s)
 {
 	return (UT_sint32)(UT_convertToInches(s) * UT_LAYOUT_UNITS);
@@ -425,6 +426,7 @@ UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim)
 {
 	return (UT_sint32)(UT_convertDimToInches(Value, dim) * UT_LAYOUT_UNITS);
 }
+#endif
 
 double UT_convertDimensionless(const char * sz)
 {
@@ -458,12 +460,12 @@ const char * UT_convertToDimensionlessString(double value, const char * szPrecis
 
 	char bufFormat[100];
 	sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
-	
+
 	setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,value);
 	//UT_DEBUGMSG(("ConvertToDimensionlessString: [%g] --> [%s]\n",value,buf));
 	setlocale(LC_NUMERIC,""); // restore original locale
-	
+
 	return buf;
 }
 
@@ -471,10 +473,10 @@ bool UT_hasDimensionComponent(const char * sz)
 {
 	// TODO : check against known units instead of taking any
 	// TODO : ASCII chars after a number as a sign of units.
-	
+
 	if (!sz)
 		return false;
-	
+
 	const char *p = sz;
 	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
 	{
@@ -511,7 +513,7 @@ UT_sint32 UT_paperUnits(const char * sz)
 
   This function uses the UT_PAPER_UNITS_PER_INCH constant
   to convert paper units into inches.
-  
+
   Paper units are a relatively low-resolution measurement (say
   1/100 inch) but are suitable for specifying margins,
   etc. -- stuff relative to the actual paper.
@@ -535,7 +537,7 @@ double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits)
   This function uses the UT_PAPER_UNITS_PER_INCH constant
   to convert paper units into inches.  Unlike UT_paperUnits,
   this function does not require a string as input.
-  
+
   Paper units are a relatively low-resolution measurement (say
   1/100 inch) but are suitable for specifying margins,
   etc. -- stuff relative to the actual paper.
@@ -568,12 +570,14 @@ UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits)
 	return (UT_LAYOUT_UNITS * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
 }
 
+#ifndef WITH_PANGO
 UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits)
 {
-	// convert number in layout units into paper units (loss of precision)    
-	
+	// convert number in layout units into paper units (loss of precision)
+
    	return (UT_PAPER_UNITS_PER_INCH * iLayoutUnits / UT_LAYOUT_UNITS);
 }
+#endif
 
 const char * UT_formatDimensionedValue(double value,
 									   const char * szUnits,
@@ -601,7 +605,7 @@ double UT_convertToDimension(const char* s, UT_Dimension dim)
 	if (UT_determineDimension(s, dim) != dim)
 	{
 		double dInches = UT_convertToInches(s);
-		d = UT_convertInchesToDimension(dInches, dim); 
+		d = UT_convertInchesToDimension(dInches, dim);
 	}
 	else
 	{

@@ -1,19 +1,19 @@
 /* AbiWord -- Embedded graphics for layout
  * Copyright (C) 1999 Matt Kimball
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -32,7 +32,7 @@
 
 #include "ut_string_class.h"
 
-FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL, 
+FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 													 const PX_ChangeRecord_Object* pcro)
 {
 	FG_GraphicRaster* pFG = new FG_GraphicRaster();
@@ -166,26 +166,28 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	{
 		iDisplayWidth = pG->convertDimension((char*)pszWidth);
 		iDisplayHeight = pG->convertDimension((char*)pszHeight);
+#ifndef WITH_PANGO
 		iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
 		iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
+#endif
 	}
 	else
 	{
 		UT_sint32 iImageWidth;
 		UT_sint32 iImageHeight;
-			
+
 		UT_PNG_getDimensions(m_pbbPNG, iImageWidth, iImageHeight);
-			
+
 		double fScale = pG->getResolution() / 100.0;
-		
+
 		iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
 		iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
-		
+#ifndef WITH_PANGO
 		//			fScale = 1440.0 / 72.0;
 		fScale = 14.399999999999999;
 		iLayoutWidth = (UT_sint32) (iImageWidth * fScale);
 		iLayoutHeight = (UT_sint32) (iImageHeight * fScale);
-		
+#endif
 	}
 
 	UT_ASSERT(iDisplayWidth > 0);
@@ -200,7 +202,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 
 //
 //  We need to be able to add a representation of ourselves to an
-//  existing document.  This added representation can be used to 
+//  existing document.  This added representation can be used to
 //  reconstruct an equivalent FG_GraphicRaster object after this one
 //  is discarded.
 //

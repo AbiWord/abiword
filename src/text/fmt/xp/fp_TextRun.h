@@ -57,7 +57,11 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			alwaysFits(void) const;
+#ifndef WITH_PANGO
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
+#else
+	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
+#endif
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
 #ifndef WITH_PANGO
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;

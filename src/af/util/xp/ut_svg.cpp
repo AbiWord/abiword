@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -97,8 +97,8 @@ const char * UT_svg::getAttribute (const char * name,const char ** atts)
   return (attr_value);
 }
 
-bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG, 
-			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight, 
+bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
+			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight,
 			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight)
 {
 	const char *buffer = (const char *) pBB->getPointer(0);
@@ -305,7 +305,7 @@ static void _css_length (const char *str,GR_Graphics* pG,
 {
    	UT_sint32 dim = UT_determineDimension((const char*)str, DIM_PX);
 
-   	if (dim != DIM_PX && dim != DIM_none) 
+   	if (dim != DIM_PX && dim != DIM_none)
 	{
 		if (pG == 0)
 		{
@@ -315,12 +315,14 @@ static void _css_length (const char *str,GR_Graphics* pG,
 		{
 			*iDisplayLength = pG->convertDimension((char*)str);
 		}
+#ifndef WITH_PANGO
 		*iLayoutLength = UT_convertToLayoutUnits(str);
+#endif
 	}
 	else
 	{
 		double iImageLength = UT_convertDimensionless(str);
-		   
+
 		double fScale = pG ? (pG->getResolution() / 72.0) : 1;
 		*iDisplayLength = (UT_sint32) (iImageLength * fScale);
 
@@ -712,10 +714,10 @@ static bool BNF_number (const char ** pptr, float * number) // number
 
 /**
  * Parse the SVG "transform" attribute and apply the transformations to the current matrix.
- * 
+ *
  * @param currentMatrix the current matrix
  * @param the "transform" attribute
- * 
+ *
  * @return Returns \b false if there is parse error; otherwise \b true, even if \b transformAttribute is
  *         \b NULL (equivalent to no transform).
  */

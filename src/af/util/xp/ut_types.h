@@ -24,11 +24,9 @@
 
 #include <stdlib.h>
 
-/*
 #ifdef DEBUG
 #define _CRTDBG_MAP_ALLOC
 #endif
-*/
 
 #ifdef NULL
 #undef NULL
@@ -53,14 +51,14 @@ typedef unsigned int        UT_UCS4Char;
 typedef unsigned short      UT_UCS2Char;
 typedef signed int          UT_GrowBufElement;
 
-typedef unsigned char           UT_uint8;
-typedef signed char             UT_sint8;
+typedef unsigned char       UT_uint8;
+typedef signed char         UT_sint8;
 
 typedef unsigned short		UT_uint16;
-typedef signed short            UT_sint16;
+typedef signed short        UT_sint16;
 
 typedef unsigned int		UT_uint32;
-typedef signed int		UT_sint32;
+typedef signed int		    UT_sint32;
 
 /*!
  * Confidence heuristic datatype normalized to the range
@@ -256,5 +254,8 @@ defined(__BEOS__) || defined (__AIX__) || \
 #else
 #define ICONV_CONST
 #endif
+
+/* This is a value from the private-use space of FriBidi */
+#define FRIBIDI_TYPE_UNSET -1
 
 #endif /* UT_TYPES_H */

@@ -52,7 +52,9 @@ public:
 
 	virtual void		initialize(fp_Line *pLine) = 0;
 	virtual UT_sint32	getStartPosition() = 0;
+#ifndef WITH_PANGO
 	virtual UT_sint32	getStartPositionInLayoutUnits() = 0;
+#endif
 	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
     virtual FB_AlignmentType getType() = 0;
 
@@ -64,14 +66,18 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
+#ifndef WITH_PANGO
 	UT_sint32	getStartPositionInLayoutUnits();
+#endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_LEFT;};
 
 private:
 
 	UT_sint32	m_iStartPosition;
+#ifndef WITH_PANGO
 	UT_sint32	m_iStartPositionLayoutUnits;
+#endif
 };
 
 class ABI_EXPORT fb_Alignment_center : public fb_Alignment
@@ -80,15 +86,18 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
+#ifndef WITH_PANGO
 	UT_sint32	getStartPositionInLayoutUnits();
+#endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_CENTER;};
 
 private:
 
 	UT_sint32	m_startPosition;
+#ifndef WITH_PANGO
 	UT_sint32	m_startPositionLayoutUnits;
-
+#endif
 };
 
 class ABI_EXPORT fb_Alignment_right : public fb_Alignment
@@ -97,15 +106,18 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
+#ifndef WITH_PANGO
 	UT_sint32	getStartPositionInLayoutUnits();
+#endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_RIGHT;};
 
 private:
 
 	UT_sint32	m_startPosition;
+#ifndef WITH_PANGO
 	UT_sint32	m_startPositionLayoutUnits;
-
+#endif
 };
 
 class ABI_EXPORT fb_Alignment_justify : public fb_Alignment
@@ -114,7 +126,9 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
+#ifndef WITH_PANGO
 	UT_sint32	getStartPositionInLayoutUnits();
+#endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_JUSTIFY;};
 
@@ -124,7 +138,9 @@ private:
 	int			m_iSpaceCount;
 	int			m_iExtraWidth;
 	UT_sint32	m_iStartPosition;
+#ifndef WITH_PANGO
 	UT_sint32	m_iStartPositionLayoutUnits;
+#endif
 
 #ifndef NDEBUG
 	void _confirmJustification(fp_Line *pLine);

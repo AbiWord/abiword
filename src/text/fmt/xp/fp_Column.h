@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -48,21 +48,23 @@ public:
 	virtual ~fp_VerticalContainer();
 
 	virtual void		setWidth(UT_sint32);
-	virtual void		setWidthInLayoutUnits(UT_sint32);
 	virtual void		setHeight(UT_sint32);
 	virtual void		setMaxHeight(UT_sint32);
-	virtual void		setMaxHeightInLayoutUnits(UT_sint32);
-	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) {m_iHeightLayoutUnits = ihLayout;}
 	virtual void		setX(UT_sint32, bool bDontClearIfNeeded=false);
 	virtual void		setY(UT_sint32);
+#ifndef WITH_PANGO
+	virtual void		setWidthInLayoutUnits(UT_sint32);
+	virtual void		setMaxHeightInLayoutUnits(UT_sint32);
+	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) {m_iHeightLayoutUnits = ihLayout;}
 	virtual void        setYInLayoutUnits(UT_sint32) {}
-
+#endif
 	/*!
 	  Get container's max height
 	  \return Max height
 	*/
 	inline UT_sint32	getMaxHeight(void) const
  		{ return m_iMaxHeight; }
+#ifndef WITH_PANGO
 	/*!
 	  Get container's max height in layout units
 	  \return Max height in layout units
@@ -73,14 +75,19 @@ public:
 	  Get container's width
 	  \return Width
 	*/
+#endif
+
 	virtual inline UT_sint32	getWidth(void) const
 		{ return m_iWidth; }
+
+#ifndef WITH_PANGO
 	/*!
 	  Get container's width in layout units
 	  \return Width in layout units
 	*/
 	virtual inline UT_sint32	getWidthInLayoutUnits(void) const
 		{ UT_ASSERT(m_iWidthLayoutUnits); return m_iWidthLayoutUnits; }
+#endif
 
 	virtual UT_sint32	getX(void) const;
 
@@ -95,14 +102,18 @@ public:
 	*/
 	virtual inline UT_sint32	getHeight(void) const
 		{ return m_iHeight; }
+
+#ifndef WITH_PANGO
 	/*!
 	  Get container's height in layout units
 	  \return Height in layout units
 	*/
 	virtual inline UT_sint32	getHeightInLayoutUnits(void) const
 		{ return m_iHeightLayoutUnits; }
+#endif
+
 	UT_sint32	getColumnGap(void) const;
-	
+
 	/*!
 	  Get container's intentionally empty flag
 	  \return Empty
@@ -117,25 +128,25 @@ public:
 
 	fp_Container*			getFirstContainer(void) const;
 	fp_Container*			getLastContainer(void) const;
-	
+
 	bool				insertContainerAfter(fp_Container* pNewContainer, fp_Container*	pAfterContainer);
 	bool				insertContainer(fp_Container*);
 	bool				addContainer(fp_Container*);
 	void				removeContainer(fp_Container*);
-	
+
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y);
 
-	virtual void		mapXYToPosition(UT_sint32 xPos, 
-										UT_sint32 yPos, 
-										PT_DocPosition& pos, 
+	virtual void		mapXYToPosition(UT_sint32 xPos,
+										UT_sint32 yPos,
+										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL);
 
-	void		 		getOffsets(fp_ContainerObject* pContainer, 
-								   UT_sint32& xoff, 
+	void		 		getOffsets(fp_ContainerObject* pContainer,
+								   UT_sint32& xoff,
 								   UT_sint32& yoff);
 
-	void		 		getScreenOffsets(fp_ContainerObject* pContainer, 
-										 UT_sint32& xoff, 
+	void		 		getScreenOffsets(fp_ContainerObject* pContainer,
+										 UT_sint32& xoff,
 										 UT_sint32& yoff);
 
 	virtual void		draw(dg_DrawArgs*);
@@ -152,12 +163,14 @@ public:
 	void                recalcMaxWidth(bool bDontClearIfNeeded = false) {}
 	virtual UT_sint32   getMarginBefore(void) const { return 0;}
 	virtual UT_sint32   getMarginAfter(void) const { return 0;}
+#ifndef WITH_PANGO
 	virtual UT_sint32   getMarginBeforeInLayoutUnits(void) const { return 0;}
 	virtual UT_sint32   getMarginAfterInLayoutUnits(void) const { return 0;}
+#endif
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
-	virtual fp_Container * getNextContainerInSection(void) const 
+	virtual fp_Container * getNextContainerInSection(void) const
 		{return NULL;}
-	virtual fp_Container * getPrevContainerInSection(void) const 
+	virtual fp_Container * getPrevContainerInSection(void) const
 		{return NULL;}
 
 
@@ -173,10 +186,13 @@ private:
 	  Width of the container
 	*/
 	UT_sint32 				m_iWidth;
+
+#ifndef WITH_PANGO
 	/*!
 	  Width in layout units of the container
 	*/
 	UT_sint32 				m_iWidthLayoutUnits;
+#endif
 	/*!
 	  Height of the container
 	*/
@@ -185,6 +201,8 @@ private:
 	  Maximum height of the container
 	*/
 	UT_sint32				m_iMaxHeight;
+
+#ifndef WITH_PANGO
 	/*!
 	  Height in layout units of the container
 	*/
@@ -193,6 +211,8 @@ private:
 	  Maximum height in layout units of the container
 	*/
 	UT_sint32				m_iMaxHeightLayoutUnits;
+#endif
+
 	/*!
 	  X coordinate of container
 	*/
@@ -221,7 +241,7 @@ public:
 	~fp_Column();
 
 	fl_DocSectionLayout*	getDocSectionLayout(void) const;
-	
+
 	inline void			setLeader(fp_Column* p) { m_pLeader = p; }
 	inline void			setFollower(fp_Column* p) { m_pFollower = p; }
 	inline fp_Column*	getLeader(void) const 			{ return m_pLeader; }
@@ -236,11 +256,11 @@ public:
 		{ return m_pPage; }
 
 	void				layout(void);
-	
-	
+
+
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
-#endif	
+#endif
 
 protected:
 	UT_uint32 				_getBottomOfLastContainer(void) const;
@@ -257,9 +277,9 @@ private:
 class ABI_EXPORT fp_ShadowContainer : public fp_VerticalContainer
 {
 public:
-	fp_ShadowContainer(UT_sint32 iX, UT_sint32 iY, 
+	fp_ShadowContainer(UT_sint32 iX, UT_sint32 iY,
 					   UT_sint32 iWidth, UT_sint32 iHeight,
-					   UT_sint32 iWidthLayout, UT_sint32 iHeightLayout, 
+					   UT_sint32 iWidthLayout, UT_sint32 iHeightLayout,
 					   fl_SectionLayout* pSL);
 	~fp_ShadowContainer();
 
@@ -290,7 +310,7 @@ class ABI_EXPORT fp_HdrFtrContainer : public fp_VerticalContainer
 {
 public:
 	fp_HdrFtrContainer( UT_sint32 iWidth,
-					   UT_sint32 iWidthLayout, 
+					   UT_sint32 iWidthLayout,
 					   fl_SectionLayout* pSL);
 	~fp_HdrFtrContainer();
 
@@ -298,9 +318,9 @@ public:
  	virtual void		draw(dg_DrawArgs*);
   	virtual void		layout(void);
  	virtual void		clearScreen(void);
-	void		 		getScreenOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff, 
+	void		 		getScreenOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff,
 										 UT_sint32& yoff);
-	
+
 protected:
 };
 

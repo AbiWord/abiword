@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -38,15 +38,17 @@
  */
 fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout) : fp_Container(iType, pSectionLayout),
 	        m_iWidth(0),
-			m_iWidthLayoutUnits(0),
 			m_iHeight(0),
 			m_iMaxHeight(0),
-			m_iHeightLayoutUnits(0),
-			m_iMaxHeightLayoutUnits(0),
 			m_iX(0),
 			m_iY(0),
 			m_bIntentionallyEmpty(0),
-			m_imaxContainerHeight(0)
+ 		    m_imaxContainerHeight(0)
+#ifndef WITH_PANGO
+		   ,m_iWidthLayoutUnits(0),
+			m_iHeightLayoutUnits(0),
+			m_iMaxHeightLayoutUnits(0)
+#endif
 {
 }
 
@@ -54,7 +56,7 @@ fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLay
   Destruct container
   \note The Containers in vector of the container are not
         destructed. They are owned by the logical hierarchy (i.e.,
-		the fl_Container classes like fl_BlockLayout), not the physical 
+		the fl_Container classes like fl_BlockLayout), not the physical
         hierarchy.
  */
 fp_VerticalContainer::~fp_VerticalContainer()
@@ -80,6 +82,7 @@ void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+#ifndef WITH_PANGO
 /*!
  Set width in layout units
  \param iWidth Width in layout units of container
@@ -88,6 +91,7 @@ void fp_VerticalContainer::setWidthInLayoutUnits(UT_sint32 iWidth)
 {
 	m_iWidthLayoutUnits = iWidth;
 }
+#endif
 
 /*!
  Set height
@@ -99,7 +103,7 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 	{
 		return;
 	}
-	
+
 	m_iHeight = iHeight;
 }
 
@@ -115,10 +119,11 @@ void fp_VerticalContainer::setMaxHeight(UT_sint32 iMaxHeight)
 	{
 		return;
 	}
-	
+
 	m_iMaxHeight = iMaxHeight;
 }
 
+#ifndef WITH_PANGO
 /*!
  Set maximum height in layout units
  \param iMaxHeight Maximum height in layout units of container
@@ -131,9 +136,10 @@ void fp_VerticalContainer::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
 	{
 		return;
 	}
-	
+
 	m_iMaxHeightLayoutUnits = iMaxHeight;
 }
+#endif
 
 /*!
   Get container's X position
@@ -188,7 +194,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		return;
 	}
 	getPage()->getScreenOffsets(this, my_xoff, my_yoff);
-	
+
 	xoff = my_xoff + pContainer->getX();
 	yoff = my_yoff + pContainer->getY();
 }
@@ -231,8 +237,8 @@ bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
   \return Column gap
 */
 UT_sint32	fp_VerticalContainer::getColumnGap(void) const
-{ 
-	return getColumn()->getPage()->getColumnGap(); 
+{
+	return getColumn()->getPage()->getColumnGap();
 }
 
 /*!
@@ -262,11 +268,11 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 {
 	UT_ASSERT(pAfterContainer);
 	UT_ASSERT(pNewContainer);
-	
+
 	UT_sint32 count = countCons();
 	UT_sint32 ndx = findCon(pAfterContainer);
 	UT_ASSERT( (count > 0) || (ndx == -1) );
-	
+
 	/*
 	  TODO this routine should not be allowing pAfterContainer to be NULL.
 	  Right now, we've fixed the symptom, but we really should fix
@@ -421,14 +427,14 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	int count = countCons();
 
 	UT_ASSERT(count > 0);
-	
+
 	fp_ContainerObject* pContainer = NULL;
 	int i = 0;
 	// Find first line that has its lower level below the desired Y
 	// position. Note that X-positions are completely ignored here.
 	do {
 		pContainer = (fp_ContainerObject*) getNthCon(i++);
-	} while ((i < count) 
+	} while ((i < count)
 			 && (y > (pContainer->getY() + pContainer->getHeight())));
 	// Undo the postincrement.
 	i--;
@@ -440,7 +446,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 
 		// Be careful with the signedness here - bug 172 leared us a
 		// lesson!
-		
+
 		// Now pick the line that is closest to the point - or the
 		// upper if it's a stalemate.
 		if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + (UT_sint32) pContainerUpper->getHeight())))
@@ -462,7 +468,7 @@ UT_uint32 fp_VerticalContainer::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 {
 	UT_sint32 dx;
 	UT_sint32 dy;
-	
+
 	if (x < m_iX)
 	{
 		dx = m_iX - x;
@@ -502,7 +508,7 @@ UT_uint32 fp_VerticalContainer::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	UT_uint32 dist = (UT_uint32) (sqrt((float)(dx * dx) + (dy * dy)));
 
 	UT_ASSERT(dist > 0);
-	
+
 	return dist;
 }
 
@@ -519,9 +525,9 @@ void fp_VerticalContainer::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 	{
 		return;
 	}
-	
+
 	clearScreen();
-	
+
 	m_iX = iX;
 }
 
@@ -540,7 +546,7 @@ void fp_VerticalContainer::setY(UT_sint32 iY)
 	}
 
 	clearScreen();
-	
+
 	m_iY = iY;
 }
 
@@ -567,7 +573,7 @@ fp_Container* fp_VerticalContainer::getFirstContainer(void) const
 fp_Container* fp_VerticalContainer::getLastContainer(void) const
 {
 	UT_uint32 iCount = countCons();
-	
+
 	if (iCount > 0)
 	{
 		return (fp_Container*) getNthCon(iCount - 1);
@@ -611,7 +617,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			pNextContainer->insertContainer(pContainer);
 		}
 	}
-	
+
 	for (i=iCount - 1; i >= ndx; i--)
 	{
 		deleteNthCon(i);
@@ -645,7 +651,7 @@ fp_Column::~fp_Column()
  \param pDA Draw arguments
 
  This differs from the container function in that it will use draw the
- outline based on the tallest column in the row. 
+ outline based on the tallest column in the row.
 */
 void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 {
@@ -689,7 +695,7 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 
   This function iterates over the lines in the column and computes
   their screen position from their accumulative heights in layout
-  units. 
+  units.
 
   Since this code accumulates fractions of the conversion process, the
   difference between Y positions of two lines may differ from the
@@ -710,10 +716,12 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 void fp_Column::layout(void)
 {
 	_setMaxContainerHeight(0);
-	UT_sint32 iYLayoutUnits = 0;
 	UT_sint32 iY = 0, iPrevY = 0;
+#ifndef WITH_PANGO
+	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
+#endif
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	long imax = (1<<30) -1;
@@ -726,29 +734,45 @@ void fp_Column::layout(void)
 //
 		if(pContainer->getHeight() > _getMaxContainerHeight())
 			_setMaxContainerHeight(pContainer->getHeight());
-
+#ifndef WITH_PANGO
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 //		UT_sint32 iContainerMarginBefore = (i != 0) ? pContainer->getMarginBefore() : 0;
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
+#else
+		UT_sint32 iContainerHeight = pContainer->getHeight();
+		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+#endif
 
+#ifndef WITH_PANGO
 //		iY += iContainerMarginBefore;
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
+#endif
+
 		if(pContainer->getY() != iY)
 		{
 			pContainer->clearScreen();
 		}
 		pContainer->setY(iY);
-		pContainer->setYInLayoutUnits(iYLayoutUnits);
 
+#ifndef WITH_PANGO
+		pContainer->setYInLayoutUnits(iYLayoutUnits);
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
+#else
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
+		//iY +=  0.5;
+
+#endif
+
+#ifndef WITH_PANGO
 		if((long) iYLayoutUnits > imax)
 		{
 		       UT_ASSERT(0);
 		}
 		// Update height of previous line now we know the gap between
-		// it and the current line. 
-
+		// it and the current line.
+#endif
 		if (pPrevContainer)
 		{
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
@@ -760,19 +784,27 @@ void fp_Column::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
+#ifndef WITH_PANGO
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
+#endif
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
+#ifndef WITH_PANGO
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+#else
+	UT_sint32 iNewHeight = iY;
+#endif
+
 	if (getHeight() == iNewHeight)
 	{
 		return;
 	}
 
 	setHeight(iNewHeight);
+#ifndef WITH_PANGO
 	setHeightLayoutUnits(iYLayoutUnits);
-	
+#endif
 	getPage()->columnHeightChanged(this);
 }
 
@@ -787,7 +819,7 @@ fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 /*!
  * This container is actually to display HdrFtrShadows which are repeated
  * for every page in the document. If the text is too high it is clipped to
- * to fit in the container. It's up to the user to adjust the height of the 
+ * to fit in the container. It's up to the user to adjust the height of the
  * header/footer region to fit the text.
  */
 fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
@@ -796,17 +828,19 @@ fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 									   UT_sint32 iHeight,
 									   UT_sint32 iWidthLayout,
 									   UT_sint32 iHeightLayout,
-									   fl_SectionLayout* pSectionLayout) 
+									   fl_SectionLayout* pSectionLayout)
 	: fp_VerticalContainer(FP_CONTAINER_COLUMN_SHADOW, pSectionLayout)
 {
 	_setX(iX);
 	_setY(iY);
 	setWidth(iWidth);
 	setHeight(iHeight);
+	setMaxHeight(iHeight);
+#ifndef WITH_PANGO
 	setWidthInLayoutUnits(iWidthLayout);
 	setHeightLayoutUnits(iHeightLayout);
-	setMaxHeight(iHeight);
 	setMaxHeightInLayoutUnits( (UT_sint32)(  (double) getHeight() * ( (double) iHeightLayout/ (double) getMaxHeight()))) ;
+#endif
    m_bHdrFtrBoxDrawn = false;
 }
 
@@ -816,10 +850,13 @@ fp_ShadowContainer::~fp_ShadowContainer()
 
 void fp_ShadowContainer::layout(void)
 {
-	double ScaleLayoutUnitsToScreen;
-	double yHardOffset = 5.0; // Move 5 pixels away from the very edge 
-	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
+#ifndef WITH_PANGO
+	double ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
+	double yHardOffset = 5.0; // Move 5 pixels away from the very edge
 	UT_sint32 iYLayoutUnits = (UT_sint32) (yHardOffset/	ScaleLayoutUnitsToScreen);
+#else
+	UT_sint32 iY = PANGO_UNITS(5);
+#endif
 	UT_uint32 iCountContainers = countCons();
 	FV_View * pView = getPage()->getDocLayout()->getView();
 	bool doLayout = true;
@@ -830,7 +867,7 @@ void fp_ShadowContainer::layout(void)
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		fp_Container* pContainer = (fp_Container*) getNthCon(i);
-		
+#ifndef WITH_PANGO
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 		UT_sint32 sum = iContainerHeightLayoutUnits + iContainerMarginAfterLayoutUnits;
@@ -841,29 +878,57 @@ void fp_ShadowContainer::layout(void)
 			pContainer->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
 			pContainer->setYInLayoutUnits(iYLayoutUnits);
 		}
+#else
+
+		UT_sint32 iContainerHeight = pContainer->getHeight();
+		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		UT_sint32 sum = iContainerHeight + iContainerMarginAfter;
+		if(((iY + sum) <= (getMaxHeight())) && doLayout)
+		{
+			pContainer->setY(iY);
+		}
+#endif
 		else
 		{
 //
 // FIXME: Dirty hack to clip.
-// 
+//
 			pContainer->setY(-1000000);
+#ifndef WITH_PANGO
 			pContainer->setYInLayoutUnits(-1000000);
+#endif
 		}
+#ifndef WITH_PANGO
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
+#else
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
+#endif
 	}
 
+#ifndef WITH_PANGO
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+#else
+	UT_sint32 iNewHeight = iY;
+#endif
 	if (getHeight() == iNewHeight)
 	{
 		return;
 	}
+#ifndef WITH_PANGO
 	if(iYLayoutUnits <= getMaxHeightInLayoutUnits())
 	{
 		setHeight(iNewHeight);
 		setHeightLayoutUnits(iYLayoutUnits);
 	}
-	
+#else
+	if(iY <= getMaxHeight())
+	{
+		setHeight(iNewHeight);
+	}
+#endif
+
 }
 
 /*!
@@ -929,7 +994,7 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 		dg_DrawArgs da = *pDA;
 		da.xoff += pContainer->getX();
 		da.yoff += pContainer->getY();
-		
+#ifndef WITH_PANGO
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 		iY += iContainerHeightLayoutUnits;
@@ -939,6 +1004,18 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 //
 		if(iY > getMaxHeightInLayoutUnits())
 			break;
+#else
+		UT_sint32 iContainerHeight = pContainer->getHeight();
+		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
+//
+// Clip to keep inside header/footer container
+//
+		if(iY > getMaxHeight())
+			break;
+#endif
+
 		pContainer->draw(&da);
 	}
     if(pView && pView->isHdrFtrEdit() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
@@ -952,7 +1029,7 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 	}
 }
 
-/*! 
+/*!
  * This method draws a solid box around the currently editted Header/Footer
  */
 void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
@@ -975,7 +1052,7 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 //
 // These magic numbers stop clearscreens from blanking the lines
 //
-	m_ixoffBegin = pDA->xoff-2; 
+	m_ixoffBegin = pDA->xoff-2;
 	m_iyoffBegin = pDA->yoff+2;
 	m_ixoffEnd = pDA->xoff + getWidth() +1;
 	m_iyoffEnd = pDA->yoff + getMaxHeight() -1;
@@ -989,7 +1066,7 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 }
 
 
-/*! 
+/*!
  * This method clears the solid box around the curently editted Header/Footer
  */
 void fp_ShadowContainer::clearHdrFtrBoundaries(void)
@@ -1013,25 +1090,27 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 /*!
  * Ok this container class is for the hdrftrSectionLayout. It never gets drawn
  * on the screen, only the shadows get drawn. The page pointer contains a NULL.
- * This makes it possible to format the hdrftrSectionLayout and to do 
+ * This makes it possible to format the hdrftrSectionLayout and to do
  * editting operations on header/footers like regular text.
 \param iwidth width of the page in pixels?? I think.
 \param IwidthLayout width of the screen in layout units
-\param fl_SectionLayout * pSectionLayout pointer to the 
+\param fl_SectionLayout * pSectionLayout pointer to the
        fl_HdrFtrSectionLayout that owns this container.
 */
 
 fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iWidth,
 									   UT_sint32 iWidthLayout,
-									   fl_SectionLayout* pSectionLayout) 
+									   fl_SectionLayout* pSectionLayout)
 	: fp_VerticalContainer(FP_CONTAINER_HDRFTR, pSectionLayout)
 {
 	_setX(0);
 	_setY(0);
 	setWidth(iWidth);
 	setHeight(0);
+#ifndef WITH_PANGO
 	setWidthInLayoutUnits(iWidthLayout);
 	setHeightLayoutUnits(0);
+#endif
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()
@@ -1045,15 +1124,20 @@ fp_HdrFtrContainer::~fp_HdrFtrContainer()
 
 void fp_HdrFtrContainer::layout(void)
 {
+#ifndef WITH_PANGO
 	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
+#else
+	UT_sint32 iY = 0;
+#endif
+
 	UT_uint32 iCountContainers = countCons();
-	
+
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		fp_Container* pContainer = (fp_Container*) getNthCon(i);
-		
+#ifndef WITH_PANGO
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 //		UT_sint32 iContainerMarginBefore = (i != 0) ? pContainer->getMarginBefore() : 0;
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
@@ -1063,17 +1147,32 @@ void fp_HdrFtrContainer::layout(void)
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
+#else
+
+		UT_sint32 iContainerHeight = pContainer->getHeight();
+		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+
+		pContainer->setY(iY);
+		iY += iContainerHeightLayoutUnits;
+		iY += iContainerMarginAfterLayoutUnits;
+#endif
 	}
 
+#ifndef WITH_PANGO
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+#else
+	UT_sint32 iNewHeight = iY;
+#endif
+
 	if (getHeight() == iNewHeight)
 	{
 		return;
 	}
 
 	setHeight(iNewHeight);
+#ifndef WITH_PANGO
 	setHeightLayoutUnits(iYLayoutUnits);
-	
+#endif
 }
 
 /*!
@@ -1088,7 +1187,7 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 
 
 /*!
-  Get line's offsets relative to the screen for this method we just return 
+  Get line's offsets relative to the screen for this method we just return
   * -100000 since virtual containers are never drawn.
  \param  pContainer Container
  \retval xoff Container's X offset relative the screen actually -10000

@@ -199,26 +199,30 @@ public:
 	virtual fp_Container*		getLastContainer();
 
 	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
-	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
-	inline UT_sint32			getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
-	bool                        arePageNumbersRestarted (void) const { return m_bRestart;}
-	UT_sint32                   getRestartedPageNumber(void) const { return m_iRestartValue;}
 	UT_sint32                   getTopMargin(void) const;
-	UT_sint32                   getTopMarginInLayoutUnits(void) const;
     UT_sint32                   getBottomMargin(void) const;
-    UT_sint32                   getBottomMarginInLayoutUnits(void) const;
 	inline UT_sint32			getFooterMargin(void) const { return m_iFooterMargin; }
-	inline UT_sint32			getFooterMarginInLayoutUnits(void) const { return m_iFooterMarginLayoutUnits; }
 	inline UT_sint32			getHeaderMargin(void) const { return m_iHeaderMargin; }
-	inline UT_sint32			getHeaderMarginInLayoutUnits(void) const { return m_iHeaderMarginLayoutUnits; }
 	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
+	inline UT_sint32            getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
+	UT_uint32                   getColumnGap(void) const;
+
+#ifndef WITH_PANGO
+	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
+	inline UT_sint32			getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
+	UT_sint32                   getTopMarginInLayoutUnits(void) const;
+    UT_sint32                   getBottomMarginInLayoutUnits(void) const;
+	inline UT_sint32			getFooterMarginInLayoutUnits(void) const { return m_iFooterMarginLayoutUnits; }
+	inline UT_sint32			getHeaderMarginInLayoutUnits(void) const { return m_iHeaderMarginLayoutUnits; }
 	inline UT_sint32			getSpaceAfterInLayoutUnits(void) const { return m_iSpaceAfterLayoutUnits; }
 	inline UT_sint32            getMaxSectionColumnHeightInLayoutUnits(void) const { return m_iMaxSectionColumnHeightInLayoutUnits;}
-	inline UT_sint32            getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
+	UT_uint32			        getColumnGapInLayoutUnits(void) const;
+#endif
+
+	bool                arePageNumbersRestarted (void) const { return m_bRestart;}
+	UT_sint32           getRestartedPageNumber(void) const { return m_iRestartValue;}
 	UT_uint32			getNumColumns(void) const;
-	UT_uint32			getColumnGap(void) const;
-	UT_uint32			getColumnGapInLayoutUnits(void) const;
 	bool				getColumnLineBetween(void) const {return m_bColumnLineBetween;}
 	UT_uint32			getColumnOrder(void) const;
 	void                setPaperColor();
@@ -276,35 +280,38 @@ protected:
 
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;
-	UT_uint32			m_iColumnGapLayoutUnits;
 	bool				m_bColumnLineBetween;
 	UT_uint32			m_iColumnOrder;
 
 	UT_sint32			m_iSpaceAfter;
-	UT_sint32			m_iSpaceAfterLayoutUnits;
 	bool                m_bRestart;
 	UT_sint32           m_iRestartValue;
 	UT_sint32			m_iLeftMargin;
-	UT_sint32			m_iLeftMarginLayoutUnits;
 	double				m_dLeftMarginUserUnits;
 	UT_sint32			m_iRightMargin;
-	UT_sint32			m_iRightMarginLayoutUnits;
 	double				m_dRightMarginUserUnits;
 	UT_sint32			m_iTopMargin;
-	UT_sint32			m_iTopMarginLayoutUnits;
 	double				m_dTopMarginUserUnits;
 	UT_sint32			m_iBottomMargin;
-	UT_sint32			m_iBottomMarginLayoutUnits;
 	double				m_dBottomMarginUserUnits;
 	UT_sint32			m_iFooterMargin;
-	UT_sint32			m_iFooterMarginLayoutUnits;
 	double				m_dFooterMarginUserUnits;
 	UT_sint32			m_iHeaderMargin;
-	UT_sint32			m_iHeaderMarginLayoutUnits;
 	double				m_dHeaderMarginUserUnits;
-	UT_sint32           m_iMaxSectionColumnHeightInLayoutUnits;
 	UT_sint32           m_iMaxSectionColumnHeight;
 	double              m_dMaxSectionColumnHeight;
+
+#ifndef WITH_PANGO
+	UT_uint32			m_iColumnGapLayoutUnits;
+	UT_sint32			m_iSpaceAfterLayoutUnits;
+	UT_sint32			m_iLeftMarginLayoutUnits;
+	UT_sint32			m_iRightMarginLayoutUnits;
+	UT_sint32			m_iTopMarginLayoutUnits;
+	UT_sint32			m_iBottomMarginLayoutUnits;
+	UT_sint32			m_iFooterMarginLayoutUnits;
+	UT_sint32			m_iHeaderMarginLayoutUnits;
+	UT_sint32           m_iMaxSectionColumnHeightInLayoutUnits;
+#endif
 
 	bool				m_bForceNewPage;
 
@@ -312,7 +319,7 @@ protected:
 	fp_Column*			m_pFirstColumn;
 	//! Last column in the section
 	fp_Column*			m_pLastColumn;
-	fp_Page *                       m_pFirstOwnedPage;
+	fp_Page *           m_pFirstOwnedPage;
 	UT_RGBColor         m_clrPaper;
 
 private:

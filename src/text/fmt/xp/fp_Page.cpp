@@ -80,21 +80,26 @@ UT_sint32 fp_Page::getWidth(void) const
 	return (UT_sint32)(m_iResolution * m_pageSize.Width(DIM_IN));
 }
 
+#ifndef WITH_PANGO
 UT_sint32 fp_Page::getWidthInLayoutUnits(void) const
 {
 	return (UT_sint32)UT_convertSizeToLayoutUnits(m_pageSize.Width(DIM_IN), DIM_IN);
 }
+#endif
 
 UT_sint32 fp_Page::getHeight(void) const
 {
 	return (UT_sint32)(m_iResolution * m_pageSize.Height(DIM_IN));
 }
 
+#ifndef WITH_PANGO
 UT_sint32 fp_Page::getHeightInLayoutUnits(void) const
 {
 	return (UT_sint32)UT_convertSizeToLayoutUnits(m_pageSize.Height(DIM_IN), DIM_IN);
 }
+#endif
 
+#ifndef WITH_PANGO
 /*!
  * Returns the page height minus the top and bottom margins in layout units
  */
@@ -104,6 +109,7 @@ UT_sint32 fp_Page::getAvailableHeightInLayoutUnits(void) const
 	UT_sint32 avail = getHeightInLayoutUnits() - pDSL->getTopMarginInLayoutUnits() - pDSL->getBottomMarginInLayoutUnits();
 	return avail;
 }
+
 
 /*!
  * This method scans the page and returns the total height in layout units of all the columns
@@ -155,6 +161,7 @@ UT_sint32 fp_Page::getFilledHeightInLayoutUnits(fp_Container * prevContainer) co
 	}
 	return totalHeight;
 }
+#endif
 
 
 UT_sint32 fp_Page::getBottom(void) const
@@ -269,12 +276,20 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	{
 		xxx_UT_DEBUGMSG(("Doing a rectangular color fill \n"));
 		UT_RGBColor * pClr = getOwningSection()->getPaperColor();
+#ifndef WITH_PANGO
 		double ScaleLayoutUnitsToScreen;
 		ScaleLayoutUnitsToScreen = (double)pDA->pG->getResolution() / UT_LAYOUT_UNITS;
+#endif
  		UT_sint32 xmin = pDA->xoff;
   		UT_sint32 ymin = pDA->yoff;
+
+#ifndef WITH_PANGO
 		UT_sint32 height = (UT_sint32) ((double)getHeightInLayoutUnits() * ScaleLayoutUnitsToScreen);
 		UT_sint32 width = (UT_sint32) ((double)getWidthInLayoutUnits() * ScaleLayoutUnitsToScreen);
+#else
+		UT_sint32 height =getHeight();
+		UT_sint32 width = getWidth();
+#endif
 		pDA->pG->fillRect(*pClr,xmin,ymin,width,height);
 	}
 
@@ -359,26 +374,52 @@ bool fp_Page::breakPage(void)
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+#ifndef WITH_PANGO
 	UT_sint32 iTopMarginLayoutUnits = pFirstSectionLayout->getTopMarginInLayoutUnits();
 	UT_sint32 iBottomMarginLayoutUnits = pFirstSectionLayout->getBottomMarginInLayoutUnits();
 	UT_sint32 iYLayoutUnits = iTopMarginLayoutUnits;
 	UT_sint32 availHeight = getHeightInLayoutUnits() - iBottomMarginLayoutUnits;
+#else
+	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
+	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMarginInLayoutUnits();
+	UT_sint32 iY = iTopMargin;
+	UT_sint32 availHeight = getHeight() - iBottomMargin;
+#endif
+
 	UT_sint32 i;
 	for (i=0; i<count; i++)
 	{
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fp_Column* pTmpCol = pLeader;
+#ifndef WITH_PANGO
 		UT_sint32 iMostHeightLayoutUnits = 0;
 		iYPrev = iYLayoutUnits;
+#else
+		UT_sint32 iMostHeight = 0;
+		iYPrev = iY;
+#endif
 		while (pTmpCol)
 		{
+#ifndef WITH_PANGO
 			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
+#else
+			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
+#endif
 			pTmpCol = pTmpCol->getFollower();
 		}
+
+#ifndef WITH_PANGO
 		iYLayoutUnits += iMostHeightLayoutUnits;
 		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
 		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
 		if (iYLayoutUnits >= availHeight)
+#else
+		iY += iMostHeight;
+		iY += pLeader->getDocSectionLayout()->getSpaceAfter();
+		iY += pLeader->getDocSectionLayout()->getSpaceAfter();
+		if (iY >= availHeight)
+#endif
+
 		{
 			break;
 		}
@@ -411,12 +452,20 @@ bool fp_Page::breakPage(void)
 			while(pContainer != NULL && pContainer != static_cast<fp_Container *>(pCol->getLastContainer()))
 			{
 				countContainers++;
+#ifndef WITH_PANGO
 				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+#else
+				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
+#endif
 				pContainer = (fp_Container *) pContainer->getNext();
 			}
 			if(pContainer != NULL)
 			{
+#ifndef WITH_PANGO
 				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+#else
+				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
+#endif
 				countContainers++;
 			}
 			maxContainers = UT_MAX(maxContainers,countContainers);
@@ -558,23 +607,30 @@ void fp_Page::_reformat(void)
 	UT_sint32 iRightMargin = 0;
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	UT_sint32 iY = iTopMargin;
 
-
+#ifndef WITH_PANGO
 	UT_sint32 iLeftMarginLayoutUnits = 0;
 	UT_sint32 iRightMarginLayoutUnits = 0;
 
 	UT_sint32 iTopMarginLayoutUnits = pFirstSectionLayout->getTopMarginInLayoutUnits();
 	UT_sint32 iBottomMarginLayoutUnits = pFirstSectionLayout->getBottomMarginInLayoutUnits();
-
-	UT_sint32 iY = iTopMargin;
 	UT_sint32 iYLayoutUnits = iTopMarginLayoutUnits;
+#endif
 
 	int i;
 	for (i=0; i<count; i++)
 	{
+#ifndef WITH_PANGO
 		if (iYLayoutUnits >= (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
+#else
+		if (iY >= (getHeight() - iBottomMargin))
+#endif
 		{
+#ifndef WITH_PANGO
 			UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iYLayoutUnits));
+#endif
+
 			m_pOwner->markForRebuild();
 			return;
 //			break;
@@ -592,14 +648,15 @@ void fp_Page::_reformat(void)
 
 		UT_uint32 iNumColumns = pSL->getNumColumns();
 		UT_uint32 iColumnGap = pSL->getColumnGap();
-		UT_uint32 iColumnGapLayoutUnits = pSL->getColumnGapInLayoutUnits();
+		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 
+#ifndef WITH_PANGO
+		UT_uint32 iColumnGapLayoutUnits = pSL->getColumnGapInLayoutUnits();
 		iLeftMarginLayoutUnits = pSL->getLeftMarginInLayoutUnits();
 		iRightMarginLayoutUnits = pSL->getRightMarginInLayoutUnits();
-
 		UT_uint32 iSpaceLayoutUnits = getWidthInLayoutUnits() - iLeftMarginLayoutUnits - iRightMarginLayoutUnits;
-		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 		UT_uint32 iColWidthLayoutUnits = (iSpaceLayoutUnits - ((iNumColumns - 1) * iColumnGapLayoutUnits)) / iNumColumns;
+#endif
 
 		UT_sint32 iX;
 		if(pSL->getColumnOrder())
@@ -613,16 +670,23 @@ void fp_Page::_reformat(void)
 
 		fp_Column* pTmpCol = pLeader;
 		UT_sint32 iMostHeight = 0;
+
+#ifndef WITH_PANGO
 		UT_sint32 iMostHeightLayoutUnits = 0;
+#endif
+
 		while (pTmpCol)
 		{
 			UT_ASSERT(pTmpCol->getContainerType() == FP_CONTAINER_COLUMN);
 			pTmpCol->setX(iX);
 			pTmpCol->setY(iY);
 			pTmpCol->setMaxHeight(getHeight() - iBottomMargin - iY);
-			pTmpCol->setMaxHeightInLayoutUnits(getHeightInLayoutUnits() - iBottomMarginLayoutUnits - iYLayoutUnits);
 			pTmpCol->setWidth(iColWidth);
+
+#ifndef WITH_PANGO
+			pTmpCol->setMaxHeightInLayoutUnits(getHeightInLayoutUnits() - iBottomMarginLayoutUnits - iYLayoutUnits);
 			pTmpCol->setWidthInLayoutUnits(iColWidthLayoutUnits);
+#endif
 
 			if(pSL->getColumnOrder())
 			{
@@ -634,16 +698,20 @@ void fp_Page::_reformat(void)
 			}
 
 			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
+#ifndef WITH_PANGO
 			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
+#endif
 			pLastCol = pTmpCol;
 			pTmpCol = pTmpCol->getFollower();
 		}
 
 		iY += iMostHeight;
-		iYLayoutUnits += iMostHeightLayoutUnits;
-
 		iY += pLeader->getDocSectionLayout()->getSpaceAfter();
+#ifndef WITH_PANGO
+		iYLayoutUnits += iMostHeightLayoutUnits;
 		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
+#endif
+
 	}
 //	UT_ASSERT(i == count);
 //
@@ -656,7 +724,7 @@ void fp_Page::_reformat(void)
 		fp_Container * pLastContainer = (fp_Container *) pLastCol->getLastContainer();
 		if(pLastContainer)
 		{
-			if(pLastContainer->getContainerType() == FP_CONTAINER_LINE 
+			if(pLastContainer->getContainerType() == FP_CONTAINER_LINE
 			   && static_cast<fp_Line *>(pLastContainer)->containsForcedPageBreak())
 			{
 				return;
@@ -671,10 +739,17 @@ void fp_Page::_reformat(void)
 			{
 				return;
 			}
+#ifndef WITH_PANGO
 			UT_sint32 iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
 			if( (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
+#else
+			UT_sint32 iYNext = pFirstNextContainer->getHeight();
+			if( (iY + 3*iYNext) < (getHeight() - iBottomMargin))
+#endif
 			{
+#ifndef WITH_PANGO
 				UT_DEBUGMSG(("SEVIOR: Mark for rebuild to fill blank gap. iYLayoutUnits =%d iYnext = %d \n",iYLayoutUnits,iYLayoutNext));
+#endif
 				m_pOwner->markForRebuild();
 				//UT_ASSERT(0);
 			}
@@ -1125,6 +1200,7 @@ fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 	//
 	// headerMargin is the height from the top of the page.
 	//
+#ifndef WITH_PANGO
 	m_pHeader = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
 									   m_pOwner->getHeaderMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
@@ -1132,6 +1208,18 @@ fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
 									   m_pOwner->getTopMarginInLayoutUnits() - m_pOwner->getHeaderMarginInLayoutUnits(),
 									   pHFSL);
+#else
+	// for the time being just pass 0's for the layout units, one day
+	// we will change the signature ...
+	m_pHeader = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									   m_pOwner->getHeaderMargin(),
+									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
+									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
+									   0,
+									   0,
+									   pHFSL);
+#endif
+
 	// TODO outofmem
 
 	m_pHeader->setPage(this);
@@ -1205,6 +1293,7 @@ fp_ShadowContainer* fp_Page::buildFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 	// footerMargin is the distance from the bottom of the text to the
 	// top of the footer
 	//
+#ifndef WITH_PANGO
 	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
 									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
@@ -1212,6 +1301,16 @@ fp_ShadowContainer* fp_Page::buildFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
 									   m_pOwner->getBottomMarginInLayoutUnits() - m_pOwner->getFooterMarginInLayoutUnits(),
 									   pHFSL);
+#else
+	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
+									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
+									   m_pOwner->getBottomMargin(),
+									   0,
+									   0,
+									   pHFSL);
+#endif
+
 	// TODO outofmem
 
 	m_pFooter->setPage(this);

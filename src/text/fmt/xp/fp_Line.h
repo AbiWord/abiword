@@ -81,44 +81,54 @@ public:
 
 	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
 	//! Return height of line as it will appear on screen
-	virtual inline UT_sint32 			getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
-	virtual inline UT_sint32 			getHeightInLayoutUnits(void) const 		{ return m_iHeightLayoutUnits; }
-	
-	virtual inline UT_sint32			getX(void) const 			{ return m_iX; }
-	virtual inline UT_sint32			getXInLayoutUnits(void) const 	{ return m_iXLayoutUnits; }
-	virtual inline UT_sint32			getY(void) const 			{ return m_iY; }
-	
+	virtual inline UT_sint32	getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
+
+	virtual inline UT_sint32	getX(void) const 			{ return m_iX; }
+	virtual inline UT_sint32	getY(void) const 			{ return m_iY; }
+
 	inline UT_sint32			getMaxWidth(void) const 	{ return m_iMaxWidth; }
+
+#ifndef WITH_PANGO
+	virtual inline UT_sint32 	getHeightInLayoutUnits(void) const 		{ return m_iHeightLayoutUnits; }
+	virtual inline UT_sint32	getXInLayoutUnits(void) const 	{ return m_iXLayoutUnits; }
 	inline UT_sint32			getMaxWidthInLayoutUnits(void) const 	{ UT_ASSERT(m_iMaxWidthLayoutUnits); return m_iMaxWidthLayoutUnits; }
+#endif
+
 	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
 	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
 	UT_sint32                   getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
 	UT_sint32			        getColumnGap(void);
-	void				setAssignedScreenHeight(UT_sint32);
+	void				        setAssignedScreenHeight(UT_sint32);
 
-	void				setMaxWidth(UT_sint32);
-	void				setMaxWidthInLayoutUnits(UT_sint32);
+	void				        setMaxWidth(UT_sint32);
 	virtual void				setX(UT_sint32 i, bool bDontClearIfNeeded = false);
-	virtual void				setXInLayoutUnits(UT_sint32);
 	virtual void				setY(UT_sint32);
+#ifndef WITH_PANGO
+	void				        setMaxWidthInLayoutUnits(UT_sint32);
+	virtual void				setXInLayoutUnits(UT_sint32);
 	virtual void				setYInLayoutUnits(UT_sint32);
+#endif
 	virtual void				setContainer(fp_Container*);
-	inline	void		setBlock(fl_BlockLayout * pBlock)	{ m_pBlock = pBlock; }
+	inline	void		        setBlock(fl_BlockLayout * pBlock)	{ m_pBlock = pBlock; }
 
 
 	virtual void        setWidth(UT_sint32 ){}
- 	virtual void        setWidthInLayoutUnits(UT_sint32) {}
     virtual void        setHeight(UT_sint32) {}
-    virtual void        setHeightLayoutUnits(UT_sint32) {}
 	virtual UT_sint32   getWidth(void) const { return 0;}
+#ifndef WITH_PANGO
+	virtual void        setWidthInLayoutUnits(UT_sint32) {}
+    virtual void        setHeightLayoutUnits(UT_sint32) {}
     virtual UT_sint32   getWidthInLayoutUnits() const {return 0;}
+#endif
     virtual bool        isVBreakable(void) { return false;}
     virtual bool        isHBreakable(void) {return true;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32) { return 0;}
 	virtual UT_sint32   wantHBreakAt(UT_sint32) { return 0;}
     virtual fp_ContainerObject * VBreakAt(UT_sint32) { return NULL;}
     virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+#ifndef WITH_PANGO
     virtual UT_sint32   getMarginBeforeInLayoutUnits(void) const { return 0;}
+#endif
     virtual UT_uint32 distanceFromPoint(UT_sint32, UT_sint32) {return 0;}
 	virtual fp_Container*	getNextContainerInSection(void) const;
 	virtual fp_Container*	getPrevContainerInSection(void) const;
@@ -171,9 +181,11 @@ public:
 	void		coalesceRuns(void);
 
 	UT_sint32	calculateWidthOfLine(void);
-	UT_sint32	calculateWidthOfLineInLayoutUnits(void);
 	UT_sint32	calculateWidthOfTrailingSpaces(void);
+#ifndef WITH_PANGO
+	UT_sint32	calculateWidthOfLineInLayoutUnits(void);
 	UT_sint32	calculateWidthOfTrailingSpacesInLayoutUnits(void);
+#endif
 	void		resetJustification();
 	void		distributeJustificationAmongstSpaces(UT_sint32 iAmount);
 	UT_uint32	countJustificationPoints(void);
@@ -220,24 +232,25 @@ void		_splitRunsAtSpaces(void);
 	fp_Container*	m_pContainer;
 
 	UT_sint32	 	m_iWidth;
-	UT_sint32	 	m_iWidthLayoutUnits;
 	UT_sint32	 	m_iMaxWidth;
-	UT_sint32		m_iMaxWidthLayoutUnits;
 	UT_sint32       m_iClearToPos;
 	UT_sint32       m_iClearLeftOffset;
 	UT_sint32 		m_iHeight;
 	//! Height assigned on screen
 	//! -1 if undefined
 	UT_sint32 		m_iScreenHeight;
-	UT_sint32 		m_iHeightLayoutUnits;
 	UT_sint32 		m_iAscent;
 	UT_sint32		m_iDescent;
 
 	UT_sint32		m_iX;
-	UT_sint32		m_iXLayoutUnits;
 	UT_sint32		m_iY;
+#ifndef WITH_PANGO
+	UT_sint32	 	m_iWidthLayoutUnits;
+	UT_sint32		m_iMaxWidthLayoutUnits;
+	UT_sint32 		m_iHeightLayoutUnits;
+	UT_sint32		m_iXLayoutUnits;
 	UT_sint32		m_iYLayoutUnits;
-
+#endif
 	UT_Vector		m_vecRuns;
 
 	bool			m_bNeedsRedraw;
@@ -251,10 +264,10 @@ void		_splitRunsAtSpaces(void);
 	UT_sint32       _createMapOfRuns();
 
 #ifdef USE_STATIC_MAP
-	static UT_Byte *   s_pEmbeddingLevels;
-	static UT_uint16 * s_pMapOfRunsL2V;
-	static UT_uint16 * s_pMapOfRunsV2L;
-	static UT_uint32 * s_pPseudoString;
+	static FriBidiLevel    * s_pEmbeddingLevels;
+	static FriBidiStrIndex * s_pMapOfRunsL2V;
+	static FriBidiStrIndex * s_pMapOfRunsV2L;
+	static FriBidiChar     * s_pPseudoString;
 
 
 	static UT_uint32   s_iMapOfRunsSize;

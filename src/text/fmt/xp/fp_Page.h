@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -50,10 +50,12 @@ public:
 	~fp_Page();
 
 	UT_sint32			getWidth(void) const;
-	UT_sint32			getWidthInLayoutUnits(void) const;
 	const fp_PageSize&	getPageSize() const;
 	UT_sint32			getHeight(void) const;
+#ifndef WITH_PANGO
+	UT_sint32			getWidthInLayoutUnits(void) const;
 	UT_sint32			getHeightInLayoutUnits(void) const;
+#endif
 	UT_sint32			getBottom(void) const;
 	fp_Page*			getNext(void) const;
 	fp_Page*			getPrev(void) const;
@@ -61,7 +63,7 @@ public:
 	void				setPrev(fp_Page*);
 	void                markAllDirty(void) {m_bNeedsRedraw = true;}
 	UT_sint32			getColumnGap(void) const {return getOwningSection()->getColumnGap(); }
-						
+
 	FL_DocLayout*		getDocLayout();
 	void				setView(FV_View*);
 
@@ -72,11 +74,13 @@ public:
 	void				mapXYToPositionClick(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, fl_HdrFtrShadow *& pShadow,  bool& bBOL, bool& bEOL);
 	void				getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
-						
+
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-    UT_sint32           getFilledHeightInLayoutUnits(fp_Container * prevContainer) const;				
+#ifndef WITH_PANGO
+    UT_sint32           getFilledHeightInLayoutUnits(fp_Container * prevContainer) const;
 	UT_sint32           getAvailableHeightInLayoutUnits(void) const;
+#endif
 	void 				columnHeightChanged(fp_Column* pLeader);
 	bool                breakPage(void);
 	UT_uint32 			countColumnLeaders(void) const;
@@ -90,11 +94,11 @@ public:
 	fp_ShadowContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
 	fp_ShadowContainer*	buildHeaderContainer(fl_HdrFtrSectionLayout*);
 	fp_ShadowContainer*	buildFooterContainer(fl_HdrFtrSectionLayout*);
-	
+
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
-#endif				  
-	
+#endif
+
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);

@@ -68,11 +68,12 @@ void fp_FmtMarkRun::lookupProperties(void)
 	m_iDescent = m_pG->getFontDescent(pFont);
 	m_iHeight = m_pG->getFontHeight(pFont);
 
+#ifndef WITH_PANGO
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
-
 	m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);
 	m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
 	m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
+#endif
 
 	PD_Document * pDoc = m_pBL->getDocument();
 

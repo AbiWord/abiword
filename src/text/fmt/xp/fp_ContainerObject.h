@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Martin Sevior
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -64,31 +64,39 @@ public:
 	  \return Type
 	*/
 	inline FP_ContainerType	getContainerType(void) const { return m_iType; }
-	
+
 	virtual void		setWidth(UT_sint32) = 0;
-	virtual void		setWidthInLayoutUnits(UT_sint32) =0;
 	virtual void		setHeight(UT_sint32) = 0 ;
-	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) =0;
 	virtual void		setX(UT_sint32, bool bDontClearIfNeeded = false) = 0;
 	virtual void		setY(UT_sint32) = 0;
-	virtual void		setYInLayoutUnits(UT_sint32) = 0;
 	virtual UT_sint32	getWidth(void) const = 0;
+
+#ifndef WITH_PANGO
+	virtual void		setWidthInLayoutUnits(UT_sint32) =0;
+	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) =0;
+	virtual void		setYInLayoutUnits(UT_sint32) = 0;
 	virtual UT_sint32	getWidthInLayoutUnits(void) const = 0;
+#endif
+
 	virtual UT_sint32	getX(void) const = 0;
 	virtual UT_sint32	getY(void) const = 0;
 	inline fl_SectionLayout*   getSectionLayout(void) const
 		{ return m_pSectionLayout; }
 	inline void         setSectionLayout(fl_SectionLayout * pSL)
 		{ m_pSectionLayout = pSL; }
-	virtual inline FriBidiCharType getDirection(void) 
+	virtual inline FriBidiCharType getDirection(void)
 		{ return m_iDirection;}
 	virtual inline void setDirection(FriBidiCharType c) {m_iDirection = c;}
 	virtual UT_sint32	getHeight(void) const = 0;
+
+#ifndef WITH_PANGO
 	virtual UT_sint32	getHeightInLayoutUnits(void) const = 0;
+#endif
+
 	virtual void		draw(dg_DrawArgs*) = 0;
 	virtual void		draw(GR_Graphics*) = 0;
 	virtual void		clearScreen(void) = 0;
-    GR_Graphics*        getGraphics(void) 
+    GR_Graphics*        getGraphics(void)
 		{ return m_pG;}
     virtual fp_ContainerObject * getNext(void) const = 0;
     virtual fp_ContainerObject * getPrev(void) const = 0;
@@ -132,19 +140,21 @@ public:
 	fp_Page *              getPage(void) const;
 	virtual UT_sint32      getMarginBefore(void) const =0;
 	virtual UT_sint32      getMarginAfter(void) const =0;
+#ifndef WITH_PANGO
 	virtual UT_sint32      getMarginBeforeInLayoutUnits(void) const =0;
 	virtual UT_sint32      getMarginAfterInLayoutUnits(void) const =0;
+#endif
     virtual fp_ContainerObject * getNext(void) const {return m_pNext;}
     virtual fp_ContainerObject * getPrev(void) const {return m_pPrev;}
-    virtual void        setNext(fp_ContainerObject * pNext) 
+    virtual void        setNext(fp_ContainerObject * pNext)
 		{m_pNext = pNext;}
     virtual void        setPrev(fp_ContainerObject * pPrev)
 		{m_pPrev = pPrev;}
-	void                   clearCons(void) 
+	void                   clearCons(void)
 		{ m_vecContainers.clear();}
 	fp_ContainerObject *   getNthCon(UT_uint32 i) const
 		{ return (fp_ContainerObject *) m_vecContainers.getNthItem(i);}
-	void                   addCon(fp_ContainerObject * pCon) 
+	void                   addCon(fp_ContainerObject * pCon)
 		{m_vecContainers.addItem((void *) pCon);}
 	UT_uint32              countCons(void) const
 		{return m_vecContainers.getItemCount();}
