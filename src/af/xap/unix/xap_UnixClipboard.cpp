@@ -111,10 +111,10 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
 
         if(which_clip.hasFormat(format_name))
             {
-	        const gchar * data = 0;
+	        gchar * data = 0;
 	        UT_uint32 data_len = 0;
                 which_clip.getClipboardData(format_name,reinterpret_cast<void**>(&data),&data_len);	 
-                gtk_selection_data_set(selection_data,needle,8,reinterpret_cast<const guchar*>(data),data_len);
+                gtk_selection_data_set(selection_data,needle,8,reinterpret_cast<guchar*>(data),data_len);
             }
         break; // success or failure, we've found the needle in the haystack so exit the loop
       }  
@@ -191,7 +191,7 @@ void XAP_UnixClipboard::clearData(bool bClipboard, bool bPrimary)
 }
 
 bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
-				void ** ppData, UT_uint32 * pLen,
+				const void ** ppData, UT_uint32 * pLen,
 				const char **pszFormatFound)
 {
   // Fetch data from the clipboard (using the allowable source(s)) in one of
@@ -229,7 +229,7 @@ bool XAP_UnixClipboard::_getDataFromFakeClipboard(T_AllowGet tFrom, const char**
 }
 
 bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** formatList,
-					   void ** ppData, UT_uint32 * pLen,
+					   const void ** ppData, UT_uint32 * pLen,
 					   const char **pszFormatFound)
 {
   bool rval = false;
@@ -254,7 +254,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	      m_databuf.truncate(0);
 	      m_databuf.append(static_cast<UT_Byte *>(selection->data), static_cast<UT_uint32>(selection->length));
 	      *pLen = selection->length;
-	      *ppData = reinterpret_cast<void**>(m_databuf.getPointer(0));
+	      *ppData = reinterpret_cast<const void *>(m_databuf.getPointer(0));
 	      *pszFormatFound = formatList[i];
 	      rval = true;
 	    }

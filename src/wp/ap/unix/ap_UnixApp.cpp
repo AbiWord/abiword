@@ -544,15 +544,15 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 					   : XAP_UnixClipboard::TAG_PrimaryOnly);
 
     const char * szFormatFound = NULL;
-    unsigned char * pData = NULL;
+    const unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
 
     bool bFoundOne = false;
     
     if ( bHonorFormatting )
-      bFoundOne = m_pClipboard->getSupportedData(tFrom,(void**)&pData,&iLen,&szFormatFound);
+      bFoundOne = m_pClipboard->getSupportedData(tFrom,reinterpret_cast<const void **>(&pData),&iLen,&szFormatFound);
     else
-      bFoundOne = m_pClipboard->getTextData(tFrom,(void**)&pData,&iLen,&szFormatFound);
+      bFoundOne = m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen,&szFormatFound);
 
     if (!bFoundOne)
     {

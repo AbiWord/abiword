@@ -444,8 +444,8 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 			UT_uint32 i =0;
 			UT_DEBUGMSG(("Cell height set to %f for row %d  number item %d \n",dNewHeight,m_draggingCell,m_infoCache.m_vecTableRowInfo->getItemCount()));
 			AP_LeftRulerTableInfo * pTInfo =  NULL;
-			pTInfo =  (AP_LeftRulerTableInfo * ) m_infoCache.m_vecTableRowInfo->getNthItem(0);
-			fp_TableContainer * pTab = pTInfo->m_pCell->getContainer();
+			pTInfo = const_cast<AP_LeftRulerTableInfo *>(reinterpret_cast<const AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(0)));
+			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTInfo->m_pCell->getContainer());
 			fp_CellContainer * pCell = NULL;
 			posPrev =pTab->getYOfRow(0);  ;
 			for(i=1;i<=m_infoCache.m_vecTableRowInfo->getItemCount();i++)

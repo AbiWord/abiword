@@ -2888,7 +2888,6 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		return false;
 
 	XML_Char * pAttr[4];
-	const XML_Char ** pAt = reinterpret_cast<const XML_Char **>(&pAttr[0]);
 
 	UT_uint32 target_len = UT_XML_strlen(szName);
 	XML_Char * target  = new XML_Char[ target_len+ 2];
@@ -2921,7 +2920,9 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 	if(bRet)
 	{
-		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAt, NULL);
+		const XML_Char ** pAttrs = static_cast<const XML_Char **>(pAttr);
+		const XML_Char ** pProps = 0;
+		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAttrs, pProps);
 	}
 
 	if(bRet)
@@ -2976,7 +2977,6 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	}
 
 	XML_Char * pAttr[6];
-	const XML_Char ** pAt = reinterpret_cast<const XML_Char **>(&pAttr[0]);
 
 	XML_Char name_l [] = "name";
 	XML_Char type_l [] = "type";
@@ -2994,14 +2994,15 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	UT_DEBUGMSG(("fv_View::cmdInsertBookmark: szName \"%s\"\n", szName));
 
-	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAt, NULL);
-
+	const XML_Char ** pAttrs = static_cast<const XML_Char **>(pAttr);
+	const XML_Char ** pProps = 0;
+	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAttrs, pProps);
 
 	if(bRet)
 	{
 		UT_XML_strncpy(type, 3,static_cast<XML_Char*>("end"));
 		type[3] = 0;
-		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAt, NULL);
+		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttrs, pProps);
 	}
 
 	_generalUpdate();

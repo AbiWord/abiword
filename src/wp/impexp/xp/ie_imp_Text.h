@@ -73,14 +73,14 @@ private:
 class ABI_EXPORT ImportStreamClipboard : public ImportStream
 {
 public:
-	ImportStreamClipboard(unsigned char *pClipboard, UT_uint32 iLength);
+	ImportStreamClipboard(const unsigned char *pClipboard, UT_uint32 iLength);
 	~ImportStreamClipboard() {};
-	bool getChar();
+	//	bool getChar();
 protected:
 	bool _getByte(unsigned char &b);
 private:
-	unsigned char *m_p;
-	unsigned char *m_pEnd;
+	const unsigned char *m_p;
+	const unsigned char *m_pEnd;
 };
 
 // Helper class so we can parse files and clipboard with same code
@@ -162,7 +162,7 @@ public:
 
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
+										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 
 protected:
 	UT_Error			_recognizeEncoding(FILE * fp);

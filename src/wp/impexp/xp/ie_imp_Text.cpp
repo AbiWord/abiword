@@ -153,7 +153,7 @@ bool ImportStreamFile::_getByte(unsigned char &b)
  \param pClipboard Buffer to read from
  \param iLength Length of buffer
  */
-ImportStreamClipboard::ImportStreamClipboard(unsigned char *pClipboard, UT_uint32 iLength) :
+ImportStreamClipboard::ImportStreamClipboard(const unsigned char *pClipboard, UT_uint32 iLength) :
 	m_p(pClipboard),
 	m_pEnd(pClipboard + iLength)
 {
@@ -851,7 +851,7 @@ void IE_Imp_Text::_setEncoding(const char *szEncoding)
 // TODO always interpreted using the system default encoding which can be wrong.
 
 void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
-								  unsigned char * pData, UT_uint32 lenData,
+								  const unsigned char * pData, UT_uint32 lenData,
 								  const char *szEncoding)
 {
 	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
@@ -861,7 +861,7 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	if (szEncoding)
 		_setEncoding(szEncoding);
 	else
-		_recognizeEncoding((const char *)pData, lenData);
+		_recognizeEncoding(reinterpret_cast<const char *>(pData), lenData);
 
 	ImportStreamClipboard stream(pData, lenData);
 	Inserter ins(getDoc(), pDocRange->m_pos1);

@@ -483,7 +483,7 @@ public:
 
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
+										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
 	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return (RTF_msword97_list *) m_vecWord97Lists.getNthItem(i);}
     bool  isWord97Lists(void) const { return (m_vecWord97Lists.getItemCount() > 0);}
@@ -686,9 +686,9 @@ private:
 
 	FILE* m_pImportFile;
 
-	unsigned char *		m_pPasteBuffer;
+	const unsigned char *		m_pPasteBuffer;
 	UT_uint32 			m_lenPasteBuffer;
-	unsigned char *		m_pCurrentCharInPasteBuffer;
+	const unsigned char *		m_pCurrentCharInPasteBuffer;
 	PT_DocPosition		m_dposPaste;
 	UT_uint32		    deflangid;
 	UT_UCS4_mbtowc		m_mbtowc;

@@ -40,19 +40,19 @@ public:
 	bool addPNGData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
 
 	bool getSupportedData(T_AllowGet tFrom,
-			      void ** ppData, UT_uint32 * pLen,
+			      const void ** ppData, UT_uint32 * pLen,
 			      const char **pszFormatFound);
 
 	bool  getTextData(T_AllowGet tFrom,
-			  void ** ppData, UT_uint32 * pLen,
+			  const void ** ppData, UT_uint32 * pLen,
 			  const char **pszFormatFound);
 
 	bool  getRichTextData(T_AllowGet tFrom,
-			      void ** ppData, UT_uint32 * pLen,
+			      const void ** ppData, UT_uint32 * pLen,
 			      const char **pszFormatFound);
 
 	bool getImageData(T_AllowGet tFrom,
-			  void ** ppData, UT_uint32 * pLen,
+			  const void ** ppData, UT_uint32 * pLen,
 			  const char **pszFormatFound);
 
 	static bool isTextTag ( const char * tag ) ;

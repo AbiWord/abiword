@@ -171,7 +171,8 @@ void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp,
       g_object_set_data(G_OBJECT(widget), "pApp",
 					  const_cast<void *>(static_cast<const void *>(pApp)));
       g_signal_connect(G_OBJECT(widget), "focus_in_event",
-					 G_CALLBACK(focus_in_event_ModelessOther), reinterpret_cast<gpointer>(other_function));
+					 G_CALLBACK(focus_in_event_ModelessOther),
+					 (gpointer) other_function); // leave as C-style cast
       g_signal_connect(G_OBJECT(widget), "focus_out_event",
 					 G_CALLBACK(focus_out_event_Modeless), NULL);
       g_signal_connect(G_OBJECT(widget), "destroy",

@@ -7477,7 +7477,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 	{
 		header = (const RTFHdrFtr *)m_hdrFtrTable[i];
 
-		m_pPasteBuffer = (unsigned char *)header->m_buf.getPointer (0);
+		m_pPasteBuffer = reinterpret_cast<const unsigned char *>(header->m_buf.getPointer (0));
 		m_lenPasteBuffer = header->m_buf.getLength ();
 		m_pCurrentCharInPasteBuffer = m_pPasteBuffer;
 		m_dposPaste = FV_DOCPOS_EOD;
@@ -7617,7 +7617,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 //////////////////////////////////////////////////////////////////
 
 void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
-								 unsigned char * pData, UT_uint32 lenData, const char * /* szEncoding */)
+								 const unsigned char * pData, UT_uint32 lenData, const char * /* szEncoding */)
 {
 	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
 	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);

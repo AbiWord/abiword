@@ -183,8 +183,8 @@ static int compareListItems(const void* p1, const void* p2)
 	//
 	//	pf_Frag * pf1 = static_cast<pf_Frag *>(p1);
 	//	PD_Document * pDoc = pf1->getPieceTable()->getDocument();
-	PL_StruxDocHandle * sdh1 = reinterpret_cast<PL_StruxDocHandle *>(p1);
-	PL_StruxDocHandle * sdh2 = reinterpret_cast<PL_StruxDocHandle *>(p2);
+	PL_StruxDocHandle const * sdh1 = reinterpret_cast<PL_StruxDocHandle const *>(p1);
+	PL_StruxDocHandle const * sdh2 = reinterpret_cast<PL_StruxDocHandle const *>(p2);
 	PT_DocPosition pos1 = pCurDoc->getStruxPosition(*sdh1);
 	PT_DocPosition pos2 = pCurDoc->getStruxPosition(*sdh2);
 	if(pos1 < pos2)
@@ -408,7 +408,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	if(place == -1)
 	{
 		//	       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		labelStr[0] = NULL;
+		labelStr[0] = 0;
 		(*insPoint) = 0;
 		return;
 	}
@@ -542,7 +542,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 			labelStr[(*insPoint)++] =  CONV_TO_UCS rightDelim[i];
 		}
 	}
-	labelStr[(*insPoint)] = NULL;
+	labelStr[(*insPoint)] = 0;
 	return;
 }
 
@@ -1299,23 +1299,29 @@ const char ** fl_AutoNum::getAttributes(void)
 	UT_Vector va;
 
 	sprintf(szID, "%i", m_iID);
-	va.addItem( static_cast<void *>("id")); va.addItem( static_cast<void *>(szID));
+	va.addItem( static_cast<const void *>("id"));
+	va.addItem( static_cast<void *>(szID));
 
 	if (m_pParent)
 		sprintf(szPid, "%i", m_pParent->getID());
 	else
 		sprintf(szPid, "0");
-	va.addItem( static_cast<void *>("parentid")); va.addItem( static_cast<void *>(szPid));
+	va.addItem( static_cast<const void *>("parentid"));
+	va.addItem( static_cast<void *>(szPid));
 
 	sprintf(szType, "%i", m_List_Type);
-	va.addItem( static_cast<void *>("type")); va.addItem(szType);
+	va.addItem( static_cast<const void *>("type"));
+	va.addItem( static_cast<void *>(szType));
 
 	sprintf(szStart, "%i", m_iStartValue);
-	va.addItem( static_cast<void *>("start-value")); va.addItem(szStart);
+	va.addItem( static_cast<const void *>("start-value"));
+	va.addItem( static_cast<void *>(szStart));
 
-	va.addItem( static_cast<void *>("list-delim")); va.addItem( static_cast<void *>(m_pszDelim));
+	va.addItem( static_cast<const void *>("list-delim"));
+	va.addItem( static_cast<void *>(m_pszDelim));
 
-	va.addItem( static_cast<void *>("list-decimal")); va.addItem( static_cast<void *>(m_pszDecimal));
+	va.addItem( static_cast<const void *>("list-decimal"));
+	va.addItem( static_cast<void *>(m_pszDecimal));
 
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 i;

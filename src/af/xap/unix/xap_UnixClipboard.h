@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -49,7 +51,7 @@ public:
 
 	void				clearData(bool bClipboard, bool bPrimary);
 	bool				getData(T_AllowGet tFrom, const char** formatList,
-						void ** ppData, UT_uint32 * pLen,
+						const void ** ppData, UT_uint32 * pLen,
 						const char **pszFormatFound);
 
 	bool canPaste(T_AllowGet tFrom);
@@ -61,7 +63,7 @@ public:
  private:
 
 	bool				_getDataFromServer(T_AllowGet tFrom, const char** formatList,
-							   void ** ppData, UT_uint32 * pLen,
+							   const void ** ppData, UT_uint32 * pLen,
 							   const char **pszFormatFound);
 	bool				_getDataFromFakeClipboard(T_AllowGet tFrom, const char** formatList,
 								  void ** ppData, UT_uint32 * pLen,

@@ -53,7 +53,7 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), reinterpret_cast<const UT_ByteBuf **>(&pFG->m_pbbPNG), NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbPNG), NULL, NULL);
 		}
 	}
 
