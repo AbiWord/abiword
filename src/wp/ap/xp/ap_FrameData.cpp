@@ -43,6 +43,7 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
     m_bShowPara = true;
 	m_bInsertMode = true;
 	m_bShowStatusBar = true;
+	m_bIsFullScreen = false;
 
 	if (pApp)
 	{

@@ -108,6 +108,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_STATUSBAR,	0,0,1,	"viewStatus",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,	"viewPara",			ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_HEADFOOT,	0,0,1,	"viewHeadFoot",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_FULLSCREEN, 0,0,1, "viewFullScreen", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,	"dlgZoom",			NULL,					NULL);
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,	NULL,				NULL,					NULL);
@@ -121,6 +122,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	"dlgParagraph",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,	"dlgBullets",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,	"dlgColumns",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_STYLE,		0,1,0,	"dlgStyle",			NULL,					NULL);

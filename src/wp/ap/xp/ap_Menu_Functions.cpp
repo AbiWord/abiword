@@ -651,6 +651,13 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 			s = EV_MIS_ZERO;
 		break;
 
+	case AP_MENU_ID_VIEW_FULLSCREEN:
+	        if ( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

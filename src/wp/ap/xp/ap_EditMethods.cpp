@@ -254,6 +254,7 @@ public:
 	static EV_EditMethod_Fn viewHeadFoot;
 	static EV_EditMethod_Fn zoom;
 	static EV_EditMethod_Fn dlgZoom;
+        static EV_EditMethod_Fn viewFullScreen;
 
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
@@ -557,6 +558,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewHeadFoot),			0,		""),
 	EV_EditMethod(NF(zoom),					0,		""),
 	EV_EditMethod(NF(dlgZoom),				0,		""),
+	EV_EditMethod(NF(viewFullScreen), 0, ""),
 
 	EV_EditMethod(NF(insBreak),				0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
@@ -4527,6 +4529,33 @@ Defun1(viewRuler)
 #endif
 
 	return true;
+}
+
+Defun1(viewFullScreen)
+{
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+  AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+
+  if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
+    {
+      pFrame->toggleBar(0, false);
+      pFrame->toggleBar(1, false);
+      pFrame->toggleBar(2, false);
+      pFrame->toggleStatusBar(false);
+      pFrame->toggleRuler(false);
+      pFrameData->m_bIsFullScreen = true;
+    }
+  else // we're (possibly) unhiding stuff
+    {
+      pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
+      pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
+      pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
+      pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+      pFrame->toggleRuler(pFrameData->m_bShowRuler);      
+      pFrameData->m_bIsFullScreen = false;
+    }
+
+  return true;
 }
 
 Defun1(viewPara)

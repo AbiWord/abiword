@@ -40,13 +40,13 @@ BeginLayout(FileEditOps)
         ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
 
 	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
-	ToolbarItem(AP_TOOLBAR_ID_EDIT_REDO)
-
-	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
+
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_REDO)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_1COLUMN)

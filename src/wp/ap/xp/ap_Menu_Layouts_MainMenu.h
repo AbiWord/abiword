@@ -79,6 +79,7 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
 		MenuItem(AP_MENU_ID_VIEW_HEADFOOT)
+                MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
 		MenuItem(AP_MENU_ID_VIEW_ZOOM)
 	EndSubMenu()
 
@@ -99,6 +100,7 @@ BeginLayout(Main,0)
 #ifdef DEBUG
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 #endif
+                MenuItem(AP_MENU_ID_FMT_DOCUMENT)
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_COLUMNS)
 		MenuItem(AP_MENU_ID_FMT_TABS)
