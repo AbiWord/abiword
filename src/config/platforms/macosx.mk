@@ -88,6 +88,13 @@ endif
 
 LDFLAGS			= -framework Carbon -framework CoreServices \
 				-framework ApplicationServices
+
+# Actually pspell is only available statically, so a the needed support
+# for static linkage.
+ifdef ABI_OPT_PSPELL
+LDFLAGS      += -lpspell-modules -lstdc++
+endif
+
 # Shared library flags
 #MKSHLIB		= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
