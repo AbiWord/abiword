@@ -952,6 +952,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 		if(pContainer->getContainerType() == FP_CONTAINER_TOC)
 		{
 			fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pContainer);
+			xxx_UT_DEBUGMSG(("Draw a TOC getY is %d \n",pContainer->getY()));
 			if(pTOC->isThisBroken())
 				da.xoff = pDA->xoff + pTOC->getMasterTOC()->getX();
 

@@ -698,7 +698,8 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 			}
 			else
 			{
-				pPage = m_pLayout->addNewPage(this);
+				bool bIsFilling = m_pLayout->isLayoutFilling();
+				pPage = m_pLayout->addNewPage(this,bIsFilling);
 			}
 		}
 		else

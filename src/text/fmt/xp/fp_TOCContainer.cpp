@@ -68,6 +68,7 @@ fp_TOCContainer::fp_TOCContainer(fl_SectionLayout* pSectionLayout, fp_TOCContain
 	  m_iBrokenBottom(0),
 	  m_iLastWantedVBreak(0)
 {
+	setY(0);
 }
 
 /*!
@@ -151,39 +152,6 @@ fl_DocSectionLayout * fp_TOCContainer::getDocSectionLayout(void)
  */
 void fp_TOCContainer::draw(GR_Graphics * pG)
 {
-	if(getPage() == NULL)
-	{
-		return;
-	}
-	if(!isThisBroken() && getFirstBrokenTOC())
-	{
-		fp_TOCContainer * pTOC = getFirstBrokenTOC();
-		while(pTOC)
-		{
-			pTOC->draw(pG);
-			pTOC = static_cast<fp_TOCContainer *>(pTOC->getNext());
-		}
-		return;
-	}
-	if(getPage() == NULL)
-	{
-		return;
-	}
-	UT_sint32 xoff,yoff;
-	fp_Column * pCol = static_cast<fp_Column *>(getContainer());
-	if(pCol == NULL)
-	{
-		return;
-	}
-	getPage()->getScreenOffsets(pCol,xoff,yoff);
-	xoff += getX();
-	yoff += getY();
-	dg_DrawArgs da;
-	da.pG = pG;
-	da.xoff = xoff;
-	da.yoff = yoff;
-	da.bDirtyRunsOnly = false;
-	draw(&da);
 }
 /*!
  Draw container content
@@ -205,7 +173,7 @@ void fp_TOCContainer::draw(dg_DrawArgs* pDA)
 	{
 		pMaster = getMasterTOC();
 	}
-	xxx_UT_DEBUGMSG(("TOC: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	xxx_UT_DEBUGMSG(("TOC: Drawing broken TOC %x x %d, y %d width %d height %d \n",this,pDA->xoff,pDA->yoff,getWidth(),getHeight()));
 
 //
 // Only draw the lines in the clipping region.
@@ -565,7 +533,7 @@ void fp_TOCContainer::setY(UT_sint32 i)
 	if(isThisBroken())
 	{
 		xxx_UT_DEBUGMSG(("setY: getMasterTOC %x FirstBrokenTOC %x this %x \n",getMasterTOC(),getMasterTOC()->getFirstBrokenTOC(),this));
-		if(getMasterTOC()->getFirstBrokenTOC() != this)
+		//	if(getMasterTOC()->getFirstBrokenTOC() != this)
 		{
 			xxx_UT_DEBUGMSG(("setY: Later broken TOC set to %d \n",i));
 			fp_VerticalContainer::setY(i);
