@@ -152,7 +152,7 @@
           <cell value="yes"/>
           <cell value="yes"/>
           <cell value="yes"/>
-          <cell value="unknown"><bug id="483"/></cell>
+          <cell value="partially"><bug id="483"/></cell>
           <cell value="unknown"/>
           <cell value="no"/>
         </row>
@@ -339,7 +339,7 @@
           <cell value="yes"/>
           <cell value="yes"/>
           <cell value="yes"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="no"/>
@@ -488,7 +488,7 @@
           <cell value="yes"/>
           <cell value="yes"/>
           <cell value="yes"/>
-          <cell value="partial"><bug id="1323"/></cell>
+          <cell value="partially"><bug id="1323"/></cell>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="no"/>
