@@ -41,6 +41,7 @@ Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
 Brian Marick <marick@rstcorp.com>		
 Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
+James Montgomerie <jamie@montgomerie.net>	ANSI C patrol
 Bruce Pearson <BruceP@wn.com.au>                full justification
 Duncan Rose <d.rose@salford.ac.uk>
 Pierre Sarrazin <ps@cam.org>            
