@@ -119,6 +119,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_iLineWidth = 1;
 	m_currentColor = Pg_BLACK;
 	m_pPrintContext = NULL;
+	m_iAscentCache = m_iDescentCache = -1;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
@@ -158,7 +159,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	DRAW_START
 
-//	printf("Drawing with font [%s] \n", m_pFont->getFont());
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
 	PgFlush();		/* Just to clear out any drawing to be done ... */
@@ -235,17 +235,13 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 
 void GR_QNXGraphics::setFont(GR_Font * pFont)
 {
-	/*
-  	Fonts listed in /usr/photon/font and take
-	the form of face size [style] passed in
-	to PgSetFont(char *font);
-	*/
 	QNXFont *qnxFont = (QNXFont *)pFont;
 	const char *backupfont = { "helv10" };
 	const char *font;
 
 	if (!qnxFont || !(font = qnxFont->getFont())) {
-		fprintf(stderr, "No font found, using helv10 as default \n");
+		UT_DEBUGMSG(("No font found, using helv10 as default"));
+		UT_ASSERT(0);
 		font = backupfont;
 	}
 
@@ -254,25 +250,13 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 		delete(m_pFont);
 	}
 
-	/*
- 	 We need to copy the font here, not just save the pointer
-	 m_pFont = qnxFont;
-	*/
 	m_pFont = new QNXFont(font);
+	m_iAscentCache = m_iDescentCache = -1;
 }
 
 UT_uint32 GR_QNXGraphics::getFontHeight()
 {
-	PhRect_t rect;
-	const char *font;
-
-	if (!m_pFont || !(font = m_pFont->getFont())) {
-		return(0);
-	}
-
-	PfExtentText(&rect, NULL, font, "A", 0);
-	//printf("GR: Height:%d + %d \n", MY_ABS(rect.lr.y), MY_ABS(rect.ul.y));
-	return(MY_ABS(rect.ul.y) + MY_ABS(rect.lr.y) + 1);
+	return getFontAscent() + getFontDescent();
 }
 
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -483,46 +467,42 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 
 UT_uint32 GR_QNXGraphics::getFontAscent()
 {
-	FontQueryInfo info;
-	memset(&info, 0, sizeof(info));
+	if(m_iAscentCache == -1) {
+		FontQueryInfo info;
 
-	if (!m_pFont || !m_pFont->getFont()) {
-		UT_ASSERT(0);
-		return(0);
+		if (!m_pFont || !m_pFont->getFont()) {
+			UT_ASSERT(0);
+			return(0);
+		}
+
+		if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
+			UT_ASSERT(0);
+			return(0);
+		}
+		m_iAscentCache = MY_ABS(info.ascender);
 	}
 
-	if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
-		UT_ASSERT(0);
-		return(0);
-	}
-/*
-	printf("Name: [%s] \n", info.font);
-	printf("Desc: [%s] \n", info.desc);
-	printf("Size: [%d] \n", info.size);
-	printf("Style: [0x%x] \n", info.style);
-	printf("Asc:  [%d] \n", info.ascender);
-	printf("Dsc:  [%d] \n", info.descender);
-	printf("Width: [%d] \n", info.width);
-	printf("Range: [0x%x - 0x%x] \n", info.lochar, info.hichar);
-*/		
-	return(MY_ABS(info.ascender));
+	return m_iAscentCache;
 }
 
 UT_uint32 GR_QNXGraphics::getFontDescent()
 {
-	FontQueryInfo info;
+	if (m_iDescentCache == -1) {
+		FontQueryInfo info;
 
-	if (!m_pFont || !m_pFont->getFont()) {
-		UT_ASSERT(0);
-		return(0);
+		if (!m_pFont || !m_pFont->getFont()) {
+			UT_ASSERT(0);
+			return(0);
+		}
+	
+		if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
+			UT_ASSERT(0);
+			return(0);
+		}
+		m_iDescentCache = MY_ABS(info.descender);
 	}
 
-	if (PfQueryFont(m_pFont->getFont(), &info) == -1) {
-		UT_ASSERT(0);
-		return(0);
-	}
-		
-	return(MY_ABS(info.descender));
+	return m_iDescentCache;
 }
 
 void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -603,8 +583,6 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 		r.lr.x = r.ul.x + pRect->width;
 		r.lr.y = r.ul.y + pRect->height;
 
-		//printf("GR: Set clipping %d,%d %d/%d \n", 
-		//	pRect->left, pRect->top, pRect->width, pRect->height);
 		UT_ASSERT(!m_pClipList);		//Only one item for now	
 	
 		if (m_pClipList || (m_pClipList = PhGetTile())) {
@@ -614,7 +592,6 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	}
 	else
 	{
-		//printf("GR: Clear Clipping \n");
 		if (m_pClipList) {
 			PhFreeTiles(m_pClipList);
 			m_pClipList = NULL;
@@ -633,13 +610,6 @@ void GR_QNXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	PgColor_t newc;
 
 	//Why do we have to do this, why can't the xap code figure it right?
-	//printf("GR Fill Rect %d,%d %d/%d 0x%x\n", x, y, w, h, newc);
-/*
-	if ((w < 0) || (h < 0) || x < 0 || y < 0) {
-		//printf("BAILING on the fill \n");
-		return;
-	}
-*/
 	w = (w < 0) ? -1*w : w;
 	h = (h < 0) ? -1*h : h;
 
@@ -710,16 +680,15 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-//TF NOTE: This is still screwed up ... lots of screen dirt!
-#if 1
 	PhRect_t 	rect, widgetrect;
 	PhPoint_t 	offset;
 
 	PtBasicWidgetCanvas(m_pDraw, &widgetrect);
 
+/*
 	UT_DEBUGMSG(("GR Scroll2 dest:%d,%d src:%d,%d %dx%d ", 
 					x_dest, y_dest, x_src, y_src, width, height));
-
+*/
 	if (width < 0) {
 		UT_ASSERT(0);
 		x_src -= width;
@@ -739,8 +708,10 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	offset.x = x_dest - x_src;
 	offset.y = y_dest - y_src;
 
+/*
 	UT_DEBUGMSG(("GR Scroll2 Before %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+*/
 
 	if (PtRectIntersect(&widgetrect, &rect) == 0) {
 		UT_DEBUGMSG(("No intersection! "));
@@ -754,16 +725,12 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	PtWidgetOffset(m_pDraw, &shift);
 	PtTranslateRect(&rect, &shift);					
 
-//	adjust_rect(&rect, &offset);
-
+/*
 	UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+*/
 
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
-#else
-	//UT_ASSERT(0);
-	UT_DEBUGMSG(("TODO: Implement scrolling"));
-#endif
 }
 
 void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -903,6 +870,8 @@ void GR_QNXGraphics::setCursor(GR_Graphics::Cursor c)
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
 	gdk_window_set_cursor(m_pWin, cursor);
 	gdk_cursor_destroy(cursor);
+#else
+	UT_DEBUGMSG(("TODO: Set the cursor type "));
 #endif
 }
 

@@ -127,11 +127,10 @@ class GR_QNXGraphics : public GR_Graphics
 	QNXFont * 			m_pFontGUI;
   
 	void*  				m_pColormap;
-	int					m_aCharWidths[256];
-	int          		m_iWindowHeight, m_iWindowWidth;
 	UT_sint32			m_iLineWidth;
-	GR_Graphics::Cursor		m_cursor;
+	UT_sint32			m_iAscentCache, m_iDescentCache;
 
+	GR_Graphics::Cursor		m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
 	
 	PgColor_t			m_currentColor;
