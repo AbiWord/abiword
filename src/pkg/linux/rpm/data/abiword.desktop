@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=AbiWord
-Name[da]=AbiWord
-Comment=AbiWord Wordprocessor
-Comment[da]=AbiWord tekstbehandlingsprogram
-Exec=abiword
-Icon=abiword_48.png
-Terminal=0
-Type=Application

@@ -1,6 +1,0 @@
-TTF to Type 42 encoder
-**********************
-
-This utility reads a TrueType font file and produces a Type 42 font in
-PFA format. It was modified from the original ttfps programme by J.
-Chroboczek <jch@pps.jussieu.fr>
