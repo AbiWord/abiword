@@ -122,7 +122,11 @@ _isCurrentAbiVersion(int a, int b, int c)
 }
 #endif /* ! ABI_PLUGIN_SOURCE */
 
+#ifdef ABI_PLUGIN_SOURCE
+#define ABI_VERSION_STRING ABI_PLUGIN_VERSION
+#else
 #define ABI_VERSION_STRING ABI_BUILD_VERSION
+#endif
 #define isCurrentAbiVersion(a,b,c) _isCurrentAbiVersion(a, b, c)
 
 #endif /* XAP_MODULE_H */
