@@ -26,10 +26,12 @@
 PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
 														 PT_DocPosition position,
 														 PT_AttrPropIndex indexOldAP,
-														 PT_AttrPropIndex indexNewAP)
+														 PT_AttrPropIndex indexNewAP,
+														 PTStruxType pts)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
 	m_indexOldAP = indexOldAP;
+	m_pts = pts;
 }
 
 PX_ChangeRecord_StruxChange::~PX_ChangeRecord_StruxChange()
@@ -41,7 +43,7 @@ PX_ChangeRecord * PX_ChangeRecord_StruxChange::reverse(void) const
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(getRevType(),
 										  m_position,
-										  m_indexAP,m_indexOldAP);
+										  m_indexAP,m_indexOldAP,m_pts);
 	UT_ASSERT(pcr);
 	return pcr;
 }

@@ -180,6 +180,8 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 												 const XML_Char ** properties)
 {
 	PT_AttrPropIndex indexNewAP;
+	PTStruxType pts = pfs->getStruxType();
+
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
@@ -199,7 +201,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
-										  indexOldAP,indexNewAP);
+										  indexOldAP,indexNewAP,pts);
 	UT_ASSERT(pcr);
 
 	bool bResult;
@@ -220,6 +222,8 @@ bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
 									   const char * pszParentID)
 {
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	PTStruxType pts = pfs->getStruxType();
+
 	const char * attributes[3] = {PT_PARENTID_ATTRIBUTE_NAME,pszParentID,NULL};
 
 	PT_AttrPropIndex indexNewAP;
@@ -242,7 +246,7 @@ bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
-										  indexOldAP,indexNewAP);
+										  indexOldAP,indexNewAP,pts);
 	UT_ASSERT(pcr);
 
 	bool bResult;

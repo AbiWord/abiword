@@ -128,7 +128,7 @@ void fl_TableLayout::createTableContainer(void)
 	_lookupProperties();
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
-		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		xxx_UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
 		return;
 	}
 
@@ -226,7 +226,11 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	fp_Container * pUpCon = NULL;
 	if(pPrevL != NULL)
 	{
-		while(pPrevL && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE) || pPrevL->getContainerType() == FL_CONTAINER_ENDNOTE))
+		while(pPrevL && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+          || (pPrevL->getContainerType() == FL_CONTAINER_ENDNOTE)||
+		  (pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||
+		  (pPrevL->isHidden() == FP_HIDDEN_FOLDED) ||
+          (pPrevL->getLastContainer() == NULL)))
 		{
 			pPrevL = pPrevL->getPrev();
 		}
@@ -255,7 +259,14 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 			else
 			{
 				pPrevCon = pPrevL->getLastContainer();
-				pUpCon = pPrevCon->getContainer();
+				if(pPrevCon)
+				{
+					pUpCon = pPrevCon->getContainer();
+				}
+				else
+				{
+					pPrevL = NULL;
+				}
 			}
 		}
 		else
@@ -305,7 +316,7 @@ void fl_TableLayout::format(void)
 	}
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
-		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		xxx_UT_DEBUGMSG(("Don't format TABLE coz I'm hidden! \n"));
 		return;
 	}
 	m_bRecursiveFormat = true;
@@ -461,7 +472,7 @@ void fl_TableLayout::redrawUpdate(void)
 		xxx_UT_DEBUGMSG(("redrawupdate table no redraw needed! \n"));
 		return;
 	}
- 	UT_DEBUGMSG(("Doing Redraw update in Table layout %x \n",this));
+ 	xxx_UT_DEBUGMSG(("Doing Redraw update in Table layout %x \n",this));
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -493,8 +504,10 @@ bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	{
 		UT_ASSERT(getNext()->getPrev() == this);
 	}
-
-	setAttrPropIndex(pcrxc->getIndexAP());
+	if(pcrxc->getStruxType() == PTX_SectionTable)
+	{
+		setAttrPropIndex(pcrxc->getIndexAP());
+	}
 	collapse();
 	updateTable();
 	xxx_UT_DEBUGMSG(("SEVIOR: getNext() %x getPrev() %x \n",getNext(),getPrev()));
@@ -736,11 +749,16 @@ void fl_TableLayout::_lookupProperties(void)
 {
 
 //  Find the folded Level of the strux
-
+	bool bFolded = (isHidden() == FP_HIDDEN_FOLDED);
 	lookupFoldedLevel();
 	if(getFoldedLevel()>0)
 	{
+		xxx_UT_DEBUGMSG(("Table set to hidden folded \n"));
 		setVisibility(FP_HIDDEN_FOLDED);
+	}
+	else
+	{
+		setVisibility(FP_VISIBLE);
 	}
 	const PP_AttrProp* pSectionAP = NULL;
 
@@ -949,7 +967,7 @@ void fl_TableLayout::_lookupProperties(void)
    As new properties for each column are defined these will be delineated with "_"
    characters. But we'll cross that bridge later.
 */
-		UT_DEBUGMSG(("Processing Column width string %s \n",pszColumnProps));
+		xxx_UT_DEBUGMSG(("Processing Column width string %s \n",pszColumnProps));
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
 		m_vecColProps.clear();
 		UT_String sProps = pszColumnProps;
@@ -1039,7 +1057,7 @@ void fl_TableLayout::_lookupProperties(void)
    if there are not enough heights defined for the entire table then the 
    rows after the last defined height do not a fixed height.
 */
-		UT_DEBUGMSG(("Processing Row Height string %s \n",pszRowHeights));
+		xxx_UT_DEBUGMSG(("Processing Row Height string %s \n",pszRowHeights));
 		UT_String sProps = pszRowHeights;
 		UT_sint32 sizes = sProps.size();
 		UT_sint32 i =0;
@@ -1285,6 +1303,11 @@ void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getLastContainer());
 	UT_ASSERT(pTab);
+	if(pCell->getLastContainer() == NULL)
+	{
+		setDirty();
+		return;
+	}
 	pTab->tableAttach(static_cast<fp_CellContainer *>(pCell->getLastContainer()));
 	setDirty();
 }
@@ -1358,7 +1381,7 @@ void fl_CellLayout::createCellContainer(void)
 	_lookupProperties();
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
-		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		xxx_UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
 		return;
 	}
 
@@ -1622,10 +1645,9 @@ fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
 
 void fl_CellLayout::format(void)
 {
-	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
-		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		UT_DEBUGMSG(("Don't format CELL coz I'm hidden! \n"));
 		return;
 	}
 	if(getFirstContainer() == NULL)
@@ -1646,6 +1668,10 @@ void fl_CellLayout::format(void)
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
+		if(iOldHeight <= 0)
+		{
+			pBL->setNeedsReformat(0);
+		}
 		pBL->format();
 		UT_sint32 count = 0;
 		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
@@ -1732,8 +1758,10 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
-
-	setAttrPropIndex(pcrxc->getIndexAP());
+	if(pcrxc->getStruxType() == PTX_SectionCell)
+	{
+		setAttrPropIndex(pcrxc->getIndexAP());
+	}
 //	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
 	collapse();
 //	pTL->collapse();
@@ -1797,10 +1825,24 @@ void fl_CellLayout::_lookupProperties(void)
 //  Find the folded Level of the strux
 
 	lookupFoldedLevel();
+	bool bFolded = (isHidden() == FP_HIDDEN_FOLDED);
 	if(getFoldedLevel()>0)
 	{
 		setVisibility(FP_HIDDEN_FOLDED);
 	}
+	else
+	{
+		setVisibility(FP_VISIBLE);
+	}
+	if(bFolded && (isHidden() != FP_HIDDEN_FOLDED))
+	{
+		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
+		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
+		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!! Unfold CELL Now !!!!!!!!!!!\n"));
+		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
+		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
+	}
+
 	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);

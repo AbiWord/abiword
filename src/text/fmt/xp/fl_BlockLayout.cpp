@@ -1921,7 +1921,7 @@ void fl_BlockLayout::format()
 {
 	if((isHidden() >= FP_HIDDEN_FOLDED) || (m_pSectionLayout->isHidden() >= FP_HIDDEN_FOLDED))
 	{
-		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		xxx_UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
 		return;
 	}
 	bool bJustifyStuff = false;
@@ -5071,7 +5071,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		}
 		// TODO: do we need to call lookupProperties for other run types.
 		fp_Line * pLine = pRun->getLine();
-		if(vecLines.findItem(reinterpret_cast<void *>(pLine)) < 0)
+		if((pLine!= NULL) && (vecLines.findItem(reinterpret_cast<void *>(pLine)) < 0))
 		{
 			vecLines.addItem(reinterpret_cast<void *>(pLine));
 		}

@@ -23,6 +23,7 @@
 
 #include "ut_types.h"
 #include "px_ChangeRecord.h"
+#include "pt_Types.h"
 
 // PX_ChangeRecord_StruxChange describes a PXT_ChangeStrux
 // made to the document (a formatting change).
@@ -46,14 +47,17 @@ public:
 	PX_ChangeRecord_StruxChange(PXType type,
 								PT_DocPosition position,
 								PT_AttrPropIndex indexOldAP,
-								PT_AttrPropIndex indexNewAP);
+								PT_AttrPropIndex indexNewAP,
+									PTStruxType pts);
 	~PX_ChangeRecord_StruxChange();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	PT_AttrPropIndex		getOldIndexAP(void) const;
-	
+	PTStruxType             getStruxType(void) const
+		{ return m_pts;}
 protected:
 	PT_AttrPropIndex		m_indexOldAP;
+	PTStruxType             m_pts;
 };
 
 #endif /* PX_CHANGERECORD_STRUXCHANGE_H */
