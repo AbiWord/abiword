@@ -2002,7 +2002,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		if (error != UT_OK || !pFG) 
 		{
 			UT_DEBUGMSG(("Error parsing embedded PNG\n"));
-			delete pictData;
+			// Memory for pictData was destroyed if not properly loaded.
 			return false;
 		}
 		
