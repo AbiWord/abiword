@@ -68,10 +68,13 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GList *					_getGlistFonts (void);
 	void					_fillFontMenu(GtkWidget* menu);
 
-	GtkWidget *				m_wMainWindow;
+	inline GtkWidget *		_getCloseButton(void) { return m_wClose; }
+	inline GtkWidget *		_getApplyButton(void) { return m_wApply; }
+	inline GtkWidget *		_getMainWindow(void) { return m_wMainWindow; }
 
-	GtkWidget * m_wApply;
-	GtkWidget * m_wClose;
+	inline void				_setCloseButton(GtkWidget *w) { m_wClose = w; }
+	inline void				_setApplyButton(GtkWidget *w) { m_wApply = w; }
+	inline void				_setMainWindow(GtkWidget *w) { m_wMainWindow = w; }
 
  private:
 	GList *					m_glFonts;
@@ -83,6 +86,10 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	UT_Bool					m_bisCustomFrameHidden;
 	UT_Timer *				m_pAutoUpdateLists;
 
+	GtkWidget *				m_wMainWindow;
+
+	GtkWidget * m_wApply;
+	GtkWidget * m_wClose;
 	GtkWidget * m_wContents;
 	GtkWidget * m_wStartNewList;
 	GtkWidget * m_wApplyCurrent;

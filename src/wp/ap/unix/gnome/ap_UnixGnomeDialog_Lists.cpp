@@ -35,15 +35,15 @@
 
 /*****************************************************************/
 XAP_Dialog * AP_UnixGnomeDialog_Lists::static_constructor(XAP_DialogFactory * pFactory, 
-							  XAP_Dialog_Id id)
+														  XAP_Dialog_Id id)
 {
 	AP_UnixGnomeDialog_Lists * p = new AP_UnixGnomeDialog_Lists(pFactory,id);
 	return p;
 }
 
 AP_UnixGnomeDialog_Lists::AP_UnixGnomeDialog_Lists(XAP_DialogFactory * pDlgFactory,
-						   XAP_Dialog_Id id)
-  : AP_UnixDialog_Lists(pDlgFactory, id)
+												   XAP_Dialog_Id id)
+	: AP_UnixDialog_Lists(pDlgFactory, id)
 {
 }
 
@@ -53,26 +53,33 @@ AP_UnixGnomeDialog_Lists::~AP_UnixGnomeDialog_Lists(void)
 
 GtkWidget * AP_UnixGnomeDialog_Lists::_constructWindow(void)
 {
-	ConstructWindowName();
-	m_wMainWindow = gnome_dialog_new (m_WindowName, NULL);
+	GtkWidget *wMainWindow;
+	GtkWidget *wClose;
+	GtkWidget *wApply;
 
-	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (m_wMainWindow)->vbox),
-			    _constructWindowContents (), TRUE, TRUE, 0);
+	ConstructWindowName();
+	wMainWindow = gnome_dialog_new (m_WindowName, NULL);
+	_setMainWindow(wMainWindow);
+
+	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (wMainWindow)->vbox),
+						_constructWindowContents (), TRUE, TRUE, 0);
 
 	// apply button
-	gnome_dialog_append_button(GNOME_DIALOG(m_wMainWindow), 
-				   GNOME_STOCK_BUTTON_APPLY);
-	m_wApply = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_wMainWindow)->buttons)->data);
-        gtk_widget_show (m_wApply);
+	gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
+							   GNOME_STOCK_BUTTON_APPLY);
+	wApply = GTK_WIDGET (g_list_last (GNOME_DIALOG (wMainWindow)->buttons)->data);
+	gtk_widget_show (wApply);
+	_setApplyButton(wApply);
 
 	// close button
-	gnome_dialog_append_button(GNOME_DIALOG(m_wMainWindow), 
-				   GNOME_STOCK_BUTTON_CLOSE);
-	m_wClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_wMainWindow)->buttons)->data);
-        gtk_widget_show (m_wClose);
+	gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
+							   GNOME_STOCK_BUTTON_CLOSE);
+	wClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (wMainWindow)->buttons)->data);
+	gtk_widget_show (wClose);
+	_setCloseButton(wApply);
 
-	//gtk_widget_show_all(m_wMainWindow);
+	//gtk_widget_show_all(wMainWindow);
 	_connectSignals();
 
-	return (m_wMainWindow);
+	return (wMainWindow);
 }
