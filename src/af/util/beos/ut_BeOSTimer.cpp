@@ -22,6 +22,17 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include <stdio.h>
+#include <OS.h>
+
+/*
+ TF Note:
+  I'm not sure that this class actually behaves the
+  way that it is intended.  I'm trying to reduce the
+  amount of extra calls, and that seems to happen
+  when I kill the thread in the stop() call, which
+  seems right since the start() call will actually
+  create a new thread.
+*/
 
 /*****************************************************************/
 	
@@ -29,7 +40,6 @@ UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, 
 {
 	UT_ASSERT(pCallback);
 	UT_BEOSTimer * p = new UT_BEOSTimer(pCallback, pData);
-
 	return p;
 }
 
@@ -37,6 +47,7 @@ UT_BEOSTimer::UT_BEOSTimer(UT_TimerCallback pCallback, void* pData)
 {
 	setCallback(pCallback);
 	setInstanceData(pData);
+	setIdentifier(-1);  
 	m_bStarted = UT_FALSE;
 	m_iMilliseconds = 0;
 }
@@ -44,19 +55,22 @@ UT_BEOSTimer::UT_BEOSTimer(UT_TimerCallback pCallback, void* pData)
 UT_BEOSTimer::~UT_BEOSTimer()
 {
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer destructor\n"));
-
 	stop();
 }
 
 /*****************************************************************/
 
-static int _Timer_Proc(void *p)
+static int32 _Timer_Proc(void *p)
 {
 	UT_BEOSTimer* pTimer = (UT_BEOSTimer*) p;
 	UT_ASSERT(pTimer);
 
+	/*
+	 Sleep for the desired amount of time (micro seconds) 
+	 then fire off the event.
+	*/
+	snooze(pTimer->m_iMilliseconds * 1000);
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer fire\n"));
-	
 	pTimer->fire();
 
 	/*
@@ -64,8 +78,14 @@ static int _Timer_Proc(void *p)
 	  timer was designed to emulate the semantics of Win32 timers,
 	  which continually fire until they are killed.
 	*/
-
 	pTimer->resetIfStarted();
+
+	/* 
+	 This seems like a waste, we should just stay cycling in a 
+	 loop within this thread waiting to either be killed or
+ 	 stopped, rather than spawn off a new thread all the time.
+	 Use this temporarily until we determine a new course of action
+ 	*/
 	return 0;
 }
 
@@ -84,21 +104,17 @@ UT_sint32 UT_BEOSTimer::set(UT_uint32 iMilliseconds)
 	  routine requires a C callback.  That callback, when it is called,
 	  must look up the UT_Timer object which corresponds to it, and
 	  call its fire() method.  See ut_Win32Timer.cpp for an example
-	  of how it's done on Windows.  We're hoping that something similar will work
-	  for other platforms.
+	  of how it's done on Windows.  We're hoping that something similar 
+	  will work for other platforms.
 	*/
-
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer set %d ms\n", iMilliseconds));
-
-/*
-	UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
-	setIdentifier(idTimer);
-*/
-	setIdentifier(0);
-	
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
-
+	//UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
+	thread_id idTimer = spawn_thread(_Timer_Proc, "Timer", 
+					 B_NORMAL_PRIORITY, this);
+	setIdentifier(idTimer);
+	resume_thread(idTimer);
 	return 0;
 }
 
@@ -106,22 +122,19 @@ void UT_BEOSTimer::stop(void)
 {
 	// stop the delivery of timer events.
 	// stop the OS timer from firing, but do not delete the class.
-
-/*
-	if (m_bStarted)
-		gtk_timeout_remove(getIdentifier());
-*/
+	//Should I just kill that thread here?
 	m_bStarted = UT_FALSE;
-
-	UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
+	thread_id id;
+	if ((id = getIdentifier()) == -1) {
+		UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
+		kill_thread(id); 
+	}
 }
 
 void UT_BEOSTimer::start(void)
 {
 	// resume the delivery of events.
-
 	UT_ASSERT(m_iMilliseconds > 0);
-	
 	if (!m_bStarted)
 		set(m_iMilliseconds);
 }

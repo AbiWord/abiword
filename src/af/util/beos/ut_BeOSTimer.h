@@ -35,7 +35,6 @@ public:
 	virtual void start(void);
 	virtual void resetIfStarted(void);
 	
-protected:
 	UT_sint32 m_iMilliseconds;
 	UT_Bool m_bStarted;
 };
