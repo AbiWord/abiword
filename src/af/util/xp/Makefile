@@ -38,6 +38,7 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_mbtowc.cpp		\
 		ut_misc.cpp		\
 		ut_png.cpp		\
+		ut_locale.cpp		\
 		ut_svg.cpp		\
 		ut_xml.cpp		\
 		ut_spi.cpp		\

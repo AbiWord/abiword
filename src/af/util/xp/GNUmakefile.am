@@ -57,6 +57,7 @@ libUtil_xp_a_SOURCES=\
 	ut_mbtowc.cpp		\
 	ut_misc.cpp		\
 	ut_mutex.cpp		\
+	ut_locale.cpp		\
 	ut_png.cpp		\
 	ut_svg.cpp		\
 	ut_rbtree.cpp		\

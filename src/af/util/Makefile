@@ -93,6 +93,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_mbtowc.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_locale.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_svg.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_rbtree.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_map.$(OBJ_SUFFIX)		\

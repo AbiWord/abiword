@@ -180,6 +180,22 @@ void UT_String::swap(UT_String& rhs)
 // End of class members, start of free functions
 //////////////////////////////////////////////////////////////////
 
+size_t UT_String_findCh(const UT_String &st, char ch)
+{
+  for (size_t i = 0 ; i < st.size(); i++)
+    if (st[i] == ch)
+      return i;
+  return (size_t)-1;
+}
+
+size_t UT_String_findRCh(const UT_String &st, char ch)
+{
+  for (size_t i = st.size() ; i > 0; i--)
+    if (st[i] == ch)
+      return i;
+  return (size_t)-1;
+}
+
 static UT_uint32
 UT_printf_string_upper_bound (const char* format,
 			      va_list      args)

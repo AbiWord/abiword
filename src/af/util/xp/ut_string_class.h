@@ -96,6 +96,9 @@ ABI_EXPORT bool operator<(const UT_String& s1, const UT_String& s2);
 
 ABI_EXPORT UT_String operator+(const UT_String& s1, const UT_String& s2);
 
+ABI_EXPORT size_t UT_String_findCh(const UT_String &st, char ch);
+ABI_EXPORT size_t UT_String_findRCh(const UT_String &st, char ch);
+
 /****************************************************************************/
 
 /*!
