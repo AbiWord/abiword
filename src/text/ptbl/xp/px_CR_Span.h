@@ -19,11 +19,9 @@
 //
 // m_position contains the absolute document position of
 // the text span at the time the change was made.
-// m_vsIndex,m_offset,m_length describe the actual contents
-// of the text span.  Note that we do not include formatting
-// information in this change record -- it is assumed that
-// the text span will receive the same attributes/properties
-// as the surrounding text.
+// m_bufIndex,m_length describe the actual contents
+// of the text span.
+
 
 class PX_ChangeRecord_Span : public PX_ChangeRecord
 {
@@ -32,18 +30,17 @@ public:
 						 UT_Bool bMultiStepStart,
 						 UT_Bool bMultiStepEnd,
 						 PT_DocPosition position,
-						 PT_VarSetIndex vsIndex,
 						 UT_Bool bLeftSide,
 						 PT_AttrPropIndex indexAP,
-						 pt_BufPosition offset,
+						 PT_BufIndex bufIndex,
 						 UT_uint32 length);
 	~PX_ChangeRecord_Span();
 
 	UT_uint32				getLength(void) const;
 	
 protected:
-	pt_BufPosition			m_offset;	/* location of our text in the VS[].m_buffer */
-	UT_uint32				m_length;	/* length of our text in that buffer */
+	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
+	UT_uint32				m_length;	/* length of our text */
 };
 
 #endif /* PX_CHANGERECORD_SPAN_H */

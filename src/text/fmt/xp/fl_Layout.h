@@ -45,14 +45,13 @@ public:
 	~fl_Layout();
 
 	PTStruxType			getType(void) const;
-	void				setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex);
+	void				setAttrPropIndex(PT_AttrPropIndex apIndex);
 	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
 	UT_Bool				getSpanAttrProp(UT_uint32 offset, const PP_AttrProp ** ppAP) const;
 	
 protected:
 	PTStruxType				m_type;
 	PL_StruxDocHandle		m_sdh;
-	PT_VarSetIndex			m_vsIndex;
 	PT_AttrPropIndex		m_apIndex;
 
 	PD_Document *			m_pDoc;		// set by child

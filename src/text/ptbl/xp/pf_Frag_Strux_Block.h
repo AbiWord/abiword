@@ -13,7 +13,6 @@ class pf_Frag_Strux_Block : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_Block(pt_PieceTable * pPT,
-						PT_VarSetIndex vsIndex,
 						PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_Block();
 

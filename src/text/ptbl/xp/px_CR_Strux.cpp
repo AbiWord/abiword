@@ -7,11 +7,10 @@ PX_ChangeRecord_Strux::PX_ChangeRecord_Strux(PXType type,
 											 UT_Bool bMultiStepStart,
 											 UT_Bool bMultiStepEnd,
 											 PT_DocPosition position,
-											 PT_VarSetIndex vsIndex,
 											 UT_Bool bLeftSide,
 											 PT_AttrPropIndex indexAP,
 											 PTStruxType struxType)
-	: PX_ChangeRecord(type, bMultiStepStart, bMultiStepEnd, position, vsIndex, bLeftSide, indexAP)
+	: PX_ChangeRecord(type, bMultiStepStart, bMultiStepEnd, position, bLeftSide, indexAP)
 {
 	m_struxType = struxType;
 }

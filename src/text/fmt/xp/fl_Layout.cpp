@@ -35,7 +35,6 @@ fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh)
 
 	m_type = type;
 	m_sdh = sdh;
-	m_vsIndex = 0;
 	m_apIndex = 0;
 
 	m_pDoc = NULL;		// set by child
@@ -50,15 +49,14 @@ PTStruxType	fl_Layout::getType(void) const
 	return m_type;
 }
 
-void fl_Layout::setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex)
+void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 {
-	m_vsIndex = vsIndex;
 	m_apIndex = apIndex;
 }
 
 UT_Bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP) const
 {
-	return m_pDoc->getAttrProp(m_vsIndex,m_apIndex,ppAP);
+	return m_pDoc->getAttrProp(m_apIndex,ppAP);
 }
 
 UT_Bool fl_Layout::getSpanAttrProp(UT_uint32 offset, const PP_AttrProp ** ppAP) const

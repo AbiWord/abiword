@@ -15,7 +15,6 @@ class pf_Frag_Strux_ColumnSet : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_ColumnSet(pt_PieceTable * pPT,
-							PT_VarSetIndex vsIndex,
 							PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_ColumnSet();
 	

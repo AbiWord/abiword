@@ -65,7 +65,7 @@ UT_Bool FL_ColumnLayout::getNewColumn(UT_uint32 iWidthGiven, UT_uint32 iHeightGi
 
 	const PP_AttrProp * pAP = NULL;
 
-	bResult = pDoc->getAttrProp(m_vsIndex,m_apIndex,&pAP);
+	bResult = pDoc->getAttrProp(m_apIndex,&pAP);
 	UT_ASSERT(bResult && pAP);
 
 	const XML_Char * szValueType;

@@ -55,7 +55,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 		return UT_FALSE;
 	}
 
-	m_pPieceTable->setPieceTableState(pt_PieceTable::PTS_Loading);
+	m_pPieceTable->setPieceTableState(PTS_Loading);
 	ies = pie->importFile(szFilename);
 	delete pie;
 
@@ -72,7 +72,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 		return UT_FALSE;
 	}
 	
-	m_pPieceTable->setPieceTableState(pt_PieceTable::PTS_Editing);
+	m_pPieceTable->setPieceTableState(PTS_Editing);
 	setClean();							// mark the document as not-dirty
 	return UT_TRUE;
 }
@@ -86,7 +86,7 @@ UT_Bool PD_Document::newDocument(void)
 		return UT_FALSE;
 	}
 
-	m_pPieceTable->setPieceTableState(pt_PieceTable::PTS_Loading);
+	m_pPieceTable->setPieceTableState(PTS_Loading);
 
 #if 1
 	// add just enough structure to empty document so we can edit
@@ -115,7 +115,7 @@ UT_Bool PD_Document::newDocument(void)
 	appendSpan(&space,1);
 #endif
 
-	m_pPieceTable->setPieceTableState(pt_PieceTable::PTS_Editing);
+	m_pPieceTable->setPieceTableState(PTS_Editing);
 	setClean();							// mark the document as not-dirty
 	return UT_TRUE;
 }
@@ -285,10 +285,9 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, PX_ChangeRecord * pcr)
 	return UT_TRUE;
 }
 
-UT_Bool PD_Document::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
-								 const PP_AttrProp ** ppAP) const
+UT_Bool PD_Document::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
-	return m_pPieceTable->getAttrProp(vsIndex,indexAP,ppAP);
+	return m_pPieceTable->getAttrProp(indexAP,ppAP);
 }
 
 UT_Bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,

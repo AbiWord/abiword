@@ -23,9 +23,10 @@
 
 pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 {
-	setPieceTableState(PTS_Invalid);
-	m_vsIndex = 0;
 	m_pDocument = pDocument;
+
+	setPieceTableState(PTS_Loading);
+	loading.m_indexCurrentInlineAP = 0;
 }
 
 pt_PieceTable::~pt_PieceTable()
@@ -34,36 +35,102 @@ pt_PieceTable::~pt_PieceTable()
 
 void pt_PieceTable::setPieceTableState(PTState pts)
 {
-	UT_uint32 k;
-	PT_AttrPropIndex ndx;
+	UT_ASSERT(pts >= m_pts);
 	
 	m_pts = pts;
-
-	switch (m_pts)
-	{
-	case PTS_Loading:
-		for (k=0; k<NrElements(m_vs); k++)					// create a default A/P
-			if (!m_vs[k].m_tableAttrProp.createAP(&ndx))	// as entry zero in the
-				return;										// AP table in each VarSet.
-		loading.m_indexCurrentInlineAP = 0;
-		break;
-
-	case PTS_Editing:
-		m_vsIndex = 1;
-		break;
-
-	case PTS_Invalid:
-		break;
-	}
+	m_varset.setPieceTableState(pts);
 }
 
-UT_GrowBuf * pt_PieceTable::getBuffer(PT_VarSetIndex vsIndex)
+UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
+								   PT_BufIndex bi,
+								   UT_Bool bLeftSide,
+								   PT_BlockOffset fragOffset,
+								   UT_uint32 length)
 {
-	UT_ASSERT(vsIndex < NrElements(m_vs));
-	
-	return &m_vs[vsIndex].m_buffer;
-}
+	// update the fragment and/or the fragment list.
+	// return true if successful.
 
+	UT_uint32 fragLen = pft->getLength();
+	
+	// see if the character data is contiguous with the
+	// fragment we found (very likely during data entry).
+
+	if (bLeftSide)
+	{
+		// if we are on the left side of the doc position, we
+		// received a fragment for which the doc position is
+		// either in the middle of or at the right end of.
+		
+		if (   (fragOffset == fragLen)
+			&& (m_varset.isContiguous(pft->getBufIndex(),fragLen,bi)))
+		{
+			// we are at the right end of it and the actual data is contiguous.
+			// new text is contiguous, we just update the length of this fragment.
+
+			pft->changeLength(fragLen+length);
+			return UT_TRUE;
+		}
+	}
+
+	if (!bLeftSide)
+	{
+		// if we are on the right side of the doc position,
+		// we received a fragment for which the doc position is
+		// either in the middle of or at the left end of.
+		
+		if (   (fragOffset == 0)
+			&& (m_varset.isContiguous(bi,length,pft->getBufIndex())))
+		{
+			// we are at the left end of it and the actual data is contiguous.
+			// new text is contiguous, we just update the offset and length of
+			// of this fragment.
+
+			pft->adjustOffsetLength(bi,length+fragLen);
+			return UT_TRUE;
+		}
+	}
+	
+	// new text is not contiguous, we need to insert one or two new text
+	// fragment(s) into the list.  first we construct a new text fragment
+	// for the data that we inserted.
+
+	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,pft->getIndexAP());
+	if (!pftNew)
+		return UT_FALSE;
+
+	if (fragOffset == 0)
+	{
+		// if change is at the beginning of the fragment, we insert a
+		// single new text fragment before the one we found.
+
+		m_fragments.insertFrag(pft->getPrev(),pftNew);
+		return UT_TRUE;
+	}
+
+	if (fragLen==fragOffset)
+	{
+		// if the change is after this fragment, we insert a single
+		// new text fragment after the one we found.
+
+		m_fragments.insertFrag(pft,pftNew);
+		return UT_TRUE;
+	}
+
+	// if the change is in the middle of the fragment, we construct
+	// a second new text fragment for the portion after the insert.
+
+	UT_uint32 lenTail = pft->getLength() - fragOffset;
+	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
+	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
+	if (!pftTail)
+		return UT_FALSE;
+			
+	pft->changeLength(fragOffset);
+	m_fragments.insertFrag(pft,pftNew);
+	m_fragments.insertFrag(pftNew,pftTail);
+	
+	return UT_TRUE;
+}
 
 UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 								  UT_Bool bLeftSide,
@@ -76,81 +143,35 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	// append the text data to the end of the current buffer.
 
-	VarSet * pvs = &m_vs[m_vsIndex];
-	pt_BufPosition bufOffset = pvs->m_buffer.getLength();
-	if (!pvs->m_buffer.ins(bufOffset,p,length))
+	PT_BufIndex bi;
+	if (!m_varset.appendBuf(p,length,&bi))
 		return UT_FALSE;
 
+	// get the fragment at the given document position.
+	
 	pf_Frag_Strux * pfs = NULL;
 	pf_Frag_Text * pft = NULL;
 	PT_BlockOffset fragOffset = 0;
 	if (!getTextFragFromPosition(dpos,bLeftSide,&pfs,&pft,&fragOffset))
 		return UT_FALSE;
 
-	// see if the character data is contiguous with the
-	// fragment we found (very likely during data entry).
+	if (!_insertSpan(pft,bi,bLeftSide,fragOffset,length))
+		return UT_FALSE;
 
-	UT_uint32 fragLen = pft->getLength();
+	// create a change record, add it to the history, and notify
+	// anyone listening.
 	
-	if (   (fragOffset == fragLen)						// at right-end of fragment
-		&& (m_vsIndex == pft->getVSindex())				// in the same buffer
-		&& (pft->getOffset()+fragLen == bufOffset))		// contiguous in buffer
-	{
-		// new text is contiguous, we just update the length of this fragment.
-
-		pft->changeLength(fragLen+length);
-	}
-	else
-	{
-		// new text is not contiguous, we need to insert one or two new text
-		// fragment(s) into the list.  first we construct a new text fragment
-		// for the data that we inserted.
-
-		pf_Frag_Text * pftNew = new pf_Frag_Text(this,m_vsIndex,bufOffset,length,pft->getIndexAP());
-		if (!pftNew)
-			return UT_FALSE;
-
-		
-		if (fragOffset == 0)
-		{
-			// if change is at the beginning of the fragment, we insert a
-			// single new text fragment before the one we found.
-
-			m_fragments.insertFrag(pft->getPrev(),pftNew);
-		}
-		else if (fragLen==fragOffset)
-		{
-			// if the change is after this fragment, we insert a single
-			// new text fragment after the one we found.
-
-			m_fragments.insertFrag(pft,pftNew);
-		}
-		else
-		{
-			// if the change is in the middle of the fragment, we construct
-			// a second new text fragment for the portion after the insert.
-
-			pf_Frag_Text * pftTail = new pf_Frag_Text(this,pft->getVSindex(),pft->getOffset()+fragOffset,
-													  fragLen-fragOffset,pft->getIndexAP());
-			if (!pftTail)
-				return UT_FALSE;
-			
-			pft->changeLength(fragOffset);
-			m_fragments.insertFrag(pft,pftNew);
-			m_fragments.insertFrag(pftNew,pftTail);
-		}
-	}
-
-	// now we notify all listeners who have subscribed.
-	
-	PX_ChangeRecord_Span * pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-														  UT_FALSE,UT_FALSE,dpos,m_vsIndex,
-														  bLeftSide,pft->getIndexAP(),
-														  bufOffset,length);
+	PX_ChangeRecord_Span * pcr
+		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,UT_FALSE,UT_FALSE,
+								   dpos,bLeftSide,pft->getIndexAP(),bi,length);
 	if (!pcr)
 		return UT_FALSE;
+
+	// now we notify all listeners who have subscribed.
+
+	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
-	
+
 	return UT_TRUE;
 }
 
@@ -160,6 +181,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 	return UT_TRUE;
 }
 
+#if 0
 UT_Bool pt_PieceTable::insertFmt(PT_DocPosition dpos1,
 								 PT_DocPosition dpos2,
 								 const XML_Char ** attributes,
@@ -188,6 +210,7 @@ UT_Bool pt_PieceTable::deleteStrux(PT_DocPosition dpos)
 {
 	return UT_TRUE;
 }
+#endif
 
 UT_Bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
@@ -196,29 +219,27 @@ UT_Bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes
 
 	// create a new structure fragment at the current end of the document.
 	
-	PT_AttrPropIndex indexAP = 0;
-
-	if (attributes && *attributes)
-		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(attributes,NULL,&indexAP))
-			return UT_FALSE;
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.storeAP(attributes,&indexAP))
+		return UT_FALSE;
 
 	pf_Frag_Strux * pfs = 0;
 	switch (pts)
 	{
 	case PTX_Section:
-		pfs = new pf_Frag_Strux_Section(this,m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_Section(this,indexAP);
 		break;
 		
 	case PTX_ColumnSet:
-		pfs = new pf_Frag_Strux_ColumnSet(this,m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_ColumnSet(this,indexAP);
 		break;
 		
 	case PTX_Column:
-		pfs = new pf_Frag_Strux_Column(this,m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_Column(this,indexAP);
 		break;
 		
 	case PTX_Block:
-		pfs = new pf_Frag_Strux_Block(this,m_vsIndex,indexAP);
+		pfs = new pf_Frag_Strux_Block(this,indexAP);
 		break;
 	}
 	if (!pfs)
@@ -244,11 +265,8 @@ UT_Bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 	// create a Fragment or a ChangeRecord.  (Formatting changes
 	// are implicit at this point in time.)
 
-	loading.m_indexCurrentInlineAP = 0;
-	if (attributes && *attributes)
-		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(attributes,NULL,
-													  &loading.m_indexCurrentInlineAP))
-			return UT_FALSE;
+	if (!m_varset.storeAP(attributes,&loading.m_indexCurrentInlineAP))
+		return UT_FALSE;
 
 	return UT_TRUE;
 }
@@ -258,11 +276,8 @@ UT_Bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
 
-	loading.m_indexCurrentInlineAP = 0;
-	if (pVecAttributes && (pVecAttributes->getItemCount() > 0))
-		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(pVecAttributes,
-													  &loading.m_indexCurrentInlineAP))
-			return UT_FALSE;
+	if (!m_varset.storeAP(pVecAttributes,&loading.m_indexCurrentInlineAP))
+		return UT_FALSE;
 
 	return UT_TRUE;
 }
@@ -280,13 +295,11 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	// records or any of the other stuff that an insertSpan
 	// would do.
 
-	VarSet * pvs = &m_vs[m_vsIndex];
-	pt_BufPosition offset = pvs->m_buffer.getLength();
-	if (!pvs->m_buffer.ins(offset,pbuf,length))
+	PT_BufIndex bi;
+	if (!m_varset.appendBuf(pbuf,length,&bi))
 		return UT_FALSE;
-	
-	pf_Frag_Text * pft = new pf_Frag_Text(this,m_vsIndex,offset,length,
-										  loading.m_indexCurrentInlineAP);
+
+	pf_Frag_Text * pft = new pf_Frag_Text(this,bi,length,loading.m_indexCurrentInlineAP);
 	if (!pft)
 		return UT_FALSE;
 
@@ -344,13 +357,11 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 	return UT_TRUE;
 }
 
-UT_Bool pt_PieceTable::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
-								   const PP_AttrProp ** ppAP) const
+UT_Bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
-	UT_ASSERT(vsIndex < NrElements(m_vs));
 	UT_ASSERT(ppAP);
 
-	const PP_AttrProp * pAP = m_vs[vsIndex].m_tableAttrProp.getAP(indexAP);
+	const PP_AttrProp * pAP = m_varset.getAP(indexAP);
 	if (!pAP)
 		return UT_FALSE;
 
@@ -361,6 +372,8 @@ UT_Bool pt_PieceTable::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex inde
 UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const PP_AttrProp ** ppAP) const
 {
+	// return the AP for the text at the given offset from the given strux.
+	
 	UT_ASSERT(sdh);
 	UT_ASSERT(ppAP);
 
@@ -377,11 +390,9 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 
 		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 		
-		// TODO consider moving the guts of this loop to pf_Frag_Text.cpp
-		
 		if ((offset >= cumOffset) && (offset < cumOffset+pfText->getLength()))
 		{
-			const PP_AttrProp * pAP = m_vs[pfText->getVSindex()].m_tableAttrProp.getAP(pfText->getIndexAP());
+			const PP_AttrProp * pAP = m_varset.getAP(pfText->getIndexAP());
 			if (!pAP)
 				return UT_FALSE;
 
@@ -394,11 +405,9 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 	return UT_FALSE;
 }
 
-const UT_UCSChar * pt_PieceTable::getPointer(PT_VarSetIndex vsIndex, pt_BufPosition bufPos) const
+const UT_UCSChar * pt_PieceTable::getPointer(PT_BufIndex bi) const
 {
-	UT_ASSERT(vsIndex < NrElements(m_vs));
-	
-	return m_vs[vsIndex].m_buffer.getPointer(bufPos);
+	return m_varset.getPointer(bi);
 }
 
 UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
@@ -417,17 +426,15 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 
 		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 		
-		// TODO consider moving the guts of this loop to pf_Frag_Text.cpp
-		
 		if (offset == cumOffset)
 		{
-			*ppSpan = getPointer(pfText->getVSindex(),pfText->getOffset());
+			*ppSpan = getPointer(pfText->getBufIndex());
 			*pLength = pfText->getLength();
 			return UT_TRUE;
 		}
 		if (offset < cumOffset+pfText->getLength())
 		{
-			const UT_UCSChar * p = getPointer(pfText->getVSindex(),pfText->getOffset());
+			const UT_UCSChar * p = getPointer(pfText->getBufIndex());
 			UT_uint32 delta = offset - cumOffset;
 			*ppSpan = p + delta;
 			*pLength = pfText->getLength() - delta;
@@ -571,7 +578,6 @@ UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
 void pt_PieceTable::dump(FILE * fp) const
 {
 	fprintf(fp,"  PieceTable: State %d\n",(int)m_pts);
-	fprintf(fp,"  PieceTable: vsIndex %d\n",m_vsIndex);
 	fprintf(fp,"  PieceTable: Fragments:\n");
 
 	m_fragments.dump(fp);

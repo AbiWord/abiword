@@ -9,6 +9,7 @@
 #include "pp_TableAttrProp.h"
 #include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
+#include "pt_VarSet.h"
 class pf_Frag_Text;
 class pf_Frag_Strux;
 
@@ -22,9 +23,7 @@ public:
 	pt_PieceTable(PD_Document * pDocument);
 	~pt_PieceTable();
 
-	typedef enum _PTState { PTS_Invalid=-1, PTS_Loading=0, PTS_Editing=1 } PTState;
 	void					setPieceTableState(PTState pts);
-	UT_GrowBuf *			getBuffer(PT_VarSetIndex vsIndex);
 
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   UT_Bool bLeftSide,
@@ -32,7 +31,7 @@ public:
 									   UT_uint32 length);
 	UT_Bool					deleteSpan(PT_DocPosition dpos,
 									   UT_uint32 length);
-
+#if 0
 	UT_Bool					insertFmt(PT_DocPosition dpos1,
 									  PT_DocPosition dpos2,
 									  const XML_Char ** attributes,
@@ -47,7 +46,8 @@ public:
 										const XML_Char ** attributes,
 										const XML_Char ** properties);
 	UT_Bool					deleteStrux(PT_DocPosition dpos);
-
+#endif
+	
 	// the append- methods are only available while importing
 	// the document.
 
@@ -59,11 +59,12 @@ public:
 	UT_Bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);
 	
-	UT_Bool					getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
+	UT_Bool					getAttrProp(PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
 	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 											const PP_AttrProp ** ppAP) const;
-	const UT_UCSChar *		getPointer(PT_VarSetIndex vsIndex, pt_BufPosition bufPos) const;
+
+	const UT_UCSChar *		getPointer(PT_BufIndex bi) const;
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
@@ -83,27 +84,15 @@ public:
 	void					dump(FILE * fp) const;
 	
 protected:
-	typedef struct _VarSet
-	{
-		UT_GrowBuf			m_buffer;
-		pp_TableAttrProp	m_tableAttrProp;
-	} VarSet;
 
-	// m_pts keeps track of whether we are loading the document
-	//       or editing it.  this lets us know conceptually which
-	//       VarSet [initial,change] to use.  we seperate this
-	//       from m_vsIndex so that we can later do multiple
-	//       VarSet's per state -- so that we can better handle
-	//       things like Win16 where we might want to limit the
-	//       arbitrary growth of an array.
-	//
-	// m_vsIndex keeps track of the index into m_vs[] that we
-	//           are currently writing (appending) to.
-	
-	PTState					m_pts;
-	PT_VarSetIndex			m_vsIndex;		/* vs[] that we are writing to */
-	VarSet					m_vs[2];		/* [0] is initial, [1] is change */
+	UT_Bool					_insertSpan(pf_Frag_Text * pft,
+										PT_BufIndex bi,
+										UT_Bool bLeftSide,
+										PT_BlockOffset fragOffset,
+										UT_uint32 length);
 
+	PTState					m_pts;		/* are we loading or editing */
+	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
 

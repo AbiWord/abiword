@@ -46,6 +46,7 @@ HEADERS=		$(EXPORT_HEADERS)		\
 			pf_Fragments.h			\
 			pp_TableAttrProp.h		\
 			pt_PieceTable.h			\
+			pt_VarSet.h			\
 			px_ChangeHistory.h
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
@@ -64,6 +65,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
 			pt_PieceTable.cpp		\
+			pt_VarSet.cpp			\
 			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
 			px_ChangeRecord_Span.cpp	\

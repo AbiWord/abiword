@@ -136,7 +136,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				UT_DEBUGMSG(("no memory for SectionLayout"));
 				return UT_FALSE;
 			}
-			pSL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
+			pSL->setAttrPropIndex(pcr->getIndexAP());
 			m_pLayout->m_vecSectionLayouts.addItem(pSL);
 
 			*psfh = (PL_StruxFmtHandle)pSL;
@@ -156,7 +156,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				UT_DEBUGMSG(("no memory for ColumnSetLayout"));
 				return UT_FALSE;
 			}
-			pCSL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
+			pCSL->setAttrPropIndex(pcr->getIndexAP());
 			UT_ASSERT(pSL->getColumnSetLayout()==NULL);
 			pSL->setColumnSetLayout(pCSL);
 
@@ -179,7 +179,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				UT_DEBUGMSG(("no memory for ColumnLayout"));
 				return UT_FALSE;
 			}
-			pCL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
+			pCL->setAttrPropIndex(pcr->getIndexAP());
 			pCSL->appendColumnLayout(pCL);
 
 			*psfh = (PL_StruxFmtHandle)pCL;
@@ -201,7 +201,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				UT_DEBUGMSG(("no memory for BlockLayout"));
 				return UT_FALSE;
 			}
-			pBL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
+			pBL->setAttrPropIndex(pcr->getIndexAP());
 
 			*psfh = (PL_StruxFmtHandle)pBL;
 		}

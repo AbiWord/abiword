@@ -5,16 +5,14 @@
 
 #include "ut_types.h"
 
-// TODO check and fix the prefix case on these 2 (they probably need to be public)
-typedef UT_uint32 pt_BufPosition;		/* offset in one of the VarSet buffers */
-typedef UT_uint32 PT_AttrPropIndex;		/* index in one of the VarSet AP Tables */
-typedef UT_uint32 PT_VarSetIndex;		/* index the VarSet */
-
+typedef UT_uint32 PT_BufIndex;			/* index to actual document data */
+typedef UT_uint32 PT_AttrPropIndex;		/* index to Attribute/Property Tables */
 
 typedef UT_uint32 PT_DocPosition;		/* absolute document position */
 typedef UT_uint32 PT_BlockOffset;		/* block-relative document position */
 
 typedef enum _PTStruxType { PTX_Section, PTX_ColumnSet, PTX_Column, PTX_Block } PTStruxType;
+typedef enum _PTState { PTS_Loading=0, PTS_Editing=1 } PTState;
 
 typedef UT_uint32 PL_ListenerId;
 typedef const void * PL_StruxDocHandle;	/* opaque document data */

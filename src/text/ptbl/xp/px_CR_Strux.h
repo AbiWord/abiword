@@ -26,7 +26,6 @@ public:
 						  UT_Bool bMultiStepStart,
 						  UT_Bool bMultiStepEnd,
 						  PT_DocPosition position,
-						  PT_VarSetIndex vsIndex,
 						  UT_Bool bLeftSide,
 						  PT_AttrPropIndex indexAP,
 						  PTStruxType struxType);

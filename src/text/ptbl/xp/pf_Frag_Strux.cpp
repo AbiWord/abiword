@@ -6,12 +6,10 @@
 
 pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,
 							 PTStruxType struxType,
-							 PT_VarSetIndex vsIndex,
 							 PT_AttrPropIndex indexAP)
 	: pf_Frag(pPT, pf_Frag::PFT_Strux)
 {
 	m_struxType = struxType;
-	m_vsIndex = vsIndex;
 	m_indexAP = indexAP;
 }
 
@@ -53,7 +51,6 @@ UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 	PX_ChangeRecord_Strux * pcr
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,UT_FALSE,UT_FALSE,
 									0, /* doc position is undefined for strux */
-									m_vsIndex,
 									UT_TRUE, /* bleftside is undefined for strux */
 									m_indexAP,m_struxType);
 	if (!pcr)

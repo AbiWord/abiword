@@ -5,9 +5,8 @@
 
 
 pf_Frag_Strux_Section::pf_Frag_Strux_Section(pt_PieceTable * pPT,
-											 PT_VarSetIndex vsIndex,
 											 PT_AttrPropIndex indexAP)
-	: pf_Frag_Strux(pPT,PTX_Section,vsIndex,indexAP)
+	: pf_Frag_Strux(pPT,PTX_Section,indexAP)
 {
 }
 
@@ -17,6 +16,6 @@ pf_Frag_Strux_Section::~pf_Frag_Strux_Section()
 
 void pf_Frag_Strux_Section::dump(FILE * fp) const
 {
-	fprintf(fp,"      Section 0x%08lx vs[%d] api[%d]\n",
-			(UT_uint32)this,m_vsIndex,m_indexAP);
+	fprintf(fp,"      Section 0x%08lx api[%d]\n",
+			(UT_uint32)this,m_indexAP);
 }

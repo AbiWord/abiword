@@ -6,14 +6,12 @@
 
 
 pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
-						   PT_VarSetIndex vsIndex,
-						   pt_BufPosition offset,
+						   PT_BufIndex bufIndex,
 						   UT_uint32 length,
 						   PT_AttrPropIndex indexAP)
 	: pf_Frag(pPT,pf_Frag::PFT_Text)
 {
-	m_vsIndex = vsIndex;
-	m_offset = offset;
+	m_bufIndex = bufIndex;
 	m_length = length;
 	m_indexAP = indexAP;
 }
@@ -22,19 +20,14 @@ pf_Frag_Text::~pf_Frag_Text()
 {
 }
 
-pt_BufPosition pf_Frag_Text::getOffset(void) const
+PT_BufIndex pf_Frag_Text::getBufIndex(void) const
 {
-	return m_offset;
+	return m_bufIndex;
 }
 
 UT_uint32 pf_Frag_Text::getLength(void) const
 {
 	return m_length;
-}
-
-PT_VarSetIndex pf_Frag_Text::getVSindex(void) const
-{
-	return m_vsIndex;
 }
 
 PT_AttrPropIndex pf_Frag_Text::getIndexAP(void) const
@@ -49,9 +42,9 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 	PT_DocPosition docPos = m_pPieceTable->getFragPosition(this);
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   UT_FALSE,UT_FALSE,docPos,m_vsIndex,
+								   UT_FALSE,UT_FALSE,docPos,
 								   UT_TRUE, /* assume left side */
-								   m_indexAP,m_offset,m_length);
+								   m_indexAP,m_bufIndex,m_length);
 	if (!pcr)
 		return UT_FALSE;
 
@@ -65,12 +58,19 @@ void pf_Frag_Text::changeLength(UT_uint32 newLength)
 	m_length = newLength;
 }
 
+void pf_Frag_Text::adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength)
+{
+	m_bufIndex = bi;
+	m_length = newLength;
+}
+
 void pf_Frag_Text::dump(FILE * fp) const
 {
-	fprintf(fp,"      TextFragment 0x%08lx vs[%d] b[%d,%d] api[%d]\n",
-			(UT_uint32)this,m_vsIndex,m_offset,m_length,m_indexAP);
+#ifdef UT_DEBUG
+	fprintf(fp,"      TextFragment 0x%08lx b[%08lx,%d] api[%d]\n",
+			(UT_uint32)this,m_bufIndex,m_length,m_indexAP);
 
-	const UT_uint16 * ptr = m_pPieceTable->getBuffer(m_vsIndex)->getPointer(m_offset);
+	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
 	char c;
 	UT_uint32 k;
 
@@ -85,4 +85,5 @@ void pf_Frag_Text::dump(FILE * fp) const
 		fprintf(fp,"%c",c);
 	}
 	fprintf(fp,"]\n");
+#endif
 }
