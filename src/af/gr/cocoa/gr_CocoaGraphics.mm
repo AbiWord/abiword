@@ -42,6 +42,8 @@
 #import <Cocoa/Cocoa.h>
 #import <ApplicationServices/ApplicationServices.h>
 
+#define FloatToFixed(a) ((Fixed)((float) (a) * fixed1))
+
 #define DISABLE_VERBOSE 1
 #define USE_OFFSCREEN 1
 //#undef USE_OFFSCREEN
@@ -359,6 +361,74 @@ UT_uint32 GR_CocoaGraphics::getFontHeight()
 	return (UT_uint32)m_pFont->getHeight();
 }
 
+UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharATSUI(const UT_UCSChar c)
+{
+	ATSUTextLayout	layout;
+	ATSUTextMeasurement begin, end;
+	ATSUStyle		textStyle;
+	OSStatus 		status;
+	ATSUFontID theFontID = kATSUInvalidFontID;
+
+#if 0
+	Str255			fontName; 
+	bool result = ::CFStringGetPascalString((CFStringRef)[m_pFont->getNSFont() familyName], fontName, 256, kCFStringEncodingMacRoman);
+	UT_ASSERT (result);
+	
+	short iFONDNumber;
+	::GetFNum(fontName, &iFONDNumber);
+	if (!iFONDNumber) {
+		UT_ASSERT (iFONDNumber);
+		return kATSUInvalidFontID;	// GetFNum return 0 if not found.
+	}
+	status = ATSUFONDtoFontID(iFONDNumber, NULL, &theFontID);
+	UT_ASSERT (status == noErr);
+#else
+	/* this is undocumented. See http://www.omnigroup.com/mailman/archive/macosx-dev/2003-January/032229.html */
+	theFontID = [m_pFont->getNSFont() _atsFontID];
+#endif
+
+
+	ByteCount				theSize;
+	ATSUAttributeValuePtr	thePtr;
+	ATSUAttributeTag 		iTag;
+	UniCharCount			count = 1;
+
+	status = ::ATSUCreateStyle (&textStyle);
+	UT_ASSERT (status == noErr);
+	iTag = kATSUFontTag;
+	theSize = sizeof(theFontID);
+	thePtr = &theFontID;
+	status = ::ATSUSetAttributes (textStyle, 1, &iTag, &theSize, &thePtr);
+	UT_ASSERT (status == noErr);
+	iTag = kATSUSizeTag;
+	theSize = sizeof(Fixed);
+	Fixed theFontSize = (Fixed)(m_pFont->getSize() << 16);//&theFontID;
+	thePtr = &theFontSize;
+	status = ::ATSUSetAttributes (textStyle, 1, &iTag, &theSize, &thePtr);
+	UT_ASSERT (status == noErr);
+	status = ::ATSUCreateTextLayoutWithTextPtr ((const UniChar*)&c, 0, 1, 1, 1, &count, &textStyle, &layout);
+	UT_ASSERT (status == noErr);
+	status = ::ATSUSetTransientFontMatching (layout, true);
+	UT_ASSERT (status == noErr);
+	status = ::ATSUGetUnjustifiedBounds(layout, 0, 1, &begin, &end, NULL, NULL);
+//	status = ::ATSUGetLayoutControl (layout, kATSULineWidthTag, sizeof(ATSUTextMeasurement), &measurement, NULL);
+	UT_ASSERT (status == noErr);
+	
+	::ATSUDisposeTextLayout (layout);
+	::ATSUDisposeStyle (textStyle);
+	
+	return (UT_uint32)FixRound (end - begin);
+}
+
+UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharNSString(const UT_UCSChar c)
+{
+	NSString * string = [[NSString alloc] initWithData:[NSData dataWithBytes:&c length:sizeof(UT_UCSChar)]
+							encoding:NSUnicodeStringEncoding];
+	NSSize aSize = [string sizeWithAttributes:m_fontProps];
+	[string release];
+	return (UT_uint32)aSize.width;
+}
+
 UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	// measureString() could be defined in terms of measureUnRemappedChar()
@@ -369,11 +439,7 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	if(c == 0x200B || c == 0xFEFF) // 0-with spaces
 		return 0;
 
-	NSString * string = [[NSString alloc] initWithData:[NSData dataWithBytes:&c length:sizeof(UT_UCSChar)]
-							encoding:NSUnicodeStringEncoding];
-	NSSize aSize = [string sizeWithAttributes:m_fontProps];
-	[string release];
-	return (UT_uint32)aSize.width;
+	return _measureUnRemappedCharNSString (c);
 }
 
 
@@ -1063,6 +1129,12 @@ void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 	[cache compositeToPoint:pt operation:NSCompositeCopy];
 	[[m_pWin window] flushWindowIfNeeded];
 }
+
+UT_uint32 GR_CocoaGraphics::getDeviceResolution(void) const
+{
+	_getResolution ();
+}
+
 
 void GR_CocoaGraphics::_resetContext()
 {

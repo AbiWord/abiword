@@ -123,6 +123,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
+	virtual UT_uint32 getDeviceResolution(void) const;
 
 
 	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
@@ -132,12 +133,12 @@ class GR_CocoaGraphics : public GR_Graphics
 	NSImage*			_getOffscreen () { return m_offscreen; };
 	void 				_updateRect(NSView * v, NSRect aRect);
 	static bool			_isFlipped();
+	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
+	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);
 private:
-	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
-	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
 	
 	NSImage*			_makeNewCacheImage() 
 	{
@@ -175,6 +176,10 @@ private:
 	UT_uint32				m_screenResolution;
 public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
+private:
+	/* private implementations. Allow esasy selection accross various ways */
+	UT_uint32 _measureUnRemappedCharNSString(const UT_UCSChar c);
+	UT_uint32 _measureUnRemappedCharATSUI(const UT_UCSChar c);
 };
 
 #endif /* GR_COCOAGRAPHICS_H */
