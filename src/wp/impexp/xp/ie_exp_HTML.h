@@ -158,7 +158,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bEmbedImages;
 	bool    bClassOnly;
 	bool    bAbsUnits;
-
+	UT_uint32 iCompact;
 	/* other options, not set/saved/restore by options dialog
 	 */
 	bool	bMultipart;

@@ -163,6 +163,12 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 		if (pref.byteLength ()) pref += ",";
 		pref += "+AbsUnits";
 	}
+	if (m_exp_opt->iCompact)
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "Compact:";
+		pref += UT_UTF8String_sprintf("%d", m_exp_opt->iCompact);
+	}
 	if (m_exp_opt->bLinkCSS)
 	{
 		if (pref.byteLength ()) pref += ",";
@@ -201,6 +207,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 	exp_opt->bAllowAWML   = true;
 	exp_opt->bEmbedCSS    = true;
 	exp_opt->bAbsUnits    = false;
+	exp_opt->iCompact     = 0;
 	exp_opt->bEmbedImages = false;
 
 	if (app == NULL) return;
@@ -222,6 +229,14 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 			exp_opt->bAllowAWML   = (strstr (pref, "xmlns:awml")  == NULL) ? false : true;
 			exp_opt->bEmbedCSS    = (strstr (pref, "+CSS")        == NULL) ? false : true;
 			exp_opt->bAbsUnits    = (strstr (pref, "+AbsUnits")   == NULL) ? false : true;
+
+			const char * p = strstr (pref, "Compact:");
+			if(p)
+			{
+				p += 8;
+				exp_opt->iCompact = atoi(p);
+			}
+			
 			exp_opt->bLinkCSS     = (strstr (pref, "LinkCSS")     == NULL) ? false : true;
 			exp_opt->bClassOnly   = (strstr (pref, "ClassOnly")   == NULL) ? false : true;
 			exp_opt->bEmbedImages = (strstr (pref, "data:base64") == NULL) ? false : true;

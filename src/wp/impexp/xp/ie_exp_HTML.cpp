@@ -84,6 +84,9 @@
 #define IE_MIME_CSS			"text/css"
 #endif
 
+#define MYEOL "\n"
+#define MAX_LINE_LEN 200
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -544,6 +547,7 @@ private:
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
 	inline bool		get_Link_CSS ()     const { return m_exp_opt->bLinkCSS; }
 	inline bool		get_Abs_Units ()    const { return m_exp_opt->bAbsUnits; }
+	inline UT_uint32 get_Compact ()      const { return m_exp_opt->iCompact; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
@@ -671,6 +675,8 @@ private:
 	UT_Vector       m_vecDWidths;
 	UT_UTF8String & m_sLinkCSS;
 	UT_UTF8String & m_sTitle;
+
+	UT_uint32       m_iOutputLen;
 };
 
 /*****************************************************************/
@@ -706,11 +712,16 @@ void s_HTML_Listener::tagRaw (UT_UTF8String & content)
 #endif
 	// fputs (content.utf8_str (), stdout);
 	m_pie->write (content.utf8_str (), content.byteLength ());
+	m_iOutputLen += content.byteLength();
 }
 
 void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 {
 	m_utf8_0 = "";
+
+	if(get_Compact())
+		return;
+	
 
 	UT_uint32 depth = m_tagStack.getDepth () + extra;
 
@@ -739,8 +750,17 @@ void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress
 	else
 		m_utf8_0 += " />";
 
-	if (ws & ws_Post) m_utf8_0 += "\r\n";
+	if (ws & ws_Post && !get_Compact()) m_utf8_0 += MYEOL;
 
+	if(get_Compact())
+	{
+		if(m_iOutputLen + m_utf8_0.byteLength() > get_Compact())
+		{
+			m_pie->write(MYEOL, strlen(MYEOL));
+			m_iOutputLen = 0;
+		}
+	}
+	
 	tagRaw (m_utf8_0);
 }
 
@@ -756,7 +776,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
 	m_utf8_0 += content;
 	m_utf8_0 += ">";
 
-	if (ws & ws_Post) m_utf8_0 += "\r\n";
+	if (ws & ws_Post && !get_Compact()) m_utf8_0 += MYEOL;
 
 	tagRaw (m_utf8_0);
 
@@ -778,8 +798,17 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 	m_utf8_0 += content;
 	m_utf8_0 += ">";
 
-	if (ws & ws_Post) m_utf8_0 += "\r\n";
+	if (ws & ws_Post && !get_Compact()) m_utf8_0 += MYEOL;
 
+	if(get_Compact())
+	{
+		if(m_iOutputLen + m_utf8_0.byteLength() > get_Compact())
+		{
+			m_pie->write(MYEOL, strlen(MYEOL));
+			m_iOutputLen = 0;
+		}
+	}
+	
 	tagRaw (m_utf8_0);
 }
 
@@ -823,9 +852,18 @@ void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content, bool suppre
 	else
 		m_utf8_0 += " />";
 
-	if (ws & ws_Post)
-		m_utf8_0 += "\r\n";
+	if (ws & ws_Post && !get_Compact())
+		m_utf8_0 += MYEOL;
 
+	if(get_Compact())
+	{
+		if(m_iOutputLen + m_utf8_0.byteLength() > get_Compact())
+		{
+			m_pie->write(MYEOL, strlen(MYEOL));
+			m_iOutputLen = 0;
+		}
+	}
+	
 	tagRaw (m_utf8_0);
 }
 
@@ -925,7 +963,9 @@ void s_HTML_Listener::tagPI (const char * target, const UT_UTF8String & content)
 	m_utf8_0 += target;
 	m_utf8_0 += " ";
 	m_utf8_0 += content;
-	m_utf8_0 += "?>\r\n";
+	m_utf8_0 += "?>";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 
 	tagRaw (m_utf8_0);
 }
@@ -936,7 +976,9 @@ void s_HTML_Listener::tagComment (const UT_UTF8String & content)
 
 	m_utf8_0 += "<!-- ";
 	m_utf8_0 += content;
-	m_utf8_0 += " -->\r\n";
+	m_utf8_0 += " -->";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 
 	tagRaw (m_utf8_0);
 }
@@ -945,7 +987,9 @@ void s_HTML_Listener::tagCommentOpen ()
 {
 	tagNewIndent ();
 
-	m_utf8_0 += "<!--\r\n";
+	m_utf8_0 += "<!--";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 
 	tagRaw (m_utf8_0);
 }
@@ -954,7 +998,9 @@ void s_HTML_Listener::tagCommentClose ()
 {
 	tagNewIndent (2);
 
-	m_utf8_0 += "-->\r\n";
+	m_utf8_0 += "-->";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 
 	tagRaw (m_utf8_0);
 }
@@ -971,7 +1017,9 @@ void s_HTML_Listener::styleOpen (const UT_UTF8String & rule)
 	styleIndent ();
 
 	m_utf8_0 += rule;
-	m_utf8_0 += " {\r\n";
+	m_utf8_0 += " {";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 
 	if (m_fdCSS)
 		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
@@ -992,7 +1040,9 @@ void s_HTML_Listener::styleClose ()
 
 	styleIndent ();
 
-	m_utf8_0 += "}\r\n";
+	m_utf8_0 += "}";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 
 	if (m_fdCSS)
 		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
@@ -1007,7 +1057,9 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 	m_utf8_0 += name;
 	m_utf8_0 += ":";
 	m_utf8_0 += value;
-	m_utf8_0 += ";\r\n";
+	m_utf8_0 += ";";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 
 	if (m_fdCSS)
 		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
@@ -1097,9 +1149,9 @@ void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
 	m_utf8_1 = "1.0";
 	multiField ("MIME-Version", m_utf8_1);
 
-	m_utf8_1  = "multipart/related;\r\n\tboundary=\"";
+	m_utf8_1  = "multipart/related;" MYEOL "\tboundary=\"";
 	m_utf8_1 += s_boundary;
-	m_utf8_1 += "\";\r\n\ttype=\"";
+	m_utf8_1 += "\";" MYEOL "\ttype=\"";
 
 	if (get_HTML4 ())
 		m_utf8_1 += IE_MIME_HTML;
@@ -1129,15 +1181,16 @@ void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
 
 void s_HTML_Listener::multiBoundary (bool end)
 {
-	m_utf8_0  = "\r\n--";
+	m_utf8_0  = MYEOL "--";
 	m_utf8_0 += s_boundary;
 
 	if (end)
-		m_utf8_0 += "--\r\n";
+		m_utf8_0 += "--" MYEOL;
 	else
-		m_utf8_0 += "\r\n";
+		m_utf8_0 += MYEOL;
 	// fputs (m_utf8_0.utf8_str (), stdout);
 	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	m_iOutputLen += m_utf8_0.byteLength();
 }
 
 void s_HTML_Listener::multiField (const char * name, const UT_UTF8String & value)
@@ -1145,16 +1198,20 @@ void s_HTML_Listener::multiField (const char * name, const UT_UTF8String & value
 	m_utf8_0  = name;
 	m_utf8_0 += ":";
 	m_utf8_0 += value;
-	m_utf8_0 += "\r\n";
+	if(!get_Compact())
+		m_utf8_0 += MYEOL;
 	// fputs (m_utf8_0.utf8_str (), stdout);
 	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	m_iOutputLen += m_utf8_0.byteLength();
+	
 }
 
 void s_HTML_Listener::multiBreak ()
 {
-	m_utf8_0 = "\r\n";
+	m_utf8_0 = MYEOL;
 	// fputs (m_utf8_0.utf8_str (), stdout);
 	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	m_iOutputLen += m_utf8_0.byteLength();
 }
 
 /* intermediate methods
@@ -1171,6 +1228,8 @@ static const char * s_Header[2] = {
    "Created by AbiWord, a free, Open Source wordprocessor. ",
    "For more information visit http://www.abisource.com.   "
 };
+
+static const char * s_HeaderCompact = "Created by Abiword, www.abisource.com";
 
 void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 {
@@ -1231,15 +1290,23 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	 * we insert them that let, because IE6 expect to find <HTML> root within
 	 * 6 lines.
 	 */
-	const UT_UTF8String delimiter(s_Delimiter);
-	tagComment (delimiter);
-	for (UT_uint32 hdri = 0; hdri < NrElements(s_Header); hdri++)
+	if(get_Compact())
 	{
-		m_utf8_1 = s_Header[hdri];
+		m_utf8_1 = s_HeaderCompact;
 		tagComment (m_utf8_1);
 	}
-	tagComment (delimiter);
-
+	else
+	{
+		const UT_UTF8String delimiter(s_Delimiter);
+		tagComment (delimiter);
+		for (UT_uint32 hdri = 0; hdri < NrElements(s_Header); hdri++)
+		{
+			m_utf8_1 = s_Header[hdri];
+			tagComment (m_utf8_1);
+		}
+		tagComment (delimiter);
+	}
+	
 	/* we add a meta tag describing the document's charset as UTF-8
 	 * even with XHTML because Safari and Camino fail to recognize
 	 * charset. This still validate W3C.
@@ -1280,7 +1347,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 	if (get_PHTML ())
 	{
-		m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-header.php');\r\n ";
+		m_utf8_1 = MYEOL "  include($DOCUMENT_ROOT.'/x-header.php');" MYEOL " ";
 		tagPI ("php", m_utf8_1);
 	}
 
@@ -1296,7 +1363,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 	if (get_PHTML ())
 	{
-		m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-begin.php');\r\n ";
+		m_utf8_1 = MYEOL "  include($DOCUMENT_ROOT.'/x-page-begin.php');" MYEOL " ";
 		tagPI ("php", m_utf8_1);
 	}
 
@@ -1318,7 +1385,7 @@ void s_HTML_Listener::_outputEnd ()
 
 	if (get_PHTML ())
 	{
-		m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-end.php');\r\n ";
+		m_utf8_1 = MYEOL "  include($DOCUMENT_ROOT.'/x-page-end.php');" MYEOL " ";
 		tagPI ("php", m_utf8_1);
 	}
 
@@ -1439,7 +1506,10 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 
 		/* first line of style sheet is an encoding declaration
 		 */
-		m_utf8_1 = "@charset \"UTF-8\";\r\n\r\n";
+		m_utf8_1 = "@charset \"UTF-8\";";
+		if(!get_Compact())
+		m_utf8_0 += MYEOL MYEOL;
+		
 		styleText (m_utf8_1);
 	}
 
@@ -2933,7 +3003,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	if(prop && atof(prop) != 0.0)
 		border = 1;
 
-	UT_UTF8String border_default = "1px";
+	UT_UTF8String border_default = "1pt";
 	if (prop)
 	{
 		UT_sint32 iPT = (UT_sint32)(UT_convertToDimension(prop, DIM_PT) + 0.5);
@@ -3627,21 +3697,38 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		if(styles.size() != 0) styles += ";";
 	
 		styles += "border:";
-		styles += sB[iBMaxIndx];
+
+		if(sB[iBMaxIndx].size())
+		{
+			styles += sB[iBMaxIndx];
+		}
+		else
+		{
+			styles += "inherit";
+		}
+		
+		styles += " ";
 
 		if(sS[iSMaxIndx].size())
 		{
-			styles += " ";
 			styles += sS[iSMaxIndx];
 		}
-	
+		else
+		{
+			styles += "inherit";
+		}
+		
+		styles += " ";
 
 		if(sC[iCMaxIndx].size())
 		{
-			styles += " ";
 			styles += sC[iCMaxIndx];
 		}
-	
+		else
+		{
+			styles += "inherit";
+		}
+		
 		if(styles.size() != 0) styles += ";";
 		if(iBCount[iBMaxIndx] != 3)
 		{
@@ -3658,7 +3745,11 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 					case 3: styles += "border-bottom-width:"; break;
 				}
 
-				styles += sB[i];
+				if(sB[i].size())
+					styles += sB[i];
+				else
+					styles += "inherit";
+				
 				styles += ";";
 			}
 		}
@@ -3678,7 +3769,11 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 					case 3: styles += "border-bottom-style:"; break;
 				}
 
-				styles += sS[i];
+				if(sS[i].size())
+					styles += sS[i];
+				else
+					styles += "inherit";
+				
 				styles += ";";
 			}
 		}
@@ -3698,7 +3793,11 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 					case 3: styles += "border-bottom-color:"; break;
 				}
 
-				styles += sC[i];
+				if(sC[i].size())
+					styles += sC[i];
+				else
+					styles += "inherit";
+				
 				styles += ";";
 			}
 		}
@@ -3890,7 +3989,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_dSecRightMarginInches(0.0),
 		m_dCellWidthInches(0.0),
 		m_sLinkCSS(linkCSS),
-		m_sTitle(title)
+		m_sTitle(title),
+		m_iOutputLen(0)
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
@@ -5340,13 +5440,14 @@ void s_TemplateHandler::_handleMetaTag (const char * key, UT_UTF8String & value)
 	m_utf8 += key;
 	m_utf8 += "\" content=\"";
 	m_utf8 += value.escapeXML ();
-	m_utf8 += "\" />\r\n";
+	m_utf8 += "\" />";
+	m_utf8 += MYEOL;
 	m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
 }
 
 void s_TemplateHandler::_handleMeta ()
 {
-	UT_UTF8String metaProp = "<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\" />\r\n";
+	UT_UTF8String metaProp = "<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\" />" MYEOL;
 
 	m_pie->write (metaProp.utf8_str (), metaProp.byteLength ());
 	
@@ -5476,6 +5577,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	m_exp_opt.bMultipart   = false;
 	m_exp_opt.bClassOnly   = false;
 	m_exp_opt.bAbsUnits    = false;
+	m_exp_opt.iCompact     = 0;
 
 	m_error = UT_OK;
 
@@ -5551,6 +5653,8 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	                              %f - file name with extension
 	                              %F - file name including full path
 	abs-units       yes | no    use absolute rather than relative units in tables, etc.
+	compact         yes | no | number -- if set we avoid ouputing unnecessary whitespace; numerical value
+	                                     indicates max line length (default MAX_LINE_LEN)
 	*/
 
 	const UT_UTF8String * prop = 0;
@@ -5578,6 +5682,21 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	prop = getProperty ("abs-units");
 	if (prop)
 		m_exp_opt.bAbsUnits = UT_parseBool (prop->utf8_str (), m_exp_opt.bAbsUnits);
+
+	prop = getProperty ("compact");
+	if (prop)
+	{
+		UT_sint32 iLen = atoi(prop->utf8_str());
+		if(iLen != 0)
+			m_exp_opt.iCompact = (UT_uint32)iLen;
+		else
+		{
+			m_exp_opt.iCompact = (UT_uint32)UT_parseBool (prop->utf8_str (), (bool)m_exp_opt.iCompact);
+			if(m_exp_opt.iCompact)
+				m_exp_opt.iCompact = MAX_LINE_LEN;
+		}
+	}
+	
 
 	prop = getProperty ("link-css");
 	if (prop)
@@ -5671,11 +5790,11 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	UT_UTF8String declaration;
 
 	if (m_exp_opt.bDeclareXML)
-		declaration += "<?xml version=\"1.0\"?>\r\n";
+		declaration += "<?xml version=\"1.0\"?>" MYEOL;
 
 	declaration += "<";
 	declaration += s_DTD_XHTML;
-	declaration += ">\r\n";
+	declaration += ">" MYEOL;
 
 	write (declaration.utf8_str (), declaration.byteLength ());
 
