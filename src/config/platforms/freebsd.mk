@@ -79,17 +79,19 @@ PORT_FLAGS		+=
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
-# Somewhere around the time FreeBSD changed to ELF format binaries,
-# the libdl functions got moved into libc (or something like that).
-# As a result, -ldl is not neccessary on these newer FreeBSD systems,
-# whereas it is needed on older ones.  I'm thinking the split is 
-# either 3.0-RELEASE or 3.1-RELEASE.  I _know_ it's needed at 3.1,
-# so mail sterwill@abisource.com if I need to be doing this for 3.0
-# also.
+# ELF versions of FreeBSD no longer need an explicit link to libdl.
+# This move to ELF happened around the 3.0 releases.  It's possible
+# people are running post-3.0 non-ELF systems or running pre-3.0 ELF
+# systems.  We assume 3.0 and later are ELF.
+OS_RELEASE_MAJOR	= $(shell uname -r | sed -e "s/-.*//")
 
-ifeq ($(OS_RELEASE), 3.1-RELEASE)
-	DL_LIBS = 
-else
+# default is no libdl
+DL_LIBS = 
+#special cases for FreeBSD 1 and FreeBSD 2
+ifeq ($(OS_RELEASE_MAJOR), 1)
+	DL_LIBS = dl
+endif
+ifeq ($(OS_RELEASE_MAJOR), 2)
 	DL_LIBS = dl
 endif
 
