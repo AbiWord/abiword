@@ -27,6 +27,79 @@
 @class XAP_CocoaPlugin;
 
 /**
+ * \protocol XAP_CocoaPlugin_ContextMenuItem XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
+ * 
+ * A reference to a context menu item.
+ */
+@protocol XAP_CocoaPlugin_MenuItem
+
+/**
+ * \param label Set the label of the context menu item.
+ */
+- (void)setLabel:(NSString *)label;
+
+/**
+ * \return The label of the context menu item.
+ */
+- (NSString *)label;
+
+/**
+ * \param aSelector Set the method which is called when the call-back is triggered, or
+ *                  nil if no method is to be called.
+ */
+- (void)setAction:(SEL)aSelector;
+
+/**
+ * \return The method which is called when the call-back is triggered, or nil if none.
+ */
+- (SEL)action;
+
+/**
+ * \param target Set a new target object for the action when the call-back is triggered, or
+ *               nil if no method is to be called.
+ */
+- (void)setTarget:(id <NSObject>)target;
+
+/**
+ * \return The new target object for the action when the call-back is triggered, or nil if none.
+ */
+- (id <NSObject>)target;
+
+/**
+ * \param anInt An integer which can be used to identify this particular object.
+ */
+- (void)setTag:(int)anInt;
+
+/**
+ * \return The integer used to identify this particular object.
+ */
+- (int)tag;
+
+/**
+ * \param state To have a check (tick) beside the menu item, set the state to NSOnState, otherwise
+ *              set it to NSOffState. The default is NSOffState.
+ */
+- (void)setState:(int)state;
+
+/**
+ * \return Returns YES if the menu item is checked (ticked).
+ */
+- (int)state;
+
+/**
+ * \param enabled YES if the menu item should be enabled, or NO if the menu item should be greyed
+ *                (i.e., non-selectable). The default is YES.
+ */
+- (void)setEnabled:(BOOL)enabled;
+
+/**
+ * \return Returns YES if the menu item is selectable.
+ */
+- (BOOL)isEnabled;
+
+@end
+
+/**
  * \protocol XAP_CocoaPlugin_FramelessDocument XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
  * 
  * Plug-in API for manipulating documents which do not have windows. Typically these
@@ -291,6 +364,20 @@
  * \see XAP_CocoaPlugin_FramelessDocument
  */
 - (id <NSObject, XAP_CocoaPlugin_FramelessDocument>)importDocumentFromFile:(NSString *)path importOptions:(NSDictionary *)options;
+
+/**
+ * Add a menu item to the context menu.
+ * You should retain the returned context menu item object, since the menu item is removed from
+ * the context menu when the object is deleted.
+ * 
+ * \param title The title of the menu item in the context menu.
+ * 
+ * \return A reference to a context menu item object.
+ * 
+ * \see XAP_CocoaPlugin_ContextMenuItem
+ */
+- (id <NSObject, XAP_CocoaPlugin_MenuItem>)contextMenuItemWithLabel:(NSString *)label;
+
 @end
 
 #endif /* XAP_COCOAPLUGIN_H */

@@ -32,6 +32,8 @@ class XAP_Frame;
 
 @class XAP_CocoaPlugin;
 
+@class AP_CocoaPlugin_MenuIDRef;
+
 @interface XAP_CocoaApplication : NSApplication
 {
 	// 
@@ -94,6 +96,8 @@ enum XAP_CocoaAppMenu_Id
 	NSMenuItem *			m_AppItem[XAP_CocoaAppMenu_count__];
 
 	NSMutableDictionary *	m_FontDictionary;
+
+	NSMutableDictionary *	m_MenuIDRefDictionary;
 
 	NSMutableArray *		m_Plugins;
 	NSMutableArray *		m_PluginsTools;
@@ -177,23 +181,50 @@ enum XAP_CocoaAppMenu_Id
 
 - (void)notifyFrameViewChange; // [re/un]setCurrentView call this
 
-/* load .Abi bundle plugin at path, returns nil on failure
+/**
+ * Load .Abi bundle plugin at path.
+ * 
+ * \return Returns nil on failure.
  */
 - (XAP_CocoaPlugin *)loadPlugin:(NSString *)path;
 
-/* list of currently loaded plugins
+/**
+ * \return Returns list of currently loaded plugins.
  */
 - (NSArray *)plugins;
 
-/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
- * returns false if any of the plugins object
+/**
+ * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
+ * 
+ * \return Returns false if any of the plugins object.
  */
 - (BOOL)deactivateAllPlugins;
 
-/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
- * returns false if the plugin objects, unless override is YES.
+/**
+ * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
+ * 
+ * \return Returns false if the plugin objects, unless override is YES.
  */
 - (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override;
+
+/**
+ * This provides a mechanism for associating XAP_CocoaPlugin_MenuItem objects
+ * with a given menu ID.
+ */
+- (void)addRef:(AP_CocoaPlugin_MenuIDRef *)ref forMenuID:(NSNumber *)menuid;
+
+/**
+ * This provides a mechanism for finding XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (AP_CocoaPlugin_MenuIDRef *)refForMenuID:(NSNumber *)menuid;
+
+/**
+ * This provides a mechanism for removing XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (void)removeRefForMenuID:(NSNumber *)menuid;
+
 @end
 
 #endif /* ! XAP_COCOAAPPCONTROLLER_H */

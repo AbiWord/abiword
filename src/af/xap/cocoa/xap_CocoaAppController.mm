@@ -319,6 +319,8 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 			m_FontDictionary = 0;
 
+			m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
+
 			m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
 			m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
 
@@ -349,6 +351,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			[m_FontDictionary release];
 			m_FontDictionary = 0;
+		}
+	if (m_MenuIDRefDictionary)
+		{
+			[m_MenuIDRefDictionary release];
+			m_MenuIDRefDictionary = 0;
 		}
 	if (m_Plugins)
 		{
@@ -982,6 +989,30 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[[plugin delegate] pluginDeactivate];
 
 	return YES;
+}
+
+/* This provides a mechanism for associating XAP_CocoaPlugin_MenuItem objects
+ * with a given menu ID.
+ */
+- (void)addRef:(AP_CocoaPlugin_MenuIDRef *)ref forMenuID:(NSNumber *)menuid
+{
+	[m_MenuIDRefDictionary setObject:ref forKey:menuid];
+}
+
+/* This provides a mechanism for finding XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (AP_CocoaPlugin_MenuIDRef *)refForMenuID:(NSNumber *)menuid
+{
+	return (AP_CocoaPlugin_MenuIDRef *) [m_MenuIDRefDictionary objectForKey:menuid];
+}
+
+/* This provides a mechanism for removing XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (void)removeRefForMenuID:(NSNumber *)menuid
+{
+	[m_MenuIDRefDictionary removeObjectForKey:menuid];
 }
 
 @end

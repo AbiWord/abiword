@@ -23,10 +23,16 @@
 #include "ut_vector.h"
 
 #include "xap_App.h"
+#include "xap_CocoaAppController.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Frame.h"
+#include "xap_Menu_Layouts.h"
+
+#include "ev_EditMethod.h"
+#include "ev_Menu_Actions.h"
+#include "ev_Menu_Labels.h"
 
 #include "pd_Document.h"
 
@@ -97,6 +103,313 @@ public:
 		return true;
 	}
 };
+
+static unsigned long s_EditMethod_Number = 0;
+
+static bool s_EditMethod_CtxtFn (AV_View * pView, EV_EditMethodCallData * pCallData, void * context)
+{
+	AP_CocoaPlugin_EditMethod * editMethod = (AP_CocoaPlugin_EditMethod *) context;
+
+	[editMethod trigger];
+}
+
+@implementation AP_CocoaPlugin_EditMethod
+
+- (id)init
+{
+	if (self = [super init])
+		{
+			m_Action = 0;
+			m_Target = 0;
+
+			m_EditMethod = 0;
+
+			m_EditMethod_Name[0] = 0;
+
+			EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
+			if (pEMC)
+				{
+					sprintf(m_EditMethod_Name, "[%lX] CocoaPlugin EditMethod", s_EditMethod_Number++);
+
+					m_EditMethod = new EV_EditMethod(m_EditMethod_Name, s_EditMethod_CtxtFn, 0, "", self);
+				}
+			if (m_EditMethod)
+				if (!pEMC->addEditMethod(m_EditMethod))
+					{
+						DELETEP(m_EditMethod);
+					}
+			if (!m_EditMethod)
+				{
+					[self release];
+					self = 0;
+				}
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	if (m_EditMethod)
+		{
+			EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
+			if (pEMC)
+				{
+					pEMC->removeEditMethod(m_EditMethod);
+					delete m_EditMethod;
+				}
+			m_EditMethod = 0;
+		}
+	[super dealloc];
+}
+
+- (const char *)editMethodName
+{
+	return m_EditMethod_Name;
+}
+
+- (void)trigger
+{
+	if (m_Action && m_Target)
+		if ([m_Target respondsToSelector:m_Action])
+			{
+				[NSApp sendAction:m_Action to:m_Target from:self];
+			}
+}
+
+- (void)setAction:(SEL)aSelector
+{
+	m_Action = aSelector;
+}
+
+- (SEL)action
+{
+	return m_Action;
+}
+
+- (void)setTarget:(id <NSObject>)target
+{
+	m_Target = target;
+}
+
+- (id <NSObject>)target
+{
+	return m_Target;
+}
+
+@end
+
+@implementation AP_CocoaPlugin_MenuIDRef
+
++ (AP_CocoaPlugin_MenuIDRef *)menuIDRefWithMenuItem:(id <XAP_CocoaPlugin_MenuItem>)menuItem
+{
+	AP_CocoaPlugin_MenuIDRef * ref = [[AP_CocoaPlugin_MenuIDRef alloc] initWithMenuItem:menuItem];
+
+	[ref autorelease];
+
+	return ref;
+}
+
+- (id)initWithMenuItem:(id <XAP_CocoaPlugin_MenuItem>)menuItem
+{
+	if (self = [super init])
+		{
+			m_NonRetainedRef = menuItem;
+		}
+	return self;
+}
+
+- (id <XAP_CocoaPlugin_MenuItem>)menuItem
+{
+	return m_NonRetainedRef;
+}
+
+@end
+
+static EV_Menu_ItemState s_GetMenuItemState_Fn (AV_View * pView, XAP_Menu_Id menuid)
+{
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	AP_CocoaPlugin_MenuIDRef * ref = [pController refForMenuID:[NSNumber numberWithInt:((int) menuid)]];
+
+	EV_Menu_ItemState state = EV_MIS_ZERO;
+
+	if (ref)
+		{
+			id <XAP_CocoaPlugin_MenuItem> menuItem = [ref menuItem];
+
+			// TODO: validate against target ??
+
+			if ([menuItem isEnabled] == NO)
+				state |= EV_MIS_Gray;		//	= 0x01,		/* item is or should be gray */
+			if ([menuItem state] == NSOnState)
+				state |= EV_MIS_Toggled;	//	= 0x02,		/* checkable item should be checked */
+		}
+	return state;
+}
+
+static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel, XAP_Menu_Id menuid)
+{
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	AP_CocoaPlugin_MenuIDRef * ref = [pController refForMenuID:[NSNumber numberWithInt:((int) menuid)]];
+
+	const char * label = pLabel->getMenuLabel();
+
+	if (ref)
+		{
+			id <XAP_CocoaPlugin_MenuItem> menuItem = [ref menuItem];
+
+			// TODO: validate against target ??
+
+			label = [[menuItem label] UTF8String];
+		}
+	return label;
+}
+
+@implementation AP_CocoaPlugin_ContextMenuItem
+
++ (AP_CocoaPlugin_ContextMenuItem *)itemWithLabel:(NSString *)label
+{
+	AP_CocoaPlugin_ContextMenuItem * item = nil;
+
+	if (label)
+		if (item = [[AP_CocoaPlugin_ContextMenuItem alloc] initWithLabel:label])
+			{
+				[item autorelease];
+			}
+
+	return item;
+}
+
+- (id)initWithLabel:(NSString *)label
+{
+	if (self = [super init])
+		{
+			m_Label = label;
+			[m_Label retain];
+
+			m_Tag = 0;
+
+			m_State = NSOffState;
+			m_Enabled = YES;
+
+			m_pAction = 0;
+
+			EV_Menu_ActionSet * pActionSet = XAP_App::getApp()->getMenuActionSet();
+
+			m_MenuID = 0;
+
+			XAP_Menu_Factory * pFact = XAP_App::getApp()->getMenuFactory();
+
+			if (pFact && pActionSet)
+				{
+					m_MenuID = pFact->addNewMenuAfter("contextText", 0, "Bullets and &Numbering", EV_MLF_Normal);
+				}
+			if (m_MenuID)
+				{
+					pFact->addNewLabel(0, m_MenuID, [m_Label UTF8String], [m_Label UTF8String]);
+
+					const char * editMethodName = [self editMethodName];
+
+					/* Create the Action that will be called.
+					 */
+					m_pAction = new EV_Menu_Action(m_MenuID,                      // id that the layout said we could use
+												   false,                         // no, we don't have a sub-menu.
+												   false,                         // no, we don't raise a dialog. (this just adds dots after the title)
+												   true,                          // yes, we have a check-box.
+												   false,                         // no, we aren't a radio.
+												   editMethodName,                // name of callback function to call.
+												   s_GetMenuItemState_Fn,         // the get-state function
+												   s_GetMenuItemComputedLabel_Fn  // the get-label function
+												   );
+				}
+			if (m_pAction)
+				{
+					if (pActionSet->addAction(m_pAction))
+						{
+							AP_CocoaPlugin_MenuIDRef * ref = [AP_CocoaPlugin_MenuIDRef menuIDRefWithMenuItem:self];
+
+							XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+							[pController addRef:ref forMenuID:[NSNumber numberWithInt:((int) m_MenuID)]];
+						}
+					else
+						{
+							DELETEP(m_pAction);
+						}
+				}
+			if (!m_pAction)
+				{
+					[self release];
+					self = 0;
+				}
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	XAP_Menu_Factory * pFact = XAP_App::getApp()->getMenuFactory();
+	if (m_pAction && pFact)
+		{
+			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+			[pController removeRefForMenuID:[NSNumber numberWithInt:((int) m_MenuID)]];
+
+			// there is no way to remove actions, so... don't delete m_pAction? (FIXME??)
+
+			pFact->removeMenuItem("contextText", 0, [m_Label UTF8String]);
+		}
+
+	[m_Label release];
+
+	[super dealloc];
+}
+
+- (void)setLabel:(NSString *)label
+{
+	if (label)
+		{
+			[m_Label release];
+			m_Label = label;
+			[m_Label retain];
+		}
+}
+
+- (NSString *)label
+{
+	return m_Label;
+}
+
+- (void)setTag:(int)anInt
+{
+	m_Tag = anInt;
+}
+
+- (int)tag
+{
+	return m_Tag;
+}
+
+- (void)setState:(int)state
+{
+	m_State = (state == NSOnState) ? NSOnState : NSOffState;
+}
+
+- (int)state
+{
+	return m_State;
+}
+
+- (void)setEnabled:(BOOL)enabled
+{
+	m_Enabled = enabled ? YES : NO;
+}
+
+- (BOOL)isEnabled
+{
+	return m_Enabled;
+}
+
+@end
 
 @implementation AP_CocoaPlugin_FramelessDocument
 
