@@ -288,10 +288,7 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		rClip.top = pG->tlu(pExposeEvent->area.y);
 		rClip.width = pG->tlu(pExposeEvent->area.width);
 		rClip.height = pG->tlu(pExposeEvent->area.height);
-	}
-	else
-	{
-		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
+		pUnixTopRuler->draw (&rClip);
 	}
 
 	return 0;

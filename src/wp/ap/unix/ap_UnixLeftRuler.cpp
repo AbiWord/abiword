@@ -325,10 +325,6 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 
 		pUnixLeftRuler->draw(&rClip);
 	}
-	else
-	{
-		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
-	}
 	return 0;
 }
 
