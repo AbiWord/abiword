@@ -397,6 +397,11 @@ static GR_Image * _showSplash(const char * szFile, UT_uint32 delay)
 	return pSplashImage;
 }
 
+// TODO : MOVE THIS TO XP CODE!  This is a cut & paste job since each
+// TODO : platform _can_ have different options, and we didn't sort
+// TODO : out how to honor them correclty yet.  There is a copy of
+// TODO : this function in other platforms.
+
 void AP_UnixApp::_printUsage(void)
 {
 	// TODO : automatically generate the output from the options struct
