@@ -5843,7 +5843,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if (strcmp((char *)keyword, "sbasedon") == 0)
 			{
-				if (parameter >= styleNumber)
+				if (parameter != styleNumber)
 				{
 //
 // Have to deal with out of sequence styles. ie A style maybe basedon a style that 
@@ -5869,7 +5869,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if (strcmp((char *)keyword, "snext") == 0)
 			{
-				if (parameter > styleNumber)
+				if (parameter != styleNumber)
 				{
 //
 // Have to deal with out of sequence styles. ie A style maybe basedon a style that 
