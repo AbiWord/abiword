@@ -26,6 +26,8 @@
 #import "ap_CocoaFrame.h"
 
 #include "ap_Dialog_Options.h"
+#import "xap_Cocoa_NSTableUtils.h"
+
 
 class XAP_Frame;
 class AP_CocoaDialog_Options;
@@ -95,8 +97,10 @@ class AP_CocoaDialog_Options;
     IBOutlet NSBox *m_tlbVisibleBox;
 	
 	AP_CocoaDialog_Options * m_xap;
+	XAP_StringListDataSource* m_tlbTlbListDataSource;
 }
 + (AP_CocoaDialog_OptionsController *)loadFromNib;
+- (oneway void)dealloc;
 - (void)windowDidLoad;
 - (void)setXAPOwner:(AP_CocoaDialog_Options *)owner;
 - (NSView *)_lookupWidget:(AP_Dialog_Options::tControl)controlId;
