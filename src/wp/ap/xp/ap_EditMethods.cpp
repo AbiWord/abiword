@@ -3623,6 +3623,13 @@ Defun1(warpInsPtLeft)
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 	pView->cmdCharMotion(bRTL,1);
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 
@@ -3636,7 +3643,13 @@ Defun1(warpInsPtRight)
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 	pView->cmdCharMotion(!bRTL,1);
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 
@@ -3816,6 +3829,13 @@ Defun1(warpInsPtPrevLine)
 		return true;
 	}
 	pView->warpInsPtNextPrevLine(false);
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 
@@ -3832,6 +3852,13 @@ Defun1(warpInsPtNextLine)
 		return true;
 	}
 	pView->warpInsPtNextPrevLine(true);
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 

@@ -441,4 +441,11 @@ void GR_Caret::_blink(bool bExplicit)
 	m_pG->flush();
 }
 
+/*!
+ * Only call this is you are absolutely certain you need it!
+ */
+void GR_Caret::forceDraw(void)
+{
+	_blink(true);
+}
 //////////////////////////////////////////////////////////////////////////////////////
