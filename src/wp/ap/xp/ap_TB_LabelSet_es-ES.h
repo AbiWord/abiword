@@ -39,7 +39,7 @@
 // Note: if a tool item does not use an icon (like a combo box), use the
 // Note: constant "NoIcon" in that column.
 
-BeginSet(SpSP)
+BeginSet(EsES)
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 

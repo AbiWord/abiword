@@ -30,7 +30,7 @@
 // If your platform doesn't have a way to do accelerators or uses a different
 // character, remove or change the '&' in your menu constructor code.
 
-BeginSet(SpSP)
+BeginSet(EsES)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 
