@@ -1448,10 +1448,17 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 				if(pHF->isPointInHere(pos))
 				{
 					pShadow = pHF->getFirstShadow();
-					pView->clearHdrFtrEdit();
-					pView->setHdrFtrEdit(pShadow);
-					pBL = static_cast<fl_BlockLayout *>(pShadow->findBlockAtPosition(pos));
-					return pBL;
+					if(pShadow)
+					{
+						pView->clearHdrFtrEdit();
+						pView->setHdrFtrEdit(pShadow);
+						pBL = static_cast<fl_BlockLayout *>(pShadow->findBlockAtPosition(pos));
+						return pBL;
+					}
+					else
+					{
+						return NULL;
+					}
 				}
 				// Ok, we're really confused now, point is nowhere to be found.
 				// It might be OK if pos-1 is in here, though...

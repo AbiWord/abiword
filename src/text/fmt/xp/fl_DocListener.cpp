@@ -2025,6 +2025,16 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
 			  return bResult;
 		   }
+		case PTX_SectionHdrFtr:
+		   {
+			   UT_DEBUGMSG(("Inserting HdrFtr after Frame \n"));
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   xxx_UT_DEBUGMSG(("Doing Insert Strux HdrFtr Into Prev Block \n"));
+			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
+			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+			   
+		   }
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after frame %d \n",pcrx->getStruxType()));

@@ -383,7 +383,7 @@ void fl_SectionLayout::checkAndAdjustCellSize(void)
 	pCell->checkAndAdjustCellSize();
 }
 
-bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pBL,
+bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 													SectionType iType,
 													const PX_ChangeRecord_Strux * pcrx,
 													PL_StruxDocHandle sdh,
@@ -392,8 +392,166 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pBL,
 																			PL_ListenerId lid,
 																			PL_StruxFmtHandle sfhNew))
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
-	return bres;
+	if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+	{
+		bool bres = static_cast<fl_BlockLayout *>(pPrevL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
+		return bres;
+	}
+	else if((pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||(pPrevL->getContainerType() == FL_CONTAINER_TABLE) )
+	{
+		fl_SectionLayout * pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_NONE,m_pLayout,NULL, sdh, pcrx->getIndexAP());
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pSL);
+		m_pLayout->addHdrFtrSection(pHFSL);
+//
+// Need to find the DocSectionLayout associated with this.
+//
+		const PP_AttrProp* pHFAP = NULL;
+		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
+		bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
+		UT_ASSERT(bres);
+		const XML_Char* pszNewID = NULL;
+		pHFAP->getAttribute("id", pszNewID);
+//
+// pszHFID may not be defined yet. If not we can't do this stuff. If it is defined
+// this step is essential
+//
+		if(pszNewID)
+		{
+		  // plam mystery code
+			// plam, MES here, I need this code for inserting headers/footers.
+		  UT_DEBUGMSG(("new id: tell plam if you see this message\n"));
+//		  UT_ASSERT(0);
+			fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr(static_cast<const char*>(pszNewID));
+			UT_ASSERT(pDocSL);
+//
+// Determine if this is a header or a footer.
+//
+			const XML_Char* pszSectionType = NULL;
+			pHFAP->getAttribute("type", pszSectionType);
+
+			HdrFtrType hfType = FL_HDRFTR_NONE;
+			if (pszSectionType && *pszSectionType)
+			{
+				if(UT_strcmp(pszSectionType,"header") == 0)
+					hfType = FL_HDRFTR_HEADER;
+				else if (UT_strcmp(pszSectionType,"header-even") == 0)
+					hfType = FL_HDRFTR_HEADER_EVEN;
+				else if (UT_strcmp(pszSectionType,"header-first") == 0)
+					hfType = FL_HDRFTR_HEADER_FIRST;
+				else if (UT_strcmp(pszSectionType,"header-last") == 0)
+					hfType = FL_HDRFTR_HEADER_LAST;
+				else if (UT_strcmp(pszSectionType,"footer") == 0)
+					hfType = FL_HDRFTR_FOOTER;
+				else if (UT_strcmp(pszSectionType,"footer-even") == 0)
+					hfType = FL_HDRFTR_FOOTER_EVEN;
+				else if (UT_strcmp(pszSectionType,"footer-first") == 0)
+					hfType = FL_HDRFTR_FOOTER_FIRST;
+				else if (UT_strcmp(pszSectionType,"footer-last") == 0)
+					hfType = FL_HDRFTR_FOOTER_LAST;
+
+				if(hfType != FL_HDRFTR_NONE)
+				{
+					pHFSL->setDocSectionLayout(pDocSL);
+					pHFSL->setHdrFtr(hfType);
+					//
+					// Set the pointers to this header/footer
+					//
+					pDocSL->setHdrFtr(hfType, pHFSL);
+				}
+			}
+		}
+		else
+		{
+			UT_DEBUGMSG(("NO ID found with insertSection HdrFtr \n"));
+		}
+
+	// Must call the bind function to complete the exchange of handles
+	// with the document (piece table) *** before *** anything tries
+	// to call down into the document (like all of the view
+	// listeners).
+
+		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+		//
+		// Don't bind to shadows
+		//
+		if(pfnBindHandles)
+		{
+			pfnBindHandles(sdh,lid,sfhNew);
+		}
+
+		fl_SectionLayout* pOldSL = getDocSectionLayout();
+//
+// Now move all the containers following into the new section
+//
+		fl_ContainerLayout* pCL = pPrevL->getNext();
+	//
+	// BUT!!! Don't move the immediate Footnotes or Endnotes
+	//
+		fl_ContainerLayout * pLastCL = pPrevL;
+
+		while(pCL && (static_cast<fl_SectionLayout *>(pCL) == pSL))
+		{
+			pCL = pCL->getNext();
+		}
+		while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+					  (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)))
+		{
+			pLastCL = pCL;
+			pCL = pCL->getNext();
+		}
+		fl_BlockLayout * pBL = NULL;
+		while (pCL)
+		{
+			fl_ContainerLayout* pNext = pCL->getNext();
+			pBL = NULL;
+			pCL->collapse();
+			if(pCL->getContainerType()==FL_CONTAINER_BLOCK)
+			{
+				pBL = static_cast<fl_BlockLayout *>(pCL);
+			} 
+			if(pBL && pBL->isHdrFtr())
+			{
+				fl_HdrFtrSectionLayout * pHF = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout());
+				pHF->collapseBlock(pBL);
+			}
+			pOldSL->remove(pCL);
+			pSL->add(pCL);
+			if(pBL)
+			{
+				pBL->setSectionLayout( pSL);
+				pBL->setNeedsReformat(0);
+			}
+			pCL = pNext;
+		}
+
+//
+// Terminate blocklist here. This Block is the last in this section.
+//
+		if (pLastCL)
+		{
+			pLastCL->setNext(NULL);
+			pOldSL->setLastLayout(pLastCL);
+		}
+		if(pszNewID)
+		{
+			pSL->format();
+			pSL->redrawUpdate();
+		}
+		else
+			return true;
+
+		FV_View* pView = m_pLayout->getView();
+		if (pView && (pView->isActive() || pView->isPreview()))
+		{
+			pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+		}
+		else if(pView && pView->getPoint() > pcrx->getPosition())
+		{
+			pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+		}
+		return true;
+	}
+	return false;
 }
 
 
@@ -3085,7 +3243,7 @@ void fl_HdrFtrSectionLayout::localFormat(void)
 	if(!getDocSectionLayout())
 		return;
 	fl_ContainerLayout*	pBL = getFirstLayout();
-
+	UT_ASSERT(pBL->getContainerType() != FL_CONTAINER_HDRFTR);
 	while (pBL)
 	{
 		if(pBL->getContainerType() == FL_CONTAINER_BLOCK)

@@ -9142,6 +9142,10 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos)
 {
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	if(pBL == NULL)
+	{
+		return 0;
+	}
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pBL->myContainingLayout());
 	bool bStop = false;
 	UT_sint32 count =-1;

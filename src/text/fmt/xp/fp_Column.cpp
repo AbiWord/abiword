@@ -389,8 +389,15 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		{
 			pShadowL = pHFSL->findShadow(pPage);
 		}
-		UT_ASSERT(pShadowL);
-		pCon = static_cast<fp_Container *>(pShadowL->getFirstContainer());
+//		UT_ASSERT(pShadowL);
+		if(pShadowL)
+		{
+			pCon = static_cast<fp_Container *>(pShadowL->getFirstContainer());
+		}
+		else
+		{
+			return;
+		}
 	}
 //
 // Correct for the offset of the column in continuous section breaks.
