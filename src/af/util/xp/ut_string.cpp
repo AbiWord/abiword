@@ -638,7 +638,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 	}
 }
 
-#if 0 // i didn't get a chance to test this -- jeff
+#if 1 // i didn't get a chance to test this -- jeff
 XML_Char * UT_encodeUTF8char(UT_UCSChar cIn)
 {
 	// convert the given unicode character into a UTF8 sequence
