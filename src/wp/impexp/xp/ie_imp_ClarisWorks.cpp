@@ -117,7 +117,7 @@ UT_Error IE_Imp_ClarisWorks::_writeHeader(FILE * /* fp */)
 UT_Error IE_Imp_ClarisWorks::_parseFile(FILE * fp)
 {
     unsigned char buf [128];   // general purpose buffer (128 bytes, no more)
-    unsigned long offset;
+    UT_uint32 offset;
     UT_GrowBuf gbBlock(1024);
     bool bEatLF = false;
     bool bEmptyFile = true;
