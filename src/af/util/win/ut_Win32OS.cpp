@@ -95,6 +95,13 @@ DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName)
 
     The caller must free the returned pointer when no longer needed
 */
+
+#ifdef UNICODE
+  #define GETDEFAULTPRINTER "GetDefaultPrinterW"
+#else
+  #define GETDEFAULTPRINTER "GetDefaultPrinterA"
+#endif
+
 char * UT_GetDefaultPrinterName()
 {
 	UT_uint32 iBufferSize = 128; // will become 2x bigger immediately in the loop
@@ -173,10 +180,26 @@ char * UT_GetDefaultPrinterName()
 			if (osvi.dwMajorVersion >= 5) /* Windows 2000 or later */
 			{
 				iBuffSize = iBufferSize;
-				if (!GetDefaultPrinter(pPrinterName,&iBuffSize))
+
+				HMODULE hWinSpool = LoadLibrary("winspool.drv");
+				if (!hWinSpool)
+					return NULL;
+
+				HRESULT (WINAPI * fnGetDefaultPrinter)(LPTSTR, LPDWORD) =
+					(HRESULT (WINAPI * )(LPTSTR, LPDWORD)) GetProcAddress(hWinSpool, GETDEFAULTPRINTER);
+				
+				if (!fnGetDefaultPrinter)
+				{
+					FreeLibrary(hWinSpool);
+					return NULL;
+				}
+
+				if (!fnGetDefaultPrinter(pPrinterName,&iBuffSize))
 					rc = GetLastError();
 				else
 					rc = ERROR_SUCCESS;
+
+				FreeLibrary(hWinSpool);
 			}
 			else /* Windows NT 4.0 or earlier */
 			{
