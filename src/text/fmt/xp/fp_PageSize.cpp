@@ -363,3 +363,33 @@ const char * fp_PageSize::PredefinedToName(Predefined preDef)
 
 	return pagesizes[preDef].name;
 }
+
+UT_Dimension UT_pageSizeUnitToDimension(fp_PageSize::Unit u)
+{
+	switch (u)
+	{
+	case fp_PageSize::mm:
+		return DIM_MM;
+	case fp_PageSize::cm:
+		return DIM_CM;
+	case fp_PageSize::inch:
+		return DIM_IN;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return DIM_MM;
+}
+
+fp_PageSize::Unit UT_dimensionToPageSizeUnit(UT_Dimension u)
+{
+	switch(u)
+	{
+	case DIM_MM:
+		return fp_PageSize::mm;
+	case DIM_CM:
+		return fp_PageSize::cm;
+	case DIM_IN:
+		return fp_PageSize::inch;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return fp_PageSize::mm;
+}

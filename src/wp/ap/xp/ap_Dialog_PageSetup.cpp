@@ -49,8 +49,14 @@ AP_Dialog_PageSetup::~AP_Dialog_PageSetup(void)
 
 bool AP_Dialog_PageSetup::validatePageSettings(void) const
 {
+	// Require at least 0.3in for headers and footers.
+
+	double fudge = UT_convertInchesToDimension(0.3, UT_pageSizeUnitToDimension(m_MarginUnits));
+
 	if ( (m_MarginLeft + m_MarginRight >= m_PageSize.Width(m_PageUnits)) ||
-		 (m_MarginTop + m_MarginBottom >= m_PageSize.Height(m_PageUnits)) ) 
+		 (m_MarginTop + m_MarginBottom >= m_PageSize.Height(m_PageUnits)) ||
+		 (m_MarginFooter + fudge > m_MarginBottom) || 
+		 (m_MarginHeader + fudge > m_MarginTop)) 
 		return false;
 
 	return true;

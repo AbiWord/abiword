@@ -1079,6 +1079,7 @@ const fp_PageSize&	fp_Page::getPageSize(void) const
 
 void fp_Page::removeHdrFtr(HdrFtrType hfType)
 {
+	UT_ASSERT(hfType >= FL_HDRFTR_HEADER && hfType <= FL_HDRFTR_FOOTER_LAST);
 	if(hfType < FL_HDRFTR_FOOTER)
 	{
 		UT_DEBUGMSG(("SEVIOR: Deleting header from page %x m_pHeader = %x \n",this, m_pHeader));

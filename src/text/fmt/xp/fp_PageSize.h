@@ -21,6 +21,7 @@
 #define FP_PAGESIZE_H
 
 #include "ut_types.h"
+#include "ut_units.h"
 
 class ABI_EXPORT fp_PageSize
 {
@@ -108,5 +109,8 @@ private:
 	double m_scale;
 	Unit m_unit;
 };
+
+UT_Dimension UT_pageSizeUnitToDimension(fp_PageSize::Unit u);
+fp_PageSize::Unit UT_dimensionToPageSizeUnit(UT_Dimension u);
 
 #endif	// FP_PAGESIZE_H
