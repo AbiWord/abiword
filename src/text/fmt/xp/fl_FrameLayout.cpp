@@ -340,7 +340,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	if(pCL == NULL)
 	{
 		UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
-		return;
+		return false;
 	}
 	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
 	pBL->removeFrame(this);
