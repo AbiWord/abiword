@@ -4128,24 +4128,27 @@ void fl_BlockLayout::remItemFromList(void)
 		UT_ASSERT(currLevel > 0);
 		currLevel--;
 		sprintf(buf, "%i", currLevel);
+		setStopping(UT_FALSE);
+		pView->_eraseInsertionPoint();
+		format();
 		if (currLevel == 0)
 		{
-		       pView->setStyle((XML_Char*)"Normal");
 		       id = 0;
+		       sprintf(lid, "%i", id);
+		       const XML_Char * attribs[] = { 	"listid", lid,
+						"level", buf,"style","Normal", 0 };
+		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
 		}
 		else
 		{
 		       id = getAutoNum()->getParent()->getID();
-		}
-		sprintf(lid, "%i", id);
-		const XML_Char * attribs[] = { 	"listid", lid,
+		       sprintf(lid, "%i", id);
+		       const XML_Char * attribs[] = { 	"listid", lid,
 						"level", buf, 0 };
-		setStopping(UT_FALSE);
-		pView->_eraseInsertionPoint();
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
-		format();
-		//		if (currLevel != 0)
-		         listUpdate();
+		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		       listUpdate();
+		}
+       		//format();
 		pView->_fixInsertionPointCoords();
 		pView->_generalUpdate();
 		pView->_drawInsertionPoint();
@@ -4270,8 +4273,8 @@ void fl_BlockLayout::_createListLabel(void)
 	UT_ASSERT(m_pAutoNum);
 	FV_View* pView = m_pLayout->getView();
 	const  XML_Char ** blockatt;
-	pView->getCharFormat(&blockatt,UT_TRUE);
-	pView->setBlockFormat(blockatt);
+       	pView->getCharFormat(&blockatt,UT_TRUE);
+        pView->setBlockFormat(blockatt);
 	FREEP(blockatt);
 
 	pView->cmdInsertField("list_label");

@@ -1781,22 +1781,24 @@ UT_Bool FV_View::cmdStopList(void)
 		id = pBlock->getAutoNum()->getParent()->getID();
 	}
 	sprintf(lid, "%i", id);
-	
-	const XML_Char * attribs[] = { 	"listid", lid,
-					"level", buf, 0 };
 
 	pBlock->setStopping(UT_FALSE);
 	_eraseInsertionPoint();
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
 	pBlock->format();
 	if (currLevel == 0)
 	{
-		setStyle((XML_Char*)"Normal");
+	        const XML_Char * attribs[] = { 	"listid", lid,
+					"level", buf,"style","Normal", 0 };
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
 	}
 	else
 	{
+	        const XML_Char * attribs[] = { 	"listid", lid,
+					"level", buf,0 };
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
 		pBlock->listUpdate();
 	}
+	// pBlock->format();
 	_fixInsertionPointCoords();
 	_generalUpdate();
 	_drawInsertionPoint();
