@@ -1819,6 +1819,10 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 const XML_Char * pszType = NULL;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("type", pszType);
+		 if(pszType == NULL)
+		 {
+			 return;
+		 }
 		 if(UT_XML_strcmp(pszType,"list_label") == 0)
 		 {
 			 return;
