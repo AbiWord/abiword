@@ -60,6 +60,8 @@ sub compare($$)
 }
 
 $temp = "/tmp/abi_test";
+chomp($cwd = `pwd`);
+
 $launched = 0;
 $generate = 0;
 $debug = 0;
@@ -81,7 +83,6 @@ while(defined($_ = shift @ARGV)) {
     open (TEST, "$test" . ".cmd") or die("could not open file ${test}.cmd\n");
 
     if ($launched) {
-        print "**************** Closing file\n";
 	close ABI;
     }
 
@@ -119,7 +120,7 @@ while(defined($_ = shift @ARGV)) {
 		$suffix = $1;
 		$match = $args[0];
 		
-		$src = "${test}.dat.${match}";
+		$src = "${cwd}/${test}.dat.${match}";
 		$dst = "${temp}.${suffix}";
 
 		if ($generate) {
