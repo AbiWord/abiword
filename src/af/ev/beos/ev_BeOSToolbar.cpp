@@ -364,7 +364,7 @@ UT_Bool EV_BeOSToolbar::bindListenerToView(AV_View * pView) {
 	m_pViewListener = new EV_BeOSToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	unsigned long lid;
+	AV_ListenerId lid;
 	UT_Bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&lid);
 	UT_ASSERT(bResult);
 
