@@ -28,6 +28,7 @@
 
 #include "xap_CocoaApp.h"
 #include "xap_CocoaAppController.h"
+#include "xap_CocoaFont.h"
 #include "xap_CocoaModule.h"
 #include "xap_CocoaPlugin.h"
 #include "xap_CocoaToolPalette.h"
@@ -317,7 +318,10 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
 			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
 
-			m_FontDictionary = 0;
+			m_FontReferenceDictionary = [[NSMutableDictionary alloc] initWithCapacity:128];
+			m_FontFamilyDictionary    = [XAP_CocoaFontFamilyHelper fontFamilyHelperDictionary:m_FontReferenceDictionary];
+
+			[m_FontFamilyDictionary retain];
 
 			m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
 
@@ -347,10 +351,15 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			[m_ContextMenu release];
 			m_ContextMenu = 0;
 		}
-	if (m_FontDictionary)
+	if (m_FontReferenceDictionary)
 		{
-			[m_FontDictionary release];
-			m_FontDictionary = 0;
+			[m_FontReferenceDictionary release];
+			m_FontReferenceDictionary = 0;
+		}
+	if (m_FontFamilyDictionary)
+		{
+			[m_FontFamilyDictionary release];
+			m_FontFamilyDictionary = 0;
 		}
 	if (m_MenuIDRefDictionary)
 		{
@@ -768,37 +777,33 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 {
 	NSString * familyName = nil;
 
-	if (!m_FontDictionary)
+	if (XAP_CocoaFontReference * fontRef = [m_FontReferenceDictionary objectForKey:fontName])
 		{
-			NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
-
-			unsigned family_count = [pAvailableFontFamilies count];
-
-			m_FontDictionary = [[NSMutableDictionary alloc] initWithCapacity:family_count];
-
-			for (unsigned ff = 0; ff < family_count; ff++)
-				{
-					NSString * family_name = (NSString *) [pAvailableFontFamilies objectAtIndex:ff];
-
-					NSArray * font_members = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:family_name];
-
-					unsigned member_count = [font_members count];
-
-					for (unsigned fm = 0; fm < member_count; fm++)
-						{
-							NSArray * font = (NSArray *) [font_members objectAtIndex:fm];
-
-							NSString * name = (NSString *) [font objectAtIndex:0];
-
-							[m_FontDictionary setObject:family_name forKey:name];
-						}
-				}
-		}
-	if (m_FontDictionary && fontName)
-		{
-			familyName = (NSString *) [m_FontDictionary objectForKey:fontName];
+			familyName = [fontRef fontFamily];
 		}
 	return familyName;
+}
+
+- (XAP_CocoaFontReference *)helperReferenceForFont:(NSString *)fontName
+{
+	return [m_FontReferenceDictionary objectForKey:fontName];
+}
+
+- (XAP_CocoaFontFamilyHelper *)helperForFontFamily:(NSString *)fontFamilyName
+{
+	return [m_FontFamilyDictionary objectForKey:fontFamilyName];
+}
+
+- (XAP_CocoaFontFamilyHelper *)helperForUnknownFontFamily:(NSString *)fontFamilyName
+{
+	XAP_CocoaFontFamilyHelper * helper = [[XAP_CocoaFontFamilyHelper alloc] initWithFontFamilyName:fontFamilyName known:NO];
+
+	[m_FontFamilyDictionary setObject:helper forKey:fontFamilyName];
+
+	[helper addFontReferences:m_FontReferenceDictionary];
+	[helper release];
+
+	return helper;
 }
 
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem

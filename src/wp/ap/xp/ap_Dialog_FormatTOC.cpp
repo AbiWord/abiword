@@ -182,8 +182,14 @@ UT_UTF8String AP_Dialog_FormatTOC::getNewStyle(UT_UTF8String & sProp)
  */
 void AP_Dialog_FormatTOC::updateDialog(void)
 {
+	XAP_Frame * pFrame = getActiveFrame();
+	if (pFrame == 0)
+	{
+		setSensitivity(false);
+		return;
+	}
 	// Handshaking code
-	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView->getPoint() == 0)
 	{
 		return;
