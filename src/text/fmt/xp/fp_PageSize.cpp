@@ -31,17 +31,13 @@ struct private_pagesize_sizes
 
 // all paper sizes with this value set for any of its margins
 // means that i don't know what the correct value is. we should
-// find these out ASAP! Default to 1inch (25.4mm)
-#define MARGIN_UNKNOWN 25.4
+// find these out ASAP!
+#define MARGIN_UNKNOWN 28.0
 
 const private_pagesize_sizes
 pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 {
 	// the A sizes
-	{1682.0, 2378.0, DIM_MM,	"4A", 
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1189.0, 1682.0, DIM_MM,	"2A", 
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 841.0, 1189.0, DIM_MM,	"A0", 
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 594.0,  841.0, DIM_MM,	"A1",
@@ -55,19 +51,15 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{  74.0,  105.0, DIM_MM,	"A7",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  52.0,  74.0, DIM_MM,	"A8",
+	{  52.0,  74.0,  DIM_MM,	"A8",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  37.0,  52.0, DIM_MM,	"A9",
+	{  37.0,  52.0,  DIM_MM,	"A9",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  26.0,  37.0, DIM_MM,	"A10",
+	{  26.0,  37.0,  DIM_MM,	"A10",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 
 	// the B sizes
-	{2000.0, 2828.0, DIM_MM,	"4B",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1414.0, 2000.0, DIM_MM,	"2B",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1000.0, 1414.0, DIM_MM,	"B0",
+	{ 1000.0,1414.0, DIM_MM,	"B0",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 707.0, 1000.0, DIM_MM,	"B1",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
@@ -99,8 +91,8 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 229.0,  324.0, DIM_MM,	"C4",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	// FIXME: C5 is dealt with below, under envelopes
-	// FIXME: should prolly have C6/C5 here too, for completeness
+	{ 162.0,  229.0, DIM_MM,    "C5", 
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{ 114.0,  162.0, DIM_MM,	"C6",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{  81.0,  114.0, DIM_MM,	"C7",
@@ -110,27 +102,56 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	{  40.0,   57.0, DIM_MM,	"C9",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	{  28.0,   40.0, DIM_MM,	"C10",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	
-	// Japanese B sizes
-	// FIXME: should prolly have the other Japanese sizes
-	{ 182.0,  258.0, DIM_MM,   "B5-Japan", 28.0, 28.0, 28.0, 28.0},
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },   
 
-	// the rest
+	// English sizes
 	{   8.5,   14.0, DIM_IN,	"Legal", 1.0, 1.0, 1.0, 1.0	},
-	{   8.5,   13.0, DIM_IN,	"Folio", 1.0, 1.0, 1.0, 1.0	},
+	{   7.5,   10.0, DIM_IN,	"Folio", 1.0, 1.0, 1.0, 1.0	},
 	{   8.5,   11.0, DIM_IN,	"Letter", 1.0, 1.0, 1.0, 1.0 },
-	{   8.5,    5.5, DIM_IN, "Half-Letter", 1.0, 1.0, 1.0, 1.0 },
-	{   7.5,   10.0, DIM_IN, "Executive", 1.0, 1.0, 1.0, 1.0 },
-	{ 280.1,  267.0, DIM_MM,   "Tabloid/Ledger", 25.4, 25.4, 25.4, 25.4},
-	{  99.0,  191.0, DIM_MM,   "Monarch", 3.5, 3.5, 3.5, 3.5},
-	{ 297.0,  433.0, DIM_MM,   "SuperB", 28.2, 28.2, 28.2, 28.2},
-	{ 105.0,  242.0, DIM_MM,   "Envelope-Commercial", 1.8, 1.8, 1.8, 1.8},
-	{  99.0,  191.0, DIM_MM,   "Envelope-Monarch", 1.8, 1.8, 1.8, 1.8},
-	{ 110.0,  220.0, DIM_MM,   "Envelope-DL", 1.8, 1.8, 1.8, 1.8},
-	{ 162.0,  229.0, DIM_MM,   "Envelope-C5", 1.8, 1.8, 1.8, 1.8},
-	{ 105.0,  148.0, DIM_MM,   "EuroPostcard", 1.8, 1.8, 1.8, 1.8},
-	{   0.0,    0.0, DIM_MM,	"Custom", 0.0, 0.0, 0.0, 0.0}
+
+	// Weirdos
+	{ 99.0, 210.0, DIM_MM, "1/3 A4",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN }, 
+	{ 74.0, 210.0, DIM_MM, "1/4 A4",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN }, 
+	{ 37.0, 210.0, DIM_MM, "1/8 A4",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN }, 
+	{ 105.0, 297.0, DIM_MM, "1/4 A3",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 70.0, 148.0, DIM_MM, "1/3 A5",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 110.0, 220.0, DIM_MM, "DL Envelope",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 114.0, 229.0, DIM_MM, "C6/C5 Envelope",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 104.8, 241.3, DIM_MM, "Envelope No10",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 6.00, 9.00, DIM_IN, "Envelope 6x9",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+
+	// Custom, same size as A4
+	{ 210.0,  297.0, DIM_MM,	"Custom", 28.0, 28.0, 28.0, 28.0 }
+
+#if 0
+	// the rejects
+	{   8.5,    5.5, DIM_IN,    "Half-Letter", 1.0, 1.0, 1.0, 1.0 },
+	{   7.5,   10.0, DIM_IN,    "Executive", 1.0, 1.0, 1.0, 1.0 },
+	{ 280.1,  267.0, DIM_MM,    "Tabloid/Ledger", 25.4, 25.4, 25.4, 25.4},
+	{  99.0,  191.0, DIM_MM,    "Monarch", 3.5, 3.5, 3.5, 3.5},
+	{ 297.0,  433.0, DIM_MM,    "SuperB", 28.2, 28.2, 28.2, 28.2},
+	{ 105.0,  242.0, DIM_MM,    "Envelope-Commercial", 1.8, 1.8, 1.8, 1.8},
+	{  99.0,  191.0, DIM_MM,    "Envelope-Monarch", 1.8, 1.8, 1.8, 1.8},
+	{ 105.0,  148.0, DIM_MM,    "EuroPostcard", 1.8, 1.8, 1.8, 1.8},
+	{2000.0, 2828.0, DIM_MM,	"4B",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{1414.0, 2000.0, DIM_MM,	"2B",
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{ 182.0,  258.0, DIM_MM,   "B5-Japan", 28.0, 28.0, 28.0, 28.0},
+	{1682.0, 2378.0, DIM_MM,	"4A", 
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+	{1189.0, 1682.0, DIM_MM,	"2A", 
+	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
+#endif
 };
 
 fp_PageSize::fp_PageSize(Predefined preDef)
@@ -313,9 +334,7 @@ bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
 		 i < static_cast<int>(_last_predefined_pagesize_dont_use_); ++i)
 	{
 		if (!strcmp(pagesizes[i].name, szPageSizeName))
-		{
 			return true;
-		}
 	}
 	return false;
 }
@@ -335,14 +354,12 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 	    preDef < static_cast<int>(_last_predefined_pagesize_dont_use_);
 		preDef++)
 	{
-		if (0 == strcmp(pagesizes[preDef].name, name)) {
+		if (0 == strcmp(pagesizes[preDef].name, name))
 			break;
-		}
 	}
 
-	if ((preDef >= _first_predefined_pagesize_) && (preDef < _last_predefined_pagesize_dont_use_)) {
+	if ((preDef >= _first_predefined_pagesize_) && (preDef < _last_predefined_pagesize_dont_use_))
 		return static_cast<Predefined>(preDef);
-	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return fp_PageSize::psLetter;

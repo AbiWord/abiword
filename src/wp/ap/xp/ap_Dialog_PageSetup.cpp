@@ -53,10 +53,13 @@ bool AP_Dialog_PageSetup::validatePageSettings(void) const
 
 	double fudge = UT_convertInchesToDimension(0.3, m_MarginUnits);
 
-	if ( (m_MarginLeft + m_MarginRight >= m_PageSize.Width(m_PageUnits)) ||
-		 (m_MarginTop + m_MarginBottom >= m_PageSize.Height(m_PageUnits)) ||
-		 (m_MarginFooter + fudge > m_MarginBottom) || 
-		 (m_MarginHeader + fudge > m_MarginTop)) 
+/*
+  (m_MarginFooter + fudge > m_MarginBottom) || 
+  (m_MarginHeader + fudge > m_MarginTop)) 
+*/
+
+	if ( (m_MarginLeft + m_MarginRight >= m_PageSize.Width(m_MarginUnits)) ||
+		 (m_MarginTop + m_MarginBottom >= m_PageSize.Height(m_MarginUnits)) )
 		return false;
 
 	return true;

@@ -30,39 +30,18 @@ public:
 	enum Predefined
 	{
 		_first_predefined_pagesize_ = 0,
+
 		// If you append a predefined pagesize here, don't forget
 		// to update the cpp accordingly.
 
-		// namespacing with 'ps' since B[0-9] seem to be reserved
-		// for BAUD rates under SUSv3 (according to Daniel E. Eisenbud)
-
-		// Metric sizes, DIN 476
-		psDIN_4A = 0,
-		psDIN_2A,
-		psA0, psA1, psA2, psA3, psA4, psA5, psA6, psA7, psA8, psA9, psA10,
-		psDIN_4B,
-		psDIN_2B,
+		psA0 = 0, psA1, psA2, psA3, psA4, psA5, psA6, psA7, psA8, psA9, psA10,
 		psB0, psB1, psB2, psB3, psB4, psB5, psB6, psB7, psB8, psB9, psB10,
-		psC0, psC1, psC2, psC3, psC4,       psC6, psC7, psC8, psC9, psC10,
-
-		// JIS P 0138-61 -- should call this JB5
-		psB5_Japan,
-		
-		psLegal,
-		psFolio,
-		psLetter,
-		psHalf_Letter,
-		psExecutive,
-		psTabloid_Ledger,
-		psMonarch,
-		psSuperB,
-		psEnvelope_Commercial,
-		psEnvelope_Monarch,
-		psEnvelope_DL,
-		psEnvelope_C5,
-		psEuroPostcard,
-
+		psC0, psC1, psC2, psC3, psC4, psC5, psC6, psC7, psC8, psC9, psC10,
+		psLegal, psFolio, psLetter,
+		ps1_3A4, ps1_4A4, ps1_8A4, ps1_4A3, ps1_3A5,
+		psEnvelope_DL, psEnvelope_C6_C5, psEnvelope_no10, psEnvelope_6x9,
 		psCustom,
+
 		// append new pagesizes here
 		_last_predefined_pagesize_dont_use_
 	};

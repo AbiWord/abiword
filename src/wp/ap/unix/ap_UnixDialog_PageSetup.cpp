@@ -346,7 +346,7 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   w = ps.Width (new_units);
   h = ps.Height (new_units);
 
-  if (fp_PageSize::psCustom != pd)
+  if (true /* fp_PageSize::psCustom != pd */)
   {
 	  // set entry values for a non-custom pagesize
 	  gchar * val;
@@ -604,19 +604,11 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   // create the drop-down menu with all of our supported page sizes
   GList *popdown_items = NULL;
   for (int i = (int)fp_PageSize::_first_predefined_pagesize_; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
-    {
       popdown_items = g_list_append (popdown_items, (void*)fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i) );
-    }
   gtk_combo_set_popdown_strings (GTK_COMBO (optionPageSize), popdown_items);
-
-  gint last_page_size = (gint)fp_PageSize::NameToPredefined 
-	  (m_PageSize.getPredefinedName ());
-
   GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(optionPageSize)->list);
-  gtk_list_select_item (optionPageSizeList, last_page_size);
-
   m_iOptionPageSizeListID = g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",
-		     G_CALLBACK(s_page_size_changed), (gpointer)this);
+											 G_CALLBACK(s_page_size_changed), (gpointer)this);
 
   labelPageUnits = gtk_label_new (_(AP, DLG_PageSetup_Units));
   gtk_widget_show (labelPageUnits);
