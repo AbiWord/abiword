@@ -89,6 +89,7 @@ public:
 		{ return &m_sCurStyle;}
 	void              setCurStyle(UT_UTF8String & sStyle)
 		{ m_sCurStyle = sStyle;}
+	void              Apply(void);
 	virtual void      setStyleInGUI(void) = 0;       
 	static void       autoUpdate(UT_Worker * pTimer);
 	void              updateDialog(void);

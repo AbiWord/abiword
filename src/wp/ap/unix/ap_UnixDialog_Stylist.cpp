@@ -131,7 +131,33 @@ void AP_UnixDialog_Stylist::event_Close(void)
 
 void AP_UnixDialog_Stylist::setStyleInGUI(void)
 {
+	UT_sint32 row,col;
+	UT_UTF8String sCurStyle = *getCurStyle();
+	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
+	{
+		updateDialog();
+	}
+	if(m_wStyleList == NULL)
+	{
+		return;
+	}
+	if(isStyleTreeChanged())
+	{
+		_fillTree();
+	}
+	getStyleTree()->findStyle(sCurStyle,row,col);
+	UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
+	UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
+	UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
+	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
+	GtkTreePath * gPathRow = gtk_tree_path_new_from_string (sPathRow.utf8_str());
+	GtkTreePath * gPathFull = gtk_tree_path_new_from_string (sPathFull.utf8_str());
+	gtk_tree_view_expand_row( GTK_TREE_VIEW(m_wStyleList),gPathRow,TRUE);
+	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
+	gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
 	setStyleChanged(false);
+	g_free(gPathRow);
+	g_free(gPathFull);
 }
 
 void AP_UnixDialog_Stylist::destroy(void)
@@ -139,6 +165,8 @@ void AP_UnixDialog_Stylist::destroy(void)
 	finalize();
 	gtk_widget_destroy(m_windowMain);
 	m_windowMain = NULL;
+	m_wRenderer = NULL;
+	m_wStyleList = NULL;
 }
 
 void AP_UnixDialog_Stylist::activate(void)
@@ -152,6 +180,9 @@ void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame *pFrame)
     UT_ASSERT(m_windowMain);
 }
 
+/*!
+ * Set the style in the XP layer fromthe selection in the GUI.
+ */
 void AP_UnixDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 {
 	UT_UTF8String sStyle;
@@ -218,8 +249,12 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 
 void  AP_UnixDialog_Stylist::event_Apply(void)
 {
+	Apply();
 }
 
+/*!
+ * Fill the GUI tree with the styles as defined in the XP tree.
+ */
 void  AP_UnixDialog_Stylist::_fillTree(void)
 {
 	Stylist_tree * pStyleTree = getStyleTree();
@@ -236,7 +271,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	UT_DEBUGMSG(("Number of rows of styles in document %d \n",pStyleTree->getNumRows()));
 	if(m_wRenderer)
 	{
-		g_object_unref (G_OBJECT (m_wRenderer));
+//		g_object_unref (G_OBJECT (m_wRenderer));
 		gtk_widget_destroy (m_wStyleList);
 	}
 
@@ -294,8 +329,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
 												 -1, 
 												 pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles).utf8_str(),
-												 m_wRenderer, "text", 0, NULL); // FIXME internationalize me.
-	gtk_tree_view_expand_all (GTK_TREE_VIEW (m_wStyleList));
+												 m_wRenderer, "text", 0, NULL); 	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));
 	gtk_container_add (GTK_CONTAINER (m_wStyleListContainer), m_wStyleList);
 
 	g_signal_connect_after(G_OBJECT(m_wStyleList),
@@ -308,11 +342,13 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 						   G_CALLBACK(s_types_dblclicked),
 						   static_cast<gpointer>(this));
 	gtk_widget_show_all(m_wStyleList);
+	setStyleTreeChanged(false);
 }
 
 void  AP_UnixDialog_Stylist::_populateWindowData(void)
 {
 	_fillTree();
+	setStyleInGUI();
 }
 
 void  AP_UnixDialog_Stylist::_connectSignals(void)

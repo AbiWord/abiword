@@ -74,6 +74,19 @@ void AP_Dialog_Stylist::startUpdater(void)
 	m_pAutoUpdater->start();
 }
 
+/*!
+ * Apply current style to the current selection in the current view
+ */
+void AP_Dialog_Stylist::Apply(void)
+{
+	FV_View * pView = static_cast<FV_View *>(getApp()->getLastFocussedFrame()->getCurrentView());
+	if(pView->getPoint() == 0)
+	{
+		return;
+	}
+	pView->setStyle(getCurStyle()->utf8_str());
+}
+
 void AP_Dialog_Stylist::stopUpdater(void)
 {
 	if(m_pAutoUpdater == NULL)
@@ -117,6 +130,10 @@ void AP_Dialog_Stylist::updateDialog(void)
 {
 	// Handshaking code
 	FV_View * pView = static_cast<FV_View *>(getApp()->getLastFocussedFrame()->getCurrentView());
+	if(pView->getPoint() == 0)
+	{
+		return;
+	}
 	PD_Document * pDoc = pView->getDocument();
 	if(m_pStyleTree == NULL)
 	{
