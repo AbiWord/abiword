@@ -151,6 +151,7 @@ UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 {
 	UT_GrowBuf gbBlock(1024);
 	UT_Bool bEatLF = UT_FALSE;
+	UT_Bool bEmptyFile = UT_TRUE;
 	UT_Bool bSmashUTF8 = UT_FALSE;
 	unsigned char c;
 
@@ -176,6 +177,7 @@ UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 			// start a paragraph and emit any text that we
 			// have accumulated.
 			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+			bEmptyFile = UT_FALSE;
 			if (gbBlock.getLength() > 0)
 			{
 				if (bSmashUTF8)
@@ -202,15 +204,17 @@ UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 		}
 	} 
 
-	if (gbBlock.getLength() > 0)
+	if (gbBlock.getLength() > 0 || bEmptyFile)
 	{
 		// if we have text left over (without final CR/LF),
+		// or if we read an empty file,
 		// create a paragraph and emit the text now.
 		if (bSmashUTF8)
 			_smashUTF8(&gbBlock);
 
 		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-		X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
+		if (gbBlock.getLength() > 0)
+		    X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 	}
 
 	return UT_OK;
