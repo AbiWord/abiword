@@ -1893,7 +1893,7 @@ void fp_TextRun::_refreshDrawBuffer()
 
 			// NB: _getContext requires block offset
 			_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
-#if 0
+#if 1
 			cg.renderString(pSpan, &m_pSpanBuff[offset],
 							iTrueLen,&prev[0],&next[0],m_pLanguage, iVisDir,
 							GR_Font::s_doesGlyphExist, (void*)getFont());
