@@ -167,6 +167,10 @@ protected:
 	void				_openTag(PT_AttrPropIndex api);
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
+  void _openTable(PT_AttrPropIndex api);
+  void _openCell(PT_AttrPropIndex api);
+  void _closeTable();
+  void _closeCell();
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	bool				_inherits(const char* style, const char* from);
 	void				_outputInheritanceLine(const char* ClassName);
@@ -319,6 +323,85 @@ void s_HTML_Listener::_closeTag(void)
 
 	m_bInBlock = false;
 	return;
+}
+
+void s_HTML_Listener::_closeTable()
+{
+  m_pie->write("</tbody>\r\n</table>\r\n");
+}
+
+void s_HTML_Listener::_closeCell()
+{
+  m_pie->write("</td>\r\n");
+}
+
+void s_HTML_Listener::_openTable(PT_AttrPropIndex api)
+{
+	if (m_bFirstWrite)
+	{
+		_outputBegin(api);
+	}
+
+	if (!m_bInSection)
+	{
+		return;
+	}
+
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
+	if (bHaveProp && pAP)
+	{
+#if 0
+	  pSectionAP->getProperty("table-col-spacing", (const XML_Char *&)pszTableColSpacing);
+	  pSectionAP->getProperty("table-row-spacing", (const XML_Char *&)pszTableRowSpacing);
+	  pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
+	  pSectionAP->getProperty("cell-margin-left", (const XML_Char *&)pszLeftOffset);
+	  pSectionAP->getProperty("cell-margin-top", (const XML_Char *&)pszTopOffset);
+	  pSectionAP->getProperty("cell-margin-right", (const XML_Char *&)pszRightOffset);
+	  pSectionAP->getProperty("cell-margin-bottom", (const XML_Char *&)pszBottomOffset);
+#endif
+	  
+	  m_pie->write("\n<table cellpadding=\"1\" border=\"1\">\r\n<tbody>\r\n");
+	}
+}
+
+void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
+{
+	if (m_bFirstWrite)
+	{
+		_outputBegin(api);
+	}
+
+	if (!m_bInSection)
+	{
+		return;
+	}
+
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
+	if (bHaveProp && pAP)
+	{
+	  UT_String bgcolor ("");
+
+#if 0
+	  pSectionAP->getProperty("left-attach", (const XML_Char *&)pszLeftAttach);
+	  pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
+	  pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
+	  pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBottomAttach);
+#endif
+	  
+	  const char* pszBgColor = NULL;
+	  pAP->getProperty("bgcolor", (const XML_Char *&)pszBgColor);
+	  if(pszBgColor && pszBgColor[0])
+	    {
+	      bgcolor = UT_String_sprintf(" bgcolor: %s;", pszBgColor);
+	    }
+	  
+	  UT_String td = UT_String_sprintf("<td%s>\r\n", bgcolor.c_str());
+	  m_pie->write(td.c_str());
+	}
 }
 
 void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
@@ -1730,7 +1813,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 	m_pie->write("</style>\r\n");
 	m_pie->write("</head>\r\n");
-	m_pie->write("<body>");
+	m_pie->write("<body>\r\n");
 
 	m_bFirstWrite = false;
 }
@@ -1941,6 +2024,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
 	switch (pcrx->getStruxType())
 	{
+	case PTX_SectionEndnote:
 	case PTX_SectionHdrFtr:
 	case PTX_Section:
 	{
@@ -1990,6 +2074,43 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		return true;
 	}
 
+	case PTX_SectionTable:
+	  {
+	    _closeSpan();
+	    _closeTag();
+	    _openTable(pcr->getIndexAP());
+	    return true;
+	  }
+
+	case PTX_SectionCell:
+	  {
+	    _closeSpan();
+	    _closeTag();
+	    _openCell(pcr->getIndexAP());
+	    return true;
+	  }
+
+	case PTX_EndTable:
+	  {
+	    _closeTag();
+	    _closeTable();
+	    return true;
+	  }
+
+	case PTX_EndCell:
+	  {
+	    _closeTag();
+	    _closeCell();
+	    return true;
+	  }
+
+	case PTX_EndFrame:
+	case PTX_EndMarginnote:
+	case PTX_EndFootnote:
+	case PTX_SectionFrame:
+	case PTX_SectionMarginnote:
+	case PTX_SectionFootnote:
+	case PTX_EndEndnote:
 	default:
 		UT_ASSERT_NOT_REACHED();
 		return false;
