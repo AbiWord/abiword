@@ -1225,6 +1225,63 @@ UT_Bool FV_View::isPointBeforeListLabel(void)
 	return bBefore;
 }
 
+void    FV_View::processSelectedBlocks(List_Type listType)
+{
+  //
+  // Update Lists in the selected region
+  //
+	UT_Vector vBlock;
+	getListBlocksInSelection( &vBlock);
+  	UT_uint32 i;
+	for(i=0; i< vBlock.getItemCount(); i++)
+	{
+	        fl_BlockLayout * pBlock =  (fl_BlockLayout *) vBlock.getNthItem(i);
+		if(pBlock->getListType() == listType)
+		{
+	              pBlock->listUpdate();
+	              pBlock->StopList();
+		}
+		else
+		{
+	              fl_BlockLayout * pPrev = pBlock->getPrev();
+		      if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == listType)
+		      {
+	                     pBlock->listUpdate();
+		             pBlock->resumeList(pPrev);
+		      }
+		      else if(pBlock->isListItem()== NULL)
+		      {
+	                     pBlock->listUpdate();
+			     XML_Char* cType = pBlock->getListStyleString(listType);
+		             pBlock->StartList(cType);
+		      } 
+		}
+	}
+}
+
+
+void FV_View::getListBlocksInSelection( UT_Vector * vBlock)
+{
+	PT_DocPosition startpos = getPoint();
+	PT_DocPosition endpos = startpos;
+	if(isSelectionEmpty())
+	{
+	        vBlock->addItem(getCurrentBlock());
+		return;
+	}
+	if(m_iSelectionAnchor > startpos)
+	        endpos = m_iSelectionAnchor;
+	else
+	        startpos =  m_iSelectionAnchor;
+	fl_BlockLayout * pBlock = _findBlockAtPosition(startpos);
+	while( pBlock != NULL && pBlock->getPosition() <= endpos)
+	{
+	        vBlock->addItem(pBlock);
+		pBlock = pBlock->getNext();
+	}
+	return;
+}
+
 void FV_View::insertParagraphBreak(void)
 {
 	UT_Bool bDidGlob = UT_FALSE;

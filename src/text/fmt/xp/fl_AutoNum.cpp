@@ -450,7 +450,7 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower)
 		len = strlen(roman);
 		while (--len >= 0) 
 		{
-		        UT_sint32 r = roman[len];
+		        UT_sint32 r = (UT_sint32) roman[len];
 		        if( (r >= (UT_sint32) 'A') && (r <= (UT_sint32) 'Z'))
 			       r = r + 64;
 			roman[len] = (char) r;

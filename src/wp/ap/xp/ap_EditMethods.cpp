@@ -4449,31 +4449,11 @@ Defun1(toggleSub)
 	return _toggleSpan(pView, "text-position", "subscript", "normal");
 }
 
-
 Defun1(doBullets)
 {
 	ABIWORD_VIEW;
 #ifndef NDEBUG
-        fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	if(pBlock->getListType() == BULLETED_LIST)
-	{
-	        pBlock->listUpdate();
-	        pBlock->StopList();
-	}
-	else
-	{
-	        fl_BlockLayout * pPrev = pBlock->getPrev();
-		if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == BULLETED_LIST)
-		{
-	              pBlock->listUpdate();
-		      pBlock->resumeList(pPrev);
-		}
-		else if(pBlock->isListItem()== NULL)
-		{
-	              pBlock->listUpdate();
-		      pView->cmdStartList((XML_Char*)"Bullet List");
-		}
-	}
+	pView->processSelectedBlocks(BULLETED_LIST);
 	return UT_TRUE;
 #else
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
@@ -4482,32 +4462,11 @@ Defun1(doBullets)
 #endif
 }
 
-
-
 Defun1(doNumbers)
 {
 	ABIWORD_VIEW;
 #ifndef NDEBUG
-        fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	if(pBlock->getListType() == NUMBERED_LIST)
-	{
-	        pBlock->listUpdate();
-		pBlock->StopList();
-	}
-	else
-	{
-	        fl_BlockLayout * pPrev = pBlock->getPrev();
-		if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == NUMBERED_LIST)
-		{
-	              pBlock->listUpdate();
-		      pBlock->resumeList(pPrev);
-		}
-		else if(pBlock->isListItem()== NULL)
-		{
-	              pBlock->listUpdate();
-		      pView->cmdStartList((XML_Char*)"Numbered List");
-		}
-	}
+	pView->processSelectedBlocks(NUMBERED_LIST);
 	return UT_TRUE;
 #else
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
