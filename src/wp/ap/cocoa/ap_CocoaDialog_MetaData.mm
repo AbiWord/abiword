@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include <stdlib.h>
 #include <time.h>
@@ -26,10 +26,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -43,15 +39,15 @@
 /*****************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_MetaData::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													 XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_MetaData * p = new AP_CocoaDialog_MetaData(pFactory,id);
+	AP_CocoaDialog_MetaData * p = new AP_CocoaDialog_MetaData(pFactory,dlgid);
 	return p;
 }
 
 AP_CocoaDialog_MetaData::AP_CocoaDialog_MetaData(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_MetaData(pDlgFactory,id)
+										 XAP_Dialog_Id dlgid)
+	: AP_Dialog_MetaData(pDlgFactory,dlgid)
 {
 }
 
@@ -90,3 +86,21 @@ void AP_CocoaDialog_MetaData::runModal(XAP_Frame * pFrame)
 
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
+
+
+
+@implementation AP_CocoaDialog_MetadataController
+
+- (IBAction)cancelBtnAction:(id)sender
+{
+}
+
+- (IBAction)fieldEdited:(id)sender
+{
+}
+
+- (IBAction)okBtnAction:(id)sender
+{
+}
+
+@end

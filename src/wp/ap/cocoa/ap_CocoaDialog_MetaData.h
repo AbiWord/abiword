@@ -24,20 +24,56 @@
 
 class XAP_CocoaFrame;
 
+@interface AP_CocoaDialog_MetadataController : NSWindowController
+{
+    IBOutlet NSTextField *m_authorData;
+    IBOutlet NSTextField *m_authorLabel;
+    IBOutlet NSTextField *m_categoryData;
+    IBOutlet NSTextField *m_categoryLabel;
+    IBOutlet NSTextField *m_coAuthorData;
+    IBOutlet NSTextField *m_coAuthorLabel;
+    IBOutlet NSTextField *m_coverageData;
+    IBOutlet NSTextField *m_coverageLabel;
+    IBOutlet NSTextField *m_descriptionData;
+    IBOutlet NSTextField *m_descriptionLabel;
+    IBOutlet NSTextField *m_keywordData;
+    IBOutlet NSTextField *m_keywordLabel;
+    IBOutlet NSTextField *m_languageData;
+    IBOutlet NSTextField *m_languageLabel;
+    IBOutlet NSTextField *m_publisherData;
+    IBOutlet NSTextField *m_publisherLabel;
+    IBOutlet NSTextField *m_relationData;
+    IBOutlet NSTextField *m_relationLabel;
+    IBOutlet NSTextField *m_rightsData;
+    IBOutlet NSTextField *m_rightsLabel;
+    IBOutlet NSTextField *m_sourceData;
+    IBOutlet NSTextField *m_sourceLabel;
+    IBOutlet NSTextField *m_subjectData;
+    IBOutlet NSTextField *m_subjectLabel;
+    IBOutlet NSTextField *m_titleData;
+    IBOutlet NSTextField *m_titleLabel;
+}
+- (IBAction)cancelBtnAction:(id)sender;
+- (IBAction)fieldEdited:(id)sender;
+- (IBAction)okBtnAction:(id)sender;
+@end
+
 /*****************************************************************/
 
 class AP_CocoaDialog_MetaData: public AP_Dialog_MetaData
 {
 public:
-	AP_CocoaDialog_MetaData(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_MetaData(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_MetaData(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 	
 protected:
 
+ private:
+	AP_CocoaDialog_MetadataController * m_dlg;
 };
 
 #endif /* AP_COCOADIALOG_METADATA_H */

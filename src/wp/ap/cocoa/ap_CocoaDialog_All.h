@@ -70,6 +70,7 @@
 #   include "ap_CocoaDialog_HdrFtr.h"
 #	include "ap_CocoaDialog_InsertBookmark.h"
 #	include "ap_CocoaDialog_InsertHyperlink.h"
+#	include "ap_CocoaDialog_MetaData.h"
 #	include "ap_CocoaDialog_MarkRevisions.h"
 #	include "ap_CocoaDialog_ListRevisions.h"
 
@@ -122,6 +123,7 @@
 //PORT 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_CocoaDialog_InsertBookmark)
 //PORT 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)
 //PORT	DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_CocoaDialog_Image)
+	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_CocoaDialog_MetaData)
 //PORT 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
 //PORT 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
  	// ... also add new dialogs here ...
