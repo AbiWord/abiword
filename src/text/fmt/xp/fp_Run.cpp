@@ -361,7 +361,13 @@ void fp_Run::updateHighlightColor(void)
 		}
 		if (pPage != NULL)
 		{
-			pClr = pPage->getOwningSection()->getPaperColor();
+			if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+				pClr = pPage->getOwningSection()->getPaperColor();
+			else
+			{
+				UT_setColor (m_pColorHL, 255, 255, 255);
+				return;
+			}
 		}
 		else if(getBlock()->isHdrFtr())
 		{
