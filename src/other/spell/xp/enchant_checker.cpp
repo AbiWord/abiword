@@ -72,8 +72,6 @@ EnchantChecker::~EnchantChecker()
 SpellChecker::SpellCheckResult
 EnchantChecker::_checkWord (const UT_UCSChar * ucszWord, size_t len)
 {
-	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
-
 	UT_return_val_if_fail (m_dict, SpellChecker::LOOKUP_ERROR);
 	UT_return_val_if_fail (ucszWord, SpellChecker::LOOKUP_ERROR);
 	UT_return_val_if_fail (len, SpellChecker::LOOKUP_ERROR);
@@ -117,12 +115,16 @@ EnchantChecker::_suggestWord (const UT_UCSChar *ucszWord, size_t len)
 
 bool EnchantChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
-	UT_return_if_fail (m_dict);
+	UT_return_val_if_fail (m_dict, false);
+
+	bool ret = false;
 
 	if (word && len) {
 		UT_UTF8String utf8 (word);
 		enchant_dict_add_to_personal (m_dict, utf8.utf8_str(), utf8.byteLength());
+		ret = true;
 	}
+	return ret;
 }
    
 void EnchantChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
