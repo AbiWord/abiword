@@ -153,6 +153,8 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 							 (const UT_sint32 *) nTypeList);
 	
 	pDialog->setDefaultFileType((IEFileType)1);
+
+	// todo: cd to the proper plugin directory
 	
 	pDialog->runModal(m_pFrame);
 	

@@ -2234,7 +2234,9 @@ Defun1(cycleWindowsBck)
 	return true;
 }
 
-Defun(closeWindow)
+static bool
+s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
+			   bool bCanExit)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -2250,7 +2252,6 @@ Defun(closeWindow)
 
 		pApp->clearLastFocussedFrame();
 	}
-	
 
 	// is this the last view on a dirty document?
 	if ((pFrame->getViewNumber() == 0) &&
@@ -2280,22 +2281,40 @@ Defun(closeWindow)
 		}
 	}
 
-	// are we the last window?
-	if (1 >= pApp->getFrameCount())
-	{
-	  // Delete all the open modeless dialogs
-
-		pApp->closeModelessDlgs();
-		pApp->reallyExit();
-	}
-
 	// nuke the window
 	
 	pApp->forgetFrame(pFrame);
 	pFrame->close();
 	delete pFrame;
 
+	// are we the last window?
+	if (1 >= pApp->getFrameCount())
+	{
+	  // Delete all the open modeless dialogs
+
+		pApp->closeModelessDlgs();
+
+		if (bCanExit)
+		{
+			pApp->reallyExit();
+		}
+		else
+		{
+			XAP_Frame * pNewFrame = pApp->newFrame();
+			pNewFrame->loadDocument(NULL, IEFT_Unknown);
+			if (pNewFrame)
+			{
+				pNewFrame->show();
+			}
+		}
+	}
+
 	return true;
+}
+
+Defun(closeWindow)
+{
+	return s_closeWindow (pAV_View, pCallData, false);
 }
 
 Defun(querySaveAndExit)
@@ -2327,7 +2346,7 @@ Defun(querySaveAndExit)
 		pAV_View = f->getCurrentView();
 		UT_ASSERT(pAV_View);
 
-		bRet = EX(closeWindow);
+		bRet = s_closeWindow (pAV_View, pCallData, true);
 
 		ndx--;
 	}
