@@ -599,7 +599,7 @@ bool EV_CocoaToolbar::synthesize(void)
 			btnFrame.size.width = 1.0f;
 			btnFrame.size.height = BTN_HEIGHT; 
 			btnFrame.origin.y = (BTN_HEIGHT - btnFrame.size.height) / 2;
-			btnX += btnFrame.size.width + 2.0f;
+			btnX += btnFrame.size.width + 3.0f;
 			
 			NSBox * box = [[NSBox alloc] initWithFrame:btnFrame];
 			UT_ASSERT(box);

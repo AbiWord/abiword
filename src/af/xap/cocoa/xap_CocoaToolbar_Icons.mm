@@ -31,24 +31,24 @@
 #include "xap_CocoaToolbar_Icons.h"
 
 static NSPoint s_ButtonOnPoint[12] = {
-	{	 1.0f,	 8.0f	},
-	{	 1.0f,	 1.0f	},
-	{	 8.0f,	 1.0f	},
-	{	24.0f,	 1.0f	},
-	{	31.0f,	 1.0f	},
-	{	31.0f,	 8.0f	},
-	{	31.0f,	24.0f	},
-	{	31.0f,	31.0f	},
-	{	24.0f,	31.0f	},
-	{	 8.0f,	31.0f	},
-	{	 1.0f,	31.0f	},
-	{	 1.0f,	24.0f	}
+	{	 0.0f,	 7.0f	},
+	{	 0.0f,	 0.0f	},
+	{	 7.0f,	 0.0f	},
+	{	19.0f,	 0.0f	},
+	{	26.0f,	 0.0f	},
+	{	26.0f,	 7.0f	},
+	{	26.0f,	19.0f	},
+	{	26.0f,	26.0f	},
+	{	19.0f,	26.0f	},
+	{	 7.0f,	26.0f	},
+	{	 0.0f,	26.0f	},
+	{	 0.0f,	19.0f	}
 };
 
 static NSPoint s_ButtonMenuPoint[3] = {
-	{	30.0f,	25.0f	},
-	{	24.0f,	25.0f	},
-	{	27.0f,	30.0f	}
+	{	26.0f,	21.0f	},
+	{	20.0f,	21.0f	},
+	{	23.0f,	26.0f	}
 };
 
 @implementation XAP_CocoaToolbarButton
