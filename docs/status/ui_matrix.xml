@@ -612,10 +612,10 @@
 
         <row>
           <cell>Insert / PageNumber</cell>
-          <cell value="no"/>
           <cell value="yes"/>
-          <cell value="no"/>
-          <cell value="no"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
