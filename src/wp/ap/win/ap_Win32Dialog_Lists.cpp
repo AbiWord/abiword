@@ -926,7 +926,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 			bOverline = (strstr(s, "overline") != NULL);
 			bStrikeOut = (strstr(s, "line-through") != NULL);
 		}
-		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut);
+		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,false,false);
 
 		free(props_in);
 	}
