@@ -162,6 +162,45 @@ void AP_CocoaLeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */, A
 	pG->rawPolyAtOffset(control, 4, l, t, lineColor, false);
 }
 
+void AP_CocoaLeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
+{
+	if (!m_pG || !prDrag)
+		return;
+
+	UT_sint32 l = prDrag->left;
+	UT_sint32 t = prDrag->top;
+
+	UT_sint32 w = m_pG->tdu(prDrag->width);
+	UT_sint32 h = m_pG->tdu(prDrag->height);
+
+	GR_Painter painter(m_pG);
+
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
+
+	NSPoint control[4];
+
+	control[0].x = static_cast<float>(    1);
+	control[0].y = static_cast<float>(    1);
+	control[1].x = static_cast<float>(    1);
+	control[1].y = static_cast<float>(h - 1);
+	control[2].x = static_cast<float>(w - 1);
+	control[2].y = static_cast<float>(h - 1);
+	control[3].x = static_cast<float>(w - 1);
+	control[3].y = static_cast<float>(    1);
+
+	NSColor * lineColor = [NSColor knobColor];
+
+	NSColor * fillColor = 0;
+
+	if (bUp)
+		fillColor = pG->VGrey();
+	else
+		fillColor = [NSColor whiteColor];
+
+	pG->rawPolyAtOffset(control, 4, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 4, l, t, lineColor, false);
+}
+
 bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
 {
 	// a static function

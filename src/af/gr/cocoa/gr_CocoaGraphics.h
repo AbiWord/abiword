@@ -80,6 +80,8 @@ class GR_CocoaGraphics : public GR_Graphics
 
 	NSColor *		HBlue() const { return m_colorBlue16x15; }
 	NSColor *		VBlue() const { return m_colorBlue11x16; }
+	NSColor *		HGrey() const { return m_colorGrey16x15; }
+	NSColor *		VGrey() const { return m_colorGrey11x16; }
 
 	virtual GR_Font*	getGUIFont();
 
@@ -197,8 +199,12 @@ private:
 
 	NSImage *					m_imageBlue16x15;
 	NSImage *					m_imageBlue11x16;
+	NSImage *					m_imageGrey16x15;
+	NSImage *					m_imageGrey11x16;
 	NSColor *					m_colorBlue16x15;
 	NSColor *					m_colorBlue11x16;
+	NSColor *					m_colorGrey16x15;
+	NSColor *					m_colorGrey11x16;
 
 	// our currently requested font by handle
 	XAP_CocoaFont *	m_pFont;

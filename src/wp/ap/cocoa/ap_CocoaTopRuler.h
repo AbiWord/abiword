@@ -58,6 +58,7 @@ protected:
 	virtual void	_drawRightIndentMarker(UT_Rect & r, bool bFilled);
 	virtual void	_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled);
 	virtual void	_drawColumnGapMarker(UT_Rect & rect);
+	virtual void	_drawCellMark(UT_Rect * prDrag, bool bUp);
 
 private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);

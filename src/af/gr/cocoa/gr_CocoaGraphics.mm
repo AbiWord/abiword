@@ -129,8 +129,12 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_currentColor (nil),
 	m_imageBlue16x15 (nil),
 	m_imageBlue11x16 (nil),
+	m_imageGrey16x15 (nil),
+	m_imageGrey11x16 (nil),
 	m_colorBlue16x15 (nil),
 	m_colorBlue11x16 (nil),
+	m_colorGrey16x15 (nil),
+	m_colorGrey11x16 (nil),
 	m_pFont (NULL),
 	m_fontForGraphics (nil),
 	m_pFontGUI(NULL),
@@ -149,10 +153,16 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	NSBundle * bundle = [NSBundle mainBundle];
 	m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Blue16x15" ofType:@"png"]];
 	m_imageBlue11x16 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Blue11x16" ofType:@"png"]];
+	m_imageGrey16x15 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Grey16x15" ofType:@"png"]];
+	m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Grey11x16" ofType:@"png"]];
 	m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
 	m_colorBlue11x16 = [NSColor colorWithPatternImage:m_imageBlue11x16];
+	m_colorGrey16x15 = [NSColor colorWithPatternImage:m_imageGrey16x15];
+	m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
 	[m_colorBlue16x15 retain];
 	[m_colorBlue11x16 retain];
+	[m_colorGrey16x15 retain];
+	[m_colorGrey11x16 retain];
 
 	m_pApp = app;
 	UT_ASSERT (m_pWin);
@@ -202,8 +212,12 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 
 	[m_imageBlue16x15 release];
 	[m_imageBlue11x16 release];
+	[m_imageGrey16x15 release];
+	[m_imageGrey11x16 release];
 	[m_colorBlue16x15 release];
 	[m_colorBlue11x16 release];
+	[m_colorGrey16x15 release];
+	[m_colorGrey11x16 release];
 
 	s_iInstanceCount--;
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {

@@ -57,6 +57,7 @@ protected:
 	virtual void		_drawMarginProperties(const UT_Rect * pClipRect,
 											  AP_LeftRulerInfo * pInfo, 
 											  GR_Graphics::GR_Color3D clr);
+	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp);
 private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 	

@@ -186,8 +186,9 @@ private:
 
 	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell, fp_TableContainer * pBroke=NULL);
 	void		        _drawCellProperties( AP_LeftRulerInfo * pInfo);
-	void                _drawCellMark(UT_Rect *prDrag, bool bUp);
-
+protected:
+	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp);
+private:
 	void                _xorGuide(bool bClear=false);
 	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 
