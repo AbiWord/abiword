@@ -42,10 +42,12 @@ PP_AttrProp::PP_AttrProp()
 	m_pProperties = NULL;
 	m_bIsReadOnly = false;
 	m_checkSum = 0;
+	xxx_UT_DEBUGMSG(("creating pp_AttrProp %x \n",this));
 }
 
 PP_AttrProp::~PP_AttrProp()
 {
+	xxx_UT_DEBUGMSG(("deleting pp_AttrProp %x \n",this));
 	if (m_pAttributes)
 	{
 		UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
@@ -81,7 +83,6 @@ PP_AttrProp::~PP_AttrProp()
 				FREEP(tmp);
 				if (entry->second())
 					delete static_cast<const PP_PropertyType *>(entry->second());
-
 				delete entry;
 			}
 		}
@@ -89,6 +90,7 @@ PP_AttrProp::~PP_AttrProp()
 		delete m_pProperties;
 		m_pProperties = NULL;
 	}
+
 }
 
 /*!
@@ -326,10 +328,15 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 
 		// hack. don't do it.
 		void* tmp = const_cast<void*> (p->first());
+		UT_ASSERT(!m_bIsReadOnly);
+		if(UT_strcmp(szName,"line-height") == 0)
+		{
+			UT_DEBUGMSG(("Found line-height, Old value %s new value is %s \n",tmp,szValue));
+		}
+
 		FREEP(tmp);
 		if (p->second())
 			delete static_cast<const PP_PropertyType *>(p->second());
-
 		delete p;
 
 		if(bRemove)
@@ -747,10 +754,10 @@ void PP_AttrProp::_clearEmptyProperties()
 			{
 
 				void* tmp = const_cast<void*> (p->first());
+				UT_ASSERT(!m_bIsReadOnly);
 				FREEP(tmp);
 				if (p->second())
 					delete static_cast<const PP_PropertyType *>(p->second());
-
 				delete p;
 
 				m_pProperties->remove(_hc1.key(),pEntry);
@@ -771,6 +778,7 @@ void PP_AttrProp::_clearEmptyAttributes()
 	{
 		if (pEntry && !*pEntry)
 		{
+			UT_ASSERT(!m_bIsReadOnly);
 			FREEP(pEntry);
 			m_pAttributes->remove(_hc1.key(),pEntry);
 		}

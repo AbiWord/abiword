@@ -64,7 +64,6 @@ class fl_HdrFtrSectionLayout;
 class fl_SectionLayout;
 class fp_ContainerObject;
 class fp_Container;
-class fb_LineBreaker;
 class fp_Run;
 class fl_DocSectionLayout;
 
@@ -117,8 +116,6 @@ public:
 	void                 remove(fl_ContainerLayout * pL);
 	virtual fp_Run *        getFirstRun(void) const;
 	virtual PT_DocPosition  getPosition(bool bActualBlockPosition = false) const;
-	fb_LineBreaker *        getLineBreaker(void);
-
 	bool                    canContainPoint() const;
 	FPVisibility            isHidden() const {return m_eHidden;}
 	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
@@ -143,7 +140,6 @@ private:
 	fl_ContainerLayout*	        m_pLastL;
 	fp_Container *              m_pFirstContainer;
 	fp_Container *              m_pLastContainer;
-	fb_LineBreaker *            m_pLB;
 	FPVisibility                m_eHidden;
 };
 

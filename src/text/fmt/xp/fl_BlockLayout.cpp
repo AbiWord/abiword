@@ -145,7 +145,6 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 //////////////////////////////////////////////////////////////////
 
 fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
-							   fb_LineBreaker* pBreaker,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
 							   PT_AttrPropIndex indexAP, bool bIsHdrFtr)
@@ -155,7 +154,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bNeedsRedraw(false),
 	  m_bFixCharWidths(false),
 	  m_bIsHdrFtr(bIsHdrFtr),
-	  m_pBreaker(pBreaker),
 	  m_pFirstRun(NULL),
 	  m_pSectionLayout(pSectionLayout),
 	  m_pAlignment(NULL),
@@ -1698,7 +1696,7 @@ void fl_BlockLayout::format()
 		recalculateFields(0);
 
 		// Reformat paragraph
-		m_pBreaker->breakParagraph(this, NULL);
+		m_Breaker.breakParagraph(this, NULL);
 
 		// we have to do this in the breakParagraph rutine
 		//_removeAllEmptyLines();

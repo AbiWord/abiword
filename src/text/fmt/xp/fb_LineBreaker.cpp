@@ -38,6 +38,12 @@ fb_LineBreaker::fb_LineBreaker()
 	m_iMaxLineWidth(0),
 	m_iWorkingLineWidth(0)
 {
+	xxx_UT_DEBUGMSG(("fb_LineBreaker %x created \n",this));
+}
+
+fb_LineBreaker::~fb_LineBreaker(void)
+{
+	xxx_UT_DEBUGMSG(("fb_LineBreaker %x destroyed \n",this));
 }
 
 

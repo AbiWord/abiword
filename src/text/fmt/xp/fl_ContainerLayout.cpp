@@ -33,7 +33,6 @@
 #include "fl_BlockLayout.h"
 #include "fl_TableLayout.h"
 #include "fp_TableContainer.h"
-#include "fb_LineBreaker.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
 #include "fp_Column.h"
@@ -57,7 +56,6 @@ fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDo
 	  m_pLastL(NULL),
 	  m_pFirstContainer(NULL),
 	  m_pLastContainer(NULL),
-	  m_pLB(NULL),
 	  m_eHidden(FP_VISIBLE)
 {
 	setAttrPropIndex(indexAP);
@@ -69,10 +67,6 @@ fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDo
 
 fl_ContainerLayout::~fl_ContainerLayout()
 {
-	if(m_pLB)
-	{
-		delete m_pLB;
-	}
 #if 1
 	m_pMyLayout = NULL;
 	m_pFirstL = NULL;
@@ -244,23 +238,6 @@ fl_ContainerLayout * fl_ContainerLayout::getLastLayout(void) const
 	return m_pLastL;
 }
 
-/*!
- * Return a pointer to a line breaker class. Gnerate a new one
- * if the class doesn't yet exist.
- */
-fb_LineBreaker * fl_ContainerLayout::getLineBreaker(void)
-{
-	if (!m_pLB)
-	{
-		fb_LineBreaker* slb = new fb_LineBreaker();
-
-		m_pLB = slb;
-	}
-
-	UT_ASSERT(m_pLB);
-
-	return m_pLB;
-}
 
 /*!
  * Create a new containerLayout  and insert it into the linked list of
@@ -275,7 +252,7 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	case FL_CONTAINER_BLOCK:
 		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
 		{
-			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true));
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true));
 			if (pPrev)
 				pPrev->_insertIntoList(pL);
 			else
@@ -286,12 +263,12 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		}
 		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_TABLE))
 		{
-			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(pPrev->myContainingLayout()), indexAP));
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(pPrev->myContainingLayout()), indexAP));
 			pPrev->_insertIntoList(pL);
 		}
 		else
 		{
-			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP));
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP));
 			if (pPrev)
 				pPrev->_insertIntoList(pL);
 			else

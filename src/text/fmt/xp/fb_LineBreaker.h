@@ -37,6 +37,7 @@ class ABI_EXPORT fb_LineBreaker
 {
 public:
 	fb_LineBreaker();
+	virtual ~fb_LineBreaker(void);
 	UT_sint32	breakParagraph(fl_BlockLayout*, fp_Line * pLineToStartAt);
 
 protected:

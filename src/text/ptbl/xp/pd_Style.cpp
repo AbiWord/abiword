@@ -219,7 +219,15 @@ bool PD_Style::addAttributes(const XML_Char ** pAtts)
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
 		return false;
 	else
-		bres = pAP->setAttributes(pAtts);
+	{
+		if(pAP->areAlreadyPresent(pAtts,NULL))
+		{
+			return true;
+		}
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(pAtts, NULL, false);
+		pNewAP->markReadOnly();
+		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
+	}
 	m_pFollowedBy = NULL;
 	m_pBasedOn = NULL;
 	return bres;

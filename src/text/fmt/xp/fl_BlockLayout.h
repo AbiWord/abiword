@@ -41,7 +41,7 @@
 #include <fribidi/fribidi.h>
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
-
+#include "fb_LineBreaker.h"
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
 
@@ -154,7 +154,7 @@ class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 	friend void FL_DocLayout::_toggleAutoSpell(bool bSpell);
 
 public:
-	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*,
+	fl_BlockLayout(PL_StruxDocHandle sdh,
 				   fl_BlockLayout*, fl_SectionLayout*,
 				   PT_AttrPropIndex indexAP, bool bIsHdrFtr = false);
 	~fl_BlockLayout();
@@ -425,7 +425,7 @@ protected:
 	fl_CharWidths			m_gbCharWidths;
 
 	FL_DocLayout*			m_pLayout;
-	fb_LineBreaker* 		m_pBreaker;
+	fb_LineBreaker 		    m_Breaker;
 
 	fp_Run* 				m_pFirstRun;
 	fl_SectionLayout*		m_pSectionLayout;
