@@ -2968,9 +2968,13 @@ void FV_View::_fixInsertionPointCoords()
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
 			pClr = pPage->getOwningSection()->getPaperColor();
-
-		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
-									m_xPoint2, m_yPoint2, m_iPointHeight, 
+		UT_sint32 yoff = 0;
+		if(m_yPoint < 0)
+		{
+			yoff = -m_yPoint + 1;
+		}
+		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint+yoff, m_iPointHeight-yoff,
+									m_xPoint2, m_yPoint2+yoff, m_iPointHeight-yoff, 
 									m_bPointDirection, pClr);
 	}
 
