@@ -45,36 +45,81 @@ LIB_SUFFIX	= a
 DLL_SUFFIX	= so
 AR		= ar cr $@
 
-# Compiler flags
-ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g -Wall -ansi -pedantic
-DEFINES		= -DDEBUG -UNDEBUG
-OBJ_DIR_SFX	= DBG
+ifeq ($(ABI_OPT_PANGO),1)
+OBJ_DIR_SFX	= PANGO_
 else
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
-DEFINES		=
-OBJ_DIR_SFX	= OBJ
+OBJ_DIR_SFX	=
 endif
 
+DEFINES		=
+OPTIMIZER	= 
+
+ifeq ($(ABI_OPT_PROF),1)
+OPTIMIZER	= -pg -fprofile-arcs -ftest-coverage
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+ABI_OPT_OPTIMIZE= 1
+ABI_OPTIONS	+= Profile:On
+endif
+
+ifeq ($(ABI_OPT_OPTIMIZE),1)
+OPTIMIZER	+= -O3 -fomit-frame-pointer
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
+ABI_OPTIONS	+= Optimize:On
+ABI_OPT_DEBUG	= 0
+else
+OPTIMIZER	= -O2
+endif
+
+ifeq ($(ABI_OPT_DEBUG),1)
+OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
+ABI_OPT_PACIFY_COMPILER = 1
+DEFINES		= -DDEBUG -UNDEBUG
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
+endif
+
+
+ifeq ($(ABI_OPT_GNOME),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+endif
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)EXP_
+endif
+
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
+
+ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
+WARNFLAGS	= -Weffc++
+else
+WARNFLAGS	=
+endif
+
+ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
+WARNFLAGS	+= -Wall -ansi -pedantic
+endif
+
+ABI_REQUIRE_PEER_ICONV = 1
 # Includes
-OS_INCLUDES		= -I/usr/local/include
-G++INCLUDES		= -I/usr/include/g++
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
+OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include -I/usr/local/include
+else
+OS_INCLUDES	= -I/usr/local/include
+endif
+G++INCLUDES	= -I/usr/include/g++
 
 # Compiler flags
 PLATFORM_FLAGS		= -pipe -DFREEBSD -DFreeBSD $(OS_INCLUDES)
 # sterwill - I've taken out _POSIX_SOURCE because it breaks popen on FreeBSD 4.0
 # fjf      - I've taken out _XOPEN_SOURCE as well because it blocks rint
-PORT_FLAGS		= -D_BSD_SOURCE -DHAVE_STRERROR # -D_XOPEN_SOURCE -D_POSIX_SOURCE
+# mg	   - I'm breaking ties with early versions, as we require gtk2 as of 20020615
+PORT_FLAGS		= -D_BSD_SOURCE -DHAVE_STRERROR #-D_XOPEN_SOURCE -D_POSIX_SOURCE
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 PLATFORM_FLAGS		+= 
 PORT_FLAGS		+= 
 
-GLIB_CONFIG		= glib12-config
-GTK_CONFIG		= gtk12-config
-# QUESTION : Does FreeBSD test for "gnome1-config" (or something similar)
-# QUESTION : instead of "gnome-config" like it does with gtk?
-GNOME_CONFIG    	= gnome-config
+GLIB_CONFIG		= pkg-config glib-2.0
+GTK_CONFIG		= pkg-config gtk+-2.0
+GNOME_CONFIG    	= pkg-config gnome-2.0
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
@@ -123,7 +168,5 @@ ABIPKGDIR	= freebsd
 PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 __FreeBSD__ = 1 #fix wchar.h stuff
-
-ABI_REQUIRE_PEER_ICONV = 1
 
 # End of freebsd defs
