@@ -273,9 +273,15 @@ performed in the session and of the complexity of the
 structure and formatting of the original document.  A
 linear search might be painfully slow.
 <ul>
-<li><b>TODO</b> We will find a tree-structure to
-use instead of the doubly-linked list that will give
-us O(<i>log(n)</i>) searching.
+<li><b>TODO</b> We have switched to using an rbtree
+instead of the doubly-linked list to give us O(<i>log(n)</i>)
+searching, but the memory consumption is terrible and
+there is much improvement to be made.  It is recommended
+that we optimize away the color and better yet, just
+switch to a fractal prefetching b+-tree.  Other ideas
+include a topologically integrated mesh data structure, but
+the implementation and wrapping (for sanity's sake) of this
+would be quite a bit more work than the fpbtree.
 <li><b>TODO</b> Consider caching the last few lookup
 results so that we can avoid doing a search if possible.
 This should have a high hit-rate when the user is
