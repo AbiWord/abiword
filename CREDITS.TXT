@@ -13,7 +13,8 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package
-Scott Boesch <scott@abisource.com>              artist, trade shows
+Scott Boesch <scott@abisource.com>		artist, trade shows
+Brian Bosse <bhb002@drake.edu>
 Justin Bradford <justin@ukans.edu>              Word8 import
 John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
