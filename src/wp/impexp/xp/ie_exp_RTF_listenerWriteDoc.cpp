@@ -1773,6 +1773,11 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				_openTag("field","/",false,api);
 				return true;
 
+			case PTO_Math:
+				_closeSpan();
+				_openTag("math","/",false,api);
+				return true;
+
 				//#endif
 
 			case PTO_Bookmark:
@@ -1935,33 +1940,33 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 if(UT_XML_strcmp(pszType,"footnote_ref") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"footnote_anchor") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"endnote_ref") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"endnote_anchor") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("PAGE ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
@@ -1969,14 +1974,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_ref") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDpageDref"); // abiword extension for now.
              m_pie->_rtf_close_brace();
@@ -2125,8 +2130,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("NUMWORDS ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
@@ -2134,14 +2139,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 _writeFieldPreamble(pSpanAP);
   			 m_pie->write("NUMCHARS  ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"line_count") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDlineDcount"); // abiword extension for now.
              m_pie->_rtf_close_brace();
@@ -2149,7 +2154,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"para_count") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDparaDcount"); // abiword extension for now.
              m_pie->_rtf_close_brace();
@@ -2166,36 +2171,36 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"file_name") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDfileDname"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 UT_DEBUGMSG(("SEVIOR: File Name field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_ver") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDver"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_id") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDid"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+                         m_pie->_rtf_close_brace();
 			 UT_DEBUGMSG(("SEVIOR: Application ID field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_options") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDoptions"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_target") == 0)
@@ -2208,18 +2213,18 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_compiledate") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDcompiledate"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+                         m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_compiletime") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDcompiletime"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else
@@ -2228,6 +2233,52 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 return;
 		 }
 	 }
+	 else if(UT_XML_strcmp(szPrefix,"math") == 0)
+	 {
+		 const PP_AttrProp * pSpanAP = NULL;
+		 const XML_Char * pszDataId = NULL;
+		 m_pDocument->getAttrProp(api, &pSpanAP);
+		 pSpanAP->getAttribute("dataid", pszDataId);
+		 UT_UTF8String sProps;
+		 if(pszDataId == NULL)
+		 {
+			 return;
+		 }
+		 m_pie->_rtf_open_brace();
+		 m_pie->_rtf_keyword("*");
+		 sProps="dataid:";
+		 sProps +=pszDataId;
+		 sProps +="; ";
+		 m_pie->_rtf_keyword("abimathml "); // abiword extension for now.
+		 const XML_Char * szWidth = NULL;
+		 const XML_Char * szAscent = NULL;
+		 const XML_Char * szDescent = NULL;
+		 bool bFoundWidthProperty = pSpanAP->getProperty("width",szWidth);
+		 bool bFoundAscentProperty = pSpanAP->getProperty("ascent",szAscent);
+		 bool bFoundDescentProperty = pSpanAP->getProperty("descent",szDescent);
+		 if(bFoundWidthProperty)
+		 {
+		   sProps +="width:";
+		   sProps +=szWidth;
+		   sProps +="; ";
+		 }
+
+		 if(bFoundAscentProperty)
+		 {
+		   sProps +="ascent:";
+		   sProps +=szAscent;
+		   sProps +="; ";
+		 }
+
+		 if(bFoundDescentProperty)
+		 {
+		   sProps +="descent:";
+		   sProps +=szDescent;
+		 }
+		 m_pie->write(sProps.utf8_str());
+		 m_pie->_rtf_close_brace();
+	 }
+
 }
 
 

@@ -5000,6 +5000,9 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					}
 					return HandleAbiEndCell();
 					break;
+				case RTF_KW_abimathml:
+					return HandleAbiMathml();
+					break;
 				case RTF_KW_shppict:
 					UT_DEBUGMSG (("handling shppict\n"));
 					HandleShapePict();
@@ -8389,6 +8392,55 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 	// Put the '}' back into the input stream
 	return SkipBackChar(ch);
 }
+
+/////////////////////////////////////////////////////////////////////////
+// Handle copy/paste of MathML by extending RTF
+/////////////////////////////////////////////////////////////////////////
+bool IE_Imp_RTF::HandleAbiMathml(void)
+{
+	UT_UTF8String sProps;
+	unsigned char ch;
+	if (!ReadCharFromFile(&ch))
+		return false;
+	while(ch == ' ')
+	{
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	while (ch != '}') // Outer loop
+	{
+		sProps += ch;
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	UT_UTF8String sPropName;
+	UT_UTF8String sInputAbiProps;
+	const XML_Char * attrs[5] = {"dataid",NULL,"props",NULL,NULL};
+	sPropName = "dataid";
+	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
+	attrs[1] = sDataIDVal.utf8_str();
+	sPropName = "width";
+	UT_UTF8String sWidth = UT_UTF8String_getPropVal(sProps,sPropName);
+	UT_UTF8String_setProperty(sInputAbiProps,sPropName,sWidth);
+	sPropName = "ascent";
+	UT_UTF8String sAscent = UT_UTF8String_getPropVal(sProps,sPropName);
+	UT_UTF8String_setProperty(sInputAbiProps,sPropName,sAscent);
+	sPropName = "descent";
+	UT_UTF8String sDescent = UT_UTF8String_getPropVal(sProps,sPropName);
+	UT_UTF8String_setProperty(sInputAbiProps,sPropName,sDescent);
+	attrs[3] = sInputAbiProps.utf8_str();
+	if(bUseInsertNotAppend())
+	{
+		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs,NULL);
+		m_dposPaste++;
+	}
+	else
+	{
+		getDoc()->appendObject(PTO_Math,attrs);
+	}
+	return true;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // Handle copy and paste of tables by extending RTF. These handlers do that
 ///////////////////////////////////////////////////////////////////////////

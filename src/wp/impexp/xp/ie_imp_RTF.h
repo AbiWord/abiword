@@ -691,6 +691,7 @@ private:
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, 
                     eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
 
+
 // Paste AbiWord tables
  public:
 	bool HandleAbiTable(void);
@@ -698,6 +699,7 @@ private:
 	bool HandleAbiEndTable(void);
 	bool HandleAbiEndCell(void);
 	bool HandleAbiLists(void);
+	bool HandleAbiMathml(void);
 	bool isPastedTableOpen(void);
 	bool markPasteBlock(void);
 	bool isBlockNeededForPasteTable(void);
