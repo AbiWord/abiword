@@ -6424,6 +6424,20 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 		}
         posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 		
+//
+// Make sure posEnd is inside the Table.
+//
+		PL_StruxDocHandle endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
+		UT_ASSERT(endTableSDH);
+		if(endTableSDH == NULL)
+		{
+			return false;
+		}
+		PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+		if(posEnd > posEndTable)
+		{
+			posEnd = posEndTable -1;
+		}
 		// Do the actual change
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
 		UT_GenericVector<fl_BlockLayout*> vBlock;
