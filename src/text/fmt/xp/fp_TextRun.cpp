@@ -1490,7 +1490,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2)
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2 && bDrawBckg)
 	{
 		if (iSel1 <= iRunBase)
 		{
@@ -3037,21 +3037,35 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 {
 	UT_return_if_fail(iLen <= s_iCharAdvanceSize && pOffset);
 
+	// this is sligthly complicated by having to deal with both
+	// logical and visual coordinances at the same time
+	// 
+	// i and j work in visual coordiances, and correspond to the
+	// orignal pChars array and the s_pCharBuffer
+	// 
+	// m and iSplitOffset are in logical coordinaces, m being index
+	// into pWidths, and iSplitOffset a value comparable to pOffset
+	// values (also in logical order)
 	UT_sint32 len = (UT_sint32) iLen;
 	bool bReverse = false;
 	
 	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL)
 	{
+		// we will be using addition on the width buffer so we need to
+		// zerow it
 		memset(s_pWidthBuff, 0, sizeof(UT_sint32)*s_iCharAdvanceSize);
 		bReverse = true;
 	}
 	
 	for(UT_sint32 i = 0, j = 0; i < len; i++, j++)
 	{
+		// m is the logical offeset corresponding to the visual offest i
 		UT_sint32 m = bReverse ? len - i - 1 : i;
 		
 		if(pChars[i] != UCS_LIGATURE_PLACEHOLDER)
 		{
+			// ordinary character, just copy it and set the width as
+			// appropriate
 			s_pCharBuff[j] = pChars[i];
 
 			if(bReverse)
@@ -3062,30 +3076,118 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 		}
 		else
 		{
-			if(bReverse)
-			{
-				// the first part of the ligature will come at the j
-				// index, we want to include the half width of the
-				// second character
-				s_pWidthBuff[j] = pWidths[m];
-			}
-			
-			j--;
-			iLen--;
-			
-			if(j >= 0 && !bReverse)
-			{
-				s_pWidthBuff[j] += pWidths[m];
-			}
+			// we will remember whether this ligature is split by the
+			// selection for later use
+			bool bSplitLigature = false;
 
-			// adjust any offsets passed to us
-			// NB: there is always one more offset than iOffsetCount
+			// iSplitOffset is the offset of the middle of the
+			// ligature in logical coordinances; j is visual offset
+			// into our output buffer
+			UT_uint32 iSplitOffset = bReverse ? iLen - j - 1: j;
+			
+			// scroll through the offest array; the offests define the
+			// segments into which the run is split by the selection
+			// NB: there is always one more (dummy) offset than iOffsetCount
 			for(UT_sint32 k = 0; k <= (UT_sint32)iOffsetCount; k++)
 			{
-				if(!pOffset[k] || (UT_sint32)pOffset[k] <= j)
+				if(!pOffset[k] || (UT_sint32)pOffset[k] < iSplitOffset)
 					continue;
 
+				if((UT_sint32)pOffset[k] == iSplitOffset)
+				{
+					// this is the case, where the ligature
+					// placeholder is the first character in a
+					// segment, i.e., the ligature is split by the
+					// selection -- we have to feed the decomposed
+					// (orginal) glyphs into the output string, but
+					// use the original width metrics
+
+					// get the second decomposed character from our
+					// piece table
+					const UT_UCS4Char * pSpan = NULL;
+					UT_uint32 lenSpan;
+					bool bContinue = getBlock()->getSpanPtr(getBlockOffset()+m, &pSpan, &lenSpan);
+					if(bContinue && lenSpan > 0)
+					{
+						s_pCharBuff[j] = pSpan[0];
+					}
+					else
+					{
+						// we failed to get the character from the
+						// piecetable, handle it gracefully
+						UT_ASSERT(UT_NOT_REACHED );
+						s_pCharBuff[j] = '?';
+					}
+
+					// set the width for this glyph
+					s_pWidthBuff[j] = pWidths[m];
+					
+					// now set the first part of the decomposed glyph,
+					// taking into account direction
+					UT_sint32 n = bReverse ? j + 1: j - 1;
+
+					// now get the first character for this ligature;
+					// we can only do this if it is not outside our run
+					if(m > 0 && n >= 0)
+					{
+						bContinue = getBlock()->getSpanPtr(getBlockOffset()+m-1, &pSpan, &lenSpan);
+						if(bContinue && lenSpan > 0)
+						{
+							s_pCharBuff[n] = pSpan[0];
+						}
+						else
+						{
+							// we failed to get the character from the
+							// piecetable, handle it gracefully
+							UT_ASSERT(UT_NOT_REACHED );
+							s_pCharBuff[n] = '?';
+						}
+
+						if(bReverse)
+						{
+							//we have already processed the next
+							//character, we only need to set the width
+							//for it as well and then can skip the
+							//next iteration of the loop
+							i++;
+							j++;
+
+							s_pWidthBuff[j] = pWidths[m-1];
+						}
+					}
+					
+					bSplitLigature = true;
+					break;
+				}
+
+				// this the case of pOffset[k] > j, just need to
+				// adjust it, since we removed the ligature
+				// placeholder from the string
 				pOffset[k]--;
+			}
+			
+			if(!bSplitLigature)
+			{
+				// we have a ligature which is either completely
+				// selected, or completely outwith the selection; all
+				// we need to do is to set the widths and adjust our
+				// indexes (we are removing this charcter, the
+				// placeholder, from the buffer).
+				if(bReverse)
+				{
+					// the first part of the ligature will come at the j
+					// index, we want to include the half width of the
+					// second character
+					s_pWidthBuff[j] = pWidths[m];
+				}
+			
+				j--;
+				iLen--;
+			
+				if(j >= 0 && !bReverse)
+				{
+					s_pWidthBuff[j] += pWidths[m];
+				}
 			}
 		}
 	}
