@@ -63,7 +63,7 @@ public:
 #endif
 
 protected:
-	virtual bool            _isEqual(const pf_Frag & f2) const;
+	virtual bool            _isContentEqual(const pf_Frag & f2) const;
 	PT_BufIndex				m_bufIndex;
 };
 

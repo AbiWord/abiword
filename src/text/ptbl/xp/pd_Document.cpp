@@ -3417,7 +3417,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 {
 	const XML_Char * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
 	UT_uint32 id, parent_id, start;
-	List_Type type;
+	FL_ListType type;
 
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{
@@ -3459,7 +3459,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 	if(i < numlists)
 		return true; // List is already present
 	parent_id = atoi(szPid);
-	type = static_cast<List_Type>(atoi(szType));
+	type = static_cast<FL_ListType>(atoi(szType));
 	start = atoi(szStart);
 
 	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this);
@@ -4483,7 +4483,8 @@ bool PD_Document::areDocumentStylesheetsEqual(const PD_Document &d) const
 		UT_return_val_if_fail(pAP1 && pAP2, false);
 
 		UT_String s;
-		UT_String_sprintf(s,"%d%d", ap1, ap2);
+		// must print all digits to make this unambigous
+		UT_String_sprintf(s,"%08x%08x", ap1, ap2);
 		bool bAreSame = hFmtMap.contains(s,NULL);
 		
 		if(!bAreSame)
@@ -4559,8 +4560,8 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 		if(iLen1 == iLen2 && iFOffset1 == 0 && iFOffset2 == 0)
 		{
 			// these two frags overlap exactly, so we can just use the
-			// == operator on them
-			if(!(*pf1 == *pf2))
+			// pf_Frag::isContentEqual() on them
+			if(!(pf1->isContentEqual(*pf2)))
 				return false;
 		}
 		else if(pf1->getType() != pf_Frag::PFT_Text)
@@ -4646,7 +4647,7 @@ bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
 		UT_return_val_if_fail(pAP1 && pAP2, false);
 
 		UT_String s;
-		UT_String_sprintf(s,"%d%d", ap1, ap2);
+		UT_String_sprintf(s,"%08x%08x", ap1, ap2);
 		bool bAreSame = hFmtMap.contains(s,NULL);
 		
 		if(!bAreSame)

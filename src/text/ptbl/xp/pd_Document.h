@@ -428,7 +428,6 @@ public:
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
-	const char *			getFileName() { return m_szFilename; }
 	UT_uint32				getLastSavedAsType() { return m_lastSavedAsType; }
 	UT_uint32				getLastOpenedType() { return m_lastOpenedType; }
 	XAP_App *				getApp() { return m_pApp; }

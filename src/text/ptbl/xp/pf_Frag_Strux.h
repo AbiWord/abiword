@@ -58,7 +58,7 @@ public:
 	
 protected:
 
-	virtual bool            _isEqual(const pf_Frag &f2) const;
+	virtual bool            _isContentEqual(const pf_Frag &f2) const;
 	PTStruxType				m_struxType;
 	UT_Vector				m_vecFmtHandle;
 };

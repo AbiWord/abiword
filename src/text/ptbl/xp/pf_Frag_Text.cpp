@@ -41,14 +41,12 @@ pf_Frag_Text::~pf_Frag_Text()
 {
 }
 
-bool pf_Frag_Text::_isEqual(const pf_Frag & f2) const
+bool pf_Frag_Text::_isContentEqual(const pf_Frag & f2) const
 {
-	if(!pf_Frag::_isEqual(f2))
+	if(!pf_Frag::_isContentEqual(f2))
 		return false;
 
-	// NB: this makes this function rather useless, but we are asked
-	// to strictly compare 2 frags
-	
+	// NB: this we are asked to strictly compare 2 frags
 	if(getLength() != f2.getLength())
 		return false;
 

@@ -405,9 +405,9 @@ pf_Frag_Object::~pf_Frag_Object()
 	m_pField = 0;
 }
 
-bool pf_Frag_Object::_isEqual(const pf_Frag &f2) const
+bool pf_Frag_Object::_isContentEqual(const pf_Frag &f2) const
 {
-	if(!pf_Frag::_isEqual(f2))
+	if(!pf_Frag::_isContentEqual(f2))
 		return false;
 	
 	if(getObjectType() != ((const pf_Frag_Object&)(f2)).getObjectType())
