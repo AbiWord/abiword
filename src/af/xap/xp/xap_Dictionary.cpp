@@ -444,6 +444,7 @@ void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar *
     }
   }
   FREEP(pszWord);
+  DELETEP(pVec);
 }
 
 /*!

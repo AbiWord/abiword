@@ -3858,33 +3858,10 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	}
 
 	{
-		SpellChecker * checker = NULL;
-		const char * szLang = NULL;
-
-		const XML_Char ** props_in = NULL;
-
-		if (getCharFormat(&props_in))
-		{
-			szLang = UT_getAttribute("lang", props_in);
-			FREEP(props_in);
-		}
-
-		if (szLang)
-		{
-			// we get smart and request the proper dictionary
-			checker = SpellManager::instance().requestDictionary(szLang);
-		}
-		else
-		{
-			// we just (dumbly) default to the last dictionary
-			checker = SpellManager::instance().lastDictionary();
-		}
-
+		SpellChecker * checker = getDictForSelection ();
 		sg = checker->suggestWord (theWord, pPOB->getLength());
 		if(sg)
-		{
 			 m_pApp->suggestWord(sg,theWord, pPOB->getLength());
-		}
 	}
 
 	if (!sg)

@@ -3162,11 +3162,11 @@ void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 	moveInsPtTo(static_cast<PT_DocPosition>(pBL->getPosition() + pPOB->getOffset()));
 	extSelHorizontal(true, pPOB->getLength());
 
-	const UT_UCSChar * selection = getSelectionText ();
+	UT_UCSChar * selection = getSelectionText ();
 	getDictForSelection ()->correctWord (selection, UT_UCS4_strlen (selection),
 										 replace, UT_UCS4_strlen (replace));
 	cmdCharInsert(replace, UT_UCS4_strlen(replace));
-
+	FREEP(selection);
 	FREEP(replace);
 }
 

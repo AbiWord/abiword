@@ -158,8 +158,9 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 	count       = pspell_word_list_size(word_list);
 
 	// no suggestions, not an error
-	if(count == 0)
+	if(count == 0) {
 		return 0;
+	}
 	
 	UT_Vector * sg = new UT_Vector ();
 	
@@ -172,7 +173,8 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 			i++;
 		}
 	}
-	
+
+	delete_pspell_string_emulation (suggestions);
 	return sg;
 }
 

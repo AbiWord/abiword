@@ -606,12 +606,14 @@ static void setDragIcon(GtkWidget * wwd, GtkImage * img)
     }
   else if (GTK_IMAGE_STOCK == gtk_image_get_storage_type(img))
     {
+#if 0
       gchar * stk = NULL ;
       GtkIconSize icn_sz ;
       
       // TODO: this doesn't work, possibly a GTK2 bug...
       gtk_image_get_stock( img, &stk, &icn_sz ) ;
       gtk_drag_source_set_icon_stock ( wwd, stk ) ;
+#endif
     }
 }
 

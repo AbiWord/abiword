@@ -142,20 +142,11 @@ const char* XAP_EncodingManager::getUCS4LEName() const
 
 XAP_EncodingManager::~XAP_EncodingManager()
 {
-	if(UT_iconv_isValid(iconv_handle_N2U))
-		UT_iconv_close(iconv_handle_N2U);
-
-	if(UT_iconv_isValid(iconv_handle_U2N))
-		UT_iconv_close(iconv_handle_U2N);
-
-	if(UT_iconv_isValid(iconv_handle_U2Latin1))
-		UT_iconv_close(iconv_handle_U2Latin1);
-
-	if(UT_iconv_isValid(iconv_handle_U2Win))
-		UT_iconv_close(iconv_handle_U2Win);
-  
-	if(UT_iconv_isValid(iconv_handle_Win2U))
-		UT_iconv_close(iconv_handle_Win2U);
+	UT_iconv_close(iconv_handle_N2U);
+	UT_iconv_close(iconv_handle_U2N);
+	UT_iconv_close(iconv_handle_U2Latin1);
+	UT_iconv_close(iconv_handle_U2Win);
+	UT_iconv_close(iconv_handle_Win2U);
 }
 
 XAP_EncodingManager::XAP_EncodingManager() { }
@@ -334,6 +325,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 };
 
 extern "C" { char *wvLIDToCodePageConverter(unsigned short lid); }
+
 static void init_values(const XAP_EncodingManager* that)
 {
 	const char * ucs4i = ucs4Internal ();
