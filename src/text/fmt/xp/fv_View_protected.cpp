@@ -5514,9 +5514,9 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	}
 	else
 	{
-	        if(m_FrameEdit.isActive())
+		if(m_FrameEdit.isActive())
 		{
-		       m_FrameEdit.setPointInside();
+			m_FrameEdit.setPointInside();
 		}
 		bool bOK = true;
 		if(!isPointLegal() && bOK)

@@ -1038,6 +1038,10 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	[oFontName removeAllItems];
 	[oFontName addItemsWithTitles:m_pFontFamilies];
 
+	[[oFontName menu] setAutoenablesItems:NO];
+
+	[[oDocumentStyle menu] setAutoenablesItems:NO];
+
 	if (m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties])
 		{
 			[oProperties setIndentationPerLevel:10.0f];
@@ -1346,13 +1350,13 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 			if (tlbrid == AP_TOOLBAR_ID_COLOR_FORE)
 				{
-					[colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_FG color]];
 					[colorPanel setAction:@selector(aColor_FG:)];
 				}
 			else
 				{
-					[colorPanel setTitle:@"Background Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_BG color]];
 					[colorPanel setAction:@selector(aColor_BG:)];
 				}

@@ -2766,7 +2766,7 @@ bool IE_Imp_RTF::ParseRTFKeyword()
 	bool parameterUsed = false;
 	if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
+		UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
 		bool bres = TranslateKeyword(keyword, parameter, parameterUsed);
 		if(!bres)
 		{
@@ -5697,6 +5697,10 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		}
 		else								// else we are pasting from a buffer
 		{
+			if( m_currentRTFState.m_paraProps.m_isList && (m_dposPaste == m_dOrigPos))
+			{
+				ApplyParagraphAttributes(true);	
+			}
 			ok = _insertSpan();
 		}
 		m_gbBlock.truncate(0);
@@ -5903,7 +5907,7 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 	return mappedID;
 }
 
-bool IE_Imp_RTF::ApplyParagraphAttributes()
+bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 {
 	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
@@ -6426,16 +6430,19 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		bool bSuccess = true;
 		if(bAbiList && (bUseInsertNotAppend()))
 		{
-			UT_DEBUGMSG(("Insert block at 1 \n"));
-			markPasteBlock();
-			insertStrux(PTX_Block);
-			m_newParaFlagged = false;
-			m_bSectionHasPara = true;
+			if(!bDontInsert)
+			{
+				UT_DEBUGMSG(("Insert block at 1 \n"));
+				markPasteBlock();
+				insertStrux(PTX_Block);
+			}
 			//
 			// Put the tab back in.
 			//
 			UT_UCSChar cTab = UCS_TAB;
 			getDoc()->insertSpan(m_dposPaste,&cTab,1);
+			m_newParaFlagged = false;
+			m_bSectionHasPara = true;
 			m_dposPaste++;
 			PL_StruxDocHandle sdh_cur;
 			UT_uint32 j;
@@ -6493,8 +6500,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				}
 			}
 			UT_DEBUGMSG((" Insert block at 2 \n"));
-			markPasteBlock();
-			insertStrux(PTX_Block);
+			if(!bDontInsert)
+			{
+				markPasteBlock();
+				insertStrux(PTX_Block);
+			}
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
 			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
@@ -9683,7 +9693,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	m_lenPasteBuffer = lenData;
 	m_pCurrentCharInPasteBuffer = pData;
 	m_dposPaste = pDocRange->m_pos1;
-
+	m_dOrigPos = m_dposPaste;
 	// some values to start with -- most often we are somewhere in the middle of doc,
 	// i.e., in section and in block
 	m_newParaFlagged = false;

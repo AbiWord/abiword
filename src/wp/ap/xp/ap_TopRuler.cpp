@@ -2591,7 +2591,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			}
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 			return;
 		}
 	case DW_RIGHTMARGIN:
@@ -2664,7 +2666,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			m_draggingWhat = DW_NOTHING;
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 			return;
 		}
 
@@ -2685,7 +2689,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2748,7 +2752,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2785,7 +2789,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2824,7 +2828,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 		}
 		return;
 
@@ -2849,7 +2855,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 		}
 		return;
 
@@ -2891,7 +2899,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 			return;
 		}
@@ -2915,7 +2923,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				FV_View * pView = static_cast<FV_View *>(m_pView);
 				notify(pView, AV_CHG_HDRFTR);
 				if(m_pG)
-					m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				{
+					m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+				}
 				return;
 			}				
 			xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn); 
@@ -3110,7 +3120,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			}
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 			return;
 		}
 	default:

@@ -8390,7 +8390,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
 		{
 			fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_FRAME;
 			fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
 			if(pDSL == NULL)
@@ -9073,7 +9073,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragLeftEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopEdge)
 		{
@@ -9081,7 +9081,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragRightEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotEdge)
 		{
@@ -9739,27 +9739,50 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
   if(!m_pDoc->isSectionAtPos(pos) && !m_pDoc->isHdrFtrAtPos(pos) &&
      (pos < posEOD))
   {
-    return false;
+	  return false;
   }
   pf_Frag * pf = m_pDoc->getFragFromPosition(pos);
   while(pf && pf->getType() != pf_Frag::PFT_Strux)
   {
-     pf = pf->getPrev();
+	  pf = pf->getPrev();
   }
   if(pf == NULL)
   {  
-     return false;
+	  return false;
   }
   pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
   if(pfs->getStruxType() == PTX_EndTOC)
   {
-     return true;
+	  return true;
   }
   if((pfs->getStruxType() == PTX_EndFootnote) || 
      (pfs->getStruxType() == PTX_EndEndnote) || 
      (pfs->getStruxType() == PTX_Block) )
   {
-    return false;
+	  return false;
+  }
+  if((pfs->getStruxType() == PTX_Section) || (pfs->getStruxType() == PTX_SectionHdrFtr))
+  {
+	  if(pfs->getPos() < pos)
+	  {
+		  return true;
+	  }
+	  pf = pf->getPrev();
+	  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+	  {
+		  pf = pf->getPrev();
+	  }
+	  if(pf == NULL)
+	  {  
+		  return false;
+	  }
+	  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+	  if((pfs->getStruxType() == PTX_EndFootnote) || 
+		 (pfs->getStruxType() == PTX_EndEndnote) || 
+		 (pfs->getStruxType() == PTX_Block) )
+	  {
+		  return false;
+	  }
   }
   return true;
 }

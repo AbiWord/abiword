@@ -409,9 +409,13 @@ bool XAP_CocoaFrameImpl::_updateTitle()
 	UT_ASSERT (theWindow);
 	if (theWindow)
 		{
-			const char * szTitle = getFrame()->getNonDecoratedTitle();
+			const char * szTitle    = getFrame()->getNonDecoratedTitle();
+			const char * szFilename = getFrame()->getFilename();
 
-			[theWindow setTitleWithRepresentedFilename:[NSString stringWithUTF8String:szTitle]];
+			[theWindow setTitle:[NSString stringWithUTF8String:szTitle]];
+			if (szFilename)
+				[theWindow setRepresentedFilename:[NSString stringWithUTF8String:szFilename]];
+
 			[theWindow setDocumentEdited:(getFrame()->isDirty() ? YES : NO)];
 		}
 	return true;
