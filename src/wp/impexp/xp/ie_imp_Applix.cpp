@@ -1,6 +1,7 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
+ * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -412,8 +413,7 @@ short IE_Imp_Applix::s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
   \param len the actual length of the buffer not includin the trailing 0. Must be at least 3
   \retval c the output char
   \return the number of bytes read
-  \note the documentation is vague on this point, but I suspect that the charset
-  \note is UNICODE encoded in UCS-2
+  \note the documentation is vague on this point, but I suspect that the charset is UNICODE encoded in UCS-2
  */
 short IE_Imp_Applix::s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
 {
@@ -562,7 +562,7 @@ IE_Imp_Applix::_applixGetLine (UT_ByteBuf* pBuf, FILE *fp)
   \return void
   Dispatch the tag to the right handler.
   \note that _dispatchTag may itself read a line for line continuation.
-  \note Since line continuation is predictable, this is not a problem.
+  Since line continuation is predictable, this is not a problem.
   \see IE_Imp_Applix::s_getTagName
 */ 
 void IE_Imp_Applix::_dispatchTag (Applix_tag_t tag, const char *buf, size_t len)
@@ -678,7 +678,7 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
   \param len length of the content of buf
   \return void
   Insert a new paragraph
-  \note TODO handle the style and paragraph attributes.
+  \todo TODO handle the style and paragraph attributes.
 */
 void IE_Imp_Applix::_applixNewPara (const char *buf, size_t len)
 {
@@ -702,7 +702,7 @@ void IE_Imp_Applix::_applixNewPara (const char *buf, size_t len)
   \param len length of the content of buf
   \return void
   Insert a page break in the current flow
-  \note TODO handle even/odd page, currently ignored by Abiword
+  \todo TODO handle even/odd page, currently ignored by Abiword
 */
 void IE_Imp_Applix::_applixPageBreak (const char * /*buf*/, size_t /*len*/)
 {
