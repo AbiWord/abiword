@@ -1,6 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
-## Copyright (C) 2002 Hubert Figuière
+## Copyright (C) 2002 Hubert Figuiere
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaDlg_MessageBox.mm	\
 	xap_CocoaEncodingManager.mm	\
 	xap_CocoaFont.mm		\
-	xap_CocoaFontManager.mm		\
+	xap_CocoaFrame.mm		\
 	xap_CocoaFrameImpl.mm		\
 	xap_CocoaModule.mm		\
 	xap_CocoaTimer.mm		\

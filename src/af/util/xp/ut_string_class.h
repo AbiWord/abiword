@@ -311,7 +311,8 @@ public:
 	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 	void appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 
-	const UT_UTF8String & escapeXML (); // escapes '<', '>' & '&' in the current string
+	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
+	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
 
 	/* UTF8String - NOTES
 	 * 

@@ -268,7 +268,7 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 	if ((binptr == 0) || (b64ptr == 0)) return false;
 
 	bool decoded = true;
-	bool padding = true;
+	bool padding = false;
 
 	int i = 0;
 
@@ -291,11 +291,11 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 							switch (i)
 								{
 								case 0:
-									byte1 = static_cast<unsigned char>(c) << 2;
+									byte1 = static_cast<unsigned char>(b64) << 2;
 									i++;
 									break;
 								case 1:
-									byte2 = static_cast<unsigned char>(c);
+									byte2 = static_cast<unsigned char>(b64);
 									byte1 |= byte2 >> 4;
 									*binptr++ = static_cast<char>(byte1);
 									binlen--;
@@ -303,7 +303,7 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 									i++;
 									break;
 								case 2:
-									byte2 = static_cast<unsigned char>(c);
+									byte2 = static_cast<unsigned char>(b64);
 									byte1 |= byte2 >> 2;
 									*binptr++ = static_cast<char>(byte1);
 									binlen--;
@@ -311,7 +311,7 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 									i++;
 									break;
 								default:
-									byte1 |= static_cast<unsigned char>(c);
+									byte1 |= static_cast<unsigned char>(b64);
 									*binptr++ = static_cast<char>(byte1);
 									binlen--;
 									i = 0;

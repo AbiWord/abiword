@@ -465,6 +465,7 @@ private:
 	bool			m_bNextIsSpace;
 	bool			m_bWroteText;
 	bool			m_bFirstWrite;
+	bool			m_bQuotedPrintable;
 
 #ifdef HTML_TABLES_SUPPORTED
 	ie_Table		m_TableHelper;
@@ -488,6 +489,7 @@ private:
 
 	/* low-level; these may use m_utf8_0 but not m_utf8_1
 	 */
+	void			tagRaw (UT_UTF8String & content);
 	void			tagNewIndent (UT_uint32 extra = 0);
 	void			tagOpenClose (const UT_UTF8String & content, bool suppress,
 								  WhiteSpace ws = ws_Both);
@@ -669,6 +671,14 @@ bool s_HTML_Listener::compareStyle (const char * key, const char * value)
 	return match;
 }
 
+void s_HTML_Listener::tagRaw (UT_UTF8String & content)
+{
+#ifdef HTML_ENABLE_MHTML
+	if (m_bQuotedPrintable) content.escapeMIME ();
+#endif
+	m_pie->write (content.utf8_str (), content.byteLength ());
+}
+
 void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 {
 	m_utf8_0 = "";
@@ -702,7 +712,7 @@ void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
@@ -719,7 +729,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 
 	void * vptr = reinterpret_cast<void *>(tagID);
 	m_tagStack.push (vptr);
@@ -741,7 +751,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID)
@@ -763,7 +773,7 @@ void s_HTML_Listener::tagOpenBroken (const UT_UTF8String & content)
 	m_utf8_0 += "<";
 	m_utf8_0 += content;
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 /* use with *extreme* caution! (this is used by images with data-URLs)
@@ -773,7 +783,7 @@ void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content)
 	m_utf8_0  = content;
 	m_utf8_0 += " />\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 UT_uint32 s_HTML_Listener::tagTop ()
@@ -793,7 +803,7 @@ void s_HTML_Listener::tagPI (const char * target, const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += "?>\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagComment (const UT_UTF8String & content)
@@ -804,7 +814,7 @@ void s_HTML_Listener::tagComment (const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += " -->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagCommentOpen ()
@@ -813,7 +823,7 @@ void s_HTML_Listener::tagCommentOpen ()
 
 	m_utf8_0 += "<!--\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::tagCommentClose ()
@@ -822,7 +832,7 @@ void s_HTML_Listener::tagCommentClose ()
 
 	m_utf8_0 += "-->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::styleIndent ()
@@ -842,7 +852,7 @@ void s_HTML_Listener::styleOpen (const UT_UTF8String & rule)
 	if (m_fdCSS)
 		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
 	else
-		m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+		tagRaw (m_utf8_0);
 
 	m_styleIndent++;
 }
@@ -863,7 +873,7 @@ void s_HTML_Listener::styleClose ()
 	if (m_fdCSS)
 		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
 	else
-		m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+		tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & value)
@@ -878,7 +888,7 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 	if (m_fdCSS)
 		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
 	else
-		m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+		tagRaw (m_utf8_0);
 }
 
 void s_HTML_Listener::styleText (const UT_UTF8String & content)
@@ -886,16 +896,21 @@ void s_HTML_Listener::styleText (const UT_UTF8String & content)
 	if (m_fdCSS)
 		fwrite (content.utf8_str (), 1, content.byteLength (), m_fdCSS);
 	else
-		m_pie->write (content.utf8_str (), content.byteLength ());
+		{
+			m_utf8_0 = content;
+			tagRaw (m_utf8_0);
+		}
 }
 
 void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
 {
 	if (text.byteLength ())
-	{
-		m_bWroteText = true;
-		m_pie->write (text.utf8_str (), text.byteLength ());
-	}
+		{
+			m_utf8_0 = text;
+			tagRaw (m_utf8_0);
+
+			m_bWroteText = true;
+		}
 }
 
 void s_HTML_Listener::textUntrusted (const char * text)
@@ -934,7 +949,7 @@ void s_HTML_Listener::textUntrusted (const char * text)
 			 */
 			ptr++;
 		}
-	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	if (m_utf8_0.byteLength ()) tagRaw (m_utf8_0);
 }
 
 static const char * s_boundary = "AbiWord_multipart_boundary____________";
@@ -980,7 +995,12 @@ void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
 	m_utf8_1 += "; charset=\"UTF-8\"";
 
 	multiField ("Content-Type", m_utf8_1);
+
+	m_utf8_1  = "quoted-printable";
+	multiField ("Content-Transfer-Encoding", m_utf8_1);
 	multiBreak ();
+
+	m_bQuotedPrintable = true;
 }
 
 void s_HTML_Listener::multiBoundary (bool end)
@@ -1122,7 +1142,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 			if (bHaveProp && pAP)
 				{
 					_outputStyles (pAP);
-					m_pAPStyles = pAP;
+					if (!get_Embed_CSS ()) m_pAPStyles = pAP;
 				}
 		}
 
@@ -1171,8 +1191,13 @@ void s_HTML_Listener::_outputEnd ()
 
 	if (get_Multipart ())
 		{
-			if (m_pAPStyles) _outputStyles (m_pAPStyles);
+			m_bQuotedPrintable = false;
 
+			if (m_pAPStyles)
+				{
+					_outputStyles (m_pAPStyles);
+					m_bQuotedPrintable = false;
+				}
 			_handlePendingImages ();
 
 			multiBoundary (true);
@@ -1199,7 +1224,12 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 
 			multiField ("Content-Type",     m_utf8_1);
 			multiField ("Content-Location", m_utf8_css_path);
+
+			m_utf8_1  = "quoted-printable";
+			multiField ("Content-Transfer-Encoding", m_utf8_1);
 			multiBreak ();
+
+			m_bQuotedPrintable = true;
 		}
 	else if (!get_Multipart ())
 		{
@@ -2943,6 +2973,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_bNextIsSpace(false),
 	m_bWroteText(false),
 	m_bFirstWrite(true),
+	m_bQuotedPrintable(false),
 #ifdef HTML_TABLES_SUPPORTED
 	m_TableHelper(pDocument),
 #endif /* HTML_TABLES_SUPPORTED */

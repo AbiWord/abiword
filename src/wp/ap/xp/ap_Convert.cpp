@@ -42,7 +42,7 @@
 
 // needed for unix printing
 
-#ifdef ANY_UNIX
+#ifdef XP_UNIX_TARGET_GTK
 #include "xap_UnixPSGraphics.h"
 #endif
 
@@ -175,7 +175,7 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
   pDocLayout->fillLayouts();
   pDocLayout->formatAll();
 
-#ifdef ANY_UNIX
+#ifdef XP_UNIX_TARGET_GTK
   PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
   psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
   psGr->setPageSize(printView.getPageSize().getPredefinedName());

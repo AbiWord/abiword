@@ -979,6 +979,14 @@ const UT_UTF8String & UT_UTF8String::escapeXML ()
 	return *this;
 }
 
+/* translates the current string to MIME "quoted-printable" format
+ */
+const UT_UTF8String & UT_UTF8String::escapeMIME ()
+{
+	pimpl->escapeMIME ();
+	return *this;
+}
+
 UT_UCS2String UT_UTF8String::ucs2_str ()
 {
 	UT_UCS2String ucs2string;

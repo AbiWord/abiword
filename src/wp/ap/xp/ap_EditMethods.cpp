@@ -3094,7 +3094,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 Defun(closeWindow)
 {
 	CHECK_FRAME;
-#if !defined(ANY_UNIX)
+#if !defined(XP_UNIX_TARGET_GTK)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();

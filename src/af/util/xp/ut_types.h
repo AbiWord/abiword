@@ -268,8 +268,8 @@ defined(__BEOS__) || defined (__AIX__) || \
 /* This is a value from the private-use space of FriBidi */
 #define FRIBIDI_TYPE_UNSET -1
 
-#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(__APPLE__)
-#define ANY_UNIX 1
+#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(XP_MAC_TARGET_MACOSX)
+#define XP_UNIX_TARGET_GTK 1
 #endif
 
 #endif /* UT_TYPES_H */

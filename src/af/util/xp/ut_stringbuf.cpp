@@ -848,6 +848,89 @@ void UT_UTF8Stringbuf::escapeXML ()
 		}
 }
 
+/* translates the current string to MIME "quoted-printable" format
+ */
+void UT_UTF8Stringbuf::escapeMIME ()
+{
+	static const char hex[16] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+	static const char * s_eol = "=\r\n";
+
+	if (m_strlen == 0) return;
+
+	size_t bytes = 0;
+	char * ptr = m_psz;
+	while (*ptr)
+		{
+			char c = *ptr++;
+			unsigned char u = static_cast<unsigned char>(c);
+
+			if ((c == '\r') || (c == '\n') || (c == '=') || (u & 0x80)) bytes += 2;
+		}
+	if (bytes)
+		{
+			if (!grow (bytes)) return;
+
+			char * pOld = m_pEnd;
+			char * pNew = m_pEnd + bytes;
+
+			while (pOld >= m_psz)
+				{
+					char c = *pOld--;
+					unsigned char u = static_cast<unsigned char>(c);
+
+					if ((u & 0x80) || (c == '\r') || (c == '\n') || (c == '='))
+						{
+							*pNew-- = hex[ u       & 0x0f];
+							*pNew-- = hex[(u >> 4) & 0x0f];
+							*pNew-- = '=';
+						}
+					else *pNew-- = c;
+				}
+			m_pEnd += bytes;
+			m_strlen = m_pEnd - m_psz;
+		}
+
+	size_t length = 0;
+	ptr = m_psz;
+	while (true)
+		{
+			if (*ptr == 0)
+				{
+					if (length)
+						{
+							size_t offset = ptr - m_psz;
+							if (grow (3))
+								{
+									ptr = m_psz + offset;
+									insert (ptr, s_eol, 3);
+								}
+						}
+					break;
+				}
+			if (length >= 70)
+				{
+					size_t offset = ptr - m_psz;
+					if (grow (3))
+						{
+							ptr = m_psz + offset;
+							insert (ptr, s_eol, 3);
+						}
+					length = 0;
+				}
+
+			if (*ptr == '=')
+				{
+					ptr += 3;
+					length += 3;
+				}
+			else
+				{
+					ptr++;
+					length++;
+				}
+		}
+}
+
 void UT_UTF8Stringbuf::clear ()
 {
 	if (m_psz) free (m_psz);

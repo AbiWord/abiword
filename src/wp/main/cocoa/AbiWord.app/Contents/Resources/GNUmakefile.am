@@ -37,8 +37,8 @@ abiword_48.tif:$(mainsrcdir)/bundle/abiword_48.tif
 	cp -f $(mainsrcdir)/bundle/abiword_48.tif abiword_48.tif
 
 splash.png:$(top_srcdir)/src/wp/ap/xp/splash.png
-	cp -f $(top_srcdir)src/wp/ap/xp/splash.png splash.png
+	cp -f $(top_srcdir)/src/wp/ap/xp/splash.png splash.png
 
 sidebar.png:$(top_srcdir)/src/wp/ap/xp/sidebar.png
-	cp -f $(top_srcdir)src/wp/ap/xp/sidebar.png sidebar.png
+	cp -f $(top_srcdir)/src/wp/ap/xp/sidebar.png sidebar.png
 
