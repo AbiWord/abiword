@@ -193,7 +193,7 @@ OS_INCLUDES += -I$(ABI_ROOT)/../fribidi
 
 # Try to find where NSIS is installed, if anywhere
 # First check to see if it's in the path.  If not, check default install path.
-NSIS_ROOT ?= $(shell dirname "`which makensis`") | sed "s/\ /\\\ /g"
+NSIS_ROOT ?= $(shell dirname "`which makensis`" | sed "s/\ /\\\ /g")
 ifeq ($(NSIS_ROOT), .)
 	NSIS_ROOT := /c/Program\ Files/NSIS
 endif
