@@ -85,6 +85,8 @@ elif test "$PLATFORM" = "cocoa" ; then
 	OBJCXX="c++"
 	OBJCXXFLAGS=""
 	OBJCXXDEPMODE="depmode=gcc3"
+else
+	ABI_THREAD
 fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
