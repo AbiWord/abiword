@@ -32,4 +32,5 @@
 #include "ap_TB_LabelSet_FiFI.h"
 #include "ap_TB_LabelSet_DaDK.h"
 #include "ap_TB_LabelSet_NlNL.h"
+#include "ap_TB_LabelSet_DeDE.h"
 
