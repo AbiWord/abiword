@@ -34,6 +34,9 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 abiclean::
 	rm -f $(OBJDIR)/*.*
 
+clean::
+	rm -rf $(OBJDIR)
+
 realclean:: $(REQUIREREALCLEAN)
 
 ##################################################################
