@@ -58,7 +58,7 @@ canonical:
 	@for k in $(CANON_SubDirs); do				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
 	done
-	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary) | (cd $(CANONDIR); tar -xf -)
+	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
 
 ##################################################################
 ## Target for building a distribution package from the compiled
