@@ -289,18 +289,21 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 	if (!pUnixTopRuler)
 		return 0;
-	FV_View * pView = (FV_View *) pUnixTopRuler->getView();
-	if(pView && (pView->getPoint() == 0))
-	{
-		return 0;
-	}
-	UT_Rect rClip;
-	rClip.left = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.x);
-	rClip.top = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.y);
-	rClip.width = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.width);
-	rClip.height = pUnixTopRuler->getGR()->tlu(pExposeEvent->area.height);
 
-	pUnixTopRuler->draw(&rClip);
+	GR_Graphics * pG = pUnixTopRuler->getGR();
+	if(pG != NULL)
+	{
+		UT_Rect rClip;
+		rClip.left = pG->tlu(pExposeEvent->area.x);
+		rClip.top = pG->tlu(pExposeEvent->area.y);
+		rClip.width = pG->tlu(pExposeEvent->area.width);
+		rClip.height = pG->tlu(pExposeEvent->area.height);
+	}
+	else
+	{
+		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
+	}
+
 	return 0;
 }
 
@@ -308,5 +311,3 @@ void AP_UnixTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {
 	// a static function
 }
-
-

@@ -17,11 +17,9 @@
  * 02111-1307, USA.
  */
 
-
 #include "pf_Frag_Strux.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Strux.h"
-
 
 pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,
 							 PTStruxType struxType,
@@ -46,6 +44,7 @@ PTStruxType pf_Frag_Strux::getStruxType(void) const
 
 PL_StruxFmtHandle pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
 {
+	if (m_vecFmtHandle.size() == 0) return 0;
 	return (PL_StruxFmtHandle)m_vecFmtHandle.getNthItem(lid);
 }
 
