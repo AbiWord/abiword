@@ -34,7 +34,7 @@
 #include "fv_View.h"
 #include "fl_BlockLayout.h"
 
-#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(TARGET_OS_MAC)
+#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(__APPLE__)
 #define ANY_UNIX 1
 #endif
 
