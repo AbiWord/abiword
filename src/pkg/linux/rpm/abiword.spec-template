@@ -11,7 +11,7 @@
 
 # PLUGIN OPTIONS: 1 for yes, 0 for no
 %define enable_aiksaurus 0
-%define enable_gdict 1
+%define enable_gdict 0
 %define enable_babelfish 1
 %define enable_urldict 1
 %define enable_wikipedia 1
