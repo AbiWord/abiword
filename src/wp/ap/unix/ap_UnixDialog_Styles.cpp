@@ -411,7 +411,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
-		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
+//		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
 //		getView()->getCurrentBlock()->setNeedsRedraw();
 //		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}
@@ -477,8 +477,10 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 										XAP_Dialog_MessageBox::a_OK);
 			return;
 		}
+
 		getFrame()->repopulateCombos();
 		_populateWindowData(); // force a refresh
+		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
     }
 }
 

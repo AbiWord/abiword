@@ -889,6 +889,12 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 				m_pie->_rtf_chardata(" ",1);
 			}
 		}
+		//
+        // Put in Tab for braindead RTF importers (like Ted) that can't 
+        // do numbering.
+		//
+		char tab = (char) 9;
+		m_pie->_rtf_chardata(&tab,1);
 		m_pie->_rtf_close_brace();
 	}
 	///

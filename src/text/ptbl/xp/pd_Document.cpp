@@ -35,8 +35,10 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "pf_Frag_Strux.h"
+#include "pp_Property.h"
 #include "pd_Style.h"
 #include "pf_Frag_Object.h"
+#include "pf_Frag_FmtMark.h"
 #include "px_CR_Span.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
@@ -445,9 +447,290 @@ bool PD_Document::appendFmtMark(void)
 
 bool PD_Document::removeStyle(const XML_Char * pszName)
 {
-  UT_ASSERT(m_pPieceTable);
+	UT_ASSERT(m_pPieceTable);
+//
+// First replace all occurances of pszName with "Normal"
+//
+	PD_Style * pNormal = NULL;
+	PD_Style * pNuke = NULL;
+	m_pPieceTable->getStyle(pszName,&pNuke);
+	UT_ASSERT(pNuke);
+	pNormal = pNuke->getBasedOn();
+	const XML_Char * szBack = NULL;
+	if(pNormal == NULL)
+	{
+		m_pPieceTable->getStyle("Normal",&pNormal);
+		szBack = "None";
+	}
+	else
+	{
+		pNormal->getAttribute(PT_NAME_ATTRIBUTE_NAME, szBack);
+	}
+	UT_ASSERT(szBack);
+	UT_ASSERT(pNormal);
+	PT_AttrPropIndex indexNormal = pNormal->getIndexAP();
 
-  return m_pPieceTable->removeStyle(pszName);
+	struct prevStuff
+	{
+		pf_Frag::PFType fragType;
+		pf_Frag_Strux * lastFragStrux;
+		PT_AttrPropIndex indexAPFrag;
+		pf_Frag * thisFrag;
+		PT_DocPosition thisPos;
+		PT_DocPosition thisStruxPos;
+		UT_uint32 fragLength;
+		bool bChangeIndexAP;
+	};
+//
+// Now scan through the document finding all instances of pszName as either
+// the style or the basedon style or the followed by style. Replace these with
+// "normal"
+//
+	UT_Vector vFrag;
+
+	PT_DocPosition pos = 0;
+	PT_DocPosition posLastStrux = 0;
+	pf_Frag_Strux * pfs = NULL;
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	UT_ASSERT(currentFrag);
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+//
+// get indexAP
+// get PT_STYLE_ATTRIBUTE_NAME
+// if it matches style name or is contained in a basedon name or followedby
+// 
+//
+// All this code is used to find if this strux has our style in it
+//
+		PT_AttrPropIndex indexAP;
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+			pfs = static_cast<pf_Frag_Strux *>(currentFrag);
+			indexAP = static_cast<pf_Frag_Strux *>(currentFrag)->getIndexAP();
+			posLastStrux = pos; 
+		}
+		else if(currentFrag->getType()  == pf_Frag::PFT_Text)
+		{
+			indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
+		}
+		else if(currentFrag->getType()  == pf_Frag::PFT_Object)
+		{
+			indexAP = static_cast<pf_Frag_Object *>(currentFrag)->getIndexAP();
+		}
+		else if(currentFrag->getType()  == pf_Frag::PFT_FmtMark)
+		{
+			indexAP = static_cast<pf_Frag_FmtMark *>(currentFrag)->getIndexAP();
+		}
+		const PP_AttrProp * pAP = NULL;
+		m_pPieceTable->getAttrProp(indexAP,&pAP);
+		UT_ASSERT(pAP);
+		const XML_Char * pszStyleName = NULL;
+		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+//
+// It does so remember this frag and set the old indexAP to Normal
+//
+		if(pszStyleName != NULL && strcmp(pszStyleName,pszName)==0)
+		{
+			prevStuff *  pStuff = new prevStuff;
+			pf_Frag::PFType cType = currentFrag->getType();		
+			pStuff->fragType = cType;
+			pStuff->thisFrag = currentFrag;
+			pStuff->indexAPFrag = indexAP;
+			pStuff->lastFragStrux = pfs;
+			pStuff->thisPos = pos;
+			pStuff->thisStruxPos = pos;
+			pStuff->fragLength = currentFrag->getLength();
+			pStuff->bChangeIndexAP = true;
+			vFrag.addItem((void *) pStuff);
+//
+// OK set this frag's indexAP to that of basedon of our deleted style or
+// Normal.
+//
+			if(pf_Frag::PFT_Strux == cType)
+				static_cast<pf_Frag_Strux *>(currentFrag)->setIndexAP(indexNormal);
+			else if(pf_Frag::PFT_Text == cType)
+				static_cast<pf_Frag_Text *>(currentFrag)->setIndexAP(indexNormal);
+			else if(pf_Frag::PFT_Object == cType)
+				static_cast<pf_Frag_Object *>(currentFrag)->setIndexAP(indexNormal);
+			else if(pf_Frag::PFT_FmtMark == cType)
+				static_cast<pf_Frag_FmtMark *>(currentFrag)->setIndexAP(indexNormal);
+		}
+//
+// Now recursively search to see if has our style in the basedon list
+//
+		else if(pszStyleName != NULL)
+		{
+			PD_Style * cStyle = NULL;
+			m_pPieceTable->getStyle(pszStyleName,&cStyle);
+			UT_ASSERT(cStyle);
+			if(!cStyle)
+				break;
+			PD_Style * pBasedOn = cStyle->getBasedOn();
+			PD_Style * pFollowedBy = cStyle->getFollowedBy();
+			UT_uint32 i =0;
+			for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != NULL) && (pBasedOn!= pNuke); i++)
+			{
+				pBasedOn = pBasedOn->getBasedOn();
+			}
+			if(pBasedOn == pNuke)
+			{
+				prevStuff *  pStuff = new prevStuff;
+				pStuff->fragType = currentFrag->getType();
+				pStuff->thisFrag = currentFrag;
+				pStuff->indexAPFrag = indexAP;
+				pStuff->lastFragStrux = pfs;
+				pStuff->thisPos = pos;
+				pStuff->thisStruxPos = pos;
+				pStuff->fragLength = currentFrag->getLength();
+				pStuff->bChangeIndexAP = false;
+				vFrag.addItem((void *) pStuff);
+			}
+//
+// Look if followedBy points to our style
+//
+			else if(pFollowedBy == pNuke)
+			{
+				prevStuff *  pStuff = new prevStuff;
+				pStuff->fragType = currentFrag->getType();
+				pStuff->thisFrag = currentFrag;
+				pStuff->indexAPFrag = indexAP;
+				pStuff->lastFragStrux = pfs;
+				pStuff->thisPos = pos;
+				pStuff->thisStruxPos = pos;
+				pStuff->fragLength = currentFrag->getLength();
+				pStuff->bChangeIndexAP = false;
+				vFrag.addItem((void *) pStuff);
+			}
+		}
+		pos = pos + currentFrag->getLength();
+		currentFrag = currentFrag->getNext();
+	}
+//
+// Now replace all pointers to this style in basedon or followedby
+// with Normal
+//
+	UT_uint32 nstyles = getStyleCount();
+	const PD_Style * cStyle = NULL;
+	const char * szCstyle = NULL;
+	UT_uint32 i;
+	for(i=0; i< nstyles;i++)
+	{
+		enumStyles(i, &szCstyle,&cStyle);
+		bool bDoBasedOn = false;
+		bool bDoFollowedby = false;
+		if(const_cast<PD_Style *>(cStyle)->getBasedOn() == pNuke)
+		{
+			bDoBasedOn = true;
+		}
+		if(const_cast<PD_Style *>(cStyle)->getFollowedBy() == pNuke)
+		{
+			bDoFollowedby = true;
+		}
+		const XML_Char * nAtts[5] ={NULL,NULL,NULL,NULL,NULL};
+		if( bDoBasedOn && bDoFollowedby)
+		{
+			nAtts[0] = "basedon"; nAtts[1] =  szBack;
+			nAtts[2]= "followedby";	nAtts[3] = "Current Settings";
+			nAtts[4] = NULL;
+		}
+		else if ( bDoBasedOn && ! bDoFollowedby)
+		{
+			nAtts[0] = "basedon"; nAtts[1] =  szBack;
+			nAtts[2] = NULL;
+		}
+		else if ( !bDoBasedOn && bDoFollowedby)
+		{
+			nAtts[0]= "followedby";	nAtts[1] = "Current Settings";
+			nAtts[2] = NULL;
+		}
+		if( bDoBasedOn || bDoFollowedby)
+		{
+			UT_uint32 i =0;
+			for(i=0; nAtts[i] != NULL; i+=2)
+			{
+				UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
+			}
+			const_cast<PD_Style *>(cStyle)->addAttributes( (const XML_Char **) nAtts);
+		}
+	}
+//
+// OK Now remove the style
+//
+	m_pPieceTable->removeStyle(pszName);
+//
+// Alright now we replace all the instances of fragSrux using the style to be 
+// deleted.
+//
+	UT_sint32 countChanges = vFrag.getItemCount();
+	UT_sint32 j;
+	pf_Frag * pfsLast = NULL;
+	PX_ChangeRecord * pcr = NULL;
+	for(j = 0; j<countChanges; j++)
+	{
+		prevStuff * pStuff = (prevStuff *) vFrag.getNthItem(j);
+		if(pStuff->fragType == pf_Frag::PFT_Strux)
+		{
+			pfsLast = pStuff->thisFrag;
+			if(pStuff->bChangeIndexAP)
+			{
+				pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexNormal);
+				notifyListeners(pStuff->lastFragStrux, pcr);
+				delete pcr;
+			}
+			else
+			{
+				pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,pStuff->indexAPFrag);
+				notifyListeners(pStuff->lastFragStrux, pcr);
+				delete pcr;
+			}
+		}
+		else
+		{
+			if(pStuff->lastFragStrux != pfsLast)
+			{
+				pfsLast = pStuff->lastFragStrux;
+				if(pStuff->bChangeIndexAP)
+				{
+					pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexNormal);
+					notifyListeners(pStuff->lastFragStrux, pcr);
+					delete pcr;
+				}
+				else
+				{
+					PT_AttrPropIndex indexLastAP = static_cast<pf_Frag_Strux *>(pfsLast)->getIndexAP();
+					pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexLastAP);
+					notifyListeners(pStuff->lastFragStrux, pcr);
+					delete pcr;
+				}
+			}
+		}
+	}
+//  		else if(bisCharStyle)
+//  		{
+//  			UT_uint32 blockoffset = (UT_uint32) (pStuff->thisPos - pStuff->thisStruxPos -1);
+//  			pf_Frag_Text * pft = (pf_Frag_Text *) pStuff->thisFrag;
+//  			PX_ChangeRecord_SpanChange * pcr = 
+//  				new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
+//  											   pStuff->thisPos,
+//  											   pStuff->indexAPFrag,
+//  											   indexNormal, 
+//  											   m_pPieceTable->getVarSet().getBufIndex(pft->getBufIndex(),0), 
+//  											   pStuff->fragLength,
+//  											   blockoffset);
+//  			notifyListeners(pStuff->lastFragStrux, pcr);
+//  			delete pcr;
+//  		}
+//  	}
+	if(countChanges > 0)
+	{
+		UT_VECTOR_PURGEALL(prevStuff *,vFrag);
+	}
+//
+// Now reformat the entire document
+//
+//	signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
+	return true;
 }
 
 bool PD_Document::appendStyle(const XML_Char ** attributes)
@@ -1014,12 +1297,10 @@ void PD_Document::_destroyDataItemData(void)
 	{
 		UT_DEBUGMSG(("DOM: deleting\n"));
 		struct _dataItemPair* pPair = (struct _dataItemPair*) val;
-
+		UT_ASSERT(pPair);
 		char * key = c.key();
-
 		m_hashDataItems.remove (key, 0);
 		FREEP(key); // free what we allocate
-
 		delete pPair->pBuf;
 		FREEP(pPair->pToken);
 		delete pPair;
@@ -1128,6 +1409,9 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 	PT_DocPosition pos = 0;
 	PT_DocPosition posLastStrux = 0;
 	pf_Frag_Strux * pfs = NULL;
+	PD_Style * pStyle = NULL;
+	m_pPieceTable->getStyle(szStyle,&pStyle);
+	UT_ASSERT(pStyle);
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	UT_ASSERT(currentFrag);
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
@@ -1150,11 +1434,35 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				UT_ASSERT(pAP);
 				const XML_Char * pszStyleName = NULL;
 				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+				bool bUpdate = false;
 //
 // It does so signal all the layouts to update themselves for the new definition
 // of the style.
 //
 				if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+				{
+					bUpdate = true;
+				}
+//
+// Look if the style in the basedon ancestory is our style
+//
+				else if (pszStyleName != NULL)
+				{
+					PD_Style * cStyle = NULL;
+					m_pPieceTable->getStyle(pszStyleName,&cStyle);
+					UT_ASSERT(cStyle);
+					PD_Style * pBasedOn = cStyle->getBasedOn();
+					UT_uint32 i =0;
+					for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != NULL) && (pBasedOn!= pStyle); i++)
+					{
+						pBasedOn = pBasedOn->getBasedOn();
+					}
+					if(pBasedOn == pStyle)
+					{
+						bUpdate = true;
+					}
+				}
+				if(bUpdate)
 				{
 					PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pos,indexAP);
 					notifyListeners(pfs, pcr);

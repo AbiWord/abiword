@@ -228,7 +228,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 
 	const static XML_Char * attribs[] = 
-	{"followedby","basedon","listid","parentid","level","style","type"};
+	{"followedby","basedon","listid","parentid","level","name","style","type"};
 
 	const size_t nattribs = sizeof(attribs)/sizeof(attribs[0]);
 	UT_uint32 i;

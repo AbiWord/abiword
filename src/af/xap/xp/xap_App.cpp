@@ -509,16 +509,16 @@ void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
 
 UT_sint32 XAP_App::safefindFrame( XAP_Frame * f)
 {
-        long ff = reinterpret_cast<long>(f);
-        UT_sint32 num_frames = m_vecFrames.getItemCount();
-        UT_sint32 i;
-        for( i = 0; i< num_frames; i++)
+	long ff = reinterpret_cast<long>(f);
+	UT_sint32 num_frames = m_vecFrames.getItemCount();
+	UT_sint32 i;
+	for( i = 0; i< num_frames; i++)
 	{
-	       long lf = reinterpret_cast<long>( m_vecFrames.getNthItem(i));
-	       if( lf == ff) break;
-        }
+		long lf = reinterpret_cast<long>( m_vecFrames.getNthItem(i));
+		if( lf == ff) break;
+	}
 	if( i == num_frames ) i = -1;
-        return i;
+	return i;
 }
 
 void    XAP_App::clearLastFocussedFrame()
@@ -530,10 +530,10 @@ XAP_Frame * XAP_App::getLastFocussedFrame( void )
 {
 	if(m_lastFocussedFrame == (XAP_Frame *) NULL)
 		return (XAP_Frame *) NULL;
-        UT_sint32 i = safefindFrame(m_lastFocussedFrame);
-        if( i>= 0)
+	UT_sint32 i = safefindFrame(m_lastFocussedFrame);
+	if( i>= 0)
 		return m_lastFocussedFrame;
-        return (XAP_Frame *) NULL;
+	return (XAP_Frame *) NULL;
 }
 
 XAP_Frame * XAP_App::findValidFrame( void)

@@ -1149,6 +1149,19 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 		}
 
 		break;
+	case PD_SIGNAL_REFORMAT_LAYOUT:
+		if(pView->isCursorOn()== true)
+		{
+			pView->eraseInsertionPoint();
+			bCursorErased = true;
+		}
+		m_pLayout->formatAll();
+		if(bCursorErased == true)
+		{
+			pView->drawInsertionPoint();
+		}
+
+		break;
 		
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
