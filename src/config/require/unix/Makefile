@@ -51,16 +51,14 @@ REQ_GTK_BUILD=1
 # Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw> for the patch.
 
 _GLIB_:
-	@glib-config --version >/dev/null 2>&1 			\
-	|| glib12-config --version >/dev/null 2>&1 			\
+	@glib-config --version 2>&1 1>/dev/null 		\
+	|| glib12-config --version 2>&1 >/dev/null 		\
 	|| (echo glib not found; exit 1)
-	@echo TODO verify glib version is greater than 1.1.??
 
 _GTK_:
-	@gtk-config --version >/dev/null 2>&1			\
-	|| gtk12-config --version >/dev/null 2>&1			\
+	@gtk-config --version 2>&1 1>/dev/null 			\
+	|| gtk12-config --version 2>&1 1>/dev/null		\
 	|| (echo gtk not found; exit 1)
-	@echo TODO verify gtk version is greater than 1.1.??
 
 # zlib can only be used if located in a system directory.
 
