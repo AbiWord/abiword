@@ -163,8 +163,9 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 		UT_ASSERT(pFont);
 		xxx_UT_DEBUGMSG(("Insert font %x in gr_Graphics cache \n",pFont));
 		// add it to the cache
-		m_hashFontCache.insert(key.c_str(),
-							   pFont);
+		
+		if(pFont)
+			m_hashFontCache.insert(key.c_str(), pFont);
 	}
 	else
 	{
