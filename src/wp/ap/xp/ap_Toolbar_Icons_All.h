@@ -68,6 +68,7 @@
 #	include "tb_save.xpm"
 #	include "tb_save_as.xpm"
 #	include "tb_undo.xpm"
+#	include "tb_todo.xpm"
 
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
@@ -119,6 +120,7 @@
 	DefineToolbarIcon(tb_save_xpm)
 	DefineToolbarIcon(tb_save_as_xpm)
 	DefineToolbarIcon(tb_undo_xpm)
+	DefineToolbarIcon(tb_todo_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

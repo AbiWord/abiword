@@ -133,7 +133,7 @@ EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(XAP_Toolbar_Id id) const
 		UT_DEBUGMSG(("WARNING: %s translation for Toolbar id [%d] not found.\n",m_szLanguage,id));
 		// NOTE: only translators should see the following strings
 		// NOTE: do *not* translate them
-		pLabel = new EV_Toolbar_Label(id,"TODO",NULL,"to do","untranslated toolbar item");
+		pLabel = new EV_Toolbar_Label(id,"TODO","tb_todo_xpm","to do","untranslated toolbar item");
 		m_labelTable[index] = pLabel;
 	}
 
