@@ -504,7 +504,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 #endif
 	UT_String sSuffix = m_szSuffixes[nFileType-1];
 	sSuffix = sSuffix.substr(1,sSuffix.length()-1);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	bool bFoundComma = false;
 	for(i=0; i< sSuffix.length(); i++)
 	{
