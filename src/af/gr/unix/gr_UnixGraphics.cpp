@@ -633,6 +633,9 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 					// get the first font we have
 					unixfont = static_cast<XAP_UnixFont *>(pVec->getNthItem(0));
 				}
+
+				// free the returned vector
+				DELETEP(pVec);
 		
 		}
 			

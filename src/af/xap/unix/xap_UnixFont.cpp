@@ -188,10 +188,9 @@ XAP_UnixFont::~XAP_UnixFont(void)
 {
 	
 	FREEP(m_name);
-	
 	FREEP(m_fontfile);
 	FREEP(m_metricfile);
-
+	FREEP(m_xlfd);
 	FREEP(m_fontKey);
 
 	//	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
@@ -212,9 +211,9 @@ XAP_UnixFont::~XAP_UnixFont(void)
 }
 
 bool XAP_UnixFont::openFileAs(const char * fontfile,
-								const char * metricfile,
-								const char * xlfd,
-								XAP_UnixFont::style s)
+			      const char * metricfile,
+			      const char * xlfd,
+			      XAP_UnixFont::style s)
 {
 	// test all our data to make sure we can continue
 	if (!fontfile)
@@ -253,7 +252,7 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	FREEP(m_name);
 	UT_cloneString(m_name, strtok(NULL, "-"));
 	
-	free(newxlfd);
+	FREEP(newxlfd);
 	
 	// save to memebers
 	FREEP(m_fontfile);

@@ -591,14 +591,19 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(void)
 	// X11R6 I can think of)
 	UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont\n"));
 
-	XAP_UnixFont * f = new XAP_UnixFont();
+	static bool fontInitted = false ;
+	static XAP_UnixFont m_f ;
 
-	// do some manual behind-the-back construction
-	f->setName("Default");
-	f->setStyle(XAP_UnixFont::STYLE_NORMAL);
-	f->setXLFD("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
+	if ( !fontInitted )
+	  {
+	    // do some manual behind-the-back construction
+	    m_f.setName("Default");
+	    m_f.setStyle(XAP_UnixFont::STYLE_NORMAL);
+	    m_f.setXLFD("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
+	    fontInitted = true ;
+	  }
 
-	return f;
+	return &m_f;
 }
 
 XAP_UnixFont * XAP_UnixFontManager::getDefaultFont16Bit(void)
