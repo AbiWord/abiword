@@ -128,7 +128,9 @@ public:
 	void setCursor(GR_Graphics::Cursor cursor) { m_pFrameImpl->_setCursor(cursor); }
 	virtual void queue_resize() { m_pFrameImpl->_queue_resize(); }
 	void setFullScreen(bool isFullScreen) { m_pFrameImpl->_setFullScreen(isFullScreen); }
+
 	bool openURL(const char * szURL) { return m_pFrameImpl->_openURL(szURL); }
+	bool openHelpURL (const char * szURL) { return m_pFrameImpl->_openHelpURL(szURL); }
 
 	virtual XAP_DialogFactory * getDialogFactory() { return m_pFrameImpl->_getDialogFactory(); }
 	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameImpl->_newToolbar(app, frame, szLayout, szLanguage); }

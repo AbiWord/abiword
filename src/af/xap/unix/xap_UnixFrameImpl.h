@@ -110,6 +110,7 @@ protected:
 	GtkWidget * _getSunkenBox(void) {return m_wSunkenBox;}
 
 	virtual bool _openURL(const char * szURL);
+	virtual bool _openHelpURL(const char * szURL);
 	virtual void _setFullScreen(bool changeToFullScreen);
 
 	class _fe

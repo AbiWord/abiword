@@ -1100,7 +1100,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
 
 // forward declaration
-bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
+static bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
 
 
 static UT_Timer * s_pToUpdateCursor = NULL;
@@ -2817,20 +2817,27 @@ Defun(fileNew)
 	return bOK;
 }
 
-bool _helpOpenURL(XAP_Frame * pFrame, const char* helpURL)
+static bool _helpOpenURL(XAP_Frame * pFrame, const char* helpURL)
 {
 	UT_return_val_if_fail(pFrame, false);
-	pFrame->openURL(helpURL);
+	pFrame->openHelpURL(helpURL);
 	return true;
 }
 
-bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
+static bool _openURL(AV_View* pAV_View, const char* url)
+{
+	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
+	pFrame->openURL (url);
+	return true;
+}
+
+static bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 {
 	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
 	return _helpOpenURL ( pFrame, helpURL ) ;
 }
 
-inline void _catPath(UT_String& st, const char* st2)
+inline static void _catPath(UT_String& st, const char* st2)
 {
 	if (st.size() > 0)
 	{
@@ -2893,7 +2900,7 @@ bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBef
 	return _helpOpenURL(pFrame, url.c_str());
 }
 	
-bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
+static bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {
 	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
 
@@ -2917,7 +2924,7 @@ Defun1(helpCheckVer)
 	CHECK_FRAME;
 	UT_String versionURL = "http://www.abisource.com/users/check_version.phtml?version=";
 	versionURL += XAP_App::s_szBuild_Version;
-	return _helpOpenURL(pAV_View, versionURL.c_str());
+	return _openURL(pAV_View, versionURL.c_str());
 }
 
 Defun1(helpReportBug)
@@ -2931,7 +2938,7 @@ Defun1(helpReportBug)
   bugURL += XAP_App::s_szBuild_Options;
   bugURL += ")%0d%0a%0d%0a";
 
-  return _helpOpenURL(pAV_View, bugURL.c_str());
+  return _openURL(pAV_View, bugURL.c_str());
 }
 
 Defun1(helpSearch)
@@ -2949,13 +2956,13 @@ Defun1(helpCredits)
 Defun1(helpAboutGnu)
 {
 	CHECK_FRAME;
-	return _helpOpenURL(pAV_View, "http://www.gnu.org/philosophy/");
+	return _openURL(pAV_View, "http://www.gnu.org/philosophy/");
 }
 
 Defun1(helpAboutGnomeOffice)
 {
 	CHECK_FRAME;
-	return _helpOpenURL(pAV_View, "http://www.gnome.org/gnome-office/");
+	return _openURL(pAV_View, "http://www.gnome.org/gnome-office/");
 }
 
 Defun1(helpAboutOS)

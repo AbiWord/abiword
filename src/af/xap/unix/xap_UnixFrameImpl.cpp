@@ -48,6 +48,10 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_Strings.h"
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#endif
+
 /*****************************************************************/
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -1255,8 +1259,24 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 	return m_pUnixMenu;
 }
 
+bool XAP_UnixFrameImpl::_openHelpURL(const char * szURL)
+{
+#ifdef HAVE_GNOME
+	// TODO: make this work
+	//gnome_help_display (szURL, NULL, NULL);
+	gnome_url_show(szURL,NULL);
+	return false;
+#else
+	return _openURL (szURL);
+#endif
+}
+
 bool XAP_UnixFrameImpl::_openURL(const char * szURL)
 {
+#ifdef HAVE_GNOME
+	gnome_url_show(szURL, NULL);
+	return false;
+#else
 	static char *fmtstring = NULL;
   	char *execstring = NULL;
 
@@ -1322,6 +1342,12 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
 		        fmtstring = "mozilla '%s' &";
 			execstring = g_strdup_printf(fmtstring, szURL);
 		}
+		// Anyone know how to find out where it might be, regardless?
+		else if(progExists("phoenix"))
+		{
+		        fmtstring = "phoenix '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
 		else if(progExists("netscape"))
 		{
 			// Try to connect to a running Netscape, if not, start new one
@@ -1356,6 +1382,7 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
 	}
 
 	return false;
+#endif
 }
 
 

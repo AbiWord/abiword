@@ -67,6 +67,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	UT_String labelText, separator;
 	
 	const XAP_StringSet * pSS = pApp->getStringSet ();
+	char * tmp_str = NULL;
 
 	switch (m_buttons)
 	{
@@ -90,18 +91,18 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		case b_YNC:
 			// YES - NO - CANCEL
 			// this is only used for saving files.
-			// FIXME: bug 4146
+		        UT_XML_cloneNoAmpersands(tmp_str, pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving).c_str());
 			message = gtk_dialog_new_with_buttons("",
 							      toplevel, 
 							      GTK_DIALOG_MODAL,
-							      pSS->getValue (XAP_STRING_ID_DLG_Exit_CloseWithoutSaving),
+							      tmp_str,
 							      GTK_RESPONSE_NO,
 							      GTK_STOCK_CANCEL, 
 							      GTK_RESPONSE_CANCEL, 
 							      GTK_STOCK_SAVE, 
 							      GTK_RESPONSE_YES,
 							      NULL);
-			
+			FREEP(tmp_str);
 			label = gtk_label_new(NULL);
 			if (m_szSecondaryMessage == NULL)
 				separator =UT_String("");
