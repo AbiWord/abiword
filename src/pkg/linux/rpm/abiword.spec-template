@@ -314,7 +314,7 @@ This is the AbiWord Manual for French.
 
 
 %prep
-rm -rf $RPM_BUILD_ROOT
+%__rm -rf $RPM_BUILD_ROOT
 
 %setup -q -n %{name}-%{version}/abi
 
@@ -333,42 +333,42 @@ cd ../abi
 umask 022
 
 cd ../abiword-plugins
-make install
+%__make install
 cd ../abi
 
-make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_BIDI_ENABLED=%{enable_bidi} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_BIDI_ENABLED=%{enable_bidi} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 # Manual fixes to Abi package
 
 # Fixes Abi start script
-perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord
+%__perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord
 
 # Creates GNOME menu entries
-mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
+%__mkdir_p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT%{prefix}/share/pixmaps/abiword_48.png
 %if %{enable_gnome}
-mkdir -p $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/
+%__mkdir_p $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/
 cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/abiword.desktop
 %endif
 
 # Copies all ispell dictionaries
-mkdir -p $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary
+%__mkdir_p $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary
 cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/dictionary/*.hash $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/
 #Remove duplicate LittleEndian hash
-/bin/rm $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/Little*
+%__rm $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/Little*
 
 # Copies all clipart
-cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
 
 #
 # Fix for wrong file rights on fonts,icons,clipart
-chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/fonts/*
-chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/icons/*
-chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/*
-chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/templates/*
+%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/fonts/*
+%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/icons/*
+%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/*
+%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/templates/*
 
 %clean
-rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
+%__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 
 %files
 %defattr(-,root,root)
@@ -459,8 +459,8 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %post
 
 # Fixes for symlink in {prefix}/bin
-mkdir -p %{prefix}/bin
-ln -sf %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
+%__mkdir_p %{prefix}/bin
+%__ln_s -f %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
 
 
 %changelog
