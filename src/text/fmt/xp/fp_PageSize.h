@@ -40,6 +40,7 @@ public:
 
 	inline char * getPredefinedName (void) const { return m_predefined; }
 
+	static bool	IsPredefinedName(const char* szPageSizeName);
 	static Predefined NameToPredefined(const char *name);
 	static const char * PredefinedToName(Predefined preDef);
 

@@ -115,6 +115,18 @@ double fp_PageSize::Height(Unit u) const
 	return m_iHeight / ScaleFactors[u];
 }
 
+bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
+{
+	for (int i=0; i < (int)_last_predefined_pagesize_dont_use_; ++i)
+	{
+		if (!strcmp(pagesizes[i].name, szPageSizeName))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 {
 	int preDef;
