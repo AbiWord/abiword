@@ -194,6 +194,9 @@ public:
 
 	void				setHdrFtr(UT_uint32 iType, fl_HdrFtrSectionLayout* pHFSL);
 
+	fl_HdrFtrSectionLayout*         getHeader(void);
+	fl_HdrFtrSectionLayout*         getFooter(void);
+
 	void				addOwnedPage(fp_Page*);
         void                            prependOwnedHeaderPage(fp_Page * p_Page);
         void                            prependOwnedFooterPage(fp_Page * p_Page);

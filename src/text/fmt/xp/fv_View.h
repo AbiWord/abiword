@@ -200,6 +200,7 @@ public:
 
 	UT_uint32		getCurrentPageNumber(void);
 
+	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos);
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
 	void	insertSectionBreak( BreakSectionType type);

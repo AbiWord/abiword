@@ -67,7 +67,6 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	m_pLB = NULL;
 	m_pFirstBlock = NULL;
 	m_pLastBlock = NULL;
-
 	m_pNext = NULL;
 	m_pPrev = NULL;
 
@@ -428,6 +427,16 @@ void fl_DocSectionLayout::setHdrFtr(UT_uint32 /*iType*/, fl_HdrFtrSectionLayout*
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void)
+{
+        return m_pHeaderSL;
+}
+
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void)
+{
+        return m_pFooterSL;
 }
 
 fp_Container* fl_DocSectionLayout::getFirstContainer()

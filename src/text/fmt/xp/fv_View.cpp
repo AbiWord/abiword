@@ -683,7 +683,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
     // this gets called from ctor, so get out quick
     if (dp == FV_DOCPOS_BOD)
     {
-        bool bRes = m_pDoc->getBounds(false, iPos);
+        bool bRes = getEditableBounds(false, iPos);
         UT_ASSERT(bRes);
         
         return iPos;
@@ -732,7 +732,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
     case FV_DOCPOS_EOD:
     {
-        bool bRes = m_pDoc->getBounds(true, iPos);
+        bool bRes = getEditableBounds(true, iPos);
         UT_ASSERT(bRes);
     }
     break;
@@ -785,7 +785,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
         else
         {
             // EOD
-            bool bRes = m_pDoc->getBounds(true, iPos);
+            bool bRes = getEditableBounds(true, iPos);
             UT_ASSERT(bRes);
         }
     }
@@ -1076,6 +1076,7 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 	_ensureThatInsertionPointIsOnScreen();
 	
 }
+
 
 
 void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
@@ -2737,7 +2738,7 @@ bool FV_View::isTabListBehindPoint(void)
 	UT_sint32 xPoint2, yPoint2;
 	bool   bDirection;
 
-	bRes = m_pDoc->getBounds(false, posBOD);
+	bRes = getEditableBounds(false, posBOD);
 	UT_ASSERT(bRes);
 	if (cpos <= posBOD - 1)
 	{
@@ -2928,7 +2929,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			PT_DocPosition posEOD;
 			bool bRes;
 
-			bRes = m_pDoc->getBounds(true, posEOD);
+			bRes = getEditableBounds(true, posEOD);
 			UT_ASSERT(bRes);
 			UT_ASSERT(posCur <= posEOD);
 
@@ -4192,7 +4193,7 @@ UT_UCSChar * FV_View::_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPos
 		{
 			// then wrap (fetch the first block in the doc)
 			PT_DocPosition startOfDoc;
-			m_pDoc->getBounds(false, startOfDoc);
+			getEditableBounds(false, startOfDoc);
 			
 			newBlock = m_pLayout->findBlockAtPosition(startOfDoc);
 
@@ -5898,6 +5899,7 @@ UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 	return pt2 - pt1;
 }
 
+
 bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 {
 	// advance(backup) the current insertion point by count characters.
@@ -5922,8 +5924,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	PT_DocPosition posEOD;
 	bool bRes;
 
-	bRes = m_pDoc->getBounds(false, posBOD);
-	bRes = m_pDoc->getBounds(true, posEOD);
+	bRes = getEditableBounds(false, posBOD);
+	bRes = getEditableBounds(true, posEOD);
 	UT_ASSERT(bRes);
 
 	// FIXME:jskov want to rewrite this code to use simplified
@@ -7098,6 +7100,54 @@ void FV_View::setShowPara(bool bShowPara)
 	}
 };
 
+
+//
+// This method keeps the insertion point out of the header/footer end of
+// of the document. 
+// TODO find clever way to cache the size of the 
+// header/footer region so we can just subtract it off.
+//
+bool    FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD)
+{
+	bool res;
+	if(!isEnd)
+	{
+	       res = m_pDoc->getBounds(isEnd,posEOD);
+	       return res;
+	}
+	else
+	{
+	       fl_DocSectionLayout * pSL =  m_pLayout->getFirstSection();
+	       while(pSL != NULL && pSL->getHeader()== NULL  && pSL->getFooter()== NULL )
+	       {
+		      pSL  = pSL->getNextDocSection();
+	       }
+	       fl_BlockLayout * pBL;
+	       if( pSL == NULL || ( pSL->getHeader()== NULL  && pSL->getFooter()== NULL ))
+	       {
+	              res = m_pDoc->getBounds(isEnd,posEOD);
+		      return res;
+	       }
+	       if(pSL->getHeader() != NULL)
+	       {
+	              pBL = pSL->getHeader()->getFirstBlock();
+	       }
+	       else 
+	       {
+	              pBL = pSL->getFooter()->getFirstBlock();
+	       }
+	       posEOD = pBL->getPosition( true);
+	       pBL = _findBlockAtPosition(posEOD);
+	       while(pBL->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
+	       {
+		      posEOD--;
+		      pBL = _findBlockAtPosition(posEOD);
+	       }
+	       posEOD--;
+	       return res;
+	}
+}
+
 bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 {
 
@@ -7151,6 +7201,10 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	// Now create the footer section
 	// First Do a block break to finish the last section.
 	UT_uint32 iPoint = getPoint();
+	UT_DEBUGMSG(("SEVIOR: Inserting Header/footer at %d \n",iPoint));
+	PT_DocPosition dp;
+	getEditableBounds(true,dp);
+	UT_DEBUGMSG(("SEVIOR: Editing doc finishes at %d \n",dp));
 	m_pDoc->insertStrux(iPoint, PTX_Block);
 	//
 	// If there is a list item here remove it!
