@@ -565,6 +565,8 @@ ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
 GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
 # These also might be needed: -lSM -lICE
+GTK_CFLAGS      := $(shell $(GTK_CONFIG) --cflags)
+GNOME_CFLAGS += $(GTK_CFLAGS)
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L)
 GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
 
@@ -574,6 +576,8 @@ GNOME_CFLAGS += -DHAVE_GNOMEVFS
 GNOME_LIBS   += $(shell gnome-vfs-config --libs)
 ABI_OPTIONS  +=GnomeVFS:On
 endif
+
+GNOME_CFLAGS += $(shell glib-config --cflags)
 
 # the bonobo target is known not to work properly yet
 ifdef ABI_OPT_BONOBO
@@ -603,7 +607,8 @@ else
 ABI_OPT_GNOME=
 GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
-CFLAGS 		+=	$(GTK_CFLAGS)
+GLIB_CFLAGS     :=      $(shell glib-config --cflags)
+CFLAGS 		+=	$(GTK_CFLAGS) $(GLIB_CFLAGS)
 EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
 endif
