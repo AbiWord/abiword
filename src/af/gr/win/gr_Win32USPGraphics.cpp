@@ -1075,7 +1075,7 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(GR_RenderInfo & ri)
 	{
 		if(!bReverse)
 		{
-			UT_uint32 iMax = RI.m_iCharCount;
+			UT_uint32 iMax = RI.m_iIndicesCount;
 			
 			if(i < (UT_sint32)RI.m_iCharCount - 1)
 				iMax = RI.m_pClust[i+1];
@@ -2140,6 +2140,12 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	pri->m_pItem = m_pItem->makeCopy();
 	UT_return_val_if_fail(pri->m_pItem, false);
 
+	m_bNeedsReshaping = true;
+	return false;
+	
+	// trying to split the data is just too precarious ...
+#if 0
+
 	if(m_bNeedsReshaping)
 	{
 		// we have not been shaped, so that is all we can do for the caller
@@ -2276,6 +2282,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	}
 	
 	return true;
+#endif
 }
 
 bool GR_Win32USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
