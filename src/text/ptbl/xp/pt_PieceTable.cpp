@@ -110,18 +110,27 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		if (!pftNew)
 			return UT_FALSE;
 
-		// if change is at the beginning of the fragment, we insert a
-		// single new text fragment before the one we found.
-		// if the change is in the middle of the fragment, we construct
-		// a second new text fragment for the portion after the insert.
-
+		
 		if (fragOffset == 0)
 		{
+			// if change is at the beginning of the fragment, we insert a
+			// single new text fragment before the one we found.
+
 			m_fragments.insertFrag(pft->getPrev(),pftNew);
+		}
+		else if (fragLen==fragOffset)
+		{
+			// if the change is after this fragment, we insert a single
+			// new text fragment after the one we found.
+
+			m_fragments.insertFrag(pft,pftNew);
 		}
 		else
 		{
-			pf_Frag_Text * pftTail = new pf_Frag_Text(this,m_vsIndex,pft->getOffset()+fragOffset,
+			// if the change is in the middle of the fragment, we construct
+			// a second new text fragment for the portion after the insert.
+
+			pf_Frag_Text * pftTail = new pf_Frag_Text(this,pft->getVSindex(),pft->getOffset()+fragOffset,
 													  fragLen-fragOffset,pft->getIndexAP());
 			if (!pftTail)
 				return UT_FALSE;
