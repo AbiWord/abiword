@@ -73,18 +73,9 @@ int pretty_group(PtWidget_t *w, const char *title);
 
 int OpenHelp(PtWidget_t *w,XAP_Dialog *,PtCallbackInfo_t *);
 int SetupContextHelp(PtWidget_t *w,void *Dlg);
-PtWidget_t *abiCreatePhabDialog(char *dialog,char *title);
+PtWidget_t *abiCreatePhabDialog(char *dialog,const XAP_StringSet *,XAP_String_Id);
 PtWidget_t *abiPhabLocateWidget(PtWidget_t *parent,char *name);
 
-char * _ev_convert(char *,const char *);
-// a *huge* convenience macro
-static char _ev_buf[256];
-#define _(a, x)                                                 \
-                  {                                             \
-				      UT_UTF8String _s;                         \
-					  pSS->getValueUTF8 (a##_STRING_ID_##x,_s); \
-                      _ev_convert (_ev_buf, _s.utf8_str());     \
-				  }
-
+void localizeLabel(PtWidget_t * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 
 #endif /* UT_QNXHELPER_H */

@@ -203,30 +203,6 @@ int pretty_group(PtWidget_t *w, const char *title) {
 	return 0;
 }
 
-char *
-_ev_convert (char * bufResult,
-	     const char * szString)
-{
-	UT_ASSERT (szString && bufResult);
-	
-	char *pl = bufResult;
-	char *s = (char *)szString;
-
-	int len = strlen (szString);
-	int i;
-
-	for (i = 0; i < len; i++)
-	  {
-	    if (*s == '&')
-	      s++;
-	    else
-	      *pl++ = *s++;
-	  }
-
-	*pl = 0;
-	return bufResult;
-}
-
 int OpenHelp(PtWidget_t *w,XAP_Dialog *dlg,PtCallbackInfo_t *cbinfo)
 {
 PhWindowEvent_t *we = (PhWindowEvent_t *)cbinfo->cbdata;
@@ -249,13 +225,14 @@ int SetupContextHelp(PtWidget_t *w,void *dlg)
 	return 0;
 }
 
-PtWidget_t *abiCreatePhabDialog(char *dialog,char *title)
+PtWidget_t *abiCreatePhabDialog(char *dialog,const XAP_StringSet *pSS, XAP_String_Id id)
 {
 ApDBase_t *db=NULL;
 int n=0;
 PtArg_t args[5];
 char path[PATH_MAX];
 PtWidget_t *window;
+UT_UTF8String s;
 
 sprintf(path,"%s/%s.wgtd",XAP_App::getApp()->getAbiSuiteAppDir(),dialog);
 
@@ -267,7 +244,9 @@ db = ApOpenExecDBaseFile(XAP_App::getApp()->getArgs()->m_argv[0],path);
 }
 if(!db) return (PtWidget_t*)-1;
 
-PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,title,0);
+pSS->getValueUTF8(id,s);
+PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,s.utf8_str(),0);
+
 window = ApCreateWidgetFamily(db,dialog,-1,-1,n,args);
 ApCloseDBase(db);
 return window;
@@ -291,3 +270,15 @@ while( (d = PtWidgetTree(parent,&cur,d) ) != Pt_TRAVERSE_DONE)
 
 return (PtWidget_t *)-1;
 }
+
+void localizeLabel(PtWidget_t * widget, const XAP_StringSet * pSS, XAP_String_Id id)
+{
+	XML_Char * unixstr = NULL;	// used for conversions
+	UT_UTF8String s;
+	pSS->getValueUTF8(id,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
+	PtSetResource(widget,Pt_ARG_TEXT_STRING,unixstr,0);
+	FREEP(unixstr);	
+}
+
+
