@@ -164,6 +164,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 #endif
 	_s(AP_MENU_ID_INSERT_INSERTHEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_INSERT_INSERTFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
+	_s(AP_MENU_ID_INSERT_MATHML,   0,1,0,0,  "fileInsertMathML",    NULL,                   NULL);
 #ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);

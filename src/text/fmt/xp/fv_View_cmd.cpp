@@ -4037,6 +4037,39 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 }
 
 /*!
+ * This method inserts a MathML object at the point presented.
+ * It assumes that a data item with a name of the supplied filename has
+ * already been inserted.
+ */
+bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
+{
+	const XML_Char * atts[3]={"dataid",NULL,NULL};
+
+	atts[1] = static_cast<const XML_Char *>(szFileName);
+	bool bDidGlob = false;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	if (!isSelectionEmpty())
+	{
+		bDidGlob = true;
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+	}
+	m_pDoc->insertObject(pos,PTO_Math,atts,NULL);
+
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+
+	_restorePieceTableState();
+	_updateInsertionPoint();
+	return true;
+}
+
+/*!
  * This method inserts an image at the strux of type iStruxType at the 
  * point given by ipos.
  * This is useful for speficifying images as backgrounds to pages and cells.

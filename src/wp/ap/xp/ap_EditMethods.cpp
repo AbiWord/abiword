@@ -115,6 +115,7 @@
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
+#include "ie_imp_MathML.h"
 #include "ie_exp.h"
 #include "ie_types.h"
 
@@ -373,6 +374,7 @@ public:
 	static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn printDirectly;
 	static EV_EditMethod_Fn fileInsertGraphic;
+	static EV_EditMethod_Fn fileInsertMathML;
 	static EV_EditMethod_Fn fileInsertPageBackgroundGraphic;
 	static EV_EditMethod_Fn insertClipart;
 	static EV_EditMethod_Fn fileSaveAsWeb;
@@ -862,6 +864,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileExport), 0, ""),
 	EV_EditMethod(NF(fileImport), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
+	EV_EditMethod(NF(fileInsertMathML),	0,	""),
 	EV_EditMethod(NF(fileInsertPageBackgroundGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				_A_,	""),
 	EV_EditMethod(NF(fileNewUsingTemplate),				_A_,	""),
@@ -1933,6 +1936,96 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	if (bOK)
 	{
 		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+			UT_cloneString(*ppPathname,szResultPathname);
+
+		UT_sint32 type = pDialog->getFileType();
+
+		// If the number is negative, it's a special type.
+		// Some operating systems which depend solely on filename
+		// suffixes to identify type (like Windows) will always
+		// want auto-detection.
+		if (type < 0)
+			switch (type)
+			{
+			case XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO:
+				// do some automagical detecting
+				*iegft = IEGFT_Unknown;
+				break;
+			default:
+				// it returned a type we don't know how to handle
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			}
+		else
+			*iegft = static_cast<IEGraphicFileType>(pDialog->getFileType());
+	}
+
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+
+
+static bool s_AskForMathMLPathname(XAP_Frame * pFrame,
+					   char ** ppPathname,
+					   IEGraphicFileType * iegft)
+{
+	// raise the file-open dialog for inserting a MathML equation.
+	// return a_OK or a_CANCEL depending on which button
+	// the user hits.
+	// return a pointer a UT_strdup()'d string containing the
+	// pathname the user entered -- ownership of this goes
+	// to the caller (so free it when you're done with it).
+
+	UT_DEBUGMSG(("s_AskForMathMLPathname: frame %p\n",
+				 pFrame));
+
+	UT_return_val_if_fail (ppPathname, false);
+	*ppPathname = NULL;
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERTMATHML));
+	UT_return_val_if_fail (pDialog, false);
+
+	pDialog->setCurrentPathname(NULL);
+	pDialog->setSuggestFilename(false);
+
+	// to fill the file types popup list, we need to convert AP-level
+	// ImpGraphic descriptions, suffixes, and types into strings.
+
+	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
+
+	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	IEGraphicFileType * nTypeList = (IEGraphicFileType *)
+		 UT_calloc(filterCount + 1,	sizeof(IEGraphicFileType));
+	UT_uint32 k = 0;
+
+	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
+		k++;
+
+	pDialog->setFileTypeList(szDescList, szSuffixList, static_cast<const UT_sint32 *>(nTypeList));
+	if (iegft != NULL)
+	  pDialog->setDefaultFileType(*iegft);
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		UT_DEBUGMSG(("MATHML Path Name selected = %s \n",szResultPathname));
 		if (szResultPathname && *szResultPathname)
 			UT_cloneString(*ppPathname,szResultPathname);
 
@@ -3494,6 +3587,58 @@ Defun1(fileInsertGraphic)
 	FREEP(pNewFile);
 	DELETEP(pFG);
 
+	return true;
+}
+
+
+Defun1(fileInsertMathML)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	PD_Document * pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
+	char* pNewFile = NULL;
+
+
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	bool bOK = s_AskForMathMLPathname(pFrame,&pNewFile,&iegft);
+	
+	if (!bOK || !pNewFile)
+	{
+		UT_DEBUGMSG(("ARRG! bOK = %d pNewFile = %x \n",bOK,pNewFile));
+		return false;
+	}
+	UT_UTF8String sNewFile = pNewFile;
+
+	// we own storage for pNewFile and must free it.
+	FREEP(pNewFile);
+
+
+	UT_DEBUGMSG(("fileInsertMathML: loading [%s]\n",sNewFile.utf8_str()));
+
+	IE_Imp_MathML * pImpMathML = new IE_Imp_MathML(pDoc);
+	UT_Error errorCode = pImpMathML->importFile(sNewFile.utf8_str());
+
+	if(errorCode != UT_OK)
+	{
+		s_CouldNotLoadFileMessage(pFrame, sNewFile.utf8_str(), errorCode);
+		DELETEP(pImpMathML);
+		return false;
+	}
+	ABIWORD_VIEW;
+
+	/*
+	  Create the data item
+	*/
+	const char* mimetypeMATHML = NULL;
+	mimetypeMATHML = UT_strdup("text/MathML");
+   	pDoc->createDataItem(sNewFile.utf8_str(), false, pImpMathML->getByteBuf(), static_cast<void *>(const_cast<char *>(mimetypeMATHML)), NULL);
+
+// Insert the MathML Object
+
+	pView->cmdInsertMathML(sNewFile.utf8_str(),pView->getPoint());
+
+	DELETEP(pImpMathML);
 	return true;
 }
 

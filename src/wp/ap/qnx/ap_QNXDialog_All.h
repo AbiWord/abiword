@@ -95,6 +95,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_QNXDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_QNXDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_QNXDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERTMATHML,	XAP_QNXDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_QNXDialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_QNXDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_PASSWORD,	XAP_QNXDialog_Password)

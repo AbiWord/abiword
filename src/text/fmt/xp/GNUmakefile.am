@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES)
+INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(MATHVIEW_CFLAGS)
 
 noinst_LIBRARIES = libFmt.a
 
@@ -53,6 +53,7 @@ libFmt_a_SOURCES= \
 	fp_FootnoteContainer.cpp        \
 	fp_Run.cpp			\
 	fp_FmtMarkRun.cpp		\
+	fp_MathRun.cpp		\
 	fp_TextRun.cpp			\
 	fp_TestRoutines.cpp		\
 	fp_FieldListLabelRun.cpp	\

@@ -1,0 +1,76 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
+/* AbiWord
+ * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (c) 2004 Martin Sevior
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
+
+
+#ifndef FP_MATHRUN_H
+#define FP_MATHRUN_H
+
+#include "fp_Run.h"
+class fl_BlockLayout;
+
+class ABI_EXPORT fp_MathRun : public fp_Run
+{
+public:
+	fp_MathRun(fl_BlockLayout* pBL, PT_BlockOffset iOffsetFirst);
+    virtual	~ fp_MathRun(void);
+
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			isSuperscript(void) const ;
+	virtual bool			isSubscript(void)  const;
+	virtual bool 			hasLayoutProperties(void) const;
+	const char *            getDataID(void) const;
+protected:
+	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
+											  const PP_AttrProp * pBlockAP,
+											  const PP_AttrProp * pSectionAP,
+											  GR_Graphics * pG = NULL);
+
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
+	void                    _drawResizeBox(UT_Rect box);
+	UT_sint32               m_iImageWidth;
+	UT_sint32               m_iImageHeight;
+	UT_String               m_sCachedWidthProp;
+	UT_String               m_sCachedHeightProp;
+	UT_sint32               m_iPointHeight;
+	const PP_AttrProp *     m_pSpanAP;
+	UT_uint32               m_iGraphicTick;
+	const XML_Char *        m_pszDataID;
+	UT_UTF8String           m_sMathML;
+};
+
+#endif /* FP_MATHRUN_H */
+
+
+
+
+
+
+
+
+
+

@@ -206,6 +206,7 @@ BeginLayout(Main,0)
 
 #ifdef HAVE_GNOME
 		Separator()
+		MenuItem(AP_MENU_ID_INSERT_MATHML)
 
 		BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
 			MenuItem(AP_MENU_ID_INSERT_CLIPART)

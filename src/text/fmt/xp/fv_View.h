@@ -186,6 +186,7 @@ public:
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 
+	bool            cmdInsertMathML(const char * szFileName, PT_DocPosition pos);
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, PT_DocPosition iPos, PTStruxType iStruxType);
 	virtual void	toggleCase(ToggleCase c);

@@ -44,6 +44,7 @@ CPPSRCS= 	ie_exp_AbiWord_1.cpp 			\
 		ie_imp_RTF.cpp				\
 		ie_imp_RTFParse.cpp			\
 		ie_imp_RTFObjectsAndPicts.cpp		\
+		ie_imp_MathML.cpp				\
 		ie_imp_Text.cpp				\
 		ie_imp_XHTML.cpp			\
 		ie_imp_XML.cpp				\

@@ -40,6 +40,7 @@
 #include "ut_string_class.h"
 #include "fp_ContainerObject.h"
 
+
 class UT_GrowBuf;
 class fp_Line;
 class GR_Graphics;
@@ -86,7 +87,8 @@ enum FP_RUN_TYPE
 	FPRUN_HYPERLINK					= 13,
 	FPRUN_DIRECTIONMARKER           = 14,
 	FPRUN_DUMMY                     = 15,
-	FPRUN__LAST__					= 16
+	FPRUN_MATH                      = 16,
+	FPRUN__LAST__					= 17
 };
 
 // specifies how setX should handle screen clearing
@@ -114,6 +116,7 @@ enum FPRUN_CLEAR_SCREEN
 		fp_BookmarkRun
 		fp_HyperlinkRun
 		fp_DummyRun
+		fp_MathRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat
 	differently, but they can all be treated like rectangular blocks to

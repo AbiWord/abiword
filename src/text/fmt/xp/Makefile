@@ -50,6 +50,7 @@ CPPSRCS=		fv_View.cpp			\
 			fp_PageSize.cpp			\
 			fp_Run.cpp			\
 			fp_FmtMarkRun.cpp		\
+			fp_MathRun.cpp		\
 			fp_TextRun.cpp			\
 			fp_TestRoutines.cpp		\
 	                fp_TableContainer.cpp           \

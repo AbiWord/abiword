@@ -76,6 +76,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "fp_MathRun.h"
 
 #include "xap_EncodingManager.h"
 
@@ -3627,6 +3628,31 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 
 }
 
+
+bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset)
+{
+	fp_Run * pNewRun;
+	
+	if(!isContainedByTOC())
+	{
+		pNewRun = new fp_MathRun(this, blockOffset);
+	}
+	else
+	{
+		pNewRun = new fp_DummyRun(this,blockOffset);
+	}
+	
+	UT_ASSERT(pNewRun);
+	bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+	{
+		_breakLineAfterRun(pNewRun);
+	}
+
+	return bResult;
+
+}
+
 bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 {
 	bool bResult = false;
@@ -6433,6 +6459,11 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		_doInsertHyperlinkRun(blockOffset);
 		return true;
 
+	case PTO_Math:
+		UT_DEBUGMSG(("Populate:InsertMathML:\n"));
+		_doInsertMathRun(blockOffset);
+		return true;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -6489,6 +6520,16 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		UT_DEBUGMSG(("Edit:InsertObject:Hyperlink:\n"));
 		blockOffset = pcro->getBlockOffset();
 		_doInsertHyperlinkRun(blockOffset);
+		break;
+
+	}
+
+
+	case PTO_Math:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Math:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertMathRun(blockOffset);
 		break;
 
 	}

@@ -299,6 +299,7 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 	{
 		case PTO_Hyperlink:
 		case PTO_Image:
+		case PTO_Math:
 		case PTO_Field:
 			{
 				pfo = new pf_Frag_Object(this,pto,indexAP);
