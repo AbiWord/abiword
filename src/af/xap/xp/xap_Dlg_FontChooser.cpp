@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -47,6 +47,7 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bStrikeout			= false;
 	m_bTopline		    	= false;
 	m_bBottomline			= false;
+	m_bHidden               = false;
 	m_bChangedFontFamily	= false;
 	m_bChangedFontSize		= false;
 	m_bChangedFontWeight	= false;
@@ -58,6 +59,8 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bChangedStrikeOut		= false;
 	m_bChangedTopline		= false;
 	m_bChangedBottomline   	= false;
+	m_bChangedHidden        = false;
+
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
 
@@ -89,12 +92,12 @@ void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
 
 	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_pColorBackground);
 	UT_ASSERT(m_pFontPreview);
-	
+
 	m_pFontPreview->setWindowSize(width, height);
 	m_pFontPreview->setVecProperties( & m_vecProps);
 }
 
-void XAP_Dialog_FontChooser::addOrReplaceVecProp(const XML_Char * pszProp, 
+void XAP_Dialog_FontChooser::addOrReplaceVecProp(const XML_Char * pszProp,
 												 const XML_Char * pszVal)
 {
 	UT_sint32 iCount = m_vecProps.getItemCount();
@@ -150,7 +153,7 @@ void XAP_Dialog_FontChooser::event_previewClear(void)
 const XML_Char * XAP_Dialog_FontChooser::getVal(const XML_Char * szProp) const
 {
 	UT_sint32 i = m_vecProps.getItemCount();
-	if(i <= 0) 
+	if(i <= 0)
 		return NULL;
 	UT_sint32 j;
 	const XML_Char * pszV = NULL;
@@ -166,7 +169,7 @@ const XML_Char * XAP_Dialog_FontChooser::getVal(const XML_Char * szProp) const
 		return NULL;
 }
 
-/*! 
+/*!
  * This method sets all the local properties from a vector of pointers
  * to const XML_Char * strings of Property - Value pairs.
  * This method wipes out all the old values and clears all the bools
@@ -195,6 +198,9 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
 	m_bStrikeout = (NULL != strstr(s,"line-through"));
 	m_bTopline = (NULL != strstr(s,"topline"));
 	m_bBottomline = (NULL != strstr(s,"bottomline"));
+
+	s = getVal("display");
+	m_bHidden = !UT_strcmp(s,"none");
 }
 
 void XAP_Dialog_FontChooser::setFontFamily(const XML_Char * pFontFamily)
@@ -231,6 +237,22 @@ void XAP_Dialog_FontChooser::setBGColor(const XML_Char * pBGColor)
 {
 	CLONEP((char *&)m_pBGColor, pBGColor);
 	addOrReplaceVecProp("bgcolor",pBGColor);
+}
+
+void XAP_Dialog_FontChooser::setHidden(bool bHidden)
+{
+	static char none[] = "none";
+	static char empty[]  = "";
+
+	if(bHidden)
+	{
+		addOrReplaceVecProp("display",none);
+	}
+	else
+	{
+		addOrReplaceVecProp("display",empty);
+	}
+	m_bHidden = bHidden;
 }
 
 void XAP_Dialog_FontChooser::setBackGroundColor(const XML_Char * pBackground)
@@ -273,7 +295,7 @@ XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
 bool XAP_Dialog_FontChooser::getChangedFontFamily(const XML_Char ** pszFontFamily) const
 {
 	bool bchanged = didPropChange(m_pFontFamily,getVal("font-family"));
-	bool useVal = (bchanged && !m_bChangedFontFamily);				 
+	bool useVal = (bchanged && !m_bChangedFontFamily);
 	if (pszFontFamily && useVal)
 		*pszFontFamily = getVal("font-family");
 	else if(pszFontFamily)
@@ -284,7 +306,7 @@ bool XAP_Dialog_FontChooser::getChangedFontFamily(const XML_Char ** pszFontFamil
 bool XAP_Dialog_FontChooser::getChangedFontSize(const XML_Char ** pszFontSize) const
 {
 	bool bchanged = didPropChange(m_pFontSize,getVal("font-size"));
-	bool useVal = (bchanged && !m_bChangedFontSize);				 
+	bool useVal = (bchanged && !m_bChangedFontSize);
 	if (pszFontSize && useVal)
 		*pszFontSize = getVal("font-size");
 	else if(pszFontSize)
@@ -295,7 +317,7 @@ bool XAP_Dialog_FontChooser::getChangedFontSize(const XML_Char ** pszFontSize) c
 bool XAP_Dialog_FontChooser::getChangedFontWeight(const XML_Char ** pszFontWeight) const
 {
 	bool bchanged = didPropChange(m_pFontWeight,getVal("font-weight"));
-	bool useVal = (bchanged && !m_bChangedFontWeight);				 
+	bool useVal = (bchanged && !m_bChangedFontWeight);
 	if (pszFontWeight && useVal)
 		*pszFontWeight = getVal("font-weight");
 	else if(pszFontWeight)
@@ -306,7 +328,7 @@ bool XAP_Dialog_FontChooser::getChangedFontWeight(const XML_Char ** pszFontWeigh
 bool XAP_Dialog_FontChooser::getChangedFontStyle(const XML_Char ** pszFontStyle) const
 {
 	bool bchanged = didPropChange(m_pFontStyle,getVal("font-style"));
-	bool useVal = (bchanged && !m_bChangedFontStyle);				 
+	bool useVal = (bchanged && !m_bChangedFontStyle);
 	if (pszFontStyle && useVal)
 		*pszFontStyle = getVal("font-style");
 	else if(pszFontStyle)
@@ -317,7 +339,7 @@ bool XAP_Dialog_FontChooser::getChangedFontStyle(const XML_Char ** pszFontStyle)
 bool XAP_Dialog_FontChooser::getChangedBGColor(const XML_Char ** pszBGColor) const
 {
 	bool bchanged = didPropChange(m_pBGColor,getVal("bgcolor"));
-	bool useVal = (bchanged && !m_bChangedBGColor);				 
+	bool useVal = (bchanged && !m_bChangedBGColor);
 	if (pszBGColor && useVal)
 		*pszBGColor = getVal("bgcolor");
 	else if(pszBGColor)
@@ -329,7 +351,7 @@ bool XAP_Dialog_FontChooser::getChangedBGColor(const XML_Char ** pszBGColor) con
 bool XAP_Dialog_FontChooser::getChangedColor(const XML_Char ** pszColor) const
 {
 	bool bchanged = didPropChange(m_pColor,getVal("color"));
-	bool useVal = (bchanged && !m_bChangedColor);				 
+	bool useVal = (bchanged && !m_bChangedColor);
 	if (pszColor && useVal)
 		*pszColor = getVal("color");
 	else if(pszColor)
@@ -347,6 +369,13 @@ bool XAP_Dialog_FontChooser::didPropChange(const XML_Char * v1, const XML_Char *
 	if(v1 == NULL || v2 == NULL)
 		return true;
 	return (strcmp(v1,v2) != 0);
+}
+
+bool XAP_Dialog_FontChooser::getChangedHidden(bool * pbHidden) const
+{
+	if (pbHidden)
+		*pbHidden = m_bHidden;
+	return m_bChangedHidden;
 }
 
 bool XAP_Dialog_FontChooser::getChangedUnderline(bool * pbUnderline) const
@@ -390,13 +419,13 @@ XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Cha
 	: XAP_Preview(gc)
 #ifdef WITH_PANGO
 	  , m_pGlyphString(NULL)
-#endif	
+#endif
 {
 	if(pszClrBackground != NULL && strcmp(pszClrBackground,"transparent")!=0)
 		UT_parseColor(pszClrBackground,m_clrBackground);
 	else
 		UT_setColor(m_clrBackground,255,255,255);
-	
+
 }
 
 XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
@@ -407,11 +436,11 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 		g_list_foreach(m_pGlyphString, UT_free1PangoGlyphString, NULL);
 		g_list_free(m_pGlyphString);
 	}
-#endif	
+#endif
 }
 
 /*!
- * This method assigns a pointer to a 
+ * This method assigns a pointer to a
  *  vector with Char * strings of span-level properties
  * The vector has const XML_Char * string in the order
  * (n) Property (n+1) Value
@@ -430,7 +459,7 @@ void XAP_Preview_FontPreview::setVecProperties( const UT_Vector * vFontProps)
 const XML_Char * XAP_Preview_FontPreview::getVal(const XML_Char * szProp)
 {
 	UT_sint32 i = m_vecProps->getItemCount();
-	if(i <= 0) 
+	if(i <= 0)
 		return NULL;
 	UT_sint32 j;
 	const XML_Char * pszV = NULL;
@@ -494,7 +523,7 @@ void XAP_Preview_FontPreview::draw(void)
 	const char* pszStretch	= getVal("font-stretch");
 	const char* pszSize		= getVal("font-size");
 	if(!pszFamily)
-	{		
+	{
 		pszFamily = "Times New Roman";
 	}
 	if(!pszStyle)
@@ -515,13 +544,13 @@ void XAP_Preview_FontPreview::draw(void)
 	pFont = m_gc->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 	UT_ASSERT(pFont);
 	if(!pFont)
-	{		
+	{
 		clearScreen();
 		return;
 	}
 
 	m_gc->setFont(pFont);
-	UT_sint32 iAscent = m_gc->getFontAscent(pFont);	
+	UT_sint32 iAscent = m_gc->getFontAscent(pFont);
     UT_sint32 iDescent = m_gc->getFontDescent(pFont);
 	UT_sint32 iHeight = m_gc->getFontHeight(pFont);
 //
@@ -535,15 +564,15 @@ void XAP_Preview_FontPreview::draw(void)
 	UT_sint32 iWinHeight = getWindowHeight();
 	UT_sint32 iTop = (iWinHeight - iHeight)/2;
 	UT_sint32 len = UT_UCS4_strlen(m_pszChars);
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_sint32 twidth = m_gc->measureString(m_pszChars,0,len,NULL);
 #else
 	PangoRectangle ink_rect;
 	UT_uint32 twidth = 0;
-	
+
 	if(!m_pGlyphString)
 		m_pGlyphString = m_gc->getPangoGlyphString(m_pszChars,len);
-	
+
 	GList * pListItem = g_list_first(m_pGlyphString);
 	while (pListItem)
 	{
@@ -553,7 +582,7 @@ void XAP_Preview_FontPreview::draw(void)
 		pListItem = pListItem->next;
 	}
 #endif
-	
+
 	UT_sint32 iLeft = (iWinWidth - twidth)/2;
 //
 // Fill the background color
@@ -564,12 +593,12 @@ void XAP_Preview_FontPreview::draw(void)
 // Do the draw chars at last!
 //
 	m_gc->setColor(FGcolor);
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	m_gc->drawChars(m_pszChars, 0, len, iLeft, iTop);
 #else
 	m_gc->drawPangoGlyphString(m_pGlyphString, iLeft, iTop);
 #endif
-	
+
 //
 // Do the decorations
 //
@@ -588,7 +617,7 @@ void XAP_Preview_FontPreview::draw(void)
 		UT_sint32 iDrop = iTop + iAscent * 2 /3;
 		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
-	
+
 	m_gc->drawLine(0, 0, getWindowWidth(), 0);
 	m_gc->drawLine(getWindowWidth() - 1, 0, getWindowWidth() - 1,
 		getWindowHeight());

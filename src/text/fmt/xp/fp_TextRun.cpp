@@ -144,6 +144,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pBlockAP,
 									const PP_AttrProp * pSectionAP)
 {
+	clearScreen();
+
 	fd_Field * fd = NULL;
 	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -752,7 +754,9 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| ((  getRevisions() != pNext->getRevisions()) // non-identical and one is null
 			&& (!getRevisions() || !pNext->getRevisions()))
 		|| ((  getRevisions() && pNext->getRevisions())
-		    && !(*getRevisions() == *(pNext->getRevisions()))) //non-null but different
+		    && !(*getRevisions() == *(pNext->getRevisions()))) //
+															   //non-null but different
+		|| (pNext->isHidden() != isHidden())
 		)
 	{
 		return false;

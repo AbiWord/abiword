@@ -329,8 +329,34 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
 
-	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(0)); //#TF retrieve first visual run
-	UT_ASSERT(pFirstRun);
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
+	UT_uint32 i = 0;
+	fp_Run* pFirstRun;
+	bool bHidden;
+	FPVisibility eHidden;
+
+	do {
+
+		pFirstRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i++)); //#TF retrieve first visual run
+		UT_ASSERT(pFirstRun);
+
+		// if this tab is to be hidden, we must treated as if its
+		// width was 0
+		eHidden  = pFirstRun->isHidden();
+		bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		              || eHidden == FP_HIDDEN_REVISION
+		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+	}while(bHidden && (i < count));
+
+	if(bHidden && (i < count))
+	{
+		//all runs on this line are hidden, at the moment just assert
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+	}
+
+
 
 	bBOL = false;
 	if (x <= pFirstRun->getX())
@@ -348,7 +374,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	fp_Run* pClosestRun = NULL;
 	UT_sint32 iClosestDistance = 0;
 
-	for (int i=0; i<count; i++)
+	for (i=0; i<count; i++)
 	{
 		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));	//#TF get i-th visual run
 
@@ -782,9 +808,9 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				leftClear = pRun->getDescent();
 
 			pRun->getGraphics()->fillRect(pRun->getPageColor(),
-										  xoff - leftClear, 
-										  yoff, 
-										  m_iClearToPos + leftClear 
+										  xoff - leftClear,
+										  yoff,
+										  m_iClearToPos + leftClear
         										  - (xoff - xoffLine),
 										  getHeight());
 //
@@ -907,11 +933,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 
-		pRun->getGraphics()->fillRect(pRun->getPageColor(), 
-									  xoff - leftClear, 
-									  yoff, 
-									  m_iClearToPos + leftClear 
-									         - (xoff - xoffLine), 
+		pRun->getGraphics()->fillRect(pRun->getPageColor(),
+									  xoff - leftClear,
+									  yoff,
+									  m_iClearToPos + leftClear
+									         - (xoff - xoffLine),
 									  getHeight());
 //
 // Sevior: I added this for robustness.
@@ -963,6 +989,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	//xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
+
 //
 // offscreen don't bother.
 //
@@ -974,12 +1001,20 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.xoff = my_xoff;
 	da.pG = pG;
 
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
 
 	for (int i=0; i < count; i++)
 	{
 		// NB !!! In the BiDi build drawing has to be done in the logical
 		// order, otherwise overstriking characters cannot be seen
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		FPVisibility eHidden  = pRun->isHidden();
+		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		   || eHidden == FP_HIDDEN_REVISION
+		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+			continue;
 
 		FP_RUN_TYPE rType = pRun->getType();
 
@@ -1014,6 +1049,8 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		return;
 
 	//xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
 
 	pDA->yoff += m_iAscent;
 
@@ -1022,6 +1059,13 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		// NB !!! In the BiDi build drawing has to be done in the logical
 		// order, otherwise overstriking characters cannot be seen
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		FPVisibility eHidden  = pRun->isHidden();
+		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		   || eHidden == FP_HIDDEN_REVISION
+		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+			continue;
+
 		FP_RUN_TYPE rType = pRun->getType();
 
 		dg_DrawArgs da = *pDA;
@@ -1208,6 +1252,25 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 {
 	if(!pRun)
 		return;
+
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+	FPVisibility eHidden  = pRun->isHidden();
+
+	bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+					|| eHidden == FP_HIDDEN_REVISION
+					|| eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+	// If the run is to be hidden just return, since the positions
+	// should remain as they were, but it would be preferable if this
+	// situation was trapped higher up (thus the assert)
+	if(bHidden)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+
 #ifndef WITH_PANGO
 	const UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
 #endif
@@ -1850,6 +1913,9 @@ void fp_Line::layout(void)
 	// now we work our way through the runs on this line
 	xxx_UT_DEBUGMSG(("fp_Line::layout ------------------- \n"));
 
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
 	UT_sint32 ii = 0;
 	for (; ii<iCountRuns; ++ii)
 	{
@@ -1861,6 +1927,17 @@ void fp_Line::layout(void)
 		// in logical order
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iIndx));
 
+
+		// if this tab is to be hidden, we must treated as if its
+		// width was 0
+		FPVisibility eHidden  = pRun->isHidden();
+		bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		              || eHidden == FP_HIDDEN_REVISION
+		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+		if(bHidden)
+			continue;
+
 		// if we are working from the left, we want to set the
 		// X coordinance now; if from the right we will do it
 		// after we have got to the width worked out
@@ -1868,7 +1945,7 @@ void fp_Line::layout(void)
 		if(eWorkingDirection == WORK_FORWARD)
 		{
 			s_pOldXs[iIndx] = pRun->getX();
-			pRun->setX(iX,FP_CLEARSCREEN_NEVER);
+				pRun->setX(iX,FP_CLEARSCREEN_NEVER);
 		}
 		xxx_UT_DEBUGMSG(("fp_Line::layout: iX %d, iXL %d, ii %d, iCountRuns %d\n"
 					 "		 run type %d\n",
@@ -1938,6 +2015,16 @@ void fp_Line::layout(void)
 					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
 					UT_ASSERT(pRun);
 
+					// if this tab is to be hidden, we must treated as if its
+					// width was 0
+					FPVisibility eHidden  = pRun->isHidden();
+					bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+								  || eHidden == FP_HIDDEN_REVISION
+								  || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+					if(bHidden)
+						continue;
+
 					//eClearScreen = iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
 					if(!bLineErased && iStartX != s_pOldXs[k])
 					{
@@ -1960,6 +2047,16 @@ void fp_Line::layout(void)
 					UT_uint32 iK = (eWorkingDirection == WORK_FORWARD) ? k : iCountRuns - k - 1;
 					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iK));
 					UT_ASSERT(pRun);
+
+					// if this tab is to be hidden, we must treated as if its
+					// width was 0
+					FPVisibility eHidden  = pRun->isHidden();
+					bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+								  || eHidden == FP_HIDDEN_REVISION
+								  || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+					if(bHidden)
+						continue;
 
 					if(eWorkingDirection == WORK_BACKWARD)
 					{
@@ -1998,6 +2095,16 @@ void fp_Line::layout(void)
 				{
 					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
 					UT_ASSERT(pRun);
+
+					// if this tab is to be hidden, we must treated as if its
+					// width was 0
+					FPVisibility eHidden  = pRun->isHidden();
+					bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+								  || eHidden == FP_HIDDEN_REVISION
+								  || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+					if(bHidden)
+						continue;
 
 					UT_sint32 iCurX = pRun->getX();
 					//eClearScreen = iCurX + iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
@@ -2470,39 +2577,21 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 	const UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
 
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
 	// first calc the width of the line
 	for (UT_uint32 i = 0; i < iCountRuns; ++i)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-#if 0
-// since the tab width's have already been calculated by a call to layout
-// this is not necessary (I gather this is an ancient piece of code
-// put here before the layout function was implemented)
+		FPVisibility eHidden  = pRun->isHidden();
+		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		   || eHidden == FP_HIDDEN_REVISION
+		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+			continue;
 
-		if (pRun->getType() == FPRUN_TAB)
-		{
-			UT_sint32	iPos;
-			eTabType	iTabType;
-			eTabLeader	iTabLeader;
-
-			bool bRes = findNextTabStop(iX, iPos, iTabType, iTabLeader);
-			UT_ASSERT(bRes);
-			UT_ASSERT(iTabType == FL_TAB_LEFT);
-
-			// TODO -- support all the tabs  shack@uiuc.edu
-
-			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
-			pTabRun->setTabWidth(iPos - iX);
-
-			iX = iPos;
-		}
-		else
-#endif
-		{
-			iX += pRun->getWidth();
-		}
-		//UT_DEBUGMSG(("calculateWidthOfLine: run[%d] (type %d) width=%d total=%d\n", i, pRun->getType(), pRun->getWidth(),iX));
+		iX += pRun->getWidth();
 	}
 	// this is a wrong assert, since line can include trailing spaces
 	// that are out of the margins.
@@ -2520,10 +2609,20 @@ UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
 	UT_sint32 iX = 0;
 	UT_uint32 i;
 
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
 	// first calc the width of the line
 	for (i=0; i<iCountRuns; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		FPVisibility eHidden  = pRun->isHidden();
+		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		   || eHidden == FP_HIDDEN_REVISION
+		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+			continue;
+
 		iX += pRun->getWidthInLayoutUnits();
 	}
 
@@ -2547,11 +2646,20 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 	UT_sint32 i;
 	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
 
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
 	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
 		// work from the run on the visual end of the line
 		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+
+		FPVisibility eHidden  = pRun->isHidden();
+		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		   || eHidden == FP_HIDDEN_REVISION
+		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+			continue;
 
 		if(!pRun->doesContainNonBlankData())
 		{
@@ -2581,11 +2689,20 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
 	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 i;
 
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
 	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
 		// work from the run on the visual end of the line
 		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+
+		FPVisibility eHidden  = pRun->isHidden();
+		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		   || eHidden == FP_HIDDEN_REVISION
+		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+			continue;
 
 		if(!pRun->doesContainNonBlankData())
 		{

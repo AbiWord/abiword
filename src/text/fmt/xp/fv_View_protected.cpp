@@ -2858,7 +2858,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 #if 0
 // Needed for piecetable fields - we don't have these in 1.0
 
-		while(pRun != NULL && pRun->isField() == true && m_iInsPoint >= posBOD)
+		while(pRun != NULL && pRun->isField() && m_iInsPoint >= posBOD)
 		{
 			m_iInsPoint--;
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
@@ -2877,6 +2877,31 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	UT_ASSERT(bRes);
 
 	bRes = true;
+
+	// we might have skipped over some runs that cannot contain the
+	// point, but but have non-zero length, such as any hidden text;
+	// if this is the case, we need to adjust the document position accordingly
+
+	PT_DocPosition iRunStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+	PT_DocPosition iRunEnd = iRunStart + pRun->getLength();
+
+	if(bForward && ( m_iInsPoint > iRunEnd))
+	{
+		// the run we have got is the on left of the ins point, we
+		// need to find the right one and set the point there
+		pRun = pRun->getNext();
+
+		while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
+			pRun = pRun->getNext();
+
+		m_iInsPoint = 1 + pBlock->getPosition(false) + pRun->getBlockOffset();
+	}
+
+	if(!bForward && (iRunEnd <= m_iInsPoint))
+	{
+		m_iInsPoint = iRunEnd - 1;
+	}
+
 
 	if ((UT_sint32) m_iInsPoint < (UT_sint32) posBOD)
 	{

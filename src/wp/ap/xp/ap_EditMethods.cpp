@@ -357,6 +357,7 @@ public:
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
 	static EV_EditMethod_Fn toggleBold;
+	static EV_EditMethod_Fn toggleHidden;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
 	static EV_EditMethod_Fn toggleOline;
@@ -892,6 +893,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleDirOverrideLTR), 0,	""),
 	EV_EditMethod(NF(toggleDirOverrideRTL), 0,	""),
 	EV_EditMethod(NF(toggleDomDirection),	0,	""),
+	EV_EditMethod(NF(toggleHidden),			0,	""),
 	EV_EditMethod(NF(toggleIndent),         0,  ""),
 	EV_EditMethod(NF(toggleInsertMode), 	0,  ""),
 	EV_EditMethod(NF(toggleItalic), 		0,	""),
@@ -7835,6 +7837,12 @@ Defun1(dlgWordCount)
 
 /****************************************************************/
 /****************************************************************/
+Defun1(toggleHidden)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "display", "none", "");
+}
 
 Defun1(toggleBold)
 {

@@ -203,7 +203,7 @@ public:
 	void            		clearScreen(bool bFullLineHeightRect = false);
 	void					markAsDirty(void)	{ m_bDirty = true; }
 	bool					isDirty(void) const { return m_bDirty; }
-	virtual bool			canContainPoint(void) const;
+	bool			        canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual	bool			recalcWidth(void);
@@ -332,6 +332,7 @@ protected:
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP) = 0;
 
+	virtual bool            _canContainPoint(void) const;
 
 //
 // Variables to draw underlines for all runs
@@ -1162,6 +1163,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+
 private:
 	enum
 	{

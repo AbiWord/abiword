@@ -134,14 +134,14 @@ fp_Run::~fp_Run()
 
 void fp_Run::lookupProperties()
 {
-	clearScreen();
-
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	bool bDelete;
 
 	m_pBL->getAttrProp(&pBlockAP);
+
+	PD_Document * pDoc = m_pBL->getDocument();
 
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
@@ -153,6 +153,21 @@ void fp_Run::lookupProperties()
 
 	// NB this call will recreate m_pRevisions for us
 	getSpanAP(pSpanAP,bDelete);
+
+
+	//evaluate the "display" property
+
+	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+
+	if(pszDisplay && !UT_strcmp(pszDisplay,"none"))
+	{
+		setVisibility(FP_HIDDEN_TEXT);
+	}
+	   else
+	{
+		setVisibility(FP_VISIBLE);
+	}
+
 
 	_lookupProperties(pSpanAP, pBlockAP, pSectionAP);
 
@@ -666,7 +681,6 @@ void fp_Run::setBlockOffset(UT_uint32 offset)
 
 void fp_Run::clearScreen(bool bFullLineHeightRect)
 {
-
 	if(!getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		return;
@@ -816,6 +830,24 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 }
 
 bool fp_Run::canContainPoint(void) const
+{
+	FV_View* pView = getBlock()->getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
+
+	// if this tab is to be hidden, we must treated as if its
+	// width was 0
+	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+	              || m_eHidden == FP_HIDDEN_REVISION
+		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+	if(bHidden)
+			return false;
+	else
+		return _canContainPoint();
+}
+
+bool fp_Run::_canContainPoint(void) const
 {
 	return true;
 }

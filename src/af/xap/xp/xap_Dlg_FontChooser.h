@@ -87,6 +87,7 @@ public:
 	void							setColor(const XML_Char * pColor);
 	void							setBGColor(const XML_Char * pBGColor);
 	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline);
+	void                            setHidden(bool bHidden);
 	void                            setBackGroundColor (const XML_Char * pBackGroundColor);
 
 
@@ -109,6 +110,7 @@ public:
 	bool							getChangedStrikeOut(bool * pbStrikeOut) const;
 	bool							getChangedTopline(bool * pbTopline) const;
 	bool							getChangedBottomline(bool * pbBottomline) const;
+	bool							getChangedHidden(bool * pbHidden) const;
 
 protected:
 	void                            _createFontPreviewFromGC(GR_Graphics * gc,
@@ -129,6 +131,7 @@ protected:
 	bool							m_bStrikeout;			/* input/output */
 	bool							m_bTopline;		 	    /* input/output */
 	bool							m_bBottomline;			/* input/output */
+	bool                            m_bHidden;
 
 	UT_Vector                       m_vecProps; // Holds the current
 	XAP_Preview_FontPreview *       m_pFontPreview;
@@ -144,6 +147,8 @@ protected:
 	bool							m_bChangedStrikeOut;	/* output */
 	bool							m_bChangedTopline;	    /* output */
 	bool							m_bChangedBottomline;	/* output */
+	bool                            m_bChangedHidden;
+
 	UT_UCSChar *                    m_drawString;
 };
 

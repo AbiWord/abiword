@@ -73,6 +73,7 @@ static PP_Property _props[] =
 
 	{ "default-tab-interval",  "0.5in", false, NULL},
 	{ "dir-override", NULL, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl
+	{ "display", NULL, true, NULL},
 	{ "dom-dir", default_dominant_direction, true, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 	{ "field-color", "dcdcdc", true, NULL},
 	{ "field-font",	"NULL",	true, NULL},
