@@ -323,6 +323,7 @@ public:
 	static EV_EditMethod_Fn fileSaveImage;
 	static EV_EditMethod_Fn fileExport;
 	static EV_EditMethod_Fn fileImport;
+	static EV_EditMethod_Fn importStyles;
 	static EV_EditMethod_Fn formatPainter;
 	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
@@ -807,6 +808,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(hyperlinkJump),		0,		""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
+	EV_EditMethod(NF(importStyles),			0,	""),
 	EV_EditMethod(NF(insAutotext_attn_1), 0, ""),
 	EV_EditMethod(NF(insAutotext_attn_2), 0, ""),
 	EV_EditMethod(NF(insAutotext_closing_1), 0, ""),
@@ -2022,6 +2024,29 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 }
 
 #define ABIWORD_VIEW	FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+Defun1(importStyles)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
+
+	UT_Error error = UT_IE_IMPORTERROR;
+	char * pFile = NULL;
+	IEFileType ieft = IEFT_Unknown;
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_OPEN, NULL,&pFile,&ieft);
+
+	if (!bOK || !pFile)
+	  return false;
+
+	PD_Document * pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
+
+	UT_return_val_if_fail(pDoc,false);
+
+	error = pDoc->importStyles(pFile,ieft);
+
+	return E2B(error);
+}
 
 Defun1(fileOpen)
 {
