@@ -549,9 +549,17 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 
 	// Add this in for loading - see if better way to fix.
-	// if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
-	//	_createListLabel();
-
+	//	if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
+//  	{
+//  	        if(m_pAutoNum->doesItemHaveLabel(this) == UT_TRUE)
+//  	        {
+//  	                m_bListLabelCreated = UT_TRUE;
+//  		}
+//  		else
+//  		{
+//  		        _createListLabel();
+//  		}
+//  	}
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -1051,7 +1059,10 @@ int fl_BlockLayout::format()
 		_removeAllEmptyLines();
 		_insertFakeTextRun();
 	}
-
+	if(m_pAutoNum && isListLabelInBlock() == UT_TRUE && m_bListLabelCreated == UT_FALSE)
+	{
+	        m_bListLabelCreated =UT_TRUE;
+	}
 	m_bNeedsReformat = UT_FALSE;
 	if(m_bCursorErased == UT_TRUE)
 	{
@@ -3621,9 +3632,11 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		_delete(blockOffset, 1);
 		if(m_pAutoNum)
 		{
+		  UT_DEBUGMSG(("SEVIOR: Looking label field \n"));
 		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE)
 		       {
 			     remItemFromList();
+		  UT_DEBUGMSG(("SEVIOR: Found it removing it from list \n"));
 		       }
 		}
 		break;
@@ -4257,6 +4270,7 @@ void fl_BlockLayout::remItemFromList(void)
 	UT_Vector vp;
         if( m_bListLabelCreated == UT_TRUE)
         {
+	  UT_DEBUGMSG(("SEVIOR: m_bListLabelCreated is true \n"));
 	        m_bListLabelCreated = UT_FALSE;
 	        FV_View* pView = m_pLayout->getView();
 	        UT_ASSERT(pView);
