@@ -44,7 +44,7 @@
                                          return 0; } } while (0)
 
 
-int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype);
+int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype, U16 lid);
 int ElementProc(wvParseStruct *ps,wvTag tag, void *props, int dirty);
 int DocProc(wvParseStruct *ps,wvTag tag);
 
@@ -108,7 +108,7 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	return m_iestatus;
 }
 
-int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype)
+int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	{
 	   IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
 	   UT_DEBUGMSG(("word 97 char is %c (%d), type is %d",eachchar,(int)eachchar,chartype));
