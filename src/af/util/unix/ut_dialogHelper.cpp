@@ -48,6 +48,14 @@ static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*
       return FALSE;
 }
 
+static gboolean destroy_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
+{
+      XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(GTK_OBJECT(widget), "frame");
+      if(pFrame == NULL) return FALSE;
+      
+      return FALSE;
+}
+
 static gboolean focus_out_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
       XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(GTK_OBJECT(widget), "frame");
@@ -121,7 +129,7 @@ void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
       gtk_signal_connect(GTK_OBJECT(widget), "focus_out_event",
 					 GTK_SIGNAL_FUNC(focus_out_event), NULL);
       gtk_signal_connect(GTK_OBJECT(widget), "destroy",
-					 GTK_SIGNAL_FUNC(focus_out_event), NULL);
+					 GTK_SIGNAL_FUNC(destroy_event), NULL);
 }
 
 void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
@@ -133,7 +141,7 @@ void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
       gtk_signal_connect(GTK_OBJECT(widget), "focus_out_event",
 					 GTK_SIGNAL_FUNC(focus_out_event_Modeless), NULL);
       gtk_signal_connect(GTK_OBJECT(widget), "destroy",
-					 GTK_SIGNAL_FUNC(focus_out_event_Modeless), NULL);
+					 GTK_SIGNAL_FUNC(destroy_event), NULL);
 }
 
 
