@@ -54,8 +54,8 @@ if test $abi_spell != ispell; then
 		dnl     a need for both... change the second one if you like,
 		dnl     but leave abi_pspell_libs alone!
 		dnl 
-		abi_pspell_libs="-lpspell -laspell -laspell-common -lltdl"
-		abi_aspell_libs="-lpspell -laspell"
+		abi_pspell_libs="-lpspell -lpspell-common -lltdl"
+		abi_aspell_libs="-laspell"
 	fi
 	if test $abi_spell = pspell; then
 		abi_pspell_cflags="-I$abi_pspell_opt/include"
@@ -80,7 +80,7 @@ if test $abi_spell != ispell; then
 				SPELL_LIBS="$abi_pspell_libs"
 				SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
 				abi_have_new_aspell_config=yes
-			],[	AC_CHECK_LIB(pspell,delete_aspell_config,[
+			],[	AC_CHECK_LIB(aspell,delete_aspell_config,[
 					SPELL_LIBS="$abi_aspell_libs"
 					SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
 					abi_have_new_aspell_config=yes
