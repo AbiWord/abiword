@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,9 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "gr_CocoaGraphics.h"
 
@@ -39,67 +38,27 @@
 #include "ap_Strings.h"
 #include "ap_CocoaDialog_PageNumbers.h"
 
-// static event callbacks
-static void s_ok_clicked (GtkWidget * w, AP_CocoaDialog_PageNumbers *dlg)
-{
-  UT_ASSERT(dlg);
-  dlg->event_OK();
-}
-
-static void s_cancel_clicked (GtkWidget * w, AP_CocoaDialog_PageNumbers *dlg)
-{
-  UT_ASSERT(dlg);
-  dlg->event_Cancel();
-}
-
-static void s_delete_clicked(GtkWidget * w,
-			     gpointer data,
-			     AP_CocoaDialog_PageNumbers * dlg)
-{
-  UT_ASSERT(dlg);
-  dlg->event_WindowDelete();
-}
-
-static gint s_preview_exposed(GtkWidget * w,
-			      GdkEventExpose * e,
-			      AP_CocoaDialog_PageNumbers * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_PreviewExposed();
-	return FALSE;
-}
-
-static void s_position_changed (GtkWidget * w, AP_CocoaDialog_PageNumbers *dlg)
-{
-  int pos = GPOINTER_TO_INT (g_object_get_user_data(G_OBJECT (w)));
-  dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
-}
-
-static void s_alignment_changed (GtkWidget * w, AP_CocoaDialog_PageNumbers *dlg)
-{
-  int align = GPOINTER_TO_INT (g_object_get_user_data(G_OBJECT (w)));
-  dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
-}
 
 XAP_Dialog * AP_CocoaDialog_PageNumbers::static_constructor(XAP_DialogFactory * pFactory,
-                                                         XAP_Dialog_Id id)
+                                                         XAP_Dialog_Id dlgid)
 {
-    AP_CocoaDialog_PageNumbers * p = new AP_CocoaDialog_PageNumbers(pFactory,id);
+    AP_CocoaDialog_PageNumbers * p = new AP_CocoaDialog_PageNumbers(pFactory,dlgid);
     return p;
 }
 
 AP_CocoaDialog_PageNumbers::AP_CocoaDialog_PageNumbers(XAP_DialogFactory * pDlgFactory,
-                                                 XAP_Dialog_Id id)
-    : AP_Dialog_PageNumbers(pDlgFactory,id)
+                                                 XAP_Dialog_Id dlgid)
+    : AP_Dialog_PageNumbers(pDlgFactory,dlgid),
+		m_pG(NULL),
+		m_dlg(nil)
 {
   m_recentControl = m_control;
   m_recentAlign   = m_align;
-  m_unixGraphics  = NULL;
 }
 
 AP_CocoaDialog_PageNumbers::~AP_CocoaDialog_PageNumbers(void)
 {
-  DELETEP (m_unixGraphics);
+  DELETEP (m_pG);
 }
 
 void AP_CocoaDialog_PageNumbers::event_OK(void)
@@ -110,278 +69,138 @@ void AP_CocoaDialog_PageNumbers::event_OK(void)
 	m_align   = m_recentAlign;
 	m_control = m_recentControl;
 
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_PageNumbers::event_Cancel(void)
 {
 	m_answer = AP_Dialog_PageNumbers::a_CANCEL;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
-void AP_CocoaDialog_PageNumbers::event_WindowDelete(void)
-{
-        event_Cancel();
-}
 
 void AP_CocoaDialog_PageNumbers::event_PreviewExposed(void)
 {
-        if(m_preview)
-	       m_preview->draw();
+	if(m_preview) {
+		m_preview->draw();
+	}
 }
 
 void AP_CocoaDialog_PageNumbers::event_AlignChanged(AP_Dialog_PageNumbers::tAlign   align)
 {
-  m_recentAlign = align;
-  _updatePreview(m_recentAlign, m_recentControl);
+	m_recentAlign = align;
+	_updatePreview(m_recentAlign, m_recentControl);
 }
 
 void AP_CocoaDialog_PageNumbers::event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl control)
 {
-  m_recentControl = control;
-  _updatePreview(m_recentAlign, m_recentControl);
+	m_recentControl = control;
+	_updatePreview(m_recentAlign, m_recentControl);
 }
 
 void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 {
-    // Build the window's widgets and arrange them
-    GtkWidget * mainWindow = _constructWindow();
-    UT_ASSERT(mainWindow);
+	m_dlg = [[AP_CocoaDialog_PageNumbersController alloc] initFromNib];
+	
+	// used similarly to convert between text and numeric arguments
+	[m_dlg setXAPOwner:this];
 
-    connectFocus(GTK_WIDGET(mainWindow), pFrame);
+	// build the dialog
+	NSWindow * window = [m_dlg window];
+	UT_ASSERT(window);
+	DELETEP (m_pG);
+	
+	// make a new Cocoa GC
+	XAP_CocoaNSView* view = [m_dlg preview];
+	NSSize size = [view frame].size;
+	m_pG = new GR_CocoaGraphics(view, m_pApp);
 
-    // save for use with event
-    m_pFrame = pFrame;
+	// let the widget materialize
+	_createPreviewFromGC(m_pG, (UT_uint32) lrintf(size.width), (UT_uint32) lrintf(size.height));
+	
+	// hack in a quick draw here
+	_updatePreview(m_recentAlign, m_recentControl);
+	event_PreviewExposed ();
 
-    // To center the dialog, we need the frame of its parent.
-    XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-    UT_ASSERT(pCocoaFrame);
-    
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
+	[NSApp runModalForWindow:window];
 
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
-
-    // *** this is how we add the gc ***
-    {
-      // attach a new graphics context to the drawing area
-      XAP_CocoaApp * unixapp = static_cast<XAP_CocoaApp *> (m_pApp);
-    
-      UT_ASSERT(unixapp);
-      UT_ASSERT(m_previewArea && m_previewArea->window);
-      DELETEP (m_unixGraphics);
-      
-      // make a new Cocoa GC
-      m_unixGraphics = new GR_CocoaGraphics(m_previewArea->window, 
-					   unixapp->getFontManager(), 
-					   m_pApp);
-    
-      // let the widget materialize
-      _createPreviewFromGC(m_unixGraphics,
-			   (UT_uint32) m_previewArea->allocation.width,
-			   (UT_uint32) m_previewArea->allocation.height);
-      
-      // hack in a quick draw here
-      _updatePreview(m_recentAlign, m_recentControl);
-      event_PreviewExposed ();
-    }
-
-    // properly set the controls
-    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo1)->list), (int)m_control);
-    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo2)->list), (int)m_align);
-
-    // Run into the GTK event loop for this window.
-    gtk_main();
-
-    DELETEP (m_unixGraphics);
-
-    if(mainWindow && GTK_IS_WIDGET(mainWindow))
-      gtk_widget_destroy(mainWindow);
+	[m_dlg discardXAP];
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
+	DELETEP(m_pG);
 }
 
-void AP_CocoaDialog_PageNumbers::_connectSignals (void)
+@implementation AP_CocoaDialog_PageNumbersController
+
+- (id)initFromNib
 {
-  	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-	
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_window),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_window),
-							 "destroy",
-							 NULL,
-							 NULL);
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_PageNumbers"];
+	return self;
 }
 
-void AP_CocoaDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
-{  
-  GtkWidget *hbox1;
-  GtkWidget *vbox1;
-  GtkWidget *label1;
-  GtkWidget *combo1;
-  GtkWidget *combo_entry1;
-  GtkWidget *label2;
-  GtkWidget *combo2;
-  GtkWidget *combo_entry2;
-  GtkWidget *frame1;
-  GtkWidget *li;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  gtk_container_set_border_width (GTK_CONTAINER (box), 4);
-
-  hbox1 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_ref (hbox1);
-  gtk_widget_show (hbox1);
-  gtk_container_add (GTK_CONTAINER (box), hbox1);
-  gtk_container_border_width (GTK_CONTAINER (hbox1), 4);
-
-  vbox1 = gtk_vbox_new (FALSE, 5);
-  gtk_widget_ref (vbox1);
-  gtk_widget_show (vbox1);
-  gtk_box_pack_start (GTK_BOX (hbox1), vbox1, TRUE, TRUE, 0);
-  gtk_container_border_width (GTK_CONTAINER (vbox1), 4);
-
-  // The position combo entry
-
-  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position));
-  gtk_widget_ref (label1);
-  gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (vbox1), label1, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label1), 0.04, 0.5);
-
-  combo1 = gtk_combo_new ();
-  gtk_widget_ref (combo1);
-  gtk_widget_show (combo1);
-  gtk_box_pack_start (GTK_BOX (vbox1), combo1, FALSE, FALSE, 0);
-
-  combo_entry1 = GTK_COMBO (combo1)->entry;
-  gtk_entry_set_editable (GTK_ENTRY (combo_entry1), FALSE);
-  gtk_widget_ref (combo_entry1);
-  gtk_widget_show (combo_entry1);
-
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-  g_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
-  g_signal_connect (G_OBJECT (li), "select",
-		      G_CALLBACK (s_position_changed),
-		      (gpointer) this);
-
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-  g_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_FTR));
-  g_signal_connect (G_OBJECT (li), "select",
-		      G_CALLBACK (s_position_changed),
-		      (gpointer) this);
-
-  // The Alignment combo entry
-
-  label2 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment));
-  gtk_widget_ref (label2);
-  gtk_widget_show (label2);
-  gtk_box_pack_start (GTK_BOX (vbox1), label2, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label2), 0.04, 0.5);
-
-  combo2 = gtk_combo_new ();
-  gtk_widget_ref (combo2);
-  gtk_widget_show (combo2);
-  gtk_box_pack_start (GTK_BOX (vbox1), combo2, FALSE, FALSE, 0);
-
-  combo_entry2 = GTK_COMBO (combo2)->entry;
-  gtk_entry_set_editable (GTK_ENTRY (combo_entry2), FALSE);
-  gtk_widget_ref (combo_entry2);
-  gtk_widget_show (combo_entry2);
-
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-  g_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_RALIGN));
-  g_signal_connect (G_OBJECT (li), "select",
-		      G_CALLBACK (s_alignment_changed),
-		      (gpointer) this);
-
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-  g_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_LALIGN));
-  g_signal_connect (G_OBJECT (li), "select",
-		      G_CALLBACK (s_alignment_changed),
-		      (gpointer) this);
-
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-  g_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_CALIGN));
-  g_signal_connect (G_OBJECT (li), "select",
-		      G_CALLBACK (s_alignment_changed),
-		      (gpointer) this);
-
-  frame1 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));
-  gtk_frame_set_shadow_type (GTK_FRAME (frame1), GTK_SHADOW_IN);
-  gtk_widget_ref (frame1);
-  gtk_widget_show (frame1);
-  gtk_box_pack_start (GTK_BOX (hbox1), frame1, TRUE, TRUE, 0);
-
-  // create the preview area
-  m_previewArea = createDrawingArea ();
-  gtk_drawing_area_size (GTK_DRAWING_AREA(m_previewArea), 90, 115);
-  gtk_widget_show (m_previewArea);
-  gtk_container_add (GTK_CONTAINER (frame1), m_previewArea);
-
-  // the expose event off the preview
-  g_signal_connect(G_OBJECT(m_previewArea),
-		     "expose_event",
-		     G_CALLBACK(s_preview_exposed),
-		     (gpointer) this);
-
-  m_combo1 = combo1;
-  m_combo2 = combo2;
-}
-
-GtkWidget * AP_CocoaDialog_PageNumbers::_constructWindow (void)
+-(void)discardXAP
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  m_window = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (m_window), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
-
-  _constructWindowContents (GTK_DIALOG(m_window)->vbox);
-
-  m_buttonOK = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_OK));
-  gtk_widget_show (m_buttonOK);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), 
-		     m_buttonOK);
-
-  m_buttonCancel = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show (m_buttonCancel);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), m_buttonCancel);
-
-  _connectSignals ();
-
-  return m_window;
+	_xap = NULL; 
 }
+
+-(void)dealloc
+{
+	[super dealloc];
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<AP_CocoaDialog_PageNumbers*>(owner);
+}
+
+-(void)windowDidLoad
+{
+	if (_xap) {
+		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_PageNumbers_Title);
+		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_positionBox, pSS, AP_STRING_ID_DLG_PageNumbers_Position);
+		LocalizeControl(_headerBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Header);
+		[_headerBtn setTag:AP_Dialog_PageNumbers::id_HDR];
+		LocalizeControl(_footerBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Footer);
+		[_footerBtn setTag:AP_Dialog_PageNumbers::id_FTR];
+		LocalizeControl(_alignmentBox, pSS, AP_STRING_ID_DLG_PageNumbers_Alignment);
+		LocalizeControl(_rightBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Right);
+		[_rightBtn setTag:AP_Dialog_PageNumbers::id_RALIGN];
+		LocalizeControl(_leftBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Left);
+		[_leftBtn setTag:AP_Dialog_PageNumbers::id_LALIGN];
+		LocalizeControl(_centerBtn, pSS, AP_STRING_ID_DLG_PageNumbers_Center);
+		[_centerBtn setTag:AP_Dialog_PageNumbers::id_CALIGN];
+		LocalizeControl(_previewBox, pSS, AP_STRING_ID_DLG_PageNumbers_Preview);
+	}
+}
+
+
+- (IBAction)alignmentAction:(id)sender
+{
+	_xap->event_AlignChanged(static_cast<AP_Dialog_PageNumbers::tAlign>([[sender selectedCell] tag]));
+}
+
+- (IBAction)cancelAction:(id)sender
+{
+	_xap->event_Cancel();
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_xap->event_OK();
+}
+
+- (IBAction)positionAction:(id)sender
+{
+	_xap->event_HdrFtrChanged(static_cast<AP_Dialog_PageNumbers::tControl>([[sender selectedCell] tag]));
+}
+
+- (XAP_CocoaNSView*)preview
+{
+	return _preview;
+}
+
+@end

@@ -35,7 +35,6 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_InsertHyperlink.h"
 #include "ap_CocoaDialog_InsertHyperlink.h"
-#include "ap_CocoaDialog_All.h"
 
 /*****************************************************************/
 

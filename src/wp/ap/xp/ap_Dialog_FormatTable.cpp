@@ -25,6 +25,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
+#include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
@@ -43,6 +44,8 @@
 #include "fg_GraphicVector.h"
 #include "ap_Dialog_FormatTable.h"
 #include "ut_png.h"
+#include "gr_Painter.h"
+#include "ut_units.h"
 
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
@@ -557,7 +560,7 @@ void AP_Dialog_FormatTable::finalize(void)
 }
 
 /*!
- Set the color and style of the toggled button
+ Set the color and style and thickness of the toggled button
  */
 void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 {
@@ -570,30 +573,48 @@ void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 		{
 			addOrReplaceVecProp(m_vecProps, "left-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "left-color", cTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "left-thickness",m_sBorderThickness.c_str());
 		}
 		break;
 		case toggle_right:
 		{	
 			addOrReplaceVecProp(m_vecProps, "right-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "right-color", cTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.c_str());
 		}
 		break;
 		case toggle_top:
 		{			
 			addOrReplaceVecProp(m_vecProps, "top-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "top-color", cTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.c_str());
 		}
 		break;
 		case toggle_bottom:
 		{			
 			addOrReplaceVecProp(m_vecProps, "bot-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "bot-color", cTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.c_str());
 		}
 		break;
 	}
 	
 	m_borderToggled = true;
 	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatTable::setBorderThickness(UT_String & sThick)
+{
+	m_sBorderThickness = sThick;
+	if(m_borderToggled)
+		return;
+	addOrReplaceVecProp(m_vecProps, "left-thickness", m_sBorderThickness.c_str());
+	addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.c_str());
+	addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.c_str());
+	addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.c_str());
+	
+	m_bSettingsChanged = true;
+
 }
 
 void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
@@ -703,12 +724,14 @@ AP_FormatTable_preview::~AP_FormatTable_preview()
 
 void AP_FormatTable_preview::draw(void)
 {
+	GR_Painter painter(m_gc);
+
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
+	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
 	
 	
 	UT_RGBColor tmpCol;
@@ -751,7 +774,7 @@ void AP_FormatTable_preview::draw(void)
 
 		UT_Rect rec(pageRect.left + border, pageRect.top + border, 
 					pageRect.width - 2*border, pageRect.height - 2*border);
-		m_gc->drawImage(pImg,pageRect.left + border, pageRect.top + border);
+		painter.drawImage(pImg,pageRect.left + border, pageRect.top + border);
 		delete pImg;
 	}
 	else
@@ -761,7 +784,7 @@ void AP_FormatTable_preview::draw(void)
 		if (pszBGCol && *pszBGCol)
 		{
 			UT_parseColor(pszBGCol, tmpCol);
-			m_gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
+			painter.fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 		}
 	}
 
@@ -772,27 +795,27 @@ void AP_FormatTable_preview::draw(void)
 	m_gc->setColor(UT_RGBColor(127,127,127));
 	
 	// top left corner
-	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
+	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
 				   pageRect.left + border, pageRect.top + border);
-	m_gc->drawLine(pageRect.left + border, pageRect.top + border  - cornerLength,
+	painter.drawLine(pageRect.left + border, pageRect.top + border  - cornerLength,
 				   pageRect.left + border, pageRect.top + border);
 
 	// top right corner
-	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + border,
+	painter.drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + border,
 				   pageRect.left + pageRect.width - border, pageRect.top + border);
-	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border - cornerLength,
+	painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border - cornerLength,
 				   pageRect.left + pageRect.width - border, pageRect.top + border);
 
 	// bottom left corner
-	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + pageRect.height - border,
+	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + pageRect.height - border,
 				   pageRect.left + border, pageRect.top + pageRect.height - border);
-	m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border + cornerLength,
+	painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border + cornerLength,
 				   pageRect.left + border, pageRect.top + pageRect.height - border);
 
 	// bottom right corner
-	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + pageRect.height - border,
+	painter.drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + pageRect.height - border,
 				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
-	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border + cornerLength,
+	painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border + cornerLength,
 				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 
 //
@@ -811,7 +834,19 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
+		const XML_Char * pszTopThickness = NULL;
+		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "top-thickness", pszTopThickness);
+		if(pszTopThickness)
+		{
+			UT_sint32 iTopThickness = UT_convertToLogicalUnits(pszTopThickness);
+			m_gc->setLineWidth(iTopThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
+
+		painter.drawLine(pageRect.left + border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + border);
 	}
 
@@ -827,7 +862,18 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
+		const XML_Char * pszLeftThickness = NULL;
+		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "left-thickness", pszLeftThickness);
+		if(pszLeftThickness)
+		{
+			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(pszLeftThickness);
+			m_gc->setLineWidth(iLeftThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
+		painter.drawLine(pageRect.left + border, pageRect.top + border,
 					   pageRect.left + border, pageRect.top + pageRect.height - border);
 	}
 
@@ -843,7 +889,18 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
+		const XML_Char * pszRightThickness = NULL;
+		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "right-thickness", pszRightThickness);
+		if(pszRightThickness)
+		{
+			UT_sint32 iRightThickness = UT_convertToLogicalUnits(pszRightThickness);
+			m_gc->setLineWidth(iRightThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
+		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 	
@@ -859,7 +916,18 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
+		const XML_Char * pszBotThickness = NULL;
+		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "bot-thickness", pszBotThickness);
+		if(pszBotThickness)
+		{
+			UT_sint32 iBotThickness = UT_convertToLogicalUnits(pszBotThickness);
+			m_gc->setLineWidth(iBotThickness);
+		}
+		else
+		{
+			m_gc->setLineWidth(m_gc->tlu(1));
+		}
+		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 }

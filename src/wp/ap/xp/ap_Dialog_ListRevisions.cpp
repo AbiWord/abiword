@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2002, 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,6 +69,12 @@ const char * AP_Dialog_ListRevisions::getColumn2Label() const
 	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Column2Label);
 }
 
+const char * AP_Dialog_ListRevisions::getColumn3Label() const
+{
+	UT_return_val_if_fail(m_pSS,NULL);
+	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Column3Label);
+}
+
 UT_uint32 AP_Dialog_ListRevisions::getItemCount() const
 {
 	UT_return_val_if_fail(m_pDoc,0);
@@ -83,6 +89,34 @@ UT_uint32 AP_Dialog_ListRevisions::getNthItemId(UT_uint32 n) const
 		return 0;
 	
 	return ((PD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getId();
+}
+
+const char * AP_Dialog_ListRevisions::getNthItemTime(UT_uint32 n) const
+{
+	UT_return_val_if_fail(m_pDoc,0);
+
+	if(n == 0)
+		return NULL;
+
+	// TODO the date should be properly localised
+	static char s[30];
+	time_t tT = ((PD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getStartTime();
+
+	if(tT != 0)
+	{
+		struct tm * tM = localtime(&tT);
+		strftime(s,30,"%c",tM);
+	}
+	else
+	{
+		// we use 0 to indicate unknown time
+		s[0] = '?';
+		s[1] = '?';
+		s[2] = '?';
+		s[3] = 0;
+	}
+	
+	return s;
 }
 
 char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n) const

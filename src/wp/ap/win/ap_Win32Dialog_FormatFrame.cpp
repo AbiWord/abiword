@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-3 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002-3 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -150,7 +150,6 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	int x, y;	
 	UT_uint32 w,h;
 	RECT rect;
-	int nItem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
@@ -162,8 +161,8 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	y = rect.bottom - rect.top;
 	
 	/* Localise controls*/
-	_DSX(FORMATFRAME_BTN_CANCEL,		DLG_Close);
-	_DSX(FORMATFRAME_BTN_APPLY,			DLG_Apply);
+	localizeControlText(AP_RID_DIALOG_FORMATFRAME_BTN_CANCEL,		XAP_STRING_ID_DLG_Close);
+	localizeControlText(AP_RID_DIALOG_FORMATFRAME_BTN_APPLY,		XAP_STRING_ID_DLG_Apply);
 	/*_DS(FORMATFRAME_TEXT_BACKGROUND,	DLG_FormatFrame_Color);
 	_DS(FORMATFRAME_TEXT_PREVIEW,		DLG_FormatFrame_Preview);
 	_DS(FORMATFRAME_TEXT_BORDERS,		DLG_FormatFrame_Border_Color);
@@ -171,7 +170,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_DS(FORMATFRAME_TEXT_BACKGROUNDS, 	DLG_FormatFrame_Background);
 	_DS(FORMATFRAME_TEXT_APPLYTO,	 	DLG_FormatFrame_Apply_To);*/
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatFrameTitle));	
+	localizeWindowTitle(hWnd, AP_STRING_ID_DLG_FormatFrameTitle);	
 	
 	
 	/* Load the bitmaps into the dialog box */								
@@ -390,7 +389,7 @@ void AP_Win32Dialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hwndDlg, m_WindowName);
+		setWindowTitle(m_hwndDlg, m_WindowName);
 
 		SetWindowLong(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,

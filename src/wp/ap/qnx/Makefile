@@ -67,6 +67,8 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_HdrFtr.cpp	\
 			ap_$(ABI_FE)Dialog_MergeCells.cpp	\
 			ap_$(ABI_FE)Dialog_FormatTable.cpp \
+			ap_$(ABI_FE)Dialog_SplitCells.cpp	\
+			ap_$(ABI_FE)Dialog_FormatFrame.cpp \
 			ap_$(ABI_FE)ViewListener.cpp	\
 			ap_$(ABI_FE)StatusBar.cpp	\
 			ap_$(ABI_FE)FrameImpl.cpp	

@@ -25,7 +25,7 @@
 ******************************************************************
 *****************************************************************/
 
-BeginLayout(TableOps)
+BeginLayout(TableOps, AP_STRING_ID_TB_Table, AP_PREF_KEY_TableBarVisible)
 
      ToolbarItem(AP_TOOLBAR_ID_INSERT_TABLE)
      ToolbarItem(AP_TOOLBAR_ID_ADD_ROW)
@@ -39,8 +39,5 @@ BeginLayout(TableOps)
      Spacer()
 
      ToolbarItem(AP_TOOLBAR_ID_MERGE_CELLS)
-#if 0
-// Not for 2.0
      ToolbarItem(AP_TOOLBAR_ID_SPLIT_CELLS)
-#endif
 EndLayout()

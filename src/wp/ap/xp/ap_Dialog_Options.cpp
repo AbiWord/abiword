@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,6 +33,7 @@
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
+#include "xap_Toolbar_Layouts.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 
@@ -69,6 +71,7 @@ inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme,
 
 void AP_Dialog_Options::_storeWindowData(void)
 {
+	UT_uint32 i;
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 
@@ -109,9 +112,11 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
-	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_StandardBarVisible, _gatherViewShowStandardBar() );
-	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_FormatBarVisible, _gatherViewShowFormatBar() );
-	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ExtraBarVisible, _gatherViewShowExtraBar() );
+	
+	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
+		Save_Pref_Bool( pPrefsScheme, m_pApp->getToolbarFactory()->prefKeyForToolbar(i), _gatherViewShowToolbar(i));
+	}
+	
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_StatusBarVisible, _gatherViewShowStatusBar() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
@@ -165,25 +170,14 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 
-	// TODO: Don't use 0, 1, 2, but AP_TOOLBAR_STANDARD, AP_TOOLBAR_FORMAT, AP_TOOLBAR_EXTRA...
-	if (_gatherViewShowStandardBar() != pFrameData->m_bShowBar[0])
-	{
-		pFrameData->m_bShowBar[0] = _gatherViewShowStandardBar();
-		m_pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
+	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
+		if (_gatherViewShowToolbar(i) != pFrameData->m_bShowBar[i])
+		{
+			pFrameData->m_bShowBar[i] = _gatherViewShowToolbar(i);
+			m_pFrame->toggleBar(i, pFrameData->m_bShowBar[i]);
+		}
 	}
-
-	if (_gatherViewShowFormatBar() != pFrameData->m_bShowBar[1])
-	{
-		pFrameData->m_bShowBar[1] = _gatherViewShowFormatBar();
-		m_pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
-	}
-
-	if (_gatherViewShowExtraBar() != pFrameData->m_bShowBar[3])
-	{
-		pFrameData->m_bShowBar[3] = _gatherViewShowExtraBar();
-		m_pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
-	}
-
+	
 	if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
 	{
 		pFrameData->m_bShowPara = _gatherViewUnprintable() ;
@@ -260,6 +254,7 @@ void AP_Dialog_Options::_eventSave(void)
 
 void AP_Dialog_Options::_populateWindowData(void)
 {
+	UT_uint32		i;
 	bool			b;
 	XAP_Prefs		*pPrefs = 0;
 	const XML_Char	*pszBuffer = 0;
@@ -301,16 +296,12 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 
-
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_StandardBarVisible,&b))
-		_setViewShowStandardBar (b);
-
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_FormatBarVisible,&b))
-		_setViewShowFormatBar (b);
-
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible,&b))
-		_setViewShowExtraBar (b);
-
+	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
+		if (pPrefs->getPrefsValueBool((XML_Char*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
+			_setViewShowToolbar (i, b);
+		}
+	}
+	
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_StatusBarVisible,&b))
 		_setViewShowStatusBar (b);
 

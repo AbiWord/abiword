@@ -21,6 +21,7 @@
 #define AP_WIN32DIALOG_FORMATFRAME_H
 
 #include "ap_Dialog_FormatFrame.h"
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 #include "xap_Win32PreviewWidget.h"
 #include "gr_Win32Graphics.h"
@@ -28,7 +29,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FormatFrame: public AP_Dialog_FormatFrame
+class AP_Win32Dialog_FormatFrame: public AP_Dialog_FormatFrame, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

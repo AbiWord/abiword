@@ -61,10 +61,11 @@
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_Toolbar_Layouts.h"
 #include "xav_View.h"
-
+#include <gdk/gdk.h>
 #include "gr_Graphics.h"
 #include "gr_UnixGraphics.h"
 #include "gr_Image.h"
+#include "gr_UnixImage.h"
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 #include "xap_UnixDialogHelper.h"
@@ -90,6 +91,7 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 #include "ie_imp_XHTML.h"
+#include "gr_DrawArgs.h"
 
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -99,6 +101,11 @@
 #include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
 #include "ut_sleep.h"
+#include "gr_Painter.h"
+#include "ap_Preview_Abi.h"
+#include "xap_UnixDialogHelper.h"
+//#include <gtk/gtk.h>
+
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -107,7 +114,6 @@
 #endif
 
 #include <popt.h>
-
 #include "ie_impGraphic.h"
 #include "ut_math.h"
 
@@ -117,10 +123,10 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <bonobo/bonobo-macros.h>
 #include <bonobo/bonobo-object.h>
-
+#include <libart_lgpl/art_affine.h>
 #include "xap_UnixGnomePrintGraphics.h"
 #include "ap_EditMethods.h"
-
+#include <libgnomeprint/gnome-print.h>
 static int mainBonobo(int argc, const char ** argv);
 #endif
 #ifdef LOGFILE
@@ -1020,6 +1026,73 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
     return true;
 }
 
+bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
+{
+	//
+	// Create a private visual to draw with
+	//
+	GdkVisual * vis = gdk_visual_get_system (); // don't delete this!
+	//
+	// Create a private color map to draw with.
+	//
+	GdkColormap*  visColorMap = gdk_colormap_new(vis,true);
+	//
+	// Create a private set of attributes for our GdkWindow
+	// 
+	GdkWindowAttr attributes;
+	attributes.title = NULL;
+	attributes.event_mask = 0;
+	attributes.x = 0;
+	attributes.y = 0;
+	attributes.width = iWidth;
+	attributes.height = iHeight;
+	attributes.wclass = 	GDK_INPUT_OUTPUT ;
+	attributes.visual = vis;
+	attributes.colormap = visColorMap;
+	attributes.window_type = GDK_WINDOW_CHILD;
+	attributes.cursor = NULL;
+	attributes.wmclass_name = NULL;
+	attributes.wmclass_class = NULL;
+	attributes.override_redirect = true;
+
+	gint attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_COLORMAP | GDK_WA_VISUAL;
+	GdkWindow*  pWindow = gdk_window_new (NULL, &attributes,
+                                             attributes_mask);
+	GdkPixmap * pMap =  gdk_pixmap_new(pWindow,iWidth,iHeight,-1); 	
+
+	GR_UnixGraphics * pG =  new GR_UnixGraphics(pMap, getFontManager(), this,true);
+	pG->createCaret();
+	UT_Error error = UT_OK;
+	PD_Document * pNewDoc = new PD_Document(this);
+	error = pNewDoc->readFromFile(pszInFile,IEFT_Unknown, NULL);
+
+	if (error != UT_OK) 
+	{
+		return false;
+	}
+	AP_Preview_Abi * pPrevAbi = new AP_Preview_Abi(pG,iWidth,iHeight,NULL, PREVIEW_ZOOMED,pNewDoc);
+	dg_DrawArgs da;
+	memset(&da, 0, sizeof(da));
+	da.pG = pG;
+	pPrevAbi->getView()->draw(0, &da);
+	GR_Painter * pPaint = new GR_Painter(pG);
+	UT_Rect r;
+	r.left = 0;
+	r.top = 0;
+	r.width = pG->tlu(iWidth);
+	r.height = pG->tlu(iHeight);
+	GR_Image * pImage = pPaint->genImageFromRectangle(r);
+	DELETEP(pPaint);
+	static_cast<GR_UnixImage *>(pImage)->saveToPNG( pszPNGFile);
+	DELETEP(pImage);
+	DELETEP(pG);
+	delete pWindow;
+	delete pMap;
+	delete visColorMap;
+	DELETEP(pPrevAbi); // This deletes pNewDoc
+	return true;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -1071,7 +1144,8 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 {
     if (pUnixGraphics && pSplashImage)
     {
-		pUnixGraphics->drawImage(pSplashImage, 0, 0);
+		GR_Painter painter (pUnixGraphics);
+		painter.drawImage(pSplashImage, 0, 0);
 
 		// on the first full paint of the image, start a 2 second timer
 		if (!firstExpose)
@@ -1432,6 +1506,11 @@ void AP_UnixApp::initPopt (AP_Args * Args)
 #endif
 }
 
+
+#define PMSCALE 0.5
+#define PMW (PMSCALE * P_WIDTH)
+#define PMH (PMSCALE * P_HEIGHT)
+
 /*!
  * A callback for AP_Args's doWindowlessArgs call which handles
  * platform-specific windowless args.
@@ -1498,6 +1577,67 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 
 		return false;
 	}
+	if (Args->m_iToThumb > 0) 
+	{
+
+#ifdef HAVE_GNOME
+
+		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
+	    {
+#if 0 // work out how to do this later
+			AP_Convert conv ;
+			if (Args->m_impProps)
+				conv.setImpProps (Args->m_impProps);
+			if (Args->m_expProps)
+				conv.setExpProps (Args->m_expProps);
+			UT_String sdimXY = Args->m_sThumbXY;
+			UT_uint32 loc = UT_String_findCh(sdimXY,'x');
+			if(loc>(size_t)-10)
+			{
+				return false;
+			}
+			UT_String sX = sdimXY.substr(0,loc);
+			UT_String sY = sdimXY.substr(loc+1,sdimXY.size());
+			UT_sint32 iX = atoi(sX.c_str());
+			UT_sint32 iY = atoi(sY.c_str());
+			guchar * buf;
+			gdouble p2b[6];
+			gint bpp = 3;
+			art_affine_scale (p2b, 1.0, -1.0);
+			p2b[5] = iY; // number of pixels in height
+			buf = g_new (guchar, iX * iY * bpp); 
+
+			GnomePrintContext * pc = gnome_print_rbuf_new (buf, iX, iY, bpp * iX, p2b, FALSE);
+
+			PD_Document *pDoc = new PD_Document(this);
+			pDoc->readFromFile(Args->m_sFile, IEFT_Unknown, Args->m_impProps);
+			double inWidth = pDoc->m_docPageSize.Width(DIM_IN);
+			double inHeight = pDoc->m_docPageSize.Height(DIM_IN);
+			XAP_UnixGnomePrintGraphics * pGraphics = new XAP_UnixGnomePrintGraphics(pc, inWidth,inHeight);
+			conv.setVerbose(Args->m_iVerbose);
+			conv.printFirstPage (pGraphics,pDoc);
+			UNREFP(pDoc);
+			gnome_print_context_close (pc);
+			GdkPixbuf* pb = gdk_pixbuf_new_from_data (buf, GDK_COLORSPACE_RGB, 
+													  false,
+													  8, iX, iY, bpp * iX, 
+													  NULL, NULL);
+			GError * err;
+			gdk_pixbuf_save(pb,Args->m_sThumb,"png",&err);
+#endif
+			return true;
+	    }
+		else
+	    {
+			// couldn't load document
+			fprintf(stderr, "Error: no file to print!\n");
+	    }
+		
+		return false;
+#else
+		fprintf(stderr,"Only works in GNOME build \n");
+#endif
+	}
 
 	if(Args->m_sPlugin)
 	{
@@ -1506,9 +1646,11 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 //
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
-		Args->m_sPlugin = poptGetArg(Args->poptcon);
+		const char * szRequest = NULL;
+		//		szRequest = poptGetArg(Args->poptcon);
+		szRequest = Args->m_sPlugin;
 		bool bFound = false;	
-		printf(" Looking for plugin name %s \n",Args->m_sPlugin);
+		printf(" Looking for plugin name %s \n",szRequest);
 		if(Args->m_sPlugin != NULL)
 		{
 			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
@@ -1518,7 +1660,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 				pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
 				szName = pModule->getModuleInfo()->name;
 				printf("Plugin %s loaded \n",szName);
-				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+				if(UT_strcmp(szName,szRequest) == 0)
 				{
 					printf("plugin %s found sending control there! \n",szName);
 					bFound = true;
@@ -1527,7 +1669,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			printf("Plugin %s not found or loaded \n",szRequest);
 			return false;
 		}
 //

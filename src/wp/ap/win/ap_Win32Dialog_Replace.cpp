@@ -524,6 +524,8 @@ void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_Vector* list)
 		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));   
     	
     	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)XAP_Win32App::getWideString(utf8s));    		
+
+		free(utf8s);
 	}		
 	
 	SendMessage(hWnd, CB_SETCURSEL, 0,0);		

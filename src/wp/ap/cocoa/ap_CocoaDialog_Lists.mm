@@ -73,7 +73,7 @@ AP_CocoaDialog_Lists::~AP_CocoaDialog_Lists(void)
 
 void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
 {
-	List_Type  savedListType;
+	FL_ListType  savedListType;
 	setModal();
 	NSWindow* window;
 	m_dlg = [[AP_CocoaDialog_ListsController alloc] initFromNib];
@@ -276,7 +276,7 @@ void  AP_CocoaDialog_Lists::setListTypeFromWidget(void)
 {
 	NSMenuItem* item = [m_dlg selectedListStyle];
 
-	setNewListType((List_Type)[item tag]);
+	setNewListType((FL_ListType)[item tag]);
 }
 
 /*!
@@ -565,7 +565,7 @@ void AP_CocoaDialog_Lists::loadXPDataIntoLocal(void)
 
 	//
 	// Now set the list type and style
-	List_Type save = getNewListType();
+	FL_ListType save = getNewListType();
 	if(getNewListType() == NOT_A_LIST)
 	{
 		typeChanged(GUI_LIST_NONE);

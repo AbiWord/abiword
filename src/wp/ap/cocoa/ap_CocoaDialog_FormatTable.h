@@ -47,6 +47,7 @@ public:
 	void					event_ApplyToChanged(void);
 	void 					event_previewExposed(void);
 	virtual void			setSensitivity(bool bSens);
+	virtual void            setBorderThicknessInGUI(UT_String & sThick) {};
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);

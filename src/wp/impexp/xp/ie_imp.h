@@ -80,7 +80,6 @@ public:
 	bool getCanPaste () const {
 		return m_bCanPaste;
 	}
-
 protected:
 	IE_ImpSniffer(const char * name, bool canPaste = false);
 
@@ -154,6 +153,7 @@ public:
 	}
 
 	void setProps (const char * props);
+	bool isPasting(void) const { return m_isPaste;}
 
  protected:
 	IE_Imp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);

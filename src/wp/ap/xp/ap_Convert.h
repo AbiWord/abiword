@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////////
 
 class GR_Graphics;
-
+class PD_Document;
 class ABI_EXPORT AP_Convert
 {
  public:
@@ -48,6 +48,7 @@ class ABI_EXPORT AP_Convert
 	void setMergeSource (const char * source);
 
 	void print(const char * file, GR_Graphics * pGraphics);
+	void printFirstPage(GR_Graphics * pGraphics, PD_Document * pDoc);
 
 	void setImpProps (const char * props) {
 		m_impProps = props;

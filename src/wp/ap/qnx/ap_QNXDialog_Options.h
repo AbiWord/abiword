@@ -45,7 +45,8 @@ public:
 	virtual void event_AllowTransparentColor(void);
 	virtual void initializeTransperentToggle(void);
 	virtual void event_ChooseTransparentColor(void);
-
+	virtual bool _gatherViewShowToolbar(UT_uint32 t);
+	virtual void _setViewShowToolbar(UT_uint32 row, bool b);
  protected:
 
 	PtWidget_t *_lookupWidget( tControl id );
@@ -70,10 +71,6 @@ public:
  	SET_GATHER			(PrefsAutoSave,		bool );
 
  	SET_GATHER			(ViewShowRuler,		bool );
-
- 	SET_GATHER			(ViewShowStandardBar,	bool );
- 	SET_GATHER			(ViewShowFormatBar,	bool );
- 	SET_GATHER			(ViewShowExtraBar,	bool );
 
  	SET_GATHER			(ViewShowStatusBar,	bool );
 
@@ -142,10 +139,7 @@ public:
 	PtWidget_t * m_listViewRulerUnits;
 	PtWidget_t * m_listViewRulerUnits_menu;
 	PtWidget_t * m_checkbuttonViewCursorBlink;
-    PtWidget_t * m_checkbuttonViewShowStandardBar;
-    PtWidget_t * m_checkbuttonViewShowFormatBar;
-    PtWidget_t * m_checkbuttonViewShowExtraBar;
-    PtWidget_t * m_checkbuttonViewShowStatusBar;
+    	PtWidget_t * m_checkbuttonViewShowStatusBar;
 	PtWidget_t * m_checkbuttonViewAll;
 	PtWidget_t * m_checkbuttonViewHiddenText;
 	PtWidget_t * m_checkbuttonViewUnprintable;

@@ -121,10 +121,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_WEB,    0,0,0,1, "viewWebLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_PRINT,  0,0,0,1, "viewPrintLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_TOOLBARS,	1,0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_VIEW_TB_STD,		0,0,1,0,	"viewStd",			ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_FORMAT,	0,0,1,0,	"viewFormat",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_EXTRA,	0,0,1,0,	"viewExtra",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_TABLE,	0,0,1,0,	"viewTable",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_TB_1,		0,0,1,0,	"viewTB1",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_2,		0,0,1,0,	"viewTB2",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_3,		0,0,1,0,	"viewTB3",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_4,		0,0,1,0,	"viewTB4",			ap_GetState_View,		ap_GetLabel_Toolbar);
 	_s(AP_MENU_ID_VIEW_LOCK_TB_LAYOUT, 0,0,1,0,	"lockToolbarLayout", ap_GetState_View,			NULL);
 	_s(AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT, 0,0,0,0,	"defaultToolbarLayout", ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_RULER,	0,0,1,0,	"viewRuler",		ap_GetState_View,		NULL);
@@ -149,7 +149,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,0,	"insPageNo",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,0,	"insDateTime",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,0,	"insField",			NULL,					NULL);
-	_s(AP_MENU_ID_INSERT_TEXTBOX,		0,1,0,0,	"insTextBox",			NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_TEXTBOX,		0,0,0,0,	"insTextBox",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_MAILMERGE,		0,1,0,0,	"insMailMerge",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FILE, 0,1,0,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,0,	"insSymbol",		NULL,					NULL);
@@ -162,8 +162,15 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 #endif
 	_s(AP_MENU_ID_INSERT_INSERTHEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_INSERT_INSERTFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
+#ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);
+#endif
+
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER,  1,0,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM,0,0,0,0, "insertLRM", NULL, NULL);
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM,0,0,0,0, "insertRLM", NULL, NULL);
+	
 	_s(AP_MENU_ID_FORMAT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,0,	"dlgLanguage",	ap_GetState_StylesLocked,					NULL);
@@ -173,7 +180,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,0,	"dlgColumns",		ap_GetState_ColumnsActive,					NULL);
-	_s(AP_MENU_ID_FMT_BACKGROUND, 0,1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_FMT_BACKGROUND, 1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR, 0,1,0,0, "dlgBackground", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_IMAGE, 0,1,0,0, "fileInsertPageBackgroundGraphic", NULL, NULL);
 	_s(AP_MENU_ID_FMT_HDRFTR,     0,1,0,0, "dlgHdrFtr", NULL, NULL);
@@ -196,6 +203,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_TOGGLECASE,           0,1,0,0,  "dlgToggleCase", ap_GetState_SomethingSelected, NULL);
 	_s(AP_MENU_ID_FMT_FRAME,           0,1,0,0,  "dlgFormatFrame", NULL, NULL);
 
+	_s(AP_MENU_ID_FMT_DIRECTION,  1,0,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DD_RTL,0,0,1,0, "toggleDomDirection", ap_GetState_BlockFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DO_LTR,0,0,1,0, "toggleDirOverrideLTR", ap_GetState_CharFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DO_RTL,0,0,1,0, "toggleDirOverrideRTL", ap_GetState_CharFmt, NULL);
+
 	_s(AP_MENU_ID_ALIGN,			1,0,0,0,	NULL,				ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_ALIGN_LEFT,		0,0,0,1,	"alignLeft",		ap_GetState_BlockFmt,	NULL);
 	_s(AP_MENU_ID_ALIGN_CENTER,		0,0,0,1,	"alignCenter",		ap_GetState_BlockFmt,	NULL);
@@ -215,8 +227,16 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_MAILMERGE,	0,1,0,0,	"mailMerge", ap_GetState_MailMerge, NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS,  1,0,0,0,  NULL,               NULL,                   NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_MARK, 0,0,1,0, "toggleMarkRevisions", ap_GetState_MarkRevisions,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW, 0,0,1,0, "toggleShowRevisions", ap_GetState_ShowRevisions,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTERPREV, 0,0,1,0, "toggleShowRevisionsAfterPrevious", ap_GetState_ShowRevisionsAfterPrev,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTER, 0,0,1,0, "toggleShowRevisionsAfter", ap_GetState_ShowRevisionsAfter,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW_BEFORE, 0,0,1,0, "toggleShowRevisionsBefore", ap_GetState_ShowRevisionsBefore,NULL);
+	
 	_s(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS, 0,0,0,0, "revisionCompareDocuments",NULL,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, ap_GetState_Changes, NULL);
@@ -239,11 +259,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_DELETE_CELLS,0,0,0,0, "deleteCell", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT,1,0,0,0, NULL, ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT_TABLE,0,0,0,0, "selectTable", ap_GetState_InTable, NULL);
-	_s(AP_MENU_ID_TABLE_SELECT_COLUMN,0,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_SELECT_COLUMN,0,0,0,0, "selectColumn", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT_ROW,0,0,0,0, "selectRow", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT_CELL,0,0,0,0, "selectCell", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_MERGE_CELLS,0,1,0,0, "mergeCells", ap_GetState_InTable, NULL);
-	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
+	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,1,0,0, "splitCells", ap_GetState_InTableMerged, NULL);
 	_s(AP_MENU_ID_TABLE_SPLIT_TABLE,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_FORMAT,0,1,0,0, "formatTable", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
@@ -253,7 +273,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent, NULL);
-	_s(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL, 0,1,0,0, "revisionSetViewLevel", NULL, NULL);
+	_s(AP_MENU_ID_CONTEXT_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);
+	_s(AP_MENU_ID_CONTEXT_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL, 0,1,0,0, "revisionSetViewLevel", ap_GetState_HasRevisions, NULL);
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,0,	"newWindow",		NULL,					NULL);

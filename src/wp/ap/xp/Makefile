@@ -30,6 +30,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Dialog_Break.cpp		\
 		ap_Dialog_InsertTable.cpp	\
 		ap_Dialog_FormatTable.cpp	\
+		ap_Dialog_FormatFrame.cpp	\
 		ap_Dialog_WordCount.cpp		\
 		ap_Dialog_Field.cpp		\
 		ap_Dialog_Goto.cpp		\
@@ -53,6 +54,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Dialog_MarkRevisions.cpp	\
 		ap_Dialog_ListRevisions.cpp	\
 		ap_Dialog_MergeCells.cpp	\
+		ap_Dialog_SplitCells.cpp	\
 		ap_Dialog_MailMerge.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\

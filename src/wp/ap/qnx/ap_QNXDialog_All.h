@@ -74,8 +74,10 @@
 #if 0
 #	include "ap_QNXDialog_Download_File.h"
 #endif
+#include "ap_QNXDialog_SplitCells.h"
 #include "ap_QNXDialog_MergeCells.h"
 #include "ap_QNXDialog_FormatTable.h"
+#include "ap_QNXDialog_FormatFrame.h"
 #include "ap_QNXDialog_FormatFootnotes.h"
 	// ... add new dialogs here ...
 
@@ -130,7 +132,9 @@
 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_QNXDialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_QNXDialog_MetaData)
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,	AP_QNXDialog_MergeCells)
+	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,	AP_QNXDialog_SplitCells)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_QNXDialog_FormatTable)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,	AP_QNXDialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,	AP_QNXDialog_FormatFootnotes)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_QNXDialog_Download_File)

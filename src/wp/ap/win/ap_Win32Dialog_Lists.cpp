@@ -699,7 +699,7 @@ void AP_Win32Dialog_Lists::_typeChanged()
 {
 	const int iType = _getTypeComboCurSel();
 
-	const List_Type type =
+	const FL_ListType type =
 		iType == 1 ? BULLETED_LIST :
 		iType == 2 ? NUMBERED_LIST :
 		NOT_A_LIST;
@@ -899,10 +899,10 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 }
 
 //
-// Returns the List_Type of the currently selected Type/Style combination.
+// Returns the FL_ListType of the currently selected Type/Style combination.
 // Returns NOT_A_LIST on failure.
 //
-List_Type AP_Win32Dialog_Lists::_getListTypeFromCombos() const
+FL_ListType AP_Win32Dialog_Lists::_getListTypeFromCombos() const
 {
 	const int iType  = _getTypeComboCurSel();
 	int iStyle = _getStyleComboCurSel();
@@ -916,7 +916,7 @@ List_Type AP_Win32Dialog_Lists::_getListTypeFromCombos() const
 
 	if (iType == 1 /* bullet list */)
 	{
-		return (List_Type)(iStyle + BULLETED_LIST);
+		return (FL_ListType)(iStyle + BULLETED_LIST);
 	}
 
 	if(iStyle >= BULLETED_LIST)
@@ -925,10 +925,10 @@ List_Type AP_Win32Dialog_Lists::_getListTypeFromCombos() const
 	// Numbered List, but just to make really REALLY sure, we assert it
 	UT_ASSERT(IS_NUMBERED_LIST_TYPE(iStyle));
 
-	return (List_Type)iStyle;
+	return (FL_ListType)iStyle;
 }
 
-void AP_Win32Dialog_Lists::_setListType(List_Type type)
+void AP_Win32Dialog_Lists::_setListType(FL_ListType type)
 {
 	int iType;
 	int iStyle;

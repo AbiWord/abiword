@@ -55,7 +55,7 @@ public:
 
 	void          setComment2(const char * pszComment);
 	void          addRevision();
-	bool		isRev();
+	bool		  isRev();
 
 protected:
 	AP_Dialog_MarkRevisions::tAnswer	m_answer;

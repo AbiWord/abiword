@@ -485,6 +485,8 @@ void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 	UT_UTF8String sBuf(pBuf, XAP_App::getApp()->getDefaultEncoding());
 	m_sStatusMessage = sBuf;
     }
+	else
+	m_sStatusMessage.clear();
 
     ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
     if(pf)

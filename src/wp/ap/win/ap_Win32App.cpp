@@ -87,6 +87,8 @@
 #include "ap_Strings.h"
 
 #include "pt_PieceTable.h"
+
+#include "gr_Painter.h"
 // extern prototype - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 /*****************************************************************/
@@ -157,31 +159,6 @@ bool AP_Win32App::initialize(void)
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_ASSERT(m_pToolbarActionSet);
 
-	if (! XAP_Win32App::initialize())
-		return false;
-
-	
-	// let various window types register themselves
-
-	if (!AP_Win32Frame::RegisterClass(this))
-	{
-		UT_DEBUGMSG(("couldn't register class\n"));
-		return false;
-	}
-
-	//////////////////////////////////////////////////////////////////
-	// Initialize the importers/exporters
-	//////////////////////////////////////////////////////////////////
-	IE_ImpExp_RegisterXP ();
-
-	//////////////////////////////////////////////////////////////////
-	// initializes the spell checker.
-	//////////////////////////////////////////////////////////////////
-	
-	{
-		SpellManager::instance();
-	}
-	
 	//////////////////////////////////////////////////////////////////
 	// load the dialog and message box strings
 	//////////////////////////////////////////////////////////////////
@@ -233,6 +210,33 @@ bool AP_Win32App::initialize(void)
 			free(szPathname);
 		}
 	}
+
+	if (! XAP_Win32App::initialize())
+		return false;
+
+	
+	// let various window types register themselves
+
+	if (!AP_Win32Frame::RegisterClass(this))
+	{
+		UT_DEBUGMSG(("couldn't register class\n"));
+		return false;
+	}
+
+	//////////////////////////////////////////////////////////////////
+	// Initialize the importers/exporters
+	//////////////////////////////////////////////////////////////////
+	IE_ImpExp_RegisterXP ();
+
+	//////////////////////////////////////////////////////////////////
+	// initializes the spell checker.
+	//////////////////////////////////////////////////////////////////
+	
+	{
+		SpellManager::instance();
+	}
+	
+	
 	// Now we have the strings loaded we can populate the field names correctly
 	int i;
 	
@@ -380,6 +384,9 @@ bool AP_Win32App::shutdown(void)
 {
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
+
+	delete m_prefs;
+	m_prefs = NULL;
 
 	return true;
 }
@@ -1101,7 +1108,12 @@ static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, L
 		{
 			// TODO: find XAP_App pointer for this
 			GR_Graphics * pG = new GR_Win32Graphics(hdc, hwndSplash, 0);
-			pG->drawImage(pSplash, 0, 0);
+			{
+				GR_Painter GP(pG);
+
+				GP.drawImage(pSplash, 0, 0);
+			}
+
 			DELETEP(pG);
 		}
         EndPaint(hWnd, &ps);
@@ -1343,6 +1355,8 @@ __try
         if (bInitialized)
                 OleUninitialize();
 
+	FreeLibrary(hinstRich);
+
 	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
 	XAP_ModuleManager::instance().unloadAllPlugins();
 	
@@ -1372,10 +1386,21 @@ __except (1)
 		UT_ASSERT(curFrame);
 		
 		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw~");
+		  curFrame->backup(".abw.saved");
 		else
-		  curFrame->backup(".CRASHED");
+		  curFrame->backup(".saved");
+
 	}	
+
+	// Tell the user was has just happened
+	AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[0];
+	if (curFrame)
+	{
+		curFrame->showMessageBox(AP_STRING_ID_MSG_Exception,XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		
+	}
+		
+
 }// end of except
 #endif
 

@@ -3,6 +3,9 @@
 
 
 !ifndef NODOWNLOADS
+!ifndef _ABI_UTIL_CONNECTED_NSH_
+!define _ABI_UTIL_CONNECTED_NSH_
+
 ; ConnectInternet (uses Dialer plugin)
 ; Originally Written by Joost Verburg 
 ;
@@ -37,4 +40,6 @@ Function ConnectInternet
      connected:
      
 FunctionEnd
-!endif ;!NODOWNLOADS
+
+!endif ; _ABI_UTIL_CONNECTED_NSH_
+!endif ; NODOWNLOADS

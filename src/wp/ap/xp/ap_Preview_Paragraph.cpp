@@ -31,6 +31,7 @@
 #include "ap_Preview_Paragraph.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Lists.h"
+#include "gr_Painter.h"
 
 #include <fribidi.h>
 
@@ -544,17 +545,20 @@ bool AP_Preview_Paragraph::_loadDrawFont(void)
 void AP_Preview_Paragraph::_drawPageBackground(void)
 {
 	// clear area
-	m_gc->fillRect(*m_clrWhite, 0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
+	GR_Painter painter(m_gc);
+	painter.fillRect(*m_clrWhite, 0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
 }
 
 void AP_Preview_Paragraph::_drawPageBorder(void)
 {
+	GR_Painter painter(m_gc);
+
 	// draw a black one pixel border
 	m_gc->setColor(*m_clrBlack);
-	m_gc->drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
-	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()));
-	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
-	m_gc->drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
+	painter.drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
+	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()));
+	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
+	painter.drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
 }
 
 
@@ -735,6 +739,8 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	UT_UCSChar  str[100];
 	UT_uint32 j, iLen;
 
+	GR_Painter painter(m_gc);
+
 	for (k = startWithWord; k < i; k++)
 	{
 		// this will not produce correct results in true bidi text, since the words that are inconsistend
@@ -759,7 +765,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		if(m_dir == FRIBIDI_TYPE_RTL)
 		    willDrawAt -= (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
 
-		m_gc->drawChars(str, 0,	iLen, willDrawAt >> 8, y);
+		painter.drawChars(str, 0,	iLen, willDrawAt >> 8, y);
 
 		if(m_dir == FRIBIDI_TYPE_LTR)
 		    willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;

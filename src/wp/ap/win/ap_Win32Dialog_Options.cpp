@@ -39,15 +39,16 @@
 
 #include "ap_Dialog_Id.h"
 #include "ap_Prefs_SchemeIds.h"
-
+#include "xap_Toolbar_Layouts.h"
 #include "ap_Strings.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Resources.rc2"
 #include "ap_Win32Dialog_Options.h"
 #include "ap_Win32Dialog_Background.h"
 #include "xap_Win32DialogHelper.h"
-#include "fp_PageSize.h"
 #include "ut_Language.h"
+
+
 
 /*****************************************************************/
 
@@ -69,18 +70,12 @@ AP_Win32Dialog_Options::AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Options(pDlgFactory,id),m_pDialogFactory(pDlgFactory)
 {
-	m_pVecUILangs = NULL;
+	
 }
 
 AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
 {
-	if (m_pVecUILangs)
-	{		
-		for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
-			delete (char *)m_pVecUILangs->getNthItem(i);
-			
-		delete m_pVecUILangs;		
-	}
+	
 }
 
 //////////////////////////////////////////////////////////////////
@@ -193,18 +188,7 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 
 	switch (id)
 	{
-	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_TOOLBARS),AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar),value);
-		return;
-
-	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_TOOLBARS),AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar),value);
-		return;
-
-	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_TOOLBARS),AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar),value);
-		return;
-
+	
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType),value);
 		return;
@@ -310,9 +294,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	void AP_Win32Dialog_Options::_set##button(const bool b) 												\
 	{ CheckDlgButton((HWND)getPage(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 
-DEFINE2_GET_SET_BOOL(PG_TOOLBARS,ViewShowStandardBar);
-DEFINE2_GET_SET_BOOL(PG_TOOLBARS,ViewShowFormatBar);
-DEFINE2_GET_SET_BOOL(PG_TOOLBARS,ViewShowExtraBar);
 
 
 DEFINE2_GET_SET_BOOL(PG_SPELL,SpellCheckAsType);
@@ -441,23 +422,7 @@ void AP_Win32Dialog_Options::_setNotebookPageNum(const int pn)
 {
 }
 
-void AP_Win32Dialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
-{
-	HWND hwndPaperSize = GetDlgItem((HWND)getPage(PG_LAYOUT),
-									 AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-	SendMessage(hwndPaperSize, CB_SETCURSEL, (WPARAM)pre, 0);
-}
 
-fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
-{
-	HWND hwndPaperSize = GetDlgItem( (HWND)getPage(PG_LAYOUT),
-									 AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-	int nSel = SendMessage(hwndPaperSize, CB_GETCURSEL, 0, 0);
-
-	if( nSel != CB_ERR )
-		return (fp_PageSize::Predefined) nSel;
-	return fp_PageSize::psLetter;
-}
 
 void AP_Win32Dialog_Options::_initializeTransperentToggle(void)
 {
@@ -512,6 +477,26 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 			break;
 		}
 	}		
+}
+
+
+bool AP_Win32Dialog_Options::_gatherViewShowToolbar(UT_uint32 row)
+{	 	
+	int nState = (int)SendMessage(GetDlgItem((HWND)getPage(PG_TOOLBARS), AP_RID_DIALOG_OPTIONS_LST_Toolbars), LVM_GETITEMSTATE, (WPARAM)row,
+		(LPARAM)LVIS_STATEIMAGEMASK);
+	
+	return (bool) (((nState >> 12)) -1);	
+}
+
+void AP_Win32Dialog_Options::_setViewShowToolbar(UT_uint32 row, bool b)
+{	
+	LV_ITEM lvitem;
+
+	lvitem.stateMask = LVIS_STATEIMAGEMASK;
+	lvitem.state = INDEXTOSTATEIMAGEMASK((b ? 2 : 1));
+
+	SendMessage(GetDlgItem((HWND)getPage(PG_TOOLBARS), AP_RID_DIALOG_OPTIONS_LST_Toolbars), 
+		LVM_SETITEMSTATE, (WPARAM)row, (LPARAM)&lvitem);
 }
 
 
@@ -652,23 +637,22 @@ BOOL AP_Win32Dialog_Options_Toolbars::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 	HWND hWndCtrl = (HWND)lParam;	
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
 	
+	/*
 	switch (wId)
 	{		
-		case AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar: 	
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR);	
-			return 0;
-		case AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar:	
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR); 	
-			return 0;
-		case AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar:		
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR);		
-			return 0;
 		
 		default:
 		break;
-	}
-	return 1;
+	}*/
+	return 0;
 }
+
+
+#ifndef LVS_EX_CHECKBOXES
+#define LVS_EX_CHECKBOXES 0x00000004L
+#endif
+
+
 /*
 	
 */	
@@ -678,9 +662,6 @@ BOOL AP_Win32Dialog_Options_Toolbars::_onInitDialog(HWND hWnd, WPARAM wParam, LP
 	setStringSet(pSS);
 	setHandle(getHandle());
 	localizeControlText(AP_RID_DIALOG_OPTIONS_FRM_Toolbars,			AP_STRING_ID_DLG_Options_Label_Toolbars);
-	localizeControlText(AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar,	AP_STRING_ID_DLG_Options_Label_ViewStandardTB);
-	localizeControlText(AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar,	AP_STRING_ID_DLG_Options_Label_ViewFormatTB);
-	localizeControlText(AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar,		AP_STRING_ID_DLG_Options_Label_ViewExtraTB);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_FRM_ButtonStyle,		AP_STRING_ID_DLG_Options_Label_Look);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_RDO_Icons,			AP_STRING_ID_DLG_Options_Label_Icons);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_RDO_Text,			AP_STRING_ID_DLG_Options_Label_Text);
@@ -692,10 +673,31 @@ BOOL AP_Win32Dialog_Options_Toolbars::_onInitDialog(HWND hWnd, WPARAM wParam, LP
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_RDO_Text), 		false );
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_RDO_IconsAndText), false );
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips), false );
+
+	HWND hWndList = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_LST_Toolbars);
 	
-	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);
-	return 0;	
-			
+	//
+	const UT_Vector & vec = XAP_App::getApp()->getToolbarFactory()->getToolbarNames();	 
+	const char* utf8;
+	for (UT_uint32 i = 0; i < vec.getItemCount(); i++) 
+	{		
+		utf8 = static_cast<const char *>(reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(i))->utf8_str());		
+		static char szText[255];		
+		strcpy(szText, (AP_Win32App::s_fromUTF8ToAnsi(utf8)).c_str());		
+		
+		LVITEMA item; //!TODO Using ANSI function
+		item.pszText = szText;
+		item.iItem = i;
+		item.iSubItem = 0;
+		item.lParam = 0;
+		item.mask = LVIF_TEXT;		
+
+		SendMessage(hWndList, LVM_INSERTITEM, 0,  (LPARAM) &item);
+	}	
+	
+	SendMessage (hWndList, LVM_SETEXTENDEDLISTVIEWSTYLE,LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
+	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);	
+	return 0;			
 }
 
 /*
@@ -779,12 +781,18 @@ BOOL AP_Win32Dialog_Options_Spelling::_onInitDialog(HWND hWnd, WPARAM wParam, LP
 */
 AP_Win32Dialog_Options_Lang::AP_Win32Dialog_Options_Lang()
 {
-	
+	m_pVecUILangs = NULL;
 }
 
 AP_Win32Dialog_Options_Lang::~AP_Win32Dialog_Options_Lang()
 {
-	
+	if (m_pVecUILangs)
+	{		
+		for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
+			free (static_cast<void *>(m_pVecUILangs->getNthItem(i)));
+			
+		delete m_pVecUILangs;		
+	}	
 }
 
 /*
@@ -903,8 +911,7 @@ BOOL AP_Win32Dialog_Options_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewAll: 			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_ALL); 			return 0;
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_HIDDEN_TEXT); 	return 0;
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable: 	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_UNPRINTABLE); 	return 0;
-		case AP_RID_DIALOG_OPTIONS_COMBO_UNITS: 																return 0;
-		case AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize:														return 0;
+		case AP_RID_DIALOG_OPTIONS_COMBO_UNITS: 																return 0;		
 		case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SMART_QUOTES_ENABLE);	return 0;
 		case AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable:
 			bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) == BST_CHECKED);
@@ -951,7 +958,6 @@ BOOL AP_Win32Dialog_Options_Layout::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	localizeControlText(AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText,		AP_STRING_ID_DLG_Options_Label_ViewHiddenText);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable,		AP_STRING_ID_DLG_Options_Label_ViewUnprintable);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_LBL_UNITS,			AP_STRING_ID_DLG_Options_Label_ViewUnits);
-	localizeControlText(AP_RID_DIALOG_OPTIONS_LBL_DefaultPageSize,		AP_STRING_ID_DLG_Options_Label_DefaultPageSize);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable,	AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable,		AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent);
 	localizeControlText(AP_RID_DIALOG_OPTIONS_BTN_BGColor,			AP_STRING_ID_DLG_Options_Label_ChooseForTransparent);
@@ -963,14 +969,6 @@ BOOL AP_Win32Dialog_Options_Layout::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)XAP_Win32App::getWideString(pSS->getValue(s_aAlignUnit[n1].id)));
 	}
 	
-	HWND hwndPaperSize = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-	for( int n2 = (int)fp_PageSize::_first_predefined_pagesize_; n2 < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; n2++ )
-	{
-	SendMessage( hwndPaperSize,
-				 CB_INSERTSTRING,
-				 (WPARAM) n2,
-				 (LPARAM) XAP_Win32App::getWideString(fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)n2) ));
-	}	
 	return 0;
 }
 
@@ -1096,3 +1094,6 @@ bool AP_Win32Dialog_Options_Pref::isAutoSaveInRange()
 	
 	return true;	
 }
+
+
+

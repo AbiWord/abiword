@@ -648,7 +648,7 @@ private:
 
 	UT_uint32		m_tlistIndent;
 	UT_uint32		m_tlistListID;
-	List_Type		m_tlistType;
+	FL_ListType		m_tlistType;
 
 	UT_StringPtrMap	m_SavedURLs;
 
@@ -3068,9 +3068,15 @@ void s_HTML_Listener::_setCellWidthInches(void)
 	UT_sint32 right = m_TableHelper.getRight ();
 	double tot = 0;
 	UT_sint32 i =0;
+
+	UT_ASSERT(m_vecDWidths.size() <= (right - left));
+
 	for(i=left; i<right; i++)
 	{
-		tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
+		// probably covering up some sort of issue
+		// but we assert above, so we'll notice it again
+		if (i < m_vecDWidths.size ())
+			tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
 	}
 	m_dCellWidthInches = tot;
 }

@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ int main (int argc, const char **argv)
 {
 #ifdef DEBUG
 	UT_DEBUGMSG(("activating NSDebug\n"));
-	NSDebugEnabled = NSZombieEnabled = YES;
+	NSDebugEnabled = NSZombieEnabled = NO;
 #endif
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	int ret = AP_CocoaApp::main(ABIWORD_APP_NAME, argc, argv);

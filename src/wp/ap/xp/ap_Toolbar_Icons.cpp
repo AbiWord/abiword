@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copryight (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -93,15 +94,14 @@ AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
 {
 }
 
-bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
-											  const char *** pIconData,
-											  UT_uint32 * pSizeofData)
+
+
+bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName)
 {
-	// This is a static function.
+	bool bIDFound = false;
+	
 	if (!szID || !*szID )
 		return false;
-	
-	bool bIDFound = false;
 	UT_uint32 m;
 	UT_uint32 mLimit = NrElements(s_imTable);
 
@@ -111,6 +111,7 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 		if (UT_stricmp(szID, s_imTable[m].m_id ) == 0)
 		{
 			bIDFound = true;
+			*pName = s_imTable[m].m_iconname;
 			break;
 		}
 	}
@@ -131,15 +132,32 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 			if (UT_stricmp(szBaseID, s_imTable[m].m_id ) == 0)
 			{
 				bIDFound = true;
+				*pName = s_imTable[m].m_iconname;
 				break;
 			}
 		}		
 	}
+	return bIDFound;
+}
+
+
+
+bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
+											  const char *** pIconData,
+											  UT_uint32 * pSizeofData)
+{
+	const char * szName;
+	// This is a static function.
+	if (!szID || !*szID )
+		return false;
+	
+	bool bIDFound = _findIconNameForID(szID, &szName);
+
 
 	if( !bIDFound )
 		return false;
 
-	if( UT_stricmp(s_imTable[m].m_iconname,"NoIcon") == 0)
+	if( UT_stricmp(szName,"NoIcon") == 0)
 		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
@@ -148,7 +166,7 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	// Search to match icon name with data
 	for (k=0; k < kLimit; k++)
 	{
-		if (UT_stricmp(s_imTable[m].m_iconname,s_itTable[k].m_name) == 0)
+		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;

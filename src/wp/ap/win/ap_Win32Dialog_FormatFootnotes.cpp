@@ -33,9 +33,6 @@
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32LabelledSeparator.h"
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 #define GWL(hwnd)		(AP_Win32Dialog_FormatFootnotes*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_FormatFootnotes*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
 
@@ -130,6 +127,7 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, 	AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec);
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE, 	AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT, 	AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone);
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_INITFOOTVAL, 	AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal);
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES1, 	AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES2, 	AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
@@ -139,6 +137,8 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES1, 	AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES2, 	AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
 	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ERSTSEC, 	AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_PLACEMENT, 	AP_STRING_ID_DLG_FormatFootnotes_EndPlacement);
+	localizeControlText(AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_NUMBERING, 	AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart);
 	
 	/*Caption*/
 	localizeDialogTitle(AP_STRING_ID_DLG_FormatFootnotes_Title);
@@ -176,12 +176,17 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	 	 	 	
  	
 	/*Set Default Radio buttons Footnotes */                                                                                                      
-	CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE,
-		getRestartFootnoteOnSection() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL : AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE);                                                                              
+	if (getRestartFootnoteOnSection() || getRestartFootnoteOnPage())
+		CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT,
+			getRestartFootnoteOnSection() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL : AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE);                                                                              
+	else
+		CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT,
+			AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT);                                                                              
+
 
 	/*Set Default Radio buttons Endnotes */                                                                                                      		
 	CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC,
-		 getRestartEndnoteOnSection() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC: AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC);                                                                              		
+		 getPlaceAtDocEnd() ? AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC: AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC);                                                                              		
 				
 	/* Set Footnotes Spin*/ 
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_FSTYLE),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);	
@@ -248,6 +253,16 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE))
 			{
 				setRestartFootnoteOnPage(true);
+				setRestartFootnoteOnSection(false);
+			}
+			break;	
+		}
+
+		case AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT:
+		{
+			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT))
+			{
+				setRestartFootnoteOnPage(false);
 				setRestartFootnoteOnSection(false);
 			}
 			break;	

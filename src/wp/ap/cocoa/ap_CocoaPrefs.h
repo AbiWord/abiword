@@ -28,8 +28,10 @@ class AP_CocoaPrefs : public AP_Prefs
 public:
 	AP_CocoaPrefs(XAP_App * pApp);
 	
-	virtual const char *	getPrefsPathname(void) const;
 	virtual void			overlayEnvironmentPrefs(void);
+	
+protected:
+	virtual const char *	_getPrefsPathname(void) const;
 };
 
 #endif /* AP_COCOAPREFS_H */

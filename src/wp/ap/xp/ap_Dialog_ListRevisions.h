@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2002, 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@ public:
 	const char *        getLabel1()const;
 	const char *        getColumn1Label() const;
 	const char *        getColumn2Label() const;
+	const char *        getColumn3Label() const;
 
 	UT_uint32           getItemCount() const;
 	UT_uint32           getNthItemId(UT_uint32 n) const;
@@ -54,6 +55,8 @@ public:
 	   the following function (use FREEP) */
 	char *              getNthItemText(UT_uint32 n) const;
 
+	const char *        getNthItemTime(UT_uint32 n) const;
+	
 	UT_uint32           getSelectedId() const {return m_iId;}
 
 protected:

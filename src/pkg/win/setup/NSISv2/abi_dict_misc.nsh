@@ -10,6 +10,8 @@
 ; English dictionary if included within the installer, but placed in their own
 ; subsection when referenced as downloads, hence the SubSection within the !ifndef chunk.
 
+!include "abi_util_dl.nsh"
+
 ; WARNING: ${ssection_dl_opt_dict}+1 is assumed to be 1st section of downloadable dictionaries
 SubSection /e "$(TITLE_ssection_dl_opt_dict)" ssection_dl_opt_dict
 
@@ -82,13 +84,9 @@ Function getDLMirror
   Call createDLIni ; sets $R0 to inifilename
 
   ; create the dialog and wait for user's response
-!ifndef CLASSIC_UI
   ; for now manually call, as the macro doesn't work as expected
   ;  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "$R0"
   InstallOptions::dialog $R0
-!else
-  InstallOptions::dialog $R0
-!endif
 
   ; pop return status and use default value on anything other than success
   ; else read back user's choice
@@ -141,18 +139,8 @@ Function getDictionary
 
 !ifndef NODOWNLOADS
 	; download the file
-	Call ConnectInternet	; try to establish connection if not connected
-	StrCmp $0 "online" 0 Finish
-	retryDL_dict:
-	DetailPrint "NSISdl::download '${DICTIONARY_BASE}/${DICT_FILENAME}' '$TEMP\${DICT_FILENAME}'"
-	NSISdl::download "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}"
-	Pop $0 ;Get the return value
-	StrCmp $0 "success" doDictInst
-		; Couldn't download the file
-		DetailPrint "Could not download requested dictionary:"
-		DetailPrint "  ${DICTIONARY_BASE}/${DICT_FILENAME}"
-		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/${DICT_FILENAME}" IDRETRY retryDL_dict
-	Goto Finish
+	${dlFile} "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}" "Failed to download requested dictionary ${DICTIONARY_BASE}/${DICT_FILENAME}"
+	StrCmp $0 "success" doDictInst Finish
 !endif
 
 	doDictInst:

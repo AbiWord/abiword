@@ -1451,6 +1451,35 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 
 		UT_DEBUGMSG(("Fnotes [%d,%d], Enotes [%d,%d]\n",
 					 m_iFootnotesStart, m_iFootnotesEnd, m_iEndnotesStart, m_iEndnotesEnd));
+
+		///////////////////////////////////////////////////////////////////////////////
+		// Set various revision states
+		//
+		// unlike Word:
+		// 
+		//     * we do not differentiate between screen and print: we
+		//       print whatever is on screen
+		//
+		//     * if show revisions is off, Word shows what the
+		//       document looks like _after_ the last revision; by
+		//       default we show what it looked _before_ first
+		//       revision; we can show the post-revision state by
+		//       setting the view id to 0xffffffff
+		//
+		//     * we currently do not handle the fLockRev parameter
+		{
+			bool bShow = ps->dop.fRMView == 1 || ps->dop.fRMPrint == 1;
+		
+			getDoc()->setShowRevisions(bShow);
+
+			if(!bShow)
+			{
+				getDoc()->setShowRevisionId(0xffffffff);
+			}
+		
+			getDoc()->setMarkRevisions(ps->dop.fRevMarking == 1);
+		}
+		
 		break;
 		
 	case DOCEND:
@@ -2893,7 +2922,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	{
 		// revision "hack" - add a single revision for all revisioned text
 		UT_UCS4String revisionStr ("msword_revisioned_text");
-		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size());
+		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size(), 0);
 		m_bEncounteredRevision = true;
 	}
 

@@ -37,7 +37,6 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_CocoaDialog_InsertBookmark.h"
-#include "ap_CocoaDialog_All.h"
 
 /*****************************************************************/
 

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +37,7 @@
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
+#include "xap_Toolbar_Layouts.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -381,14 +383,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	const gchar *data[2];
 	data[1] = 0;
 
-	data[0] = static_cast<const gchar *>(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB));
-	gtk_clist_append (GTK_CLIST(toolbar_clist), const_cast<gchar **>(data));
-
-	data[0] = static_cast<const gchar *>(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB));
-	gtk_clist_append (GTK_CLIST(toolbar_clist), const_cast<gchar **>(data));
-
-	data[0] = static_cast<const gchar *>(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB));
-	gtk_clist_append (GTK_CLIST(toolbar_clist), const_cast<gchar **>(data));
+	const UT_Vector & vec = XAP_App::getApp()->getToolbarFactory()->getToolbarNames();
+	UT_uint32 i;
+	for (i = 0; i < vec.getItemCount(); i++) {
+		data[0] = static_cast<const gchar *>(reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(i))->utf8_str());
+		gtk_clist_append (GTK_CLIST(toolbar_clist), const_cast<gchar **>(data));
+	}
 
 	gtk_clist_thaw (GTK_CLIST (toolbar_clist));
 
@@ -1161,9 +1161,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 		// not implemented
 	case id_BUTTON_SAVE:
-	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
 	  return 0;
 
 	default:
@@ -1184,23 +1181,20 @@ void AP_UnixDialog_Options::_controlEnable( tControl id, bool value )
 }
 
 
-#define DEFINE_CLIST_GET_SET_BOOL(itm, row) \
-bool AP_UnixDialog_Options::_gather##itm(void) { \
-        UT_ASSERT (m_toolbarClist); \
-        bool b = static_cast<bool>(GPOINTER_TO_INT (gtk_clist_get_row_data (GTK_CLIST (m_toolbarClist), row))); \
-        xxx_UT_DEBUGMSG(("DOM: _gather %d %d\n", row, b)); \
-        return b; \
-} \
-void AP_UnixDialog_Options::_set##itm(bool b) { \
-        UT_ASSERT (m_toolbarClist); \
-        xxx_UT_DEBUGMSG(("DOM: _set %d %d\n", row, b)); \
-        gtk_clist_set_row_data (GTK_CLIST (m_toolbarClist), row, GINT_TO_POINTER(b)); \
+bool AP_UnixDialog_Options::_gatherViewShowToolbar(UT_uint32 row)
+{
+	UT_ASSERT (m_toolbarClist);
+	bool b = static_cast<bool>(GPOINTER_TO_INT (gtk_clist_get_row_data (GTK_CLIST (m_toolbarClist), row)));
+	xxx_UT_DEBUGMSG(("DOM: _gather %d %d\n", row, b));
+	return b;
 }
 
-DEFINE_CLIST_GET_SET_BOOL(ViewShowStandardBar, 0);
-DEFINE_CLIST_GET_SET_BOOL(ViewShowFormatBar, 1);
-DEFINE_CLIST_GET_SET_BOOL(ViewShowExtraBar, 2);
-#undef DEFINE_CLIST_GET_SET_BOOL
+void AP_UnixDialog_Options::_setViewShowToolbar(UT_uint32 row, bool b)
+{
+	UT_ASSERT (m_toolbarClist);
+	xxx_UT_DEBUGMSG(("DOM: _set %d %d\n", row, b));
+	gtk_clist_set_row_data (GTK_CLIST (m_toolbarClist), row, GINT_TO_POINTER(b));
+}
 
 
 #define DEFINE_GET_SET_BOOL(button) \

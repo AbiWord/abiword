@@ -28,8 +28,10 @@ public:
 	AP_Win32Prefs(XAP_App * pApp);
 	
 	virtual bool			loadBuiltinPrefs(void);
-	virtual const char *	getPrefsPathname(void) const;
 	virtual void			overlayEnvironmentPrefs(void);
+
+protected:
+	virtual const char *	_getPrefsPathname(void) const;
 };
 
 #endif /* AP_WIN32PREFS_H */

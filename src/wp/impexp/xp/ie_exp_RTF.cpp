@@ -1892,7 +1892,7 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	UT_sint32 Param = 0;
 	UT_String fontName;
 	UT_UCSChar bulletsym=0;
-	List_Type lType = NUMBERED_LIST;
+	FL_ListType lType = NUMBERED_LIST;
 	if(pAuto != NULL)
 	{
 		lType = pAuto->getType();

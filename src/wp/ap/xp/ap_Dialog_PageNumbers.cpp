@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include "ut_string.h"
 #include "ap_Dialog_PageNumbers.h"
+#include "gr_Painter.h"
 
 AP_Dialog_PageNumbers::AP_Dialog_PageNumbers (XAP_DialogFactory * pDlgFactory,
 					      XAP_Dialog_Id id)
@@ -111,16 +112,16 @@ void AP_Preview_PageNumbers::setAlign(AP_Dialog_PageNumbers::tAlign align)
 
 void AP_Preview_PageNumbers::draw (void)
 {
-	int x = 0, y = 0;
-	
-	UT_ASSERT (m_gc);
+	GR_Painter painter(m_gc);
+
+	int x = 0, y = 0;	
 	
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
+	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
 	
 	// actually draw some "text" on the preview for a more realistic appearance
 	
@@ -132,7 +133,7 @@ void AP_Preview_PageNumbers::draw (void)
 	
 	for (int txty = pageRect.top + (2 * iFontHeight); txty < pageRect.top + pageRect.height - (2 * iFontHeight); txty += step)
 	{
-		m_gc->drawLine (pageRect.left + m_gc->tlu(5), txty, pageRect.left + pageRect.width - m_gc->tlu(5), txty);
+		painter.drawLine (pageRect.left + m_gc->tlu(5), txty, pageRect.left + pageRect.width - m_gc->tlu(5), txty);
 	}
 	
 	// draw in the page number as a header or footer, properly aligned
@@ -151,5 +152,5 @@ void AP_Preview_PageNumbers::draw (void)
 	}
 	
 	//m_gc->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_gc->drawChars (m_str, 0, UT_UCS4_strlen(m_str), x, y);
+	painter.drawChars (m_str, 0, UT_UCS4_strlen(m_str), x, y);
 }

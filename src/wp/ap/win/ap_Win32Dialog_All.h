@@ -44,6 +44,7 @@
 #	include "xap_Win32Dlg_Password.h"
 #	include "xap_Win32Dlg_Image.h"
 #	include "xap_Win32Dlg_HTMLOptions.h"
+#   include "xap_Win32Dlg_ListDocuments.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
@@ -71,9 +72,11 @@
 #  	include "ap_Win32Dialog_InsertTable.h"
 #  	include "ap_Win32Dialog_MetaData.h"
 #  	include "ap_Win32Dialog_MergeCells.h"
+#  	include "ap_Win32Dialog_SplitCells.h"
 #  	include "ap_Win32Dialog_FormatTable.h"
 #	include "ap_Win32Dialog_FormatFootnotes.h"
 #	include "ap_Win32Dialog_MailMerge.h"
+#	include "ap_Win32Dialog_FormatFrame.h"
 #if 0
 #	include "ap_Win32Dialog_Download_File.h"
 #endif
@@ -101,6 +104,9 @@
 	DeclareDialog(XAP_DIALOG_ID_PASSWORD,		XAP_Win32Dialog_Password)
 	DeclareDialog(XAP_DIALOG_ID_IMAGE,			XAP_Win32Dialog_Image)
 	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,    XAP_Win32Dialog_HTMLOptions)		
+	DeclareDialog(XAP_DIALOG_ID_LISTDOCUMENTS,  XAP_Win32Dialog_ListDocuments)		
+	DeclareDialog(XAP_DIALOG_ID_MERGEDOCUMENTS, XAP_Win32Dialog_ListDocuments)		
+	DeclareDialog(XAP_DIALOG_ID_COMPAREDOCUMENTS,XAP_Win32Dialog_ListDocuments)		
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
@@ -129,7 +135,9 @@
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,	AP_Win32Dialog_InsertTable)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_Win32Dialog_MetaData)	
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_Win32Dialog_MergeCells)
+	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_Win32Dialog_SplitCells)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_Win32Dialog_FormatTable)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,	AP_Win32Dialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,AP_Win32Dialog_FormatFootnotes)
 	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_Win32Dialog_MailMerge)
 	

@@ -24,6 +24,7 @@
 #include "xap_QNXFrameImpl.h"
 #include "ap_QNXLeftRuler.h"
 #include "gr_QNXGraphics.h"
+#include "fv_View.h"
 #include <stdio.h>
 
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -217,7 +218,6 @@ int AP_QNXLeftRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallb
 	get_stuff(info, &ems, NULL, &mx, &my);
 
 	pQNXLeftRuler->mouseMotion(ems, pQNXLeftRuler->getGraphics()->tlu(mx), pQNXLeftRuler->getGraphics()->tlu(my));
-	PgFlush();
 
 	return Pt_CONTINUE;
 }

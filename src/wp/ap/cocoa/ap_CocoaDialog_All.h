@@ -75,8 +75,10 @@
 #	include "ap_CocoaDialog_MarkRevisions.h"
 #	include "ap_CocoaDialog_ListRevisions.h"
 #	include "ap_CocoaDialog_MergeCells.h"
+#	include "ap_CocoaDialog_SplitCells.h"
 #	include "ap_CocoaDialog_InsertTable.h"
 #	include "ap_CocoaDialog_FormatTable.h"
+#	include "ap_CocoaDialog_FormatFrame.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
@@ -100,13 +102,13 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_CocoaDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_CocoaDialog_Replace)
-//PORT    DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_CocoaDialog_HdrFtr)
+	DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_CocoaDialog_HdrFtr)
 //PORT    DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_CocoaDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_CocoaDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_CocoaDialog_Break)
-//PORT	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_CocoaDialog_Spell)
+	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_CocoaDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_CocoaDialog_Styles)
-//PORT    DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_CocoaDialog_PageNumbers)
+	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_CocoaDialog_PageNumbers)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_CocoaDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_CocoaDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_CocoaDialog_Insert_DateTime)
@@ -127,13 +129,15 @@
 	DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_CocoaDialog_Password)
 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_CocoaDialog_InsertBookmark)
 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)
-//PORT	DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_CocoaDialog_Image)
+	DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_CocoaDialog_Image)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_CocoaDialog_MetaData)
-//PORT 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
-//PORT 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
+ 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
+	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_CocoaDialog_InsertTable)
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_CocoaDialog_MergeCells)
+	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_CocoaDialog_SplitCells)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_CocoaDialog_FormatTable)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,		AP_CocoaDialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
 //PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
 #if 0

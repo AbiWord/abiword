@@ -41,6 +41,7 @@ glade_DATA = \
 	ap_UnixDialog_Field.glade \
 	ap_UnixDialog_FormatFootnotes.glade \
 	ap_UnixDialog_FormatTable.glade \
+	ap_UnixDialog_FormatFrame.glade \
 	ap_UnixDialog_HdrFtr.glade \
 	ap_UnixDialog_InsertTable.glade \
 	ap_UnixDialog_Insert_DateTime.glade \
@@ -59,6 +60,7 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@Dialog_Break.cpp		\
 	ap_@ABI_FE@Dialog_InsertTable.cpp	\
 	ap_@ABI_FE@Dialog_FormatTable.cpp	\
+	ap_@ABI_FE@Dialog_FormatFrame.cpp	\
 	ap_@ABI_FE@Dialog_New.cpp		\
 	ap_@ABI_FE@Dialog_Background.cpp	\
 	ap_@ABI_FE@Dialog_HdrFtr.cpp		\
@@ -82,6 +84,7 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@Dialog_MarkRevisions.cpp	\
 	ap_@ABI_FE@Dialog_ListRevisions.cpp	\
 	ap_@ABI_FE@Dialog_MergeCells.cpp	\
+	ap_@ABI_FE@Dialog_SplitCells.cpp	\
 	ap_@ABI_FE@Dialog_MetaData.cpp		\
 	ap_@ABI_FE@Dialog_MailMerge.cpp		\
 	ap_@ABI_FE@Prefs.cpp			\

@@ -42,6 +42,7 @@
 
 
 #include "ap_Win32Resources.rc2"
+#include "xap_Win32DialogHelper.h"
 
 /*****************************************************************/
 
@@ -123,10 +124,15 @@ BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 	ListView_InsertColumn(h,0,&col);
 
 	col.iSubItem = 1;
-	col.cx = 230;
+	col.cx = 160;
 	col.pszText = const_cast<char*>(getColumn2Label());
 	ListView_InsertColumn(h,1,&col);
 
+	col.iSubItem = 2;
+	col.cx = 230;
+	col.pszText = const_cast<char*>(getColumn3Label());
+	ListView_InsertColumn(h,2,&col);
+	
 	ListView_SetItemCount(h, getItemCount());
 
 	LVITEMA item; //!TODO Using ANSI function
@@ -149,12 +155,20 @@ BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 		ListView_InsertItem(h, &item);
 
 		item.iSubItem = 1;
+		item.pszText = const_cast<char *>(getNthItemTime(i));
+		item.mask = LVIF_TEXT;
+		ListView_SetItem(h, &item);
+		
+		item.iSubItem = 2;
 		t = getNthItemText(i);
 		item.pszText = t;
 		item.mask = LVIF_TEXT;
 		ListView_SetItem(h, &item);
 		FREEP(t);
 	}
+	
+	SendMessage(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 1;							// 1 == we did not call SetFocus()
 }

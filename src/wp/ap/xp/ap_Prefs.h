@@ -33,11 +33,15 @@ public:
 
 	virtual bool				loadBuiltinPrefs(void);
 	virtual const XML_Char *	getBuiltinSchemeName(void) const;
-	virtual const char *		getPrefsPathname(void) const = 0;
+	const char *		        getPrefsPathname(void) const;
 	virtual void				overlayEnvironmentPrefs(void) = 0;
 	virtual void				fullInit(void);
 
 	void						overlaySystemPrefs(void);
+
+protected:
+	virtual const char *	    _getPrefsPathname(void) const = 0;
+
 };
 
 #endif /* AP_PREFS_H */

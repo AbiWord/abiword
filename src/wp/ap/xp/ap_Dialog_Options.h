@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,9 +67,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
 				   id_CHECK_VIEW_CURSOR_BLINK,
-				   id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR,
-				   id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR,
-				   id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR,
 				   id_CHECK_VIEW_SHOW_STATUS_BAR,
 				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT,
 				   id_CHECK_VIEW_UNPRINTABLE,
@@ -143,9 +141,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(PrefsAutoSave, 	bool);
 
 	SET_GATHER			(ViewShowRuler, 	bool);
-	SET_GATHER			(ViewShowStandardBar,	bool);
-	SET_GATHER			(ViewShowFormatBar, bool);
-	SET_GATHER			(ViewShowExtraBar,	bool);
+	virtual bool _gatherViewShowToolbar(UT_uint32 t) = 0;
+	virtual void _setViewShowToolbar(UT_uint32 row, bool b) = 0;
 	SET_GATHER			(ViewShowStatusBar, bool);
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);

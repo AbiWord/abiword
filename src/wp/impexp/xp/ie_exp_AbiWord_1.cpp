@@ -177,6 +177,7 @@ protected:
 	void				_handleDataItems(void);
     void                _handleMetaData(void);
 	void                _handleRevisions(void);
+	void                _handleHistory(void);
 
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
@@ -573,6 +574,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// now we begin the actual document.
 
 	_handleMetaData();
+	_handleHistory();
 	_handleRevisions();
 	_handleStyles();
 	_handleLists();
@@ -1264,7 +1266,6 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	bool bWroteOpenRevisionsSection = false;
 
 	const PD_Revision * pRev=NULL;
-	char buf[35];
 
 	UT_Vector & vRevisions = m_pDocument->getRevisions();
 
@@ -1272,23 +1273,79 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
 		pRev = static_cast<PD_Revision *>(vRevisions.getNthItem(k));
+		UT_return_if_fail(pRev);
+		
+		UT_String s;
+		
 		if (!bWroteOpenRevisionsSection)
 		{
-			m_pie->write("<revisions>\n");
+			UT_String_sprintf(s, "<revisions show=\"%d\" mark=\"%d\" show-level=\"%d\">\n",
+							  m_pDocument->isShowRevisions(),
+							  m_pDocument->isMarkRevisions(),
+							  m_pDocument->getShowRevisionId());
+			
+			m_pie->write(s.c_str());
 			bWroteOpenRevisionsSection = true;
 		}
-		UT_String s = "<r id=\"";
-		sprintf(buf, "%d\">", pRev->getId());
-		s += buf;
+
+		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%d\">",
+						  pRev->getId(),
+						  pRev->getStartTime());
+		
 		m_pie->write(s.c_str());
 
-		_outputData(pRev->getDescription(), UT_UCS4_strlen(pRev->getDescription()));
+		if(pRev->getDescription())
+		{
+			_outputData(pRev->getDescription(), UT_UCS4_strlen(pRev->getDescription()));
+		}
+		
 
 		m_pie->write("</r>\n");
 	}
 
 	if (bWroteOpenRevisionsSection)
 		m_pie->write("</revisions>\n");
+
+	return;
+}
+
+void s_AbiWord_1_Listener::_handleHistory(void)
+{
+	bool bWroteOpenSection = false;
+
+	UT_uint32 k = 0;
+	const UT_uint32 iCount = m_pDocument->getHistoryCount();
+	
+	for (k=0; k < iCount; k++)
+	{
+		UT_uint32 iVersion  =  m_pDocument->getHistoryNthId(k);
+		UT_uint32 iEditTime =  m_pDocument->getHistoryNthEditTime(k);
+		time_t tTime        =  m_pDocument->getHistoryNthTime(k);
+		UT_uint32 iUID      =  m_pDocument->getHistoryNthUID(k);
+		
+		UT_String s;
+		
+		if (!bWroteOpenSection)
+		{
+			UT_String_sprintf(s, "<history version=\"%d\" edit-time=\"%d\" last-saved=\"%d\" "
+							     "uid=\"%s\">\n",
+							  m_pDocument->getDocVersion(),
+							  m_pDocument->getEditTime(),
+							  m_pDocument->getLastSavedTime(),
+							  m_pDocument->getDocUIDString());
+			
+			m_pie->write(s.c_str());
+			bWroteOpenSection = true;
+		}
+
+		UT_String_sprintf(s, "<version id=\"%d\" time=\"%d\" edit-time=\"%d\" uid=\"%d\"/>\n",
+						  iVersion, tTime, iEditTime, iUID);
+		
+		m_pie->write(s.c_str());
+	}
+
+	if (bWroteOpenSection)
+		m_pie->write("</history>\n");
 
 	return;
 }

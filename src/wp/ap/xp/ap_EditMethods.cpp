@@ -38,6 +38,7 @@
 #include "fg_Graphic.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
+#include "gr_DrawArgs.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
@@ -80,10 +81,13 @@
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Dialog_ListRevisions.h"
 #include "ap_Dialog_MergeCells.h"
+#include "ap_Dialog_SplitCells.h"
 #include "ap_Dialog_FormatTable.h"
+#include "ap_Dialog_FormatFrame.h"
 #include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Dialog_MailMerge.h"
 #include "fv_FrameEdit.h"
+#include "fl_FootnoteLayout.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -100,6 +104,7 @@
 #include "xap_Dlg_Language.h"
 #include "xap_Dlg_PluginManager.h"
 #include "xap_Dlg_Image.h"
+#include "xap_Dlg_ListDocuments.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -110,6 +115,7 @@
 #include "ut_Script.h"
 #include "ut_path.h"
 #include "ie_mailmerge.h"
+#include "gr_Painter.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -234,6 +240,7 @@ public:
 	static EV_EditMethod_Fn selectTable;
 	static EV_EditMethod_Fn selectRow;
 	static EV_EditMethod_Fn selectCell;
+	static EV_EditMethod_Fn selectColumn;
 
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -293,6 +300,7 @@ public:
 	static EV_EditMethod_Fn insertOgonekData;
 
 	static EV_EditMethod_Fn mergeCells;
+	static EV_EditMethod_Fn splitCells;
 	static EV_EditMethod_Fn formatTable;
 
 	static EV_EditMethod_Fn replaceChar;
@@ -378,6 +386,10 @@ public:
 	static EV_EditMethod_Fn viewFormat;
 	static EV_EditMethod_Fn viewExtra;
 	static EV_EditMethod_Fn viewTable;
+	static EV_EditMethod_Fn viewTB1;
+	static EV_EditMethod_Fn viewTB2;
+	static EV_EditMethod_Fn viewTB3;
+	static EV_EditMethod_Fn viewTB4;
 	static EV_EditMethod_Fn lockToolbarLayout;
 	static EV_EditMethod_Fn defaultToolbarLayout;
 	static EV_EditMethod_Fn viewRuler;
@@ -626,7 +638,14 @@ public:
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn revisionAccept;
 	static EV_EditMethod_Fn revisionReject;
+	static EV_EditMethod_Fn revisionFindNext;
+	static EV_EditMethod_Fn revisionFindPrev;
 	static EV_EditMethod_Fn revisionSetViewLevel;
+	static EV_EditMethod_Fn toggleShowRevisions;
+	static EV_EditMethod_Fn toggleShowRevisionsBefore;
+	static EV_EditMethod_Fn toggleShowRevisionsAfter;
+	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
+	static EV_EditMethod_Fn revisionCompareDocuments;
 
 	static EV_EditMethod_Fn insertTable;
 
@@ -989,6 +1008,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(replaceChar),			_D_,""),
 	EV_EditMethod(NF(resizeImage),			0,  ""),
 	EV_EditMethod(NF(revisionAccept),		0,  ""),
+	EV_EditMethod(NF(revisionCompareDocuments),	0,  ""),
+	EV_EditMethod(NF(revisionFindNext),		0,  ""),
+	EV_EditMethod(NF(revisionFindPrev),		0,  ""),
 	EV_EditMethod(NF(revisionReject),		0,  ""),
 	EV_EditMethod(NF(revisionSetViewLevel),	0,  ""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
@@ -1013,6 +1035,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectAll),			0,	""),
 	EV_EditMethod(NF(selectBlock),			0,	""),
 	EV_EditMethod(NF(selectCell),			0,	""),
+	EV_EditMethod(NF(selectColumn),			0,	""),
 	EV_EditMethod(NF(selectFrame),			0,	""),
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
@@ -1036,6 +1059,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(spellSuggest_7),		0,	""),
 	EV_EditMethod(NF(spellSuggest_8),		0,	""),
 	EV_EditMethod(NF(spellSuggest_9),		0,	""),
+	EV_EditMethod(NF(splitCells),           0,  ""),
 	EV_EditMethod(NF(style),				_D_,""),
 
 	// t
@@ -1052,6 +1076,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleMarkRevisions),  0,  ""),
 	EV_EditMethod(NF(toggleOline),			0,  ""),
 	EV_EditMethod(NF(togglePlain),			0,	""),
+	EV_EditMethod(NF(toggleShowRevisions),  0,  ""),
+	EV_EditMethod(NF(toggleShowRevisionsAfter),  0,  ""),
+	EV_EditMethod(NF(toggleShowRevisionsAfterPrevious),  0,  ""),
+	EV_EditMethod(NF(toggleShowRevisionsBefore),  0,  ""),
 	EV_EditMethod(NF(toggleStrike), 		0,	""),
 	EV_EditMethod(NF(toggleSub),			0,	""),
 	EV_EditMethod(NF(toggleSuper),			0,	""),
@@ -1111,6 +1139,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
+	// capitals before lowercase ...
+	EV_EditMethod(NF(viewTB1),			0,		""),
+	EV_EditMethod(NF(viewTB2),			0,		""),
+	EV_EditMethod(NF(viewTB3),			0,		""),
+	EV_EditMethod(NF(viewTB4),			0,		""),
 	EV_EditMethod(NF(viewTable),			0,		""),
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
@@ -2874,7 +2907,7 @@ Defun(dlgMetaData)
       pDocument->setMetaDataProp ( PD_META_KEY_RIGHTS, pDialog->getRights() ) ;
       pDocument->setMetaDataProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
 
-	  for(int i = 0;i < pApp->getFrameCount();++i)
+	  for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
 	  {
 		  pApp->getFrame(i)->updateTitle ();
 	  }	  
@@ -3651,6 +3684,27 @@ Defun1(warpInsPtEOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+//
+// This is called on cntrl-End. If called from within a footnote/endnote
+// jump back to just after the insertion point
+//
+	if(pView->isInFootnote())
+	{
+		fl_FootnoteLayout * pFL = pView->getClosestFootnote(pView->getPoint());
+		PT_DocPosition pos = pFL->getDocPosition() + pFL->getLength();
+		pView->setPoint(pos);
+		pView->ensureInsertionPointOnScreen();
+		return true;
+	}
+	if(pView->isInEndnote())
+	{
+		fl_EndnoteLayout * pEL = pView->getClosestEndnote(pView->getPoint());
+		PT_DocPosition pos = pEL->getDocPosition() + pEL->getLength();
+		pView->setPoint(pos);
+		pView->ensureInsertionPointOnScreen();
+		return true;
+	}
+
 	pView->moveInsPtTo(FV_DOCPOS_EOD);
 	return true;
 }
@@ -4375,6 +4429,19 @@ Defun1(selectCell)
 }
 
 
+Defun1(selectColumn)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	if(!pView->isInTable())
+	{
+		return false;
+	}
+	pView->cmdSelectColumn(pView->getPoint());
+	return true;
+}
+
+
 Defun1(delLeft)
 {
 	CHECK_FRAME;
@@ -4467,12 +4534,43 @@ Defun1(delEOD)
 	return true;
 }
 
+#if 0
+static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
+						XAP_Frame * pFrame, FV_View * pView,
+						bool bForce = false)
+{
+	// handle automatic language formatting
+	XAP_App * pApp = pFrame->getApp();
+	UT_return_val_if_fail(pApp, false);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+
+	bool b = false;
+
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &b);
+	if(b)
+	{
+		const UT_LangRecord * pLR = pApp->getKbdLanguage();
+
+		if (pLR)
+		{
+			const XML_Char * props_out[] = {"lang", NULL, NULL};
+			props_out[1] = pLR->m_szLangCode;
+			pView->setCharFormat(props_out);
+		}
+	}
+	
+	pView->cmdCharInsert(pText, iLen, bForce);
+	return true;
+}
+#endif
+
 Defun(insertData)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
-	return true;
+	return pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
 }
 
 Defun(insertClosingParenthesis)
@@ -4487,50 +4585,41 @@ Defun(insertClosingParenthesis)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_return_val_if_fail(pPrefsScheme, false);
+	bool bLang = false, bMarker = false;
 
-	bool b = false;
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &bLang);
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard), &b);
-	if(b)
-	{
-		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &b);
-	}
+	const UT_LangRecord * pLR = NULL;
 	
-	if(b)
+	if(bLang)
+	{
+		pLR = pApp->getKbdLanguage();
+		
+		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+	}
+
+	if(bMarker && pLR)
 	{
 		UT_return_val_if_fail(pCallData->m_dataLength == 1, false);
 		UT_UCS4Char data[2];
 		data[0] = (UT_UCS4Char) *(pCallData->m_pData);
-
 		
-		const XML_Char ** props_in = NULL;
-		if (pView->getCharFormat(&props_in))
+		if(pLR->m_eDir == UTLANG_RTL)
 		{
-			const XML_Char * s = UT_getAttribute("lang", props_in);
-			UT_Language l;
-			UT_LANGUAGE_DIR order = l.getDirFromCode(s);
-			FREEP(props_in);
-
-			if(order == UTLANG_RTL)
-			{
-				data[1] = UCS_RLM;
-			}
-			else if(order == UTLANG_LTR)
-			{
-				data[1] = UCS_LRM;
-			}
-			else
-			{
-				goto normal_insert;
-			}
-
-			pView->cmdCharInsert(&data[0], 2);
-			return true;
+			data[1] = UCS_RLM;
 		}
-		
-		return false;
+		else if(pLR->m_eDir == UTLANG_LTR)
+		{
+			data[1] = UCS_LRM;
+		}
+		else
+		{
+			goto normal_insert;
+		}
+
+		pView->cmdCharInsert(&data[0],2);
+		return true;
 	}
 
  normal_insert:	
@@ -4550,50 +4639,41 @@ Defun(insertOpeningParenthesis)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_return_val_if_fail(pPrefsScheme, false);
+	bool bLang = false, bMarker = false;
 
-	bool b = false;
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &bLang);
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard), &b);
-	if(b)
+	const UT_LangRecord * pLR = NULL;
+	
+	if(bLang)
 	{
-		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &b);
+		pLR = pApp->getKbdLanguage();
+		
+		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
 	}
 	
-	if(b)
+	if(bMarker && pLR)
 	{
 		UT_return_val_if_fail(pCallData->m_dataLength == 1, false);
 		UT_UCS4Char data[2];
 		data[1] = (UT_UCS4Char) *(pCallData->m_pData);
 
-		
-		const XML_Char ** props_in = NULL;
-		if (pView->getCharFormat(&props_in))
+		if(pLR->m_eDir == UTLANG_RTL)
 		{
-			const XML_Char * s = UT_getAttribute("lang", props_in);
-			UT_Language l;
-			UT_LANGUAGE_DIR order = l.getDirFromCode(s);
-			FREEP(props_in);
-
-			if(order == UTLANG_RTL)
-			{
-				data[0] = UCS_RLM;
-			}
-			else if(order == UTLANG_LTR)
-			{
-				data[0] = UCS_LRM;
-			}
-			else
-			{
-				goto normal_insert;
-			}
-
-			pView->cmdCharInsert(&data[0], 2);
-			return true;
+			data[0] = UCS_RLM;
 		}
-		
-		return false;
+		else if(pLR->m_eDir == UTLANG_LTR)
+		{
+			data[0] = UCS_LRM;
+		}
+		else
+		{
+			goto normal_insert;
+		}
+
+		pView->cmdCharInsert(&data[0], 2);
+		return true;
 	}
 
  normal_insert:	
@@ -4605,6 +4685,7 @@ Defun1(insertLRM)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	
 	UT_UCS4Char cM = UCS_LRM;
 	pView->cmdCharInsert(&cM, 1);
 	return true;
@@ -4614,6 +4695,7 @@ Defun1(insertRLM)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
 	UT_UCS4Char cM = UCS_RLM;
 	pView->cmdCharInsert(&cM, 1);
 	return true;
@@ -4817,7 +4899,8 @@ Defun1(insertColumnBreak)
 		return true;
 	if(pView->isInTable())
 	{
-		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
@@ -4965,6 +5048,44 @@ Defun1(mergeCells)
 	return true;
 }
 
+
+static bool s_doSplitCellsDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_SplitCells * pDialog
+		= static_cast<AP_Dialog_SplitCells *>(pDialogFactory->requestDialog(AP_DIALOG_ID_SPLIT_CELLS));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
+	return true;
+}
+
+
+Defun1(splitCells)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	s_doSplitCellsDlg(pView);
+	return true;
+}
+
 /***********************************************************************************/
 
 static bool s_doFormatTableDlg(FV_View * pView)
@@ -5048,6 +5169,7 @@ Defun1(insertPageBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
 	UT_UCSChar c = UCS_FF;
 //
 // No page breaks in header/Footers
@@ -5056,7 +5178,8 @@ Defun1(insertPageBreak)
 		return true;
 	if(pView->isInTable())
 	{
-		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
@@ -6898,6 +7021,16 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
+		/*
+		We need to re-layout the document for now, so the UnixPSGraphics class will
+		get it's font list filled. When we find a better way to fill the UnixPSGraphics
+		font list, we can remove the 4 lines below. - MARCM
+		*/
+		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+        FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+		pPrintView->getLayout()->fillLayouts();
+		pPrintView->getLayout()->formatAll();
+		
 		UT_uint32 nFromPage, nToPage;
 		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
@@ -6915,9 +7048,12 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
-		s_actuallyPrint(doc, pGraphics, pView, pDocName, nCopies, bCollate,
+		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 				iWidth,  iHeight, nToPage, nFromPage);
 
+		delete pDocLayout;
+		delete pPrintView;
+		
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 
 //
@@ -6966,7 +7102,17 @@ static bool s_doPrintPreview(FV_View * pView)
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
-
+	/*
+	We need to re-layout the document for now, so the UnixPSGraphics class will
+	get it's font list filled. When we find a better way to fill the UnixPSGraphics
+	font list, we can remove the 4 lines below. - MARCM
+	*/
+	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+	FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+	pPrintView->getLayout()->fillLayouts();
+	pPrintView->getLayout()->formatAll();
+	
+	
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
 	bool bCollate  = false;
 
@@ -6977,8 +7123,11 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 
-	s_actuallyPrint(doc, pGraphics, pView, pDocName, nCopies, bCollate,
+	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 					iWidth,  iHeight, nToPage, nFromPage);
+
+	delete pDocLayout;
+	delete pPrintView;
 
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
@@ -7806,6 +7955,70 @@ Defun1(dlgSpellPrefs)
 /*****************************************************************/
 /*****************************************************************/
 
+/* the array below is a HACK. FIXME */
+static XML_Char* s_TBPrefsKeys [] = {
+	AP_PREF_KEY_StandardBarVisible,
+	AP_PREF_KEY_FormatBarVisible,
+	AP_PREF_KEY_TableBarVisible,
+	AP_PREF_KEY_ExtraBarVisible
+};
+
+static bool
+_viewTBx(AV_View* pAV_View, int num) 
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
+	// toggle the ruler bit
+	pFrameData->m_bShowBar[num] = ! pFrameData->m_bShowBar[num];
+
+	// actually do the dirty work
+	pFrame->toggleBar(num, pFrameData->m_bShowBar[num] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(static_cast<XML_Char*>(s_TBPrefsKeys[num]), pFrameData->m_bShowBar[num]);
+
+	return true;
+}
+
+
+Defun1(viewTB1)
+{
+	return _viewTBx(pAV_View, 0);
+}
+
+Defun1(viewTB2)
+{
+	return _viewTBx(pAV_View, 1);
+}
+
+Defun1(viewTB3)
+{
+	return _viewTBx(pAV_View, 2);
+}
+
+Defun1(viewTB4)
+{
+	return _viewTBx(pAV_View, 3);
+}
+
+
+
 Defun1(viewStd)
 {
 	CHECK_FRAME;
@@ -7870,6 +8083,7 @@ Defun1(viewFormat)
 
 	return true;
 }
+
 
 Defun1(viewTable)
 {
@@ -10175,70 +10389,70 @@ Defun(insAutotext_attn_1)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_ATTN_1);
+						AP_STRING_ID_AUTOTEXT_ATTN_1);
 }
 
 Defun(insAutotext_attn_2)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_ATTN_2);
+						AP_STRING_ID_AUTOTEXT_ATTN_2);
 }
 
 Defun(insAutotext_closing_1)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_1);
+						AP_STRING_ID_AUTOTEXT_CLOSING_1);
 }
 
 Defun(insAutotext_closing_2)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_2);
+						AP_STRING_ID_AUTOTEXT_CLOSING_2);
 }
 
 Defun(insAutotext_closing_3)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_3);
+						AP_STRING_ID_AUTOTEXT_CLOSING_3);
 }
 
 Defun(insAutotext_closing_4)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_4);
+						AP_STRING_ID_AUTOTEXT_CLOSING_4);
 }
 
 Defun(insAutotext_closing_5)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_5);
+						AP_STRING_ID_AUTOTEXT_CLOSING_5);
 }
 
 Defun(insAutotext_closing_6)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_6);
+	return _insAutotext( static_cast<FV_View *>(pAV_View),
+						AP_STRING_ID_AUTOTEXT_CLOSING_6);
 }
 
 Defun(insAutotext_closing_7)
 {
 	CHECK_FRAME;
 	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_7);
+						AP_STRING_ID_AUTOTEXT_CLOSING_7);
 }
 
 Defun(insAutotext_closing_8)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View),
-			  AP_STRING_ID_AUTOTEXT_CLOSING_8);
+	return _insAutotext( static_cast<FV_View *>(pAV_View),
+						AP_STRING_ID_AUTOTEXT_CLOSING_8);
 }
 
 Defun(insAutotext_closing_9)
@@ -11126,6 +11340,12 @@ Defun1(toggleMarkRevisions)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	if(!pView->isMarkRevisions())
+	{
+		// set view level to all
+		pView->setRevisionLevel(0);
+	}
+	
 	pView->toggleMarkRevisions();
 
 	if(pView->isMarkRevisions())
@@ -11135,6 +11355,97 @@ Defun1(toggleMarkRevisions)
 		s_doMarkRevisions(pFrame, pDoc, pView);
 	}
 
+	return true;
+}
+
+Defun1(toggleShowRevisions)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	pView->toggleShowRevisions();
+	return true;
+}
+
+Defun1(toggleShowRevisionsBefore)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	bool bShow = pView->isShowRevisions();
+	UT_uint32 iLevel = pView->getRevisionLevel();
+	
+	if(bShow)
+	{
+		//we are asked to hide revisions, first set view level to 0
+		pView->setRevisionLevel(0);
+		pView->toggleShowRevisions();
+	}
+	else if(iLevel != 0)
+	{
+		// we are asked to change view level
+		pView->cmdSetRevisionLevel(0);
+	}
+	
+	return true;
+}
+
+Defun1(toggleShowRevisionsAfter)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	bool bShow = pView->isShowRevisions();
+	bool bMark = pView->isMarkRevisions();
+	UT_uint32 iLevel = pView->getRevisionLevel();
+
+	if(bMark)
+	{
+		if(iLevel != 0xffffffff)
+		{
+			pView->cmdSetRevisionLevel(0xffffffff);
+		}
+		else
+		{
+			pView->cmdSetRevisionLevel(0);
+		}
+	}
+	else if(bShow)
+	{
+		//we are asked to hide revisions, first set view level to max
+		pView->setRevisionLevel(0xffffffff);
+		pView->toggleShowRevisions();
+	}
+	else if(iLevel != 0xffffffff)
+	{
+		// we are asked to change view level
+		pView->cmdSetRevisionLevel(0xffffffff);
+	}
+	
+	return true;
+}
+
+Defun1(toggleShowRevisionsAfterPrevious)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	UT_uint32 iLevel = pView->getRevisionLevel();
+	UT_uint32 iDocLevel = pView->getDocument()->getHighestRevisionId();
+
+	if(iDocLevel == 0)
+		return false;
+	
+	if(iLevel != iDocLevel - 1)
+	{
+		// we are in Mark mode and are asked to treat all revisions
+		// but the present as accepted
+		pView->cmdSetRevisionLevel(iDocLevel-1);
+	}
+	else
+	{
+		pView->cmdSetRevisionLevel(0);
+	}
 	return true;
 }
 
@@ -11154,9 +11465,25 @@ Defun(revisionReject)
 	return true;
 }
 
+Defun(revisionFindNext)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdFindRevision(true, pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
+Defun(revisionFindPrev)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdFindRevision(false, pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
 static bool s_doListRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView)
 {
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame, false);
 
 	pFrame->raise();
 
@@ -11196,6 +11523,86 @@ Defun1(revisionSetViewLevel)
 
 	s_doListRevisions(pFrame, pDoc, pView);
 
+	return true;
+}
+
+/*!
+    This function can be used to raise one of the ListDocuments dialogues
+    \param pFrame: the active frame
+    \param bExcludeCurrent: true if current document is to be excluded
+                            from the list
+    \param iId: the dialogue iId determining which of the
+                ListDocuments variants to raise
+
+    \return: returns pointer to the document user selected or NULL
+*/
+static PD_Document * s_doListDocuments(XAP_Frame * pFrame, bool bExcludeCurrent, UT_uint32 iId)
+{
+	UT_return_val_if_fail(pFrame, NULL);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_ListDocuments * pDialog
+		= static_cast<XAP_Dialog_ListDocuments *>(pDialogFactory->requestDialog(iId));
+	
+	UT_return_val_if_fail(pDialog, NULL);
+
+	// the dialgue excludes current document by default, if we are to
+	// include it, we need to tell it ...
+	if(!bExcludeCurrent)
+		pDialog->setIncludeActiveDoc(true);
+	
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_ListDocuments::a_OK);
+
+	PD_Document *pD = NULL;
+	
+	if (bOK)
+	{
+		pD = (PD_Document *)pDialog->getDocument();
+#if DEBUG
+		if(!pD)
+			UT_DEBUGMSG(("DIALOG LIST DOCUMENTS: no document\n"));
+		else
+			UT_DEBUGMSG(("DIALOG LIST DOCUMENTS: %s\n", pD->getFilename()));
+#endif
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return pD;
+}
+
+Defun1(revisionCompareDocuments)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
+
+	PD_Document * pDoc2 = s_doListDocuments(pFrame, true, XAP_DIALOG_ID_COMPAREDOCUMENTS);
+
+	if(pDoc2)
+	{
+		UT_DEBUGMSG(("COMPARE DOCUMENTS:\n   related:     %d\n"
+					                     "   stylesheets: %d\n"
+										 "   history:     %d\n"
+					                     "   contents:    %d\n"
+					                     "   format:      %d\n",
+					 pDoc->areDocumentsRelated(*pDoc2),
+					 pDoc->areDocumentStylesheetsEqual(*pDoc2),
+					 pDoc->areDocumentHistoriesEqual(*pDoc2),
+					 pDoc->areDocumentContentsEqual(*pDoc2),
+					 pDoc->areDocumentFormatsEqual(*pDoc2)));
+
+		pDoc->diffIntoRevisions(*pDoc2);
+	}
 	return true;
 }
 
@@ -11301,13 +11708,15 @@ Defun(resizeImage)
 		
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
+
+		GR_Painter painter(pG);
 		if (bIsResizing)
 		{
 			UT_DEBUGMSG(("MARCM: Clearing old line\n"));
-			xorRect(pG, pView->getCurImageSel());
+			painter.xorRect(pView->getCurImageSel());
 		}
 		pView->setCurImageSel(r);
-		xorRect(pG, r);
+		painter.xorRect(r);
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 				
 		UT_DEBUGMSG(("MARCM: image display size: (w:%d,h:%d) - total change (w:%d,h:%d)\n",r.width,r.height,xDiff, yDiff));
@@ -11360,7 +11769,9 @@ Defun(endResizeImage)
 		// clear the resizing line
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
-		xorRect(pG, pView->getCurImageSel());
+
+		GR_Painter painter(pG);
+		painter.xorRect(pView->getCurImageSel());
 		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
@@ -11727,6 +12138,28 @@ Defun(dlgFormatFrame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Format Frame \n"));
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_FormatFrame * pDialog
+		= static_cast<AP_Dialog_FormatFrame *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FRAME));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
 	return true;
 }
 

@@ -327,9 +327,6 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *labelUnits;
 	PtWidget_t *listViewRulerUnit;
 	PtWidget_t *checkbuttonViewCursorBlink;
-	PtWidget_t *checkbuttonViewStandard;
-	PtWidget_t *checkbuttonViewFormat;
-	PtWidget_t *checkbuttonViewExtra;
 	PtWidget_t *checkbuttonViewStatusBar;
 	PtWidget_t *checkbuttonViewAll;
 	PtWidget_t *checkbuttonViewHidden;
@@ -553,18 +550,6 @@ item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).utf8_str();
 	*/
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStandardTB ).utf8_str()), 0);
-	checkbuttonViewStandard = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
-
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewFormatTB ).utf8_str()), 0);
-	checkbuttonViewFormat = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
-
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewExtraTB ).utf8_str()), 0);
-	checkbuttonViewExtra = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
-
-	n = 0;
 PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStatusBar ).utf8_str()), 0);
 	checkbuttonViewStatusBar = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
@@ -760,9 +745,6 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_
   m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
   m_listViewRulerUnits			= listViewRulerUnit;
   m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
-  m_checkbuttonViewShowStandardBar	= checkbuttonViewStandard;
-  m_checkbuttonViewShowFormatBar	= checkbuttonViewFormat;
-  m_checkbuttonViewShowExtraBar	= checkbuttonViewExtra;
   m_checkbuttonViewShowStatusBar	= checkbuttonViewStatusBar;
   m_checkbuttonViewAll			= checkbuttonViewAll;
   m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
@@ -872,18 +854,6 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		return m_checkbuttonViewCursorBlink;
 		break;
 
-	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-		return m_checkbuttonViewShowStandardBar;
-		break;
-
-	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-		return m_checkbuttonViewShowFormatBar;
-		break;
-
-	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
-		return m_checkbuttonViewShowExtraBar;
-		break;
-
 	case id_CHECK_VIEW_SHOW_STATUS_BAR:
 		return m_checkbuttonViewShowStatusBar;
 		break;
@@ -971,9 +941,6 @@ DEFINE_GET_SET_BOOL(SpellInternet);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);
-DEFINE_GET_SET_BOOL(ViewShowStandardBar);
-DEFINE_GET_SET_BOOL(ViewShowFormatBar);
-DEFINE_GET_SET_BOOL(ViewShowExtraBar);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
@@ -1063,4 +1030,12 @@ void	AP_QNXDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
 	// FIXME: replace this with *real* gui code
 	defaultPageSize = pre;
 }
+void AP_QNXDialog_Options::_setViewShowToolbar(UT_uint32 row, bool b)
+{
 
+
+}
+bool AP_QNXDialog_Options::_gatherViewShowToolbar(UT_uint32 row)
+{
+
+}

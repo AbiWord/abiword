@@ -91,13 +91,8 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 	return ret;
 }
 
-const char * AP_Win32Prefs::getPrefsPathname(void) const
+const char * AP_Win32Prefs::_getPrefsPathname(void) const
 {
-	/* return a pointer to a static buffer */
-
-	const char * szDirectory = m_pApp->getUserPrivateDirectory();
-	char * szFile = "AbiWord.Profile";
-	
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
@@ -105,6 +100,10 @@ const char * AP_Win32Prefs::getPrefsPathname(void) const
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 
+	/* return a pointer to a static buffer */
+	const char * szDirectory = m_pApp->getUserPrivateDirectory();
+	char * szFile = "AbiWord.Profile";
+	
 	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
 		return NULL;
 

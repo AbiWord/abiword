@@ -318,7 +318,7 @@ void  AP_QNXDialog_Lists::setXPFromLocal(void)
 	} else {
 		void *junk;
 		junk = m_styleVector.getNthItem(*value - 1);
-		setNewListType((enum List_Type)((int)junk));
+		setNewListType((enum FL_ListType)((int)junk));
 	}
 
 	_gatherData();
@@ -651,7 +651,7 @@ void AP_QNXDialog_Lists::_loadXPDataIntoLocal(void)
 
 	//
 	// Now set the list type and style
-	List_Type save = getNewListType();
+	FL_ListType save = getNewListType();
 	if(save == NOT_A_LIST) {
 		styleChanged(0);
 		setNewListType(save);
@@ -670,7 +670,7 @@ void AP_QNXDialog_Lists::_loadXPDataIntoLocal(void)
 	for (i=0; i<m_styleVector.getItemCount(); i++) {
 		void *junk;
 		junk = m_styleVector.getNthItem(i);
-		if ((enum List_Type)((int)junk) == getNewListType()) {
+		if ((enum FL_ListType)((int)junk) == getNewListType()) {
 			PtSetResource(m_wListStyle_menu, Pt_ARG_CBOX_SEL_ITEM, i+1, 0);
 			break;
 		}

@@ -34,6 +34,7 @@
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
 #include "xav_View.h"
+#include "xap_Toolbar_Layouts.h"
 #include "fv_View.h"
 #include "ap_FrameData.h"
 #include "ap_Prefs.h"
@@ -41,6 +42,7 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 #include "ie_mailmerge.h"
+#include "fp_TableContainer.h"
 
 #ifdef _WIN32
 #include "ap_Win32App.h" 
@@ -150,6 +152,35 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 
 	return c;
 }
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
+{
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id >= AP_MENU_ID_VIEW_TB_1);
+	UT_ASSERT(id <= AP_MENU_ID_VIEW_TB_4);
+
+	UT_uint32 ndx = (id - AP_MENU_ID_VIEW_TB_1);
+	const UT_Vector & vec = pApp->getToolbarFactory()->getToolbarNames();
+
+
+	if (ndx <= vec.getItemCount())
+	{
+		const char * szFormat = pLabel->getMenuLabel();
+		static char buf[128];	
+		
+		const char * szRecent = reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(ndx))->utf8_str();
+
+		snprintf(buf,sizeof(buf),szFormat,szRecent);
+		return buf;
+	}
+
+	return NULL;
+}
+
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 {
@@ -555,7 +586,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 	switch(id)
 	{
 	case AP_MENU_ID_FILE_SAVE:
-	  if (!pView->getDocument()->isDirty() || !pView->canDo(true) || pView->getDocument()->getFileName() == NULL)
+	  if (!pView->getDocument()->isDirty() || !pView->canDo(true) || pView->getDocument()->getFilename() == NULL)
 	    s = EV_MIS_Gray;
 	  break;
 	case AP_MENU_ID_FILE_REVERT:
@@ -784,6 +815,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 		val  = "subscript";
 		break;
 
+	case AP_MENU_ID_FMT_DIRECTION_DO_RTL:
+		prop = "dir-override";
+		val  = "rtl";
+		break;
+		
+	case AP_MENU_ID_FMT_DIRECTION_DO_LTR:
+		prop = "dir-override";
+		val  = "ltr";
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -853,6 +894,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 		val  = "justify";
 		break;
 
+	case AP_MENU_ID_FMT_DIRECTION_DD_RTL:
+		prop = "dom-dir";
+		val  = "rtl";
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -913,25 +959,25 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 			s = EV_MIS_Toggled;
 		break;
-	case AP_MENU_ID_VIEW_TB_STD:
+	case AP_MENU_ID_VIEW_TB_1:
 		if ( pFrameData->m_bShowBar[0] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_FORMAT:
+	case AP_MENU_ID_VIEW_TB_2:	
 		if ( pFrameData->m_bShowBar[1] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_TABLE:
+	case AP_MENU_ID_VIEW_TB_3:	
 		if ( pFrameData->m_bShowBar[2] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_EXTRA:
+	case AP_MENU_ID_VIEW_TB_4:	
 		if ( pFrameData->m_bShowBar[3] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
@@ -1015,6 +1061,99 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
         return EV_MIS_ZERO;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	if(pView->isShowRevisions())
+	{
+		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
+	}
+
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	if(pView->isMarkRevisions())
+	{
+		if(pView->getRevisionLevel() == 0xffffffff)
+			return EV_MIS_Toggled;
+		else
+			return EV_MIS_ZERO;
+	}
+	else if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0xffffffff)
+	{
+		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
+	}
+
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	if(pView->isMarkRevisions())
+	{
+		if(pView->getDocument()->getHighestRevisionId() == pView->getRevisionLevel() + 1)
+			return EV_MIS_Toggled;
+		else
+			return EV_MIS_ZERO;
+	}
+	else
+		return EV_MIS_Gray;
+	
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	if(pView->isMarkRevisions())
+	{
+		// cannot hide revisions when in revisions mode
+		return EV_MIS_Gray;
+	}
+
+	if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0)
+	{
+		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
+	}
+
+	return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 {
 	ABIWORD_VIEW;
@@ -1047,6 +1186,18 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 	if(pView->isInTable())
 		return EV_MIS_ZERO;
 
+    return EV_MIS_Gray;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->isInTable())
+	{
+		return EV_MIS_ZERO;
+	}
     return EV_MIS_Gray;
 }
 

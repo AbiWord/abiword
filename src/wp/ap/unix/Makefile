@@ -36,6 +36,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Break.cpp		\
 			ap_$(ABI_FE)Dialog_InsertTable.cpp		\
 			ap_$(ABI_FE)Dialog_FormatTable.cpp		\
+			ap_$(ABI_FE)Dialog_FormatFrame.cpp		\
 			ap_$(ABI_FE)Dialog_Field.cpp		\
 			ap_$(ABI_FE)Dialog_Goto.cpp		\
 			ap_$(ABI_FE)Dialog_Insert_DateTime.cpp	\
@@ -60,6 +61,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_MarkRevisions.cpp \
 			ap_$(ABI_FE)Dialog_ListRevisions.cpp \
 			ap_$(ABI_FE)Dialog_MergeCells.cpp \
+			ap_$(ABI_FE)Dialog_SplitCells.cpp \
 			ap_$(ABI_FE)Dialog_MetaData.cpp		\
 			ap_$(ABI_FE)Dialog_MailMerge.cpp	\
 			ap_$(ABI_FE)Frame.cpp			\

@@ -34,7 +34,7 @@ AP_CocoaPrefs::AP_CocoaPrefs(XAP_App * pApp)
 {
 }
 
-const char * AP_CocoaPrefs::getPrefsPathname(void) const
+const char * AP_CocoaPrefs::_getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
 	static UT_String buf;

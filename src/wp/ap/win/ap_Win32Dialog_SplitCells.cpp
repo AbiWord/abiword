@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -104,9 +104,6 @@ BOOL CALLBACK AP_Win32Dialog_SplitCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPa
 		return 0;
 	}
 }
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 
 HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int x, int y, UT_RGBColor color)
 {
@@ -134,10 +131,10 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 				
 	// localise controls 		
 
-	_DSX(BTN_CANCEL,	DLG_Close);				
+	localizeControlText(AP_RID_DIALOG_MERGECELLS_BTN_CANCEL,	XAP_STRING_ID_DLG_Close);
 				
 	// Localise caption
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_SplitCellsTitle));	
+	localizeWindowTitle(hWnd, AP_STRING_ID_DLG_SplitCellsTitle);	
 	
 	// The four items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_MERGECELLS_BMP_LEFT), &rect);			

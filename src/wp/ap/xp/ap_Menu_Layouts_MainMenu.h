@@ -87,10 +87,10 @@ BeginLayout(Main,0)
 		Separator()
 
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
-			MenuItem(AP_MENU_ID_VIEW_TB_STD)
-			MenuItem(AP_MENU_ID_VIEW_TB_FORMAT)
-			MenuItem(AP_MENU_ID_VIEW_TB_TABLE)
-			MenuItem(AP_MENU_ID_VIEW_TB_EXTRA)
+			MenuItem(AP_MENU_ID_VIEW_TB_1)
+			MenuItem(AP_MENU_ID_VIEW_TB_2)
+			MenuItem(AP_MENU_ID_VIEW_TB_3)
+			MenuItem(AP_MENU_ID_VIEW_TB_4)			
 // Currently we only can change toolbars in UNIX builds
 #ifdef XP_UNIX_TARGET_GTK
 			Separator()
@@ -210,6 +210,10 @@ BeginLayout(Main,0)
 #else
 		MenuItem(AP_MENU_ID_INSERT_PICTURE)
 #endif
+		BeginSubMenu(AP_MENU_ID_INSERT_DIRECTIONMARKER)
+ 	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM)
+	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM)
+	    EndSubMenu()
 
 	EndSubMenu()
 
@@ -218,6 +222,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
 		MenuItem(AP_MENU_ID_FMT_DOCUMENT)
+		MenuItem(AP_MENU_ID_FMT_FRAME)
 #if 0 // someone code and turn this back on
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 #endif
@@ -262,6 +267,12 @@ BeginLayout(Main,0)
 		    MenuItem(AP_MENU_ID_FMT_BACKGROUND_PAGE_IMAGE)
 		    MenuItem(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR)
 	    EndSubMenu()
+
+	    BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
+	        MenuItem(AP_MENU_ID_FMT_DIRECTION_DD_RTL)
+        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
+        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
+    	EndSubMenu()
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)
@@ -277,15 +288,29 @@ BeginLayout(Main,0)
 
 		BeginSubMenu(AP_MENU_ID_TOOLS_REVISIONS)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_MARK)
+		    Separator()
+	        MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW)
+			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTER)
+			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTERPREV)
+			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW_BEFORE)
+			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL)
+	        Separator()
+			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_FIND_NEXT)
+			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_FIND_PREV)
+	        Separator()
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION)
-			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL)
+	        Separator()
+			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS)
 		EndSubMenu()
 
 		MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
 		MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
 		MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
+#ifndef XP_MAC_TARGET_MACOSX
+		// On MacOS X don't put a separator as the "Option" menu item is moved away at run time
 		Separator()
+#endif
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 	EndSubMenu()
 
@@ -315,19 +340,16 @@ BeginLayout(Main,0)
 
    		BeginSubMenu(AP_MENU_ID_TABLE_SELECT)
 			MenuItem(AP_MENU_ID_TABLE_SELECT_TABLE)
-#if 0
-// Not for 2.0
 			MenuItem(AP_MENU_ID_TABLE_SELECT_COLUMN)
-#endif
 			MenuItem(AP_MENU_ID_TABLE_SELECT_ROW)
 			MenuItem(AP_MENU_ID_TABLE_SELECT_CELL)
 		EndSubMenu()
 
 		Separator()
 		MenuItem(AP_MENU_ID_TABLE_MERGE_CELLS)
+		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 #if 0
 // Not for 2.0
-		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
@@ -369,7 +391,10 @@ BeginLayout(Main,0)
 		Separator()
 #ifndef HAVE_GNOME
 		MenuItem(AP_MENU_ID_HELP_CREDITS)
+#ifndef XP_MAC_TARGET_MACOSX
+		// On MacOS X don't put a separator as the "About" menu item is moved away at run time
 		Separator()
+#endif
 #endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 	EndSubMenu()

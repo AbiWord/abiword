@@ -71,7 +71,9 @@
 #   include "ap_UnixDialog_MarkRevisions.h"
 #   include "ap_UnixDialog_ListRevisions.h"
 #   include "ap_UnixDialog_MergeCells.h"
+#   include "ap_UnixDialog_SplitCells.h"
 #   include "ap_UnixDialog_FormatTable.h"
+#   include "ap_UnixDialog_FormatFrame.h"
 #   include "ap_UnixDialog_FormatFootnotes.h"
 #   include "ap_UnixDialog_MailMerge.h"
 #if 0
@@ -152,7 +154,9 @@
      DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
      DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_UnixDialog_InsertTable)
      DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_UnixDialog_MergeCells)
+     DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_UnixDialog_SplitCells)
 	 DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_UnixDialog_FormatTable)
+	 DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,		AP_UnixDialog_FormatFrame)
 	 DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_UnixDialog_FormatFootnotes)
 	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
 #if 0

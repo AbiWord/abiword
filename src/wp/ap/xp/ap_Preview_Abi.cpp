@@ -72,10 +72,10 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 //
 	double curWidth = 0.0;
 	double curHeight = 0.0;
-	if(previewMode != PREVIEW_ADJUSTED_PAGE  || (pDoc != NULL))
+	if((previewMode != PREVIEW_ADJUSTED_PAGE)  && (pDoc != NULL))
 	{
-		curWidth = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Width(DIM_IN);
-		curHeight = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Height(DIM_IN);
+		curWidth = pDoc->m_docPageSize.Width(DIM_IN);
+		curHeight = pDoc->m_docPageSize.Height(DIM_IN);
 	}
 	else
 	{
@@ -84,7 +84,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 		curHeight = 11.0;
 	}
 
-	m_pApp = pFrame->getApp();
+	m_pApp = XAP_App::getApp();
 //
 // Make a new document
 //
@@ -109,7 +109,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 //
 	case PREVIEW_ZOOMED:
 		m_pDocument->m_docPageSize.Set(curWidth,curHeight,DIM_IN);
-		previewWidth = ((double) iWidth)/((double) gc->getResolution());
+		previewWidth = ((double) gc->tlu(iWidth))/((double) gc->getResolution());
 		tmp = 100.0 * previewWidth/curWidth;
 		iZoom = (UT_uint32) tmp;
 		gc->setZoomPercentage(iZoom);
@@ -118,8 +118,8 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 // In this case we set the page size to fit inside the gc window
 //
 	case PREVIEW_ADJUSTED_PAGE:
-		width = (double) iWidth/((double) gc->getResolution());
-		height = (double) iHeight/((double) gc->getResolution()) ;
+		width = (double) gc->tlu(iWidth)/((double) gc->getResolution());
+		height = (double) gc->tlu(iHeight)/((double) gc->getResolution()) ;
 		m_pDocument->m_docPageSize.Set(width,height,DIM_IN);
 		break;
 //

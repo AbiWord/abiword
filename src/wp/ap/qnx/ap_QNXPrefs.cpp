@@ -32,7 +32,7 @@ AP_QNXPrefs::AP_QNXPrefs(XAP_App * pApp)
 {
 }
 
-const char * AP_QNXPrefs::getPrefsPathname(void) const
+const char * AP_QNXPrefs::_getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
 

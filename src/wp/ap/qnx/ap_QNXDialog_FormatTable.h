@@ -44,6 +44,7 @@ public:
 	void				lineClicked();
 	void				event_WindowDelete();
 	void				event_previewExposed();
+	virtual void        setBorderThicknessInGUI(UT_String & sThick) {};
 		
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	

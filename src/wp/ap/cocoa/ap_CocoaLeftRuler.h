@@ -32,7 +32,7 @@
 #include "ap_LeftRuler.h"
 #include "gr_CocoaGraphics.h"
 class XAP_Frame;
-
+@class AP_CocoaLeftRulerDelegate;
 
 /*****************************************************************/
 
@@ -57,21 +57,7 @@ private:
 	
 	XAP_CocoaNSView *		m_wLeftRuler;
 	NSWindow *	m_rootWindow;
-
-#if 0
-	class _fe
-	{
-	public:
-		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
-		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
-		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
-		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint abi_expose_repaint( gpointer /* AP_CocoaLeftRuler * */ p);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-	};
-#endif
+	AP_CocoaLeftRulerDelegate* m_delegate;
 };
 
 #endif /* AP_COCOALEFTRULER_H */

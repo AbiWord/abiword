@@ -7,9 +7,8 @@ Thank you for your interest in this release of AbiWord!
 
 ---- About AbiWord
 
-AbiWord is an "Open Source" word processor.  (If you would like more
-information about the concept of Open Source, you might start looking
-at www.opensource.org.)
+AbiWord is an "Open Source" word processor.  (To learn more about the
+concept of Open Source, you should look at http://opensource.org.)
 
 Because AbiWord is Open Source, it is freely distributable and
 available for use by anyone, without restrictions.  With AbiWord,
@@ -40,7 +39,7 @@ Users are strongly encouraged to join the mailing list in order to
 ask and answer questions freely.  Please keep discussion limited to
 AbiWord related subjects.
 
-Also, IRC provides a more realtime medium of communication, and can
+Also, IRC provides a more real time medium of communication, and can
 elicit more immediate response, depending on who's online and
 responsive.  See <http://www.abisource.com/support/help/irc.phtml>
 for details.
@@ -52,22 +51,23 @@ AbiWord, there are lots of ways you can help, even if you are not a
 computer programmer.
 
 If you are in fact a programmer, and would like to work on the
-project, see the developer information on our website, join the
+project, see the developer information on our web site, join the
 abiword-dev mailing list, and ask what needs to be done.  There are
 always features or ports which need attention.
 Be aware that because the site does not receive too much attention,
 http://www.abisource.com/developers/ is obsolete in some areas and
-you will probably find the developers on list and irc more helpful.
+you will probably find the developers on list and IRC more helpful.
 
-If you are not a programmer, you can still join the abiword-dev
+If you are not a programmer, you can still join the Abiword Developer
 mailing list and contribute in other ways.  The easiest way to help is
 to simply use the program and report any bugs you find.  A tool called
-Bugzilla is available on our website for exactly this purpose.
+Bugzilla is available on our web site for exactly this purpose.
 Contributions can be easily made in the areas of documentation,
 site maintenance, quality assurance (bug-checking, a little harder),
 and product promotion.  Whatever you're good at, the friendly folks
-on abiword-dev are perfectly willing to find a use for it, and there's
-always plenty of work to be done.  We appreciate any help we can get.
+on the Abiword Developer mailing list are perfectly willing to find 
+something for you to help with and there is always plenty to be done.  
+We appreciate any help we can get.
 
 ---- Supported Platforms
 
@@ -75,7 +75,7 @@ AbiWord is a multi-platform application, meaning that it was designed
 to work well on multiple types of computers and operating systems.
 
 At the present time, AbiWord is supported on Windows (including
-Windows 95 through Windows XP), MacOS (see note below), Linux, a
+Windows 95 through Windows XP), Mac OS (see note below), Linux, a
 variety of other UNIX-like systems (including everything from Solaris
 to *BSD to RTEMS), and QNX (though beware that there is currently only
 one active QNX-port developer).  The BeOS port is no longer actively
@@ -86,9 +86,9 @@ you are more than welcome to.
 
 Other operating systems will likely be supported in the future.
 
-AbiWord's port to MacOS prior to OSX (Carbon) has been removed due to the
-extensive and unmet developer resource requirements.  However, the
-OSX (Cocoa) port is still under development and according to its
+The AbiWord port to Mac OS prior to OS X (Carbon) has been removed due 
+to the extensive and unmet developer resource requirements.  However, 
+the Mac OS X (Cocoa) port is still under development and according to its
 maintainer, has reached a quite usable state, though it is not quite
 on par with the Unix port yet.
 
@@ -113,7 +113,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 02111-1307, USA.
 
 AbiSource, AbiWord, and AbiSuite are trademarks of AbiSource, Inc., in
-the United States and other countries.  AbiSource's logos and
+the United States and other countries.  The AbiSource logos and
 AbiSource product and service names are also trademarks of AbiSource,
 Inc., which may be registered in other countries.
 

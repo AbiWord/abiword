@@ -154,12 +154,13 @@ static gboolean s_update (void)
 
 void AP_UnixDialog_Lists::closeClicked(void)
 {
+	setAnswer(AP_Dialog_Lists::a_QUIT);	
 	abiDestroyWidget(m_wMainWindow); // emit the correct signals
 }
 
 void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 {
-	List_Type  savedListType;
+	FL_ListType  savedListType;
 	setModal();
 	
 	GtkWidget * mainWindow = _constructWindow();
@@ -195,9 +196,10 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	setNewListType(savedListType);
 	
 	abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false );
-	
+	AP_Dialog_Lists::tAnswer res = getAnswer();
 	g_list_free( m_glFonts);
 	abiDestroyWidget ( mainWindow ) ;
+	setAnswer(res);
 	DELETEP (m_pPreviewWidget);
 }
 
@@ -406,7 +408,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 void  AP_UnixDialog_Lists::setListTypeFromWidget(void)
 {
 	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
-	setNewListType(static_cast<List_Type>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(wlisttype), "user_data"))));
+	setNewListType(static_cast<FL_ListType>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(wlisttype), "user_data"))));
 }
 
 /*!
@@ -454,6 +456,7 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	if(isModal())
 	{
 		setAnswer(AP_Dialog_Lists::a_OK);
+		
 	}
 }
 
@@ -1122,6 +1125,7 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 			      AP_UnixDialog_Lists * dlg)
 {
 	UT_ASSERT(dlg);
+	dlg->setAnswer(AP_Dialog_Lists::a_QUIT);
 	dlg->destroy();
 }
 
@@ -1237,7 +1241,7 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 
 	//
 	// Now set the list type and style
-	List_Type save = getNewListType();
+	FL_ListType save = getNewListType();
 	if(getNewListType() == NOT_A_LIST)
 	{
 		styleChanged(0);

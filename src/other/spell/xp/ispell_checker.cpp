@@ -498,7 +498,25 @@ ISpellChecker::setDictionaryEncoding( const char * hashname, const char * encodi
 	try_autodetect_charset(encoding);
 
 	if (UT_iconv_isValid(m_translate_in) && UT_iconv_isValid(m_translate_out))
+	{
+		/* We still have to setup prefstringchar*/		
+		prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : static_cast<int *>(NULL));
+
+		if (prefstringchar < 0)
+		{				
+			UT_String teststring;
+			for(int n1 = 1; n1 <= 15; n1++)
+			{
+				UT_String_sprintf(teststring, "latin%u", n1);
+				prefstringchar = findfiletype(teststring.c_str(), 1,
+											  deftflag < 0 ? &deftflag : static_cast<int *>(NULL));
+
+				if (prefstringchar >= 0) break;				
+			}	
+		}
+		
 		return; /* success */
+	}
 
 	/* Test for UTF-8 first */
 	prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : static_cast<int *>(NULL));
