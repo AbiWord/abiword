@@ -4004,7 +4004,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	if ((s_pvCachedSuggestions->getItemCount()) &&
 		( ndx <= s_pvCachedSuggestions->getItemCount()))
 	{
-		UT_UCS4_cloneString(&szSuggest, static_cast<UT_UCSChar *>(sg->getNthItem(ndx-1)));
+		UT_UCS4_cloneString(&szSuggest, static_cast<UT_UCSChar *>(s_pvCachedSuggestions->getNthItem(ndx-1)));
 	}
 
 	return szSuggest;
