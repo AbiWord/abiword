@@ -635,39 +635,27 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		break;
 		
 	case GR_CURSOR_IMAGE:
-		cursor_name = IDC_ARROW;		// TODO change this
+		cursor_name = IDC_SIZEALL;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_NW:
-		cursor_name = IDC_ARROW;		// TODO change this
+	case GR_CURSOR_IMAGESIZE_SE:
+		cursor_name = IDC_SIZENWSE;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_N:
-		cursor_name = IDC_ARROW;		// TODO change this
+	case GR_CURSOR_IMAGESIZE_S:
+		cursor_name = IDC_SIZENS;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_NE:
-		cursor_name = IDC_ARROW;		// TODO change this
+	case GR_CURSOR_IMAGESIZE_SW:
+		cursor_name = IDC_SIZENESW;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_E:
-		cursor_name = IDC_ARROW;		// TODO change this
-		break;
-		
-	case GR_CURSOR_IMAGESIZE_SE:
-		cursor_name = IDC_ARROW;		// TODO change this
-		break;
-		
-	case GR_CURSOR_IMAGESIZE_S:
-		cursor_name = IDC_ARROW;		// TODO change this
-		break;
-		
-	case GR_CURSOR_IMAGESIZE_SW:
-		cursor_name = IDC_ARROW;		// TODO change this
-		break;
-		
 	case GR_CURSOR_IMAGESIZE_W:
-		cursor_name = IDC_ARROW;		// TODO change this
+		cursor_name = IDC_SIZEWE;
 		break;
 	}
 
