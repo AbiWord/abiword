@@ -400,8 +400,9 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		move = 1;
 		break;
 	case GDK_Return:
-		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
-					     "key_press_event");
+		g_signal_stop_emission (G_OBJECT(m_windowMain), 
+								g_signal_lookup ("key_press_event", 
+												 G_OBJECT_TYPE (m_windowMain)), 0);
 		event_Insert();
 		return TRUE ;
 		break;
@@ -416,8 +417,9 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		UT_DEBUGMSG(("m_CurrentSymbol %d \n",m_CurrentSymbol));
 		iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
-		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
-									 "key_press_event");
+		g_signal_stop_emission (G_OBJECT(m_windowMain), 
+								g_signal_lookup ("key_press_event", 
+												 G_OBJECT_TYPE (m_windowMain)), 0);
 	}
 
 	return FALSE ;
