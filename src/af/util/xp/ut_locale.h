@@ -20,6 +20,7 @@
 #ifndef UT_LOCALE_H
 #define UT_LOCALE_H
 
+#include <locale.h>
 #include "ut_string_class.h"
 
 class UT_LocaleTransactor
@@ -27,8 +28,6 @@ class UT_LocaleTransactor
  public:
 
   UT_LocaleTransactor (int category, const char * locale);
-  UT_LocaleTransactor (int category, const UT_String & locale);
-
   ~UT_LocaleTransactor ();
 
  private:
@@ -38,7 +37,7 @@ class UT_LocaleTransactor
   UT_LocaleTransactor& operator=(const UT_LocaleTransactor & rhs);
   
   int mCategory;
-  UT_String mOldLocale;
+  char * mOldLocale;
 };
 
 class UT_LocaleInfo
@@ -47,7 +46,6 @@ class UT_LocaleInfo
   
   UT_LocaleInfo ();
   UT_LocaleInfo (const char * locale);
-  UT_LocaleInfo (const UT_String & locale);
 
   // default copy and assignment constructors
 
@@ -57,11 +55,11 @@ class UT_LocaleInfo
   bool hasTerritory () const;
   bool hasEncoding () const;
 
-  UT_String getLanguage () const;
-  UT_String getTerritory () const;
-  UT_String getEncoding () const;
+  UT_UTF8String getLanguage () const;
+  UT_UTF8String getTerritory () const;
+  UT_UTF8String getEncoding () const;
 
-  UT_String toString () const;
+  UT_UTF8String toString () const;
 
   bool operator==(const UT_LocaleInfo & rhs) const;
   bool operator!=(const UT_LocaleInfo & rhs) const;
@@ -70,9 +68,9 @@ class UT_LocaleInfo
 
   void init (const UT_String & locale);
 
-  UT_String mLanguage;
-  UT_String mTerritory;
-  UT_String mEncoding;
+  UT_UTF8String mLanguage;
+  UT_UTF8String mTerritory;
+  UT_UTF8String mEncoding;
 };
 
 #endif /* UT_LOCALE_H */

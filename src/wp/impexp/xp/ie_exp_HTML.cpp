@@ -26,9 +26,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <locale.h>
 #include <time.h>
 
+#include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_exception.h"
@@ -2621,10 +2621,12 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 		if (szP_FontSize)
 		{
-			char * old_locale = setlocale (LC_NUMERIC, "C");
 			char buf[16];
-			sprintf (buf, "%g", UT_convertToPoints (szP_FontSize));
-			setlocale (LC_NUMERIC, old_locale);
+
+			{
+				UT_LocaleTransactor(LC_NUMERIC, "C");
+				sprintf (buf, "%g", UT_convertToPoints (szP_FontSize));
+			}
 
 			m_utf8_0  = buf;
 			m_utf8_0 += "pt";
@@ -3081,13 +3083,14 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			double * pDWidth = reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
 			double percent = 100.0*(*pDWidth/totWidth);
 
+			{
+				UT_LocaleTransactor(LC_NUMERIC, "C");
+				m_utf8_1  = "colgroup width=\"";
+				m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", percent,1);
+				m_utf8_1 += "\"";
+				UT_DEBUGMSG(("Output width def %s \n",m_utf8_1.utf8_str()));
+			}
 
-			char * old_locale = setlocale (LC_NUMERIC, "C");
-			m_utf8_1  = "colgroup width=\"";
-			m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", percent,1);
-			m_utf8_1 += "\"";
-			UT_DEBUGMSG(("Output width def %s \n",m_utf8_1.utf8_str()));
-			setlocale (LC_NUMERIC, old_locale);
 			tagOpenClose (m_utf8_1, false);
 			m_utf8_1.clear();		
 		}
@@ -3096,11 +3099,12 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	{
 		tagOpen (TT_TABLE, m_utf8_1);
 
-		char * old_locale = setlocale (LC_NUMERIC, "C");
-		m_utf8_1  = "colgroup width=\"";
-		m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", colWidth, nCols);
-		m_utf8_1 += "\"";
-		setlocale (LC_NUMERIC, old_locale);
+		{
+			UT_LocaleTransactor(LC_NUMERIC, "C");
+			m_utf8_1  = "colgroup width=\"";
+			m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", colWidth, nCols);
+			m_utf8_1 += "\"";
+		}
 
 		tagOpenClose (m_utf8_1, false);
 	}

@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <locale.h>
+#include "ut_locale.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -6866,9 +6866,11 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	}
 
 	static UT_String buf;
-	char * old_locale = setlocale(LC_NUMERIC,"C");
-	buf = UT_String_sprintf ("%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
-	setlocale(LC_NUMERIC,old_locale); // restore original locale
+
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		buf = UT_String_sprintf ("%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
+	}
 
 	pInfo->m_xPaperSize = UT_convertToLogicalUnits(buf.c_str());
 	pInfo->m_xPageViewMargin = getPageViewLeftMargin();

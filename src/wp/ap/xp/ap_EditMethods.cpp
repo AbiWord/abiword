@@ -22,8 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <locale.h>
 
+#include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -9046,10 +9046,12 @@ Defun(dlgFmtImage)
 
 		  // TODO: set format
 		  const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
-		  char * old_locale = setlocale(LC_NUMERIC, "C");
-		  sprintf(widthBuf, "%fin", width);
-		  sprintf(heightBuf, "%fin", height);
-		  setlocale(LC_NUMERIC, old_locale);
+
+		  {
+			  UT_LocaleTransactor(LC_NUMERIC, "C");
+			  sprintf(widthBuf, "%fin", width);
+			  sprintf(heightBuf, "%fin", height);
+		  }
 
 		  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
 
@@ -11808,10 +11810,12 @@ Defun(endResizeImage)
 		
 		// TODO: set format
 		const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
-		char * old_locale = setlocale(LC_NUMERIC, "C");
-		sprintf(widthBuf, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
-		sprintf(heightBuf, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
-		setlocale(LC_NUMERIC, old_locale);
+
+		{
+			UT_LocaleTransactor(LC_NUMERIC, "C");
+			sprintf(widthBuf, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
+			sprintf(heightBuf, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
+		}
 		
 		UT_DEBUGMSG(("MARCM: nw:%s nh:%s\n", widthBuf, heightBuf));
 		

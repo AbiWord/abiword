@@ -286,8 +286,8 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 {
 	UT_LocaleInfo locale(UT_LocaleInfo::system());
 
-	UT_String lang (locale.getLanguage());
-	UT_String terr (locale.getTerritory());
+	UT_UTF8String lang (locale.getLanguage());
+	UT_UTF8String terr (locale.getTerritory());
 
 	/* try *6* combinations of the form:
 	   1) /templates/normal.awt-en_US
@@ -305,10 +305,10 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	global_template_base += UT_String_sprintf("/templates/%s", base.c_str());
 
 	template_list[0] = user_template_base; // always try to load user's normal.awt first
-	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.c_str(), terr.c_str());
-	template_list[2] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.c_str());
-	template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.c_str(), terr.c_str());
-	template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.c_str());
+	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
+	template_list[2] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.utf8_str());
+	template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
+	template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.utf8_str());
 	template_list[5] = global_template_base; // always try to load global normal.awt last
 }
 
@@ -3856,14 +3856,14 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		// if there is a default language in the preferences, set it
 		UT_LocaleInfo locale;
 
-		UT_String lang(locale.getLanguage());
+		UT_UTF8String lang(locale.getLanguage());
 		if (locale.getTerritory().size()) {
 			lang += "-";
 			lang += locale.getTerritory();
 		}
 
 		props[0] = "lang";
-		props[1] = lang.c_str();
+		props[1] = lang.utf8_str();
 		props[2] = 0;
 		bRet = setProperties(props);
 

@@ -19,9 +19,9 @@
  * 02111-1307, USA.
  */
 
-#include <locale.h>
 #include <time.h>
 
+#include "ut_locale.h"
 #include "ut_string.h"
 #include "ut_types.h"
 #include "ut_bytebuf.h"
@@ -1128,7 +1128,6 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
   //
 	char *old_locale;
 
-	old_locale = setlocale (LC_NUMERIC, "C");
         m_pie->write("<pagesize pagetype=\"");
 	m_pie->write(m_pDocument->m_docPageSize.getPredefinedName());
 	m_pie->write("\"");
@@ -1139,14 +1138,14 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 	else
 	        m_pie->write("landscape\"");
 	UT_Dimension docUnit = m_pDocument->m_docPageSize.getDims();
+
+	UT_LocaleTransactor(LC_NUMERIC, "C");
 	m_pie->write( UT_String_sprintf(" width=\"%f\"", m_pDocument->m_docPageSize.Width(docUnit)).c_str() );
 	m_pie->write( UT_String_sprintf(" height=\"%f\"",m_pDocument->m_docPageSize.Height(docUnit)).c_str() );
 	m_pie->write(" units=\"");
 	m_pie->write(UT_dimensionName(docUnit));
 	m_pie->write("\"");
 	m_pie->write( UT_String_sprintf(" page-scale=\"%f\"/>\n",m_pDocument->m_docPageSize.getScale()).c_str() );
-	setlocale (LC_NUMERIC, old_locale);
-	return;
 }
 
 void s_AbiWord_1_Listener::_handleDataItems(void)

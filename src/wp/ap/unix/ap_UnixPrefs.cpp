@@ -17,10 +17,10 @@
  * 02111-1307, USA.
  */
 
-#include "stdlib.h"
-#include "string.h"
-#include "locale.h"
-#include "ctype.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "ut_locale.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_UnixPrefs.h"

@@ -17,8 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <locale.h>
-
+#include "ut_locale.h"
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_string.h"
@@ -135,7 +134,8 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 		!!! if adding or removing properties to the list_fmt, you have to make also changes to
 		pt_VarSet.cpp mergeAP()
 	*/
-	char* old_locale = setlocale (LC_NUMERIC, "C");
+	UT_LocaleTransactor(LC_NUMERIC, "C");
+
 	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; "
 		"field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
 	UT_String list_fmt_tmp;
@@ -246,11 +246,9 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Footnote Text","C", "Normal", "Current Settings", "text-position:normal; font-size:10pt");
 
-	setlocale (LC_NUMERIC, old_locale);
 	return true;
 
 Failed:
-	setlocale (LC_NUMERIC, old_locale);
 	return false;
 }
 

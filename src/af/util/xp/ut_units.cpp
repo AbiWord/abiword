@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
-#include <locale.h>
+#include "ut_locale.h"
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -70,9 +70,11 @@ const char * UT_dimensionName(UT_Dimension dim)
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
   char * p = NULL ;
-  const char * old_locale = setlocale(LC_NUMERIC, "C");
-  strtod(sz, &p);
-  setlocale(LC_NUMERIC, old_locale);
+
+  {
+	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  strtod(sz, &p);
+  }
 
 #if defined(__QNXNTO__)
   // workaround for QNX's strtod being overly ambitious
@@ -209,9 +211,10 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 		break;
 	}
 
-	char * old_locale = setlocale(LC_NUMERIC,"C");
-	sprintf(buf,bufFormat,valueScaled);
-	setlocale(LC_NUMERIC,old_locale); // restore original locale
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		sprintf(buf,bufFormat,valueScaled);
+	}
 
 	return buf;
 }
@@ -272,9 +275,11 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 	}
-	char * old_locale = setlocale(LC_NUMERIC,"C");
-	sprintf(buf,bufFormat,value);
-	setlocale(LC_NUMERIC,old_locale); // restore original locale
+
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		sprintf(buf,bufFormat,value);
+	}
 
 	return buf;
 }
@@ -422,9 +427,11 @@ double UT_convertDimensionless(const char * sz)
 	// we can let the GUI do locale-specific conversions for presentation
 	// in dialogs and etc.
 
-	char * old_locale = setlocale(LC_NUMERIC,"C");
-	double f = atof(sz);
-	setlocale(LC_NUMERIC,old_locale);
+	double f;
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		f = atof(sz);
+	}
 
 	return f;
 }
@@ -441,9 +448,10 @@ const char * UT_convertToDimensionlessString(double value, const char * szPrecis
 	char bufFormat[100];
 	sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 
-	char * old_locale = setlocale(LC_NUMERIC,"C");
-	sprintf(buf,bufFormat,value);
-	setlocale(LC_NUMERIC,old_locale); // restore original locale
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		sprintf(buf,bufFormat,value);
+	}
 
 	return buf;
 }
@@ -457,9 +465,11 @@ bool UT_hasDimensionComponent(const char * sz)
 		return false;
 
 	char *p = NULL;
-	char * old_locale = setlocale(LC_NUMERIC, "C");
-	strtod(sz, &p);
-	setlocale(LC_NUMERIC, old_locale);
+
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		strtod(sz, &p);
+	}
 
 	// if we landed on non-NULL, unit component
 	if(p && *p)

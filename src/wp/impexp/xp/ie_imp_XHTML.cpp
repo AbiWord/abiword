@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <locale.h>
+#include "ut_locale.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -907,10 +907,12 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_String_sprintf(szListID, "%u", thisID);
 			UT_String_sprintf(szParentID, "%u", *parentID);
 			UT_String_sprintf(szLevel, "%u", m_utsParents.getDepth());
-			char * old_locale = setlocale (LC_NUMERIC, "C");
-			UT_String_sprintf(szMarginLeft, " margin-left: %.2fin", 
-					  m_utsParents.getDepth() * 0.5);
-			setlocale (LC_NUMERIC, old_locale);
+
+			{
+				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_String_sprintf(szMarginLeft, " margin-left: %.2fin", 
+								  m_utsParents.getDepth() * 0.5);
+			}
 
 			const int LevelPos = 1;
 			const int IDpos = 3;
@@ -1085,9 +1087,12 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				double d = UT_convertDimensionless (szWidth);
 				float width = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 				UT_String tmp;
-				char * old_locale = setlocale (LC_NUMERIC, "C");
-				UT_String_sprintf (tmp, "%gin", width);
-				setlocale (LC_NUMERIC, old_locale);
+
+				{
+					UT_LocaleTransactor(LC_NUMERIC, "C");
+					UT_String_sprintf (tmp, "%gin", width);
+				}
+
 				if (!tmp.empty ())
 					{
 						if (utf8val.byteLength ()) utf8val += "; ";
@@ -1101,9 +1106,12 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				double d = UT_convertDimensionless (szHeight);
 				float height = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 				UT_String tmp;
-				char * old_locale = setlocale (LC_NUMERIC, "C");
-				UT_String_sprintf (tmp, "%gin", height);
-				setlocale (LC_NUMERIC, old_locale);
+
+				{
+					UT_LocaleTransactor(LC_NUMERIC, "C");
+					UT_String_sprintf (tmp, "%gin", height);
+				}
+
 				if (!tmp.empty ())
 					{
 						if (utf8val.byteLength ()) utf8val += "; ";
@@ -1127,10 +1135,12 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 						width  = static_cast<float>(100);
 						height = static_cast<float>(100);
 					}
-				const char * old_locale = setlocale (LC_NUMERIC, "C");
+
 				UT_String tmp;
-				UT_String_sprintf (tmp, "width:%gin; height:%gin", width, height);
-				setlocale (LC_NUMERIC, old_locale);
+				{
+					UT_LocaleTransactor(LC_NUMERIC, "C");
+					UT_String_sprintf (tmp, "width:%gin; height:%gin", width, height);
+				}
 
 				utf8val = tmp.c_str ();
 			}
@@ -2265,9 +2275,12 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 					double d = UT_convertDimensionless (value);
 					float dim = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 					UT_String tmp;
-					char * old_locale = setlocale (LC_NUMERIC, "C");
-					UT_String_sprintf (tmp, "%gin", dim);
-					setlocale (LC_NUMERIC, old_locale);
+
+					{
+						UT_LocaleTransactor(LC_NUMERIC, "C");
+						UT_String_sprintf (tmp, "%gin", dim);
+					}
+
 					if (!tmp.empty ())
 						{
 							if (props.byteLength ()) props += "; ";

@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
+#include "ut_locale.h"
 
 #include <zlib.h>
 
@@ -3386,8 +3386,7 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
-	const char * old_locale = "" ;
-	const char * mimetype 	= UT_strdup ("image/png");
+	const char * mimetype = UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
@@ -3492,11 +3491,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   // This next bit of code will set up our properties based on the image attributes
   //
 
-  old_locale = setlocale(LC_NUMERIC, "C");
-  UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
-		    static_cast<double>(width) / static_cast<double>(1440),
-		    static_cast<double>(height) / static_cast<double>(1440));
-  setlocale(LC_NUMERIC, old_locale);
+  {
+	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
+						static_cast<double>(width) / static_cast<double>(1440),
+						static_cast<double>(height) / static_cast<double>(1440));
+  }
 
   UT_String_sprintf(propsName, "%d", getDoc()->getUID(UT_UniqueId::Image));
 
@@ -3968,26 +3968,25 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   if (apap->ptap.rgshd[m_iCurrentCell].icoBack != 0)
     propBuffer += "bg-style:1;";
 
-  const char * old_locale = setlocale(LC_NUMERIC, "C");
-
-  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcTop.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcTop.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcTop.brcType));
-  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%fpx; left-style:%d;",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcLeft.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcLeft.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcLeft.brcType));
-  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%fpx; bot-style:%d;",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcBottom.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcBottom.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcBottom.brcType));
-  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%fpx; right-style:%d",
-				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcRight.ico).c_str(),
-				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcRight.dptLineWidth),
-				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcRight.brcType));
-
-  setlocale (LC_NUMERIC, old_locale);
+  {
+	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;",
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcTop.ico).c_str(),
+									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcTop.dptLineWidth),
+									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcTop.brcType));
+	  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%fpx; left-style:%d;",
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcLeft.ico).c_str(),
+									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcLeft.dptLineWidth),
+									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcLeft.brcType));
+	  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%fpx; bot-style:%d;",
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcBottom.ico).c_str(),
+									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcBottom.dptLineWidth),
+									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcBottom.brcType));
+	  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%fpx; right-style:%d",
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcRight.ico).c_str(),
+									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcRight.dptLineWidth),
+									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcRight.brcType));
+  }
   xxx_UT_DEBUGMSG(("propbuffer: %s \n",propBuffer.c_str()));
 
   const XML_Char* propsArray[3];

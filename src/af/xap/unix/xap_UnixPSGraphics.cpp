@@ -19,7 +19,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <locale.h>
 #include <math.h>
 
 #include "ut_types.h"
@@ -44,6 +43,7 @@
 
 #include "xap_Prefs.h"
 #include "xap_App.h"
+#include "ut_locale.h"
 
 // the resolution that we report to the application (pixels per inch).
 #define PS_RESOLUTION		72
@@ -1037,36 +1037,37 @@ void PS_Graphics::_emit_SetColor(void)
   // used for any averaging
   unsigned char newclr;
 
-	const char * old_locale = setlocale(LC_NUMERIC,"C");
-	switch(m_cs)
-	{
-	case GR_Graphics::GR_COLORSPACE_COLOR:
-        g_snprintf(buf, sizeof (buf), "%.8f %.8f %.8f setrgbcolor\n",
-                (static_cast<float>(m_currentColor.m_red) / static_cast<float>(255.0)),
-                (static_cast<float>(m_currentColor.m_grn) / static_cast<float>(255.0)),
-                (static_cast<float>(m_currentColor.m_blu) / static_cast<float>(255.0)));
-		break;
-	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
-		newclr = static_cast<unsigned char>(( static_cast<float>(0.30) * m_currentColor.m_red +
-											  static_cast<float>(0.59) * m_currentColor.m_grn +
-											  static_cast<float>(0.11) * m_currentColor.m_blu ));
-		g_snprintf(buf, sizeof(buf), "%.8f setgray\n", static_cast<float>(newclr) / static_cast<float>(255.0));
-		break;
-	case GR_Graphics::GR_COLORSPACE_BW:
-		// Black & White is a special case of the Gray color space where
-		// all colors are 0 (black) and all absence of color is 1 (white)
-
-        if (m_currentColor.m_red + m_currentColor.m_grn + m_currentColor.m_blu > 3*250) // yay, arbitrary threshold!
-			g_snprintf(buf,sizeof(buf),"1 setgray\n");
-         else		
-			 g_snprintf(buf,sizeof(buf),"0 setgray\n");
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-	setlocale(LC_NUMERIC,old_locale); // restore original locale
+  {
+	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  switch(m_cs)
+	  {
+	  case GR_Graphics::GR_COLORSPACE_COLOR:
+		  g_snprintf(buf, sizeof (buf), "%.8f %.8f %.8f setrgbcolor\n",
+					 (static_cast<float>(m_currentColor.m_red) / static_cast<float>(255.0)),
+					 (static_cast<float>(m_currentColor.m_grn) / static_cast<float>(255.0)),
+					 (static_cast<float>(m_currentColor.m_blu) / static_cast<float>(255.0)));
+		  break;
+	  case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
+		  newclr = static_cast<unsigned char>(( static_cast<float>(0.30) * m_currentColor.m_red +
+												static_cast<float>(0.59) * m_currentColor.m_grn +
+												static_cast<float>(0.11) * m_currentColor.m_blu ));
+		  g_snprintf(buf, sizeof(buf), "%.8f setgray\n", static_cast<float>(newclr) / static_cast<float>(255.0));
+		  break;
+	  case GR_Graphics::GR_COLORSPACE_BW:
+		  // Black & White is a special case of the Gray color space where
+		  // all colors are 0 (black) and all absence of color is 1 (white)
+		  
+	  if (m_currentColor.m_red + m_currentColor.m_grn + m_currentColor.m_blu > 3*250) // yay, arbitrary threshold!
+		  g_snprintf(buf,sizeof(buf),"1 setgray\n");
+	  else		
+		  g_snprintf(buf,sizeof(buf),"0 setgray\n");
+	  break;
+	  default:
+		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  }
+  }
 	
-	m_ps->writeBytes(buf);
+  m_ps->writeBytes(buf);
 }
 
 GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)

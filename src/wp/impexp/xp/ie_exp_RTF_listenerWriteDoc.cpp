@@ -26,8 +26,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <locale.h>
 
+#include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_units.h"
@@ -2902,20 +2902,20 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	// <docfmt> -- page information
 
-	char * old_locale;
-	old_locale = setlocale (LC_NUMERIC, "C");
-
-	double width = m_pDocument->m_docPageSize.Width(DIM_IN);
-	double height = m_pDocument->m_docPageSize.Height(DIM_IN);
-	bool landscape = !m_pDocument->m_docPageSize.isPortrait();
-
 	UT_String szPaperWidth;
 	UT_String szPaperHeight;
 
-	UT_String_sprintf(szPaperWidth, "%fin", width);
-	UT_String_sprintf(szPaperHeight, "%fin", height);
+	bool landscape = !m_pDocument->m_docPageSize.isPortrait();
 
-	setlocale (LC_NUMERIC, old_locale);
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		
+		double width = m_pDocument->m_docPageSize.Width(DIM_IN);
+		double height = m_pDocument->m_docPageSize.Height(DIM_IN);
+			
+		UT_String_sprintf(szPaperWidth, "%fin", width);
+		UT_String_sprintf(szPaperHeight, "%fin", height);		
+	}
 
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",szPaperWidth.c_str(),0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",szPaperHeight.c_str(),0);
@@ -3049,48 +3049,48 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword("sbknone");								// no page break implied
 	m_pie->_rtf_keyword_ifnotdefault("cols",static_cast<const char*>(szColumns),1);
 	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",static_cast<const char*>(szColumnGap),720);
-	char * old_locale;
-	old_locale = setlocale (LC_NUMERIC, "C");
 
-	if (bColLine)
 	{
-		m_pie->_rtf_keyword ("linebetcol");
-	}
-	if(szHeaderExists)
-	{
-		double hMarg = UT_convertToInches(szHeaderY);
-		UT_String sHeaderY;
-
-		UT_String_sprintf(sHeaderY,"%fin",hMarg);
-		m_pie->_rtf_keyword_ifnotdefault_twips("headery", static_cast<const char*>(sHeaderY.c_str()), 720);
-
-	}
-	if(szMarginTop)
-	{
-		double tMarg = UT_convertToInches(szMarginTop);
-		UT_String sRtfTop;
-
-
-		UT_String_sprintf(sRtfTop,"%fin",tMarg);
-		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", static_cast<const char*>(sRtfTop.c_str()), 1440);
-	}
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		
+		if (bColLine)
+		{
+			m_pie->_rtf_keyword ("linebetcol");
+		}
+		if(szHeaderExists)
+		{
+			double hMarg = UT_convertToInches(szHeaderY);
+			UT_String sHeaderY;
+			
+			UT_String_sprintf(sHeaderY,"%fin",hMarg);
+			m_pie->_rtf_keyword_ifnotdefault_twips("headery", static_cast<const char*>(sHeaderY.c_str()), 720);			
+		}
+		if(szMarginTop)
+		{
+			double tMarg = UT_convertToInches(szMarginTop);
+			UT_String sRtfTop;
+			
+			
+			UT_String_sprintf(sRtfTop,"%fin",tMarg);
+			m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", static_cast<const char*>(sRtfTop.c_str()), 1440);
+		}
 #if 0
-	if(szFooterExists  && szMarginBottom)
-	{
-		double Gutter = UT_convertToInches(szGutter);
-		UT_String sGutter;
-		UT_String_sprintf(sGutter,"%fin",Gutter);
-		m_pie->_rtf_keyword_ifnotdefault_twips("gutter", static_cast<const char*>(sGutter.c_str()), 0);
-	}
+		if(szFooterExists  && szMarginBottom)
+		{
+			double Gutter = UT_convertToInches(szGutter);
+			UT_String sGutter;
+			UT_String_sprintf(sGutter,"%fin",Gutter);
+			m_pie->_rtf_keyword_ifnotdefault_twips("gutter", static_cast<const char*>(sGutter.c_str()), 0);
+		}
 #endif
-	if(szMarginBottom)
-	{
-		double bMarg = UT_convertToInches(szMarginBottom);
-		UT_String sRtfBot;
-		UT_String_sprintf(sRtfBot,"%fin",bMarg);
-		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", static_cast<const char*>(sRtfBot.c_str()), 1440);
+		if(szMarginBottom)
+		{
+			double bMarg = UT_convertToInches(szMarginBottom);
+			UT_String sRtfBot;
+			UT_String_sprintf(sRtfBot,"%fin",bMarg);
+			m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", static_cast<const char*>(sRtfBot.c_str()), 1440);
+		}
 	}
-	setlocale (LC_NUMERIC, old_locale);
 
 	if(szMarginLeft)
 	{

@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <glade/glade.h>
-#include <locale.h>
+#include "ut_locale.h"
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -289,9 +289,11 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 		gint history = gtk_option_menu_get_history(GTK_OPTION_MENU(m_wBorderThickness));
 		double thickness = m_dThickness[history];
 
-		char * locale = setlocale(LC_NUMERIC, "C");
-		UT_UTF8String sThickness(UT_UTF8String_sprintf("%fin",thickness));
-		setlocale(LC_NUMERIC, locale);
+		UT_UTF8String sThickness;
+		{
+			UT_LocaleTransactor(LC_NUMERIC, "C");
+			sThickness = UT_UTF8String_sprintf("%fin",thickness);
+		}
 
 		setBorderThickness(sThickness);
 		event_previewExposed();

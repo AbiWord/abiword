@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <locale.h>
 #include "ut_locale.h"
 
 // don't like XAP in UT, but oh well...
@@ -28,7 +27,7 @@
 
 /********************************************/
 
-static const char *
+static char *
 explicit_setlocale (int category, const char * locale)
 {
   return setlocale (category, locale);
@@ -48,20 +47,18 @@ explicit_setlocale (int category, const char * locale)
  * SEE ALSO: man setlocale
  */
 UT_LocaleTransactor::UT_LocaleTransactor (int category, const char * locale)
-  : mCategory (category), mOldLocale ("")
+  : mCategory (category), mOldLocale (0)
 {
-  mOldLocale = explicit_setlocale (category, locale);
-}
+	char * old_locale = explicit_setlocale (category, locale);
+	mOldLocale = UT_strdup(old_locale);
 
-UT_LocaleTransactor::UT_LocaleTransactor (int category, const UT_String & locale)
-  : mCategory (category), mOldLocale ("")
-{
-  mOldLocale = explicit_setlocale (category, locale.c_str ());
+	// TODO: win32 may need to free old_locale
 }
 
 UT_LocaleTransactor::~UT_LocaleTransactor ()
 {
-  static_cast<void>(explicit_setlocale (mCategory, mOldLocale.c_str ()));
+	static_cast<void>(explicit_setlocale (mCategory, mOldLocale));
+	FREEP(mOldLocale);
 }
 
 /********************************************/
@@ -91,11 +88,6 @@ UT_LocaleInfo::UT_LocaleInfo ()
  * parts are optional
  */
 UT_LocaleInfo::UT_LocaleInfo (const char * locale)
-{
-  init (locale);
-}
-
-UT_LocaleInfo::UT_LocaleInfo (const UT_String & locale)
 {
   init (locale);
 }
@@ -133,7 +125,7 @@ bool UT_LocaleInfo::hasEncoding () const
  * Returns empty string or language. Example languages are
  * "en", "wen", "fr", "es"
  */
-UT_String UT_LocaleInfo::getLanguage () const
+UT_UTF8String UT_LocaleInfo::getLanguage () const
 {
   return mLanguage;
 }
@@ -142,7 +134,7 @@ UT_String UT_LocaleInfo::getLanguage () const
  * Returns empty string or territory. Example territories are:
  * "US", "GB", "FR", ...
  */
-UT_String UT_LocaleInfo::getTerritory () const
+UT_UTF8String UT_LocaleInfo::getTerritory () const
 {
   return mTerritory;
 }
@@ -151,7 +143,7 @@ UT_String UT_LocaleInfo::getTerritory () const
  * Returns empty string or encoding. Encoding is like "UTF-8" or
  * "ISO-8859-1"
  */
-UT_String UT_LocaleInfo::getEncoding () const
+UT_UTF8String UT_LocaleInfo::getEncoding () const
 {
   return mEncoding;
 }
@@ -173,7 +165,7 @@ void UT_LocaleInfo::init (const UT_String & locale)
 
   if (hyphen == (size_t)-1 && dot == (size_t)-1)
     {
-      mLanguage = locale;
+      mLanguage = locale.c_str();
       return;
     }
 
@@ -181,25 +173,25 @@ void UT_LocaleInfo::init (const UT_String & locale)
     {
       if (hyphen < dot)
 	{
-	  mLanguage  = locale.substr (0, hyphen);
-	  mTerritory = locale.substr (hyphen+1, dot-(hyphen+1));
-	  mEncoding  = locale.substr (dot+1, locale.size ()-(dot+1));
+	  mLanguage  = locale.substr (0, hyphen).c_str();
+	  mTerritory = locale.substr (hyphen+1, dot-(hyphen+1)).c_str();
+	  mEncoding  = locale.substr (dot+1, locale.size ()-(dot+1)).c_str();
 	}
       else
 	{
-	  mLanguage = locale.substr (0, dot);
-	  mEncoding = locale.substr (dot+1, locale.size ()-(dot+1));
+	  mLanguage = locale.substr (0, dot).c_str();
+	  mEncoding = locale.substr (dot+1, locale.size ()-(dot+1)).c_str();
 	}
     }
   else if (dot != (size_t)-1)
     {
-      mLanguage = locale.substr (0, dot);
-      mEncoding = locale.substr (dot+1, locale.size ()-(dot+1));
+      mLanguage = locale.substr (0, dot).c_str();
+      mEncoding = locale.substr (dot+1, locale.size ()-(dot+1)).c_str();
     }
   else if (hyphen != (size_t)-1)
     {
-      mLanguage = locale.substr (0, hyphen);
-      mEncoding = locale.substr (hyphen+1, locale.size ()-(hyphen+1));
+      mLanguage = locale.substr (0, hyphen).c_str();
+      mEncoding = locale.substr (hyphen+1, locale.size ()-(hyphen+1)).c_str();
     }
 }
 
@@ -207,19 +199,19 @@ void UT_LocaleInfo::init (const UT_String & locale)
  * Turns object back into a string of the form language_TERRITORY.ENCODING
  * (eg): en_US.UTF-8
  */
-UT_String UT_LocaleInfo::toString () const
+UT_UTF8String UT_LocaleInfo::toString () const
 {
-  UT_String ret (mLanguage);
+  UT_UTF8String ret (mLanguage);
 
   if (hasTerritory ())
     {
-      ret += '_';
+      ret += "_";
       ret += mTerritory;
     }
 
   if (hasEncoding ())
     {
-      ret += '.';
+      ret += ".";
       ret += mEncoding;
     }
 
