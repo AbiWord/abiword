@@ -2239,7 +2239,7 @@ Defun1(extSelBOW)
 Defun1(extSelEOW)
 {
 	ABIWORD_VIEW;
-	pView->extSelTo(FV_DOCPOS_EOW_SELECT);
+	pView->extSelTo(FV_DOCPOS_EOW_MOVE);
 	return UT_TRUE;
 }
 
