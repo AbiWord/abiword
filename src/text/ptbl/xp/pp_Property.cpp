@@ -66,6 +66,10 @@ static PP_Property _props[] =
 	{ "orphans",				"2",				0},
 	{ "widows",					"2",				0},
 
+	{ "page-margin-left",		"1in",				0},
+	{ "page-margin-top",		"1in",				0},
+	{ "page-margin-right",		"1in",				0},
+	{ "page-margin-bottom",		"1in",				0},
 	{ "columns",				"1",				0},
 	{ "column-gap",				"0.25in",			0},
 	

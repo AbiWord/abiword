@@ -304,7 +304,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				pNextLine = pLine->getNext();
 				if (!pNextLine)
 				{
-					fp_Line* pNewLine  = pBlock->getNewLine(pLine->getFirstRun()->getHeight());
+					fp_Line* pNewLine  = pBlock->getNewLine();
 					UT_ASSERT(pNewLine);	// TODO check for outofmem
 							
 					pNextLine = pNewLine;

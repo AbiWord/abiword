@@ -533,7 +533,7 @@ void fl_BlockLayout::checkForEndOnForcedBreak(void)
 	pNewRun->setPrev(pLastRun);
 	pLastRun->setNext(pNewRun);
 
-	pNewLine = getNewLine(m_pFirstRun->getHeight());
+	pNewLine = getNewLine();
 	UT_ASSERT(pNewLine == m_pLastLine);
 
 	// the line just contains the empty run
@@ -560,7 +560,7 @@ int fl_BlockLayout::format()
 		if (!m_pFirstLine)
 		{
 			// start a new line
-			fp_Line* pLine = getNewLine(m_pFirstRun->getHeight());
+			fp_Line* pLine = getNewLine();
 
 			fp_Run* pTempRun = m_pFirstRun;
 			while (pTempRun)
@@ -587,7 +587,7 @@ int fl_BlockLayout::format()
 
 		if (!m_pFirstLine)
 		{
-			getNewLine(m_pFirstRun->getHeight());
+			getNewLine();
 		}
 
 		// the line just contains the empty run
@@ -606,10 +606,8 @@ fp_Run* fl_BlockLayout::getFirstRun()
 	return m_pFirstRun;
 }
 
-fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
+fp_Line* fl_BlockLayout::getNewLine(void)
 {
-	UT_ASSERT(iHeight > 0);
-
 	fp_Line* pLine = new fp_Line();
 	UT_ASSERT(pLine);
 
@@ -2429,9 +2427,41 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
 	
-	UT_ASSERT(UT_TODO);
+	fl_SectionLayout* pSL = new fl_SectionLayout(m_pLayout, sdh, pcrx->getIndexAP());
+	if (!pSL)
+	{
+		UT_DEBUGMSG(("no memory for SectionLayout"));
+		return UT_FALSE;
+	}
 	
-	return UT_FALSE;
+	m_pLayout->insertSectionAfter(m_pSectionLayout, pSL);
+	
+	// must call the bind function to complete the exchange
+	// of handles with the document (piece table) *** before ***
+	// anything tries to call down into the document (like all
+	// of the view listeners).
+
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+	fl_SectionLayout* pOldSL = m_pSectionLayout;
+	fl_BlockLayout* pBL = getNext();
+	while (pBL)
+	{
+		fl_BlockLayout* pNext = pBL->getNext();
+
+		pBL->collapse();
+		pOldSL->removeBlock(pBL);
+		pSL->addBlock(pBL);
+		pBL->m_pSectionLayout = pSL;
+		pBL->m_bNeedsReformat = UT_TRUE;
+
+		pBL = pNext;
+	}
+
+	pOldSL->deleteEmptyColumns();
+
+	return UT_TRUE;
 }
 
 void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)

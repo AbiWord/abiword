@@ -117,8 +117,8 @@ void fp_TextRun::lookupProperties(void)
 
 UT_Bool fp_TextRun::canBreakAfter(void) const
 {
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
+	const UT_UCSChar* pSpan = NULL;
+	UT_uint32 lenSpan = 0;
 	UT_uint32 offset = m_iOffsetFirst;
 	UT_uint32 len = m_iLen;
 	UT_Bool bContinue = UT_TRUE;

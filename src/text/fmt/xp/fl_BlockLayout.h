@@ -65,7 +65,7 @@ public:
 	int 		format();
 	UT_Bool		recalculateFields(void);
 	
-	fp_Line*	getNewLine(UT_sint32 iHeight);
+	fp_Line*	getNewLine(void);
 
 	const char*	getProperty(const XML_Char * pszName) const;
 	void setAlignment(UT_uint32 iAlignCmd);

@@ -548,6 +548,22 @@ void FL_DocLayout::addSection(fl_SectionLayout* pSL)
 	}
 }
 
+void FL_DocLayout::insertSectionAfter(fl_SectionLayout* pAfter, fl_SectionLayout* pNewSL)
+{
+	pNewSL->setNext(pAfter->getNext());
+	pNewSL->setPrev(pAfter);
+	if (pAfter->getNext())
+	{
+		pAfter->getNext()->setPrev(pNewSL);
+	}
+	pAfter->setNext(pNewSL);
+	
+	if (m_pLastSection == pAfter)
+	{
+		m_pLastSection = pNewSL;
+	}
+}
+
 void FL_DocLayout::removeSection(fl_SectionLayout * pSL)
 {
 	UT_ASSERT(pSL);

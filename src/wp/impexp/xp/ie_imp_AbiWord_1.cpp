@@ -199,6 +199,8 @@ UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 #define TT_BREAK		7		// a forced line-break <br>
 #define TT_DATASECTION	8		// a data section <data>
 #define TT_DATAITEM		9		// a data item <d> within a data section
+#define TT_COLBREAK		10		// a forced column-break <cbr>
+#define TT_PAGEBREAK	11		// a forced page-break <pbr>
 
 struct _TokenTable
 {
@@ -216,6 +218,8 @@ static struct _TokenTable s_Tokens[] =
 	{	"br",			TT_BREAK		},
 	{	"data",			TT_DATASECTION	},
 	{	"d",			TT_DATAITEM		},
+	{	"cbr",			TT_COLBREAK		},
+	{	"pbr",			TT_PAGEBREAK	},
 	{	"*",			TT_OTHER		}};	// must be last
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -320,6 +324,32 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		}
 		return;
 
+	case TT_COLBREAK:
+		X_VerifyParseState(_PS_Block);
+		// TODO decide if we should push and pop the attr's
+		// TODO that came in with the <cbr/>.  that is, decide
+		// TODO if <cbr/>'s will have any attributes or will
+		// TODO just inherit everything from the surrounding
+		// TODO spans.
+		{
+			UT_UCSChar ucs = UCS_VTAB;
+			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+		}
+		return;
+
+	case TT_PAGEBREAK:
+		X_VerifyParseState(_PS_Block);
+		// TODO decide if we should push and pop the attr's
+		// TODO that came in with the <pbr/>.  that is, decide
+		// TODO if <pbr/>'s will have any attributes or will
+		// TODO just inherit everything from the surrounding
+		// TODO spans.
+		{
+			UT_UCSChar ucs = UCS_FF;
+			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+		}
+		return;
+
 	case TT_DATASECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_DataSec;
@@ -386,6 +416,16 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		return;
 
 	case TT_BREAK:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_COLBREAK:					// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_PAGEBREAK:					// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;

@@ -193,6 +193,11 @@ void fp_Page::_reformat(void)
 	int i;
 	for (i=0; i<count; i++)
 	{
+		if (iY >= (m_iHeight - iBottomMargin))
+		{
+			break;
+		}
+
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fl_SectionLayout* pSL = pLeader->getSectionLayout();
 		UT_uint32 iNumColumns = pSL->getNumColumns();
@@ -221,11 +226,6 @@ void fp_Page::_reformat(void)
 		iY += iMostHeight;
 
 		iY += m_pLayout->getGraphics()->convertDimension("0.25in");	// TODO
-
-		if (iY >= (m_iHeight - iBottomMargin))
-		{
-			break;
-		}
 	}
 
 	while (i < count)
@@ -233,23 +233,11 @@ void fp_Page::_reformat(void)
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fl_SectionLayout* pSL = pLeader->getSectionLayout();
 
-		// TODO move this column to the next page.
+		UT_ASSERT(UT_TODO);
+		
 		i++;
 	}
 }
-
-#if 0
-UT_Bool fp_Page::addColumnLeader(fp_Column* pLeader)
-{
-	m_vecColumnLeaders.addItem(pLeader);
-
-	_reformat();
-
-	// TODO this shouldn't ALWAYS return true, right?
-	
-	return UT_TRUE;
-}
-#endif
 
 void fp_Page::removeColumnLeader(fp_Column* pLeader)
 {
@@ -271,11 +259,6 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 
 UT_Bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 {
-	/*
-	  TODO we should check to see if there is ANY hope of this
-	  column leader actually fitting on the page.
-	*/
-	
 	if (pAfter)
 	{
 		UT_sint32 ndx = m_vecColumnLeaders.findItem(pAfter);

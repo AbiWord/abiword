@@ -104,13 +104,38 @@ void fl_SectionLayout::_lookupProperties(void)
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
 	}
 
-	/*
-	  TODO these margins should NOT be hard-coded
-	*/
-	m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-	m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-	m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-	m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+	const char* pszLeftMargin = NULL;
+	const char* pszTopMargin = NULL;
+	const char* pszRightMargin = NULL;
+	const char* pszBottomMargin = NULL;
+	pSectionAP->getProperty("page-margin-left", pszLeftMargin);
+	pSectionAP->getProperty("page-margin-top", pszTopMargin);
+	pSectionAP->getProperty("page-margin-right", pszRightMargin);
+	pSectionAP->getProperty("page-margin-bottom", pszBottomMargin);
+
+	if (
+		pszLeftMargin
+		&& pszTopMargin
+		&& pszRightMargin
+		&& pszBottomMargin
+		&& pszLeftMargin[0]
+		&& pszTopMargin[0]
+		&& pszRightMargin[0]
+		&& pszBottomMargin[0]
+		)
+	{
+		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
+		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
+		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
+		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
+	}
+	else
+	{
+		m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+	}
 	
 	m_bForceNewPage = UT_FALSE;
 }
@@ -599,6 +624,7 @@ UT_Bool fl_SectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	return UT_FALSE;
 }
 
+#if 0
 UT_Bool fl_SectionLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
 												  PL_StruxDocHandle sdh,
 												  PL_ListenerId lid,
@@ -626,6 +652,7 @@ UT_Bool fl_SectionLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * 
 	
 	return UT_FALSE;
 }
+#endif
 
 UT_Bool fl_SectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {

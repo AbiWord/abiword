@@ -76,12 +76,14 @@ public:
 	void				deleteEmptyColumns(void);
 	UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	UT_Bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+#if 0	
 	UT_Bool				doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
 												PL_StruxDocHandle sdh,
 												PL_ListenerId lid,
 												void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																		PL_ListenerId lid,
 																		PL_StruxFmtHandle sfhNew));
+#endif	
 
 protected:
 	void				_purgeLayout();

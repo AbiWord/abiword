@@ -120,6 +120,7 @@ public:
 
 	void		addSection(fl_SectionLayout*);
 	void		removeSection(fl_SectionLayout*);
+	void		insertSectionAfter(fl_SectionLayout* pAfter, fl_SectionLayout* pNewSL);
 	
 	inline		fl_SectionLayout* getFirstSection(void) const { return m_pFirstSection; }
 	inline		fl_SectionLayout* getLastSection(void) const { return m_pLastSection; }

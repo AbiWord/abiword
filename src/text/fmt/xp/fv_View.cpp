@@ -857,8 +857,10 @@ void FV_View::insertSectionBreak(void)
 	// ==>: we *don't* call _clearPointAP() in this case 
 
 	// before inserting a section break, we insert a block break
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
-	m_pDoc->insertStrux(getPoint(), PTX_Section);
+	UT_uint32 iPoint = getPoint();
+	
+	m_pDoc->insertStrux(iPoint, PTX_Block);
+	m_pDoc->insertStrux(iPoint, PTX_Section);
 	
 	_generalUpdate();
 	
@@ -2421,6 +2423,16 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 */
 void FV_View::_generalUpdate(void)
 {
+	/*
+	  TODO RED ALERT!
+
+	  This routine has a major design problem.  It is called
+	  in response to a user command, NOT in response to
+	  a listener notification from the piece table.  In other
+	  words, this function is the reason that multiple windows
+	  on the same document are currently hosed.
+	*/
+	
 	/*
 	  TODO the following routine checks every paragraph in the
 	  document to see if it needs a reformat.  How is this going

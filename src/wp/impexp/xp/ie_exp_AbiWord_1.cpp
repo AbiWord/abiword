@@ -299,6 +299,26 @@ void s_Abword_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			pData++;
 			break;
 			
+		case UCS_VTAB:					// VTAB -- representing a Forced-Column-Break
+			*pBuf++ = '<';				// these get mapped to <cbr/>
+			*pBuf++ = 'c';
+			*pBuf++ = 'b';
+			*pBuf++ = 'r';
+			*pBuf++ = '/';
+			*pBuf++ = '>';
+			pData++;
+			break;
+			
+		case UCS_FF:					// FF -- representing a Forced-Page-Break
+			*pBuf++ = '<';				// these get mapped to <pbr/>
+			*pBuf++ = 'p';
+			*pBuf++ = 'b';
+			*pBuf++ = 'r';
+			*pBuf++ = '/';
+			*pBuf++ = '>';
+			pData++;
+			break;
+			
 		default:
 			if (*pData > 0x007f)
 			{

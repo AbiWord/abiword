@@ -54,9 +54,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 		while (pCurLine)
 		{
 			UT_sint32 iLineHeight = pCurLine->getHeight();
-			UT_sint32 iLineMarginBefore = (pCurLine != pFirstLineToKeep) ? pCurLine->getMarginBefore() : 0;
 			UT_sint32 iLineMarginAfter = pCurLine->getMarginAfter();
-			UT_sint32 iTotalLineSpace = iLineHeight + iLineMarginBefore + iLineMarginAfter;
+			UT_sint32 iTotalLineSpace = iLineHeight + iLineMarginAfter;
 
 			if ((iWorkingColHeight + iTotalLineSpace) > iMaxColHeight)
 			{
