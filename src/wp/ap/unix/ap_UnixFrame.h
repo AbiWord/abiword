@@ -70,6 +70,8 @@ protected:
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	UT_Error					_replaceDocument(AD_Document * pDoc);
+	virtual UT_sint32 _getDocumentAreaWidth();
+	virtual UT_sint32 _getDocumentAreaHeight();
 };
 
 #endif /* AP_UNIXFRAME_H */

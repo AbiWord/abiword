@@ -149,7 +149,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 												GDK_BUTTON_RELEASE_MASK |
 												GDK_KEY_PRESS_MASK |
 												GDK_KEY_RELEASE_MASK));
-	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea),FALSE);
+	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
 	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::expose), NULL);
   
@@ -234,6 +234,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	gtk_frame_set_shadow_type(GTK_FRAME(m_wSunkenBox), GTK_SHADOW_IN);
 	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_table);
 
+	// (scrollbars are shown, only if needed, by _setScrollRange)
 	gtk_widget_show(m_dArea);
 	gtk_widget_show(m_innertable);
 	gtk_widget_show(m_table);

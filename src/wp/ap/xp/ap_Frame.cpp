@@ -30,6 +30,7 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "ap_StatusBar.h"
+
 AP_Frame::~AP_Frame()
 {
 }
@@ -85,9 +86,10 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
+	m_pView->setWindowSize(_getDocumentAreaWidth(), _getDocumentAreaHeight());
 
 	updateTitle();
-//	pDocLayout->setView((FV_View *) m_pView);
+	//pDocLayout->setView((FV_View *) m_pView);
 	pDocLayout->fillLayouts();   
 	
 	_resetInsertionPoint();

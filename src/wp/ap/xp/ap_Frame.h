@@ -20,6 +20,7 @@
 #ifndef AP_FRAME_H
 #define AP_FRAME_H
 
+#include "ut_types.h"
 #if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__))
 #include "xap_Frame.h"
 #include "fv_View.h"
@@ -28,7 +29,7 @@
 class AP_Frame : public XAP_Frame
 {
  public:
-	AP_Frame(XAP_App *pApp) : XAP_Frame(pApp) {}
+	AP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App *pApp) : XAP_Frame(pFrameImpl, pApp) {}
 	AP_Frame(AP_Frame *pFrame) : XAP_Frame(static_cast<XAP_Frame *>(pFrame)) {}
 	virtual ~AP_Frame();
   
@@ -39,6 +40,8 @@ class AP_Frame : public XAP_Frame
 			  ap_Scrollbar_ViewListener *pScrollbarViewListener,
 			  AV_ListenerId lid, AV_ListenerId lidScrollbarViewListener,
 			  UT_uint32 iZoom);
+	virtual UT_sint32 _getDocumentAreaWidth() = 0;
+	virtual UT_sint32 _getDocumentAreaHeight() = 0;
 
  private:
 	void _resetInsertionPoint();

@@ -156,14 +156,12 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
 							&lidScrollbarViewListener))
 		goto Cleanup;
-
-	static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->_bindToolbars(pView);
 	
+	static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->_bindToolbars(pView);
+
 	_replaceView(pG, pDocLayout, pView, pScrollObj, pViewListener, pOldDoc, 
 		     pScrollbarViewListener, lid, lidScrollbarViewListener, iZoom);
 
-	m_pView->setWindowSize(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea)->allocation.width,
-			       GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea)->allocation.height);
 	setXScrollRange();
 	setYScrollRange();
 
@@ -256,10 +254,8 @@ void AP_UnixFrame::setYScrollRange(void)
 
 
 AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * pApp)
-	: AP_Frame(pApp)
+	: AP_Frame(new AP_UnixFrameImpl(this, pApp), pApp)
 {
-
-	m_pFrameImpl = new AP_UnixFrameImpl(this, pApp);
 	m_pData = NULL;
 	static_cast<XAP_UnixFrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
 
@@ -739,4 +735,14 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 		pFrameData->m_pStatusBar->show();
 	else	// turning status bar off
 		pFrameData->m_pStatusBar->hide();
+}
+
+UT_sint32 AP_UnixFrame::_getDocumentAreaWidth()
+{
+	return (UT_sint32) GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea)->allocation.width;
+}
+
+UT_sint32 AP_UnixFrame::_getDocumentAreaHeight()
+{
+	return (UT_sint32) GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea)->allocation.height;
 }
