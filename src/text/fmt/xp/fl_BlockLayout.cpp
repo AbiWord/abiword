@@ -2666,8 +2666,7 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
  Consume word in pPOB -- either squiggle or delete it
 
  FIXME:jsk Make callers use fl_BlockSpellIterator so we don't have to
- check validity?
-
+ check validity? Should just be provided the starting offset...
 */
 bool
 fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
@@ -2678,83 +2677,26 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	if (!pPOB)
 		return false;
 
-	// Ensure pPOB is deleted - if falling out of this block
-	do {
+    // Just use the initial offset from the provided pPOB - the word's
+    // exact location/length is not known (since what we're provided
+    // is just the editing limits).
+    fl_BlockSpellIterator* pWordIterator = new fl_BlockSpellIterator(this, pPOB->getOffset());
 
-		UT_sint32 iLength = pPOB->getLength();
-		UT_sint32 iBlockPos = pPOB->getOffset();
-		if (0 == iLength)
-			break;
+	const UT_UCSChar* pWord;
+	UT_sint32 iLength, iBlockPos;
 
-		// Get the block content
-		UT_GrowBuf pgb(1024);
-		bool bRes = getBlockBuf(&pgb);
-		UT_ASSERT(bRes);
+	if (pWordIterator->nextWordForSpellChecking(pWord, iLength, iBlockPos))
+    {
+        // The found word must be within the editing limits provided
+        UT_ASSERT(pPOB->getOffset() <= iBlockPos);
+        UT_ASSERT(pPOB->getLength() >= iLength);
+        delete pPOB;
 
-		const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
-		if (!pBlockText)
-			break;
-
-		const UT_UCSChar* pWord = &pBlockText[iBlockPos];
-
-		// For some reason, the spell checker fails on all 1-char
-		// words & really big ones
-		if ((iLength <= 1) || (iLength > INPUTWORDLEN))
-			break;
-
-		UT_ASSERT((UT_uint32)iBlockPos <= pgb.getLength());
-		UT_ASSERT((UT_uint32)(iBlockPos+iLength) <= pgb.getLength());
-
-		// Ignore words where first character is a digit
-		if (UT_UCS4_isdigit(pWord[0]))
-			break;
-
-		// Check that there are no CJK letters
-		if (!XAP_EncodingManager::get_instance()->noncjk_letters(pWord, iLength))
-			break;
-
-		// Convert word to simple characters the speller can
-		// understand. While doing this, look for upper-case letters and
-		// digits.
-		UT_UCSChar szTheWord[INPUTWORDLEN + 1];
-		UT_sint32 iNewLength = 0;
-		bool bAllUpperCase = true;
-		bool bHasNumeric = false;
-		for (UT_sint32 i=0; i < iLength; i++)
-		{
-			UT_UCSChar currentChar;
-			currentChar = pWord[i];
-
-			// Remove UCS_ABI_OBJECT from the word
-			if (currentChar == UCS_ABI_OBJECT) continue;
-
-			// Convert smart quote apostrophe to ASCII single quote to
-			// be compatible with ispell
-			if (currentChar == UCS_RQUOTE) currentChar = '\'';
-		
-			// Until a lower-case letter is found, we assume the word
-			// is upper-case (don't bother checking after the first
-			// lower-case letter has been found).
-			if (bAllUpperCase)
-				bAllUpperCase &= UT_UCS4_isupper(currentChar);
-
-			// Look for digits
-			bHasNumeric |= UT_UCS4_isdigit(currentChar);
-			
-			szTheWord[iNewLength++] = currentChar;
-		}
-
-		// Configurably ignore upper-case words
-		if (bAllUpperCase && m_pLayout->getSpellCheckCaps())
-			break;
-
-		// Configurably ignore words containing digits
-		if (bHasNumeric && m_pLayout->getSpellCheckNumbers())
-			break;
-
-		// _doCheckWord will consume/delete pPOB
-		return _doCheckWord(pPOB, szTheWord );
-	} while (0);
+		fl_PartOfBlock* pNewPOB = new fl_PartOfBlock(iBlockPos, iLength);
+		UT_ASSERT(pNewPOB);
+            
+		return _doCheckWord(pNewPOB, pWord );
+    }
 
 	// Delete the POB which is not longer needed
 	delete pPOB;
