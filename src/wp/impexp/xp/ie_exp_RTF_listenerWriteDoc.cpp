@@ -4224,10 +4224,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		if(listid != 0)
 		{
 			fl_AutoNum * pAuto = m_pDocument->getListByID(listid);
-			szAbiListDelim = pAuto->getDelim();
-			szAbiListDecimal = pAuto->getDecimal();
-			UT_String_sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
-			UT_String_sprintf(szLevel,"%i",pAuto->getLevel());
+			if(pAuto)
+			{
+				szAbiListDelim = pAuto->getDelim();
+				szAbiListDecimal = pAuto->getDecimal();
+				UT_String_sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
+				UT_String_sprintf(szLevel,"%i",pAuto->getLevel());
+			}
 		}
 	}
 	szListStyle = PP_evalProperty("list-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
