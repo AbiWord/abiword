@@ -38,6 +38,7 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Toolbar_Icons.h"
+#include "ap_Win32App.h"
 
 #define SPACE_ICONTEXT	4	// Pixels between the icon and the text
 
@@ -155,6 +156,10 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 	if (!szLabelName || !*szLabelName)
 		return NULL;
 
+	UT_String str = AP_Win32App::s_fromUTF8ToAnsi(szLabelName);
+	szLabelName = str.c_str();
+
+	
 	const char * szShortcut = NULL;
 	int len = 0;
 
@@ -181,7 +186,11 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 		len += 4;
 
 	if (!len)
-		return szLabelName;
+	{
+		static char buf[128];
+		strcpy(buf,szLabelName);
+		return buf;
+	}
 
 	static char buf[128];
 	memset(buf,0,NrElements(buf));
