@@ -530,9 +530,3 @@ protected:
 };
 
 #endif /* FV_VIEW_H */
-
-
-
-
-
-
