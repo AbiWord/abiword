@@ -80,24 +80,33 @@ public:
 	GtkWidget * m_windowMain;
 
 	GtkWidget * m_listAlignment;
+	 GtkWidget * m_menuitemLeft;
+	 GtkWidget * m_menuitemCentered;
+	 GtkWidget * m_menuitemRight;
+	 GtkWidget * m_menuitemJustified;
 
-//	GtkObject * m_spinbuttonLeft_adj;
 	GtkWidget * m_spinbuttonLeft;
-	
-//	GtkObject * m_spinbuttonRight_adj;
 	GtkWidget * m_spinbuttonRight;
+	GtkWidget * m_spinbuttonBy;
+
 	GtkWidget * m_listSpecial;
 	GtkWidget * m_listSpecial_menu;
-//	GtkObject * m_spinbuttonBy_adj;
-	GtkWidget * m_spinbuttonBy;
-//	GtkObject * m_spinbuttonBefore_adj;
+	 GtkWidget * m_menuitemNone;
+	 GtkWidget * m_menuitemFirstLine;
+	 GtkWidget * m_menuitemHanging;	
+	
 	GtkWidget * m_spinbuttonBefore;
-//	GtkObject * m_spinbuttonAfter_adj;
 	GtkWidget * m_spinbuttonAfter;
+	GtkWidget * m_spinbuttonAt;
+
 	GtkWidget * m_listLineSpacing;
 	GtkWidget * m_listLineSpacing_menu;
-//	GtkObject * m_spinbuttonAt_adj;
-	GtkWidget * m_spinbuttonAt;
+	 GtkWidget * m_menuitemSingle;
+	 GtkWidget * m_menuitemOneAndHalf;
+	 GtkWidget * m_menuitemDouble;
+	 GtkWidget * m_menuitemAtLeast;
+	 GtkWidget * m_menuitemExactly;
+	 GtkWidget * m_menuitemMultiple;
 
 	GtkWidget * m_drawingareaPreview;
 
