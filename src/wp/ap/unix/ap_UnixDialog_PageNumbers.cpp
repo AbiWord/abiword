@@ -123,7 +123,12 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	_createPreviewFromGC(m_unixGraphics,
 		   (UT_uint32) m_previewArea->allocation.width,
 		   (UT_uint32) m_previewArea->allocation.height);
-		   
+
+	// Todo: we need a good widget to query with a probable
+	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
+	// Todo: background. This should be fine
+	m_unixGraphics->init3dColors(m_previewArea->style);
+
 	// hack in a quick draw here
 	_updatePreview(m_recentAlign, m_recentControl);
 

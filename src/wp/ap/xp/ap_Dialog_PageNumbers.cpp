@@ -109,8 +109,6 @@ void AP_Preview_PageNumbers::setAlign(AP_Dialog_PageNumbers::tAlign align)
   m_align = align;
 }
 
-#define LINES_TO_DRAW 25
-
 void AP_Preview_PageNumbers::draw (void)
 {
   int x = 0, y = 0;
@@ -119,38 +117,39 @@ void AP_Preview_PageNumbers::draw (void)
 
   UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
   UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
-
-  // clear the screen on updates
-  m_gc->clearArea (0, 0, iWidth, iHeight);
+  UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
+	
+  m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+  m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
  
-  UT_sint32 iFontHeight = m_gc->getFontHeight ();
-  UT_sint32 step = (int)(iHeight / LINES_TO_DRAW);
-
   // actually draw some "text" on the preview for a more realistic appearance
 
   m_gc->setLineWidth(m_gc->tlu(1));
-  UT_RGBColor color(0, 0, 0);
-  m_gc->setColor(color);
+  m_gc->setColor3D(GR_Graphics::CLR3D_Foreground);
 
-  for (int txty = (2 * iFontHeight); txty < iHeight - (2 * iFontHeight); txty += step)
+  UT_sint32 iFontHeight = m_gc->getFontHeight ();
+  UT_sint32 step = m_gc->tlu(4);
+
+  for (int txty = pageRect.top + (2 * iFontHeight); txty < pageRect.top + pageRect.height - (2 * iFontHeight); txty += step)
     {
-      m_gc->drawLine (m_gc->tlu(7), txty, iWidth - m_gc->tlu(7), txty);
+      m_gc->drawLine (pageRect.left + m_gc->tlu(5), txty, pageRect.left + pageRect.width - m_gc->tlu(5), txty);
     }
 
   // draw in the page number as a header or footer, properly aligned
 
   switch (m_align)
     {
-    case AP_Dialog_PageNumbers::id_RALIGN : x = iWidth - (2 * m_gc->measureUnRemappedChar(*m_str)); break;
-    case AP_Dialog_PageNumbers::id_CALIGN : x = (int)(iWidth / 2); break;
-    case AP_Dialog_PageNumbers::id_LALIGN : x =  m_gc->measureUnRemappedChar(*m_str); break;
+    case AP_Dialog_PageNumbers::id_RALIGN : x = pageRect.left + pageRect.width - (2 * m_gc->measureUnRemappedChar(*m_str)); break;
+    case AP_Dialog_PageNumbers::id_CALIGN : x = pageRect.left + (int)(pageRect.width / 2); break;
+    case AP_Dialog_PageNumbers::id_LALIGN : x = pageRect.left + m_gc->measureUnRemappedChar(*m_str); break;
     }
 
   switch (m_control)
     {
-    case AP_Dialog_PageNumbers::id_HDR : y = (int)(iFontHeight / 2); break;
-    case AP_Dialog_PageNumbers::id_FTR : y = iHeight - (2 * iFontHeight); break;
+    case AP_Dialog_PageNumbers::id_HDR : y = pageRect.top + (int)(iFontHeight / 2); break;
+    case AP_Dialog_PageNumbers::id_FTR : y = pageRect.top + pageRect.height - (int)(1.5 * iFontHeight); break;
     }
 
+  //m_gc->setColor3D(GR_Graphics::CLR3D_Foreground);
   m_gc->drawChars (m_str, 0, UT_UCS4_strlen(m_str), x, y);
 }
