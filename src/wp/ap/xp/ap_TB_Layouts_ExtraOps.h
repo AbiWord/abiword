@@ -26,11 +26,10 @@
 *****************************************************************/
 
 BeginLayout(ExtraOps)
-#ifdef DEBUG
      ToolbarItem(AP_TOOLBAR_ID_FMT_HYPERLINK)
      ToolbarItem(AP_TOOLBAR_ID_FMT_BOOKMARK)
      Spacer ()
-#endif
+
 	ToolbarItem(AP_TOOLBAR_ID_FMT_OVERLINE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_STRIKE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_TOPLINE)
