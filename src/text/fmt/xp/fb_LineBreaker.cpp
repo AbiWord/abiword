@@ -333,7 +333,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 			fp_Line *pOldLine = pLine;
 			pLine = static_cast<fp_Line *>(pLine->getNext());
 
-			pBlock->_removeLine(pOldLine);
+			pBlock->_removeLine(pOldLine,true,true);
 		}
 
 

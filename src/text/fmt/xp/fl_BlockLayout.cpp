@@ -1508,11 +1508,11 @@ void fl_BlockLayout::collapse(void)
 		fl_DocSectionLayout * pDSL = getDocSectionLayout();
 		if(!pDSL->isCollapsing())
 		{
-			_removeLine(pLine,true);
+			_removeLine(pLine,true,true);
 		}
 		else
 		{
-			_removeLine(pLine,false);
+			_removeLine(pLine,false,true);
 		}
 		pLine = static_cast<fp_Line *>(getFirstContainer());
 	}
@@ -1544,7 +1544,7 @@ void fl_BlockLayout::purgeLayout(void)
 	}
 }
 
-void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer)
+void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool bReCalc)
 {
 
 	if (getFirstContainer() == static_cast<fp_Container *>(pLine))
@@ -1553,7 +1553,7 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer)
 
 		// we have to call recalcMaxWidth so that the new line has the correct
 		// x offset and width
-		if(getFirstContainer())
+		if(getFirstContainer() && bReCalc)
 			getFirstContainer()->recalcMaxWidth();
 	}
 
@@ -1562,7 +1562,7 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer)
 		setLastContainer(static_cast<fp_Container *>(getLastContainer()->getPrev()));
 		// we have to call recalcMaxWidth so that the new line has the correct
 		// x offset and width
-		if(getLastContainer())
+		if(getLastContainer() && bReCalc)
 			getLastContainer()->recalcMaxWidth();
 	}
 
@@ -1620,7 +1620,7 @@ void fl_BlockLayout::_removeAllEmptyLines(void)
 		if (pLine->isEmpty())
 		{
 			fp_Line * pNext = static_cast<fp_Line *>(pLine->getNext());
-			_removeLine(pLine, true);
+			_removeLine(pLine, true,true);
 			pLine = pNext;
 		}
 		else
@@ -2250,7 +2250,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		pDumLine = static_cast<fp_Line *>(pDumLine->getNext());
 		pLineToDelete->setBlock(NULL);
 // delete this and remove from container
-		_removeLine(pLineToDelete,true); 
+		_removeLine(pLineToDelete,true,false); 
 	}
 	//
 	// OK our line is the last line left
@@ -2321,7 +2321,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			pNew->addRun(pRun);
 			pRun= pRun->getNextRun();
 		}
-		_removeLine(pLine,true);
+		_removeLine(pLine,true,false);
 		pLine = pNew;
 		if(bFirst)
 		{
@@ -2436,7 +2436,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 				pNew->addRun(pRun);
 				pRun= pRun->getNextRun();
 			}
-			_removeLine(pLine,true);
+			_removeLine(pLine,true,false);
 			pLine = pNew;
 			if(bFirst)
 			{
