@@ -48,7 +48,7 @@ XAP_Dialog * AP_UnixDialog_Spell::static_constructor(XAP_DialogFactory * pFactor
 }
 
 AP_UnixDialog_Spell::AP_UnixDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : AP_Dialog_Spell(pDlgFactory,id)
+  : AP_Dialog_Spell(pDlgFactory,id), mbword(0)
 {
 }
 
@@ -381,7 +381,7 @@ void AP_UnixDialog_Spell::event_Change()
 	else
 	  {
 	        replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
-		if (!UT_UCS4_strlen(replace)) {
+		if (!replace || !UT_UCS4_strlen(replace)) {
 		  UT_DEBUGMSG(("replace is 0 length\n"));
 		  FREEP(replace);
 		  return;
@@ -403,7 +403,7 @@ void AP_UnixDialog_Spell::event_ChangeAll()
    else
      {
 	replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
-	if (!UT_UCS4_strlen(replace)) {
+	if (!replace || !UT_UCS4_strlen(replace)) {
 	   FREEP(replace);
 	   return;
 	}
@@ -473,26 +473,16 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
    m_iSelectedRow = -1;
 }
 
-
-// GTK+ uses multibyte strings for i18n
-// these functions convert from wide (UCS) to MB and back
-
-// TODO: these are probably generally useful functions,
-// TODO: but I don't know about xp support for them.
-
-// make a multibyte encoded version of a string
 char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
-	mbword = (char *) malloc (UT_UCS4_strlen(wword)*2);
-	UT_UCS4_strcpy_to_char(mbword,wword);
-	return mbword;
+  UT_UCS4String ucs4(wword);
+  return UT_strdup(ucs4.utf8_str());
 }
 
-// make a wide string from a multibyte string
 UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
 {
-        UT_UCSChar *wword = NULL;
-	UT_UCS4_cloneString_char ( &wword, word );
-
-	return wword;
+  UT_UCS4Char * str = 0;
+  UT_UCS4String ucs4(word);
+  UT_UCS4_cloneString(&str, ucs4.ucs4_str());
+  return str;
 }
