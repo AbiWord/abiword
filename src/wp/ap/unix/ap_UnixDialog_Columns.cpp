@@ -168,8 +168,6 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
-
-
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
@@ -180,6 +178,11 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
 	m_pPreviewWidget = new GR_UnixGraphics(m_wpreviewArea->window, unixapp->getFontManager(), m_pApp);
+
+	// Todo: we need a good widget to query with a probable
+	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget) 
+	// Todo: background. This should be fine
+	m_pPreviewWidget->init3dColors(m_wpreviewArea->style);
 
 	// let the widget materialize
 
@@ -228,6 +231,9 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 					  m_twoHandlerID);
         gtk_signal_handler_block(GTK_OBJECT(m_wtoggleThree), 
 					  m_threeHandlerID);
+
+		// DOM: TODO: rewrite me
+
 	switch (icolumns)
         {
         case 1:
@@ -246,6 +252,7 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),TRUE);
 		 break;
 	default:
+		// TODO: make these insenstive and update a spin control
 	         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
         gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
@@ -324,8 +331,6 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 
 void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 {
-
-
 	GtkWidget *frame2;
 	GtkWidget *vbox1;
 	GtkWidget *hbox1;
@@ -348,7 +353,6 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 
 	GtkWidget *hbox2;
 	GtkWidget *wLineBtween;
-	GtkWidget *wLabelLineBetween;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -456,15 +460,9 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(hbox2 );
 	gtk_box_pack_start (GTK_BOX (vbox1), hbox2, FALSE, FALSE, 0);
 
-	wLineBtween = gtk_check_button_new_with_label ("");
+	wLineBtween = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Column_Line_Between));
 	gtk_widget_show(wLineBtween );
 	gtk_box_pack_start (GTK_BOX (hbox2), wLineBtween, FALSE, FALSE, 3);
-
-	wLabelLineBetween = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Column_Line_Between));
-	gtk_widget_show(wLabelLineBetween );
-	gtk_box_pack_start (GTK_BOX (hbox2), wLabelLineBetween, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (wLabelLineBetween), GTK_JUSTIFY_LEFT);
-
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -549,3 +547,4 @@ void AP_UnixDialog_Columns::_storeWindowData(void)
 void AP_UnixDialog_Columns::enableLineBetweenControl(bool bState)
 {
 }
+

@@ -67,8 +67,6 @@ void AP_Dialog_Columns::setColumns(UT_uint32 iColumns)
 {
 	m_iColumns = iColumns;
 
-	UT_ASSERT(m_iColumns >= 1 && m_iColumns <= 3);
-
 	if(m_pColumnsPreview)
 		m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
 
@@ -117,17 +115,25 @@ void AP_Columns_preview::draw(void)
 	UT_sint32 iWidth = getWindowWidth();
 	UT_sint32 iHeight = getWindowHeight();
 
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-
 	UT_Rect pageRect(5, 5, iWidth - 10, iHeight - 10);
 
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
+	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, 
+					pageRect.height);
+
 	m_gc->setLineWidth(1);
-	m_gc->drawLine(pageRect.left, pageRect.top, pageRect.left + pageRect.width, pageRect.top);
-	m_gc->drawLine(pageRect.left, pageRect.top, pageRect.left, pageRect.top + pageRect.height);
+	m_gc->drawLine(pageRect.left, pageRect.top, 
+				   pageRect.left + pageRect.width, pageRect.top);
+	m_gc->drawLine(pageRect.left, pageRect.top, 
+				   pageRect.left, pageRect.top + pageRect.height);
+
 	m_gc->setLineWidth(3);
-	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + 1, pageRect.left + pageRect.width, pageRect.top + pageRect.height);
-	m_gc->drawLine(pageRect.left + 1, pageRect.top + pageRect.height, pageRect.left + pageRect.width, pageRect.top + pageRect.height);
+	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + 1, 
+				   pageRect.left + pageRect.width, 
+				   pageRect.top + pageRect.height);
+	m_gc->drawLine(pageRect.left + 1, pageRect.top + pageRect.height, 
+				   pageRect.left + pageRect.width, 
+				   pageRect.top + pageRect.height);
 
 
 	pageRect.top += 5;
@@ -153,66 +159,31 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	UT_RGBColor Line_color(0, 0, 0);
 	gc->setColor(Line_color);
 
-	UT_sint32 y;
-
 	rect.left += iHalfColumnGap;
 	rect.width -= 2 * iHalfColumnGap;
 
-
-	for(y = y_start; y < y_end; y += y_step)
+	for(UT_sint32 y = y_start; y < y_end; y += y_step)
 	{
-		switch(iColumns)
+		for (UT_sint32 i = 1; i <= iColumns; i++)
 		{
-		case 1:
-			gc->drawLine(rect.left + iHalfColumnGap, y, rect.left + rect.width - iHalfColumnGap, y);
-			break;
+			UT_sint32 xLeft, xRight;
 
-		case 2:
-			gc->drawLine(rect.left + iHalfColumnGap, y, rect.left + rect.width / 2 - iHalfColumnGap, y);
-			gc->drawLine(rect.left + rect.width / 2 + iHalfColumnGap, y, rect.left + rect.width - iHalfColumnGap, y);
-			break;
-
-		case 3:
-			gc->drawLine(rect.left + iHalfColumnGap, y, rect.left + rect.width / 3 - iHalfColumnGap, y);
-			gc->drawLine(rect.left + rect.width / 3 + iHalfColumnGap, y, rect.left + 2 * rect.width / 3 - iHalfColumnGap, y);
-			gc->drawLine(rect.left + 2 * rect.width / 3 + iHalfColumnGap, y, rect.left + rect.width - iHalfColumnGap, y);
-			break;
-
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
+			// a little bit of math to avoid/replace a (nasty) switch statement
+			xLeft = rect.left + iHalfColumnGap + ((i-1) * rect.width / iColumns);
+			xRight = rect.left - iHalfColumnGap + (i * rect.width / iColumns);
+			gc->drawLine(xLeft, y, xRight, y);
 		}
-
 	}
 
 	if(bLineBetween)
 	{
-		UT_sint32 x;
-
-		switch(iColumns)
+		// a bit of math to avoid/replace a (nasty) switch statement
+		for (UT_sint32 j = 2; j <= iColumns; j++)
 		{
-		case 1:
-			break;
+			UT_sint32 x;
 
-		case 2:
-			x = rect.left + rect.width / 2;
+			x = rect.left + (j-1) * rect.width / iColumns;
 			gc->drawLine(x, y_start, x, y_end);
-			break;
-
-		case 3:
-			x = rect.left + rect.width / 3;
-			gc->drawLine(x, y_start, x, y_end);
-			x = rect.left + 2 * rect.width / 3;
-			gc->drawLine(x, y_start, x, y_end);
-			break;
-
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
 		}
-
 	}
-
 }
-
-
