@@ -92,7 +92,8 @@ do
  		echo "because you do not have sufficient permission to perform this operation."
 		echo "You will most likely have to run this script as superuser to write to"
 		echo "system directories."
-		exit 2
+		# loop around again
+		GO=1
 	    fi
 	fi
     else
@@ -197,23 +198,28 @@ cat <<EOF
   proceed and specify "${DEFAULT_LINK_DIR}", I will create symbolic links like
   "${DEFAULT_LINK_DIR}/AbiWord" and point them to the executable I just
   previously installed.
-
 EOF
-
-echo -n "Do you want to provide a directory for these symbolic links? (y/n) [y]: "
-read MAKE_LINKS
-if [ "${MAKE_LINKS}" = "n" -o "${MAKE_LINKS}" = "N" ]
-then
-    echo ""
-    echo "Installation complete."
-    echo ""
-    exit
-fi
 
 # go for symlinks
 GO=1
+ASKED_LINKS=0
 while test ${GO} -eq 1
 do
+    if [ ${ASKED_LINKS} -eq 0 ]
+    then
+	ASKED_LINKS=1
+	echo ""
+	echo -n "Do you want to provide a directory for these symbolic links? (y/n) [y]: "
+	read MAKE_LINKS
+	if [ "${MAKE_LINKS}" = "n" -o "${MAKE_LINKS}" = "N" ]
+	then
+	    echo ""
+	    echo "Installation complete."
+	    echo ""
+	    exit
+	fi
+    fi
+
     echo ""
     echo "In which directory shall I install the symbolic links?"
     echo -n "[${DEFAULT_LINK_DIR}]: "
@@ -246,15 +252,17 @@ do
 	    if [ $? -ne 0 ]
 	    then
 		echo ""
-		echo "I couldn't create [${LINK_DIR}].  You are probably seeing this error"
- 		echo "because you do not have sufficient permission to perform this operation."
-		echo "You will most likely have to run this script as superuser to write to"
-		echo "system directories."
+		echo "  I couldn't create [${LINK_DIR}].  You are probably seeing this error"
+ 		echo "  because you do not have sufficient permission to perform this operation."
+		echo "  You will most likely have to run this script as superuser to write to"
+		echo "  system directories."
 		echo ""
-		echo "You can manually create these links at a later time.  You can run"
-		echo "the executables in ${INSTALL_BASE}/bin for now, or run this install"
-		echo "script again with sufficient permissions."
-		exit 2
+		echo "  If you wish, you can manually create these links at a later time."
+		echo "  You may cancel the installation of these links by issuing a"
+		echo "  terminal interrupt (usually Control-C), or you can provide another"
+		echo "  directory now."
+		# loop again
+		GO=1
 	    fi
 	fi
     fi
