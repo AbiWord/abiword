@@ -1623,7 +1623,7 @@ bool IE_Imp_RTF::PopRTFState(void)
 	else
 	{
 		UT_ASSERT(pState != NULL);	// state stack should not be empty
-		return false;
+		return true; // was false
 	}
 }
 
