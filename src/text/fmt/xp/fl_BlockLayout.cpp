@@ -5292,6 +5292,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 void
 fl_BlockLayout::_assertRunListIntegrityImpl(void)
 {
+	UT_return_if_fail( m_pLayout );
+	
 	fp_Run* pRun = m_pFirstRun;
 	UT_uint32 iOffset = 0;
 	bool bPastFirst = false;
@@ -5864,6 +5866,9 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// If there is no previous strux (this being the first strux in
 	// the document) this will be empty - but the EOP Run needs to be
 	// deleted.
+	//
+	// This is not exactly the case; for example the first block in the footnote section
+	// has not previous, yet it is not empty -- it contains at least the footnote reference.
 
 	fp_Line* pLastLine = NULL;
 	fl_BlockLayout * pPrevBL = static_cast<fl_BlockLayout *>(getPrev());
@@ -7353,13 +7358,14 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		pView->_setPoint(pView->getPoint() - 1);
 
 	// TODO: are objects always one wide?
-	m_pSquiggles->textDeleted(blockOffset, 1);
+	if(m_pSquiggles)
+		m_pSquiggles->textDeleted(blockOffset, 1);
 
 	_assertRunListIntegrity();
 	//
 	// OK Now do the deleteObject for any TOC's that shadow this block.
 	//
-	if(!isNotTOCable() && !m_bIsTOC && m_bStyleInTOC)
+	if(!isNotTOCable() && !m_bIsTOC && m_bStyleInTOC && m_pLayout)
 	{
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
@@ -7810,6 +7816,7 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 bool
 fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 {
+	UT_return_val_if_fail( m_pLayout, false );
 	_assertRunListIntegrity();
 
 	PT_BlockOffset blockOffset = pcrfm->getBlockOffset();
