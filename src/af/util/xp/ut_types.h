@@ -181,7 +181,8 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define UCS_FIELDEND		((UT_UCSChar)0xF851)
 #define UCS_BOOKMARKSTART	((UT_UCSChar)0xF852)
 #define UCS_BOOKMARKEND		((UT_UCSChar)0xF853)
-#define UCS_ABICONTROL_END	(UCS_BOOKMARKEND)
+#define UCS_LIGATURE_PLACEHOLDER ((UT_UCS4Char)0xF854)
+#define UCS_ABICONTROL_END	(UCS_LIGATURE_PLACEHOLDER)
 
 
 #if 1 /* try to use the unicode values for special chars */
