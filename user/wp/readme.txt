@@ -87,8 +87,7 @@ Windows 95, Windows 98, and Windows NT 4.0), Linux (including Intel
 and Alpha), and a variety of other UNIX-like systems (including
 Solaris, and *BSD).
 
-Other operating systems will be supported in the future.  A port to
-the BeOS is currently nearing completion.
+Other operating systems will be supported in the future.
 
 AbiWord is not yet available for the Macintosh, but efforts to remedy
 this situation have begun.
