@@ -42,6 +42,11 @@
 #pragma warning(disable: 4355)	// 'this' used in base member initializer list
 #endif
 
+// TODO Fix the following header file. It seems to be incomplete
+// TODO #include <ap_EditMethods.h>
+// TODO In the mean time, define the needed function by hand
+extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
+
 /*****************************************************************/
 
 bool XAP_Win32Frame::RegisterClass(XAP_Win32App* app)
@@ -281,6 +286,9 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	m_hwndStatusBar = _createStatusBarWindow(m_hwndFrame,0,m_iBarHeight+iHeight,iWidth);
 	GetClientRect(m_hwndStatusBar,&r);
 	m_iStatusBarHeight = r.bottom;
+
+	// Allow drag-and drop
+	DragAcceptFiles(m_hwndFrame, true);
 
 	// we let our caller decide when to show m_hwndFrame.
 
@@ -633,6 +641,60 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			SendMessage(f->m_hwndStatusBar,WM_SYSCOLORCHANGE,0,0);
 		return 0;
 	}
+
+	case WM_DROPFILES:
+		{
+			HDROP hDrop = (HDROP) wParam; 
+			// How many files were dropped?
+			int count = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+			char bufsize[_MAX_PATH];
+			int i,pathlength;
+			for (i=0; i<count; i++)
+			{
+				pathlength = DragQueryFile(hDrop, i, NULL, 0);
+				if (pathlength < _MAX_PATH)
+				{
+					DragQueryFile(hDrop, i, bufsize, _MAX_PATH);
+					XAP_App * pApp = f->getApp();
+					UT_ASSERT(pApp);
+					
+					XAP_Frame * pNewFrame;
+					// TODO Check if the current document is empty.
+					// TODO How do I do that?
+					if (0)
+					{
+						pNewFrame = f;
+					}
+					else
+					{
+						pNewFrame = pApp->newFrame();
+						if (pNewFrame == NULL)
+						{
+							f->setStatusMessage("Could not open another window");
+							return 0;
+						}
+					}
+					
+					
+					UT_Error error = pNewFrame->loadDocument(bufsize, IEFT_Unknown);
+					if (error != UT_OK)
+					{
+						if (f != pNewFrame)
+							pNewFrame->close();
+						s_CouldNotLoadFileMessage(f, bufsize, error);
+					}
+					else
+					{
+						pNewFrame->show();
+					}
+				}
+				else
+				{
+				}
+			}
+			DragFinish(hDrop);
+		}
+		return 0;
 
 	case WM_DESTROY:
 		return 0;
