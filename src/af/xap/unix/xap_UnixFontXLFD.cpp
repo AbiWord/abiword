@@ -133,21 +133,21 @@ char * XAP_UnixFontXLFD::getXLFD(void)
 	g_string_append(xlfd, m_width); g_string_append(xlfd, "-");
 	g_string_append(xlfd, m_adStyle); g_string_append(xlfd, "-");
 
-	g_snprintf(numberBuffer, 10, "%ld", m_pixelSize);
+	g_snprintf(numberBuffer, 10, "%d", m_pixelSize);
 	g_string_append(xlfd, numberBuffer); g_string_append(xlfd, "-");
 
-	g_snprintf(numberBuffer, 10, "%ld", m_deciPointSize);
+	g_snprintf(numberBuffer, 10, "%d", m_deciPointSize);
 	g_string_append(xlfd, numberBuffer); g_string_append(xlfd, "-");
 
-	g_snprintf(numberBuffer, 10, "%ld", m_resX);
+	g_snprintf(numberBuffer, 10, "%d", m_resX);
 	g_string_append(xlfd, numberBuffer); g_string_append(xlfd, "-");
 
-	g_snprintf(numberBuffer, 10, "%ld", m_resY);
+	g_snprintf(numberBuffer, 10, "%d", m_resY);
 	g_string_append(xlfd, numberBuffer); g_string_append(xlfd, "-");
 					
 	g_string_append(xlfd, m_spacing); g_string_append(xlfd, "-");
 
-	g_snprintf(numberBuffer, 10, "%ld", m_averageWidth);
+	g_snprintf(numberBuffer, 10, "%d", m_averageWidth);
 	g_string_append(xlfd, numberBuffer); g_string_append(xlfd, "-");
 					
 	g_string_append(xlfd, m_registry); g_string_append(xlfd, "-");

@@ -335,7 +335,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		pS++;
 	}
 	*pD++ = ')';
-	sprintf((char *) pD," %ld %ld MS\n",xoff,yoff);
+	sprintf((char *) pD," %d %d MS\n",xoff,yoff);
 	m_ps->writeBytes(buf);
 }
 
@@ -349,7 +349,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	
 	char buf[OUR_LINE_LIMIT*2];
 //	UT_sint32 nA = getFontAscent();
-	sprintf(buf,"%ld %ld %ld %ld ML\n", x2, y2, x1, y1);
+	sprintf(buf,"%d %d %d %d ML\n", x2, y2, x1, y1);
 	m_ps->writeBytes(buf);
 }
 
@@ -510,7 +510,7 @@ UT_Bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	// emit stuff prior to each page
 	
 	char buf[1024];
-	sprintf(buf,"%ld",pageNumber);
+	sprintf(buf,"%d",pageNumber);
 
 	const char * argv[2] = { szPageLabel, buf };
 	m_ps->formatComment("Page",argv,2);
@@ -519,7 +519,7 @@ UT_Bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 
 	m_ps->formatComment("BeginPageSetup");
 
-	sprintf(buf,"%ld %ld %d %s\n",iWidth,iHeight,PS_RESOLUTION,((bPortrait) ? "BPP" : "BPL"));
+	sprintf(buf,"%d %d %d %s\n",iWidth,iHeight,PS_RESOLUTION,((bPortrait) ? "BPP" : "BPL"));
 	m_ps->writeBytes(buf);
 	
 	// TODO add page-setup stuff here
@@ -660,7 +660,7 @@ void PS_Graphics::_emit_FontMacros(void)
 	for (k=0; k<kLimit; k++)
 	{
 		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
-		sprintf(buf,"  /F%ld {%ld /%s FSF setfont} bind def\n", k,
+		sprintf(buf,"  /F%d {%d /%s FSF setfont} bind def\n", k,
 				psf->getSize(), psf->getMetricsData()->gfi->fontName);
 		m_ps->writeBytes(buf);
 	}
@@ -669,7 +669,7 @@ void PS_Graphics::_emit_FontMacros(void)
 void PS_Graphics::_emit_SetFont(void)
 {
 	char buf[1024];
-	sprintf(buf,"F%ld\n", m_pCurrentFont->getIndex());
+	sprintf(buf,"F%d\n", m_pCurrentFont->getIndex());
 	m_ps->writeBytes(buf);
 }
 
@@ -722,10 +722,10 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
-	sprintf(buf, "%ld %ld translate\n", xDest, (yDest * -1) - iDestHeight);
+	sprintf(buf, "%d %d translate\n", xDest, (yDest * -1) - iDestHeight);
 	m_ps->writeBytes(buf);
 
-	sprintf(buf, "%ld %ld scale\n", iDestWidth, iDestHeight);
+	sprintf(buf, "%d %d scale\n", iDestWidth, iDestHeight);
 	m_ps->writeBytes(buf);
 
 	// use true image source data dimensions for matrix 

@@ -361,7 +361,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 				UT_uint16 charWidths[6];
 				UT_ASSERT(n < 10000);
 
-				sprintf(buf, "%ld", n);
+				sprintf(buf, "%d", n);
 				UT_UCS_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
 
@@ -396,7 +396,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 				UT_uint16 charWidths[6];
 				UT_ASSERT(n < 10000);
 
-				sprintf(buf, "%ld", n);
+				sprintf(buf, "%d", n);
 				UT_UCS_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
 

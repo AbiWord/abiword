@@ -4315,7 +4315,7 @@ void FV_View::_doPaste(void)
 			for (;;)
 			{
 				pImg->getName(szName);
-				sprintf(szName + strlen(szName), "%ld", ndx);
+				sprintf(szName + strlen(szName), "%d", ndx);
 				if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
 				{
 					break;
@@ -4642,7 +4642,7 @@ UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 	UT_uint32 ndx = 0;
 	for (;;)
 	{
-		sprintf(szName, "%s_%ld", pszName, ndx);
+		sprintf(szName, "%s_%d", pszName, ndx);
 		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
 		{
 			break;

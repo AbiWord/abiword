@@ -279,7 +279,7 @@ void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 {
 	char message[512];
 
-	sprintf(message, "AbiWord has finished its search of the document and has made %ld replacements.", numReplaced);
+	sprintf(message, "AbiWord has finished its search of the document and has made %d replacements.", numReplaced);
 	_messageBox(message);
 }
 

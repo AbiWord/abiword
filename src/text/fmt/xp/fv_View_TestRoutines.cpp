@@ -38,21 +38,21 @@ void FV_View::Test_Dump(void)
 	x++;
 	
 #if defined(PT_TEST)
-	sprintf(buf,"dump.ptbl.%ld",x);
+	sprintf(buf,"dump.ptbl.%d",x);
 	FILE * fpDumpPTbl = fopen(buf,"w");
 	m_pDoc->__dump(fpDumpPTbl);
 	fclose(fpDumpPTbl);
 #endif
 
 #if defined(FMT_TEST)
-	sprintf(buf,"dump.fmt.%ld",x);
+	sprintf(buf,"dump.fmt.%d",x);
 	FILE * fpDumpFmt = fopen(buf,"w");
 	m_pLayout->__dump(fpDumpFmt);
 	fclose(fpDumpFmt);
 #endif
 
 #if defined(UT_TEST)
-	sprintf(buf,"dump.ut.%ld",x);
+	sprintf(buf,"dump.ut.%d",x);
 	FILE * fpDumpUt = fopen(buf,"w");
 	UT_Test(fpDumpUt);
 	fclose(fpDumpUt);

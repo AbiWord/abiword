@@ -283,7 +283,7 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 
 	static char buf[128];
 	UT_ASSERT(strlen(sz)<120);
-	sprintf(buf,"%s%ld",sz,k);
+	sprintf(buf,"%s%d",sz,k);
 	return buf;
 }
 

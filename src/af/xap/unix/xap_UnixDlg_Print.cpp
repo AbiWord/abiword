@@ -436,9 +436,9 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 
 		char str[30];
-		sprintf(str, "%ld", m_persistPrintDlg.nFromPage);
+		sprintf(str, "%d", m_persistPrintDlg.nFromPage);
 		gtk_entry_set_text (GTK_ENTRY (entryFrom), str);
-		sprintf(str, "%ld", m_persistPrintDlg.nToPage);
+		sprintf(str, "%d", m_persistPrintDlg.nToPage);
 		gtk_entry_set_text (GTK_ENTRY (entryTo), str);
 
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);

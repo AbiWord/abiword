@@ -93,7 +93,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 			// first line is a count
 			fgets(buffer, 512, file);
 
-			long fontcount = atol(buffer);
+			UT_sint32 fontcount = atol(buffer);
 
 			// these should probably not be DEBUG-build only, but reworked
 			// for real error messages in a release version (perhaps with
@@ -103,7 +103,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 			if (fontcount < 0)
 			{
 				char message[512];
-				g_snprintf(message, 512, "WARNING: Font index file [%s]\ndeclares an invalid number of fonts (%ld).",
+				g_snprintf(message, 512, "WARNING: Font index file [%s]\ndeclares an invalid number of fonts (%d).",
 						   filename, fontcount);
 				messageBoxOK(message);
 			}
@@ -114,7 +114,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 #endif
 			
 			// every line after is a font name / XLFD pair
-			long line;
+			UT_sint32 line;
 			for (line = 0; line < fontcount; line++)
 			{
 				if (!fgets(buffer, 512, file))
@@ -123,7 +123,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 					// fonts specified than found)
 					char message[512];
 					g_snprintf(message, 512, "Premature end of file from font index file [%s];\n"
-							   "%ld fonts were supposed to be declared, but I only got %ld.\n"
+							   "%d fonts were supposed to be declared, but I only got %d.\n"
 							   "I will continue, but things may not work correctly.\n",
 							   filename, fontcount, line);
 					messageBoxOK(message);
@@ -146,7 +146,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 			fclose(file);
 	}
 
-	if (totaldirs <= 0)
+	if (totaldirs == 0)
 	{
 		// TODO this is not big enough for a really big list of fonts!
 		char message[10240];
@@ -184,7 +184,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 		// we have no fonts, just quit
 		char message[1024];
 		g_snprintf(message, 1024, "Found no actual font data files ('*.pfa', '*.afm') in\n"
-				   "the font path even though I found [%ld] font index files ('fonts.dir').\n"
+				   "the font path even though I found [%d] font index files ('fonts.dir').\n"
 				   "\n"
 				   "It is possible that the AbiSuite Unix fonts were not completely and successfully\n"
 				   "installed.\n"

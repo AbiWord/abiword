@@ -639,7 +639,7 @@ UT_Bool fp_FieldRun::calculateValue(void)
 
 			UT_ASSERT(iPageNum > 0);
 
-			sprintf(szFieldValue, "%ld", iPageNum);
+			sprintf(szFieldValue, "%dd", iPageNum);
 		}
 		else
 		{
@@ -659,7 +659,7 @@ UT_Bool fp_FieldRun::calculateValue(void)
 			fp_Page* pPage = m_pLine->getContainer()->getPage();
 			FL_DocLayout* pDL = pPage->getDocLayout();
 
-			sprintf(szFieldValue, "%ld", pDL->countPages());
+			sprintf(szFieldValue, "%d", pDL->countPages());
 		}
 		else
 		{

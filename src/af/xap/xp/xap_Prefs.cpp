@@ -721,7 +721,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			m_pApp->getApplicationName(),
 			"1.0");
 	{
-		fprintf(fp,"\n\t<Select\n\t\tscheme=\"%s\"\n\t\tautosaveprefs=\"%ld\" />\n",
+		fprintf(fp,"\n\t<Select\n\t\tscheme=\"%s\"\n\t\tautosaveprefs=\"%d\" />\n",
 				m_currentScheme->getSchemeName(),
 				(UT_uint32)m_bAutoSavePrefs);
 
@@ -774,7 +774,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			fprintf(fp,"\t\t/>\n");
 		}
 
-		fprintf(fp,"\n\t<Recent\n\t\tmax=\"%ld\"\n",
+		fprintf(fp,"\n\t<Recent\n\t\tmax=\"%d\"\n",
 				(UT_uint32)m_iMaxRecent);
 
 		kLimit = m_vecRecent.getItemCount();
@@ -783,7 +783,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 		{
 			const char * szRecent = getRecent(k+1);
 
-			fprintf(fp,"\t\tname%ld=\"%s\"\n",k+1,szRecent);
+			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,szRecent);
 		}
 				
 		fprintf(fp,"\t\t/>\n");

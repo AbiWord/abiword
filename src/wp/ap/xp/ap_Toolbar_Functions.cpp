@@ -440,7 +440,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 
 	UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
 	
-	sprintf(buf, "%ld%%", iZoom);
+	sprintf(buf, "%d%%", iZoom);
 	*pszState = buf;
 
 	return s;
