@@ -27,6 +27,7 @@
 #include "ap_StatusBar.h"
 #include "gr_Win32Graphics.h"
 class XAP_Frame;
+class XAP_Win32App;
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -37,7 +38,7 @@ public:
 	AP_Win32StatusBar(XAP_Frame * pFrame);
 	virtual ~AP_Win32StatusBar(void);
 
-	HWND					createWindow(HWND hwndContainer,
+	HWND					createWindow(HWND hwndFrame,
 										 UT_uint32 left, UT_uint32 top,
 										 UT_uint32 width);
 	virtual void			setView(AV_View * pView);

@@ -291,9 +291,9 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
 
-#if 0
-	m_hwndStatusBar = _createStatusBarWindow(m_hwndFrame,0,m_iBarHeight+iHeight,iWidth,...);
-#endif
+	m_hwndStatusBar = _createStatusBarWindow(m_hwndFrame,0,m_iBarHeight+iHeight,iWidth);
+	GetClientRect(m_hwndStatusBar,&r);
+	m_iStatusBarHeight = r.bottom;
 
 	// we let our caller decide when to show m_hwndFrame.
 
@@ -466,14 +466,16 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
 		}
 
+		// leave room for the toolbars and the status bar
+		nHeight -= f->m_iBarHeight;
+		nHeight -= f->m_iStatusBarHeight;
+
 		if (f->m_hwndContainer)
-		{
-			// leave room for the toolbars
-			nHeight -= f->m_iBarHeight;
-
 			MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
-		}
 
+		if (f->m_hwndStatusBar)
+			MoveWindow(f->m_hwndStatusBar, 0, f->m_iBarHeight+nHeight, nWidth, f->m_iStatusBarHeight, TRUE);
+			
 		f->m_iSizeWidth = nWidth;
 		f->m_iSizeHeight = nHeight;
 		

@@ -93,7 +93,7 @@ UT_Bool AP_Win32StatusBar::RegisterClass(XAP_Win32App * app)
 	return UT_TRUE;
 }
 
-HWND AP_Win32StatusBar::createWindow(HWND hwndContainer,
+HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 									 UT_uint32 left, UT_uint32 top,
 									 UT_uint32 width)
 {
@@ -101,14 +101,14 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndContainer,
 	m_hwndStatusBar = CreateWindowEx(0, s_StatusBarWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, s_iFixedHeight,
-									hwndContainer, NULL, app->getInstance(), NULL);
+									hwndFrame, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndStatusBar);
 	SWL(m_hwndStatusBar, this);
 
 	RECT rSize;
 	GetClientRect(m_hwndStatusBar,&rSize);
-	setHeight(nHeight);
-	setWidth(nWidth);
+	setHeight(rSize.bottom);
+	setWidth(rSize.right);
 
 	return m_hwndStatusBar;
 }
@@ -117,9 +117,9 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 {
 	// this is a static member function.
 
-	AP_Win32StatusBar * pRuler = GWL(hwnd);
+	AP_Win32StatusBar * pStatusBar = GWL(hwnd);
 
-	if (!pRuler)
+	if (!pStatusBar)
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
 		
 	switch (iMsg)
@@ -128,8 +128,8 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 		{
 			int nWidth = LOWORD(lParam);
 			int nHeight = HIWORD(lParam);
-			setHeight(nHeight);
-			setWidth(nWidth);
+			pStatusBar->setHeight(nHeight);
+			pStatusBar->setWidth(nWidth);
 			return 0;
 		}
 	
@@ -140,7 +140,7 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 			UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
 					  ps.rcPaint.right-ps.rcPaint.left,
 					  ps.rcPaint.bottom-ps.rcPaint.top);
-			pRuler->draw(&r);
+			pStatusBar->draw(&r);
 			EndPaint(hwnd,&ps);
 			return 0;
 		}

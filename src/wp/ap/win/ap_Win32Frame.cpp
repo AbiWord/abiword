@@ -243,9 +243,8 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	// created.
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
-#if 0
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
-#endif
+
 	RECT r;
 	GetClientRect(hwnd, &r);
 	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
@@ -258,9 +257,8 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-#if 0
 	((AP_FrameData*)m_pData)->m_pStatusBar->draw(NULL);
-#endif	
+
 	return UT_TRUE;
 
 Cleanup:
@@ -383,7 +381,9 @@ UT_Bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 		return UT_FALSE;
 	if (!AP_Win32LeftRuler::RegisterClass(app))
 		return UT_FALSE;
-
+	if (!AP_Win32StatusBar::RegisterClass(app))
+		return UT_FALSE;
+	
 	return UT_TRUE;
 }
 
@@ -396,6 +396,7 @@ AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 	m_hwndVScroll = NULL;
 	m_hwndHScroll = NULL;
 	m_hwndDocument = NULL;
+	m_hwndStatusBar = NULL;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
@@ -407,6 +408,7 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_hwndVScroll = NULL;
 	m_hwndHScroll = NULL;
 	m_hwndDocument = NULL;
+	m_hwndStatusBar = NULL;
 }
 
 AP_Win32Frame::~AP_Win32Frame(void)
@@ -933,9 +935,14 @@ void AP_Win32Frame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 
 HWND AP_Win32Frame::_createStatusBarWindow(HWND hwndParent,
 										   UT_uint32 iLeft, UT_uint32 iTop,
-										   UT_uint32 iWidth, UT_uint32 iHeight)
+										   UT_uint32 iWidth)
 {
-	return 0;
+	AP_Win32StatusBar * pStatusBar = new AP_Win32StatusBar(this);
+	UT_ASSERT(pStatusBar);
+	m_hwndStatusBar = pStatusBar->createWindow(hwndParent,iLeft,iTop,iWidth);
+	((AP_FrameData *)m_pData)->m_pStatusBar = pStatusBar;
+
+	return m_hwndStatusBar;
 }
 
 void AP_Win32Frame::setStatusMessage(const char * szMsg)

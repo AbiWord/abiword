@@ -77,7 +77,7 @@ protected:
 													  UT_uint32 iWidth, UT_uint32 iHeight)=0;
 	virtual HWND				_createStatusBarWindow(HWND hwndParent,
 													  UT_uint32 iLeft, UT_uint32 iTop,
-													  UT_uint32 iWidth, UT_uint32 iHeight)=0;
+													  UT_uint32 iWidth)=0;
 	void						_createTopLevelWindow(void);
 	static LRESULT CALLBACK		_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
@@ -89,6 +89,7 @@ protected:
 	EV_Win32MenuPopup *			m_pWin32Popup; /* only valid while a context popup is up */
 	UT_Vector					m_vecWin32Toolbars;
 	UT_uint32					m_iBarHeight;
+	UT_uint32					m_iStatusBarHeight;
 	
 	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
 	HWND						m_hwndRebar;
