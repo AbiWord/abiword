@@ -770,9 +770,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 		if (m_pAutoNum->isEmpty())
 		{
-			fl_AutoNum * pAuto = m_pAutoNum;
+			m_pDoc->removeList(m_pAutoNum,getStruxDocHandle());
 			DELETEP(m_pAutoNum);
-			m_pDoc->removeList(pAuto,getStruxDocHandle());
 		}
 		else
 		{
