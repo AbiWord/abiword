@@ -30,8 +30,8 @@ struct _ClipboardItem;
 class AP_FakeClipboard : public AP_Clipboard
 {
 public:
-	virtual AP_FakeClipboard();
-	virtual ~AP_FakeClipboard();
+	AP_FakeClipboard();
+	~AP_FakeClipboard();
 	
 	virtual UT_Bool		open(void);
 	virtual UT_Bool		close(void);
