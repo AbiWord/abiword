@@ -117,8 +117,9 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixTopRuler: [p %p] [size w %d h %d] received configure_event\n",
-				 pUnixTopRuler, e->width, e->height));
+
+	// UT_DEBUGMSG(("UnixTopRuler: [p %p] [size w %d h %d] received configure_event\n",
+	//				 pUnixTopRuler, e->width, e->height));
 
 	UT_uint32 iHeight = (UT_uint32)e->height;
 	if (iHeight != pUnixTopRuler->getHeight())
@@ -134,8 +135,8 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixTopRuler: [p %p] received motion_notify_event\n",pUnixTopRuler));
+	// AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// UT_DEBUGMSG(("UnixTopRuler: [p %p] received motion_notify_event\n",pUnixTopRuler));
 	return 1;
 }
 	
@@ -150,8 +151,8 @@ gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 gint AP_UnixTopRuler::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixTopRuler: [p %p] received delete_event\n",pUnixTopRuler));
+	// AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// UT_DEBUGMSG(("UnixTopRuler: [p %p] received delete_event\n",pUnixTopRuler));
 	return 1;
 }
 	
