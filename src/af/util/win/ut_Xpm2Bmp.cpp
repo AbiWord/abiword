@@ -120,7 +120,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		
 		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1]," %s %s",&bufKey,&bufColorValue);
 		UT_ASSERT(nf == 2);
-		UT_ASSERT(bufKey[0] = 'c');
+		UT_ASSERT(bufKey[0] == 'c');
 
 		// make the ".." a hash key and store our color index as the data.
 		// we add k+1 because the hash code does not like null pointers...

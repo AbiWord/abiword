@@ -660,7 +660,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
 
 	// Skip import if PNG or SVG file
-	if (iegft != IEGFT_PNG || iegft != IEGFT_SVG)
+	if (iegft != IEGFT_PNG && iegft != IEGFT_SVG)
 	{
 		// Convert to PNG or SVG (pBB Memoried freed in function
 		errorCode = pIEG->convertGraphic(pBB, &pTempBB);  

@@ -627,7 +627,7 @@ bool UT_UUID::isNull() const
 
 void UT_UUID::clear()
 {
-	memset(&(this->m_uuid), sizeof(m_uuid), 0);
+	memset(&(this->m_uuid), 0, sizeof(m_uuid));
 	m_bIsValid = false;
 }
 

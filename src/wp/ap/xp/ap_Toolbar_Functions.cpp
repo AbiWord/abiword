@@ -366,7 +366,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	// todo: rtl/ltr/dom-dir are legal
-	if(pView->getDocument()->areStylesLocked() && (AP_TOOLBAR_ID_FMT_SUPERSCRIPT != id || AP_TOOLBAR_ID_FMT_SUBSCRIPT != id)) {
+	if(pView->getDocument()->areStylesLocked() && !(AP_TOOLBAR_ID_FMT_SUPERSCRIPT == id || AP_TOOLBAR_ID_FMT_SUBSCRIPT == id)) {
 	  return EV_TIS_Gray;
 	}
 

@@ -760,7 +760,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	const XML_Char * prop = NULL;
 	const XML_Char * val  = NULL;
 
-	if(pView->getDocument()->areStylesLocked() && (AP_MENU_ID_FMT_SUPERSCRIPT != id || AP_MENU_ID_FMT_SUBSCRIPT != id)) {
+	if(pView->getDocument()->areStylesLocked() && !(AP_MENU_ID_FMT_SUPERSCRIPT == id || AP_MENU_ID_FMT_SUBSCRIPT == id)) {
           return EV_MIS_Gray;
 	}
 
