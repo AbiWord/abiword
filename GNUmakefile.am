@@ -1,11 +1,9 @@
 
-SUBDIRS = . src
+SUBDIRS = src
 
 MAINTAINERCLEANFILES=GNUmakefile
 
-if LOCAL_EXPAT
 all: expat wv psiconv
-endif
 
 expat:
 	(cd ../expat; ./configure --enable-shared=no; make)  
