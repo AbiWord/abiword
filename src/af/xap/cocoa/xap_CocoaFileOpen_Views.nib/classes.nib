@@ -11,9 +11,13 @@
             CLASS = "XAP_OpenSavePanel_AccessoryController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                "_fileTypeAcessoryView" = NSView; 
-                "_fileTypeLabel" = NSTextField; 
-                "_fileTypePopup" = NSPopUpButton; 
+                oFTAccessoryView = NSView; 
+                oFTIAccessoryView = NSView; 
+                oFTIImageView = NSImageView; 
+                oFTILabel = NSTextField; 
+                oFTIPopUp = NSPopUpButton; 
+                oFTLabel = NSTextField; 
+                oFTPopUp = NSPopUpButton; 
             }; 
             SUPERCLASS = NSObject; 
         }
