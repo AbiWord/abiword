@@ -311,19 +311,14 @@ protected:
 	bool					_unlinkStrux_Section(pf_Frag_Strux * pfs,
 												 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
-	bool					_deleteSpan_norec(PT_DocPosition dpos,
-											  pf_Frag_Text * pft, UT_uint32 fragOffset,
-											  UT_uint32 length,
-											  pf_Frag_Strux * pfs,
-											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const;
 
 	bool					_deleteSpanWithNotify(PT_DocPosition dpos,
 												  pf_Frag_Text * pft, UT_uint32 fragOffset,
 												  UT_uint32 length,
 												  pf_Frag_Strux * pfs,
-												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
-
+												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd,
+												  bool bAddChangeRec = true);
 
 	bool					_isSimpleDeleteSpan(PT_DocPosition dpos1,
 												PT_DocPosition dpos2) const;

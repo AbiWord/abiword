@@ -6871,9 +6871,6 @@ bool FV_View::insertEndnote()
 		pid = UT_rand();
 	sprintf(enpid, "%i", pid);
 
-	// You know, I'm not sure if endnote-id should be a prop or attr on
-	// the endnote_ref field.  I'm thinking it should be a prop, but
-	// currently it's an attr; that's easier to add.  Is that bogus? -PL
 	const XML_Char* attrs[] = {
 		"endnote-id", enpid,
 		NULL, NULL
@@ -7068,21 +7065,14 @@ bool FV_View::insertEndnote()
 			NULL, NULL
 		};
 
-	// do not want any hardcoded block properties, let them default
-#if 0
-		const XML_Char* block_props[] = {
-			"text-align", "left",
-			NULL, NULL
-		};
-#else
-		const XML_Char**	block_props = NULL;
-#endif
-
 		m_pDoc->insertStrux(dp, PTX_Block);
 		// the dp+1 is needed because the postion on boundary between two
 		// blocks is considered as belonging to the PREVIOUS block,
 		// i.e., dp only reformats the wrong block
-		m_pDoc->changeStruxFmt(PTC_AddFmt, dp+1, dp+1, block_attrs, block_props, PTX_Block);
+		m_pDoc->changeStruxFmt(PTC_AddFmt, dp+1, dp+1, block_attrs, NULL, PTX_Block);
+
+		// we should really add 1 to dp now that we've added this block.
+		_setPoint(dp+1,false);
 
 		_drawInsertionPoint();
 	}
@@ -7141,16 +7131,6 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 		NULL, NULL
 	};
 
-	// do not want any hardcode block properties, let them default
-#if 0
-	const XML_Char* block_props[] = {
-		"text-align", "left",
-		NULL, NULL
-	};
-#else
-	const XML_Char**	block_props = NULL;
-#endif
-
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
@@ -7158,7 +7138,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
-	if (!insertEndnoteSection(block_props, block_attrs)) // cursor is now in the endnotes
+	if (!insertEndnoteSection(block_attrs)) // cursor is now in the endnotes
 		return false;
 
 	// restore updates and clean up dirty lists
@@ -7178,7 +7158,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	return true;
 }
 
-bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char ** blkattrs)
+bool FV_View::insertEndnoteSection(const XML_Char ** blkattrs, const XML_Char ** blkprops)
 {
 	/*
 	  This inserts an endnote at the end of the document,

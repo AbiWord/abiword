@@ -175,8 +175,7 @@ public:
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
 	virtual UT_Error		cmdSaveAs(const char * szFilename, int ieft, bool cpy);
 
-	UT_Error		cmdInsertField(const char* szName);
-	UT_Error		cmdInsertField(const char* szName, const XML_Char ** extra_attrs);
+	UT_Error		cmdInsertField(const char* szName, const XML_Char ** extra_attrs = NULL, const XML_Char ** extra_props = NULL);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName);
@@ -361,7 +360,7 @@ public:
 //
 	bool	insertEndnote();
 	bool	insertEndnoteSection(const XML_Char * enpid);
-	bool	insertEndnoteSection(const XML_Char ** blkprops, const XML_Char ** blkattrs);
+	bool	insertEndnoteSection(const XML_Char ** blkattrs, const XML_Char ** blkprops = NULL);
 
 // ----------------------
 

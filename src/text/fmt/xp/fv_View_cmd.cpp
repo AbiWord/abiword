@@ -1202,12 +1202,7 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 
 /*****************************************************************/
-UT_Error FV_View::cmdInsertField(const char* szName)
-{
-	return cmdInsertField(szName, NULL);
-}
-
-UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_attrs)
+UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_attrs, const XML_Char ** extra_props)
 {
 	bool bResult;
 
@@ -1243,7 +1238,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	{
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL,&pField);
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props,&pField);
 		if(pField != NULL)
 		{
 			pField->update();
@@ -1253,7 +1248,8 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	else
 	{
 		_eraseInsertionPoint();
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL, &pField);		if(pField != NULL)
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
+		if(pField != NULL)
 		{
 			pField->update();
 		}

@@ -262,7 +262,8 @@ bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 										  pf_Frag_Text * pft, UT_uint32 fragOffset,
 										  UT_uint32 length,
 										  pf_Frag_Strux * pfs,
-										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd,
+										  bool bAddChangeRec = true)
 {
 	// create a change record for this change and put it in the history.
 
@@ -291,9 +292,11 @@ bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 
 	bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
 
-	if (_canCoalesceDeleteSpan(pcr))
+	if (!bAddChangeRec || _canCoalesceDeleteSpan(pcr))
 	{
-		m_history.coalesceHistory(pcr);
+		if (bAddChangeRec)
+			m_history.coalesceHistory(pcr);
+
 		m_pDocument->notifyListeners(pfs,pcr);
 		delete pcr;
 	}
@@ -302,46 +305,6 @@ bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		m_history.addChangeRecord(pcr);
 		m_pDocument->notifyListeners(pfs,pcr);
 	}
-
-	return bResult;
-}
-
-
-bool pt_PieceTable::_deleteSpan_norec(PT_DocPosition dpos,
-									  pf_Frag_Text * pft, UT_uint32 fragOffset,
-									  UT_uint32 length,
-									  pf_Frag_Strux * pfs,
-									  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
-{
-	// create a change record for this change and put it in the history.
-
-	UT_ASSERT(pfs);
-
-	if (length == 0)					// TODO decide if this is an error.
-	{
-		UT_DEBUGMSG(("_deleteSpanWithNotify: length==0\n"));
-		SETP(ppfEnd, pft->getNext());
-		SETP(pfragOffsetEnd, 0);
-		return true;
-	}
-
-	// we do this before the actual change because various fields that
-	// we need are blown away during the delete.  we then notify all
-	// listeners of the change.
-
-	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pft) + fragOffset;
-
-	PX_ChangeRecord_Span * pcr
-		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
-								   dpos, pft->getIndexAP(),
-								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-								   length,blockOffset,pft->getField());
-	UT_ASSERT(pcr);
-
-	bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
-
-	m_pDocument->notifyListeners(pfs,pcr);
-	delete pcr;
 
 	return bResult;
 }
@@ -937,22 +900,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 					    pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
 					    UT_ASSERT(pAP);
 					    const XML_Char* pszEid = NULL;
-					    const XML_Char* pszEidName  = NULL;
-			            UT_uint32 k = 0;
-    	    		    bool bFound = false;
-
     	    		    pf_Frag_Strux *pMySection, *pESection;
 
-					    while((pAP)->getNthAttribute(k++,pszEidName, pszEid))
-					    {
-		    				if(!UT_strcmp(pszEidName, "endnote-id"))
-				    		{
-				    			bFound = true;
-		    					break;
-					    	}
-					    }
-
-					    UT_ASSERT(bFound);
+						pAP->getAttribute("endnote-id", pszEid);
 
 						pf_Frag_Strux * pfsContainer = NULL;
 						pf_Frag * pF;
@@ -980,20 +930,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 								{
 								    pfsContainer->getPieceTable()->getAttrProp(pfsContainer->getIndexAP(),&pAP);
 								    UT_ASSERT(pAP);
-								    const XML_Char* pszEnoteName  = NULL;
-						            k = 0;
-    	    		    			bFound = false;
-
-								    while((pAP)->getNthAttribute(k++,pszEnoteName, pszEnote))
-								    {
-		    							if(!UT_strcmp(pszEnoteName, "endnote"))
-							    		{
-						    				bFound = true;
-		    								break;
-		    							}
-					    			}
-
-					    			UT_ASSERT(bFound);
+									bool bFound = 
+										pAP->getAttribute("endnote", pszEnote);
+									UT_ASSERT(bFound);
 					    			break;
 					   			}
 					   		}
@@ -1015,23 +954,11 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 								{
 								    pfsContainer->getPieceTable()->getAttrProp(pfsContainer->getIndexAP(),&pAP);
 								    UT_ASSERT(pAP);
-								    const XML_Char* pszId = NULL;
-								    const XML_Char* pszIdName  = NULL;
-						            k = 0;
-    	    		    			bFound = false;
-
-								    while((pAP)->getNthAttribute(k++,pszIdName, pszId))
-								    {
-		    							if(!UT_strcmp(pszIdName, "id"))
-							    		{
-							    			if(!UT_strcmp(pszId, pszEnote))
-							    			{
-						    					bFound = true;
-		    									break;
-		    								}
-		    							}
-					    			}
-									if(bFound)
+									const XML_Char * Eid = NULL;
+									bool bFound = 
+										pAP->getAttribute("id", Eid);
+									
+									if(bFound && !UT_stricmp(Eid, pszEnote))
 					    				break;
 					   			}
 					   		}
@@ -1120,29 +1047,21 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 							    pF->getPieceTable()->getAttrProp(iAPI,&pAP);
 							    UT_ASSERT(pAP);
 							    const XML_Char* pszEid2 = NULL;
-				            	k = 0;
-    	    			    	bFound = false;
     	    			    	bool bResult = false;
 
-					    		while((pAP)->getNthAttribute(k++,pszEidName, pszEid2))
-						    	{
-				    				if(!UT_strcmp(pszEidName, "endnote-id"))
-						    		{
-						    			if(!UT_strcmp(pszEid,pszEid2))
-						    			{
-					    					bFound = true;
-		    								break;
-		    							}
-						    		}
-							    }
+								bFound = pAP->getAttribute("endnote-id", pszEid2) && !UT_stricmp(pszEid2, pszEid);
 
-							    // OK, if we have got something that carries our id
-							    // we have to delete it, we do not know what it is
-							    // the simplest thing is to call deleteSpan recursively
-							    // this works in all cases but the first block, where
-							    // calling deleteSpan deletes both the block and the
-							    // section break; further, when deleting the first block
-							    // we have to delete the content first
+							    // OK, if we have got something that
+							    // carries our id we have to delete
+							    // it, we do not know what it is the
+							    // simplest thing is to call
+							    // deleteSpan recursively this works
+							    // in all cases but the first block,
+							    // where calling deleteSpan deletes
+							    // both the block and the section
+							    // break; further, when deleting the
+							    // first block we have to delete the
+							    // content first
 							    if(bFound)
 							    {
 #ifdef DEBUG
@@ -1197,7 +1116,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 											bResult = _deleteStruxWithNotify(dpos1,pFS,NULL,NULL);
 									}
 									else
-										bResult = deleteSpan(posStart,posEnd,NULL,false);
+										bResult = deleteSpan(posStart,posEnd,NULL,true);
 									UT_ASSERT(bResult);
 								}
 							}
@@ -1274,7 +1193,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 							bResult = _deleteStruxWithNotify(pFirstBlock->getPos(),pFirstBlock,NULL,NULL);
 							UT_ASSERT(bResult);
 						}
-
 				    }
 				    // no break, let everything fall through
 				}
@@ -1369,9 +1287,11 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 		case pf_Frag::PFT_Text:
 		{
 			bool bResult
-				= _deleteSpan_norec(dpos1,static_cast<pf_Frag_Text *>(pf_First),
-									fragOffset_First,lengthThisStep,
-									pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+				= _deleteSpanWithNotify(dpos1,
+										static_cast<pf_Frag_Text *>(pf_First),
+										fragOffset_First,lengthThisStep,
+										pfsContainer,&pfNewEnd,
+										&fragOffsetNewEnd, false);
 			UT_ASSERT(bResult);
 		}
 		break;
