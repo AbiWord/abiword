@@ -532,14 +532,15 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	// Give precedence to the file contents
 	if (ieft == IEFT_Unknown && szFilename && *szFilename)
 	{
-		char szBuf[4096] = "";  // 4096 ought to be enough
+		char szBuf[4097] = "";  // 4096+nul ought to be enough
 		UT_uint32 iNumbytes = 0;
 		FILE *f = NULL;
 
 		// we must open in binary mode for UCS-2 compatibility
 		if ( ( f = fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
 		{
-			iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
+			iNumbytes = fread(szBuf, 1, sizeof(szBuf)-1, f);
+			szBuf[iNumbytes] = '\0';
 			fclose(f);
 		}
 
