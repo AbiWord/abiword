@@ -195,19 +195,14 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
-	    if (m_szFilename)
-		{
-			free((void *) m_szFilename);
-			m_szFilename = NULL;
-		}
-	
+	    FREEP(m_szFilename);
 	    char * szFilenameCopy = NULL;
 	    if (!UT_cloneString(szFilenameCopy,szFilename))
 			return UT_SAVE_OTHERERROR;
 	    m_szFilename = szFilenameCopy;
+	    _setClean(); // only mark as clean if we're saving under a new name
 	}
 
-	_setClean();
 	return UT_OK;
 }
 
