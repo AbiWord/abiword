@@ -154,71 +154,51 @@ PtWidget_t *btnCancel;
 PtWidget_t *title;
 PtWidget_t *lstRevisions;
 
+PtWidget_t *grp;
+PtArg_t args[10];
+int n=0;
 const XAP_StringSet *pSS = m_pApp->getStringSet();
 
-	static const PhDim_t dim = { 313,344}; 
-	static const PtArg_t args[] = {
-	    Pt_ARG( Pt_ARG_DIM,&dim, 0),
-	    Pt_ARG( Pt_ARG_WINDOW_TITLE,getTitle(),0),
-	Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
-	Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS),
-	};
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,getTitle(),0);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_MANAGE_FLAGS);
+	mainwindow=PtCreateWidget(PtWindow,NULL,n,args);
+	n=0;
 
-	static const PhArea_t area1 = { { 3, 3 }, { 308, 308 } };
-	static const PtArg_t args1[] = {
-		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
-		Pt_ARG( Pt_ARG_ANCHOR_FLAGS, 1440,8191 ),
-		};
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	grp=PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	static const PhArea_t area2 = { { 1, 0 }, { 341, 30 } };
-	static const PtArg_t args2[] = {
-		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 1280,1280 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		Pt_ARG( Pt_ARG_RESIZE_FLAGS, 0x1200000,0x3f00000 ),
-		};
+	PtSetArg(&args[n++],Pt_ARG_HEIGHT,150,0);
+	PtSetArg(&args[n++],Pt_ARG_WIDTH,150,0);
+	lstRevisions = PtCreateWidget( PtList, Pt_DEFAULT_PARENT, n,args );
+	n=0;
+	PtCreateWidget( PtDivider, lstRevisions, n,args);
+	n=0;
+	
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,getColumn1Label(),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	static const PhArea_t area3 = { { 0, 0 }, { 78, 28 } };
-	static const PtArg_t args3[] = {
-		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, getColumn1Label(), 0 ),
-		};
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,getColumn2Label(),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
 
-	static const PhArea_t area4 = { { 78, 0 }, { 261, 28 } };
-	static const PtArg_t args4[] = {
-		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, getColumn2Label(), 0 ),
-		};
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
+	PtCreateWidget(PtGroup,grp,n,args);
 
-	static const PhArea_t area5 = { { 241, 314 }, { 70, 27 } };
-	static const PtArg_t args5[] = {
-		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
-		};
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	btnOk = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT, n,args);
+	n=0;
 
-	static const PhArea_t area6 = { { 166, 314 }, { 70, 27 } };
-	static const PtArg_t args6[] = {
-		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0 ),
-		};
-
-	mainwindow=PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
-
-	lstRevisions = PtCreateWidget( PtList, NULL, sizeof(args1) / sizeof(PtArg_t), args1 );
-
-	PtCreateWidget( PtDivider, NULL, sizeof(args2) / sizeof(PtArg_t), args2 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
-
-	btnOk = PtCreateWidget( PtButton, mainwindow, sizeof(args5) / sizeof(PtArg_t), args5 );
-
-	btnCancel = PtCreateWidget( PtButton, mainwindow, sizeof(args6) / sizeof(PtArg_t), args6 );
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	btnCancel = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args); 
 
        /* Add items to list */
-       for(UT_uint32 i=0;i < getItemCount();i++)
-      {
+  for(UT_uint32 i=0;i < getItemCount();i++)
+    {
 	char text[150];
 	char *str=getNthItemText(i);
 	sprintf(text,"%d\t",getNthItemId(i));
@@ -226,6 +206,7 @@ Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 
 	FREEP(str);
 	PtListAddItems(lstRevisions,(const char **)&text,1,0);
       }
+
 	PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);
 	PtAddCallback(btnCancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
 	PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
