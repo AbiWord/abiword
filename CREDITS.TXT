@@ -262,6 +262,8 @@ Alper <shullgum@yahoo.com>				Turkish
 Nikos Niktaris <niktarin@yahoo.com>			Greek
 Damon Allen Davison <allolex@users.sourceforge.net>	German
 Masayuki Hatta <mhatta@gnu.org>				Japanese
+Daniel Yacob <locales@geez.org>				Amharic
+Pierre Abbat <phma@webjockey.net>			Lojban
 unsung heroes
 -------------
 Mary Eppich
