@@ -1257,7 +1257,7 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 		return TRUE;
 
 	UT_UTF8String utf (text);
-	DELETEP(text);
+	DELETEPV(text);
 
 	gtk_im_context_set_surrounding (context,
 									utf.utf8_str(),
