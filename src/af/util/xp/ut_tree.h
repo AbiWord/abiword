@@ -572,7 +572,7 @@ UT_GenericTree<T>::_getNthNodeForLevel(UT_uint32 iLevel, UT_uint32 n) const
 
 	UT_return_val_if_fail( v, NULL );
 
-	UT_return_val_if_fail( v->getItemCount() > n, s );
+	UT_return_val_if_fail( v->getItemCount() > n, NULL );
 
 	return v->getNthItem(n);
 }
