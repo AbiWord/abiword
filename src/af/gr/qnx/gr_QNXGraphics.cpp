@@ -886,6 +886,14 @@ PpPrintContext_t * GR_QNXGraphics::getPrintContext() {
 }
 
 void GR_QNXGraphics::setPrintContext(PpPrintContext_t *context) {
+	if (context != NULL) {
+		m_iShadowZoomPercentage = getZoomPercentage();
+		setZoomPercentage(100);
+	} else {
+		setZoomPercentage(m_iShadowZoomPercentage);
+		m_iShadowZoomPercentage = 100;
+	}
+		
 	 m_pPrintContext = context;
 }
 

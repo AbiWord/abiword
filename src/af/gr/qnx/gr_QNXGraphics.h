@@ -136,6 +136,7 @@ class GR_QNXGraphics : public GR_Graphics
 	PgColor_t			m_currentColor;
 	PgColor_t			m_3dColors[COUNT_3D_COLORS];
 
+	UT_uint32			m_iShadowZoomPercentage;
  	UT_Bool             m_bPrintNextPage;    
 	PpPrintContext_t *  m_pPrintContext;
 };
