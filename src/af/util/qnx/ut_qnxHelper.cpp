@@ -228,11 +228,12 @@ _ev_convert (char * bufResult,
 
 int OpenHelp(PtWidget_t *w,XAP_Dialog *dlg,PtCallbackInfo_t *cbinfo)
 {
-
-char url[PATH_MAX] = "/usr/help/product/AbiWord/en-US/";
-strcat(url,dlg->getHelpUrl().c_str());
-
-PtHelpUrl(url);
+if(dlg->getHelpUrl().size() > 0)
+{
+	char url[PATH_MAX] = "/usr/help/product/AbiWord/en-US/";
+	sprintf(url,"%s%s.html",url,dlg->getHelpUrl().c_str());
+	PtHelpUrl(url);
+}
 return 0;
 }
 
