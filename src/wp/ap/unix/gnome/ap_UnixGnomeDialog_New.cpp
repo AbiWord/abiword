@@ -104,7 +104,7 @@ GtkWidget* AP_UnixGnomeDialog_New::_constructWindow (void )
 
 	_constructWindowContents(GNOME_DIALOG(windowNew)->vbox);
 	_connectSignals();
-	setDefaultButton (GNOME_DIALOG(windowNew), 1);
+	setDefaultButton (GNOME_DIALOG(windowNew), 0); // ok is the default button
 
 	return windowNew;
 }
