@@ -58,6 +58,7 @@ AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
 
 AP_CocoaTopRuler::~AP_CocoaTopRuler(void)
 {
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
 	DELETEP(m_pG);
 	if (m_delegate) {
 		[[NSNotificationCenter defaultCenter] removeObserver:m_delegate];

@@ -60,6 +60,7 @@ AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
 	{
 		UT_usleep(100);
 	}
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
 	DELETEP(m_pG);
 	if (m_delegate) {
 		[[NSNotificationCenter defaultCenter] removeObserver:m_delegate];
