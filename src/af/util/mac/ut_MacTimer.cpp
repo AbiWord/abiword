@@ -159,7 +159,7 @@ failure:
 }
 
 
-UT_sint32 UT_MacTimer::setAsFastAsPossible()
+UT_sint32 UT_MacTimer::setAsFastAsPossible(void)
 {
   // Just a placeholder until someone implements an idle-queue
   // mechanism. See ut_unixTimer.cpp for more information.
