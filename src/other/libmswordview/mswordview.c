@@ -4236,64 +4236,68 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 					break;
 				default:
 					if (fontname==NULL)
-						{
+					{
 						if (flag)
-							{
+						{
 							len = our_wctomb(target,letter);
 							error(erroroutput,"letter3: %x %d",letter,letter);
 							/*
-							expand this in the ranges that we will have to handle 
-							ourselves, just for my own benefit for now, i might be
-							able to build a table with some word macros and luck*/
+							  expand this in the ranges that we will have to handle 
+							  ourselves, just for my own benefit for now, i might be
+							  able to build a table with some word macros and luck*/
 							if (letter == 0x2122)
 								decode_symbol(0xf0e4);
 							else if (letter != 0)
 								for(i=0;i<len;i++)
-									{
+								{
 									if ( (achp->fSmallCaps || achp->fCaps)  && use_fontfacequery(achp) && (len == 1) )
-										{
+									{
 										if  ( isupper(target[i]) && achp->fSmallCaps)
-											{
+										{
 											temp = achp->fontsize;
 											achp->fontsize+=2;
 											decode_e_chp(achp);
 											decode_s_chp(achp,fontnamelist);
 											achp->fontsize = temp;
-											}
-										target[i] = toupper(target[i]);
 										}
-									spewString("%c",target[i]);
+										target[i] = toupper(target[i]);
+									}
+									/* sterwill: check for ASCII range */
+									if (target[i] > 0 && target[i] < 128)
+										spewString("%c",target[i]);
 
 									error(erroroutput,"letter2: %c, silent is %d",target[i],silent);
-									}
+								}
 							else
 								error(erroroutput,"given 0 as a letter !\n");
-							}
+						}
 						else
-							{
+						{
 							if (letter == 0xae)
 								decode_symbol(61666);
 							else if (letter != 0)
-								{
+							{
 								if ( ( achp->fSmallCaps || achp->fCaps) && use_fontfacequery(achp) )
-									{
+								{
 									if  ( letter && achp->fSmallCaps)
-											{
-											temp = achp->fontsize;
-											achp->fontsize+=2;
-											decode_e_chp(achp);
-											decode_s_chp(achp,fontnamelist);
-											achp->fontsize = temp;
-											}
-									letter = toupper(letter);
+									{
+										temp = achp->fontsize;
+										achp->fontsize+=2;
+										decode_e_chp(achp);
+										decode_s_chp(achp,fontnamelist);
+										achp->fontsize = temp;
 									}
-								spewString("%c",letter);
+									letter = toupper(letter);
 								}
-							error(erroroutput,"letter2: %c %d %x, silent is %d",letter,letter,letter,silent);
+								/* sterwill: check for ASCII range */
+								if (letter > 0 && letter < 128)
+									spewString("%c",letter);
 							}
+							error(erroroutput,"letter2: %c %d %x, silent is %d",letter,letter,letter,silent);
 						}
+					}
 					else
-						{
+					{
 						if (!(strcmp("Wingdings",fontname)))
 							decode_wingding(letter);
 						else if (!(strcmp("Symbol",fontname)))
@@ -4303,324 +4307,311 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 						if (fSpecflag)
 							achp->fSpec=0;
 						return(ret);
-						}
+					}
 					break;
 				}
 			}
 		else
-			{
+		{
 			switch(letter)
-				{
-				case 13:
-					error(erroroutput,"\n<!--paragraph end-->\n");
+			{
+			case 13:
+				error(erroroutput,"\n<!--paragraph end-->\n");
 					
-		if (inunderline)
-			{
-			spewString("</c>");
-			inunderline=0;
-			}
-		if (initalic)
-			{
-			spewString("</c>");
-			initalic=0;
-			}
-		if (inbold)
-			{
-			spewString("</c>");
-			inbold=0;
-			}
-		if (inblink)
-			{
-				/*spewString("</BLINK>");*/
-			inblink=0;
-			}
-		if (inafont)
-			{
-			inacolor=0;
-			incolor[0] = '\0';
-			spewString("</c>");
-			currentfontsize=NORMAL;
-			inafont=0;
-			}
+				if (inunderline)
+				{
+					spewString("</c>");
+					inunderline=0;
+				}
+				if (initalic)
+				{
+					spewString("</c>");
+					initalic=0;
+				}
+				if (inbold)
+				{
+					spewString("</c>");
+					inbold=0;
+				}
+				if (inblink)
+				{
+					/*spewString("</BLINK>");*/
+					inblink=0;
+				}
+				if (inafont)
+				{
+					inacolor=0;
+					incolor[0] = '\0';
+					spewString("</c>");
+					currentfontsize=NORMAL;
+					inafont=0;
+				}
 
-					spewString("</p>\n<p>");
-					if (!silent)
-						{
-						breakcount++;
+				spewString("</p>\n<p>");
+				if (!silent)
+				{
+					breakcount++;
 
-						if (cellempty == 0)
-							cellempty++;
+					if (cellempty == 0)
+						cellempty++;
 						
-						tabstop=0;
-						newline=1;
-						}
-					break;
-				case 11:
-					error(erroroutput,"\n(--line break--)\n");
-					spewString("<br/>");
 					tabstop=0;
-					break;
-				case 45:
-					error(erroroutput,"-");
-					spewString("-"); 	/* is this a hyphen? We don't have ligatures for that yet.*/
-					break;
-				case 32:
-					spacecount++;
-					tabstop--;
-					if (cellempty == 0)
-						cellempty++;
-					break;
-				case 31:
-					error(erroroutput,"\n(-nonrequired hyphen- ?)\n");
-					spewString("-");
-					break;
-				case 30:
-					error(erroroutput,"\n(-nonbreaking hyphen- ?)\n");
-					spewString("-");
-					break;
-				case 160:
-					error(erroroutput,"\n(-non breaking space)\n");
-					spewString(" ");	/* nbsp */
-					break;
-				case 12:
-					error(erroroutput,"\npage break (maybe section) at %x\n",cp);
-					for (i=0;i<portions->section_nos+1;i++)
-						{
-						if (cp+1 == portions->section_cps[i])
-							{
-							/*sectionpagenumber=1;*/
-							sectionno++;
-							*issection=1;
-							}
-						}
-					ret=1;
-					tabstop=0;
-					break;
-				case 14:
-					error(erroroutput,"\ncolumn break\n");
-					columnbreak();
-					break;
-				case 9:
-					spewString("\t");
-#if 0					
-					tabstop--;
-					error(erroroutput,"\ntab\n");
-					tabbing = ((float)tabstop)/8;
-					error(erroroutput,"tabbing is %f, from %d\n",tabbing,tabstop);
-					error(erroroutput,"tabsize is %f\n",tabsize);
-					if (tabbing == tabstop/8)
-						{
-						if ( (padding == 0) || (padding == 3))
-							spewString("\t");
-						else if ( (padding == 1) || (padding == 4))
-							for(j=0;j<(int)tabsize;j++)
-								spewString(" ");	/* nbsp */
-						else if ( (padding == 5) || (padding == 2))
-							spewString(" ");
-						tabstop = tabstop=8;
-						}
-					else 
-						{
-						temp2 = (8-((tabbing - (tabstop/8))*8))+1;
-					    error(erroroutput,"temp2 is %d\n",temp2);
-						if ( (padding == 1) || (padding == 4))
-							{
-							for(i=0;i< (8-((tabbing - (tabstop/8))*8))+1;i++)
-									for(j=0;j<(int)(tabsize/8);j++)
-										spewString(" "); /* nbsp */
-							}
-						else if ( (padding == 0) || (padding == 3))
-							spewString("\t");
-						else if ((padding == 5) || (padding == 2))
-							spewString(" ");
-						tabstop = tabstop+(8-(tabbing - (tabstop/8))*8);
-						}
-					/*spewString("<TAB>");*/
-#endif					
-					break;
-				case 19:
-					error(erroroutput,"\nfield begins\n");
-					init_chp(&tempchp);
-					chpsoff();
-					decode_field(main,magic_fields,&cp,&fieldwas,&swallowcp1,&swallowcp2);
-					error(erroroutput,"cp vals are %x and %x\n",swallowcp1,swallowcp2);
-					switch (fieldwas)
-						{
-						case 37:
-							if ((swallowcp1 != -1) && (swallowcp2 != -1))
-								fieldparse=37;
-							break;
-						case 88:
-							if ((swallowcp1 != -1) && (swallowcp2 != -1))
-								fieldparse=88;
-							break;
-						default:
-							silent=1;
-							break;
-						}
-					break;
-				case 21:
-					error(erroroutput,"\nfield ends\n");
-					decode_field(main,magic_fields,&cp,&fieldwas,&swallowcp1,&swallowcp2);
-					chpson();
-					silent=0;
-					fieldparse=0;
-					break;
-				case 20:
-					error(erroroutput,"\n field separator\n");
-					decode_field(main,magic_fields,&cp,&fieldwas,&swallowcp1,&swallowcp2);
-					if ( (fieldwas == 10) || (fieldwas == 12) || (fieldwas == 68) || (fieldwas == 17) || (fieldwas == 29) || (fieldwas == 13) || (fieldwas == 88) || (fieldwas == 3))
-						{
-						silent=0;
-						chpson();
-						}
-					break;
-				case '<':
-					spewString("&lt;");
-					break;
-				case '>':
-					spewString("&gt;");
-					break;
-				case 7:
-					if (cellempty == 0)
-						cellempty++;
-					apap->tableflag=1;
-					decode_e_specials(apap,achp,a_list_info);
-					if (decode_e_table(apap,achp,a_list_info)==1)
-						{
-						if (deferrednewpage)
-							{
-							deferrednewpage=0;
-							ret=2;
-							}
-						}
-					error(erroroutput,"\n");
 					newline=1;
+				}
+				break;
+			case 11:
+				error(erroroutput,"\n(--line break--)\n");
+				spewString("<br/>");
+				tabstop=0;
+				break;
+			case 45:
+				error(erroroutput,"-");
+				spewString("-"); 	/* is this a hyphen? We don't have ligatures for that yet.*/
+				break;
+			case 32:
+				spacecount++;
+				tabstop--;
+				if (cellempty == 0)
+					cellempty++;
+				break;
+			case 31:
+				error(erroroutput,"\n(-nonrequired hyphen- ?)\n");
+				spewString("-");
+				break;
+			case 30:
+				error(erroroutput,"\n(-nonbreaking hyphen- ?)\n");
+				spewString("-");
+				break;
+			case 160:
+				error(erroroutput,"\n(-non breaking space)\n");
+				spewString(" ");	/* nbsp */
+				break;
+			case 12:
+				error(erroroutput,"\npage break (maybe section) at %x\n",cp);
+				for (i=0;i<portions->section_nos+1;i++)
+				{
+					if (cp+1 == portions->section_cps[i])
+					{
+						/*sectionpagenumber=1;*/
+						sectionno++;
+						*issection=1;
+					}
+				}
+				ret=1;
+				tabstop=0;
+				break;
+			case 14:
+				error(erroroutput,"\ncolumn break\n");
+				columnbreak();
+				break;
+			case 9:
+				spewString("\t");
+#if 0					
+				tabstop--;
+				error(erroroutput,"\ntab\n");
+				tabbing = ((float)tabstop)/8;
+				error(erroroutput,"tabbing is %f, from %d\n",tabbing,tabstop);
+				error(erroroutput,"tabsize is %f\n",tabsize);
+				if (tabbing == tabstop/8)
+				{
+					if ( (padding == 0) || (padding == 3))
+						spewString("\t");
+					else if ( (padding == 1) || (padding == 4))
+						for(j=0;j<(int)tabsize;j++)
+							spewString(" ");	/* nbsp */
+					else if ( (padding == 5) || (padding == 2))
+						spewString(" ");
+					tabstop = tabstop=8;
+				}
+				else 
+				{
+					temp2 = (8-((tabbing - (tabstop/8))*8))+1;
+					error(erroroutput,"temp2 is %d\n",temp2);
+					if ( (padding == 1) || (padding == 4))
+					{
+						for(i=0;i< (8-((tabbing - (tabstop/8))*8))+1;i++)
+							for(j=0;j<(int)(tabsize/8);j++)
+								spewString(" "); /* nbsp */
+					}
+					else if ( (padding == 0) || (padding == 3))
+						spewString("\t");
+					else if ((padding == 5) || (padding == 2))
+						spewString(" ");
+					tabstop = tabstop+(8-(tabbing - (tabstop/8))*8);
+				}
+				/*spewString("<TAB>");*/
+#endif					
+				break;
+			case 19:
+				error(erroroutput,"\nfield begins\n");
+				init_chp(&tempchp);
+				chpsoff();
+				decode_field(main,magic_fields,&cp,&fieldwas,&swallowcp1,&swallowcp2);
+				error(erroroutput,"cp vals are %x and %x\n",swallowcp1,swallowcp2);
+				switch (fieldwas)
+				{
+				case 37:
+					if ((swallowcp1 != -1) && (swallowcp2 != -1))
+						fieldparse=37;
 					break;
-				case 0x2A:
-					spewString("&amp;");
+				case 88:
+					if ((swallowcp1 != -1) && (swallowcp2 != -1))
+						fieldparse=88;
 					break;
-				case 0x96:
-				case 0x2013:
-					spewString("-");
-					break;
-				case 145:
-				case 146:
-					spewString("'");
-					break;
-				case 132:
-				case 147:
-					error(erroroutput,"begin quot\n");
-					spewString("\"");	/* &quot; */
-					break;
-				case 148:
-					error(erroroutput,"end quot\n");
-					spewString("\"");	/* &quot; */
-					break;
-				case 0x85:
-					if (flag)
-						letter = 0x2026;
-					else
-						{
-						fontname = "Symbol";
-						letter = 0xf0bc;
-						/*156.gif*/
-						}
-					/*deliberate fallthrough*/
 				default:
-					if (fontname==NULL)
-						{
-						if (flag)
-							{
-							len = our_wctomb(target,letter);
-							error(erroroutput,"letter3: %x %d",letter,letter);
-							/*
-							expand this in the ranges that we will have to handle 
-							ourselves, just for my own benefit for now, i might be
-							able to build a table with some word macros and luck*/
-
-							if (letter > 255)
-							{
-								/* non Latin-1, not supported */
-								spewString(" ");
-							}
-							else
-							{
-								if (letter == 0x2122)
-									decode_symbol(0xf0e4);
-								else if (letter != 0)
-									for(i=0;i<len;i++)
-									{
-										if ( (achp->fSmallCaps || achp->fCaps) && use_fontfacequery(achp) && (len == 1) )
-										{
-											if  ( isupper(target[i]) && achp->fSmallCaps)
-											{
-												temp = achp->fontsize;
-												achp->fontsize+=2;
-												decode_e_chp(achp);
-												decode_s_chp(achp,fontnamelist);
-												achp->fontsize = temp;
-											}
-											target[i] = toupper(target[i]);
-										}
-										spewString("%c",target[i]);
-										error(erroroutput,"letter2: %c, silent is %d",target[i],silent);
-									}
-								else
-									error(erroroutput,"given 0 as a letter !\n");
-							}
-							
-							}
-						else
-							{
-							if (letter > 255)
-							{
-								/* non Latin-1, not supported */
-								spewString(" ");
-							}
-							else
-							{
-								if (letter == 0xae)
-									decode_symbol(61666);
-								else if (letter != 0)
-								{
-									if ( (achp->fSmallCaps || achp->fCaps) && (use_fontfacequery(achp)) )
-									{
-										if  ( isupper(letter) && achp->fSmallCaps)
-										{
-											temp = achp->fontsize;
-											achp->fontsize+=2;
-											decode_e_chp(achp);
-											decode_s_chp(achp,fontnamelist);
-											achp->fontsize = temp;
-										}
-										letter = toupper(letter);
-									}
-									spewString("%c",letter);
-								}
-								else
-									error(erroroutput,"silly 0 found\n");
-							}
-							
-/*								error(erroroutput,"letter2: %c %d %x silent is %d",letter,letter,letter,silent); */
-							}
-						}
-					else
-						{
-						if (!(strcmp("Wingdings",fontname)))
-							decode_wingding(letter);
-						else if (!(strcmp("Symbol",fontname)))
-							decode_symbol(letter);
-						realcp++;
-						cp++;
-						if (fSpecflag)
-							achp->fSpec=0;
-						return(ret);
-						}
+					silent=1;
 					break;
 				}
-				
+				break;
+			case 21:
+				error(erroroutput,"\nfield ends\n");
+				decode_field(main,magic_fields,&cp,&fieldwas,&swallowcp1,&swallowcp2);
+				chpson();
+				silent=0;
+				fieldparse=0;
+				break;
+			case 20:
+				error(erroroutput,"\n field separator\n");
+				decode_field(main,magic_fields,&cp,&fieldwas,&swallowcp1,&swallowcp2);
+				if ( (fieldwas == 10) || (fieldwas == 12) || (fieldwas == 68) || (fieldwas == 17) || (fieldwas == 29) || (fieldwas == 13) || (fieldwas == 88) || (fieldwas == 3))
+				{
+					silent=0;
+					chpson();
+				}
+				break;
+			case '<':
+				spewString("&lt;");
+				break;
+			case '>':
+				spewString("&gt;");
+				break;
+			case 7:
+				if (cellempty == 0)
+					cellempty++;
+				apap->tableflag=1;
+				decode_e_specials(apap,achp,a_list_info);
+				if (decode_e_table(apap,achp,a_list_info)==1)
+				{
+					if (deferrednewpage)
+					{
+						deferrednewpage=0;
+						ret=2;
+					}
+				}
+				error(erroroutput,"\n");
+				newline=1;
+				break;
+			case 0x26:
+				spewString("&amp;");
+				break;
+			case 0x96:
+			case 0x2013:
+				spewString("-");
+				break;
+			case 145:
+			case 146:
+				spewString("'");
+				break;
+			case 132:
+			case 147:
+				error(erroroutput,"begin quot\n");
+				spewString("\"");	/* &quot; */
+				break;
+			case 148:
+				error(erroroutput,"end quot\n");
+				spewString("\"");	/* &quot; */
+				break;
+			case 0x85:
+				if (flag)
+					letter = 0x2026;
+				else
+				{
+					fontname = "Symbol";
+					letter = 0xf0bc;
+					/*156.gif*/
+				}
+				/*deliberate fallthrough*/
+			default:
+				if (fontname==NULL)
+				{
+					if (flag)
+					{
+						len = our_wctomb(target,letter);
+						error(erroroutput,"letter3: %x %d",letter,letter);
+						/*
+						  expand this in the ranges that we will have to handle 
+						  ourselves, just for my own benefit for now, i might be
+						  able to build a table with some word macros and luck*/
+
+						if (letter == 0x2122)
+							decode_symbol(0xf0e4);
+						else if (letter != 0)
+							for(i=0;i<len;i++)
+							{
+								if ( (achp->fSmallCaps || achp->fCaps) && use_fontfacequery(achp) && (len == 1) )
+								{
+									if  ( isupper(target[i]) && achp->fSmallCaps)
+									{
+										temp = achp->fontsize;
+										achp->fontsize+=2;
+										decode_e_chp(achp);
+										decode_s_chp(achp,fontnamelist);
+										achp->fontsize = temp;
+									}
+									target[i] = toupper(target[i]);
+								}
+								/* sterwill: check for ASCII range */
+								if (target[i] > 0 && target[i] < 128)
+									spewString("%c",target[i]);
+								error(erroroutput,"letter2: %c, silent is %d",target[i],silent);
+							}
+						else
+							error(erroroutput,"given 0 as a letter !\n");
+					}
+					else
+					{
+						if (letter == 0xae)
+							decode_symbol(61666);
+						else if (letter != 0)
+						{
+							if ( (achp->fSmallCaps || achp->fCaps) && (use_fontfacequery(achp)) )
+							{
+								if  ( isupper(letter) && achp->fSmallCaps)
+								{
+									temp = achp->fontsize;
+									achp->fontsize+=2;
+									decode_e_chp(achp);
+									decode_s_chp(achp,fontnamelist);
+									achp->fontsize = temp;
+								}
+								letter = toupper(letter);
+							}
+							/* sterwill: check for ASCII range */
+							if (letter > 0 && letter < 128)
+								spewString("%c",letter);
+						}
+						else
+							error(erroroutput,"silly 0 found\n");
+							
+/*								error(erroroutput,"letter2: %c %d %x silent is %d",letter,letter,letter,silent); */
+					}
+				}
+				else
+				{
+					if (!(strcmp("Wingdings",fontname)))
+						decode_wingding(letter);
+					else if (!(strcmp("Symbol",fontname)))
+						decode_symbol(letter);
+					realcp++;
+					cp++;
+					if (fSpecflag)
+						achp->fSpec=0;
+					return(ret);
+				}
+				break;
 			}
+				
+		}
 		}
 	cp++;
 	realcp++;
