@@ -9,6 +9,10 @@
 <!-- Revision History:
 
      $Log$
+     Revision 1.2  1998/12/06 18:25:40  jeff
+     Added comments to several sections in the DTD.
+     Added additional prose to the Format document.
+
      Revision 1.1  1998/12/05 23:43:28  jeff
      Started work on a DTD for AbiWord -- warning this is very crude.
 
@@ -40,7 +44,14 @@
 
 <!--================================================================-->
 
-<!ENTITY % AWML.Version "-//AbiSource//DTD AbiWord 1.0//EN" >
+<!ENTITY % AWML.Version "-//AbiSource//DTD AbiWord 1.0//EN" 
+	-- Typical usage: 
+		<!DOCTYPE AWML PUBLIC "-//AbiSource//DTD AbiWord 1.0//EN"
+			"http://www.abisource.com/.../AbiWord.dtd">
+		<awml>
+		...
+		</awml>
+	>
 
 <!--================================================================-->
 
@@ -72,11 +83,22 @@
 	>
 
 <!--================================================================-->
+<!-- COLUMN describes the shape, location, and size of a column in  -->
+<!-- the column-layout. The TYPE attribute determines the shape     -->
+<!-- (actually the name of the class which will be given the data). -->
+<!-- The various dimensions are relative to the page margin.  LEFT  -->
+<!-- and TOP are required to be absolute.  The others can be an     -->
+<!-- absolute dimension or a "*". A "*" indicates that the value    -->
+<!-- should calculated by the column to be the size necessary to    -->
+<!-- push that term to the page margin.                             -->
+ 
+<!ENTITY % dimensionAbs CDATA	-- absolute dimension. this is of
+				   the form: <float><units>. for
+				   example: "6.5in" or "10cm".
+				   currently we allow "in", "pt",
+				   and "cm".  others may be added later. -->
 
-<!ENTITY % dimension CDATA	-- this is a '*' or a <float><units>.
-				   for example, "6.5in".
-				   currently we allow "in", "pt", "cm".
-				   others may be added later. 
+<!ENTITY % dimension CDATA	-- this is a '*' a %dimensionAbs.
 				   there's probably a better way to say
 				   this in SGML, but i'll defer to the
 				   experts. -->
@@ -84,8 +106,8 @@
 <!ELEMENT COLUMN - 0 EMPTY>
 <!ATTLIST COLUMN
 	type	(box|circle)	#REQUIRED
-	left	%dimension	"0.0in"		-- x-coord of origin --
-	top	%dimension	"0.0in"		-- y-coord of origin --
+	left	%dimensionAbs	"0.0in"		-- x-coord of origin --
+	top	%dimensionAbs	"0.0in"		-- y-coord of origin --
 	radius	%dimension	"*"		-- column radius (when type=circle) --
 	width	%dimension	"*"		-- column width (when type=box) --
 	height	%dimension	"*"		-- column height (when type=box) --
@@ -97,6 +119,9 @@
 <!ELEMENT COLUMNMODEL - - %columnmodel.content>
 
 <!--================================================================-->
+<!-- SECTION is a collection of blocks (paragraphs) under the same  -->
+<!-- column layout.  There will be other section-level stuff added  -->
+<!-- later. The "break" attribute is not yet supported in the code. -->
 
 <!ENTITY % secton.content "COLUMNMODEL P*">
 <!ELEMENT SECTION - - %section.content>
