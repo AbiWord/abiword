@@ -146,8 +146,6 @@ bool IE_Exp::_openFile(const char * szFilename)
 
 UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 {
-	UT_ASSERT(m_fp);
-
 	if(!pBytes || !length)
 	  return 0;
 
@@ -167,10 +165,6 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 
 bool IE_Exp::_writeBytes(const UT_Byte * sz)
 {
-	UT_ASSERT(m_fp);
-	if(!sz)
-	  return true;
-	
 	int length = strlen((const char *)sz);
 	return (_writeBytes(sz,length)==(UT_uint32)length);
 }

@@ -49,18 +49,9 @@ public:
 	IE_Exp_GZipAbiWord(PD_Document * pDocument);
 	virtual ~IE_Exp_GZipAbiWord();
 
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
-	
 protected:
 	bool				_openFile(const char * szFilename);
 	UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	bool				_writeBytes(const UT_Byte * sz);
 	bool				_closeFile(void);
 
 private:

@@ -26,9 +26,8 @@
 #include "ut_string.h"
 
 IE_Exp_GZipAbiWord::IE_Exp_GZipAbiWord(PD_Document * pDocument)
-	: IE_Exp_AbiWord_1(pDocument)
+  : IE_Exp_AbiWord_1(pDocument), m_gzfp(0)
 {
-    m_gzfp = 0;
 }
 
 IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
@@ -145,16 +144,6 @@ UT_uint32 IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * pBytes, UT_uint32 leng
     UT_ASSERT(length);
 
     return gzwrite(m_gzfp, (void *) pBytes, sizeof(UT_Byte) * length);
-}
-
-bool IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * sz)
-{
-    UT_ASSERT(m_gzfp);
-    UT_ASSERT(sz);
-    int length = strlen((const char *)sz);
-    UT_ASSERT(length);
-    
-    return (_writeBytes(sz,length)==(UT_uint32)length);
 }
 
 bool IE_Exp_GZipAbiWord::_closeFile(void)
