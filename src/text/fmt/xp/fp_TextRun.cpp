@@ -2958,6 +2958,8 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	while(pPrev)
 	{
 		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
+			break;
 		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
 
 		while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
@@ -3009,6 +3011,8 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	while(pNext)
 	{
 		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
+			break;
 		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
 		bool bDirSet = false;
 		spanOffset = 0;
