@@ -68,14 +68,14 @@ PS_Image::~PS_Image()
 	}
 }
 
-UT_Bool		PS_Image::convertToPNG(UT_ByteBuf** ppBB) const
+UT_Bool PS_Image::convertToPNG(UT_ByteBuf ** /* ppBB */) const
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
 	return UT_FALSE;
 }
 
-UT_Bool	PS_Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+UT_Bool PS_Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;

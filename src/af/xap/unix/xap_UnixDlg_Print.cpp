@@ -149,7 +149,7 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	return;
 }
 
-static void s_ok_clicked(GtkWidget * widget,
+static void s_ok_clicked(GtkWidget * /* widget */,
 						 printCBStruct * data)
 {
 	UT_ASSERT(data && data->entry && data->frame && data->answer);
@@ -168,14 +168,15 @@ static void s_ok_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
-static void s_cancel_clicked(GtkWidget * widget,
+static void s_cancel_clicked(GtkWidget * /* widget */,
 							 XAP_Dialog_Print::tAnswer * answer)
 {
 	*answer = XAP_Dialog_Print::a_CANCEL;
 	gtk_main_quit();
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data,
+static void s_delete_clicked(GtkWidget * /* widget */,
+							 gpointer /* data */,
 							 XAP_Dialog_Print::tAnswer * answer)
 {
 	*answer = XAP_Dialog_Print::a_CANCEL;

@@ -158,7 +158,7 @@ UT_Bool fp_Page::needsRedraw(void) const
 }
 
 #ifdef FMT_TEST
-void fp_Page::__dump(FILE * fp) const
+void fp_Page::__dump(FILE * /* fp */) const
 {
 }
 #endif
@@ -230,8 +230,8 @@ void fp_Page::_reformat(void)
 
 	while (i < count)
 	{
-		fp_Column* pLeader = getNthColumnLeader(i);
-		fl_SectionLayout* pSL = pLeader->getSectionLayout();
+		// fp_Column* pLeader = getNthColumnLeader(i);
+		// fl_SectionLayout* pSL = pLeader->getSectionLayout();
 
 		UT_ASSERT(UT_TODO);
 		

@@ -2176,7 +2176,7 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 }
 // ---------------- start goto ---------------
 
-UT_Bool FV_View::gotoTarget(FV_JumpTarget type, UT_UCSChar * data)
+UT_Bool FV_View::gotoTarget(FV_JumpTarget /* type */, UT_UCSChar * /* data */)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 
@@ -2641,7 +2641,7 @@ UT_sint32 FV_View::_findBlockSearchDumbNoCase(const UT_UCSChar * haystack, const
   Any takers?
 */
 
-UT_sint32 FV_View::_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle)
+UT_sint32 FV_View::_findBlockSearchRegexp(const UT_UCSChar * /* haystack */, const UT_UCSChar * /* needle */)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 	

@@ -137,8 +137,8 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 	return FALSE;
 }
 
-static gint s_color_update(GtkWidget * widget,
-						   GdkEvent * event,
+static gint s_color_update(GtkWidget * /* widget */,
+						   GdkEvent * /* event */,
 						   XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_ASSERT(dlg);
@@ -147,57 +147,57 @@ static gint s_color_update(GtkWidget * widget,
 	return FALSE;
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data,
+static void s_delete_clicked(GtkWidget * /* widget */,
+							 gpointer /* data */,
 							 XAP_Dialog_FontChooser::tAnswer * answer)
 {
 	*answer = XAP_Dialog_FontChooser::a_CANCEL;
 	gtk_main_quit();
 }
 
-static void s_ok_clicked(GtkWidget * widget,
+static void s_ok_clicked(GtkWidget * /* widget */,
 						 XAP_Dialog_FontChooser::tAnswer * answer)
 {	*answer = XAP_Dialog_FontChooser::a_OK;
 	gtk_main_quit();
 }
 
-static void s_cancel_clicked(GtkWidget * widget,
+static void s_cancel_clicked(GtkWidget * /* widget */,
 							 XAP_Dialog_FontChooser::tAnswer * answer)
 {
 	*answer = XAP_Dialog_FontChooser::a_CANCEL;
 	gtk_main_quit();
 }
 
-static void s_select_row_font(GtkWidget * widget,
-							  gint row,
-							  gint column,
-							  GdkEventButton * event,
+static void s_select_row_font(GtkWidget * /* widget */,
+							  gint /* row */,
+							  gint /* column */,
+							  GdkEventButton * /* event */,
 							  XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(widget);
 	UT_ASSERT(dlg);
 
 	// redisplay the preview text
 	dlg->updatePreview();
 }
-static void s_select_row_style(GtkWidget * widget,
-							   gint row,
-							   gint column,
-							   GdkEventButton * event,
+
+static void s_select_row_style(GtkWidget * /* widget */,
+							   gint /* row */,
+							   gint /* column */,
+							   GdkEventButton * /* event */,
 							   XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(widget);
 	UT_ASSERT(dlg);
 
 	// redisplay the preview text
 	dlg->updatePreview();
 }
-static void s_select_row_size(GtkWidget * widget,
-							  gint row,
-							  gint column,
-							  GdkEventButton * event,
+
+static void s_select_row_size(GtkWidget * /* widget */,
+							  gint /* row */,
+							  gint /* column */,
+							  GdkEventButton * /* event */,
 							  XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(widget);
 	UT_ASSERT(dlg);
 
 	// redisplay the preview text
@@ -205,7 +205,7 @@ static void s_select_row_size(GtkWidget * widget,
 }
 
 static gint s_drawing_area_expose(GtkWidget * w,
-								  GdkEventExpose * pExposeEvent)
+								  GdkEventExpose * /* pExposeEvent */)
 {
 	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
 		                              gtk_object_get_user_data(GTK_OBJECT(w));

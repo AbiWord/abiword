@@ -257,7 +257,7 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 
 }
 	
-gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
+gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -265,7 +265,7 @@ gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	return 1;
 }
 	
-gint AP_UnixTopRuler::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
+gint AP_UnixTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
 	// AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));

@@ -64,7 +64,7 @@ protected:
 							   _PS_Sec,
 							   _PS_Block,
 							   _PS_DataSec,
-							   _PS_DataItem,
+							   _PS_DataItem
 	} ParseState;
 
 	IEStatus			m_iestatus;

@@ -280,7 +280,8 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		m_pG->setClipRect(NULL);
 }
 
-void AP_TopRuler::_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
+void AP_TopRuler::_draw3DFrame(const UT_Rect * /* pClipRect */,
+							   AP_TopRulerInfo * pInfo,
 							   UT_sint32 x, UT_sint32 w)
 {
 	// Draw ruler bar (white or dark-gray) over [x,x+w)
@@ -371,7 +372,7 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 }
 
 void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
-								AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
+								AP_TopRulerInfo * /* pInfo */, ap_RulerTicks &tick,
 								UT_RGBColor &clr, GR_Font * pFont,
 								UT_sint32 k, UT_sint32 xTick)
 {
@@ -519,7 +520,7 @@ UT_Bool AP_TopRuler::_isInBottomBoxOfLeftIndent(UT_uint32 y)
 	return (y > yBottom);
 }
 
-void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * pInfo,
+void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 										   UT_sint32 leftCenter,
 										   UT_sint32 rightCenter,
 										   UT_sint32 firstLineCenter,
@@ -650,7 +651,7 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 	return;
 }
 
-void AP_TopRuler::_getTabStopRect(AP_TopRulerInfo * pInfo,
+void AP_TopRuler::_getTabStopRect(AP_TopRulerInfo * /* pInfo */,
 									 UT_sint32 anchor,
 									 UT_Rect * pRect)
 {
@@ -810,7 +811,7 @@ UT_sint32 AP_TopRuler::_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uin
 	return _getFirstPixelInColumn(pInfo,kCol+1);
 }
 
-void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol,
+void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 /* kCol */,
 									   UT_sint32 xRight, UT_Rect * prCol)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
@@ -864,8 +865,8 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	rRight.set(xAbsRight -hs, yTop-fs, fs, fs);
 }
 
-void AP_TopRuler::_drawMarginProperties(const UT_Rect * pClipRect,
-										AP_TopRulerInfo * pInfo, UT_RGBColor &clr)
+void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
+										AP_TopRulerInfo * /* pInfo */, UT_RGBColor & /* clr */)
 {
 #if 0
 	UT_Rect rLeft, rRight;
@@ -1055,7 +1056,7 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 
 /*****************************************************************/
 
-void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y)
+void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_uint32 x, UT_uint32 y)
 {
 	//UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
@@ -1215,7 +1216,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 
 /*****************************************************************/
 
-void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y)
+void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_uint32 x, UT_uint32 y)
 {
 	if (!m_bValidMouseClick)
 		return;

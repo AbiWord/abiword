@@ -535,18 +535,18 @@ UT_Bool s_AbiWord_1_Listener::change(PL_StruxFmtHandle /*sfh*/,
 }
 
 UT_Bool s_AbiWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-										 const PX_ChangeRecord * /*pcr*/,
-										 PL_StruxDocHandle /*sdh*/,
-										 PL_ListenerId /* lid */,
-										 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																 PL_ListenerId lid,
-																 PL_StruxFmtHandle sfhNew))
+										  const PX_ChangeRecord * /*pcr*/,
+										  PL_StruxDocHandle /*sdh*/,
+										  PL_ListenerId /* lid */,
+										  void (* pfnBindHandles)(PL_StruxDocHandle /* sdhNew */,
+																  PL_ListenerId /* lid */,
+																  PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
 }
 
-UT_Bool s_AbiWord_1_Listener::signal(UT_uint32 iSignal)
+UT_Bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;

@@ -29,13 +29,14 @@
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_string.h"
 
 // default GTK message box button width, in GTK screen units (pixels)
 #define DEFAULT_BUTTON_WIDTH	85
 
 /*****************************************************************/
 
-gint s_key_pressed(GtkWidget * widget, GdkEventKey * e)
+gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e)
 {
 	UT_ASSERT(e);
 

@@ -84,7 +84,7 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument)
 #define X_ReturnIfFail(exp,ies)		do { UT_Bool b = (exp); if (!b) return (ies); } while (0)
 #define X_ReturnNoMemIfError(exp)	X_ReturnIfFail(exp,IES_NoMemory)
 
-IEStatus IE_Imp_Text::_writeHeader(FILE * fp)
+IEStatus IE_Imp_Text::_writeHeader(FILE * /* fp */)
 {
 	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
 

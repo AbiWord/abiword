@@ -215,7 +215,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 	m_pie->write(">");
 }
 
-void s_HTML_Listener::_openSection(PT_AttrPropIndex api)
+void s_HTML_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
 	m_pie->write("<DIV>\n");
 }
@@ -755,18 +755,18 @@ UT_Bool s_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/,
 }
 
 UT_Bool s_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-										 const PX_ChangeRecord * /*pcr*/,
-										 PL_StruxDocHandle /*sdh*/,
-										 PL_ListenerId /* lid */,
-										 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																 PL_ListenerId lid,
-																 PL_StruxFmtHandle sfhNew))
+									 const PX_ChangeRecord * /*pcr*/,
+									 PL_StruxDocHandle /*sdh*/,
+									 PL_ListenerId /* lid */,
+									 void (* pfnBindHandles)(PL_StruxDocHandle /* sdhNew */,
+															 PL_ListenerId /* lid */,
+															 PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
 }
 
-UT_Bool s_HTML_Listener::signal(UT_uint32 iSignal)
+UT_Bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;

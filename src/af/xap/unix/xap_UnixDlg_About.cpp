@@ -57,7 +57,7 @@ XAP_UnixDialog_About::~XAP_UnixDialog_About(void)
 {
 }
 
-static void s_okClicked(GtkWidget * widget, gpointer data, gpointer extra)
+static void s_okClicked(GtkWidget * /* widget */, gpointer /* data */, gpointer /* extra */)
 {
 	// just quit out of the dialog
 	gtk_main_quit();
@@ -69,7 +69,8 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	GtkWidget* dialog_vbox1;
 	GtkWidget* dialog_action_area1;
 	GtkWidget* vbox1;
-	GtkWidget* hbox1;
+// TODO:  remove?  Unused.	
+//	GtkWidget* hbox1;
 	GtkWidget* label1;
 	GtkWidget* label2;
 	GtkWidget* label3;

@@ -60,7 +60,7 @@ static void _png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 	pBB->ins(pBB->getLength(), data, length);
 }
 
-static void _png_flush(png_structp png_ptr)
+static void _png_flush(png_structp /* png_ptr */)
 {
 }
 

@@ -2554,6 +2554,7 @@ Defun1(paste)
 
 /*****************************************************************/
 
+#if 0
 static UT_Bool s_doGotoDlg(FV_View * pView, AP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -2578,6 +2579,7 @@ static UT_Bool s_doGotoDlg(FV_View * pView, AP_Dialog_Id id)
 
 	return bOK;
 }
+#endif
 
 Defun1(go)
 {

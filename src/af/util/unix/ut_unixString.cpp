@@ -22,6 +22,8 @@
 #include <math.h>
 #include <ctype.h>
 
+#include <glib.h>
+
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -39,6 +41,6 @@ UT_sint32 UT_stricmp(const char *s1, const char *s2)
 
 UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)
 {
-	// TODO - fix this!  strncasecmp is NOT portable (for example, AIX doesn't have it)
-	return strncasecmp(s1,s2,lenS1);
+	// strncasecmp is not very portable, so we use GLIB's implementation
+	return g_strncasecmp(s1,s2,lenS1);
 }

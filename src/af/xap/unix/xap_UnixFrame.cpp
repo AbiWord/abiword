@@ -447,7 +447,7 @@ UT_Bool XAP_UnixFrame::updateTitle()
 
 /*****************************************************************/
 
-static void s_gtkMenuPositionFunc(GtkMenu * menu, gint * x, gint * y, gpointer user_data)
+static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gpointer user_data)
 {
 	struct UT_Point * p = (struct UT_Point *)user_data;
 	
@@ -455,7 +455,7 @@ static void s_gtkMenuPositionFunc(GtkMenu * menu, gint * x, gint * y, gpointer u
 	*y = p->y;
 }
 
-UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * pView, const char * szMenuName,
+UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
 	UT_Bool bResult = UT_TRUE;

@@ -158,13 +158,12 @@ static void MatchCaseCallback(GtkWidget * checkbutton,
 	repDialog->setMatchCase(GTK_TOGGLE_BUTTON(checkbutton)->active);
 }
 
-static void CancelCallback(GtkWidget * object, GtkWidget * data)
+static void CancelCallback(GtkWidget * /* object */, GtkWidget * /* data */)
 {
-	UT_ASSERT(object);
 	gtk_main_quit();
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data, gpointer extra)
+static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */, gpointer /* extra */)
 {
 	// just quit out of the dialog
 	gtk_main_quit();

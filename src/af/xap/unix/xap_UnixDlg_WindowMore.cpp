@@ -88,11 +88,11 @@ static void s_clist_event(GtkWidget * widget,
 	}
 }
 
-static void s_delete_clicked(GtkWidget * widget,
-							 gpointer data,
+static void s_delete_clicked(GtkWidget * /* widget */,
+							 gpointer /* data */,
 							 XAP_UnixDialog_WindowMore * dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_ASSERT(dlg);
 
 	dlg->event_WindowDelete();
 }

@@ -59,7 +59,7 @@ public:									// we create...
 	{
 	};
 
-	static void s_callback(GtkWidget * widget, gpointer user_data)
+	static void s_callback(GtkWidget * /* widget */, gpointer user_data)
 	{
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.

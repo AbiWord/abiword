@@ -124,7 +124,7 @@ void IE_Exp::_abortFile(void)
 
 IEStatus IE_Exp::constructExporter(PD_Document * pDocument,
 								   const char * szFilename,
-								   IEFileType ieft,
+								   IEFileType /* ieft */,
 								   IE_Exp ** ppie)
 {
 	// construct the right type of exporter.

@@ -146,7 +146,7 @@ UT_uint32 AP_LeftRuler::getWidth(void) const
 
 /*****************************************************************/
 
-UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
+UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask /* mask */)
 {
 	// Handle AV_Listener events on the view.
 
@@ -157,7 +157,7 @@ UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 /*****************************************************************/
 
-void AP_LeftRuler::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit)
+void AP_LeftRuler::_scrollFuncX(void * /* pData */, UT_sint32 /* xoff */, UT_sint32 /* xlimit */)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	// we don't care about horizontal scrolling.

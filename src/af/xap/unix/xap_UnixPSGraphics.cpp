@@ -199,9 +199,9 @@ GR_Font* PS_Graphics::getGUIFont()
 
 GR_Font* PS_Graphics::findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 
-							   const char* pszFontVariant, 
+							   const char* /* pszFontVariant */,
 							   const char* pszFontWeight, 
-							   const char* /*pszFontStretch*/, 
+							   const char* /* pszFontStretch */,
 							   const char* pszFontSize)
 {
 	UT_ASSERT(pszFontFamily);
@@ -362,7 +362,7 @@ void PS_Graphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
 {
 }
 
-void PS_Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void PS_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
 {
 	// polyLine is only used for drawing spell-check squiggles, which does not apply on paper.
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -401,9 +401,12 @@ void PS_Graphics::scroll(UT_sint32, UT_sint32)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-void PS_Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-						 UT_sint32 x_src, UT_sint32 y_src,
-						 UT_sint32 width, UT_sint32 height)
+void PS_Graphics::scroll(UT_sint32 /* x_dest */,
+						 UT_sint32 /* y_dest */,
+						 UT_sint32 /* x_src */,
+						 UT_sint32 /* y_src */,
+						 UT_sint32 /* width */,
+						 UT_sint32 /* height */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }

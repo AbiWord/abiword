@@ -97,7 +97,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 
 /*****************************************************************/
 
-gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
+gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * /* e */)
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -105,7 +105,7 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 	return 1;
 }
 
-gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
+gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * /* e */)
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -113,7 +113,7 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 	return 1;
 }
 	
-gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
+gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -132,7 +132,7 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	return 1;
 }
 	
-gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
+gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* /* w */, GdkEventMotion* /* e */)
 {
 	// a static function
 	// AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -140,7 +140,7 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	return 1;
 }
 	
-gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
+gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -148,7 +148,7 @@ gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	return 1;
 }
 	
-gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
+gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
 	// AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));

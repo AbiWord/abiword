@@ -241,7 +241,7 @@ UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 	}
 }
 
-void fp_Run::fetchCharWidths(UT_GrowBuf * pgbCharWidths)
+void fp_Run::fetchCharWidths(UT_GrowBuf * /* pgbCharWidths */)
 {
 	// do nothing.  subclasses may override this.
 }
@@ -295,12 +295,12 @@ UT_Bool fp_TabRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_TabRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+UT_Bool	fp_TabRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
 
-void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_TabRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /* y */, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
 	bBOL = UT_FALSE;
@@ -336,7 +336,7 @@ void fp_TabRun::setWidth(UT_sint32 iWidth)
 	m_iWidth = iWidth;
 }
 
-void fp_TabRun::_clearScreen(UT_Bool bFullLineHeightRect)
+void fp_TabRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
@@ -396,7 +396,7 @@ UT_Bool fp_ForcedLineBreakRun::canContainPoint(void) const
 	return UT_FALSE;
 }
 
-UT_uint32 fp_ForcedLineBreakRun::containsOffset(UT_uint32 iOffset)
+UT_uint32 fp_ForcedLineBreakRun::containsOffset(UT_uint32 /* iOffset */)
 {
 	return FP_RUN_NOT;
 }
@@ -415,14 +415,14 @@ UT_Bool fp_ForcedLineBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+UT_Bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
 	return UT_FALSE;
 }
 
-void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
@@ -447,7 +447,7 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 	height = m_pLine->getHeight();
 }
 
-void fp_ForcedLineBreakRun::_clearScreen(UT_Bool bFullLineHeightRect)
+void fp_ForcedLineBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
@@ -509,7 +509,7 @@ UT_Bool fp_ImageRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-UT_Bool	fp_ImageRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+UT_Bool	fp_ImageRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
@@ -551,7 +551,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	height = m_iHeight;
 }
 
-void fp_ImageRun::_clearScreen(UT_Bool bFullLineHeightRect)
+void fp_ImageRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	
@@ -679,12 +679,12 @@ UT_Bool fp_FieldRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-UT_Bool	fp_FieldRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+UT_Bool	fp_FieldRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
 
-void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_FieldRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
 	bBOL = UT_FALSE;
@@ -705,7 +705,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	height = m_iHeight;
 }
 
-void fp_FieldRun::_clearScreen(UT_Bool bFullLineHeightRect)
+void fp_FieldRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	
@@ -782,7 +782,7 @@ UT_Bool fp_ForcedColumnBreakRun::canContainPoint(void) const
 	return UT_FALSE;
 }
 
-UT_uint32 fp_ForcedColumnBreakRun::containsOffset(UT_uint32 iOffset)
+UT_uint32 fp_ForcedColumnBreakRun::containsOffset(UT_uint32 /* iOffset */)
 {
 	return FP_RUN_NOT;
 }
@@ -801,14 +801,14 @@ UT_Bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
 	return UT_FALSE;
 }
 
-void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
 	bBOL = UT_FALSE;
@@ -829,7 +829,7 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 	height = m_pLine->getHeight();
 }
 
-void fp_ForcedColumnBreakRun::_clearScreen(UT_Bool bFullLineHeightRect)
+void fp_ForcedColumnBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
@@ -854,7 +854,7 @@ UT_Bool fp_ForcedPageBreakRun::canContainPoint(void) const
 	return UT_FALSE;
 }
 
-UT_uint32 fp_ForcedPageBreakRun::containsOffset(UT_uint32 iOffset)
+UT_uint32 fp_ForcedPageBreakRun::containsOffset(UT_uint32 /* iOffset */)
 {
 	return FP_RUN_NOT;
 }
@@ -869,12 +869,12 @@ UT_Bool fp_ForcedPageBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+UT_Bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
 
-void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
 	bBOL = UT_FALSE;
@@ -895,7 +895,7 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 	height = m_pLine->getHeight();
 }
 
-void fp_ForcedPageBreakRun::_clearScreen(UT_Bool bFullLineHeightRect)
+void fp_ForcedPageBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));

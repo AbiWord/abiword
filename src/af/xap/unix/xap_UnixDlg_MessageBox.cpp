@@ -54,7 +54,7 @@ XAP_UnixDialog_MessageBox::~XAP_UnixDialog_MessageBox(void)
 // perhaps this should move to util/dialogHelper.cpp?  Right now
 // only hand-crafted dialogs like Message Box will need to handle
 // their own keys.
-static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, XAP_UnixDialog_MessageBox * box)
+static gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e, XAP_UnixDialog_MessageBox * box)
 {
 	UT_ASSERT(e);
 	UT_ASSERT(box);
@@ -104,35 +104,35 @@ static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, XAP_UnixDialog_Me
 	return TRUE;
 }
 
-static void s_ok_clicked(GtkWidget * widget,
+static void s_ok_clicked(GtkWidget * /* widget */,
 						 XAP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = XAP_Dialog_MessageBox::a_OK;
 	gtk_main_quit();
 }
 
-static void s_cancel_clicked(GtkWidget * widget,
+static void s_cancel_clicked(GtkWidget * /* widget */,
 							 XAP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = XAP_Dialog_MessageBox::a_CANCEL;
 	gtk_main_quit();
 }
 
-static void s_yes_clicked(GtkWidget * widget,
+static void s_yes_clicked(GtkWidget * /* widget */,
 						  XAP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = XAP_Dialog_MessageBox::a_YES;
 	gtk_main_quit();
 }
 
-static void s_no_clicked(GtkWidget * widget,
+static void s_no_clicked(GtkWidget * /* widget */,
 						 XAP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = XAP_Dialog_MessageBox::a_NO;
 	gtk_main_quit();
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data, XAP_Dialog_MessageBox::tAnswer * answer)
+static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */, XAP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = XAP_Dialog_MessageBox::a_CANCEL;
 	gtk_main_quit();

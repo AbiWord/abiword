@@ -55,21 +55,21 @@ XAP_UnixDialog_FileOpenSaveAs::~XAP_UnixDialog_FileOpenSaveAs(void)
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * widget,
+static void s_ok_clicked(GtkWidget * /* widget */,
 						 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
 	*answer = XAP_Dialog_FileOpenSaveAs::a_OK;
 	gtk_main_quit();
 }
 
-static void s_cancel_clicked(GtkWidget * widget,
+static void s_cancel_clicked(GtkWidget * /* widget */,
 							 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
 	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 	gtk_main_quit();
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
 	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 	gtk_main_quit();

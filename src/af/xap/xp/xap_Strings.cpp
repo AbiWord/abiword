@@ -307,13 +307,13 @@ InvalidFileError:
 	return;
 }
 
-void XAP_DiskStringSet::_endElement(const XML_Char *name)
+void XAP_DiskStringSet::_endElement(const XML_Char * /* name */)
 {
 	// everything in this file is contained in start-tags
 	return;
 }
 
-void XAP_DiskStringSet::_charData(const XML_Char *s, int len)
+void XAP_DiskStringSet::_charData(const XML_Char * /* s */, int /* len */)
 {
 	// everything in this file is contained in start-tags
 	return;

@@ -323,7 +323,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 }
 
-void fl_BlockLayout::clearScreen(GR_Graphics* pG)
+void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 {
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
@@ -1053,7 +1053,7 @@ void fl_BlockLayout::_updateSquiggle(fl_PartOfBlock* pPOB)
 	pView->_clearBetweenPositions(pos1, pos2, UT_TRUE);
 }
 
-void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
+void fl_BlockLayout::_insertSquiggles(UT_uint32 /* iOffset */, UT_uint32 /* iLength */, fl_BlockLayout* /* pBlock */)
 {
 #if 0
 	UT_sint32 chg = iLength;
@@ -1088,7 +1088,7 @@ void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_B
 #endif
 }
 
-void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
+void fl_BlockLayout::_deleteSquiggles(UT_uint32 /* iOffset */, UT_uint32 /* iLength */, fl_BlockLayout* /* pBlock */)
 {
 #if 0
 	UT_sint32 chg = -(UT_sint32)iLength;
@@ -1587,7 +1587,7 @@ UT_Bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 	return _doInsertRun(pNewRun);
 }
 
-UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * /* pcro */)
 {
 	GR_Image* pImage = NULL;
 
@@ -1665,7 +1665,7 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 	return _doInsertRun(pNewRun);
 }
 
-UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * /* pcro */)
 {
 	fp_FieldRun* pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem

@@ -27,7 +27,7 @@
 class UT_UNIXTimer : public UT_Timer
 {
 public:
-	UT_UNIXTimer::UT_UNIXTimer(UT_TimerCallback pCallback, void* pData);
+	UT_UNIXTimer(UT_TimerCallback pCallback, void* pData);
 	virtual ~UT_UNIXTimer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);

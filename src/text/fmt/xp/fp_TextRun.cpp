@@ -581,7 +581,7 @@ UT_Bool fp_TextRun::recalcWidth(void)
 	return UT_TRUE;
 }
 
-void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
+void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
