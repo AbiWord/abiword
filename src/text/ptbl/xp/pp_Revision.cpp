@@ -441,6 +441,10 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	// first we are looking for any deletions which cancel anything below them
 	bool bDelete = false;
 	UT_sint32 i;
+	if(m_vRev.getItemCount() == 0)
+	{
+		return;
+	}
 	
 	for(i = m_vRev.getItemCount()-1; i >=0; --i)
 	{
@@ -457,6 +461,11 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	}
 
 	// now we merge props and attrs in what is left
+	if(m_vRev.getItemCount() == 0)
+	{
+		return;
+	}
+
 	PP_Revision * r0 = (PP_Revision *)m_vRev.getNthItem(0);
 	UT_return_if_fail(r0);
 	

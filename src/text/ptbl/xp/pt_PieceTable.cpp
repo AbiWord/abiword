@@ -204,31 +204,25 @@ bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** p
 
 bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const
 {
-#define ReturnThis(type,pf)													\
-	do {	type * _pf_ = static_cast< type *>((pf));						\
-			const PP_AttrProp * pAP = m_varset.getAP(_pf_->getIndexAP());	\
-			*ppAP = pAP;													\
-			return (pAP != NULL);											\
-	} while (0)
-
 	switch (pf->getType())
 	{
 	case pf_Frag::PFT_FmtMark:
-		ReturnThis( pf_Frag_FmtMark, pf );
-
 	case pf_Frag::PFT_Text:
-		ReturnThis( pf_Frag_Text, pf );
-
 	case pf_Frag::PFT_Object:
-		ReturnThis( pf_Frag_Object, pf );
+		{	
+			const PP_AttrProp * pAP = m_varset.getAP(pf->getIndexAP());
+		    *ppAP = pAP;
+		    return true;
+		}
 
 	case pf_Frag::PFT_Strux:
 	case pf_Frag::PFT_EndOfDoc:
 	default:
-		*ppAP = NULL;
-		return false;
+		{
+			*ppAP = NULL;
+		}
 	}
-#undef ReturnThis
+	return false;
 }
 
 

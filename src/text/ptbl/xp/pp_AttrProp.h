@@ -155,6 +155,7 @@ protected:
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 	UT_uint32			m_index;	//$HACK
+	mutable const XML_Char **   m_szProperties;
 	
 	mutable PT_AttrPropIndex    m_iRevisedIndex;
 	mutable PP_RevisionState    m_RevisionState;

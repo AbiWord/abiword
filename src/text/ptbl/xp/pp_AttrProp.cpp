@@ -45,6 +45,7 @@ PP_AttrProp::PP_AttrProp()
 {
 	m_pAttributes = NULL;
 	m_pProperties = NULL;
+	m_szProperties = NULL;
 	m_bIsReadOnly = false;
 	m_checkSum = 0;
 	xxx_UT_DEBUGMSG(("creating pp_AttrProp %x \n",this));
@@ -98,6 +99,11 @@ PP_AttrProp::~PP_AttrProp()
 		delete m_pProperties;
 		m_pProperties = NULL;
 	}
+	if(m_szProperties)
+	{
+		delete [] m_szProperties;
+	}
+	m_szProperties = NULL;
 }
 
 /*!
@@ -435,24 +441,33 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	szValue = pEntry->first();
 	return true;
 }
-
+/*!
+ * Do not free this memory. It's cached here.
+ */
 const XML_Char ** PP_AttrProp::getProperties () const
 {
 	if(!m_pProperties)
 		return NULL;
-	
+	if(m_szProperties != NULL)
+	{
+		return m_szProperties;
+	}
 	UT_uint32 iPropsCount = m_pProperties->size();
+	m_szProperties = new const XML_Char * [iPropsCount*2+2];
 
 	const XML_Char ** pList = m_pProperties->list();
+	UT_sint32 i = 0;
 
 	// where the values should be, we actually have pointers to PropertyPair;
-	for(UT_uint32 i = 1; i < iPropsCount * 2; i += 2)
+	for(i = 1; i < iPropsCount * 2; i += 2)
 	{
 		PropertyPair * pP = (PropertyPair *) pList[i];
-		pList[i] = pP->first();
+		m_szProperties[i-1] = pList[i-1];
+		m_szProperties[i] = pP->first();
 	}
-
-	return pList;
+	m_szProperties[i-1] = NULL;
+	m_szProperties[i] = NULL;
+	return m_szProperties;
 }
 
 
@@ -1121,6 +1136,11 @@ UT_uint32 PP_AttrProp::getIndex(void)
 void PP_AttrProp::setIndex(UT_uint32 i)
 {
 	m_index = i;
+	if(m_szProperties)
+	{
+		delete [] m_szProperties;
+	}
+	m_szProperties = NULL;
 }
 
 /*!
