@@ -1397,7 +1397,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 		else
 			str = NULL;
 	}
-
+	UT_iconv_close(ic_handle);
 	return str;
 }
 
