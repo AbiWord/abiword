@@ -44,6 +44,7 @@ class fl_BlockLayout;
 class fl_PartOfBlock;
 class fp_Page;
 class fp_Run;
+class fp_HyperlinkRun;
 class FG_Graphic;
 class PD_Document;
 class GR_Graphics;
@@ -512,6 +513,8 @@ protected:
 
 	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);	
+	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
+											 PT_DocPosition &posEnd);
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
@@ -596,12 +599,4 @@ protected:
 };
 
 #endif /* FV_VIEW_H */
-
-
-
-
-
-
-
-
 

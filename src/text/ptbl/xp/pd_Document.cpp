@@ -2667,9 +2667,10 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 /*! Returns true if pName looks like a relative link, rather than a
  *  bookmark.
 
- *  Current heuristic: try to stat the file; if it exists, then it's
- * a filename. */
+ *  Current heuristic: if pName contains a ., then it's a rel link;
+ * otherwise it's a bookmark. */
 bool PD_Document::isBookmarkRelativeLink(const XML_Char * pName) const
 {
-	return UT_isRegularFile(pName);
+	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	return strchr((char *)pName, '.') != NULL;
 }

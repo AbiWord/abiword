@@ -9218,6 +9218,51 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 	pFrame->setStatusMessage(pH1->getTarget());
 	return true;
 }
+
+/*! Returns the hyperlink around position pos, if any; assumes
+ * posStart, posEnd in same block. */
+fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
+												PT_DocPosition &posEnd)
+{
+	fl_BlockLayout *pBlock = _findBlockAtPosition(posStart);
+	PT_DocPosition curPos = posStart - pBlock->getPosition(false);
+	
+	fp_Run * pRun = pBlock->getFirstRun();
+		
+	//find the run at pos
+	while(pRun && pRun->getBlockOffset() <= curPos)
+		pRun = pRun->getNext();
+		
+	UT_ASSERT(pRun);
+	if(!pRun)
+		return NULL;
+	
+	// now we have the run immediately after the run in question, so
+	// we step back
+	pRun = pRun->getPrev();
+	UT_ASSERT(pRun);
+	if(!pRun)
+		return NULL;
+	
+	if (pRun->getHyperlink() != NULL)
+		return pRun->getHyperlink();
+
+	// Now, getHyperlink() looks NULL, so let's step forward till posEnd.
+
+	PT_DocPosition curPosEnd = posEnd - pBlock->getPosition(false);
+	
+	// Continue checking for hyperlinks.
+	while(pRun && pRun->getBlockOffset() <= curPosEnd)
+	{
+		pRun = pRun->getNext();
+		if (pRun->getPrev() && pRun->getPrev()->getHyperlink() != NULL)
+			return pRun->getPrev()->getHyperlink();
+	}
+
+	// OK, we're really safe now.
+	return NULL;
+}
+
 /*
 	NB: this function assumes that the position it is passed is inside a
 	hyperlink and will assert if it is not so.
@@ -9225,29 +9270,7 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 
 UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 {
-	fp_HyperlinkRun * pH1 = 0;
-		
-	fl_BlockLayout *pBlock = _findBlockAtPosition(pos1);
-	PT_DocPosition curPos = pos1 - pBlock->getPosition(false);
-	
-	fp_Run * pRun = pBlock->getFirstRun();
-		
-	//find the run at pos1
-	while(pRun && pRun->getBlockOffset() <= curPos)
-		pRun = pRun->getNext();
-		
-	UT_ASSERT(pRun);
-	if(!pRun)
-		return false;
-	
-	// now we have the run immediately after the run in question, so
-	// we step back
-	pRun = pRun->getPrev();
-	UT_ASSERT(pRun);
-	if(!pRun)
-		return false;
-	
-	pH1 = pRun->getHyperlink();
+	fp_HyperlinkRun * pH1 = _getHyperlinkInRange(pos1, pos1);
 	
 	UT_ASSERT(pH1);
 	if(!pH1)
@@ -9258,7 +9281,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	// now reset the hyperlink member for the runs that belonged to this
 	// hyperlink
 
-	pRun = pH1->getNext();
+	fp_Run * pRun = pRun = pH1->getNext();
 	UT_ASSERT(pRun);
 	while(pRun && pRun->getHyperlink() != NULL)
 	{
@@ -9325,6 +9348,9 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	bool relLink = false;
 	if (!UT_isUrl(szName))
 		relLink = m_pDoc->isBookmarkRelativeLink(szName);
+	// TODO: After strings freeze is lifted, we should
+	// TODO: display a message if relLink is true but
+	// TODO: szName does not stat.
 	
 	if(!UT_isUrl(szName) && m_pDoc->isBookmarkUnique(szName) && !relLink)
 	{
@@ -9368,6 +9394,9 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		return false;
 	}
 
+	// Silently fail (TODO: pop up message) if we try to nest hyperlinks.
+	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
+		return false;
 	
 	XML_Char * pAttr[4];
 	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
