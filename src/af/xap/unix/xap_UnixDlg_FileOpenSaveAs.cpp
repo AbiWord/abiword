@@ -41,7 +41,12 @@
 #include "ut_svg.h"
 #include "ut_misc.h"
 #include "gr_UnixGraphics.h"
+
+#if defined(HAVE_GNOME)
+#include "gr_UnixGnomeImage.h"
+#else
 #include "gr_UnixImage.h"
+#endif
 
 #include "../../../wp/impexp/xp/ie_types.h"
 #include "../../../wp/impexp/xp/ie_imp.h"
@@ -741,7 +746,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	IEGraphicFileType iegft = IEGFT_Unknown;
 	IE_ImpGraphic* pIEG = NULL;
 	UT_Error errorCode = UT_OK;
-	GR_UnixImage *pImage = NULL;
+	GR_Image *pImage = NULL;
 
 	double		scale_factor = 0.0;
 	UT_sint32	scaled_width,scaled_height;
@@ -809,7 +814,12 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	scaled_width  = (int) (scale_factor * iImageWidth);
 	scaled_height = (int) (scale_factor * iImageHeight);
 
+#if defined(HAVE_GNOME)
+	pImage = new GR_UnixGnomeImage(NULL);
+#else
 	pImage = new GR_UnixImage(NULL);
+#endif
+
 	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
 
 	pGr->drawImage(pImage,

@@ -36,6 +36,10 @@ ifeq ($(ABI_FE), Mac)
 PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)Font.$(OBJ_SUFFIX)
 endif
 
+ifdef ABI_OPT_GNOME
+	PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)$(ABI_GNOME_PREFIX)Image.$(OBJ_SUFFIX)
+endif
+
 OBJS=		$(PLATFORM_OBJS)					\
 		$(OBJDIR)/gr_CharWidths.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\

@@ -28,6 +28,12 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#include "gr_UnixGnomeImage.h"
+#endif
+
 #if 1
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
@@ -771,6 +777,8 @@ bool GR_UnixGraphics::endPrint(void)
 	return false;
 }
 
+#if !defined(HAVE_GNOME)
+
 GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
    	GR_Image* pImg = NULL;
@@ -811,6 +819,40 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
                                               // which is pixels * 3 (we use 3 bytes per pixel).
 
 }
+
+#else
+
+// gdk-pixbuf based routines
+
+GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+{
+   	GR_Image* pImg = NULL;
+	
+	pImg = new GR_UnixGnomeImage(pszName);
+	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+   	return pImg;
+}
+
+void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+{
+	UT_ASSERT(pImg);
+
+   	GR_UnixGnomeImage * pUnixImage = static_cast<GR_UnixGnomeImage *>(pImg);
+
+   	GdkPixbuf * image = pUnixImage->getData();
+
+   	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
+   	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
+
+	gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
+								   0, 0,
+								   xDest, yDest,
+								   iImageWidth, iImageHeight,
+								   GDK_RGB_DITHER_NORMAL,
+								   0, 0);
+}
+
+#endif /* HAVE_GNOME */
 
 void GR_UnixGraphics::flush(void)
 {
