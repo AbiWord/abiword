@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -27,6 +28,7 @@
 #include "ut_xml.h"
 
 #include "xap_EncodingManager.h"
+#include "ut_string_class.h"
 
 // Please keep the "/**/" to stop MSVC dependency generator complaining.
 #include <libxml/parser.h>
@@ -72,6 +74,30 @@ static void _charData (void * userData, const XML_Char * buffer, int length)
   pXML->charData ((const char *) buffer, length);
 }
 
+static void _errorSAXFunc(void *ctx,
+			  const char *msg,
+			  ...)
+{
+  va_list args;
+  va_start (args, msg);
+  UT_String errorMessage(UT_String_vprintf (msg, args));
+  va_end (args);
+  
+  UT_DEBUGMSG(("%s", errorMessage.c_str()));
+}
+
+static void _fatalErrorSAXFunc(void *ctx,
+			       const char *msg,
+			       ...)
+{
+  va_list args;
+  va_start (args, msg);
+  UT_String errorMessage(UT_String_vprintf (msg, args));
+  va_end (args);
+  
+  UT_DEBUGMSG(("%s", errorMessage.c_str()));
+}
+
 #ifdef __MRC__
 };
 #endif
@@ -109,6 +135,8 @@ UT_Error UT_XML::parse (const char * szFilename)
   hdl.startElement = _startElement;
   hdl.endElement   = _endElement;
   hdl.characters   = _charData;
+  hdl.error        = _errorSAXFunc;
+  hdl.fatalError   = _fatalErrorSAXFunc;
 
   size_t length = reader->readBytes (buffer, sizeof (buffer));
   int done = (length < sizeof (buffer));
@@ -131,7 +159,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 
       if (xmlParseChunk (ctxt, buffer, (int) length, 0))
 	{
-	  UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
+	  UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
 	  ret = UT_IE_IMPORTERROR;
 	  break;
 	}
@@ -142,7 +170,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 	char null_char[1] = { '\0' };
 	if (xmlParseChunk (ctxt, null_char, 1, 1))
 	  {
-	    UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
+	    UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
 	    ret = UT_IE_IMPORTERROR;
 	  }
       }
