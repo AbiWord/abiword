@@ -138,11 +138,6 @@ public:									// we create...
 		UT_ASSERT(wd);
 
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
-
-		// attach this new menu's accel group to be triggered off itself
-		// WL: AFAIK this isn't necessary?
-		//_gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
-		//gtk_accel_group_lock(wd->m_accelGroup);
 	}
 
 	static void s_onDestroyMenu(GtkMenuItem * menuItem, gpointer callback_data)
@@ -156,11 +151,6 @@ public:									// we create...
 		UT_ASSERT(pFrame);
 
 		pFrame->setStatusMessage(NULL);
-
-		// bind this menuitem to its parent menu
-		// WL: AFAIK this isn't necessary?
-		//_gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
-		//gtk_accel_group_unlock(wd->m_accelGroup);
 	}
 
 	// GTK wants to run popup menus asynchronously, but we want synchronous,
@@ -445,6 +435,7 @@ static char _ev_get_underlined_char(const char * szString)
 		else
 			p++;
 	}
+
 	return 0;
 }
 
