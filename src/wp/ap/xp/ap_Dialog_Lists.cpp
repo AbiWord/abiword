@@ -98,7 +98,8 @@ AP_Dialog_Lists::~AP_Dialog_Lists(void)
 	for(UT_uint32 i=0; i<4; i++)
 	{
 		DELETEP(m_pFakeLayout[i]);
-		DELETEP(static_cast<const pf_Frag_Strux_Block *>(m_pFakeSdh[i]));
+		const pf_Frag_Strux_Block * pFSB = static_cast<const pf_Frag_Strux_Block *>(m_pFakeSdh[i]);
+		DELETEP(pFSB);
 	}
 	// What do we do about the fakeAutoNum in the Document pDoc?
 	// Maybe we need another constrcutor
