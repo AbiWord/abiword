@@ -205,16 +205,6 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 	case WM_RBUTTONDBLCLK:
 		return 0;
 
-	case WM_SIZE:
-		{
-			int nWidth = LOWORD(lParam);
-			int nHeight = HIWORD(lParam);	
-						
-			pRuler->setHeight(nHeight);
-			pRuler->setWidth(nWidth);
-			return 0;
-		}
-	
 	case WM_PAINT:
 		{
 			PAINTSTRUCT ps;
