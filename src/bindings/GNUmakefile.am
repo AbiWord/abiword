@@ -1,0 +1,7 @@
+if SCRIPT
+PERLSUBDIR=perl
+endif
+
+SUBDIRS = $(PERLSUBDIR)
+
+

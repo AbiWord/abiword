@@ -293,8 +293,20 @@ close(pFrame)
 		delete pFrame;
 
 void
+register(pszFunctionName, pszDescription, pszHelp, pszAuthor, pszCopyright, pszDate, pszMenuPath, pFunction)
+	const char *pszFunctionName
+	const char *pszDescription
+	const char *pszHelp
+	const char *pszAuthor
+	const char *pszCopyright
+	const char *pszDate
+	const char *pszMenuPath
+	SV *pFunction
+	CODE:
+		// XAP_PerlBindings::get_instance().register_function(pszFunctionName, pFunction);
+
+void
 exit()
 	CODE:
 		XAP_App::getApp()->reallyExit();
 
-MODULE = abi		PACKAGE = abi::FV_View

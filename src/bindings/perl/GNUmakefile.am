@@ -1,0 +1,31 @@
+# /usr/bin/perl 
+# /usr/share/perl/5.6.0/ExtUtils/xsubpp 
+# -C++ -typemap /usr/share/perl/5.6.0/ExtUtils/typemap 
+# -typemap typemap abi.xs > abi.xsc && mv abi.xsc abi.c
+
+#XSUBPPDIR = /usr/share/perl/5.6.0/ExtUtils
+
+include $(top_srcdir)/includes.mk
+
+noinst_LIBRARIES = libabiperl.a
+
+libabiperl_a_SOURCES = abi.cpp
+BUILT_SOURCES = abi.cpp
+
+perldir = $(top_builddir)/src/bindings/perl
+@XSUBPPDIR@
+XSUBPP = $(XSUBPPDIR)/xsubpp
+XSPROTOARG = 
+XSUBPPDEPS = $(XSUBPPDIR)/typemap typemap $(XSUBPP)
+XSUBPPARGS = -typemap $(XSUBPPDIR)/typemap -typemap typemap
+
+INCLUDES=\
+	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
+	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
+	$(TEXT_INCLUDES) $(SCRIPT_CFLAGS) -I$(top_srcdir) \
+	$(AF_INCLUDES) $(AP_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@ 
+
+abi.cpp: abi.xs $(srcdir)/typemap
+	perl $(XSUBPP) -typemap $(XSUBPPDIR)/typemap -typemap typemap \
+		$(srcdir)/abi.xs > $(perldir)/abi.xsc && mv  $(perldir)/abi.xsc  $(perldir)/abi.cpp
+
