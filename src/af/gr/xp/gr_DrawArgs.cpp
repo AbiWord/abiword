@@ -25,6 +25,4 @@ dg_DrawArgs::dg_DrawArgs()
 	bDirtyRunsOnly = UT_FALSE;
 	xoff = 0;
 	yoff = 0;
-	iSelPos1 = 0;
-	iSelPos2 = 0;
 }

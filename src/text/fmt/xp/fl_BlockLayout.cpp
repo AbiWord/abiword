@@ -85,16 +85,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	}
 }
 
-FL_DocLayout* fl_BlockLayout::getDocLayout()
-{
-	return m_pLayout;
-}
-
-fl_SectionLayout * fl_BlockLayout::getSectionLayout()
-{
-	return m_pSectionLayout;
-}
-
 fl_TabStop::fl_TabStop()
 {
 	iPosition = 0;

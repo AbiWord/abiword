@@ -29,6 +29,7 @@
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "gr_DrawArgs.h"
+#include "fv_View.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -604,23 +605,30 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_uint32 iRunBase = iBase + m_iOffsetFirst;
 
-	UT_ASSERT(pDA->iSelPos1 <= pDA->iSelPos2);
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+	UT_uint32 iPoint = pView->getPoint();
+
+	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
 	
-	if (pDA->iSelPos1 == pDA->iSelPos2)
+	UT_ASSERT(iSel1 <= iSel2);
+	
+	if (iSel1 == iSel2)
 	{
 		// nothing in this run is selected
 		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
-	else if (pDA->iSelPos1 <= iRunBase)
+	else if (iSel1 <= iRunBase)
 	{
-		if (pDA->iSelPos2 <= iRunBase)
+		if (iSel2 <= iRunBase)
 		{
 			// nothing in this run is selected
 			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
-		else if (pDA->iSelPos2 >= (iRunBase + m_iLen))
+		else if (iSel2 >= (iRunBase + m_iLen))
 		{
 			// the whole run is selected
 			
@@ -631,14 +639,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		{
 			// the first part is selected, the second part is not
 
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos2 - iRunBase, pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos2 - iRunBase, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 
-			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}
-	else if (pDA->iSelPos1 >= (iRunBase + m_iLen))
+	else if (iSel1 >= (iRunBase + m_iLen))
 	{
 		// nothing in this run is selected
 		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
@@ -646,21 +654,21 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos1 - iRunBase, pgbCharWidths);
-		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos1 - iRunBase, pgbCharWidths);
+		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
+		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
 		
-		if (pDA->iSelPos2 >= (iRunBase + m_iLen))
+		if (iSel2 >= (iRunBase + m_iLen))
 		{
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, m_iLen - (pDA->iSelPos1 - iRunBase), pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, m_iLen - (pDA->iSelPos1 - iRunBase), pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
 		}
 		else
 		{
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, pDA->iSelPos2 - pDA->iSelPos1, pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, pDA->iSelPos2 - pDA->iSelPos1, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 
-			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
-			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}
 

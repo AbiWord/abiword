@@ -382,11 +382,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.xoff = my_xoff;
 	da.pG = pG;
 
-	// TODO: The following line means that no selection will be drawn.  Is this right?
-	da.iSelPos1 = da.iSelPos2 = 0;
-	
 	int count = m_vecRuns.getItemCount();
-
 	for (int i=0; i < count; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);

@@ -97,7 +97,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	pLayout->setView(this);
 		
 	moveInsPtTo(FV_DOCPOS_BOD);
-	m_iSelectionAnchor = _getPoint();
+	m_iSelectionAnchor = getPoint();
 	_resetSelection();
 	_fixInsertionPointCoords();
 
@@ -336,7 +336,7 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 
-		_findPositionCoords(_getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, NULL, &pRun);
+		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, NULL, &pRun);
 
 		fp_Column * pColumn = pRun->getLine()->getColumn();
 		UT_uint32 nCol=0;
@@ -363,7 +363,7 @@ void FV_View::_swapSelectionOrientation(void)
 	// without changing the screen.
 
 	UT_ASSERT(!isSelectionEmpty());
-	PT_DocPosition curPos = _getPoint();
+	PT_DocPosition curPos = getPoint();
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	_setPoint(m_iSelectionAnchor);
 	m_iSelectionAnchor = curPos;
@@ -378,7 +378,7 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 
 	UT_ASSERT(!isSelectionEmpty());
 	
-	PT_DocPosition curPos = _getPoint();
+	PT_DocPosition curPos = getPoint();
 	
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	UT_Bool bForwardSelection = (m_iSelectionAnchor < curPos);
@@ -400,14 +400,14 @@ void FV_View::_clearSelection(void)
 
 	if (m_bSelection)
 	{
-		if (m_iSelectionAnchor < _getPoint())
+		if (m_iSelectionAnchor < getPoint())
 		{
 			iPos1 = m_iSelectionAnchor;
-			iPos2 = _getPoint();
+			iPos2 = getPoint();
 		}
 		else
 		{
-			iPos1 = _getPoint();
+			iPos1 = getPoint();
 			iPos2 = m_iSelectionAnchor;
 		}
 		bRedrawOldSelection = UT_TRUE;
@@ -428,27 +428,27 @@ void FV_View::_clearSelection(void)
 void FV_View::_resetSelection(void)
 {
 	m_bSelection = UT_FALSE;
-	m_iSelectionAnchor = 0;
+	m_iSelectionAnchor = getPoint();
 }
 
 void FV_View::_drawSelection()
 {
 	UT_ASSERT(!isSelectionEmpty());
 
-	if (m_iSelectionAnchor < _getPoint())
+	if (m_iSelectionAnchor < getPoint())
 	{
-		_drawBetweenPositions(m_iSelectionAnchor, _getPoint());
+		_drawBetweenPositions(m_iSelectionAnchor, getPoint());
 	}
 	else
 	{
-		_drawBetweenPositions(_getPoint(), m_iSelectionAnchor);
+		_drawBetweenPositions(getPoint(), m_iSelectionAnchor);
 	}
 }
 
 void FV_View::_setSelectionAnchor(void)
 {
 	m_bSelection = UT_TRUE;
-	m_iSelectionAnchor = _getPoint();
+	m_iSelectionAnchor = getPoint();
 }
 
 void FV_View::_deleteSelection(void)
@@ -458,7 +458,7 @@ void FV_View::_deleteSelection(void)
 
 	UT_ASSERT(!isSelectionEmpty());
 
-	PT_DocPosition iPoint = _getPoint();
+	PT_DocPosition iPoint = getPoint();
 	UT_ASSERT(iPoint != m_iSelectionAnchor);
 
 	// TODO fix this
@@ -484,7 +484,7 @@ UT_Bool FV_View::isSelectionEmpty()
 		return UT_TRUE;
 	}
 	
-	PT_DocPosition curPos = _getPoint();
+	PT_DocPosition curPos = getPoint();
 	if (curPos == m_iSelectionAnchor)
 	{
 		return UT_TRUE;
@@ -510,11 +510,11 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 		return iPos;
 	}
 
-	PT_DocPosition iPoint = _getPoint();
+	PT_DocPosition iPoint = getPoint();
 
 	// TODO: could cache these to save a lookup if point doesn't change
 	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), m_bPointEOL,
+	fp_Run* pRun = pBlock->findPointCoords(getPoint(), m_bPointEOL,
 										   xPoint, yPoint, iPointHeight);
 	fp_Line* pLine = pRun->getLine();
 
@@ -721,7 +721,7 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 	
 	PT_DocPosition iPos = _getDocPos(dp);
 
-	if (iPos != _getPoint())
+	if (iPos != getPoint())
 	{
 		_clearPointAP(UT_TRUE);
 	}
@@ -748,7 +748,7 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 		_eraseInsertionPoint();
 	}
 	
-	if (dp != _getPoint())
+	if (dp != getPoint())
 	{
 		_clearPointAP(UT_TRUE);
 	}
@@ -775,7 +775,7 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 		_drawInsertionPoint();
 	}
 
-	PT_DocPosition iPoint = _getPoint();
+	PT_DocPosition iPoint = getPoint();
 	if (!_charMotion(bForward, count))
 	{
 		_setPoint(iPoint);
@@ -804,7 +804,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 		_eraseInsertionPoint();
 	}
 
-	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
+	UT_Bool bResult = m_pDoc->insertSpan(getPoint(), text, count);
 	m_pLayout->deleteEmptyColumnsAndPages();
 		
 	_updateScreen();
@@ -835,8 +835,8 @@ void FV_View::insertSectionBreak(void)
 	// ==>: we *don't* call _clearPointAP() in this case 
 
 	// before inserting a section break, we insert a block break
-	m_pDoc->insertStrux(_getPoint(), PTX_Block);
-	m_pDoc->insertStrux(_getPoint(), PTX_Section);
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
+	m_pDoc->insertStrux(getPoint(), PTX_Section);
 	
 	m_pLayout->deleteEmptyColumnsAndPages();
 		
@@ -865,7 +865,7 @@ void FV_View::insertParagraphBreak(void)
 
 	// ==>: we *don't* call _clearPointAP() in this case 
 
-	m_pDoc->insertStrux(_getPoint(), PTX_Block);
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
 	
 	m_pLayout->deleteEmptyColumnsAndPages();
 		
@@ -887,7 +887,7 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 		_eraseInsertionPoint();
 	}
 
-	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
 	if (!isSelectionEmpty())
@@ -912,10 +912,6 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-	else
-	{
-		_drawSelection();
-	}
 
 	return bRet;
 }
@@ -935,7 +931,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 		at the beginning of the selection, load 'em all into a vector, and 
 		then prune any property that collides.
 	*/
-	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	UT_Bool bSelEmpty = isSelectionEmpty();
 
@@ -1125,7 +1121,7 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 	_clearPointAP(UT_TRUE);
 	_eraseInsertionPoint();
 
-	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
 	if (!isSelectionEmpty())
@@ -1149,10 +1145,6 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-	else
-	{
-		_drawSelection();
-	}
 
 	return bRet;
 }
@@ -1171,7 +1163,7 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 		at the beginning of the selection, load 'em all into a vector, and 
 		then prune any property that collides.
 	*/
-	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
 	if (!isSelectionEmpty())
@@ -1291,7 +1283,7 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 		at the beginning of the selection, load 'em all into a vector, and 
 		then prune any property that collides.
 	*/
-	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
 	if (!isSelectionEmpty())
@@ -1404,7 +1396,7 @@ void FV_View::delTo(FV_DocPos dp)
 {
 	PT_DocPosition iPos = _getDocPos(dp);
 
-	if (iPos == _getPoint())
+	if (iPos == getPoint())
 	{
 		return;
 	}
@@ -1492,18 +1484,18 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		_eraseInsertionPoint();
 
 		UT_uint32 amt = count;
-		UT_uint32 posCur = _getPoint();
+		UT_uint32 posCur = getPoint();
 
 		if (!bForward)
 		{
 
 			if (!_charMotion(bForward,count))
 			{
-				UT_ASSERT(_getPoint() <= posCur);
-				amt = posCur - _getPoint();
+				UT_ASSERT(getPoint() <= posCur);
+				amt = posCur - getPoint();
 			}
 
-			posCur = _getPoint();
+			posCur = getPoint();
 		}
 		else
 		{
@@ -1555,10 +1547,10 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	UT_sint32 xOldSticky = m_xPointSticky;
 
 	// first, find the line we are on now
-	UT_uint32 iOldPoint = _getPoint();
+	UT_uint32 iOldPoint = getPoint();
 
 	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
-	fp_Run* pOldRun = pOldBlock->findPointCoords(_getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
+	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Column* pOldColumn = pOldLine->getColumn();
@@ -1760,9 +1752,9 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 	}
 	else
 	{
-		PT_DocPosition iOldPoint = _getPoint();
+		PT_DocPosition iOldPoint = getPoint();
  		_moveInsPtNextPrevLine(bNext);
-		PT_DocPosition iNewPoint = _getPoint();
+		PT_DocPosition iNewPoint = getPoint();
 
 		// top/bottom of doc - nowhere to go
 		if (iOldPoint == iNewPoint)
@@ -1782,6 +1774,8 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 		if (isSelectionEmpty())
 		{
 			_resetSelection();
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
 		}
 	}
 
@@ -1814,7 +1808,7 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	}
 	else
 	{
-		PT_DocPosition iOldPoint = _getPoint();
+		PT_DocPosition iOldPoint = getPoint();
 
 		if (_charMotion(bForward, count) == UT_FALSE)
 		{
@@ -1822,7 +1816,7 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 			return;
 		}
 		
-		PT_DocPosition iNewPoint = _getPoint();
+		PT_DocPosition iNewPoint = getPoint();
 
 		if (iOldPoint < iNewPoint)
 		{
@@ -1841,8 +1835,11 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
-		_fixInsertionPointCoords();
-//		_drawInsertionPoint();
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 
 	notifyListeners(AV_CHG_MOTION);
@@ -1856,8 +1853,11 @@ void FV_View::extSelTo(FV_DocPos dp)
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
-		_fixInsertionPointCoords();
-//		_drawInsertionPoint();
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 
 	notifyListeners(AV_CHG_MOTION);
@@ -1874,7 +1874,7 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	FV_View * pView = (FV_View *) pTimer->getInstanceData();
 	UT_ASSERT(pView);
 
-	PT_DocPosition iOldPoint = pView->_getPoint();
+	PT_DocPosition iOldPoint = pView->getPoint();
 
 	/*
 		NOTE: We update the selection here, so that the timer can keep 
@@ -1882,7 +1882,7 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	*/
 	pView->extSelToXY(pView->m_xLastMouse, pView->m_yLastMouse, UT_FALSE);
 
-	if (pView->_getPoint() != iOldPoint)
+	if (pView->getPoint() != iOldPoint)
 	{
 		// do the autoscroll
 		if (!pView->_ensureThatInsertionPointIsOnScreen())
@@ -2108,10 +2108,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool * 
 	}
 	else
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_drawSelection();
-		}
+		_ensureThatInsertionPointIsOnScreen();
 	}
 
 	return bRes;
@@ -2333,10 +2330,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	}
 	else
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_drawSelection();
-		}
+		!_ensureThatInsertionPointIsOnScreen();
 	}
 
 	return bRes;
@@ -2367,7 +2361,7 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 				_eraseInsertionPoint();
 			}
 
-			result = m_pDoc->insertSpan(_getPoint(), replace, UT_UCS_strlen(replace));
+			result = m_pDoc->insertSpan(getPoint(), replace, UT_UCS_strlen(replace));
 			m_pLayout->deleteEmptyColumnsAndPages();
 		}
 
@@ -2442,10 +2436,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	}
 	else
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_drawSelection();
-		}
+		_ensureThatInsertionPointIsOnScreen();
 	}
 
 	return numReplaced;
@@ -2488,7 +2479,7 @@ UT_sint32 FV_View::_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_
 
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 {
-	PT_DocPosition iOldPoint = _getPoint();
+	PT_DocPosition iOldPoint = getPoint();
 
 	xxx_UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
 				 iOldPoint, iNewPoint, m_iSelectionAnchor));
@@ -2747,24 +2738,6 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		da.xoff = xoff;
 		da.yoff = yoff + pLine->getAscent();
 
-		if (m_bSelection)
-		{
-			if (m_iSelectionAnchor < _getPoint())
-			{
-				da.iSelPos1 = m_iSelectionAnchor;
-				da.iSelPos2 = _getPoint();
-			}
-			else
-			{
-				da.iSelPos1 = _getPoint();
-				da.iSelPos2 = m_iSelectionAnchor;
-			}
-		}
-		else
-		{
-			da.iSelPos1 = da.iSelPos2 = 0;
-		}
-
 		pCurRun->draw(&da);
 		
 		pCurRun = pCurRun->getNext();
@@ -2827,7 +2800,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_fixInsertionPointCoords()
 {
-	_findPositionCoords(_getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
+	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
 
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
@@ -3122,23 +3095,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			da.pG = m_pG;
 			da.xoff = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
 			da.yoff = adjustedTop;
-			if (m_bSelection)
-			{
-				if (m_iSelectionAnchor < _getPoint())
-				{
-					da.iSelPos1 = m_iSelectionAnchor;
-					da.iSelPos2 = _getPoint();
-				}
-				else
-				{
-					da.iSelPos1 = _getPoint();
-					da.iSelPos2 = m_iSelectionAnchor;
-				}
-			}
-			else
-			{
-				da.iSelPos1 = da.iSelPos2 = 0;
-			}
 
 			UT_sint32 adjustedLeft  = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
@@ -3374,13 +3330,6 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	notifyListeners(AV_CHG_EMPTYSEL);
 }
 
-// -------------------------------------------------------------------------
-PT_DocPosition FV_View::_getPoint(void)
-{
-	// TODO inline this in the class header
-	return m_iInsPoint;
-}
-
 void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 {
 	m_iInsPoint = pt;
@@ -3512,10 +3461,6 @@ void FV_View::cmdUndo(UT_uint32 count)
 			_drawInsertionPoint();
 		}
 	}
-	else
-	{
-		_drawSelection();
-	}
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -3542,10 +3487,6 @@ void FV_View::cmdRedo(UT_uint32 count)
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
-	}
-	else
-	{
-		_drawSelection();
 	}
 }
 
@@ -3592,14 +3533,14 @@ void FV_View::cmdCopy(void)
 
 	UT_uint32 iPos1, iPos2;
 
-	if (m_iSelectionAnchor < _getPoint())
+	if (m_iSelectionAnchor < getPoint())
 	{
 		iPos1 = m_iSelectionAnchor;
-		iPos2 = _getPoint();
+		iPos2 = getPoint();
 	}
 	else
 	{
-		iPos1 = _getPoint();
+		iPos1 = getPoint();
 		iPos2 = m_iSelectionAnchor;
 	}
 
@@ -3831,7 +3772,7 @@ void FV_View::_doInsertImage(GR_Image* pImg)
 		NULL, NULL
 	};
 	
-	m_pDoc->insertObject(_getPoint(), PTO_Image, attributes, properties);
+	m_pDoc->insertObject(getPoint(), PTO_Image, attributes, properties);
 }
 
 void FV_View::_doPaste(void)
@@ -3896,7 +3837,7 @@ void FV_View::_doPaste(void)
 
 				if ((pCur - pStart) > 0)
 				{
-					m_pDoc->insertSpan(_getPoint(), pStart, pCur - pStart);
+					m_pDoc->insertSpan(getPoint(), pStart, pCur - pStart);
 				}
 
 				if (
@@ -3904,7 +3845,7 @@ void FV_View::_doPaste(void)
 					|| (*pCur == 10)
 					)
 				{
-					m_pDoc->insertStrux(_getPoint(), PTX_Block);
+					m_pDoc->insertStrux(getPoint(), PTX_Block);
 	
 					if (*pCur == 13)
 					{
@@ -3960,7 +3901,7 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 	_clearPointAP(UT_TRUE);
 	_eraseInsertionPoint();
 
-	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
 	if (!isSelectionEmpty())
@@ -3984,10 +3925,6 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-	else
-	{
-		_drawSelection();
-	}
 
 	return bRet;
 }
@@ -4008,7 +3945,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 
-		_findPositionCoords(_getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
+		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
 
 		fp_Column * pColumn = pRun->getLine()->getColumn();
 		UT_uint32 nCol=0;

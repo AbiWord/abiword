@@ -84,8 +84,6 @@ public:
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
-	FL_DocLayout * getDocLayout();
-	fl_SectionLayout * getSectionLayout();
 	UT_GrowBuf * getCharWidths(void);
 
 	PT_DocPosition getPosition(UT_Bool bActualBlockPos=UT_FALSE) const;
@@ -106,6 +104,8 @@ public:
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
 	inline UT_uint32	getAlignment(void) const { return m_iAlignment; }
+	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
+	inline fl_SectionLayout* 	getSectionLayout(void) { return m_pSectionLayout; }
 
 	void getLineSpacing(double& dSpacing, UT_Bool& bExact) const;
 

@@ -83,10 +83,11 @@ public:
 	~FL_DocLayout();
 
 	void setView(FV_View*);
-	FV_View * getView(void) const;
 
-	GR_Graphics*	getGraphics();
-	PD_Document*	getDocument() const;
+	inline FV_View * getView(void) const { return m_pView; }
+	inline GR_Graphics*	getGraphics(void) const { return m_pG; }
+	inline PD_Document*	getDocument(void) const { return m_pDoc; }
+	
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 

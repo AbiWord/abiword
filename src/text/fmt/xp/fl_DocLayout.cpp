@@ -88,21 +88,6 @@ void FL_DocLayout::setView(FV_View* pView)
 	}
 }
 
-FV_View * FL_DocLayout::getView(void) const
-{
-	return m_pView;
-}
-
-PD_Document* FL_DocLayout::getDocument() const
-{
-	return m_pDoc;
-}
-
-GR_Graphics* FL_DocLayout::getGraphics()
-{
-	return m_pG;
-}
-
 UT_sint32 FL_DocLayout::getHeight()
 {
 	UT_sint32 iHeight = 0;

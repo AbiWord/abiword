@@ -76,6 +76,10 @@ public:
 	FV_View(void*, FL_DocLayout*);
 	~FV_View();
 
+	inline GR_Graphics*		getGraphics(void) const { return m_pG; }
+	inline UT_uint32		getPoint(void) const { return m_iInsPoint; }
+	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
+	
 	virtual void	setXScrollOffset(UT_sint32);
 	virtual void	setYScrollOffset(UT_sint32);
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
@@ -221,7 +225,6 @@ protected:
 	static void			_autoScroll(UT_Timer * pTimer);
 
 	// localize handling of insertion point logic
-	UT_uint32			_getPoint(void);
 	void				_setPoint(UT_uint32 pt, UT_Bool bEOL = UT_FALSE);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);

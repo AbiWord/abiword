@@ -32,10 +32,6 @@ struct dg_DrawArgs
 	UT_sint32		xoff;
 	UT_sint32		yoff;
 	UT_Bool			bDirtyRunsOnly;
-
-	// actually the following are PT_DocPosition
-	UT_uint32		iSelPos1;
-	UT_uint32		iSelPos2;
 };
 
 #endif /* GR_DRAWARGS_H */

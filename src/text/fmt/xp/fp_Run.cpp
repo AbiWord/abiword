@@ -29,6 +29,7 @@
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "gr_DrawArgs.h"
+#include "fv_View.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -330,7 +331,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 	
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
-	UT_ASSERT(pDA->iSelPos1 <= pDA->iSelPos2);
 
 	UT_RGBColor clrSelBackground(192, 192, 192);
 	UT_RGBColor clrNormalBackground(255,255,255);
@@ -338,9 +338,18 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 iFillHeight = m_pLine->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
 		
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+	UT_uint32 iPoint = pView->getPoint();
+
+	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+	UT_ASSERT(iSel1 <= iSel2);
+	
 	if (
-		(pDA->iSelPos1 <= iRunBase)
-		&& (pDA->iSelPos2 > iRunBase)
+		(iSel1 <= iRunBase)
+		&& (iSel2 > iRunBase)
 		)
 	{
 		m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
@@ -700,7 +709,6 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
-		UT_ASSERT(pDA->iSelPos1 <= pDA->iSelPos2);
 
 		/*
 		  TODO we might want special colors for fields.  We might also
@@ -717,9 +725,18 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 		UT_sint32 iFillHeight = m_pLine->getHeight();
 		UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
 		
+		FV_View* pView = m_pBL->getDocLayout()->getView();
+		UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+		UT_uint32 iPoint = pView->getPoint();
+
+		UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+		UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+		UT_ASSERT(iSel1 <= iSel2);
+	
 		if (
-			(pDA->iSelPos1 <= iRunBase)
-			&& (pDA->iSelPos2 > iRunBase)
+			(iSel1 <= iRunBase)
+			&& (iSel2 > iRunBase)
 			)
 		{
 			m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
