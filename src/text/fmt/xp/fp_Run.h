@@ -625,6 +625,9 @@ public:
 	virtual bool hasLayoutProperties(void) const
 	{ return false; }
 
+	// for the purposes of linebreaking, just whitespace
+	virtual bool doesContainNonBlankData(void) const { return false; }
+	
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
@@ -670,6 +673,9 @@ public:
 	virtual bool hasLayoutProperties(void) const
 	{ return false; }
 
+	// for the purposes of linebreaking, just whitespace
+	virtual bool doesContainNonBlankData(void) const { return false; }
+	
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
