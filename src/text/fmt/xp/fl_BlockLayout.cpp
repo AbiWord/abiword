@@ -4770,7 +4770,12 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	if (iMin > iStartX)
 	{
 		iPosition = iMin;
-		iType = FL_TAB_LEFT;
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			iType = FL_TAB_RIGHT;
+		else
+#endif
+			iType = FL_TAB_LEFT;
 		return true;
 	}
 	
@@ -4798,8 +4803,18 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	// mathematical approach
 	const UT_sint32 iPos = (iStartX / m_iDefaultTabInterval + 1) *
 		m_iDefaultTabInterval;
-	iPosition = iPos;
-	iType = FL_TAB_LEFT;
+		
+	if(iPos > iMaxX)
+		iPosition = iMaxX;
+	else
+		iPosition = iPos;
+
+#ifdef BIDI_ENABLED
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		iType = FL_TAB_RIGHT;
+	else
+#endif				
+		iType = FL_TAB_LEFT;
 
 	UT_ASSERT(iPos > iStartX);
 
@@ -4842,7 +4857,12 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 	if (iMin > iStartX)
 	{
 		iPosition = iMin;
-		iType = FL_TAB_LEFT;
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			iType = FL_TAB_RIGHT;
+		else
+#endif
+			iType = FL_TAB_LEFT;
 		return true;
 	}
 
@@ -4870,10 +4890,20 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 	// mathematical approach
 	const UT_sint32 iPos = (iStartX / m_iDefaultTabIntervalLayoutUnits + 1) *
 		m_iDefaultTabIntervalLayoutUnits;
-	UT_ASSERT(iPos > iStartX);
+	
+	if(iPos > iMaxX)
+		iPosition = iMaxX;
+	else
+		iPosition = iPos;
 
-	iPosition = iPos;
-	iType = FL_TAB_LEFT;
+#ifdef BIDI_ENABLED
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		iType = FL_TAB_RIGHT;
+	else
+#endif				
+		iType = FL_TAB_LEFT;
+	
+	UT_ASSERT(iPos > iStartX);
 
 	return true;
 #endif
@@ -4935,7 +4965,12 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	if (iMin >= iStartX)
 	{
 		iPosition = iMin;
-		iType = FL_TAB_LEFT;
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			iType = FL_TAB_RIGHT;
+		else
+#endif
+			iType = FL_TAB_LEFT;
 		return true;
 	}
 	
@@ -4946,7 +4981,12 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	const UT_sint32 iPos = ((iStartX - 1)/ m_iDefaultTabInterval) *
 		m_iDefaultTabInterval;
 	iPosition = iPos;
-	iType = FL_TAB_LEFT;
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			iType = FL_TAB_RIGHT;
+		else
+#endif
+		iType = FL_TAB_LEFT;
 
 	UT_ASSERT(iPos <= iStartX);
 
@@ -5021,7 +5061,12 @@ bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 	UT_ASSERT(iPos <= iStartX);
 
 	iPosition = iPos;
-	iType = FL_TAB_LEFT;
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			iType = FL_TAB_RIGHT;
+		else
+#endif
+		iType = FL_TAB_LEFT;
 	UT_DEBUGMSG(("iPosition %d\n", iPosition));
 	return true;
 
