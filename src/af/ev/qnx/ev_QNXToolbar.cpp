@@ -74,7 +74,7 @@ EV_QNXToolbar::~EV_QNXToolbar(void)
 }
 
 bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id, 
-				 					char * pData,
+				 					UT_UCS4String pData,
 				 					UT_uint32 dataLength)
 
 {
@@ -121,7 +121,7 @@ bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(pView,pEM,(UT_UCS4Char *)pData,dataLength);
+	invokeToolbarMethod(pView,pEM,pData.ucs4_str(),dataLength);
 	return true;
 }
 
@@ -177,7 +177,7 @@ return Pt_CONTINUE;
 static int s_button_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 
 	struct _cb_data *cb_data = (struct _cb_data *)data;
-	cb_data->tb->toolbarEvent(cb_data->id, 0, 0);
+	cb_data->tb->toolbarEvent(cb_data->id, (const char *)NULL, 0);
 
 	return Pt_CONTINUE;
 }

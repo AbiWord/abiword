@@ -33,7 +33,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Spell.h"
 #include "ap_Win32Dialog_Spell.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -135,6 +135,7 @@ BOOL AP_Win32Dialog_Spell::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	// set initial state
 	makeWordVisible();
 	_showMisspelledWord();
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -449,9 +450,10 @@ BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				return 1;
 
 			case LBN_DBLCLK:
+				if (!m_Suggestions->getItemCount()) return 1;
 				m_bChangingSelection = 1;
-				UT_ASSERT((m_iSelectedRow == SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0)));
-				_change();
+				m_iSelectedRow = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
+				if (m_iSelectedRow!=CB_ERR)	_change();
 				m_bChangingSelection = 0;
 				return 1;
 

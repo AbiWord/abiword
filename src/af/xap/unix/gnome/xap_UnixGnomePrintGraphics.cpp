@@ -206,7 +206,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	}
 	float fWidth = m_pCurrentPSFont->measureUnRemappedChar(realChar, m_pCurrentPSFont->getSize())
 		* (float)getResolution() / (float)getDeviceResolution();
-	return static_cast<UT_uint32>(rintf(fWidth));
+	return static_cast<UT_uint32>(rint(fWidth));
 }
 
 void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -214,7 +214,7 @@ void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_s
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void XAP_UnixGnomePrintGraphics::getCoverage (UT_Vector& coverage)
+void XAP_UnixGnomePrintGraphics::getCoverage (UT_NumberVector& coverage)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
@@ -241,6 +241,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
 			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			gnome_print_grestore (m_gpc);
 			return;
 		}
 		else if(m_bIsSymbol)
@@ -262,6 +263,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
 			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
 			delete [] uChars;
+			gnome_print_grestore (m_gpc);
 			return;
 		}
 		else
@@ -270,6 +272,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
 			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			gnome_print_grestore (m_gpc);
 			return;
 		}
 	}

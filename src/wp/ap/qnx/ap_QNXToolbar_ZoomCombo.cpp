@@ -67,9 +67,9 @@ bool AP_QNXToolbar_ZoomCombo::populate(void)
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth).c_str()));
-	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage ).c_str()));
-	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent ).c_str()));
+	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth).utf8_str()));
+	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage ).utf8_str()));
+	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent ).utf8_str()));
 
 	return true;
 }

@@ -206,8 +206,17 @@ endif
 $(SHARED_LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
-ifeq ($(OS_NAME), WIN32)
-	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) $(EXTRA_LIBS) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
+ifeq ($(ABI_FE), Win32)
+ifeq ($(OS_NAME), MINGW32)
+	dllwrap --dllname=$(LIBDIR)/lib$(LIBRARY_NAME).dll \
+	--implib=$(LIBDIR)/lib$(LIBRARY_NAME)dll.a \
+	--driver-name=g++  \
+	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
+else
+	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) \
+	$(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH) ) \
+	$(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
+endif
 else
 	$(MKSHLIB) -o $@ $(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 endif

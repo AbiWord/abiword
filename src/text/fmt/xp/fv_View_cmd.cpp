@@ -99,6 +99,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		_moveToSelectionEnd(bForward);
 		_fixInsertionPointCoords();
 		_ensureInsertionPointOnScreen();
+		notifyListeners(AV_CHG_MOTION);
 		return;
 	}
 
@@ -365,6 +366,11 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				}
 				bChanged = true;
 				_MergeCells(posSource,posWork,false);
+				UT_ASSERT(Bot > Top);
+				if(Bot <= Top)
+				{
+					break;
+				}
 				Top = Bot;
 			}
 //
@@ -2199,7 +2205,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		}
 		else
 		{
-			if(!isInFootnote() && isInFootnote(getPoint() - count))
+			if(!isInFootnote(getPoint()) && isInFootnote(getPoint() - count))
 			{
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
 				count += pFL->getLength();
@@ -2343,7 +2349,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 		//special handling is required for delete in revisions mode
 		//where we have to move the insertion point
-		if(isMarkRevisions())
+		// only if we are deleting forward; if deleting backwards, the
+		// code above already moved the insertion point
+		// Tomas, Oct 28, 2003
+		if(bForward && isMarkRevisions())
 		{
 			UT_ASSERT( iRealDeleteCount <= count );
 			_charMotion(bForward,count - iRealDeleteCount);
@@ -3268,7 +3277,7 @@ void FV_View::cmdContextIgnoreAll(void)
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
-		while (pSL)
+		if (pSL)
 		{
 			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
@@ -3276,9 +3285,8 @@ void FV_View::cmdContextIgnoreAll(void)
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
 				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
-				b = static_cast<fl_BlockLayout *>(b->getNext());
+ 				b = static_cast<fl_BlockLayout *>(b->getNextBlockInDocument());
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }
@@ -3304,7 +3312,7 @@ void FV_View::cmdContextAdd(void)
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
-		while (pSL)
+		if(pSL)
 		{
 			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
@@ -3314,10 +3322,13 @@ void FV_View::cmdContextAdd(void)
 				if(b->getContainerType() == FL_CONTAINER_BLOCK)
 				{
 					m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
+					b = static_cast<fl_BlockLayout *>(b->getNextBlockInDocument());
 				}
-				b = static_cast<fl_BlockLayout *>(b->getNext());
+				else
+				{
+					b = static_cast<fl_BlockLayout *>(b->getNext());
+				}
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }

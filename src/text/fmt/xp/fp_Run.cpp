@@ -120,7 +120,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iOverlineXoff(0),
 		m_pHyperlink(0),
 		m_pRevisions(NULL),
-		m_eHidden(FP_VISIBLE)
+		m_eHidden(FP_VISIBLE),
+		m_bIsCleared(true)
 {
         // set the default background color and the paper color of the
 	    // section owning the run.
@@ -143,6 +144,8 @@ fp_Run::~fp_Run()
 	m_pBL = NULL;
 	m_pLine = NULL;
 #endif
+
+	DELETEP(m_pRevisions);
 }
 
 void fp_Run::lookupProperties()
@@ -250,7 +253,7 @@ fp_Run*
 fp_Run::_findPrevPropertyRun(void) const
 {
 	fp_Run* pRun = getPrev();
-	while (pRun && !pRun->hasLayoutProperties())
+	while (pRun && (!pRun->hasLayoutProperties() || pRun->isHidden()))
 	    pRun = pRun->getPrev();
 
 	return pRun;
@@ -301,7 +304,7 @@ fp_Run::_inheritProperties(void)
 #else
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
 
-		if (pFont != _getFont())
+		if ((pFont != _getFont()) || (getType() == FPRUN_ENDOFPARAGRAPH))
 		{
 			_setFont(pFont);
 		    _setAscent(getGR()->getFontAscent(pFont));
@@ -693,6 +696,16 @@ bool fp_Run::isFirstVisRunOnLine(void) const
 	return (getLine()->getFirstVisRun() == this);
 }
 
+void fp_Run::markAsDirty(void)
+{
+	m_bDirty = true;
+}
+
+void fp_Run::setCleared(void)
+{
+	m_bIsCleared = true;
+}
+
 bool fp_Run::isOnlyRunOnLine(void) const
 {
 	if (getLine()->countRuns() == 1)
@@ -712,11 +725,11 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	{
 		return;
 	}
-    m_bRecalcWidth = bRefresh;
+    m_bRecalcWidth |= bRefresh;
 	clearScreen();
 
 	m_iLen = iLen;
-	m_bRefreshDrawBuffer = bRefresh;
+	m_bRefreshDrawBuffer |= bRefresh;
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
@@ -731,7 +744,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 		return;
 	}
 
-	if (isDirty())
+	if (m_bIsCleared)
 	{
 		// no need to clear if we've already done so.
 		return;
@@ -761,6 +774,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 			// make sure we only get erased once
 			_setDirty(true);
 			markAsDirty();
+			m_bIsCleared = true;
 		}
 		else
 		{
@@ -817,6 +831,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("fp_Run::Run %x not dirty returning \n",this));
 		return;
 	}
+	m_bIsCleared = false;
 	if (getLine())
 		getLine()->setScreenCleared(false);
 
@@ -843,18 +858,18 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 		if(r_type == PP_REVISION_ADDITION)
 		{
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, 1);
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + 2, iWidth, 1);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGR()->tlu(1));
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGR()->tlu(2), iWidth, getGR()->tlu(1));
 		}
 		else if(r_type == PP_REVISION_FMT_CHANGE)
 		{
 			// draw a thick line underneath
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, 2);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGR()->tlu(2));
 		}
 		else
 		{
 			// draw a strike-through line
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, 2);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGR()->tlu(2));
 		}
 
 	}
@@ -864,7 +879,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
 		getGR()->setColor(_getView()->getColorHyperLink());
-		getGR()->setLineProperties(1.0,
+ 		getGR()->setLineProperties(getGR()->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
@@ -875,7 +890,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if(m_eHidden == FP_HIDDEN_TEXT || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT)
 	{
 		getGR()->setColor(getFGColor());
-		getGR()->setLineProperties(1.0,
+ 		getGR()->setLineProperties(getGR()->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_DOTTED);
@@ -1506,8 +1521,8 @@ eTabType fp_TabRun::getTabType(void) const
 
 void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 
@@ -1833,8 +1848,8 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
@@ -1994,8 +2009,8 @@ void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint3
 
 void fp_FieldStartRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_FieldStartRun::_draw(dg_DrawArgs* pDA)
@@ -2052,8 +2067,8 @@ void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32&
 
 void fp_FieldEndRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
@@ -2133,7 +2148,7 @@ void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32&
 
 void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
    	FV_View* pView = _getView();
     if(!pView || !pView->getShowPara())
@@ -2465,9 +2480,12 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 
 void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
-
+	//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
+	if(m_iDrawWidth == 0 )
+	{
+		return;
+	}
 	UT_sint32 xoff = 0, yoff = 0;
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
@@ -2765,9 +2783,9 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 
 void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 
@@ -2785,30 +2803,31 @@ const char * fp_ImageRun::getDataId(void) const
 
 void fp_ImageRun::_drawResizeBox(UT_Rect box)
 {
+	GR_Graphics * pG = getGR();
 	UT_sint32 left = box.left;
 	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - getGR()->tlu(1);
-	UT_sint32 bottom = box.top + box.height - getGR()->tlu(1);
+	UT_sint32 right = box.left + box.width - pG->tlu(1);
+	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
 	
-	getGR()->setLineProperties(1.0,
+ 	pG->setLineProperties(pG->tluD(1.0),
 								 GR_Graphics::JOIN_MITER,
 								 GR_Graphics::CAP_BUTT,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here
-	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(left, top, right, top);
-	getGR()->drawLine(left, top, left, bottom);
-	getGR()->setColor(UT_RGBColor(230,234,238));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), right - getGR()->tlu(1), top+getGR()->tlu(1));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), left + getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(right - getGR()->tlu(1), top + getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->drawLine(left + getGR()->tlu(1), bottom - getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->setColor(UT_RGBColor(49,85,82));
-	getGR()->drawLine(right, top, right, bottom);
-	getGR()->drawLine(left, bottom, right, bottom);
-	getGR()->fillRect(UT_RGBColor(156,178,180),box.left + getGR()->tlu(2), box.top + getGR()->tlu(2), box.width - getGR()->tlu(4), box.height - getGR()->tlu(4));
+	pG->setColor(UT_RGBColor(98,129,131));
+	pG->drawLine(left, top, right, top);
+	pG->drawLine(left, top, left, bottom);
+	pG->setColor(UT_RGBColor(230,234,238));
+	pG->drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), right - pG->tlu(1), top+pG->tlu(1));
+	pG->drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
+	pG->setColor(UT_RGBColor(98,129,131));
+	pG->drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->setColor(UT_RGBColor(49,85,82));
+	pG->drawLine(right, top, right, bottom);
+	pG->drawLine(left, bottom, right, bottom);
+	pG->fillRect(UT_RGBColor(156,178,180),box.left + pG->tlu(2), box.top + pG->tlu(2), box.width - pG->tlu(4), box.height - pG->tlu(4));
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
@@ -3288,7 +3307,14 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 
 	bBOL = false;
-	bEOL = false;
+	if(getNext() == NULL)
+	{
+		bEOL = true;
+	}
+	if(getNext()->getType() == FPRUN_ENDOFPARAGRAPH)
+	{
+		bEOL = true;
+	}
 }
 
 void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
@@ -3403,9 +3429,9 @@ bool fp_FieldRun::calculateValue(void)
 
 void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
+	//	UT_ASSERT(!isDirty());
 
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
@@ -3479,7 +3505,10 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	getGR()->setFont(m_pFont);
 	getGR()->setColor(_getColorFG());
 
-	getGR()->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
+	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
+	UT_sint32 iNewWidth = getGR()->measureString(m_sFieldValue, 0, len, aCharWidths);
+	getGR()->drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, aCharWidths);
 //
 // Draw underline/overline/strikethough
 //
@@ -4693,8 +4722,8 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 
 void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);
@@ -4814,8 +4843,8 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+	//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);

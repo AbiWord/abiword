@@ -88,6 +88,10 @@ public:
 	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr) = 0;
 
+	virtual void		deferNotifications(void)  { }
+
+	virtual void		processDeferredNotifications(void) { }
+
 	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdhNew,

@@ -289,7 +289,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listFields)), GTK_SELECTION_SINGLE);	
 
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle_Capital).c_str());	
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle_Capital).utf8_str());	
 	
 	// localize the strings in our dialog, and set some userdata for some widg
 

@@ -38,7 +38,7 @@
 #include "fg_Graphic.h"
 #include "fl_AutoLists.h"
 #include "pp_Property.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
@@ -177,7 +177,7 @@ public:
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
-
+	UT_sint32       getLength(void);
 	bool            isEmbeddedType(void);
 	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize);
 	void            updateEnclosingBlockIfNeeded(void);
@@ -185,8 +185,6 @@ public:
 	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);
 
 	UT_sint32       getHeightOfBlock(void);
-	fl_BlockLayout* getNextBlockInDocument(void) const;
-	fl_BlockLayout* getPrevBlockInDocument(void) const;
 	fp_Line *       findLineWithFootnotePID(UT_uint32 pid);
 	UT_sint32 getMaxNonBreakableRun(void);
 
@@ -275,7 +273,7 @@ public:
 	void setHdrFtr(void) { m_bIsHdrFtr = true;}
 	void clearHdrFtr(void) { m_bIsHdrFtr = false;}
 
-	void checkSpelling(void);
+	bool checkSpelling(void);
 	void debugFlashing(void);
 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,

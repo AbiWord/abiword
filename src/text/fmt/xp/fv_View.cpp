@@ -702,7 +702,10 @@ void FV_View::toggleCase (ToggleCase c)
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
 
 		bool bBlockDone = false;
-
+		if(pBL->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			pBL = static_cast<fl_ContainerLayout *>(pBL)->getNextBlockInDocument();
+		}
 		while(!bBlockDone && (low < high) /*&& (low < lastPos)*/)
 		{
 			UT_uint32 iLenToCopy = UT_MIN(high - low, buffer.getLength() - offset);
@@ -886,7 +889,7 @@ void FV_View::toggleCase (ToggleCase c)
 				offset += iLen;
 			}
 		}
-		pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
+		pBL = pBL->getNextBlockInDocument();
 		if ( pBL )
 		  low = pBL->getPosition(false);
 		else
@@ -2770,6 +2773,9 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	{
 		fl_BlockLayout * pBL1 = _findBlockAtPosition(posStart);
 		fl_BlockLayout * pBL2 = _findBlockAtPosition(posEnd);
+
+		// if both the start and end points are in the same block, we will not apply
+		// fmt to the block -- doing so causes bug 5290
 		bool bFormatStart = false;
 		bool bFormatEnd = false;
 
@@ -2817,12 +2823,110 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		}
 
 		if(posEnd > posStart)
-		    bFormatEnd = true;
+			bFormatEnd = true;
 
 		if(bFormatStart && bFormatEnd)
-			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
+		{
+			// we need to take care of the special case where the entire doc is selected and
+			// we are asked to apply hidden fmt -- there must be at least one visible block in
+			// the document
+			PT_DocPosition posEOD;
+			getEditableBounds(true, posEOD);
+			bool bChangeFmt = true;
+			if(posStart == 2 && posEnd == posEOD && properties)
+			{
+				const XML_Char * hidden = UT_getAttribute("display", properties);
+				if(hidden && !UT_strcmp(hidden, "none"))
+				{
+					// we will be applying fmt ourselves ...
+					bChangeFmt = false;
+					
+					// if this is the only thing we are changing, we just need to adjust the bounds
+					// -- count atts and props (we will count the elements of the array, rather
+					// thant he pairs)
+					UT_uint32 prop_count, attr_count = 0;
+					for(prop_count = 0; properties[prop_count] != NULL; prop_count +=2) {;}
+
+					if(attribs)
+						for(attr_count = 0; attribs[attr_count] != NULL; attr_count += 2) {;}
+
+					if(attr_count)
+					{
+						// attributes get applied to the present range
+						bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,NULL,PTX_Block);
+					}
+
+					// calculate the end position of the penultimate block ...
+					PT_DocPosition posEnd2 = posEnd;
+					if(   pBL2->getPrev() && pBL2->getPrev()->getLastContainer()
+						  && pBL2->getPrev()->getLastContainer()->getContainerType() == FP_CONTAINER_LINE)
+					{
+						pLastRun2 = static_cast<fp_Line *>(pBL2->getPrev()->getLastContainer())->getLastRun();
+						if(pLastRun2)
+						{
+							posEnd2 = pBL2->getPrev()->getPosition(false)
+								+ pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+						}
+						else
+						{
+							// no last run
+							UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						}
+					}
+					else
+					{
+						// this happens if there is only on block in the doc ...
+						UT_ASSERT_HARMLESS( !pBL2->getPrev());
+					}
+
+					// if posEnd == posEnd2, then the above calculation failed, we just ignore the
+					// props 
+					if(posEnd != posEnd2)
+					{
+						if(prop_count == 2)
+						{
+							// only the display prop, we just apply the original props to the
+							// reduced range
+							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd2,NULL,properties,PTX_Block);
+						}
+						else 
+						{
+							// this is the complicated case
+							// strip the display prop and apply the rest to the whole set
+							const XML_Char ** reducedProps = new const XML_Char *[prop_count];
+							UT_return_val_if_fail( reducedProps, false );
+
+							UT_uint32 j = 0;
+							for(UT_uint32 i = 0; i < prop_count; i += 2)
+							{
+								if(UT_strcmp("display", properties[i]))
+								{
+									reducedProps[j++] = properties[i];
+									reducedProps[j++] = properties[i+1];
+								}
+							}
+
+							UT_return_val_if_fail( j == prop_count - 2, false );
+							reducedProps[j]= NULL;
+
+							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,reducedProps,PTX_Block);
+
+							// now apply the hidden prop to the reduced range alone ...
+							const XML_Char * hiddenProp[3] = {"display", "none", NULL};
+							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd2,NULL,hiddenProp,PTX_Block);
+							delete [] reducedProps;
+						}
+					}
+				}
+			}
+
+			if(bChangeFmt)
+				bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
+		}
+		
 	}
 
+	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_fixInsertionPointCoords();
 
@@ -3917,6 +4021,8 @@ void FV_View::delTo(FV_DocPos dp)
 	box (1) only allows a bit of text and (2) has no concept of a
 	block break anyway, I don't see a reason to make this behave
 	differently.
+
+	The caller must free the returned pointer !!!
 */
 UT_UCSChar * FV_View::getSelectionText(void)
 {
@@ -3972,11 +4078,13 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	return NULL;
 }
-#if 0
-// this function has not been debugged
-UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
-{
 
+/* this function has not been debugged
+
+   The caller must delete [] the returned pointer !!!
+ */
+UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
+{
 	UT_ASSERT(pos2 > pos1);
 
 	UT_GrowBuf buffer;
@@ -3989,7 +4097,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	// get the current block the insertion point is in
 	fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(curPos);
 
-	UT_UCSChar * bufferRet = new UT_UCSChar[iLength];
+	UT_UCSChar * bufferRet = new UT_UCSChar[iLength+1];
 
 	UT_ASSERT(bufferRet);
 	if(!bufferRet)
@@ -4002,7 +4110,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 		pBlock->getBlockBuf(&buffer);
 
 		PT_DocPosition offset = curPos - pBlock->getPosition(false);
-		UT_uint32 iLenToCopy = MIN(pos2 - curPos, buffer.getLength() - offset);
+		UT_uint32 iLenToCopy = UT_MIN(pos2 - curPos, buffer.getLength() - offset);
 		while(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
 		{
 			memmove(buff_ptr, buffer.getPointer(offset), iLenToCopy * sizeof(UT_UCSChar));
@@ -4015,9 +4123,9 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	}
 
 	UT_ASSERT(curPos == pos2);
+	*buff_ptr = 0;
 	return bufferRet;
 }
-#endif
 
 bool FV_View::isTabListBehindPoint(void)
 {
@@ -5521,6 +5629,10 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	return bBOL;
 }
 
+void FV_View::ensureInsertionPointOnScreen(void)
+{
+	_ensureInsertionPointOnScreen();
+}
 
 
 void FV_View::setPoint(PT_DocPosition pt)
@@ -5759,6 +5871,20 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 		}
         posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 		
+//
+// Make sure posEnd is inside the Table.
+//
+		PL_StruxDocHandle endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
+		UT_ASSERT(endTableSDH);
+		if(endTableSDH == NULL)
+		{
+			return false;
+		}
+		PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+		if(posEnd > posEndTable)
+		{
+			posEnd = posEndTable -1;
+		}
 		// Do the actual change
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
 	}
@@ -8178,6 +8304,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PL_StruxDocHandle prevSDH = NULL;
 	PL_StruxDocHandle nextSDH = NULL;
 	PT_DocPosition nextPos =0;
+//
+// Special case which would otherwise fail..
+//
+	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		return true;
+	}
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
 	if(!bres)
 	{
@@ -8257,6 +8390,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
+//
+// Do this first
+//
+	const XML_Char ** props_in = NULL;
+	getCharFormat(&props_in);
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
@@ -8307,12 +8445,18 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
+	bool bRet = false;
 	if(bFootnote)
 	{
 		if (cmdInsertField("footnote_ref", attrs)==false)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		setCharFormat(props_in);
 	}
 	else
 	{
@@ -8320,7 +8464,12 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
 	}
+	free(props_in);
 	fl_BlockLayout * pBL;
 
 //
@@ -8347,6 +8496,16 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		cmdInsertField("endnote_anchor", attrs);
 	}
+//
+// Place a format mark before the field so we can select the field.
+//
+	const XML_Char * propListTag[] = {"list-tag",NULL,NULL};
+	static XML_Char sid[15];
+	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
+	sprintf(sid, "%i", id);
+	propListTag[1] = sid;
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart,NULL,propListTag);
+
 	FanchEnd = FanchStart+1;
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a space after the anchor
@@ -8356,13 +8515,24 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	// apply footnote text style to the body of the footnote and the
 	// reference style to the anchor follows it
+	propListTag[0]="text-position";
+	propListTag[1]="superscript";
 	if(bFootnote)
 	{
 		setStyleAtPos("Footnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
+
 	}
 	else
 	{
 		setStyleAtPos("Endnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
 	}
 
 	_setPoint(FanchEnd+1);

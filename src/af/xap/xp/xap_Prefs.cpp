@@ -901,6 +901,8 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 			// file will still have sensible fall-back defaults).
 			UT_uint32 width = 800, height = 600, flags = PREF_FLAG_GEOMETRY_SIZE;
 			UT_sint32 posx = 0, posy = 0;
+			
+			XAP_App::getApp()->getDefaultGeometry(width,height, flags);
 
 			m_geom.m_width = width;
 			m_geom.m_height = height;
@@ -951,6 +953,11 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 				m_geom.m_posy = posy;
 				m_geom.m_flags |= PREF_FLAG_GEOMETRY_POS;
 			}
+			
+			if (!(flags & PREF_FLAG_GEOMETRY_MAXIMIZED))
+				m_geom.m_flags &= ~PREF_FLAG_GEOMETRY_MAXIMIZED;
+			
+			
 		}
 	}
 	// successful parse of tag...
@@ -1296,8 +1303,10 @@ bool XAP_Prefs::savePrefsFile(void)
 		for (k=0; k<kLimit; k++)
 		{
 			const char * szRecent = getRecent(k+1);
+			UT_UTF8String utf8string( szRecent );
+			utf8string.escapeXML();
 
-			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,szRecent);
+			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,utf8string.utf8_str());
 		}
 				
 		fprintf(fp,"\t\t/>\n");
