@@ -194,6 +194,14 @@ AP_Dialog_Download_File::AP_Dialog_Download_File(XAP_DialogFactory * pDlgFactory
 	m_pd->userAnswer = a_NONE;
 	m_dialogRemoved = 0;
 	m_szTitle = pSS->getValue(AP_STRING_ID_DLG_DlFile_Title);
+	
+	m_pG = NULL;
+	s_iPBFixedHeight = 20;
+	_setHeight(s_iPBFixedHeight);
+	// Minimum wanted width
+	_setWidth(250);
+	
+	_reflowPBRect();
 }
 
 AP_Dialog_Download_File::~AP_Dialog_Download_File()
@@ -212,12 +220,14 @@ AP_Dialog_Download_File_timerCallback(UT_Worker* pWorker)
 void
 AP_Dialog_Download_File::event_Timer(void)
 {
+	if (getUserAnswer() == a_CANCEL)
+		return;		// user pressed cancel right under our nose, exit
+	
 	if (getDLDone()) {
 		/* The downloadthread is done, so it's time to destroy the dialog and clean up */
 		
-		if (_getDialogRemoved() || getUserAnswer() == a_CANCEL)
-			return;		// 1) We have already done this, exit
-						// or 2) user pressed cancel right under our nose, exit
+		if (_getDialogRemoved())
+			return;		// We have already done this, exit
 		
 		_setDialogRemoved(1);
 		_abortDialog();
@@ -240,22 +250,16 @@ AP_Dialog_Download_File::runModal(XAP_Frame * pFrame)
 	UT_Timer *tim;
 	AP_Dialog_Download_File_Thread *th;
 
+	/* Filedata pipe */
+	pipe(dataPipe);
+
+	th = new AP_Dialog_Download_File_Thread(getURL(), dataPipe, m_pd);
+
 #ifdef HAVE_THREADS	
 	/* Timer that checks if download is done and updates the progressmeeter */
 	tim = UT_Timer::static_constructor(AP_Dialog_Download_File_timerCallback, this);
 	tim->set(100);
-#endif	
-	
-	/* Filedata pipe */
-	pipe(dataPipe);
-	
-	/* Init graphical progressmeeter */
-	if (getShowProgress())
-		_showProgressStart(pFrame);
-	
-	th = new AP_Dialog_Download_File_Thread(getURL(), dataPipe, m_pd);
-	
-#ifdef HAVE_THREADS	
+
 	/* Start thread - in other words, start download */
 	th->start();
 	
@@ -267,45 +271,141 @@ AP_Dialog_Download_File::runModal(XAP_Frame * pFrame)
 	
 	tim->stop();
 	DELETEP(tim);
-#else
-	/* Runs download method directly, without creating a new thread */
-	th->run();
-#endif	
-	
-	if (getShowProgress())
-		_showProgressStop(pFrame);
 
-#ifdef HAVE_THREADS	
 	/* If everything went OK, get filedata from other thread */
 	if (getUserAnswer() != a_CANCEL && getDLDone() && !getDLResult()) {
 		m_data.s = getFileSize();
-		m_data.data = (char *)malloc(m_data.s);
+		if (!(m_data.data = (char *)malloc(m_data.s))) {
+			_setDLResult(-1);
+			return;
+		}
 		read(dataPipe[0], m_data.data, m_data.s);
 	}
 #else
-	/* If everything went OK, get filedata from other thread */
+	/* Init graphical progressmeeter on the statusbar */
+	if (getShowProgress())
+		_showProgressStart(pFrame);
+
+	/* Runs download method directly, without creating a new thread */
+	th->run();
+
+	if (getShowProgress())
+		_showProgressStop(pFrame);
+
+	/* 
+	 * If everything went OK, get filedata from other "thread"
+	 * Well, just copy the internal buffer of the "thread"
+	 */
 	if (getDLDone() && !getDLResult()) {
 		m_data.s = getFileSize();
-		m_data.data = th->_getFileData();
+		if (!(m_data.data = (char *)malloc(m_data.s))) {
+			_setDLResult(-1);
+			return;
+		}
+		memcpy(m_data.data, th->_getFileData(), m_data.s);
 	}
-#endif
+#endif	
 }
 
+void 
+AP_Dialog_Download_File::_reflowPBRect(void)
+{
+	memset(&m_rect3d,0,sizeof(m_rect3d));
+	m_rect3d.left	= 3;
+	m_rect3d.width	= _getWidth() - 2*m_rect3d.left;
+	m_rect3d.top	= 3;
+	m_rect3d.height	= _getHeight() - 2*m_rect3d.top;
+}
+
+void 
+AP_Dialog_Download_File::_drawPB3D(void)
+{
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,
+				 m_rect3d.left,m_rect3d.top,
+				 m_rect3d.width,m_rect3d.height);
+
+	UT_uint32 l = m_rect3d.left -1;
+	UT_uint32 r = l + m_rect3d.width +2;
+	UT_uint32 t = m_rect3d.top -1;
+	UT_uint32 b = t + m_rect3d.height +2;
+	
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
+	m_pG->drawLine(l,t, l,b);
+	m_pG->drawLine(l,t, r,t);
+	
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	m_pG->drawLine(l+1,b, r,b);
+	m_pG->drawLine(r,b, r,t);
+}
+
+void 
+AP_Dialog_Download_File::_drawPB(void)
+{
+	UT_RGBColor clr(255,255,0);			//Yellow
+	UT_RGBColor anticlr(120,120,120);	//Dark grey
+	UT_Rect newrect;
+	UT_Rect greyrect;
+
+	m_pG->setClipRect(&m_rect3d);
+
+	char buffer[AP_MAX_MESSAGE_FIELD];
+
+	buffer[0] = '\0';
+	newrect = 
+	greyrect = m_rect3d;
+
+	//TODO: Get rid of the double here ...
+	double percent = (double)getProgress() / (double)getFileSize(); 
+	newrect.width = (UT_sint32)((double)newrect.width * percent); 
+
+	greyrect.left += newrect.width;
+	greyrect.width -= newrect.width;
+
+	m_pG->fillRect(clr, newrect);
+	m_pG->fillRect(anticlr, greyrect);
+
+	sprintf(buffer, "%.1f%%", 100 * percent); 
+
+	UT_sint32 len = strlen(buffer);
+	UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD];
+	UT_UCS4_strcpy_char(bufUCS, buffer);
+
+	UT_uint32 iFontHeight = m_pG->getFontHeight();
+	UT_uint32 iStringWidth = m_pG->measureString(bufUCS, 0, len, NULL);
+
+	UT_uint32 x = m_rect3d.left + 3;
+	UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
+
+	x = m_rect3d.left + ((m_rect3d.width - iStringWidth) / 2);
+
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+
+	m_pG->setClipRect(&m_rect3d);
+	m_pG->drawChars(bufUCS, 0, len, x, y);
+	m_pG->setClipRect(NULL);
+}
 
 void 
 AP_Dialog_Download_File::_updateProgress(XAP_Frame *pFrame)
 {
-	if ( getProgress() == -1)
+	if (!m_pG)
 		return;
-
-	AP_FrameData *pFrameData;
-	pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-	UT_ASSERT(pFrameData);
-
-	pFrameData->m_pStatusBar->setStatusProgressType(0, getFileSize(), PROGRESS_START | PROGRESS_SHOW_PERCENT);
-	pFrameData->m_pStatusBar->setStatusProgressValue(getProgress());
+	
+	// draw the background
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, 0, 0, m_iWidth, m_iHeight);
+	_drawPB3D();
+	
+	if (getProgress() == -1)
+		return;
+	
+	// draw the foreground
+	_drawPB();
 }
 
+
+/*
+ * These are used for the non-threaded version, to show the progress on the statusbar
+ */
 void
 AP_Dialog_Download_File::_showProgressStart(XAP_Frame *pFrame)
 {
@@ -334,6 +434,7 @@ AP_Dialog_Download_File::_showProgressStop(XAP_Frame *pFrame)
 	pFrameData->m_bShowStatusBar = didShowStatusBar;
 	pFrame->toggleStatusBar(didShowStatusBar);
 }
+
 
 UT_sint32 
 AP_Dialog_Download_File::getFileData(char *buf, UT_uint32 offset, UT_uint32 len)

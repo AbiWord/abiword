@@ -86,24 +86,42 @@ public:
 	void				event_Timer(void);
 
 protected:
-	virtual void		_updateProgress(XAP_Frame *pFrame);
 	virtual void		_showProgressStart(XAP_Frame *pFrame);
 	virtual void		_showProgressStop(XAP_Frame *pFrame);
 
 	/* If user aborts transfer */
 	void 				_setUserAnswer(tAnswer ans) { m_pd->userAnswer = ans; }
 
+	void				_setDLResult(UT_sint32 res) { m_pd->dlResult = res; }
+
 	void				_setDialogRemoved(UT_uint32 rm) { m_dialogRemoved = rm; }
 	UT_uint32			_getDialogRemoved(void) { return(m_dialogRemoved); }
 
 	void				_setProgressData(tProgressData *pd) { m_pd = pd; }
 
+	void				_setWidth(UT_uint32 width) { m_iWidth = width; }
+	UT_uint32			_getWidth(void) { return(m_iWidth); }
+
+	void				_setHeight(UT_uint32 height) { m_iHeight = height; }
+	UT_uint32			_getHeight(void) { return(m_iHeight); }
+
+	void 				_reflowPBRect(void);
+	void 				_drawPB3D(void);
+	void 				_drawPB(void);
+	virtual void		_updateProgress(XAP_Frame *pFrame);
+
 	virtual void		_runModal(XAP_Frame * pFrame) = 0;	/* Redefined in platform specific code */
-	virtual void		_abortDialog(void) = 0;		/* Called when download is finished and dialog should be remobed */
+	virtual void		_abortDialog(void) = 0;		/* Called when download is finished and dialog should be removed */
 
 	tFileData		m_data;
 	UT_sint32 		didShowStatusBar;
 	tProgressData	*m_pd;
+
+	GR_Graphics		*m_pG;
+	UT_Rect			m_rect3d;
+	UT_uint32		m_iWidth;
+	UT_uint32		m_iHeight;
+	UT_uint32		s_iPBFixedHeight;
 
 private:
 	const char		*m_szTitle;

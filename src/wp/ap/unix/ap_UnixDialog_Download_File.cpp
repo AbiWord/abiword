@@ -57,11 +57,14 @@ AP_UnixDialog_Download_File::AP_UnixDialog_Download_File(XAP_DialogFactory * pDl
 	m_windowMain = NULL;
 	m_buttonCancel = NULL;
 	m_gc = NULL;
+
+	m_pG = NULL;
 }
 
 AP_UnixDialog_Download_File::~AP_UnixDialog_Download_File(void)
 {
 	DELETEP(m_gc);
+	DELETEP(m_pG);
 }
 
 /*****************************************************************/
@@ -85,6 +88,23 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 
 	dlg->event_WindowDelete();
 }
+
+static gint s_PBConfigure(GtkWidget* w, GdkEventConfigure *e)
+{
+	AP_UnixDialog_Download_File * pUnixDDF = (AP_UnixDialog_Download_File *)gtk_object_get_user_data(GTK_OBJECT(w));
+	if (pUnixDDF)
+		pUnixDDF->event_PBConfigure(e);
+	return 1;
+}
+	
+static gint s_PBExpose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
+{
+	AP_UnixDialog_Download_File * pUnixDDF = (AP_UnixDialog_Download_File *)gtk_object_get_user_data(GTK_OBJECT(w));
+	if (pUnixDDF)
+		pUnixDDF->event_PBExpose();
+	return 0;
+}
+
 
 
 /*****************************************************************/
@@ -119,6 +139,25 @@ void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
+	
+	/*
+	 * Init a graphical context for the progressbar
+	 */
+	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
+	XAP_UnixFontManager * fontManager = app->getFontManager();
+	GR_UnixGraphics * pG = new GR_UnixGraphics(m_progressBar->window, fontManager, m_pFrame->getApp());
+	m_pG = pG;
+	UT_ASSERT(m_pG);
+
+	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow());
+	UT_ASSERT(style);
+	pG->init3dColors(style);
+
+	GR_Font * pFont = m_pG->getGUIFont();
+	UT_ASSERT(pFont);
+	m_pG->setFont(pFont);
+
+
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
@@ -143,6 +182,24 @@ void AP_UnixDialog_Download_File::event_WindowDelete(void)
 	gtk_main_quit();
 }
 
+void AP_UnixDialog_Download_File::event_PBConfigure(GdkEventConfigure *e)
+{
+	_setHeight((UT_uint32)e->height);
+
+	UT_uint32 iWidth = (UT_uint32)e->width;
+	if (iWidth != _getWidth())
+		_setWidth(iWidth);
+	
+	/* Adjust the drawing rectangle from the (just changed) geometry */
+	_reflowPBRect();
+	_updateProgress(m_pFrame);
+}
+
+void AP_UnixDialog_Download_File::event_PBExpose(void)
+{
+	_updateProgress(m_pFrame);
+}
+
 /*****************************************************************/
 GtkWidget * AP_UnixDialog_Download_File::_constructButtonCancel(void)
 {
@@ -156,12 +213,27 @@ GtkWidget * AP_UnixDialog_Download_File::_constructButtonCancel(void)
 	return buttonCancel;
 }
 
+GtkWidget * AP_UnixDialog_Download_File::_constructProgressBar(void)
+{
+	GtkWidget *pb;
+	
+	pb = createDrawingArea ();
+
+	gtk_object_set_user_data(GTK_OBJECT(pb),this);
+	gtk_widget_show(pb);
+	/* Set minimum wanted width */
+	gtk_widget_set_usize(pb, _getWidth(), s_iPBFixedHeight);
+
+	return pb;
+}
+
 GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 {
 	GtkWidget *windowDL;
 	GtkWidget *hbox;
 	GtkWidget *vboxMain;
 	GtkWidget *label;
+	GtkWidget *progressBar;
 	GtkWidget *buttonboxAction;
 	GtkWidget *buttonCancel;
 
@@ -185,7 +257,10 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 	gtk_misc_set_padding (GTK_MISC(label), 10, 10);
 	gtk_box_pack_start (GTK_BOX(vboxMain), label, TRUE, TRUE, 0);
 	gtk_widget_show (label);
-
+	
+	progressBar = _constructProgressBar();
+	gtk_box_pack_start (GTK_BOX (vboxMain), progressBar, FALSE, TRUE, 0);
+	
 	buttonboxAction = gtk_hbutton_box_new ();
 	gtk_widget_show (buttonboxAction);
 	gtk_box_pack_start (GTK_BOX (vboxMain), buttonboxAction, FALSE, TRUE, 0);
@@ -213,10 +288,22 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 							 NULL,
 							 NULL);
 
+	gtk_widget_set_events(GTK_WIDGET(progressBar), (GDK_EXPOSURE_MASK));
+	g_signal_connect(G_OBJECT(progressBar), 
+						"expose_event", 
+						G_CALLBACK(s_PBExpose), 
+						NULL);
+	
+	g_signal_connect(G_OBJECT(progressBar), 
+						"configure_event", 
+						G_CALLBACK(s_PBConfigure), 
+						NULL);
+
+
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
-
 	m_windowMain = windowDL;
+	m_progressBar = progressBar;
 	m_buttonCancel = buttonCancel;
 
 	return windowDL;

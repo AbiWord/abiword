@@ -40,6 +40,8 @@ public:
 	// callbacks can fire these events
 	virtual void		event_Cancel(void);
 	virtual void		event_WindowDelete(void);
+	virtual void 		event_PBConfigure(GdkEventConfigure *e);
+	virtual void 		event_PBExpose(void);
 	
  protected:
 
@@ -47,11 +49,13 @@ public:
 
 	// for easy Gnome overriding
 	virtual GtkWidget	*_constructButtonCancel(void);
+	virtual GtkWidget 	*_constructProgressBar(void);
 
 	void				_populateWindowData(void);
 	
 	GtkWidget			*m_windowMain;
 	GtkWidget			*m_buttonCancel;
+	GtkWidget			*m_progressBar;
 	
 	GR_UnixGraphics		*m_gc;
 	XAP_UnixFrame 		*m_pFrame;
