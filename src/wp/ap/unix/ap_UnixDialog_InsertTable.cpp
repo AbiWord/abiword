@@ -239,7 +239,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 
 	spinRangeCols = (GtkAdjustment *) gtk_adjustment_new(5, 1, 9999, 1, 5, 0);
 	spinNumCols = gtk_spin_button_new (spinRangeCols, 1, 0);
-	g_object_set_data (G_OBJECT (windowInsertTable), "spinNumCols", spinNumCols);
+	//g_object_set_data (G_OBJECT (windowInsertTable), "spinNumCols", spinNumCols);
 	gtk_widget_show (spinNumCols);
 	gtk_table_attach (GTK_TABLE (tableInsert), spinNumCols, 1, 2, 1, 2,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
