@@ -2981,8 +2981,62 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 
 	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
-	_generalUpdate();
+	// if there is a selection then we need to change the formatting also for any
+	// completely selected block within the selection
+	if(posStart != posEnd)
+	{
+		fl_BlockLayout * pBL1 = _findBlockAtPosition(posStart);
+		fl_BlockLayout * pBL2 = _findBlockAtPosition(posEnd);
+		bool bFormatStart = false;
+		bool bFormatEnd = false;
 
+		PT_DocPosition posBL1 = pBL1->getPosition(false);
+
+		fp_Run * pLastRun2 = pBL2->getLastLine()->getLastRun();
+		PT_DocPosition posBL2 = pBL2->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+	
+		if(posBL1 == posStart)
+		{
+			bFormatStart = true;
+		}
+		else if(posBL1 < posStart && pBL1->getNext())
+		{
+			posStart = pBL1->getNext()->getPosition(false);
+			if(posStart < posEnd)
+				bFormatStart = true;
+		}
+
+		// TODO: We have got a problem with handling the end of the paragraph.
+		// Basically, if only the text in the paragraph is selected, we
+		// do not want to apply the format to the paragraph; if the pilcrow
+		// too is selected, we want to apply the format to the paragraph as well.
+		// The problem lies in the fact that although the pilcrow represents the
+		// block, it is located at the end of the paragraph, while the strux
+		// that contains the formatting is at the start. Consequently the when the
+		// pilcrow is selected, the end of the selection is already in the next
+		// paragraph. If there is a next paragraph, we can handle this, but if
+		// there is not a next pragraph, it is not currently possible to select the
+		// pilcrow, i.e., we cannot change the font (for instance) used by the last
+		// paragraph in the document; there is no simple solution at the moment, since
+		// if we allow the selection to go across the last pilcrow, it will be possible
+		// to insert text into the block _after_ the pilcrow, and we do not want that.
+		// we would need to make some changes to the block insertion mechanism, so that
+		// if insertion is requested to be past the pilcrow, it would be adjusted to
+		// happen just before it -- Tomas 19/01/2002
+		
+		if(posBL2 > posEnd && pBL2->getPrev())
+		{
+			pLastRun2 = pBL2->getPrev()->getLastLine()->getLastRun();
+			posEnd = pBL2->getPrev()->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+			if(posEnd > posStart)
+				bFormatEnd = true;
+		}
+		
+		if(bFormatStart && bFormatEnd)
+			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
+	}
+	
+	_generalUpdate();
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
