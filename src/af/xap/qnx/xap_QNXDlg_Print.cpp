@@ -164,7 +164,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	m_answer = a_OK;
 
-#define DRAWING_RESOLUTION 96
+#define DRAWING_RESOLUTION 72
 	if (value == Pt_PRINTSEL_PRINT || value == Pt_PRINTSEL_PREVIEW) {
 		UT_uint32 first = 0, last = 0;
 		char *option;

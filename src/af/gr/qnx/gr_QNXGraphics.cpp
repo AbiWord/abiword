@@ -172,7 +172,10 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
       the printing values vs the screen values?
 	*/
 
+	/*
 	return 96;
+	*/
+	return 72;
 }
 
 void GR_QNXGraphics::flush(void)
@@ -399,7 +402,7 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 		}
 		tmp->prev = NULL;
 	}
-
+	printf("Set Font to %s \n", m_pFont->getFont());
 	m_iAscentCache = m_iDescentCache = -1;
 }
 
