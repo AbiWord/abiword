@@ -239,13 +239,14 @@ UT_Mbtowc::UT_Mbtowc(const char* from_charset): m_bufLen(0)
 
 UT_Mbtowc::UT_Mbtowc(): m_bufLen(0)
 {
-    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNativeEncodingName() );
+    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNative8BitEncodingName() );
     UT_ASSERT(cd != (iconv_t)-1);    
 };
 
 UT_Mbtowc::UT_Mbtowc(const UT_Mbtowc& v): m_bufLen(0)
 {
-    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNativeEncodingName() );
+	// Shouldn't a copy also copy the encoding?
+    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNative8BitEncodingName() );
     UT_ASSERT(cd != (iconv_t)-1);    
 };
 

@@ -41,7 +41,7 @@ auto_iconv::auto_iconv(iconv_t iconv)
  */
 auto_iconv::auto_iconv(const char * in_charset, const char *out_charset)
 {
-  m_h = iconv_open (in_charset, out_charset);
+  m_h = iconv_open (out_charset, in_charset);
 }
 
 /*!

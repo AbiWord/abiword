@@ -56,6 +56,12 @@ public:
     virtual const char* getNativeEncodingName() const;
 
     /*
+	this shouldn't return NULL. Don't free or write to returned string. 
+	The string should be uppercased (extra font tarballs assume this).
+    */
+    virtual const char* getNative8BitEncodingName() const;
+
+    /*
 	this can return NULL. Don't free or write to returned string. 
 	The string should be uppercased (extra font tarballs assume this).
     */

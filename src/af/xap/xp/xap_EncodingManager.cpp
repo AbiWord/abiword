@@ -35,11 +35,32 @@ static 	iconv_t iconv_handle_N2U = NULL, iconv_handle_U2N = NULL,
 
 XAP_EncodingManager*	XAP_EncodingManager::_instance = NULL;
 
+/*!
+ * Returns the native encoding, no matter what
+ */
 const char* XAP_EncodingManager::getNativeEncodingName() const
 {
     return "ISO-8859-1"; /* this will definitely work*/
 }
 
+/*!
+ * Returns the native 8-bit encoding
+ *
+ * Always returns an 8-bit encoding, even when the native
+ * encoding is wide char like UCS-2 on Windows NT.
+ * This includes multibyte encodings such as UTF-8 and CJK encodings.
+ * Any encoding which inludes the ASCII range is OK.
+ */
+const char* XAP_EncodingManager::getNative8BitEncodingName() const
+{
+    return "ISO-8859-1"; /* this will definitely work*/
+}
+
+/*!
+ * Returns the native Unicode encoding
+ *
+ * Typically UTF-8 on *nix and UCS-2 on Windows NT
+ */
 const char* XAP_EncodingManager::getNativeUnicodeEncodingName() const
 {
     return "UTF-8"; /* this will definitely work*/
@@ -47,11 +68,21 @@ const char* XAP_EncodingManager::getNativeUnicodeEncodingName() const
 
 static const char* UCS2BEName, *UCS2LEName;
 
+/*!
+ * Returns the name this system uses for UCS-2, big endian
+ *
+ * UCS-2BE is standard but some older iconvs use UCS-2-BE
+ */
 const char* XAP_EncodingManager::getUCS2BEName() const
 {
 	return UCS2BEName;
 }
 
+/*!
+ * Returns the name this system uses for UCS-2, little endian
+ *
+ * UCS-2LE is standard but some older iconvs use UCS-2-LE
+ */
 const char* XAP_EncodingManager::getUCS2LEName() const
 {
 	return UCS2LEName;

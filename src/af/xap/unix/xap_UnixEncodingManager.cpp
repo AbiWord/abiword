@@ -382,7 +382,16 @@ XAP_UnixEncodingManager::XAP_UnixEncodingManager()
 
 XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}
 
-static const char* NativeEncodingName, *LanguageISOName, *LanguageISOTerritory;
+static const char * NativeEncodingName;
+static const char * NativeUnicodeEncodingName;
+static const char * LanguageISOName;
+static const char * LanguageISOTerritory;
+
+const char* XAP_UnixEncodingManager::getNativeEncodingName() const
+{     return NativeEncodingName; };
+
+const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
+{     return NativeEncodingName; };
 
 const char* XAP_UnixEncodingManager::getNativeEncodingName() const
 {     return NativeEncodingName; };
@@ -400,6 +409,7 @@ void  XAP_UnixEncodingManager::initialize()
 	const char* locname = (char*)lst->data;
 	
 	NativeEncodingName = "ISO-8859-1";
+	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";
 	

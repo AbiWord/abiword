@@ -35,7 +35,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(pt,PT,true)
+BeginSetEnc(pt,PT,true,"iso-8859-1")
 
     MenuLabel(AP_MENU_ID__BOGUS1__,		NULL,			NULL)
 

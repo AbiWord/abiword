@@ -32,7 +32,7 @@
 // If the third argument is UT_TRUE, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(ja,JP,true)
+BeginSetEnc(ja,JP,true,"EUC-JP")
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 

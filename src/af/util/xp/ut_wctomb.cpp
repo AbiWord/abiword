@@ -173,13 +173,14 @@ UT_Wctomb::UT_Wctomb(const char* to_charset)
 
 UT_Wctomb::UT_Wctomb()
 {
-    cd = iconv_open(XAP_EncodingManager::get_instance()->getNativeEncodingName(),"UCS-2");
+    cd = iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),"UCS-2");
     UT_ASSERT(cd!=(iconv_t)-1);
 };
 
 UT_Wctomb::UT_Wctomb(const UT_Wctomb& v)
 {
-    cd = iconv_open(XAP_EncodingManager::get_instance()->getNativeEncodingName(),"UCS-2");
+	// Shouldn't a copy also copy the encoding?
+    cd = iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),"UCS-2");
     UT_ASSERT(cd!=(iconv_t)-1);
 };
 
@@ -196,7 +197,7 @@ int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
     char* obuf = pC;
     const char* ibuf = buf;
     {
-        bool swap = XAP_EncodingManager::swap_utos;
+	bool swap = XAP_EncodingManager::swap_utos;
 	unsigned short val = wc;
 	unsigned char b0 = val&0xff, b1 = val>>8;
 	buf[swap ] = b0;

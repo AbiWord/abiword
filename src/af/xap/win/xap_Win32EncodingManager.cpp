@@ -28,10 +28,17 @@ XAP_Win32EncodingManager::XAP_Win32EncodingManager()
 
 XAP_Win32EncodingManager::~XAP_Win32EncodingManager() {}
 
-static const char* NativeEncodingName, *NativeUnicodeEncodingName, *LanguageISOName, *LanguageISOTerritory;
+static const char * NativeEncodingName;
+static const char * Native8BitEncodingName;
+static const char * NativeUnicodeEncodingName;
+static const char * LanguageISOName;
+static const char * LanguageISOTerritory;
 
 const char* XAP_Win32EncodingManager::getNativeEncodingName() const
 {     return NativeEncodingName; };
+
+const char* XAP_Win32EncodingManager::getNative8BitEncodingName() const
+{     return Native8BitEncodingName; };
 
 const char* XAP_Win32EncodingManager::getNativeUnicodeEncodingName() const
 {     return NativeUnicodeEncodingName; };
@@ -51,7 +58,7 @@ void  XAP_Win32EncodingManager::initialize()
 	static char szTerritory[64];
 	bool bNorwaySpecialCase = false;
 
-	NativeEncodingName = "CP1252";
+	Native8BitEncodingName = NativeEncodingName = "CP1252";
 	LanguageISOName = "en";
 	LanguageISOTerritory = NULL;
 
@@ -75,7 +82,7 @@ void  XAP_Win32EncodingManager::initialize()
 			szCodepage[0] = 'C';
 			szCodepage[1] = 'P';
 			strcpy(szCodepage+2,szLocaleInfo);
-			NativeEncodingName = szCodepage;
+			Native8BitEncodingName = NativeEncodingName = szCodepage;
 			m_bIsUnicodeLocale = false;
 		}
 	}

@@ -14,6 +14,8 @@ protected:
 
 public:
     const char* getNativeEncodingName() 	const;
+    const char* getNative8BitEncodingName()	const;
+    const char* getNativeUnicodeEncodingName() 	const;
     const char* getLanguageISOName() 		const;
     const char* getLanguageISOTerritory() 	const;
 
