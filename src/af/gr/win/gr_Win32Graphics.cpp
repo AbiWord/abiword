@@ -27,6 +27,8 @@
 
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
+#include <xap_Win32App.h>
+#include <xap_Win32Res_Cursors.rc2>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -776,6 +778,8 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 {
 	// deal with WM_SETCURSOR message.
 
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	HINSTANCE hinst = pWin32App->getInstance();
 	LPCTSTR cursor_name;
 	
 	switch (m_cursor)
@@ -785,50 +789,75 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
 		cursor_name = IDC_ARROW;		// top-left arrow
+		hinst = NULL;
 		break;
 		
+	case GR_CURSOR_GRAB:
+		cursor_name = MAKEINTRESOURCE(IDC_ABIHAND);
+		break;
+
+	case GR_CURSOR_EXCHANGE:
+		cursor_name = MAKEINTRESOURCE(IDC_EXCHANGE);
+		break;
+
+	case GR_CURSOR_LEFTRIGHT:
+		cursor_name = IDC_SIZEWE;
+		hinst = NULL;
+		break;
+
 	case GR_CURSOR_IBEAM:
 		cursor_name = IDC_IBEAM;
+		hinst = NULL;
 		break;
 
 	case GR_CURSOR_RIGHTARROW:
 		cursor_name = IDC_ARROW;		// TODO change this
+		hinst = NULL;
 		break;
 		
 #ifdef BIDI_ENABLED
 //#error choose a suitable cursor; this is just a placeholder !!!		
 	case GR_CURSOR_LEFTARROW:
 		cursor_name = IDC_ARROW;		// TODO change this
+		hinst = NULL;
 		break;
 #endif
 
 	case GR_CURSOR_IMAGE:
 		cursor_name = IDC_SIZEALL;
+		hinst = NULL;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_NW:
 	case GR_CURSOR_IMAGESIZE_SE:
 		cursor_name = IDC_SIZENWSE;
+		hinst = NULL;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_N:
 	case GR_CURSOR_IMAGESIZE_S:
 		cursor_name = IDC_SIZENS;
+		hinst = NULL;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_NE:
 	case GR_CURSOR_IMAGESIZE_SW:
 		cursor_name = IDC_SIZENESW;
+		hinst = NULL;
 		break;
 		
 	case GR_CURSOR_IMAGESIZE_E:
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_name = IDC_SIZEWE;
+		hinst = NULL;
 		break;
 	}
 
-	HCURSOR hCursor = LoadCursor(NULL,cursor_name);
-	SetCursor(hCursor);
+	HCURSOR hCursor = LoadCursor(hinst,cursor_name);
+	if (hCursor != NULL)
+	{
+		SetCursor(hCursor);
+	}
 }
 
 void GR_Win32Graphics::setColor3D(GR_Color3D c)

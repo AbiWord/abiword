@@ -46,3 +46,5 @@
 #include "xap_Win32Res_DlgFont.rc2"
 #include "xap_Win32Res_DlgEncoding.rc2"
 #include "xap_Win32Res_DlgPlugin.rc2"
+
+#include "xap_Win32Res_Cursors.rc2"
