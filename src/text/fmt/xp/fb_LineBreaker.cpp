@@ -27,6 +27,8 @@
 #include "fp_Column.h"
 
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include "ut_string.h"
 
 fb_LineBreaker::fb_LineBreaker()
 {
@@ -148,18 +150,131 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					UT_Bool bRes = pLine->findNextTabStop(m_iWorkingLineWidth, iPos, iType);
 					if (bRes)
 					{
-						UT_ASSERT(iType == FL_TAB_LEFT);	// TODO right and center tabs
+
+						UT_DEBUGMSG(("%s:%d tab run: p=%p type=%d height=%d width=%d offset=%d length=%d\n",
+								 __FILE__, __LINE__,
+								iType,
+								pCurrentRun->getHeight(),
+								pCurrentRun->getWidth(),
+								pCurrentRun->getBlockOffset(),
+								pCurrentRun->getLength()
+								));
+
 
 						UT_ASSERT(iPos > m_iWorkingLineWidth);
-					
-						m_iWorkingLineWidth = iPos;
+						UT_ASSERT(iPos < m_iMaxLineWidth);
+
+						switch ( iType ) 
+						{
+						case FL_TAB_BAR:
+							UT_DEBUGMSG(("BAR - not implemented - defaulting to LEFT\n"));
+
+						case FL_TAB_LEFT:
+							m_iWorkingLineWidth = iPos;
+							break;
+
+						case FL_TAB_CENTER:
+						{
+							fp_Run *pScanRun;
+							int iScanWidth = 0;
+
+							for ( pScanRun = pCurrentRun->getNext();	
+								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth / 2 < iPos-m_iWorkingLineWidth); 
+								  pScanRun = pScanRun->getNext() )
+							{
+								iScanWidth += pScanRun->getWidth();
+							}
+				
+							m_iWorkingLineWidth = iPos - iScanWidth/2;
+
+							break;	
+						}
+
+						case FL_TAB_RIGHT:
+						{
+							fp_Run *pScanRun;
+							int iScanWidth = 0;
+
+							for ( pScanRun = pCurrentRun->getNext();	
+								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth < iPos-m_iWorkingLineWidth); 
+								  pScanRun = pScanRun->getNext() )
+							{
+								iScanWidth += pScanRun->getWidth();
+							}
+				
+							m_iWorkingLineWidth = iPos - iScanWidth;
+
+							break;	
+						}
+
+						case FL_TAB_DECIMAL:
+						{
+							fp_Run *pScanRun;
+							int iScanWidth = 0;
+							UT_uint32   len, runLen;
+
+							UT_UCSChar const *pSpanPtr, *pCh;
+							UT_UCSChar *pDecimalStr;
+							// the string to search for decimals
+							UT_UCS_cloneString_char(&pDecimalStr, ".");
+
+
+							for ( pScanRun = pCurrentRun->getNext();	
+								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth < iPos-m_iWorkingLineWidth); 
+								  pScanRun = pScanRun->getNext() )
+							{
+								UT_Bool foundDecimal = UT_FALSE;
+								if ( pBlock->getSpanPtr( pScanRun->getBlockOffset(), &pSpanPtr, &len ) )
+								{
+									runLen = pScanRun->getLength();
+									UT_ASSERT(len >= runLen);
+									pCh = pSpanPtr;
+
+									while ( runLen )
+									{
+										if ( *pCh++ == *pDecimalStr )		// TODO - FIXME
+										{
+											foundDecimal = UT_TRUE;	
+											break;
+										}
+										runLen--;
+									}
+								}
+								//UT_DEBUGMSG(("%s:%d  foundDecimal=%d len=%d iScanWidth=%d \n", 
+								//			__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
+				
+								if ( foundDecimal )
+								{
+									iScanWidth += pBlock->getDocLayout()->getGraphics()->
+										measureString( pSpanPtr, 0, pScanRun->getLength() - runLen, NULL );
+									break; // we found our decimal, don't search any further
+								}
+								else	
+									iScanWidth += pScanRun->getWidth();
+							}
+							//UT_DEBUGMSG((" tabrun iX=%d iPos=%d iScanWidth=%d tabwidth=%d newX=%d\n", 
+							//					  iX,	iPos,   iScanWidth,   iPos-iX-iScanWidth,iPos-iScanWidth));	
+							
+							m_iWorkingLineWidth = iPos - iScanWidth;
+						
+							FREEP(pDecimalStr);	
+							break;	
+						}
+
+
+						default:
+							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							goto done_with_run_loop;
+						};
 					}
 					else
 					{
 						// tab won't fit.  bump it to the next line
 						UT_ASSERT(pCurrentRun->getPrev());
 						UT_ASSERT(pCurrentRun != m_pFirstRunToKeep);
-						
+					
+						// TODO - FIXIT - HACK - white space should be wrapped	???
+						// shouldn't the end of the line eat up the last of the white space?
 						m_pLastRunToKeep = pCurrentRun->getPrev();
 						goto done_with_run_loop;
 					}

@@ -29,6 +29,7 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_string.h"
 
 fp_Line::fp_Line() 
 {
@@ -420,12 +421,122 @@ void fp_Line::layout(void)
 
 			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType);
 			UT_ASSERT(bRes);
-			UT_ASSERT(iTabType == FL_TAB_LEFT);
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
-			pTabRun->setWidth(iPos - iX);
+			fp_Run *pScanRun;
+			int iScanWidth = 0;
+
+			// for everybody except the left tab, we need to know how much text is to follow
+			switch ( iTabType )
+			{
+			case FL_TAB_LEFT:
+				pTabRun->setWidth(iPos - iX);
+				iX = iPos;
+				break;
+
+			case FL_TAB_CENTER:
+				for ( pScanRun = pRun->getNext();	
+					  pScanRun && pScanRun->getType() != FPRUN_TAB; 
+					  pScanRun = pScanRun->getNext() )
+				{
+					iScanWidth += pScanRun->getWidth();
+				}
+	
+				if ( iScanWidth / 2 > iPos - iX )
+					pTabRun->setWidth(0);
+				else
+				{
+					int tabWidth = iPos - iX - iScanWidth / 2 ;
+					pTabRun->setWidth( tabWidth );
+					iX += tabWidth;
+				}
+		
+				break;
+
+			case FL_TAB_RIGHT:
+				for ( pScanRun = pRun->getNext();	
+					  pScanRun && pScanRun->getType() != FPRUN_TAB; 
+					  pScanRun = pScanRun->getNext() )
+				{
+					iScanWidth += pScanRun->getWidth();
+				}
+		
+				if ( iScanWidth > iPos - iX )
+					pTabRun->setWidth(0);
+				else
+				{
+					int tabWidth = iPos - iX - iScanWidth ;
+					pTabRun->setWidth( tabWidth );
+					iX += tabWidth;
+				}
+				break;
+
+			case FL_TAB_DECIMAL:
+			{
+				UT_UCSChar const *pSpanPtr, *pCh;
+				UT_UCSChar *pDecimalStr;
+				UT_uint32   len, runLen;
+				iScanWidth=0;
+
+				// the string to search for decimals
+				UT_UCS_cloneString_char(&pDecimalStr, ".");
+
+				for ( pScanRun = pRun->getNext();	
+					  pScanRun && pScanRun->getType() != FPRUN_TAB; 
+					  pScanRun = pScanRun->getNext() )
+				{
+					UT_Bool foundDecimal = UT_FALSE;
+					if ( getBlock()->getSpanPtr( pScanRun->getBlockOffset(), &pSpanPtr, &len ) )
+					{
+						runLen = pScanRun->getLength();
+						UT_ASSERT(len >= runLen);
+						pCh = pSpanPtr;
+
+						#if defined(UT_DEBUG) && 1
+							char szbuffer[0x400];
+							UT_UCS_strcpy_to_char(szbuffer, pSpanPtr);
+							szbuffer[runLen] = 0;
+							UT_DEBUGMSG(("%s:%d  searching span [%s] (%d chars) (iScanWidth=%d)\n", 
+										  __FILE__, __LINE__, szbuffer, runLen, iScanWidth));
+						#endif
+
+						while ( runLen )
+						{
+							if ( *pCh++ == *pDecimalStr )		// TODO - FIXME
+							{
+								foundDecimal = UT_TRUE;	
+								break;
+							}
+							runLen--;
+						}
+					}
+					UT_DEBUGMSG(("%s:%d  foundDecimal=%d len=%d iScanWidth=%d \n", 
+								__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
+					if ( foundDecimal )
+					{
+						iScanWidth += getBlock()->getDocLayout()->getGraphics()->
+							measureString( pSpanPtr, 0, pScanRun->getLength() - runLen, NULL );
+						break; // we found our decimal, don't search any further
+					}
+					else	
+						iScanWidth += pScanRun->getWidth();
+				}
 			
-			iX = iPos;
+				UT_DEBUGMSG((" tabrun iX=%d iPos=%d iScanWidth=%d tabwidth=%d newX=%d\n", 
+									  iX,	iPos,   iScanWidth,   iPos-iX-iScanWidth,iPos-iScanWidth));	
+				pTabRun->setWidth(iPos - iX - iScanWidth);
+				iX = iPos - iScanWidth;
+			
+				FREEP(pDecimalStr);	
+				break;
+			}
+		
+			case FL_TAB_BAR:
+
+			default:
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+			};
+
 		}
 		else
 		{
@@ -668,7 +779,7 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 		}
 		else if (pRun->getType() == FPRUN_TEXT)
 		{
-			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
+			//fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
 
 			if(i == 0)
 			{
