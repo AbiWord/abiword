@@ -1309,7 +1309,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     gtk_set_locale();
     gboolean have_display = gtk_init_check(&Args.m_argc,(char ***)&Args.m_argv);
  
-    if (!have_display && Args.getShowApp()) {
+    if (!have_display && bShowApp) {
       // this is just like an abort() but with a useful error messsage
       gtk_init (&Args.m_argc,(char ***)&Args.m_argv);
     }
