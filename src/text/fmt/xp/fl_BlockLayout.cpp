@@ -61,6 +61,27 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
+//////////////////////////////////////////////////////////////////////
+// Two Useful List arrays
+/////////////////////////////////////////////////////////////////////
+
+static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST, 
+			   XML_LOWERCASE_LIST, 
+			   XML_UPPERCASE_LIST, 
+			   XML_UPPERROMAN_LIST,
+			   XML_LOWERROMAN_LIST,
+			   XML_BULLETED_LIST,
+			   XML_DASHED_LIST };
+
+
+static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST, 
+			   fmt_LOWERCASE_LIST,
+			   fmt_UPPERCASE_LIST,
+			   fmt_UPPERROMAN_LIST,
+			   fmt_LOWERROMAN_LIST,
+			   fmt_BULLETED_LIST,
+			   fmt_DASHED_LIST };
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -469,7 +490,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		if ((level > last_level) && !m_bStartList)
 		{
-			if (last_level > 0 && !m_bListItem && !m_bStopList)
+			if (last_level > 0 && !m_bListItem && !m_bStopList )
 				_addBlockToPrevList(prevBlockInList);
 		
 			if (m_pAutoNum)
@@ -4069,24 +4090,11 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 
        // These strings match piece table styles and should not be 
        // internationalized
-
-       switch (iListType)
-       {
-       case NUMBERED_LIST:
-	      style = (XML_Char *)  "Numbered List";
-	      break;
-       case LOWERCASE_LIST:
-     	      style = (XML_Char *)  "Lower Case List";
-	      break;
-       case UPPERCASE_LIST:
-	      style = (XML_Char *)  "Upper Case List"; 
-	      break;
-       case BULLETED_LIST:
-	      style = (XML_Char *)  "Bullet List";
-	      break;
-       default:
-	      return (XML_Char *) NULL;
-       }
+       UT_uint32 nlisttype = (UT_uint32) iListType;
+       if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
+	      style = (XML_Char *) NULL;
+       else
+	      style = xml_Lists[nlisttype];
        return style;
 }
 
@@ -4094,17 +4102,16 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 List_Type fl_BlockLayout::decodeListType(char * listformat)
 {
         List_Type iType = NOT_A_LIST;
-	if(strstr(listformat,"%*%d")!= NULL)
-              iType = NUMBERED_LIST;
-	else if(strstr(listformat,"%*%a")!= NULL)
-	      iType = LOWERCASE_LIST;
-	else if(strstr(listformat,"%*%A")!= NULL)
-	      iType = UPPERCASE_LIST;
-	else if(strstr(listformat,"%b")!= NULL)
-	      iType = BULLETED_LIST;
-	else
-	      iType = NOT_A_LIST;
-	return iType;
+	UT_uint32 j;
+	UT_uint32 size_fmt_lists = sizeof(fmt_Lists);
+	for(j=0; j < size_fmt_lists; j++)
+	{
+	      if( strstr(listformat,fmt_Lists[j])!=NULL)
+		     break;
+	}
+	if(j < size_fmt_lists)
+	      iType = (List_Type) j;
+        return iType;
 }
 
 List_Type fl_BlockLayout::getListType(void)
@@ -4343,6 +4350,37 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
         return pPrev;
 }
 
+
+void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
+{
+  //
+  // Make the current block an element of the list before in the block nextList
+  //
+        UT_ASSERT(nextList);
+	XML_Char lid[15], buf[5];
+
+	List_Type rType = nextList->getListType();
+	XML_Char * style = getListStyleString(rType);
+	UT_uint32 id = nextList->getAutoNum()->getID();
+
+	UT_uint32 currLevel = nextList->getLevel();
+	sprintf(buf, "%i", currLevel);
+	sprintf(lid, "%i", id);
+	const XML_Char * attribs[] = {  "listid", lid,
+					"level", buf,
+					"style", style, 0 };
+	m_bStartList =  UT_FALSE;
+        m_bStopList = UT_FALSE; 
+	FV_View* pView = m_pLayout->getView();
+	UT_ASSERT(pView);
+        pView->_eraseInsertionPoint();
+        m_bListLabelCreated = UT_FALSE;
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+        m_bListItem = UT_TRUE;
+        listUpdate();
+        pView->_generalUpdate();
+}
+
 void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 {
   //
@@ -4431,15 +4469,31 @@ void fl_BlockLayout::transferListFlags(void)
 	}
 }	
 
+UT_Bool  fl_BlockLayout::isListLabelInBlock( void)
+{
+        fp_Run * pRun = m_pFirstRun;
+	UT_Bool bListLabel = UT_FALSE;
+	while( (pRun!= NULL) && (bListLabel == UT_FALSE))
+        {
+	        if(pRun->getType() == FPRUN_FIELD)
+		{
+		        fp_FieldRun* pFRun = static_cast<fp_FieldRun*>(pRun); 
+			if(pFRun->getFieldType() == FPFIELD_list_label)
+			        bListLabel = UT_TRUE;
+		}
+		pRun = pRun->getNext();
+	}
+	return bListLabel;
+}
+
 void fl_BlockLayout::_createListLabel(void)
 {
-/*	This is a temporary hack, we need to find out more about the field */
   //
   // Put the current list label into this block.
   //
 	if(!m_pFirstRun)
 		return;
-	if (m_pFirstRun->getType() == FPRUN_FIELD)
+	if (isListLabelInBlock() == UT_TRUE)
 	{
 		m_bListLabelCreated = UT_TRUE;
 		return;
@@ -4534,6 +4588,17 @@ inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInLis
 	UT_ASSERT(prevBlockInList);
 	m_pAutoNum = prevBlockInList->getAutoNum();
 	m_pAutoNum->insertItem(this, prevBlockInList);
+}
+
+
+inline void fl_BlockLayout::_prependBlockToPrevList( fl_BlockLayout * nextBlockInList)
+{
+  //
+  // Insert the current block to the list at the point before nextBlockInList
+  //
+	UT_ASSERT(nextBlockInList);
+	m_pAutoNum = nextBlockInList->getAutoNum();
+	m_pAutoNum->prependItem(this, nextBlockInList);
 }
 
 UT_uint32 fl_BlockLayout::getLevel(void)

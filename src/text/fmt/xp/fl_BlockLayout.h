@@ -37,6 +37,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"		// FIXME: this is needed for the friend'ed function
 #include "fg_Graphic.h"
+#include "fl_AutoLists.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
@@ -114,17 +115,6 @@ class fl_CharWidths
 
 };
 
-///////////////////////////////////////////////////////////////////////
-// Lists Definitions
-///////////////////////////////////////////////////////////////////////
-typedef enum 
-{
-        NUMBERED_LIST,
-	LOWERCASE_LIST,
-	UPPERCASE_LIST,
-	BULLETED_LIST,
-	NOT_A_LIST
-}       List_Type;
 
 /*
 	Blocks are stored in a linked list which contains all of the blocks in
@@ -187,10 +177,12 @@ public:
 	void remItemFromList(void);
 	virtual void listUpdate(void); 
 	void resumeList( fl_BlockLayout * prevList);
+	void prependList( fl_BlockLayout * nextList);
         List_Type decodeListType(char * listformat);
 	List_Type getListType(void);
 	XML_Char* getListStyleString( List_Type iListType);
 
+	UT_Bool isListLabelInBlock(void); 
 	void StartList( const XML_Char * style);
 	void StopList(void);
 	XML_Char * getListLabel(void);
@@ -368,6 +360,7 @@ protected:
 	void					_createListLabel(void);
 	void					_deleteListLabel(void);
 	inline void				_addBlockToPrevList( fl_BlockLayout * prevBlockInList);	
+	inline void				_prependBlockToPrevList( fl_BlockLayout * nextBlockInList);	
 
 	UT_Bool					m_bNeedsReformat;
 	UT_Bool					m_bNeedsRedraw;
@@ -464,3 +457,10 @@ struct fl_TabStop
 };
 
 #endif /* FL_BLOCKLAYOUT_H */
+
+
+
+
+
+
+

@@ -47,6 +47,7 @@ public:
 	void					setStartValue(UT_uint32 start);
 
 	void					insertItem(fl_Layout * pItem, fl_Layout * pBefore);
+	void					prependItem(fl_Layout * pItem, fl_Layout * pAfter);
 	void					removeItem(fl_Layout * pItem);
 	fl_Layout *				getNthBlock(UT_uint32 i);
 	fl_Layout *				getPrevInList(fl_Layout * pItem);

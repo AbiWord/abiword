@@ -233,6 +233,18 @@ void fl_AutoNum::insertItem(fl_Layout * pItem, fl_Layout * pPrev)
 	_updateItems(ndx + 1);
 }
 
+
+void fl_AutoNum::prependItem(fl_Layout * pItem, fl_Layout * pNext)
+{
+	UT_sint32 ndx;
+	UT_ASSERT(pItem);
+	
+	ndx = m_pItems.findItem(pNext);
+	m_pItems.insertItemAt(pItem, ndx);
+	
+	_updateItems(ndx + 1);
+}
+
 void fl_AutoNum::removeItem(fl_Layout * pItem)
 {
 	UT_sint32 ndx = m_pItems.findItem(pItem);

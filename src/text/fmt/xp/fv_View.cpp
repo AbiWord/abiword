@@ -2294,6 +2294,54 @@ UT_Bool FV_View::isTabListBehindPoint(void)
 	}
 }
 
+
+UT_Bool FV_View::isTabListAheadPoint(void)
+{
+  //
+  // Return TRUE if the point is immediately ahead of a list label - TAB combination
+  //
+
+        PT_DocPosition cpos = getPoint();      
+	UT_sint32 xPoint, yPoint, iPointHeight;
+	
+	fl_BlockLayout* pBlock = _findBlockAtPosition(cpos);
+	if (!pBlock)
+		return UT_FALSE;
+	UT_Bool bEOL = UT_FALSE;
+	fp_Run* pRun = pBlock->findPointCoords(cpos, bEOL, xPoint, yPoint, iPointHeight);
+	while((pRun != NULL) && (pRun->getType()== FPRUN_FMTMARK))
+	{
+	        pRun = pRun->getNext();
+	}
+	if(pRun == NULL)
+	  return UT_FALSE;
+	if(pRun->getType() != FPRUN_FIELD)
+	        return UT_FALSE;
+	else
+	{
+	        fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+		if(pFRun->getFieldType() != FPFIELD_list_label)
+		{
+		         return UT_FALSE;
+		}
+	}
+	pRun = pRun->getNext();
+	while((pRun != NULL) && (pRun->getType()== FPRUN_FMTMARK))
+	{
+	        pRun = pRun->getNext();
+	}
+	if(pRun == NULL)
+	        return UT_FALSE;
+	if(pRun->getType() != FPRUN_TAB)
+	{
+	        return UT_FALSE;
+	}
+	else
+	{
+	        return UT_TRUE;
+	}
+}
+
 void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 {
         const XML_Char * properties[] = { (XML_Char*)"font-family", NULL, 0};
@@ -2315,11 +2363,16 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	else
 	{
 	  //
-	  // Look to see if there is a tab - list label
+	  // Look to see if there is a tab - list label deal with these together
 	  //
 	        if((bForward == UT_FALSE) && (count == 1))
 		{
 		      if(isTabListBehindPoint() == UT_TRUE)
+			     count = 2;
+		}
+	        if((bForward == UT_TRUE) && (count == 1))
+		{
+		      if(isTabListAheadPoint() == UT_TRUE)
 			     count = 2;
 		}
 	  /*

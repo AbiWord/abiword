@@ -28,6 +28,7 @@
 #include "xav_View.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
+#include "fl_AutoLists.h"
 #include "fg_Graphic.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"

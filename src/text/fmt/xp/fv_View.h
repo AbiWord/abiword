@@ -31,6 +31,7 @@
 #include "ie_types.h"
 #include "xap_Prefs.h"
 #include "ap_Dialog_Goto.h"
+#include "fl_AutoLists.h"
 
 // number of milliseconds between cursor blinks
 const int AUTO_DRAW_POINT = 600;
@@ -158,7 +159,9 @@ public:
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
+
 	UT_Bool isTabListBehindPoint(void);
+	UT_Bool isTabListAheadPoint(void);
 	void    processSelectedBlocks(List_Type listType);
 	void    getListBlocksInSelection( UT_Vector * vBlock);
 	UT_Bool isPointBeforeListLabel(void);

@@ -25,6 +25,7 @@
 #include "xav_View.h"
 #include "fl_BlockLayout.h"
 #include "fl_AutoNum.h"
+#include "fl_AutoLists.h"
 #include "pt_Types.h"
 
 class FV_View;
