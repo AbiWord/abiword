@@ -64,16 +64,16 @@ OS_NAME = WINNT
 endif
 
 ifeq ($(OS_NAME), WINNT)
-include $(ABI_DEPTH)/config/platforms/winnt.defs
+include $(ABI_DEPTH)/config/platforms/winnt.mk
 endif
 
 ifeq ($(OS_NAME), Linux)
-include $(ABI_DEPTH)/config/platforms/linux.defs
+include $(ABI_DEPTH)/config/platforms/linux.mk
 endif
 
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
-include $(ABI_DEPTH)/config/platforms/sunos.defs
+include $(ABI_DEPTH)/config/platforms/sunos.mk
 endif
 # End of platform defs
 
