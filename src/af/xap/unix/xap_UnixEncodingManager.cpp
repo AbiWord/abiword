@@ -70,6 +70,7 @@ g_i18n_get_language_list (const gchar *category_name);
 
 static GHashTable *alias_table = NULL;
 static GHashTable *category_table= NULL;
+bool prepped_table = 0;
 
 /*read an alias file for the locales*/
 static void
@@ -77,8 +78,10 @@ read_aliases (char *file)
 {
   FILE *fp;
   char buf[256];
-  if (!alias_table)
+  if (!prepped_table) {
     alias_table = g_hash_table_new (g_str_hash, g_str_equal);
+    prepped_table = 1;
+    }
   fp = fopen (file,"r");
   if (!fp)
     return;
@@ -100,13 +103,20 @@ read_aliases (char *file)
   fclose (fp);
 }
 
+static void
+free_entry (void *ekey,void *eval, void* user_data)
+{
+  g_free(ekey);
+  g_free(eval);
+}
+
 /*return the un-aliased language as a newly allocated string*/
 static char *
 unalias_lang (char *lang)
 {
   char *p;
   int i;
-  if (!alias_table)
+  if (!prepped_table)
     {
       read_aliases ("/usr/lib/locale/locale.alias");
       read_aliases ("/usr/local/lib/locale/locale.alias");
@@ -115,6 +125,7 @@ unalias_lang (char *lang)
       read_aliases ("/usr/lib/X11/locale/locale.alias");
       read_aliases ("/usr/openwin/lib/locale/locale.alias");
     }
+
   i = 0;
   while ((p=(char*)g_hash_table_lookup(alias_table,lang)) && strcmp(p, lang))
     {
@@ -131,15 +142,8 @@ unalias_lang (char *lang)
     }
   return lang;
 }
-#if 0
-void
-free_entry (void *ekey,void *eval, void* user_data)
-{
-g_free(ekey);
-g_free(eval);
-return;
-}
-#endif	
+
+	
 /* Mask for components of locale spec. The ordering here is from
  * least significant to most significant
  */
@@ -379,11 +383,17 @@ g_i18n_get_language_list (const gchar *category_name)
 
       g_hash_table_insert (category_table, (gpointer) category_name, list);
     }
-  
-//  g_hash_table_foreach(alias_table, free_entry, NULL);
-//  g_hash_table_destroy(alias_table);
+
+// This check shouldn't be necessary, but paranoia is underrated.
+   if(prepped_table) {
+     g_hash_table_foreach(alias_table, free_entry, NULL);
+     g_hash_table_destroy(alias_table);
+     prepped_table = 0;  
+   }
+   
   return list;
 }
+
 
 /************************************************************/
 
@@ -406,7 +416,9 @@ XAP_UnixEncodingManager::XAP_UnixEncodingManager()
 {
 }
 
-XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}
+XAP_UnixEncodingManager::~XAP_UnixEncodingManager()
+{
+}
 
 static const char * NativeEncodingName;
 static const char * NativeUnicodeEncodingName;
