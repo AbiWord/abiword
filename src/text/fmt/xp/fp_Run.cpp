@@ -449,17 +449,22 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 
 		UT_uint32 iId  = pView->getRevisionLevel();
 		bool bShow     = pView->isShowRevisions();
+		bool bMark     = pView->isMarkRevisions();
+		bool bDeleted = false;
+
 		const PP_Revision * pRev;
-		UT_sint32 i = 0;
+		UT_uint32 i = 0;
 		UT_uint32 iMinId;
 
 		pRev = m_pRevisions->getLastRevision();
 		UT_return_if_fail(pRev);
 		
 		UT_uint32 iMaxId = pRev->getId();
+
+		// set initial visibility ...
+		setVisibility(FP_VISIBLE);
 		
-	
-		if(!bShow && iId == 0)
+		if(!bMark && !bShow && iId == 0)
 		{
 			// revisions are not to be shown, and the document to be
 			// shown in the state before the first revision, i.e.,
@@ -502,29 +507,20 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 			setVisibility(FP_VISIBLE);
 			return;
 		}
-		if(!bShow && iId != 0)
+		
+		if((bMark || !bShow) && iId != 0)
 		{
 			// revisions not to be shown, but document to be presented
-			// as it looks after the final revision
+			// as it looks after the revision iId
+			UT_ASSERT( bMark || iId == 0xffffffff );
+			
+			UT_uint32 iMyMaxId = bMark ? UT_MIN(iId,iMaxId) : iMaxId;
 
-			// the UI should not allow us any other values of iId than
-			// 0 and 0xffffffff in not-show mode, this is to catch any
-			// anomalies (e.g., misbehaving importer)
-			UT_ASSERT( iId == 0xffffffff );
-			if(iId != 0xffffffff)
-			{
-				iId = 0xffffffff;
-				// we cannot call pView->cmdSetRevisionLevel(iId) here
-				// as that results in notifying listeneres, it would
-				// create real mess
-			}
-
-			// now we need to loop through subsequent revisions,
+			// we need to loop through subsequent revisions,
 			// working out the their cumulative effect
 			i = 1;
-			bool bDeleted = false;
 			
-			for(i = 1; i <= (UT_sint32)iMaxId; i++)
+			for(i = 1; i <= iMyMaxId; i++)
 			{
 				pRev = m_pRevisions->getRevisionWithId(i,iMinId);
 
@@ -593,7 +589,12 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 			{
 				setVisibility(FP_VISIBLE);
 			}
-			return;
+
+			if(!bMark || iId == 0xffffffff)
+				return;
+
+			// if we are in Mark mode, we need to process the last
+			// revision ... 
 		}
 		else if(!m_pRevisions->isVisible(iId))
 		{
@@ -602,15 +603,21 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 			return;
 		}
 
-		// the revision is visible
-		setVisibility(FP_VISIBLE);
-		UT_DEBUGMSG(("fp_Run::lookupProperties: visible revision\n"));
-
 		//next step is to find any fmt changes, layering them as
 		//subsequent revisions come
-		i = 1;
+		if(bMark && iId != 0)
+		{
+			// we are in Mark mode and only interested in the last
+			// revision; the loop below will run only once
+			i = UT_MIN(iId+1,iMaxId);
+		}
+		else
+		{
+			i = 1;
+		}
+		
 
-		for(i = 1; i <= (UT_sint32)iMaxId; i++)
+		for(i = 1; i <= iMaxId; i++)
 		{
 			pRev = m_pRevisions->getRevisionWithId(i,iMinId);
 
@@ -629,7 +636,7 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 			}
 			
 			
-			if(  (pRev->getType() == PP_REVISION_FMT_CHANGE)
+			if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
 				 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
 			{
 				// create copy of span AP and then set all props contained
@@ -643,12 +650,14 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 					(*pMySpanAP) = *pRev;
 					pSpanAP = pMySpanAP;
 					bDeleteAfter = true;
+					bDeleted = false;
 				}
 				else
 				{
 					// add fmt to our AP
 					pMySpanAP->setAttributes(pRev->getAttributes());
 					pMySpanAP->setProperties(pRev->getProperties());
+					bDeleted = false;
 				}
 			}
 		} // for
@@ -974,7 +983,36 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	
 	if(m_pRevisions && bShow)
 	{
-		UT_uint32 iId = m_pRevisions->getLastRevision()->getId();
+		bool bMark = pView->isMarkRevisions();
+		const PP_Revision * r = m_pRevisions->getLastRevision();
+		UT_uint32 iId = r->getId();
+		UT_uint32 iShowId = pView->getRevisionLevel();
+
+		bool bRevColor = false;
+
+		if(!bMark)
+		{
+			// this is the case when we are in non-marking mode ...
+			bRevColor = true;
+		}
+		
+		if(bMark && iShowId == 0)
+		{
+			// this is the case where we are in marking mode and are
+			// supposed to reveal all
+			bRevColor = true;
+		}
+		
+		if(bMark && iShowId != 0 && (iId-1 == iShowId))
+		{
+			// this is the case when we are in marking mode, and are
+			// supposed to reveal id > iShowId
+			bRevColor = true;
+		}
+		
+		if(!bRevColor)
+			return _getColorFG();
+
 		s_fgColor = _getView()->getColorRevisions(iId-1);
 	}
 	else if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -1038,27 +1076,38 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		PP_RevisionType r_type = r->getType();
+		UT_uint32 iId = r->getId();
+		UT_uint32 iShowId = pView->getRevisionLevel();
+		bool bMark = pView->isMarkRevisions();
 
-		pG->setColor(getFGColor());
-
-		UT_uint32 iWidth = getDrawingWidth();
-
-		if(r_type == PP_REVISION_ADDITION)
+		if(bMark && iShowId != 0)
+			iId--;
+		
+		if(!bMark || !iShowId || iId == iShowId)
 		{
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2), iWidth, getGraphics()->tlu(1));
+			pG->setColor(getFGColor());
 
-		}
-		else if(r_type == PP_REVISION_FMT_CHANGE)
-		{
-			// draw a thick line underneath
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
-		}
-		else
-		{
-			// draw a strike-through line
+			UT_uint32 iWidth = getDrawingWidth();
 
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGraphics()->tlu(2));
+			if(r_type == PP_REVISION_ADDITION)
+			{
+				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
+							 iWidth, getGraphics()->tlu(1));
+
+			}
+			else if(r_type == PP_REVISION_FMT_CHANGE)
+			{
+				// draw a thick line underneath
+				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
+			}
+			else
+			{
+				// draw a strike-through line
+
+				pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
+							 iWidth, getGraphics()->tlu(2));
+			}
 		}
 	}
 

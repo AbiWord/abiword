@@ -1068,15 +1068,37 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 	
 	if(pView->isMarkRevisions())
 	{
-		// cannot hide revisions when in revisions mode
-		return EV_MIS_Gray;
+		if(pView->getRevisionLevel() == 0xffffffff)
+			return EV_MIS_Toggled;
+		else
+			return EV_MIS_ZERO;
 	}
-
-	if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0xffffffff)
+	else if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0xffffffff)
 	{
 		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
 	}
 
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	if(pView->isMarkRevisions())
+	{
+		if(pView->getDocument()->getHighestRevisionId() == pView->getRevisionLevel() + 1)
+			return EV_MIS_Toggled;
+		else
+			return EV_MIS_ZERO;
+	}
+	else
+		return EV_MIS_Gray;
+	
 	return EV_MIS_ZERO;
 }
 

@@ -635,6 +635,7 @@ public:
 	static EV_EditMethod_Fn toggleShowRevisions;
 	static EV_EditMethod_Fn toggleShowRevisionsBefore;
 	static EV_EditMethod_Fn toggleShowRevisionsAfter;
+	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
 
 	static EV_EditMethod_Fn insertTable;
 
@@ -1064,6 +1065,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(togglePlain),			0,	""),
 	EV_EditMethod(NF(toggleShowRevisions),  0,  ""),
 	EV_EditMethod(NF(toggleShowRevisionsAfter),  0,  ""),
+	EV_EditMethod(NF(toggleShowRevisionsAfterPrevious),  0,  ""),
 	EV_EditMethod(NF(toggleShowRevisionsBefore),  0,  ""),
 	EV_EditMethod(NF(toggleStrike), 		0,	""),
 	EV_EditMethod(NF(toggleSub),			0,	""),
@@ -11255,6 +11257,12 @@ Defun1(toggleMarkRevisions)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	if(!pView->isMarkRevisions())
+	{
+		// set view level to all
+		pView->setRevisionLevel(0);
+	}
+	
 	pView->toggleMarkRevisions();
 
 	if(pView->isMarkRevisions())
@@ -11305,9 +11313,21 @@ Defun1(toggleShowRevisionsAfter)
 	ABIWORD_VIEW;
 
 	bool bShow = pView->isShowRevisions();
+	bool bMark = pView->isMarkRevisions();
 	UT_uint32 iLevel = pView->getRevisionLevel();
 
-	if(bShow)
+	if(bMark)
+	{
+		if(iLevel != 0xffffffff)
+		{
+			pView->cmdSetRevisionLevel(0xffffffff);
+		}
+		else
+		{
+			pView->cmdSetRevisionLevel(0);
+		}
+	}
+	else if(bShow)
 	{
 		//we are asked to hide revisions, first set view level to max
 		pView->setRevisionLevel(0xffffffff);
@@ -11319,6 +11339,30 @@ Defun1(toggleShowRevisionsAfter)
 		pView->cmdSetRevisionLevel(0xffffffff);
 	}
 	
+	return true;
+}
+
+Defun1(toggleShowRevisionsAfterPrevious)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	UT_uint32 iLevel = pView->getRevisionLevel();
+	UT_uint32 iDocLevel = pView->getDocument()->getHighestRevisionId();
+
+	if(iDocLevel == 0)
+		return false;
+	
+	if(iLevel != iDocLevel - 1)
+	{
+		// we are in Mark mode and are asked to treat all revisions
+		// but the present as accepted
+		pView->cmdSetRevisionLevel(iDocLevel-1);
+	}
+	else
+	{
+		pView->cmdSetRevisionLevel(0);
+	}
 	return true;
 }
 

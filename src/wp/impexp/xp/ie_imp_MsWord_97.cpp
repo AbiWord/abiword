@@ -1457,9 +1457,6 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		//
 		// unlike Word:
 		// 
-		//     * we do not allow hidding of revision markings if
-		//       revision mode is on
-		//
 		//     * we do not differentiate between screen and print: we
 		//       print whatever is on screen
 		//
@@ -1471,7 +1468,7 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		//
 		//     * we currently do not handle the fLockRev parameter
 		{
-			bool bShow = ps->dop.fRMView == 1 || ps->dop.fRMPrint == 1 || ps->dop.fRevMarking == 1;
+			bool bShow = ps->dop.fRMView == 1 || ps->dop.fRMPrint == 1;
 		
 			getDoc()->setShowRevisions(bShow);
 
