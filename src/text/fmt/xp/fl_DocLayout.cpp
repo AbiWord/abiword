@@ -405,9 +405,12 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 
 		if (pB != NULL)
 		{
-			pB->checkSpelling();
 			vecToCheck->deleteNthItem(0);
 			i--;
+
+			//	note that we remove this block from queue before checking it
+			//	(otherwise asserts could trigger redundant recursive calls)
+			pB->checkSpelling();
 		}
 	}
 
