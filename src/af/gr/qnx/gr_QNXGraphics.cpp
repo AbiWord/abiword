@@ -527,7 +527,7 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	int old;
 
 	GR_CaretDisabler caretDisabler(getCaret());
-	old = PgSetDrawMode(Pg_DRAWMODE_XOR);
+	old = PgSetDrawMode(Pg_DrawModeDSx);
 	drawLine(x1, y1, x2, y2);
 	PgSetDrawMode(old);
 }
@@ -567,7 +567,7 @@ void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 	UT_ASSERT(pRect);
 
 	int old;
-	old = PgSetDrawMode(Pg_DRAWMODE_XOR);
+	old = PgSetDrawMode(Pg_DrawModeDSx);
 	UT_RGBColor c;
 	c.m_red = PgRedValue(m_currentColor);
 	c.m_blu = PgBlueValue(m_currentColor);
