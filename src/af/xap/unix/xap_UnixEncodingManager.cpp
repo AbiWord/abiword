@@ -380,8 +380,8 @@ g_i18n_get_language_list (const gchar *category_name)
       g_hash_table_insert (category_table, (gpointer) category_name, list);
     }
   
-  g_hash_table_foreach(alias_table, free_entry, NULL);
-  g_hash_table_destroy(alias_table);
+//  g_hash_table_foreach(alias_table, free_entry, NULL);
+//  g_hash_table_destroy(alias_table);
   return list;
 }
 
