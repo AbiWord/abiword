@@ -34,7 +34,7 @@
 %define release	__ABI_RELEASE_NUMBER__
 
 %if %{enable_gnome}
-%define enable_gdkpixbuf 1
+%define enable_gdkpixbuf 0
 %endif
 
 %if %{enable_abicommand}
