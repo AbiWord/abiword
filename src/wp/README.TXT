@@ -4,11 +4,13 @@ the exception of the samples subdirectory, there is one subdirectory
 per module.
 
 ap
-	Source code for application-specific portion of the
-	cross-platform framework defined in src/ev.  This contains
-	application key bindings, mouse bindings, menu layouts,
-	etc.  It contains the menu string tables.  It contains the
-	table of application functions to which events may be bound.
+	Source code for application-specific portion of the cross-platform
+	framework defined in src/xap and src/ev.  This contains application
+	key bindings, mouse bindings, menu layouts, and toolbar layouts.
+	It contains the menu string tables.  It contains the table of
+	application functions to which events may be bound.  It contains
+	the code to manager the document window (rulers, scroll bars, and
+	the actual document window itself).
 
 fmt
 	Formatting and layout code, including views.
