@@ -32,8 +32,6 @@ public:
 	AP_UnixGnomeDialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixGnomeDialog_WordCount(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
-
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
@@ -41,8 +39,8 @@ protected:
 	virtual GtkWidget * _constructWindow(void);
 
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-	GtkWidget * m_buttonOK;
+	//	GtkWidget * m_windowMain;
+	//	GtkWidget * m_buttonOK;
 };
 
 #endif /* AP_UNIXGNOMEDIALOG_WORDCOUNT_H */
