@@ -26,6 +26,7 @@ echo ""
 ./abi-extract.pl -N fr-FR 
 ./abi-extract.pl -N nn-NO 
 ./abi-extract.pl -N ru-RU 
+./abi-extract.pl -N bg-BG
 
 ./update.pl gl-ES
 ./update.pl nb-NO
@@ -51,3 +52,4 @@ echo ""
 ./update.pl fr-FR 
 ./update.pl nn-NO 
 ./update.pl ru-RU 
+./update.pl bg-BG 

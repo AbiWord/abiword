@@ -26,3 +26,4 @@ echo ""
 ./abi-extract.pl -N fr-FR 
 ./abi-extract.pl -N nn-NO 
 ./abi-extract.pl -N ru-RU 
+./abi-extract.pl -N bg-BG 
