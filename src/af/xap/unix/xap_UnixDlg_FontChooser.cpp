@@ -355,14 +355,14 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelFont", labelFont);
 	gtk_widget_show (labelFont);
-	gtk_fixed_put (GTK_FIXED (fixedFont), labelFont, 8, 8);
-	gtk_widget_set_usize (labelFont, 34, 16);
+	gtk_fixed_put (GTK_FIXED (fixedFont), labelFont, 5, 8);
+	gtk_widget_set_usize (labelFont, 34, 16); 
 
 	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelStyle", labelStyle);
 	gtk_widget_show (labelStyle);
-	gtk_fixed_put (GTK_FIXED (fixedFont), labelStyle, 216, 8);
-	gtk_widget_set_usize (labelStyle, 34, 16);
+	gtk_fixed_put (GTK_FIXED (fixedFont), labelStyle, 209, 8); 
+	gtk_widget_set_usize (labelStyle, 34, 16); 
 
 	frameFonts = gtk_scrolled_window_new(NULL, NULL);
 	gtk_object_set_data(GTK_OBJECT(windowFontSelection), "frameFonts", frameFonts);
@@ -383,7 +383,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelSize", labelSize);
 	gtk_widget_show (labelSize);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelSize, 356, 8);
-	gtk_widget_set_usize (labelSize, 34, 16);
+	gtk_widget_set_usize (labelSize, 50, 16); 
 
 	/*************************************/
 	
@@ -391,7 +391,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "frameEffects", frameEffects);
 	gtk_widget_show (frameEffects);
 	gtk_fixed_put (GTK_FIXED (fixedFont), frameEffects, 216, 117);
-	gtk_widget_set_usize (frameEffects, 206, 45);
+	gtk_widget_set_usize (frameEffects, 225, 45); 
 
 	hboxDecorations = gtk_hbox_new (FALSE, 0);
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "hboxDecorations", hboxDecorations);
@@ -416,15 +416,15 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelEncoding", labelEncoding);
 	gtk_widget_show (labelEncoding);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelEncoding, 216, 170);
-	gtk_widget_set_usize (labelEncoding, 62, 22);
+	gtk_widget_set_usize (labelEncoding, 70, 22); 
 	gtk_label_set_justify (GTK_LABEL (labelEncoding), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelEncoding), 0, 0.5);
 
 	comboEncoding = gtk_combo_new ();
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "comboEncoding", comboEncoding);
 	gtk_widget_show (comboEncoding);
-	gtk_fixed_put (GTK_FIXED (fixedFont), comboEncoding, 280, 170);
-	gtk_widget_set_usize (GTK_WIDGET (comboEncoding), 142, 22);
+	gtk_fixed_put (GTK_FIXED (fixedFont), comboEncoding, 290, 170); 
+	gtk_widget_set_usize (GTK_WIDGET (comboEncoding), 150, 22); 
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (GTK_COMBO (comboEncoding)->popup),
 									GTK_POLICY_NEVER,
 									GTK_POLICY_AUTOMATIC);
@@ -459,7 +459,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data(GTK_OBJECT(windowFontSelection), "frameSize", frameSize);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameSize), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
 	gtk_fixed_put(GTK_FIXED(fixedFont), frameSize, 356, 24);
-	gtk_widget_set_usize(frameSize, 66, 85);
+	gtk_widget_set_usize(frameSize, 84, 85);
 	gtk_widget_show(frameSize);
 
 	listSizes = gtk_clist_new (1);
