@@ -3412,7 +3412,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	goto Cleanup;
       }
       pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
-      DELETEP(uncompr);
+      DELETEPV(uncompr);
   }
   else
   {
@@ -5662,4 +5662,3 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 
 	return true;
 }
-
