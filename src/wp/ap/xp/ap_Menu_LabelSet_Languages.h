@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,7 @@
 // TODO decide if we want to ifdef these...
 
 #include "ap_Menu_LabelSet_EnUS.h"
+#include "ap_Menu_LabelSet_CaES.h"
 #include "ap_Menu_LabelSet_EsES.h"
 #include "ap_Menu_LabelSet_FiFI.h"
 #include "ap_Menu_LabelSet_FrFR.h"

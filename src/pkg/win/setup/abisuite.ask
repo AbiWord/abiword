@@ -17,6 +17,7 @@
 <datafile name="__CANONDIR__/AbiWord/help/EnUS/help.html" relpath="AbiWord/help/EnUS" />
 <datafile name="__CANONDIR__/AbiWord/sample/EnUS/Latin1.abw" relpath="AbiWord/sample/EnUS" />
 
+<datafile name="__CANONDIR__/AbiWord/strings/CaES.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/DaDK.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/DeDE.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/DuNL.strings" relpath="AbiWord/strings" />

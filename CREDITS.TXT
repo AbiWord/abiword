@@ -13,6 +13,7 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
+Henrik Berg <henrik@lansen.se>
 Daniel Berlin <db003g@mail.rochester.edu>       BeOS whiz
 Bryan Blackburn <blb@pobox.com>                 Solaris / GCC 2.95 make
 Scott Boesch <scott@abisource.com>              artist, trade shows
@@ -59,6 +60,7 @@ Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian
 Birger Langkjer <birger.langkjer@image.dk>      Danish
+Jordi Mas <jmas@softcatala.org>                 Catalan
 Rui Silva <rms@ssi.aaum.pt>                     Portugese
 Christian Terboven <cterboven@gmx.net>          German
 Javier Yáñez <javier@cibal.es>                  Spanish
