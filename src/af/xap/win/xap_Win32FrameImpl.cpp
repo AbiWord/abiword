@@ -47,6 +47,20 @@
 #define WHICHPROC	FARPROC
 #endif
 
+/* Defines not present in old header files*/
+
+#ifndef TBN_FIRST
+#define TBN_FIRST               (0U-700U)       // toolbar
+#endif
+
+#ifndef TBN_DROPDOWN
+#define TBN_DROPDOWN            (TBN_FIRST - 10)
+#endif
+
+#ifndef TBDDRET_DEFAULT
+#define TBDDRET_DEFAULT 0 
+#endif
+
 WHICHPROC s_oldRedBar; 
 
 extern "C" const char * wvLIDToLangConverter(unsigned short langID);
