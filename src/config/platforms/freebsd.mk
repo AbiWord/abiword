@@ -103,7 +103,8 @@ G++INCLUDES		= -I/usr/include/g++
 PLATFORM_FLAGS		= -pipe -DFREEBSD -DFreeBSD $(OS_INCLUDES)
 # sterwill - I've taken out _POSIX_SOURCE because it breaks popen on FreeBSD 4.0
 # fjf      - I've taken out _XOPEN_SOURCE as well because it blocks rint
-PORT_FLAGS		= -D_BSD_SOURCE -DHAVE_STRERROR # -D_XOPEN_SOURCE -D_POSIX_SOURCE
+# mg	   - I'm breaking ties with early versions, as we require gtk2 as of 20020615
+PORT_FLAGS		= -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D_POSIX_SOURCE
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 PLATFORM_FLAGS		+= 
