@@ -3163,7 +3163,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	bool bSelEmpty = isSelectionEmpty();
-
+ 
 	if (!bSelEmpty)
 	{
 		if (m_iSelectionAnchor < posStart)
@@ -3181,6 +3181,18 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	bool bDirection;
 	
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	fl_BlockLayout* pNBlock = NULL;
+//
+// Look if our selection starts just before a paragraph break
+//
+	if(posStart < posEnd)
+	{
+		pNBlock = _findBlockAtPosition(posStart+1);
+		if(pNBlock != pBlock)
+		{
+			pBlock = pNBlock;
+		}
+	}
 	UT_uint32 blockPosition = pBlock->getPosition();
 	if(blockPosition > posStart)
 	{
@@ -3307,6 +3319,8 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 			bool bCheck = false;
 
 			pRun = pRun->getNext();
+
+
 			if (!pRun)
 			{
 				// go to first run of next block
@@ -3334,7 +3348,6 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 			// check altogether is easier (and faster).
 			if (pRun->getType() == FPRUN_ENDOFPARAGRAPH)
 				continue;
-
 
 			// did span format change?
 
