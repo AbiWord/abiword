@@ -410,7 +410,9 @@ void AP_UnixDialog_Columns::doMaxHeightEntry(void)
 		setMaxHeight(szHeight);
 
 		gtk_signal_handler_block(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wMaxColumnHeightEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+		gtk_entry_set_position(GTK_ENTRY(m_wMaxColumnHeightEntry), pos);
 		gtk_signal_handler_unblock(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 	}
 }
@@ -423,7 +425,9 @@ void AP_UnixDialog_Columns::doSpaceAfterEntry(void)
 		setSpaceAfter(szAfter);
 
 		gtk_signal_handler_block(GTK_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wSpaceAfterEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+		gtk_entry_set_position(GTK_ENTRY(m_wSpaceAfterEntry), pos);
 		gtk_signal_handler_unblock(GTK_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
 	}
 }
