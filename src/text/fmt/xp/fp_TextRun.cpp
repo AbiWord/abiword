@@ -2810,13 +2810,13 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 	UT_return_if_fail(offset < getLength());
 
 	// calculate actual length of deletion in this run
-	UT_uint32 iLen = UT_MIN(iLenToDelete, getLength() - offset);
+	UT_sint32 iLen = UT_MIN(static_cast<UT_sint32>(iLenToDelete), static_cast<UT_sint32>(getLength()) - static_cast<UT_sint32>(offset));
 
 	// do not try to delete nothing ...
 	if(iLen == 0)
 		return;
 
-	UT_uint32 iLenOrig = getLength();
+	UT_sint32 iLenOrig = getLength();
 
 	// construct a text iterator to speed things up
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
@@ -2827,14 +2827,14 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 		// this whole run will be deleted ...
 		goto set_length;
 	}
-
+	xxx_UT_DEBUGMSG(("Doing updateOnDelete %x length of run %d amount to delete %d iLen %d \n",this,getLength(),iLenToDelete,iLen));
 	if(m_pRenderInfo)
 	{
 		m_pRenderInfo->m_iLength = iLenOrig;
 		m_pRenderInfo->m_iVisDir = getVisDirection();
 		m_pRenderInfo->m_eState = _getRefreshDrawBuffer();
 		m_pRenderInfo->m_pText = &text;
-		if(!m_pRenderInfo->cut(offset,iLenToDelete))
+		if(!m_pRenderInfo->cut(offset,iLen))
 		{
 			// mark draw buffer dirty ...
 			orDrawBufferDirty(GRSR_Unknown);
@@ -2890,7 +2890,7 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 		}
 	}
 
-	if(offset + iLen == iLenOrig && getNextRun())
+	if((static_cast<UT_sint32>(offset) + iLen == iLenOrig) && getNextRun())
 	{
 		fp_Run * pRun = getNextRun();
 
