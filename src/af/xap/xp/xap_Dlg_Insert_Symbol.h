@@ -23,6 +23,7 @@
 /* #include "xap_Frame.h" */
 #include "xap_Dialog.h"
 /* #include "xap_Draw_Symbol.h" */
+#include "gr_Graphics.h"
 
 /* #include "xav_View.h" */
 class AV_View;

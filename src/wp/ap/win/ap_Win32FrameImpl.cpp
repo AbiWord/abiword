@@ -39,6 +39,12 @@
 #endif
 
 
+// reserve space for static variables
+char AP_Win32FrameImpl::s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
+char AP_Win32FrameImpl::s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
+
+
+
 AP_Win32FrameImpl::AP_Win32FrameImpl(AP_Frame *pFrame) :
 	XAP_Win32FrameImpl(static_cast<XAP_Frame *>(pFrame)),
 	m_hwndContainer(NULL),

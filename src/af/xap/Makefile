@@ -136,6 +136,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_Insert_Symbol.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_FakeClipboard.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_FrameImpl.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_FontPreview.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_LoadBindings.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Log.$(OBJ_SUFFIX)					\

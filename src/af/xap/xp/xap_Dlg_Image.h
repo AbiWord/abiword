@@ -28,12 +28,11 @@
 #include "ut_types.h"
 #endif
 
-/* #include "xap_Frame.h" */
+#include "xap_Frame.h"
 #include "xap_Dialog.h"
 
 /* #include "xav_View.h" */
 
-class XAP_Frame;
 
 class XAP_Dialog_Image : public XAP_Dialog_NonPersistent
 {

@@ -134,7 +134,7 @@ public:
 	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameImpl->_newToolbar(app, frame, szLayout, szLanguage); }
 	virtual EV_Menu* getMainMenu() { return m_pFrameImpl->_getMainMenu(); }
 
-	XAP_FrameImpl * getFrameImpl() { return m_pFrameImpl; }
+	XAP_FrameImpl * getFrameImpl() const { return m_pFrameImpl; }
 
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;

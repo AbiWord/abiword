@@ -39,7 +39,7 @@ class EV_Toolbar;
 // in the Frame class if we had factored the other way
 // or built a lattice...
 
-class AP_FrameData
+class ABI_EXPORT AP_FrameData
 {
 public:
 	AP_FrameData(XAP_App * pApp);
