@@ -767,9 +767,18 @@ void FL_DocLayout::updateColor()
 
 #define BACKGROUND_CHECK_MSECS 100
 
-void FL_DocLayout::_toggleAutoSpell(bool bSpell)
+/*!
+ Toggle auto spell-checking state
+ \param bSpell True if spell-checking should be enabled, false otherwise
+ When disabling spelling, all squiggles are deleted.
+ When enabling spelling, force a full check of the document.
+*/
+void
+FL_DocLayout::_toggleAutoSpell(bool bSpell)
 {
 	bool bOldAutoSpell = getAutoSpellCheck();
+
+	// Add reason to background checker
 	if (bSpell)
 	{
 		addBackgroundCheckReason(bgcrSpelling);
@@ -779,11 +788,12 @@ void FL_DocLayout::_toggleAutoSpell(bool bSpell)
 		removeBackgroundCheckReason(bgcrSpelling);
 	}
 
-	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", bSpell ? "true" : "false" ));
+	xxx_UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", 
+					 bSpell ? "true" : "false" ));
 
 	if (bSpell)
 	{
-		// recheck the whole doc
+		// When enabling, recheck the whole document
 		fl_DocSectionLayout * pSL = getFirstSection();
 		while (pSL)
 		{
@@ -800,7 +810,7 @@ void FL_DocLayout::_toggleAutoSpell(bool bSpell)
 	}
 	else
 	{
-		// remove the squiggles, too
+		// Disabling, so remove the squiggles too
 		fl_DocSectionLayout * pSL = getFirstSection();
 		while (pSL)
 		{
@@ -815,10 +825,13 @@ void FL_DocLayout::_toggleAutoSpell(bool bSpell)
 		}
 		if (bOldAutoSpell)
 		{
-			// If we're here, it was set to TRUE before but now it is being set
-			// to FALSE. This means that it is the user setting it. That's good.
+			// If we're here, it was set to TRUE before but now it is
+			// being set to FALSE. This means that it is the user
+			// setting it. That's good.
 			m_pView->draw(NULL);
-			// A pending word would be bad. Not sure why it's not ignored once autospell is off, but for now it should definattely be annulled.
+			// A pending word would be bad. Not sure why it's not
+			// ignored once autospell is off, but for now it should
+			// definattely be annulled.
 			setPendingWordForSpell(NULL, NULL);
 		}
 	}
@@ -839,76 +852,83 @@ void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "true" : "false" ));
 }
 
-void FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
+/*!
+ Do background spell-check
+ \param pWorker Worker object
+ \note This is a static callback method and does not have a 'this' pointer.
+*/
+void
+FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 {
 	UT_ASSERT(pWorker);
 
-	// this is a static callback method and does not have a 'this' pointer.
-
+	// Get the doclayout
 	FL_DocLayout * pDocLayout = (FL_DocLayout *) pWorker->getInstanceData();
 	UT_ASSERT(pDocLayout);
 
+	// Win32 timers can fire prematurely on asserts (the dialog's
+	// message pump releases the timers)
 	if (!pDocLayout->m_pView)
 	{
-		// Win32 timers can fire prematurely on asserts
-		// (the dialog's message pump releases the timers)
 		return;
 	}
-//
-// Don't spell check while printing!
-//
+
+	// Don't spell check while printing!
 	if(pDocLayout->m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		return;
 	}
-	if(pDocLayout->m_bStopSpellChecking == true || pDocLayout->m_bImSpellCheckingNow == true)
+
+	// Don't spell check if disabled, or already happening
+	if(pDocLayout->m_bStopSpellChecking == true 
+	   || pDocLayout->m_bImSpellCheckingNow == true)
 	{
 		return;
 	}
-	// Code added to hold spell checks during block insertions
 
+	// Code added to hold spell checks during block insertions
 	if(pDocLayout->m_pDoc->isPieceTableChanging() == true)
 	{
 		return;
 	}
-//
-// Don't spell check while a redrawupdate is happening either...
-//
+
+	// Don't spell check while a redrawupdate is happening either...
 	PD_Document * pDoc = pDocLayout->getDocument();
 	if(pDoc->isRedrawHappenning())
 	{
 		return;
 	}
 
+	// Flag that spell checking is in action.
+	// Note: this is not a good way to do mutual exclusion!
 	pDocLayout->m_bImSpellCheckingNow = true;
 
-	// prevent getting a new timer hit before we've finished this one by
-	// temporarily disabling the timer
-	//pDocLayout->m_pBackgroundCheckTimer->stop();
-
+	// Find vector of blocks to check.
 	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
 	UT_ASSERT(vecToCheck);
 
 	UT_uint32 i = vecToCheck->getItemCount();
-
 	if (i > 0)
 	{
+		// Check each block in the queue
 		fl_BlockLayout *pB = (fl_BlockLayout *) vecToCheck->getFirstItem();
-
 		if (pB != NULL)
 		{
-			for (unsigned int bitdex=0; bitdex<8*sizeof(pB->m_uBackgroundCheckReasons); ++bitdex)
+			// This looping seems like a lot of wasted effort when we
+			// don't define meaning for most of the bits, but it's
+			// small effort compared to all that squiggle stuff that
+			// goes on for the spelling stuff.
+			for (UT_uint32 bitdex = 0; 
+				 bitdex < 8*sizeof(pB->m_uBackgroundCheckReasons);
+				 bitdex++)
 			{
-				// This looping seems like a lot of wasted effort when we
-				// don't define meaning for most of the bits, but it's small
-				// effort compared to all that squiggle stuff that goes on
-				// for the spelling stuff.
 				UT_uint32 mask;
 				mask = (1 << bitdex);
 				if (pB->hasBackgroundCheckReason(mask))
 				{
-					//	note that we remove this reason from queue before checking it
-					//	(otherwise asserts could trigger redundant recursive calls)
+					// Note that we remove this reason from queue
+					// before checking it (otherwise asserts could
+					// trigger redundant recursive calls)
 					pB->removeBackgroundCheckReason(mask);
 					switch (mask)
 					{
@@ -926,6 +946,8 @@ void FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 					}
 				}
 			}
+			// Delete block from queue if there are no more reasons
+			// for checking it.
 			if (!pB->m_uBackgroundCheckReasons)
 			{
 				vecToCheck->deleteNthItem(0);
@@ -935,27 +957,30 @@ void FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	}
 	else
 	{ 
-//
-// No blocks to spellcheck so stop the idle/timer. Otherwise we consume 100% CPU.
-//
+		// No blocks to spellcheck so stop the idle/timer. Otherwise
+		// we consume 100% CPU.
 		pDocLayout->m_pBackgroundCheckTimer->stop();
 	}
-		
-	if (i != 0 && pDocLayout->m_bStopSpellChecking == false)
-	{
-		// restart timer unless it's not needed any more
-		//pDocLayout->m_pBackgroundCheckTimer->start();
-	}
+
 	pDocLayout->m_bImSpellCheckingNow = false;
 }
 
-void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead)
+/*!
+ Enqueue block for background spell-checking
+ \param iReason Reason for checking the block FIXME - enum?
+ \param pBlock Block to enqueue
+ \param bHead When true, insert block at head of queue
+
+ This routine queues up blocks for timer-driven spell checking, etc.  
+ By default, this is a FIFO queue, but it can be explicitly 
+ reprioritized by setting bHead to true.
+*/
+void
+FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
+										   fl_BlockLayout *pBlock,
+										   bool bHead)
 {
-	/*
-	  This routine queues up blocks for timer-driven spell checking, etc.  
-	  By default, this is a FIFO queue, but it can be explicitly 
-	  reprioritized by setting bHead == true.  
-	*/
+	// If there's no timer running, start one
 	if (!m_pBackgroundCheckTimer)
 	{
 	    int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
@@ -966,9 +991,11 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	    UT_ASSERT(m_pBackgroundCheckTimer);
 	    UT_ASSERT(outMode != UT_WorkerFactory::NONE);
 
+		// If the worker is working on a timer instead of in the idle
+		// time, set the frequency of the checks.
 	    if ( UT_WorkerFactory::TIMER == outMode )
 		{
-		// this is really a timer, so it's safe to static_cast it
+			// this is really a timer, so it's safe to static_cast it
 			static_cast<UT_Timer*>(m_pBackgroundCheckTimer)->set(BACKGROUND_CHECK_MSECS);
 		}
 #if 1
@@ -986,17 +1013,18 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	}
 #endif
 
+	// Set debug flash reason on block if it is set
 	if (hasBackgroundCheckReason(bgcrDebugFlash))
 	{
 		pBlock->addBackgroundCheckReason(bgcrDebugFlash);
 	}
-	pBlock->addBackgroundCheckReason(reason);
+	pBlock->addBackgroundCheckReason(iReason);
 
 	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
-
 	if (i < 0)
 	{
-		// add it
+		// Add block if it's not already in the queue. Add it either
+		// at the head, or at the tail.
 		if (bHead)
 			m_vecUncheckedBlocks.insertItemAt(pBlock, 0);
 		else
@@ -1004,28 +1032,38 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	}
 	else if (bHead)
 	{
-		// bubble it to the start
+		// Block is already in the queue, bubble it to the start
 		m_vecUncheckedBlocks.deleteNthItem(i);
 		m_vecUncheckedBlocks.insertItemAt(pBlock, 0);
 	}
 }
 
-void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
-{
-	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
+/*!
+ Remove block from background checking queue
+ \param pBlock Block to remove
 
-	if (i>=0)
+ When the last block is removed from the queue, the background timer
+ is stopped. The function does not return before the background
+ spell-checking timer has stopped.
+*/
+void
+FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
+{
+	// Remove block from queue if it's found there
+	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
+	if (i >= 0)
 	{
 		m_vecUncheckedBlocks.deleteNthItem(i);
 	}
 
-	// when queue is empty, kill timer
+	// When queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
 		m_bStopSpellChecking = true;
 		if(m_pBackgroundCheckTimer)
 		{
 			m_pBackgroundCheckTimer->stop();
+			// Wait for checking to complete before returning.
 			while(m_bImSpellCheckingNow == true)
 			{
 			}
@@ -1033,27 +1071,48 @@ void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	}
 }
 
-void FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord)
+/*!
+  Mark a region of a block to be spell checked
+  \param pBlock Block
+  \param pWord  Region
+
+  If called with NULL arguments, any prior marked region will be
+  freed. Callers must reuse pWord (by calling getPendingWordForSpell)
+  when set.  
+*/
+void 
+FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
+									 fl_PartOfBlock* pWord)
 {
+	// Return if matching the existant marked region
 	if ((pBlock == m_pPendingBlockForSpell) && 
 		(pWord == m_pPendingWordForSpell))
 		return;
 
+	// Assert an exisant pWord allocation is reused
 	UT_ASSERT(!m_pPendingBlockForSpell || !pBlock);
 
+	// Check for valid arguments
 	if (pBlock && m_pPendingBlockForSpell && m_pPendingWordForSpell)
 	{
 		UT_ASSERT(pWord);
 	}
 
-	// when clobbering prior POB, make sure we don't leak it
+	// When clobbering prior POB, make sure we don't leak it
 	DELETEP(m_pPendingWordForSpell);
 
 	m_pPendingBlockForSpell = pBlock;
 	m_pPendingWordForSpell = pWord;
 }
 
-bool FL_DocLayout::checkPendingWordForSpell(void)
+/*!
+ Spell-check pending word
+ \result True if word checked, false otherwise
+ If a word is pending spelling, and the PieceTable is
+ not changing, spell-check the word.
+*/
+bool
+FL_DocLayout::checkPendingWordForSpell(void)
 {
 	bool bUpdate = false;
 
@@ -1061,39 +1120,52 @@ bool FL_DocLayout::checkPendingWordForSpell(void)
 		return bUpdate;
 
 	if(m_pDoc->isPieceTableChanging() == true)
-	{
 		return bUpdate;
-	}
 
-	// check pending word
+	// Check pending word
 	UT_ASSERT(m_pPendingWordForSpell);
 	bUpdate = m_pPendingBlockForSpell->checkWord(m_pPendingWordForSpell);
 
 	m_pPendingWordForSpell = NULL;	// NB: already freed by checkWord
 
-	// not pending any more
+	// Not pending any more
 	setPendingWordForSpell(NULL, NULL);
 
 	return bUpdate;
 }
 
-bool FL_DocLayout::isPendingWordForSpell(void) const
+/*!
+ Is a word pending for spelling
+ \return True if a word is pending, false otherwise
+*/
+bool
+FL_DocLayout::isPendingWordForSpell(void) const
 {
 	return (m_pPendingBlockForSpell ? true : false);
 }
 
-bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
-												 UT_uint32 iOffset, 
-												 UT_sint32 chg) const
+/*!
+ Determine if position touches the pending word for spelling
+ \param pBLock Block of position
+ \param iOffset Offset in block
+ \param chg  FIXME
+ \return True if position touches pending word, false otherwise
+
+ FIXME: why this function/chg? Caller uses result for what?
+*/
+bool
+FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
+										 UT_uint32 iOffset, 
+										 UT_sint32 chg) const
 {
 	UT_uint32 len = (chg < 0) ? -chg : 0;
+
+	UT_ASSERT(pBlock);
 
 	if (!m_pPendingBlockForSpell)
 		return false;
 
-	UT_ASSERT(pBlock);
-
-	// are we in the same block?
+	// Are we in the same block?
 	if (m_pPendingBlockForSpell != pBlock)
 		return false;
 
@@ -1101,6 +1173,7 @@ bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
 
 	return m_pPendingWordForSpell->doesTouch(iOffset, len);
 }
+
 /*!
  * This method appends a DocSectionLayout onto the linked list of SectionLayout's
  * and updates the m_pFirstSection and m_pLastSection member variables 

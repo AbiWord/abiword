@@ -1560,7 +1560,7 @@ void fp_Line::layout(void)
     		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
     	
-	UT_DEBUGMSG(("fp_Line::layout(), this = 0x%x\n"
+	xxx_UT_DEBUGMSG(("fp_Line::layout(), this = 0x%x\n"
 				 "       alignment [%s], working direction [%s], using tabstops [%s]\n"
 				 "       fixed width multiplier %d/%d\n"
 				 "       iStartX    = %d, iStartXLayout = %d \n"
