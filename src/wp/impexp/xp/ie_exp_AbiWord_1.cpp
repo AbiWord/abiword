@@ -952,8 +952,18 @@ UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 	m_pListener = new s_AbiWord_1_Listener(getDoc(),this, m_bIsTemplate);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
-	if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
-		return UT_ERROR;
+
+	if (getDocRange())
+	{
+		if(!getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange()))
+			return UT_ERROR;
+	}
+	else
+	{
+		if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
+			return UT_ERROR;
+	}
+	
 	delete m_pListener;
 
 	m_pListener = NULL;

@@ -72,6 +72,8 @@ extern "C" { // for MRC compiler (Mac)
 	}
 }
 
+
+
 int IE_Imp_XML::_mapNameToToken (const char * name,
 								 struct xmlToIdMapping * idlist, int len)
 {
@@ -119,6 +121,32 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 
 	return m_error;
 }
+
+void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned char * pData, 
+								 UT_uint32 lenData, const char * /*szEncoding*/)
+{
+	UT_DEBUGMSG(("IE_Imp_XML::pasteFromBuffer\n"));
+	UT_return_if_fail(pDocRange && pDocRange->m_pDoc);
+	setClipboard(pDocRange->m_pos1);
+
+	UT_XML default_xml;
+	UT_XML * parser = &default_xml;
+	if (m_pParser) parser = m_pParser;
+
+	parser->setListener (this);
+	if (m_pReader) parser->setReader (m_pReader);
+
+	UT_Error err = parser->parse ((const char*)pData, lenData);
+
+	if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
+		m_error = UT_IE_BOGUSDOCUMENT;
+
+	if (m_error != UT_OK)
+	{
+		UT_DEBUGMSG(("Problem reading document\n"));
+	}
+}
+
 
 /*****************************************************************/
 /*****************************************************************/

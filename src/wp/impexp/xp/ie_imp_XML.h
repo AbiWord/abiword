@@ -59,6 +59,11 @@ public:
 
     virtual UT_Error	importFile(const char * szFilename);
 
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+										const unsigned char * pData, 
+										UT_uint32 lenData, 
+										const char * szEncoding = 0);
+	
     /* (Partial) Implementation of UT_XML::Listener
      *
      * You *must* override these next two methods:

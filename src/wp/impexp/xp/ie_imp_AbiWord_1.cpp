@@ -49,7 +49,7 @@
 
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
-#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))			\
+#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))  \
 									  {  m_error = UT_IE_BOGUSDOCUMENT;	UT_ASSERT(0); \
 										 return; } } while (0)
 
@@ -168,9 +168,9 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 	if(!getLoadStylesOnly()	)
 	{
 		if ( !m_bWroteSection )
-			X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
+			X_CheckError(appendStrux(PTX_Section,NULL));
 		if ( !m_bWroteParagraph )
-			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+			X_CheckError(appendStrux(PTX_Block,NULL));
 	}
 	
   if (m_refMap)
@@ -193,6 +193,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
 	return IE_Imp_XML::importFile(szFilename);
 }
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -307,7 +308,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_Doc;
 
-		if(!getLoadStylesOnly() || getLoadDocProps())
+		if(!isClipboard() && (!getLoadStylesOnly() || getLoadDocProps()))
 		{
 		  X_CheckError(getDoc()->setAttrProp(atts));
 		}
@@ -327,7 +328,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 		    m_parseState = _PS_Sec;
 		    m_bWroteSection = true;
-		    X_CheckError(getDoc()->appendStrux(PTX_Section,atts));
+		    X_CheckError(appendStrux(PTX_Section,atts));
 		    return;
 		}
 		else
@@ -343,7 +344,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 				getDoc()->changeStruxAttsNoUpdate(sdh,pszType,pszId);
 				m_parseState = _PS_Sec;
 				m_bWroteSection = true;
-				X_CheckError(getDoc()->appendStrux(PTX_Section,atts));
+				X_CheckError(appendStrux(PTX_Section,atts));
 				return;
 			}
 			m_error = UT_IE_SKIPINVALID;
@@ -361,7 +362,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// Don't check for id on the footnote. It should match an id on
         // a footnote reference field.
 
-		X_CheckError(getDoc()->appendStrux(PTX_SectionFootnote,atts));
+		X_CheckError(appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
 		return;
 	}
@@ -375,13 +376,20 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// Don't check for id of the endnote strux. It should match the
 		// id of the endnote reference.
 
-		X_CheckError(getDoc()->appendStrux(PTX_SectionEndnote,atts));
+		X_CheckError(appendStrux(PTX_SectionEndnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append Endnote strux \n"));
 		return;
 	}
 	case TT_BLOCK:
 	{
-		X_VerifyParseState(_PS_Sec);
+		// when pasting from clipboard, the doc might not open with section/paragraph
+		if(!isClipboard() || m_bWroteSection)
+			X_VerifyParseState(_PS_Sec);
+		else
+		{
+			m_bWroteSection = true;
+		}
+		
 		m_parseState = _PS_Block;
 		m_bWroteParagraph = true;
 		const XML_Char * pszId = _getXMLPropValue("list", atts);
@@ -396,16 +404,29 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 			}
 		}
-		X_CheckError(getDoc()->appendStrux(PTX_Block,atts));
+		X_CheckError(appendStrux(PTX_Block,atts));
 		m_iInlineStart = getOperationCount();
 		return;
 	}
 	case TT_INLINE:
 		// ignored for fields
 		if (m_parseState == _PS_Field) return;
-		X_VerifyParseState(_PS_Block);
+
+		// when pasting from clipboard, the doc might not open with section/paragraph
+		if(!isClipboard() || m_bWroteParagraph)
+			X_VerifyParseState(_PS_Block);
+		else
+		{
+			m_parseState = _PS_Block;
+			m_bWroteParagraph = true;
+		}
+		
+		
 		X_CheckError(_pushInlineFmt(atts));
-		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+
+		if(!isClipboard())
+			X_CheckError(appendFmt(&m_vecInlineFmt));
+
 		m_iInlineStart++;
 		return;
 
@@ -426,25 +447,25 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// Remove this assert because the image object MUST have already
 		// defined the correct ID.
 		//
-		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
+		X_CheckError(appendObject(PTO_Image,atts));
 #endif
 		return;
 	}
 	case TT_BOOKMARK:
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(getDoc()->appendObject(PTO_Bookmark,atts));
+		X_CheckError(appendObject(PTO_Bookmark,atts));
 		return;
 		
 	case TT_HYPERLINK:
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,atts));
+		X_CheckError(appendObject(PTO_Hyperlink,atts));
 		return;
 
 	case TT_FIELD:
 	{
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Field;
-		X_CheckError(getDoc()->appendObject(PTO_Field,atts));
+		X_CheckError(appendObject(PTO_Field,atts));
 
 #ifdef DEBUG
 		UT_DEBUGMSG(("SEVIOR: Appending field \n"));
@@ -478,7 +499,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// TODO spans.
 		{
 			UT_UCSChar ucs = UCS_LF;
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(appendSpan(&ucs,1));
 		}
 		return;
 
@@ -492,7 +513,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// TODO spans.
 		{
 			UT_UCSChar ucs = UCS_VTAB;
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(appendSpan(&ucs,1));
 		}
 		return;
 
@@ -505,7 +526,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// TODO spans.
 		{
 			UT_UCSChar ucs = UCS_FF;
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(appendSpan(&ucs,1));
 		}
 		return;
 
@@ -630,13 +651,13 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_TABLE:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(getDoc()->appendStrux(PTX_SectionTable,atts));
+		X_CheckError(appendStrux(PTX_SectionTable,atts));
 		return;
 
 	case TT_CELL:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(getDoc()->appendStrux(PTX_SectionCell,atts));
+		X_CheckError(appendStrux(PTX_SectionCell,atts));
 		return;
 
 	case TT_OTHER:
@@ -668,7 +689,9 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
-		X_VerifyParseState(_PS_Doc);
+		// when pasting from clipboard, there does not have to be any sections/paragraphs
+		if(!isClipboard())
+			X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Init;
 		return;
 
@@ -679,14 +702,14 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_FOOTNOTE:
 		X_VerifyParseState(_PS_Sec);
-		X_CheckError(getDoc()->appendStrux(PTX_EndFootnote,NULL));
+		X_CheckError(appendStrux(PTX_EndFootnote,NULL));
 		xxx_UT_DEBUGMSG(("FInished Append End footnote strux \n"));
 		m_parseState = _PS_Block;
 		return;
 
 	case TT_ENDNOTE:
 		X_VerifyParseState(_PS_Sec);
-		X_CheckError(getDoc()->appendStrux(PTX_EndEndnote,NULL));
+		X_CheckError(appendStrux(PTX_EndEndnote,NULL));
 		xxx_UT_DEBUGMSG(("Finished Append End Endnote strux \n"));
 		m_parseState = _PS_Block;
 		return;
@@ -694,13 +717,13 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_TABLE:
 		X_VerifyParseState(_PS_Sec);
 		m_bWroteSection = true;
-		X_CheckError(getDoc()->appendStrux(PTX_EndTable,NULL));
+		X_CheckError(appendStrux(PTX_EndTable,NULL));
 		return;
 
 	case TT_CELL:
 		X_VerifyParseState(_PS_Sec);
 		m_bWroteSection = true;
-		X_CheckError(getDoc()->appendStrux(PTX_EndCell,NULL));
+		X_CheckError(appendStrux(PTX_EndCell,NULL));
 		return;
 
 	case TT_BLOCK:
@@ -717,12 +740,14 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		// Insert a FmtMark if nothing was inserted in the block.
-		if (m_iInlineStart == getOperationCount()+1)
+		if (!isClipboard() && (m_iInlineStart == getOperationCount()+1))
 		{
 			X_CheckError(getDoc()->appendFmtMark());
 		}
 		_popInlineFmt();
-		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+
+		if(!isClipboard())
+			X_CheckError(appendFmt(&m_vecInlineFmt));
 		return;
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
@@ -739,7 +764,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		// we append another Hyperlink Object, but with no attributes
-		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,NULL));
+		X_CheckError(appendObject(PTO_Hyperlink,NULL));
 		return;
 
 		return;
@@ -1011,7 +1036,7 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 	*new_attr++ = 0;
 	*new_attr++ = 0;
 
-	bool success = getDoc()->appendObject (PTO_Image, new_atts);
+	bool success = appendObject (PTO_Image, new_atts);
 
 	free (new_atts);
 
