@@ -28,6 +28,7 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "xav_View.h"
+#include "gr_Graphics.h"
 
 EV_Win32Mouse::EV_Win32Mouse(EV_EditEventMapper * pEEM)
 :	EV_Mouse(pEEM),
