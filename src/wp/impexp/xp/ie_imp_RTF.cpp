@@ -18,6 +18,8 @@
  */
 
 
+/* RTF importer by Peter Arnold <petera@intrinsica.co.uk> */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

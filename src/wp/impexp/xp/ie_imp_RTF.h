@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+/* RTF importer by Peter Arnold <petera@intrinsica.co.uk> */
 
 #ifndef IE_IMP_RTF_H
 #define IE_IMP_RTF_H
