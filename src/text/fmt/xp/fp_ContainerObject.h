@@ -123,6 +123,7 @@ typedef enum {
 
 class ABI_EXPORT fg_FillType
 {
+	friend class fp_Run;
 public:
 	fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, FG_Fill_Type iType);
 	virtual ~ fg_FillType(void);

@@ -284,6 +284,7 @@ private:
 	bool				m_bSpellCheckCaps;
 	bool				m_bSpellCheckNumbers;
 	bool				m_bSpellCheckInternet;
+	bool                m_bAutoSpellCheck;
 	UT_uint32                       m_uDocBackgroundCheckReasons;
 	bool                         m_bStopSpellChecking; // Handshaking
 	bool                         m_bImSpellCheckingNow; // Variables

@@ -203,7 +203,7 @@ class ABI_EXPORT GR_Graphics
 #endif
 
 	virtual void      setFont(GR_Font* pFont) PURE_VIRTUAL_IF_NOT_PANGO;
-
+    virtual void      clearFont(void) = 0;
 	virtual UT_uint32 getFontAscent()         PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontDescent()        PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontHeight()         PURE_VIRTUAL_IF_NOT_PANGO;

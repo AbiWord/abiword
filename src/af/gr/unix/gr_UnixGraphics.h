@@ -56,6 +56,7 @@ class GR_UnixGraphics : public GR_Graphics
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
 								  int * pCharWidths = NULL);
 	virtual void		setFont(GR_Font* pFont);
+	virtual void        clearFont(void) {m_pFont = NULL;} 
 	virtual UT_uint32	getFontHeight();
 	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);

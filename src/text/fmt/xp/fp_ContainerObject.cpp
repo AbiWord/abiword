@@ -34,6 +34,7 @@
 #include "fl_FootnoteLayout.h"
 #include "fl_DocLayout.h"
 #include "fp_Column.h"
+#include "fp_Run.h"
 
 /*!
   Create container
@@ -662,6 +663,20 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		{
 			srcX -= xoff;
 			srcY -= 2*yoff;
+		}
+	}
+	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_RUN))
+	{
+		if(m_iGraphicTick != m_pDocLayout->getGraphicTick() )
+		{
+			m_iGraphicTick = m_pDocLayout->getGraphicTick();
+			fp_Run * pRun = static_cast<fp_Run *>(m_pContainer);
+			pRun->_setFont(NULL);
+			pRun->lookupProperties();
+			if((m_FillType == FG_FILL_IMAGE) && (m_pDocImage == NULL))
+			{
+				_regenerateImage(pG);
+			}
 		}
 	}
 

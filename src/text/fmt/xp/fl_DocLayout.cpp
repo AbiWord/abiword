@@ -85,6 +85,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bSpellCheckCaps = true;
 	m_bSpellCheckNumbers = true;
 	m_bSpellCheckInternet = true;
+	m_bAutoSpellCheck = true;
 	m_pPrefs = NULL;
 	m_bStopSpellChecking = false;
 	m_bImSpellCheckingNow = false;
@@ -2345,7 +2346,12 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 
 	// auto spell
 	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b );
-	pDocLayout->_toggleAutoSpell( b );
+	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
+	if(b != pDocLayout->m_bAutoSpellCheck)
+	{
+		pDocLayout->m_bAutoSpellCheck = b;
+		pDocLayout->_toggleAutoSpell( b );
+	}
 	// do this because it's recheck to document - TODO
 
 	if ( changed )

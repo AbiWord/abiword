@@ -129,6 +129,7 @@ enum FPRUN_CLEAR_SCREEN
 */
 class ABI_EXPORT fp_Run : fp_ContainerObject
 {
+	friend class fg_FillType;
 public:
 	fp_Run(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst,
 		   UT_uint32 iLen, FP_RUN_TYPE iType);

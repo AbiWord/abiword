@@ -52,7 +52,7 @@ public:
 						   UT_sint32 xoff, UT_sint32 yoff,
 						   int * pCharWidths = NULL);
 	virtual void setFont(GR_Font* pFont);
-
+	virtual void clearFont(void) {m_pCurrentFont = NULL;}
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();

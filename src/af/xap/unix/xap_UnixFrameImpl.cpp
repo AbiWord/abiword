@@ -571,7 +571,10 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 		iNewWidth = pUnixFrameImpl->m_iNewWidth;
 		iNewHeight = pUnixFrameImpl->m_iNewHeight;
 
+		// don't need this for quickZoom
+#if 0
 		pUnixFrameImpl->_startViewAutoUpdater(); 
+#endif
 		pView->setWindowSize(iNewWidth, iNewHeight);
 		pFrame->quickZoom(); // was update zoom
 
@@ -618,8 +621,10 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
         pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
 
 		// Dynamic Zoom Implementation
+
         if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
             pUnixFrameImpl->m_iZoomUpdateID = g_idle_add(static_cast<GSourceFunc>(do_ZoomUpdate), static_cast<gpointer>(pUnixFrameImpl));
+
 	}
 	return 1;
 }

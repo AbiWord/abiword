@@ -56,13 +56,14 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 {
 	bool bChanged = (getZoomPercentage() != iZoom);
 	XAP_Frame::setZoomPercentage(iZoom);
+	FV_View * pView = static_cast<FV_View *>(getCurrentView());
 	if (bChanged) 
 	{
-		FV_View * pView = static_cast<FV_View *>(getCurrentView());
 		FL_DocLayout * pDocLayout = pView->getLayout();
 		pDocLayout->incrementGraphicTick();
 		GR_Graphics * pOldGraphics = pView->getGraphics();
 		pOldGraphics->setZoomPercentage(iZoom);
+		pOldGraphics->clearFont();
 		AP_TopRuler * pTop = pView->getTopRuler();
 		if(pTop)
 		{
@@ -87,6 +88,14 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		{
 			pLeft->draw(NULL);
 		}
+	}
+	else
+	{
+//
+// Redraw the entire screen
+//
+		pView->updateScreen(false);
+
 	}
 }
 
