@@ -608,7 +608,12 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 // TODO edge.  this causes bug #92 (double clicking
 // TODO on the first line of a paragraph selects
 // TODO current paragraph and the previous paragraph).
-// TODO i'm not sure why it is here.			
+// TODO i'm not sure why it is here.
+// TODO
+// TODO it's here because it makes control-up-arrow
+// TODO when at the beginning of paragraph work. this
+// TODO problem is logged as bug #403.
+// TODO
 			// are we already there?
 			if (iPos == pBlock->getPosition())
 			{
@@ -778,6 +783,10 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 		_eraseInsertionPoint();
 	
 	PT_DocPosition iPos = _getDocPos(dp);
+
+	if (iPos != getPoint())
+		_clearIfAtFmtMark(getPoint());
+
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -796,6 +805,9 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 	else
 		_eraseInsertionPoint();
 	
+	if (dp != getPoint())
+		_clearIfAtFmtMark(getPoint());
+
 	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ UT_FALSE);  // is this bool correct?
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -968,6 +980,7 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 			_eraseInsertionPoint();
 		}
 
+		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 		_eraseSelection();
                 
 		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
@@ -976,6 +989,8 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 	{
 		// set block-level style
 		_eraseInsertionPoint();
+
+		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 
 		// NB: clear explicit props at both block and char levels
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
@@ -1384,6 +1399,8 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
+
+	_clearIfAtFmtMark(getPoint());
 
 	_eraseInsertionPoint();
 
@@ -1997,6 +2014,7 @@ void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 		_eraseInsertionPoint();
 
 	_resetSelection();
+	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevLine(bNext);
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -2006,6 +2024,7 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 	if (isSelectionEmpty())
 	{
 		_setSelectionAnchor();
+		_clearIfAtFmtMark(getPoint());
 		_moveInsPtNextPrevLine(bNext);
 		if (isSelectionEmpty())
 		{
@@ -2972,6 +2991,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	if (isSelectionEmpty())
 	{
 		_eraseInsertionPoint();
+		_clearIfAtFmtMark(getPoint());
 		_setSelectionAnchor();
 	}
 
@@ -3005,6 +3025,9 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	UT_Bool bBOL, bEOL;
 	
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+
+	if (pos != getPoint())
+		_clearIfAtFmtMark(getPoint());
 	
 	_setPoint(pos, bEOL);
 	_fixInsertionPointCoords();
@@ -3796,44 +3819,6 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 	m_bPointEOL = bEOL;
 }
 
-#if 0
-UT_Bool FV_View::_isPointAP(void)
-{
-	return m_bPointAP;
-}
-
-PT_AttrPropIndex FV_View::_getPointAP(void)
-{
-	UT_ASSERT(m_bPointAP);
-	return m_apPoint;
-}
-
-void FV_View::_setPointAP(PT_AttrPropIndex indexAP)
-{
-	m_bPointAP = UT_TRUE;
-	m_apPoint = indexAP;
-}
-
-UT_Bool FV_View::_clearPointAP(UT_Bool bNotify)
-{
-	if (_isPointAP())
-	{
-		m_bPointAP = UT_FALSE;
-
-		// notify document that insertion point format is obsolete
-		if (bNotify)
-		{
-// TODO we don't need this anymore, but i wanted to remember where it was until i finished
-// TODO making the changes to remove it.
-//			m_pDoc->clearTemporarySpanFmt();
-			notifyListeners(AV_CHG_FMTCHAR); // ensure that toolbar doesn't get stale...
-		}
-	}
-
-	return UT_TRUE;
-}
-#endif /* 0 */
-
 UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 {
 	UT_ASSERT(pt2>=pt1);
@@ -3870,8 +3855,11 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 		m_iInsPoint = posBOD;
 
 		if (m_iInsPoint != posOld)
+		{
+			_clearIfAtFmtMark(posOld);
 			notifyListeners(AV_CHG_MOTION);
-
+		}
+		
 		return UT_FALSE;
 	}
 
@@ -3883,12 +3871,20 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 		m_iInsPoint = posEOD;
 
 		if (m_iInsPoint != posOld)
+		{
+			_clearIfAtFmtMark(posOld);
 			notifyListeners(AV_CHG_MOTION);
-
+		}
+		
 		return UT_FALSE;
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	if (m_iInsPoint != posOld)
+	{
+		_clearIfAtFmtMark(posOld);
+		notifyListeners(AV_CHG_MOTION);
+	}
+	
 	return UT_TRUE;
 }
 // -------------------------------------------------------------------------
@@ -4177,6 +4173,8 @@ void FV_View::_doPaste(void)
 	AP_Clipboard* pClip = XAP_App::getClipboard();
 	if (pClip->open())
 	{
+		_clearIfAtFmtMark(getPoint());
+		
 		// TODO support paste of RTF
 
 		/*
@@ -4297,6 +4295,11 @@ void FV_View::_doPaste(void)
 
 			delete pUCSData;
 		}
+		else
+		{
+			UT_DEBUGMSG(("Unsupported clipboard format...\n"));
+		}
+		
 		pClip->close();
 	}
 
@@ -4314,6 +4317,7 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 	UT_Bool bRet;
 
 	_eraseInsertionPoint();
+	_clearIfAtFmtMark(getPoint());
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
@@ -4682,4 +4686,10 @@ UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 	return 0;
+}
+
+void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
+{
+	m_pDoc->clearIfAtFmtMark(dpos);
+	_generalUpdate();
 }

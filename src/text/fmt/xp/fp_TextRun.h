@@ -49,6 +49,8 @@ class fp_TextRun : public fp_Run
 	UT_Bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 
+	UT_sint32				simpleRecalcWidth(void) const;
+
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif	

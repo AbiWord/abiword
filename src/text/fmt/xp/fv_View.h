@@ -254,13 +254,8 @@ protected:
 	void				_setPoint(UT_uint32 pt, UT_Bool bEOL = UT_FALSE);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
-#if 0
-	UT_Bool				_isPointAP(void);
-	PT_AttrPropIndex	_getPointAP(void);
-	void				_setPointAP(PT_AttrPropIndex indexAP);
-	UT_Bool				_clearPointAP(UT_Bool bNotify);
-#endif
 	void				_doPaste(void);
+	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 	
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
@@ -272,11 +267,6 @@ protected:
 	UT_Bool				m_bPointVisible;
 	UT_Bool				m_bPointEOL;
 
-#if 0
-	UT_Bool				m_bPointAP;
-	PT_AttrPropIndex	m_apPoint;
-#endif
-	
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	GR_Graphics*		m_pG;

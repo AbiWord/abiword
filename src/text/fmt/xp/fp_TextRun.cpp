@@ -460,7 +460,6 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iHeight = this->m_iHeight;
 	pNew->m_iLineWidth = this->m_iLineWidth;
 	pNew->m_bDirty = this->m_bDirty;
-//	pNew->m_bDirty = UT_FALSE;
 
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
@@ -474,10 +473,11 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	m_pLine->insertRunAfter(pNew, this);
 
-	this->recalcWidth();
+	m_iWidth = simpleRecalcWidth();
 	pNew->m_iX = m_iX + m_iWidth;
 	pNew->m_iY = m_iY;
-
+	pNew->m_iWidth = pNew->simpleRecalcWidth();
+	
 	return UT_TRUE;
 }
 
@@ -520,16 +520,14 @@ void fp_TextRun::fetchCharWidths(UT_GrowBuf * pgbCharWidths)
 	}
 }
 
-UT_Bool fp_TextRun::recalcWidth(void)
+UT_sint32 fp_TextRun::simpleRecalcWidth(void) const
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 	
 	UT_sint32 iWidth = 0;
 	if (m_iLen == 0)
-	{
-		goto done;
-	}
+		return 0;
 
 	{
 		const UT_UCSChar* pSpan;
@@ -565,7 +563,13 @@ UT_Bool fp_TextRun::recalcWidth(void)
 		}
 	}
 
- done:
+	return iWidth;
+}
+
+UT_Bool fp_TextRun::recalcWidth(void)
+{
+	UT_sint32 iWidth = simpleRecalcWidth();
+	
 	if (iWidth == m_iWidth)
 	{
 		return UT_FALSE;

@@ -234,8 +234,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 							
 							pOtherHalfOfSplitRun = (fp_TextRun*) pRunToSplit->getNext();
 
-							pRunToSplit->recalcWidth();
-							pOtherHalfOfSplitRun->recalcWidth();
+// todo decide if we need to call recalcWidth() now on the 2 pieces.
+//							pRunToSplit->recalcWidth();
+//							pOtherHalfOfSplitRun->recalcWidth();
 							
 							UT_ASSERT((UT_sint32)pRunToSplit->getWidth() == si.iLeftWidth);
 

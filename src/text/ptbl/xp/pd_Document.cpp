@@ -791,3 +791,11 @@ UT_Bool PD_Document::enumStyles(UT_uint32 k,
 {
 	return m_pPieceTable->enumStyles(k, pszName, ppStyle);
 }
+
+//////////////////////////////////////////////////////////////////
+
+void PD_Document::clearIfAtFmtMark(PT_DocPosition dpos)
+{
+	m_pPieceTable->clearIfAtFmtMark(dpos);
+}
+

@@ -68,7 +68,6 @@ public:
 	virtual UT_Bool			undoCmd(UT_uint32 repeatCount);
 	virtual UT_Bool			redoCmd(UT_uint32 repeatCount);
 
-// ----------------------
 	UT_Bool					saveAs(const char * szFilename, int ieft);
 	UT_Bool					save(void);
 
@@ -157,6 +156,8 @@ public:
 	UT_Bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	UT_Bool					enumStyles(UT_uint32 k,
 										  const char ** pszName, const PD_Style ** ppStyle) const;
+
+	void					clearIfAtFmtMark(PT_DocPosition dpos);
 	
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;

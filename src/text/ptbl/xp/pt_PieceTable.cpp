@@ -651,3 +651,11 @@ UT_uint32 pt_PieceTable::_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTar
 }
 
 	
+void pt_PieceTable::clearIfAtFmtMark(PT_DocPosition dpos)
+{
+	while (_lastUndoIsThisFmtMark(dpos))
+	{
+		UT_DEBUGMSG(("clearIfAtFmtMark doing something...\n"));
+		undoCmd();
+	}
+}

@@ -138,13 +138,12 @@ public:
 												  pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
 												  pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const;
 	
-	// TODO add stuff for objects like in-line images.
-
-	// styles
 	UT_Bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	UT_Bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
+	void					clearIfAtFmtMark(PT_DocPosition dpos);
+	
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;

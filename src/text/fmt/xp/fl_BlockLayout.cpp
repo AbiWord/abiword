@@ -1795,7 +1795,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			
 			fp_TextRun* pOtherHalfOfSplitRun = (fp_TextRun*) pTextRun->getNext();
 			
-			pTextRun->recalcWidth();
+//			pTextRun->recalcWidth();
 
 			bInserted = UT_TRUE;
 			
@@ -1825,7 +1825,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 			pRun->getLine()->insertRunBefore(pNewRun, pRun);
 			
-			pOtherHalfOfSplitRun->recalcWidth();
+//			pOtherHalfOfSplitRun->recalcWidth();
 		}
 		
 		pRun = pRun->getNext();
@@ -2137,7 +2137,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 			{
 				// split at right end of span
 				pTextRun->split(blockOffset+len);
-				pTextRun->getNext()->recalcWidth();
+//				pTextRun->getNext()->recalcWidth();
 			}
 
 			iWhere = pRun->containsOffset(blockOffset);
@@ -2145,7 +2145,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 			{
 				// split at left end of span
 				pTextRun->split(blockOffset);
-				pTextRun->getNext()->recalcWidth();
+//				pTextRun->getNext()->recalcWidth();
 			}
 
 			if ((runOffset >= blockOffset) && (runOffset < blockOffset + len))
