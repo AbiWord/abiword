@@ -20,7 +20,7 @@
 #ifndef XAP_MACDIALOG_ABOUT_H
 #define XAP_MACDIALOG_ABOUT_H
 
-#include "xap_Dialog_About.h"
+#include "xap_Dlg_About.h"
 
 /*****************************************************************/
 
