@@ -542,8 +542,8 @@ UT_Bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 { 
   	const XML_Char *val = _getXMLPropValue ((XML_Char *)"base64", atts);
 
-	if ((!val) || (!UT_XML_strcmp (val, "no")))
-	  return UT_FALSE;
+	if ((!val) || (UT_XML_strcmp (val, "no") != 0))
+	  return UT_TRUE;
 
-	return UT_TRUE;
+	return UT_FALSE;
 }
