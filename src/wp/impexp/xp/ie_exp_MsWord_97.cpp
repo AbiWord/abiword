@@ -435,13 +435,14 @@ UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
     m_pWordDocument = wvDocument_create(szFileName);
     
     UT_DEBUGMSG(("Creating Streams\n"));
-    //m_pTableStream = wvStream_new(m_pWordDocument, "Table0");
     m_pMainStream = wvStream_new(m_pWordDocument, "WordDocument");
-    
+    m_pSummaryStream = wvStream_new(m_pWordDocument, "Summary");
+    m_pTableStream = wvStream_new(m_pWordDocument, "0Table");    
+
     UT_DEBUGMSG(("Streams Created\n"));
 
-    if(m_pWordDocument != NULL /* && m_pTableStream != NULL */
-            && m_pMainStream != NULL)
+    if(m_pWordDocument != NULL && m_pTableStream != NULL
+            && m_pMainStream != NULL && m_pSummaryStream != NULL)
 	    return UT_TRUE;
     else
         return UT_FALSE;
@@ -452,7 +453,7 @@ UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length
 	UT_ASSERT(pBytes);
 	UT_ASSERT(length);
 
-    UT_DEBUGMSG(("Writing %s", pBytes));
+	UT_DEBUGMSG(("Writing %s", pBytes));
 
 	UT_uint32 nwritten = 0;
 
@@ -472,7 +473,7 @@ UT_Bool IE_Exp_MsWord_97::_closeFile(void)
 {
 	UT_Bool tmp = UT_TRUE;
 
-    wvOLEFree();
+	wvOLEFree();
 
 	return tmp;
 }
@@ -518,20 +519,19 @@ s_MsWord_97_Listener::s_MsWord_97_Listener(PD_Document * pDocument,
     UT_DEBUGMSG(("Writing initial FIB\n"));
     wvPutFIB(&m_Fib, m_pie->m_pMainStream); // We write a blank one now, and
                                             // we'll fill it in at the end. 
-    
-	m_Fib.fcMin=wvStream_tell(m_pie->m_pMainStream);
-    
+
+    m_Fib.fcMin = wvStream_tell(m_pie->m_pMainStream) + 128;
+    wvStream_offset(m_pie->m_pMainStream, (long)128);
+
     // TODO: write some summary information
-	// TODO: learn the MSWord OLE format :-)
-    
+    // TODO: learn the MSWord OLE format :-)
         
-    
     UT_DEBUGMSG(("Word Export Finished\n"));
 }
 
 s_MsWord_97_Listener::~s_MsWord_97_Listener()
 {
-	// TODO: end the output stream
+  // TODO: end the output stream
     
     wvStream_rewind(m_pie->m_pMainStream);
     wvPutFIB(&m_Fib, m_pie->m_pMainStream);
