@@ -34,7 +34,7 @@ class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_Insert_Symbol: public XAP_Dialog_Insert_Symbol
+class AP_UnixDialog_Insert_Symbol: public AP_Dialog_Insert_Symbol
 {
 public:
 	AP_UnixDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
