@@ -1352,11 +1352,11 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// draw the cell properties for a table
 	_drawCellProperties(pClipRect, pInfo,true);
 
-	// draw the paragraph properties {left-indent, right-indent, first-left-indent}.
-	_drawParagraphProperties(pClipRect,pInfo,true);	
-	
 	// draw the Tab properties
 	_drawTabProperties(pClipRect,pInfo,true);
+	
+	// draw the paragraph properties {left-indent, right-indent, first-left-indent}.
+	_drawParagraphProperties(pClipRect,pInfo,true);	
 	
 	return;
 }
