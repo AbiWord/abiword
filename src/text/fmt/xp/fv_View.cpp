@@ -3933,12 +3933,7 @@ void FV_View::warpInsPtNextPrevPage(bool bNext)
 		_eraseInsertionPoint();
 
 	_resetSelection();
-	
-	if ( getPoint() != _getDocPos(FV_DOCPOS_BOL)) 
-	{
-		xxx_UT_DEBUGMSG(("Not at the beginning of a line. Removing FmtMark. \n"));
-		_clearIfAtFmtMark(getPoint());
-	}
+	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevPage(bNext);
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -3951,12 +3946,7 @@ void FV_View::warpInsPtNextPrevLine(bool bNext)
 		_eraseInsertionPoint();
 
 	_resetSelection();
-	
-	if ( getPoint() != _getDocPos(FV_DOCPOS_BOL)) 
-	{
-		xxx_UT_DEBUGMSG(("Not at the beginning of a line. Removing FmtMark. \n"));
-		_clearIfAtFmtMark(getPoint());
-	}
+	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevLine(bNext);
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -7529,7 +7519,14 @@ UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
 
 void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 {
-	m_pDoc->clearIfAtFmtMark(dpos);
+	// Check to see if we're at the beginning of the line. If we
+	// aren't, then it's safe to delete the FmtMark. Else we could
+	// wipe out the placeholder FmtMark for our attributes.
+	// Fix for Bug #863 
+	if ( ( dpos != _getDocPosFromPoint(dpos,FV_DOCPOS_BOL) )) 
+	{
+		m_pDoc->clearIfAtFmtMark(dpos);
+	}
 	_generalUpdate();
 }
 
