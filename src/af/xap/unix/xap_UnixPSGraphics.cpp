@@ -424,7 +424,9 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
 	// This piece of code scales the FONT chosen at low resolution to that at high
 	// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
-	UT_uint32 iSize = (UT_uint32)((UT_convertToInches(pszFontSize)+0.05) * getResolution());
+//	UT_uint32 iSize = (UT_uint32)((UT_convertToInches(pszFontSize)+0.05) * getResolution());
+	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
+
 	XAP_UnixFontHandle* item = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(item);
 
