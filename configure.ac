@@ -205,10 +205,13 @@ AC_ARG_ENABLE(extra-optimization,
 AC_ARG_ENABLE(bidi,
     [  --enable-bidi    Turn on bidirectional support ],
      [case "${enableval}" in
-       yes) BIDI_CFLAGS="-DBIDI_ENABLED" ;;
-       no)  BIDI_CFLAGS="" ;; 
+       yes) bidi=true;
+		BIDI_CFLAGS="-DBIDI_ENABLED" ;;
+       no)  bidi=false;
+		BIDI_CFLAGS="" ;; 
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-bidi) ;;
      esac],[BIDI_CFLAGS=""])
+AM_CONDITIONAL(BIDI_ENABLED, test "x$bidi" = "xtrue")
 
 # by default, configure in the abi directory runs the same configure command
 # in the peer directories (wv, expat, etc...).  this provides a way to
@@ -407,6 +410,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
  src/other/spell/xp/GNUmakefile
+ src/other/fribidi/GNUmakefile
+ src/other/fribidi/xp/GNUmakefile
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -470,6 +475,11 @@ esac
 case "$script" in
      "true" )
         AC_MSG_RESULT([Configured with scripting support.]) ;;
+esac
+
+case "$bidi" in
+     "true" )
+        AC_MSG_RESULT([Configured with BiDi support.]) ;;
 esac
 
 echo " "

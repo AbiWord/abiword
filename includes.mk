@@ -99,7 +99,13 @@ ABI_GNOME_PREFIX = Gnome
 OTHER_LIBS=@LIBPNG_LIBS@ -lz @PSPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ \
 	@PSICONV_LIBS@ @WV_LIBS@ @LIBWMF_LIBS@ @ICONV_LIBS@
 
-ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a 
+# BiDi needs a specific lib
+if BIDI_ENABLED
+BIDI_LIBS=$(top_builddir)/src/other/fribidi/xp/libFribidi.a
+else
+BIDI_LIBS=
+endif
+ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a $(BIDI_LIBS)
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/xp/libImpexp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a

@@ -16,7 +16,17 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+include $(top_srcdir)/includes.mk
 
-SUBDIRS = spell fribidi
+INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) 
 
+if BIDI_ENABLED
+noinst_LIBRARIES = libFribidi.a
+else
+noinst_LIBRARIES = 
+endif
+
+if BIDI_ENABLED
+libFribidi_a_SOURCES = fribidi.c fribidi_get_type.c fribidi_types.c
+endif
 
