@@ -24,6 +24,8 @@
 #ifndef FRIBIDI_H
 #define FRIBIDI_H
 
+#define USE_SIMPLE_MALLOC
+
 #ifdef __cplusplus
 extern "C" {
 #endif
