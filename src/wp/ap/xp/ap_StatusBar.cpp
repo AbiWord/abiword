@@ -35,7 +35,7 @@
 
 #include "ut_timer.h"
 
-// WL: ONLY ENABLE NEW STATUS BAR ON UNIX/GTK FOR NOW
+// WL: ONLY ENABLE NEW STATUS BAR ON UNIX/GTK (AND QNX) FOR NOW
 #if !defined(WIN32) && !defined(__BEOS__) && !defined(__APPLE__)
 
 //////////////////////////////////////////////////////////////////
@@ -79,10 +79,10 @@ AP_StatusBarField_TextInfo::AP_StatusBarField_TextInfo(AP_StatusBar *pSB)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-class AP_StatusBarField_PageInfo : public AP_StatusBarField_TextInfo
+class ap_sbf_PageInfo : public AP_StatusBarField_TextInfo
 {
 public:
-	AP_StatusBarField_PageInfo(AP_StatusBar * pSB);
+	ap_sbf_PageInfo(AP_StatusBar * pSB);
 
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 
@@ -93,7 +93,7 @@ private:
 	const XML_Char *	m_szFormat;
 };
 
-AP_StatusBarField_PageInfo::AP_StatusBarField_PageInfo(AP_StatusBar * pSB)
+ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
 	: AP_StatusBarField_TextInfo(pSB)
 {
 	m_pageNr = 0;
@@ -106,7 +106,7 @@ AP_StatusBarField_PageInfo::AP_StatusBarField_PageInfo(AP_StatusBar * pSB)
 	sprintf(m_sRepresentativeString,m_szFormat,AP_STATUSBAR_MAX_PAGES,AP_STATUSBAR_MAX_PAGES);
 }
 
-void AP_StatusBarField_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
+void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 {
 	FV_View * pView = (FV_View *)pavView;
 	
@@ -152,16 +152,16 @@ void AP_StatusBarField_PageInfo::notify(AV_View * pavView, const AV_ChangeMask m
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class AP_StatusBarField_StatusMessage : public AP_StatusBarField_TextInfo
+class ap_sbf_StatusMessage : public AP_StatusBarField_TextInfo
 {
  public:
-	AP_StatusBarField_StatusMessage(AP_StatusBar * pSB);
+	ap_sbf_StatusMessage(AP_StatusBar * pSB);
 
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 	void update(UT_UCS4Char *pMessage); // for receiving messages from the status bar itself
 };
 
-AP_StatusBarField_StatusMessage::AP_StatusBarField_StatusMessage(AP_StatusBar * pSB)
+ap_sbf_StatusMessage::ap_sbf_StatusMessage(AP_StatusBar * pSB)
 	: AP_StatusBarField_TextInfo(pSB)
 {
 	m_fillMethod = MAX_POSSIBLE;
@@ -169,7 +169,7 @@ AP_StatusBarField_StatusMessage::AP_StatusBarField_StatusMessage(AP_StatusBar * 
 	strcpy(m_sRepresentativeString, AP_STATUSBAR_STATUSMESSAGE_REPRESENTATIVE_STRING);
 }
 
-void AP_StatusBarField_StatusMessage::notify(AV_View * /*pView*/, const AV_ChangeMask /*mask*/)
+void ap_sbf_StatusMessage::notify(AV_View * /*pView*/, const AV_ChangeMask /*mask*/)
 {
 	UT_UCS4_strcpy(m_bufUCS, m_pSB->getStatusMessage());
 
@@ -177,7 +177,7 @@ void AP_StatusBarField_StatusMessage::notify(AV_View * /*pView*/, const AV_Chang
 		getListener()->notify();
 }
 
-void AP_StatusBarField_StatusMessage::update(UT_UCS4Char *pMessage)
+void ap_sbf_StatusMessage::update(UT_UCS4Char *pMessage)
 {
 	UT_UCS4_strcpy(m_bufUCS, pMessage);
 
@@ -188,15 +188,15 @@ void AP_StatusBarField_StatusMessage::update(UT_UCS4Char *pMessage)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class AP_StatusBarField_InputMode : public AP_StatusBarField_TextInfo
+class ap_sbf_InputMode : public AP_StatusBarField_TextInfo
 {
  public:
-	AP_StatusBarField_InputMode(AP_StatusBar * pSB);
+	ap_sbf_InputMode(AP_StatusBar * pSB);
 	
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 };
 
-AP_StatusBarField_InputMode::AP_StatusBarField_InputMode(AP_StatusBar * pSB)
+ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
 	: AP_StatusBarField_TextInfo(pSB)
 {
 	const char * szInputMode = m_pSB->getFrame()->getInputMode();
@@ -208,7 +208,7 @@ AP_StatusBarField_InputMode::AP_StatusBarField_InputMode(AP_StatusBar * pSB)
 	strcpy(m_sRepresentativeString, AP_STATUSBAR_INPUTMODE_REP_STRING);
 }
 
-void AP_StatusBarField_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
+void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
 	if (mask & (AV_CHG_INPUTMODE))
 	{
@@ -225,10 +225,10 @@ void AP_StatusBarField_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeM
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class AP_StatusBarField_InsertMode : public AP_StatusBarField_TextInfo
+class ap_sbf_InsertMode : public AP_StatusBarField_TextInfo
 {
  public:
-	AP_StatusBarField_InsertMode(AP_StatusBar * pSB);
+	ap_sbf_InsertMode(AP_StatusBar * pSB);
 	
 	virtual void        notify(AV_View * pView, const AV_ChangeMask mask);
 
@@ -237,7 +237,7 @@ class AP_StatusBarField_InsertMode : public AP_StatusBarField_TextInfo
 	bool m_bInsertMode;
 };
 
-AP_StatusBarField_InsertMode::AP_StatusBarField_InsertMode(AP_StatusBar * pSB)
+ap_sbf_InsertMode::ap_sbf_InsertMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
 {
     UT_UCS4_strcpy_char(m_InsertMode[(int)true],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
@@ -250,7 +250,7 @@ AP_StatusBarField_InsertMode::AP_StatusBarField_InsertMode(AP_StatusBar * pSB)
     strcpy(m_sRepresentativeString, AP_STATUSBAR_INSERTMODE_REP_STRING);
 }
 
-void AP_StatusBarField_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
+void ap_sbf_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
     if (mask & (AV_CHG_INSERTMODE))
     {
@@ -269,15 +269,15 @@ void AP_StatusBarField_InsertMode::notify(AV_View * /*pavView*/, const AV_Change
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class AP_StatusBarField_Language : public AP_StatusBarField_TextInfo
+class ap_sbf_Language : public AP_StatusBarField_TextInfo
 {
  public:
-	AP_StatusBarField_Language(AP_StatusBar * pSB);
+	ap_sbf_Language(AP_StatusBar * pSB);
 
 	virtual void notify(AV_View * pView, const AV_ChangeMask mask);
 };
 
-AP_StatusBarField_Language::AP_StatusBarField_Language(AP_StatusBar * pSB)
+ap_sbf_Language::ap_sbf_Language(AP_StatusBar * pSB)
 	: AP_StatusBarField_TextInfo(pSB)
 {
 	m_fillMethod = REPRESENTATIVE_STRING;
@@ -285,7 +285,7 @@ AP_StatusBarField_Language::AP_StatusBarField_Language(AP_StatusBar * pSB)
 	strcpy(m_sRepresentativeString, "mm-MM"); // this should actually be longer.. see old code for info on why
 }
 
-void AP_StatusBarField_Language::notify(AV_View * pavView, const AV_ChangeMask mask)
+void ap_sbf_Language::notify(AV_View * pavView, const AV_ChangeMask mask)
 {
 	// TODO do we want our own bit for language change?
 	//if (mask & (AV_CHG_INSERTMODE))
@@ -381,16 +381,16 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 		UT_ASSERT((var));								\
 		m_vecFields.addItem((var));						\
 		
-		DclField(AP_StatusBarField_PageInfo, pf1);
-		DclField(AP_StatusBarField_StatusMessage, pf2);
+		DclField(ap_sbf_PageInfo, pf1);
+		DclField(ap_sbf_StatusMessage, pf2);
 
 		m_pStatusMessageField = pf2;	// its in the vector, but we remember it explicitly
 		                                // so that setStatusMessage() can do its thing.
 
-		DclField(AP_StatusBarField_InsertMode, pf4);
-		DclField(AP_StatusBarField_InputMode, pf3);
+		DclField(ap_sbf_InsertMode, pf4);
+		DclField(ap_sbf_InputMode, pf3);
 		
-		DclField(AP_StatusBarField_Language, pf5);
+		DclField(ap_sbf_Language, pf5);
 
 		// TODO add other fields
 
@@ -477,7 +477,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 		UT_UCS4_strcpy(m_bufUCS, pBufUCS);
 	}
 	
- 	AP_StatusBarField_StatusMessage * pf = (AP_StatusBarField_StatusMessage *)m_pStatusMessageField;
+ 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
  	if(pf)
  		pf->update(pBufUCS);
 }
@@ -494,7 +494,7 @@ void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 	else
 		memset(bufUCS,0,sizeof(bufUCS));
 
- 	AP_StatusBarField_StatusMessage * pf = (AP_StatusBarField_StatusMessage *)m_pStatusMessageField;
+ 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
  	if(pf) {
 		pf->update(bufUCS);
 	}
@@ -506,7 +506,7 @@ const UT_UCSChar * AP_StatusBar::getStatusMessage(void) const
 }
 
 void AP_StatusBar::setStatusProgressType(int start, int end, int flags) {
-// 	AP_StatusBarField_StatusMessage * pf = (AP_StatusBarField_StatusMessage *)m_pStatusMessageField;
+// 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
 // 	if(pf)
 // 	{
 // 		pf->setStatusProgressType(start, end, flags);
@@ -516,7 +516,7 @@ void AP_StatusBar::setStatusProgressType(int start, int end, int flags) {
 }
 
 void AP_StatusBar::setStatusProgressValue(int value) {
-// 	AP_StatusBarField_StatusMessage * pf = (AP_StatusBarField_StatusMessage *)m_pStatusMessageField;
+// 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
 // 	if(pf)
 // 	{
 // 		pf->setStatusProgressValue(value);

@@ -48,17 +48,6 @@ void ap_usb_TextListener::notify()
 	const UT_UCS4Char * buf = textInfo->getBufUCS();
 	UT_UTF8String utf8 (buf);	
 
-#if 0
-	char paddedLabel[AP_MAX_MESSAGE_FIELD];
-	// HACK: there's no decent way of giving some left padding on the gtklabel (that I know of)
-	// which looks aesthetically pleasing, so we add an extra space to the label text
-	paddedLabel[0] = ' ';
-	paddedLabel[1] = '\0';
-	UT_ASSERT(utf8.size() < (AP_MAX_MESSAGE_FIELD));
-	if (utf8.size() < (AP_MAX_MESSAGE_FIELD)) // buffer overflow check
-		strcat(paddedLabel, utf8.utf8_str());
-#endif
-
 	gtk_label_set_label(GTK_LABEL(m_pLabel), utf8.utf8_str());
 }
 
@@ -82,8 +71,6 @@ void AP_UnixStatusBar::setView(AV_View * pView)
 }
 
 // FIXME: we need more sanity checking here to make sure everything allocates correctly
-// FIXME: we need to call a view update when this happens, to make sure the elements get
-// their needed updates. this is why the page numbering doesn't appear on startup
 GtkWidget * AP_UnixStatusBar::createWidget(void)
 {
 	UT_ASSERT(!m_wStatusBar);
