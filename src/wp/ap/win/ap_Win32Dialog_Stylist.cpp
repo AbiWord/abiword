@@ -31,7 +31,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Stylist.h"
 #include "ap_Win32Dialog_Stylist.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 #if defined(STRICT)
@@ -55,6 +55,7 @@ AP_Win32Dialog_Stylist::AP_Win32Dialog_Stylist(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_Stylist(pDlgFactory,id)
 {
+	
 }
 
 AP_Win32Dialog_Stylist::~AP_Win32Dialog_Stylist(void)
@@ -65,7 +66,22 @@ AP_Win32Dialog_Stylist::~AP_Win32Dialog_Stylist(void)
 void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
-	UT_ASSERT_HARMLESS(0);
+	
+	UT_ASSERT(m_id == AP_DIALOG_ID_STYLIST);
+
+	m_modeless = FALSE;
+
+	// raise the dialog
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);	
+
+	LPCTSTR lpTemplate = lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_STYLIST);
+
+	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
+
+	UT_ASSERT((result != -1));	
+
 }
 
 void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
@@ -75,6 +91,7 @@ void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	LPCTSTR lpTemplate = NULL;
+	m_modeless = TRUE;
 
 	UT_return_if_fail (m_id == AP_DIALOG_ID_STYLIST);
 
@@ -126,11 +143,17 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 
 void  AP_Win32Dialog_Stylist::destroy(void)
 {
-	int iResult = DestroyWindow( m_hWnd );
+	if (m_modeless) 
+	{
+		int iResult = DestroyWindow( m_hWnd );
 
-	UT_ASSERT_HARMLESS((iResult != 0));
+		UT_ASSERT_HARMLESS((iResult != 0));
 
-	modeless_cleanup();
+		modeless_cleanup();
+	}
+	else
+		EndDialog(m_hWnd,0);
+	
 }
 
 
@@ -218,6 +241,7 @@ BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	hTreeProc = (WHICHPROC) GetWindowLong(hTree, GWL_WNDPROC); // save off our prior callback
 	SetWindowLong(hTree, GWL_WNDPROC, (LONG)s_treeProc); // tie the treeview to the new callback
 	SetWindowLong(hTree, GWL_USERDATA, (LONG)this);
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);
 
 	return 1;							// 1 == we did not call SetFocus()
 }
