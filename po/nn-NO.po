@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord\n"
 "POT-Creation-Date: 2001-05-06 15:24+0000\n"
-"PO-Revision-Date: 2001-05-06 17:13+0100\n"
+"PO-Revision-Date: 2001-07-18 11:38+0100\n"
 "Last-Translator: Karl Ove Hufthammer <huftis@bigfoot.com>\n"
 "Language-Team: Karl Ove Hufthammer <huftis@bigfoot.com>\n"
 "MIME-Version: 1.0\n"
@@ -43,8 +43,7 @@ msgid ""
 msgstr ""
 "%s er dessverre ikkje implementert enno.\n"
 "\n"
-"Viss du kan programmera, er du velkommen til å implementera denne funksjonen "
-"sjølv, ved å redigera fila %s, linje %d\n"
+"Viss du kan programmera, er du velkommen til å implementera denne funksjonen sjølv, ved å redigera fila %s, linje %d\n"
 "og senda oppdateringa til:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -367,7 +366,8 @@ msgid "Alignment:"
 msgstr "Justering:"
 
 #. DLG_Styles_LBL_All
-#: po/tmp/ap_String_Id.h.h:139 po/tmp/xap_String_Id.h.h:35
+#: po/tmp/ap_String_Id.h.h:139
+#: po/tmp/xap_String_Id.h.h:35
 msgid "All"
 msgstr "Alle"
 
@@ -382,7 +382,8 @@ msgid "Application"
 msgstr "Program"
 
 #. DLG_Options_Btn_Apply
-#: po/tmp/ap_String_Id.h.h:145 po/tmp/xap_String_Id.h.h:37
+#: po/tmp/ap_String_Id.h.h:145
+#: po/tmp/xap_String_Id.h.h:37
 msgid "Apply"
 msgstr "Bruk"
 
@@ -620,15 +621,10 @@ msgstr "Vel bakgrunnsfarge for AbiWord"
 #: po/tmp/ap_String_Id.h.h:237
 msgid ""
 "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the "
-"desired number.  You can use + and - to perform relative movement.  I.e., if "
-"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
-"below your current position."
+"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.  I.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
 msgstr ""
 "Vel kva type plassering du vil gå til i venstre felt.\n"
-"Fyll inn talfeltet viss du vil bruka Gå til-knappen. Du kan bruka + og - til "
-"relativ rørsle. Eksempel: «+2» som tal og «Linje» som type, vil flytta "
-"markøren to linjer nedover."
+"Fyll inn talfeltet viss du vil bruka Gå til-knappen. Du kan bruka + og - til relativ rørsle. Eksempel: «+2» som tal og «Linje» som type, vil flytta markøren to linjer nedover."
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:239
@@ -820,7 +816,8 @@ msgid "Delete"
 msgstr "Slett"
 
 #. DLG_Styles_ModifyDescription
-#: po/tmp/ap_String_Id.h.h:313 po/tmp/xap_String_Id.h.h:71
+#: po/tmp/ap_String_Id.h.h:313
+#: po/tmp/xap_String_Id.h.h:71
 msgid "Description"
 msgstr "Beskriving"
 
@@ -854,8 +851,7 @@ msgstr "Feil ved importering av %s."
 #: po/tmp/ap_String_Id.h.h:325
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr ""
-"Feil ved forsøk på lagring av %s: kunne ikkje starta eksporteringsprogram"
+msgstr "Feil ved forsøk på lagring av %s: kunne ikkje starta eksporteringsprogram"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:327
@@ -893,8 +889,7 @@ msgstr "Fila %s er eit ugyldig dokument"
 #: po/tmp/ap_String_Id.h.h:339
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr ""
-"Fila %s er av eit filformat som ikkje er støtta av denne utgåva av AbiWord"
+msgstr "Fila %s er av eit filformat som ikkje er støtta av denne utgåva av AbiWord"
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h.h:341
@@ -937,20 +932,18 @@ msgstr "Første linje"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:355
-msgid ""
-"Following Paragraph Following Paragraph Following Paragraph Following "
-"Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr ""
-"Neste avsnitt Neste avsnitt Neste avsnitt Neste avsnitt Neste avsnitt Neste "
-"avsnitt Neste avsnitt"
+msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr "Neste avsnitt Neste avsnitt Neste avsnitt Neste avsnitt Neste avsnitt Neste avsnitt Neste avsnitt"
 
 #. DLG_Styles_ModifyFont
-#: po/tmp/ap_String_Id.h.h:357 po/tmp/xap_String_Id.h.h:93
+#: po/tmp/ap_String_Id.h.h:357
+#: po/tmp/xap_String_Id.h.h:93
 msgid "Font"
 msgstr "Skrift"
 
 #. DLG_Lists_Font
-#: po/tmp/ap_String_Id.h.h:359 po/tmp/xap_String_Id.h.h:95
+#: po/tmp/ap_String_Id.h.h:359
+#: po/tmp/xap_String_Id.h.h:95
 msgid "Font:"
 msgstr "Skrift:"
 
@@ -1107,7 +1100,8 @@ msgid "Indentation"
 msgstr "Innrykk"
 
 #. DLG_Break_Insert
-#: po/tmp/ap_String_Id.h.h:421 po/tmp/xap_String_Id.h.h:113
+#: po/tmp/ap_String_Id.h.h:421
+#: po/tmp/xap_String_Id.h.h:113
 msgid "Insert"
 msgstr "Sett inn"
 
@@ -1142,7 +1136,8 @@ msgid "Ladies and Gentlemen:"
 msgstr "Til den det måtte gjelda"
 
 #. DLG_Styles_ModifyLanguage
-#: po/tmp/ap_String_Id.h.h:435 po/tmp/xap_String_Id.h.h:127
+#: po/tmp/ap_String_Id.h.h:435
+#: po/tmp/xap_String_Id.h.h:127
 msgid "Language"
 msgstr "Språk"
 
@@ -1392,7 +1387,8 @@ msgid "PERSONAL"
 msgstr "KONFIDENSIELT"
 
 #. DLG_PageSetup_Page
-#: po/tmp/ap_String_Id.h.h:531 po/tmp/xap_String_Id.h.h:147
+#: po/tmp/ap_String_Id.h.h:531
+#: po/tmp/xap_String_Id.h.h:147
 msgid "Page"
 msgstr "Side"
 
@@ -1488,18 +1484,15 @@ msgid "Preferences"
 msgstr "Innstillingar"
 
 #. DLG_PageNumbers_Preview
-#: po/tmp/ap_String_Id.h.h:569 po/tmp/xap_String_Id.h.h:157
+#: po/tmp/ap_String_Id.h.h:569
+#: po/tmp/xap_String_Id.h.h:157
 msgid "Preview"
 msgstr "Førehandsvising"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:571
-msgid ""
-"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
-"Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr ""
-"Førre avsnitt Førre avsnitt Førre avsnitt Førre avsnitt Førre avsnitt Førre "
-"avsnitt Førre avsnitt"
+msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr "Førre avsnitt Førre avsnitt Førre avsnitt Førre avsnitt Førre avsnitt Førre avsnitt Førre avsnitt"
 
 #. AUTOTEXT_REFERENCE_2
 #: po/tmp/ap_String_Id.h.h:573
@@ -1721,7 +1714,8 @@ msgid "Style for following paragraph"
 msgstr "Stil for følgjande avsnitt"
 
 #. DLG_Lists_Style
-#: po/tmp/ap_String_Id.h.h:659 po/tmp/xap_String_Id.h.h:197
+#: po/tmp/ap_String_Id.h.h:659
+#: po/tmp/xap_String_Id.h.h:197
 msgid "Style:"
 msgstr "Stil:"
 
@@ -1813,10 +1807,7 @@ msgstr "Vekedagen"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:695
-msgid ""
-"This paragraph represents words as they might appear in your document.  To "
-"see text from your document used in this preview, position your cursor in a "
-"document paragraph with some text in it and open this dialog."
+msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
 msgstr "Dette avsnittet viser ord slik dei vil sjå ut i dokumentet."
 
 #. DLG_Column_Three
@@ -1911,7 +1902,8 @@ msgid "VIA OVERNIGHT MAIL"
 msgstr "TELEFAKS"
 
 #. FIELD_Application_Version
-#: po/tmp/ap_String_Id.h.h:733 po/tmp/xap_String_Id.h.h:213
+#: po/tmp/ap_String_Id.h.h:733
+#: po/tmp/xap_String_Id.h.h:213
 msgid "Version"
 msgstr "Versjon"
 
@@ -2550,3 +2542,4 @@ msgstr "pica"
 #: po/tmp/xap_String_Id.h.h:239
 msgid "points"
 msgstr "punkt"
+

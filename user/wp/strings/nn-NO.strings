@@ -14,6 +14,14 @@
 
 <Strings    class="XAP"
 
+DLG_ABOUT_Title="Om %s"
+DLG_UFS_BottomlineCheck="Botnlinje"
+DLG_UFS_ColorLabel="Farge:"
+DLG_UFS_SampleFrameLabel="Eksempel"
+DLG_UFS_ScriptLabel="Skript"
+DLG_UFS_SmallCapsCheck="Kapitélar"
+DLG_UFS_ToplineCheck="Topplinje"
+
 DLG_Apply="Bruk"
 DLG_IP_Button_Label="Sett inn"
 DLG_PLUGIN_MANAGER_DESC="Beskriving"
