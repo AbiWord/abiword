@@ -147,6 +147,24 @@ public:
 };
 
 
+/*!
+  Stores a RTF header and footer.
+  headers and footer are NOT section properties. But they are defined
+  before any section data begins.
+  \todo add right and left headers and footer. Not yet supported by AbiWord
+ */
+class RTFHdrFtr
+{
+public:
+	enum HdrFtrType {hftNone, hftHeader, hftFooter };
+
+	RTFHdrFtr () : m_buf(1024) { m_type = hftNone; m_id = 0; };
+	
+	HdrFtrType      m_type;
+	UT_uint32       m_id;
+	UT_ByteBuf      m_buf;
+};	
+
 // RTFStateStore
 class RTFStateStore
 {
@@ -220,7 +238,7 @@ public:
 protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
-
+	UT_Error            _parseHdrFtr ();
 
 // importer helper methods
 private:
@@ -255,9 +273,9 @@ private:
 	bool HandlePicture();
 	bool HandleObject();
 	bool HandleField();
-	bool HandleHeader();
-	bool HandleFooter();
+	bool HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID);
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
+	bool StuffCurrentGroup(UT_ByteBuf & buf);
 	bool CanHandlePictFormat(PictFormat format);
 	bool LoadPictData(PictFormat format, char * image_name);
 	
@@ -326,11 +344,21 @@ private:
 
 	int m_cbBin;
 
+	// headers and footers
+	// headers and footers are NOT part of the state. They change each time
+	// they are defined and sections inherit them from the previous
+	// this is not part of section properties, they are not reset by \sectd
+	// TODO: handle \titlepg and \facingpg cases.
+	UT_uint32       m_currentHdrID;     // these are numbers.
+	UT_uint32       m_currentFtrID;
+
+
 	UT_Stack m_stateStack;
 	RTFStateStore m_currentRTFState;
 
 	UT_Vector m_fontTable;
 	UT_Vector m_colourTable;
+	UT_Vector m_hdrFtrTable;
 
 	struct _rtfAbiListTable
 	{      

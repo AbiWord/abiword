@@ -526,6 +526,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_lenPasteBuffer = 0;
 	m_pCurrentCharInPasteBuffer = NULL;
 	m_numLists = 0;
+	m_currentHdrID = 0;
+	m_currentFtrID = 0;
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
 		UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
@@ -551,6 +553,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 		delete pItem;
 	}
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
+	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 }
 
 
@@ -619,6 +622,8 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 
 	m_currentRTFState.m_internalState = RTFStateStore::risNorm;
 	m_currentRTFState.m_destinationState = RTFStateStore::rdsNorm;
+	m_currentHdrID = 0;
+	m_currentFtrID = 0;
 
 	bool ok = true;
     int cNibble = 2;
@@ -1104,6 +1109,41 @@ bool IE_Imp_RTF::SkipCurrentGroup(bool bConsumeLastBrace)
 	// ( the caller indicates whether this is necesary or not)
 	if (!bConsumeLastBrace)
 		SkipBackChar(ch);
+
+	return true;
+}
+
+
+/*!
+  Stuff the current group into the buffer
+  \param  buf the buffer to stuff RTF in.
+  \return false if any problem raised
+  \desc This function read until the current group and all nested 
+  subgroups are passed and stuff them into the buffer. This allow saving a 
+  chunk of the RTF file for future use.
+ */
+bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
+{
+	int nesting = 1;
+	unsigned char ch;
+
+	do {
+		if (!ReadCharFromFileWithCRLF(&ch))
+			return false;
+
+		if (ch == '{') 
+		{
+			++nesting;
+		}
+		else if (ch == '}')
+		{
+			--nesting;
+		}
+		buf.append(&ch, 1);
+	} while (nesting > 0);
+	
+	// we don't want the last }
+	SkipBackChar(ch);
 
 	return true;
 }
@@ -1744,18 +1784,45 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 }
 
 
-
-bool IE_Imp_RTF::HandleHeader()
+/*!
+  Handle a header
+  \retvalue header return the created header, for information 
+  purpose since it belongs to the header/footer table
+  \note it does not set the RTF state.
+ */
+bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID)
 {
-	UT_DEBUGMSG(("TODO: Handle \\header keyword properly\n"));
-	return SkipCurrentGroup();
-}
+	UT_DEBUGMSG(("Handling \\header of \\footer keyword\n"));
 
 
-bool IE_Imp_RTF::HandleFooter()
-{
-	UT_DEBUGMSG(("TODO: Handle \\footer keyword properly\n"));
-	return SkipCurrentGroup();
+	RTFHdrFtr * header;
+
+	header = new RTFHdrFtr ();
+	header->m_type = hftype;
+	header->m_id = rand();    // TODO: make sure it is unique
+	UT_DEBUGMSG(("Header id=%u\n", header->m_id));
+
+	m_hdrFtrTable.addItem (header);
+	headerID = header->m_id;
+
+	switch (hftype) 
+	{
+	case RTFHdrFtr::hftHeader:
+		m_currentHdrID = headerID;
+		break;
+	case RTFHdrFtr::hftFooter:
+		m_currentFtrID = headerID;
+		break;
+	default:
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	}
+
+	// read the whole group content and put it into a buffer to 
+	// decode it later, when appending footer to the document.
+	StuffCurrentGroup (header->m_buf);
+
+	//return SkipCurrentGroup();
+	return true;
 }
 
 
@@ -1869,13 +1936,15 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "footer") == 0) 
 		{
-			return HandleFooter ();
+			UT_uint32 footerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftHeader,footerID);
 		}
 		break;
 	case 'h':
 		if (strcmp((char*)pKeyword, "header") == 0) 
 		{
-			return HandleHeader ();
+			UT_uint32 headerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
 		}
 		break;
 	case 'i':
@@ -2181,15 +2250,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case '*':
 		if (strcmp((char*)pKeyword, "*") == 0)
 		{
-			//
-			// Code to handle overline importing.
-			//
 			unsigned char keyword_star[MAX_KEYWORD_LEN];
 			long parameter_star = 0;
 			bool parameterUsed_star = false;
-			//
-			// Look for \*\ol sequence. Ignore all others
-			// 
+
 			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
 							MAX_KEYWORD_LEN))
 		    {
@@ -2872,6 +2936,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	XML_Char* pProps = "props";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
 	XML_Char tempBuffer[128];
+	short paramIndex = 0;
 
 	propBuffer[0] = 0;
 
@@ -2879,10 +2944,30 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	sprintf(tempBuffer, "columns:%d", m_currentRTFState.m_sectionProps.m_numCols);
 	strcat(propBuffer, tempBuffer);
 
-	const XML_Char* propsArray[3];
+	const XML_Char* propsArray[7];
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer;
-	propsArray[2] = NULL;
+	paramIndex = 2;
+	if (m_currentHdrID != 0) 
+	{
+		UT_DEBUGMSG (("Applying header\n"));
+		propsArray [paramIndex] = "header";
+		paramIndex++;
+		sprintf (tempBuffer, "hdr%u", m_currentHdrID);
+		propsArray [paramIndex] = tempBuffer;
+		paramIndex++;
+	}
+	if (m_currentFtrID != 0) 
+	{
+		UT_DEBUGMSG (("Applying footer\n"));
+		propsArray [paramIndex] = "footer";
+		paramIndex++;
+		sprintf (tempBuffer, "ftr%u", m_currentFtrID);
+		propsArray [paramIndex] = tempBuffer;
+		paramIndex++;
+	}
+	UT_ASSERT (paramIndex < 7);
+	propsArray [paramIndex] = NULL;
 
 	if (m_pImportFile)					// if we are reading a file
 		return m_pDocument->appendStrux(PTX_Section, propsArray);
@@ -2891,6 +2976,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		// Add a block before the section so there's something content
 		// can be inserted into.
 		bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+
 		if (bSuccess)
 		{
 			bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Section);
@@ -3859,19 +3945,20 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
 	return true;
 }
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-/*
-  get the next token, put it into buf, if there is an error return RTF_TOKEN_ERROR
+/*!
+  Get the next token, put it into buf, if there is an error return RTF_TOKEN_ERROR
   otherwise returns the RTFTokenType
   If it is RTF_TOKEN_DATA, data is returned byte by byte.
-  RTF_TOKEN_KEYWORD includes control words and control symbols (like hex char). 
+  RTF_TOKEN_KEYWORD includes control words and control symbols 
+  (like hex char). 
   It is up to the caller to distinguish beetween them and parse them.
-  pKeyword is the data
-  pParam is the keyword parameter if any
-  pParamUsed is a flag to tell whether there is a parameter.
-  Both are only used if tokenType is RTF_TOKEN_KEYWORD
-  NOTE: this changes the state of the file
+  \retval pKeyword is the data
+  \retval pParam is the keyword parameter if any, otherwise ""
+  \retval pParamUsed is a flag to tell whether there is a parameter.
+  \return the type of the next token parsed.
+  \note Both pParam amd pParamUsed are only used if tokenType is 
+  RTF_TOKEN_KEYWORD
+  \note this changes the state of the file
 */
 IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* pParam, 
 									bool* pParamUsed, UT_uint32 len)
@@ -3915,6 +4002,7 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 		
 	return tokenType;
 }
+
 
 
 //////////////////////////////////////////////////////////////////
