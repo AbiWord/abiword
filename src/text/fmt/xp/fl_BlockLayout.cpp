@@ -2369,7 +2369,13 @@ UT_sint32 fl_BlockLayout::getLength()
 	m_pDoc->getNextStrux(getStruxDocHandle(),&nextSDH);
 	if(nextSDH == NULL)
 	{
-		return 1;
+		//
+		// Here if we reach EOD.
+		//
+		PT_DocPosition docEnd;
+		m_pDoc->getBounds(true, docEnd);
+		UT_sint32 length = static_cast<UT_sint32>(docEnd) - static_cast<UT_sint32>(posThis);
+		return length;
 	}
 	PT_DocPosition posNext = m_pDoc->getStruxPosition(nextSDH);
 	//

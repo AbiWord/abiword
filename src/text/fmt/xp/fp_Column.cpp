@@ -253,7 +253,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 		xxx_UT_DEBUGMSG(("Container y %d height %d was found in table %d ybreak %d ybottom y %d \n",pCon->getY(),pCon->getHeight(),iCount,pTab->getYBreak(),pTab->getYBottom()));
 		return  pTab;
 	}
-	UT_DEBUGMSG(("getCorrectBroken: No table found after %d tries, Y of Con \n",iCount,pCon->getY()));
+	xxx_UT_DEBUGMSG(("getCorrectBroken: No table found after %d tries, Y of Con \n",iCount,pCon->getY()));
 	if(pMasterTab)
 	{
 //		UT_ASSERT(pMasterTab->getFirstBrokenTable() == NULL);
@@ -301,7 +301,7 @@ fp_TOCContainer * fp_VerticalContainer::getCorrectBrokenTOC(fp_Container * pCon)
 		xxx_UT_DEBUGMSG(("Container y %d height %d was found in table %d ybreak %d ybottom y %d \n",pCon->getY(),pCon->getHeight(),iCount,pTab->getYBreak(),pTab->getYBottom()));
 		return  pTOC;
 	}
-	UT_DEBUGMSG(("getCorrectBroken: No table found after %d tries, Y of Con \n",iCount,pCon->getY()));
+	xxx_UT_DEBUGMSG(("getCorrectBrokenTOC: NoTOC found after %d tries, Y of Con \n",iCount,pCon->getY()));
 	if(pMasterTOC)
 	{
 //		UT_ASSERT(pMasterTOC->getFirstBrokenTOC() == NULL);

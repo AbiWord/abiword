@@ -1378,7 +1378,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 
 	PT_DocPosition posEOD;
 	bool bRes;
-
+	xxx_UT_DEBUGMSG(("Pos at entry %d \n",pos));
 	bRes = m_pDoc->getBounds(true, posEOD);
 	UT_ASSERT(bRes);
 	if(m_pDoc->isEndFootnoteAtPos(pos))

@@ -427,6 +427,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	PT_DocPosition posStart,posEnd;
 	posStart = pBlock->getPosition(true);
 	posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength());
+	UT_DEBUGMSG(("Block is %d long \n",pBlock->getLength()));
 	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
 	m_pDoc->tellListenerSubset(pListen, docRange);
 	delete docRange;
@@ -1031,21 +1032,16 @@ void fl_TOCLayout::_createTOCContainer(void)
 	m_pLayout->fillTOC(this);
 	if(m_bTOCHeading)
 	{
-		fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(getPosition()-1);
-		UT_ASSERT(pBlock);
-		if(pBlock)
+		PD_Style * pStyle = NULL;
+		m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
+		if(pStyle == NULL)
 		{
-			PD_Style * pStyle = NULL;
-			m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
-			if(pStyle == NULL)
-			{
-				m_pDoc->getStyle("Heading 1", &pStyle);
-			}
-			PT_AttrPropIndex indexAP = pStyle->getIndexAP();
-
-			fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
-			pNewBlock->_doInsertTOCHeadingRun(0);
+			m_pDoc->getStyle("Heading 1", &pStyle);
 		}
+		PT_AttrPropIndex indexAP = pStyle->getIndexAP();
+		
+		fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
+		pNewBlock->_doInsertTOCHeadingRun(0);
 	}
 }
 

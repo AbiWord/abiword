@@ -915,11 +915,11 @@ void fp_TOCContainer::layout(void)
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-	if (getHeight() == iY)
+	if (fp_VerticalContainer::getHeight() == iY)
 	{
 		return;
 	}
-	xxx_UT_DEBUGMSG(("Height in TOCContainer set to %d Old Height %d \n",iY,getHeight()));
+	UT_DEBUGMSG(("Height in TOCContainer set to %d Old Height %d \n",iY,getHeight()));
 	setHeight(iY);
 	deleteBrokenTOCs(true);
 }
