@@ -697,18 +697,7 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 		UT_sint32 xoff = 0, yoff = 0;
 		m_pLine->getScreenOffsets(this, xoff, yoff);
 		
-		if(!m_pLine->isEmpty() && m_pLine->getFirstRun() == this)
-		{
-			// First run on the line so add extra at start to clear any glyph before margin.
-			// Left margin only.
-			UT_sint32 halfcolumnGap = m_pLine->getColumnGap() / 2;
-
-			m_pG->clearArea(xoff - halfcolumnGap, yoff, m_iWidth + halfcolumnGap, m_pLine->getHeight());
-		}
-		else
-		{
-		        m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
-		}
+		m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 	}
 
 }
@@ -720,7 +709,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  the top.
 	*/
 
-        UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove
+	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun+1; // final character dirt
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)

@@ -425,8 +425,7 @@ void fp_Line::clearScreen(void)
 
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 
-			UT_sint32 columnGap = getColumnGap();
-			pRun->getGraphics()->clearArea(xoffLine - columnGap / 2, yoffLine, m_iMaxWidth + columnGap, m_iHeight);
+			pRun->getGraphics()->clearArea(xoffLine, yoffLine, m_iMaxWidth, m_iHeight);
 		}
 	}
 	
@@ -464,17 +463,8 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		UT_sint32 xoffLine, yoffLine;
 
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-
-		if(runIndex == 0)
-		{
-			// Erasing the whole line so include 1/2 column gap at start and end.
-		        pRun->getGraphics()->clearArea(xoff - getColumnGap() / 2, yoff, m_iMaxWidth + getColumnGap() - (xoff - xoffLine), m_iHeight);
-		}
-		else
-		{
-			// Erasing to the end so include 1/2 column gap at end.
-			pRun->getGraphics()->clearArea(xoff, yoff, m_iMaxWidth + getColumnGap() / 2 - (xoff - xoffLine), m_iHeight);
-		}
+		
+		pRun->getGraphics()->clearArea(xoff, yoff, m_iMaxWidth - (xoff - xoffLine), m_iHeight);
 		
 		for (i = runIndex; i < count; i++)
 		{
