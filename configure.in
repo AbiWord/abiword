@@ -66,24 +66,6 @@ AC_SUBST(WARNING_CFLAGS)
 dnl Checks for libraries.
 dnl Define here ABI_FE, PLATFORM_CFLAGS, PLATFORM_LIBS
 if test "$PLATFORM" = "unix"; then
-	# Make sure that we have glib>=1.1.16
-	dnl AM_PATH_GLIB(1.2.0)
-	GMODULE_CFLAGS=`glib-config --cflags gmodule`
-	AC_SUBST(GMODULE_CFLAGS)
-	GMODULE_LIBS=`glib-config --libs gmodule`
-	AC_SUBST(GMODULE_LIBS)
-
-	dnl AM_PATH_GTK(1.2.0)
-	GTK_CFLAGS=`gtk-config --cflags`
-	AC_SUBST(GTK_CFLAGS)
-	GTK_LIBS=`gtk-config --libs`
-	AC_SUBST(GTK_LIBS)
-
-	GNOME_CFLAGS=`gnome-config --cflags gnomeui`
-	GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME"
-	AC_SUBST(GNOME_CFLAGS)
-	GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
-	AC_SUBST(GNOME_LIBS)
 	ABI_FE="Unix"
 	AM_CONDITIONAL(WITH_UNIX, true)
 	echo "defined WITH_UNIX"
@@ -107,6 +89,28 @@ AC_SUBST(ICONV_INCLUDES)
 
 if test "$PLATFORM" = "unix"; then
 	dnl ******************************
+	dnl glib checking
+	dnl ******************************
+	AC_MSG_CHECKING(for glib >= 1.2.0)
+	if glib-config --version > /dev/null 2>&1; then 
+	    dnl We need the "%d" in order not to get e-notation on hpux.
+	    vers=`glib-config --version | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+	    if test "$vers" -ge 1002000; then
+	        AC_MSG_RESULT(found)
+	    else
+	        AC_MSG_ERROR(You need at least glib 1.2.0 for this version of AbiWord)
+	    fi
+	else
+	    AC_MSG_ERROR(Did not find glib installed)
+	fi
+
+	dnl AM_PATH_GLIB(1.2.0)
+	GMODULE_CFLAGS=`glib-config --cflags gmodule`
+	AC_SUBST(GMODULE_CFLAGS)
+	GMODULE_LIBS=`glib-config --libs gmodule`
+	AC_SUBST(GMODULE_LIBS)
+
+	dnl ******************************
 	dnl gtk+ checking
 	dnl ******************************
 	AC_MSG_CHECKING(for GTK >= 1.2.2)
@@ -121,6 +125,12 @@ if test "$PLATFORM" = "unix"; then
 	else
 	    AC_MSG_ERROR(Did not find GTK+ installed)
 	fi
+
+	dnl AM_PATH_GTK(1.2.2)
+	GTK_CFLAGS=`gtk-config --cflags`
+	AC_SUBST(GTK_CFLAGS)
+	GTK_LIBS=`gtk-config --libs`
+	AC_SUBST(GTK_LIBS)
 
 	dnl GNOME_INIT
 fi
@@ -218,13 +228,54 @@ case "$script" in
 	    ;;
 esac
 
+if test "$PLATFORM" = unix -a "$gnome" = true ; then
+	AC_MSG_CHECKING(for gnome-libs >= 1.2.0)
+	if gnome-config --modversion gnome 2> /dev/null | grep gnome-libs >/dev/null 2>&1; then 
+	    dnl We need the "%d" in order not to get e-notation on hpux.
+	    vers=`gnome-config --modversion gnome | sed s,gnome-libs-,, | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+	    if test "$vers" -ge 1002000; then
+	        AC_MSG_RESULT(found)
+	    else
+	       AC_MSG_RESULT(You need at least gnome-libs 1.2.0: disabling gnome)
+	    fi
+	else
+	    AC_MSG_RESULT(not found: disabling gnome)
+           gnome=false
+        fi
+fi
+
+if test "$PLATFORM" = unix -a "$gnome" = true ; then
+	dnl What is the minimum gal library we can use?
+	AC_MSG_CHECKING(for gal >= 0.5)
+	if gnome-config --modversion gal 2> /dev/null | grep gal > /dev/null 2>&1; then 
+	    dnl We need the "%d" in order not to get e-notation on hpux.
+	    vers=`gnome-config --modversion gal | sed s,gal-,, | awk 'BEGIN { FS = "."; } { printf "%d", $1 * 1000 + $2;}'`
+	    if test "$vers" -ge 5; then
+	        AC_MSG_RESULT(found)
+	    else
+	       AC_MSG_RESULT(You need at least gal 0.5: disabling gnome)
+	    fi
+	else
+	    AC_MSG_RESULT(not found: disabling gnome)
+           gnome=false
+        fi
+fi
+
+if test "$PLATFORM" = unix -a "$gnome" = true ; then
+	GNOME_CFLAGS="`gnome-config --cflags gnomeui` -DHAVE_GNOME"
+	dnl This is the old line
+	#GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
+	GNOME_LIBS="`gnome-config --libs gal`"
+else
+	GNOME_CFLAGS=""
+	GNOME_LIBS=""
+fi
+AC_SUBST(GNOME_CFLAGS)
+AC_SUBST(GNOME_LIBS)
+	
+
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
-dnl		AC_CHECK_HEADERS([gal/widgets/gtk-combo-text.h gal/widgets/widget-color-combo.h gal/widgets/widget-pixmap-combo.h],
-dnl			no_gal_h=no, no_gal_h=yes)
-dnl		if test "x$no_gal_h" = "xyes"; then
-dnl			AC_MSG_ERROR(Libgal is required.)
-dnl		fi
 		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS"
 		PLATFORM_LIBS=
 	else
