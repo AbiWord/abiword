@@ -701,6 +701,11 @@ UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 	     break;
 	   case 9: // hard EOP (TODO: implement me)
 	   case 28: // deletable hard EOP (TODO: treat as a hard end-of-page)
+	     { 
+	       UT_UCSChar ucs = UCS_FF;
+	       X_CheckDocumentError(getDoc()->appendSpan(&ucs,1));
+	     }
+	     break;
 	   default: // something else we don't support yet
 	     break;
 	  }
