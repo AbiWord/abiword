@@ -34,6 +34,8 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+// #include "ie_types.h"
+
 /*****************************************************************/
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -41,49 +43,69 @@
 /****************************************************************/
 
 /* Each time that a object is dropped in a widget, this function is called */
-//  void XAP_UnixGnomeFrame::_gfe::dnd_drop_event(GtkWidget        *widget,
-//  											  GdkDragContext   *context,
-//  											  gint              /*x*/,
-//  											  gint              /*y*/,
-//  											  GtkSelectionData *selection_data,
-//  											  guint             info,
-//  											  guint             /*time*/)
-//  {
-//  	XAP_UnixFrame * pUnixFrame;
-//      g_return_if_fail(widget != NULL);
+void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
+										 GdkDragContext   * /*context*/,
+										 gint              /*x*/,
+										 gint              /*y*/,
+										 GtkSelectionData *selection_data,
+										 guint             info,
+										 guint             /*time*/)
+{
+	XAP_UnixFrame * pUnixFrame;
+	XAP_App * pApp;
+	GList *names;
+	char *filename = NULL;
+	g_return_if_fail(widget != NULL);
 
-//  	pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(widget));
+	pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(widget));
+	pApp = pUnixFrame->getApp ();
 
-//      switch (info)
-//      {
-//      case TARGET_URL:
-//      {
-//  		GList *files;
-//  		GList *ltmp;
+	switch (info)
+	{
+	case TARGET_URI_LIST:
+	{
+		names = gnome_uri_list_extract_filenames ((char *) selection_data->data);
 
-//  		files = gnome_uri_list_extract_filenames((gchar *) selection_data->data);
+		if (!names)
+			return;
+                
+		for (; names; names = names->next) {
+			XAP_Frame * pNewUnixFrame = pApp->newFrame ();
+			filename = (char *) names->data;
 
-//  		for(ltmp = files; ltmp; ltmp = g_list_next(ltmp))
-//  		{
-//  			const char *mimetype;
-			
-//  			mimetype = (const char *) gnome_mime_type((const gchar *) ltmp->data);
-			
-//  /*	    if((mimetype != NULL) &&
-//  	    (strcmp(mimetype,"x-url/http") == 0 ||
-//  	    strcmp(mimetype,"x-url/ftp") == 0)) */
-//  			if(mimetype != NULL)
-//  			{
-//  //				g_print("File dropped: %s.  Mime type: %s\n", (gchar *) ltmp->data, mimetype);
-//  				pUnixFrame->loadDocument((const char *) ltmp->data, 0 /*IEFT_Unknow*/);
-//  			}
-//  		}
-		
-//  		gnome_uri_list_free_strings (files);
-//  		break;
-//      }
-//      }
-//  }
+			if (!E2B(pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */)))
+			{
+				// TODO: warn user that we couldn't open that file
+				
+#if 1
+				// TODO we crash if we just delete this without putting something
+				// TODO in it, so let's go ahead and open an untitled document
+				// TODO for now.
+				pNewUnixFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
+#else
+				delete pNewUnixFrame;
+#endif
+			}
+		}
+
+		gnome_uri_list_free_strings (names);
+		break;
+	}
+	case TARGET_URL:
+	{
+		// TODO
+#if 0
+		XAP_Frame * pNewUnixFrame = pApp->newFrame();
+		filename = (char *) selection_data->data;
+
+		if (!E2B(pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */)))
+			pNewUnixFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
+
+#endif
+		break;
+	}
+	}
+}
 
 /*****************************************************************/
 
@@ -105,6 +127,12 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 	UT_Bool bResult;
+	static GtkTargetEntry drag_types[] =
+	{
+		{ "text/uri-list", 0, TARGET_URI_LIST },
+		{ "_NETSCAPE_URL", 0, TARGET_URL }
+	};
+	static gint n_drag_types = sizeof(drag_types)/sizeof(drag_types[0]);
 
 	m_wTopLevelWindow = gnome_app_new((gchar *)(m_pUnixApp->getApplicationName()),
 									  (gchar *)(m_pUnixApp->getApplicationTitleForTitleBar()));
@@ -116,8 +144,12 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName(),
 						   m_pUnixApp->getApplicationName());
 
-	// This is now done with --geometry parsing.
-	//gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
+	gtk_drag_dest_set (m_wTopLevelWindow,
+					   GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
+					   drag_types, n_drag_types, GDK_ACTION_COPY);
+
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "drag_data_received",
+                       GTK_SIGNAL_FUNC(_dnd_drop_event), NULL);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);

@@ -55,20 +55,14 @@ public:
 protected:
 	virtual void				_createTopLevelWindow(void);
 
-//  I'll leave comment out the drop stuff for now (I want to finish it before uncomment it)	
-//  	enum
-//  	{
-//  		TARGET_URL
-//  //  	TARGET_NETSCAPE_URL
-//  	};
+  	enum
+  	{
+		TARGET_URI_LIST,
+		TARGET_URL
+  	};
 
-//  	class _gfe
-//  	{
-//  	public:
-//  		static void dnd_drop_event (GtkWidget *widget, GdkDragContext */*context*/, gint /*x*/, gint /*y*/,
-//  									GtkSelectionData *selection_data, guint info, guint /*time*/);
-//  	};
-
+	static void _dnd_drop_event (GtkWidget *widget, GdkDragContext */*context*/, gint /*x*/, gint /*y*/,
+								 GtkSelectionData *selection_data, guint info, guint /*time*/);
 };
 
 #endif /* XAP_UNIXGNOMEFRAME_H */
