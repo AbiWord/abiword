@@ -302,15 +302,18 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec = [Open(%1)]
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\application = <application_name>
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\topic = System
+	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,1>
 
 #define VALUE_DDEEXEC_OPEN		"[Open(%1)]"
 #define FORMAT_OUR_INDIRECTION	"AbiSuite.%s"
 #define CONTENT_TYPE_KEY		"Content Type"
+#define DOCUMENT_ICON_POSITION	3
 #define xx(s)					((LPBYTE)(s)),(strlen(s)+1)
 	
 	char buf[1024];
 	char bufOurFoo[1024];
 	char bufOurFooValue[1024];
+	char bufDefaultIconValue[1024];
 	DWORD dType;
 	LONG eResult;
 	ULONG len;
@@ -325,6 +328,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	HKEY hKeyDdeExec = 0;
 	HKEY hKeyApplication = 0;
 	HKEY hKeyTopic = 0;
+	HKEY hKeyDefaultIcon = 0;
 	
 	sprintf(bufOurFoo,"AbiSuite.%s",szApplicationName);
 	strtok(bufOurFoo," ");				// trim key at first whitespace
@@ -574,6 +578,35 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	}
 
 	///////////////////////////////////////////////////////////////////
+	// Set the default icon for the suffix (this is for Explorer et al.
+	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,1>
+	///////////////////////////////////////////////////////////////////
+
+	sprintf(bufDefaultIconValue,"%s,%d",szExePathname,DOCUMENT_ICON_POSITION);
+	switch ( _fetchKey(hKeyFoo,"DefaultIcon",&hKeyDefaultIcon) )
+	{
+	case X_Error:
+		goto CleanupMess;
+
+	case X_ExistingKey:	
+		UT_ASSERT(hKeyDefaultIcon);
+		len = NrElements(buf);
+		eResult = RegQueryValueEx(hKeyDefaultIcon,NULL,0,&dType,(LPBYTE)buf,&len);
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,bufDefaultIconValue)==0))
+			break;						// already has correct value, no need to overwrite.
+
+		/* otherwise, replace the value */
+		/* fall thru intended */
+		
+	case X_CreatedKey:
+		UT_ASSERT(hKeyDefaultIcon);
+		eResult = RegSetValueEx(hKeyDefaultIcon,NULL,0,REG_SZ,xx(bufDefaultIconValue));
+		if (eResult != ERROR_SUCCESS)
+			goto CleanupMess;
+		break;
+	}
+		
+	///////////////////////////////////////////////////////////////////
 	// Success.
 	///////////////////////////////////////////////////////////////////
 
@@ -591,6 +624,7 @@ CleanupMess:
 	KILLKEY(hKeyDdeExec);
 	KILLKEY(hKeyApplication);
 	KILLKEY(hKeyTopic);
+	KILLKEY(hKeyDefaultIcon);
 
 	return;
 }
