@@ -1719,7 +1719,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	fp_Line * pNewLine = static_cast<fp_Line *>(pRun->getLine());
 
 	if(pNewLine == NULL ||
-	   (pNewLine->getPage() == pLine->getPage()) && 
+	   (pNewLine->getContainer() == pLine->getContainer()) && 
 	   (bMovingDown ? (pNewLine->getY() < pLine->getY())
              		: (pNewLine->getY() > pLine->getY())))
 	{
