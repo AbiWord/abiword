@@ -331,7 +331,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	}
 	
-	abiAddStockButton(GTK_DIALOG(windowReplace), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+	abiAddStockButton(GTK_DIALOG(windowReplace), GTK_STOCK_CLOSE, BUTTON_CANCEL);
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		m_buttonFindReplace = abiAddStockButton ( GTK_DIALOG(windowReplace), GTK_STOCK_FIND_AND_REPLACE, BUTTON_REPLACE ) ;
