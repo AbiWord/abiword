@@ -41,7 +41,7 @@
 // obtained from the Graphics class at runtime !!!
 // the CSS 1 spec recommends 90 but abi assumes 100. 
 // let's stay internally consistent
-static const UT_uint32 DPI_PER_PIXEL = 100 ;
+static const double DPI_PER_PIXEL = 100.0 ;
 #endif
 
 const char * UT_dimensionName(UT_Dimension dim)
@@ -130,8 +130,8 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	case DIM_IN:	valueScaled = inches;			break;
 	case DIM_CM:	valueScaled = (inches * 2.54);	break;
 	case DIM_MM:    valueScaled = (inches * 25.4);  break;
-	case DIM_PI:	valueScaled = (inches * 6);		break;
-	case DIM_PT:	valueScaled = (inches * 72);	break;
+	case DIM_PI:	valueScaled = (inches * 6.0);		break;
+	case DIM_PT:	valueScaled = (inches * 72.0);	break;
 #if 0
 	case DIM_PX:    valueScaled = (inches * DPI_PER_PIXEL); break;
 #else	
