@@ -717,6 +717,10 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	_addToRebar();	// add this bar to the rebar
 
+	// I think that this is true due to the WS_VISIBLE flag
+	// sent to CreateWindowEx
+	m_bVisible = true;
+
 	return true;
 }
 
