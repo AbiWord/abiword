@@ -117,6 +117,12 @@ tidy::
 	rm -rf $(OBJS)
 	+$(LOOP_OVER_DIRS)
 
+
+# The directories used for documentation generation are listed in .doxygen.cfg
+# in the INPUT variable.
+dox:
+	doxygen .doxygen.cfg
+
 ################################################################################
 
 ifdef HELPER_PROGRAM
