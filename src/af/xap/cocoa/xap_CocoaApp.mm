@@ -77,7 +77,7 @@ XAP_CocoaApp::~XAP_CocoaApp()
 /*!
 	Returns the GUI string encoding.
  */
-const char * XAP_CocoaApp::getDefaultEncoding ()
+const char * XAP_CocoaApp::getDefaultEncoding () const
 {
 	return "UTF-8";
 }

@@ -49,7 +49,7 @@ public:
 	XAP_CocoaApp(XAP_Args* pArgs, const char* szAppName);
 	virtual ~XAP_CocoaApp();
 
-	virtual const char * 					getDefaultEncoding ();
+	virtual const char * 					getDefaultEncoding () const;
 
 	virtual bool							initialize();
 	virtual XAP_Frame * 					newFrame() = 0;
