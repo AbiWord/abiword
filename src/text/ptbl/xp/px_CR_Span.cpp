@@ -27,15 +27,13 @@ PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
 										   PT_DocPosition position,
 										   PT_AttrPropIndex indexNewAP,
 										   PT_BufIndex bufIndex,
-										   UT_uint32 length,
-										   PT_Differences bDifferentFmt)
+										   UT_uint32 length)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
 	UT_ASSERT(length > 0);
 	
 	m_bufIndex = bufIndex;
 	m_length = length;
-	m_DifferentFmt = bDifferentFmt;
 }
 
 PX_ChangeRecord_Span::~PX_ChangeRecord_Span()
@@ -46,7 +44,7 @@ PX_ChangeRecord * PX_ChangeRecord_Span::reverse(void) const
 {
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(getRevType(),m_position,m_indexAP,
-								   m_bufIndex,m_length,m_DifferentFmt);
+								   m_bufIndex,m_length);
 	UT_ASSERT(pcr);
 	return pcr;
 }
@@ -59,11 +57,6 @@ UT_uint32 PX_ChangeRecord_Span::getLength(void) const
 PT_BufIndex PX_ChangeRecord_Span::getBufIndex(void) const
 {
 	return m_bufIndex;
-}
-
-PT_Differences PX_ChangeRecord_Span::isDifferentFmt(void) const
-{
-	return m_DifferentFmt;
 }
 
 void PX_ChangeRecord_Span::coalesce(const PX_ChangeRecord_Span * pcr)

@@ -127,8 +127,6 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		return UT_TRUE;
 	}
 
-	PT_Differences isDifferentFmt = _isDifferentFmt(pft,fragOffset,pft->getIndexAP());
-	
 	// we do this before the actual change because various fields that
 	// we need are blown away during the delete.  we then notify all
 	// listeners of the change.
@@ -137,7 +135,7 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
 								   dpos, pft->getIndexAP(),
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-								   length,isDifferentFmt);
+								   length);
 	UT_ASSERT(pcr);
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
 
@@ -169,8 +167,6 @@ UT_Bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) co
 		return UT_FALSE;
 	if (pcrSpan->getIndexAP() != pcrUndo->getIndexAP())
 		return UT_FALSE;
-
-	// TODO decide if we need to test isDifferentFmt bit in the two ChangeRecords.
 
 	PX_ChangeRecord_Span * pcrUndoSpan = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
 	UT_uint32 lengthUndo = pcrUndoSpan->getLength();

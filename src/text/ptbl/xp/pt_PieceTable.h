@@ -163,8 +163,6 @@ protected:
 										  PT_AttrPropIndex indexAP,
 										  pf_Frag_Object ** ppfo);
 	
-	PT_Differences			_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex indexAP);
-	
 	UT_Bool					_insertSpan(pf_Frag * pf,
 										PT_BufIndex bi,
 										PT_BlockOffset fragOffset,

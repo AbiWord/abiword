@@ -45,8 +45,4 @@ typedef const void * PL_StruxFmtHandle;	/* opaque layout data */
 
 #define PT_PROPS_ATTRIBUTE_NAME		((const XML_Char *)"PROPS")
 
-typedef UT_Byte PT_Differences;
-#define PT_Diff_Left				((PT_Differences) 0x01)
-#define PT_Diff_Right				((PT_Differences) 0x02)
-
 #endif /* PT_TYPES_H */

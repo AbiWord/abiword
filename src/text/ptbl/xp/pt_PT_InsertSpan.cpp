@@ -40,95 +40,6 @@
 
 /****************************************************************/
 /****************************************************************/
-
-PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex indexAP)
-{
-	PT_Differences diff = 0;
-	
-	switch (pf->getType())
-	{
-	default:
-		UT_ASSERT(0);
-		return diff;
-
-	case pf_Frag::PFT_EndOfDoc:
-	case pf_Frag::PFT_Strux:
-	case pf_Frag::PFT_Object:
-		{
-			// we are looking at a strux or EOD.  see if there is text
-			// just before us and if it is different.  if there is nothing
-			// or something other than text before us, we are by-definition
-			// changing fmt.
-			if (   (pf->getPrev())
-				&& (pf->getPrev()->getType()==pf_Frag::PFT_Text))
-			{
-				pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pf->getPrev());
-				if (pftPrev->getIndexAP() != indexAP)
-					diff |= PT_Diff_Left;
-			}
-			else
-			{
-				diff |= PT_Diff_Left;
-			}
-		}
-		return diff;
-		
-	case pf_Frag::PFT_Text:
-		{
-			pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
-			UT_uint32 fragLen = pft->getLength();
-			if (fragOffset == 0)
-			{
-				// we are on the left edge of a text frag.
-				// see if we are different.  if the previous frag
-				// is a text frag, see if it is different.
-				if (pft->getIndexAP() != indexAP)
-					diff |= PT_Diff_Right;
-				if (   (pf->getPrev())
-					&& (pf->getPrev()->getType()==pf_Frag::PFT_Text))
-				{
-					pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pf->getPrev());
-					if (pftPrev->getIndexAP() != indexAP)
-						diff |= PT_Diff_Left;
-				}
-				else
-				{
-					diff |= PT_Diff_Left;
-				}
-			}
-			else if (fragOffset == fragLen)
-			{
-				// we are on the right edge of a text frag.
-				// see if we are different.  if the next frag is
-				// a text frag, see if it is different.
-				if (pft->getIndexAP() != indexAP)
-					diff |= PT_Diff_Left;
-				if (   (pft->getNext())
-					&& (pft->getNext()->getType()==pf_Frag::PFT_Text))
-				{
-					pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pf->getNext());
-					if (pftNext->getIndexAP() != indexAP)
-						diff |= PT_Diff_Right;
-				}
-				else
-				{
-					// I'm not sure why we don't set the _Right flag here
-					// like we do for the fragOffset==0 case.  It should
-					// probably be symmetric, but I'm not sure.
-					// diff |= PT_Diff_Right;
-				}
-			}
-			else
-			{
-				// we are in the middle of a text frag.
-				// see if we are different.
-				if (pft->getIndexAP() != indexAP)
-					diff |= PT_Diff_Left | PT_Diff_Right;
-			}
-		}
-		return diff;
-	}
-}
 	
 UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 								   PT_BufIndex bi,
@@ -363,10 +274,6 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	
 	PT_AttrPropIndex indexAP = _chooseIndexAP(pf,fragOffset);
 
-	// before we actually do the insert, see if we are introducing a
-	// change in the formatting.
-	PT_Differences isDifferentFmt = _isDifferentFmt(pf,fragOffset,indexAP);
-	
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP))
 		return UT_FALSE;
 
@@ -377,7 +284,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   dpos,indexAP,bi,length,isDifferentFmt);
+								   dpos,indexAP,bi,length);
 	UT_ASSERT(pcr);
 
 	pf_Frag_Strux * pfs = NULL;
@@ -425,8 +332,6 @@ UT_Bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) co
 	if (m_varset.getBufIndex(biUndo,lengthUndo) != biSpan)
 		return UT_FALSE;
 
-	// TODO decide if we need to test isDifferentFmt bit in the two ChangeRecords.
-	
 	return UT_TRUE;
 }
 
