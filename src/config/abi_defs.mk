@@ -514,7 +514,7 @@ OUT			= $(ABI_ROOT)/src
 ##################################################################
 ## Symbols to uniquely identify the build.
 ##
-## ABI_BUILD_VERSION	should be set to the build version (1.0.0)
+## ABI_BUILD_VERSION	should be set to the build version (1.0.3)
 ##			for a numbered build.
 ##
 ## ABI_BUILD_ID		can be used as a identifying label (such as

@@ -4,7 +4,7 @@
 # Alexander Shopov <al_shopov@web.bg>, 2001.
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord 1.0.2\n"
+"Project-Id-Version: AbiWord 1.0.3\n"
 "POT-Creation-Date: 2002-07-12 12:24+0300\n"
 "PO-Revision-Date: 2002-07-12 13:09+0300\n"
 "Last-Translator: Iassen Pramatarov <jason_pramik@mail.bg>\n"
