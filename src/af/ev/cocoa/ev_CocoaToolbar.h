@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,13 +37,15 @@ class AP_CocoaToolbar_Icons;
 class EV_CocoaToolbar_ViewListener;
 class EV_Toolbar_Label;
 
+class EV_CocoaToolbar;
+
 @interface EV_CocoaToolbarTarget : NSObject
 {
+	EV_CocoaToolbar*	_xap;
 }
 - (id)toolbarSelected:(id)sender;
+- (void)setXAPOwner:(EV_CocoaToolbar*)owner;
 @end
-
-class _wd;
 
 class EV_CocoaToolbar : public EV_Toolbar
 {
@@ -54,7 +56,7 @@ public:
 	
 	virtual ~EV_CocoaToolbar(void);
 
-	bool toolbarEvent(_wd * wd, UT_UCS2Char * pData, UT_uint32 dataLength);
+	bool toolbarEvent(XAP_Toolbar_Id tlbrid, UT_UCS2Char * pData, UT_uint32 dataLength);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
@@ -75,13 +77,12 @@ protected:
 	EV_CocoaToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
 
-//	GdkEvent *                      m_eEvent;
 	NSView *						m_wToolbar;
 	NSView *						m_superView;
 	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
-	UT_Vector						m_vecToolbarWidgets;
 private:
-	NSButton * _makeToolbarButton (int type, EV_Toolbar_Label * pLabel, _wd * wd, NSView *parent,
+	NSButton * _makeToolbarButton (int type, EV_Toolbar_Label * pLabel, 
+												XAP_Toolbar_Id tlbrid, NSView *parent,
 												float & btnX);
 	EV_CocoaToolbarTarget * 		m_target;
 	bool							m_hidden;
