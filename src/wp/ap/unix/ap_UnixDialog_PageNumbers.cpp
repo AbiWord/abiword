@@ -195,10 +195,16 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
       event_PreviewExposed ();
     }
 
+    
+    
     // properly set the controls
-    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo1)->list), (int)m_control);
-    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo2)->list), (int)m_align);
+//    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo1)->list), (int)m_control);
+//    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo2)->list), (int)m_align);
+    m_recentControl = m_control = AP_Dialog_PageNumbers::id_HDR;
+    m_recentAlign = m_align = AP_Dialog_PageNumbers::id_RALIGN;
 
+    _updatePreview(m_align, m_control);
+    
     // Run into the GTK event loop for this window.
     gtk_main();
 
@@ -208,159 +214,216 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
       gtk_widget_destroy(mainWindow);
 }
 
-void AP_UnixDialog_PageNumbers::_connectSignals (void)
+void AP_UnixDialog_PageNumbers::_connectSignals()
 {
   	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_buttonOK), "clicked", GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
+    gtk_signal_connect(GTK_OBJECT(m_buttonCancel), "clicked", GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
 	
 	// the catch-alls
-	
-	gtk_signal_connect(GTK_OBJECT(m_window),
-					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_delete_clicked),
-					   (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(m_window),
-							 "destroy",
-							 NULL,
-							 NULL);
+    gtk_signal_connect(GTK_OBJECT(m_window), "delete_event", GTK_SIGNAL_FUNC(s_delete_clicked), (gpointer)this);
+	gtk_signal_connect_after(GTK_OBJECT(m_window), "destroy", NULL, NULL);
 }
 
 void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
 {  
-  GtkWidget *hbox1;
-  GtkWidget *vbox1;
-  GtkWidget *label1;
-  GtkWidget *combo1;
-  GtkWidget *combo_entry1;
-  GtkWidget *label2;
-  GtkWidget *combo2;
-  GtkWidget *combo_entry2;
-  GtkWidget *frame1;
-  GtkWidget *li;
-
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
   gtk_container_set_border_width (GTK_CONTAINER (box), 4);
 
-  hbox1 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_ref (hbox1);
-  gtk_widget_show (hbox1);
-  gtk_container_add (GTK_CONTAINER (box), hbox1);
-  gtk_container_border_width (GTK_CONTAINER (hbox1), 4);
+//  hbox1 = gtk_hbox_new (FALSE, 0);
+//  gtk_widget_ref (hbox1);
+//  gtk_widget_show (hbox1);
+//  gtk_container_border_width (GTK_CONTAINER (hbox1), 4);
 
-  vbox1 = gtk_vbox_new (FALSE, 5);
-  gtk_widget_ref (vbox1);
-  gtk_widget_show (vbox1);
-  gtk_box_pack_start (GTK_BOX (hbox1), vbox1, TRUE, TRUE, 0);
-  gtk_container_border_width (GTK_CONTAINER (vbox1), 4);
+//  vbox1 = gtk_vbox_new (FALSE, 5);
+//  gtk_widget_ref (vbox1);
+//  gtk_widget_show (vbox1);
+//  gtk_box_pack_start (GTK_BOX (hbox1), vbox1, TRUE, TRUE, 0);
+//  gtk_container_border_width (GTK_CONTAINER (vbox1), 4);
 
+ 
+  
+  // Create a hbox with "Position -----------"
+  GtkWidget* labelPosition = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position));
+  GtkWidget* linePosition = gtk_hseparator_new();
+  GtkWidget* boxPosition = gtk_hbox_new(false, 4);
+  gtk_box_pack_start(GTK_BOX(boxPosition), labelPosition, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(boxPosition), linePosition, 1, 1, 0);
+  gtk_widget_show(labelPosition);
+  gtk_widget_show(linePosition);
+  gtk_widget_show(boxPosition);
+  
+  // Create a vbox with position options.
+  GtkWidget* radioHeader = gtk_radio_button_new_with_label(0, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
+  GtkWidget* radioFooter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioHeader), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
+  GtkWidget* boxPositionOptions = gtk_vbox_new(false, 1);
+  gtk_container_border_width(GTK_CONTAINER(boxPositionOptions), 5);
+  gtk_box_pack_start(GTK_BOX(boxPositionOptions), radioHeader, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(boxPositionOptions), radioFooter, 0, 0, 0);
+  gtk_widget_show(radioHeader);
+  gtk_widget_show(radioFooter);
+  gtk_widget_show(boxPositionOptions);
+
+  // Create a hbox with "Alignment ----------"
+  GtkWidget* labelAlignment = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment));
+  GtkWidget* lineAlignment = gtk_hseparator_new();
+  GtkWidget* boxAlignment = gtk_hbox_new(false, 4);
+  gtk_box_pack_start(GTK_BOX(boxAlignment), labelAlignment, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(boxAlignment), lineAlignment,  1, 1, 0);
+  gtk_widget_show(labelAlignment);
+  gtk_widget_show(lineAlignment);
+  gtk_widget_show(boxAlignment);
+
+  // Create a vbox with alignment options.
+  GtkWidget* radioLeft =   gtk_radio_button_new_with_label(0, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left));
+  GtkWidget* radioCenter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center));
+  GtkWidget* radioRight =  gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right));
+  GtkWidget* boxAlignmentOptions = gtk_vbox_new(false, 1);
+  gtk_container_border_width(GTK_CONTAINER(boxAlignmentOptions), 5);
+  gtk_box_pack_start(GTK_BOX(boxAlignmentOptions), radioLeft,   0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(boxAlignmentOptions), radioCenter, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(boxAlignmentOptions), radioRight,  0, 0, 0);
+  gtk_widget_show(radioLeft);
+  gtk_widget_show(radioCenter);
+  gtk_widget_show(radioRight);
+  gtk_widget_show(boxAlignmentOptions);
+  
+  // Create the main left-hand vbox
+  GtkWidget* vboxLeft = gtk_vbox_new(false, 4);
+  gtk_box_pack_start(GTK_BOX(vboxLeft), boxPosition, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(vboxLeft), boxPositionOptions, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(vboxLeft), boxAlignment, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(vboxLeft), boxAlignmentOptions, 0, 0, 0);
+  gtk_widget_set_usize(vboxLeft, 140, 190);
+  gtk_widget_show(vboxLeft);
+ 
+
+  // Create the preview area.
+  GtkWidget* framePreview = gtk_frame_new(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));
+  gtk_widget_set_usize(framePreview, 146, 190);
+  gtk_widget_ref(framePreview);
+  gtk_widget_show(framePreview);
+//  gtk_frame_set_shadow_type(GTK_FRAME(framePreview), GTK_SHADOW_IN);
+  m_previewArea = createDrawingArea();
+  gtk_widget_ref(m_previewArea);
+  gtk_widget_show(m_previewArea);
+  gtk_drawing_area_size(GTK_DRAWING_AREA(m_previewArea), 90, 115);
+  gtk_container_add(GTK_CONTAINER(framePreview), m_previewArea);
+
+  // Create the main layout hbox
+  GtkWidget* hboxMain = gtk_hbox_new(false, 10);
+  gtk_box_pack_start(GTK_BOX(hboxMain), vboxLeft, 1, 1, 0);
+  gtk_box_pack_start(GTK_BOX(hboxMain), framePreview, 1, 1, 0);
+  gtk_widget_show(hboxMain);
+  gtk_container_add(GTK_CONTAINER(box), hboxMain);
+  
+  // Set user data so that our callbacks know what to do.
+  gtk_object_set_user_data(GTK_OBJECT(radioFooter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));
+  gtk_object_set_user_data(GTK_OBJECT(radioHeader), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));
+  gtk_object_set_user_data(GTK_OBJECT(radioLeft),   GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
+  gtk_object_set_user_data(GTK_OBJECT(radioCenter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
+  gtk_object_set_user_data(GTK_OBJECT(radioRight),  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
+
+  // Set our defaults to number in the top-right corner.
+  m_control = AP_Dialog_PageNumbers::id_HDR;
+  m_align = AP_Dialog_PageNumbers::id_RALIGN;
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioHeader), true);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioRight), true);
+  
+  // Connect clicked signals so that our callbacks get called.
+  gtk_signal_connect(GTK_OBJECT(radioHeader), "clicked", GTK_SIGNAL_FUNC(s_position_changed),  (gpointer)this);
+  gtk_signal_connect(GTK_OBJECT(radioFooter), "clicked", GTK_SIGNAL_FUNC(s_position_changed),  (gpointer)this);
+  gtk_signal_connect(GTK_OBJECT(radioLeft),   "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
+  gtk_signal_connect(GTK_OBJECT(radioCenter), "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
+  gtk_signal_connect(GTK_OBJECT(radioRight),  "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
+
+  // the expose event off the preview
+  gtk_signal_connect(GTK_OBJECT(m_previewArea), "expose_event", GTK_SIGNAL_FUNC(s_preview_exposed), (gpointer)this);
+  
   // The position combo entry
 
-  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position));
-  gtk_widget_ref (label1);
-  gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (vbox1), label1, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label1), 0.04, 0.5);
+//  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position));
+//  gtk_widget_ref (label1);
+//  gtk_widget_show (label1);
+//  gtk_box_pack_start (GTK_BOX (vbox1), label1, FALSE, FALSE, 0);
+//  gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
+//  gtk_misc_set_alignment (GTK_MISC (label1), 0.04, 0.5);
 
-  combo1 = gtk_combo_new ();
-  gtk_widget_ref (combo1);
-  gtk_widget_show (combo1);
-  gtk_box_pack_start (GTK_BOX (vbox1), combo1, FALSE, FALSE, 0);
+//  combo1 = gtk_combo_new ();
+//  gtk_widget_ref (combo1);
+//  gtk_widget_show (combo1);
+//  gtk_box_pack_start (GTK_BOX (vbox1), combo1, FALSE, FALSE, 0);
 
-  combo_entry1 = GTK_COMBO (combo1)->entry;
-  gtk_entry_set_editable (GTK_ENTRY (combo_entry1), FALSE);
-  gtk_widget_ref (combo_entry1);
-  gtk_widget_show (combo_entry1);
+//  combo_entry1 = GTK_COMBO (combo1)->entry;
+//  gtk_entry_set_editable (GTK_ENTRY (combo_entry1), FALSE);
+//  gtk_widget_ref (combo_entry1);
+//  gtk_widget_show (combo_entry1);
+  
+//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
+//  gtk_widget_show(li);
+//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
+//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
+//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//		      GTK_SIGNAL_FUNC (s_position_changed),
+//		      (gpointer) this);
 
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
-  gtk_signal_connect (GTK_OBJECT (li), "select",
-		      GTK_SIGNAL_FUNC (s_position_changed),
-		      (gpointer) this);
-
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_FTR));
-  gtk_signal_connect (GTK_OBJECT (li), "select",
-		      GTK_SIGNAL_FUNC (s_position_changed),
-		      (gpointer) this);
+ 
+  
+//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
+//  gtk_widget_show(li);
+//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
+//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_FTR));
+//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//		      GTK_SIGNAL_FUNC (s_position_changed),
+//		      (gpointer) this);
 
   // The Alignment combo entry
 
-  label2 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment));
-  gtk_widget_ref (label2);
-  gtk_widget_show (label2);
-  gtk_box_pack_start (GTK_BOX (vbox1), label2, FALSE, FALSE, 0);
-  gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (label2), 0.04, 0.5);
+//  label2 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment));
+//  gtk_widget_ref (label2);
+//  gtk_widget_show (label2);
+//  gtk_box_pack_start (GTK_BOX (vbox1), label2, FALSE, FALSE, 0);
+//  gtk_label_set_justify (GTK_LABEL (label2), GTK_JUSTIFY_LEFT); 
+//  gtk_misc_set_alignment (GTK_MISC (label2), 0.04, 0.5);
 
-  combo2 = gtk_combo_new ();
-  gtk_widget_ref (combo2);
-  gtk_widget_show (combo2);
-  gtk_box_pack_start (GTK_BOX (vbox1), combo2, FALSE, FALSE, 0);
+//  combo2 = gtk_combo_new ();
+//  gtk_widget_ref (combo2);
+//  gtk_widget_show (combo2);
+//  gtk_box_pack_start (GTK_BOX (vbox1), combo2, FALSE, FALSE, 0);
 
-  combo_entry2 = GTK_COMBO (combo2)->entry;
-  gtk_entry_set_editable (GTK_ENTRY (combo_entry2), FALSE);
-  gtk_widget_ref (combo_entry2);
-  gtk_widget_show (combo_entry2);
+//  combo_entry2 = GTK_COMBO (combo2)->entry;
+//  gtk_entry_set_editable (GTK_ENTRY (combo_entry2), FALSE);
+//  gtk_widget_ref (combo_entry2);
+//  gtk_widget_show (combo_entry2);
 
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_RALIGN));
-  gtk_signal_connect (GTK_OBJECT (li), "select",
-		      GTK_SIGNAL_FUNC (s_alignment_changed),
-		      (gpointer) this);
+//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right));
+//  gtk_widget_show(li);
+//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
+//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_RALIGN));
+//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//		      GTK_SIGNAL_FUNC (s_alignment_changed),
+//		      (gpointer) this);
 
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_LALIGN));
-  gtk_signal_connect (GTK_OBJECT (li), "select",
-		      GTK_SIGNAL_FUNC (s_alignment_changed),
-		      (gpointer) this);
+//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left));
+//  gtk_widget_show(li);
+//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
+//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_LALIGN));
+//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//		      GTK_SIGNAL_FUNC (s_alignment_changed),
+//		      (gpointer) this);
 
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_CALIGN));
-  gtk_signal_connect (GTK_OBJECT (li), "select",
-		      GTK_SIGNAL_FUNC (s_alignment_changed),
-		      (gpointer) this);
+//  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center));
+//  gtk_widget_show(li);
+//  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
+//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_CALIGN));
+//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//		      GTK_SIGNAL_FUNC (s_alignment_changed),
+//		      (gpointer) this);
 
-  frame1 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));
-  gtk_frame_set_shadow_type (GTK_FRAME (frame1), GTK_SHADOW_IN);
-  gtk_widget_ref (frame1);
-  gtk_widget_show (frame1);
-  gtk_box_pack_start (GTK_BOX (hbox1), frame1, TRUE, TRUE, 0);
 
-  // create the preview area
-  m_previewArea = createDrawingArea ();
-  gtk_drawing_area_size (GTK_DRAWING_AREA(m_previewArea), 90, 115);
-  gtk_widget_show (m_previewArea);
-  gtk_container_add (GTK_CONTAINER (frame1), m_previewArea);
-
-  // the expose event off the preview
-  gtk_signal_connect(GTK_OBJECT(m_previewArea),
-		     "expose_event",
-		     GTK_SIGNAL_FUNC(s_preview_exposed),
-		     (gpointer) this);
-
-  m_combo1 = combo1;
-  m_combo2 = combo2;
+//  m_combo1 = combo1;
+//  m_combo2 = combo2;
 }
 
 GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
@@ -372,14 +435,22 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 
   _constructWindowContents (GTK_DIALOG(m_window)->vbox);
 
-  m_buttonOK = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_OK));
-  gtk_widget_show (m_buttonOK);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), 
-		     m_buttonOK);
+  GtkWidget* buttonBox = gtk_hbutton_box_new();
+  gtk_button_box_set_layout(GTK_BUTTON_BOX(buttonBox), GTK_BUTTONBOX_END);
+  gtk_button_box_set_spacing(GTK_BUTTON_BOX(buttonBox), 5);
+  gtk_button_box_set_child_size(GTK_BUTTON_BOX(buttonBox), 85, 24);
+  gtk_button_box_set_child_ipadding(GTK_BUTTON_BOX(buttonBox), 0, 0);
+  gtk_widget_show(buttonBox); 
 
+  m_buttonOK = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_OK));
   m_buttonCancel = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show (m_buttonCancel);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), m_buttonCancel);
+  gtk_widget_show(m_buttonOK);
+  gtk_widget_show(m_buttonCancel);
+  
+  gtk_container_add(GTK_CONTAINER(buttonBox), m_buttonOK);
+  gtk_container_add(GTK_CONTAINER(buttonBox), m_buttonCancel);
+  
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), buttonBox);
 
   _connectSignals ();
 
