@@ -723,7 +723,7 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	if (id != 0 && !m_pAutoNum)
 	{
-		UT_DEBUGMSG(("Adding to List, id= %d parent_id = \n",id,parent_id));
+		UT_DEBUGMSG(("Adding to List, id= %d parent_id = %d \n",id,parent_id));
 		
 		pAutoNum = m_pDoc->getListByID(id);
 		//
@@ -744,7 +744,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			UT_ASSERT(style);
 			List_Type lType = getListTypeFromStyle( style);
 			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc);
-			xxx_UT_DEBUGMSG(("SEVIOR: Created new list \n"));
+			UT_DEBUGMSG(("SEVIOR: Created new list id = %d\n",id));
 			m_pDoc->addList(pAutoNum);
 		}
 		UT_ASSERT(pAutoNum);
@@ -6272,9 +6272,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 		if(offset > 0 )
 			pView->_setPoint(pView->getPoint()+offset-2);
 	}
-
-
-	pView->_generalUpdate();
+	if(m_pDoc->areListUpdatesAllowed())
+	{
+		pView->_generalUpdate();
+	}
 	if (!pView->_ensureThatInsertionPointIsOnScreen())
 	{
 		pView->_fixInsertionPointCoords();

@@ -7947,13 +7947,14 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	m_pDoc->setDoingPaste();
 	_doPaste(true, bHonorFormatting);
 
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
 	m_pDoc->clearDoingPaste();
 

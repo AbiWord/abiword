@@ -3722,6 +3722,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	propBuffer[0] = 0;
 
 	bool bWord97List = m_currentRTFState.m_paraProps.m_isList && isWord97Lists();
+	bool bAbiList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
+	bWord97List = bWord97List && !bAbiList;
 	RTF_msword97_listOveride * pOver = NULL;	
 	UT_uint32 iLevel = 0;
 	UT_uint32 iOveride = 0;
@@ -3854,7 +3856,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // Filled from List deefinition
 //
-	if(!bWord97List)
+	if(!bWord97List || bAbiList)
 	{
 		sprintf(tempBuffer, "margin-left:%s; ",		UT_convertInchesToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_indentLeft/1440));
 		strcat(propBuffer, tempBuffer);
@@ -3864,7 +3866,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // Filled from List definition
 //
-	if(!bWord97List)
+	if(!bWord97List || bAbiList)
 	{
 		sprintf(tempBuffer, "text-indent:%s; ",		UT_convertInchesToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_indentFirst/1440));
 		strcat(propBuffer, tempBuffer);
@@ -3890,11 +3892,10 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	static char szParentID[15];
 	static char szStartValue[15];
 	UT_uint32 id = 0,pid = 0,startValue = 0;
-	bool bPasteList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
 //
 // This is for our own extensions to RTF.
 //
-	if( bPasteList )
+	if( bAbiList )
 	{
 	  //
 	  // First off assemble the list attributes
@@ -4074,12 +4075,12 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		strcat(propBuffer, tempBuffer);
 		sprintf(tempBuffer, "margin-left:%s; ",szAlign);
 		strcat(propBuffer, tempBuffer);
-		sprintf(tempBuffer, "text-indent:%s", szIndent); // Note last entry has no ;
+		sprintf(tempBuffer, "text-indent:%s;", szIndent); // Note last entry has no ;
 		strcat(propBuffer, tempBuffer);
 	}
 
 
-	if( bPasteList)
+	if( bAbiList)
 	{
 		//
 		// Now handle the Abi List properties
@@ -4125,7 +4126,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 
 	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing header and footers
 	{
-		if(bPasteList || bWord97List )
+		if(bAbiList || bWord97List )
 		{
 			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
 			//
@@ -4152,7 +4153,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	else
 	{
 		bool bSuccess = true;
-		if(bPasteList)
+		if(bAbiList && (m_pImportFile == NULL))
 		{
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
@@ -4230,7 +4231,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			}
 			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
 		}
-		else
+		else if(m_pImportFile == NULL)
 		{
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
@@ -4261,6 +4262,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				//
 				if(bisListItem)
 				{
+					UT_DEBUGMSG(("SEVIOR: Stopping list at %x \n",sdh));
 					getDoc()->StopList(sdh);
 				}
 			}
