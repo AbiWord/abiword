@@ -85,7 +85,7 @@ endif
 # Generic Unix includes for Gtk, as it moves about installation paths.
 # glib/gtk 1.1.X and up stick glibconfig.h in this directory.
 ifeq ($(ABI_FE), Unix)
-CFLAGS	+= -I/usr/local/lib/glib/include
+CFLAGS 		+=	`gtk-config --cflags`
 endif
 
 define MAKE_OBJDIR
@@ -119,15 +119,15 @@ ABI_VERSION=	0_0
 ##    ABI_LIBS should be for the X11 libraries and the like
 
 ifeq ($(OS_NAME),WINNT)
-EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
-		$(addsuffix .lib,$(ABI_LIBS))
+EXTRA_LIBS	= 	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
+			$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
+			$(addsuffix .lib,$(ABI_LIBS))
 else
-EXTRA_LIBS=	-L$(DIST)/lib 							\
-		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
-		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
-		$(addprefix -l,$(ABI_LIBS))	\
-		`gtk-config --libs`
+EXTRA_LIBS	=	-L$(DIST)/lib 							\
+			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
+			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
+			$(addprefix -l,$(ABI_LIBS))					\
+			`gtk-config --libs`						
 endif
 
 ##################################################################
