@@ -826,13 +826,13 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	//const char * szPid;
 	//const char * szProps;
 
-	fl_AutoNum * pAutoNum;
-	const char ** attr = NULL;
-
 #define LCheck(str) (0 == UT_strcmp(attr[0], str))
 
+	fl_AutoNum * pAutoNum;
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
 	{	
+		const char ** attr = NULL, ** attr0 = NULL;
+
 		if (pAutoNum->isEmpty() == true)
 			continue;
 		
@@ -842,7 +842,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 			bWroteOpenListSection = true;
 		}
 		m_pie->write("<l");
-		for (attr = pAutoNum->getAttributes(); (*attr); attr++)
+		for (attr0 = attr = pAutoNum->getAttributes(); (*attr); attr++)
 		{
 			if (LCheck("id") || LCheck("parentid") || LCheck("type") || LCheck("start-value") || LCheck("list-delim") || LCheck("list-decimal"))
 			{
@@ -852,12 +852,12 @@ void s_AbiWord_1_Listener::_handleLists(void)
 				m_pie->write(attr[1]);
 				m_pie->write("\"");
 			}
-			//attr++;
 		}
 		m_pie->write("/>\n");
+		// No, no, you can't free attr and expect good things to happen.
+		FREEP(attr0);
 	}
 
-	FREEP(attr);
 
 #undef LCheck			
 	
