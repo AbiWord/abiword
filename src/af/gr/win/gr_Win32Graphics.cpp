@@ -2163,9 +2163,9 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
     things have to be satisfied:
 
     1. The memory allocated for the structure has to be large enough to hold both the
-       public and private parts of the structure; we generally obtain the handle from the
-       PrintDlg, and it _should_ allocate the necessary size correctly (that is the whole
-       point of passing handle, not a pointer), but you never know.
+       public and private parts of the structure; we obtain the handle from the
+       PrintDlg, and it _should_ allocate the necessary size correctly. In any case, we
+       cannot meddle with the size, since reallocating means loosing the private part.
 
     2. The settings represented by the public part have to be transferred into the private
        part; this is achieved by calling the DocumentProperties() function on the
@@ -2174,80 +2174,51 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
        function. In addition, I have a strong suspicion that the PrintDlg function only
        sets the public section, but does not call DocumentProperties(), so we have to do
        that ourselves once we get the handle back.
-
-    In the light of the above comments, this function takes the most conservative route
-    (considering the problems we have had with DEVMOD, this seems the only sensible thing
-    to do), namely:
-
-    a) It reallocates the memory represented by the handle to ensure that it is large
-       enough to hold both the public and private data, and then copies the original
-       public part into the the memory represented by the handle; this probably is not
-       necessary, but as I said, we take no chances.
-
-    b) It then calls DocumentProperties() to transfer the public data into the private
-       section.
 */
 bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 {
-	HGLOBAL hOldHandle = NULL;
-	
-	// create a local copy of the public part of the DEVMODE passed to us
-	// we need to allocate this dynamically, because we cannot be sure that the original
-	// size matches that declared in the header files with which we were compiled
 	DEVMODE * pDM = (DEVMODE*)GlobalLock(hDevMode);
 	UT_return_val_if_fail( pDM, false );
-	
-	DEVMODE * dm = (DEVMODE*)UT_calloc(1,pDM->dmSize);
-	UT_return_val_if_fail(dm, false );
-
-	memcpy(dm, pDM, pDM->dmSize);
-	GlobalUnlock(hDevMode);
 	
 	// find out how big structure this particular printer really needs
 	HANDLE      hPrinter;
 	DWORD       dwNeeded, dwRet;
 
 	//Start by opening the printer
-	if(!OpenPrinter((char*)& dm->dmDeviceName, &hPrinter, NULL))
+	if(!OpenPrinter((char*)& pDM->dmDeviceName, &hPrinter, NULL))
 	{
-		goto cleanup;
+		UT_String msg;
+		UT_String_sprintf(msg,"Unable to open printer [%s]", (char*)& pDM->dmDeviceName);
+		LOG_WIN32_EXCPT(msg.c_str());
+		GlobalUnlock(hDevMode);
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		return false;
 	}
 	
-	dwNeeded = DocumentProperties(NULL,hPrinter, (char*)& dm->dmDeviceName, NULL, NULL, 0);
+	dwNeeded = DocumentProperties(NULL,hPrinter, (char*)& pDM->dmDeviceName, NULL, NULL, 0);
 
-	hOldHandle = hDevMode;
-   
-	hDevMode = GlobalReAlloc(hDevMode, dwNeeded, GMEM_MOVEABLE | GMEM_ZEROINIT);
-
-	if(hOldHandle != hDevMode)
+	if( (int) dwNeeded > pDM->dmSize + pDM->dmDriverExtra )
 	{
-		goto cleanup;
+		// we are knees deep in crap here ... log it into the users profile, so we have
+		// some debug info to go on
+		UT_String msg;
+		UT_String_sprintf(msg,"DEVMODE too small [%s, needs %d, got %d + %d]",
+						  (char*)& pDM->dmDeviceName, dwNeeded, pDM->dmSize, pDM->dmDriverExtra);
+		LOG_WIN32_EXCPT(msg.c_str());
+		ClosePrinter(hPrinter);
+		GlobalUnlock(hDevMode);
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		return false;
 	}
 	
-
-	// now copy the original public contents back into the public part of the DEVMODE
-	pDM = (DEVMODE*)GlobalLock(hDevMode);
-	memcpy(pDM, dm, dm->dmSize);
-
 	// now get the printer driver to merge the data in the public section into its private part
-	dwRet = DocumentProperties(NULL,hPrinter, (char*)& dm->dmDeviceName, pDM, pDM, DM_IN_BUFFER | DM_OUT_BUFFER);
+	dwRet = DocumentProperties(NULL,hPrinter, (char*)& pDM->dmDeviceName, pDM, pDM, DM_IN_BUFFER | DM_OUT_BUFFER);
 
-	// Finished with the printer
+	// free what needs be ...
 	ClosePrinter(hPrinter);
-	
-	// release the DEVMODE handle
 	GlobalUnlock(hDevMode);
 
-	free(dm);
-
 	UT_return_val_if_fail( dwRet == IDOK, false );
-
 	return true;
-
- cleanup:
-	UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-	free(dm);
-
-	return false;
 }
 
