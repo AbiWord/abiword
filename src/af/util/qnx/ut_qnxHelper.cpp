@@ -63,15 +63,16 @@ int  UT_QNXCenterWindow(PtWidget_t *parent, PtWidget_t *widget) {
 	PtSetArg(&args[1], Pt_ARG_HEIGHT, 0, 0);
 	PtGetResources(widget, 2, args);
 
+/*
 	printf("Centering on window %d,%d - %d,%d Widget %d/%d \n",
 		rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, args[0].value, args[1].value);
-
+*/
 	pos.x = rect.ul.x;
 	pos.y = rect.ul.y;
 
 	pos.x += (rect.lr.x - rect.ul.x - args[0].value) / 2;
 	pos.y += (rect.lr.y - rect.ul.y - args[1].value) / 2;
-	printf("Final position %d,%d \n", pos.x, pos.y);
+//	printf("Final position %d,%d \n", pos.x, pos.y); 
 	PtSetArg(&args[0], Pt_ARG_POS, &pos, 0);
 	PtSetResources(widget, 1, args);
 
@@ -83,11 +84,14 @@ int UT_QNXGetWidgetArea(PtWidget_t *widget, short *x, short *y, unsigned short *
 	PtArg_t  arg;
 
 	UT_ASSERT(widget);
+	PtExtentWidget(widget);
 	PtSetArg(&arg, Pt_ARG_AREA, &parea, 0);
 	PtGetResources(widget, 1, &arg);
 
+/*
 	printf("Got area %d,%d %d/%d \n",
 		parea->pos.x, parea->pos.y, parea->size.w, parea->size.h);
+*/
 
 	if (x) *x = parea->pos.x;
 	if (y) *y = parea->pos.y;
