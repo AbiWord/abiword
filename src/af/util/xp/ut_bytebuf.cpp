@@ -54,7 +54,7 @@ UT_Bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
 	// expand the buffer if necessary to accomidate the requested space.
 	// round up to the next multiple of the chunk size.
 	
-	UT_uint32 newSize = ((m_iSpace+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
+	UT_uint32 newSize = ((m_iSize+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
 	UT_Byte * pNew = (UT_Byte *)calloc(newSize,sizeof(*m_pBuf));
 	if (!pNew)
 		return UT_FALSE;
@@ -121,6 +121,8 @@ UT_Bool UT_ByteBuf::ins(UT_uint32 position, UT_uint32 length)
 
 UT_Bool UT_ByteBuf::del(UT_uint32 position, UT_uint32 amount)
 {
+
+
 	if (!amount)
 		return UT_TRUE;
 
@@ -132,7 +134,13 @@ UT_Bool UT_ByteBuf::del(UT_uint32 position, UT_uint32 amount)
 	memmove(m_pBuf+position,m_pBuf+position+amount,(m_iSize-position-amount)*sizeof(*m_pBuf));
 	m_iSize -= amount;
 
-	// TODO consider adding some stuff to realloc-down if we cross a good-sized threshold.
+	UT_uint32 newSpace = ((m_iSize+m_iChunk-1)/m_iChunk)*m_iChunk; //Calculate the new space needed
+	if (newSpace != m_iSpace)
+	{
+		m_pBuf = (UT_Byte *)realloc(m_pBuf, newSpace*sizeof(*m_pBuf));  //Re-allocate to the smaller size
+		m_iSpace = newSpace; //update m_iSpace to the new figure
+	}
+
 	
 	return UT_TRUE;
 }
@@ -179,7 +187,12 @@ void UT_ByteBuf::truncate(UT_uint32 position)
 	if (position < m_iSize)
 		m_iSize = position;
 
-	// TODO consider reallocing down
+	UT_uint32 newSpace = ((m_iSize+m_iChunk-1)/m_iChunk)*m_iChunk; //Calculate the new space needed
+	if (newSpace != m_iSpace)
+	{
+		m_pBuf = (UT_Byte *)realloc(m_pBuf, newSpace*sizeof(*m_pBuf));  //Re-allocate to the smaller size
+		m_iSpace = newSpace; //update m_iSpace to the new figure
+	}
 }
 
 UT_Bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
