@@ -4157,8 +4157,10 @@ UT_Bool fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
 		{
 			fp_Line* pLine = pRun->getLine();
 			UT_ASSERT(pLine);
-
-			pLine->removeRun(pRun);
+			//
+			// Sevior Interesting bug here!!!
+			if(pLine)
+			        pLine->removeRun(pRun);
 
 			if (m_pFirstRun == pRun)
 				m_pFirstRun = pRun->getNext();

@@ -66,7 +66,9 @@ typedef enum
 #define  XML_HAND_LIST ((const XML_Char *) "Hand List")
 #define  XML_HEART_LIST ((const XML_Char *) "Heart List")
 
-#define  LIST_DEFAULT_INDENT 0.40
+//
+// MS Word uses 0.5 inches so we do too.
+#define  LIST_DEFAULT_INDENT 0.50
 
 #define fmt_NUMBERED_LIST ((const char *)"%*%d")
 #define  fmt_LOWERCASE_LIST ((const char *)"%*%a")

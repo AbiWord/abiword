@@ -1183,6 +1183,10 @@ void FV_View::insertSectionBreak(BreakSectionType type)
   // if Type = 1 "next page" section break
   // if Type = 2 "even page" section break
   // if Type = 3 "odd page" section break
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
         UT_UCSChar c = UCS_FF;
 	UT_uint32 iPageNum = 0;
 	switch(type)
@@ -1229,6 +1233,10 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+
+	// Signal piceTable is stable again
+        m_pDoc->notifyPieceTableChangeEnd();
+
 }
 
 void FV_View::insertSectionBreak(void)
@@ -1352,6 +1360,10 @@ void    FV_View::processSelectedBlocks(List_Type listType)
   //
   // Update Lists in the selected region
   //
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	UT_Vector vBlock;
 	getListBlocksInSelection( &vBlock);
   	UT_uint32 i;
@@ -1389,7 +1401,14 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+
+
 	_generalUpdate();
+
+
+	// Signal piceTable is stable again
+        m_pDoc->notifyPieceTableChangeEnd();
+
 }
 
 
@@ -1533,6 +1552,12 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
@@ -1583,7 +1608,15 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
 	}
 
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
 	_generalUpdate();
+
+	// Signal piceTable is stable again
+        m_pDoc->notifyPieceTableChangeEnd();
+
 
 	if (isSelectionEmpty())
 	{
@@ -1781,6 +1814,9 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	if (isSelectionEmpty())
 	{
 		_eraseInsertionPoint();
@@ -1812,6 +1848,9 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
+
+	// Signal piceTable is stable again
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	return bRet;
 }
@@ -1989,6 +2028,14 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+
 	_clearIfAtFmtMark(getPoint());
 
 	_eraseInsertionPoint();
@@ -2011,6 +2058,13 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (isSelectionEmpty())
 	{
@@ -2045,6 +2099,10 @@ void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	XML_Char pszStart[80],pszAlign[20],pszIndent[20];
 	UT_Vector va,vp,vb;
 	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	m_pDoc->disableListUpdates();
 
 	if(lType == NOT_A_LIST)
@@ -2067,6 +2125,10 @@ void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 		_generalUpdate();
+
+		// Signal PieceTable Changes have finished
+		m_pDoc->notifyPieceTableChangeEnd();
+
 		return;
 	}
 
@@ -2138,6 +2200,10 @@ void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
+
 	_ensureThatInsertionPointIsOnScreen();
 	DELETEP(attribs);
 	DELETEP(props);
@@ -2146,10 +2212,17 @@ void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
 UT_Bool FV_View::cmdStopList(void)
 {
 
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	m_pDoc->beginUserAtomicGlob();
 	fl_BlockLayout * pBlock = getCurrentBlock();
 	m_pDoc->StopList(pBlock->getStruxDocHandle());
 	m_pDoc->endUserAtomicGlob();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	return UT_TRUE;
 }
@@ -2404,6 +2477,10 @@ void FV_View::delTo(FV_DocPos dp)
 {
 	PT_DocPosition iPos = _getDocPos(dp);
 
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	if (iPos == getPoint())
 	{
 		return;
@@ -2413,6 +2490,9 @@ void FV_View::delTo(FV_DocPos dp)
 	_deleteSelection();
 
 	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
@@ -2582,6 +2662,10 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	UT_Bool bisList = UT_FALSE;
  	fl_BlockLayout * curBlock = NULL;
  	fl_BlockLayout * nBlock = NULL;
+
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
  
 	if (!isSelectionEmpty())
 	{
@@ -2707,6 +2791,10 @@ deleted.
 			_drawInsertionPoint();
 		}
 	}
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+
 }
 
 void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
