@@ -162,7 +162,7 @@ void PS_Graphics::setColor(UT_RGBColor& /*clr*/)
 {
 }
 
-virtual DG_Font* PS_Graphics::getGUIFont()
+DG_Font* PS_Graphics::getGUIFont()
 {
 	// getGUIFont is only used for drawing UI widgets, which does not apply on paper.
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
