@@ -229,7 +229,7 @@ void AP_UnixDialog_Insert_Symbol::event_OK(void)
 {
 	if (m_Insert_Symbol_no_fonts > 0 )
 	{ 
-		m_answer = XAP_Dialog_Insert_Symbol::a_OK;
+		m_answer = AP_Dialog_Insert_Symbol::a_OK;
 		m_Inserted_Symbol = m_CurrentSymbol;
 		g_list_free( m_InsertS_Font_list);
 
@@ -248,7 +248,7 @@ void AP_UnixDialog_Insert_Symbol::event_Cancel(void)
 {
 	if(m_Insert_Symbol_no_fonts > 0 )
 	{ 
-		m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
+		m_answer = AP_Dialog_Insert_Symbol::a_CANCEL;
 		g_list_free( m_InsertS_Font_list);
 
 		for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
@@ -352,7 +352,7 @@ void AP_UnixDialog_Insert_Symbol::New_Font(void )
 
 void AP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 {
-	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;	
+	m_answer = AP_Dialog_Insert_Symbol::a_CANCEL;	
 	g_list_free( m_InsertS_Font_list);
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++)
 		g_free(m_fontlist[i]);
