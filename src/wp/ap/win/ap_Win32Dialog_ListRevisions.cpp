@@ -19,6 +19,7 @@
  */
 
 #include <windows.h>
+#include <commctrl.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
