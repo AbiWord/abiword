@@ -440,6 +440,9 @@ public:
 	void                toggleMarkRevisions();
 	void                cmdAcceptRejectRevision(bool bReject, UT_sint32 x, UT_sint32 y);
 	bool                isMarkRevisions();
+	void                cmdSetRevisionLevel(UT_uint32 i){m_iViewRevision = i;}
+	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
+
 
 protected:
 	void				_saveAndNotifyPieceTableChange(void);

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -56,9 +56,9 @@ public:
     virtual UT_Error	importFile(const char * szFilename);
 
     /* (Partial) Implementation of UT_XML::Listener
-     * 
+     *
      * You (i.e., non-abstract child classes) *must* override these next two methods:
-     * 
+     *
      * virtual void startElement (const XML_Char * name, const XML_Char ** atts) = 0;
      * virtual void endElement (const XML_Char * name) = 0;
      *
@@ -75,15 +75,15 @@ private:
     UT_XML::Reader * m_pReader;
 
 public:
-    void		incOperationCount(void) { m_iOperationCount++; }
+    void		    incOperationCount(void) { m_iOperationCount++; }
     UT_uint32		getOperationCount(void) const { return m_iOperationCount; }
 
 protected:
-    int _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
+    int             _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
 
-    const XML_Char *            _getXMLPropValue(const XML_Char *name, const XML_Char **atts);
+    const XML_Char* _getXMLPropValue(const XML_Char *name, const XML_Char **atts);
 
-    UT_uint32			_getInlineDepth(void) const;
+    UT_uint32		_getInlineDepth(void) const;
     bool			_pushInlineFmt(const XML_Char ** atts);
     void			_popInlineFmt(void);
 
@@ -102,35 +102,38 @@ protected:
 			       _PS_Field,
 			       _PS_PageSize,
 			       _PS_MetaData,
-			       _PS_Meta
+				   _PS_Meta,
+				   _PS_RevisionSec,
+				   _PS_Revision
     } ParseState;
 
  protected:
-   
+
     // TODO: make us private, refactor code
-    UT_Error m_error;
-    ParseState                  m_parseState;
+    UT_Error        m_error;
+    ParseState      m_parseState;
 
     bool			m_bLoadIgnoredWords;
-    XML_Char			m_charDataSeen[4];
-    UT_uint32			m_lenCharDataSeen;
-    UT_uint32			m_lenCharDataExpected;
-    UT_uint32			m_iOperationCount;
+    XML_Char		m_charDataSeen[4];
+    UT_uint32		m_lenCharDataSeen;
+    UT_uint32		m_lenCharDataExpected;
+    UT_uint32		m_iOperationCount;
     bool			m_bSeenCR;
-    bool                     m_bWhiteSignificant;
-    bool                     m_bWasSpace;
+    bool            m_bWhiteSignificant;
+    bool            m_bWasSpace;
 
-    UT_Vector			m_vecInlineFmt;
-    UT_Stack			m_stackFmtStartIndex;
+    UT_Vector		m_vecInlineFmt;
+    UT_Stack		m_stackFmtStartIndex;
 
-    UT_ByteBuf			m_currentDataItem;
-    XML_Char *			m_currentDataItemName;
-    XML_Char *			m_currentDataItemMimeType;
+    UT_ByteBuf		m_currentDataItem;
+    XML_Char *		m_currentDataItemName;
+    XML_Char *		m_currentDataItemMimeType;
     bool			m_currentDataItemEncoded;
 
     FILE *			m_fp;
 
-    UT_String			m_currentMetaDataName;
+    UT_String		m_currentMetaDataName;
+	UT_uint32       m_currentRevisionId;
 };
 
 #endif /* IE_IMP_XML_H */

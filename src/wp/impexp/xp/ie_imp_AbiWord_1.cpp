@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -34,8 +34,8 @@
 #include "xap_EncodingManager.h"
 #include "ut_misc.h"
 
-/*****************************************************************/	
-/*****************************************************************/	
+/*****************************************************************/
+/*****************************************************************/
 
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
@@ -60,7 +60,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf, 
+UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 												  UT_uint32 iNumbytes)
 {
 	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
@@ -166,7 +166,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_STYLE		13		// a style <s> within a style section
 #define TT_LISTSECTION		14	// a list section <lists>
 #define TT_LIST			15	// a list <l> within a list section
-#define TT_PAGESIZE             16      // The PageSize <pagesize> 
+#define TT_PAGESIZE             16      // The PageSize <pagesize>
 #define TT_IGNOREDWORDS 17		// an ignored words section <ignoredwords>
 #define TT_IGNOREDWORD  18      // a word <iw> within an ignored words section
 #define TT_BOOKMARK     19		// <bookmark>
@@ -184,6 +184,9 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_ENDMARGINNOTE   31 // <endmargin>
 #define TT_ENDFRAME        32 // <endframe>
 #define TT_ENDENDNOTE        33 // <endendnote>
+#define TT_REVISIONSECTION 34 //<revisions>
+#define TT_REVISION        35 //<r>
+
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -234,6 +237,8 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"p",			TT_BLOCK		},
 	{   "pagesize",     TT_PAGESIZE     },
 	{	"pbr",			TT_PAGEBREAK	},
+    {   "r",            TT_REVISION     },
+	{   "revisions",    TT_REVISIONSECTION},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
 	{	"styles",		TT_STYLESECTION	},
@@ -247,7 +252,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
-	
+
 	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 	switch (tokenIndex)
 	{
@@ -325,7 +330,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// push the ParseState (_PS_...).
 		// TODO should Images or Fields inherit the (possibly nested)
 		// TODO inline span formatting.
-		
+
 	case TT_IMAGE:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
@@ -338,7 +343,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,atts));
 		return;
-	
+
 	case TT_FIELD:
 	{
 		X_VerifyParseState(_PS_Block);
@@ -356,7 +361,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 #endif
 		return;
 	}
-	
+
 		// Forced Line Breaks are not containers.  Therefore we don't
 		// push the ParseState (_PS_...).  Breaks are marked with a
 		// tag, but are translated into character data (LF).  This may
@@ -432,7 +437,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(UT_XML_cloneString(m_currentDataItemMimeType,_getDataItemMimeType(atts)));
 		m_currentDataItemEncoded = _getDataItemEncoded(atts);
 		return;
-		
+
 	case TT_STYLESECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_StyleSec;
@@ -461,12 +466,32 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		return;
 	}
-	case TT_LISTSECTION:
+
+	case TT_REVISIONSECTION:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_RevisionSec;
+		// We don't need to notify the piece table of the style section,
+		// it will get the hint when we begin sending styles.
+		return;
+
+	case TT_REVISION:
+	{
+		X_VerifyParseState(_PS_RevisionSec);
+		m_parseState = _PS_Revision;
+
+		const XML_Char * szId = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
+		if(szId)
+			m_currentRevisionId = atoi(szId);
+
+		return;
+	}
+
+   case TT_LISTSECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_ListSec;
 		// As per styles, we don't need to notify the piece table.
 		return;
-		
+
 	case TT_LIST:
 		X_VerifyParseState(_PS_ListSec);
 		m_parseState = _PS_List;
@@ -516,7 +541,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
   	xxx_UT_DEBUGMSG(("endElement %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
-	
+
 	UT_uint32 trim;
 	UT_uint32 len;
 	const UT_Byte * buffer;
@@ -541,10 +566,10 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		return;
-		
+
 	case TT_INLINE:
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
-                if (m_parseState == _PS_Field) // just return 
+                if (m_parseState == _PS_Field) // just return
 			  return;
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
@@ -570,12 +595,12 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_HYPERLINK:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
-		// we append another Hyperlink Object, but with no attributes		
+		// we append another Hyperlink Object, but with no attributes
 		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,NULL));
 		return;
-		
+
 		return;
-			
+
 	case TT_FIELD:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Field);
@@ -629,7 +654,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		// the data item will free the token we passed (mime-type)
 		m_currentDataItemMimeType = NULL;
  		return;
-		
+
 	case TT_STYLESECTION:
 		X_VerifyParseState(_PS_StyleSec);
 		m_parseState = _PS_Doc;
@@ -639,6 +664,16 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Style);
 		m_parseState = _PS_StyleSec;
+		return;
+
+	case TT_REVISIONSECTION:
+		X_VerifyParseState(_PS_RevisionSec);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_REVISION:
+		X_VerifyParseState(_PS_Revision);
+		m_parseState = _PS_RevisionSec;
 		return;
 
 	case TT_LISTSECTION:
@@ -658,7 +693,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_PageSize);
 		m_parseState = _PS_Doc;
 		return;
-		
+
 	case TT_IGNOREDWORDS:
 		X_VerifyParseState(_PS_IgnoredWordsSec);
 		m_parseState = _PS_Doc;
@@ -684,7 +719,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
 #if 0
 		m_error = UT_IE_BOGUSDOCUMENT;
-#endif		
+#endif
 		return;
 	}
 }
@@ -701,13 +736,13 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 {
 	const XML_Char *val = _getXMLPropValue ("mime-type", atts);
 
-	// if the mime-type was not specified, for backwards 
+	// if the mime-type was not specified, for backwards
  	// compatibility we assume that it is a png image
 	return (val ? val : "image/png");
 }
 
 bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
-{ 
+{
   	const XML_Char *val = _getXMLPropValue ("base64", atts);
 
 	if ((!val) || (UT_XML_strcmp (val, "no") != 0))

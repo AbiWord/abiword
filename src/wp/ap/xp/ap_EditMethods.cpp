@@ -537,6 +537,7 @@ public:
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn revisionAccept;
 	static EV_EditMethod_Fn revisionReject;
+	static EV_EditMethod_Fn revisionSetViewLevel;
 
 	static EV_EditMethod_Fn noop;
 
@@ -836,8 +837,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,""),
-	EV_EditMethod(NF(revisionAccept),		0,""),
-	EV_EditMethod(NF(revisionReject),		0,""),
+	EV_EditMethod(NF(revisionAccept),		0,  ""),
+	EV_EditMethod(NF(revisionReject),		0,  ""),
+	EV_EditMethod(NF(revisionSetViewLevel),	0,  ""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
 
 	// s
@@ -9428,4 +9430,12 @@ Defun(revisionReject)
 	ABIWORD_VIEW;
 	pView->cmdAcceptRejectRevision(true, pCallData->m_xPos, pCallData->m_yPos);
 	return true;
+}
+
+Defun1(revisionSetViewLevel)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	// TODO -- this is just a dummy -- this will need a dialogue
+	pView->cmdSetRevisionLevel(0);
 }

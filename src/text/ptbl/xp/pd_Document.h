@@ -134,6 +134,22 @@ enum
 // the creator (product) of this document. AbiWord, KWord, etc...
 #define PD_META_KEY_GENERATOR         "abiword.generator"
 
+// a helper class for keeping track of revisions in the document
+class PD_Revision
+{
+  public:
+	PD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc):m_iId(iId),m_pDescription(pDesc){};
+	~PD_Revision(){delete m_pDescription;}
+	UT_uint32         getId()const{return m_iId;}
+	UT_UCS4Char *     getDescription() const {return m_pDescription;}
+
+  private:
+	UT_uint32 m_iId;
+	UT_UCS4Char * m_pDescription;
+};
+
+
+
 /*!
  PD_Document is the representation for a document.
 */
@@ -342,6 +358,9 @@ public:
 	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
 	void                    toggleMarkRevisions(){m_bMarkRevisions = m_bMarkRevisions ? false : true;}
 	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
+	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc);
+	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen);
+	UT_Vector &             getRevisions() {return m_vRevisions;}
 
 
 #ifdef PT_TEST
@@ -364,6 +383,7 @@ public:
 			       UT_String & outProp ) const ;
 
 	UT_StringPtrMap & getMetaData () { return m_metaDataMap ; }
+
 
 protected:
 	~PD_Document();
@@ -395,6 +415,8 @@ private:
 	UT_StringPtrMap         m_metaDataMap;
 	bool                    m_bMarkRevisions;
 	UT_uint32               m_iRevisionID;
+	UT_Vector               m_vRevisions;
+
 };
 
 #endif /* PD_DOCUMENT_H */

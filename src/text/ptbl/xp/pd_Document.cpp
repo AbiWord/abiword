@@ -109,7 +109,7 @@ PD_Document::~PD_Document()
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
-
+	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
 	// remove the meta data
 	UT_HASH_PURGEDATA(UT_String*, &m_metaDataMap, delete) ;
 
@@ -117,6 +117,42 @@ PD_Document::~PD_Document()
 	// since these are not owned by us.
 
 	// TODO: delete the key/data pairs
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
+{
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		const PD_Revision * r = (const PD_Revision*) m_vRevisions.getNthItem(i);
+		if(r->getId() == iId)
+			return false;
+	}
+
+	PD_Revision * pRev = new PD_Revision(iId, pDesc);
+
+	m_vRevisions.addItem((void*)pRev);
+	return true;
+}
+
+bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen)
+{
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		const PD_Revision * r = (const PD_Revision*) m_vRevisions.getNthItem(i);
+		if(r->getId() == iId)
+			return false;
+	}
+
+	UT_UCS4Char * pD = new UT_UCS4Char [iLen + 1];
+	UT_UCS4_strncpy(pD,pDesc,iLen);
+	pD[iLen] = 0;
+	PD_Revision * pRev = new PD_Revision(iId, pD);
+
+	m_vRevisions.addItem((void*)pRev);
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////

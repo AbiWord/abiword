@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -85,7 +85,7 @@ IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate)
 IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
 {
 }
-	  
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -134,8 +134,9 @@ protected:
 	void				_handleLists(void);
 	void				_handlePageSize(void);
 	void				_handleDataItems(void);
-  void _handleMetaData(void);
-	
+    void                _handleMetaData(void);
+	void                _handleRevisions(void);
+
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
 	bool                m_bIsTemplate;
@@ -158,7 +159,7 @@ void s_AbiWord_1_Listener::_closeSection(void)
 {
 	if (!m_bInSection)
 		return;
-	
+
 	m_pie->write("</section>\n");
 	m_bInSection = false;
 	return;
@@ -225,7 +226,7 @@ void s_AbiWord_1_Listener::_openSpan(PT_AttrPropIndex apiSpan)
 
 	if (!apiSpan)				// don't write tag for empty A/P
 		return;
-	
+
 	_openTag("c","",false,apiSpan);
 	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
@@ -258,7 +259,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			// TODO consider scanning the value to see if it has one
 			// TODO in it and escaping it or using single-quotes.
 			// Let's also escape ampersands and other goodies.
-			
+
 			m_pie->write(" ");
 			m_pie->write((char*)szName);
 			m_pie->write("=\"");
@@ -316,12 +317,12 @@ void s_AbiWord_1_Listener::_outputXMLChar(const XML_Char * data, UT_uint32 lengt
 			sBuf += "&lt;";
 			pData++;
 			break;
-			
+
 		case '>':
 			sBuf += "&gt;";
 			pData++;
 			break;
-			
+
 		case '&':
 			sBuf += "&amp;";
 			pData++;
@@ -351,12 +352,12 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 			sBuf += "&lt;";
 			pData++;
 			break;
-			
+
 		case '>':
 			sBuf += "&gt;";
 			pData++;
 			break;
-			
+
 		case '&':
 			sBuf += "&amp;";
 			pData++;
@@ -366,7 +367,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 			sBuf += "<br/>";
 			pData++;
 			break;
-			
+
 		case UCS_VTAB:					// VTAB -- representing a Forced-Column-Break
 			sBuf += "<cbr/>";
 			pData++;
@@ -376,16 +377,16 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 			sBuf += "\t";
 			pData++;
 			break;
-			
+
 		case UCS_FF:					// FF -- representing a Forced-Page-Break
 			sBuf += "<pbr/>";
 			pData++;
 			break;
-			
+
 		default:
 			if (*pData > 0x007f)
 			{
-				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || 
+				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() ||
 				   (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) == 0xa1))
 
 				{
@@ -400,7 +401,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 				{
 					/*
 					Try to convert to native encoding and if
-					character fits into byte, output raw byte. This 
+					character fits into byte, output raw byte. This
 					is somewhat essential for single-byte non-latin
 					languages like russian or polish - since
 					tools like grep and sed can be used then for
@@ -450,10 +451,10 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_apiLastSpan = 0;
 	m_pCurrentField = 0;
 
-	// Be nice to XML apps.  See the notes in _outputData() for more 
-	// details on the charset used in our documents.  By not declaring 
-	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
-	// is a strict subset of UTF-8. 
+	// Be nice to XML apps.  See the notes in _outputData() for more
+	// details on the charset used in our documents.  By not declaring
+	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII
+	// is a strict subset of UTF-8.
 
 	if (!XAP_EncodingManager::get_instance()->cjk_locale() &&
 	    (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1)) {
@@ -467,8 +468,8 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 
 	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
-	// We write this first so that the sniffer can detect AbiWord 
-	// documents more easily.   
+	// We write this first so that the sniffer can detect AbiWord
+	// documents more easily.
 
 	m_pie->write("<abiword xmlns=\"http://www.abisource.com/awml.dtd\" xml:space=\"preserve\" xmlns:awml=\"http://www.abisource.com/awml.dtd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:math=\"http://www.w3.org/1998/Math/MathML\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"");
 	m_pie->write(" version=\"");
@@ -500,7 +501,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// NOTE we output the following preamble in XML comments.
 	// NOTE this information is for human viewing only.
 	// TODO should this preamble have a DTD reference in it ??
-	
+
 	m_pie->write("<!-- =====================================================================  -->\n");
 	m_pie->write("<!-- This file is an AbiWord document.                                      -->\n");
 	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                         -->\n");
@@ -511,8 +512,9 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 
 	// end of preamble.
 	// now we begin the actual document.
-		
+
 	_handleMetaData();
+	_handleRevisions();
 	_handleStyles();
 	_handleIgnoredWords();
 	_handleLists();
@@ -527,7 +529,7 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 	_closeBlock();
 	_closeSection();
 	_handleDataItems();
-	
+
 	m_pie->write("</abiword>\n");
 }
 
@@ -562,7 +564,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
             }
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			_openSpan(api);
-			
+
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
@@ -593,7 +595,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     _closeSpan();
                     _closeField();
                     _openTag("field","",false,api);
-                    m_pCurrentField = pcro->getField(); 
+                    m_pCurrentField = pcro->getField();
                     UT_ASSERT(m_pCurrentField);
                     return true;
                 }
@@ -604,7 +606,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
    					_openTag("bookmark", "/",false, api,true);
    					return true;
    				}
-   			
+
    			case PTO_Hyperlink:
    				{
    					_closeSpan();
@@ -615,14 +617,14 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					const XML_Char * pValue;
 					bool bFound = false;
 					UT_uint32 k = 0;
-					
+
 					while(pAP->getNthAttribute(k++, pName, pValue))
 					{
 						bFound = (0 == UT_XML_strnicmp(pName,"xlink:href",10));
 						if(bFound)
 							break;
 					}
-					
+
 					if(bFound)
 					{
 						//this is the start of the hyperlink
@@ -633,13 +635,13 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
    					{
    						_closeHyperlink();
    					}
-   					
+
 
    					return true;
-   				
+
    				}
-   				
-   				
+
+
 			default:
 				UT_ASSERT_NOT_REACHED();
 				return false;
@@ -652,7 +654,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		_openTag("c","",false,pcr->getIndexAP());
 		_closeTag();
 		return true;
-		
+
 	default:
 	  UT_ASSERT_NOT_REACHED();
 		return false;
@@ -918,13 +920,13 @@ void s_AbiWord_1_Listener::_handleIgnoredWords(void)
 
 	XAP_Prefs *pPrefs = pApp->getPrefs();
 	UT_return_if_fail(pPrefs);
-	
+
 	bool saveIgnores = false;
 	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsSave, &saveIgnores);
 
 	bool bWroteIgnoredWords = false;
 
-	if (!saveIgnores) 
+	if (!saveIgnores)
 		return;  // don't bother
 
 	const UT_UCSChar *word;
@@ -936,7 +938,7 @@ void s_AbiWord_1_Listener::_handleIgnoredWords(void)
 			bWroteIgnoredWords = true;
 			m_pie->write("<ignoredwords>\n");
 		}
-		
+
 		m_pie->write("<iw>");
 		_outputData (word, UT_UCS4_strlen (word));
 		m_pie->write("</iw>\n");
@@ -951,7 +953,7 @@ void s_AbiWord_1_Listener::_handleIgnoredWords(void)
 void s_AbiWord_1_Listener::_handleLists(void)
 {
 	bool bWroteOpenListSection = false;
-	
+
  	//const char * szID;
 	//const char * szPid;
 	//const char * szProps;
@@ -960,12 +962,12 @@ void s_AbiWord_1_Listener::_handleLists(void)
 
 	fl_AutoNum * pAutoNum;
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
-	{	
+	{
 		const char ** attr = NULL, ** attr0 = NULL;
 
 		if (pAutoNum->isEmpty() == true)
 			continue;
-		
+
 		if (!bWroteOpenListSection)
 		{
 			m_pie->write("<lists>\n");
@@ -978,7 +980,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 			{
 				m_pie->write(" ");
 				m_pie->write(attr[0]);
-				m_pie->write("=\""); 
+				m_pie->write("=\"");
 				m_pie->write(attr[1]);
 				m_pie->write("\"");
 			}
@@ -989,11 +991,11 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	}
 
 
-#undef LCheck			
-	
+#undef LCheck
+
 	if (bWroteOpenListSection)
 		m_pie->write("</lists>\n");
-	
+
 	return;
 }
 
@@ -1048,7 +1050,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 {
   //
   // Code to write out the PageSize Definitions to disk
-  // 
+  //
 	char *old_locale;
 
 	old_locale = setlocale (LC_NUMERIC, "C");
@@ -1106,7 +1108,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 
 	   	bool status = false;
 	   	bool encoded = true;
-	   
+
 		if (szMimeType && (UT_strcmp(szMimeType, "image/svg-xml") == 0 || UT_strcmp(szMimeType, "text/mathml") == 0))
 	    {
 		   bbEncoded.truncate(0);
@@ -1131,7 +1133,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		   status = true;
 		   encoded = false;
 		}
-	   	else  
+	   	else
 		{
 		   status = UT_Base64Encode(&bbEncoded, pByteBuf);
 		   encoded = true;
@@ -1149,7 +1151,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 			   m_pie->write("\" mime-type=\"");
 			   _outputXMLChar(szMimeType, strlen(szMimeType));
 			}
-		   	if (encoded) 
+		   	if (encoded)
 		    {
 			   	m_pie->write("\" base64=\"yes\">\n");
 				// break up the Base64 blob as a series lines
@@ -1176,6 +1178,41 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 
 	if (bWroteOpenDataSection)
 		m_pie->write("</data>\n");
+
+	return;
+}
+
+void s_AbiWord_1_Listener::_handleRevisions(void)
+{
+	bool bWroteOpenRevisionsSection = false;
+
+	const char * szName = NULL;
+	const PD_Revision * pRev=NULL;
+	char buf[35];
+
+	UT_Vector & vRevisions = m_pDocument->getRevisions();
+
+	UT_uint32 k = 0;
+	for (k=0; k < vRevisions.getItemCount(); k++)
+	{
+		pRev = (PD_Revision *) vRevisions.getNthItem(k);
+		if (!bWroteOpenRevisionsSection)
+		{
+			m_pie->write("<revisions>\n");
+			bWroteOpenRevisionsSection = true;
+		}
+		UT_String s = "<r id=\"";
+		sprintf(buf, "%d\">", pRev->getId());
+		s += buf;
+		m_pie->write(s.c_str());
+
+		_outputData(pRev->getDescription(), UT_UCS4_strlen(pRev->getDescription()));
+
+		m_pie->write("</r>\n");
+	}
+
+	if (bWroteOpenRevisionsSection)
+		m_pie->write("</revisions>\n");
 
 	return;
 }

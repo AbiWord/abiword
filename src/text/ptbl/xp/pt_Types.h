@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -33,7 +33,7 @@ typedef UT_uint32 PT_DocPosition;
 typedef UT_uint32 PT_BlockOffset;
 
 class PD_Document;
-/*!  
+/*!
  PD_DocumentRange identifies a piece of the document, using two
  PT_DocPosition absolute document positions as limits.
 */
@@ -41,7 +41,7 @@ class PD_Document;
 class ABI_EXPORT PD_DocumentRange
 {
 public:
-	//! Dummy constructure. 
+	//! Dummy constructure.
 	//! Resulting range is invalid until it is initialized with set
 	PD_DocumentRange(void)
 		{
@@ -49,7 +49,7 @@ public:
 			m_pos1 = 0;
 			m_pos2 = 0;
 		}
-	
+
 	//! Initializing constructor.
 	PD_DocumentRange(PD_Document * pDoc, PT_DocPosition k1, PT_DocPosition k2)
 		{
@@ -65,7 +65,7 @@ public:
 			m_pos1 = k1;
 			m_pos2 = k2;
 		}
-	
+
 	//! Document this range is in
 	PD_Document *		m_pDoc;
 	//! Lower limit of range
@@ -75,18 +75,18 @@ public:
 };
 
 //! PTStruxType tells the sub-type of a FragStrux.
-typedef enum _PTStruxType 
-{ 
-	PTX_Section, 
-	PTX_Block, 
-	PTX_SectionHdrFtr, 
+typedef enum _PTStruxType
+{
+	PTX_Section,
+	PTX_Block,
+	PTX_SectionHdrFtr,
 	PTX_SectionEndnote,
-	PTX_SectionTable, 
-	PTX_SectionCell, 
-	PTX_SectionFootnote, 
+	PTX_SectionTable,
+	PTX_SectionCell,
+	PTX_SectionFootnote,
 	PTX_SectionMarginnote,
 	PTX_SectionFrame,
-	PTX_EndCell, 
+	PTX_EndCell,
 	PTX_EndTable,
     PTX_EndFootnote,
     PTX_EndMarginnote,
@@ -128,7 +128,8 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_FOOTEREVEN_ATTRIBUTE_NAME	((const XML_Char *)"footer-even")
 #define PT_FOOTERFIRST_ATTRIBUTE_NAME	((const XML_Char *)"footer-first")
 #define PT_FOOTERLAST_ATTRIBUTE_NAME	((const XML_Char *)"footer-last")
-
+#define PT_REVISION_ATTRIBUTE_NAME      ((const XML_Char *)"revision")
+#define PT_ID_ATTRIBUTE_NAME            ((const XML_Char *)"id")
 
 
 #endif /* PT_TYPES_H */

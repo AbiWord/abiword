@@ -77,7 +77,6 @@
 #define BOOKMARK_NAME_SIZE 30
 #define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
 
-#define REVISION_TEST DEBUG
 /****************************************************************/
 
 class _fmtPair
@@ -1210,7 +1209,6 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	_eraseSelection();
 	_resetSelection();
 
-#ifdef REVISION_TEST
 	if(isMarkRevisions())
 	{
 		const fl_BlockLayout * pBL = getCurrentBlock();
@@ -1238,7 +1236,6 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 		m_pDoc->changeSpanFmt(PTC_AddFmt, iLow, iHigh, ppRevAttrib, NULL);
 	}
 	else
-#endif
 	{
 		m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before);
 	}
@@ -1924,7 +1921,6 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 
-#ifdef REVISION_TEST
 		if(isMarkRevisions())
 		{
 			// need to set the revision attribute to current id
@@ -1940,7 +1936,6 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		{
 			AttrProp_Before.setAttribute("revision", NULL);
 		}
-#endif
 
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
@@ -1999,7 +1994,6 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		}
 		if (doInsert == true)
 		{
-#ifdef REVISION_TEST
 			const PP_AttrProp *pAttrProp;
 			const fl_BlockLayout * pBL = getCurrentBlock();
 			PP_AttrProp * pMyAP = NULL;
@@ -2049,9 +2043,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 			bResult = m_pDoc->insertSpan(getPoint(), text, count, pMyAP);
 
 			delete pMyAP;
-#else
-			bResult = m_pDoc->insertSpan(getPoint(), text, count);
-#endif
+
 			if(!bResult)
 			{
 				const fl_BlockLayout * pBL = getCurrentBlock();
@@ -4939,7 +4931,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			}
 		}
 
-#ifdef REVISION_TEST
 		bool bMark = isMarkRevisions();
 
 		PP_AttrProp * pAttrProp;
@@ -4970,7 +4961,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			ppRevAttrib[2] = NULL;
 			ppRevAttrib[3] = NULL;
 		}
-#endif
 
 		if (amt > 0)
 		{
@@ -4998,13 +4988,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else if(bisList == true)
 				{
-#ifdef REVISION_TEST
 					if(bMark)
 					{
 						m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
 					}
 					else
-#endif
 					{
 						m_pDoc->deleteSpan(posCur, posCur+amt);
 						nBlock->remItemFromList();
@@ -5013,14 +5001,12 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else
 				{
-#ifdef REVISION_TEST
 					if(bMark)
 					{
 
 						m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
 					}
 					else
-#endif
 					{
 						m_pDoc->deleteSpan(posCur, posCur+amt);
 					}
@@ -5029,13 +5015,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			}
 			else
 			{
-#ifdef REVISION_TEST
 				if(bMark)
 				{
 					m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
 				}
 				else
-#endif
 				{
 					m_pDoc->deleteSpan(posCur, posCur+amt);
 				}
@@ -5051,13 +5035,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		if(isTabListAheadPoint())
 		{
-#ifdef REVISION_TEST
 			if(bMark)
 			{
 				m_pDoc->changeSpanFmt(PTC_AddFmt, getPoint(), getPoint()+2, ppRevAttrib, NULL);
 			}
 			else
-#endif
 			{
 				m_pDoc->deleteSpan(getPoint(), getPoint()+2);
 			}
