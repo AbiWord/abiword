@@ -6861,7 +6861,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 
 	const XML_Char*	sec_attributes1[] = {
 		"type", szString,
-		"id", "page_num",
+		"id", "page_num","listid","0","parentid","0",
 		NULL, NULL
 	};
 
@@ -6907,6 +6907,18 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	m_pDoc->insertStrux(iPoint, PTX_Section);
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
+	//
+	// If there is a list item here remove it!
+	//
+	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
+	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
+	if(pBlock && pBlock->isListItem())
+	{
+	       while(pBlock->isListItem())
+	       {
+	              m_pDoc->StopList(sdh);
+	       }     
+	} 
 
 	// Make the new section into a footer
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
@@ -6937,6 +6949,7 @@ bool FV_View::insertPageNum(const XML_Char ** props, bool ftr)
 
 	// Signal PieceTable Changes have Started
 	m_pDoc->notifyPieceTableChangeStart();
+	m_pDoc->disableListUpdates();
 
 	_eraseInsertionPoint();
 
@@ -6959,6 +6972,9 @@ bool FV_View::insertPageNum(const XML_Char ** props, bool ftr)
 	m_pLayout->updateLayout(); // Update document layout everywhere
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
 	
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
 	// Signal PieceTable Changes have Ended
 

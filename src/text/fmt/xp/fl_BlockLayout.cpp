@@ -5202,6 +5202,11 @@ void fl_BlockLayout::listUpdate(void)
   //
   // Update the list on the screen to reflect changes made. 
   //
+        if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+	{
+	        m_pAutoNum = NULL;
+		return;
+	}
 	if (m_pAutoNum == NULL)
 		return;
 	
