@@ -30,7 +30,7 @@ UT_Wctomb::UT_Wctomb()
   initialize();
 }
 
-#ifdef __OpenBSD__
+#if ( defined(__OpenBSD__)) || ( defined(__FreeBSD__))
 enum
 {
   T1      = 0x00,
@@ -71,12 +71,12 @@ enum
 	
 #endif
 
-#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__)
+#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__)
 #include <stdlib.h>
 
 //We have to do this since wctomb clashes with the class name
 int my_wctomb( char* s, wchar_t wchar, int *state ) {
-#ifndef __OpenBSD__
+#if (! defined(__OpenBSD__)) && (! defined(__FreeBSD__))
 	return wctomb(s, wchar);
 #else
 	if(s == 0)
@@ -132,7 +132,7 @@ int my_wctomb( char* s, wchar_t wchar, int *state ) {
 
 int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
 {
-#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__)
+#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__)
   size_t len=my_wctomb(pC,wc, &m_state);
 #else
   size_t len=wcrtomb(pC,wc, &m_state);

@@ -1,17 +1,17 @@
 #ifndef UT_WCTOMB_H
 #define UT_WCTOMB_H
 
-#ifndef __OpenBSD__
+#if (! defined(__OpenBSD__)) && (! defined(__FreeBSD__))
 #include <wchar.h>
 #endif
 #include <string.h>
 #include <limits.h>
 
-#if defined(__BEOS__) || defined(__OpenBSD__)
+#if defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__)
 typedef int mbstate_t;
 #endif
 
-#ifdef __OpenBSD__
+#if  defined(__OpenBSD__) || defined (__FreeBSD__)
 typedef unsigned long wchar_t;
 size_t wcrtomb(char *,wchar_t,mbstate_t *);
 #endif

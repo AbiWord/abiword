@@ -2,10 +2,10 @@
 #define UT_MBTOWC_H
 
 
-#ifndef __OpenBSD__
+#if (! defined(__OpenBSD__)) && (! defined(__FreeBSD__))
 #include <wchar.h>
 #else
-/* Note: wchar.h doesn't exist in OpenBSD systems */
+/* Note: wchar.h doesn't exist in Open/FreeBSD systems */
 typedef int mbstate_t;
 typedef unsigned long wchar_t;
 size_t mbrtowc(wchar_t&,char*,int,mbstate_t);
