@@ -146,6 +146,14 @@ void AP_Dialog_Options::_storeWindowData(void)
 		m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
 	}
 
+	// Same for status bar
+	if (_gatherViewShowStatusBar() != pFrameData->m_bShowStatusBar)
+	{
+		pFrameData->m_bShowStatusBar = _gatherViewShowStatusBar();
+		m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+	}
+
+
 	// TODO: Don't use 0, 1, 2, but AP_TOOLBAR_STANDARD, AP_TOOLBAR_FORMAT, AP_TOOLBAR_EXTRA...
 	if (_gatherViewShowStandardBar() != pFrameData->m_bShowBar[0])
 	{
