@@ -309,6 +309,13 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
 
+	case XAP_DIALOG_ID_INSERT_FILE:
+		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
+		ofn.Flags |= OFN_FILEMUSTEXIST;
+		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
+		bDialogResult = GetOpenFileName(&ofn);
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

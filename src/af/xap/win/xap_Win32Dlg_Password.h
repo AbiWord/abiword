@@ -21,11 +21,13 @@
 #define XAP_WIN32DIALOG_PASSWORD_H
 
 #include "xap_Dlg_Password.h"
+#include "xap_Win32DialogHelper.h"
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_Password: public XAP_Dialog_Password
+class XAP_Win32Dialog_Password: public XAP_Dialog_Password, XAP_Win32Dialog
 {
 public:
 	XAP_Win32Dialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -35,7 +37,14 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
+private:
+	HWND						m_hThisDlg;
+	XAP_Win32DialogHelper		_win32Dialog;	
+
 protected:
+	BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL			_onDeltaPos(NM_UPDOWN * pnmud);
 
 };
 

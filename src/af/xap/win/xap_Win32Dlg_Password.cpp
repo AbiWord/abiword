@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef _MSC_VER	 // MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 #include <windows.h>
 
 #include "ut_string.h"
@@ -45,7 +49,9 @@ XAP_Dialog * XAP_Win32Dialog_Password::static_constructor(XAP_DialogFactory * pF
 
 XAP_Win32Dialog_Password::XAP_Win32Dialog_Password(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: XAP_Dialog_Password(pDlgFactory,id)
+	: XAP_Dialog_Password(pDlgFactory,id), 
+      _win32Dialog(this),
+      m_hThisDlg(NULL)
 {
 }
 
@@ -56,32 +62,63 @@ XAP_Win32Dialog_Password::~XAP_Win32Dialog_Password(void)
 void XAP_Win32Dialog_Password::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
-
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
-
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
-
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	_win32Dialog.runModal( pFrame,
+						   XAP_DIALOG_ID_PASSWORD,
+                           XAP_RID_DIALOG_PASSWORD,
+	         		       this );
 }
 
+#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+BOOL XAP_Win32Dialog_Password::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
+
+	m_hThisDlg = hWnd;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// localize dialog title
+	_win32Dialog.setDialogTitle( pSS->getValue(XAP_STRING_ID_DLG_Password_Title) );
+
+	// localize controls
+	_DSX(PASSWORD_BTN_OK,				DLG_OK);
+	_DSX(PASSWORD_BTN_CANCEL,			DLG_Cancel);
+	_DSX(PASSWORD_LBL_PASSWORD,			DLG_Password_Password);
+
+	return 1;
+}
+
+BOOL XAP_Win32Dialog_Password::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case XAP_RID_DIALOG_PASSWORD_BTN_CANCEL:
+		setAnswer( a_Cancel );
+		EndDialog(hWnd,0);
+		return 1;
+
+	case XAP_RID_DIALOG_PASSWORD_BTN_OK:
+		{
+			char buf[1024];
+			_win32Dialog.getControlText(XAP_RID_DIALOG_PASSWORD_EBX_PASSWORD, buf, 1024);
+			setPassword( buf );
+		}
+		setAnswer( a_OK );
+		EndDialog(hWnd,0);
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
+
+BOOL XAP_Win32Dialog_Password::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return 1;
+}

@@ -41,6 +41,7 @@
 #	include "xap_Win32Dlg_Language.h"
 #	include "xap_Win32Dlg_Encoding.h"
 #	include "xap_Win32Dlg_PluginManager.h"
+#	include "xap_Win32Dlg_Password.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
@@ -68,6 +69,9 @@
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_Win32Dialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_Win32Dialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_Win32Dialog_FontChooser)
@@ -79,6 +83,7 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE, XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,		XAP_Win32Dialog_Encoding)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_Win32Dialog_PluginManager)
+	DeclareDialog(XAP_DIALOG_ID_PASSWORD,		XAP_Win32Dialog_Password)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
@@ -99,8 +104,6 @@
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_Win32Dialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_Win32Dialog_Background)
 	DeclareDialog(AP_DIALOG_ID_HDRFTR,  		AP_Win32Dialog_HdrFtr)
-        DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_Win32Dialog_FileOpenSaveAs)
-        DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_Win32Dialog_FileOpenSaveAs)
 	// ... also add new dialogs here ...
 
 #endif
