@@ -13,6 +13,8 @@ typedef UT_uint32 PT_DocPosition;		/* absolute document position */
 typedef UT_uint32 pt_BufPosition;		/* offset in one of the VarSet buffers */
 typedef UT_uint32 pt_AttrPropIndex;		/* index in one of the VarSet AP Tables */
 
+typedef enum _PTStruxType { PTX_Section, PTX_Block, PTX_ColumnSet, PTX_Column } PTStruxType;
+
 class PT_PieceTable
 {
 public:
@@ -20,7 +22,6 @@ public:
 	~PT_PieceTable();
 
 	typedef enum _PTState { PTS_Loading=0, PTS_Editing=1 } PTState;
-	typedef enum _PTStrux { PTX_Block, PTX_Section } PTStrux;
 
 	void					setPieceTableState(PTState pts);
 
@@ -41,7 +42,9 @@ public:
 									  const XML_Char ** properties);
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
-										PTStrux pts);
+										PTStruxType pts,
+										const XML_Char ** attributes,
+										const XML_Char ** properties);
 	UT_Bool					deleteStrux(PT_DocPosition dpos);
 
 	// TODO add stuff for objects like in-line images.
