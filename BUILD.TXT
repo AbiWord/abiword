@@ -70,6 +70,41 @@ There are 2 ways to build and run AbiWord:
     setup program it will do a normal Win32 installation and create desktop
     icons and start menu items.
 
+Build Instructions -- QNX
+--------------------------
+
+Building on QNX is similar to the other unix like platforms.  We rely on 
+the command line utilities for bash, sed, gawk, etc.  
+
+There are 2 ways to build and run AbiWord:
+
+[1] Developer Style:  just cd to abi and type 'make'.  To run AbiWord, cd
+    to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will
+    help AbiWord find the dictionary and other support files.
+
+[2] End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z'
+    This will build a distribution zip file (abi/dist/AbiSuite-x.y.z-$(arch).zip).
+    Expand this in /boot/apps.  You can then run /boot/apps/AbiSuite/bin/AbiWord.
+
+Components that you will need to checkout from CVS, or have installed, are:
+	abi 
+		You wouldn't be reading this if you didn't have this checked out
+	abidistfiles
+		This contains the basic spelling libraries and is needed for building
+		a distribution (ie [2])
+	wv
+		This contains the Word converter library
+	expat
+		This contains the XML parser library
+	zlib
+		This is used for compression
+	libpng
+		This is used for AbiWord's internal graphics representation
+	libiconv
+		This is used for internationalization and character support
+	psiconv
+		This is used for the Psion importer.
+	
 
 Build Instructions -- BeOS
 --------------------------
