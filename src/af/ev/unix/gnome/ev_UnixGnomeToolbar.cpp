@@ -178,7 +178,8 @@ static int s_combo_changed(GtkWidget * widget, gpointer user_data)
 #define COLOR_NORMALIZE(c) (gint)(c)
 
 static void
-s_color_changed (ColorCombo * combo, GdkColor * color, _wd * wd)
+s_color_changed (ColorCombo * combo, GdkColor * color, gboolean by_user,
+		 _wd * wd)
 {
        	gchar str [7];
 	gchar r[3], g[3], b[3];
