@@ -107,11 +107,11 @@ public:
 	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, fl_BlockLayout*, fl_SectionLayout*);
 	~fl_BlockLayout();
 
-	void setNeedsReformat(UT_Bool);
-	UT_Bool needsReformat();
+	void setNeedsCompleteReformat(UT_Bool);
+	UT_Bool needsCompleteReformat();
 
-	int format();
-	int reformat();
+	int complete_format();
+	int minor_reformat();
 	int	requestLineSpace(int iHeight);
 	int	addLine(fp_Line*);
 
@@ -158,10 +158,12 @@ protected:
 	void _createNewSlice();
 	void _createRuns();
 	void _align();
+	void					_purgeLayout(UT_Bool bVisible);
+
 	int						m_bNeedsReformat;
+	
 	void					_verifyCurrentSlice();
 	UT_uint32				_getLastChar();
-	void					_purgeLayout(UT_Bool bVisible);
 
 	UT_GrowBuf				m_gbCharWidths;
 	UT_Vector				m_vecSlices;

@@ -271,6 +271,7 @@ int FL_DocLayout::formatAll()
 	}
 
 	UT_DEBUGMSG(("END Formatting document: 0x%x\n", this));
+
 	return 0;
 }
 

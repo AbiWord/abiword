@@ -167,7 +167,9 @@ void fp_Column::removeBlockSlice(fp_BlockSlice* p)
 	}
 
 	if (pNode->pNext)
+	{
 		pNode->pNext->pPrev = pPrev;
+	}
 
 	delete pNode;
 
@@ -344,6 +346,7 @@ void fp_Column::reportSliceHeightChanged(fp_BlockSlice* pBS, UT_uint32 /*iNewHei
 	if (pNode->pNext)
 	{
 		UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+
 		// TODO perhaps we should _repositionSlices ONCE after all edits to a paragraph
 		// are done, rather than doing it so often?
 		_repositionSlices();
@@ -391,7 +394,7 @@ int fp_Column::_repositionSlices()
 			*/
 			if ((pListNode->yoff > iCalcOffset) && (!(pListNode->pNext)) && (!(pListNode->pSlice->isLastSliceInBlock())))
 			{
-				pListNode->pSlice->getBlock()->setNeedsReformat(UT_TRUE);
+				pListNode->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
 			}
 
 			/*
@@ -410,7 +413,7 @@ int fp_Column::_repositionSlices()
 			  First of all, however, we check:  If the block for this slice
 			  already needs a reformat, there is no need to proceed.
 			*/
-			if (!pListNode->pSlice->getBlock()->needsReformat())
+			if (!pListNode->pSlice->getBlock()->needsCompleteReformat())
 			{
 				UT_Bool bFits = UT_TRUE;
 				int countSlivers = pListNode->pSlice->countSlivers();
@@ -427,7 +430,7 @@ int fp_Column::_repositionSlices()
 					
 						// this sliver no longer fits!!
 						bFits = UT_FALSE;
-						pListNode->pSlice->getBlock()->setNeedsReformat(UT_TRUE);
+						pListNode->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
 						break;
 					}
 				}
@@ -440,13 +443,33 @@ int fp_Column::_repositionSlices()
 			  to be done.  However, we erased it earlier, so we
 			  now need to redraw it.
 			*/
-			if (!pListNode->pSlice->getBlock()->needsReformat())
+			if (!pListNode->pSlice->getBlock()->needsCompleteReformat())
 			{
 				pListNode->pSlice->draw(m_pG);
 			}
 		}
 
 		pListNode = pListNode->pNext;
+	}
+
+	/*
+	  TODO the following code is very pessimistic.  It
+	  should only be called if this _repositionSlices() call
+	  was made in response to something moving UP, not down.
+
+	  TODO what we really want to force here is that the block
+	  needs to look and see if it can start in the previous
+	  column.  We're currently setting needsCompleteReformat
+	  to accomplish that purpose.
+	*/
+	fp_Column* pNextColumn = getNext();
+	if (pNextColumn)
+	{
+		fp_BlockSliceInfo* pBSI = pNextColumn->m_pFirstSlice;
+		if (pBSI->pSlice->isFirstSliceInBlock())
+		{
+			pBSI->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
+		}
 	}
 
 	return 0;

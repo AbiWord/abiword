@@ -49,6 +49,11 @@ fp_Line::~fp_Line()
 	UT_VECTOR_PURGEALL(fp_RunInfo, m_vecRunInfos);
 }
 
+UT_Bool fp_Line::isEmpty(void) const
+{
+	return ((m_vecRunInfos.getItemCount()) == 0);
+}
+
 void fp_Line::setBlockSlice(fp_BlockSlice* pBlockSlice, void* p)
 {
 	m_pBlockSlice = pBlockSlice;
@@ -235,8 +240,8 @@ UT_uint32 fp_Line::getNumChars() const
 {
 	UT_uint32 iCountChars = 0;
 	
-	int countRuns = m_vecRunInfos.getItemCount();
-	for (int i=0; i<countRuns; i++)
+	int iCountRuns = m_vecRunInfos.getItemCount();
+	for (int i=0; i<iCountRuns; i++)
 	{
 		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
@@ -276,8 +281,9 @@ void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 		}
 
 		if (bIncr)
+		{
 			pInfo->xoff += dx;
-		
+		}
 	}
 	
 	m_iWidth += dx;
@@ -288,10 +294,14 @@ void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 void fp_Line::remove()
 {
 	if (m_pNext)
+	{
 		m_pNext->setPrev(m_pPrev);
+	}
 
 	if (m_pPrev)
+	{
 		m_pPrev->setNext(m_pNext);
+	}
 
 	m_pBlockSlice->removeLine(this, m_pBlockSliceData);
 }

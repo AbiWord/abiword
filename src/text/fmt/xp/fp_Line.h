@@ -91,6 +91,8 @@ public:
 	void		align();
 
 	void		dumpRunInfo(const fp_Run* pRun, void* p);
+
+	UT_Bool		isEmpty(void) const;
 	
 	UT_Bool         m_bDirty;
 

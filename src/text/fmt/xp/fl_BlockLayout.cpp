@@ -287,7 +287,7 @@ void fl_BlockLayout::_align()
 	}
 }
 
-int fl_BlockLayout::reformat()
+int fl_BlockLayout::minor_reformat()
 {
 	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
 	UT_DEBUGMSG(("BEGIN reformat block: 0x%x\n", this));
@@ -299,9 +299,34 @@ int fl_BlockLayout::reformat()
 
 	m_pBreaker->reLayoutParagraph(this);
 
+	/*
+	  A delete could mean that there are empty lines
+	  in the block.  If so, we need to remove them.
+	*/
+	while (m_pLastLine->isEmpty())
+	{
+		fp_Line* pLine = m_pLastLine;
+		
+		pLine->remove();
+		m_pLastLine = pLine->getPrev();
+
+		// note that we do NOT delete pLine here.  It is deleted elsewhere.
+	}
+	
+	int countSlices = m_vecSlices.getItemCount();
+	for (int i=0; i<countSlices; i++)
+	{
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
+		UT_ASSERT(pSlice);
+
+		pSlice->returnExtraSpace();
+	}
+
+	// TODO should we call _align here?
+	
 	UT_DEBUGMSG(("END reformat block: 0x%x\n", this));
 
-	setNeedsReformat(UT_FALSE);
+	setNeedsCompleteReformat(UT_FALSE);
 	
 	m_bFormatting = UT_FALSE;
 	return 0;
@@ -314,11 +339,18 @@ void fl_BlockLayout::_purgeLayout(UT_Bool bVisible)
 	{
 		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 		UT_ASSERT(pSlice);
+
 		if (bVisible)
+		{
+			UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
 			pSlice->clearScreen(m_pLayout->getGraphics());
+		}
 		pSlice->deleteLines();
+
 		if (bVisible)
+		{
 			pSlice->remove();
+		}
 
 		delete pSlice;
 	}
@@ -354,7 +386,9 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	}
 
 	if (m_pFirstRun == pTruncRun)
+	{
 		m_pFirstRun = NULL;
+	}
 
 	// remove runs from lines
 	fp_Run* pRun = pTruncRun;
@@ -405,7 +439,7 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	return UT_TRUE;
 }
 
-int fl_BlockLayout::format()
+int fl_BlockLayout::complete_format()
 {
 	UT_DEBUGMSG(("BEGIN Formatting block: 0x%x\n", this));
 
@@ -420,30 +454,56 @@ int fl_BlockLayout::format()
 		  The operation will be slow.
 		*/
 		UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
+		UT_DEBUGMSG(("######## WARNING:  Brute-force reformat of block: 0x%x\n", this));
+
+		/*
+		  TODO originally this routine was a brute-force reformat of a block.
+		  It has since been modified such that the runs are no longer destroyed.
+		  In other words, it has been modified to do essentially what minor_reformat()
+		  is supposed to do.  I've changed the names of the methods and comments
+		  to make things clearer.  However, for now, I'm not changing the behavior
+		  of this method much.
+
+		  It is now clear that there are going to be several kinds of reformat
+		  operations.  In some cases, we will want to stomp all the runs.
+		  In some cases, we will want to stomp the slices.  In some cases
+		  we want to call relayoutBlock and in others breakParagraph.
+		*/
 		
 		int countSlices = m_vecSlices.getItemCount();
 		for (int i=0; i<countSlices; i++)
 		{
 			fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
 			UT_ASSERT(pSlice);
-			
+
 			pSlice->clearScreen(m_pLayout->getGraphics());
 			pSlice->deleteLines();
 			pSlice->verifyColumnFit();
-		}
-
-		m_pFirstLine = m_pLastLine = NULL;
 #if 0
-		while (m_pFirstRun)
-		{
-			fp_Run* pNext = m_pFirstRun->getNext();
-			delete m_pFirstRun;
-			m_pFirstRun = pNext;
+			pSlice->remove();
+
+			delete pSlice;
+#endif
 		}
 
-		m_gbCharWidths.truncate(0);
+#if 0		
+		for (int j=countSlices-1; j>=0; j--)
+		{
+			m_vecSlices.deleteNthItem(j);
+		}
+		UT_ASSERT(m_vecSlices.getItemCount() == 0);
+#endif		
+		m_pFirstLine = m_pLastLine = NULL;
+
+#if 0
+		m_pCurrentSlice = NULL;
 #endif
 		m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
+
+		/*
+		  NOTE that we currently leave the runs alone.  If we were
+		  to stomp them too, then we should just call _purgeLayout().
+		*/
 	}
 
 #if 0
@@ -491,7 +551,7 @@ int fl_BlockLayout::format()
 
 	m_bFormatting = UT_FALSE;
 
-	setNeedsReformat(UT_FALSE);
+	setNeedsCompleteReformat(UT_FALSE);
 	
 	UT_DEBUGMSG(("END Formatting block: 0x%x\n", this));
 
@@ -593,12 +653,12 @@ void fl_BlockLayout::_createRuns()
 	// EX:  m_pDoc->repopulate(m_sdh, this);	// or get lid from m_pLayout
 }
 
-void fl_BlockLayout::setNeedsReformat(UT_Bool b)
+void fl_BlockLayout::setNeedsCompleteReformat(UT_Bool b)
 {
 	m_bNeedsReformat = b;
 }
 
-UT_Bool fl_BlockLayout::needsReformat()
+UT_Bool fl_BlockLayout::needsCompleteReformat()
 {
 	return m_bNeedsReformat;
 }

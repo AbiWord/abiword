@@ -41,7 +41,7 @@ fb_SimpleLineBreaker::fb_SimpleLineBreaker()
   than just trash them all and start over, we actually need to iterate
   over the lines so we can figure out if the runs contained in the line
   have moved on the screen.  If they have indeed moved, we need to repaint
-  them
+  them.
 */
 int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 {
@@ -70,7 +70,18 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 											yoff, screenWidth, screenHeight);
 
 					if (yoff > screenHeight)
+					{
+						/*
+						  This check is apparently too aggressive.  There are cases
+						  where a line needs to be cleared but it is not being done,
+						  due to this variable being [apparently] set incorrectly.
+
+						  For now, I've fixed the symptom, not the problem, by commenting
+						  out the check (see below).  TODO we should fix the problem,
+						  not the symptom.  -EWS
+						*/
 						bLineOnScreen = UT_FALSE;
+					}
 				}
 			}
 			
@@ -84,11 +95,8 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 				fp_Run* pLastRun = pLine->getLastRun();
 				fp_Run* pNewLastRun = NULL;
 				
-				while (pRun && pRun != pLastRun->getNext())
+				while (pRun && (pRun != pLastRun->getNext()))
 				{
-//					if (bRedrawLine && bLineOnScreen)
-//						pRun->clearScreen();
-					
 					iWidth += pRun->getWidth();
 
 					// This is the run that needs to be broken
@@ -261,6 +269,7 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 					{
 						// TODO: remove empty lines from
 						// TODO: pRealNextLine to pNextLine
+
 						return 0;
 					}
 
@@ -268,8 +277,6 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 					fp_Run* pRunLooking = pCurRun;
 					fp_Run* pLastRun = pNextLine->getLastRun();
 					
-					fp_RunSplitInfo si;
-
 					while (iWidthLooking < iSpaceLeft &&
 						   pRunLooking != pLastRun->getNext())
 					{
@@ -282,8 +289,12 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 							if (!pRunLooking->getNext() ||
 								pRunLooking->canBreakAfter())
 							{
+#if 0	// this check seems to leave screen dirt -EWS								
 								if (bLineOnScreen)
+#endif
+								{
 									pNextLine->clearScreen();
+								}
 								
 								// snarf up any runs previous to us who
 								// said they couldn't be broken after ...
@@ -344,11 +355,13 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 									return 0;
 								}
 
-/*								if (pNextLine->countRuns() == 0)
+#if 0
+								if (pNextLine->countRuns() == 0)
 								{
 									pLine->m_bDirty = UT_TRUE;
 									break;
-									}*/
+								}
+#endif
 							}
 							else
 							{
@@ -359,8 +372,12 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 						}
 						else if	(pRunLooking->findMaxLeftFitSplitPoint(iSpaceLeft - (iWidthLooking - pRunLooking->getWidth()), si))
 						{
+#if 0	// this line causes display dirt.  -EWS
 							if (bLineOnScreen)
+#endif								
+							{
 								pNextLine->clearScreen();
+							}
 							
 							pNextLine->removeRun(pRunLooking);
 							
@@ -577,7 +594,7 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						  nothing at all was placed on this line.  We should try harder.
 						*/
 						
-						int bFoundSplit = pCurRun->findMinLeftFitSplitPoint(si);
+						bFoundSplit = pCurRun->findMinLeftFitSplitPoint(si);
 
 						if (bFoundSplit)		
 						{

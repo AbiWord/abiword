@@ -337,12 +337,12 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					if (bFormat)
 					{
 						mask |= FV_CHG_FMTCHAR;
-						pBL->format();
+						pBL->complete_format();
 						pBL->draw(m_pLayout->getGraphics());
 					}
 					else
 					{
-						pBL->reformat();
+						pBL->minor_reformat();
 					}
 
 					// in case anything else moved
@@ -428,8 +428,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						}
 					}
 
-					pBL->format();
-					pBL->draw(m_pLayout->getGraphics());
+					pBL->minor_reformat();
+					// pBL->draw(m_pLayout->getGraphics());
 
 					// in case anything else moved
 					m_pLayout->reformat();
@@ -505,7 +505,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							pRun = pRun->getNext();
 						}
 
-						pBL->format();
+						pBL->complete_format();
 						pBL->draw(m_pLayout->getGraphics());
 
 						// in case anything else moved
@@ -680,7 +680,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							delete pBL;
 
 							// update the display
-							pPrevBL->format();
+							pPrevBL->complete_format();
 							pPrevBL->draw(m_pLayout->getGraphics());
 
 							// in case anything else moved
@@ -743,7 +743,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					pL->setAttrPropIndex(pcr->getIndexAP());
 
 					// TODO: may want to figure out the specific change and do less work
-					pBL->format();
+					pBL->complete_format();
 					pBL->draw(m_pLayout->getGraphics());
 
 					// in case anything else moved
@@ -901,10 +901,10 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					}
 
 					// update the display
-					pBL->reformat();
+					pBL->minor_reformat();
 					pBL->draw(m_pLayout->getGraphics());
 
-					pNewBL->format();
+					pNewBL->complete_format();
 					pNewBL->draw(m_pLayout->getGraphics());
 
 					// in case anything else moved

@@ -156,7 +156,7 @@ int fl_SectionLayout::format()
 
 	while (pBL && bStillGoing)
 	{
-		pBL->format();
+		pBL->complete_format();
 		pBL = pBL->getNext();
 	}
 
@@ -170,10 +170,11 @@ UT_Bool fl_SectionLayout::reformat()
 
 	while (pBL)
 	{
-		if (pBL->needsReformat())
+		if (pBL->needsCompleteReformat())
 		{
-			pBL->format();
+			pBL->complete_format();
 			pBL->draw(m_pLayout->getGraphics());
+			
 			bResult = UT_TRUE;
 		}
 

@@ -527,7 +527,9 @@ void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
 	
 	// let our parent know that we are changing underneath them ...
 	if (m_pLine)
+	{
 		m_pLine->runSizeChanged(m_pLineData, iOldWidth, m_iWidth);
+	}
 }
 
 void fp_Run::expandWidthTo(UT_uint32 /*iNewWidth*/)
@@ -735,9 +737,9 @@ void fp_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 		{
 			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff - m_iAscent);
 
-			for (UT_uint32 i=offset; i<offset+lenSpan; i++)
+			for (UT_uint32 i2=offset; i2<offset+lenSpan; i2++)
 			{
-				iLeftWidth += pCharWidths[i];
+				iLeftWidth += pCharWidths[i2];
 			}
 
 			offset += lenSpan;
