@@ -106,28 +106,47 @@ void AP_Preview_PageNumbers::setAlign(AP_Dialog_PageNumbers::tAlign align)
   m_align = align;
 }
 
+#define LINES_TO_DRAW 25
+
 void AP_Preview_PageNumbers::draw (void)
 {
   int x = 0, y = 0;
 
   UT_ASSERT (m_gc);
 
+  // clear the screen on updates
   m_gc->clearArea (0, 0, getWindowWidth(), getWindowHeight());
 
-  // TODO: make this right for headers, footers, and both
-  // TODO: and put some text in the middle too
+  UT_sint32 iWidth = getWindowWidth();
+  UT_sint32 iHeight = getWindowHeight();
+  UT_sint32 iFontHeight = m_gc->getFontHeight ();
+
+  UT_sint32 step = (int)(iHeight / LINES_TO_DRAW);
+
+  // actually draw some "text" on the preview for a more realistic appearance
+
+  m_gc->setLineWidth(1);
+  UT_RGBColor color(0, 0, 0);
+  m_gc->setColor(color);
+
+  for (int txty = (2 * iFontHeight); txty < iHeight - (2 * iFontHeight); txty += step)
+    {
+      m_gc->drawLine (7, txty, iWidth - 7, txty);
+    }
+
+  // draw in the page number as a header or footer, properly aligned
 
   switch (m_align)
     {
-    case AP_Dialog_PageNumbers::id_RALIGN : x = getWindowWidth() - (2 * m_gc->measureUnRemappedChar(*m_str)); break;
-    case AP_Dialog_PageNumbers::id_CALIGN : x = (int)(getWindowWidth()/2); break;
-    case AP_Dialog_PageNumbers::id_LALIGN : x =  3 * m_gc->measureUnRemappedChar(*m_str); break;
+    case AP_Dialog_PageNumbers::id_RALIGN : x = iWidth - (2 * m_gc->measureUnRemappedChar(*m_str)); break;
+    case AP_Dialog_PageNumbers::id_CALIGN : x = (int)(iWidth / 2); break;
+    case AP_Dialog_PageNumbers::id_LALIGN : x =  m_gc->measureUnRemappedChar(*m_str); break;
     }
 
   switch (m_control)
     {
-    case AP_Dialog_PageNumbers::id_HDR : y = m_gc->getFontHeight(); break;
-    case AP_Dialog_PageNumbers::id_FTR : y = getWindowHeight() - (2 * m_gc->getFontHeight()); break;
+    case AP_Dialog_PageNumbers::id_HDR : y = (int)(iFontHeight / 2); break;
+    case AP_Dialog_PageNumbers::id_FTR : y = iHeight - (2 * iFontHeight); break;
     }
 
   m_gc->drawChars (m_str, 0, UT_UCS_strlen(m_str), x, y);

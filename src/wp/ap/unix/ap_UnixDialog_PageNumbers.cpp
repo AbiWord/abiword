@@ -347,8 +347,7 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
 
   // create the preview area
   m_previewArea = gtk_drawing_area_new ();
-  gtk_drawing_area_size (GTK_DRAWING_AREA(m_previewArea), 145, 145);
-  //	gtk_widget_set_usize(preview_area, 180, 225);
+  gtk_drawing_area_size (GTK_DRAWING_AREA(m_previewArea), 90, 115);
   gtk_widget_show (m_previewArea);
   gtk_container_add (GTK_CONTAINER (frame1), m_previewArea);
 
