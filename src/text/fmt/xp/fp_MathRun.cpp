@@ -106,6 +106,24 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 // Load this into MathView
 
+	// LUCA: chunk of code moved up here from the bottom of the method
+	// 'cause we need to retrieve the font-size
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	getBlockAP(pBlockAP);
+
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+
+	if (pFont != _getFont())
+	{
+		_setFont(pFont);
+	}
+	m_iPointHeight = pG->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
+	const char* pszSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,
+					      getBlock()->getDocument(), true);
+
 	// LUCA: It is fundamental to do this before the MathView object
 	// gets destroyed to avoid resuscitating it
 	if(	m_pMathView == NULL)
@@ -118,7 +136,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 		m_pMathView->loadBuffer(m_sMathML.utf8_str());
 	}
-	m_pMathView->setDefaultFontSize(20);
+	m_pMathView->setDefaultFontSize(atoi(pszSize));
 	BoundingBox box = m_pMathView->getBoundingBox();
 	UT_sint32 iWidth = getAbiContext()->toAbiLayoutUnits(box.width);
 	UT_sint32 iAscent = getAbiContext()->toAbiLayoutUnits(box.height);
@@ -179,19 +197,6 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setDescent(iDescent);
 	_setWidth(iWidth);
 	_setHeight(iAscent+iDescent);
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL;
-
-	getBlockAP(pBlockAP);
-
-	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-
-	if (pFont != _getFont())
-	{
-		_setFont(pFont);
-	}
-	m_iPointHeight = pG->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
 }
 
 
