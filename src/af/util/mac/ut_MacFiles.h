@@ -24,8 +24,13 @@
 #ifndef _UT_MAC_FILE_H_
 #define _UT_MAC_FILE_H_
 
+#include <MacTypes.h>
+
+
+char * UT_FSRefToUNIXPath (const FSRef * fileRef);
+
 /* From More Files */
-pascal	OSErr	FSpGetFullPath(const FSSpec *spec,
+OSErr	FSpGetFullPath(const FSSpec *spec,
 							   short *fullPathLength,
 							   Handle *fullPath);
 /*	¦ Get a full pathname to a volume, directory or file.

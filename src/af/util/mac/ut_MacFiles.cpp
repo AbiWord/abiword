@@ -26,14 +26,38 @@
 #include <Files.h>
 #include <TextUtils.h>
 
-#include "UT_MacFiles.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "ut_MacFiles.h"
 
 #define SystemSevenOrLater 1
 
 
+/*!
+	Return a UNIX Path from a FSRef
+	\param fileRef the FSRef
+	\return the path in UTF-8. NULL in case of error. The caller must free() the return pointer.
+ */
+char * UT_FSRefToUNIXPath (const FSRef * fileRef)
+{
+	char * result;
+	CFIndex len;
+	CFURLRef   destURL = ::CFURLCreateFromFSRef (kCFAllocatorDefault, fileRef);
+	CFStringRef   destPath = ::CFURLCopyFileSystemPath (destURL, kCFURLPOSIXPathStyle);
+	len = CFStringGetMaximumSizeForEncoding (CFStringGetLength (destPath), kCFStringEncodingUTF8) + 1;
+	result = (char *)malloc (len * sizeof (char));
+	bool ok = CFStringGetCString (destPath, result, len, kCFStringEncodingUTF8);
+	UT_ASSERT (ok);
+	
+	CFRelease (destPath);
+	CFRelease (destURL);
+	return result;
+}
+
+
 /*****************************************************************************/
 
-pascal	OSErr	FSMakeFSSpecCompat(short vRefNum,
+OSErr	FSMakeFSSpecCompat(short vRefNum,
 								   long dirID,
 								   ConstStr255Param fileName,
 								   FSSpec *spec)
@@ -69,7 +93,7 @@ pascal	OSErr	FSMakeFSSpecCompat(short vRefNum,
 
 /*****************************************************************************/
 
-pascal	OSErr	FSpGetFullPath(const FSSpec *spec,
+OSErr	FSpGetFullPath(const FSSpec *spec,
 							   short *fullPathLength,
 							   Handle *fullPath)
 {
