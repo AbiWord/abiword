@@ -62,7 +62,10 @@ char * UT_tmpnam(char * base)
 	if (fd != -1)
 	{
 		close (fd);
-		strncpy (base, name, strlen (name));
+//		strncpy (base, name, strlen (name));
+		// no need for a strncpy since name is 0 terminated and
+		// we have no clue of len of base buffer. See bug 1647
+		strcpy (base, name);
 		g_free (name);
 		return base;
 	}
