@@ -1023,8 +1023,20 @@ void fp_Line::clearScreen(void)
 				return;
 			}
 //			UT_sint32 iExtra = getGraphics()->getFontAscent()/2;
-			UT_sint32 iExtra = 0;
-			
+			fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
+			UT_sint32 iExtra = getGraphics()->tlu(2);
+			if(getContainer() && (getContainer()->getContainerType() != FP_CONTAINER_CELL) && (getContainer()->getContainerType() != FP_CONTAINER_FRAME))
+
+			{
+				if(pSL->getNumColumns() >1)
+				{
+					iExtra = pSL->getColumnGap()/2;
+				}
+				else
+				{
+					iExtra = pSL->getRightMargin()/2;
+				}
+			}
 			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
 //			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset+iExtra, height);
 			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, getMaxWidth() + m_iClearLeftOffset +iExtra, height);
