@@ -29,7 +29,7 @@ PROGRAM=		$(BINDIR)/AbiWord
 #LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
 #			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libpng Abi_zlib
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv Abi_libiconv
 
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 
