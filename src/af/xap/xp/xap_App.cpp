@@ -531,9 +531,11 @@ void    XAP_App::clearLastFocussedFrame(void)
 
 XAP_Frame * XAP_App::getLastFocussedFrame( void ) 
 {
-        if(m_lastFocussedFrame == (XAP_Frame *) NULL) return m_lastFocussedFrame;
+	if(m_lastFocussedFrame == (XAP_Frame *) NULL)
+		return getFrame(0);
         UT_sint32 i = safefindFrame(m_lastFocussedFrame);
-        if( i>= 0) return m_lastFocussedFrame;
+        if( i>= 0)
+		return m_lastFocussedFrame;
         return (XAP_Frame *) NULL;
 }
 
