@@ -482,15 +482,18 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 static void set_menu_enabled(PtWidget_t *w, int enabled, int checked) {
 	int flags;
 
-	flags =  (enabled == UT_TRUE) ? 0 : (Pt_BLOCKED | Pt_GHOST);
+/* Photon funniness ... why can't ghosting work? */
+	flags =  (enabled == UT_TRUE) ? Pt_SELECTABLE : (Pt_BLOCKED | Pt_GHOST)  ;
 	flags |= (checked == UT_TRUE) ? Pt_SET : 0;
-	PtSetResource(w, Pt_ARG_FLAGS, flags, Pt_BLOCKED | Pt_GHOST | Pt_SET);
+	PtSetResource(w, Pt_ARG_FLAGS, flags, Pt_BLOCKED | Pt_GHOST | Pt_SET | Pt_SELECTABLE);
 }
 
+//TODO: This code gets called way too often, or maybe we need to be able
+//      to whip through all of the non-relevant widgets more quickly.  In
+//      any case it is on the TODO list.
 UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 {
 	// update the status of stateful items on menu bar.
-#if 1
 	const EV_Menu_ActionSet * pMenuActionSet = m_pQNXApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
@@ -645,7 +648,6 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == wMenuRoot);
-#endif
 
 	return UT_TRUE;
 }
