@@ -101,7 +101,6 @@ void FV_Selection::pasteRowOrCol(void)
 	// Turn off list updates
 
 		getDoc()->disableListUpdates();
-		getDoc()->beginUserAtomicGlob();
 		if (!m_pView->isSelectionEmpty())
 		{
 			m_pView->_clearSelection();
