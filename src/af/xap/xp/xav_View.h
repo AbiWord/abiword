@@ -26,7 +26,6 @@
 #include "ut_vector.h"
 #include "xav_Listener.h"
 #include "ev_EditBits.h"
-class AP_TopRulerInfo;
 class XAP_App;
 
 typedef enum _AV_ScrollCmd
@@ -75,9 +74,6 @@ public:
 	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; };
 	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; };
 
-	virtual UT_uint32	getPageViewLeftMargin(void) const = 0;
-	virtual UT_uint32	getPageViewTopMargin(void) const = 0;
-	
 	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
 
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
@@ -96,7 +92,6 @@ public:
 	virtual UT_Bool	cmdSave(void) = 0;
 	virtual UT_Bool	cmdSaveAs(const char * szFilename) = 0;
 
-	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo) = 0;
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos) = 0;
 	

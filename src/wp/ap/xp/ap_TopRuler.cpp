@@ -25,15 +25,11 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ap_TopRuler.h"
-#include "xav_View.h"
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
-#include "fv_View.h"					// TODO remove this.  we need to
-										// TODO add the various pView->...()
-										// TODO methods that we use to the
-										// TODO the xav_View base class.
+#include "fv_View.h"
 
 // HACK: private copy of constants from fl_BlockLayout.h
 // TODO: find a better way of passing iType for tabs?
@@ -849,7 +845,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	{
 		// otherwise we calculate our own.
 		pInfo = &infoLocal;
-		m_pView->getTopRulerInfo(pInfo);
+		(static_cast<FV_View *>(m_pView))->getTopRulerInfo(pInfo);
 	}
 	
 	// draw the tab toggle inside the fixed area in the left-hand corner
@@ -1009,7 +1005,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	m_bValidMouseClick = UT_FALSE;
 	m_draggingWhat = DW_NOTHING;
 	
-	m_pView->getTopRulerInfo(&m_infoCache);
+	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
 
 	// first hit-test against the tab toggle control
 

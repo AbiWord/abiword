@@ -41,6 +41,7 @@ class GR_Graphics;
 class GR_Image;
 class UT_Timer;
 class UT_ByteBuf;
+class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
 
 
