@@ -19,6 +19,8 @@
 
 /* traduction fcella@mahj.org du 24/05/1999
  * complétée par Philippe Duperron <duperron@mail.dotcom.fr> 08/06/1999  */
+/* modifications par Gilles Saint-Denis <stdenisg@cedep.net> et
+   Christopher Caron <ChrisDigo@aol.com> 23/10/2000 */
 
 /*****************************************************************
 ******************************************************************
@@ -50,7 +52,7 @@ BeginSet(fr,FR,UT_TRUE)
 
 	//          (id, 		                szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nouveau", 			tb_new_xpm,	NULL, "Creer un nouveau document")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nouveau", 			tb_new_xpm,	NULL, "Créer un nouveau document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Ouvrir",			tb_open_xpm,	NULL, "Ouvrir un document existant")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Enregistrer",		tb_save_xpm,	NULL, "Enregistrer le document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Enregistrer sous",	tb_save_as_xpm,	NULL, "Enregistrer le document sous un nouveau nom")
@@ -73,7 +75,7 @@ BeginSet(fr,FR,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Exposant",			tb_text_superscript_xpm,	NULL, "Exposant")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indice",			tb_text_subscript_xpm,		NULL, "Indice")
-	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Simbole",			tb_symbol_xpm,				NULL, "Insèrer simbole")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbole",			tb_symbol_xpm,				NULL, "Insérer symbole")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Gauche",			tb_text_align_left_xpm,		NULL, "Alignement à gauche")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centré",			tb_text_center_xpm,			NULL, "Paragraphe centré")
@@ -92,6 +94,8 @@ BeginSet(fr,FR,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"Trois colonnes",	tb_3column_xpm,			NULL, "Trois colonnes")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Liste à puce",		tb_lists_bullets_xpm,	NULL,	"Démarre/arrête une liste à puce")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Liste numérotée",	tb_lists_numbers_xpm,	NULL,	"Démarre/arrête une liste numérotée")
 	
 	// ... add others here ...
 

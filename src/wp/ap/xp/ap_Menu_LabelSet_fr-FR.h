@@ -18,6 +18,8 @@
  */
 
 /* French translations provided by Philippe Duperron <duperron@mail.dotcom.fr> */
+/* modifications by Gilles Saint-Denis <stdenisg@cedep.net> and 
+   Christopher Caron <ChrisDigo@aol.com> 23/10/2000 */
 
 /*****************************************************************
 ******************************************************************
@@ -58,7 +60,7 @@ BeginSet(fr,FR,UT_TRUE)
     MenuLabel(AP_MENU_ID_FILE_RECENT_9,     "&9 %s",            "Ouvre ce document")
     MenuLabel(AP_MENU_ID_FILE_EXIT,         "&Quitter",         "Ferme toutes les fenêtres et quitte l'application")
 
-    MenuLabel(AP_MENU_ID_EDIT,              "&Édition",         NULL)
+    MenuLabel(AP_MENU_ID_EDIT,              "&Edition",         NULL)
     MenuLabel(AP_MENU_ID_EDIT_UNDO,         "&Annuler",         "Annule la dernière action")
     MenuLabel(AP_MENU_ID_EDIT_REDO,         "&Répéter",         "Refait l'action précédemment annulée")
     MenuLabel(AP_MENU_ID_EDIT_CUT,          "&Couper",          "Efface la sélection et la place dans le presse-papiers")
@@ -74,10 +76,11 @@ BeginSet(fr,FR,UT_TRUE)
     MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,     "&Barre d'outils",  NULL)
     MenuLabel(AP_MENU_ID_VIEW_TB_STD,       "&Standard",        "Affiche ou masque la barre d'outils standard")
     MenuLabel(AP_MENU_ID_VIEW_TB_FORMAT,    "&Mise en forme",   "Affiche ou masque la barre d'outils de mise en forme")
+	MenuLabel(AP_MENU_ID_VIEW_TB_EXTRA,		"&Extra",			"Affiche ou masque la barre d'outils extra")
     MenuLabel(AP_MENU_ID_VIEW_RULER,        "&Règles",          "Affiche ou masque les règles")
     MenuLabel(AP_MENU_ID_VIEW_STATUSBAR,    "Barre d'é&tat",    "Affiche ou masque la barre d'état")
     MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,     "&Afficher/Masquer ¶",          "Affiche ou masque les caractères non-imprimables")
-    MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,     "&Entêtes et pieds de page",    "Édite le texte de l'entête et du pied de page")
+    MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,     "&Entêtes et pieds de page",    "Edite le texte de l'entête et du pied de page")
     MenuLabel(AP_MENU_ID_VIEW_ZOOM,         "&Zoom",            "Règle le facteur d'agrandissement de l'affichage")
 
     MenuLabel(AP_MENU_ID_INSERT,            "&Insertion",      NULL)
@@ -99,13 +102,15 @@ BeginSet(fr,FR,UT_TRUE)
     MenuLabel(AP_MENU_ID_FMT_BOLD,          "&Gras",           "Met la sélection en gras (bascule)")
     MenuLabel(AP_MENU_ID_FMT_ITALIC,        "&Italique",       "Met la sélection en italique (bascule)")
     MenuLabel(AP_MENU_ID_FMT_UNDERLINE,     "Sou&ligné",       "Souligne la sélection (bascule)")
-    MenuLabel(AP_MENU_ID_FMT_OVERLINE,      "Barré &haut",     "Overline the selection (toggle)")
+    MenuLabel(AP_MENU_ID_FMT_OVERLINE,      "Barré &haut",     "Barre la sélection en haut (bascule)")
     MenuLabel(AP_MENU_ID_FMT_STRIKE,        "&Barré",          "Barre la sélection (bascule)")
-    MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   "&Exposant",       "Make the selection superscript (toggle)")
-    MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,     "I&ndice",         "Make the selection subscript (toggle)")
+    MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   "&Exposant",       "Met la sélection en exposant (bascule)")
+    MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,     "I&ndice",         "Met la sélection en indice (bascule)")
 
-    MenuLabel(AP_MENU_ID_TOOLS_SPELL,        "O&rthographe",	"Vérifie l'orthographe du document")
-    MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,      "Option&s",         "Configure les différentes options")
+	MenuLabel(AP_MENU_ID_TOOLS,				"O&utils",			NULL)   
+    MenuLabel(AP_MENU_ID_TOOLS_SPELL,       "O&rthographe",		"Vérifie l'orthographe du document")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Statistiques",	"Statistiques du document")
+    MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,     "O&ptions",         "Configure les différentes options")
     
     MenuLabel(AP_MENU_ID_ALIGN,             "&Alignement",     NULL)
     MenuLabel(AP_MENU_ID_ALIGN_LEFT,        "à &Gauche",       "Aligne le paragraphe à gauche")
@@ -127,13 +132,27 @@ BeginSet(fr,FR,UT_TRUE)
     MenuLabel(AP_MENU_ID_WINDOW_MORE,       "&Plus de fenêtres",    "Montre la liste complète des fenêtres")
 
     MenuLabel(AP_MENU_ID_HELP,              "&Aide",            NULL)
-    MenuLabel(AP_MENU_ID_HELP_ABOUT,        "&A propos de %s",  "Affiche les informations sur le programme, le numéro de version et le copyright")
+	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Sommaire",		"Affiche le sommaire de l'aide")
+	MenuLabel(AP_MENU_ID_HELP_INDEX,		"&Index de l'aide",		"Affiche l'index de l'aide")
+	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"&Vérifier la version",	"Affiche le numéro de version du programme")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Rechercher dans l'aide",	"Recherche de l'aide à propos de...")
+    MenuLabel(AP_MENU_ID_HELP_ABOUT,        "&A propos de %s",  "Affiche des informations sur le programme, le numéro de version et le copyright")
+	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"A propos de l'&Open Source",	"Affiche des informations sur le concept Open Source")
+
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_9,	"%s",				"Change pour le texte suggéré")
+	MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,	"&Ignorer tout", 	"Ignore le mot chaque fois qu'on le rencontre dans le document")
+	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Ajouter", 		"Ajouter ce mot au dictionnaire personnel")
 
     // ... add others here ...
 
     MenuLabel(AP_MENU_ID__BOGUS2__,         NULL,               NULL)
 
 EndSet()
- 
-
-
