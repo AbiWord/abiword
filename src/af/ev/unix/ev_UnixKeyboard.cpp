@@ -125,7 +125,9 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	}
 	else 
 	  {
-	    UT_UTF8String utf8 ((const UT_UCSChar *)&charData, 1);
+	    // TODO: is this necessary?
+	    charData = gdk_keyval_to_unicode (charData);
+	    UT_UTF8String utf8 ((const UT_UCS4Char *)&charData, 1);
 	    return charDataEvent (pView, state, utf8.utf8_str(), utf8.byteLength());
 	  }
 
@@ -136,6 +138,11 @@ bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const cha
 {
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
+
+	if (!len) {
+	  UT_ASSERT_NOT_REACHED ();
+	  return true;
+	}
 
 	UT_UCS4String ucs (text, len);
 
