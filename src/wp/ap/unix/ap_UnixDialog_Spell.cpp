@@ -294,6 +294,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    // insert start of sentence
    p = _getPreWord();
    gchar * preword = (gchar*) _convertToMB(p);
+   FREEP(mbword);
    FREEP(p);
    gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
 		   preword, strlen(preword));
@@ -301,6 +302,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    // insert misspelled word (in highlight color)
    p = _getCurrentWord();
    gchar * word = (gchar*) _convertToMB(p);
+   FREEP(mbword);
    FREEP(p);
 
    gtk_text_insert(GTK_TEXT(m_textWord) , NULL, &m_highlight, NULL,
@@ -309,6 +311,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    // insert end of sentence
    p = _getPostWord();
    gchar * postword = (gchar*) _convertToMB(p);
+   FREEP(mbword);
    FREEP(p);
    gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
 		   postword, strlen(postword));
@@ -323,6 +326,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    
    for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
       suggest[0] = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
+      FREEP(mbword);
       gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
    }
    
@@ -348,7 +352,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    }
    
    gtk_clist_thaw(GTK_CLIST(m_clistSuggestions) );
-   
+   FREEP(word);
 }
 
 void AP_UnixDialog_Spell::_populateWindowData(void)
@@ -479,9 +483,9 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
-	char *word = (char *) malloc (UT_UCS4_strlen(wword)*2);
-	UT_UCS4_strcpy_to_char(word,wword);
-	return word;
+	mbword = (char *) malloc (UT_UCS4_strlen(wword)*2);
+	UT_UCS4_strcpy_to_char(mbword,wword);
+	return mbword;
 }
 
 // make a wide string from a multibyte string
