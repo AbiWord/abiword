@@ -252,6 +252,7 @@ protected:
 	void				_convertFontSize(char* szDest, const char* pszFontSize);
 	void				_convertColor(char* szDest, const char* pszColor);
 	void				_storeStyles(void);
+	char *				_stripSuffix(const char* from, char delimiter);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
@@ -1906,12 +1907,17 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 					m_utvDataIDs.push_back(dataid);
 
-					sprintf(buf, "%s.png", UT_basename(szValue));
-					m_pie->write("<img alt=\"AbiWord Image");
+					char * temp = _stripSuffix(UT_basename(szValue), '_');
+					char * fstripped = _stripSuffix(temp, '.');
+					FREEP(temp);
+					sprintf(buf, "%s.png", fstripped);
+					FREEP(fstripped);
+					
+					m_pie->write("<img alt=\"AbiWord Image ");
 					m_pie->write(buf);
 					m_pie->write("\" src=\"");
 					m_pie->write(UT_basename(m_pie->getFileName()));
-					m_pie->write("_d/");
+					m_pie->write("_data/");
 					m_pie->write(buf);
 					m_pie->write("\" ");
 					
@@ -2145,6 +2151,30 @@ UT_Error IE_Exp_HTML::_writeDocument(void)
 /*****************************************************************/
 /*****************************************************************/
 
+/*!
+   removes the suffix from a string by searching backwards for the specified 
+   character delimiter. If the delimiter is not found, a copy of the original 
+   string is returned
+   
+   eg. _stripSuffix("/home/user/file.png, '.') returns "/home/user/file" 
+       _stripSuffix("/home/user/foo_bar, '_') returns /home/user/foo 
+       _stripSuffix("/home/user/file.png, '_') returns /home/user/file.png"
+*/
+char *s_HTML_Listener::_stripSuffix(const char* from, char delimiter)
+{
+    char * fremove_s = (char *)malloc(strlen(from)+1);
+    strcpy(fremove_s, from);   
+
+    char * p = fremove_s + strlen(fremove_s);
+    while ((p >= fremove_s) && (*p != delimiter))
+        p--;
+	
+    if (p >= fremove_s)
+	*p = '\0';
+    
+    return fremove_s;
+}
+
 void s_HTML_Listener::_handleDataItems(void)
 {
  	const char * szName;
@@ -2168,7 +2198,7 @@ void s_HTML_Listener::_handleDataItems(void)
 			FILE *fp;
 			char fname [1024]; // EVIL EVIL bad hardcoded buffer size
 			
-			sprintf(fname, "%s_d", m_pie->getFileName());
+			sprintf(fname, "%s_data", m_pie->getFileName());
 			int result = m_pDocument->getApp()->makeDirectory(fname, 0750);
 			
 			if (!UT_strcmp(szMimeType, "image/svg-xml"))
@@ -2176,22 +2206,31 @@ void s_HTML_Listener::_handleDataItems(void)
 			if (!UT_strcmp(szMimeType, "text/mathml"))
 				sprintf(fname, "%s/%s_%d.mathml", fname, szName, loc);
 			else // PNG Image
-				sprintf(fname, "%s/%s.png", fname, UT_basename(szName));
-			
-			fp = fopen (fname, "wb+");
-			
-			if(!fp)
-				continue;
-			
-			int cnt = 0, len = pByteBuf->getLength();
-			
-			while (cnt < len)
-			{
-				cnt += fwrite (pByteBuf->getPointer(cnt), 
-							   sizeof(UT_Byte), len-cnt, fp);
+			{  
+				char * temp = _stripSuffix(UT_basename(szName), '_');
+				char * fstripped = _stripSuffix(temp, '.');
+				FREEP(temp);
+				sprintf(fname, "%s/%s.png", fname, fstripped);
+				FREEP(fstripped);
 			}
 			
-			fclose(fp);
+			if (!UT_isRegularFile(fname))
+			{
+			    fp = fopen (fname, "wb+");
+			
+			    if(!fp)
+				    continue;
+			
+			    int cnt = 0, len = pByteBuf->getLength();
+			
+			    while (cnt < len)
+			    {
+				    cnt += fwrite (pByteBuf->getPointer(cnt), 
+							     sizeof(UT_Byte), len-cnt, fp);
+			    }
+			
+			    fclose(fp);
+			}
 		}
 	}
 	
