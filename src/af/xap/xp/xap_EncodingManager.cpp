@@ -861,18 +861,18 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
     static char* ptrs[7];
     int idx = 0;
     if (!skip_fallback)
-	if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s",prefix,suffix)!=-1)
+	if (sprintf(ptrs[idx]=bufs[idx],"%s%s",prefix,suffix)!=-1)
 	    ++idx;
     const char* lang = XAP_EncodingManager::instance->getLanguageISOName(),
 	*territory = XAP_EncodingManager::instance->getLanguageISOTerritory(),
 	*enc = XAP_EncodingManager::instance->getNativeEncodingName();
-    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s%s",prefix,sep,lang,suffix)!=-1)
+    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s%s",prefix,sep,lang,suffix)!=-1)
 	++idx;
-    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s%s",prefix,sep,enc,suffix)!=-1)
+    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s%s",prefix,sep,enc,suffix)!=-1)
 	++idx;	
-    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s-%s%s",prefix,sep,lang,territory,suffix)!=-1)
+    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s-%s%s",prefix,sep,lang,territory,suffix)!=-1)
 	++idx;
-    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s-%s.%s%s",prefix,sep,lang,territory,enc,suffix)!=-1)
+    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s-%s.%s%s",prefix,sep,lang,territory,enc,suffix)!=-1)
 	++idx;
     ptrs[idx]=NULL;
     return (const char **)ptrs;
