@@ -81,7 +81,7 @@ static int word_colors[][3] = {
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
 	FILE *fp = NULL;
-	UT_DEBUGMSG(("got to import file\n"));
+	xxx_UT_DEBUGMSG(("got to import file\n"));
 
 	fp = fopen(szFilename, "rb");
 	if (!fp)
@@ -90,7 +90,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	   m_error = UT_IE_FILENOTFOUND;
 	   return m_error;
 	}
-	UT_DEBUGMSG(("wv importer\n"));
+	xxx_UT_DEBUGMSG(("wv importer\n"));
 	fclose(fp);
 
 	wvParseStruct ps;
@@ -102,7 +102,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 		return m_error;
 		}
 	
-	UT_DEBUGMSG(("just here\n"));
+	xxx_UT_DEBUGMSG(("just here\n"));
 	ps.userData = this;
 	wvSetElementHandler(ElementProc);
 	wvSetCharHandler(CharProc);
@@ -123,9 +123,10 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	   
 	   // convert incoming character to unicode
 	   if (chartype)
-	     eachchar = wvHandleCodePage(eachchar, lid);
+	     eachchar = XAP_EncodingManager::instance->UToNative(eachchar);
+	     //eachchar = wvHandleCodePage(eachchar, lid);
 
-	   UT_DEBUGMSG(("word 97 char is %c (%d), type is %d\n",eachchar,(int)eachchar,chartype));
+	   xxx_UT_DEBUGMSG(("word 97 char is %c (%d), type is %d\n",eachchar,(int)eachchar,chartype));
 
 	   // take care of any oddities in Microsoft's character "encoding"
 	   // TODO: does the above code page handler take care of these?
@@ -137,7 +138,7 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	      case 13: // paragraph end
 		return 0;
 	      case 11: // hard line break
-		UT_DEBUGMSG(("a line break\n"));
+		xxx_UT_DEBUGMSG(("a line break\n"));
 		eachchar = UCS_LF;
 		break;
 	      case 12: // page breaks, section marks
@@ -149,27 +150,27 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 		// the last character in the text buffer. since we just 
 		// flushed it above, there's no chance of auto-flushing
 		// before the end-of-section hits.
-		UT_DEBUGMSG(("a page break/section mark\n"));
+		xxx_UT_DEBUGMSG(("a page break/section mark\n"));
 		eachchar = UCS_FF;
 		break;
 	      case 14: // column break
-		UT_DEBUGMSG(("a column break\n"));
+		xxx_UT_DEBUGMSG(("a column break\n"));
 		eachchar = UCS_VTAB;
 		break;
 	      case 19: // field begin
 		// flush current text buffer
 		pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
 		pDocReader->m_iTextRunLength = 0;
-		UT_DEBUGMSG(("a field is beginning\n"));
+		xxx_UT_DEBUGMSG(("a field is beginning\n"));
 		ps->fieldstate++;
 		ps->fieldmiddle = 0;
 		return 0;
 	      case 20: // field separator
-		UT_DEBUGMSG(("a field separator\n"));
+		xxx_UT_DEBUGMSG(("a field separator\n"));
 		ps->fieldmiddle = 1;
 		return 0;
 	      case 21: // field end
-		UT_DEBUGMSG(("a field has ended\n"));
+		xxx_UT_DEBUGMSG(("a field has ended\n"));
 		ps->fieldstate--;
 		ps->fieldmiddle = 0;
 		return 0;
@@ -218,16 +219,16 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	// flush current text buffer
 	pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
 	pDocReader->m_iTextRunLength = 0;
-	UT_DEBUGMSG(("a field is beginning\n"));
+	xxx_UT_DEBUGMSG(("a field is beginning\n"));
 	ps->fieldstate++;
 	ps->fieldmiddle = 0;
 	return 0;
       case 20: // field separator
-	UT_DEBUGMSG(("a field separator\n"));
+	xxx_UT_DEBUGMSG(("a field separator\n"));
 	ps->fieldmiddle = 1;
 	return 0;
       case 21: // field end
-	UT_DEBUGMSG(("a field has ended\n"));
+	xxx_UT_DEBUGMSG(("a field has ended\n"));
 	ps->fieldstate--;
 	ps->fieldmiddle = 0;
 	return 0;
@@ -248,7 +249,7 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	
 	if (achp->fOle2) {
 	   // TODO: support embedded OLE2 components...
-	   UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
+	   xxx_UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
 	   return 0;
 	}
 	
@@ -288,7 +289,7 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	    }
 	  else
 	    {
-	      UT_DEBUGMSG(("nooffspa was <=0 -- ignoring"));
+	      xxx_UT_DEBUGMSG(("nooffspa was <=0 -- ignoring"));
 	    } 
 	  }
 	else
@@ -359,7 +360,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 	const XML_Char* propsArray[3];
 	   
 	propBuffer[0] = 0;
-	UT_DEBUGMSG(("element started\n"));
+	xxx_UT_DEBUGMSG(("element started\n"));
 	PAP *apap;
 	CHP *achp;
 	SEP *asep;
@@ -374,7 +375,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		  m_iTextRunLength = 0;
 		  UT_ASSERT(iRes == 0);
 
-		   UT_DEBUGMSG(("section properties...\n"));
+		   xxx_UT_DEBUGMSG(("section properties...\n"));
 		   asep = (SEP*)props;
 
 		   // page margins
@@ -429,7 +430,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   m_iTextRunLength = 0;
 		   UT_ASSERT(iRes == 0);
 
-		   UT_DEBUGMSG(("paragraph properties...\n"));
+		   xxx_UT_DEBUGMSG(("paragraph properties...\n"));
 		   apap = (PAP*)props;
 
 		   // break before paragraph?
@@ -574,7 +575,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   m_iTextRunLength = 0;
 		   UT_ASSERT(iRes == 0);
 
-		   UT_DEBUGMSG(("character properties...\n"));
+		   xxx_UT_DEBUGMSG(("character properties...\n"));
 		   achp = (CHP*)props;
 
 		   // bold text
@@ -638,7 +639,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   // character sets or encoding types? it's in the docs.
 		   
 		   UT_ASSERT(fname != NULL);
-		   UT_DEBUGMSG(("font-family = %s\n", fname));
+		   xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
 
 		    strcat(propBuffer, "font-family:");
 		    strcat(propBuffer, fname);
@@ -678,9 +679,9 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		       m_pTextRun[m_iTextRunLength-1] == UCS_FF)
 		     {
 			m_iTextRunLength--;
-			UT_DEBUGMSG(("section mark removed\n"));
+			xxx_UT_DEBUGMSG(("section mark removed\n"));
 		     }
-		   UT_DEBUGMSG(("section end\n"));
+		   xxx_UT_DEBUGMSG(("section end\n"));
 		   break;
 
 	        case CHARPROPEND: /* not needed */
@@ -688,7 +689,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		default:
 		   break;
 	     }
-	UT_DEBUGMSG(("element ended\n"));
+	xxx_UT_DEBUGMSG(("element ended\n"));
 	return(0);
 	}
 
@@ -703,7 +704,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	: IE_Imp(pDocument)
 {
-	UT_DEBUGMSG(("constructed wv\n"));
+	xxx_UT_DEBUGMSG(("constructed wv\n"));
 	m_error = UT_OK;
    
 	// to increase the speed and efficiency of the important,
@@ -831,7 +832,7 @@ UT_Bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
 void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				       unsigned char * pData, UT_uint32 lenData)
 {
-	UT_DEBUGMSG(("TODO IE_Imp_MsWord_97::pasteFromBuffer\n"));
+	xxx_UT_DEBUGMSG(("TODO IE_Imp_MsWord_97::pasteFromBuffer\n"));
 }
 
 UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
