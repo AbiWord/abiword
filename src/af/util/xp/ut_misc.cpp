@@ -345,7 +345,7 @@ UT_sint32 signedHiWord(UT_uint32 dw)
  * (str).
  */
 UT_Vector * simpleSplit (const UT_String & str, char separator,
-						 size_t max = 0)
+						 size_t max)
 {
 	UT_Vector * utvResult = new UT_Vector();
 	UT_String* utsEntry;
