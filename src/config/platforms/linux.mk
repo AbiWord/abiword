@@ -62,10 +62,16 @@ AR		= ar cr $@
 
 # Compiler flags
 
+ifeq ($(ABI_OPT_PANGO),1)
+	OBJ_DIR_SFX	= PANGO_
+else
+	OBJ_DIR_SFX	=
+endif
+
 ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER   	= -pg -Wall -ansi -pedantic -fprofile-arcs -ftest-coverage
 DEFINES  	=
-OBJ_DIR_SFX	= PRF
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
 ABI_OPT_DEBUG 	= ""
 ABI_OPT_OPTIMIZE= ""
 ABI_OPTIONS	+= Profile:On
@@ -74,7 +80,7 @@ else
 	ifeq ($(ABI_OPT_OPTIMIZE),1)
 	OPTIMIZER	= -O3 -Wall -ansi -pedantic
 	DEFINES		=
-	OBJ_DIR_SFX	= OPT
+	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
 	ABI_OPTIONS	+= Optimize:On
 	ABI_OPT_DEBUG	= ""
 	else #/* OPTIMIZE*/
@@ -83,34 +89,41 @@ else
 #	OPTIMIZER	= -g -Wall -ansi -pedantic
 	OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
 	DEFINES		= -DDEBUG -UNDEBUG
-	OBJ_DIR_SFX	= DBG
 		ifeq ($(ABI_OPT_GNOME),1)
 			ifeq ($(ABI_OPT_PEER_EXPAT),1)
-			OBJ_DIR_SFX	= GNOME
+			OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
 			else
-			OBJ_DIR_SFX	= GNOME_XML
+			OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_XML_
+			endif #/* EXPAT */
+		else
+			ifeq ($(ABI_OPT_PEER_EXPAT),1)
+			#OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+			else
+			OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)XML_
 			endif #/* EXPAT */
 		endif #/* GNOME */
-	else # DEBUG
+	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG
 
+	else # DEBUG
 	OPTIMIZER	= -O2 -Wall -ansi -pedantic
 	DEFINES		=
-	OBJ_DIR_SFX	= OBJ
-	endif #/* DEBUG */
-	endif #/* OPTIMIZE */
-	ifeq ($(ABI_OPT_GNOME),1)
-		ifeq ($(ABI_OPT_PEER_EXPAT),1)
-		OBJ_DIR_SFX	= GNOME
-		else
-		OBJ_DIR_SFX	= GNOME_XML
+		ifeq ($(ABI_OPT_GNOME),1)
+			ifeq ($(ABI_OPT_PEER_EXPAT),1)
+				OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+			else
+				OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_XML_
 		endif #/* EXPAT */
-	else #/* GNOME */
+	else #/* not GNOME */
 		ifeq ($(ABI_OPT_PEER_EXPAT),1)
-		OBJ_DIR_SFX	= GNOME
+		#OBJ_DIR_SFX	=
 		else
-		OBJ_DIR_SFX	= GNOME_XML
+		OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)XML_
 		endif #/* EXPAT */
 	endif #/* GNOME */
+
+	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
+	endif #/* DEBUG */
+	endif #/* OPTIMIZE */
 
 endif #/* PROF */
 
