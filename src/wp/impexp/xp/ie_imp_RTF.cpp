@@ -4533,7 +4533,11 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 		{
 			nesting--;
 		}
-		else
+		else if(ch == '{')
+		{
+			nesting++;
+		}
+		else if(ch == '\\')
 		{
 			if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 			{
