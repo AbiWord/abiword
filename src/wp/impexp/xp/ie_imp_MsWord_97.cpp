@@ -401,6 +401,7 @@ void IE_Imp_MsWord_97::_flush ()
 			UT_DEBUGMSG(("DOM: error appending text run\n"));
 			return;
 		}
+		m_pTextRun.clear ();
 	}
 }
 
