@@ -22,7 +22,7 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		ut_assert.h		\
+COMM_EXPORT_HEADERS=		ut_assert.h		\
 			ut_debugmsg.h		\
 			ut_growbuf.h		\
 			ut_hash.h		\
@@ -37,12 +37,19 @@ EXPORT_HEADERS=		ut_assert.h		\
 			ut_units.h		\
 			ut_vector.h
 
+ifeq ($(OS_NAME),WIN32)
+EXPORT_HEADERS=	$(COMM_EXPORT_HEADERS) \
+			ut_regex.h
+endif
+
+
+
 HEADERS=		$(EXPORT_HEADERS)
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		ut_growbuf.cpp		\
+COMMONSRCS=		ut_growbuf.cpp		\
 			ut_hash.cpp		\
 			ut_math.cpp		\
 			ut_misc.cpp		\
@@ -53,6 +60,13 @@ CPPSRCS=		ut_growbuf.cpp		\
 			ut_timer.cpp		\
 			ut_units.cpp		\
 			ut_vector.cpp
+
+ifeq ($(OS_NAME),WIN32)
+CPPSRCS=	$(COMMONSRCS) \
+			ut_regex.cpp
+endif
+
+
 
 TARGETS=		$(OBJS)
 
