@@ -137,7 +137,7 @@ unalias_lang (char *lang)
 }
 
 void
-free_entry (gchar *ekey,gchar *eval)
+free_entry (gchar *ekey,gchar *eval, NULL)
 {
 g_free(ekey);
 g_free(eval);
