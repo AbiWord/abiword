@@ -2861,8 +2861,19 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		_findPositionCoords(iPos2, UT_FALSE, x, y, uheight, &pBlock2, &pRun2);
 	}
 
+	if (!pRun1 && !pRun2)
+	{
+		// no formatting info for either block, so just bail
+		// this can happen during spell, when we're trying to invalidate
+		// a new squiggle before the block has been formatted
+		return;
+	}
+
+	UT_ASSERT(pRun1 && pRun2);
+
 	UT_Bool bDone = UT_FALSE;
 	fp_Run* pCurRun = pRun1;
+
 
 	while (!bDone)
 	{
@@ -2909,22 +2920,28 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	UT_ASSERT(pBlock);
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
 
-	// we now have coords relative to the page containing the ins pt
-	fp_Page* pPointPage = pRun->getLine()->getColumn()->getPage();
+	// NOTE prior call will fail if the block isn't currently formatted,
+	// NOTE so we won't be able to figure out more specific geometry
 
-	UT_sint32 iPageOffset;
-	getPageYOffset(pPointPage, iPageOffset);
-	yPoint += iPageOffset;
-	xPoint += fl_PAGEVIEW_MARGIN_X;
+	if (pRun)
+	{
+		// we now have coords relative to the page containing the ins pt
+		fp_Page* pPointPage = pRun->getLine()->getColumn()->getPage();
 
-	// now, we have coords absolute, as if all pages were stacked vertically
-	xPoint -= m_xScrollOffset;
-	yPoint -= m_yScrollOffset;
+		UT_sint32 iPageOffset;
+		getPageYOffset(pPointPage, iPageOffset);
+		yPoint += iPageOffset;
+		xPoint += fl_PAGEVIEW_MARGIN_X;
 
-	// now, return the results
-	x = xPoint;
-	y = yPoint;
-	height = iPointHeight;
+		// now, we have coords absolute, as if all pages were stacked vertically
+		xPoint -= m_xScrollOffset;
+		yPoint -= m_yScrollOffset;
+
+		// now, return the results
+		x = xPoint;
+		y = yPoint;
+		height = iPointHeight;
+	}
 
 	if (ppBlock)
 	{

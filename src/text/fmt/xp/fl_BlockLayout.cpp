@@ -501,9 +501,9 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	while (pRun)
 	{
 		fp_Line* pLine = pRun->getLine();
-		UT_ASSERT(pLine);
 
-		pLine->removeRun(pRun);
+		if (pLine)
+			pLine->removeRun(pRun, UT_TRUE);
 
 		pRun = pRun->getNext();
 	}
@@ -712,6 +712,12 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 	// find the run which has this position inside it.
 	UT_ASSERT(iPos >= getPosition());
 	UT_uint32 iRelOffset = iPos - getPosition();
+
+	if (!m_pFirstLine)
+	{
+		// when we have no formatting information, can't find anything
+		return NULL;
+	}
 
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
