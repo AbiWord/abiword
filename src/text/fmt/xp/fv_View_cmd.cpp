@@ -99,6 +99,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		_moveToSelectionEnd(bForward);
 		_fixInsertionPointCoords();
 		_ensureInsertionPointOnScreen();
+		notifyListeners(AV_CHG_MOTION);
 		return;
 	}
 
