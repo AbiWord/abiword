@@ -93,6 +93,15 @@ DLG_Break_NextPage="P&amp;rossima pagina"
 DLG_Break_Continuous="Con&amp;tinue"
 DLG_Break_EvenPage="Pagine &amp;Pari"
 DLG_Break_OddPage="Pagine &amp;Dispari"
+DLG_Spell_SpellTitle="Spelling Check"
+DLG_Spell_UnknownWord="Not in Dictionary:"
+DLG_Spell_ChangeTo="Change to:"
+DLG_Spell_Change="Change"
+DLG_Spell_ChangeAll="Change All"
+DLG_Spell_Ignore="Ignore"
+DLG_Spell_IgnoreAll="Ignore All"
+DLG_Spell_AddToDict="Add to Dictionary"
+DLG_Spell_NoSuggestions="(no spelling suggestions)"
 />
 
 </AbiStrings>
