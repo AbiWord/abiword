@@ -27,6 +27,7 @@ private:
 
 	int deftflag;              /* NZ for TeX mode by default */
 	int prefstringchar;        /* Preferred string character type */
+	bool g_bSuccessfulInit;
 
 #if defined(DONT_USE_GLOBALS)
 	ispell_state_t	*m_pISpellState;

@@ -10,6 +10,8 @@
 #include "xap_App.h"
 #include "ut_string_class.h"
 
+#include "ut_debugmsg.h"
+
 #	define UCS_2_INTERNAL "UCS-2"
 
 /***************************************************************************/
@@ -127,20 +129,20 @@ static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
 
 /***************************************************************************/
 
-static int g_bSuccessfulInit = 0;
-
 ISpellChecker::ISpellChecker()
+  : deftflag(-1), prefstringchar(-1), g_bSuccessfulInit(false)
 {
 #if defined(DONT_USE_GLOBALS)
 	m_pISpellState = NULL;
 #endif
-	deftflag = -1;
-	prefstringchar = -1;  
 }
 
 ISpellChecker::~ISpellChecker()
 {
 #if defined(DONT_USE_GLOBALS)
+  if (!m_pISpellState)
+    return;
+
     lcleanup(m_pISpellState);
 #else
     lcleanup();
@@ -301,9 +303,11 @@ typedef struct {
   char * lang;
 } Ispell2Lang_t;
 
+// please try to keep this ordered alphabetically
 static const Ispell2Lang_t m_mapping[] = {
+  { "british.hash",  "en-GB" },
   { "american.hash", "en-US" },
-  { "british.hash", "en-GB" }
+  { "swedish.hash",  "sv-SE"}
 };
 
 bool
@@ -322,17 +326,25 @@ ISpellChecker::requestDictionary(const char *szLang)
 	    }
 	  }
 
+	if (hashname == NULL) {
+	  UT_DEBUGMSG(("DOM: dictionary for lang:%s not found\n", szLang));
+	  return false;
+	}
+
 #if defined(DONT_USE_GLOBALS)
 	m_pISpellState = alloc_ispell_struct();
 #endif
     if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
     {
         /* TODO gripe -- could not load the dictionary */
-      FREEP(hashname);
+      UT_DEBUGMSG(("DOM: could not load dictionary (%s, %s)\n", hashname, szLang));
+        FREEP(hashname);
         return false;
     }
 
-    g_bSuccessfulInit = 1;
+    UT_DEBUGMSG(("DOM: loaded dictionary (%s %s)\n", hashname, szLang));
+
+    g_bSuccessfulInit = true;
 
     /* Test for utf8 first */
     prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);

@@ -47,6 +47,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.3  2001/06/12 21:32:49  dom
+ * More ispell work...
+ *
  * Revision 1.2  2001/05/12 16:05:42  thomasf
  * Big pseudo changes to ispell to make it pass around a structure rather
  * than rely on all sorts of gloabals willy nilly here and there.  Also
@@ -145,8 +148,6 @@ static void     initckch P ((FIRST_ARG(istate) char *));
 
 int		gnMaskBits = 64;
 
-static	int	inited = 0;
-
 int linit (FIRST_ARG(istate) char *hashname)
 #if 0
 char *hashname; /* name of the hash file (dictionary) */
@@ -161,9 +162,6 @@ char *hashname; /* name of the hash file (dictionary) */
     int			nextchar, x;
     int			viazero;
     register ichar_t *	cp;
-
-    if (inited)
-	return 0;
 
     if ((fpHash = fopen (hashname, "rb")) == NULL)
 	{
@@ -475,7 +473,6 @@ char *hashname; /* name of the hash file (dictionary) */
 	    nextchar++;
 	    }
 	}
-    inited = 1;
 
     initckch(DEREF_FIRST_ARG(istate) NULL);   
        
