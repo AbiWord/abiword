@@ -1776,7 +1776,7 @@ bool PD_Document::isCellAtPos(PT_DocPosition pos)
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-		if(pfs->getStruxType() == PTX_SectionTable)
+		if(pfs->getStruxType() == PTX_SectionCell)
 		{
 			return true;
 		}
