@@ -30,9 +30,9 @@ INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 noinst_LIBRARIES = libWpAp_unix.a
 
 if WITH_CURL
-AP_HASH_DOWNLOADER_OBJ=ap_@ABI_FE@HashDownloader.cpp
+CURL_SOURCE_OBJ = ap_@ABI_FE@HashDownloader.cpp ap_@ABI_FE@Dialog_Download_File.cpp
 else
-AP_HASH_DOWNLOADER_OBJ=
+CURL_SOURCE_OBJ = 
 endif
 
 libWpAp_unix_a_SOURCES=\
@@ -73,7 +73,7 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@Toolbar_SizeCombo.cpp	\
 	ap_@ABI_FE@Toolbar_StyleCombo.cpp	\
 	ap_@ABI_FE@Toolbar_ZoomCombo.cpp	\
-	$(AP_HASH_DOWNLOADER_OBJ)		\
 	ap_@ABI_FE@_TB_CFactory.cpp		\
 	ap_@ABI_FE@TopRuler.cpp			\
-	ap_@ABI_FE@ViewListener.cpp
+	ap_@ABI_FE@ViewListener.cpp		\
+	$(CURL_SOURCE_OBJ)

@@ -26,7 +26,7 @@ INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 noinst_LIBRARIES = libWpAp_xp.a
 
 if WITH_CURL
-CURL_SOURCE_OBJ=ap_HashDownloader.cpp
+CURL_SOURCE_OBJ = ap_HashDownloader.cpp ap_Dialog_Download_File.cpp
 else
 CURL_SOURCE_OBJ=
 endif

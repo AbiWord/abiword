@@ -135,8 +135,8 @@ AC_ARG_ENABLE(stable,[  --enable-static          build static AbiWord (UNIX/GTK 
 AM_CONDITIONAL(ABI_BUILD_SHARED,[test $abi_build_shared = yes])
 AM_CONDITIONAL(ABI_BUILD_STATIC,[test $abi_build_static = yes])
 
-ABI_CURLHASH
-AM_CONDITIONAL(WITH_CURL, test x$abi_curlhash = xtrue)
+ABI_CURL
+AM_CONDITIONAL(WITH_CURL, test x$abi_curl = xyes)
 
 ABI_SPELL
 

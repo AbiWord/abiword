@@ -59,8 +59,8 @@ if test $abi_curl != no; then
 fi
 
 if test $abi_curl != no; then
-	LIBCURL_CFLAGS=`$CURL_CONFIG --cflags`
-	LIBCURL_LIBS=`$CURL_CONFIG --libs`
+	LIBCURL_CFLAGS="`$CURL_CONFIG --cflags` -DHAVE_CURL=1"
+	LIBCURL_LIBS="`$CURL_CONFIG --libs`"
 else
 	LIBCURL_CFLAGS=""
 	LIBCURL_LIBS=""

@@ -26,6 +26,12 @@ INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 
 noinst_LIBRARIES = libWpAp_cocoa.a
 
+if WITH_CURL
+CURL_SOURCE_OBJ = ap_CocoaDialog_Download_File.mm
+else
+CURL_SOURCE_OBJ = 
+endif
+
 libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaApp.mm		\
 	ap_CocoaClipboard.mm	\
@@ -41,8 +47,9 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaTopRuler.mm		\
 	ap_CocoaStatusBar.mm		\
 	ap_CocoaViewListener.mm		\
-	ap_CocoaFrame.mm			\
-	ap_Cocoa_TB_CFactory.mm
+	ap_CocoaFrame.mm		\
+	ap_Cocoa_TB_CFactory.mm		\
+	$(CURL_SOURCE_OBJ)
 
 bundledir=$(prefix)/AbiWord.app
 contentsdir=$(bundledir)/Contents
