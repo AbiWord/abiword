@@ -793,7 +793,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
+	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
 }
 
 /*!
@@ -4149,10 +4149,16 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 	{
 		UT_ASSERT(m_pFirstRun->getPrev() == NULL);
 	}
+#if 0
+	//
+	// This can legitmately be non zero while deleting a block with an
+	// embedded footnote
+	//
+	UT_ASSERT(m_pFirstRun->getBlockOffset() == 0);
+	// Verify that offset of this block is correct.
+#endif
 	while (pRun)
 	{
-		UT_ASSERT(m_pFirstRun->getBlockOffset() == 0);
-		// Verify that offset of this block is correct.
 #if 0
 //
 // FIXME: Invent a clever way to account for embedded hidden stuff
@@ -4204,7 +4210,7 @@ fl_BlockLayout::_assertRunListIntegrity(void)
 bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 {
 	_assertRunListIntegrity();
-
+	UT_DEBUGMSG(("_delete fl_BlockLayout offset %d len %d \n",blockOffset,len));
 	/* TODO the attempts herein to do fetchCharWidths will fail. */
 
 	m_gbCharWidths.del(blockOffset, len);
@@ -4474,7 +4480,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
-
+	UT_DEBUGMSG(("fl_BlockLayout:: deleteSpan offset %d len %d \n",blockOffset,len));
 	_delete(blockOffset, len);
 
 	m_pSquiggles->textDeleted(blockOffset, len);

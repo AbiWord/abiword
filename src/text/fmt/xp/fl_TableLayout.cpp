@@ -366,6 +366,13 @@ void fl_TableLayout::format(void)
 
 void fl_TableLayout::markAllRunsDirty(void)
 {
+	//
+	// No need to do this during import.
+	//
+	if(m_pLayout->isLayoutFilling())
+	{
+		return;
+	}
 	fl_ContainerLayout*	pCL = getFirstLayout();
 	while (pCL)
 	{

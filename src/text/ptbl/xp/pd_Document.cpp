@@ -1478,10 +1478,22 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 			szStrux = "Endnote";
 		else if(pfs->getStruxType() == PTX_EndEndnote)
 			szStrux = "End Endnote";
+		else if(pfs->getStruxType() == PTX_Section)
+			szStrux = "Section";
 		else
 			szStrux = "Other Strux";
-
-		UT_DEBUGMSG(("MiniDump Frag %x Type %s \n",pfs,szStrux));
+		if(i< nstruxes)
+		{
+			UT_DEBUGMSG(("MiniDump Before Frag %x Type %s \n",pfs,szStrux));
+		}
+		else if(i > nstruxes)
+		{
+			UT_DEBUGMSG(("MiniDump After Frag %x Type %s \n",pfs,szStrux));
+		}
+		if(pfs == static_cast<const pf_Frag_Strux *>(sdh))
+		{
+			UT_DEBUGMSG(("MiniDump Actual Frag %x Type %s \n",pfs,szStrux));
+		}
 		const char * szLeft=NULL;
 		const char * szRight=NULL;
 		const char * szTop=NULL;

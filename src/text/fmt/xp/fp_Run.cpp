@@ -4087,7 +4087,7 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Gra
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
-	m_iPID = atoi(footid);
+	m_iPID = atol(footid);
 }
 
 // Appears in the FootnoteContainer, one per footnote.

@@ -820,6 +820,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // 
 					if(!isFootnote(pfs) && !isEndFootnote(pfs))
 					{ 
+						UT_DEBUGMSG(("Delete Block strux \n"));
 						bResult = _deleteStruxWithNotify(dpos1,pfs,
 												  &pfNewEnd,&fragOffsetNewEnd);
 						bPrevWasCell = false;
@@ -834,12 +835,14 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 							fragOffsetNewEnd = 0;
 							pfsContainer = pfs;
 							dpos1 = dpos1 +  lengthInFrag;
+							UT_DEBUGMSG(("Push footnote strux \n"));
 							stDelayStruxDelete->push(pfs);
 							iFootnoteCount++;
 							bPrevWasFootnote = true;
 						}
 						else
 						{
+							UT_DEBUGMSG(("Push endfootnote strux \n"));
 							stDelayStruxDelete->push(pfs);
 						}
 					}
@@ -939,7 +942,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 // First delete the EndFootnote Strux
 //
-				xxx_UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
+				UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
 				stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 				if(m_fragments.areFragsDirty())
 				{
@@ -961,7 +964,12 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 					if(isFootnote(pfs))
 					{
+						UT_DEBUGMSG(("Found and deleted footnote strux \n"));
 						iFootnoteCount--;
+					}
+					else
+					{
+						UT_DEBUGMSG(("Found and deleted Block strux in footnote \n"));
 					}
 					PT_DocPosition myPos = pfs->getPos();
 					if(m_fragments.areFragsDirty())
@@ -980,10 +988,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // Now we have to update pfsContainer from dpos1
 //
 				bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
-//
-// For the EndFootnote
-//
-				dpos1 -= 1;
 				break;
 			}
 			
