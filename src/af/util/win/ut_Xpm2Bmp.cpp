@@ -111,6 +111,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		char bufColorValue[100];
 
 		// we expect something of the form: ".. c #000000"
+		// or we can accpet ".. g #000000" for gray scale
 		// but we allow a space as a character in the symbol, so we
 		// get the first field the hard way.
 
@@ -120,7 +121,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		
 		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1]," %s %s",&bufKey,&bufColorValue);
 		UT_ASSERT(nf == 2);
-		UT_ASSERT(bufKey[0] == 'c');
+		UT_ASSERT(bufKey[0] == 'c' || bufKey[0] == 'g');
 
 		// make the ".." a hash key and store our color index as the data.
 		// we add k+1 because the hash code does not like null pointers...
