@@ -354,7 +354,12 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 		goto Cleanup;
 	}
 
-#ifdef BIDI_ENABLED
+
+	// TODO: the similar code in ev_Toolbar_Labels.cpp was causing crashes
+	// and until a solution to the problem is devised (see comments in that file)
+	// I am turning this off.
+
+#if 0 //def BIDI_ENABLED
 	// now we run this stringset through fribidi
 	if(!XAP_App::getApp()->theOSHasBidiSupport())
 	{

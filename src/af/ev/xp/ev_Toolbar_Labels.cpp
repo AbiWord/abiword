@@ -47,7 +47,16 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 	UT_cloneString(m_szToolTip,szToolTip);
 	UT_cloneString(m_szStatusMsg,szStatusMsg);
 
-#ifdef BIDI_ENABLED	
+	// TODO: the following code causes crashes; after spending several hours over it
+	// it would appear that the glib memory functions that fribidi uses
+	// clash with the memory management used by new; consequently the two
+	// temp. FribidiChar strings we allocate overlap with the memory chunk that
+	// fribidi allocates for creating type links, and when we copy our string
+	// to the temp we overwrite the runlist
+	// I do not know how to fix this and as we do not need it yet,
+	// I am going to turn it off for the moment
+	
+#if 0 //def BIDI_ENABLED
 	// TODO I wish we did not have to do this here, but I see no other
 	// way; the menu mechanism is much cleaner and I think we should be
 	// using the string-set mechanism for toolbars as we do for menus.
