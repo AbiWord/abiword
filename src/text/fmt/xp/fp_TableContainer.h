@@ -103,6 +103,7 @@ public:
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
 	void                clearLines(fp_TableContainer * pBroke);
+	void				clearBackground(fp_TableContainer * pBroke);
 	void                drawLines(fp_TableContainer * pBroke);
 	void                drawLinesAdjacent(void);
 	virtual void		draw(dg_DrawArgs*);
@@ -158,22 +159,47 @@ public:
 		{ m_iTopPad = i;}
 	void                setBotPad(UT_sint32 i)
 		{ m_iBotPad = i;}
-    UT_RGBColor         getLeftColor(void)
-		{ return m_iLeftColor;}
-    UT_RGBColor         getRightColor(void)
-		{ return m_iRightColor;}
-    UT_RGBColor         getTopColor(void)
-		{ return m_iTopColor;}
-    UT_RGBColor         getBottomColor(void)
-		{ return m_iBottomColor;}
+		
+    UT_RGBColor        getLeftColor(void)
+		{ return m_cLeftColor;}
+    UT_RGBColor        getRightColor(void)
+		{ return m_cRightColor;}
+    UT_RGBColor        getTopColor(void)
+		{ return m_cTopColor;}
+    UT_RGBColor        getBottomColor(void)
+		{ return m_cBottomColor;}
+    UT_RGBColor        getBgColor(void)
+		{ return m_cBgColor;}
 	void                setLeftColor(UT_RGBColor c)
-		{ m_iLeftColor = c;}
+		{ m_cLeftColor = c;}
     void                setRightColor(UT_RGBColor c)
-		{ m_iRightColor = c;}
+		{ m_cRightColor = c;}
     void                setTopColor(UT_RGBColor c)
-		{ m_iTopColor = c;}
+		{ m_cTopColor = c;}
     void                setBottomColor(UT_RGBColor c)
-		{ m_iBottomColor = c;}
+		{ m_cBottomColor = c;}
+    void                setBgColor(UT_RGBColor c)
+		{ m_cBgColor = c;}
+    UT_sint32           getLeftStyle(void)
+		{ return m_iLeftStyle;}
+    UT_sint32           getRightStyle(void)
+		{ return m_iRightStyle;}
+    UT_sint32           getTopStyle(void)
+		{ return m_iTopStyle;}
+    UT_sint32           getBottomStyle(void)
+		{ return m_iBottomStyle;}
+    UT_sint32           getBgStyle(void)
+		{ return m_iBgStyle;}
+	void                setLeftStyle(UT_sint32 i)
+		{ m_iLeftStyle = i;}
+    void                setRightStyle(UT_sint32 i)
+		{ m_iRightStyle = i;}
+    void                setTopStyle(UT_sint32 i)
+		{ m_iTopStyle = i;}
+    void                setBottomStyle(UT_sint32 i)
+		{ m_iBottomStyle = i;}
+    void                setBgStyle(UT_sint32 i)
+		{ m_iBgStyle = i;}
 	bool                getXexpand(void) const
 		{ return m_bXexpand;}
 	bool                getYexpand(void) const
@@ -214,6 +240,9 @@ public:
 #endif
 
 private:
+		
+	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec);
+		
 //
 // These variables describe where the cell is attached to the table.
 // The first cell in the Table is at (0,0)
@@ -275,12 +304,28 @@ private:
 	bool                m_bDrawRight;
 	bool                m_bLinesDrawn;
 	
-// Line colors to be used for drawing the cell
+// Line colors to be used for drawing the cell borders
 
-	UT_RGBColor         m_iLeftColor;
-	UT_RGBColor         m_iRightColor;
-	UT_RGBColor         m_iTopColor;
-	UT_RGBColor         m_iBottomColor;
+	UT_RGBColor         m_cLeftColor;
+	UT_RGBColor         m_cRightColor;
+	UT_RGBColor         m_cTopColor;
+	UT_RGBColor         m_cBottomColor;
+	
+// Line styles to be used for drawing cell borders	
+	
+	UT_sint32			m_iLeftStyle;
+	UT_sint32			m_iRightStyle;
+	UT_sint32			m_iTopStyle;
+	UT_sint32			m_iBottomStyle;
+	
+// Cell background fill color
+	UT_RGBColor			m_cBgColor;
+
+// Cell background fill style
+	UT_sint32			m_iBgStyle;
+	
+// bool to see if the background needs to be redrawn
+	bool				m_bBgDirty;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer

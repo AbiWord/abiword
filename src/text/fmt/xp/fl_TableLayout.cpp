@@ -79,7 +79,6 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	  m_bColumnsPositionedOnPage(false),
 	  m_bRowsPositionedOnPage(false),
 	  m_bIsDirty(true),
-	  m_iLineType(0),
 	  m_iLineThickness(0),
 	  m_iColSpacing(0),
 	  m_iRowSpacing(0),
@@ -668,9 +667,7 @@ void fl_TableLayout::_lookupProperties(void)
 #endif
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
-	const char * pszLineType = NULL;
 	const char * pszLineThick = NULL;
-	pSectionAP->getProperty("table-line-type", (const XML_Char *&)pszLineType);
 	pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
 	if(pszLineThick && *pszLineThick)
 	{
@@ -680,16 +677,7 @@ void fl_TableLayout::_lookupProperties(void)
 	{
 		m_iLineThickness = 1;
 	}
-	if(pszLineType && *pszLineType)
-	{
-		UT_DEBUGMSG(("SEVIOR: Line Type string %s \n",pszLineType));
-		m_iLineType = atoi(pszLineType);
-	}
-	else
-	{
-		m_iLineType = 1;
-	}
-	UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup linetype %d lineThickness %d \n",m_iLineType,m_iLineThickness));
+	UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup lineThickness %d \n",m_iLineThickness));
 	const char * pszTableColSpacing = NULL;
 	const char * pszTableRowSpacing = NULL;
 	pSectionAP->getProperty("table-col-spacing", (const XML_Char *&)pszTableColSpacing);
@@ -796,11 +784,6 @@ UT_sint32 fl_TableLayout::getColSpacing(void) const
 UT_sint32 fl_TableLayout::getRowSpacing(void) const
 {
 	return m_iRowSpacing;
-}
-
-UT_sint32 fl_TableLayout::getLineType(void) const
-{
-	return m_iLineType;
 }
 
 UT_sint32 fl_TableLayout::getLineThickness(void) const
@@ -991,7 +974,16 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iTopAttach(0),
 	  m_iBottomAttach(1),
 	  m_bCellPositionedOnPage(false),
-	  m_iCellHeight(0)
+	  m_iCellHeight(0),
+	  m_cLeftColor(UT_RGBColor(0,0,0)),
+	  m_cRightColor(UT_RGBColor(0,0,0)),
+	  m_cTopColor(UT_RGBColor(0,0,0)),
+	  m_cBottomColor(UT_RGBColor(0,0,0)),
+	  m_iLeftStyle(LS_NORMAL),
+	  m_iRightStyle(LS_NORMAL),
+	  m_iTopStyle(LS_NORMAL),
+	  m_iBottomStyle(LS_NORMAL),
+	  m_iBgStyle(FS_OFF)
 {
 	createCellContainer();
 }
@@ -1056,10 +1048,16 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setRightPad(m_iRightOffsetLayoutUnits);
 	pCell->setTopPad(m_iTopOffset);
 	pCell->setBotPad(m_iBottomOffset);
-	pCell->setLeftColor(m_iLeftColor);
-	pCell->setRightColor(m_iRightColor);
-	pCell->setTopColor(m_iTopColor);
-	pCell->setBottomColor(m_iBottomColor);
+	pCell->setLeftColor(m_cLeftColor);
+	pCell->setRightColor(m_cRightColor);
+	pCell->setTopColor(m_cTopColor);
+	pCell->setBottomColor(m_cBottomColor);
+	pCell->setBgColor(m_cBgColor);
+	pCell->setLeftStyle(m_iLeftStyle);
+	pCell->setRightStyle(m_iRightStyle);
+	pCell->setTopStyle(m_iTopStyle);
+	pCell->setBottomStyle(m_iBottomStyle);
+	pCell->setBgStyle(m_iBgStyle);
 }
 
 /*!
@@ -1319,6 +1317,46 @@ bool fl_CellLayout::recalculateFields(UT_uint32 iUpdateCount)
 	return true;
 }
 
+//
+// copied from ie_imp_XML.cpp
+//
+extern "C" { // for MRC compiler (Mac)
+	static int s_str_compare (const void * a, const void * b)
+	{
+		const char * name = (const char *)a;
+		const xmlToIdMapping * id = (const xmlToIdMapping *)b;
+
+		return UT_strcmp (name, id->m_name);
+	}
+}
+
+//
+// copied from ie_imp_XML.cpp
+//
+int _mapNameToToken (const char * name,
+								 struct xmlToIdMapping * idlist, int len)
+{
+	static UT_StringPtrMap tokens(30);
+
+	xmlToIdMapping * id = NULL;
+
+	const void * pEntry = tokens.pick (name);
+
+	if (pEntry)
+	{
+		return (int)pEntry;
+	}
+
+	id = (xmlToIdMapping *)bsearch (name, idlist, len,
+									sizeof (xmlToIdMapping), s_str_compare);
+	if (id)
+    {
+		tokens.insert (name, (void *)id->m_type);
+		return id->m_type;
+    }
+	return -1;
+}
+
 void fl_CellLayout::_lookupProperties(void)
 {
 	const PP_AttrProp* pSectionAP = NULL;
@@ -1505,35 +1543,95 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("bot-color", (const XML_Char *&)pszBottomColor);
 	if(pszLeftColor && pszLeftColor[0])
 	{
-		UT_parseColor(pszLeftColor, m_iLeftColor);
+		UT_parseColor(pszLeftColor, m_cLeftColor);
 	}
 	else
 	{
-		m_iLeftColor = clrBlack;
+		m_cLeftColor = clrBlack;
 	}
 	if(pszRightColor && pszRightColor[0])
 	{
-		UT_parseColor(pszRightColor, m_iRightColor);
+		UT_parseColor(pszRightColor, m_cRightColor);
 	}
 	else
 	{
-		m_iRightColor = clrBlack;
+		m_cRightColor = clrBlack;
 	}
 	if(pszTopColor && pszTopColor[0])
 	{
-		UT_parseColor(pszTopColor, m_iTopColor);
+		UT_parseColor(pszTopColor, m_cTopColor);
 	}
 	else
 	{
-		m_iTopColor = clrBlack;
+		m_cTopColor = clrBlack;
 	}
 	if(pszBottomColor && pszBottomColor[0])
 	{
-		UT_parseColor(pszBottomColor, m_iBottomColor);
+		UT_parseColor(pszBottomColor, m_cBottomColor);
 	}
 	else
 	{
-		m_iBottomColor = clrBlack;
+		m_cBottomColor = clrBlack;
+	}
+	const char* pszLeftStyle = NULL;
+	const char* pszRightStyle = NULL;
+	const char* pszTopStyle = NULL;
+	const char* pszBottomStyle = NULL;
+	pSectionAP->getProperty("left-style", (const XML_Char *&)pszLeftStyle);
+	pSectionAP->getProperty("right-style", (const XML_Char *&)pszRightStyle);
+	pSectionAP->getProperty("top-style", (const XML_Char *&)pszTopStyle);
+	pSectionAP->getProperty("bot-style", (const XML_Char *&)pszBottomStyle);
+	if(pszLeftStyle && pszLeftStyle[0])
+	{
+		m_iLeftStyle = _mapNameToToken (pszLeftStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
+		if (m_iLeftStyle == -1)
+		{
+			m_iLeftStyle = LS_NORMAL; // fallback to a normal line
+		}
+	}
+	if(pszRightStyle && pszRightStyle[0])
+	{
+		m_iRightStyle = _mapNameToToken (pszRightStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
+		if (m_iRightStyle == -1)
+		{
+			m_iRightStyle = LS_NORMAL; // fallback to a normal line
+		}
+	}
+	if(pszTopStyle && pszTopStyle[0])
+	{
+		m_iTopStyle = _mapNameToToken (pszTopStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
+		if (m_iTopStyle == -1)
+		{
+			m_iTopStyle = LS_NORMAL; // fallback to a normal line
+		}
+	}
+	if(pszBottomStyle && pszBottomStyle[0])
+	{
+		m_iBottomStyle = _mapNameToToken (pszBottomStyle, s_LineStyleTokens, s_LineStyleTokenTableSize);
+		if (m_iBottomStyle == -1)
+		{
+			m_iBottomStyle = LS_NORMAL; // fallback to a normal line
+		}
+	}
+	const char* pszBgColor = NULL;
+	pSectionAP->getProperty("bg-color", (const XML_Char *&)pszBgColor);
+	if(pszBgColor && pszBgColor[0])
+	{
+		UT_parseColor(pszBgColor, m_cBgColor);
+	}
+	else
+	{
+		m_cBgColor = UT_RGBColor(255,255,255); // fallback to something: it's not used anyway, cause bg-style would (most likely) be "off"
+	}
+	const char* pszBgStyle = NULL;
+	pSectionAP->getProperty("bg-style", (const XML_Char *&)pszBgStyle);
+	if(pszBgStyle && pszBgStyle[0])
+	{
+		m_iBgStyle = _mapNameToToken (pszBgStyle, s_FillStyleTokens, s_FillStyleTokenTableSize);
+		if (m_iBgStyle == -1)
+		{
+			m_iBgStyle = FS_OFF; // fallback to no background
+		}
 	}
 }
 

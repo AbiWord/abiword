@@ -166,7 +166,6 @@ UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 		{ return m_bIsDirty;}
 	void                     setDirty(void)
 		{ m_bIsDirty = true;}
-	UT_sint32                getLineType(void) const;
 	UT_sint32                getLineThickness(void) const;
 	UT_sint32                getColSpacing(void) const;
 	UT_sint32                getRowSpacing(void) const;
@@ -205,7 +204,6 @@ private:
 	bool                   m_bRowsPositionedOnPage;
 	bool                   m_bIsDirty;
 	bool                   m_bDontImmediatelyLayout;
-	UT_sint32              m_iLineType;
 	UT_sint32              m_iLineThickness;
 	UT_sint32              m_iColSpacing;
 	UT_sint32              m_iRowSpacing;
@@ -290,36 +288,65 @@ private:
 	UT_sint32              m_iBottomOffset;
 	UT_sint32              m_iBottomOffsetLayoutUnits;
 	double                 m_dBottomOffsetUserUnits;
+	
 	UT_sint32              m_iLeftAttach;
 	UT_sint32              m_iRightAttach;
 	UT_sint32              m_iTopAttach;
 	UT_sint32              m_iBottomAttach;
+	
 	bool                   m_bCellPositionedOnPage;
 	UT_sint32              m_iCellHeight;
-	UT_RGBColor            m_iLeftColor;
-	UT_RGBColor            m_iRightColor;
-	UT_RGBColor            m_iTopColor;
-	UT_RGBColor            m_iBottomColor;	
+
+// Line properties
+	UT_RGBColor            m_cLeftColor;
+	UT_RGBColor            m_cRightColor;
+	UT_RGBColor            m_cTopColor;
+	UT_RGBColor            m_cBottomColor;	
+	UT_sint32              m_iLeftStyle;
+	UT_sint32              m_iRightStyle;
+	UT_sint32              m_iTopStyle;
+	UT_sint32              m_iBottomStyle;
+	
+// Background properties
+	UT_RGBColor            m_cBgColor;
+	UT_sint32              m_iBgStyle;
 };
 
+//
+// copied from ie_imp_XML.h
+//
+struct xmlToIdMapping {                                                                                                                      
+  char *m_name;                                                                                                                                         
+  int m_type;                                                                                                                                           
+};
+
+// define the fill styles for the cell background
+#define FS_OFF		0	// off
+#define FS_FILL		1	// normal full fill
+
+// define the line styles for the cell borders
+#define LS_OFF		0	// off
+#define LS_NORMAL	1	// normal line
+
+///
+/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
+///
+static struct xmlToIdMapping s_FillStyleTokens[] =
+{
+	{	"fill",			FS_FILL			},
+	{	"off",			FS_OFF			}
+};
+#define s_FillStyleTokenTableSize	((sizeof(s_FillStyleTokens)/sizeof(s_FillStyleTokens[0])))
+
+///
+/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
+///
+static struct xmlToIdMapping s_LineStyleTokens[] =
+{
+	{	"normal",		LS_NORMAL		},
+	{	"off",			LS_OFF			}
+};
+#define s_LineStyleTokenTableSize	((sizeof(s_LineStyleTokens)/sizeof(s_LineStyleTokens[0])))
+
 #endif /* TABLELAYOUT_H */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -44,6 +44,7 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "fp_TableContainer.h"
+#include "fl_TableLayout.h"
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
@@ -344,11 +345,21 @@ void fp_Run::updateHighlightColor(void)
 	else
 	{
 		fp_Line * pLine = getLine();
-		fp_Page * pPage = NULL;
 		if(pLine != NULL)
-			pPage = pLine->getContainer()->getPage();
-		if(pPage != NULL)
-			pClr = pPage->getOwningSection()->getPaperColor();
+		{
+			fp_Container * pCon = pLine->getContainer();
+			// Check if we are in a table cell which has a NON-transparent background
+			// if it is, then use the cell backgound color
+			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+			{
+					pClr = &((fp_CellContainer *) pCon)->getBgColor();
+			} 
+			else
+			{
+				fp_Page * pPage = pCon->getPage();
+				pClr = pPage->getOwningSection()->getPaperColor();
+			}
+		}
 		else if(getBlock()->isHdrFtr())
 		{
 			UT_setColor (m_pColorHL, 255, 255, 255);
@@ -357,7 +368,7 @@ void fp_Run::updateHighlightColor(void)
 		else
 			pClr = getBlock()->getDocSectionLayout()->getPaperColor();
 		UT_setColor (m_pColorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
-		return;
+		return;		
 	}
 }
 
@@ -368,13 +379,25 @@ void fp_Run::updateHighlightColor(void)
  */
 void fp_Run::updatePageColor(void)
 {
-	fp_Line * pLine = getLine();
-	fp_Page * pPage = NULL;
 	UT_RGBColor * pClr = NULL;
+	fp_Line * pLine = getLine();
+	
 	if(pLine != NULL)
-		pPage = pLine->getContainer()->getPage();
-	if(pPage != NULL)
-		pClr = pPage->getOwningSection()->getPaperColor();
+	{
+		fp_Container * pCon = pLine->getContainer();
+
+		// Check if we are in a table cell which has a NON-transparent background
+		// if it is, then use the cell backgound color
+		if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+		{
+				pClr = &((fp_CellContainer *) pCon)->getBgColor();
+		} 
+		else
+		{
+			fp_Page * pPage = pCon->getPage();
+			pClr = pPage->getOwningSection()->getPaperColor();
+		}
+	}
 	else if(getBlock()->isHdrFtr())
 	{
 		UT_setColor (m_pColorPG, 0, 0, 0);
@@ -382,6 +405,7 @@ void fp_Run::updatePageColor(void)
 	}
 	else
 		pClr = getBlock()->getDocSectionLayout()->getPaperColor();
+		
 	UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
 	return;
 }

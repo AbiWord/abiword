@@ -109,7 +109,16 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bDrawTop(false),
 	  m_bDrawBot(false),
 	  m_bDrawRight(false),
-	  m_bLinesDrawn(false)
+	  m_bLinesDrawn(false),
+	  m_cLeftColor(UT_RGBColor(0,0,0)),
+	  m_cRightColor(UT_RGBColor(0,0,0)),
+	  m_cTopColor(UT_RGBColor(0,0,0)),
+	  m_cBottomColor(UT_RGBColor(0,0,0)),
+	  m_iLeftStyle(LS_NORMAL),
+	  m_iRightStyle(LS_NORMAL),
+	  m_iTopStyle(LS_NORMAL),
+	  m_iBottomStyle(LS_NORMAL),
+	  m_bBgDirty(true)
 {
 }
 
@@ -138,48 +147,10 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 	static_cast<fl_TableLayout *>(pSL)->setDirty();
 }
 
-
-void fp_CellContainer::clearScreen(void)
+void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec)
 {
-	fp_Container * pCon = NULL;
-	UT_sint32 i =0;
-	for(i=0; i< (UT_sint32) countCons(); i++)
-	{
-		pCon = (fp_Container *) getNthCon(i);
-		pCon->clearScreen();
-	}
-	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
-	if(pTab)
-	{
-		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
-		if(pBroke == NULL)
-		{
-			return;
-		}
-		while(pBroke)
-		{
-			if((getY() >= pBroke->getYBreak() && getY() < pBroke->getYBottom())
-				|| ( (getY()+getHeight()) >= pBroke->getYBreak() && 
-					 (getY() + getHeight()) < pBroke->getYBottom()))
-			{
-				clearLines(pBroke);
-			}
-			pBroke = (fp_TableContainer *) pBroke->getNext();
-		}
-	}
-}
-
-void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
-{
-
-// Lookup table properties to see if we need to clear lines around the cell.
-	if(!m_bLinesDrawn)
-	{
-		return;
-	}
 	fl_TableLayout * pTab = (fl_TableLayout *) getSectionLayout()->myContainingLayout();
 	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
-	fp_Page * pPage = NULL;
 	fp_Column * pCol;
 	UT_sint32 col_y =0,col_x =0;
 	UT_sint32 iLeft = m_iLeft;
@@ -229,17 +200,93 @@ void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
 	{
 		pPage = getPage();
 	}
-	if(pTab->getLineType() != 0 && pPage != NULL)
+	
+	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
+}
+
+void fp_CellContainer::clearScreen(void)
+{
+	fp_Container * pCon = NULL;
+	UT_sint32 i =0;
+	for(i=0; i< (UT_sint32) countCons(); i++)
 	{
-		UT_RGBColor * pColor = pPage->getOwningSection()->getPaperColor();
-		getGraphics()->setColor(*pColor);
-		getGraphics()->setLineWidth(pTab->getLineThickness());
-		getGraphics()->drawLine(iLeft, iTop, iLeft,   iBot);
-		getGraphics()->drawLine(iLeft, iTop, iRight,  iTop);
-		getGraphics()->drawLine(iRight, iTop, iRight, iBot);
-		getGraphics()->drawLine(iLeft, iBot,  iRight, iBot);
+		pCon = (fp_Container *) getNthCon(i);
+		pCon->clearScreen();
 	}
+	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
+	if(pTab)
+	{
+		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+		if(pBroke == NULL)
+		{
+			return;
+		}
+		while(pBroke)
+		{
+			if((getY() >= pBroke->getYBreak() && getY() < pBroke->getYBottom())
+				|| ( (getY()+getHeight()) >= pBroke->getYBreak() && 
+					 (getY() + getHeight()) < pBroke->getYBottom()))
+			{
+				clearLines(pBroke);
+				clearBackground(pBroke);
+			}
+			pBroke = (fp_TableContainer *) pBroke->getNext();
+		}
+	}
+}
+
+void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
+{
+	if(!m_bLinesDrawn) // FIXME MarcM: replace by m_iLeftStyle, m_iRightStyle, etc.
+	{
+		return;
+	}
+
+	UT_Rect bRec;
+	fp_Page * pPage = NULL;
+	_getBrokenRect(pBroke, pPage, bRec);	
+	
+	UT_RGBColor * pColor = pPage->getOwningSection()->getPaperColor();
+	getGraphics()->setColor(*pColor);
+	getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
+
+	if (pPage != NULL)
+	{
+		if(m_iLeftStyle != LS_OFF)
+			{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); }
+		if(m_iTopStyle != LS_OFF)
+			{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); }
+		if(m_iRightStyle != LS_OFF)
+			{	getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); }
+		if(m_iBottomStyle != LS_OFF)
+			{	getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height); }
+	}
+				
 	m_bLinesDrawn = false;
+}
+
+void fp_CellContainer::clearBackground(fp_TableContainer * pBroke)
+{
+	if (m_iBgStyle == FS_OFF)
+	{
+		return;
+	}
+	
+	UT_Rect bRec;
+	fp_Page * pPage = NULL;
+	_getBrokenRect(pBroke, pPage, bRec);
+	if (pPage != NULL)
+	{
+		switch (m_iBgStyle)
+		{
+			case FS_FILL:
+				getGraphics()->fillRect(*pPage->getOwningSection()->getPaperColor(),bRec.left,bRec.top,bRec.width,bRec.height);
+				break;
+			default:
+				break;
+		}
+	}
+	m_bBgDirty = true;
 }
 
 /*!
@@ -311,7 +358,7 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 }
 
 /*!
- * Draw lines around a cell in a broken table.
+ * Draw background and lines around a cell in a broken table.
  */
 void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 {
@@ -321,16 +368,17 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		return;
 	}
 
-// Lookup table properties to see if we need to draw lines around the cell.
-
+// Lookup table properties to get the line thickness.
 	fl_TableLayout * pTab = (fl_TableLayout *) getSectionLayout()->myContainingLayout();
 	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
-	if(pTab->getLineType() == 0)
+	getGraphics()->setLineWidth(pTab->getLineThickness());
+
+// see if we need to draw lines around the cell or draw the background of the cell.
+	
+	if(m_iLeftStyle == LS_OFF && m_iRightStyle == LS_OFF && m_iTopStyle == LS_OFF && m_iBottomStyle == LS_OFF)
 	{
 		return;
 	}
-
-	getGraphics()->setLineWidth(pTab->getLineThickness());
 	
 //
 // Now correct if iTop or iBot is off the page.
@@ -398,25 +446,66 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 			iBot =  col_y + pCol->getHeight();
 			bDrawBot = false;
 		}
+		
+		//
+		// TODO MARCM: Clean this code up below; it uses
+		// TODO MARCM: four times almost identical code, juk!
+		//
 		if(m_bDrawLeft)
 		{
-			getGraphics()->setColor(m_iLeftColor);
-			getGraphics()->drawLine(iLeft,iTop, iLeft, iBot);
+			getGraphics()->setColor(m_cLeftColor);
+			switch (m_iLeftStyle)
+			{
+				case LS_OFF: // do nothing
+					break;
+				case LS_NORMAL:
+					getGraphics()->drawLine(iLeft,iTop, iLeft, iBot);
+					break;
+				default:
+					break;
+			}
 		}
 		if(m_bDrawTop && bDrawTop)
 		{
-			getGraphics()->setColor(m_iTopColor);
-			getGraphics()->drawLine(iLeft, iTop, iRight, iTop);
+			getGraphics()->setColor(m_cTopColor);
+			switch (m_iTopStyle)
+			{
+				case LS_OFF: // do nothing
+					break;
+				case LS_NORMAL:
+					getGraphics()->drawLine(iLeft, iTop, iRight, iTop);
+					break;
+				default:
+					break;
+			}
 		}
-		if(m_bDrawRight)
+		if(m_bDrawRight && m_iRightStyle == LS_NORMAL)
 		{
-			getGraphics()->setColor(m_iRightColor);
-			getGraphics()->drawLine(iRight, iTop, iRight, iBot);
+			getGraphics()->setColor(m_cRightColor);
+			switch (m_iRightStyle)
+			{
+				case LS_OFF: // do nothing
+					break;
+				case LS_NORMAL:
+					getGraphics()->drawLine(iRight, iTop, iRight, iBot);
+					break;
+				default:
+					break;
+			}
 		}
 		if(m_bDrawBot && bDrawBot)
 		{
-			getGraphics()->setColor(m_iBottomColor);
-			getGraphics()->drawLine(iLeft, iBot, iRight, iBot);
+			getGraphics()->setColor(m_cBottomColor);
+			switch (m_iBottomStyle)
+			{
+				case LS_OFF: // do nothing
+					break;
+				case LS_NORMAL:
+					getGraphics()->drawLine(iLeft, iBot, iRight, iBot);
+					break;
+				default:
+					break;
+			}
 		}
 	}
 	m_bLinesDrawn = true;
@@ -463,7 +552,7 @@ void fp_CellContainer::drawLinesAdjacent(void)
  */
 void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBroke)
 {
-    UT_ASSERT(pDA->pG == getGraphics());
+	UT_ASSERT(pDA->pG == getGraphics());
 	UT_ASSERT(getPage());
 	if(getPage() == NULL)
 	{
@@ -558,6 +647,7 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	bool bStop = false;
 	bool bStart = false;
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing unbroken cell %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	
 //
 // Only draw the lines in the clipping region.
 //
@@ -589,7 +679,6 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 
     _drawBoundaries(pDA,NULL);
 }
-
 
 /*!
  Draw container content visible within the supplied broken table
@@ -639,6 +728,26 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	bool bStart = false;
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing broken cell %x x %d, y %d width %d height %d ncons %d \n",this,getX(),getY(),getWidth(),getHeight(),count));
 
+//
+// Now draw the cell background.
+//
+
+	if (m_bBgDirty || !pDA->bDirtyRunsOnly)
+	{
+		fp_Page * pPage;
+		UT_Rect bRec;
+		_getBrokenRect(pBroke, pPage, bRec);
+		switch (m_iBgStyle)
+		{
+			case FS_OFF:
+				break;
+			case FS_FILL:
+				getGraphics()->fillRect(m_cBgColor,bRec.left,bRec.top,bRec.width,bRec.height);
+				break;
+		}	
+		m_bBgDirty = false;
+	}
+	
 //
 // Only draw the lines in the clipping region.
 //
@@ -960,6 +1069,7 @@ void fp_CellContainer::layout(void)
 
 void fp_CellContainer::setToAllocation(void)
 {
+	m_bBgDirty = true;
 	setWidthInLayoutUnits(m_MyAllocation.width);
 	setWidth(m_MyAllocation.width * SCALE_TO_SCREEN);
 	setHeightLayoutUnits(m_MyAllocation.height);
