@@ -171,7 +171,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &Char, 1, NULL);
+	UT_UCSChar currentChar = remapGlyph(Char, UT_FALSE);
+	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
 }
 
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
@@ -184,6 +185,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
+	// TODO: need remapGlyph() before the following call
 	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, pChars + iCharOffset, iLength, NULL);
 	//TextOutW(m_hdc, xoff, yoff, pChars + iCharOffset, iLength);
 }
@@ -217,12 +219,18 @@ UT_uint32 GR_Win32Graphics::getFontDescent()
 	return m_pFont->getDescent();
 }
 
+UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
+{
+	UT_ASSERT(m_pFont);
+	return m_pFont->measureUnRemappedChar(c);
+}
+#if 0
 UT_uint32 GR_Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths)
 {
 	UT_ASSERT(m_pFont);
 	return m_pFont->measureString(s,iOffset,num,pWidths);
 }
-
+#endif
 UT_uint32 GR_Win32Graphics::_getResolution(void) const
 {
 	int result = GetDeviceCaps(m_hdc, LOGPIXELSY); // NOTE: assumes square pixels
@@ -680,6 +688,26 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	return;
 }
 
+UT_uint32 GR_Win32Font::measureUnRemappedChar(const UT_UCSChar c)
+{
+	int iCharWidth = 0;
+	int iWidth;
+	// try to get cached value for the width of this char.
+	// if that fails, force fill the cache for this char
+	// and then re-hit the cache.
+	// if that fails, the char is probably not defined in
+	// the font, so we substitute the default char width.
+	iWidth = m_cw.getWidth(c);
+	if (!iWidth)
+	{
+		m_cw.setCharWidthsOfRange(m_oldHDC, c, c);
+		iWidth = m_cw.getWidth(c);
+		// [[Why the default width?  I think zero is better in that case?]]
+		if (!iWidth) iWidth = 0 /* m_defaultCharWidth */;
+	}
+	return iWidth;
+}
+#if 0
 UT_uint32 GR_Win32Font::measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths)
 {
 	UT_ASSERT(s);
@@ -695,14 +723,18 @@ UT_uint32 GR_Win32Font::measureString(const UT_UCSChar* s, int iOffset, int num,
 		// and then re-hit the cache.
 		// if that fails, the char is probably not defined in
 		// the font, so we substitute the default char width.
-		
-		iWidth = m_cw.getWidth(s[i+iOffset]);
+		UT_UCSChar currentChar;
+		currentChar = s[i + iOffset];
+		iWidth = m_cw.getWidth(currentChar);
 		if (!iWidth)
 		{
-			m_cw.setCharWidthsOfRange(m_oldHDC,s[i+iOffset],s[i+iOffset]);
-			iWidth = m_cw.getWidth(s[i+iOffset]);
+			m_cw.setCharWidthsOfRange(m_oldHDC,currentChar,currentChar);
+			iWidth = m_cw.getWidth(currentChar);
 			if (!iWidth)
-				iWidth = m_defaultCharWidth;
+			{
+				currentChar = remapGlyph(currentChar, UT_TRUE);
+				iWidth = measureUnRemappedChar(currentChar);
+			}
 		}
 		
 		iCharWidth += iWidth;
@@ -712,7 +744,7 @@ UT_uint32 GR_Win32Font::measureString(const UT_UCSChar* s, int iOffset, int num,
 
 	return iCharWidth;
 }
-
+#endif
 GR_Win32Font::GR_Win32Font(HFONT hFont)
 {
 	m_hFont = hFont;

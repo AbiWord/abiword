@@ -199,7 +199,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	memset(buffer, 0, 2*(iLength+1));
 	for (i=0; i<iLength; i++) {
 		char * utf8char;
-		utf8char =  UT_encodeUTF8char(pChars[i+iCharOffset]);
+		utf8char =  UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], UT_FALSE));
 		/*	
 		printf("GR: 0x%x -UCS2 2 UTF8-> ", pChars[i+iCharOffset]);
 		for (int t=0; utf8char[t]; t++) {
@@ -236,6 +236,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	float fontsize=viewFont.Size();
 	viewFont.GetEscapements(buffer,iLength,&tempdelta,escapementArray);
 
+	// TODO: need remapGlyph() before the following function call?
 	m_pShadowView->DrawString(UT_encodeUTF8char(pChars[0+iCharOffset]),
 							  BPoint(xoff,yoff+offset));
 	for (i=1; i<iLength; i++)
@@ -246,7 +247,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		 */
 		widthAbiWants=(unsigned short int)ceil(escapementArray[i-1].x*fontsize);
 		xoff+=widthAbiWants;
-		m_pShadowView->DrawString(UT_encodeUTF8char(pChars[i+iCharOffset]),
+		m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], UT_FALSE)),
 								  BPoint(xoff,yoff+offset));
 	}
 	m_pShadowView->Window()->Unlock();
@@ -438,6 +439,43 @@ UT_uint32 GR_BeOSGraphics::getFontDescent()
 	return((UT_uint32)(fh.descent + 0.5));
 }
 
+UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
+{
+	UT_uint32	size, i;	
+
+	//We need to convert the string from UCS2 to UTF8 before
+	//we use the BeOS string operations on it.
+	char buffer[10];
+
+	//Set the character, then set the length of the character
+	size=0;
+
+	BFont viewFont;
+	BPoint *escapementArray=new BPoint[num];
+
+	m_pShadowView->GetFont(&viewFont);
+	viewFont.SetSpacing(B_BITMAP_SPACING);
+	if (m_pShadowView->Window()->Lock()) {
+		m_pShadowView->SetFont(&viewFont);
+		m_pShadowView->Window()->Unlock();
+	}
+
+	char * utf8char;
+	utf8char =  UT_encodeUTF8char(c);
+	strcpy(buffer, utf8char);						
+
+	escapement_delta tempdelta;
+	tempdelta.space=0.0;
+	tempdelta.nonspace=0.0;
+	//Hope this works on UTF8 characters buffers
+	viewFont.GetEscapements(buffer,1,&tempdelta,escapementArray);
+	float fontsize=viewFont.Size();
+
+	size+= ceil(escapementArray[i].x *fontsize);
+
+	return(size);
+}
+#if 0
 UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									  int num,  unsigned short* pWidths)
 {
@@ -468,7 +506,11 @@ UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 
 	for (i=0; i<num; i++) {
 		char * utf8char;
-		utf8char =  UT_encodeUTF8char(s[i+iOffset]);
+		UT_UCSChar *currentChar;
+		currentChar = s[i+Offset];
+		// TODO: next line might be performance hit
+		currentChar = remapGlyph(currentChar, UT_FALSE);
+		utf8char =  UT_encodeUTF8char(currentChar);
 		strcat(buffer, utf8char);						
 	}
 
@@ -493,7 +535,7 @@ UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	delete [] buffer;
 	return(size);
 }
-
+#endif
 UT_uint32 GR_BeOSGraphics::_getResolution() const
 {
 	return 72;

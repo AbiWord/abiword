@@ -42,8 +42,8 @@ public:
 	inline UT_uint32				getDescent(void)	{ return m_tm.tmDescent; };
 	inline UT_uint32				getFontHeight(void)	{ return m_tm.tmHeight; };
 	void							selectFontIntoDC(HDC hdc);
-	UT_uint32						measureString(const UT_UCSChar* s, int iOffset,
-												  int num, unsigned short* pWidths);
+	//UT_uint32						measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths);
+	UT_uint32						measureUnRemappedChar(const UT_UCSChar c);
 
 protected:
 	HDC						m_oldHDC;
@@ -69,9 +69,8 @@ public:
 									  UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			setFont(GR_Font* pFont);
 	virtual UT_uint32		getFontHeight();
-	virtual UT_uint32		measureString(const UT_UCSChar*s,
-										  int iOffset, int num,
-										  unsigned short* pWidths);
+	//virtual UT_uint32		measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
+	virtual UT_uint32		measureUnRemappedChar(const UT_UCSChar c);
 	virtual void			setColor(UT_RGBColor& clr);
 	virtual GR_Font*		getGUIFont();
 	virtual GR_Font*		findFont(const char* pszFontFamily, 

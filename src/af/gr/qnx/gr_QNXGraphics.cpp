@@ -172,7 +172,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	int i;
 	for (i = 0; i<iLength; i++) {
-		buffer[i] = (char)pChars[i];	//Bad I know convert from UTC later
+		buffer[i] = (char)remapGlyph(pChars[i], UT_FALSE);	//Bad I know convert from UTC later
 	}
 	buffer[i] = '\0';
 	
@@ -215,6 +215,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgFlush();
 	free(buffer);	
 #else
+	// TODO: need remapGlyph() before the following function call
 	PgDrawTextmx((char *)(&pChars[iCharOffset]), iLength*sizeof(UT_UCSChar), 
 		   		  &pos, Pg_TEXT_WIDECHAR);
 
@@ -273,6 +274,39 @@ UT_uint32 GR_QNXGraphics::getFontHeight()
 	return(MY_ABS(rect.ul.y) + MY_ABS(rect.lr.y) + 1);
 }
 
+UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
+{
+	if (c >= 256) return 0;  // TODO: doesn't grok Unicode
+	const char *font;
+	char buffer[2];
+
+	if (!m_pFont || !(font = m_pFont->getFont())) {
+		return(0);
+	}
+
+	PhRect_t rect;
+	int indices, penpos;
+
+	UT_UCSChar currentChar;
+	buffer[0] = (char)currentChar;
+	buffer[1] = 0;
+	memset(&rect, 0, sizeof(rect));
+	indices = 1;
+	penpos = 0;
+	PfExtentTextCharPositions(&rect, 		/* Rect extent */
+							  NULL,			/* Position offset */
+							  buffer,	    /* Buffer to hit */
+							  font, 		/* Font buffer uses */
+							  &indices,		/* Where to get pen pos from */
+							  &penpos, 		/* Where to store pen pos */
+							  1,			/* Number of indices */
+							  0,			/* Flags */
+							  0,			/* Length of buffer (use strlen) */
+							  0, 			/* Number of characters to skip */
+							  NULL);		/* Clipping rectangle? */
+	return (penpos);
+}
+#if 0
 UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 					  int num,  unsigned short* pWidths)
 {
@@ -285,7 +319,10 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	}
 	//printf("GR: Measure string font %s \n", (font) ? font : "NULL");
 
-	//CHANGE THIS TO MAKE IT UNICODE
+	// TODO:  CHANGE THIS TO MAKE IT UNICODE
+	// TODO:  Why is this routine doing all this jazz with allocating
+	// TODO:  "buffer", etc, when it's only using one character at a time
+	// TODO:  anyhow?  Why not always use "c" or some similar scheme?
 	if (num == 1) {
 		buffer = c;
 	}
@@ -329,6 +366,25 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									0,				/* Length of buffer (use strlen) */
 									0, 				/* Number of characters to skip */
 									NULL);			/* Clipping rectangle? */
+		if (!penpos)
+		{
+			buffer[i] = (char)remapGlyph(s[i+iOffset], UT_TRUE);
+			memset(&rect, 0, sizeof(rect));
+			indices = 1;
+			penpos = 0;
+
+			PfExtentTextCharPositions(&rect, 			/* Rect extent */
+								 		NULL,			/* Position offset */
+										&buffer[i],		/* Buffer to hit */
+										font, 			/* Font buffer uses */
+										&indices,		/* Where to get pen pos from */
+										&penpos, 		/* Where to store pen pos */
+										1,				/* Number of indices */
+										0,				/* Flags */
+										0,				/* Length of buffer (use strlen) */
+										0, 				/* Number of characters to skip */
+										NULL);			/* Clipping rectangle? */
+		}
 		if (pWidths)
 			pWidths[i] = penpos;
 		charWidth += penpos;
@@ -344,7 +400,7 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	//printf("GR: Width:%d \n", charWidth);
 	return charWidth;
 }
-
+#endif
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
 {
 	// this is hard-coded at 100 for X now, since 75 (which
