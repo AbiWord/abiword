@@ -4036,7 +4036,19 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				if ((blockOffset + len) < (iRunBlockOffset + iRunLength))
 				{
 					// the deleted section is entirely within this run
-					if(pRun->getType()== FPRUN_TEXT)
+					if(pRun->getType()== FPRUN_DIRECTIONMARKER)
+					{
+						if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
+						{
+							pTR_next = static_cast<fp_TextRun*>(pRun->getNext());
+						}
+						
+						if(pRun->getPrev() && pRun->getPrev()->getType()== FPRUN_TEXT)
+						{
+							pTR_prev = static_cast<fp_TextRun*>(pRun->getPrev());
+						}
+					}
+					else if(pRun->getType()== FPRUN_TEXT)
 					{
 						pTR_del1 = static_cast<fp_TextRun*>(pRun);
 
@@ -4063,7 +4075,19 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					int iDeleted = iRunBlockOffset + iRunLength - blockOffset;
 					UT_ASSERT(iDeleted > 0);
 
-					if(pRun->getType()== FPRUN_TEXT)
+					if(pRun->getType()== FPRUN_DIRECTIONMARKER)
+					{
+						if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
+						{
+							pTR_next = static_cast<fp_TextRun*>(pRun->getNext());
+						}
+						
+						if(pRun->getPrev() && pRun->getPrev()->getType()== FPRUN_TEXT)
+						{
+							pTR_prev = static_cast<fp_TextRun*>(pRun->getPrev());
+						}
+					}
+					else if(pRun->getType()== FPRUN_TEXT)
 					{
 						if(!((iRunBlockOffset == blockOffset) && (iRunLength == len)))
 							pTR_del1 = static_cast<fp_TextRun*>(pRun);
@@ -4090,7 +4114,19 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				// run and possibly also the end; unless this is the
 				// first run in the block, then we have already deleted
 				// something
-				if(pRun->getType()== FPRUN_TEXT)
+				if(pRun->getType()== FPRUN_DIRECTIONMARKER)
+				{
+					if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
+					{
+						pTR_next = static_cast<fp_TextRun*>(pRun->getNext());
+					}
+						
+					if(pRun->getPrev() && pRun->getPrev()->getType()== FPRUN_TEXT)
+					{
+						pTR_prev = static_cast<fp_TextRun*>(pRun->getPrev());
+					}
+				}
+				else if(pRun->getType()== FPRUN_TEXT)
 				{
 					if(!pTR_del1 && pRun->getPrev() && pRun->getPrev()->getType()== FPRUN_TEXT)
 					{

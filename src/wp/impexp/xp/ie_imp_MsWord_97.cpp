@@ -68,6 +68,7 @@
 
 #include <fribidi/fribidi.h>
 
+#define BIDI_DEBUG
 //
 // Forward decls. to wv's callbacks
 //
@@ -374,7 +375,7 @@ static bool s_isLanguageRTL(short unsigned int lid)
 IE_Imp_MsWord_97_Sniffer::IE_Imp_MsWord_97_Sniffer ()
 	: IE_ImpSniffer(IE_IMPEXPNAME_MSWORD97)
 {
-	// 
+	//
 }
 
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::supportsMIME (const char * szMIME)
@@ -541,8 +542,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iBookmarksCount(0),
 	m_iMSWordListId(0),
     m_bEncounteredRevision(false),
-    m_bInTable(false), 
-	m_iRowsRemaining(0), 
+    m_bInTable(false),
+	m_iRowsRemaining(0),
     m_iCellsRemaining(0),
     m_iCurrentRow(0),
     m_iCurrentCell(0),
@@ -690,39 +691,39 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
       if (summary)
 	{
 	  UT_DEBUGMSG(("DOM: getting summary information\n"));
-	  
+
 	  UT_UTF8String prop_str;
 	  gboolean found = FALSE;
-	  
+
 	  // title
 	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_TITLE, &found);
 	  if (found && prop_str.size())
 	    getDoc()->setMetaDataProp ( PD_META_KEY_TITLE, prop_str ) ;
-	  
+
 	  // subject
 	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_SUBJECT, &found);
 	  if (found && prop_str.size())
 	    getDoc()->setMetaDataProp ( PD_META_KEY_SUBJECT, prop_str ) ;
-	  
+
 	  // author
 	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_AUTHOR, &found);
 	  if (found && prop_str.size())
 	    getDoc()->setMetaDataProp ( PD_META_KEY_CREATOR, prop_str ) ;
-	  
+
 	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_LASTAUTHOR, &found);
 	  if (found && prop_str.size())
 	    getDoc()->setMetaDataProp ( PD_META_KEY_CONTRIBUTOR, prop_str ) ;
-	  
+
 	  // keywords
 	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
 	  if (found && prop_str.size())
 	    getDoc()->setMetaDataProp ( PD_META_KEY_KEYWORDS, prop_str ) ;
-	  
+
 	  // comments
 	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
 	  if (found && prop_str.size())
 	    getDoc()->setMetaDataProp ( PD_META_KEY_DESCRIPTION, prop_str ) ;
-	  
+
 	  // below this line are from Document Summary Information
 
 	  ms_ole_summary_close (summary);
@@ -733,12 +734,12 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
 	    if (found && prop_str.size())
 	      getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
-	    
+
 	    // organization
 	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
 	    if (found && prop_str.size())
 	      getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
-	    
+
 	    ms_ole_summary_close (summary);
 	  }
 	}
@@ -818,17 +819,17 @@ void IE_Imp_MsWord_97::_flush ()
 }
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
-{	
+{
   if (m_bInTable) {
     switch (ch) {
     case 7:			// eat tab characters
-      return;	
+      return;
     case 30:		// ??
       ch = '-';
 		  break;
     }
-  }	
-  
+  }
+
   if ( m_bIsLower )
     ch = UT_UCS4_tolower ( ch );
   m_pTextRun += ch;
@@ -926,9 +927,13 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 	case DOCBEGIN:
 
 		// test the bidi nature of this document
-		//m_bBidiDocument = wvIsBidiDocument(ps);
+#ifdef BIDI_DEBUG
+		m_bBidiDocument = wvIsBidiDocument(ps);
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_docProc: complex %d, bidi %d\n",
+					 ps->fib.fComplex,m_bBidiDocument));
+#else
 		m_bBidiDocument = false;
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_docProc: complex %d, bidi %d\n",ps->fib.fComplex,m_bBidiDocument));
+#endif
 		UT_uint32 i,j;
 
 		if(m_pBookmarks)
@@ -1143,18 +1148,60 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// deal with the thorny problem of mirror characters and languge
 	// as direction override
 	FriBidiCharType cType = fribidi_get_type(static_cast<FriBidiChar>(eachchar));
-	
+
 #if 0
-		FriBidiChar dbg_mirror_char;
-		fribidi_get_mirror_char(static_cast<FriBidiChar>(eachchar), &dbg_mirror_char);
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: 0x%04x, LTR=%d, RTL lang=%d\n",
+	FriBidiChar dbg_mirror_char;
+	fribidi_get_mirror_char(static_cast<FriBidiChar>(eachchar), &dbg_mirror_char);
+	UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: 0x%04x, LTR=%d, RTL lang=%d\n",
 						 eachchar,m_bLTRCharContext,m_bLanguageRTL));
 #endif
 
+	UT_UCS4Char cMarker = 0;
+	
+#ifdef BIDI_DEBUG
+	// bidi adjustments for neutrals
+	// 
+	// We have a problem in bidi documents caused by the fact that
+	// Word does not use the Unicode bidi algorithm, but rather one of
+	// its own, which adds keyboard language to the equation. I have
+	// no intention of emulating this proprietary algorithm fully, as
+	// that would mean using explicit overrides all the time, but
+	// there are some cases when we need to jump through hoops to get
+	// sensible layout out of the document.
+
+	if(m_bBidiDocument)
+	{
+		if(FRIBIDI_IS_NEUTRAL(cType))
+		{
+			// A. Other-Neutral characters
+			//    Sometimes Other-Neutral characters will have to be given
+			//    explicit direction based on the language
+			//    
+			// A.1 Parenthesis, braces, brackets
+			//     Closing parenthesis braces and brackets need to be
+			//     treated as strong characters; we will achieve this by
+			//     inserting UCS_LRM and UCS_RLM after them
+			if(eachchar == ')' || eachchar == '}' || eachchar == ']')
+			{
+				if(s_isLanguageRTL(lid))
+				{
+					cMarker = UCS_RLM;
+				}
+				else
+				{
+					cMarker = UCS_LRM;
+				}
+			}
+		}
+	}
+#endif
+	
 #if 0
 
 	// I am going to disable this for now, to simplify debugging
 	// processing of numbers in RTL context (Tomas, Jan 30, 2003)
+	//
+	// I do not think this will be needed after all (Tomas, Apr 11, 2003)
 
 	// if the character is a European number and we are in LTR context
 	// then we need to issue a direction override; we will cancel this
@@ -1162,6 +1209,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// character that has a directional property RTL, i.e., any
 	// neutral characters enclosed in a sequence of numbers will also
 	// be subject to the override.
+	
 	if(cType == FRIBIDI_TYPE_EN && m_bLTRCharContext && !m_bLTROverrideIssued)
 	{
 		this->_flush();
@@ -1173,7 +1221,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		XML_Char rev[] ="revision";
 
 		UT_String props = m_charProps;
-		
+
 		props +=";dir-override:ltr";
 		propsArray[0] = static_cast<const XML_Char*>(&prop);
 		propsArray[1] = props.c_str();
@@ -1183,7 +1231,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 			propsArray[2] = static_cast<const XML_Char*>(&rev);
 			propsArray[3] = m_charRevs.c_str();
 		}
-		
+
 		if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
 		{
 			UT_DEBUGMSG(("#TF: error appending LTR override\n"));
@@ -1196,7 +1244,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	else if(m_bLTROverrideIssued && (FRIBIDI_IS_STRONG(cType) || FRIBIDI_IS_RTL(cType)))
 	{
 		this->_flush();
-		
+
 		const XML_Char * propsArray[5];
 		memset (propsArray, 0, sizeof(propsArray));
 
@@ -1211,7 +1259,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 			propsArray[2] = static_cast<const XML_Char*>(&rev);
 			propsArray[3] = m_charRevs.c_str();
 		}
-		
+
 		if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
 		{
 			UT_DEBUGMSG(("#TF: error appending LTR override\n"));
@@ -1226,6 +1274,12 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 	m_iDocPosition++;
 
+	if(cMarker)
+	{
+		this->_appendChar (cMarker);
+		m_iDocPosition++;
+	}
+	
 	if(FRIBIDI_IS_STRONG(cType))
 	{
 		m_bPrevStrongCharRTL = FRIBIDI_IS_RTL(cType);
@@ -1495,8 +1549,8 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		// explicitely so that we do not end up with wrong default
 		props += "dom-dir:ltr;";
 	}
-	
-	
+
+
 	if(asep->fPgnRestart)
 	  {
 		// set to 1 when page numbering should be restarted at the beginning of this section
@@ -1669,10 +1723,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 	  if (apap->fInTable) {
 	    if (!m_bInTable) {
-	      m_bInTable = true;	    
+	      m_bInTable = true;
 	        _table_open();
 	    }
-	    
+
 	    if (ps->endcell) {
 	      ps->endcell = 0;
 	      _cell_close();
@@ -1683,16 +1737,16 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		}
 	      }
 	    }
-	    
+
 	    _row_open();
-	    
+
 	    // determine column spans
 	    if (!m_bCellOpen) {
 	      m_vecColumnSpansForCurrentRow.clear();
-	    
+
 	      for (int column = 1; column < ps->nocellbounds; column++) {
-		int span = 0;	
-		
+		int span = 0;
+
 		for (int i = column; i < ps->nocellbounds; i++) {
 		  if (ps->cellbounds[i] >= apap->ptap.rgdxaCenter[column]) {
 		    span = (i - column);
@@ -1702,17 +1756,17 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		m_vecColumnSpansForCurrentRow.addItem(reinterpret_cast<void *>(span));
 	      }
 	    }
-	    
+
 	    _cell_open(ps, apap);
-	    
+
 	    if (m_iCellsRemaining == 0) {
 	      m_iCellsRemaining = apap->ptap.itcMac + 1;
-	    }	
-	    
+	    }
+
 	    if (m_iRowsRemaining == 0) {
 	      m_iRowsRemaining = ps->norows;
 	    }
-	    
+
 	    m_iRowsRemaining--;
 	  }
 	  else if (m_bInTable) {
@@ -1991,7 +2045,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  UT_ASSERT(myLVLF);
 
 		  myStartAt = myLFOLVL->fStartAt ? static_cast<signed>(myLVLF->iStartAt) : -1;
-		  
+
 		  mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
 		  mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
 
@@ -2259,7 +2313,7 @@ list_error:
 		getDoc()->appendStrux(PTX_Section, NULL);
 		m_bInSect = true ;
 	}
-	
+
 	if (!getDoc()->appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0])))
 	{
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
@@ -2313,7 +2367,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	UT_String propBuffer;
 
 	m_charProps.clear();
-	
+
 	memset (propsArray, 0, sizeof(propsArray));
 
 	// set char tolower if fSmallCaps && fLowerCase
@@ -2343,7 +2397,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		m_charProps += wvLIDToLangConverter (achp->lidFE);
 		m_bLanguageRTL = s_isLanguageRTL(achp->lidBidi);
 	}
-		
+
 	m_charProps += ";";
 
 	// decide best codepage based on the lid (as lang code above)
@@ -2378,14 +2432,14 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	// first of all, cancel any leftover LTR override indicator
 	m_bLTROverrideIssued = false;
-	
+
 	if (!achp->fBidi)
 		m_bLTRCharContext = true;
 	else
 		m_bLTRCharContext = false;
-		
-	
-	
+
+
+
 	// bold text
 	bool fBold = (achp->fBidi ? achp->fBoldBidi : achp->fBold);
 	if (fBold) {
@@ -2515,7 +2569,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	}
 	else
 		m_charRevs.clear();
-		
+
 	// woah - major error here
 	if(!m_bInSect)
 	{
@@ -2530,7 +2584,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		getDoc()->appendStrux(PTX_Block, NULL);
 		m_bInPara = true ;
 	}
-	
+
 	if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
 	{
 		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
@@ -2993,14 +3047,14 @@ static int docProc (wvParseStruct *ps, wvTag tag)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_table_open () 
-{  
+void IE_Imp_MsWord_97::_table_open ()
+{
   m_iCurrentRow = 0;
   m_iCurrentCell = 0;
-  
+
   getDoc()->appendStrux(PTX_Block, NULL);
   getDoc()->appendStrux(PTX_SectionTable, NULL);
-  
+
   m_bRowOpen = false;
   m_bCellOpen = false;
   m_bInPara = false;
@@ -3010,17 +3064,17 @@ void IE_Imp_MsWord_97::_table_open ()
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap) 
-{  
+void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
+{
   _cell_close();
   _row_close();
 
   UT_String props("table-column-props:");
-   
+
   if (m_vecColumnWidths.size()) {
     // build column width properties string
     UT_String propBuffer;
-    
+
     for (UT_uint32 i = 0; i < m_vecColumnWidths.size(); i++) {
       UT_String_sprintf(propBuffer,
 			"%s/",
@@ -3034,11 +3088,11 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   }
 
   props += UT_String_sprintf("table-line-ignore:0; table-line-type:1; table-line-thickness:0.8pt; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
-  
+
   // apply properties
   PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
-  getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());  
-  
+  getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());
+
   // end-of-table
   getDoc()->appendStrux(PTX_EndTable, NULL);
   m_bInPara = false ;
@@ -3049,22 +3103,22 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_row_open () 
-{  
+void IE_Imp_MsWord_97::_row_open ()
+{
   if (m_bRowOpen)
     return;
-  
+
   m_bRowOpen = true;
   m_iCurrentRow++;
   m_iCurrentCell = 0;
-  
+
   xxx_UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
 }
 
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_row_close () 
+void IE_Imp_MsWord_97::_row_close ()
 {
   if (m_bRowOpen) {
     xxx_UT_DEBUGMSG(("\t</ROW>"));
@@ -3085,12 +3139,12 @@ enum
 static int
 sConvertLineStyle (short lineType)
 {
-  switch (lineType) 
+  switch (lineType)
     {
     case 0: return LS_NORMAL;
-    case 1: 
+    case 1:
       return LS_NORMAL;
-      
+
       // TODO: more cases here
     default:
       return LS_NORMAL;
@@ -3100,48 +3154,48 @@ sConvertLineStyle (short lineType)
 static double
 brc_to_pixel (int x)
 {
-  // each unit is 1/8 of a pixel. abi only deals with whole numbers, 
+  // each unit is 1/8 of a pixel. abi only deals with whole numbers,
   if(x == 255)
     return  0.;
   return x/8.;
 }
 
-void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap) 
-{  
+void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
+{
   if (m_bCellOpen || apap->fTtp)
     return;
-  
+
   // determine column widths
   UT_Vector columnWidths;
-  
+
   for (int i = 1; i < ps->nocellbounds; i++) {
     int width = apap->ptap.rgdxaCenter[i] - apap->ptap.rgdxaCenter[i - 1];
     if (width <= 0)
       break;
     columnWidths.addItem(reinterpret_cast<void *>(width));
   }
-  
+
   if (columnWidths.size() > m_vecColumnWidths.size()) {
     m_vecColumnWidths.clear();
     m_vecColumnWidths = columnWidths;
   }
-  
+
   // add a new cell
   m_bCellOpen = true;
   m_iCurrentCell++;
-  
+
   UT_String propBuffer;
-  
+
   int vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1];
-  
+
   if (vspan > 0)
     vspan--;
-  
-  UT_String_sprintf(propBuffer, 
-		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ", 
-		    m_iCurrentCell - 1, 
-		    m_iCurrentCell + reinterpret_cast<int>(m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1)), 
-		    m_iCurrentRow - 1, 
+
+  UT_String_sprintf(propBuffer,
+		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ",
+		    m_iCurrentCell - 1,
+		    m_iCurrentCell + reinterpret_cast<int>(m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1)),
+		    m_iCurrentRow - 1,
 		    m_iCurrentRow + vspan
 		    );
 
@@ -3150,34 +3204,34 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   // so long as it's not the "auto" color
   if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
     propBuffer += "bg-style:1;";
-  
+
   const char * old_locale = setlocale(LC_NUMERIC, "C");
 
-  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;", 
+  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;",
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.ico).c_str(),
 				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.brcType));
-  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%fpx; left-style:%d;", 
+  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%fpx; left-style:%d;",
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.ico).c_str(),
 				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.brcType));
-  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%fpx; bot-style:%d;", 
+  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%fpx; bot-style:%d;",
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.ico).c_str(),
 				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.brcType));
-  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%fpx; right-style:%d", 
+  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%fpx; right-style:%d",
 				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.ico).c_str(),
 				  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
 
   setlocale (LC_NUMERIC, old_locale);
   xxx_UT_DEBUGMSG(("propbuffer: %s \n",propBuffer.c_str()));
- 
+
   const XML_Char* propsArray[3];
   propsArray[0] = static_cast<const XML_Char*>("props");
   propsArray[1] = propBuffer.c_str();
   propsArray[2] = NULL;
-  
+
   getDoc()->appendStrux(PTX_SectionCell, propsArray);
   m_bInPara = false;
 
@@ -3187,12 +3241,12 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_cell_close () 
-{  
+void IE_Imp_MsWord_97::_cell_close ()
+{
   if (!m_bCellOpen)
     return;
-  
-  m_bCellOpen = false;  
+
+  m_bCellOpen = false;
   getDoc()->appendStrux(PTX_EndCell, NULL);
   m_bInPara = false ;
 
