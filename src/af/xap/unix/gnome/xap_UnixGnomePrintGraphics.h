@@ -145,6 +145,8 @@ private:
 	bool _endPage(void);
 	bool _endDocument(void);
 
+	GnomeGlyphList * _createGlyphList ();
+
 	bool                     m_bIsPreview;
 	GnomePrintJob           *m_gpm;
 	GnomePrintContext       *m_gpc;
