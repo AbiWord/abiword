@@ -83,10 +83,13 @@
 <p style="Sample"><c style="ISO">tr-TR</c>	Turkish	<c props="lang:tr-TR">Dünya birbiriyle konuşmak isterse bunu Unicode vasıtası ile yapar</c></p>
 <p style="Sample"><c style="ISO">cy-UK</c>	Welsh	<c props="lang:cy-UK">Pan mae'r byd am siarad, mae'n siarad Unicode</c></p>
 <p></p>
+<p><c props="font-weight:bold">Only a 3-letter ISO 639 language code</c><c props="font-weight:bold"></c></p>
+<p></p>
+<p style="Sample"><c style="ISO">haw-US</c>	Hawaiian	<c props="lang:-none-">Hele ā makemake ka honua e walaʻau, ʻōlelo ʻo ia i ka ʻōlelo Unicode</c></p>
+<p></p>
 <p><c props="font-weight:bold">These have no ISO 639 2-letter or 3-letter language code</c><c props="font-weight:bold"></c></p>
 <p></p>
-<p style="Sample"><c style="ISO">??-AU</c>	Arernte	<c props="lang:-none-">Ilengare ahelhe angketyeke ahentye-aneme, re Unicode angkeme</c></p>
-<p style="Sample"><c style="ISO">??-US</c>	Hawaiian	<c props="lang:-none-">Hele ā makemake ka honua e walaʻau, ʻōlelo ʻo ia i ka ʻōlelo Unicode</c></p>
+<p style="Sample"><c style="ISO">x-sil-AER</c>	Arernte	<c props="lang:-none-">Ilengare ahelhe angketyeke ahentye-aneme, re Unicode angkeme</c></p>
 <p></p>
 <p><c props="font-weight:bold">Additional fonts, etc. needed</c><c props="font-weight:bold"></c></p>
 <p></p>
