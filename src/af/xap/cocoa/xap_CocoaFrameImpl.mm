@@ -229,9 +229,8 @@ XAP_DialogFactory * XAP_CocoaFrameImpl::_getDialogFactory(void)
 
 void XAP_CocoaFrameImpl::_nullUpdate() const
 {
-#if 0
-  gtk_main_iteration ();
-#endif
+	/* FIXME: do this more propperly if there is any chance...*/
+	[[m_frameController window] displayIfNeeded];
 }
 
 void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
