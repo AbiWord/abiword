@@ -135,6 +135,11 @@ UninstallExeName "UninstallAbiWord.exe"
 ; special uninstall section.
 Section "Uninstall"
 
+	MessageBox MB_OKCANCEL "This will delete $INSTDIR and all subdirectories and files?" IDOK DoUnInstall
+	
+	Abort "Quitting the uninstall process"
+
+	DoUnInstall:
 	; remove registry keys
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword"
 	DeleteRegKey HKLM SOFTWARE\Abisuite
