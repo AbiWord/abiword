@@ -311,10 +311,12 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
+#if 0
 #ifdef DEBUG
 	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping block AP\n"));
 	if(pBlockAP)
 		pBlockAP->miniDump(pDoc);
+#endif
 #endif
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
@@ -338,10 +340,13 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	}
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 
+
+#if 0
 #ifdef DEBUG
 	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping span AP\n"));
 	if(pSpanAP)
 		pSpanAP->miniDump(pDoc);
+#endif
 #endif
 	
 	//evaluate the "display" property and superimpose it over anything
