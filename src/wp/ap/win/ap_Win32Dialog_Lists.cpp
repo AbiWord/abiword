@@ -61,6 +61,8 @@ AP_Win32Dialog_Lists::static_constructor(	XAP_DialogFactory* pFactory,
 AP_Win32Dialog_Lists::AP_Win32Dialog_Lists(	XAP_DialogFactory* pDlgFactory,
 											XAP_Dialog_Id id)
 :	AP_Dialog_Lists(pDlgFactory,id),
+	m_bDestroy_says_stopupdating(false),
+	m_bAutoUpdate_happening_now(false),
 	m_pAutoUpdateLists(0),
 	_win32Dialog(this),
 	m_pPreviewWidget(0),
@@ -76,6 +78,7 @@ AP_Win32Dialog_Lists::~AP_Win32Dialog_Lists(void)
 		m_pAutoUpdateLists->stop();
 		DELETEP(m_pAutoUpdateLists);
 	}
+	DELETEP(m_pPreviewWidget);
 }
 
 /*****************************************************************/
