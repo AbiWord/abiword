@@ -26,16 +26,20 @@
 #ifndef AP_QNXAPP_H
 #define AP_QNXAPP_H
 
+#include "ap_App.h"
 #include "ut_bytebuf.h"
 #include "xap_Args.h"
 #include "xap_QNXApp.h"
 #include "ap_QNXPrefs.h"
 #include "ap_QNXClipboard.h"
 #include "pt_Types.h"
+
 class XAP_StringSet;
 class AV_View;
+class GR_Image;
+class AP_Args;
 
-class AP_QNXApp : public XAP_QNXApp
+class AP_QNXApp : public AP_App
 {
 public:
 	AP_QNXApp(XAP_Args * pArgs, const char * szAppName);
@@ -54,8 +58,6 @@ public:
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting);
 	virtual bool					canPasteFromClipboard(void);
 	
-	bool									parseCommandLine(void);
-
 	virtual void					setSelectionStatus(AV_View * pView);
 	virtual void					clearSelection(void);
 	virtual bool					getCurrentSelection(const char** formatList,
@@ -65,11 +67,16 @@ public:
 
 	virtual	void					catchSignals(int sig_num);
 	void 									loadAllPlugins ();
+
+	virtual void errorMsgBadArg(AP_Args * Args, int nextopt);
+	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+								 UT_Error error);
+	virtual bool doWindowlessArgs (const AP_Args *);
+	virtual XAP_Frame * newFrame(AP_App *);
 	
 	static int main (const char * szAppName, int argc,const char ** argv);
 
 protected:
-	//AP_QNXPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
 	AP_QNXClipboard *		m_pClipboard;
 

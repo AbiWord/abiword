@@ -21,7 +21,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Frame.h"
-#include "xap_QNXFrame.h"
 #include "ap_QNXLeftRuler.h"
 #include "gr_QNXGraphics.h"
 #include <stdio.h>
@@ -46,6 +45,7 @@ AP_QNXLeftRuler::~AP_QNXLeftRuler(void)
 
 PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 {
+#if 0 
 	PtArg_t args[10];
 	PhArea_t area;
 	void    *data = this;
@@ -89,10 +89,12 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 
 
 	return m_wLeftRulerGroup;
+#endif
 }
 
 void AP_QNXLeftRuler::setView(AV_View * pView)
 {
+#if 0
 	AP_LeftRuler::setView(pView);
 
 	// We really should allocate m_pG in createWidget(), but
@@ -100,10 +102,11 @@ void AP_QNXLeftRuler::setView(AV_View * pView)
 	// is not created until the frame's top-level window is
 	// shown.
 	DELETEP(m_pG);
-	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrame *)m_pFrame)->getTopLevelWindow(),
+	GR_QNXGraphics * pG = new GR_QNXGraphics(m_pFrame->getTopLevelWindow(),
                                            m_wLeftRuler, m_pFrame->getApp());
 	m_pG = pG;
 	pG->init3dColors();
+#endif
 }
 
 void * AP_QNXLeftRuler::getRootWindow(void)
@@ -114,9 +117,7 @@ void * AP_QNXLeftRuler::getRootWindow(void)
 	if (m_rootWindow)
 		return m_rootWindow;
 
-	if (m_pFrame)
-		return (m_rootWindow = ((XAP_QNXFrame *)m_pFrame)->getTopLevelWindow()) ;
-
+//XXX:
 	return NULL;
 }
 

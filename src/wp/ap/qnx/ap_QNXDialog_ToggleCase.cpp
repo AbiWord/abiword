@@ -26,7 +26,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -100,13 +101,11 @@ AP_QNXDialog_ToggleCase::~AP_QNXDialog_ToggleCase(void)
 void AP_QNXDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
 	// get top level window 
-	XAP_QNXFrame * frame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(frame);
-
-	PtWidget_t *parent = frame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parent =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parent);
-	PtSetParentWidget(parent);
 
+	PtSetParentWidget(parent);
 	// build the dialog
 	PtWidget_t * window = _constructWindow();
 	UT_ASSERT(window);

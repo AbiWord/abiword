@@ -9,7 +9,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+/usr/bin/bash: 3: command not found
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -33,6 +33,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/dir.h>
+#include <popt.h>
+
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -42,6 +44,7 @@
 #include "ut_PerlBindings.h"
 
 #include "xap_Args.h"
+#include "ap_Args.h"
 #include "ap_Convert.h"
 #include "ap_QNXFrame.h"
 #include "ap_QNXApp.h"
@@ -93,7 +96,7 @@ void signalWrapper(int sig_num);
 /*****************************************************************/
 
 AP_QNXApp::AP_QNXApp(XAP_Args * pArgs, const char * szAppName)
-	: XAP_QNXApp(pArgs,szAppName)
+	: AP_App(pArgs,szAppName)
 {
 	m_prefs = NULL;
 	m_pStringSet = NULL;
@@ -791,50 +794,53 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 
 	// initialize our application.
 
-	XAP_Args Args = XAP_Args(argc,argv);
-
-	//Initial state
-	bool bShowSplash = true;
-	bool bShowApp = true;
-
-	// Do a quick and dirty find for "-to"
-	for (int k = 1; k < Args.m_argc; k++)
- 		if (*Args.m_argv[k] == '-')
- 			if (UT_stricmp(Args.m_argv[k],"-to") == 0)
- 			{
-				bShowApp = false;
- 				bShowSplash = false;
- 				break;
- 			}
-
-	// Do a quick and dirty find for "-show"
- 	for (int k = 1; k < Args.m_argc; k++)
- 		if (*Args.m_argv[k] == '-')
- 			if (UT_stricmp(Args.m_argv[k],"-show") == 0)
- 			{
-				bShowApp = true;
- 				bShowSplash = true;
- 				break;
- 			}
-
-	// Do a quick and dirty find for "-nosplash"
-	for (int k = 1; k < Args.m_argc; k++)
-		if (*Args.m_argv[k] == '-')
-			if (UT_stricmp(Args.m_argv[k],"-nosplash") == 0)
-			{
-				bShowSplash = false;
-				break;
-			}
+	XAP_Args XArgs = XAP_Args(argc,argv);
 
 
 	//TODO: Do a PtAppInit() here with the main window being the splash screen
 	PtWidget_t *spwin;
-	spwin = PtAppInit(NULL, NULL /* Args.m_argc */, NULL /* Args.m_argv */, 0, NULL);
+	spwin = PtAppInit(NULL, NULL /* XArgs.m_argc */, NULL /* XArgs.m_argv */, 0, NULL);
 
-	AP_QNXApp * pMyQNXApp;
-	gQNXApp = pMyQNXApp = new AP_QNXApp(&Args, szAppName);
+	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&XArgs, szAppName);
+	AP_Args Args = AP_Args(&XArgs,szAppName,pMyQNXApp);
 
+	// if the initialize fails, we don't have icons, fonts, etc.
+	if (!pMyQNXApp->initialize())
+	{
+		delete pMyQNXApp;
+		return -1;	// make this something standard?
+	}
 
+	//This is used by all the timer classes, and should probably be in the XAP contructor
+	PtArg_t args[2];
+	PtSetArg(&args[0], Pt_ARG_REGION_FIELDS, Ph_REGION_EV_SENSE, Ph_REGION_EV_SENSE);
+	PtSetArg(&args[1], Pt_ARG_REGION_SENSE, Ph_EV_TIMER, Ph_EV_TIMER);
+	PtSetParentWidget(NULL);
+	gTimerWidget = PtCreateWidget(PtRegion, NULL, 2, args);
+	PtRealizeWidget(gTimerWidget);
+
+	
+ // do we show the app&splash?
+ bool bShowSplash = Args.getShowSplash();
+ bool bShowApp = Args.getShowApp();
+ pMyQNXApp->setDisplayStatus(bShowApp);
+
+ const XAP_Prefs * pPrefs = pMyQNXApp->getPrefs();
+ UT_ASSERT(pPrefs);
+ bool bSplashPref = true;
+ if (pPrefs && 
+	pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+  {
+  	bShowSplash = bShowSplash && bSplashPref;
+  }
+	if (bShowSplash) {
+		_showSplash(spwin, 2000);
+	}
+	else {
+		PtDestroyWidget(spwin);
+
+  if (!Args.doWindowlessArgs())
+    return false;
 	
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it
@@ -855,47 +861,27 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
     sigaction(SIGFPE, &sa, NULL);
     // TODO: handle SIGABRT
 
-	//This is used by all the timer classes, and should probably be in the XAP contructor
-	PtArg_t args[2];
-	PtSetArg(&args[0], Pt_ARG_REGION_FIELDS, Ph_REGION_EV_SENSE, Ph_REGION_EV_SENSE);
-	PtSetArg(&args[1], Pt_ARG_REGION_SENSE, Ph_EV_TIMER, Ph_EV_TIMER);
-	PtSetParentWidget(NULL);
-	gTimerWidget = PtCreateWidget(PtRegion, NULL, 2, args);
-	PtRealizeWidget(gTimerWidget);
-
-	// if the initialize fails, we don't have icons, fonts, etc.
-	if (!pMyQNXApp->initialize())
-	{
-		delete pMyQNXApp;
-		return -1;	// make this something standard?
-	}
-	
-	if (bShowSplash) {
-		_showSplash(spwin, 2000);
-	}
-	else {
-		PtDestroyWidget(spwin);
 	}
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
 	// continue out the door.
-	if (pMyQNXApp->parseCommandLine() && bShowApp)
+	if (pMyQNXApp->parseCommandLine(Args.poptcon) && bShowApp)
 	{
-				PtCallbackList_t *cl;
-				XAP_QNXFrame *pFrame = static_cast<XAP_QNXFrame*>(XAP_App::getApp()->getLastFocussedFrame());
-		//XXX: Kinda nasty.
-		PtGetResource(pFrame->getTopLevelWindow(),Pt_CB_GOT_FOCUS,&cl,0);
-		(int)(*cl->cb.event_f)(0,pFrame,0);		
 		PtMainLoop();
+	}
+	else
+	{
+	UT_DEBUGMSG(("Not parsing command line or showing app\n"));
 	}
 	
 	// destroy the App.  It should take care of deleting all frames.
 	pMyQNXApp->shutdown();
 	delete pMyQNXApp;
-	
+
+	poptFreeContext(Args.poptcon);	
 	return 0;
 }
-
+#if 0
 bool AP_QNXApp::parseCommandLine(void)
 {
 	// parse the command line
@@ -1086,7 +1072,7 @@ pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_ImportError).c_str
 	}
 	return true;
 }
-
+#endif 
 /*** Signal handling functionality ***/
 void signalWrapper(int sig_num)
 {
@@ -1212,4 +1198,33 @@ void AP_QNXApp::loadAllPlugins ()
    */
   XAP_ModuleManager::instance().registerPending ();
 }
+
+void AP_QNXApp::errorMsgBadArg(AP_Args *Args,int nextopt)
+{
+  printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+	  poptBadOption (Args->poptcon, 0),
+	  poptStrerror (nextopt),
+	  Args->XArgs->m_argv[0]);
+}
+
+void AP_QNXApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+				 UT_Error error)
+{
+}
+
+bool AP_QNXApp::doWindowlessArgs(const AP_Args *Args)
+{
+
+return false;
+}
+
+XAP_Frame * AP_QNXApp::newFrame(AP_App * app)
+{
+  AP_QNXFrame * pFrame = new AP_QNXFrame(app);
+  if (pFrame)
+    pFrame->initialize();
+  
+  return pFrame;
+}
+
 

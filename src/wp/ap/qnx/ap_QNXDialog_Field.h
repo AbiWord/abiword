@@ -21,6 +21,7 @@
 #define AP_QNXDIALOG_FIELD_H
 
 #include "ap_Dialog_Field.h"
+#include <Pt.h>
 
 class XAP_QNXFrame;
 

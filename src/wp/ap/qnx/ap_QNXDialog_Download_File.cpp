@@ -26,7 +26,8 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "xap_Dialog_Id.h"
 #include "ap_QNXDialog_Download_File.h"
@@ -74,14 +75,10 @@ void AP_QNXDialog_Download_File::_runModal(XAP_Frame * pFrame)
 	UT_ASSERT(mainWindow);
 	connectFocus(mainWindow,pFrame);
 	
-   // To center the dialog, we need the frame of its parent.
-    XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-    UT_ASSERT(pQNXFrame);
-    
-    // Get the Window of the parent frame
-    PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
+   	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
+	UT_ASSERT(parentWindow);
+
     // Center our new dialog in its parent and make it a transient
     // so it won't get lost underneath
     // Make it modal, and stick it up top

@@ -26,7 +26,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -103,15 +104,11 @@ static int s_item_selected(PtWidget_t * widget, void *data, PtCallbackInfo_t *in
 
 void AP_QNXDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 {
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the GtkWindow of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
-	PtSetParentWidget(parentWindow);
 
+	PtSetParentWidget(parentWindow);
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);

@@ -32,7 +32,8 @@
 // like centering them, measuring them, etc.
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"

@@ -22,7 +22,6 @@
 #include "ut_debugmsg.h"
 
 #include "xap_Frame.h"
-#include "xap_QNXFrame.h"
 
 #include "gr_QNXGraphics.h"
 #include "ap_QNXTopRuler.h"
@@ -48,6 +47,7 @@ AP_QNXTopRuler::~AP_QNXTopRuler(void)
 
 PtWidget_t * AP_QNXTopRuler::createWidget(void)
 {
+#if 0
 	PtArg_t args[10];
 	PhArea_t area;
 	void 	*data = this;
@@ -90,10 +90,12 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
 
 	return m_wTopRulerGroup;
+#endif
 }
 
 void AP_QNXTopRuler::setView(AV_View * pView)
 {
+#if 0
 	AP_TopRuler::setView(pView);
 
 	// We really should allocate m_pG in createWidget(), but
@@ -107,6 +109,7 @@ void AP_QNXTopRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 	pG->init3dColors();
+#endif 
 }
 
 void AP_QNXTopRuler::getWidgetPosition(int * x, int * y)
@@ -132,10 +135,8 @@ void * AP_QNXTopRuler::getRootWindow(void)
 	if (m_rootWindow)
 		return m_rootWindow;
 
-	if (m_pFrame)
-		return (m_rootWindow = ((XAP_QNXFrame *)m_pFrame)->getTopLevelWindow()) ;
-
-	return NULL;
+	//XXX:
+return NULL;
 }
 
 		

@@ -26,7 +26,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -96,13 +97,10 @@ static int s_radio_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 
 void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 {
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the Window of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
+
 	PtSetParentWidget(parentWindow);
 
 	// Build the window's widgets and arrange them

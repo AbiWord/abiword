@@ -22,7 +22,6 @@
 #include "ut_assert.h"
 #include "xap_ViewListener.h"
 #include "ap_FrameData.h"
-#include "xap_QNXFrame.h"
 #include "ev_QNXToolbar.h"
 #include "xav_View.h"
 #include "xad_Document.h"
@@ -62,243 +61,17 @@ UT_uint32 AP_QNXFrame::getZoomPercentage(void)
 	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
 }
 
-UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
-{
-	UT_DEBUGMSG(("Frame: _showDocument \n"));
-
-	if (!m_pDoc)
-	{
-		UT_DEBUGMSG(("Can't show a non-existent document\n"));
-		return UT_IE_FILENOTFOUND;
-	}
-
-	if (!((AP_FrameData*)m_pData))
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_IE_IMPORTERROR;
-	}
-
-	GR_QNXGraphics * pG = NULL;
-	FL_DocLayout * pDocLayout = NULL;
-	AV_View * pView = NULL;
-	AV_ScrollObj * pScrollObj = NULL;
-	ap_ViewListener * pViewListener = NULL;
-	AD_Document * pOldDoc = NULL;
-	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
-	AV_ListenerId lid;
-	AV_ListenerId lidScrollbarViewListener;
-	UT_uint32 nrToolbars;
-	UT_uint32 point = 0;
-	UT_uint32 k = 0;
-
-	pG = new GR_QNXGraphics(m_wTopLevelWindow, m_dArea, getApp());
-	ENSUREP(pG);
-	pG->setZoomPercentage(iZoom);
-	
-	pDocLayout = new FL_DocLayout((PD_Document *)(m_pDoc), pG);
-	ENSUREP(pDocLayout);
-  
-	/*TF DIFF: The unix version has this commented out???*/
-	//pDocLayout->formatAll();
-
-	pView = new FV_View(getApp(), this, pDocLayout);
-	if (m_pView != NULL)
-	{
-		point = ((FV_View *) m_pView)->getPoint();
-//		pView->setFocus(m_pView->getFocus());		//Keep the same focus policy
-	}
-	ENSUREP(pView);
-
-	// The "AV_ScrollObj pScrollObj" receives
-	// send{Vertical,Horizontal}ScrollEvents
-	// from both the scroll-related edit methods
-	// and from the UI callbacks.
-	// 
-	// The "ap_ViewListener pViewListener" receives
-	// change notifications as the document changes.
-	// This ViewListener is responsible for keeping
-	// the title-bar up to date (primarily title
-	// changes, dirty indicator, and window number).
-	//
-	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
-	// receives change notifications as the doucment changes.
-	// This ViewListener is responsible for recalibrating the
-	// scrollbars as pages are added/removed from the document.
-	//
-	// Each Toolbar will also get a ViewListener so that
-	// it can update toggle buttons, and other state-indicating
-	// controls on it.
-	//
-	// TODO we ***really*** need to re-do the whole scrollbar thing.
-	// TODO we have an addScrollListener() using an m_pScrollObj
-	// TODO and a View-Listener, and a bunch of other widget stuff.
-	// TODO and its very confusing.
-	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
-	ENSUREP(pScrollObj);
-	pViewListener = new ap_QNXViewListener(this);
-	ENSUREP(pViewListener);
-	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
-	ENSUREP(pScrollbarViewListener);
-
-	if (!pView->addListener((AV_Listener *)pViewListener,&lid))
-		goto Cleanup;
-
-	if (!pView->addListener((AV_Listener *)pScrollbarViewListener,
-							&lidScrollbarViewListener))
-		goto Cleanup;
-
-	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (k=0; k < nrToolbars; k++)
-	{
-		// TODO Toolbars are a frame-level item, but a view-listener is
-		// TODO a view-level item.  I've bound the toolbar-view-listeners
-		// TODO to the current view within this frame and have code in the
-		// TODO toolbar to allow the view-listener to be rebound to a different
-		// TODO view.  in the future, when we have support for multiple views
-		// TODO in the frame (think splitter windows), we will need to have
-		// TODO a loop like this to help change the focus when the current
-		// TODO view changes.
-		
-		EV_QNXToolbar * pQNXToolbar = (EV_QNXToolbar *)m_vecToolbars.getNthItem(k);
-		pQNXToolbar->bindListenerToView(pView);
-	}
-
-	/****************************************************************
-	*****************************************************************
-	** If we reach this point, everything for the new document has
-	** been created.  We can now safely replace the various fields
-	** within the structure.  Nothing below this point should fail.
-	*****************************************************************
-	****************************************************************/
-	
-	// switch to new view, cleaning up previous settings
-	if (((AP_FrameData*)m_pData)->m_pDocLayout)
-	{
-		pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-	}
-
-	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
-	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
-	if (pOldDoc != m_pDoc)
-	{
-		UNREFP(pOldDoc);
-	}
-	REPLACEP(m_pView, pView);
-	REPLACEP(m_pScrollObj, pScrollObj);
-	REPLACEP(m_pViewListener, pViewListener);
-	m_lid = lid;
-	REPLACEP(m_pScrollbarViewListener,pScrollbarViewListener);
-	m_lidScrollbarViewListener = lidScrollbarViewListener;
-
-	m_pView->addScrollListener(m_pScrollObj);
-
-	// Associate the new view with the existing TopRuler, LeftRuler.
-	// Because of the binding to the actual on-screen widgets we do
-	// not destroy and recreate the TopRuler, LeftRuler when we change
-	// views, like we do for all the other objects.  We also do not
-	// allocate the TopRuler, LeftRuler  here; that is done as the
-	// frame is created.
-	/*TF DIFF: QNX version checks the 
-		  if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
-	  before showing the rulers.
-	*/
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
-	{
-	  if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-	    ((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-	  if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
-	}
-
-	if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
-	  ((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
-    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
-
-	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
-	
-	unsigned short w, h;
-	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, &w, &h);
-	UT_DEBUGMSG(("FRAME: Setting window to %d/%d ", w,h));
-	m_pView->setWindowSize(w, h);
-
-	setXScrollRange();
-	setYScrollRange();
-	updateTitle();
-
-	pDocLayout->fillLayouts();
-	if (m_pView != NULL)
-	{
-		// we cannot just set the insertion position to that of the previous
-		// view, since the new document could be shorter or completely
-		// different from the previous one (see bug 2615)
-		// Instead we have to test that the original position is within
-		// the editable bounds, and if not, we will set the point
-		// to the end of the document (i.e., if reloading an earlier
-		// version of the same document we try to get the point as near
-		// the users editing position as possible
-		point = ((FV_View *) m_pView)->getPoint();
-		PT_DocPosition posEOD;
-		static_cast<FV_View *>(pView)->getEditableBounds(true, posEOD, false);
-		if(point > posEOD)
-			point = posEOD;
-	}
-	if (point != 0)
-		((FV_View *) m_pView)->moveInsPtTo(point);
-	m_pView->draw(NULL);
-
-	/*TF DIFF: QNX code to control the ruler looks like:
-	  if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) {
-	      if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-		...
-	*/
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
-	{
-		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-			((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-
-		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	}
-
-	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
-		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView,AV_CHG_ALL);
-	}
-
-	PtContainerGiveFocus(m_dArea, NULL);
-
-	return UT_OK;
-
-Cleanup:
-	// clean up anything we created here
-	DELETEP(pG);
-	DELETEP(pDocLayout);
-	DELETEP(pView);
-	DELETEP(pViewListener);
-	DELETEP(pScrollObj);
-	DELETEP(pScrollbarViewListener);
-
-	// change back to prior document
-	UNREFP(m_pDoc);
-	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-
-	UT_DEBUGMSG(("Frame: return from _showDocument false \n"));
-	return UT_IE_ADDLISTENERERROR;
-}
-
-/*
- This function is called whenever we are re-sized to
- re-calculate the size/extent of the scroll bars.
- Once the size is calculated, it should send a new
- position event off.
-*/
 void AP_QNXFrame::setXScrollRange(void)
 {
+#if 0
+	AP_QNXFrameImpl * pFrameImpl = static_cast<AP_QNXFrameImpl *>(getFrameImpl());
+
 	int width = _UD(((AP_FrameData*)m_pData)->m_pDocLayout->getWidth());
 	int n, windowWidth;
 	PtArg_t args[6];
 
 	unsigned short tmp;
-	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, &tmp, NULL);
+	UT_QNXGetWidgetArea(pFrameImpl->m_dArea, NULL, NULL, &tmp, NULL);
 	windowWidth = tmp;
 
 	int newvalue = ((m_pView) ? _UD(m_pView->getXScrollOffset()) : 0);
@@ -318,22 +91,19 @@ void AP_QNXFrame::setXScrollRange(void)
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); 
 	PtSetResources(m_hScroll, n, args);
 
-	/*
-	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
-	bool bDifferentLimits = ((width-windowWidth) != (m_pHadj->upper-m_pHadj->page_size));
-	*/
-	bool bDifferentPosition = 1;
-	bool bDifferentLimits = 1;
+	bool bDifferentPosition = (newvalue != (int)pFrameImpl->m_pHadj->value);
+	bool bDifferentLimits = ((width-windowWidth) != ((int)pFrameImpl->m_pHadj->upper - pFrameImpl->m_pHadj->page_size));
 
-	//printf("Set X limits to %d -[%d]- %d \n", 0, newvalue, newmax);
-	
+#warning 	pFrameImpl->_setScrollRange(apufi_scrollX,newvalue,...);
 	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
-		m_pView->sendHorizontalScrollEvent(_UL(newvalue), _UL((long) width-windowWidth));
+		m_pView->sendHorizontalScrollEvent(_UL(newvalue), _UL((long) width-windowWidth)); //XXX:
 	}
+#endif
 }
 
 void AP_QNXFrame::setYScrollRange(void)
 {
+#if 0
 	int height = _UD(((AP_FrameData*)m_pData)->m_pDocLayout->getHeight());
 	int n, windowHeight;
 	PtArg_t args[6];
@@ -367,18 +137,19 @@ void AP_QNXFrame::setYScrollRange(void)
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendVerticalScrollEvent(_UL(newvalue), _UL((long) height-windowHeight));
+#endif
 }
 
 
 AP_QNXFrame::AP_QNXFrame(XAP_QNXApp * app)
-	: XAP_QNXFrame(app)
+	: AP_Frame(new AP_QNXFrameImpl(this,app),app)
 {
-	// TODO
 	m_pData = NULL;
+	setFrameLocked(false);
 }
 
 AP_QNXFrame::AP_QNXFrame(AP_QNXFrame * f)
-	: XAP_QNXFrame((XAP_QNXFrame *)(f))
+	: AP_Frame(static_cast<AP_Frame*>(f))
 {
 	// TODO
 	m_pData = NULL;
@@ -389,174 +160,27 @@ AP_QNXFrame::~AP_QNXFrame(void)
 	killFrameData();
 }
 
-bool AP_QNXFrame::initialize(void)
+bool AP_QNXFrame::initialize(XAP_FrameMode frameMode)
 {
+
+	AP_QNXFrameImpl *pFrameImpl = static_cast<AP_QNXFrameImpl *>(getFrameImpl());
+
+
+	setFrameMode(frameMode);
+	setFrameLocked(false);
+
 	if (!initFrameData())
 		return false;
 
-	if (!XAP_QNXFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+	if (!XAP_Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 								   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
 		return false;
-
-	_createTopLevelWindow();
-	_showOrHideToolbars();
-	_showOrHideStatusbar();
-	_showOrHideRulers();
-	PtRealizeWidget(m_wTopLevelWindow);
-	PtDamageWidget(m_wTopLevelWindow);
+	UT_DEBUGMSG(("AP_QNXFrame: Creating toplevel window!\n"));
+	pFrameImpl->_createWindow();
 	return true;
-}
-
-// Does the initial show/hide of toolbars (based on the user prefs).
-// This is needed because toggleBar is called only when the user
-// (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
-// and thus we have to manually call this function at startup.
-void AP_QNXFrame::_showOrHideToolbars(void)
-{
-    bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
-
-    for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
-    {
-        // TODO: The two next lines are here to bind the EV_Toolbar to the
-        // AP_FrameData, but their correct place are next to the toolbar creation (JCA)
-        EV_QNXToolbar * pQNXToolbar = static_cast<EV_QNXToolbar *> (m_vecToolbars.getNthItem(i));
-        static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pQNXToolbar;
-		//It is enabled by default .. only toggle it off
-		if(!bShowBar[i]) {
-	        toggleBar(i, bShowBar[i]);
-		}
-    }
-}
-
-// Does the initial show/hide of the rulers (based on user prefs)
-void AP_QNXFrame::_showOrHideRulers(void)
-{
-	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
-	//It is enabled by default .. only toggle it off
-	if(!bShowRulers) {
-		toggleRuler(bShowRulers);
-	} 
-}
-
-
-// Does the initial show/hide of status bar (based on the user prefs).
-void AP_QNXFrame::_showOrHideStatusbar(void)
-{
-    bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
-	//It is enabled by default .. only toggle it off
-	if(!bShowStatusBar) {
-    	toggleStatusBar(bShowStatusBar);
-	} 
-}
-
-/*****************************************************************/
-
-bool AP_QNXFrame::initFrameData(void)
-{
-	UT_ASSERT(!((AP_FrameData*)m_pData));
-
-	AP_FrameData* pData = new AP_FrameData(m_pQNXApp);
-
-	m_pData = (void*)pData;
-	return (pData ? true : false);
-}
-
-void AP_QNXFrame::killFrameData(void)
-{
-	AP_FrameData* pData = (AP_FrameData*) m_pData;
-	DELETEP(pData);
-	m_pData = NULL;
-}
-
-UT_Error AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft, bool createNew)
-{
-	UT_DEBUGMSG(("Frame: _loadDocument %s (%d,%d)\n", (szFilename) ? szFilename : "", ieft, createNew));
-
-	// are we replacing another document?
-	if (m_pDoc)
-	{
-		// yep.  first make sure it's OK to discard it, 
-		// TODO: query user if dirty...
-	}
-
-	// load a document into the current frame.
-	// if no filename, create a new document.
-
-	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
-	
-	if (!szFilename || !*szFilename)
-	{
-		pNewDoc->newDocument();
-		m_iUntitled = _getNextUntitledNumber();
-		goto ReplaceDocument;
-	}
-
-	UT_Error errorCode; 
-	errorCode = pNewDoc->readFromFile(szFilename, ieft);
-	if (!errorCode)
-		goto ReplaceDocument;
-
-	// we have a file name but couldn't load it
-	if (createNew) { 
-	    pNewDoc->newDocument();
-	    errorCode = pNewDoc->saveAs(szFilename, ieft);
-	}
-	if (!errorCode)
-	  goto ReplaceDocument;
-	
-	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-	UNREFP(pNewDoc);
-	return errorCode;
-
-ReplaceDocument:
-	getApp()->forgetClones(this);
-
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = pNewDoc;
-	return UT_OK;
-}
-
-UT_Error AP_QNXFrame::_importDocument(const char * szFilename, int ieft,
-									  bool markClean)
-{
-	// are we replacing another document?
-	if (m_pDoc)
-	{
-		// yep.  first make sure it's OK to discard it, 
-		// TODO: query user if dirty...
-	}
-
-	// load a document into the current frame.
-	// if no filename, create a new document.
-
-	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
-	
-	if (!szFilename || !*szFilename)
-	{
-		pNewDoc->newDocument();
-		m_iUntitled = _getNextUntitledNumber();
-		goto ReplaceDocument;
-	}
-	UT_Error errorCode;
-	errorCode = pNewDoc->importFile(szFilename, ieft, markClean);
-	if (!errorCode)
-		goto ReplaceDocument;
-
-	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-	UNREFP(pNewDoc);
-	return errorCode;
-
-ReplaceDocument:
-	getApp()->forgetClones(this);
-
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = pNewDoc;
-	return UT_OK;
 }
 
 	
@@ -564,125 +188,19 @@ XAP_Frame * AP_QNXFrame::cloneFrame(void)
 {
 	AP_QNXFrame * pClone = new AP_QNXFrame(this);
 	ENSUREP(pClone);
-	return pClone;
+	return static_cast<XAP_Frame *>(pClone);
 
 Cleanup:
 	// clean up anything we created here
 	if (pClone)
 	{
-		m_pQNXApp->forgetFrame(pClone);
+		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
 		delete pClone;
 	}
 
 	return NULL;
 }
 
-XAP_Frame * AP_QNXFrame::buildFrame(XAP_Frame * pF)
-{
-	UT_Error error = UT_OK;
-	AP_QNXFrame * pClone = static_cast<	AP_QNXFrame *>(pF);
-	ENSUREP(pClone);
-	if (!pClone->initialize())
-		goto Cleanup;
-
-	error = pClone->_showDocument();
-	if (error)
-		goto Cleanup;
-
-	pClone->show();
-
-	return pClone;
-
-Cleanup:
-	// clean up anything we created here
-	if (pClone)
-	{
-		m_pQNXApp->forgetFrame(pClone);
-		delete pClone;
-	}
-
-	return NULL;
-}
-
-UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
-{
-	bool bUpdateClones;
-	UT_Vector vClones;
-	XAP_App * pApp = getApp();
-
-	bUpdateClones = (getViewNumber() > 0);
-	if (bUpdateClones)
-	{
-		pApp->getClones(&vClones, this);
-	}
-	UT_Error errorCode;
-	errorCode =  _loadDocument(szFilename, (IEFileType) ieft, createNew);
-	if (errorCode)
-	{
-		// we could not load the document.
-		// we cannot complain to the user here, we don't know
-		// if the app is fully up yet.  we force our caller
-		// to deal with the problem.
-		return errorCode;
-	}
-
-	pApp->rememberFrame(this);
-	if (bUpdateClones)
-	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-		{
-			AP_QNXFrame * pFrame = (AP_QNXFrame *) vClones.getNthItem(i);
-			if(pFrame != this)
-			{
-				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
-			}
-		}
-	}
-
-	return _showDocument();
-}
-
-UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
-{
-	return loadDocument(szFilename, ieft, false);
-}
-
-UT_Error AP_QNXFrame::importDocument(const char * szFilename, int ieft,
-									  bool markClean)
-{
-	bool bUpdateClones;
-	UT_Vector vClones;
-	XAP_App * pApp = getApp();
-
-	bUpdateClones = (getViewNumber() > 0);
-	if (bUpdateClones)
-	{
-		pApp->getClones(&vClones, this);
-	}
-	UT_Error errorCode;
-	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
-	if (errorCode)
-	{
-		return errorCode;
-	}
-
-	pApp->rememberFrame(this);
-	if (bUpdateClones)
-	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-		{
-			AP_QNXFrame * pFrame = (AP_QNXFrame *) vClones.getNthItem(i);
-			if(pFrame != this)
-			{
-				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
-			}
-		}
-	}
-
-	return _showDocument();
-}
 
 /*
  These functions are called whenever the position of the scrollbar
@@ -692,6 +210,7 @@ UT_Error AP_QNXFrame::importDocument(const char * szFilename, int ieft,
 */
 void AP_QNXFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
 {
+#if 0
 	PtArg_t args[1];
 	//printf("Static X scroll function  \n");
 	// this is a static callback function and doesn't have a 'this' pointer.
@@ -705,10 +224,12 @@ void AP_QNXFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*
 	PtSetResources(pQNXFrame->m_hScroll, 1, args);
 
 	pView->setXScrollOffset(xoff);
+#endif 
 }
 
 void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {
+#if 0
 	PtArg_t args[1];
 	//printf("Static Y scroll function  \n");
 
@@ -722,180 +243,25 @@ void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*
 	PtSetResources(pQNXFrame->m_vScroll, 1, args);
 
 	pView->setYScrollOffset(yoff);
+#endif
 }
 	
-PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
-{
-	PhArea_t area, savedarea;
-	void * data = this;
-
-	PtArg_t args[10];
-	int n;
-
-	/*TF DIFF: There is code here to not show
-               the rulers, checked by
-		bool bShowRulers = ((AP_FrameData*)m_pData)->m_bShowRuler;
-	*/
-
-
-#define SCROLLBAR_WIDTHHEIGHT 20
-	// Strip the scrollbarwidth off the right and bottom
-	// so that the scrollbars overlap the rulers
-	savedarea = m_AvailableArea;
-#if !defined(SCROLL_SMALLER_THAN_RULER) 
-	m_AvailableArea.size.h -= SCROLLBAR_WIDTHHEIGHT; 
-	m_AvailableArea.size.w -= SCROLLBAR_WIDTHHEIGHT; 
-#endif
-
-	// create the top ruler
-	AP_QNXTopRuler * pQNXTopRuler = new AP_QNXTopRuler(this);
-	UT_ASSERT(pQNXTopRuler);
-	m_topRuler = pQNXTopRuler->createWidget();
-	((AP_FrameData*)m_pData)->m_pTopRuler = pQNXTopRuler;
-
-	// create the left ruler
-	AP_QNXLeftRuler * pQNXLeftRuler = new AP_QNXLeftRuler(this);
-	UT_ASSERT(pQNXLeftRuler);
-	m_leftRuler = pQNXLeftRuler->createWidget();
-	((AP_FrameData*)m_pData)->m_pLeftRuler = pQNXLeftRuler;
-
-	// get the width from the left ruler and stuff it into the top ruler.
-	pQNXTopRuler->setOffsetLeftRuler(pQNXLeftRuler->getWidth());
-
-	// create the scrollbars horizontal then vertical
-
-#if defined(SCROLL_SMALLER_THAN_RULER) 
-	area.size.w = SCROLLBAR_WIDTHHEIGHT;
-	area.size.h = m_AvailableArea.size.h - area.size.w;
-	area.pos.y = m_AvailableArea.pos.y;
-	area.pos.x = m_AvailableArea.pos.x + m_AvailableArea.size.w - area.size.w;
-	m_AvailableArea.size.w -= area.size.w;
-#else
-	area.size.w = SCROLLBAR_WIDTHHEIGHT;
-	area.size.h = savedarea.size.h - area.size.w;
-	area.pos.y = savedarea.pos.y;
-	area.pos.x = savedarea.pos.x + savedarea.size.w - area.size.w;
-#endif
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-#define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
-		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _VS_ANCHOR_, _VS_ANCHOR_); 
-	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/, 
-									 		     Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/); 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 0 /*Vertical*/, 0); 
-	m_vScroll = PtCreateWidget(PtScrollbar, getTopLevelWindow(), n, args);
-	PtAddCallback(m_vScroll, Pt_CB_SCROLL_MOVE, _fe::vScrollChanged, this);
-
-#if defined(SCROLL_SMALLER_THAN_RULER) 
-	area.size.h = SCROLLBAR_WIDTHHEIGHT;
-	area.size.w = m_AvailableArea.size.w;
-	area.pos.y = m_AvailableArea.pos.y + m_AvailableArea.size.h - area.size.h;
-	area.pos.x = m_AvailableArea.pos.x;
-	m_AvailableArea.size.h -= area.size.h;
-#else
-	area.size.h = SCROLLBAR_WIDTHHEIGHT;
-	area.size.w = savedarea.size.w - SCROLLBAR_WIDTHHEIGHT;
-	area.pos.y = savedarea.pos.y + savedarea.size.h - area.size.h;
-	area.pos.x = savedarea.pos.x;
-#endif
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-#define _HS_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-		     Pt_TOP_ANCHORED_BOTTOM | Pt_BOTTOM_ANCHORED_BOTTOM)
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _HS_ANCHOR_, _HS_ANCHOR_); 
-	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/,
-									 			 Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/); 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
-	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 1 /*Horizontal*/, 0); 
-	m_hScroll = PtCreateWidget(PtScrollbar, getTopLevelWindow(), n, args);
-	PtAddCallback(m_hScroll, Pt_CB_SCROLL_MOVE, _fe::hScrollChanged, this);
-
-	// create a drawing area in the for our document window.
-
-	area.pos.x = m_AvailableArea.pos.x;
-	area.pos.y = m_AvailableArea.pos.y;
-	area.size.w = m_AvailableArea.size.w; 
-	area.size.h = m_AvailableArea.size.h;
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL);
-#define _DA_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _DA_ANCHOR_, _DA_ANCHOR_);
-#define _DA_STRETCH_ (Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL)
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _DA_STRETCH_, _DA_STRETCH_);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	m_dAreaGroup = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-	PtAddCallback(m_dAreaGroup, Pt_CB_RESIZE, &(_fe::resize), this);
-	
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_GETS_FOCUS, Pt_GETS_FOCUS); 
-	m_dArea = PtCreateWidget(PtRaw, m_dAreaGroup, n, args); 
-
-	PtAddEventHandler(m_dArea, Ph_EV_KEY, _fe::key_press_event, this);
-	PtAddEventHandler(m_dArea, Ph_EV_PTR_MOTION_BUTTON, _fe::motion_notify_event, this);
-	PtAddEventHandler(m_dArea, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
-	PtAddEventHandler(m_dArea, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
-	//QNX DND Code
-	PtAddCallback(m_dArea,Pt_CB_DND,_fe::dnd,this);
-
-
-	return(m_dAreaGroup);
-}
 
 //This might be the place to do our co-ordinate conversions ...
 void AP_QNXFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 {
 	printf("TODO: Translate Document To Screen %d,%d \n", x, y);
+	UT_ASSERT_NOT_REACHED();
 }
 
-PtWidget_t * AP_QNXFrame::_createStatusBarWindow(void)
-{
-	AP_QNXStatusBar * pQNXStatusBar = new AP_QNXStatusBar(this);
-	UT_ASSERT(pQNXStatusBar);
-
-	((AP_FrameData *)m_pData)->m_pStatusBar = pQNXStatusBar;
-	
-	//This should probably be held in XP land
-	m_wStatusBar = pQNXStatusBar->createWidget();
-
-	return m_wStatusBar;
-}
 
 void AP_QNXFrame::setStatusMessage(const char * szMsg)
 {
-PhDrawContext_t *context=PhDCGetCurrent();
-//XXX: A bit of a hack, checking if the current context is a print context, if so, ignore.
-//This is because this function is called to update the toolbar while printing.
-	if(context->type & 0x1) 
-		return; 
-	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
-		((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
-	}
-}
-
-void AP_QNXFrame::_setWindowIcon(void)
-{
-	//Photon relies on the icon being bound into the executable resource
-}
-
-UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
-{
-	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = REFP(pDoc);
-
-	return _showDocument();
+	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }
 
 void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
+#if 0
 	int		before, after;
 	unsigned short *height;
 
@@ -917,12 +283,13 @@ void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
 	after = *height;
 
 	_reflowLayout(0, before - after, 0, 0);
+#endif
 }
 
 void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
 {
 	unsigned short *height;
-
+#if 0
 	PtGetResource(m_topRuler, Pt_ARG_HEIGHT, &height, 0);
 
 	if (bRulerOn) {
@@ -933,11 +300,13 @@ void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
 		PtSetResource(m_topRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
 		_reflowLayout(0, 0, *height, 0);
 	}
+#endif
 }
 
 void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
 {
 	unsigned short *width;
+#if 0
 
 	PtGetResource(m_leftRuler, Pt_ARG_WIDTH, &width, 0);
 
@@ -949,6 +318,7 @@ void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
 		PtSetResource(m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
 		_reflowLayout(0, 0, 0, (*width));
 	}
+#endif 
 }
 
 void AP_QNXFrame::toggleRuler(bool bRulerOn)
@@ -974,74 +344,36 @@ void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
 
 }
 
-void AP_QNXFrame::setDocumentFocus() {
-	PtContainerGiveFocus(m_dArea, NULL);
+UT_sint32	AP_QNXFrame::_getDocumentAreaWidth()
+{
+
+}
+
+UT_sint32	AP_QNXFrame::_getDocumentAreaHeight()
+{
+
 }
 
 
-/*** THIS CODE WILL GO AWAY WITH AN INTELLIGENT LAYOUT THINGY ***/
-void AP_QNXFrame::_reflowLayout(int loweradj, int upperadj, int topruleradj, int leftruleradj) {
-	PhArea_t 	newarea, *oldarea;
-	/*
-     loweradj < 0 means we are enabling and > 0 means disabling
-	*/
-	if(loweradj != 0) { 	
-		PtGetResource(m_hScroll, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.pos.y += loweradj;
-		PtSetResource(m_hScroll, Pt_ARG_AREA, &newarea, 0);
+bool AP_QNXFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
+{
+	return true;
+}
 
-		PtGetResource(m_vScroll, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.size.h += loweradj;
-		PtSetResource(m_vScroll, Pt_ARG_AREA, &newarea, 0);
+void AP_QNXFrame::_setViewFocus(AV_View *pView)
+{
 
-		PtGetResource(m_leftRuler, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.size.h += loweradj;
-		PtSetResource(m_leftRuler, Pt_ARG_AREA, &newarea, 0);
+}
 
-		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.size.h += loweradj;
-		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
-	} 
+void AP_QNXFrame::_bindToolbars(AV_View *pView)
+{
 
-	/*
-	 upperadj < 0 means we are enabling an > 0 means disabling
-	*/
-	if(upperadj != 0) {
-		PtGetResource(m_vScroll, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.pos.y -= upperadj;
-		newarea.size.h += upperadj;
-		PtSetResource(m_vScroll, Pt_ARG_AREA, &newarea, 0);
+}
 
-		PtGetResource(m_topRuler, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.pos.y -= upperadj;
-		PtSetResource(m_topRuler, Pt_ARG_AREA, &newarea, 0);
-	}
+bool AP_QNXFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+					     ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+					     AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener)
+{
 
-	if(topruleradj != 0 || upperadj != 0) {
-		PtGetResource(m_leftRuler, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.pos.y -= upperadj;
-		newarea.size.h += upperadj;
-		PtSetResource(m_leftRuler, Pt_ARG_AREA, &newarea, 0);
 
-		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.pos.y -= upperadj + topruleradj;
-		newarea.size.h += upperadj + topruleradj;
-		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
-	}
-
-	if(leftruleradj != 0) {
-		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
-		newarea = *oldarea;
-		newarea.pos.x -= leftruleradj;
-		newarea.size.w += leftruleradj;
-		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
-	}
 }

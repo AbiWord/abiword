@@ -22,28 +22,22 @@
 
 class GR_Graphics;
 
-#include "xap_QNXFrame.h"
-#include "ie_types.h"
 #include "ut_assert.h"
+#include "ap_Frame.h"
+#include "ap_QNXFrameImpl.h"
 #include <Pt.h>
 
 /*****************************************************************/
 
-class AP_QNXFrame : public XAP_QNXFrame
+class AP_QNXFrame : public AP_Frame
 {
 public:
 	AP_QNXFrame(XAP_QNXApp * app);
 	AP_QNXFrame(AP_QNXFrame * f);
 	virtual ~AP_QNXFrame(void);
 
-	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
-	virtual	XAP_Frame *			buildFrame(XAP_Frame * pFrame);
-	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Error			loadDocument(const char * szFilename, int ieft, bool createNew);
-	virtual UT_Error            importDocument(const char * szFilename, int ieft, bool markClean);
-	virtual bool				initFrameData(void);
-	virtual void				killFrameData(void);
+	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
@@ -52,39 +46,30 @@ public:
 	virtual UT_uint32			getZoomPercentage(void);
 	virtual void				setStatusMessage(const char * szMsg);
 
-	virtual void 				toggleRuler(bool bRulerOn);
-	virtual void 				toggleTopRuler(bool bRulerOn);
-	virtual void 				toggleLeftRuler(bool bRulerOn);
-	virtual void 				toggleBar(UT_uint32 iBarNb, bool bRulerOn);
-	virtual void 				toggleStatusBar(bool bStatusBarOn);
-	virtual void				setDocumentFocus();
-	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
-
-protected:
-	virtual PtWidget_t *		_createDocumentWindow(void);
-	virtual PtWidget_t *		_createStatusBarWindow(void);
-	virtual void				_setWindowIcon(void);
-	UT_Error					_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
-	virtual UT_Error            _importDocument(const char * szFilename, int ieft, bool markClean);
-	UT_Error					_showDocument(UT_uint32 iZoom=100);
-	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
-	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
-	UT_Error					_replaceDocument(AD_Document * pDoc);
-    virtual void                _showOrHideToolbars();
-    virtual void                _showOrHideStatusbar();
-    virtual void                _showOrHideRulers();
-	virtual void 				_reflowLayout(int loweradj, int upperadj, 
-											  int topruleradj, int leftruleradj);
+	virtual void				toggleRuler(bool bRulerOn);
+	virtual void                            toggleTopRuler(bool bRulerOn);
+	virtual void                            toggleLeftRuler(bool bRulerOn);
+	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
+	virtual void				toggleStatusBar(bool bStatusBarOn);
 	
+protected:
+	friend class AP_QNXFrameImpl;
 
-	PtWidget_t *			m_dArea;
-	PtWidget_t *			m_dAreaGroup;
+	// implementation of helper methods for AP_Frame::_showDocument
+	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
+	virtual void _bindToolbars(AV_View *pView);
+	virtual void _setViewFocus(AV_View *pView);
+	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+					       ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+					       AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener);
+	virtual UT_sint32 _getDocumentAreaWidth();
+	virtual UT_sint32 _getDocumentAreaHeight();
 
-	PtWidget_t *			m_hScroll;
-	PtWidget_t *			m_vScroll;
+	// scrolling function
+	static void _scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void _scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 
-	PtWidget_t *			m_topRuler;
-	PtWidget_t *			m_leftRuler;
+
 };
 
 #endif /* AP_QNXFRAME_H */

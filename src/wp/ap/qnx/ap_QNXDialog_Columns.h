@@ -22,8 +22,7 @@
 
 #include "ap_Dialog_Columns.h"
 #include "ut_Xpm2Bitmap.h"
-
-class XAP_QNXFrame;
+#include "gr_QNXGraphics.h"
 
 /*****************************************************************
 ******************************************************************

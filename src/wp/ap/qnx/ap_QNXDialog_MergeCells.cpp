@@ -26,7 +26,8 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -89,8 +90,6 @@ AP_QNXDialog_MergeCells::~AP_QNXDialog_MergeCells(void)
 void AP_QNXDialog_MergeCells::runModeless(XAP_Frame * pFrame)
 {
 	// Build the window's widgets and arrange them
-	XAP_QNXFrame *pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
 
 	PtWidget_t *mainWindow = _constructWindow();
 

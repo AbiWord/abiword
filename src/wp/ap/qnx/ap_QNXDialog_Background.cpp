@@ -26,7 +26,7 @@
 
 #include "xap_App.h"
 #include "xap_QNXApp.h"
-#include "xap_QNXFrame.h"
+#include "xap_QNXFrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -94,13 +94,10 @@ AP_QNXDialog_Background::~AP_QNXDialog_Background(void)
 
 void AP_QNXDialog_Background::runModal(XAP_Frame * pFrame)
 {
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the window of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
+	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
+
 	PtSetParentWidget(parentWindow);
 
 	// Build the window's widgets and arrange them

@@ -22,6 +22,7 @@
 
 #include "ap_Dialog_Lists.h"
 #include "ut_timer.h"
+#include "gr_QNXGraphics.h"
 
 class XAP_QNXFrame;
 

@@ -22,7 +22,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Frame.h"
-#include "xap_QNXFrame.h"
 #include "gr_QNXGraphics.h"
 #include "ap_QNXStatusBar.h"
 #include "ap_StatusBar.h"
@@ -79,18 +78,19 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 	UT_ASSERT(!m_wStatusBar);
 
 
-	PtWidget_t * toplevel = (static_cast<XAP_QNXFrame *> (m_pFrame))->getTopLevelWindow();
+/*	PtWidget_t * toplevel = (static_cast<XAP_QNXFrame *> (m_pFrame))->getTopLevelWindow();
 	PtGetResource(toplevel,Pt_ARG_HEIGHT,&h,0);	
 	PtGetResource(toplevel,Pt_ARG_WIDTH,&w,0);
 	ptr.y = *h -24;
 	ptr.x = 0;
+*/
 	// probably should make this into an event box (if we want the user to be able to interact with the status bar)
 	PtSetArg(&args[n++],Pt_ARG_TOOLBAR_FLAGS,Pt_TOOLBAR_ITEM_SEPARATORS ,Pt_TOOLBAR_END_SEPARATOR|Pt_TOOLBAR_DRAGGABLE|Pt_TOOLBAR_ITEM_SEPARATORS);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT,24,0);
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS,Pt_TRUE,Pt_LEFT_ANCHORED_LEFT|Pt_RIGHT_ANCHORED_RIGHT|Pt_BOTTOM_ANCHORED_BOTTOM);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,*w,0);
 	PtSetArg(&args[n++], Pt_ARG_POS,&ptr,0);
-	m_wStatusBar = PtCreateWidget(PtToolbar,toplevel,n,args); 
+	//m_wStatusBar = PtCreateWidget(PtToolbar,toplevel,n,args); 
 	n=0;
 
 	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) {
@@ -136,7 +136,7 @@ void AP_QNXStatusBar::show(void)
 
 void AP_QNXStatusBar::hide(void)
 {
-	PtRealizeWidget (m_wStatusBar);
+	PtUnrealizeWidget (m_wStatusBar);
 			
 	m_pFrame->queue_resize();
 }
