@@ -96,6 +96,5 @@ STATIC_FLAGS		= -Wl,-a,archive_shared
 ## This is relative to $(ABI_ROOT)/src/pkg                                      
 
 ABIPKGDIR       = hpux
-PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 # End of HP-UX defs

@@ -56,6 +56,5 @@ STATIC_FLAGS		= -static
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= cygwin
-PSICONV_PLATFORM_DEFS= CFLAGS='-O3 -fomit-frame-pointer'
 
 # End of cygwin defs

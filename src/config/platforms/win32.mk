@@ -133,6 +133,5 @@ ABIPKGDIR	= win/setup
 ## that should be passed to configure when building expat and
 ## psiconv, respectively, for this platform (if any)
 EXPAT_PLATFORM_DEFS=CC=cl.exe CONFIG_SHELL=bash.exe CFLAGS='$(OS_CFLAGS)' 
-PSICONV_PLATFORM_DEFS=CC=cl.exe CONFIG_SHELL=bash.exe CFLAGS='$(OS_CFLAGS) -Dvsnprintf=_vsnprintf -Dsnprintf=_snprintf -DHAVE_STRING_H=1'
 
 # End of win32 defs

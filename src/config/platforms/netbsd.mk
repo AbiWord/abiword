@@ -49,6 +49,5 @@ STATIC_FLAGS		= -static
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= netbsd
-PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 # End of NetBSD defs

@@ -45,6 +45,5 @@ STATIC_FLAGS		= -static
 ## This is relative to $(ABI_ROOT)/src/pkg                                      
 
 ABIPKGDIR       = osf1
-PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 # End of OSF/1 defs

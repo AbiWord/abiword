@@ -75,7 +75,6 @@ STATIC_FLAGS		= -static
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= freebsd
-PSICONV_PLATFORM_DEFS= CFLAGS='-O3 -fomit-frame-pointer'
 
 __FreeBSD__ = 1 #fix wchar.h stuff
 

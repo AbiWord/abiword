@@ -54,7 +54,6 @@ STATIC_FLAGS		= -static
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR       = irix 
-PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 EXTRA_LIBS += -liconv
 

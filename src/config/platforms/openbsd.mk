@@ -58,6 +58,5 @@ STATIC_FLAGS		=  -static
 # End of OpenBSD defs
 
 ABIPKGDIR	= openbsd
-PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 __OpenBSD__ = 1
