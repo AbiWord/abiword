@@ -99,13 +99,14 @@ bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
 		}
 }
 
-bool IE_Imp::appendObject (PTObjectType pto, const XML_Char ** attributes)
+bool IE_Imp::appendObject (PTObjectType pto, const XML_Char ** attribs,
+						   const XML_Char ** props)
 {
 	if (!m_isPaste)
-		return m_pDocument->appendObject (pto, attributes);
+		return m_pDocument->appendObject (pto, attribs);
 	else
 		{
-			bool bRes = m_pDocument->insertObject (m_dpos, pto, attributes, NULL);
+			bool bRes = m_pDocument->insertObject (m_dpos, pto, attribs, props);
 			m_dpos++;
 			return bRes;
 		}

@@ -87,6 +87,7 @@
 #include "ie_imp.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
+#include "ie_imp_XHTML.h"
 
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -584,70 +585,73 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
-
-		return;
     }
+	else if (AP_UnixClipboard::isHTMLTag (szFormatFound))
+	{
+		iLen = UT_MIN(iLen,strlen((const char *)pData));
+		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
+
+		IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
+		pImpHTML->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImpHTML);
+	}
     else if (AP_UnixClipboard::isImageTag(szFormatFound))
       {
-	IE_ImpGraphic * pIEG = NULL;
-	FG_Graphic * pFG = NULL;
-	IEGraphicFileType iegft = IEGFT_Unknown;
-	UT_Error error = UT_OK;
-
-	XAP_Frame * pFrame = getLastFocussedFrame ();
-
-	UT_ByteBuf * bytes = new UT_ByteBuf( iLen );
-
-	bytes->append (pData, iLen);
-
-	error = IE_ImpGraphic::constructImporter(bytes, iegft, &pIEG);
-	if(error)
-	  {
-	    UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
-			 error));
-	    DELETEP(bytes);
-	    return;
-	  }
-	
-	error = pIEG->importGraphic(bytes, &pFG);
-	if(!pFG || error)
-	  {
-	    UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
-	    DELETEP(bytes);
-	    DELETEP(pIEG);
-	    return;
-	  }
-	
-	// at this point, 'bytes' is owned by pFG
-	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-	
-	UT_String newName = UT_String_sprintf ( "paste_image_%d", UT_newNumber() ) ;
-
-	DELETEP(pIEG);
-
-	error = pView->cmdInsertGraphic(pFG, newName.c_str());
-	if (error)
-	  {
-	    UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
-	    DELETEP(pFG);
-	    return;
-	  }
-	
-	DELETEP(pFG);
+		  IE_ImpGraphic * pIEG = NULL;
+		  FG_Graphic * pFG = NULL;
+		  IEGraphicFileType iegft = IEGFT_Unknown;
+		  UT_Error error = UT_OK;
+		  
+		  XAP_Frame * pFrame = getLastFocussedFrame ();
+		  
+		  UT_ByteBuf * bytes = new UT_ByteBuf( iLen );
+		  
+		  bytes->append (pData, iLen);
+		  
+		  error = IE_ImpGraphic::constructImporter(bytes, iegft, &pIEG);
+		  if(error)
+		  {
+			  UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
+						   error));
+			  DELETEP(bytes);
+			  return;
+		  }
+		  
+		  error = pIEG->importGraphic(bytes, &pFG);
+		  if(!pFG || error)
+		  {
+			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
+			  DELETEP(bytes);
+			  DELETEP(pIEG);
+			  return;
+		  }
+		  
+		  // at this point, 'bytes' is owned by pFG
+		  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		  
+		  UT_String newName = UT_String_sprintf ( "paste_image_%d", UT_newNumber() ) ;
+		  
+		  DELETEP(pIEG);
+		  
+		  error = pView->cmdInsertGraphic(pFG, newName.c_str());
+		  if (error)
+		  {
+			  UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
+			  DELETEP(pFG);
+			  return;
+		  }
+		  
+		  DELETEP(pFG);
       }
     else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {
 		iLen = UT_MIN(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
-
+		
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
-
-		return;
     }
-
-    return;
 }
 
 bool AP_UnixApp::canPasteFromClipboard(void)

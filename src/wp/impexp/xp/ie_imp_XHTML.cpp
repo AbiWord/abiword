@@ -19,7 +19,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -520,6 +519,23 @@ UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 	return e;
 }
 
+void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
+								   const unsigned char * pData, 
+								   UT_uint32 lenData, 
+								   const char * szEncoding)
+{
+	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
+	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
+
+	setClipboard (pDocRange->m_pos1);
+
+	UT_XML xml;
+	xml.setListener (this);
+	UT_ByteBuf buf (lenData);
+	buf.append (pData, lenData);
+	xml.parse (&buf);
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -713,7 +729,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			if (_data_CharCount ())
 				{
 					UT_UCSChar ucs = UCS_LF;
-					X_CheckError(getDoc()->appendSpan (&ucs, 1));
+					X_CheckError(appendSpan (&ucs, 1));
 					_data_NewBlock ();
 				}
 		}
@@ -840,7 +856,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			XML_Char* temp = (XML_Char*) listAtts[propsPos];
 			listAtts[propsPos] = props.c_str();
 
-			X_CheckError(getDoc()->appendStrux(PTX_Block, listAtts));
+			X_CheckError(appendStrux(PTX_Block, listAtts));
 
 			listAtts[propsPos] = temp;
 
@@ -849,7 +865,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			new_atts[0] = sz;
 			UT_XML_cloneString(sz, "list_label");
 			new_atts[1] = sz;
-			X_CheckError(getDoc()->appendObject(PTO_Field, new_atts));
+			X_CheckError(appendObject(PTO_Field, new_atts));
 
 			// append the character run
 			UT_XML_cloneString(sz, "type");
@@ -861,7 +877,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			/* warn XML charData() handler of new block, but insert a tab first
 			 */
 			UT_UCSChar ucs = UCS_TAB;
-			X_CheckError(getDoc()->appendSpan (&ucs, 1));
+			X_CheckError(appendSpan (&ucs, 1));
 			_data_NewBlock ();
 		}
 		return;
@@ -887,7 +903,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		if(m_parseState == _PS_Block)
 		{
 			UT_UCSChar ucs = UCS_LF;
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(appendSpan(&ucs,1));
 		}
 		return;
 
@@ -904,7 +920,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	    	sz = NULL;
 		    UT_XML_cloneString(sz, p_val);
 		    new_atts[1] = sz;
-			X_CheckError(getDoc()->appendObject(PTO_Hyperlink,new_atts));
+			X_CheckError(appendObject(PTO_Hyperlink,new_atts));
 		}
 		else
 		{
@@ -932,7 +948,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			    bm_new_atts[3] = sz;
 				if (m_szBookMarkName)
 				{
-					X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
+					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 				}
 				else for (i = 0; i < 4; i++) FREEP(bm_new_atts[i]);
 
@@ -950,7 +966,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 					sz = NULL;
 					UT_XML_cloneString(sz, m_szBookMarkName);
 					bm_new_atts[3] = sz;
-					X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
+					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 
 					FREEP(m_szBookMarkName);
 					m_szBookMarkName = NULL;
@@ -973,10 +989,9 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		FG_Graphic * pfg = 0;
 
 		if (strncmp (szSrc, "data:", 5) == 0) // data-URL - special case
-			{
 				pfg = importDataURLImage (szSrc + 5);
-			}
-		else pfg = importImage (szSrc);
+		else if (!isClipboard ())
+			pfg = importImage (szSrc);
 
 		if (pfg == 0) break;
 
@@ -1078,7 +1093,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			}
 		UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
 
-		X_CheckError(getDoc()->appendObject (PTO_Image, api_atts));
+		X_CheckError(appendObject (PTO_Image, api_atts));
 		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, (void*) mimetype, NULL));
 
 		UT_DEBUGMSG(("insertion successful\n"));
@@ -1270,7 +1285,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
     		sz = NULL;
 	    	UT_XML_cloneString(sz, m_szBookMarkName);
 		    bm_new_atts[3] = sz;
-			X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
+			X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 			for(i = 0; i < 5; i++) FREEP(bm_new_atts[i]);
 			FREEP(m_szBookMarkName);
 			m_szBookMarkName = NULL;
@@ -1280,7 +1295,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 			/* if (m_parseState == _PS_Sec) then this is an anchor outside
 			 * of a block, not a hyperlink (see TT_A in startElement)
 			 */
- 			X_CheckError(getDoc()->appendObject(PTO_Hyperlink,0));
+ 			X_CheckError(appendObject(PTO_Hyperlink,0));
 		}
 		return;
 
@@ -1567,7 +1582,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 				return false;
 			api_atts[3] = sz;
 		}
-	if (getDoc()->appendStrux (PTX_Block, api_atts) == 0)
+	if (!appendStrux (PTX_Block, api_atts))
 		{
 			return false;
 		}
@@ -1598,7 +1613,7 @@ bool IE_Imp_XHTML::requireSection ()
 {
 	if (m_parseState == _PS_Sec) return true;
 
-	if (getDoc()->appendStrux (PTX_Section,NULL) == 0)
+	if (!appendStrux (PTX_Section,NULL))
 		{
 			return false;
 		}

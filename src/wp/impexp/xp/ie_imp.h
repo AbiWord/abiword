@@ -144,7 +144,8 @@ public:
 
 	bool appendStrux (PTStruxType pts, const XML_Char ** attributes);
 	bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
-	bool appendObject (PTObjectType pto, const XML_Char ** attributes);
+	bool appendObject (PTObjectType pto, const XML_Char ** attribs,
+					   const XML_Char ** props = NULL);
 
  private:
 	PD_Document * m_pDocument;

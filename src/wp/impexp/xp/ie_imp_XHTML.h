@@ -89,6 +89,11 @@ public:
 
 	virtual void			charData (const XML_Char * buffer, int length);
 
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+										const unsigned char * pData, 
+										UT_uint32 lenData, 
+										const char * szEncoding = 0);
+
 protected:
 	virtual FG_Graphic *	importImage (const XML_Char * szSrc);
 
