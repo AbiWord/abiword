@@ -1408,137 +1408,8 @@ IE_Imp_RTF::~IE_Imp_RTF()
 		m_stateStack.pop((void**)(&pItem));
 		delete pItem;
 	}
+	closePastedTableIfNeeded();
 
-//
-// Close off pasted lists
-//
-	while(m_pasteTableStack.getDepth() > 0)
-	{
-		ABI_Paste_Table * pPaste = NULL;
-		m_pasteTableStack.pop((void**)(&pPaste));
-		if(pPaste != NULL)
-		{
-			if(pPaste->m_bHasPastedCellStrux && !pPaste->m_bHasPastedBlockStrux)
-			{
-				insertStrux(PTX_Block);
-				UT_DEBUGMSG(("Paste block in destructor 1 \n"));
-			}
-			if(pPaste->m_bHasPastedCellStrux)
-			{
-				insertStrux(PTX_EndCell);
-				UT_DEBUGMSG(("Paste EndCell in destructor 1 \n"));
-			}
-			if(!pPaste->m_bPasteAfterRow)
-			{
-//
-// Now fill out any remaining cells needed to finish the row of the table
-//
-				UT_sint32 i = pPaste->m_iCurRightCell;
-				UT_String sTop =  UT_String_sprintf("%d",pPaste->m_iCurTopCell);
-				UT_String sBot =  UT_String_sprintf("%d",pPaste->m_iCurTopCell+1);
-				UT_String sCellProps;
-				UT_String sVal;
-				UT_String sDum;
-				const XML_Char * attrs[3] = {"props",NULL,NULL};
-				for(i = pPaste->m_iCurRightCell; i<pPaste->m_iMaxRightCell; i++)
-				{
-					sCellProps.clear();
-					sVal = UT_String_sprintf("%d",i);
-					sDum = "left-attach";
-					UT_String_setProperty(sCellProps,sDum,sVal);
-					sVal = UT_String_sprintf("%d",i+1);
-					sDum = "right-attach";
-					UT_String_setProperty(sCellProps,sDum,sVal);
-					sDum = "top-attach";
-					UT_String_setProperty(sCellProps,sDum,sTop);
-					sDum = "bot-attach";
-					UT_String_setProperty(sCellProps,sDum,sBot);
-					
-					attrs[1] = sCellProps.c_str();
-					insertStrux(PTX_SectionCell,attrs,NULL);
-					
-					insertStrux(PTX_Block);
-					
-					insertStrux(PTX_EndCell);
-				}
-				if(pPaste->m_bHasPastedTableStrux)
-				{
-					insertStrux(PTX_EndTable);
-					
-//					insertStrux(PTX_Block); // we don't need this now
-				}
-			}
-			else
-			{
-//
-// Close off pasted rows by incrementing the top and botton's of the cell's
-// below
-//
-				UT_sint32 numRows = pPaste->m_iCurTopCell -pPaste->m_iRowNumberAtPaste +1;
-				PL_StruxDocHandle sdhCell = NULL;
-				PL_StruxDocHandle sdhTable = NULL;
-				PL_StruxDocHandle sdhEndTable = NULL;
-				bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
-				PT_DocPosition posTable = getDoc()->getStruxPosition(sdhTable);
-				UT_ASSERT(b);
-				sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
-				UT_ASSERT(sdhEndTable);
-				PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
-				b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste-1,PTX_SectionCell,&sdhCell);
-				b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
-				UT_String sTop;
-				UT_String sBot;
-				const char * szVal = NULL;
-				const XML_Char * sProps[5] = {NULL,NULL,NULL,NULL};
-				PT_DocPosition posCell = 0;
-				if(b)
-				{
-					posCell = getDoc()->getStruxPosition(sdhCell);
-				}
-				while(b && (posCell < posEndTable))
-				{
-					getDoc()->getPropertyFromSDH(sdhCell,
-												 true,
-												 PD_MAX_REVISION,
-												 "top-attach", &szVal);
-					UT_ASSERT(szVal);
-					UT_sint32 iTop = atoi(szVal);
-					iTop += numRows;
-					UT_String_sprintf(sTop,"%d",iTop);
-					getDoc()->getPropertyFromSDH(sdhCell,
-												 true,
-												 PD_MAX_REVISION,
-												 "bot-attach", &szVal);
-					UT_ASSERT(szVal);
-					UT_sint32 iBot = atoi(szVal);
-					iBot += numRows;
-					UT_String_sprintf(sBot,"%d",iBot);
-					UT_DEBUGMSG(("Change cell top to %d bot to %d \n",iTop,iBot));
-					sProps[0] = "top-attach";
-					sProps[1] = sTop.c_str();
-					sProps[2] = "bot-attach";
-					sProps[3] = sBot.c_str();
-					getDoc()->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,sProps,PTX_SectionCell);
-					b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
-					if(b)
-					{
-						posCell = getDoc()->getStruxPosition(sdhCell);
-					}
-				}
-//
-// Now a change strux on the table to make it rebuild.
-//
-				sProps[0] = "list-tag";
-				UT_String sVal;
-				UT_String_sprintf(sVal,"%d",getDoc()->getUID(UT_UniqueId::List));
-				sProps[1] = sVal.c_str();
-				sProps[2] = NULL;
-				sProps[3] = NULL;
-				getDoc()->changeStruxFmt(PTC_AddFmt,posTable+1,posTable+1,NULL,sProps,PTX_SectionTable);
-			}
-			delete pPaste;
-		}
-	}
 	// and the font table (can't use the macro as we allow NULLs in the vector
 	UT_sint32 size = m_fontTable.getItemCount();
 	UT_sint32 i =0;
@@ -1717,6 +1588,144 @@ void IE_Imp_RTF::RemoveRowInfo(void)
 {
 }
 
+UT_sint32 IE_Imp_RTF::getPasteDepth(void)
+{
+	return m_pasteTableStack.getDepth();
+}
+
+/*!
+ * Close off pasted Tables
+ */
+void IE_Imp_RTF::closePastedTableIfNeeded(void)
+{
+	while(m_pasteTableStack.getDepth() > 0)
+	{
+		ABI_Paste_Table * pPaste = NULL;
+		m_pasteTableStack.pop((void**)(&pPaste));
+		if(pPaste != NULL)
+		{
+			if(pPaste->m_bHasPastedCellStrux && !pPaste->m_bHasPastedBlockStrux)
+			{
+				insertStrux(PTX_Block);
+				UT_DEBUGMSG(("Paste block in destructor 1 \n"));
+			}
+			if(pPaste->m_bHasPastedCellStrux)
+			{
+				insertStrux(PTX_EndCell);
+				UT_DEBUGMSG(("Paste EndCell in destructor 1 \n"));
+			}
+			if(!pPaste->m_bPasteAfterRow)
+			{
+//
+// Now fill out any remaining cells needed to finish the row of the table
+//
+				UT_sint32 i = pPaste->m_iCurRightCell;
+				UT_String sTop =  UT_String_sprintf("%d",pPaste->m_iCurTopCell);
+				UT_String sBot =  UT_String_sprintf("%d",pPaste->m_iCurTopCell+1);
+				UT_String sCellProps;
+				UT_String sVal;
+				UT_String sDum;
+				const XML_Char * attrs[3] = {"props",NULL,NULL};
+				for(i = pPaste->m_iCurRightCell; i<pPaste->m_iMaxRightCell; i++)
+				{
+					sCellProps.clear();
+					sVal = UT_String_sprintf("%d",i);
+					sDum = "left-attach";
+					UT_String_setProperty(sCellProps,sDum,sVal);
+					sVal = UT_String_sprintf("%d",i+1);
+					sDum = "right-attach";
+					UT_String_setProperty(sCellProps,sDum,sVal);
+					sDum = "top-attach";
+					UT_String_setProperty(sCellProps,sDum,sTop);
+					sDum = "bot-attach";
+					UT_String_setProperty(sCellProps,sDum,sBot);
+					
+					attrs[1] = sCellProps.c_str();
+					insertStrux(PTX_SectionCell,attrs,NULL);
+					
+					insertStrux(PTX_Block);
+					
+					insertStrux(PTX_EndCell);
+				}
+				if(pPaste->m_bHasPastedTableStrux)
+				{
+					insertStrux(PTX_EndTable);
+					
+//					insertStrux(PTX_Block); // we don't need this now
+				}
+			}
+			else
+			{
+//
+// Close off pasted rows by incrementing the top and botton's of the cell's
+// below
+//
+				UT_sint32 numRows = pPaste->m_iCurTopCell -pPaste->m_iRowNumberAtPaste +1;
+				PL_StruxDocHandle sdhCell = NULL;
+				PL_StruxDocHandle sdhTable = NULL;
+				PL_StruxDocHandle sdhEndTable = NULL;
+				bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
+				PT_DocPosition posTable = getDoc()->getStruxPosition(sdhTable);
+				UT_ASSERT(b);
+				sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
+				UT_ASSERT(sdhEndTable);
+				PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
+				b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste-1,PTX_SectionCell,&sdhCell);
+				b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
+				UT_String sTop;
+				UT_String sBot;
+				const char * szVal = NULL;
+				const XML_Char * sProps[5] = {NULL,NULL,NULL,NULL};
+				PT_DocPosition posCell = 0;
+				if(b)
+				{
+					posCell = getDoc()->getStruxPosition(sdhCell);
+				}
+				while(b && (posCell < posEndTable))
+				{
+					getDoc()->getPropertyFromSDH(sdhCell,
+												 true,
+												 PD_MAX_REVISION,
+												 "top-attach", &szVal);
+					UT_ASSERT(szVal);
+					UT_sint32 iTop = atoi(szVal);
+					iTop += numRows;
+					UT_String_sprintf(sTop,"%d",iTop);
+					getDoc()->getPropertyFromSDH(sdhCell,
+												 true,
+												 PD_MAX_REVISION,
+												 "bot-attach", &szVal);
+					UT_ASSERT(szVal);
+					UT_sint32 iBot = atoi(szVal);
+					iBot += numRows;
+					UT_String_sprintf(sBot,"%d",iBot);
+					UT_DEBUGMSG(("Change cell top to %d bot to %d \n",iTop,iBot));
+					sProps[0] = "top-attach";
+					sProps[1] = sTop.c_str();
+					sProps[2] = "bot-attach";
+					sProps[3] = sBot.c_str();
+					getDoc()->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,sProps,PTX_SectionCell);
+					b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
+					if(b)
+					{
+						posCell = getDoc()->getStruxPosition(sdhCell);
+					}
+				}
+//
+// Now a change strux on the table to make it rebuild.
+//
+				sProps[0] = "list-tag";
+				UT_String sVal;
+				UT_String_sprintf(sVal,"%d",getDoc()->getUID(UT_UniqueId::List));
+				sProps[1] = sVal.c_str();
+				sProps[2] = NULL;
+				sProps[3] = NULL;
+				getDoc()->changeStruxFmt(PTC_AddFmt,posTable+1,posTable+1,NULL,sProps,PTX_SectionTable);
+			}
+			delete pPaste;
+		}
+	}
+}
 /*!
  * Closes the current table. Does all the book keeping of inserting
  * endstruxs and deleting used ones.

@@ -686,10 +686,11 @@ public:
 		  m_last_kwID(RTF_UNKNOWN_KEYWORD),
 		  m_name(NULL),
 		  m_value(NULL), 
-		  m_lastData(NULL) 
+		  m_lastData(NULL)
 		{}
 	~IE_Imp_ShpPropParser()
 		{ 
+
 			DELETEP(m_propPair); 
 			DELETEP(m_name); 
 			DELETEP(m_value); 
@@ -885,6 +886,18 @@ IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser(IE_Imp_RTF * ie) : m_ieRTF(ie)
 
 IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
 {
+	if(m_ieRTF->getTable() != NULL)
+	{
+		m_ieRTF->CloseTable(true);
+	}
+	//
+	// Close off any open tables
+	//
+	if(	m_ieRTF->getPasteDepth() > 0)
+	{
+		m_ieRTF->closePastedTableIfNeeded();
+		m_ieRTF->insertStrux(PTX_Block);
+	}
 	if(!m_ieRTF->isFrameIn())
 	{
 		m_ieRTF->addFrame(m_currentFrame);
@@ -979,7 +992,8 @@ void IE_Imp_RTF::HandleShape(void)
 		getDoc()->appendStrux(PTX_EndFrame, NULL);
 		m_newParaFlagged = true;
 	}
-	else {
+	else 
+	{
 		insertStrux(PTX_EndFrame);
 		m_newParaFlagged = true;
 	}
@@ -1055,7 +1069,16 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	{
 		UT_LocaleTransactor(LC_NUMERIC, "C");
 
-		double dV = static_cast<double>(frame.m_iLeftPos)/1440.0;
+		//
+		// Shift positions a little for pasted frames so they don't
+		// appear right on top of other frames
+		//
+		double dOff = 0.0;
+		if(bUseInsertNotAppend())
+		{
+			dOff = 0.1; // 0.1 inches
+		}
+		double dV = dOff + static_cast<double>(frame.m_iLeftPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "xpos";
 		UT_UTF8String_setProperty(sPropString,sP,sV);
@@ -1064,7 +1087,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 		sP= "frame-page-xpos";
 		UT_UTF8String_setProperty(sPropString,sP,sV);
 		
-		dV = static_cast<double>(frame.m_iTopPos)/1440.0;
+		dV = dOff + static_cast<double>(frame.m_iTopPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "ypos";
 		UT_UTF8String_setProperty(sPropString,sP,sV);

@@ -692,6 +692,7 @@ private:
                     eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
 
 // Paste AbiWord tables
+ public:
 	bool HandleAbiTable(void);
 	bool HandleAbiCell(void);
 	bool HandleAbiEndTable(void);
@@ -719,6 +720,11 @@ private:
     void           HandleCell(void);
 	void           HandleCellX(UT_sint32 cellx);
     void           HandleRow(void);
+	UT_sint32      getPasteDepth(void);
+	void           closePastedTableIfNeeded(void);
+
+ private:
+
 	void           HandleNote();
 	void           HandleNoteReference();
 // Shape handlers in ie_imp_RTFObjectsAndPicts.cpp
@@ -731,12 +737,12 @@ public:
 	bool           isFrameIn(void)
 		{ return m_bFrameStruxIn;}
 
+	bool           bUseInsertNotAppend(void);
+
 private:
 //	void           HandleEndShape(void);
 // Meta data
 	bool           HandleInfoMetaData(void);
-
-	bool           bUseInsertNotAppend(void);
 // Little convience wrapper
 	void           _setStringProperty(UT_String & sPropString, 
                                       const char * szProp, const char * szVal);
