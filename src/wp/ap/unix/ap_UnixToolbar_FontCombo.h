@@ -20,6 +20,7 @@
 #ifndef AP_UNIXTOOLBAR_FONTCOMBO_H
 #define AP_UNIXTOOLBAR_FONTCOMBO_H
 
+#include <glib.h>
 #include "ap_Types.h"
 #include "ev_Toolbar_Control.h"
 class EV_Toolbar;
@@ -34,7 +35,7 @@ public:
 
 	virtual UT_Bool		populate(void);
 
-	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, AP_Toolbar_Id id);
+	static EV_Toolbar_Control * static_constructor(EV_Toolbar *, AP_Toolbar_Id id);
 
 protected:
 	gboolean isXLFDFontName(const gchar *fontname);
