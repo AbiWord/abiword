@@ -68,7 +68,7 @@ EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataL
 
 EV_EditMethodCallData::~EV_EditMethodCallData()
 {
-	delete m_pData;
+	delete [] m_pData;
 }
 
 /*****************************************************************/
