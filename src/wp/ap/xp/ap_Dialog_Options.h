@@ -81,6 +81,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_UNIXFONTWARNING,
 				   id_CHECK_ALLOW_CUSTOM_TOOLBARS,
 				   id_CHECK_AUTO_LOAD_PLUGINS,
+				   id_LIST_VIEW_TOOLBARS,		// this is needed for the Cocoa front-end to fetch the control
+				   id_NOTEBOOK,
 				   id_last } tControl;
 
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
