@@ -43,6 +43,7 @@ public:
 	void event_ToggleOpenExisting ();
 	void event_ToggleStartNew ();
 	void event_ToggleSelection(PtWidget_t *w);
+	void event_ListClicked();
 	
 protected:
 
@@ -63,7 +64,9 @@ private:
 	PtWidget_t * m_radioNew;
 	PtWidget_t * m_radioExisting;
 	PtWidget_t * m_radioEmpty;
-	PtWidget_t * m_tree;
+	PtWidget_t * m_list;
+	
+	UT_Vector mTemplates ;
 
 	int done;
 };
