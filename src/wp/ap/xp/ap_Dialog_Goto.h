@@ -68,6 +68,8 @@ public:
 
 	// is this used in a modeless dialog like this?
 	tAnswer						m_answer;
+	
+	void			    _setupJumpTargets();
 };
 
 #endif /* AP_DIALOG_GOTO_H */

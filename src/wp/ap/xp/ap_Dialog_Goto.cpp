@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_Dialog_Goto.h"
+#include "ap_Strings.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -33,21 +34,33 @@
 #include "fv_View.h"
 
 char * AP_Dialog_Goto::s_pJumpTargets[] = {
-	"Page",
-	"Line",
+	NULL,
+	NULL,
 //	"Picture",  TODO
 	NULL
 };
+
 
 AP_Dialog_Goto::AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory, id)
 {
   	m_pView = NULL;
 	m_answer = a_CLOSE;
+	if (s_pJumpTargets[0] == NULL)
+	    _setupJumpTargets();
 }
 
 AP_Dialog_Goto::~AP_Dialog_Goto(void)
 {
+}
+
+void AP_Dialog_Goto::_setupJumpTargets(void)
+{
+    const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+    s_pJumpTargets[0] = ::strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Page));
+    s_pJumpTargets[1] = ::strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Line));
+    //s_pJumpTargets[2] = ::strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Picture)); //TODO
 }
 
 char ** AP_Dialog_Goto::getJumpTargets(void)

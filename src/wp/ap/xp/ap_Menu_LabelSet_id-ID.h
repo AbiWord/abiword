@@ -84,7 +84,7 @@ BeginSet(id,ID,UT_TRUE)
 
 	MenuLabel(AP_MENU_ID_INSERT,			"&Sisipkan",			NULL)
 	MenuLabel(AP_MENU_ID_INSERT_BREAK,		"&Pemutus",			"Sisipkan pemutus halaman, kolom, atau bagian")
-	MenuLabel(AP_MENU_ID_INSERT_PAGENO,		"&Nomor Halaman",		"Sisipkan nomor halaman yang diganti secara automatis")
+	MenuLabel(AP_MENU_ID_INSERT_PAGENO,		"&Nomor Halaman",		"Sisipkan nomor halaman yang diganti secara otomatis")
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,		"&Tanggal dan Jam",		"Sisipkan tanggal dan/atau jam")
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Field",			"Sisipkan a calculated field")
 	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"Sim&bol",			"Sisipkan simbol atau huruf istimewa lainnya")
