@@ -1,6 +1,7 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ * Copyright (c) 2002 Jordi Mas i Hernàndez - jmas@softcatala.org
+ * 			 (c) 1998-2000 AbiSource, Inc.	
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -33,131 +34,32 @@
 #include "ev_EditEventMapper.h"
 #include "xap_EncodingManager.h"
 
-#ifdef UT_DEBUG
-#define MSG(keydata,args)	do { if ( ! (keyData & 0x40000000)) UT_DEBUGMSG args ; } while (0)
-#else
-#define MSG(keydata,args)	do { } while (0)
-#endif
+/*
+	What are we doing here
+	
+	Originally Abiword foxs tried to handle the keyboard their "own 
+	way", that included not calling TranslateMessage() and trying to do 
+	interpreted the keyboard tru WM_KEYDOWN ignoring most WM_CHAR. This 
+	caused serval problems, including ALT+XXX not working and other 
+	keyboard related issues.
+	
+	What we do now is:
+	
+	- Keep this code as simple as possible
+	
+	- We always call TranslateMessage() and we let Windows do that job,
+	as all the applications do
+	
+	- We process all the WM_CHAR messages except the ones that occur when
+	the user has the ALT key activated and we pass them to Windows because
+	we undertand that they are menu hotkeys called.
+	
+	- We process only the special keys tru WM_KEYDOWN message.
+	
+	Jordi 10/11/2002
+	
+*/
 
-#define HACK_FOR_MENU
-
-/*****************************************************************
-******************************************************************
-** We handle the Win32 keyboard events in a slightly non-standard
-** way.  First, we do not call neither TranslateMessage() nor
-** TranslateAccelerator() in our main event loop.
-**
-**    We will use the keybinding mechanism here to provide
-**    all accelerator functionality (in conjunction with
-**    our dynamic menu mechanism).  (Which will, in turn,
-**    help us keep the application free of windows
-**    resources and be able to localize completely from
-**    an external config file.)
-**
-**    We let the keyboard code, below, decide if the key
-**    event (WM_KEYDOWN and WM_SYSKEYDOWN messages) should
-**    be processed as is -- or if it should be translated
-**    to a character before being processed.  This gives
-**    us the flexibility that we want, but also lets the
-**    system deal with upper/lowercase issues.  And deal
-**    deal with the various character locale compose
-**    conventions used to enter non-7bit characters.
-**
-** When a WM_KEYDOWN or WM_SYSKEYDOWN occurs, we first check to
-** see if the key is a "named key that we have interest in".  A
-** "named key" is something like BACKSPACE, HOME, END, F2, etc.
-** The "have interest in" means that we have exposed that key
-** to the keybinding mechanism and allow bindings for -- for
-** example, the VK_LWIN and VK_RWIN keys (the left- and right-
-** flag keys on new Win95-enabled keyboards) are "named keys",
-** but we don't allow access to them.
-** 
-**    If it is a "named key of interest", we see
-**    if it is bound (either as a terminal or
-**    non-terminal node in an event sequence).
-**
-**        If it is bound, we advance the state
-**        machine.  If it is the terminal node
-**        in a sequence, we invoke the method.
-**
-**        If it is not bound, and in the middle
-**        of a sequence, we abort the state
-**        machine and ignore the key.
-**
-**        If it is not bound and we are not in
-**        the middle of a sequence, we pass it
-**        on the system for normal processing
-**        (TranslateMessage() and DefWindowProc()).
-**        This lets the system keys (like ALT-F4)
-**        do their thing.
-**
-**    If it is not a "named key that we have an
-**    interest in" (EV_NVK__IGNORE__) we pass it
-**    on to the system for normal processing
-**    (TranslateMessage() and DefWindowProc()).
-**    This lets the system keys (like VK_LWIN)
-**    do their thing.
-**
-**    If it is not a "named key" (nvk==0), we ask the
-**    system to translate it to a character using
-**    ToAsciiEx() and the current keyboard layout.
-**    Depending upon the result we either process the
-**    resulting character or strip off the modifiers
-**    and retranslate the key and process that.  (more
-**    details are given in the function.)
-**
-** In a nutshell, this algorithm provides the following:
-**
-** [] cannot bind to named keys we don't want rebound
-**    (such as VK_LWIN) either at the start of sequence
-**    or in the middle.
-** [] by recognizing "named" keys (such as BACKSPACE),
-**    we don't have to rely on the ASCII control code
-**    scheme (ie, Control-h) (and are free to use them
-**    differently).
-** [] keys like ALT-F4 and ALT-F are processed by us,
-**    if bound, and by the system, if not.
-** [] an unbound system keys (like ALT-F4) will not
-**    be sent to the system in the middle of a sequence.
-**    (another way of saying this is that unbound system
-**    keys will only receive system processing at the
-**    start of a sequence.)
-** [] we mark VK_SHIFT, VK_CONTROL, and VK_MENU (alt)
-**    as "not of interest" -- to prevent them from being
-**    a binding rather than a modifier.
-**
-** We did it this way because we want to be able to freely
-** use the control, alt, and shift keys as modifiers.  The
-** normal Windows method of calling TranslateMessage() just
-** doesn't give us the control that we want -- sometimes it
-** generates a WM_CHAR and sometimes it doesn't and it is
-** not possible to tell (see the differences in the return
-** value documented between Win95 and WinNT).  Furthermore,
-** it doesn't generate in all the different combinations --
-** 'a', 'shift a', 'control a' and maybe 'alt a' get sent,
-** but 'control shift a', 'alt control a', 'alt shift a',
-** and 'alt control shift a' do not.  This is just unacceptable :-)
-**
-** The traditional method was sufficient to get alt, control
-** and shift modifiers on the NamedVirtualKeys (PageDown, etc),
-** but was not for letter keys which do not have a corresponding
-** ASCII control character, such as '2'.  on my keyboard, 'shift 2'
-** is a '@' -- we can get '2', 'control 2', 'alt 2', 'alt control 2'
-** and '@', 'control @', 'alt @', and 'alt control @' -- note
-** that the shift is implied in the latter set.
-**
-** Note: If the user presses ALT and releases it, focus moves
-** to the menu bar.  We don't have control of it.  This should
-** be considered a feature because it lets the user have access
-** to the menu bar from the keyboard even when most of the typical
-** menu accelerators are bound -- as is the case in EMACS mode.
-**
-******************************************************************
-*****************************************************************/
-
-// Note: these variables are static and thus shared by all
-// Note: instances of this class, but then so is the physical
-// Note: keyboard.
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
@@ -222,306 +124,53 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	}
 }
 
-/*****************************************************************/
-/*****************************************************************/
+/*
 
+	Processes WM_KEYDOWN messages related to special keys
+	
+*/
 bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 									HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
-	// process the keydown message.
-	// return true if we handled it.
-	// return false if the DefWindowProc() should be called.
-
-	// For now, we choose to ignore the repeat count.
-
-	//MSG(keyData,(("%s: %p %p\n",((iMsg==WM_KEYDOWN)?"onKeyDown":"onSysKeyDown"),nVirtKey,keyData)));
-
-	///////////////////////////////////////////////////////////////////
-	//
-	// Try to determine the nature of the character.
-	//
-	// The windows keyboard driver keeps track of mappings
-	// from virtual-keys to scan code and characters.  It
-	// also keeps track of which keys are dead-chars (like
-	// accent, grave, etc) ***and*** the set of valid chars
-	// than can follow a particular dead-char.  Unfortunately,
-	// it doesn't tell us what they are until after the fact.
-	// That is, the output of the ToAsciiEx() function depends
-	// upon what dead-chars were previously typed.  The
-	// key typed immediately after a dead-char is
-	// either an allowed value (and we get the proper accented
-	// character) or not allowed (and we get **2** characters,
-	// the accent character by itself and the second character).
-	// However (by experimentation I've found that) there are
-	// times that it doesn't treat the second key this way --
-	// for example, when it is F3 -- BUT IT DOES KEEP THE DEAD-CHAR
-	// STATE AROUND AND EVENTUALLY DRAIN IT AS EITHER AN ACCENTED
-	// CHARACTER OR A 2 CHARACTER SEQUENCE -- so yes,
-	// <dead-grave> <F3> <a> will cause a <F3> <a-grave>, and
-	// <dead-grave> <F3> <s> will cause a <F3> <grave> <s>
-	// *** I don't like this -- a dead-char is either a prefix
-	// *** or it isn't -- it shouldn't just lurk...
-	//
-	// If we let it lurk, it means that we can't immediately map
-	// the keys via our machinery -- we process the keys as we see
-	// them (advancing our state-machine into the prefix state
-	// when we see the dead-char).
-	//
-	// There's also the issue of having multiple windows.  If
-	// the user hits a dead-char in one window and then raises
-	// another winodw and types a character, does the dead-char
-	// eval get done in the new window or is the dead-char state
-	// a per-window thing (or does the system just discard the
-	// dead-char).  By experimentation, it looks like the new
-	// window inherits the dead-char -- as if there is only one
-	// keyboard state for the entire desktop.
-	// *** Likewise, I don't like this -- a dead-char should
-	// *** be constrained to the window in which it was received...
-	//
-	// There's also the issue of hitting multiple dead-chars.  If
-	// the user hits one dead-char and then another, the first one
-	// is silently suppressed (and the second one remains active
-	// as described above).  If the second dead-char is the same
-	// key as the first, the same thing happens -- there is no
-	// notion of canceling the dead-char or actually entering the
-	// non-dead-char.
-	// *** Likewise, I don't like this.
-	//
-	///////////////////////////////////////////////////////////////////
-	//
-	// The implications of this are:
-	//
-	// [] we cannot do anything with the WM_KEYDOWN for a dead-char
-	//    -- we may see the second character or another window or
-	//       another application may see it.
-	// [] symmetrically, another window or application could get
-	//    the dead-char and we only get the second char, so we
-	//    cannot assume that a dead-char did not occur.
-	//
-	// We modify our normal processing to return immediately
-	// upon receiving a dead-char (and without affecting our state
-	// machine).
-	//
-	// Since the set of dead-chars is dependent upon the keyboard
-	// layout installed and we don't have a table of what they are
-	// and the ToAsciiEx() call will correctly (??) do the mapping
-	// to the proper character, we cannot use the dead-char prefix
-	// maps (like the X11 version does).  Therefore we need bindings
-	// in the base map for all of the accented characters (whereas
-	// the X11 version uses the prefix maps).
-	//
-	// But, before we check for dead-chars, we route it thru the NVK
-	// tables (since dead-chars come in as regular VK_ keysyms but
-	// with hidden meaning (unlike on X11)).
-	//
-	///////////////////////////////////////////////////////////////////
-	//
-	// The windows keyboard layout mechanism also treats Control+Alt
-	// as AltGr and Shift+Control+Alt as Shift+AltGr -- two special
-	// sequence to get another range of chars.  Note, some layouts
-	// only define AltGr while other define both.  (See the German
-	// and the US-International keyboard layouts.)
-	//
-	// BUGBUG We have a slight discrepancy with other apps (like MSWord)
-	// BUGBUG where a AltGr (Control+Alt) on a dead-char which is only
-	// BUGBUG a dead-char in the non-AltGr state (see [`/~] on the ENUS
-	// BUGBUG International layout) still acts like a dead-char.  That
-	// BUGBUG is: "Control+Alt+grave a" yields "agrave" just like the
-	// BUGBUG sequence "grave a".  Whereas, MSWord, you just get "a".
-	// BUGBUG I don't care.
-	//
-	///////////////////////////////////////////////////////////////////
 	
 	EV_EditMethod * pEM;
 	EV_EditEventMapperResult result;
 
 	EV_EditModifierState ems = _getModifierState();
 	EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(nVirtKey);
-
-	if (nvk == EV_NVK__IGNORE__)
-	{
-		// if a named-virtual-key that we don't have
-		// an interest in (must be ignored), give it
-		// the traditional processing.
-		// note: translating it is probably unnecessary,
-		// note: but we must run it thru DefWindowProc().
-
-		//MSG(keyData,(("    NVK_Ignore: %p\n",nVirtKey)));
-		_translateMessage(hWnd,iMsg,nVirtKey,keyData);
-		return false;
-	}
-
+	
+	/* We are only interested in special keys */
+	if (nvk == EV_NVK__IGNORE__ || nvk ==0)
+		return true;
+		
+	/* If the user has ALT pressed we ignore then */
+	if (GetKeyState(VK_MENU) & 0x8000)
+		return true;		
+	
 	if (nvk != 0)
 	{
 		// a named-virtual-key that we have an interest in.
-		
-		//MSG(keyData,(("    NVK: %s (%s %s %s)\n",EV_NamedVirtualKey::getName(nvk),
-		//			  (ems&EV_EMS_SHIFT)?"shift":"",
-		//			  (ems&EV_EMS_CONTROL)?"control":"",
-		//			  (ems&EV_EMS_ALT)?"alt":"")));
-
 		result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|nvk,&pEM);
 		switch (result)
 		{
+			
 		case EV_EEMR_BOGUS_START:
-			// If it is a bogus key and we don't have a sequence in
-			// progress, we should let the system handle it
-			// (this lets things like ALT-F4 work).
-			_translateMessage(hWnd,iMsg,nVirtKey,keyData);
-			return false;
-
-		case EV_EEMR_BOGUS_CONT:
-			// If it is a bogus key but in the middle of a sequence,
-			// we should silently eat it (this is to prevent things
-			// like Control-X ALT-F4 from killing us -- if they want
-			// to kill us, fine, but they shouldn't be in the middle
-			// of a sequence).
-			return true;
-
-		case EV_EEMR_COMPLETE:			// a terminal node in state machine
-			UT_ASSERT(pEM);
+		case EV_EEMR_BOGUS_CONT:			
+		case EV_EEMR_INCOMPLETE:		// a non-terminal node in state machine
+			return false;		
+			
+		case EV_EEMR_COMPLETE:			// a terminal node in state machine			
+			UT_ASSERT(pEM);			
 			invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
 			return true;
-
-		case EV_EEMR_INCOMPLETE:		// a non-terminal node in state machine
-			return true;
-
+			
 		default:
 			UT_ASSERT(0);
-			return true;
+			return false;
 		}
 	}
 
-	// an unnamed-virtual-key -- a character key possibly with some sugar on it.
-
-	BYTE keyState[256];
-	WCHAR buffer[2] = {0,0};
-	int count;
-
-	unsigned int scancode = (keyData & 0x00ff0000)>>16;
-	GetKeyboardState(keyState);
-
-	count = _scanCodeToChars(nVirtKey,scancode,keyState,buffer,sizeof(buffer));
-
-	if (count == -1)
-	{
-		// a possible dead-char -- ignore it and wait for possible completed sequence.
-		//UT_DEBUGMSG(("    Received possible dead-char: %x\n",nVirtKey));
-		return true;
-	}
-		
-	if (count == 0)
-	{
-		// this key combination (this vk and whatever modifiers
-		// are already down) doesn't produce a character (not all
-		// AltGr or Shift+AltGr key do).
-		//
-		// here we need some trickery: strip off Control+Alt and let
-		// the system re-interpret the vk.  take that result and
-		// use the Control+Alt settings in our tables.
-
-		//UT_DEBUGMSG(("    Received non-character-producing key: %x\n",nVirtKey));
-		EV_EditModifierState ems2 = ems & (EV_EMS_CONTROL|EV_EMS_ALT);
-
-		keyState[VK_CONTROL] &= ~0x80;
-		keyState[VK_MENU] &= ~0x80;
-		keyState[VK_LCONTROL] &= ~0x80;
-		keyState[VK_LMENU] &= ~0x80;
-		keyState[VK_RCONTROL] &= ~0x80;
-		keyState[VK_RMENU] &= ~0x80;
-
-		count = _scanCodeToChars(nVirtKey,scancode,keyState,buffer,sizeof(buffer));
-
-		if (count == 1)
-		{
-			//UT_DEBUGMSG(("        Remapped char to: %c (%s %s)\n",
-			//			 buffer[0],
-			//			 ((ems&EV_EMS_CONTROL)?"control":""),
-			//			 ((ems&EV_EMS_ALT)?"alt":"")));
-
-			_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],ems2);
-		}
-		else
-		{
-			//UT_DEBUGMSG(("        Could not decode char stripped of (%s %s) [result %d], ignoring.\n",
-			//			 ((ems&EV_EMS_CONTROL)?"control":""),
-			//			 ((ems&EV_EMS_ALT)?"alt":""),
-			//			 count));
-		}
-		return true;
-	}
-	
-	if (count == 2)
-	{
-		// a [dead-char, invalid-char] sequence, emit the dead-char
-		// as a plain char and then decide what to do with the other.
-		// Shift-state in the dead-char has already been compensated for.
-		// we exclude Control and Alt from consideration because we don't
-		// have the settings for when the dead-char was pressed -- we only
-		// have the settings as of the second character.
-			
-		//UT_DEBUGMSG(("    Emitting dead-char as plain char: %c\n",buffer[0]));
-		_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],0);
-		buffer[0] = buffer[1];
-	}
-
-	// try to handle the remaining (or only) character.
-
-	if (buffer[0] >= 0x20)
-	{
-		// a normal character
-		//
-		// if AltGr or Shift+AltGr were down and we got a character,
-		// then we probably don't want to use the Control+Alt in our
-		// state machine, so we don't pass "ems" in the call to _emitChar().
-		// we don't care about SHIFT, since it's already accounted for
-		// in the character.
-		//
-		// we allow ALT (without CONTROL) to go thru so that the menu
-		// will work.
-
-		EV_EditModifierState ems2 = ems & (EV_EMS_CONTROL|EV_EMS_ALT);
-		if (ems2 == (EV_EMS_CONTROL|EV_EMS_ALT))
-			ems2 = 0;
-		
-		_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],ems2);
-		return true;
-	}
-	else
-	{
-		// windows maps control-a and friends to [0x00 - 0x1f].
-		// we want control characters to appear as the actual
-		// character and a control bit set in the ems.
-
-		EV_EditModifierState ems2 = ems & (EV_EMS_CONTROL|EV_EMS_ALT);
-
-		keyState[VK_CONTROL] &= ~0x80;
-		keyState[VK_MENU] &= ~0x80;
-		keyState[VK_LCONTROL] &= ~0x80;
-		keyState[VK_LMENU] &= ~0x80;
-		keyState[VK_RCONTROL] &= ~0x80;
-		keyState[VK_RMENU] &= ~0x80;
-		
-		count = _scanCodeToChars(nVirtKey,scancode,keyState,buffer,sizeof(buffer));
-
-		if (count == 1)
-		{
-			//UT_DEBUGMSG(("        Remapped ControlChar to: %c (%s %s)\n",
-			//			 buffer[0],
-			//			 ((ems2&EV_EMS_CONTROL)?"control":""),
-			//			 ((ems2&EV_EMS_ALT)?"alt":"")));
-
-			_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],ems2);
-		}
-		else
-		{
-			//UT_DEBUGMSG(("        Could not decode ControlChar stripped of (%s %s) [result %d], ignoring.\n",
-			//			 ((ems2&EV_EMS_CONTROL)?"control":""),
-			//			 ((ems2&EV_EMS_ALT)?"alt":""),
-			//			 count));
-		}
-		return true;
-	}
+	return 	true;
 }
 
 bool ev_Win32Keyboard::onIMEChar(AV_View * pView,
@@ -542,11 +191,6 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 								 WCHAR b, EV_EditModifierState ems)
 {
 	// do the dirty work of pumping this character thru the state machine.
-
-	//UT_DEBUGMSG(("        Char: %c (%s %s %s)\n",b,
-	//			 (ems&EV_EMS_SHIFT)?"shift":"",
-	//			 (ems&EV_EMS_CONTROL)?"control":"",
-	//			 (ems&EV_EMS_ALT)?"alt":""));
 
 	UT_UCSChar charData[2];
 	size_t ret;
@@ -583,11 +227,6 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	{
 	case EV_EEMR_BOGUS_START:
 		//UT_DEBUGMSG(("    Unbound StartChar: %c\n",b));
-#ifdef HACK_FOR_MENU
-		// Let Alt+F and friends raise menus.
-		if ((ems & (EV_EMS_CONTROL|EV_EMS_ALT)) == EV_EMS_ALT)
-			_translateMessage(hWnd,iMsg,nVirtKey,keyData);
-#endif
 		break;
 
 	case EV_EEMR_BOGUS_CONT:
@@ -611,22 +250,28 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	return;
 }
 
+/*	
 
+	Processes WM_CHAR messages
+	
+*/
 bool ev_Win32Keyboard::onChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
-	// process the char message.  since we have taken care of everything
-	// on the KeyDown, we have nothing to do here.
+	WCHAR b = nVirtKey;
 
-	//MSG(keyData,(("%s: %p %p\n",((iMsg==WM_CHAR)?"wm_char":"wm_syschar"),nVirtKey,keyData)));
+	// The user is pressing ALT+x. If x is from a to a is a Hotkey for sure	
+	if (GetKeyState(VK_MENU) & 0x8000)
+	{
+		UT_DEBUGMSG(("WM_CHAR discarting char because is a menu accesskey\n"));
+		if (b>='a' && b<='z')
+			return true;		
+	}
+	
+	// Process the key
+	_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,nVirtKey,0);
+	return true;
 
-	bool bIgnoreCharacter = true;
-#ifdef HACK_FOR_MENU
-	// see the note in KeyDown.  we need this to get the system to
-	// process the key and do the menu activation thing.
-	bIgnoreCharacter = false;
-#endif
-	return bIgnoreCharacter;
 }
 
 /*****************************************************************/
@@ -644,20 +289,6 @@ EV_EditBits ev_Win32Keyboard::_getModifierState(void)
 		eb |= EV_EMS_ALT;
 
 	return eb;
-}
-
-void ev_Win32Keyboard::_translateMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
-{
-	MSG new_msg;
-
-	new_msg.hwnd	= hwnd;
-	new_msg.message = iMsg;
-	new_msg.wParam = wParam;
-	new_msg.lParam = lParam;
-	new_msg.time = GetMessageTime();
-	new_msg.pt.x = 0;
-	new_msg.pt.y = 0;
-	TranslateMessage(&new_msg);
 }
 
 int ev_Win32Keyboard::_scanCodeToChars(UINT nVirtKey, UINT wScanCode, CONST PBYTE lpKeyState,

@@ -1175,17 +1175,23 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 	{
-	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
-		if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		UT_DEBUGMSG(("WM_KEYDOWN %d  - %d\n",wParam, lParam));
+	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);	    
+	    
+     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
+     		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+ 		else
+ 			return false;	    				 	     			
+    		
 	}
 	case WM_SYSCHAR:
 	case WM_CHAR:
 	{
+		UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
 	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
-		if (pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
+	   
+	    
+		pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam);		
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 	}
 	case WM_IME_CHAR:

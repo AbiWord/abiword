@@ -1190,6 +1190,8 @@ __try
 	      	// has its own way of decoding keyboard accelerators
 	      	if (pMyWin32App->handleModelessDialogMessage(&msg)) 
 				continue;
+				
+			TranslateMessage(&msg);	
 	    	DispatchMessage(&msg);	
 	    	
 			// Check for idle condition
