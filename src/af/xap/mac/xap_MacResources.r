@@ -24,19 +24,20 @@
 */
 
 
-#include <Types.r>
-#include <Controls.r>
-#include <Balloons.r>
+#include "Types.r"
+#include "Controls.r"
+#include "Balloons.r"
+#include "Menus.r"
 
 #define __INCLUDING_REZ__
-#include "ap_Mac_ResID.h"
+#include "xap_Mac_ResID.h"
 
 #define APPLICATION_SIGNATURE	'AbiW'
 #define MAJOR_VERSION			0
 #define MINOR_VERSION			7
 #define RELEASE_KIND 			beta
-#define PATCH_LEVEL				11
-#define CURRENT_VERSION_TEXT	"0.7.11"
+#define PATCH_LEVEL				12
+#define CURRENT_VERSION_TEXT	"0.7.12"
 
 #define APP_NAME 				"AbiWord"
 
@@ -77,6 +78,19 @@ resource APPLICATION_SIGNATURE (128) {
 	APP_NAME" "CURRENT_VERSION_TEXT" - ©1998-2000 AbiSource, Inc. and other contributors."
 };
 
+resource 'MENU' (RES_MENU_APPLE) {
+	RES_MENU_APPLE,
+	textMenuProc,
+	allEnabled,
+	enabled,
+	apple,
+	{
+		/* [1] */
+		"About "APP_NAME"É", noIcon, noKey, noMark, plain,
+		/* [2] */
+		"-", noIcon, noKey, noMark, plain	
+	}
+};
 
 resource 'hfdr' (-5696) {
 	2,
