@@ -39,7 +39,7 @@
 struct _AbiPrivData {
 	AP_UnixApp           * m_pApp;
 	AP_UnixFrame         * m_pFrame;
-	const char           * m_szFilename;
+	char           * m_szFilename;
 	GdkICAttr            * ic_attr;
 	GdkIC                * ic;
 	bool                 externalApp;
@@ -1370,7 +1370,7 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	{
 		if (abi->priv->m_szFilename)
 		{
-			pArgs = new XAP_Args (1, &abi->priv->m_szFilename);
+			pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
 		}
 		else
 		{
