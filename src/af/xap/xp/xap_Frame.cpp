@@ -695,10 +695,10 @@ UT_Error XAP_Frame::backup()
 	{
 		const XAP_StringSet * pSS = m_app->getStringSet();
 		const char *szTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument);
-		int iLen = strlen(szTmp) + 5;
+		int iLen = strlen(szTmp) + 10;
 		char *szTmp2 = new char[iLen];
 
-		snprintf(szTmp2, iLen, szTmp, m_iUntitled);
+		sprintf(szTmp2, szTmp, m_iUntitled);
 		oldName = szTmp2;
 		delete[] (szTmp2);
 		UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
