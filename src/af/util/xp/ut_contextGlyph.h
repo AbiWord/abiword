@@ -36,7 +36,7 @@ class UT_StringPtrMap;
 class XAP_App;
 class XAP_Prefs;
 
-#define CONTEXT_BUFF_SIZE 5
+//#define UT_CG_GENERATION2
 
 struct LigatureData
 {
@@ -65,20 +65,29 @@ struct UCSRange
 
 enum GlyphContext {GC_ISOLATE,GC_INITIAL,GC_MEDIAL,GC_FINAL,GC_NOT_SET};
 
+enum UTShapingResult
+{
+	SR_Error = 0,
+	SR_ContextSensitive,
+	SR_Ligatures,
+	SR_ContextSensitiveAndLigatures
+};
+
+
 class UT_contextGlyph
 {
 public:
 	UT_contextGlyph();
 	UT_contextGlyph(bool bNoInit);
 	void static_destructor();
-	
-	void renderString(UT_TextIterator & text,
-					  UT_UCSChar      * dest,
-					  UT_uint32         len,
-					  const XML_Char  * pLang,
-					  FriBidiCharType   iDirection,
-					  bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
-					  void * custom_param = NULL) const;
+
+	UTShapingResult renderString(UT_TextIterator & text,
+								 UT_UCSChar      * dest,
+								 UT_uint32         len,
+								 const XML_Char  * pLang,
+								 FriBidiCharType   iDirection,
+								 bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
+								 void * custom_param = NULL) const;
 	
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;
@@ -90,7 +99,6 @@ public:
 									
 
 	bool  isNotFirstInLigature(UT_UCS4Char c) const;
-	bool  isNotSecondInLigature(UT_UCS4Char c) const;
 	bool  isNotContextSensitive(UT_UCS4Char c) const;
 	bool  isNotJoiningWithNext(UT_UCS4Char c, UT_UCS4Char n, UT_UCS4Char p) const;
 	bool  isNotJoiningWithPrev(UT_UCS4Char c, UT_UCS4Char n, UT_UCS4Char p) const;
@@ -104,7 +112,6 @@ private:
 								void            * data);
 
 	void _generateNoLigatureTable();
-	void _generateNoLigature2Table();
 	void _generateNoShapingTable();
 	void _fixHebrewLigatures(bool bShape);
 	void _fixHebrewLetters(bool bShape);

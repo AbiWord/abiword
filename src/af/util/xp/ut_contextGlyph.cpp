@@ -38,6 +38,7 @@ struct LigatureSequence
 	UT_UCSChar next;
 };
 
+
 // The following table contains ligature data for two-character
 // ligatures (code_low is the first character, code_high the second).
 // 
@@ -50,7 +51,10 @@ struct LigatureSequence
 static LigatureData s_ligature[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
-
+#if 0
+#define ENABLE_LATIN_LIGATURES
+#endif
+	
 #ifdef ENABLE_LATIN_LIGATURES
 	// Latin
 	{0x0021, 0x0021, 0x203c, 0, 0, 0}, // !!
@@ -332,18 +336,11 @@ static LigatureData s_hebrewShapingLigature[] =
 	{0x05E6, 0x05BC, 0xFB46, 0xFB46, 1, 1}
 };
 
-
-// This table contains reverse ligature data for identifying the first
-// part of a ligature from the second part; it is generated
-// automatically when the class is initialised.
-static LigatureData s_lig_rev[NrElements(s_ligature)];
-
 // the following vectors contain ranges ranges of characters that are
 // never first/second part of a ligature; they are use to speedup
 // processing and their contents are generated automatically when the
 // class is initialised by the following two functions
 static UT_Vector s_noLigature;
-static UT_Vector s_noLigature2;
 
 void UT_contextGlyph::_generateNoLigatureTable()
 {
@@ -398,60 +395,6 @@ void UT_contextGlyph::_generateNoLigatureTable()
 				 pRange->low, pRange->high));
 	
 }
-
-void UT_contextGlyph::_generateNoLigature2Table()
-{
-	// handle the first entry separately ...
-	UCSRange * pRange = new UCSRange;
-	UT_return_if_fail(pRange);
-	pRange->low = 0;
-	pRange->high = s_lig_rev[0].code_high - 1;
-
-	s_noLigature2.addItem((void*)pRange);
-	xxx_UT_DEBUGMSG(("No Ligature2 table: adding {0x%04x, 0x%04x}\n",
-				 pRange->low, pRange->high));
-	
-	UT_uint32 iHigh = s_lig_rev[0].code_high;
-	if(NrElements(s_lig_rev) &&
-	   s_lig_rev[0].code_high + 1 == s_lig_rev[1].code_high)
-	{
-		iHigh++;
-	}
-	
-	for(UT_uint32 i = 1; i < NrElements(s_lig_rev) - 1; i++)
-	{
-		if(s_lig_rev[i].code_high != iHigh)
-		{
-			pRange = new UCSRange;
-			UT_return_if_fail(pRange);
-		
-			pRange->low = iHigh + 1;
-			iHigh = s_lig_rev[i].code_high;
-			pRange->high = iHigh - 1;
-			
-			s_noLigature2.addItem((void*)pRange);
-			xxx_UT_DEBUGMSG(("No Ligature2 table: adding {0x%04x, 0x%04x}\n",
-						 pRange->low, pRange->high));
-		}
-		
-		if(s_lig_rev[i].code_high + 1 == s_lig_rev[i+1].code_high)
-		{
-			iHigh++;
-		}
-	}
-
-	// now handle the last element
-	pRange = new UCSRange;
-	UT_return_if_fail(pRange);
-	pRange->low = iHigh + 1;
-	pRange->high = 0xffffffff;
-
-	s_noLigature2.addItem((void*)pRange);
-	xxx_UT_DEBUGMSG(("No Ligature2 table: adding {0x%04x, 0x%04x}\n",
-				 pRange->low, pRange->high));
-	
-}
-
 
 // The following table contains letters that have context-sensitive
 // forms
@@ -709,6 +652,9 @@ static UCSRange s_nonjoining_with_prev[] =
 // This table contains Unicode ranges of characters that should be
 // ignored (i.e., skipped over) by the shaping engine. Typically,
 // these are combining characters
+
+// for this to work, the ligature placeholder definition in ut_types.h
+// has to match the value assumed here
 static UCSRange s_ignore[] =
 {
 	// straight quotes
@@ -729,7 +675,10 @@ static UCSRange s_ignore[] =
 	{0x06EA,0x06ED},
 
 	// smart quotes
-	{0x2018,0x201F}
+	{0x2018,0x201F},
+
+	// UCS_LIGATURE_PLACEHOLDER
+	{0xf854, 0xf854}
 };
 
 // following three functions determine if shaping and ligature
@@ -779,31 +728,6 @@ bool UT_contextGlyph::isNotFirstInLigature(UT_UCS4Char c) const
 		}
 
 		if(c < static_cast<UCSRange*>(s_noLigature.getNthItem(i))->low)
-		{
-			// we have already overshot ...
-			return false;
-		}
-	}
-	return false;
-}
-
-/*!
-    returns true if character c never forms a second part of a ligature
-*/
-bool UT_contextGlyph::isNotSecondInLigature(UT_UCS4Char c) const
-{
-	// this too is worth it, since the ligature table is quite large and
-	// the s_noLigature2 table is not only very small, but most characters
-	// will exit in the first three cycles of the loop
-	for(UT_uint32 i = 0; i < s_noLigature2.getItemCount(); i++)
-	{
-		if(c >= static_cast<UCSRange*>(s_noLigature2.getNthItem(i))->low &&
-		   c <= static_cast<UCSRange*>(s_noLigature2.getNthItem(i))->high)
-		{
-			return true;
-		}
-
-		if(c < static_cast<UCSRange*>(s_noLigature2.getNthItem(i))->low)
 		{
 			// we have already overshot ...
 			return false;
@@ -879,34 +803,6 @@ static int s_comp_lig(const void *a, const void *b)
 	int ret = static_cast<int>(A->code) - static_cast<int>(B->code_low);
 	if(!ret)
 		ret = static_cast<int>(A->next) - static_cast<int>(B->code_high);
-
-	return ret;
-}
-
-// The following function is used for binary search of the reversed ligature table.
-static int s_comp_lig2(const void *a, const void *b)
-{
-	const LigatureSequence * A = static_cast<const LigatureSequence*>(a);
-	const LigatureData     * B = static_cast<const LigatureData*>(b);
-
-	int ret = static_cast<int>(A->code) - static_cast<int>(B->code_high);
-	if(!ret)
-		ret = static_cast<int>(A->next) - static_cast<int>(B->code_low);
-
-	return ret;
-}
-
-
-// The following function is used for quick sorting the reversed
-// ligature table
-static int s_comp_qlig(const void *a, const void *b)
-{
-	const LigatureData *A = static_cast<const LigatureData*>(a);
-	const LigatureData *B = static_cast<const LigatureData*>(b);
-
-	int ret = static_cast<int>(A->code_high) - static_cast<int>(B->code_high);
-	if(!ret)
-		return static_cast<int>(A->code_low) - static_cast<int>(B->code_low);
 
 	return ret;
 }
@@ -1001,6 +897,11 @@ UT_contextGlyph::UT_contextGlyph()
 {
 	if(!s_bInit)
 	{
+		// UCS_LIGATURE_PLACEHOLDER defined in ut_types.h must equal
+		// to the falue hardcode in our tables, 0xF854
+		UT_ASSERT(UCS_LIGATURE_PLACEHOLDER == 0xF854);
+		
+
 		bool bHebrewContextGlyphs = false;
 		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs,
 											 &bHebrewContextGlyphs);
@@ -1010,17 +911,11 @@ UT_contextGlyph::UT_contextGlyph()
 		_fixHebrewLetters(bHebrewContextGlyphs);
 		_fixHebrewLigatures(bHebrewContextGlyphs);
 		
-		// now copy the data from the ligature table into the reversed
-		// ligature table and sort it
-		memcpy(s_lig_rev,s_ligature, sizeof(s_ligature));
-		qsort(s_lig_rev,NrElements(s_lig_rev), sizeof(LigatureData),s_comp_qlig);
-
 		// generate the no-shaping and no-ligature tables
 		_generateNoLigatureTable();
-		_generateNoLigature2Table();
 		_generateNoShapingTable();
 
-		UT_DEBUGMSG(("UT_ContextGlyph: glyphs: %d, ligatures: %d, no-lig: %d, no-lig2: %d, "
+		xxx_UT_DEBUGMSG(("UT_ContextGlyph: glyphs: %d, ligatures: %d, no-lig: %d, no-lig2: %d, "
 					 "no-shap: %d\n",
 					 s_iGlyphTableSize/sizeof(LetterData), NrElements(s_ligature),
 					 s_noLigature.getItemCount(), s_noLigature2.getItemCount(),
@@ -1055,7 +950,6 @@ void UT_contextGlyph::static_destructor()
 	{
 		s_bInit = false;
 		UT_VECTOR_PURGEALL(UCSRange*,s_noLigature);  s_noLigature.clear();
-		UT_VECTOR_PURGEALL(UCSRange*,s_noLigature2); s_noLigature2.clear();
 		UT_VECTOR_PURGEALL(UCSRange*,s_noShaping);   s_noShaping.clear();
 	}
 }
@@ -1334,8 +1228,9 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, U
 
 /*!
     render string using glyph and ligature tables
+    returns true if ligature replacement was involved
  */
-void UT_contextGlyph::renderString(UT_TextIterator & text,
+UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 								   UT_UCSChar *dest,
 								   UT_uint32 len,
 								   const XML_Char   * pLang,
@@ -1350,39 +1245,46 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 
 	UT_uint32 pos = text.getPosition();
 
-	UT_UCS4Char next, prev, current;
+	UT_UCS4Char next, prev, current, nextL;
 	UT_UCS4Char glyph = 0;
 	UT_UCS4Char glyph2 = 2;
 
+	UT_sint32 iLigature = 0;
+	UT_sint32 iContextSensitive = 0;
+	
 	for(UT_uint32 i = 0; i < len; i++)
 	{
 		LigatureSequence     Lig;
 		const LetterData   * pLet = 0;
 		const LigatureData * pLig = 0;
-		bool                 bIsSecond = false;
 		GlyphContext         context = GC_NOT_SET;
 		
 		current = text[pos + i];
 		if(text.getStatus() != UTIter_OK)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return;
+			return SR_Error;
 		}
 		
 		//get the current context
 		next = text[pos + i + 1];
 		if(text.getStatus() != UTIter_OK)
 			next = 0;
-		
+
+		if(i < len - 1)
+			nextL = next;
+		else
+			nextL = 0;
+				
 		prev = text[pos + i - 1];
 		if(text.getStatus() != UTIter_OK)
 			prev = 0;
-		
+
 		// decide if this is a part of a ligature
 		// check for a ligature form
-		if(!isNotFirstInLigature(current))
+		if(nextL && !isNotFirstInLigature(current))
 		{
-			Lig.next = next;
+			Lig.next = nextL;
 			Lig.code = current;
 
 			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
@@ -1396,46 +1298,19 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 		{
 			// we need the context of the whole pair not just of this
 			// character
-			glyph2 = next;
+			iLigature++;
+			glyph2 = nextL;
 			next = text[pos + i + 2];
 			
 			xxx_UT_DEBUGMSG(("UT_contextGlyph::render: 0x%x, 1st of lig.\n", *code));
-		}
-		else
-		{
-			//we only check that this is not a second part of a ligature for the
-			//first character, the rest we will handle in the previous
-			//cycle of the loop
-			if(i == 0 && !isNotSecondInLigature(current))
-			{
-				Lig.next = prev;
-				Lig.code = current;
-					
-				pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
-														  static_cast<void*>(s_lig_rev),
-														  NrElements(s_lig_rev),
-														  sizeof(LigatureData),
-														  s_comp_lig2));
-					
-				if(pLig)
-				{
-					xxx_UT_DEBUGMSG(("UT_contextGlyph::render: 0x%x, 2nd of lig.\n",*code));
-					bIsSecond = true;
-				}
-			}
-		}
-			
-		// if this is a ligature, handle it
-		if(pLig)
-		{
+
 			// we use 0 in the isolate form to indicate that
 			// ligature is not context sensitive
 			if(pLig->alone)
 			{
+				iContextSensitive++;
 				text.setPosition(pos + i);
-				
-				context = bIsSecond ? _evalGlyphContext(text, -1)
-					: _evalGlyphContext(text);
+				context = _evalGlyphContext(text);
 				
 				switch (context)
 				{
@@ -1459,6 +1334,7 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 				{
 					// no special form exists in this context, process
 					// as ordinary characters
+					iLigature--;
 					goto ligature_form_missing;
 				}
 			}
@@ -1481,6 +1357,7 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 							 glyph));
 				// we need to use the original glyphs; glyph2 is
 				// already set
+				iLigature--;
 				glyph = current;
 			}
 			else
@@ -1491,7 +1368,7 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 			
 			
 			
-			if(!bIsSecond && glyph != 1) //first part of a ligature
+			if(glyph != 1) //first part of a ligature
 			{
 				// we set both this and the next char if we can
 				if(bGlyphAvailable)
@@ -1508,6 +1385,7 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 				{
 					// we have the original glyph, so we will use it
+					iLigature--;
 					*dst_ptr++ = glyph;
 				}
 				else
@@ -1515,30 +1393,10 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 					// bad luck, not even the original glyph exists
 					UT_DEBUGMSG(("UT_contextGlyph::render [1b] glyph 0x%x not present in font\n",
 								 glyph));
+					iLigature--;
 					*dst_ptr++ = s_cDefaultGlyph;
 				}
 
-				
-				continue;
-			}
-			else if(bIsSecond && glyph != 1)
-			{
-				if(bGlyphAvailable)
-				{
-					// a ligature glyph was used, map this to a
-					// placeholder
-					*dst_ptr++ = UCS_LIGATURE_PLACEHOLDER;
-				}
-				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
-				{
-					*dst_ptr++ = glyph;
-				}
-				else
-				{
-					UT_DEBUGMSG(("UT_contextGlyph::render [1c] glyph 0x%x not present in font\n",
-								 glyph));
-					*dst_ptr++ = s_cDefaultGlyph;
-				}
 				
 				continue;
 			}
@@ -1593,7 +1451,8 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 		}
 
 		// if we got this far, we are dealing with a context sensitive character
-		if(context == GC_NOT_SET || bIsSecond)
+		iContextSensitive++;
+		if(context == GC_NOT_SET)
 		{
 			text.setPosition(pos + i);
 			context = _evalGlyphContext(text);
@@ -1647,6 +1506,17 @@ void UT_contextGlyph::renderString(UT_TextIterator & text,
 			}
 		}
 	}
+
+	UT_ASSERT( iLigature >= 0 );
+	UT_ASSERT( iContextSensitive >= 0 );
+
+	if(iLigature > 0 && iContextSensitive <= 0)
+		return SR_Ligatures;
+	
+	if(iLigature <= 0 && iContextSensitive > 0)
+		return SR_ContextSensitive;
+	
+	return SR_ContextSensitiveAndLigatures;
 }
 
 /*!

@@ -889,15 +889,17 @@ void fp_TextRun::mergeWithNext(void)
 	// join the two span buffers; this will save us refreshing the draw buffer
 	// which is very expensive
 #if 0
-	// however, first make sure that the buffers are uptodate (_refreshDrawBuffer
-	// decides whether this is needed or not)
-	//
-	// Actually, we do not want to do this; we will simply join the
-	// two buffers as they are, and OR the draw buffer states
-	_refreshDrawBuffer();
-	pNext->_refreshDrawBuffer();
-#else
 	_setRefreshDrawBuffer(_getRefreshDrawBuffer() | pNext->_getRefreshDrawBuffer());
+#else
+	// because there might be a ligature across the run boundary, we
+	// have to refresh if the last char of the run is susceptible
+	// to ligating
+	UT_contextGlyph cg;
+	UT_UCS4Char c;
+	getCharacter(getLength()-1, c);
+	_setRefreshDrawBuffer(_getRefreshDrawBuffer()
+						  | pNext->_getRefreshDrawBuffer()
+						  | !cg.isNotFirstInLigature(c));
 #endif
 
 	// we need to take into consideration whether this run has been reversed
@@ -1752,12 +1754,13 @@ void fp_TextRun::_refreshDrawBuffer()
 		
 		FriBidiCharType iVisDir = getVisDirection();
 		UT_contextGlyph  cg;
+
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 		
 		cg.renderString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
 						GR_Font::s_doesGlyphExist, (void*)getFont());
-		
+
 		// if we are on a non-bidi OS, we have to reverse any RTL runs
 		// if we are on bidi OS, we have to reverse RTL runs that have direction
 		// override set to LTR, to preempty to OS reversal of such text

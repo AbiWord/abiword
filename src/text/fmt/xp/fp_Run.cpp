@@ -561,6 +561,9 @@ void fp_Run::setNextRun(fp_Run* p, bool bRefresh)
 	{
 		m_bRefreshDrawBuffer |= bRefresh;
 		m_bRecalcWidth |= bRefresh;
+#if 0
+		// we do not do ligatures across run boundaries any more,
+		// Tomas, Nov 15, 2003
 		// because we support 2-char ligatures, the change of next
 		// can also influence the run ahead of us
 		// we will just mark it
@@ -569,7 +572,7 @@ void fp_Run::setNextRun(fp_Run* p, bool bRefresh)
 			m_pPrev->markDrawBufferDirty();
 			m_pPrev->markWidthDirty();
 		}
-
+#endif
 		m_pNext = p;
 	}
 }
@@ -580,6 +583,9 @@ void fp_Run::setPrevRun(fp_Run* p, bool bRefresh)
 	{
 		m_bRefreshDrawBuffer |= bRefresh;
 		m_bRecalcWidth |= bRefresh;
+#if 0
+		// we do not do ligatures across run boundaries any more,
+		// Tomas, Nov 15, 2003
 		// because we support 2-char ligatures, the change of prev
 		// can also influence the run that follows us
 		// we will just mark it
@@ -588,7 +594,7 @@ void fp_Run::setPrevRun(fp_Run* p, bool bRefresh)
 			m_pNext->markDrawBufferDirty();
 			m_pNext->markWidthDirty();
 		}
-
+#endif
 		m_pPrev = p;
 	}
 }
@@ -683,11 +689,11 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	{
 		return;
 	}
-    m_bRecalcWidth = bRefresh;
+    m_bRecalcWidth |= bRefresh;
 	clearScreen();
 
 	m_iLen = iLen;
-	m_bRefreshDrawBuffer = bRefresh;
+	m_bRefreshDrawBuffer |= bRefresh;
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
