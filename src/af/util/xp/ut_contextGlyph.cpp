@@ -959,7 +959,7 @@ void UT_contextGlyph::_prefsListener(XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap
 	UT_return_if_fail(pApp);
 	const XML_Char *default_utf8;
 	UT_GrowBuf gb;
-	bool bNoErr = pApp->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault),
+	bool bNoErr = pApp->getPrefsValue(static_cast<const XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault),
 								 &default_utf8);
 	UT_ASSERT( bNoErr );
 		
