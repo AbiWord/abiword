@@ -1269,8 +1269,7 @@ bool XAP_UnixFrameImpl::_openHelpURL(const char * szURL)
 {
 #ifdef HAVE_GNOME
 	// TODO: make this work
-	//gnome_help_display (szURL, NULL, NULL);
-	gnome_url_show(szURL,NULL);
+	gnome_help_display (szURL, NULL, NULL);
 	return false;
 #else
 	return _openURL (szURL);
