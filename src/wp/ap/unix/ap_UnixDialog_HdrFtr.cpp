@@ -220,6 +220,7 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 {
 	GtkWidget *HdrFtrDialog;
 	GtkWidget *vbox1;
+	GtkWidget *hseparator1;
 	GtkWidget *gnomeButtons;
 	GtkWidget *buttonOK;
 	GtkWidget *buttonCancel;
@@ -234,6 +235,11 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	gtk_container_add (GTK_CONTAINER (HdrFtrDialog), vbox1);
 
     _constructWindowContents (vbox1);
+
+
+	hseparator1 = gtk_hseparator_new ();
+	gtk_widget_show (hseparator1);
+	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, FALSE, TRUE, 0);
 
 	gnomeButtons = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show (gnomeButtons);
@@ -273,7 +279,6 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	GtkWidget *restartLabel;
 	GtkObject *spinbutton1_adj;
 	GtkWidget *spinbutton1;
-	GtkWidget *hseparator1;
 
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -341,10 +346,6 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	spinbutton1 = gtk_spin_button_new (GTK_ADJUSTMENT (spinbutton1_adj), 1, 0);
 	gtk_widget_show (spinbutton1);
 	gtk_box_pack_end (GTK_BOX (hbox1), spinbutton1, FALSE, FALSE, 2);
-
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (parent), hseparator1, FALSE, TRUE, 0);
 
 	m_wHdrFtrCheck[HdrEven] = HeaderEven;
 	m_wHdrFtrCheck[HdrFirst] = HeaderFirst;

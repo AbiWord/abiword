@@ -310,7 +310,7 @@ void AP_Dialog_Columns::setMaxHeight(const char * szHeight)
 		m_bMaxHeightChanged = true;
 		m_HeightString = szHeight;
 		double dum = UT_convertToInches(getHeightString());
-		if(dum < 0.2)
+		if(dum < 0.0)
 		{
 			m_HeightString = UT_convertInchesToDimensionString(dim,0.0);
 		}
