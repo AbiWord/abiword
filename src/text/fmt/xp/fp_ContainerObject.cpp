@@ -38,6 +38,11 @@
 #include "fv_View.h"
 #include "gr_Painter.h"
 
+#ifdef _MSC_VER
+// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 /*!
   Create container
   \param iType Container type

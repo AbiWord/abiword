@@ -55,6 +55,11 @@
 #include "xap_Toolbar_Layouts.h"
 #include "ut_sleep.h"
 
+#ifdef _MSC_VER
+// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	: m_pApp(pApp),
 	  m_pDoc(0),

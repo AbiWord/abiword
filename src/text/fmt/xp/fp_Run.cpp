@@ -58,6 +58,11 @@
 
 #include "ut_sleep.h"
 
+#ifdef _MSC_VER
+// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 // TODO can we use the indexAP provided in the change records
 // TODO to remember the attr/prop for each run rather than
 // TODO looking it up each time we call lookupProperties() -- jeff 4/19/99

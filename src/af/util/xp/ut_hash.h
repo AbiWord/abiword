@@ -39,6 +39,11 @@
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
 
+#if _MSC_VER >= 1310
+// MSVC++ 7.1 warns about debug output limitations.
+#pragma warning(disable: 4292)
+#endif
+
 // fwd. decl.
 template <class T> class hash_slot;
 
