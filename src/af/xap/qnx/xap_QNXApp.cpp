@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "ut_debugmsg.h"
 
@@ -81,6 +82,11 @@ void XAP_QNXApp::reallyExit(void)
 {
 	//There must be a nicer way to drop out of the event loop
 	PtExit(0);
+}
+
+UT_sint32 XAP_QNXApp::makeDirectory(const char *path, UT_sint32 mode) const
+{
+        return mkdir ( path, mode );
 }
 
 XAP_DialogFactory * XAP_QNXApp::getDialogFactory(void)

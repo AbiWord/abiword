@@ -64,6 +64,8 @@ public:
 
 	void *					getFontManager(void);
 
+	UT_sint32 makeDirectory(const char *, int) const;
+
 #if 0
 	typedef enum
 	{
