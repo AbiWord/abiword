@@ -153,6 +153,13 @@ struct ABI_EXPORT _rtfListTable
 	UT_uint32 iWord97Level;
 };
 
+enum rtfCellBorder
+{
+	rtfCellBorderTop,
+	rtfCellBorderLeft,
+	rtfCellBorderRight,
+	rtfCellBorderBot
+};
 
 struct ABI_EXPORT RTFProps_CellProps
 {
@@ -162,6 +169,8 @@ struct ABI_EXPORT RTFProps_CellProps
 	bool      m_bVerticalMergedFirst;
 	bool      m_bHorizontalMerged;
 	bool      m_bHorizontalMergedFirst;
+	UT_String m_sCellProps;
+	rtfCellBorder  m_iCurBorder;
 	UT_sint32 m_iCellx;
 };
 
@@ -640,6 +649,9 @@ private:
 	void           HandleNote();
 	void           HandleNoteReference();
 	
+// Little convience wrapper
+	void           _setStringProperty(UT_String & sPropString, const char * szProp, const char * szVal);
+
 	// Section property handlers
 	bool ApplySectionAttributes();
 	bool ResetSectionAttributes();

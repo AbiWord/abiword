@@ -707,6 +707,15 @@ void ie_imp_cell::setProp(const UT_String & psProp, const UT_String & psVal)
 }
 
 /*!
+ * Add a list of properties to the cell definition. The definition is the
+ * standard prop:value; pair
+ */
+void ie_imp_cell::addPropString(const UT_String & sPropString)
+{
+	UT_String_addPropertyString(m_sCellProps, sPropString);
+
+}
+/*!
  * set a property of this cell.
  */
 void ie_imp_cell::setProp(const char * szProp, const char * szVal)

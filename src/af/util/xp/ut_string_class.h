@@ -151,6 +151,7 @@ ABI_EXPORT UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1
 ABI_EXPORT UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_String & sProp);
 ABI_EXPORT void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sProp);
 ABI_EXPORT void UT_String_setProperty(UT_String & sPropertyString, const UT_String &sProp, const UT_String & sVal);
+ABI_EXPORT void UT_String_addPropertyString(UT_String & sPropertyString, const UT_String & sNewProp);
 
 ////////////////////////////////////////////////////////////////////////
 //

@@ -473,6 +473,59 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 		return UT_String(sPropertyString.substr(offset,(iLen - offset)));
 	}
 }
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Add aother propety string, updating previously defined properties with
+ * values in the new string.
+ */
+void UT_String_addPropertyString(UT_String & sPropertyString, const UT_String & sNewProp)
+{
+	UT_sint32 iSize = static_cast<UT_sint32>(sNewProp.size());
+	UT_sint32 iBase  =0;
+	UT_String sProp;
+	UT_String sVal;
+	const char * szWork = NULL;
+	const char * szLoc = NULL;
+	while(iBase < iSize)
+	{
+		bool bBreakAtEnd = false;
+		szWork = sNewProp.substr(iBase, iSize-iBase).c_str();
+		szLoc = strstr(szWork,":");
+		if(szLoc)
+		{
+			sProp = sNewProp.substr(iBase,szLoc - szWork);
+		}
+		else
+		{
+			break;
+		}
+		iBase += szLoc-szWork+1;
+		szWork = sNewProp.substr(iBase, iSize-iBase).c_str();
+		szLoc = strstr(szWork,";");
+		if(szLoc)
+		{
+			sVal = sNewProp.substr(iBase,szLoc - szWork);
+			iBase += szLoc-szWork+1;
+		}
+		else
+		{
+			sVal = sNewProp.substr(iBase,iSize-iBase);
+			bBreakAtEnd = true;
+		}
+		if((sProp.size()>0) && (sVal.size() >0))
+		{
+			UT_String_setProperty(sPropertyString,sProp,sVal);
+		}
+		else
+		{
+			break;
+		}
+		if(bBreakAtEnd)
+		{
+			break;
+		}
+	}
+}
 
 /*!
  * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"

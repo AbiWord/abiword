@@ -218,7 +218,12 @@ PP_PropertyMap::TypeBackground PP_PropertyMap::background_type (const char * pro
 	if (*property == 0) return background; // erk!
 
 	unsigned char u = static_cast<unsigned char>(*property);
-	if (isdigit (static_cast<int>(u)) && (strlen(property)<3))
+
+ // colours can have digits as their first character ie "1f7399". Use string
+ // length as an additional hueristic to detect if property is a color string
+ //
+
+	if (isdigit (static_cast<int>(u)) && (strlen(property)<3)) 
 		{
 			int i = atoi (property);
 			if ((i < 0) || (i + 1 >= static_cast<int>(background_inherit)))

@@ -130,6 +130,7 @@ class ABI_EXPORT ie_imp_cell
 	ie_imp_cell *    getCellBelow(void);
 	ie_imp_cell *    getCellLeft(void);
 	ie_imp_cell *    getCellRight(void);
+	void             addPropString(const UT_String & sPropString);
 	void             setProp(const UT_String & psProp, const UT_String & psVal);
 	UT_String        getPropVal(const UT_String & psProp);
 	void             setProp(const char * szProp, const char * szVal);

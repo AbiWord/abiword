@@ -1231,6 +1231,8 @@ RTFProps_CellProps::RTFProps_CellProps()
 	m_bVerticalMergedFirst = false;
 	m_bHorizontalMerged = false;
 	m_bHorizontalMergedFirst = false;
+	m_sCellProps.clear();
+	m_iCurBorder = rtfCellBorderTop;
 	m_iCellx = 0;
 }
 
@@ -1242,6 +1244,8 @@ RTFProps_CellProps& RTFProps_CellProps::operator=(const RTFProps_CellProps& othe
 		 m_bVerticalMergedFirst = other. m_bVerticalMergedFirst;
 		 m_bHorizontalMerged = other.m_bHorizontalMerged;
 		 m_bHorizontalMergedFirst = other. m_bHorizontalMergedFirst;
+		 m_sCellProps = other.m_sCellProps;
+		 m_iCurBorder = other.m_iCurBorder;
 		 m_iCellx = other.m_iCellx;
 	}
 	return *this;
@@ -1640,7 +1644,19 @@ void IE_Imp_RTF::FlushCellProps(void)
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
 	getCell()->setFirstHorizontalMerge( m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst );
 	getCell()->setMergeLeft( m_currentRTFState.m_cellProps.m_bHorizontalMerged );
+	getCell()->addPropString( m_currentRTFState.m_cellProps.m_sCellProps );
 	
+}
+
+/*!
+ * Set a property, value pair in the supplied string. This is just a convience
+ * wrapper function to use const char * strings
+ */
+void IE_Imp_RTF::_setStringProperty(UT_String & sPropsString, const char * szProp, const char * szVal)
+{
+	UT_String sProp(szProp);
+	UT_String sVal(szVal);
+	UT_String_setProperty(sPropsString,sProp,sVal);
 }
 
 
@@ -1729,7 +1745,6 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		}
 		
 		UT_String footpid;
-		UT_uint32 pid = 0;
 		if(m_bInFootnote && !m_bFtnReferencePending)
 		{
 			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
@@ -3055,7 +3070,6 @@ bool IE_Imp_RTF::HandleField()
 {
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	bool ok = false;
 	long parameter = 0;
 	bool paramUsed = false;
 	bool bUseResult = false;  // true if field instruction can not be used
@@ -3807,6 +3821,113 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return ParseChar(UCS_BULLET);
 		}
+		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrs") == 0)
+		{
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","solid");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","solid");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","solid");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","solid");
+			}
+			return true;
+		}
+		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrdot") == 0)
+		{
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dotted");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dotted");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dotted");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dotted");
+			}
+			return true;
+		}
+		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrdash") == 0)
+		{
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dashed");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dashed");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dashed");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dashed");
+			}
+			return true;
+		}
+		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrw") == 0)
+		{
+			double dWidth = static_cast<double>(param)/1440; // convert to inches
+			UT_String sWidth;
+			UT_String_sprintf(sWidth,"%fin",dWidth);
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-thickness",sWidth.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+			   _setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-thickness",sWidth.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-thickness",sWidth.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-thickness",sWidth.c_str());
+			}
+			return true;
+		}
+		else if(strcmp(reinterpret_cast<char*>(pKeyword), "brdrcf") == 0)
+		{
+			UT_String sColor;
+			UT_sint32 iCol = static_cast<UT_sint32>(param);
+			UT_uint32 colour = GetNthTableColour(iCol);
+			UT_String_sprintf(sColor, "%06x", colour);
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-color",sColor.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+			   _setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-color",sColor.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-color",sColor.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-color",sColor.c_str());
+			}
+			return true;
+		}
 		break;
 
 	case 'c':
@@ -3899,6 +4020,34 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst = true;
 			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrt") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderTop;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrl") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderLeft;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrb") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderBot;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clbrdrr") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderRight;
+			return true;
+		}
+		else if(strcmp(reinterpret_cast<char*>(pKeyword), "clcbpat") == 0)
+		{
+			UT_String sColor;
+			UT_sint32 iCol = static_cast<UT_sint32>(param);
+			UT_uint32 colour = GetNthTableColour(iCol);
+			UT_String_sprintf(sColor, "%06x", colour);
+			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 		}
 		break;
 
