@@ -20,103 +20,53 @@
 #ifndef AP_WIN32FRAME_H
 #define AP_WIN32FRAME_H
 
-#include "xap_Win32Frame.h"
 #include "ie_types.h"
 #include "ut_assert.h"
+#include "ap_Frame.h"
+#include "ap_Win32FrameImpl.h"
+#include "xap_Win32App.h"
+#include "ap_StatusBar.h"
 
 /*****************************************************************/
 
-class AP_Win32Frame : public XAP_Win32Frame
+class ABI_EXPORT AP_Win32Frame : public AP_Frame
 {
-public:
+ public:
 	AP_Win32Frame(XAP_Win32App * app);
 	AP_Win32Frame(AP_Win32Frame * f);
 	virtual ~AP_Win32Frame(void);
 
-	virtual bool				initialize(void);
-	virtual	XAP_Frame *			cloneFrame(void);
-	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone);
-	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Error			loadDocument(const char * szFilename, int ieft, bool createNew);
-	virtual UT_Error            importDocument(const char * szFilename, int ieft, bool markClean);
-	virtual bool				initFrameData(void);
-	virtual void				killFrameData(void);
+	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
+	virtual XAP_Frame *			cloneFrame(void);
 
-	virtual void				setXScrollRange(void);
-	virtual void				setYScrollRange(void);
-	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
+	virtual void				setXScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(m_pFrameImpl)->_setXScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
+	virtual void				setYScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(m_pFrameImpl)->_setYScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
 
-	virtual void				setZoomPercentage(UT_uint32 iZoom);
-	virtual UT_uint32			getZoomPercentage(void);
-	virtual void				setStatusMessage(const char * szMsg);
+	virtual void				setStatusMessage(const char * szMsg) {  static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);  }
 
-	static bool				RegisterClass(XAP_Win32App * app);
+	static bool 				RegisterClass(XAP_Win32App * app) {  return AP_Win32FrameImpl::_RegisterClass(app); }
 
-	virtual void				toggleRuler(bool bRulerOn);
 	virtual void				toggleTopRuler(bool bRulerOn);
 	virtual void				toggleLeftRuler(bool bRulerOn);
-	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
 
-protected:
-	virtual HWND				_createDocumentWindow(HWND hwndParent,
-													  UT_uint32 iLeft, UT_uint32 iTop,
-													  UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual HWND				_createStatusBarWindow(HWND hwndParent,
-													   UT_uint32 iLeft, UT_uint32 iTop,
-													   UT_uint32 iWidth);
+	virtual HWND				getTopLevelWindow(void) const {  return static_cast<AP_Win32FrameImpl*>(m_pFrameImpl)->_getTopLevelWindow();  }
 
-	void						_createRulers(void);
-	void						_createTopRuler(void);
-	void						_createLeftRuler(void);
-	void						_getRulerSizes(int &yTopRulerHeight, int &xLeftRulerWidth);
-	void						_onSize(int nWidth, int nHeight);
+ protected:
+	// helper methods for _showDocument
+	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
+	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+				       ap_ViewListener *& pViewListener, 
+				       ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+				       AV_ListenerId &lid, 
+				       AV_ListenerId &lidScrollbarViewListener);	
+	virtual void _bindToolbars(AV_View *pView);
+	virtual void _setViewFocus(AV_View *pView);
 
-	UT_Error					_loadDocument(const char * szFilename, IEFileType ieft);
-	virtual UT_Error            _importDocument(const char * szFilename, int ieft, bool markClean);
-	UT_Error					_showDocument(UT_uint32 iZoom=100);
-	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
-	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+	// helper methods for helper methods for _showDocument (meta-helper-methods?) :-)
+	virtual UT_sint32 _getDocumentAreaWidth();
+	virtual UT_sint32 _getDocumentAreaHeight();
 
-	static LRESULT CALLBACK		_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-
-	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
-	void						_getVerticalScrollInfo(SCROLLINFO * psi);
-
-	UT_Error					_replaceDocument(AD_Document * pDoc);
-
-	HWND						m_hwndContainer;
-	HWND						m_hwndTopRuler;
-	HWND						m_hwndLeftRuler;
-	HWND						m_hwndDocument;	/* the actual document window */
-
-	UT_uint32					m_vScale; /* vertical scroll scaling to get around 16-bit scrollbar problems */
-
-private:
-	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn );
-	virtual void				toggleStatusBar(bool bStatusBarOn);
-	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
-
-	void						_startTracking(UT_sint32 x, UT_sint32 y);
-	void						_endTracking(UT_sint32 x, UT_sint32 y);
-	void						_track(UT_sint32 x, UT_sint32 y);
-	bool						_isTracking() const
-								{
-									return m_bMouseWheelTrack;
-								}
-
-	void						_showOrHideToolbars(void);
-	void						_showOrHideStatusbar(void);
-
-	bool						m_bMouseWheelTrack;
-	bool						m_bMouseActivateReceived;
-	HWND						m_hWndHScroll;
-	HWND						m_hWndVScroll;
-	HWND						m_hWndGripperHack;
-	UT_sint32					m_startMouseWheelY;
-	UT_sint32					m_startScrollPosition;
-	bool 						m_bFirstAfterFocus;
+ private:
 };
 
 #endif /* AP_WIN32FRAME_H */

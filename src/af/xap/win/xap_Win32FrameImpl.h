@@ -82,13 +82,16 @@ protected:
 	virtual void _nullUpdate () const;
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 
+	static bool _RegisterClass(XAP_Win32App * app);
 
 /*** Win32 help functions ***/
 	virtual void				_translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
+	virtual HWND				_getTopLevelWindow(void) const {  return m_hwndFrame;  }
 
+
+	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
 
 private:
-	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
 	AP_Win32DialogFactory			m_dialogFactory;	/* class defined[.h] in XAP, implemented[.cpp] in AP */
 
 	EV_Win32MenuBar *				m_pWin32Menu;
