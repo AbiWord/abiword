@@ -464,6 +464,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/tools/pfa2afm/unix/GNUmakefile
  src/tools/ttftool/GNUmakefile
  src/tools/ttftool/unix/GNUmakefile
+ src/tools/scripts/GNUmakefile
+ src/tools/scripts/unix/GNUmakefile
  src/bindings/GNUmakefile
  src/bindings/perl/GNUmakefile
 ])
