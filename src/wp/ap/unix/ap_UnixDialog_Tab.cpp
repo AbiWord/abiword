@@ -428,8 +428,9 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop, TRUE, TRUE, 0);
 	gtk_editable_set_editable(GTK_EDITABLE( spinbuttonTabstop),FALSE);
 	GtkWidget * spinbuttonTabstop_dum = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonTabstop_adj), 1, 0);
+	gtk_entry_set_visibility(GTK_ENTRY(spinbuttonTabstop_dum), false);
 	gtk_widget_show (spinbuttonTabstop_dum);
-	gtk_widget_set_size_request(spinbuttonTabstop_dum,10,-2);
+	gtk_widget_set_size_request(spinbuttonTabstop_dum,0,0);
 	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop_dum, FALSE,FALSE, 0);
 
 

@@ -215,7 +215,8 @@ void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)
 {
   // build the dialog
   GtkWidget * cf = _constructWindow();
-
+  UT_return_if_fail(cf);	
+	
   setHeightEntry();
   setWidthEntry();
   double height = UT_convertToInches(getHeightString());
@@ -379,8 +380,3 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
   return dialog1;
 }
-
-
-
-
-

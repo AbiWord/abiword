@@ -106,6 +106,8 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

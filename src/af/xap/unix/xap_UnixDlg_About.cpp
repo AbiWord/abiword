@@ -89,8 +89,9 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	m_pFrame = pFrame;
   
 	// Build the window's widgets and arrange them
-	GtkDialog * mainWindow = GTK_DIALOG ( _constructWindow() );
-
+	GtkWidget * mainWindow = _constructWindow();
+	UT_return_if_fail(mainWindow);
+	
 	// assemble an image
 	_preparePicture();
   
@@ -103,7 +104,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, pApp);
 #endif
 	
-	switch ( abiRunModalDialog ( mainWindow, pFrame, this, BUTTON_CLOSE, true ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CLOSE, true ) )
 	{
 		case BUTTON_URL:
 			event_URL();
@@ -137,6 +138,8 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

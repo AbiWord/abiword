@@ -320,6 +320,8 @@ void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
 	
 	// build the dialog
 	GtkWidget * cf = _constructWindow();
+	UT_return_if_fail(cf);
+	
 	gtk_window_set_default_size(GTK_WINDOW(cf), 500, 300);
 	
 	// load the data
@@ -340,7 +342,9 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-
+	if (!xml)
+		return NULL;
+	
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_PluginManager");
 	m_list = glade_xml_get_widget(xml, "tvPlugins");
 	m_name = glade_xml_get_widget(xml, "enName");

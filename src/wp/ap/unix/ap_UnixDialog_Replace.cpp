@@ -281,7 +281,9 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML(glade_path.c_str());
-
+	if (!xml)
+		return NULL;
+	
 	m_windowMain = glade_xml_get_widget(xml,"ap_UnixDialog_Replace");
 	m_buttonFind = glade_xml_get_widget(xml,"btnFind");
 	m_buttonFindReplace = glade_xml_get_widget(xml,"btnFindReplace");

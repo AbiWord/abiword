@@ -91,7 +91,7 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 	
 	// Build the window's widgets and arrange them
 	m_windowMain = _constructWindow();
-	UT_ASSERT(m_windowMain);
+	UT_return_if_fail(m_windowMain);
 
 	// Populate the window's data items
 	_populateCatogries();
@@ -274,7 +274,9 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-
+	if (!xml)
+		return NULL;
+	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_Field");

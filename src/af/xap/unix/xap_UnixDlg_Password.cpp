@@ -74,9 +74,7 @@ XAP_UnixDialog_Password::~XAP_UnixDialog_Password(void)
 void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 {
 	GtkWidget * cf = _constructWindow();
-	
-	gtk_widget_show (cf);
-	gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
+	UT_return_if_fail(cf);	
 	
 	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_OK, false ) )
     {
@@ -102,7 +100,9 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-
+	if (!xml)
+		return NULL;
+	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Password");

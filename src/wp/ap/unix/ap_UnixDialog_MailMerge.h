@@ -49,7 +49,7 @@ protected:
 private:
 
 	// private construction functions
-	void _constructWindow(void);
+	GtkWidget *  _constructWindow(void);
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_entry;

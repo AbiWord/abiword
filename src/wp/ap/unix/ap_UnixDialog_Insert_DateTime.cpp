@@ -140,7 +140,9 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-
+	if (!xml)
+		return NULL;
+	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_Insert_DateTime");
@@ -220,4 +222,3 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 	// now select first item in box
  	gtk_widget_grab_focus (m_tvFormats);
 }
-

@@ -107,13 +107,12 @@ void AP_UnixDialog_MailMerge::runModeless(XAP_Frame * pFrame)
 	m_pFrame = pFrame;
 
     // Build the dialog's window
-	_constructWindow();
+	m_windowMain = _constructWindow();
 	UT_return_if_fail(m_windowMain);
 
 	abiSetupModelessDialog(GTK_DIALOG(m_windowMain),
 						   pFrame, this, GTK_RESPONSE_CANCEL);
 	init ();
-	gtk_widget_show_all(m_windowMain);
 }
 
 /*****************************************************************/
@@ -154,8 +153,9 @@ void AP_UnixDialog_MailMerge::event_AddClicked ()
 	addClicked();
 }
 
-void AP_UnixDialog_MailMerge::_constructWindow(void)
+GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 {
+	GtkWidget * window;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our glade file is located
@@ -165,10 +165,12 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "ap_UnixDialog_MailMerge");
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_MailMerge");
 	m_entry = glade_xml_get_widget(xml, "edFieldName");
 	m_treeview = glade_xml_get_widget(xml, "tvAvailableFields");
 
@@ -209,6 +211,8 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 			   "delete_event",
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
+			   
+	return window;			   
 }
 
 void AP_UnixDialog_MailMerge::setFieldList()

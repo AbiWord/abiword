@@ -115,6 +115,8 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
@@ -200,6 +202,8 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 {
   // build the dialog
   GtkWidget * cf = constructWindow();    
+  UT_return_if_fail(cf);	
+	
   _populateWindowData();  
 
   switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, CUSTOM_RESPONSE_SET_LANG, false ) )

@@ -80,7 +80,7 @@ void AP_UnixDialog_WordCount::s_response(GtkWidget * wid, gint id,
 void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
 {
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	UT_return_if_fail(mainWindow);
 
 	_updateWindowData ();
 
@@ -156,7 +156,9 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-
+	if (!xml)
+		return NULL;
+	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
 	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_WordCount");

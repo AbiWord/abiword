@@ -62,7 +62,8 @@ void XAP_UnixDialog_Encoding::runModal(XAP_Frame * pFrame)
 {
   // Build the window's widgets and arrange them
   GtkWidget * mainWindow = _constructWindow();
-
+  UT_return_if_fail(mainWindow);	
+	
   // Populate the window's data items
   _populateWindowData();
   
@@ -129,7 +130,9 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-
+	if (!xml)
+		return NULL;
+	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Encoding");
