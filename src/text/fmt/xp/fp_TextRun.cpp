@@ -571,7 +571,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	    x2 = x;
 	    y2 = yoff;
 	}
-	bDirection = iDirection;
+	bDirection = (iDirection != 0);
 #else	    // ! BIDI_ENABLED
 	x = xoff;
 #endif
@@ -2031,7 +2031,6 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
-			UT_sint32 iDirection;
 			switch (isUCharRTL(firstChar))
 			{
 	    		case 1:

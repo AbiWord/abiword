@@ -532,7 +532,7 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	    x2 = x;
 	    y2 = yoff;
 	}
-	bDirection = iDirection;
+	bDirection = (iDirection != 0);
 #else
 	if (iOffset == m_iOffsetFirst)
 	{
@@ -1134,7 +1134,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	height = m_iHeight;
 #ifdef BIDI_ENABLED
 	y2 = y;
-	bDirection = getVisDirection();
+	bDirection = (getVisDirection() != 0);
 #endif
 }
 
@@ -1478,7 +1478,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 #ifdef BIDI_ENABLED
 	x2 = x;
 	y2 = y;
-	bDirection = getVisDirection();
+	bDirection = (getVisDirection() != 0);
 #endif
 }
 

@@ -1062,7 +1062,9 @@ UT_UCSChar * UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32
 UT_UCSChar * UT_UCS_strnrev(UT_UCSChar * src, UT_uint32 n)
 {
     UT_UCSChar t;
-    for(int i = 0; i < n/2; i++)
+    UT_uint32 i;
+
+    for(i = 0; i < n/2; i++)
     {
         t = *(src + i);
         *(src + i) = *(src + n - i - 1); //-1 so that we do not move the 00

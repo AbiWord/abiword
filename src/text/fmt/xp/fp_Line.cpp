@@ -1727,7 +1727,7 @@ UT_uint32 fp_Line::_getRunVisIndx(UT_uint32 indx)
     for(;;)
     {
         UT_ASSERT(m_vecRuns.getItemCount() > i);
-        if(s_pMapOfRuns[i] == indx)
+        if(s_pMapOfRuns[i] == (UT_sint32)indx)
 			return(i);
         ++i;
     }

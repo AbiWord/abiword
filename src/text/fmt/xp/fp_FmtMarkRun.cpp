@@ -145,7 +145,7 @@ void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint
 #ifdef BIDI_ENABLED
 	x2 = x;
 	y2 = y;
-	bDirection = getVisDirection();
+	bDirection = (getVisDirection() != 0);
 #endif
 }
 
