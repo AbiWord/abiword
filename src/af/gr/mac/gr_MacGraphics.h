@@ -23,9 +23,7 @@
 #ifndef GR_MACGRAPHICS_h
 #define GR_MACGRAPHICS_h
 
-#if 0
 #include <QuickDraw.h>
-#endif
 
 #include <CoreGraphics/CoreGraphics.h>
 
@@ -42,11 +40,11 @@ private:
 	int m_pointSize;
 };
 
-class MacGraphics : public GR_Graphics
+class GR_MacGraphics : public GR_Graphics
 {
 public:
-	MacGraphics(CGContextRef context, XAP_App * app);	/* for screen */
-	virtual ~MacGraphics();
+	GR_MacGraphics(CGrafPtr port, XAP_App * app);	/* for screen */
+	virtual ~GR_MacGraphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff);
@@ -75,7 +73,7 @@ public:
 	*/
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-
+	virtual void setLineWidth(UT_sint32);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
 
 	/* For fillRect() and ??:
@@ -83,6 +81,7 @@ public:
 	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??
 	*/
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+       	virtual void fillRect(UT_RGBColor& c, UT_Rect &r);
 	virtual void invertRect(const UT_Rect* pRect);
 	virtual void setClipRect(const UT_Rect* pRect);
 	virtual void scroll(UT_sint32, UT_sint32);
@@ -99,11 +98,23 @@ public:
 	virtual bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual bool endPrint(void);
-	
+
+	virtual void setColorSpace(GR_Graphics::ColorSpace c);
+	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
+
+	virtual void setCursor(GR_Graphics::Cursor c);
+	virtual GR_Graphics::Cursor getCursor(void) const;
+
+	virtual void		setColor3D(GR_Color3D c);
+	virtual void		fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
+
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
         CGContextRef m_CGContext;
+        
+        UT_RGBColor m_3Dcolors[COUNT_3D_COLORS];
 	
 };
 

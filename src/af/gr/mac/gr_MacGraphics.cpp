@@ -24,75 +24,97 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
+/* UNDOCUMENTED feature for public beta. */
+#ifndef CreateCGContextForPort
+extern "C" {
+OSStatus CreateCGContextForPort( CGrafPtr port, CGContextRef* outContext );	// in build 4I10.
+OSStatus BeginCGSContextForPort(CGrafPtr thePort, CGContextRef *outContext);	// in prior build eg PB.
+};
+#endif
 
 
-MacGraphics::MacGraphics(CGContextRef context, XAP_App * app)
+GR_MacGraphics::GR_MacGraphics(CGrafPtr port, XAP_App * app)
       : GR_Graphics ()
 {
-      UT_ASSERT (context != NULL);
+    OSStatus err;
+    UT_ASSERT (port != NULL);
 
-      m_CGContext = context;
+    err = BeginCGSContextForPort (port, &m_CGContext );
+    UT_ASSERT (err == noErr);
+
+    UT_RGBColor c;
+    c.m_red = c.m_grn = c.m_blu = 0;		//Black
+    m_3Dcolors[CLR3D_Foreground] = c;
+    c.m_red = c.m_grn = c.m_blu = 219;		//Light Grey
+    m_3Dcolors[CLR3D_Background] = c;
+    c.m_red = c.m_grn = c.m_blu = 150;		//Dark Grey
+    m_3Dcolors[CLR3D_BevelDown] = c;
+    c.m_red = c.m_grn = c.m_blu = 255;		//White
+    m_3Dcolors[CLR3D_Highlight] = c;
+    c.m_red = c.m_grn = c.m_blu = 255;		//White
+    m_3Dcolors[CLR3D_BevelUp] = c;
 }
 
-MacGraphics::~MacGraphics ()
+GR_MacGraphics::~GR_MacGraphics ()
 {
-
+    CGContextRelease (m_CGContext);
+    m_CGContext = NULL; 
 }
 
 
-void MacGraphics::drawChars(const UT_UCSChar* pChars, 
+void GR_MacGraphics::drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
-void MacGraphics::setFont(GR_Font* pFont)
+void GR_MacGraphics::setFont(GR_Font* pFont)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
 
-UT_uint32 MacGraphics::getFontAscent()
-{
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return 0;
-}
-
-
-UT_uint32 MacGraphics::getFontDescent()
+UT_uint32 GR_MacGraphics::getFontAscent()
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return 0;
 }
 
 
-UT_uint32 MacGraphics::getFontHeight()
+UT_uint32 GR_MacGraphics::getFontDescent()
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return 0;
 }
 
 
-UT_uint32 MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_uint32 GR_MacGraphics::getFontHeight()
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return 0;
 }
 
 
-void MacGraphics::setColor(UT_RGBColor& clr)
+UT_uint32 GR_MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    return 0;
+}
+
+
+void GR_MacGraphics::setColor(UT_RGBColor& clr)
 {
     CGContextSetRGBStrokeColor (m_CGContext, clr.m_red, clr.m_grn, clr.m_blu, 1.0f);
 }
 
 
-GR_Font* MacGraphics::getGUIFont()
+GR_Font* GR_MacGraphics::getGUIFont()
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return NULL;
 }
 
-GR_Font* MacGraphics::findFont(
+GR_Font* GR_MacGraphics::findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
 		const char* pszFontVariant, 
@@ -104,7 +126,7 @@ GR_Font* MacGraphics::findFont(
     return NULL;
 }
 
-void MacGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void GR_MacGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
     CGContextBeginPath (m_CGContext);
     CGContextMoveToPoint (m_CGContext, x1, y1);
@@ -114,13 +136,18 @@ void MacGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 }
 
 
-void MacGraphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
+void GR_MacGraphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
+void GR_MacGraphics::setLineWidth(UT_sint32 w)
+{
+    CGContextSetLineWidth (m_CGContext, w);
+}
 
-void MacGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+
+void GR_MacGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
     UT_uint32 i;
     CGContextBeginPath (m_CGContext);
@@ -137,7 +164,7 @@ void MacGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	**   begin fill at x0,y0,
 	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??
 	*/
-void MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
     CGRect myRect;
 
@@ -148,8 +175,14 @@ void MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w
     CGContextSetRGBFillColor (m_CGContext, c.m_red, c.m_grn, c.m_blu, 1.0f);
     CGContextFillRect (m_CGContext, myRect);
 }
+
+void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+{
+    fillRect (c, r.left, r.top, r.width, r.height);
+}
+
         
-void MacGraphics::invertRect(const UT_Rect* pRect)
+void GR_MacGraphics::invertRect(const UT_Rect* pRect)
 {
     CGContextSaveGState (m_CGContext);
     /* do the rect inversion */
@@ -158,7 +191,7 @@ void MacGraphics::invertRect(const UT_Rect* pRect)
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
         
-void MacGraphics::setClipRect(const UT_Rect* pRect)
+void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 {
     CGRect myRect;
     
@@ -173,13 +206,13 @@ void MacGraphics::setClipRect(const UT_Rect* pRect)
     CGContextClip (m_CGContext);
 }
 
-void MacGraphics::scroll(UT_sint32, UT_sint32)
+void GR_MacGraphics::scroll(UT_sint32, UT_sint32)
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
 
-void MacGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+void GR_MacGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						UT_sint32 x_src, UT_sint32 y_src,
 						UT_sint32 width, UT_sint32 height)
 {
@@ -187,7 +220,7 @@ void MacGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 }
 
 
-void MacGraphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_MacGraphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
     CGRect myRect;
 
@@ -199,7 +232,7 @@ void MacGraphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
     CGContextFillRect (m_CGContext, myRect);
 }
 
-bool MacGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool GR_MacGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -215,14 +248,14 @@ bool MacGraphics::queryProperties(GR_Graphics::Properties gp) const
 
 	/* the following are only used for printing */
 
-bool MacGraphics::startPrint(void)
+bool GR_MacGraphics::startPrint(void)
 {
     // FIXIT
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return false;
 }
 
-bool MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+bool GR_MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
     // FIXIT
@@ -231,14 +264,57 @@ bool MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 }
 
 
-bool MacGraphics::endPrint(void)
+bool GR_MacGraphics::endPrint(void)
 {
     // FIXIT
     UT_ASSERT (UT_NOT_IMPLEMENTED);
     return false;
 }
 
+void GR_MacGraphics::setColorSpace(GR_Graphics::ColorSpace c)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+}
 
+
+GR_Graphics::ColorSpace GR_MacGraphics::getColorSpace(void) const
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    return GR_COLORSPACE_COLOR;
+}
+
+void GR_MacGraphics::setCursor(GR_Graphics::Cursor c)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+}
+
+GR_Graphics::Cursor GR_MacGraphics::getCursor(void) const
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    return GR_CURSOR_DEFAULT;
+}
+
+void GR_MacGraphics::setColor3D(GR_Color3D c)
+{
+    UT_RGBColor myC = m_3Dcolors [c];
+    setColor (myC);
+}
+
+
+void GR_MacGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+    UT_RGBColor myC = m_3Dcolors [c];
+    
+    fillRect (myC, x, y, w, h);
+}
+
+
+void GR_MacGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+    UT_RGBColor myC = m_3Dcolors [c];
+    
+    fillRect (myC, r);    
+}
 
 
 // Code below borrowed to gr_BeOSGraphics.cpp... FIXIT
