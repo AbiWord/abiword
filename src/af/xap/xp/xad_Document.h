@@ -55,7 +55,7 @@ public:
    	// "ignore all" list for spell check
    	UT_Bool				appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
    	UT_Bool				isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const;
-   	UT_Bool				enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const;
+   	UT_Bool				enumIgnores(UT_uint32 k, const UT_UCSChar ** pszWord) const;
    	UT_Bool				clearIgnores(void);
    
 protected:
