@@ -76,9 +76,14 @@ UT_Bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length)
 {
 	// insert the given buffer into the growbuf
+
+	if (!length)
+	{
+		UT_ASSERT(!pValue);
+		return UT_TRUE;
+	}
 	
 	UT_ASSERT(pValue);
-	UT_ASSERT(length);
 	
 	if (m_iSpace-m_iSize < length)
 		if (!_growBuf(length))
@@ -95,8 +100,9 @@ UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length
 UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint32 length)
 {
 	// insert zeroed space into the growbuf
-	
-	UT_ASSERT(length);
+
+	if (!length)
+		return UT_TRUE;
 	
 	if (m_iSpace-m_iSize < length)
 		if (!_growBuf(length))
@@ -112,6 +118,9 @@ UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint32 length)
 
 UT_Bool UT_GrowBuf::del(UT_uint32 position, UT_uint32 amount)
 {
+	if (!amount)
+		return UT_TRUE;
+
 	if (!m_pBuf)
 		return UT_FALSE;
 	UT_ASSERT(position < m_iSize);
@@ -136,7 +145,7 @@ UT_uint16 * UT_GrowBuf::getPointer(UT_uint32 position) const
 {
 	// return a read-only pointer to the buffer
 	
-	if (!m_pBuf)
+	if (!m_pBuf || !m_iSize)
 		return 0;
 	UT_ASSERT(position < m_iSize);
 	return m_pBuf+position;
@@ -146,8 +155,13 @@ UT_Bool UT_GrowBuf::overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 
 {
 	// overwrite the current cells at the given position for the given length.
 
+	if (!length)
+	{
+		UT_ASSERT(!pValue);
+		return UT_TRUE;
+	}
+	
 	UT_ASSERT(pValue);
-	UT_ASSERT(length);
 
 	if (m_iSpace < position+length)
 		if (!_growBuf(position+length-m_iSpace))
