@@ -567,7 +567,8 @@ private:
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
 	bool StuffCurrentGroup(UT_ByteBuf & buf);
 	bool LoadPictData(PictFormat format, const char * image_name,
-					  struct RTFProps_ImageProps & imgProps);
+					  struct RTFProps_ImageProps & imgProps,
+					  bool isBinary = false, long binaryLen = 0);
 	bool InsertImage (const UT_ByteBuf * buf, const char * image_name,
 					  const struct RTFProps_ImageProps & imgProps);
 

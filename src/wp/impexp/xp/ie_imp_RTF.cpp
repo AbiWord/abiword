@@ -2632,7 +2632,8 @@ iegftForRTF(IE_Imp_RTF::PictFormat format)
   \see IE_Imp_RTF::HandlePicture
 */
 bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
-							  struct RTFProps_ImageProps & imgProps)
+							  struct RTFProps_ImageProps & imgProps, 
+							  bool isBinary, long binaryLen)
 {
 	// first, we load the actual data into a buffer
 	bool ok;
@@ -2650,25 +2651,39 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	if (!ReadCharFromFile(&ch))
 		return false;
 
-	while (ch != '}')
-	{
-		int digit;
-
-		if (!hexVal(ch, digit))
-			return false;
-
-		pic_byte = (pic_byte << bits_per_char) + digit;
-
-		// if we have a complete byte, we put it in the buffer
-		if (--chLeft == 0)
+	if (!isBinary) {
+		while (ch != '}')
 		{
-			pictData->append(&pic_byte, 1);
-			chLeft = chars_per_byte;
-			pic_byte = 0;
+			int digit;
+			
+			if (!hexVal(ch, digit))
+				return false;
+			
+			pic_byte = (pic_byte << bits_per_char) + digit;
+			
+			// if we have a complete byte, we put it in the buffer
+			if (--chLeft == 0)
+			{
+				pictData->append(&pic_byte, 1);
+				chLeft = chars_per_byte;
+				pic_byte = 0;
+			}
+			
+			if (!ReadCharFromFile(&ch))
+				return false;
 		}
-
-		if (!ReadCharFromFile(&ch))
-			return false;
+	} else {
+#if 1
+		UT_ASSERT(UT_TODO);
+		UT_DEBUGMSG(("BIN SHPPICT control not currently handled correctly\n"));
+#else
+		UT_ASSERT(binaryLen);
+		for (long i = 0; i < binaryLen; i++) {
+			pictData->append(&ch, 1);
+			if (!ReadCharFromFile(&ch))
+				return false;
+#endif
+		}
 	}
 
 	// We let the caller handle this
@@ -2931,6 +2946,9 @@ bool IE_Imp_RTF::HandlePicture()
 	bool parameterUsed = false;
 	RTFProps_ImageProps imageProps;
 
+	bool isBinary = false;
+	long binaryLen = 0;
+
 	do {
 		if (!ReadCharFromFile(&ch))
 			return false;
@@ -2996,6 +3014,14 @@ bool IE_Imp_RTF::HandlePicture()
 					}
 				}
 			}
+			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "bin") == 0)
+			{
+				UT_ASSERT(parameterUsed);
+				if (parameterUsed) {
+					isBinary = true;
+					binaryLen = parameter;
+				}
+			}
 			break;
 		case '{':
 			UT_return_val_if_fail(!bPictProcessed, false);
@@ -3024,7 +3050,7 @@ bool IE_Imp_RTF::HandlePicture()
 			// the first char belongs to the picture too
 			SkipBackChar(ch);
 
-			if (!LoadPictData(format, image_name.c_str(), imageProps))
+			if (!LoadPictData(format, image_name.c_str(), imageProps, isBinary, binaryLen))
 				if (!SkipCurrentGroup())
 					return false;
 
