@@ -8966,7 +8966,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
 
-		pInfo->m_pfnEnumTabStops = pBlock->s_EnumTabStops;
+		pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;
 		pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
 		pInfo->m_iTabStops = (UT_sint32) pBlock->getTabsCount();
 		pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
