@@ -353,65 +353,34 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 
 	UT_ASSERT(count > 0);
 	
-	for (int i = 0; i<count; i++)
+	fp_Line* pLine = NULL;
+	int i = 0;
+	// Find first line that has its lower level below the desired Y
+	// position. Note that X-positions are completely ignored here.
+	do {
+		pLine = (fp_Line*) m_vecLines.getNthItem(i++);
+	} while ((i < count) 
+			 && (y > (pLine->getY() + pLine->getHeight())));
+	// Undo the postincrement.
+	i--;
+	// Now check if the position is actually between the found line
+	// and the line before it (ignore check on the top-most line).
+	if (i > 0 && y < pLine->getY())
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		fp_Line* pLineUpper = (fp_Line*) m_vecLines.getNthItem(i-1);
 
-		// when hit testing lines within a column, we ignore the X coord.
-//		if (((x - pLine->getX()) >= 0) && ((x - pLine->getX()) < (pLine->getWidth())))
-		{
-			if (((y - pLine->getY()) >= 0) && ((y - pLine->getY()) < (UT_sint32)(pLine->getHeight())))
-			{
-				pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-				return;
-			}
-		}
-
-	    /*
-		  Be careful with the comparisons of signed vs. unsigned
-		  below.  (bug 172 resulted from that kind of problem.)
-		*/
+		// Be careful with the signedness here - bug 172 leared us a
+		// lesson!
 		
-		if ((i + 1) < count)
+		// Now pick the line that is closest to the point - or the
+		// upper if it's a stalemate.
+		if ((pLine->getY() - y) >= (y - (pLineUpper->getY() + (UT_sint32) pLineUpper->getHeight())))
 		{
-			if (y >= (pLine->getY() + (UT_sint32) pLine->getHeight()))
-			{
-				fp_Line* pLine2 = (fp_Line*) m_vecLines.getNthItem(i+1);
-				if (y < (pLine2->getY()))
-				{
-					/*
-					  The point is between these two lines.  Pick one.
-					*/
-
-					if ((pLine2->getY() - y) < (y - (pLine->getY() + (UT_sint32) pLine->getHeight())))
-					{
-						pLine2->mapXYToPosition(x - pLine2->getX(), y - pLine2->getY(), pos, bBOL, bEOL);
-					}
-					else
-					{
-						pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-					}
-					return;
-				}
-			}
-		}
-
-		// TODO it might be better to move these special cases outside the loop
-		if ((i == 0) && (y < pLine->getY()))
-		{
-			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-			return;
-		}
-		
-		if ((i == (count-1)) && (y >= (pLine->getY() + (UT_sint32)pLine->getHeight())))
-		{
-			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-			return;
+			pLine = pLineUpper;
 		}
 	}
 
-	// TODO pick the closest line
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY() - pLine->getHeight(), pos, bBOL, bEOL);
 }
 
 /*!
