@@ -22,51 +22,19 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-COMM_EXPORT_HEADERS=		ut_assert.h		\
-			ut_debugmsg.h		\
-			ut_growbuf.h		\
-			ut_hash.h		\
-			ut_math.h		\
-			ut_misc.h		\
-			ut_pool.h		\
-			ut_stack.h		\
-			ut_string.h		\
-			ut_test.h		\
-			ut_timer.h		\
-			ut_types.h		\
-			ut_units.h		\
-			ut_vector.h
+CPPSRCS=	ut_growbuf.cpp		\
+		ut_hash.cpp		\
+		ut_math.cpp		\
+		ut_misc.cpp		\
+		ut_pool.cpp		\
+		ut_stack.cpp		\
+		ut_string.cpp		\
+		ut_test.cpp		\
+		ut_timer.cpp		\
+		ut_units.cpp		\
+		ut_vector.cpp
 
-ifeq ($(OS_NAME),WIN32)
-EXPORT_HEADERS=	$(COMM_EXPORT_HEADERS) \
-			ut_regex.h
-endif
-
-
-
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
-COMMONSRCS=		ut_growbuf.cpp		\
-			ut_hash.cpp		\
-			ut_math.cpp		\
-			ut_misc.cpp		\
-			ut_pool.cpp		\
-			ut_stack.cpp		\
-			ut_string.cpp		\
-			ut_test.cpp		\
-			ut_timer.cpp		\
-			ut_units.cpp		\
-			ut_vector.cpp
-
-ifeq ($(OS_NAME),WIN32)
-CPPSRCS=	$(COMMONSRCS) \
-			ut_regex.cpp
-endif
-
-
+CSRCS=		ut_regex.c
 
 TARGETS=		$(OBJS)
 
