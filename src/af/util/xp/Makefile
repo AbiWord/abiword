@@ -62,7 +62,6 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_OverstrikingChars.cpp \
 		ut_Language.cpp		\
 		ut_Encoding.cpp     \
-		ut_contextGlyph.cpp	\
 		ut_thread.cpp		\
 		ut_decompress.cpp	\
 		ut_IntStrMap.cpp       \
