@@ -38,7 +38,9 @@
  * work for us anyway
  */
 #ifdef WIN32
-#include <windows.h>	// need it to include lstrcmpA
+// this completely screws everything up for me; we do not want windows.h
+//included in anything but platform code. Tomas, Nov 29, 2003
+//#include <windows.h>	// need it to include lstrcmpA
 #define UT_strcoll(a, b) lstrcmpA((a), (b))
 #else
 #define UT_strcoll(a, b) strcoll((a), (b))
