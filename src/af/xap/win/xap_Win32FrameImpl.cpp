@@ -383,7 +383,9 @@ EV_Toolbar * XAP_Win32FrameImpl::_newToolbar(XAP_App *app, XAP_Frame *frame, con
 	// for now, position each one manually
 	// TODO: put 'em all in a rebar instead
 	HWND hwndBar = result->getWindow();
-	
+	if (!hwndBar) 
+		return result;
+
 	RECT rcClient;
 	GetClientRect(hwndBar, &rcClient);
 	const UT_uint32 iHeight = rcClient.bottom - rcClient.top;
