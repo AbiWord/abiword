@@ -85,7 +85,7 @@ static const char * aszFormatsAccepted[] = {
 AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
 	: XAP_UnixClipboard((XAP_UnixApp *)(pApp))
 {
-#define AddFmt(szFormat)															\
+#define AddFmt(szFormat) \
 	do {	m_vecFormat_AP_Name.addItem((void *) szFormat);							\
 			m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));	\
 	} while (0)
@@ -100,6 +100,10 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
 	AddFmt(AP_CLIPBOARD_TEXT_PLAIN);
 	AddFmt(AP_CLIPBOARD_COMPOUND_TEXT);
 
+	// hypertext types
+	AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
+	AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
+
 	// image types
 	AddFmt ( AP_CLIPBOARD_IMAGE_PNG ) ;
 	AddFmt ( AP_CLIPBOARD_IMAGE_JPEG ) ;
@@ -107,13 +111,9 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
 	AddFmt ( AP_CLIPBOARD_IMAGE_BMP ) ;
 	AddFmt ( AP_CLIPBOARD_IMAGE_TIFF ) ;
 
-	// TODO: deal with html
-
 	// TODO deal with multi-byte text (either unicode or utf8 or whatever)
 	// TODO add something like the following.  you should be able to test
 	// TODO against xemacs.
-	// TODO
-	// TODO AddFmt(AP_CLIPBOARD_COMPOUND_TEXT);
 
 #undef AddFmt
 }
@@ -194,7 +194,8 @@ bool AP_UnixClipboard::isRichTextTag ( const char * tag )
 
 bool AP_UnixClipboard::isHTMLTag ( const char * tag )
 {
-  if ( !strcmp ( tag, AP_CLIPBOARD_TXT_HTML ) )
+  if ( !strcmp ( tag, AP_CLIPBOARD_TXT_HTML ) ||
+       !strcmp ( tag, AP_CLIPBOARD_APPLICATION_XHTML ) )
     return true ;
   return false ;
 }
