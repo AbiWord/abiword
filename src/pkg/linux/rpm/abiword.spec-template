@@ -351,36 +351,6 @@ cd ../abi
 %{ABIPREFIX}/%{AbiSuite}/fonts/*.e2u
 %{ABIPREFIX}/%{AbiSuite}/fonts/*.u2g
 
-%post
-if test ! -e %{prefix}/bin/abiword ; then
-  %__ln_s -f %{prefix}/bin/abiword-2.0 %{prefix}/bin/abiword
-fi
-if test ! -e %{prefix}/bin/AbiWord ; then
-  %__ln_s -f %{prefix}/bin/AbiWord-2.0 %{prefix}/bin/AbiWord
-fi
-
-%postun
-if test -h %{prefix}/bin/abiword && ! -e %{prefix}/bin/abiword-2.0 ; then
-  %__rm -f %{prefix}/bin/abiword
-fi
-if test -h %{prefix}/bin/AbiWord && ! -e %{prefix}/bin/AbiWord-2.0 ; then
-  %__rm -f %{prefix}/bin/AbiWord
-fi
-
-#%post fonts
-#if test -z "`grep AbiSuite /etc/X11/fs/config`" ; then
-#  if test -x /usr/sbin/chkfontpath ; then
-#    /usr/sbin/chkfontpath --add %{ABIPREFIX}/AbiSuite/fonts
-#  fi
-#fi
-#
-#%postun fonts
-#if test ! -e %{ABIPREFIX}/AbiSuite/fonts/fonts.dir ; then
-#  if test -x /usr/sbin/chkfontpath ; then
-#    /usr/sbin/chkfontpath --remove %{ABIPREFIX}/AbiSuite/fonts
-#  fi
-#fi
-
 %changelog
 * Sun Oct 20 2002 Rui M. Seabra <rms@1407.org>
 - Use pspell conditionally
