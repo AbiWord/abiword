@@ -122,7 +122,7 @@ protected:
 		static int key_press_event(PtWidget_t* w, void *data, PtCallbackInfo_t *info);
 		static int resize(PtWidget_t * w, void *data,  PtCallbackInfo_t * info);
 		static int window_resize(PtWidget_t * w, void *data,  PtCallbackInfo_t * info);
-//		static int delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
+		static int window_delete(PtWidget_t * w, void *data,  PtCallbackInfo_t * info);
 		static int expose(PtWidget_t * w, PhTile_t* damage);
 		static int vScrollChanged(PtWidget_t * w, void *data,  PtCallbackInfo_t * info);
 		static int hScrollChanged(PtWidget_t * w, void *data,  PtCallbackInfo_t * info);

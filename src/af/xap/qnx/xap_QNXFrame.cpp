@@ -158,10 +158,15 @@ int XAP_QNXFrame::_fe::window_resize(PtWidget_t * w, void *data, PtCallbackInfo_
 	return Pt_CONTINUE;
 }
 		
-#if 0
-int XAP_QNXFrame::_fe::delete_event(PtWidget_t * w, GdkEvent * /*event*/, gpointer /*data*/)
+int XAP_QNXFrame::_fe::window_delete(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
+	PhWindowEvent_t *winevent = (PhWindowEvent_t *)info->cbdata;
+
+	if(!winevent || winevent->event_f != Ph_WM_CLOSE) {
+		return Pt_CONTINUE;
+	}
+
+	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data; 
 	XAP_App * pApp = pQNXFrame->getApp();
 	UT_ASSERT(pApp);
 
@@ -173,22 +178,19 @@ int XAP_QNXFrame::_fe::delete_event(PtWidget_t * w, GdkEvent * /*event*/, gpoint
 	
 	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
 	UT_ASSERT(pEM);
-	
+
 	if (pEM)
 	{
 		if ((*pEM->getFn())(pQNXFrame->getCurrentView(),NULL))
 		{
-			// returning FALSE means destroy the window, continue along the
-			// chain of Gtk destroy events
-			return FALSE;
+			//Destroy this window.
+			PtDestroyWidget(w);
 		}
 	}
 		
-	// returning TRUE means do NOT destroy the window; halt the message
-	// chain so it doesn't see destroy
-	return TRUE;
+	//Do not destroy this window.
+	return Pt_CONTINUE;
 }
-#endif
 	
 int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 {
@@ -442,8 +444,9 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, m_pQNXApp->getApplicationTitleForTitleBar(), 0);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, Ph_WM_CLOSE);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_NOTIFY_FLAGS, Ph_WM_CLOSE, Ph_WM_CLOSE);
 	/*
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, Ph_WM_FFRONT);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_STATE, 0, Ph_WM_STATE_ISFRONT);
 	*/
 	//m_wTopLevelWindow = PtAppInit(NULL, NULL, NULL, 2, args);
@@ -457,6 +460,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_in_event, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_LOST_FOCUS, _fe::focus_out_event, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_RESIZE, _fe::window_resize, m_pQNXApp);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_WINDOW, _fe::window_delete, this);
 
 	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
 #if 0
