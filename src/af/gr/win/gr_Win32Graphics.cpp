@@ -379,6 +379,14 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 {
 	UT_ASSERT(pChars);
 
+	if(!iLengthOrig)
+	{
+		// I do not want to assert here, as this makes debugging
+		// virtually impossible
+		UT_DEBUGMSG(("GR_Win32Graphics::drawChars: asked to draw zero chars !!!\n"));
+		return;
+	}
+	
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::drawChars %c %u %u\n", pChars, xoff, yoff));	
 	#endif
