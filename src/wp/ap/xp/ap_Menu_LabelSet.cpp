@@ -66,7 +66,7 @@ struct _lt
 	ap_CreateLabelSet_pFn		m_fn;
 };
 
-#define BeginSet(Language)		{ #Language, _ap_CreateLabelSet_##Language },
+#define BeginSet(Language)							{ #Language, _ap_CreateLabelSet_##Language },
 #define MenuLabel(id,szName,szToolTip,szStatusMsg)	/*nothing*/
 #define EndSet()									/*nothing*/
 

@@ -40,10 +40,25 @@ public:
 	UT_Bool				menuEvent(AP_Menu_Id id);
 
 protected:
+	void				_append_NormalItem(char * bufMenuPathname,
+										   const char * szLabelName,
+										   AP_Menu_Id id,
+										   UT_Bool bCheckable);
+	void				_append_SubMenu(char * bufMenuPathname,
+										const char * szLabelName,
+										AP_Menu_Id id);
+	void				_end_SubMenu(char * bufMenuPathname);
+	void				_append_Separator(char * bufMenuPathname,
+										  AP_Menu_Id id);
+
 	AP_UnixApp *		m_pUnixApp;
 	AP_UnixFrame *		m_pUnixFrame;
 
 	GtkWidget *			m_wMenuBar;
+	GtkAccelGroup *		m_wAccelGroup;
+	GtkItemFactory *	m_wMenuBarItemFactory;
+	GtkItemFactoryEntry * m_menuFactoryItems;
+	UT_uint32			m_nrActualFactoryItems;
 	UT_Vector			m_vecMenuWidgets;
 };
 

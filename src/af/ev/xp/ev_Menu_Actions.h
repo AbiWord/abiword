@@ -90,6 +90,7 @@ public:
 	UT_Bool							hasGetStateFunction(void) const;
 	EV_Menu_ItemState				getMenuItemState(FV_View * pView) const;
 	UT_Bool							raisesDialog(void) const;
+	UT_Bool							isCheckable(void) const;
 	
 protected:
 	AP_Menu_Id						m_id;

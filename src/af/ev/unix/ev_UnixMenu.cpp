@@ -19,8 +19,10 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include <stdlib.h>
 #include "ut_types.h"
 #include "ut_stack.h"
+#include "ut_string.h"
 #include "ap_Menu_Id.h"
 #include "ev_UnixMenu.h"
 #include "ap_UnixApp.h"
@@ -39,48 +41,33 @@
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
-	_wd(AP_Menu_Id id, GtkWidget * widget)
+	_wd(EV_UnixMenu * pUnixMenu, AP_Menu_Id id)
 	{
+		m_pUnixMenu = pUnixMenu;
 		m_id = id;
-		m_widget = widget;
 	};
 	
 	~_wd(void)
 	{
-		// TODO do we need to destroy our widget or will gtk take care of this ??
 	};
 
-	static void			s_onActivate(GtkMenuItem * menuItem, gpointer user_data);
+	static void s_onActivate(GtkMenuItem * menuItem, gpointer user_data)
+	{
+		// this is a static callback method and does not have a 'this' pointer.
+		// map the user_data into an object and dispatch the event.
+	
+		_wd * wd = (_wd *)user_data;
+		UT_ASSERT(wd);
+
+		wd->m_pUnixMenu->menuEvent(wd->m_id);
+	};
 	
 protected:
+	EV_UnixMenu *		m_pUnixMenu;
 	AP_Menu_Id			m_id;
-	GtkWidget *			m_widget;
 };
 
-void _wd::s_onActivate(GtkMenuItem * menuItem, gpointer user_data)
-{
-	// this is a static callback method and does not have a 'this' pointer.
-	// map the user_data into an object and dispatch the event.
-	
-	_wd * wd = (_wd *)user_data;
-	UT_ASSERT(wd);
-
-	EV_UnixMenu * pUnixMenu = (EV_UnixMenu *)gtk_object_get_user_data(GTK_OBJECT(menuItem));
-
-	pUnixMenu->menuEvent(wd->m_id);
-}
-
 /*****************************************************************/
-
-static const char * _ev_FakeName(const char * sz, UT_uint32 k)
-{
-	// construct a temporary string
-
-	static char buf[128];
-	UT_ASSERT(strlen(sz)<120);
-	sprintf(buf,"%s%ld",sz,k);
-	return buf;
-}
 
 static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
 									 EV_Menu_Action * pAction,
@@ -105,6 +92,17 @@ static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
 	memset(buf,0,NrElements(buf));
 	strncpy(buf,szLabelName,NrElements(buf)-4);
 	strcat(buf,"...");
+	return buf;
+}
+
+static const char * _ev_gtkMenuFactoryName(const char * szMenuName)
+{
+	// construct the menu bar factory name for gtk.
+	// return pointer to static string.  caller must use or copy before next call.
+	
+	static char buf[128];
+
+	sprintf(buf,"<%s>",szMenuName);
 	return buf;
 }
 
@@ -157,9 +155,6 @@ UT_Bool EV_UnixMenu::synthesize(void)
 {
 	// create a GTK menu from the info provided.
 
-	UT_Bool bResult;
-	UT_uint32 tmp = 0;
-	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
@@ -175,20 +170,25 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
-	m_wMenuBar = gtk_menu_bar_new();
-	gtk_object_set_data(GTK_OBJECT(wTLW), "menubar", m_wMenuBar);
-	gtk_widget_show(m_wMenuBar);
-	gtk_box_pack_start(GTK_BOX(wVBox),m_wMenuBar,FALSE,TRUE,0);
-	gtk_widget_set_usize(m_wMenuBar, -1, 30);
+	m_wAccelGroup = gtk_accel_group_new();
+	const char * szMenuBarName = _ev_gtkMenuFactoryName(pMenuLayout->getName());
+	m_wMenuBarItemFactory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,szMenuBarName,m_wAccelGroup);
 
-	// we keep a stack of the widgets so that we can properly
-	// parent the menu items and deal with nested pull-rights.
+	// we allocate space for nrLabelItemsInLayout even though our
+	// format includes entries not found in the corresponding gtk
+	// menu factory layout.  we'll just leave the extra ones zero.
 	
-	UT_Stack stack;
-	stack.push(m_wMenuBar);
+	m_menuFactoryItems = (GtkItemFactoryEntry *)calloc(sizeof(GtkItemFactoryEntry),nrLabelItemsInLayout);
+	UT_ASSERT(m_menuFactoryItems);
+	m_nrActualFactoryItems = 0;
+
+	char bufMenuPathname[1024];
+	*bufMenuPathname = 0;
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
+		const char * szLabelName;
+		
 		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
@@ -198,72 +198,26 @@ UT_Bool EV_UnixMenu::synthesize(void)
 		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
-		// get the name for the menu item
-		
-		const char * szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
-
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:
+			szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
+			if (szLabelName && *szLabelName)
+				_append_NormalItem(bufMenuPathname,szLabelName,id,pAction->isCheckable());
+			break;
+			
 		case EV_MLF_BeginSubMenu:
-			{
-				GtkWidget * w = gtk_menu_item_new_with_label(szLabelName);
-				UT_ASSERT(w);
-				gtk_object_set_user_data(GTK_OBJECT(w),this);
-				_wd * wd = new _wd(id,w);
-				UT_ASSERT(wd);
-				m_vecMenuWidgets.addItem(wd);
-				GtkWidget * wParent;
-				bResult = stack.viewTop((void **)&wParent);
-				UT_ASSERT(bResult);
-
-				gtk_object_set_data(GTK_OBJECT(m_wMenuBar), szLabelName, w);
-				gtk_widget_show(w);
-				gtk_container_add(GTK_CONTAINER(wParent),w);
-				gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate),wd);
-
-				if (pLayoutItem->getMenuLayoutFlags() == EV_MLF_BeginSubMenu)
-				{
-					GtkWidget * wsub = gtk_menu_new();
-					UT_ASSERT(wsub);
-					gtk_object_set_user_data(GTK_OBJECT(wsub),this);
-					_wd * wdsub = new _wd(id,wsub);
-					UT_ASSERT(wdsub);
-					m_vecMenuWidgets.addItem(wdsub);
-					gtk_object_set_data(GTK_OBJECT(m_wMenuBar), _ev_FakeName(szLabelName,tmp++), wsub);
-					// note: for GTK 1.0.6, we don't call "gtk_widget_show(wsub);"
-					// note: on the popup's (else we get weird stuff on the screen).
-					// note: this doesn't seem to matter for 1.1.2....
-					gtk_menu_item_set_submenu(GTK_MENU_ITEM(w),wsub);
-					stack.push(wsub);
-				}
-			}
+			szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
+			if (szLabelName && *szLabelName)
+				_append_SubMenu(bufMenuPathname,szLabelName,id);
 			break;
 	
 		case EV_MLF_EndSubMenu:
-			{
-				GtkWidget * wsub = NULL;
-				bResult = stack.pop((void **)&wsub);
-				UT_ASSERT(bResult);
-			}
+			_end_SubMenu(bufMenuPathname);
 			break;
 			
 		case EV_MLF_Separator:
-			{
-				GtkWidget * w = gtk_menu_item_new();
-				UT_ASSERT(w);
-				gtk_object_set_user_data(GTK_OBJECT(w),this);
-				_wd * wd = new _wd(id,w);
-				UT_ASSERT(wd);
-				m_vecMenuWidgets.addItem(wd);
-				GtkWidget * wParent;
-				bResult = stack.viewTop((void **)&wParent);
-				UT_ASSERT(bResult);
-
-				gtk_object_set_data(GTK_OBJECT(m_wMenuBar), _ev_FakeName("separator",tmp++), w);
-				gtk_widget_show(w);
-				gtk_container_add(GTK_CONTAINER(wParent),w);
-			}
+			_append_Separator(bufMenuPathname,id);
 			break;
 
 		default:
@@ -272,13 +226,125 @@ UT_Bool EV_UnixMenu::synthesize(void)
 		}
 	}
 
-#ifdef UT_DEBUG
-	GtkWidget * wDbg = NULL;
-	bResult = stack.pop((void **)&wDbg);
-	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == m_wMenuBar);
-#endif
-	
+	gtk_item_factory_create_items(m_wMenuBarItemFactory,
+								  m_nrActualFactoryItems,m_menuFactoryItems,
+								  NULL);
+	gtk_accel_group_attach(m_wAccelGroup,GTK_OBJECT(wTLW));
+
+	m_wMenuBar = gtk_item_factory_get_widget(m_wMenuBarItemFactory, szMenuBarName);
+	gtk_widget_show(m_wMenuBar);
+
+ 	gtk_box_pack_start(GTK_BOX(wVBox),m_wMenuBar,FALSE,TRUE,0);
+
 	return UT_TRUE;
 }
 
+static void _ev_concat_and_convert(char * bufResult,
+								   const char * szPrefix,
+								   const char * szLabelName)
+{
+	// Win32 uses '&' in it's menu strings to denote an accelerator.
+	// GTK MenuFactory uses '_'.  We do the conversion.
+
+	strcpy(bufResult,szPrefix);
+	char * pb = bufResult + strlen(bufResult);
+	*pb++ = '/';
+
+	const char * pl = szLabelName;
+	while (*pl)
+	{
+		if (*pl == '&')
+			*pb++ = '_';
+		else
+			*pb++ = *pl;
+		pl++;
+	}
+	*pb = 0;
+}
+
+void EV_UnixMenu::_append_NormalItem(char * bufMenuPathname,const char * szLabelName,AP_Menu_Id id,UT_Bool bCheckable)
+{
+	GtkItemFactoryEntry * p = &m_menuFactoryItems[m_nrActualFactoryItems++];
+
+	char buf[1024];
+	_ev_concat_and_convert(buf,bufMenuPathname,szLabelName);
+	UT_cloneString(p->path,buf);
+
+	p->accelerator = NULL;
+	p->callback = (GtkItemFactoryCallback)_wd::s_onActivate;
+
+	_wd * wd = new _wd(this,id);
+	UT_ASSERT(wd);
+	m_vecMenuWidgets.addItem(wd);
+
+	p->callback_action = (guint)wd;
+	p->item_type = NULL;
+	if (bCheckable)
+		p->item_type = "<CheckItem>";
+}
+
+void EV_UnixMenu::_append_SubMenu(char * bufMenuPathname,const char * szLabelName,AP_Menu_Id id)
+{
+	GtkItemFactoryEntry * p = &m_menuFactoryItems[m_nrActualFactoryItems++];
+
+	// we are given 2 strings -- something of the form: "/Edit" and "&Align"
+	// build string for the sub-menu (with accelerator) and then yank the "&"
+	// and extend the prefix.
+	
+	char buf[1024];
+	_ev_concat_and_convert(buf,bufMenuPathname,szLabelName);
+	UT_cloneString(p->path,buf);
+
+	p->accelerator = NULL;
+	p->callback = NULL;
+
+	_wd * wd = new _wd(this,id);
+	UT_ASSERT(wd);
+	m_vecMenuWidgets.addItem(wd);
+
+	p->callback_action = (guint)wd;
+	p->item_type = "<Branch>";
+
+	// append this name to the prefix, omitting the "&".
+
+	char * pb = bufMenuPathname + strlen(bufMenuPathname);
+	*pb++ = '/';
+	const char * pl = szLabelName;
+	while (*pl)
+	{
+		if (*pl != '&')
+			*pb++ = *pl;
+		pl++;
+	}
+	*pb = 0;
+}
+
+void EV_UnixMenu::_end_SubMenu(char * bufMenuPathname)
+{
+	// trim trailing component from pathname
+
+	char * pLastSlash = strrchr(bufMenuPathname,'/');
+	if (pLastSlash && *pLastSlash)
+		*pLastSlash = 0;
+}
+
+void EV_UnixMenu::_append_Separator(char * bufMenuPathname, AP_Menu_Id id)
+{
+	GtkItemFactoryEntry * p = &m_menuFactoryItems[m_nrActualFactoryItems++];
+
+	static int tmp = 0;
+
+	char buf[1024];
+	sprintf(buf,"%s/separator%d",bufMenuPathname,tmp++);
+	UT_cloneString(p->path,buf);
+
+	p->accelerator = NULL;
+	p->callback = (GtkItemFactoryCallback)_wd::s_onActivate;
+
+	_wd * wd = new _wd(this,id);
+	UT_ASSERT(wd);
+	m_vecMenuWidgets.addItem(wd);
+
+	p->callback_action = (guint)wd;
+	p->item_type = "<Separator>";
+}

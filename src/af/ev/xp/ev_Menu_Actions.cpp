@@ -99,6 +99,11 @@ UT_Bool EV_Menu_Action::raisesDialog(void) const
 	return m_bRaisesDialog;
 }
 
+UT_Bool EV_Menu_Action::isCheckable(void) const
+{
+	return m_bCheckable;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
