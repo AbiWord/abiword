@@ -316,10 +316,11 @@ bool EV_QNXToolbar::synthesize(void)
 
 					if (image) {
 						PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, style, 0);
-						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
+						PtSetArg(&args[n++], Pt_ARG_LABEL_IMAGE, image, sizeof(*image)); 
 					}
 
 					tb = PtCreateWidget(PtButton, tbgroup, n, args);
+					FREEP(image);
 					if (tb) {
 						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
 						tcb->tb = this;
@@ -366,6 +367,7 @@ bool EV_QNXToolbar::synthesize(void)
 						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "pbut", 0); 
 					}
 					tb = PtCreateWidget(PtButton, tbgroup, n, args);
+					FREEP(image);
 					if (tb) {
 						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
 						tcb->tb = this;

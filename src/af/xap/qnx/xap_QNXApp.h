@@ -61,6 +61,8 @@ public:
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 
+  virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const {return BIDI_SUPPORT_GUI;}
+
 	void *					getFontManager(void);
 
 	UT_sint32 makeDirectory(const char *, int) const;

@@ -68,7 +68,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	//pImage->colors = nrColors;
 	//pImage->xscale = pImage->yscale = 1;
 	pImage->transparent = Pg_MAGENTA;
-	pImage->flags = Ph_USE_TRANSPARENCY;
+	pImage->flags = Ph_USE_TRANSPARENCY|Ph_RELEASE_IMAGE;
 	//Set these later when we know it works
 	//pImage->ghost_bpl = 0;
 	//pImage->ghost_bitmap = NULL;
