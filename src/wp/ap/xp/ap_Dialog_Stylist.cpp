@@ -24,6 +24,9 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
+#include "ap_Dialog_Stylist.h"
+
+#include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
@@ -39,7 +42,6 @@
 #include "fl_DocLayout.h"
 #include "ut_timer.h"
 
-#include "ap_Dialog_Stylist.h"
 
 AP_Dialog_Stylist::AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),

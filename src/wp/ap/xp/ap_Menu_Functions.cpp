@@ -586,7 +586,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 	switch(id)
 	{
 	case AP_MENU_ID_FILE_SAVE:
-	  if (!pView->getDocument()->isDirty() || !pView->canDo(true) || pView->getDocument()->getFileName() == NULL)
+	  if (!pView->getDocument()->isDirty() || !pView->canDo(true) || pView->getDocument()->getFilename() == NULL)
 	    s = EV_MIS_Gray;
 	  break;
 	case AP_MENU_ID_FILE_REVERT:

@@ -31,6 +31,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
 #include "fv_View.h"
 #include "fl_BlockLayout.h"

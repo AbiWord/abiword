@@ -31,6 +31,7 @@
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Labels.h"
 #include "xap_App.h"
+#include "xap_Prefs.h"
 #include "xap_Clipboard.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
@@ -124,7 +125,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_FILE_SAVE:
-	  if (!pView->getDocument()->isDirty() || !pView->canDo(true) || pView->getDocument()->getFileName() == NULL)
+	  if (!pView->getDocument()->isDirty() || !pView->canDo(true) || pView->getDocument()->getFilename() == NULL)
 	    s = EV_TIS_Gray;
 	  break;
 	case AP_TOOLBAR_ID_EDIT_UNDO:

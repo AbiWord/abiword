@@ -24,6 +24,8 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
+#include "xap_App.h"
+#include "xap_Frame.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
@@ -232,7 +234,7 @@ void AP_Dialog_SplitCells::finalize(void)
 /*!
  * Set the merge Type
  */
-void AP_Dialog_SplitCells::setSplitType(SplitType iSplitType)
+void AP_Dialog_SplitCells::setSplitType(AP_CellSplitType iSplitType)
 {
 	m_SplitType = iSplitType;
 }

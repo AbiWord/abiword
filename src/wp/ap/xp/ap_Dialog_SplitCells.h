@@ -21,10 +21,11 @@
 #define AP_DIALOG_SPLITCELLS_H
 
 #include "ut_types.h"
-#include "xap_Frame.h"
+//#include "xap_Frame.h"
 #include "xap_Dialog.h"
-#include "xav_View.h"
+//#include "xav_View.h"
 #include "pt_Types.h"
+#include "ap_types.h"
 
 class UT_Timer;
 class XAP_Frame;
@@ -39,7 +40,6 @@ public:
 	virtual void					runModeless(XAP_Frame * pFrame) = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
-	typedef enum { hori_left, hori_mid, hori_right, vert_above, vert_mid, vert_below } SplitType;
 	
 	AP_Dialog_SplitCells::tAnswer		getAnswer(void) const;
 	PT_DocPosition						getCellSource(void);
@@ -47,13 +47,14 @@ public:
 	virtual void                        startUpdater(void);
 	virtual void                        stopUpdater(void);
 	static void                         autoUpdateMC(UT_Worker * pTimer);
-	virtual void                        setSensitivity( SplitType splitThis, bool bSens) = 0;
+	virtual void                        setSensitivity(AP_CellSplitType splitThis,
+													   bool bSens) = 0;
     virtual void                        setActiveFrame(XAP_Frame *pFrame);
 	void                                ConstructWindowName(void);
 	void                                setAllSensitivities(void);
 	void                                event_update(void);
 	void                                finalize(void);
-	void                                setSplitType( SplitType iMergeType);
+	void                                setSplitType(AP_CellSplitType iMergeType);
 	void                                onSplit(void);
 
 protected:
@@ -63,7 +64,7 @@ private:
 	
 	PT_DocPosition                      m_iCellSource;
 	PT_DocPosition                      m_iCellDestination;
-	AP_Dialog_SplitCells::SplitType     m_SplitType;
+	AP_CellSplitType                    m_SplitType;
 	UT_sint32                           m_iLeft;
 	UT_sint32                           m_iRight;
 	UT_sint32                           m_iTop;

@@ -132,8 +132,8 @@ protected:
 	SET_GATHER(bisCustomized,	bool);
 	SET_GATHER(isListAtPoint,	bool);
 	SET_GATHER(bguiChanged,	    bool);
-	SET_GATHER(NewListType,	    List_Type);
-	SET_GATHER(DocListType,	    List_Type);
+	SET_GATHER(NewListType,	    FL_ListType);
+	SET_GATHER(DocListType,	    FL_ListType);
 	SET_GATHER(iLevel,	        UT_uint32);
 	SET_GATHER(pView,	        FV_View *);
 
@@ -170,7 +170,7 @@ private:
 	bool					m_previousListExistsAtPoint;
 	UT_UCSChar				m_curListLabel[100];
 	UT_UCSChar				m_newListLabel[100];
-	List_Type				m_NewListType;
+	FL_ListType				m_NewListType;
 	XML_Char				m_pszDelim[80];
 	XML_Char				m_pszDecimal[80];
 	XML_Char				m_pszFont[80];
@@ -187,7 +187,7 @@ private:
 	UT_uint32				m_curListLevel;
 	UT_uint32				m_newListLevel;
 	UT_uint32				m_iID;
-	List_Type				m_DocListType;
+	FL_ListType				m_DocListType;
 
 	bool					m_bStartList;
 

@@ -38,7 +38,7 @@
 #include "ut_string_class.h"
 #include "fp_TableContainer.h"
 
-
+#include "pp_AttrProp.h"
 enum TABINDEX
   {
     tr_TABINDEX_NEW  = -1,

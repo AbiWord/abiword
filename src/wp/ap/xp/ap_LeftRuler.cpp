@@ -39,6 +39,7 @@
 #include "fp_FrameContainer.h"
 #include "pd_Document.h"
 
+#include "pp_AttrProp.h"
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)

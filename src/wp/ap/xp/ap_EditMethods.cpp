@@ -38,6 +38,7 @@
 #include "fg_Graphic.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
+#include "gr_DrawArgs.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
@@ -103,6 +104,7 @@
 #include "xap_Dlg_Language.h"
 #include "xap_Dlg_PluginManager.h"
 #include "xap_Dlg_Image.h"
+#include "xap_Dlg_ListDocuments.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -635,11 +637,14 @@ public:
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn revisionAccept;
 	static EV_EditMethod_Fn revisionReject;
+	static EV_EditMethod_Fn revisionFindNext;
+	static EV_EditMethod_Fn revisionFindPrev;
 	static EV_EditMethod_Fn revisionSetViewLevel;
 	static EV_EditMethod_Fn toggleShowRevisions;
 	static EV_EditMethod_Fn toggleShowRevisionsBefore;
 	static EV_EditMethod_Fn toggleShowRevisionsAfter;
 	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
+	static EV_EditMethod_Fn revisionCompareDocuments;
 
 	static EV_EditMethod_Fn insertTable;
 
@@ -1002,6 +1007,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(replaceChar),			_D_,""),
 	EV_EditMethod(NF(resizeImage),			0,  ""),
 	EV_EditMethod(NF(revisionAccept),		0,  ""),
+	EV_EditMethod(NF(revisionCompareDocuments),	0,  ""),
+	EV_EditMethod(NF(revisionFindNext),		0,  ""),
+	EV_EditMethod(NF(revisionFindPrev),		0,  ""),
 	EV_EditMethod(NF(revisionReject),		0,  ""),
 	EV_EditMethod(NF(revisionSetViewLevel),	0,  ""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
@@ -11455,9 +11463,25 @@ Defun(revisionReject)
 	return true;
 }
 
+Defun(revisionFindNext)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdFindRevision(true, pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
+Defun(revisionFindPrev)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdFindRevision(false, pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
 static bool s_doListRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView)
 {
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame, false);
 
 	pFrame->raise();
 
@@ -11497,6 +11521,89 @@ Defun1(revisionSetViewLevel)
 
 	s_doListRevisions(pFrame, pDoc, pView);
 
+	return true;
+}
+
+/*!
+    This function can be used to raise one of the ListDocuments dialogues
+    \param pFrame: the active frame
+    \param bExcludeCurrent: true if current document is to be excluded
+                            from the list
+    \param iId: the dialogue iId determining which of the
+                ListDocuments variants to raise
+
+    \return: returns pointer to the document user selected or NULL
+*/
+static PD_Document * s_doListDocuments(XAP_Frame * pFrame, bool bExcludeCurrent, UT_uint32 iId)
+{
+	UT_return_val_if_fail(pFrame, NULL);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_ListDocuments * pDialog
+		= static_cast<XAP_Dialog_ListDocuments *>(pDialogFactory->requestDialog(iId));
+	
+	UT_return_val_if_fail(pDialog, NULL);
+
+	// the dialgue excludes current document by default, if we are to
+	// include it, we need to tell it ...
+	if(!bExcludeCurrent)
+		pDialog->setIncludeActiveDoc(true);
+	
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_ListDocuments::a_OK);
+
+	PD_Document *pD = NULL;
+	
+	if (bOK)
+	{
+		pD = (PD_Document *)pDialog->getDocument();
+#if DEBUG
+		if(!pD)
+			UT_DEBUGMSG(("DIALOG LIST DOCUMENTS: no document\n"));
+		else
+			UT_DEBUGMSG(("DIALOG LIST DOCUMENTS: %s\n", pD->getFilename()));
+#endif
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return pD;
+}
+
+Defun1(revisionCompareDocuments)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
+
+	PD_Document * pDoc2 = s_doListDocuments(pFrame, true, XAP_DIALOG_ID_COMPAREDOCUMENTS);
+
+	if(pDoc2)
+	{
+		UT_DEBUGMSG(("COMPARE DOCUMENTS:\n   related:     %d\n"
+					                     "   stylesheets: %d\n"
+										 "   history:     %d\n"
+					                     "   contents:    %d\n"
+					                     "   format:      %d\n",
+					 pDoc->areDocumentsRelated(*pDoc2),
+					 pDoc->areDocumentStylesheetsEqual(*pDoc2),
+					 pDoc->areDocumentHistoriesEqual(*pDoc2),
+					 pDoc->areDocumentContentsEqual(*pDoc2),
+					 pDoc->areDocumentFormatsEqual(*pDoc2)));
+
+		UT_Vector vDiff;
+		pDoc->diffDocuments(*pDoc2, vDiff);
+		UT_VECTOR_PURGEALL(PD_DocumentDiff*, vDiff);
+		
+	}
 	return true;
 }
 
