@@ -11070,7 +11070,11 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 		return false;
 	}
-	return true;
+	if((pos > pBL->getPosition(true)) && (pos <= (pBL->getPosition(true) + pBL->getLength())))
+	{
+		return true;
+	}
+	return false;
 }
 
 bool FV_View::isPointLegal(void)

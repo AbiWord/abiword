@@ -5469,6 +5469,37 @@ void FV_View::_fixInsertionPointAfterRevision()
 	}
 }
 
+bool FV_View::_makePointLegal(void)
+{
+		bool bOK = true;
+		while(!isPointLegal() && bOK)
+		{
+//
+// If we're in an illegal position move forward till we're safe.
+//
+			bOK = _charMotion(true,1);
+		}
+		PT_DocPosition posEnd = 0;
+		getEditableBounds(true, posEnd);
+		if(posEnd == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd-1 == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd-1 == getPoint() && m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isFrameAtPos(getPoint()-1))
+		{
+			bOK = _charMotion(false,1);
+		}
+		while(bOK && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		return bOK;
+}
+
 bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	// see if prefs specify we should set language based on kbd layout
