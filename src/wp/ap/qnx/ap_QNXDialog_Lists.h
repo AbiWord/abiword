@@ -111,7 +111,8 @@ protected:
 	//Action buttons
 	PtWidget_t * m_wApply;
 	PtWidget_t * m_wClose;
-protected:
+
+	UT_Vector	m_styleVector;
 
 };
 
