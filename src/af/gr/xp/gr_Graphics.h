@@ -105,7 +105,14 @@ class ABI_EXPORT GR_Font
 	   NB: it is essential that this function is fast
 	*/
 	virtual bool doesGlyphExist(UT_UCS4Char g);
+//
+// UT_Rect of glyph in Logical units.
+// rec.left = bearing Left (distance from origin to start)
+// rec.width = widht of the glyph
+// rec.top = distance from the origin to the top of the glyph
+// rec.height = total height of the glyph
 
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) = 0;
 	static  bool s_doesGlyphExist(UT_UCS4Char g, void *instance)
 	{
 		UT_return_val_if_fail(instance, false);

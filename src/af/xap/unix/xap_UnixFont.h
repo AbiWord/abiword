@@ -120,7 +120,6 @@ class ABI_EXPORT XAP_UnixFont
 	font_type				getFontType() const {return m_fontType;}
 
 	void					getCoverage(UT_NumberVector& coverage);
-
 	float					getAscender(UT_uint32 iSize) const;
 	float					getDescender(UT_uint32 iSize) const;
 	UT_String				getPostscriptName() const;
@@ -220,7 +219,9 @@ class XAP_UnixFontHandle : public GR_Font
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 	float measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 
-	virtual bool doesGlyphExist(UT_UCS4Char g);
+	virtual bool                doesGlyphExist(UT_UCS4Char g);
+    virtual bool                glyphBox(UT_UCS4Char g, UT_Rect & rec);
+
 
 private:
  	XAP_UnixFontHandle();
