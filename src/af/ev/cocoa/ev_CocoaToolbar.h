@@ -74,9 +74,9 @@ public:
 	virtual void hide(void);
 
 	static	float	getButtonWidth (void)
-					{ return 32.0f; };
+					{ return 28.0f; };
 	static	float	getButtonHeight (void)
-					{ return 32.0f; };
+					{ return 28.0f; };
 
 	static float  getToolbarHeight(void)
 					{ return getButtonHeight(); };

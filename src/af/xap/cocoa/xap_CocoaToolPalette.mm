@@ -235,8 +235,8 @@ enum _XAP_CocoaTool_Id
 }
 
 #define PALETTE_ELEMENT_ORIGIN_X  -3
-#define PALETTE_ELEMENT_WIDTH    240
-#define PALETTE_PANEL_WIDTH      234
+#define PALETTE_ELEMENT_WIDTH    219
+#define PALETTE_PANEL_WIDTH      213
 
 - (void)sync
 {
@@ -1170,10 +1170,12 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (IBAction)aSwitch_FG:(id)sender
 {
+	// TODO
 }
 
 - (IBAction)aSwitch_BG:(id)sender
 {
+	// TODO
 }
 
 - (IBAction)aTitle_click:(id)sender
@@ -1819,6 +1821,9 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 	/* Color buttons
 	 */
+	[oSwitch_FG setEnabled:NO]; // TODO
+	[oSwitch_BG setEnabled:NO]; // TODO
+
 	if (m_pViewCurrent)
 		{
 			FV_View * pFView = static_cast<FV_View *>(m_pViewCurrent);
