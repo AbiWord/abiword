@@ -41,6 +41,10 @@ build::		$(REQUIRE)
 _EXPAT_:
 	@if [ -d $(ABI_ROOT)/../expat ]; then						\
 		echo Found expat in peer directory;					\
+		if [ ! -r $(ABI_ROOT)/../exapt/config.h ]; then \
+			cd $(ABI_ROOT)/../expatt; \
+			./configure --disable-shared --enable-static; \
+		fi; \
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;			\
 	elif [ -e /usr/include/expat.h -o -e /usr/local/include/expat.h ]; then \
 		echo "*** Found a shared library version of expat.  I'm going to use "; \
