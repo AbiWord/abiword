@@ -447,6 +447,25 @@ void be_DocView::Draw(BRect updateRect) {
 	if (!pBWin || !pBWin->m_pBeOSFrame)
 		return;
 	
+	// Okay, there is a bug here, that when the BeOS wants a single line of horizontal text drawn, it (more)
+	// passes updateRect.top and updateRect.bottom as an equal value, so how do we get around this (more)
+	// other than pre-decreasing the top value.
+	// The same thing also occurs for a vertical line..
+	
+	updateRect.top -= 1.0f;
+	if( updateRect.top < 0.0f)
+	{
+		updateRect.bottom += 1.0f;
+		updateRect.top = 0.0f;
+	}
+	
+	updateRect.left -= 1.0f;
+	if( updateRect.left < 0.0f)
+	{
+		updateRect.left = 0.0f;
+		updateRect.right += 1.0f;
+	}
+
 #if defined(USE_BACKING_BITMAP)
 	GR_BeOSGraphics 	*pG;
 	BBitmap 		*pBitmap;	
