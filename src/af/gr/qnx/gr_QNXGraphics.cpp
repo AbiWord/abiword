@@ -1068,17 +1068,22 @@ bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 		return false;
 	}
 
-	PgFlush();
-	PpPrintNewPage(m_pPrintContext);
+	if(!m_bPrintNextPage) {
+		//do some setup things..
+		m_bPrintNextPage=true;
+	} else {
+		PgFlush();
+		PpPrintNewPage(m_pPrintContext);
+	}
 	return true;
 }
 
 bool GR_QNXGraphics::endPrint(void) {
 	UT_DEBUGMSG(("GR: End print"));
-	PtFlush(); //ensure no draws are pending
 	UT_ASSERT(m_pPrintContext);
 
 	if (m_pPrintContext) {
+		PgFlush();
 		PpSuspendJob(m_pPrintContext);
 		PpEndJob(m_pPrintContext);
 		PtRelease();

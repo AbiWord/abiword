@@ -476,7 +476,7 @@ void XAP_QNXFrameImpl::_nullUpdate() const
 
 
 	if(dc->type == Ph_DRAW_TO_PRINT_CONTEXT) {
-//		return;
+		return;
 	}
 
 	PhEvent_t *event = (PhEvent_t*)malloc(EVENT_SIZE);
