@@ -48,7 +48,7 @@ AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 	
 	m_findString = NULL;
 	m_replaceString = NULL;
-	m_matchCase = true;
+	m_matchCase = false;
 
 	m_didSomething = false;
 

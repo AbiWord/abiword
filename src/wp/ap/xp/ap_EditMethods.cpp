@@ -4371,6 +4371,9 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	if (!pDialog)
 		return false;
 
+	// don't match case by default
+	pDialog->setMatchCase(false);
+
 	// prime the dialog with a "find" string if there's a
 	// current selection.
 	if (!pView->isSelectionEmpty())
