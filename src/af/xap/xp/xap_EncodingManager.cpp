@@ -255,12 +255,14 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 	return retstr;
 };
 
-#ifndef	HAVE_LIBXML2
-	/*this is used by code that reads xml using expat*/
 int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerData*/,
                                           const XML_Char *name,
                                           XML_Encoding *info)
 {
+#ifdef	HAVE_LIBXML2
+	return 0;
+#else
+	/*this is used by code that reads xml using expat*/
 	if (get_instance()->cjk_locale())
 	    return 0;/*this handler doesn't support multibyte encodings*/
 	UT_iconv_t iconv_handle = UT_iconv_open("UCS-2",name);
@@ -292,8 +294,8 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 	}
 	UT_iconv_close(iconv_handle);
 	return 1;
-};
 #endif
+};
 
 extern "C" { char *wvLIDToCodePageConverter(unsigned short lid); }
 static void init_values(const XAP_EncodingManager* that)

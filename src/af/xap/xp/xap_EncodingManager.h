@@ -243,12 +243,12 @@ public:
 	 Same as above, but it will use buffer provided by caller.
 	*/
 	const char* strToNative(const char* in,const char* charset,char* buf,int bufsz,bool bUseSysEncoding=false) const;
-#ifndef	HAVE_LIBXML2
+
 	/*this is used by code that reads xml using expat*/
 	static int XAP_XML_UnknownEncodingHandler(void *encodingHandlerData,
                                           const XML_Char *name,
                                           XML_Encoding *info);
-#endif
+
 	/*it's terminated with the record with NULL in language name. */
 	static const XAP_LangInfo		langinfo[];
 	/*

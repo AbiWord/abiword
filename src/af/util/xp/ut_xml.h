@@ -35,6 +35,13 @@
   #endif
   #define XML_Char char
 
+  /* XML_Encoding is used in XAP_XML_UnknownEncodingHandler
+   */
+  #ifdef XML_Encoding
+  #undef XML_Encoding
+  #endif
+  #define XML_Encoding void
+
 #else /* EXPAT */
   #include <expat.h>
 
