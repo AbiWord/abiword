@@ -47,7 +47,8 @@ private:
 	void event_Deactivate ();
 	void event_Load ();
 
-	void setPluginList();
+	void _updatePluginList ();
+	void _selectFirstEntry ();
 
 	static void s_deactivate_clicked (GtkWidget * w, 
 									  XAP_UnixDialog_PluginManager * dlg);
@@ -58,7 +59,7 @@ private:
 	static void s_load_clicked (GtkWidget * w,
 								XAP_UnixDialog_PluginManager * dlg);
 
-	static void s_list_clicked(GtkTreeView *treeview,
+	static void s_list_clicked(GtkTreeSelection *selection,
 							   XAP_UnixDialog_PluginManager * dlg);
 
 	void _refresh ();
