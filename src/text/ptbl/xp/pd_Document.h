@@ -198,7 +198,8 @@ public:
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
-
+	void                    setMarginChangeOnly(bool b);
+	bool                    isMarginChangeOnly(void) const;
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
@@ -676,6 +677,7 @@ private:
 	UT_UniqueId             m_UID;
 	UT_sint32               m_iNewHdrHeight;
 	UT_sint32               m_iNewFtrHeight;
+	bool                    m_bMarginChangeOnly;
 };
 
 #endif /* PD_DOCUMENT_H */

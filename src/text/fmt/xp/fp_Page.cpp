@@ -1016,6 +1016,34 @@ fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 }
 
 /*!
+ * This method is called following a notification of an increase in 
+ * HdrFtr size
+ */
+bool fp_Page::TopBotMarginChanged(void)
+{
+//
+// Adjust header/footer shadows first
+//
+	UT_sint32 iTopM = m_pOwner->getTopMargin();
+	UT_sint32 iBotM = m_pOwner->getBottomMargin();
+	clearScreenFrames();
+	if(m_pHeader)
+	{
+		m_pHeader->clearScreen();
+		m_pHeader->setMaxHeight(iTopM - m_pOwner->getHeaderMargin());
+		m_pHeader->layout();
+	}
+	if(m_pFooter)
+	{
+		m_pFooter->clearScreen();
+		m_pFooter->setMaxHeight(iBotM - m_pOwner->getFooterMargin());
+		m_pFooter->layout();
+	}
+	breakPage();
+	_reformat();
+	return true;
+}
+/*!
  * This method scans the current page to make sure that there is space to at least start
  * every column on the page. Columns with space are deleted and their contents redistributed.
  */

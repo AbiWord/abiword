@@ -281,6 +281,7 @@ public:
 	bool                isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage);
     void                getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr);
 	void                formatAllHdrFtr(void);
+	void                doMarginChangeOnly(void);
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
 	void                setNeedsSectionBreak(bool bSet, fp_Page * pPage );

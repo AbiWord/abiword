@@ -136,6 +136,7 @@ public:
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
 	bool                overlapsWrappedFrame(fp_Line * pLine);
 	bool                overlapsWrappedFrame(UT_Rect & rec);
+	bool                TopBotMarginChanged(void);
 	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
 		{ m_pLastMappedTOC = pTOCL;}
 	fl_TOCLayout *      getLastMappedTOC(void)

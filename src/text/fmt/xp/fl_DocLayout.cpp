@@ -1434,8 +1434,19 @@ void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, f
 	pDSL->doclistener_changeStrux(pcrx);
 	while(pCur != NULL)
 	{
-		pCur->collapse();
+		if(m_pDoc->isMarginChangeOnly())
+		{
+			pCur->doMarginChangeOnly();
+		}
+		else
+		{
+			pCur->collapse();
+		}
 		pCur = pCur->getNextDocSection();
+	}
+	if(m_pDoc->isMarginChangeOnly())
+	{
+		return;
 	}
 	pCur = pDSL;
 	while(pCur != NULL)

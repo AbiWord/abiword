@@ -1113,7 +1113,9 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	{
 		iPage = pDSL->m_pLayout->findPage(pShadow->getPage());
 	}
+	pDoc->setMarginChangeOnly( true);
 	pDoc->changeStruxFmtNoUndo(PTC_AddFmt,sdh,pszAtts,NULL);
+	pDoc->setMarginChangeOnly(false);
 //
 // update the screen
 //
@@ -1141,18 +1143,50 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 // Stop the resizer and delete and clear it's pointer. It's job is done now.
 //
 	pDSL->m_pHdrFtrChangeTimer->stop();
-	fl_DocSectionLayout * pOrig = pDSL;
+	DELETEP(pDSL->m_pHdrFtrChangeTimer);
+}
+
+/*!
+ * This method is called if the top and bottom margins of the pages
+ * have changed following an auto-resize request from the header.
+ * We try to avoid a complete rebuild.
+ */
+void fl_DocSectionLayout::doMarginChangeOnly(void)
+{
+	const PP_AttrProp* pAP = NULL;
+	getAP(pAP);
+	UT_return_if_fail(pAP);
+
+	const XML_Char* pszSectionType = NULL;
+	pAP->getAttribute("type", pszSectionType);
+	lookupProperties();
+	fp_Page * pMyPage = m_pLayout->getFirstPage();
+	while(pMyPage && pMyPage->getOwningSection() != this)
+	{
+		pMyPage = pMyPage->getNext();
+	}
+	if(pMyPage == NULL)
+	{
+		return;
+	}
+//
+// Remove broken tables. They need to be rebroken.
+//
+	deleteBrokenTablesFromHere(NULL);
+	while(pMyPage && pMyPage->getOwningSection() == this)
+	{
+		pMyPage->TopBotMarginChanged();
+		pMyPage = pMyPage->getNext();
+	}
+//
+// Rebreak the document. Place containers on their new pages.
+//
+	fl_DocSectionLayout * pDSL = this;
 	while(pDSL)
 	{
-
-		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
-		{
-			static_cast<fl_DocSectionLayout *>(pDSL)->completeBreakSection();
-			static_cast<fl_DocSectionLayout *>(pDSL)->checkAndRemovePages();
-		}
-		pDSL = static_cast<fl_DocSectionLayout *>(pDSL->getNext());
+		pDSL->completeBreakSection();
+		pDSL = pDSL->getNextDocSection();
 	}
-	DELETEP(pOrig->m_pHdrFtrChangeTimer);
 }
 /*!
  * Signal a PT change at the next opportunity to change the height of a Hdr
@@ -2215,6 +2249,10 @@ void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_ContainerLayout * pTL)
 		return;
 	}
 	m_bDeleteingBrokenContainers = true;
+	if(pTL == NULL)
+	{
+		pTL = getFirstLayout();
+	}
 	fl_ContainerLayout * pCL = pTL->getNext();
 	while(pCL != NULL)
 	{

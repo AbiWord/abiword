@@ -106,7 +106,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_pVDRun(NULL),
 	  m_iVDLastPos(0xffffffff),
 	  m_iNewHdrHeight(0), 
-	  m_iNewFtrHeight(0)
+	  m_iNewFtrHeight(0),
+	  m_bMarginChangeOnly(false)
 {
 	m_pApp = pApp;
 	
@@ -186,6 +187,16 @@ void PD_Document::setMailMergeField(const UT_String & key,
 
 	UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
 	m_mailMergeMap.set ( key, ptrvalue ) ;
+}
+
+void PD_Document::setMarginChangeOnly(bool b)
+{
+	m_bMarginChangeOnly = b;
+}
+
+bool PD_Document::isMarginChangeOnly(void) const
+{
+	return m_bMarginChangeOnly;
 }
 
 //////////////////////////////////////////////////////////////////
