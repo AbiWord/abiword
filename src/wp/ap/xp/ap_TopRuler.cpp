@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
+ * Copyright (C) 2002 Dom Lachowicz
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -203,7 +204,7 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 		pClipRect.top = 0;
 		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
 		FV_View * pView = static_cast<FV_View *>(m_pView);
-		if(pView->getViewMode() == VIEW_NORMAL)
+		if(pView->getViewMode() != VIEW_PRINT)
 		{
 			pClipRect.left = 0;
 		}
@@ -257,7 +258,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 
 	UT_sint32 xFixed = MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		xFixed = s_iFixedWidth;
 	}
@@ -334,7 +335,7 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 	// convert page-relative coordinates into absolute coordinates.
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		ixMargin = 0;
 		xFixed = s_iFixedWidth;
@@ -430,7 +431,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		xFixed = s_iFixedWidth;
 	}
@@ -689,7 +690,7 @@ void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
 	UT_sint32 l,xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		xFixed = s_iFixedWidth;
 	}
@@ -796,7 +797,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		_drawTabStop(rect, m_draggingTabType, false);
 		UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 		FV_View * pView = static_cast<FV_View *>(m_pView);
-		if(pView->getViewMode() == VIEW_NORMAL)
+		if(pView->getViewMode() != VIEW_PRINT)
 		{
 			xFixed = s_iFixedWidth;
 		}
@@ -1052,6 +1053,8 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	UT_sint32 sum;
 	UT_uint32 k;
 
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+
 	// ask the view for paper/margin/column/table/caret
 	// details at the current insertion point.
 
@@ -1066,13 +1069,11 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	{
 		// otherwise we calculate our own.
 		pInfo = &infoLocal;
-		(static_cast<FV_View *>(m_pView))->getTopRulerInfo(pInfo);
+		pView->getTopRulerInfo(pInfo);
 	}
 	
 	// draw the tab toggle inside the fixed area in the left-hand corner
-
 	_drawTabToggle(pClipRect, false);
-
 
 	// TODO for now assume we are in column display mode.
 	UT_ASSERT(pInfo->m_mode==AP_TopRulerInfo::TRI_MODE_COLUMNS);
@@ -1100,8 +1101,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 #endif
 	{
 		UT_sint32 width = pInfo->u.c.m_xaLeftMargin;
-		FV_View * pView = static_cast<FV_View *>(m_pView);
-		if(pView->getViewMode() == VIEW_NORMAL)
+		if(pView->getViewMode() != VIEW_PRINT)
 		{
 			width -= s_iFixedWidth;
 		}
@@ -1164,7 +1164,6 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// be drawn on a negative scale to the left relative to here.  everything
 	// to the right of this x-value will be drawn on a positive scale to the
 	// right.
-	FV_View * pView = static_cast<FV_View *>(m_pView);
 	UT_sint32 xTickOrigin = 0;
 #ifdef BIDI_ENABLED
 	
@@ -1178,7 +1177,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 #endif
 	{	//do not remove!!!
 		xTickOrigin = pInfo->u.c.m_xaLeftMargin;
-		if(pView->getViewMode() == VIEW_NORMAL)
+		if(pView->getViewMode() != VIEW_PRINT)
 		{
 			xTickOrigin -= s_iFixedWidth;
 		}
@@ -1206,7 +1205,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		sum += pInfo->u.c.m_xaLeftMargin;
 	}
 	
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		sum -= s_iFixedWidth;
 	}
@@ -1292,7 +1291,7 @@ void AP_TopRuler::_xorGuide(bool bClear)
 {
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		xFixed = 0;
 	}
@@ -1364,6 +1363,9 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 	if (m_draggingWhat != DW_NOTHING)
 		return false;
+
+	if ( static_cast<FV_View*>(m_pView)->getViewMode() == VIEW_WEB )
+	  return false;
 
 	_getTabToggleRect(&rToggle);
 	if (rToggle.containsPoint(x,y))
@@ -1535,6 +1537,10 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	_getTabToggleRect(&rToggle);
 	if (rToggle.containsPoint(x,y))
 	{
+	  // do nothing in this view mode
+	  if ( pView->getViewMode () == VIEW_WEB )
+	    return ;
+
 		int currentTabType = m_iDefaultTabType;
 		if(emb == EV_EMB_BUTTON1)
 		{
@@ -1840,7 +1846,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			
 			UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 			FV_View * pView = static_cast<FV_View *>(m_pView);
-			if(pView->getViewMode() == VIEW_NORMAL)
+			if(pView->getViewMode() != VIEW_PRINT)
 			{
 				xFixed = 0;
 			}
@@ -2219,7 +2225,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		xFixed = s_iFixedWidth;
 	}
@@ -2958,7 +2964,7 @@ double AP_TopRuler::_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & ti
 {
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		xFixed = 0;
 	}
@@ -2976,7 +2982,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 		+ kCol * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView->getViewMode() == VIEW_NORMAL)
+	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		ixMargin = 0;
 		xFixed = 0;
@@ -3288,6 +3294,10 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 
 void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 {
+	// draw in normal and print layout modes, not online
+	if(static_cast<FV_View*>(m_pView)->getViewMode() == VIEW_WEB)
+	  return;
+
 	UT_Rect rect;
 	_getTabToggleRect(&rect);
 

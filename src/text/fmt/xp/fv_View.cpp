@@ -7589,7 +7589,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 //
 			UT_RGBColor paperColor = *(pPage->getOwningSection()->getPaperColor());
 
-			if(getViewMode() != VIEW_PRINT)
+			// only in NORMAL MODE - draw a line across the screen
+			// at a page boundary. Not used in online/web and print
+			// layout modes
+			if(getViewMode() == VIEW_NORMAL)
 			{
 				UT_RGBColor clrPageSep(192,192,192);		// light gray
 				m_pG->setColor(clrPageSep);

@@ -6046,6 +6046,8 @@ Defun(viewNormalLayout)
 	pFrame->toggleLeftRuler (false);
 
 	pView->setViewMode (VIEW_NORMAL);
+	//pFrame->setZoomType( XAP_Frame::z_PERCENT );
+	//pFrame->setZoomPercentage(90);
 
 	// POLICY: make this the default for new frames, too
 	XAP_App * pApp = pFrame->getApp();
@@ -6077,6 +6079,8 @@ Defun(viewWebLayout)
 
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->setViewMode (VIEW_WEB);
+	//pFrame->setZoomType( XAP_Frame::z_100 );
+	//pFrame->setZoomPercentage(100);
 
 	// POLICY: make this the default for new frames, too
 	XAP_App * pApp = pFrame->getApp();
@@ -6088,10 +6092,13 @@ Defun(viewWebLayout)
 
 	pScheme->setValue(AP_PREF_KEY_LayoutMode, "3");
 
+	pView->updateScreen(false);
+	pView->notifyListeners(AV_CHG_ALL);
+
 	return true;
 }
 
-Defun1(viewPrintLayout)
+Defun(viewPrintLayout)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -6105,6 +6112,8 @@ Defun1(viewPrintLayout)
 
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->setViewMode (VIEW_PRINT);
+	//pFrame->setZoomType( XAP_Frame::z_100 );
+	//pFrame->setZoomPercentage(100);
 
 	// POLICY: make this the default for new frames, too
 	XAP_App * pApp = pFrame->getApp();

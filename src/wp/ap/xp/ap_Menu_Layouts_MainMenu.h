@@ -85,9 +85,7 @@ BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_VIEW)
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
-#ifdef DEBUG
 		MenuItem(AP_MENU_ID_VIEW_WEB)
-#endif
 		MenuItem(AP_MENU_ID_VIEW_PRINT)
 		Separator()
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
