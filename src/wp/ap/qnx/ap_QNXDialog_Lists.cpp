@@ -105,6 +105,31 @@ static int s_update (void)
 	return UT_TRUE;
 }
 
+static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
+{
+	PtArg_t args[1];
+	UT_Rect rClip;
+
+   	PhRect_t rect;
+   	PtSuperClassDraw(PtBasic, w, damage);
+   	PtBasicWidgetCanvas(w, &rect);
+	//clip to our basic canvas (it's only polite).
+    PtClipAdd( w, &rect );
+
+	AP_QNXDialog_Lists *pQNXDlg, **ppQNXDlg = NULL;
+	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
+	PtGetResources(w, 1, args);
+	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+
+	UT_ASSERT(pQNXDlg);
+	printf("Calling expose area ... \n");
+	pQNXDlg->event_PreviewAreaExposed();
+
+    PtClipRemove();
+	return Pt_CONTINUE;
+}
+
+
 /**********************************************************************/
 
 void AP_QNXDialog_Lists::activate()
@@ -153,6 +178,26 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
     // Only use this if you need to to update the dialog upon focussing.
 	//connectFocusModelessOther (m_mainWindow, m_pApp, s_update);
 	connectFocusModeless(m_mainWindow, m_pApp);
+
+	{
+		// attach a new graphics context to the drawing area
+		XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
+		UT_ASSERT(app);
+
+		UT_ASSERT(m_wPreview);
+
+		// make a new QNX GC
+		m_qnxGraphics = new GR_QNXGraphics(m_mainWindow, m_wPreview, pFrame->getApp());
+		unsigned short w, h;
+
+		// let the widget materialize
+		UT_QNXGetWidgetArea(m_wPreview, NULL, NULL, &w, &h);
+		_createPreviewFromGC(m_qnxGraphics, w, h);
+
+	}
+
+
+
 
 	// Populate the dialog
 	updateDialog();
@@ -462,6 +507,20 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Close), 0);
 	m_wClose = PtCreateWidget(PtButton, hbutgroup, n, args);
 	PtAddCallback(m_wClose, Pt_CB_ACTIVATE, s_closeClicked, this);
+
+	/*** JAM THE PREVIEW DOWN HERE ***/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  300, 0);
+	m_wPreviewGroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  300, 0);
+	void *data = (void *)this;
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
+	m_wPreview = PtCreateWidget(PtRaw, m_wPreviewGroup, n, args);
 
 	return m_mainWindow;
 }

@@ -33,19 +33,26 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 
+#include "fl_DocLayout.h"
+#include "fl_BlockLayout.h"
+#include "ap_Preview_Paragraph.h"
+
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory, id)
 {
   	m_pView = NULL;
 	m_answer = a_CLOSE;
-        m_bStartList = UT_FALSE;
-        m_bStopList = UT_FALSE;
+	m_bStartList = UT_FALSE;
+	m_bStopList = UT_FALSE;
 	m_bChangeStartValue = UT_FALSE;
+
+	m_paragraphPreview = NULL;
 }
 
 AP_Dialog_Lists::~AP_Dialog_Lists(void)
 {
+	DELETEP(m_paragraphPreview);
 }
 
 AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
@@ -54,6 +61,73 @@ AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
 	return m_answer;
 }
 
+/************************************************************************/
+
+// how many characters do we want to pull from the current paragraph
+// to fill our preview
+
+#define NUM_CHARS_FOR_SAMPLE 100
+
+void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics * gc,
+										   UT_uint32 width,
+										   UT_uint32 height)
+{
+	UT_ASSERT(gc);
+
+	// free any attached preview
+	DELETEP(m_paragraphPreview);
+
+	// platform's runModal should have set this
+	UT_ASSERT(getActiveFrame());
+
+	AV_View * baseview = getActiveFrame()->getCurrentView();
+	UT_ASSERT(baseview);
+
+	FV_View * view = static_cast<FV_View *> (baseview);
+
+	FL_DocLayout * dl = view->getLayout();
+	UT_ASSERT(dl);
+
+	fl_BlockLayout * bl = dl->findBlockAtPosition((PT_DocPosition) view->getPoint());
+	UT_ASSERT(bl);
+
+	UT_GrowBuf gb;
+	UT_Bool hadMem = bl->getBlockBuf(&gb);
+
+	UT_UCSChar * tmp = NULL;
+	if (hadMem && gb.getLength() > 0)
+	{
+		gb.truncate(NUM_CHARS_FOR_SAMPLE);
+		UT_UCS_cloneString(&tmp, (UT_UCSChar *) gb.getPointer(0));
+	}
+	else
+	{
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+		// if the paragraph was empty, use our sample
+		UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
+	}
+
+	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this);
+
+	FREEP(tmp);
+	
+	UT_ASSERT(m_paragraphPreview);
+	
+	m_paragraphPreview->setWindowSize(width, height);
+
+	// TODO : any setup of the GC for drawing
+}
+
+void AP_Dialog_Lists::event_PreviewAreaExposed(void)
+{
+	if (m_paragraphPreview) {
+		m_paragraphPreview->draw();
+	}
+	else {
+		UT_ASSERT(0);
+	}
+}
 
 void  AP_Dialog_Lists::StartList(void)
 {

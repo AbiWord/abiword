@@ -239,6 +239,87 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 										   const UT_UCSChar * text,
+										   AP_Dialog_Lists * dlg)
+	: XAP_Preview(gc)
+{
+	UT_ASSERT(text && dlg);
+
+	m_font = NULL;
+	m_fontHeight = 0;
+	
+	m_y = DEFAULT_TOP_MARGIN;
+		
+	m_clrWhite = new UT_RGBColor(255,255,255);
+	m_clrBlack = new UT_RGBColor(0,0,0);
+	m_clrGray = new UT_RGBColor(192,192,192);
+
+	// initialize font to start measuring with for following setText calls
+	_loadDrawFont();
+	
+	{
+		// this block is a dummy block
+		m_previousBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
+														 m_gc,
+														 AP_Dialog_Paragraph::align_LEFT,
+														 m_fontHeight);
+		m_previousBlock->setFormat(AP_Dialog_Paragraph::align_LEFT,
+								   NULL,
+								   AP_Dialog_Paragraph::indent_NONE,
+								   NULL,NULL,NULL,NULL,NULL,
+								   AP_Dialog_Paragraph::spacing_SINGLE);
+	}
+	
+	{
+		// this block is our ACTIVE block
+		m_activeBlock = new AP_Preview_Paragraph_Block(*m_clrBlack,
+													   m_gc,
+													   AP_Dialog_Paragraph::align_LEFT,
+													   m_fontHeight);
+		// read these from the dialog's members
+#if 0
+		m_activeBlock->setFormat((AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
+								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
+								 (AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
+								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT),
+								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),								 
+								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING),
+								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
+								 dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
+								 (AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
+#endif
+	}
+	
+	{
+		// another dummy block
+		m_followingBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
+														  m_gc,
+														  AP_Dialog_Paragraph::align_LEFT,
+														  m_fontHeight);
+		m_followingBlock->setFormat(AP_Dialog_Paragraph::align_LEFT,
+									NULL,
+									AP_Dialog_Paragraph::indent_NONE,
+									NULL,NULL,NULL,NULL,NULL,
+									AP_Dialog_Paragraph::spacing_SINGLE);
+	}
+
+	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
+	
+	UT_UCSChar * tmp = NULL;
+
+	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
+	m_previousBlock->setText(tmp);
+	FREEP(tmp);
+
+	// this text came from the current document, passed in as arg
+	m_activeBlock->setText(text);
+
+	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
+	m_followingBlock->setText(tmp);
+	FREEP(tmp);
+}
+
+AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
+										   const UT_UCSChar * text,
 										   AP_Dialog_Paragraph * dlg)
 	: XAP_Preview(gc)
 {

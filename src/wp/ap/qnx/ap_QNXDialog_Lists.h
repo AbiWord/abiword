@@ -81,6 +81,9 @@ protected:
 	PtWidget_t * m_wCur_listlabel;
 	PtWidget_t * m_wCur_listlabelv;
 
+	PtWidget_t * m_wPreviewGroup, *m_wPreview;
+	GR_QNXGraphics * m_qnxGraphics;
+
 protected:
 
 };

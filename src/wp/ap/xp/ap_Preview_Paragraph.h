@@ -27,6 +27,7 @@
 
 #include "xap_Preview.h"
 #include "ap_Dialog_Paragraph.h"
+#include "ap_Dialog_Lists.h"
 
 class GR_Font;
 
@@ -88,6 +89,9 @@ class AP_Preview_Paragraph : public XAP_Preview
 
 	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
 						 AP_Dialog_Paragraph * dlg);
+	AP_Preview_Paragraph(GR_Graphics * gc,
+					     const UT_UCSChar * text,
+					     AP_Dialog_Lists * dlg);
 	virtual ~AP_Preview_Paragraph(void);
 
 	void setFormat(AP_Dialog_Paragraph::tAlignState align,

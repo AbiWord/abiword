@@ -31,9 +31,13 @@
 class FV_View;
 class fl_AutoNum;
 class fl_BlockLayout;
+class AP_Preview_Paragraph;
 		
 class AP_Dialog_Lists : public XAP_Dialog_Modeless
 {
+	friend class AP_Preview_Paragraph;
+	friend class AP_Preview_Paragraph_Block;
+
 public:
 	AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Lists(void);
@@ -60,6 +64,9 @@ public:
   	FV_View * 				getView(void);
 	void					setActiveFrame(XAP_Frame *pFrame);
 
+	virtual void 			event_PreviewAreaExposed();
+	virtual void 			_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
+
  protected:
 	
 	// These are the "current use" dialog data items,
@@ -83,8 +90,10 @@ public:
 
 	UT_Bool                                         m_bStartList;
 	UT_Bool                                         m_bStopList;
-        UT_Bool                                         m_bChangeStartValue;
+    UT_Bool                                         m_bChangeStartValue;
 	UT_Bool                                         m_bresumeList;
+
+	AP_Preview_Paragraph 							*m_paragraphPreview;
 };
 
 #endif /* AP_DIALOG_LISTS_H */
