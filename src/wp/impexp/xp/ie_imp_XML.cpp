@@ -77,16 +77,15 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 {
 	xmlToIdMapping * id = NULL;
 
-	const void * pEntry = m_tokens.pick (name);
+	UT_sint32 iEntry = m_tokens[name];
 
-	if (pEntry)
-		return reinterpret_cast<int>(pEntry);
+	if (iEntry >= 0) return static_cast<int>(iEntry);
 
 	id = static_cast<xmlToIdMapping *>(bsearch (name, idlist, len,
 									   sizeof (xmlToIdMapping), s_str_compare));
 	if (id)
     {
-		m_tokens.insert (name, reinterpret_cast<void *>(id->m_type));
+		m_tokens.ins (name, static_cast<UT_sint32>(id->m_type));
 		return id->m_type;
     }
 	return -1;
@@ -136,7 +135,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL), m_tokens(30)
+	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL), m_tokens(-1,30)
 {
 	XAP_App *pApp = getDoc()->getApp();
 	UT_return_if_fail(pApp);

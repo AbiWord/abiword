@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2003 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ut_assert.h"
+#include "ut_exception.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
@@ -63,47 +66,25 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 
 	m_dim = bHasRulerUnits ? UT_determineDimension(szRulerUnits) : DIM_IN;
 
-	// terminate the static buffers for cleanliness
-	m_bufLeftIndent[0] = 0;
-	m_bufRightIndent[0] = 0;
-	m_bufSpecialIndent[0] = 0;
-	m_bufBeforeSpacing[0] = 0;
-	m_bufAfterSpacing[0] = 0;
-	m_bufSpecialSpacing[0] = 0;
-
 	m_pageLeftMargin = NULL;
 	m_pageRightMargin = NULL;
 
-	// initialize vector of control/value/changed items
-	struct id_val_pair
-	{
-		tControl	index;
-		void*		pValue;
-	};
-	const id_val_pair rgPairs[] =
-	{
-		{id_MENU_ALIGNMENT,			(void*)align_LEFT},
-		{id_SPIN_LEFT_INDENT,		&m_bufLeftIndent},
-		{id_SPIN_RIGHT_INDENT,		&m_bufRightIndent},
-		{id_MENU_SPECIAL_INDENT,	(void*)indent_NONE},
-		{id_SPIN_SPECIAL_INDENT,	&m_bufSpecialIndent},
-		{id_SPIN_BEFORE_SPACING,	&m_bufBeforeSpacing},
-		{id_SPIN_AFTER_SPACING,		&m_bufAfterSpacing},
-		{id_MENU_SPECIAL_SPACING,	(void*)spacing_SINGLE},
-		{id_SPIN_SPECIAL_SPACING,	&m_bufSpecialSpacing},
-		{id_CHECK_WIDOW_ORPHAN,		(void*)check_INDETERMINATE},
-		{id_CHECK_KEEP_LINES,		(void*)check_INDETERMINATE},
-		{id_CHECK_PAGE_BREAK,		(void*)check_INDETERMINATE},
-		{id_CHECK_SUPPRESS,			(void*)check_INDETERMINATE},
-		{id_CHECK_NO_HYPHENATE,		(void*)check_INDETERMINATE},
-		{id_CHECK_KEEP_NEXT,		(void*)check_INDETERMINATE},
-		{id_CHECK_DOMDIRECTION,	(void*)check_TRUE}
-	};
-
-	for (unsigned int i = 0; i < NrElements(rgPairs); ++i)
-	{
-		_addPropertyItem(rgPairs[i].index, rgPairs[i].pValue);
-	}
+	_addPropertyItem (id_MENU_ALIGNMENT,		sControlData(align_LEFT));
+	_addPropertyItem (id_SPIN_LEFT_INDENT,		sControlData());
+	_addPropertyItem (id_SPIN_RIGHT_INDENT,		sControlData());
+	_addPropertyItem (id_MENU_SPECIAL_INDENT,	sControlData(indent_NONE));
+	_addPropertyItem (id_SPIN_SPECIAL_INDENT,	sControlData());
+	_addPropertyItem (id_SPIN_BEFORE_SPACING,	sControlData());
+	_addPropertyItem (id_SPIN_AFTER_SPACING,	sControlData());
+	_addPropertyItem (id_MENU_SPECIAL_SPACING,	sControlData(spacing_SINGLE));
+	_addPropertyItem (id_SPIN_SPECIAL_SPACING,	sControlData());
+	_addPropertyItem (id_CHECK_WIDOW_ORPHAN,	sControlData(check_INDETERMINATE));
+	_addPropertyItem (id_CHECK_KEEP_LINES,		sControlData(check_INDETERMINATE));
+	_addPropertyItem (id_CHECK_PAGE_BREAK,		sControlData(check_INDETERMINATE));
+	_addPropertyItem (id_CHECK_SUPPRESS,		sControlData(check_INDETERMINATE));
+	_addPropertyItem (id_CHECK_NO_HYPHENATE,	sControlData(check_INDETERMINATE));
+	_addPropertyItem (id_CHECK_KEEP_NEXT,		sControlData(check_INDETERMINATE));
+	_addPropertyItem (id_CHECK_DOMDIRECTION,	sControlData(check_TRUE));
 }
 
 AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
@@ -113,10 +94,6 @@ AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 
 	DELETEP(m_paragraphPreview);
 
-	// This macro will remove all the sControlData items in
-	// the vector, but will not free the sControlData.pValue items
-	// (which is desirable, they will be either ints or static
-	// buffers).
 	UT_VECTOR_PURGEALL(sControlData *, m_vecProperties);
 }
 
@@ -717,14 +694,14 @@ void AP_Dialog_Paragraph::_setMenuItemValue(tControl item, UT_sint32 value,
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
-	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
+	sControlData * pItem = _getPropertyItem (item);
 	UT_ASSERT(pItem);
+	if (!pItem) return;
 
-	// menu items have integers as data, so store it in a pointer
-	pItem->pData = (void *) value;
+	pItem->setData (value);
 
 	if ((op == op_UICHANGE) || (op == op_SYNC))
-		pItem->bChanged = true;
+		pItem->changed (true);
 
 	// for UI-driven changes, may need to sync other controls
 	if (op == op_UICHANGE)
@@ -732,14 +709,17 @@ void AP_Dialog_Paragraph::_setMenuItemValue(tControl item, UT_sint32 value,
 }
 
 
-UT_uint32 AP_Dialog_Paragraph::_getMenuItemValue(tControl item)
+UT_sint32 AP_Dialog_Paragraph::_getMenuItemValue(tControl item)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
-	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
+	sControlData * pItem = _getPropertyItem (item);
 	UT_ASSERT(pItem);
 
-	return (UT_uint32) pItem->pData;
+	UT_sint32 value = 0;
+	if (pItem)
+		pItem->getData (value);
+	return value;
 }
 
 void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
@@ -747,14 +727,14 @@ void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
-	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
+	sControlData * pItem = _getPropertyItem (item);
 	UT_ASSERT(pItem);
+	if (!pItem) return;
 
-	// check buttons have integers as data, so store it in a pointer
-	pItem->pData = (void *) value;
+	pItem->setData (value);
 
 	if ((op == op_UICHANGE) || (op == op_SYNC))
-		pItem->bChanged = true;
+		pItem->changed (true);
 
 	// for UI-driven changes, may need to sync other controls
 	if (op == op_UICHANGE)
@@ -765,12 +745,13 @@ AP_Dialog_Paragraph::tCheckState AP_Dialog_Paragraph::_getCheckItemValue(tContro
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
-	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
+	sControlData * pItem = _getPropertyItem (item);
 	UT_ASSERT(pItem);
 
-	// stupid casting tricks to keep the compiler happy
-	UT_uint32 tmp = (UT_uint32) pItem->pData;
-	return (tCheckState) tmp;
+	tCheckState value = check_INDETERMINATE;
+	if (pItem)
+		pItem->getData (value);
+	return value;
 }
 
 const XML_Char * AP_Dialog_Paragraph::_makeAbsolute(const XML_Char * value)
@@ -796,55 +777,52 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 											tOperation op /* = op_UICHANGE */)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
+	UT_ASSERT(value);
 
-	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
+	sControlData * pItem = _getPropertyItem (item);
 	UT_ASSERT(pItem);
-
-	// spin items have pointers to static XML_Char buffers as data, so we
-	// don't free them, but extract a pointer and copy the string contents
-
-	UT_ASSERT(pItem->pData && value);
+	if (!pItem) return;
 
 	// some spinbuttons have special data requirements
 	switch(item)
 	{
 	case id_SPIN_LEFT_INDENT:
 	case id_SPIN_RIGHT_INDENT:
-		{
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, value));
-		}
-		break;
-
 	case id_SPIN_SPECIAL_INDENT:
-
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, value));
+		pItem->setData (reinterpret_cast<const XML_Char *>(UT_reformatDimensionString (m_dim, value)));
 		break;
 
 	case id_SPIN_BEFORE_SPACING:
 	case id_SPIN_AFTER_SPACING:
-		// NOTE : line spacing can't be negative, so make absolut
-
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_PT, _makeAbsolute(value)));
+		{
+			/* NOTE : line spacing can't be negative, so take absolute value:
+			 */
+			const char * abs_value = UT_reformatDimensionString (DIM_PT, _makeAbsolute (value));
+			pItem->setData (reinterpret_cast<const XML_Char *>(abs_value));
+		}
 		break;
 
 	case id_SPIN_SPECIAL_SPACING:
-		if(_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
-		{
-			UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_none, _makeAbsolute(value),".2"));
-		}
+		if (_getMenuItemValue (id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
+			{
+				const char * abs_value = UT_reformatDimensionString (DIM_none, _makeAbsolute (value), ".2");
+				pItem->setData (reinterpret_cast<const XML_Char *>(abs_value));
+			}
 		else
-		{
-			UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_PT, _makeAbsolute(value)));
-		}
+			{
+				const char * abs_value = UT_reformatDimensionString (DIM_PT, _makeAbsolute (value));
+				pItem->setData (reinterpret_cast<const XML_Char *>(abs_value));
+			}
 		break;
 
 	default:
-		// all others get a simple string copy to the static member
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, value);
+		/* all others get a simple string copy to the static member
+		 */
+		pItem->setData (value);
 	}
 
 	if ((op == op_UICHANGE) || (op == op_SYNC))
-		pItem->bChanged = true;
+		pItem->changed (true);
 
 	// for UI-driven changes, may need to sync other controls
 	if (op == op_UICHANGE)
@@ -855,10 +833,14 @@ const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
-	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
-	UT_ASSERT(pItem && pItem->pData);
+	sControlData * pItem = _getPropertyItem (item);
+	UT_ASSERT(pItem);
 
-	return (const XML_Char *) pItem->pData;
+	const XML_Char * value = NULL;
+	if (pItem)
+		pItem->getData (value);
+	UT_ASSERT(value);
+	return value;
 }
 
 
@@ -1224,20 +1206,127 @@ bool AP_Dialog_Paragraph::_wasChanged(tControl item)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
-	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
+	sControlData * pItem = _getPropertyItem (item);
 	UT_ASSERT(pItem);
 
-	return pItem->bChanged;
+	return (pItem ? pItem->changed () : false);
 }
 
-void AP_Dialog_Paragraph::_addPropertyItem(UT_uint32 index, void* pValue)
+void AP_Dialog_Paragraph::_addPropertyItem (tControl index, const sControlData & control_data)
 {
-	typedef AP_Dialog_Paragraph::sControlData sControlData;
-	sControlData* pItem = new sControlData;
-    UT_ASSERT(pItem);
-    pItem->bChanged = false;
-    pItem->pData = pValue;
-    void* pTmp;
-    m_vecProperties.setNthItem(index, pItem, &pTmp);
+	sControlData * pDataCopy = 0;
+
+	UT_TRY
+		{
+			pDataCopy = new sControlData(control_data);
+		}
+	UT_CATCH(...)
+		{
+			pDataCopy = 0;
+		}
+	UT_ASSERT(pDataCopy);
+
+	if (pDataCopy)
+		m_vecProperties.setNthItem (static_cast<UT_uint32>(index), pDataCopy, 0);
 }
 
+AP_Dialog_Paragraph::sControlData::sControlData (UT_sint32 data) :
+	m_siData(data),
+	m_csData(check_INDETERMINATE),
+	m_szData(0),
+	m_bChanged(false)
+{
+	// 
+}
+
+AP_Dialog_Paragraph::sControlData::sControlData (tCheckState data) :
+	m_siData(0),
+	m_csData(data),
+	m_szData(0),
+	m_bChanged(false)
+{
+	// 
+}
+
+/* default is empty string
+ */
+AP_Dialog_Paragraph::sControlData::sControlData (XML_Char * data) :
+	m_siData(0),
+	m_csData(check_INDETERMINATE),
+	m_szData(new XML_Char[SPIN_BUF_TEXT_SIZE]),
+	m_bChanged(false)
+{
+	m_szData[SPIN_BUF_TEXT_SIZE-1] = 0;
+	setData (data);
+}
+
+AP_Dialog_Paragraph::sControlData::sControlData (const sControlData & rhs) :
+	m_siData(rhs.m_siData),
+	m_csData(rhs.m_csData),
+	m_szData(rhs.m_szData ? new XML_Char[SPIN_BUF_TEXT_SIZE] : 0),
+	m_bChanged(false)
+{
+	if (m_szData)
+		memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (XML_Char));
+}
+
+AP_Dialog_Paragraph::sControlData::~sControlData ()
+{
+	if (m_szData) delete [] m_szData;
+}
+
+AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator= (const sControlData & rhs)
+{
+	m_siData = rhs.m_siData;
+	m_csData = rhs.m_csData;
+
+	if (rhs.m_szData)
+		{
+			if (!m_szData)
+				{
+					UT_TRY
+						{
+							m_szData = new XML_Char[SPIN_BUF_TEXT_SIZE];
+						}
+					UT_CATCH(...)
+						{
+							m_szData = 0;
+						}
+					UT_ASSERT(m_szData);
+				}
+			if (m_szData)
+				memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (XML_Char));
+		}
+	else if (m_szData)
+		{
+			m_szData[0] = 0;
+		}
+	m_bChanged = false;
+
+	return *this;
+}
+
+bool AP_Dialog_Paragraph::sControlData::setData (const XML_Char * data)
+{
+	if (!m_szData)
+		{
+			UT_TRY
+				{
+					m_szData = new XML_Char[SPIN_BUF_TEXT_SIZE];
+				}
+			UT_CATCH(...)
+				{
+					m_szData = 0;
+				}
+			UT_ASSERT(m_szData);
+			if (!m_szData) return false;
+
+			m_szData[SPIN_BUF_TEXT_SIZE-1] = 0;
+		}
+	if (data)
+		UT_XML_strncpy (m_szData, SPIN_BUF_TEXT_SIZE - 1, data);
+	else
+		m_szData[0] = 0;
+
+	return true;
+}

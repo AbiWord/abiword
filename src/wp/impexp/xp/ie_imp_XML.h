@@ -32,7 +32,7 @@
 #include "ie_imp.h"
 #include "ut_bytebuf.h"
 #include "ut_string_class.h"
-#include "ut_hash.h"
+#include "ut_IntStrMap.h"
 
 class PD_Document;
 
@@ -148,7 +148,7 @@ protected:
     UT_String		m_currentMetaDataName;
 	UT_uint32       m_currentRevisionId;
 
-	UT_StringPtrMap m_tokens;
+	UT_NumberMap    m_tokens;
 
 private:
 	UT_uint32	m_iCharCount;
