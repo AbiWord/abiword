@@ -47,6 +47,7 @@ XAP_Dialog * AP_Win32Dialog_Spell::static_constructor(XAP_DialogFactory * pFacto
 AP_Win32Dialog_Spell::AP_Win32Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
   : AP_Dialog_Spell(pDlgFactory,id)
 {
+	m_bChangingSelection = 0;
 }
 
 AP_Win32Dialog_Spell::~AP_Win32Dialog_Spell(void)
@@ -246,7 +247,9 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
 
 	// populate the change field, if appropriate
+	m_bChangingSelection = 1;
 	_suggestChange();
+	m_bChangingSelection = 0;
 }
 
 void AP_Win32Dialog_Spell::_suggestChange(void)
@@ -408,12 +411,12 @@ BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case EN_CHANGE:
 			if (GetWindowTextLength(hWndCtrl))
 			{
-#if 0
-// TODO: this looks plausible, but it causes more problems than it solves
-				m_iSelectedRow = -1;
-				SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
-#endif 
-				_toggleChangeButtons(UT_TRUE);
+				if( !m_bChangingSelection )
+				{
+					m_iSelectedRow = -1;
+					SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
+					_toggleChangeButtons(UT_TRUE);
+				}
 			}
 			else
 			{
@@ -429,12 +432,16 @@ BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		switch (HIWORD(wParam))
 		{
 			case LBN_SELCHANGE:
+				m_bChangingSelection = 1;
 				_suggestChange();
+				m_bChangingSelection = 0;
 				return 1;
 
 			case LBN_DBLCLK:
+				m_bChangingSelection = 1;
 				UT_ASSERT((m_iSelectedRow == SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0)));
 				_change();
+				m_bChangingSelection = 0;
 				return 1;
 
 			default:

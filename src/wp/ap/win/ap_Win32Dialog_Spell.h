@@ -53,6 +53,7 @@ protected:
 	HWND					m_hwndChangeTo;		// AP_RID_DIALOG_SPELL_EDIT_CHANGE
 	HWND					m_hwndSuggest;		// AP_RID_DIALOG_SPELL_LIST_SUGGEST
 
+	BOOL					m_bChangingSelection;
 };
 
 #endif /* AP_WIN32DIALOG_SPELL_H */
