@@ -45,6 +45,7 @@ TToolTip::TToolTip(tool_tip_settings *settings)
 	Run();
 }
 
+
 //--------------------------------------------------------------------
 
 void TToolTip::MessageReceived(BMessage *msg)
@@ -181,7 +182,8 @@ void TToolTipView::Draw(BRect /* where */)
 
 void TToolTipView::MessageReceived(BMessage *msg)
 {
-	switch (msg->what) {
+	switch (msg->what) 
+	{
 		case B_APP_ACTIVATED:
 			msg->FindBool("active", &fTip.app_active);
 			break;
@@ -209,6 +211,10 @@ void TToolTipView::MessageReceived(BMessage *msg)
 		case eToolTipStop:
 			// flag thread to stop
 			fTip.stop = true;
+			break;
+			
+		default:
+			BView::MessageReceived(msg);
 			break;
 	}
 }
