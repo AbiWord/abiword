@@ -9768,9 +9768,12 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			const XML_Char * sz = pCurStyleVec->getNthItem(j);
 			if(sz != NULL)
+			{
 				// MUST NOT USED delete[] on strings allocated by malloc/calloc !!!
 				// delete [] sz;
 				free(const_cast<XML_Char*>(sz));
+				sz = NULL;
+			}
 		}
 		delete pCurStyleVec;
 
