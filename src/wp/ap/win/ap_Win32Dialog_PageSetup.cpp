@@ -144,9 +144,21 @@ typedef struct _tabParam
 	WORD which;
 } TabParam;
 
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+// As Tabbed Dialogs have problems with HotKeys, these macros have been replaced to remove &
+//#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+//#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)  { \
+                    XML_Char* p = NULL; \
+                    UT_XML_cloneNoAmpersands( p, pSS->getValue(AP_STRING_ID_##s));\
+                    SetDlgItemText(hWnd,AP_RID_DIALOG_##c,p); \
+					FREEP(p); \
+                  }
+#define _DSX(c,s) { \
+                    XML_Char* p = NULL; \
+                    UT_XML_cloneNoAmpersands( p, pSS->getValue(XAP_STRING_ID_##s));\
+                    SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,p); \
+					FREEP(p); \
+                  }
 #define _GV(s)		(pSS->getValue(AP_STRING_ID_##s))
 #define _GVX(s)		(pSS->getValue(XAP_STRING_ID_##s))
 

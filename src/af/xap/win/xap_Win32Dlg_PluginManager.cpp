@@ -122,8 +122,14 @@ BOOL CALLBACK XAP_Win32Dialog_PluginManager::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-
-#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+// As Tabbed Dialogs have problems with HotKeys, this macro have been replaced to remove &
+//#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DSX(c,s) { \
+                    XML_Char* p = NULL; \
+                    UT_XML_cloneNoAmpersands( p, pSS->getValue(XAP_STRING_ID_##s));\
+                    SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,p); \
+					FREEP(p); \
+                  }
 #define _GVX(s)		(pSS->getValue(XAP_STRING_ID_##s))
 
 // the order of the tabs
