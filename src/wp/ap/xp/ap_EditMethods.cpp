@@ -4553,20 +4553,26 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 
 	if(pGraphics->startPrint())
 	{
+	  const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
+	  const XML_Char * msgTmpl = pSS->getValue (AP_STRING_ID_MSG_PrintStatus);
+
+	  XML_Char msgBuf [1024];
+
 	    if (bCollate)
 		{
 			for (j=1; (j <= nCopies); j++)
 				for (k=nFromPage; (k <= nToPage); k++)
 				{
+					sprintf (msgBuf, msgTmpl, k, nToPage);					
+					pFrame->setStatusMessage ( msgBuf );
+					pFrame->nullUpdate();
+
 		      // NB we will need a better way to calc
 					// pGraphics->m_iRasterPosition when
 					// iHeight is allowed to vary page to page
 					pGraphics->m_iRasterPosition = (k-1)*iHeight;
 					pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
-
-					// TODO: give better user-feedback
-					pFrame->nullUpdate();
 				}
 		}
 	    else
@@ -4574,18 +4580,20 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 			for (k=nFromPage; (k <= nToPage); k++)
 				for (j=1; (j <= nCopies); j++)
 				{
+					sprintf (msgBuf, msgTmpl, k, nToPage);
+					pFrame->setStatusMessage ( msgBuf );
+					pFrame->nullUpdate();
+
 					// NB we will need a better way to calc
 					// pGraphics->m_iRasterPosition when
 					// iHeight is allowed to vary page to page
 					pGraphics->m_iRasterPosition = (k-1)*iHeight;
 					pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
-
-					// TODO: give better user-feedback
-					pFrame->nullUpdate();
 				}
 		}
 	    pGraphics->endPrint();
+	    pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
 	
 	return true;
