@@ -14,6 +14,9 @@
 
 <Strings    class="XAP"
 
+LANG_MH_MH="Marshallesisk (Marshalløyane)"
+LANG_MH_NR="Marshallesisk (Nauru)"
+
 STYLE_BLOCKTEXT="Blokktekst"
 STYLE_BOXLIST="Liste (boksar)"
 STYLE_BULLETLIST="Liste (fylte sirklar)"
@@ -353,6 +356,9 @@ UntitledDocument="Utan namn%d"
 />
 
 <Strings    class="AP"
+
+MENU_LABEL_FILE_RECENT="Nyleg brukte &amp;filer"
+MENU_STATUSLINE_FILE_RECENT="Opna eit nyleg brukt dokument"
 
 DLG_MergeCellsTitle="Slå saman celler"
 DLG_MergeCells_Frame="Slå saman celler"
