@@ -33,6 +33,7 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 #include "ut_assert.h"
+#include "ut_contextGlyph.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
 #include <fribidi.h>
@@ -152,185 +153,199 @@ public:
 	virtual void                 setPrev(fp_ContainerObject * pNull) {}
 	virtual void                 draw(GR_Graphics * pG) {}
 
-	UT_uint32		        getBlockOffset() const			{ return m_iOffsetFirst; }
-	UT_uint32		        getLength() const				{ return m_iLen; }
-	GR_Graphics*	        getGraphics() const;
-	fp_HyperlinkRun *       getHyperlink() const 			{ return m_pHyperlink;}
+	UT_uint32		    getBlockOffset() const			{ return m_iOffsetFirst; }
+	UT_uint32		    getLength() const				{ return m_iLen; }
+	GR_Graphics*	    getGraphics() const;
+	fp_HyperlinkRun *   getHyperlink() const 			{ return m_pHyperlink;}
 #if DEBUG
-	virtual void            printText(void) {};
+	virtual void        printText(void) {};
 #endif
-	void                    getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
+	void                getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
 
-	void					insertIntoRunListBeforeThis(fp_Run& newRun);
-	void					insertIntoRunListAfterThis(fp_Run& newRun);
-	fd_Field*				getField(void) const { return m_pField; }
-	bool					isField(void) const { return (bool) (m_pField != NULL); }
-	void					unlinkFromRunList();
+	void				insertIntoRunListBeforeThis(fp_Run& newRun);
+	void				insertIntoRunListAfterThis(fp_Run& newRun);
+	fd_Field*			getField(void) const { return m_pField; }
+	bool				isField(void) const { return (bool) (m_pField != NULL); }
+	void				unlinkFromRunList();
 
-	const UT_RGBColor 		getFGColor(void) const;
+	const UT_RGBColor 	getFGColor(void) const;
 
-	virtual bool			hasLayoutProperties(void) const;
+	virtual bool		hasLayoutProperties(void) const;
 
-	void					setLine(fp_Line*);
-	void					setBlock(fl_BlockLayout * pBL) { _setBlock(pBL); }
-	virtual void            setX(UT_sint32 x, bool bDontClearIfNeeded = false);
-	void			        Run_setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
-	virtual void			setY(UT_sint32);
-	void					setBlockOffset(UT_uint32);
-	void					setLength(UT_uint32 iLen, bool bRefresh = true);
-	void					setNextRun(fp_Run*, bool bRefresh = true);
-	void					setPrevRun(fp_Run*, bool bRefresh = true);
-	void					setHyperlink(fp_HyperlinkRun * pH);
-	void					markWidthDirty() {m_bRecalcWidth = true;}
-	bool					isFirstRunOnLine(void) const;
-	bool					isLastRunOnLine(void) const;
-	bool					isOnlyRunOnLine(void) const;
-	bool					isFirstVisRunOnLine(void) const;
-	bool					isLastVisRunOnLine(void) const;
-	void					markDrawBufferDirty() {m_bRefreshDrawBuffer = true;}
-	virtual void			draw(dg_DrawArgs*);
-	virtual void            clearScreen(void);
-	void                    Run_ClearScreen(bool bFullLineHeightRect = false);
-	virtual void            setWidth(UT_sint32 iW) {}
-	virtual void            setHeight(UT_sint32 iH) {}
-	virtual bool            isVBreakable(void) {return false;}
-	virtual bool            isHBreakable(void) {return false;}
-	virtual UT_sint32       wantVBreakAt(UT_sint32 i) {return i;}
-	virtual UT_sint32       wantHBreakAt(UT_sint32 i) {return i;}
+	void				setLine(fp_Line*);
+	void				setBlock(fl_BlockLayout * pBL) { _setBlock(pBL); }
+	virtual void        setX(UT_sint32 x, bool bDontClearIfNeeded = false);
+	void			    Run_setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
+	virtual void		setY(UT_sint32);
+	void				setBlockOffset(UT_uint32);
+	void				setLength(UT_uint32 iLen, bool bRefresh = true);
+	void				setNextRun(fp_Run*, bool bRefresh = true);
+	void				setPrevRun(fp_Run*, bool bRefresh = true);
+	void				setHyperlink(fp_HyperlinkRun * pH);
+	void				markWidthDirty() {m_bRecalcWidth = true;}
+	bool				isFirstRunOnLine(void) const;
+	bool				isLastRunOnLine(void) const;
+	bool				isOnlyRunOnLine(void) const;
+	bool				isFirstVisRunOnLine(void) const;
+	bool				isLastVisRunOnLine(void) const;
+	void				markDrawBufferDirty()
+	                        {m_eRefreshDrawBuffer = SR_ContextSensitiveAndLigatures;}
+	void				orDrawBufferDirty(UTShapingResult eR)
+                        {
+							m_eRefreshDrawBuffer = (UTShapingResult)((UT_uint32)m_eRefreshDrawBuffer
+																	 |(UT_uint32)eR);
+						}
+	virtual void		draw(dg_DrawArgs*);
+	virtual void        clearScreen(void);
+	void                Run_ClearScreen(bool bFullLineHeightRect = false);
+	virtual void        setWidth(UT_sint32 iW) {}
+	virtual void        setHeight(UT_sint32 iH) {}
+	virtual bool        isVBreakable(void) {return false;}
+	virtual bool        isHBreakable(void) {return false;}
+	virtual UT_sint32   wantVBreakAt(UT_sint32 i) {return i;}
+	virtual UT_sint32   wantHBreakAt(UT_sint32 i) {return i;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) { return NULL;}
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) { return NULL;}
 
-	void					markAsDirty(void);
-	void                    setCleared(void);
-	bool					isDirty(void) const { return m_bDirty; }
-	bool			        canContainPoint(void) const;
+	void				markAsDirty(void);
+	void                setCleared(void);
+	bool				isDirty(void) const { return m_bDirty; }
+	bool			    canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
-	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
-	virtual	bool			recalcWidth(void);
+	virtual void		fetchCharWidths(fl_CharWidths * pgbCharWidths);
+	virtual	bool		recalcWidth(void);
 
-    virtual UT_Rect *       getScreenRect();
-    virtual void            markDirtyOverlappingRuns(UT_Rect & recScreen);
+    virtual UT_Rect *   getScreenRect();
+    virtual void        markDirtyOverlappingRuns(UT_Rect & recScreen);
 
-	virtual void			_draw(dg_DrawArgs*) = 0;
-    void                    _drawTextLine(UT_sint32, UT_sint32, UT_uint32, UT_uint32, UT_UCSChar *);
-	virtual void       		_clearScreen(bool bFullLineHeightRect) = 0;
-	virtual bool			canBreakAfter(void) const = 0;
-	virtual bool			canBreakBefore(void) const = 0;
-	virtual bool			letPointPass(void) const;
-	virtual bool			isForcedBreak(void) const { return false; }
-	virtual bool			alwaysFits(void) const { return false; }
-	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
-	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }
-	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) = 0;
-	void			        lookupProperties(GR_Graphics * pG=NULL);
-	virtual bool			doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
-	void                    drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG);
-	virtual bool			isSuperscript(void) const { return false; }
-	virtual bool			isSubscript(void) const { return false; }
-    bool			        isUnderline(void) const ;
-	bool			        isOverline(void) const ;
-	bool			        isStrikethrough(void) const ;
-	bool			        isTopline(void) const ;
-	bool			        isBottomline(void) const ;
-	void			        setLinethickness(UT_sint32 max_linethickness);
-    UT_sint32		        getLinethickness(void) ;
-	void			        setUnderlineXoff(UT_sint32 xoff);
-	UT_sint32		        getUnderlineXoff(void);
-	void			        setOverlineXoff(UT_sint32 xoff) ;
-	UT_sint32		        getOverlineXoff(void) ;
-	void			        setMaxUnderline(UT_sint32 xoff) ;
-	UT_sint32		        getMaxUnderline(void) ;
-	void			        setMinOverline(UT_sint32 xoff) ;
-	UT_sint32		        getMinOverline(void) ;
-	UT_sint32               getToplineThickness(void);
+	virtual void		_draw(dg_DrawArgs*) = 0;
+    void                _drawTextLine(UT_sint32, UT_sint32, UT_uint32, UT_uint32, UT_UCSChar *);
+	virtual void       	_clearScreen(bool bFullLineHeightRect) = 0;
+	virtual bool		canBreakAfter(void) const = 0;
+	virtual bool		canBreakBefore(void) const = 0;
+	virtual bool		letPointPass(void) const;
+	virtual bool		isForcedBreak(void) const { return false; }
+	virtual bool		alwaysFits(void) const { return false; }
+	virtual bool		findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si,
+												 bool bForce=false);
+	
+	virtual UT_sint32	findTrailingSpaceDistance(void) const { return 0; }
+	virtual bool		findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
+	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos,
+										PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
+	
+	virtual void 		findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
+										UT_sint32& x2, UT_sint32& y2, UT_sint32& height,
+										bool& bDirection) = 0;
+	
+	void			    lookupProperties(GR_Graphics * pG=NULL);
+	virtual bool		doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
+	void                drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG);
+	virtual bool		isSuperscript(void) const { return false; }
+	virtual bool		isSubscript(void) const { return false; }
+    bool			    isUnderline(void) const ;
+	bool			    isOverline(void) const ;
+	bool			    isStrikethrough(void) const ;
+	bool			    isTopline(void) const ;
+	bool			    isBottomline(void) const ;
+	void			    setLinethickness(UT_sint32 max_linethickness);
+    UT_sint32		    getLinethickness(void) ;
+	void			    setUnderlineXoff(UT_sint32 xoff);
+	UT_sint32		    getUnderlineXoff(void);
+	void			    setOverlineXoff(UT_sint32 xoff) ;
+	UT_sint32		    getOverlineXoff(void) ;
+	void			    setMaxUnderline(UT_sint32 xoff) ;
+	UT_sint32		    getMaxUnderline(void) ;
+	void			    setMinOverline(UT_sint32 xoff) ;
+	UT_sint32		    getMinOverline(void) ;
+	UT_sint32           getToplineThickness(void);
 
 	virtual FriBidiCharType	getDirection() const { return m_iDirection; };
-	FriBidiCharType			getVisDirection();
-	virtual void            setDirection(FriBidiCharType iDirection = FRIBIDI_TYPE_WS);
-	void					setVisDirection(FriBidiCharType iDir);
-	UT_uint32               getVisPosition(UT_uint32 ilogPos);
-	UT_uint32               getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);
-	UT_uint32               getOffsetFirstVis();
-	UT_uint32               getOffsetLog(UT_uint32 iVisOff);
-	//virtual void            setDirectionProperty(FriBidiCharType dir);
-	fp_Run *				getNextVisual();
-	fp_Run *				getPrevVisual();
+	FriBidiCharType		getVisDirection();
+	virtual void        setDirection(FriBidiCharType iDirection = FRIBIDI_TYPE_WS);
+	void				setVisDirection(FriBidiCharType iDir);
+	UT_uint32           getVisPosition(UT_uint32 ilogPos);
+	UT_uint32           getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);
+	UT_uint32           getOffsetFirstVis();
+	UT_uint32           getOffsetLog(UT_uint32 iVisOff);
+	fp_Run *			getNextVisual();
+	fp_Run *			getPrevVisual();
 
-	bool                    containsRevisions(){return (m_pRevisions != NULL);}
+	bool                containsRevisions(){return (m_pRevisions != NULL);}
 	// would prefer to make the return value const, but the
 	// getLastRevision() and related functions use internal cache so
 	// they could not be called
-	PP_RevisionAttr *       getRevisions() const {return m_pRevisions;}
-	FPVisibility            isHidden() const {return m_eHidden;}
-	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
-	void					forceRecalcWidth(void) { m_bRecalcWidth = true; }
-	void					forceRefreshDrawBuffer(void) { m_bRefreshDrawBuffer = true; }
-	void                    Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
-	fg_FillType *           getFillType(void);            
+	PP_RevisionAttr *   getRevisions() const {return m_pRevisions;}
+	FPVisibility        isHidden() const {return m_eHidden;}
+	void                setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
+	void				forceRecalcWidth(void) { m_bRecalcWidth = true; }
+	void                Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y,
+							 UT_sint32 width, UT_sint32 height);
+	
+	fg_FillType *       getFillType(void);            
 
 #ifdef FMT_TEST
-	virtual void			__dump(FILE * fp) const;
+	virtual void		__dump(FILE * fp) const;
 #endif
 
 protected:
-	void					_inheritProperties(void);
-	fp_Run*					_findPrevPropertyRun(void) const;
+	void				_inheritProperties(void);
+	fp_Run*				_findPrevPropertyRun(void) const;
 
-	FV_View*				_getView(void) const { return getBlock()->getView(); }
+	FV_View*			_getView(void) const { return getBlock()->getView(); }
 	// By convention, _getFoo and _setFoo have no side effects.
 	// They can easily be inlined by a smart compiler.
-	UT_RGBColor				_getColorPG(void) const { return m_pColorPG; }
-	UT_RGBColor				_getColorFG(void) const { return m_pColorFG; }
-	UT_RGBColor				_getColorHL(void) const { return m_pColorHL; }
-	void					_setColorFG(UT_RGBColor c) { m_pColorFG = c; }
-	void					_setColorHL(UT_RGBColor c) { m_pColorHL = c; }
-	void                    _setColorHL(const char *pszColor)
+	UT_RGBColor			_getColorPG(void) const { return m_pColorPG; }
+	UT_RGBColor			_getColorFG(void) const { return m_pColorFG; }
+	UT_RGBColor			_getColorHL(void) const { return m_pColorHL; }
+	void				_setColorFG(UT_RGBColor c) { m_pColorFG = c; }
+	void				_setColorHL(UT_RGBColor c) { m_pColorHL = c; }
+	void                _setColorHL(const char *pszColor)
 		{ m_pColorHL.setColor(pszColor); }
 	
-	void					_setLine(fp_Line* pLine) { m_pLine = pLine; }
-	void					_setHeight(UT_sint32 iHeight)
-								{ m_iHeight = iHeight;}
-	void					_setWidth(UT_sint32 iWidth)
-                        		{ m_iWidth = iWidth; }
-	void					_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
-	void					_setAscent(int iAscent) { m_iAscent = iAscent; }
-	void					_setDescent(int iDescent) {m_iDescent = iDescent;}
-	void					_setX(int iX) { m_iX = iX; }
-	void					_setY(int iY) { m_iY = iY; }
-	void					_setDirection(FriBidiCharType c) { m_iDirection = c; }
-	FriBidiCharType			_getDirection(void) const { return m_iDirection; }
-	FriBidiCharType			_getVisDirection(void) const { return m_iVisDirection; }
-	GR_Font *				_getFont(void) const { return m_pFont; }
-	void  					_setFont(GR_Font * f) { m_pFont = f; }
-	unsigned char			_getDecorations(void) const { return m_fDecorations; }
-	void					_setDecorations(unsigned char d) {m_fDecorations = d;}
+	void				_setLine(fp_Line* pLine) { m_pLine = pLine; }
+	void				_setHeight(UT_sint32 iHeight)
+							{ m_iHeight = iHeight;}
+	void				_setWidth(UT_sint32 iWidth)
+                        	{ m_iWidth = iWidth; }
+	void				_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
+	void				_setAscent(int iAscent) { m_iAscent = iAscent; }
+	void				_setDescent(int iDescent) {m_iDescent = iDescent;}
+	void				_setX(int iX) { m_iX = iX; }
+	void				_setY(int iY) { m_iY = iY; }
+	void				_setDirection(FriBidiCharType c) { m_iDirection = c; }
+	FriBidiCharType		_getDirection(void) const { return m_iDirection; }
+	FriBidiCharType		_getVisDirection(void) const { return m_iVisDirection; }
+	GR_Font *			_getFont(void) const { return m_pFont; }
+	void  				_setFont(GR_Font * f) { m_pFont = f; }
+	unsigned char		_getDecorations(void) const { return m_fDecorations; }
+	void				_setDecorations(unsigned char d) {m_fDecorations = d;}
 	
-	void					_orDecorations(unsigned char d) { m_fDecorations |= d; }
-	UT_sint32				_getLineWidth(void) { return m_iLineWidth; }
-	bool					_setLineWidth(UT_sint32 w)
-	                             {
-									 UT_sint32 o = m_iLineWidth;
-									 m_iLineWidth = w;
-									 return o != w;
-								 }
-	void					_setLength(UT_uint32 l) { m_iLen = l; }
-	void					_setRevisions(PP_RevisionAttr * p) { m_pRevisions = p; }
-	void					_setDirty(bool b);
-	void					_setField(fd_Field * fd) { m_pField = fd; }
-	void                    _setHyperlink(fp_HyperlinkRun * pH) { m_pHyperlink = pH; }
-	bool					_getRecalcWidth(void) const { return m_bRecalcWidth; }
-	void					_setRecalcWidth(bool b) { m_bRecalcWidth = b; }
+	void				_orDecorations(unsigned char d) { m_fDecorations |= d; }
+	UT_sint32			_getLineWidth(void) { return m_iLineWidth; }
+	bool				_setLineWidth(UT_sint32 w)
+	                         {
+								 UT_sint32 o = m_iLineWidth;
+								 m_iLineWidth = w;
+								 return o != w;
+							 }
+	void				_setLength(UT_uint32 l) { m_iLen = l; }
+	void				_setRevisions(PP_RevisionAttr * p) { m_pRevisions = p; }
+	void				_setDirty(bool b);
+	void				_setField(fd_Field * fd) { m_pField = fd; }
+	void                _setHyperlink(fp_HyperlinkRun * pH) { m_pHyperlink = pH; }
+	bool				_getRecalcWidth(void) const { return m_bRecalcWidth; }
+	void				_setRecalcWidth(bool b) { m_bRecalcWidth = b; }
 
-	bool					_getRefreshDrawBuffer(void) const { return m_bRefreshDrawBuffer; }
-	void					_setRefreshDrawBuffer(bool b) { m_bRefreshDrawBuffer = b; }
-	virtual void	        _lookupProperties(const PP_AttrProp * pSpanAP,
-											  const PP_AttrProp * pBlockAP,
-											  const PP_AttrProp * pSectionAP, 
-											  GR_Graphics * pG = NULL) = 0;
+	UTShapingResult		_getRefreshDrawBuffer(void) const { return m_eRefreshDrawBuffer; }
+	void				_setRefreshDrawBuffer(UTShapingResult eR)
+	                         { m_eRefreshDrawBuffer = eR; }
+	virtual void	    _lookupProperties(const PP_AttrProp * pSpanAP,
+										  const PP_AttrProp * pBlockAP,
+										  const PP_AttrProp * pSectionAP, 
+										  GR_Graphics * pG = NULL) = 0;
 
-	virtual bool            _canContainPoint(void) const;
+	virtual bool        _canContainPoint(void) const;
 
 //
 // Variables to draw underlines for all runs
@@ -367,7 +382,7 @@ private:
 	fd_Field*				m_pField;
 	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
 	FriBidiCharType			m_iVisDirection;
-	bool 					m_bRefreshDrawBuffer;
+	UTShapingResult			m_eRefreshDrawBuffer;
 
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_pColorHL;

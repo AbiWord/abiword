@@ -103,7 +103,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pField(0),
 	m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
 	m_iVisDirection(FRIBIDI_TYPE_UNSET),
-	m_bRefreshDrawBuffer(true),
+	m_eRefreshDrawBuffer(SR_ContextSensitiveAndLigatures), // everything
 	m_pColorHL(255,255,255,true), // set highlight colour to transparent
 	m_pFont(0),
 	m_bRecalcWidth(false),
@@ -559,7 +559,10 @@ void fp_Run::setNextRun(fp_Run* p, bool bRefresh)
 {
 	if(p != m_pNext)
 	{
-		m_bRefreshDrawBuffer |= bRefresh;
+		// change of context, need to refresh draw buffer if context sensitive
+		if(bRefresh)
+			m_eRefreshDrawBuffer = (UTShapingResult)((UT_uint32)m_eRefreshDrawBuffer
+													 | (UT_uint32)SR_ContextSensitive);
 		m_bRecalcWidth |= bRefresh;
 #if 0
 		// we do not do ligatures across run boundaries any more,
@@ -581,7 +584,10 @@ void fp_Run::setPrevRun(fp_Run* p, bool bRefresh)
 {
 	if(p != m_pPrev)
 	{
-		m_bRefreshDrawBuffer |= bRefresh;
+		// change of context, need to refresh draw buffer if context sensitive
+		if(bRefresh)
+			m_eRefreshDrawBuffer = (UTShapingResult)((UT_uint32)m_eRefreshDrawBuffer
+													 | (UT_uint32)SR_ContextSensitive);
 		m_bRecalcWidth |= bRefresh;
 #if 0
 		// we do not do ligatures across run boundaries any more,
@@ -693,7 +699,12 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	clearScreen();
 
 	m_iLen = iLen;
-	m_bRefreshDrawBuffer |= bRefresh;
+
+	// change of length generally means something got deleted, and
+	// that affects both shaping and ligature processing
+	if(bRefresh)
+		m_eRefreshDrawBuffer = SR_ContextSensitiveAndLigatures;
+	
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
@@ -4876,8 +4887,10 @@ FriBidiCharType fp_Run::getVisDirection()
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
+	// not entirely sure this is necessary ...
     if(iDir != m_iVisDirection)
-		m_bRefreshDrawBuffer = true;
+		m_eRefreshDrawBuffer = SR_ContextSensitiveAndLigatures;
+	
 	m_iVisDirection = iDir;
 }
 

@@ -1919,7 +1919,8 @@ void fl_BlockLayout::format()
 					if(m_iNeedsReformat == 0  || bJustifyStuff)
 					{
 						pRun->forceRecalcWidth();
-						pRun->forceRefreshDrawBuffer();
+						// This should not be required, Tomas, Nov 22, 2003
+						//pRun->markDrawBufferDirty();
 					}
 					pRun->recalcWidth();
 					xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
@@ -4482,7 +4483,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 						// this run
 						pTR_del1 = static_cast<fp_TextRun*>(pRun);
 
-						// need to force ligature processing
+						// need to force ligature processing (but not shaping)
 						pTR_del1->orShapingRequired(SR_Ligatures);
 						
 						if(pRun->getNextRun() && pRun->getNextRun()->getType()== FPRUN_TEXT)
@@ -4800,7 +4801,8 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 			pTextRun->lookupProperties();
 			pTextRun->fetchCharWidths(&m_gbCharWidths);
 			pTextRun->forceRecalcWidth();
-			pTextRun->forceRefreshDrawBuffer();
+			// should not be necessary, Tomas, Nov 22, 2003
+			// pTextRun->markDrawBufferDirty();
 		}
 		else if (pRun->getType() == FPRUN_TAB)
 		{

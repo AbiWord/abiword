@@ -139,8 +139,8 @@ bool fp_TextRun::hasLayoutProperties(void) const
 }
 
 void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
-									const PP_AttrProp * pBlockAP,
-									const PP_AttrProp * pSectionAP,
+								   const PP_AttrProp * pBlockAP,
+								   const PP_AttrProp * pSectionAP,
 								   GR_Graphics * pG)
 {
 	// we should only need this if the props have changed
@@ -253,6 +253,11 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setAscent(pG->getFontAscent(pFont));
 		_setDescent(pG->getFontDescent(pFont));
 		_setHeight(pG->getFontHeight(pFont));
+
+		// change of font can mean different glyph coverage; we have
+		// to recalculate the entire drawbuffer
+		markDrawBufferDirty();
+		m_eShapingRequired = SR_Unknown;
 		bChanged = true;
 	}
 
@@ -887,6 +892,11 @@ void fp_TextRun::mergeWithNext(void)
 	// can only adjust width after the justification has been handled
  	_setWidth(getWidth() + pNext->getWidth());
 
+
+	// the shaping requirenments of the combined run
+	m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
+										   | (UT_uint32)(pNext->m_eShapingRequired));
+
 	// because there might be a ligature across the run boundary, we
 	// have to refresh if the last char of the run is susceptible
 	// to ligating
@@ -894,20 +904,25 @@ void fp_TextRun::mergeWithNext(void)
 	UT_UCS4Char c;
 	getCharacter(getLength()-1, c);
 	bool bFirstInLigature = !cg.isNotFirstInLigature(c);
-	_setRefreshDrawBuffer(_getRefreshDrawBuffer()
-						  | pNext->_getRefreshDrawBuffer()
-						  | bFirstInLigature);
+	UTShapingResult eR = _getRefreshDrawBuffer();
 
-	m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
-										   | (UT_uint32)(pNext->m_eShapingRequired));
-
+	// get the current refresh state
+	eR = (UTShapingResult)((UT_uint32)eR | (UT_uint32)pNext->_getRefreshDrawBuffer());
+	
 	if(bFirstInLigature)
 	{
 		// this is a special case where we have to force ligature
-		// processing
+		// processing; we need to add this both to the refresh state
+		// and the required shaping
+		eR = (UTShapingResult)((UT_uint32)eR | (UT_uint32) SR_Ligatures);
+
 		m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
-											   | (UT_uint32) SR_Ligatures);
+										   | (UT_uint32) SR_Ligatures);
 	}
+	
+	_setRefreshDrawBuffer(eR);
+
+
 
 	// we need to take into consideration whether this run has been reversed
 	// in which case the order of the concating needs to be reversed too
@@ -1749,10 +1764,17 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 void fp_TextRun::_refreshDrawBuffer()
 {
 	UT_uint32 iLen = getLength();
+	UTShapingResult eRefresh = _getRefreshDrawBuffer();
+	bool bShape = ((UT_uint32)eRefresh & (UT_uint32) m_eShapingRequired) != 0;
+
+	// see if there is an overlap between the dirtiness of the present
+	// buffer and the shaping requirenments of the text it represents
+	UT_DEBUGMSG(("fp_TextRun::_refreshDrawBuffer(): bShape %d, eRefresh 0x%02x, "
+				 "m_eShapingRequired 0x%02x\n",
+				 (UT_uint32)bShape,(UT_uint32)eRefresh, (UT_uint32)m_eShapingRequired));
 	
-	if(_getRefreshDrawBuffer() && iLen && m_eShapingRequired != SR_Plain)
+	if(iLen && bShape)
 	{
-		
 		if(iLen > m_iSpanBuffSize) //buffer too small, reallocate
 		{
 			delete[] m_pSpanBuff;
@@ -1780,7 +1802,7 @@ void fp_TextRun::_refreshDrawBuffer()
 			UT_UCS4_strnrev(m_pSpanBuff, iLen);
 
 		// mark the draw buffer clean ...
-		_setRefreshDrawBuffer(false);
+		_setRefreshDrawBuffer(SR_None);
 	} //if(m_bRefreshDrawBuffer)
 }
 
