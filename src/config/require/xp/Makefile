@@ -42,10 +42,8 @@ ifeq ($(OS_NAME),WIN32)
 	@if [ -d $(ABI_ROOT)/../expat ]; then				\
 		echo "Found expat in peer directory";			\
 		cd $(ABI_ROOT)/../expat; 			\
-		$(ABICOPY) config.h.msvc config.h;	\
 		$(ABICOPY) expat_config.h.msvc expat_config.h;	\
 		$(ABICOPY) lib/winconfig.h lib/config.h;	\
-		$(ABICOPY) lib/expat.h.in lib/expat.h;	\
 		$(MAKE) -fMakefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
 	else										\
 		echo "ERROR -- peer expat not found";			\

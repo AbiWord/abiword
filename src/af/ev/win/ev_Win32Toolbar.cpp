@@ -972,8 +972,11 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 				bool bString = EV_TIS_ShouldUseString(tis);
 
+				UT_return_val_if_fail(szState, true);
+
 				HWND hwndCombo = _getControlWindow(id);
-				UT_ASSERT(hwndCombo);
+				UT_return_val_if_fail(hwndCombo, true);
+
 				
 				/*
 				{
@@ -1044,7 +1047,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 
 		case EV_TBIT_BOGUS:
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 	}
 
@@ -1090,7 +1093,7 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 }
 
 
-void EV_Win32Toolbar::show()
+void EV_Win32Toolbar::show(void)
 {
 	UT_ASSERT(m_pWin32Frame);
 	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
@@ -1102,7 +1105,7 @@ void EV_Win32Toolbar::show()
 	m_bVisible = true;
 }
 
-void EV_Win32Toolbar::hide()
+void EV_Win32Toolbar::hide(void)
 {
 	UT_ASSERT(m_pWin32Frame);
 	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();

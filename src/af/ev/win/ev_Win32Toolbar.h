@@ -73,8 +73,8 @@ public:
 	inline bool				bVisible( void ) { return m_bVisible; }
 
 protected:
-	virtual void					show();
-	virtual void					hide();
+	virtual void					show(void);
+	virtual void					hide(void);
 
 	void							_releaseListener(void);
 	HWND							_getControlWindow(XAP_Toolbar_Id id);

@@ -22,7 +22,8 @@
 #include <string.h>
 
 #if defined(_WIN32)
-#define _STATIC
+#define XML_STATIC
+#define COMPILED_FROM_DSP
 #endif /* _WIN32 */
 
 #include <expat.h>
