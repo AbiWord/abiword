@@ -241,7 +241,8 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	char szFamily[256];
 
 	char szWeight[32];
-	char szWeight2[32]; 	// HACK:  since it's almost always the weight
+	char szWeight2[32];
+	char szWeight3[32]; 	// HACK:  since it's almost always the weight
 	                        // we have trouble matching, we use this for a second shot.
 	
 	char szSlant[8];
@@ -281,8 +282,13 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	}
 	else
 	{
-		strcpy(szWeight, "medium");		// matches most fonts
-		strcpy(szWeight2, "normal");	// matches other fonts
+		// Note that we order them normal, then medium, because fonts
+		// that support both consider medium a heavier weight than
+		// normal.
+
+		strcpy(szWeight, "normal");		// matches most fonts
+		strcpy(szWeight2, "regular");	// matches some odd fonts
+		strcpy(szWeight3, "medium");	// matches other fonts
 	}
 
 	UT_sint32 height = convertDimension(pszFontSize);
@@ -303,7 +309,7 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	// First match try
 	GdkFont * pgFont;
 	{
-		sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-iso8859-1", szFamily, szWeight, szSlant, height, cSpacing);
+		sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-*-*", szFamily, szWeight, szSlant, height, cSpacing);
 		if (m_pFont && m_pFont->m_strFontName)
 			if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
 				return m_pFont;
@@ -313,16 +319,28 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 		if (!pgFont)
 		{
 			// load failed, try again with compromise attributes (this should be made much more general)
-			sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-iso8859-1", szFamily, szWeight2, szSlant, height, cSpacing);
+			sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-*-*", szFamily, szWeight2, szSlant, height, cSpacing);
 			if (m_pFont && m_pFont->m_strFontName)
 				if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
 					return m_pFont;
 
 			pgFont = gdk_font_load(xFontName);
 			
-			// we failed the second lookup!  Bail!
 			if (!pgFont)
-				pgFont = gdk_font_load("fixed");
+			{
+				// TRY AGAIN!
+				// load failed, try again with compromise attributes (this should be made much more general)
+				sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-*-*", szFamily, szWeight3, szSlant, height, cSpacing);
+				if (m_pFont && m_pFont->m_strFontName)
+					if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
+						return m_pFont;
+
+				pgFont = gdk_font_load(xFontName);
+
+				// we failed the third lookup!  Bail!
+				if (!pgFont)
+					pgFont = gdk_font_load("fixed");
+			}
 		}
 	}
 	
