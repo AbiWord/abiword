@@ -144,10 +144,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_pDoc(pLayout->getDocument()),
 		m_pG(m_pLayout->getGraphics()),
 		m_pParentData(pParentData),
-		m_iSelectionAnchor(0),
-		m_iSelectionLeftAnchor(0),
-		m_iSelectionRightAnchor(0),
-		m_bSelection(false),
 		m_pAutoScrollTimer(0),
 		m_xLastMouse(0),
 		m_yLastMouse(0),
@@ -206,7 +202,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iHighDrawPoint(0),
 		m_CaretListID(0),
 		m_FrameEdit(this),
-		m_VisualDragText(this)
+		m_VisualDragText(this),
+		m_Selection(this)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -379,7 +376,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 	//Test_Dump();
 
-	m_iSelectionAnchor = getPoint();
+	m_Selection.setSelectionAnchor(getPoint());
 	_resetSelection();
 //
 // Update the combo boxes on the frame with this documents info.
@@ -531,10 +528,10 @@ void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
@@ -816,15 +813,15 @@ void FV_View::toggleCase (ToggleCase c)
 	}
 	else
 	{
-		if(m_iInsPoint < m_iSelectionAnchor)
+		if(m_iInsPoint < m_Selection.getSelectionAnchor())
 		{
 			low  = m_iInsPoint;
-			high = m_iSelectionAnchor;
+			high = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
 			high = m_iInsPoint;
-			low  = m_iSelectionAnchor;
+			low  = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -1557,7 +1554,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 	// if nothing selected, then an image can't be
 	if (!isSelectionEmpty())
 	{
-		PT_DocPosition pos = m_iSelectionAnchor;
+		PT_DocPosition pos = m_Selection.getSelectionAnchor();
 		fp_Run* pRun = NULL;
 
 		UT_Vector vBlock;
@@ -1568,7 +1565,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 		{
 			if(i==0)
 			{
-				if(getPoint() < m_iSelectionAnchor)
+				if(getPoint() < m_Selection.getSelectionAnchor())
 				{
 					pos = getPoint();
 				}
@@ -1607,15 +1604,24 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 	return 0;
 }
 
+PT_DocPosition FV_View::getSelectionAnchor(void) const
+{
+	if(m_Selection.isSelected())
+	{
+		return m_Selection.getSelectionAnchor();
+	}
+	return m_iInsPoint;
+}
+
 bool FV_View::isSelectionEmpty(void) const
 {
-	if (!m_bSelection)
+	if (!m_Selection.isSelected())
 	{
 		return true;
 	}
 
 	PT_DocPosition curPos = getPoint();
-	if (curPos == m_iSelectionAnchor)
+	if (curPos == m_Selection.getSelectionAnchor())
 	{
 		return true;
 	}
@@ -2097,13 +2103,13 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 		vBlock->addItem(getCurrentBlock());
 		return;
 	}
-	if (m_iSelectionAnchor > startpos)
+	if (m_Selection.getSelectionAnchor() > startpos)
 	{
-		endpos = m_iSelectionAnchor;
+		endpos = m_Selection.getSelectionAnchor();
 	}
 	else
 	{
-		startpos = m_iSelectionAnchor;
+		startpos = m_Selection.getSelectionAnchor();
 	}
 //
 // tweak the start point of the selection if it is just before the current block
@@ -2318,13 +2324,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	m_pDoc->disableListUpdates();
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 		if(posStart < 2)
 		{
@@ -2800,10 +2806,10 @@ bool FV_View::getStyle(const XML_Char ** style)
 
 	if (!bSelEmpty)
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 	}
 
 	// 1. get block style at insertion point
@@ -2963,13 +2969,13 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -3061,10 +3067,10 @@ bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** 
 
 		if (!bSelEmpty)
 		{
-			if (m_iSelectionAnchor < posStart)
-				posStart = m_iSelectionAnchor;
+			if (m_Selection.getSelectionAnchor() < posStart)
+				posStart = m_Selection.getSelectionAnchor();
 			else
-				posEnd = m_iSelectionAnchor;
+				posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 	if(posStart < 2)
@@ -3193,10 +3199,10 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 
 		if (!bSelEmpty)
 		{
-			if (m_iSelectionAnchor < posStart)
-				posStart = m_iSelectionAnchor;
+			if (m_Selection.getSelectionAnchor() < posStart)
+				posStart = m_Selection.getSelectionAnchor();
 			else
-				posEnd = m_iSelectionAnchor;
+				posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 	if(posStart < 2)
@@ -3580,13 +3586,13 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	PT_DocPosition posEnd = posStart;
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 	if(posStart < 2)
@@ -3970,10 +3976,10 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 	}
 
 	// 1. assemble complete set at insertion point
@@ -4169,10 +4175,10 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 	}
 
 	// 1. assemble complete set at insertion point
@@ -4319,12 +4325,12 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	UT_GrowBuf buffer;
 
-	UT_sint32 selLength = static_cast<UT_sint32>(labs(m_iInsPoint - m_iSelectionAnchor));
+	UT_sint32 selLength = static_cast<UT_sint32>(labs(m_iInsPoint - m_Selection.getSelectionAnchor()));
 
 	PT_DocPosition low;
-	if (m_iInsPoint > m_iSelectionAnchor)
+	if (m_iInsPoint > m_Selection.getSelectionAnchor())
 	{
-		low = m_iSelectionAnchor;
+		low = m_Selection.getSelectionAnchor();
 	}
 	else
 	{
@@ -4906,17 +4912,17 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 
 	//UT_ASSERT(!isSelectionEmpty());
 
-	if (iNewPoint <= m_iSelectionLeftAnchor)
+	if (iNewPoint <= m_Selection.getSelectionLeftAnchor())
 	{
-		m_iSelectionAnchor = m_iSelectionRightAnchor;
+		m_Selection.setSelectionAnchor(m_Selection.getSelectionRightAnchor());
 	}
 	else
 	{
-		m_iSelectionAnchor = m_iSelectionLeftAnchor;
+		m_Selection.setSelectionAnchor(m_Selection.getSelectionLeftAnchor());
 	}
 
 	const FV_DocPos argDocPos =
-		iNewPoint > m_iSelectionAnchor ? FV_DOCPOS_EOW_SELECT : FV_DOCPOS_BOW;
+		iNewPoint > m_Selection.getSelectionAnchor() ? FV_DOCPOS_EOW_SELECT : FV_DOCPOS_BOW;
 	const PT_DocPosition iNewPointWord = _getDocPosFromPoint(iNewPoint, argDocPos,false);
 
 	bool bPostpone = false;
@@ -5996,15 +6002,15 @@ UT_uint32 FV_View::undoCount (bool bUndo) const
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 {
 	PT_DocPosition iPos1, iPos2;
-	if (m_iSelectionAnchor < getPoint())
+	if (m_Selection.getSelectionAnchor() < getPoint())
 	{
-		iPos1 = m_iSelectionAnchor;
+		iPos1 = m_Selection.getSelectionAnchor();
 		iPos2 = getPoint();
 	}
 	else
 	{
 		iPos1 = getPoint();
-		iPos2 = m_iSelectionAnchor;
+		iPos2 = m_Selection.getSelectionAnchor();
 	}
 
 	pdr->set(m_pDoc,iPos1,iPos2);
@@ -6150,10 +6156,10 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 	PT_DocPosition posEnd = posStart;
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
@@ -6388,9 +6394,9 @@ bool FV_View::getCellBGColor(XML_Char * &color)
 	PT_DocPosition posCell = getPoint();
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posCell)
+		if (m_Selection.getSelectionAnchor() < posCell)
 		{
-			posCell = m_iSelectionAnchor;
+			posCell = m_Selection.getSelectionAnchor();
 		}
 		if(posCell < 2)
 		{
@@ -6444,10 +6450,10 @@ bool FV_View::setTableFormat(PT_DocPosition pos, const XML_Char * properties[])
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
@@ -6489,10 +6495,10 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
@@ -7122,10 +7128,10 @@ bool FV_View::isPosSelected(PT_DocPosition pos) const
 		PT_DocPosition posStart = getPoint();
 		PT_DocPosition posEnd = posStart;
 
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 
 		return ((pos >= posStart) && (pos <= posEnd));
 	}
@@ -7462,7 +7468,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				return EV_EMC_IMAGE;
 			}
 		}
-		PT_DocPosition posLow = m_iSelectionAnchor;
+		PT_DocPosition posLow = m_Selection.getSelectionAnchor();
 		PT_DocPosition posHigh = getPoint();
 		if(posLow > posHigh)
 		{
@@ -8001,15 +8007,15 @@ FV_View::countWords(void)
 	}
 	else
 	{
-		if(m_iInsPoint < m_iSelectionAnchor)
+		if(m_iInsPoint < m_Selection.getSelectionAnchor())
 		{
 			low  = m_iInsPoint;
-			high = m_iSelectionAnchor;
+			high = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
 			high = m_iInsPoint;
-			low  = m_iSelectionAnchor;
+			low  = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -9483,7 +9489,7 @@ bool FV_View::isInTable()
 	}
 	else
 	{
-		pos = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
+		pos = (m_iInsPoint < m_Selection.getSelectionAnchor() ? m_iInsPoint : m_Selection.getSelectionAnchor());
 	}
 	return isInTable(pos);
 }

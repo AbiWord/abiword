@@ -112,9 +112,9 @@ void FV_View::_swapSelectionOrientation(void)
 	UT_ASSERT(!isSelectionEmpty());
 	_fixInsertionPointCoords();
 	PT_DocPosition curPos = getPoint();
-	UT_ASSERT(curPos != m_iSelectionAnchor);
-	_setPoint(m_iSelectionAnchor);
-	m_iSelectionAnchor = curPos;
+	UT_ASSERT(curPos != m_Selection.getSelectionAnchor());
+	_setPoint(m_Selection.getSelectionAnchor());
+	m_Selection.setSelectionAnchor(curPos);
 }
 
 /*!
@@ -130,8 +130,8 @@ void FV_View::_moveToSelectionEnd(bool bForward)
 	UT_ASSERT(!isSelectionEmpty());
 
 	PT_DocPosition curPos = getPoint();
-	UT_ASSERT(curPos != m_iSelectionAnchor);
-	bool bForwardSelection = (m_iSelectionAnchor < curPos);
+	UT_ASSERT(curPos != m_Selection.getSelectionAnchor());
+	bool bForwardSelection = (m_Selection.getSelectionAnchor() < curPos);
 
 	if (bForward != bForwardSelection)
 	{
@@ -146,7 +146,7 @@ void FV_View::_moveToSelectionEnd(bool bForward)
 void FV_View::_eraseSelection(void)
 {
 	_fixInsertionPointCoords();
-	if (!m_bSelection)
+	if (!m_Selection.isSelected())
 	{
 		_resetSelection();
 		return;
@@ -154,15 +154,15 @@ void FV_View::_eraseSelection(void)
 
 	UT_uint32 iPos1, iPos2;
 
-	if (m_iSelectionAnchor < getPoint())
+	if (m_Selection.getSelectionAnchor() < getPoint())
 	{
-		iPos1 = m_iSelectionAnchor;
+		iPos1 = m_Selection.getSelectionAnchor();
 		iPos2 = getPoint();
 	}
 	else
 	{
 		iPos1 = getPoint();
-		iPos2 = m_iSelectionAnchor;
+		iPos2 = m_Selection.getSelectionAnchor();
 	}
 	m_iLowDrawPoint = 0;
 	m_iHighDrawPoint = 0;;
@@ -179,7 +179,7 @@ void FV_View::_clearSelection(void)
 	m_pG->getCaret()->enable();
 
 	_fixInsertionPointCoords();
-	if (!m_bSelection)
+	if (!m_Selection.isSelected())
 	{
 		_resetSelection();
 		return;
@@ -187,15 +187,15 @@ void FV_View::_clearSelection(void)
 
 	UT_uint32 iPos1, iPos2;
 
-	if (m_iSelectionAnchor < getPoint())
+	if (m_Selection.getSelectionAnchor() < getPoint())
 	{
-		iPos1 = m_iSelectionAnchor;
+		iPos1 = m_Selection.getSelectionAnchor();
 		iPos2 = getPoint();
 	}
 	else
 	{
 		iPos1 = getPoint();
-		iPos2 = m_iSelectionAnchor;
+		iPos2 = m_Selection.getSelectionAnchor();
 	}
 
 	bool bres = _clearBetweenPositions(iPos1, iPos2, true);
@@ -212,23 +212,23 @@ void FV_View::_drawSelection()
 {
 	UT_return_if_fail(!isSelectionEmpty());
 //	CHECK_WINDOW_SIZE
-	UT_DEBUGMSG(("_drawSelection getPoint() %d m_iSelectionAnchor %d \n",getPoint(),m_iSelectionAnchor));
+	UT_DEBUGMSG(("_drawSelection getPoint() %d m_Selection.getSelectionAnchor() %d \n",getPoint(),m_Selection.getSelectionAnchor()));
 //	if(m_iLowDrawPoint == 0 && m_iHighDrawPoint == 0)
 	{
-		if (m_iSelectionAnchor < getPoint())
+		if (m_Selection.getSelectionAnchor() < getPoint())
 		{
-			_drawBetweenPositions(m_iSelectionAnchor, getPoint());
+			_drawBetweenPositions(m_Selection.getSelectionAnchor(), getPoint());
 		}
 		else
 		{
-			_drawBetweenPositions(getPoint(), m_iSelectionAnchor);
+			_drawBetweenPositions(getPoint(), m_Selection.getSelectionAnchor());
 		}
 	}
 #if 0
 	else
 	{
-		PT_DocPosition iLow = UT_MIN(m_iSelectionAnchor,getPoint());
-		PT_DocPosition iHigh =  UT_MAX(m_iSelectionAnchor,getPoint());
+		PT_DocPosition iLow = UT_MIN(m_Selection.getSelectionAnchor(),getPoint());
+		PT_DocPosition iHigh =  UT_MAX(m_Selection.getSelectionAnchor(),getPoint());
 		if(iLow < m_iLowDrawPoint)
 		{
 			_drawBetweenPositions(iLow, m_iLowDrawPoint);
@@ -239,25 +239,25 @@ void FV_View::_drawSelection()
 		}
 	}
 #endif
-	m_iLowDrawPoint = UT_MIN(m_iSelectionAnchor,getPoint());
-	m_iHighDrawPoint = UT_MAX(m_iSelectionAnchor,getPoint());
+	m_iLowDrawPoint = UT_MIN(m_Selection.getSelectionAnchor(),getPoint());
+	m_iHighDrawPoint = UT_MAX(m_Selection.getSelectionAnchor(),getPoint());
 }
 
 // Note that isClearSelection() might change its tune in one of two ways.
 // Way #1 is by calling one of the next few methods.
-//   BUT! this never happens because m_iSelectionAnchor == getPoint by def.
-// Way #2 is if m_bSelection is set and the point is changed so that it
-//          no longer equals m_iSelectionAnchor.
+//   BUT! this never happens because m_Selection.getSelectionAnchor() == getPoint by def.
+// Way #2 is if the Selection is set and the point is changed so that it
+//          no longer equals m_Selection.getSelectionAnchor().
 void FV_View::_resetSelection(void)
 {
-	m_bSelection = false;
-	m_iSelectionAnchor = getPoint();
+	m_Selection.clearSelection();
+	m_Selection.setSelectionAnchor(getPoint());
 }
 
 void FV_View::_setSelectionAnchor(void)
 {
-	m_bSelection = true;
-	m_iSelectionAnchor = getPoint();
+	m_Selection.setMode(FV_SelectionMode_Single);
+	m_Selection.setSelectionAnchor(getPoint());
 }
 
 void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
@@ -271,7 +271,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	UT_uint32 iRealDeleteCount;
 
-	UT_uint32 iSelAnchor = m_iSelectionAnchor;
+	UT_uint32 iSelAnchor = m_Selection.getSelectionAnchor();
 	if(iSelAnchor < 2)
 	{
 		iSelAnchor = 2;
@@ -2659,7 +2659,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	*/
 	bool bres;
 	UT_uint32 iNewPoint = getPoint();
-	xxx_UT_DEBUGMSG(("_extSel: iNewPoint %d ioldPoint %d selectionAnchor %d \n",iNewPoint,iOldPoint,m_iSelectionAnchor));
+	xxx_UT_DEBUGMSG(("_extSel: iNewPoint %d ioldPoint %d selectionAnchor %d \n",iNewPoint,iOldPoint,m_Selection.getSelectionAnchor()));
 	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint;
 	dNewPoint = static_cast<PT_DocPosition>(iNewPoint);
 	dOldPoint = static_cast<PT_DocPosition>(iOldPoint);
@@ -2677,9 +2677,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 
 	if (iNewPoint < iOldPoint)
 	{
-		if (iNewPoint < m_iSelectionAnchor)
+		if (iNewPoint < m_Selection.getSelectionAnchor())
 		{
-			if (iOldPoint < m_iSelectionAnchor)
+			if (iOldPoint < m_Selection.getSelectionAnchor())
 			{
 				/*
 				  N O A
@@ -2694,14 +2694,14 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				  N A O
 				  The selection flipped across the anchor to the left.
 				*/
-				bres = _clearBetweenPositions(m_iSelectionAnchor, iOldPoint, true);
+				bres = _clearBetweenPositions(m_Selection.getSelectionAnchor(), iOldPoint, true);
 				if(bres)
 					_drawBetweenPositions(iNewPoint, iOldPoint);
 			}
 		}
 		else
 		{
-			UT_ASSERT(iOldPoint >= m_iSelectionAnchor);
+			UT_ASSERT(iOldPoint >= m_Selection.getSelectionAnchor());
 
 			/*
 			  A N O
@@ -2718,9 +2718,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	{
 		UT_ASSERT(iNewPoint > iOldPoint);
 
-		if (iNewPoint < m_iSelectionAnchor)
+		if (iNewPoint < m_Selection.getSelectionAnchor())
 		{
-			UT_ASSERT(iOldPoint <= m_iSelectionAnchor);
+			UT_ASSERT(iOldPoint <= m_Selection.getSelectionAnchor());
 
 			/*
 			  O N A
@@ -2734,14 +2734,14 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 		}
 		else
 		{
-			if (iOldPoint < m_iSelectionAnchor)
+			if (iOldPoint < m_Selection.getSelectionAnchor())
 			{
 				/*
 				  O A N
 				  The selection flipped across the anchor to the right.
 				*/
 
-				bres = _clearBetweenPositions(iOldPoint, m_iSelectionAnchor, true);
+				bres = _clearBetweenPositions(iOldPoint, m_Selection.getSelectionAnchor(), true);
 				if(bres)
 					_drawBetweenPositions(iOldPoint, iNewPoint);
 			}
@@ -2781,7 +2781,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		_clearIfAtFmtMark(getPoint());
 		_setSelectionAnchor();
 	}
-	m_bSelection = true;	
+	m_Selection.setMode(FV_SelectionMode_Single);
 	_setPoint(iNewPoint);
 	_extSel(iOldPoint);
 

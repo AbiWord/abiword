@@ -2993,8 +2993,8 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 
 	_setPoint(dpBeg);
 	_setSelectionAnchor();
-	m_iSelectionLeftAnchor = dpBeg;
-	m_iSelectionRightAnchor = dpEnd;
+	m_Selection.setSelectionLeftAnchor(dpBeg);
+	m_Selection.setSelectionRightAnchor(dpEnd);
 
 	_setPoint (dpEnd);
 
@@ -3417,17 +3417,17 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	PT_DocPosition iPointOrig = posStart;
-	PT_DocPosition iAnchorOrig = m_iSelectionAnchor;
+	PT_DocPosition iAnchorOrig = m_Selection.getSelectionAnchor();
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 
 	}
@@ -3528,7 +3528,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		// boundaries the original insetion point and selection anchor
 		// are now shifted, so we need to fix them
 		setPoint(iPointOrig+1);
-		m_iSelectionAnchor = iAnchorOrig + 1;
+		m_Selection.setSelectionAnchor(iAnchorOrig + 1);
 	}
 
 	delete [] target;
@@ -3554,13 +3554,13 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -3964,32 +3964,11 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Need code here to remove all the header/footers.
 //
 	pHdrFtr = pShadow->getHdrFtrSectionLayout();
-	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
 //
 // Repeat this code 4 times to remove all the DocSection Layouts.
 //
 	setCursorWait();
 	_removeThisHdrFtr(pHdrFtr);
-#if 0
-	if(isHeader)
-	{
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header First \n"));
-		_removeThisHdrFtr(pDSL->getHeaderFirst());
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header Last \n"));
-		_removeThisHdrFtr(pDSL->getHeaderLast());
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header Even \n"));
-		_removeThisHdrFtr(pDSL->getHeaderEven());
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header \n"));
-		_removeThisHdrFtr(pDSL->getHeader());
-	}
-	else
-	{
-		_removeThisHdrFtr(pDSL->getFooterFirst());
-		_removeThisHdrFtr(pDSL->getFooterLast());
-		_removeThisHdrFtr(pDSL->getFooterEven());
-		_removeThisHdrFtr(pDSL->getFooter());
-	}
-#endif
 //
 // After erarsing the cursor, Restore to the point before all this mess started.
 //

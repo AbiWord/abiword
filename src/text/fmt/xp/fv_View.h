@@ -38,6 +38,7 @@
 #include "fv_FrameEdit.h"
 #include "fv_VisualDragText.h"
 #include "ap_Dialog_SplitCells.h"
+#include "fv_Selection.h"
 
 #define AUTO_SCROLL_MSECS	100
 
@@ -180,14 +181,16 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class GR_Caret;
 	friend class FV_FrameEdit;
 	friend class FV_VisualDragText;
+	friend class FV_Selection;
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
 
 	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
 	void  setGraphics(GR_Graphics *pG);
-	virtual inline UT_uint32	  getPoint(void) const { return m_iInsPoint; }
-	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
+	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
+	PT_DocPosition	getSelectionAnchor(void) const;
+
 
 	virtual void focusChange(AV_Focus focus);
 
@@ -741,11 +744,6 @@ private:
 	GR_Graphics*		m_pG;
 	void*				m_pParentData;
 
-	PT_DocPosition		m_iSelectionAnchor;
-	PT_DocPosition		m_iSelectionLeftAnchor;
-	PT_DocPosition		m_iSelectionRightAnchor;
-	bool				m_bSelection;
-
 	// autoscroll stuff
 	UT_Timer *			m_pAutoScrollTimer;
 	UT_sint32			m_xLastMouse;
@@ -847,6 +845,7 @@ private:
 	AV_ListenerId       m_CaretListID;
 	FV_FrameEdit        m_FrameEdit;
 	FV_VisualDragText   m_VisualDragText;
+	FV_Selection        m_Selection;
 };
 
 #endif /* FV_VIEW_H */
