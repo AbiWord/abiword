@@ -849,6 +849,10 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 //
 		getBlock()->setNeedsRedraw();
 		setNeedsRedraw();
+		if(bUseFirst)
+		  {
+		    runIndex = 0;
+		  }
 		for (i = runIndex; i < count; i++)
 		{
 #ifdef BIDI_ENABLED
