@@ -65,6 +65,7 @@ BeginSet(EnUS)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Find",			"Find the specified text")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"R&eplace",			"Replace the specified text with different text")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Go To",			"Move the insertion point to a specific location")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spell Check",			"Checks spelling in document")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Options",			"Set options")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&View",			NULL)

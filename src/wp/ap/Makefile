@@ -31,6 +31,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)		\
+                $(OBJDIR)/ap_$(ABI_FE)Dialog_Spell.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)				\
@@ -51,6 +52,7 @@ endif
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Dialog_Spell.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/ap_LeftRuler.$(OBJ_SUFFIX)				\

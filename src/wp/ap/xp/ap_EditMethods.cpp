@@ -42,6 +42,7 @@
 #include "ap_Dialog_Replace.h"
 #include "ap_Dialog_Goto.h"
 #include "ap_Dialog_Break.h"
+#include "ap_Dialog_Spell.h"
 
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
@@ -220,7 +221,9 @@ public:
 	static EV_EditMethod_Fn insField;
 	static EV_EditMethod_Fn insSymbol;
 
-	static EV_EditMethod_Fn dlgFont;
+	static EV_EditMethod_Fn dlgSpell;
+   
+   	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
 	static EV_EditMethod_Fn dlgBullets;
 	static EV_EditMethod_Fn dlgBorders;
@@ -474,6 +477,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insField),				0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
 
+   	EV_EditMethod(NF(dlgSpell),			0,		""),
+   
 	EV_EditMethod(NF(dlgFont),				0,		""),
 	EV_EditMethod(NF(dlgParagraph),			0,		""),
 	EV_EditMethod(NF(dlgBullets),			0,		""),
@@ -2829,6 +2834,52 @@ Defun1(go)
 #endif
 }
 
+/*****************************************************************/
+   
+static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
+{
+   XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+   UT_ASSERT(pFrame);
+	
+   pFrame->raise();
+	
+   XAP_DialogFactory * pDialogFactory
+     = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	
+   UT_DEBUGMSG(("dialog id = %i", id));
+   
+   AP_Dialog_Spell * pDialog
+     = (AP_Dialog_Spell *)(pDialogFactory->requestDialog(id));
+   UT_ASSERT(pDialog);
+	
+   // run the dialog (it probably should be modeless if anyone
+   // gets the urge to make it safe that way)
+   pDialog->runModal(pFrame);
+	        
+   UT_Bool bOK = UT_TRUE;
+	                
+   pDialogFactory->releaseDialog(pDialog);
+	                
+   return bOK;
+}                       
+           
+           
+Defun1(dlgSpell)
+{
+#if 0
+   ABIWORD_VIEW;
+   XAP_Dialog_Id id = AP_DIALOG_ID_SPELL;
+
+   return s_doSpellDlg(pView,id);
+#else
+   XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+   UT_ASSERT(pFrame);
+   
+   s_TellNotImplemented(pFrame, "Spell Check dialog", __LINE__);
+   return UT_TRUE;
+#endif
+}   
+   
 /*****************************************************************/
 
 static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
