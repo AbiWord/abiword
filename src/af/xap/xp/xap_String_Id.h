@@ -209,8 +209,13 @@ dcl(DLG_ABOUT_Title,					"About %s")
 dcl(DLG_Options_Label_UnixFontWarning, "Show font warning at start up")
 dcl(DLG_Options_Label_ModifyUnixFontPath, "Modify Unix Font Path")
 
-/* Language property in different languages; alphabetical except English first */
-dcl(LANG_0, 							"no proofing")
+/*
+	  Language property in different languages; alphabetical except English first.
+	  Please when translating the first entry, put it also into parenthesis
+	  or, surround it by some other characters, so that it will appear on the top
+	  of the list when sorted alphabetically.
+*/
+dcl(LANG_0, 							"(no proofing)")
 dcl(LANG_EN_AU, 							"English (Australia)")
 dcl(LANG_EN_CA, 							"English (Canada)")
 dcl(LANG_EN_GB, 							"English (UK)")
