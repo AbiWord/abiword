@@ -568,7 +568,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iEndnotesStart(0xffffffff),
 	m_iEndnotesEnd(0xffffffff),
 	m_iNextFNote(0),
-	m_iNextENote(0)
+	m_iNextENote(0),
+	m_bInFNotes(false),
+	m_bInENotes(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1127,9 +1129,7 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		_handleBookmarks(ps);
 
 		// deal with footnotes and endnotes
-		_handleNotes(ps);
-
-		// get the doc offsets of the foot/endnote text
+		// first, get the doc offsets of the foot/endnote text
 		// (We are interested in the offset of this in the document,
 		// not in the data stream; therefore, we do not add
 		// ps->fib.fcMin for the simple doc
@@ -1137,6 +1137,10 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		m_iFootnotesEnd   = m_iFootnotesStart + ps->fib.ccpFtn;
 		m_iEndnotesStart = m_iFootnotesEnd + ps->fib.ccpHdr + ps->fib.ccpMcr + ps->fib.ccpAtn;
 		m_iEndnotesEnd   = m_iEndnotesStart + ps->fib.ccpEdn;
+
+		// now retrieve the note info ...
+		_handleNotes(ps);
+
 
 		UT_DEBUGMSG(("Fnotes [%d,%d], Enotes [%d,%d]\n",
 					 m_iFootnotesStart, m_iFootnotesEnd, m_iEndnotesStart, m_iEndnotesEnd));
@@ -1214,18 +1218,13 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
-	if(ps->currentcp >= m_iFootnotesStart && ps->currentcp < m_iFootnotesEnd)
-	{
-		UT_DEBUGMSG(("In footnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
-	}
-	
-	if(ps->currentcp >= m_iEndnotesStart && ps->currentcp < m_iEndnotesEnd)
-	{
-		UT_DEBUGMSG(("In endnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
-	}
+	if(!_handleNotesText(ps->currentcp))
+		return 0;
 	
 	_insertBookmarkIfAppropriate(ps->currentcp);
-	_insertNoteIfAppropriate(ps->currentcp);
+
+	if(_insertNoteIfAppropriate(ps->currentcp, eachchar))
+		return 0;
 
 	// convert incoming character to unicode
 	if (chartype)
@@ -1301,18 +1300,13 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	PICF picf;
 #endif
 
-	if(ps->currentcp >= m_iFootnotesStart && ps->currentcp < m_iFootnotesEnd)
-	{
-		UT_DEBUGMSG(("In footnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
-	}
+	if(!_handleNotesText(ps->currentcp))
+		return 0;
 	
-	if(ps->currentcp >= m_iEndnotesStart && ps->currentcp < m_iEndnotesEnd)
-	{
-		UT_DEBUGMSG(("In endnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
-	}
-
 	_insertBookmarkIfAppropriate(ps->currentcp);
-	_insertNoteIfAppropriate(ps->currentcp);
+	
+	if(_insertNoteIfAppropriate(ps->currentcp, 0))
+		return 0;
 	
 	//
 	// This next bit of code is to handle fields
@@ -2178,6 +2172,8 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	{
 	    propsArray[propsOffset++] = static_cast<XML_Char *>("style");
 	    propsArray[propsOffset++] = static_cast<XML_Char *>(achp->stylename);
+		// remember the stylename for future use
+		m_charStyle = achp->stylename;
 	}
 
 	// woah - major error here
@@ -3555,7 +3551,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			for(i = 0; i < m_iFootnotesCount; i++)
 			{
 				m_pFootnotes[i].ref_pos = pPLCF_ref[i];
-				m_pFootnotes[i].txt_pos = pPLCF_txt[i];
+				m_pFootnotes[i].txt_pos = pPLCF_txt[i] + m_iFootnotesStart;
 				m_pFootnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
 				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iFootnotesCount + 1) + i];
 				m_pFootnotes[i].type = iType;
@@ -3594,7 +3590,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			for(i = 0; i < m_iEndnotesCount; i++)
 			{
 				m_pEndnotes[i].ref_pos = pPLCF_ref[i];
-				m_pEndnotes[i].txt_pos = pPLCF_txt[i];
+				m_pEndnotes[i].txt_pos = pPLCF_txt[i] + m_iEndnotesStart;
 				m_pEndnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
 				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iEndnotesCount + 1) + i];
 				m_pEndnotes[i].type = iType;
@@ -3609,36 +3605,45 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 	}
 }
 
-/*
+/*!
+   Determines whether footnote is to be inserted at present document
+   position, and if so takes care of inserting the reference marker,
+   note section and anchor marker.
+
+   returns true if a note was successfully inserted, false otherwise;
+   if the return value is true, the caller should ignore the present character
+   
    we will take advantage of the notes being in document order, so we
    can just remember the last note we inserted, rather than having to
    search through the list
 
-   returns true on success
 */
-bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition)
+bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition, UT_UCS4Char c)
 {
-	bool res = true;
+	if(m_bInFNotes || m_bInENotes)
+		return false;
+	
+	bool res = false;
 	//now search for position iDocPosition in our footnnote list;
-	if (!m_pFootnotes || m_iFootnotesCount == 0 || m_iNextFNote >= m_iFootnotesCount)
+	if(!m_pFootnotes || m_iFootnotesCount == 0 || m_iNextFNote >= m_iFootnotesCount)
 	{
 		goto endnotes;
 	}
 
 	if(m_pFootnotes[m_iNextFNote].ref_pos == iDocPosition)
 	{
-		res &= _insertFootnote(m_pFootnotes + m_iNextFNote++);
+		res |= _insertFootnote(m_pFootnotes + m_iNextFNote++, c);
 	}
 	
  endnotes:
-	if (!m_pEndnotes || m_iEndnotesCount == 0 || m_iNextENote >= m_iEndnotesCount)
+	if(!m_pEndnotes || m_iEndnotesCount == 0 || m_iNextENote >= m_iEndnotesCount)
 	{
 		goto finish;
 	}
 	
 	if(m_pEndnotes[m_iNextENote].ref_pos == iDocPosition)
 	{
-		res &= _insertEndnote(m_pEndnotes + m_iNextENote++);
+		res |= _insertEndnote(m_pEndnotes + m_iNextENote++, c);
 	}
 	
 	
@@ -3646,8 +3651,8 @@ bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition)
 	return res;
 }
 
-/* returns true on success */
-bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f)
+/* returns true on successful insertion of the reference marker */
+bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 {
 	UT_return_val_if_fail(f, true);
 	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertFootnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
@@ -3656,28 +3661,123 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f)
 
 	bool res = true;
 	const XML_Char * attribsS[3] ={"footnote-id",NULL,NULL};
-	const XML_Char* attribsR[5] = {"type", "footnote_ref", "footnote-id", NULL, NULL};
+	const XML_Char* attribsR[9] = {"type", "footnote_ref", "footnote-id",
+								   NULL, NULL, NULL, NULL, NULL, NULL};
 	const XML_Char* attribsA[5] = {"type", "footnote_anchor", "footnote-id", NULL, NULL};
+	UT_uint32 iOffR = 3;
 
 	UT_String footpid;
 	UT_String_sprintf(footpid,"%i",f->pid);
 	attribsS[1] = footpid.c_str();
-	attribsR[3] = footpid.c_str();
 	attribsA[3] = footpid.c_str();
+
+	// for attribsR we need to set props and style in order to
+	// preserve any formating set by a previous call to _beginChar()
+	attribsR[iOffR++] = footpid.c_str();
+	attribsR[iOffR++] = "props";
+	attribsR[iOffR++] = m_charProps.c_str();
+	attribsR[iOffR++] = "style";
+	attribsR[iOffR++] = m_charStyle.c_str();
+		
+	UT_ASSERT( iOffR <= sizeof(attribsR)/sizeof(XML_Char*) );
 	
-	res &= getDoc()->appendObject(PTO_Field, attribsR);
-	res &= getDoc()->appendStrux(PTX_SectionFootnote,attribsS);
-	res &= getDoc()->appendStrux(PTX_Block,NULL);
-	res &= getDoc()->appendObject(PTO_Field, attribsA);
-	res &= getDoc()->appendStrux(PTX_EndFootnote,NULL);
+	if(f->type)
+	{
+		// auto-generated reference -- insert a field
+		res &= getDoc()->appendObject(PTO_Field, attribsR);
+	}
+	else
+	{
+		// manually-inserted marker, we need to issue the character
+		// TODO -- in word the marker can consist of several
+		// characters, but I have no idea how Word knows how many;
+		// we at least need to reset the character formatting again
+		// after we have inserted the footnote section
+		res &= getDoc()->appendSpan(&c,1);
+	}
+	
+	getDoc()->appendStrux(PTX_SectionFootnote,attribsS);
+	getDoc()->appendStrux(PTX_Block,NULL);
+
+	if(f->type)
+	{
+		getDoc()->appendObject(PTO_Field, attribsA);
+	}
+	
+	getDoc()->appendStrux(PTX_EndFootnote,NULL);
+
+	if(!f->type)
+	{
+		// set the formatting to whatever it was, in case the footnote
+		// marker is longer than one character
+		getDoc()->appendFmt(&attribsR[0]);
+	}
+	
 	return res;
 }
 
-bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f)
+bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 {
 	UT_return_val_if_fail(f, true);
-	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertEndnote: pos: %d\n", f->ref_pos));
-	return true;
+	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertEndnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
+
+	this->_flush();
+
+	bool res = true;
+	const XML_Char * attribsS[3] ={"endnote-id",NULL,NULL};
+	const XML_Char* attribsR[9] = {"type", "endnote_ref", "endnote-id",
+								   NULL, NULL, NULL, NULL, NULL, NULL};
+	const XML_Char* attribsA[5] = {"type", "endnote_anchor", "endnote-id", NULL, NULL};
+	UT_uint32 iOffR = 3;
+
+	UT_String footpid;
+	UT_String_sprintf(footpid,"%i",f->pid);
+	attribsS[1] = footpid.c_str();
+	attribsA[3] = footpid.c_str();
+
+	// for attribsR we need to set props and style in order to
+	// preserve any formating set by a previous call to _beginChar()
+	attribsR[iOffR++] = footpid.c_str();
+	attribsR[iOffR++] = "props";
+	attribsR[iOffR++] = m_charProps.c_str();
+	attribsR[iOffR++] = "style";
+	attribsR[iOffR++] = m_charStyle.c_str();
+		
+	UT_ASSERT( iOffR <= sizeof(attribsR)/sizeof(XML_Char*) );
+	
+	if(f->type)
+	{
+		// auto-generated reference -- insert a field
+		res &= getDoc()->appendObject(PTO_Field, attribsR);
+	}
+	else
+	{
+		// manually-inserted marker, we need to issue the character
+		// TODO -- in word the marker can consist of several
+		// characters, but I have no idea how Word knows how many;
+		// we at least need to reset the character formatting again
+		// after we have inserted the footnote section
+		res &= getDoc()->appendSpan(&c,1);
+	}
+	
+	getDoc()->appendStrux(PTX_SectionEndnote,attribsS);
+	getDoc()->appendStrux(PTX_Block,NULL);
+
+	if(f->type)
+	{
+		getDoc()->appendObject(PTO_Field, attribsA);
+	}
+	
+	getDoc()->appendStrux(PTX_EndEndnote,NULL);
+
+	if(!f->type)
+	{
+		// set the formatting to whatever it was, in case the footnote
+		// marker is longer than one character
+		getDoc()->appendFmt(&attribsR[0]);
+	}
+	
+	return res;
 }
 
 
@@ -3687,13 +3787,155 @@ bool IE_Imp_MsWord_97::_insertNoteTextIfAppropriate(UT_uint32 iDocPosition)
 	return true;
 }
 
-bool IE_Imp_MsWord_97::_insertFootnoteText()
+/*!
+    This function makes sure that the insert is happening at the
+    correct place if we are in a segment which belongs to one of the
+    set of notes (foonotes & endnote, in future also annotations).
+
+    \parameter UT_uint32 iDocPosition: character position in the Word
+                                       document stream
+    \return returns false if the present character is to be skipped,
+            true otherwise
+*/
+bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 {
+	if(iDocPosition >= m_iFootnotesStart && iDocPosition < m_iFootnotesEnd)
+	{
+		// upon entry into the footnote-land, we will need to search for
+		// the first footnote section in our document, note that we are
+		// in a footnote section, note at what doc position the current
+		// footnote will end, and then let things run until we reach
+		// the end of the note; then we need to search for the next
+		// doc section, etc.
+
+		// if the footnote marker is auto-generated, we need to remove
+		// the special character from the stream (happens
+		// automatically)
+
+		// when in a footnote section, all the functions that normally
+		// use append methods will need to use insert methods instead
+
+		if(!m_bInFNotes)
+		{
+			UT_DEBUGMSG(("In footnote territory: pos %d\n", iDocPosition));
+			m_bInFNotes = true;
+
+			// we will reuse the m_iNextFNote variable, noting it
+			// refers to the CURRENT footnote
+			m_iNextFNote = 0;
+			_findNextFNoteSection();
+		}
+
+		// if this is the first character in a footnote with an
+		// autogenerated reference then skip it (the field has already
+		// been inserted
+		if(m_pFootnotes[m_iNextFNote].type &&
+		   iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos)
+		{
+			UT_DEBUGMSG(("Skiping auto-generated reference mareker\n"));
+			return false;
+		}
+		
+		// the current footnote will end at pos
+		// f.txt_pos + f.txt_len, 
+		if(iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos +
+		                   m_pFootnotes[m_iNextFNote].txt_len)
+		{
+			m_iNextFNote++;
+
+			// after the last footnote there is an extra paragraph
+			// marker that is still a part of the footnote section --
+			// we do not want that marker imported
+			if(m_iNextFNote < m_iFootnotesCount)
+				_findNextFNoteSection();
+			else
+			{
+				UT_DEBUGMSG(("End of footnotes marker at pos %d\n", iDocPosition));
+				return false;
+			}
+		}
+
+		// do not return !!!
+		UT_DEBUGMSG(("In footnote %d, on pos %d\n", m_iNextFNote, iDocPosition));
+	}
+	else if(m_bInFNotes)
+	{
+		m_bInFNotes = false;
+		UT_DEBUGMSG(("Leaving footnote territory\n"));
+		// move to the end of the do end of the document ...
+
+		// do not return !!!
+	}
+	
+	if(iDocPosition >= m_iEndnotesStart && iDocPosition < m_iEndnotesEnd)
+	{
+		if(!m_bInENotes)
+		{
+			UT_DEBUGMSG(("In endnote territory: pos %d\n", iDocPosition));
+			m_bInENotes = true;
+			m_iNextENote = 0;
+			_findNextENoteSection();
+		}
+
+		// if this is the first character in a footnote with an
+		// autogenerated reference then skip it (the field has already
+		// been inserted
+		if(m_pEndnotes[m_iNextENote].type &&
+		   iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
+		{
+			UT_DEBUGMSG(("Skiping auto-generated reference mareker\n"));
+			return false;
+		}
+
+		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos +
+		                   m_pEndnotes[m_iNextENote].txt_len)
+		{
+			m_iNextENote++;
+
+			// after the last endnote there is an extra paragraph
+			// marker that is still a part of the endnote section --
+			// we do not want that marker imported
+			if(m_iNextENote < m_iEndnotesCount)
+				_findNextENoteSection();
+			else
+			{
+				UT_DEBUGMSG(("End of endnotes marker at pos %d\n", iDocPosition));
+				return false;
+			}
+		}
+
+		UT_DEBUGMSG(("In endnote %d, on pos %d\n", m_iNextENote, iDocPosition));
+		// do not return !!!
+	}
+	else if(m_bInENotes)
+	{
+		m_bInENotes = false;
+		UT_DEBUGMSG(("Leaving endnote territory\n"));
+		// move to the end of the document ...
+
+		// do not return !!!
+	}
+
+	// we only return here, so that the code above could be extended
+	// for handly annotations by simply copy/paste
 	return true;
 }
 
-bool IE_Imp_MsWord_97::_insertEndnoteText()
+bool IE_Imp_MsWord_97::_findNextFNoteSection()
 {
+	if(!m_iNextFNote)
+	{
+		// move to the start of the doc first
+	}
+	return true;
+}
+
+bool IE_Imp_MsWord_97::_findNextENoteSection()
+{
+	if(!m_iNextENote)
+	{
+		// move to the start of the doc first
+	}
 	return true;
 }
 

@@ -152,12 +152,13 @@ private:
 	void        _generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps);
 	int         _handleBookmarks(const wvParseStruct *ps);
 	void        _handleNotes(const wvParseStruct *ps);
-	bool        _insertNoteIfAppropriate(UT_uint32 iDocPosition);
-	bool        _insertFootnote(const footnote * f);
-	bool        _insertEndnote(const footnote * f);
+	bool        _insertNoteIfAppropriate(UT_uint32 iDocPosition, UT_UCS4Char c);
+	bool        _insertFootnote(const footnote * f, UT_UCS4Char c);
+	bool        _insertEndnote(const footnote * f, UT_UCS4Char c);
 	bool        _insertNoteTextIfAppropriate(UT_uint32 iDocPosition);
-	bool        _insertFootnoteText();
-	bool        _insertEndnoteText();
+	bool        _handleNotesText(UT_uint32 iPos);
+	bool        _findNextFNoteSection();
+	bool        _findNextENoteSection();
 
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
@@ -203,6 +204,7 @@ private:
 											  // struxes
 	UT_String   m_charProps;
 	UT_String   m_charRevs;
+	UT_String   m_charStyle;
 
 	UT_uint32   m_iFootnotesStart;
 	UT_uint32   m_iFootnotesEnd;
@@ -210,6 +212,8 @@ private:
 	UT_uint32   m_iEndnotesEnd;
 	UT_uint32   m_iNextFNote;
 	UT_uint32   m_iNextENote;
+	bool        m_bInFNotes;
+	bool        m_bInENotes;
 };
 
 #endif /* IE_IMP_MSWORD_H */
