@@ -43,7 +43,7 @@ class PD_Document;
 class IE_Imp_XML : public IE_Imp
 {
 public:
-    IE_Imp_XML(PD_Document * pDocument);
+    IE_Imp_XML(PD_Document * pDocument, UT_Bool whiteSignificant);
     virtual ~IE_Imp_XML();
 
     virtual UT_Error	importFile(const char * szFilename);

@@ -185,7 +185,7 @@ IE_Imp_XML::~IE_Imp_XML()
 	FREEP(m_currentDataItemMimeType);
 }
 
-IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument)
+IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, UT_Bool whiteSignificant)
 	: IE_Imp(pDocument)
 {
 	m_error = UT_OK;
@@ -193,7 +193,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument)
 	m_lenCharDataSeen = 0;
 	m_lenCharDataExpected = 0;
 	m_bSeenCR = UT_FALSE;
-	m_bWhiteSignificant = UT_TRUE;
+	m_bWhiteSignificant = whiteSignificant;
 	m_bWasSpace = UT_FALSE;
 
 	m_currentDataItemName = NULL;

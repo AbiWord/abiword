@@ -42,10 +42,8 @@ IE_Imp_DocBook::~IE_Imp_DocBook()
 }
 
 IE_Imp_DocBook::IE_Imp_DocBook(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument)
+	: IE_Imp_XML(pDocument, UT_FALSE)
 {
-  // white space is not significant
-  m_bWhiteSignificant = UT_FALSE;
 }
 
 /*****************************************************************/

@@ -34,10 +34,8 @@
 /*****************************************************************/
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument)
+	: IE_Imp_XML(pDocument, UT_FALSE)
 {
-  // white space is not significant
-  m_bWhiteSignificant = UT_FALSE;
 }
 
 IE_Imp_XHTML::~IE_Imp_XHTML()

@@ -40,7 +40,7 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument)
+  : IE_Imp_XML(pDocument, UT_TRUE)
 {
 	m_bDocHasLists = UT_FALSE;
 }
