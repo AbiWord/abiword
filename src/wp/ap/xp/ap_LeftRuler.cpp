@@ -30,6 +30,7 @@
 #include "ap_FrameData.h"
 #include "ap_TopRuler.h"
 #include "xap_Frame.h"
+#include "ap_Ruler.h"
 
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
@@ -260,44 +261,8 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	}
 
 	// now draw tick marks on the bar, using the selected system of units.
-	// (we use big dimensions to avoid round-off problems.)
 
-	UT_uint32 tickUnit, tickLong, tickLabel, tickScale;
-
-	if (1)
-	{
-		// For english, we draw numbers on the inches, long ticks 
-		// on the half inches and short ticks on the eighth inches.  
-		tickUnit = m_pG->convertDimension("12.5in");
-		tickLong = 4;
-		tickLabel = 8;
-		tickScale = 1;
-	}
-#if 0
-	// TODO for now we assume English units.  
-	// TODO these other scale factors have been tested, they just need a UI.  
-	{
-		// cm
-		tickUnit = m_pG->convertDimension("25cm");
-		tickLong = 2;
-		tickLabel = 4;
-		tickScale = 1;
-	}
-	{
-		// picas
-		tickUnit = m_pG->convertDimension("100pi");
-		tickLong = 6;
-		tickLabel = 6;
-		tickScale = 6;
-	}
-	{
-		// points
-		tickUnit = m_pG->convertDimension("600pt");
-		tickLong = 6;
-		tickLabel = 6;
-		tickScale = 36;
-	}
-#endif
+	ap_RulerTicks tick(m_pG);
 
 	UT_uint32 k, iFontHeight;
 
@@ -311,22 +276,22 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	}
 
 	// first draw the top margin
-	for (k=1; (k*tickUnit/100 < docTopMarginHeight); k++)
+	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < docTopMarginHeight); k++)
 	{
-		y = yOrigin + docTopMarginHeight - k*tickUnit/100 - m_yScrollOffset;
+		y = yOrigin + docTopMarginHeight - k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
 		{
-			if (k % tickLabel)
+			if (k % tick.tickLabel)
 			{
 				// draw the ticks
-				UT_uint32 w = ((k % tickLong) ? 2 : 6);
+				UT_uint32 w = ((k % tick.tickLong) ? 2 : 6);
 				UT_uint32 x = xLeft + (xBar-w)/2;
 				m_pG->drawLine(x,y,x+w,y);
 			}
 			else if (pFont)
 			{
 				// draw the number
-				UT_uint32 n = k / tickLabel * tickScale;
+				UT_uint32 n = k / tick.tickLabel * tick.tickScale;
 
 				char buf[6];
 				UT_UCSChar span[6];
@@ -346,22 +311,22 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	}
 	
 	// then draw everything below
-	for (k=1; (k*tickUnit/100 < (pageHeight - docTopMarginHeight)); k++)
+	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < (pageHeight - docTopMarginHeight)); k++)
 	{
-		y = yOrigin + docTopMarginHeight + k*tickUnit/100 - m_yScrollOffset;
+		y = yOrigin + docTopMarginHeight + k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
 		{
-			if (k % tickLabel)
+			if (k % tick.tickLabel)
 			{
 				// draw the ticks
-				UT_uint32 w = ((k % tickLong) ? 2 : 6);
+				UT_uint32 w = ((k % tick.tickLong) ? 2 : 6);
 				UT_uint32 x = xLeft + (xBar-w)/2;
 				m_pG->drawLine(x,y,x+w,y);
 			}
 			else if (pFont)
 			{
 				// draw the number
-				UT_uint32 n = k / tickLabel * tickScale;
+				UT_uint32 n = k / tick.tickLabel * tick.tickScale;
 
 				char buf[6];
 				UT_UCSChar span[6];

@@ -92,6 +92,8 @@ public:
 	virtual void	cmdCut(void);
 	virtual void	cmdPaste(void);
 
+	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
+	
 // ----------------------
 	FL_DocLayout* getLayout() const;
 

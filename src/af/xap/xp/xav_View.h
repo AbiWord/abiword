@@ -25,6 +25,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xav_Listener.h"
+class AP_TopRulerInfo;
 
 typedef enum _AV_ScrollCmd
 {
@@ -88,6 +89,8 @@ public:
 	virtual void	cmdSave(void) = 0;
 	virtual void	cmdSaveAs(const char * szFilename) = 0;
 
+	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo) = 0;
+	
 protected: 
 	void*				m_pParentData;
 

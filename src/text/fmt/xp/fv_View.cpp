@@ -45,6 +45,7 @@
 #include "ie_types.h"
 #include "xap_App.h"
 #include "xap_Clipboard.h"
+#include "ap_TopRuler.h"
 
 // TODO why do we define these multiply, in different files? --EWS
 #define DELETEP(p)	do { if (p) delete p; } while (0)
@@ -3308,6 +3309,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 // -------------------------------------------------------------------------
 PT_DocPosition FV_View::_getPoint(void)
 {
+	// TODO inline this in the class header
 	return m_iInsPoint;
 }
 
@@ -3797,13 +3799,6 @@ void FV_View::_doPaste(void)
 	}
 }
 
-#if 0
-void FV_View::_drawRuler(void)
-{
-
-}
-#endif
-
 UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
@@ -3843,3 +3838,55 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 	return bRet;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
+{
+	memset(pInfo,0,sizeof(*pInfo));
+
+	if (1)		// TODO support tables
+	{
+		// we are in a column context
+
+		fl_BlockLayout * pBlock;
+		fp_Run * pRun;
+		UT_sint32 xCaret, yCaret;
+		UT_uint32 heightCaret;
+
+		_findPositionCoords(_getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
+
+		fp_Column * pColumn = pRun->getLine()->getColumn();
+		UT_uint32 nCol=0;
+		fp_Column * pNthColumn=pColumn->getLeader();
+		while (pNthColumn && (pNthColumn != pColumn))
+		{
+			nCol++;
+			pNthColumn = pNthColumn->getFollower();
+		}
+
+		fl_SectionLayout * pSection = pColumn->getSectionLayout();
+
+		// fill in the details
+		
+		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
+		pInfo->m_xPaperSize = m_pG->convertDimension("8.5in"); // TODO eliminate this constant
+		pInfo->m_xPageViewMargin = fl_PAGEVIEW_MARGIN_X;
+		pInfo->m_xrPoint = xCaret - pColumn->getX();
+		pInfo->m_xrLeftIndent = 0;		// TODO
+		pInfo->m_xrFirstLineIndent = 0;	// TODO
+		pInfo->m_xrRightIndent = 0;		// TODO
+		pInfo->m_iCurrentColumn = nCol;
+		pInfo->m_iNumColumns = pSection->getNumColumns();
+		pInfo->u.c.m_xaLeftMargin = pSection->getLeftMargin();
+		pInfo->u.c.m_xaRightMargin = pSection->getRightMargin();
+		pInfo->u.c.m_xColumnGap = pSection->getColumnGap();
+		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
+	}
+	else
+	{
+		// TODO support tables
+	}
+
+	return;
+}

@@ -47,6 +47,7 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_Menu_Functions.cpp		\
 		ap_Menu_LabelSet.cpp		\
 		ap_Menu_Layouts.cpp		\
+		ap_Ruler.cpp			\
 		ap_Toolbar_ActionSet.cpp	\
 		ap_Toolbar_Functions.cpp	\
 		ap_Toolbar_Icons.cpp		\

@@ -26,10 +26,61 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "xav_Listener.h"
+#include "ap_Ruler.h"
 
 class XAP_Frame;
 class AV_ScrollObj;
 class DG_Graphics;
+
+/*****************************************************************/
+/*****************************************************************/
+
+class AP_TopRulerInfo
+{
+public:
+	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
+		
+	Mode					m_mode;
+	UT_uint32				m_xPaperSize;
+	UT_uint32				m_xPageViewMargin;
+	
+	// current caret position -- relative to the current column
+	
+	UT_sint32				m_xrPoint;
+	UT_sint32				m_xrLeftIndent;
+	UT_sint32				m_xrFirstLineIndent;
+	UT_sint32				m_xrRightIndent;
+
+	// current column number and the number of columns
+	
+	UT_uint32				m_iCurrentColumn;
+	UT_uint32				m_iNumColumns;
+
+	union _u {
+
+		struct _c {
+
+			// page absolute document margins
+			
+			UT_sint32		m_xaLeftMargin;
+			UT_sint32		m_xaRightMargin;
+
+			// column width and spacing -- currently we only support
+			// uniform gaps and widths for columns
+			
+			UT_uint32		m_xColumnGap;
+			UT_uint32		m_xColumnWidth;
+
+		} c;									/* valid when column mode */
+
+		struct _t {
+
+			int foo;
+			
+		} t;									/* valid when table mode */
+
+	} u;
+};
 
 /*****************************************************************/
 
@@ -41,7 +92,6 @@ public:
 
 	virtual void		setView(AV_View * pView);
 	void				setOffsetLeftRuler(UT_uint32 iLeftRulerWidth);
-	void				setOffsetPageViewLeftMargin(UT_uint32 iPageViewLeftMargin);
 	void				setHeight(UT_uint32 iHeight);
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
@@ -57,6 +107,15 @@ public:
 	static void			_scrollFuncY(void * pData, UT_sint32 yoff);
 	
 protected:
+	void				_draw(void);
+	void				_drawBar(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_sint32 x, UT_sint32 w);
+	void				_drawTickMark(AP_TopRulerInfo &info, ap_RulerTicks &tick,
+									  UT_RGBColor &clr, DG_Font * pFont,
+									  UT_sint32 k, UT_sint32 xTick);
+	void				_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
+								   UT_RGBColor &clr, DG_Font * pFont,
+								   UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo);
+	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;
@@ -64,7 +123,6 @@ protected:
 	UT_uint32			m_iHeight;		/* size of window */
 	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iLeftRulerWidth;
-	UT_uint32			m_iPageViewLeftMargin;
 	UT_sint32			m_xScrollOffset;
 
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */

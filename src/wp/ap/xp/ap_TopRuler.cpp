@@ -27,8 +27,10 @@
 #include "ap_TopRuler.h"
 #include "xav_View.h"
 #include "gr_Graphics.h"
+#include "ap_Ruler.h"
 class XAP_Frame;
 
+#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 
@@ -43,7 +45,6 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_iHeight = 0;
 	m_iWidth = 0;
 	m_iLeftRulerWidth = 0;
-	m_iPageViewLeftMargin = 0;
 	m_xScrollOffset = 0;
 
 	// i wanted these to be "static const x = 32;" in the
@@ -74,7 +75,6 @@ void AP_TopRuler::setView(AV_View * pView)
 	}
 	
 	m_pView = pView;
-	setOffsetPageViewLeftMargin(pView->getPageViewLeftMargin());
 	
 	// create an AV_ScrollObj to receive send*ScrollEvents()
 	
@@ -106,16 +106,6 @@ void AP_TopRuler::setOffsetLeftRuler(UT_uint32 iLeftRulerWidth)
 	m_iLeftRulerWidth = iLeftRulerWidth;
 }
 
-void AP_TopRuler::setOffsetPageViewLeftMargin(UT_uint32 iPageViewLeftMargin)
-{
-	// This gives us the amount of gray-space that the DocumentWindow
-	// draws to the left of the paper in the "Page View".  We set the
-	// origin of our ruler at this offset from the width of the left
-	// ruler.  For "Normal View" this should be zero.
-
-	m_iPageViewLeftMargin = iPageViewLeftMargin;
-}
-
 void AP_TopRuler::setHeight(UT_uint32 iHeight)
 {
 	m_iHeight = iHeight;
@@ -144,6 +134,10 @@ UT_Bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 	UT_ASSERT(pView==m_pView);
 	UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
+
+	if (mask & AV_CHG_MOTION)
+		draw(NULL);
+	
 	return UT_TRUE;
 }
 
@@ -219,216 +213,238 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect)
 	if (pClipRect)
 		m_pG->setClipRect(pClipRect);
 
-	UT_RGBColor clrDarkGray(127,127,127);
-	UT_RGBColor clrLiteGray(192,192,192);
-	UT_RGBColor clrBlack(0,0,0);
-	UT_RGBColor clrWhite(255,255,255);
-
 	// draw the background
-	
+
+	UT_RGBColor clrLiteGray(192,192,192);
 	m_pG->fillRect(clrLiteGray,0,0,m_iWidth,m_iHeight);
 
-	// draw a dark-gray and white bar lined up with the paper
+	// draw the foreground
 	
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
-
-	// TODO get these from the document at the current cursor position.
-	
-	UT_uint32 pageWidth = m_pG->convertDimension("8.5in");
-	UT_uint32 docLeftMarginWidth = m_pG->convertDimension("1.0in");
-	UT_uint32 docRightMarginWidth = m_pG->convertDimension("1.0in");
-	UT_uint32 docWithinMarginWidth = pageWidth - docLeftMarginWidth - docRightMarginWidth;
-
-	// left edge of the paper depends upon size of the LeftRuler
-	// (if present) and the width of the gray-space we draw for
-	// PageView (when in PageView mode).
-	//
-	// when we scroll, we fix the area above the LeftRuler, so it
-	// is omitted from the calculations.
-	
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	UT_sint32 xOrigin = (UT_sint32)m_iPageViewLeftMargin;
-	UT_sint32 xScrolledOrigin = xOrigin - m_xScrollOffset;
-	UT_sint32 x,w;
-
-	if ((xScrolledOrigin + docLeftMarginWidth) > 0)
-	{
-		// left margin of paper is on-screen (or rather -- not
-		// scrolled over the LeftRuler).  draw dark-gray bar.
-		// we need to clip it ourselves -- since the expose/paint
-		// clip rects don't know anything about this distinction.
-
-		x = xFixed;
-		w = docLeftMarginWidth - 2;		// leave room for margin widget
-		if (xScrolledOrigin < 0)
-			w += xScrolledOrigin;
-		else
-			x += xScrolledOrigin;
-		if (w > 0)
-			m_pG->fillRect(clrDarkGray,x,yTop,w,yBar);
-	}
-
-	xScrolledOrigin += docLeftMarginWidth;
-	if ((xScrolledOrigin + docWithinMarginWidth) > 0)
-	{
-		// area within the page margins is on-screen (not over
-		// the LeftRuler).  draw a main white bar over the area.
-		// we subtract 1 from w for the right margin widget (a
-		// 3 pixel wide area)
-		
-		x = xFixed;
-		w = docWithinMarginWidth - 1;
-		if (xScrolledOrigin < 0)
-			w += xScrolledOrigin;
-		else
-			x += xScrolledOrigin;
-		if (w > 0)
-			m_pG->fillRect(clrWhite,x,yTop,w,yBar);
-	}
-
-	xScrolledOrigin += docWithinMarginWidth;
-	if ((xScrolledOrigin + docRightMarginWidth) > 0)
-	{
-		// right margin of paper is on-screen (not over the
-		// LeftRuler).  draw another dark-gray bar, like we
-		// did on the left side.  we add 2 to x for the other
-		// side of the right margin widget (a 3 pixel wide area).
-
-		x = xFixed + 2;
-		w = docRightMarginWidth - 2;
-		if (xScrolledOrigin < 0)
-			w += xScrolledOrigin;
-		else
-			x += xScrolledOrigin;
-		if (w > 0)
-			m_pG->fillRect(clrDarkGray,x,yTop,w,yBar);
-	}
-
-	// now draw tick marks on the bar, using the selected system of units.
-	// (we use big dimensions to avoid round-off problems.)
-
-	UT_uint32 tickUnit, tickLong, tickLabel, tickScale;
-
-	if (1)
-	{
-		// For english, we draw numbers on the inches, long ticks 
-		// on the half inches and short ticks on the eighth inches.
-		// We scale up a factor of 100 to avoid round off problems.
-		
-		tickUnit = m_pG->convertDimension("12.5in");
-		tickLong = 4;
-		tickLabel = 8;
-		tickScale = 1;
-	}
-#if 0
-	// TODO for now we assume English units.  
-	// TODO these other scale factors have been tested, they just need a UI.  
-	{
-		// cm
-		tickUnit = m_pG->convertDimension("25cm");
-		tickLong = 2;
-		tickLabel = 4;
-		tickScale = 1;
-	}
-	{
-		// picas
-		tickUnit = m_pG->convertDimension("100pi");
-		tickLong = 6;
-		tickLabel = 6;
-		tickScale = 6;
-	}
-	{
-		// points
-		tickUnit = m_pG->convertDimension("600pt");
-		tickLong = 6;
-		tickLabel = 6;
-		tickScale = 36;
-	}
-#endif
-
-	UT_uint32 k, iFontHeight;
-
-	m_pG->setColor(clrBlack);
-
-	DG_Font * pFont = m_pG->getGUIFont();
-	if (pFont)
-	{
-		m_pG->setFont(pFont);
-		iFontHeight = m_pG->getFontHeight();
-	}
-
-	// first draw the left margin
-	for (k=1; (k*tickUnit/100 < docLeftMarginWidth); k++)
-	{
-		x = xFixed + xOrigin + docLeftMarginWidth - k*tickUnit/100 - m_xScrollOffset;
-		if (x >= xFixed)
-		{
-			if (k % tickLabel)
-			{
-				// draw the ticks
-				UT_uint32 h = ((k % tickLong) ? 2 : 6);
-				UT_uint32 y = yTop + (yBar-h)/2;
-				m_pG->drawLine(x,y,x,y+h);
-			}
-			else if (pFont)
-			{
-				// draw the number
-				UT_uint32 n = k / tickLabel * tickScale;
-
-				char buf[6];
-				UT_UCSChar span[6];
-				UT_uint16 charWidths[6];
-				UT_ASSERT(n < 10000);
-
-				sprintf(buf, "%ld", n);
-				UT_UCS_strcpy_char(span, buf);
-				UT_uint32 len = strlen(buf);
-
-				w = m_pG->measureString(span, 0, len, charWidths);
-				UT_uint32 y = yTop + (yBar-iFontHeight)/2;
-
-				m_pG->drawChars(span, 0, len, x - w/2, y);
-			}
-		}
-	}
-	
-	// then draw everything to the right
-	for (k=1; (k*tickUnit/100 < (pageWidth - docLeftMarginWidth)); k++)
-	{
-		x = xFixed + xOrigin + docLeftMarginWidth + k*tickUnit/100 - m_xScrollOffset;
-		if (x >= xFixed)
-		{
-			if (k % tickLabel)
-			{
-				// draw the ticks
-				UT_uint32 h = ((k % tickLong) ? 2 : 6);
-				UT_uint32 y = yTop + (yBar-h)/2;
-				m_pG->drawLine(x,y,x,y+h);
-			}
-			else if (pFont)
-			{
-				// draw the number
-				UT_uint32 n = k / tickLabel * tickScale;
-
-				char buf[6];
-				UT_UCSChar span[6];
-				UT_uint16 charWidths[6];
-				UT_ASSERT(n < 10000);
-
-				sprintf(buf, "%ld", n);
-				UT_UCS_strcpy_char(span, buf);
-				UT_uint32 len = strlen(buf);
-
-				w = m_pG->measureString(span, 0, len, charWidths);
-				UT_uint32 y = yTop + (yBar-iFontHeight)/2;
-
-				m_pG->drawChars(span, 0, len, x - w/2, y);
-			}
-		}
-	}
+	_draw();
 	
 	if (pClipRect)
 		m_pG->setClipRect(NULL);
+}
+
+void AP_TopRuler::_drawBar(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_sint32 x, UT_sint32 w)
+{
+	// Draw ruler bar (white or dark-gray) over [x,x+w)
+	// where x is in page-relative coordinates.  we need
+	// to compensate for fixed portion, the page-view margin,
+	// and the scroll.
+	
+	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+
+	// convert page-relative coordinates into absolute coordinates.
+	
+	UT_sint32 xAbsLeft = xFixed + info.m_xPageViewMargin + x - m_xScrollOffset;
+	UT_sint32 xAbsRight = xAbsLeft + w;
+
+	// we need to do our own clipping for the fixed area
+	
+	if (xAbsLeft < xFixed)			// need to shorten what we draw
+		xAbsLeft = xFixed;
+
+	// draw whatever is left
+
+	if (xAbsRight > xAbsLeft)
+		m_pG->fillRect(clr,xAbsLeft,yTop,(xAbsRight-xAbsLeft),yBar);
+
+	return;
+}
+
+void AP_TopRuler::_drawTickMark(AP_TopRulerInfo &info, ap_RulerTicks &tick,
+								UT_RGBColor &clr, DG_Font * pFont,
+								UT_sint32 k, UT_sint32 xTick)
+{
+	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yBar = s_iFixedHeight/2;
+
+	if (k % tick.tickLabel)
+	{
+		// draw the ticks
+		UT_uint32 h = ((k % tick.tickLong) ? 2 : 6);
+		UT_uint32 y = yTop + (yBar-h)/2;
+		m_pG->drawLine(xTick,y,xTick,y+h);
+	}
+	else if (pFont)
+	{
+		// draw the number
+
+		m_pG->setFont(pFont);
+		UT_uint32 iFontHeight = m_pG->getFontHeight();
+		UT_uint32 n = k / tick.tickLabel * tick.tickScale;
+
+		char buf[6];
+		UT_UCSChar span[6];
+		UT_uint16 charWidths[6];
+		UT_ASSERT(n < 10000);
+
+		sprintf(buf, "%ld", n);
+		UT_UCS_strcpy_char(span, buf);
+		UT_uint32 len = strlen(buf);
+
+		UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);
+		UT_uint32 y = yTop + (yBar-iFontHeight)/2;
+
+		m_pG->drawChars(span, 0, len, xTick - w/2, y);
+	}
+}
+		
+void AP_TopRuler::_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
+							 UT_RGBColor &clr, DG_Font * pFont,
+							 UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo)
+{
+	// draw tick marks over the ruler bar.
+	// xOrigin gives the page-relative x-coordinate of zero.
+	// xFrom gives the page-relative x-coordinate of where we should begin drawing.
+	// xTo gives the page-relative x-coordinate of where we should end drawing.
+	// if xTo is less than xFrom we draw with values increasing to the left.
+
+	UT_ASSERT(xFrom != xTo);
+	UT_ASSERT(xFrom >= 0);
+	UT_ASSERT(xTo >= 0);
+	
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+
+	// convert page-relative coordinates into absolute coordinates.
+	
+	UT_sint32 xAbsOrigin = xFixed + info.m_xPageViewMargin + xOrigin - m_xScrollOffset;
+	UT_sint32 xAbsFrom   = xFixed + info.m_xPageViewMargin + xFrom   - m_xScrollOffset;
+	UT_sint32 xAbsTo     = xFixed + info.m_xPageViewMargin + xTo     - m_xScrollOffset;
+
+	// we need to do our own clipping for the fixed area
+	
+	if (xAbsFrom < xFixed)
+		xAbsFrom = xFixed;
+	if (xAbsTo < xFixed)
+		xAbsTo = xFixed;
+	if (xAbsFrom == xAbsTo)
+		return;							// everything clipped
+
+	if (xAbsTo > xAbsFrom)
+	{
+		// draw increasing numbers to the right
+		
+		UT_sint32 k=0; 
+		while (1)
+		{
+			UT_sint32 xTick = xAbsOrigin + k*tick.tickUnit/tick.tickUnitScale;
+			if (xTick > xAbsTo)
+				break;
+			if (xTick >= xAbsFrom)
+				_drawTickMark(info,tick,clr,pFont,k,xTick);
+			k++;
+		}
+	}
+	else
+	{
+		// draw increasing numbers to the left
+
+		UT_sint32 k=0; 
+		while (1)
+		{
+			UT_sint32 xTick = xAbsOrigin - k*tick.tickUnit/tick.tickUnitScale;
+			if (xTick < xAbsTo)
+				break;
+			if (xTick <= xAbsFrom)
+				_drawTickMark(info,tick,clr,pFont,k,xTick);
+			k++;
+		}
+	}
+}
+	
+void AP_TopRuler::_draw(void)
+{
+	AP_TopRulerInfo info;
+	UT_sint32 sum;
+	UT_uint32 k;
+
+	// ask the view for paper/margin/column/table/caret
+	// details at the current insertion point.
+
+	m_pView->getTopRulerInfo(&info);
+	
+	UT_RGBColor clrDarkGray(127,127,127);
+	UT_RGBColor clrBlack(0,0,0);
+	UT_RGBColor clrWhite(255,255,255);
+
+	// TODO for now assume we are in column display mode.
+	UT_ASSERT(info.m_mode==AP_TopRulerInfo::TRI_MODE_COLUMNS);
+	
+	// draw a dark-gray bar over the left margin
+
+	_drawBar(info,clrDarkGray,0,info.u.c.m_xaLeftMargin);
+	sum=info.u.c.m_xaLeftMargin;
+
+	for (k=0; k<info.m_iNumColumns; k++)
+	{
+		// draw white bar over this column
+		
+		_drawBar(info,clrWhite, sum, info.u.c.m_xColumnWidth);
+		sum += info.u.c.m_xColumnWidth;
+
+		// if another column after this one, draw dark gray-gap
+		
+		if (k+1 < info.m_iNumColumns)
+		{
+			_drawBar(info,clrDarkGray, sum, info.u.c.m_xColumnGap);
+			sum += info.u.c.m_xColumnGap;
+		}
+	}
+
+	// draw dark-gray right margin
+	
+	_drawBar(info,clrDarkGray,sum,info.u.c.m_xaRightMargin);
+
+	// now draw tick marks on the bar, using the selected system of units.
+
+	ap_RulerTicks tick(m_pG);
+	DG_Font * pFont = m_pG->getGUIFont();
+
+	// find the origin for the tick marks.  this is the left-edge of the
+	// column that we are in.  everything to the left of this x-value will
+	// be drawn on a negative scale to the left relative to here.  everything
+	// to the right of this x-value will be drawn on a positive scale to the
+	// right.
+
+	UT_sint32 xTickOrigin = info.u.c.m_xaLeftMargin;
+	if (info.m_iCurrentColumn > 0)
+		xTickOrigin += info.m_iCurrentColumn * (info.u.c.m_xColumnWidth + info.u.c.m_xColumnGap);
+
+	sum = 0;
+
+	// draw negative ticks over left margin.  
+
+	_drawTicks(info,tick,clrBlack,pFont,xTickOrigin, info.u.c.m_xaLeftMargin,sum);
+	sum += info.u.c.m_xaLeftMargin;
+	
+	for (k=0; k<info.m_iNumColumns; k++)
+	{
+		// draw positive or negative ticks on this column.
+		
+		if (k < info.m_iCurrentColumn)
+			_drawTicks(info,tick,clrBlack,pFont,xTickOrigin, sum+info.u.c.m_xColumnWidth, sum);
+		else
+			_drawTicks(info,tick,clrBlack,pFont,xTickOrigin, sum, sum+info.u.c.m_xColumnWidth);
+
+		sum += info.u.c.m_xColumnWidth;
+
+		// if another column after this one, skip over the gap
+		// (we don't actually draw ticks on the gap itself.
+
+		if (k+1 < info.m_iNumColumns)
+			sum += info.u.c.m_xColumnGap;
+	}
+
+	// draw ticks over the right margin
+
+	_drawTicks(info,tick,clrBlack,pFont,xTickOrigin, sum, sum+info.u.c.m_xaRightMargin);
+
+	// TODO draw the various widgets for the margins and the current paragraph properties.
+	
+	return;
 }
 
