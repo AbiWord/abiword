@@ -642,8 +642,13 @@ static UCSRange s_nonjoining_with_next[] =
 	// Arabic
 	{0x0622, 0x0625},
 	{0x0627, 0x0627},
+    {0x0629, 0x0629},
 	{0x062f, 0x0632},
 	{0x0648, 0x0648},
+    {0x0671, 0x0673},
+	{0x0688, 0x0699},
+	{0x06C4, 0x06CB},
+    {0x06D2, 0x06D3},
 	{0x2000, 0x2fff}
 };
 
@@ -1246,8 +1251,6 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 		return GC_FINAL;
 #endif
 	}
-	xxx_UT_DEBUGMSG(("GR_ContextGlyph::_eval: 0x%x, prev 0x%x, myNext 0x%x, myNextNext 0x%x\n",
-					 *code,*prev, *myNext,myNextNext));
 
 #ifndef NO_BIDI_SUPPORT
 	bPrevWD = isNotJoiningWithNext(prev, current, prev2);
@@ -1256,16 +1259,19 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 	bPrevWD = UT_isWordDelimiter(prev,current,prev2);
 	bNextWD = UT_isWordDelimiter(myNext,myNext2,UCS_UNKPUNK);
 #endif
+	xxx_UT_DEBUGMSG(("GR_ContextGlyph::_eval: 0x%x, prev 0x%x, myNext 0x%x, myNextNext 0x%x, prevjoin %i, nextjoin %i\n",
+					 current,prev, myNext,myNext2, bPrevWD, bNextWD ));
+    
 	// if both are not , then medial form is needed
 	if(!bPrevWD && !bNextWD)
 		return GC_MEDIAL;
 
 	// if only *next is, than final form is needed
-	if(bNextWD)
+	if(bNextWD && !bPrevWD)
 		return GC_FINAL;
 
 	// if *prev is, the initial form is needed
-	if(bPrevWD)
+	if(bPrevWD && !bNextWD)
 		return GC_INITIAL;
 
 	// if we got here, both are delimiters, which means stand alone form is needed
