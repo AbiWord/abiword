@@ -398,6 +398,15 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
 			
 			// Initialize Data
+			if( getPageOrientation() == PORTRAIT )
+			{
+				m_PageSize.setPortrait();
+			}
+			else
+			{
+				m_PageSize.setLandscape();
+			}
+
 			char buf[BUFSIZE];
 			updateWidth();
 			updateHeight();
@@ -761,7 +770,7 @@ void AP_Win32Dialog_PageSetup::doSpinControl(UT_uint32 id, UT_sint32 delta)
 	switch( id )
 	{
 	case AP_RID_DIALOG_PAGE_SETUP_SPN_WIDTH:
-		updatedData = (int)( m_PageSize.Width(getPageUnits()) * pageScale + delta );
+		updatedData = (int)( m_PageSize.Width(getPageUnits()) * pageScale + delta + 0.05f );
 		if( updatedData >= 0 )
 		{
 			m_PageSize.Set( (double) updatedData/pageScale,
@@ -774,7 +783,7 @@ void AP_Win32Dialog_PageSetup::doSpinControl(UT_uint32 id, UT_sint32 delta)
 		break;
 
 	case AP_RID_DIALOG_PAGE_SETUP_SPN_HEIGHT:
-		updatedData = (int)( m_PageSize.Height(getPageUnits()) * pageScale + delta );
+		updatedData = (int)( m_PageSize.Height(getPageUnits()) * pageScale + delta + 0.05f );
 		if( updatedData >= 0 )
 		{
 			m_PageSize.Set( m_PageSize.Width(getPageUnits()),
