@@ -514,14 +514,14 @@ OUT			= $(ABI_ROOT)/src
 ##################################################################
 ## Symbols to uniquely identify the build.
 ##
-## ABI_BUILD_VERSION	should be set to the build version (1.0.4)
+## ABI_BUILD_VERSION	should be set to the build version (1.0.5)
 ##			for a numbered build.
 ##
 ## ABI_BUILD_ID		can be used as a identifying label (such as
 ##			a date stamp in a nightly build system).
 ##
 
-ABI_BUILD_VERSION	= 1.0.4
+ABI_BUILD_VERSION	= 1.0.5
 ABI_BUILD_ID		=
 
 CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
