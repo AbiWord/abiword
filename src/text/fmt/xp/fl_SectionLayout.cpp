@@ -57,8 +57,6 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 
 	setAttrPropIndex(indexAP);
 	
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp* pSectionAP = NULL;
 	
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);

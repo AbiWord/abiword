@@ -518,8 +518,6 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpli
 
 UT_Bool fp_TextRun::calcWidths(UT_GrowBuf * pgbCharWidths)
 {
-	UT_sint32 iOldWidth = m_iWidth;
-
 	_calcWidths(pgbCharWidths);
 	
 	// TODO we could be smarter about this

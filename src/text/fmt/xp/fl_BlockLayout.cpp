@@ -1202,7 +1202,8 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	*/
 	UT_uint32 	iNormalBase = 0;
 	UT_Bool		bNormal = UT_FALSE;
-	for (UT_uint32 i=0; i<len; i++)
+	UT_uint32 i;
+	for (i=0; i<len; i++)
 	{
 		switch (pChars[i])
 		{
@@ -1389,7 +1390,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 	if (!bInserted)
 	{
-		fp_Run * pRun = m_pFirstRun;
+		pRun = m_pFirstRun;
 		fp_Run * pLastRun = NULL;
 		UT_uint32 offset = 0;
 		while (pRun)
@@ -1458,7 +1459,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	*/
 	UT_uint32 	iNormalBase = 0;
 	UT_Bool		bNormal = UT_FALSE;
-	for (UT_uint32 i=0; i<len; i++)
+	UT_uint32 i;
+	for (i=0; i<len; i++)
 	{
 		switch (pChars[i])
 		{

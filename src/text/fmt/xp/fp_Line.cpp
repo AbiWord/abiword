@@ -387,8 +387,6 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecRuns.getItemCount();
 
-	UT_sint32 yOff = pDA->yoff;
-	
 	pDA->yoff += m_iAscent;
 
 	for (int i=0; i<count; i++)
@@ -408,7 +406,8 @@ void fp_Line::layout(void)
 	
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
-	for (UT_uint32 i=0; i<iCountRuns; i++)
+	UT_uint32 i;
+	for (i=0; i<iCountRuns; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 		pRun->setX(iX);
