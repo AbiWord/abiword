@@ -28,7 +28,7 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Insert_DateTime.h"
-#include "ap_MacDialog_Insert_DateTime.h"
+#include "ap_MacDlg_Insert_DateTime.h"
 
 #if 0
 class DateTimeWin:public BWindow {
