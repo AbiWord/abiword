@@ -44,19 +44,19 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	bool bHasFootnote = false, bFirstColumn = true;
 
 	fl_ContainerLayout* pFirstLayout = NULL;
-	fp_Container* pCurContainer = NULL;
+	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
 
 	pFirstLayout = pSL->getFirstLayout();
 	if (!pFirstLayout)
 		return 0;
 
-	pCurContainer = pFirstLayout->getFirstContainer();
+	pOuterContainer = pFirstLayout->getFirstContainer();
 	pCurColumn = (fp_Column*) pSL->getFirstContainer();
 
 	while (pCurColumn)
 	{
-		fp_Container* pFirstContainerToKeep = pCurContainer;
+		fp_Container* pFirstContainerToKeep = pOuterContainer;
 		fp_Container* pLastContainerToKeep = NULL;
 		fp_Container* pOffendingContainer = NULL;
 #ifndef WITH_PANGO
@@ -525,9 +525,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
-			pCurContainer = (fp_Container *) pLastContainerToKeep->getNextContainerInSection();
+			pOuterContainer = (fp_Container *) pLastContainerToKeep->getNextContainerInSection();
 		else
-			pCurContainer = NULL;
+			pOuterContainer = NULL;
 
 //
 // OK fill our column with content between pFirstContainerToKeep and pLastContainerToKeep
@@ -598,7 +598,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				fp_Container * pCon = pCurColumn->getLastContainer();
 				if(pCon && pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
-					pCurContainer = pCon->getNextContainerInSection();
+					pOuterContainer = pCon->getNextContainerInSection();
 				}
 				pCurColumn = (fp_Column *) pCurColumn->getNext();
 
@@ -615,16 +615,16 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		        (pCurColumn->getLastContainer()) == pLastContainerToKeep));
 
 			bool bTableTest = false;
-			if(pCurContainer)
-				bTableTest = (pCurContainer->getContainerType() == 
+			if(pOuterContainer)
+				bTableTest = (pOuterContainer->getContainerType() == 
 							  FP_CONTAINER_TABLE);
 
 			pCurColumn->layout();
 
 			// pCurColumn->layout() might delete a broken table; fixup.
 			if(bTableTest &&
-			   pCurContainer != pCurColumn->getLastContainer())
-				pCurContainer = 
+			   pOuterContainer != pCurColumn->getLastContainer())
+				pOuterContainer = 
 				 pCurColumn->getLastContainer()->getNextContainerInSection();
 
 			pCurColumn = (fp_Column *) pCurColumn->getNext();
