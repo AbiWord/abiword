@@ -4219,6 +4219,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	else
 	{
 		_ensureThatInsertionPointIsOnScreen();
+		_drawSelection();
 	}
 
 	return bRes;
