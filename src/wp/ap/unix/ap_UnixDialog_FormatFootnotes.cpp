@@ -945,7 +945,7 @@ GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 
   _constructWindowContents ( vbox2 );
 
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
 // Apply button does not destoy widget. Do it this way.
 

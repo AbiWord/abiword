@@ -429,7 +429,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	UT_sint32 y_start = rect.top + iHalfColumnGap;
 	UT_sint32 y_end = rect.top + rect.height - iHalfColumnGap;
 
-	UT_sint32 y_step = gc->tlu(2);
+	UT_sint32 y_step = gc->tlu(4);
 	maxHeightPercent /= 100.0;
 	SpacePercent /= 100.0;
 	if(maxHeightPercent < 0.01)
