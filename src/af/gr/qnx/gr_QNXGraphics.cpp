@@ -161,14 +161,6 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-void GR_QNXGraphics::setLineProperties ( double inWidthPixels,
-					    GR_QNXGraphics::JoinStyle inJoinStyle,
-					    GR_QNXGraphics::CapStyle inCapStyle,
-					    GR_QNXGraphics::LineStyle inLineStyle )
-    {
-    //XXX: ???
-    
-    }
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
 {
 	/*Unix uses a fixed value of 100dpi for this value,
