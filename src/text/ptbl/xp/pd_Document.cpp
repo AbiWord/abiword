@@ -389,7 +389,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 
 	if ( !UT_isRegularFile(szFilename) )
 	{
-	  UT_DEBUGMSG (("PD_Document::readFromFile -- file is not plain file\n"));
+	  UT_DEBUGMSG (("PD_Document::readFromFile -- file (%s) is not plain file\n",szFilename));
 	  return UT_INVALIDFILENAME;
 	}
 

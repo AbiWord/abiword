@@ -153,7 +153,10 @@ bool AP_Args::doWindowlessArgs()
 		if (m_expProps)
 			conv->setExpProps (m_expProps);
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
+		{
+			UT_DEBUGMSG(("Converting file (%s) to type (%s)\n", m_sFile, m_sTo));
 			conv->convertTo(m_sFile, m_sTo);
+		}
 		delete conv;
 		return false;
 	}

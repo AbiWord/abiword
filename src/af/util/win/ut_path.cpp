@@ -20,6 +20,7 @@
 
 #include "ut_path.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -59,8 +60,10 @@ bool UT_isRegularFile(const char* filename)
 
 	if( _stat( filename , &buf ) != -1 ) 
 	{
+		UT_DEBUGMSG(("UT_isRegularFile(%s) { _stat(...) succeeded, returning ( st_mode<%X> & _S_IFREG<%X> )!= 0  <%X>\n", filename, buf.st_mode, _S_IFREG, (( buf.st_mode & _S_IFREG ) != 0) ));
 		return ( buf.st_mode & _S_IFREG ) != 0;
 	}
+	UT_DEBUGMSG(("UT_isRegularFile(%s) { _stat(...) failed, returning false. }\n", filename));
 	return false;
 }
 
