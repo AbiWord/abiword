@@ -87,7 +87,13 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 		}
 		
 		pathSize = newPath_ptr - newPath;
-		xxx_UT_DEBUGMSG(("new path size %d\n", pathSize));
+
+#ifdef DEBUG		
+		UT_DEBUGMSG(("--- new path (size %d) ---\n", pathSize));
+		for(j = 0; j < pathSize; j++)
+			UT_DEBUGMSG(("\tfontpath[%d]: \"%s\"\n", j, newPath[j]));
+		UT_DEBUGMSG(("-------------------------------------------------\n\n"));
+#endif
 		
 		XSetFontPath(dsp, newPath, pathSize);
 		for(j = 0; j < m_iExtraXFontPathCount; j++)
@@ -216,7 +222,13 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	for(i = realFontPathDirCount - m_iExtraXFontPathCount; i < realFontPathDirCount; i++)
 		*pExtraXFontPath++ = newFontPath[i];
 	
-	xxx_UT_DEBUGMSG(("setting X font path; %d items\n", realFontPathDirCount));
+#ifdef DEBUG		
+		UT_DEBUGMSG(("--- setting X font path (%d items)\n", realFontPathDirCount));
+		for(UT_uint32 j = 0; j < realFontPathDirCount; j++)
+			UT_DEBUGMSG(("\tfontpath[%d]: \"%s\"\n", j, newFontPath[j]));
+		UT_DEBUGMSG(("-------------------------------------------------\n\n"));
+#endif
+	
 	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
 
 	// now free what we do not need	
