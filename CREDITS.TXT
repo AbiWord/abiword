@@ -11,6 +11,7 @@ Shaw Terwilliger <sterwill@abisource.com>
 
 contributors
 ------------
+Ithamar R. Adema <ithamar@dds.nl>               BeOS fixes
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
 Tim Allen <rita_tim@tpg.com.au>			Goto Localization, Indonesian Translation
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
