@@ -37,9 +37,14 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
+	
+	void event_ok();
+	void event_cancel();
+	void event_close();
+	int done;	
 protected:
-
+    PtWidget_t *_constructWindow();
+    PtWidget_t *m_lstRevision;
 };
 
 #endif /* AP_QNXDIALOG_LISTREVISIONS_H */

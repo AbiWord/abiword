@@ -37,8 +37,16 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
+	int done;
+	void event_OK();
+	void event_Cancel();
+	void event_toggle(PtWidget_t *widget);	
 protected:
+
+      PtWidget_t * _constructWindow();
+      PtWidget_t *m_text1;
+      PtWidget_t *m_toggle1;
+      PtWidget_t *m_toggle2;
 
 };
 
