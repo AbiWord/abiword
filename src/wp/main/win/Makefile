@@ -51,7 +51,7 @@ endif
 LoadOrder=	AbiGr AbiFmt AbiXAp AbiWPAp AbiPTbl AbiImpExp \
 			AbiEv AbiUtil AbiGr AbiWordVer AbiSpell 
 ABI_PERIPHLIBS=		Abi_libwv fribidi \
-			Abi_libpopt $(ABIICONV) Abi_libpng $(ABI_ZLIB_LIB)
+			Abi_libpopt $(ABIICONV) Abi_libpng
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder) $(ABI_PERIPHLIBS)
 ABI_APPLIBDEP=		$(LoadOrder)
 
@@ -71,12 +71,12 @@ ifeq ($(OS_NAME), MINGW32)
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 ifeq ($(ABI_OPT_WINELIB), 1)
-	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) $(OBJDIR)/dummy.o $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
+	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) $(OBJDIR)/dummy.o $(EXTRA_LIBS) $(OS_LIBS) $(ABI_ZLIB_LIB) $(XLDFLAGS)
 else
 	@echo Linking dynamic $(PROGRAM)
-	$(CCC) -o $(BINDIR)/libAbiWord.dll $(SHARED_LDFLAGS) $(CFLAGS) $(OBJDIR)/dummy.o  $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
+	$(CCC) -o $(BINDIR)/libAbiWord.dll $(SHARED_LDFLAGS) $(CFLAGS) $(OBJDIR)/dummy.o  $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(ABI_ZLIB_LIB) $(XLDFLAGS)
 	@mv libAbiWord.dll.a $(LIBDIR)
-	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) -L$(LIBDIR) -lAbiWord.dll $(OS_LIBS) $(XLDFLAGS)
+	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) -L$(LIBDIR) -lAbiWord.dll $(OS_LIBS) $(ABI_ZLIB_LIB) $(XLDFLAGS)
 endif
 else
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
@@ -84,7 +84,7 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@echo Linking $(PROGRAM)....
 	@$(CC) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH))	\
 		-Fe$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))	\
-		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS)				\
+		-link $(LDFLAGS) $(OS_LIBS) $(ABI_ZLIB_LIB) $(ABI_LDFLAGS)				\
 		$(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH))
 endif
 
