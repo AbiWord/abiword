@@ -21,8 +21,9 @@
 
 #ifndef UT_DEBUGMSG_H
 #define UT_DEBUGMSG_H
+#include "ut_types.h"
 
-void _UT_OutputMessage(const char *s, ...);
+ABI_EXPORT void _UT_OutputMessage(const char *s, ...);
 
 #ifdef UT_DEBUG
 #define UT_DEBUGMSG(M) _UT_OutputMessage M
