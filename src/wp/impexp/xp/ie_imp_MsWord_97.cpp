@@ -1491,7 +1491,7 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 {
 	//now search for position iDocPosition in our bookmark list;
-	bookmark * bm;
+	bookmark * bm, * lastBm;
 	if (m_iBookmarksCount == 0) {
 		bm = static_cast<bookmark*>(NULL);
 	}
@@ -1508,7 +1508,9 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 	   while(bm > m_pBookmarks && (bm - 1)->pos == iDocPosition)
 		   bm--;
 
-	   while(bm->pos == iDocPosition)
+	   lastBm = &m_pBookmarks[m_iBookmarksCount];
+
+	   while(bm < lastBm && bm->pos == iDocPosition)
 		  error |= _insertBookmark(bm++);
 	}
 	return error;
