@@ -10190,7 +10190,7 @@ Defun(resizeImage)
 		}
 
 		UT_Rect r = orgImgRect;
-		double aRatio = r.height/r.width;
+		double aRatio = ((double )r.height)/((double )r.width);
 		
 		// we can savely use the cursor format to see what kind of dragging we are doing
 		GR_Graphics::Cursor cur = pView->getImageSelCursor();
