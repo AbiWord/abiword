@@ -28,6 +28,8 @@
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
 
+#pragma warning(disable:4355)
+
 /*****************************************************************/
 
 XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)

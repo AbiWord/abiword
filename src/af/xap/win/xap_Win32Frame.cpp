@@ -36,6 +36,7 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+#pragma warning(disable:4355)
 
 /*****************************************************************/
 
