@@ -89,7 +89,7 @@ only practical when installing a couple of fonts; (2) use the provided
 ttfadmin script (located in AbiSuite/bin directory) to process all ttf
 fonts in an entire directory; use the directory as a command line
 parameter, for instance
-	/usr/local/AbiSuite/bin/ttfadmin /usr/local/AbiSuite/fonts/
+	/usr/local/AbiSuite/bin/ttfadmin.sh /usr/local/AbiSuite/fonts/
 
 (NB: do not move this script, it expects to find the programs ttf2uafm
 and ttf2t42 in the directory where it is located.)
