@@ -373,15 +373,18 @@ void GR_CocoaGraphics::setFont(GR_Font * pFont)
 
 UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 {
-	return getFontAscent(fnt)+getFontDescent(fnt);
+	UT_ASSERT(fnt);
+
+	XAP_CocoaFontHandle * hndl = static_cast<XAP_CocoaFontHandle *>(fnt);
+
+	NSFont* pFont = hndl->getNSFont();
+//	printf ("line height %f\n", [pFont defaultLineHeightForFont]);
+	return (UT_uint32)[pFont defaultLineHeightForFont];
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
 {
-	if (!m_pFontManager)
-		return 0;
-
-	return getFontAscent()+getFontDescent();
+	return getFontHeight(m_pFont);
 }
 
 UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -777,7 +780,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
    	GR_CocoaImage * pCocoaImage = static_cast<GR_CocoaImage *>(pImg);
 
-   	Fatmap * image = pCocoaImage->getData();
+   	NSImage * image = pCocoaImage->getNSImage();
 
 	if (image == 0)
 	{
@@ -788,20 +791,8 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
    	UT_sint32 iImageWidth = pCocoaImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pCocoaImage->getDisplayHeight();
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	/*
-   	gdk_draw_rgb_image(m_pWin,
-			   m_pGC,
-			   xDest,
-			   yDest,
-			   iImageWidth,
-			   iImageHeight,
-			   GDK_RGB_DITHER_NORMAL,
-			   image->data,
-			   image->width * 3); // This parameter is the total bytes across one row,
-                                              // which is pixels * 3 (we use 3 bytes per pixel).
-
-	*/
+	LOCK_CONTEXT__;
+	[image compositeToPoint:NSMakePoint(xDest, yDest + iImageHeight) operation:NSCompositeCopy fraction:1.0f];
 }
 
 
