@@ -10199,6 +10199,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 // Do this first
 //
+	if(m_pDoc->isTOCAtPos(getPoint()))
+	{
+		setPoint(getPoint()-1);
+	}
 	const XML_Char ** props_in = NULL;
 	getCharFormat(&props_in);
 
