@@ -11,7 +11,7 @@ Shaw Terwilliger <sterwill@abisource.com>
 
 current maintainer
 -----------------------------
-Dom Lachowicz <dominicl@seas.upenn.edu>
+Dom Lachowicz <doml@appligent.com>
 
 contributors
 ------------

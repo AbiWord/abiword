@@ -168,7 +168,7 @@ void UT_Wctomb::setOutCharset(const char* charset)
 UT_Wctomb::UT_Wctomb(const char* to_charset)
 {
     cd = UT_iconv_open(to_charset,ucs4Internal());
-    //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
+    UT_ASSERT(UT_iconv_isValid(cd)); //it's better to return "?" instead of crashing
 };
 
 UT_Wctomb::UT_Wctomb()
@@ -179,14 +179,13 @@ UT_Wctomb::UT_Wctomb()
 
 UT_Wctomb::UT_Wctomb(const UT_Wctomb& v)
 {
-	// Shouldn't a copy also copy the encoding?
-    cd = UT_iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),"UCS-2");
+  // Shouldn't a copy also copy the encoding?
+    cd = UT_iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),UCS_2_INTERNAL);
     UT_ASSERT(UT_iconv_isValid(cd));
 };
 
 UT_Wctomb::~UT_Wctomb()
 {
-    /*libiconv is stupid - we'll get segfault if we don't check  - VH */
     if (UT_iconv_isValid(cd))
 	    UT_iconv_close(cd);
 };
