@@ -38,7 +38,7 @@ public:
 
 	UT_Map();
 	UT_Map(comparator comp);
-	virtual ~UT_Map();
+	~UT_Map();
 
 	bool insert(key_t key, data_t data);
 	void erase(key_t key);
