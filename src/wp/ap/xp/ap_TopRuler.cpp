@@ -1546,6 +1546,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
             m_draggingCenter = iRightIndentPos - m_minColumnWidth;
 		}
+        iIndentShift = UT_MIN(0,UT_MIN(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
+        if (m_draggingCenter - xAbsLeft + iIndentShift < 0)
+        {
+            m_draggingCenter = xAbsLeft - iIndentShift;
+        }
 
 		if(m_draggingCenter == oldDragCenter)
 		{
@@ -1609,6 +1614,12 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 			m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
 		}
+
+        UT_sint32 iIndentShift = UT_MIN(0,m_infoCache.m_xrRightIndent);
+        if (xAbsRight - m_draggingCenter + iIndentShift < 0 )
+        {
+            m_draggingCenter = xAbsRight + iIndentShift;
+        }
 
 		if(m_draggingCenter == oldDragCenter)
 		{
