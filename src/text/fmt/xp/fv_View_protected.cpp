@@ -5506,6 +5506,10 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	fl_BlockLayout * pBlock = _findBlockAtPosition(iDocPos);
 
 	UT_return_if_fail( pBlock );
+	if(pBlock->getLength() <  iDocPos - pBlock->getPosition())
+	{
+		return;
+	}
 	
 	fp_Run * pRun = pBlock->findRunAtOffset(iDocPos - pBlock->getPosition());
 	UT_return_if_fail( pRun );
@@ -5527,6 +5531,10 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 
 		fl_BlockLayout * pEndBlock = _findBlockAtPosition(iOrigEndOffset);
 		UT_return_if_fail( pEndBlock );
+		if(pEndBlock->getLength() <  iOrigEndOffset - pEndBlock->getPosition())
+		{
+			return;
+		}
 		
 		fp_Run * pEndRun = pEndBlock->findRunAtOffset(iOrigEndOffset - pEndBlock->getPosition());
 		UT_return_if_fail( pEndRun );
