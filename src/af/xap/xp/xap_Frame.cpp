@@ -65,6 +65,28 @@ AP_Frame::AP_Frame(AP_App * app)
 	m_app->rememberFrame(this);
 }
 
+AP_Frame::AP_Frame(AP_Frame * f)
+{
+	// only clone a few things
+	m_app = f->m_app;
+	m_pDoc = f->m_pDoc;
+	m_iUntitled = f->m_iUntitled;
+
+	// everything else gets recreated
+	m_pDocLayout = NULL;
+	m_pView = NULL;
+	m_pViewListener = NULL;
+	m_pScrollObj = NULL;
+	m_pG = NULL;
+	m_pEBM = NULL;
+	m_pEEM = NULL;
+	m_pMenuLayout = NULL;
+	m_pMenuLabelSet = NULL;
+	m_nView = 0;
+
+	m_app->rememberFrame(this, f);
+}
+
 AP_Frame::~AP_Frame(void)
 {
 	// BUGBUG: commented out to avoid circular nastiness in app destructor
@@ -174,6 +196,24 @@ void AP_Frame::setViewNumber(UT_uint32 n)
 UT_uint32 AP_Frame::getViewNumber(void) const
 {
 	return m_nView;
+}
+
+const char * AP_Frame::getViewKey(void) const
+{
+	/*
+		We want a string key which uniquely identifies a PD_Document instance, 
+		so that we can match up top-level views on the same document.  
+		
+		We can't use the filename, since it might not exist (untitled43) and
+		is likely to change when the document is saved.
+
+		So, we just use the PD_Document pointer.  :-)
+	*/
+	static char buf[9];
+
+	sprintf(buf, "%08lx", (UT_uint32)m_pDoc);
+
+	return buf;
 }
 
 const char * AP_Frame::getTitle(int len) const

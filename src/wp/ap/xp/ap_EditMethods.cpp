@@ -1025,6 +1025,14 @@ Defun(fileSave)
 
 	pView->cmdSave();
 
+	if (pFrame->getViewNumber() > 0)
+	{
+		AP_App * pApp = pFrame->getApp();
+		UT_ASSERT(pApp);
+
+		pApp->updateClones(pFrame);
+	}
+
 	return UT_TRUE;
 }
 
@@ -1044,6 +1052,14 @@ Defun1(fileSaveAs)
 		UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 		pView->cmdSaveAs(pNewFile);
 		free(pNewFile);
+
+		if (pFrame->getViewNumber() > 0)
+		{
+			AP_App * pApp = pFrame->getApp();
+			UT_ASSERT(pApp);
+
+			pApp->updateClones(pFrame);
+		}
 	}
 
 	return UT_TRUE;
@@ -1101,9 +1117,12 @@ Defun0(replace)
 	return UT_TRUE;
 }
 
-Defun0(newWindow)
+Defun1(newWindow)
 {
-	return UT_TRUE;
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	return (pFrame->cloneFrame() ? UT_TRUE : UT_FALSE);
 }
 
 static UT_Bool _activateWindow(FV_View* pView, UT_uint32 ndx)

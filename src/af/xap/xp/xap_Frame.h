@@ -50,9 +50,11 @@ class AP_Frame
 {
 public:
 	AP_Frame(AP_App * app);
+	AP_Frame(AP_Frame * f);
 	virtual ~AP_Frame(void);
 
 	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
+	virtual	AP_Frame *			cloneFrame(void)=0;
 	virtual UT_Bool				loadDocument(const char * szFilename);
 	virtual UT_Bool				close(void)=0;
 	virtual UT_Bool				raise(void)=0;
@@ -71,6 +73,7 @@ public:
 
 	void						setViewNumber(UT_uint32 n);
 	UT_uint32					getViewNumber(void) const;
+	const char *				getViewKey(void) const;
 	
 protected:
 	AP_App *					m_app;			/* handle to application-specific data */
@@ -86,11 +89,11 @@ protected:
 	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */
 	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */
 	UT_uint32					m_nView;
+	int							m_iUntitled;
 
 private:
 	char						m_szTitle[512];
 	
-	int							m_iUntitled;
 	static int					s_iUntitled;	
 };
 

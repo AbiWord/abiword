@@ -140,6 +140,16 @@ AP_UnixFrame::AP_UnixFrame(AP_UnixApp * app)
 	m_pView = NULL;
 }
 
+AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
+	: AP_Frame(static_cast<AP_Frame *>(f))
+{
+	m_pUnixApp = f->m_pUnixApp;
+	m_pUnixKeyboard = NULL;
+	m_pUnixMouse = NULL;
+	m_pUnixMenu = NULL;
+	m_pView = NULL;
+}
+
 AP_UnixFrame::~AP_UnixFrame(void)
 {
 	// only delete the things we created...
@@ -175,6 +185,32 @@ UT_Bool AP_UnixFrame::initialize(int * pArgc, char *** pArgv)
 	gtk_widget_show(m_wTopLevelWindow);
 
 	return UT_TRUE;
+}
+
+AP_Frame * AP_UnixFrame::cloneFrame(void)
+{
+	AP_UnixFrame * pClone = new AP_UnixFrame(this);
+	ENSUREP(pClone);
+
+	if (!pClone->initialize(0,NULL))
+		goto Cleanup;
+
+	if (!pClone->_showDocument())
+		goto Cleanup;
+
+	pClone->show();
+
+	return pClone;
+
+Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		m_pUnixApp->forgetFrame(pClone);
+		delete pClone;
+	}
+
+	return NULL;
 }
 
 GtkWidget * AP_UnixFrame::getTopLevelWindow(void) const
@@ -325,6 +361,12 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 
 		return UT_FALSE;
 	}
+
+	return _showDocument();
+}
+
+UT_Bool AP_UnixFrame::_showDocument(void)
+{
 
 	UNIXGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;

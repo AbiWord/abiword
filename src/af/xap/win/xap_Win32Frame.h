@@ -41,9 +41,11 @@ class AP_Win32Frame : public AP_Frame
 {
 public:
 	AP_Win32Frame(AP_Win32App * app);
+	AP_Win32Frame(AP_Win32Frame * f);
 	~AP_Win32Frame(void);
 
 	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
+	virtual	AP_Frame *			cloneFrame(void);
 	virtual UT_Bool				loadDocument(const char * szFilename);
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
@@ -58,6 +60,7 @@ public:
 
 protected:
 	void						_createTopLevelWindow(void);
+	UT_Bool						_showDocument(void);
 	static void					_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff);
 	static LRESULT CALLBACK		_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 

@@ -27,6 +27,8 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_hash.h"
+
 class AP_Frame;
 class EV_EditMethodContainer;
 class EV_Menu_ActionSet;
@@ -53,9 +55,11 @@ public:
 	virtual ~AP_App(void);
 
 	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
-	virtual UT_Bool					rememberFrame(AP_Frame * pFrame);
+	virtual UT_Bool					rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf=NULL);
 	virtual UT_Bool					forgetFrame(AP_Frame * pFrame);
 	virtual AP_Frame * 				newFrame(void) = 0;
+
+	UT_Bool							updateClones(AP_Frame * pFrame);
 
 	UT_uint32						getFrameCount(void) const;
 	AP_Frame * 						getFrame(UT_uint32 ndx) const;
@@ -77,6 +81,7 @@ protected:
 	EV_Menu_ActionSet *			m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 
 	UT_Vector					m_vecFrames;
+	UT_HashTable				m_hashClones;
 
 #ifdef ABI_OPT_JS	
 	JSInterpPtr 				m_pJSInterp;

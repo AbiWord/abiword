@@ -85,6 +85,17 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
 	m_hwnd = NULL;
 }
 
+AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
+	: AP_Frame(static_cast<AP_Frame *>(f))
+{
+	m_pWin32App = f->m_pWin32App;
+	m_pWin32Keyboard = NULL;
+	m_pWin32Mouse = NULL;
+	m_pWin32Menu = NULL;
+	m_pView = NULL;
+	m_hwnd = NULL;
+}
+
 AP_Win32Frame::~AP_Win32Frame(void)
 {
 	// only delete the things we created...
@@ -120,6 +131,32 @@ UT_Bool AP_Win32Frame::initialize(int * pArgc, char *** pArgv)
 	// should we pass that via argv, to do it here for all frames?
 
 	return UT_TRUE;
+}
+
+AP_Frame * AP_Win32Frame::cloneFrame(void)
+{
+	AP_Win32Frame * pClone = new AP_Win32Frame(this);
+	ENSUREP(pClone);
+
+	if (!pClone->initialize(0,NULL))
+		goto Cleanup;
+
+	if (!pClone->_showDocument())
+		goto Cleanup;
+
+	pClone->show();
+
+	return pClone;
+
+Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		m_pWin32App->forgetFrame(pClone);
+		delete pClone;
+	}
+
+	return NULL;
 }
 
 HWND AP_Win32Frame::getTopLevelWindow(void) const
@@ -180,7 +217,18 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 
 		return UT_FALSE;
 	}
+
+	return _showDocument();
+}
 	
+UT_Bool AP_Win32Frame::_showDocument(void)
+{
+	if (!m_pDoc)
+	{
+		UT_DEBUGMSG(("Can't show a non-existent document\n"));
+		return UT_FALSE;
+	}
+
 	Win32Graphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	FV_View * pView = NULL;

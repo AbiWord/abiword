@@ -38,7 +38,7 @@
 
 /*****************************************************************/
 
-AP_App::AP_App(void)
+AP_App::AP_App(void) : m_hashClones(5)
 {
 	m_pEMC = NULL;
 	m_pMenuActionSet = NULL;
@@ -48,8 +48,6 @@ AP_App::~AP_App(void)
 {
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(AP_Frame, m_vecFrames);
-
-	// TODO: add another method to give them fair warning first
 
 	DELETEP(m_pEMC);
 	DELETEP(m_pMenuActionSet);
@@ -139,12 +137,53 @@ const EV_Menu_ActionSet * AP_App::getMenuActionSet(void) const
 	return m_pMenuActionSet;
 }
 
-UT_Bool AP_App::rememberFrame(AP_Frame * pFrame)
+UT_Bool AP_App::rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf)
 {
 	UT_ASSERT(pFrame);
 
 	// add this frame to our window list
 	m_vecFrames.addItem(pFrame);
+
+	// TODO: error-check the following for mem failures
+	if (pCloneOf)
+	{
+		// locate vector of this frame's clones
+		UT_HashTable::UT_HashEntry* pEntry = m_hashClones.findEntry(pCloneOf->getViewKey());
+
+		UT_Vector * pvClones = NULL;
+
+		if (pEntry)
+		{
+			// already exists
+			pvClones = (UT_Vector *) pEntry->pData;
+			UT_ASSERT(pvClones);
+		}
+		else
+		{
+			// create a new one
+			pvClones = new UT_Vector();
+			UT_ASSERT(pvClones);
+
+			pvClones->addItem(pCloneOf);
+
+			// add it to the hash table
+			m_hashClones.addEntry(pCloneOf->getViewKey(), NULL, pvClones);
+		}
+
+		pvClones->addItem(pFrame);
+
+		// notify all clones of their new view numbers
+		for (UT_uint32 j=0; j<pvClones->getItemCount(); j++)
+		{
+			AP_Frame * f = (AP_Frame *) pvClones->getNthItem(j);
+			UT_ASSERT(f);
+
+			f->setViewNumber(j+1);
+
+			if (f != pFrame)
+				f->updateTitle();
+		}
+	}
 	
 	// TODO do something here...
 	return UT_TRUE;
@@ -153,6 +192,59 @@ UT_Bool AP_App::rememberFrame(AP_Frame * pFrame)
 UT_Bool AP_App::forgetFrame(AP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
+
+	if (pFrame->getViewNumber() > 0)
+	{
+		// locate vector of this frame's clones
+		UT_HashTable::UT_HashEntry* pEntry = m_hashClones.findEntry(pFrame->getViewKey());
+		UT_ASSERT(pEntry);
+
+		if (pEntry)
+		{
+			UT_Vector * pvClones = (UT_Vector *) pEntry->pData;
+			UT_ASSERT(pvClones);
+
+			// remove this frame from the vector
+			UT_sint32 i = pvClones->findItem(pFrame);
+			UT_ASSERT(i >= 0);
+
+			if (i >= 0)
+			{
+				pvClones->deleteNthItem(i);
+			}
+
+			// see how many clones are left
+			UT_uint32 count = pvClones->getItemCount();
+			UT_ASSERT(count > 0);
+			AP_Frame * f = NULL;
+
+			if (count == 1)
+			{
+				// remaining clone is now a singleton
+				f = (AP_Frame *) pvClones->getNthItem(count-1);
+				UT_ASSERT(f);
+
+				f->setViewNumber(0);
+				f->updateTitle();
+
+				// remove this entry from hashtable
+				m_hashClones.setEntry(pEntry, NULL, NULL);
+				delete pvClones;
+			}
+			else
+			{
+				// notify remaining clones of their new view numbers
+				for (UT_uint32 j=0; j<count; j++)
+				{
+					f = (AP_Frame *) pvClones->getNthItem(j);
+					UT_ASSERT(f);
+
+					f->setViewNumber(j+1);
+					f->updateTitle();
+				}
+			}
+		}
+	}
 
 	// remove this frame from our window list
 	UT_sint32 ndx = m_vecFrames.findItem(pFrame);
@@ -164,6 +256,36 @@ UT_Bool AP_App::forgetFrame(AP_Frame * pFrame)
 	}
 
 	// TODO do something here...
+	return UT_TRUE;
+}
+
+UT_Bool AP_App::updateClones(AP_Frame * pFrame)
+{
+	UT_ASSERT(pFrame);
+	UT_ASSERT(pFrame->getViewNumber() > 0);
+
+	// locate vector of this frame's clones
+	UT_HashTable::UT_HashEntry* pEntry = m_hashClones.findEntry(pFrame->getViewKey());
+	UT_ASSERT(pEntry);
+
+	if (pEntry)
+	{
+		UT_Vector * pvClones = (UT_Vector *) pEntry->pData;
+		UT_ASSERT(pvClones);
+
+		UT_uint32 count = pvClones->getItemCount();
+		UT_ASSERT(count > 0);
+		AP_Frame * f = NULL;
+
+		for (UT_uint32 j=0; j<count; j++)
+		{
+			f = (AP_Frame *) pvClones->getNthItem(j);
+			UT_ASSERT(f);
+
+			f->updateTitle();
+		}
+	}
+
 	return UT_TRUE;
 }
 
