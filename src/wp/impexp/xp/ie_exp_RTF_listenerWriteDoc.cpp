@@ -416,19 +416,34 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			return true;
 		}
 
-	case PTX_SectionHdrFtr: // just a copy of the code from ptx_section for now
+	case PTX_SectionHdrFtr: 
 		{
 			_closeSpan();
 			_closeBlock();
 			_closeSection();
 			_setTabEaten(false);
-			// begin a new section.  in RTF this is expressed as
+			// begin a header/footer.  in RTF this is expressed as
 			//
-			// <section> := <secfmt>* <hdrftr>? <para>+ (\sect <section>)?
+			// {' <hdrctl> <para>+ '}' where <hdrctl> is one of
+			// \header or \footer for headers or footers on all pages
+			// \headerl or \headerr or \headerf for headers on left, right, and first pages 
+			// \footerl or \footerr or \footerf for footers on left, right, and first pages 
 			//
 			// here we deal with everything except for the <para>+
 			m_sdh = sdh;
-			_rtf_open_section(pcr->getIndexAP());
+			m_pie->_rtf_nl();
+			m_pie->_rtf_open_brace();
+			PT_AttrPropIndex indexAP = pcr->getIndexAP();
+			const PP_AttrProp* pAP = NULL;
+			m_pDocument->getAttrProp(indexAP, &pAP);
+			const XML_Char* pszSectionType = NULL;
+			pAP->getAttribute("type", pszSectionType);
+			if(0 == UT_strcmp(pszSectionType, "header"))
+				m_pie->_rtf_keyword("header");
+			else if(0 == UT_strcmp(pszSectionType, "footer"))
+				m_pie->_rtf_keyword("footer");
+			else
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return true;
 		}
 

@@ -1031,6 +1031,7 @@ void IE_Exp_RTF::_write_stylesheets(void)
 		}
 	
 		_rtf_chardata(pStyle->getName(), strlen(pStyle->getName()));
+		_rtf_chardata(";",1);
 		_rtf_close_brace();
     }
 
@@ -1039,7 +1040,8 @@ void IE_Exp_RTF::_write_stylesheets(void)
 
 bool IE_Exp_RTF::_write_rtf_trailer(void)
 {
-	_rtf_close_brace();
+	while (m_braceLevel>0)
+		_rtf_close_brace();
 	return (m_error == 0);
 }
 
