@@ -232,9 +232,7 @@ public:
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
         static EV_EditMethod_Fn printPreview;
-#ifdef HAVE_GNOME_DIRECT_PRINT
 	static EV_EditMethod_Fn printDirectly;
-#endif
 	static EV_EditMethod_Fn fileInsertGraphic;
 
 	static EV_EditMethod_Fn undo;
@@ -595,9 +593,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	        // intended for X11 middle mouse
 	EV_EditMethod(NF(pasteSelection),		0,	""),
 	EV_EditMethod(NF(print),				0,	""),
-#ifdef HAVE_GNOME_DIRECT_PRINT	
 	EV_EditMethod(NF(printDirectly), 0, ""),
-#endif
 	EV_EditMethod(NF(printPreview), 0, ""),
 	EV_EditMethod(NF(printTB),				0,	""),
 
