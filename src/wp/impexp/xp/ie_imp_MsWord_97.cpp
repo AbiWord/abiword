@@ -26,18 +26,12 @@
 
 #include "wv.h"
 #include "ie_imp_MsWord_97.h"
-#include "ie_impGraphic.h"
 #include "xap_EncodingManager.h"
 
+#include "ie_impGraphic.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
-
-#include "ie_impGraphic_PNG.h"
-#include "ie_impGraphic_BMP.h"
-#ifdef HAVE_LIBJPEG
-#include "ie_impGraphic_JPEG.h"
-#endif
 
 #include "ut_string_class.h"
 #include "pd_Document.h"
@@ -1550,28 +1544,12 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
-  switch(b->type) 
-    {
-      // currently handled image types
-#ifdef HAVE_LIBJPEG
-    case msoblipJPEG: 
-#endif
-    case msoblipDIB:
-    case msoblipPNG:
-      break;
-      
-      // currently unhandled image types
-    case msoblipWMF:
-    case msoblipEMF:
-    case msoblipPICT:
-    default:
-      return UT_ERROR;
-    }
-  
   const char * mimetype     = UT_strdup ("image/png");
   IE_ImpGraphic * importer  = 0;
-  
-  UT_ByteBuf * pictData = new UT_ByteBuf();
+  FG_Graphic* pFG           = 0;
+  UT_Error error            = UT_OK;
+  UT_ByteBuf * buf          = 0;  
+  UT_ByteBuf * pictData     = new UT_ByteBuf();
   
   // suck the data into the ByteBuffer
   
@@ -1579,29 +1557,33 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
     pictData->append((UT_Byte*)&data, 1);
   
-  if (b->type == msoblipPNG)
-    importer = new IE_ImpGraphic_PNG;
-  else if (b->type == msoblipDIB)
-    importer = new IE_ImpGraphic_BMP;
-#ifdef HAVE_LIBJPEG
-  else // msoblipJPEG
-    importer = new IE_ImpGraphic_JPEG();
-#endif
-  
-  FG_Graphic* pFG;
-  UT_Error error = importer->importGraphic(pictData, &pFG);
-  DELETEP(importer);
-  
-  if (error != UT_OK) 
+  error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
+  if ((error != UT_OK) || !importer)
     {
-      UT_DEBUGMSG(("Error parsing embedded PNG\n"));
-      delete pictData;
-      FREEP(mimetype);
-      return false;
+      UT_DEBUGMSG(("Could not create image importer object\n"));
+      DELETEP(pictData);
+      goto Cleanup;
     }
-	
-  UT_ByteBuf * buf;
+  
+  error = importer->importGraphic(pictData, &pFG); 
+  if ((error != UT_OK) || !pFG)
+    {
+      UT_DEBUGMSG(("Could not import graphic\n"));
+      DELETEP(pictData);
+      goto Cleanup;
+    }
+  
+  // TODO: can we get back a vector graphic?
   buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+
+  if (!buf)
+    {
+      // i don't think that this could ever happen, but...
+      UT_DEBUGMSG(("Could not convert to PNG\n"));
+      DELETEP(pictData);
+      error = UT_ERROR;
+      goto Cleanup;
+    }
   
   //
   // This next bit of code will set up our properties based on the image attributes
@@ -1630,24 +1612,28 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   if (!getDoc()->appendObject (PTO_Image, propsArray))
     {
       UT_DEBUGMSG (("Could not create append object\n"));
-      delete pictData;
-      FREEP(mimetype);
-      return UT_ERROR;
+      error = UT_ERROR;
+      goto Cleanup;
     }
   
   if (!getDoc()->createDataItem((char*)propsName, false,
 				buf, (void*)mimetype, NULL))
     {
       UT_DEBUGMSG (("Could not create data item\n"));
-      delete pictData;
-      FREEP(mimetype);
-      return UT_ERROR;
+      error = UT_ERROR;
+      goto Cleanup;
     }
+
+ Cleanup:
+  //DELETEP(pictData);
+  //DELETEP(pFG);
+  DELETEP(importer);
+  FREEP(mimetype);
   
   //
   // Free any allocated data
   //
-  return UT_OK;
+  return error;
 }
 
 /****************************************************************************/
