@@ -212,7 +212,6 @@ void AP_QNXDialog_Replace::event_Find(void)
 	if (!(findEntryText = s_get_text_string(m_entryFind))) {
 		return;
 	}
-	printf("Find [%s] \n", findEntryText);
 	
 	UT_UCS4Char * findString;
 
