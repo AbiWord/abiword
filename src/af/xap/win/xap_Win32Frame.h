@@ -54,6 +54,7 @@ public:
 	virtual UT_Bool				updateTitle(void);
 
 	HWND						getTopLevelWindow(void) const;
+	HWND						getToolbarWindow(void) const;
 	EV_Win32Mouse *				getWin32Mouse(void);
 	ev_Win32Keyboard *			getWin32Keyboard(void);
 
@@ -75,6 +76,7 @@ protected:
 	UT_uint32					m_iBarHeight;
 	
 	HWND						m_hwndFrame;
+	HWND						m_hwndRebar;
 	HWND						m_hwndChild;
 };
 

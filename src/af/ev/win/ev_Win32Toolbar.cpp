@@ -95,20 +95,25 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	HWND wTLW = m_pWin32Frame->getTopLevelWindow();
+#ifdef REBAR
+	HWND hwndParent = m_pWin32Frame->getToolbarWindow();
+#else
+	HWND hwndParent = m_pWin32Frame->getTopLevelWindow();
+#endif
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
     m_hwnd = CreateWindowEx(0, 
 				TOOLBARCLASSNAME,		// window class name
 				(LPSTR) NULL,			// window caption
-				WS_CHILD | WS_BORDER | TBSTYLE_TOOLTIPS
+				WS_CHILD | WS_BORDER | WS_VISIBLE | TBSTYLE_TOOLTIPS
+				| CCS_NOPARENTALIGN | CCS_NOMOVEY | CCS_NODIVIDER
 				,						// window style
 				0,						// initial x position
 				0,						// initial y position
 				0,						// initial x size
 				0,						// initial y size
-				wTLW,					// parent window handle
+				hwndParent,				// parent window handle
 				NULL,					// window menu handle
 				m_pWin32App->getInstance(),		// program instance handle
 				NULL);					// creation parameters
@@ -127,6 +132,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 
 	// TODO: is there any advantage to building up all the TBBUTTONs at once
 	//		 and then adding them en masse, instead of one at a time? 
+	UINT last_id=0;
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -163,6 +169,8 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 				tbb.iBitmap = STD_HELP;		// HACK: just map to std. icons for now
 				tbb.idCommand = u;     
 				tbb.dwData = 0; 
+				
+				last_id = u;
 
 				const char * szLabel = pLabel->getToolbarLabel();
 				tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
@@ -211,10 +219,43 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	// figure out bar dimensions now that buttons are all there
 	SendMessage(m_hwnd, TB_AUTOSIZE, 0, 0);  
 
-	// TODO: should this wait until they're positioned?
-	// HYP:  shouldn't matter, just do both before frame (ie, parent) is shown
-    ShowWindow(m_hwnd, SW_SHOW); 
-	
+#ifdef REBAR
+	RECT r;
+	GetWindowRect(m_hwnd, &r);
+
+#if 0
+	UT_ASSERT(last_id > 0);
+	SendMessage(m_hwnd, TB_GETRECT, (WPARAM) last_id, (LPARAM)(LPRECT) &r);  
+#endif
+
+	// add this bar to the rebar
+	REBARBANDINFO  rbbi;
+	ZeroMemory(&rbbi, sizeof(rbbi));
+	// Initialize REBARBANDINFO
+	rbbi.cbSize = sizeof(REBARBANDINFO);
+	rbbi.fMask = RBBIM_COLORS |	// clrFore and clrBack are valid
+		RBBIM_CHILD |				// hwndChild is valid
+		RBBIM_CHILDSIZE |			// cxMinChild and cyMinChild are valid
+		RBBIM_STYLE |				// fStyle is valid
+//		RBBIM_ID |					// wID is valid
+//		RBBIM_TEXT |				// lpText is valid
+//		RBBIM_IMAGE |				// iImage is valid
+		/* RBBIM_BACKGROUND */ 0;			// hbmBack is valid
+	rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
+	rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
+	rbbi.fStyle = RBBS_NOVERT |	// do not display in vertical orientation
+		RBBS_CHILDEDGE |
+		/* RBBS_FIXEDBMP */ 0;
+//	rbbi.hbmBack = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BACK));
+//	rbbi.lpText = TEXT("Cool sites:");
+	rbbi.hwndChild = m_hwnd;
+	rbbi.cxMinChild = r.right - r.left;
+	rbbi.cyMinChild = r.bottom - r.top;
+
+	// Add it at the the end
+	SendMessage(hwndParent, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
+#endif
+
 	return UT_TRUE;
 }
 
