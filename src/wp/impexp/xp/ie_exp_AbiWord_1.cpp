@@ -563,7 +563,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					
 					while(pAP->getNthAttribute(k++, pName, pValue))
 					{
-						bFound = (0 == UT_XML_strnicmp(pName,"href",4));
+						bFound = (0 == UT_XML_strnicmp(pName,"xlink:href",4));
 						if(bFound)
 							break;
 					}
