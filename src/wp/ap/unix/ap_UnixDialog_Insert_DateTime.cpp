@@ -41,6 +41,7 @@
 /*****************************************************************/
 
 #define	LIST_ITEM_INDEX_KEY "index"
+#define CUSTOM_RESPONSE_INSERT 1
 
 /*****************************************************************/
 
@@ -78,10 +79,10 @@ void AP_UnixDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
-							 GTK_RESPONSE_OK, false ))
+							 CUSTOM_RESPONSE_INSERT, false ))
 	{
-		case GTK_RESPONSE_OK:
-			event_OK();
+		case CUSTOM_RESPONSE_INSERT:
+			event_Insert();
 			break;
 		default:
 			m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
@@ -96,10 +97,10 @@ void AP_UnixDialog_Insert_DateTime::s_date_dblclicked(GtkTreeView *treeview,
 													  GtkTreeViewColumn *arg2,
 													  AP_UnixDialog_Insert_DateTime * me)
 {
-	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_INSERT);
 }
 
-void AP_UnixDialog_Insert_DateTime::event_OK(void)
+void AP_UnixDialog_Insert_DateTime::event_Insert(void)
 {
 	UT_ASSERT(m_windowMain && m_tvFormats);
 
@@ -154,6 +155,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	// localize the strings in our dialog
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFormats"), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
+	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
 	
 	// add a column to our TreeView
 	renderer = gtk_cell_renderer_text_new ();

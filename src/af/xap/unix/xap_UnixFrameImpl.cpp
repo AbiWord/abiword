@@ -1340,17 +1340,6 @@ void XAP_UnixFrameImpl::_setGeometry ()
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}
 
-#if 0
-	bool cap_resize = false;
-	const XAP_Prefs * pPrefs = m_pUnixApp->getPrefs ();
-	if (pPrefs) pPrefs->getPrefsValueBool (XAP_PREF_KEY_CapResize, &cap_resize);
-
-	if (cap_resize)
-	    gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), w, h);
-	else
-	    gtk_window_set_default_size(GTK_WINDOW(m_wTopLevelWindow), w, h); // deprecated
-#endif
-
 	// Because we're clever, we only honor this flag when we
 	// are the first (well, only) top level frame available.
 	// This is so the user's window manager can find better

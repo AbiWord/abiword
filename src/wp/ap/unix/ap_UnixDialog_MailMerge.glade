@@ -7,7 +7,7 @@
 <widget class="GtkDialog" id="ap_UnixDialog_MailMerge">
   <property name="border_width">5</property>
   <property name="visible">True</property>
-  <property name="title" translatable="yes">Mail Merge</property>
+  <property name="title" translatable="yes">Insert Mail Merge Field</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -107,15 +107,15 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkButton" id="btOK">
+	    <widget class="GtkButton" id="btInsert">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="has_default">True</property>
 	      <property name="can_focus">True</property>
-	      <property name="label">gtk-add</property>
-	      <property name="use_stock">True</property>
+	      <property name="label" translatable="yes">_Insert</property>
+	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
-	      <property name="response_id">-5</property>
+	      <property name="response_id">1</property>
 	    </widget>
 	  </child>
 	</widget>

@@ -41,6 +41,7 @@
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
+#define CUSTOM_RESPONSE_INSERT 1
 
 /*****************************************************************/
 
@@ -77,9 +78,9 @@ void AP_UnixDialog_Break::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain),
-								 pFrame, this, GTK_RESPONSE_OK, false ) )
+								 pFrame, this, CUSTOM_RESPONSE_INSERT, false ) )
 	{
-		case GTK_RESPONSE_OK:
+		case CUSTOM_RESPONSE_INSERT:
 			m_answer = AP_Dialog_Break::a_OK;
 			break;
 		default:
@@ -137,6 +138,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 
 	localizeButton(glade_xml_get_widget(xml, "rbOddPage"), pSS, AP_STRING_ID_DLG_Break_OddPage);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbOddPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
+	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	return window;
 }

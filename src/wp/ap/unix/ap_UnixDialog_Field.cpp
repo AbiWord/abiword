@@ -42,6 +42,7 @@
 /*****************************************************************/
 
 #define	LIST_ITEM_INDEX_KEY "index"
+#define CUSTOM_RESPONSE_INSERT 1
 
 /*****************************************************************/
 
@@ -81,7 +82,7 @@ void AP_UnixDialog_Field::s_field_dblclicked(GtkTreeView *treeview,
 											 GtkTreeViewColumn *arg2,
 											 AP_UnixDialog_Field * me)
 {
-	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_INSERT);
 }
 
 /*****************************************************************/
@@ -98,10 +99,10 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 	_populateCatogries();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain), pFrame, this,
-								 GTK_RESPONSE_OK, false ) )
+								 CUSTOM_RESPONSE_INSERT, false ) )
 	{
-		case GTK_RESPONSE_OK:
-			event_OK();
+		case CUSTOM_RESPONSE_INSERT:
+			event_Insert();
 			break;
 		default:
 			m_answer = AP_Dialog_Field::a_CANCEL;
@@ -111,7 +112,7 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 	abiDestroyWidget ( m_windowMain ) ;
 }
 
-void AP_UnixDialog_Field::event_OK(void)
+void AP_UnixDialog_Field::event_Insert(void)
 {
 	UT_ASSERT(m_windowMain && m_listTypes && m_listFields);
 	
@@ -295,6 +296,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTypes"), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFields"), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbExtraParameters"), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
+	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	// add a column to our TreeViews
 

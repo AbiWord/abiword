@@ -220,8 +220,10 @@ dcl(DLG_PLUGIN_MANAGER_COULDNT_UNLOAD,	"Could not deactivate plugin")
 dcl(DLG_PLUGIN_MANAGER_NONE_SELECTED,	"No plugin selected")
 
 /* Language Dialog */
+dcl(DLG_ULANG_LangTitle,				"Set Language")
 dcl(DLG_ULANG_LangLabel,				"Select Language:")
-dcl(DLG_ULANG_LangTitle,				"Language")
+dcl(DLG_ULANG_AvailableLanguages,			"Available Languages")
+dcl(DLG_ULANG_SetLangButton,				"&Set Language")
 
 /* ClipArt Dialog */
 dcl(DLG_CLIPART_Title, "Clip Art")

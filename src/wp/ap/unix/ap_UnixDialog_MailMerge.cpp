@@ -38,7 +38,10 @@
 #include "ap_Dialog_MailMerge.h"
 #include "ap_UnixDialog_MailMerge.h"
 
+/*****************************************************************/
+
 #define CUSTOM_RESPONSE_OPEN_FILE 1
+#define CUSTOM_RESPONSE_INSERT 1
 
 /*****************************************************************/
 
@@ -137,7 +140,7 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Ma
 {
 	UT_return_if_fail(widget && dlg);
 	
-	if ( resp == GTK_RESPONSE_OK )
+	if ( resp == CUSTOM_RESPONSE_INSERT )
 	  dlg->event_AddClicked();
 	else if ( resp == CUSTOM_RESPONSE_OPEN_FILE )
 	  dlg->eventOpen ();
@@ -182,6 +185,8 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFieldName"), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
 
 	localizeLabel(glade_xml_get_widget(xml, "lbOpenFile"), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
+
+	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	g_signal_connect_after(G_OBJECT(m_treeview),
 						   "cursor-changed",

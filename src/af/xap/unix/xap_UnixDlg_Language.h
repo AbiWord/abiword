@@ -41,7 +41,7 @@ public:
 
 private:
 	
-	void event_Ok();
+	void event_setLang();
 	void event_Cancel();
 
 	void _populateWindowData();

@@ -39,6 +39,12 @@
 #include "ap_Strings.h"
 #include "ap_UnixDialog_PageNumbers.h"
 
+/*****************************************************************/
+
+#define CUSTOM_RESPONSE_INSERT 1
+
+/*****************************************************************/
+
 static gint s_preview_exposed(GtkWidget * w,
 			      GdkEventExpose * e,
 			      AP_UnixDialog_PageNumbers * dlg)
@@ -133,9 +139,9 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	_updatePreview(m_recentAlign, m_recentControl);
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_window), pFrame, this,
-								 GTK_RESPONSE_OK, false ) )
+								 CUSTOM_RESPONSE_INSERT, false ) )
 	{
-		case GTK_RESPONSE_OK:
+		case CUSTOM_RESPONSE_INSERT:
 			m_answer = AP_Dialog_PageNumbers::a_OK;
 			// set the align and control data
 			m_align   = m_recentAlign;
@@ -203,6 +209,8 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_PageNumbers_Preview);
 	
+	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+
 	// Set our defaults to number in the bottom-right corner.
 	m_recentControl = m_control = AP_Dialog_PageNumbers::id_FTR;
 	m_recentAlign = m_align = AP_Dialog_PageNumbers::id_RALIGN;

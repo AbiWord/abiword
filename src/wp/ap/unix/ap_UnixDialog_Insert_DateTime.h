@@ -38,7 +38,7 @@ public:
 
 	// callbacks can fire these events
 
-	virtual void			event_OK(void);
+	virtual void			event_Insert(void);
 
 protected:
 

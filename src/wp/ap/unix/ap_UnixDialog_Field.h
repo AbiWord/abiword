@@ -37,7 +37,7 @@ pFactory , XAP_Dialog_Id id);
 
 	virtual void runModal(XAP_Frame * pFrame);
 
-	void event_OK(void);
+	void event_Insert(void);
 	void types_changed(GtkTreeView *treeview);
 	void setTypesList(void);
 	void setFieldsList(void);

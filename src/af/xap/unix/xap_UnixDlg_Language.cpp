@@ -32,6 +32,8 @@
 #include "xap_UnixFrameImpl.h"
 #include "gr_UnixGraphics.h"
 
+#define CUSTOM_RESPONSE_SET_LANG 1
+
 XAP_Dialog * XAP_UnixDialog_Language::static_constructor(XAP_DialogFactory * pFactory,
 							 XAP_Dialog_Id id)
 {
@@ -49,14 +51,14 @@ void XAP_UnixDialog_Language::s_lang_dblclicked(GtkTreeView *treeview,
 												GtkTreeViewColumn *arg2,
 												XAP_UnixDialog_Language * me)
 {
-	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_SET_LANG);
 }
 
 XAP_UnixDialog_Language::~XAP_UnixDialog_Language(void)
 {
 }
 
-void XAP_UnixDialog_Language::event_Ok()
+void XAP_UnixDialog_Language::event_setLang()
 {
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;
@@ -117,10 +119,11 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Language");
-	m_pLanguageList = glade_xml_get_widget(xml, "tvLanguages");
+	m_pLanguageList = glade_xml_get_widget(xml, "tvAvailableLanguages");
 
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str());
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLanguage"), pSS, XAP_STRING_ID_DLG_ULANG_LangLabel);
+	localizeLabelMarkup (glade_xml_get_widget(xml, "lbAvailableLanguages"), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
+	localizeButtonUnderline (glade_xml_get_widget(xml, "btSetLanguage"), pSS, XAP_STRING_ID_DLG_ULANG_SetLangButton);
 
 	// add a column to our TreeViews
 
@@ -199,10 +202,10 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
   GtkWidget * cf = constructWindow();    
   _populateWindowData();  
 
-  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CANCEL, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, CUSTOM_RESPONSE_SET_LANG, false ) )
     {
-    case GTK_RESPONSE_OK:
-		event_Ok(); break;
+    case CUSTOM_RESPONSE_SET_LANG:
+		event_setLang(); break;
     default:
 		event_Cancel(); break;
     }
