@@ -116,17 +116,15 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	}
 
 	// Search the toolbariconmap for ID to iconname
-	if( !bIDFound )
+	if(!bIDFound)
 	{
-		// Get BaseID from szId
-		char buf[300];
-		strcpy(buf,szID);
-		char * szBaseID = buf;
-		UT_uint32 length = strlen(szBaseID);
-		length -= 6; // removal of language ID _xx-XX
-		if (length < 0 )
-				return false;
-		szBaseID[length] = '\0';
+		//	Format: ICONNAME_LANGCODE where LANGCODE code can be _XX (_yi) or _XXXA (_caES)					
+		char szBaseID[300];
+		strcpy(szBaseID,szID);		
+		char *pLast = strrchr(szBaseID, '_');
+		
+		if (pLast)
+			*pLast = '\0';
 				
 		for (m=0; m < mLimit; m++)
 		{
