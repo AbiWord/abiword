@@ -55,8 +55,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_SMART_QUOTES_ENABLE,
 
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
-				   id_CHECK_OTHER_USE_CONTEXT_GLYPHS,
-				   id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS,
 				   id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS,
 
 				   id_CHECK_AUTO_SAVE_FILE,
@@ -157,7 +155,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(AutoLoadPlugins, bool);
 
 	SET_GATHER			(OtherDirectionRtl, bool);
-	SET_GATHER			(OtherSaveContextGlyphs, bool);
 	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 
 	SET_GATHER			(AutoSaveFile,		bool);

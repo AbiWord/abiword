@@ -367,7 +367,6 @@ dcl(DLG_Options_Label_DefaultPageSize, "Default page size")
 
 dcl(DLG_Options_Label_DirectionRtl, "Default to right-to-left direction of text")
 dcl(DLG_Options_Label_BiDiOptions, "Bi-Directional Options")
-dcl(DLG_Options_Label_SaveContextGlyphs, "Save visual glyph shapes")
 dcl(DLG_Options_Label_HebrewContextGlyphs, "Use glyph shaping for Hebrew")
 
 dcl(DLG_Options_Label_UILang, 					"User Interface Language")

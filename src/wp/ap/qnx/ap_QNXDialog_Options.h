@@ -87,7 +87,6 @@ public:
 	SET_GATHER			(OtherDirectionRtl, bool);
 	SET_GATHER			(AutoSaveFile, bool);
 
-	SET_GATHER			(OtherSaveContextGlyphs, bool);
 	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
@@ -155,7 +154,6 @@ public:
 	PtWidget_t * m_checkbuttonShowSplash;
 
     PtWidget_t * m_checkbuttonOtherDirectionRtl;
-	PtWidget_t * m_checkbuttonOtherSaveContextGlyphs;
 	PtWidget_t * m_checkbuttonOtherHebrewContextGlyphs;
 
 

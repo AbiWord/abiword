@@ -171,7 +171,6 @@ public:
  	SET_GATHER			(NotebookPageNum,	int );
 
 	SET_GATHER			(OtherDirectionRtl, bool);
-	SET_GATHER			(OtherSaveContextGlyphs, bool);
 	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 
 	SET_GATHER			(AutoSaveFile, bool);

@@ -244,7 +244,6 @@ public:
 	SET_GATHER			(AutoLoadPlugins, bool);
 
 	SET_GATHER			(OtherDirectionRtl, bool );
-	SET_GATHER			(OtherSaveContextGlyphs,bool );
 	SET_GATHER			(OtherHebrewContextGlyphs,bool );
 
 	SET_GATHER			(AutoSaveFile, bool);

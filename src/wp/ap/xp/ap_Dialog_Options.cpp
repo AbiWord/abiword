@@ -125,7 +125,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 #endif
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
-	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, _gatherDirMarkerAfterClosingParenthesis());
@@ -352,8 +351,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 	//------------- other
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
 		_setOtherDirectionRtl (b);
-	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_SaveContextGlyphs,&b))
-		_setOtherSaveContextGlyphs (b);
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,&b))
 		_setOtherHebrewContextGlyphs (b);
 
@@ -371,8 +368,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 void AP_Dialog_Options::_enableDisableLogic( tControl id )
 {
-	UT_DEBUGMSG(("_enableDisableLogic: id %d, myId %d\n", id,id_CHECK_OTHER_USE_CONTEXT_GLYPHS));
-
 	switch (id)
 	{
 
@@ -418,8 +413,6 @@ void AP_Dialog_Options::_initEnableControls()
 	// id_CHECK_DIR_MARKER... in the bidi controls !!!)
 	_controlEnable( id_CHECK_LANG_WITH_KEYBOARD,    false ); 
 
-	// bidi controls
-	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, false); // not
 																// implemented
 	_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,_gatherLanguageWithKeyboard());  
 	//

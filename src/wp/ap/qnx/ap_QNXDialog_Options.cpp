@@ -332,7 +332,6 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *checkbuttonViewHidden;
 	PtWidget_t *checkbuttonViewUnprintable;
 	PtWidget_t *checkbuttonOtherDirectionRtl;
-	PtWidget_t *checkbuttonOtherSaveContextGlyphs;
 	PtWidget_t *checkbuttonOtherHebrewContextGlyphs;
 
 
@@ -673,11 +672,6 @@ TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DirectionRtl ).utf8_str()), 
 	checkbuttonOtherDirectionRtl = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs).utf8_str()),0);
-	PtSetArg(&args[n++],Pt_ARG_WIDTH,2*ABI_DEFAULT_BUTTON_WIDTH,0);
-	checkbuttonOtherSaveContextGlyphs = PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
-
-	n = 0;
 PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs).utf8_str()),0);
 	PtSetArg(&args[n++],Pt_ARG_WIDTH, 2* ABI_DEFAULT_BUTTON_WIDTH,0);
 	checkbuttonOtherHebrewContextGlyphs=PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
@@ -723,7 +717,6 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_
   m_notebook = notebook1 = NULL;
 
   m_checkbuttonOtherDirectionRtl = checkbuttonOtherDirectionRtl;
-  m_checkbuttonOtherSaveContextGlyphs = checkbuttonOtherSaveContextGlyphs;
   m_checkbuttonOtherHebrewContextGlyphs = checkbuttonOtherHebrewContextGlyphs;
 
   m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
@@ -825,8 +818,6 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
-	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherSaveContextGlyphs;
 	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
 		return m_checkbuttonOtherHebrewContextGlyphs;
 
@@ -944,7 +935,6 @@ DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
-DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs);
 DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs);
 
 /* File save options related stuff */
