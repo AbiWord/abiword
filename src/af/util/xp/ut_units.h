@@ -48,7 +48,7 @@ UT_BEGIN_EXTERN_C
          ...
        }
 */
-#if 0
+#if 1
 #define _UUL(x) x = UT_LOG_UNITS(x)
 #define _UUD(x) x = UT_DEV_UNITS(x)
 
