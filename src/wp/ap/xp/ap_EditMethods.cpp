@@ -7942,10 +7942,30 @@ static bool s_doZoomDlg(FV_View * pView)
 
 	pDialog->runModal(pFrame);
 
+	switch (pDialog->getZoomType())
+	{
+	case XAP_Frame::z_PAGEWIDTH:
+		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+				       static_cast<const XML_Char*>("Width"));
+		break;
+	case XAP_Frame::z_WHOLEPAGE:
+		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+				       static_cast<const XML_Char*>("Page"));
+		break;
+	default:
+		{
+			UT_UTF8String percent = UT_UTF8String_sprintf("%lu", static_cast<unsigned long>(pDialog->getZoomPercent()));
+			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+					       static_cast<const XML_Char*>(percent.utf8_str()));
+		}
+		break;
+	}
+	pFrame->setZoomType(pDialog->getZoomType());
+	pFrame->quickZoom(pDialog->getZoomPercent());
+
 	// Zoom is instant-apply, no need to worry about processing the
 	// OK/cancel state of the dialog.  Just release it.
 	pDialogFactory->releaseDialog(pDialog);
-
 	return true;
 }
 
