@@ -274,7 +274,8 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 #else
 		UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(m_FS));
 #endif
-		UT_ASSERT(szDialogFilename);
+		if (!szDialogFilename)
+			continue;
 
 		// We append the suffix of the default type, so the user doesn't
 	        // have to.  This is adapted from the Windows front-end code
