@@ -3601,7 +3601,7 @@ void IE_Imp_MsWord_97::_table_open ()
   m_bCellOpen = false;
   m_bInPara = false;
 #ifdef DEBUG
-  static sTableCount = 0;
+  static UT_sint32 sTableCount = 0;
   sTableCount++;
 #endif
   UT_DEBUGMSG(("\n<TABLE> [%d]", sTableCount));
