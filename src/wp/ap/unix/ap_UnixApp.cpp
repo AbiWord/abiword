@@ -437,8 +437,6 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		// asserted one.  we force clear the old one to enforce the X11
 		// style.
 
-
-		UT_DEBUGMSG(("crash1\n"));
 		m_pViewSelection->cmdUnselectSelection();
 	}
 
@@ -473,11 +471,21 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 	}
 	
 	UT_DEBUGMSG(("here we go whooooo\n"));
-	m_pViewSelection = pView;
+	setViewSelection(pView);
 	m_pFrameSelection = (XAP_Frame *)pView->getParentData();
 
 	m_bSelectionInFlux = UT_FALSE;
 	return;
+}
+
+void    AP_UnixApp::setViewSelection( AV_View * pView)
+{
+        m_pViewSelection = pView;
+}
+
+AV_View* AP_UnixApp::getViewSelection(void)
+{
+        return m_pViewSelection;
 }
 
 UT_Bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)

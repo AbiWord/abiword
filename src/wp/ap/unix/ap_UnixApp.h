@@ -64,6 +64,8 @@ public:
 	virtual UT_Bool					parseCommandLine(void);
 
 	virtual void					setSelectionStatus(AV_View * pView);
+        virtual void                                            setViewSelection( AV_View * pView);
+        virtual AV_View *                                       getViewSelection( void);
 	virtual void					clearSelection(void);
 	virtual UT_Bool					getCurrentSelection(const char** formatList,
 														void ** ppData, UT_uint32 * pLen,

@@ -126,6 +126,9 @@ public:
 	void notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
 	void notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
 
+        virtual void                                            setViewSelection( AV_View * pView) {}; //subclasses override
+        virtual AV_View *                                       getViewSelection( void) { return (AV_View *)  NULL;} ; // subclasses override
+
 protected:
 	void				  _setAbiSuiteLibDir(const char * sz);
 	

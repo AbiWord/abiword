@@ -191,6 +191,8 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		UNREFP(pOldDoc);
 	}
 	REPLACEP(m_pView, pView);
+        if(getApp()->getViewSelection())
+	       getApp()->setViewSelection(pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
 	m_lid = lid;
