@@ -46,7 +46,7 @@
 
 
 #ifdef HAVE_GNOMEVFS
-#include "gnome-vfs.h"
+#include "libgnomevfs/gnome-vfs.h"
 #endif
 
 /*****************************************************************/
@@ -139,6 +139,86 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 	if (!names)
 	{
 		UT_DEBUGMSG(("SEVIOR: No filename found in drop event \n"));
+#ifdef HAVE_GNOMEVFS
+//
+// Drag an image into AbiWord. Use our magic auto -detection of image types
+//
+		UT_DEBUGMSG(("SEVIOR: Load image into Abiword \n"));
+		GnomeVFSResult    result;
+		GnomeVFSHandle   *handle;
+		gchar             buffer[1024];
+		UT_ByteBuf * Bytes = new UT_ByteBuf();
+		GnomeVFSFileSize  bytes_read;
+		GnomeVFSURI 	 *uri;
+		UT_String stripped;
+		UT_uint32 i =0;
+		for(i=0; i < strlen(rawChar); i++)
+		{
+			if(rawChar[i] != '[' && rawChar[i] != ']')
+			{
+				stripped += rawChar[i];
+			}
+		}
+		uri = gnome_vfs_uri_new (stripped.c_str());
+		if (uri == NULL) 
+		{
+			UT_DEBUGMSG(("SEVIOR: Invalid uri text was %s \n",stripped.c_str()));
+			return;
+		}
+		result = gnome_vfs_open_uri (&handle, uri, GNOME_VFS_OPEN_READ);
+//
+// Read a chunk to determine if this is an image.
+//
+		if(result == GNOME_VFS_OK)
+		{
+			UT_DEBUGMSG(("SEVIOR: uri %s openned OK \n",stripped.c_str()));
+			result = gnome_vfs_read (handle, buffer, sizeof buffer - 1,
+									 &bytes_read);
+		}
+		if(result==GNOME_VFS_OK)
+		{
+			UT_DEBUGMSG(("SEVIOR:  uri %s read OK \n",stripped.c_str()));
+			Bytes->append((UT_Byte *)buffer,(UT_uint32) bytes_read);
+			iegft = IEGFT_Unknown;
+			error = IE_ImpGraphic::constructImporter(Bytes, iegft, &pIEG);
+			if(!error)
+			{
+//
+// We have an image! Load it into a byte buffer and import it into Abiword
+//
+				UT_DEBUGMSG(("SEVIOR: uri gave valid image data \n"));
+				while( result==GNOME_VFS_OK ) 
+				{
+					result = gnome_vfs_read (handle, buffer, sizeof buffer - 1,
+										 &bytes_read);
+					if(!bytes_read) break;
+					Bytes->append((UT_Byte *) buffer,(UT_uint32) bytes_read);
+				}
+			
+				error = pIEG->importGraphic(Bytes, &pFG);
+				if(error)
+				{
+					UT_DEBUGMSG(("Sevior: could not import graphic (%d)\n", error));
+					DELETEP(pIEG);
+					return;
+				}
+			
+				DELETEP(pIEG);
+			
+				FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+				error = pView->cmdInsertGraphic(pFG, rawChar);
+				if (error)
+				{
+					UT_DEBUGMSG(("Sevior: could not insert graphic (%d)\n", error));
+					DELETEP(pFG);
+					return;
+				}
+				DELETEP(pFG);
+				return;
+			}
+		}
+			
+#endif
 		int type = s_mapMimeToUriType (gnome_mime_type_or_default (rawChar, "foobar"));
 		if(type== TARGET_URL)
 		{

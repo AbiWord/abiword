@@ -66,7 +66,7 @@
 #include "fv_View.h"
 
 #ifdef HAVE_GNOMEVFS
-#include "gnome-vfs.h"
+#include "libgnomevfs/gnome-vfs.h"
 #endif
 
 #include <libgnomeui/gnome-window-icon.h>

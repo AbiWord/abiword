@@ -33,7 +33,7 @@ class UT_ByteBuf;
 
 // conditionally compile in support for VFS
 #ifdef HAVE_GNOMEVFS
-#include "gnome-vfs.h"
+#include "libgnomevfs/gnome-vfs.h"
 #endif
 
 //////////////////////////////////////////////////////////////////

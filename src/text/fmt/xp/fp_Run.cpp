@@ -662,6 +662,10 @@ drawn.
 
 	const UT_sint32 old_LineWidth = m_iLineWidth;
 	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
+//
+// Line thickness is too thick.
+//
+	cur_linewidth = UT_MAX(1,cur_linewidth/2);
 	UT_sint32 iDrop = 0;
 	fp_Run* P_Run = getPrev();
 	fp_Run* N_Run = getNext();
