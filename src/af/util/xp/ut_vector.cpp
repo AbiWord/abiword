@@ -22,15 +22,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
-
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_assert.h"
 
 #ifndef ABI_OPT_STL
 
-UT_Vector::UT_Vector(int sizehint)
+UT_Vector::UT_Vector(UT_uint32 sizehint)
 {
 	m_iCutoffDouble = sizehint;		/* After this point we stop doubling our allocations */		
 	m_iPostCutoffIncrement = 32;	/* We only increment the array by this much after our allocations */
@@ -50,11 +48,6 @@ void UT_Vector::clear()
 UT_Vector::~UT_Vector()
 {
 	FREEP(m_pEntries);
-}
-
-UT_uint32 UT_Vector::getItemCount() const
-{
-	return m_iCount;
 }
 
 /*
@@ -116,7 +109,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 
 UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 {
-	int err = addItem(p);
+	UT_sint32 err = addItem(p);
 	if (!err && pIndex)
 		*pIndex = m_iCount-1;
 	return err;
@@ -136,15 +129,6 @@ UT_sint32 UT_Vector::addItem(void* p)
 	m_pEntries[m_iCount++] = p;
 
 	return 0;
-}
-
-void* UT_Vector::getNthItem(UT_uint32 n) const
-{
-	UT_ASSERT(m_pEntries);
-	UT_ASSERT(m_iCount > 0);
-	UT_ASSERT(n<m_iCount);
-
-	return m_pEntries[n];
 }
 
 UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
@@ -241,7 +225,7 @@ const void* UT_Vector::operator[](UT_uint32 i) const
 
 #else /* ABI_OPT_STL */
 
-UT_Vector::UT_Vector(int sizehint)
+UT_Vector::UT_Vector(UT_uint32 sizehint)
 {
 	//Ignore the sizehint
 }
@@ -268,7 +252,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 
 UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 {
-	int err = addItem(p);
+	UT_sint32 err = addItem(p);
 	if (!err && pIndex)
 		*pIndex = m_STLVec.size()-1;
 	return err;

@@ -23,8 +23,6 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 
-// TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
-
 // ----------------------------------------------------------------
 /*
 	The following class is a simple, portable implementation of a vector.
@@ -37,17 +35,27 @@
 class UT_Vector
 {
 public:
-	UT_Vector(int sizehint = 2048);
+	UT_Vector(UT_uint32 sizehint = 2048);
 	~UT_Vector();
 
 	UT_sint32	addItem(void*);
 	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
-	void*		getNthItem(UT_uint32 n) const;
+	inline void*getNthItem(UT_uint32 n) const
+	{
+	    UT_ASSERT(m_pEntries);
+	    UT_ASSERT(m_iCount > 0);
+	    UT_ASSERT(n<m_iCount);
+
+		return m_pEntries[n];
+	}
 	const void*           operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
 	void*		getFirstItem() const;
 	void*		getLastItem() const;
-	UT_uint32	getItemCount() const;
+	inline UT_uint32 getItemCount() const
+	{
+		return m_iCount;
+	}
 	UT_sint32	findItem(void*) const;
 
 	UT_sint32	insertItemAt(void*, UT_uint32 ndx);
@@ -110,7 +118,7 @@ protected:
 class UT_Vector
 {
  public:
-	UT_Vector(int sizehint = 2048);
+	UT_Vector(UT_uint32 sizehint = 2048);
 	~UT_Vector();
 
 	UT_sint32	addItem(void*);
