@@ -784,7 +784,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 			  (GtkAttachOptions) (GTK_FILL),
 			  (GtkAttachOptions) (GTK_EXPAND), 0, 0);
 	page_size_menu = gtk_menu_new ();
-	for (int i = (int)fp_PageSize::A0; i < (int)fp_PageSize::Custom; i++)
+	for (int i = (int)fp_PageSize::_first_predefined_pagesize_;
+		 i < (int)fp_PageSize::_last_predefined_unit_dont_use_; i++)
 	{
 	    glade_menuitem = gtk_menu_item_new_with_label (fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i));
 	    gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) page_size);

@@ -455,7 +455,8 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_optionPageSize = PtCreateWidget(PtComboBox, vgroup2, n, args);
-	for (int i = (int)fp_PageSize::A0; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
+	for (int i = (int)fp_PageSize::_first_predefined_pagesize_;
+		 i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
     {
 		const char *itemname = fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i);
 		PtListAddItems(m_optionPageSize, &itemname, 1, 0);

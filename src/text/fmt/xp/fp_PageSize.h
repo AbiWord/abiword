@@ -28,7 +28,8 @@ public:
 
 	enum Unit
 	{
-		mm,
+		_first_predefined_unit_ = 0,
+		mm = 0,
 		cm,
 		inch,
 		PaperUnit,		//  100 per inch
@@ -38,11 +39,13 @@ public:
 
 	enum Predefined
 	{
+		_first_predefined_pagesize_ = 0,
 		// If you append a predefined pagesize here, don't forget
 		// to update the cpp accordingly.
 
 		// Metric sizes, DIN 476
-		DIN_4A, DIN_2A, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10,
+		DIN_4A = 0,
+		DIN_2A, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10,
 		DIN_4B, DIN_2B, B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10,
 		C0, C1, C2, C3, C4, C6, C7, C8, C9, C10,
 

@@ -320,6 +320,16 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   g_free (val);
 
   last_page_size = pd;
+
+  if (fp_PageSize::Custom == pd)
+  {
+	  UT_DEBUGMSG(("FIXME: Make size widgets editable\n"));
+  }
+  else
+  {
+	  UT_DEBUGMSG(("FIXME: Make size widgets non-editable\n"));
+  }
+
 }
 
 void AP_UnixDialog_PageSetup::event_MarginUnitsChanged (void)
@@ -582,7 +592,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   // create the drop-down menu with all of our supported page sizes
   GList *popdown_items = NULL;
-  for (int i = (int)fp_PageSize::DIN_4A; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
+  for (int i = (int)fp_PageSize::_first_predefined_pagesize_; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
     {
       popdown_items = g_list_append (popdown_items, (void*)fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i) );
     }

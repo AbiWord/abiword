@@ -157,7 +157,7 @@ fp_PageSize::fp_PageSize(const char *name)
 
 fp_PageSize::fp_PageSize(double w, double h, Unit u)
 {
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 	m_bisPortrait = true;
 	m_scale = 1.0;
 	Set(w, h, u);
@@ -166,8 +166,8 @@ fp_PageSize::fp_PageSize(double w, double h, Unit u)
 // all Set() calls ultimately go through this function
 void fp_PageSize::Set(Predefined preDef, Unit u)
 {
-	UT_ASSERT(preDef >= 0 && preDef < _last_predefined_pagesize_dont_use_);
-	UT_ASSERT(u >= 0 && u <= _last_predefined_unit_dont_use_);
+	UT_ASSERT(preDef >= _first_predefined_pagesize_ && preDef < _last_predefined_pagesize_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u <= _last_predefined_unit_dont_use_);
 
 	const private_pagesize_sizes& size = pagesizes[preDef];
 
@@ -191,11 +191,12 @@ void fp_PageSize::Set(double w, double h, Unit u)
 	int i;
 	double converted_w, converted_h;
 
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 
 	// calculate which predefined this represents
 
-	for (i = 0; i < (int)_last_predefined_pagesize_dont_use_; i++)
+	for (i = _first_predefined_pagesize_; 
+		 i < (int)_last_predefined_pagesize_dont_use_; i++)
 	{
 		if (pagesizes[i].u != u )  // Convert to local defined units and round off
 		{
@@ -240,7 +241,7 @@ void fp_PageSize::Set(double w, double h, Unit u)
 
 void fp_PageSize::Set(const char *name, Unit u)
 {
-	UT_ASSERT(u >= 0 && u <= _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u <= _last_predefined_unit_dont_use_);
 	UT_DEBUGMSG(("fp_PageSize::Set(\"%s\")\n", (char*) name));
 
 	Set(NameToPredefined(name), u);
@@ -258,7 +259,7 @@ void fp_PageSize::setLandscape(void)
 
 double fp_PageSize::Width(Unit u) const
 {
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
 		return m_scale * m_iWidth / ScaleFactors[u];
 	else
@@ -267,7 +268,7 @@ double fp_PageSize::Width(Unit u) const
 
 double fp_PageSize::Height(Unit u) const
 {
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
 		return m_scale * m_iHeight / ScaleFactors[u];
 	else
@@ -276,7 +277,7 @@ double fp_PageSize::Height(Unit u) const
 
 double fp_PageSize::MarginTop(Unit u) const
 {
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
 		return m_scale * m_iMarginTop / ScaleFactors[u];
 	else
@@ -285,7 +286,7 @@ double fp_PageSize::MarginTop(Unit u) const
 
 double fp_PageSize::MarginBottom(Unit u) const
 {
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
 		return m_scale * m_iMarginBottom / ScaleFactors[u];
 	else
@@ -294,7 +295,7 @@ double fp_PageSize::MarginBottom(Unit u) const
 
 double fp_PageSize::MarginLeft(Unit u) const
 {
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
 		return m_scale * m_iMarginLeft / ScaleFactors[u];
 	else
@@ -303,7 +304,7 @@ double fp_PageSize::MarginLeft(Unit u) const
 
 double fp_PageSize::MarginRight(Unit u) const
 {
-	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
 	if(m_bisPortrait == true)
 		return m_scale * m_iMarginRight / ScaleFactors[u];
 	else
@@ -312,7 +313,8 @@ double fp_PageSize::MarginRight(Unit u) const
 
 bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
 {
-	for (int i=0; i < (int)_last_predefined_pagesize_dont_use_; ++i)
+	for (int i = (int)_first_predefined_pagesize_;
+		 i < (int)_last_predefined_pagesize_dont_use_; ++i)
 	{
 		if (!strcmp(pagesizes[i].name, szPageSizeName))
 		{
@@ -333,7 +335,7 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 	    return fp_PageSize::Letter;
 	}
 
-	for(preDef=0;
+	for(preDef = (int)_first_predefined_pagesize_;
 	    preDef < static_cast<int>(_last_predefined_pagesize_dont_use_);
 		preDef++)
 	{
@@ -342,7 +344,7 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 		}
 	}
 
-	if ((preDef >= 0) && (preDef < _last_predefined_pagesize_dont_use_)) {
+	if ((preDef >= _first_predefined_pagesize_) && (preDef < _last_predefined_pagesize_dont_use_)) {
 		return static_cast<Predefined>(preDef);
 	}
 
@@ -352,7 +354,7 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 
 const char * fp_PageSize::PredefinedToName(Predefined preDef)
 {
-	UT_ASSERT((preDef >= 0) && (preDef < _last_predefined_pagesize_dont_use_));
+	UT_ASSERT((preDef >= _first_predefined_pagesize_) && (preDef < _last_predefined_pagesize_dont_use_));
 
 	return pagesizes[preDef].name;
 }

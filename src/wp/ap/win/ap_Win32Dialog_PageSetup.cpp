@@ -369,7 +369,7 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 			// Populate Combo and List Boxes
 			HWND hwndPaperSize = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE);
-			for (UT_uint32 i = 0; i < (UT_uint32)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
+			for (UT_uint32 i = (UT_uint32)fp_PageSize::_first_predefined_pagesize_; i < (UT_uint32)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
 			{
 				SendMessage( hwndPaperSize,
                              CB_INSERTSTRING ,

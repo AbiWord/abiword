@@ -429,7 +429,7 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			}
 
 			HWND hwndPaperSize = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-			for( int n2 = 0; n2 < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; n2++ ) 
+			for( int n2 = (int)fp_PageSize::_first_predefined_pagesize_; n2 < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; n2++ ) 
 			{
 				SendMessage( hwndPaperSize, 
                              CB_INSERTSTRING, 
