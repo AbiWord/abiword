@@ -610,7 +610,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	case PX_ChangeRecord::PXT_ChangePoint:
 	{
 		FV_View* pView = m_pLayout->getView();
-		if (pView)
+		if (pView && pView->isActive())
 			pView->_setPoint(pcr->getPosition());
 		goto finish_up;
 	}

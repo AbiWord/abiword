@@ -100,6 +100,9 @@ public:
 
 	UT_Bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	UT_Bool			removeListener(AV_ListenerId listenerId);
+
+	//! returns true iff the current view is the active/focused window
+	UT_Bool			isActive(void);
 	virtual UT_Bool	notifyListeners(const AV_ChangeMask hint) = 0;
 
 	virtual UT_Bool	canDo(UT_Bool bUndo) const = 0;

@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "xav_View.h"
 #include "xav_Listener.h"
+#include "xap_Frame.h"
 #include"ut_debugmsg.h"
 
 AV_View::AV_View(XAP_App * pApp, void* pParentData)
@@ -131,6 +132,22 @@ UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	}
 
 	return UT_TRUE;
+}
+
+UT_Bool AV_View::isActive(void) 
+{
+	AV_View* pActiveView = NULL;
+	XAP_Frame* lff = getApp()->getLastFocussedFrame();
+	if(lff) 
+	{
+		pActiveView = lff->getCurrentView();
+	}
+	else 
+	{
+		pActiveView = this;
+	}
+	
+	return pActiveView == this;
 }
 
 UT_uint32 AV_View::getTick(void)

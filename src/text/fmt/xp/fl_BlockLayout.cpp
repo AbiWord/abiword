@@ -371,7 +371,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		{ "margin-right",	&m_iRightMargin,	&m_iRightMarginLayoutUnits	},
 		{ "text-indent",	&m_iTextIndent,		&m_iTextIndentLayoutUnits	}
 	};
-	for (int iRg = 0; iRg < NrElements(rgProps); ++iRg)
+	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const char* pszProp = getProperty((XML_Char*)mai.szProp);
@@ -2166,7 +2166,7 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 
 				UT_UCSChar theWord[101];
 				// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-				for (unsigned int ldex=0; ldex<wordLength; ++ldex)
+				for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
 				{
 					UT_UCSChar currentChar;
 					currentChar = pBlockText[wordBeginning + ldex];
@@ -2258,7 +2258,7 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 		UT_UCSChar theWord[101];
 		// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-		for (unsigned int ldex=0; ldex<wordLength; ++ldex)
+		for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
 		{
 			UT_UCSChar currentChar;
 			currentChar = pBlockText[wordBeginning + ldex];
@@ -2854,11 +2854,13 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	UT_ASSERT(_validateBlockForPoint());
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
+	if (pView && pView->isActive())
 	{
-		pView->_setPoint(pcrs->getPosition()+len);
+		pView->_setPoint(pcrs->getPosition() + len);
 		pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
 	}
+	else if(pView && pView->getPoint() > pcrs->getPosition())
+		pView->_setPoint(pView->getPoint() + len);
 
 	if (m_pLayout->hasBackgroundCheckReason(FL_DocLayout::bgcrSmartQuotes))
 	{
@@ -2872,7 +2874,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		if (sqcount)
 		{
 			m_pDoc->beginUserAtomicGlob();
-			for (unsigned int sdex=0; sdex<sqcount; ++sdex)
+			for (UT_uint32 sdex=0; sdex<sqcount; ++sdex)
 			{
 				m_pLayout->considerSmartQuoteCandidateAt(this, sqlist[sdex]);
 			}
@@ -3027,10 +3029,16 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
+	if (pView && pView->isActive())
 	{
  		pView->_resetSelection();
- 		pView->_setPoint(pcrs->getPosition());
+		pView->_setPoint(pcrs->getPosition());
+	}
+	else if(pView && pView->getPoint() > pcrs->getPosition())
+	{
+		if(pView->getPoint() <= pcrs->getPosition() + len)
+			pView->_setPoint(pcrs->getPosition());
+		else pView->_setPoint(pView->getPoint() - len);
 	}
 
 	if (m_pLayout->getAutoSpellCheck())
@@ -3330,10 +3338,10 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcr
 	m_pLayout->dequeueBlockForBackgroundCheck(this);
 
 	FV_View* pView = pSL->getDocLayout()->getView();
-	if (pView)
-	{
+	if (pView && pView->isActive())
 		pView->_setPoint(pcrx->getPosition());
-	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+		pView->_setPoint(pView->getPoint() - 1);
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 	
@@ -3407,10 +3415,9 @@ UT_Bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
+	if (pView && pView->isActive())
 		pView->_setPoint(pcrx->getPosition());
-	}
+	else if (pView) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 	return UT_TRUE;
 }
@@ -3574,10 +3581,10 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	pNewBL->setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
+	if (pView && pView->isActive())
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
-	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 #ifdef FASTSQUIGGLE
 	if (m_pLayout->getAutoSpellCheck() && m_vecSquiggles.getItemCount() > 0)
@@ -3656,9 +3663,13 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	pOldSL->deleteEmptyColumns();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
+	if (pView && pView->isActive())
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
 
 	return UT_TRUE;
@@ -3779,11 +3790,10 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
-		pView->_resetSelection();
+	if (pView && pView->isActive())
 		pView->_setPoint(pcro->getPosition() + 1);
-	}
+	else if(pView && pView->getPoint() > pcro->getPosition())
+		pView->_setPoint(pView->getPoint() + 1);
 
 	if (m_pLayout->getAutoSpellCheck())
 		_insertSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
@@ -3833,11 +3843,13 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
+	if (pView && pView->isActive())
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcro->getPosition());
 	}
+	else if(pView && pView->getPoint() > pcro->getPosition())
+		pView->_setPoint(pView->getPoint() - 1);
 
 	if (m_pLayout->getAutoSpellCheck())
 		_deleteSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
@@ -3890,7 +3902,7 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 done:
 	setNeedsReformat();
 
-	if (pView)
+	if (pView && pView->isActive())
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcroc->getPosition());
@@ -4132,10 +4144,12 @@ UT_Bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark 
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
+	if (pView && pView->isActive())
+		pView->_setPoint(pcrfm->getPosition());
+
 	if (pView)
 	{
 		pView->_resetSelection();
-		pView->_setPoint(pcrfm->getPosition());
 		pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
@@ -4160,7 +4174,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark 
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
+	if (pView && pView->isActive())
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcrfm->getPosition());
@@ -4256,7 +4270,7 @@ UT_Bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkC
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView)
+	if (pView && pView->isActive())
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcrfmc->getPosition());
@@ -4320,7 +4334,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 		if (wordLength < 100)
 		{
 			// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-			for (unsigned int ldex=0; ldex<wordLength; ++ldex)
+			for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
 			{
 				UT_UCSChar currentChar;
 				currentChar = pBlockText[wordBeginning + ldex];
