@@ -51,11 +51,11 @@ AR		= qcc -a $@
 
 # Compiler flags
 ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g 
+OPTIMIZER	= -g -Wall
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O2 
+OPTIMIZER	= -O2 -Wall
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
