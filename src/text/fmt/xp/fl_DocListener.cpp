@@ -164,6 +164,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute((XML_Char*)"type", pszSectionType);
+			UT_DEBUGMSG(("SEVIOR: In doclistener populate section strux:, type= %s \n",pszSectionType)); 
 			if (
 				!pszSectionType
 				|| (0 == UT_stricmp(pszSectionType, "doc"))
@@ -222,7 +223,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 						UT_DEBUGMSG(("no memory for SectionLayout"));
 						return UT_FALSE;
 					}
-			
+
 					pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pSL);
 
 					*psfh = (PL_StruxFmtHandle)pSL;
@@ -450,7 +451,100 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		case PTX_Section:
 		{
 			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
-			bResult = pSL->doclistener_changeStrux(pcrxc);
+			
+			// Sevior code here
+			
+			PT_AttrPropIndex indexAP = pcr->getIndexAP();
+			const PP_AttrProp* pAP = NULL;
+			
+			UT_Bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
+			UT_ASSERT(bres);
+			PL_StruxDocHandle sdh = pL->getStruxDocHandle();
+	
+			const XML_Char* pszSectionType = NULL;
+			pAP->getAttribute((XML_Char*)"type", pszSectionType);
+			UT_DEBUGMSG(("SEVIOR: In sectionlayout change_strux:, type= %s \n",pszSectionType)); 
+			//
+			// OK Sevior adds code to actually change a 
+			// sectionlayout to
+			// a header/footer layout
+			//
+			// Strategy: Collapse all the blocks in this section.
+			// create a header/footer sectionlayout ala populate_strux
+			// transfer the blocks in this sectionlayout to the
+			// new header/footer and format it
+			//
+			// Then do an update layout on the whole document.
+			// 
+			UT_DEBUGMSG(("SEVIOR: Current m_pCurrentSL = %d \n",m_pCurrentSL));
+			if(pszSectionType && UT_stricmp(pszSectionType,"header") == 0)
+			{
+			        //
+			        //  Ok first we need a previous section with a
+			        //  matching ID
+			        //
+				const XML_Char* pszID = NULL;
+				pAP->getAttribute((XML_Char*)"id", pszID);
+
+				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
+				UT_ASSERT(pDocSL); 
+			        
+				// append a HdrFtrSectionLayout to this DocLayout
+				fl_HdrFtrSectionLayout* pHeadSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+				if (!pHeadSL)
+				{
+					UT_DEBUGMSG(("no memory for SectionLayout"));
+					return UT_FALSE;
+				}
+				//
+				// Set the pointers to this header/footer
+				//
+				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHeadSL);
+
+				// OK Now clean up the old section and transfer
+				// blocks into this header section.
+				
+				pHeadSL->changeStrux(pSL);
+
+			        bResult = UT_TRUE;
+			        goto finish_up;
+			}
+			else if(pszSectionType && UT_stricmp(pszSectionType,"footer") == 0)
+			{
+			        //
+			        //  Ok first we need a previous section with a
+			        //  matching ID
+			        //
+				const XML_Char* pszID = NULL;
+				pAP->getAttribute((XML_Char*)"id", pszID);
+
+				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
+				UT_ASSERT(pDocSL); 
+			        
+				// append a HdrFtrSectionLayout to this DocLayout
+				fl_HdrFtrSectionLayout* pFootSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+				if (!pFootSL)
+				{
+					UT_DEBUGMSG(("no memory for SectionLayout"));
+					return UT_FALSE;
+				}
+				//
+				// Set the pointers to this header/footer
+				//
+				pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pFootSL);
+
+				// OK Now clean up the old section and transfer
+				// blocks into this header section.
+				
+				pFootSL->changeStrux(pSL);
+			        
+			        bResult = UT_TRUE;
+			        goto finish_up;
+			}
+			// end sevior code here
+			
+
+ 			bResult = pSL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
 		
@@ -592,7 +686,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 {
-	//UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
+	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -645,7 +739,8 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			// section.  we also need to verify that there is a block immediately
 			// after this new section -- a section must be followed by a block
 			// because a section cannot contain content.
-
+		        UT_DEBUGMSG(("SEVIOR: Inserting section \n"));
+			
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
 			UT_Bool bResult = pBLSL->bl_doclistener_insertSection(pBL, pcrx,sdh,lid,pfnBindHandles);
@@ -721,3 +816,7 @@ UT_Bool fl_DocListener::signal(UT_uint32 iSignal)
 
 	return UT_TRUE;
 }
+
+
+
+

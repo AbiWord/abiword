@@ -282,6 +282,7 @@ public:
 // -----------------------
 
 	UT_Bool                         insertPageNum(const XML_Char ** props, UT_Bool ftr);
+	void				setPoint(UT_uint32 pt);
 
 // -----------------------
 

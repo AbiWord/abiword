@@ -1018,7 +1018,8 @@ void fp_FieldRun::lookupProperties(void)
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
-	
+	//	UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
+	UT_ASSERT(pSpanAP);
 	PD_Document * pDoc = m_pBL->getDocument();
 	m_pBL->getAttrProp(&pBlockAP);
         m_pBL->getField(m_iOffsetFirst+1,m_pField); // Next Pos?

@@ -36,6 +36,8 @@ class fl_BlockLayout;
 class fb_LineBreaker;
 class fp_HdrFtrContainer;
 class fp_Column;
+class fp_Run;
+class fp_Line;
 class fp_Container;
 class PD_Document;
 class PP_AttrProp;
@@ -252,7 +254,7 @@ public:
 	virtual fp_Container*		getLastContainer();
 
 	virtual UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
-
+        void                                    changeStrux( fl_DocSectionLayout * pSL);
 	void						addPage(fp_Page*);
 	void						deletePage(fp_Page*);
 	
@@ -303,6 +305,7 @@ public:
 	
 	inline fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
 
+	fl_BlockLayout *                findMatchingBlock(fl_BlockLayout * pBL);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
 

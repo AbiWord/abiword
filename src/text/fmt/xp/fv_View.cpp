@@ -3139,11 +3139,16 @@ void FV_View::extSelTo(FV_DocPos dp)
 void FV_View::_autoScroll(UT_Timer * pTimer)
 {
 	UT_ASSERT(pTimer);
-
+	
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_View * pView = (FV_View *) pTimer->getInstanceData();
 	UT_ASSERT(pView);
+
+	if(pView->getLayout()->getDocument()->isPieceTableChanging() == UT_TRUE)
+	{
+		return;
+	}
 
 	PT_DocPosition iOldPoint = pView->getPoint();
 
@@ -5465,6 +5470,16 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 	_checkPendingWordForSpell();
 }
 
+void FV_View::setPoint(PT_DocPosition pt)
+{
+
+	if(m_bDontChangeInsPoint == UT_TRUE)
+	       return;
+	m_iInsPoint = pt;
+	m_pLayout->considerPendingSmartQuoteCandidate();
+	_checkPendingWordForSpell();
+}
+
 void FV_View::setDontChangeInsPoint(void)
 {
         m_bDontChangeInsPoint = UT_TRUE;
@@ -6072,6 +6087,9 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 {
 	UT_Bool bDidGlob = UT_FALSE;
 
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	if (!isSelectionEmpty())
 	{
 		bDidGlob = UT_TRUE;
@@ -6104,6 +6122,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -6643,28 +6662,36 @@ UT_Bool FV_View::_insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 
 	// Sevior: I don't think this is needed	UT_uint32 iPoint = FV_DOCPOS_EOD;
 
-	// UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
+        UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
+
+	//
+	// 
+	//	fl_BlockLayout* pOldBlock = _findBlockAtPosition(getPoint());
+	//fl_SectionLayout* pSL = pOldBlock->getSectionLayout();
+
+
 	moveInsPtTo(FV_DOCPOS_EOD);    // Move to the end, where we will create the page numbers
 
 	// Now create the footer section
+	// First Do a block break to finish the last section.
+       	UT_uint32 iPoint = getPoint();
+	m_pDoc->insertStrux(iPoint, PTX_Block);
 
-	m_pDoc->insertStrux(getPoint(), PTX_Section);
+	//
+	// Now Insert the footer section. 
+	// Doing things this way will grab the previously intereted block 
+        // and put into the footter section.
+
+	m_pDoc->insertStrux(iPoint, PTX_Section);
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
-	_generalUpdate(); // Why is this needed here?
 
 	// Make the new section into a footer
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
 	// Change the formatting of the new footer appropriately (currently just center it)
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), NULL, props, PTX_Block);
 
-	UT_Bool bResult = UT_TRUE;
-
-	m_pDoc->endUserAtomicGlob(); // end the big undo section
-
-	_generalUpdate();
-
-	return bResult;
+	return UT_TRUE;
 }
 
 UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
@@ -6686,28 +6713,37 @@ UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
 
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
+	// Signal PieceTable Changes have Started
+        m_pDoc->notifyPieceTableChangeStart();
+
 	_eraseInsertionPoint();
 
 	UT_uint32 oldPos = getPoint();  // This ends up being redundant, but it's neccessary
+	UT_Bool bftr = UT_TRUE;
+	UT_Bool bResult = _insertHeaderFooter(props, bftr);
 
-	UT_Bool bResult = _insertHeaderFooter(props, ftr);
-
+	//
+	// after this call the insertion point is at the position where stuff
+	// can be inserted into the header/footer
+	//
 	if(!bResult) 
 		return UT_FALSE;
-
-	// Move to the end of the document again (it has moved since we called _insertFooter() )
-	moveInsPtTo(FV_DOCPOS_EOD);
 	
 	// Insert the page_number field
 	bResult = m_pDoc->insertObject(getPoint(), PTO_Field, f_attributes, NULL);
 
 	moveInsPtTo(oldPos);  // Get back to where you once belonged.  
 
+	m_pLayout->updateLayout(); // Update document layout everywhere
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+	
+
+	// Signal PieceTable Changes have Ended
+
+        m_pDoc->notifyPieceTableChangeEnd();
+	_generalUpdate();
 	_fixInsertionPointCoords();
         _drawInsertionPoint();
-	m_pDoc->endUserAtomicGlob(); // Begin the big undo block
-	
-	_generalUpdate();
 
 	return bResult;
 }
