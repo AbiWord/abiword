@@ -805,17 +805,16 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	// Build an Import Graphic based on file type
 	errorCode = IE_ImpGraphic::constructImporter(buf, IEGFT_Unknown, &pIEG);
-	if (errorCode)
+	if ((errorCode != UT_OK) || !pIEG)
 	{
 		DELETEP(pBB);
 		pGr->drawChars (ucstext, 0, len, 12, 35);
 		goto Cleanup;
 	}
 
-	pIEG->importGraphic (pBB, &pGraphic);
+	errorCode = pIEG->importGraphic (pBB, &pGraphic);
 
-	UT_ASSERT(pGraphic);
-	if (!pGraphic)
+	if ((errorCode != UT_OK) || !pGraphic)
 	  {
 	    pGr->drawChars (ucstext, 0, len, 12, 35);
 	    goto Cleanup;
