@@ -3263,9 +3263,19 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 		m_fontTable.addItem(NULL);
 	}
 	void* pOld = NULL;
-	UT_sint32 res = m_fontTable.setNthItem(fontIndex, pNewFont, &pOld);
-	UT_ASSERT(res == 0);
-	UT_ASSERT(pOld == NULL);
+	// some RTF files define the fonts several time. This is INVALID according to the
+	// specifications. So we ignore it.
+	if (m_fontTable[fontIndex] == NULL)
+	{
+		UT_sint32 res = m_fontTable.setNthItem(fontIndex, pNewFont, &pOld);
+		UT_ASSERT(res == 0);
+		UT_ASSERT(pOld == NULL);
+	}
+	else 
+	{
+		UT_DEBUGMSG (("RTF: font %d (named %s) already defined. Ignoring\n", fontIndex, pFontName));
+		DELETEP (pNewFont);
+	}
 
 	return true;
 }
@@ -4098,9 +4108,6 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		m_parsingHdrFtr = true;
 		_parseFile (NULL);
 		m_parsingHdrFtr = false;
-#ifdef PT_TEST
-		m_pDocument->__dump(stderr);
-#endif
 	}
 }
 
