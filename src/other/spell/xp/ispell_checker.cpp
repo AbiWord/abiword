@@ -305,6 +305,7 @@ typedef struct {
 
 // please try to keep this ordered alphabetically by country-code
 static const Ispell2Lang_t m_mapping[] = {
+  { "danish.hash",     "da-DK" },
   { "german.hash",     "de-DE" },
   { "australian.hash", "en-AU" },
   { "canadian.hash",   "en-CA" },
