@@ -6715,6 +6715,19 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	fl_BlockLayout * pBL = NULL;
 	while (pCL)
 	{
+		//
+		// When inserting a HEADER/FOOTER dont move footnotes/endnotes into
+		// Header/Footer
+		//
+		if((iType== FL_SECTION_HDRFTR) && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE 
+										 || pCL->getContainerType() == FL_CONTAINER_ENDNOTE 
+										 || pCL->getContainerType() == FL_CONTAINER_TOC 
+										 ||   pCL->getContainerType() == FL_CONTAINER_FRAME))
+		{
+			pCL = pCL->getNext();
+			continue;
+		}
+
 		fl_ContainerLayout* pNext = pCL->getNext();
 		pBL = NULL;
 		pCL->collapse();
