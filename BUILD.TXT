@@ -92,16 +92,19 @@ There are 2 ways to build and run AbiWord:
 Build Instructions -- MacOS
 ---------------------------
 
+This will build a PowerPC version of AbiWord. Currently 68k is not supported.
+
 You will need to get:
 -zlib
 -libpng
--libiconv
 
 Two different solutions:
 
-[1] using Metrowerks CodeWarrior. Open the project in config/platform/macos.mcp (or 
+[1] using Metrowerks CodeWarrior. Open the project in src/config/platform/macos.mcp (or 
 macos.xml if you don't have version 6.0 of CodeWarrior).
 
+[2] using MPW. Start MPW shell, go to the abi directory and execute the script mpw-build.
+It will work with MPW 3.5 GM. Currently Metrowerks MPW compilers are not supported.
 
 
 Build Instructions -- MacOS X
