@@ -831,10 +831,11 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 						 (GtkAttachOptions)(GTK_FILL),
 						 0, 0);
 
-		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
-						 (GtkAttachOptions)(GTK_FILL),
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 0, 0);
+		if (m_leftRuler)
+			gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
+							 (GtkAttachOptions)(GTK_FILL),
+							 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+							 0, 0);
 
 		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
 						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
