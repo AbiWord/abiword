@@ -52,7 +52,7 @@ XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 	m_hwndRebar(NULL),
 	m_hwndContainer(NULL),
 	m_hwndStatusBar(NULL),
-	m_dialogFactory(pFrame, pFrame->getApp()),
+	m_dialogFactory(pFrame, XAP_App::getApp()), /* note: pFrame->getApp() not initialized properly yet! */
 	m_pWin32Menu(NULL),
 	m_pWin32Popup(NULL),
 	m_iBarHeight(0),
