@@ -297,9 +297,14 @@ GR_Font* GR_BEOSGraphics::findFont(const char* pszFontFamily,
 								const char* pszFontSize)
 {
 	BFont 	*aFont;
-	int 	size = atoi(pszFontSize);
-	DPRINTF(printf("GR Find Font:\n\tFamily: %s \n\tStyle: %s \n\tWeight: %s \n\tSize: %s (%d)\n",
-			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize, size));
+	//int 	size = atoi(pszFontSize);
+	//UT_sint32 iHeight = convertDimension(pszFontSize);
+	int		size = convertDimension(pszFontSize);
+
+	DPRINTF(printf("GR Find Font:\n\tFamily: %s ", pszFontFamily));
+	DPRINTF(printf("\n\tStyle: %s ", pszFontStyle));
+	DPRINTF(printf("\n\tWeight: %s ", pszFontWeight));
+	DPRINTF(printf("\n\tSize: %s (%d) ", pszFontSize, size));
 	
 	aFont = findClosestFont(pszFontFamily, pszFontStyle, pszFontWeight);
 	aFont->SetSize(size);
