@@ -820,57 +820,49 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 //
 //
 //
-void CreateBMPFile(HWND hwnd, LPTSTR pszFile, PBITMAPINFO pbi, 
+void CreateBMP(HWND hwnd, UT_ByteBuf & pBB, PBITMAPINFO pbi, 
                   HBITMAP hBMP, HDC hDC) 
 { 
-	HANDLE hf;                 // file handle 
 	BITMAPFILEHEADER hdr;       // bitmap file-header 
 	PBITMAPINFOHEADER pbih;     // bitmap info-header 
 	LPBYTE lpBits;              // memory pointer 	
-//	DWORD cb;                   // incremental count of bytes - not used
-	DWORD dwTmp; 
 
-    pbih = (PBITMAPINFOHEADER) pbi; 
-    lpBits = (LPBYTE) GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
+	if (!hBMP) return;
 
-    if (!lpBits) return;
+	pbih = (PBITMAPINFOHEADER) pbi; 
+	lpBits = (LPBYTE) GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
 
-    // Retrieve the color table (RGBQUAD array) and the bits 
-    // (array of palette indices) from the DIB. 
-    if (!GetDIBits(hDC, hBMP, 0, (WORD) pbih->biHeight, lpBits, pbi, 
-        DIB_RGB_COLORS)) 
-    	return;
+	if (!lpBits) return;
 
-    // Create the .BMP file. 
-    hf = CreateFile(pszFile,  GENERIC_READ | GENERIC_WRITE, 
-                   (DWORD) 0,  NULL,  CREATE_ALWAYS,  FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL); 
-                   
-    if (hf == INVALID_HANDLE_VALUE)  return;
-        
-    hdr.bfType = 0x4d42;        // 0x42 = "B" 0x4d = "M" 
-    // Compute the size of the entire file. 
-    hdr.bfSize = (DWORD) (sizeof(BITMAPFILEHEADER) + 
-                 pbih->biSize + pbih->biClrUsed 
-                 * sizeof(RGBQUAD) + pbih->biSizeImage); 
-    hdr.bfReserved1 = 0; 
-    hdr.bfReserved2 = 0; 
+	// Retrieve the color table (RGBQUAD array) and the bits 
+	// (array of palette indices) from the DIB. 
+	if (!GetDIBits(hDC, hBMP, 0, (WORD) pbih->biHeight, lpBits, pbi, 
+		 DIB_RGB_COLORS)) 
+	return;
 
-    // Compute the offset to the array of color indices. 
-    hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) + 
-                    pbih->biSize + pbih->biClrUsed 
-                    * sizeof (RGBQUAD); 
+	hdr.bfType = 0x4d42;        // 0x42 = "B" 0x4d = "M" 
+	// Compute the size of the entire file. 
+	hdr.bfSize = (DWORD) (sizeof(BITMAPFILEHEADER) + 
+			pbih->biSize + pbih->biClrUsed 
+			* sizeof(RGBQUAD) + pbih->biSizeImage); 
+	hdr.bfReserved1 = 0; 
+	hdr.bfReserved2 = 0; 
 
-    // Copy the BITMAPFILEHEADER into the .BMP file. 
-    WriteFile(hf, (LPVOID) &hdr, sizeof(BITMAPFILEHEADER),  (LPDWORD) &dwTmp,  NULL);
-    
-    WriteFile(hf, (LPVOID) pbih, sizeof(BITMAPINFOHEADER) + pbih->biClrUsed * sizeof (RGBQUAD), 
-                  (LPDWORD) &dwTmp, ( NULL));        
+	// Compute the offset to the array of color indices. 
+	hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) + 
+	pbih->biSize + pbih->biClrUsed 
+	* sizeof (RGBQUAD); 
 
-    // Copy the array of color indices into the .BMP file.         
-    WriteFile(hf, (LPSTR) lpBits, (int) pbih->biSizeImage, (LPDWORD) &dwTmp,NULL);           
-    
-	CloseHandle(hf);        
-    GlobalFree((HGLOBAL)lpBits);
+	pBB.truncate (0);
+
+	// Copy the BITMAPFILEHEADER into the .BMP file. 
+	pBB.append ((const UT_Byte *)&hdr, sizeof(BITMAPFILEHEADER));
+	pBB.append ((const UT_Byte *)pbih, sizeof(BITMAPINFOHEADER) + pbih->biClrUsed * sizeof (RGBQUAD));
+
+	// Copy the array of color indices into the .BMP file.         
+	pBB.append ((const UT_Byte *)lpBits, (int) pbih->biSizeImage);
+
+	GlobalFree((HGLOBAL)lpBits);
 }
 
 
@@ -940,28 +932,23 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		AP_FrameData* 			pFrameData;		
  		FL_DocLayout*			pDocLy;	
  		FV_View* 				pView;						
- 		char szFile[_MAX_PATH];
- 		char szPath[MAX_PATH];
+		UT_ByteBuf				bBufBMP;
  		
  		hBitmap = (HBITMAP)hData;					
  		hWnd =  GetDesktopWindow();
  		hdc = GetDC(hWnd);		
  		
- 		// Get a temp file
- 		GetTempPath(MAX_PATH,szPath);
-  		GetTempFileName(szPath, "abi", rand()*65535*65535, szFile);		
- 
-  		// Create a BMP file from a BITMAP
+ 		// Create a BMP file from a BITMAP
  		bi =  CreateBitmapInfoStruct(hBitmap);						
- 		CreateBMPFile(hWnd, szFile, bi, hBitmap,hdc);                  										
+ 		CreateBMP(hWnd, bBufBMP, bi, hBitmap,hdc);                  										
  		
  		// Since we are providing the file type, there is not need to pass the bytebuff filled up
- 		errorCode = IE_ImpGraphic::constructImporter(szFile, iegft, &pIEG);				 				
+ 		errorCode = IE_ImpGraphic::constructImporter(&bBufBMP, iegft, &pIEG);				 				
 		 				
  		if(errorCode != UT_OK)		
 			return false;				  	
 		 				 			
- 		errorCode = pIEG->importGraphic(szFile, &pFG); 		
+ 		errorCode = pIEG->importGraphic(&bBufBMP, &pFG); 		
  		
  		if(errorCode != UT_OK || !pFG)
 		{
@@ -979,8 +966,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  	
 		DELETEP(pIEG);
  		//DELETEP(pFG);		
-
- 		unlink(szFile);		  	
+ 		
  		bSuccess = true;
  	}
  	else	
