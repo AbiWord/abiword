@@ -44,12 +44,20 @@ enum FL_FrameFormatMode
 	FL_FRAME_CENTERED_IN_TEXT
 };
 
+enum FL_FrameType
+{
+	FL_FRAME_TEXTBOX_TYPE,
+	FL_FRAME_WRAPPER_IMAGE,
+	FL_FRAME_WRAPPER_TABLE,
+	FL_FRAME_WRAPPER_EMBED
+};
+
 // We have one fl_FrameLayout for each Frame.  They all
 // get physically placed on a page. 
 
 
 // The fl_FrameLayout is placed before the Block it is closest to on the page.
-// It holds Blocks of it's own like cells and foornotes.
+// It holds Blocks of it's own like cells and footnotes.
 
 class ABI_EXPORT fl_FrameLayout : public fl_SectionLayout
 {
