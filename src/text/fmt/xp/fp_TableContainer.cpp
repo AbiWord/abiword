@@ -657,8 +657,8 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		{
 			xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
 			//			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
-			UT_sint32 srcX = getX();
-			UT_sint32 srcY = getY();
+			UT_sint32 srcX = 0;
+			UT_sint32 srcY = 0;
 			getFillType()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
@@ -1653,8 +1653,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			case PP_PropertyMap::background_none:
 				break;
 			case PP_PropertyMap::background_solid:
-				UT_sint32 srcX = getX();
-				UT_sint32 srcY = getY();
+				UT_sint32 srcX = 0;
+				UT_sint32 srcY = 0;
 				getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 				break;
 		}	

@@ -154,27 +154,16 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	{
 		return;
 	}
+	UT_sint32 srcX = 0;
+	UT_sint32 srcY = 0;
+	UT_ASSERT(x > 0);
 	fp_Line * pLine = getLine();
-	if(pLine == NULL)
+    
+	if(pLine)
 	{
-		return;
-	}
-	UT_sint32 xoffLine, yoffLine;
-	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(pLine->getContainer()));
-	pVCon->getScreenOffsets(pLine, xoffLine, yoffLine);
-
-	UT_sint32 srcX = getX() + xoffLine;
-	UT_sint32 srcY = getY() + yoffLine;
-	//
-	// srcX and srcY should now give the location on screen of this run.
-	// we want them to give the offset of x and y from their container,
-	// the line that holds them.
-	//
-	srcX = getX() - (srcX - x);
-	srcY = getY() - (srcY - y);
-	if(getType() == FPRUN_TAB)
-	{
-		UT_DEBUGMSG(("Tab run in fp_Run::Fill \n"));
+		UT_sint32 xoff,yoff;
+		pLine->getScreenOffsets(this,xoff,yoff);
+		srcX = x - xoff;
 	}
 	if(getType() != FPRUN_FIELD)
 	{
@@ -760,13 +749,13 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 //	UT_usleep(100000); // 0.1 seconds useful for debugging
 	xxx_UT_DEBUGMSG(("SEVIOR: draw Run this %x \n",this));
-
+	GR_Graphics * pG = pDA->pG;
 	// shortcircuit drawing if we're way off base.
 	long imax = (1 << 15) - 1;
-	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 
-	getGraphics()->setColor(getFGColor());
+	pG->setColor(getFGColor());
 
 	_draw(pDA);
 
@@ -781,46 +770,46 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 		if(r_type == PP_REVISION_ADDITION)
 		{
-			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
-			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2), iWidth, getGraphics()->tlu(1));
+			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2), iWidth, getGraphics()->tlu(1));
 
 		}
 		else if(r_type == PP_REVISION_FMT_CHANGE)
 		{
 			// draw a thick line underneath
-			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
+			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
 		}
 		else
 		{
 			// draw a strike-through line
 
-			getGraphics()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGraphics()->tlu(2));
+			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGraphics()->tlu(2));
 		}
 
 	}
 
-	if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(m_pHyperlink && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		getGraphics()->setColor(_getView()->getColorHyperLink());
-		getGraphics()->setLineProperties(1.0,
+		pG->setColor(_getView()->getColorHyperLink());
+		pG->setLineProperties(1.0,
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
 
-		getGraphics()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 	}
 
 	if(m_eHidden == FP_HIDDEN_TEXT || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT)
 	{
-		getGraphics()->setColor(getFGColor());
-		getGraphics()->setLineProperties(1.0,
+		pG->setColor(getFGColor());
+		pG->setLineProperties(1.0,
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_DOTTED);
 
-		getGraphics()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 
 	}
 	_setDirty(false);
