@@ -52,13 +52,17 @@ BeginSet(es,ES,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Abrir",			tb_open_xpm,	NULL, "Abrir un documento existente")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Guardar",			tb_save_xpm,	NULL, "Guardar el documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Guardar como",		tb_save_as_xpm,	NULL, "Guardar el documento con un nombre diferente")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimir",			tb_print_xpm,	NULL, "Imprimir el docuemnto")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimir",			tb_print_xpm,	NULL, "Imprimir el documento")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, "Presentación preliminar", tb_print_preview_xpm, NULL, "Presentación preliminar")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Deshacer",			tb_undo_xpm,	NULL, "Deshacer la edición")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Rehacer",			tb_redo_xpm,	NULL, "Rehacer la edición")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Cortar",			tb_cut_xpm,		NULL, "Cortar")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copiar",			tb_copy_xpm,	NULL, "Copiar")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Pegar",			tb_paste_xpm,	NULL, "Pegar")
+
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Corrección ortográfica", tb_spellcheck_xpm, NULL, "Corrección ortográfica")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, 			"Insertar imagen",	tb_insert_graphic_xpm, NULL, "Insertar una imagen en el documento")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estilo",			NoIcon,			NULL, "Estilo")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Fuente",			NoIcon,			NULL, "Fuente")
@@ -93,6 +97,11 @@ BeginSet(es,ES,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Viñetas",			tb_lists_bullets_xpm,	NULL, "Viñetas")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Listas",			tb_lists_numbers_xpm,	NULL, "Listas numeradas")
 	
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color de la tinta",	NoIcon,				NULL, "Cambiar el color de la tinta")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fondo",	NoIcon,					NULL, "Cambiar el color del fondo")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Indentar párrafo", tb_text_indent_xpm,		NULL, "Incrementar la indentación del párrafo")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar párrafo", tb_text_unindent_xpm,	NULL, "Reducir la indentación del párrafo")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)

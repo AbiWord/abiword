@@ -5,11 +5,11 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: AbiWord 0.7.13\n"
 "POT-Creation-Date: 2000-11-20 23:50+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2001-01-28 15:10+CET\n"
+"Last-Translator: Joaquín Cuenca Abela <cuenca@celium.net>\n"
+"Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
@@ -49,22 +49,22 @@ msgstr ""
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h.h:11
 msgid "&1 None"
-msgstr ""
+msgstr "&1 Ninguno"
 
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h.h:13
 msgid "&2 .........."
-msgstr ""
+msgstr "&2 .........."
 
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h.h:15
 msgid "&3\t----------"
-msgstr ""
+msgstr "&3\t----------"
 
 #. DLG_Tab_Radio_Underline
 #: po/tmp/ap_String_Id.h.h:17
 msgid "&4 __________"
-msgstr ""
+msgstr "&4 __________"
 
 #. DLG_Spell_AddToDict
 #: po/tmp/ap_String_Id.h.h:19
@@ -289,7 +289,7 @@ msgstr "Ali&neamiento:"
 #. DLG_Tab_Label_Alignment
 #: po/tmp/ap_String_Id.h.h:107
 msgid "Alignment"
-msgstr ""
+msgstr "Alineamiento"
 
 #. DLG_Options_Btn_Apply
 #: po/tmp/ap_String_Id.h.h:109 po/tmp/xap_String_Id.h.h:35
@@ -299,7 +299,7 @@ msgstr "Aplicar"
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:111
 msgid "Apply to Current List"
-msgstr ""
+msgstr "Aplicar a la lista actual"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:113
@@ -314,7 +314,7 @@ msgstr "&Por:"
 #. DLG_Tab_Radio_Bar
 #: po/tmp/ap_String_Id.h.h:117
 msgid "Bar"
-msgstr ""
+msgstr "Barra"
 
 #. DLG_Lists_Box_List
 #: po/tmp/ap_String_Id.h.h:119
@@ -329,7 +329,7 @@ msgstr "Salto"
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:123
 msgid "Bullet"
-msgstr ""
+msgstr "Viñetas"
 
 #. DLG_Lists_Bullet_List
 #: po/tmp/ap_String_Id.h.h:125
@@ -339,7 +339,7 @@ msgstr "Viñetas"
 #. DLG_Tab_Radio_Center
 #: po/tmp/ap_String_Id.h.h:127
 msgid "Center"
-msgstr ""
+msgstr "Centrar"
 
 #. DLG_Para_AlignCentered
 #: po/tmp/ap_String_Id.h.h:129
@@ -383,20 +383,21 @@ msgstr "Comprobar &ortografía mientras se escribe"
 msgid "Choose your target in the left side.\n"
 msgstr ""
 "Escoja el objetivo en la parte izquierda.\n"
-"Si quiere utilizar el botón «Ir a», sólo tiene que escribir en el hueco el "
-"número deseado.  Puede utilizar + y - para realizar movimientos relativos.  "
-"Es decir, si escribe «+2» y selecciona «Línea» como objetivo, con el botón "
-"de «Ir a» descenderá dos líneas."
+
+# "Si quiere utilizar el botón «Ir a», sólo tiene que escribir en el hueco el "
+# "número deseado.  Puede utilizar + y - para realizar movimientos relativos.  "
+# "Es decir, si escribe «+2» y selecciona «Línea» como objetivo, con el botón "
+# "de «Ir a» descenderá dos líneas."
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:145
 msgid "Clear"
-msgstr ""
+msgstr "Borrar"
 
 #. DLG_Tab_Button_ClearAll
 #: po/tmp/ap_String_Id.h.h:147
 msgid "Clear &All"
-msgstr ""
+msgstr "Borrar todo"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:149
@@ -412,7 +413,7 @@ msgstr "División de la columna [%s]"
 #. DLG_Column_ColumnTitle
 #: po/tmp/ap_String_Id.h.h:153
 msgid "Columns"
-msgstr ""
+msgstr "Columnas"
 
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h.h:155
@@ -440,7 +441,7 @@ msgstr "Imposible escribir en el fichero %s."
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h.h:163
 msgid "Current Font"
-msgstr ""
+msgstr "Tipo de letra actual"
 
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h.h:165
@@ -475,12 +476,12 @@ msgstr "Diccionario personal:"
 #. DLG_Lists_Customize
 #: po/tmp/ap_String_Id.h.h:177
 msgid "Customize"
-msgstr ""
+msgstr "Personalizar"
 
 #. DLG_Lists_Dashed_List
 #: po/tmp/ap_String_Id.h.h:179
 msgid "Dashed List"
-msgstr ""
+msgstr "Lista con guiones"
 
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:181
@@ -495,7 +496,7 @@ msgstr "Defecto"
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h.h:185
 msgid "Decimal"
-msgstr ""
+msgstr "Decimal"
 
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:187
@@ -505,7 +506,7 @@ msgstr ""
 #. DLG_Lists_Diamond_List
 #: po/tmp/ap_String_Id.h.h:189
 msgid "Diamond List"
-msgstr ""
+msgstr "Lista con diamantes"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:191
@@ -604,12 +605,12 @@ msgstr "Primera línea"
 #. DLG_Lists_Font
 #: po/tmp/ap_String_Id.h.h:225 po/tmp/xap_String_Id.h.h:65
 msgid "Font:"
-msgstr ""
+msgstr "Tipo:"
 
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:227
 msgid "Format:"
-msgstr ""
+msgstr "Formato:"
 
 #. DLG_Goto_Btn_Goto
 #: po/tmp/ap_String_Id.h.h:229
@@ -629,7 +630,7 @@ msgstr "Ir a..."
 #. DLG_Lists_Hand_List
 #: po/tmp/ap_String_Id.h.h:235
 msgid "Hand List"
-msgstr ""
+msgstr "Lista con una mano"
 
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h.h:237
@@ -639,7 +640,7 @@ msgstr "Hanging"
 #. DLG_Lists_Heart_List
 #: po/tmp/ap_String_Id.h.h:239
 msgid "Heart List"
-msgstr ""
+msgstr "Lista con corazones"
 
 #. DLG_Options_Label_SpellHideErrors
 #: po/tmp/ap_String_Id.h.h:241
@@ -1266,7 +1267,7 @@ msgstr "Un directorio de la ruta de acceso no existe."
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:27
 msgid "AbiWord: Print Preview"
-msgstr ""
+msgstr "AbiWord: Previsualización"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:29
@@ -1524,12 +1525,12 @@ msgstr "Actualizar"
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Width"
-msgstr ""
+msgstr "Ancho"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:143
 msgid "Width:  "
-msgstr "Anchura:  "
+msgstr "Ancho:  "
 
 #. DLG_QNXMB_Yes
 #: po/tmp/xap_String_Id.h.h:145
