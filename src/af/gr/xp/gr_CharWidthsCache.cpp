@@ -30,8 +30,9 @@ GR_CharWidthsCache* GR_CharWidthsCache::s_pInstance = NULL;
  
 void GR_CharWidthsCache::_instantiate(void)
 {
-	if (!s_pInstance)
+	if (!s_pInstance) {
 		s_pInstance = new GR_CharWidthsCache;
+	}
 }
 
 GR_CharWidthsCache::GR_CharWidthsCache()
