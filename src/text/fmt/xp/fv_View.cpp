@@ -4969,7 +4969,6 @@ FV_DocCount FV_View::countWords(void)
 			UT_Bool delim = UT_TRUE;
 			for (i = 0; i < len; i++)
 			{
-				UT_DEBUGMSG(("%c", i));
 				if (!s_notChar(pSpan[i]))
 				{
 					wCount.ch_sp++;
