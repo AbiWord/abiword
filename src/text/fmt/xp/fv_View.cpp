@@ -3943,6 +3943,8 @@ void FV_View::_doPaste(void)
 			UT_UCSChar* pCur = pStart;
 			for (;;)
 			{
+				// TODO replace these 13's and 10's with UT_UCS_ constants
+				
 				while (
 					(*pCur != 13)
 					&& (*pCur != 10)
@@ -3955,6 +3957,7 @@ void FV_View::_doPaste(void)
 
 				if ((pCur - pStart) > 0)
 				{
+					_clearPointAP(UT_TRUE); // clear tmp span fmt if we have one
 					m_pDoc->insertSpan(getPoint(), pStart, pCur - pStart);
 				}
 
@@ -3963,6 +3966,7 @@ void FV_View::_doPaste(void)
 					|| (*pCur == 10)
 					)
 				{
+					_clearPointAP(UT_TRUE); // clear tmp span fmt if we have one
 					m_pDoc->insertStrux(getPoint(), PTX_Block);
 	
 					if (*pCur == 13)
