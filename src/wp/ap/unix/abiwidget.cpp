@@ -34,11 +34,16 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "xap_UnixDialogHelper.h"
-
+#include <glib-object.h>
 #if 0//def HAVE_GNOME
 #include "ap_UnixGnomeApp.h"
 #else
 #include "ap_UnixApp.h"
+#endif
+
+//#define LOGFILE
+#ifdef LOGFILE
+static FILE * logfile;
 #endif
 
 /**************************************************************************/
@@ -419,26 +424,27 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 //
 // arguments to abiwidget
 //
-static void abi_widget_get_arg (GtkObject  *object,
-				GtkArg     *arg,
-				guint	arg_id)
+static void abi_widget_get_prop (GObject  *object,
+								 guint arg_id,
+								 GValue     *arg,
+								 GParamSpec *pspec)
 {
     AbiWidget * abi = ABI_WIDGET(object);
 	switch(arg_id)
 	{
 	    case MAP_TO_SCREEN:
 		{
-			GTK_VALUE_BOOL(*arg) = (gboolean) abi->priv->m_bMappedToScreen;
+			g_value_set_boolean(arg, (gboolean) abi->priv->m_bMappedToScreen);
 			break;
 		}
 	    case IS_ABI_WIDGET:
 		{
-			GTK_VALUE_BOOL(*arg) = (gboolean) true;
+			g_value_set_boolean(arg,(gboolean) true);
 			break;
 		}
 	    case UNLINK_AFTER_LOAD:
 		{
-			GTK_VALUE_BOOL(*arg) = (gboolean) abi->priv->m_bUnlinkFileAfterLoad;
+			g_value_set_boolean(arg,(gboolean) abi->priv->m_bUnlinkFileAfterLoad);
 			break;
 		}
 	    default:
@@ -446,23 +452,41 @@ static void abi_widget_get_arg (GtkObject  *object,
 	}
 }
 
+void abi_widget_get_property(GObject  *object,
+								 guint arg_id,
+								 GValue     *arg,
+								 GParamSpec *pspec)
+{
+	abi_widget_get_prop(object,
+						arg_id,
+						arg,
+						pspec);
+}
+
 //
-// arguments to abiwidget
+// props to abiwidget
 //
-static void abi_widget_set_arg (GtkObject  *object,
-				GtkArg     *arg,
-				guint	arg_id)
+static void abi_widget_set_prop (GObject  *object,
+								 guint	arg_id,
+								 const GValue *arg,
+								 GParamSpec *pspec)
 {
   g_return_if_fail (object != 0);
 
   AbiWidget * abi = ABI_WIDGET (object);
   AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 
+#ifdef LOGFILE
+	fprintf(logfile,"setArg %d\n",arg_id);
+	fclose(logfile);
+	fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
+#endif
+
 	switch(arg_id)
 	{
 	    case CURSOR_ON:
 		{
-		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+		     if(g_value_get_boolean(arg) == TRUE)
 			 {
 			      abi_widget_turn_on_cursor(abi);
 			 }
@@ -470,13 +494,13 @@ static void abi_widget_set_arg (GtkObject  *object,
 		}
 	    case INVOKE_NOARGS:
 		{
-		     const char * psz= GTK_VALUE_STRING (*arg);
+		     const char * psz= g_value_get_string( arg);
 		     abi_widget_invoke_ex(abi,psz,0,0,0);
 			 break;
 		}
 	    case MAP_TO_SCREEN:
 		{
-		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+		     if(g_value_get_boolean(arg) == TRUE)
 			 {
 			      abi_widget_map_to_screen(abi);
 			 }
@@ -484,7 +508,7 @@ static void abi_widget_set_arg (GtkObject  *object,
 		}
 	    case UNLINK_AFTER_LOAD:
 		{
-		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+		     if(g_value_get_boolean(arg) == TRUE)
 			 {
 			      abi->priv->m_bUnlinkFileAfterLoad = true;
 			 }
@@ -496,7 +520,7 @@ static void abi_widget_set_arg (GtkObject  *object,
 		}
 	    case DRAW:
 		{
-		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+		     if(g_value_get_boolean(arg) == TRUE)
 			 {
 			      abi_widget_draw(abi);
 			 }
@@ -504,7 +528,7 @@ static void abi_widget_set_arg (GtkObject  *object,
 		}
 	    case LOAD_FILE:
 		{
-		     const char * pszFile= GTK_VALUE_STRING (*arg);
+		     const char * pszFile= g_value_get_string(arg);
 			 abi_widget_load_file(abi,pszFile);
 			 break;
 		}
@@ -570,9 +594,9 @@ static void abi_widget_set_arg (GtkObject  *object,
 		}
 	    case INSERTDATA:
 		{
-		    const char * pszstr = GTK_VALUE_STRING (*arg);
-		    abi_klazz->insert_data (abi, pszstr);
-		    break;
+		     const char * pszstr= g_value_get_string(arg);
+			 abi_klazz->insert_data (abi, pszstr);
+			 break;
 		}
 	    case  INSERTSPACE:
 		{
@@ -945,6 +969,17 @@ static void abi_widget_set_arg (GtkObject  *object,
 	}
 }
 
+void abi_widget_set_property(GObject  *object,
+							 guint	arg_id,
+							 const GValue *arg,
+							 GParamSpec *pspec)
+{
+	abi_widget_set_prop(object,
+						arg_id,
+						arg,
+						pspec);
+}
+
 static void 
 abi_widget_size_request (GtkWidget      *widget,
 			 GtkRequisition *requisition)
@@ -1155,6 +1190,11 @@ abi_widget_destroy (GtkObject *object)
 
 	g_free (abi->priv);
 
+#ifdef LOGFILE
+	fprintf(logfile,"abiwidget destroyed\n");
+	fclose(logfile);
+#endif
+
 	// chain up
 	if (GTK_OBJECT_CLASS (parent_class)->destroy)
 		GTK_OBJECT_CLASS (parent_class)->destroy (object);
@@ -1170,6 +1210,9 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	object_class = (GtkObjectClass *)abi_class;
 	widget_class = (GtkWidgetClass *)abi_class;
+//
+// Next to install properties to the object class too
+	GObjectClass *gobject_class = G_OBJECT_CLASS(abi_class);
 
 	// we need our own special destroy function
 	object_class->destroy  = abi_widget_destroy;
@@ -1180,8 +1223,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	
 	// set our custom destroy method
 	object_class->destroy = abi_widget_destroy; 
-	object_class->set_arg = abi_widget_set_arg;
-	object_class->get_arg = abi_widget_get_arg;
+	gobject_class->set_property = abi_widget_set_prop;
+	gobject_class->get_property = abi_widget_get_prop;
 
 	// set our custom class methods
 	widget_class->realize       = abi_widget_realize;
@@ -1297,105 +1340,663 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->zoom_75    = EM_NAME(zoom75);
 	abi_class->zoom_whole = EM_NAME(zoomWhole);
 	abi_class->zoom_width = EM_NAME(zoomWidth);
-	
-    // now add GtkArgs for our properties
 
-	gtk_object_add_arg_type ("AbiWidget::cursoron", GTK_TYPE_BOOL, GTK_ARG_READWRITE, CURSOR_ON);
-	gtk_object_add_arg_type ("AbiWidget::invoke_noargs", GTK_TYPE_STRING, GTK_ARG_READWRITE, INVOKE_NOARGS);
-	gtk_object_add_arg_type ("AbiWidget::map_to_screen", GTK_TYPE_BOOL, GTK_ARG_READWRITE, MAP_TO_SCREEN);
-	gtk_object_add_arg_type ("AbiWidget::unlink_after_load", GTK_TYPE_BOOL, GTK_ARG_READWRITE, UNLINK_AFTER_LOAD);
-	gtk_object_add_arg_type ("AbiWidget::is_abi_widget", GTK_TYPE_BOOL, GTK_ARG_READABLE, IS_ABI_WIDGET);
-	gtk_object_add_arg_type ("AbiWidget::draw", GTK_TYPE_BOOL, GTK_ARG_READWRITE, DRAW);
-	gtk_object_add_arg_type ("AbiWidget::load_file", GTK_TYPE_STRING, GTK_ARG_READWRITE, LOAD_FILE);
-	gtk_object_add_arg_type ("AbiWidget::aligncenter", GTK_TYPE_BOOL, GTK_ARG_READWRITE,ALIGNCENTER);
-	gtk_object_add_arg_type ("AbiWidget::alignleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNLEFT);
-	gtk_object_add_arg_type ("AbiWidget::alignright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNRIGHT);
-	gtk_object_add_arg_type ("AbiWidget::alignjustify", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNJUSTIFY);
-	gtk_object_add_arg_type ("AbiWidget::copy", GTK_TYPE_BOOL,GTK_ARG_READWRITE,COPY);
-	gtk_object_add_arg_type ("AbiWidget::cut", GTK_TYPE_BOOL,GTK_ARG_READWRITE,CUT);
-	gtk_object_add_arg_type ("AbiWidget::paste", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTE);
-	gtk_object_add_arg_type ("AbiWidget::pastespecial", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTESPECIAL);
-	gtk_object_add_arg_type ("AbiWidget::selectblock", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTBLOCK);
-	gtk_object_add_arg_type ("AbiWidget::selectline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTLINE);
-	gtk_object_add_arg_type ("AbiWidget::selectword", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTWORD);
-	gtk_object_add_arg_type ("AbiWidget::selectall", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTALL);
 
-	gtk_object_add_arg_type ("AbiWidget::insertdata", GTK_TYPE_STRING, GTK_ARG_READWRITE, INSERTDATA);
+// now install GObject properties
 
-	  gtk_object_add_arg_type("AbiWidget::insertspace", GTK_TYPE_BOOL,GTK_ARG_READWRITE,INSERTSPACE);
-  gtk_object_add_arg_type("AbiWidget::delbob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOB);
-  gtk_object_add_arg_type("AbiWidget::delbod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOD);
-  gtk_object_add_arg_type("AbiWidget::delbol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOL);
-  gtk_object_add_arg_type("AbiWidget::delbow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOW);
-  gtk_object_add_arg_type("AbiWidget::deleob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOB);
-  gtk_object_add_arg_type("AbiWidget::deleod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOD);
-  gtk_object_add_arg_type("AbiWidget::deleol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOL);
-  gtk_object_add_arg_type("AbiWidget::deleow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOW);
-  gtk_object_add_arg_type("AbiWidget::delleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELLEFT);
-  gtk_object_add_arg_type("AbiWidget::delright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELRIGHT);
-  gtk_object_add_arg_type("AbiWidget::editheader", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EDITHEADER);
-  gtk_object_add_arg_type("AbiWidget::editfooter", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EDITFOOTER);
-  gtk_object_add_arg_type("AbiWidget::removeheader", GTK_TYPE_BOOL,GTK_ARG_READWRITE,REMOVEHEADER);
-  gtk_object_add_arg_type("AbiWidget::removefooter", GTK_TYPE_BOOL,GTK_ARG_READWRITE,REMOVEFOOTER);
-  gtk_object_add_arg_type("AbiWidget::extselbob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOB);
-  gtk_object_add_arg_type("AbiWidget::extselboL", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOL);
-  gtk_object_add_arg_type("AbiWidget::extselbod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOD);
-  gtk_object_add_arg_type("AbiWidget::extselbow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOW);
-  gtk_object_add_arg_type("AbiWidget::extseleob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOB);
-  gtk_object_add_arg_type("AbiWidget::extseleod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOD);
-  gtk_object_add_arg_type("AbiWidget::extseleol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOL);
-  gtk_object_add_arg_type("AbiWidget::extseleow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOW);
-  gtk_object_add_arg_type("AbiWidget::extselleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELLEFT);
-  gtk_object_add_arg_type("AbiWidget::extselright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELRIGHT);
-  gtk_object_add_arg_type("AbiWidget::extselnextline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELNEXTLINE);
-  gtk_object_add_arg_type("AbiWidget::extselpagedown", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPAGEDOWN);
-  gtk_object_add_arg_type("AbiWidget::extselpageup", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPAGEUP);
-  gtk_object_add_arg_type("AbiWidget::extselprevline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPREVLINE);
-  gtk_object_add_arg_type("AbiWidget::extselscreendown", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELSCREENDOWN);
-  gtk_object_add_arg_type("AbiWidget::extselscreenup", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELSCREENUP);
-  gtk_object_add_arg_type("AbiWidget::togglebold", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEBOLD);
-  gtk_object_add_arg_type("AbiWidget::togglebottomline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEBOTTOMLINE);
-  gtk_object_add_arg_type("AbiWidget::toggleinsertmode", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEINSERTMODE);
-  gtk_object_add_arg_type("AbiWidget::toggleitalic", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEITALIC);
-  gtk_object_add_arg_type("AbiWidget::toggleoline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEOLINE);
-  gtk_object_add_arg_type("AbiWidget::toggleplain", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEPLAIN);
-  gtk_object_add_arg_type("AbiWidget::togglestrike", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLESTRIKE);
-  gtk_object_add_arg_type("AbiWidget::togglesub", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLESUB);
-  gtk_object_add_arg_type("AbiWidget::togglesuper", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLESUPER);
-  gtk_object_add_arg_type("AbiWidget::toggletopline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLETOPLINE);
-  gtk_object_add_arg_type("AbiWidget::toggleuline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEULINE);
-  gtk_object_add_arg_type("AbiWidget::toggleunindent", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEUNINDENT);
-  gtk_object_add_arg_type("AbiWidget::viewpara", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWPARA);
-  gtk_object_add_arg_type("AbiWidget::viewprintlayout", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWPRINTLAYOUT);
-  gtk_object_add_arg_type("AbiWidget::viewnormallayout", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWNORMALLAYOUT);
-  gtk_object_add_arg_type("AbiWidget::viewweblayout", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWWEBLAYOUT);
-  gtk_object_add_arg_type("AbiWidget::undo", GTK_TYPE_BOOL,GTK_ARG_READWRITE,UNDO);
-  gtk_object_add_arg_type("AbiWidget::redo", GTK_TYPE_BOOL,GTK_ARG_READWRITE,REDO);
-  gtk_object_add_arg_type("AbiWidget::warpinsptbob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOB);
-  gtk_object_add_arg_type("AbiWidget::warpinsptbod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOD);
-  gtk_object_add_arg_type("AbiWidget::warpinsptbol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOL);
-  gtk_object_add_arg_type("AbiWidget::warpinsptbop", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOP);
-  gtk_object_add_arg_type("AbiWidget::warpinsptbow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOW);
-  gtk_object_add_arg_type("AbiWidget::warpinspteob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOB);
-  gtk_object_add_arg_type("AbiWidget::warpinspteod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOD);
-  gtk_object_add_arg_type("AbiWidget::warpinspteol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOL);
-  gtk_object_add_arg_type("AbiWidget::warpinspteop", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOP);
-  gtk_object_add_arg_type("AbiWidget::warpinspteow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOW);
-  gtk_object_add_arg_type("AbiWidget::warpinsptleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTLEFT);
-  gtk_object_add_arg_type("AbiWidget::warpinsptnextline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTNEXTLINE);
-  gtk_object_add_arg_type("AbiWidget::warpinsptnextpage", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTNEXTPAGE);
-  gtk_object_add_arg_type("AbiWidget::warpinsptnextscreen", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTNEXTSCREEN);
-  gtk_object_add_arg_type("AbiWidget::warpinsptprevline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVLINE);
-  gtk_object_add_arg_type("AbiWidget::warpinsptprevpage", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVPAGE);
-  gtk_object_add_arg_type("AbiWidget::warpinsptprevscreen", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVSCREEN);
-  gtk_object_add_arg_type("AbiWidget::warpinsptprevright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVRIGHT);
-  gtk_object_add_arg_type("AbiWidget::zoom100", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM100);
-  gtk_object_add_arg_type("AbiWidget::zoom200", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM200);
-  gtk_object_add_arg_type("AbiWidget::zoom50", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM50);
-  gtk_object_add_arg_type("AbiWidget::zoom75", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM75);
-  gtk_object_add_arg_type("AbiWidget::zoomwhole", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOMWHOLE);
-  gtk_object_add_arg_type("AbiWidget::zoomwidth", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOMWIDTH);
+	g_object_class_install_property (gobject_class,
+									 CURSOR_ON,
+									 g_param_spec_boolean("AbiWidget::cursoron",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 INVOKE_NOARGS,
+									 g_param_spec_string("AbiWidget::invoke_noargs",
+														 NULL,
+														 NULL,
+														 NULL,
+														 (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 MAP_TO_SCREEN,
+									 g_param_spec_boolean("AbiWidget::map_to_screen",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 UNLINK_AFTER_LOAD,
+									 g_param_spec_boolean("AbiWidget::unlink_after_load",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 IS_ABI_WIDGET,
+									 g_param_spec_boolean("AbiWidget::is_abi_widget",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 DRAW,
+									 g_param_spec_boolean("AbiWidget::draw",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 LOAD_FILE,
+									 g_param_spec_string("AbiWidget::load_file",
+														 NULL,
+														 NULL,
+													   NULL,
+														 (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 ALIGNCENTER,
+									 g_param_spec_boolean("AbiWidget::aligncenter",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 ALIGNLEFT,
+									 g_param_spec_boolean("AbiWidget::alignleft",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 ALIGNRIGHT,
+									 g_param_spec_boolean("AbiWidget::alignright",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 ALIGNJUSTIFY,
+									 g_param_spec_boolean("AbiWidget::alignjustify",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 COPY,
+									 g_param_spec_boolean("AbiWidget::copy",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 CUT,
+									 g_param_spec_boolean("AbiWidget::cut",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 PASTE,
+									 g_param_spec_boolean("AbiWidget::paste",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 PASTESPECIAL,
+									 g_param_spec_boolean("AbiWidget::pastespecial",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 SELECTBLOCK,
+									 g_param_spec_boolean("AbiWidget::selectblock",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 SELECTLINE,
+									 g_param_spec_boolean("AbiWidget::selectline",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 SELECTWORD,
+									 g_param_spec_boolean("AbiWidget::selectword",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 SELECTALL,
+									 g_param_spec_boolean("AbiWidget::selectall",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
 
+	g_object_class_install_property (gobject_class,
+									 INSERTDATA,
+									 g_param_spec_string("AbiWidget::insertdata",
+														 NULL,
+														 NULL,
+													   NULL,
+														 (GParamFlags) G_PARAM_READWRITE));
+
+	  g_object_class_install_property(gobject_class,
+									  INSERTSPACE,
+									  g_param_spec_boolean("AbiWidget::insertspace",
+														   NULL,
+														   NULL,
+														   FALSE,
+														   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELBOB,
+								  g_param_spec_boolean("AbiWidget::delbob",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELBOD,
+								  g_param_spec_boolean("AbiWidget::delbod",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELBOL,
+								  g_param_spec_boolean("AbiWidget::delbol",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELBOW,
+								  g_param_spec_boolean("AbiWidget::delbow",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELEOB,
+								  g_param_spec_boolean("AbiWidget::deleob",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELEOD,
+								  g_param_spec_boolean("AbiWidget::deleod",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELEOL,
+								  g_param_spec_boolean("AbiWidget::deleol",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELEOW,
+								  g_param_spec_boolean("AbiWidget::deleow",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELLEFT,
+								  g_param_spec_boolean("AbiWidget::delleft",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  DELRIGHT,
+								  g_param_spec_boolean("AbiWidget::delright",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EDITHEADER,
+								  g_param_spec_boolean("AbiWidget::editheader",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EDITFOOTER,
+								  g_param_spec_boolean("AbiWidget::editfooter",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  REMOVEHEADER,
+								  g_param_spec_boolean("AbiWidget::removeheader",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  REMOVEFOOTER,
+								  g_param_spec_boolean("AbiWidget::removefooter",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELBOB,
+								  g_param_spec_boolean("AbiWidget::extselbob",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELBOL,
+								  g_param_spec_boolean("AbiWidget::extselboL",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELBOD,
+								  g_param_spec_boolean("AbiWidget::extselbod",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELBOW,
+								  g_param_spec_boolean("AbiWidget::extselbow",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELEOB,
+								  g_param_spec_boolean("AbiWidget::extseleob",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELEOD,
+								  g_param_spec_boolean("AbiWidget::extseleod",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELEOL,
+								  g_param_spec_boolean("AbiWidget::extseleol",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELEOW,
+								  g_param_spec_boolean("AbiWidget::extseleow",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELLEFT,
+								  g_param_spec_boolean("AbiWidget::extselleft",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELRIGHT,
+								  g_param_spec_boolean("AbiWidget::extselright",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELNEXTLINE,
+								  g_param_spec_boolean("AbiWidget::extselnextline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELPAGEDOWN,
+								  g_param_spec_boolean("AbiWidget::extselpagedown",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELPAGEUP,
+								  g_param_spec_boolean("AbiWidget::extselpageup",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELPREVLINE,
+								  g_param_spec_boolean("AbiWidget::extselprevline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELSCREENDOWN,
+								  g_param_spec_boolean("AbiWidget::extselscreendown",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  EXTSELSCREENUP,
+								  g_param_spec_boolean("AbiWidget::extselscreenup",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEBOLD,
+								  g_param_spec_boolean("AbiWidget::togglebold",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEBOTTOMLINE,
+								  g_param_spec_boolean("AbiWidget::togglebottomline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEINSERTMODE,
+								  g_param_spec_boolean("AbiWidget::toggleinsertmode",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEITALIC,
+								  g_param_spec_boolean("AbiWidget::toggleitalic",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEOLINE,
+								  g_param_spec_boolean("AbiWidget::toggleoline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEPLAIN,
+								  g_param_spec_boolean("AbiWidget::toggleplain",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLESTRIKE,
+								  g_param_spec_boolean("AbiWidget::togglestrike",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLESUB,
+								  g_param_spec_boolean("AbiWidget::togglesub",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLESUPER,
+								  g_param_spec_boolean("AbiWidget::togglesuper",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLETOPLINE,
+								  g_param_spec_boolean("AbiWidget::toggletopline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEULINE,
+								  g_param_spec_boolean("AbiWidget::toggleuline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  TOGGLEUNINDENT,
+								  g_param_spec_boolean("AbiWidget::toggleunindent",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  VIEWPARA,
+								  g_param_spec_boolean("AbiWidget::viewpara",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  VIEWPRINTLAYOUT,
+								  g_param_spec_boolean("AbiWidget::viewprintlayout",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  VIEWNORMALLAYOUT,
+								  g_param_spec_boolean("AbiWidget::viewnormallayout",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  VIEWWEBLAYOUT,
+								  g_param_spec_boolean("AbiWidget::viewweblayout",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  UNDO,
+								  g_param_spec_boolean("AbiWidget::undo",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  REDO,
+								  g_param_spec_boolean("AbiWidget::redo",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTBOB,
+								  g_param_spec_boolean("AbiWidget::warpinsptbob",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTBOD,
+								  g_param_spec_boolean("AbiWidget::warpinsptbod",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTBOL,
+								  g_param_spec_boolean("AbiWidget::warpinsptbol",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTBOP,
+								  g_param_spec_boolean("AbiWidget::warpinsptbop",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTBOW,
+								  g_param_spec_boolean("AbiWidget::warpinsptbow",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTEOB,
+								  g_param_spec_boolean("AbiWidget::warpinspteob",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTEOD,
+								  g_param_spec_boolean("AbiWidget::warpinspteod",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTEOL,
+								  g_param_spec_boolean("AbiWidget::warpinspteol",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTEOP,
+								  g_param_spec_boolean("AbiWidget::warpinspteop",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTEOW,
+								  g_param_spec_boolean("AbiWidget::warpinspteow",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTLEFT,
+								  g_param_spec_boolean("AbiWidget::warpinsptleft",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTNEXTLINE,
+								  g_param_spec_boolean("AbiWidget::warpinsptnextline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTNEXTPAGE,
+								  g_param_spec_boolean("AbiWidget::warpinsptnextpage",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTNEXTSCREEN,
+								  g_param_spec_boolean("AbiWidget::warpinsptnextscreen",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTPREVLINE,
+								  g_param_spec_boolean("AbiWidget::warpinsptprevline",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTPREVPAGE,
+								  g_param_spec_boolean("AbiWidget::warpinsptprevpage",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTPREVSCREEN,
+								  g_param_spec_boolean("AbiWidget::warpinsptprevscreen",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  WARPINSPTPREVRIGHT,
+								  g_param_spec_boolean("AbiWidget::warpinsptprevright",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  ZOOM100,
+								  g_param_spec_boolean("AbiWidget::zoom100",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  ZOOM200,
+								  g_param_spec_boolean("AbiWidget::zoom200",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  ZOOM50,
+								  g_param_spec_boolean("AbiWidget::zoom50",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  ZOOM75,
+								  g_param_spec_boolean("AbiWidget::zoom75",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  ZOOMWHOLE,
+								  g_param_spec_boolean("AbiWidget::zoomwhole",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class,
+								  ZOOMWIDTH,
+								  g_param_spec_boolean("AbiWidget::zoomwidth",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   (GParamFlags) G_PARAM_READWRITE));
 }
 
 static void
@@ -1425,6 +2026,14 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 		priv->m_szFilename = g_strdup (file);
 
 	abi->priv = priv;
+
+#ifdef LOGFILE
+	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
+	fprintf(logfile,"AbiWidget Constructed \n");
+	fclose(logfile);
+	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
+#endif
+
 
 	return;
 }

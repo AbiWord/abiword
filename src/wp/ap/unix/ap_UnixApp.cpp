@@ -96,6 +96,7 @@
 #include "xap_ModuleManager.h"
 #include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
+#include "ut_sleep.h"
 
 #ifdef HAVE_CURL
 #include "ap_UnixHashDownloader.h"
@@ -118,6 +119,11 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include "xap_UnixGnomePrintGraphics.h"
 #include "ap_EditMethods.h"
+
+//#define LOGFILE
+#ifdef LOGFILE
+static FILE * logfile;
+#endif
 
 static int mainBonobo(int argc, const char ** argv);
 #endif
@@ -1181,6 +1187,13 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	XAP_Args XArgs = XAP_Args(argc,argv);
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
+
+#ifdef LOGFILE
+	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile-unix","a+");
+	fprintf(logfile,"About to do gtk_set_locale \n");
+	fclose(logfile);
+	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile-unix","a+");
+#endif
     
 	// Step 1: Initialize GTK and create the APP.
 	// hack needed to intialize gtk before ::initialize
@@ -1267,6 +1280,10 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		if(bControlFactory)
 		{
 			int rtn = mainBonobo(XArgs.m_argc, XArgs.m_argv);
+#ifdef LOGFILE
+			fprintf(logfile,"mainBonobo Finished \n");
+			fclose(logfile);
+#endif
 			pMyUnixApp->shutdown();
 			delete pMyUnixApp;
 		  return rtn;
@@ -1560,7 +1577,16 @@ void AP_UnixApp::catchSignals(int sig_num)
     }
     
     UT_DEBUGMSG(("Oh no - we just crashed!\n"));
-	
+//
+// fixme: Enable this to help debug the bonobo component. After a crash the
+// the program hangs here and you can connect to it from gdb and backtrace to
+// the crash point
+#if 0
+	while(1)
+	{
+		UT_usleep(10000);
+	}
+#endif
     UT_uint32 i = 0;
     for(;i<m_vecFrames.getItemCount();i++)
     {
@@ -1585,6 +1611,86 @@ void AP_UnixApp::catchSignals(int sig_num)
 //-------------------------------------------------------------------
 
 static BonoboControl * AbiWidget_control_new (AbiWidget * abi);
+
+
+/* 
+ * get a value from abiwidget
+ */ 
+static void get_prop (BonoboPropertyBag 	*bag,
+	  BonoboArg 		*arg,
+	  guint 		 arg_id,
+	  CORBA_Environment 	*ev,
+	  gpointer 		 user_data)
+{
+	GObject 	*abi;
+	
+	g_return_if_fail (IS_ABI_WIDGET(user_data));
+		
+	/*
+	 * get data from our AbiWidget
+	 */
+//
+// first create fresh GValue
+//
+	GValue gVal = {0, };
+	GParamSpec ParamSpec;
+//
+// Now extract the requested GValue from abiwidget using arg_id
+//
+	abi = G_OBJECT(user_data); 
+	abi_widget_get_property(abi,arg_id,&gVal,&ParamSpec);
+//
+// Now copy it back to the bonobo argument.
+//
+	bonobo_arg_from_gvalue (arg, &gVal);
+//
+// Free up allocated memory
+//
+	if (G_VALUE_TYPE(&gVal) == G_TYPE_STRING && g_value_get_string(&gVal))
+	{
+		g_free (g_value_get_string(&gVal));
+	}
+}
+
+/*
+ * Tell abiwidget to do something.
+ */
+static void set_prop (BonoboPropertyBag 	*bag,
+					  const BonoboArg 	*arg,
+					  guint 		 arg_id,
+					  CORBA_Environment 	*ev,
+					  gpointer 		 user_data)
+{
+	GObject 	*abi;
+	
+	g_return_if_fail (IS_ABI_WIDGET(user_data));
+#ifdef LOGFILE
+	fprintf(logfile,"UnixApp::set_prop id %d \n",arg_id);
+	fclose(logfile);
+	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile-unix","a+");
+#endif
+	abi = G_OBJECT(user_data); 
+//
+// define a fresh GValue and fill it from bonobo_arg
+//
+	GValue gVal = {0, };
+	GParamSpec ParamSpec;
+	bonobo_arg_to_gvalue(&gVal,arg);
+//
+// Now send it to abiwidget via send prop
+//
+	abi_widget_set_property(abi,arg_id,&gVal,&ParamSpec);
+//
+// Free up allocated memory
+//
+//
+// Free up allocated memory
+//
+	if (G_VALUE_TYPE(&gVal) == G_TYPE_STRING && g_value_get_string(&gVal))
+	{
+		g_free (g_value_get_string(&gVal));
+	}
+}
 
 /*****************************************************************/
 /* Implements the Bonobo/Persist:1.0, Bonobo/PersistStream:1.0,
@@ -2009,10 +2115,15 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	/* Inteface Bonobo::PropertyBag */
 
 	guint n_pspecs = 0;
-	BonoboPropertyBag * pb = bonobo_property_bag_new (NULL, NULL, NULL);
+	BonoboPropertyBag * pb = bonobo_property_bag_new (get_prop, set_prop, abiwidget);
 	const GParamSpec ** pspecs = (const GParamSpec **)(g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs));
 	bonobo_property_bag_map_params (pb, G_OBJECT (abiwidget), pspecs, n_pspecs);
+	bonobo_control_set_properties (BONOBO_CONTROL(to_aggregate),BONOBO_OBJREF (pb), NULL);
+
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
+#ifdef LOGFILE
+	fprintf(logfile,"AbiControl_add_interfaces Property Bag with %d parameters added \n",n_pspecs);
+#endif
 
 	/* Interface Bonobo::Persist */
 
@@ -2027,9 +2138,12 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
 		return NULL;
 	}
-
+#ifdef LOGFILE
+	fprintf(logfile,"AbiControl_add_interfaces stream created \n");
+#endif
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (stream));
+
 
 	/* Interface Bonobo::PersistFile */
 
@@ -2096,6 +2210,7 @@ static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 {
   // create a BonoboControl from a widget
   BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
+
   AbiControl_add_interfaces (ABI_WIDGET(abi),
 							 BONOBO_OBJECT(control));
   return control;
@@ -2127,11 +2242,13 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory,
   return BONOBO_OBJECT (AbiWidget_control_new (ABI_WIDGET (abi)));
 }
 
+
+
 static int mainBonobo(int argc, const char ** argv)
 {
 	BONOBO_FACTORY_INIT ("abiword-component", "0.1", &argc, const_cast<char **>(argv));
 
-	return bonobo_generic_factory_main ("OAFIID:GNOME_AbiWord_Factory",
+	return bonobo_generic_factory_main ("OAFIID:GNOME_AbiWord_ControlFactory",
 										bonobo_AbiWidget_factory, NULL);
 }
 

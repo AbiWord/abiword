@@ -186,12 +186,21 @@ extern "C" {
   };
 	
   /* the public API */
-  GtkWidget * abi_widget_new (void);
-  GtkWidget * abi_widget_new_with_file (const gchar * file);
-  GtkType     abi_widget_get_type	(void);
-  void        abi_widget_map_to_screen(AbiWidget * widget);
-  void        abi_widget_turn_on_cursor(AbiWidget * widget);
-  
+	GtkWidget * abi_widget_new (void);
+	GtkWidget * abi_widget_new_with_file (const gchar * file);
+	GtkType     abi_widget_get_type	(void);
+	void        abi_widget_map_to_screen(AbiWidget * widget);
+	void        abi_widget_turn_on_cursor(AbiWidget * widget);
+	void abi_widget_set_property(GObject  *object,
+								 guint	arg_id,
+								 const GValue *arg,
+								 GParamSpec *pspec);
+ 
+	void abi_widget_get_property(GObject  *object,
+								 guint arg_id,
+								 GValue     *arg,
+								 GParamSpec *pspec);
+
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, 
 				    const char * data, gint32 x, gint32 y);
