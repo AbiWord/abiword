@@ -85,7 +85,7 @@ class AP_Preview_Paragraph_Block
 	// easy layout, and store the word content (UT_UCSChar *)
 	// and its measured length in pixels (UT_uint32)
 	UT_Vector m_words;
-	UT_Vector m_widths;
+	UT_NumberVector m_widths;
 };
 
 class AP_Preview_Paragraph : public XAP_Preview
@@ -134,7 +134,7 @@ class AP_Preview_Paragraph : public XAP_Preview
 	virtual void	_drawPageBorder(void);
 	virtual void 	_appendBlock(AP_Preview_Paragraph_Block * block);
 	virtual UT_uint32 _appendLine(UT_Vector * words,
-								  UT_Vector * widths,
+								  UT_NumberVector * widths,
 								  UT_uint32 startWithWord,
 								  UT_uint32 left,
 								  UT_uint32 right,

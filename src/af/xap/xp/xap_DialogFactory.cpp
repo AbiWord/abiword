@@ -151,11 +151,11 @@ CreateItPersistent:
 		// see if we already have an instance of this object in our vector.
 		// if so, just return it.  otherwise, create a fresh one and remember it.
 		
-		UT_sint32 indexVec = m_vecDialogIds.findItem((void*)(index+1));
+		UT_sint32 indexVec = m_vecDialogIds.findItem(index+1);
 		if (indexVec < 0)				// not present, create new object and add it to vector
 		{
 			pDialog = (XAP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
-			m_vecDialogIds.addItem((void*)(index+1));
+			m_vecDialogIds.addItem(index+1);
 			m_vecDialogs.addItem(pDialog);
 		}
 		else							// already present, reuse this object

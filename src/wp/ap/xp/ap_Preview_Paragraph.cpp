@@ -123,7 +123,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 			m_words.addItem(clone);
 
 			// measure clone item
-			m_widths.addItem((void *) m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
+			m_widths.addItem(m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
 
 			// advance clone pointer for new word
 			clone = i + 1;
@@ -134,7 +134,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 	// add last word
 	m_words.addItem(clone);
 	// measure last word
-	m_widths.addItem((void *) m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
+	m_widths.addItem(m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
 }
 
 // ignores NULL parameters, otherwise scales dimensioned strings into
@@ -645,7 +645,7 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 
 // returns number of words it plotted
 UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
-											UT_Vector * widths,
+											UT_NumberVector * widths,
 											UT_uint32 startWithWord,
 											UT_uint32 left,
 											UT_uint32 right,
@@ -677,9 +677,9 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	// NOTE : we don't evaluate space widths in the while() condition so we don't
 	// NOTE : wrap on one (which would be silly)
 	while ((i < totalWords) &&
-		   (pixelsForThisLine + (UT_uint32) widths->getNthItem(i) <= (UT_uint32)maxPixelsForThisLine))
+		   (pixelsForThisLine + widths->getNthItem(i) <= (UT_uint32)maxPixelsForThisLine))
 	{
-		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + spaceCharWidth;
+		pixelsForThisLine += widths->getNthItem(i) + spaceCharWidth;
 		i++;
 	}
 
@@ -687,7 +687,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	{
 		// HACK: Make sure we have at least one word. (no longer true, because of above)
 
-		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + spaceCharWidth;
+		pixelsForThisLine += widths->getNthItem(i) + spaceCharWidth;
 		i++;
 	}
 
@@ -763,12 +763,12 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		    str[j] = (UT_UCSChar)fb2[j];
 
 		if(m_dir == FRIBIDI_TYPE_RTL)
-		    willDrawAt -= (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
+		    willDrawAt -= ((widths->getNthItem(k)) << 8) + spaceCharWidth;
 
 		painter.drawChars(str, 0,	iLen, willDrawAt >> 8, y);
 
 		if(m_dir == FRIBIDI_TYPE_LTR)
-		    willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
+		    willDrawAt += ((widths->getNthItem(k)) << 8) + spaceCharWidth;
 	}
 
 	// return number of words drawn
