@@ -10566,6 +10566,7 @@ Defun(dragImage)
 					return false;
 				}
 			}
+			pView->cmdSelect(pos,pos+1);
 			pView->startImageDrag(pRun, pCallData->m_xPos, pCallData->m_yPos);
 		}
 		pView->drawDraggedImage(pCallData->m_xPos, pCallData->m_yPos);
