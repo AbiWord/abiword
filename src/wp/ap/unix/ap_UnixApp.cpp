@@ -47,6 +47,12 @@
 
 #include "ie_imp.h"
 #include "ie_types.h"
+#include "ie_exp_Text.h"
+#include "ie_exp_RTF.h"
+#include "ie_exp_AbiWord_1.h"
+#include "ie_exp_HTML.h"
+#include "ie_imp_Text.h"
+#include "ie_imp_RTF.h"
 
 #include "gr_Graphics.h"
 #include "gr_UnixGraphics.h"
@@ -291,7 +297,6 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	m_pClipboard->clear();
 	
 	{
-#if 0
 		// put raw 8bit text on the clipboard
 		
 		IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
@@ -323,6 +328,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
 		}
 
+#if 0
 		// also put our format on the clipboard
 		
 		IE_Exp_AbiWord_1 * pExpAbw = new IE_Exp_AbiWord_1(pDocRange->m_pDoc);
@@ -369,14 +375,20 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange)
 			goto MyEnd;
 		}
 #endif
-#if 0
+
 		if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
 		{
-			// TODO
-			UT_DEBUGMSG(("PasteFromClipboard: TODO paste RTF\n"));
+			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_RTF);
+			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
+			unsigned char * pData = new unsigned char[iLen+1];
+			memset(pData,0,iLen+1);
+			m_pClipboard->getData(AP_CLIPBOARD_RTF,pData);
+			IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
+			pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
+			DELETEP(pImpRTF);
+			DELETEP(pData);
 			goto MyEnd;
 		}
-#endif
 
 		if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		{
