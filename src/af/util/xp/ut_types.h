@@ -63,7 +63,7 @@ typedef signed short        UT_sint16;
 typedef unsigned int		UT_uint32;
 typedef signed int		    UT_sint32;
 
-#ifdef  WIN32
+#if defined(WIN32) && !defined(__GNUC__)
 typedef DWORDLONG           UT_uint64;
 typedef LONGLONG            UT_sint64;
 #else
