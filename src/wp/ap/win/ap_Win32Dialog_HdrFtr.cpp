@@ -30,7 +30,7 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_HdrFtr.h"
@@ -112,7 +112,8 @@ BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_LBL_SECTION, bRestart);
 	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, bRestart);
 	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, bRestart);
-
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 	return 1;
 }
 

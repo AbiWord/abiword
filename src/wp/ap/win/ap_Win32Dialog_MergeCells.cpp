@@ -60,7 +60,11 @@ AP_Win32Dialog_MergeCells::AP_Win32Dialog_MergeCells(XAP_DialogFactory * pDlgFac
 }   
     
 AP_Win32Dialog_MergeCells::~AP_Win32Dialog_MergeCells(void)
-{
+{	
+	if (m_hBitmapRight) DeleteObject(m_hBitmapRight);		
+	if (m_hBitmapAbove) DeleteObject(m_hBitmapAbove);		
+	if (m_hBitmapLeft) DeleteObject(m_hBitmapLeft);		
+	if (m_hBitmapBelow) DeleteObject(m_hBitmapBelow);		
 }
 
 void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)

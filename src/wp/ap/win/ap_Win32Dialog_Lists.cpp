@@ -40,6 +40,7 @@
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32Dlg_FontChooser.h"
+#include "xap_Win32DialogHelper.h"
 
 #ifdef _MSC_VER
 // MSVC++ warns about using 'this' in initializer list.
@@ -136,6 +137,8 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 			SendMessage(hWndSpin, UDM_SETRANGE, 0L, range);
 		}
 	}
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
@@ -212,6 +215,8 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists, this);
 	m_bDestroy_says_stopupdating = false;
 	m_pAutoUpdateLists->set(500);	// auto-updater at 1/2 Hz
+	
+	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
