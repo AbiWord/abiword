@@ -192,7 +192,7 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 		LOGFONT lf;
 		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
-		lf.lfHeight = (lf.lfHeight * 100.0)/getZoomPercentage();
+		lf.lfHeight = (abs(lf.lfHeight) * 100.0)/getZoomPercentage();
 		m_pFontGUI = new GR_Win32Font(lf);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
@@ -236,7 +236,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	// we need to get the size in logpixels for the current DC, which
 	// simply means to divide points by 72 and multiply by device Y resolution
 	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
-	lf.lfHeight = MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);		
+	lf.lfHeight = abs(MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72));		
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
