@@ -5759,6 +5759,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 
 		// tell that we are parsing headers and footers
 		m_parsingHdrFtr = true;
+		m_newParaFlagged = true;
 		_parseFile (NULL);
 		m_parsingHdrFtr = false;
 	}
@@ -5901,8 +5902,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					attribs[attribsCount++] = NULL;
 					attribs[attribsCount]   = NULL;
 				}
-				else 
+				else if(0)
 				{
+					// TODO: Why is this code here? It left over from before the BasedOn array
 					char * val = (char *)m_styleTable.getNthItem(parameter);
 					if (val != NULL)
 					{
@@ -5929,6 +5931,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				}
 				else if(parameter < styleNumber)
 				{
+					// TODO: Why is this code here? It left over from before the FollowedBy array
 					char * val = (char *)m_styleTable.getNthItem(parameter);
 					if (val != NULL)
 					{
