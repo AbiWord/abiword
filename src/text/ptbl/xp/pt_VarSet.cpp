@@ -227,7 +227,29 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// one and the a/p given in the args.  we then use it
 			// to find an existing match or use the new one.
 			
-			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties);
+			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, UT_FALSE);
+			if (!pNew)
+				return UT_FALSE;
+
+			pNew->markReadOnly();
+			return addIfUniqueAP(pNew,papiNew);
+		}
+
+	case PTC_AddStyle:
+		{
+			if (!papOld->hasProperties() && 
+				papOld->areAlreadyPresent(attributes,properties))
+			{
+				*papiNew = apiOld;
+				return UT_TRUE;
+			}
+
+			// create a new AP that is the merger of the existing
+			// one (with its props cleared) and the a/p given in 
+			// the args.  we then use it to find an existing match 
+			// or use the new one.
+			
+			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, UT_TRUE);
 			if (!pNew)
 				return UT_FALSE;
 

@@ -40,6 +40,7 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
 #include "gr_Graphics.h"
@@ -944,12 +945,24 @@ void FV_View::insertParagraphBreak(void)
 
 UT_Bool FV_View::setStyle(const XML_Char * style)
 {
-	// TODO: lookup this pStyle
-	// TODO: if block-level, then apply to each block in selection
-	// TODO: else, apply to each frag in span
-
 	UT_Bool bRet;
 
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+		{
+			posStart = m_iSelectionAnchor;
+		}
+		else
+		{
+			posEnd = m_iSelectionAnchor;
+		}
+	}
+
+	// lookup the current style
 	PD_Style * pStyle = NULL;
 	m_pDoc->getStyle(style, &pStyle);
 	if (!pStyle)
@@ -958,59 +971,31 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 		return UT_FALSE;
 	}
 
+	UT_Bool bCharStyle = pStyle->isCharStyle();
+
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
 
-	UT_Bool bCharStyle = UT_FALSE /* pStyle->isCharStyle() */;
-
-	// TODO: condense these some more
 	if (bCharStyle)
 	{
+		// set character-level style
 		if (isSelectionEmpty())
 		{
 			_eraseInsertionPoint();
 		}
 
-		PT_DocPosition posStart = getPoint();
-		PT_DocPosition posEnd = posStart;
-
-		if (!isSelectionEmpty())
-		{
-			if (m_iSelectionAnchor < posStart)
-			{
-				posStart = m_iSelectionAnchor;
-			}
-			else
-			{
-				posEnd = m_iSelectionAnchor;
-			}
-		}
-
 		_eraseSelection();
 		
-		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,attribs,NULL);
+		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
 	}
 	else
 	{
+		// set block-level style
 		_clearPointAP(UT_TRUE);
 		_eraseInsertionPoint();
 
-		PT_DocPosition posStart = getPoint();
-		PT_DocPosition posEnd = posStart;
-
-		if (!isSelectionEmpty())
-		{
-			if (m_iSelectionAnchor < posStart)
-			{
-				posStart = m_iSelectionAnchor;
-			}
-			else
-			{
-				posEnd = m_iSelectionAnchor;
-			}
-		}
-
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,NULL,PTX_Block);
+		// NB: clear explicit props at both block and char levels
+		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
 	}
 
 	_generalUpdate();
@@ -1039,11 +1024,6 @@ static const XML_Char * x_getStyle(const PP_AttrProp * pAP, UT_Bool bBlock)
 
 UT_Bool FV_View::getStyle(const XML_Char ** style)
 {
-	// TODO: walk over selection, figuring out block and char-level styles
-	// TODO: if char-level conflict, use block
-	// TODO: if block-level conflict, use nothing
-	// TODO: if not explicit, assume "Normal"
-
 	UT_Bool bCharStyle = UT_FALSE;
 	const XML_Char * szChar = NULL;
 	const XML_Char * szBlock = NULL;

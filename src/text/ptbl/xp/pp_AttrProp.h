@@ -60,12 +60,14 @@ public:
 	UT_Bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
 	UT_Bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
 
+	UT_Bool hasProperties(void) const;
 	UT_Bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
 	UT_Bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
 	UT_Bool isExactMatch(const PP_AttrProp * pMatch) const;
 
 	PP_AttrProp * cloneWithReplacements(const XML_Char ** attributes,
-										const XML_Char ** properties) const;
+										const XML_Char ** properties,
+										UT_Bool bClearProps) const;
 	PP_AttrProp * cloneWithElimination(const XML_Char ** attributes,
 									   const XML_Char ** properties) const;
 	void markReadOnly(void);

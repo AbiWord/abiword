@@ -96,7 +96,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 {
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	// apply a strux-level formating change to the given region.
+	// apply a strux-level formatting change to the given region.
 
 	UT_ASSERT(dpos1 <= dpos2);
 	UT_Bool bHaveAttributes = (attributes && *attributes);

@@ -308,7 +308,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 {
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	// apply a span-level formating change to the given region.
+	// apply a span-level formatting change to the given region.
 
 	if (dpos1 == dpos2)
 	{

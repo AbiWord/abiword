@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include "ut_string.h"
 #include "pd_Style.h"
 #include "pt_PieceTable.h"
 
@@ -36,7 +37,7 @@ UT_Bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 {
 	UT_ASSERT(indexAP != m_indexAP);
 
-	// TODO: may need to rebind, handle undo, etc.
+	// TODO: may need to rebind, handle undo, clear caches, etc.
 
 	m_indexAP = indexAP;
 
@@ -53,6 +54,16 @@ UT_Bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue
 		return pAP->getProperty(szName, szValue);
 }
 
+UT_Bool PD_Style::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
+{
+	const PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+		return UT_FALSE;
+	else
+		return pAP->getAttribute(szName, szValue);
+}
+
 UT_Bool PD_Style::isUsed(void) const
 {
 	// TODO: we need some way of refcounting
@@ -60,6 +71,51 @@ UT_Bool PD_Style::isUsed(void) const
 
 	// for now, we cheat
 	return isUserDefined();
+}
+
+UT_Bool PD_Style::isCharStyle(void) const
+{
+	// TODO: cache this too  
+
+	const XML_Char * szValue = NULL;
+	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
+		if (szValue && szValue[0])
+			return !UT_stricmp(szValue, "c");
+
+	// default: no
+	return UT_FALSE;
+}
+
+PD_Style * PD_Style::getBasedOn(void)
+{
+	if (m_pBasedOn)
+		return m_pBasedOn;
+
+	const XML_Char * szStyle;
+
+	if (getAttribute(PT_BASEDON_ATTRIBUTE_NAME, szStyle))
+		if (szStyle && szStyle[0])
+			m_pPT->getStyle(szStyle, &m_pBasedOn);
+
+	// NOTE: we silently fail if style is referenced, but not defined
+
+	return m_pBasedOn;
+}
+
+PD_Style * PD_Style::getFollowedBy(void)
+{
+	if (m_pFollowedBy)
+		return m_pFollowedBy;
+
+	const XML_Char * szStyle;
+
+	if (getAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, szStyle))
+		if (szStyle && szStyle[0])
+			m_pPT->getStyle(szStyle, &m_pFollowedBy);
+
+	// NOTE: we silently fail if style is referenced, but not defined
+
+	return m_pFollowedBy;
 }
 
 //////////////////////////////////////////////////////////////////

@@ -133,6 +133,9 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	return pStyle;
 }
 
+// make sure we don't get caught in a BASEDON loop
+#define pp_BASEDON_DEPTH_LIMIT	10
+
 const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
@@ -172,8 +175,16 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		if (bExpandStyles)
 		{
 			pStyle = _getStyle(pSpanAttrProp, pDoc);
-			if (pStyle && pStyle->getProperty(pProp->getName(), szValue))
-				return szValue;
+
+			int i = 0;
+			while (pStyle && (i < pp_BASEDON_DEPTH_LIMIT))
+			{
+				if (pStyle->getProperty(pProp->getName(), szValue))
+					return szValue;
+
+				pStyle = pStyle->getBasedOn();
+				i++;
+			}
 		}
 	}
 
@@ -189,8 +200,16 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 			if (bExpandStyles)
 			{
 				pStyle = _getStyle(pBlockAttrProp, pDoc);
-				if (pStyle && pStyle->getProperty(pProp->getName(), szValue))
-					return szValue;
+
+				int i = 0;
+				while (pStyle && (i < pp_BASEDON_DEPTH_LIMIT))
+				{
+					if (pStyle->getProperty(pProp->getName(), szValue))
+						return szValue;
+
+					pStyle = pStyle->getBasedOn();
+					i++;
+				}
 			}
 		}
 

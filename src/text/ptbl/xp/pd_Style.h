@@ -40,14 +40,21 @@ public:
 	UT_Bool						setIndexAP(PT_AttrPropIndex indexAP);
 
 	UT_Bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
+	UT_Bool					getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
+	
+	PD_Style *				getBasedOn(void);
+	PD_Style *				getFollowedBy(void);
 
 	virtual UT_Bool			isUserDefined(void) const { return UT_TRUE; };
 	UT_Bool					isUsed(void) const;
+	UT_Bool					isCharStyle(void) const;
 
 protected:
+
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;
 
+	// lazily-bound attribute caches to speed lookups
 	PD_Style *				m_pBasedOn;
 	PD_Style *				m_pFollowedBy;
 };

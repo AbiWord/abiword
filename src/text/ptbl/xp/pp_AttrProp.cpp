@@ -263,6 +263,14 @@ UT_Bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szV
 	return UT_TRUE;
 }
 
+UT_Bool PP_AttrProp::hasProperties(void) const
+{
+	if (!m_pProperties)
+		return UT_FALSE;
+
+	return (m_pProperties->getEntryCount() > 0);
+}
+
 UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
 {
 	// return TRUE if each attribute and property is already present
@@ -410,7 +418,8 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 }
 
 PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
-												 const XML_Char ** properties) const
+												 const XML_Char ** properties,
+												 UT_Bool bClearProps) const
 {
 	// create a new AttrProp based upon the given one
 	// and adding or replacing the items given.
@@ -449,12 +458,15 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 				goto Failed;
 	}
 
-	k = 0;
-	while (getNthProperty(k++,n,v))
+	if (!bClearProps)
 	{
-		if (!papNew->getProperty(n,vNew))
-			if (!papNew->setProperty(n,v))
-				goto Failed;
+		k = 0;
+		while (getNthProperty(k++,n,v))
+		{
+			if (!papNew->getProperty(n,vNew))
+				if (!papNew->setProperty(n,v))
+					goto Failed;
+		}
 	}
 
 	return papNew;
