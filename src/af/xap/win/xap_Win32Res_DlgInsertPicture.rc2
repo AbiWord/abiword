@@ -47,7 +47,7 @@ BEGIN
                     SS_SUNKEN | SS_CENTER | SS_CENTERIMAGE 
     CONTROL         "Preview Image", XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
 	                "Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-					111,15,63,10
+					111,15,120,10
     LTEXT           "Height",XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
 	                133,32,50,8,
 					NOT WS_VISIBLE
