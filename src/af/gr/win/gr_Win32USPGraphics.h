@@ -124,7 +124,7 @@ public:
 	bool      _constructorCommonCode();
 	virtual GR_Win32Font * _newFont(LOGFONT & lf);
 
-	void   _setupFontOnDC(GR_Win32USPFont *pFont);
+	void   _setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe);
 
 	UT_uint32 m_iDCFontAllocNo;
 	bool   m_bConstructorSucceeded;

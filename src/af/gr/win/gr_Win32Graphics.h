@@ -42,6 +42,7 @@ public:
 	UT_uint32	getAscent()  const { return m_tm.tmAscent; }
 	UT_uint32	getDescent() const { return m_tm.tmDescent; }
 	UT_uint32	getHeight()  const { return m_tm.tmHeight; }
+	UT_uint32   getUnscaledHeight() const { return m_iHeight;}
 
 	HFONT       getDisplayFont(GR_Graphics * pGr);
 
@@ -82,6 +83,8 @@ protected:
 	// it is prinicipally intened to be used when we share fonts between screen and
 	// printer 
 	virtual void _clearAnyCachedInfo() {};
+
+public:
 	HFONT        getFontFromCache(UT_uint32 pixelsize, bool bIsLayout,
 								  UT_uint32 zoomPercentage) const;
 

@@ -516,11 +516,21 @@ void GR_Win32USPGraphics::setFont(GR_Font* pFont)
 		m_iFontAllocNo = 0;
 }
 
-void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont)
+void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 {
 	UT_return_if_fail( pFont );
 
-	HFONT hFont = pFont->getDisplayFont(this);
+	bool bDontScale = pFont->isFontGUI() || !bZoomMe;
+	
+	UT_uint32 zoom = bDontScale ? 100 : getZoomPercentage();
+	UT_uint32 pixels = bDontScale ? pFont->getUnscaledHeight() : pFont->getUnscaledHeight()*zoom/100;
+		
+	HFONT hFont = pFont->getFontFromCache(pixels, false, zoom);
+	if (!hFont)
+	{
+		pFont->fetchFont(pixels);
+		hFont = pFont->getFontFromCache(pixels, false, zoom);
+	}
 	
 	if(pFont->getAllocNumber() != m_iDCFontAllocNo ||
 	   (HFONT) GetCurrentObject(m_hdc, OBJ_FONT) != hFont)
@@ -739,7 +749,8 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	{
 		// need to make sure that the HDC has the correct font set
 		// so that ScriptShape measures it correctly for the cache
-		_setupFontOnDC(pFont);
+		// we do not want to scale the font for this
+		_setupFontOnDC(pFont, false);
 		hdc = m_hdc;
 	}
 
@@ -756,7 +767,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	{
 		UT_ASSERT_HARMLESS( hdc == 0 );
 
-		_setupFontOnDC(pFont);
+		_setupFontOnDC(pFont, false);
 		hdc = m_hdc;
 		hRes = fScriptShape(hdc, pFont->getScriptCache(), pInChars, si.m_iLength,
 							iGlyphBuffSize, & pItem->m_si.a, pGlyphs,
@@ -1087,7 +1098,8 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	}
 
 	// need to make sure that the HDC has the correct font set
-	_setupFontOnDC(pFont);
+	// we scale this font
+	_setupFontOnDC(pFont, true);
 	
 	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : NULL;
 	
@@ -1141,6 +1153,9 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			RI.m_pGoffsets = new GOFFSET[RI.m_iIndicesSize];
 
 	UT_uint32 iZoom = getZoomPercentage();
+	
+#if 0
+	// the script cache is always containing data for 100% zoom, we scale widths manually later
 	if(iZoom != RI.m_iZoom)
 	{
 		// the zoom factor has changed; make sure we invalidate the cache
@@ -1150,12 +1165,13 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			*(pFont->getScriptCache()) = NULL;
 		}
 	}
-
+#endif
 	HDC hdc = 0;
 	if(*(pFont->getScriptCache()) == NULL)
 	{
 		// need to make sure that the HDC has the correct font set
-		_setupFontOnDC(pFont);
+		// we do not scale the font by zoom
+		_setupFontOnDC(pFont, false);
 		hdc = m_hdc;
 	}
 	
@@ -1171,7 +1187,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	if( hRes == E_PENDING)
 	{
 		UT_ASSERT_HARMLESS( hdc == 0 );
-		_setupFontOnDC(pFont);
+		_setupFontOnDC(pFont, false);
 		hdc = m_hdc;
 		
 		hRes = fScriptPlace(hdc, pFont->getScriptCache(), RI.m_pIndices,
@@ -1200,12 +1216,16 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	// now convert the whole lot to layout units
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
-		RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
+		// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
+		RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/(double)getDeviceResolution());
 	}
 
-	RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
-	RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
-	RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
+	//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
+	//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
+	//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
+	RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution() / (double)getDeviceResolution());
+	RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution() / (double)getDeviceResolution());
+	RI.m_ABC.abcC = (UT_sint32)((double) RI.m_ABC.abcC * (double)getResolution() / (double)getDeviceResolution());
 
 	RI.m_bRejustify = true;
 	
@@ -1805,7 +1825,7 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 	// need to make sure that the HDC has the correct font set
 	// so that ScriptShape measures it correctly for the cache
 	GR_Win32USPFont * pFont = static_cast<GR_Win32USPFont *>(m_pFont);
-	_setupFontOnDC(pFont);
+	_setupFontOnDC(pFont, true);
 	
 	HRESULT hRes = fScriptStringAnalyse(m_hdc, pwChars, iLength, iLength*3/2 + 1,
 						-1, flags, 0, NULL, NULL, NULL, NULL, NULL, &SSA);
