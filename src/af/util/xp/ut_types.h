@@ -45,7 +45,12 @@ typedef char XML_Char;
 typedef unsigned char		UT_Byte;
 typedef unsigned short		UT_UCSChar;	/* Unicode */
 
+typedef unsigned char           UT_uint8;
+typedef signed char             UT_sint8;
+
 typedef unsigned short		UT_uint16;
+typedef signed short            UT_sint16;
+
 typedef unsigned int		UT_uint32;
 typedef signed int		UT_sint32;
 
@@ -68,14 +73,6 @@ typedef signed int		UT_sint32;
 #define ABI_FAR_CALL ABI_CALL ABI_PLUGIN_EXPORT
 
 #define _abi_callonce /* only call me once! */
-
-/*
-	TODO we currently use plain old C 'int' all over the place.
-	For many applications, this is inappropriate, and we should change
-	them to UT_sint32.  Also, there are places where we are
-	using it as a bool, and there are places where we are using it as
-	an error code.
-*/
 
 /*
 	UT_Error should be used far more than it is.  Any function
