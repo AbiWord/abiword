@@ -92,22 +92,12 @@ BuildRequires: fontconfig-devel
 
 # Requirements for GNOME build
 %if %{enable_gnome}
-#Requires: gnome-libs >= 1.0.57
-#Requires: gal >= 0.8
-#Requires: gnome-print >= 0.29
-#Requires: gnome-vfs
-#Requires: bonobo
-Requires: gal >= 0.23
+Requires: gal >= 1.99
 Requires: libbonobo >= 2.2.0
 Requires: libgnomeui >= 2.2.0
 Requires: libgnomeprint22 >= 2.2.0
 Requires: libgnomeprintui22 >= 2.2.0
-#BuildRequires: gnome-libs-devel
-#BuildRequires: gal-devel
-#BuildRequires: gnome-print-devel
-#BuildRequires: gnome-vfs-devel
-#BuildRequires: bonobo-devel
-BuildRequires: gal-devel >= 0.23
+BuildRequires: gal-devel >= 1.99
 BuildRequires: libbonobo-devel >= 2.2.0
 BuildRequires: libgnomeui-devel >= 2.2.0
 BuildRequires: libgnomeprint22-devel >= 2.2.0
@@ -174,16 +164,6 @@ bzipped AbiWord, and (x)html document formats.  Additionally, it adds support
 for certain image types to AbiWord builds that were not gnome-enabled.
 %endif
 
-#%if !%{enable_xft}
-#%package fonts
-#Summary: AbiWord Fonts
-#Group: Applications/Productivity
-#Epoch: 1
-#
-#%description fonts
-#These are the basic fonts used by AbiWord.
-#%endif
-
 %package clipart
 Summary: AbiWord Clipart
 Group: Applications/Productivity
@@ -204,7 +184,6 @@ This is the clipart portfolio used by AbiWord.
 %if %{enable_tools} || %{enable_impexp}
 cd ../abiword-plugins
 ./nextgen.sh
-##%configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/%{AbiSuite} --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
 %configure --prefix=%{_prefix} --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
 %__make
 
@@ -223,10 +202,6 @@ cd ../abi
 %__make DESTDIR=$RPM_BUILD_ROOT install
 
 # Manual fixes to Abi package
-%__rm -f %{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
-# Fixes Abi start script and creates links
-# %__perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT/%{_bindir}/AbiWord-2.0
-# %__cp -f $RPM_BUILD_ROOT/%{_bindir}/AbiWord-2.0 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.0
 %__ln_s -f %{_bindir}/AbiWord-2.0 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.0
 
 # Creates GNOME menu entries
@@ -240,14 +215,11 @@ cd ../abi
 #%__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/oaf
 #%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{_datadir}/oaf
 #%__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui
-#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui/
+#%__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/abi-nautilus-view-file.xml $RPM_BUILD_ROOT/%{_datadir}/gnome-2.0/ui/ ???
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
 %__mv $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/GNOME_AbiWord_Control_2_0.server $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers/
 
 # Fix for wrong file rights on fonts,icons,clipart
-#%if !%{enable_xft}
-#%__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/fonts/*
-#%endif
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/icons/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/clipart/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
@@ -257,7 +229,9 @@ cd ../abi
 #%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/Nautilus_View_AbiWord.oaf
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
 %__rm -f $RPM_BUILD_ROOT/%{_bindir}/abiword
-%__rm -f %{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
+
+%__rm -f $RPM_BUILD_ROOT/%{_libdir}/%{AbiWord}/plugins/*.la
+%__rm -f $RPM_BUILD_ROOT/%{_libdir}/%{AbiWord}/plugins/*.a
 
 %clean
 %__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
@@ -268,6 +242,8 @@ cd ../abi
 %{_libdir}/*
 %{_datadir}/%{AbiSuite}/AbiWord/scripts/*
 %defattr(644,root,root,755)
+%{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
+%{_datadir}/%{AbiSuite}/abi-nautilus-view-file.xml
 #%{_datadir}/%{AbiSuite}/COPYING
 %{_datadir}/%{AbiSuite}/README
 %{_datadir}/%{AbiSuite}/AbiWord/readme.txt
@@ -295,69 +271,60 @@ cd ../abi
 %files plugins-tools
 %defattr(644,root,root,755)
 # comment if not working
-%{_libdir}/%{AbiWord}/plugins/libAbiCommand.*
+%{_libdir}/%{AbiWord}/plugins/libAbiCommand.so
 #%{_libdir}/%{AbiWord}/plugins/libAbiAikSaurus.so
-%{_libdir}/%{AbiWord}/plugins/libAbiBabelfish.*
-%{_libdir}/%{AbiWord}/plugins/libAbiFreeTranslation.*
-%{_libdir}/%{AbiWord}/plugins/libAbiGdict.*
-%{_libdir}/%{AbiWord}/plugins/libAbiGimp.*
-%{_libdir}/%{AbiWord}/plugins/libAbiGoogle.*
-%{_libdir}/%{AbiWord}/plugins/libAbiURLDict.*
-%{_libdir}/%{AbiWord}/plugins/libAbiWikipedia.*
-%{_libdir}/%{AbiWord}/plugins/libAbiReferee.*
-%{_libdir}/%{AbiWord}/plugins/libAbiScriptHappy.*
+%{_libdir}/%{AbiWord}/plugins/libAbiBabelfish.so
+%{_libdir}/%{AbiWord}/plugins/libAbiFreeTranslation.so
+%{_libdir}/%{AbiWord}/plugins/libAbiGdict.so
+%{_libdir}/%{AbiWord}/plugins/libAbiGimp.so
+%{_libdir}/%{AbiWord}/plugins/libAbiGoogle.so
+%{_libdir}/%{AbiWord}/plugins/libAbiURLDict.so
+%{_libdir}/%{AbiWord}/plugins/libAbiWikipedia.so
+%{_libdir}/%{AbiWord}/plugins/libAbiReferee.so
+%{_libdir}/%{AbiWord}/plugins/libAbiScriptHappy.so
 %endif
 
 %if %{enable_impexp}
 %files plugins-impexp
 %defattr(644,root,root,755)
-%{_libdir}/%{AbiWord}/plugins/libAbiApplix.*
-%{_libdir}/%{AbiWord}/plugins/libAbiBMP.*
-%{_libdir}/%{AbiWord}/plugins/libAbiBZ2.*
-%{_libdir}/%{AbiWord}/plugins/libAbiClarisWorks.*
-%{_libdir}/%{AbiWord}/plugins/libAbiCoquille.*
-%{_libdir}/%{AbiWord}/plugins/libAbiDocBook.*
-%{_libdir}/%{AbiWord}/plugins/libAbiEML.*
-%{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.*
-%{_libdir}/%{AbiWord}/plugins/libAbiHancom.*
-%{_libdir}/%{AbiWord}/plugins/libAbiHRText.*
-#%{_libdir}/%{AbiWord}/plugins/libAbiHTML.*
-%{_libdir}/%{AbiWord}/plugins/libAbiISCII.*
-%{_libdir}/%{AbiWord}/plugins/libAbiJPEG.*
-%{_libdir}/%{AbiWord}/plugins/libAbiKWord.*
-%{_libdir}/%{AbiWord}/plugins/libAbiLaTeX.*
-%{_libdir}/%{AbiWord}/plugins/libAbiMIF.*
-%{_libdir}/%{AbiWord}/plugins/libAbiMSWrite.*
-%{_libdir}/%{AbiWord}/plugins/libAbiNroff.*
+%{_libdir}/%{AbiWord}/plugins/libAbiApplix.so
+%{_libdir}/%{AbiWord}/plugins/libAbiBMP.so
+%{_libdir}/%{AbiWord}/plugins/libAbiBZ2.so
+%{_libdir}/%{AbiWord}/plugins/libAbiClarisWorks.so
+%{_libdir}/%{AbiWord}/plugins/libAbiCoquille.so
+%{_libdir}/%{AbiWord}/plugins/libAbiDocBook.so
+%{_libdir}/%{AbiWord}/plugins/libAbiEML.so
+%{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.so
+%{_libdir}/%{AbiWord}/plugins/libAbiHancom.so
+%{_libdir}/%{AbiWord}/plugins/libAbiHRText.so
+#%{_libdir}/%{AbiWord}/plugins/libAbiHTML.so
+%{_libdir}/%{AbiWord}/plugins/libAbiISCII.so
+%{_libdir}/%{AbiWord}/plugins/libAbiJPEG.so
+%{_libdir}/%{AbiWord}/plugins/libAbiKWord.so
+%{_libdir}/%{AbiWord}/plugins/libAbiLaTeX.so
+%{_libdir}/%{AbiWord}/plugins/libAbiMIF.so
+%{_libdir}/%{AbiWord}/plugins/libAbiMSWrite.so
+%{_libdir}/%{AbiWord}/plugins/libAbiNroff.so
 %{_libdir}/%{AbiWord}/plugins/libAbiOpenWriter.so
-%{_libdir}/%{AbiWord}/plugins/libAbiPW.*
-%{_libdir}/%{AbiWord}/plugins/libAbiPalmDoc.*
-%{_libdir}/%{AbiWord}/plugins/libAbiRSVG.*
+%{_libdir}/%{AbiWord}/plugins/libAbiPW.so
+%{_libdir}/%{AbiWord}/plugins/libAbiPalmDoc.so
+%{_libdir}/%{AbiWord}/plugins/libAbiRSVG.so
 %{_libdir}/%{AbiWord}/plugins/libAbiSDW.so
-%{_libdir}/%{AbiWord}/plugins/libAbiT602.*
-%{_libdir}/%{AbiWord}/plugins/libAbiWML.*
-#%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.*
-%{_libdir}/%{AbiWord}/plugins/libAbiXHTML.*
-%{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.*
+%{_libdir}/%{AbiWord}/plugins/libAbiT602.so
+%{_libdir}/%{AbiWord}/plugins/libAbiWML.so
+#%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.so
+%{_libdir}/%{AbiWord}/plugins/libAbiXHTML.so
+%{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.so
 %endif
 
 %files clipart
 %defattr(644,root,root,755)
 %{_datadir}/%{AbiSuite}/clipart
 
-#%if !%{enable_xft}
-#%files fonts
-#%defattr(644,root,root,755)
-#%config(noreplace) %{_datadir}/%{AbiSuite}/fonts/fonts.dir
-#%config(noreplace) %{_datadir}/%{AbiSuite}/fonts/fonts.scale
-#%{_datadir}/%{AbiSuite}/fonts/*.afm
-#%{_datadir}/%{AbiSuite}/fonts/*.pfa
-#%{_datadir}/%{AbiSuite}/fonts/*.pfb
-#%{_datadir}/%{AbiSuite}/fonts/*.e2u
-#%{_datadir}/%{AbiSuite}/fonts/*.u2g
-#%endif
-
 %changelog
+* Wed Apr 16 2003 Rui M. Seabra <rms@1407.org>
+- Remove unecessary comments
+
 * Fri Feb 28 2003 Rui M. Seabra <rms@1407.org>
 - adapt to new installation changes
 
