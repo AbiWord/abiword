@@ -117,8 +117,8 @@ void AP_QNXDialog_ListRevisions::event_ok()
   PtGetResource(m_lstRevision,Pt_ARG_ITEMS,&items,0);
   PtGetResource(m_lstRevision,Pt_ARG_SELECTION_INDEXES,&selection,0);
   if(selection && *selection) {
-  m_id=atoi(items[*selection]); 
-  }else m_id = 0;
+  m_iId=atoi(items[*selection]); 
+  }else m_iId = 0;
 
 m_answer=a_OK;
 done=1;
@@ -173,11 +173,13 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
   for(UT_uint32 i=0;i < getItemCount();i++)
     {
 	char text[150];
+	char *tmp[1];
 	char *str=getNthItemText(i);
 	sprintf(text,"%d\t",getNthItemId(i));
 	strncat(text,str,140);
+	tmp[0] =text;
 	FREEP(str);
-	PtListAddItems(lstRevisions,(const char **)&text,1,0);
+	PtListAddItems(lstRevisions,(const char **)&tmp,1,0);
       }
 
 	PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);

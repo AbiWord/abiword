@@ -64,13 +64,11 @@ return Pt_CONTINUE;
 
 void AP_QNXDialog_MarkRevisions::event_OK()
 {
-  if(PtWidgetFlags(m_toggle2) & Pt_SET)
-  {
-   char *text;
-    PtGetResource(m_text1,Pt_ARG_TEXT_STRING,&text,0);
-    setComment2(text);
-  }
+char *text;
+
 m_answer= a_OK;
+PtGetResource(m_text1,Pt_ARG_TEXT_STRING,&text,0);
+setComment2(text);
 done=1;
 }
 
@@ -191,47 +189,22 @@ PtWidget_t *text1;
 PtWidget_t *label1,*label2;
 
 const XAP_StringSet *pSS = m_pApp->getStringSet();
-int n=0;
-PtArg_t args[10];
 
 
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,getTitle(),0);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);    
-	mainwindow = PtCreateWidget( PtWindow,Pt_DEFAULT_PARENT,n, args);
+	mainwindow = abiCreatePhabDialog("ap_QNXDialog_MarkRevisions",(char *)getTitle()); 
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
-	n=0;
+	toggle1= abiPhabLocateWidget(mainwindow,"toggleContinue"); 
+	toggle2 = abiPhabLocateWidget(mainwindow,"toggleNew");  
+	label2 = abiPhabLocateWidget(mainwindow,"lblNewName"); 
+	text1 =abiPhabLocateWidget(mainwindow,"textName");  
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,8,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-	toggle1=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args );
-	n=0;
-	label1 = PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT,n,args);
-	n=0;
-	PtCreateWidget( PtSeparator, Pt_DEFAULT_PARENT,n,args);
-	n=0;
 
-	toggle2=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args );
-	n=0;
-	label2 =PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT,n,args);
-	n=0;
-	text1=PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
-	n=0;
-	PtCreateWidget( PtSeparator, Pt_DEFAULT_PARENT,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-		PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);		
-		btnOk=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
-		n=0;
-		PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
-		btnCancel=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
+	btnOk = abiPhabLocateWidget(mainwindow,"btnOK");
+	PtSetResource(btnOk,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);		
+	btnCancel = abiPhabLocateWidget(mainwindow,"btnCancel");
+	PtSetResource(btnCancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
 
 	char *pStr = getRadio1Label(); 
 	if(pStr){
@@ -246,14 +219,15 @@ PtArg_t args[10];
 	  //Disable edit box.	  
 	  PtSetResource(text1,Pt_ARG_FLAGS,Pt_TRUE,Pt_GHOST|Pt_BLOCKED);
 	}else { //There are no revisions in this doc yet, so everything is ghosted except edit control.
-	PtSetResource(toggle1,Pt_ARG_FLAGS,Pt_TRUE,Pt_GHOST|Pt_BLOCKED);
-	PtSetResource(toggle2,Pt_ARG_FLAGS,Pt_TRUE,Pt_GHOST|Pt_BLOCKED);
-	PtSetResource(label1,Pt_ARG_FLAGS,Pt_TRUE,Pt_GHOST|Pt_BLOCKED);
-
+	PtSetResource(toggle1,Pt_ARG_FLAGS,Pt_TRUE,Pt_DELAY_REALIZE);
+	PtSetResource(toggle2,Pt_ARG_FLAGS,Pt_TRUE,Pt_DELAY_REALIZE);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"seperator"),Pt_ARG_FLAGS,Pt_TRUE,Pt_DELAY_REALIZE);
       }
-PtSetResource(label2,Pt_ARG_TEXT_STRING,getComment2Label(),0);
+
+      PtSetResource(label2,Pt_ARG_TEXT_STRING,getComment2Label(),0);
 
       PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);
+      PtAddCallback(text1,Pt_CB_ACTIVATE,ph_event_ok,this);
       PtAddCallback(btnCancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
       PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
       PtAddCallback(toggle1,Pt_CB_ACTIVATE,ph_event_toggle_change,this);
