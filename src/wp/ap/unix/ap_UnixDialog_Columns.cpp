@@ -65,7 +65,9 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory,
         m_wpreviewArea = NULL;
 	m_wGnomeButtons = NULL;
         m_pPreviewWidget = NULL;
-
+#ifdef BIDI_ENABLED
+    m_checkOrder = NULL;
+#endif
 }
 
 AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
@@ -202,7 +204,10 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
         // Run into the GTK event loop for this window.
 
 	gtk_main();
-
+#ifdef BIDI_ENABLED
+	setColumnOrder (gtk_toggle_button_get_active(								
+				GTK_TOGGLE_BUTTON(m_checkOrder)));
+#endif
 	_storeWindowData();
 	DELETEP (m_pPreviewWidget);
 	
@@ -311,7 +316,6 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	_constructWindowContents(windowColumns);
 
 	// These buttons need to be gnomified
-
 	buttonOK = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_widget_show(buttonOK );
 	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
@@ -464,6 +468,17 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(wLineBtween );
 	gtk_box_pack_start (GTK_BOX (hbox2), wLineBtween, FALSE, FALSE, 3);
 
+#ifdef BIDI_ENABLED
+	GtkWidget *hbox6 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hbox6 );
+	gtk_box_pack_start (GTK_BOX (vbox1), hbox6, FALSE, FALSE, 0);
+	GtkWidget * checkOrder = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Column_RtlOrder));
+	gtk_widget_show (checkOrder);
+	gtk_box_pack_start (GTK_BOX (hbox6), checkOrder, FALSE, FALSE, 3);
+	gtk_toggle_button_set_active (										\
+				GTK_TOGGLE_BUTTON(checkOrder), getColumnOrder() );
+	m_checkOrder = checkOrder;
+#endif	
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 

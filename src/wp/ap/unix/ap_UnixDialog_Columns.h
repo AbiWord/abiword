@@ -178,6 +178,11 @@ protected:
 	guint m_oneHandlerID;
 	guint m_twoHandlerID;
 	guint m_threeHandlerID;
+	
+#ifdef BIDI_ENABLED
+    GtkWidget * m_checkOrder;
+#endif
+	
 };
 
 #endif /* AP_UnixDialog_Columns_H */

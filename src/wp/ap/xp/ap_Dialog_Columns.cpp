@@ -37,6 +37,7 @@ AP_Dialog_Columns::AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 	m_answer = a_OK;
 	m_pColumnsPreview = NULL;
 	m_bLineBetween = false;
+	m_iColumnOrder = 0;
 }
 
 AP_Dialog_Columns::~AP_Dialog_Columns(void)
@@ -72,6 +73,13 @@ void AP_Dialog_Columns::setColumns(UT_uint32 iColumns)
 
 	enableLineBetweenControl(m_iColumns != 1);
 }
+
+#ifdef BIDI_ENABLED
+void AP_Dialog_Columns::setColumnOrder(UT_uint32 iOrder)	
+{
+	m_iColumnOrder = iOrder;
+}
+#endif
 
 void AP_Dialog_Columns::setLineBetween(bool bState)
 {

@@ -82,6 +82,10 @@ public:
 	void							setLineBetween(bool bState);
 	bool							getLineBetween(void) const { return m_bLineBetween;}
 
+#ifdef BIDI_ENABLED
+	void							setColumnOrder(UT_uint32 iOrder);
+	UT_uint32						getColumnOrder(void) const {return m_iColumnOrder;}
+#endif
 	
 
 protected:
@@ -99,6 +103,9 @@ private:
 
 	UT_uint32						m_iColumns;
 	bool							m_bLineBetween;
+#ifdef BIDI_ENABLED
+	UT_uint32						m_iColumnOrder;
+#endif
 };
 
 #endif /* AP_Dialog_Columns_H */

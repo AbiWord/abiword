@@ -6155,7 +6155,17 @@ static bool s_doColumnsDlg(FV_View * pView)
 			bLineBetween = true;
 		}
 	}
-	
+
+#ifdef BIDI_ENABLED
+	UT_uint32 iOrder = 0;
+	if (props_in && props_in[0])
+		sz = UT_getAttribute("column-order", props_in);
+	if (sz)
+		iOrder = strcmp(sz, "ltr") ? 1 : 0;
+		
+	pDialog->setColumnOrder(iOrder);
+#endif	
+
 	pDialog->setColumns(iColumns);
 	pDialog->setLineBetween(bLineBetween);
 	pDialog->runModal(pFrame);
@@ -6178,6 +6188,24 @@ static bool s_doColumnsDlg(FV_View * pView)
 		{
 			strcpy(buf2, "off");
 		}
+		
+#ifdef BIDI_ENABLED
+		char buf3[4];
+		if(pDialog->getColumnOrder())
+			strcpy(buf3, "rtl");
+		else
+			strcpy(buf3, "ltr");
+#ifndef __MRC__
+		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, "column-order", buf3, 0};
+#else
+		const XML_Char * properties[] =	{ "columns", NULL, "column-line", NULL, "column-order", NULL, 0};
+		properties [1] = buf;
+		properties [3] = buf2;
+		properties [5] = buf3;
+#endif
+
+#else //not BIDI
+
 
 #ifndef __MRC__
 		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, 0};
@@ -6186,6 +6214,8 @@ static bool s_doColumnsDlg(FV_View * pView)
 		properties [1] = buf;
 		properties [3] = buf2;
 #endif
+#endif //not BIDI
+
 		pView->setSectionFormat(properties);
 	}
 

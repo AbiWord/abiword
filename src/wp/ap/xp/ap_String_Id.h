@@ -223,6 +223,9 @@ dcl(DLG_Column_One,				"One")
 dcl(DLG_Column_Two,				"Two")
 dcl(DLG_Column_Three,			"Three")
 dcl(DLG_Column_Line_Between,	"Line between")
+#ifdef BIDI_ENABLED
+dcl(DLG_Column_RtlOrder,		"Use RTL Order")
+#endif
 
 
 /* when translating these, the important thing to remember is to get a
