@@ -2986,7 +2986,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 				{
 					// two neutral characters in a row will have the same
 					// direction
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->weak\n"));
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: ntrl->ntrl (c=0x%04x)\n",
+								 pSpan[i]));
 					bIgnore = true;
 				}
 				else if(FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
@@ -2994,6 +2995,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					// we can ignore a neutral character following a
 					// strong one if it is followed by a strong
 					// character of identical type to the previous one
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->ntrl (c=0x%04x)\n",
+								 pSpan[i]));
 					
 					// take a peek at what follows
 					for(UT_uint32 j = i+1; j < trueLen; j++)
@@ -3008,7 +3011,6 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 						if(FRIBIDI_IS_STRONG(iNextType))
 							break;
 					}
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->weak\n"));
 					
 				}
 				else if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_STRONG(iType))
@@ -3021,14 +3023,15 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					{
 						bIgnore = true;
 					}
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->strong\n"));
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: ntrl->strong (c=0x%04x)\n",
+								 pSpan[i]));
 					
 				}
 				else
 				{
 					// two strong characters -- change cannot be
 					// ignored
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->strong\n"));
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: other (c=0x%04x)\n",pSpan[i]));
 					
 				}
 
