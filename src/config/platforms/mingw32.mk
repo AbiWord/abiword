@@ -24,9 +24,9 @@
 
 # Here for syntactic purposes.
 ##
-PLATFORM_FLAGS		=
+PLATFORM_FLAGS	=
 PORT_FLAGS		=
-OS_CFLAGS		= -fvtable-thunks  # required for compiling ole dragndrop
+OS_CFLAGS		= 
 ##
 
 # mingw doesn't like -ansi in compiling wv
@@ -53,7 +53,7 @@ GLIB_CONFIG=
 GTK_CONFIG=
 GNOME_CONFIG=
 LIBXML_CONFIG=
-
+OS_CFLAGS += -fvtable-thunks  # required for compiling ole dragndrop
 
 # Shared library flags
 MKSHLIB			= $(LD) --dll
