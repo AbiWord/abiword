@@ -70,8 +70,7 @@ PP_AttrProp::~PP_AttrProp()
 		{
 			if(entry)
 			{
-				if (entry->first())
-					free ((XML_Char *)entry->first());
+			        FREEP(entry->first());
 				if (entry->second())
 					delete (PP_PropertyType *)entry->second();
 
@@ -271,16 +270,15 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	const void * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
 	{
-		m_pProperties->set(szName, 
-				   (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 		UT_Pair* p = (UT_Pair*) pEntry;
 
-		if (p->first())
-			delete[] ((XML_Char *)p->first());
+		FREEP(p->first());
 		if (p->second())
 			delete (PP_PropertyType *)p->second();
 
 		delete p;
+		m_pProperties->set(szName, 
+				   (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 	}
 	else
 	{

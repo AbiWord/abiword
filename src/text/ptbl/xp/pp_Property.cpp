@@ -156,19 +156,7 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 {
 	PP_Property * prop = NULL;
 
-	static UT_StringPtrMap propHash(NrElements(_props));
-
-	const char * szName = (const char *)name;
-	const void *entry = propHash.pick (szName);
-
-	if (entry)
-	  {
-	    return (PP_Property *)entry;
-	  }
-
 	prop = (PP_Property *)bsearch (name, _props, NrElements(_props), sizeof (_props[0]), s_compare);
-
-	propHash.insert(szName, (void *)prop);
 
 	return prop;
 }
