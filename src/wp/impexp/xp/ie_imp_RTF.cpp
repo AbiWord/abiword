@@ -1,6 +1,7 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
+ * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net> 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1276,7 +1277,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bParaWrittenForSection(false),
 	m_bCellBlank(true),
 	m_bEndTableOpen(false),
-	m_bHyperlinkOpen(false)
+	m_iHyperlinkOpen(0)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -1672,26 +1673,21 @@ void IE_Imp_RTF::HandleFootnote(void)
 	}
 }
 
-UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
+UT_Error IE_Imp_RTF::_parseText()
 {
-	m_pImportFile = fp;
-
-	m_currentRTFState.m_internalState = RTFStateStore::risNorm;
-	m_currentRTFState.m_destinationState = RTFStateStore::rdsNorm;
-	m_currentHdrID = 0;
-	m_currentFtrID = 0;
-	m_currentHdrEvenID = 0;
-	m_currentFtrEvenID = 0;
-	m_currentHdrFirstID = 0;
-	m_currentFtrFirstID = 0;
-	m_currentHdrLastID = 0;
-	m_currentFtrLastID = 0;
-
 	bool ok = true;
     int cNibble = 2;
 	int b = 0;
 	unsigned char c;
-	while (ok  &&  ReadCharFromFile(&c))
+
+	// remember the depth of stack on entry, and if the depth of stack
+	// drops bellow this level return (this is so that we can call
+	// this method recursively)
+	UT_uint32 iRTFStackDepth = m_stateStack.getDepth();
+	UT_DEBUGMSG(("IE_Imp_RTF::_parseText: stack depth %d\n", iRTFStackDepth));
+	
+	
+	while (ok  &&  m_stateStack.getDepth() >= iRTFStackDepth && ReadCharFromFile(&c))
 	{
 		if (m_currentRTFState.m_internalState == RTFStateStore::risBin)
 		{
@@ -1766,6 +1762,27 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 		}
 	}
 	return ok ? UT_OK : UT_ERROR;
+
+}
+
+
+UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
+{
+	m_pImportFile = fp;
+
+	m_currentRTFState.m_internalState = RTFStateStore::risNorm;
+	m_currentRTFState.m_destinationState = RTFStateStore::rdsNorm;
+	m_currentHdrID = 0;
+	m_currentFtrID = 0;
+	m_currentHdrEvenID = 0;
+	m_currentFtrEvenID = 0;
+	m_currentHdrFirstID = 0;
+	m_currentFtrFirstID = 0;
+	m_currentHdrLastID = 0;
+	m_currentFtrLastID = 0;
+
+
+	return _parseText();
 }
 
 /*****************************************************************/
@@ -2781,6 +2798,8 @@ bool IE_Imp_RTF::HandleField()
 	} RTFFieldAttr;
 
 
+	UT_uint32 iHyperlinkOpen = m_iHyperlinkOpen;
+	
 	tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
 	if (tokenType == RTF_TOKEN_ERROR)
 	{
@@ -2906,6 +2925,7 @@ bool IE_Imp_RTF::HandleField()
 	// TODO: push and pop the state as expected.
 	if (tokenType == RTF_TOKEN_OPEN_BRACE)
 	{
+		PushRTFState();
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
 		if (tokenType == RTF_TOKEN_ERROR)
 		{
@@ -2920,51 +2940,16 @@ bool IE_Imp_RTF::HandleField()
 				// don't return as we simply skip it
 			}
 		}
-
-		nested = 0;
-		do
+		
+		// The original code parsing the result was not enough: the
+		// field result can contain full-blown rtf markup, including
+		// other fields, etc. That means that we have to parse it just
+		// like we do ordinary text.
+		if(bUseResult)
 		{
-			tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
-			switch (tokenType)
-			{
-			case  RTF_TOKEN_ERROR:
+			if(UT_OK != _parseText())
 				return false;
-				break;
-			// TODO: handle the \cpg keyword that can possible lies here. Hence we will need
-			// to push and pop the state
-			case  RTF_TOKEN_KEYWORD:
-				UT_DEBUGMSG (("RTF Field: found %s\n", keyword));
-				if (strcmp (reinterpret_cast<char*>(&keyword[0]), "\\") == 0)
-				{
-					if (bUseResult)
-					{
-						ok = ParseChar (keyword [0]);
-						if (!ok)
-							return false;
-					}
-				}
-				else
-				{
-					UT_DEBUGMSG (("RTF: unexpected keyword\n"));
-				}
-				break;
-			case RTF_TOKEN_OPEN_BRACE:
-				nested++;
-				UT_DEBUGMSG (("RTF Debug: met a new block\n"));
-				break;
-			case RTF_TOKEN_CLOSE_BRACE:
-				nested--;
-				break;
-			default:
-				if (bUseResult)
-				{
-					ok = ParseChar (*keyword);
-					if (!ok)
-						return false;
-				}
-			}
-		} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
-		// no need to skip back ch because we handled it ourselves
+		}
 	}
 	else
 	{
@@ -2973,11 +2958,12 @@ bool IE_Imp_RTF::HandleField()
 		// continue
 	}
 
-	if(m_bHyperlinkOpen)
+	if(m_iHyperlinkOpen > iHyperlinkOpen)
 	{
 		FlushStoredChars(true);
 		getDoc()->appendObject(PTO_Hyperlink,NULL);
-		m_bHyperlinkOpen = false;
+		m_iHyperlinkOpen--;
+		UT_ASSERT( m_iHyperlinkOpen == iHyperlinkOpen );
 	}
 		
 	return true;
@@ -3018,6 +3004,13 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	*/
 	/* Microsoft doc on field usages in Word is at:
 	   <http://support.microsoft.com/support/word/usage/fields/>
+	*/
+
+	/* IMPORTANT: field results can contain full-blown rtf markup,
+	   incuding embeded field, etc. For instnace the result for a TOC
+	   field contains hyperlinks that allow jumping from the TOC to a
+	   relevant page. This means that the result cannot be simply
+	   pasted into the document
 	*/
 
 	char *instr;
@@ -3135,7 +3128,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 			FlushStoredChars(true);
 			getDoc()->appendObject(PTO_Hyperlink,new_atts);
-			m_bHyperlinkOpen = true;
+			m_iHyperlinkOpen++;
 		}
 		break;
 	case 'I':
@@ -3254,6 +3247,12 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 				isXML = (xmlField != NULL);
 			}
 		}
+		else if (strcmp (instr, "TOC") == 0)
+		{
+			// Table-of-contents field
+			UT_DEBUGMSG (("RTF: TOC fieldinst not handled yet\n"));
+		}
+		
 		break;
 	case 'd':
 		if (strcmp (instr, "date") == 0)

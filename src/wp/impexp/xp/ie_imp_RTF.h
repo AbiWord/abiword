@@ -1,6 +1,7 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
- /* Copyright (C) 1999 AbiSource, Inc.
- *
+/* Copyright (C) 1999 AbiSource, Inc.
+ * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -505,6 +506,8 @@ protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
 	UT_Error            _parseHdrFtr ();
+	UT_Error            _parseText();
+	
 
 // importer helper methods
 private:
@@ -713,7 +716,7 @@ private:
 	UT_uint32             m_iDepthAtFootnote;
 	UT_uint32             m_iLastFootnoteId;
 	UT_String             m_hyperlinkBase;
-	bool                  m_bHyperlinkOpen;
+	UT_uint32             m_iHyperlinkOpen;
 };
 
 #endif /* IE_IMP_RTF_H */
