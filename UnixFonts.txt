@@ -22,20 +22,21 @@ available to AbiWord, you need to do the following:
 
 (2) Update the fonts.dir file. 
 
-(3) If you are installing a pfa or pfb font, you will need to provide
-    an afm file and place it into the same directory as the font  (no
-    afm file is required for ttf fonts - see below).
+The detailed procedure for pfa/pfb fonts and for ttf fonts is
+slightly different and is descirbed below.
 
 
 2. pfa / pfb fonts
 ------------------
+If your font came with a vendor provided afm file, you should copy
+or symlink it alongside the pfa/pfb file. If not AW will 
+generate the afm file automatically, but using a vendor provided
+afm file is preferable.
+
 To update the fonts.dir file, you should add an entry for the new
 font into fonts.scale and then run mkfontdir. If you do not know
 what the entry in the fonts.scale should be, you can generate it
-using the utility ttmkfdir. Similarly, if your font did not come
-with an afm file, you can generate it from the pfa font using the
-utility pfa2afm; the afm file needs to be located in, or symlinked
-to, the same directory where you installed the font.
+using the utility ttmkfdir.
 
 3. TTF fonts
 ------------
@@ -47,14 +48,12 @@ ttf fonts, the utility will generate multiple entries, for a number
 of diferent encodings the font supports, just disregard those you 
 do not need. Once fonts.scale is updated, run mkfontdir.
 
-Printing with ttf is currently supported only using Ghostscript, 
-and any ttf fonts that you wish to use have to be registered with
-Ghostscript.
-
 IMPORTANT: if you decide to update a ttf font that you have used
 with AbiWord previously, you will need to remove some support files
 that AbiWord generated. If your font is called myfont.ttf, look for
-files myfont.afm and myfont.u2g and delete them.
+files myfont.afm, myfont.u2g and myfont.t42 and delete them, then
+install the updated ttf font; AbiWord will generate the support files
+the first time you use the font.
 
 
 4. Unicode peculiarities

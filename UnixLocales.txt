@@ -38,14 +38,7 @@ For instance if you are going to use he_IL locale, you create a
 directory he-IL (use dash instead of the underscore). Now you just
 put your fonts in this directory in the same manner you would 
 install additional fonts into the main fonts directory (you will 
-find details in the UnixFonts.txt document). When you install your
-fonts in there, you should further create a symbolic link in this 
-directory to the files adobe-full.u2g and adobe-short.u2g, both 
-of which are located in the main fonts dir. Thus in the he_IL 
-case do:
-	cd /usr/local/AbiSuite/fonts
-	ln -s adobe-full.u2g he-IL/adobe-full.u2g
-	ln -s adobe-short.u2g he-IL/adobe-short.u2g
+find details in the UnixFonts.txt document).
 
 2.2 Keyboard
 There is nothing you need to do about your keyboard for the sake of 
