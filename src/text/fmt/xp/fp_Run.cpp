@@ -128,11 +128,13 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	// will do this in ::lookupProperties
 	//updateHighlightColor();
 	//updatePageColor();
+	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 }
 
 fp_Run::~fp_Run()
 {
   // no impl.
+	xxx_UT_DEBUGMSG(("~fp_Run %x deleted!!! \n",this));
 
 // Zero these to trap mem errors.
 #if 1

@@ -216,15 +216,14 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 									pL->removeRun(pRun,true);
 									pLine->addRun(pRun);
 								}
-#if DEBUG
-								pL->assertLineListIntegrity();
-								pLine->assertLineListIntegrity();
-#endif
 								if(pRun == pCurrentRun)
 									break;
 
 								pRun = pRun->getNext();
 							}
+#if DEBUG
+							pLine->assertLineListIntegrity();
+#endif
 						}
 					}
 

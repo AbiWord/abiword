@@ -174,6 +174,7 @@ bool fp_Line::assertLineListIntegrity(void)
 			{
 				fp_Run *pRun = getRunFromIndex(i);
 				pRun->printText();
+				UT_DEBUGMSG(("Line run %d is %x \n",i,pRun));
 			}
 			UT_ASSERT(pRunLine == pRunBlock);
 		}
