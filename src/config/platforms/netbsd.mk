@@ -40,7 +40,7 @@ OPTIMIZER	= -g -Wall -Wshadow
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O2
+OPTIMIZER	= -O2 -Wall -Wshadow
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif

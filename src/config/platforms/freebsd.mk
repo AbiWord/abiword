@@ -40,7 +40,7 @@ OPTIMIZER	= -g -Wall -Wshadow
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O2
+OPTIMIZER	= -O2 -Wall -Wshadow
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
@@ -59,7 +59,20 @@ PORT_FLAGS		+=
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
-DL_LIBS			= dl
+
+# Somewhere around the time FreeBSD changed to ELF format binaries,
+# the libdl functions got moved into libc (or something like that).
+# As a result, -ldl is not neccessary on these newer FreeBSD systems,
+# whereas it is needed on older ones.  I'm thinking the split is 
+# either 3.0-RELEASE or 3.1-RELEASE.  I _know_ it's needed at 3.1,
+# so mail sterwill@abisource.com if I need to be doing this for 3.0
+# also.
+
+ifeq ($(OS_RELEASE), 3.1-RELEASE)
+	DL_LIBS = 
+else
+	DL_LIBS = dl
+endif
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
