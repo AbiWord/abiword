@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,6 +60,8 @@ UT_Bool			UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
 
 char * UT_upperString(char * string);
 char * UT_lowerString(char * string);
+
+char * UT_catPathname(const char * szPath, const char * szFile);
 
 UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
 void UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);

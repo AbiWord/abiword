@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
  */
  
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
@@ -44,3 +45,20 @@ UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)
 	// strncasecmp is not very portable, so we use GLIB's implementation
 	return g_strncasecmp(s1,s2,lenS1);
 }
+
+char * UT_catPathname(const char * szPath, const char * szFile)
+{
+	UT_ASSERT((szPath) && (*szPath));
+	UT_ASSERT((szFile) && (*szFile));
+	
+	char * szPathname = (char *)calloc(sizeof(char),strlen(szPath)+strlen(szFile)+2);
+	UT_ASSERT(szPathname);
+	
+	sprintf(szPathname,"%s%s%s",
+			szPath,
+			((szPath[strlen(szPath)-1]=='/') ? "" : "/"),
+			szFile);
+
+	return szPathname;
+}
+
