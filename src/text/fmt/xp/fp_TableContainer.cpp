@@ -3042,7 +3042,7 @@ void fp_TableContainer::setYBreakHere(UT_sint32 i)
 void fp_TableContainer::setYBottom(UT_sint32 i)
 {
 	m_iYBottom = i;
-	UT_ASSERT(getHeight() > 0);
+	//	UT_ASSERT(getHeight() > 0);
 }
 
 /*!

@@ -287,7 +287,9 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
 	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
-	_clearSelection();
+	_resetSelection();
+	_clearBetweenPositions(iLow, iHigh, true);
+
 	bool bOldDelete = m_pDoc->isDontImmediateLayout();
 	if(bDeleteTables)
 	{

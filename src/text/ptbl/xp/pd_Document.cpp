@@ -1247,6 +1247,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 	return NULL;
 }
 
+
 /*!
  * This method returns the offset to a an embedded strux 
  * And a pointer to the embedded strux found.

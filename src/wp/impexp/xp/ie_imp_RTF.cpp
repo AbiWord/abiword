@@ -1996,6 +1996,7 @@ UT_Error IE_Imp_RTF::_parseText()
 				{
 					if(0 == strcmp((const char*)&keyword[0], "ftnalt"))
 					{
+						UT_DEBUGMSG(("Have Endnote \n"));
 						// we have an end-note
 						m_bNoteIsFNote = false;
 						HandleNote();
@@ -2287,7 +2288,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		ok = ApplyCharacterAttributes();
 		m_bCellBlank = false;
 	}
-	if( ok && m_bInFootnote && m_stateStack.getDepth() <m_iDepthAtFootnote)
+	if( ok && m_bInFootnote && (m_stateStack.getDepth() < m_iDepthAtFootnote))
 	{
 		if(m_pImportFile)
 		{
@@ -3276,7 +3277,7 @@ bool IE_Imp_RTF::HandleField()
 		nested = 0;
 		do
 		{
-			tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+			tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN,false);
 			switch (tokenType)
 			{
 			case RTF_TOKEN_ERROR:
@@ -3328,6 +3329,7 @@ bool IE_Imp_RTF::HandleField()
 		if (!bUseResult)
 		{
 			bool ok;
+			UT_DEBUGMSG(("Append field type %s \n",xmlField));
 			ok = _appendField (xmlField);
 			UT_ASSERT_HARMLESS (ok);
 			// we own xmlField, so we delete it after use.
@@ -3341,7 +3343,7 @@ bool IE_Imp_RTF::HandleField()
 		// continue
 	}
 
-	tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
+	tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN,false);
 	if (tokenType == RTF_TOKEN_ERROR)
 	{
 		return false;
@@ -3376,6 +3378,10 @@ bool IE_Imp_RTF::HandleField()
 			if(UT_OK != _parseText())
 				return false;
 		}
+	}
+	else if(tokenType == RTF_TOKEN_CLOSE_BRACE)
+	{
+		PopRTFState ();
 	}
 	else
 	{
@@ -8765,7 +8771,7 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
   \note this changes the state of the file
 */
 IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* pParam,
-									bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace)
+												bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace /* = false */ )
 {
 	RTFTokenType tokenType = RTF_TOKEN_NONE;
 	bool ok;

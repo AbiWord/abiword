@@ -854,6 +854,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
 	pEmbedCL = NULL;
 	return -1;
 }
+
 /*! 
  * This method scans through the list of runs from the first position listed
  * and updates the offsets. This is used following an operation on an embedded
