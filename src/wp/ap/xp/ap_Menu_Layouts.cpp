@@ -424,7 +424,7 @@ void XAP_Menu_Factory::resetMenusToDefault(void)
 bool  XAP_Menu_Factory::buildMenuLabelSet(const char * szLanguage_)
 {
 	char buf[300];
-	strcpy(buf,szLanguage_ ? szLanguage_ : "");
+	strncpy(buf,szLanguage_ ? szLanguage_ : "", sizeof(buf)-1);
 	char* szLanguage = buf;
 
 	char* dot = strrchr(szLanguage,'.');
@@ -477,7 +477,7 @@ bool  XAP_Menu_Factory::buildBuiltInMenuLabelSet(EV_Menu_LabelSet *& pLabelSet)
 EV_Menu_LabelSet *  XAP_Menu_Factory::CreateMenuLabelSet(const char * szLanguage_)
 {
 	char buf[300];
-	strcpy(buf,szLanguage_ ? szLanguage_ : "");
+	strncpy(buf,szLanguage_ ? szLanguage_ : "", sizeof(buf)-1);
 	char* szLanguage = buf;
 
 	char* dot = strrchr(szLanguage,'.');
