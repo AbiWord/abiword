@@ -133,7 +133,6 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 
 	GtkWidget * ruler = gtk_vruler_new ();
 	pG->init3dColors(get_ensured_style (ruler));
-	//abiDestroyWidget (ruler);
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)
@@ -161,24 +160,16 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
-	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_press_event\n",pUnixLeftRuler));
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
-	if(pView && pView->getPoint()==0)
-	{
-//
-// Abort
-//
-		return 0;
-	}
+	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
+		return 1;
 
 	// grab the mouse for the duration of the drag.
 	gtk_grab_add(w);
 	
-	EV_EditModifierState ems;
+	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
-	
-	ems = 0;
 	
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
@@ -205,21 +196,13 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
-	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_release_event\n",pUnixLeftRuler));
-	EV_EditModifierState ems;
+	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
-	if(pView && pView->getPoint()==0)
-	{
-//
-// Abort
-//
-		return 0;
-	}
+	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
+		return 1;
 
-	ems = 0;
-	
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
@@ -249,9 +232,6 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
-	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
-	//			 pUnixLeftRuler, e->width, e->height));
-
 	// nb: we'd convert here, but we can't: have no graphics class!
 	pUnixLeftRuler->setHeight(e->height);
 	pUnixLeftRuler->setWidth(e->width);
@@ -263,20 +243,12 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
-	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received motion_notify_event\n",pUnixLeftRuler));
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
-	if(pView && pView->getPoint()==0)
-	{
-//
-// Abort
-//
-		return 0;
-	}
+	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
+		return 1;
 
-	EV_EditModifierState ems;
-	
-	ems = 0;
+	EV_EditModifierState ems = 0;
 	
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
@@ -294,16 +266,12 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
-// 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
-	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received key_press_event\n",pUnixLeftRuler));
 	return 1;
 }
 	
 gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
-	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received delete_event\n",pUnixLeftRuler));
 	return 1;
 }
 	

@@ -162,10 +162,11 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	// grab the mouse for the duration of the drag.
 	gtk_grab_add(w);
 	
-	EV_EditModifierState ems;
+	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
-	
-	ems = 0;
+
+	if (!pUnixTopRuler->getGR())
+		return 1;
 	
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
@@ -193,11 +194,12 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
-	EV_EditModifierState ems;
+	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 	
-	ems = 0;
-	
+	if (!pUnixTopRuler->getGR())
+		return 1;
+
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
@@ -227,6 +229,7 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
+// nb: we'd convert here, but we can't: have no graphics class!
 	pUnixTopRuler->setHeight(static_cast<UT_uint32>(e->height));
 	pUnixTopRuler->setWidth(static_cast<UT_uint32>(e->width));
 	
@@ -242,22 +245,13 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
 	if(pFrame == NULL)
-	{
 		return 1;
-	}
-	AV_View * pView = pFrame->getCurrentView();
-	if(pView == NULL)
-	{
-		return 1;
-	}
-	if(pView->getPoint() == 0)
-	{
-		return 1;
-	}
 
-	EV_EditModifierState ems;
-	
-	ems = 0;
+	AV_View * pView = pFrame->getCurrentView();
+	if(pView == NULL || pView->getPoint() == 0 || pUnixTopRuler->getGR() == NULL)
+		return 1;
+
+	EV_EditModifierState ems = 0;
 	
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
