@@ -946,7 +946,27 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		
 		UT_sint32 xoff = 0, yoff = 0;
 		m_pLine->getScreenOffsets(this, xoff, yoff);
-		m_pG->fillRect(clrNormalBackground,xoff, yoff, m_iWidth, m_pLine->getHeight());
+		//
+		// Handle case where character extend behind the left side
+		// like italic Times New Roman f
+		//
+		fp_Line * thisLine = getLine();
+		fp_Run * pPrev = getPrev();
+		UT_sint32 leftClear = 0;
+		if(thisLine != NULL)
+		{
+			while(pPrev != NULL && pPrev->getLine() == thisLine && pPrev->getLength()== 0)
+			{
+				pPrev = pPrev->getPrev();
+			}
+			if(pPrev == NULL)
+				leftClear = getDescent();
+			else if (pPrev->getLine() != thisLine)
+				leftClear = getDescent();
+			else if (pPrev->getType() == FPRUN_TAB)
+				leftClear = getDescent();
+		}
+		m_pG->fillRect(clrNormalBackground,xoff-leftClear , yoff, m_iWidth+leftClear, m_pLine->getHeight());
 	}
 
 }

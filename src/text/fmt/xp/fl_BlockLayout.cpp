@@ -765,7 +765,7 @@ void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 	{
 		UT_ASSERT(!pLine->isEmpty());
 //		fp_Run * pRun = pLine->getFirstRun();
-//  		while(pRun)
+//  	while(pRun)
 //  		{
 //  			pRun->clearScreen();
 //  			pRun = pRun->getNext();
@@ -3521,7 +3521,11 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// EOP stuff. Only, I don't remember why I did it, and it's wrong:
 	// the strux is deleted only after its content has been deleted -
 	// so the call might try to clear empty lines. jskov 2001.04.23
-//	clearScreen(m_pLayout->getGraphics());
+
+	// Sevior put this back 2001.6.3. I don't understand why there was ever any
+    // question about it's neccessity.
+
+	clearScreen(m_pLayout->getGraphics());
 
 	// If there is a previous strux, we merge the Runs from this strux
 	// into it - including the EOP Run, so delete that in the previous
@@ -3659,7 +3663,8 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 		// Update the display
 //		pPrevBL->_lookupProperties();	// TODO: this may be needed
-		pPrevBL->setNeedsReformat();
+//		pPrevBL->setNeedsReformat(); // Sevior 4/6/2001
+		pPrevBL->format();
 
 		//Fix for bug #1119, but only do it when auto spelling is
 		//enabled, or we get squiggles in the document when clearing
@@ -3668,6 +3673,7 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		{
 			pPrevBL->checkSpelling();
 		}
+		pPrevBL->redrawUpdate();
 	}
 
 	// In case we've never checked this one

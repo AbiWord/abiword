@@ -1063,7 +1063,94 @@ void AP_TopRuler::_xorGuide(bool bClear)
 
 /*****************************************************************/
 
-void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_uint32 x, UT_uint32 y)
+/*!
+ * Returns true if the mouse is over a previously defined tab marker or a
+ * paragraph control
+\param x location of mouse
+\param y location of mouse
+*/
+bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
+{
+
+// Sevior: Look to cache this.
+	// first hit-test against the tab toggle control
+	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
+
+	UT_Rect rToggle;
+	_getTabToggleRect(&rToggle);
+	if (rToggle.containsPoint(x,y))
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_EXCHANGE);
+		return true;
+	}
+
+ 	eTabType iType;
+	eTabLeader iLeader;
+	UT_DEBUGMSG(("SEVIOR: s_iFixedHeight = %d \n",s_iFixedHeight));
+	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType, iLeader);
+	if (iTab >= 0)
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		return true;
+	}
+
+
+	// next hit-test against the paragraph widgets
+	
+	UT_sint32 leftIndentCenter, rightIndentCenter, firstLineIndentCenter;
+	UT_Rect rLeftIndent, rRightIndent, rFirstLineIndent;
+	_getParagraphMarkerXCenters(&m_infoCache,&leftIndentCenter,&rightIndentCenter,&firstLineIndentCenter);
+	_getParagraphMarkerRects(&m_infoCache,
+							 leftIndentCenter, rightIndentCenter, firstLineIndentCenter,
+							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
+	if (rLeftIndent.containsPoint(x,y))
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		return true;
+	}
+	if (rRightIndent.containsPoint(x,y))
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		return true;
+	}
+	if (rFirstLineIndent.containsPoint(x,y))
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		return true;
+	}
+
+	// next check the column gap
+	
+	if (m_infoCache.m_iNumColumns > 1)
+	{
+		UT_Rect rCol;
+		_getColumnMarkerRect(&m_infoCache,0,_getColumnMarkerXRightEnd(&m_infoCache,0),&rCol);
+		if (rCol.containsPoint(x,y))
+		{
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			return true;
+		}
+	}
+
+	// next check page margins
+	
+	UT_Rect rLeftMargin, rRightMargin;
+	_getMarginMarkerRects(&m_infoCache,rLeftMargin,rRightMargin);
+	if (rLeftMargin.containsPoint(x,y))
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		return true;
+	}
+	if (rRightMargin.containsPoint(x,y))
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		return true;
+	}
+	return false;
+}
+
+void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,  
+							 EV_EditMouseButton emb , UT_uint32 x, UT_uint32 y)
 {
 	//UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
@@ -1103,6 +1190,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 			default:	UT_DEBUGMSG(("Should not happen, tab type %d\n", m_iDefaultTabType));
 		}
 		_drawTabToggle(NULL, true);
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_EXCHANGE);
 		return;
 	}
 
@@ -1113,14 +1201,49 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType, iLeader);
 	if (iTab >= 0)
 	{
-		UT_DEBUGMSG(("hit tab %ld\n",iTab));
-		m_bValidMouseClick = true;
-		m_draggingWhat = DW_TABSTOP;
-		m_draggingTab = iTab;
-		m_draggingTabType = iType;
-		m_draggingTabLeader = iLeader;
-		m_dragStart = 0;
-		m_bBeforeFirstMotion = true;
+		if(emb == EV_EMB_BUTTON1)
+		{
+			UT_DEBUGMSG(("hit tab %ld  x=%d y=%d \n",iTab,x,y));
+			m_bValidMouseClick = true;
+			m_draggingWhat = DW_TABSTOP;
+			m_draggingTab = iTab;
+			m_draggingTabType = iType;
+			m_draggingTabLeader = iLeader;
+			m_dragStart = 0;
+			m_bBeforeFirstMotion = true;
+ 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+		}
+//
+// if not button 1 delete the tabstop
+//
+		else
+		{
+//
+// Rebuild the tab setting minus the found tab
+//			
+			UT_String buf;
+			UT_sint32 j;
+			for (j = 0; j < m_infoCache.m_iTabStops; j++)
+			{
+				if ((j == iTab))
+					continue;
+
+				if (!buf.empty())
+					buf += ",";
+
+				buf += _getTabStopString(&m_infoCache, j);
+			}
+
+			const XML_Char * properties[3];
+			properties[0] = "tabstops";
+			properties[1] = (XML_Char *)buf.c_str();
+			properties[2] = 0;
+			UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
+			m_draggingWhat = DW_NOTHING;
+			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+ 			m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		}
+
 		return;
 	}
 
@@ -1134,26 +1257,29 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
 	if (rLeftIndent.containsPoint(x,y))
 	{
-		//UT_DEBUGMSG(("hit left indent block\n"));
+		UT_DEBUGMSG(("hit left indent block x= %d y=%d \n",x,y));
 		m_bValidMouseClick = true;
 		m_draggingWhat = ((_isInBottomBoxOfLeftIndent(y)) ? DW_LEFTINDENTWITHFIRST : DW_LEFTINDENT);
 		m_bBeforeFirstMotion = true;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		return;
 	}
 	if (rRightIndent.containsPoint(x,y))
 	{
-		//UT_DEBUGMSG(("hit right indent block\n"));
+		UT_DEBUGMSG(("hit right indent block x=%d y=%d \n",x,y));
 		m_bValidMouseClick = true;
 		m_draggingWhat = DW_RIGHTINDENT;
 		m_bBeforeFirstMotion = true;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		return;
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
-		//UT_DEBUGMSG(("hit first-line-indent block\n"));
+		UT_DEBUGMSG(("hit first-line-indent block x= %d y= %d \n",x,y));
 		m_bValidMouseClick = true;
 		m_draggingWhat = DW_FIRSTLINEINDENT;
 		m_bBeforeFirstMotion = true;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		return;
 	}
 
@@ -1169,6 +1295,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 			m_bValidMouseClick = true;
 			m_draggingWhat = ((((UT_sint32)x) > (rCol.left+(rCol.width/2))) ? DW_COLUMNGAP : DW_COLUMNGAPLEFTSIDE);
 			m_bBeforeFirstMotion = true;
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			return;
 		}
 	}
@@ -1183,6 +1310,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		m_bValidMouseClick = true;
 		m_draggingWhat = DW_LEFTMARGIN;
 		m_bBeforeFirstMotion = true;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		return;
 	}
 	if (rRightMargin.containsPoint(x,y))
@@ -1191,6 +1319,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		m_bValidMouseClick = true;
 		m_draggingWhat = DW_RIGHTMARGIN;
 		m_bBeforeFirstMotion = true;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		return;
 	}
 
@@ -1229,6 +1358,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		// a drag. Set m_oldX to a negative number so that
 		// mouseMotion() is fooled.
 		m_oldX = -1;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 	}
 }
 
@@ -1240,6 +1370,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	{
 		m_draggingWhat = DW_NOTHING;
 		m_bValidMouseClick = false;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 	
@@ -1251,6 +1382,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	{
 		_ignoreEvent(true);
 		m_draggingWhat = DW_NOTHING;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
@@ -1276,6 +1408,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	if (xgrid == m_oldX) // Not moved - clicked and released
 	{
 		m_draggingWhat = DW_NOTHING;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 	
@@ -1283,6 +1416,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	{
 	case DW_NOTHING:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 		
 	case DW_LEFTMARGIN:
@@ -1301,6 +1435,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
 
@@ -1320,6 +1456,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
 
@@ -1337,6 +1475,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
 		
@@ -1371,7 +1511,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 						 properties[1],properties[3]));
 
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			pView->setBlockFormat(properties);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
 
@@ -1390,7 +1533,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_DEBUGMSG(("TopRuler: LeftIndent [%s]\n",properties[1]));
 
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			pView->setBlockFormat(properties);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
 		
@@ -1406,7 +1552,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_DEBUGMSG(("TopRuler: RightIndent [%s]\n",properties[1]));
 
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			pView->setBlockFormat(properties);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
 
@@ -1421,7 +1570,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_DEBUGMSG(("TopRuler: FirstLineIndent [%s]\n",properties[1]));
 			
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			pView->setBlockFormat(properties);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
 
@@ -1444,11 +1596,15 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				_setTabStops(tick, iTab,  m_draggingTabLeader, false);
 			}
 			m_draggingWhat = DW_NOTHING;
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			notify(pView, AV_CHG_HDRFTR);
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 			return;
 		}
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 }
@@ -1513,8 +1669,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// The X and Y that are passed to this function are x and y on the screen, not on the ruler.
 	
 	if (!m_bValidMouseClick)
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
-		
+	}
 	m_bEventIgnored = false;
 
 //  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
@@ -1528,9 +1686,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_ignoreEvent(false);
 			m_bEventIgnored = true;
 		}
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
+    
 	// the following segment of code used to test whether the mouse was on the ruler horizontally
 	// now it makes sure the values are sane, disregarding mouse area
 	// for example, it will not let a left indent be moved to a place before the end of the left page view margin
@@ -1540,7 +1700,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
 		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 	ap_RulerTicks tick(m_pG,m_dim);
-
 	// now to test if we are on the view, and scroll if the mouse isn't
 	
 	// by the way, my OGR client just hit 50% of the block!! i'm so excited!!! http://www.distributed.net
@@ -1603,6 +1762,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// if we are this far along, the mouse motion is significant
 	// we cannot ignore it.
 		
+	UT_DEBUGMSG(("SEVIOR: m_draggingwhat = %d \n",m_draggingWhat));
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
@@ -1611,6 +1771,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		
 	case DW_LEFTMARGIN:
 		{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
 		UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
@@ -1677,6 +1838,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	case DW_RIGHTMARGIN:
 		{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		UT_sint32 oldDragCenter = m_draggingCenter;
         UT_sint32 iRightShift = UT_MAX(0,m_infoCache.m_xrRightIndent);
         UT_sint32 iLeftShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
@@ -1685,16 +1847,19 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
         UT_sint32 newColumnWidth;
 
         x = UT_MIN(x,xAbsRight + UT_MIN(0,m_infoCache.m_xrRightIndent));
-        while(1){
+        while(1)
+		{
             newMargin = xAbsRight - x;
             deltaRightMargin = newMargin - m_infoCache.u.c.m_xaRightMargin;
             newColumnWidth = m_infoCache.u.c.m_xColumnWidth - deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 
             if(newColumnWidth - iRightShift - iLeftShift < m_minColumnWidth){
                 x += (m_minColumnWidth - (newColumnWidth - iRightShift - iLeftShift)) * (UT_sint32)m_infoCache.m_iNumColumns;
-            } else {
+            } 
+			else 
+			{
                 break;
-		}
+			}
         }
 
         m_draggingCenter = tick.snapPixelToGrid(x);
@@ -1726,6 +1891,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_COLUMNGAP:
 	case DW_COLUMNGAPLEFTSIDE:
 		{
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
 			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 			UT_sint32 xAbsRightGap = xAbsRight2 + m_infoCache.u.c.m_xColumnGap;
@@ -1788,7 +1954,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// location for the first-line, but means that we need
 			// to update it (since it is stored in relative to the
 			// paragraph in the document).
-			
+
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
@@ -1828,6 +1995,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// first-line-indent (since it is stored in relative
 			// terms.
 			
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
@@ -1878,6 +2046,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		
 	case DW_RIGHTINDENT:
 		{
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 			UT_sint32 xrel = xAbsRight2 - ((UT_sint32)x);
@@ -1908,6 +2077,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	case DW_FIRSTLINEINDENT:
 		{
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
 			// first-line-indent is relative to the left-indent
@@ -1943,6 +2113,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	case DW_TABSTOP:
 		{
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			if (x < xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin)
 			{
 				x = xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin;

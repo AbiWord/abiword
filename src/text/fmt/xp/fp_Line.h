@@ -111,7 +111,7 @@ public:
 
 	fp_Line*	getNextLineInSection(void) const;
 	fp_Line*	getPrevLineInSection(void) const;
-
+	fp_Run *    getRunFromIndex( UT_uint32 runIndex);
 	bool		containsForcedColumnBreak(void) const;
 	bool		containsForcedPageBreak(void) const;
 	
@@ -197,6 +197,7 @@ protected:
 	UT_sint32	 	m_iMaxWidth;
 	UT_sint32		m_iMaxWidthLayoutUnits;
 	UT_sint32       m_iClearToPos;
+	UT_sint32       m_iClearLeftOffset;
 	UT_sint32 		m_iHeight;
 	//! Height assigned on screen
 	//! -1 if undefined

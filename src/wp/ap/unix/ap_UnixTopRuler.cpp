@@ -203,14 +203,16 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	if (e->state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	if (e->state & GDK_BUTTON1_MASK)
+
+	if (1 == e->button )
 		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
+	else if (2 == e->button )
 		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
+	else if (3 == e->button)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixTopRuler->mousePress(ems, emb, (long) e->x, (long) e->y);
+	UT_DEBUGMSG(("SEVIOR: e->button = %x \n",e->button));
+	pUnixTopRuler->mousePress(ems, emb, (UT_uint32) e->x, (UT_uint32) e->y);
 	return 1;
 }
 
@@ -231,11 +233,11 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 	if (e->state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	if (e->state & GDK_BUTTON1_MASK)
+	if (1 == e->button )
 		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
+	else if (2 == e->button )
 		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
+	else if (3 == e->button)
 		emb = EV_EMB_BUTTON3;
 
 	// Map the mouse into coordinates relative to our window.
@@ -291,6 +293,8 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
 
 	pUnixTopRuler->mouseMotion(ems, xrel, yrel);
+	pUnixTopRuler->isMouseOverTab((UT_uint32) e->x,(UT_uint32)e->y);
+
 	return 1;
 
 }
@@ -332,3 +336,5 @@ void AP_UnixTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {
 	// a static function
 }
+
+

@@ -948,6 +948,22 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_number = GDK_LEFT_SIDE;
 		break;
+		
+	case GR_CURSOR_LEFTRIGHT:
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_UPDOWN:
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_EXCHANGE:
+		cursor_number = GDK_EXCHANGE;
+		break;
+
+	case GR_CURSOR_GRAB:
+		cursor_number = GDK_HAND1;
+		break;
 	}
 
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);

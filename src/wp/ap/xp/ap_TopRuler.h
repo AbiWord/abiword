@@ -114,6 +114,7 @@ public:
 	UT_uint32		getHeight(void) const;
 	void			setWidth(UT_uint32 iWidth);
 	UT_uint32		getWidth(void) const;
+	GR_Graphics *	getGraphics(void) const { return m_pG;}
 	void			draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo = NULL);
 	void			scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 
@@ -121,6 +122,7 @@ public:
 	void			mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
 	void			mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y);
 
+	bool            isMouseOverTab(UT_uint32 x, UT_uint32 y);
 	/* used with AV_Listener */
 	virtual bool	notify(AV_View * pView, const AV_ChangeMask mask);
 

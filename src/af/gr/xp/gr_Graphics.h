@@ -164,7 +164,11 @@ public:
 				   GR_CURSOR_IMAGESIZE_SE,
 				   GR_CURSOR_IMAGESIZE_S,
 				   GR_CURSOR_IMAGESIZE_SW,
-				   GR_CURSOR_IMAGESIZE_W
+				   GR_CURSOR_IMAGESIZE_W,
+				   GR_CURSOR_LEFTRIGHT,
+				   GR_CURSOR_UPDOWN,
+				   GR_CURSOR_EXCHANGE,
+				   GR_CURSOR_GRAB
 	} Cursor;
 
 	virtual void setCursor(GR_Graphics::Cursor c) = 0;

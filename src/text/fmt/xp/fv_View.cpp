@@ -7484,6 +7484,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	if (!pPage)
 		return EV_EMC_UNKNOWN;
 
+
 	if (   (yClick < 0)
 		   || (xClick < 0)
 		   || (xClick > pPage->getWidth()) )

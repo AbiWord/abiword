@@ -55,6 +55,7 @@ fp_Line::fp_Line()
 	m_iDescent = 0;
 	m_iMaxWidth = 0;
 	m_iClearToPos = 0;
+	m_iClearLeftOffset = 0;
 	m_iMaxWidthLayoutUnits = 0;
 	m_iWidth = 0;
 	m_iWidthLayoutUnits = 0;
@@ -609,6 +610,23 @@ void fp_Line::recalcHeight()
 	}
 }
 
+/*!
+ * Return a pointer to the run given by runIndex in the  line
+\param runIndex the nth run in the line
+\returns fp_Run * pRun the pointer to the nth run
+*/
+
+fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
+{
+	UT_uint32 count = m_vecRuns.getItemCount();
+	fp_Run * pRun = NULL;
+	if(count > 0 && runIndex < count)
+	{
+		pRun = (fp_Run *) m_vecRuns.getNthItem(runIndex);
+	}
+	return pRun;
+}
+
 void fp_Line::clearScreen(void)
 {
 	UT_uint32 count = m_vecRuns.getItemCount();
@@ -643,7 +661,7 @@ void fp_Line::clearScreen(void)
 			// assigned a height. Call it robustness, if you want.
 
 			xxx_UT_DEBUGMSG(("SEVIOR: Clear Line cleartopos = %d xoffline = %d \n",m_iClearToPos,m_iMaxWidth));
-			pRun->getGraphics()->fillRect(*pClr,xoffLine-2, yoffLine, m_iClearToPos + 2, getHeight());
+			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, getHeight());
 //
 // Sevior: I added this for robustness. 
 //
@@ -676,6 +694,25 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 #else
 			pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
 #endif
+			//
+			// Handle case where character extend behind the left side
+			// like italic Times New Roman f. Clear a litle bit before if
+			// there is clear screen there
+			//
+			UT_sint32 j = runIndex - 1;
+			fp_Run * pPrev = pRun->getPrev();
+			UT_sint32 leftClear = 0;
+			while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
+			{
+				pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
+				j--;
+			}
+			if(j < 0)
+				leftClear = pRun->getDescent();
+			else if(pPrev == NULL)
+				leftClear = pRun->getDescent();
+			else if(pPrev->getType() == FPRUN_TAB)
+				leftClear = pRun->getDescent();
 
 			getScreenOffsets(pRun, xoff, yoff);
 			UT_sint32 xoffLine, yoffLine;
@@ -683,7 +720,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 			UT_RGBColor * pClr = pRun->getPageColor();
 			xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd cleartopos = %d xoff = %d xoffline =%d \n",m_iClearToPos,xoff,xoffLine));
-			pRun->getGraphics()->fillRect(*pClr,xoff, yoff, m_iClearToPos - (xoff - xoffLine) , getHeight());
+			pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
 //
@@ -748,13 +785,33 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
 #endif
 
+		//
+		// Handle case where character extend behind the left side
+		// like italic Times New Roman f. Clear a litle bit before if
+		// there is clear screen there
+		//
+		UT_sint32 j = runIndex - 1;
+		fp_Run * pPrev = pRun->getPrev();
+		UT_sint32 leftClear = 0;
+		while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
+		{
+			pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
+			j--;
+		}
+		if(j < 0)
+			leftClear = pRun->getDescent();
+		else if(pPrev == NULL)
+			leftClear = pRun->getDescent();
+		else if(pPrev->getType() == FPRUN_TAB)
+			leftClear = pRun->getDescent();
+
 		getScreenOffsets(pRun, xoff, yoff);
 		UT_sint32 xoffLine, yoffLine;
 
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 		UT_RGBColor * pClr = pRun->getPageColor();
 		xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd cleartopos = %d xoff = %d xoffline =%d \n",m_iClearToPos,xoff,xoffLine));
-		pRun->getGraphics()->fillRect(*pClr,xoff, yoff, m_iClearToPos - (xoff - xoffLine) , getHeight());
+		pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos  + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
 //
@@ -1284,10 +1341,12 @@ void fp_Line::recalcMaxWidth()
 	if(pSL->getNumColumns() > 1)
 	{
 		m_iClearToPos = iMaxWidth + pSL->getColumnGap();
+		m_iClearLeftOffset = pSL->getColumnGap() -1;
 	}
 	else
 	{
 		m_iClearToPos = iMaxWidth + pSL->getRightMargin() - 2;
+		m_iClearLeftOffset = pSL->getLeftMargin() -1;
 	}
 
 	iMaxWidth -= m_pBlock->getRightMargin();
