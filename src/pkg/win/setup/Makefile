@@ -22,8 +22,9 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CSRCS=			setup.c			\
-			$(OBJDIR)/data.c
+CSRCS=			setup.c
+
+GENCSRCS=		$(OBJDIR)/data.c
 
 RCSRCS=			setup.rc
 
@@ -41,7 +42,7 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 GARBAGE=		setup.map setup.pdb $(OBJDIR)/data.c _tmp_.ask
 TARGETS=		$(PROGRAM)
 
-INCLUDES=		-I$(ABI_ROOT)/src/ask/lib/xp
+INCLUDES=		-I$(ABI_XX_ROOT)/src/ask/lib/xp
 
 CFLAGS +=		-Zm1000
 
@@ -63,7 +64,7 @@ $(OBJDIR)/data.c:	abisuite.ask $(BINDIR)/ask_gendata.exe $(BINDIR)/askrm.exe
 	sed -e 's|__BINDIR__|$(BINDIR)|g' $(OBJDIR)/_tmp1_.ask > $(OBJDIR)/_tmp2_.ask
 	sed -e 's|__GRAPHICNAME__|$(GRAPHICNAME)|g' $(OBJDIR)/_tmp2_.ask > $(OBJDIR)/_tmp3_.ask
 	$(BINDIR)/ask_gendata.exe $(OBJDIR)/_tmp3_.ask $(OBJDIR)/_tmp_.c
-	mv $(OBJDIR)/_tmp_.c $(OBJDIR)/data.c
+	(cd $(OBJDIR); mv _tmp_.c data.c)
 
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)

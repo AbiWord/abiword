@@ -69,6 +69,7 @@ ifndef OBJS
 OBJS		= $(addprefix $(OBJDIR)/,$(CSRCS:.c=.$(OBJ_SUFFIX)))		\
 		  $(addprefix $(OBJDIR)/,$(CPPSRCS:.cpp=.$(OBJ_SUFFIX)))	\
 		  $(addprefix $(OBJDIR)/,$(notdir $(GENCPPSRCS:.cpp=.$(OBJ_SUFFIX))))	\
+		  $(addprefix $(OBJDIR)/,$(notdir $(GENCSRCS:.c=.$(OBJ_SUFFIX))))	\
 		  $(addprefix $(OBJDIR)/,$(ASFILES:.s=.$(OBJ_SUFFIX)))
 endif
 
@@ -206,6 +207,21 @@ $(OBJDIR)/%.$(OBJ_SUFFIX): %.c
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
 	@$(CC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c $(CFLAGS) $<
+else
+	@echo $<:
+	@$(CC) -o $@ -c $(CFLAGS) $<
+endif
+
+
+###############################################################################
+## Rule for building generated .c sources (in $(OBJDIR)) into .o's in $(OBJDIR)
+###############################################################################
+
+$(OBJDIR)/%.$(OBJ_SUFFIX): $(OBJDIR)/%.c
+	@$(MAKE_OBJDIR)
+ifeq ($(OS_NAME), WIN32)
+	@$(CC) -Fo$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g') -c	\
+		$(CFLAGS) $(shell echo $< | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
 else
 	@echo $<:
 	@$(CC) -o $@ -c $(CFLAGS) $<
