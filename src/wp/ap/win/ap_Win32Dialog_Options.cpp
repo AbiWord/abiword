@@ -39,7 +39,7 @@
 
 #include "ap_Dialog_Id.h"
 #include "ap_Prefs_SchemeIds.h"
-
+#include "xap_Toolbar_Layouts.h"
 #include "ap_Strings.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Resources.rc2"
@@ -47,6 +47,8 @@
 #include "ap_Win32Dialog_Background.h"
 #include "xap_Win32DialogHelper.h"
 #include "ut_Language.h"
+
+
 
 /*****************************************************************/
 
@@ -188,18 +190,7 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 
 	switch (id)
 	{
-	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_TOOLBARS),AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar),value);
-		return;
-
-	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_TOOLBARS),AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar),value);
-		return;
-
-	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_TOOLBARS),AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar),value);
-		return;
-
+	
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType),value);
 		return;
@@ -305,9 +296,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	void AP_Win32Dialog_Options::_set##button(const bool b) 												\
 	{ CheckDlgButton((HWND)getPage(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 
-DEFINE2_GET_SET_BOOL(PG_TOOLBARS,ViewShowStandardBar);
-DEFINE2_GET_SET_BOOL(PG_TOOLBARS,ViewShowFormatBar);
-DEFINE2_GET_SET_BOOL(PG_TOOLBARS,ViewShowExtraBar);
 
 
 DEFINE2_GET_SET_BOOL(PG_SPELL,SpellCheckAsType);
@@ -494,6 +482,26 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 }
 
 
+bool AP_Win32Dialog_Options::_gatherViewShowToolbar(UT_uint32 row)
+{	 	
+	int nState = (int)SendMessage(GetDlgItem((HWND)getPage(PG_TOOLBARS), AP_RID_DIALOG_OPTIONS_LST_Toolbars), LVM_GETITEMSTATE, (WPARAM)row,
+		(LPARAM)LVIS_STATEIMAGEMASK);
+	
+	return (bool) (((nState >> 12)) -1);	
+}
+
+void AP_Win32Dialog_Options::_setViewShowToolbar(UT_uint32 row, bool b)
+{	
+	LV_ITEM lvitem;
+
+	lvitem.stateMask = LVIS_STATEIMAGEMASK;
+	lvitem.state = INDEXTOSTATEIMAGEMASK((b ? 2 : 1));
+
+	SendMessage(GetDlgItem((HWND)getPage(PG_TOOLBARS), AP_RID_DIALOG_OPTIONS_LST_Toolbars), 
+		LVM_SETITEMSTATE, (WPARAM)row, (LPARAM)&lvitem);
+}
+
+
 
 /*
 
@@ -630,22 +638,21 @@ void AP_Win32Dialog_Options_Toolbars::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 	HWND hWndCtrl = (HWND)lParam;	
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
 	
+	/*
 	switch (wId)
 	{		
-		case AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar: 	
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR);	
-			return;
-		case AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar:	
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR); 	
-			return;
-		case AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar:		
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR);		
-			return;
 		
 		default:
 		break;
-	}
+	}*/
 }
+
+
+#ifndef LVS_EX_CHECKBOXES
+#define LVS_EX_CHECKBOXES 0x00000004L
+#endif
+
+
 /*
 	
 */	
@@ -653,10 +660,7 @@ void AP_Win32Dialog_Options_Toolbars::_onInitDialog()
 {				
 	const XAP_StringSet * pSS = getApp()->getStringSet();	
 	
-	_DS2(OPTIONS_FRM_Toolbars,				DLG_Options_Label_Toolbars);
-	_DS2(OPTIONS_CHK_ViewShowStandardBar,	DLG_Options_Label_ViewStandardTB);
-	_DS2(OPTIONS_CHK_ViewShowFormatBar,		DLG_Options_Label_ViewFormatTB);
-	_DS2(OPTIONS_CHK_ViewShowExtraBar,		DLG_Options_Label_ViewExtraTB);
+	_DS2(OPTIONS_FRM_Toolbars,				DLG_Options_Label_Toolbars);	
 	_DS2(OPTIONS_FRM_ButtonStyle,			DLG_Options_Label_Look);
 	_DS2(OPTIONS_RDO_Icons,					DLG_Options_Label_Icons);
 	_DS2(OPTIONS_RDO_Text,					DLG_Options_Label_Text);
@@ -668,7 +672,29 @@ void AP_Win32Dialog_Options_Toolbars::_onInitDialog()
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_RDO_Text), 		false );
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_RDO_IconsAndText), false );
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips), false );
+
+	HWND hWndList = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_LST_Toolbars);
 	
+	//
+	const UT_Vector & vec = XAP_App::getApp()->getToolbarFactory()->getToolbarNames();	 
+	const char* utf8;
+	for (UT_uint32 i = 0; i < vec.getItemCount(); i++) 
+	{		
+		utf8 = static_cast<const char *>(reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(i))->utf8_str());		
+		static char szText[255];		
+		strcpy(szText, (AP_Win32App::s_fromUTF8ToAnsi(utf8)).c_str());		
+		
+		LVITEM item;
+		item.pszText = szText;
+		item.iItem = i;
+		item.iSubItem = 0;
+		item.lParam = 0;
+		item.mask = LVIF_TEXT;		
+
+		SendMessage(hWndList, LVM_INSERTITEM, 0,  (LPARAM) &item);
+	}	
+	
+	SendMessage (hWndList, LVM_SETEXTENDEDLISTVIEWSTYLE,LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
 	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);	
 			
 }
@@ -1060,3 +1086,6 @@ bool AP_Win32Dialog_Options_Pref::isAutoSaveInRange()
 	
 	return true;	
 }
+
+
+
