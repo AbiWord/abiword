@@ -75,6 +75,8 @@ class fl_AutoNum;
 
 
 static const UT_uint32 MAX_KEYWORD_LEN = 256;
+// This should probably be defined in pt_Types.h
+static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 
 //////////////////////////////////////////////////////////////////////
 // Two Useful List arrays
@@ -2781,7 +2783,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		break;
 
 	case 's':
-		if (strcmp((char*)pKeyword, "stylesheet") == 0)
+		if (strcmp((char*)pKeyword, "s")==0)
+		{
+			m_currentRTFState.m_paraProps.m_styleNumber = param;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "stylesheet") == 0)
 		{
 			return HandleStyleDefinition();
 		}
@@ -3298,7 +3305,9 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 
 bool IE_Imp_RTF::ApplyParagraphAttributes()
 {
-	XML_Char* pProps = "props";
+	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
+	UT_uint32 attribsCount=0;
+
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack // TODO consider using a UT_ByteBuf instead -- jeff
 	XML_Char tempBuffer[128];
 
@@ -3448,16 +3457,12 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 
 
 	// Lists. If the paragraph has a list element handle it.
-	const XML_Char* propsArray[3];
-	const XML_Char** attribs = NULL;
-	UT_Vector v;
-	static char pszLevel[8];
-	static char pszStyle[40];
-	static char pszListID[15];
-	static char pszParentID[15];
-	static char pszStartValue[15];
+	static char szLevel[8];
+	static char szStyle[40];
+	static char szListID[15];
+	static char szParentID[15];
+	static char szStartValue[15];
 	UT_uint32 id = 0,pid = 0,startValue = 0;
-	UT_uint32 attribsCount;
 	bool bPasteList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
 //
 // This is for our own extensions to RTF.
@@ -3468,22 +3473,20 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	  // First off assemble the list attributes
 	  //
 		id = mapID(m_currentRTFState.m_paraProps.m_rawID);
-		sprintf(pszListID,"%d",id);
-		v.addItem((void *) "listid"); v.addItem( (void *) pszListID);
+		sprintf(szListID,"%d",id);
 		pid = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
-		sprintf(pszParentID,"%d",pid);
-		v.addItem((void *) "parentid"); v.addItem( (void *) pszParentID);
+		sprintf(szParentID,"%d",pid);
 		if(pid == 0)
 			m_currentRTFState.m_paraProps.m_level = 1;
-		sprintf(pszLevel,"%d",m_currentRTFState.m_paraProps.m_level);
-		v.addItem((void *) "level"); v.addItem( (void *) pszLevel);
-		
-		UT_uint32 counta = v.getItemCount() + 3;
-		attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
-		for(attribsCount=0; attribsCount<v.getItemCount();attribsCount++)
-		{
-			attribs[attribsCount] = (XML_Char *) v.getNthItem(attribsCount);
-		}
+		sprintf(szLevel,"%d",m_currentRTFState.m_paraProps.m_level);
+
+		attribs[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
+		attribs[attribsCount++] = szListID;
+		attribs[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
+		attribs[attribsCount++] = szParentID;
+		attribs[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
+		attribs[attribsCount++] = szLevel;
+		attribs[attribsCount] = NULL;
 	}
 
 //
@@ -3511,17 +3514,14 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // Got attributes
 //
-		v.clear();
-		v.addItem((void *) "listid"); v.addItem( (void *) szListID);
-		v.addItem((void *) "parentid"); v.addItem( (void *) szParentID);
-		v.addItem((void *) "level"); v.addItem( (void *) szLevel);
+		attribs[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
+		attribs[attribsCount++] = szListID;
+		attribs[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
+		attribs[attribsCount++] = szParentID;
+		attribs[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
+		attribs[attribsCount++] = szLevel;
+		attribs[attribsCount]   = NULL;
 		
-		UT_uint32 counta = v.getItemCount() + 3;
-		attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
-		for(attribsCount=0; attribsCount<v.getItemCount();attribsCount++)
-		{
-			attribs[attribsCount] = (XML_Char *) v.getNthItem(attribsCount);
-		}
 //
 // Next do character properties redefined in this list
 //
@@ -3648,10 +3648,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		strcat(propBuffer, tempBuffer);
 		sprintf(tempBuffer, "text-indent:%s", szIndent); // Note last entry has no ;
 		strcat(propBuffer, tempBuffer);
-
-		attribs[attribsCount++] = pProps;
-		attribs[attribsCount++] = propBuffer;
-		attribs[attribsCount] = NULL;
 	}
 
 
@@ -3661,7 +3657,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		// Now handle the Abi List properties
 		//
 		sprintf(tempBuffer,"list-style:%s;",m_currentRTFState.m_paraProps.m_pszStyle);
-		sprintf(pszStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
+		sprintf(szStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
 		strcat(propBuffer, tempBuffer);
 		sprintf(tempBuffer, "list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
 		strcat(propBuffer, tempBuffer);
@@ -3670,13 +3666,18 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		sprintf(tempBuffer, "field-font:%s; ",m_currentRTFState.m_paraProps.m_pszFieldFont);
 		strcat(propBuffer, tempBuffer);
 		startValue = m_currentRTFState.m_paraProps.m_startValue;
-		sprintf(pszStartValue,"%d",startValue);
-		sprintf(tempBuffer, "start-value:%s ",pszStartValue);
+		sprintf(szStartValue,"%d",startValue);
+		sprintf(tempBuffer, "start-value:%s ",szStartValue);
 		strcat(propBuffer, tempBuffer);
-
-		attribs[attribsCount++] = pProps;
-		attribs[attribsCount++] = propBuffer;
-		attribs[attribsCount] = NULL;
+	}
+	// Style name
+	if( (UT_uint32) m_currentRTFState.m_paraProps.m_styleNumber < m_styleTable.size() &&(m_currentRTFState.m_paraProps.m_styleNumber >= 0) )
+	{
+		UT_uint32 styleNumber = m_currentRTFState.m_paraProps.m_styleNumber;
+		const char * styleName = (const char *)m_styleTable[styleNumber];
+		attribs[attribsCount++] = PT_STYLE_ATTRIBUTE_NAME;
+		attribs[attribsCount++] = styleName;
+		attribs[attribsCount]   = NULL;
 	}
 //
 // Remove the trailing ";" if needed.
@@ -3690,9 +3691,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	{
 		propBuffer[eol] = 0;
 	}
-	propsArray[0] = pProps;
-	propsArray[1] = propBuffer;
-	propsArray[2] = NULL;
+	attribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
+	attribs[attribsCount++] = propBuffer;
+	attribs[attribsCount++] = NULL;
 
 	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing header and footers
 	{
@@ -3702,7 +3703,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			//
 			// Insert a list-label field??
 			//
-			FREEP(attribs);
 			const XML_Char* fielddef[3];
 			fielddef[0] ="type";
 			fielddef[1] = "list_label";
@@ -3717,128 +3717,124 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else
 		{
-			bool ok = getDoc()->appendStrux(PTX_Block, propsArray);
+			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
 			return ok;
 		}
 	}
 	else
 	{
 		bool bSuccess = true;
-		if (bSuccess)
+		if(bPasteList)
 		{
-			if(bPasteList)
+			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_dposPaste++;
+			//
+			// Put the tab back in.
+			//
+			UT_UCSChar cTab = UCS_TAB;
+			getDoc()->insertSpan(m_dposPaste,&cTab,1);
+			m_dposPaste++;
+			PL_StruxDocHandle sdh_cur,sdh_next;
+			PT_DocPosition pos_next;
+			UT_uint32 j;
+			fl_AutoNum * pAuto = getDoc()->getListByID(id);
+			if(pAuto == NULL) 
+			/*
+			* Got to create a new list here. 
+			* Old one may have been cut out or ID may have
+			* been remapped.
+			*/
 			{
-				bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
-				m_dposPaste++;
-//
-// Put the tab back in.
-//
-				UT_UCSChar cTab = UCS_TAB;
-				getDoc()->insertSpan(m_dposPaste,&cTab,1);
-				m_dposPaste++;
-				PL_StruxDocHandle sdh_cur,sdh_next;
-				PT_DocPosition pos_next;
-				UT_uint32 j;
-				fl_AutoNum * pAuto = getDoc()->getListByID(id);
-				if(pAuto == NULL) 
-				/*
-				 * Got to create a new list here. 
-				 * Old one may have been cut out or ID may have
-				 * been remapped.
-				 */
+				List_Type lType = NOT_A_LIST;
+				UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
+				for(j=0; j< size_xml_lists; j++)
 				{
-					List_Type lType = NOT_A_LIST;
-					UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
-					for(j=0; j< size_xml_lists; j++)
+					if( UT_XML_strcmp(szStyle,xml_Lists[j]) ==0)
 					{
-						if( UT_XML_strcmp(pszStyle,xml_Lists[j]) ==0)
-						{
-							break;
-						}
+						break;
 					}
-					if(j < size_xml_lists)
-						lType = (List_Type) j;
-					else
-						lType = (List_Type) 0;
-					pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, getDoc());
-					getDoc()->addList(pAuto);
-					pAuto->fixHierarchy(getDoc());
 				}
-				bSuccess = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh_cur);
-				///
-				/// Now insert this into the pAuto List
-				///
-				if(pAuto->isEmpty() == true)
-				{
-					pAuto->addItem(sdh_cur);
-				}
+				if(j < size_xml_lists)
+					lType = (List_Type) j;
 				else
-				{
-					j= 0;
-					sdh_next = pAuto->getNthBlock(j);
-					pos_next = getDoc()->getStruxPosition(sdh_next);
-					while(sdh_next != NULL && pos_next < m_dposPaste)
-					{
-						j++;
-						sdh_next = pAuto->getNthBlock(j);
-						if(sdh_next != NULL)
-							pos_next = getDoc()->getStruxPosition(sdh_next);
-					}
-					if(sdh_next != NULL)
-					{
-						pAuto->prependItem(sdh_cur,sdh_next);
-					}
-					else
-					{
-						pAuto->addItem(sdh_cur);
-					}
-				}
-				UT_uint32 npid = 0;
-				if(pid != 0)
-				{
-					pAuto->findAndSetParentItem();
-					pAuto->markAsDirty();
-					npid = pAuto->getParentID();
-					sprintf(pszParentID,"%d",npid);
-				}
-				bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
-  				FREEP(attribs);
+					lType = (List_Type) 0;
+				pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, getDoc());
+				getDoc()->addList(pAuto);
+				pAuto->fixHierarchy(getDoc());
+			}
+			bSuccess = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh_cur);
+			///
+			/// Now insert this into the pAuto List
+			///
+			if(pAuto->isEmpty() == true)
+			{
+				pAuto->addItem(sdh_cur);
 			}
 			else
 			{
-				bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
-				m_dposPaste++;
-				bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, propsArray,NULL,PTX_Block);
-//
-// Now check if this strux has associated list element. If so stop the list!
-//
-				PL_StruxDocHandle sdh = NULL;
-				getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh);
-				UT_uint32 nLists = getDoc()->getListsCount();
-				bool bisListItem = false;
-//
-// Have to loop so that multi-level lists get stopped. Each StopList removes
-// the sdh from the next highest level.
-//
-				do
+				j= 0;
+				sdh_next = pAuto->getNthBlock(j);
+				pos_next = getDoc()->getStruxPosition(sdh_next);
+				while(sdh_next != NULL && pos_next < m_dposPaste)
 				{
-					fl_AutoNum * pAuto = NULL;
-					bisListItem = false;
-					for(UT_uint32 i=0; (i< nLists && !bisListItem); i++)
-					{
-						pAuto = getDoc()->getNthList(i);
-						bisListItem = pAuto->isItem(sdh);
-					}
-//
-// We've created a list element where we should not. Stop it now!!
-//
-					if(bisListItem)
-					{
-						getDoc()->StopList(sdh);
-					}
+					j++;
+					sdh_next = pAuto->getNthBlock(j);
+					if(sdh_next != NULL)
+						pos_next = getDoc()->getStruxPosition(sdh_next);
 				}
-				while(bisListItem);
+				if(sdh_next != NULL)
+				{
+					pAuto->prependItem(sdh_cur,sdh_next);
+				}
+				else
+				{
+					pAuto->addItem(sdh_cur);
+				}
 			}
+			UT_uint32 npid = 0;
+			if(pid != 0)
+			{
+				pAuto->findAndSetParentItem();
+				pAuto->markAsDirty();
+				npid = pAuto->getParentID();
+				sprintf(szParentID,"%d",npid);
+			}
+			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
+		}
+		else
+		{
+			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_dposPaste++;
+			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
+			//
+			// Now check if this strux has associated list element. If so stop the list!
+			//
+			PL_StruxDocHandle sdh = NULL;
+			getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh);
+			UT_uint32 nLists = getDoc()->getListsCount();
+			bool bisListItem = false;
+			//
+			// Have to loop so that multi-level lists get stopped. Each StopList removes
+			// the sdh from the next highest level.
+			//
+			do
+			{
+				fl_AutoNum * pAuto = NULL;
+				bisListItem = false;
+				for(UT_uint32 i=0; (i< nLists && !bisListItem); i++)
+				{
+					pAuto = getDoc()->getNthList(i);
+					bisListItem = pAuto->isItem(sdh);
+				}
+				//
+				// We've created a list element where we should not. Stop it now!!
+				//
+				if(bisListItem)
+				{
+					getDoc()->StopList(sdh);
+				}
+			}
+			while(bisListItem);
 		}
 		return bSuccess;
 	}
@@ -4221,7 +4217,8 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 
 /*!
  * OK this method parses the RTF against all the character and paragraph properties.
- * and fills the points to the character and paragraph classes. These are used by the list table
+ * and fills the pointers to the character and paragraph classes. 
+ * These are used by the list table
  * reader.
  */
 bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas)
@@ -4229,25 +4226,21 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 	if (strcmp((char*)pKeyword, "b") == 0) // bold
 	{
 		pbChars->bm_bold = true;
-		return HandleBoolCharacterProp(fParam ? false : true, &(pChars->m_bold));
+		pChars->m_bold = fParam ? false : true; 
+		return true;
 	}
 	else if (strcmp((char*)pKeyword, "cf") == 0) // color
 	{
-		if (HandleBoolCharacterProp(true, &(pChars->m_hasColour)))
-		{
-			pbChars->bm_colourNumber = true;
-			return HandleU32CharacterProp((UT_uint32) param, &(pChars->m_colourNumber));
-		}
-		return false;
+		pChars->m_hasColour = true;
+		pbChars->bm_hasColour = true;
+		pbChars->bm_colourNumber = true;
+		pChars->m_colourNumber = (UT_uint32) param;
+		return true;
 	}
 	else if (strcmp((char*)pKeyword, "cb") == 0) // background color
 	{
-		if (HandleBoolCharacterProp(true, &(pChars->m_hasBgColour)))
-		{
-			pbChars->bm_bgcolourNumber = true;
-			return HandleU32CharacterProp((UT_uint32) param, &(pChars->m_bgcolourNumber));
-		}
-		return false;
+		pbChars->bm_bgcolourNumber = true;
+		return HandleU32CharacterProp((UT_uint32) param, &(pChars->m_bgcolourNumber));
 	}
 	else if (strcmp((char*)pKeyword, "deleted") == 0) // deleted
 	{
@@ -4463,12 +4456,9 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 		bool ok;
 		UT_uint32 pos = (UT_uint32) (fParam ? param : 6);
 		pbChars->bm_superscript = true;
-		ok = HandleBoolCharacterProp((pos != 0) ? true : false, &(pChars->m_superscript));
-		if (ok)
-		{
-			pbChars->bm_superscript_pos = true;
-			ok = HandleFloatCharacterProp (pos*0.5, &(pChars->m_superscript_pos));
-		}
+		pChars->m_superscript = (pos != 0) ? true : false ;
+		pbChars->bm_superscript_pos = true;
+		ok = HandleFloatCharacterProp (pos*0.5, &(pChars->m_superscript_pos));
 		return ok;
 	}
 	return true;
@@ -5752,8 +5742,6 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	return;
 }
 
-// This should probably be defined in pt_Types.h
-#define PT_MAX_ATTRIBUTES 8
 
 /*!
 Define a new style, here is the formal syntax:
@@ -5787,7 +5775,6 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	bool status = true;
 	int nesting = 1;
 	unsigned char ch;
-	UT_sint32 i;
 	char * styleType = "P";
 	RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
@@ -5796,67 +5783,60 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	static char  propBuffer[1024];
 	propBuffer[0] = NULL;
 
-	UT_Vector attribs;
+	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
+	UT_uint32 attribsCount=0;
 	UT_String styleName = "";
 	UT_sint32 styleNumber = 0;
-	while ((nesting > 0) && status)
+	while (nesting>0 && status == true)
 	{
         unsigned char keyword[MAX_KEYWORD_LEN];
         long parameter = 0;
 	    bool parameterUsed = false;
         
-		if (!ReadCharFromFile(&ch)) {
+		if (!ReadCharFromFile(&ch))
 		    return false;
-		}
 		
 		switch(ch)
 		{
 		case '\\':
             status = ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN);
-			if (!status) {
+			if (!status)
 				return status;
-			}
-			else if (UT_strcmp((char *)keyword, "sbasedon") == 0)
+			else if (0 == UT_strcmp((char *)keyword, "sbasedon"))
 			{
 				if (parameter >= styleNumber)
 				{
-					UT_DEBUGMSG(("Cannot base this style on style %d when I am style %d. Ignoring that.\n", parameter, styleNumber));
-					// ignore
-					//return false;
+					UT_DEBUGMSG(("Cannot base this style on style %d when I am style %d",parameter,styleNumber));
+					return false;
 				}
-				else {
-					char * val = (char *)m_styleTable.getNthItem(parameter);
-					if (val != NULL)
-					{
-						attribs.addItem((void *)PT_BASEDON_ATTRIBUTE_NAME);
-						attribs.addItem(val);
-					}
+				char * val = (char *)m_styleTable.getNthItem(parameter);
+				if (val != NULL)
+				{
+               		attribs[attribsCount++] = PT_BASEDON_ATTRIBUTE_NAME;
+					attribs[attribsCount++] = val;
+					attribs[attribsCount]   = NULL;
 				}
 			}
-			else if (UT_strcmp((char *)keyword, "snext") == 0)
+			else if (0 == UT_strcmp((char *)keyword, "snext"))
 			{
 				if (parameter != styleNumber)
 				{
-					if (styleNumber < m_styleTable.getItemCount()) {
-						char * val = (char *)m_styleTable.getNthItem(parameter);
-						if (val != NULL)
-						{
-							attribs.addItem((void *)PT_FOLLOWEDBY_ATTRIBUTE_NAME);
-							attribs.addItem(val);
-						}
-					}
-					else {
-						UT_DEBUGMSG (("Next style %d for style %d is not yet defined !\n", parameter, styleNumber));
+					char * val = (char *)m_styleTable.getNthItem(parameter);
+					if (val != NULL)
+					{
+	               		attribs[attribsCount++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
+						attribs[attribsCount++] = val;
+						attribs[attribsCount]   = NULL;
 					}
 				}
 			}
-			else if ((UT_strcmp((char *)keyword, "s") == 0) ||
-				     (UT_strcmp((char *)keyword, "ds") == 0) ||
-				     (UT_strcmp((char *)keyword, "cs") == 0))
+			else if ((0 == UT_strcmp((char *)keyword,  "s")) ||
+				     (0 == UT_strcmp((char *)keyword, "ds")) ||
+				     (0 == UT_strcmp((char *)keyword, "cs")))
 			{
 				styleNumber = parameter;
 			}
-			else if (UT_strcmp((char *)keyword, "*") == 0)
+			else if (0 == UT_strcmp((char *)keyword, "*"))
 			{
 				break;
 			}
@@ -5874,17 +5854,11 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		default:
 			// The only thing that should be left is the style name
 
-//  			if (m_styleTable.size() >0)
-//  			{
-//  				UT_DEBUGMSG(("RTF: m_styleTable already parsed once, something is wrong"));
-//  				return false;
-//  			}
 			while (ch != '}' && ch != ';')
 			{
 				styleName += ch;
-                if (!ReadCharFromFile(&ch)) {
+                if (!ReadCharFromFile(&ch))
 		            return false;
-				}
 				if (ch =='}')
 				{
 					UT_DEBUGMSG(("RTF: Badly formatted style name, no ';'"));
@@ -5900,45 +5874,36 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			// Reached the end of a single style definition.
 			// Use it.
-			const char * attributes[16];
-			for (i=0;i< (UT_sint32) attribs.size(); i++)
-			{
-				attributes[i] = (char *)attribs.getNthItem(i);
-			}
-			// TODO: Turn the properties structure into a string
-			attributes[i++] = PT_PROPS_ATTRIBUTE_NAME;
 			buildAllProps((char *) &propBuffer ,pParas,pChars,pbParas,pbChars);
-			attributes[i++] = (const char *) &propBuffer;
+			attribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
+			attribs[attribsCount++] = (const char *) &propBuffer;
 			UT_DEBUGMSG(("SEVIOR: Loading props definition %s \n",propBuffer));
-			// ApplyParagraphAttributes()
-//
-// The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
-// style
-//
-			attributes[i++] = PT_NAME_ATTRIBUTE_NAME;
-			attributes[i++] = (const char *)m_styleTable[styleNumber];
 
-			attributes[i++] = PT_TYPE_ATTRIBUTE_NAME;
-			attributes[i++] = styleType;
-			attributes[i++] = NULL;
-			const char * szName = (const char *)m_styleTable[styleNumber];
-			PD_Style * pStyle = NULL;
+			attribs[attribsCount++] = PT_NAME_ATTRIBUTE_NAME;
+			attribs[attribsCount++] = (const char *)m_styleTable[styleNumber];
+
+			attribs[attribsCount++] = PT_TYPE_ATTRIBUTE_NAME;
+			attribs[attribsCount++] = styleType;
+			attribs[attribsCount] = NULL;
 //
 // If style exists we have to redefine it like this
 //
+			const char * szName = (const char *)m_styleTable[styleNumber];
+			PD_Style * pStyle = NULL;
 			if(getDoc()->getStyle(szName, &pStyle))
 			{
-				pStyle->addAttributes(attributes);
+				pStyle->addAttributes(attribs);
 				pStyle->getBasedOn();
 				pStyle->getFollowedBy();
 			}
 			else
 			{
-				getDoc()->appendStyle(attributes);
+				getDoc()->appendStyle(attribs);
 			}
 
 			// Reset
-			attribs.clear();
+			attribsCount = 0;
+			attribs[attribsCount] = NULL;
 			styleNumber = 0;
 			styleName = "";
 			styleType = "P";
@@ -6165,7 +6130,6 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 			sprintf(tempBuffer, " color:%06x;", colour);
 			tempBuffer[14] = 0;
 			strcat(propBuffer, tempBuffer);
-			strcat(propBuffer, ";");
 		}
 	}
 	// BackGround Colour
@@ -6180,7 +6144,6 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 				sprintf(tempBuffer, " bgcolor:%06x;", bgColour);	   		
 				tempBuffer[17] = 0;
 				strcat(propBuffer, tempBuffer);
-				strcat(propBuffer, ";");
 			}
 		}
 	}
@@ -6192,6 +6155,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 	{
 		eol--;
 	}
+	UT_DEBUGMSG(("SEVIOR: char at eol = %c, eol = %d \n",propBuffer[eol],eol));
 	if(propBuffer[eol] == ';')
 	{
 		propBuffer[eol] = 0;
