@@ -1075,7 +1075,7 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(GR_RenderInfo & ri)
 	{
 		if(!bReverse)
 		{
-			UT_uint32 iMax = RI.m_iCharCount;
+			UT_uint32 iMax = RI.m_iIndicesCount;
 			
 			if(i < (UT_sint32)RI.m_iCharCount - 1)
 				iMax = RI.m_pClust[i+1];
@@ -2127,6 +2127,7 @@ bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 
 bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 {
+#if 0
 	UT_return_val_if_fail(m_pGraphics && m_pFont, false);
 
 	UT_ASSERT_HARMLESS(!pri);
@@ -2275,6 +2276,11 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	}
 	
 	return true;
+#else
+		m_bNeedsReshaping = true;
+	
+	return false;
+#endif
 }
 
 bool GR_Win32USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
