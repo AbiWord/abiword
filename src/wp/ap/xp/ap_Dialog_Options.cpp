@@ -36,6 +36,7 @@
 #include "ap_Dialog_Options.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "ap_Strings.h"
+#include "ap_FrameData.h"
 
 AP_Dialog_Options::AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
@@ -66,6 +67,9 @@ void AP_Dialog_Options::_storeWindowData(void)
 {
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_ASSERT(pPrefs);
+
+	AP_FrameData *pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
 
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefs->getCurrentScheme());
@@ -105,8 +109,18 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckInternet, _gatherSpellInternet() );
 
-	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// If we changed whether the ruler is to be visible
+	// or hidden, then update the current window:
+	// (If we didn't change anything, leave it alone)
+	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
+	{
+		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
+		m_pFrame->toggleRuler( _gatherViewShowRuler() );
+	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// save ruler units value
