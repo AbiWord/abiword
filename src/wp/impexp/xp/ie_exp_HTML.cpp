@@ -417,77 +417,77 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					m_bInList = false;
 				}
 
-				if(0 == UT_strcmp(szValue, "Heading1") ||
-					_inherits((const char*) szValue, "Heading1")) 
+				if(0 == UT_strcmp(value, "Heading1") ||
+					_inherits((const char*) value, "Heading1")) 
 				{
 					// <p style="Heading 1"> ...
 
 					m_iBlockType = BT_HEADING1;
 					m_pie->write("\n<h1");
-					if(_inherits((const char*) szValue, "Heading1"))
+					if(_inherits((const char*) value, "Heading1"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) szValue);
+						_outputInheritanceLine((const char*) value);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "Heading2") ||
-					_inherits((const char*) szValue, "Heading2")) 
+				else if(0 == UT_strcmp(value, "Heading2") ||
+					_inherits((const char*) value, "Heading2")) 
 				{
 					// <p style="Heading 2"> ...
 
 					m_iBlockType = BT_HEADING2;
 					m_pie->write("\n<h2");
-					if(_inherits((const char*) szValue, "Heading2"))
+					if(_inherits((const char*) value, "Heading2"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) szValue);
+						_outputInheritanceLine((const char*) value);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "Heading3") ||
-					_inherits((const char*) szValue, "Heading3")) 
+				else if(0 == UT_strcmp(value, "Heading3") ||
+					_inherits((const char*) value, "Heading3")) 
 				{
 					// <p style="Heading 3"> ...
 
 					m_iBlockType = BT_HEADING3;
 					m_pie->write("\n<h3");
-					if(_inherits((const char*) szValue, "Heading3"))
+					if(_inherits((const char*) value, "Heading3"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) szValue);
+						_outputInheritanceLine((const char*) value);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "BlockText") || 
-					_inherits((const char*) szValue, "BlockText"))
+				else if(0 == UT_strcmp(value, "BlockText") || 
+					_inherits((const char*) value, "BlockText"))
 				{
 					// <p style="Block Text"> ...
 
 					m_iBlockType = BT_BLOCKTEXT;
 					m_pie->write("<blockquote");
-					if(_inherits((const char*) szValue, "BlockText"))
+					if(_inherits((const char*) value, "BlockText"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) szValue);
+						_outputInheritanceLine((const char*) value);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "PlainText") ||
-					_inherits((const char*) szValue, "PlainText"))
+				else if(0 == UT_strcmp(value, "PlainText") ||
+					_inherits((const char*) value, "PlainText"))
 				{
 					// <p style="Plain Text"> ...
 
 					m_iBlockType = BT_PLAINTEXT;
 					m_pie->write("<pre");
-					if(_inherits((const char*) szValue, "PlainText"))
+					if(_inherits((const char*) value, "PlainText"))
 					{
 						m_pie->write(" class=\"");
-						_outputInheritanceLine((const char*) szValue);
+						_outputInheritanceLine((const char*) value);
 						m_pie->write("\"");
 					}
 					wasWritten = true;
@@ -498,7 +498,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 			        m_iBlockType = BT_NORMAL;
 			      	m_pie->write("<p class=\"");
-					m_pie->write(szValue);
+					m_pie->write(value);
 					m_pie->write("\"");
 					wasWritten = true;
 				}	
