@@ -406,8 +406,17 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 			    m_ps->writeBytes(buf);
 			    pD = buf;
 			}
-			for(int i=0;i<_bytes_len;++i)
-			    *pD++ = _bytes[i];
+                       for(int i = 0; i < _bytes_len; ++i) {
+                           char c = _bytes[i];
+                           switch (c)
+                           {
+                               case '\\': *pD++ = '\\'; *pD++ = '\\'; break;
+                               case '(' : *pD++ = '\\'; *pD++ = '(';  break;
+                               case ')' : *pD++ = '\\'; *pD++ = ')';  break;
+                               default:   *pD++ = (unsigned char)c;     break;
+                           }
+                       }
+
 		} else 	{
 		    currentChar = remapGlyph(*pS, *pS >= 256 ? UT_TRUE : UT_FALSE);
 		    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
