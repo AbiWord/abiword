@@ -86,10 +86,14 @@ public:
 							m_vecFullTable(NULL),
 							m_iTablePadding(0),
 							m_iCells(0),
-							m_iCurCell(0),
-							u()
+							m_iCurCell(0)
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Creating AP_TopRulerInfo %x \n",this));
+
+			u.c.m_xaLeftMargin  = 0;
+			u.c.m_xaRightMargin = 0;
+			u.c.m_xColumnGap    = 0;
+			u.c.m_xColumnWidth  = 0;
 		}
 	virtual ~AP_TopRulerInfo(void)
 		{
