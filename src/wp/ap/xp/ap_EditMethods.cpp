@@ -2342,7 +2342,7 @@ Defun1(filePreviewWeb)
   else
 	  tmpUrl = UT_catPathname("file:///", szTempFileName);
 
-  bool bOk = _helpOpenURL(pAV_View, tmpUrl);
+  bool bOk = _openURL(pAV_View, tmpUrl);
   FREEP(tmpUrl);
 
 #if 0
