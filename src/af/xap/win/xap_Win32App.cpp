@@ -62,7 +62,7 @@ UT_Bool AP_Win32App::initialize(void)
 
 	if (!AP_Win32Frame::RegisterClass(this))
 	{
-		UT_DEBUGMSG(("couldn't register class"));
+		UT_DEBUGMSG(("couldn't register class\n"));
 		return UT_FALSE;
 	}
 

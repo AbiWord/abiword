@@ -19,6 +19,7 @@
 
 
 #include <windows.h>
+#include <commctrl.h>   // includes the common control header
 #include <crtdbg.h>
 #include <string.h>
 
@@ -55,6 +56,9 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG );
+
+	// Ensure that common control DLL is loaded
+	InitCommonControls();
 
 	// initialize our application.
 

@@ -80,7 +80,7 @@ UT_Bool EV_Toolbar::invokeToolbarMethod(FV_View * pView,
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-	UT_DEBUGMSG(("invokeToolbarMethod: %s repeat %d",pEM->getName(),iPrefixCount));
+	UT_DEBUGMSG(("invokeToolbarMethod: %s repeat %d\n",pEM->getName(),iPrefixCount));
 
 	EV_EditMethodType t = pEM->getType();
 

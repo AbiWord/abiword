@@ -72,6 +72,7 @@ protected:
 	EV_Win32Mouse *				m_pWin32Mouse;
 	EV_Win32Menu *				m_pWin32Menu;
 	UT_Vector					m_vecWin32Toolbars;
+	UT_uint32					m_iBarHeight;
 	
 	HWND						m_hwndFrame;
 	HWND						m_hwndChild;

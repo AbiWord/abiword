@@ -18,6 +18,8 @@
  */
 
 #include <windows.h>
+#include <commctrl.h>   // includes the common control header
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ev_Win32Toolbar.h"
@@ -45,10 +47,14 @@ EV_Win32Toolbar::EV_Win32Toolbar(AP_Win32App * pWin32App, AP_Win32Frame * pWin32
 {
 	m_pWin32App = pWin32App;
 	m_pWin32Frame = pWin32Frame;
+	m_pViewListener = NULL;
+	m_lid = 0;							// view listener id
+	m_hwnd = NULL;
 }
 
 EV_Win32Toolbar::~EV_Win32Toolbar(void)
 {
+	_releaseListener();
 //	UT_VECTOR_PURGEALL(_wd,m_vecToolbarWidgets);
 }
 
@@ -91,6 +97,37 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 
 	HWND wTLW = m_pWin32Frame->getTopLevelWindow();
 
+	// NOTE: this toolbar will get placed later, by frame or rebar
+
+    m_hwnd = CreateWindowEx(0, 
+				TOOLBARCLASSNAME,		// window class name
+				(LPSTR) NULL,			// window caption
+				WS_CHILD | WS_BORDER | TBSTYLE_TOOLTIPS
+				,						// window style
+				0,						// initial x position
+				0,						// initial y position
+				0,						// initial x size
+				0,						// initial y size
+				wTLW,					// parent window handle
+				NULL,					// window menu handle
+				m_pWin32App->getInstance(),		// program instance handle
+				NULL);					// creation parameters
+
+	UT_ASSERT(m_hwnd);
+
+	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
+	SendMessage(m_hwnd, TB_SETBUTTONSIZE, 0, (LPARAM) MAKELONG(16,15));  
+
+	// HACK: stuff in the standard icons for now
+	TBADDBITMAP ab;
+	ab.hInst = HINST_COMMCTRL;		// hinstCommctrl
+	ab.nID   = IDB_STD_SMALL_COLOR;	// std bitmaps
+	LRESULT iAddedAt = SendMessage(m_hwnd, TB_ADDBITMAP, 15, (LPARAM)&ab);
+	UT_ASSERT(iAddedAt != -1);
+
+	// TODO: is there any advantage to building up all the TBBUTTONs at once
+	//		 and then adding them en masse, instead of one at a time? 
+
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
@@ -102,11 +139,18 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
+		UINT u = WmCommandFromItemId(id);
+
+		TBBUTTON tbb;
+		memset(&tbb, 0, sizeof(tbb));
+		
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
 			{
 #if 0
+				// TODO: actually translate XPM into a HBITMAP here
+				// NOTE: if the logic's here, apps don't need it, but can't provide BMPs either
 				UT_Bool bFoundIcon =
 					m_pWin32ToolbarIcons->getPixmapForIcon(wTLW->window,
 														  &wTLW->style->bg[GTK_STATE_NORMAL],
@@ -114,34 +158,25 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 														  &wPixmap);
 				UT_ASSERT(bFoundIcon);
 #endif
-				const char * szToolTip = pLabel->getToolTip();
-				if (!szToolTip || !*szToolTip)
-					szToolTip = pLabel->getStatusMsg();
+
+				// these don't vary much by type
+				tbb.iBitmap = STD_HELP;		// HACK: just map to std. icons for now
+				tbb.idCommand = u;     
+				tbb.dwData = 0; 
+
+				const char * szLabel = pLabel->getToolbarLabel();
+				tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
 
 				switch (pAction->getItemType())
 				{
 				case EV_TBIT_PushButton:
-#if 0
-					gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-											pLabel->getToolbarLabel(),
-											szToolTip,(const char *)NULL,
-											wPixmap,
-											GTK_SIGNAL_FUNC(_wd::s_callback),
-											wd);
-#endif
+					tbb.fsState = TBSTATE_ENABLED; 
+					tbb.fsStyle = TBSTYLE_BUTTON;     
 					break;
 
 				case EV_TBIT_ToggleButton:
-#if 0
-					gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
-											   GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
-											   (GtkWidget *)NULL,
-											   pLabel->getToolbarLabel(),
-											   szToolTip,(const char *)NULL,
-											   wPixmap,
-											   GTK_SIGNAL_FUNC(_wd::s_callback),
-											   wd);
-#endif
+					tbb.fsState = TBSTATE_ENABLED; 
+					tbb.fsStyle = TBSTYLE_CHECK;     
 					break;
 
 				case EV_TBIT_EditText:
@@ -158,17 +193,34 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 					break;
 				}
 			}
+			break;
 		
 		case EV_TLF_Spacer:
-			// TODO do this....
+			tbb.fsState = TBSTATE_ENABLED; 
+			tbb.fsStyle = TBSTYLE_SEP;     
 			break;
 			
 		default:
 			UT_ASSERT(0);
 		}
+
+		// add this button to the bar
+		SendMessage(m_hwnd, TB_ADDBUTTONS, (WPARAM) 1, (LPARAM) (LPTBBUTTON) &tbb);
 	}
 
+	// figure out bar dimensions now that buttons are all there
+	SendMessage(m_hwnd, TB_AUTOSIZE, 0, 0);  
+
+	// TODO: should this wait until they're positioned?
+	// HYP:  shouldn't matter, just do both before frame (ie, parent) is shown
+    ShowWindow(m_hwnd, SW_SHOW); 
+	
 	return UT_TRUE;
+}
+
+HWND EV_Win32Toolbar::getWindow(void) const
+{
+	return m_hwnd;
 }
 
 void EV_Win32Toolbar::_releaseListener(void)
@@ -215,6 +267,8 @@ UT_Bool EV_Win32Toolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
 			continue;										// changes of this type, skip it...
 		
+		UINT u = WmCommandFromItemId(id);
+
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
@@ -228,7 +282,7 @@ UT_Bool EV_Win32Toolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 					{
 						UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
-						// TODO gray/ungray this button
+						SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
 
 						UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 									m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
@@ -241,8 +295,8 @@ UT_Bool EV_Win32Toolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 						UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 						UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
 						
-						// TODO gray/ungray this button
-						// TODO press/unpress this button
+						SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
+						SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
 
 						UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
 									 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
@@ -279,3 +333,29 @@ UT_Bool EV_Win32Toolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 	return UT_TRUE;
 }
 
+UT_Bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
+{
+	UT_ASSERT(lParam);
+	LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT) lParam;
+
+	// who's asking?
+	UINT idButton = lpttt->hdr.idFrom;
+	AP_Toolbar_Id id = ItemIdFromWmCommand(idButton);
+	
+	EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
+	if (!pLabel)
+		return UT_FALSE;
+
+	// ok, gotcha
+	const char * szToolTip = pLabel->getToolTip();
+	if (!szToolTip || !*szToolTip)
+	{
+		szToolTip = pLabel->getStatusMsg();
+	}
+
+	// here 'tis
+	strncpy(lpttt->lpszText, szToolTip, 80);
+
+	return UT_TRUE;
+}
+				  

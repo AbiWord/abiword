@@ -20,8 +20,11 @@
 #ifndef EV_WIN32TOOLBAR_H
 #define EV_WIN32TOOLBAR_H
 
+#include <windows.h>
+
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ap_Menu_Id.h"
 #include "ap_Toolbar_Id.h"
 #include "ev_Toolbar.h"
 #include "fv_Listener.h"
@@ -45,6 +48,16 @@ public:
 	UT_Bool synthesize(void);
 	UT_Bool bindListenerToView(FV_View * pView);
 	UT_Bool refreshToolbar(FV_View * pView, FV_ChangeMask mask);
+	UT_Bool getToolTip(LPARAM lParam);
+
+	HWND getWindow(void) const;
+
+	/*
+		Note that the namespaces for toolbar and menu command ids 
+		do *not* overlap.  
+	*/
+	inline AP_Toolbar_Id	ItemIdFromWmCommand(UINT cmd)			{ return (AP_Toolbar_Id)(cmd - WM_USER - AP_MENU_ID__BOGUS2__); };
+	inline UINT				WmCommandFromItemId(AP_Toolbar_Id id)	{ return (id + WM_USER + AP_MENU_ID__BOGUS2__); };
 
 protected:
 	void							_releaseListener(void);
@@ -54,6 +67,7 @@ protected:
 	EV_Win32Toolbar_ViewListener *	m_pViewListener;
 	FV_ListenerId					m_lid;	/* view listener id */
 
+	HWND							m_hwnd;
 	AP_Win32Toolbar_Icons *			m_pWin32ToolbarIcons;
 	UT_Vector						m_vecToolbarWidgets;
 };

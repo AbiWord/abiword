@@ -95,7 +95,8 @@ UT_Bool EV_Win32Menu::onCommand(FV_View * pView,
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-	UT_ASSERT(pAction);
+	if (!pAction)
+		return UT_FALSE;
 
 	const char * szMethodName = pAction->getMethodName();
 	UT_ASSERT(szMethodName);

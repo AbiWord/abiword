@@ -40,7 +40,7 @@ ABI_OTHLIBS=		expat $(ABI_JSLIBS)
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid
+			shell32 uuid comctl32
 
 GARBAGE=		AbiWord.map AbiWord.pdb
 TARGETS=		$(PROGRAM)

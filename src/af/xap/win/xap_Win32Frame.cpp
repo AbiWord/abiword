@@ -18,6 +18,7 @@
  */
 
 #include <windows.h>
+#include <commctrl.h>
 #include <stdio.h>
 
 #include "ut_types.h"
@@ -207,6 +208,9 @@ ev_Win32Keyboard * AP_Win32Frame::getWin32Keyboard(void)
 
 void AP_Win32Frame::_createTopLevelWindow(void)
 {
+	RECT r;
+	UT_uint32 iHeight, iWidth;
+
 	// create a top-level window for us.
 	// TODO get the default window size from preferences or something.
 	m_hwndFrame = CreateWindow (m_pWin32App->getApplicationName(),	// window class name
@@ -236,6 +240,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	UT_ASSERT(bResult);
 
 	// create a toolbar instance for each toolbar listed in our base class.
+	m_iBarHeight = 0;
 
 	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
 	for (UT_uint32 k=0; k < nrToolbars; k++)
@@ -249,15 +254,30 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 		UT_ASSERT(bResult);
 		
 		m_vecWin32Toolbars.addItem(pWin32Toolbar);
+
+		// for now, position each one manually
+		// TODO: put 'em all in a rebar instead
+		HWND hwndBar = pWin32Toolbar->getWindow();
+
+		GetClientRect(hwndBar, &r);
+		iHeight = r.bottom - r.top;
+		iWidth = r.right - r.left;
+
+		if (m_iBarHeight > 0)
+		{
+			MoveWindow(hwndBar, r.left, m_iBarHeight, iWidth, iHeight, TRUE);
+		}
+
+		m_iBarHeight += iHeight;
 	}
 
-	// TODO: insert the toolbars
-	
 	// figure out how much room is left for the child
-	RECT r;
 	GetClientRect(m_hwndFrame, &r);
-	UT_uint32 iHeight = r.bottom - r.top;
-	UT_uint32 iWidth = r.right - r.left;
+	iHeight = r.bottom - r.top;
+	iWidth = r.right - r.left;
+
+	UT_ASSERT(iHeight > m_iBarHeight);
+	iHeight -= m_iBarHeight;
 
 	// create a child window for us.
 	m_hwndChild = CreateWindow (CHILDWINCLASS,	// window class name
@@ -265,8 +285,8 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				WS_CHILD | WS_VISIBLE
 				| WS_VSCROLL
 				,					     // window style
-				CW_USEDEFAULT,           // initial x position
-				CW_USEDEFAULT,           // initial y position
+				0,						 // initial x position
+				m_iBarHeight,            // initial y position
 				iHeight,                 // initial x size
 				iWidth,                  // initial y size
 				m_hwndFrame,             // parent window handle
@@ -312,6 +332,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	ap_ViewListener * pViewListener = NULL;
 
 	UT_uint32 iWindowHeight, iHeight;
+	UT_uint32 nrToolbars, k;
 	HWND hwnd = m_hwndChild;
 
 	// TODO fix prefix on class Win32Graphics
@@ -334,6 +355,22 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	if (!pView->addListener(static_cast<FV_Listener *>(pViewListener),&lid))
 		goto Cleanup;
 
+	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (k=0; k < nrToolbars; k++)
+	{
+		// TODO Toolbars are a frame-level item, but a view-listener is
+		// TODO a view-level item.  I've bound the toolbar-view-listeners
+		// TODO to the current view within this frame and have code in the
+		// TODO toolbar to allow the view-listener to be rebound to a different
+		// TODO view.  in the future, when we have support for multiple views
+		// TODO in the frame (think splitter windows), we will need to have
+		// TODO a loop like this to help change the focus when the current
+		// TODO view changes.
+		
+		EV_Win32Toolbar * pWin32Toolbar = (EV_Win32Toolbar *)m_vecWin32Toolbars.getNthItem(k);
+		pWin32Toolbar->bindListenerToView(pView);
+	}
+	
 	// switch to new view, cleaning up previous settings
 	REPLACEP(m_pG, pG);
 	REPLACEP(m_pDocLayout, pDocLayout);
@@ -472,7 +509,22 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 
 	case WM_COMMAND:
 		if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
+		{
 			return 0;
+		}
+		else
+		{
+			// after menu passes on it, give each of the toolbars a chance
+			UT_uint32 nrToolbars, k;
+			nrToolbars = f->m_vecToolbarLayoutNames.getItemCount();
+			for (k=0; k < nrToolbars; k++)
+			{
+				EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
+				AP_Toolbar_Id id = t->ItemIdFromWmCommand(LOWORD(wParam));
+				if (t->toolbarEvent(id))
+					return 0;
+			}
+		}
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 
 	case WM_INITMENU:
@@ -490,20 +542,45 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		if (f->m_pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-			  
+
+	case WM_NOTIFY:
+		switch (((LPNMHDR) lParam)->code) 
+		{ 
+        case TTN_NEEDTEXT:             
+			{             
+				UT_uint32 nrToolbars, k;
+				nrToolbars = f->m_vecToolbarLayoutNames.getItemCount();
+				for (k=0; k < nrToolbars; k++)
+				{
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
+					if (t->getToolTip(lParam))
+						break;
+				}
+			}
+			break;
+
+		// Process other notifications here
+        default:
+			break;
+		} 
+		break;
+
 	case WM_SIZE:
 	{
 		int nWidth = LOWORD(lParam);
 		int nHeight = HIWORD(lParam);
 
-		// TODO: subtract out the toolbars from nHeight
-
 		if (f->m_hwndChild)
-			MoveWindow(f->m_hwndChild, 0, 0, nWidth, nHeight, TRUE);
+		{
+			// leave room for the toolbars
+			nHeight -= f->m_iBarHeight;
+
+			MoveWindow(f->m_hwndChild, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+		}
 
 		return 0;
 	}
-		
+
 	case WM_CLOSE :
 	{
 		AP_App * pApp = f->getApp();
