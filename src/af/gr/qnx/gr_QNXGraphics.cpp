@@ -161,6 +161,15 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+void GR_QNXGraphics::setLineProperties ( double inWidthPixels, 
+					  GR_Graphics::JoinStyle inJoinStyle,
+					  GR_Graphics::CapStyle inCapStyle,
+					  GR_Graphics::LineStyle inLineStyle )
+{
+//XXX: ???
+
+}
+
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
 {
 	/*Unix uses a fixed value of 100dpi for this value,
@@ -199,7 +208,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	PhPoint_t pos;
-	int i;
 	char *utf8;
 	UT_uint32 len;
 	pos.x = xoff;

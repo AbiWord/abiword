@@ -113,6 +113,10 @@ class GR_QNXGraphics : public GR_Graphics
 	void 				init3dColors();
 	virtual void 		fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void 		fillRect(GR_Color3D c, UT_Rect &r);
+	virtual void setLineProperties ( double inWidthPixels, 
+					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
+					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
+					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID ) ;
 
 	/* GR_Font versions of the above information */
 	virtual UT_uint32 	getFontAscent(GR_Font *);
