@@ -1507,7 +1507,9 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// the whole thing.  but this may interact with the current scroll.
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	if ((x < xFixed) || (x > (UT_sint32)m_iWidth))
+	ap_RulerTicks tick(m_pG,m_dim);
+	if ((x < xFixed + m_infoCache.m_xPageViewMargin + tick.tickUnit/tick.tickUnitScale)
+		|| (x > (UT_sint32)m_iWidth))
 	{
 		if(!m_bEventIgnored)
 		{
@@ -1520,8 +1522,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	m_bEventIgnored = UT_FALSE;
 
 	// mouse motion was in the ruler portion of the window, we cannot ignore it.
-	
-	ap_RulerTicks tick(m_pG,m_dim);
 
 	switch (m_draggingWhat)
 	{
