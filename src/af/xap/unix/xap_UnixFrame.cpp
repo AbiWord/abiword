@@ -488,13 +488,15 @@ void AP_UnixFrame::_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff)
 
 UT_Bool AP_UnixFrame::close()
 {
-
 	return UT_TRUE;
 }
 
 UT_Bool AP_UnixFrame::raise()
 {
-	/* TODO */
+	GtkWidget * tlw = getTopLevelWindow();
+	UT_ASSERT(tlw);
+	
+	gdk_window_raise(tlw->window);
 
 	return UT_TRUE;
 }
