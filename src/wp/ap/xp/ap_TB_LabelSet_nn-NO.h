@@ -54,12 +54,13 @@ BeginSet(nn,NO,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Lagr", 	tb_save_xpm,	NULL, "Lagrar dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Lagr som", 	tb_save_as_xpm,	NULL, "Lagrar dokumentet med eit anna namn")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Skriv ut",	tb_print_xpm,	NULL, "Skriv ut heile eller delar av dokumentet")
-
+        ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, "Førehandsvising", tb_print_preview_xpm, NULL, "Viser dokumentet slik det blir skrive ut")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Angr",		tb_undo_xpm,	NULL, "Angrar siste handling")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Gjer om",		tb_redo_xpm,	NULL, "Gjer om siste angra handling")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Klipp ut",		tb_cut_xpm,		NULL, "Klipp ut")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopier",		tb_copy_xpm,	NULL, "Kopier")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Lim inn",	tb_paste_xpm,	NULL, "Lim inn")
+        ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Stavekontroll", tb_spellcheck_xpm, NULL, "Stavekontrollerer dokumentet")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",	NoIcon,			NULL, "Stil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Skrift",		NoIcon,			NULL, "Skrift")
@@ -93,8 +94,12 @@ BeginSet(nn,NO,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Forstørring",		NoIcon,			NULL, "Forstørring")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Punktmerkt liste",		tb_lists_bullets_xpm,		NULL,		"Startar/avsluttar punktmerkt liste")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Nummerert liste",		tb_lists_numbers_xpm,		NULL,		"Start/avsluttar nummerert liste")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Forgrunnsfarge",	NoIcon,			NULL, "Change Foreground Color")
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Bakgrunnsfarge",	NoIcon,			NULL, "Change Background Color")
+        ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Auk innrykk", tb_text_indent_xpm, NULL, "Auker avsnittsinnrykk")
+        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Reduser innrykk", tb_text_unindent_xpm, NULL, "Reduserer avsnittsinnrykk")
 	
-	// ... add others here ...
+     // ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
