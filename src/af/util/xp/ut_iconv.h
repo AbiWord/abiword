@@ -22,15 +22,6 @@
 #ifndef UT_ICONV_H
 #define UT_ICONV_H
 
-#ifdef __cplusplus
-/* make freebsd happy */
-extern "C" {
-#include <iconv.h>
-}
-#else
-#include <iconv.h>
-#endif /* c++ */
-
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -39,9 +30,9 @@ extern "C" {
 #include "ut_types.h"
 #endif
 
-typedef iconv_t UT_iconv_t;
+typedef void * UT_iconv_t;
 
-#define UT_ICONV_INVALID ((iconv_t)(-1))
+#define UT_ICONV_INVALID ((UT_iconv_t)(-1))
 
 #ifdef __cplusplus
 

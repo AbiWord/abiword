@@ -35,10 +35,45 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#if 0 //defined(XP_UNIX_TARGET_GTK) || defined(XP_MAC_TARGET_MACOSX)
+#include <glib.h>
+#define UT_ICONV_USING_GLIB
+#else
+/* make freebsd happy */
+extern "C" {
+#include <iconv.h>
+}
+#endif
+
 #include "xap_EncodingManager.h"
 
 /************************************************************************/
 /************************************************************************/
+
+/* UGLY UGLY Iconv hack for operating systems with strange declartions
+   for iconv.  Why, oh why can't they all be the same? <sob> I will
+   suffer in the afterlife for this - sam - dec 2000 
+
+   Update - the folks repsonsible for the Single Unix Specification
+   are responsible for this.  They will suffer even more in the
+   afterlife than I will. - sam - mar 2001
+
+   Update - I ditched this, it was breaking builds.  Besides, the platforms
+   that would have been broken by using const have since changed to allow it.
+   AIX and hpux are my only concerns, and hpux is under the care of someone
+   else who will look into it.  Enjoy your afterlife, sam. - MG - jun 2002
+*/
+
+#if defined (WIN32) || defined(__QNXNTO__) || defined(__CYGWIN__) ||  \
+(defined (__MACH__) && defined (__APPLE__)) || \
+(defined(TARGET_OS_MAC) && TARGET_OS_MAC) || \
+defined(__BEOS__) || defined (__AIX__) || \
+(defined(__linux__) && defined(__powerpc__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 1))
+
+#define ICONV_CONST const
+#else
+#define ICONV_CONST
+#endif
 
 /*
  * This file represents my own personal assault on iconv, the most horrid
@@ -278,12 +313,17 @@ int UT_iconv_isValid ( UT_iconv_t cd )
 UT_iconv_t  UT_iconv_open( const char* to, const char* from )
 {
   if ( to && from )
-    return iconv_open( to, from );
+#ifdef UT_ICONV_USING_GLIB
+	  return (UT_iconv_t)g_iconv_open(to, from);
+#else
+  return (UT_iconv_t)iconv_open( to, from );
+#endif
+
   return UT_ICONV_INVALID;
 }
 
-size_t  UT_iconv( UT_iconv_t cd, const char **inbuf, 
-		  size_t *inbytesleft, char **outbuf, size_t *outbytesleft )
+size_t UT_iconv( UT_iconv_t cd, const char **inbuf, 
+				 size_t *inbytesleft, char **outbuf, size_t *outbytesleft )
 {
   // this should take care of iconv problems with different compilers
   // known issues:
@@ -294,15 +334,22 @@ size_t  UT_iconv( UT_iconv_t cd, const char **inbuf,
   if ( !UT_iconv_isValid ( cd ) )
     return (size_t)-1;
 
-
-  ICONV_CONST char ** buf = const_cast<ICONV_CONST char**>(inbuf);
-  return iconv( cd, buf, inbytesleft, outbuf, outbytesleft );
+#ifdef UT_ICONV_USING_GLIB
+  return g_iconv((GIConv)cd, (char **)inbuf, inbytesleft, outbuf, outbytesleft);
+#else
+  return iconv( (iconv_t)cd, (ICONV_CONST char **)inbuf, inbytesleft, outbuf, outbytesleft );
+#endif
 }
 
 int  UT_iconv_close( UT_iconv_t cd )
 {
   if ( UT_iconv_isValid ( cd ) )
-    return iconv_close( cd );
+#ifdef UT_ICONV_USING_GLIB
+    return g_iconv_close( (GIConv) cd );
+#else
+    return iconv_close( (iconv_t)cd );
+#endif
+
   return -1;
 }
 

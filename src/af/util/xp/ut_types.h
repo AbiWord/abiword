@@ -241,31 +241,6 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 
 #define E2B(err)		((err) == UT_OK)
 
-/* UGLY UGLY Iconv hack for operating systems with strange declartions
-   for iconv.  Why, oh why can't they all be the same? <sob> I will
-   suffer in the afterlife for this - sam - dec 2000 
-
-   Update - the folks repsonsible for the Single Unix Specification
-   are responsible for this.  They will suffer even more in the
-   afterlife than I will. - sam - mar 2001
-
-   Update - I ditched this, it was breaking builds.  Besides, the platforms
-   that would have been broken by using const have since changed to allow it.
-   AIX and hpux are my only concerns, and hpux is under the care of someone
-   else who will look into it.  Enjoy your afterlife, sam. - MG - jun 2002
-*/
-
-#if defined (WIN32) || defined(__QNXNTO__) || defined(__CYGWIN__) ||  \
-(defined (__MACH__) && defined (__APPLE__)) || \
-(defined(TARGET_OS_MAC) && TARGET_OS_MAC) || \
-defined(__BEOS__) || defined (__AIX__) || \
-(defined(__linux__) && defined(__powerpc__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 1))
-
-#define ICONV_CONST const
-#else
-#define ICONV_CONST
-#endif
-
 /* This is a value from the private-use space of FriBidi */
 #define FRIBIDI_TYPE_UNSET -1
 #define FRIBIDI_TYPE_IGNORE -2
