@@ -65,14 +65,6 @@ class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 public:
 	IE_Exp_HTML(PD_Document * pDocument, bool is4 = false);
 	virtual ~IE_Exp_HTML();
-
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error 	StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);
