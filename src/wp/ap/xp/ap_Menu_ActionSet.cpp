@@ -226,7 +226,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_MERGE_CELLS,0,1,0, "mergeCells", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL); // ap_GetState_AlwaysDisabled is a hack to disable the menu item before the 1.1.1 release
 	_s(AP_MENU_ID_TABLE_SPLIT_TABLE,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
-	_s(AP_MENU_ID_TABLE_FORMAT,0,0,0, "formatTable", ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_FORMAT,0,1,0, "formatTable", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_SORT,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
