@@ -28,7 +28,7 @@
 
 class GR_Graphics;
 
-class GR_Caret
+class ABI_EXPORT GR_Caret
 {
 public:
 	explicit GR_Caret(GR_Graphics * pG);
