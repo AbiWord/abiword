@@ -120,6 +120,7 @@ public:
 	BWindow *				getTopLevelWindow(void) const;
 	be_DocView *				getBeDocView(void) const;
 	void 					setBeDocView(be_DocView *);
+	UT_sint32				setInputMode(const char * szName);
 	ev_BeOSMouse *				getBeOSMouse(void);
 	ev_BeOSKeyboard *			getBeOSKeyboard(void);
 

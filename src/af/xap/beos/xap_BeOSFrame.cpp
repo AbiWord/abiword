@@ -158,7 +158,20 @@ void XAP_BeOSFrame::setBeDocView(be_DocView *view)
 {
 	m_pBeDocView = view;
 }
+UT_sint32 XAP_BeOSFrame::setInputMode(const char * szName)
+{
+	UT_sint32 result = XAP_Frame::setInputMode(szName);
+	if (result == 1)
+	{
+		// If it actually changed the mode, update the maps
+		EV_EditEventMapper * pEEM = getEditEventMapper();
+		UT_ASSERT(pEEM);
 
+		m_pBeOSKeyboard->setEditEventMap(pEEM);
+		m_pBeOSMouse->setEditEventMap(pEEM);
+	}
+	return result;
+}
 ev_BeOSMouse * XAP_BeOSFrame::getBeOSMouse(void)
 {
 	return m_pBeOSMouse;
@@ -420,14 +433,17 @@ be_DocView::be_DocView(BRect frame, const char *name, uint32 resizeMask, uint32 
 void be_DocView::FrameResized(float new_width, float new_height) {
 	be_Window	*pBWin;
 	GR_BeOSGraphics *pG;
-	
+	pBWin->DisableUpdates();	
 	pBWin = (be_Window *)Window();
 	if (!pBWin || !pBWin->m_pBeOSFrame)
 		return;
  
 	pG = (GR_BeOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
 	if (!pG)
+	{
+		pBWin->EnableUpdates();
 		return;
+	}
 
 	BRect rect = Bounds();
 	pG->ResizeBitmap(rect);
@@ -438,6 +454,8 @@ void be_DocView::FrameResized(float new_width, float new_height) {
 		pView->setWindowSize(rect.Width(), rect.Height());
 		pView->draw();
 	}
+	pBWin->EnableUpdates();
+	pBWin->Flush(); //Maybe Sync? We'll see
 }
 
 void be_DocView::Draw(BRect updateRect) {
@@ -450,12 +468,14 @@ void be_DocView::Draw(BRect updateRect) {
 #if defined(USE_BACKING_BITMAP)
 	GR_BeOSGraphics 	*pG;
 	BBitmap 		*pBitmap;	
-
+ 	pBWin->DisableUpdates();
 	pG = (GR_BeOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
 	if (!pG || !(pBitmap = pG->ShadowBitmap()))
 		return;
 	
 	DrawBitmap(pBitmap);
+	pBWin->EnableUpdates();
+	pBWin->Flush();
 #else
 /* 
 Things to do to speed this up, make it less flashy:
@@ -463,22 +483,24 @@ Things to do to speed this up, make it less flashy:
  - Draw everything to an offscreen buffer/picture
  - Don't erase the background by default 
 */
-
+	pBWin->DisableUpdates();
 	//This code path is used for printing
 	if (m_pBPicture) {
+		printf("In printer path code\n");
 		DrawPicture(m_pBPicture, BPoint(0,0));
+		pBWin->EnableUpdates();
 		return;
 	}
 
 	AV_View *pView = pBWin->m_pBeOSFrame->getCurrentView();
 	if (pView) {
-		BPicture *mypict;
-		BeginPicture(new BPicture);
+//		BPicture *mypict;
+		//BeginPicture(new BPicture);
 		
 		//Always erase the contents of the rect first
 		//NOTE: No need to do this
 		//SetHighColor(ViewColor());	
-		//FillRect(updateRect);
+	//	FillRect(updateRect);
 		
 		//The tell AbiWord to draw us ...
 		UT_Rect r;
@@ -487,12 +509,16 @@ Things to do to speed this up, make it less flashy:
 		r.width = (UT_sint32)updateRect.Width();
 		r.height = (UT_sint32)updateRect.Height();
 		pView->draw(&r);
-
+/*
 		if ((mypict = EndPicture())) {
 			DrawPicture(mypict, BPoint(0,0));
+			pBWin->EnableUpdates();
+			pBWin->Flush();
 			delete mypict;
-		}
+		}*/
 	}
+	pBWin->EnableUpdates();
+	pBWin->Sync();
 #endif
 }
 
