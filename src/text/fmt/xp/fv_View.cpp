@@ -2162,8 +2162,9 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	m_pDoc->beginUserAtomicGlob();
 
 	char margin_left [] = "margin-left";
+#ifdef BIDI_ENABLED	
 	char margin_right[] = "margin-right";
-
+#endif
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
 		fl_BlockLayout * pBlock =  (fl_BlockLayout *) vBlock.getNthItem(i);
@@ -8999,7 +9000,8 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	XML_Char type_l [] = "type";
 	XML_Char name[BOOKMARK_NAME_SIZE + 1];
 	UT_XML_strncpy(name, BOOKMARK_NAME_SIZE, (XML_Char*)szName);
-
+	name[BOOKMARK_NAME_SIZE] = 0;
+	
 	XML_Char type[] = "start";
 	pAttr [0] = &name_l[0];
 	pAttr [1] = &name[0];
