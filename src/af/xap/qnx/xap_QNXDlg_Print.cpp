@@ -268,8 +268,8 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 				last = m_persistPrintDlg.nMaxPage;
 			}
 			
-			m_nFirstPage = __min(first,last);
-			m_nLastPage = __max(first,last);
+			m_nFirstPage = UT_MIN(first,last);
+			m_nLastPage = UT_MAX(first,last);
 		}
 	}
 }

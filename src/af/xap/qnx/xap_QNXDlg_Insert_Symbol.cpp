@@ -361,7 +361,7 @@ void XAP_QNXDialog_Insert_Symbol::SymbolMap_clicked( PtCallbackInfo_t * e)
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 	m_PreviousSymbol = m_CurrentSymbol;
-	m_CurrentSymbol = iDrawSymbol->calcSymbol(_UL(x), _UL(y));
+	m_CurrentSymbol = iDrawSymbol->calcSymbol(x, y);
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 	/* Double clicking should also insert the symbol */

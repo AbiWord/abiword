@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <Ap.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ut_string.h"
@@ -109,7 +110,14 @@ static int s_deleteClicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 
 void AP_QNXDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
-	_constructWindow ();
+ApDBase_t *honken=NULL;
+
+
+honken = ApOpenDBase(0);
+if(honken) fprintf(stderr,"IT worked!!!!!!!!!\n\n");
+
+
+/*	_constructWindow ();
 	UT_ASSERT (m_mainWindow);
 
 	// Save dialog the ID number and pointer to the widget
@@ -123,7 +131,7 @@ void AP_QNXDialog_Goto::runModeless (XAP_Frame * pFrame)
 
 	UT_QNXCenterWindow(NULL, m_mainWindow);
 
-	PtRealizeWidget(m_mainWindow);
+	PtRealizeWidget(m_mainWindow);*/
 }
 
 void AP_QNXDialog_Goto::activate (void)

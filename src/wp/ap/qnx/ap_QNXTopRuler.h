@@ -47,6 +47,7 @@ public:
 	void				getWidgetPosition(int * x, int * y);
 	void *				getWidget(void) { return m_wTopRuler; };
 	void *				getRootWindow(void);
+	virtual bool	notify(AV_View * pView, const AV_ChangeMask mask);
 			
 protected:
 	PtWidget_t *	m_wTopRuler;

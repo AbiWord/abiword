@@ -91,7 +91,7 @@ public:
 	
 protected:
 	bool							_loadFonts(void);
-	void							_setAbiSuiteLibDir(void);
+	void							_setAbiSuiteLibDir();
 
 	AP_QNXToolbar_Icons *			m_pQNXToolbarIcons;
 	AP_QNXDialogFactory			m_dialogFactory;

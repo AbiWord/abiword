@@ -23,7 +23,6 @@
 #include "ap_Dialog_Stub.h"
 #include <Pt.h>
 
-class XAP_QNXFrame;
 
 /*****************************************************************/
 

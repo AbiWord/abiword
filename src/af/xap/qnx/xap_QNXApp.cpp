@@ -146,7 +146,7 @@ void XAP_QNXApp::getWinGeometry(int *x,int *y,UT_uint32 *width,UT_uint32 *height
 	*flags = m_geometry.flags;
 }
 
-void XAP_QNXApp::_setAbiSuiteLibDir(void)
+void XAP_QNXApp::_setAbiSuiteLibDir()
 {
 	char buf[PATH_MAX];
 //	char buf2[PATH_MAX]; // not used?

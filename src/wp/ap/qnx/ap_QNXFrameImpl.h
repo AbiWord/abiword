@@ -39,6 +39,7 @@ class AP_QNXFrameImpl : public XAP_QNXFrameImpl
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 	void setDocumentFocus();
 	void _reflowLayout(int loweradj,int upperadj,int topruleradj,int leftruleradj);	
+	virtual UT_RGBColor getColorSelBackground () const;
 
  protected:
 	friend class AP_QNXFrame;

@@ -131,12 +131,14 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual UT_uint32 	getFontHeight(GR_Font *);
 
  protected:
-	virtual UT_uint32 	_getResolution(void) const;
+	virtual UT_uint32 	getDeviceResolution(void) const;
 	int 				DrawSetup();
 	int 				DrawTeardown();
 
 	PtWidget_t *  	m_pWin;
 	PtWidget_t *  	m_pDraw;
+	PdOffscreenContext_t *m_pOSC;
+	PhDrawContext_t				*m_pOldDC;
 	PhPoint_t		m_OffsetPoint;		
 	PhTile_t *		m_pClipList;		
 
@@ -162,14 +164,11 @@ class GR_QNXGraphics : public GR_Graphics
  	bool             m_bPrintNextPage;    
 	PpPrintContext_t *  m_pPrintContext;
 private:
-	virtual bool            _setTransform(const GR_Transform & tr);
 	virtual void saveRectangle(UT_Rect &r, UT_uint32 iIndx);
 	virtual void restoreRectangle(UT_uint32 iIndx);
 
 	UT_Vector				m_vSaveRect;
 	UT_Vector 				m_vSaveRectBuf;
-	//UT_Rect *m_saveRect;
-	//PhImage_t	*m_pImg;
 };
 
 #endif /* GR_QNXGRAPHICS_H */

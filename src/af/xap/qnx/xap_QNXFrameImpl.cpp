@@ -286,7 +286,6 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 
  	PtCalcCanvas(w, &rect);
  	PtWidgetOffset(w, &pnt);
-	
 	XAP_FrameImpl *pQNXFrameImpl, **ppQNXFrameImpl = NULL;
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXFrameImpl, 0);
 	PtGetResources(w, 1, args);
@@ -295,7 +294,6 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	UT_ASSERT(pQNXFrameImpl);
 
 	
-//XXX: Or AV_View as before??	
 	FV_View * pView = (FV_View *) pQNXFrameImpl->getFrame()->getCurrentView();
 	if (pView) {
 		/*
@@ -320,26 +318,18 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 		}
 		while (damage) {
 			/* At one point in time this required some fiddling to put it in the widget co-ordinates*/
-			rClip.width = (damage->rect.lr.x - damage->rect.ul.x);
-			rClip.height = (damage->rect.lr.y - damage->rect.ul.y);
-			rClip.left = damage->rect.ul.x - pnt.x;
-			rClip.top = damage->rect.ul.y - pnt.y;
+			GR_Graphics * pGr = pView->getGraphics ();
+			rClip.width = pGr->tlu(damage->rect.lr.x - damage->rect.ul.x);
+			rClip.height = pGr->tlu(damage->rect.lr.y - damage->rect.ul.y);
+			rClip.left = pGr->tlu((damage->rect.ul.x - pnt.x) > 0 ? damage->rect.ul.x - pnt.x : 0 );
+			rClip.top = pGr->tlu((damage->rect.ul.y - pnt.y) > 0 ? damage->rect.ul.y - pnt.y : 0);
 
-
+			fprintf(stderr,"pnt.x=%d,pnt.y=%d, rect= %d,%d,%d,%d\n\n",pnt.x,pnt.y,damage->rect.ul.x,damage->rect.ul.y,damage->rect.lr.x,damage->rect.lr.y);
 			//OR: Pass the draw function the clipping rectangle
 			//This is preferred since this way the application
 			//can optimize their drawing routines as well.
-/*
-			fprintf(stderr,"Calling draw from XAP_QNXFrameImpl! = %d,%d,%d,%d\n",rClip.width,rClip.height,rClip.left,rClip.top);
-			if(rClip.width < 0) rClip.width=0;
-			if(rClip.height < 0) rClip.height=0;
-			if(rClip.top < 0) rClip.top =0;
-			if(rClip.left < 0) rClip.left=0;
-			pView->draw(&rClip);*/
 
-			//OR: Completely unoptimized
-			pView->draw(NULL);
-			//break;
+			pView->draw(&rClip);
 
 #if defined(MULTIPLE_EXPOSE_EVENTS) 
 			damage = damage->next;
@@ -362,7 +352,7 @@ int XAP_QNXFrameImpl::_fe::vScrollChanged(PtWidget_t * w, void *data, PtCallback
 	AV_View * pView = pFrame->getCurrentView();
 
 	if (pView)
-		pView->sendVerticalScrollEvent((UT_sint32) _UL(sb->position));
+		pView->sendVerticalScrollEvent((UT_sint32)sb->position);
 	return 0;
 }
 	
@@ -375,7 +365,7 @@ int XAP_QNXFrameImpl::_fe::hScrollChanged(PtWidget_t * w, void *data, PtCallback
 	AV_View * pView = pFrame->getCurrentView();
 	
 	if (pView)
-		pView->sendHorizontalScrollEvent((UT_sint32) _UL(sb->position));
+		pView->sendHorizontalScrollEvent((UT_sint32) sb->position);
 	return 0;
 }
 
@@ -665,6 +655,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_RESIZE, _fe::window_resize, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_WINDOW, _fe::window_delete, this);
 
+
 	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
 	n = 0;
 #define _A_TBGRP (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | Pt_TOP_ANCHORED_TOP)
@@ -799,8 +790,9 @@ bool XAP_QNXFrameImpl::_show()
 bool XAP_QNXFrameImpl::_runModalContextMenu(AV_View *pView,const char *szMenuName,
 	UT_sint32 x,UT_sint32 y)
 {
-	_UUD(x);
-	_UUD(y);
+	GR_Graphics * pGr = pView->getGraphics ();
+	x = pGr->tdu(x);
+	y = pGr->tdu(y);
 	bool bResult = true;
 	UT_ASSERT(!m_pQNXPopup);
 
@@ -888,6 +880,13 @@ EV_Menu *XAP_QNXFrameImpl::_getMainMenu(void)
 {
 	return m_pQNXMenu;
 }
+
+UT_String XAP_QNXFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBefore, 
+											   const char * pathAfter)
+{
+	return XAP_FrameImpl::_localizeHelpUrl (bLocal, pathBefore, pathAfter);
+}
+
 
 void XAP_QNXFrameImpl::_queue_resize()
 {

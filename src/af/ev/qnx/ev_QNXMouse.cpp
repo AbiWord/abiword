@@ -30,6 +30,7 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "xav_View.h"
+#include "gr_QNXGraphics.h"
 #include <stdio.h>
 
 EV_QNXMouse::EV_QNXMouse(EV_EditEventMapper * pEEM)
@@ -50,12 +51,12 @@ void EV_QNXMouse::mouseUp(AV_View* pView, PtCallbackInfo_t * e)
 
     PhPointerEvent_t *ptrevent;
 	PhRect_t		 *rect;
-	int 			 mx, my;
+	UT_sint32 			 mx, my;
     ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
 	rect = PhGetRects(e->event);
 
-	mx = _UL(rect->ul.x);
-	my = _UL(rect->ul.y);
+	mx = static_cast<UT_sint32>(pView->getGraphics()->tlu(rect->ul.x));
+	my = static_cast<UT_sint32>(pView->getGraphics()->tlu(rect->ul.y));
 
 	if (e->event->subtype == Ph_EV_RELEASE_REAL) {
     	//UT_DEBUGMSG(("Mouse Real Release! (%d,%d)", mx, my));
@@ -137,8 +138,8 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
     ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
 	rect = PhGetRects(e->event);
 
-	mx = _UL(rect->ul.x);
-	my = _UL(rect->ul.y);
+	mx = static_cast<UT_sint32>(pView->getGraphics()->tlu(rect->ul.x));
+	my = static_cast<UT_sint32>(pView->getGraphics()->tlu(rect->ul.y));
     //UT_DEBUGMSG(("Mouse Click! (%d,%d)", mx, my));
 	
 	if (ptrevent->key_mods & Pk_KM_Shift)
@@ -215,8 +216,8 @@ void EV_QNXMouse::mouseMotion(AV_View* pView, PtCallbackInfo_t *e)
     ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
 	rect = PhGetRects(e->event);
 
-	mx = _UL(rect->ul.x);
-	my = _UL(rect->ul.y);
+	mx = static_cast<UT_sint32>(pView->getGraphics()->tlu(rect->ul.x));
+	my = static_cast<UT_sint32>(pView->getGraphics()->tlu(rect->ul.y));
     //UT_DEBUGMSG(("Mouse Move! (%d,%d)", mx, my));
 
 	if (ptrevent->key_mods & Pk_KM_Shift)

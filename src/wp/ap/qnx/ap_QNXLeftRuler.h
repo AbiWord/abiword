@@ -42,6 +42,7 @@ public:
 
 	PtWidget_t *		createWidget(void);
 	virtual void		setView(AV_View * pView);
+	bool notify(AV_View * pView, const AV_ChangeMask mask);
 	
 	void *				getRootWindow(void);
 

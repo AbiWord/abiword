@@ -63,16 +63,23 @@ int GR_QNXGraphics::DrawSetup() {
 	if (m_pPrintContext) {
 		return 0;
 	}
+
+//	m_pOldDC = PhDCSetCurrent(m_pOSC);
 	m_pGC_old=PgSetGC(m_pGC);
+
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
 	PgSetTranslation (&m_OffsetPoint,0); //replace translation with this one.
+/*	PhPoint_t trans;
+	trans.x = -m_OffsetPoint.x;
+	trans.y = -m_OffsetPoint.y;
+	PdSetOffscreenTranslation(m_pOSC,&trans);*/
 
 	//Always clip to the canvas
 	PhRect_t _rdraw;
 	PtCalcCanvas(m_pDraw, &_rdraw);
-	PtClipAdd(m_pDraw,&_rdraw);
+//	PtClipAdd(m_pDraw,&_rdraw);
 /*
 	printf("Widget Rect %d,%d %d,%d \n",
 		_rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y);
@@ -95,6 +102,7 @@ int GR_QNXGraphics::DrawSetup() {
 	}
 
 	PgSetUserClip(&_rdraw);
+
 	return 0;
 
 }
@@ -107,13 +115,33 @@ int GR_QNXGraphics::DrawTeardown() {
 	}
 
 	//Remove the clipping (only one for now)
-	PgSetUserClip(NULL);
-	PtClipRemove();
+//	PtClipRemove();
 	//Reset the translation
-	m_OffsetPoint.x *= -1;
+/*	m_OffsetPoint.x *= -1;
 	m_OffsetPoint.y *= -1;
-	PgSetTranslation(&m_OffsetPoint, 0);
+	PgSetTranslation(&m_OffsetPoint, 0);*/
+
+
+/*	PhRect_t rect;
+	rect.ul.x = rect.ul.y = 0;
+	rect.lr.x = m_pDraw->area.size.w;
+	rect.lr.y = m_pDraw->area.size.h;
+
+	PhRect_t rect2;
+
+	rect2.lr.x = m_OffsetPoint.x + m_pDraw->area.size.w;
+	rect2.lr.y = m_OffsetPoint.y + m_pDraw->area.size.h;
+	rect2.ul.x = m_OffsetPoint.x;
+	rect2.ul.y = m_OffsetPoint.y;
+
+	PgContextBlit(m_pOSC,&rect,NULL,&rect2); */
+
+	PgSetUserClip(NULL);
+	PgClearTranslation();
+
 	PgSetGC(m_pGC_old);
+//	PhDCSetCurrent(m_pOldDC);
+
 	return 0;
 }
 
@@ -132,6 +160,8 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_pPrintContext = NULL;
 	m_iAscentCache = m_iDescentCache = m_iHeightCache -1;
 
+	m_pOSC = PdCreateOffscreenContext(0,draw->area.size.w,draw->area.size.h,NULL);
+	
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
@@ -148,6 +178,7 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	  PgShmemDestroy(pImg);
 	}
 	PgDestroyGC(m_pGC);
+	PhDCRelease(m_pOSC);
 }
 
 /***
@@ -200,6 +231,7 @@ switch (inCapStyle)
 		break;
 }
 
+DRAW_START
 if(inLineStyle == LINE_SOLID)
 	PgSetStrokeDash(NULL,0,0x10000);
 if(inLineStyle == LINE_ON_OFF_DASH)
@@ -210,9 +242,10 @@ if(inLineStyle == LINE_DOUBLE_DASH)
 PgSetStrokeWidth((int)inWidthPixels);
 PgSetStrokeCap(capstyle);
 PgSetStrokeJoin(joinstyle);
+DRAW_END
 }
 
-UT_uint32 GR_QNXGraphics::_getResolution(void) const
+UT_uint32 GR_QNXGraphics::getDeviceResolution(void) const
 {
 	/*Unix uses a fixed value of 100dpi for this value,
       Windows does a call to get the context resolution.
@@ -225,7 +258,7 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
       the printing values vs the screen values?
 	*/
 
-	return _UL(72);
+	return 72;
 }
 
 void GR_QNXGraphics::flush(void)
@@ -251,23 +284,26 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							   int * pCharWidths)
 {
 	PhPoint_t pos;
-	char *utf8;
-	UT_uint32 len;
+	UT_UCS2Char ucs2[iLength];
+//	char *utf8;
+//	UT_uint32 len;
 
-	_UUD(xoff);
-	_UUD(yoff);
+	for(int i=0;i<iLength;i++)
+		ucs2[i] = pChars[i];	
 
+	xoff = tdu(xoff);
+	yoff = tdu(yoff);
 
-	pos.x = xoff - (iCharOffset +1);
-	pos.y = yoff + _UD(getFontAscent());
+	pos.x = xoff;
+	pos.y = yoff + tdu(getFontAscent());
 
+	
 	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
-	utf8=(char*)UT_convert((char*)(pChars+iCharOffset),(iLength)*sizeof(pChars[0]),UCS_INTERNAL,"UTF-8",NULL,&len);
-
+//	utf8=(char*)UT_convert((char*)(pChars+iCharOffset),(iLength)*sizeof(pChars[0]),UCS_INTERNAL,"UTF-8",NULL,&len);
 	//Faster to copy and not flush or to not copy and flush?
 /*
 	Each flush causes two messages to be sent.  Since AbiWord is stupid about sending
@@ -275,9 +311,9 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
-	PgDrawText(utf8,len , &pos, 0);
+	PgDrawTextChars((const char *)&ucs2,iLength , &pos, Pg_TEXT_WIDECHAR);
 
-	FREEP(utf8);
+//	FREEP(utf8);
 	DRAW_END
 }
 
@@ -298,6 +334,7 @@ const char *font;
 uint16_t mychr = c;
 //int size;
 PhRect_t rect;
+FontRender metrics;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
@@ -306,9 +343,10 @@ if(mychr == 128) return GR_CW_UNKNOWN;
 //size = PfWideTextWidthBytes(font,&mychr,2);
 
 PfExtent(&rect,NULL,font,NULL,NULL,(const char*)&c,1,PF_WIDE_CHAR32,NULL);
+//PfGlyph(font,c,&metrics,NULL,NULL,NULL);
 
 //return _UL(size);
-return _UL((rect.lr.x - min(rect.ul.x,0))+1 );
+return tlu((rect.lr.x - min(rect.ul.x,0))+1 );
 }
 
 /***
@@ -341,11 +379,9 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize));
 
 	char fname[MAX_FONT_TAG];
-#ifdef USE_LAYOUT_UNITS
-	int size = convertDimension(pszFontSize);
-#else
+
 	int size = (int)UT_convertToPoints(pszFontSize);
-#endif
+
 	int style = 0;
 	// Only check for bold weight and italic style
 	if (UT_strcmp(pszFontWeight, "bold") == 0) {
@@ -434,7 +470,7 @@ UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
 		return(0);
 	}
 
-	return MY_ABS(_UL(info.ascender - 1));
+	return tlu(MY_ABS(info.ascender - 1));
 }
 
 UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
@@ -448,7 +484,7 @@ UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
 		return(0);
 	}
 
-	return MY_ABS(_UL(info.descender + 1 ));
+	return tlu(MY_ABS(info.descender + 1 ));
 }
 
 UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
@@ -461,7 +497,7 @@ UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 		UT_ASSERT(0);
 		return(0);
 	}
-	return MY_ABS(_UL(info.descender)) + _UL(MY_ABS(info.ascender));
+	return tlu(MY_ABS(info.descender)) + tlu(MY_ABS(info.ascender));
 }
 
 
@@ -525,10 +561,10 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 		DRAW_START
 
 
-	_UUD(x1);
-	_UUD(x2);
-	_UUD(y1);
-	_UUD(y2);
+	x1 = tdu(x1);
+	x2 = tdu(x2);
+	y1 = tdu(y1);
+	y2 = tdu(y2);
 
 	PgSetFillColor(m_currentColor);
 	PgSetStrokeColor(m_currentColor);
@@ -553,7 +589,7 @@ coverage.push_back((void*)(info.hichar - info.lochar));
 
 void GR_QNXGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	m_iLineWidth = _UD(iLineWidth);
+	m_iLineWidth = tdu(iLineWidth);
 }
 
 void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
@@ -565,10 +601,10 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	DRAW_START
 	old = PgSetDrawMode(Pg_DrawModeDSx);
 
-	_UUD(x1);
-	_UUD(x2);
-	_UUD(y1);
-	_UUD(y2);
+	x1 = tdu(x1);
+	x2 = tdu(x2);
+	y1 = tdu(y1);
+ 	y2 = tdu(y2);
 
 	PgSetFillColor(m_currentColor);
 	PgSetStrokeColor(m_currentColor);
@@ -618,7 +654,7 @@ void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 
 	old = PgSetDrawMode(Pg_DrawModeDSx);
 	PgSetFillColor(m_currentColor);
-	PgDrawIRect(_UD(pRect->left), _UD(pRect->top), _UD(pRect->left)+_UD(pRect->width), _UD(pRect->top)+_UD(pRect->height), Pg_DRAW_FILL);
+	PgDrawIRect(tdu(pRect->left), tdu(pRect->top), tdu(pRect->left)+tdu(pRect->width), tdu(pRect->top)+tdu(pRect->height), Pg_DRAW_FILL);
 	PgSetDrawMode(old);
 
 	DRAW_END
@@ -630,13 +666,12 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		PhRect_t r;
-		r.ul.x = _UD(pRect->left);
-		r.ul.y = _UD(pRect->top);
-		r.lr.x = r.ul.x + _UD(pRect->width);
-		r.lr.y = r.ul.y + _UD(pRect->height);
+		r.ul.x = tdu(pRect->left);
+		r.ul.y = tdu(pRect->top);
+		r.lr.x = r.ul.x + tdu(pRect->width);
+		r.lr.y = r.ul.y + tdu(pRect->height);
 //		UT_ASSERT(!m_pClipList);		//Only one item for now
-
-		if (m_pClipList || (m_pClipList = PhGetTile())) {
+	if (m_pClipList || (m_pClipList = PhGetTile())) {
 			m_pClipList->rect = r;
 			m_pClipList->next = NULL; //One item list for now
 		}
@@ -654,10 +689,10 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 			      UT_sint32 w, UT_sint32 h)
 {
 	PgColor_t newc;
-	_UUD(x);
-	_UUD(y);
-	_UUD(w);
-	_UUD(h);
+	x = tdu(x);
+	y = tdu(y);
+	w = tdu(w);
+	h = tdu(h);
 
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
 	GR_CaretDisabler caretDisabler(getCaret());
@@ -692,8 +727,8 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	PhRect_t  rect;
 	PhPoint_t offset;
 
-	_UUD(dx);
-	_UUD(dy);
+	dx = tdu(dx);
+	dy = tdu(dy);
 	
 	GR_CaretDisabler caretDisabler(getCaret());
 	PtCalcCanvas(m_pDraw, &rect);
@@ -723,7 +758,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	xxx_UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 
-	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+//	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 	//to get an expose call PtDamageExtent(region_widget, damage_rect)
 }
 
@@ -734,12 +769,12 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	PhRect_t 	rect, widgetrect;
 	PhPoint_t 	offset;
 
-	_UUD(x_dest);
-	_UUD(y_dest);
-	_UUD(x_src);
-	_UUD(y_src);
-	_UUD(width);
-	_UUD(height);
+	x_dest = tdu(x_dest);
+	y_dest = tdu(y_dest);
+	x_src = tdu(x_src);
+	y_src = tdu(y_src);
+	width = tdu(width);
+	height = tdu(height);
 	GR_CaretDisabler caretDisabler(getCaret());
 
 	PtCalcCanvas(m_pDraw, &widgetrect);
@@ -789,7 +824,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 
 
-	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+//	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 }
 
 void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -804,8 +839,8 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 ***/
 GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-	_UUD(iDisplayWidth);
-	_UUD(iDisplayHeight);
+	iDisplayWidth = tdu(iDisplayWidth);
+	iDisplayHeight = tdu(iDisplayHeight);
 	/* GR_QNXImage* pImg = NULL; */
 	GR_Image* pImg = NULL;
    	if (iType == GR_Image::GRT_Raster)
@@ -821,8 +856,8 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 
 	UT_ASSERT(pImg);
-	_UUD(xDest);
-	_UUD(yDest);
+	xDest = tdu(xDest);
+	yDest = tdu(yDest);
 
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
@@ -994,10 +1029,10 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 
-	_UUD(x);
-	_UUD(y);
-	_UUD(w);
-	_UUD(h);
+	x = tdu(x);
+	y = tdu(y);
+	w = tdu(w);
+	h = tdu(h);
 
 	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
@@ -1056,8 +1091,8 @@ bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 		pageNumber, iWidth, iHeight, bPortrait, (szPageLabel) ? szPageLabel : "", m_bPrintNextPage));
 	UT_ASSERT(m_pPrintContext);
 
-	_UUD(iWidth);
-	_UUD(iHeight);
+	iWidth = tdu(iWidth);
+	iHeight = tdu(iHeight);
 
 	if (!m_pPrintContext) {
 		return false;
@@ -1098,29 +1133,16 @@ bool GR_QNXGraphics::endPrint(void) {
 	return true;
 }
 
-bool	GR_QNXGraphics::_setTransform(const GR_Transform & tr)
-{
-		long lScale = ((_UL(1) * getZoomPercentage()));
-		PhLpoint_t scale;
-
-UT_DEBUGMSG(("_setTransform: Unimplemented!"));
-UT_DEBUGMSG((("Transform values: %d,%d,%d,%d,%d,%d"),tr.getM11(),tr.getM12(),tr.getM21(),tr.getM22(),tr.getDy(),tr.getDx()));
-	scale.x = tr.getM11() * lScale;
-	scale.y = tr.getM22() * lScale;
-
-return false;
-}
-
 void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
 {
 	
   PhRect_t rect;
   short int x,y;
 
-	_UUD(r.left);
-	_UUD(r.top);
-	_UUD(r.width);
-	_UUD(r.height); 
+	r.left =  tdu(r.left);
+	r.top =   tdu(r.top);
+	r.width = tdu(r.width);
+	r.height =tdu(r.height); 
 #if 0
 	// had to turn this off -- the fact the the rectangle coordinances
 	// are the same does not guarantee that the bitmap is (e.g., in a
@@ -1169,7 +1191,7 @@ void GR_QNXGraphics::restoreRectangle(UT_uint32 iIndx)
       
       DRAW_START
 	
-	pos.x=r->left;
+				pos.x=r->left;
         pos.y=r->top;
       
 	PgDrawPhImage(&pos,pImg,0);

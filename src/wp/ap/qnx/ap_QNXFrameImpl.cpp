@@ -41,6 +41,11 @@ void AP_QNXFrameImpl::_bindToolbars(AV_View *pView)
 	}	
 }
 
+UT_RGBColor AP_QNXFrameImpl::getColorSelBackground () const
+
+{
+return UT_RGBColor(125,125,125);
+}
 void AP_QNXFrameImpl::_showOrHideToolbars()
 {
 	XAP_Frame *pFrame = getFrame();
@@ -99,6 +104,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	AP_QNXTopRuler * pQNXTopRuler = new AP_QNXTopRuler(getFrame());
 	UT_ASSERT(pQNXTopRuler);
 	m_topRuler = pQNXTopRuler->createWidget();
+
 	((AP_FrameData*)pData)->m_pTopRuler = pQNXTopRuler;
 
 		// create the left ruler
@@ -178,7 +184,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _DA_STRETCH_, _DA_STRETCH_);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	m_dAreaGroup = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-	PtAddCallback(m_dAreaGroup, Pt_CB_RESIZE, &(_fe::resize), this);
+	PtAddCallback(m_dAreaGroup, Pt_CB_RESIZE,_fe::resize, this);
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 

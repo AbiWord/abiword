@@ -53,12 +53,13 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	UT_ASSERT(!m_pG && !m_wLeftRuler);
 
 	XAP_QNXFrameImpl *pQNXFrameImpl = (XAP_QNXFrameImpl *)m_pFrame->getFrameImpl();
+	
 	m_rootWindow = pQNXFrameImpl->getTopLevelWindow();
 
 	area.pos.x = 0;
-	area.pos.y = pQNXFrameImpl->m_AvailableArea.pos.y + _UD(s_iFixedWidth);
-	area.size.w = _UD(s_iFixedWidth);
-	area.size.h = pQNXFrameImpl->m_AvailableArea.size.h - _UD(s_iFixedWidth);
+	area.pos.y = pQNXFrameImpl->m_AvailableArea.pos.y + s_iFixedWidth;
+	area.size.w = s_iFixedWidth;
+	area.size.h = pQNXFrameImpl->m_AvailableArea.size.h - s_iFixedWidth;
 //	pQNXFrameImpl->m_AvailableArea.pos.x += area.size.w + 3;
 //	pQNXFrameImpl->m_AvailableArea.size.w -= area.size.w + 3;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
@@ -71,7 +72,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _LR_STRETCH_, _LR_STRETCH_); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE|Pt_HIGHLIGHTED, Pt_HIGHLIGHTED|Pt_DELAY_REALIZE); 
 	m_wLeftRulerGroup = PtCreateWidget(PtGroup, m_rootWindow, n, args);
-	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
+	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, _fe::resize, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
@@ -85,6 +86,12 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtAddEventHandler(m_wLeftRuler, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
 	PtAddEventHandler(m_wLeftRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
 
+	DELETEP(m_pG);
+	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(), m_wLeftRuler, ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
+	m_pG = pG;
+	pG->init3dColors();
+
+
 	return m_wLeftRulerGroup;
 }
 
@@ -92,15 +99,6 @@ void AP_QNXLeftRuler::setView(AV_View * pView)
 {
 	AP_LeftRuler::setView(pView);
 
-	// We really should allocate m_pG in createWidget(), but
-	// unfortunately, the actual window (m_wLeftRuler->window)
-	// is not created until the frame's top-level window is
-	// shown.
-	DELETEP(m_pG);
-	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(),
-                                           m_wLeftRuler, ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
-	m_pG = pG;
-	pG->init3dColors();
 }
 
 void * AP_QNXLeftRuler::getRootWindow(void)
@@ -168,7 +166,7 @@ int AP_QNXLeftRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallba
 	get_stuff(info, &ems, &emb, &mx, &my);
 
 	UT_DEBUGMSG(("LR: Pressing the mouse %x %x %d,%d ", ems, emb, mx, my));
-	pQNXLeftRuler->mousePress(ems, emb, mx, my);
+	pQNXLeftRuler->mousePress(ems, emb, pQNXLeftRuler->getGraphics()->tlu(mx), pQNXLeftRuler->getGraphics()->tlu(my));
 
 	return Pt_CONTINUE;
 }
@@ -205,7 +203,7 @@ int AP_QNXLeftRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCall
 		return Pt_CONTINUE;
 	}
 
-	pQNXLeftRuler->mouseRelease(ems, emb, mx, my);
+	pQNXLeftRuler->mouseRelease(ems, emb, pQNXLeftRuler->getGraphics()->tlu(mx), pQNXLeftRuler->getGraphics()->tlu(my));
 
 	return Pt_CONTINUE;
 }
@@ -222,7 +220,7 @@ int AP_QNXLeftRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallb
 	mx = my = 0;
 	get_stuff(info, &ems, NULL, &mx, &my);
 
-	pQNXLeftRuler->mouseMotion(ems, mx, my);
+	pQNXLeftRuler->mouseMotion(ems, pQNXLeftRuler->getGraphics()->tlu(mx), pQNXLeftRuler->getGraphics()->tlu(my));
 	PgFlush();
 
 	return Pt_CONTINUE;
@@ -232,7 +230,6 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 {
 	PtArg_t args[1];
 	PhRect_t rect;
-	UT_Rect rClip;
 
 	PtCalcCanvas(w, &rect);
 
@@ -244,10 +241,17 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	if (!pQNXRuler)
 		return 0;
 
-		PhPoint_t shift;
-		PtWidgetOffset(w, &shift);
+			UT_Rect rClip;
+			PhPoint_t shift;
+			PtWidgetOffset(w, &shift);
 
-   pQNXRuler->draw(NULL);
+			GR_Graphics * pGr = pQNXRuler->getGraphics();
+			rClip.width = pGr->tlu(damage->rect.lr.x - damage->rect.ul.x);
+			rClip.height = pGr->tlu(damage->rect.lr.y - damage->rect.ul.y);
+			rClip.left = pGr->tlu((damage->rect.ul.x - shift.x) > 0 ? damage->rect.ul.x - shift.x : 0 );
+			rClip.top = pGr->tlu((damage->rect.ul.y - shift.y) > 0 ? damage->rect.ul.y - shift.y : 0);
+
+			pQNXRuler->draw(&rClip);
 
 	return 0;
 }
@@ -285,5 +289,34 @@ int AP_QNXLeftRuler::_fe::resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *i
 	}
 
 	return Pt_CONTINUE;
+}
+bool AP_QNXLeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
+{
+
+
+	// if the column containing the caret has changed or any
+	// properties on the section (like the number of columns
+	// or the margins) or on the block (like the paragraph
+	// indents), then we redraw the ruler.
+//#bidi
+	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR ))
+	{
+/*		UT_Rect pClipRect;
+		pClipRect.top = 0;
+		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		if(pView->getViewMode() != VIEW_PRINT)
+		{
+			pClipRect.left = 0;
+		}
+
+		pClipRect.height = m_iHeight;
+		pClipRect.width = m_iWidth;
+		draw(&pClipRect);*/
+		PtDamageWidget(m_wLeftRuler);
+
+	}
+
+	return true;
 }
 

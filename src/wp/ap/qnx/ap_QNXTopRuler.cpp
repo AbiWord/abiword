@@ -59,7 +59,7 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	area.pos.x = 0;
 	area.pos.y = pQNXFrameImpl->m_AvailableArea.pos.y;
 	area.size.w = pQNXFrameImpl->m_AvailableArea.size.w;
-	area.size.h = _UD(s_iFixedHeight);
+	area.size.h = s_iFixedHeight;
 //	pQNXFrameImpl->m_AvailableArea.pos.y += area.size.h + 3;
 //	pQNXFrameImpl->m_AvailableArea.size.h -= area.size.h + 3;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
@@ -71,18 +71,24 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _TR_STRETCH_, _TR_STRETCH_); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED|Pt_DELAY_REALIZE, Pt_HIGHLIGHTED|Pt_DELAY_REALIZE);
 	m_wTopRulerGroup = PtCreateWidget(PtGroup, m_rootWindow, n, args);
-	PtAddCallback(m_wTopRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
+	PtAddCallback(m_wTopRulerGroup, Pt_CB_RESIZE, _fe::resize, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-   PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_ARG_FLAGS, Pt_GETS_FOCUS); 
+   PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS); 
 	m_wTopRuler = PtCreateWidget(PtRaw, m_wTopRulerGroup, n, args);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
 								  _fe::motion_notify_event, this);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
+
+	DELETEP(m_pG);	
+	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(), m_wTopRuler,  ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
+	m_pG = pG;
+	UT_ASSERT(m_pG);
+	pG->init3dColors();
 
 	return m_wTopRulerGroup;
 }
@@ -90,18 +96,6 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 void AP_QNXTopRuler::setView(AV_View * pView)
 {
 	AP_TopRuler::setView(pView);
-
-	// We really should allocate m_pG in createWidget(), but
-	// unfortunately, the actual window (m_wTopRuler->window)
-	// is not created until the frame's top-level window is
-	// shown.
-
-	DELETEP(m_pG);	
-	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(), 
-											 m_wTopRuler,  ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
-	m_pG = pG;
-	UT_ASSERT(m_pG);
-	pG->init3dColors();
 }
 
 void AP_QNXTopRuler::getWidgetPosition(int * x, int * y)
@@ -185,7 +179,7 @@ int AP_QNXTopRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbac
 
 	UT_DEBUGMSG(("TR: Pressing the mouse %x %x %d,%d ",
 				ems, emb, mx, my));
-	pQNXTopRuler->mousePress(ems, emb, mx, my);
+	pQNXTopRuler->mousePress(ems, emb, pQNXTopRuler->getGR()->tlu(mx), pQNXTopRuler->getGR()->tlu(my));
 
 	return Pt_CONTINUE;
 }
@@ -222,7 +216,7 @@ int AP_QNXTopRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCallb
 		return Pt_CONTINUE;
 	}
 
-	pQNXTopRuler->mouseRelease(ems, emb, mx, my);
+	pQNXTopRuler->mouseRelease(ems, emb,  pQNXTopRuler->getGR()->tlu(mx),  pQNXTopRuler->getGR()->tlu(my));
 
 	return Pt_CONTINUE;
 }
@@ -239,7 +233,7 @@ int AP_QNXTopRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallba
 	mx = my = 0;
 	get_stuff(info, &ems, NULL, &mx, &my);
 
-	pQNXTopRuler->mouseMotion(ems, mx, my);
+	pQNXTopRuler->mouseMotion(ems,  pQNXTopRuler->getGR()->tlu(mx),  pQNXTopRuler->getGR()->tlu(my));
 	PgFlush();
 
 	return Pt_CONTINUE;
@@ -291,22 +285,57 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXRuler, 0);
 	PtGetResources(w, 1, args);
 	pQNXRuler = (ppQNXRuler) ? *ppQNXRuler : NULL;
+	FV_View * pView = (FV_View *) pQNXRuler->getView();
 
-	if (!pQNXRuler) {
+	if (!pQNXRuler || !pView) {
 		return 0;
 	}
 			// HACK for not updating Ruler for incremental Loading
-			FV_View * pView = (FV_View *) pQNXRuler->getView();
 			if(pView && (pView->getPoint() == 0))
 			{
 				return 0;
 			}
 				UT_Rect rClip;
 				PhPoint_t shift;
-
-
 				PtWidgetOffset(w, &shift);
-			pQNXRuler->draw(NULL);
+
+				GR_Graphics * pGr = pQNXRuler->getGR();
+				rClip.width = pGr->tlu(damage->rect.lr.x - damage->rect.ul.x);
+				rClip.height = pGr->tlu(damage->rect.lr.y - damage->rect.ul.y);
+				rClip.left = pGr->tlu((damage->rect.ul.x - shift.x) > 0 ? damage->rect.ul.x - shift.x : 0 );
+				rClip.top = pGr->tlu((damage->rect.ul.y - shift.y) > 0 ? damage->rect.ul.y - shift.y : 0);
+
+				pQNXRuler->draw(&rClip);
 	return 0;
+}
+
+bool AP_QNXTopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
+{
+
+
+	// if the column containing the caret has changed or any
+	// properties on the section (like the number of columns
+	// or the margins) or on the block (like the paragraph
+	// indents), then we redraw the ruler.
+//#bidi
+	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR ))
+	{
+/*		UT_Rect pClipRect;
+		pClipRect.top = 0;
+		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		if(pView->getViewMode() != VIEW_PRINT)
+		{
+			pClipRect.left = 0;
+		}
+
+		pClipRect.height = m_iHeight;
+		pClipRect.width = m_iWidth;
+		draw(&pClipRect);*/
+		PtDamageWidget(m_wTopRuler);
+
+	}
+
+	return true;
 }
 
