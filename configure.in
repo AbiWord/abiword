@@ -52,15 +52,15 @@ if test "$PLATFORM" = "unix"; then
 	ABI_BE="$ABI_FE"
 	with_unix=true
 	dnl locate glib and gtk
-	ABI_GLIB_GTK
+	ABI_GTK2
 elif test "$PLATFORM" = "mac" ; then
-	ABI_GLIB
+	ABI_GLIB2
 	ABI_FE="Mac"
 	ABI_BE="$ABI_FE"
 	with_macosx=true
 	with_carbon=true
 elif test "$PLATFORM" = "cocoa" ; then
-	ABI_GLIB
+	ABI_GLIB2
 	ABI_FE="Cocoa"
 	ABI_BE="Unix"
 	with_macosx=true
