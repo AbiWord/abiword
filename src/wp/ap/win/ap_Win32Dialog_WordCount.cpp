@@ -234,13 +234,27 @@ BOOL CALLBACK AP_Win32Dialog_WordCount::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	}
 }
 
-#define _DSI(c,i)	SetDlgItemInt(hWnd,AP_RID_DIALOG_##c,m_count.##i,FALSE)
+void AP_Win32Dialog_WordCount::_setDlgItemInt(UINT nCtrl, int nValue)
+{
+	char szUnFormatted[128], szFormatted[128];
+
+	sprintf(szUnFormatted, "%u", nValue);
+
+	GetNumberFormat(LOCALE_USER_DEFAULT, 0, szUnFormatted,
+		NULL, szFormatted, sizeof (szFormatted)/sizeof(char));		
+
+	SetDlgItemText(m_hWnd, nCtrl, szFormatted);		
+}						
+					
+					
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 
 BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	m_hWnd = hWnd;
 	
 	// Update the caption
 	ConstructWindowName();
@@ -262,12 +276,12 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	_DS(WORDCOUNT_TEXT_LINE,		DLG_WordCount_Lines);
 
 	// set initial state
-	_DSI(WORDCOUNT_VAL_PAGE,		page);
-	_DSI(WORDCOUNT_VAL_WORD,		word);
-	_DSI(WORDCOUNT_VAL_CH,			ch_no);
-	_DSI(WORDCOUNT_VAL_CHSP,		ch_sp);
-	_DSI(WORDCOUNT_VAL_PARA,		para);
-	_DSI(WORDCOUNT_VAL_LINE,		line);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PAGE,		m_count.page);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORD,		m_count.word);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CH,			m_count.ch_no);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,		m_count.ch_sp);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
 	
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
@@ -278,12 +292,12 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 {
 	HWND hWnd = m_hWnd;
 
-	_DSI(WORDCOUNT_VAL_PAGE,		page);
-	_DSI(WORDCOUNT_VAL_WORD,		word);
-	_DSI(WORDCOUNT_VAL_CH,			ch_no);
-	_DSI(WORDCOUNT_VAL_CHSP,		ch_sp);
-	_DSI(WORDCOUNT_VAL_PARA,		para);
-	_DSI(WORDCOUNT_VAL_LINE,		line);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PAGE,		m_count.page);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORD,		m_count.word);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CH,			m_count.ch_no);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,		m_count.ch_sp);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
 
 	// Update the caption in case the name of the document has changed
 	ConstructWindowName();

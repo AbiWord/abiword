@@ -224,9 +224,7 @@ public:
 
 	SET_GATHER			(ShowSplash,		bool );
 
-	SET_GATHER			(SmartQuotesEnable, bool );
-	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined );
-
+	SET_GATHER			(SmartQuotesEnable, bool );	
 	SET_GATHER			(PrefsAutoSave, 	bool );
 
 	SET_GATHER			(ViewShowRuler, 	bool );
@@ -269,7 +267,6 @@ public:
 
 	int 						m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
-	UT_Vector*					m_pVecUILangs;
 
 private:
 	XAP_DialogFactory * 		m_pDialogFactory;

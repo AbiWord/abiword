@@ -17,11 +17,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-if test ! -d `aclocal --print-ac-dir 2>> autogen.err`; then
-  echo "Bad aclocal (automake) installation"
-  exit 1
-fi
-
 # Produce aclocal.m4, so autoconf gets the automake macros it needs
 # 
 echo "Creating aclocal.m4: aclocal -I ac-helpers $ACLOCAL_FLAGS"

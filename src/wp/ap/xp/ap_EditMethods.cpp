@@ -82,6 +82,7 @@
 #include "ap_Dialog_FormatTable.h"
 #include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Dialog_MailMerge.h"
+#include "fl_FootnoteLayout.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -3540,6 +3541,27 @@ Defun1(warpInsPtEOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+//
+// This is called on cntrl-End. If called from within a footnote/endnote
+// jump back to just after the insertion point
+//
+	if(pView->isInFootnote())
+	{
+		fl_FootnoteLayout * pFL = pView->getClosestFootnote(pView->getPoint());
+		PT_DocPosition pos = pFL->getDocPosition() + pFL->getLength();
+		pView->setPoint(pos);
+		pView->ensureInsertionPointOnScreen();
+		return true;
+	}
+	if(pView->isInEndnote())
+	{
+		fl_EndnoteLayout * pEL = pView->getClosestEndnote(pView->getPoint());
+		PT_DocPosition pos = pEL->getDocPosition() + pEL->getLength();
+		pView->setPoint(pos);
+		pView->ensureInsertionPointOnScreen();
+		return true;
+	}
+
 	pView->moveInsPtTo(FV_DOCPOS_EOD);
 	return true;
 }
@@ -6107,8 +6129,15 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 	properties[1] = szTabStops;
 	properties[2] = 0;
 	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1]));
-
-	pView->setBlockFormat(properties);
+	if(szTabStops && *szTabStops)
+	{
+		pView->setBlockFormat(properties);
+	}
+	else
+	{
+		properties[1] = " ";
+		pView->setBlockFormat(properties);
+	}
 
 	properties[0] = "default-tab-interval";
 	properties[1] = szDflTabStop;
@@ -8171,25 +8200,25 @@ Defun(zoom)
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	UT_String sPageWidth (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth));
-	UT_String sWholePage (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage));
-	UT_String sPercent (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent));
+	UT_UTF8String sPageWidth (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth));
+	UT_UTF8String sWholePage (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage));
+	UT_UTF8String sPercent (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent));
 	
-	if(strcmp(p_zoom, sPageWidth.c_str()) == 0)
+	if(strcmp(p_zoom, sPageWidth.utf8_str()) == 0)
 	{
 		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>("Width"));
 		pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 		iZoom = pView->calculateZoomPercentForPageWidth();
 	}
-	else if(strcmp(p_zoom, sWholePage.c_str()) == 0)
+	else if(strcmp(p_zoom, sWholePage.utf8_str()) == 0)
 	{
 		pFrame->setZoomType(XAP_Frame::z_WHOLEPAGE);
 		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>("Page"));
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
-	else if(strcmp(p_zoom, sPercent.c_str()) == 0)
+	else if(strcmp(p_zoom, sPercent.utf8_str()) == 0)
 	{
 		// invoke the zoom dialog instead for some custom value
 		return EX(dlgZoom);
@@ -9567,7 +9596,6 @@ Defun(sectColumns3)
 		return false;
 	const XML_Char * properties[] = { "columns", "3", 0};
 	pView->setSectionFormat(properties);
-	EX(viewPrintLayout);
 	return true;
 }
 
@@ -10023,29 +10051,14 @@ Defun(viCmd_yy)
 	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(copy) );
 }
 
-bool _insAutotext (FV_View *pView, int id)
+static bool _insAutotext (FV_View *pView, int id)
 {
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-	if (!pFrame)
-	  return false;
-
-	XAP_App * pApp = pFrame->getApp();
-	if (!pApp)
-	  return false;
-
-	const XAP_StringSet * pSS = pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	if (!pSS)
 	  return false;
 
-	const char * text = static_cast<const char *>(pSS->getValue(id));
-	UT_uint32 len = strlen (text);
-
-	UT_UCSChar * ucstext = new UT_UCSChar [len + 1];
-	UT_UCS4_strcpy_char (ucstext, text);
-
-	pView->cmdCharInsert(ucstext, len);
-
-	delete [] ucstext;
+	UT_UCS4String ucs4 (pSS->getValueUTF8(id).ucs4_str());
+	pView->cmdCharInsert(ucs4.ucs4_str(), ucs4.size());
 
 	return true;
 }

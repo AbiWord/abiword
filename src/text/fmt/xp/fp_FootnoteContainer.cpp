@@ -93,11 +93,14 @@ void fp_FootnoteContainer::clearScreen(void)
 		UT_RGBColor * pBGColor = pDSL->getPaperColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
+//		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 diff = 0; // FIXME make a property
 		UT_sint32 xoff,yoff;
 		getPage()->getScreenOffsets(this,xoff,yoff);
 		UT_sint32 xoffStart = xoff  + diff;
-		UT_sint32 xoffEnd = xoff + getPage()->getWidth() - iLeftMargin -iRightMargin - diff;
+		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		UT_sint32 xoffEnd = xoff + width;
+
 		getGraphics()->setColor(*pBGColor);
 		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();
 		getGraphics()->setLineWidth(iLineThick);
@@ -156,9 +159,12 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
+//		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 diff = 0; // FIXME make a property
 		UT_sint32 xoffStart = pDA->xoff + diff;
-		UT_sint32 xoffEnd = pDA->xoff + getPage()->getWidth() -iLeftMargin - iRightMargin - diff;
+		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		UT_sint32 xoffEnd = pDA->xoff + width;
+
 		UT_sint32 yline = pDA->yoff;
 		pDA->pG->setColor(black);
 		pDA->pG->setLineProperties(1.0,
@@ -229,6 +235,11 @@ void fp_FootnoteContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
+	UT_sint32 iMaxFootHeight = getPage()->getHeight();
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	iMaxFootHeight -= pDSL->getTopMargin();
+	iMaxFootHeight -= pDSL->getBottomMargin();
+	iMaxFootHeight -= getGraphics()->tlu(20)*3;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
@@ -253,10 +264,16 @@ void fp_FootnoteContainer::layout(void)
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 		//iY +=  0.5;
-
-		if (pPrevContainer)
+		if(iY > iMaxFootHeight)
 		{
-			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			iY = iMaxFootHeight;
+		}
+		else
+		{
+			if (pPrevContainer)
+			{
+				pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			}
 		}
 		pPrevContainer = pContainer;
 		iPrevY = iY;

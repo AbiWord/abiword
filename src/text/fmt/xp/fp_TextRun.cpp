@@ -45,7 +45,7 @@
 
 #include "ut_OverstrikingChars.h"
 #include "ut_Language.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "ut_contextGlyph.h"
 #include "ap_Prefs.h"
 
@@ -108,6 +108,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 		// set the static buffers to some reasonable value
 		s_pCharAdvance = new UT_sint32 [TEXTRUN_STATIC_BUFFER_SIZE];
 		UT_return_if_fail(s_pCharAdvance);
+		memset (s_pCharAdvance, 0, TEXTRUN_STATIC_BUFFER_SIZE); 
 
 		s_pCharBuff = new UT_UCS4Char [TEXTRUN_STATIC_BUFFER_SIZE];
 		UT_return_if_fail(s_pCharBuff);
@@ -1418,8 +1419,8 @@ bool fp_TextRun::_addupCharWidths(void)
 
 void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 //
 // For justfied lines we have to clear the entire line
 //
@@ -1692,6 +1693,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// strip placeholders and adjust segment offsets accordingly
 	_stripLigaturePlaceHolders(m_pSpanBuff, pCWThis, iLen, &iSegmentOffset[0], iSegmentCount);
 
+	// if iLen is 0, there is nothing to draw; this sometimes happens,
+	// and is probably legal ...
+	UT_return_if_fail(iLen);
+	
 	// now we can calculate the character advances
 	UT_sint32 xoff_draw = pDA->xoff;
 	_calculateCharAdvances(iLen, xoff_draw);
@@ -2944,28 +2949,31 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
 		if ( pSpan == static_cast<UT_UCSChar *>(NULL) || !lenSpan )
 			break;
-		iPrevType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
-		iType = iPrevType;
 
-		while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
+		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
+
+		if(getLength() > 1)
 		{
-			curOffset--;
-			getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
-			iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
-			if(iType != iPrevType)
+			while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
 			{
-				pPrev->split(curOffset+1);
+				curOffset--;
+				getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
+				iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
+				if(iType != iPrevType)
+				{
+					pPrev->split(curOffset+1);
 
-				//now we want to reset the direction of the second half
-				UT_ASSERT(pPrev->getNext()->getType() == FPRUN_TEXT);
-				pOtherHalf = static_cast<fp_TextRun*>(pPrev->getNext());
-				pOtherHalf->setDirection(iPrevType, pOtherHalf->getDirOverride());
-				iPrevType = iType;
-				// we do not want to break here, since pPrev still points to the
-				// left part, so we can carry on leftwards
+					//now we want to reset the direction of the second half
+					UT_ASSERT(pPrev->getNext()->getType() == FPRUN_TEXT);
+					pOtherHalf = static_cast<fp_TextRun*>(pPrev->getNext());
+					pOtherHalf->setDirection(iPrevType, pOtherHalf->getDirOverride());
+					iPrevType = iType;
+					// we do not want to break here, since pPrev still points to the
+					// left part, so we can carry on leftwards
+				}
 			}
 		}
-
+		
 		if(FRIBIDI_IS_STRONG(iPrevType))
 			break;
 
@@ -2992,45 +3000,51 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		curOffset = pNext->getBlockOffset();
 	}
 
-	iType = FRIBIDI_TYPE_UNSET;
 	while(pNext)
 	{
 		getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
 		if ( pSpan == static_cast<UT_UCSChar *>(NULL) || !lenSpan )
 			break;
-		iPrevType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
+		
+		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
 		bool bDirSet = false;
-		spanOffset = 0;
-		while(curOffset + spanOffset < pNext->getBlockOffset() + pNext->getLength() - 1 && !FRIBIDI_IS_STRONG(iType))
+
+		if(pNext->getLength() > 1)
 		{
-			spanOffset++;
-			if(spanOffset >= lenSpan)
+			spanOffset = 0;
+			while(curOffset + spanOffset < pNext->getBlockOffset() + pNext->getLength() - 1
+				  && !FRIBIDI_IS_STRONG(iType))
 			{
-				curOffset += spanOffset;
-				spanOffset = 0;
-				getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
+				spanOffset++;
+				if(spanOffset >= lenSpan)
+				{
+					curOffset += spanOffset;
+					spanOffset = 0;
+					getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
+				}
+				iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
+				if(iType != iPrevType)
+				{
+					pNext->split(curOffset + spanOffset);
+					pNext->setDirection(iPrevType, pNext->getDirOverride());
+
+					// now set direction of the second half
+					UT_ASSERT(pNext->getNext()->getType() == FPRUN_TEXT);
+					pOtherHalf = static_cast<fp_TextRun*>(pNext->getNext());
+
+					pOtherHalf->setDirection(iType, pOtherHalf->getDirOverride());
+					bDirSet = true;
+					iPrevType = iType; // not needed
+
+					// since pNext points now to the left half, the right-ward processing
+					// cannot continue, but insteds we need to proceed with the new run
+					// on the right
+					break;
+				}
 			}
-			iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
-			if(iType != iPrevType)
-			{
-				pNext->split(curOffset + spanOffset);
-				pNext->setDirection(iPrevType, pNext->getDirOverride());
-
-				// now set direction of the second half
-				UT_ASSERT(pNext->getNext()->getType() == FPRUN_TEXT);
-				pOtherHalf = static_cast<fp_TextRun*>(pNext->getNext());
-
-				pOtherHalf->setDirection(iType, pOtherHalf->getDirOverride());
-				bDirSet = true;
-				iPrevType = iType; // not needed
-
-				// since pNext points now to the left half, the right-ward processing
-				// cannot continue, but insteds we need to proceed with the new run
-				// on the right
-				break;
-			}
+		
 		}
-
+		
 		if(FRIBIDI_IS_STRONG(iPrevType))
 			break;
 
@@ -3325,6 +3339,9 @@ void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
 	// performance bottleneck, we could cache this in a member array,
 	// and refresh it inside refreshDrawBuffer()
 
+	if(iLen == 0)
+		return;
+	
 	UT_return_if_fail(iLen <= s_iCharAdvanceSize);
 
 	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL )

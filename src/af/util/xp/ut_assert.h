@@ -167,8 +167,6 @@
  */
 #define UT_ASSERT_HARMLESS(cond) UT_ASSERT(cond)
 
-#ifndef UT_DISABLE_CHECKS
-
 /*!
  * Just return from a function if this condition fails
  */
@@ -183,14 +181,5 @@
  * Throw if this condition fails
  */
 #define UT_throw_if_fail(cond, val) if (!(cond)) { UT_ASSERT(cond); throw val; }
-
-#else
-
-// disable these checks - probably not a good idea (NOTE: NOT NDEBUG!!!)
-
-#define UT_return_if_fail(cond)
-#define UT_return_val_if_fail(cond, val)
-#define UT_throw_if_fail(cond, val)
-#endif
 
 #endif /* UT_ASSERT_H */

@@ -1264,13 +1264,19 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
+	UT_sint32 oldDY = tdu(getPrevYOffset());
+	UT_sint32 oldDX = tdu(getPrevXOffset());
 	UT_sint32 newY = getPrevYOffset() + dy;
 	UT_sint32 newX = getPrevXOffset() + dx;
-	GR_CaretDisabler caretDisabler(getCaret());
-	UT_sint32 ddx = -tdu(newX - getPrevXOffset());
-	UT_sint32 ddy = -tdu(newY - getPrevYOffset());
+	UT_sint32 ddx = -(tdu(newX) - oldDX);
+	UT_sint32 ddy = -(tdu(newY) - oldDY);
 	setPrevYOffset(newY);
 	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
+	{
+		return;
+	}
 	UT_sint32 iddy = labs(ddy);
 	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
 	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);

@@ -433,9 +433,18 @@ void fl_BlockLayout::_lookupProperties(void)
 				pRun = pRun->getNext();
 				pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
 			}
+			else if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				// need to set the direction correctly
+				pRun->setDirection(m_iDomDirection);
+				pRun->setVisDirection(m_iDomDirection);
+				pRun = pRun->getNext();
+			}
 			else
 				pRun = pRun->getNext();
 		}
+
+		
 	}
 	{
 		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(getPropertyType("orphans", Property_type_int));
@@ -865,11 +874,12 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
-	UT_DEBUGMSG(("In update Offsets \n"));
+	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
-	PT_DocPosition posInBlock = getPosition();
+	PT_DocPosition posInBlock = getPosition(true);
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
+ 		UT_DEBUGMSG(("Look at run %x posindoc %d \n",pRun,posInBlock+pRun->getBlockOffset()));
 		pRun = pRun->getNext();
 	}
 	if(pRun == NULL)
@@ -889,7 +899,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		if(posRun + pPrev->getLength() <= posEmbedded)
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
-			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
 		else if((posRun == posEmbedded) && pRun->getNext())
 		{
@@ -920,8 +930,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			{
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 				fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
-				UT_uint32 splitOffset = posEmbedded - posInBlock;
-				xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+				UT_uint32 splitOffset = posEmbedded - posInBlock -1;
+				UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 				bool bres = pTRun->split(splitOffset);
 				UT_ASSERT(bres);
 				pRun = pTRun->getNext();
@@ -931,7 +941,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	xxx_UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
+	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
 //
@@ -5093,12 +5103,14 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	fp_Run* pFirstNewRun = NULL;
 	fp_Run* pLastRun = NULL;
 	fp_Run* pRun;
+ 	UT_DEBUGMSG(("BlockOffset %d \n",blockOffset));
 	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun);
 		 pLastRun=pRun, pRun=pRun->getNext())
 	{
 		// We have passed the point. Why didn't previous Run claim to
 		// hold the offset? Make the best of it in non-debug
 		// builds. But keep the assert to get us information...
+ 		xxx_UT_DEBUGMSG(("pRun %x pRun->next %x pRun->blockOffset %d pRun->getLength %d \n",pRun,pRun->getNextRun(),pRun->getBlockOffset(),pRun->getLength()));
 		if (pRun->getBlockOffset() > blockOffset)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -441,13 +441,14 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 void XAP_UnixFrameImpl::focusIMIn ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext()); 
+	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_reset (getIMContext());
 }
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_focus_out(getIMContext());
 }
 
 void XAP_UnixFrameImpl::resetIMContext()
@@ -505,8 +506,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 
 	gtk_grab_add(w);
 
-	if (e->state & GDK_SHIFT_MASK)
-		pUnixFrameImpl->resetIMContext ();
+	pUnixFrameImpl->resetIMContext ();
 
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
@@ -1211,12 +1211,27 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 {
 	UT_DEBUGMSG(("Retrieve Surrounding\n"));
 
-#if 0
-  gtk_im_context_set_surrounding (context,
-				  entry->text,
-				  entry->n_bytes,
-				  g_utf8_offset_to_pointer (entry->text, entry->current_pos) - entry->text);
-#endif
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
+	PT_DocPosition begin_p, end_p, here;
+
+	begin_p = pView->mapDocPos (FV_DOCPOS_BOB);
+	end_p = pView->mapDocPos (FV_DOCPOS_EOB);
+	here = pView->getInsPoint ();
+
+	UT_UCSChar * text = pView->getTextBetweenPos (begin_p, end_p);
+
+	if (!text)
+		return TRUE;
+
+	UT_UTF8String utf (text);
+	DELETEPV(text);
+
+	gtk_im_context_set_surrounding (context,
+									utf.utf8_str(),
+									utf.byteLength (),
+									here - begin_p);
 
 	return TRUE;
 }
@@ -1328,15 +1343,10 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	GdkGeometry geom;
 	geom.min_width   = 100;
 	geom.min_height  = 100;
-	geom.base_width  = user_w;
-	geom.base_height = user_h;
-	geom.width_inc  = 1;
-	geom.height_inc = 1;
-
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
-									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC));
+									static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE));
 
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}

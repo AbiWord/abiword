@@ -27,7 +27,7 @@
 
 #include "xap_Preview.h"
 #include "ap_Dialog_Paragraph.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 // fwd decl.
 class AP_Dialog_Lists;

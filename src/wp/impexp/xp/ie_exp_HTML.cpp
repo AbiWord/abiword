@@ -3068,9 +3068,15 @@ void s_HTML_Listener::_setCellWidthInches(void)
 	UT_sint32 right = m_TableHelper.getRight ();
 	double tot = 0;
 	UT_sint32 i =0;
+
+	UT_ASSERT(m_vecDWidths.size() <= (right - left));
+
 	for(i=left; i<right; i++)
 	{
-		tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
+		// probably covering up some sort of issue
+		// but we assert above, so we'll notice it again
+		if (i < m_vecDWidths.size ())
+			tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
 	}
 	m_dCellWidthInches = tot;
 }
@@ -3557,7 +3563,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		if (*--ptr == '.')
 			{
 				suffix = ptr;
-				break;
+				// break;
 			}
 	if (dataid == suffix) return;
 
@@ -4230,7 +4236,7 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 		{
 			tree = new s_StyleTree(this,style_name,style);
 		}
-	UT_CATCH(...)
+	UT_CATCH(UT_CATCH_ANY)
 		{
 			tree = 0;
 		}
@@ -4273,6 +4279,10 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 		}
 	else parent = this;
 
+	if (!parent) {
+		UT_ASSERT_NOT_REACHED();
+		return false;
+	}
 	return parent->add (style_name, style);
 }
 
@@ -4654,6 +4664,20 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 					m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
 #endif /* HTML_META_SUPPORTED */
 				}
+			else if (m_utf8 == "creator")
+				{
+#ifdef HTML_META_SUPPORTED
+					m_utf8 = "";
+
+					m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, m_utf8);
+
+					if (m_utf8.byteLength ())
+						{
+							m_utf8.escapeXML ();
+							m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+						}
+#endif /* HTML_META_SUPPORTED */
+				}
 			else if (m_utf8 == "meta")
 				{
 #ifdef HTML_META_SUPPORTED
@@ -4675,8 +4699,24 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 
 			if (sz_property && sz_comment)
 				{
-					const UT_UTF8String * prop = m_pie->getProperty (sz_property->utf8_str ());
+#ifdef HTML_META_SUPPORTED
+					UT_UTF8String creator = "";
+#endif /* HTML_META_SUPPORTED */
+					const UT_UTF8String * prop = 0;
 
+					if (*sz_property == "meta::creator")
+						{
+#ifdef HTML_META_SUPPORTED
+							m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, creator);
+
+							if (creator.byteLength ())
+								prop = &creator;
+#endif /* HTML_META_SUPPORTED */
+						}
+					else
+						{
+							prop = m_pie->getProperty (sz_property->utf8_str ());
+						}
 					if (prop)
 						{
 							const UT_UTF8String DD("$$");

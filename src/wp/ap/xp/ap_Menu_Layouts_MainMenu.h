@@ -209,6 +209,10 @@ BeginLayout(Main,0)
 #else
 		MenuItem(AP_MENU_ID_INSERT_PICTURE)
 #endif
+		BeginSubMenu(AP_MENU_ID_INSERT_DIRECTIONMARKER)
+ 	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM)
+	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM)
+	    EndSubMenu()
 
 	EndSubMenu()
 
@@ -255,8 +259,13 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_EDIT_REMOVEHEADER)
 		MenuItem(AP_MENU_ID_EDIT_REMOVEFOOTER)
-
 		MenuItem(AP_MENU_ID_FMT_BACKGROUND)
+
+		BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
+	        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DD_RTL)
+	        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
+        		MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
+	    	EndSubMenu()
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)

@@ -424,8 +424,8 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 								pStyleC->repopulate();                                                                                                
 
-								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);                                                         					
-								strcpy (buf, (char *)v->getNthItem(nData));				
+								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);                                                         													
+								UT_UCS4_strcpy_char(ucs_buf, (char *)v->getNthItem(nData));				
 								DELETEP(pControl);
 							}
 							
@@ -1047,22 +1047,20 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 			{
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 				bool bString = EV_TIS_ShouldUseString(tis);
-
-				UT_return_val_if_fail(szState, true);
-
+				
 				HWND hwndCombo = _getControlWindow(id);
 				UT_return_val_if_fail(hwndCombo, true);
 
 				
-				/*
+				// NOTE: we always update the control even if !szState
+				if (!szState)
 				{
-				// NOTE: we always update the control even if !bString
-				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
-				if (idx==CB_ERR)
-					SetWindowText(hwndCombo, szState);
-				}	
-				break;
-				*/
+					int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
+					if (idx==CB_ERR)
+						SetWindowText(hwndCombo, "");
+					break;
+				}					
+				
 				
 				// are we currently dropped down?
 			

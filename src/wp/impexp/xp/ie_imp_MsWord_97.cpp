@@ -74,7 +74,7 @@
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
 
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 //#define BIDI_DEBUG
 //

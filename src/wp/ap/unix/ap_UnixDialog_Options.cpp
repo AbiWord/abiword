@@ -147,7 +147,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dlg = abiDialogNew("color chooser dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ColorChooserLabel).c_str());
+  dlg = abiDialogNew("color chooser dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ColorChooserLabel).utf8_str());
 
   abiAddStockButton(GTK_DIALOG(dlg), GTK_STOCK_CLOSE, GTK_RESPONSE_CANCEL);
 
@@ -360,7 +360,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox17);
 	gtk_box_pack_start (GTK_BOX (hbox3), vbox17, TRUE, TRUE, 0);
 
-	frame13 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).c_str());
+	frame13 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).utf8_str());
 	gtk_widget_show (frame13);
 	gtk_box_pack_start (GTK_BOX (vbox17), frame13, TRUE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame13), GTK_SHADOW_NONE);
@@ -376,7 +376,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_clist_clear  (GTK_CLIST (toolbar_clist));
 
 	gtk_clist_set_column_title (GTK_CLIST (toolbar_clist), 1,
-				    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).c_str());
+				    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).utf8_str());
 
 	const gchar *data[2];
 	data[1] = 0;
@@ -404,7 +404,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox18);
 	gtk_box_pack_start (GTK_BOX (hbox3), vbox18, TRUE, TRUE, 0);
 
-	frame14 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Visible).c_str());
+	frame14 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Visible).utf8_str());
 	gtk_widget_show (frame14);
 	gtk_box_pack_start (GTK_BOX (vbox18), frame14, TRUE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame14), GTK_SHADOW_NONE);
@@ -414,7 +414,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_container_add (GTK_CONTAINER (frame14), vbox19);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox19), 1);
 
-	show_toolbar = gtk_radio_button_new_with_label (vbox19_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Show).c_str());
+	show_toolbar = gtk_radio_button_new_with_label (vbox19_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Show).utf8_str());
 	vbox19_group = gtk_radio_button_group (GTK_RADIO_BUTTON (show_toolbar));
 	gtk_widget_show (show_toolbar);
 	gtk_box_pack_start (GTK_BOX (vbox19), show_toolbar, FALSE, FALSE, 0);
@@ -422,12 +422,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	g_signal_connect (G_OBJECT (show_toolbar), "toggled",
 			    G_CALLBACK (s_radio_toggled), toolbar_clist);
 
-	hide_toolbar = gtk_radio_button_new_with_label (vbox19_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Hide).c_str());
+	hide_toolbar = gtk_radio_button_new_with_label (vbox19_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Hide).utf8_str());
 	vbox19_group = gtk_radio_button_group (GTK_RADIO_BUTTON (hide_toolbar));
 	gtk_widget_show (hide_toolbar);
 	gtk_box_pack_start (GTK_BOX (vbox19), hide_toolbar, FALSE, FALSE, 0);
 
-	frame15 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Look).c_str());
+	frame15 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Look).utf8_str());
 	gtk_widget_show (frame15);
 	gtk_box_pack_start (GTK_BOX (vbox18), frame15, TRUE, TRUE, 2);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame15), GTK_SHADOW_NONE);
@@ -437,17 +437,17 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_container_add (GTK_CONTAINER (frame15), vbox20);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox20), 1);
 
-	look_icon = gtk_radio_button_new_with_label (vbox20_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Icons).c_str());
+	look_icon = gtk_radio_button_new_with_label (vbox20_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Icons).utf8_str());
 	vbox20_group = gtk_radio_button_group (GTK_RADIO_BUTTON (look_icon));
 	gtk_widget_show (look_icon);
 	gtk_box_pack_start (GTK_BOX (vbox20), look_icon, FALSE, FALSE, 0);
 
-	look_text = gtk_radio_button_new_with_label (vbox20_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Text).c_str());
+	look_text = gtk_radio_button_new_with_label (vbox20_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Text).utf8_str());
 	vbox20_group = gtk_radio_button_group (GTK_RADIO_BUTTON (look_text));
 	gtk_widget_show (look_text);
 	gtk_box_pack_start (GTK_BOX (vbox20), look_text, FALSE, FALSE, 0);
 
-	look_both = gtk_radio_button_new_with_label (vbox20_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Both).c_str());
+	look_both = gtk_radio_button_new_with_label (vbox20_group, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Both).utf8_str());
 	vbox20_group = gtk_radio_button_group (GTK_RADIO_BUTTON (look_both));
 	gtk_widget_show (look_both);
 	gtk_box_pack_start (GTK_BOX (vbox20), look_both, FALSE, FALSE, 0);
@@ -457,13 +457,13 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_set_sensitive (look_text, FALSE);
 	gtk_widget_set_sensitive (look_both, FALSE);
 
-	view_tooltips = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewTooltips).c_str());
+	view_tooltips = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewTooltips).utf8_str());
 	gtk_widget_show (view_tooltips);
 	gtk_box_pack_start (GTK_BOX (vbox18), view_tooltips, FALSE, FALSE, 2);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (view_tooltips), TRUE);
 	gtk_widget_set_sensitive (view_tooltips, FALSE);
 
-	label4 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).c_str());
+	label4 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).utf8_str());
 	gtk_widget_show (label4);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), label4);
 
@@ -480,7 +480,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (hbox9);
 	gtk_box_pack_start (GTK_BOX (vbox30), hbox9, TRUE, TRUE, 0);
 
-	frame21 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_General).c_str());
+	frame21 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_General).utf8_str());
 	gtk_widget_show (frame21);
 	gtk_box_pack_start (GTK_BOX (hbox9), frame21, TRUE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame21), GTK_SHADOW_NONE);
@@ -489,24 +489,24 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox31);
 	gtk_container_add (GTK_CONTAINER (frame21), vbox31);
 
-	check_spell = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType).c_str());
+	check_spell = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType).utf8_str());
 
 	gtk_widget_show (check_spell);
 	gtk_box_pack_start (GTK_BOX (vbox31), check_spell, FALSE, FALSE, 0);
 
-	hide_errors = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellHideErrors).c_str());
+	hide_errors = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellHideErrors).utf8_str());
 	gtk_widget_show (hide_errors);
 	gtk_box_pack_start (GTK_BOX (vbox31), hide_errors, FALSE, FALSE, 0);
 
-	always_suggest = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellSuggest).c_str());
+	always_suggest = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellSuggest).utf8_str());
 	gtk_widget_show (always_suggest);
 	gtk_box_pack_start (GTK_BOX (vbox31), always_suggest, FALSE, FALSE, 0);
 
-	suggest_from = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellMainOnly).c_str());
+	suggest_from = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellMainOnly).utf8_str());
 	gtk_widget_show (suggest_from);
 	gtk_box_pack_start (GTK_BOX (vbox31), suggest_from, FALSE, FALSE, 0);
 
-	frame22 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Ignore).c_str());
+	frame22 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Ignore).utf8_str());
 	gtk_widget_show (frame22);
 	gtk_box_pack_start (GTK_BOX (hbox9), frame22, TRUE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame22), GTK_SHADOW_NONE);
@@ -515,15 +515,15 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox32);
 	gtk_container_add (GTK_CONTAINER (frame22), vbox32);
 
-	ignore_upper = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellUppercase).c_str());
+	ignore_upper = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellUppercase).utf8_str());
 	gtk_widget_show (ignore_upper);
 	gtk_box_pack_start (GTK_BOX (vbox32), ignore_upper, FALSE, FALSE, 0);
 
-	ignore_nums = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellNumbers).c_str());
+	ignore_nums = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellNumbers).utf8_str());
 	gtk_widget_show (ignore_nums);
 	gtk_box_pack_start (GTK_BOX (vbox32), ignore_nums, FALSE, FALSE, 0);
 
-	ignore_inet = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellInternet).c_str());
+	ignore_inet = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellInternet).utf8_str());
 	gtk_widget_show (ignore_inet);
 	gtk_box_pack_start (GTK_BOX (vbox32), ignore_inet, FALSE, FALSE, 0);
 
@@ -545,7 +545,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_table_set_row_spacings (GTK_TABLE (table2), 2);
 	gtk_table_set_col_spacings (GTK_TABLE (table2), 4);
 
-	label7 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord).c_str());
+	label7 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord).utf8_str());
 	gtk_widget_show (label7);
 	gtk_table_attach (GTK_TABLE (table2), label7, 0, 1, 1, 2,
 			  (GtkAttachOptions) (GTK_FILL),
@@ -557,36 +557,36 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 			  (GtkAttachOptions) (GTK_FILL), 0, 0);
 	custom_dict_menu = gtk_menu_new ();
-	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CustomDict).c_str());
+	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CustomDict).utf8_str());
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (custom_dict_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (custom_dict), custom_dict_menu);
 
-	label8 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCustomDict).c_str());
+	label8 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCustomDict).utf8_str());
 	gtk_widget_show (label8);
 	gtk_table_attach (GTK_TABLE (table2), label8, 0, 1, 0, 1,
 			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 			  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	button_dict = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_CustomDict).c_str());
+	button_dict = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_CustomDict).utf8_str());
 	gtk_widget_show (button_dict);
 	gtk_table_attach (GTK_TABLE (table2), button_dict, 2, 3, 0, 1,
 			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 			  (GtkAttachOptions) (0), 0, 0);
 
-	button_edit = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreEdit).c_str());
+	button_edit = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreEdit).utf8_str());
 	gtk_widget_show (button_edit);
 	gtk_table_attach (GTK_TABLE (table2), button_edit, 2, 3, 1, 2,
 			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 			  (GtkAttachOptions) (0), 0, 0);
 
-	button_reset = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreReset).c_str());
+	button_reset = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreReset).utf8_str());
 	gtk_widget_show (button_reset);
 	gtk_table_attach (GTK_TABLE (table2), button_reset, 1, 2, 1, 2,
 			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 			  (GtkAttachOptions) (0), 0, 0);
 
-	label2 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Spelling).c_str());
+	label2 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Spelling).utf8_str());
 	gtk_widget_show (label2);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label2);
 
@@ -611,7 +611,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_box_pack_start (GTK_BOX (vbox54), hbox23, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox23), 4);
 
-	frame38 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewShowHide).c_str());
+	frame38 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewShowHide).utf8_str());
 	gtk_widget_show (frame38);
 	gtk_box_pack_start (GTK_BOX (hbox23), frame38, TRUE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame38), GTK_SHADOW_NONE);
@@ -620,19 +620,19 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox55);
 	gtk_container_add (GTK_CONTAINER (frame38), vbox55);
 
-	show_ruler = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewRuler).c_str());
+	show_ruler = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewRuler).utf8_str());
 	gtk_widget_show (show_ruler);
 	gtk_box_pack_start (GTK_BOX (vbox55), show_ruler, FALSE, FALSE, 0);
 
-	show_statusbar = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStatusBar).c_str());
+	show_statusbar = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStatusBar).utf8_str());
 	gtk_widget_show (show_statusbar);
 	gtk_box_pack_start (GTK_BOX (vbox55), show_statusbar, FALSE, FALSE, 0);
 
-	blink_cursor = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink).c_str());
+	blink_cursor = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink).utf8_str());
 	gtk_widget_show (blink_cursor);
 	gtk_box_pack_start (GTK_BOX (vbox55), blink_cursor, FALSE, FALSE, 0);
 
-	frame39 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewViewFrame).c_str());
+	frame39 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewViewFrame).utf8_str());
 	gtk_widget_show (frame39);
 	gtk_box_pack_start (GTK_BOX (hbox23), frame39, TRUE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame39), GTK_SHADOW_NONE);
@@ -641,15 +641,15 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox56);
 	gtk_container_add (GTK_CONTAINER (frame39), vbox56);
 
-	view_all = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewAll).c_str());
+	view_all = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewAll).utf8_str());
 	gtk_widget_show (view_all);
 	gtk_box_pack_start (GTK_BOX (vbox56), view_all, FALSE, FALSE, 0);
 
-	view_hidden = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewHiddenText).c_str());
+	view_hidden = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewHiddenText).utf8_str());
 	gtk_widget_show (view_hidden);
 	gtk_box_pack_start (GTK_BOX (vbox56), view_hidden, FALSE, FALSE, 0);
 
-	view_invis = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnprintable).c_str());
+	view_invis = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnprintable).utf8_str());
 	gtk_widget_show (view_invis);
 	gtk_box_pack_start (GTK_BOX (vbox56), view_invis, FALSE, FALSE, 0);
 
@@ -668,7 +668,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	ruler_units_menu = gtk_menu_new ();
 
 	// inches
-	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_inch).c_str());
+	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_inch).utf8_str());
  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, static_cast<gpointer>(ruler_units));
  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_IN));
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
@@ -676,7 +676,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
 
 	// cm
-	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_cm).c_str());
+	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_cm).utf8_str());
  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, static_cast<gpointer>(ruler_units));
  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_CM));
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
@@ -684,7 +684,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
 
 	// points
-	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_points).c_str());
+	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_points).utf8_str());
  	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, static_cast<gpointer>(ruler_units));
   	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_PT));
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
@@ -692,7 +692,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
 
 	// picas
-  	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).c_str());
+  	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).utf8_str());
   	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, static_cast<gpointer>(ruler_units));
   	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_PI));
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
@@ -701,7 +701,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (ruler_units), ruler_units_menu);
 
-	label21 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnits).c_str());
+	label21 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnits).utf8_str());
 	gtk_widget_show (label21);
 	gtk_table_attach (GTK_TABLE (table4), label21, 0, 1, 0, 1,
 			  (GtkAttachOptions) (GTK_FILL),
@@ -712,7 +712,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox58);
 	gtk_box_pack_start (GTK_BOX (vbox54), vbox58, TRUE, TRUE, 0);
 
-	enable_sq = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable).c_str());
+	enable_sq = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable).utf8_str());
 	gtk_widget_show (enable_sq);
 	gtk_box_pack_start (GTK_BOX (vbox58), enable_sq, FALSE, FALSE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (enable_sq), 2);
@@ -721,33 +721,33 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show(hbox58);
 	gtk_box_pack_start(GTK_BOX(vbox58),hbox58, TRUE, TRUE, 0);
 
-	checkWhiteForTransparent = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent).c_str());
+	checkWhiteForTransparent = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent).utf8_str());
 	gtk_widget_show (checkWhiteForTransparent);
 	gtk_box_pack_start (GTK_BOX (hbox58), checkWhiteForTransparent, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkWhiteForTransparent), 2);
 
-	pushChooseColorForTransparent = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent).c_str());
+	pushChooseColorForTransparent = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent).utf8_str());
 	gtk_widget_show (pushChooseColorForTransparent);
 	gtk_box_pack_start (GTK_BOX (hbox58), pushChooseColorForTransparent, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (pushChooseColorForTransparent), 2);
 //
 // Custom toolbars.
 //
-	checkAllowCustomToolbars = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars).c_str());
+	checkAllowCustomToolbars = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars).utf8_str());
 	gtk_widget_show (checkAllowCustomToolbars);
 	gtk_box_pack_start (GTK_BOX (vbox58), checkAllowCustomToolbars, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkAllowCustomToolbars), 2);
 //
 // Smooth Scrolling
 //
-	checkEnableSmoothScrolling = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckEnableSmoothScrolling).c_str());
+	checkEnableSmoothScrolling = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckEnableSmoothScrolling).utf8_str());
 	gtk_widget_show (checkEnableSmoothScrolling);
 	gtk_box_pack_start (GTK_BOX (vbox58), checkEnableSmoothScrolling, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkEnableSmoothScrolling), 2);
 
 
 
-	label3 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Layout).c_str());
+	label3 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Layout).utf8_str());
 	gtk_widget_show (label3);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), label3);
 
@@ -759,7 +759,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox36);
 	gtk_container_add (GTK_CONTAINER (notebook1), vbox36);
 
-	frame40 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Schemes).c_str());
+	frame40 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Schemes).utf8_str());
 	gtk_widget_show (frame40);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame40, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame40), 4);
@@ -770,7 +770,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_container_add (GTK_CONTAINER (frame40), vbox57);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox57), 4);
 
-	save_scheme = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave).c_str());
+	save_scheme = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave).utf8_str());
 	gtk_widget_show (save_scheme);
 	gtk_box_pack_start (GTK_BOX (vbox57), save_scheme, FALSE, FALSE, 0);
 
@@ -778,7 +778,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (hbox25);
 	gtk_box_pack_start (GTK_BOX (vbox57), hbox25, TRUE, TRUE, 0);
 
-	label17 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme).c_str());
+	label17 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme).utf8_str());
 	gtk_widget_show (label17);
 	gtk_box_pack_start (GTK_BOX (hbox25), label17, FALSE, TRUE, 3);
 
@@ -787,7 +787,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_box_pack_start (GTK_BOX (hbox25), current_scheme, TRUE, TRUE, 0);
 	//gtk_entry_set_editable (GTK_ENTRY (current_scheme), FALSE);
 
-	frame42 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_BiDiOptions).c_str());
+	frame42 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_BiDiOptions).utf8_str());
 	gtk_widget_show (frame42);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame42, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame42), 4);
@@ -797,24 +797,24 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox59);
 	gtk_container_add (GTK_CONTAINER (frame42), vbox59);
 
-	rtl_dominant = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DirectionRtl).c_str());
+	rtl_dominant = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DirectionRtl).utf8_str());
 	gtk_widget_show (rtl_dominant);
 	gtk_box_pack_start (GTK_BOX (vbox59), rtl_dominant, FALSE, FALSE, 0);
 
 	// this is not implemented at the moment
-	save_context_glyphs = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs).c_str());
+	save_context_glyphs = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs).utf8_str());
 #if 0
 	// currently not implemented
 	gtk_widget_show (save_context_glyphs);
 #endif
 	gtk_box_pack_start (GTK_BOX (vbox59), save_context_glyphs, FALSE, FALSE, 0);
 
-	hebrew_context_glyphs = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs).c_str());
+	hebrew_context_glyphs = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs).utf8_str());
 	gtk_widget_show (hebrew_context_glyphs);
 	gtk_box_pack_start (GTK_BOX (vbox59), hebrew_context_glyphs, FALSE, FALSE, 0);
 
 	// AUTO SAVE
-	frame43 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_AutoSave).c_str());
+	frame43 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_AutoSave).utf8_str());
 	gtk_widget_show (frame43);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame43, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame43), 4);
@@ -828,7 +828,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (hbox27);
 	gtk_box_pack_start (GTK_BOX (hbox26), hbox27, TRUE, TRUE, 0);
 
-	autosave_cb = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent).c_str());
+	autosave_cb = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent).utf8_str());
 	gtk_widget_show (autosave_cb);
 	gtk_box_pack_start (GTK_BOX (hbox27), autosave_cb, FALSE, FALSE, 0);
 
@@ -837,7 +837,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (autosave_time);
 	gtk_box_pack_start (GTK_BOX (hbox27), autosave_time, FALSE, TRUE, 0);
 
-	label23 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Minutes).c_str());
+	label23 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Minutes).utf8_str());
 	gtk_widget_show (label23);
 	gtk_box_pack_start (GTK_BOX (hbox27), label23, FALSE, FALSE, 0);
 
@@ -845,7 +845,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (hbox28);
 	gtk_box_pack_start (GTK_BOX (hbox26), hbox28, TRUE, FALSE, 0);
 
-	label24 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_WithExtension).c_str());
+	label24 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_WithExtension).utf8_str());
 	gtk_widget_show (label24);
 	gtk_box_pack_start (GTK_BOX (hbox28), label24, FALSE, FALSE, 0);
 
@@ -854,7 +854,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_box_pack_start (GTK_BOX (hbox28), autosave_ext, TRUE, TRUE, 0);
 	gtk_widget_set_size_request (autosave_ext, 50, -1);
 
-	frame44 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Misc).c_str());
+	frame44 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Misc).utf8_str());
 	gtk_widget_show (frame44);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame44, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame44), 4);
@@ -864,18 +864,18 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox29);
 	gtk_container_add (GTK_CONTAINER (frame44), vbox29);
 
-	check_splash = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ShowSplash).c_str());
+	check_splash = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ShowSplash).utf8_str());
 	gtk_widget_show (check_splash);
 	gtk_box_pack_start (GTK_BOX (vbox29), check_splash, FALSE, FALSE, 0);
 
 //
 // Auto Load Plugins.
 //
-	checkAutoLoadPlugins = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins).c_str());
+	checkAutoLoadPlugins = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins).utf8_str());
 	gtk_widget_show (checkAutoLoadPlugins);
 	gtk_box_pack_start (GTK_BOX (vbox29), checkAutoLoadPlugins, TRUE, TRUE, 0);
 
-	label10 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Preferences).c_str());
+	label10 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Preferences).utf8_str());
 	gtk_widget_show (label10);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label10);
 
@@ -994,7 +994,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	GtkWidget * buttonCancel = 0;
 	GtkWidget * buttonDefaults;
 
-	mainWindow = abiDialogNew("options dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).c_str());
+	mainWindow = abiDialogNew("options dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).utf8_str());
 
 #if 0
 	buttonCancel = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL);

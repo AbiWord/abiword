@@ -901,6 +901,8 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 			// file will still have sensible fall-back defaults).
 			UT_uint32 width = 800, height = 600, flags = PREF_FLAG_GEOMETRY_SIZE;
 			UT_sint32 posx = 0, posy = 0;
+			
+			XAP_App::getApp()->getDefaultGeometry(width,height, flags);
 
 			m_geom.m_width = width;
 			m_geom.m_height = height;
@@ -951,6 +953,11 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 				m_geom.m_posy = posy;
 				m_geom.m_flags |= PREF_FLAG_GEOMETRY_POS;
 			}
+			
+			if (!(flags & PREF_FLAG_GEOMETRY_MAXIMIZED))
+				m_geom.m_flags &= ~PREF_FLAG_GEOMETRY_MAXIMIZED;
+			
+			
 		}
 	}
 	// successful parse of tag...

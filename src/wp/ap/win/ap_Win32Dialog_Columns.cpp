@@ -149,6 +149,8 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 													  0);
 	UT_uint32 w,h;
 	m_pPreviewWidget->getWindowSize(&w,&h);
+	//m_pPreviewWidget->init3dColors(m_wpreviewArea->style);
+	m_pPreviewWidget->getGraphics()->init3dColors();
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);
 	m_pPreviewWidget->setPreview(m_pColumnsPreview);
 	

@@ -30,44 +30,37 @@ class XAP_UnixFrame;
 class AP_UnixDialog_MetaData: public AP_Dialog_MetaData
 {
  public:
-  AP_UnixDialog_MetaData(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-  virtual ~AP_UnixDialog_MetaData(void);
-  
-  virtual void			runModal(XAP_Frame * pFrame);
-  
-  static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	AP_UnixDialog_MetaData(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixDialog_MetaData(void);
+	
+	virtual void			runModal(XAP_Frame * pFrame);
+	
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
  protected:
 
-  void eventCancel () ;
-  void eventOK () ;
-
-  virtual GtkWidget * _constructWindow () ;
-
-  void _constructWindowContents ( GtkWidget * container ) ;
+	void eventCancel () ;
+	void eventOK () ;
+	
+	virtual GtkWidget * _constructWindow () ;
 
  private:  
 
-	typedef enum
-		{
-			BUTTON_OK,
-			BUTTON_CANCEL
-		} ResponseId ;
-	
-  GtkWidget * m_entryTitle ;
-  GtkWidget * m_entrySubject ;
-  GtkWidget * m_entryAuthor ;
-  GtkWidget * m_entryPublisher ;
-  GtkWidget * m_entryCoAuthor ;
-  GtkWidget * m_entryCategory ;
-  GtkWidget * m_entryKeywords ;
-  GtkWidget * m_entryLanguages ;
-  GtkWidget * m_entrySource ;
-  GtkWidget * m_entryRelation ;
-  GtkWidget * m_entryCoverage ;
-  GtkWidget * m_entryRights ;
-
-  GtkWidget * m_textDescription ;
+ 	GtkWidget * m_windowMain;
+ 
+	GtkWidget * m_entryTitle;
+	GtkWidget * m_entrySubject;
+	GtkWidget * m_entryAuthor;
+	GtkWidget * m_entryPublisher;
+	GtkWidget * m_entryCoAuthor;
+	GtkWidget * m_entryCategory;
+	GtkWidget * m_entryKeywords;
+	GtkWidget * m_entryLanguages;
+	GtkWidget * m_textDescription;
+	GtkWidget * m_entrySource;
+	GtkWidget * m_entryRelation;
+	GtkWidget * m_entryCoverage;
+	GtkWidget * m_entryRights;
 };
 
 #endif /* AP_UNIXDIALOG_METADATA_H */

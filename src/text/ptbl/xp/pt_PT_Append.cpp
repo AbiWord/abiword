@@ -48,8 +48,21 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, p
 	pf_Frag_Strux * pfs = NULL;
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
 		return false;
-
+	pf_Frag * pfPrev = m_fragments.getLast();
+	bool bDoInsertFmt = false;
+	if(pfPrev != NULL && pfPrev->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pfPrev);
+		if(pfsPrev->getStruxType() == PTX_Block)
+		{
+			bDoInsertFmt = true;
+		}
+	}
 	m_fragments.appendFrag(pfs);
+	if(bDoInsertFmt)
+	{
+		insertFmtMarkBeforeFrag(static_cast<pf_Frag *>(pfs));
+	}
 	if (ppfs_ret)
 		*ppfs_ret = pfs;
 	return true;
