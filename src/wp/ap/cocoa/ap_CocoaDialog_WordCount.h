@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003-2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ class AP_CocoaDialog_WordCount;
 
 @interface AP_CocoaDialog_WordCountController : NSWindowController <XAP_CocoaDialogProtocol>
 {
+	IBOutlet NSTextField *_titleLabel;
     IBOutlet NSTextField *_charNoSpaceCount;
     IBOutlet NSTextField *_charNoSpaceLabel;
     IBOutlet NSTextField *_charSpaceCount;
@@ -48,6 +49,8 @@ class AP_CocoaDialog_WordCount;
     IBOutlet NSTextField *_paraLabel;
     IBOutlet NSTextField *_wordCount;
     IBOutlet NSTextField *_wordLabel;
+	IBOutlet NSTextField *_wordNoFNCount;
+	IBOutlet NSTextField *_wordNoFNLabel;
 
 	AP_CocoaDialog_WordCount *	_xap;
 }

@@ -14,8 +14,11 @@
                 "_pageLabel" = NSTextField; 
                 "_paraCount" = NSTextField; 
                 "_paraLabel" = NSTextField; 
+                "_titleLabel" = NSTextField; 
                 "_wordCount" = NSTextField; 
                 "_wordLabel" = NSTextField; 
+                "_wordNoFNCount" = NSTextField; 
+                "_wordNoFNLabel" = NSTextField; 
             }; 
             SUPERCLASS = NSWindowController; 
         }, 

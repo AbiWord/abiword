@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -193,8 +193,7 @@ void AP_CocoaDialog_WordCount::destroy(void)
 		return new XAP_CocoaWidget(NULL);
 		break;
 	case AP_Dialog_WordCount::TITLE_LBL_WID:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		return NULL;
+		return new XAP_CocoaWidget(_titleLabel);
 		break;
 	case AP_Dialog_WordCount::PAGES_LBL_WID:
 		return new XAP_CocoaWidget(_pageLabel);
@@ -233,12 +232,10 @@ void AP_CocoaDialog_WordCount::destroy(void)
 		return new XAP_CocoaWidget(_wordCount);
 		break;
 	case AP_Dialog_WordCount::WORDSNF_LBL_WID:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		return NULL;
+		return new XAP_CocoaWidget(_wordNoFNLabel);
 		break;
 	case AP_Dialog_WordCount::WORDSNF_VAL_WID:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		return NULL;
+		return new XAP_CocoaWidget(_wordNoFNCount);
 		break;		
 	default:
 		UT_ASSERT(UT_NOT_REACHED);
