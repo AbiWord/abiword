@@ -32,6 +32,7 @@
 #include "xap_Win32Dlg_Image.h"
 
 #include "xap_Win32Resources.rc2"
+#include "ap_Win32App.h"
 
 #define BUFSIZE 1024
 /*****************************************************************/
@@ -77,12 +78,67 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_HEIGHT,	XAP_STRING_ID_DLG_Image_Height);
 	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_WIDTH,		XAP_STRING_ID_DLG_Image_Width);
 	localizeControlText(XAP_RID_DIALOG_IMAGE_CHK_ASPECT,	XAP_STRING_ID_DLG_Image_Aspect);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_TITLE,		XAP_STRING_ID_DLG_Image_LblTitle);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_DESCRIPTION,XAP_STRING_ID_DLG_Image_LblDescription);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_SIZE,		XAP_STRING_ID_DLG_Image_ImageSize);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_NAME,		XAP_STRING_ID_DLG_Image_ImageDesc);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_WRAPPING,	XAP_STRING_ID_DLG_Image_TextWrapping);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_PLACEMENT,	XAP_STRING_ID_DLG_Image_Placement);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_INLINE,	XAP_STRING_ID_DLG_Image_InLine);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_RIGHT,	XAP_STRING_ID_DLG_Image_WrappedRight);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_LEFT,	XAP_STRING_ID_DLG_Image_WrappedLeft);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,XAP_STRING_ID_DLG_Image_WrappedBoth);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH,XAP_STRING_ID_DLG_Image_PlaceParagraph);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_COLUMN,	XAP_STRING_ID_DLG_Image_PlaceColumn);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_PAGE,	XAP_STRING_ID_DLG_Image_PlacePage);
 
 	// Initialize controls
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
-	checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect() );
+	setControlText(XAP_RID_DIALOG_IMAGE_EBX_TITLE, AP_Win32App::s_fromUTF8ToAnsi(getTitle().utf8_str()).c_str());
+	setControlText(XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION, AP_Win32App::s_fromUTF8ToAnsi(getDescription().utf8_str()).c_str());
+	checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect());
 
+	// Initialize text wrapping radio buttons
+	if(getWrapping() == WRAP_INLINE)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE, XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,
+		XAP_RID_DIALOG_IMAGE_RADIO_INLINE);
+	}
+	else if(getWrapping() == WRAP_TEXTRIGHT)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE, XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,
+		XAP_RID_DIALOG_IMAGE_RADIO_RIGHT);
+	}
+	else if(getWrapping() == WRAP_TEXTLEFT)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE, XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,
+		XAP_RID_DIALOG_IMAGE_RADIO_LEFT);
+	}
+	else if(getWrapping() == WRAP_TEXTBOTH)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE, XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,
+		XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES);
+	}
+
+	// Initialize image placement radio buttons
+	if(getPositionTo() == POSITION_TO_PARAGRAPH)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH, XAP_RID_DIALOG_IMAGE_RADIO_PAGE,
+		XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH);
+	}
+	else if(getPositionTo() == POSITION_TO_COLUMN)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH, XAP_RID_DIALOG_IMAGE_RADIO_PAGE,
+		XAP_RID_DIALOG_IMAGE_RADIO_COLUMN);
+	}
+	else if(getPositionTo() == POSITION_TO_PAGE)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH, XAP_RID_DIALOG_IMAGE_RADIO_PAGE,
+		XAP_RID_DIALOG_IMAGE_RADIO_PAGE);
+	}
+
+	wrappingChanged();
 	return TRUE;
 }
 
@@ -100,6 +156,44 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case IDOK:							// also AP_RID_DIALOG_COLUMN_BTN_OK
+		// change wrapping
+		if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE))
+		{
+			setWrapping(WRAP_INLINE);
+		}
+		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_RIGHT))
+		{
+			setWrapping(WRAP_TEXTRIGHT);
+		}
+		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_LEFT))
+		{
+			setWrapping(WRAP_TEXTLEFT);
+		}
+		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES))
+		{
+			setWrapping(WRAP_TEXTBOTH);
+		}
+
+		// change placement
+		if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH))
+		{
+			setPositionTo(POSITION_TO_PARAGRAPH);
+		}
+		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_COLUMN))
+		{
+			setPositionTo(POSITION_TO_COLUMN);
+		}
+		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PAGE))
+		{
+			setPositionTo(POSITION_TO_PAGE);
+		}
+
+		char buf[BUFSIZE];
+		getControlText(XAP_RID_DIALOG_IMAGE_EBX_TITLE,buf,BUFSIZE);
+		setTitle(buf);
+		getControlText(XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION,buf,BUFSIZE);
+		setDescription(buf);
+
 		setAnswer( a_OK );
 		EndDialog(hWnd,0);
 		return 1;
@@ -130,7 +224,12 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		setPreserveAspect( isChecked(wId)!=0 );
 		return 1;
 
-	default:							// we did not handle this notification
+	case XAP_RID_DIALOG_IMAGE_RADIO_INLINE:	case XAP_RID_DIALOG_IMAGE_RADIO_RIGHT:
+	 case XAP_RID_DIALOG_IMAGE_RADIO_LEFT: case XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES:
+		wrappingChanged();
+		return 1;
+
+	 default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
 	}
@@ -168,5 +267,21 @@ BOOL XAP_Win32Dialog_Image::_onDeltaPos(NM_UPDOWN * pnmud)
 
 	default:
 		return 0;
+	}
+}
+
+void XAP_Win32Dialog_Image::wrappingChanged(void)
+{
+	if(isChecked(XAP_RID_DIALOG_IMAGE_RADIO_INLINE))
+	{
+		enableControl(XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH,FALSE);
+		enableControl(XAP_RID_DIALOG_IMAGE_RADIO_COLUMN,FALSE);
+		enableControl(XAP_RID_DIALOG_IMAGE_RADIO_PAGE,FALSE);
+	}
+	else
+	{
+		enableControl(XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH, TRUE);
+		enableControl(XAP_RID_DIALOG_IMAGE_RADIO_COLUMN,TRUE);
+		enableControl(XAP_RID_DIALOG_IMAGE_RADIO_PAGE,TRUE);
 	}
 }

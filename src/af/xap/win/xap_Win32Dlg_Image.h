@@ -40,6 +40,7 @@ protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
+	void					wrappingChanged(void);
 };
 
 #endif /* XAP_WIN32DIALOG_IMAGE_H */
