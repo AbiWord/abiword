@@ -311,7 +311,7 @@ fp_Run*
 fp_Run::_findPrevPropertyRun(void) const
 {
 	fp_Run* pRun = getPrevRun();
-	while (pRun && !pRun->hasLayoutProperties())
+	while (pRun && (!pRun->hasLayoutProperties() || pRun->isHidden()))
 	    pRun = pRun->getPrevRun();
 
 	return pRun;

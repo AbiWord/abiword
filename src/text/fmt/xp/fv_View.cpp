@@ -3149,57 +3149,63 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	{
 		fl_BlockLayout * pBL1 = _findBlockAtPosition(posStart);
 		fl_BlockLayout * pBL2 = _findBlockAtPosition(posEnd);
-		bool bFormatStart = false;
-		bool bFormatEnd = false;
 
-		PT_DocPosition posBL1 = pBL1->getPosition(false);
-
-		fp_Run * pLastRun2 = static_cast<fp_Line *>(pBL2->getLastContainer())->getLastRun();
-		PT_DocPosition posBL2 = pBL2->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
-
-		if(posBL1 == posStart)
+		// if both the start and end points are in the same block, we will not apply
+		// fmt to the block -- doing so causes bug 5290
+		if(pBL1 != pBL2)
 		{
-			bFormatStart = true;
-		}
-		else if(posBL1 < posStart && pBL1->getNext())
-		{
-			posStart = pBL1->getNext()->getPosition(false);
-			if(posStart < posEnd)
-				bFormatStart = true;
-		}
+			bool bFormatStart = false;
+			bool bFormatEnd = false;
 
-		// TODO: We have got a problem with handling the end of the paragraph.
-		// Basically, if only the text in the paragraph is selected, we
-		// do not want to apply the format to the paragraph; if the pilcrow
-		// too is selected, we want to apply the format to the paragraph as well.
-		// The problem lies in the fact that although the pilcrow represents the
-		// block, it is located at the end of the paragraph, while the strux
-		// that contains the formatting is at the start. Consequently the when the
-		// pilcrow is selected, the end of the selection is already in the next
-		// paragraph. If there is a next paragraph, we can handle this, but if
-		// there is not a next pragraph, it is not currently possible to select the
-		// pilcrow, i.e., we cannot change the font (for instance) used by the last
-		// paragraph in the document; there is no simple solution at the moment, since
-		// if we allow the selection to go across the last pilcrow, it will be possible
-		// to insert text into the block _after_ the pilcrow, and we do not want that.
-		// we would need to make some changes to the block insertion mechanism, so that
-		// if insertion is requested to be past the pilcrow, it would be adjusted to
-		// happen just before it -- Tomas 19/01/2002
+			PT_DocPosition posBL1 = pBL1->getPosition(false);
 
-		if(posBL2 > posEnd && pBL2->getPrev())
-		{
-			if(pBL2->getPrev()->getLastContainer()->getContainerType() == FP_CONTAINER_LINE)
+			fp_Run * pLastRun2 = static_cast<fp_Line *>(pBL2->getLastContainer())->getLastRun();
+			PT_DocPosition posBL2 = pBL2->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+
+			if(posBL1 == posStart)
 			{
-				pLastRun2 = static_cast<fp_Line *>(pBL2->getPrev()->getLastContainer())->getLastRun();
-				posEnd = pBL2->getPrev()->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+				bFormatStart = true;
 			}
+			else if(posBL1 < posStart && pBL1->getNext())
+			{
+				posStart = pBL1->getNext()->getPosition(false);
+				if(posStart < posEnd)
+					bFormatStart = true;
+			}
+
+			// TODO: We have got a problem with handling the end of the paragraph.
+			// Basically, if only the text in the paragraph is selected, we
+			// do not want to apply the format to the paragraph; if the pilcrow
+			// too is selected, we want to apply the format to the paragraph as well.
+			// The problem lies in the fact that although the pilcrow represents the
+			// block, it is located at the end of the paragraph, while the strux
+			// that contains the formatting is at the start. Consequently the when the
+			// pilcrow is selected, the end of the selection is already in the next
+			// paragraph. If there is a next paragraph, we can handle this, but if
+			// there is not a next pragraph, it is not currently possible to select the
+			// pilcrow, i.e., we cannot change the font (for instance) used by the last
+			// paragraph in the document; there is no simple solution at the moment, since
+			// if we allow the selection to go across the last pilcrow, it will be possible
+			// to insert text into the block _after_ the pilcrow, and we do not want that.
+			// we would need to make some changes to the block insertion mechanism, so that
+			// if insertion is requested to be past the pilcrow, it would be adjusted to
+			// happen just before it -- Tomas 19/01/2002
+
+			if(posBL2 > posEnd && pBL2->getPrev())
+			{
+				if(pBL2->getPrev()->getLastContainer()->getContainerType() == FP_CONTAINER_LINE)
+				{
+					pLastRun2 = static_cast<fp_Line *>(pBL2->getPrev()->getLastContainer())->getLastRun();
+					posEnd = pBL2->getPrev()->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+				}
+			}
+
+			if(posEnd > posStart)
+				bFormatEnd = true;
+
+			if(bFormatStart && bFormatEnd)
+				bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
 		}
-
-		if(posEnd > posStart)
-		    bFormatEnd = true;
-
-		if(bFormatStart && bFormatEnd)
-			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
 	}
 
 	m_pDoc->endUserAtomicGlob();
