@@ -44,5 +44,9 @@ typedef enum _IEFileType { IEFT_Unknown,
 						   IEFT_Text,
 						   IEFT_LAST_BOGUS } IEFileType;
 
+typedef enum _IEGraphicFileType { IEGFT_Unknown,
+								  IEGFT_PNG,
+								  IEGFT_SVG,
+								  IEGFT_LAST_BOGUS } IEGraphicFileType;
 
 #endif /* IE_TYPES_H */

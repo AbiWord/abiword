@@ -52,6 +52,7 @@
 #include "xap_Dlg_Zoom.h"
 
 #include "ie_imp.h"
+#include "ie_impGraphic.h"
 #include "ie_exp.h"
 #include "ie_types.h"
 
@@ -189,7 +190,7 @@ public:
 	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
-	static EV_EditMethod_Fn fileInsertImage;
+	static EV_EditMethod_Fn fileInsertGraphic;
 
 	static EV_EditMethod_Fn undo;
 	static EV_EditMethod_Fn redo;
@@ -442,7 +443,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(pageSetup),			0,	""),
 	EV_EditMethod(NF(print),				0,	""),
 	EV_EditMethod(NF(printTB),				0,	""), // avoid query if possible
-	EV_EditMethod(NF(fileInsertImage),		0,	""),
+	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 
 	EV_EditMethod(NF(undo),					0,	""),
 	EV_EditMethod(NF(redo),					0,	""),
@@ -847,26 +848,6 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	// pathname the user entered -- ownership of this goes
 	// to the caller (so free it when you're done with it).
 
-	/*
-	  TODO -- I think this function needs the ability to specify
-	  which file formats are used for the drop-down list.  For
-	  example, when we import a document file, we'll want to specify
-	  ABW, DOC, TXT, RTF, etc.  When we are inserting an image file,
-	  we'll want to specify PNG and whatever else we can import.
-
-	  Or, perhaps I shouldn't be using this function to ask for
-	  image filenames?  :-)  -EWS
-
-	  TODO you should clone this function and pass a different XAP_DIALOG_ID_
-	  TODO but before we do that, we need to have a little additional
-	  TODO info such as the set of image format translators.
-	  TODO
-	  TODO also, by using other dialog id's they will inherit their own
-	  TODO persistence information (previous directory, format, etc.)
-	  TODO
-	  TODO -- jeff
-	*/
-	
 	UT_DEBUGMSG(("s_AskForPathname: frame %p, bSaveAs %ld, suggest=[%s]\n",
 				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
 
@@ -958,6 +939,101 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 			}
 		else
 			*ieft = (IEFileType) pDialog->getFileType();
+	}
+
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+	
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
+									   char ** ppPathname,
+									   IEGraphicFileType * iegft)
+{
+	// raise the file-open dialog for inserting an image.
+	// return a_OK or a_CANCEL depending on which button
+	// the user hits.
+	// return a pointer a strdup()'d string containing the
+	// pathname the user entered -- ownership of this goes
+	// to the caller (so free it when you're done with it).
+
+	UT_DEBUGMSG(("s_AskForGraphicPathname: frame %p\n",
+				 pFrame));
+
+	UT_ASSERT(ppPathname);
+	*ppPathname = NULL;
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	/* 
+	   TODO  Use something like XAP_DIALOG_ID_INSERT_GRAPHIC rather
+	   TODO  than using XAP_DIALOG_ID_FILE_OPEN so that the insert
+	   TODO  image dialog can be different and so that it can
+	   TODO  have its own directory memory.
+	*/
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= (XAP_Dialog_FileOpenSaveAs *)
+		      (pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
+	UT_ASSERT(pDialog);
+
+	pDialog->setCurrentPathname(pFrame->getFilename());
+	pDialog->setSuggestFilename(UT_FALSE);
+
+	// to fill the file types popup list, we need to convert AP-level
+	// ImpGraphic descriptions, suffixes, and types into strings.
+
+	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
+	
+	const char ** szDescList = (const char **) calloc(filterCount + 1,
+													  sizeof(char *));
+	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+														sizeof(char *));
+	IEGraphicFileType * nTypeList = (IEGraphicFileType *) 
+							calloc(filterCount + 1,	sizeof(IEGraphicFileType));
+	UT_uint32 k = 0;
+
+	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
+		k++;
+
+	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_uint32 *) nTypeList);
+	
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+			UT_cloneString(*ppPathname,szResultPathname);
+
+		UT_sint32 type = pDialog->getFileType();
+
+		// If the number is negative, it's a special type.
+		// Some operating systems which depend solely on filename
+		// suffixes to indentify type (like Windows) will always
+		// want auto-detection.
+		if (type < 0)
+			switch (type)
+			{
+			case XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO:
+				// do some automagical detecting
+				*iegft = IEGFT_Unknown;
+				break;
+			default:
+				// it returned a type we don't know how to handle
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		else
+			*iegft = (IEGraphicFileType) pDialog->getFileType();
 	}
 
 	FREEP(szDescList);
@@ -1573,7 +1649,7 @@ Defun(querySaveAndExit)
 */
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
-Defun1(fileInsertImage)
+Defun1(fileInsertGraphic)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
@@ -1581,24 +1657,18 @@ Defun1(fileInsertImage)
 
 	char* pNewFile = NULL;
 
-	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
-	// we really should make a clone of s_AskForPathname so that
-	// images aren't treated like file imports, since the file
-	// types don't match (png/gif/jpg vs. abw/doc/txt).
-	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
-
 	// we just ignore this ieft now, even though the user
 	// might set it in the dialog
-	IEFileType ieft;
+	IEGraphicFileType ieift;
 	
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile,&ieft);
+	UT_Bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&ieift);
 
 	if (!bOK || !pNewFile)
 		return UT_FALSE;
 
 	// we own storage for pNewFile and must free it.
 
-	UT_DEBUGMSG(("fileInsertImage: loading [%s]\n",pNewFile));
+	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
 	UT_ByteBuf* pBB = new UT_ByteBuf();
 

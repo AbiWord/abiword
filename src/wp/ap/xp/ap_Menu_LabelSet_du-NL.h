@@ -85,7 +85,7 @@ BeginSet(DuNL)
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,		"&Datum en Tijd",		"Invoegen van datum en/of tijd")
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Veld",			"Voeg een berekend veld in")
 	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"&Symbool",			"Voeg een symbool of ander speciaal karakter toe")
-	MenuLabel(AP_MENU_ID_INSERT_IMAGE,		"&Plaatje",			"Voeg een bestaand plaatje uit een ander bestand toe")
+	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&Plaatje",			"Voeg een bestaand plaatje uit een ander bestand toe")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"&Formaat",			NULL)
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Lettertype",			"Verander het lettertype van de geselecteerde tekst")

@@ -84,7 +84,7 @@ BeginSet(DaDK)
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,		"&Dato og klokkeslæt",		"Indsæt datoen og/eller klokkeslæt")
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"F&elt",			"Indsæt et kalkuleret felt")
 	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"Sy&mbol",			"Indsæt et symbol eller andre speciele tegn")
-	MenuLabel(AP_MENU_ID_INSERT_IMAGE,		"Bi&llede",			"Indsæt et billede fra en fil")
+	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"Bi&llede",			"Indsæt et billede fra en fil")
 
 	MenuLabel(AP_MENU_ID_FORMAT,				"Forma&ter",			NULL)
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Skrifttype",			"Ændre skrifttypen på den markerede tekst")

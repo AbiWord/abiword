@@ -84,7 +84,7 @@ BeginSet(DeDE)
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,	        "Datum und &Uhrzeit",   	"Datum und/oder Uhrzeit einfügen")
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"F&eld",			"Berechnetes Feld einfügen")
 	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"So&nderzeichen",		"Symbol oder Sonderzeichen einfügen")
-	MenuLabel(AP_MENU_ID_INSERT_IMAGE,		"&Grafik",			"Grafik aus Datei einfügen")
+	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&Grafik",			"Grafik aus Datei einfügen")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"Forma&t",  			NULL)
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Schrift",			"Schrifteigenschaften der Markierung ändern")

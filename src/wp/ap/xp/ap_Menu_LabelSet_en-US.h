@@ -83,7 +83,7 @@ BeginSet(EnUS)
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,	"Date and &Time",	"Insert the date and/or time")
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Field",			"Insert a calculated field")
 	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"&Symbol",			"Insert a symbol or other special character")
-	MenuLabel(AP_MENU_ID_INSERT_IMAGE,		"&Picture",			"Insert an existing picture from another file")
+	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,		"&Picture",			"Insert an existing picture from another file")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"F&ormat",			NULL)
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Font",			"Change the font of the selected text")

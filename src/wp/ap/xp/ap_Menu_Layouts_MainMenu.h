@@ -87,7 +87,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
 		Separator()
-		MenuItem(AP_MENU_ID_INSERT_IMAGE)
+		MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_FORMAT)

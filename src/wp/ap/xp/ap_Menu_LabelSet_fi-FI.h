@@ -84,7 +84,7 @@ BeginSet(FiFI)
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,	"&P‰iv‰ys ja aika",	"Lis‰‰ p‰iv‰ys ja/tai aika")
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Kentt‰",			"Lis‰‰ laskentakentt‰")
 	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"&Symboli",			"Lis‰‰ symboli tai muu erikoismerkki")
-	MenuLabel(AP_MENU_ID_INSERT_IMAGE,		"K&uva",			"Lis‰‰ kuva tiedostosta")
+	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"K&uva",			"Lis‰‰ kuva tiedostosta")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"&Muotoile",			NULL)
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Fontti",			"Muuta Fonttia valitussa tekstiss‰")
