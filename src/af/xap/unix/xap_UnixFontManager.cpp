@@ -39,6 +39,11 @@
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
 
+#ifdef USE_XFT
+static FcFontSet* XAP_UnixFontManager::m_pFontSet;
+static FcConfig* XAP_UnixFontManager::m_pConfig;
+#endif
+
 #ifndef USE_XFT
 static char **	s_oldFontPath = NULL;
 static int		s_oldFontPathCount = 0;
@@ -136,6 +141,7 @@ XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
 {
 #ifdef USE_XFT
 	m_pFontSet = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
+	m_pConfig = FcInitLoadConfigAndFonts();
 //, FC_FAMILY, FC_STYLE, FC_SLANT, FC_WEIGHT, FC_SIZE, FC_FILE, 0);
 #endif
 }
@@ -695,7 +701,7 @@ bool XAP_UnixFontManager::scavengeFonts()
 	return true;
 }
 
-static XAP_UnixFont* searchFont(const char* pszXftName)
+XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 {
 	FcPattern* fp;
 	FcPattern* result_fp;
@@ -703,6 +709,10 @@ static XAP_UnixFont* searchFont(const char* pszXftName)
 
 	UT_DEBUGMSG(("searchFont [%s]\n", pszXftName));
 	fp = XftNameParse(pszXftName);
+
+	FcConfigSubstitute (m_pConfig, fp, FcMatchPattern);
+	result_fp = FcFontSetMatch (m_pConfig, &m_pFontSet, 1, fp, &result);
+
 	result_fp = XftFontMatch(GDK_DISPLAY(), DefaultScreen(GDK_DISPLAY()), fp, &result);
 	UT_ASSERT(result_fp);
 	FcPatternDestroy(fp);
@@ -725,7 +735,7 @@ class FontHolder
 {
 public:
 	FontHolder(XAP_UnixFont* pFont = NULL) : m_pFont(pFont) {}
-	~FontHolder() { free(m_pFont); }
+	~FontHolder() { delete m_pFont; }
 
 	void setFont(XAP_UnixFont* pFont) { delete m_pFont; m_pFont = pFont; }
 	XAP_UnixFont* getFont() { return m_pFont; }

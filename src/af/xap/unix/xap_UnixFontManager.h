@@ -57,6 +57,8 @@ public:
 									XAP_UnixFont::style s);
 
 #ifdef USE_XFT	
+	static XAP_UnixFont*	searchFont(const char* pszXftName);
+
 	static XAP_UnixFont*	findNearestFont(const char* pszFontFamily,
 											const char* pszFontStyle,
 											const char* pszFontVariant,
@@ -86,7 +88,8 @@ private:
 #endif
 
 #ifdef USE_XFT
-	FcFontSet*				m_pFontSet;
+	static FcFontSet*		m_pFontSet;
+	static FcConfig*		m_pConfig;
 #endif
 };
 

@@ -1267,13 +1267,9 @@ XftFont* XAP_UnixFont::getXftFont(UT_uint32 pixelsize) const
 #endif
 		UT_DEBUGMSG(("After print.\n"));
 
-		UT_DEBUGMSG(("Before open.\n"));
 		pXftFont = XftFontOpenPattern(GDK_DISPLAY(), result_fp);
-		UT_DEBUGMSG(("After open.\n"));
 		
-		UT_DEBUGMSG(("Before destroy.\n"));
 		// FcPatternDestroy(result_fp);
-		UT_DEBUGMSG(("After destroy.\n"));
 
 		// That means that we should should be 100% sure that,
 		// at this point, the font exists in the system
