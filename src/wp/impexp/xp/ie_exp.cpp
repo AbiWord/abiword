@@ -70,9 +70,7 @@ struct _xp
 static struct _xp s_expTable[] =
 {
 	DeclareExporter(IE_Exp_AbiWord_1),
-#ifdef DEBUG
 	DeclareExporter(IE_Exp_Applix),
-#endif
 	DeclareExporter(IE_Exp_DocBook),
 #ifdef DEBUG
 	DeclareExporter(IE_Exp_MsWord_97),

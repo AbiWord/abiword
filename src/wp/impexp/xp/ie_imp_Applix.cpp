@@ -44,7 +44,8 @@
  * Interested in Plain-text import only right now. More complex import
  * To come
  *
-*/
+ * Please, someone pick up on this and do a POW! - Dom
+ */
 
 /*****************************************************************/
 /*****************************************************************/
@@ -99,40 +100,128 @@ UT_Error IE_Imp_Applix::_writeHeader(FILE * /* fp */)
 	return UT_OK;
 }
 
-typedef enum {NOT_A_TAG, tag_Unknown} Applix_tag;
+// the applix tags that i know about && maybe handle
+typedef enum {APPLIX_T,
+			  GLOBALS_T,
+			  START_STYLES_T,
+			  STYLE_T,
+			  COLOR_T,
+			  END_STYLES_T,
+			  START_FLOW_T,			  
+			  WP400_T,
+			  T_T,
+			  P_T,
+			  END_FLOW_T,
+			  START_VARS_T,
+			  V_T,
+			  END_VARS_T,
+			  END_DOCUMENT_T,
+			  NOT_A_TAG, 
+			  tag_Unknown} Applix_tag_t;
 
-static Applix_tag
-name_2_tag (const char *name)
+typedef struct {
+	char * name;
+	Applix_tag_t tag;
+} Applix_mapping_t;
+
+static Applix_mapping_t axwords[] =
 {
-  if(!name)
-    return NOT_A_TAG;
+	{"Applix", APPLIX_T},
+	{"Globals", GLOBALS_T},
+	{"start_styles", START_STYLES_T},
+	{"style", STYLE_T},
+	{"color", COLOR_T},
+	{"end_styles", END_STYLES_T},
+	{"start_flow", START_FLOW_T},
+	{"WP400", WP400_T},
+	{"T", T_T},
+	{"P", P_T},
+	{"end_flow", END_FLOW_T},
+	{"start_vars", START_VARS_T},
+	{"V", V_T},
+	{"end_vars", END_VARS_T},
+	{"end_document", END_DOCUMENT_T}
+};
 
-  return tag_Unknown;
+// these should both be case insensitive
+#define AX_STR_CMP(x, y) UT_strcmp((x), (y))
+#define AX_STRN_CMP(x, y, z) strncmp((x), (y), (z))
+
+#define APPLIX_LINE_LENGTH 80 // applix does 80 to a line
+#define nAxWords (sizeof(axwords) / sizeof(axwords[1]))
+
+static Applix_tag_t
+s_name_2_tag (const char *name, size_t n)
+{
+	if (!name || !n)
+		return NOT_A_TAG;
+	
+	// simple lookup. TODO: make me faster (HT + BTree probably)
+	for (size_t i = 0; i < nAxWords; i++)
+	{
+		if (!AX_STRN_CMP (name, axwords[i].name, n))
+		{
+			xxx_UT_DEBUGMSG(("DOM: applix tag is %s\n", axwords[i].name));
+			return axwords[i].tag;
+		}
+	}
+	
+	return tag_Unknown;
 }
 
 // must free returned string
-static Applix_tag
-_getTagName(const char *str)
-{  
-  char buf[256];
+static Applix_tag_t
+s_getTagName(const char *str, size_t len)
+{
+	if (!len || !str)
+		return NOT_A_TAG;
 
-  if(str && *str == '<')
-    {
-      int n = 0;
-      str++;
-      while(str && (!UT_UCS_isspace(*str) && !(*str == '>')))
+	// innocent, just for fast pointer comparison
+	char * ptr = (char *)str;
+	
+	xxx_UT_DEBUGMSG(("DOM: Applix string: %s (%d)\n", str, len));
+	
+	if(*ptr == '<')
 	{
-	  n++; str++;
+		ptr++;
+		while(ptr && !UT_UCS_isspace(*ptr) && (*ptr != '>'))
+		{
+			ptr++;
+		}
+		if (ptr)
+		{
+			char buf [APPLIX_LINE_LENGTH + 1];
+
+			size_t n = ptr - str - 1;
+			strncpy (buf, str+1, n);
+			buf[n] = 0;
+
+			xxx_UT_DEBUGMSG(("DOM: calling with %s\n", buf));
+
+			return s_name_2_tag(buf, n);
+		}
 	}
-      if (n)
-	strncpy (buf, str+1, n-1);
-      return name_2_tag(buf);
-    }
-  return NOT_A_TAG;
+	return NOT_A_TAG;
 }
 
 UT_Error IE_Imp_Applix::_parseFile(FILE * fp)
 {
+	char buf [APPLIX_LINE_LENGTH + 1];
+	size_t len = 0;
+
+	while (!feof (fp))
+	{
+		fgets (buf, APPLIX_LINE_LENGTH, fp);
+		if (buf)
+		{
+			len = strlen(buf);
+
+			// todo: make me more robust
+			// grammars? we don't need no stinkin' grammars! ;-(
+			s_getTagName(buf, len);
+		}
+	}
+
 	return UT_OK;
 }
 
@@ -153,10 +242,12 @@ void IE_Imp_Applix::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 bool IE_Imp_Applix::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-  // this should be suffecient, at least for my liking
-  if (!strncmp(szBuf, "<Applix Words>", strlen("<Applix Words>")))
-    return true;
-  return false;
+	// this should be suffecient, at least for my liking
+	const char * magic = "<Applix Words>";
+
+	if (!AX_STRN_CMP(szBuf, magic, strlen(magic)))
+		return true;
+	return false;
 }
 
 bool IE_Imp_Applix::RecognizeSuffix(const char * szSuffix)
@@ -173,10 +264,10 @@ UT_Error IE_Imp_Applix::StaticConstructor(PD_Document * pDocument,
 }
 
 bool	IE_Imp_Applix::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
+									const char ** pszSuffixList,
+									IEFileType * ft)
 {
-  // TOOD: get the real filename extension used
+	// TOOD: get the real filename extension used
 	*pszDesc = "Applix Word (.aw)";
 	*pszSuffixList = "*.aw";
 	*ft = IEFT_APPLIX;

@@ -29,8 +29,10 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
-#include"ut_wctomb.h"
+#include "ut_wctomb.h"
 #include "xap_EncodingManager.h"
+
+#include "ut_string_class.h"
 
 /**
  * TODO:
@@ -99,8 +101,7 @@ protected:
 	PD_Document *		m_pDocument;
 	IE_Exp_Applix *		m_pie;
 	bool				m_bInBlock;
-	UT_Wctomb 		m_wctomb;
-        char m_buf[APPLIX_LINE * 2]; // not evil, applix does 80 chars per line
+        char m_buf[APPLIX_LINE + 1]; // not evil, applix does 80 chars per line
         int m_pos;
         bool m_bInSpan;
 };
@@ -174,43 +175,24 @@ UT_Error IE_Exp_Applix::_writeDocument(void)
 
 void s_Applix_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
 	const UT_UCSChar * pData;
+	UT_String sBuf;
+
+	UT_ASSERT(sizeof(char) == sizeof(UT_Byte));
 
 	if (!m_bInBlock)
 	{
 		return;
 	}
 
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
+	for (pData=data; (pData<data+length); /**/)
 	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
-		{
-			_write(buf,(pBuf-buf));
-			pBuf = buf;
-		}
-
 		switch (*pData)
 		{
 			
 		default:
 			if (*pData > 0x007f)
 			{
-#if 1
-#	if 0
-				// convert non us-ascii into numeric entities.
-				// this has the advantage that our file format is
-				// 7bit clean and safe for email and other network
-				// transfers....
-				char localBuf[20];
-				char * plocal = localBuf;
-				sprintf(localBuf,"&#x%x;",*pData++);
-				while (*plocal)
-					*pBuf++ = (UT_Byte)*plocal++;
-#	else
 				/*
 				Try to convert to native encoding and if
 				character fits into byte, output raw byte. This 
@@ -228,37 +210,23 @@ void s_Applix_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					char * plocal = localBuf;
 					sprintf(localBuf,"&#x%x;",*pData++);
 					while (*plocal)
-						*pBuf++ = (UT_Byte)*plocal++;
+						sBuf += (char)*plocal++;
 				}
 				else
 				{
-					*pBuf++ = (UT_Byte)c;
+					sBuf += (char)c;
 					pData++;
 				}
-#	endif
-#else
-				// convert to UTF8
-				// TODO if we choose this, do we have to put the ISO header in
-				// TODO like we did for the strings files.... i hesitate to
-				// TODO make such a change to our file format.
-				XML_Char * pszUTF8 = UT_encodeUTF8char(*pData);
-				while (*pszUTF8)
-				{
-					*pBuf++ = (UT_Byte)*pszUTF8;
-					pszUTF8++;
-				}
-#endif
 			}
 			else
 			{
-				*pBuf++ = (UT_Byte)*pData++;
+				sBuf += (char)*pData++;
 			}
 			break;
 		}
 	}
 
-	if (pBuf > buf)
-		_write(buf,(pBuf-buf));	
+	_write(sBuf.c_str(),sBuf.size());	
 }
 
 s_Applix_Listener::s_Applix_Listener(PD_Document * pDocument,
@@ -370,6 +338,9 @@ bool s_Applix_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	}
 }
 
+// this method has been very carefully hand-crafted
+// to produce 80 chars per line output. don't mess with it
+// -Dom
 void s_Applix_Listener::_write (const char * src, int len)
 {
   if (!src || !len) // short-circuit
@@ -537,13 +508,6 @@ void s_Applix_Listener::_writePostamble(void)
   _writeln ("*END WORDS");
 }
 
-void s_Applix_Listener::_openParagraph (PT_AttrPropIndex api)
-{
-  // TODO: this should get more complex, but this is a 1st rev
-  _openTag ("P");
-  _closeTag ();
-}
-
 void s_Applix_Listener::_resetBuffer (void)
 {
   memset (m_buf, 0, sizeof (m_buf));
@@ -555,6 +519,13 @@ void s_Applix_Listener::_openSpan(PT_AttrPropIndex /* always ignored */)
   _openTag ("T");
   _write ("\""); // begin text
   m_bInSpan = true;
+}
+
+void s_Applix_Listener::_openParagraph (PT_AttrPropIndex api)
+{
+  // TODO: this should get more complex, but this is a 1st rev
+  _openTag ("P");
+  _closeTag ();
 }
 
 void s_Applix_Listener::_closeSpan(PT_AttrPropIndex api)

@@ -64,14 +64,12 @@ struct _imp
 static struct _imp s_impTable[] =
 {
 	DeclareImporter(IE_Imp_AbiWord_1),
-#if 0
+#ifdef DEBUG
 	DeclareImporter(IE_Imp_Applix),
 #endif
 	DeclareImporter(IE_Imp_DocBook),
 	DeclareImporter(IE_Imp_MsWord_97),
-#ifdef DEBUG
 	DeclareImporter(IE_Imp_XSL_FO),
-#endif
 	DeclareImporter(IE_Imp_XHTML),
 #if 0
 	DeclareImporter(IE_Imp_MIF),

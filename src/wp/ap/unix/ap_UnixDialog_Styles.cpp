@@ -441,11 +441,15 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 
 void AP_UnixDialog_Styles::event_NewClicked(void)
 {
+
+#if 0
 //
 // Hide the old window
 //
-	UT_DEBUGMSG(("SEVIOR: Hiding main window for New \n"));
-    gtk_widget_hide( m_windowMain);
+	xxx_UT_DEBUGMSG(("SEVIOR: Hiding main window for New \n"));
+	gtk_widget_hide( m_windowMain);
+#endif
+
 	setIsNew(true);
 	modifyRunModal();
 	UT_DEBUGMSG(("SEVIOR: Finished New \n"));
@@ -460,10 +464,13 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 // Do other stuff
 //
 	}
+
+#if 0
 //
 // Reveal main window again
 //
 	gtk_widget_show( m_windowMain);
+#endif
 
 }
 
