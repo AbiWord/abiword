@@ -1569,7 +1569,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			// Clearly you can't change columns while editing a header. -PL
 			mask ^= AV_CHG_COLUMN;
 		}
-		else
+		else if(pContainer == NULL)
 		{
 			return false;
 		}
