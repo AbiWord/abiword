@@ -61,6 +61,8 @@ protected: // FIXME! These variables should be private.
 	
 	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
+private:	
+	const char * EV_UnixMenu::s_getStockPixmapFromId (int id);
 };
 
 #endif /* EV_UNIXMENU_H */
