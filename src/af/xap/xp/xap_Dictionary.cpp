@@ -135,7 +135,13 @@ bool XAP_Dictionary::load(void)
 		_closeFile();
 
 	m_bDirty = false;
-
+//
+// Hardwire in some words that should be in the English Language :-)
+//
+	addWord("AbiWord");
+	addWord("Abiword");
+	addWord("abiword");
+	addWord("abisource");
 	return true;
 }
 
@@ -327,16 +333,27 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 		FREEP(copy);
 		return false;
 	}
-
-	for (UT_uint32 i = 0; i < len; i++)
+	UT_uint32 i = 0;
+	for (i = 0; i < len; i++)
 	{
 		UT_UCSChar currentChar;
 		currentChar = pWord[i];
 		// map smart quote apostrophe to ASCII right single quote
 		if (currentChar == UCS_RQUOTE) currentChar = '\'';
-		key[i] =  (char) (unsigned char) currentChar;
+		key[i] =  (char) static_cast<unsigned char>(currentChar);
 		copy[i] = currentChar;
+		xxx_UT_DEBUGMSG(("addWord: key[%d] = %c %d \n",i,key[i],key[i]));
+		if(key[i] == 0)
+		{
+			break;
+		}
 	}
+	key[i] = 0;
+//
+// Get exactly the same length.
+//
+	char * key2 = UT_strdup(key);
+	copy[i] = 0;
 #if 0
 //
 // Useful debugging code
@@ -345,19 +362,39 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 	UT_UCS_strcpy_to_char( ucs_dup, copy);
 	UT_DEBUGMSG(("Inserting word %s with key %s into hash \n",ucs_dup,key));
 	FREEP(ucs_dup);
+
 #endif
-	m_hashWords.insert(key, 
+	m_hashWords.insert(key2, 
 			   (void *) copy);
 
 	FREEP(key);
+	FREEP(key2);
 
 	// TODO: is this right?
 	m_bDirty = true;
 	return true;
 }
 
+bool XAP_Dictionary::addWord(const char * word)
+{
+	UT_sint32 len = strlen(word);
+	if(len <=0)
+	{
+		return false;
+	}
+	UT_UCSChar * ucs_dup = (UT_UCSChar *) calloc(len, sizeof(UT_UCSChar));
+	UT_UCS_strcpy_char(ucs_dup, word);
+	addWord(ucs_dup,len);
+	FREEP(ucs_dup);
+	return true;
+}
+
 bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 {
+//
+// This original code does not work. I believe it is a bug in the hash table.
+//
+#if 0
 	char * key = (char*) calloc(len+1, sizeof(char));
 	if (!key)
 	{
@@ -365,14 +402,61 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 		FREEP(key);
 		return false;
 	}
-
-	for (UT_uint32 i = 0; i < len; i++)
+	UT_uint32 i =0;
+	for (i = 0; i < len; i++)
 	{
-		key[i] =  (char) (unsigned char) pWord[i];
+		key[i] =  (char) static_cast<unsigned char>( pWord[i]);
+		xxx_UT_DEBUGMSG(("isword key[%d] = %c %d \n",i,key[i],key[i]));
+		if(key[i] == 0)
+			break;
 	}
-
-	bool contains = m_hashWords.contains (key, NULL);
+	key[i] = 0;
+	char * key2 = UT_strdup(key);
+	bool contains = m_hashWords.contains (key2, NULL);
 	FREEP(key);
-
+	FREEP(key2);
 	return contains;
+#else
+//
+// This code is a work around for the buggy "contains" method used above.
+//
+	char * key = (char*) calloc(len+1, sizeof(char));
+	if (!key)
+	{
+		UT_DEBUGMSG(("mem failure looking up word in dictionary\n"));
+		FREEP(key);
+		return false;
+	}
+	UT_uint32 i =0;
+	for (i = 0; i < len; i++)
+	{
+		key[i] =  (char) static_cast<unsigned char>( pWord[i]);
+		xxx_UT_DEBUGMSG(("isword key[%d] = %c %d \n",i,key[i],key[i]));
+		if(key[i] == 0)
+			break;
+	}
+	key[i] = 0;
+	char * key2 = UT_strdup(key);
+
+	UT_Vector * pVec = m_hashWords.enumerate();
+	UT_ASSERT(pVec);
+
+	UT_uint32 size = pVec->size();
+	bool bFound = false;
+	for (i = 0; (i < size) && !bFound; i++)
+	{
+		UT_UCSChar * pWord = (UT_UCSChar *) pVec->getNthItem(i);
+		UT_uint32 lenstr = UT_UCS_strlen(pWord);
+		char * szV = (char *)  calloc(lenstr+1, sizeof(char));
+		UT_UCS_strcpy_to_char(szV,pWord);
+		xxx_UT_DEBUGMSG(("isWord: Comparing key %s to entry %s \n",key2,szV));
+		bFound = (strcmp(szV,key2) == 0); 
+		FREEP(szV);
+	}
+	FREEP(key);
+	FREEP(key2);
+	delete pVec;
+	return bFound;
+#endif
 }
+

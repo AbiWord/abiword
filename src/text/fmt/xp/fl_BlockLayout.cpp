@@ -2479,8 +2479,8 @@ fl_BlockLayout::_moveSquiggles(UT_uint32 iOffset, UT_sint32 chg,
 {
 	UT_uint32 target = (chg > 0) ? iOffset : (UT_uint32)((UT_sint32)iOffset - chg);
 
-	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
-	UT_uint32 j;
+	UT_sint32 iSquiggles = (UT_sint32) m_vecSquiggles.getItemCount();
+	UT_sint32 j;
 	for (j = iSquiggles-1; j >= 0; j--)
 	{
 		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j);
@@ -4078,8 +4078,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	}
 
 //	This was...
-//	setNeedsReformat();
-	format();
+	setNeedsReformat();
 	m_bCursorErased = false;
 
 	_assertRunListIntegrity();

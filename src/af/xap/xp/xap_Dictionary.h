@@ -41,7 +41,8 @@ public:
 
 	bool				load(void);
 	bool				save(void);
-
+	
+	bool                addWord(const char * pWord);
 	bool				addWord(const UT_UCSChar * pWord, UT_uint32 len);
 	bool				isWord(const UT_UCSChar * pWord, UT_uint32 len) const;
 
