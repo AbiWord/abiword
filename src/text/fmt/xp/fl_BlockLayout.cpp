@@ -4624,7 +4624,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 
 	UT_XML_strncpy(	pszIndent,
 					sizeof(pszIndent),
-					UT_convertInchesToDimensionString(DIM_IN, Align, 0));
+					UT_convertInchesToDimensionString(DIM_IN, indent, 0));
 	
 	va.addItem( (void *) "listid");			va.addItem( (void *) lid);
 	va.addItem( (void *) "parentid");		va.addItem( (void *) pid);
@@ -4773,15 +4773,21 @@ void    fl_BlockLayout::StopList(void)
 				pStyle->getProperty((const XML_Char *)"text-indent", szIndent);
 				fAlign = (float)atof(szAlign);
 				fAlign *= level;
-				sprintf(align, "%fin", fAlign);
+				UT_XML_strncpy(	align,
+					sizeof(align),
+					UT_convertInchesToDimensionString(DIM_IN, fAlign, 0));
 				sprintf(indent, "%s", szIndent);
 			}
 			else
 			{
 				fAlign =  (float)LIST_DEFAULT_INDENT * level;
 				fIndent = (float)-LIST_DEFAULT_INDENT;
-				sprintf(align, "%fin", fAlign);
-				sprintf(indent, "%fin", fIndent);
+				UT_XML_strncpy(	align,
+					sizeof(align),
+					UT_convertInchesToDimensionString(DIM_IN, fAlign, 0));
+				UT_XML_strncpy(	indent,
+					sizeof(indent),
+					UT_convertInchesToDimensionString(DIM_IN, fIndent, 0));
 			}
 			
 			vp.addItem((void *) "margin-left");

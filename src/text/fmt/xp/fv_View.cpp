@@ -2039,8 +2039,13 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 
 	pAuto->setListType(lType);
 	sprintf(pszStart, "%i" , startv);
-	sprintf(pszAlign, "%fin" , Align);
-	sprintf(pszIndent, "%fin" , Indent);
+	UT_XML_strncpy(	pszAlign,
+			sizeof(pszAlign),
+			UT_convertInchesToDimensionString(DIM_IN, Align, 0));
+
+	UT_XML_strncpy(	pszIndent,
+			sizeof(pszIndent),
+			UT_convertInchesToDimensionString(DIM_IN, Indent, 0));
 
 	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
