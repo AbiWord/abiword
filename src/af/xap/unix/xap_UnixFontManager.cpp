@@ -86,10 +86,6 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			
 			long fontcount = atol(buffer);
 
-			// these should probably not be DEBUG-build only, but reworked
-			// for real error messages in a release version (perhaps with
-			// friendly messages telling the users where to look to fix
-			// a busted font path problem)
 			#ifdef DEBUG
 			if (fontcount < 0)
 			{
@@ -147,13 +143,12 @@ AP_UnixFont ** AP_UnixFontManager::getAllFonts(void)
 AP_UnixFont * AP_UnixFontManager::getFont(const char * fontname,
 										  AP_UnixFont::style s)
 {
-	// We use a static buffer because this function gets called a lot.
-	// Doing an allocation is really slow on many machines.
-	static char keyBuffer[512];
+	// NOTE: this is what a font does itself to make a key (this
+	// is duplicating code) -- throw it in a ut group or something
+	char * key = (char *) calloc(strlen(fontname) + 1 + 1 + 1, sizeof(char));
+	sprintf(key, "%s@%d", fontname, s);
 
-	snprintf(keyBuffer, 512, "%s@%d", fontname, s);
-
-	UT_HashTable::UT_HashEntry * entry = m_fontHash.findEntry(keyBuffer);
+	UT_HashTable::UT_HashEntry * entry = m_fontHash.findEntry(key);
 
 	UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
@@ -289,10 +284,9 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	{
 		DELETEP(font);
 	}
+	
 
-	// somewhere, one of these strings is getting freed twice,
-	// which isn't good.
-/*	
+/*
 	FREEP(newstuff);
 	FREEP(xlfd);
 	FREEP(metricfile);

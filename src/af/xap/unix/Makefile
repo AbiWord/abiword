@@ -31,11 +31,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixFontManager.cpp			\
 			xap_UnixFrame.cpp			\
 			xap_UnixMain.cpp			\
-			xap_UnixToolbar_Icons.cpp		\
-			xap_UnixPSFont.cpp			\
-			xap_UnixPSGenerate.cpp			\
-			xap_UnixPSParseAFM.cpp			\
-			xap_UnixPSGraphics.cpp
+			xap_UnixToolbar_Icons.cpp
 
 TARGETS=		$(OBJS)
 
