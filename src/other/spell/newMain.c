@@ -31,7 +31,7 @@ struct strchartype 		*chartypes;  /* String character type collection */
 /***************************************************************************/
 
 
-int g_bSuccessfulInit = 0;
+static int g_bSuccessfulInit = 0;
 
 int SpellCheckInit(char *hashname)
 {
@@ -66,6 +66,45 @@ int SpellCheckWord16(unsigned short  *word16)
 }
 
 
+int SpellCheckNWord16(unsigned short *word16, int length)
+{
+	int retVal;
+    ichar_t  *iWord;
+	register ichar_t *p;
+	register int x;
+
+	if (!g_bSuccessfulInit)
+	{
+		return 1;
+	}
+
+	if (!word16)
+		return 0;
+
+	/* TODO: modify good() to take a non-null terminated string so
+		we don't have to malloc() for this check */
+
+	if (!(iWord = (ichar_t *) malloc( (length+1))))
+	{
+			return -1;
+	}
+
+	/* copy and null terminate */
+	for (x = 0, p = iWord; x < length; x++)
+	{
+		*p++ = *word16++;
+	}
+	*p = (ichar_t) 0;
+
+	
+	retVal = good(iWord, 0, 0, 1, 0);
+	free(iWord);
+
+	return retVal; /* 0 - not found, 1 on found, -1 on error */
+	
+}
+
+
 
 int SpellCheckWord(char *word)
 {
@@ -88,14 +127,14 @@ int SpellCheckWord(char *word)
 		return 0;
 
 	if (!(iWord = (ichar_t *) malloc( (wordLength+1) * 2 )))
-		{
+	{
 			return -1;
-		}
+	}
 
     for (pi = iWord, pc = word; *pc; )
-        {
+    {
             *pi++ = chartoichar(*pc++);
-        }
+    }
     *pi = 0;
 
 	retVal = good(iWord, 0, 0, 1, 0);
