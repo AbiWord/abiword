@@ -204,7 +204,7 @@ $(SHARED_LIBRARY): $(OBJS)
 	@rm -f $@
 ifeq ($(ABI_FE), Win32)
 ifeq ($(OS_NAME), MINGW32)
-	dllwrap --dllname=$(LIBDIR)/$(LIBRARY_NAME).dll \
+	@dllwrap --dllname=$(LIBDIR)/$(LIBRARY_NAME).dll \
 	--implib=$(LIBDIR)/lib$(LIBRARY_NAME)dll.a \
 	--driver-name=g++  \
 	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
@@ -225,7 +225,7 @@ $(PLUGIN): $(OBJS)
 	@rm -f $@
 ifeq ($(ABI_FE), Win32)
 ifeq ($(OS_NAME), MINGW32)
-	dllwrap --dllname=$(PLUGINDIR)/$(LIBRARY_NAME).dll \
+	@dllwrap --dllname=$(PLUGINDIR)/$(LIBRARY_NAME).dll \
 	--implib=$(PLUGINDIR)/lib$(LIBRARY_NAME)dll.a \
 	--driver-name=g++  \
 	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)

@@ -23,9 +23,9 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 #The setup file name, include version in name.
-PROGRAM=		$(BINDIR)/setup_abiword.${ABI_BUILD_VERSION_MAJOR}-$(ABI_BUILD_VERSION_MINOR)-${ABI_BUILD_VERSION_MICRO}.exe
-
-TARGETS=		$(PROGRAM)
+PROGRAM:=		$(BINDIR)/setup-abiword.$(ABI_BUILD_VERSION_MAJOR)-$(ABI_BUILD_VERSION_MINOR)-$(ABI_BUILD_VERSION_MICRO).exe
+PLUGINTOOLS:=		$(PLUGINDIR)/abiword-plugins-tools-$(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO).exe
+PLUGINIMPEXP:=		$(PLUGINDIR)/abiword-plugins-impexp-$(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO).exe
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
@@ -37,14 +37,15 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 # but only sometimes, sometimes it doesn't matter, sometimes using it fails, I'm so confused...
 ifeq ($(OS_NAME),MINGW32)
 NSIS_DEF = "//D"
-NSIS_OPT = $(NSIS_DEF)MINGW32=1
+NSIS_OPT = //V3 $(NSIS_DEF)MINGW32=1
 else
 NSIS_DEF = "/D"
-NSIS_OPT =
+NSIS_OPT = /V3
 endif
 
+NSIS_SRC 	:= ./NSISv2/*.ns*
+NSIS_PLUGIN_SRC := ./plugin*.nsi
 
-NSIS_SRC =  ./NSISv2/*.ns*
 NSIS_OPT += $(NSIS_DEF)VERSION=$(ABI_BUILD_VERSION) $(NSIS_DEF)VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
 NSIS_OPT += $(NSIS_DEF)VERSION_MINOR=$(ABI_BUILD_VERSION_MINOR) $(NSIS_DEF)VERSION_MICRO=$(ABI_BUILD_VERSION_MICRO)
 #e.g. NSIS_CRTL_URL=http://abiword.pchasm.org/microsoft/ NSIS_CRTL_FILENAME=msvcr70.dll
@@ -67,10 +68,22 @@ endif
 
 
 $(PROGRAM): 
-	@rm -f $(BINDIR)/*.ns*; \
-	$(ABICOPY) $(NSIS_SRC) $(BINDIR)/; \
-	cd $(BINDIR); \
+	@rm -f $(BINDIR)/*.ns*
+	@$(ABICOPY) $(NSIS_SRC) $(BINDIR)
+	@cd $(BINDIR); \ 
 	$(NSIS_ROOT)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./AbiWord.nsi
+
+$(PLUGINTOOLS):
+	rm -f $(PLUGINDIR)/*.ns*
+	@$(ABICOPY) $(NSIS_PLUGIN_SRC) $(PLUGINDIR)
+	@cd $(PLUGINDIR); \
+	$(NSIS_ROOT)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./pluginTools.nsi
+
+$(PLUGINIMPEXP):
+	@rm -f $(PLUGINDIR)/*.ns*
+	@$(ABICOPY) $(NSIS_PLUGIN_SRC) $(PLUGINDIR)
+	@cd $(PLUGINDIR); \
+	$(NSIS_ROOT)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./pluginImportersExporters.nsi
 
 _NSIS_:
 	@if [ -d $(NSIS_ROOT) ]; then	\
@@ -110,16 +123,28 @@ _W32NATIVE_PLUGIN_:
 
 ifeq ($(ABI_OPT_DEBUG),1)
 
+disttools:: distribution
+distimpexp:: distribution
 distribution::
 	@echo ABI_OPT_DEBUG is set.  Building a setup program in
 	@echo debug mode is not allowed.
-	exit 1
+	@exit 1
 
 else
 
-distribution:: _NSIS_ _W32NATIVE_PLUGIN_ $(TARGETS)
+distribution:: _NSIS_ _W32NATIVE_PLUGIN_ $(PROGRAM)
 	@echo Copying $(PROGRAM) to $(DIST)
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(PROGRAM) $(DIST)
+
+disttools:: _NSIS_ $(PLUGINTOOLS)
+	@echo Copying $(PLUGINTOOLS) to $(DIST)
+	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(PLUGINTOOLS) $(DIST)
+
+distimpexp:: _NSIS_ $(PLUGINIMPEXP)
+	@echo Copying $(PLUGINIMPEXP) to $(DIST)
+	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(PLUGINIMPEXP) $(DIST)
 
 endif

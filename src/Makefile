@@ -148,24 +148,63 @@ endif
 ## it is already set at the /abi level.
 
 ifneq ($(ABIPKGDIR),)
+  ifeq ($(ABI_BUILD_VERSION),unnumbered)
+    disttools: distribution
+    distimpexp: distribution
 
-ifeq ($(ABI_BUILD_VERSION),unnumbered)
-distribution:
+    distribution:
 	@echo 
 	@echo Error -- ABI_BUILD_VERSION is not set for this build.
 	@echo Error -- Set this variable before building packages
 	@echo Error -- for distribution.
 	@echo
 	@exit 1
-else
-distribution:
+  else
+    distribution:
 	@echo Building distribution packages for $(ABIPKGDIR)...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) distribution
-endif
 
+    disttools:
+	@if [ -d $(ABI_ROOT)/../abiword-plugins ]; then \
+		echo Found abiword-plugins in peer directory; \
+	else \
+		echo ; \
+		echo " - abiword_plugins not found"; \
+		echo "  'make disttools' requires the abiword-plugins/ package be available as"; \
+		echo "  a peer to the abi/ tree."; \
+		echo "  You can check it out of cvs by running the following command from the"; \
+		echo "  same directory you checked out abi into: "; \
+		echo "  cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot co abiword-plugins"; \
+		exit 1; \
+	fi
+	@echo Building tools plugins...
+	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C $(ABI_ROOT)/../abiword-plugins/tools all
+	@echo Building distribution tools plugin package for $(ABIPKGDIR)...
+	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) disttools
+
+    distimpexp:
+	@if [ -d $(ABI_ROOT)/../abiword-plugins ]; then \
+		echo Found abiword-plugins in peer directory; \
+	else \
+		echo ; \
+		echo " - abiword_plugins not found"; \
+		echo "  'make distimpexp' requires the abiword-plugins/ package be available as"; \
+		echo "  a peer to the abi/ tree."; \
+		echo "  You can check it out of cvs by running the following command from the"; \
+		echo "  same directory you checked out abi into: "; \
+		echo "  cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot co abiword-plugins"; \
+		exit 1; \
+	fi
+	@echo Building importer/exporter plugins...
+	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C $(ABI_ROOT)/../abiword-plugins/wp/impexp all
+	@echo Building distribution importer/exporter plugin package for $(ABIPKGDIR)...
+	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) distimpexp
+
+  endif
 else
-
-distribution:
+  disttools: distribution
+  distimpexp: distribution
+  distribution:
 	@echo
 	@echo Error -- No package script defined for this platform.
 	@echo Error -- Please make sure ABIPKGDIR is set in
