@@ -39,6 +39,7 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_LEFT)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_CENTER)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_RIGHT)
+#if 0
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_JUSTIFY)
-
+#endif
 EndLayout()
