@@ -130,7 +130,7 @@ UT_RBTree::_insertFixup(Node* x)
 		{
 			/* If x's parent is a left, y is x's right 'uncle' */
 			y = x->parent->parent->right;
-		    if (y->color == Node::red)
+		    if (y && y->color == Node::red)
 			{
 				/* case 1 - change the colours */
 				x->parent->color = Node::black;
@@ -582,6 +582,50 @@ UT_RBTree::print() const
 		m_pRoot->print();
 	else
 		printf("empty set\n");
+}
+
+int
+UT_RBTree::_countBlackNodes(const Iterator& it)
+{
+	int retval = 0;
+	const Node* pn = it.getNode();
+	UT_ASSERT(it.is_valid());
+
+	do
+	{
+		if (pn->color == Node::black)
+			++retval;
+		else
+			if (pn->parent && pn->parent->color == Node::red)
+				return -1;
+
+		pn = pn->parent;
+	}
+	while (pn != 0);
+
+	return retval;
+}
+
+bool
+UT_RBTree::checkInvariants()
+{
+	int nb_blacks = 0;
+
+	Iterator end(end());
+	Iterator it(begin());
+
+	if (it != end)
+		nb_blacks = _countBlackNodes(it++);
+
+	if (nb_blacks < 0)
+		return false;
+
+	for (; it != end; ++it)
+		if (!it.getNode()->left && !it.getNode()->right &&
+			nb_blacks != _countBlackNodes(it))
+			return false;
+	
+	return true;
 }
 #endif
 

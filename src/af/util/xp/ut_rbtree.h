@@ -62,6 +62,7 @@ public:
 	private:
 		Iterator(UT_RBTree* owner, Node* node = 0) : m_pOwner(owner), m_pNode(node) {}
 		inline Node* getNode() { return m_pNode; }
+		inline const Node* getNode() const { return m_pNode; }
 
 		UT_RBTree* m_pOwner;
 		Node* m_pNode;
@@ -74,17 +75,20 @@ public:
 	bool insert(key_t item);
 	void erase(Iterator& c);
 
-	UT_RBTree::Iterator find(key_t item);
-	UT_RBTree::Iterator find_if(key_t item, comparator pred);
+	Iterator find(key_t item);
+	Iterator find_if(key_t item, comparator pred);
 
-	inline UT_RBTree::Iterator begin() { return Iterator(this, _first()); }
-	inline UT_RBTree::Iterator end() { return Iterator(this); }
-	inline UT_RBTree::Iterator rbegin() { return Iterator(this, _last()); }
-	inline UT_RBTree::Iterator rend() { return Iterator(this); }
+	inline Iterator begin() { return Iterator(this, _first()); }
+	inline Iterator end() { return Iterator(this); }
+	inline Iterator rbegin() { return Iterator(this, _last()); }
+	inline Iterator rend() { return Iterator(this); }
 	inline size_t size() { return m_nSize; }
 
 #ifdef DEBUG
 	void print() const;
+	// TODO: This method is const, but I don't have (yet)
+	// TODO: a ConstIterator
+	bool checkInvariants();
 #endif
 
 private:
@@ -96,17 +100,24 @@ private:
 	void _eraseFixup(Node* pn);
 	void _leftRotate(Node* x);
 	void _rightRotate(Node* x);
+
+#ifdef DEBUG
+	// TODO: This method is const, but I don't have (yet)
+	// TODO: a ConstIterator
+	int _countBlackNodes(const Iterator& it);
+#endif
+
 	static void s_delete_tree(Node* node);
 
-	const UT_RBTree::Node* _next(const Node* pn) const;
-	const UT_RBTree::Node* _prev(const Node* pn) const;
-	const UT_RBTree::Node* _first() const;
-	const UT_RBTree::Node* _last() const;
+	const Node* _next(const Node* pn) const;
+	const Node* _prev(const Node* pn) const;
+	const Node* _first() const;
+	const Node* _last() const;
 
-	UT_RBTree::Node* _next(Node* pn);
-	UT_RBTree::Node* _prev(Node* pn);
-	UT_RBTree::Node* _first();
-	UT_RBTree::Node* _last();
+	Node* _next(Node* pn);
+	Node* _prev(Node* pn);
+	Node* _first();
+	Node* _last();
 
 	Node* m_pRoot;
 	comparator m_comp;

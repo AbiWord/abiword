@@ -46,6 +46,8 @@ public:
 
 #ifdef DEBUG
 	inline void print() const { m_rbtree.print(); }
+	// This method should be const.  See UT_RBTree::checkInvariants comment
+	inline bool checkInvariants() { return m_rbtree.checkInvariants(); }
 #endif
 
 private:
