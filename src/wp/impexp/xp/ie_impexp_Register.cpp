@@ -76,7 +76,6 @@ void IE_ImpExp_RegisterXP ()
 	IE_Imp::registerImporter(new IE_Imp_Psion_Word_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_ISCII_Sniffer ());
@@ -97,7 +96,6 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_RTF_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_EncodedText_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
