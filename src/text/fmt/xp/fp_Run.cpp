@@ -3344,7 +3344,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 // We're actually just before the next run and in the insertion point will be
 // in the next run so make the insertion point reflect this.
 //
-		if(getNext() && getNext()->getType() != FPRUN_ENDOFPARAGRAPH  )
+		if(getNext() && getNext()->hasLayoutProperties()  )
 		{
 			height = getNext()->getHeight();
 			UT_sint32 xx,xx2,yy2,hheight;

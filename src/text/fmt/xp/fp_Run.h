@@ -571,7 +571,8 @@ public:
 								 UT_sint32& y2,
 								 UT_sint32& height,
 								 bool& bDirection);
-
+	virtual bool hasLayoutProperties(void) const
+	{ return false; }
 
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -613,6 +614,8 @@ public:
 								 UT_sint32& height,
 								 bool& bDirection);
 
+	virtual bool hasLayoutProperties(void) const
+	{ return false; }
 
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
