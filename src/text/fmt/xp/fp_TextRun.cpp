@@ -551,6 +551,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			text.setPosition(iPosStart);
 			
 			m_pRenderInfo->m_iLength = getLength();
+			m_pRenderInfo->m_iOffset = i;
 			bCanBreak = getGraphics()->canBreak(*m_pRenderInfo, iNext);
 
 			text.setPosition(iPos);
@@ -619,7 +620,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			{
 				UT_uint32 m = bReverse ? getLength() - n - 1: n;
 				//UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
-				m_pRenderInfo->m_iOffset = n;
+				m_pRenderInfo->m_iOffset = m;
 				m_pRenderInfo->m_iLength = 1;
 				UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
 				iLeftWidth += iCW;
@@ -2248,12 +2249,17 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 
+		// HACK
+		fp_TextRun * pThis = const_cast<fp_TextRun*>(this);
+		bool bReverse = (pThis->getVisDirection() == FRIBIDI_TYPE_RTL);
+
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
+			UT_sint32 k = bReverse ? getLength() - i - 1: i;
 			if(UCS_SPACE == text.getChar())
 			{
 				xxx_UT_DEBUGMSG(("For i %d char is |%c| trail %d \n",i,c,iTrailingDistance));
-				m_pRenderInfo->m_iOffset = i;
+				m_pRenderInfo->m_iOffset = k;
 				m_pRenderInfo->m_iLength = 1;
 				iTrailingDistance += getGraphics()->getTextWidth(*m_pRenderInfo);
 			}
