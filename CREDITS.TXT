@@ -20,7 +20,7 @@ Ithamar R. Adema <ithamar@dds.nl>               BeOS fixes
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
 Tim Allen <rita_tim@tpg.com.au>                 Goto Localization, Indonesian Translation
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
-Nils Barth <nils_barth@post.harvard.edu>	LaTeX exporter improvements, cntrl-Q
+Nils Barth <nils_barth@post.harvard.edu>        LaTeX exporter improvements, cntrl-Q
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Henrik Berg <henrik@lansen.se>                  ispell i18n
 Daniel Berlin <db003g@mail.rochester.edu>       BeOS whiz
@@ -38,10 +38,10 @@ Bill Carpenter <bill-abisource@carpenter.org>   Smart Quotes
 Heath D. Carr <heath@abisource.com>
 Chema Celorio <chema@celorio.com>               Help w/ Gnome-Print
 Allan Clark <shark@blueyonder.co.uk>            StringPool fixes, Find algorithm
-John L. Clark <jlc6@po.cwru.edu>		XHMTL exporter maintainer
+John L. Clark <jlc6@po.cwru.edu>                XHMTL exporter maintainer
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter, perl bindings, misc. fixes
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
-Andrew Dunbar <falconsquire@start.com.au>	UTF-8 text recognition, encoding stuff
+Andrew Dunbar <falconsquire@start.com.au>       UTF-8 text recognition, encoding stuff
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Paul Egli <pegli@sourcegear.com>
 Danny Faught <faught@rstcorp.com>
@@ -49,8 +49,10 @@ Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) maintainer, MacOS X makefiles and autoconf, JPEG import, Applix import
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Ben Fowler <bpfowler@hotmail.com>               MacOS 8/9 work
-Tomas Frydrych <tomas@frydrych.uklinux.net>	ttf, utf8 locale, bidi
-David Given <dg@tao-group.com>			Human Readable Text Export
+F J Franklin <F.J.Franklin@sheffield.ac.uk>
+Stephane Fritsch <sfritsch@noos.fr>             BeOS
+Tomas Frydrych <tomas@frydrych.uklinux.net>     ttf, utf8 locale, bidi
+David Given <dg@tao-group.com>                  Human Readable Text Export
 Ashleigh Gordon <gordonac@ocean.com.au>         English help files
 Peter Haight <peterh@sapros.com>                Fonts location bug fix
 Vlad Harchev <hvv@hippo.ru>                     Support for non latin-1 Languages
@@ -62,7 +64,7 @@ Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Perry Ismangil <perry@trabas.com>               AbiHello
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
-David Kaelbling <drk@sgi.com>			Irix build fixes
+David Kaelbling <drk@sgi.com>                   Irix build fixes
 Lauris Kaplinski<lauris@helixcode.com>          Help with GnomePrint
 Joseph Kelsey <jkelsey@freei.com>               HTML centering
 Matt Kimball <robozapp@xmission.com>            layout fixes
@@ -70,10 +72,11 @@ Andrew Klassen <ak@dkp.com>                     Irix 64 fixes
 Larry Kollar <kollar@alltel.net>                MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
+William Lachance <wlach@interlog.com>           WordPerfect import
 Dom Lachowicz <cinamod@hotmail.com>             glib and Word export, gnome FE maintainer, 
                                                 current wvWare maintainer
 Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
-Patrick Lam <plam@mit.edu>			tab leaders, left ruler grippies
+Patrick Lam <plam@mit.edu>                      tab leaders, left ruler grippies
 Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
 Aaron Lehmann <aaronl@vitelus.com>              Ruler placement patch
@@ -82,21 +85,24 @@ Frodo Looijaard  <frodol@dds.nl>                Psion import/export
 Kenneth MacDonald <kenny@holyrood.ed.ac.uk>     Color Printing patch
 Brian Marick <marick@rstcorp.com>       
 Lalo Martins <lalo@webcom.com>
+Vincent McIntyre <Vince.McIntyre@atnf.CSIRO.AU> autoconf on Solaris 2.6
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk>  GTK Window Autosize
 Mike Meyer <mwm@mired.org>                      ParseAFM isspace() fix
-Paolo Molaro <lupus@debian.org>			Perl bindings
+Paolo Molaro <lupus@debian.org>                 Perl bindings
 James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integration
 David Nay                                       PalmDoc exporter
 Tom Newton <Tom.Newton@gtl.com>
 Mike Nordell <tamlin@algonet.se>                Windows printing fix
 Bruce Pearson <BruceP@wn.com.au>                full justification
+Adrian Phillips <adrianp@powertech.no>
+Matti Picus <matti@picus.org>                   RTF fixes
 Christopher Plymire <chrisjp@eudoramail.com>    BeOS fixes, Word Count, Insert Date/Time
 Michael Pritchett <MPritchett@attglobal.net>    BMP Import, Cygwin 1.1.0 build fixes
 Bryan Prusha <bryanp@wolfram.com>               Mac Port Work
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>PostScript image handling
 Will Robinson <wsr23@stanford.edu>
-Pavel Roskin <proski@gnu.org>			Makefile and install.sh fixes
+Pavel Roskin <proski@gnu.org>                   Makefile and install.sh fixes
 Duncan Rose <d.rose@salford.ac.uk>
 Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint, IA64
 Leonard Rosenthal <leonardr@lazerware.com>      Windows, Mac guru
@@ -112,7 +118,7 @@ Jesper Skov <jskov@redhat.com>                  Documentation, Cursor motion fix
 Justin Smith <jsmith@mcs.drexel.edu>            OpenBSD fixes
 Ed Stafford <dysan_2000@hotmail.com>            Ghost cursor fix
 <kstailey@kstailey.tzo.com>                     OpenBSD
-Jakub "Jimmac" Steiner <jimmac@ximian.com>	Artwork
+Jakub "Jimmac" Steiner <jimmac@ximian.com>      Artwork
 Diego Sueiro <dsueiro@yahoo.com>                Gnome work & bugfixes
 Owen Stenseth <owen@pdaverticals.com>           script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
@@ -137,6 +143,8 @@ Belcon Zhao <rainfall@yeah.net>                 Testing/fixing CJK support
 
 translators
 -----------
+Takeshi Aihana <aihana@muc.biglobe.ne.jp, 
+                aihana@turbolinux.co.jp>        Japanese (jp-JP)
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Jesus Bravo Alvarez <jba@pobox.com>             Galician
 Henrik Berg <henrik@lansen.se>                  Swedish
@@ -144,15 +152,21 @@ Frédéric CELLA <fcella@mahj.org>                French
 Kenneth Christiansen <kenneth@gnu.org>          Danish
 Mauro Colorio <macolori@tin.it>                 Italian
 Jesús Corrius <jesus@softcatala.org>            Catalan
+Joaquín Cuenca Abela <cuenca@celium.net>        Spanish
 Tamas Decsi <tamas@pressflex.com>               Hungarian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
+Vadim Frolov <vadim@krug.uch.net>               Ukrainian (uk-UA)
+GPS <GrandPooh@telkom.net>                      Indonesian
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian (Bokmål)
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
+hj <huangj@citiz.net>                           Chinese (zh-CN)
+Alan Horkan <horkana@maths.tcd.ie>              Irish (ga-IE); also en-GB, en-IE
 Chih-Wei Huang <cwhuang@linux.org.tw>           Chinese (zh-TW)
 Karl Ove Hufthammer <huftis@bigfoot.com>        Norwegian (Nynorsk)
 Marco Innocenti <dot0037@iperbole.bologna.it>   Italian
 Karl Trygve Kalleberg <karltk@prosalg.no>       Norwegian Bokmål
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
+Mantas Kriauciunas <mantelis@centras.lt>        Lithuanian (lt-LT)
 Michl Ladislav <xmichl03@stud.fee.vutbr.cz>     Czech
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian (Bokmål)
 Birger Langkjer <birger.langkjer@image.dk>      Danish
@@ -164,19 +178,14 @@ Zbynek Miksa <xmiksa@informatics.muni.cz>       Czech
 Giovanni dos Reis Nunes <giovanni@skydome.net>  Portugese (Brazil)
 Rasmus Toftdahl Olesen <rto@post.tele.dk>       Danish
 Gediminas Paulauskas <menesis@03bar.ktu.lt>     Lithuanian
+John Profic <profic@linux.ru.net>               Russian
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
 Rui M. Silva Seabra <rms@greymalkin.yi.org>     Portugese
 Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
+Andraz Tori                                     Slovenian (sl-SI)
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
 Javier Yáñez <javier@cibal.es>                  Spanish
-Joaquín Cuenca Abela <cuenca@celium.net>	Spanish
-hj <huangj@citiz.net>                           Chinese (zh-CN)
-John Profic <profic@linux.ru.net>               Russian
-Vadim Frolov <vadim@krug.uch.net>               Ukrainian (uk-UA)
-Takeshi Aihana <aihana@muc.biglobe.ne.jp, 
-                aihana@turbolinux.co.jp>        Japanese (jp-JP)
-Alan Horkan <horkana@maths.tcd.ie>              Irish (ga-IE); also en-GB, en-IE
 
 unsung heroes
 -------------
