@@ -175,6 +175,9 @@ void AP_TopRuler::setHeight(UT_uint32 iHeight)
 
 UT_uint32 AP_TopRuler::getHeight(void) const
 {
+	if (m_pG == NULL) {
+		return 0;
+	}
 	return m_pG->tlu(m_iHeight);
 }
 
@@ -185,6 +188,9 @@ void AP_TopRuler::setWidth(UT_uint32 iWidth)
 
 UT_uint32 AP_TopRuler::getWidth(void) const
 {
+	if (m_pG == NULL) {
+		return 0;
+	}
 	return m_pG->tlu(m_iWidth);
 }
 

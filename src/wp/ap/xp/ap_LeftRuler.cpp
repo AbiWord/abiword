@@ -154,6 +154,9 @@ void AP_LeftRuler::setHeight(UT_uint32 iHeight)
 /*! return value in logical units */
 UT_uint32 AP_LeftRuler::getHeight(void) const
 {
+	if (m_pG == NULL) {
+		return 0;
+	}
 	return m_pG->tlu(m_iHeight);
 }
 
@@ -172,6 +175,9 @@ void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 /*! return value in logical units */
 UT_uint32 AP_LeftRuler::getWidth(void) const
 {
+	if (m_pG == NULL) {
+		return 0;
+	}
 	return m_pG->tlu(m_iWidth);
 }
 
