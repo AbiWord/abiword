@@ -227,11 +227,6 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
 	
-	// Get the Window of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	PtSetParentWidget(parentWindow);
-	
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -277,13 +272,11 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 		iDrawSymbol->setSelectedFont("Symbol");
 		xap_QNXDlg_Insert_Symbol_first = 1;
 	}
-	PtListGotoPos(m_fontcombo,PtListItemPos(m_fontcombo,iDrawSymbol->getSelectedFont()));
 
 	// Show the Previously selected symbol
 	m_PreviousSymbol = m_CurrentSymbol;
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
-	UT_QNXCenterWindow(parentWindow, mainWindow);
 	PtRealizeWidget(mainWindow);
 	PgFlush();
 }
@@ -380,7 +373,7 @@ void XAP_QNXDialog_Insert_Symbol::SymbolMap_clicked( PtCallbackInfo_t * e)
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 	m_PreviousSymbol = m_CurrentSymbol;
-	m_CurrentSymbol = iDrawSymbol->calcSymbol(x, y);
+	m_CurrentSymbol = iDrawSymbol->calcSymbol(_UL(x), _UL(y));
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 	/* Double clicking should also insert the symbol */
@@ -451,8 +444,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	int     n;
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-	UT_XML_transNoAmpersands(pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle ).c_str()), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,_(XAP,DLG_Insert_SymbolTitle), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowInsertS = PtCreateWidget(PtWindow, NULL, n, args);
@@ -524,7 +516,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	hboxInsertS = PtCreateWidget(PtGroup, vboxInsertS, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hboxInsertS, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
@@ -549,7 +541,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK)
    	}
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hboxInsertS, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
