@@ -186,10 +186,10 @@ void FL_DocLayout::fillLayouts(void)
 	formatAll();
 	if(m_pView)
 	{
-		m_pView->moveInsPtTo(FV_DOCPOS_BOD);
-		m_pView->clearCursorWait();
 		m_pView->setLayoutIsFilling(false);
 		setLayoutIsFilling(false);
+		m_pView->moveInsPtTo(FV_DOCPOS_BOD);
+		m_pView->clearCursorWait();
 		m_pView->updateLayout();
 		m_pView->updateScreen(false);
 	}
