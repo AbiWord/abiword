@@ -48,8 +48,8 @@ ABI_OPT_DEBUG=1		// TODO remove this later
 # a Pentium Pro, you will see your bins in a "...i386" directory.
 # This doesn't mean it didn't use your optimizations.
 
-OS_NAME		:= $(shell uname -s | sed "s/\//-/")
-OS_RELEASE	:= $(shell uname -r | sed "s/\//-/")
+OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/-.*//g")
+OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
 OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
 
 # Where to stuff all the bins
