@@ -132,7 +132,14 @@ public:									// we create...
 		// manually force an update
 		s_combo_changed(widget, user_data);
 	}
-	
+
+	static void s_combo_focus_in(GtkWidget * widget, GdkEventFocus * event, gpointer /* user_data */)
+	{
+	  UT_DEBUGMSG(("Got focus!\n"));
+		// lose the focus immediately
+		gtk_signal_emit_by_name(GTK_OBJECT(widget), "focus_out_event");
+	}
+
 	EV_UnixToolbar *	m_pUnixToolbar;
 	XAP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
@@ -380,6 +387,11 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				gtk_signal_connect(GTK_OBJECT(popwin),
 								   "hide",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
+								   wd);
+
+				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
+								   "focus_in_event",
+								   GTK_SIGNAL_FUNC(_wd::s_combo_focus_in),
 								   wd);
 				
 				// handle changes in content
