@@ -271,10 +271,14 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 			[m_description retain];
 			[m_usage retain];
 
+			NSDictionary * attr = 0;
+
 			if ([delegate pluginIsActive])
-				m_entry = [[NSAttributedString alloc] initWithString:m_name]; // TODO
+				attr = [NSDictionary dictionaryWithObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
 			else
-				m_entry = [[NSAttributedString alloc] initWithString:m_name];
+				attr = [NSDictionary dictionaryWithObject:[NSColor  grayColor] forKey:NSForegroundColorAttributeName];
+
+			m_entry = [[NSAttributedString alloc] initWithString:m_name attributes:attr];
 		}
 	return self;
 }
@@ -316,7 +320,20 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 - (void)setActive:(BOOL)active
 {
-	// TODO
+	if (m_entry)
+		{
+			[m_entry release];
+			m_entry = 0;
+		}
+
+	NSDictionary * attr = 0;
+
+	if (active)
+		attr = [NSDictionary dictionaryWithObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
+	else
+		attr = [NSDictionary dictionaryWithObject:[NSColor  grayColor] forKey:NSForegroundColorAttributeName];
+
+	m_entry = [[NSAttributedString alloc] initWithString:m_name attributes:attr];
 }
 
 - (NSAttributedString *)entry

@@ -318,6 +318,9 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 			m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
 			m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
+
+			m_PluginsToolsSeparator = [NSMenuItem separatorItem];
+			[m_PluginsToolsSeparator retain];
 		}
 	return self;
 }
@@ -343,6 +346,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			[m_PluginsTools release];
 			m_PluginsTools = 0;
+		}
+	if (m_PluginsToolsSeparator)
+		{
+			[m_PluginsToolsSeparator release];
+			m_PluginsToolsSeparator = 0;
 		}
 	[super dealloc];
 }
@@ -700,12 +708,30 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem
 {
-	// TODO
+	if (![m_PluginsTools containsObject:menuItem])
+		{
+			if ([m_PluginsTools count] == 0)
+				{
+					[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
+				}
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
+
+			[m_PluginsTools addObject:menuItem];
+		}
 }
 
 - (void)removePluginMenuItem:(NSMenuItem *)menuItem
 {
-	// TODO
+	if ([m_PluginsTools containsObject:menuItem])
+		{
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:menuItem];
+
+			if ([m_PluginsTools count] == 1)
+				{
+					[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:m_PluginsToolsSeparator];
+				}
+			[m_PluginsTools removeObject:menuItem];
+		}
 }
 
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
@@ -726,23 +752,16 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	m_pViewCurrent  = view;
 	m_pFrameCurrent = frame;
 
-	if ([XAP_CocoaToolPalette instantiated])
-		{
-			[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
-		}
+	[self notifyFrameViewChange];
 }
 
 - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
-	UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
+	// UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
 	if (m_pFrameCurrent == frame)
 		{
 			m_pViewCurrent = view;
-
-			if ([XAP_CocoaToolPalette instantiated])
-				{
-					[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
-				}
+			[self notifyFrameViewChange];
 		}
 }
 
@@ -764,6 +783,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			m_pViewPrevious = 0;
 			m_pFramePrevious = 0;
 		}
+	[self notifyFrameViewChange];
 }
 
 - (AV_View *)currentView
@@ -784,6 +804,22 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (XAP_Frame *)previousFrame
 {
 	return m_pFramePrevious;
+}
+
+- (void)notifyFrameViewChange
+{
+	if ([XAP_CocoaToolPalette instantiated])
+		{
+			[[XAP_CocoaToolPalette instance:self] setCurrentView:m_pViewCurrent inFrame:m_pFrameCurrent];
+		}
+
+	unsigned count = [m_Plugins count];
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+			[[plugin delegate] pluginCurrentDocumentHasChanged];
+		}
 }
 
 /* load .Abi bundle plugin at path, returns nil on failure

@@ -189,6 +189,11 @@ void PD_Document::setMailMergeField(const UT_String & key,
 	m_mailMergeMap.set ( key, ptrvalue ) ;
 }
 
+void PD_Document::clearMailMergeMap()
+{
+	m_mailMergeMap.clear();
+}
+
 void PD_Document::setMarginChangeOnly(bool b)
 {
 	m_bMarginChangeOnly = b;

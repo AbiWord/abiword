@@ -156,18 +156,22 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 		return;
 	}
 
+	bool bNewConfiguration = true;
+
 	NSString * SummaryID = [frame getToolbarSummaryID];
 	if ([m_SummaryID isEqualToString:SummaryID])
 	{
 		XAP_CocoaFrameImpl::setToolbarRect(m_bounds);
-		return;
+		bNewConfiguration = false;
 	}
+	if (bNewConfiguration)
+	{
+		[self removeAllToolbars];
 
-	[self removeAllToolbars];
-
-	[m_SummaryID release];
-	m_SummaryID = SummaryID;
-	[m_SummaryID retain];
+		[m_SummaryID release];
+		m_SummaryID = SummaryID;
+		[m_SummaryID retain];
+	}
 
 	NSArray * toolbars = [frame getToolbars];
 
@@ -183,6 +187,25 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 	for (unsigned i = 0; i < count; i++)
 	{
 		NSView * view = [toolbars objectAtIndex:i];
+
+		if (!bNewConfiguration)
+		{
+			/* A different frame is being used but with the same configuration of toolbars, so
+			 * don't create new windows, just replace the views...
+			 */
+			NSWindowController * controller = (NSWindowController *) [m_windows objectAtIndex:i];
+			NSWindow * window = [controller window];
+			NSView * contentView = [window contentView];
+			NSArray * subviews = [contentView subviews];
+			while ([subviews count])
+			{
+				NSView * subview = (NSView *) [subviews objectAtIndex:0];
+				[subview removeFromSuperview];
+			}
+			[contentView addSubview:view];
+			[window orderFront:self];
+			continue;
+		}
 
 		NSRect frame = [view frame];
 
@@ -217,12 +240,15 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 
 		[[window contentView] addSubview:view];
 	}
-	visibleFrame.origin.y = visibleFrame.origin.y + visibleFrame.size.height - offset_y;
-	visibleFrame.size.height = offset_y;
+	if (bNewConfiguration)
+	{
+		visibleFrame.origin.y = visibleFrame.origin.y + visibleFrame.size.height - offset_y;
+		visibleFrame.size.height = offset_y;
 
-	m_bounds = visibleFrame;
+		m_bounds = visibleFrame;
 
-	XAP_CocoaFrameImpl::setToolbarRect(m_bounds);
+		XAP_CocoaFrameImpl::setToolbarRect(m_bounds);
+	}
 }
 
 - (float)height
@@ -245,14 +271,17 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 - (void)showToolbarNotification:(NSNotification*)notif
 {
 	UT_DEBUGMSG(("received showToolbarNotification:\n"));
-	XAP_CocoaFrameController* frame = [notif object];
+	XAP_CocoaFrameController * frame = [notif object];
 	
-	if (frame == m_current) {
+	if (frame == m_current)
+	{
 		UT_DEBUGMSG(("already shown\n"));
 		return;
 	}
 	m_current = frame;
 
+	[self _showAllToolbars:frame];
+#if 0
 	unsigned count = [m_windows count];
 	if (!count)
 		return;
@@ -262,6 +291,7 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 		NSWindowController * controller = (NSWindowController *) [m_windows objectAtIndex:i];
 		[[controller window] orderFront:self];
 	}
+#endif
 }
 
 - (void)hideToolbarNotification:(NSNotification*)notif
@@ -280,7 +310,7 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 	for (unsigned i = 0; i < count; i++)
 	{
 		NSWindowController * controller = (NSWindowController *) [m_windows objectAtIndex:i];
-		[[controller window] orderFront:self];
+		[[controller window] orderOut:self];
 	}
 }
 

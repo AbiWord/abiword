@@ -596,6 +596,11 @@ public:
 		if (!fp)
 			return UT_ERROR;
 
+		UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
+		m_headers.clear();
+		UT_VECTOR_PURGEALL(UT_UTF8String *, m_items);
+		m_items.clear();
+
 		// line 1 == Headings/titles
 		// line 2..n == Data
 
@@ -632,6 +637,9 @@ public:
 		FILE * fp = fopen(szFilename, "rb");
 		if (!fp)
 			return UT_ERROR;
+
+		UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
+		m_headers.clear();
 
 		// line 1 == Headings/titles
 		// line 2..n == Data

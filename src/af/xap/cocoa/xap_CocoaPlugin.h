@@ -27,6 +27,27 @@
 @class XAP_CocoaPlugin;
 @class XAP_CocoaPluginImpl;
 
+/* Please bear in mind that documents can be closed, so don't keep references to documents
+ * lying around for future use.
+ */
+@protocol XAP_CocoaPlugin_Document
+- (BOOL)documentStillExists;
+
+- (NSString *)title;
+
+/* Mail Merge interface
+ */
+- (NSString *)documentMailMergeSource; // may return nil
+- (void)setDocumentMailMergeSource:(NSString *)path;
+
+- (NSArray *)documentMailMergeFields;
+- (void)setDocumentMailMergeFields:(NSArray *)field_array;
+
+/* value_dictionary maps (NSString *) keys [field names] to (NSString *) values.
+ */
+- (void)setDocumentMailMergeValues:(NSDictionary *)value_dictionary;
+@end
+
 @protocol XAP_CocoaPluginDelegate
 
 /* This will be called immediately after initialization;
@@ -45,6 +66,11 @@
  * "Cancel" to an alert about an unsaved document.
  */
 - (BOOL)pluginCanDeactivate;
+
+/* AbiWord will call this if the focus changes to a different document, or different window
+ * or panel, or if the current document is closed.
+ */
+- (void)pluginCurrentDocumentHasChanged;
 
 - (NSString *)pluginName;
 - (NSString *)pluginAuthor;
@@ -75,6 +101,18 @@
 - (void)appendMenuItem:(NSMenuItem *)menuItem;
 - (void)removeMenuItem:(NSMenuItem *)menuItem;
 
+/* Please bear in mind that documents can be closed, so don't keep references to documents
+ * lying around for future use.
+ */
+- (id <NSObject, XAP_CocoaPlugin_Document>)currentDocument; // may return nil;
+- (NSArray *)documents;                                     // array of id <XAP_CocoaPlugin_Document>
+
+- (NSString *)selectMailMergeSource; // may return nil
+
+/* Returns an NSMutableArray whose objects are NSMutableArray of NSString, the first row holding the
+ * field names, the rest being records; returns nil on failure.
+ */
+- (NSMutableArray *)importMailMergeSource:(NSString *)path;
 @end
 
 #endif /* XAP_COCOAPLUGIN_H */
