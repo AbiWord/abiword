@@ -2145,6 +2145,10 @@ void fl_BlockLayout::format()
 				pRun->recalcWidth();
 				xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
 			}
+			if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				pRun->lookupProperties();
+			}
 			pRun = pRun->getNextRun();
 		}
 
