@@ -91,7 +91,7 @@ public:
 	virtual void        markAllRunsDirty(void) =0;
 	virtual void        collapse(void) = 0;
 	virtual void		redrawUpdate(void) = 0;
-	virtual void        setNeedsReformat(void) = 0;
+	virtual void        setNeedsReformat(UT_uint32 offset = 0) = 0;
 	virtual void        setNeedsRedraw(void) = 0;
 	virtual bool        isCollapsed(void) const = 0;
 	virtual bool        needsReformat(void) const = 0;

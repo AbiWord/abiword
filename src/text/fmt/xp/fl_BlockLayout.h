@@ -364,9 +364,9 @@ public:
 	virtual bool			isCollapsed(void) const
 		{return m_bIsCollapsed;}
 	void					coalesceRuns(void);
-	virtual void			setNeedsReformat(void); 
+	virtual void			setNeedsReformat(UT_uint32 offset = 0); 
 	inline bool 		    needsReformat(void) const 
-		{ return m_bNeedsReformat; }
+		{ return (m_iNeedsReformat >= 0); }
 	virtual void			setNeedsRedraw(void);
 	virtual bool 		    needsRedraw(void) const 
 		{ return m_bNeedsRedraw; }
@@ -446,7 +446,9 @@ protected:
 	inline void 			_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);
 	inline void 			_prependBlockToPrevList( fl_BlockLayout * nextBlockInList);
 
-	bool					m_bNeedsReformat;
+	UT_sint32 				m_iNeedsReformat; // will store offset
+											  // from which reformat
+											  // is need, -1 if not
 	bool					m_bNeedsRedraw;
 	bool					m_bFixCharWidths;
 	bool								 m_bCursorErased;

@@ -147,7 +147,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   PT_AttrPropIndex indexAP, bool bIsHdrFtr)
 	: fl_ContainerLayout(pSectionLayout,sdh,indexAP,PTX_Block,FL_CONTAINER_BLOCK),
 	  m_uBackgroundCheckReasons(0),
-	  m_bNeedsReformat(true),
+	  m_iNeedsReformat(0),
 	  m_bNeedsRedraw(false),
 	  m_bFixCharWidths(false),
 	  m_bCursorErased(false),
@@ -1330,6 +1330,7 @@ void fl_BlockLayout::format()
 #endif
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = NULL;
+
 	// Remember state of cursor
 	m_bCursorErased = false;
 
@@ -1358,6 +1359,19 @@ void fl_BlockLayout::format()
 
 	if (m_pFirstRun)
 	{
+		if(m_iNeedsReformat > 0)
+		{
+			// only a part of this block need reformat, find the run that
+			// contains this offset
+			fp_Run * pR = m_pFirstRun;
+			while(pR && (pR->getBlockOffset() + pR->getLength()) <= (UT_uint32)m_iNeedsReformat)
+				pR = pR->getNext();
+
+			UT_ASSERT( pR );
+			pRunToStartAt = pR;
+		}
+	
+
 		// Recalculate widths of Runs if necessary.
 		m_bFixCharWidths = true; // Kludge from sevior to fix layout bugs
 		if (m_bFixCharWidths)
@@ -1424,7 +1438,7 @@ void fl_BlockLayout::format()
 	}
 
 	// Paragraph has been reformatted.
-	m_bNeedsReformat = false;
+	m_iNeedsReformat = -1;
 	// Redraw cursor if necessary
 	if (m_bCursorErased == true)
 	{
@@ -1582,9 +1596,11 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 	return (fp_Container *) pLine;
 }
 
-void fl_BlockLayout::setNeedsReformat(void)
+void fl_BlockLayout::setNeedsReformat(UT_uint32 offset)
 {
-	m_bNeedsReformat = true;
+	if((UT_sint32)offset > m_iNeedsReformat)
+		m_iNeedsReformat = offset;
+	
 	getSectionLayout()->setNeedsReformat();
 }
 
@@ -3453,7 +3469,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
 	}
 
-	setNeedsReformat();
+	setNeedsReformat(iNormalBase);
 
 	m_pSquiggles->textInserted(blockOffset, len);
 
@@ -3686,7 +3702,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	}
 
 	_assertRunListIntegrity();
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 
 	return true;
 }
@@ -3791,7 +3807,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		pRun = pRun->getNext();
 	}
 
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 
 	_assertRunListIntegrity();
 
@@ -3985,7 +4001,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 // Now fix up the previous block. Calling this format fixes bug 2702
 //
 		pPrevBL->format();
-		pPrevBL->setNeedsReformat();
+		pPrevBL->setNeedsReformat(); // why when we just formatted it?
 		// This call will dequeue the block from background checking
 		// if necessary
 		m_pSquiggles->join(offset, pPrevBL);
@@ -4517,7 +4533,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pOldSL->remove(pBL);
 		pSL->add(pBL);
 		pBL->setSectionLayout( pSL);
-		pBL->m_bNeedsReformat = true;
+		pBL->m_iNeedsReformat = 0;
 		pBL = pNext;
 	}
 
@@ -4804,7 +4820,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		return false;
 	}
 
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -4873,7 +4889,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		return false;
 	}
 
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -4898,6 +4914,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	_assertRunListIntegrity();
 
 	FV_View* pView = getView();
+	PT_BlockOffset blockOffset = 0;
 	switch (pcroc->getObjectType())
 	{
 	case PTO_Bookmark:
@@ -4906,7 +4923,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	case PTO_Image:
 	{
 		UT_DEBUGMSG(("Edit:ChangeObject:Image:\n"));
-		PT_BlockOffset blockOffset = pcroc->getBlockOffset();
+		blockOffset = pcroc->getBlockOffset();
 		fp_Run* pRun = m_pFirstRun;
 		while (pRun)
 		{
@@ -4943,7 +4960,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	case PTO_Field:
 	{
 		UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));
-		PT_BlockOffset blockOffset = pcroc->getBlockOffset();
+		blockOffset = pcroc->getBlockOffset();
 		fp_Run* pRun = m_pFirstRun;
 		while (pRun)
 		{
@@ -4984,7 +5001,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	}
 
  done:
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_drawInsertionPoint();
@@ -5508,8 +5525,9 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	UT_ASSERT(pNewRun);
 	_doInsertRun(pNewRun);
 
-	// TODO is it necessary to force a reformat when inserting a FmtMark
-	setNeedsReformat();
+	// TODO is it necessary to force a reformat when inserting a
+	// FmtMark -- no fmt mark has no width, so it cannot change layout
+	// setNeedsReformat();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -5523,7 +5541,7 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	}
 
 	_assertRunListIntegrity();
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 	return true;
 }
 
@@ -5540,7 +5558,7 @@ fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	_deleteFmtMark(blockOffset);
 
 	// TODO is it necessary to force a reformat when deleting a FmtMark
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 
 	FV_View* pView = getView();
 	PT_DocPosition posEOD =0;
@@ -5654,7 +5672,7 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 
 	// We need a reformat for blocks that only contain a format mark.
 	// ie. no next just a carrige return.
-	setNeedsReformat();
+	setNeedsReformat(blockOffset);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))

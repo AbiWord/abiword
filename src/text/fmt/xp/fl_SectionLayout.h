@@ -103,7 +103,7 @@ public:
 	virtual void                markAllRunsDirty(void) =0;
 	virtual bool                isCollapsed(void) const
 		{return m_bIsCollapsed;}
-	virtual void                setNeedsReformat(void);
+	virtual void                setNeedsReformat(UT_uint32 offset = 0);
 	virtual void                setNeedsRedraw(void);
 	virtual bool                needsReformat(void) const
 		{return m_bNeedsReformat;}

@@ -130,7 +130,7 @@ void fl_SectionLayout::_purgeLayout()
 	return;
 }
 
-void fl_SectionLayout::setNeedsReformat(void)
+void fl_SectionLayout::setNeedsReformat(UT_uint32 /*offset*/)
 {
 	m_bNeedsReformat = true;
 	if(myContainingLayout() != NULL && static_cast<fl_SectionLayout *>(myContainingLayout()) != this)
