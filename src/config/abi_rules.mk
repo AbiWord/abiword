@@ -210,7 +210,7 @@ ifeq ($(OS_NAME), MINGW32)
 	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 else
 	$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) \
-	-implib:$(LIBRARY)	\
+	-implib:$(shell echo $(LIBRARY) | $(TRANSFORM_TO_DOS_PATH) )	\
 	$(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH) ) \
 	$(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
 endif

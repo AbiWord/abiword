@@ -314,10 +314,11 @@ NSIS_ROOT ?= "/Program Files/NSIS"
 #EXPAT_PLATFORM_DEFS=CC=cl.exe CONFIG_SHELL=sh.exe CFLAGS='$(OS_CFLAGS)' 
 
 # require'd library settings
-ABI_ZLIB_ROOT = $(ABI_ROOT)/../libs/zlib
+ABI_ZLIB_ROOT = $(ABI_XX_ROOT)/../libs/zlib
+#OS_LIBS += -L$(ABI_ZLIB_ROOT)/lib
 ABI_ZLIB_INC = $(ABI_ZLIB_ROOT)/include
-ABI_ZLIB_LIB = $(ABI_ZLIB_ROOT)/lib/zdll
-ABI_LIBS += $(ABI_ZLIB_LIB)
+ABI_ZLIB_LIB = $(ABI_ZLIB_ROOT)/lib/zdll.lib
+ABI_LIBS += $(ABI_ZLIB_ROOT)/lib/zdll
 
 # TODO: support fribidi as DLL or statically compiled in
 CFLAGS += -DFRIBIDI_EXPORTS	# symbols match
