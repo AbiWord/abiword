@@ -61,7 +61,7 @@ public:
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 	void							setLanguageProperty(const XML_Char * pLangProp);
-	bool							getLangProperty(const XML_Char ** pszLangProp) const;
+	bool							getChangedLangProperty(const XML_Char ** pszLangProp) const;
 
 	bool                            isMakeDocumentDefault() const {return m_bDocDefault;}
 	void                            setMakeDocumentDefault(bool b) {m_bDocDefault = b;}

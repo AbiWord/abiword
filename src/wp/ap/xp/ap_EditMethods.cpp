@@ -6734,7 +6734,7 @@ UT_return_val_if_fail(pDialog, false);
 		const XML_Char * props_out[3];
 		const XML_Char * s = NULL;
 
-		bool bChange = pDialog->getLangProperty(&s);
+		bool bChange = pDialog->getChangedLangProperty(&s);
 		
 		if (s)
 		{

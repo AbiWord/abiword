@@ -136,7 +136,7 @@ XAP_Dialog_Language::tAnswer XAP_Dialog_Language::getAnswer(void) const
 	return m_answer;
 }
 
-bool XAP_Dialog_Language::getLangProperty(const XML_Char ** pszLangProp) const
+bool XAP_Dialog_Language::getChangedLangProperty(const XML_Char ** pszLangProp) const
 {
 	UT_return_val_if_fail(pszLangProp,false);
 	*pszLangProp = m_pLangProperty;
