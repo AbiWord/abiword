@@ -40,9 +40,9 @@
 %endif
 
 %if %{enable_tools}
-%define plugin_tools --enable-abicommand --enable-abigimp --enable-aiksaurus --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots}
+%define plugin_tools --enable-abicommand --enable-abigimp --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots} %{?_with_aiksaurus:--enable-aiksaurus} %{!?_with_aiksaurus:--disable-aiksaurus}
 %else
-%define plugin_tools --disable-abicommand --disable-abigimp --disable-aiksaurus --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell --disable-ots
+%define plugin_tools --disable-abicommand --disable-abigimp --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell --disable-ots --disable-aiksaurus
 %endif
 
 %if %{enable_impexp}
@@ -134,6 +134,8 @@ Perl Module containing classes for AbiWord Scripting.
 Summary: Various tools that can be used to extend AbiWord's capabilities.
 Group: Applications/Productivity
 Requires: abiword
+%{?_with_aiksaurus:Requires: aiksaurus,aiksaurus-gtk}
+%{?_with_aiksaurus:BuildRequires: aiksaurus,aiksaurus-gtk}
 %{?_with_ots:Requires: ots}
 %{?_with_ots:BuildRequires: ots-devel}
 
@@ -146,7 +148,7 @@ This is a set of plugins for AbiWord.  It includes
   wikipedia: Access the Wikipedia reference from AbiWord.
     urldict: Cross-platform url dictionary plugin.
       gdict: Use the gnome dictionary application from within AbiWord.
-  aiksaurus: Use the Aiksaurus thesaurus in AbiWord.
+%{?_with_aiksaurus:  aiksaurus: Use the Aiksaurus thesaurus in AbiWord.}
   babelfish: Translate text online using Babelfish.
 ScriptHappy: Run other programs in a shell and direct the output to AbiWord.
 %{?_with_ots:        Ots: Summarize documents}
@@ -283,7 +285,7 @@ cd ../abi
 %defattr(644,root,root,755)
 # comment if not working
 %{_libdir}/%{AbiWord}/plugins/libAbiCommand.so
-#%{_libdir}/%{AbiWord}/plugins/libAbiAikSaurus.so
+%{?_with_aiksaurus:%{_libdir}/%{AbiWord}/plugins/libAbiAikSaurus.so}
 %{_libdir}/%{AbiWord}/plugins/libAbiBabelfish.so
 %{_libdir}/%{AbiWord}/plugins/libAbiFreeTranslation.so
 %{_libdir}/%{AbiWord}/plugins/libAbiGdict.so
