@@ -19,7 +19,7 @@
 
 #include "gr_UnixImage.h"
 
-GR_UnixImage::GR_UnixImage(const char* pszName)
+GR_UnixImage::GR_UnixImage(const char* szName)
 {
 	if (szName)
 	{
@@ -45,13 +45,24 @@ UT_sint32	GR_UnixImage::getHeight(void) const
 	return 0; // TODO
 }
 
-void		GR_UnixImage::getByteBuf(UT_ByteBuf** ppBB) const
+UT_Bool		GR_UnixImage::getByteBuf(UT_ByteBuf** ppBB) const
 {
 	// TODO convert to PNG and copy to the byte buf
+
+	return UT_FALSE;
+}
+
+UT_Bool	GR_UnixImage::convertFromPNG(const UT_ByteBuf* pBB)
+{
+	// TODO convert the PNG in the bytebuf to a GdkImage
+	
+	return UT_FALSE;
 }
 
 GR_Image* GR_UnixImageFactory::createNewImage(const char* pszName)
 {
 	return new GR_UnixImage(pszName);
 }
+
+
 

@@ -31,7 +31,8 @@ public:
 
 	virtual UT_sint32	getWidth(void) const;
 	virtual UT_sint32	getHeight(void) const;
-	virtual void		getByteBuf(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		getByteBuf(UT_ByteBuf** ppBB) const;
+	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB);
 	
 protected:
 
