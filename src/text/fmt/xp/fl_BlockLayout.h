@@ -193,9 +193,7 @@ public:
 
 	virtual void		redrawUpdate();
 	virtual void        updateLayout(void) {}
-	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL)
-		{ return getNewContainerLocal();}
-	fp_Container*	getNewContainerLocal(void);
+	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
 	FV_View *		getView(void) const { return m_pLayout->getView(); }
 
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
@@ -391,8 +389,6 @@ public:
 	void					__dump(FILE * fp) const;
 #endif
 
-	void                insertFirstLineIntoVerticalContainer();
-	
 protected:
 
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);

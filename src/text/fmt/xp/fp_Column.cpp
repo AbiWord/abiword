@@ -1085,6 +1085,7 @@ void fp_Column::layout(void)
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 {
 	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_DOC ||
+			  getSectionLayout()->getType() == FL_SECTION_HDRFTR ||
 			  getSectionLayout()->getType() == FL_SECTION_ENDNOTE);
 
 	return (fl_DocSectionLayout*) getSectionLayout();

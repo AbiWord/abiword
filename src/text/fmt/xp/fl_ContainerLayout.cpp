@@ -267,10 +267,6 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 				if (getFirstLayout()) getFirstLayout()->setPrev(pL); 
 			}
 		}
-		
-		fl_BlockLayout *pBL = (fl_BlockLayout*)pL;
-		pBL->insertFirstLineIntoVerticalContainer();
-		
 	}
 	if(iType == FL_CONTAINER_TABLE)
 	{

@@ -922,14 +922,11 @@ void fl_DocSectionLayout::updateLayout(void)
 
 		if(!bHidden)
 		{
-			if (pBL->getContainerType()== FL_CONTAINER_BLOCK && pBL->needsReformat())
-			{
+			if (pBL->needsReformat())
 				pBL->format();
-			}
-			else
-			{
+
+			if (pBL->getContainerType() != FL_CONTAINER_BLOCK)
 				pBL->updateLayout();
-			}
 		}
 
 		pBL = pBL->getNext();

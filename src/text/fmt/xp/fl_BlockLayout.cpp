@@ -1521,7 +1521,7 @@ void fl_BlockLayout::redrawUpdate()
 	}
 }
 
-fp_Container* fl_BlockLayout::getNewContainerLocal(void)
+fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 {
 	fp_Line* pLine = new fp_Line(getSectionLayout());
 	// TODO: Handle out-of-memory
@@ -1570,14 +1570,6 @@ fp_Container* fl_BlockLayout::getNewContainerLocal(void)
 		else if (getNext() && getNext()->getFirstContainer())
 		{
 			pContainer = (fp_VerticalContainer *) getNext()->getFirstContainer()->getContainer();
-		}
-		else if(!getPrev() && !getNext())
-		{
-			// this block is not linked into the block list, probably
-			// it has just been created and _insertEndOfParagraphRun()
-			// is trying to do its job -- we must not insert the new
-			// line into any vertical container
-			return (fp_Container *) pLine;
 		}
 		else if (m_pSectionLayout->getFirstContainer())
 		{
@@ -4402,6 +4394,9 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 		if(pszNewID)
 		{
+		  // plam mystery code
+		  UT_DEBUGMSG(("new id: tell plam if you see this message\n"));
+		  UT_ASSERT(0);
 			fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszNewID);
 			UT_ASSERT(pDocSL);
 //
@@ -7118,43 +7113,3 @@ fl_BlockLayout::debugFlashing(void)
 	pView->_drawInsertionPoint();
 #endif
 }
-
-void fl_BlockLayout::insertFirstLineIntoVerticalContainer()
-{
-	fp_VerticalContainer* pContainer = NULL;
-	fp_Line* pPrevLine = NULL;
-
-	fp_Line* pFirstLine = (fp_Line *) getFirstContainer();
-	fp_Line* pLastLine = (fp_Line *) getLastContainer();
-
-	UT_ASSERT( pFirstLine && pLastLine );
-	UT_ASSERT( pFirstLine == pLastLine );
-
-	if (getPrev() && getPrev()->getLastContainer())
-	{
-		pPrevLine = (fp_Line *) getPrev()->getLastContainer();
-		pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
-	}
-	else if (getNext() && getNext()->getFirstContainer())
-	{
-		pContainer = (fp_VerticalContainer *) getNext()->getFirstContainer()->getContainer();
-	}
-	else if (m_pSectionLayout->getFirstContainer())
-	{
-		// TODO assert something here about what's in that container
-		pContainer = (fp_VerticalContainer *) m_pSectionLayout->getFirstContainer();
-	}
-	else
-	{
-		pContainer = (fp_VerticalContainer *) m_pSectionLayout->getNewContainer();
-		UT_ASSERT(pContainer->getWidth() >0);
-	}
-
-	UT_ASSERT( pContainer );
-
-	if (!pPrevLine)
-		pContainer->insertContainer((fp_Container *) pFirstLine);
-	else
-		pContainer->insertContainerAfter((fp_Container *)pFirstLine, (fp_Container *) pPrevLine);
-}
-

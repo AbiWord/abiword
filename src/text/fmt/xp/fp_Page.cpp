@@ -1065,7 +1065,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 				if(p == NULL || !p->getFirstContainer())
 					continue;
 
-				if ((x >= m_pHeader->getX())
+				if ((x >= p->getX())
 					&& (x < (p->getX() + p->getWidth()))
 					&& (y >= p->getY())
 					&& (y < (p->getY() + p->getHeight())))
