@@ -34,8 +34,6 @@
 EV_CocoaMouse::EV_CocoaMouse(EV_EditEventMapper * pEEM)
 	: EV_Mouse(pEEM)
 {
-	m_clickState = 0;					// no click
-	m_contextState = 0;
 }
 
 void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e, NSView* hitView)

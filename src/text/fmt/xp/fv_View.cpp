@@ -28,6 +28,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
+#include "ev_Mouse.h"
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -682,6 +683,16 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 void FV_View::deleteFrame(void)
 {
 	m_FrameEdit.deleteFrame();
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if(pFrame)
+	{
+		EV_Mouse * pMouse = pFrame->getMouse();
+		if(pMouse)
+		{
+			pMouse->clearMouseContext();
+		}
+	}
+	m_prevMouseContext = EV_EMC_TEXT;
 	setCursorToContext();
 }
 

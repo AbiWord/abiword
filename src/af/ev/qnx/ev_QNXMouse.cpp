@@ -37,8 +37,6 @@
 EV_QNXMouse::EV_QNXMouse(EV_EditEventMapper * pEEM)
 	: EV_Mouse(pEEM)
 {
-	m_clickState = 0;					// no click
-	m_contextState = 0;
 }
 
 void EV_QNXMouse::mouseUp(AV_View* pView, PtCallbackInfo_t * e)
