@@ -30,11 +30,11 @@ GR_UnixImage::GR_UnixImage(const char* szName)
 	
 	if (szName)
 	{
-		strcpy(m_szName, szName);
+		m_szName = szName;
 	}
 	else
 	{
-		strcpy(m_szName, "UnixImage");
+		m_szName = "UnixImage";
 	}
 }
 

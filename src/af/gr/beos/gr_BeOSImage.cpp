@@ -35,10 +35,10 @@ GR_BeOSImage::GR_BeOSImage(const char* szName)
 	m_image = NULL;
 	
 	if (szName) {
-		strcpy(m_szName, szName);
+	  m_szName = szName;
 	}
 	else {
-		strcpy(m_szName, "BeOSImage");
+	  m_szName = "BeOSImage";
 	}
 }
 

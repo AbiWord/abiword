@@ -30,11 +30,11 @@ PS_Image::PS_Image(const char* szName)
 	
 	if (szName)
 	{
-		strcpy(m_szName, szName);
+	  m_szName = szName;
 	}
 	else
 	{
-		strcpy(m_szName, "PostScriptImage");
+	  m_szName = "PostScriptImage";
 	}
 }
 

@@ -208,12 +208,12 @@ clean_LIBPNG_:
 	fi
 
 clean_PSICONV_:
-	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
+	@if [ -d $(ABI_ROOT)/../psiconv ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../psiconv clean;	\
 	fi
 
 clean_EXPAT_:
-	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
+	@if [ -d $(ABI_ROOT)/../expat ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../expat clean;	\
 	fi
 

@@ -21,8 +21,7 @@
 #define GR_IMAGE_H
 
 #include "ut_types.h"
-
-#define	GR_IMAGE_MAX_NAME_LEN	63
+#include "ut_string_class.h"
 
 class GR_Graphics;
 class UT_ByteBuf;
@@ -58,7 +57,7 @@ public:
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return false; }
 
 protected:
-   	char			m_szName[GR_IMAGE_MAX_NAME_LEN+1];
+   	UT_String		m_szName;
 	UT_sint32		m_iLayoutWidth;
 	UT_sint32		m_iLayoutHeight;
 	UT_sint32			m_iDisplayWidth;

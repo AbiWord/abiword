@@ -80,11 +80,11 @@ GR_VectorImage::GR_VectorImage(const char* szName)
 {
    if (szName)
      {
-	strcpy(m_szName, szName);
+	m_szName = szName;
      }
    else
      {
-	strcpy(m_szName, "VectorImage");
+	m_szName = "VectorImage";
      }
 }
 

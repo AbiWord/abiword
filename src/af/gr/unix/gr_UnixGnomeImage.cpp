@@ -29,13 +29,13 @@
 GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName) 
 	: m_image(NULL)
 {
-	if (szName)
+  if (szName)
     {
-		strcpy(m_szName, szName);
+      m_szName = szName;
     }
-	else
+  else
     {
-		strcpy(m_szName, "UnixGnomeImage");
+      m_szName = "UnixGnomeImage";
     }
 }
 

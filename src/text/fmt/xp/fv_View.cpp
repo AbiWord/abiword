@@ -7545,7 +7545,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	/*
 	  First, find a unique name for the data item.
 	*/
-	char szName[GR_IMAGE_MAX_NAME_LEN + 10 + 1];
+	char *szName = new char [strlen (pszName) + 64 + 1];
 	UT_uint32 ndx = 0;
 	for (;;)
 	{
@@ -7570,6 +7570,8 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
+
+	delete [] szName;
 
 	return errorCode;
 }

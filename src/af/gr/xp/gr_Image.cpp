@@ -25,12 +25,9 @@
 #include "ut_assert.h"
 
 GR_Image::GR_Image()
+  : m_szName(""), m_iLayoutWidth(0), m_iLayoutHeight(0),
+    m_iDisplayWidth(0), m_iDisplayHeight(0)
 {
-	m_szName[0] = 0;
-	m_iLayoutWidth = 0;
-	m_iLayoutHeight = 0;
-	m_iDisplayWidth = 0;
-	m_iDisplayHeight = 0;
 }
 
 GR_Image::~GR_Image()
@@ -41,7 +38,7 @@ void GR_Image::getName(char* p) const
 {
 	UT_ASSERT(p);
 	
-	strcpy(p, m_szName);
+	strcpy(p, m_szName.c_str());
 }
 
 GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)

@@ -44,11 +44,11 @@ GR_Win32Image::GR_Win32Image(const char* szName)
 {
 	if (szName)
 	{
-		strcpy(m_szName, szName);
+	  m_szName = szName;
 	}
 	else
 	{
-		strcpy(m_szName, "Win32Image");
+	  m_szName = "Win32Image";
 	}
 }
 

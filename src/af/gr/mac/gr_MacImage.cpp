@@ -30,10 +30,10 @@ GR_MacImage::GR_MacImage(const char* szName)
 //	m_image = NULL;
 	
 	if (szName) {
-		strcpy(m_szName, szName);
+		m_szName = szName;
 	}
 	else {
-		strcpy(m_szName, "MacImage");
+		m_szName = "MacImage";
 	}
 }
 
