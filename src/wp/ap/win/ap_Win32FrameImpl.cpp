@@ -456,8 +456,6 @@ void AP_Win32FrameImpl::_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 	UT_return_if_fail(pFrame);
 	AP_FrameData *pFrameData = pFrame->getAPFrameData();
 	UT_return_if_fail(pFrameData);
-	
-	if (static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pViewMode == VIEW_PRINT)
 		
 
 	if (bRulerOn && pFrameData->m_pViewMode == VIEW_PRINT)
