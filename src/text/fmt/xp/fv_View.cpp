@@ -7922,11 +7922,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
-	if(pRun->containsRevisions())
-	{
-		m_prevMouseContext = EV_EMC_REVISION;
-		return EV_EMC_REVISION;
-	}
 
 	if(pRun->getHyperlink() != NULL)
 	{
@@ -7938,6 +7933,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_HYPERLINK;
 		return EV_EMC_HYPERLINK;
 	}
+
+
 	if(!isSelectionEmpty())
 	{
 		if(pRun->getType() == FPRUN_IMAGE)
@@ -7991,7 +7988,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			return EV_EMC_VISUALTEXTDRAG;
 		}
 	}
-	
+
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
@@ -8009,8 +8006,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			xxx_UT_DEBUGMSG(("pos selected \n"));
 		}
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (9) text pos %d \n",pos));
-		m_prevMouseContext = EV_EMC_TEXT;
-		return EV_EMC_TEXT;
+		goto handle_revisions;
 
 	case FPRUN_IMAGE:
 		{
@@ -8067,8 +8063,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_HYPERLINK:
 	case FPRUN_DIRECTIONMARKER:
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (10): %d\n", pRun->getType()));
-		m_prevMouseContext = EV_EMC_TEXT;
-		return EV_EMC_TEXT;
+		goto handle_revisions;
 
 	case FPRUN_FIELD:
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (11)\n"));
@@ -8082,6 +8077,23 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
+	// should  be last evaluated context, so that other context menus do not get overshadowed when
+	// document history is on; this code is only reached by jump from the above switch (we really
+	// need these values to be orable, so that menus can be combined)
+ handle_revisions:	
+	if(pRun->containsRevisions())
+	{
+		m_prevMouseContext = EV_EMC_REVISION;
+		return EV_EMC_REVISION;
+	}
+	else
+	{
+		m_prevMouseContext = EV_EMC_TEXT;
+		return EV_EMC_TEXT;
+	}
+	
+	
+	
 	/*NOTREACHED*/
 	UT_ASSERT(0);
 	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (13)\n"));
