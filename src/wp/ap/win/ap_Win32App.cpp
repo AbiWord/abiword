@@ -759,12 +759,16 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	if (!hinstRich)
 		hinstRich = LoadLibrary("riched20.dll");
 	UT_ASSERT(hinstRich);
+	
+	AP_Win32App * pMyWin32App;
 
+// We put this in a block to force the destruction of Args in the stack
+{	
 	// Load the command line into an XAP_Args class
 	XAP_Args Args = XAP_Args(szCmdLine);
 
 	// initialize our application.
-	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
+	pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
   
 	// Quick & Dirty command-line 
@@ -774,7 +778,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// so [0] is the first argument
 	int nFirstArg = 0;
 	int k;
- 
+ 			
 	for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
 			if ( (UT_stricmp(Args.m_argv[k],"-to") == 0) ||
@@ -820,7 +824,13 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 #endif
 
 	pMyWin32App->ParseCommandLine(iCmdShow);
-
+}
+//
+// This block is controlled by the Structured Exception Handle
+// if any crash happens here we will recover it and save the file (cross fingers)
+//	
+__try
+{				
 	if (bShowApp)
 	{
 		while( GetMessage(&msg, NULL, 0, 0) )
@@ -830,7 +840,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	      	if (pMyWin32App->handleModelessDialogMessage(&msg)) 
 				continue;
 	    	DispatchMessage(&msg);	
-
+	    	
 			// Check for idle condition
 			while( !UT_Win32Idle::_isEmpty() &&
                    !PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
@@ -844,9 +854,31 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// destroy the App.  It should take care of deleting all frames.
 	pMyWin32App->shutdown();
 	delete pMyWin32App;
+	
+}// end of thes block is controlled by the SEH 
+
+//
+// If an exception happens, with "catch" the block
+// and then the save it into disk
+//
+__except (1)
+{
+	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
+	
+	UT_ASSERT(pApp);
+	
+	UT_uint32 i = 0;
+	
+	for(;i<pApp->m_vecFrames.getItemCount();i++)
+	{
+		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
+		UT_ASSERT(curFrame);
+		
+		curFrame->backup(".CRASHED");
+	}	
+}// end of except
 
 	SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
-
 	return msg.wParam;
 }
 
