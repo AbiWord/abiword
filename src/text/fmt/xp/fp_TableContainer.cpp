@@ -948,7 +948,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	}
 	if(!bNested && pBroke && pBroke->getPage())
 	{
-		if(!pBroke->getPage()->isOnScreen())
+		if(pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pBroke->getPage()->isOnScreen())
 		{
 			return;
 		}
@@ -1034,6 +1034,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 //
 // Cell is above this page
 //
+			xxx_UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
 			return;
 		}
 		if(m_iTopY > pBroke->getYBottom() && !bNested)
@@ -1041,6 +1042,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 //
 // Cell is below this page
 //
+			xxx_UT_DEBUGMSG(("Don't drawlines because m_iTopY > pBroke->getYBottom \n",m_iTopY, pBroke->getYBottom()));
 			return;
 		}
 		iTop -= pBroke->getYBreak();
