@@ -1448,7 +1448,7 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 //
 // Done! Now fill it.
 //
-	posTableStart +=4;
+	posTableStart +=3;
 	PL_StruxDocHandle sdhTable = NULL;
 	PL_StruxDocHandle sdhCell = NULL;
 	bool b =m_pDoc->getStruxOfTypeFromPosition(posTableStart,PTX_SectionTable,&sdhTable);
@@ -1475,19 +1475,14 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 											bIgnoreSpaces);
 			if(((j < numCols-1) && (begPos > 0)) || ((j == numCols-1) && (endPos - pBL->getPosition(false)) >= pBuf->getLength()))
 			{
-				UT_UCS4String sWord4 = sWords.ucs4_str();
-				m_pDoc->insertSpan(posCell+1,sWord4.ucs4_str(),sWord4.length(),NULL);
+				copyToLocal(begPos, endPos);
+				_pasteFromLocalTo(posCell+1);
 				posStart = endPos+1;
 			}
 			else if((j==numCols-1) && (begPos > 0))
 			{
-				UT_uint32 offset = begPos - pBL->getPosition(false);
-				UT_UCS4String sWord4;
-				for(;offset<pBuf->getLength();offset++)
-				{
-					sWord4 += static_cast<UT_UCS4Char>(*pBuf->getPointer(offset));
-				}
-				m_pDoc->insertSpan(posCell+1,sWord4.ucs4_str(),sWord4.length(),NULL);
+				copyToLocal(begPos, endPos);
+				_pasteFromLocalTo(posCell+1);
 				posStart = endPos+1;
 				break;
 			}
@@ -1514,7 +1509,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	_setPoint(posTableStart+1);
+	_setPoint(posTableStart);
+
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 //

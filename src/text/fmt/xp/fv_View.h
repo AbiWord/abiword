@@ -199,6 +199,10 @@ public:
 	virtual void	cmdPaste(bool bHonorFormatting = true);
 	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos);
 
+	void            pasteFromLocalTo(PT_DocPosition pos);
+	void            _pasteFromLocalTo(PT_DocPosition pos);
+	void            copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2);
+
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
@@ -868,6 +872,7 @@ private:
 	FV_BIDI_Order       m_eBidiOrder;
 	UT_uint32           m_iFreePass;
 	bool                m_bDontNotifyListeners;
+	UT_ByteBuf *        m_pLocalBuf;
 };
 
 #endif /* FV_VIEW_H */

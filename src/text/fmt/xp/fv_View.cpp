@@ -33,7 +33,8 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
-
+#include "ie_imp_RTF.h"
+#include "ie_exp_RTF.h"
 #include "xav_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
@@ -216,7 +217,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bShowRevisions(true),
 		m_eBidiOrder(FV_Order_Visual),
 		m_iFreePass(0),
-		m_bDontNotifyListeners(false)
+		m_bDontNotifyListeners(false),
+		m_pLocalBuf(NULL)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -455,6 +457,7 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
+	DELETEP(m_pLocalBuf);
 }
 
 void FV_View::setGraphics(GR_Graphics * pG)
@@ -522,6 +525,62 @@ void FV_View::pasteVisualText(UT_sint32 x, UT_sint32 y)
 }
 
 
+//
+// Local copy stuff. This pastes from the local paste buffer into the document
+//
+void FV_View::_pasteFromLocalTo(PT_DocPosition pos)
+{
+	UT_return_if_fail(m_pLocalBuf);
+	PD_DocumentRange docRange(m_pDoc, pos,pos);
+	IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(m_pDoc);
+	const unsigned char * pData = static_cast<const unsigned char *>(m_pLocalBuf->getPointer(0));
+	UT_uint32 iLen = m_pLocalBuf->getLength();
+
+	pImpRTF->pasteFromBuffer(&docRange,pData,iLen);
+	delete pImpRTF;
+}
+
+void FV_View::pasteFromLocalTo(PT_DocPosition pos)
+{
+	UT_return_if_fail(m_pLocalBuf);
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+
+	_pasteFromLocalTo(pos);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	m_pDoc->endUserAtomicGlob();
+
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+	_generalUpdate();
+	_fixInsertionPointCoords();
+	if (isSelectionEmpty())
+	{
+		_ensureInsertionPointOnScreen();
+	}
+	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+}
+
+//
+// This copies a range into a local buffer.
+//
+void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
+{
+	DELETEP(m_pLocalBuf);
+	m_pLocalBuf = new UT_ByteBuf(1024);
+	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(m_pDoc);
+	PD_DocumentRange docRange(m_pDoc, pos1,pos2);
+
+	pExpRtf->copyToBuffer(&docRange,m_pLocalBuf);
+	delete pExpRtf;
+}
 
 FV_FrameEdit * FV_View::getFrameEdit(void)
 {
