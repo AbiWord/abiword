@@ -44,6 +44,8 @@ public:
 	XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_Win32App(void);
 
+	virtual const char * getDefaultEncoding () const;
+	
 	virtual bool							initialize(void);
 	virtual XAP_Frame *						newFrame(void) = 0;
 	virtual void							reallyExit(void);

@@ -38,6 +38,10 @@
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"
 #include "ut_string_class.h"
+#ifdef WIN32
+  #include "ut_Win32OS.h"
+#endif
+
 
 /*****************************************************************/
 /*****************************************************************/

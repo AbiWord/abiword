@@ -30,6 +30,7 @@
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
+#include "xap_Win32EncodingManager.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
@@ -432,4 +433,10 @@ void XAP_Win32App::_setBidiOS(void)
 	}
 
 	ReleaseDC(NULL,displayDC);
+}
+
+const char * XAP_Win32App::getDefaultEncoding () const
+{
+	XAP_EncodingManager * pEncodingManager = XAP_EncodingManager::get_instance();
+	return pEncodingManager->getNativeSystemEncodingName();
 }

@@ -441,7 +441,7 @@ void ie_Table::setCellRowCol(UT_sint32 row, UT_sint32 col)
 {
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop((void **) &pPT);
-	UT_return_val_if_fail(pPT,NULL);
+	UT_return_if_fail(pPT);
 	PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(pPT->getTableSDH(),row,col);
 	PT_AttrPropIndex api = m_pDoc->getAPIFromSDH(cellSDH);
 	pPT->setCellApi(api);
