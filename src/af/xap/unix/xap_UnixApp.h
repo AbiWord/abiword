@@ -24,6 +24,7 @@
 #include "xap_App.h"
 #include "xap_UnixDialogFactory.h"
 #include "xap_UnixToolbar_ControlFactory.h"
+#include "xap_UnixFontManager.h"
 class AP_Args;
 class AP_UnixToolbar_Icons;
 
@@ -55,7 +56,8 @@ protected:
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
-
+	AP_UnixFontManager *			m_fontManager;
+	
 	/* TODO put anything we need here.  for example, our
 	** TODO connection to the XServer.
 	*/

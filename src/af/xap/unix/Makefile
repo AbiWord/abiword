@@ -27,6 +27,8 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixDialog_FontChooser.cpp		\
 			xap_UnixDialog_MessageBox.cpp		\
 			xap_UnixDialog_Print.cpp		\
+			xap_UnixFont.cpp			\
+			xap_UnixFontManager.cpp			\
 			xap_UnixFrame.cpp			\
 			xap_UnixMain.cpp			\
 			xap_UnixToolbar_Icons.cpp

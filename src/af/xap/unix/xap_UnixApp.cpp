@@ -19,6 +19,13 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+
+#if DEBUG
+#include <stdio.h>
+#endif
+
+#include "ut_debugmsg.h"
+
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"
@@ -58,6 +65,38 @@ UT_Bool AP_UnixApp::initialize(void)
 	
 	AP_App::initialize();
 
+	// create a font manager for our app to use
+
+	m_fontManager = new AP_UnixFontManager();
+
+	// find all the fonts in the appropriate places
+	
+	m_fontManager->scavengeFonts();
+
+#ifdef DEBUG	
+	AP_UnixFont ** fonts = m_fontManager->getAllFonts();
+	UT_DEBUGMSG(("Found Fonts:"));
+	for (UT_uint32 i = 0; i < m_fontManager->getCount(); i++)
+	{
+		UT_DEBUGMSG(("\tName [%s] at [%s], metrics [%s]",
+					 fonts[i]->getName(), fonts[i]->getFontfile(),
+					 fonts[i]->getMetricfile()));
+
+// here's how to print out raw font data
+#if 0
+		printf("\n");
+		fonts[i]->openPFA();
+		char ch;
+		while ((ch = fonts[i]->getPFAChar()))
+			printf("%c", ch);
+		fonts[i]->closePFA();
+#endif
+	}
+	
+#endif
+
+	/*******************************/
+	
 	// load only one copy of the platform-specific icons.
 	
 	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();
