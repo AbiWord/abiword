@@ -300,6 +300,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 			delete (PP_PropertyType *)p->second();
 
 		delete p;
+
 		m_pProperties->set(szName, 
 				   (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 	}
@@ -653,11 +654,48 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 		}
 	}
 
+	// the following will remove all properties set to ""; this allows us
+	// to remove properties with the by setting them to ""
+	papNew->_clearEmptyProperties();
+	
 	return papNew;
 
 Failed:
 	DELETEP(papNew);
 	return NULL;
+}
+
+/*
+  This function will remove all properties that are set to ""
+*/
+void PP_AttrProp::_clearEmptyProperties()
+{
+	if(!m_pProperties)
+		return;
+
+	UT_StringPtrMap::UT_Cursor _hc1(m_pProperties);
+	void * pEntry;
+	
+	for ( pEntry  = (UT_Pair*) _hc1.first(); _hc1.is_valid(); pEntry = (UT_Pair*) _hc1.next() )
+	{
+		if (pEntry)
+		{
+			UT_Pair* p = (UT_Pair*) pEntry;
+
+			if(*((XML_Char *)p->first()) == 0)
+			{
+				
+				void* tmp = const_cast<void*> (p->first());
+				FREEP(tmp);
+				if (p->second())
+					delete (PP_PropertyType *)p->second();
+
+				delete p;
+
+				m_pProperties->remove(_hc1.key(),pEntry);
+			}
+		}
+	}
 }
 
 PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
