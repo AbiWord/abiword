@@ -204,6 +204,8 @@ protected:
 														   PT_DocPosition dpos,
 														   const XML_Char ** attributes,
 														   const XML_Char ** properties);
+	void					_chooseBaseIndexAPForTempSpan(pf_Frag * pf, PT_BlockOffset fragOffset,
+														  PT_AttrPropIndex * papi) const;
 	
 
 	PTState					m_pts;		/* are we loading or editing */

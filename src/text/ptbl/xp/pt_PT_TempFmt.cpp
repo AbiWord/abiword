@@ -98,17 +98,7 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	}
 	else
 	{
-		// we want to bases things off the attributes of the the
-		// text immediately to our left, if present.
-		if ((pf->getType() == pf_Frag::PFT_Text) && (fragOffset > 0))
-		{
-			indexOldAP = (static_cast<pf_Frag_Text *>(pf))->getIndexAP();
-		}
-		// TODO make this look-back cross a paragraph boundary...
-		else if (pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
-		{
-			indexOldAP = (static_cast<pf_Frag_Text *>(pf->getPrev()))->getIndexAP();
-		}
+		_chooseBaseIndexAPForTempSpan(pf,fragOffset,&indexOldAP);
 	}
 
 	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
@@ -164,3 +154,50 @@ UT_Bool pt_PieceTable::_haveTempSpanFmt(PT_DocPosition * pdpos, PT_AttrPropIndex
 	
 	return bResult;
 }
+
+void pt_PieceTable::_chooseBaseIndexAPForTempSpan(pf_Frag * pf, PT_BlockOffset fragOffset,
+												  PT_AttrPropIndex * papi) const
+{
+	// we want to bases things off the attributes of the the
+	// text immediately to our left, if present.
+
+	UT_ASSERT(papi);
+
+	*papi = 0;							// assume no formatting
+
+	// if we're in the middle of a fragment, we use its formatting.
+	
+	if ((pf->getType() == pf_Frag::PFT_Text) && (fragOffset > 0))
+	{
+		*papi = (static_cast<pf_Frag_Text *>(pf))->getIndexAP();
+		return;
+	}
+
+	// otherwise, we look to the left.
+	
+	pf_Frag * pfPrev = pf->getPrev();
+	if (!pfPrev)
+		return;
+
+	switch (pfPrev->getType())
+	{
+	default:
+		return;
+		
+	case pf_Frag::PFT_Text:				// text to the left, use its attr/prop
+		*papi = (static_cast<pf_Frag_Text *>(pfPrev))->getIndexAP();
+		return;
+		
+	case pf_Frag::PFT_Strux:			// strux to the left, see if it a block
+		{
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pfPrev);
+			if (pfs->getStruxType() == PTX_Block)
+			{
+				pf_Frag_Strux_Block * pfsBlock = static_cast<pf_Frag_Strux_Block *>(pfs);
+				*papi = pfsBlock->getPreferredSpanFmt();
+			}
+		}
+		return;
+	}
+}
+
