@@ -340,7 +340,7 @@ UT_printf_string_upper_bound (const char* format,
 }
 
 #if !defined (VA_COPY)
-#  if defined (__GNUC__) && defined (__PPC__) && (defined (_CALL_SYSV) || defined (_WIN32) || defined(WIN32)) || defined(__s390__)
+#  if defined (__GNUC__) && defined (__PPC__) && (defined (_CALL_SYSV) || defined (_WIN32) || defined(WIN32)) || defined(__s390__) || defined(__x86_64__)
 #  define VA_COPY(ap1, ap2)	  (*(ap1) = *(ap2))
 #  elif defined (VA_COPY_AS_ARRAY)
 #  define VA_COPY(ap1, ap2)	  memmove ((ap1), (ap2), sizeof (va_list))
