@@ -45,16 +45,27 @@ install:
 
 ########################################################################
 
-# Tgz target is provided by a common Unix makefile
+# Identify which targets the user has asked for
+DIST_DEPS = 
 
+# If tgz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tgz,$(ABI_DIST_TARGET)),)
+	DIST_DEPS += tgz
+endif
+
+# If qpkg is inside $ABI_DIST_TARGET
+ifneq ($(findstring qpkg,$(ABI_DIST_TARGET)),)
+	DIST_DEPS += qpkg
+endif
+
+
+# Tgz target is provided by a common Unix makefile
+UNIX_CAN_BUILD_DYNAMIC = $(QNX_CAN_BUILD_DYNAMIC)
+UNIX_CAN_BUILD_STATIC = $(QNX_CAN_BUILD_STATIC)
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 
-########################################################################
+include qpkg.mk
 
-# TODO : add tardist format here?
-
-########################################################################
-
-# This target should build all packages defined for this platform
-distribution: tgz
-
+# This target should build all packages 
+distribution: $(DIST_DEPS)
+	@echo "Finished building distributions"
