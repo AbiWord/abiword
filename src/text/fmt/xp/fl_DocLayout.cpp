@@ -463,7 +463,17 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		return NULL;
 	}
 
-
+	if(pBL->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
+	{
+	        fl_HdrFtrShadow * pShadow = ((fl_HdrFtrSectionLayout *) pBL->getSectionLayout())->getFirstShadow();
+		if(pShadow != NULL)
+	                pBL = pShadow->findMatchingBlock(pBL);
+		else
+		{
+		        UT_DEBUGMSG(("SEVIOR: No Shadow! But there should be ! \n"));
+		        UT_ASSERT(0);
+		}
+	}
 	return pBL;
 }
 

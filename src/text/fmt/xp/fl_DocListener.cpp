@@ -82,7 +82,8 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			{
 			        UT_DEBUGMSG(("In DocListner no LastLine in Previous Block Fixing this now \n"));
 			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				pBL->getPrev()->format();
+				if( pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR)
+				         pBL->getPrev()->format();
 				
 			}
 
@@ -94,8 +95,8 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			{
 			        UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
 				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				       if(pBL->getPrev()!= NULL)
-					        pBL->format();
+			        if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev()!= NULL)
+				        pBL->format();
 				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 
@@ -164,7 +165,6 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute((XML_Char*)"type", pszSectionType);
-			UT_DEBUGMSG(("SEVIOR: In doclistener populate section strux:, type= %s \n",pszSectionType)); 
 			if (
 				!pszSectionType
 				|| (0 == UT_stricmp(pszSectionType, "doc"))
@@ -271,8 +271,8 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			        UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
 			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				if(pBL->getPrev() != NULL)
-				           pBL->format();
+				if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev() != NULL)
+				         pBL->format();
 				
 		}
 
@@ -452,8 +452,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
 			
-			// Sevior code here
-			
 			PT_AttrPropIndex indexAP = pcr->getIndexAP();
 			const PP_AttrProp* pAP = NULL;
 			
@@ -463,7 +461,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute((XML_Char*)"type", pszSectionType);
-			UT_DEBUGMSG(("SEVIOR: In sectionlayout change_strux:, type= %s \n",pszSectionType)); 
+
 			//
 			// OK Sevior adds code to actually change a 
 			// sectionlayout to
@@ -472,11 +470,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			// Strategy: Collapse all the blocks in this section.
 			// create a header/footer sectionlayout ala populate_strux
 			// transfer the blocks in this sectionlayout to the
-			// new header/footer and format it
+			// new header/footer and format just the shadows
 			//
-			// Then do an update layout on the whole document.
-			// 
-			UT_DEBUGMSG(("SEVIOR: Current m_pCurrentSL = %d \n",m_pCurrentSL));
 			if(pszSectionType && UT_stricmp(pszSectionType,"header") == 0)
 			{
 			        //
@@ -522,7 +517,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				UT_ASSERT(pDocSL); 
 			        
 				// append a HdrFtrSectionLayout to this DocLayout
-				fl_HdrFtrSectionLayout* pFootSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+				fl_HdrFtrSectionLayout* pFootSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 				if (!pFootSL)
 				{
 					UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -541,8 +536,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			        bResult = UT_TRUE;
 			        goto finish_up;
 			}
-			// end sevior code here
-			
 
  			bResult = pSL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
@@ -739,7 +732,6 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			// section.  we also need to verify that there is a block immediately
 			// after this new section -- a section must be followed by a block
 			// because a section cannot contain content.
-		        UT_DEBUGMSG(("SEVIOR: Inserting section \n"));
 			
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();

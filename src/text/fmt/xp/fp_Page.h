@@ -81,7 +81,8 @@ public:
 	UT_Bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
 	UT_Bool				isEmpty(void) const;
-
+        fp_HdrFtrContainer*             getHeaderP(void) const { return m_pHeader;}
+        fp_HdrFtrContainer*             getFooterP(void) const { return m_pFooter;}
 	fp_HdrFtrContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
 	fp_HdrFtrContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
 	

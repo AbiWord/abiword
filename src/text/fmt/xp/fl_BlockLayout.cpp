@@ -730,6 +730,25 @@ void fl_BlockLayout::collapse(void)
 void fl_BlockLayout::purgeLayout(void)
 {
 	fp_Line* pLine = m_pFirstLine;
+ //         if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+//  	{
+//  	  // Sevior.
+//  	  // TODO. Investigate whether this causes a memory leak.
+//            // This delete appears to clash with the line delete from the shadows
+//            // Apparently the fact that both the first page shadow and this overall
+//  	  // hdrftrSection are attached to the same container causes conflicts.
+//  	  // Maybe we should implement a virtual header/footer container for the
+//  	  // overall hdrftrSectionLayout. Anyway right now doing this prsvents
+//  	  // a crash on closing windows.
+//  	  //
+//  	        while (m_pFirstRun)
+//  	        {
+//  		       fp_Run* pNext = m_pFirstRun->getNext();
+//  		       delete m_pFirstRun;
+//  		       m_pFirstRun = pNext;
+//  		}
+//  		return;
+//	}
 	while (pLine)
 	{
 		_removeLine(pLine);
@@ -914,6 +933,10 @@ void fl_BlockLayout::_insertFakeTextRun(void)
 	GR_Graphics* pG = m_pLayout->getGraphics();
 	m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
 	m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
+	if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+	{
+	        return;
+	}
 
 	if (!m_pFirstLine)
 		getNewLine();
@@ -1126,10 +1149,15 @@ void fl_BlockLayout::redrawUpdate()
 
 fp_Line* fl_BlockLayout::getNewLine(void)
 {
+        if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+	  {
+	    UT_ASSERT(0);
+	    return NULL;
+	  }
 	fp_Line* pLine = new fp_Line();
 	// TODO: Handle out-of-memory
 	UT_ASSERT(pLine);
-
+	
 	pLine->setBlock(this);
 	pLine->setNext(NULL);
 	
@@ -2561,13 +2589,17 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		  We special case the situation where we are inserting into
 		  a block which has nothing but the fake run.
 		*/
-
-		m_pFirstRun->getLine()->removeRun(m_pFirstRun);
+	  // Handle special case for headers/footers where a line may not be 
+	  // defined
+	        fp_Line * pLine = m_pFirstRun->getLine();
+		if(pLine)
+		        pLine->removeRun(m_pFirstRun);
 		delete m_pFirstRun;
 		m_pFirstRun = NULL;
 
 		m_pFirstRun = pNewRun;
-		m_pLastLine->addRun(pNewRun);
+		if(m_pLastLine)
+		       m_pLastLine->addRun(pNewRun);
 
 		return UT_TRUE;
 	}
@@ -2605,8 +2637,8 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			{
 				m_pFirstRun = pNewRun;
 			}
-
-			pRun->getLine()->insertRunBefore(pNewRun, pRun);
+			if(pRun->getLine())
+			        pRun->getLine()->insertRunBefore(pNewRun, pRun);
 		}
 		else
 		{
@@ -2644,8 +2676,8 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			pRun->setBlockOffset(iRunBlockOffset + len);
 
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
-
-			pRun->getLine()->insertRunBefore(pNewRun, pRun);
+			if(pRun->getLine())
+			         pRun->getLine()->insertRunBefore(pNewRun, pRun);
 			
 //			pOtherHalfOfSplitRun->recalcWidth();
 		}
@@ -3530,7 +3562,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 		UT_DEBUGMSG(("no memory for SectionLayout"));
 		return UT_FALSE;
 	}
-	UT_DEBUGMSG(("SEVIOR: Inserting Section after this block \n"));
 	m_pLayout->insertSectionAfter(pDSL, pSL);
 	
 	// must call the bind function to complete the exchange
@@ -3552,7 +3583,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 		pSL->addBlock(pBL);
 		pBL->m_pSectionLayout = pSL;
 		pBL->m_bNeedsReformat = UT_TRUE;
-		UT_DEBUGMSG(("SEVIOR: Added this block to new section this block = %d, nect block =%d \n",this,pNext));
 		pBL = pNext;
 	}
 
@@ -3563,7 +3593,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
-	UT_DEBUGMSG(("SEVIOR: Completed Block doclisterner_insertsection \n"));
 
 	return UT_TRUE;
 }

@@ -41,6 +41,7 @@ class fp_Line;
 class fp_Container;
 class PD_Document;
 class PP_AttrProp;
+class fl_HdrFtrShadow;
 class PX_ChangeRecord_FmtMark;
 class PX_ChangeRecord_FmtMarkChange;
 class PX_ChangeRecord_Object;
@@ -190,6 +191,8 @@ public:
 	void				setHdrFtr(UT_uint32 iType, fl_HdrFtrSectionLayout* pHFSL);
 
 	void				addOwnedPage(fp_Page*);
+        void                            prependOwnedHeaderPage(fp_Page * p_Page);
+        void                            prependOwnedFooterPage(fp_Page * p_Page);
 	void				deleteOwnedPage(fp_Page*);
 
 	void				checkAndAdjustColumnGap(UT_sint32 iLayoutWidth);
@@ -227,8 +230,8 @@ protected:
 
 	fp_Column*			m_pFirstColumn;
 	fp_Column*			m_pLastColumn;
+	fp_Page *                       m_pFirstOwnedPage;
 
-	UT_Vector			m_vecOwnedPages;
 };
 
 class fl_HdrFtrSectionLayout : public fl_SectionLayout
@@ -252,7 +255,7 @@ public:
 	virtual fp_Container*		getNewContainer();
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
-
+        fl_HdrFtrShadow *               getFirstShadow(void);
 	virtual UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
         void                                    changeStrux( fl_DocSectionLayout * pSL);
 	void						addPage(fp_Page*);

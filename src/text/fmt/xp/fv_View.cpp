@@ -452,8 +452,17 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		UT_uint32 heightCaret;
 
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, NULL, &pRun);
-
-		fp_Container * pContainer = pRun->getLine()->getContainer();
+		//
+		// Handle Headers/Footers This is a kludge for now
+		//
+                fp_Container * pContainer = NULL;
+		fl_BlockLayout * pBlock = pRun->getBlock();
+		if(pBlock->getSectionLayout()->getType() ==  FL_SECTION_HDRFTR)
+		{
+		        pContainer = pBlock->getSectionLayout()->getFirstContainer();
+		}
+		else
+		        pContainer = pRun->getLine()->getContainer();
 
 		if (pContainer->getType() == FP_CONTAINER_COLUMN)
 		{

@@ -138,6 +138,9 @@ void fp_Container::getScreenOffsets(fp_Line* pLine,
 
 void fp_Container::removeLine(fp_Line* pLine)
 {
+        UT_sint32 iCount = m_vecLines.getItemCount();
+	if(iCount == 0)
+	      return;
 	UT_sint32 ndx = m_vecLines.findItem(pLine);
 	UT_ASSERT(ndx >= 0);
 

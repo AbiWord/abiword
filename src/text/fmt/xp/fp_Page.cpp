@@ -66,11 +66,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 fp_Page::~fp_Page()
 {
 	UT_ASSERT(m_pOwner);
-	
-	m_pOwner->deleteOwnedPage(this);
 
-	DELETEP(m_pHeader);
-	DELETEP(m_pFooter);
+	m_pOwner->deleteOwnedPage(this);
 }
 
 UT_Bool fp_Page::isEmpty(void) const
