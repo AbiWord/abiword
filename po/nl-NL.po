@@ -1432,8 +1432,9 @@ msgstr "&Opsommingstekens en nummering"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:617
+#, fuzzy
 msgid "Button Style"
-msgstr "Cirkel Stijl"
+msgstr "Knop stijl"
 
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:619
@@ -2540,27 +2541,23 @@ msgstr "Voettekst [%s]"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h.h:1055
-#, fuzzy
 msgid "Footnote Style"
-msgstr "Cirkel Stijl"
+msgstr "Voetnoot stijl"
 
 #. FIELD_Numbers_FootnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1057
-#, fuzzy
 msgid "Footnote anchor"
-msgstr "Eindnoot anker"
+msgstr "Voetnoot anker"
 
 #. FIELD_Numbers_FootnoteReference
 #: po/tmp/ap_String_Id.h.h:1059
-#, fuzzy
 msgid "Footnote reference"
-msgstr "Opties instellen"
+msgstr "Voetnoot referentie"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:1061
-#, fuzzy
 msgid "Footnotes and Endnotes"
-msgstr "Eindnoot invoegen"
+msgstr "Voet- en eindnoot"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -2593,25 +2590,23 @@ msgstr "Opmaken"
 
 #. DLG_FormatFootnotes_EndTab
 #: po/tmp/ap_String_Id.h.h:1075
-#, fuzzy
 msgid "Format Endnotes"
-msgstr "Tabel opmaken"
+msgstr "Eindnoot opmaken"
 
 #. DLG_FormatFootnotes_FootTab
 #: po/tmp/ap_String_Id.h.h:1077
-#, fuzzy
 msgid "Format Footnotes"
-msgstr "&Kop- en voettekst opmaken"
+msgstr "Voetnoot opmaken"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h.h:1079
 msgid "Format Footnotes and Endnotes"
-msgstr "Voet- en eindnoten opmaken"
+msgstr "Voet- en eindnoot opmaken"
 
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h.h:1081
 msgid "Format Header/Footers"
-msgstr "&Kop- en voettekst opmaken"
+msgstr "Kop- en voettekst opmaken"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:1083
@@ -2695,9 +2690,8 @@ msgstr "Koptekst [%s]"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1115
-#, fuzzy
 msgid "Header/Footers"
-msgstr "&Kop- en voettekst opmaken"
+msgstr "Kop- en voettekst"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:1117
@@ -2741,7 +2735,7 @@ msgstr "Help In&houd"
 #: po/tmp/ap_String_Id.h.h:1129
 #, fuzzy
 msgid "Help &Introduction"
-msgstr "Mail Instructies:"
+msgstr "Help &introductie"
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:1131
@@ -4499,15 +4493,14 @@ msgstr "Tabs instellen"
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:1830
-#, fuzzy
 msgid "Set the types of Footnotes and Endnotes"
-msgstr "Kop- en voettekst opmaken"
+msgstr "Zet het soort voet- en eindnoot"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1832
 #, fuzzy
 msgid "Set the types of Headers and Footers"
-msgstr "Kop- en voettekst opmaken"
+msgstr "Zet het soort voet- en eindnoot"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1834
