@@ -284,6 +284,58 @@ UT_uint32 GR_Graphics::getZoomPercentage(void) const
 	return m_iZoomPercentage;
 }
 
+/*!
+ * This method converts a const * string to the appropriate Type 1 Font size.
+ * This method should guarentee we get the same sized font for Layout in both
+ * Print and Screen contexts.
+ * It takes into account if we are in layout resolution mode and in either print
+ * or screen contexts.
+\params const char *pszFontSize
+\returns UT_uint32 the correct font number
+*/
+UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize)
+{
+	UT_uint32  iSize;
+	UT_uint32  iSizeLayout;
+	double dSize;
+	if(queryProperties(DGP_SCREEN))
+	{
+		bool curRes = m_bLayoutResolutionModeEnabled;
+		m_bLayoutResolutionModeEnabled = false;
+		iSize = convertDimension(pszFontSize);
+		m_bLayoutResolutionModeEnabled = curRes;
+		dSize = iSize;
+		double rat = (double) UT_LAYOUT_UNITS / (double) getResolution();
+		iSizeLayout = (UT_uint32) (dSize * rat + 0.5);
+		if( m_bLayoutResolutionModeEnabled)
+		{
+			return iSizeLayout;
+		} 
+		return iSize;
+	}
+//
+// For printing we ignore all zoom stuff and calculate the screen font based on
+// inch size.
+//
+	else
+	{
+		double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
+		UT_uint32 iScreenSize = (UT_uint32) (dScreenSize + 0.05);
+		dScreenSize = (double) iScreenSize;
+
+		double ratToLayout = (double) UT_LAYOUT_UNITS / (double) getScreenResolution();
+		UT_sint32 iSizeLayout = (UT_sint32) (dScreenSize * ratToLayout + 0.5);
+
+		double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
+		iSize = (UT_sint32) (dPaperSize + 0.05);
+		if( m_bLayoutResolutionModeEnabled)
+		{
+			return iSizeLayout;
+		} 
+		return iSize;
+	}
+}
+
 UT_uint32 GR_Graphics::getResolution(void) const
 {
 	return _getResolution() * m_iZoomPercentage / 100;

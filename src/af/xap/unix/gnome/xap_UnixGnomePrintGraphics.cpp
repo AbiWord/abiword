@@ -74,25 +74,25 @@ struct _fontMapping
 /* The ones with ?? have not been verified. (Chema) */
 static struct _fontMapping fontMappingTable[] = 
 {
-		{"Arial",                  "Helvetica"}, // Arial is a MS name for Helvetica, so I've been told
-		{"Bitstream",              "Palatino"}, // ??
-		{"Bookman",                "URW Bookman L"},
-		{"Century Schoolbook",     "Century Schoolbook L"},
-		{"Courier",                "Courier"},
-		{"Courier New",            "Courier"}, /* ??? not really. (I think) */
-		{"Dingbats",               "Dingbats"},
-		{"Goth",                   "URW Gothic L"},
-		{"Helvetic",               "Helvetica"},
-		{"Helvetica",              "Helvetica"},
-		{"Nimbus Mono",            "Times"},
-		{"Nimbus Roman",           "Times"},
-		{"Nimbus Sans",            "Nimbus Sans L"},
-		{"Nimbus Sans Condensed",  "Nimbus Sans L"}, // ??
-		{"Palladio",               "URW Palladio L"},
-		{"Standard Symbols",       "Symbol"},
-		{"Symbol",                 "Symbol"}, // ?? (Symbol?)
-		{"Times",                  "Times"},
-		{"Times New Roman",        GPG_DEFAULT_FONT},
+		{"Arial",                  "Nimbus Sans L"}, // Arial is a MS name for Helvetica, //v
+		{"Bitstream",              "Bitstream Charter"}, // ?? // v
+		{"Bookman",                "URW Bookman L"}, // v
+		{"Century Schoolbook",     "Century Schoolbook L"}, //v
+		{"Courier",                "Nimbus Mono L"}, //v
+		{"Courier New",            "Nimbus Mono L"}, /* ??? not really. (I think) */ //v
+		{"Dingbats",               "Dingbats"}, // v
+		{"Goth",                   "URW Gothic L"}, // v
+		{"Helvetic",               "Nimbus Sans L"}, // v
+		{"Helvetica",              "Nimbus Sans L"}, // v
+		{"Nimbus Mono",            "Nimbus Mono L"}, // v
+		{"Nimbus Roman",           "Nimbus Roman No9 L"}, //v
+		{"Nimbus Sans",            "Nimbus Sans L"}, // v
+		{"Nimbus Sans Condensed",  "Nimbus Sans L"}, // v This name is Nimbus Sans L * Condensed!!
+		{"Palladio",               "URW Palladio L"}, // v
+		{"Standard Symbols",       "Standard Symbols L"}, // v
+		{"Symbol",                 "Standard Symbols L"}, // v
+		{"Times",                  "Nimbus Roman No9 L"}, // v
+		{"Times New Roman",        "Nimbus Roman No9 L"}, //v
 		{"*",                      GPG_DEFAULT_FONT}
 };
 
@@ -188,7 +188,7 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 	
 		// ok, this is the ugliest hack of the year, so I'll take it one step
 		// at a time
-
+#if 0 // This code gratututously removed by Sevior!! GnomePrint works fine at all scales!
 		// add 0.0001 so 11.9999 gets rounded up to 12
 		double size         = (double)pFont->getSize() * _scale_factor_get () + 0.0001;
 	
@@ -198,7 +198,10 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 		// scale it down. *ugly*
 		if((int)size % 2 != 0)
 				size -= 1.0;
-		
+#endif
+		double size         = (double)pFont->getSize() * _scale_factor_get ();
+
+		UT_DEBUGMSG(("SEVIOR: PS Font size = %d gnome font size = %d \n",pFont->getSize(),size));
 		// first try to directly allocate abi's name
 		// this is good for fonts not in my table, and
 		// fonts installed by the user in both Abi and
@@ -478,22 +481,35 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getUnicodeForDingbats(UT_uint32 code)
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	int size = 0;
+	UT_uint32 width = 0;
 	
         UT_ASSERT(m_pCurrentFont);
 	if (c >= 256)
 		return 0;
 	UT_UCSChar cc = c; 
-//#if 1
-//	unsigned char uc = c;
-//	size = (int) ( _scale_factor_get_inverse () *
-//		       gnome_font_get_width_string_n (m_pCurrentFont, (const char *)&uc, 1) );
-//#else
-//	size = (int) (_scale_factor_get_inverse () * gnome_font_get_glyph_width(m_pCurrentFont, (int)c));
-//#endif
-	
-	size = m_pCurrentPSFont->getCharWidth(cc) * m_pCurrentPSFont->getSize() / 1000;
-	return size;
+	//
+	// If the font is in cache we're doing layout calculations so use exactly
+	// the same calculations as the screen uses.
+	//
+	XAP_UnixFont * pUFont = m_pCurrentPSFont->getUnixFont();
+	UT_sint32 iSize = m_pCurrentPSFont->getSize();
+	xxx_UT_DEBUGMSG(("SEVIOR: Gnome Looking for font of size %d in the cache \n",iSize));
+	if(pUFont->isSizeInCache(iSize))
+	{
+			XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+			GdkFont* font = pHndl->getGdkFont();
+			gchar gc = (gchar) c;
+			width = gdk_text_width(font, (gchar*)&gc, 1);
+			delete pHndl;
+			xxx_UT_DEBUGMSG(("SEVIOR: Got Width %d from gdk_font \n",width));
+			return width;
+	}
+	else
+	{
+			width = (UT_uint32) ((double) m_pCurrentPSFont->getCharWidth(cc) * (double) m_pCurrentPSFont->getSize() / 1000.);
+			xxx_UT_DEBUGMSG(("SEVIOR: Got Width %d from PS font \n",width));
+	}
+	return width;
 }
 
 void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars, 
@@ -602,7 +618,7 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 
 	m_pCurrentFont = _allocGnomeFont(psFont);
 
-#if 0
+#if 1
 	XAP_UnixFont *uf          = static_cast<PSFont*>(pFont)->getUnixFont();
 	UT_DEBUGMSG(("Dom: setting font:\n"
 				 "\tsize returned: %f (requested %f)\n"
@@ -964,7 +980,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 	GnomeFont * gfnt = _allocGnomeFont(static_cast<PSFont*>(fnt));
 	const GnomeFontFace *face;
 	const ArtDRect *bbox;
-
+	
 	face = gnome_font_get_face (gfnt);
 	bbox = 	gnome_font_face_get_stdbbox (face);
 	asc = (gint) (bbox->y1 * gnome_font_get_size (gfnt) / 10);
@@ -975,12 +991,21 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 
   XAP_UnixFont * pUFont = psfnt->getUnixFont();
   UT_sint32 iSize = psfnt->getSize();
-  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
-  GdkFont* pFont = pHndl->getGdkFont();
-  GdkFont* pMatchFont= pHndl->getMatchGdkFont();
-  asc = MAX(pFont->ascent, pMatchFont->ascent);
-  delete pHndl;
-	return asc;
+  if(pUFont->isSizeInCache(iSize))
+  {
+		  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+		  GdkFont* pFont = pHndl->getGdkFont();
+		  GdkFont* pMatchFont=pHndl->getMatchGdkFont();
+		  asc = MAX(pFont->ascent, pMatchFont->ascent);
+		  delete pHndl;
+  }
+  else
+  {
+		  GlobalFontInfo * gfi = psfnt->getMetricsData()->gfi;
+		  UT_ASSERT(gfi);
+		  asc = (UT_uint32) ( (double) gfi->fontBBox.ury * (double) psfnt->getSize() /1000.);
+  }
+  return asc;
 }
 
 /* This function does not expect in return the font ascent,
@@ -988,17 +1013,6 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 {
 	UT_uint32 asc;
-#if 0
-	const GnomeFontFace *face;
-	const ArtDRect *bbox;
-	GnomeFont *font;
-
-	font = m_pCurrentFont;
-	face = gnome_font_get_face (font);
-	bbox = 	gnome_font_face_get_stdbbox (face);
-	asc = (gint) (bbox->y1 * gnome_font_get_size (font) / 10);
-#endif
-
 	asc = getFontAscent(static_cast<GR_Font *>(m_pCurrentPSFont));
 	return asc;
 }
@@ -1024,13 +1038,22 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 
   XAP_UnixFont * pUFont = psfnt->getUnixFont();
   UT_sint32 iSize = psfnt->getSize();
-  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
-  GdkFont* pFont = pHndl->getGdkFont();
-  GdkFont* pMatchFont= pHndl->getMatchGdkFont();
-  des = MAX(pFont->descent, pMatchFont->descent);
-  delete pHndl;
-
-	return des;
+  if(pUFont->isSizeInCache(iSize))
+  {
+		  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+		  GdkFont* pFont = pHndl->getGdkFont();
+		  GdkFont* pMatchFont=pHndl->getMatchGdkFont();
+		  des = MAX(pFont->descent, pMatchFont->descent);
+		  delete pHndl;
+  }
+  else
+  {
+		  GlobalFontInfo * gfi = psfnt->getMetricsData()->gfi;
+		  UT_ASSERT(gfi);
+		  des = (UT_uint32) ((double) -(gfi->fontBBox.lly) * (double) psfnt->getSize() / 1000.);
+  }
+  return des;
+  return des;
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
@@ -1120,11 +1143,17 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 	// Request the appropriate XAP_UnixFont::, and bury it in an
 	// instance of a UnixFont:: with the correct size.
 	XAP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
-	XAP_UnixFont * item = NULL;
+	XAP_UnixFontHandle * item = NULL;
+	
+//
+// This piece of code scales the FONT chosen at low resolution to that at high
+// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
+//
+	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
 	if (unixfont)
 	{
-		// make a copy
-		item = new XAP_UnixFont(*unixfont);
+		// end up burying a pointer to the unix font, but first we need a handle
+		item = new XAP_UnixFontHandle(unixfont,iSize);
 	}
 	else
 	{
@@ -1132,32 +1161,11 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 		// we know we have (get smarter about this later)
 		g_print ("Get times new roman !!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
 				 "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-		item = new XAP_UnixFont(*m_fm->getFont("Times New Roman", s));
+		item = new XAP_UnixFontHandle(m_fm->getFont("Times New Roman", s),iSize);
 	}
-	
-//
-// This piece of code scales the FONT chosen at low resolution to that at high
-// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
-//
-	double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
-	UT_sint32 iScreenSize = (UT_sint32) (dScreenSize + 0.05);
-	dScreenSize = (double) iScreenSize;
-
-	double ratToLayout = (double) UT_LAYOUT_UNITS / (double) getScreenResolution();
-	UT_sint32 iSizeLayout = (UT_sint32) (dScreenSize * ratToLayout + 0.5);
-
-	double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
-	UT_sint32 iSize = (UT_sint32) (dPaperSize + 0.05);
-    
-	
-	if( m_bLayoutResolutionModeEnabled)
-	{
-		iSize = iSizeLayout;
-	} 
-
 	xxx_UT_DEBUGMSG(("Using Gnome-Print PS Font Size %d \n",iSize));
-	PSFont * pFont = new PSFont(item, iSize);
-
+	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
+    delete item;
 	UT_ASSERT(pFont);
 
 	return pFont;

@@ -160,6 +160,7 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 
 XAP_UnixFont::~XAP_UnixFont(void)
 {
+	UT_DEBUGMSG(("SEVIOR: Deleting font %s sizeof class %x \n",m_name,sizeof(this)));
 	FREEP(m_name);
 	
 	FREEP(m_fontfile);
@@ -169,8 +170,13 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	
 	FREEP(m_fontKey);
 
-	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
-	
+	//	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
+	for(UT_sint32 i =0; i < m_allocFonts.getItemCount(); i++)
+	{
+		allocFont * p = (allocFont *) m_allocFonts.getNthItem(i);
+		gdk_font_unref(p->gdkFont);
+		delete p;
+	}
 	if(m_uniWidths)
 	{
 		delete [] m_uniWidths;
@@ -361,7 +367,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
-	
+	xxx_UT_DEBUGMSG(("Loading encoding file %s \n",encfile));
 	
 	FILE * ef = fopen(encfile, "r");
 	if(!ef)
@@ -671,7 +677,6 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 			// translate these into UCS-2 values).
 
 			m_metricsData->numOfChars = numfound;
-			UT_DEBUGMSG(("created width table with %d entries\n", numfound));
 			
 			//OK, now we have the widths, we can get rid off the encoding table
 			// (there is a chance that we will have to immediately recreate the
@@ -698,7 +703,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 					++numfound;
 				}
            }
-		m_metricsData->numOfChars = numfound;
+		   m_metricsData->numOfChars = numfound;
 
        	}
 	
@@ -746,7 +751,6 @@ bool XAP_UnixFont::openPFA(void)
 	
 	UT_DEBUGMSG(("UnixFont::openPFA: opening file %s\n", pfafile));
 	m_PFFile = fopen(pfafile, "r");
-	//UT_DEBUGMSG(("UnixFont::openPFA: opened  file %s (handle 0x%x)\n", pfafile, m_PFFile));
 
 	if (!m_PFFile)
 	{
@@ -877,6 +881,26 @@ const char * XAP_UnixFont::getFontKey(void)
 	ASSERT_MEMBERS;
 	return m_fontKey;
 }
+/*!
+ * returns true if the requested pixelsize is in the cache.
+\params pixelsize: This of the font.
+\returns true if found
+*/
+bool XAP_UnixFont::isSizeInCache(UT_uint32 pixelsize)
+{
+	UT_uint32 l = 0;
+	UT_uint32 count = m_allocFonts.getItemCount();
+	allocFont * entry;
+	while (l < count)
+	{
+		entry = (allocFont *) m_allocFonts.getNthItem(l);
+		if (entry && entry->pixelSize == pixelsize)
+			return true;
+		else
+			l++;
+	}
+    return false;
+}
 
 GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 {
@@ -884,8 +908,10 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	// size couldn't be found
 	UT_uint32 l = 0;
 	UT_uint32 count = m_allocFonts.getItemCount();
+	xxx_UT_DEBUGMSG(("There are %d allocated fonts for %s \n",count,m_name));
 	allocFont * entry;
         char buf[1000];
+		
 	while (l < count)
 	{
 		entry = (allocFont *) m_allocFonts.getNthItem(l);
@@ -921,7 +947,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 	if(!is_CJK_font())
 	{
-		//UT_DEBUGMSG(("Loading gdkfont [%s]\n", newxlfd));
+		xxx_UT_DEBUGMSG(("Loading gdkfont [%s]\n", newxlfd));
 		gdkfont = gdk_font_load(newxlfd);
 
 	 	if (!gdkfont)
@@ -992,6 +1018,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	allocFont * item = new allocFont;
 	item->pixelSize = pixelsize;
 	item->gdkFont = gdkfont;
+	xxx_UT_DEBUGMSG(("SEVIOR: Allocated font of pixel size %d \n",pixelsize));
 	m_allocFonts.addItem((void *) item);
 
 	return gdkfont;

@@ -560,3 +560,5 @@ void XAP_UnixFontManager::_allocateCJKFont(const char * line,
 	g_strfreev(sa);
 }
 
+
+

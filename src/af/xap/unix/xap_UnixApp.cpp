@@ -67,6 +67,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
+	DELETEP(m_fontManager);
 }
 
 bool XAP_UnixApp::initialize()
@@ -324,3 +325,4 @@ void XAP_UnixApp::setTimeOfLastEvent(UT_uint32 eventTime)
 {
 	m_eventTime = eventTime;
 }
+

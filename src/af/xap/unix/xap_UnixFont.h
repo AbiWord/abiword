@@ -90,7 +90,7 @@ class XAP_UnixFont
 	bool					openPFA(void);
 	char					getPFAChar(void);
 	bool					closePFA(void);	
-
+	bool                    isSizeInCache(UT_uint32 pixelsize);
 	const char * 			getFontKey(void);
 	GdkFont *				getGdkFont(UT_uint32 pixelsize);
 

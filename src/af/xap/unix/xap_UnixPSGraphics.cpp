@@ -141,19 +141,26 @@ UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
 
 //#if 0
 //  e = _scaleFont(psfnt, gfi->ascender);
-//#elseif 0
-//  e = _scaleFont(psfnt, gfi->fontBBox.ury);
-//#else
-#if 1
+  //#if 0
+  //  e = _scaleFont(psfnt, gfi->fontBBox.ury);
+  //#endif
+    
+
   XAP_UnixFont * pUFont = psfnt->getUnixFont();
   UT_sint32 iSize = psfnt->getSize();
-  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
-  GdkFont* pFont = pHndl->getGdkFont();
-  GdkFont* pMatchFont=pHndl->getMatchGdkFont();
-  e = MAX(pFont->ascent, pMatchFont->ascent);
-  delete pHndl;
+  if(pUFont->isSizeInCache(iSize))
+  {
+	XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+	GdkFont* pFont = pHndl->getGdkFont();
+	GdkFont* pMatchFont=pHndl->getMatchGdkFont();
+	e = MAX(pFont->ascent, pMatchFont->ascent);
+	delete pHndl;
+  }
+  else
+  {
+	e = _scaleFont(psfnt, gfi->fontBBox.ury);
+  }
 
-#endif	
   c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Ascent());
   return MAX(e,c);
 }
@@ -174,22 +181,20 @@ UT_uint32 PS_Graphics::getFontDescent(GR_Font * fnt)
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
   UT_ASSERT(gfi);
 
-//#if 0
-//  UT_ASSERT(gfi->descender <= 0);
-//  e=_scaleFont(psfnt, -gfi->descender);
-//#elseif 0
-//  UT_ASSERT(gfi->fontBBox.lly <= 0);
-//  e=_scaleFont(psfnt, -(gfi->fontBBox.lly));
-#if 1
-
   XAP_UnixFont * pUFont = psfnt->getUnixFont();
   UT_sint32 iSize = psfnt->getSize();
-  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
-  GdkFont* pFont = pHndl->getGdkFont();
-  GdkFont* pMatchFont= pHndl->getMatchGdkFont();
-  e = MAX(pFont->descent, pMatchFont->descent);
-  delete pHndl;
-#endif	
+  if(pUFont->isSizeInCache(iSize))
+  {
+	XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+	GdkFont* pFont = pHndl->getGdkFont();
+	GdkFont* pMatchFont=pHndl->getMatchGdkFont();
+	e = MAX(pFont->descent, pMatchFont->descent);
+	delete pHndl;
+  }
+  else
+  {
+	e = _scaleFont(psfnt, -(gfi->fontBBox.lly));
+  }
 
   c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Descent());
   return MAX(e,c);
@@ -224,6 +229,13 @@ UT_uint32 PS_Graphics::getFontHeight()
 UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
  	UT_ASSERT(m_pCurrentFont);
+//
+// If the font is in cache we're doing layout calculations so use exactly
+// the same calculations as the screen uses.
+//
+	XAP_UnixFont * pUFont = m_pCurrentFont->getUnixFont();
+	UT_sint32 iSize = m_pCurrentFont->getSize();
+
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;
 	_explodePSFonts(m_pCurrentFont, pEnglishFont,pChineseFont);
@@ -232,8 +244,21 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	    return _scale(pChineseFont->getUnixFont()->get_CJK_Width());
 	else
 	{	
-	    return _scale(pEnglishFont->getCharWidth(c));
-	};
+		if(pUFont->isSizeInCache(iSize))
+		{
+			XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+			GdkFont* font = pHndl->getGdkFont();
+			gchar gc = (gchar) c;
+			UT_uint32 width = gdk_text_width(font, (gchar*)&gc, 1);
+			delete pHndl;
+			return width;
+		}
+		else
+		{
+			UT_uint32 width =_scale(pEnglishFont->getCharWidth(c));
+			return width;
+		}
+	}
 }
 #if 0
 /*
@@ -337,43 +362,29 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	// Request the appropriate XAP_UnixFont::, and bury it in an
 	// instance of a UnixFont:: with the correct size.
 	XAP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
-	XAP_UnixFont * item = NULL;
-	if (unixfont)
-	{
-		// make a copy
-		item = new XAP_UnixFont(*unixfont);
-	}
-	else
-	{
-		// Oops!  We don't have that font here.  substitute something
-		// we know we have (get smarter about this later)
-		item = new XAP_UnixFont(*m_fm->getFont("Times New Roman", s));
-	}
-	
+	XAP_UnixFontHandle * item = NULL;
 
 //
 // This piece of code scales the FONT chosen at low resolution to that at high
 // resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
 //
-	double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
-	UT_sint32 iScreenSize = (UT_sint32) (dScreenSize + 0.05);
-	dScreenSize = (double) iScreenSize;
-
-	double ratToLayout = (double) UT_LAYOUT_UNITS / (double) getScreenResolution();
-	UT_sint32 iSizeLayout = (UT_sint32) (dScreenSize * ratToLayout + 0.5);
-
-	double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
-	UT_sint32 iSize = (UT_sint32) (dPaperSize + 0.05);
-    
-	
-	if( m_bLayoutResolutionModeEnabled)
+	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
+	if (unixfont)
 	{
-		iSize = iSizeLayout;
-	} 
+		// Make a handle on the unixfont.
+		item = new XAP_UnixFontHandle(unixfont,iSize);
+	}
+	else
+	{
+		// Oops!  We don't have that font here.  substitute something
+		// we know we have (get smarter about this later)
+		item = new XAP_UnixFontHandle(m_fm->getFont("Times New Roman", s),iSize);
+	}
 
 	xxx_UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
-	PSFont * pFont = new PSFont(item, iSize);
+	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
 	UT_ASSERT(pFont);
+    delete item;
 
 	// Here we do something different from gr_UnixGraphics::setFont().
 	// The PostScript context keeps a simple vector of all its fonts,

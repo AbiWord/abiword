@@ -1481,10 +1481,6 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 			UT_ASSERT(pAP);
 			const XML_Char * pszStyleName = NULL;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
-//
-// It does so signal all the layouts to update themselves for the new definition
-// of the style.
-//
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
 			{
 				bFound = true;
@@ -1493,6 +1489,55 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 		if(!bFound)
 		{
 			currentFrag = currentFrag->getPrev();
+		}
+	}
+	if(bFound)
+	{
+		sdh = (PL_StruxDocHandle) currentFrag;
+	}
+	else
+	{
+		sdh = NULL;
+	}
+	return sdh;
+}
+
+/*!
+ * This method scans the document forwards for a strux with the style name 
+ * szStyle in it.
+\params pStyle a pointer to style to be scanned for.
+\params pos the document position to start from.
+\return the sdh of the strux found.
+*/
+PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, PT_DocPosition pos)
+{
+	PL_StruxDocHandle sdh = NULL;
+	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
+	pf_Frag_Strux * pfs = NULL;
+	pf_Frag * currentFrag = (pf_Frag *) sdh;
+	bool bFound = false;
+    while (currentFrag != m_pPieceTable->getFragments().getLast() && !bFound)
+	{
+		if (currentFrag->getType()==pf_Frag::PFT_Strux)
+		{
+//
+// All this code is used to find if this strux has our style in it
+//
+			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
+			PT_AttrPropIndex indexAP = pfs->getIndexAP();
+			const PP_AttrProp * pAP = NULL;
+			m_pPieceTable->getAttrProp(indexAP,&pAP);
+			UT_ASSERT(pAP);
+			const XML_Char * pszStyleName = NULL;
+			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+			{
+				bFound = true;
+			}
+		}
+		if(!bFound)
+		{
+			currentFrag = currentFrag->getNext();
 		}
 	}
 	if(bFound)

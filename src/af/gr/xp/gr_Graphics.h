@@ -87,7 +87,8 @@ public:
 	UT_UCSChar remapGlyph(const UT_UCSChar actual, bool noMatterWhat);
 
 	UT_uint32 getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
-	
+	UT_uint32 getAppropriateFontSizeFromString(const char * pszFontSize);
+
 	virtual void setColor(UT_RGBColor& clr) = 0;
 	
 	virtual GR_Font* getGUIFont() = 0;
@@ -180,6 +181,7 @@ public:
 	UT_uint32 getZoomPercentage(void) const;
 	UT_uint32 getResolution(void) const;
 	void setLayoutResolutionMode(bool bEnable) {m_bLayoutResolutionModeEnabled = bEnable;}
+	bool getLayoutResolutionMode(void) const {return m_bLayoutResolutionModeEnabled;}
 
 	inline void setPortrait (bool b) {m_bIsPortrait = b;}
 	inline bool isPortrait (void) const {return m_bIsPortrait;}

@@ -532,20 +532,9 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 // This piece of code scales the FONT chosen at low resolution to that at high
 // resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
 //
-	bool curRes = m_bLayoutResolutionModeEnabled;
-	m_bLayoutResolutionModeEnabled = false;
-	UT_sint32 iSize = convertDimension(pszFontSize);
-	m_bLayoutResolutionModeEnabled = curRes;
-
-	if( m_bLayoutResolutionModeEnabled)
-	{
-		double dSize = (double) iSize;
-		double rat = (double) UT_LAYOUT_UNITS / (double) getResolution();
-		iSize = (UT_sint32) (dSize * rat + 0.5);
-	} 
+	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
 	XAP_UnixFontHandle * pFont = new XAP_UnixFontHandle(unixfont, iSize);
 	UT_ASSERT(pFont);
-	UT_DEBUGMSG(("SEVIOR: Using GDK Font Size %d \n",iSize));
 
 	return pFont;
 }
@@ -556,7 +545,7 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	UT_ASSERT(m_pGC);
 
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
-
+	
 	GdkFont* pFont = hndl->getGdkFont();
 	GdkFont* pMatchFont=hndl->getMatchGdkFont();
 	return MAX(pFont->ascent, pMatchFont->ascent);

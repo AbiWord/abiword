@@ -184,6 +184,7 @@ public:
 	bool	                addStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
 
     PL_StruxDocHandle       findPreviousStyleStrux(const XML_Char * szStyle, PT_DocPosition pos);
+    PL_StruxDocHandle       findForwardStyleStrux(const XML_Char * szStyle, PT_DocPosition pos);
 	bool					updateDocForStyleChange(const XML_Char * szStyleName,
 													bool isParaStyle);
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);
