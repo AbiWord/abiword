@@ -97,14 +97,14 @@ static gint s_spin_focus_out(GtkWidget * widget,
 	return FALSE;
 }
 
-static gint s_spin_changed(GtkWidget * widget,
+static void s_spin_changed(GtkWidget * widget,
 						   AP_UnixDialog_Paragraph * dlg)
 {
 	// notify the dialog that an edit has changed
 	dlg->event_SpinChanged(widget);
 }
 
-static gint s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
+static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	

@@ -50,6 +50,7 @@ XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size)
 }
 
 XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFontHandle & copy)
+	: GR_Font(copy)
 {
 	m_font = copy.m_font;
 	m_size = copy.m_size;
