@@ -1270,9 +1270,11 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 :	m_oldHDC(0),
 	m_layoutFont (0),
 	m_defaultCharWidth(0),
-	m_tm(TEXTMETRIC()),
-	m_iHeight(lf.lfHeight)
+	m_tm(TEXTMETRIC())
 {
+	lf.lfHeight = abs(lf.lfHeight);
+	m_iHeight = lf.lfHeight;
+
 	m_layoutFont = CreateFontIndirect(&lf); // this is what we see to start with
 	insertFontInCache (lf.lfHeight, m_layoutFont);
 
