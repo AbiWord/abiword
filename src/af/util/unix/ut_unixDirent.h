@@ -27,6 +27,10 @@
 #include <sys/stat.h> 
 #include <dirent.h> 
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 int 
 scandir(const char *dirname, struct dirent ***namelist, 
         int (*select) (const struct dirent *), 
@@ -35,8 +39,12 @@ scandir(const char *dirname, struct dirent ***namelist,
 int 
 alphasort(const void *d1, const void *d2);
 
-#endif
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif // SCANDIR_MISSING
 
 
-#endif
+#endif // UT_UNIXDIRENT_H
 

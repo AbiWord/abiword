@@ -118,4 +118,4 @@ alphasort(const void *d1, const void *d2)
 } 
 
 
-#endif
+#endif // SCANDIR_MISSING
