@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiWord
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998-2000 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Paragraph.cpp	\
 			ap_$(ABI_FE)Dialog_Replace.cpp		\
 			ap_$(ABI_FE)Dialog_Spell.cpp		\
+			ap_$(ABI_FE)Dialog_Stub.cpp			\
 			ap_$(ABI_FE)Dialog_WordCount.cpp	\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)LeftRuler.cpp		\
