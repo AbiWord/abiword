@@ -527,10 +527,17 @@ void UT_UUID::clear()
 }
 
 /* 
-    perform a 32 bit Fowler/Noll/Vo hash on a buffer
- */
+    perform a 32 bit Fowler/Noll/Vo hash
+*/
 UT_uint32 UT_UUID::hash32() const
 {
+#if 0
+    // 32 bit Fowler/Noll/Vo hash on a buffer I have run extensive
+	// tests using the FNV and the other algorithm in the #else branch
+	// (based on UT_String) and the latter turns out to be slightly
+	// less collision prone on randomly generated uuid's but
+	// significantly less collision prone on uuid's generated on the
+	// same machine and close in time
 	static UT_uint32 hval = 0x811c9dc5;
     unsigned char *bp = (unsigned char *)&m_uuid;
 
@@ -545,13 +552,24 @@ UT_uint32 UT_UUID::hash32() const
 
     /* return our new hash value */
     return hval;
+#else
+	// base on UT_String
+	const unsigned char * p = (const unsigned char *)& m_uuid;
+	UT_uint32 h = (UT_uint32)*p;
+	
+	for (UT_uint32 i = 1; i < sizeof(m_uuid); ++i, ++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+
+	return h;
+#endif
 }
 
-/*!
-    perform a 64 bit Fowler/Noll/Vo hash
- */
 UT_uint64 UT_UUID::hash64() const
 {
+#if 0
+	// see comments in hash32()
 #if defined(WIN32) && !defined(__GNUC__)	
 	static UT_uint64 hval = 0xcbf29ce484222325; // value FNV1_64_INIT;
 #else
@@ -576,7 +594,20 @@ UT_uint64 UT_UUID::hash64() const
 
     /* return our new hash value */
     return hval;
+#else
+	// base on UT_String
+	const unsigned char * p = (const unsigned char *)& m_uuid;
+	UT_uint64 h = (UT_uint64)*p;
+	
+	for (UT_uint32 i = 1; i < sizeof(m_uuid); ++i, ++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+
+	return h;
+#endif
 }
+
 
 UT_uint32 UT_UUIDGenerator::getNewUUID32()
 {
@@ -591,7 +622,7 @@ UT_uint32 UT_UUIDGenerator::getNewUUID32()
 
 	m_pUUID->makeUUID();
 	UT_ASSERT(m_pUUID->isValid());
-	
+
 	return m_pUUID->hash32();
 }
 
@@ -614,7 +645,7 @@ UT_uint64 UT_UUIDGenerator::getNewUUID64()
 
 
 
-#ifdef DEBUG
+#if defined(UT_UUID_HASH_TEST) && defined(DEBUG)
 #include "ut_endian.h"
 #include "ut_vector.h"
 #include "ut_rand.h"
@@ -625,7 +656,7 @@ struct test_record
 	UT_uint32 indx;
 };
 
-static int s_cmp_int(const void *i1, const void * i2)
+static int s_cmp_hash(const void *i1, const void * i2)
 {
 	struct test_record ** I1  = (struct test_record**) i1;
 	struct test_record ** I2  = (struct test_record**) i2;
@@ -639,86 +670,49 @@ static int s_cmp_int(const void *i1, const void * i2)
 		return 0;
 }
 
-
-void UT_UUID::__test()
+void UT_UUIDGenerator::__test()
 {
-#if 0
 	// test hashes ...
-	UT_DEBUGMSG(("-------------------------- Testing hash --------------------------------"));
-	UT_UUID u;
-	UT_uint64 h;
-#ifdef UT_BIG_ENDIAN
-	UT_uint32 * h1 = (UT_uint32*) &h;
-	UT_uint32 * h2 = (UT_uint32*)(((char*)&h) + 4);
-#else
-	UT_uint32 * h2 = (UT_uint32*) &h;
-	UT_uint32 * h1 = (UT_uint32*)(((char*)&h) + 4);
-#endif
-	UT_uint32 h32;
-	
-	UT_String s;
-
-	for(UT_uint32 i = 0; i < 10; i++)
-	{
-		u.makeUUID();
-		u.toString(s);
-		h32 = u.hash32();
-		h = u.hash64();
-
-		UT_DEBUGMSG(("uuid: %s, hash32: 0x%x, hash64: 0x%x%x\n",
-					 s.c_str(), h32, *h1, *h2));
-
-		// sleep 2 seconds
-		time_t t0 = time(NULL);
-		time_t t1;
-		
-		do{
-			t1 = time(NULL);
-		}while(t1 <= t0 + 1);	
-	}
-
-	UT_DEBUGMSG(("-------------------------------------------------\n"));
-#endif
-#if 0
-	// test hashes ...
-	UT_DEBUGMSG(("------------------------- Testing UT_rand() -----------------------------\n"));
-	UT_Vector v, u;
-	const UT_uint32 iMax = 128000;
-	const UT_uint32 iMsg = 1000;
+	UT_DEBUGMSG(("------------------------- Testing uuid hash() ---------------------------\n"));
+	UT_Vector v;
+	const UT_uint32 iMax = 512000;
+	const UT_uint32 iMsg = 5000;
 	const UT_uint32 iTest = 10;
-	UT_uint32 iColRTotal = 0;
 	UT_uint32 iColHTotal = 0;
-	UT_uint32 iDeltaMinR = 0xffffffff;
 	UT_uint32 iDeltaMinH = 0xffffffff;
-	
 
+	// create a dummy uuid instance ...
+	if(!m_pUUID)
+		m_pUUID = new UT_UUID;
+	
 	for (UT_uint32 k = 0; k < iTest; ++k)
 	{
 		UT_uint32 j;
-		UT_uint32 iColR = 0;
 		UT_uint32 iColH = 0;
-		UT_uint32 iDMinR = 0xffffffff;
 		UT_uint32 iDMinH = 0xffffffff;
 
 		for(j = 0; j < iMax; ++j)
 		{
+			//makeUUID();
+
+			// on similar strings, the glib hash performs much better;
+			// let's test it on random strings
+			UT_uint32 * p = (UT_uint32 *)&(m_pUUID->m_uuid);
+
+			for(UT_uint32 n = 0; n < 4; n++)
+				p[n] = UT_rand();
+			
+			
 			struct test_record * t = new struct test_record;
-			t->val = UT_rand();
+			t->val = m_pUUID->hash32();
 			t->indx = j;
 			v.addItem((void*)t);
 
-			t = new struct test_record;
-			makeUUID();
-			t->val = hash32();
-			t->indx = j;
-			u.addItem((void*)t);
-		
 			if(0 == j%iMsg)
 				UT_DEBUGMSG(("Round %d: Generating rand %d of %d\n", k, j, iMax));
 		}
 
-		v.qsort(s_cmp_int);
-		u.qsort(s_cmp_int);
+		v.qsort(s_cmp_hash);
 
 		for(j = 0; j < iMax - 1; ++j)
 		{
@@ -727,56 +721,39 @@ void UT_UUID::__test()
 
 			if(t1->val == t2->val)
 			{
-				UT_DEBUGMSG(("Round %04d: UT_rand() collision (value: %d\n", k, t1->val));
-				UT_uint32 i1 = t1->indx > t2->indx ? t1->indx : t2->indx;
-				UT_uint32 i2 = t1->indx < t2->indx ? t1->indx : t2->indx;
-				iDMinR = iDMinR < (UT_uint32)(i1-i2) ? iDMinR : (UT_uint32)i1-i2;
-				iColR++;
-			}
-		
-
-			t1 = (struct test_record *) u.getNthItem(j);
-			t2 = (struct test_record *) u.getNthItem(j+1);
-
-			if(t1->val == t2->val)
-			{
-				UT_DEBUGMSG(("Round %04d: uuid hash collision (value: %d\n", k, t1->val));
+				UT_DEBUGMSG(("Round %04d: uuid hash() collision (value: %d\n", k, t1->val));
 				UT_uint32 i1 = t1->indx > t2->indx ? t1->indx : t2->indx;
 				UT_uint32 i2 = t1->indx < t2->indx ? t1->indx : t2->indx;
 				iDMinH = iDMinH < (UT_uint32)(i1-i2) ? iDMinH : (UT_uint32)i1-i2;
 				iColH++;
 			}
 		
-
 			if(0 == j%iMsg)
 				UT_DEBUGMSG(("Round %04d: testing %d of %d\n", k, j, iMax));
 		}
 	
-		UT_DEBUGMSG(("RESULTS: round %04d: %d rand collisions (min distance %d)\n"
-					 "                      %d hash collisions (min distance %d)\n",
-					 k, iColR, iDMinR, iColH, iDMinH));
+		UT_DEBUGMSG(("RESULTS: round %04d: %d hash collisions (min distance %d)\n",
+					 k, iColH, iDMinH));
 
-		iColRTotal += iColR;
 		iColHTotal += iColH;
-		iDeltaMinR = iDeltaMinR < iDMinR ? iDeltaMinR : iDMinR;
 		iDeltaMinH = iDeltaMinH < iDMinH ? iDeltaMinH : iDMinH;
 
 		UT_VECTOR_PURGEALL(struct test_record *, v);
-		UT_VECTOR_PURGEALL(struct test_record *, u);
 		v.clear();
-		u.clear();
-		
 	}
 
-	UT_DEBUGMSG(("CUMULATIVE RESULTS (of %d): %d rand collisions (min distance %d)\n"
-				 "                            %d hash collisions (min distance %d)\n"
-				 "                            R/H collision rate %f\n",
-				 iMax*iTest, iColRTotal, iDeltaMinR,
-				 iColHTotal, iDeltaMinH,
-				 ((float)iColRTotal)/((float)iColHTotal)));
+	UT_DEBUGMSG(("CUMULATIVE RESULTS (of %d): %d hash collisions (min distance %d)\n",
+				 iMax*iTest, iColHTotal, iDeltaMinH));
 
-	UT_DEBUGMSG(("---------------------- Testing UT_rand() END --------------------------\n"));	
-#endif
+	// delete the dummy uuid instance so that any genuine calls to the
+	// hash functions allocate a proper derived instance
+	if(m_pUUID)
+	{
+		delete m_pUUID;
+		m_pUUID = NULL;
+	}
+	
+	UT_DEBUGMSG(("---------------------- Testing uuid hash END --------------------------\n"));	
 }
 #endif
 

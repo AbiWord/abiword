@@ -33,7 +33,7 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-
+#include "ut_vector.h"
 #include <time.h>
 
 class UT_String;
@@ -104,7 +104,8 @@ class ABI_EXPORT UT_UUID
 	   internal state */
 	bool            toString(UT_String & to) const;
 
-	/* create FNV hash of the uuid */
+	/* create FNV hash of the uuid -- use UT_UUIDGenerator::getUUID*()
+	   instead of these; it provides collision correction*/
 	UT_uint32       hash32() const;
 	UT_uint64       hash64() const;
 
@@ -165,10 +166,6 @@ class ABI_EXPORT UT_UUID
 	
 	bool            _getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq);
 
-#ifdef DEBUG
-  public:
-void	                __test();
-#endif
   private:	
 	uuid                   m_uuid;
 	bool                   m_bIsValid;
@@ -185,15 +182,15 @@ void	                __test();
     it.  This allows us to create platform specific instances in place
     for generic UT_UUID from xp code.
 */
+//#define UT_UUID_HASH_TEST
 class ABI_EXPORT UT_UUIDGenerator
 {
   public:
 	UT_UUIDGenerator()
 		:m_pUUID(NULL)
 	{
-#ifdef DEBUG
-		UT_UUID u;
-		u.__test();
+#if defined(UT_UUID_HASH_TEST) && defined(DEBUG)
+		__test();
 #endif
 	};
 	
@@ -209,8 +206,14 @@ class ABI_EXPORT UT_UUIDGenerator
 
 	UT_uint32 getNewUUID32();
 	UT_uint64 getNewUUID64();
+
+#if defined(UT_UUID_HASH_TEST) && defined(DEBUG)
+  public:
+void	                __test();
+#endif
 	
   private:
+
 	UT_UUID * m_pUUID;
 };
 
