@@ -43,6 +43,7 @@ typedef enum _XAP_Dialog_Id
 
 	XAP_DIALOG_ID_WINDOWMORE,
 	XAP_DIALOG_ID_ZOOM,
+	XAP_DIALOG_ID_INSERT_SYMBOL,
 
 	XAP_DIALOG_ID_ABOUT,				/* about dialog */
 	/* ... add others here ... */

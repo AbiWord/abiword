@@ -787,7 +787,29 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		dim = DIM_IN;
 
 	char defaultMargin[30];
-	strcpy(defaultMargin, UT_convertToDimensionString(dim, 1.0));
+	switch(dim)
+	{
+	case DIM_IN:
+		strcpy(defaultMargin, "1.0in");
+		break;
+
+	case DIM_CM:
+		strcpy(defaultMargin, "2.5cm");
+		break;
+
+	case DIM_PI:
+		strcpy(defaultMargin, "6.0pi");
+		break;
+
+	case DIM_PT:
+		strcpy(defaultMargin, "72.0pt");
+		break;
+
+	case DIM_none:
+		strcpy(defaultMargin, "1.0in");	// TODO: what to do with this.
+		break;
+
+	}
 
 	if(pszLeftMargin && pszLeftMargin[0])
 	{

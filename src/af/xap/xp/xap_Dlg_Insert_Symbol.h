@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_DIALOG_INSERT_SYMBOL_H
-#define XAP_DIALOG_INSERT_SYMBOL_H
+#ifndef XAP_Dialog_Insert_Symbol_H
+#define XAP_Dialog_Insert_Symbol_H
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
@@ -28,6 +28,13 @@
 #include "xav_View.h"
 
 class XAP_Frame;
+
+class XAP_Insert_symbol_listener
+	{
+	public:
+
+		virtual UT_Bool insertSymbol(UT_UCSChar Char, char *p_font_name) = 0;
+	};
 
 class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 {
@@ -40,9 +47,13 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 	virtual void	 runModal(XAP_Frame * pFrame) = 0;
 	// read these back
 	UT_UCSChar	     getInsertedSymbol(void);
-	UT_UCSChar *     getInsertedFont(void);
+	char *     getInsertedFont(void);
 	typedef enum { a_OK, a_CANCEL} tAnswer;
 	XAP_Dialog_Insert_Symbol::tAnswer    getAnswer(void) const;
+	void setListener(XAP_Insert_symbol_listener *p_listener_in)
+	{
+		m_pListener = p_listener_in;;
+	}
 
  protected:
 	// handle the XP-job of drawing our symbols.
@@ -58,6 +69,7 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 	// handle the XP-job of constructing the preview area
 	void   _createSymbolareaFromGC(GR_Graphics * gc, UT_uint32 width,
 								   UT_uint32 height);
+	void   _onInsertButton();
 
 	// This function returns the current Symbol Map class
 	XAP_Draw_Symbol *  _getCurrentSymbolMap();
@@ -67,10 +79,13 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 
 	// This variable stores the current symbol font
 	GR_Font *		   m_Insert_Symbol_font;
+	char			   m_FontName[50];
 
 	// This is character selected.
 	UT_UCSChar	       m_Inserted_Symbol;
 	XAP_Dialog_Insert_Symbol::tAnswer   m_answer;
+
+	XAP_Insert_symbol_listener*			m_pListener;
 };
 
-#endif /* XAP_DIALOG_ZOOM_H */
+#endif /* XAP_Dialog_Insert_Symbol_H */

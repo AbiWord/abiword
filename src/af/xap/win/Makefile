@@ -31,6 +31,7 @@ CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32Dlg_Print.cpp			\
 			xap_Win32Dlg_WindowMore.cpp		\
 			xap_Win32Dlg_Zoom.cpp			\
+			xap_Win32Dlg_Insert_Symbol.cpp	\
 			xap_Win32Frame.cpp			\
 			xap_Win32PreviewWidget.cpp		\
 			xap_Win32Slurp.cpp			\

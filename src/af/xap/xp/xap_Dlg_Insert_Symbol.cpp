@@ -30,15 +30,18 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
 
+
 XAP_Dialog_Insert_Symbol::XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_AppPersistent(pDlgFactory,id)
 {
 	m_Inserted_Symbol = ' ';
 	m_answer = a_CANCEL;
 	m_DrawSymbol = NULL;
+	m_pListener = NULL;
 }
 XAP_Dialog_Insert_Symbol::~XAP_Dialog_Insert_Symbol(void)
 {
+	DELETEP(m_DrawSymbol);
 	UT_ASSERT(!m_bInUse);
 }
 
@@ -58,10 +61,12 @@ UT_UCSChar  XAP_Dialog_Insert_Symbol::getInsertedSymbol(void)
 }
 
 
-UT_UCSChar * XAP_Dialog_Insert_Symbol::getInsertedFont(void)
+char * XAP_Dialog_Insert_Symbol::getInsertedFont(void)
 {
 	UT_ASSERT(m_DrawSymbol);
-	return m_DrawSymbol->getSelectedFont();
+	UT_UCS_strcpy_to_char(m_FontName, m_DrawSymbol->getSelectedFont());
+
+	return m_FontName;
 }
 
 XAP_Dialog_Insert_Symbol::tAnswer XAP_Dialog_Insert_Symbol::getAnswer(void) const
@@ -109,18 +114,20 @@ void XAP_Dialog_Insert_Symbol::_createSymbolareaFromGC(GR_Graphics * gc,
 }
 
 
+void XAP_Dialog_Insert_Symbol::_onInsertButton()
+{
+	UT_ASSERT(m_pListener);
 
+	/* Now get the character to be inserted */
 
+	UT_UCSChar c = getInsertedSymbol();
 
+	/* Now get the font of the symbol to be inserted */
 
+	XML_Char * symfont = (XML_Char *) getInsertedFont();
 
-
-
-
-
-
-
-
+	m_pListener->insertSymbol(c, symfont);
+}
 
 
 

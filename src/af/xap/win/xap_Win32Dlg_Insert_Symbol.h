@@ -17,13 +17,44 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_WIN32DIALOG_INSERT_SYMBOL_H
-#define XAP_WIN32DIALOG_INSERT_SYMBOL_H
+#ifndef XAP_Win32Dialog_Insert_Symbol_H
+#define XAP_Win32Dialog_Insert_Symbol_H
 
 #include "xap_Dlg_Insert_Symbol.h"
 class XAP_Win32Frame;
+class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
+
+static UT_UCSChar m_CurrentSymbol = UCS_SPACE;
+static UT_UCSChar m_PreviousSymbol = UCS_SPACE;
+
+static char Symbol_font_selected[32] = "Symbol";
+
+
+class XAP_Draw_Symbol_sample : public XAP_Preview
+{
+public:
+
+	XAP_Draw_Symbol_sample(XAP_Draw_Symbol *pSymbolDraw, GR_Graphics * gc) : XAP_Preview(gc)
+		{
+		m_pSymbolDraw = pSymbolDraw;
+		}
+	virtual ~XAP_Draw_Symbol_sample(void)
+		{
+		}
+				
+	void	draw(void)
+		{
+		m_pSymbolDraw->drawarea(m_CurrentSymbol, m_PreviousSymbol);
+		}
+
+protected:
+
+	XAP_Draw_Symbol *m_pSymbolDraw;
+};
+
+
 
 class XAP_Win32Dialog_Insert_Symbol: public XAP_Dialog_Insert_Symbol
 {
@@ -34,9 +65,22 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	static int CALLBACK		fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam);
 	
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	int						_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type);
+	void					_setFontFromCombo(UT_sint32 Index);
 
+
+	XAP_Win32PreviewWidget *	m_pSymbolPreviewWidget;
+	XAP_Win32PreviewWidget *	m_pSamplePreviewWidget;
+
+	XAP_Draw_Symbol_sample *	m_DrawSymbolSample;
+
+	HWND m_hDlg;
 };
 
-#endif /* XAP_WIN32DIALOG_INSERT_SYMBOL_H */
+#endif /* XAP_Win32Dialog_Insert_Symbol_H */

@@ -31,6 +31,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Win32Dlg_Insert_Symbol.h"
+#include "xap_Win32PreviewWidget.h"
 
 #include "xap_Win32Resources.rc2"
 
@@ -47,122 +48,217 @@ XAP_Win32Dialog_Insert_Symbol::XAP_Win32Dialog_Insert_Symbol(XAP_DialogFactory *
 										 XAP_Dialog_Id id)
 	: XAP_Dialog_Insert_Symbol(pDlgFactory,id)
 {
+	m_pSymbolPreviewWidget = NULL;
+	m_pSamplePreviewWidget = NULL;
 }
 
 XAP_Win32Dialog_Insert_Symbol::~XAP_Win32Dialog_Insert_Symbol(void)
 {
+	DELETEP(m_pSymbolPreviewWidget);
+	DELETEP(m_pSamplePreviewWidget);
+	DELETEP(m_DrawSymbolSample);
 }
 
 void XAP_Win32Dialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-/*
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	// raise the dialog
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
-OK here goes. Look at xap_UnixDlg_Insert_Symbol.cpp.
+	LPCTSTR lpTemplate = NULL;
 
-Firstly there are local static wrapper functions used to connect GUI events to
-their correct class managers. These are:
+	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
 
+	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL);
 
-static void s_ok_clicked(GtkWidget * widget,...
-static void s_cancel_clicked(GtkWidget * widget,... 
-static void s_sym_SymbolMap_exposed(GtkWidget * widget,.. 
-static void s_Symbolarea_exposed(GtkWidget * widget,...
-static void s_SymbolMap_clicked(GtkWidget * widget,...
-static void s_new_font(GtkWidget * widget,...
-static gboolean s_keypressed(GtkWidget * widget,...
-static void s_delete_clicked(GtkWidget * /* widget * /,...
-
-I hope their use is obvious from there names. 
-Your platform may need these too.I know nothing but gtk/gnome though.
-
-Then there are class specific handlers of the GUI events.
-
-void XAP_UnixDialog_Insert_Symbol::event_OK(void)
-  //
-  // Quit the dialog with signal that a symbol and font have been selected.
-  // The check on the number of fonts present is used to get around the 
-  // problem that asking for keypress events (particularly return) activates
-  // "OK" and "Cancel" buttons too
-  //
-
-
-void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
-  //
-  // Quit the dialog returning no selected symbol.
-  // The check on the number of fonts present is used to get around the 
-  // problem that asking for keypress events (particularly return) activates
-  // "OK" and "Cancel" buttons too
-  //
-
-void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
-  //
-  // Update the Symbol Map display on an exposed event.
-  //
-
-void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
-  //
-  // Update the selected Symbol area on an expose event
-  //
-
-void XAP_UnixDialog_Insert_Symbol::Key_Pressed( GdkEventKey * e)
-
-  //
-  // This function allows the symbol to be selected via the keyboard
-  // The arrow keys are used to choose a symbol. The return key is equivalent
-  // to clicking the OK button.
-
-void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
-  // This updates the current character picked from the location of click event
-  // within the symbol map window
-
-
-void XAP_UnixDialog_Insert_Symbol::New_Font(void )
-
-  // This recognizes that a new font has been request from the list and changes
-  // the symbol map to display that font
-
-void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
-  // Obvious..
-
-
-GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
-  // This code is used to contruct the GUI and to connect the GUI signals to
-  // the appropriate handlers.
-  // I used an overall vertical box to hold the font selector, Symbol Map,
-  // and selection area regions.
-  // In addition there is a horizontal box to hold the buttons and selected
-  // Symbol areas.
-  // I used a combination list and entry box widget for the font selection
-  // and there is a lot of code to populate this list.
-  // There are two drawing areas. The Main one in the middle of the dialog 
-  // which shows the symbols for selection and a smaller one between the OK 
-  // and cancel buttons to show a magnified view of the current selected
-  // symbol
- 
-
-The runModal function first constructs the GUI then enables and draws the
-  two graphics areas (the Symbol Map and the Selected Symbol area). Defines
-  the font and current selected symbol from either the defaults (the
-Font is platform specific. You should choose an appropriate font name.)
-or from the previous invocation of the dialog. It then enters the gtk_main
-loop and waits from responses from the user.
-
-
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+								pWin32Frame->getTopLevelWindow(),
+								(DLGPROC)s_dlgProc,(LPARAM)this);
+	UT_ASSERT((result != -1));
 }
 
+BOOL CALLBACK XAP_Win32Dialog_Insert_Symbol::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+	// This is a static function.
 
+	XAP_Win32Dialog_Insert_Symbol * pThis;
+	
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		pThis = (XAP_Win32Dialog_Insert_Symbol *)lParam;
+		SetWindowLong(hWnd,DWL_USER,lParam);
+		return pThis->_onInitDialog(hWnd,wParam,lParam);
+		
+	case WM_COMMAND:
+		pThis = (XAP_Win32Dialog_Insert_Symbol *)GetWindowLong(hWnd,DWL_USER);
+		return pThis->_onCommand(hWnd,wParam,lParam);
+		
+	default:
+		return 0;
+	}
+}
+
+#define _DSI(c,i)	SetDlgItemInt(hWnd,XAP_RID_DIALOG_##c,m_count.##i,FALSE)
+#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// localize controls
+	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
+	_DSX(INSERTSYMBOL_INSERT_BUTTON,DLG_Insert);
+	_DSX(INSERTSYMBOL_CLOSE_BUTTON,DLG_Close);
+
+	m_hDlg = hWnd;
+
+	// *** this is how we add the gc for symbol table ***
+	// attach a new graphics context to the drawing area
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
+
+	HWND hwndChild = GetDlgItem(hWnd, XAP_RID_DIALOG_INSERTSYMBOL_SYMBOLS);
+
+	m_pSymbolPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+													  hwndChild,
+													  0);
+	UT_uint32 w,h;
+	m_pSymbolPreviewWidget->getWindowSize(&w,&h);
+	_createSymbolFromGC(m_pSymbolPreviewWidget->getGraphics(), w, h);
+	m_pSymbolPreviewWidget->setPreview(m_DrawSymbol);
+
+
+	hwndChild = GetDlgItem(hWnd, XAP_RID_DIALOG_INSERTSYMBOL_SYMBOL_PREVIEW);
+
+	m_pSamplePreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+													  hwndChild,
+													  0);
+
+	m_pSamplePreviewWidget->getWindowSize(&w,&h);
+	_createSymbolareaFromGC(m_pSamplePreviewWidget->getGraphics(), w, h);
+
+	m_DrawSymbolSample = new XAP_Draw_Symbol_sample(m_DrawSymbol, m_pSamplePreviewWidget->getGraphics()); 
+	m_pSamplePreviewWidget->setPreview(m_DrawSymbolSample);
+
+
+	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+	UT_ASSERT(iDrawSymbol);
+
+	// Fill the list box with symbol fonts.
+
+	HDC hDCScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
+
+	LOGFONT LogFont;
+	LogFont.lfCharSet = SYMBOL_CHARSET;
+	LogFont.lfFaceName[0] = '\0';
+	EnumFontFamiliesEx(hDCScreen, &LogFont, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+	DeleteDC(hDCScreen);
+
+	// Select the current font.
+
+	UT_sint32 Index = SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_FINDSTRING, -1, (LPARAM)Symbol_font_selected);
+
+	if(Index != -1)
+	{
+		_setFontFromCombo(Index);
+	}
+	else
+	{
+		_setFontFromCombo(0);
+	}
+
+	return 1;							// 1 == we did not call SetFocus()
+}
+
+BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case XAP_RID_DIALOG_INSERTSYMBOL_CLOSE_BUTTON:
+		m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
+		EndDialog(hWnd,0);
+		return 1;
+
+	case XAP_RID_DIALOG_INSERTSYMBOL_INSERT_BUTTON:
+		m_Inserted_Symbol = m_DrawSymbol->getCurrent();
+		_onInsertButton();
+		return 1;
+
+
+
+	case XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST:
+		switch(wNotifyCode)
+		{
+		case CBN_SELCHANGE:
+			_setFontFromCombo(SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETCURSEL, 0, 0));
+			return 1;
+		}
+		return 0;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
+
+int XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam)
+{
+
+	XAP_Win32Dialog_Insert_Symbol *pThis = (XAP_Win32Dialog_Insert_Symbol *)lParam;
+
+	return pThis->_enumFont(pLogFont, pTextMetric, Font_type);
+}
+
+int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type)
+{
+	if(Font_type & TRUETYPE_FONTTYPE) // Only except true type fonts.
+	{
+		SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_ADDSTRING, 0, (LPARAM)pLogFont->lfFaceName);
+	}
+
+	return TRUE;
+}
+
+void XAP_Win32Dialog_Insert_Symbol::_setFontFromCombo(UT_sint32 Index)
+{
+	if(Index >= 0)
+	{
+		SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_SETCURSEL, Index, 0);
+
+		int Length = SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXTLEN, Index, 0);
+
+		if(Length != CB_ERR)
+		{
+			char *p_buffer = new char[Length + 1];
+
+			SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXT, Index, (LPARAM)p_buffer);
+
+			strcpy(Symbol_font_selected, p_buffer);
+
+			UT_UCSChar *p_UC_buffer = new UT_UCSChar[Length + 1];
+
+			UT_UCS_strcpy_char(p_UC_buffer, p_buffer);
+			
+			m_DrawSymbol->setSelectedFont(p_UC_buffer);
+			m_DrawSymbol->draw();
+			m_DrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
+
+			delete [] p_UC_buffer;
+			delete [] p_buffer;
+
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+}
 
