@@ -46,11 +46,7 @@ if test "$abi_found_parser" = "no"; then
 	echo "checking for expat"
 	AC_CHECK_LIB(expat, XML_Parse,
 		abi_expat_libs="-lexpat" abi_found_parser="expat",
-		AC_CHECK_LIB(xmlparse, XML_Parse,
-			abi_expat_libs="-lxmltok -lxmlparse" 
-			abi_found_parser="expat",
-			abi_found_parser="no",
-			-lxmltok )
+		abi_found_parser="no"
 		)
 fi
 
