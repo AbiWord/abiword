@@ -48,6 +48,8 @@ class auto_iconv
   ~auto_iconv();
   operator UT_iconv_t();
 
+  UT_iconv_t getHandle ();
+
  private:
 
   auto_iconv(const auto_iconv&);	// no impl
@@ -71,9 +73,9 @@ void        UT_iconv_reset( UT_iconv_t cd );
 int         UT_iconv_isValid ( UT_iconv_t cd );
 
 char *      UT_convert (const char *str,
-			UT_uint32 len,
-			const char *to_codeset,
+			UT_sint32 len,
 			const char *from_codeset,
+			const char *to_codeset,
 			UT_uint32 *bytes_read,
 			UT_uint32 *bytes_written);
 
