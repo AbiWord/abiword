@@ -22,8 +22,19 @@
 ABI_DEPTH=.
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-# TODO add calc to this list when it's ready
+T=abiword
+
+ifeq ($(T), all)
+DIRS=		ver other util ps ev wp calc
+endif
+
+ifeq ($(T), abiword)
 DIRS=		ver other util ps ev wp
+endif
+
+ifeq ($(T), abicalc)
+DIRS=		ver other util ps ev calc
+endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

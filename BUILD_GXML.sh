@@ -28,10 +28,15 @@ if [ $OS_NAME = "WIN32" ]; then
     cd ../gnomexml
     make -f makefile.w32 clean
     make -f makefile.w32
+    r=$?
     cd ../abi
 else
     cd ../js
-    ./configure
-    ./make
+    CONFIGURE_HOST=`echo $OS_ARCH-$OS_NAME | awk '{print tolower($0)}'`
+    echo ./configure --host=$CONFIGURE_HOST  && make
+    ./configure --host=$CONFIGURE_HOST  && make
+    r=$?
     cd ../abi
 fi
+
+exit $r

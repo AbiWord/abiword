@@ -25,12 +25,14 @@ if [ $OS_NAME = "WIN32" ]; then
     cd ../glib
     nmake -f makefile.msc clean
     nmake -f makefile.msc
+    r=$?
     cd ../abi
 else
     cd ../glib
-    ./configure
-    ./make
+    ####./configure && make
+    r=$?
     cd ../abi
 fi
 
 sh GET_GLIB.sh
+exit $r
