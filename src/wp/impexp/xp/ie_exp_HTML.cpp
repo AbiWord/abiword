@@ -2144,7 +2144,13 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H1;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h1";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "h1";
+			}
 		}
 		else if (tree->descends ("Heading 2"))
 		{
@@ -2152,7 +2158,13 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H2;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h2";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "h2";
+			}
 		}
 		else if (tree->descends ("Heading 3"))
 		{
@@ -2160,7 +2172,13 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H3;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h3";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "h3";
+			}
 		}
 		else if (tree->descends ("Block Text"))
 		{
@@ -2183,14 +2201,26 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			m_iBlockType = BT_NORMAL;
 			tagID = TT_P;
 			tagPending = true;
-			m_utf8_1 = "p";
+
+			if (m_toc && m_toc->isTOCStyle(szValue)) {
+				m_utf8_1 = UT_UTF8String_sprintf("p id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "p";
+			}
 		}
 		else
 		{
 			m_iBlockType = BT_NORMAL;
 			tagID = TT_P;
 			tagPending = true;
-			m_utf8_1 = "p";
+
+			if (m_toc && m_toc->isTOCStyle(szValue)) {
+				m_utf8_1 = UT_UTF8String_sprintf("p id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "p";
+			}
 		}
 
 		if (tree && !bClassAsTag)
@@ -4684,13 +4714,16 @@ void s_HTML_Listener::_emitTOC () {
 			int tocLevel = 0;			
 			
 			UT_UCS4String tocText(m_toc->getNthTOCEntry(i, &tocLevel).utf8_str());
-			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
 
-			_openTag (TT_P, NULL);
-			m_pie->write(tocLink.utf8_str(), tocLink.length());
-			_outputData (tocText.ucs4_str(), tocText.length());
-			m_pie->write("</a>", 4);
-			_closeTag ();
+			if (tocText.length()) {
+				UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
+				
+				_openTag (TT_P, NULL);
+				m_pie->write(tocLink.utf8_str(), tocLink.length());
+				_outputData (tocText.ucs4_str(), tocText.length());
+				m_pie->write("</a>", 4);
+				_closeTag ();
+			}
 		}
 	}
 }
