@@ -444,9 +444,10 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 
 	m_pie->write(" master-name=\"first\"");
 
-	m_pie->write("/>\n");
+	m_pie->write(">\n");
 	m_pie->write("\t<fo:region-body/>\n");
 	m_pie->write("</fo:simple-page-master>\n\n");
+	m_pie->write("</fo:layout-master-set>\n\n");
 
 	setlocale (LC_NUMERIC, old_locale);
 
@@ -463,7 +464,7 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
 	{	  	  
 	  FILE *fp;
-	  char fname [1024]; // EVIL EVIL bad hardcoded buffer size
+	  char fname [1024]; // FIXME EVIL EVIL bad hardcoded buffer size
 	  
 	  if (!UT_strcmp(szMimeType, "image/svg-xml"))
 	      sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
@@ -501,7 +502,7 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 	m_bInSection = true;
 
 	m_pie->write("<fo:page-sequence master-name=\"first\">\n");
-	m_pie->write("<fo:flow>\n");
+	m_pie->write("<fo:flow flow-name\"section\">\n");
 }
 
 #define BLOCK() do {if(block) m_pie->write(" "); else m_pie->write(" "); block = true;} while (0)
@@ -679,7 +680,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 	// keep track of whether we've written out anything
 	bool span = false;
 
-	m_pie->write("<fo:character");
+	m_pie->write("<fo:inline");
 
 	// query and output properties
 	if (bHaveProp && pAP)
@@ -822,7 +823,7 @@ void s_XSL_FO_Listener::_closeSpan(void)
 
 	m_bInSpan = false;
 
-	m_pie->write("</fo:character>");
+	m_pie->write("</fo:inline>");
 }
 
 /*****************************************************************/
