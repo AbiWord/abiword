@@ -124,8 +124,6 @@ XAP_CocoaDialog_FileOpenSaveAs::~XAP_CocoaDialog_FileOpenSaveAs(void)
 
 void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	m_pCocoaFrame = (XAP_CocoaFrame *)pFrame;
-	UT_ASSERT(m_pCocoaFrame);
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -319,8 +317,6 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_answer = a_OK;
 	}
 			  
-	m_pCocoaFrame = NULL;
-
 	return;
 }
 
