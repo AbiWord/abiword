@@ -15,8 +15,8 @@ Dom Lachowicz <dominicl@seas.upenn.edu>
 
 stable branch maintainers
 -------------------------
+Mark Gilbert <markgilbert@hotpop.com>
 Hubert Figuiere <hfiguiere@teaser.fr>
-Mark Gilbert <webmaster@dofty.zzn.com>
 
 contributors
 ------------
