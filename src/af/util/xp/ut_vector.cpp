@@ -32,7 +32,7 @@ UT_Vector::~UT_Vector()
 	}
 }
 
-int UT_Vector::calcNewSpace()
+UT_uint32 UT_Vector::calcNewSpace()
 {
 	if (m_iSpace < m_iCutoffDouble)
 	{
@@ -56,9 +56,9 @@ UT_uint32 UT_Vector::getItemCount() const
 	return m_iCount;
 }
 
-int UT_Vector::grow()
+UT_sint32 UT_Vector::grow()
 {
-	int new_iSpace = calcNewSpace();
+	UT_uint32 new_iSpace = calcNewSpace();
 
 	void ** new_pEntries = (void**) calloc(new_iSpace, sizeof(void*));
 	if (!new_pEntries)
@@ -68,7 +68,7 @@ int UT_Vector::grow()
 
 	if (m_pEntries && (m_iCount > 0))
 	{
-		for (int i=0; i<m_iCount; i++)
+		for (UT_uint32 i=0; i<m_iCount; i++)
 		{
 			new_pEntries[i] = m_pEntries[i];
 		}
@@ -82,7 +82,7 @@ int UT_Vector::grow()
 	return 0;
 }
 
-UT_sint32 UT_Vector::insertItemAt(void* p, UT_sint32 ndx)
+UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 {
 	if (ndx < 0 || ndx > m_iCount + 1)
 		return -1;
@@ -97,7 +97,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_sint32 ndx)
 	}
 
 	// bump the elements -> thataway up to the ndxth position
-	for (int i = m_iCount; i > ndx; i--)
+	for (UT_uint32 i = m_iCount; i > ndx; i--)
 	{
 		m_pEntries[i] = m_pEntries[i - 1];
 	}
@@ -120,7 +120,7 @@ UT_sint32 UT_Vector::addItem(void* p)
 {
 	if ((m_iCount+1) > m_iSpace)
 	{
-		int err = grow();
+		UT_sint32 err = grow();
 		if (err)
 		{
 			return err;

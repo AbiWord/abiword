@@ -27,13 +27,13 @@ public:
 	UT_uint32	getItemCount() const;
 	UT_sint32	findItem(void*);
 
-	UT_sint32	insertItemAt(void*, UT_sint32 ndx);
+	UT_sint32	insertItemAt(void*, UT_uint32 ndx);
 	void		deleteNthItem(UT_uint32 n);
 	void		clear();
 
 protected:
-	int				calcNewSpace();
-	int				grow();
+	UT_uint32		calcNewSpace();
+	UT_sint32		grow();
 	
 	void**			m_pEntries;
 	UT_uint32		m_iCount;
