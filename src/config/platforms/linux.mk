@@ -70,10 +70,10 @@ else
 endif
 
 DEFINES		=
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
+OPTIMIZER	= -O2
 
 ifeq ($(ABI_OPT_PROF),1)
-OPTIMIZER   	= -pg -Wall -ansi -pedantic -fprofile-arcs -ftest-coverage
+OPTIMIZER   	= -pg -fprofile-arcs -ftest-coverage
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
 ABI_OPT_DEBUG 	= 0
 ABI_OPT_OPTIMIZE= 1
@@ -81,7 +81,7 @@ ABI_OPTIONS	+= Profile:On
 endif
 
 ifeq ($(ABI_OPT_OPTIMIZE),1)
-OPTIMIZER	+= -O3 -fomit-frame-pointer -Wall -ansi -pedantic
+OPTIMIZER	+= -O3 -fomit-frame-pointer
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
 ABI_OPTIONS	+= Optimize:On
 ABI_OPT_DEBUG	= 0
@@ -89,6 +89,7 @@ endif
 
 ifeq ($(ABI_OPT_DEBUG),1)
 OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
+ABI_OPT_PACIFY_COMPILER = 1
 DEFINES		+= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
 ABI_OPT_OPTIMIZE = 0
@@ -107,6 +108,10 @@ OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
 ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
 	OPTIMIZER 	+= -Weffc++
 endif #/* WAY_TOO_MANY_WARNINGS */
+
+ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
+WARNFLAGS	= -Wall -ansi -pedantic
+endif
 
 # Includes
 OS_INCLUDES		=
