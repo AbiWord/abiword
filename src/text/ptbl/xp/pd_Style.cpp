@@ -58,6 +58,133 @@ bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) c
 		return pAP->getProperty(szName, szValue);
 }
 
+
+bool PD_Style::getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue)
+{
+	const PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+	{
+		return false;
+	}
+	else
+	{
+		if( pAP->getProperty(szName, szValue))
+		{
+			return true;
+		}
+		else
+		{
+			PD_Style * pStyle = getBasedOn();
+			if(pStyle != NULL)
+			{
+				return pStyle->_getPropertyExpand(szName,szValue, 0);
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+
+bool PD_Style::_getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth)
+{
+	const PP_AttrProp * pAP = NULL;
+	
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+	{
+		return false;
+	}
+	else
+	{
+		if( pAP->getProperty(szName, szValue))
+		{
+			return true;
+		}
+		else
+		{
+			PD_Style * pStyle = getBasedOn();
+			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ))
+			{
+				return pStyle->_getPropertyExpand(szName,szValue, iDepth+1);
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+
+bool PD_Style::getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue)
+{
+	const PP_AttrProp * pAP = NULL;
+	
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+	{
+		return false;
+	}
+	else
+	{
+		if( pAP->getAttribute(szName, szValue))
+		{
+			return true;
+		}
+		else
+		{
+			PD_Style * pStyle = getBasedOn();
+			if(pStyle != NULL )
+			{
+				return pStyle->_getAttributeExpand(szName,szValue, 0);
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+
+bool PD_Style::_getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth)
+{
+	const PP_AttrProp * pAP = NULL;
+	
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+	{
+		return false;
+	}
+	else
+	{
+		if( pAP->getAttribute(szName, szValue))
+		{
+			return true;
+		}
+		else
+		{
+			PD_Style * pStyle = getBasedOn();
+			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ) )
+			{
+				return pStyle->_getAttributeExpand(szName,szValue, iDepth+1);
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
 const PP_PropertyType *	PD_Style::getPropertyType(const XML_Char * szName, tProperty_type Type) const
 {
 	const PP_AttrProp * pAP = NULL;
@@ -174,15 +301,26 @@ PD_Style * PD_Style::getFollowedBy(void)
 	return m_pFollowedBy;
 }
 
-
+/*!
+ * Add a property to the style definition.
+ */
 bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
 {
 	PP_AttrProp * pAP = NULL;
+	bool bres= true;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **) &pAP))
 		return false;
 	else
-		return pAP->setProperty(szName, szValue);
+	{
+		const XML_Char * pProps[4] = {NULL,NULL,NULL,NULL};
+		pProps[0] = szName;
+		pProps[1] = szValue;
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, pProps, false);
+		pNewAP->markReadOnly();
+		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
+	}
+	return bres;
 }
 
 /*!
@@ -194,11 +332,16 @@ bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
 bool PD_Style::addProperties(const XML_Char ** pProperties)
 {
 	PP_AttrProp * pAP = NULL;
-	
+	bool bres= true;
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
 		return false;
 	else
-		return pAP->setProperties(pProperties);
+	{
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, pProperties, false);
+		pNewAP->markReadOnly();
+		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
+	}
+	return bres;
 }
 
 /*!
