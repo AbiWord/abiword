@@ -130,7 +130,7 @@ bool ps_Generate::writeBytes(UT_Byte * pBytes, size_t length)
 
 bool ps_Generate::formatComment(const char * szCommentName)
 {
-	UT_String buf = "%%%%";
+	UT_String buf = "%%";
 	buf += szCommentName;
 	buf += "\n";
 	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
@@ -144,7 +144,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const char * szArg1)
 	// we do not PS-escape arg1.
 	// return true if successful.
 
-	UT_String buf = "%%%%";
+	UT_String buf = "%%";
 	buf += szCommentName;
 	buf += ": ";
 	buf += szArg1;
@@ -158,7 +158,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const char **argv, i
 	// we PS-escapify each arg as we output it.
 	// return true if successful.
 	
-        UT_String buf = "%%%%";
+        UT_String buf = "%%";
 	int bufLen;
 	
         buf += szCommentName;
@@ -176,7 +176,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const char **argv, i
 			buf += "\n";
 			if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
 				return false;
-			buf = "%%%%+";
+			buf = "%%+";
 		}
 	}
 	bufLen = buf.size();
@@ -195,7 +195,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	// we PS-escapify each arg as we output it.
 	// return true if successful.
 	
-	UT_String buf = "%%%%";
+	UT_String buf = "%%";
 	buf += szCommentName;
 
 	int bufLen;
@@ -216,7 +216,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 			buf += "\n";
 			if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
 				return false;
-			buf = "%%%%+";
+			buf = "%%+";
 		}
 	}
 	bufLen = buf.size();
