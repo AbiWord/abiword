@@ -113,7 +113,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 // Not implemented for UNIX. No need for it.
 #if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
-
+	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		Save_Pref_Bool( pPrefsScheme, m_pApp->getToolbarFactory()->prefKeyForToolbar(i), _gatherViewShowToolbar(i));
 	}
@@ -313,13 +313,16 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 
 		case id_CHECK_VIEW_SHOW_RULER:
 #if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
-			tmpbool = _gatherViewShowRuler();
-			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
-			if (tmpbool != pFrameData->m_bShowRuler)
 			{
-				pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
-				m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
+				bool tmpbool = _gatherViewShowRuler();
+				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
+				if (tmpbool != pFrameData->m_bShowRuler)
+				{
+					pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
+					m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
+				}
 			}
+			
 #endif
 			break;
 
@@ -334,13 +337,16 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 
 		case id_CHECK_VIEW_SHOW_STATUS_BAR:
 #if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
-			tmpbool = _gatherViewShowStatusBar();
-			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
-			if (tmpbool != pFrameData->m_bShowStatusBar)
 			{
-				pFrameData->m_bShowStatusBar = tmpbool;
-				m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+				bool tmpbool = _gatherViewShowStatusBar();
+				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
+				if (tmpbool != pFrameData->m_bShowStatusBar)
+				{
+					pFrameData->m_bShowStatusBar = tmpbool;
+					m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+				}
 			}
+			
 #endif
 			break;
 
@@ -486,7 +492,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 #if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
-
+	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (pPrefs->getPrefsValueBool((XML_Char*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
 			_setViewShowToolbar (i, b);
