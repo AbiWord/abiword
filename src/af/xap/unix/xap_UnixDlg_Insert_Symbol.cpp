@@ -172,7 +172,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
-	// Save dialog the ID number and pointer to the widget
+	// Save dialog the ID number and pointer to the Dialog
 	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
 
 	// This magic command displays the frame that characters will be
@@ -595,7 +595,8 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					   (gpointer) this);
 
 	// the catch-alls
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	// Dont use gtk_signal_connect_after for modeless dialogs
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 (gpointer) this);

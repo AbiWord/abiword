@@ -47,17 +47,17 @@ public:
 		a_CLOSE
 	} tAnswer;
 
-    AP_Dialog_Goto::tAnswer	 	getAnswer(void) const;
-
+        AP_Dialog_Goto::tAnswer	 	getAnswer(void) const;
+        void                            ConstructWindowName(void);
 	// These are called from edit methods or from dialogs
 	// to set or read the variables in the current
 	// instance of the dialog.  These do not read the persistent
 	// values.
   	UT_Bool						setView(FV_View * view);
   	FV_View * 					getView(void);
-
+	void                                            setActiveFrame(XAP_Frame *pFrame);
 	static char **              getJumpTargets(void); // TODO: Change to UT_UCSChar
-
+	void                        _setupJumpTargets(void);
  protected:
 	
 	// These are the "current use" dialog data items,
@@ -68,8 +68,7 @@ public:
 
 	// is this used in a modeless dialog like this?
 	tAnswer						m_answer;
-	
-	void			    _setupJumpTargets();
+	char m_WindowName[100];
 };
 
 #endif /* AP_DIALOG_GOTO_H */

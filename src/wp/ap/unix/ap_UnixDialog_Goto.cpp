@@ -107,6 +107,8 @@ void AP_UnixDialog_Goto::s_deleteClicked (GtkWidget * widget, AP_UnixDialog_Goto
 	me->destroy();
 }
 
+
+
 void AP_UnixDialog_Goto::s_targetChanged (GtkWidget *clist, gint row, gint column,
 										  GdkEventButton *event, AP_UnixDialog_Goto *me)
 {
@@ -164,7 +166,17 @@ void AP_UnixDialog_Goto::destroy (void)
 void AP_UnixDialog_Goto::activate (void)
 {
 	UT_ASSERT (m_wMainWindow);
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), m_WindowName);
 	gdk_window_raise (m_wMainWindow->window);
+}
+
+
+void AP_UnixDialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
+{
+        UT_ASSERT(m_wMainWindow);
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), m_WindowName);
 }
 
 GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
@@ -176,7 +188,8 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 
 	m_wMainWindow = gtk_dialog_new ();
 	gtk_container_set_border_width (GTK_CONTAINER (m_wMainWindow), 4);
-	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), pSS->getValue (AP_STRING_ID_DLG_Goto_Title));
+        ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_wMainWindow),m_WindowName);
 	gtk_window_set_policy(GTK_WINDOW(m_wMainWindow), FALSE, FALSE, TRUE);
 	vbox = GTK_DIALOG (m_wMainWindow)->vbox;
 	actionarea = GTK_DIALOG (m_wMainWindow)->action_area;
@@ -297,12 +310,13 @@ void AP_UnixDialog_Goto::_connectSignals(void)
 {
 	gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
 							 "destroy",
-							 GTK_SIGNAL_FUNC(s_deleteClicked),
-							 this);
-	gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_deleteClicked),
-							 this);
+							 NULL,
+							 NULL);
+	//
+        // Don't use connect_after in modeless dialog
+	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+						     "delete_event",
+						     GTK_SIGNAL_FUNC(s_deleteClicked), (gpointer) this);
 	gtk_signal_connect (GTK_OBJECT (m_wPrev), "clicked",
 						GTK_SIGNAL_FUNC (s_prevClicked), this);
 	gtk_signal_connect (GTK_OBJECT (m_wNext), "clicked",

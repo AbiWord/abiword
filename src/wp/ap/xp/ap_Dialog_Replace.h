@@ -26,17 +26,26 @@
 #include "xav_View.h"
 #include "pt_Types.h"
 
-class AP_Dialog_Replace : public XAP_Dialog_FramePersistent
+class AP_Dialog_Replace : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Replace(void);
 
-	virtual void				useStart(void);
-	virtual void				runModal(XAP_Frame * pFrame) = 0;
-	virtual void				useEnd(void);
+	//------------------------------------------------------------
+	// All these are needed for a modeless dialog
+
+	virtual void     useStart(void);
+	virtual void     useEnd(void);
+	virtual void	 runModal(XAP_Frame * pFrame) = 0;
+	virtual void	 runModeless(XAP_Frame * pFrame) = 0;
+        virtual void     destroy(void)=0;
+        virtual void     activate(void)=0;
+	void		 setActiveFrame(XAP_Frame *pFrame);
+	virtual void		notifyActiveFrame(XAP_Frame *pFrame) = 0;
 
 	typedef enum { a_VOID, a_FIND_NEXT, a_REPLACE, a_REPLACE_ALL, a_CANCEL }	tAnswer;
+        void                                       ConstructWindowName(void);
 
     AP_Dialog_Replace::tAnswer	getAnswer(void) const;
 
@@ -45,7 +54,8 @@ public:
 	// instance of the dialog.  These do not read the persistent
 	// values.
 	UT_Bool						setView(AV_View * view);
-	AV_View * 					getView(void) const;
+	AV_View * 					getView(void);
+	FV_View * 					getFvView(void);
 	
 	UT_Bool						setFindString(const UT_UCSChar * string);
 	UT_UCSChar *				getFindString(void);
@@ -96,6 +106,11 @@ public:
 	
 	// is this used in a modeless dialog like this?
 	tAnswer					m_answer;
+        char                       m_WindowName[100];
 };
 
 #endif /* AP_DIALOG_REPLACE_H */
+
+
+
+

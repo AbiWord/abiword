@@ -108,10 +108,13 @@ void  AP_UnixDialog_WordCount::activate(void)
 {
 	UT_ASSERT (m_windowMain);
         
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	setCountFromActiveFrame ();
 	_updateWindowData ();
 	gdk_window_raise (m_windowMain->window);
 }
+
 
 void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
 {
@@ -267,6 +270,9 @@ void AP_UnixDialog_WordCount::event_WindowDelete(void)
 
 void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 {
+        UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	event_Update();
 }
 
@@ -294,7 +300,8 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
 
 	gtk_container_set_border_width(GTK_CONTAINER (m_windowMain), 20);
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle));
+        ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
 
 	vbox = gtk_vbox_new (FALSE, 4);
@@ -554,7 +561,8 @@ void AP_UnixDialog_WordCount::_connectSignals(void)
 					   (gpointer) this);
 
 	// the catch-alls
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	// Don't use gtk_signal_connect_after for Modeless dialogs
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 (gpointer) this);

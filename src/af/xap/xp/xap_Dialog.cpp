@@ -20,6 +20,7 @@
 #include <string.h>
 #include "xap_Dialog.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "xap_DialogFactory.h"
 #include "xap_App.h"
 #include "xap_Frame.h"

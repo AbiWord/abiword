@@ -130,44 +130,45 @@ static void s_replace_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace *
 
 /*****************************************************************/
 
-void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
+void AP_UnixDialog_Replace::activate(void)
 {
+        UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+        gdk_window_raise(m_windowMain->window);
+}
+
+
+void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
+{
+        UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+}
+
+void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
+{
+	// get the Dialog Id number
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+	// Save dialog the ID number and pointer to the Dialog
+	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
+
+	// This magic command displays the frame where strings will be found
+	connectFocusModeless(GTK_WIDGET(mainWindow),m_pApp);
+
 	// Populate the window's data items
 	_populateWindowData();
 	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
-
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// this dialogs needs this
-	setView(static_cast<FV_View *> (pFrame->getCurrentView()));
-
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	_storeWindowData();
-	
-	gtk_widget_destroy(mainWindow);
+	// this dialog needs this
+	setView(static_cast<FV_View *> (getActiveFrame()->getCurrentView()));
 }
 
 void AP_UnixDialog_Replace::event_Find(void)
@@ -241,13 +242,21 @@ void AP_UnixDialog_Replace::event_MatchCaseToggled(void)
 void AP_UnixDialog_Replace::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Replace::a_CANCEL;
-	gtk_main_quit();
+	destroy();
+}
+
+void AP_UnixDialog_Replace::destroy(void)
+{
+	_storeWindowData();
+        modeless_cleanup();
+        gtk_widget_destroy(m_windowMain);
+        m_windowMain = NULL;
 }
 
 void AP_UnixDialog_Replace::event_WindowDelete(void)
 {
 	m_answer = AP_Dialog_Replace::a_CANCEL;	
-	gtk_main_quit();
+	destroy();
 }
 
 /*****************************************************************/
@@ -272,23 +281,18 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-	// conditionally set title
-	if (m_id == AP_DIALOG_ID_FIND)
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
-	else
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));		
-	windowReplace = gtk_window_new (GTK_WINDOW_DIALOG);
+
+	windowReplace = gtk_window_new(GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "windowReplace", windowReplace);
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Insert));
-	gtk_window_set_title (GTK_WINDOW (windowReplace), "REPLACE THIS STRING");
+
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (windowReplace),  m_WindowName);
 	// find is smaller
 	if (m_id == AP_DIALOG_ID_FIND)
 		gtk_widget_set_usize (windowReplace, 390, 102);
 	else
 		gtk_widget_set_usize (windowReplace, 390, 123);
-	
-	FREEP(unixstr);
+
 	gtk_window_set_policy (GTK_WINDOW (windowReplace), FALSE, FALSE, FALSE);
 
 	// top level vbox
@@ -396,12 +400,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonCancel);
-
-	// Configuration of the title depending on the ID
-	if (m_id == AP_DIALOG_ID_FIND)
-		gtk_window_set_title(GTK_WINDOW(windowReplace), pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
-	else
-		gtk_window_set_title(GTK_WINDOW(windowReplace), pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));
 
 	// attach generic signals
 	gtk_signal_connect(GTK_OBJECT(checkbuttonMatchCase),

@@ -56,7 +56,8 @@ GtkWidget * AP_UnixGnomeDialog_Goto::_constructWindow (void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_wMainWindow = gnome_dialog_new (pSS->getValue (AP_STRING_ID_DLG_Goto_Title), NULL);
+	ConstructWindowName();
+	m_wMainWindow = gnome_dialog_new (m_WindowName, NULL);
 
 	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (m_wMainWindow)->vbox),
 						_constructWindowContents (), TRUE, TRUE, 0);

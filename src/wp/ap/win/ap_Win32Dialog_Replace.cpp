@@ -58,7 +58,7 @@ AP_Win32Dialog_Replace::~AP_Win32Dialog_Replace(void)
 {
 }
 
-void AP_Win32Dialog_Replace::runModal(XAP_Frame * pFrame)
+void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 {
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(pFrame->getApp());
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);

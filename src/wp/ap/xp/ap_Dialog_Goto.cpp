@@ -74,6 +74,26 @@ AP_Dialog_Goto::tAnswer AP_Dialog_Goto::getAnswer(void) const
 	return m_answer;
 }
 
+
+void AP_Dialog_Goto::ConstructWindowName(void)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	XML_Char * tmp = NULL;
+        UT_uint32 title_width = 33;
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_Goto_Title));
+        BuildWindowName((char *) m_WindowName,tmp,title_width);
+        FREEP(tmp);
+
+}
+
+
+void  AP_Dialog_Goto::setActiveFrame(XAP_Frame *pFrame)
+{
+        setView(getView());
+	notifyActiveFrame(getActiveFrame());
+}
+
+
 // --------------------------- Setup Functions -----------------------------
 UT_Bool AP_Dialog_Goto::setView(FV_View * view)
 {

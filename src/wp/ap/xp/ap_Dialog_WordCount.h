@@ -41,10 +41,16 @@ public:
 	FV_DocCount							getCount(void) const;
 	void								setCount(FV_DocCount);
 	void								setCountFromActiveFrame(void);
+        void                                    ConstructWindowName(void);
+
+        void                                    setActiveFrame(XAP_Frame *pFrame);
 
 protected:
 	AP_Dialog_WordCount::tAnswer		m_answer;
 	FV_DocCount							m_count;
+	char m_WindowName[100];
 };
 
 #endif /* AP_DIALOG_WORDCOUNT_H */
+
+

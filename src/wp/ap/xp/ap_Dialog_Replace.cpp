@@ -25,6 +25,8 @@
 #include "ut_debugmsg.h"
 
 #include "ap_Dialog_Replace.h"
+#include "ap_Dialog_Id.h"
+#include "ap_Strings.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -35,7 +37,7 @@
 
 
 AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_FramePersistent(pDlgFactory,id)
+	: XAP_Dialog_Modeless(pDlgFactory,id)
 {
 	persist_findString = NULL;
 	persist_replaceString = NULL;
@@ -56,7 +58,7 @@ AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 
 AP_Dialog_Replace::~AP_Dialog_Replace(void)
 {
-	UT_ASSERT(!m_bInUse);
+  //	UT_ASSERT(!m_bInUse);
 
 	FREEP(m_findString);
 	FREEP(m_replaceString);
@@ -67,9 +69,7 @@ AP_Dialog_Replace::~AP_Dialog_Replace(void)
 
 void AP_Dialog_Replace::useStart(void)
 {
-	UT_DEBUGMSG(("AP_Dialog_Replace::useStart(void) I've been called\n"));
-
-	XAP_Dialog_FramePersistent::useStart();
+  	UT_DEBUGMSG(("AP_Dialog_Replace::useStart(void) I've been called\n"));
 
 	// restore from persistent storage
 	if (persist_findString)
@@ -85,11 +85,6 @@ void AP_Dialog_Replace::useEnd(void)
 {
 
 	UT_DEBUGMSG(("AP_Dialog_Replace::useEnd(void) I've been called\n"));
-	XAP_Dialog_FramePersistent::useEnd();
-
-	// Let the view know it doens't need to maintain it's
-	// "find" or "replace" session-oriented counters
-	UT_ASSERT(m_pView);
 	
 	// persistent dialogs don't destroy this data
 	if (m_didSomething)
@@ -122,19 +117,50 @@ UT_Bool AP_Dialog_Replace::setView(AV_View * view)
 	// outline view, etc.
 	UT_ASSERT(view);
 
-	m_pFrame = (XAP_Frame *) view->getParentData();
+	m_pFrame = (XAP_Frame *) getActiveFrame();
 	UT_ASSERT(m_pFrame);
 	
-	m_pView = static_cast<FV_View *>(view);
+	m_pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 
-	m_pView->findSetStartAtInsPoint();
+	getFvView()->findSetStartAtInsPoint();
 	
 	return UT_TRUE;
 }
 
-AV_View * AP_Dialog_Replace::getView(void) const
+AV_View * AP_Dialog_Replace::getView(void) 
 {
-	return m_pView;
+	return getActiveFrame()->getCurrentView();
+}
+
+void  AP_Dialog_Replace::setActiveFrame(XAP_Frame *pFrame)
+{
+        setView(getView());
+	notifyActiveFrame(getActiveFrame());
+}
+
+void  AP_Dialog_Replace::ConstructWindowName(void)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	XML_Char * tmp = NULL;
+        UT_uint32 title_width = 0;
+	// conditionally set title
+	if (m_id == AP_DIALOG_ID_FIND)
+	{
+                UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
+                title_width = 30;
+	}
+	else
+	{
+                UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));	
+                title_width = 60;
+	}
+        BuildWindowName((char *) m_WindowName,tmp,title_width);
+        FREEP(tmp);
+}
+
+FV_View * AP_Dialog_Replace::getFvView(void) 
+{
+	return static_cast<FV_View *>(getView());
 }
 
 UT_Bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
@@ -197,8 +223,6 @@ UT_Bool	AP_Dialog_Replace::getMatchCase(void)
 
 UT_Bool AP_Dialog_Replace::findNext()
 {
-	UT_ASSERT(m_pView);
-
 	UT_ASSERT(m_findString);
 	//UT_ASSERT(m_replaceString);
 	
@@ -208,10 +232,10 @@ UT_Bool AP_Dialog_Replace::findNext()
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 
 	// update the view's automatic "find next" string
-	m_pView->findSetNextString(m_findString, m_matchCase);
+	getFvView()->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findNext(m_findString, m_matchCase, &bDoneEntireDocument);
+	UT_Bool result = getFvView()->findNext(m_findString, m_matchCase, &bDoneEntireDocument);
 
 	if (bDoneEntireDocument == UT_TRUE)
 		_messageFinishedFind();
@@ -221,7 +245,6 @@ UT_Bool AP_Dialog_Replace::findNext()
 
 UT_Bool AP_Dialog_Replace::findReplace()
 {
-	UT_ASSERT(m_pView);
 
 	UT_ASSERT(m_findString);
 	UT_ASSERT(m_replaceString);
@@ -232,10 +255,10 @@ UT_Bool AP_Dialog_Replace::findReplace()
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 	
 	// update the view's automatic "find next" string
-	m_pView->findSetNextString(m_findString, m_matchCase);
+	getFvView()->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString,
+	UT_Bool result = getFvView()->findReplace(m_findString, m_replaceString,
 										  m_matchCase, &bDoneEntireDocument);
 
 	if (bDoneEntireDocument == UT_TRUE)
@@ -246,7 +269,6 @@ UT_Bool AP_Dialog_Replace::findReplace()
 
 UT_Bool AP_Dialog_Replace::findReplaceAll()
 {
-	UT_ASSERT(m_pView);
 
 	UT_ASSERT(m_findString);
 	UT_ASSERT(m_replaceString);
@@ -257,10 +279,10 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 	
 	// update the view's automatic "find next" string
-	m_pView->findSetNextString(m_findString, m_matchCase);
+	getFvView()->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_uint32 numReplaced = m_pView->findReplaceAll(m_findString,
+	UT_uint32 numReplaced = getFvView()->findReplaceAll(m_findString,
 													m_replaceString,
 													m_matchCase);
 
@@ -285,7 +307,7 @@ void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 
 void AP_Dialog_Replace::_messageBox(char * message)
 {
-	m_pFrame->showMessageBox(message,
+	getActiveFrame()->showMessageBox(message,
 								XAP_Dialog_MessageBox::b_O,
 								XAP_Dialog_MessageBox::a_OK);
 }

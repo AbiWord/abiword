@@ -3026,15 +3026,19 @@ static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 
 		FREEP(buffer);
 	}
-		
+	      
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
-	pDialog->runModal(pFrame);
-	
+        // OK I Will
+        if(pDialog->isRunning() == UT_TRUE)
+	{
+	       pDialog->activate();
+	}
+        else
+	{
+	       pDialog->runModeless(pFrame);
+	}
 	UT_Bool bOK = UT_TRUE;
-
-	pDialogFactory->releaseDialog(pDialog);
-
 	return bOK;
 }
 

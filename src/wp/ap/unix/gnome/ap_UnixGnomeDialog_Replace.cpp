@@ -122,43 +122,30 @@ static void s_replace_entry_activate(GtkWidget * widget, AP_UnixGnomeDialog_Repl
 
 /*****************************************************************/
 
-void AP_UnixGnomeDialog_Replace::runModal(XAP_Frame * pFrame)
+void AP_UnixGnomeDialog_Replace::runModeless(XAP_Frame * pFrame)
 {
+
+	// get the Dialog Id number
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
+	// Save dialog the ID number and pointer to the Dialog
+	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
+
+	// This magic command displays the frame where strings will be found
+	connectFocusModeless(GTK_WIDGET(mainWindow),m_pApp);
+
 	// Populate the window's data items
 	_populateWindowData();
 	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
-
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// this dialogs needs this
-	setView(static_cast<FV_View *> (pFrame->getCurrentView()));
-
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	_storeWindowData();
-	
-	gtk_widget_destroy(mainWindow);
+	// this dialog needs this
+	setView(static_cast<FV_View *> (getActiveFrame()->getCurrentView()));
 }
 
 GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
@@ -182,21 +169,17 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 	// conditionally set title
-	if (m_id == AP_DIALOG_ID_FIND)
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
-	else
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));		
-	windowReplace = gnome_dialog_new (unixstr, NULL);
+
+	ConstructWindowName();
+	windowReplace = gnome_dialog_new ( m_WindowName, NULL);
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "windowReplace", windowReplace);
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Insert));
+
 	// find is smaller
 //  	if (m_id == AP_DIALOG_ID_FIND)
 //  		gtk_widget_set_usize (windowReplace, 390, 102);
 //  	else
 //  		gtk_widget_set_usize (windowReplace, 390, 123);
 	
-	FREEP(unixstr);
 	gtk_window_set_policy (GTK_WINDOW (windowReplace), FALSE, FALSE, FALSE);
 
 	// top level vbox
@@ -294,12 +277,6 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonCancel", buttonCancel);
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
 
-	// Configuration of the title depending on the ID
-	if (m_id == AP_DIALOG_ID_FIND)
-		gtk_window_set_title(GTK_WINDOW(windowReplace), pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
-	else
-		gtk_window_set_title(GTK_WINDOW(windowReplace), pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));
-
 	// attach generic signals
 	gtk_signal_connect(GTK_OBJECT(checkbuttonMatchCase),
 					   "toggled",
@@ -324,15 +301,16 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 					   this);
 
 	// Window events
-	gtk_signal_connect_after(GTK_OBJECT(windowReplace),
+	//	gtk_signal_connect_after(GTK_OBJECT(windowReplace),
+	gtk_signal_connect(GTK_OBJECT(windowReplace),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowReplace),
+		gtk_signal_connect_after(GTK_OBJECT(windowReplace),
 							 "destroy",
-							 NULL,
-							 NULL);
+						 NULL,
+						 NULL);
 
 	// signals only useful in "replace mode"
 	if (m_id == AP_DIALOG_ID_REPLACE)

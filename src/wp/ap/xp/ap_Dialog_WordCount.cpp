@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
+#include "ap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
@@ -60,4 +61,21 @@ void AP_Dialog_WordCount::setCountFromActiveFrame(void)
 {
 	FV_View * pview = (FV_View *) getActiveFrame()->getCurrentView();
 	setCount(pview->countWords());
+}
+
+
+void AP_Dialog_WordCount::ConstructWindowName(void)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	XML_Char * tmp = NULL;
+        UT_uint32 title_width = 26;
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle));
+        BuildWindowName((char *) m_WindowName,tmp,title_width);
+        FREEP(tmp);
+
+}
+
+void    AP_Dialog_WordCount::setActiveFrame(XAP_Frame *pFrame)
+{
+	notifyActiveFrame(getActiveFrame());
 }

@@ -31,7 +31,12 @@ public:
 	AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Replace(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame){};
+	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame){};
+	virtual void			notifyCloseFrame(XAP_Frame *pFrame){};
+	virtual void			destroy(void){};
+	virtual void			activate(void){};
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
