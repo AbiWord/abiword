@@ -52,6 +52,12 @@ public:
 	UT_sint32				m_xrFirstLineIndent;
 	UT_sint32				m_xrRightIndent;
 
+	// tab stop information
+
+	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType);
+	void *					m_pVoidEnumTabStopsData;
+	UT_sint32				m_iDefaultTabInterval;
+	
 	// current column number and the number of columns
 	
 	UT_uint32				m_iCurrentColumn;
@@ -177,7 +183,8 @@ protected:
 								 DW_LEFTINDENT,
 								 DW_RIGHTINDENT,
 								 DW_FIRSTLINEINDENT,
-								 DW_LEFTINDENTWITHFIRST
+								 DW_LEFTINDENTWITHFIRST,
+								 DW_TABSTOP
 	} DraggingWhat;
 
 	DraggingWhat		m_draggingWhat;

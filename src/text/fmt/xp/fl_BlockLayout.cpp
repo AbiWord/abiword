@@ -2737,6 +2737,23 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_s
 	return UT_FALSE;
 }
 
+UT_Bool fl_BlockLayout::s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType)
+{
+	// a static function
+
+	fl_BlockLayout * pBL = (fl_BlockLayout *)myThis;
+
+	UT_uint32 iCountTabs = pBL->m_vecTabs.getItemCount();
+	if (k >= iCountTabs)
+		return UT_FALSE;
+	fl_TabStop * pTab = (fl_TabStop *)pBL->m_vecTabs.getNthItem(k);
+
+	iPosition = pTab->iPosition;
+	iType = pTab->iType;
+	return UT_TRUE;
+}
+
+
 void fl_BlockLayout::setNext(fl_BlockLayout* pBL)
 {
 	m_pNext = pBL;

@@ -4061,12 +4061,19 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 		pInfo->m_xPaperSize = m_pG->convertDimension("8.5in"); // TODO eliminate this constant
 		pInfo->m_xPageViewMargin = fl_PAGEVIEW_MARGIN_X;
+
 		pInfo->m_xrPoint = xCaret - pColumn->getX();
 		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
+
+		pInfo->m_pfnEnumTabStops = pBlock->s_EnumTabStops;
+		pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
+		pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
+
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pSection->getNumColumns();
+
 		pInfo->u.c.m_xaLeftMargin = pSection->getLeftMargin();
 		pInfo->u.c.m_xaRightMargin = pSection->getRightMargin();
 		pInfo->u.c.m_xColumnGap = pSection->getColumnGap();

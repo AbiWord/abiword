@@ -126,6 +126,7 @@ public:
 
 	void checkSpelling(void);
 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
+	inline getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 
 	UT_Bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
@@ -159,6 +160,8 @@ public:
 	inline UT_Bool			needsReformat(void) const { return m_bNeedsReformat; }
 
 	void					checkWord(fl_PartOfBlock* pPOB);
+
+	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType);
 	
 #ifndef NDEBUG
 	void					debug_dumpRunList(void);
@@ -259,6 +262,8 @@ public:
 
 protected:
 };
+
+// TODO make a typedef to type type rather than just using 'unsigned char'
 
 #define FL_TAB_LEFT				1
 #define FL_TAB_RIGHT			2
