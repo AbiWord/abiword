@@ -366,7 +366,7 @@ void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 
 void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 {
-	setDetailsLevel(iLevel);
+	AP_Dialog_FormatTOC::setDetailsLevel(iLevel);
 	UT_UTF8String sVal;
 
 	sVal = getTOCPropVal("toc-label-after",getDetailsLevel());
