@@ -855,7 +855,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 				return true;
 			}
 			// Insert a character into the story
-            if ((ch >= 32  ||  ch == 9 || ch == UCS_FF || ch == UCS_LF)  &&  !m_currentRTFState.m_charProps.m_deleted)
+            if ((ch >= 32  ||  ch == 9 || ch == UCS_FF || ch == UCS_LF || ch == UCS_VTAB)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
 				if (no_convert==0 && ch<=0xff) 
 				{	

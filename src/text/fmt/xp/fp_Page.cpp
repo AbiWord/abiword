@@ -59,6 +59,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	UT_ASSERT(pG);
 
 	m_iResolution = pG->getResolution();
+	UT_DEBUGMSG(("SEVIOR: Owner initially set to %x \n",m_pOwner));
 
 	m_pOwner->addOwnedPage(this);
 }
@@ -406,6 +407,7 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 
 	// Update owner and reformat
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	UT_DEBUGMSG(("SEVIOR: Owner %x changed to %x \n",m_pOwner, pFirstColumnLeader->getDocSectionLayout()));
 	m_pOwner = pFirstColumnLeader->getDocSectionLayout();
 
 	_reformat();
