@@ -93,6 +93,44 @@ void AP_QNXDialog_InsertTable::runModal(XAP_Frame * pFrame)
 	PtDestroyWidget(mainWindow);
 }
 
+int ph_event_close(PtWidget_t *widget,AP_QNXDialog_InsertTable *dialog,PtCallbackInfo_t *cbinfo)
+{
+dialog->done=1;
+return Pt_CONTINUE;
+}
+
+int ph_event_ok(PtWidget_t *widget,AP_QNXDialog_InsertTable *dialog,PtCallbackInfo_t *cbinfo)
+{
+dialog->event_OK();
+return Pt_CONTINUE;
+}
+
+int ph_event_cancel(PtWidget_t *widget,AP_QNXDialog_InsertTable *dialog,PtCallbackInfo_t *cbinfo)
+{
+dialog->event_Cancel();
+return Pt_CONTINUE;
+}
+
+void AP_QNXDialog_InsertTable::event_OK()
+{
+int *num;
+
+PtGetResource(m_widgetNumCol,Pt_ARG_NUMERIC_VALUE,&num,0);
+m_numCols=*num;
+PtGetResource(m_widgetNumRow,Pt_ARG_NUMERIC_VALUE,&num,0);
+m_numRows=*num;
+//Add the radio buttons.
+m_columnType = AP_Dialog_InsertTable::b_AUTOSIZE;
+
+done=1;
+m_answer = AP_Dialog_InsertTable::a_OK;
+}
+
+void AP_QNXDialog_InsertTable::event_Cancel()
+{
+done=1;
+m_answer = AP_Dialog_InsertTable::a_CANCEL;
+}
 PtWidget_t * AP_QNXDialog_InsertTable::_constructWindow(void)
 {
 PtWidget_t *mainwindow;
@@ -219,7 +257,15 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	n=0;
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Cancel),0);
 	btn_cancel = PtCreateWidget(PtButton,group_btn,n,args);
-	
+
+	PtAddCallback(btn_ok,Pt_CB_ACTIVATE,ph_event_ok,this);
+	PtAddCallback(btn_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);	
+	PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
+
+
+	m_widgetNumCol=num_col;
+	m_widgetNumRow=num_row;
 
 return mainwindow;
 }
+

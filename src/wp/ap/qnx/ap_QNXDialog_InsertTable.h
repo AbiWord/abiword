@@ -42,7 +42,9 @@ public:
 
 protected:
 	PtWidget_t * _constructWindow();
-
+	PtWidget_t *m_widgetNumCol;
+	PtWidget_t *m_widgetNumRow;
+	//..Radio..
 };
 
 #endif /* AP_QNXDIALOG_INSERTTABLE_H */
