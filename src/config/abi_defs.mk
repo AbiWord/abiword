@@ -45,8 +45,8 @@
 #### ABI_OPT_GNOME=1
 ####
 
-#### To build with libxml2 (aka gnome-xml version 2)
-#### as opposed to expat as XML parser 
+#### To use the peer library expat over the default 
+#### build with libxml2 (aka gnome-xml version 2)
 #### add the following line back to the
 #### Makefile, add the variable to the make command line, or set
 #### this variable as an environment variable.  A full recompile
@@ -55,11 +55,7 @@
 #### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
 #### NOTE: this to **any** value will enable it.
 ####
-#### NOTE: this is still experimental and require version 2.x of 
-#### NOTE: libxml (aka gnome-xml). Get the latest version from
-#### NOTE: http://xmlsoft.org/
-####
-#### ABI_OPT_LIBXML2=1
+#### ABI_OPT_PEER_EXPAT=1
 ####
 
 #### To get a cygwin/gcc/gtk (as opposed to a native win32) build: add
@@ -195,6 +191,12 @@ ifndef ABI_ESCAPE_QUOTES
  endif
 endif
 
+# Currently hard code expat to default for Win32
+ifeq ($(OS_NAME),WIN32)
+  ABI_OPT_PEER_EXPAT=1
+endif
+
+
 ##################################################################
 ##################################################################
 #### if it is Darwin, we suspect taht we have MacOS X, hence we 
@@ -317,10 +319,8 @@ ifeq ($(OS_NAME), WIN32)
 ABI_OTH_INCS+=	/../../wv/glib-wv 
 endif
 
-ifeq ($(ABI_OPT_LIBXML2),1)
-ABI_PEER_INCS=
-else
-ABI_PEER_INCS=	/../../expat/lib
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+  ABI_PEER_INCS+=/../../expat/lib
 endif
 ABI_PEER_INCS+=/../../wv/exporter
 ABI_PEER_INCS+=/../../popt
@@ -681,25 +681,27 @@ LIBCURL_LIBS    =       $(shell curl-config --libs)
 CFLAGS          +=      $(LIBCURL_CFLAGS) -DHAVE_CURLHASH=1
 EXTRA_LIBS      +=      $(LIBCURL_LIBS)
 endif
-
-ifeq ($(ABI_OPT_LIBXML2),1)
-XML_CFLAGS	= $(shell $(LIBXML_CONFIG) --cflags)
-XML_LIBS	= $(shell $(LIBXML_CONFIG) --libs)
-CFLAGS 		+=	$(XML_CFLAGS) -DHAVE_LIBXML2
-EXTRA_LIBS	+=	$(XML_LIBS)
-ABI_OPTIONS+=LibXML:On
-else
-ABI_OPTIONS+=LibXML:Off
-endif
 endif
 
-ifeq ($(OS_NAME), WIN32)
-EXTRA_LIBS	+= $(ABI_ROOT)/../expat/lib/.libs/libexpat.lib
-LDFLAGS += /NODEFAULTLIB:LIBC
+##################################################################
+##################################################################
+## XML Parser
+## Default = libxml2, peer = expat
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+  ifeq ($(OS_NAME),WIN32)
+    EXTRA_LIBS += $(ABI_ROOT)/../expat/lib/.libs/libexpat.lib
+    LDFLAGS += /NODEFAULTLIB:LIBC
+  else
+    EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat 
+  endif
+  CFLAGS += -DHAVE_EXPAT
+  ABI_OPTIONS+=XML:expat
 else
-ifneq ($(ABI_OPT_LIBXML2),1)
-EXTRA_LIBS	+= -L$(ABI_ROOT)/../expat/lib/.libs -lexpat 
-endif
+  XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
+  XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
+  CFLAGS 	 +=	$(XML_CFLAGS) 
+  EXTRA_LIBS +=	$(XML_LIBS)
+  ABI_OPTIONS+=XML:libxml2
 endif
 
 ##################################################################
@@ -718,7 +720,7 @@ endif
 
 # Perl scripting support
 ifeq ($(ABI_OPT_PERL),1)
-    ifeq ($(OS_NAME), WIN32)
+    ifeq ($(OS_NAME),WIN32)
 		EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts | sed 's|[a-zA-Z0-9~:\\]*msvcrt\.lib||g' | sed 's|\([-/]release\|[-/]nodefaultlib\|[-/]nologo\|[-/]machine:[a-zA-Z0-9]*\)||g' | sed 's|\\|\\\\\\\\|g')
 		CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts | sed 's/\(-O1\|-MD\)//g')
     else

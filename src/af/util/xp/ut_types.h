@@ -43,11 +43,6 @@
 #define UT_END_EXTERN_C
 #endif
 
-#ifdef HAVE_LIBXML2
-#include /**/ <libxml/tree.h>
-typedef char XML_Char;
-#endif
-
 typedef unsigned char		UT_Byte;
 
 /* NOTA BENE: UT_UCSChar is deprecated; all new code must use

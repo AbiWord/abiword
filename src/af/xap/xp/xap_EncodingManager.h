@@ -27,6 +27,13 @@
 #include "ut_xml.h"
 #include "ut_iconv.h"
 
+#define XML_Encoding void
+#if defined(HAVE_EXPAT)
+	#undef XML_Char
+	#undef XML_Encoding
+	#include <expat.h>
+#endif
+
 struct ABI_EXPORT XAP_LangInfo
 {
 	/*no memeber can have NULL value. If string is empty, then value is

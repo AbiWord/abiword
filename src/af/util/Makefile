@@ -120,6 +120,12 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)                 \
 		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)                 
 
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+ OBJS += $(OBJDIR)/ut_xml_expat.$(OBJ_SUFFIX)
+else
+ OBJS += $(OBJDIR)/ut_xml_libxml2.$(OBJ_SUFFIX)
+endif
+
 ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 OBJS +=	$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
 endif

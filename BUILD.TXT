@@ -95,7 +95,7 @@ There are several ways to build and run AbiWord:
 
     ABI_BUILD_VERSION=x.y.z		set Abiword compile version
     ABI_OPT_DEBUG=[1,0]			enable debugging
-    ABI_OPT_LIBXML2=[1,0]		enable LibXML2 support
+	ABI_OPT_PEER_EXPAT=[1,0]    enable peer expat support over defaul LibXML2
     UNIX_CAN_BUILD_STATIC=[1,0]		Include all libraries within Abi's structure
     UNIX_CAN_BUILD_DYNAMIC=[1,0]	Link to libraries in Operating System
     ABI_OPT_GNOME=[1,0]			enable Gnome support

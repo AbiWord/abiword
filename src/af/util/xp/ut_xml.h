@@ -25,27 +25,10 @@
 #include "ut_types.h"
 #include "ut_bytebuf.h"
 
-#if defined(HAVE_LIBXML2) || defined(ABI_PLUGIN_SOURCE)
-  /* XML_Char is the expat char def, xmlChar is the libxml2 def.
-   * xmlChar is unsigned char - which is a real pain in the ass for AbiWord,
-   * so I'm going to mis-define it here and use the correct sign only internally...
-   */
-  #ifdef XML_Char
-  #undef XML_Char
-  #endif
-  #define XML_Char char
-
-  /* XML_Encoding is used in XAP_XML_UnknownEncodingHandler
-   */
-  #ifdef XML_Encoding
-  #undef XML_Encoding
-  #endif
-  #define XML_Encoding void
-
-#else /* EXPAT */
-  #include <expat.h>
-
+#ifdef XML_Char
+ #undef XML_Char
 #endif
+#define XML_Char char
 
 class ABI_EXPORT UT_XML
 {
@@ -162,6 +145,20 @@ class ABI_EXPORT UT_XML
   void startElement (const XML_Char * name, const XML_Char ** atts);
   void endElement (const XML_Char * name);
   void charData (const XML_Char * buffer, int length);
+};
+
+class DefaultReader : public UT_XML::Reader
+{
+public:
+  DefaultReader ();
+  ~DefaultReader ();
+
+  bool      openFile (const char * szFilename);
+  UT_uint32 readBytes (char * buffer, UT_uint32 length);
+  void      closeFile (void);
+
+private:
+  FILE * in;
 };
 
 /* Kudos (sp?) to Joaquin Cuenca Abela for the good bits; the bad bits are likely my fault... (fjf)

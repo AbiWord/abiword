@@ -85,11 +85,11 @@ else
 	DEFINES		= -DDEBUG -UNDEBUG
 	OBJ_DIR_SFX	= DBG
 		ifeq ($(ABI_OPT_GNOME),1)
-			ifeq ($(ABI_OPT_LIBXML2),1)
-			OBJ_DIR_SFX	= GNOME_XML
-			else
+			ifeq ($(ABI_OPT_PEER_EXPAT),1)
 			OBJ_DIR_SFX	= GNOME
-			endif #/* LIBXML2 */
+			else
+			OBJ_DIR_SFX	= GNOME_XML
+			endif #/* EXPAT */
 		endif #/* GNOME */
 	else # DEBUG
 
@@ -99,15 +99,17 @@ else
 	endif #/* DEBUG */ 
 	endif #/* OPTIMIZE */
 	ifeq ($(ABI_OPT_GNOME),1)
-		ifeq ($(ABI_OPT_LIBXML2),1)
-		OBJ_DIR_SFX	= GNOME_XML
-		else
+		ifeq ($(ABI_OPT_PEER_EXPAT),1)
 		OBJ_DIR_SFX	= GNOME
-		endif #/* LIBXML2 */
+		else
+		OBJ_DIR_SFX	= GNOME_XML
+		endif #/* EXPAT */
 	else #/* GNOME */
-		ifeq ($(ABI_OPT_LIBXML2),1)
-		OBJ_DIR_SFX	= GTK_XML
-		endif #/* LIBXML2 */
+		ifeq ($(ABI_OPT_PEER_EXPAT),1)
+		OBJ_DIR_SFX	= GNOME
+		else
+		OBJ_DIR_SFX	= GNOME_XML
+		endif #/* EXPAT */
 	endif #/* GNOME */
 
 endif #/* PROF */

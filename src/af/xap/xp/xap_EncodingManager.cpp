@@ -259,7 +259,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
                                           const XML_Char *name,
                                           XML_Encoding *info)
 {
-#ifdef	HAVE_LIBXML2
+#ifndef	HAVE_EXPAT
 	return 0;
 #else
 	/*this is used by code that reads xml using expat*/

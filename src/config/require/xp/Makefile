@@ -22,9 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-ifdef ABI_OPT_LIBXML2
-REQUIRE=
-else
+ifdef ABI_OPT_PEER_EXPAT
 REQUIRE=	_EXPAT_ 
 endif
 #REQUIRE+=	_PSICONV_

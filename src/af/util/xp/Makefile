@@ -60,6 +60,12 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_Language.cpp		\
 		ut_Encoding.cpp
 
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+ CPPSRCS += ut_xml_expat.cpp
+else
+ CPPSRCS += ut_xml_libxml2.cpp
+endif
+
 ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 CPPSRCS += ut_contextGlyph.cpp
 endif		
