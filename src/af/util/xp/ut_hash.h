@@ -23,6 +23,7 @@
 #ifndef UTHASH_H
 #define UTHASH_H
 
+#include "ut_types.h"
 #include "ut_pool.h"
 
 class UT_HashTable
@@ -37,9 +38,9 @@ public:
 	};
 
 	UT_HashTable();
+	UT_sint32 addEntry(const char* psLeft, const char* psRight, void* pData);
+	UT_sint32 setEntry(UT_HashTable::UT_HashEntry* pEntry, const char* pszRight, void* pData);
 	~UT_HashTable();
-
-	int addEntry(const char* psLeft, const char* psRight, void* pData);
 	int getEntryCount(void);
 	UT_HashEntry* getNthEntry(int n);
 	UT_HashEntry* findEntry(const char* psLeft);

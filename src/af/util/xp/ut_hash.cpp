@@ -55,7 +55,7 @@ UT_HashTable::~UT_HashTable()
 	free(m_pEntries);
 }
 
-int UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pData)
+UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pData)
 {
 	UT_ASSERT(pszLeft);
 	UT_ASSERT(pszRight);
@@ -79,6 +79,14 @@ int UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pDat
 	pHELN->pNext = m_pBuckets[iBucket].pHead;
 	m_pBuckets[iBucket].pHead = pHELN;
 	m_iEntryCount++;
+
+	return 0;
+}
+
+UT_sint32 UT_HashTable::setEntry(UT_HashTable::UT_HashEntry* pEntry, const char* pszRight, void* pData)
+{
+	pEntry->pszRight = m_pool.addString(pszRight);	// TODO this can fail, right?
+	pEntry->pData = pData;
 
 	return 0;
 }
