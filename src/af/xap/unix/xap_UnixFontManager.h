@@ -27,12 +27,12 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
-
+#include "xap_UnixApp.h"
 #include "xap_UnixFont.h"
 
 /*****************************************************************/
 
-class XAP_UnixFontManager
+class ABI_EXPORT XAP_UnixFontManager
 {
 public:
 	XAP_UnixFontManager(void);

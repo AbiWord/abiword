@@ -28,7 +28,6 @@
 #include "ut_string.h"
 #include "xap_UnixDialogHelper.h"
 
-#include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"

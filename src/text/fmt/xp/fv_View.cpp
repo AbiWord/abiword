@@ -8447,8 +8447,6 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// due to that function being overloaded to be used from this
 	// code.
 
-	
-
 	if (bForward)
 	{
 		m_iInsPoint += countChars;

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) Luke Jordan, Martin Sevior.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
  * 
  * This program is free software; you can redistribute it and/or

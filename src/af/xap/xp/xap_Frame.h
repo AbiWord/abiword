@@ -112,6 +112,8 @@ public:
 	XAP_App *					getApp() const;
 	AV_View *		       		getCurrentView() const;
 	AD_Document *				getCurrentDoc() const;
+	void                        setView(AV_View * pView) {m_pView = pView;}
+	void                        setDoc(AD_Document * pDoc) {m_pDoc = pDoc;}
 	const char *				getFilename() const;
 	const char *				getTitle(int len) const;
 	const char *				getTempNameFromTitle() const;

@@ -27,8 +27,8 @@
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_UnixDialogFactory.h"
+#include "xap_UnixApp.h"
 
-class XAP_UnixApp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;
 class EV_UnixMenuBar;
@@ -43,7 +43,7 @@ class EV_UnixMenuPopup;
 ******************************************************************
 *****************************************************************/
 
-class XAP_UnixFrame : public XAP_Frame
+class ABI_EXPORT XAP_UnixFrame : public XAP_Frame
 {
 public:
 	XAP_UnixFrame(XAP_UnixApp * app);

@@ -62,11 +62,9 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Toolbar_ZoomCombo.cpp	\
 			ap_$(ABI_FE)_TB_CFactory.cpp		\
 			ap_$(ABI_FE)TopRuler.cpp		\
-			ap_$(ABI_FE)ViewListener.cpp
+			ap_$(ABI_FE)ViewListener.cpp \
+	                abiwidget.cpp
 
-ifdef ABI_OPT_WIDGET
-CPPSRCS += abiwidget.cpp
-endif
 
 TARGETS=		$(OBJS)
 

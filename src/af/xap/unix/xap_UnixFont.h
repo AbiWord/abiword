@@ -43,7 +43,7 @@ struct uniWidth
 
 typedef enum {FONT_TYPE_PFA, FONT_TYPE_PFB, FONT_TYPE_TTF, FONT_TYPE_UNKNOWN} font_type;
 
-class XAP_UnixFont
+class ABI_EXPORT XAP_UnixFont
 {
  public:
 

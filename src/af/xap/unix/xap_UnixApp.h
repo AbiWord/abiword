@@ -38,7 +38,7 @@ class XAP_UnixFontManager;
 ******************************************************************
 *****************************************************************/
 
-class XAP_UnixApp : public XAP_App
+class ABI_EXPORT XAP_UnixApp : public XAP_App
 {
 public:
 	XAP_UnixApp(XAP_Args* pArgs, const char* szAppName);
