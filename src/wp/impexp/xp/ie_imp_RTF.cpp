@@ -290,6 +290,14 @@ IEStatus IE_Imp_RTF::_parseFile(FILE* fp)
 						cNibble = 2;
 						b = 0;
 						m_currentRTFState.m_internalState = RTFStateStore::risNorm;
+						if (ok)  // skip following space if applicable
+						{   
+							unsigned char ch;
+							if (!ReadCharFromFile(&ch))
+								ok = UT_FALSE; 
+							else if (ch != ' ') 
+								SkipBackChar(ch);
+						}   
 					}
 				}
 			}
@@ -379,7 +387,7 @@ UT_Bool IE_Imp_RTF::FlushStoredChars(UT_Bool forceInsertPara)
 {
 	// start a new para if we have to
 	UT_Bool ok = UT_TRUE;
-	if (m_newSectionFlagged  &&  (m_gbBlock.getLength() > 0))
+        if (m_newSectionFlagged && (forceInsertPara || (m_gbBlock.getLength() > 0)) )
 	{
 		ok = ApplySectionAttributes();
 		m_newSectionFlagged = UT_FALSE;
