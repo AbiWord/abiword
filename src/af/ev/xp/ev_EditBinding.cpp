@@ -420,12 +420,32 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 			szNVK = "Del";
 			break;
 
+		case EV_NVK_F1:
+			szNVK = "F1";
+			break;
+
+		case EV_NVK_F3:
+			szNVK = "F3";
+			break;
+
 		case EV_NVK_F4:
 			szNVK = "F4";
 			break;
 
 		case EV_NVK_F7:
 			szNVK = "F7";
+			break;
+
+		case EV_NVK_F10:
+			szNVK = "F10";
+			break;
+
+		case EV_NVK_F11:
+			szNVK = "F11";
+			break;
+
+		case EV_NVK_F12:
+			szNVK = "F12";
 			break;
 
 		default:
