@@ -38,6 +38,13 @@
 #include "ut_debugmsg.h"
 
 //
+// Just FYI, "dir" and "dom-dir" only get set if BIDI_ENABLED is set.
+// Regardless of BIDI_ENABLED, if CHP::fBidi == 1, the BiDi versions
+// Of the ico, hps, ftc, lid, etc... are used in place of their "normal"
+// Counterparts
+//
+
+//
 // Forward decls. to wv's callbacks
 //
 static int charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid);
@@ -662,6 +669,9 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 	case CHARPROPEND:
 		return _endChar (ps, tag, props, dirty);
 
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
 	}
 
 	return 0;
@@ -830,6 +840,17 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	// first, flush any character data in any open runs
 	this->_flush ();
+
+#ifdef BIDI_ENABLED
+
+	// DOM TODO: i think that this is right
+	if (apap->fBidi == 1) {
+		props += "dom-dir:rtl;";
+	} else {
+		props += "dom-dir:ltr;";
+	}
+
+#endif
 
 	// paragraph alignment/justification
 	switch(apap->jc)
@@ -1009,27 +1030,50 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	this->_flush ();
 
 	// set language based the lid - TODO: do we want to handle -none- differently?
-	if (!ps->fib.fFarEast) {
-		props += "lang:";
+	props += "lang:";
+
+	if (achp->fBidi)
+		props += wvLIDToLangConverter (achp->lidBidi);
+	else if (!ps->fib.fFarEast)
 		props += wvLIDToLangConverter (achp->lidDefault);
-		props += ";";
-	}
-	else {
-		props += "lang:";
+	else
 		props += wvLIDToLangConverter (achp->lidFE);
-		props += ";";
+	props += ";";
+
+#ifdef BIDI_ENABLED
+
+	// DOM TODO: is this correct? How does it handle with dom-dir?
+	if (achp->fBidi) {
+		props += "dir:rtl;";
+	} else {
+		props += "dir:ltr;";
 	}
+
+#endif
 
 	// bold text
-	if (achp->fBold) { 
+	bool fBold = (achp->fBidi ? achp->fBoldBidi : achp->fBold);
+	if (fBold) { 
 		props += "font-weight:bold;";
 	}
-
+		
 	// italic text
-	if (achp->fItalic) {
+	bool fItalic = (achp->fBidi ? achp->fItalicBidi : achp->fItalic);
+	if (fItalic) {
 		props += "font-style:italic;";
 	}
-
+	
+	// foreground color
+	U8 ico = (achp->fBidi ? achp->icoBidi : achp->ico);
+	if (ico) {
+		sprintf(propBuffer, 
+				"color:%02x%02x%02x;", 
+				word_colors[ico-1][0], 
+				word_colors[ico-1][1], 
+				word_colors[ico-1][2]);
+		props += propBuffer;
+	}
+	
 	// underline and strike-through
 	if (achp->fStrike || achp->kul) {
 		props += "text-decoration:";
@@ -1040,16 +1084,6 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		} else {
 			props += "line-through;";
 		}
-	}
-
-	// foreground color
-	if (achp->ico) {
-		sprintf(propBuffer, 
-				"color:%02x%02x%02x;", 
-				word_colors[achp->ico-1][0], 
-				word_colors[achp->ico-1][1], 
-				word_colors[achp->ico-1][2]);
-		props += propBuffer;
 	}
 	
 	// background color
@@ -1070,8 +1104,9 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	}
 
 	// font size (hps is half-points)
+	U16 hps = (achp->fBidi ? achp->hpsBidi : achp->hps);
 	sprintf(propBuffer, 
-			"font-size:%dpt;", (achp->hps/2));
+			"font-size:%dpt;", (hps/2));
 	props += propBuffer;
 
 	// font family
@@ -1079,7 +1114,10 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	// if the FarEast flag is set, use the FarEast font,
 	// otherwise, we'll use the ASCII font.
-	if (!ps->fib.fFarEast) {
+	if (achp->fBidi) {
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcBidi);
+	} 
+	else if (!ps->fib.fFarEast) {
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
 	} else {
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
