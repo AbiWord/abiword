@@ -478,46 +478,6 @@ void AP_Win32Dialog_Options::_initializeTransperentToggle(void)
 	}
 }
 
-/*
-	Gets the default document language
-*/
-void AP_Win32Dialog_Options::_gatherDocLanguage(UT_String &stRetVal)
-{
-	HWND		hCtrlDocLang	= GetDlgItem( (HWND)getPage(PG_LANG), AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG);	
-	UT_Language	lang;
-	const char* pLang;
-	int nIndex;
-	
-	nIndex = SendMessage(hCtrlDocLang,  CB_GETCURSEL , 0,0);
-	
-	if (nIndex!=CB_ERR)
-	{
-		int nID = SendMessage(hCtrlDocLang,  CB_GETITEMDATA , nIndex,0);
-		pLang =  (const char*)lang.getNthLangCode(nID);		
-		stRetVal = pLang;
-	}				
-}
-
-/*
-	Sets the default document language
-*/
-void AP_Win32Dialog_Options::_setDocLanguage(const UT_String &stExt)
-{
-	UT_Language	lang;
-	int id = lang.getIndxFromCode(stExt.c_str());
-	HWND hCtrlDocLang	= GetDlgItem((HWND)getPage(PG_LANG), AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG);	
-
-	int nCount = SendMessage(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
-	
-	for (int i=0; i<nCount;i++)
-	{
-		if (SendMessage(hCtrlDocLang,  CB_GETITEMDATA , i,0)==id)
-		{
-			SendMessage(hCtrlDocLang, CB_SETCURSEL, i, 0);				
-			break;
-		}
-	}	
-}
 
 void AP_Win32Dialog_Options::_gatherUILanguage(UT_String &stRetVal)
 {
@@ -905,21 +865,6 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 		else
 			EnableWindow(hCtrlUILang, FALSE);
 	}
-	
-	/* Fill up UI language*/
-	{				
-		int nIndex;				
-		const XML_Char *pLang;
-		UT_Language	lang;
-		HWND	hCtrlDOCLang		= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG);
-		
-		for (UT_uint32 i=0; i < lang.getCount(); i++)
-		{					
-			pLang  = lang.getNthLangName(i);
-			nIndex = SendMessage(hCtrlDOCLang, CB_ADDSTRING, 0, (LPARAM)pLang);
-			SendMessage(hCtrlDOCLang, CB_SETITEMDATA, nIndex, i);
-		}				
-	}	
 	
 }
 

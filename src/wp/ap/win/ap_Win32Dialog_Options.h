@@ -251,11 +251,7 @@ public:
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
-	virtual void _setAutoSaveFileExt(const UT_String &stExt);
-	
-	
-	virtual void _gatherDocLanguage(UT_String &stRetVal);
-	virtual void _setDocLanguage(const UT_String &stExt);
+	virtual void _setAutoSaveFileExt(const UT_String &stExt);	
 	virtual void _gatherUILanguage(UT_String &stRetVal);
 	virtual void _setUILanguage(const UT_String &stExt);
 
