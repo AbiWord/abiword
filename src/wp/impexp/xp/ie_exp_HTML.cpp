@@ -362,7 +362,7 @@ void s_HTML_Listener::_openTable(PT_AttrPropIndex api)
 	  pSectionAP->getProperty("cell-margin-bottom", (const XML_Char *&)pszBottomOffset);
 #endif
 	  
-	  m_pie->write("\n<table cellpadding=\"1\" border=\"1\">\r\n<tbody>\r\n");
+	  m_pie->write("\n<table width=\"100%\" cellpadding=\"1\" border=\"1\">\r\n<tbody>\r\n");
 	}
 }
 
