@@ -210,6 +210,7 @@ Sam Trenholme <abiword_bugs@yahoo.com>			RTF exporter fixes
 Kevin Vajk <kvajk@ricochet.net> 			File import/export
 							detection, hpux
 Martin Vermeer <martin.vermeer@fgi.fi>			Unicode Latex export
+Stephen Viles <sviles_abi@iinet.net.au>                 Fix bug 428
 Ruud Vring <arvee_at_work@hotmail.com>			Various bug fixes; 
 							MsWord table import
 Robert G. Werner <rwerner@lx1.microbsys.com>		VI keybindings

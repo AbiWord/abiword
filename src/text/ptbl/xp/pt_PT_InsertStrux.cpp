@@ -408,16 +408,10 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		// this lets things like hitting two consecutive CR's and then comming
 		// back to the first empty paragraph behave as expected.
 
-		if ((pf->getType()==pf_Frag::PFT_Strux) && 
-			(fragOffset == pf->getLength()))
+		if ((pf->getType()==pf_Frag::PFT_Text) && (fragOffset == 0) &&
+			(pf->getPrev()!=NULL) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
 		{
-			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pf);
-			if (pfsPrev->getStruxType()==PTX_Block)
-			{
-				_insertFmtMarkAfterBlockWithNotify(pfsPrev,dpos,apFmtMark);
-				pf = pf->getNext();
-				fragOffset = 0;
-			}
+			_insertFmtMarkAfterBlockWithNotify(pfsContainer,dpos,apFmtMark);
 		}
 	}
 
@@ -464,7 +458,7 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 	// next we look backwards for an active FmtMark or Text span.
 
 	pf_Frag * pfPrev;
-	if (fragOffset!=0)
+	if ((fragOffset!=0) || (pfCurrent->getType()==pf_Frag::PFT_Text))
 		pfPrev = pfCurrent;
 	else if (pfCurrent->getLength()==0)
 		pfPrev = pfCurrent;
