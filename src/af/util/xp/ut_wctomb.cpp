@@ -61,11 +61,17 @@ UT_Wctomb::~UT_Wctomb()
 
 int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc)
 {
-    char buf[sizeof(UT_UCS4Char)];
-    char* obuf = pC;
-    const char* ibuf = buf;
+#if 0
+	// since iconv was initialized with the internal encoding, we must
+	// not do any swaps
 
-    {
+    char buf[sizeof(UT_UCS4Char)];
+#endif
+	char* obuf = pC;
+    const char* ibuf = (const char *) &wc;//buf;
+
+#if 0
+	{
 	int swap = XAP_EncodingManager::swap_utos ? 1 : 0;
         UT_UCS4Char val = wc;
 	unsigned char b0 = val&0xff, b1 = val>>8, b2 = val>>16, b3 = val >> 24;
@@ -74,7 +80,7 @@ int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc)
 	buf[swap + 2] = b2;
 	buf[!swap + 2] = b3;
     }
-
+#endif
     size_t inlen = 4, outlen = 100;
     size_t len = UT_iconv(cd,&ibuf,&inlen,&obuf,&outlen);
     if (len==(size_t)-1)
