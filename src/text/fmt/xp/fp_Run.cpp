@@ -66,40 +66,40 @@
 */
 
 fp_Run::fp_Run(fl_BlockLayout* pBL,
-					   GR_Graphics* pG,
-					   UT_uint32 iOffsetFirst,
-					   UT_uint32 iLen,
-					   unsigned char iType)
+			   GR_Graphics* pG,
+			   UT_uint32 iOffsetFirst,
+			   UT_uint32 iLen,
+			   FP_RUN_TYPE iType)
+:	m_iType (iType),
+	m_pLine(0),
+	m_pBL(pBL),
+	m_pNext(0),
+	m_pPrev(0),
+	m_iX(0),
+	m_iY(0),
+	m_iHeight(0),
+	m_iHeightLayoutUnits(0),
+	m_iWidth(0),
+	m_iWidthLayoutUnits(0),
+	m_iOffsetFirst(iOffsetFirst),
+	m_iLen(iLen),
+	m_iAscent(0),
+	m_iDescent(0),
+	m_iAscentLayoutUnits(0),
+	m_iDescentLayoutUnits(0),
+	m_pG(pG),
+	m_bDirty(UT_TRUE),	// a run which has just been created is not onscreen, therefore it is dirty
+	m_pField(0)
 {
-	m_pG = pG;
-	m_pBL = pBL;
-	m_iOffsetFirst = iOffsetFirst;
-	m_iLen = iLen;
-	m_iType = iType;
-	
-	m_bDirty = UT_TRUE;		// a run which has just been created is not onscreen, therefore it is dirty
-	m_iWidth = 0;
-	m_iWidthLayoutUnits = 0;
-	m_iHeight = 0;
-	m_iHeightLayoutUnits = 0;
-	m_iX = 0;
-	m_iY = 0;
-	m_pNext = NULL;
-	m_pPrev = NULL;
-	m_pLine = NULL;
-	m_iAscent = 0;
-	m_iDescent = 0;
-	m_iAscentLayoutUnits = 0;
-	m_iDescentLayoutUnits = 0;
-        m_pField = NULL;
-
 	// set a default background color
 	UT_setColor(m_colorBG, 255, 255, 255);
 }
 
+
 fp_Run::~fp_Run()
 {
 }
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

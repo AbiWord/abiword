@@ -187,7 +187,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	{
 		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		if (pRun2->canContainPoint()  || pRun2->isField())
+		if (pRun2->canContainPoint() || pRun2->isField())
 		{
 			UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
 			if ((x >= (UT_sint32) pRun2->getX()) && (x < (UT_sint32) (pRun2->getX() + pRun2->getWidth())))
@@ -210,9 +210,9 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 #if 0
 					// this only happens in an empty line, right?
 					/*
-					  NOPE.  Runs with no width can actually happen now, due to
-					  a variety of changes, including the introduction of forced
-					  breaks.
+						NOPE.  Runs with no width can actually happen now,
+						due to a variety of changes, including the
+						introduction of forced breaks.
 					*/
 					
 					UT_ASSERT(m_iWidth==0);
@@ -268,12 +268,12 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
 	if(pClosestRun->isField())
 	{
-	       UT_uint32 width = pClosestRun->getWidth() + 1;
-	       pClosestRun->mapXYToPosition(width , y2, pos, bBOL, bEOL);
+		UT_uint32 width = pClosestRun->getWidth() + 1;
+		pClosestRun->mapXYToPosition(width , y2, pos, bBOL, bEOL);
 	}
 	else
 	{
-	       pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
+		pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
 	}
 	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
 	UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
@@ -282,8 +282,8 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 
 void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 {
-  // This returns the baseline of run. ie the bottom of the line of text
-  //
+	// This returns the baseline of run. ie the bottom of the line of text
+	 //
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
@@ -301,8 +301,8 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	UT_sint32 my_yoff;
 
 	/*
-	  This method returns the screen offsets of the given
-	  run, referring to the UPPER-LEFT corner of the run.
+		This method returns the screen offsets of the given
+		run, referring to the UPPER-LEFT corner of the run.
 	*/
 	
 	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
@@ -351,7 +351,7 @@ void fp_Line::recalcHeight()
 		iMaxDescentLayoutUnits = UT_MAX(iMaxDescentLayoutUnits, iDescentLayoutUnits);
 	}
 
-    UT_sint32 iOldHeight = m_iHeight;
+	UT_sint32 iOldHeight = m_iHeight;
 	UT_sint32 iOldAscent = m_iAscent;
 	UT_sint32 iOldDescent = m_iDescent;
 	
@@ -543,22 +543,23 @@ void fp_Line::layout(void)
 {
 	recalcHeight();
 	
-	fb_Alignment *pAlignment = getBlock()->getAlignment();
+	fb_Alignment* pAlignment = getBlock()->getAlignment();
+	UT_ASSERT(pAlignment);
+
 	pAlignment->initialize(this);
 
+	const UT_uint32 iCountRuns			= m_vecRuns.getItemCount();
+	const UT_sint32 iStartX				= pAlignment->getStartPosition();
+	const UT_sint32 iStartXLayoutUnits	= pAlignment->getStartPositionInLayoutUnits();
+	const UT_sint32 Screen_resolution =
+		getBlock()->getDocLayout()->getGraphics()->getResolution();
 
-	UT_sint32 Screen_resolution = getBlock()->getDocLayout()->getGraphics()->getResolution();
+	UT_sint32 iX			= iStartX;
+	UT_sint32 iXLayoutUnits	= iStartXLayoutUnits;
+	UT_Bool bLineErased		= UT_FALSE;
 
-	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
-	UT_sint32 iX, iXLayoutUnits;
-	UT_sint32 iStartX, iStartXLayoutUnits;
-	UT_uint32 i;
-	UT_Bool bLineErased = UT_FALSE;
-
-	iStartX = iX = pAlignment->getStartPosition();
-	iStartXLayoutUnits = iXLayoutUnits = pAlignment->getStartPositionInLayoutUnits();
-	
-	for (i=0; i<iCountRuns; i++)		// TODO do we need to do this if iMoveOver is zero ??
+	// TODO do we need to do this if iMoveOver is zero ??
+	for (UT_uint32 i=0; i<iCountRuns; ++i)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 		if(!bLineErased && iX != pRun->getX())
@@ -575,7 +576,7 @@ void fp_Line::layout(void)
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
-			UT_sint32 iPosLayoutUnits;
+			UT_sint32	iPosLayoutUnits;
 			eTabType	iTabType;
 			eTabLeader	iTabLeader;
 
@@ -599,8 +600,8 @@ void fp_Line::layout(void)
 				break;
 
 			case FL_TAB_CENTER:
-				for ( pScanRun = pRun->getNext();	
-					  pScanRun && pScanRun->getType() != FPRUN_TAB; 
+				for ( pScanRun = pRun->getNext();
+					  pScanRun && pScanRun->getType() != FPRUN_TAB;
 					  pScanRun = pScanRun->getNext() )
 				{
 					iScanWidth += pScanRun->getWidth();
@@ -620,8 +621,8 @@ void fp_Line::layout(void)
 
 			case FL_TAB_RIGHT:
 			{
-				for ( pScanRun = pRun->getNext();	
-					  pScanRun && pScanRun->getType() != FPRUN_TAB; 
+				for ( pScanRun = pRun->getNext();
+					  pScanRun && pScanRun->getType() != FPRUN_TAB;
 					  pScanRun = pScanRun->getNext() )
 				{
 					iScanWidth += pScanRun->getWidth();
@@ -629,7 +630,9 @@ void fp_Line::layout(void)
 				}
 		
 				if ( iScanWidthLayoutUnits > iPosLayoutUnits - (iXLayoutUnits - iStartXLayoutUnits) )
+				{
 					pTabRun->setWidth(0);
+				}
 				else
 				{
 					iXLayoutUnits += iPosLayoutUnits - (iXLayoutUnits - iStartXLayoutUnits) - iScanWidthLayoutUnits;
@@ -645,10 +648,13 @@ void fp_Line::layout(void)
 				UT_uint32	runLen = 0;
 
 				// the string to search for decimals
-				UT_UCS_cloneString_char(&pDecimalStr, ".");
+				if (UT_UCS_cloneString_char(&pDecimalStr, ".") != UT_TRUE)
+				{
+					// Out of memory. Now what?
+				}
 
-				for ( pScanRun = pRun->getNext();	
-					  pScanRun && pScanRun->getType() != FPRUN_TAB; 
+				for ( pScanRun = pRun->getNext();
+					  pScanRun && pScanRun->getType() != FPRUN_TAB;
 					  pScanRun = pScanRun->getNext() )
 				{
 					UT_Bool foundDecimal = UT_FALSE;
@@ -665,7 +671,7 @@ void fp_Line::layout(void)
 						}
 					}
 
-					UT_DEBUGMSG(("%s:%d  foundDecimal=%d len=%d iScanWidth=%d \n", 
+					UT_DEBUGMSG(("%s(%d): foundDecimal=%d len=%d iScanWidth=%d \n", 
 								__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
 					if ( foundDecimal )
 					{
@@ -828,11 +834,11 @@ UT_Bool fp_Line::recalculateFields(void)
 }
 
 fp_Run* fp_Line::getLastRun(void) const
-{ 
-	UT_sint32 i = m_vecRuns.getItemCount();
-	if( i <= 0 )
-	{    
-		fp_Run * pRun = getBlock()->getFirstRun();
+{
+	const UT_sint32 i = m_vecRuns.getItemCount();
+	if(i <= 0)
+	{
+		fp_Run* pRun = getBlock()->getFirstRun();
 		return pRun;
 	}
 	else
@@ -872,9 +878,9 @@ UT_Bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPos
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	UT_Bool bRes = m_pBlock->findNextTabStopInLayoutUnits( iStartX + getXInLayoutUnits(), 
-														   getXInLayoutUnits() + getMaxWidthInLayoutUnits(), 
-														   iTabStopPosition, iTabStopType, iTabStopLeader);
+	UT_Bool bRes = m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
+														  getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
+														  iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getXInLayoutUnits();
@@ -1174,8 +1180,8 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
-		  //			UT_ASSERT(UT_FALSE);
-		  UT_DEBUGMSG(("TODO - decide if tab is a space \n"));
+			//			UT_ASSERT(UT_FALSE);
+			UT_DEBUGMSG(("TODO - decide if tab is a space \n"));
 			// TODO: decide if a tab is a space.
 
 		}
