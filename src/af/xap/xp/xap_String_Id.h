@@ -24,18 +24,9 @@
 ******************************************************************
 *****************************************************************/
 
-dcl(MSG_ShowUnixFontWarning, "AbiWord was not able to add its fonts to the X font path.\n"
-                             "This does not mean that there is anything wrong with your\n"
-                             "system, but you will need to modify your font path manually.\n"
-                             "Please see \"Unix Font Path Problem\" in the FAQ section of\n"
-                             "the Abiword help file for more detailed information, including\n"
-                             "instructions on how to turn this warning off.")
+dcl(MSG_ShowUnixFontWarning, "AbiWord was not able to add its fonts to the X font path.\nThis does not mean that there is anything wrong with your\nsystem, but you will need to modify your font path manually.\nPlease see \"Unix Font Path Problem\" in the FAQ section of\nthe Abiword help file for more detailed information, including\ninstructions on how to turn this warning off.")
 
-dcl(MSG_UnixFontSizeWarning, "The operating system was unable to allocate a font of the\n"
-							 "requested size; a smaller font will be used in its place on\n"
-							 "the screen, which will look strange, but the overall layout\n"
-							 "will be correct, and you should be able to print the document\n"
-							 "properly. Using a smaller zoom factor may resolve this problem.")
+dcl(MSG_UnixFontSizeWarning, "The operating system was unable to allocate a font of the\nrequested size; a smaller font will be used in its place on\nthe screen, which will look strange, but the overall layout\nwill be correct, and you should be able to print the document\nproperly. Using a smaller zoom factor may resolve this problem.")
 dcl(MSG_ImportingDoc, "Importing Document..")
 dcl(MSG_BuildingDoc, "Building Document..")
 
@@ -154,8 +145,8 @@ dcl(DLG_NoSaveFile_DirNotExist, 		"A directory in the given pathname does not ex
 dcl(DLG_NoSaveFile_DirNotWriteable, 	"The directory '%s' is write-protected.")
 dcl(DLG_OverwriteFile,					"File already exists.  Overwrite file '%s'?")
 
-	 dcl(DLG_Password_Title, "Enter Password")
-	 dcl(DLG_Password_Password, "Password:")
+dcl(DLG_Password_Title, "Enter Password")
+dcl(DLG_Password_Password, "Password:")
 
 /* Zoom dialog */
 dcl(DLG_Zoom_ZoomTitle, 				"Zoom")
@@ -246,23 +237,16 @@ dcl(DLG_Options_Label_UnixFontWarning, "Show font warning at start up")
 dcl(DLG_Options_Label_ModifyUnixFontPath, "Modify Unix Font Path")
 
 /* HashDownloader dialogs */
-dcl(DLG_HashDownloader_AskDownload, 		"I could not find a dictionary for %s.\n"
-											"Would you like me to try downloading it from the internet?")
-dcl(DLG_HashDownloader_AskFirstTryFailed, 	"Download failed!\n"
-											"Would you like me to try again?\n"
-											"If yes, please make sure you are connected to the internet.")
-dcl(DLG_HashDownloader_AskInstallGlobal, 	"You seem to have permission to install the dictionary system-wide.\n"
-											"Would you like to do that?\n"
-											"If yes, I will install the dictionary in %s")
+dcl(DLG_HashDownloader_AskDownload, 		"I could not find a dictionary for %s.\nWould you like me to try downloading it from the internet?")
+dcl(DLG_HashDownloader_AskFirstTryFailed, 	"Download failed!\nWould you like me to try again?\nIf yes, please make sure you are connected to the internet.")
+dcl(DLG_HashDownloader_AskInstallGlobal, 	"You seem to have permission to install the dictionary system-wide.\nWould you like to do that?\nIf yes, I will install the dictionary in %s")
 dcl(DLG_HashDownloader_DictlistDLFail, 		"Sorry! I seem unable to download the dictionary-list.")
 dcl(DLG_HashDownloader_DictDLFail, 			"Sorry! I seem unable to download the dictionary.")
 dcl(DLG_HashDownloader_DictInstallFail, 	"Sorry! I seem unable to install the dictionary.")
 dcl(DLG_HashDownloader_DictNotAvailable, 	"I'm sorry. The wanted dictionary is not available for download.")
-dcl(DLG_HashDownloader_DictNotForThis, 		"I'm sorry. The wanted dictionary is not available for this release.\n"
-											"Please consider upgrading AbiWord.")
+dcl(DLG_HashDownloader_DictNotForThis, 		"I'm sorry. The wanted dictionary is not available for this release.\nPlease consider upgrading AbiWord.")
 dcl(DLG_HashDownloader_FeatureDisabled, 	"I'm sorry. This feature is not available anymore.")
-dcl(DLG_HashDownloader_FeatureDisabledForThis, 	"I'm sorry. This feature is disabled for this release.\n"
-											"Please consider upgrading AbiWord.")
+dcl(DLG_HashDownloader_FeatureDisabledForThis, 	"I'm sorry. This feature is disabled for this release.\nPlease consider upgrading AbiWord.")
 dcl(DLG_HashDownloader_DictList,			"the dictionary-list")
 dcl(DLG_HashDownloader_Dict, 				"the dictionary")
 dcl(DLG_HashDownloader_Dlg_Title, 			"New dictionary installation")
