@@ -815,8 +815,8 @@ void XAP_Frame::setAutoSaveFileExt(const UT_String &stExt)
 }
 
 XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char *szMessage,
-											  XAP_Dialog_MessageBox::tButtons buttons,
-											  XAP_Dialog_MessageBox::tAnswer default_answer)
+							 XAP_Dialog_MessageBox::tButtons buttons,
+							 XAP_Dialog_MessageBox::tAnswer default_answer)
 {
 	raise();
 

@@ -108,19 +108,20 @@ XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 
 		switch (m_dlg_table[index].m_type)
 		{
-		case XAP_DLGT_NON_PERSISTENT:	// construct a non-persistent dialog and just return it.
+		case XAP_DLGT_NON_PERSISTENT:	
+			// construct a non-persistent dialog and just return it.
 			goto CreateItSimple;
 
-		case XAP_DLGT_FRAME_PERSISTENT:						// if requested frame-persistent dialog
+		case XAP_DLGT_FRAME_PERSISTENT:	 // if requested frame-persistent dialog
 			if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	// from a frame-persistent factory.
 				goto CreateItPersistent;
 			break;
 			
-		case XAP_DLGT_APP_PERSISTENT:						// if requested app-persistent dialog
-			if (m_dialogType == XAP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
+		case XAP_DLGT_APP_PERSISTENT:	// if requested app-persistent dialog
+			if (m_dialogType == XAP_DLGT_APP_PERSISTENT)  //   if from a app-persistent factory
 				goto CreateItPersistent;
 			if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
-				goto HandToAppFactory;						//     let the app's factory do it....
+				goto HandToAppFactory;	 //     let the app's factory do it....
 			break;
 			
 		case XAP_DLGT_MODELESS:						// if requested app-persistent dialog
@@ -133,7 +134,7 @@ XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 		}
 	}
 
-//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+//	UT_ASSERT_NOT_REACHED();
 	return NULL;
 
 CreateItSimple:

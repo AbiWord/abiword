@@ -68,6 +68,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 											   GTK_MESSAGE_INFO,
 											   GTK_BUTTONS_OK,
 											   m_szMessage ) ;
+
 			break;
 
 		case b_OC:
@@ -105,9 +106,9 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			UT_ASSERT_NOT_REACHED();
 	}
 
-	gtk_window_set_title ( GTK_WINDOW(message), szCaption ) ;
-	gtk_window_set_role (GTK_WINDOW(message), "message dialog");
-						   	
+	// set the title to '', as per GNOME HIG, Section 3, Alerts
+	gtk_window_set_title (GTK_WINDOW(message), "");
+
 	switch ( abiRunModalDialog ( GTK_DIALOG(message), pFrame,
 				     this, GTK_RESPONSE_OK, true ) )
 	{
