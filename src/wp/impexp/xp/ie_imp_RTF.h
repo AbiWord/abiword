@@ -242,7 +242,7 @@ public:
 								 const char ** szAlign, 
 								 const char ** szIndent, 
 								 const char ** szListStyle);
-	bool ParseLevelText(const UT_String szLevelText,const UT_String szLevelNumbers, UT_uint32 iLevel);
+	bool ParseLevelText(const UT_String & szLevelText,const UT_String & szLevelNumbers, UT_uint32 iLevel);
 	UT_sint32 m_levelStartAt;
 	UT_uint32 m_AbiLevelID;
 	static UT_uint32 m_sLastAssignedLevelID;

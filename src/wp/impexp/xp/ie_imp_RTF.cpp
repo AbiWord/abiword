@@ -229,35 +229,51 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 // List Style
 //
     List_Type abiListType;
-	switch (m_RTFListType)
+	if(m_RTFListType == 0)
     {
-	default:
-	case 0:
         abiListType = NUMBERED_LIST;
-		break;
-    case 1:
-        abiListType = UPPERROMAN_LIST;
-		break;
-    case 2:
-        abiListType = LOWERROMAN_LIST;
-		break;
-    case 3:
-        abiListType = UPPERCASE_LIST;
-		break;
-    case 4:
-        abiListType = LOWERCASE_LIST;
-		break;
-    case 5:
-        abiListType = UPPERCASE_LIST;
-		break;
-    case 23:
-        abiListType = BULLETED_LIST;
-		break;
-#ifdef BIDI_ENABLED
-	case 45:
-		abiListType = HEBREW_LIST;
-#endif
 	}
+	else if( m_RTFListType == 1)
+	{
+        abiListType = UPPERROMAN_LIST;
+	}
+    else if(m_RTFListType == 2)
+	{
+        abiListType = LOWERROMAN_LIST;
+	}
+    else if( m_RTFListType == 3)
+	{
+        abiListType = UPPERCASE_LIST;
+	}
+	else if (m_RTFListType == 4)
+	{
+        abiListType = LOWERCASE_LIST;
+	}
+    else if (m_RTFListType == 5)
+	{
+        abiListType = UPPERCASE_LIST;
+	}
+    else if (m_RTFListType == 23)
+	{
+		*szStartat = "1";
+        abiListType = BULLETED_LIST;
+	}
+    else if (m_RTFListType == 23 + IMPLIES_LIST)
+	{
+		*szStartat = "1";
+        abiListType = IMPLIES_LIST;
+	}
+#ifdef BIDI_ENABLED
+	else if (m_RTFListType == 45)
+	{
+		abiListType = HEBREW_LIST;
+	}
+#endif
+	else
+	{
+		abiListType = NUMBERED_LIST;
+	}
+
 	
 	fl_AutoLists al;
     *szListStyle = al.getXmlList(abiListType);
@@ -265,12 +281,16 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 // Field Font
 //	
     FieldFont = "NULL";
-    if(abiListType == BULLETED_LIST)
-    {
-        FieldFont = "symbol";
-    }
     if(m_pParaProps &&  m_pParaProps->m_pszFieldFont)
 	    FieldFont = m_pParaProps->m_pszFieldFont;
+    if(abiListType == BULLETED_LIST)
+    {
+        FieldFont = "Symbol";
+    }
+    if(abiListType == IMPLIES_LIST)
+    {
+        FieldFont = "Symbol";
+    }
     *szFieldFont = FieldFont.c_str();
 //
 // List Delim
@@ -322,7 +342,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 
   \todo look up the parent label and be more precise about what is added by this label.
  */
-bool RTF_msword97_level::ParseLevelText(const UT_String szLevelText,const UT_String szLevelNumbers, UT_uint32 iLevel)
+bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_String & szLevelNumbers, UT_uint32 iLevel)
 {
 	//read the text string into a int array, set the place holders to 
 	//values less than zero.
@@ -567,7 +587,6 @@ bool RTF_msword97_listOveride::getItalic(UT_uint32 iLevel)
  */
 bool RTF_msword97_listOveride::isUnderlineChanged(UT_uint32 iLevel)
 {
-	
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_underline);
 }
@@ -576,6 +595,7 @@ bool RTF_msword97_listOveride::isUnderlineChanged(UT_uint32 iLevel)
  */
 bool RTF_msword97_listOveride::getUnderline(UT_uint32 iLevel)
 {
+	
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_underline);
 }
@@ -773,13 +793,12 @@ void RTF_msword97_listOveride::buildAbiListProperties( const char ** szListID,
 								 const char ** szListStyle,
 								 UT_uint32 iLevel)
 {
-	
 	m_pList->m_RTF_level[iLevel]->buildAbiListProperties(szListID, szParentID, szLevel, szStartat, szFieldFont, 
 									 szListDelim, szListDecimal, szAlign, szIndent, szListStyle);
 
 }
 
-// constrcutor class to tell if a character property has been defined in a list structure.
+// constructor class to tell if a character property has been defined in a list structure.
 RTFProps_bCharProps::RTFProps_bCharProps(void):
 	bm_deleted(false),
 	bm_bold(false),
@@ -2991,8 +3010,6 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "listtext") == 0)
 		{
 			// This paragraph is a member of a list.
-
-			UT_DEBUGMSG(("SEVIOR: Found listtext - skipping this \n"));
 			SkipCurrentGroup( false);
 			return true;
 		}
@@ -3059,12 +3076,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return ParseChar(UCS_FF);
 		}
-		else if (strcmp((char*)pKeyword, "pntext") == 0 && m_numLists > 0 )
+		else if (strcmp((char*)pKeyword, "pntext") == 0 )
 		{
 			//
 			// skip this!
 			//
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			SkipCurrentGroup( false);
+			//m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "pict") == 0)
@@ -4043,6 +4061,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		//
 		// Now handle the List properties
 		//
+
 		sprintf(tempBuffer,"list-style:%s;",szListStyle);
 		strcat(propBuffer, tempBuffer);
 		sprintf(tempBuffer, "list-decimal:%s; ",szListDecimal);
@@ -4520,6 +4539,10 @@ bool IE_Imp_RTF::HandleTableList(void)
 				HandleListLevel(pList,levelCount);
 				levelCount++;
 			}
+			else if(strcmp((char *) keyword,"listid") == 0)
+			{
+				pList->m_RTF_listID = (UT_uint32) parameter;
+			}
 			else
 			{
 				char * szLevelText = getCharsInsideBrace();
@@ -4579,7 +4602,9 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	pLevel->m_pbParaProps = pbParas;
 	pLevel->m_pbCharProps = pbChars;
 	pList->m_RTF_level[levelCount] = pLevel;
-#if 0
+#if 1 // Sevior use this!! The other method can lead to inccorect results upon
+	// import. If we export RTF list ID starting at 10000 they might clash
+    // with these later.
 	pLevel->m_AbiLevelID = UT_rand();
 	while(pLevel->m_AbiLevelID < 10000)
 		pLevel->m_AbiLevelID = UT_rand();
@@ -4676,7 +4701,22 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			}
 		}
 	}
-	pLevel->ParseLevelText(szLevelText,szLevelNumbers, levelCount);
+	if(pLevel->m_RTFListType != 23)
+	{
+		pLevel->ParseLevelText(szLevelText,szLevelNumbers, levelCount);
+	}
+	else
+	{
+		pLevel->m_listDelim = "%L";
+		if(strstr(szLevelText.c_str(),"u-3913") != 0)
+		{
+			pLevel->m_RTFListType = 23; // Bulleted List
+		}
+		if(strstr(szLevelText.c_str(),"u-3880") != 0)
+		{
+			pLevel->m_RTFListType = 23 + IMPLIES_LIST; // IMPLIES List
+		}
+	}
 	return true;
 }
 
@@ -4961,7 +5001,9 @@ bool IE_Imp_RTF::ReadListOverideTable(void)
 			if (strcmp((char*)keyword, "listoverride") == 0)
 			{
 				if(!HandleTableListOveride())
+				{
 					return false;
+				}
 			}
 		}
 		else if(ch == '}')
