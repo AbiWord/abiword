@@ -20,7 +20,7 @@
 #include "ut_string.h"
 #include "pd_Style.h"
 #include "pt_PieceTable.h"
-#include "pp_Property.cpp"
+#include "pp_Property.h"
 #include "ut_vector.h"
 
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP)

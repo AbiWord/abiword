@@ -214,9 +214,6 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 	return pStyle;
 }
-
-// make sure we don't get caught in a BASEDON loop
-#define pp_BASEDON_DEPTH_LIMIT	10
  
 const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 								 const PP_AttrProp * pSpanAttrProp,

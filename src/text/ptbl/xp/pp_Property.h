@@ -22,6 +22,9 @@
 #ifndef PP_PROPERTY_H
 #define PP_PROPERTY_H
 
+// make sure we don't get caught in a BASEDON loop
+#define pp_BASEDON_DEPTH_LIMIT	10
+
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_units.h"
