@@ -1473,8 +1473,8 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBr
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff + getX();
         UT_sint32 yoffBegin = pDA->yoff + getY();
-        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth();
-        UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight();
+        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() - getGraphics()->tlu(1);
+        UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight() - getGraphics()->tlu(1);
 
 		UT_RGBColor clrShowPara(127,127,127);
 
@@ -2586,7 +2586,7 @@ void fp_CellContainer::setLineMarkers(void)
 	}
 	else
 	{
-		m_iRight = getX() + getWidth();
+		m_iRight = getX() + getWidth() - getGraphics()->tlu(1);
 		m_iRight += static_cast<UT_sint32> (0.5 * static_cast<double>(pTab->getBorderWidth()));
 	}
 	m_iTopY = pTab->getYOfRow(getTopAttach());
@@ -2630,7 +2630,7 @@ void fp_CellContainer::setLineMarkers(void)
 // table. Otherwise we just get height of the first broken table.
 //
 		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pTab);
-		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight();
+		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight() - getGraphics()->tlu(1);
 		m_iBotY -= static_cast<UT_sint32>(2.0 * static_cast<double>(pTab->getBorderWidth()));
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
@@ -5002,10 +5002,10 @@ void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 		return;
 	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
-        UT_sint32 xoffBegin = pDA->xoff - 1 + getX();
-        UT_sint32 yoffBegin = pDA->yoff - 1;
-        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() + 2;
-        UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
+        UT_sint32 xoffBegin = pDA->xoff + getX();
+        UT_sint32 yoffBegin = pDA->yoff;
+        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() - getGraphics()->tlu(1);
+        UT_sint32 yoffEnd = pDA->yoff + getHeight() - getGraphics()->tlu(1);
 
 		UT_RGBColor clrShowPara(127,127,127);
 		getGraphics()->setColor(clrShowPara);
