@@ -868,7 +868,7 @@ void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS,
 {
 	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).c_str());
 	UT_ASSERT(newlbl);
-	for (i = 0; newlbl[i] != 0; i++) 
+	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
 	{
 		if ( newlbl[i] == '&' ) {
 			if (i > 0 && newlbl[i-1] == '\\')
