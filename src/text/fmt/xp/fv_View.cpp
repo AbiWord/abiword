@@ -2511,7 +2511,6 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
@@ -2537,6 +2536,150 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 		_drawInsertionPoint();
 	}
 
+	return bRet;
+}
+
+/*!
+ * This method does the insert Page Number logic.
+ * It inserts with this logic. For the sake of not writing header/footer every
+ * time I will just write "footer"
+ * 1. If no footer exists one will be created and a page number inserted.
+ * 2. If a footer with a page number exists the paragraph containing the footer
+ * will be right center or left justified as requested by the user.
+ * 3. If a footer with no page number exists a new paragraph containg the 
+ * page number will be inserted at the top of the container.
+ *
+\param bIsFooter true if the user wants a pagenumber in a footer.
+\param const  XML_Char ** atts  const string describing left , center or right
+ * justification.
+ */
+
+bool FV_View::processPageNumber(bool bIsFooter, const XML_Char ** atts)
+{
+	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
+	if(bIsFooter && pDSL->getFooter() == NULL)
+	{
+//
+// Quick hack to stop a segfault if a user tries to insert a header from
+// within a footer. 
+//
+		if(isHdrFtrEdit())
+		{
+			clearHdrFtrEdit();
+			warpInsPtToXY(0,0,false);
+		}
+		insertPageNum(atts, bIsFooter);
+		return true;
+	}
+	else if(!bIsFooter && pDSL->getHeader() == NULL)
+	{
+//
+// Quick hack to stop a segfault if a user tries to insert a header from
+// within a footer. 
+//
+		if(isHdrFtrEdit())
+		{
+			clearHdrFtrEdit();
+			warpInsPtToXY(0,0,false);
+		}
+		insertPageNum(atts, bIsFooter);
+		return true;
+	}
+//
+// OK we're here if we want to insert a page number into a pre-existing 
+// header/footer. Let's get the header/footer now.
+//
+	fl_HdrFtrSectionLayout * pHFSL = NULL;
+	if(bIsFooter)
+		pHFSL = pDSL->getFooter();
+	else
+		pHFSL = pDSL->getHeader();
+//
+// Scan the layout for a pre-existing page number.
+//
+	fl_BlockLayout * pBL = pHFSL->getFirstBlock();
+	bool bFoundPageNumber = false;
+	while(pBL != NULL && !bFoundPageNumber)
+	{
+		fp_Run * pRun = pBL->getFirstRun();
+		while(pRun != NULL && !bFoundPageNumber)
+		{
+			if(pRun->getType() == FPRUN_FIELD)
+			{
+				fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+				bFoundPageNumber = (pFRun->getFieldType() == FPFIELD_page_number);
+			}
+			pRun = pRun->getNext();
+		}
+		if(!bFoundPageNumber) 
+		    pBL = pBL->getNext();
+	}
+
+	// Signal PieceTable Change
+
+	m_pDoc->notifyPieceTableChangeStart();
+//
+// Just set the format of the Block if a PageNumber has been found.
+//
+	bool bRet;
+	PT_DocPosition pos;
+	if(bFoundPageNumber)
+	{
+		pos = pBL->getPosition();
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,atts,PTX_Block);
+
+
+		// Signal PieceTable Changes have finished
+		_generalUpdate();
+		m_pDoc->notifyPieceTableChangeEnd();
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+		return bRet;
+	}
+//
+// We're here if there's a header/footer with no page number
+// Insert a page number with the correct formatting.
+// 
+
+	const XML_Char*	f_attributes[] = {
+		"type", "page_number",
+		NULL, NULL
+	};
+	pBL = pHFSL->getFirstBlock();
+	pos = pBL->getPosition();
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+
+    //
+    // Insert a blank paragraph at the beginning of the Section
+    //
+	
+	m_pDoc->insertStrux(pos, PTX_Block);
+
+    // 
+    // Set the formatting of the paragraph to the Users request
+    //
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,atts,PTX_Block);
+
+	// Insert the page_number field with the requested attributes at the top
+    // of the header/footer
+
+	bRet = m_pDoc->insertObject(pos, PTO_Field, f_attributes, NULL);
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	_generalUpdate();
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 	return bRet;
 }
 

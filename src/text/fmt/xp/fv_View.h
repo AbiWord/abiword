@@ -190,6 +190,7 @@ public:
 	bool	setBlockFormat(const XML_Char * properties[]);
 	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
+	bool    processPageNumber(bool bIsFooter, const XML_Char ** atts);
 
 	bool	isTabListBehindPoint(void);
 	bool	isTabListAheadPoint(void);

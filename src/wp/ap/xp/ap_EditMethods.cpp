@@ -5174,21 +5174,20 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 
 	pDialog->runModal(pFrame);
 
-	if (pDialog->getAnswer() == AP_Dialog_PageNumbers::a_OK)
+	if (pDialog->getAnswer() != AP_Dialog_PageNumbers::a_OK)
 	{
-	  switch (pDialog->getAlignment())
-	    {
+		pDialogFactory->releaseDialog(pDialog);
+		return true;
+	}
+	switch (pDialog->getAlignment())
+	{
 	    case AP_Dialog_PageNumbers::id_RALIGN : atts = right_attributes; break;
 	    case AP_Dialog_PageNumbers::id_LALIGN : atts = left_attributes; break;
 	    case AP_Dialog_PageNumbers::id_CALIGN : atts = center_attributes; break;
 	    default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
-	    }
-
-	  pView->insertPageNum(atts, pDialog->isFooter());
 	}
-
+	pView->processPageNumber(pDialog->isFooter(),atts);
 	pDialogFactory->releaseDialog(pDialog);
-
 	return true;
 }
 
