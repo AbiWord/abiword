@@ -21,7 +21,7 @@
 #define ENCHANT_CHECKER_H
 
 #include "spell_manager.h"
-#include <enchant/enchant.h>
+#include <enchant.h>
 
 class EnchantChecker : public SpellChecker
 {
