@@ -29,6 +29,7 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaAppController.h"
 #include "xap_CocoaModule.h"
+#include "xap_CocoaPlugin.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -314,6 +315,14 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 			m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
 			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
+
+			m_FontDictionary = 0;
+
+			m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
+			m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
+
+			m_PluginsToolsSeparator = [NSMenuItem separatorItem];
+			[m_PluginsToolsSeparator retain];
 		}
 	return self;
 }
@@ -329,6 +338,26 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			[m_ContextMenu release];
 			m_ContextMenu = 0;
+		}
+	if (m_FontDictionary)
+		{
+			[m_FontDictionary release];
+			m_FontDictionary = 0;
+		}
+	if (m_Plugins)
+		{
+			[m_Plugins release];
+			m_Plugins = 0;
+		}
+	if (m_PluginsTools)
+		{
+			[m_PluginsTools release];
+			m_PluginsTools = 0;
+		}
+	if (m_PluginsToolsSeparator)
+		{
+			[m_PluginsToolsSeparator release];
+			m_PluginsToolsSeparator = 0;
 		}
 	[super dealloc];
 }
@@ -684,6 +713,71 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[self clearMenu:XAP_CocoaAppMenu_Help  ];
 }
 
+- (NSString *)familyNameForFont:(NSString *)fontName
+{
+	NSString * familyName = nil;
+
+	if (!m_FontDictionary)
+		{
+			NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
+
+			unsigned family_count = [pAvailableFontFamilies count];
+
+			m_FontDictionary = [[NSMutableDictionary alloc] initWithCapacity:family_count];
+
+			for (unsigned ff = 0; ff < family_count; ff++)
+				{
+					NSString * family_name = (NSString *) [pAvailableFontFamilies objectAtIndex:ff];
+
+					NSArray * font_members = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:family_name];
+
+					unsigned member_count = [font_members count];
+
+					for (unsigned fm = 0; fm < member_count; fm++)
+						{
+							NSArray * font = (NSArray *) [font_members objectAtIndex:fm];
+
+							NSString * name = (NSString *) [font objectAtIndex:0];
+
+							[m_FontDictionary setObject:family_name forKey:name];
+						}
+				}
+		}
+	if (m_FontDictionary && fontName)
+		{
+			familyName = (NSString *) [m_FontDictionary objectForKey:fontName];
+		}
+	return familyName;
+}
+
+- (void)appendPluginMenuItem:(NSMenuItem *)menuItem
+{
+	if (![m_PluginsTools containsObject:menuItem])
+		{
+			if ([m_PluginsTools count] == 0)
+				{
+					[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
+				}
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
+
+			[m_PluginsTools addObject:menuItem];
+		}
+}
+
+- (void)removePluginMenuItem:(NSMenuItem *)menuItem
+{
+	if ([m_PluginsTools containsObject:menuItem])
+		{
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:menuItem];
+
+			if ([m_PluginsTools count] == 1)
+				{
+					[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:m_PluginsToolsSeparator];
+				}
+			[m_PluginsTools removeObject:menuItem];
+		}
+}
+
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
  */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
@@ -702,23 +796,16 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	m_pViewCurrent  = view;
 	m_pFrameCurrent = frame;
 
-	if ([XAP_CocoaToolPalette instantiated])
-		{
-			[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
-		}
+	[self notifyFrameViewChange];
 }
 
 - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
-	UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
+	// UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
 	if (m_pFrameCurrent == frame)
 		{
 			m_pViewCurrent = view;
-
-			if ([XAP_CocoaToolPalette instantiated])
-				{
-					[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
-				}
+			[self notifyFrameViewChange];
 		}
 }
 
@@ -740,6 +827,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			m_pViewPrevious = 0;
 			m_pFramePrevious = 0;
 		}
+	[self notifyFrameViewChange];
 }
 
 - (AV_View *)currentView
@@ -760,6 +848,96 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (XAP_Frame *)previousFrame
 {
 	return m_pFramePrevious;
+}
+
+- (void)notifyFrameViewChange
+{
+	if ([XAP_CocoaToolPalette instantiated])
+		{
+			[[XAP_CocoaToolPalette instance:self] setCurrentView:m_pViewCurrent inFrame:m_pFrameCurrent];
+		}
+
+	unsigned count = [m_Plugins count];
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+			[[plugin delegate] pluginCurrentDocumentHasChanged];
+		}
+}
+
+/* load .Abi bundle plugin at path, returns nil on failure
+ */
+- (XAP_CocoaPlugin *)loadPlugin:(NSString *)path
+{
+	if (!path)
+		return nil;
+
+	XAP_CocoaPlugin * cocoa_plugin = [[XAP_CocoaPlugin alloc] init];
+	if (!cocoa_plugin)
+		return nil;
+
+	if ([cocoa_plugin loadBundleWithPath:path])
+		{
+			[m_Plugins addObject:cocoa_plugin];
+		}
+	else
+		{
+			[cocoa_plugin release];
+			cocoa_plugin = nil;
+		}
+	return cocoa_plugin;
+}
+
+/* list of currently loaded plugins
+ */
+- (NSArray *)plugins
+{
+	return m_Plugins;
+}
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if any of the plugins object
+ */
+- (BOOL)deactivateAllPlugins
+{
+	unsigned count = [m_Plugins count];
+
+	BOOL bCanDeactivate = YES;
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+
+			bCanDeactivate = [[plugin delegate] pluginCanDeactivate];
+			if (!bCanDeactivate)
+				break;
+		}
+	if (!bCanDeactivate)
+		return NO;
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+
+			[[plugin delegate] pluginDeactivate];
+		}
+	return YES;
+}
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if the plugin objects, unless override is YES.
+ */
+- (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override
+{
+	if (!override)
+		{
+			if (![[plugin delegate] pluginCanDeactivate])
+				return NO;
+		}
+	[[plugin delegate] pluginDeactivate];
+
+	return YES;
 }
 
 @end

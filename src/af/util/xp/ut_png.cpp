@@ -24,7 +24,7 @@
 #ifdef _AIX
 #define jmpbuf __jmpbuf
 #endif
-#include "png.h"
+#include <png.h>
 
 #include "ut_assert.h"
 #include "ut_bytebuf.h"

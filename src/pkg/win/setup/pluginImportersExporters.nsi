@@ -790,9 +790,13 @@ Section "AbiWordPerfect (*.wpd) Plugin"
 
 	DoInstall:
         SetOutPath $INSTDIR\AbiWord\bin
-        File "libwpd-1.dll"
+        File "libwpd-0.8.dll"
+
+        SetOutPath $INSTDIR\AbiWord\bin
+        File "libwpd-stream-0.8.dll"
+
         SetOutPath $INSTDIR\AbiWord\plugins
-	File "AbiWordPerfect.dll"
+	  File "AbiWordPerfect.dll"
 
   
 	End:
@@ -902,7 +906,8 @@ Section "Uninstall"
 	Delete "$INSTDIR\..\bin\libglib-2.0-0.dll"
 	Delete "$INSTDIR\..\bin\libgobject-2.0-0.dll"
 	Delete "$INSTDIR\..\bin\libgsf-1-1.dll"
-	Delete "$INSTDIR\..\bin\libwpd-1.dll"
+	Delete "$INSTDIR\..\bin\libwpd-0.8.dll"
+	Delete "$INSTDIR\..\bin\libwpd-stream-0.8.dll"
 	Delete "$INSTDIR\..\bin\libxml2.dll"
 
 !ifdef 0

@@ -3,6 +3,7 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
+                activateAction = id; 
                 closeAction = id; 
                 deactivateAction = id; 
                 deactivateAllAction = id; 
@@ -11,6 +12,7 @@
             CLASS = "XAP_CocoaDlg_PluginManagerController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                oActivateBtn = NSButton; 
                 oAuthorData = NSTextField; 
                 oAuthorLabel = NSTextField; 
                 oCloseBtn = NSButton; 
@@ -18,6 +20,7 @@
                 oDeactivateBtn = NSButton; 
                 oDescriptionData = NSTextField; 
                 oDescriptionLabel = NSTextField; 
+                oForceDeactivation = NSButton; 
                 oInstallBtn = NSButton; 
                 oNameData = NSTextField; 
                 oNameLabel = NSTextField; 

@@ -30,6 +30,8 @@ class XAP_Frame;
 
 @class EV_CocoaMenuDelegate;
 
+@class XAP_CocoaPlugin;
+
 @interface XAP_CocoaApplication : NSApplication
 {
 	// 
@@ -91,6 +93,13 @@ enum XAP_CocoaAppMenu_Id
 	NSMenu *				m_AppMenu[XAP_CocoaAppMenu_count__];
 	NSMenuItem *			m_AppItem[XAP_CocoaAppMenu_count__];
 
+	NSMutableDictionary *	m_FontDictionary;
+
+	NSMutableArray *		m_Plugins;
+	NSMutableArray *		m_PluginsTools;
+
+	NSMenuItem *			m_PluginsToolsSeparator;
+
 	BOOL			m_bFileOpenedDuringLaunch;
 	BOOL			m_bApplicationLaunching;
 	BOOL			m_bAutoLoadPluginsAfterLaunch;
@@ -148,6 +157,11 @@ enum XAP_CocoaAppMenu_Id
 - (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu; // except AbiWord & Windows
 - (void)clearAllMenus;                          // except AbiWord & Windows
 
+- (NSString *)familyNameForFont:(NSString *)fontName;
+
+- (void)appendPluginMenuItem:(NSMenuItem *)menuItem;
+- (void)removePluginMenuItem:(NSMenuItem *)menuItem;
+
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
  */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
@@ -159,6 +173,26 @@ enum XAP_CocoaAppMenu_Id
 
 - (AV_View *)previousView;
 - (XAP_Frame *)previousFrame;
+
+- (void)notifyFrameViewChange; // [re/un]setCurrentView call this
+
+/* load .Abi bundle plugin at path, returns nil on failure
+ */
+- (XAP_CocoaPlugin *)loadPlugin:(NSString *)path;
+
+/* list of currently loaded plugins
+ */
+- (NSArray *)plugins;
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if any of the plugins object
+ */
+- (BOOL)deactivateAllPlugins;
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if the plugin objects, unless override is YES.
+ */
+- (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override;
 @end
 
 #endif /* ! XAP_COCOAAPPCONTROLLER_H */

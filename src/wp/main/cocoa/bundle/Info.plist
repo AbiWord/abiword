@@ -2,29 +2,37 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>W6BN</string>
-				<string>WDBN</string>
-			</array>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>doc</string>
-				<string>DOC</string>
-				<string>dot</string>
-				<string>DOT</string>
+				<string>abw</string>
+				<string>ABW</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>DOCDocument.icns</string>
+			<string>ABWDocument.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Microsoft Word Document</string>
+			<string>AbiWord Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>awt</string>
+				<string>AWT</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWDocument.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord Template</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -37,63 +45,33 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWDocument.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>AbiWord Compressed Document Format</string>
-			<key>CFBundleTypeOSTypes</key>
-			<string></string>
+			<string>Compressed AbiWord Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>abw</string>
-				<string>ABW</string>
+				<string>doc</string>
+				<string>DOC</string>
+				<string>dot</string>
+				<string>DOT</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>ABWDocument.icns</string>
+			<string>DOCDocument.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>AbiWord Document Format</string>
+			<string>Microsoft Word Document</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
-				<string>TEXT</string>
-				<string>AbiW</string>
+				<string>W6BN</string>
+				<string>WDBN</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>bak~</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>ABWBackup.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>AbiWord Auto-Save Document</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>TEXT</string>
-				<string>AbiW</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>CRASHED</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>ABWSaved.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>AbiWord Auto-Save Document</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>TEXT</string>
-				<string>AbiW</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -104,25 +82,67 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>RTFDocument.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>AbiWord RTF Document</string>
+			<string>Rich Text Format Document</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
-				<string>RTF </string>
-				<string>TEXT</string>
+				<string>RTF</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>Abi</string>
+				<string>bak~</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWBackup.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord Auto-Saved Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>CRASHED</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWSaved.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord Crash-Saved Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>so-abi</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWPlugin.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>AbiWord Plugin</string>
+			<key>CFBundleTypeRole</key>
+			<string>None</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>Abi</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWPlugin.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Cocoa AbiWord Plugin</string>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 		</dict>
@@ -133,21 +153,13 @@
 	<string>AbiWord.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.AbiSource.AbiWord</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleInfoPlistVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>AbiWord</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>AbiW</string>
 	<key>CFBundleVersion</key>
-	<string>2.2.3</string>
-        <key>NSMainNibFile</key>
-        <string>MainMenu</string>
-        <key>NSPrincipalClass</key>
-        <string>XAP_CocoaApplication</string>
+	<string>2.2.4</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>XAP_CocoaApplication</string>
 </dict>
 </plist>

@@ -2766,7 +2766,7 @@ bool IE_Imp_RTF::ParseRTFKeyword()
 	bool parameterUsed = false;
 	if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
+		UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
 		bool bres = TranslateKeyword(keyword, parameter, parameterUsed);
 		if(!bres)
 		{
@@ -5697,6 +5697,10 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		}
 		else								// else we are pasting from a buffer
 		{
+			if( m_currentRTFState.m_paraProps.m_isList && (m_dposPaste == m_dOrigPos))
+			{
+				ApplyParagraphAttributes(true);	
+			}
 			ok = _insertSpan();
 		}
 		m_gbBlock.truncate(0);
@@ -5903,7 +5907,7 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 	return mappedID;
 }
 
-bool IE_Imp_RTF::ApplyParagraphAttributes()
+bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 {
 	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
@@ -6088,13 +6092,18 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		UT_String_sprintf(tempBuffer, "text-indent:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentFirst)/1440));
 		propBuffer += tempBuffer;
 	}
-	// line spacing
+// line spacing
 	if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
 	{
-		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
-		UT_String_sprintf(tempBuffer, "line-height:1.0;");
+        if (m_currentRTFState.m_paraProps.m_lineSpaceVal < 0) {  // exact spacing
+			UT_String_sprintf(tempBuffer, "line-height:%spt;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
+		}
+		else                                                         // "at least" spacing
+		{
+			UT_String_sprintf(tempBuffer, "line-height:%spt+;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
+		}
 	}
-	else
+	else                 // multiple line spacing
 	{
 		UT_String_sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
 	}
@@ -6426,16 +6435,19 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		bool bSuccess = true;
 		if(bAbiList && (bUseInsertNotAppend()))
 		{
-			UT_DEBUGMSG(("Insert block at 1 \n"));
-			markPasteBlock();
-			insertStrux(PTX_Block);
-			m_newParaFlagged = false;
-			m_bSectionHasPara = true;
+			if(!bDontInsert)
+			{
+				UT_DEBUGMSG(("Insert block at 1 \n"));
+				markPasteBlock();
+				insertStrux(PTX_Block);
+			}
 			//
 			// Put the tab back in.
 			//
 			UT_UCSChar cTab = UCS_TAB;
 			getDoc()->insertSpan(m_dposPaste,&cTab,1);
+			m_newParaFlagged = false;
+			m_bSectionHasPara = true;
 			m_dposPaste++;
 			PL_StruxDocHandle sdh_cur;
 			UT_uint32 j;
@@ -6493,8 +6505,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				}
 			}
 			UT_DEBUGMSG((" Insert block at 2 \n"));
-			markPasteBlock();
-			insertStrux(PTX_Block);
+			if(!bDontInsert)
+			{
+				markPasteBlock();
+				insertStrux(PTX_Block);
+			}
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
 			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
@@ -7355,7 +7370,7 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword,
 	else if (strcmp(reinterpret_cast<char*>(pKeyword), "slmult") == 0)
 	{
 		pbParas->bm_lineSpaceExact = true;
-		pParas->m_lineSpaceExact = (!fParam  ||  param == 0);
+		pParas->m_lineSpaceExact = (!fParam  ||  param == 0);   // this means exact or "at least" - which depends on sign of \sl param
 	}
 	else if (strcmp(reinterpret_cast<char*>(pKeyword), "super") == 0)
 	{
@@ -9683,7 +9698,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	m_lenPasteBuffer = lenData;
 	m_pCurrentCharInPasteBuffer = pData;
 	m_dposPaste = pDocRange->m_pos1;
-
+	m_dOrigPos = m_dposPaste;
 	// some values to start with -- most often we are somewhere in the middle of doc,
 	// i.e., in section and in block
 	m_newParaFlagged = false;
@@ -10278,19 +10293,64 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 		UT_String_sprintf(tempBuffer, "margin-right:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentRight)/1440));
 		strcat(propBuffer, tempBuffer.c_str());
 	}
-    //
-	// line spacing
-    //
-	if (pParas->m_lineSpaceExact)
+//
+// First line indent
+//
+
+	if(pbParas->bm_indentFirst)
 	{
-		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
-		UT_String_sprintf(tempBuffer, "line-height:1.0;");
+		UT_String_sprintf(tempBuffer, "text-indent:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentFirst)/1440));
+		strcat(propBuffer, tempBuffer.c_str());
 	}
-	else
+
+//
+// line spacing
+//
+	if(pbParas->bm_lineSpaceVal)
 	{
-		UT_String_sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
+		if (pParas->m_lineSpaceExact)
+		{
+			if (pParas->m_lineSpaceVal < 0) {  // exact spacing
+				UT_String_sprintf(tempBuffer, "line-height:%spt; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+			}
+			else                                                         // "at least" spacing
+			{
+				UT_String_sprintf(tempBuffer, "line-height:%spt+; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+			}
+		}
+		else   // multiple spacing
+		{
+			UT_String_sprintf(tempBuffer, "line-height:%s; ",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
+		}
+		strcat(propBuffer, tempBuffer.c_str());
 	}
-	strcat(propBuffer, tempBuffer.c_str());
+
+//
+// justification
+//
+	if (pbParas->bm_justification)
+	{
+		strcat(propBuffer, "text-align:");
+		switch(pParas->m_justification)
+		{
+			case RTFProps_ParaProps::pjCentre:
+				strcat(propBuffer, "center; ");
+				break;
+		    case RTFProps_ParaProps::pjRight:
+			    strcat(propBuffer, "right; ");
+			    break;
+		    case RTFProps_ParaProps::pjFull:
+			    strcat(propBuffer, "justify; ");
+		     	break;
+		    default:
+			    UT_ASSERT_NOT_REACHED();	// so what is it?
+		    case RTFProps_ParaProps::pjLeft:
+			    strcat(propBuffer,"left; ");
+			    break;
+		}
+		strcat(propBuffer, tempBuffer.c_str());
+	}
+
 //
 // Character Properties.
 //

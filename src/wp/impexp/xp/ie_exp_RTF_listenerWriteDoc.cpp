@@ -1485,6 +1485,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 		case UCS_NBSP:					// NBSP -- non breaking space
 			FlushBuffer();
 			m_pie->_rtf_keyword("~");
+			m_pie->m_bLastWasKeyword = false;       // no space needed afterward
+			
 			pData++;
 			break;
 
@@ -4136,7 +4138,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		{
 			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Populate block \n"));
 			_closeSpan();
-			if(!m_bBlankLine)
+			if(!m_bBlankLine && !m_bOpennedFootnote)
 			{
 				m_bInBlock = true;
 			}
@@ -4914,16 +4916,31 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if (strcmp(szLineHeight,"1.0") != 0)
 	{
 		double f = UT_convertDimensionless(szLineHeight);
-		if (f != 0.0)					// we get zero on bogus strings....
-		{
-			// don't ask me to explain the details of this conversion factor,
-			// because i don't know....
-			UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
-			m_pie->_rtf_keyword("sl",dSpacing);
-			m_pie->_rtf_keyword("slmult",1);
+
+
+		if (f > 0.000001) 
+		{                                   // we get zero on bogus strings....
+		        const char * pPlusFound = strrchr(szLineHeight, '+');
+		        if (pPlusFound && *(pPlusFound + 1) == 0)             //  "+" means "at least" line spacing
+			{
+				UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+				m_pie->_rtf_keyword("sl",dSpacing);
+				m_pie->_rtf_keyword("slmult",0);
+			}
+			else if (UT_hasDimensionComponent(szLineHeight)) //  use exact line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+			        m_pie->_rtf_keyword("sl",-dSpacing);
+			        m_pie->_rtf_keyword("slmult",0);
+		        }
+			else // multiple line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
+			        m_pie->_rtf_keyword("sl",dSpacing);
+			        m_pie->_rtf_keyword("slmult",1);
+		        }
 		}
 	}
-
 //
 // Output Paragraph Cell nesting level.
 //

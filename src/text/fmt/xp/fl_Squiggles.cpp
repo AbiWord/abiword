@@ -310,8 +310,8 @@ fl_Squiggles::_deleteNth(UT_sint32 iIndex)
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::delelteNth(%d)\n", iIndex));
 	fl_PartOfBlock* pPOB = getNth(iIndex);
-	clear(pPOB);
 	m_vecSquiggles.deleteNthItem(iIndex);
+	clear(pPOB);
 	delete pPOB;
 }
 

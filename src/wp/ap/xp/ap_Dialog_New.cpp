@@ -23,7 +23,7 @@
 
 AP_Dialog_New::AP_Dialog_New(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent (pDlgFactory, id, "interface/dialognew"), 
-	m_answer (AP_Dialog_New::a_CANCEL), m_openType (AP_Dialog_New::open_New),
+	m_answer (AP_Dialog_New::a_CANCEL), m_openType (AP_Dialog_New::open_Template),
 	m_fileName(0)
 {
 }

@@ -189,6 +189,11 @@ void PD_Document::setMailMergeField(const UT_String & key,
 	m_mailMergeMap.set ( key, ptrvalue ) ;
 }
 
+void PD_Document::clearMailMergeMap()
+{
+	m_mailMergeMap.clear();
+}
+
 void PD_Document::setMarginChangeOnly(bool b)
 {
 	m_bMarginChangeOnly = b;
@@ -1069,10 +1074,34 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attribut
 	return m_pPieceTable->appendStruxFmt(pfs,attributes);
 }
 
+/*!
+ * This method appends a block strux to the end of the piecteable if
+ * there is an open strux present with no content. Really useful for
+ * importers.
+ */
+bool PD_Document::appendBlockIfNeeded(void)
+{
+	pf_Frag * pf = getLastFrag();
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		{
+			//
+			// Append a block!
+			//
+			appendStrux(PTX_Block,NULL);
+			return true;
+		}
+		
+	}
+	return true;
+}
+
 bool PD_Document::appendFmt(const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-
+	appendBlockIfNeeded();
 	// can only be used while loading the document
 	return m_pPieceTable->appendFmt(attributes);
 }
@@ -1080,6 +1109,7 @@ bool PD_Document::appendFmt(const XML_Char ** attributes)
 bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
+	appendBlockIfNeeded();
 
 	// can only be used while loading the document
 
@@ -1089,6 +1119,7 @@ bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
+	appendBlockIfNeeded();
 
 	// can only be used while loading the document
 
@@ -1164,6 +1195,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
+	appendBlockIfNeeded();
 
 	// can only be used while loading the document
 
@@ -1173,6 +1205,7 @@ bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 bool PD_Document::appendFmtMark(void)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
+	appendBlockIfNeeded();
 
 	// can only be used while loading the document
 

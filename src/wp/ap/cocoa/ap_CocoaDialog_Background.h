@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
@@ -21,31 +23,42 @@
 #ifndef AP_COCOADIALOG_BACKGROUND_H
 #define AP_COCOADIALOG_BACKGROUND_H
 
-#include <Cocoa/Cocoa.h>
+#import <Cocoa/Cocoa.h>
+
+#include "xap_CocoaDialog_Utilities.h"
+
 #include "ap_Dialog_Background.h"
 
-class XAP_CocoaFrame;
-
-/*****************************************************************/
-
-class AP_CocoaDialog_Background: public AP_Dialog_Background
+class AP_CocoaDialog_Background : public AP_Dialog_Background
 {
 public:
 	AP_CocoaDialog_Background(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
+
 	virtual ~AP_CocoaDialog_Background(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
-	virtual void eventOk(void);
-	virtual void eventCancel(void);
-	void         colorCleared(void);
- private:
-	virtual NSWindow * _constructWindow (void);
-	virtual void _constructWindowContents (NSWindow * container);
-	NSControl * m_wColorsel;
-	NSWindow * m_dlg;
+	void					_setAnswer (AP_Dialog_Background::tAnswer ans) { setAnswer(ans); }
 };
+
+@interface AP_CocoaDialog_Background_Controller : NSWindowController <XAP_CocoaDialogProtocol>
+{
+	IBOutlet NSButton *		oClear;
+	IBOutlet NSButton *		oCancel;
+	IBOutlet NSButton *		oOK;
+
+	IBOutlet NSColorWell *	oColorWell;
+
+	AP_CocoaDialog_Background *	_xap;
+}
+- (void)dealloc;
+
+- (IBAction)aColor:(id)sender;
+- (IBAction)aClear:(id)sender;
+- (IBAction)aCancel:(id)sender;
+- (IBAction)aOK:(id)sender;
+@end
 
 #endif /* AP_COCOADIALOG_BACKGROUND_H */
