@@ -7730,7 +7730,7 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	bres = m_pDoc->getNextStrux(prevSDH,&nextSDH);
 	if(!bres)
 	{
-		return false;
+		return true;
 	}
 	nextPos =  m_pDoc->getStruxPosition(nextSDH);
 	if(pos > nextPos && (m_pDoc->getStruxType(nextSDH) != PTX_Block))
