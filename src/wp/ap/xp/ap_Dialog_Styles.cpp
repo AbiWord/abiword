@@ -41,6 +41,8 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 
+#include "xap_Dlg_Language.h"
+
 #include "ap_Dialog_Tab.h"
 
 AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
@@ -255,6 +257,43 @@ const XML_Char * AP_Dialog_Styles::getAttsVal(const XML_Char * szProp) const
 		return  (const XML_Char *) m_vecAllAttribs.getNthItem(j+1);
 	else
 		return NULL;
+}
+
+void AP_Dialog_Styles::ModifyLang(void)
+{
+	UT_DEBUGMSG(("DOM: modify lang\n"));
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_LANGUAGE;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *) getFrame()->getDialogFactory();
+
+	XAP_Dialog_Language * pDialog
+		= (XAP_Dialog_Language *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	const XML_Char ** props_in = NULL;
+	if (getView()->getCharFormat(&props_in))
+	{
+		pDialog->setLanguageProperty(UT_getAttribute("lang", props_in));
+		FREEP(props_in);
+	}
+
+	pDialog->runModal(getFrame());
+
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_Language::a_OK);
+
+	if (bOK)
+	{
+		const XML_Char * s;
+
+		if (pDialog->getChangedLangProperty(&s))
+		{
+			addOrReplaceVecProp("lang", s);
+		}
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
 }
 
 void AP_Dialog_Styles::ModifyFont(void)

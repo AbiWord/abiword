@@ -73,6 +73,7 @@ public:
 	void         event_ModifyFont();
 	void         event_ModifyNumbering();
 	void         event_ModifyTabs();
+	void         event_ModifyLanguage();
 	void         event_ModifyPreviewExposed();
 	void         event_basedOn(void);
 	void         event_followedBy(void);
@@ -150,6 +151,8 @@ protected:
 	GtkWidget *	m_wModifyFont;
 	GtkWidget *	m_wModifyNumbering;
 	GtkWidget *	m_wModifyTabs;
+	GtkWidget * m_wModifyLanguage;
+
 	GList *     m_gbasedOnStyles;
 	GList *     m_gfollowedByStyles;
 	const XML_Char * m_newStyleName[40];

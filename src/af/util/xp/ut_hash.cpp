@@ -125,12 +125,21 @@ UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
 		return NULL;
 	}
 
+	if (!pszLeft)
+	{
+		return NULL;
+	}
+
 	UT_ASSERT(m_pBuckets);
 	int iBucket = hashFunc(pszLeft);
 	ut_HashEntryListNode* pHELN = m_pBuckets[iBucket].pHead;
 	while (pHELN)
 	{
 		UT_HashEntry* pEntry = m_pEntries + pHELN->iEntry;
+
+		if (!pEntry->pszLeft)
+			continue;
+
 		if (0 == strcmp(pEntry->pszLeft, pszLeft))
 		{
 			return pEntry;
@@ -140,6 +149,28 @@ UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
 	}
 
 	return NULL;
+}
+
+void UT_HashTable::removeEntry (const char * pszLeft)
+{
+	if (!m_pBuckets)
+	{
+		return;
+	}
+
+	UT_HashEntry * pEntry = findEntry (pszLeft);
+	if (!pEntry)
+	{
+		return;
+	}
+
+	// the ht is in *dire* need of a rewrite!!!!!!!!!!!
+	// this method is certainly not correct
+
+	setEntry (pEntry, NULL, NULL);
+	pEntry->pszLeft = 0;
+
+	return;
 }
 
 UT_HashEntry* UT_HashTable::getNthEntry(int n) const

@@ -131,6 +131,7 @@ dcl(DLG_Styles_ModifyParagraph,	"Paragraph")
 dcl(DLG_Styles_ModifyFont,	    "Font")
 dcl(DLG_Styles_ModifyTabs,	    "Tabs")
 dcl(DLG_Styles_ModifyNumbering,	"Numbering")
+dcl(DLG_Styles_ModifyLanguage,  "Language")
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle,			"Paragraph")

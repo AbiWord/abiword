@@ -45,6 +45,8 @@ public:
 	UT_HashEntry* getNthEntry(int n) const;
 	UT_HashEntry* findEntry(const char* psLeft) const;
 
+	void removeEntry (const char * szLeft);
+
 protected:
 	UT_uint32 hashFunc(const char*) const;
 

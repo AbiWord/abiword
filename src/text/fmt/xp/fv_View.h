@@ -362,6 +362,9 @@ public:
 	bool                isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}
 	void                setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
 	PreViewMode         getPreviewMode(void) { return m_previewMode;}
+
+	inline PD_Document * getDocument (void) const {return m_pDoc;}
+
 protected:
 	void				_generalUpdate(void);
 	

@@ -157,31 +157,25 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 
 bool pt_PieceTable::removeStyle (const XML_Char * szName)
 {
-  UT_ASSERT(szName);
-  UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	UT_ASSERT(szName);
+	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	
+	UT_DEBUGMSG(("DOM: remove the style, maybe recode the hash-table\n"));
 
-  UT_DEBUGMSG(("DOM: TODO: remove the style, maybe recode the hash-table\n"));
-  UT_ASSERT(UT_TODO);
+	PD_Style * pStyle;
 
-#if 0
-	UT_HashEntry * pHashEntry = m_hashStyles.findEntry(szName);
-	if (!pHashEntry)
-		return false;
+	if (getStyle(szName,&pStyle))
+	{
+		if (!pStyle->isUserDefined())
+			return false; // can't destroy a builtin style
+		
+		delete pStyle;
 
-	PD_Style * pStyle = (PD_Style *) pHashEntry->pData;
-	UT_ASSERT(pStyle);
+		m_hashStyles.removeEntry (szName);
+		return true;
+	}
 
-	if (!pStyle.isUserDefined())
-	  return false; // can't destroy a builtin style
-
-	delete pStyle;
-
-	// todo - we need to remove this from the hashtable
-	m_hashStyles.setEntry (szName, NULL, NULL);
-	return true;
-#endif
-
-  return false;
+	return false;
 }
 
 bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const

@@ -84,6 +84,7 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wModifyParagraph = NULL;
 	m_wModifyFont = NULL;
 	m_wModifyNumbering = NULL;
+	m_wModifyLanguage = NULL;
 	m_gbasedOnStyles = NULL;
 	m_gfollowedByStyles = NULL;
 
@@ -259,6 +260,13 @@ static void s_modify_numbering(GtkWidget * /* widget */,
 }
 
 
+static void s_modify_language (GtkWidget * /* w */,
+							   AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(me);
+	me->event_ModifyLanguage();
+}
+
 static void s_modify_tabs(GtkWidget * /* widget */,
 			     AP_UnixDialog_Styles * me)
 {
@@ -422,7 +430,6 @@ void AP_UnixDialog_Styles::event_charPreviewExposed(void)
 
 void AP_UnixDialog_Styles::event_DeleteClicked(void)
 {
-	messageBoxOK("Delete Clicked");
 	if (m_whichRow != -1)
     {
         gchar * style = NULL;
@@ -441,37 +448,12 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 
 void AP_UnixDialog_Styles::event_NewClicked(void)
 {
-
-#if 0
-//
-// Hide the old window
-//
-	xxx_UT_DEBUGMSG(("SEVIOR: Hiding main window for New \n"));
-	gtk_widget_hide( m_windowMain);
-#endif
-
 	setIsNew(true);
 	modifyRunModal();
-	UT_DEBUGMSG(("SEVIOR: Finished New \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
-		UT_DEBUGMSG(("SEVIOR!! creating new style!! \n"));
 		createNewStyle(getNewStyleName());
 	}
-	else
-	{
-//
-// Do other stuff
-//
-	}
-
-#if 0
-//
-// Reveal main window again
-//
-	gtk_widget_show( m_windowMain);
-#endif
-
 }
 
 void AP_UnixDialog_Styles::event_ClistClicked(gint row, gint col)
@@ -797,12 +779,16 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 
 	    getDoc()->enumStyles((UT_uint32)i, &name, &pStyle);
 
+		// style has been deleted probably
+		if (!pStyle)
+			continue;
+
 	    // all of this is safe to do... append should take a const char **
 	    data[0] = name;
 
 	    if ((m_whichType == ALL_STYLES) || 
-		(m_whichType == USED_STYLES && pStyle->isUsed()) ||
-		(m_whichType == USER_STYLES && pStyle->isUserDefined()))
+			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
+			(m_whichType == USER_STYLES && pStyle->isUserDefined()))
 		{
 			gtk_clist_append (GTK_CLIST(m_wclistStyles), (gchar **)data);
 		}
@@ -1081,6 +1067,10 @@ void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
 	gtk_widget_show (wNumbering);
 	gtk_menu_append (GTK_MENU (FormatMenu_menu), wNumbering);
 
+	GtkWidget * wLanguage = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage));
+	gtk_widget_show (wLanguage);
+	gtk_menu_append (GTK_MENU (FormatMenu_menu), wLanguage);
+
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (FormatMenu), FormatMenu_menu);
 
 	m_wFormat = wFormat;
@@ -1088,6 +1078,7 @@ void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
 	m_wModifyFont = wFont;
 	m_wModifyNumbering = wNumbering;
 	m_wModifyTabs = wTabs;
+	m_wModifyLanguage = wLanguage;
 }
 
 void AP_UnixDialog_Styles::_connectModifySignals(void)
@@ -1123,6 +1114,11 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 	gtk_signal_connect(GTK_OBJECT(m_wModifyTabs),
 					   "activate",
 					   GTK_SIGNAL_FUNC(s_modify_tabs),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wModifyLanguage),
+					   "activate",
+					   GTK_SIGNAL_FUNC(s_modify_language),
 					   (gpointer) this);
 
 	gtk_signal_connect(GTK_OBJECT(m_wModifyDrawingArea),
@@ -1476,6 +1472,18 @@ void   AP_UnixDialog_Styles::event_ModifyFont()
 	updateCurrentStyle();
 }
 
+void AP_UnixDialog_Styles::event_ModifyLanguage()
+{
+	UT_DEBUGMSG(("DOM: Modify Language properties\n"));
+
+	gtk_widget_hide (m_wModifyDialog);
+
+	ModifyLang();
+
+	gtk_widget_show (m_wModifyDialog);
+
+	updateCurrentStyle();
+}
 
 void   AP_UnixDialog_Styles::event_ModifyNumbering()
 {

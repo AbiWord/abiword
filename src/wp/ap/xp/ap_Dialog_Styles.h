@@ -74,6 +74,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void ModifyFont(void);
 	void ModifyParagraph(void);
 	void ModifyTabs(void);
+	void ModifyLang(void);
 
 	void updateCurrentStyle(void);
     bool createNewStyle(const XML_Char * szName);

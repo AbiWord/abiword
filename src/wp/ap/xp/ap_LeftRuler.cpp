@@ -34,6 +34,8 @@
 #include "ap_Prefs.h"
 #include "fv_View.h"
 
+#include "pd_Document.h"
+
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
