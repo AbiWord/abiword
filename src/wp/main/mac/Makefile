@@ -27,20 +27,17 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		MacMain.cpp
-PROGRAM=		$(BINDIR)/AbiWord
+PROGRAM=		$(BINDIR)/AbiWord.app/Content/MacOS/AbiWord
 
-#TF As of R4 we don't need zlib or libpng any more
-#LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
-#			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libpng Abi_zlib
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv Abi_libiconv
 
 
 ABI_APPLIBS=		$(LoadOrder)
-ABI_LIBS=		translation be tracker png z
+ABI_LIBS=		png z
 
 ABI_APPLIBS+=		$(LoadOrder) $(LoadOrder)
-ABI_LIBS+=		stdc++.r4
+ABI_LIBS+=		
 
 TARGETS=		$(PROGRAM)
 
