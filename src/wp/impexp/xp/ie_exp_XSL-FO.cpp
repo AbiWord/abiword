@@ -301,7 +301,7 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Image:
 			{
 				char buf[16];
-				sprintf(buf, "%d.png", m_iImgCnt++);
+				sprintf(buf, "-%d.png", m_iImgCnt++);
 				m_pie->write("<fo:external-graphic src=\"");
 				m_pie->write(m_pie->getFileName());
 				m_pie->write(buf);
