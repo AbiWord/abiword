@@ -4355,8 +4355,6 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	setNeedsReformat();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
-		pView->_resetSelection();
-		pView->_setPoint(pcroc->getPosition());
 		pView->_drawInsertionPoint();
 	}
 
@@ -4740,8 +4738,6 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
-		pView->_resetSelection();
-		pView->_setPoint(pcrfmc->getPosition());
 		pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 

@@ -2297,8 +2297,9 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 		}
 	}
 
-	_eraseSelection();
-	
+	// Here the selection used to be cleared, but that prevented users
+	// from making multiple changes to the same region.
+
 	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
 	_generalUpdate();
