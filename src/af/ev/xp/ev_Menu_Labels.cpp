@@ -98,7 +98,7 @@ UT_Bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 	return (m_labelTable[index] != NULL);
 }
 
-EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
+EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) // TODO change it to const
 {
 	if ((id < m_first) || (id > m_last))
 		return NULL;

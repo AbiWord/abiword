@@ -69,7 +69,7 @@ public:
 	UT_Bool				setLabel(XAP_Menu_Id id,
 								 const char * szMenuLabel,
 								 const char * szStatusMsg);
-	EV_Menu_Label *		getLabel(XAP_Menu_Id id) const;
+	EV_Menu_Label *		getLabel(XAP_Menu_Id id);
 	const char *		getLanguage(void) const;
 
 protected:
