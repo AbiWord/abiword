@@ -162,6 +162,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	PhPoint_t pos;
+	int i,j;
 	
 	pos.x = xoff; 
 	pos.y = yoff + getFontAscent();
@@ -178,9 +179,24 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	} else {
 		pNChars = new UT_UCSChar[iLength];
 	}
-	for (int i = 0; i < iLength; i++) {
+	for (i = 0; i < iLength; i++) {
 		pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
 	}
+
+#if 0
+	{
+	char *buffer;
+	if (buffer = (char *)malloc(iLength + 1)) {
+		for (j = 0; j < iLength; j++) {
+			buffer[j] = (char )pNChars[i];
+		}
+		buffer[j] = '\0';
+		printf("@ %d,%d w/ %s do:\n%s\n", pos.x, pos.y, m_pFont->getFont(), buffer);
+		
+		free(buffer);
+	}
+	}
+#endif
 
 	//Was: (char *)(&pChars[iCharOffset]), iLength*sizeof(UT_UCSChar), 
 	PgDrawTextmx((char *)pNChars, iLength*sizeof(UT_UCSChar), &pos, Pg_TEXT_WIDECHAR);
@@ -287,6 +303,9 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 				  1,			/* Length of buffer (0 = use strlen) */
 				  0, 			/* Number of characters to skip */
 				  NULL);		/* Clipping rectangle? */
+#if 0
+	printf("%s : %s gives width %d \n", font, buffer, penpos);
+#endif
 #else
 	PfExtentText(&rect,
 				 NULL,
@@ -298,101 +317,6 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return penpos;
 }
 
-#if 0
-UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
-					  int num,  unsigned short* pWidths)
-{
-	const char *font;
-	int  i, charWidth = 0;
-	char c[2], *buffer;
-
-	if (!m_pFont || !(font = m_pFont->getFont())) {
-		return(0);
-	}
-	//printf("GR: Measure string font %s \n", (font) ? font : "NULL");
-
-	// TODO:  CHANGE THIS TO MAKE IT UNICODE
-	// TODO:  Why is this routine doing all this jazz with allocating
-	// TODO:  "buffer", etc, when it's only using one character at a time
-	// TODO:  anyhow?  Why not always use "c" or some similar scheme?
-	if (num == 1) {
-		buffer = c;
-	}
-	else {
-		if (!(buffer = (char *)malloc(num + 1))) {
-			fprintf(stderr, "Can't allocate memory \n");
-			return(0);
-		}
-	}
-	memset(buffer, 0, num + 1);
-
-#if 0
-	for (i = 0; i < num; i++) {
-		PhRect_t rect;
-
-		buffer[i] = (char)(s[i+iOffset]);
-		PfExtentText(&rect, NULL, font, &buffer[i], 0);
-		pWidths[i] = (rect.lr.x - min(rect.ul.x, 0) + 1) - rect.ul.x;
-		charWidth += pWidths[i];
-		//printf("Width of %s is %d \n", &buffer[i], pWidths[i]);
-	}
-#else
-	PhRect_t rect;
-	int indices, penpos;
-
-	for (i = 0; i < num; i++) {
-
-		buffer[i] = (char)(s[i+iOffset]);
-		memset(&rect, 0, sizeof(rect));
-		indices = 1;
-		penpos = 0;
-
-		PfExtentTextCharPositions(&rect, 			/* Rect extent */
-							 		NULL,			/* Position offset */
-									&buffer[i],		/* Buffer to hit */
-									font, 			/* Font buffer uses */
-									&indices,		/* Where to get pen pos from */
-									&penpos, 		/* Where to store pen pos */
-									1,				/* Number of indices */
-									0,				/* Flags */
-									0,				/* Length of buffer (use strlen) */
-									0, 				/* Number of characters to skip */
-									NULL);			/* Clipping rectangle? */
-		if (!penpos)
-		{
-			buffer[i] = (char)remapGlyph(s[i+iOffset], UT_TRUE);
-			memset(&rect, 0, sizeof(rect));
-			indices = 1;
-			penpos = 0;
-
-			PfExtentTextCharPositions(&rect, 			/* Rect extent */
-								 		NULL,			/* Position offset */
-										&buffer[i],		/* Buffer to hit */
-										font, 			/* Font buffer uses */
-										&indices,		/* Where to get pen pos from */
-										&penpos, 		/* Where to store pen pos */
-										1,				/* Number of indices */
-										0,				/* Flags */
-										0,				/* Length of buffer (use strlen) */
-										0, 				/* Number of characters to skip */
-										NULL);			/* Clipping rectangle? */
-		}
-		if (pWidths)
-			pWidths[i] = penpos;
-		charWidth += penpos;
-		//printf("Width of %s is %d (%d)\n", &buffer[i], pWidths[i], charWidth);
-	}
-
-#endif
-
-	if (num != 1) {
-		free(buffer);
-	}
-
-	//printf("GR: Width:%d \n", charWidth);
-	return charWidth;
-}
-#endif
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
 {
 	// this is hard-coded at 100 for X now, since 75 (which
@@ -962,30 +886,30 @@ void GR_QNXGraphics::setPrintContext(PpPrintContext_t *context) {
 }
 
 UT_Bool GR_QNXGraphics::startPrint(void) {
-#if defined(HEADERS_FIXED)
-	/* Somehow I need to get the print context here */
+	UT_DEBUGMSG(("GR: Start print"));
 	UT_ASSERT(m_pPrintContext);
+
 	if (m_pPrintContext) {
-#if 1
-		PpPrintOpen(m_pPrintContext);	
-		PpPrintStart(m_pPrintContext);	
-#endif
+		PpStartJob(m_pPrintContext);	
+		PpContinueJob(m_pPrintContext);	
 	}
 
  	m_bPrintNextPage = UT_FALSE;    
-#endif
 	return UT_TRUE;
 }
 
 UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) {
 
-	printf("Portrait %d W/H %d/%d \n", bPortrait, iWidth, iHeight);
-#if defined(HEADERS_FIXED)
-
+	UT_DEBUGMSG(("GR: Start Page %d W/H %d/%d (portrait:%d label:%s nextpage:%d)", 
+		pageNumber, iWidth, iHeight, bPortrait, (szPageLabel) ? szPageLabel : "", m_bPrintNextPage));
 	UT_ASSERT(m_pPrintContext);
-	if (m_pPrintContext && !m_bPrintNextPage) {		/* First page do setup */
-		printf("Print first page! \n");
+
+	if (!m_pPrintContext) {
+		return UT_FALSE;
+	}
+
+	if (!m_bPrintNextPage) {		/* First page do setup */
 #if 0
 		PhDim_t 	size;
 
@@ -999,26 +923,21 @@ UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber
 		PpPrintOpen(m_pPrintContext);	
 		PpPrintStart(m_pPrintContext);	
 #endif
-	}
- 	else if (m_pPrintContext && m_bPrintNextPage) {
-		printf("Print a new page! \n");
+	} else {
 		PpPrintNewPage(m_pPrintContext);
 	}
 
 	m_bPrintNextPage = UT_TRUE;
-#endif
 	return UT_TRUE;	
 }
 
 UT_Bool GR_QNXGraphics::endPrint(void) {
-
-#if defined(HEADERS_FIXED)
+	UT_DEBUGMSG(("GR: End print"));
 	UT_ASSERT(m_pPrintContext);
+
 	if (m_pPrintContext) {
-		PpPrintStop(m_pPrintContext);
-		PpPrintClose(m_pPrintContext);
+		PpEndJob(m_pPrintContext);
 	}
-#endif
 
 	return UT_TRUE;
 }

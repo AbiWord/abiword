@@ -143,6 +143,15 @@ static int s_SymbolMap_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t 
 	return Pt_CONTINUE;
 }
 
+static int s_CurrentSymbol_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	XAP_QNXDialog_Insert_Symbol *dlg = (XAP_QNXDialog_Insert_Symbol *)data;
+	UT_ASSERT(widget && dlg);
+	dlg->CurrentSymbol_clicked(info);
+	return Pt_CONTINUE;
+}
+
+
 static int s_new_font(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	XAP_QNXDialog_Insert_Symbol *dlg = (XAP_QNXDialog_Insert_Symbol *)data;
@@ -366,8 +375,9 @@ void XAP_QNXDialog_Insert_Symbol::SymbolMap_clicked( PtCallbackInfo_t * e)
 	PhRect_t         *rect;
 	UT_uint32 		 x, y;
 
-/* Global co-ordinates ... no good
 	ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
+
+/* Global co-ordinates ... no good
 	x = (UT_uint32) event->pos.x;
 	y = (UT_uint32) event->pos.y;
 */
@@ -380,6 +390,17 @@ void XAP_QNXDialog_Insert_Symbol::SymbolMap_clicked( PtCallbackInfo_t * e)
 	m_PreviousSymbol = m_CurrentSymbol;
 	m_CurrentSymbol = iDrawSymbol->calcSymbol(x, y);
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
+
+	/* Double clicking should also insert the symbol */
+	if (ptrevent->click_count > 1) {
+		event_OK();
+	}
+}
+
+void XAP_QNXDialog_Insert_Symbol::CurrentSymbol_clicked( PtCallbackInfo_t * e)
+{
+	//Single clicks will insert the symbol
+	event_OK();
 }
 
 
@@ -517,6 +538,8 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 		PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 		PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_Symbolarea_exposed, 1); 
 		areaCurrentSym = PtCreateWidget(PtRaw, symgroup, n, args);
+		PtAddEventHandler(areaCurrentSym, Ph_EV_BUT_PRESS /* | Ph_EV_BUT_RELEASE */, 
+							s_CurrentSymbol_clicked, this);
    	}
 
 	n = 0;

@@ -160,6 +160,10 @@ UT_Bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	invokeMenuMethod(m_pQNXFrame->getCurrentView(),pEM,0,0);
+
+	//Right away switch the focus back to the document
+	m_pQNXFrame->setDocumentFocus();
+
 	return UT_TRUE;
 }
 

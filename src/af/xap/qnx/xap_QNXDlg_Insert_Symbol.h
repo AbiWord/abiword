@@ -56,6 +56,7 @@ public:
 	virtual void			SymbolMap_exposed( void);
 	virtual void			Symbolarea_exposed( void);
 	virtual void			SymbolMap_clicked(PtCallbackInfo_t * event);
+	virtual void			CurrentSymbol_clicked(PtCallbackInfo_t *event);
 	virtual void			Key_Pressed(void * e);
 	virtual void            New_Font( void);
 	virtual void			event_WindowDelete(void);

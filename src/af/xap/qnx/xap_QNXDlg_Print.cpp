@@ -50,7 +50,10 @@ XAP_QNXDialog_Print::XAP_QNXDialog_Print(XAP_DialogFactory * pDlgFactory,
 
 XAP_QNXDialog_Print::~XAP_QNXDialog_Print(void)
 {
-	//TODO: Clear the context here ...	
+	if (m_pPrintContext) {
+		PpReleasePC(m_pPrintContext);
+		m_pPrintContext = NULL;
+	}
 }
 
 void XAP_QNXDialog_Print::useStart(void)
@@ -134,14 +137,14 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	}
 
 	if (m_pPrintContext) {
-		PpPrintReleasePC(m_pPrintContext);
+		PpReleasePC(m_pPrintContext);
 	}
 
 	/*TODO: Map the user choices from persistPrintDlg to the current dialog */
 
 	int value;
 
-	m_pPrintContext = PpPrintCreatePC();
+	m_pPrintContext = PpCreatePC();
 	UT_ASSERT(m_pPrintContext);
 	value = PtPrintSelection(m_pQNXFrame->getTopLevelWindow(), 		/* Parent widget */
 					 		 NULL, 									/* Position on the screen */
@@ -152,7 +155,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	m_answer = a_CANCEL;
 
 	if (value == Pt_PRINTSEL_CANCEL) {
-		PpPrintReleasePC(m_pPrintContext);
+		PpReleasePC(m_pPrintContext);
 		m_pPrintContext = NULL;
 		return;	
 	}
@@ -167,16 +170,13 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 		nrect.ul.x = nrect.ul.y = 0;
 		nrect.lr.x = nrect.lr.y = 0;
-		PpPrintSetPC(m_pPrintContext, 
-					 INITIAL_PC, 0, Pp_PC_MARGINS, &nrect);
+		PpSetPC(m_pPrintContext, Pp_PC_MARGINS, &nrect, 0);
 
-		PpPrintGetPC(m_pPrintContext, 
-					 Pp_PC_NONPRINT_MARGINS, (const void **)&rect);
-		UT_DEBUGMSG(("Margins are %d,%d %d,%d \n", 
+		PpGetPC(m_pPrintContext, Pp_PC_NONPRINT_MARGINS, (const void **)&rect);
+		UT_DEBUGMSG(("Non-Print Margins are %d,%d %d,%d \n", 
 				rect->ul.x, rect->ul.y, rect->lr.x, rect->lr.y));
 
-		PpPrintGetPC(m_pPrintContext, 
-					 Pp_PC_PAPER_SIZE, (const void **)&dim);
+		PpGetPC(m_pPrintContext, Pp_PC_PAPER_SIZE, (const void **)&dim);
 		UT_DEBUGMSG(("Paper size is %d/%d \n", dim->w, dim->h));
 
 #define DPI_LEVEL 72
@@ -190,10 +190,10 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		size.h = 792;
 #endif
 		printf("Source size %d/%d \n", size.w, size.h);
-		PpPrintSetPC(m_pPrintContext, INITIAL_PC, 0, Pp_PC_SOURCE_SIZE, &size);
+		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_SIZE, &size, 0);
 
 		PpPageRange_t *range = NULL;
-		PpPrintGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&range);
+		PpGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&range);
 		UT_DEBUGMSG(("Range is set to [%d - %d] \n", 
 					(range) ? range->from : -1, (range) ? range->to : -1));
 		if (!range || (range->from == 0 && range->to == 0)) {
@@ -216,7 +216,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		m_bDoPrintToFile	= UT_FALSE;	//Let photon take care of this
 		m_bCollate			= UT_FALSE; //Pp_PC_COLLATING_MODE
 		
-		PpPrintGetPC(m_pPrintContext, Pp_PC_COPIES, (const void **)&option);
+		PpGetPC(m_pPrintContext, Pp_PC_COPIES, (const void **)&option);
 		m_nCopies			= __max(strtoul(option, NULL, 10), 1);
 		UT_DEBUGMSG(("Printing %d copies [%s] \n", m_nCopies, option));
 

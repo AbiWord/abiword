@@ -36,6 +36,9 @@
 #include "xad_Document.h"
 #include "ut_qnxHelper.h"
 
+/* This is required for dynamic zoom implimentation */
+#include "fv_View.h"
+
 //THIS IS BAD!!!
 #include "ap_FrameData.h"
 
@@ -121,6 +124,7 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
+	FV_View * pfView = static_cast<FV_View*>(pView);
 
 	if (pView) {
 		UT_DEBUGMSG(("Resizing to %d,%d %d,%d \n",
@@ -129,6 +133,23 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 		pView->setWindowSize(cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 
 				     cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
 	}
+
+	// Dynamic Zoom Implimentation
+	UT_uint32 newZoom = 100;
+	switch(pQNXFrame->getZoomType())
+	{
+	case XAP_Frame::z_PAGEWIDTH:
+		newZoom = pfView->calculateZoomPercentForPageWidth();
+		pQNXFrame->setZoomPercentage(newZoom);
+		break;
+	case XAP_Frame::z_WHOLEPAGE:
+		newZoom = pfView->calculateZoomPercentForWholePage();
+		pQNXFrame->setZoomPercentage(newZoom);
+		break;
+	default:
+		break;
+	}
+
 
 	return Pt_CONTINUE;
 }
