@@ -270,8 +270,7 @@ ABI_OTH_INCS=	/other/spell
 ifdef ABI_OPT_LIBXML2
 ABI_PEER_INCS=
 else
-ABI_PEER_INCS=	/../../expat/xmlparse	\
-		/../../expat/xmltok
+ABI_PEER_INCS=	/../../expat/lib
 endif
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
