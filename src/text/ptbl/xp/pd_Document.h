@@ -54,7 +54,6 @@ class po_Bookmark;
 class fl_AutoNum;
 class fl_BlockLayout;
 class fp_Run;
-class UT_UUID;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -143,88 +142,6 @@ enum
 
 // the creator (product) of this document. AbiWord, KWord, etc...
 #define PD_META_KEY_GENERATOR         "abiword.generator"
-
-// a helper class for keeping track of revisions in the document
-class PD_Revision
-{
-  public:
-	PD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start)
-		:m_iId(iId),m_pDescription(pDesc), m_tStart(start){};
-	
-	~PD_Revision(){delete [] m_pDescription;}
-	
-	UT_uint32         getId()const{return m_iId;}
-	UT_UCS4Char *     getDescription() const {return m_pDescription;}
-
-	// NB: getStartTime() == 0 should be interpreted as 'unknown'
-	time_t            getStartTime() const {return m_tStart;}
-	void              setStartTime(time_t t) {m_tStart = t;}
-
-  private:
-	UT_uint32     m_iId;
-	UT_UCS4Char * m_pDescription;
-	time_t        m_tStart;
-};
-
-// a helper class for history tracking
-class PD_VersionData
-{
-  public:
-
-	// constructor for importers
-	PD_VersionData(UT_uint32 v, UT_String &uuid, time_t start);
-	PD_VersionData(UT_uint32 v, const char * uuid, time_t start);
-	
-	// constructor for new entries
-	PD_VersionData(UT_uint32 v, time_t start);
-
-	// copy constructor
-	PD_VersionData(const PD_VersionData & v);
-
-	virtual ~PD_VersionData();
-	
-	PD_VersionData & operator = (const PD_VersionData &v);
-
-	bool operator == (const PD_VersionData &v);
-
-	UT_uint32      getId()const{return m_iId;}
-	time_t         getTime()const;
-	time_t         getStartTime()const {return m_tStart;}
-	const UT_UUID& getUID()const {return (const UT_UUID&)*m_pUUID;}
-	bool           newUID(); // true on success
-	void           setId(UT_uint32 id) {m_iId = id;}
-	
-  private:
-	UT_uint32   m_iId;
-	UT_UUID *   m_pUUID;
-	time_t      m_tStart;
-};
-
-// class for managing Documents UID
-
-class PD_DocumentUID
-{
-  public:
-	// constructor for new documents
-	PD_DocumentUID();
-
-	// constructor for importers
-	PD_DocumentUID(const char * uid);
-
-	// virtual destructor
-	virtual ~PD_DocumentUID();
-
-	inline bool operator == (const PD_DocumentUID & u);
-	inline bool isValid() const;
-	
-	const char *  getUIDString() const {return m_sUUID.c_str();}
-	inline time_t getTime()const;
-	
-	
-  private:
-	UT_UUID * m_pUUID;
-	UT_String m_sUUID;
-};
 
 class PD_DocumentDiff
 {
@@ -499,30 +416,8 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	// Functions for dealing with revisions
 	//
-	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
-	void                    toggleMarkRevisions();
-	void                    setMarkRevisions(bool bMark);
-	bool                    isShowRevisions() const{ return m_bShowRevisions;}
-	void                    setShowRevisions(bool bShow);
-	void                    toggleShowRevisions();
-	UT_uint32               getShowRevisionId() const {return m_iShowRevisionID;}
-	void                    setShowRevisionId(UT_uint32 iId);
-	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
-	void                    setRevisionId(UT_uint32 iId);
 
-	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc,
-										time_t tStart);
-	
-	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
-										time_t tStart);
-	
-	UT_Vector &             getRevisions() {return m_vRevisions;}
-	UT_uint32               getHighestRevisionId() const;
-	const PD_Revision *     getHighestRevision() const;
-	void                    purgeRevisionTable();
-
-	bool                    getAutoRevisioning() const {return m_bAutoRevisioning;}
-	void                    setAutoRevisioning(bool b);
+	virtual void            purgeRevisionTable();
 
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
@@ -604,17 +499,6 @@ public:
 	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
 	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.isIdUnique(t,i);}
 
-	void            addRecordToHistory(const PD_VersionData & v);
-	void            purgeHistory();
-	UT_uint32       getHistoryCount()const {return m_vHistory.getItemCount();}
-	UT_uint32       getHistoryNthId(UT_uint32 i)const;
-	time_t          getHistoryNthTime(UT_uint32 i)const;
-	time_t          getHistoryNthTimeStarted(UT_uint32 i)const;
-	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
-	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
-
-	bool      areDocumentsRelated (const PD_Document &d) const;
-	bool      areDocumentHistoriesEqual(const PD_Document &d) const;
 	bool      areDocumentContentsEqual(const PD_Document &d) const;
 	bool      areDocumentFormatsEqual(const PD_Document &d) const;
 	bool      areDocumentStylesheetsEqual(const PD_Document &d) const;
@@ -629,14 +513,9 @@ public:
 	bool      diffDocuments(const PD_Document &d, UT_Vector & vDiff) const;
 	void      diffIntoRevisions(const PD_Document &d);
 	
-	const PD_DocumentUID * getDocUID()const {return m_pDocUID;}
-	void                   setDocUID(PD_DocumentUID * u);
-	const char *           getDocUIDString()const;
-	
 protected:
 	~PD_Document();
 
-	void                    _adjustHistoryOnSave();
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);
@@ -669,15 +548,9 @@ private:
 	bool					m_bAllowInsertPointChange;
 	bool                    m_bRedrawHappenning;
 	bool                    m_bLoading;
-	bool                    m_bForcedDirty;
 	UT_Vector				m_vBookmarkNames;
 	bool                    m_bLockedStyles;
 	UT_StringPtrMap         m_metaDataMap;
-	bool                    m_bMarkRevisions;
-	bool                    m_bShowRevisions;
-	UT_uint32               m_iRevisionID;
-	UT_uint32               m_iShowRevisionID;
-	UT_Vector               m_vRevisions;
 	PT_AttrPropIndex        m_indexAP;
 	bool                    m_bDontImmediatelyLayout;
 
@@ -693,12 +566,6 @@ private:
 	fp_Run *                m_pVDRun;
 	PT_DocPosition          m_iVDLastPos;
 	UT_UniqueId             m_UID;
-
-	// these are for tracking versioning
-	bool                    m_bHistoryWasSaved;
-	UT_Vector               m_vHistory;
-	PD_DocumentUID *        m_pDocUID;
-	bool                    m_bAutoRevisioning;
 };
 
 #endif /* PD_DOCUMENT_H */

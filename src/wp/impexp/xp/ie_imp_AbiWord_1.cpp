@@ -684,11 +684,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		szS = UT_getAttribute("uid",atts);
 		if(szS)
 		{
-			PD_DocumentUID * u = new PD_DocumentUID(szS);
-
-			UT_return_if_fail(u);
-			
-			getDoc()->setDocUID(u);
+			getDoc()->setUUID(szS);
 		}
 		
 		return;
@@ -711,7 +707,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			
 			szS = UT_getAttribute("uid",atts);
 
-			PD_VersionData v(iId, szS, tStarted);
+			AD_VersionData v(iId, szS, tStarted);
 			getDoc()->addRecordToHistory(v);
 		}
 

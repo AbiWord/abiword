@@ -1284,14 +1284,14 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 {
 	bool bWroteOpenRevisionsSection = false;
 
-	const PD_Revision * pRev=NULL;
+	const AD_Revision * pRev=NULL;
 
 	UT_Vector & vRevisions = m_pDocument->getRevisions();
 
 	UT_uint32 k = 0;
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
-		pRev = static_cast<PD_Revision *>(vRevisions.getNthItem(k));
+		pRev = static_cast<AD_Revision *>(vRevisions.getNthItem(k));
 		UT_return_if_fail(pRev);
 		
 		UT_String s;
@@ -1352,7 +1352,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 							  m_pDocument->getDocVersion(),
 							  m_pDocument->getEditTime(),
 							  m_pDocument->getLastSavedTime(),
-							  m_pDocument->getDocUIDString());
+							  m_pDocument->getUUIDString());
 			
 			m_pie->write(s.c_str());
 			bWroteOpenSection = true;

@@ -27,7 +27,8 @@
 *****************************************************************/
 
 dcl(MSG_ImportingDoc, "Importing Document..")
-dcl(MSG_BuildingDoc, "Building Document..")
+dcl(MSG_BuildingDoc,  "Building Document..")
+dcl(MSG_AutoRevision, "Autorevision")
 
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")

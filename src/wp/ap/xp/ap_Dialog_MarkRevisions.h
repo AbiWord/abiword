@@ -66,7 +66,7 @@ private:
 	PD_Document *                       m_pDoc;
 	UT_UCS4Char *                       m_pComment2;
 	const XAP_StringSet *               m_pSS;
-	const PD_Revision *                 m_pRev;
+	const AD_Revision *                 m_pRev;
 };
 
 #endif /* AP_DIALOG_MARKREVISIONS_H */

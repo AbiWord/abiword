@@ -98,21 +98,13 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bAllowInsertPointChange(true),
 	  m_bRedrawHappenning(false),
 	  m_bLoading(false),
-	  m_bForcedDirty(false),
 	  m_bLockedStyles(false),        // same as lockStyles(false)
-	  m_bMarkRevisions(false),
-	  m_bShowRevisions(true),
-	  m_iRevisionID(1),
-	  m_iShowRevisionID(0), // show all
 	  m_indexAP(0xffffffff),
 	  m_bDontImmediatelyLayout(false),
 	  m_iLastDirMarker(0),
 	  m_pVDBl(NULL),
 	  m_pVDRun(NULL),
-	  m_iVDLastPos(0xffffffff),
-	  m_bHistoryWasSaved(false),
-	  m_pDocUID(NULL),
-	  m_bAutoRevisioning(false)
+	  m_iVDLastPos(0xffffffff)
 {
 	m_pApp = pApp;
 	
@@ -133,14 +125,12 @@ PD_Document::~PD_Document()
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
-	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
-	UT_VECTOR_PURGEALL(PD_VersionData*, m_vHistory);
 	// remove the meta data
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
-	if(m_pDocUID)
-		delete m_pDocUID;
+	if(m_pUUID)
+		delete m_pUUID;
 	
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
@@ -148,86 +138,6 @@ PD_Document::~PD_Document()
 	// TODO: delete the key/data pairs
 }
 
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-
-UT_uint32 PD_Document::getHighestRevisionId() const
-{
-	UT_uint32 iId = 0;
-
-	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
-	{
-		iId = UT_MAX(iId, reinterpret_cast<const PD_Revision *>(m_vRevisions.getNthItem(i))->getId());
-	}
-
-	return iId;
-}
-
-const PD_Revision * PD_Document::getHighestRevision() const
-{
-	UT_uint32 iId = 0;
-	const PD_Revision * r = NULL;
-
-	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
-	{
-		const PD_Revision * t = reinterpret_cast<const PD_Revision *>(m_vRevisions.getNthItem(i));
-		UT_uint32 t_id = t->getId();
-
-		if(t_id > iId)
-		{
-			iId = t_id;
-			r = t;
-		}
-	}
-
-	return r;
-}
-
-bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart)
-{
-	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
-	{
-		const PD_Revision * r = reinterpret_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
-		if(r->getId() == iId)
-			return false;
-	}
-
-	PD_Revision * pRev = new PD_Revision(iId, pDesc, tStart);
-
-	m_vRevisions.addItem(static_cast<void*>(pRev));
-	forceDirty();
-	m_iRevisionID = iId;
-	return true;
-}
-
-bool PD_Document::addRevision(UT_uint32 iId,
-							  const UT_UCS4Char * pDesc,
-							  UT_uint32 iLen,
-							  time_t tStart)
-{
-	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
-	{
-		const PD_Revision * r = reinterpret_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
-		if(r->getId() == iId)
-			return false;
-	}
-
-	UT_UCS4Char * pD = NULL;
-	
-	if(pDesc)
-	{
-		pD = new UT_UCS4Char [iLen + 1];
-		UT_UCS4_strncpy(pD,pDesc,iLen);
-		pD[iLen] = 0;
-	}
-	
-	PD_Revision * pRev = new PD_Revision(iId, pD, tStart);
-
-	m_vRevisions.addItem(static_cast<void*>(pRev));
-	forceDirty();
-	m_iRevisionID = iId;
-	return true;
-}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -392,13 +302,6 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		}
 	}
 
-	if(!m_pDocUID)
-	{
-		UT_DEBUGMSG(("PD_Document::importFile: no doc UID, generating ...\n"));
-		m_pDocUID = new PD_DocumentUID();
-	}
-	
-	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 
@@ -515,12 +418,6 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		}
 	}
 
-	if(!m_pDocUID)
-	{
-		UT_DEBUGMSG(("PD_Document::readFromFile: no doc UID, generating ...\n"));
-		m_pDocUID = new PD_DocumentUID();
-	}
-	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
@@ -651,13 +548,12 @@ UT_Error PD_Document::newDocument(void)
 	setEditTime(0);
 	m_lastOpenedTime = time(NULL);
 
-	if(m_pDocUID)
+	if(!m_pUUID)
 	{
-		UT_DEBUGMSG(("PD_Document::newDocument: doc UID set !!!, deleting ...\n"));
-		delete m_pDocUID;
+		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	}
-	
-	m_pDocUID = new PD_DocumentUID;
+	else
+		m_pUUID->makeUUID();
 	
 	// mark the document as not-dirty
 	_setClean();
@@ -4303,52 +4199,6 @@ pf_Frag * PD_Document::getLastFrag() const
 	return m_pPieceTable->getFragments().getLast();
 }
 
-void PD_Document::setMarkRevisions(bool bMark)
-{
-	if(m_bMarkRevisions != bMark)
-	{
-		m_bMarkRevisions = bMark;
-		forceDirty();
-	}
-}
-
-void PD_Document::toggleMarkRevisions()
-{
-	setMarkRevisions(!m_bMarkRevisions);
-}
-
-void PD_Document::setShowRevisions(bool bShow)
-{
-	if(m_bShowRevisions != bShow)
-	{
-		m_bShowRevisions = bShow;
-		forceDirty();
-	}
-}
-
-void PD_Document::toggleShowRevisions()
-{
-	setShowRevisions(!m_bShowRevisions);
-}
-
-void PD_Document::setShowRevisionId(UT_uint32 iId)
-{
-	if(iId != m_iShowRevisionID)
-	{
-		m_iShowRevisionID = iId;
-		forceDirty();
-	}
-}
-
-void PD_Document::setRevisionId(UT_uint32 iId)
-{
-	if(iId != m_iRevisionID)
-	{
-		m_iRevisionID  = iId;
-		// not in this case; this value is not persistent between sessions
-		//forceDirty();
-	}
-}
 
 /*!
     force the document into being dirty and signal this to our listeners
@@ -4363,192 +4213,6 @@ void PD_Document::forceDirty()
 	signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD);	
 }
 
-
-/*!
-    Update document history and version information; should only be
-    called inside save() and saveAs()
-*/
-void PD_Document::_adjustHistoryOnSave()
-{
-	// record this as the last time the document was saved + adjust
-	// the cumulative edit time
-	m_iVersion++;
-	
-	if(!m_bHistoryWasSaved || m_bAutoRevisioning)
-	{
-		m_bHistoryWasSaved = true;
-		PD_VersionData v(m_iVersion, m_lastOpenedTime);
-		m_lastSavedTime = v.getTime(); // store the time of this save
-		addRecordToHistory(v);
-	}
-	else
-	{
-		UT_return_if_fail(m_vHistory.getItemCount() > 0);
-
-		// change the edit time of the last entry and create a new UID
-		// for the record
-		PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(m_vHistory.getItemCount()-1);
-
-		UT_return_if_fail(v);
-		v->setId(m_iVersion);
-		v->newUID();
-		m_lastSavedTime = v->getTime();
-	}
-
-	if(m_bAutoRevisioning)
-	{
-		// create new revision
-		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-		UT_return_if_fail(pSS);
-		UT_UCS4String ucs4(pSS->getValue(AP_STRING_ID_MSG_AutoRevision));
-
-		UT_uint32 iId = getRevisionId()+1;
-		setRevisionId(iId);
-		addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL));
-	}
-}
-
-void PD_Document::purgeHistory()
-{
-	UT_VECTOR_PURGEALL(PD_VersionData*, m_vHistory);
-	m_bHistoryWasSaved = false;
-}
-
-
-/*!
-    Add given version data to the document history.
-*/
-void PD_Document::addRecordToHistory(const PD_VersionData &vd)
-{
-	PD_VersionData * v = new PD_VersionData(vd);
-	UT_return_if_fail(v);
-	m_vHistory.addItem((void*)v);
-}
-
-/*!
-    Get the version number for n-th record in version history
-*/
-UT_uint32 PD_Document::getHistoryNthId(UT_uint32 i)const
-{
-	if(!m_vHistory.getItemCount())
-		return 0;
-
-	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
-
-	if(!v)
-		return 0;
-
-	return v->getId();
-}
-
-/*!
-    Get time stamp for n-th record in version history
-    NB: the time stamp represents the last save time
-*/
-time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
-{
-	if(!m_vHistory.getItemCount())
-		return 0;
-
-	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
-
-	if(!v)
-		return 0;
-
-	return v->getTime();
-}
-
-time_t PD_Document::getHistoryNthTimeStarted(UT_uint32 i)const
-{
-	if(!m_vHistory.getItemCount())
-		return 0;
-
-	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
-
-	if(!v)
-		return 0;
-
-	return v->getStartTime();
-}
-
-
-/*!
-    Get get cumulative edit time for n-th record in version history
-    NB: this time is cumulative from the creation of document not from
-    the start of given version record. To calculate the latter
-    substract n-1st value from nth value.
-*/
-UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
-{
-	if(!m_vHistory.getItemCount() || !m_pDocUID)
-		return 0;
-
-	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
-
-	if(!v)
-		return 0;
-
-	time_t t0 = v->getStartTime();
-	time_t t1 = v->getTime();
-
-	UT_ASSERT( t1 >= t0 );
-	return t1-t0;
-}
-
-/*!
-    Get the UID for n-th record in version history
-*/
-const UT_UUID & PD_Document::getHistoryNthUID(UT_uint32 i) const
-{
-	if(!m_vHistory.getItemCount())
-		return UT_UUID::getNull();
-
-	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
-
-	if(!v)
-		return UT_UUID::getNull();
-
-	return v->getUID();
-}
-
-/*!
-    Returns true if both documents are based on the same root document
-*/
-bool PD_Document::areDocumentsRelated(const PD_Document & d) const
-{
-	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
-		return false;
-
-	return (*m_pDocUID == *(d.getDocUID()));
-}
-
-/*!
-    Returns true if both documents are based on the same root document
-    and all version records have identical UID's
-*/
-bool PD_Document::areDocumentHistoriesEqual(const PD_Document & d) const
-{
-	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
-		return false;
-
-	if(!(*m_pDocUID == *(d.getDocUID())))
-		return false;
-
-	UT_uint32 iHCount = getHistoryCount();
-	if(iHCount != d.getHistoryCount())
-		return false;
-
-	for(UT_uint32 i = 0; i < iHCount; ++i)
-	{
-		PD_VersionData * v1 = (PD_VersionData*)m_vHistory.getNthItem(i);
-		PD_VersionData * v2 = (PD_VersionData*)d.m_vHistory.getNthItem(i);
-	
-		if(!(*v1 == *v2))
-			return false;
-	}
-	
-	return true;		
-}
 
 /*!
     Returns true if the stylesheets of both documents are identical
@@ -4658,8 +4322,7 @@ void PD_Document::purgeRevisionTable()
 	// if we got this far, we have not found any revisions in the
 	// whole doc, clear out the table
 	UT_DEBUGMSG(("PD_Document::purgeRevisionTable(): clearing\n"));
-	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
-	m_vRevisions.clear();
+	_purgeRevisionTable();
 }
 
 
@@ -5244,55 +4907,6 @@ bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
 	return true;
 }
 
-/*!
-    Set UID for the present document
-*/
-void PD_Document::setDocUID(PD_DocumentUID * u)
-{
-	if(!m_pPieceTable || m_pPieceTable->getPieceTableState() != PTS_Loading)
-	{
-		UT_return_if_fail(0);
-	}
-	
-	m_pDocUID = u;
-}
-
-/*!
-    Get the UID of this document represented as a string (this
-    funciton is primarily for exporters)
-*/
-const char * PD_Document::getDocUIDString() const
-{
-	UT_return_val_if_fail(m_pDocUID, NULL);
-
-	return m_pDocUID->getUIDString();
-}
-
-void PD_Document::setAutoRevisioning(bool b)
-{
-	if(b != m_bAutoRevisioning)
-	{
-		m_bAutoRevisioning = b;
-
-		if(b)
-		{
-			// create new revision
-			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-			UT_return_if_fail(pSS);
-			UT_UCS4String ucs4(pSS->getValue(AP_STRING_ID_MSG_AutoRevision));
-
-			UT_uint32 iId = getRevisionId()+1;
-			setRevisionId(iId);
-			addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL));
-
-			// collapse all revisions ...
-			setShowRevisionId(0xffffffff);
-		}
-
-		setMarkRevisions(b);
-	}
-}
-
 
 #ifdef DEBUG
 void PD_DocumentDiff::_dump() const
@@ -5303,148 +4917,4 @@ void PD_DocumentDiff::_dump() const
 #endif
 
 
-///////////////////////////////////////////////////
-// PD_VersionData
-//
-// constructor for new entries
-PD_VersionData::PD_VersionData(UT_uint32 v, time_t start)
-	:m_iId(v),m_pUUID(NULL),m_tStart(start)
-{
-	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
-	UT_return_if_fail(pGen);
-	
-	m_pUUID = pGen->createUUID();
-	UT_ASSERT(m_pUUID);
-	m_tStart = m_pUUID->getTime();
-}
-
-
-// constructors for importers
-PD_VersionData::PD_VersionData(UT_uint32 v, UT_String &uuid, time_t start):
-	m_iId(v),m_pUUID(NULL),m_tStart(start)
-{
-	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
-	UT_return_if_fail(pGen);
-	
-	m_pUUID = pGen->createUUID(uuid);
-	UT_ASSERT(m_pUUID);
-};
-
-PD_VersionData::PD_VersionData(UT_uint32 v, const char *uuid, time_t start):
-	m_iId(v),m_pUUID(NULL),m_tStart(start)
-{
-	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
-	UT_return_if_fail(pGen);
-	
-	m_pUUID = pGen->createUUID(uuid);
-	UT_ASSERT(m_pUUID);
-};
-
-// copy constructor
-PD_VersionData::PD_VersionData(const PD_VersionData & v):
-		m_iId(v.m_iId), m_pUUID(NULL)
-{
-	UT_return_if_fail(v.m_pUUID);
-	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
-	UT_return_if_fail(pGen);
-	
-	m_pUUID = pGen->createUUID(*(v.m_pUUID));
-	UT_ASSERT(m_pUUID);
-
-	m_tStart = v.m_tStart;
-};
-
-PD_VersionData & PD_VersionData::operator = (const PD_VersionData &v)
-{
-	m_iId       = v.m_iId;
-	*m_pUUID    = *(v.m_pUUID);
-	m_tStart    = v.m_tStart;
-	return *this;
-}
-
-bool PD_VersionData::operator == (const PD_VersionData &v)
-{
-	return (m_iId == v.m_iId && m_tStart == v.m_tStart && *m_pUUID == *(v.m_pUUID));
-}
-
-PD_VersionData::~PD_VersionData()
-{
-	if(m_pUUID)
-		delete m_pUUID;
-}
-
-time_t PD_VersionData::getTime()const
-{
-	if(!m_pUUID)
-		return 0;
-
-	return m_pUUID->getTime();
-}
-
-bool PD_VersionData::newUID()
-{
-	if(!m_pUUID)
-		return false;
-
-	return m_pUUID->makeUUID();
-}
-
-
-//////////////////////////////////////////////////
-// PD_DocumentUID
-
-// constructor for new documents
-PD_DocumentUID::PD_DocumentUID()
-	:m_pUUID(NULL)
-
-{
-	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
-
-	m_pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-
-	UT_return_if_fail(m_pUUID);
-	UT_return_if_fail(m_pUUID->isValid());
-
-	m_pUUID->toString(m_sUUID);
-}
-
-// constructor for importers
-PD_DocumentUID::PD_DocumentUID(const char * uid)
-	:m_pUUID(NULL)
-{
-	UT_return_if_fail(uid);
-	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
-
-	m_pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID(uid);
-	UT_return_if_fail(m_pUUID);
-
-	if(!m_pUUID->isValid())
-	{
-		m_pUUID->makeUUID();
-	}
-	
-	m_pUUID->toString(m_sUUID);
-}
-
-PD_DocumentUID::~PD_DocumentUID()
-{
-	if(m_pUUID)
-		delete m_pUUID;
-}
-
-bool PD_DocumentUID::isValid() const
-{
-	return (m_pUUID && m_pUUID->isValid());
-}
-
-bool PD_DocumentUID::operator == (const PD_DocumentUID & u)
-{
-	return (*m_pUUID == *(u.m_pUUID));
-}
-
-time_t PD_DocumentUID::getTime()const
-{
-	UT_return_val_if_fail(isValid(),0xffffffff);
-	return m_pUUID->getTime();
-}
 
