@@ -4001,6 +4001,107 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 }
 
 
+static UT_Bool s_doPageSetupDlg (FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	pFrame->raise();
+	XAP_DialogFactory * pDialogFactory
+	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_PageSetup * pDialog = 
+	  (AP_Dialog_PageSetup *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_PAGESETUP));
+
+	UT_ASSERT(pDialog);
+
+	PD_Document * pDoc = pView->getLayout()->getDocument();
+	//
+	// Need this for the conversion methods
+	//
+	fp_PageSize::Predefined orig_def,final_def;
+	fp_PageSize pSize(pDoc->m_docPageSize.getPredefinedName());
+	orig_def = pSize.NameToPredefined(pSize.getPredefinedName());
+	pDialog->setPageSize(pSize);
+	pDialog->setPageSize(orig_def);
+	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
+	orig_ori =  AP_Dialog_PageSetup::PORTRAIT;
+	if(pDoc->m_docPageSize.isPortrait() == UT_FALSE)
+	       orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
+	pDialog->setPageOrientation(orig_ori);
+	fp_PageSize::Unit orig_unit,final_unit;
+	double orig_scale,final_scale;
+	orig_unit = pDoc->m_docPageSize.getUnit();
+	orig_scale = pDoc->m_docPageSize.getScale();
+
+	pDialog->setPageUnits(orig_unit);
+	pDialog->setPageScale(100.0*orig_scale);
+	// TODO: properly set up dialog with AbiWord's current data
+
+	pDialog->runModal (pFrame);
+
+	AP_Dialog_PageSetup::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == AP_Dialog_PageSetup::a_OK);
+
+	if (bOK)
+	{
+	       final_def = pSize.NameToPredefined(pDialog->getPageSize().getPredefinedName());
+	       final_ori = pDialog->getPageOrientation();
+	       UT_DEBUGMSG(("SEVIOR: orig_ori =%d final_ori = %d \n",orig_ori,final_ori));
+	       final_unit = pDialog->getPageUnits();
+	       final_scale = pDialog->getPageScale()/100.0;
+	       if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) )
+	       {
+		 //
+		 // Set the new Page Stuff
+		 //
+		      pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
+ 		      pDoc->m_docPageSize.Set(final_unit);
+		      UT_Bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
+		      if( p == UT_TRUE)
+		      { 
+		             pDoc->m_docPageSize.setPortrait();
+		      }
+		      else
+		      { 
+		             pDoc->m_docPageSize.setLandscape();
+		      }
+		      UT_DEBUGMSG(("SEVIOR: scaled to %f \n",final_scale));
+ 		      pDoc->m_docPageSize.setScale(final_scale);
+
+		      //
+		      // Get all clones of this frame and set the new page dimensions
+	              //
+
+		      UT_Vector vClones;
+		      if(pFrame->getViewNumber() > 0)
+		      {
+		             pApp->getClones(&vClones,pFrame);
+		             for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+	                     {
+	      		             XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+				     UT_uint32 izoom = f->getZoomPercentage();
+			             f->setZoomPercentage(izoom);
+			     }
+		      }
+		      else
+		      {
+			     UT_uint32 izoom = pFrame->getZoomPercentage();
+			     pFrame->setZoomPercentage(izoom);
+			     
+		      }
+	       }
+	  
+	    // TODO: properly gather info from dialog
+	    // TODO: and set AbiWord's values appropriately
+	  }
+
+	return UT_TRUE;
+}
+
 class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	{
 	public:
@@ -4022,37 +4123,8 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 		FV_View *p_view;
 	};
 
+
 static  FV_View_Insert_symbol_listener symbol_Listener;
-
-static UT_Bool s_doPageSetupDlg (FV_View * pView)
-{
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-	UT_ASSERT(pFrame);
-
-	pFrame->raise();
-	XAP_DialogFactory * pDialogFactory
-	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-	AP_Dialog_PageSetup * pDialog = 
-	  (AP_Dialog_PageSetup *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_PAGESETUP));
-
-	UT_ASSERT(pDialog);
-
-	// TODO: properly set up dialog with AbiWord's current data
-
-	pDialog->runModal (pFrame);
-
-	AP_Dialog_PageSetup::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == AP_Dialog_PageSetup::a_OK);
-
-	if (bOK)
-	  {
-	    // TODO: properly gather info from dialog
-	    // TODO: and set AbiWord's values appropriately
-	  }
-
-	return UT_TRUE;
-}
 
 static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 {

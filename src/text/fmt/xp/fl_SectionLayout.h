@@ -176,6 +176,10 @@ public:
 	inline UT_sint32			getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
 	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
 	inline UT_sint32			getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
+	inline UT_sint32			getFooterMargin(void) const { return m_iFooterMargin; }
+	inline UT_sint32			getFooterMarginInLayoutUnits(void) const { return m_iFooterMarginLayoutUnits; }
+	inline UT_sint32			getHeaderMargin(void) const { return m_iHeaderMargin; }
+	inline UT_sint32			getHeaderMarginInLayoutUnits(void) const { return m_iHeaderMarginLayoutUnits; }
 	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
 	inline UT_sint32			getSpaceAfterInLayoutUnits(void) const { return m_iSpaceAfterLayoutUnits; }
 	
@@ -225,6 +229,12 @@ protected:
 	UT_sint32			m_iBottomMargin;
 	UT_sint32			m_iBottomMarginLayoutUnits;
 	double				m_dBottomMarginUserUnits;
+	UT_sint32			m_iFooterMargin;
+	UT_sint32			m_iFooterMarginLayoutUnits;
+	double				m_dFooterMarginUserUnits;
+	UT_sint32			m_iHeaderMargin;
+	UT_sint32			m_iHeaderMarginLayoutUnits;
+	double				m_dHeaderMarginUserUnits;
 
 	UT_Bool				m_bForceNewPage;
 

@@ -55,6 +55,12 @@ protected:
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
     UT_Bool		_getDataItemEncoded(const XML_Char ** atts);
     UT_Bool			m_bDocHasLists;
+    UT_Bool			m_bDocHasPageSize;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */
+
+
+
+
+

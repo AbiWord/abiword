@@ -187,7 +187,6 @@ protected:
 
 
 	static void			_redrawUpdate(UT_Timer * pTimer);
-	static fp_PageSize	_getDefaultPageSize();
 
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
@@ -222,9 +221,12 @@ protected:
 //	UT_Vector			m_vecLists;
 	
 	UT_Timer*			m_pRedrawUpdateTimer;
-	fp_PageSize			m_pageSize;
 };
 
 #endif /* DOCLAYOUT_H */
+
+
+
+
 
 

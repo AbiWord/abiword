@@ -35,6 +35,7 @@
 #include "fd_Field.h"
 #include "xap_EncodingManager.h"
 #include "fl_AutoNum.h"
+#include "fp_PageSize.h"
 
 // our currently used DTD
 #define ABIWORD_FILEFORMAT " fileformat=\"1.0\""
@@ -125,6 +126,7 @@ protected:
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleStyles(void);
 	void				_handleLists(void);
+	void				_handlePageSize(void);
 	void				_handleDataItems(void);
 	
 	PD_Document *		m_pDocument;
@@ -422,7 +424,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	{
 		m_pie->write(XAP_App::s_szBuild_Version);
 	}
-	m_pie->write("\"");
+	m_pie->write("\" ");
 	m_pie->write(ABIWORD_FILEFORMAT);
 	m_pie->write(">\n");
 
@@ -509,6 +511,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	
 	_handleStyles();
 	_handleLists();
+	_handlePageSize();
 }
 
 s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
@@ -689,6 +692,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 	return;
 }
 
+
 void s_AbiWord_1_Listener::_handleLists(void)
 {
 	UT_Bool bWroteOpenListSection = UT_FALSE;
@@ -733,6 +737,50 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	if (bWroteOpenListSection)
 		m_pie->write("</lists>\n");
 	
+	return;
+}
+
+void s_AbiWord_1_Listener::_handlePageSize(void)
+{
+  //
+  // Code to write out the PageSize Definitions to disk
+  // 
+	char buf[20];
+
+        m_pie->write("<pagesize pagetype=\"");
+	m_pie->write(m_pDocument->m_docPageSize.getPredefinedName());
+	m_pie->write("\"");
+
+	m_pie->write(" orientation=\"");
+	if(m_pDocument->m_docPageSize.isPortrait() == UT_TRUE)
+	        m_pie->write("portrait\"");
+	else
+	        m_pie->write("landscape\"");
+	m_pie->write( " width=\"");
+	fp_PageSize::Unit  docUnit = m_pDocument->m_docPageSize.getUnit(); 
+	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(docUnit));
+	m_pie->write( (char *) buf);
+	m_pie->write("\"");
+	m_pie->write(" height=\"");
+	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(docUnit));
+	m_pie->write( (char *) buf);
+	m_pie->write("\"");
+	m_pie->write(" units=\"");
+	if(docUnit == fp_PageSize::cm)
+	        m_pie->write("cm");
+	else if(docUnit == fp_PageSize::mm)
+	        m_pie->write("mm");
+	else if(docUnit == fp_PageSize::inch)
+	        m_pie->write("inch");
+	else
+	        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	m_pie->write("\"");
+	m_pie->write(" page-scale=\"");
+	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.getScale());
+	m_pie->write( (char *) buf);
+	m_pie->write("\"");
+
+	m_pie->write("/>\n");
 	return;
 }
 

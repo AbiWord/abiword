@@ -44,6 +44,8 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 #include "fl_AutoNum.h"
+#include "xap_App.h"
+#include "ut_units.h"
 
 
 //////////////////////////////////////////////////////////////////
@@ -59,7 +61,7 @@ struct _dataItemPair
 //////////////////////////////////////////////////////////////////
 
 PD_Document::PD_Document()
-  : AD_Document(), m_hashDataItems(11)
+  : AD_Document(),  m_docPageSize(getDefaultPageSize()),m_hashDataItems(11)
 {
 	m_pPieceTable = NULL;
 
@@ -138,6 +140,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 
 UT_Error PD_Document::newDocument(void)
 {
+	setDefaultPageSize();
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
 	{
@@ -1302,6 +1305,96 @@ UT_Bool  PD_Document::isDoingPaste(void)
 {
          return m_bDoingPaste;
 }
+
+void     PD_Document::setDefaultPageSize(void)
+{
+	XAP_App *pApp = XAP_App::getApp();
+	UT_ASSERT(pApp);
+
+	const XML_Char * szDefaultPageSize = NULL;
+	pApp->getPrefsValue(XAP_PREF_KEY_DefaultPageSize,
+	                      &szDefaultPageSize);
+	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
+	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	m_docPageSize.Set(  (const char *) szDefaultPageSize);
+}
+
+const char *  PD_Document::getDefaultPageSize(void)
+{
+	XAP_App *pApp = XAP_App::getApp();
+	UT_ASSERT(pApp);
+
+	const XML_Char * szDefaultPageSize = NULL;
+	pApp->getPrefsValue(XAP_PREF_KEY_DefaultPageSize,
+	                      &szDefaultPageSize);
+	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
+	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	return (const char *) szDefaultPageSize;
+}
+
+UT_Bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
+{
+	const XML_Char * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
+	double width=0.0;
+	double height=0.0;
+	double scale =1.0;
+	fp_PageSize::Unit u;
+	
+	for (const XML_Char ** a = attributes; (*a); a++)
+	{
+		if (UT_XML_stricmp(a[0],"pagetype") == 0)
+		        szPageSize = a[1];
+		else if (UT_XML_stricmp(a[0], "orientation") == 0)
+			szOrientation = a[1];
+		else if (UT_XML_stricmp(a[0], "width") == 0)
+			szWidth = a[1];
+		else if (UT_XML_stricmp(a[0], "height") == 0)
+			szHeight = a[1];
+		else if (UT_XML_stricmp(a[0], "units") == 0)
+			szUnits = a[1];
+		else if (UT_XML_stricmp(a[0], "page-scale") == 0)
+			szPageScale = a[1];
+	}
+
+	if(!szPageSize)
+		return UT_FALSE;
+	if(!szOrientation)
+		return UT_FALSE;
+	m_docPageSize.Set(szPageSize);
+	if(UT_XML_stricmp(szOrientation,"portrait")==0)
+	{
+		m_docPageSize.setPortrait();
+	}
+	else if(UT_XML_stricmp(szOrientation,"landscape")==0)
+	{
+		m_docPageSize.setLandscape();
+	}
+	else
+	        return UT_FALSE;
+	if( !szWidth || !szHeight || !szUnits || !szPageScale)
+	        return UT_FALSE;
+	else
+	{
+	        width = UT_convertDimensionless(szWidth);
+		height = UT_convertDimensionless(szHeight);
+		scale =  UT_convertDimensionless(szPageScale);
+		if(UT_XML_stricmp(szUnits,"cm"))
+		        u = fp_PageSize::cm;
+		else if(UT_XML_stricmp(szUnits,"mm"))
+		        u = fp_PageSize::mm;
+		if(UT_XML_stricmp(szUnits,"inch"))
+		        u = fp_PageSize::inch;
+		if(UT_XML_stricmp(szPageSize,"Custom") == 0)
+		{
+			m_docPageSize.Set(width,height,u);
+		}
+		m_docPageSize.setScale(scale);
+	}
+	UT_DEBUGMSG(("SEVIOR: Filled PageSize \n"));
+	return UT_TRUE;
+}
+
+
 
 
 

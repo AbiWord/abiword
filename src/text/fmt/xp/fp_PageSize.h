@@ -2,13 +2,15 @@
 #ifndef FP_PAGESIZE_H
 #define FP_PAGESIZE_H
 
+#include "ut_types.h"
 
 class fp_PageSize
 {
 public:
-	enum Unit
+
+        enum Unit
 	{
-		mm,
+                mm,
 		cm,
 		inch,
 		PaperUnit,		//  100 per inch
@@ -22,7 +24,7 @@ public:
 		// to update the cpp accordingly.
 		A0, A1, A2, A3, A4, A5, A6,
 		B0, B1, B2, B3, B4, B5, B6,
-		Legal, Folio, Letter,
+		Legal, Folio, Letter, Custom,
 		// append new pagesizes here
 		_last_predefined_pagesize_dont_use_
 	};
@@ -34,10 +36,15 @@ public:
 	void Set(Predefined preDef);
 	void Set(const char *name);
 	void Set(double w, double h, Unit u);
-
+	void Set(Unit u) {m_unit = u;}
+	inline void setScale( double scale) {m_scale = scale;}
+	void setPortrait(void);
+	void setLandscape(void);
+	UT_Bool isPortrait(void) { return m_bisPortrait; }
 	double Width(Unit u) const;
 	double Height(Unit u) const;
-
+	double getScale(void) {return m_scale;}
+	Unit getUnit(void) { return m_unit;}
 	inline char * getPredefinedName (void) const { return m_predefined; }
 
 	static bool	IsPredefinedName(const char* szPageSizeName);
@@ -49,7 +56,21 @@ private:
 
 	double m_iWidth;
 	double m_iHeight;
+	UT_Bool m_bisPortrait;
+	double m_scale;
+	Unit m_unit;
 };
 
 #endif	// FP_PAGESIZE_H
+
+
+
+
+
+
+
+
+
+
+
 

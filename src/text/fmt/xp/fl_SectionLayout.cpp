@@ -812,10 +812,14 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	const char* pszTopMargin = NULL;
 	const char* pszRightMargin = NULL;
 	const char* pszBottomMargin = NULL;
+	const char* pszFooterMargin = NULL;
+	const char* pszHeaderMargin = NULL;
 	pSectionAP->getProperty((XML_Char*)"page-margin-left", (const XML_Char *&)pszLeftMargin);
 	pSectionAP->getProperty((XML_Char*)"page-margin-top", (const XML_Char *&)pszTopMargin);
 	pSectionAP->getProperty((XML_Char*)"page-margin-right", (const XML_Char *&)pszRightMargin);
 	pSectionAP->getProperty((XML_Char*)"page-margin-bottom", (const XML_Char *&)pszBottomMargin);
+	pSectionAP->getProperty((XML_Char*)"page-margin-footer", (const XML_Char *&)pszFooterMargin);
+	pSectionAP->getProperty((XML_Char*)"page-margin-header", (const XML_Char *&)pszHeaderMargin);
 
 
 	const XML_Char * szRulerUnits;
@@ -910,7 +914,49 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin);
 		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin);
 	}
+
+	if(pszBottomMargin && pszBottomMargin[0])
+	{
+		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
+		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
+		m_dBottomMarginUserUnits = UT_convertDimensionless(pszBottomMargin);
+	}
+	else
+	{
+		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin);
+		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin);
+		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin);
+	}
+
+	if(pszFooterMargin && pszFooterMargin[0])
+	{
+		m_iFooterMargin = m_pLayout->getGraphics()->convertDimension(pszFooterMargin);
+		m_iFooterMarginLayoutUnits = UT_convertToLayoutUnits(pszFooterMargin);
+		m_dFooterMarginUserUnits = UT_convertDimensionless(pszFooterMargin);
+	}
+	else
+	{
+		m_iFooterMargin = m_pLayout->getGraphics()->convertDimension("0.0in");
+		m_iFooterMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
+		m_dFooterMarginUserUnits = UT_convertDimensionless("0.0in");
+	}
 	
+
+	if(pszHeaderMargin && pszHeaderMargin[0])
+	{
+		m_iHeaderMargin = m_pLayout->getGraphics()->convertDimension(pszHeaderMargin);
+		m_iHeaderMarginLayoutUnits = UT_convertToLayoutUnits(pszHeaderMargin);
+		m_dHeaderMarginUserUnits = UT_convertDimensionless(pszHeaderMargin);
+	}
+	else
+	{
+		m_iHeaderMargin = m_pLayout->getGraphics()->convertDimension("0.0in");
+		m_iHeaderMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
+		m_dHeaderMarginUserUnits = UT_convertDimensionless("0.0in");
+	}
+	
+
+
 	m_bForceNewPage = UT_FALSE;
 }
 

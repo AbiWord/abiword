@@ -45,12 +45,12 @@
 #define REDRAW_UPDATE_MSECS	500
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
-:	m_hashFontCache(19),
-	m_pageSize(_getDefaultPageSize())
+:	m_hashFontCache(19)
 {
 	m_pDoc = doc;
 	m_pG = pG;
 	m_pView = NULL;
+
 	m_pBackgroundCheckTimer = NULL;
 	m_pPendingBlockForSpell = NULL;
 	m_pPendingWordForSpell = NULL;
@@ -85,6 +85,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 #ifdef FMT_TEST
 	m_pDocLayout = this;
 #endif
+
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -403,7 +404,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 
 	fp_Page* pPage = new fp_Page(	this,
 									m_pView,
-									m_pageSize,
+									m_pDoc->m_docPageSize,
 									pOwner);
 	if (pLastPage)
 	{
@@ -1066,19 +1067,6 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 */
 }
 
-fp_PageSize FL_DocLayout::_getDefaultPageSize()
-{
-	XAP_App *pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-
-	const XML_Char * szDefaultPageSize = NULL;
-	pApp->getPrefsValue(XAP_PREF_KEY_DefaultPageSize,
-	                      &szDefaultPageSize);
-	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return fp_PageSize((char*) szDefaultPageSize);
-}
-
 void FL_DocLayout::setPendingSmartQuote(fl_BlockLayout *bl, UT_uint32 of)
 {
 	UT_DEBUGMSG(("FL_DocLayout::setPendingSmartQuote(%x, %d)\n", bl, of));
@@ -1539,22 +1527,6 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 inline fl_AutoNum * FL_DocLayout::getListByID(UT_uint32 id) const
 {
 	return m_pDoc->getListByID(id);
-/*	
-	UT_uint16 i = 0;
-	fl_AutoNum * pAutoNum;
-	
-	UT_ASSERT(m_vecLists.getFirstItem());
-	
-	while (m_vecLists[i])
-	{
-		pAutoNum = (fl_AutoNum *)m_vecLists[i];
-		if (pAutoNum->getID() == id)
-			return pAutoNum;
-		i++;
-	}
-	
-	return 0;
-*/
 }
 
 inline fl_AutoNum * FL_DocLayout::getNthList(UT_uint32 i) const
@@ -1570,5 +1542,4 @@ inline UT_uint32 FL_DocLayout::getListsCount(void) const
 inline void FL_DocLayout::addList(fl_AutoNum * pAutoNum)
 {
 	m_pDoc->addList(pAutoNum);
-	// m_vecLists.addItem(pAutoNum);
 }

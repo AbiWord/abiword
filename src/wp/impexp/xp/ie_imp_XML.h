@@ -84,7 +84,8 @@ protected:
 			       _PS_Style,
 			       _PS_ListSec,
 			       _PS_List,
-			       _PS_Field
+			       _PS_Field,
+			       _PS_PageSize
     } ParseState;
 
     ParseState                  m_parseState;

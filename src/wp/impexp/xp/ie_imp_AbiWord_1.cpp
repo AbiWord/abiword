@@ -43,12 +43,16 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, UT_TRUE)
 {
 	m_bDocHasLists = UT_FALSE;
+	m_bDocHasPageSize = UT_FALSE;
 }
 
 /* Quick hack for GZipAbiWord */
 UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
-	return IE_Imp_XML::importFile(szFilename);
+        UT_Error bret = IE_Imp_XML::importFile(szFilename);
+	if(m_bDocHasPageSize == UT_FALSE)
+	       m_pDocument->setDefaultPageSize();
+	return bret;
 }
 
 /*****************************************************************/
@@ -135,7 +139,7 @@ UT_Bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
 #define TT_STYLE		13		// a style <s> within a style section
 #define TT_LISTSECTION		14	// a list section <lists>
 #define TT_LIST			15	// a list <l> within a list section
-
+#define TT_PAGESIZE             16      // The PageSize <pagesize> 
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -165,6 +169,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"l",			TT_LIST			},
 	{	"lists",		TT_LISTSECTION		},
 	{	"p",			TT_BLOCK		},
+	{       "pagesize",             TT_PAGESIZE             },
 	{	"pbr",			TT_PAGEBREAK		},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
@@ -366,7 +371,16 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_CheckError(m_pDocument->appendList(atts));
 		m_bDocHasLists = UT_TRUE;
 		return;
-		
+
+	case TT_PAGESIZE:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_PageSize;
+		UT_DEBUGMSG(("SEVIOR: Processing pagesize \n"));
+		X_CheckError(m_pDocument->setPageSizeFromFile(atts));
+		m_bDocHasPageSize = UT_TRUE;
+		UT_DEBUGMSG(("SEVIOR: Back From Error processing \n"));
+		return;
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -499,6 +513,11 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_List);
 		m_parseState = _PS_ListSec;
+		return;
+
+	case TT_PAGESIZE:
+		X_VerifyParseState(_PS_PageSize);
+		m_parseState = _PS_Doc;
 		return;
 		
 	case TT_OTHER:

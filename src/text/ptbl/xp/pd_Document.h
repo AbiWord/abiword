@@ -32,6 +32,7 @@
 #include "pt_Types.h"
 #include "pl_Listener.h"
 #include "ie_types.h"
+#include "fp_PageSize.h"
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -42,7 +43,7 @@ class PX_ChangeRecord;
 class PD_Style;
 class fd_Field;
 class fl_AutoNum;
-
+class fp_PageSize;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -203,9 +204,16 @@ UT_Bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 	void            enableListUpdates(void);
 	void            updateDirtyLists(void);
 	UT_Bool         areListUpdatesAllowed(void);
+
 	void            setDoingPaste(void);
 	void            clearDoingPaste(void);
 	UT_Bool         isDoingPaste(void);
+	
+	fp_PageSize     m_docPageSize;
+	void            setDefaultPageSize(void);
+	const char *    getDefaultPageSize(void);
+	UT_Bool		setPageSizeFromFile(const XML_Char ** attributes);
+
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
