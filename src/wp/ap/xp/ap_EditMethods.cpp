@@ -7479,7 +7479,7 @@ Defun1(zoomIn)
 	UT_return_val_if_fail(pFrame, false);
 	
 	pFrame->raise();
-	UT_uint32 newZoom = pFrame->getZoomPercentage() + 10;
+	UT_uint32 newZoom = UT_MIN(pFrame->getZoomPercentage() + 10, 500);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
 	XAP_App * pApp = pFrame->getApp();
 	UT_return_val_if_fail(pApp, false);
@@ -7504,7 +7504,7 @@ Defun1(zoomOut)
 	
 	pFrame->raise();
 	
-	UT_uint32 newZoom = pFrame->getZoomPercentage() - 10;
+	UT_uint32 newZoom = UT_MAX(pFrame->getZoomPercentage() - 10, 10);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
 	XAP_App * pApp = pFrame->getApp();
 	UT_return_val_if_fail(pApp, false);
