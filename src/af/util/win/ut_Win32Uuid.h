@@ -77,7 +77,6 @@ class ABI_EXPORT UT_Win32UUID : public UT_UUID
 	
 	UT_Win32UUID(const UT_String &s):UT_UUID(s){s_iInstCount++;};
 	UT_Win32UUID(const char *s):UT_UUID(s){s_iInstCount++;};
-	UT_Win32UUID(const uuid_t &u):UT_UUID(u){s_iInstCount++;};
 	UT_Win32UUID(const UT_UUID &u):UT_UUID(u){s_iInstCount++;};
 	UT_Win32UUID(const UT_Win32UUID &u):UT_UUID((UT_UUID&)u){s_iInstCount++;};
 	
@@ -110,7 +109,6 @@ class ABI_EXPORT UT_Win32UUIDGenerator : public UT_UUIDGenerator
 	
 	virtual UT_UUID * createUUID(const UT_String &s){return new UT_Win32UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_Win32UUID(s);}
-	virtual UT_UUID * createUUID(const uuid_t &u){return new UT_Win32UUID(u);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_Win32UUID(u);}
 };
 

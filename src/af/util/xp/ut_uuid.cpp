@@ -20,12 +20,20 @@
  * 02111-1307, USA.
  */
 
+#include <ctype.h>
+
+#ifdef WIN32
+#  include <winsock.h> // this is where timeval etc is defined ...
+#else
+#  include <sys/time.h> // this is where timeval should be ...
+#endif
+
 #include "ut_uuid.h"
 #include "ut_assert.h"
 #include "ut_string_class.h"
 #include "ut_rand.h"
-#include <ctype.h>
 #include "ut_misc.h"
+
 
 //static UT_UUID _null();
 
@@ -46,7 +54,7 @@ UT_UUID::UT_UUID ()
 }
 
 /*!
-    The following three constructors instantiate the class from
+    The following two constructors instantiate the class from
     existing UUIDs for further processing
 */
 UT_UUID::UT_UUID(const UT_String &s)
@@ -67,12 +75,6 @@ UT_UUID::UT_UUID(const char * in)
 		makeUUID();
 }
 
-UT_UUID::UT_UUID(const uuid_t &u)
-	:m_bIsValid(true)
-{
-    _unpack(u, m_uuid);
-}
-
 /*! copy constructor */
 UT_UUID::UT_UUID(const UT_UUID &u)
 {
@@ -82,27 +84,7 @@ UT_UUID::UT_UUID(const UT_UUID &u)
 
 
 /*!
-    Converts string represenation of UUID to uuid_t; does not modify
-    internal state
-*/
-bool UT_UUID::fromString(const UT_String &s, uuid_t &u) const
-{
-	return fromString(s.c_str(), u);
-}
-
-bool UT_UUID::fromString(const char * in, uuid_t &u) const
-{
-	struct uuid uuid;
-	
-    if(!_parse(in, uuid))
-		return false;
-	
-    _pack(uuid, u);
-    return true;
-}
-
-/*!
-    parse UUID string into the internal (unpacked) uuid struct
+    parse UUID string into the internal uuid struct
 */
 bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 {
@@ -151,43 +133,6 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 }
 
 /*!
-   pack UUID from the internal struct to uuid_t
-*/
-bool UT_UUID::_pack(const uuid &uu, uuid_t &u) const
-{
-    UT_uint32   tmp;
-    unsigned char   *out = (unsigned char *)&u;
-
-    tmp = uu.time_low;
-    out[3] = (unsigned char) tmp;
-    tmp >>= 8;
-    out[2] = (unsigned char) tmp;
-    tmp >>= 8;
-    out[1] = (unsigned char) tmp;
-    tmp >>= 8;
-    out[0] = (unsigned char) tmp;
-    
-    tmp = uu.time_mid;
-    out[5] = (unsigned char) tmp;
-    tmp >>= 8;
-    out[4] = (unsigned char) tmp;
-
-    tmp = uu.time_high_and_version;
-    out[7] = (unsigned char) tmp;
-    tmp >>= 8;
-    out[6] = (unsigned char) tmp;
-
-    tmp = uu.clock_seq;
-    out[9] = (unsigned char) tmp;
-    tmp >>= 8;
-    out[8] = (unsigned char) tmp;
-
-    memcpy(out+10, uu.node, 6);
-
-	return true;
-}
-
-/*!
     convert internal UUID struct to a string
 */
 bool UT_UUID::_toString(const uuid &uu, UT_String & s) const
@@ -202,55 +147,12 @@ bool UT_UUID::_toString(const uuid &uu, UT_String & s) const
 }
 
 /*!
-    convert uuid_t to a string; does not modify internal state
- */
-bool UT_UUID::toString(const uuid_t &uu, UT_String & s) const
-{
-    struct uuid uuid;
-    bool bRet = _unpack(uu, uuid);
-	bRet &= _toString(uuid, s);
-
-	return bRet;
-}
-
-/*!
     convert internal state to string
 */
 bool UT_UUID::toString(UT_String & s) const
 {
 	UT_return_val_if_fail(m_bIsValid, false);
 	return _toString(m_uuid, s);
-}
-
-/*!
-    Unpack uuid_t into the internal uuid struct
-*/
-bool UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
-{
-    const unsigned char  *ptr = (const unsigned char*)&in;
-    UT_uint32       tmp;
-
-    tmp = *ptr++;
-    tmp = (tmp << 8) | *ptr++;
-    tmp = (tmp << 8) | *ptr++;
-    tmp = (tmp << 8) | *ptr++;
-    uu.time_low = tmp;
-
-    tmp = *ptr++;
-    tmp = (tmp << 8) | *ptr++;
-    uu.time_mid = tmp;
-    
-    tmp = *ptr++;
-    tmp = (tmp << 8) | *ptr++;
-    uu.time_high_and_version = tmp;
-
-    tmp = *ptr++;
-    tmp = (tmp << 8) | *ptr++;
-    uu.clock_seq = tmp;
-
-    memcpy(uu.node, ptr, 6);
-
-	return true;
 }
 
 /*!
@@ -268,13 +170,6 @@ bool UT_UUID::setUUID(const char *s)
 	return m_bIsValid;
 }
 
-bool UT_UUID::setUUID(const uuid_t &uu)
-{
-	struct uuid uuid;
-    m_bIsValid = _unpack(uu, uuid);
-	return m_bIsValid;
-}
-
 /*!
     generate new UUID and set the internal value to it
 */
@@ -285,7 +180,7 @@ bool UT_UUID::makeUUID()
 }
 
 /*!
-    generate new UUID into provided string or uuid_t
+    generate new UUID into provided string
 */
 bool UT_UUID::makeUUID(UT_String & s)
 {
@@ -295,31 +190,13 @@ bool UT_UUID::makeUUID(UT_String & s)
 	return bRet;
 }
 
-bool UT_UUID::makeUUID(uuid_t & u)
-{
-	struct uuid uuid;
-	bool bRet = _makeUUID(uuid);
-    bRet &= _pack(uuid, u);
-	return bRet;
-}
-
 /*!
-    retrive the time at which the UUID was created; internal and
-    external variant
+    retrive the time at which the UUID was created
 */
 time_t UT_UUID::getTime() const
 {
 	UT_return_val_if_fail(m_bIsValid, 0xffffffff);
 	return _getTime(m_uuid);
-}
-
-time_t UT_UUID::getTime(const uuid_t & uu) const
-{
-    struct uuid uuid;
-    bool bValid = _unpack(uu, uuid);
-	UT_return_val_if_fail(bValid, 0xffffffff);
-
-	return _getTime(uuid);
 }
 
 time_t UT_UUID::_getTime(const struct uuid & uuid) const
@@ -347,37 +224,19 @@ UT_sint32 UT_UUID::getType() const
 	return _getType(m_uuid);
 }
 
-UT_sint32 UT_UUID::getType(const uuid_t &uu) const
-{
-    struct uuid uuid;
-    bool bValid = _unpack(uu, uuid); 
-	UT_return_val_if_fail(bValid, -1);
-
-	return _getType(uuid);
-}
-
 UT_sint32 UT_UUID::_getType(const struct uuid &uuid) const
 {
     return ((uuid.time_high_and_version >> 12) & 0xF);
 }
 
 /*!
-    get the variant of the UUID; internal and external version
+    get the variant of the UUID
 */
 UT_UUIDVariant UT_UUID::getVariant() const
 {
 	UT_return_val_if_fail(m_bIsValid, UT_UUID_VARIANT_ERROR);
 
 	return _getVariant(m_uuid);
-}
-
-UT_UUIDVariant UT_UUID::getVariant(const uuid_t &uu) const
-{
-    struct uuid uuid;
-	bool bValid = _unpack(uu, uuid);
-	UT_return_val_if_fail(bValid, UT_UUID_VARIANT_ERROR);
-
-	return _getVariant(uuid);
 }
 
 UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid) const
@@ -761,5 +620,82 @@ void UT_UUID::__test()
 
 	UT_DEBUGMSG(("-------------------------------------------------\n"));
 #endif
+}
+#endif
+
+#if 0
+/*
+    Due to portability problems I removed the various functions
+    operating on uuid_t. However, I suspect a day will come someone
+    will decide we need those after all, so I leave here the code for
+    _pack() and _unpack()
+*/
+
+/*!
+   pack UUID from the internal struct to uuid_t
+*/
+bool UT_UUID::_pack(const uuid &uu, uuid_t &u) const
+{
+    UT_uint32   tmp;
+    unsigned char   *out = (unsigned char *)&u;
+
+    tmp = uu.time_low;
+    out[3] = (unsigned char) tmp;
+    tmp >>= 8;
+    out[2] = (unsigned char) tmp;
+    tmp >>= 8;
+    out[1] = (unsigned char) tmp;
+    tmp >>= 8;
+    out[0] = (unsigned char) tmp;
+    
+    tmp = uu.time_mid;
+    out[5] = (unsigned char) tmp;
+    tmp >>= 8;
+    out[4] = (unsigned char) tmp;
+
+    tmp = uu.time_high_and_version;
+    out[7] = (unsigned char) tmp;
+    tmp >>= 8;
+    out[6] = (unsigned char) tmp;
+
+    tmp = uu.clock_seq;
+    out[9] = (unsigned char) tmp;
+    tmp >>= 8;
+    out[8] = (unsigned char) tmp;
+
+    memcpy(out+10, uu.node, 6);
+
+	return true;
+}
+
+/*!
+    Unpack uuid_t into the internal uuid struct
+*/
+bool UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
+{
+    const unsigned char  *ptr = (const unsigned char*)&in;
+    UT_uint32       tmp;
+
+    tmp = *ptr++;
+    tmp = (tmp << 8) | *ptr++;
+    tmp = (tmp << 8) | *ptr++;
+    tmp = (tmp << 8) | *ptr++;
+    uu.time_low = tmp;
+
+    tmp = *ptr++;
+    tmp = (tmp << 8) | *ptr++;
+    uu.time_mid = tmp;
+    
+    tmp = *ptr++;
+    tmp = (tmp << 8) | *ptr++;
+    uu.time_high_and_version = tmp;
+
+    tmp = *ptr++;
+    tmp = (tmp << 8) | *ptr++;
+    uu.clock_seq = tmp;
+
+    memcpy(uu.node, ptr, 6);
+
+	return true;
 }
 #endif

@@ -36,14 +36,6 @@
 
 #include <time.h>
 
-#ifdef WIN32
-#  include <winsock.h> // this is where timeval etc is defined ...
-#  include <rpc.h>     // this is where uuid_t is defined ...
-#else
-#  include <sys/time.h> // this is where timeval should be ...
-#  include <uuid/uuid.h> // this is where uuid_t should be ...
-#endif
-
 class UT_String;
 
 
@@ -56,19 +48,6 @@ typedef enum
 	UT_UUID_VARIANT_OTHER = 3,
 	UT_UUID_VARIANT_ERROR = 0xffffffff
 } UT_UUIDVariant;
-
-
-#if 0
-// this is what uuid_t is supposed to look; if it is not defined for
-// your platform, enable this definition
-typedef struct _uuid_t
-{
-    UT_uint32 d1;
-    UT_uint16 d2;
-    UT_uint16 d3;
-    unsigned char d4[8];
-} uuid_t;
-#endif
 
 struct uuid
 {
@@ -116,24 +95,14 @@ class ABI_EXPORT UT_UUID
 	/* These generate new UUIDs */
 	bool            makeUUID();                // changes internal state
 	bool            makeUUID(UT_String & out); // does not change internal state !!!
-	bool            makeUUID(uuid_t & out);    // does not change internal state !!!
 
 	/* these set m_uuid to given UUID, i.e., force internal state change */ 
 	bool            setUUID(const UT_String &s);
 	bool            setUUID(const char *s);
-	bool            setUUID(const uuid_t &uu);
 
-	/* get internal state in standard uuid_t format */
-	bool            getUUID(uuid_t &out) const {return _pack(m_uuid,out);}
-	
-	/* create uuid from string; do not change internal state !!! */
-	bool            fromString(const UT_String &from, uuid_t &to) const;
-	bool            fromString(const char * from, uuid_t &to) const;
-
-	/* translate uuid into string representation; do not change
+	/* translate internal state into string representation; do not change
 	   internal state */
 	bool            toString(UT_String & to) const;
-	bool            toString(const uuid_t &from, UT_String & to) const;
 
 	/* create FNV hash of the uuid */
 	UT_uint32       hash32() const;
@@ -146,13 +115,8 @@ class ABI_EXPORT UT_UUID
 	/* these retrieve various information from UUID; internal and
 	   external variants */
 	time_t          getTime() const;
-	time_t          getTime(const uuid_t & u) const;
-	
 	UT_sint32       getType() const;
-	UT_sint32       getType(const uuid_t &uu) const;
-
 	UT_UUIDVariant  getVariant() const;
-	UT_UUIDVariant  getVariant(const uuid_t &uu) const;
 
 	/* NB: these are operators over the UUID space, not temporal
 	   operators !!! */
@@ -182,7 +146,6 @@ class ABI_EXPORT UT_UUID
 	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed to initialise
 	UT_UUID(const UT_String &s); // initialises from string
 	UT_UUID(const char *s);      // initialises from string
-	UT_UUID(const uuid_t &u);    // initialises from uuid_t
 	UT_UUID(const UT_UUID &u);   // copy constructor
 
 	/* the following funciton can be ovewritten when a better source
@@ -191,8 +154,6 @@ class ABI_EXPORT UT_UUID
 	virtual bool    _getRandomBytes(void *buf, int nbytes);
 	
   private:
-	bool            _pack(const struct uuid & unpacked, uuid_t &uuid) const;
-	bool            _unpack(const uuid_t &in, struct uuid &uu) const;
 	bool            _parse(const char * in, struct uuid &u) const;
 	
 	bool            _makeUUID(struct uuid & u);
@@ -243,7 +204,6 @@ class ABI_EXPORT UT_UUIDGenerator
 
 	virtual UT_UUID * createUUID(const UT_String &s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_UUID(s);}
-	virtual UT_UUID * createUUID(const uuid_t &u){return new UT_UUID(u);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_UUID(u);}
 };
 
