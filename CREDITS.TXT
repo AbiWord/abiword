@@ -53,7 +53,7 @@ Harald Fernengel <harry@bnro.de>				RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>			RTF import/export work, MacOS (X) maintainer, MacOS X makefiles and autoconf, JPEG import, Applix import
 Albert Fluegel <albert.fluegel@hl.siemens.de>	Solaris
 Ben Fowler <bpfowler@hotmail.com>				MacOS 8/9 work
-Anthony Fok <anthony@thizlinux.com>             Translation fixes for zh-CN and zh-TW
+Anthony Fok <anthony@thizlinux.com>             Translation fixes for zh-CN and zh-TW unicode private code point fixes
 Francis J Franklin <fjf@alinameridon.com> 	SVG work, XML work, HTML plugin, build system stuff, XDarwin maintainer.
 Stephane Fritsch <sfritsch@noos.fr> 			BeOS
 Tomas Frydrych <tomas@frydrych.uklinux.net> 	ttf, utf8 locale, bidi

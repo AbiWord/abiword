@@ -112,7 +112,8 @@ bool ImportStream::getRawChar(UT_UCSChar &ucs)
 	// Surrogates
 	UT_ASSERT(!(wc >= 0xD800 && wc <= 0xDFFF));
 	// Private Use Area
-	UT_ASSERT(!((wc >= 0xDB80 && wc <= 0xDBFF)||(wc >= 0xE000 && wc <= 0xF8FF)));
+	// No, Private User Area is not evil!  Commenting it out for now.
+	/* UT_ASSERT(!((wc >= 0xDB80 && wc <= 0xDBFF)||(wc >= 0xE000 && wc <= 0xF8FF))); */
 	// AbiWord control characters
 	UT_ASSERT(wc != UCS_FIELDSTART && wc != UCS_FIELDEND && wc != UCS_BOOKMARKSTART && wc != UCS_BOOKMARKEND);
 	// Illegal characters
