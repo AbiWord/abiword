@@ -84,20 +84,31 @@ endif
 DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DSUPPORTS_UT_IDLE
 OBJ_DIR_SFX	= DBG
 OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -DWIN32 -Zm200
-DLLFLAGS 	= -DEBUG -DEBUGTYPE:CV -OUT:"$@"
+DLLFLAGS 	= -DEBUG -DEBUGTYPE:CV -OUT:"$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))" 
 LDFLAGS 	= -DEBUG -DEBUGTYPE:CV
-OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
+OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE 
 
 else
 
 DEFINES		= -UDEBUG -U_DEBUG -DNDEBUG -DSUPPORTS_UT_IDLE
 OBJ_DIR_SFX	= OBJ
 OS_CFLAGS 	= -W3 -nologo -GF -Gy -MD -DWIN32 -Zm200
-DLLFLAGS 	= -OUT:"$@"
+DLLFLAGS 	= -OUT:"$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))" 
 LDFLAGS 	=
-OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
+OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE 
 
 endif
+
+OS_LIBS		= kernel32.lib \
+              user32.lib \
+              gdi32.lib \
+              winspool.lib \
+              comdlg32.lib \
+              advapi32.lib \
+			  shell32.lib \
+              uuid.lib \
+              comctl32.lib \
+              msvcprt.lib
 
 OS_CFLAGS 	+= $(OPTIMIZER) $(ARCH_FLAGS)
 

@@ -535,6 +535,7 @@ OBJDIR			= $(OUTDIR)/obj$(ABI_PEER)
 LIBDIR			= $(OUTDIR)/obj
 BINDIR			= $(OUTDIR)/bin
 CANONDIR		= $(OUTDIR)/AbiSuite
+PLUGINDIR       = $(OUTDIR)/plugins
 
 PKGBASENAME		= abisuite-$(ABI_BUILD_VERSION)-$(OS_NAME)_$(OS_ARCH)
 

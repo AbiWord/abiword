@@ -40,15 +40,12 @@
 ifdef LIBRARY_NAME
 ifeq ($(OS_NAME), WIN32)
 LIBRARY		= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION)_s.lib
-SHARED_LIBRARY	= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).dll
 IMPORT_LIBRARY	= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).lib
-
 else
-
 LIBRARY		= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).$(LIB_SUFFIX)
-SHARED_LIBRARY	= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).$(DLL_SUFFIX)
-
 endif
+ SHARED_LIBRARY		= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).$(DLL_SUFFIX)
+ PLUGIN          	= $(PLUGINDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).$(DLL_SUFFIX)
 endif
 
 ifndef TARGETS
@@ -182,6 +179,19 @@ $(SHARED_LIBRARY): $(OBJS)
 	@rm -f $@
 ifeq ($(OS_NAME), WIN32)
 	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) $(EXTRA_LIBS) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
+else
+	$(MKSHLIB) -o $@ $(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
+endif
+
+################################################################################
+
+$(PLUGIN): $(OBJS)
+	@$(MAKE_OBJDIR)
+	@rm -f $@
+ifeq ($(OS_NAME), WIN32)
+	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) \
+     $(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH) ) \
+     $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
 else
 	$(MKSHLIB) -o $@ $(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 endif
