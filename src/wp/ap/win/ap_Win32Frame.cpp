@@ -313,7 +313,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	RECT r;
 	GetClientRect(hwnd, &r);
 	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
-	InvalidateRect(hwnd, NULL, true);
+	InvalidateRect(hwnd, NULL, TRUE);
 
 	setXScrollRange();
 	setYScrollRange();
@@ -1091,7 +1091,7 @@ bool AP_Win32Frame::initFrameData(void)
 	AP_FrameData* pData = new AP_FrameData(m_pWin32App);
 	m_pData = (void*) pData;
 	
-	return (pData ? true : false);
+	return pData != 0;
 }
 
 void AP_Win32Frame::killFrameData(void)
