@@ -1415,7 +1415,7 @@ inline UT_UCSChar fp_TextRun::_getContextGlyph(const UT_UCSChar * pSpan,
 										UT_UCSChar *prev,
 										UT_UCSChar *after) const
 {
-	UT_sint32 iStop2 = MIN(CONTEXT_BUFF_SIZE, len - 1);
+	UT_sint32 iStop2 = (UT_sint32) CONTEXT_BUFF_SIZE < (UT_sint32)(len - 1) ? CONTEXT_BUFF_SIZE : len - 1;
 	UT_contextGlyph cg;
 	UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
 			
@@ -1489,7 +1489,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	             prev[0],prev[1],m_iOffsetFirst,offset));
 			
 	// how many characters at most can we retrieve?
-	UT_sint32 iStop = MIN(CONTEXT_BUFF_SIZE, lenSpan - len);
+	UT_sint32 iStop = (UT_sint32) CONTEXT_BUFF_SIZE < (UT_sint32)(lenSpan - len) ? CONTEXT_BUFF_SIZE : lenSpan - len;
 	UT_sint32 i;
 	// first, getting anything that might be in the span buffer
 	for(i=0; i< iStop;i++)
@@ -1500,7 +1500,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	
 	while(i < CONTEXT_BUFF_SIZE && m_pBL->getSpanPtr(offset + len + i, &pNext, &lenAfter))
 	{
-		for(UT_uint32 j = 0; j < lenSpan && (UT_uint32)i < CONTEXT_BUFF_SIZE; j++,i++)
+		for(UT_uint32 j = 0; j < lenAfter && (UT_uint32)i < CONTEXT_BUFF_SIZE; j++,i++)
 			after[i] = pNext[j];
 	}
 
