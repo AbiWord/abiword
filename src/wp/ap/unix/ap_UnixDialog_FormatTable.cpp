@@ -242,11 +242,15 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 void AP_UnixDialog_FormatTable::setSensitivity(bool bSens)
 {
 	gtk_widget_set_sensitive(m_wBorderColorButton, bSens);
+	gtk_widget_set_sensitive(m_wBorderThickness, bSens);
 	gtk_widget_set_sensitive(m_wBackgroundColorButton, bSens);	
+	gtk_widget_set_sensitive(m_wSelectImageButton, bSens);
+	gtk_widget_set_sensitive(m_wNoImageButton, bSens);
 	gtk_widget_set_sensitive(m_wLineLeft, bSens);
 	gtk_widget_set_sensitive(m_wLineRight, bSens);
 	gtk_widget_set_sensitive(m_wLineTop, bSens);
 	gtk_widget_set_sensitive(m_wLineBottom, bSens);
+	gtk_widget_set_sensitive(m_wApplyToMenu, bSens);
 	gtk_widget_set_sensitive(m_wApplyButton, bSens);
 }
 
