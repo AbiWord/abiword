@@ -328,22 +328,15 @@ include $(ABI_ROOT)/src/config/platforms/mingw32.mk
 endif
 endif
 
-ifeq ($(OS_NAME), Linux)
-include $(ABI_ROOT)/src/config/platforms/linux.mk
+ifeq ($(OS_NAME), MACOSX)
+include $(ABI_ROOT)/src/config/platforms/macosx.mk
 endif
 
-ifeq ($(OS_NAME), FreeBSD)
-include $(ABI_ROOT)/src/config/platforms/freebsd.mk
+# DOS (via WxWindows)
+ifeq ($(OS_NAME), WXWIN)
+include $(ABI_ROOT)/src/config/platforms/wxwin.mk
 endif
-
-ifeq ($(OS_NAME), OpenBSD)
-include $(ABI_ROOT)/src/config/platforms/openbsd.mk
-endif
-
-ifeq ($(OS_NAME), NetBSD)
-include $(ABI_ROOT)/src/config/platforms/netbsd.mk
-endif
-
+ 
 ifeq ($(OS_NAME), BeOS)
 include $(ABI_ROOT)/src/config/platforms/beos.mk
 endif
@@ -359,53 +352,17 @@ include $(ABI_ROOT)/src/config/platforms/nto.mk
 endif
 endif
 
-# TODO: how do we differentiate between old SunOS and new Solaris
-ifeq ($(OS_NAME), SunOS)
-include $(ABI_ROOT)/src/config/platforms/sunos.mk
-endif
-
-ifeq ($(OS_NAME), IRIX)
-include $(ABI_ROOT)/src/config/platforms/irix.mk
-endif
-
-ifeq ($(OS_NAME), IRIX64)
-include $(ABI_ROOT)/src/config/platforms/irix64.mk
-endif
-
-# not HP-UX since sed applies s/-.*// to uname
-ifeq ($(OS_NAME), HP)
-include $(ABI_ROOT)/src/config/platforms/hpux.mk
-endif
-
-ifeq ($(OS_NAME), AIX)
-include $(ABI_ROOT)/src/config/platforms/aix.mk
-endif
-
-ifeq ($(OS_NAME), OSF1)
-include $(ABI_ROOT)/src/config/platforms/osf1.mk
-endif
-
-ifeq ($(OS_NAME), MACOSX)
-include $(ABI_ROOT)/src/config/platforms/macosx.mk
-endif
-
-# DOS (via WxWindows)
-ifeq ($(OS_NAME), WXWIN)
-include $(ABI_ROOT)/src/config/platforms/wxwin.mk
-endif
- 
-
 # Catch all for undefined platform (CC will always be defined on a working platform)
-ifndef CC
+ifndef $(CC)
 fake-target::
 	@echo
 	@echo "    I can't seem to figure out which platform you are using."
 	@echo
-	@echo "    If this is a Unix-like platform, it should be easy to"
-	@echo "modify an existing platform configuration file to suit this"
-	@echo "platform's needs.  Look in abi/src/config/platforms for starter"
-	@echo "platform configuration files, and abi/src/config/abi_defs.mk"
-	@echo "for the proper detection magic."
+	@echo "    You should probably try using the autoconfiscated build system (rather"
+	@echo "    than this, the deprecated and unsupported diving make system) by running"
+	@echo "    configure (creating it with autogen.sh if need be) and using GNU Make."
+	@echo "    Using configure is a requirement for all known platforms that aren't some form"
+	@echo "    of Windows, QNX Neutrino, BeOS, or MacOS X."
 	@echo
 	exit 1
 endif
