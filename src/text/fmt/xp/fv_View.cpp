@@ -2257,6 +2257,8 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
+	UT_Vector vBlock;
+	getBlocksInSelection( &vBlock);
 //
 // Turn off cursor
 //
@@ -2268,8 +2270,6 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	{
 		_clearSelection();
 	}
-	UT_Vector vBlock;
-	getBlocksInSelection( &vBlock);
 	UT_uint32 i;
 	m_pDoc->disableListUpdates();
 
@@ -2371,7 +2371,7 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 	}
 	else
 	{
-		startpos =	m_iSelectionAnchor;
+		startpos = m_iSelectionAnchor;
 	}
 //
 // tweak the start point of the selection if it is just before the current block
@@ -2643,7 +2643,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		return false;
 	}
 	pBL = _findBlockAtPosition(posStart+2);
-	UT_DEBUGMSG(("SEVIOR: PosStart %d posEnd %d next blockpos %d \n",posStart,posEnd,pBL->getPosition(true)));
 	if((posStart == pBL->getPosition(true)) && (posEnd > posStart))
 	{
 		posStart++;
