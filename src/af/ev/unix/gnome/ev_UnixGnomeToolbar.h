@@ -48,6 +48,9 @@ public:
 	virtual void hide(void);
 	virtual UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
+	// consider this function protected - it's needed in a callback
+	virtual void _orient_changed(GtkToolbar *toolbar,
+				GtkOrientation dir);
 private:
 	GtkWidget *_makeToolbar(void);
 	UT_Bool _addToolbar (GtkWidget *toolbar);

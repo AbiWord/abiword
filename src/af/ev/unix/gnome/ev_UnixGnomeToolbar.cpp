@@ -170,6 +170,19 @@ static int s_combo_changed(GtkWidget * widget, gpointer user_data)
 	return 0;
 }
 
+/*
+ * Some toolbar items are too damn wide to put into the toolbar
+ * if it is vertical.
+ */
+static void
+format_toolbar_orient (GtkToolbar *toolbar,
+		       GtkOrientation dir,
+		       gpointer closure)
+{
+     EV_UnixGnomeToolbar *tb = (EV_UnixGnomeToolbar *)closure;
+     tb->_orient_changed(toolbar, dir);
+}
+
 /*****************************************************************/
 
 EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGnomeFrame * pUnixFrame,
@@ -185,6 +198,46 @@ EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGn
 EV_UnixGnomeToolbar::~EV_UnixGnomeToolbar(void)
 {
 	UT_VECTOR_PURGEALL(GtkWidget *, m_vecToolbars);
+}
+
+void
+EV_UnixGnomeToolbar::_orient_changed(GtkToolbar *toolbar,
+				     GtkOrientation dir)
+{
+        GtkWidget *w = NULL;
+	_wd *wd;
+	int i = 0;
+	int len = m_vecToolbarWidgets.getItemCount();
+
+	// hack - we want to hide the large widgets
+	// if we get sent vertical, and show them again
+	// when we go horizontal
+
+	// TODO: something similar could probably be put into
+	// TODO: the GTK build too
+
+	if (dir == GTK_ORIENTATION_HORIZONTAL)
+	  {
+	    // show the large widgets
+	    for(i = 0; i < len; i++)
+	      {
+		wd = (_wd*)m_vecToolbarWidgets.getNthItem(i);
+		w = wd->m_widget;
+		if (GTK_IS_COMBO_TEXT(w))
+		  gtk_widget_show(w);
+	      }
+	  } 
+	else  // GTK_ORIENTATION_VERTICAL
+	  {
+	    // hide the large widgets
+	    for(i = 0; i < len; i++)
+	      {
+		wd = (_wd*)m_vecToolbarWidgets.getNthItem(i);
+		w = wd->m_widget;
+		if (GTK_IS_COMBO_TEXT(w))
+		  gtk_widget_hide(w);
+	      }
+	  }
 }
 
 UT_Bool EV_UnixGnomeToolbar::synthesize(void)
@@ -383,6 +436,11 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 		}
 	}
 
+	/* Handle orientation changes so that we can hide wide widgets */
+	gtk_signal_connect (
+		GTK_OBJECT(m_wToolbar), "orientation-changed",
+		GTK_SIGNAL_FUNC (format_toolbar_orient), this);
+
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
 
@@ -396,23 +454,22 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 {
 	GnomeDockItemBehavior beh;
-	char *buf;
+	char *name;
 
 	// an arbitrary padding to make our document not run into our buttons
 	gtk_container_set_border_width(GTK_CONTAINER(toolbar), 2);
+	beh = GNOME_DOCK_ITEM_BEH_NORMAL;
 
-	if (gnome_preferences_get_toolbar_detachable())
-		beh = GNOME_DOCK_ITEM_BEH_NORMAL;
-	else
+	if (!gnome_preferences_get_toolbar_detachable())
 		beh = GNOME_DOCK_ITEM_BEH_LOCKED;
 
-	buf = g_strdup_printf("Toolbar %d-%d", nbBands, ++nbToolbarsInBand);
+	name = g_strdup_printf("Toolbar %d-%d", nbBands, ++nbToolbarsInBand);
 	//	g_print ("Toolbar style = %d\n", static_cast<int> (toolbar->style));
 	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
-						  GTK_TOOLBAR (toolbar), buf, beh, GNOME_DOCK_TOP,
-						  nbBands + 1, nbToolbarsInBand, 0);
+						  GTK_TOOLBAR (toolbar), name, beh, GNOME_DOCK_TOP,
+						  nbBands + 1, nbToolbarsInBand - 1, 0);
 	m_vecToolbars.addItem(toolbar);
-	free(buf);
+	g_free(name);
 	return UT_TRUE;
 }
 
