@@ -70,6 +70,8 @@ BeginSetEnc(hu,HU,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Aláhúzott",tb_text_underline_A_xpm,	NULL, "Aláhúzott")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Felülvonás",tb_text_overline_F_xpm,	NULL, "Felülvonás")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Kihúzott",   tb_text_strikeout_K_xpm,	NULL, "Kihúzott")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Felsõ vonal",		tb_text_topline_xpm,	NULL, "Felsõ vonal")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Alsó vonal",		tb_text_bottomline_xpm,	NULL, "Alsó vonal")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,			"Súgó",			tb_help_xpm,			NULL, "Súgó")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Felsõ index",	tb_text_superscript_xpm,	NULL, "Felsõ index")
@@ -100,6 +102,10 @@ BeginSetEnc(hu,HU,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Kiemelés",		tb_text_bgcolor_xpm,	NULL, "Kiemelés")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Nagyobb behúzás",	tb_text_indent_xpm, 	NULL, "Nagyobb behúzás")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Kisebb behúzás",	tb_text_unindent_xpm,	NULL, "Kisebb behúzás")
+
+#ifdef ABI_OPT_PERL
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Makró",	tb_script_play_xpm,		NULL, "Makró futtatása")
+#endif
 
      // ... add others here ...
 #ifdef BIDI_ENABLED
