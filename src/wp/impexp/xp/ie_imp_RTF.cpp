@@ -1280,11 +1280,12 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	// and the styleName table.
 
 	size = m_styleTable.getItemCount();
-	for (i = size-1; i>=0; i--)
-	{
-		char * pItem = (char *) m_styleTable.getNthItem(i);
-		delete [] pItem;
-	}
+	for (i = 0; i < size; i++)
+		{
+			char * pItem = (char *) m_styleTable.getNthItem(i);
+			if(pItem)
+				delete [] pItem;
+		}
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
@@ -3703,15 +3704,22 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			iOveride = m_icurOveride;
 			iLevel = m_icurOverideLevel;
 		}
-		UT_ASSERT(iOveride);
+		UT_ASSERT(iOveride); // 2172
 //
 // Now get the properties we've painstakingly put together.
 //
-		pOver = (RTF_msword97_listOveride *) m_vecWord97ListOveride.getNthItem(iOveride - 1);
+		if ( iOveride > 0 && iOveride <= m_vecWord97ListOveride.size () )
+			{
+				pOver = (RTF_msword97_listOveride *) m_vecWord97ListOveride.getNthItem(iOveride - 1);
+			}
+		else
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN); //wtf is going on here? see bug 2172
+			}
 	}
 
 	// tabs
-	if (m_currentRTFState.m_paraProps.m_tabStops.getItemCount() > 0 || (pOver != NULL && pOver->isTab(iLevel)))
+	if ((pOver != NULL && pOver->isTab(iLevel)))
 	{
 		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
 					m_currentRTFState.m_paraProps.m_tabTypes.getItemCount() );
@@ -3720,7 +3728,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // The Word 97 RTF list definition has some extra tab stops. Add them here.
 //
-		if(pOver != NULL && pOver->isTab(iLevel))
+		if(pOver->isTab(iLevel))
 		{
 			UT_uint32 i = 0;
 			UT_uint32 count = pOver->getTabStopVect(iLevel)->getItemCount();
@@ -3878,12 +3886,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // This is for Word97 Lists
 //
-	if(bWord97List)
+	if(bWord97List && pOver)
 	{
 //
 // Now get the properties we've painstakingly put together.
 //
-		pOver = (RTF_msword97_listOveride *) m_vecWord97ListOveride.getNthItem(iOveride - 1);
 		const char * szListID = NULL; 
 		const char * szParentID = NULL; 
 		const char * szLevel = NULL;

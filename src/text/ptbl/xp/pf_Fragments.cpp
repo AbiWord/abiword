@@ -184,13 +184,14 @@ pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 #endif
 	xxx_UT_DEBUGMSG(("JCA: findFirstFragBeforePos (%d).  NbFrags = %d...\n", pos, numFrags));
 
-	if (numFrags  < 1)
+	if (numFrags < 1)
 		return NULL;
 
-	if (pos >= getLast()->getPos())
+	pf_Frag * last = getLast();
+	if (last && pos >= last->getPos())
 	{
-		xxx_UT_DEBUGMSG(("JCA: Found last Frag[%p] @ pos %d Looking for pos %d \n", getLast(), getLast()->getPos(), pos));
-		return getLast();
+		xxx_UT_DEBUGMSG(("JCA: Found last Frag[%p] @ pos %d Looking for pos %d \n", getLast(), last->getPos(), pos));
+		return last;
 	}
 
 	pf_Frag* cache = getCache();
