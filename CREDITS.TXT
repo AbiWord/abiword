@@ -302,6 +302,7 @@ Raphael Finkel <raphael@cs.uky.edu>			Yiddish
 Besnik Bleta <besnikbleta@hotmail.com>			Albanian
 Alberto Cabello Sánchez <alberto@unex.es> 
 Vital Khilko <dojlid@mova.org>				Belarusian
+Gustavs Galdins <gusts@mits.lv>				Latvian
 
 unsung heroes
 -------------
