@@ -72,6 +72,12 @@
 #include "ie_imp.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
+#include "ie_impGraphic.h"
+#include "fg_Graphic.h"
+#include "xav_View.h"
+#include "xad_Document.h"
+#include "ap_framedata.h"
+
 
 #ifdef HAVE_CURL
 #include "ap_Win32HashDownloader.h"
@@ -473,6 +479,134 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 	m_pClipboard->closeClipboard();				// release clipboard lock
 }
 
+//
+// 
+//
+PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
+{ 
+	BITMAP 		bmp; 
+	PBITMAPINFO 	pbmi; 
+	WORD    	cClrBits; 
+
+	// Retrieve the bitmap's color format, width, and height. 
+    	if (!GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
+		return NULL;
+	
+	if (bmp.bmBitsPixel==16) bmp.bmBitsPixel=24;	// 16 bit BMPs are not supported by all programs
+					
+
+	// Convert the color format to a count of bits. 
+   	cClrBits = (WORD)(bmp.bmPlanes * bmp.bmBitsPixel); 
+    
+	if (cClrBits == 1) 
+		cClrBits = 1; 
+	else if (cClrBits <= 4) 
+		cClrBits = 4; 
+	else if (cClrBits <= 8) 
+		cClrBits = 8; 
+	else if (cClrBits <= 16) 
+		cClrBits = 16; 
+	else if (cClrBits <= 24) 
+		cClrBits = 24; 
+	else cClrBits = 32; 
+	
+	// Allocate memory for the BITMAPINFO structure. (This structure 
+	// contains a BITMAPINFOHEADER structure and an array of RGBQUAD 
+	// data structures.) 
+	
+	if (cClrBits != 24) 
+	 pbmi = (PBITMAPINFO) LocalAlloc(LPTR, 
+	            sizeof(BITMAPINFOHEADER) + 
+	            sizeof(RGBQUAD) * (1<< cClrBits)); 
+	
+	// There is no RGBQUAD array for the 24-bit-per-pixel format. 	
+	else 
+	 pbmi = (PBITMAPINFO) LocalAlloc(LPTR, 
+	            sizeof(BITMAPINFOHEADER)); 
+	
+	// Initialize the fields in the BITMAPINFO structure. 
+	
+	pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 
+	pbmi->bmiHeader.biWidth = bmp.bmWidth; 
+	pbmi->bmiHeader.biHeight = bmp.bmHeight; 
+	pbmi->bmiHeader.biPlanes = bmp.bmPlanes; 
+	pbmi->bmiHeader.biBitCount = bmp.bmBitsPixel; 
+	if (cClrBits < 24) 
+	pbmi->bmiHeader.biClrUsed = (1<<cClrBits); 
+	
+	// If the bitmap is not compressed, set the BI_RGB flag. 
+	pbmi->bmiHeader.biCompression = BI_RGB; 
+	
+	// Compute the number of bytes in the array of color 
+	// indices and store the result in biSizeImage. 
+	// For Windows NT/2000, the width must be DWORD aligned unless 
+	// the bitmap is RLE compressed.
+	pbmi->bmiHeader.biSizeImage = ((pbmi->bmiHeader.biWidth * cClrBits +31) & ~31) /8
+	                          * pbmi->bmiHeader.biHeight; 
+	// Set biClrImportant to 0, indicating that all of the 
+	// device colors are important. 
+	pbmi->bmiHeader.biClrImportant = 0; 
+	return pbmi; 
+} 
+
+//
+//
+//
+void CreateBMPFile(HWND hwnd, LPTSTR pszFile, PBITMAPINFO pbi, 
+                  HBITMAP hBMP, HDC hDC) 
+{ 
+	HANDLE hf;                 // file handle 
+	BITMAPFILEHEADER hdr;       // bitmap file-header 
+	PBITMAPINFOHEADER pbih;     // bitmap info-header 
+	LPBYTE lpBits;              // memory pointer 	
+	DWORD cb;                   // incremental count of bytes 	
+	DWORD dwTmp; 
+
+    pbih = (PBITMAPINFOHEADER) pbi; 
+    lpBits = (LPBYTE) GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
+
+    if (!lpBits) return;
+
+    // Retrieve the color table (RGBQUAD array) and the bits 
+    // (array of palette indices) from the DIB. 
+    if (!GetDIBits(hDC, hBMP, 0, (WORD) pbih->biHeight, lpBits, pbi, 
+        DIB_RGB_COLORS)) 
+    	return;
+
+    // Create the .BMP file. 
+    hf = CreateFile(pszFile,  GENERIC_READ | GENERIC_WRITE, 
+                   (DWORD) 0,  NULL,  CREATE_ALWAYS,  FILE_ATTRIBUTE_NORMAL, (HANDLE) NULL); 
+                   
+    if (hf == INVALID_HANDLE_VALUE)  return;
+        
+    hdr.bfType = 0x4d42;        // 0x42 = "B" 0x4d = "M" 
+    // Compute the size of the entire file. 
+    hdr.bfSize = (DWORD) (sizeof(BITMAPFILEHEADER) + 
+                 pbih->biSize + pbih->biClrUsed 
+                 * sizeof(RGBQUAD) + pbih->biSizeImage); 
+    hdr.bfReserved1 = 0; 
+    hdr.bfReserved2 = 0; 
+
+    // Compute the offset to the array of color indices. 
+    hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) + 
+                    pbih->biSize + pbih->biClrUsed 
+                    * sizeof (RGBQUAD); 
+
+    // Copy the BITMAPFILEHEADER into the .BMP file. 
+    WriteFile(hf, (LPVOID) &hdr, sizeof(BITMAPFILEHEADER),  (LPDWORD) &dwTmp,  NULL);
+    
+    WriteFile(hf, (LPVOID) pbih, sizeof(BITMAPINFOHEADER) + pbih->biClrUsed * sizeof (RGBQUAD), 
+                  (LPDWORD) &dwTmp, ( NULL));        
+
+    // Copy the array of color indices into the .BMP file.         
+    WriteFile(hf, (LPSTR) lpBits, (int) pbih->biSizeImage, (LPDWORD) &dwTmp,NULL);           
+    
+	CloseHandle(hf);        
+    GlobalFree((HGLOBAL)lpBits);
+}
+
+
+
 void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting)
 {
 	// paste from the system clipboard using the best-for-us format
@@ -499,6 +633,7 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		// TODO decide if we need to support .ABW on the clipboard.
 		if (!((bHonorFormatting && _pasteFormatFromClipboard(pDocRange, AP_CLIPBOARD_RTF, ".rtf", false)) ||
 			_pasteFormatFromClipboard(pDocRange, AP_CLIPBOARD_TEXTPLAIN_UCS2, ".txt", true) ||
+			_pasteFormatFromClipboard(pDocRange, AP_CLIPBOARD_BMP, ".bmp", false) ||
 			_pasteFormatFromClipboard(pDocRange, AP_CLIPBOARD_TEXTPLAIN_8BIT, ".txt", false)))
 		{
 			// TODO figure out what to do with an image and other formats....
@@ -513,10 +648,74 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const char * szFormat,
 											const char * szType, bool bWide)
 {
-	HANDLE hData;
-	bool bSuccess = false;
-
-	if (hData = m_pClipboard->getHandleInFormat(szFormat))
+	HANDLE	hData;
+	bool 	bSuccess = false;	
+  
+	if (!(hData = m_pClipboard->getHandleInFormat(szFormat)))
+		return bSuccess;		
+ 		
+ 	// It's a bitmap
+ 	if (stricmp(szFormat, AP_CLIPBOARD_BMP)==0)
+	{			
+ 		HBITMAP					hBitmap;
+ 		PBITMAPINFO 			bi;
+ 		HWND		 			hWnd;
+ 		HDC 					hdc;
+ 		IE_ImpGraphic*			pIEG = NULL;
+ 		FG_Graphic* 			pFG;	
+ 		UT_Error 				errorCode;		
+ 		UT_ByteBuf 				byteBuf;				
+ 		IEGraphicFileType		iegft = IEGFT_BMP;	
+ 		XAP_Frame* 				pFrame;						
+ 		AP_FrameData* 			pFrameData;		
+ 		FL_DocLayout*			pDocLy;	
+ 		FV_View* 				pView;						
+ 		char szFile[_MAX_PATH];
+ 		char szPath[MAX_PATH];
+ 		char sz[MAX_PATH]; 		
+ 		
+ 		hBitmap = (HBITMAP)hData;					
+ 		hWnd =  GetDesktopWindow();
+ 		hdc = GetDC(hWnd);		
+ 		
+ 		// Get a temp file
+ 		GetTempPath(MAX_PATH,szPath);
+  		GetTempFileName(szPath, "abi", rand()*65535*65535, szFile);		
+ 
+  		// Create a BMP file from a BITMAP
+ 		bi =  CreateBitmapInfoStruct(hBitmap);						
+ 		CreateBMPFile(hWnd, szFile, bi, hBitmap,hdc);                  										
+ 		
+ 		// Since we are providing the file type, there is not need to pass the bytebuff filled up
+ 		errorCode = IE_ImpGraphic::constructImporter(szFile, iegft, &pIEG);				 				
+		 				
+ 		if(errorCode != UT_OK)
+ 				return false;				  	
+ 				 			
+ 		errorCode = pIEG->importGraphic(szFile, &pFG); 		
+ 		
+ 		if(errorCode != UT_OK || !pFG)
+ 		{
+ 			MessageBox(NULL, "Paste BMP files requieres the ImageMagick plugin", NULL, NULL);						
+ 			DELETEP(pIEG);
+ 			return false;
+ 		}
+ 		 
+ 		// Insert graphic in the view
+ 		pFrame = getLastFocussedFrame();		
+ 		if (!pFrame) return false;
+ 						
+ 		pFrameData = (AP_FrameData*) pFrame->getFrameData();		
+ 		pDocLy =	pFrameData->m_pDocLayout;	
+ 		pView =  pDocLy->getView();		
+ 				
+ 		errorCode = pView->cmdInsertGraphic(pFG, szFile);	  		  		
+ 	
+ 		DELETEP(pFG);
+ 		unlink(szFile);		  	
+ 		bSuccess = true;
+ 	}
+ 	else	
 	{
 		unsigned char * pData = static_cast<unsigned char *>(GlobalLock(hData));
 		UT_DEBUGMSG(("Paste: [fmt %s][hdata 0x%08lx][pData 0x%08lx]\n",
@@ -560,7 +759,9 @@ bool AP_Win32App::canPasteFromClipboard(void)
 		goto ReturnTrue;
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		goto ReturnTrue;
-
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_BMP))
+  		goto ReturnTrue;
+  		
 	m_pClipboard->closeClipboard();
 	return false;
 
@@ -854,8 +1055,21 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 // This block is controlled by the Structured Exception Handle
 // if any crash happens here we will recover it and save the file (cross fingers)
 //	
+
+	
 __try
-{				
+{		
+	/*
+	#define IEGFT_PNG IE_ImpGraphic::fileTypeForSuffix(".png")
+	#define IEGFT_SVG IE_ImpGraphic::fileTypeForSuffix(".svg")
+	#define IEGFT_BMP IE_ImpGraphic::fileTypeForSuffix(".bmp")
+	#define IEGFT_DIB IEGFT_BMP
+	#define IEGFT_JPEG IE_ImpGraphic::fileTypeForSuffix(".jpg")
+	#define IEGFT_WMF IE_ImpGraphic::fileTypeForSuffix(".wmf")
+	*/
+
+	
+
 	if (bShowApp)
 	{
 		// display the windows

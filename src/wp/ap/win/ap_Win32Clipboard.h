@@ -33,6 +33,7 @@
 #define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
 #define	AP_CLIPBOARD_TEXTPLAIN_UCS2 		"text-ucs2"
 #define AP_CLIPBOARD_RTF 					"rtf"
+#define AP_CLIPBOARD_BMP					"bitmap"
 #define AP_CLIPBOARD_UNKNOWN 				"unknown"
 
 

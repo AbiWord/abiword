@@ -41,6 +41,7 @@ AP_Win32Clipboard::AP_Win32Clipboard(void)
 	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,		CF_TEXT);
 	AddFmt(AP_CLIPBOARD_TEXTPLAIN_UCS2,		CF_UNICODETEXT);
 	AddFmt(AP_CLIPBOARD_RTF,				RegisterClipboardFormat(CF_RTF));
+	AddFmt(AP_CLIPBOARD_BMP,				CF_BITMAP);					
 	AddFmt(AP_CLIPBOARD_UNKNOWN,			0);					// must be last
 
 	// We don't need to free these strings in our destructor
