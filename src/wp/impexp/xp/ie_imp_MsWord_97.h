@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
- * Copyright (C) 2001 Tomas Frydrych
+ * Copyright (C) 2001-2003 Tomas Frydrych
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -256,6 +256,7 @@ private:
 	UT_uint32   m_iMacrosEnd;
 	UT_uint32   m_iTextStart;
 	UT_uint32   m_iTextEnd;
+	bool        m_bPageBreakPending;
 };
 
 #endif /* IE_IMP_MSWORD_H */

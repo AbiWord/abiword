@@ -629,7 +629,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iMacrosStart(0xffffffff),
 	m_iMacrosEnd(0xffffffff),
 	m_iTextStart(0xffffffff),
-	m_iTextEnd(0xffffffff)
+	m_iTextEnd(0xffffffff),
+	m_bPageBreakPending(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1289,6 +1290,16 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
+	// reset the page break tracker
+	if(m_bPageBreakPending)
+	{
+		// we have a page break pending, and being here means that it
+		// was not a seciton break; we have to append it first and
+		// then continue normal processing
+		this->_appendChar (UCS_FF);
+		m_bPageBreakPending = false;
+	}
+	
 	if(!_handleHeadersText(ps->currentcp))
 		return 0;
 	if(!_handleNotesText(ps->currentcp))
@@ -1312,8 +1323,13 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 
 	case 12: // page or section break
 		this->_flush ();
-		eachchar = UCS_FF;
-		break;
+		//eachchar = UCS_FF;
+		// we will not append page breaks to the buffer, only mark it
+		// as pending append; that will allow us later to decide if we
+		// should or should not appended (we want to remove any page
+		// break that is at an end of a section
+		m_bPageBreakPending = true;
+		return 0;
 
 	case 13: // end of paragraph
 		return 0;
@@ -1356,7 +1372,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// take care of any oddities in Microsoft's character encoding
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
-
+	
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 
 	return 0;
@@ -1847,6 +1863,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ ,
 								void * /* prop */, int /* dirty */ )
 {
+#if 0
 	// if we're at the end of a section, we need to check for a section mark
 	// at the end of our character stream and remove it (to prevent page breaks
 	// between sections)
@@ -1858,6 +1875,12 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 	  {
 		m_pTextRun[m_pTextRun.size()-1] = 0;
 	  }
+#endif
+
+	// if there is a pending page break it belongs to the section and
+	// is to be removed, we just need to set the tracker to false
+	m_bPageBreakPending = false;
+
 	m_bInSect = false;
 	m_bInPara = false; // reset paragraph status
 	return 0;
@@ -2346,7 +2369,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 							  ps->currentcp == m_iHeadersStart);
 
 	// the end of endnotes/fnotes/headers and all other subsections in
-	// the main stream always contains a paragraph marker; we do not
+	// the main stream always contain a paragraph marker; we do not
 	// want it to append fmt on those
 	if((ps->currentcp == m_iTextEnd - 1 && m_iTextEnd > m_iTextStart)                ||
 	   (ps->currentcp == m_iTextEnd - 2 && m_iTextEnd > m_iTextStart)                ||
