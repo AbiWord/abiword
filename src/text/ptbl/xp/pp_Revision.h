@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
+#include "pp_AttrProp.h"
 
 typedef enum {
 	PP_REVISION_ADDITION,
@@ -36,7 +37,7 @@ typedef enum {
     provides functions for retrieving information and from merging
     properties
 */
-class PP_Revision
+class PP_Revision: public PP_AttrProp
 {
   public:
 	PP_Revision(UT_uint32 Id,
@@ -49,31 +50,18 @@ class PP_Revision
 				const XML_Char ** props,
 				const XML_Char ** attrs);
 
-	~PP_Revision();
-
 	UT_uint32        getId()    const {return m_iID;}
 	PP_RevisionType  getType()  const {return m_eType;}
 	const XML_Char * getPropsString();
 	const XML_Char * getAttrsString();
-	const UT_Vector* getPropsVector() const {return (const UT_Vector*)& m_vProps;}
-	const UT_Vector* getAttrsVector() const {return (const UT_Vector*)& m_vAttrs;}
-
-	void             mergeProps(const XML_Char * pProps);
-	void             mergeProps(const XML_Char ** pProps);
-	void             mergeAttrs(const XML_Char ** pAttrs);
-
-	bool             hasProperty(const XML_Char * pName, const XML_Char *& pValue) const;
 
 	bool operator == (const PP_Revision &op2) const;
 
   private:
-	void             _clear();
 	void             _refreshString();
 
 	UT_uint32        m_iID;
 	PP_RevisionType  m_eType;
-	UT_Vector        m_vProps;
-	UT_Vector        m_vAttrs;
 	UT_String        m_sXMLProps;
 	UT_String        m_sXMLAttrs;
 	bool             m_bDirty;
@@ -138,9 +126,10 @@ class PP_RevisionAttr
 	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue) const;
 	PP_RevisionType       getType(UT_uint32 iId) const;
 	PP_RevisionType       getType() const;
+#if 0
 	const UT_Vector *     getProps(UT_uint32 iId) const;
 	const UT_Vector *     getProps() const;
-
+#endif
 	const XML_Char *      getXMLstring();
 	bool                  isFragmentSuperfluous() const;
 

@@ -43,22 +43,19 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 
 		while(p)
 		{
-			char * n = UT_strdup(p);
+			char * n = p;
 			p = strtok(NULL, ";");
 			UT_ASSERT(p && n);
 
 			if(p && n)
 			{
-				m_vProps.addItem((void*)n);
-				m_vProps.addItem((void*)UT_strdup(p));
+				setProperty(n,p);
 				p = strtok(NULL,":");
 			}
 			else
 			{
 				// malformed property
 				UT_DEBUGMSG(("PP_Revision::PP_Revision: malformed props string [%s]\n", props));
-				FREEP(n);
-
 				// if we have not reached the end, we will keep trying ...
 				if(p)
 					p = strtok(NULL,":");
@@ -66,7 +63,6 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		}
 
 		FREEP(pProps);
-		UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
 	}
 
 	if(attrs)
@@ -84,22 +80,19 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 
 		while(p)
 		{
-			char * n = UT_strdup(p);
+			char * n = p;
 			p = strtok(NULL, ";");
 			UT_ASSERT(p && n);
 
 			if(p && n)
 			{
-				m_vAttrs.addItem((void*)n);
-				m_vAttrs.addItem((void*)UT_strdup(p));
+				setAttribute(n,p);
 				p = strtok(NULL,":");
 			}
 			else
 			{
 				// malformed property
 				UT_DEBUGMSG(("PP_Revision::PP_Revision: malformed props string [%s]\n", props));
-				FREEP(n);
-
 				// if we have not reached the end, we will keep trying ...
 				if(p)
 					p = strtok(NULL,":");
@@ -107,9 +100,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		}
 
 		FREEP(pAttrs);
-		UT_ASSERT(m_vAttrs.getItemCount() % 2 == 0);
 	}
-
 }
 
 PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** props, const XML_Char ** attrs):
@@ -120,164 +111,15 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** 
 
 	if(props)
 	{
-		const XML_Char ** pProps = props;
-
-		while(*pProps)
-		{
-			m_vProps.addItem((void*) UT_strdup(*pProps++));
-		}
-		UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
+		setProperties(props);
 	}
 
 	if(attrs)
 	{
-		const XML_Char ** pAttrs = attrs;
-
-		while(*pAttrs)
-		{
-			m_vAttrs.addItem((void*) UT_strdup(*pAttrs++));
-		}
-		UT_ASSERT(m_vAttrs.getItemCount() % 2 == 0);
+		setAttributes(attrs);
 	}
 }
 
-PP_Revision::~PP_Revision()
-{
-	_clear();
-}
-
-void PP_Revision::_clear()
-{
-	UT_uint32 i;
-
-	for (i = 0; i < m_vProps.getItemCount(); i++)
-	{
-		XML_Char * p = (XML_Char *)m_vProps.getNthItem(i);
-		FREEP(p);
-	}
-	m_vProps.clear();
-
-	for (i = 0; i < m_vAttrs.getItemCount(); i++)
-	{
-		XML_Char * p = (XML_Char *)m_vAttrs.getNthItem(i);
-		FREEP(p);
-	}
-	m_vAttrs.clear();
-
-	m_bDirty = true;
-}
-
-
-/*! merges pProps with the properties aready stored in this
-    revision
-*/
-void PP_Revision::mergeProps(const XML_Char * pProps)
-{
-	// first the simple cases
-	if(pProps == NULL)
-		return;
-
-	// we will parse the string into individual properties
-	// use these to init an PP_AttrProp class and then use it to
-	// create the new string
-	PP_AttrProp attrProp;
-
-	UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
-
-	for(UT_uint32 i = 0; i < m_vProps.getItemCount(); i += 2)
-	{
-		attrProp.setProperty((const XML_Char *) m_vProps.getNthItem(i),
-							 (const XML_Char *) m_vProps.getNthItem(i+1));
-	}
-
-
-	char * pTemp = UT_strdup(pProps);
-
-	UT_ASSERT(pTemp);
-	if(!pTemp)
-	{
-		UT_DEBUGMSG(("PP_Revision::mergeProps: out of memory\n"));
-		return;
-	}
-
-	char *p = strtok(pTemp, ":");
-
-	while(p)
-	{
-		char * v = strtok(NULL, ";");
-		attrProp.setProperty(p,v);
-		p = strtok(NULL,":");
-	}
-
-	FREEP(pTemp);
-
-	// now refil our vector
-	_clear();
-	const XML_Char * n, *v;
-
-	for(UT_uint32 j = 0; i < attrProp.getPropertyCount(); i++)
-	{
-		attrProp.getNthProperty(i, n, v);
-		m_vProps.addItem((void*)UT_strdup(n));
-		m_vProps.addItem((void*)UT_strdup(v));
-	}
-}
-
-/*! merges pProps with the properties aready stored in this
-    revision
-*/
-void PP_Revision::mergeProps(const XML_Char ** pProps)
-{
-	// first the simple cases
-	if((pProps == NULL) || *pProps == NULL)
-		return;
-
-	PP_AttrProp attrProp;
-
-	UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
-
-	attrProp.setProperties((const UT_Vector *)& m_vProps);
-	attrProp.setProperties(pProps);
-
-	// now refil our vector
-	_clear();
-	const XML_Char * n, *v;
-
-	for(UT_uint32 i = 0; i < attrProp.getPropertyCount(); i++)
-	{
-		attrProp.getNthProperty(i, n, v);
-		m_vProps.addItem((void*)UT_strdup(n));
-		m_vProps.addItem((void*)UT_strdup(v));
-	}
-}
-
-/*! merges pProps with the properties aready stored in this
-    revision
-*/
-void PP_Revision::mergeAttrs(const XML_Char ** pAttrs)
-{
-	// first the simple cases
-	if((pAttrs == NULL) || *pAttrs == NULL)
-		return;
-
-	PP_AttrProp attrProp;
-
-	UT_ASSERT(m_vAttrs.getItemCount() % 2 == 0);
-
-	attrProp.setAttributes((const UT_Vector *)&m_vAttrs);
-	attrProp.setAttributes(pAttrs);
-
-	// now refil our vector
-	_clear();
-	const XML_Char * n, *v;
-
-	for(UT_uint32 i = 0; i < attrProp.getAttributeCount(); i++)
-	{
-		attrProp.getNthAttribute(i, n, v);
-		m_vAttrs.addItem((void*)UT_strdup(n));
-		m_vAttrs.addItem((void*)UT_strdup(v));
-	}
-}
 
 /*! converts the internal vector of properties into XML string */
 const XML_Char * PP_Revision::getPropsString()
@@ -303,24 +145,27 @@ void PP_Revision::_refreshString()
 	m_sXMLAttrs.clear();
 
 	UT_uint32 i;
-	UT_uint32 iCount = m_vProps.getItemCount();
+	UT_uint32 iCount = getPropertyCount();
+	const XML_Char * n, *v;
 
-	for(i = 0; i < iCount; i += 2)
+	for(i = 0; i < iCount; i++)
 	{
-		m_sXMLProps += (char *)m_vProps.getNthItem(i);
+		getNthProperty(i,n,v);
+		m_sXMLProps += n;
 		m_sXMLProps += ":";
-		m_sXMLProps += (char *)m_vProps.getNthItem(i+1);
-		if(i < iCount - 2)
+		m_sXMLProps += v;
+		if(i < iCount - 1)
 			m_sXMLProps += ";";
 	}
 
-	iCount = m_vAttrs.getItemCount();
-	for(i = 0; i < iCount; i += 2)
+	iCount = getAttributeCount();
+	for(i = 0; i < iCount; i++)
 	{
-		m_sXMLAttrs += (char *)m_vAttrs.getNthItem(i);
+		getNthAttribute(i,n,v);
+		m_sXMLAttrs += n;
 		m_sXMLAttrs += ":";
-		m_sXMLAttrs += (char *)m_vAttrs.getNthItem(i+1);
-		if(i < iCount - 2)
+		m_sXMLAttrs += v;
+		if(i < iCount - 1)
 			m_sXMLAttrs += ";";
 	}
 
@@ -340,65 +185,39 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 
 
 	// OK, so we have the same type and id, do we have the same props ???
-	UT_uint32 iPCount1 = m_vProps.getItemCount();
-	UT_uint32 iPCount2 = op2.m_vProps.getItemCount();
-	UT_uint32 iACount1 = m_vAttrs.getItemCount();
-	UT_uint32 iACount2 = op2.m_vAttrs.getItemCount();
+	UT_uint32 iPCount1 = getPropertyCount();
+	UT_uint32 iPCount2 = op2.getPropertyCount();
+	UT_uint32 iACount1 = getAttributeCount();
+	UT_uint32 iACount2 = op2.getAttributeCount();
 
 	if((iPCount1 != iPCount2) || (iACount1 != iACount2))
 		return false;
 
 	// now the lengthy comparison
-	UT_uint32 i,j;
-	for(i = 0; i < iPCount1; i += 2)
+	UT_uint32 i;
+	const XML_Char * n;
+	const XML_Char * v1, * v2;
+
+	for(i = 0; i < iPCount1; i++)
 	{
-		const XML_Char * n1 = (const XML_Char *) m_vProps.getNthItem(i);
-		const XML_Char * v1 = (const XML_Char *) m_vProps.getNthItem(i+1);
 
-		for(j = 0; j < iPCount2; j += 2)
-		{
-			const XML_Char * n2 = (const XML_Char *) op2.m_vProps.getNthItem(j);
-			const XML_Char * v2 = (const XML_Char *) op2.m_vProps.getNthItem(j+1);
+		getNthProperty(i,n,v1);
+		op2.getProperty(n,v2);
 
-			if(!UT_strcmp(n1,n2) && UT_strcmp(v1,v2))
-				return false;
-		}
+		if(UT_strcmp(v1,v2))
+			return false;
 	}
 
-	for(i = 0; i < iACount1; i += 2)
+	for(i = 0; i < iACount1; i++)
 	{
-		const XML_Char * n1 = (const XML_Char *) m_vAttrs.getNthItem(i);
-		const XML_Char * v1 = (const XML_Char *) m_vAttrs.getNthItem(i+1);
 
-		for(j = 0; j < iACount2; j += 2)
-		{
-			const XML_Char * n2 = (const XML_Char *) op2.m_vAttrs.getNthItem(j);
-			const XML_Char * v2 = (const XML_Char *) op2.m_vAttrs.getNthItem(j+1);
+		getNthAttribute(i,n,v1);
+		op2.getAttribute(n,v2);
 
-			if(!UT_strcmp(n1,n2) && UT_strcmp(v1,v2))
-				return false;
-		}
+		if(UT_strcmp(v1,v2))
+			return false;
 	}
 	return true;
-}
-
-/*! returns true if the property of pName is found in this revision
-    and sets pValue to its value; note that NULL is a valid value for
-    pName, it means that given property was removed by this revision
-*/
-bool PP_Revision::hasProperty(const XML_Char * pName, const XML_Char *& pValue) const
-{
-	for(UT_uint32 i = 0; i < m_vProps.getItemCount(); i += 2)
-	{
-		if(!UT_strcmp(pName, (char *)m_vProps.getNthItem(i)))
-		{
-			pValue = (const XML_Char *) m_vProps.getNthItem(i+1);
-			return true;
-		}
-	}
-
-	pValue = NULL;
-	return false;
 }
 
 
@@ -501,6 +320,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 				continue;
 			}
 			pProps = NULL;
+			pAttrs = NULL;
 		}
 		else
 		{
@@ -764,8 +584,8 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 				// I will implement this here, but this case should
 				// really be handled higher up and the property
 				// changes should be applied directly to the fragments props
-				r->mergeProps(pProps);
-				r->mergeAttrs(pAttrs);
+				r->setProperties(pProps);
+				r->setAttributes(pAttrs);
 			}
 
 			m_bDirty = true;
@@ -867,7 +687,7 @@ void PP_RevisionAttr::_refreshString()
 			m_sXMLstring += r->getPropsString();
 			m_sXMLstring += "}";
 
-			if(r->getAttrsVector()->getItemCount())
+			if(r->hasAttributes())
 			{
 				m_sXMLstring += "{";
 				m_sXMLstring += r->getAttrsString();
@@ -939,7 +759,7 @@ bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
 bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue) const
 {
 	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
-	return r->hasProperty(pName, pValue);
+	return r->getProperty(pName, pValue);
 }
 
 /*! returns true if after the last revision this fragment carries revised
@@ -949,7 +769,7 @@ bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const X
 bool PP_RevisionAttr::hasProperty(const XML_Char * pName, const XML_Char * &pValue) const
 {
 	const PP_Revision * r = getLastRevision();
-	return r->hasProperty(pName, pValue);
+	return r->getProperty(pName, pValue);
 }
 
 /*! returns the type of cumulative revision up to iId represented by this attribute
@@ -967,18 +787,3 @@ PP_RevisionType PP_RevisionAttr::getType() const
 	const PP_Revision * r = getLastRevision();
 	return r->getType();
 }
-
-/*! get properties associated with revision level iId */
-const UT_Vector * PP_RevisionAttr::getProps(UT_uint32 iId) const
-{
-	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
-	return r->getPropsVector();
-}
-
-/*! get properties associated with last revision */
-const UT_Vector * PP_RevisionAttr::getProps() const
-{
-	const PP_Revision * r = getLastRevision();
-	return r->getPropsVector();
-}
-
