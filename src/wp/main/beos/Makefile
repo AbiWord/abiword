@@ -55,7 +55,7 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 # we override the $(PROGRAM) rule.
 RESOURCES=$(shell ls *.rsrc)
 
-$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP) $(RESOURCES)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 

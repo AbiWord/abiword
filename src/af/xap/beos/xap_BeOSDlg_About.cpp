@@ -41,26 +41,46 @@
 extern unsigned char g_pngSidebar[];            // see ap_wp_sidebar.cpp
 extern unsigned long g_pngSidebar_sizeof;       // see ap_wp_sidebar.cp
 
-class AboutWin:public BWindow {
-        public:
-                AboutWin(BMessage *data, XAP_Frame * pFrame);
-                virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+class AboutWin:public BWindow
+{
+public:
+	AboutWin(BMessage *data, XAP_Frame * pFrame);
+	virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+	void initDialogFields(void);
 
-        private:
-		XAP_Frame *m_pFrame;
+private:
+	XAP_Frame *m_pFrame;
 };                                                    
 
 AboutWin::AboutWin(BMessage *data, XAP_Frame * pFrame)
-        :BWindow(data) {
-	char buf[100];
+	: BWindow(data)
+{
+	m_pFrame = pFrame;
+}
 
-	BStringView *str = (BStringView*)FindView("strVersion");
+void AboutWin::initDialogFields(void)
+{
+	XAP_App * pApp = m_pFrame->getApp();
+	
+	char buf[1000];
+
+	BStringView *strAppName = (BStringView*)FindView("strAppName");
+	if (strAppName) strAppName->SetText(pApp->getApplicationName());
+	
+	BStringView *strVersion = (BStringView*)FindView("strVersion");
 	sprintf(buf, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
-	if (str) str->SetText(buf);
-		
-	str = (BStringView*)FindView("strOptions");
-	sprintf(buf, XAP_ABOUT_BUILD, XAP_App::s_szBuild_Options);
-	if (str) str->SetText(buf);
+	if (strVersion) strVersion->SetText(buf);
+
+	BStringView * strCopyright = (BStringView*)FindView("strCopyright");
+	if (strCopyright) strCopyright->SetText(XAP_ABOUT_COPYRIGHT);
+
+	BTextView * strBodyText = (BTextView*)FindView("strBodyText");
+	sprintf(buf,XAP_ABOUT_GPL_LONG_LF,pApp->getApplicationName());
+	if (strBodyText) strBodyText->SetText(buf);
+
+//	str = (BStringView*)FindView("strOptions");
+//	sprintf(buf, XAP_ABOUT_BUILD, XAP_App::s_szBuild_Options);
+//	if (str) str->SetText(buf);
 
 	BView *view = FindView("sideView");
 	if (view) {
@@ -69,17 +89,19 @@ AboutWin::AboutWin(BMessage *data, XAP_Frame * pFrame)
 		if (bitmap)
 			view->SetViewBitmap(bitmap, B_FOLLOW_ALL, 0);
 	}
-	m_pFrame = pFrame;
 } 
 
-void AboutWin::DispatchMessage(BMessage *msg, BHandler *handler) {
-	switch(msg->what) {
+void AboutWin::DispatchMessage(BMessage *msg, BHandler *handler)
+{
+	switch(msg->what)
+	{
 	case 'gurl':
 		m_pFrame->openURL("http://www.abisource.com");
 		break;
 	default:
-                BWindow::DispatchMessage(msg, handler);
-        }                           
+		BWindow::DispatchMessage(msg, handler);
+		break;
+	}                           
 }
 
 /*****************************************************************/
@@ -108,10 +130,14 @@ void XAP_BeOSDialog_About::runModal(XAP_Frame * pFrame)
 	//sprintf(buf, XAP_ABOUT_TITLE, pApp->getApplicationName());
 	//sprintf(buf, XAP_ABOUT_DESCRIPTION, pApp->getApplicationName());
 	BMessage *msg = new BMessage();
-	if (RehydrateWindow("AboutWindow", msg)) {
+	if (RehydrateWindow("AboutWindow", msg))
+	{
 		AboutWin *nwin = new AboutWin(msg, pFrame);
 		if (nwin)
+		{
+			nwin->initDialogFields();
 			nwin->Show();
+		}
 	}	
 }
 

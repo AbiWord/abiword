@@ -50,6 +50,8 @@
 #include <TranslationUtils.h>
 #include <DataIO.h>
 
+#define SPLASH_UP_TIME	3				// seconds
+
 extern unsigned char g_pngSplash[];             // see ap_wp_Splash.cpp
 extern unsigned long g_pngSplash_sizeof;        // see ap_wp_Splash.cpp
        
@@ -69,11 +71,14 @@ SplashWin::SplashWin(BMessage *data)
 		BMemoryIO memio(g_pngSplash, g_pngSplash_sizeof);
 		BBitmap *bitmap = BTranslationUtils::GetBitmap(&memio);
 		if (bitmap)
-                        view->SetViewBitmap(bitmap, B_FOLLOW_ALL, 0);
+			view->SetViewBitmap(bitmap, B_FOLLOW_ALL, 0);
+		else
+			UT_DEBUGMSG(("Could not interpret splash image...\n"));
+
 		view->Sync();
         }                                     
-	ignore = 10;
-	SetPulseRate(5000000);	//5 s pulse
+	ignore = SPLASH_UP_TIME;			// keep on screen n seconds
+	SetPulseRate(1000000);				// a 1 second pulse
 }
 
 void SplashWin::DispatchMessage(BMessage *msg, BHandler *handler) {
@@ -92,8 +97,8 @@ void SplashWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 } 
 
 void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
-        // Unix does put the program name in argv[0], 
-	//unlike Win32, so [1] is the first argument
+	// Unix does put the program name in argv[0], 
+	// unlike Win32, so [1] is the first argument
         int nFirstArg = 1;
         int k;
 
