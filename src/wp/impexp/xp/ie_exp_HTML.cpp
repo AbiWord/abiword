@@ -1127,7 +1127,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	
 			}
 			
-			char szSize[4];
+			char szSize[16];
 
 			if (pszFontSize)
 			{
