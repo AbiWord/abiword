@@ -440,7 +440,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 	
 	if((!next || !*next) && prev && *prev)
 	{
-		bPrevWD = UT_isWordDelimiter(*prev, *code);
+		bPrevWD = UT_isWordDelimiter(*prev, *code, *(prev+1));
 		if(bPrevWD)
 			return GC_ISOLATE;
 		else
@@ -463,7 +463,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 		
 	if((!prev || !*prev) && *myNext)
 	{
-		bNextWD = UT_isWordDelimiter(*myNext, myNextNext);
+		bNextWD = UT_isWordDelimiter(*myNext, myNextNext, UCS_UNKPUNK);
 		if(bNextWD)
 			return GC_ISOLATE;
 		else
@@ -472,7 +472,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 		
 	if(*prev && !*myNext)
 	{
-		bPrevWD = UT_isWordDelimiter(*prev, *code);
+		bPrevWD = UT_isWordDelimiter(*prev, *code, *(prev+1));
 		if(bPrevWD)
 			return GC_ISOLATE;
 		else
@@ -480,8 +480,8 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 		
 	}
 	xxx_UT_DEBUGMSG(("UT_contextGlyph::_evalGlyphContext: code 0x%x, prev 0x%x, myNext 0x%x, myNextNext 0x%x\n",*code,*prev, *myNext,myNextNext));
-	bPrevWD = UT_isWordDelimiter(*prev, *code);
-	bNextWD = UT_isWordDelimiter(*myNext, myNextNext);
+	bPrevWD = UT_isWordDelimiter(*prev, *code, *(prev+1));
+	bNextWD = UT_isWordDelimiter(*myNext, myNextNext,UCS_UNKPUNK);
 	
 	// if both are not , then medial form is needed
 	if(!bPrevWD && !bNextWD)

@@ -282,7 +282,7 @@ static bool s_find_delim(UT_UCSChar c)
 	return false;
 }
 
-bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
+bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar)
 {
 #if 1
     switch(currentChar)
@@ -293,7 +293,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 		case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
 		case UCS_LQUOTE:    // smart quote, open single  /* wjc */
 		case UCS_RQUOTE:	// we want quotes inside words for contractions
-			if (UT_UCS_isalpha(followChar))
+			if (UT_UCS_isalpha(followChar) && UT_UCS_isalpha(prevChar))
 			  {
 				  return false;
 			  }

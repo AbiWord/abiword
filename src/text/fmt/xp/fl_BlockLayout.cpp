@@ -2100,11 +2100,17 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	// each side.
 
 	// First, look towards the start of the buffer
-	while ((iFirst > 0) 
-		   && !UT_isWordDelimiter(pBlockText[iFirst-1], pBlockText[iFirst]))
+	while ((iFirst > 1) 
+		   && !UT_isWordDelimiter(pBlockText[iFirst-1], pBlockText[iFirst] ,pBlockText[iFirst-2]))
 	{
 		iFirst--;
 	}
+
+	if(iFirst == 1 && !UT_isWordDelimiter(pBlockText[0], pBlockText[1], UCS_UNKPUNK))
+	{
+		iFirst--;
+	}
+	
 	UT_ASSERT(iOffset>=iFirst);
 	iLen += (iOffset-iFirst);
 
@@ -2112,9 +2118,11 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	UT_uint32 iBlockSize = pgb.getLength();
 	while ((iFirst + iLen < iBlockSize))
 	{
-		UT_UCSChar followChar;
+		UT_UCSChar followChar, prevChar;
 		followChar = ((iFirst + iLen + 1) < iBlockSize)  ?	pBlockText[iFirst + iLen + 1]  : UCS_UNKPUNK;
-		if (UT_isWordDelimiter(pBlockText[iFirst + iLen], followChar)) break;
+		prevChar = (iFirst == 0) ? UCS_UNKPUNK : pBlockText[iFirst + iLen - 1];
+		
+		if (UT_isWordDelimiter(pBlockText[iFirst + iLen], followChar, prevChar)) break;
 		iLen++;
 	}
 
@@ -2124,11 +2132,12 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		// Insertion - look for any completed words by finding the
 		// first word delimiter from the end.
 		UT_uint32 iLast = iOffset + chg;
-		UT_UCSChar followChar = UCS_UNKPUNK, currentChar;
+		UT_UCSChar followChar = UCS_UNKPUNK, currentChar, prevChar = iLast > 0 ? pBlockText[iLast - 2] : UCS_UNKPUNK;
 		while (iLast > iFirst)
 		{
 			currentChar = pBlockText[--iLast];
-			if (UT_isWordDelimiter(currentChar, followChar)) break;
+			prevChar = iLast > 0 ? pBlockText[iLast - 1] : UCS_UNKPUNK;
+			if (UT_isWordDelimiter(currentChar, followChar,prevChar)) break;
 			followChar = currentChar;
 		}
 
@@ -2160,7 +2169,9 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		UT_UCSChar currentChar = pBlockText[iFirst];
 		UT_UCSChar followChar = (((iFirst + 1) < eor) ?
 								 pBlockText[iFirst + + 1]  : UCS_UNKPUNK);
-		if (!UT_isWordDelimiter(currentChar, followChar)) break;
+		UT_UCSChar prevChar = iFirst > 0 ? pBlockText[iFirst - 1] : UCS_UNKPUNK;
+		
+		if (!UT_isWordDelimiter(currentChar, followChar, prevChar)) break;
 		iFirst++;
 		iLen--;
 	}
@@ -2271,7 +2282,8 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 		// Skip delimiters...
 		while (wordBeginning < eor)
 		{
-			if (!UT_isWordDelimiter(pBlockText[wordBeginning], UCS_UNKPUNK))
+			// TODO: surely the UCS_UNKPUNK for followChar cannot be right here ?!
+			if (!UT_isWordDelimiter(pBlockText[wordBeginning], UCS_UNKPUNK, UCS_UNKPUNK))
 				break;
 			wordBeginning++;
 		}
@@ -2282,11 +2294,13 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 			UT_uint32 wordLength = 0;
 			while ((wordBeginning + wordLength) < eor)
 			{
-				UT_UCSChar currentChar, followChar;
+				UT_UCSChar currentChar, followChar, prevChar;
 				currentChar = pBlockText[wordBeginning + wordLength];
 				followChar = ((wordBeginning + wordLength + 1) < eor)  ?
 					pBlockText[wordBeginning + wordLength + 1]	:  UCS_UNKPUNK;
-				if (UT_isWordDelimiter(currentChar, followChar)) break;
+				prevChar = wordBeginning + wordLength > 0 ? pBlockText[wordBeginning + wordLength - 1] : UCS_UNKPUNK;
+				
+				if (UT_isWordDelimiter(currentChar, followChar, prevChar)) break;
 				wordLength++;
 			}
 

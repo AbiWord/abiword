@@ -232,9 +232,11 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 	 // skip delimiters...
 	 while (m_iWordOffset < iBlockLength)
 	 {
-		 UT_UCSChar followChar;
+		 UT_UCSChar followChar, prevChar;
 		 followChar = ((m_iWordOffset + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset+1]  :  UCS_UNKPUNK;
-		 if (!UT_isWordDelimiter( pBlockText[m_iWordOffset], followChar)) break;
+		 prevChar = m_iWordOffset > 0 ? pBlockText[m_iWordOffset-1] : UCS_UNKPUNK;
+		 
+		 if (!UT_isWordDelimiter( pBlockText[m_iWordOffset], followChar, prevChar)) break;
 		 m_iWordOffset++;
 	 }
 	     
@@ -250,9 +252,11 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 	    m_iWordLength = 0;
 	    while ((!bFound) && (m_iWordOffset + m_iWordLength) < iBlockLength) {
 
-			UT_UCSChar followChar;
+			UT_UCSChar followChar, prevChar;
 			followChar = ((m_iWordOffset + m_iWordLength + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset + m_iWordLength + 1]  :  UCS_UNKPUNK;
-	       if ( true == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar)) {
+			prevChar = m_iWordOffset + m_iWordLength > 0 ? pBlockText[m_iWordOffset + m_iWordLength - 1] : UCS_UNKPUNK;
+			
+	       if ( true == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar, prevChar)) {
 
 		  bFound = true;
 

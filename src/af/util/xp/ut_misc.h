@@ -110,7 +110,7 @@ struct ABI_EXPORT UT_Point
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
 const char * UT_pathSuffix(const char * path);
-bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar);
+bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar);
 ABI_EXPORT const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
 UT_sint32 signedHiWord(UT_uint32 dw);

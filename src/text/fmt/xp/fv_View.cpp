@@ -1408,12 +1408,14 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				break;
 			}
 		}
+
+		UT_uint32 iUseOffset = bKeepLooking ? offset-1 : offset;
 		
-		bool bInWord = !UT_isWordDelimiter(pSpan[bKeepLooking ? offset-1 : offset], UCS_UNKPUNK);
+		bool bInWord = !UT_isWordDelimiter(pSpan[iUseOffset], UCS_UNKPUNK, iUseOffset > 0 ? pSpan[iUseOffset - 1] : UCS_UNKPUNK);
 		
 		for (offset--; offset > 0; offset--)
 		{
-			if (UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK))
+			if (UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK,pSpan[offset-1]))
 			{
 				if (bInWord)
 					break;
@@ -1468,7 +1470,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			}
 		}
 		
-		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
+		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK, offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK);
 		
 		// Needed so ctrl-right arrow will work
 		// This is the code that was causing bug 10
@@ -1476,17 +1478,23 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 		
 		for (; offset < pgb.getLength(); offset++)
 		{
-			UT_UCSChar followChar;
+			UT_UCSChar followChar, prevChar;
+			
 			followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
-			if (!UT_isWordDelimiter(pSpan[offset], followChar))
+			prevChar = offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK;
+			
+			if (!UT_isWordDelimiter(pSpan[offset], followChar, prevChar))
 				break;
 		}
 		
 		for (; offset < pgb.getLength(); offset++)
 		{
-			UT_UCSChar followChar;
+			UT_UCSChar followChar, prevChar;
+			
 			followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
-			if (!UT_isWordDelimiter(pSpan[offset], followChar))
+			prevChar = offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK;
+			
+			if (!UT_isWordDelimiter(pSpan[offset], followChar, prevChar))
 			{
 				if (bBetween)
 				{
@@ -1546,7 +1554,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			}
 		}
 
-		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
+		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK, offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK);
 			
 		// Needed so ctrl-right arrow will work
 		// This is the code that was causing bug 10
@@ -1560,9 +1568,12 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 		*/
 		for (; offset < pgb.getLength(); offset++)
 		{
-			UT_UCSChar followChar;
+			UT_UCSChar followChar, prevChar;
+			
 			followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
-			if (UT_isWordDelimiter(pSpan[offset], followChar))
+			prevChar = offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK;
+			
+			if (UT_isWordDelimiter(pSpan[offset], followChar, prevChar))
 			{
 				if (bBetween)
 					break;
@@ -9672,11 +9683,13 @@ FV_View::countWords(void)
 					wCount.ch_no++;
 				}
 			}
-			UT_UCSChar followChar;
+			UT_UCSChar followChar, prevChar;
 			followChar = (i+1 < len) ? pSpan[i+1] : UCS_UNKPUNK;
-			newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar));
+			prevChar = i > 0 ? pSpan[i-1] : UCS_UNKPUNK;
 			
-			delim = UT_isWordDelimiter(pSpan[i], followChar);
+			newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar, prevChar));
+			
+			delim = UT_isWordDelimiter(pSpan[i], followChar, prevChar);
 				
 			// CJK-FIXME: this can work incorrectly under CJK locales
 			// since it can give 'true' for UCS with value >0xff (like
