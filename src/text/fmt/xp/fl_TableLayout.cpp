@@ -1018,7 +1018,7 @@ fl_CellLayout::~fl_CellLayout()
 	while(pTC)
 	{
 		fp_CellContainer * pNext = (fp_CellContainer *) pTC->getNext();
-		if(pTC == (fp_CellContainer *) getLastContainer());
+		if(pTC == (fp_CellContainer *) getLastContainer())
 		{
 			pNext = NULL;
 		}
