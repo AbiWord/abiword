@@ -2331,6 +2331,11 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 					props_out[6] = "font-style";
 					props_out[7] ="italic";
 				}
+				else if (!UT_stricmp(token, "o"))
+				{
+					props_out[6] = "font-style";
+					props_out[7] ="oblique";
+				}
 				else // o and r
 				{
 					props_out[6] = "font-style";
@@ -2564,20 +2569,28 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
-	char* title = (char *) doc->getFilename();	// TODO get a real title
+	char* pTitle = (char *) doc->getFilename();
+	// This may be a new, unsaved file
+	if(!pTitle)
+		UT_cloneString(pTitle, "Untitled");
 
 	// get the filename with no path
-	char* lastslash = strrchr(title, '/');
-	lastslash++;
-	char *filename;
-	filename = (char *) malloc( (strlen(lastslash) + 4) * sizeof(char *) );
-	strcpy(filename, lastslash);
-	strcat(filename, ".ps");
+	char* pFileNameOnly = strrchr(pTitle, '/');
+	if(!pFileNameOnly)
+		pFileNameOnly = pTitle;
+	else
+		pFileNameOnly++;
+		
+	char *pSaveAsFile;
+	pSaveAsFile = (char *) malloc( (strlen(pFileNameOnly) + 4) * sizeof(char *) );
+	strcpy(pSaveAsFile, pFileNameOnly);
+	strcat(pSaveAsFile, ".ps");
 
-	char * pNewFile = _promptFile(pFrame, UT_TRUE, filename);
+	char * pNewFile = _promptFile(pFrame, UT_TRUE, pSaveAsFile);
 
-	// create a new graphics
-	PS_Graphics* ppG = new PS_Graphics(pNewFile, title, "AbiWord");
+	// create a new graphics for postscript
+	// TODO replace hardcoded AbiWord with variable from app
+	PS_Graphics* ppG = new PS_Graphics(pNewFile, pTitle, "AbiWord");
 	UT_ASSERT(ppG);
 
 	// Create a new layout using the printer's graphics and format it
@@ -2596,7 +2609,6 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	da.height = pDL->getHeight()/nPagesInDoc;
 
 	ppG->startPrint();
-
 	for(int i = 0; i < nPagesInDoc; i++)	//page numbers are zero based
 	{
 		ppG->startPage(doc->getFilename(), i, TRUE,da.width, da.height);
@@ -2604,7 +2616,16 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	}
 	ppG->endPrint();
 
-	free(filename);
+	//char * printcommand = (char *) malloc( (strlen(pNewFile) +5) * sizeof(char*) );
+	//strcpy(printcommand, "lpr ");
+	//strcat(printcommand, pNewFile);
+	//system(printcommand);
+	
+	free(pSaveAsFile);
+	delete pV;
+	delete ppG;
+	delete pDL;
+
 	return UT_TRUE;
 }
 
