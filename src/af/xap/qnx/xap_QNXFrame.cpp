@@ -55,7 +55,7 @@ int XAP_QNXFrame::_fe::focus_in_event(PtWidget_t *w, void *data, PtCallbackInfo_
 																		 : AV_FOCUS_NEARBY);
 	*/
 	//I don't understand the AV_FOCUS_HERE vs NEARBY
-	pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
+	pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE/*AV_FOCUS_NEARBY*/);
 	return Pt_CONTINUE;
 }
 
@@ -423,7 +423,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	}
 	//PtAddEventHandler(m_wTopLevelWindow, Ph_EV_KEY, _fe::key_press_event, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_in_event, this);
-	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_out_event, this);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_LOST_FOCUS, _fe::focus_out_event, this);
 
 	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
 #if 0
