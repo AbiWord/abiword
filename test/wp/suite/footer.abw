@@ -1,10 +1,23 @@
-<abiword>
-<section PROPS="columns:1;section-space-after:0.25in" FOOTER="ftr01">
-<p PROPS="line-height:1.0; margin-top:12pt; text-align:center"><c PROPS="font-size:18pt; font-weight:bold">Interview with AbiSource Founder Eric Sink</c></p>
+<?xml version="1.0"?>
+<abiword version="unnumbered">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:Off Gnome:Off -->
+<!--         Build_Target      = /home/bob/abisource/abi/src/Linux_2.2.12-20_i386_OBJ/obj -->
+<!--         Build_CompileTime = 18:29:22 -->
+<!--         Build_CompileDate = Apr 28 2000 -->
+
+<section footer="ftr01" props="columns:1; section-space-after:0.25in">
+<p props="line-height:1.0; margin-top:12pt; text-align:center"><c props="font-size:18pt; font-weight:bold">This document should have a quip at the bottom stating this is page 1 of 1.  </c></p>
 </section>
-<section type="footer" id="ftr01">
-<p PROPS="text-align:center">
-Page <field type="page_number"/> of <field type="page_count"/>
-</p>
+<section id="ftr01" type="footer">
+<p props="text-align:center"> Page <field type="page_number"/> of <field type="page_count"/> </p>
 </section>
 </abiword>
