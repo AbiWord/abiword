@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
+
 #ifdef USE_GUCHARMAP
 #include <gucharmap/gucharmap.h>
 #endif
