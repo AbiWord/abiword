@@ -602,6 +602,7 @@ DEFINE_GET_SET_BOOL	(ViewHiddenText , "chkViewHiddenText");
 DEFINE_GET_SET_BOOL	(ViewUnprintable , "chkViewUnprintable" );
 DEFINE_GET_SET_BOOL	(SmartQuotesEnable , "SmartQuotes");
 DEFINE_GET_SET_BOOL (AutoSaveFile, "AutoSaveFile");
+DEFINE_GET_SET_BOOL (ShowSplash, "ShowSplash");
 
 #undef DEFINE_GET_SET_BOOL
 

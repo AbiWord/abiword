@@ -247,11 +247,12 @@ bool AP_BeOSApp::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	IE_ImpExp_RegisterXP ();
 
+#if 0
+	/* if'ed out like on other platforms... don't know exactly why */
 	//////////////////////////////////////////////////////////////////
 	// initializes the spell checker.
 	//////////////////////////////////////////////////////////////////
 	
-#if 1
 	{
 		const char * szISpellDirectory = NULL;
 		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
@@ -460,10 +461,11 @@ void AP_BeOSApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	}
 }
 
-void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool)
+void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool, bool bHonorFormatting = true)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
+	// TODO handle bHonorFormatting
 	
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
 	{

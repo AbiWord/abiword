@@ -205,7 +205,7 @@ int _ev_convert(char * bufResult, const char * szString) {
 // Is there a reason why this couldn't be made generic?
 const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 							  XAP_Frame * pBeOSFrame,
-							  EV_Menu_Action * pAction,
+							  const EV_Menu_Action * pAction,
 							  EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
@@ -344,7 +344,7 @@ bool EV_BeOSMenu::synthesize()
 		UT_ASSERT(pLayoutItem);
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
@@ -647,7 +647,7 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
 
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 
 

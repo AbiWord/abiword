@@ -77,6 +77,7 @@ public:
  	SET_GATHER			(ViewUnprintable,	bool );
   
 	SET_GATHER			(AutoSaveFile, bool);
+	SET_GATHER			(ShowSplash, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
