@@ -71,7 +71,7 @@
 				 0)))
 #	endif
 
-#elif defined(TARGET_OS_MAC) && TARGET_OS_MAC // ?SBK
+#elif (defined(TARGET_OS_MAC) && TARGET_OS_MAC) || (defined(__APPLE__) && defined(__MACH__)) // ?SBK
 
 #     ifdef NDEBUG
               // When NDEBUG is defined, assert() does nothing.
