@@ -1157,7 +1157,7 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	strcat(metricfile, ".afm");
 
 	// build a font and load it up
-	XAP_UnixFont * font = new XAP_UnixFont;
+	XAP_UnixFont * font = new XAP_UnixFont(this);
 	font->set_CJK_font(0);
 	if (font->openFileAs((const char *) fontfile,
 						 (const char *) metricfile,
@@ -1171,6 +1171,7 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	}
 	else
 	{
+		font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
 		DELETEP(font);
 	}
 
