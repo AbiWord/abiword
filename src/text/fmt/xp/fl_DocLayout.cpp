@@ -400,6 +400,13 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 	FL_DocLayout * pDocLayout = (FL_DocLayout *) pTimer->getInstanceData();
 	UT_ASSERT(pDocLayout);
 
+	if (!pDocLayout->m_pView)
+	{
+		// Win32 timers can fire prematurely on asserts
+		// (the dialog's message pump releases the timers)
+		return;
+	}
+
 	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
 	UT_ASSERT(vecToCheck);
 
