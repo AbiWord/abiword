@@ -159,21 +159,21 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
-	m_windowMain   = glade_xml_get_widget(xml, "mainWindow");
-	m_labelWCount  = glade_xml_get_widget(xml, "lblWordsVal");
-	m_labelPCount  = glade_xml_get_widget(xml, "lblParasVal");
-	m_labelCCount  = glade_xml_get_widget(xml, "lblCharsVal");
-	m_labelCNCount = glade_xml_get_widget(xml, "lblChars2Val");
-	m_labelLCount  = glade_xml_get_widget(xml, "lblLinesVal");	
-	m_labelPgCount = glade_xml_get_widget(xml, "lblPagesVal");	
-	m_labelTitle   = glade_xml_get_widget(xml, "lblTitle");
+	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_WordCount");
+	m_labelWCount  = glade_xml_get_widget(xml, "lbWordsVal");
+	m_labelPCount  = glade_xml_get_widget(xml, "lbParagraphsVal");
+	m_labelCCount  = glade_xml_get_widget(xml, "lbCharactersSpacesVal");
+	m_labelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpacesVal");
+	m_labelLCount  = glade_xml_get_widget(xml, "lbLinesVal");	
+	m_labelPgCount = glade_xml_get_widget(xml, "lbPagesVal");	
+	m_labelTitle   = glade_xml_get_widget(xml, "lbTitle");
 
-	GtkWidget * labelWCount  = glade_xml_get_widget(xml, "lblWords");
-	GtkWidget * labelPCount  = glade_xml_get_widget(xml, "lblParas");
-	GtkWidget * labelCCount  = glade_xml_get_widget(xml, "lblChars");
-	GtkWidget * labelCNCount = glade_xml_get_widget(xml, "lblChars2");
-	GtkWidget * labelLCount  = glade_xml_get_widget(xml, "lblLines");	
-	GtkWidget * labelPgCount = glade_xml_get_widget(xml, "lblPages");	
+	GtkWidget * labelWCount  = glade_xml_get_widget(xml, "lbWords");
+	GtkWidget * labelPCount  = glade_xml_get_widget(xml, "lbParagraphs");
+	GtkWidget * labelCCount  = glade_xml_get_widget(xml, "lbCharactersSpaces");
+	GtkWidget * labelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpaces");
+	GtkWidget * labelLCount  = glade_xml_get_widget(xml, "lbLines");	
+	GtkWidget * labelPgCount = glade_xml_get_widget(xml, "lbPages");	
 
 	gtk_label_set_text (GTK_LABEL (labelWCount),
 						pSS->getValue(AP_STRING_ID_DLG_WordCount_Words));
@@ -227,5 +227,5 @@ void AP_UnixDialog_WordCount::_updateWindowData(void)
 	g_snprintf (tmp, sizeof(tmp),"%d", m_count.page);
 	gtk_label_set_text(GTK_LABEL(m_labelPgCount), tmp);
 
-	setLabelMarkup (m_labelTitle, getActiveFrame ()->getTitle (60));
+	setLabelMarkup (m_labelTitle, getActiveFrame()->getTitle (60));
 }
