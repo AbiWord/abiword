@@ -610,7 +610,7 @@ GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
 		// first try "Times New Roman", which should be sensible, and should
 		// be there unless the user fidled with the installation
 		NSLog (@"Unable to find font \"%s\".", pszFontFamily);
-		nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times New Roman" 
+		nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times" 
 		                traits:s weight:5 size:size];
 	}
 
