@@ -52,14 +52,15 @@ public:
     IE_Imp_XHTML(PD_Document * pDocument);
     ~IE_Imp_XHTML();
 
+    virtual UT_Error	importFile(const char * szFilename);
+
     void			startElement(const XML_Char *name, 
 								  const XML_Char **atts);
     void			endElement(const XML_Char *name);
 
     virtual void charData (const XML_Char * buffer, int length);
 
-protected:
-    
+private:
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
 	bool        m_bFirstDiv;
@@ -67,6 +68,8 @@ protected:
 
 	UT_Stack	m_utsParents;
 	XML_Char *  m_szBookMarkName;
+
+	bool        m_addedPTXSection;
 };
 
 #endif /* IE_IMP_XHTML_H */

@@ -217,7 +217,8 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, false), m_listType(L_NONE),
-    m_iListID(0), m_bFirstDiv(true), m_iNewListID(0), m_szBookMarkName(NULL)
+    m_iListID(0), m_bFirstDiv(true), m_iNewListID(0), m_szBookMarkName(NULL),
+	m_addedPTXSection(false)
 {
 }
 
@@ -531,6 +532,16 @@ static void convertColor(UT_String & szDest, const char *szFrom, int dfl = 0x000
 /*****************************************************************/
 /*****************************************************************/
 
+UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
+{
+	UT_Error e = IE_Imp_XML::importFile(szFilename);
+ 	if (!m_addedPTXSection) e = UT_IE_BOGUSDOCUMENT;
+	return e;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 {
 	int i = 0;
@@ -566,6 +577,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Sec;
 		X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
+		m_addedPTXSection = true;
 		return;		
 
 	case TT_DIV:
@@ -574,6 +586,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		if( !m_bFirstDiv )
 		{
 			X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
+			m_addedPTXSection = true;
 		}
 		else
 		{
