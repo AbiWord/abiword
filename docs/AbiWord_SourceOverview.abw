@@ -32,9 +32,9 @@
 <p>abi/wp/main</p>
 <p>abi/wp/ptbl</p>
 <p><c PROPS="font-weight:bold">Miscellaneous </c><c PROPS="font-weight:bold">Application-Independent</c></p>
-<p>abi/src/config</p>
-<p>abi/src/other</p>
-<p>abi/src/ps</p>
+<p><c PROPS="font-family:courier">abi/src/config</c> -- This directory contains the <c PROPS="font-family:courier">Makefile</c> declarations and rules used to build everything; all of the <c PROPS="font-family:courier">Makefiles</c> in the source tree simply define their targets and include the <c PROPS="font-family:courier">.mk</c> files found here. Additionally, the <c PROPS="font-family:courier">/platfo</c><c PROPS="font-family:courier">rms</c> sub-directory contains platform-specific declarations.</p>
+<p><c PROPS="font-family:courier">abi/src/other</c> -- This directory contains other (3rd party) source code that we have chosen to incorporate into our source. Currently this directory contains <c PROPS="font-family:courier">/expat</c>, an XML parser from James Clark.</p>
+<p><c PROPS="font-family:courier">abi/src/ps</c><c PROPS="font-family:courier"> {/xp}</c> -- This directory contains code to implement a DG_Graphics that generates PostScript rather than drawing on the screen. This code is sharable, but is only used on Unix.</p>
 <p><c PROPS="font-family:courier">abi/src/</c><c PROPS="font-family:courier">util</c><c PROPS="font-family:courier"> </c><c PROPS="font-family:courier">{</c><c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">xp, </c><c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">unix, </c><c PROPS="font-family:courier">/</c><c PROPS="font-family:courier">win}</c> -- These directories contain various utility routines and simple data structures that we have found useful. Some of these are used to isolate platform-specific behavior (such as string routines, debug messages, and assert macros) and others are use to provide useful data structures (such as hash tables, vectors, and string pools). These directories also contain various data conversion routines.</p>
 <p>It is one of our goals to restrict platform-specific #ifdef's to code in the <c PROPS="font-family:courier">abi/src/util/xp</c> directory.</p>
 </section>
