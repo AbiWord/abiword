@@ -25,6 +25,7 @@
 
 #include "xap_Clipboard.h"
 
+#include <glib.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
@@ -61,6 +62,8 @@ public:
    UT_Bool	m_error;
 
    UT_Bool	m_ownClipboard;
+
+   GdkAtom	m_selection;
    
 protected:
 
@@ -68,8 +71,6 @@ protected:
    
    GtkWidget*	m_targets_widget;
    GtkWidget*	m_data_widget;
-   
-   GdkAtom	m_selection;
    
    virtual UT_Bool	_getFormats(void);
    virtual UT_Bool	_getData(GdkAtom target);

@@ -29,14 +29,24 @@
 //////////////////////////////////////////////////////////////////
 
 
-static void targets_selection_received(GtkWidget*, GtkSelectionData*,
-				       guint32, XAP_UnixClipboard*);
-static void selection_received(GtkWidget*, GtkSelectionData*,
-			       guint32, XAP_UnixClipboard*);
-static gint selection_clear(GtkWidget*, GdkEventSelection*,
-			    XAP_UnixClipboard*);
-static void selection_handler(GtkWidget*, GtkSelectionData*,
-			      XAP_UnixClipboard*);
+static void targets_selection_received(GtkWidget*,
+				       GtkSelectionData*,
+#if (GTK_MINOR_VERSION > 0)
+				       guint32,
+#endif				      
+				       gpointer);
+static void selection_received(GtkWidget*, 
+			       GtkSelectionData*,
+#if (GTK_MINOR_VERSION > 0)
+			       guint32, 
+#endif
+			       gpointer);
+static gint selection_clear(GtkWidget*,
+			    GdkEventSelection*
+			    );
+static void selection_handler(GtkWidget*,
+			      GtkSelectionData*,
+			      gpointer);
 
 struct _ClipboardItem
 {
@@ -86,9 +96,12 @@ UT_Bool XAP_UnixClipboard::_init(GdkAtom selection)
    // for querying targets
    m_targets_widget = gtk_window_new( GTK_WINDOW_POPUP );
    gtk_widget_realize( m_targets_widget );
+   gtk_object_set_data(GTK_OBJECT(m_targets_widget),
+		       "clipboard", (gpointer)this);
+
    // for getting and offering data
    m_data_widget = gtk_window_new( GTK_WINDOW_POPUP );
-   gtk_widget_realize( m_targets_widget );
+   gtk_widget_realize( m_data_widget );
    gtk_object_set_data(GTK_OBJECT(m_data_widget),
 		       "clipboard", (gpointer)this);
    
@@ -141,9 +154,6 @@ UT_Bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iN
 {
    UT_DEBUGMSG(("adding data to clipboard\n"));
 
-   // take ownership of the clipboard
-   if (!m_ownClipboard && !_getClipboard()) return UT_FALSE;
-   
    // now we add the data to our local list.
    // with selections, the application owning the clipboard
    // holds onto the data until another application requests it...
@@ -156,12 +166,27 @@ UT_Bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iN
    if (m_vecData.addItem(pItem) < 0)
       return UT_FALSE;
 
+#if (GTK_MINOR_VERSION > 0)
+   
    gtk_selection_add_target(m_data_widget, m_selection, target, 0);
 
    gtk_signal_connect(GTK_OBJECT(m_data_widget),
 		      "selection_get",
 		      GTK_SIGNAL_FUNC(selection_handler),
 		      (gpointer)this);
+   
+#else
+   
+   gtk_selection_add_handler(m_data_widget,
+			     m_selection,
+			     target,
+			     selection_handler,
+			     (gpointer)this);
+   
+#endif
+   
+   // take ownership of the clipboard
+   if (!m_ownClipboard && !_getClipboard()) return UT_FALSE;
    
    return UT_TRUE;
 }
@@ -414,13 +439,20 @@ UT_Bool XAP_UnixClipboard::_getData(GdkAtom target)
    else return UT_TRUE;
 }
 
-static void targets_selection_received(GtkWidget *,
-				 GtkSelectionData *selection_data,
-				 guint32,
-				 XAP_UnixClipboard *clipboard)
+static void 
+targets_selection_received(GtkWidget *widget,
+			   GtkSelectionData *selection_data,
+#if (GTK_MINOR_VERSION > 0)
+			   guint32 time,
+#endif			   
+			   gpointer data)
 {
    UT_DEBUGMSG(("formats received.\n"));
    
+   // get a reference to our clipboard out of the widget
+   XAP_UnixClipboard *clipboard = (XAP_UnixClipboard*)
+     gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
+
    clipboard->m_vecFormatAtoms.clear();
    
    if (selection_data->length <= 0) {
@@ -449,14 +481,19 @@ static void targets_selection_received(GtkWidget *,
    return;
 }
 
-static void selection_received(GtkWidget *,
+static void selection_received(GtkWidget *widget,
 			       GtkSelectionData *selection_data,
-			       guint32,
-			       XAP_UnixClipboard *clipboard)
+#if (GTK_MINOR_VERSION > 0)
+			       guint32 time,
+#endif			       
+			       gpointer data)
 {
-
    UT_DEBUGMSG(("selection received.\n"));
-   
+
+   // get a reference to our clipboard out of the widget
+   XAP_UnixClipboard *clipboard = (XAP_UnixClipboard*)
+     gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
+
    if (clipboard->m_received_data) {
       delete clipboard->m_received_data;
       clipboard->m_received_data = NULL;
@@ -476,31 +513,41 @@ static void selection_received(GtkWidget *,
    clipboard->m_waiting = FALSE;
 }
 
-static gint selection_clear(GtkWidget *,
-			    GdkEventSelection *,
-			    XAP_UnixClipboard *clipboard)
+static gint selection_clear(GtkWidget *widget,
+			    GdkEventSelection *event)
 {
    UT_DEBUGMSG(("clipboard: lost ownership.\n"));
    
-   if (clipboard->m_ownClipboard) {
-      clipboard->m_ownClipboard = UT_FALSE;
-      clipboard->clear();
+   // get a reference to our clipboard out of the widget
+   XAP_UnixClipboard *clipboard = (XAP_UnixClipboard*)
+     gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
+   
+   if (event->selection == clipboard->m_selection) {
+
+      if (clipboard->m_ownClipboard) {
+	 clipboard->m_ownClipboard = UT_FALSE;
+	 clipboard->clear();
+      }
+      clipboard->m_waiting = UT_FALSE;
+      return TRUE;
+
+   } else {
+      
+      clipboard->m_waiting = UT_FALSE;
+      return FALSE;
+      
    }
-   clipboard->m_waiting = UT_FALSE;
-   return TRUE;
 }
 
 static void selection_handler(GtkWidget *widget,
 			      GtkSelectionData *selection_data,
-			      XAP_UnixClipboard *)
+			      gpointer data)
 {
    UT_DEBUGMSG(("selection requested.\n"));
    
-   // get a reference to our clipboard out of the widget, as the 
-   // clipboard pointer that should be passed to us doesn't
+   // get a reference to our clipboard out of the widget
    XAP_UnixClipboard *clipboard = (XAP_UnixClipboard*)
-     gtk_object_get_data(GTK_OBJECT(widget),
-			 "clipboard");
+     gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
    
    _ClipboardItem *pItem;
    UT_sint32 iCount = clipboard->m_vecData.getItemCount();
