@@ -9594,14 +9594,10 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 	if(m_newParaFlagged)
 	{
-		// need to insert block
-		// TODO -- this ways we loose fmt for this block
-		getDoc()->insertStrux(m_dposPaste,PTX_Block);
-		//
-// Need this to handle cleanup in the destructor.
 //
-		m_dposPaste++;
-		m_newParaFlagged = false;
+// Finish off any remaining stuff
+//
+		FlushStoredChars(false);
 	}
 	
 	m_pPasteBuffer = NULL;
