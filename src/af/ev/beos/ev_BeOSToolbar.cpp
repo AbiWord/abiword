@@ -208,7 +208,9 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 	const EV_Toolbar_ActionSet * pToolbarActionSet;
 	pToolbarActionSet = m_pBeOSApp->getToolbarActionSet();
+
 	UT_ASSERT(pToolbarActionSet);
+	int oldstate, perform_update = 0;
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++) {
@@ -233,10 +235,14 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 				case EV_TBIT_PushButton: {
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
-				//	UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n", m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), ((bGrayed) ? "disabled" : "enabled"))); 
+				//	UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n", 
+				//		m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
+				//		((bGrayed) ? "disabled" : "enabled"))); 
 					tb_item_t * item = m_pTBView->FindItemByID(id);
 					if (item) {
+						oldstate = item->state;
 						item->state = (bGrayed) ? 0 : ENABLED_MASK;
+						perform_update |= (oldstate == item->state) ? 0 : 1; 
 					}
 				}
 				break;
@@ -248,12 +254,17 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 											
-					//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n", m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), ((bGrayed) ? "disabled" : "enabled"), ((bToggled) ? "pressed" : "not pressed")));
+					//UT_DEBUGMSG(("refreshToolbar: ToggleBut [%s] is %s and %s\n", 
+					//	m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
+					//	((bGrayed) ? "disabled" : "enabled"), 
+					//	((bToggled) ? "pressed" : "not pressed")));
 
 					tb_item_t * item = m_pTBView->FindItemByID(id);
 					if (item) {
+						oldstate = item->state;
 						item->state = ((bGrayed) ? 0 : ENABLED_MASK) |
 						              ((bToggled) ? PRESSED_MASK : 0);
+						perform_update |= (oldstate == item->state) ? 0 : 1; 
 					}
 				
 				}
@@ -263,8 +274,11 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					UT_Bool bString = EV_TIS_ShouldUseString(tis);
 						
-					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n", m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), ((bGrayed) ? "disabled" : "enabled"), ((bString) ? szState : "no state")));
-					
+					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n", 
+					// 	m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
+					//	((bGrayed) ? "disabled" : "enabled"), 
+					//	((bString) ? szState : "no state")));
+
 					tb_item_t * item = m_pTBView->FindItemByID(id);
 					if (item && bString) {
 						BPopUpMenu *popup;
@@ -312,13 +326,19 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 		}
 	}
 
-#if 0
+#if 1
 //TF I can't remember why I put this in, but it doesn't 
 //seem to be needed now and is contributing in a big way
 //to the slowdown of the drag updates.
-	m_pTBView->Window()->Lock();
-	m_pTBView->Draw(m_pTBView->Bounds()); 	
-	m_pTBView->Window()->Unlock();
+
+//TF Note ... without this we don't get updated properly
+//when a button state changes.  Instead put in hooks
+//that only update us as required.
+	if (perform_update) {
+		m_pTBView->Window()->Lock();
+		m_pTBView->Draw(m_pTBView->Bounds()); 	
+		m_pTBView->Window()->Unlock();
+	}
 #endif
 	return UT_TRUE;
 }
@@ -406,7 +426,6 @@ filter_result TBMouseFilter::Filter(BMessage *message, BHandler **target) {
 			    r.Contains(pt) && m_pTBView->items[i].bitmap != NULL) {
 				//We have a hit on an item ...
 				int id = m_pTBView->items[i].id;
-				printf("Hit target id %d \n", id);
 		 		m_pTBView->m_pBeOSToolbar->toolbarEvent(id, NULL, 0);		
 				break;
 			}
@@ -561,20 +580,29 @@ void ToolbarView::Draw(BRect clip) {
 	
 	for (i=0; i<item_count; i++) {
 		r = items[i].rect;
-		if (items[i].bitmap) {
-			DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
+		if (items[i].bitmap /*&& clip.Intersects(r)*/) {
+			//Draw the bitmap of the icon
+			//DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
+			DrawBitmap(items[i].bitmap, BPoint(r.left, r.top));
+
+			//Disabled icons should be greyed out ...
 			if (!(items[i].state & ENABLED_MASK)) {
-				//TODO: Find something a little more elegant
-				StrokeLine(r.LeftTop(),r.RightBottom());
-				StrokeLine(r.RightTop(),r.LeftBottom());
+				drawing_mode oldmode = DrawingMode();
+				SetDrawingMode(B_OP_ADD);
+				SetHighColor(80, 80, 80);
+				FillRect(r);
+				SetDrawingMode(oldmode);
 			}
+
+			//Pressed icons should look like they are pressed (ie down)
 			else if (items[i].state & PRESSED_MASK) {
 				//Toggle buttons which are down
-				HighLightItem(i, 0);
+				HighLightItem(i, 2);
 			}			
+
+			//We just draw normal icons when activated
 			else {
-				//Normal bitmaps ...
-				HighLightItem(i, 1);
+				DrawBitmap(items[i].bitmap, BPoint(r.left, r.top));
 			}
 			
 		}
@@ -601,23 +629,23 @@ void ToolbarView::Draw(BRect clip) {
 	}
 }
 
-void ToolbarView::HighLightItem(int index, int up) {
+void ToolbarView::HighLightItem(int index, int state) {
 	BRect r = items[index].rect;
 	rgb_color dark = { 150, 150, 150, 255 };	//was 192
 	rgb_color light = { 240, 240, 240, 255 };	//was 240
 	
-	if (up)
+	if (state == 1)				//UP look
 		SetHighColor(dark);		//Light Dark grey
-	else
+	else if (state == 2)			//DOWN look
 		SetHighColor(light);		//Almost white
 		
 	StrokeLine(BPoint(r.left, r.bottom), BPoint(r.right, r.bottom));
 	StrokeLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1));
 	StrokeLine(BPoint(r.right, r.top), BPoint(r.right, r.bottom));
 	StrokeLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1));
-	if (up)
+	if (state == 1)
 		SetHighColor(light);		//Almost white
-	else
+	else if (state == 2)
 		SetHighColor(dark);		//Light Dark grey
 	StrokeLine(BPoint(r.left, r.bottom), BPoint(r.left, r.top));
 	StrokeLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1));

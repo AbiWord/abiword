@@ -54,7 +54,7 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 	UT_ASSERT(charsPerPixel > 0);
 
 	//Create a new BBitmap with that width/height ...
-	pBBitmap = new BBitmap(BRect(0, 0, width, height), B_RGB32);
+	pBBitmap = new BBitmap(BRect(0, 0, width-1, height-1), B_RGB32);
 	if (!pBBitmap) 
 		return(UT_FALSE);
 
