@@ -3839,11 +3839,9 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 // Scan the differences in centers for this row so we can work out the column
 // widths of the table eventually.
 //
-	  UT_sint32 iLeft = 0;
-	  UT_sint32 iRight = 1;
-	  UT_sint32 i =0;
+	  UT_sint32 iLeft, iRight, i;
 	  
-	  for(i =0; i< ps->nocellbounds; i++) 
+	  for(i = 0; i < ps->nocellbounds-1; i++) 
 	  {
 		  iLeft = i;
 		  iRight = i+1;
