@@ -29,7 +29,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CSRCS=
 CPPSRCS= spell_manager.cpp
 
-ifdef ABI_OPT_PSPELL
+ifeq ($(ABI_OPT_PSPELL),1)
 	CPPSRCS+= pspell_checker.cpp
 else
 # TF CHANGE: Drop newMain
