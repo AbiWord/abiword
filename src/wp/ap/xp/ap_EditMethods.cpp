@@ -9569,7 +9569,6 @@ Defun(sectColumns3)
 		return false;
 	const XML_Char * properties[] = { "columns", "3", 0};
 	pView->setSectionFormat(properties);
-	EX(viewPrintLayout);
 	return true;
 }
 

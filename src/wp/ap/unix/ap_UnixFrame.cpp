@@ -313,13 +313,19 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 
 	if ( bRulerOn )
 	{
-		AP_TopRuler * pTop = pFrameData->m_pTopRuler;
-		if(pTop)
+		if(pFrameData->m_pTopRuler)
 		{
-			delete pTop;
+			if(pFrameImpl->m_topRuler && GTK_IS_OBJECT(pFrameImpl->m_topRuler))
+			{
+				gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
+			}			
+			DELETEP(pFrameData->m_pTopRuler);
 		}
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
 		pUnixTopRuler = new AP_UnixTopRuler(this);
 		UT_ASSERT(pUnixTopRuler);
+		pFrameData->m_pTopRuler = pUnixTopRuler;		
 		pFrameImpl->m_topRuler = pUnixTopRuler->createWidget();
 
 		// attach everything	
@@ -328,31 +334,27 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL),
 				 0, 0);
-		FV_View * pView = static_cast<FV_View *>(m_pView);
-		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
+
 		static_cast<AP_TopRuler *>(pUnixTopRuler)->setView(m_pView,iZoom);
 
 		// get the width from the left ruler and stuff it into the 
 		// top ruler.
 		if (static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler)
-		  pUnixTopRuler->setOffsetLeftRuler(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->getWidth());
+			pUnixTopRuler->setOffsetLeftRuler(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->getWidth());
 		else
-		  pUnixTopRuler->setOffsetLeftRuler(0);
+			pUnixTopRuler->setOffsetLeftRuler(0);
 	}
 	else
-	  {
+	{
 		// delete the actual widgets
-		  AP_TopRuler * pTop = pFrameData->m_pTopRuler;
-		  if(pTop && !pTop->isHidden())
-		  {
-			  gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
-		  }
-		  DELETEP(static_cast<AP_FrameData*>(m_pData)->m_pTopRuler);
-		  pFrameImpl->m_topRuler = NULL;
-		  static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
-	  }
-
-	static_cast<AP_FrameData*>(m_pData)->m_pTopRuler = pUnixTopRuler;
+		if(pFrameImpl->m_topRuler && GTK_IS_OBJECT(pFrameImpl->m_topRuler))
+		{
+			gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
+		}
+		DELETEP(pFrameData->m_pTopRuler);
+		pFrameImpl->m_topRuler = NULL;
+		static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
+	}
 }
 
 void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
@@ -361,23 +363,27 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 	UT_ASSERT(pFrameData);
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 
-	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
-
 	UT_DEBUGMSG(("AP_UnixFrame::toggleLeftRuler %d, %d\n", 
 		     bRulerOn, pFrameData->m_pLeftRuler));
 
 	if (bRulerOn)
 	{
 //
-// if there is an old ruler just return.
+// if there is an old ruler then delete that first.
 //
-		AP_LeftRuler * pLeft = pFrameData->m_pLeftRuler;
-		if(pLeft)
+		if(pFrameData->m_pLeftRuler)
 		{
-			delete pLeft;
-		}
-		pUnixLeftRuler = new AP_UnixLeftRuler(this);
+			if (pFrameImpl->m_leftRuler && GTK_IS_OBJECT(pFrameImpl->m_leftRuler))
+			{
+				gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_leftRuler) );
+			}		
+			DELETEP(pFrameData->m_pLeftRuler);
+		} 
+		FV_View * pView = static_cast<FV_View *>(m_pView);		
+		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
+		AP_UnixLeftRuler * pUnixLeftRuler = new AP_UnixLeftRuler(this);
 		UT_ASSERT(pUnixLeftRuler);
+		pFrameData->m_pLeftRuler = pUnixLeftRuler;		
 		pFrameImpl->m_leftRuler = pUnixLeftRuler->createWidget();
 
 		gtk_table_attach(GTK_TABLE(pFrameImpl->m_innertable), 
@@ -385,22 +391,20 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 0,0);
-		FV_View * pView = static_cast<FV_View *>(m_pView);
-		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
 		static_cast<AP_LeftRuler *>(pUnixLeftRuler)->setView(m_pView,iZoom);
 		setYScrollRange();
 	}
 	else
 	{
 	    if (pFrameImpl->m_leftRuler && GTK_IS_OBJECT(pFrameImpl->m_leftRuler))
+		{
 			gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_leftRuler) );
-	    
-	    DELETEP(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler);
+		}
+	    DELETEP(pFrameData->m_pLeftRuler);
 	    pFrameImpl->m_leftRuler = NULL;
 		static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
 	}
 
-	static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler = pUnixLeftRuler;
 }
 
 void AP_UnixFrame::toggleRuler(bool bRulerOn)
