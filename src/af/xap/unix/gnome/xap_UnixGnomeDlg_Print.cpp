@@ -17,13 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <gnome.h>
-
-//#include <libgnomeprint/gnome-printer-dialog.h>
-#include <libgnomeprint/gnome-print.h>
-#include <libgnomeprint/gnome-printer.h>
-#include <libgnomeprint/gnome-print-dialog.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,22 +35,57 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
+#include "xap_UnixGnomePrintGraphics.h"
+
+extern "C" {
+#include <libgnomeprint/gnome-print-dialog.h>
+}
+
 XAP_Dialog * XAP_UnixGnomeDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+							   XAP_Dialog_Id id)
 {
 	XAP_UnixGnomeDialog_Print * p = new XAP_UnixGnomeDialog_Print(pFactory,id);
 	return p;
 }
 
 XAP_UnixGnomeDialog_Print::XAP_UnixGnomeDialog_Print(XAP_DialogFactory * pDlgFactory,
-										   XAP_Dialog_Id id)
-	: XAP_UnixDialog_Print(pDlgFactory,id)
+						     XAP_Dialog_Id id)
+	: XAP_Dialog_Print(pDlgFactory,id)
 {
 }
 
 XAP_UnixGnomeDialog_Print::~XAP_UnixGnomeDialog_Print(void)
 {
+        // nothing
 }
+
+
+void XAP_UnixGnomeDialog_Print::useStart(void)
+{
+	XAP_Dialog_Print::useStart();
+}
+
+void XAP_UnixGnomeDialog_Print::useEnd(void)
+{
+	XAP_Dialog_Print::useEnd();
+}
+
+GR_Graphics * XAP_UnixGnomeDialog_Print::getPrinterGraphicsContext(void)
+{
+	UT_ASSERT(m_answer == a_OK);
+
+	return m_pGnomePrintGraphics;
+}
+
+void XAP_UnixGnomeDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+{
+	UT_ASSERT(pGraphics == m_pGnomePrintGraphics);
+	
+	DELETEP(m_pGnomePrintGraphics);
+}
+
+/*****************************************************************/
+/*****************************************************************/
 
 void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
@@ -69,11 +97,10 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	UT_ASSERT(pSS);
 
-	// There are four basic parts to _raisePrintDialog:
+	// There are three basic parts to _raisePrintDialog:
 	//		1.  Create the dialog widget
 	//		2.  Toggle dialog options to match persistent values
 	// 		3.  Run dialog
-	//		4.  Set new persistent values from dialog
 
 	// 1.  Create the dialog widget
 	gpd = (GnomePrintDialog *)gnome_print_dialog_new(
@@ -97,8 +124,6 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gnome_dialog_set_parent(GNOME_DIALOG(gpd), GTK_WINDOW(parent));
 	//centerDialog(parent, GTK_WIDGET(gpd));
 
-	// don't set transient - this is a gnome-dialog
-
 	// 2.  Toggle dialog options to match persistent values
 	// TODO: We're not really persistant. I view this as a good thing, others don't.
 	// Gnome Print really doesn't do persistance too well (limited accessor
@@ -120,18 +145,21 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		  return;
 	}
 
-	// 4.  Set new persistent values from dialog
-	// TODO
+	m_bIsPreview = preview;
 
 	gnome_print_dialog_get_copies(gpd, &copies, &collate);
 	printer = gnome_print_dialog_get_printer (gpd);
 	range = gnome_print_dialog_get_range_page(gpd, &first, &end);
 	gnome_dialog_close(GNOME_DIALOG(gpd));
 
+	m_gpm = gnome_print_master_new();
+	gnome_print_master_set_paper(m_gpm, gnome_paper_with_name(gnome_paper_name_default()));
+	if (printer)
+		gnome_print_master_set_printer(m_gpm, printer);
+
 	// Record outputs
 	m_bDoPrintRange				= (range == GNOME_PRINT_RANGE_RANGE);
 	m_bDoPrintSelection			= (range == GNOME_PRINT_RANGE_SELECTION);
-	m_bCollate				= collate;
 	m_cColorSpace				= GR_Graphics::GR_COLORSPACE_COLOR;  //BUG
 	
 	if(m_bDoPrintRange)
@@ -140,24 +168,19 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	    m_nLastPage				= MAX(first, end);
 	  }
 
+#if 0
+	// either handle things ourself
+	m_bCollate				= collate;
 	m_nCopies				= copies;
-	m_answer 				= a_OK;
+#else
+	// or (smartly?) let gnome-print handle it
+	// will this work with our printing structure?
+	m_bCollate = UT_FALSE;
+	m_nCopies  = 1;
+	gnome_print_master_set_copies(m_gpm, copies, collate);
+#endif
 
-	/* hack - detect the pipe ('|') gnome print adds for printing to a non-file */
-	m_bDoPrintToFile = (printer->filename) && (*(printer->filename) != '|');
-	
-	if(m_bDoPrintToFile) 
-	  {
-	    /* postscript output to a file */
-	    UT_cloneString(m_szPrintToFilePathname, printer->filename);
-	    UT_cloneString(m_szPrintCommand, "foo");
-	  }
-	else
-	  {
-	    /* printing using lpr or similar */
-	    UT_cloneString(m_szPrintCommand, printer->filename+1); /* hack to remove "|" from "|lpr" */
-	    UT_cloneString(m_szPrintToFilePathname, "foo");
-	  }
+	m_answer 				= a_OK;
 
 	UT_DEBUGMSG(("Gnome Print: Copies: %d Collate: %d Start: %d End: %d\n", m_nCopies, m_bCollate, m_nFirstPage, m_nLastPage));
 
@@ -177,25 +200,15 @@ void XAP_UnixGnomeDialog_Print::_getGraphics(void)
 	XAP_UnixFontManager * fontmgr = unixapp->getFontManager();
 	UT_ASSERT(fontmgr);
 	
-	if (m_bDoPrintToFile)
-	{
-		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
-						m_pUnixFrame->getApp()->getApplicationName(),
-						fontmgr,
-						UT_TRUE, app);
-	}
-	else
-	{		
-		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
-						m_pUnixFrame->getApp()->getApplicationName(),
-						fontmgr,
-						UT_FALSE, app);
-	}
+	m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(m_gpm,
+						       fontmgr,
+						       unixapp,
+						       m_bIsPreview);
 
-	UT_ASSERT(m_pPSGraphics);
+	UT_ASSERT(m_pGnomePrintGraphics);
 
 	// set the color mode
-	m_pPSGraphics->setColorSpace(m_cColorSpace);
+	m_pGnomePrintGraphics->setColorSpace(m_cColorSpace);
 	
 	m_answer = a_OK;
 	return;

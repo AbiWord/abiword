@@ -357,6 +357,9 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			// Append to the vector even if spacer, to sync up with refresh
 			// which expects each item in the layout to have a place in the
 			// vector.
+#if 0
+		        gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
+#else
 			_wd * wd = new _wd(this,id);
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
@@ -364,6 +367,7 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			gtk_widget_show(m_wToolbar);
 			_addToolbar(m_wToolbar);
 			m_wToolbar = _makeToolbar();
+#endif
 			break;
 		}
 		
@@ -442,7 +446,8 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 	gtk_toolbar_set_button_relief(GTK_TOOLBAR (toolbar), GTK_RELIEF_NONE);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR (toolbar), TRUE);
 	gtk_toolbar_set_space_size(GTK_TOOLBAR (toolbar), 10);
-
+	gtk_toolbar_set_space_style(GTK_TOOLBAR (toolbar), GTK_TOOLBAR_SPACE_LINE);
+	
 	return toolbar;
 }
 
