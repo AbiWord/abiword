@@ -203,7 +203,8 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 	if (!m_fontManager->scavengeFonts())
 		return UT_FALSE;
 	
-#ifdef DEBUG	
+#if 0
+#ifdef DEBUG
 	XAP_UnixFont ** fonts = m_fontManager->getAllFonts();
 	UT_DEBUGMSG(("Found Fonts:\n"));
 	for (UT_uint32 i = 0; i < m_fontManager->getCount(); i++)
@@ -214,6 +215,7 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 	}
 
 	DELETEP(fonts);
+#endif
 #endif
 
 	return UT_TRUE;
