@@ -3896,6 +3896,23 @@ void FV_View::cmdHyperlinkJump(PT_DocPosition pos)
 	delete [] pJump;
 }
 
+void FV_View::cmdHyperlinkCopyLocation(PT_DocPosition pos)
+{
+	fp_HyperlinkRun * pH = static_cast<fp_HyperlinkRun *>(getHyperLinkRun(pos));
+	if(!pH)
+		return;
+
+	const XML_Char * pTarget = pH->getTarget();
+
+	//skip over internal anchors
+	if(*pTarget == '#')
+		pTarget++;
+
+	//copy the target to the clipboard
+	copyTextToClipboard(pTarget, true);
+}
+
+
 void FV_View::cmdUndo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())

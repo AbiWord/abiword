@@ -148,6 +148,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_HyperlinkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_GOTO_HYPERLINK, 0,1,0,0,	"hyperlinkJumpPos",	ap_GetState_HyperlinkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_EDIT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_HyperlinkOK,					NULL);
+	_s(AP_MENU_ID_EDIT_COPY_HYPERLINK_LOCATION, 0,0,0,0, "hyperlinkCopyLocation", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_DELETE_HYPERLINK, 0,0,0,0,	"deleteHyperlink",	NULL,			NULL);
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,0,	"insPageNo",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,0,	"insDateTime",		NULL,					NULL);

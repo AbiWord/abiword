@@ -169,6 +169,7 @@ public:
 
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
+	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
 
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 
@@ -210,6 +211,7 @@ public:
 	void            pasteFromLocalTo(PT_DocPosition pos);
 	void            _pasteFromLocalTo(PT_DocPosition pos);
 	void            copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2);
+	void			copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard=true);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo);

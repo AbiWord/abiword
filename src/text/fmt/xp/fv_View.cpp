@@ -616,6 +616,34 @@ void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
 	delete pExpRtf;
 }
 
+//Creates a new document, inserts a string into it, selects all, and then copies it
+//onto the system clipboard
+
+void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard)
+{
+	/* create a new hidden document */
+  	PD_Document * pDoc = new PD_Document(XAP_App::getApp());
+  	pDoc->newDocument();
+	FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc, m_pG);
+	FV_View * pCopyLinkView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
+	
+	/* assign the view to the doclayout */
+	pDocLayout->setView(pCopyLinkView);
+	
+	/* fill its layout structures (which are quite empty, but still...) */
+	pCopyLinkView->getLayout()->fillLayouts();
+	pCopyLinkView->getLayout()->formatAll();
+	
+	/* insert the string in the new document, select it, and copy it */
+	pCopyLinkView->cmdCharInsert(sIncoming.ucs4_str(), sIncoming.length(),false);
+	pCopyLinkView->cmdSelect(0,0,FV_DOCPOS_BOD,FV_DOCPOS_EOD);
+	pCopyLinkView->cmdCopy();
+
+	/* we're done, release our resources */
+	DELETEP(pCopyLinkView);
+	DELETEP(pDocLayout);
+}
+
 FV_FrameEdit * FV_View::getFrameEdit(void)
 {
 	return &m_FrameEdit;

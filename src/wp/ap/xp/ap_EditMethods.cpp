@@ -647,6 +647,7 @@ public:
 
         static EV_EditMethod_Fn mailMerge;
 
+	static EV_EditMethod_Fn hyperlinkCopyLocation;
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkJumpPos;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
@@ -899,6 +900,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpReportBug), _A_, ""),
 	EV_EditMethod(NF(helpSearch),			_A_,		""),
 	EV_EditMethod(NF(history),	            0,      ""),
+	EV_EditMethod(NF(hyperlinkCopyLocation), 0, ""),
 	EV_EditMethod(NF(hyperlinkJump),		0,		""),
 	EV_EditMethod(NF(hyperlinkJumpPos),     0,      ""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
@@ -12226,6 +12228,14 @@ UT_return_val_if_fail(pDialog, false);//
 
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
+}
+
+Defun(hyperlinkCopyLocation)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdHyperlinkCopyLocation(pView->getPoint());
+	return true;
 }
 
 Defun(hyperlinkJump)
