@@ -469,6 +469,7 @@ void  XAP_CocoaEncodingManager::initialize()
 	else
 	{
 		char* lang,*terr,*cs,*mod;
+		lang = terr = cs = mod = NULL;
 		int mask = explode_locale (locname,&lang,&terr,&cs,&mod);
 		LanguageISOName = lang;
 		g_free(mod);	// unneeded
