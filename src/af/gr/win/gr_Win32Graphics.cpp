@@ -726,17 +726,12 @@ UT_uint32 GR_Win32Font::measureString(const UT_UCSChar* s, int iOffset, int num,
 		// if that fails, the char is probably not defined in
 		// the font, so we substitute the default char width.
 		UT_UCSChar currentChar;
-		currentChar = s[i + iOffset];
+		currentChar = remapGlyph(s[i + iOffset]);
 		iWidth = m_cw.getWidth(currentChar);
 		if (!iWidth)
 		{
 			m_cw.setCharWidthsOfRange(m_oldHDC,currentChar,currentChar);
 			iWidth = m_cw.getWidth(currentChar);
-			if (!iWidth)
-			{
-				currentChar = remapGlyph(currentChar, UT_TRUE);
-				iWidth = measureUnRemappedChar(currentChar);
-			}
 		}
 		
 		iCharWidth += iWidth;

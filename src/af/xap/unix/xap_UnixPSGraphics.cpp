@@ -178,12 +178,8 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 		//UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
 		register int x;
 		UT_UCSChar currentChar;
-		currentChar = p[k];
-		if (currentChar >= 256 || !(_scale(cwi[currentChar])))
-		{
-			currentChar = remapGlyph(currentChar, UT_TRUE);
-		}
-		x = _scale(cwi[currentChar]);
+		currentChar = remapGlyph(p[k], UT_FALSE);
+		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
 		
 		iCharWidth += x;
 		pWidths[k] = x;

@@ -214,15 +214,8 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	
 	for (int i = 0; i < num; i++)
     {
-		cChar = s[i + iOffset];
-		
+		cChar = remapGlyph(s[i + iOffset], UT_TRUE);
 		width = gdk_char_width_wc (pFont, cChar);
-		if (width == 0)
-		{
-			cChar = remapGlyph(s[i + iOffset], UT_TRUE);
-			width = gdk_char_width_wc (pFont, cChar);
-		}
-		
 		charWidth += width;
 		if (pWidths)
 			pWidths[i] = width;

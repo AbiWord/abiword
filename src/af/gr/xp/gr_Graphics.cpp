@@ -93,26 +93,15 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	// Platform versions can roll their own if it makes a performance difference.
 	UT_ASSERT(s);
 
-	int charWidth = 0, width;
-	
+	int stringWidth = 0, charWidth;
 	for (int i = 0; i < num; i++)
     {
-		UT_UCSChar currentChar = s[i + iOffset];
-		
-		width = measureUnRemappedChar(currentChar);
-		if (width == 0)
-		{
-			xxx_UT_DEBUGMSG(("GR_Graphics::measureString remapping 0x%04X\n", currentChar));
-			currentChar = remapGlyph(currentChar, UT_TRUE);
-			width = measureUnRemappedChar(currentChar);
-		}
-		
-		charWidth += width;
-		if (pWidths)
-			pWidths[i] = width;
+		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], UT_FALSE);
+		charWidth = measureUnRemappedChar(currentChar);
+		stringWidth += charWidth;
+		if (pWidths) pWidths[i] = charWidth;
     }
-  
-	return charWidth;
+	return stringWidth;
 }
 
 UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat)
