@@ -1283,8 +1283,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	for (i = 0; i < size; i++)
 		{
 			char * pItem = (char *) m_styleTable.getNthItem(i);
-			if(pItem)
-				delete [] pItem;
+			FREEP(pItem);
 		}
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
@@ -6412,7 +6411,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					nesting--;
 				}
 			}
-			char * buffer  = strdup(styleName.c_str());
+			char * buffer  = UT_strdup(styleName.c_str());
 			char * oldbuffer;
 			m_styleTable.setNthItem(styleNumber,(void *)buffer,(void **)&oldbuffer);
 			break;
