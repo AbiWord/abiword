@@ -28,6 +28,7 @@ EXPORT_HEADERS=		ie_exp.h		\
 			ie_exp_AbiWord_1.h	\
 			ie_imp.h		\
 			ie_imp_AbiWord_1.h	\
+			ie_imp_MsWord_97.h	\
 			ie_types.h
 
 
@@ -39,7 +40,8 @@ RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 CPPSRCS=		ie_exp.cpp		\
 			ie_exp_AbiWord_1.cpp	\
 			ie_imp.cpp		\
-			ie_imp_AbiWord_1.cpp
+			ie_imp_AbiWord_1.cpp	\
+			ie_imp_MsWord_97.cpp
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 
