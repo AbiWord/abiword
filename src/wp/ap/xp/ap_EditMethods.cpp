@@ -3811,6 +3811,14 @@ Defun1(warpInsPtPrevLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+//
+// Finish handling current expose before doing the next movement
+//
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG && pG->isExposePending())
+	{
+		return true;
+	}
 	pView->warpInsPtNextPrevLine(false);
 	return true;
 }
@@ -3819,6 +3827,14 @@ Defun1(warpInsPtNextLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+//
+// Finish handling current expose before doing the next movement
+//
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG && pG->isExposePending())
+	{
+		return true;
+	}
 	pView->warpInsPtNextPrevLine(true);
 	return true;
 }

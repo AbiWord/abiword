@@ -796,7 +796,7 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		rClip.top = pGr->tlu(pExposeEvent->area.y);
 		rClip.width = pGr->tlu(pExposeEvent->area.width)+1;
 		rClip.height = pGr->tlu(pExposeEvent->area.height)+1;
-
+		pGr->setExposePending(false);
 		pView->draw(&rClip);
 	}
 	return FALSE;

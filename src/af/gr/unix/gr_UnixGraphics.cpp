@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <gdk/gdkkeysyms.h>
 #include "ut_endian.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
@@ -1417,6 +1417,7 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	{
 		gdk_window_scroll(m_pWin,ddx,ddy);
 	}
+	setExposePending(true);
 }
 
 void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
