@@ -4084,6 +4084,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
+			m_bBlankLine = true; // Need this as well!
 			_open_cell(pcr->getIndexAP());
 			return true;
 		}
