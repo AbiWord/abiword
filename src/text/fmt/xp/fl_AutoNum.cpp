@@ -64,7 +64,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 		m_pParentItem(0)
 {
 	_setParent(pParent);
-	UT_uint32 i;
+	memset(m_pszDelim, 0, 80);
+	memset(m_pszDecimal, 0, 80);	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
  	addItem(pFirst);
@@ -96,6 +97,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 		m_pParentItem(0)
 {
 	// Set in Block???
+	memset(m_pszDelim, 0, 80);
+	memset(m_pszDecimal, 0, 80);
 	UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
 	if(m_iParentID != 0)
@@ -538,7 +541,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-
+	
 	if( m_List_Type < BULLETED_LIST &&
 	    (UT_XML_strnicmp(m_pszDecimal,rightDelim,4) != 0 || depth == 0) )
 	{

@@ -140,7 +140,7 @@ protected:
 	bool						m_bUpdatingItems;
 	bool						m_bDirty;
 	UT_sint32					m_ioffset;
-	XML_Char					m_pszDecimal[80];
+	XML_Char					m_pszDecimal[80]; // BAD BAD HARDCODED ARRAY LENGTHS
 	XML_Char					m_pszDelim[80];
 	XML_Char					m_pszIndent[80];
 	bool						m_bWordMultiStyle;
