@@ -220,7 +220,7 @@ public:
 	inline UT_sint32            getMaxSectionColumnHeightInLayoutUnits(void) const { return m_iMaxSectionColumnHeightInLayoutUnits;}
 	UT_uint32			        getColumnGapInLayoutUnits(void) const;
 #endif
-
+	void                completeBreakSection(void);
 	bool                arePageNumbersRestarted (void) const { return m_bRestart;}
 	UT_sint32           getRestartedPageNumber(void) const { return m_iRestartValue;}
 	UT_uint32			getNumColumns(void) const;

@@ -3396,7 +3396,9 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 	_clearIfAtFmtMark(getPoint());
 	PD_DocumentRange dr(m_pDoc,getPoint(),getPoint());
 	m_pApp->pasteFromClipboard(&dr,bUseClipboard,bHonorFormatting);
-
+	fl_SectionLayout * pSL = getCurrentBlock()->getSectionLayout();
+	m_pDoc->setDontImmediatelyLayout(false);
+	pSL->checkAndAdjustCellSize();
 	_generalUpdate();
 
 	_updateInsertionPoint();

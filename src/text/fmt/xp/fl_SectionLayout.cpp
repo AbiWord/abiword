@@ -929,8 +929,9 @@ void fl_DocSectionLayout::updateLayout(void)
 			{
 				pBL->format();
 			}
-			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
+			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && ! !getDocument()->isDontImmediateLayout())
 			{
+				xxx_UT_DEBUGMSG(("updateDocSecLayout calling table update \n"));
 				pBL->updateLayout();
 			}
 		}
@@ -954,7 +955,12 @@ void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
 {
 	m_bNeedsSectionBreak = bSet;
 	fp_Page * pOldP = m_ColumnBreaker.getStartPage();
-	UT_sint32 iOldP = 999999999;
+    UT_sint32 iOldP = 999999999;
+	if(pPage == NULL)
+	{
+		m_ColumnBreaker.setStartPage(pPage);
+		return;
+	}	
 	if(pOldP)
 	{
 		iOldP = getDocLayout()->findPage(pOldP);
@@ -965,7 +971,15 @@ void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
 		m_ColumnBreaker.setStartPage(pPage);
 	}
 }
-	
+
+void fl_DocSectionLayout::completeBreakSection(void)
+{
+	m_bNeedsSectionBreak = true;
+	m_ColumnBreaker.setStartPage(NULL);
+	m_ColumnBreaker.breakSection(this);
+	m_bNeedsSectionBreak = false;
+}
+
 void fl_DocSectionLayout::redrawUpdate(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();

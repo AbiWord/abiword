@@ -97,6 +97,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 	if (!isSelectionEmpty())
 	{
 		_moveToSelectionEnd(bForward);
+		_ensureInsertionPointOnScreen();
 		return;
 	}
 
@@ -124,13 +125,14 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 			if(!_charMotion(bForward, count))
 			{
 				_setPoint(iPoint);
+				_ensureInsertionPointOnScreen();
 				notifyListeners(AV_CHG_MOTION);
 				return;
 			}
 		}
 	}
+	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION);
-
 }
 
 /*!
@@ -1908,11 +1910,12 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	_ensureInsertionPointOnScreen();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_setPoint(getPoint());
 
-	_ensureInsertionPointOnScreen();
 	return bResult;
 }
 
@@ -1964,7 +1967,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		m_pDoc->disableListUpdates();
 
 		_deleteSelection();
-
 		_generalUpdate();
 
 		// restore updates and clean up dirty lists
@@ -2134,6 +2136,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_setPoint(getPoint());
 }
 
 
@@ -2497,20 +2500,19 @@ void FV_View::cmdCut(void)
 	m_pDoc->disableListUpdates();
 	cmdCopy(true);
 	_deleteSelection();
+	_generalUpdate();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	_ensureInsertionPointOnScreen();
 
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
 
-	_generalUpdate();
-
-
-	_fixInsertionPointCoords();
+	_setPoint(getPoint());
 }
 
 // bToClipboard is true if you want to copy to the CLIPBOARD
@@ -2557,8 +2559,20 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	m_iPieceTableState = 0;
 
 	m_pDoc->clearDoingPaste();
-
 	m_pDoc->endUserAtomicGlob();
+	m_iPieceTableState = 0;
+	// Move insertion point out of field run if it is in one
+	//
+	_charMotion(true, 0);
+
+//
+// Do a complete update coz who knows what happened in the paste!
+//
+	notifyListeners(AV_CHG_ALL);
+
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
@@ -2587,6 +2601,8 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 
 	m_pDoc->endUserAtomicGlob();
 }

@@ -84,7 +84,8 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iLineThickness(0),
 	  m_iColSpacing(0),
 	  m_iRowSpacing(0),
-	  m_iLeftColPos(0)
+	  m_iLeftColPos(0),
+	  m_bRecursiveFormat(false)
 
 {
 	m_vecColProps.clear();
@@ -245,6 +246,11 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 
 void fl_TableLayout::format(void)
 {
+	if(m_bRecursiveFormat)
+	{
+		return;
+	}
+	m_bRecursiveFormat = true;
 	bool bRebuild = false;
 	fl_ContainerLayout * pPrevCL = getPrev();
 	fp_Page * pPrevP = NULL;
@@ -304,6 +310,7 @@ void fl_TableLayout::format(void)
 	{
 		UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
 	}
+	m_bRecursiveFormat = false;
 }
 
 void fl_TableLayout::markAllRunsDirty(void)
@@ -317,11 +324,14 @@ void fl_TableLayout::markAllRunsDirty(void)
 }
 
 void fl_TableLayout::updateLayout(void)
-{
+{			
+	xxx_UT_DEBUGMSG(("updateTableLayout  \n"));
 	if(getDocument()->isDontImmediateLayout())
 	{
+		xxx_UT_DEBUGMSG(("updateTableLayout not allowed updates  \n"));
 		return;
 	}
+	xxx_UT_DEBUGMSG(("updateTableLayout Doing updates  \n"));
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	bool bNeedsFormat = false;
 	while (pBL)
@@ -1165,9 +1175,11 @@ void fl_CellLayout::checkAndAdjustCellSize(void)
 	pCell->sizeRequest(&Req);
 	if(Req.height == m_iCellHeight)
 	{
+		xxx_UT_DEBUGMSG(("checkandadjustcellheight: Heights identical return %d \n",m_iCellHeight));
 		return;
 	}
 	m_iCellHeight = Req.height;
+	xxx_UT_DEBUGMSG(("checkandadjustcellheight: Heights differ format %d %d \n",m_iCellHeight,Req.height));
 	static_cast<fl_TableLayout *>(myContainingLayout())->setDirty();
 	myContainingLayout()->format();
 }
@@ -1313,6 +1325,7 @@ void fl_CellLayout::format(void)
 	}
 	static_cast<fp_CellContainer *>(getFirstContainer())->layout();
 	m_bNeedsReformat = false;
+	checkAndAdjustCellSize();
 }
 
 void fl_CellLayout::markAllRunsDirty(void)
@@ -1328,16 +1341,24 @@ void fl_CellLayout::markAllRunsDirty(void)
 void fl_CellLayout::updateLayout(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	bool bNeedsFormat = false;
+	xxx_UT_DEBUGMSG(("updateCellLayout \n"));
 	while (pBL)
 	{
 		if (pBL->needsReformat())
 		{
 			pBL->format();
+			bNeedsFormat = true;
+			xxx_UT_DEBUGMSG(("updateCellLayout formatting sub block \n"));
 		}
 
 		pBL = pBL->getNext();
 	}
-	checkAndAdjustCellSize();
+	if(bNeedsFormat)
+	{
+		xxx_UT_DEBUGMSG(("updateCellLayout formatting whole cell \n"));
+		format();
+	}
 }
 
 void fl_CellLayout::redrawUpdate(void)

@@ -1352,6 +1352,7 @@ void fl_BlockLayout::format()
 		UT_DEBUGMSG(("block 0x%08x not on screen\n",this));
 	}
 #endif
+	xxx_UT_DEBUGMSG(("fl_BlockLayout - format \n"));
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = NULL;
 

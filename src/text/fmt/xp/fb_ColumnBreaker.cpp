@@ -34,6 +34,12 @@ fb_ColumnBreaker::fb_ColumnBreaker() :
 {
 }
 
+void fb_ColumnBreaker::setStartPage(fp_Page * pPage)
+{
+	m_pStartPage = pPage;
+	return;
+}
+	
 /*!
   Layout sections on pages
   \return zero

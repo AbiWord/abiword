@@ -129,11 +129,11 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	// for each listener in our vector, we send a notification.
 	// we step over null listners (for listeners which have been
 	// removed (views that went away)).
-	
+	bool bIsLayoutFilling = isLayoutFilling();
 	for (lid=0; lid<lidCount; lid++)
 	{
 		AV_Listener * pListener = (AV_Listener *)m_vecListeners.getNthItem(lid);
-		if(pListener && (!isLayoutFilling() 
+		if(pListener && (!bIsLayoutFilling
 						 || (pListener->getType()== AV_LISTENER_STATUSBAR)
 						 || (pListener->getType()== AV_LISTENER_SCROLLBAR)))
 		{

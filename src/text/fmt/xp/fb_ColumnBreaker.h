@@ -35,7 +35,7 @@ public:
 	fb_ColumnBreaker();
 	virtual ~fb_ColumnBreaker(void) {}
 	UT_sint32 breakSection(fl_DocSectionLayout * pSL);
-	void   setStartPage(fp_Page * pPage) { m_pStartPage = pPage;} 
+	void   setStartPage(fp_Page * pPage);
 	fp_Page * getStartPage(void) { return m_pStartPage;}
 private:
 	bool _breakTable(fp_Container *& pOffendingContainer,

@@ -189,6 +189,7 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->moveInsPtTo(FV_DOCPOS_BOD);
 		m_pView->clearCursorWait();
 		m_pView->setLayoutIsFilling(false);
+		setLayoutIsFilling(false);
 		m_pView->updateLayout();
 		m_pView->updateScreen(false);
 	}
@@ -681,9 +682,11 @@ void FL_DocLayout::formatAll()
 	while (pSL)
 	{
 		pSL->format();
-		if(pSL->getType() == FL_SECTION_DOC)
+		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			static_cast<fl_DocSectionLayout *>(pSL)->completeBreakSection();
 			static_cast<fl_DocSectionLayout *>(pSL)->checkAndRemovePages();
-
+		}
 		pSL = (fl_SectionLayout *) pSL->getNext();
 	}
 }
@@ -692,6 +695,10 @@ void FL_DocLayout::formatAll()
 void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 {
 	UT_ASSERT(m_pDoc);
+	if(isLayoutFilling())
+	{
+		return;
+	}
 //
 	fl_DocSectionLayout * pStart = pFirstDSL;
 //	fl_DocSectionLayout * pStart = pFirstDSL->getPrevDocSection();
@@ -703,7 +710,6 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	// add page view dimensions
 #if 1
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
-//	UT_ASSERT(0);
 	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
 		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(k);

@@ -1091,6 +1091,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 
 			}
 #endif
+			xxx_UT_DEBUGMSG(("sizeRequest: Height of Line %d %d \n",i,pCon->getHeight()));
 			height = height + pCon->getHeight();
 			height = height + pCon->getMarginAfter();
 		}

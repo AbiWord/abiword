@@ -211,7 +211,8 @@ private:
 	UT_sint32              m_iLineThickness;
 	UT_sint32              m_iColSpacing;
 	UT_sint32              m_iRowSpacing;
-	UT_sint32              m_iLeftColPos; 
+	UT_sint32              m_iLeftColPos;
+	bool                   m_bRecursiveFormat;
 	UT_Vector              m_vecColProps;
 	UT_Vector              m_vecRowProps;
 };
