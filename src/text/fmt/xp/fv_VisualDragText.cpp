@@ -587,7 +587,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
-	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
+	bool bPasteTableCol = (m_pView->getSelectionMode() == FV_SelectionMode_TableColumn);
 	if(bPasteTableCol)
 	{
 		m_pView->cmdCut();
