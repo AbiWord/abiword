@@ -24,16 +24,23 @@
 
 class AP_BeOSDialog_PageNumbers : public AP_Dialog_PageNumbers
 {
+	friend class PageNumberWindow;
+	
+public: 
 
- public: 
+	AP_BeOSDialog_PageNumbers(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_BeOSDialog_PageNumbers (void);
+	
+	virtual void			setAnswer(AP_Dialog_PageNumbers::tAnswer a) { m_answer = a; };
 
-  AP_BeOSDialog_PageNumbers(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-  virtual ~AP_BeOSDialog_PageNumbers (void);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	virtual void	runModal(XAP_Frame * pFrame);
 
-  virtual void	runModal(XAP_Frame * pFrame);
+protected:
 
- protected:
-
+  // caches of the last known values for alignment and hdr/footer/both
+  AP_Dialog_PageNumbers::tAlign m_recentAlign;
+  AP_Dialog_PageNumbers::tControl m_recentControl;
 };
 
 #endif /* AP_BeOSDIALOG_PAGENUMBERS_H */

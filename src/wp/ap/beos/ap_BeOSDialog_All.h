@@ -50,6 +50,7 @@
 #include "ap_BeOSDialog_Field.h"
 #include "ap_BeOSDialog_Tab.h"
 #include "ap_BeOSDialog_Columns.h" 
+#include "ap_BeOSDialog_PageNumbers.h"
 
 	// ... add new dialogs here ...
 
@@ -78,6 +79,7 @@
 	DeclareDialog(AP_DIALOG_ID_FIELD, 			AP_BeOSDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_BeOSDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_BeOSDialog_Columns)
+	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,		AP_BeOSDialog_PageNumbers)
 	// ... also add new dialogs here ...
 
 #endif
