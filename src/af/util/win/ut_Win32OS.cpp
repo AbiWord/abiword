@@ -22,7 +22,10 @@
 #include "ut_assert.h"
 #include "ut_Win32OS.h"
 
-bool UT_IsWinNT(void)
+/*!
+ Returns Windows's OSVERSIONINFO structure
+ */
+OSVERSIONINFO& UT_GetWinVersion(void)
 {
 	static bool bInitialized = false;
 	static OSVERSIONINFO os;
@@ -35,22 +38,41 @@ bool UT_IsWinNT(void)
 		bInitialized = true;
 	}
 
-	return (os.dwPlatformId == VER_PLATFORM_WIN32_NT);
+	return os;
+}
+
+/*!
+ Return true if we're running on Windows NT, false otherwise
+ */
+bool UT_IsWinNT(void)
+{
+	return UT_GetWinVersion().dwPlatformId == VER_PLATFORM_WIN32_NT;
+}
+
+/*!
+ Return true if we're running on Windows 2000, false otherwise
+ */
+bool UT_IsWin2K(void)
+{
+	return (UT_GetWinVersion().dwPlatformId == VER_PLATFORM_WIN32_NT
+		 && UT_GetWinVersion().dwMajorVersion >= 5);
 }
 
 /*****************************************************************/
 
+/*!
+ This function loads and locks a dialog template resource. 
+
+ \param hinst
+ \param lpszResName Name of the resource
+
+ Returns the address of the locked resource.
+ The caller is responsible for any unlocking/releasing necessary.
+ This function is used by the various tabbed dialogs to load
+ the sub-dialogs.
+ */
 DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName)
 { 
-	// This function loads and locks a dialog template resource. 
-	// Returns the address of the locked resource.
-	// The caller is responsible for any unlocking/releasing necessary.
-	//
-	// lpszResName - name of the resource
-	//
-	// This function is used by the various tabbed dialogs to load
-	// the sub-dialogs.
-
     HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
     HGLOBAL hglb = LoadResource(hinst, hrsrc); 
     return (DLGTEMPLATE *) LockResource(hglb); 	

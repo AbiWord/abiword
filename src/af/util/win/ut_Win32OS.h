@@ -24,7 +24,9 @@
 #include <windows.h>
 #include "ut_types.h"
 
+OSVERSIONINFO& UT_GetWinVersion(void);
 bool UT_IsWinNT(void);
+bool UT_IsWin2K(void);
 
 DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName);
 
