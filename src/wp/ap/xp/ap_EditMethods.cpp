@@ -1053,6 +1053,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(rotateCase),			0,	""),
 
 	// s
+
 	EV_EditMethod(NF(scriptPlay),			0,	""),
 	EV_EditMethod(NF(scrollLineDown),		0,	""),
 	EV_EditMethod(NF(scrollLineLeft),		0,	""),
@@ -1258,19 +1259,41 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 static bool _openURL(const char* url);
 
 static UT_Timer * s_pToUpdateCursor = NULL;
+static UT_Worker * s_pFrequentRepeat = NULL;
 static XAP_Frame * s_pLoadingFrame = NULL;
 static AD_Document * s_pLoadingDoc = NULL;
 static bool s_LockOutGUI = false;
 
+class _Freq
+{
+public:
+	_Freq(AV_View * pView,EV_EditMethodCallData * pData, void(* exe)(AV_View * pView,EV_EditMethodCallData * pData)):
+		m_pView (pView),
+		m_pData(pData),
+		m_pExe(exe)
+		{};
+	AV_View * m_pView;
+	EV_EditMethodCallData * m_pData;
+	void(* m_pExe)(AV_View * ,EV_EditMethodCallData *) ;
+};
+
 /*!
 This little macro locks out loading frames from any activity thus preventing
 segfaults.
+*
+* Also used to lock out operations during a frequently repeated event 
+* (like holding down an arrow key)
+*
 */
 
 static bool s_EditMethods_check_frame(void)
 {
 	bool result = false;
 	if(s_LockOutGUI)
+	{
+		return true;
+	}
+	if(s_pFrequentRepeat != NULL)
 	{
 		return true;
 	}
@@ -1315,6 +1338,24 @@ static bool unlockGUI(void)
 }
 
 #define CHECK_FRAME if(s_EditMethods_check_frame()) return true;
+
+/*!
+ * use this code to execute a one-off operation in an idle loop.
+ * This allows us to drop frequent events like those that come from arrow keys
+ * so we never get ahead of ourselves.
+ */
+static void _sFrequentRepeat(UT_Worker * pWorker)
+{
+	_Freq * pFreq = static_cast<_Freq *>(pWorker->getInstanceData());
+	pFreq->m_pExe(pFreq->m_pView,pFreq->m_pData);
+//
+// Once then delete, stop and set to NULL
+//
+	delete pFreq;
+	s_pFrequentRepeat->stop();
+	delete s_pFrequentRepeat;
+	s_pFrequentRepeat = NULL;
+}
 
 Defun1(toggleAutoSpell)
 {
@@ -3613,9 +3654,8 @@ Defun(warpInsPtToXY)
 	return true;
 }
 
-Defun1(warpInsPtLeft)
+static void sActualMoveLeft(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
-	CHECK_FRAME;
 	ABIWORD_VIEW;
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
@@ -3630,12 +3670,40 @@ Defun1(warpInsPtLeft)
 //
 		pView->getGraphics()->getCaret()->forceDraw();
 	}
+}
+
+Defun1(warpInsPtLeft)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	_Freq * pFreq = new _Freq(pView,NULL,sActualMoveLeft);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
 	return true;
 }
 
-Defun1(warpInsPtRight)
+static void sActualMoveRight(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
-	CHECK_FRAME;
 	ABIWORD_VIEW;
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
@@ -3646,10 +3714,40 @@ Defun1(warpInsPtRight)
 	if(pView->getGraphics() && pView->getGraphics()->getCaret())
 	{
 //
-// Draw fsking caret for sure!!!
+// Draw the fsking caret for sure!!!
 //
 		pView->getGraphics()->getCaret()->forceDraw();
 	}
+	return;
+}
+
+Defun1(warpInsPtRight)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	_Freq * pFreq = new _Freq(pView,NULL,sActualMoveRight);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
 	return true;
 }
 
@@ -4631,19 +4729,76 @@ Defun(selectColumnClick)
 }
 
 
+static void sActualDelLeft(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharDelete(false,1);
+}
+
 Defun1(delLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharDelete(false,1);
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	_Freq * pFreq = new _Freq(pView,NULL,sActualDelLeft);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
 	return true;
+}
+
+
+static void sActualDelRight(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharDelete(true,1);
 }
 
 Defun1(delRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharDelete(true,1);
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	_Freq * pFreq = new _Freq(pView,NULL,sActualDelRight);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
 	return true;
 }
 
@@ -4754,6 +4909,7 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 	return true;
 }
 #endif
+
 
 Defun(insertData)
 {
