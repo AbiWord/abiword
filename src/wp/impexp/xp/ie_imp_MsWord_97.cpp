@@ -3381,10 +3381,8 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 */
 static const XML_Char * s_translateStyleId(UT_uint32 id)
 {
-	if(id == 4094)
+	if(id >= 4094)
 	{
-		UT_DEBUGMSG(("Custom style\n"));
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		return NULL;
 	}
 
@@ -3402,26 +3400,103 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 7:  return NULL /*"Heading 7"*/;
 		case 8:  return NULL /*"Heading 8"*/;
 		case 9:  return NULL /*"Heading 9"*/;
-			
+		case 10: return NULL /*"Index 1"*/;
+		case 11: return NULL /*"Index 2"*/;
+		case 12: return NULL /*"Index 3"*/;
+		case 13: return NULL /*"Index 4"*/;
+		case 14: return NULL /*"Index 5"*/;
+		case 15: return NULL /*"Index 6"*/;
+		case 16: return NULL /*"Index 7"*/;
+		case 17: return NULL /*"Index 8"*/;
+		case 18: return NULL /*"Index 9"*/;
+		case 19: return NULL /*"TOC 1"*/;
+		case 20: return NULL /*"TOC 2"*/;
+		case 21: return NULL /*"TOC 3"*/;
+		case 22: return NULL /*"TOC 4"*/;
+		case 23: return NULL /*"TOC 5"*/;
+		case 24: return NULL /*"TOC 6"*/;
+		case 25: return NULL /*"TOC 7"*/;
+		case 26: return NULL /*"TOC 8"*/;
+		case 27: return NULL /*"TOC 9"*/;
+		case 28: return NULL /*"Normal Indent"*/;
 		case 29: return "Footnote Text";
-
+		case 30: return NULL /*"Comment Text"*/;
 		case 31: return NULL /*"Header"*/;			
 		case 32: return NULL /*"Footer"*/;
-			
+		case 33: return NULL /*"Index Heading"*/;
 		case 34: return NULL /*"Caption"*/;
-			
+		case 35: return NULL /*"Table of Figures"*/;
 		case 36: return NULL /*"Envelope Address"*/;
 		case 37: return NULL /*"Envelope Return"*/;
 		case 38: return "Footnote Reference";
-
+		case 39: return NULL /*"Comment Reference"*/;
+		case 40: return NULL /*"Line Number"*/;
 		case 41: return NULL /*"Page Number"*/;
 		case 42: return "Endnote Reference";
 		case 43: return "Endnote Text";
-
+		case 44: return NULL /*"Index of Authorities"*/;
+		case 45: return NULL /*"Macro Text"*/;
+		case 46: return NULL /*"TOA Heading"*/;
+		case 47: return NULL /*"List"*/;
+		case 48: return "Bulleted List";
+		case 49: return "Numbered List";
+		case 50: return NULL /*"List 2"*/;
+		case 51: return NULL /*"List 3"*/;
+		case 52: return NULL /*"List 4"*/;
+		case 53: return NULL /*"List 5"*/;
+		case 54: return NULL /*"List Bullet 2"*/;
+		case 55: return NULL /*"List Bullet 3"*/;
+		case 56: return NULL /*"List Bullet 4"*/;
+		case 57: return NULL /*"List Bullet 5"*/;
+		case 58: return NULL /*"List Number 2"*/;
+		case 59: return NULL /*"List Number 3"*/;
+		case 60: return NULL /*"List Number 4"*/;
+		case 61: return NULL /*"List Number 5"*/;
+		case 62: return NULL /*"Title"*/;
+		case 63: return NULL /*"Closing"*/;	
+		case 64: return NULL /*"Signature"*/;
 		case 65: return NULL /*"Default Paragraph Font"*/;
 		case 66: return NULL /*"Body Text"*/;
-
+		case 67: return NULL /*"Body Text Indent"*/;
+		case 68: return NULL /*"List Continue"*/;
+		case 69: return NULL /*"List Continue 2"*/;
+		case 70: return NULL /*"List Continue 3"*/;
+		case 71: return NULL /*"List Continue 4"*/;
+		case 72: return NULL /*"List Continue 5"*/;
+		case 73: return NULL /*"Message Header"*/;
+		case 74: return NULL /*"Subtitle"*/;
+		case 75: return NULL /*"Salutation"*/;
+		case 76: return NULL /*"Date"*/;
+		case 77: return NULL /*"Body Text First Indent"*/;
+		case 78: return NULL /*"Body Text First Indent 2"*/;
+		case 79: return NULL /*"Note Heading"*/;
+		case 80: return NULL /*"Body Text 2"*/;
+		case 81: return NULL /*"Body Text 3"*/;
+		case 82: return NULL /*"Body Text Indent 2"*/;
+		case 83: return NULL /*"Body Text Indent 3"*/;
+		case 84: return "Block Text";
 		case 85: return NULL /*"Hyperlink"*/;
+		case 86: return NULL /*"FollowedHyperlink"*/;
+		case 87: return NULL /*"Strong"*/;
+		case 88: return NULL /*"Emphasis"*/;
+		case 89: return NULL /*"Document Map"*/;
+		case 90: return "Plain Text";
+		case 91: return NULL /*"Email Signature"*/;
+			
+		case 94: return NULL /*"Normal (Web)"*/;
+		case 95: return NULL /*"HTML Acronym"*/;
+		case 96: return NULL /*"HTML Address"*/;
+		case 97: return NULL /*"HTML Cite"*/;
+		case 98: return NULL /*"HTML Code"*/;
+		case 99: return NULL /*"HTML Definition"*/;
+		case 100: return NULL /*"HTML Keyboard"*/;
+		case 101: return NULL /*"HTML Preformatted"*/;
+		case 102: return NULL /*"HTML Sample"*/;
+		case 103: return NULL /*"HTML Typewriter"*/;
+		case 104: return NULL /*"HTML Variable"*/;
+		case 105: return NULL /*"Table Normal"*/;
+
+		case 107: return NULL /*"No List"*/;
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
@@ -3460,11 +3535,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 		attribs[iOffset++] = PT_NAME_ATTRIBUTE_NAME;
 
 		// make sure we use standard names for standard styles
-		const XML_Char * pName = NULL;
-		if(pSTD->sti < 4094)
-		{
-			pName = s_translateStyleId(pSTD->sti);
-		}
+		const XML_Char * pName = s_translateStyleId(pSTD->sti);
 
 		if(pName)
 		{
