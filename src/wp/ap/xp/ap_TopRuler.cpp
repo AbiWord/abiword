@@ -322,7 +322,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		// font -- let's assume that a 3 digit centered
 		// string will be less than 100 pixels.
 		
-		UT_Rect r(xTick-50,yTop,50,yBar);
+		UT_Rect r(xTick-50,yTop,100,yBar);
 		if (!r.intersectsRect(pClipRect))
 			return;
 	}
