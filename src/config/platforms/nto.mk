@@ -91,7 +91,7 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
 # Which links can this platform create.  Define one or
 # both of these options.
-QNX_CAN_BUILD_DYNAMIC=0
+QNX_CAN_BUILD_DYNAMIC=1
 QNX_CAN_BUILD_STATIC=1
 
 # Compiler options for static and dynamic linkage
