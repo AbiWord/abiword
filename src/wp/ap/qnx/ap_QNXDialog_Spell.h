@@ -55,8 +55,9 @@ class AP_QNXDialog_Spell: public AP_Dialog_Spell
    void     _storeWindowData(void);
    void 	_showMisspelledWord(void);	
 
-   char * _convertToMB(UT_UCSChar *wword);
-   UT_UCSChar * _convertFromMB(char *word);
+   char * _convertToMB(const UT_UCSChar *wword);
+   char * _convertToMB(const UT_UCSChar *wword, UT_sint32 iLength);
+   UT_UCSChar * _convertFromMB(const char *word);
    
    bool m_bCancelled;
    short m_iSelectedRow;

@@ -382,53 +382,60 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 	int		   len;
 
 	// insert start of sentence
-	p = _getPreWord();
-	str = _convertToMB(p);
-	len = mbstrlen(str, 0, NULL);
-	FREEP(p);
-	PtMultiTextAttributes_t attrs;
-	memset(&attrs, 0, sizeof(attrs));
-	attrs.text_color = Pg_BLACK;
-	PtMultiTextModifyText(m_textWord, 	/* Widget */
-						  0, 0,			/* start, end positions */
-						  -1,			/* insert position (end of buffer) */
-						  str,	/* text to insert */
-						  len,			/* length of text */
-						  &attrs,			/* Attributes (use default) */
-						  Pt_MT_TEXT_COLOR);		    /* Flags on which attrs to use */				
-   FREEP(str);
+	UT_sint32 iLength;
+
+    p = m_pWordIterator->getPreWord(iLength);
+	if (0 < iLength)
+	{
+		str = _convertToMB(p);
+		len = mbstrlen(str, 0, NULL);
+		PtMultiTextAttributes_t attrs;
+		memset(&attrs, 0, sizeof(attrs));
+		attrs.text_color = Pg_BLACK;
+		PtMultiTextModifyText(m_textWord, 	/* Widget */
+							  0, 0,			/* start, end positions */
+							  -1,			/* insert position (end of buffer) */
+							  str,	/* text to insert */
+							  len,			/* length of text */
+							  &attrs,			/* Attributes (use default) */
+							  Pt_MT_TEXT_COLOR);		    /* Flags on which attrs to use */				
+		FREEP(str);
+	}
    
 	// insert misspelled word (in highlight color)
-	p = _getCurrentWord();
-	str = _convertToMB(p);
-	len = mbstrlen(str, 0, NULL);
-	FREEP(p);
-	attrs.text_color = Pg_RED;
-  	PtMultiTextModifyText(m_textWord, 	/* Widget */
-						  0, 0,			/* start, end positions */
-						  -1,			/* insert position (end of buffer) */
-						  str,			/* text to insert */
-						  len,			/* length of text */
-						  &attrs,		/* Attributes */
-						  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
+    p = m_pWordIterator->getCurrentWord(iLength);
+	if (0 < iLength)
+	{
+		str = _convertToMB(p);
+		len = mbstrlen(str, 0, NULL);
+		attrs.text_color = Pg_RED;
+		PtMultiTextModifyText(m_textWord, 	/* Widget */
+							  0, 0,			/* start, end positions */
+							  -1,			/* insert position (end of buffer) */
+							  str,			/* text to insert */
+							  len,			/* length of text */
+							  &attrs,		/* Attributes */
+							  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
    
-	FREEP(str);
+		FREEP(str);
+	}
 
 	// insert end of sentence
-	p = _getPostWord();
-	str = _convertToMB(p);
-	len = mbstrlen(str, 0, NULL);
-	FREEP(p);
-	attrs.text_color = Pg_BLACK;
-  	PtMultiTextModifyText(m_textWord, 	/* Widget */
-						  0, 0,			/* start, end positions */
-						  -1,			/* insert position (end of buffer) */
-						  str,			/* text to insert */
-						  len,			/* length of text */
-						  &attrs,		/* Attributes */
-						  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
-	FREEP(str);
-    
+    p = m_pWordIterator->getPostWord(iLength);
+	if (0 < iLength)
+	{
+		str = _convertToMB(p);
+		len = mbstrlen(str, 0, NULL);
+		attrs.text_color = Pg_BLACK;
+		PtMultiTextModifyText(m_textWord, 	/* Widget */
+							  0, 0,			/* start, end positions */
+							  -1,			/* insert position (end of buffer) */
+							  str,			/* text to insert */
+							  len,			/* length of text */
+							  &attrs,		/* Attributes */
+							  Pt_MT_TEXT_COLOR);   /* Flags on which attrs to use */				
+		FREEP(str);
+    }
 	// TODO: set scroll position so misspelled word is centered
 
 	char *suggest[2] = {NULL, NULL};
@@ -591,7 +598,7 @@ void AP_QNXDialog_Spell::event_ReplacementChanged()
 // TODO: but I don't know about xp support for them.
 
 // make a multibyte encoded version of a string
-char * AP_QNXDialog_Spell::_convertToMB(UT_UCS4Char *wword)
+char * AP_QNXDialog_Spell::_convertToMB(const UT_UCS4Char *wword)
 {
 char *str;
 UT_UTF8String *utf8 = new UT_UTF8String(wword,0);
@@ -601,8 +608,19 @@ delete utf8;
 return str;
 }
 
+// make a multibyte encoded version of a string
+char * AP_QNXDialog_Spell::_convertToMB(const UT_UCS4Char *wword, UT_sint32 iLength)
+{
+char *str;
+UT_UTF8String *utf8 = new UT_UTF8String(wword,iLength);
+
+str=strdup(utf8->utf8_str());
+delete utf8;
+return str;
+}
+
 // make a wide string from a multibyte string
-UT_UCSChar * AP_QNXDialog_Spell::_convertFromMB(char *word)
+UT_UCSChar * AP_QNXDialog_Spell::_convertFromMB(const char *word)
 {
 UT_UCSChar *wcstr;
 UT_UCS2String str;

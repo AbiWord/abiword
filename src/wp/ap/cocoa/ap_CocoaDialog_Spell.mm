@@ -394,29 +394,34 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
    gtk_text_forward_delete( GTK_TEXT(m_textWord), 
 			   gtk_text_get_length( GTK_TEXT(m_textWord) ) );
    
-   UT_UCSChar *p;
+   const UT_UCSChar *p;
    // insert start of sentence
-   p = _getPreWord();
-   gchar * preword = (gchar*) _convertToMB(p);
-   FREEP(p);
-   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
-		   preword, strlen(preword));
+   UT_sint32 iLength;
+   p = m_pWordIterator->getPreWord(iLength);
+   if (0 < iLength)
+   {
+	   gchar * preword = (gchar*) _convertToMB(p, iLength);
+	   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
+					   preword, strlen(preword));
+	   FREEP(preword);
+   }
 
    // insert misspelled word (in highlight color)
-   p = _getCurrentWord();
-   gchar * word = (gchar*) _convertToMB(p);
-   FREEP(p);
-
+   p = m_pWordIterator->getCurrentWord(iLength);
+   gchar * word = (gchar*) _convertToMB(p, iLength);
    gtk_text_insert(GTK_TEXT(m_textWord) , NULL, &m_highlight, NULL,
-		   word, strlen(word));
-   
-   // insert end of sentence
-   p = _getPostWord();
-   gchar * postword = (gchar*) _convertToMB(p);
-   FREEP(p);
-   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
-		   postword, strlen(postword));
+				   word, strlen(word));
+   //word is freed at the end of the method...
 
+   // insert end of sentence
+   p = m_pWordIterator->getPostWord(iLength);
+   if (0 < iLength)
+   {
+	   gchar * postword = (gchar*) _convertToMB(p, iLength);
+	   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
+					   postword, strlen(postword));
+	   FREEP(postword);
+   }
    // TODO: set scroll position so misspelled word is centered
 
    gtk_text_thaw( GTK_TEXT(m_textWord) );   
@@ -439,7 +444,7 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
       gtk_clist_set_selectable(GTK_CLIST(m_clistSuggestions), 0, FALSE);
 
       g_signal_handler_block(G_OBJECT(m_entryChange), m_replaceHandlerID);
-      gtk_entry_set_text(GTK_ENTRY(m_entryChange), "");
+      gtk_entry_set_text(GTK_ENTRY(m_entryChange), word);
       g_signal_handler_unblock(G_OBJECT(m_entryChange), m_replaceHandlerID);
 
       m_iSelectedRow = -1;
@@ -453,6 +458,8 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
    
    gtk_clist_thaw(GTK_CLIST(m_clistSuggestions) );
    
+
+   FREEP(word);
 }
 
 void AP_CocoaDialog_Spell::_populateWindowData(void)
@@ -589,15 +596,26 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 // TODO: but I don't know about xp support for them.
 
 // make a multibyte encoded version of a string
-char * AP_CocoaDialog_Spell::_convertToMB(UT_UCSChar *wword)
+char * AP_CocoaDialog_Spell::_convertToMB(const UT_UCSChar *wword)
 {
 	char *word = (char *) malloc (UT_UCS_strlen(wword)*2);
 	UT_UCS_strcpy_to_char(word,wword);
 	return word;
 }
 
+// make a multibyte encoded version of a string
+char * AP_CocoaDialog_Spell::_convertToMB(const UT_UCSChar *wword, UT_sint32 iLength)
+{
+// FIXME: this is broken - should take iLength characters from wword
+// and convert them to char. I.e., first substr wword, then
+// convert. But output length is not necessarily related to iLength!
+	char *word = (char *) calloc (iLength);
+	UT_UCS_strncpy_to_char(word,wword, iLength);
+	return word;
+}
+
 // make a wide string from a multibyte string
-UT_UCSChar * AP_CocoaDialog_Spell::_convertFromMB(char *word)
+UT_UCSChar * AP_CocoaDialog_Spell::_convertFromMB(const char *word)
 {
 #if 1
         UT_UCSChar *wword = NULL;

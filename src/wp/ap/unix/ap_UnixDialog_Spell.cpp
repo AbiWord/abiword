@@ -46,7 +46,7 @@ XAP_Dialog * AP_UnixDialog_Spell::static_constructor(XAP_DialogFactory * pFactor
 }
 
 AP_UnixDialog_Spell::AP_UnixDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-    : AP_Dialog_Spell(pDlgFactory,id), mbword(0)
+    : AP_Dialog_Spell(pDlgFactory,id)
 {
 }
 
@@ -283,33 +283,37 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
     GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_textWord));
     GtkTextIter iter;
 
-    UT_UCSChar *p;
+	// Empty buffer
+	gtk_text_buffer_set_text(buffer, "", -1);
+
+    const UT_UCSChar *p;
+	UT_sint32 iLength;
     // insert start of sentence
-    p = _getPreWord();
-    gchar * preword = (gchar*) _convertToMB(p);
-    FREEP(mbword);
-    FREEP(p);
-    gtk_text_buffer_set_text(buffer, preword, -1);
+    p = m_pWordIterator->getPreWord(iLength);
+	if (0 < iLength)
+	{
+		gchar * preword = (gchar*) _convertToMB(p, iLength);
+		gtk_text_buffer_set_text(buffer, preword, -1);
+		FREEP(preword);
+	}
 
     // insert misspelled word (in highlight color)
-    p = _getCurrentWord();
-    gchar * word = (gchar*) _convertToMB(p);
-    FREEP(mbword);
-    FREEP(p);
-
+    p = m_pWordIterator->getCurrentWord(iLength);
+    gchar * word = (gchar*) _convertToMB(p, iLength);
     GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-gdk", &m_highlight, NULL); 
     gtk_text_buffer_get_end_iter(buffer, &iter);
     gtk_text_buffer_insert_with_tags(buffer, &iter, word, -1, txt_tag, NULL);
-   
+	// word is freed at the end of the method...
+	
     // insert end of sentence
-    p = _getPostWord();
-    gchar * postword = (gchar*) _convertToMB(p);
-    FREEP(mbword);
-    FREEP(p);
-
-    gtk_text_buffer_get_end_iter(buffer, &iter);
-    gtk_text_buffer_insert(buffer, &iter, postword, -1);
-
+    p = m_pWordIterator->getPostWord(iLength);
+	if (0 < iLength)
+	{
+		gchar * postword = (gchar*) _convertToMB(p, iLength);
+		gtk_text_buffer_get_end_iter(buffer, &iter);
+		gtk_text_buffer_insert(buffer, &iter, postword, -1);
+		FREEP(postword);
+	}
     // TODO: set scroll position so misspelled word is centered
 
     gtk_clist_freeze( GTK_CLIST(m_clistSuggestions) );   
@@ -319,7 +323,6 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    
     for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
         suggest[0] = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
-        FREEP(mbword);
         gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
     }
    
@@ -332,7 +335,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
         gtk_clist_set_selectable(GTK_CLIST(m_clistSuggestions), 0, FALSE);
 
         g_signal_handler_block(G_OBJECT(m_entryChange), m_replaceHandlerID);
-        gtk_entry_set_text(GTK_ENTRY(m_entryChange), "");
+        gtk_entry_set_text(GTK_ENTRY(m_entryChange), word);
         g_signal_handler_unblock(G_OBJECT(m_entryChange), m_replaceHandlerID);
 
         m_iSelectedRow = -1;
@@ -466,13 +469,19 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
     m_iSelectedRow = -1;
 }
 
-char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
+char * AP_UnixDialog_Spell::_convertToMB(const UT_UCSChar *wword)
 {
     UT_UCS4String ucs4(wword);
     return UT_strdup(ucs4.utf8_str());
 }
 
-UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
+char * AP_UnixDialog_Spell::_convertToMB(const UT_UCSChar *wword, UT_sint32 iLength)
+{
+    UT_UCS4String ucs4(wword, iLength);
+    return UT_strdup(ucs4.utf8_str());
+}
+
+UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(const char *word)
 {
     UT_UCS4Char * str = 0;
     UT_UCS4String ucs4(word);

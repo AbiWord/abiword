@@ -140,6 +140,8 @@ void SpellWin::_suggestChange()
 	
 	if (!m_DlgSpell->m_Suggestions->size()) 
 	{
+		// FIXME: this should insert the original word, surely!
+
 		// no change to suggest, ignore it
 		if (m_DlgSpell->m_iSelectedRow != -1)
 			suggestList->Select(-1);
@@ -240,7 +242,7 @@ void SpellWin::_changeAll(void)
 
 void SpellWin::_showMisspelledWord(void)
 {
-	UT_UCSChar *p;
+	const UT_UCSChar *p;
 	UT_uint32 len;
 	char * buf;
 	UT_uint32 sum = 0;
@@ -268,46 +270,46 @@ void SpellWin::_showMisspelledWord(void)
 
 	// insert start of sentence
 
-	p = m_DlgSpell->_getPreWord();
-	len = UT_UCS_strlen(p);
-	if (len)
+	UT_sint32 iLength;
+
+    p = m_pWordIterator->getPreWord(iLength);
+	if (0 < iLength)
 	{
-		buf = new char [len + 1];
-		UT_UCS_strcpy_to_char(buf, p);
-		sentenceView->Insert(buf, (long int)len);
+		buf = new char [iLength + 1];
+		UT_UCS4_strncpy_to_char(buf, p, iLength);
+		buf[iLength] = '\0';
+		sentenceView->Insert(buf, (long int)iLength);
 		DELETEP(buf);
 	}
-	FREEP(p);
-	sum += len;
+	sum += iLength;
 
 	array->runs[1].offset = sum;
 	
-	p = m_DlgSpell->_getCurrentWord();
-	len = UT_UCS_strlen(p);
-	if (len)
+    p = m_pWordIterator->getCurrentWord(iLength);
+	if (0 < iLength)
 	{
-		buf = new char [len + 1];
-		UT_UCS_strcpy_to_char(buf, p);
-		sentenceView->Insert(sum, buf, (long int)len);
+		buf = new char [iLength + 1];
+		UT_UCS4_strncpy_to_char(buf, p, iLength);
+		buf[iLength] = '\0';
+		sentenceView->Insert(sum, buf, (long int)iLength);
 		DELETEP(buf);
 	}
-	FREEP(p);
-	sum += len;
+	sum += iLength;
 
 	array->runs[2].offset = sum;
 
-	p = m_DlgSpell->_getPostWord();
-	len = UT_UCS_strlen(p);
-	if (len)
+    p = m_pWordIterator->getPostWord(iLength);
+	if (0 < iLength)
 	{
-		buf = new char [len + 1];
-		UT_UCS_strcpy_to_char(buf, p);
-		sentenceView->Insert(sum, buf, (long int)len);
+		buf = new char [iLength + 1];
+		UT_UCS4_strncpy_to_char(buf, p, iLength);
+		buf[iLength] = '\0';
+		sentenceView->Insert(sum, buf, (long int)iLength);
 		DELETEP(buf);
 	}
-	FREEP(p);
-	
-	sentenceView->SetRunArray(0, (long int)sum + len , array);
+	sum += iLength;
+
+	sentenceView->SetRunArray(0, (long int)sum, array);
 	sentenceView->MakeEditable(false);
 
 	// insert suggestions

@@ -2423,7 +2423,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 			// Delimiter was found in the block - that means
 			// there is one or more words between iFirst
 			// and iLast we want to check.
-			_checkMultiWord(pBlockText, iFirst, iLast, false);
+			_checkMultiWord(iFirst, iLast, false);
 		}
 
 		// We still have the word at the end pending though.
@@ -2535,12 +2535,7 @@ fl_BlockLayout::checkSpelling(void)
 	bool bUpdateScreen = m_pSquiggles->deleteAll();
 
 	// Now start checking
-	UT_GrowBuf pgb(1024);
-	bool bRes = getBlockBuf(&pgb);
-	UT_ASSERT(bRes);
-	const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
-	UT_uint32 eor = pgb.getLength();
-	bUpdateScreen |= _checkMultiWord(pBlockText, 0, eor, bIsCursorInBlock);
+	bUpdateScreen |= _checkMultiWord(0, -1, bIsCursorInBlock);
 
 	// Finally update screen
 	if (bIsOnScreen && bUpdateScreen && pView)
@@ -2553,79 +2548,55 @@ fl_BlockLayout::checkSpelling(void)
  Spell-check region of block with potentially multiple words
  \param pBlockText Text of block
  \param iStart Start of region to check
- \param eor End of region to check
+ \param eor End of region to check (or -1 to check to the end)
  \param bToggleIP Toggle IP if true
 */
 bool
-fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
-								UT_uint32 iStart,
-								UT_uint32 eor,
+fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
+								UT_sint32 eor,
 								bool bToggleIP)
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
 
 	bool bScreenUpdated = false;
 
-	UT_uint32 wordBeginning = iStart;
-	while (wordBeginning < eor)
+	fl_BlockSpellIterator* pWordIterator = new fl_BlockSpellIterator(this, iStart);
+
+	const UT_UCSChar* pWord;
+	UT_sint32 iLength, iBlockPos;
+
+	while (pWordIterator->nextWordForSpellChecking(pWord, iLength, iBlockPos))
 	{
-		// Skip delimiters...
-		while (wordBeginning < eor)
-		{
-			// TODO: surely the UCS_UNKPUNK for followChar cannot be right here ?!
-			if (!UT_isWordDelimiter(pBlockText[wordBeginning], UCS_UNKPUNK, UCS_UNKPUNK))
-				break;
-			wordBeginning++;
-		}
-
-		// We're at the start of a word. Find end of word
-		if (wordBeginning < eor)
-		{
-			UT_uint32 wordLength = 0;
-			while ((wordBeginning + wordLength) < eor)
-			{
-				UT_UCSChar currentChar, followChar, prevChar;
-				currentChar = pBlockText[wordBeginning + wordLength];
-				followChar = ((wordBeginning + wordLength + 1) < eor)  ?
-					pBlockText[wordBeginning + wordLength + 1]	:  UCS_UNKPUNK;
-				prevChar = wordBeginning + wordLength > 0 ? pBlockText[wordBeginning + wordLength - 1] : UCS_UNKPUNK;
-
-				if (UT_isWordDelimiter(currentChar, followChar, prevChar)) break;
-				wordLength++;
-			}
-
-			if (wordLength)
-			{
-				fl_PartOfBlock* pPOB = new fl_PartOfBlock(wordBeginning,
-														  wordLength);
-				UT_ASSERT(pPOB);
+		// When past the provided end position, break out
+		if (eor > 0 && iBlockPos > eor) break;
+		
+		fl_PartOfBlock* pPOB = new fl_PartOfBlock(iBlockPos, iLength);
+		UT_ASSERT(pPOB);
 
 #if 0 // TODO: turn this code on someday
-				FV_View* pView = getView();
-				XAP_App * pApp = XAP_App::getApp();
-				XAP_Prefs *pPrefs = pApp->getPrefs();
-				UT_ASSERT(pPrefs);
+		FV_View* pView = getView();
+		XAP_App * pApp = XAP_App::getApp();
+		XAP_Prefs *pPrefs = pApp->getPrefs();
+		UT_ASSERT(pPrefs);
 
-				bool b;
+		bool b;
 
-				// possibly auto-replace the squiggled word with a suggestion
-				if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellAutoReplace, &b))
-				{
-					if (b && !bIsIgnored)
-					{
-						// todo: better cursor movement
-						pView->cmdContextSuggest(1, this, pPOB);
-						pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
-						DELETEP(pPOB);
-					}
-				}
+		// possibly auto-replace the squiggled word with a suggestion
+		if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellAutoReplace, &b))
+		{
+			if (b && !bIsIgnored)
+			{
+				// todo: better cursor movement
+				pView->cmdContextSuggest(1, this, pPOB);
+				pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+				DELETEP(pPOB);
+			}
+		}
 #endif
 
-				if (pPOB)
-					bScreenUpdated |= _doCheckWord(pPOB, pBlockText,true,bToggleIP);
-			}
-
-			wordBeginning += (wordLength + 1);
+		if (pPOB)
+		{
+			bScreenUpdated |= _doCheckWord(pPOB, pWord, true, bToggleIP);
 		}
 	}
 
@@ -2643,90 +2614,28 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
  */
 bool
 fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
-							 const UT_UCSChar* pBlockText,
+							 const UT_UCSChar* pWord,
 							 bool bAddSquiggle /* = true */,
 							 bool bClearScreen /* = true */)
 {
-	UT_uint32 iLength = pPOB->getLength();
-	UT_uint32 iBlockPos = pPOB->getOffset();
-	const UT_UCSChar* pWord = &pBlockText[iBlockPos];
 
-	xxx_UT_DEBUGMSG(("fl_BlockLayout::_doCheckWord %d,%d\n",
-					 pPOB->getOffset(), pPOB->getLength()));
+	UT_sint32 iLength = pPOB->getLength();
+	UT_sint32 iBlockPos = pPOB->getOffset();
 
 	do {
-
-		// Sanity check of word details
-		UT_ASSERT(pBlockText && iLength);
-		if (!pBlockText || (0 == iLength))
-			break;
-
-		// For some reason, the spell checker fails on all 1-char
-		// words & really big ones
-		if ((iLength <= 1) || (iLength > INPUTWORDLEN))
-			break;
-
-		// Ignore words where first character is a digit
-		if (UT_UCS4_isdigit(pWord[0]))
-			break;
-
-		// Check that there are no CJK letters
-		if (!XAP_EncodingManager::get_instance()->noncjk_letters(pWord,
-																 iLength))
-			break;
-
-		// Convert word to simple characters the speller can
-		// understand. While doing this, look for upper-case letters
-		// and digits.
-		UT_UCSChar szTheWord[INPUTWORDLEN + 1];
-		UT_uint32 iNewLength = 0;
-		bool bAllUpperCase = true;
-		bool bHasNumeric = false;
-		for (UT_uint32 i=0; i < iLength; i++)
-		{
-			UT_UCSChar currentChar;
-			currentChar = pWord[i];
-
-			// Remove UCS_ABI_OBJECT from the word
-			if (currentChar == UCS_ABI_OBJECT) continue;
-
-			// Convert smart quote apostrophe to ASCII single quote to
-			// be compatible with ispell
-			if (currentChar == UCS_RQUOTE) currentChar = '\'';
-
-			// Until a lower-case letter is found, we assume the word
-			// is upper-case (don't bother checking after the first
-			// lower-case letter has been found).
-			if (bAllUpperCase)
-				bAllUpperCase &= UT_UCS4_isupper(currentChar);
-
-			// Look for digits
-			bHasNumeric |= UT_UCS4_isdigit(currentChar);
-
-			szTheWord[iNewLength++] = currentChar;
-		}
-
-		// Configurably ignore upper-case words
-		if (bAllUpperCase && m_pLayout->getSpellCheckCaps())
-			break;
-
-		// Configurably ignore words containing digits
-		if (bHasNumeric && m_pLayout->getSpellCheckNumbers())
-			break;
-
 		// Spell check the word, return if correct
 		XAP_App * pApp = XAP_App::getApp();
-		if (_spellCheckWord(szTheWord, iNewLength, iBlockPos))
+		if (_spellCheckWord(pWord, iLength, iBlockPos))
 			break;
 
 		// Look the word up in the dictionary, return if found
-		if (pApp->isWordInDict(szTheWord, iNewLength))
+		if (pApp->isWordInDict(pWord, iLength))
 			break;
 
 		// Find out if the word is in the document's list of ignored
 		// words
 		PD_Document * pDoc = m_pLayout->getDocument();
-		pPOB->setIsIgnored(pDoc->isIgnore(szTheWord, iNewLength));
+		pPOB->setIsIgnored(pDoc->isIgnore(pWord, iLength));
 
 		// Word not correct or recognized, so squiggle it
 		if (bAddSquiggle)
@@ -2735,7 +2644,9 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 		}
 
 		if(bClearScreen)
+		{
 			m_pSquiggles->clear(pPOB);
+		}
 
 		// Display was updated
 		return true;
@@ -2751,8 +2662,12 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 /*!
  Spell-check word in the block region
  \param pPOB Block region bounding the word
-
+ \return True if display was updated, false otherwise
  Consume word in pPOB -- either squiggle or delete it
+
+ FIXME:jsk Make callers use fl_BlockSpellIterator so we don't have to
+ check validity?
+
 */
 bool
 fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
@@ -2763,19 +2678,87 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	if (!pPOB)
 		return false;
 
-	// Get the block content
-	UT_GrowBuf pgb(1024);
-	bool bRes = getBlockBuf(&pgb);
-	UT_ASSERT(bRes);
+	// Ensure pPOB is deleted - if falling out of this block
+	do {
 
-	const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
-	if (!pBlockText)
-		return false;
+		UT_sint32 iLength = pPOB->getLength();
+		UT_sint32 iBlockPos = pPOB->getOffset();
+		if (0 == iLength)
+			break;
 
-	UT_ASSERT((UT_uint32)pPOB->getOffset() <= pgb.getLength());
-	UT_ASSERT((UT_uint32)(pPOB->getOffset() + pPOB->getLength()) <= pgb.getLength());
+		// For some reason, the spell checker fails on all 1-char
+		// words & really big ones
+		if ((iLength <= 1) || (iLength > INPUTWORDLEN))
+			break;
 
-	return _doCheckWord(pPOB, pBlockText);
+		// Get the block content
+		UT_GrowBuf pgb(1024);
+		bool bRes = getBlockBuf(&pgb);
+		UT_ASSERT(bRes);
+
+		const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
+		if (!pBlockText)
+			break;
+
+		const UT_UCSChar* pWord = &pBlockText[iBlockPos];
+
+		UT_ASSERT((UT_uint32)iBlockPos <= pgb.getLength());
+		UT_ASSERT((UT_uint32)(iBlockPos+iLength) <= pgb.getLength());
+
+		// Ignore words where first character is a digit
+		if (UT_UCS4_isdigit(pWord[0]))
+			break;
+
+		// Check that there are no CJK letters
+		if (!XAP_EncodingManager::get_instance()->noncjk_letters(pWord, iLength))
+			break;
+
+		// Convert word to simple characters the speller can
+		// understand. While doing this, look for upper-case letters and
+		// digits.
+		UT_UCSChar szTheWord[INPUTWORDLEN + 1];
+		UT_sint32 iNewLength = 0;
+		bool bAllUpperCase = true;
+		bool bHasNumeric = false;
+		for (UT_sint32 i=0; i < iLength; i++)
+		{
+			UT_UCSChar currentChar;
+			currentChar = pWord[i];
+
+			// Remove UCS_ABI_OBJECT from the word
+			if (currentChar == UCS_ABI_OBJECT) continue;
+
+			// Convert smart quote apostrophe to ASCII single quote to
+			// be compatible with ispell
+			if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		
+			// Until a lower-case letter is found, we assume the word
+			// is upper-case (don't bother checking after the first
+			// lower-case letter has been found).
+			if (bAllUpperCase)
+				bAllUpperCase &= UT_UCS4_isupper(currentChar);
+
+			// Look for digits
+			bHasNumeric |= UT_UCS4_isdigit(currentChar);
+			
+			szTheWord[iNewLength++] = currentChar;
+		}
+
+		// Configurably ignore upper-case words
+		if (bAllUpperCase && m_pLayout->getSpellCheckCaps())
+			break;
+
+		// Configurably ignore words containing digits
+		if (bHasNumeric && m_pLayout->getSpellCheckNumbers())
+			break;
+
+		// _doCheckWord will consume/delete pPOB
+		return _doCheckWord(pPOB, szTheWord );
+	} while (0);
+
+	// Delete the POB which is not longer needed
+	delete pPOB;
+	return false;
 }
 
 /*****************************************************************/
@@ -7364,4 +7347,465 @@ fl_BlockLayout::debugFlashing(void)
 
 	pView->updateScreen();
 #endif
+}
+
+
+
+
+/*!
+  Constructor for iterator
+  
+  Use the iterator to find words for spell-checking in the block.
+
+  \param pBL BlockLayout this iterator should work on
+  \param iPos Position the iterator should start from
+*/
+fl_BlockSpellIterator::fl_BlockSpellIterator(fl_BlockLayout* pBL, UT_sint32 iPos)
+	: m_pBL(pBL), m_iWordOffset(iPos), m_iStartIndex(iPos), m_iPrevStartIndex(iPos),
+	  m_pMutatedString(NULL),
+	  m_iSentenceStart(0), m_iSentenceEnd(0)
+{
+	m_pgb = new UT_GrowBuf(1024);
+	bool bRes = pBL->getBlockBuf(m_pgb);
+	UT_ASSERT(bRes);
+	m_pText = (UT_UCS4Char*)m_pgb->getPointer(0);
+	m_iLength = m_pgb->getLength();
+}
+
+/*!
+  Destructor for iterator
+*/
+fl_BlockSpellIterator::~fl_BlockSpellIterator()
+{
+	DELETEP(m_pgb);
+	FREEP(m_pMutatedString);
+}
+
+/*!
+  Get length of the block text
+  \return Length of the block
+*/
+UT_sint32
+fl_BlockSpellIterator::getBlockLength(void)
+{
+	return m_iLength;
+}
+
+/*!
+  Update block information for this iterator
+
+  This method must be called whenever the block this iterator is
+  associated with changes.
+*/
+void
+fl_BlockSpellIterator::updateBlock(void)
+{
+	m_pgb->truncate(0);
+	bool bRes = m_pBL->getBlockBuf(m_pgb);
+	UT_ASSERT(bRes);
+	m_pText = (UT_UCS4Char*)m_pgb->getPointer(0);
+
+	UT_sint32 iNewLen = m_pgb->getLength();
+	if (iNewLen <= m_iStartIndex)
+	{
+		m_iStartIndex = iNewLen;
+		m_iPrevStartIndex = iNewLen;
+	}
+
+	m_iLength = iNewLen;
+
+
+	m_iWordOffset = 0;
+	m_iWordLength = 0;
+}
+
+
+/*!
+  Returns next word for spell checking in block
+
+  The method finds the next word in the block for spell checking. It
+  takes care of ignoring words as per user configuration and speller
+  limitations. It also makes necessary tweaks to the word (such as
+  right-quote to ASCII-quote conversion).
+
+  If the block is changed between calls to this method, the
+  updateBlock method must be called.
+
+  \result pWord Pointer to word. 
+  \result iLength Length of word.
+  \result iBlockPost The word's position in the block
+  \return True if word was found, false otherwise.
+*/
+bool
+fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sint32& iLength,
+												UT_sint32& iBlockPos)
+{
+	// For empty blocks, there will be no buffer
+	if (NULL == m_pText) return false;
+
+	for (;;) {
+
+		bool bFound = false;
+		bool bWordStartFound = false;
+		m_iWordOffset = m_iStartIndex;
+
+		// Special case for first character in block - checked
+		// seperately to avoid in loop below
+		if (0 == m_iWordOffset)
+		{
+			UT_UCSChar followChar = (((m_iWordOffset + 1) < m_iLength)  
+									 ?  m_pText[m_iWordOffset+1] : UCS_UNKPUNK);
+			if (!UT_isWordDelimiter( m_pText[m_iWordOffset], followChar, UCS_UNKPUNK))
+			{
+				bWordStartFound = true;
+			}
+			else
+			{
+				m_iWordOffset++;
+			}
+		}
+
+		// If start of word not found, keep looking (until the last
+		// character but one - avoids boundary checks for the
+		// followChar argument)
+		if (!bWordStartFound) {
+			while (m_iWordOffset < (m_iLength-1))
+			{
+				if (!UT_isWordDelimiter( m_pText[m_iWordOffset], 
+										 m_pText[m_iWordOffset+1],
+										 m_pText[m_iWordOffset-1]))
+				{
+					bWordStartFound = true;
+					break;
+				}
+				m_iWordOffset++;
+			}
+		}
+
+		// No word start has been found. We still have to check the
+		// last character in the block, but even if it is a word
+		// character, we don't spell-check one-character words, so
+		// there's no reason to make the effort. Just exit...
+		if (!bWordStartFound) {
+			return false;
+		}
+
+		// Now we have the starting position of the word in
+		// m_iWordOffset.
+
+		// Ignore initial apostrophe
+		if ('\'' == m_pText[m_iWordOffset])
+		{
+			m_iWordOffset++;
+		}
+
+		// We're at the start of a word. Find end of word while
+		// keeping track of numerics and case of letters. Again, only
+		// check until the last but one character to avoid followChar
+		// boundary checks...
+		bool bAllUpperCase = true;
+		bool bHasNumeric = false;
+		UT_sint32 iWordEnd = m_iWordOffset;
+		while (!bFound && (iWordEnd < (m_iLength-1)))
+		{
+			if (UT_isWordDelimiter( m_pText[iWordEnd], 
+									m_pText[iWordEnd+1],
+									m_pText[iWordEnd-1]))
+			{
+				bFound = true;
+			}
+			else 
+			{
+				if (bAllUpperCase)
+				{
+					// Only check as long as all seen characters have
+					// been upper case. Most words will cause
+					// bAllUpperCase to go false pretty early, so we
+					// can save the lookup...
+					bAllUpperCase &= UT_UCS4_isupper(m_pText[iWordEnd]);
+				}
+				// It's not worth making this lookup conditional:
+				// majority of words do not contain digits, so the
+				// if-statement will just become an overhead...
+				bHasNumeric |= UT_UCS4_isdigit(m_pText[iWordEnd]);
+
+				iWordEnd++;
+			}
+		}
+
+		// Check last character in block if necessary
+		if (!bFound)
+		{
+			UT_ASSERT(iWordEnd == (m_iLength-1));
+			
+			if (UT_isWordDelimiter(m_pText[iWordEnd], 
+								   UCS_UNKPUNK,
+								   m_pText[iWordEnd-1]))
+			{
+				bFound = true;
+			} 
+			else 
+			{
+				if (bAllUpperCase)
+					bAllUpperCase &= UT_UCS4_isupper(m_pText[iWordEnd]);
+				bHasNumeric |= UT_UCS4_isdigit(m_pText[iWordEnd]);
+				
+				iWordEnd++;
+			}
+		}
+		UT_ASSERT(bFound || iWordEnd == m_iLength);
+
+		// This is where we want to start from at next call.
+		m_iPrevStartIndex = m_iStartIndex;
+		m_iStartIndex = iWordEnd;
+		   
+		// Find length of word
+		UT_uint32 iWordLength = iWordEnd - m_iWordOffset;
+
+		// ignore terminal apostrophe
+		if (m_pText[m_iWordOffset + iWordLength - 1] == '\'')
+		{
+			iWordLength--;
+		}
+
+		// Ignore words where first character is a digit
+		if (UT_UCS4_isdigit(m_pText[m_iWordOffset]))
+		{
+			continue;
+		}
+
+		// Don't check all-UPPERCASE words unless so configured
+		if (bAllUpperCase && !m_pBL->getView()->getLayout()->getSpellCheckCaps())
+		{
+			continue;
+		}
+
+		// Don't check words with numbers unless so configured
+		if (bHasNumeric && !m_pBL->getView()->getLayout()->getSpellCheckNumbers())
+		{
+			continue;
+		}
+
+		// TODO i18n the CJK stuff here is a hack
+		if (!XAP_EncodingManager::get_instance()->noncjk_letters(m_pText+m_iWordOffset, iWordLength))
+		{
+			continue;
+		}
+
+
+		// These are the current word details
+		UT_uint32 iNewLength = iWordLength;
+		pWord = &m_pText[m_iWordOffset];
+
+		// Now make any necessary mutations to the word before it is
+		// returned. Normal case is that no changes are necessary, so
+		// do this in two loops, only executing the second if any
+		// mutation is necessary. This means the normal case will not
+		// require the allocation+copy of the word.
+		FREEP(m_pMutatedString);
+		bool bNeedsMutation = false;
+		for (UT_uint32 i=0; i < (UT_uint32)iWordLength; i++)
+		{
+			UT_UCSChar currentChar = m_pText[m_iWordOffset + i];
+			
+			if (currentChar == UCS_ABI_OBJECT || currentChar == UCS_RQUOTE)
+			{
+				bNeedsMutation = true;
+				break;
+			}
+		}
+
+		if (bNeedsMutation)
+		{
+			// Generate the mutated word in a new buffer pointed to by m_pMutatedString
+			m_pMutatedString = (UT_UCSChar*) UT_calloc(iWordLength, sizeof(UT_UCSChar));
+			UT_ASSERT(m_pMutatedString);
+			pWord = m_pMutatedString;
+			iNewLength = 0;
+			for (UT_uint32 i=0; i < (UT_uint32)iWordLength; i++)
+			{
+				UT_UCSChar currentChar = m_pText[m_iWordOffset + i];
+			
+				// Remove UCS_ABI_OBJECT from the word
+				if (currentChar == UCS_ABI_OBJECT) continue;
+
+				// Convert smart quote apostrophe to ASCII single quote to
+				// be compatible with ispell
+				if (currentChar == UCS_RQUOTE) currentChar = '\'';
+
+				m_pMutatedString[iNewLength++] = currentChar;
+			}
+		}
+
+		// Ignore one-character words.
+		// Note: if this is ever changed to be 2+, the scan for word
+		// delimiters at the top must also be changed to check for a word
+		// in the last character of the block.
+		if (iNewLength <= 1)
+		{
+			continue;
+		}
+
+
+		// Don't blow ispell's little mind...
+		if (INPUTWORDLEN < iNewLength)
+		{
+			continue;
+		}
+
+		
+		// OK, we found the word. Feed the length/pos details to the
+		// caller...
+		iLength = iNewLength;
+		iBlockPos = m_iWordOffset;
+
+		// Also remember length of m_pWord
+		m_iWordLength = iNewLength;
+
+		// Return success!
+		return true;
+	}
+}
+
+// TODO  This function finds the beginning and end of a sentence enclosing
+// TODO  the current misspelled word. Right now, it starts from the word
+// TODO  and works forward/backward until finding [.!?] or EOB
+// TODO  This needs to be improved badly. However, I can't think of a 
+// TODO  algorithm to do so -- especially not one which could work with
+// TODO  other languages very well...
+// TODO  Anyone have something better?
+// TODO  Hipi: ICU includes an international sentence iterator
+// TODO  Hipi: Arabic / Hebrew reverse ? should count, Spanish upside-down
+// TODO  Hipi: ? should not count.  CJK scripts have their own equivalents
+// TODO  Hipi: to [.!?].  Indic languages can use a "danda" or "double danda".
+// TODO  Hipi: Unicode chartype functions may be useable
+
+/*!
+  Update sentence baoundaries around current word
+  Find sentence the current word is in.
+*/
+void
+fl_BlockSpellIterator::updateSentenceBoundaries(void)
+{
+	UT_sint32 iBlockLength = m_pgb->getLength();
+
+	// If the block is small, don't bother looking for
+	// boundaries. Just display the full block.
+	if (iBlockLength < 30)
+	{
+		m_iSentenceStart = 0;
+		m_iSentenceEnd = iBlockLength - 1;
+		return;
+	}
+
+	// Go back from the current word start until a period is found
+	m_iSentenceStart = m_iWordOffset;
+	while (m_iSentenceStart > 0) {
+		if (UT_UCS4_isSentenceSeparator(m_pText[m_iSentenceStart]))
+			break;
+		m_iSentenceStart--;
+	}
+   
+	// Go forward past any whitespace if sentence start is not at the
+	// start of the block
+	if (m_iSentenceStart > 0)
+	{
+		// Seeing as we're not at the start of the block, and the word
+		// must contain at least one character, we don't have to make
+		// conditional boundary checking (and UCS_UNKPUNK
+		// substitution).
+		UT_ASSERT(m_iSentenceStart > 0);
+		UT_ASSERT(m_iWordLength > 1);
+
+		while (++m_iSentenceStart < m_iWordOffset
+			   && UT_isWordDelimiter(m_pText[m_iSentenceStart], 
+									 m_pText[m_iSentenceStart+1],
+									 m_pText[m_iSentenceStart-1]))
+		{
+			// Nothing to do... just iterating...
+		};
+
+	}
+
+
+	// Find end of sentence. Go forward until a period is found. If
+	// getting to within 10 characters of the end of the block, stop
+	// and go with that as the end....
+	m_iSentenceEnd = m_iWordOffset + m_iWordLength;
+	while (m_iSentenceEnd < (iBlockLength - 10)) {
+		if (UT_UCS4_isSentenceSeparator(m_pText[m_iSentenceStart]))
+			break;
+		m_iSentenceEnd++;
+	}
+	if (m_iSentenceEnd == (iBlockLength-10)) m_iSentenceEnd = iBlockLength-1;
+}
+
+/*!
+  Get current word
+  \result iLength Length of string.
+  \return Pointer to word.
+*/
+const UT_UCSChar*
+fl_BlockSpellIterator::getCurrentWord(UT_sint32& iLength)
+{
+	iLength = m_iWordLength;
+
+	if (NULL != m_pMutatedString)
+	{
+		return m_pMutatedString;
+	}
+	else
+	{
+		return &m_pText[m_iWordOffset];
+	}
+}
+
+/*!
+  Get part of sentence before current word
+  \result iLength Length of string. If 0, NULL will be returned.
+  \return Pointer to sentence prior to current word, or NULL
+*/
+const UT_UCSChar*
+fl_BlockSpellIterator::getPreWord(UT_sint32& iLength)
+{
+	iLength = m_iWordOffset - m_iSentenceStart;
+
+	// If it ever becomes necessary to mutate the pre-word, allocate
+	// space to m_pMutatedString and return it. Caller will consume
+	// that buffer before calling any other function.
+
+	if (0 >= iLength)
+		return NULL;
+
+	return (UT_UCSChar*)m_pgb->getPointer(m_iSentenceStart);
+}
+
+/*!
+  Get part of sentence after current word
+  \result iLength Length of string. If 0, NULL will be returned.
+  \return Pointer to sentence following current word, or NULL
+*/
+const UT_UCSChar*
+fl_BlockSpellIterator::getPostWord(UT_sint32& iLength)
+{
+	iLength = m_iSentenceEnd - m_iStartIndex;
+
+	// If it ever becomes necessary to mutate the pre-word, allocate
+	// space to m_pMutatedString and return it. Caller will consume
+	// that buffer before calling any other function.
+	
+	if (0 >= iLength)
+		return NULL;
+
+	return (UT_UCSChar*)m_pgb->getPointer(m_iStartIndex);
+}
+
+/*!
+  Move iterator back to the previous word.
+  This method can only be called once per iteration.
+*/
+void
+fl_BlockSpellIterator::revertToPreviousWord()
+{
+	m_iStartIndex = m_iPrevStartIndex;
 }

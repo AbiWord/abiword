@@ -446,9 +446,8 @@ protected:
 	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 
-	bool					_checkMultiWord(const UT_UCSChar* pBlockText,
-											UT_uint32 iStart,
-											UT_uint32 eor,
+	bool					_checkMultiWord(UT_sint32 iStart,
+											UT_sint32 eor,
 											bool bToggleIP);
 
 	UT_uint32				_getLastChar();
@@ -591,9 +590,45 @@ protected:
 	UT_uint32		iOffset;
 };
 
+
+class ABI_EXPORT fl_BlockSpellIterator
+{
+	friend class fl_BlockLayout;
+
+	UT_GrowBuf*     m_pgb;
+
+	fl_BlockLayout* m_pBL;
+
+	UT_sint32       m_iWordOffset;
+	UT_sint32       m_iWordLength;
+
+	UT_sint32       m_iStartIndex;
+	UT_sint32       m_iPrevStartIndex;
+	UT_UCSChar*     m_pText;
+	UT_sint32       m_iLength;
+
+	UT_UCSChar*     m_pMutatedString;
+
+	UT_sint32       m_iSentenceStart;
+	UT_sint32       m_iSentenceEnd;
+
+public:
+	fl_BlockSpellIterator(fl_BlockLayout* pBL, UT_sint32 iPos = 0);
+	~fl_BlockSpellIterator();
+		
+	bool            nextWordForSpellChecking(const UT_UCSChar*& pWord,
+											 UT_sint32& iLength,
+											 UT_sint32& iBlockPos);
+	void              updateBlock(void);
+	void              updateSentenceBoundaries(void);
+
+	UT_sint32         getBlockLength(void);
+
+	void              revertToPreviousWord(void);
+
+    const UT_UCSChar* getCurrentWord(UT_sint32& iLength);
+    const UT_UCSChar* getPreWord(UT_sint32& iLength);
+    const UT_UCSChar* getPostWord(UT_sint32& iLength);
+};
+
 #endif /* FL_BLOCKLAYOUT_H */
-
-
-
-
-

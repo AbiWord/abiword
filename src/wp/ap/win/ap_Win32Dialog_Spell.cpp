@@ -153,7 +153,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	SendMessage(m_hwndSuggest, LB_RESETCONTENT, 0, 0);
 
 	CHARFORMAT cf;
-	UT_UCSChar *p;
+	const UT_UCSChar *p;
 	UT_uint32 len;
 	UT_uint32 sum = 0;
 	char * buf;
@@ -166,17 +166,21 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	cf.dwEffects = CFE_AUTOCOLOR | CFE_PROTECTED;
 	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_ALL, (LPARAM) &cf);
 
-	p = _getPreWord();
-	len = UT_UCS4_strlen(p);
-	if (len)
+	UT_sint32 iLength;
+
+    p = m_pWordIterator->getPreWord(iLength);
+	if (0 < iLength)
 	{
-		buf = new char [len + 1];
-		UT_UCS4_strcpy_to_char(buf, p);
+// FIXME: this is broken - should take iLength characters from p
+// and convert them to char. I.e., first substr p, then
+// convert. But output length is not necessarily related to iLength!
+		buf = new char [iLength + 1];
+		UT_UCS4_strncpy_to_char(buf, p, iLength);
+		buf[iLength] = '\0';
 		SendMessage(m_hwndSentence, WM_SETTEXT, 0, (LPARAM)buf);
 		DELETEP(buf);
 	}
-	FREEP(p);
-	sum += len;
+	sum += iLength;
 
 	// insert misspelled word (in highlight color)
 	SendMessage(m_hwndSentence, EM_SETSEL, (WPARAM) sum, (LPARAM) sum);
@@ -186,17 +190,19 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	cf.crTextColor = RGB(255,0,0);
 	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_SELECTION, (LPARAM) &cf);
 
-	p = _getCurrentWord();
-	len = UT_UCS4_strlen(p);
-	if (len)
+    p = m_pWordIterator->getCurrentWord(iLength);
+	if (0 < iLength)
 	{
-		buf = new char [len + 1];
-		UT_UCS4_strcpy_to_char(buf, p);
+// FIXME: this is broken - should take iLength characters from p
+// and convert them to char. I.e., first substr p, then
+// convert. But output length is not necessarily related to iLength!
+		buf = new char [iLength + 1];
+		UT_UCS4_strncpy_to_char(buf, p, iLength);
+		buf[iLength] = '\0';
 		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)buf);
 		DELETEP(buf);
 	}
-	FREEP(p);
-	sum += len;
+	sum += iLength;
 
 	// insert end of sentence
 	SendMessage(m_hwndSentence, EM_SETSEL, (WPARAM) sum, (LPARAM) sum);
@@ -204,16 +210,18 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	cf.dwEffects = CFE_AUTOCOLOR | CFE_PROTECTED;
 	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_SELECTION, (LPARAM) &cf);
 
-	p = _getPostWord();
-	len = UT_UCS4_strlen(p);
-	if (len)
+    p = m_pWordIterator->getPostWord(iLength);
+	if (0 < iLength)
 	{
-		buf = new char [len + 1];
-		UT_UCS4_strcpy_to_char(buf, p);
+// FIXME: this is broken - should take iLength characters from p
+// and convert them to char. I.e., first substr p, then
+// convert. But output length is not necessarily related to iLength!
+		buf = new char [iLength + 1];
+		UT_UCS4_strncpy_to_char(buf, p, iLength);
+		buf[iLength] = '\0';
 		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)buf);
 		DELETEP(buf);
 	}
-	FREEP(p);
 
 	// insert suggestions
 	if (!m_Suggestions->getItemCount())
@@ -259,6 +267,8 @@ void AP_Win32Dialog_Spell::_suggestChange(void)
 
 	if (!m_Suggestions->getItemCount()) 
 	{
+		// FIXME: this should insert the original word, surely!
+
 		// no change to suggest, ignore it
 		if (m_iSelectedRow != -1)
 			SendMessage(m_hwndSuggest, LB_SETCURSEL, -1, 0);

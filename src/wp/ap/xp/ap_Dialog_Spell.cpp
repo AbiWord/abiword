@@ -94,11 +94,9 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 
    m_iWordOffset = 0;
    m_iWordLength = -1;
-
-   m_iSentenceStart = 0;
-   m_iSentenceEnd = 0;
-   
-   m_pBlockBuf = NULL;
+   m_pWord = NULL;
+   m_bSkipWord = false;
+  
    m_pView = NULL;
    m_pStartSection = NULL;
    m_pStartBlock = NULL;
@@ -125,10 +123,10 @@ AP_Dialog_Spell::~AP_Dialog_Spell(void)
 	  m_pView->moveInsPtTo( m_iOrigInsPoint );
 	}
 
-	DELETEP(m_pBlockBuf);
 	UT_HASH_PURGEDATA(UT_UCSChar*,m_pChangeAll, free);
 	DELETEP(m_pChangeAll);
 	DELETEP(m_pIgnoreAll);
+	DELETEP(m_pWordIterator);
 
 	_purgeSuggestions();
 }
@@ -179,28 +177,21 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
 
 	   m_pCurrBlock = m_pStartBlock;
 	   m_pCurrSection = m_pStartSection;
-
 	   m_bIsSelection = true;
    }
 
-   m_pBlockBuf = new UT_GrowBuf(1024);
-   bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
-   UT_ASSERT(bRes);
+   m_pWordIterator = new fl_BlockSpellIterator(m_pCurrBlock, 0);
    
    m_pChangeAll = new UT_StringPtrMap(7); // is 7 buckets adequate? too much?
    m_pIgnoreAll = new UT_StringPtrMap(7);
+
+   m_bSkipWord = false;
 }
 
 bool AP_Dialog_Spell::nextMisspelledWord(void)
 {
-   UT_ASSERT(m_pBlockBuf);
-
-   UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
-   UT_uint32 iBlockLength = m_pBlockBuf->getLength();
-
+   UT_ASSERT(m_pWordIterator);
    UT_ASSERT(m_pView && m_pView->getLayout() );	
-   bool checkCaps = m_pView->getLayout()->getSpellCheckCaps();
-   bool checkNumeric = m_pView->getLayout()->getSpellCheckNumbers();
 
    // Makes this honor spelling prefs
    XAP_App * pApp = m_pFrame->getApp();
@@ -214,281 +205,146 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    bool b = false;
    pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
 
+
+   // Yes, I know. This is a bit anal. But it works, and I'm too tired
+   // to rethink the iterator behaviour to match the requirement right
+   // now. I'll fix it sometime in the future... FIXME:jskov
+   if (!m_bSkipWord)
+   {
+	   m_pWordIterator->revertToPreviousWord();
+   }
+   m_bSkipWord = false;
+
    // loop until a misspelled word or end of document is hit
    for (;;) 
    {
-
-	   // do we need to move to the next block?
-	   if (m_iWordOffset >= iBlockLength) 
+	   while (m_pWordIterator->nextWordForSpellChecking(m_pWord, m_iWordLength, m_iWordOffset))
 	   {
-
-		   // since we're done with this current block, put it
-		   // in the block spell queue so squiggles will be updated
-	
-		   FL_DocLayout * docLayout = m_pCurrSection->getDocLayout();
-
-		   // causes SEGV if a table is in the document!!!
-		   if (b)
+		   // We have found a word, but if there was a selection, make
+		   // sure the word lies inside the selection (this check is
+		   // for the start of the selection only).
+		   if (m_iStartIndex >= 0)
 		   {
-			   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pCurrBlock);
-		   }
-
-		   // was that the last block in the selection?
-		   if (m_bIsSelection && m_pCurrBlock == m_pEndBlock)
-			   return false;
-
-		   // no, so move on to the next block
-		   m_pCurrBlock = (fl_BlockLayout *) m_pCurrBlock->getNext();
-		   
-		   // next section, too?
-		   if (m_pCurrBlock == NULL) 
-		   {
-			   m_pCurrSection = (fl_DocSectionLayout*) m_pCurrSection->getNext();
-
-			   // end of document?
-			   if (m_pCurrSection == NULL)
+			   if (m_iStartIndex >= (m_iWordOffset + m_iWordLength))
 			   {
-				   return false;
+				   // Word is not inside the selection - skip to
+				   // next one
+				   continue;
 			   }
-
-			   m_pCurrBlock = (fl_BlockLayout *) m_pCurrSection->getFirstLayout();
-		   }
-	 
-		   // update the buffer with our new block
-		   m_pBlockBuf->truncate(0);
-		   bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
-	     
-		   m_iWordOffset = 0;
-		   m_iSentenceStart = 0;
-		   m_iSentenceEnd = 0;
-
-		   UT_ASSERT(bRes);
-		   if (!bRes)
-		     continue;
-
-		   pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
-		   iBlockLength = m_pBlockBuf->getLength();
-	   }
-	
-	   // scan block for misspelled words
-
-	   // now start checking
-	   bool bFound;
-	   bool bAllUpperCase;
-	   bool bHasNumeric;
-	
-	   while (m_iWordOffset < iBlockLength) 
-	   {
-
-		   // skip delimiters...
-		   while (m_iWordOffset < iBlockLength)
-		   {
-			   UT_UCSChar followChar, prevChar;
-			   followChar = ((m_iWordOffset + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset+1]  :  UCS_UNKPUNK;
-			   prevChar = m_iWordOffset > 0 ? pBlockText[m_iWordOffset-1] : UCS_UNKPUNK;
-		 
-			   if (!UT_isWordDelimiter( pBlockText[m_iWordOffset], followChar, prevChar))
-			   {
-				   break;
-			   }
-			   m_iWordOffset++;
+			   // OK, it's inside the selection - we don't have to
+			   // check for this anymore
+			   m_iStartIndex = -1;
 		   }
 
 		   // If there was a selection, we may have to stop here if
-		   // we're past the end length. It's done here, and not
-		   // earlier (or later) so that the last word of the
-		   // selection (even if only partially selected) is checked.
+		   // we're past the end length (compare the m_iWordOffset and
+		   // not the end of the word, thus including a partially
+		   // selected word).
 		   if (m_bIsSelection && m_pCurrBlock == m_pEndBlock
 			   && m_iWordOffset >= m_iEndLength)
 		   {
-			   // Trigger next-block handling code (above)
-			   m_iWordOffset = iBlockLength;
+			   // Trigger next-block handling code (below)
 			   break;
 		   }
 
-	     
-		   // ignore initial apostrophe
-		   // TODO i18n can be part of word
-		   if (pBlockText[m_iWordOffset] == '\'')
+		   // try testing our current change all lists
+		   if (!inChangeAll()) 
 		   {
-			   m_iWordOffset++;
-		   }
-		   if (m_iWordOffset < iBlockLength) 
+			   // try ignore all list and user dictionaries here, too
+			   XAP_App * pApp = m_pFrame->getApp();
+
+			   if (!m_pDoc->isIgnore(m_pWord, m_iWordLength) &&
+				   !pApp->isWordInDict(m_pWord, m_iWordLength) &&
+				   !_spellCheckWord(m_pWord, m_iWordLength)) 
+			   {
+				   // unknown word... prepare list of possibilities
+				   SpellChecker * checker = _getDict();
+				   if (!checker)
+				   {
+					   return false;
+				   }
+				   makeWordVisible(); // display the word now.
+
+				   // Get suggestions from spell checker
+				   _purgeSuggestions();
+				   m_Suggestions = checker->suggestWord(m_pWord, m_iWordLength);
+				   // If it didn't have any, create an empty vector
+				   if(!m_Suggestions)
+				   {
+					   m_Suggestions = new UT_Vector();
+				   }
+				   // Get suggestions from user's AbiWord file
+				   pApp->suggestWord(m_Suggestions, m_pWord, m_iWordLength);
+
+				   // update sentence boundaries (so we can display
+				   // the misspelled word in proper context)
+				   m_pWordIterator->updateSentenceBoundaries();
+
+				   // return to caller
+				   return true;
+				   // we have all the important state information in
+				   // class variables, so the next call to this
+				   // function will pick up at the same place.  this
+				   // also means we'll check whatever changes they
+				   // make to this word.
+			   }
+		   } 
+		   else 
 		   {
-	    
-			   // we're at the start of a word. find end of word...
-			   bAllUpperCase = true;
-			   bHasNumeric = false;
-			   bFound = false;
-			   m_iWordLength = 0;
-			   while ((!bFound) && (m_iWordOffset + m_iWordLength) < iBlockLength) 
+			   UT_uint32 iOldLength = m_pWordIterator->getBlockLength();
+
+			   // we changed the word, and the block buffer has been
+			   // updated, so reload the pointer and length
+			   m_pWordIterator->updateBlock();
+
+			   // If this is the last block, adjust the end length
+			   // accordingly (seeing as the change must have occured
+			   // before the end of the selection).
+			   if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
 			   {
-
-				   UT_UCSChar followChar, prevChar;
-				   followChar = ((m_iWordOffset + m_iWordLength + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset + m_iWordLength + 1]  :  UCS_UNKPUNK;
-				   prevChar = m_iWordOffset + m_iWordLength > 0 ? pBlockText[m_iWordOffset + m_iWordLength - 1] : UCS_UNKPUNK;
-			
-				   if ( true == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar, prevChar)) 
-				   {
-					   bFound = true;
-				   } 
-				   else 
-				   {
-					   bAllUpperCase &= UT_UCS4_isupper(pBlockText[m_iWordOffset + m_iWordLength]);
-					   bHasNumeric |= UT_UCS4_isdigit(pBlockText[m_iWordOffset + m_iWordLength]);
-
-					   m_iWordLength++;
-				   }
+				   m_iEndLength += (m_pWordIterator->getBlockLength() - iOldLength);
 			   }
 
-			   // We have found a word, but if there was a selection,
-			   // make sure the word lies inside the selection (this
-			   // check is for the start of the selection only).
-			   if (m_bIsSelection && m_iStartIndex >= 0)
-			   {
-				   if ((UT_uint32)m_iStartIndex >= (m_iWordOffset + m_iWordLength))
-				   {
-					   // Word is not inside the selection - skip to
-					   // next one
-					   m_iWordOffset += (m_iWordLength + 1);
-					   continue;
-				   }
-				   // OK, it's inside the selection - we don't have to
-				   // check for this anymore
-				   m_iStartIndex = -1;
-			   }
-				
-			   // ignore terminal apostrophe
-			   // TODO i18n can be part of a word
-			   if (pBlockText[m_iWordOffset + m_iWordLength - 1] == '\'')
-			   {
-				   m_iWordLength--;
-			   }
-		  
-			   // for some reason, the spell checker fails on all 1-char words & really big ones
-			   // -this is a limitation in the underlying default checker ispell --JB
-			   // TODO query spell object about min word length
-			   // TODO i18n the CJK stuff here is a hack
-			   if ((m_iWordLength > 1) &&
-				   XAP_EncodingManager::get_instance()->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
-				   (!checkCaps || !bAllUpperCase) &&
-				   (!UT_UCS4_isdigit(pBlockText[m_iWordOffset]) &&
-					(m_iWordLength < INPUTWORDLEN))) 
-			   {
-	    
-				   // try testing our current change all lists
-				   if (!inChangeAll()) 
-				   {
-					   // try ignore all list and user dictionaries here, too
-					   XAP_App * pApp = m_pFrame->getApp();
-
-					   UT_UCSChar theWord[INPUTWORDLEN + 1];
-					   UT_uint32 iNewLength = 0;
-					   for (UT_uint32 i=0; i < (UT_uint32)m_iWordLength; i++)
-					   {
-						   UT_UCSChar currentChar;
-						   currentChar = pBlockText[m_iWordOffset + i];
-			
-						   // Remove UCS_ABI_OBJECT from the word
-						   if (currentChar == UCS_ABI_OBJECT) continue;
-			
-						   // Convert smart quote apostrophe to ASCII
-						   // single quote to be compatible with
-						   // ispell
-						   if (currentChar == UCS_RQUOTE) currentChar = '\'';
-
-						   theWord[iNewLength++] = currentChar;
-					   }
-					   theWord[iNewLength+1] = 0;
-
-					   // Configurably ignore upper-case words
-					   if (bAllUpperCase && checkCaps)
-					   {
-						   m_iWordOffset += (m_iWordLength + 1);
-						   continue;
-					   }
-
-					   // Configurably ignore words containing digits
-					   if (bHasNumeric && checkNumeric)
-					   {
-						   m_iWordOffset += (m_iWordLength + 1);
-						   continue;
-					   }
-
-//					   makeWordVisible();
-
-					   if (!m_pDoc->isIgnore(theWord, iNewLength) &&
-						   !pApp->isWordInDict(theWord, iNewLength) &&
-						   !_spellCheckWord(theWord, iNewLength)) 
-					   {
-		  
-						   // unknown word... prepare list of possibilities
-						   SpellChecker * checker = _getDict();
-						   if (!checker)
-						   {
-							   return false;
-						   }
-						   makeWordVisible(); // display the word now.
-
-						   m_Suggestions = checker->suggestWord(theWord, 
-																iNewLength);
-						   if(m_Suggestions)
-						   {
-							   pApp->suggestWord(m_Suggestions,theWord,  
-												 iNewLength);
-						   }
-						   if (!m_Suggestions)
-						   {
-							   m_Suggestions = new UT_Vector();
-							   pApp->suggestWord(m_Suggestions,theWord,
-												 iNewLength);
-							   if(m_Suggestions->getItemCount() == 0)
-							   {
-								   DELETEP(m_Suggestions);
-								   m_Suggestions = NULL;
-								   return false;
-							   }		
-						   }
-						   
-						   // update sentence boundaries (so we can display
-						   // the misspelled word in proper context)
-						   if (m_iWordOffset + m_iWordLength > m_iSentenceEnd ||
-							   m_iWordOffset < m_iSentenceStart) 
-						   {
-							   _updateSentenceBoundaries();
-						   }
-
-						   // return to caller
-						   return true;
-						   // we have all the important state information in class variables,
-						   // so the next call to this function will pick up at the same place.
-						   // this also means we'll check whatever changes they make to this word.
-					   }
-				   } 
-				   else 
-				   {
-					   // we changed the word, and the block buffer has
-					   // been updated, so reload the pointer and length
-					   pBlockText = (UT_UCS4Char*) m_pBlockBuf->getPointer(0);
-					   UT_uint32 newLength = m_pBlockBuf->getLength();
-					   // If this is the last block, adjust the end
-					   // length accordingly (seeing as the change
-					   // must have occured before the end of the
-					   // selection).
-					   if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
-					   {
-						   m_iEndLength += (newLength - iBlockLength);
-					   }
-
-					   iBlockLength = newLength;
-					   // the offset shouldn't change
-				   }
-			   }
-		
-			   // correctly spelled, so continue on
-			   m_iWordOffset += (m_iWordLength + 1);
 		   }
 	   }
+
+	   // iterator is of no more use to us
+	   DELETEP(m_pWordIterator);
+
+	   // since we're done with this current block, put it
+	   // in the block spell queue so squiggles will be updated
+	   FL_DocLayout * docLayout = m_pCurrSection->getDocLayout();
+
+	   // causes SEGV if a table is in the document!!!
+	   if (b)
+	   {
+		   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pCurrBlock);
+	   }
+
+	   // was that the last block in the selection?
+	   if (m_bIsSelection && m_pCurrBlock == m_pEndBlock)
+		   return false;
+
+	   // no, so move on to the next block
+	   m_pCurrBlock = (fl_BlockLayout *) m_pCurrBlock->getNext();
+	   
+	   // next section, too?
+	   if (m_pCurrBlock == NULL) 
+	   {
+		   m_pCurrSection = (fl_DocSectionLayout*) m_pCurrSection->getNext();
+
+		   // end of document?
+		   if (m_pCurrSection == NULL)
+		   {
+			   return false;
+		   }
+
+		   m_pCurrBlock = (fl_BlockLayout *) m_pCurrSection->getFirstLayout();
+	   }
+	 
+	   // update the iterator with our new block
+	   m_pWordIterator = new fl_BlockSpellIterator(m_pCurrBlock, 0);
+	   UT_ASSERT(m_pWordIterator);
    }
 }
 
@@ -506,49 +362,47 @@ bool AP_Dialog_Spell::makeWordVisible(void)
 
 bool AP_Dialog_Spell::addIgnoreAll(void)
 {
-	UT_UCSChar * pBuf = (UT_UCSChar *) m_pBlockBuf->getPointer(m_iWordOffset);
-	return m_pDoc->appendIgnore(pBuf,m_iWordLength);
+	return m_pDoc->appendIgnore(m_pWord,m_iWordLength);
 }
 
 void AP_Dialog_Spell::ignoreWord(void)
 {
-   // skip past the current word
-   m_iWordOffset += (m_iWordLength + 1);
+	m_bSkipWord = true;
 }
 
 // changing words
 
 bool AP_Dialog_Spell::inChangeAll(void)
 {
-   UT_UCSChar * bufferUnicode = _getCurrentWord();
-   UT_ASSERT(bufferUnicode);
-   char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
-   UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-   FREEP(bufferUnicode);
-   const void * ent = m_pChangeAll->pick(bufferNormal);
-   FREEP(bufferNormal);
+	UT_sint32 iLength;
+	const UT_UCSChar * bufferUnicode = m_pWordIterator->getCurrentWord(iLength);
+	UT_ASSERT(bufferUnicode);
+	char * bufferNormal = (char *) UT_calloc(iLength + 1, sizeof(char));
+	UT_UCS4_strncpy_to_char(bufferNormal, bufferUnicode, iLength);
+	const void * ent = m_pChangeAll->pick(bufferNormal);
+	FREEP(bufferNormal);
 
-   if (ent == NULL) return false;
-   else {
-      makeWordVisible();
-      bool bRes = changeWordWith( (UT_UCSChar*) (ent) ); 
-      return bRes;
-   }
+	if (ent == NULL) return false;
+	else {
+		makeWordVisible();
+		bool bRes = changeWordWith( (UT_UCSChar*) (ent) ); 
+		return bRes;
+	}
 }
 
 bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
 {
-   UT_UCSChar * bufferUnicode = _getCurrentWord();
-   char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
-   UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-   FREEP(bufferUnicode);
+	UT_sint32 iLength;
+	const UT_UCSChar * bufferUnicode = m_pWordIterator->getCurrentWord(iLength);
+	UT_ASSERT(bufferUnicode);
+	char * bufferNormal = (char *) UT_calloc(iLength + 1, sizeof(char));
+	UT_UCS4_strncpy_to_char(bufferNormal, bufferUnicode, iLength);
 
    // make a copy of the word for storage
    UT_UCSChar * newword2 = (UT_UCSChar*) UT_calloc(UT_UCS4_strlen(newword) + 1, sizeof(UT_UCSChar));
    UT_UCS4_strcpy(newword2, newword);
    
-   m_pChangeAll->insert(bufferNormal, 
-			(void *) newword2);
+   m_pChangeAll->insert(bufferNormal, (void *) newword2);
 
    FREEP(bufferNormal);
    
@@ -563,7 +417,7 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    // that the focus gets shifted to the textbox instead
    // of the document, so isSelectionEmpty() returns true
    makeWordVisible ();
-   UT_uint32 iNewLength = UT_UCS4_strlen(newword);
+   UT_sint32 iNewLength = UT_UCS4_strlen(newword);
 
    result = m_pView->cmdCharInsert(newword, iNewLength);
    m_pView->updateScreen();
@@ -575,115 +429,16 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    {
 	   m_iEndLength += (iNewLength - m_iWordLength);
    }
-   m_iWordLength = iNewLength;
 
-   // reload block into buffer, as we just changed it
-   m_pBlockBuf->truncate(0);
-   bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
-   UT_ASSERT(bRes);
+   m_pWordIterator->updateBlock();
                  
    return result;
 }
 
 bool AP_Dialog_Spell::addToDict(void)
 {
-	UT_UCSChar * pBuf = (UT_UCSChar *) m_pBlockBuf->getPointer(m_iWordOffset);
-	XAP_App * pApp = m_pFrame->getApp();
-
 	// add word to the current custom dictionary
-	return pApp->addWordToDict(pBuf,m_iWordLength);
+	XAP_App * pApp = m_pFrame->getApp();
+	return pApp->addWordToDict(m_pWord, m_iWordLength);
 }
 
-UT_UCSChar * AP_Dialog_Spell::_getCurrentWord(void)
-{
-   UT_UCSChar * word = (UT_UCSChar*) UT_calloc(m_iWordLength + 1, sizeof(UT_UCSChar));
-   if (word == NULL) return NULL;
-
-   UT_UCS4Char * pBuf = (UT_UCS4Char*) m_pBlockBuf->getPointer(m_iWordOffset);
-   
-   for (UT_sint32 i = 0; i < m_iWordLength; i++) word[i] = (UT_UCSChar) pBuf[i];
-
-   return word;
-}
-
-UT_UCSChar * AP_Dialog_Spell::_getPreWord(void)
-{
-   UT_sint32 len = m_iWordOffset - m_iSentenceStart;
-   UT_UCSChar * preword = (UT_UCSChar*) UT_calloc(len + 1, sizeof(UT_UCSChar));
-   if (preword == NULL) return NULL;
-   
-   if (len) {
-      UT_UCS4Char * pBuf = (UT_UCS4Char*) m_pBlockBuf->getPointer(m_iSentenceStart);
-   
-      for (UT_sint32 i = 0; i < len; i++) preword[i] = (UT_UCSChar) pBuf[i];
-   }
-   
-   return preword;
-}
-
-UT_UCSChar * AP_Dialog_Spell::_getPostWord(void)
-{
-   UT_sint32 len = m_iSentenceEnd - (m_iWordOffset + m_iWordLength) + 1;
-   UT_UCSChar * postword = (UT_UCSChar*) UT_calloc(len + 1, sizeof(UT_UCSChar));
-   if (postword == NULL) return NULL;
-   
-   if (len) {
-      UT_UCS4Char * pBuf = (UT_UCS4Char*) m_pBlockBuf->getPointer(m_iWordOffset+m_iWordLength);
-   
-      for (UT_sint32 i = 0; i < len; i++) postword[i] = (UT_UCSChar) pBuf[i];
-   }
-   
-   return postword;
-}
-
-
-// TODO  This function finds the beginning and end of a sentence enclosing
-// TODO  the current misspelled word. Right now, it starts from the word
-// TODO  and works forward/backward until finding [.!?] or EOB
-// TODO  This needs to be improved badly. However, I can't think of a 
-// TODO  algorithm to do so -- especially not one which could work with
-// TODO  other languages very well...
-// TODO  Anyone have something better?
-// TODO  Hipi: ICU includes an international sentence iterator
-// TODO  Hipi: Arabic / Hebrew reverse ? should count, Spanish upside-down
-// TODO  Hipi: ? should not count.  CJK scripts have their own equivalents
-// TODO  Hipi: to [.!?].  Indic languages can use a "danda" or "double danda".
-// TODO  Hipi: Unicode chartype functions may be useable
-
-void AP_Dialog_Spell::_updateSentenceBoundaries(void)
-{
-   UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
-   UT_uint32 iBlockLength = m_pBlockBuf->getLength();
-   
-   // go back until a period is found
-   m_iSentenceStart = m_iWordOffset;
-   while (m_iSentenceStart > 0) {
-      if (pBlockText[m_iSentenceStart] == '.' ||
-	  pBlockText[m_iSentenceStart] == '?' ||
-	  pBlockText[m_iSentenceStart] == '!') {
-	 m_iSentenceStart++;
-	 break;
-      }
-      m_iSentenceStart--;
-   }
-   
-   // skip back past any whitespace
-   // TODO Unicode has many new spacing characters - use some
-   // TODO UT_UCS_iswhite type function
-   while (pBlockText[m_iSentenceStart] == ' ' ||
-	  pBlockText[m_iSentenceStart] == UCS_TAB ||
-	  pBlockText[m_iSentenceStart] == UCS_LF ||
-	  pBlockText[m_iSentenceStart] == UCS_VTAB ||
-	  pBlockText[m_iSentenceStart] == UCS_FF) m_iSentenceStart++;
-   
-   // go forward until a period is found
-   m_iSentenceEnd = m_iWordOffset + m_iWordLength;
-   while (m_iSentenceEnd < iBlockLength) {
-      if (pBlockText[m_iSentenceEnd] == '.' ||
-	  pBlockText[m_iSentenceEnd] == '?' ||
-	  pBlockText[m_iSentenceEnd] == '!') break;
-      m_iSentenceEnd++;
-   }
-   if (m_iSentenceEnd == iBlockLength) m_iSentenceEnd--;
-
-}

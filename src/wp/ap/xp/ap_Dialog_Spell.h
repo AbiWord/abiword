@@ -52,14 +52,6 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
 
    void _purgeSuggestions(void);
 
-   UT_UCSChar * _getCurrentWord(void);
-   UT_UCSChar * _getPreWord(void);
-   UT_UCSChar * _getPostWord(void);
-     
-   void _updateSentenceBoundaries(void);
-   UT_uint32 m_iSentenceStart;
-   UT_uint32 m_iSentenceEnd;
-   
    PT_DocPosition m_iOrigInsPoint;
    
    // used to find misspelled words
@@ -87,9 +79,11 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    // these variables keep track of the current
    // location/state of the search through the
    // document for misspelled words
-   UT_uint32 m_iWordOffset;
+   fl_BlockSpellIterator* m_pWordIterator;
+   UT_sint32 m_iWordOffset;
    UT_sint32 m_iWordLength;
-   UT_GrowBuf * m_pBlockBuf;
+   const UT_UCSChar* m_pWord;
+   bool m_bSkipWord;
 
    // section & block pairs for start, end,
    // and current position position within
@@ -99,7 +93,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    UT_sint32             m_iStartIndex;
    fl_DocSectionLayout * m_pEndSection;
    fl_BlockLayout      * m_pEndBlock;
-   UT_uint32             m_iEndLength;
+   UT_sint32             m_iEndLength;
    fl_DocSectionLayout * m_pCurrSection;
    fl_BlockLayout      * m_pCurrBlock;
    

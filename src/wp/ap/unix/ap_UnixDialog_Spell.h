@@ -59,8 +59,9 @@ class AP_UnixDialog_Spell: public AP_Dialog_Spell
 
    void _showMisspelledWord(void);	
 
-   char * _convertToMB(UT_UCSChar *wword);
-   UT_UCSChar * _convertFromMB(char *word);
+   char * _convertToMB(const UT_UCSChar *wword);
+   char * _convertToMB(const UT_UCSChar *wword, UT_sint32 iLength);
+   UT_UCSChar * _convertFromMB(const char *word);
 
    enum
      {
@@ -86,7 +87,6 @@ class AP_UnixDialog_Spell: public AP_Dialog_Spell
    GtkWidget * m_buttonCancel;
 
    GdkColor m_highlight;
-   char *mbword;
 
    guint m_listHandlerID;
    guint m_replaceHandlerID;
