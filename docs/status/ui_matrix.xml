@@ -667,10 +667,10 @@
 
         <row>
           <cell>Format / Bullets</cell>
+          <cell value="yes"/>
           <cell value="no"/>
-          <cell value="no"/>
-          <cell value="no"/>
-          <cell value="no"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
