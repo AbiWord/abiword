@@ -665,11 +665,16 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 // This should make sure the last column in the previous section  has it's last container
 // on a sane page.
 //
+
+#if 0
 			//
 			// Sevior this code should not be needed!
 			//
 			UT_DEBUGMSG(("code sez: this code should not be needed!\n"));
 			UT_ASSERT(0);
+
+			// says not needed, but clearly still is
+#endif
 			fp_Column * pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
 			while(pPrevCol == NULL)
 			{
