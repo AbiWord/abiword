@@ -33,35 +33,6 @@
 
 /*****************************************************************/
 
-static void s_getWidgetRelativeMouseCoordinates(AP_UnixLeftRuler * pUnixLeftRuler,
-												gint * prx, gint * pry)
-{
-	// TODO there is what appears to be a bug in GTK where
-	// TODO mouse coordinates that we receive (motion and
-	// TODO release) when we have a grab are relative to
-	// TODO whatever window the mouse is over ***AND NOT***
-	// TODO relative to our window.  the following ***HACK***
-	// TODO is used to map the mouse coordinates relative to
-	// TODO our widget.
-
-	// root (absolute) coordinates
-	gint rx, ry;
-	GdkModifierType mask;
-	gdk_window_get_pointer((GdkWindow *) pUnixLeftRuler->getRootWindow(), &rx, &ry, &mask);
-
-	// local (ruler widget) coordinates
-	gint wx, wy;
-	pUnixLeftRuler->getWidgetPosition(&wx, &wy);
-
-	// subtract one from the other to catch all coordinates
-	// relative to the widget's 0,
-	*prx = rx - wx;
-	*pry = ry - wy;
-	return;
-}
-
-/*****************************************************************/
-
 // evil ugly hack
 static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
 								AP_UnixLeftRuler * ruler)
@@ -235,7 +206,7 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 	else if (e->state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixLeftRuler->mousePress(ems, emb, (long) e->x, (long) e->y);
+	pUnixLeftRuler->mousePress(ems, emb, (UT_uint32)e->x, (UT_uint32)e->y);
 
 	return 1;
 }
@@ -273,11 +244,7 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 	else if (e->state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	// Map the mouse into coordinates relative to our window.
-	gint xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pUnixLeftRuler,&xrel,&yrel);
-
-	pUnixLeftRuler->mouseRelease(ems, emb, xrel, yrel);
+	pUnixLeftRuler->mouseRelease(ems, emb, (UT_uint32)e->x, (UT_uint32)e->y);
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -330,11 +297,7 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 	if (e->state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	// Map the mouse into coordinates relative to our window.
-	gint xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pUnixLeftRuler,&xrel,&yrel);
-
-	pUnixLeftRuler->mouseMotion(ems, xrel, yrel);
+	pUnixLeftRuler->mouseMotion(ems, (UT_uint32)e->x, (UT_uint32)e->y);
 	return 1;
 }
 	
