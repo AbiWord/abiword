@@ -76,11 +76,11 @@ fi
 # huge nasty case statement to actually pick the platform
 
 case "$OS_NAME" in 
-	"WIN32") PLATFORM="win" ;;
-	"Linux"|"AIX"|"*BSD"|"IRIX*"|"HP"|"OSF1") PLATFORM="unix" ;;
-	"QNX"|"procnto") PLATFORM="qnx" ;;
-	"MACOSX") PLATFORM="mac" ;;
-	"BeOS") PLATFORM="beos" ;;
+	WIN32) PLATFORM="win" ;;
+	Linux|AIX|*BSD|IRIX*|HP|OSF1) PLATFORM="unix" ;;
+	QNX|procnto) PLATFORM="qnx" ;;
+	MACOSX) PLATFORM="mac" ;;
+	BeOS) PLATFORM="beos" ;;
 esac
 
 AC_SUBST(PLATFORM)
