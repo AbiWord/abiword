@@ -31,6 +31,7 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaDlg_PrintPreview.mm	\
 	xap_CocoaDlg_About.mm		\
 	xap_CocoaDlg_FileOpenSaveAs.mm	\
+	xap_CocoaDlg_FontChooser.mm \
 	xap_CocoaDlg_MessageBox.mm	\
 	xap_CocoaEncodingManager.mm	\
 	xap_CocoaFont.mm		\
