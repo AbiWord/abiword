@@ -8299,7 +8299,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 		const char * szVal = NULL;
 		const XML_Char * sProps[5] = {NULL,NULL,NULL,NULL};
 		PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
-		while(b && (posCell < posEndTable));
+		while(b && (posCell < posEndTable))
 		{
 			getDoc()->getPropertyFromSDH(sdhCell,
 										 true,

@@ -1980,8 +1980,12 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 {
 //
 // We appear to no longer need this code. Symptom would be if the last
-// character in a run is blanked out. Removing this code fixes bug
+// character in a run is blanked out. Removing this code fixes bug 6113
 // 
+// I'm keeping this code behind an #if 0 in case we need it. If after
+// a few month we don't, this method and calls of it should be removed.
+// MES 28/8/2004
+//
 	return;
 #if 0
 	UT_return_if_fail(m_pRenderInfo);
