@@ -52,6 +52,10 @@ AP_FakeClipboard::AP_FakeClipboard() : AP_Clipboard()
 
 }
 
+AP_FakeClipboard::~AP_FakeClipboard()
+{
+}
+
 UT_Bool		AP_FakeClipboard::open(void)
 {
 	if (m_bOpen)
