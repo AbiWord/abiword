@@ -1376,8 +1376,8 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	// (ignore app_x, app_y & app_f since the WM will set them for us just fine)
 	  
 	// This is now done with --geometry parsing.
-	if (app_w == 0) app_w = 760;
-	if (app_h == 0) app_h = 520;
+	if (app_w == 0 || app_w > USHRT_MAX) app_w = 760;
+        if (app_h == 0 || app_h > USHRT_MAX) app_h = 520;
 
 	UT_DEBUGMSG(("xap_UnixFrameImpl: app-width=%lu, app-height=%lu\n",
 				 static_cast<unsigned long>(app_w),static_cast<unsigned long>(app_h)));
@@ -1429,6 +1429,9 @@ void XAP_UnixFrameImpl::_setGeometry ()
 			user_w = static_cast<guint>(app_w);
 			user_h = static_cast<guint>(app_h);
 		}
+
+	if (user_w > USHRT_MAX) user_w = app_w;
+        if (user_h > USHRT_MAX) user_h = app_h;
 
 	GdkGeometry geom;
 	geom.min_width   = 100;

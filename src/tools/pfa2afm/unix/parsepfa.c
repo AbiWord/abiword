@@ -1304,7 +1304,6 @@ return( ret );
 
 FontDict *ReadPSFont(char *fontname) {
     FILE *in, *temp;
-    char *tempname;
     struct fontparse fp;
 
     in = fopen(fontname,"r");
@@ -1313,10 +1312,9 @@ FontDict *ReadPSFont(char *fontname) {
 return(NULL);
     }
 
-    tempname = tempnam(NULL,"dcrpt");
-    temp = fopen(tempname,"w+");
+    temp = tmpfile();
     if ( temp==NULL ) {
-	fprintf( stderr, "Cannot open %s for temp\n", tempname );
+	fprintf( stderr, "Cannot open temporary file\n" );
 	fclose(in);
 return(NULL);
     }
@@ -1326,8 +1324,6 @@ return(NULL);
     doubledecrypt(&fp,in,temp);
 
     fclose(in); fclose(temp);
-    unlink(tempname);
-    free(tempname);
 return( fp.fd );
 }
 
