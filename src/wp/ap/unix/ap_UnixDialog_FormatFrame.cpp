@@ -98,41 +98,11 @@ static void s_WrapButton(GtkWidget *widget, gpointer data )
 	dlg->setWrapping(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 }
 
-static void s_border_color(GtkWidget *widget, gpointer data )
-{
-	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
-	UT_return_if_fail(widget && dlg);
-	
-	GdkColor color;
-	gtk_color_button_get_color(GTK_COLOR_BUTTON(widget), &color);
-
-	UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor(color);
-	dlg->setBorderColor(*rgb);
-	DELETEP(rgb);
-
-	dlg->event_previewExposed();
-}
-
 static void s_border_thickness(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->event_BorderThicknessChanged();
-}
-
-static void s_background_color(GtkWidget *widget, gpointer data)
-{
-	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
-	UT_return_if_fail(widget && dlg);
-
-	GdkColor color;
-	gtk_color_button_get_color(GTK_COLOR_BUTTON(widget), &color);
-
-	UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor(color);
-	dlg->setBGColor(*rgb);
-	DELETEP(rgb);
-
-	dlg->event_previewExposed();
 }
 
 static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_FormatFrame * dlg)
@@ -156,6 +126,90 @@ static gboolean s_remove_image(GtkWidget *widget, gpointer data)
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->clearImage();
 	return FALSE;
+}
+
+/*!
+* Intercept clicks on the color button and show an own GtkColorSelectionDialog
+* with palette enabled.
+*/
+static gboolean 
+AP_UnixDialog_FormatFrame__onBorderColorClicked (GtkWidget 		*button,
+												 GdkEventButton *event,
+												 gpointer 		data)
+{
+	// only handle left clicks
+	if (event->button != 1) {
+		return FALSE;
+	}
+
+	AP_UnixDialog_FormatFrame *dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
+	UT_return_val_if_fail (button && dlg, FALSE);
+
+	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
+	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
+	gtk_color_selection_set_has_palette (colorsel, TRUE);
+	
+	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
+	if (result == GTK_RESPONSE_OK) {
+		
+		// update button
+		GtkColorButton *colorbtn = GTK_COLOR_BUTTON (button);
+		GdkColor color;
+		gtk_color_selection_get_current_color (colorsel, &color);
+		gtk_color_button_set_color (colorbtn, &color);
+
+		// update dialog
+		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
+		dlg->setBorderColor (*rgb);
+		DELETEP (rgb);
+		dlg->event_previewExposed ();
+	}
+		
+	// do not propagate further
+	gtk_widget_destroy (colordlg);
+	return TRUE;
+}
+
+/*!
+* Intercept clicks on the color button and show an own GtkColorSelectionDialog
+* with palette enabled.
+*/
+static gboolean 
+AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
+													 GdkEventButton *event,
+													 gpointer 		data)
+{
+	// only handle left clicks
+	if (event->button != 1) {
+		return FALSE;
+	}
+
+	AP_UnixDialog_FormatFrame *dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
+	UT_return_val_if_fail (button && dlg, FALSE);
+
+	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
+	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
+	gtk_color_selection_set_has_palette (colorsel, TRUE);
+	
+	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
+	if (result == GTK_RESPONSE_OK) {
+		
+		// update button
+		GtkColorButton *colorbtn = GTK_COLOR_BUTTON (button);
+		GdkColor color;
+		gtk_color_selection_get_current_color (colorsel, &color);
+		gtk_color_button_set_color (colorbtn, &color);
+
+		// update dialog
+		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
+		dlg->setBGColor (*rgb);
+		DELETEP (rgb);
+		dlg->event_previewExposed ();
+	}
+		
+	// do not propagate further
+	gtk_widget_destroy (colordlg);
+	return TRUE;
 }
 
 /*****************************************************************/
@@ -532,13 +586,13 @@ void AP_UnixDialog_FormatFrame::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));		   
 						   
 	g_signal_connect(G_OBJECT(m_wBorderColorButton),
-							"color-set",
-							G_CALLBACK(s_border_color),
+							"button-release-event",
+							G_CALLBACK(AP_UnixDialog_FormatFrame__onBorderColorClicked),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wBackgroundColorButton),
-							"color-set",
-							G_CALLBACK(s_background_color),
+							"button-release-event",
+							G_CALLBACK(AP_UnixDialog_FormatFrame__onBackgroundColorClicked),
 							reinterpret_cast<gpointer>(this));	   
 
 	m_iBorderThicknessConnect = g_signal_connect(G_OBJECT(m_wBorderThickness),
