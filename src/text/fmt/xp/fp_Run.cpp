@@ -398,9 +398,15 @@ UT_Bool	fp_TabRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWi
 	return UT_FALSE;
 }
 
-void fp_TabRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /* y */, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	// If X is left of the middle, return offset to the left,
+	// otherwise the offset to the right.
+	if (x < (getWidth() / 2))
+		pos = m_pBL->getPosition() + m_iOffsetFirst;
+	else
+		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+		
 	bBOL = UT_FALSE;
 	bEOL = UT_FALSE;
 }
@@ -680,17 +686,12 @@ UT_Bool	fp_ImageRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeft
 void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	if (x > m_iWidth)
-	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
-		bBOL = UT_FALSE;
-		bEOL = UT_FALSE;
-	}
 	else
-	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
-		bBOL = UT_FALSE;
-		bEOL = UT_FALSE;
-	}
+
+	bBOL = UT_FALSE;
+	bEOL = UT_FALSE;
 }
 
 void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
@@ -1037,9 +1038,15 @@ UT_Bool fp_FieldRun::isSubscript(void) const
 	return (m_fPosition == TEXT_POSITION_SUBSCRIPT);
 }
 
-void fp_FieldRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	// If X is left of the middle, return offset to the left,
+	// otherwise the offset to the right.
+	if (x < (getWidth() / 2))
+		pos = m_pBL->getPosition() + m_iOffsetFirst;
+	else
+		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+		
 	bBOL = UT_FALSE;
 	bEOL = UT_FALSE;
 }
