@@ -849,7 +849,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iTextBoxesStart(0xffffffff),
 	m_iTextBoxesEnd(0xffffffff),
 	m_iPrevHeaderPosition(0xffffffff),
-	m_bEvenOddHeaders(false)
+	m_bEvenOddHeaders(false),
+	m_bInTOC(false),
+	m_bTOCsupported(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -3099,6 +3101,13 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			{
 				case F_TOC:
 				case F_TOC_FROM_RANGE:
+					if(_isTOCsupported(f))
+					{
+						break;
+					}
+					
+					// for unsuported TOCs fall through ...
+					
 				case F_HYPERLINK:
 					// for these fields we want to dump into the
 					// document anything in the argument
@@ -3215,6 +3224,22 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 		return true;
 	}
 
+	if(m_bInTOC && m_bTOCsupported && (   f->type == F_TOC
+									   || f->type == F_TOC_FROM_RANGE))
+	{
+		// end of TOC field in a supported TOC; we do nothing, since the field has already
+		// been processed in _handleFieldCommand()
+		m_bInTOC = false;
+		m_bTOCsupported = false;
+		return _insertTOC(f);
+	}
+
+	if(m_bInTOC && m_bTOCsupported)
+	{
+		// end of some non-TOC field inside supported TOC; just return
+		return true;
+	}
+
 	command++;
 	token = strtok (command, "\t, ");
 	
@@ -3251,8 +3276,13 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 					_appendObject(PTO_Hyperlink,NULL);
 					break;
 				}
-			case F_TOC:             // for the toc fields we will
-			case F_TOC_FROM_RANGE:  // insert the field result for now
+			case F_TOC:             
+			case F_TOC_FROM_RANGE:
+				// we only get here for unsupported TOC types, in which case we dump the field
+				// result (not ideal, since often the PAGEREF fields inside the TOC have not been
+				// updated before save and so we get 'bookmark not found' instead of page numbers,
+				// but it is better than nothing at all)
+				
 				{
 					token = strtok (NULL, "\"\" ");
 					UT_return_val_if_fail(f->argument[f->fieldI - 1] == 0x15, false);
@@ -3271,6 +3301,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 					}
 					this->_flush();
 				}
+
 				break;
 
 			default:
@@ -3282,8 +3313,312 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 	return false;
 }
 
+/*!
+    Word has several different toc tables (TOC, TOA, indexes); at the moment we only
+    support TOC and even than only if it is based on heading styles
+*/
+bool IE_Imp_MsWord_97::_isTOCsupported(field *f)
+{
+	UT_return_val_if_fail(f,false);
+
+	if(   f->type != F_TOC
+	   && f->type != F_TOC_FROM_RANGE
+	  )
+	{
+		return false;
+	}
+	
+	bool bRet = true;
+	char * command = wvWideStrToMB (f->command);
+	UT_DEBUGMSG(("IE_Imp_MsWord_97::_isTOCsupported: command %s\n", command));
+
+	char * params = NULL;
+
+	if(f->type == F_TOC)
+	{
+		params = command + 5;
+	}
+	else if(f->type == F_TOC_FROM_RANGE)
+	{
+		params = command + 4;
+	}
+	
+	// we only support the heading based TOC for now
+	char * t = strstr(params, "\\o");
+
+	if(!t)
+		t = strstr(params, "\\t");
+
+	if(!t)
+	{
+		bRet = false;
+		goto finish;
+	}
+
+ finish:
+	FREEP(command);
+	return bRet;
+}
+
+
+
+/*!
+   returns true if the TOC has been handled, false if the TOC type is unsupported
+*/
+bool IE_Imp_MsWord_97::_insertTOC(field *f)
+{
+	UT_return_val_if_fail(f,false);
+	bool bRet = true;
+	bool bSupported = false;
+
+	UT_sint32 i = 0, i1 = 0, i2 = 0;
+	char * t = NULL, * t1 = NULL, * t2 = NULL;
+	UT_UTF8String sProps = "toc-has-heading:0;", sTemp, sLeader;
+
+	const XML_Char * attrs [3] = {"props", NULL, NULL};
+
+	char * command = wvWideStrToMB (f->command);
+	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertTOC: command %s\n", command));
+
+	char * params = NULL;
+	
+	if(f->type == F_TOC)
+	{
+		params = command + 5;
+	}
+	else if(f->type == F_TOC_FROM_RANGE)
+	{
+		params = command + 4;
+	}
+	else
+	{
+		bRet = false;
+		goto finish;
+	}
+
+	if(t = strstr(params, "\\p"))
+	{
+		// this defines the leader, we parse it first, before we mess up the command
+		t1 = strchr(t, '\"');
+		if(t1)
+		{
+			t1++;
+
+			// AW can only use one of the chars (there are up to 5), we will take the first
+			switch(*t1)
+			{
+				default: // not sure, we will treat this as a dot
+				case '.': sLeader += "dot";       break;
+				case '-': sLeader += "hyphen";    break;
+				case '_': sLeader += "underline"; break;
+				case ' ': sLeader += "none"; break;
+			}
+		}
+	}
+	
+	if(t = strstr(params, "\\o"))
+	{
+		// heading-based TOC
+		// \o param specifies a range of headings to use, e.g., \o "2-4"
+		bSupported = true;
+		
+		t = strchr(t, '\"');
+	
+		if(!t)
+		{
+			bRet = false;
+			goto finish;
+		}
+
+		t++;
+
+		i1 = atoi(t);
+
+		if(!i1)
+		{
+			bRet = false;
+			goto finish;
+		}
+
+		t1 = strchr(t, '-');
+		t2 = strchr(t, '\"');
+
+		t = UT_MIN(t1, t2);
+	
+		if(!t)
+		{
+			bRet = false;
+			goto finish;
+		}
+
+		i2 = 0;
+		if(*t == '\"')
+		{
+			i2 = i1;
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS( *t == '-');
+			t++;
+			i2 = atoi(t);
+		}
+	
+		if(!i2)
+		{
+			bRet = false;
+			goto finish;
+		}
+		// now create our TOC attr/props
+		//
+		// * we do not need to set the source styles, because the Heading
+		//   styles are the AW default
+		//   
+		// * we do have to set the dest styles
+		//
+		// * I am not sure what to do about toc-id: the AW FV_Fiew::cmdInsertTOC() does not specify the
+		//   id, so neither will we
+		//   
+		// AW currently only uses the first 4 Heading styles, but we will implement this for all 9
+		// to avoid future work
+		
+		for(i = 1; i < i1; ++i)
+		{
+			UT_UTF8String_sprintf(sTemp, "toc-source-style%d:nonexistentstyle;", i);
+			sProps += sTemp;
+		}
+
+		UT_sint32 iMin = UT_MIN(i2+1,10);
+		
+		for(i = i1; i < iMin; ++i)
+		{
+			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:TOC %d", i, i);
+			sProps += sTemp;
+			if(i < 9)
+				sProps += ";";
+
+			if(sLeader.size())
+			{
+				UT_UTF8String_sprintf(sTemp, "toc-tab-leader%d:", i);
+				sProps += sTemp;
+				sProps += sLeader;
+				sProps += ";";
+			}
+		}
+
+		for(i = iMin; i < 10; ++i)
+		{
+			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:nonexistentstyle", i);
+			sProps += sTemp;
+			if(i < 9)
+				sProps += ";";
+		}
+	}
+
+	// the \t and \o switches can be used simultaneously
+	// if both switches define the same level, we are unable to handle that; we will used the style
+	// in the \t switch (it is easier since the parsing of the \t parameter is destructive)
+	if (t = strstr(params, "\\t"))
+	{
+		// style-based toc, the params have the format
+		// \t "style,level,style,level ..."
+		bSupported = true;
+		t1 = strchr(params, '\"');
+		if(!t1)
+		{
+			bRet = false;
+			goto finish;
+		}
+
+		char * end = strchr(t1+1, '\"');
+
+		while(t1 && t1 < end)
+		{
+			t1++;
+			t2 = strchr(t1, ',');
+			if(!t2)
+			{
+				bRet = false;
+				goto finish;
+			}
+
+			*t2 = 0;
+
+			sTemp = t1; // style name
+			
+			t1 = t2 + 1; // style level
+			t2 = strchr(t1, ',');
+
+			if(t2)
+				t2 = UT_MIN(t2,end);
+			else
+				t2 = end;
+			
+			*t2 = 0;
+			
+			sProps += "toc-source-style";
+			sProps += t1;
+			sProps += ":";
+			sProps += sTemp;
+			sProps += ";";
+
+			sProps += "tod-dest-style";
+			sProps += t1;
+			sProps += ":TOC ";
+			sProps += t1;
+			sProps += ";";
+			
+			if(sLeader.size())
+			{
+				sProps += "toc-tab-leader";
+				sProps += t1;
+				sProps += ":";
+				sProps += sLeader;
+				sProps += ";";
+			}
+			
+			t1 = t2;
+		}
+	}
+
+	if(!bSupported)
+	{
+		bRet = false;
+		goto finish;
+	}
+
+	// remove trailing semicolon (screws up property parser)
+	{
+		sTemp = sProps;
+		const char * c = sTemp.utf8_str();
+		if(c[strlen(c)-1] == ';')
+		{
+			sProps.assign(c, strlen(c)-1);
+		}
+	}
+	
+	attrs[1] = sProps.utf8_str();
+
+	if(!m_bInPara)
+	{
+		_appendStrux(PTX_Block, NULL);
+		m_bInPara = true ;
+	}
+	
+	_appendStrux(PTX_SectionTOC, attrs);
+	_appendStrux(PTX_EndTOC, NULL);
+	
+ finish:
+	FREEP(command);
+	return bRet;
+}
+
+
 bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 {
+	// if we are currently inside a supported TOC, just return
+	if(m_bInTOC && m_bTOCsupported)
+		return true;
+	
 	Doc_Field_t tokenIndex = F_OTHER;
 	char *token = NULL;
 	field * f = NULL;
@@ -3396,6 +3731,9 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 			case F_TOC:             // for the toc fields we will
 			case F_TOC_FROM_RANGE:  // insert the field result for now
 				UT_DEBUGMSG(("TOC field encountered\n"));
+				m_bInTOC = true;
+				m_bTOCsupported = _isTOCsupported(f);
+				
 			default:
 				// unhandled field type
 				token = strtok(NULL, "\t, ");
@@ -5678,6 +6016,8 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 			{
 				m_iCurrentHeader++;
 			}
+
+			m_bInHeaders = true;
 		}
 		xxx_UT_DEBUGMSG(("CurrentHeader %d HeaderCount %d \n",m_iCurrentHeader,m_iHeadersCount));
 		if (m_iCurrentHeader < m_iHeadersCount) {
@@ -5883,6 +6223,8 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
  */
 bool IE_Imp_MsWord_97::_ignorePosition(UT_uint32 iDocPos)
 {
+	if(m_bInTOC && m_bTOCsupported)
+		return true;
 	
 	if(m_bInHeaders && m_iCurrentHeader < m_iHeadersCount && m_pHeaders)
 	{

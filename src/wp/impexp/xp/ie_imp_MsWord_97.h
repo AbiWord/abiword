@@ -40,6 +40,8 @@ class PD_Document;
 class pf_Frag;
 class UT_Stack;
 
+typedef struct field;
+
 struct bookmark
 {
 	XML_Char * name;
@@ -211,6 +213,10 @@ private:
 	void        setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_sint32 val);
 	bool        findMatchSpan(UT_sint32 iLeft,UT_sint32 iRight);
 	bool        _ignorePosition(UT_uint32 pos);
+
+	bool        _isTOCsupported(field *f);
+	bool        _insertTOC(field *f);
+	
 	
 	UT_UCS4String		m_pTextRun;
 	//UT_uint32			m_iImageCount;
@@ -296,6 +302,9 @@ private:
 	UT_uint32    m_iTextBoxesEnd;
 	UT_uint32    m_iPrevHeaderPosition;
 	bool         m_bEvenOddHeaders;
+
+	UT_sint32    m_bInTOC;
+	bool         m_bTOCsupported;
 };
 
 #endif /* IE_IMP_MSWORD_H */
