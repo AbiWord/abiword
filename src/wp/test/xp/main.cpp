@@ -19,6 +19,15 @@
 #define ABI_BUILD_TARGET                ""
 #endif /* ABI_BUILD_TARGET */
 
+
+#ifndef HAVE_GNOME
+// work around a linker bug. see bugzilla 8286
+extern unsigned char g_pngSidebar[];
+
+unsigned char *foo1 = g_pngSidebar;
+#endif
+
+
 const char* XAP_App::s_szBuild_ID = "TEST";
 const char* XAP_App::s_szAbiSuite_Home = "/tmp";
 const char* XAP_App::s_szBuild_Version = "TEST";
