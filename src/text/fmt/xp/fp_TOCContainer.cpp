@@ -108,20 +108,8 @@ void fp_TOCContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 									  PT_DocPosition& pos,
 									  bool& bBOL, bool& bEOL, bool &isTOC)
 {
-	fp_TOCContainer * pMaster = this;
-	if(getMasterTOC())
-	{
-		pMaster = getMasterTOC();
-	}
-
-	fp_ContainerObject * pC = pMaster->getContainer()->getNext();
-	if (!pC)
-	{
-		// this shouldn't really happen.
-		fp_VerticalContainer::mapXYToPosition(x, y, pos, bBOL, bEOL, isTOC);
-		return;
-	}
-	pC->mapXYToPosition(x, y, pos, bBOL, bEOL, isTOC);
+	isTOC = true;
+	fp_VerticalContainer::mapXYToPosition(x, y, pos, bBOL, bEOL, isTOC);
 }
 
 /*! 
@@ -905,14 +893,6 @@ void fp_TOCContainer::setContainer(fp_Container * pContainer)
 	{
 		return;
 	}
-#if 1
-	fp_Container * pCon = pContainer;
-	while(pCon)
-	{
-		UT_ASSERT(pCon != this);
-		pCon = pCon->getContainer();
-	}
-#endif
 	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();
