@@ -53,6 +53,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
+#include "fv_FrameEdit.h"
 
 static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
 								 const XML_Char * color, PP_PropertyMap::Line & line);
@@ -110,6 +111,17 @@ fl_FrameLayout::~fl_FrameLayout()
 
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+//
+// Remove pointers to this if they exist
+//
+	if(getDocLayout() && getDocLayout()->getView())
+	{
+		FV_FrameEdit * pFE = getDocLayout()->getView()->getFrameEdit();
+		if(pFE->getFrameLayout() == this)
+		{
+			pFE->setMode(FV_FrameEdit_NOT_ACTIVE);
+		}
+	}
 }
 
 /*!

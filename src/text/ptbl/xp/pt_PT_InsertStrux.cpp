@@ -262,6 +262,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 	    {
 			pf = static_cast<pf_Frag *>(pfsNext);
 		}
+		fragOffset = 0;
 	}
 	switch (pf->getType())
 	{

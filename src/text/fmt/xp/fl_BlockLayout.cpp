@@ -5022,7 +5022,34 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// Runs are no longer attached to this block
 		m_pFirstRun = NULL;
 	}
-
+	//
+	// Transfer any frames from this block to the previous block in the
+	// the document.
+	//
+	fl_BlockLayout * pPrevForFrames = pPrevBL;
+	if(pPrevForFrames == NULL)
+	{
+		pPrevForFrames = getPrevBlockInDocument();
+	}
+	if(pPrevForFrames)
+	{
+		if(getNumFrames() > 0)
+		{
+			fl_FrameLayout * pFrame = NULL;
+			UT_sint32 i = 0;
+			UT_sint32 count = getNumFrames();
+			for(i= 0; i < count; i++)
+		  	{
+				pFrame = getNthFrameLayout(i);
+				pPrevForFrames->addFrame(pFrame);
+			}
+			for( i=count-1; i>=0; i--)
+			{
+				pFrame = getNthFrameLayout(i);
+				removeFrame(pFrame);
+			}
+		}
+	}
 	// Get rid of everything else about the block
 	purgeLayout();
 	// Unlink this block
@@ -5353,6 +5380,25 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		// TODO char widths data between the two clocks.  see [1].
 		pRun->fetchCharWidths(&pNewBL->m_gbCharWidths);
 		pRun->recalcWidth();
+	}
+	//
+	// Now transfer the frames of this block to the newly created one
+	//
+	if(getNumFrames() > 0)
+	{
+		fl_FrameLayout * pFrame = NULL;
+		UT_sint32 i = 0;
+		UT_sint32 count = getNumFrames();
+		for(i= 0; i < count; i++)
+		{
+			pFrame = getNthFrameLayout(i);
+			pNewBL->addFrame(pFrame);
+		}
+		for( i=0; i<count; i++)
+		{
+			pFrame = pNewBL->getNthFrameLayout(i);
+			removeFrame(pFrame);
+		}
 	}
 
 	// Explicitly truncate rest of this block's layout

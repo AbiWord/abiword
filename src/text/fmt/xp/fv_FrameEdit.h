@@ -82,9 +82,9 @@ public:
 										  UT_String & sWidth,
 										  UT_String & sHeight,
 										  PT_DocPosition & posAtXY);
+	fl_FrameLayout *      getFrameLayout(void)
+		{ return m_pFrameLayout;}
 private:
-    void                  _xorBox(UT_Rect & rect);
-    void                  _drawBox(UT_Rect & rect);
 	FV_View *             m_pView;
 	FV_FrameEditMode      m_iFrameEditMode;
 	fl_FrameLayout *      m_pFrameLayout;
@@ -93,9 +93,10 @@ private:
 	UT_sint32             m_iLastX;
 	UT_sint32             m_iLastY;
 	UT_Rect               m_recCurFrame;
-	bool                  m_bBoxOnOff;
 	UT_sint32             m_iInitialDragX;
 	UT_sint32             m_iInitialDragY;
+	bool                  m_bFirstDragDone;
+	bool                  m_bInitialClick;
 };
 
 #endif /* FV_FRAME_EDIT_H */

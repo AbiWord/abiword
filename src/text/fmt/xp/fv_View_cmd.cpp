@@ -2613,11 +2613,11 @@ void FV_View::cmdUndo(UT_uint32 count)
 	// Move insertion point out of field run if it is in one
 	//
 	_charMotion(true, 0);
-
 //
 // Do a complete update coz who knows what happened in the undo!
 //
 	notifyListeners(AV_CHG_ALL);
+	setCursorToContext();
 
 
 	_updateInsertionPoint();
@@ -2666,6 +2666,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 // Do a complete update coz who knows what happened in the undo!
 //
 	notifyListeners(AV_CHG_ALL);
+	setCursorToContext();
 
 	_updateInsertionPoint();
 }

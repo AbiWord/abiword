@@ -667,6 +667,7 @@ fp_FrameContainer * fl_ContainerLayout::getNthFrameContainer(UT_sint32 i) const
 
 void fl_ContainerLayout:: removeFrame(fl_FrameLayout * pFrame)
 {
+	UT_DEBUGMSG(("Remove Frame %x from this container %x \n",pFrame,this));
 	UT_sint32 i = m_vecFrames.findItem(static_cast<void *>(pFrame));
 	if(i >= 0)
 	{

@@ -142,10 +142,12 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_SectionTable:
 					case PTX_SectionCell:
 					case PTX_SectionFootnote:
+					case PTX_SectionFrame:
 					case PTX_EndCell:
 					case PTX_EndTable:
 				    case PTX_EndFootnote:
 				    case PTX_EndEndnote:
+				    case PTX_EndFrame:
 						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
 						break;
 
@@ -485,8 +487,10 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 
 	case PTX_SectionTable:
 	case PTX_SectionCell:
+	case PTX_SectionFrame:
 	case PTX_EndTable:
 	case PTX_EndCell:
+	case PTX_EndFrame:
 //
 // We've set things up so that deleting table struxes is done very deliberately.//  Don't mess with the end points here
 //
@@ -718,7 +722,8 @@ bool pt_PieceTable::_StruxIsNotTable(pf_Frag_Strux * pfs)
 {
 	PTStruxType its = pfs->getStruxType();
 	bool b = ((its != PTX_SectionTable) && (its != PTX_SectionCell)
-			  && (its != PTX_EndTable) && (its != PTX_EndCell));
+			  && (its != PTX_EndTable) && (its != PTX_EndCell)
+			  && (its != PTX_SectionFrame) && (its != PTX_EndFrame));
 	return b;
 }
 
@@ -730,6 +735,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	UT_uint32 fragOffsetNewEnd;
 	bool bPrevWasCell = false;
 	bool bPrevWasEndTable = false;
+	bool bPrevWasFrame = false;
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
 	PT_BlockOffset fragOffset_First;
@@ -754,6 +760,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	UT_uint32 length = dpos2 - dpos1;
 	UT_uint32 iTable = 0;
 	UT_sint32 iFootnoteCount = 0;
+	if(pfsContainer->getStruxType() == PTX_SectionFrame)
+	{
+		bPrevWasFrame = true;
+	}
 	if(pfsContainer->getStruxType() == PTX_SectionCell)
 	{
 		bPrevWasCell = true;
@@ -798,14 +808,27 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				dpos1 = dpos1 +  lengthInFrag;
 				break;
 			}
+			if(bPrevWasFrame && (iLoopCount == 0))
+			{
+//
+// Dont' delete this Block strux if the previous strux is a cell and this
+// is the start of the delete phase.
+//
+				pfNewEnd = pfs->getNext();
+				fragOffsetNewEnd = 0;
+				pfsContainer = pfs;
+				dpos1 = dpos1 +  lengthInFrag;
+				break;
+			}
 			if(_StruxIsNotTable(pfs))
 			{
-				if((bPrevWasCell || bPrevWasFootnote || bPrevWasEndTable) 
+				if((bPrevWasCell || bPrevWasFootnote || bPrevWasEndTable|| bPrevWasFrame) 
 				   && pfs->getStruxType()== PTX_Block)
 				{
 					bPrevWasCell = false;
 					bPrevWasFootnote = false;
 					bPrevWasEndTable = false;
+					bPrevWasFrame = false;
 					pfNewEnd = pfs->getNext();
 					fragOffsetNewEnd = 0;
 					pfsContainer = pfs;
@@ -824,6 +847,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 						bResult = _deleteStruxWithNotify(dpos1,pfs,
 												  &pfNewEnd,&fragOffsetNewEnd);
 						bPrevWasCell = false;
+						bPrevWasFrame = false;
 						bPrevWasEndTable = false;
 						break;
 					}
@@ -857,6 +881,14 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				else
 				{
 					bPrevWasCell = false;
+				}
+				if(pfs->getStruxType() == PTX_SectionFrame )
+				{
+					bPrevWasFrame = true;
+				}
+				else
+				{
+					bPrevWasFrame = false;
 				}
 				if(pfs->getStruxType() == PTX_EndTable)
 				{
@@ -971,6 +1003,53 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 					{
 						UT_DEBUGMSG(("Found and deleted Block strux in footnote \n"));
 					}
+					PT_DocPosition myPos = pfs->getPos();
+					if(m_fragments.areFragsDirty())
+					{
+						m_fragments.cleanFrags();
+					}
+					_deleteFormatting(myPos - pfs->getLength(), myPos);
+					bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
+//
+// Each strux is one in length, we've added one while delaying the delete
+// so subtract it now.
+//
+					dpos1 -= 1;
+				}
+//
+// Now we have to update pfsContainer from dpos1
+//
+				bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+				break;
+			}
+//
+// Look to see if we've reached the end of a Frame section.
+//
+			if (pfs->getStruxType() == PTX_EndFrame)
+			{
+//
+// First delete the EndFrame Strux
+//
+				UT_DEBUGMSG(("Doing Frame delete now \n"));
+				stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
+				if(m_fragments.areFragsDirty())
+				{
+					m_fragments.cleanFrags();
+				}
+				PT_DocPosition myPos = pfs->getPos();
+				_deleteFormatting(myPos - pfs->getLength(), myPos);
+				bResult = _deleteStruxWithNotify(myPos, pfs,
+												  &pfNewEnd,
+												  &fragOffsetNewEnd);
+//
+// Now delete the Frame strux. Doing things in this order works for
+// the layout classes for both the delete (needs the endFrame strux 
+// deleted first) and for
+// undo where we want the Frame Strux inserted first.
+//
+				while(bResult && (pfs->getStruxType() != PTX_SectionFrame))
+				{
+					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 					PT_DocPosition myPos = pfs->getPos();
 					if(m_fragments.areFragsDirty())
 					{

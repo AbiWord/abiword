@@ -39,9 +39,10 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_iLastX(0),
 	  m_iLastY(0),
 	  m_recCurFrame(0,0,0,0),
-	  m_bBoxOnOff(false),
 	  m_iInitialDragX(0),
-	  m_iInitialDragY(0)
+	  m_iInitialDragY(0),
+	  m_bFirstDragDone(false),
+	  m_bInitialClick(false)
 {
 	UT_ASSERT (pView);
 }
@@ -72,32 +73,22 @@ GR_Graphics * FV_FrameEdit::getGraphics(void) const
 
 void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 {
+	if(iEditMode == FV_FrameEdit_NOT_ACTIVE)
+	{
+		m_pFrameLayout = NULL;
+		m_pFrameContainer = NULL;
+		m_recCurFrame.width = 0;
+		m_recCurFrame.height = 0;
+	    m_iDraggingWhat = FV_FrameEdit_DragNothing;
+		m_iLastX = 0;
+		m_iLastY = 0;
+	}
 	m_iFrameEditMode = iEditMode;
 }
 
 void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
-
-// Should clear the old box
-
-	if((FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT == m_iFrameEditMode) || 
-	   (FV_FrameEdit_RESIZE_INSERT == m_iFrameEditMode))
-	{
-		xxx_UT_DEBUGMSG(("width after drag %d \n",m_recCurFrame.width));
-		_xorBox(m_recCurFrame);
-	}
-//
-// Clear the initial mark.
-//
-	if(m_iFrameEditMode == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
-	{
-		m_iFrameEditMode = FV_FrameEdit_RESIZE_INSERT;
-		UT_sint32 len = getGraphics()->tlu(25);		
-		UT_sint32 one = getGraphics()->tlu(1);
-	
-		getGraphics()->xorLine(m_iLastX-one,m_iLastY,m_iLastX-len,m_iLastY);
-		getGraphics()->xorLine(m_iLastX,m_iLastY-one,m_iLastX,m_iLastY-len);
-	}
+	m_bFirstDragDone = true;
 	UT_sint32 diffx = 0;
 	UT_sint32 diffy = 0;
 	UT_sint32 dx = 0;
@@ -408,11 +399,10 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		break;
 	}
 
-// Should draw the new box
+
 	if(FV_FrameEdit_RESIZE_INSERT == m_iFrameEditMode)
 	{
 		xxx_UT_DEBUGMSG(("width after drag %d \n",m_recCurFrame.width));
-		_xorBox(m_recCurFrame);
 	}
 	else if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode)
 	{
@@ -668,7 +658,6 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		}
 		else
 		{
-			//_drawBox(m_recCurFrame);
 			if( m_iDraggingWhat != FV_FrameEdit_DragWholeFrame)
 			{
 				m_iFrameEditMode = FV_FrameEdit_RESIZE_EXISTING;
@@ -691,22 +680,29 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 //
 // Draw a marker at the current position
 //
-		UT_sint32 len = getGraphics()->tlu(25);
-		UT_sint32 one = getGraphics()->tlu(1);
-		getGraphics()->xorLine(x-one,y,x-len,y);
-		getGraphics()->xorLine(x,y-one,x,y-len);
 //
-// Initial box size of 1
+// Now insert a text box
 //
-		m_recCurFrame.top = y;
+		UT_sint32 origX = x;
+		UT_sint32 origY = y;
+		UT_sint32 iSize = getGraphics()->tlu(32);
+		x = x - iSize + getGraphics()->tlu(4) ;
+		y = y - iSize + getGraphics()->tlu(4);
 		m_recCurFrame.left = x;
-		m_recCurFrame.width = one;
-		m_recCurFrame.height = one;
-		m_bBoxOnOff = false;
-		m_iLastX = x;
-		m_iLastY = y;
-		_drawBox(m_recCurFrame);
+		m_recCurFrame.top = y;
+		m_recCurFrame.width = iSize;
+		m_recCurFrame.height = iSize;
+		m_iFrameEditMode = FV_FrameEdit_RESIZE_INSERT;
+		getDoc()->beginUserAtomicGlob();
+		mouseRelease(x,y);
+		m_iFrameEditMode = FV_FrameEdit_RESIZE_EXISTING;
+		m_iLastX = origX;
+		m_iLastY = origY;
+		m_iInitialDragX = x;
+		m_iInitialDragY = y;
 		m_iDraggingWhat = FV_FrameEdit_DragBotRightCorner;
+		m_bFirstDragDone = false;
+		m_bInitialClick = true;
 		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
 	}
 }
@@ -730,7 +726,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_uint32 height;
 		bool b,bDir;
 		m_pView->_findPositionCoords(posAtXY,b,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
-		xxx_UT_DEBUGMSG((" frameEdit y1= %d y2= %d \n",y1,y2));
+		UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
 		if((pBL == NULL) || (pRun == NULL))
 		{
 			return false;
@@ -752,10 +748,10 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_sint32 xLineOff = 0;
 		UT_sint32 yLineOff = 0;
 		pLine->getScreenOffsets(pRun, xLineOff,yLineOff);
-		xxx_UT_DEBUGMSG(("Raw yLineoff %d \n",yLineOff));
+		UT_DEBUGMSG(("Raw yLineoff %d \n",yLineOff));
 		xLineOff = x + pRun->getX() - xLineOff  + xBlockOff;
 		yLineOff = y + pRun->getY() - yLineOff  + yBlockOff;
-		xxx_UT_DEBUGMSG(("fv_FrameEdit: (x,y) %d %d xLineOff %d yLineOff %d \n",x,y,xLineOff,yLineOff));
+		UT_DEBUGMSG(("fv_FrameEdit: (x,y) %d %d xLineOff %d yLineOff %d \n",x,y,xLineOff,yLineOff));
 //
 // The sXpos and sYpos values are the numbers that need to be added from the
 // top left corner of thefirst line of the block to reach the top left 
@@ -784,15 +780,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		return;
 	}
 
-	mouseDrag(x,y);
 	PT_DocPosition posAtXY = 0;
 
 	if(m_iFrameEditMode == 	FV_FrameEdit_RESIZE_INSERT)
 	{
-//
-// Clear the drag box
-//
-		_xorBox(m_recCurFrame);
 		// Signal PieceTable Change
 		m_pView->_saveAndNotifyPieceTableChange();
 
@@ -879,6 +870,15 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		const char * pszXpos = NULL;
 		const char * pszYpos = NULL;
 		UT_sint32 iX,iY;
+//
+// If there was no drag, the user just clicked and released the left mouse
+// no need to change anything.
+//
+		if(!m_bFirstDragDone)
+		{
+			getDoc()->endUserAtomicGlob();
+			return;
+		}
 
 // Xpos
 		if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
@@ -956,6 +956,15 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();
 //
+// If this was a drag following the initial click, wrap it in a 
+// endUserAtomicGlob so it undo's in a single click.
+//
+		if(m_bFirstDragDone && m_bInitialClick)
+		{
+			getDoc()->endUserAtomicGlob();
+		}
+		m_bInitialClick = false;
+//
 // Finish up by putting the editmode back to existing selected.
 //	
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
@@ -991,32 +1000,3 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 		m_pFrameContainer->drawHandles(&da);
 	}
 }
-
-void FV_FrameEdit::_xorBox(UT_Rect & rec)
-{
-	xorRect(getGraphics(),rec);
-	m_bBoxOnOff = !m_bBoxOnOff;
-}
-
-
-void FV_FrameEdit::_drawBox(UT_Rect & rec)
-{
-	UT_sint32 iLeft = rec.left;
-	UT_sint32 iRight = iLeft + rec.width;
-	UT_sint32 iTop = rec.top;
-	UT_sint32 iBot = iTop + rec.height;
-	getGraphics()->setLineWidth(getGraphics()->tlu(1));
-	UT_RGBColor black(0,0,0);
-	getGraphics()->setColor(black);
-	
-	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
-	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_BUTT;
-	getGraphics()->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
-
-    getGraphics()->drawLine(iLeft,iTop,iRight,iTop);
-    getGraphics()->drawLine(iRight,iTop,iRight,iBot);
-    getGraphics()->drawLine(iLeft,iBot,iRight,iBot);
-    getGraphics()->drawLine(iLeft,iTop,iLeft,iBot);
-	m_bBoxOnOff = true;
-}
-
