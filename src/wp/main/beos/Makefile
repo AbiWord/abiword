@@ -34,7 +34,7 @@ INCLUDES=
 
 PROGRAM=		AbiWord
 
-LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiVer AbiSpell 
+LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiWordVer AbiSpell 
 ABI_APPLIBS=		$(LoadOrder) 
 
 #ABI_OTHLIBS=		expat $(ABI_JSLIBS) dl

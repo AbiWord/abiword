@@ -1,5 +1,3 @@
-
-
 /* AbiSuite
  * Copyright (C) 1998 AbiSource, Inc.
  * 

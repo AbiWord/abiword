@@ -25,8 +25,8 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 ABI_R1 := `pwd`
 ABI_ROOT := $(ABI_R1)/../$(ABI_DEPTH)
 
-REQUIRE=		_ZLIB_ _LIBPNG_
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_
+REQUIRE=		_EXPAT_ 
+REQUIRECLEAN=		clean_EXPAT_ 
 REQUIREREALCLEAN=	$(REQUIRECLEAN)
 
 TARGET=		build
@@ -43,37 +43,22 @@ realclean::	$(REQUIREREALCLEAN)
 
 #################################################################
 
-_ZLIB_:
-	@if [ -d ../../$(ABI_DEPTH)/zlib ]; then				\
-		echo Found zlib in peer directory;				\
-		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C ../../$(ABI_DEPTH)/zlib;	\
+_EXPAT_:
+	@if [ -d ../../$(ABI_DEPTH)/expat ]; then				\
+		echo Found expat in peer directory;				\
+		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C ../../$(ABI_DEPTH)/expat;	\
 	else									\
-		echo zlib not found;						\
-		echo TODO provide a nicer error message;			\
-		echo TODO with instructions for obtaining it;			\
+		echo expat not found;						\
+		echo You need to get expat from the AbiSource downloads site;	\
+		echo It is identical to expat from www.jclark.com, except;	\
+		echo for minor modifications to integrate with the abi tree build system;	\
 		exit 1;								\
 	fi
-
-_LIBPNG_:
-	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then				\
-		echo Found libpng in peer directory;				\
-		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C ../../$(ABI_DEPTH)/libpng;	\
-	else									\
-		echo libpng not found;						\
-		echo TODO provide a nicer error message;			\
-		echo TODO with instructions for obtaining it;			\
-		exit 1;								\
-	fi
-
 
 #################################################################
 
-clean_ZLIB_:
-	@if [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/zlib clean;	\
+clean_EXPAT_:
+	@if [ -d ../../$(ABI_DEPTH)/expat ]; then		\
+		$(MAKE) -C ../../$(ABI_DEPTH)/expat clean;	\
 	fi
 
-clean_LIBPNG_:
-	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/libpng clean;	\
-	fi
