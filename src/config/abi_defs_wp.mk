@@ -35,9 +35,9 @@ endif
 ## of Win32 slash lossage.  
 ##
 
-ifdef ABI_BIDI_ENABLED
-BIDI_STRING= -BiDi
-endif
+#ifdef ABI_BIDI_ENABLED
+#BIDI_STRING= -BiDi
+#endif
 
 ifeq ($(ABI_ESCAPE_QUOTES),YES)
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord$(BIDI_STRING)\"\"

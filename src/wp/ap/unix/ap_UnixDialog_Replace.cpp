@@ -285,7 +285,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 
 	windowReplace = gtk_window_new(GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "windowReplace", windowReplace);
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (windowReplace),  m_WindowName);
@@ -294,14 +293,12 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	// top level vbox
 	vboxReplace = gtk_vbox_new (FALSE, 12);
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "vboxReplace", vboxReplace);
 	gtk_widget_show (vboxReplace);
 	gtk_container_add (GTK_CONTAINER (windowReplace), vboxReplace);
 	gtk_container_set_border_width (GTK_CONTAINER (vboxReplace), 10);
 
 	// table up top
 	tableReplace = gtk_table_new (3, 2, FALSE);
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "tableReplace", tableReplace);
 	gtk_widget_show (tableReplace);
 	gtk_box_pack_start (GTK_BOX (vboxReplace), tableReplace, FALSE, TRUE, 0);
 
@@ -309,7 +306,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindLabel));
 	labelFind = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "labelFind", labelFind);
 	gtk_widget_show (labelFind);
 	gtk_table_attach (GTK_TABLE (tableReplace), labelFind, 0, 1, 0, 1,
 			  GtkAttachOptions(GTK_FILL),
@@ -318,7 +314,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	// find entry is always here
 	entryFind = gtk_entry_new ();
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "entryFind", entryFind);
 	gtk_widget_show (entryFind);
 	gtk_table_attach (GTK_TABLE (tableReplace), entryFind, 1, 2, 0, 1,
 			  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
@@ -328,7 +323,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));	
 	checkbuttonMatchCase = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "checkbuttonMatchCase", checkbuttonMatchCase);
 	gtk_widget_show (checkbuttonMatchCase);
 	gtk_table_attach (GTK_TABLE (tableReplace), checkbuttonMatchCase, 1, 2, 1, 2,
 			  GtkAttachOptions(GTK_FILL),
@@ -341,7 +335,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceWithLabel));	
 		labelReplace = gtk_label_new (unixstr);
 		FREEP(unixstr);
-		gtk_object_set_data (GTK_OBJECT (windowReplace), "labelReplace", labelReplace);
 		gtk_widget_show (labelReplace);
 		gtk_table_attach (GTK_TABLE (tableReplace), labelReplace, 0, 1, 2, 3,
 				  GtkAttachOptions(0), GtkAttachOptions(0), 5, 0);
@@ -349,7 +342,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 		// create replace entry
 		entryReplace = gtk_entry_new ();
-		gtk_object_set_data (GTK_OBJECT (windowReplace), "entryReplace", entryReplace);
 		gtk_widget_show (entryReplace);
 		gtk_table_attach (GTK_TABLE (tableReplace), entryReplace, 1, 2, 2, 3,
 				  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
@@ -364,7 +356,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	// button box at the bottom
 	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "hbuttonbox1", hbuttonbox1);
 	gtk_widget_show (hbuttonbox1);
 	gtk_box_pack_start (GTK_BOX (vboxReplace), hbuttonbox1, FALSE, FALSE, 0);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
@@ -376,14 +367,12 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));	
 		buttonReplace = gtk_button_new_with_label (unixstr);
 		FREEP(unixstr);
-		gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonReplace", buttonReplace);
 		gtk_widget_show (buttonReplace);
 		gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonReplace);
 
 		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
 		buttonReplaceAll = gtk_button_new_with_label (unixstr);
 		FREEP(unixstr);
-		gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonReplaceAll", buttonReplaceAll);
 		gtk_widget_show (buttonReplaceAll);
 		gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonReplaceAll);
 	}
@@ -391,12 +380,10 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
 	buttonFindNext = gtk_button_new_with_label (unixstr);
 	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonFindNext", buttonFindNext);
 	gtk_widget_show (buttonFindNext);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonFindNext);
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonCancel);
 

@@ -300,7 +300,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		UT_XML_cloneString(buf[0], "props");
 		buf[2] = NULL;
 		
-		switch(s_Tokens[tokenIndex].m_type) {
+		switch(tokenIndex) {
 		case TT_EMPHASIS: 
 		    UT_XML_cloneString(buf[1], "font-style:italic"); 
 		    break;

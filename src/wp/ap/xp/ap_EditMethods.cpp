@@ -2083,7 +2083,7 @@ Defun1(dlgAbout)
 	return true;
 }
 
-Defun1(fileNew)
+Defun(fileNew)
 {
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 

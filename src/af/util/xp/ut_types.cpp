@@ -44,6 +44,14 @@ UT_Error UT_errnoToUTError (void)
     case ENOSPC:
       return UT_IE_COULDNOTWRITE;
 
+      /**
+       * Valid  error  numbers are all non-zero; errno is never set
+       * to zero by any library  function.   All  the  error  names
+       * specified by POSIX.1 must have distinct values.
+       */
+    case 0:
+      return UT_OK;
+
     case EINVAL:
     default: // generic case
       return UT_ERROR;
