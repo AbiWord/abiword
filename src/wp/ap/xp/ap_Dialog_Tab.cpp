@@ -271,7 +271,7 @@ void AP_Dialog_Tab::_event_Set(void)
 
 	_setTabList(m_tabInfo.getItemCount());
 
-	// Select the new or changed tab in the lis.
+	// Select the new or changed tab in the list.
 
 	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
@@ -425,7 +425,7 @@ bool AP_Dialog_Tab::buildTab( UT_String & buffer )
 {
 	// get current value from member
 	const XML_Char* szOld = _gatherTabEdit();
-	bool res = UT_isValidDimensionString(szOld);
+	bool res = UT_isValidDimensionString(szOld, MAX_TAB_LENGTH);
 	if (res)
 	{
 		const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
@@ -519,7 +519,6 @@ char *AP_Dialog_Tab::_getTabString(fl_TabStop *pTabInfo)
 	}
 
 	UT_uint32 iLen = pEnd - pStart;
-	UT_return_val_if_fail (iLen<20, NULL);
 
 	strncpy(buf, pStart, iLen);
 	buf[iLen]=0;

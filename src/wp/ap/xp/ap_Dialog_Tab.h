@@ -30,6 +30,8 @@ class XAP_Frame;
 class AP_Dialog_Tab;
 class FV_View;
 
+#define MAX_TAB_LENGTH 15 // the maximum length the the tab input can have
+
 typedef void (*TabSaveCallBack)(AP_Dialog_Tab * pDlg, 
 								FV_View *pView, const char * szTabStops,
 								const char * szDflTabStop, void * closure);
