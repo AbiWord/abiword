@@ -29,7 +29,7 @@
        int              numhits;
 struct success          hits[MAX_HITS];
 
-struct flagptr          pflagindex[SET_SIZE + MAXSTRINGCHARS];/*prefix index*/ 
+struct flagptr          pflagindex[SET_SIZE + MAXSTRINGCHARS];/*prefix index*/
 struct flagent          *pflaglist; /* prefix flag control list */
        int              numpflags;  /* Number of prefix flags in table*/
 struct flagptr          sflagindex[SET_SIZE + MAXSTRINGCHARS];/*suffix index*/
@@ -94,7 +94,7 @@ static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
       return;
     DEREF(istate, translate_in) = UT_iconv_open(start, UCS_INTERNAL);
     DEREF(istate, translate_out) = UT_iconv_open(UCS_INTERNAL, start);
-  }  
+  }
 }
 
 /***************************************************************************/
@@ -112,7 +112,7 @@ ISpellChecker::~ISpellChecker()
 #if defined(DONT_USE_GLOBALS)
   if (!m_pISpellState)
     return;
-  
+
   lcleanup(m_pISpellState);
 #else
   lcleanup();
@@ -123,7 +123,7 @@ ISpellChecker::~ISpellChecker()
   if(UT_iconv_isValid(DEREF(m_pISpellState, translate_out)))
     UT_iconv_close(DEREF(m_pISpellState, translate_out));
   DEREF(m_pISpellState, translate_out) = (UT_iconv_t)-1;
-  
+
 #if defined(DONT_USE_GLOBALS)
   FREEP(m_pISpellState);
 #endif
@@ -135,21 +135,21 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
   SpellChecker::SpellCheckResult retVal;
   ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
   char  word8[INPUTWORDLEN + MAXAFFIXLEN];
-  
+
   if (!g_bSuccessfulInit)
     {
       return SpellChecker::LOOKUP_FAILED;
     }
-  
+
   if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
     return SpellChecker::LOOKUP_FAILED;
-  
+
   if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
       /* copy to 8bit string and null terminate */
       register char *p;
       register size_t x;
-      
+
       for (x = 0, p = word8; x < length; x++)
 	*p++ = (unsigned char)*word32++;
       *p = '\0';
@@ -157,28 +157,28 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
   else
     {
       /* convert to 8bit string and null terminate */
-      /* TF CHANGE: Use the right types 
-	 unsigned int len_in, len_out; 
+      /* TF CHANGE: Use the right types
+	 unsigned int len_in, len_out;
       */
       size_t len_in, len_out;
       const char *In = (const char *)word32;
       char *Out = word8;
-      
+
       len_in = length * sizeof(UT_UCSChar);
       len_out = sizeof( word8 ) - 1;
       UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
       *Out = '\0';
     }
-  
+
   if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
     if ( good(DEREF_FIRST_ARG(m_pISpellState) iWord, 0, 0, 1, 0) == 1 ||
 	 compoundgood(DEREF_FIRST_ARG(m_pISpellState) iWord, 1 ) == 1 )
       retVal = SpellChecker::LOOKUP_SUCCEEDED;
-    else 
+    else
       retVal = SpellChecker::LOOKUP_FAILED;
   else
     retVal = SpellChecker::LOOKUP_ERROR;
-  
+
   return retVal; /* 0 - not found, 1 on found, -1 on error */
 }
 
@@ -189,20 +189,20 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
   ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
   char  word8[INPUTWORDLEN + MAXAFFIXLEN];
   int  c;
-  
-  if (!g_bSuccessfulInit) 
+
+  if (!g_bSuccessfulInit)
     return 0;
   if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
     return 0;
   if (!sgvec)
     return 0;
-  
+
   if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
       /* copy to 8bit string and null terminate */
       register char *p;
       register size_t x;
-      
+
       for (x = 0, p = word8; x < length; ++x)
 	{
 	  *p++ = (unsigned char)*word32++;
@@ -213,9 +213,9 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
     {
       /* convert to 8bit string and null terminate */
       /* TF CHANGE: Use the right types
-	 unsigned int len_in, len_out; 
+	 unsigned int len_in, len_out;
       */
-      size_t len_in, len_out; 
+      size_t len_in, len_out;
       const char *In = (const char *)word32;
       char *Out = word8;
       len_in = length * sizeof(UT_UCSChar);
@@ -223,28 +223,28 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
       UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
       *Out = '\0';
     }
-  
+
   if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
     makepossibilities(DEREF_FIRST_ARG(m_pISpellState) iWord);
-  
-  for (c = 0; c < DEREF(m_pISpellState, pcount); c++) 
+
+  for (c = 0; c < DEREF(m_pISpellState, pcount); c++)
     {
       int l;
-      
+
       l = strlen(DEREF(m_pISpellState, possibilities[c]));
-      
+
       UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
-      if (theWord == NULL) 
+      if (theWord == NULL)
         {
 	  // OOM, but return what we have so far
 	  return sgvec;
         }
-      
+
       if (DEREF(m_pISpellState, translate_out) == (iconv_t)-1)
         {
 	  /* copy to 16bit string and null terminate */
 	  register int x;
-	  
+
 	  for (x = 0; x < l; x++)
 	    theWord[x] = (unsigned char)DEREF(m_pISpellState, possibilities[c][x]);
 	  theWord[l] = 0;
@@ -253,18 +253,18 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
         {
 	  /* convert to 16bit string and null terminate */
 	  /* TF CHANGE: Use the right types
-	     unsigned int len_in, len_out; 
+	     unsigned int len_in, len_out;
 	  */
-	  size_t len_in, len_out; 
+	  size_t len_in, len_out;
 	  const char *In = DEREF(m_pISpellState, possibilities[c]);
 	  char *Out = (char *)theWord;
-	  
+
 	  len_in = l;
 	  len_out = sizeof(UT_UCS4Char) * (l+1);
-	  UT_iconv(DEREF(m_pISpellState, translate_out), &In, &len_in, &Out, &len_out);	    
+	  UT_iconv(DEREF(m_pISpellState, translate_out), &In, &len_in, &Out, &len_out);
 	  *((UT_UCS4Char *)Out) = 0;
         }
-      
+
       sgvec->addItem((void *)theWord);
     }
   return sgvec;
@@ -273,15 +273,30 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 static void couldNotLoadDictionary ( const char * szLang )
 {
   XAP_Frame           * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
-  
+
+#if 0
+  // this invariably happens at start up, when there is no frame yet,
+  // and generates irritating assert ...
   UT_return_if_fail(pFrame && szLang);
-  
-  const XAP_StringSet * pSS    = XAP_App::getApp()->getStringSet ();
-  
-  const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
-  pFrame->showMessageBox (UT_String_sprintf(text, szLang).c_str(),
-			  XAP_Dialog_MessageBox::b_O,
-			  XAP_Dialog_MessageBox::a_OK);
+#else
+  UT_return_if_fail(szLang);
+#endif
+
+  if(pFrame)
+  {
+
+    const XAP_StringSet * pSS    = XAP_App::getApp()->getStringSet ();
+
+    const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
+    pFrame->showMessageBox (UT_String_sprintf(text, szLang).c_str(),
+							XAP_Dialog_MessageBox::b_O,
+							XAP_Dialog_MessageBox::a_OK);
+  }
+  else
+  {
+	  // TODO -- create a dialog not bound to a frame
+	  UT_DEBUGMSG(( "ispell_checker::couldNotLoadDictionary: could not load dictionary for %s\n", szLang ));
+  }
 }
 
 static char *
@@ -290,7 +305,7 @@ s_buildHashName ( const char * base, const char * dict )
   UT_String hName ( base ) ;
   hName += "/dictionary/";
   hName += dict ;
-  return UT_strdup (hName.c_str());  
+  return UT_strdup (hName.c_str());
 }
 
 
@@ -330,20 +345,20 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 
   for (UT_uint32 i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
     {
-      if (!strcmp (szLang, m_mapping[i].lang)) 
+      if (!strcmp (szLang, m_mapping[i].lang))
 	{
 	  hFile = m_mapping[i].dict;
 	  break;
 	}
     }
-  
+
   if ( hFile == NULL )
     return NULL ;
 
 #if defined(DONT_USE_GLOBALS)
   m_pISpellState = alloc_ispell_struct();
 #endif
-  
+
   if (!(hashname = loadGlobalDictionary(hFile))) {
     if (!(hashname = loadLocalDictionary(hFile))) {
 #ifdef HAVE_CURL
@@ -375,16 +390,16 @@ ISpellChecker::requestDictionary(const char *szLang)
     }
 
   g_bSuccessfulInit = true;
-  
+
   /* Test for utf8 first */
   prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
   if (prefstringchar >= 0)
     {
 		DEREF(m_pISpellState, translate_in) = UT_iconv_open("utf-8", UCS_INTERNAL);
 		DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_INTERNAL, "utf-8");
-		
+
     }
-  
+
     /* Test for "latinN" */
     if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
