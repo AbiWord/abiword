@@ -862,7 +862,6 @@ void GR_Graphics::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
-#ifdef DEBUG // XXX
 void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	pG->xorLine(x,     y,     x + w, y);
@@ -876,6 +875,7 @@ void xorRect(GR_Graphics* pG, const UT_Rect& r)
 	xorRect(pG, r.left, r.top, r.width, r.height);
 }
 
+#ifdef DEBUG // XXX
 void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c)
 {
 /*
