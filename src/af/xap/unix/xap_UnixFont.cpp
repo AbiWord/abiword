@@ -422,7 +422,7 @@ const FontMappingTable std_enc[] = {
   { 0x00DD, "Yacute" },
   { 0x00DB, "Ucircumflex" },
   { 0x00D9, "Ugrave" },
-  // HELP: What is "Zcaron"?
+  // HELP: What is "Zcaron"? ANS: Z + caron; caron = inverted circumflex
   { 0x00FF, "Ydieresis" },
   { 0x00B3, "threesuperior" },
   { 0x00DA, "Uacute" },
@@ -440,7 +440,7 @@ const FontMappingTable std_enc[] = {
   { 0x00E5, "aring" },
   { 0x00E4, "adieresis" },
   { 0x00D2, "Ograve" },
-  { 0x00D4, "Ocurcumflex" },
+  { 0x00D4, "Ocircumflex" },
   { 0x00D6, "Odieresis" },
   { 0x00D1, "Ntilde" },
   { 0x00EB, "edieresis" },
@@ -450,7 +450,7 @@ const FontMappingTable std_enc[] = {
   { 0x00EA, "ecircumflex" },
   { 0x00CC, "Igrave" },
   { 0x00CD, "Iacute" },
-  { 0x00CF, "Idiersis" },
+  { 0x00CF, "Idieresis" },
   { 0x00B0, "degree" },
   { 0x00CA, "Ecircumflex" },
   { 0x002D, "minus" },
@@ -500,7 +500,7 @@ const FontMappingTable std_enc[] = {
   { 0x00A6, "brokenbar" },
   { 0x00DE, "Thorn" },
   { 0x00C4, "Adieresis" },
-  // HELP: What is "mu"?
+  { 0x00B5, "mu" },
   { 0x0000, NULL }
 };
 
