@@ -537,6 +537,7 @@ public:
 	bool				isInTable(PT_DocPosition pos);
 	bool                cmdAutoSizeCols(void);
 	bool                cmdAutoSizeRows(void);
+	bool                cmdAdvanceNextPrevCell(bool bGoNext);
 	fp_CellContainer *  getCellAtPos(PT_DocPosition pos);
 	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col);
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);

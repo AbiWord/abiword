@@ -1110,6 +1110,75 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	return true;
 }
 
+
+/*!
+ * Mve the caret to the next or previous cell in a table. If at either end
+ * insert a new row.
+ */
+bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
+{
+	if(!isInTable())
+	{
+		return false;
+	}
+	PL_StruxDocHandle sdhCell = NULL;
+	PL_StruxDocHandle sdhNextPrevCell = NULL;
+	PL_StruxDocHandle sdhTable = NULL;
+	PL_StruxDocHandle sdhEndTable = NULL;
+	PT_DocPosition posTable = 0;
+	PT_DocPosition posEndTable = 0;
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionTable,&sdhTable);
+	UT_return_val_if_fail(bRes,false);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionCell,&sdhCell);
+	UT_return_val_if_fail(bRes,false);
+	if(bGoNext)
+	{
+		sdhEndTable = m_pDoc->getEndTableStruxFromTableSDH(sdhTable);
+		UT_return_val_if_fail(sdhEndTable,false);
+		posEndTable = m_pDoc->getStruxPosition(sdhEndTable);
+		bRes = m_pDoc->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhNextPrevCell);
+		PT_DocPosition posNextCell = 0;
+		if(bRes)
+		{
+			posNextCell = m_pDoc->getStruxPosition(sdhNextPrevCell);
+			if(posNextCell > posEndTable)
+			{
+				posNextCell = 0;
+			}
+		}
+		if(posNextCell == 0)
+		{
+			cmdInsertRow(getPoint(),false);
+			return true;
+		}
+		setPoint(posNextCell+2);
+		_fixInsertionPointCoords();
+		_ensureInsertionPointOnScreen();
+		return true;
+	}
+	bRes = m_pDoc->getPrevStruxOfType(sdhCell,PTX_SectionCell,&sdhNextPrevCell);
+	PT_DocPosition posPrevCell = 0;
+	if(bRes)
+	{
+		posPrevCell = m_pDoc->getStruxPosition(sdhNextPrevCell);
+		if(posPrevCell < posTable)
+		{
+			cmdInsertRow(getPoint(),true);
+			return true;
+		}
+		setPoint(posPrevCell+2);
+		_fixInsertionPointCoords();
+		_ensureInsertionPointOnScreen();
+		return true; 
+	}
+	if(posPrevCell == 0)
+	{
+		cmdInsertRow(getPoint(),true);
+		return true;
+	}
+
+	return false;
+}
 /*!
  * Make a table columns autosizing by removing all the column properties.
  */

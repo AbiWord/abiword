@@ -287,6 +287,7 @@ public:
 	static EV_EditMethod_Fn insertSectionBreak;
 	static EV_EditMethod_Fn insertSoftBreak;
 	static EV_EditMethod_Fn insertTab;
+	static EV_EditMethod_Fn insertTabShift;
 
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
@@ -973,6 +974,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertSoftBreak),		0,	""),
 	EV_EditMethod(NF(insertSpace),			0,	""),
 	EV_EditMethod(NF(insertTab),			0,	""),
+	EV_EditMethod(NF(insertTabShift),			0,	""),
 	EV_EditMethod(NF(insertTable),          0,  ""),
 	EV_EditMethod(NF(insertTildeData),		_D_,	""),
 	EV_EditMethod(NF(insertZWJoiner),		0,	""),
@@ -4997,9 +4999,33 @@ Defun1(insertTab)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_TAB;
-	pView->cmdCharInsert(&c,1);
+	if(!pView->isInTable())
+	{
+		pView->cmdCharInsert(&c,1);
+	}
+	else
+	{
+		pView->cmdAdvanceNextPrevCell(true);
+	}
 	return true;
 }
+
+
+Defun1(insertTabShift)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	if(!pView->isInTable())
+	{
+		return true;
+	}
+	else
+	{
+		pView->cmdAdvanceNextPrevCell(false);
+	}
+	return true;
+}
+
 
 Defun1(insertLineBreak)
 {
