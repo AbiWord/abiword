@@ -37,29 +37,28 @@ $w->vbox->add($table);
 $w->signal_connect('clicked', \&clicked_cb, $fax_number, $company_name, $logo);
 $w->show_all;
 
+# return a true value
 1;
 
 sub clicked_cb {
-    my ($dialog, $fax_number, $company_name, $logo) = @_;
-    my $button_nb = 1;
+    my ($dialog, $fax_number, $company_name, $logo, $button_nb) = @_;
 
-    print "$button_nb\n";
-    if ($button_nb == 1) {
-	my $frame = abi::XAP_Frame::getLastFocussed;
-	my $view = $frame->getCurrentView;
+    if ($button_nb == 0) {
+	my $frame = AbiWord::XAP_Frame::getLastFocussed();
+	my $view = $frame->getCurrentView();
 
 	$view->setCharFormat("font-weight" => "bold", "font-size" => "24pt");
-	$view->write("FAX Document.\t".$fax_number->get_text."\n\n");
+	$view->write("FAX Document.\t" . $fax_number->get_text . "\n\n");
 	$view->setCharFormat("font-size" => "12pt");
 	$view->write("From: ");
 	$view->setCharFormat("font-weight" => "normal");
-	$view->write("TODO (".$company_name->get_text.")\n");
+	$view->write("TODO (" . $company_name->get_text . ")\n");
 	$view->setCharFormat("font-weight" => "bold");
 	$view->write("To: ");
 	$view->setCharFormat("font-weight" => "normal");
 	$view->write("TODO\n");
     }
+
+    $dialog->close();
 }
 
-# return a true value
-1;
