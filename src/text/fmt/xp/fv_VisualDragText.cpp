@@ -41,7 +41,10 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_iInitialOffY(0),
 	  m_recOrigLeft(0,0,0,0),
 	  m_recOrigRight(0,0,0,0),
-	  m_bTextCut(false)
+	  m_bTextCut(false),
+	  m_pDocUnderCursor(NULL),
+	  m_bCursorDrawn(false),
+	  m_recCursor(0,0,0,0)
 {
 	UT_ASSERT (pView);
 }
@@ -78,6 +81,7 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 		m_bTextCut = true;
 
 	}
+	clearCursor();
 	m_iVisualDragMode = FV_VisualDrag_DRAGGING;	
 	UT_sint32 dx = 0;
 	UT_sint32 dy = 0;
@@ -162,9 +166,49 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	getGraphics()->setClipRect(NULL);
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->_setPoint(posAtXY);
-	m_pView->_fixInsertionPointCoords();
+//	m_pView->_fixInsertionPointCoords();
+	drawCursor(posAtXY);
 }
 
+void FV_VisualDragText::clearCursor(void)
+{
+	if(m_bCursorDrawn)
+	{
+		if(m_pDocUnderCursor)
+		{
+			GR_Painter painter(getGraphics());
+			painter.drawImage(m_pDocUnderCursor,m_recCursor.left,m_recCursor.top);
+			m_bCursorDrawn = false;
+			DELETEP(m_pDocUnderCursor);
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+}
+
+void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
+{
+
+	fp_Run * pRunLow = NULL;
+	fl_BlockLayout * pBlock = NULL;
+	UT_sint32 xLow, yLow;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection,bEOL;
+	m_pView->_findPositionCoords(newPos, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+	m_recCursor.left = xLow;
+	m_recCursor.top = yLow;
+	m_recCursor.width =  2;
+	m_recCursor.height = heightCaret;
+	UT_ASSERT(m_pDocUnderCursor == NULL);
+	GR_Painter painter(getGraphics());
+	m_pDocUnderCursor = painter.genImageFromRectangle(m_recCursor);
+	UT_RGBColor black(0,0,0);
+	painter.fillRect( black, m_recCursor);
+	m_bCursorDrawn = true;
+}
 
 /*!
  * This method creates an image from the current selection. It sets
@@ -397,6 +441,7 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
  */
 void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
+	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
 //

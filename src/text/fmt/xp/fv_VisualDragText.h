@@ -55,6 +55,8 @@ public:
 	void                  drawImage(void);
 	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y); 	
 	PT_DocPosition        getPosFromXY(UT_sint32 x, UT_sint32 y);
+	void                  drawCursor(PT_DocPosition newPos);
+	void                  clearCursor(void);
 private:
 	FV_View *             m_pView;
 	FV_VisualDragMode     m_iVisualDragMode;
@@ -67,6 +69,9 @@ private:
 	UT_Rect               m_recOrigLeft;
 	UT_Rect               m_recOrigRight;
 	bool                  m_bTextCut;
+	GR_Image *            m_pDocUnderCursor;
+	bool                  m_bCursorDrawn;
+	UT_Rect               m_recCursor;
 };
 
 #endif /* FV_VISUALDRAGTEXT_H */

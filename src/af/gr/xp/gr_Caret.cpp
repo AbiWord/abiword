@@ -24,7 +24,7 @@
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
-
+#include "ut_debugmsg.h"
 static const UT_uint32 CURSOR_DELAY_TIME = 10; // milliseconds
 
 #ifdef XP_UNIX_TARGET_GTK
@@ -232,8 +232,9 @@ void GR_Caret::_blink(bool bExplicit)
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
 
+	m_bRecursiveDraw = true;
 	GR_Painter painter (m_pG);
-		
+	m_bRecursiveDraw = false;
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.
 	if (!bExplicit)
@@ -253,6 +254,7 @@ void GR_Caret::_blink(bool bExplicit)
 		if (m_bCursorIsOn)
 		{
 			m_pG->restoreRectangle(0);
+			xxx_UT_DEBUGMSG(("blink cursor turned off \n")); 
 
 			if(m_bSplitCaret)
 			{
@@ -317,6 +319,7 @@ void GR_Caret::_blink(bool bExplicit)
 			if(m_bCaret1OnScreen)
 			{
 				// draw the primary caret
+				xxx_UT_DEBUGMSG(("blink cursor turned on \n")); 
 				UT_sint32 x1 = m_xPoint + iDelta * m_pG->tlu(1);
 				UT_sint32 x2 = m_xPoint;
 				while(m_pG->_tduX(x1) == m_pG->_tduX(x2))
