@@ -22,16 +22,9 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		ap_Win32App.h			\
-			ap_Win32Frame.h
-
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		ap_Win32App.cpp			\
-			ap_Win32Frame.cpp
+			ap_Win32Frame.cpp		\
+			ap_Win32Toolbar_Icons.cpp
 
 TARGETS=		$(OBJS)
 

@@ -23,6 +23,7 @@
 
 #include <windows.h>
 #include "ap_Frame.h"
+#include "ut_vector.h"
 class AP_Win32App;
 class ev_Win32Keyboard;
 class EV_Win32Mouse;
@@ -44,7 +45,7 @@ public:
 	AP_Win32Frame(AP_Win32Frame * f);
 	~AP_Win32Frame(void);
 
-	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool				initialize(void);
 	virtual	AP_Frame *			cloneFrame(void);
 	virtual UT_Bool				loadDocument(const char * szFilename);
 	virtual UT_Bool				close(void);
@@ -69,6 +70,7 @@ protected:
 	ev_Win32Keyboard *			m_pWin32Keyboard;
 	EV_Win32Mouse *				m_pWin32Mouse;
 	EV_Win32Menu *				m_pWin32Menu;
+	UT_Vector					m_vecWin32Toolbars;
 	
 	HWND						m_hwnd;
 };

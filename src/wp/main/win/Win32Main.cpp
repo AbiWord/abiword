@@ -26,6 +26,7 @@
 #include <js.h>
 #endif /* ABI_OPT_JS */
 
+#include "ap_Args.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 
@@ -57,13 +58,15 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	// initialize our application.
 
-	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance);
-	pMyWin32App->initialize(&argc,&argv);
+	AP_Args Args = AP_Args(argc,argv);
+	
+	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args);
+	pMyWin32App->initialize();
 
 	// create the first window.
 
 	AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(pMyWin32App);
-	pFirstWin32Frame->initialize(&argc,&argv);
+	pFirstWin32Frame->initialize();
 	hwnd = pFirstWin32Frame->getTopLevelWindow();
 	
 	{
@@ -113,7 +116,10 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	while (GetMessage (&msg, NULL, 0, 0))
 	{
-//		TranslateMessage (&msg) ;
+		// Note: we do not call TranslateMessage() because
+		// Note: the keybinding mechanism is responsible
+		// Note: for deciding if/when to do this.
+
 		DispatchMessage (&msg) ;
 	}
 

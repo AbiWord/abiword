@@ -33,7 +33,9 @@ class AP_UnixFrame;
 class EV_UnixMenu : public EV_Menu
 {
 public:
-	EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame);
+	EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame,
+				const char * szMenuLayoutName,
+				const char * szMenuLabelSetName);
 	~EV_UnixMenu(void);
 
 	UT_Bool				synthesize(void);

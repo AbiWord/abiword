@@ -23,6 +23,7 @@
 
 #include <gtk/gtk.h>
 #include "ap_Frame.h"
+#include "ut_vector.h"
 class AP_UnixApp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;
@@ -44,7 +45,7 @@ public:
 	AP_UnixFrame(AP_UnixFrame * f);
 	~AP_UnixFrame(void);
 
-	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool				initialize(void);
 	virtual	AP_Frame *			cloneFrame(void);
 	virtual UT_Bool				loadDocument(const char * szFilename);
 	virtual UT_Bool				close(void);
@@ -63,10 +64,11 @@ protected:
 	static void					_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff);
 
 	// TODO see why ev_UnixKeyboard has lowercase prefix...
-	AP_UnixApp *					m_pUnixApp;
+	AP_UnixApp *				m_pUnixApp;
 	ev_UnixKeyboard *			m_pUnixKeyboard;
 	EV_UnixMouse *				m_pUnixMouse;
 	EV_UnixMenu *				m_pUnixMenu;
+	UT_Vector					m_vecUnixToolbars;
 	
 	GtkWidget *					m_wTopLevelWindow;
 	GtkWidget *					m_wVBox;
@@ -77,7 +79,6 @@ protected:
 	GtkWidget *					m_vScroll;
 	GtkWidget *					m_dArea;
 	GtkWidget *					m_table;
-//	GtkAcceleratorTable *		m_accel;
 };
 
 #endif /* AP_UNIXFRAME_H */

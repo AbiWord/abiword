@@ -20,20 +20,26 @@
 #include <windows.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ap_Args.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 
+#define DELETEP(p)	do { if (p) delete p; } while (0)
+
 /*****************************************************************/
 
-AP_Win32App::AP_Win32App(HINSTANCE hInstance)
+AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs)
+	: AP_App(pArgs)
 {
 	UT_ASSERT(hInstance);
 
 	m_hInstance = hInstance;
+	m_pWin32ToolbarIcons = 0;
 }
 
 AP_Win32App::~AP_Win32App(void)
 {
+	DELETEP(m_pWin32ToolbarIcons);
 }
 
 HINSTANCE AP_Win32App::getInstance() const
@@ -41,12 +47,16 @@ HINSTANCE AP_Win32App::getInstance() const
 	return m_hInstance;
 }
 
-UT_Bool AP_Win32App::initialize(int * pArgc, char *** pArgv)
+UT_Bool AP_Win32App::initialize(void)
 {
 	// let our base class do it's thing.
 	
-	AP_App::initialize(pArgc,pArgv);
+	AP_App::initialize();
 
+	// load only one copy of the platform-specific icons.
+
+	m_pWin32ToolbarIcons = new AP_Win32Toolbar_Icons();
+	
 	// let various window types register themselves
 
 	if (!AP_Win32Frame::RegisterClass(this))
@@ -65,7 +75,7 @@ AP_Frame * AP_Win32App::newFrame(void)
 	AP_Win32Frame * pWin32Frame = new AP_Win32Frame(this);
 
 	if (pWin32Frame)
-		pWin32Frame->initialize(0,NULL);
+		pWin32Frame->initialize();
 
 	return pWin32Frame;
 }

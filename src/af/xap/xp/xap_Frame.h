@@ -22,6 +22,7 @@
 #define AP_FRAME_H
 
 #include "ut_types.h"
+#include "ut_vector.h"
 #include "fv_Listener.h"	// for FV_ListenerID
 
 class AP_App;
@@ -53,7 +54,7 @@ public:
 	AP_Frame(AP_Frame * f);
 	virtual ~AP_Frame(void);
 
-	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool				initialize(void);
 	virtual	AP_Frame *			cloneFrame(void)=0;
 	virtual UT_Bool				loadDocument(const char * szFilename);
 	virtual UT_Bool				close(void)=0;
@@ -61,8 +62,6 @@ public:
 	virtual UT_Bool				show(void)=0;
 	virtual UT_Bool				updateTitle(void);
 
-	const EV_Menu_Layout *		getMenuLayout(void) const;
-	const EV_Menu_LabelSet *	getMenuLabelSet(void) const;
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
 	AP_App *					getApp(void) const;
 	FV_View *					getCurrentView(void) const;
@@ -86,8 +85,10 @@ protected:
 	DG_Graphics *				m_pG;
 	EV_EditBindingMap *			m_pEBM;			/* the key/mouse bindings for this frame */
 	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */
-	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */
-	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */
+	const char *				m_szMenuLayoutName;
+	const char *				m_szMenuLabelSetName;		/* language for menus */
+	UT_Vector					m_vecToolbarLayoutNames;
+	const char *				m_szToolbarLabelSetName;	/* language for toolbars */
 	UT_uint32					m_nView;
 	int							m_iUntitled;
 

@@ -33,8 +33,10 @@ TARGETS=		$(LIBRARY)
 # note: the $(DIST)/bin directory on Windows.
 
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Menu.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Mouse.$(OBJ_SUFFIX)
+		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Menu.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Mouse.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Toolbar.$(OBJ_SUFFIX)
+
 
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ev_EditBinding.$(OBJ_SUFFIX)		\
@@ -46,7 +48,11 @@ OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ev_Menu_Labels.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ev_Menu_Layouts.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ev_Mouse.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ev_NamedVirtualKey.$(OBJ_SUFFIX)
+		xp/$(OBJDIR)/ev_NamedVirtualKey.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_Toolbar.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ev_Toolbar_Actions.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_Toolbar_Labels.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_Toolbar_Layouts.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

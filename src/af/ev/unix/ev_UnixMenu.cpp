@@ -118,8 +118,10 @@ static const char * _ev_gtkMenuFactoryName(const char * szMenuName)
 
 /*****************************************************************/
 
-EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame)
-	: EV_Menu(pUnixApp->getEditMethodContainer())
+EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame,
+						 const char * szMenuLayoutName,
+						 const char * szMenuLabelSetName)
+	: EV_Menu(pUnixApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
 {
 	m_pUnixApp = pUnixApp;
 	m_pUnixFrame = pUnixFrame;
@@ -159,11 +161,6 @@ UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
 	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 
-	// TODO decide if we like this lookup here or would rather do the
-	// TODO lookup when we synthesize the menu and store the pEM in
-	// TODO the _wd entry.  by doing the lookup here, the application
-	// TODO will startup a little faster....
-	
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
@@ -178,20 +175,14 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
-	const EV_Menu_LabelSet * pMenuLabelSet = m_pUnixFrame->getMenuLabelSet();
-	UT_ASSERT(pMenuLabelSet);
-	
-	const EV_Menu_Layout * pMenuLayout = m_pUnixFrame->getMenuLayout();
-	UT_ASSERT(pMenuLayout);
-	
-	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
+	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
 	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
 	m_wAccelGroup = gtk_accel_group_new();
-	const char * szMenuBarName = _ev_gtkMenuFactoryName(pMenuLayout->getName());
+	const char * szMenuBarName = _ev_gtkMenuFactoryName(m_pMenuLayout->getName());
 	m_wMenuBarItemFactory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,szMenuBarName,m_wAccelGroup);
 
 	// we allocate space for nrLabelItemsInLayout even though our
@@ -212,13 +203,13 @@ UT_Bool EV_UnixMenu::synthesize(void)
 		const char * szLabelName;
 		char * tempPath = NULL;
 		
-		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
+		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
 		AP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
-		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
+		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
 		switch (pLayoutItem->getMenuLayoutFlags())
@@ -457,20 +448,16 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
-	const EV_Menu_LabelSet * pMenuLabelSet = m_pUnixFrame->getMenuLabelSet();
-	UT_ASSERT(pMenuLabelSet);
-	const EV_Menu_Layout * pMenuLayout = m_pUnixFrame->getMenuLayout();
-	UT_ASSERT(pMenuLayout);
-	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
+	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 
 	gchar buf[1024];
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
-		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
+		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		AP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
+		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		const char * szMenuFactoryItemPath = _getItemPath(id);
 		UT_Bool bPresent = _isItemPresent(id);
 
@@ -510,10 +497,20 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 					// if no dynamic label, all we need to do
 					// is enable/disable and/or check/uncheck it.
 
+					// Strip out the underscores from the path
+					// or else the lookup in the hash will fail.
+					gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+					_ev_strip_accel(buf, szMenuFactoryItemPath);
+					GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+																   buf);
+					delete buf;
+					UT_ASSERT(item);
+
 					// check boxes 
 					if (GTK_IS_CHECK_MENU_ITEM(item))
 						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 					// all get the gray treatment
+
 					gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 					break;
 				}

@@ -29,20 +29,30 @@
 
 class EV_EditMethodContainer;
 class EV_EditMethod;
+class EV_Menu_Layout;
+class EV_Menu_LabelSet;
 class FV_View;
 
 class EV_Menu
 {
 public:
-	EV_Menu(EV_EditMethodContainer * pEMC);
+	EV_Menu(EV_EditMethodContainer * pEMC,
+			const char * szMenuLayoutName,
+			const char * szMenuLanguageName);
+
 	UT_Bool invokeMenuMethod(FV_View * pView,
 							 EV_EditMethod * pEM,
 							 UT_uint32 iPrefixCount,
 							 UT_UCSChar * pData,
 							 UT_uint32 dataLength);
 
+	const EV_Menu_Layout *		getMenuLayout(void) const;
+	const EV_Menu_LabelSet *	getMenuLabelSet(void) const;
+
 protected:
 	EV_EditMethodContainer *	m_pEMC;
+	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */
+	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */
 };
 
 #endif /* EV_MENU_H */

@@ -28,20 +28,25 @@
 #include "ut_string.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
+#include "ev_Toolbar_Actions.h"
 #include "ap_App.h"
+#include "ap_Args.h"
 #include "ap_Frame.h"
 #include "ap_EditMethods.h"
 #include "ap_Menu_ActionSet.h"
+#include "ap_Toolbar_ActionSet.h"
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 
-AP_App::AP_App(void) : m_hashClones(5)
+AP_App::AP_App(AP_Args * pArgs) : m_hashClones(5)
 {
+	m_pArgs = pArgs;
 	m_pEMC = NULL;
 	m_pMenuActionSet = NULL;
+	m_pToolbarActionSet = NULL;
 }
 
 AP_App::~AP_App(void)
@@ -51,7 +56,8 @@ AP_App::~AP_App(void)
 
 	DELETEP(m_pEMC);
 	DELETEP(m_pMenuActionSet);
-
+	DELETEP(m_pToolbarActionSet);
+	
 #ifdef ABI_OPT_JS
 	if (m_pJSInterp)
 	{
@@ -60,7 +66,7 @@ AP_App::~AP_App(void)
 #endif /* ABI_OPT_JS */
 }
 
-UT_Bool AP_App::initialize(int * /*pArgc*/, char *** /*pArgv*/)
+UT_Bool AP_App::initialize(void)
 {
 	// create application-wide resources that
 	// are shared by everything.
@@ -71,7 +77,10 @@ UT_Bool AP_App::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 	m_pMenuActionSet = AP_CreateMenuActionSet();
 	UT_ASSERT(m_pMenuActionSet);
 
-	// TODO use argc,argv to process any command-line
+	m_pToolbarActionSet = AP_CreateToolbarActionSet();
+	UT_ASSERT(m_pToolbarActionSet);
+
+	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
 
 #ifdef ABI_OPT_JS
@@ -135,6 +144,11 @@ EV_EditMethodContainer * AP_App::getEditMethodContainer(void) const
 const EV_Menu_ActionSet * AP_App::getMenuActionSet(void) const
 {
 	return m_pMenuActionSet;
+}
+
+const EV_Toolbar_ActionSet * AP_App::getToolbarActionSet(void) const
+{
+	return m_pToolbarActionSet;
 }
 
 UT_Bool AP_App::rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf)

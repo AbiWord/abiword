@@ -103,15 +103,16 @@ AP_Win32Frame::~AP_Win32Frame(void)
 	DELETEP(m_pWin32Keyboard);
 	DELETEP(m_pWin32Mouse);
 	DELETEP(m_pWin32Menu);
+	UT_VECTOR_PURGEALL(EV_Win32Toolbar *, m_vecWin32Toolbars);
 }
 
-UT_Bool AP_Win32Frame::initialize(int * pArgc, char *** pArgv)
+UT_Bool AP_Win32Frame::initialize(void)
 {
 	UT_Bool bResult;
 
 	// invoke our base class first.
 	
-	bResult = AP_Frame::initialize(pArgc,pArgv);
+	bResult = AP_Frame::initialize(void);
 	UT_ASSERT(bResult);
 
 	_createTopLevelWindow();
@@ -125,7 +126,7 @@ UT_Bool AP_Win32Frame::initialize(int * pArgc, char *** pArgv)
 	m_pWin32Mouse = new EV_Win32Mouse(m_pEEM);
 	UT_ASSERT(m_pWin32Mouse);
 
-	// ... add other stuff (like tool bar) here...
+	// ... add other stuff here...
 
 	// TODO: Jeff, I'm currently showing in WinMain, to honor iCmdShow.
 	// should we pass that via argv, to do it here for all frames?
@@ -202,6 +203,22 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	UT_ASSERT(m_pWin32Menu);
 	UT_Bool bResult = m_pWin32Menu->synthesize();
 	UT_ASSERT(bResult);
+
+	// create a toolbar instance for each toolbar listed in our base class.
+
+	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (UT_uint32 k=0; k < nrToolbars; k++)
+	{
+		EV_Win32Toolbar * pWin32Toolbar
+			= new EV_Win32Toolbar(m_pWin32App,this,
+								 (const char *)m_vecToolbarLayoutNames.getNthItem(k),
+								 m_szToolbarLabelSetName);
+		UT_ASSERT(pWin32Toolbar);
+		bResult = pWin32Toolbar->synthesize();
+		UT_ASSERT(bResult);
+		
+		m_vecWin32Toolbars.addItem(pWin32Toolbar);
+	}
 
 	// we let our caller decide when to show m_hwnd.
 

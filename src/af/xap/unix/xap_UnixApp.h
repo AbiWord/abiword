@@ -23,6 +23,9 @@
 
 #include "ap_App.h"
 
+class AP_Args;
+class AP_UnixToolbar_Icons;
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the unix-platform-specific class for the
@@ -35,13 +38,14 @@
 class AP_UnixApp : public AP_App
 {
 public:
-	AP_UnixApp(void);
+	AP_UnixApp(AP_Args * pArgs);
 	virtual ~AP_UnixApp(void);
 
-	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool					initialize(void);
 	virtual AP_Frame * 				newFrame(void);
 
 protected:
+	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 
 	/* TODO put anything we need here.  for example, our
 	** TODO connection to the XServer.

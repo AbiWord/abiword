@@ -29,14 +29,38 @@
 #include "ev_Menu.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
+#include "ap_Menu_Layouts.h"
+#include "ap_Menu_LabelSet.h"
 
 /*****************************************************************/
 
-EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC)
+EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC,
+				 const char * szMenuLayoutName,
+				 const char * szMenuLabelSetName)
 {
 	UT_ASSERT(pEMC);
 
 	m_pEMC = pEMC;
+
+	UT_DEBUGMSG(("EV_Menu: Creating menu for [layout %s, language %s]\n",
+				 szMenuLayoutName,szMenuLabelSetName));
+	
+	m_pMenuLayout = AP_CreateMenuLayout(szMenuLayoutName);
+	UT_ASSERT(m_pMenuLayout);
+
+	m_pMenuLabelSet = AP_CreateMenuLabelSet(szMenuLabelSetName);
+	UT_ASSERT(m_pMenuLabelSet);
+
+}
+
+const EV_Menu_Layout * EV_Menu::getMenuLayout(void) const
+{
+	return m_pMenuLayout;
+}
+
+const EV_Menu_LabelSet * EV_Menu::getMenuLabelSet(void) const
+{
+	return m_pMenuLabelSet;
 }
 
 UT_Bool EV_Menu::invokeMenuMethod(FV_View * pView,

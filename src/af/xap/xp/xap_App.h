@@ -29,9 +29,11 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 
+class AP_Args;
 class AP_Frame;
 class EV_EditMethodContainer;
 class EV_Menu_ActionSet;
+class EV_Toolbar_ActionSet;
 
 /*****************************************************************
 ******************************************************************
@@ -43,7 +45,7 @@ class EV_Menu_ActionSet;
 
 class AP_App
 {
-public:
+public:									/* TODO these should be protected */
 	static const char* s_szBuild_ID;
 	static const char* s_szBuild_Version;
 	static const char* s_szBuild_Options;
@@ -51,10 +53,10 @@ public:
 	static const char* s_szBuild_CompileDate;
 
 public:
-	AP_App(void);
+	AP_App(AP_Args * pArgs);
 	virtual ~AP_App(void);
 
-	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool					initialize(void);
 	virtual UT_Bool					rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf=(AP_Frame*)NULL);
 	virtual UT_Bool					forgetFrame(AP_Frame * pFrame);
 	virtual AP_Frame * 				newFrame(void) = 0;
@@ -71,21 +73,27 @@ public:
 	
 	EV_EditMethodContainer *		getEditMethodContainer(void) const;
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
+	const EV_Toolbar_ActionSet *	getToolbarActionSet(void) const;
 
-#ifdef ABI_OPT_JS	
-	JSInterpPtr			   			getInterp(void) const;
-#endif /* ABI_OPT_JS */
-	
+	AP_Args *						getArgs(void) const;
+
 protected:
-	EV_EditMethodContainer *	m_pEMC;				/* the set of all possible EditMethods in the app */
-	EV_Menu_ActionSet *			m_pMenuActionSet;	/* the set of all possible menu actions in the app */
+	AP_Args *						m_pArgs;
+	
+	EV_EditMethodContainer *		m_pEMC;				/* the set of all possible EditMethods in the app */
+	EV_Menu_ActionSet *				m_pMenuActionSet;	/* the set of all possible menu actions in the app */
+	EV_Toolbar_ActionSet *			m_pToolbarActionSet;
 
-	UT_Vector					m_vecFrames;
-	UT_HashTable				m_hashClones;
+	UT_Vector						m_vecFrames;
+	UT_HashTable					m_hashClones;
 
 #ifdef ABI_OPT_JS	
-	JSInterpPtr 				m_pJSInterp;
-	JSInterpOptions 			m_JSOptions;
+public:
+	JSInterpPtr			   			getInterp(void) const;
+
+protected:	
+	JSInterpPtr 					m_pJSInterp;
+	JSInterpOptions 				m_JSOptions;
 #endif /* ABI_OPT_JS */
 };
 

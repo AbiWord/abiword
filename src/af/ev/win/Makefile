@@ -22,18 +22,10 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		ev_Win32Keyboard.h		\
-			ev_Win32Menu.h			\
-			ev_Win32Mouse.h
-
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		ev_Win32Keyboard.cpp		\
 			ev_Win32Menu.cpp		\
-			ev_Win32Mouse.cpp
+			ev_Win32Mouse.cpp		\
+			ev_Win32Toolbar.cpp
 
 TARGETS=		$(OBJS)
 

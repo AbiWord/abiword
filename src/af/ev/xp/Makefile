@@ -22,23 +22,6 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		ev_EditBinding.h	\
-			ev_EditBits.h		\
-			ev_EditEventMapper.h	\
-			ev_EditMethod.h		\
-			ev_Keyboard.h		\
-			ev_Menu.h		\
-			ev_Menu_Actions.h	\
-			ev_Menu_Labels.h	\
-			ev_Menu_Layouts.h	\
-			ev_Mouse.h		\
-			ev_NamedVirtualKey.h	
-
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		ev_EditBinding.cpp		\
 			ev_EditEventMapper.cpp		\
 			ev_EditMethod.cpp		\
@@ -48,7 +31,11 @@ CPPSRCS=		ev_EditBinding.cpp		\
 			ev_Menu_Labels.cpp		\
 			ev_Menu_Layouts.cpp		\
 			ev_Mouse.cpp			\
-			ev_NamedVirtualKey.cpp		
+			ev_NamedVirtualKey.cpp		\
+			ev_Toolbar.cpp			\
+			ev_Toolbar_Actions.cpp		\
+			ev_Toolbar_Labels.cpp		\
+			ev_Toolbar_Layouts.cpp
 
 TARGETS=		$(OBJS)
 

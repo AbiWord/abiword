@@ -65,8 +65,10 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 	
 /*****************************************************************/
 
-EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame)
-	: EV_Menu(pWin32App->getEditMethodContainer())
+EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame,
+						   const char * szMenuLayoutName,
+						   const char * szMenuLabelSetName)
+	: EV_Menu(pWin32App->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
 {
 	m_pWin32App = pWin32App;
 	m_pWin32Frame = pWin32Frame;
@@ -121,13 +123,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
-	const EV_Menu_LabelSet * pMenuLabelSet = m_pWin32Frame->getMenuLabelSet();
-	UT_ASSERT(pMenuLabelSet);
-	
-	const EV_Menu_Layout * pMenuLayout = m_pWin32Frame->getMenuLayout();
-	UT_ASSERT(pMenuLayout);
-	
-	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
+	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
 	HWND wTLW = m_pWin32Frame->getTopLevelWindow();
@@ -142,13 +138,13 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
-		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
+		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
 		AP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
-		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
+		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
 		// get the name for the menu item
@@ -248,9 +244,7 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 	// deal with WM_INITMENU.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
-	const EV_Menu_LabelSet * pMenuLabelSet = m_pWin32Frame->getMenuLabelSet();
-	const EV_Menu_Layout * pMenuLayout = m_pWin32Frame->getMenuLayout();
-	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
+	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_Bool bNeedToRedrawMenu = UT_FALSE;
 
 	UT_uint32 pos = 0;
@@ -264,10 +258,10 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 		
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
-		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
+		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		AP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
+		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
 		UINT cmd = WmCommandFromMenuId(id);
 

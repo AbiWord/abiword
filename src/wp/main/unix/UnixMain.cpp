@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ap_Args.h"
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 
@@ -42,13 +43,15 @@ int main(int argc, char ** argv)
 
 	// initialize our application.
 
-	AP_UnixApp * pMyUnixApp = new AP_UnixApp();
-	pMyUnixApp->initialize(&argc,&argv);
+	AP_Args Args = AP_Args(argc,argv);
+	
+	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args);
+	pMyUnixApp->initialize();
 
 	// create the first window.
 
 	AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(pMyUnixApp);
-	pFirstUnixFrame->initialize(&argc,&argv);
+	pFirstUnixFrame->initialize();
 	
 	/*
 		TODO command-line parsers are a-dime-a-dozen.

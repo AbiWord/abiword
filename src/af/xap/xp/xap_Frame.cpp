@@ -23,7 +23,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
+#include "ut_vector.h"
 #include "ap_App.h"
 #include "ap_Frame.h"
 #include "ap_ViewListener.h"
@@ -57,8 +57,8 @@ AP_Frame::AP_Frame(AP_App * app)
 	m_pG = NULL;
 	m_pEBM = NULL;
 	m_pEEM = NULL;
-	m_pMenuLayout = NULL;
-	m_pMenuLabelSet = NULL;
+	m_szMenuLayoutName = NULL;
+	m_szMenuLabelSetName = NULL;
 	m_iUntitled = 0;
 	m_nView = 0;
 
@@ -80,8 +80,8 @@ AP_Frame::AP_Frame(AP_Frame * f)
 	m_pG = NULL;
 	m_pEBM = NULL;
 	m_pEEM = NULL;
-	m_pMenuLayout = NULL;
-	m_pMenuLabelSet = NULL;
+	m_szMenuLayoutName = NULL;
+	m_szMenuLabelSetName = NULL;
 	m_nView = 0;
 
 	m_app->rememberFrame(this, f);
@@ -90,7 +90,7 @@ AP_Frame::AP_Frame(AP_Frame * f)
 AP_Frame::~AP_Frame(void)
 {
 	// BUGBUG: commented out to avoid circular nastiness in app destructor
-//	m_app->forgetFrame(this);
+	//	m_app->forgetFrame(this);
 	
 	// only delete the things that we created...
 
@@ -108,21 +108,20 @@ AP_Frame::~AP_Frame(void)
 	DELETEP(m_pG);
 	DELETEP(m_pEBM);
 	DELETEP(m_pEEM);
-	DELETEP(m_pMenuLayout);
-	DELETEP(m_pMenuLabelSet);
+	UT_VECTOR_PURGEALL(char *, m_vecToolbarLayoutNames);
 }
 
 // sequence number tracker for untitled documents
 int AP_Frame::s_iUntitled = 0;	
 
-UT_Bool AP_Frame::initialize(int * /*pArgc*/, char *** /*pArgv*/)
+UT_Bool AP_Frame::initialize(void)
 {
 	UT_Bool bResult;
 
 	// choose which set of key- and mouse-bindings to load
 	
 	char * szBindings = "default";
-	// TODO override szBindings from argc,argv.
+	// TODO override szBindings from m_app->m_pArgs->{argc,argv}.
 	bResult = AP_LoadBindings(szBindings,m_app->getEditMethodContainer(),&m_pEBM);
 	UT_ASSERT(bResult && (m_pEBM != NULL));
 
@@ -132,31 +131,29 @@ UT_Bool AP_Frame::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 	UT_ASSERT(m_pEEM);
 
 	// select which menu bar we should use
-
-	char * szMenuLayout = "Main";
-	// TODO override szMenuLayout using argc,argv
-	m_pMenuLayout = AP_CreateMenuLayout(szMenuLayout);
-	UT_ASSERT(m_pMenuLayout);
+	// TODO override szMenuLayout using m_app->m_pArgs->{argc,argv}.
+	m_szMenuLayoutName = "Main";
 
 	// select language for menu labels
-	char * szLanguage = "EnUS";
-	// TODO override szLanguage using argc,argv
-	m_pMenuLabelSet = AP_CreateMenuLabelSet(szLanguage);
-	UT_ASSERT(m_pMenuLabelSet);
+	// TODO override szLanguage using m_app->m_pArgs->{argc,argv}.
+	m_szMenuLabelSetName = "EnUS";
 
+	// select which toolbars we should display
+	// TODO add an addItem() call for each toolbar we want to have.
+	// TODO optionally allow override from m_app->m_pArgs->{argc,argv}.
+	m_vecToolbarLayoutNames.addItem("FileEditOps");
+	m_vecToolbarLayoutNames.addItem("FormatOps");
+	
+	// select language for the toolbar labels.
+	// i'm not sure if it would ever make sense to
+	// deviate from what we set the menus to, but
+	// we can if we have to.
+	// all toolbars will have the same language.
+	m_szToolbarLabelSetName = m_szMenuLabelSetName;
+	
 	// ... add other stuff here ...
 
 	return UT_TRUE;
-}
-
-const EV_Menu_Layout * AP_Frame::getMenuLayout(void) const
-{
-	return m_pMenuLayout;
-}
-
-const EV_Menu_LabelSet * AP_Frame::getMenuLabelSet(void) const
-{
-	return m_pMenuLabelSet;
 }
 
 const EV_EditEventMapper * AP_Frame::getEditEventMapper(void) const

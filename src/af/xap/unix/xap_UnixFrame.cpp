@@ -27,6 +27,7 @@
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
 #include "ev_UnixMenu.h"
+#include "ev_UnixToolbar.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
@@ -190,16 +191,16 @@ AP_UnixFrame::~AP_UnixFrame(void)
 	DELETEP(m_pUnixKeyboard);
 	DELETEP(m_pUnixMouse);
 	DELETEP(m_pUnixMenu);
-	// TODO do we need to delete m_pView...
+	UT_VECTOR_PURGEALL(EV_UnixToolbar *, m_vecUnixToolbars);
 }
 
-UT_Bool AP_UnixFrame::initialize(int * pArgc, char *** pArgv)
+UT_Bool AP_UnixFrame::initialize(void)
 {
 	UT_Bool bResult;
 
 	// invoke our base class first.
 	
-	bResult = AP_Frame::initialize(pArgc,pArgv);
+	bResult = AP_Frame::initialize();
 	UT_ASSERT(bResult);
 
 	_createTopLevelWindow();
@@ -213,7 +214,7 @@ UT_Bool AP_UnixFrame::initialize(int * pArgc, char *** pArgv)
 	m_pUnixMouse = new EV_UnixMouse(m_pEEM);
 	UT_ASSERT(m_pUnixMouse);
 
-	// ... add other stuff (like tool bar) here...
+	// ... add other stuff here...
 
 	gtk_widget_show(m_wTopLevelWindow);
 
@@ -225,7 +226,7 @@ AP_Frame * AP_UnixFrame::cloneFrame(void)
 	AP_UnixFrame * pClone = new AP_UnixFrame(this);
 	ENSUREP(pClone);
 
-	if (!pClone->initialize(0,NULL))
+	if (!pClone->initialize())
 		goto Cleanup;
 
 	if (!pClone->_showDocument())
@@ -270,6 +271,8 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 
+	UT_Bool bResult;
+
 	m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
@@ -305,11 +308,32 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 
 	// synthesize a menu from the info in our base class.
 
-	m_pUnixMenu = new EV_UnixMenu(m_pUnixApp,this);
+	m_pUnixMenu = new EV_UnixMenu(m_pUnixApp,this,
+								  m_szMenuLayoutName,
+								  m_szMenuLabelSetName);
 	UT_ASSERT(m_pUnixMenu);
-	UT_Bool bResult = m_pUnixMenu->synthesize();
+	bResult = m_pUnixMenu->synthesize();
 	UT_ASSERT(bResult);
 
+	// create a toolbar instance for each toolbar listed in our base class.
+	// TODO for some reason, the toolbar functions require the TLW to be
+	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
+	gtk_widget_realize(m_wTopLevelWindow);
+
+	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (UT_uint32 k=0; k < nrToolbars; k++)
+	{
+		EV_UnixToolbar * pUnixToolbar
+			= new EV_UnixToolbar(m_pUnixApp,this,
+								 (const char *)m_vecToolbarLayoutNames.getNthItem(k),
+								 m_szToolbarLabelSetName);
+		UT_ASSERT(pUnixToolbar);
+		bResult = pUnixToolbar->synthesize();
+		UT_ASSERT(bResult);
+		
+		m_vecUnixToolbars.addItem(pUnixToolbar);
+	}
+	
 	// TODO deal with other window decorations after the
 	// TODO menu and before the drawing area.
 

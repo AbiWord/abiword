@@ -18,30 +18,41 @@
  */
 
 #include <gtk/gtk.h>
+#include "ap_Args.h"
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
+#include "ap_UnixToolbar_Icons.h"
+
+#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 
-AP_UnixApp::AP_UnixApp(void)
+AP_UnixApp::AP_UnixApp(AP_Args * pArgs)
+	: AP_App(pArgs)
 {
+	m_pUnixToolbarIcons = 0;
 }
 
 AP_UnixApp::~AP_UnixApp(void)
 {
+	DELETEP(m_pUnixToolbarIcons);
 }
 
-UT_Bool AP_UnixApp::initialize(int * pArgc, char *** pArgv)
+UT_Bool AP_UnixApp::initialize(void)
 {
 	// initialize GTK first.
 	
 	gtk_set_locale();
-	gtk_init(pArgc,pArgv);
+	gtk_init(&m_pArgs->m_argc,&m_pArgs->m_argv);
 
 	// let our base class do it's thing.
 	
-	AP_App::initialize(pArgc,pArgv);
+	AP_App::initialize();
 
+	// load only one copy of the platform-specific icons.
+	
+	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();
+	
 	// do any thing we need here...
 	
 	return UT_TRUE;
@@ -52,7 +63,7 @@ AP_Frame * AP_UnixApp::newFrame(void)
 	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
 
 	if (pUnixFrame)
-		pUnixFrame->initialize(0, (char***) NULL);
+		pUnixFrame->initialize();
 
 	return pUnixFrame;
 }

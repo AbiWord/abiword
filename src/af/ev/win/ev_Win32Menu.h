@@ -33,7 +33,9 @@ class AP_Win32Frame;
 class EV_Win32Menu : public EV_Menu
 {
 public:
-	EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame);
+	EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame,
+				 const char * szMenuLayoutName,
+				 const char * szMenuLabelSetName);
 	~EV_Win32Menu(void);
 
 	UT_Bool				synthesize(void);

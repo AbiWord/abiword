@@ -24,6 +24,9 @@
 #include <windows.h>
 #include "ap_App.h"
 
+class AP_Args;
+class AP_Win32Toolbar_Icons;
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the Win32-platform-specific class for the
@@ -36,19 +39,19 @@
 class AP_Win32App : public AP_App
 {
 public:
-	AP_Win32App(HINSTANCE hInstance);
+	AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs);
 	virtual ~AP_Win32App(void);
 
-	virtual UT_Bool			initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool			initialize(void);
 	virtual AP_Frame * 		newFrame(void);
 
 	virtual HINSTANCE		getInstance() const;
 
 protected:
-	HINSTANCE	m_hInstance;
+	AP_Win32Toolbar_Icons *	m_pWin32ToolbarIcons;
+	HINSTANCE				m_hInstance;
 
-	/* TODO put anything we need here.  
-	*/
+	/* TODO put anything we need here. */
 };
 
 #endif /* AP_WIN32APP_H */
