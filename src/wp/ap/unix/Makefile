@@ -66,8 +66,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Toolbar_ZoomCombo.cpp	\
 			ap_$(ABI_FE)_TB_CFactory.cpp		\
 			ap_$(ABI_FE)TopRuler.cpp		\
-			ap_$(ABI_FE)ViewListener.cpp \
-	                abiwidget.cpp
+			ap_$(ABI_FE)ViewListener.cpp		\
 
 ifeq ($(ABI_OPT_CURL),1)
 CPPSRCS +=		ap_$(ABI_FE)HashDownloader.cpp		\
