@@ -165,6 +165,9 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   gtk_box_pack_start (GTK_BOX (vbox2), m_entry, FALSE, FALSE, 0);
   gtk_widget_show(m_entry);
 
+  if ( getHyperlink() != NULL )
+    gtk_entry_set_text ( GTK_ENTRY(m_entry), getHyperlink() ) ;
+
   // the bookmark list
   m_swindow  = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
