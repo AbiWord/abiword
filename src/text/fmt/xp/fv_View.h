@@ -150,7 +150,8 @@ public:
 // ----------------------
 	
 protected:
-	void _drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
+	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
+	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
 
 	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);

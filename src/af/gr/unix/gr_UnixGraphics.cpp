@@ -219,13 +219,8 @@ void UNIXGraphics::setColor(UT_RGBColor& clr)
 	/* Set up the XOR gc */
 	XGCValues gcv;
 
-	XGetGCValues(pogc->xdisplay, pogc->xgc, GCForeground|GCBackground, &gcv);
+	XGetGCValues(pogc->xdisplay, pogc->xgc, GCForeground, &gcv);
 
-// ERIC, on an 8 bit display just using the pixel
-//       value was sufficient.  Could you confirm
-//       if we need the ^ background on >8 bit
-//       displays.
-//	gcv.foreground = c.pixel ^ gcv.background;
 	gcv.foreground = c.pixel;
 	
 	gcv.function = GXxor;

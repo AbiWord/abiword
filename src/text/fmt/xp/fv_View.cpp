@@ -699,8 +699,11 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 }
 
 void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
@@ -744,8 +747,11 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
 
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 
 	return bResult;
 }
@@ -1264,21 +1270,10 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		_setPoint(iFirstPosOnNewLine);
 		_charMotion(UT_TRUE, iNumChars);
 
-		// check to see if the run is on the screen, if not bump down/up ...
-		fp_Line* pLine = pFirstRunOnNewLine->getLine();
-		UT_sint32 xoff, yoff, width, height;
-		pLine->getScreenOffsets(pFirstRunOnNewLine,
-								pFirstRunOnNewLine->getLineData(), xoff, yoff,
-								width, height);
-	
-		if (yoff < 0)
+		if (!_ensureThatInsertionPointIsOnScreen())
 		{
-			yoff *= -1;
-			cmdScroll(DG_SCROLLCMD_LINEUP, (UT_uint32) yoff);
-		}
-		else if (yoff + ((UT_sint32) (pFirstRunOnNewLine->getHeight())) >= m_iWindowHeight)
-		{
-			cmdScroll(DG_SCROLLCMD_LINEDOWN, (UT_uint32)(yoff + pFirstRunOnNewLine->getHeight() - m_iWindowHeight));
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
 		}
 	}
 	else
@@ -1287,6 +1282,24 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	}
 
 	notifyListeners(FV_CHG_MOTION);
+}
+
+UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
+{
+	_fixInsertionPointCoords();
+
+	if (m_yPoint < 0)
+	{
+		cmdScroll(DG_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
+		return UT_TRUE;
+	}
+	else if (((UT_uint32) (m_yPoint + m_iPointHeight)) >= ((UT_uint32) m_iWindowHeight))
+	{
+		cmdScroll(DG_SCROLLCMD_LINEDOWN, (UT_uint32)(m_yPoint + m_iPointHeight - m_iWindowHeight));
+		return UT_TRUE;
+	}
+
+	return UT_FALSE;
 }
 
 void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
@@ -1303,9 +1316,6 @@ void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 	_resetSelection();
 
 	_moveInsPtNextPrevLine(bNext);
-
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
 
 	notifyListeners(FV_CHG_MOTION);
 }
@@ -1931,7 +1941,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 
 		m_pG->setClipRect(&r);
 	}
-	
+
 	UT_sint32 curY = 0;
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
@@ -2063,7 +2073,7 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	UT_sint32 lineHeight = iPos;
 	UT_sint32 docWidth = 0, docHeight = 0;
 	
-//	_eraseInsertionPoint();	
+	_eraseInsertionPoint();	
 
 	docHeight = m_pLayout->getHeight();
 	docWidth = m_pLayout->getWidth();
