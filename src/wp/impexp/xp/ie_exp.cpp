@@ -28,7 +28,31 @@
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 
-// TODO make this use NSPR
+/*****************************************************************/
+/*****************************************************************/
+
+struct _xp
+{
+	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
+
+	IEStatus		(*fpStaticConstructor)(const char * szSuffix,
+										   PD_Document * pDocument,
+										   IE_Exp ** ppie);
+	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
+									  const char ** szSuffixList);
+};
+
+#define DeclareExporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels }
+
+static struct _xp s_expTable[] =
+{
+	DeclareExporter(IE_Exp_AbiWord_1),
+};
+
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
+
+/*****************************************************************/
+/*****************************************************************/
 
 IE_Exp::IE_Exp(PD_Document * pDocument)
 {
@@ -107,24 +131,34 @@ IEStatus IE_Exp::constructExporter(PD_Document * pDocument,
 	UT_ASSERT(szFilename && *szFilename);
 	UT_ASSERT(ppie);
 
-	switch (ieft)
-	{
-	case IEFT_AbiWord_1:
-		{
-			IE_Exp_AbiWord_1 * p = new IE_Exp_AbiWord_1(pDocument);
-			if (!p)
-				return IES_NoMemory;
-			*ppie = p;
-		}
-		return IES_OK;
-		
-	case IEFT_Unknown:
-		// TODO add logic to try to guess a file format from the filename.
-		return IES_Error;
+	const char * pExt = strrchr(szFilename,'.');
 
-	default:
-		UT_ASSERT(0);
-		return IES_Error;
+	if (!pExt)
+	{
+		// no suffix -- what to do ??
+		// assume it is our format and try to save it.
+
+		*ppie = new IE_Exp_AbiWord_1(pDocument);
+		return ((*ppie) ? IES_OK : IES_NoMemory);
 	}
+
+	for (UT_uint32 k=0; (k < NrElements(s_expTable)); k++)
+	{
+		struct _xp * s = &s_expTable[k];
+		if (s->fpRecognizeSuffix(pExt))
+			return s->fpStaticConstructor(pExt,pDocument,ppie);
+	}
+
+	return IES_UnknownType;
+}
+
+UT_Bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
+								   const char ** pszDesc,
+								   const char ** pszSuffixList)
+{
+	if (ndx < NrElements(s_expTable))
+		return s_expTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList);
+
+	return UT_FALSE;
 }
 

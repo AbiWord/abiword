@@ -28,6 +28,33 @@
 #include "ie_imp_MsWord_97.h"
 #include "ie_imp_Text.h"
 
+/*****************************************************************/
+/*****************************************************************/
+
+struct _imp
+{
+	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
+	IEStatus		(*fpStaticConstructor)(const char * szSuffix,
+										   PD_Document * pDocument,
+										   IE_Imp ** ppie);
+	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
+									  const char ** szSuffixList);
+};
+
+#define DeclareImporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels }
+
+static struct _imp s_impTable[] =
+{
+	DeclareImporter(IE_Imp_AbiWord_1),
+	DeclareImporter(IE_Imp_Text),
+	DeclareImporter(IE_Imp_MsWord_97),
+};
+
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
+		
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Imp::IE_Imp(PD_Document * pDocument)
 {
 	m_pDocument = pDocument;
@@ -52,47 +79,34 @@ IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 	UT_ASSERT(szFilename && *szFilename);
 	UT_ASSERT(ppie);
 	
-	// TODO use some heuristic to decide what type of file
-	// TODO we have been given.  Then instantiate the correct
-	// TODO ie_imp sublcass to read it.  If we cannot decide
-	// TODO what it is, return IES_UnknownType.
-	//
-	// TODO for now, we just assume AbiWord_1.
+	const char * pExt = strrchr(szFilename,'.');
 
-	int i = 0, nLen = strlen(szFilename);
-
-	const char *pExt = szFilename;
-
-	while ((*pExt != '.') && (i < nLen))
+	if (!pExt)
 	{
-		pExt++;
-		i++;
+		// no suffix -- what to do ??
+		// assume it is our format and try to read it.
+		// if that fails, just give up.
+
+		*ppie = new IE_Imp_AbiWord_1(pDocument);
+		return ((*ppie) ? IES_OK : IES_NoMemory);
 	}
 
-	if (pExt && (UT_stricmp(pExt, ".doc") == 0))
+	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
 	{
-		IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
-		if (!p)
-			return IES_NoMemory;
-
-		*ppie = p;
+		struct _imp * s = &s_impTable[k];
+		if (s->fpRecognizeSuffix(pExt))
+			return s->fpStaticConstructor(pExt,pDocument,ppie);
 	}
-	else if (pExt && (UT_stricmp(pExt, ".txt") == 0))
-	{
-		IE_Imp_Text * p = new IE_Imp_Text(pDocument);
-		if (!p)
-			return IES_NoMemory;
+	
+	return IES_UnknownType;
+}
 
-		*ppie = p;
-	}
-	else
-	{
-		IE_Imp_AbiWord_1 * p = new IE_Imp_AbiWord_1(pDocument);
-		if (!p)
-			return IES_NoMemory;
+UT_Bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
+								   const char ** pszDesc,
+								   const char ** pszSuffixList)
+{
+	if (ndx < NrElements(s_impTable))
+		return s_impTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList);
 
-		*ppie = p;
-	}
-
-	return IES_OK;
+	return UT_FALSE;
 }

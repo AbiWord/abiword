@@ -38,6 +38,13 @@ public:
 	void				write(const char * sz);
 	void				write(const char * sz, UT_uint32 length);
 
+	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static IEStatus		StaticConstructor(const char * szSuffix,
+										  PD_Document * pDocument,
+										  IE_Exp ** ppie);
+	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+									 const char ** pszSuffixList);
+
 protected:
 	IEStatus			_writeDocument(void);
 	

@@ -39,6 +39,9 @@ public:
 	static IEStatus		constructImporter(PD_Document * pDocument,
 										  const char * szFilename,
 										  IE_Imp ** ppie);
+	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
+										   const char ** pszDesc,
+										   const char ** pszSuffixList);
 
 public:
 	IE_Imp(PD_Document * pDocument);

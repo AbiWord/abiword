@@ -291,8 +291,13 @@ public:
 
 	IEStatus			importFile(const char * szFilename);
 
-	// the following are public only so that the
-	// XML parser callback routines can access them.
+
+	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static IEStatus		StaticConstructor(const char * szSuffix,
+										  PD_Document * pDocument,
+										  IE_Imp ** ppie);
+	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+									 const char ** pszSuffixList);
 	
 protected:
 	int readByte(FILE *fp, char *c, int num);

@@ -41,16 +41,22 @@ public:
 	// the following are public only so that the
 	// XML parser callback routines can access them.
 	
-	void _startElement(const XML_Char *name, const XML_Char **atts);
-	void _endElement(const XML_Char *name);
-	void _charData(const XML_Char*, int);
+	void				_startElement(const XML_Char *name, const XML_Char **atts);
+	void				_endElement(const XML_Char *name);
+	void				_charData(const XML_Char*, int);
 
-protected:
-	UT_uint32		_getInlineDepth(void) const;
-	UT_Bool			_pushInlineFmt(const XML_Char ** atts);
-	void			_popInlineFmt(void);
+	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static IEStatus		StaticConstructor(const char * szSuffix,
+										  PD_Document * pDocument,
+										  IE_Imp ** ppie);
+	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+									 const char ** pszSuffixList);
 	
 protected:
+	UT_uint32			_getInlineDepth(void) const;
+	UT_Bool				_pushInlineFmt(const XML_Char ** atts);
+	void				_popInlineFmt(void);
+	
 	typedef enum _parseState { _PS_Init,
 							   _PS_Doc,
 							   _PS_Sec,
@@ -58,11 +64,11 @@ protected:
 							   _PS_Col,
 							   _PS_Block } ParseState;
 
-	IEStatus		m_iestatus;
-	ParseState		m_parseState;
+	IEStatus			m_iestatus;
+	ParseState			m_parseState;
 
-	UT_Vector		m_vecInlineFmt;
-	UT_Stack		m_stackFmtStartIndex;
+	UT_Vector			m_vecInlineFmt;
+	UT_Stack			m_stackFmtStartIndex;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

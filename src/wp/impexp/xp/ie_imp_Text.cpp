@@ -62,6 +62,11 @@ Cleanup:
 	return iestatus;
 }
 
+#undef X_CleanupIfError
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Imp_Text::~IE_Imp_Text()
 {
 }
@@ -163,3 +168,31 @@ IEStatus IE_Imp_Text::_parseFile(FILE * fp)
 
 #undef X_ReturnNoMemIfError
 #undef X_ReturnIfFail
+
+/*****************************************************************/
+/*****************************************************************/
+
+UT_Bool IE_Imp_Text::RecognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".txt") == 0);
+}
+
+IEStatus IE_Imp_Text::StaticConstructor(const char * szSuffix,
+										PD_Document * pDocument,
+										IE_Imp ** ppie)
+{
+	UT_ASSERT(RecognizeSuffix(szSuffix));
+	
+	IE_Imp_Text * p = new IE_Imp_Text(pDocument);
+	*ppie = p;
+	return IES_OK;
+}
+
+UT_Bool	IE_Imp_Text::GetDlgLabels(const char ** pszDesc,
+								  const char ** pszSuffixList)
+{
+	*pszDesc = "Text (.txt)";
+	*pszSuffixList = "*.txt";
+	return UT_TRUE;
+}
+

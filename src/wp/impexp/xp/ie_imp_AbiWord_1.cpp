@@ -105,6 +105,9 @@ Cleanup:
 	return m_iestatus;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 {
 }
@@ -114,6 +117,33 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 {
 	m_iestatus = IES_OK;
 	m_parseState = _PS_Init;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+UT_Bool IE_Imp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".abw") == 0);
+}
+
+IEStatus IE_Imp_AbiWord_1::StaticConstructor(const char * szSuffix,
+										PD_Document * pDocument,
+										IE_Imp ** ppie)
+{
+	UT_ASSERT(RecognizeSuffix(szSuffix));
+	
+	IE_Imp_AbiWord_1 * p = new IE_Imp_AbiWord_1(pDocument);
+	*ppie = p;
+	return IES_OK;
+}
+
+UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
+								  const char ** pszSuffixList)
+{
+	*pszDesc = "AbiWord (.abw)";
+	*pszSuffixList = "*.abw";
+	return UT_TRUE;
 }
 
 /*****************************************************************/

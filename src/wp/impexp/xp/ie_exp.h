@@ -42,6 +42,9 @@ public:
 										  const char * szFilename,
 										  IEFileType ieft,
 										  IE_Exp ** ppie);
+	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
+										   const char ** pszDesc,
+										   const char ** pszSuffixList);
 	
 public:
 	IE_Exp(PD_Document * pDocument);

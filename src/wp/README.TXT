@@ -1,6 +1,6 @@
 
-The 'wp' directory contains all source code specific to AbiWord.  With 
-the exception of the samples subdirectory, there is one subdirectory 
+The 'wp' directory contains all source code specific to AbiWord.  With
+the exception of the samples subdirectory, there is one subdirectory
 per module.
 
 ap
@@ -17,13 +17,13 @@ gr
 	Source code for graphics (drawing code, font code, etc.)
 
 impexp
-	Importers and exporters for various file formats. 
+	Importers and exporters for various file formats.
 
 main
 	Platform-specific Source code for main().
 
 ptbl
-	The editable document, implemented using piece tables. 
+	The editable document, implemented using piece tables.
 
 samples
 	Sample files in AbiWord format.  (no source code here)
@@ -37,4 +37,3 @@ itself in a directory which indicates the portability of the code
 within it.  For example, cross-platform code should always be placed
 in a subdirectory called 'xp'.  Win32-specific code should be in a
 subdirectory called 'win'.
-

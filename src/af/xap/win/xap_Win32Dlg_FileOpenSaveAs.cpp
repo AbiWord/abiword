@@ -25,6 +25,8 @@
 #include "xap_Win32Dialog_FileOpenSaveAs.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
+#include "ie_imp.h"
+#include "ie_exp.h"
 
 /*****************************************************************/
 AP_Dialog * AP_Win32Dialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
@@ -46,6 +48,70 @@ AP_Win32Dialog_FileOpenSaveAs::~AP_Win32Dialog_FileOpenSaveAs(void)
 
 /*****************************************************************/
 
+static void _buildImportFilterList(char * szFilter)
+{
+	const char * szDesc;
+	const char * szSuffixList;
+
+	char * p = szFilter;
+	UT_uint32 k = 0;
+	
+	while (IE_Imp::enumerateDlgLabels(k++,&szDesc,&szSuffixList))
+	{
+		strcpy(p,szDesc);
+		p += strlen(p)+1;				// include the trailing 0
+		strcpy(p,szSuffixList);
+		p += strlen(p)+1;				// include the trailing 0
+	}
+
+	strcpy(p,"All");
+	p += strlen(p)+1;					// include the trailing 0
+	strcpy(p,"*.*");
+	p += strlen(p)+1;					// include the trailing 0
+	
+	*p = 0;								// double 0 at the end
+}
+
+static void _buildExportFilterList(char * szFilter)
+{
+	const char * szDesc;
+	const char * szSuffixList;
+
+	char * p = szFilter;
+	UT_uint32 k = 0;
+
+	while (IE_Exp::enumerateDlgLabels(k++,&szDesc,&szSuffixList))
+	{
+		strcpy(p,szDesc);
+		p += strlen(p)+1;				// include the trailing 0
+		strcpy(p,szSuffixList);
+		p += strlen(p)+1;				// include the trailing 0
+	}
+
+	strcpy(p,"All (*.*)");
+	p += strlen(p)+1;					// include the trailing 0
+	strcpy(p,"*.*");
+	p += strlen(p)+1;					// include the trailing 0
+	
+	*p = 0;								// double 0 at the end
+}
+
+static void _buildPrintFilterList(char * szFilter)
+{
+	char * p = szFilter;
+
+	// TODO decide what the suffix is for a print-to-file
+	
+	strcpy(p,"All (*.*)");
+	p += strlen(p)+1;					// include the trailing 0
+	strcpy(p,"*.*");
+	p += strlen(p)+1;					// include the trailing 0
+	
+	*p = 0;								// double 0 at the end
+}
+
+/*****************************************************************/
+
 void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 {
 	m_pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
@@ -55,19 +121,19 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 
 	char szFile[1030];      // buffer for filename
 	char szDir[1030];		// buffer for directory
+	char szFilter[1030];	// buffer for building suffix list
 	OPENFILENAME ofn;       // common dialog box structure
 
 	ZeroMemory(szFile,sizeof(szFile));
 	ZeroMemory(szDir,sizeof(szDir));
+	ZeroMemory(szFilter,sizeof(szFilter));
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 
-	// TODO decide what our suffix list should be....
-	
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = hwnd;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = "All\0*.*\0";
+	ofn.lpstrFilter = szFilter;
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
@@ -137,14 +203,20 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
+		_buildImportFilterList(szFilter);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
+		_buildPrintFilterList(szFilter);
 		ofn.lpstrTitle = "Print To File";
-		/*FALLTHRU*/
+		ofn.Flags |= OFN_OVERWRITEPROMPT;
+		bDialogResult = GetSaveFileName(&ofn);
+		break;
+
 	case XAP_DIALOG_ID_FILE_SAVEAS:
+		_buildExportFilterList(szFilter);
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
