@@ -66,6 +66,108 @@ AP_Win32Dialog_Styles::~AP_Win32Dialog_Styles(void)
 {
 }
 
+
+/*
+	
+*/
+BOOL CALLBACK AP_Win32Dialog_Styles::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+	// This is a static function.
+
+	AP_Win32Dialog_Styles * pThis;
+	switch (msg)
+	{
+	case WM_INITDIALOG:	
+		pThis = (AP_Win32Dialog_Styles *)lParam;		
+		SetWindowLong(hWnd,DWL_USER,lParam);
+		return pThis->_onInitDialog(hWnd,wParam,lParam);
+
+	case WM_COMMAND:
+		
+		pThis = (AP_Win32Dialog_Styles *)GetWindowLong(hWnd,DWL_USER);
+		if(pThis)
+			return pThis->_onCommand(hWnd,wParam,lParam);
+		else		
+			return 0;
+			
+	case WM_DRAWITEM:		
+		AP_Win32Dialog_Styles * pThis;
+		pThis = (AP_Win32Dialog_Styles *)lParam;				
+		
+		if (wParam==AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS)
+			pThis->_onDrawButton((LPDRAWITEMSTRUCT)lParam, hWnd);
+		
+		return 0;
+	
+	default:
+		return 0;
+	}
+}
+
+
+/*
+	Draws the Format button with an arrow
+*/
+void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWND hWnd)
+{
+    UINT			uiState    = lpDrawItemStruct->itemState;
+    HPEN			hPen;
+    HPEN			pOldPen;
+	HDC				hdc = lpDrawItemStruct->hDC;
+	int				nWidth;
+	int				nHeight;
+	int		 		x, xEnd, xStart;
+	int 			y;
+	POINT 			p;	
+	const char* 	pText;
+	HWND 			hParent;
+	LONG			lData;
+	
+	// Get parent object and get the App object from there
+	hParent = GetParent(hWnd);	
+	lData = GetWindowLong(hWnd,DWL_USER);			
+	AP_Win32Dialog_Styles * pParent = (AP_Win32Dialog_Styles *)lData;
+	const XAP_StringSet * pSS = pParent->m_pApp->getStringSet();		
+	
+	pText=	pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFormat);		
+	
+	nWidth = lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left;
+	nHeight = lpDrawItemStruct->rcItem.bottom - lpDrawItemStruct->rcItem.top;
+		      
+    // set the pen color
+    if (uiState&ODS_DISABLED)
+        hPen = CreatePen(PS_SOLID, 0, GetSysColor(COLOR_GRAYTEXT));
+    else
+        hPen = CreatePen(PS_SOLID, 0, GetSysColor(COLOR_BTNTEXT));
+    
+    pOldPen =  (HPEN) SelectObject(hdc, hPen);
+
+    // draw the border of the button
+    if(uiState&ODS_SELECTED)
+        DrawFrameControl(hdc, &lpDrawItemStruct->rcItem, DFC_BUTTON, DFCS_BUTTONPUSH|DFCS_PUSHED);
+    else
+        DrawFrameControl(hdc, &lpDrawItemStruct->rcItem, DFC_BUTTON, DFCS_BUTTONPUSH);	
+	
+	// Draw arrow
+	y = nHeight/2;
+	xStart = (nWidth/6)*5;
+	for (int i=0; i<4; i++)
+	{
+  	   x = xStart + i;
+	   xEnd = xStart + 7 - i;
+
+	   ::MoveToEx(hdc, x, y, &p);	   
+       ::LineTo(hdc, xEnd, y);
+	   y++;
+	 }
+
+	ExtTextOut(hdc, (nWidth/6)*1, ((nHeight/4)), 0, NULL, pText,  strlen(pText), NULL);
+		
+    // Clean Up
+    SelectObject(hdc, pOldPen);       
+    DeleteObject(hPen);
+}
+
 void AP_Win32Dialog_Styles::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
@@ -82,9 +184,9 @@ void AP_Win32Dialog_Styles::runModal(XAP_Frame * pFrame)
 
 
 	// raise the dialog
-
 	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_TOP, this);
-
+	
+	
 	if (m_answer == AP_Dialog_Styles::a_OK)
 	{
 		const char* szStyle = getCurrentStyle();
@@ -106,13 +208,11 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	char szTemp[20];
-	GetWindowText(hWnd, szTemp, 20 );
-
+	GetWindowText(hWnd, szTemp, 20 );	
+			
 	// Regular dialog box
 	if( strncmp(szTemp, "Styles", 20) == 0 )
-	{
-		// m_hThisDlg = hWnd;
-	
+	{	
 		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
 
 		// localize controls
@@ -180,6 +280,8 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		SetWindowText(hWnd, pSS->getValue( (m_bisNewStyle) ? 
                                            AP_STRING_ID_DLG_Styles_NewTitle :
                                            AP_STRING_ID_DLG_Styles_ModifyTitle ));
+
+		_win32DialogNewModify.setHandle(hWnd);
 		
 		#define _DS(c,s)  _win32DialogNewModify.setControlText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 		#define _DSX(c,s)  _win32DialogNewModify.setControlText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
@@ -190,14 +292,14 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		_DS(STYLES_NEWMODIFY_LBL_REMOVE,		DLG_Styles_RemoveLab);
 		_DS(STYLES_NEWMODIFY_GBX_PREVIEW,		DLG_Styles_ModifyPreview);
 		_DS(STYLES_NEWMODIFY_GBX_DESC,			DLG_Styles_ModifyDescription);
-		_DS(STYLES_NEWMODIFY_BTN_REMOVE,		DLG_Styles_RemoveButton);
-		_DS(STYLES_NEWMODIFY_BTN_TOGGLEITEMS,	DLG_Styles_ModifyParagraph);
+		_DS(STYLES_NEWMODIFY_BTN_REMOVE,		DLG_Styles_RemoveButton);		
 		_DS(STYLES_NEWMODIFY_BTN_SHORTCUT,		DLG_Styles_ModifyShortCut);
 		_DSX(STYLES_NEWMODIFY_BTN_OK,			DLG_OK);
 		_DSX(STYLES_NEWMODIFY_BTN_CANCEL,		DLG_Cancel);
 		#undef _DSX
 		#undef _DS
-
+		
+		
 		// Changes basic controls based upon either New or Modify Dialog
 		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE , 
                                            (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
@@ -548,9 +650,16 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				getDoc()->getStyle(m_selectedStyle.c_str(), &pStyle);
 
 				m_bisNewStyle = false;
-				XAP_Frame* pFrame = getFrame();
+				XAP_Frame* pFrame = getFrame();			
+				
+				XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(getApp());
+				XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);										
 			
-				_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
+				LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_STYLES_NEWMODIFY);				
+											
+				int result = DialogBoxParam(pWin32App->getInstance(), lpTemplate,
+											pWin32Frame->getTopLevelWindow(),
+											(DLGPROC)s_dlgProc, (LPARAM)this);
 				
 				if(m_answer == AP_Dialog_Styles::a_OK)
 				{
@@ -578,27 +687,61 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS:
-		switch( m_selectToggle )
+	{
+	    RECT 	rect;
+	    HMENU 	hMenu;
+	    int		x,y;	    	    
+	    HWND	hWndButton;
+	    
+	    hWndButton = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS);
+	    XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);		
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
+	    
+		// Get button position
+	    GetWindowRect(hWndButton, &rect);
+	    x = rect.left;
+	    y = rect.bottom;	               		
+
+	    // Menu creation
+	    hMenu =  CreatePopupMenu();
+	    AppendMenu(hMenu, MF_ENABLED|MF_STRING, 1, (LPCTSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+	    AppendMenu(hMenu, MF_ENABLED|MF_STRING, 2, (LPCTSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont));
+	    AppendMenu(hMenu, MF_ENABLED|MF_STRING, 3, (LPCTSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs));
+	    AppendMenu(hMenu, MF_ENABLED|MF_STRING, 4, (LPCTSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyNumbering));
+	    AppendMenu(hMenu, MF_ENABLED|MF_STRING, 5, (LPCTSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage));
+	    
+	    // show and track the menu
+    	m_selectToggle = TrackPopupMenu(hMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,
+    						x,y,0, hWndButton,  NULL);		    							    	        						 							    
+	    
+	    switch(m_selectToggle)
 		{
-		case 0:
-			ModifyParagraph();
+		case 0:	// user has cancelled
 			break;
 		case 1:
-			ModifyFont();
+			ModifyParagraph();
 			break;
 		case 2:
-			ModifyTabs();
+			ModifyFont();
 			break;
 		case 3:
-			ModifyLists();
+			ModifyTabs();
 			break;
 		case 4:
+			ModifyLists();
+			break;
+		case 5:
 			ModifyLang();
 			break;
+		default:
+			break;			
 		}
+		
 		rebuildDeleteProps();
 		updateCurrentStyle();
+	    DestroyMenu(hMenu);
 		return 1;
+	}
 
 
 	case AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON:
@@ -627,22 +770,10 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
 	}
+	
+	return 0;						// return zero to let windows take care of it.
 }
 
-BOOL AP_Win32Dialog_Styles::_onDeltaPos(NM_UPDOWN * pnmud)
-{
-	switch( pnmud->hdr.idFrom )
-	{
-	case AP_RID_DIALOG_STYLES_NEWMODIFY_SPN_TOGGLEITEMS: 
-		m_selectToggle += pnmud->iDelta;
-		if( m_selectToggle > MAX_NEWMODIFY_TOGGLE ) m_selectToggle = 0;
-		if( m_selectToggle < 0 ) m_selectToggle = MAX_NEWMODIFY_TOGGLE;
-		_updateToggleButtonText();
-		return 1;
-	default:
-		return 0;
-	}
-}
 
 void AP_Win32Dialog_Styles::_populateWindowData(void)
 {
@@ -709,38 +840,6 @@ void AP_Win32Dialog_Styles::setModifyDescription (const char * desc)
 	p_This->_win32DialogNewModify.setControlText(AP_RID_DIALOG_STYLES_NEWMODIFY_CTL_DESC, desc);
 }
 
-void AP_Win32Dialog_Styles::_updateToggleButtonText()
-{
-	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	AP_Win32Dialog_Styles *p_This = (AP_Win32Dialog_Styles *)this; // Cast away const
-
-	switch(m_selectToggle)
-	{
-	case 0:
-		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
-		break;
-	case 1:
-		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont) );
-		break;
-	case 2:
-		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs) );
-		break;
-	case 3:
-		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyNumbering) );
-		break;
-	case 4:
-		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage) );
-		break;
-	}
-}	
 
 void AP_Win32Dialog_Styles::rebuildDeleteProps()
 {

@@ -117,7 +117,8 @@ public:
 	XAP_Win32Frame*		getParentFrame();
 	void 				centerDialog();
 	static void			s_centerDialog(HWND hWnd);
-
+	void				setHandle(HWND hWnd){m_hDlg=hWnd;};
+	
 private:
 	XAP_Win32Dialog	*			m_pDialog;
 	HWND						m_hDlg;

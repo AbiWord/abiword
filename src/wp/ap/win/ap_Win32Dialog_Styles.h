@@ -52,8 +52,7 @@ protected:
 	XAP_Win32PreviewWidget	*	m_pAbiPreviewWidget;
 
 	void				_populateWindowData(void);
-	void                _populateCList(void);
-	void				_updateToggleButtonText();
+	void                _populateCList(void);	
 	void				rebuildDeleteProps();
 	void				eventBasedOn();
 	void				eventFollowedBy();
@@ -62,7 +61,11 @@ protected:
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
+	BOOL					_onDeltaPos(NM_UPDOWN * pnmud){return 0;};
+	static BOOL CALLBACK 	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+	void					_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWND hWnd);	
+	
+	
 
 private:
 	XAP_Win32DialogHelper		_win32Dialog;
