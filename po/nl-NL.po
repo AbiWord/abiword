@@ -1124,6 +1124,13 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
+"AbiWord is ontworpen voor nieuwere versies van het systeem bestand COMCTL32.DLL\n"
+"dan de versie die nu op uw systeem staat. (COMCTL32.DLL versie 4.72 of nieuwer)\n"
+"Een oplossing voor dit probleem is uitgelegd in de Veel Gestelde Vragen sectie op de AbiSource web site\n"
+"\n"
+"\thttp://www.abisource.com\n"
+"\n"
+"U kunt het programma gebruiken, maar de werkbalken kunnen missen."
 
 #. WINDOWS_NEED_UNICOWS
 #: po/tmp/ap_String_Id.h.h:496
@@ -1591,7 +1598,7 @@ msgstr "Kan een ingebouwde stijl niet veranderen"
 #. PRINT_CANNOTSTARTPRINTJOB
 #: po/tmp/ap_String_Id.h.h:676
 msgid "Cannot start print job"
-msgstr ""
+msgstr "De print opdracht kan niet gestart worden"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h.h:678
@@ -2474,7 +2481,7 @@ msgstr "Opmaak mogelijkheden aanzetten"
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h.h:1025
 msgid "Enable Smooth Scrolling"
-msgstr ""
+msgstr "Soepel scrollen gebruiken"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1027
@@ -5689,10 +5696,13 @@ msgstr "AbiWord Plugin Manager"
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
 #, c-format
+#,fuzzy
 msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
+"AbiWord kan het spellingsbestand %s.dll niet vinden.\n"
+"Haal Aspell op van http://aspell.net/win32/ en installeer het."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:35
@@ -7105,7 +7115,7 @@ msgstr "Vernieuwen"
 #. LANG_UR_PK
 #: po/tmp/xap_String_Id.h.h:650
 msgid "Urdu"
-msgstr ""
+msgstr "Oerdoe"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #: po/tmp/xap_String_Id.h.h:652
