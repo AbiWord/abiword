@@ -357,19 +357,19 @@ UT_Bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 	//  We want to keep tweaking the delete span until there is nothing
 	//  more to tweak.  We check to see if nothing has changed in the
 	//  last tweak, and if so, we are done. 
-	while (1)
-	{
-		PT_DocPosition old_dpos1 = dpos1;
-		PT_DocPosition old_dpos2 = dpos2;
-		UT_uint32 old_iStackSize = pstDelayStruxDelete->getDepth();
+//	while (1)
+//	{
+//		PT_DocPosition old_dpos1 = dpos1;
+//		PT_DocPosition old_dpos2 = dpos2;
+//		UT_uint32 old_iStackSize = pstDelayStruxDelete->getDepth();
 
 		if(!_tweakDeleteSpanOnce(dpos1, dpos2, pstDelayStruxDelete))
 			return UT_FALSE;
 
-		if (dpos1 == old_dpos1 && dpos2 == old_dpos2
-			&& pstDelayStruxDelete->getDepth() == old_iStackSize)
+//		if (dpos1 == old_dpos1 && dpos2 == old_dpos2
+//			&& pstDelayStruxDelete->getDepth() == old_iStackSize)
 			return UT_TRUE;
-	}
+//	}
 }
 
 UT_Bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
@@ -559,7 +559,8 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		if (bSuccess)
 			bSuccess = _deleteComplexSpan(dpos1, dpos2);
 
-		while (bSuccess && stDelayStruxDelete.getDepth() > 0) {
+		while (bSuccess && stDelayStruxDelete.getDepth() > 0)
+		{
 			pf_Frag_Strux * pfs;
 			stDelayStruxDelete.pop((void **)&pfs);
 
