@@ -75,6 +75,7 @@
 #  	include "ap_Win32Dialog_FormatTable.h"
 #	include "ap_Win32Dialog_FormatFootnotes.h"
 #	include "ap_Win32Dialog_MailMerge.h"
+#	include "ap_Win32Dialog_FormatFrame.h"
 #if 0
 #	include "ap_Win32Dialog_Download_File.h"
 #endif
