@@ -1757,6 +1757,9 @@ UT_Bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 			}
 			PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 			UT_uint32 len = pcrs->getLength();
+
+// sterwill -- is this call to getSectionLayout() needed?  pBLSL is not used.
+			
 //			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
 			bResult = m_pCurrentBL->doclistener_populateSpan(pcrs, blockOffset, len);
 			goto finish_up;
@@ -1772,6 +1775,8 @@ UT_Bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 				UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
 			}
 			PT_BlockOffset blockOffset = pcro->getBlockOffset();
+
+// sterwill -- is this call to getSectionLayout() needed?  pBLSL is not used.
 
 //			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
 			bResult = m_pCurrentBL->doclistener_populateObject(blockOffset,pcro);

@@ -1726,6 +1726,9 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 			UT_ASSERT(pTextRun->getNext());
 			UT_ASSERT(pTextRun->getNext()->getType() == FPRUN_TEXT);
+
+// sterwill -- is the call to getNext() needed?  pOtherHalfOfSplitRun
+//             is not used.
 			
 //			fp_TextRun* pOtherHalfOfSplitRun = (fp_TextRun*) pTextRun->getNext();
 			
@@ -3013,7 +3016,12 @@ UT_Bool fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
 	while (pRun)
 	{
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
+
+// sterwill -- is this call to getLength() needed?  iRunLength is not
+//             used in this function.
+
 //		UT_uint32 iRunLength = pRun->getLength();
+
 		fp_Run* pNextRun = pRun->getNext();	// remember where we're going, since this run may get axed
 
 		if ( (iRunBlockOffset == blockOffset) && (pRun->getType() == FPRUN_FMTMARK) )

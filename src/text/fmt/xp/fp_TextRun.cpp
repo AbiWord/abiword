@@ -945,6 +945,9 @@ void fp_TextRun::__dump(FILE * fp) const
 	{
 		const UT_UCSChar* pSpan;
 		UT_uint32 lenSpan;
+
+// sterwill -- not used
+
 //		UT_Bool bContinue = UT_TRUE;
 
 		UT_uint32 koff=m_iOffsetFirst;
