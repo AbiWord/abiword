@@ -347,7 +347,7 @@ UT_printf_string_upper_bound (const char* format,
 #  define VA_COPY(ap1, ap2)	  (*(ap1) = *(ap2))
 #  elif defined (VA_COPY_AS_ARRAY)
 #  define VA_COPY(ap1, ap2)	  memmove ((ap1), (ap2), sizeof (va_list))
-#  elif defined (__GNUC__)
+#  elif defined (__GNUC__) && defined (__va_copy)
 #  define VA_COPY(ap1,ap2)     __va_copy((ap1),(ap2))
 #  else /* va_list is a pointer */
 #  define VA_COPY(ap1, ap2)	  ((ap1) = (ap2))
