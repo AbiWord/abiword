@@ -35,15 +35,16 @@ when a new document is created or AbiWord restarted).
 
 Known Issues
 ------------
-* the direction flag of insertion point does not work correctly 
-  in all situations (e.g. end of line in progress, with last run
-  of a different direction than that of the paragraph)
 
 * Only single level of quoting works (i.e., if you have an English
   paragraph with a Hebrew quote which in turn contains an English
   quote, the text will not be displayed correctly, the English quote
   will be treated as a continuation of the main text) -- we will provide
-  manual override to group the Hebrew quote together, one day.
+  manual override to group the Hebrew quote together, one day. If you 
+  need a work around for this, this is what to do: type in the text
+  up to the start of the outer quote; type in the *second* part of the
+  outer quote; type in the inner quote; type in the *first* part of the
+  outer quote; continue the main text.
 
 
 TECHNICAL NOTES
