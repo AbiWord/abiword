@@ -24,15 +24,24 @@
 #include "ie_exp.h"
 #include "ie_imp.h"
 #include "ut_types.h"
+#include "ut_string.h"
+#include "ut_string_class.h"
+
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+
+#include "xap_Frame.h"
+#include "gr_Graphics.h"
+#include "fv_View.h"
+#include "fl_BlockLayout.h"
 
 class XAP_App;
 
 //////////////////////////////////////////////////////////////////
 
 AP_Convert::AP_Convert(XAP_App *pApp)
+  : m_iVerbose(1), m_pApp(pApp)
 {
-    m_iVerbose = 1;
-	m_pApp = pApp;
 }
 
 AP_Convert::~AP_Convert(void)
@@ -99,50 +108,94 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 
 void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffix)
 {
-	char ext[256] = ".";
-	IEFileType ieft;
-	char file[256];
-	char *tmp;
+  UT_String ext("."), file;
+  IEFileType ieft = 0;
+  char *tmp = NULL;
+  char * fileDup = UT_strdup ( szFilename );
 
-	strncat(ext, szTargetSuffix, 255);
-	ieft = IE_Exp::fileTypeForSuffix(ext);
-	strncpy(file, szFilename, 255);
+  ext += szTargetSuffix;
+  ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
 
-	tmp = strrchr(file, '.');
-	if (tmp != NULL)
-		*tmp = '\0';
+  tmp = strrchr(fileDup, '.');
+  if (tmp != NULL)
+    *tmp = '\0';
+  
+  file = fileDup;
+  file += ext;
+  
+  FREEP(fileDup);
 
-	strncat(file, ext, 255 - strlen(file));
-
-	convertTo(szFilename, IEFT_Unknown, file, ieft);
+  convertTo(szFilename, IEFT_Unknown, file.c_str(), ieft);
 }
 
 void AP_Convert::convertTo(const char * szFilename, const char * szSourceSuffix, const char * szTargetSuffix)
 {
-	char ext[256] = ".";
-	char sourceExt[256] = ".";
-	IEFileType ieft;
-	IEFileType sourceIeft;
-	char file[256];
-	char *tmp;
+  UT_String ext("."), sourceExt("."), file;
+  IEFileType ieft = 0;
+  IEFileType sourceIeft = 0;
+  char *tmp = NULL;
+  char * fileDup = UT_strdup ( szFilename );
 
-	strncat(ext, szTargetSuffix, 255);
-	strncat(sourceExt, szSourceSuffix, 255);
-	ieft = IE_Exp::fileTypeForSuffix(ext);
-	sourceIeft = IE_Imp::fileTypeForSuffix(sourceExt);
-	strncpy(file, szFilename, 255);
+  ext += szTargetSuffix;
+  sourceExt += szSourceSuffix;
 
-	tmp = strrchr(file, '.');
-	if (tmp != NULL)
-		*tmp = '\0';
+  ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
+  sourceIeft = IE_Imp::fileTypeForSuffix(sourceExt.c_str());
 
-	strncat(file, ext, 255 - strlen(file));
+  tmp = strrchr(fileDup, '.');
+  if (tmp != NULL)
+    *tmp = '\0';
 
-	convertTo(szFilename, sourceIeft, file, ieft);
+  file = fileDup;
+  file += ext;
+  
+  FREEP( fileDup );
+
+  convertTo(szFilename, sourceIeft, file.c_str(), ieft);
 }
 
 void AP_Convert::setVerbose(int level)
 {
 	if ((level >= 0) && (level <= 2))
 		m_iVerbose = level;
+}
+
+void AP_Convert::print(XAP_Frame * pFrame, GR_Graphics * pGraphics)
+{
+  UT_DEBUGMSG(("DOM: AP_Convert::print\n"));
+
+  UT_ASSERT(pFrame);
+  UT_ASSERT(pGraphics);
+
+  // get the current document
+  PD_Document * doc = static_cast<PD_Document*>(pFrame->getCurrentDoc ());
+
+  // create a new layout and view object for the doc
+  FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+  pDocLayout->formatAll();
+  FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
+
+  // get the width, height, orient
+  UT_sint32 iWidth = pDocLayout->getWidth();
+  UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
+
+  bool orient = pPrintView->getPageSize().isPortrait();
+  pGraphics->setPortrait (orient);  
+
+  // setup the drawing args
+  dg_DrawArgs da;
+  memset(&da, 0, sizeof(da));
+  da.pG = NULL;
+
+  if(pGraphics->startPrint())
+    {
+      // iterate over the pages, printing each one
+      for (UT_uint32 k = 1; (k <= pDocLayout->countPages()); k++)
+	{
+	  pGraphics->m_iRasterPosition = (k-1)*iHeight;
+	  pGraphics->startPage(doc->getFileName(), k, orient, iWidth, iHeight);
+	  pPrintView->draw(k-1, &da);
+	}
+      pGraphics->endPrint();
+    }
 }

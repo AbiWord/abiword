@@ -64,7 +64,7 @@ public:
 	inline void setScale( double scale) {m_scale = scale;}
 	void setPortrait(void);
 	void setLandscape(void);
-	bool isPortrait(void) { return m_bisPortrait; }
+	bool isPortrait(void) const { return m_bisPortrait; }
 	double Width(Unit u) const;
 	double Height(Unit u) const;
 
