@@ -441,11 +441,12 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 
 void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 {
-	// TODO: figure out how to remove the window's title bar
-
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-
 	HWND hwndFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
+
+	// Get the window's style so we can add or remove the titlebar later
+	long hStyle = GetWindowLong(hwndFrame, GWL_STYLE);
+
 	if (isFullScreen)
 	{
 		// Save window state prior to fullscreen (are we maximized?)
@@ -459,13 +460,24 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 		{
 			// Couldn't retrieve windowplacement info
 			// Assume we were at Normal (non-maximized) state
-			m_iWindowStateBeforeFS = SW_NORMAL;
+			m_iWindowStateBeforeFS = SW_SHOWNORMAL;
 		}
-
+		
+		// Remove the title-bar and maximize
+		SetWindowLong(hwndFrame, GWL_STYLE, hStyle & ~WS_CAPTION);
 		ShowWindow(hwndFrame, SW_SHOWMAXIMIZED);
 	}
 	else
 	{
+		// Add the title-bar back
+		SetWindowLong(hwndFrame, GWL_STYLE, hStyle | WS_CAPTION);
+
+		// If we were previously maximized, we need to restore to normal
+		// before adding the title-bar back and re-maximizing.
+		// Otherwise, the title-bar is added off-screen.
+		if(m_iWindowStateBeforeFS == SW_SHOWMAXIMIZED)
+			ShowWindow(hwndFrame, SW_RESTORE);
+
 		if(m_iWindowStateBeforeFS)
 			ShowWindow(hwndFrame, m_iWindowStateBeforeFS);
 	}
