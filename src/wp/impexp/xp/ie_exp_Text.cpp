@@ -876,11 +876,13 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_SectionMarginnote:
 	case PTX_SectionFootnote:
 	case PTX_EndEndnote:
+	case PTX_SectionTOC:
+	case PTX_EndTOC:
 	    return true ;
 
 	default:
 		UT_ASSERT_NOT_REACHED();
-		return false;
+		return true;
 	}
 }
 
