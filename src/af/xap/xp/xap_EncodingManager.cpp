@@ -980,8 +980,8 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 	buf[idx] += enc;
 	buf[idx++] += suffix;
 
-	for (size_t i = 0; i < 5; ++i)
-		ptrs[i] = buf[i].c_str();
+	for (size_t j = 0; j < 5; ++j)
+		ptrs[j] = buf[j].c_str();
 	ptrs[5] = 0;
 
     return ptrs;
