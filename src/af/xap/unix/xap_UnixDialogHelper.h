@@ -74,6 +74,16 @@ GtkStyle * get_ensured_style (GtkWidget * w);
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap
 GtkWidget *createDrawingArea ();
 
+// These are here so that I can start on the GTK+2 port without installing
+// GTK+2 quite yet...
+#define G_OBJECT(x) GTK_OBJECT(x)
+#define G_CALLBACK(x) GTK_SIGNAL_FUNC(x)
+#define g_signal_connect(o,s,c,d) gtk_signal_connect(o,s,c,d)
+#define g_object_ref(x) gtk_object_ref(x)
+#define g_object_unref(x) gtk_object_unref(x)
+#define g_object_set_data(x,y,z) gtk_object_set_data(x,y,z)
+#define g_object_get_data(x,y) gtk_object_get_data(x,y)
+
 #endif /* UT_DIALOGHELPER_H */
 
 
