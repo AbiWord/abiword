@@ -490,7 +490,10 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					// Block the signal, throw the toggle event
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
-					gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
+					if (szState)
+						gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
+					else
+						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
 					wd->m_blockSignal = wasBlocked;
 					
 					UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
