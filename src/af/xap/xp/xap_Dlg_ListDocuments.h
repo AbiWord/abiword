@@ -39,7 +39,9 @@ class AD_Document;
     and runModal() methods.
 
     The dialogue contains a single column list which is filled by
-    document names using _getDocumentCount() and _getNthDocumentName().
+    document names using _getDocumentCount() and
+    _getNthDocumentName(). There is a heading text for the list,
+    obtained through _getHeading();
 
 	When the user selects a particular entry on the list,
 	_setSelDocumentIndx() should be called to store the index of the
@@ -49,7 +51,7 @@ class AD_Document;
     There should be two buttons: OK and Cancel; the text for the OK
     button needs to be obtained using _getOKButtonText().
 
-	Title for the dialogue is obtained through _getTitle().
+	Title for the dialogue window is obtained through _getTitle().
 
 	(this dialogue is very much like ListRevisions, except the list
 	has only one column and the OK button label is not static)
@@ -81,6 +83,7 @@ class XAP_Dialog_ListDocuments : public XAP_Dialog_NonPersistent
 
 	const char *               _getTitle() const;
 	const char *               _getOKButtonText() const;
+	const char *               _getHeading() const;
 	
   private:
 

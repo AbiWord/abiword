@@ -262,7 +262,8 @@ dcl(DLG_ABOUT_Title,					"About %s")
 	dcl(DLG_Image_LblAlt, "Alt:")
 
 /* ListDocuments Dialog */
-dcl(DLG_LISTDOCS_Title,					"Open Documents")
+dcl(DLG_LISTDOCS_Title,					"Opened Documents")
+dcl(DLG_LISTDOCS_Heading1,				"Choose document from the list:")
 	
 /*
 For insert Table widget

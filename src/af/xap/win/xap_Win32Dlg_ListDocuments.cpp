@@ -118,7 +118,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	_DSXS(BTN_OK,    _getOKButtonText());
 	_DSX(BTN_CANCEL, DLG_Cancel);
 
-	//SetDlgItemText(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_FRAME,getLabel1());
+	SetDlgItemText(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_HEADING,_getHeading());
 
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_LIST);

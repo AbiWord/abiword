@@ -114,6 +114,14 @@ const char * XAP_Dialog_ListDocuments::_getTitle() const
 	return 	pSS->getValue(XAP_STRING_ID_DLG_LISTDOCS_Title);
 }
 
+const char * XAP_Dialog_ListDocuments::_getHeading() const
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_return_val_if_fail(pSS, NULL);
+
+	return 	pSS->getValue(XAP_STRING_ID_DLG_LISTDOCS_Heading1);
+}
+
 const char * XAP_Dialog_ListDocuments::_getOKButtonText() const
 {
 
