@@ -358,7 +358,11 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		// for a matching directory.  We can then proceed with the file
 		// if another stat of that dir passes.
 
-		pLastSlash = strrchr(szFinalPathnameCopy,'/');
+		if (szFinalPathnameCopy && strlen(szFinalPathnameCopy))
+			pLastSlash = strrchr(szFinalPathnameCopy,'/');
+		else
+			pLastSlash = NULL;
+
 		if (!pLastSlash)
 		{
 			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
