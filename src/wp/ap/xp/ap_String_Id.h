@@ -288,7 +288,7 @@ dcl(DLG_Options_Label_SaveContextGlyphs, "Save visual glyph shapes")
 dcl(DLG_Options_Label_HebrewContextGlyphs, "Use glyph shaping for Hebrew")
 
 dcl(DLG_Options_Label_AutoSave, 		"Auto Save")
-dcl(DLG_Options_Label_AutoSaveCurrent,	"Auto &save current file each")
+dcl(DLG_Options_Label_AutoSaveCurrent,	"Auto &save current file every")
 dcl(DLG_Options_Label_Minutes,			"minutes")
 dcl(DLG_Options_Label_WithExtension,	"With extension:")
 
