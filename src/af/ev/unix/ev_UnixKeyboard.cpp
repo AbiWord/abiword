@@ -430,11 +430,11 @@ static bool s_isVirtualKeyCode(gint keyval)
 	// for now, we will ignore these.
 
 	if (keyval > 0x0000FFFF)
-		return false;//was true before CJK patch
+		return false; //was true before CJK patch
 //
 // Causes immediate on keypress segfault??
-//	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9) // number pad keys
-//		return false;
+	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9) // number pad keys
+		return false;
 	
 	if (keyval > 0xFF00)				// see the above table
 		return true;
@@ -459,7 +459,7 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
 	// these appear to have stuff in the high word.  (see {ap_,DEC,HP,Sun}keysym.h)
 	// for now, we will ignore these.
 
-	if (keyval >0x0000FFFF)
+	if (keyval > 0x0000FFFF)
 		return EV_NVK__IGNORE__;
 	
 	if (keyval > 0xFF00)
