@@ -1107,15 +1107,29 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	
 	UT_sint32 iDirection = getVisDirection();
 
-	if(iDirection == FRIBIDI_TYPE_RTL)
-	    x = xoff - 1;      //necessary to draw the the caret properly -- I am not sure why though #TF
+    x = xoff;
+
+	if(iDirection == FRIBIDI_TYPE_LTR)
+	{
+		xxx_UT_DEBUGMSG(("iOffset %d, m_iOffsetFirst %d, m_iLen %d\n", iOffset,m_iOffsetFirst,m_iLen));
+		if(iOffset != m_iOffsetFirst)
+		{
+			UT_ASSERT(iOffset == (m_iOffsetFirst + m_iLen));
+			x += getWidth();
+		}
+	}
 	else
-	    x = xoff + getWidth() + 1;
+	{
+		if(iOffset == m_iOffsetFirst)
+		{
+		    x += getWidth();
+		}
+	}
 	
 	
 	if(pRun && (iNextDir != iDirection)) //if this run precedes run of different direction, we have to split the caret
 	{
-	    x2 = (iNextDir == FRIBIDI_TYPE_LTR) ?  xoff + pRun->getWidth() + 1 : xoff2 - 1;
+	    x2 = (iNextDir == FRIBIDI_TYPE_LTR) ?  xoff + pRun->getWidth() : xoff2;
 	    y2 = yoff2;
 	}
 	else
