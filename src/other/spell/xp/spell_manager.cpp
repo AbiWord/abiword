@@ -99,10 +99,16 @@ SpellManager::requestDictionary (const char * szLang)
 {  
 	SpellCheckerClass * checker = 0;
 	
+	// Don't try to load hashes we know are missing
+	if (strstr(m_missingHashs.c_str(), szLang))
+		return 0;
+
 	// first look up the entry in the hashtable
 	if (m_map.contains (szLang, 0))
+	{
 		return (SpellCheckerClass *)m_map.pick (szLang);
-	
+	}
+
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
 	
@@ -114,7 +120,7 @@ SpellManager::requestDictionary (const char * szLang)
     }
 	else
     {
-		m_map.insert (szLang, NULL); // add a null entry for this lang
+		m_missingHashs += szLang;
 		delete checker;
 		return 0;
     }

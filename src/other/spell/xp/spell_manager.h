@@ -73,6 +73,7 @@ private:
 
 private:
 	UT_StringPtrMap m_map;
+	UT_String m_missingHashs;
 	SpellChecker *  m_lastDict;
 };
 
