@@ -404,7 +404,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 
 						UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
 
-						UT_UCS4_strcpy_utf8_char(ucs_buf, buf);
+						UT_UCS4_strcpy_char(ucs_buf, buf);
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
 						
 						if(dataLength)
