@@ -62,7 +62,7 @@ public:
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec);
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) const;
 
 	enum RemapFont {
 		rf_None = 0,
