@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "xap_Args.h"
 #include "xap_BeOSApp.h"
 #include "xap_FakeClipboard.h"
@@ -26,7 +27,7 @@
 #include "xap_BeOSToolbar_Icons.h"
 #include "xap_BeOSToolbar_ControlFactory.h"
 
-#include "ap_BeOSFrame.h"				// TODO move this
+#include "ap_BeOSFrame.h"		// TODO move this
 
 /*****************************************************************/
 

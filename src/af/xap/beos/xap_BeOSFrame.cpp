@@ -33,6 +33,9 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+#include "ap_FrameData.h"
+#include "gr_BeOSGraphics.h"
+
 #define DPRINTF(x) x
 
 /*****************************************************************/
@@ -189,98 +192,7 @@ void XAP_BeOSFrame::_createTopLevelWindow(void)
 	UT_ASSERT(m_pBeWin);
 	m_pBeWin->_createWindow(m_szMenuLayoutName, m_szMenuLabelSetName);
 
-#if 0
-	m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
-						m_wTopLevelWindow);
-	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
-	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
-						 m_pBeOSApp->getApplicationTitleForTitleBar());
-	gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
-	gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
-						   m_pBeOSApp->getApplicationName(),
-						   m_pBeOSApp->getApplicationName());
-
-	// TODO get the following values from a preferences or something.
-	gtk_container_set_border_width(GTK_CONTAINER(m_wTopLevelWindow), 4);
-
-	// TODO These values should probably be set and read from program
-	// TODO preferences.
-	// NOTE GTK does not automatically parse -geometry for us, but
-	// NOTE we should honor it eventually.
-	gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
-
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
-					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
-	// here we connect the "destroy" event to a signal handler.  
-	// This event occurs when we call gtk_widget_destroy() on the window,
-	// or if we return 'FALSE' in the "delete_event" callback.
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "destroy",
-					   GTK_SIGNAL_FUNC(_fe::destroy), NULL);
-
-	// create a VBox inside it.
-	
-	m_wVBox = gtk_vbox_new(FALSE,0);
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
-	gtk_object_set_user_data(GTK_OBJECT(m_wVBox),this);
-	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
-
-	// TODO get the following values from a preferences or something.
-
-// HEY! This is commented out because versions of GTK > than 1.1.5
-//	call this gtk_container_SET_border_width() and commenting it out
-//  makes it build everywhere, and it doesn't look any different.
-
-//	gtk_container_set_border_width(GTK_CONTAINER(m_wVBox), 0);
-
-/* TF NOTE DONE IN be_Window class
-	// synthesize a menu from the info in our base class.
-
-	m_pBeOSMenu = new EV_BeOSMenu(m_pBeOSApp,this,
-				      m_szMenuLayoutName, m_szMenuLabelSetName);
-	UT_ASSERT(m_pBeOSMenu);
-	bResult = m_pBeOSMenu->synthesize();
-	UT_ASSERT(bResult);
-*/
-
-	// create a toolbar instance for each toolbar listed in our base class.
-	// TODO for some reason, the toolbar functions require the TLW to be
-	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
-	gtk_widget_realize(m_wTopLevelWindow);
-
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
-					   GTK_SIGNAL_FUNC(_fe::key_press_event), NULL);
-
-	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
-	{
-		EV_BeOSToolbar * pBeOSToolbar
-			= new EV_BeOSToolbar(m_pBeOSApp,this,
-								 (const char *)m_vecToolbarLayoutNames.getNthItem(k),
-								 m_szToolbarLabelSetName);
-		UT_ASSERT(pBeOSToolbar);
-		bResult = pBeOSToolbar->synthesize();
-		UT_ASSERT(bResult);
-
-		m_vecBeOSToolbars.addItem(pBeOSToolbar);
-	}
-
-	// Let the app-specific frame code create the contents of
-	// the child area of the window (between the toolbars and
-	// the status bar).
-
-	m_wSunkenBox = _createDocumentWindow();
-	gtk_container_add(GTK_CONTAINER(m_wVBox), m_wSunkenBox);
-	gtk_widget_show(m_wSunkenBox);
-
-	// TODO decide what to do with accelerators
-	// gtk_window_add_accelerator_table(GTK_WINDOW(window), accel);
-
-	gtk_widget_show(m_wVBox);
-#endif
-	
 	// we let our caller decide when to show m_wTopLevelWindow.
-
 	return;
 }
 
@@ -363,6 +275,27 @@ UT_Bool XAP_BeOSFrame::runModalContextMenu(AV_View * /* pView */, const char * s
 	return(UT_FALSE);
 }
 
+UT_Vector * XAP_BeOSFrame::VecBeOSToolbars() { 
+	return(&m_vecBeOSToolbars); 
+};      
+
+UT_Vector * XAP_BeOSFrame::VecToolbarLayoutNames() {
+	return(&m_vecToolbarLayoutNames); 
+}
+
+const char * XAP_BeOSFrame::ToolbarLabelSetName() { 
+	return(m_szToolbarLabelSetName); 
+};     
+
+GR_Graphics * XAP_BeOSFrame::Graphics() {
+	return(((AP_FrameData*)m_pData)->m_pG);
+}
+
+void XAP_BeOSFrame::setScrollBars(TFScrollBar *h, TFScrollBar *v) {
+	m_hScroll = h;
+	m_vScroll = v;
+}	
+
 /*********************************************************
  Local Window/View Class Stuff 
 *********************************************************/
@@ -441,7 +374,7 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 	m_winRectAvailable.PrintToStream();
 	m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView", 
 				       B_FOLLOW_ALL, B_WILL_DRAW);
-	m_pbe_DocView->SetViewColor(0,120, 255);
+	//m_pbe_DocView->SetViewColor(0,120, 255);
 	//Add the view to both frameworks (Be and Abi)
 	AddChild(m_pbe_DocView);
 	m_pBeOSFrame->setBeDocView(m_pbe_DocView);	

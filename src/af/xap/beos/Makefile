@@ -20,7 +20,8 @@
 
 ABI_DEPTH = ../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+#include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 CPPSRCS=		xap_BeOSApp.cpp				\
 			xap_BeOSDlg_WindowMore.cpp	\

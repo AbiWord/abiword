@@ -27,13 +27,11 @@
 #include "ut_vector.h"
 #include "xap_BeOSDialogFactory.h"
 
-#include "ap_FrameData.h"
-#include "gr_BeOSGraphics.h"
-
 class XAP_BeOSApp;
 class ev_BeOSKeyboard;
 class ev_BeOSMouse;
 class EV_BeOSMenu;
+class GR_Graphics;
 
 /*****************************************************************
 ******************************************************************
@@ -107,7 +105,7 @@ public:
 				  const char * szToolbarLabelSetDefaultValue);
 	
 	virtual	XAP_Frame *			cloneFrame(void)=0;
-	virtual UT_Bool				loadDocument(const char * szFilename)=0;
+	virtual UT_Bool				loadDocument(const char * szFilename,  int ieft)=0;
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
@@ -126,23 +124,11 @@ public:
 	virtual void                            setStatusMessage(const char * szMsg) = 0;
 
 	//TF Added 
- 	UT_Vector *                             VecBeOSToolbars() { 
-						 return(&m_vecBeOSToolbars); 
-						};      
-	UT_Vector *				VecToolbarLayoutNames() {
-						 return(&m_vecToolbarLayoutNames); 
-						}
-  	const char *                            ToolbarLabelSetName() { 
-						 return(m_szToolbarLabelSetName); 
-						};     
-	GR_Graphics *				Graphics() {
-						 return(((AP_FrameData*)m_pData)->m_pG);
-						}
-	void					setScrollBars(TFScrollBar *h, 
-							      TFScrollBar *v) {
-						 m_hScroll = h;
-						 m_vScroll = v;
-						}	
+ 	UT_Vector *                             VecBeOSToolbars();
+	UT_Vector *				VecToolbarLayoutNames();
+  	const char *                            ToolbarLabelSetName();
+	GR_Graphics *				Graphics();
+	void					setScrollBars(TFScrollBar *h, TFScrollBar *v);
 
 protected:
 //	virtual GtkWidget *			_createDocumentWindow(void)=0;
