@@ -1241,6 +1241,8 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 			{
 				
 				Lig.next = prev ? *prev : 0;
+				Lig.code = *code;
+
 				pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
 														  static_cast<void*>(s_lig_rev),
 														  NrElements(s_lig_rev),
@@ -1279,7 +1281,7 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 
-			UT_DEBUGMSG(("UT_contextGlyph::getGlyph: lig. (%d), glyph 0x%x\n",bIsSecond,glyph));
+			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: lig. (%d), glyph 0x%x\n",bIsSecond,glyph));
 			
 			if(!bIsSecond && glyph != 1) //first part of a ligature
 				return glyph;
@@ -1430,6 +1432,8 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				if(i == 0 && !isNotSecondInLigature(*src_ptr))
 				{
 					Lig.next = prev ? *prev : 0;
+					Lig.code = *src_ptr;
+					
 					pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
 															  static_cast<void*>(s_lig_rev),
 															  NrElements(s_lig_rev),
@@ -1467,7 +1471,7 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 
-				UT_DEBUGMSG(("UT_contextGlyph::render: lig.(%d), glyph 0x%x\n",bIsSecond,glyph));
+				xxx_UT_DEBUGMSG(("UT_contextGlyph::render: lig.(%d), glyph 0x%x\n",bIsSecond,glyph));
 				if(!bIsSecond && glyph != 1) //first part of a ligature
 				{
 					// we set both this and the next char if we can
