@@ -167,6 +167,7 @@ dcl(LayoutMode)
 
 dcl(SpellDirectory)
 dcl(StringSetDirectory)
+dcl(ShowSplash)
 
 #ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
