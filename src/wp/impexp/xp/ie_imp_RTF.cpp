@@ -6254,13 +6254,14 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 		fontIndex = parameter;
 	}
 
-	// Read the font family (must be specified)
     // ignore white space here to work around some broken docs. See 2719
 
 	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN,true);
 	if (tokenType != RTF_TOKEN_KEYWORD)
 	{
-		return false;
+		// Read the font family (must be specified), but we'll let it slide...
+		// tokenType will be RTF_TOKEN_DATA, so we'll bypass the following while() loop
+		fontFamily = RTFFontTableItem::ffNone;
 	}
 	else
 	{
