@@ -64,11 +64,11 @@ typedef unsigned int		UT_uint32;
 typedef signed int		    UT_sint32;
 
 #if defined(WIN32) && !defined(__GNUC__)
-typedef DWORDLONG           UT_uint64;
-typedef LONGLONG            UT_sint64;
+typedef __int64             UT_uint64;
+typedef __int64             UT_sint64;
 #else
 GNUC_EXTENSION typedef unsigned long long  UT_uint64;
-GNUC_EXTENSION typedef signed long long           UT_sint64;
+GNUC_EXTENSION typedef signed long long    UT_sint64;
 #endif
 
 /* If expat is in use, include <expat.h> before "ut_types.h"
