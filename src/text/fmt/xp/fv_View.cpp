@@ -11364,7 +11364,7 @@ void FV_View::markSavedPositionAsNeeded(void)
    \param	posEnd is the value of the doc position at the beginning and end 
 			of the doc
    \param	bOveride if true the EOD is made within the edittable region
-   \return	true if succesful
+   \return	true if successful
    \todo speed this up by finding clever way to cache the size of the 
 		 header/footer region so we can just subtract it off.
 */
