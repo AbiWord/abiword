@@ -105,6 +105,16 @@ private:
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayOutlineCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item;
 @end
 
+@interface XAP_CocoaPreviewPanel : NSWindowController
+{
+	IBOutlet NSTextField *oPreview;
+}
+- (id)init;
+- (void)dealloc;
+- (void)windowDidLoad;
+- (void)setPreviewString:(NSString *)previewString;
+@end
+
 @interface XAP_CocoaToolPalette : NSWindowController
 {
 	struct XAP_CocoaToolRef *			m_ToolChest;
@@ -113,35 +123,37 @@ private:
 
 	XAP_PaletteProperties_DataSource *	m_Properties_DataSource;
 
-	IBOutlet NSButton *oTitle_Standard;
-	IBOutlet NSButton *oTitle_Format;
-	IBOutlet NSButton *oTitle_Table;
-	IBOutlet NSButton *oTitle_Extra;
-	IBOutlet NSButton *oTitle_Properties;
+	IBOutlet XAP_CocoaPreviewPanel *	oPreviewPanel;
 
-	IBOutlet NSBox *oBox_Standard;
-	IBOutlet NSBox *oBox_Format;
-	IBOutlet NSBox *oBox_Table;
-	IBOutlet NSBox *oBox_Extra;
-	IBOutlet NSBox *oBox_Properties;
+	IBOutlet NSButton *			oTitle_Standard;
+	IBOutlet NSButton *			oTitle_Format;
+	IBOutlet NSButton *			oTitle_Table;
+	IBOutlet NSButton *			oTitle_Extra;
+	IBOutlet NSButton *			oTitle_Properties;
 
-	IBOutlet NSPopUpButton *oDocumentStyle;
-	IBOutlet NSPopUpButton *oFontName;
+	IBOutlet NSBox *			oBox_Standard;
+	IBOutlet NSBox *			oBox_Format;
+	IBOutlet NSBox *			oBox_Table;
+	IBOutlet NSBox *			oBox_Extra;
+	IBOutlet NSBox *			oBox_Properties;
 
-	IBOutlet NSComboBox *oFontSize;
-	IBOutlet NSComboBox *oZoom;
+	IBOutlet NSPopUpButton *	oDocumentStyle;
+	IBOutlet NSPopUpButton *	oFontName;
 
-	IBOutlet NSColorWell *oColor_BG;
-	IBOutlet NSColorWell *oColor_FG;
+	IBOutlet NSComboBox *		oFontSize;
+	IBOutlet NSComboBox *		oZoom;
 
-	IBOutlet NSButton *oSwitch_BG;
-	IBOutlet NSButton *oSwitch_FG;
+	IBOutlet NSColorWell *		oColor_BG;
+	IBOutlet NSColorWell *		oColor_FG;
 
-	IBOutlet NSTextField *oPreview;
+	IBOutlet NSButton *			oSwitch_BG;
+	IBOutlet NSButton *			oSwitch_FG;
 
-	IBOutlet NSOutlineView *oProperties;
+	IBOutlet NSTextField *		oPreview;
 
-	IBOutlet NSPanel *oPanel;
+	IBOutlet NSOutlineView *	oProperties;
+
+	IBOutlet NSPanel *			oPanel;
 
 #ifdef defn
 #undef defn
@@ -176,7 +188,10 @@ private:
 - (void)close;
 - (void)windowWillClose;
 
-- (NSTextField *)preview;
++ (void)setPreviewText:(id)previewText;
+- (void)setPreviewString:(NSString *)previewString;
+
+- (NSWindow *)previewPanel;
 
 - (void)setColor:(XAP_Toolbar_Id)tlbrid;
 

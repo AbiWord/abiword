@@ -741,31 +741,32 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 
 @interface EV_CocoaPaletteMenuItem : NSMenuItem
 {
+	BOOL	m_bPreview;
 }
--(id)initWithTitle:(NSString *)title;
--(void)togglePalette:(id)sender;
+-(id)initWithTitle:(NSString *)title forPreview:(BOOL)preview;
+-(void)togglePanel:(id)sender;
 -(void)update;
 @end
 
 @implementation EV_CocoaPaletteMenuItem
 
--(id)initWithTitle:(NSString *)title
+-(id)initWithTitle:(NSString *)title forPreview:(BOOL)preview
 {
 	if (self = [super initWithTitle:title action:nil keyEquivalent:@""])
 		{
-			// 
+			m_bPreview = preview;
 		}
 	return self;
 }
 
--(void)togglePalette:(id)sender
+-(void)togglePanel:(id)sender
 {
 	BOOL bInstantiated = [XAP_CocoaToolPalette instantiated];
 
-	NSWindow * window = [[XAP_CocoaToolPalette instance:self] window];
-
 	if (bInstantiated)
 		{
+			NSWindow * window = m_bPreview ? [[XAP_CocoaToolPalette instance:self] previewPanel] : [[XAP_CocoaToolPalette instance:self] window];
+
 			if ([window isVisible])
 				[window orderOut:self];
 			else
@@ -779,7 +780,7 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 
 	if ([XAP_CocoaToolPalette instantiated])
 		{
-			NSWindow * window = [[XAP_CocoaToolPalette instance:self] window];
+			NSWindow * window = m_bPreview ? [[XAP_CocoaToolPalette instance:self] previewPanel] : [[XAP_CocoaToolPalette instance:self] window];
 			bVisible = [window isVisible];
 		}
 
@@ -837,6 +838,7 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 		{
 			m_numberOfFrames = numberOfFrames;
 			m_pMenuItem_Palette = 0;
+			m_pMenuItem_Preview = 0;
 		}
 	return self;
 }
@@ -844,6 +846,11 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 -(void)setMenuItem_Palette:(EV_CocoaPaletteMenuItem *)pMenuItem_Palette
 {
 	m_pMenuItem_Palette = pMenuItem_Palette;
+}
+
+-(void)setMenuItem_Preview:(EV_CocoaPaletteMenuItem *)pMenuItem_Preview
+{
+	m_pMenuItem_Preview = pMenuItem_Preview;
 }
 
 -(void)menuNeedsUpdate
@@ -857,6 +864,10 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 		{
 			[m_pMenuItem_Palette update];
 		}
+	if (m_pMenuItem_Preview)
+		{
+			[m_pMenuItem_Preview update];
+		}
 }
 
 @end
@@ -864,6 +875,7 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 NSMenuItem *				EV_CocoaMenuBar::s_pMenuItem_FileNew  = 0;
 NSMenuItem *				EV_CocoaMenuBar::s_pMenuItem_FileOpen = 0;
 EV_CocoaPaletteMenuItem *	EV_CocoaMenuBar::s_pMenuItem_Palette  = 0;
+EV_CocoaPaletteMenuItem *	EV_CocoaMenuBar::s_pMenuItem_Preview  = 0;
 
 EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs)
 {
@@ -877,14 +889,25 @@ EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs
 
 	if (s_pMenuItem_Palette == 0)
 		{
-			s_pMenuItem_Palette = [[EV_CocoaPaletteMenuItem alloc] initWithTitle:@"Tool Palette"];
+			s_pMenuItem_Palette = [[EV_CocoaPaletteMenuItem alloc] initWithTitle:@"Tool Palette" forPreview:NO];
 
 			[s_pMenuItem_Palette setTarget:s_pMenuItem_Palette];
-			[s_pMenuItem_Palette setAction:@selector(togglePalette:)];
+			[s_pMenuItem_Palette setAction:@selector(togglePanel:)];
 
 			[s_pMenuItem_Palette update];
 
 			[pDockMenu setMenuItem_Palette:s_pMenuItem_Palette];
+		}
+	if (s_pMenuItem_Preview == 0)
+		{
+			s_pMenuItem_Preview = [[EV_CocoaPaletteMenuItem alloc] initWithTitle:@"Preview Panel" forPreview:YES];
+
+			[s_pMenuItem_Preview setTarget:s_pMenuItem_Preview];
+			[s_pMenuItem_Preview setAction:@selector(togglePanel:)];
+
+			[s_pMenuItem_Preview update];
+
+			[pDockMenu setMenuItem_Preview:s_pMenuItem_Preview];
 		}
 
 	if (vecDocs.getItemCount())
@@ -913,6 +936,10 @@ EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs
 		{
 			[pDockMenu addItem:s_pMenuItem_Palette];
 		}
+	if (s_pMenuItem_Preview)
+		{
+			[pDockMenu addItem:s_pMenuItem_Preview];
+		}
 	if (s_pMenuItem_FileNew)
 		{
 			[s_pMenuItem_FileNew setTarget:pAppDelegate];
@@ -931,6 +958,10 @@ void EV_CocoaMenuBar::releaseDockMenu(EV_CocoaDockMenu * pMenu)
 	if (s_pMenuItem_Palette)
 		{
 			[pMenu removeItem:s_pMenuItem_Palette];
+		}
+	if (s_pMenuItem_Preview)
+		{
+			[pMenu removeItem:s_pMenuItem_Preview];
 		}
 	if (s_pMenuItem_FileNew)
 		{

@@ -328,9 +328,8 @@ UT_DEBUGMSG(("insertText: length=%u\n", [aString length]));
 	if (pView)
 		pCocoaKeyboard->insertTextEvent(pView, aString);	
 
-	if ([XAP_CocoaToolPalette instantiated]) {
-		[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:@""];
-	}
+	[XAP_CocoaToolPalette setPreviewText:@""];
+
 	m_selectedRange = NSMakeRange(NSNotFound, 0);
 	m_hasMarkedText = NO;
 }
@@ -344,9 +343,8 @@ UT_DEBUGMSG(("insertText: length=%u\n", [aString length]));
 	/* This method gets called when you delete the current character sequence to 0 length,
 	 * so let's clear the preview...
 	 */
-	if ([XAP_CocoaToolPalette instantiated]) {
-		[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:@""];
-	}
+	[XAP_CocoaToolPalette setPreviewText:@""];
+
 	m_selectedRange = NSMakeRange(NSNotFound, 0);
 	m_hasMarkedText = NO;
 
@@ -361,16 +359,8 @@ UT_DEBUGMSG(("selectedRange=(location=%u,length=%u)\n",m_selectedRange.location,
 
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange
 {
-	if ([XAP_CocoaToolPalette instantiated]) {
-		if ([aString isKindOfClass:[NSString class]]) {
-			NSString * str = (NSString *) aString;
-			[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:str];
-		}
-		if ([aString isKindOfClass:[NSAttributedString class]]) {
-			NSAttributedString * str = (NSAttributedString *) aString;
-			[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:[str string]];
-		}
-	}
+	[XAP_CocoaToolPalette setPreviewText:aString];
+
 	m_selectedRange = selRange;
 	m_hasMarkedText = (selRange.length != 0 ? YES : NO);
 	UT_DEBUGMSG(("Hub TODO: handle -[XAP_CocoaTextView setMarkedText:selectedRange:]\n"));

@@ -650,9 +650,6 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					}
 					if (!bIsCombo)
 					{
-						UT_ASSERT(szState);
-						NSString * state = szState ? [NSString stringWithUTF8String:szState] : 0;
-
 						NSPopUpButton * popupButton = [m_wToolbar viewWithTag:tlbrid];
 						UT_ASSERT(popupButton);
 						UT_ASSERT([popupButton isKindOfClass:[NSPopUpButton class]]);
@@ -682,6 +679,11 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							[popupButton removeAllItems];
 							[popupButton addItemsWithTitles:styles];
 						}
+
+						if (!szState) break; // Mixed selection...
+
+						NSString * state = szState ? [NSString stringWithUTF8String:szState] : 0;
+
 						if ((tlbrid == AP_TOOLBAR_ID_FMT_FONT) && state)
 							if ([popupButton indexOfItemWithTitle:state] < 0)
 							{
@@ -716,7 +718,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							value = [[NSString alloc] initWithUTF8String:str];
 						}
 						else {
-							UT_DEBUGMSG(("%s:%d fontSize not found.... !!!! FIXME", __FILE__, __LINE__));
+							// mixed selection? ... UT_DEBUGMSG(("%s:%d fontSize not found.... !!!! FIXME", __FILE__, __LINE__));
 							if (szState) {
 								value = [[NSString alloc] initWithUTF8String:szState];
 							}

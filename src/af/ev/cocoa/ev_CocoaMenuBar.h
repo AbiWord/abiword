@@ -53,9 +53,11 @@ struct EV_CocoaCommandKeyRef
 	int	m_numberOfFrames;
 
 	EV_CocoaPaletteMenuItem *	m_pMenuItem_Palette;
+	EV_CocoaPaletteMenuItem *	m_pMenuItem_Preview;
 }
 -(id)initWithNumberOfFrames:(int)numberOfFrames;
 -(void)setMenuItem_Palette:(EV_CocoaPaletteMenuItem *)pMenuItem_Palette;
+-(void)setMenuItem_Preview:(EV_CocoaPaletteMenuItem *)pMenuItem_Preview;
 -(void)menuNeedsUpdate;
 @end
 
@@ -83,6 +85,7 @@ private:
 	static NSMenuItem *					s_pMenuItem_FileNew;
 	static NSMenuItem *					s_pMenuItem_FileOpen;
 	static EV_CocoaPaletteMenuItem *	s_pMenuItem_Palette;
+	static EV_CocoaPaletteMenuItem *	s_pMenuItem_Preview;
 protected:
 	NSMenu *			m_wMenuBar;
 	UT_Vector			m_vecKeyRef;

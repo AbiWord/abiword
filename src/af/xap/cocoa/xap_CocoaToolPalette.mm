@@ -694,6 +694,39 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 @end
 
+@implementation XAP_CocoaPreviewPanel
+
+- (id)init
+{
+	if (self = [super init])
+		{
+			// 
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	// 
+	[super dealloc];
+}
+
+- (void)windowDidLoad
+{
+	NSPanel * panel = (NSPanel *) [self window];
+
+	[panel setBecomesKeyOnlyIfNeeded:YES];
+
+	[oPreview setStringValue:@"Preview"];
+}
+
+- (void)setPreviewString:(NSString *)previewString
+{
+	[oPreview setStringValue:previewString];
+}
+
+@end
+
 static XAP_CocoaToolPalette * s_instance = 0;
 
 @implementation XAP_CocoaToolPalette
@@ -964,6 +997,8 @@ static XAP_CocoaToolPalette * s_instance = 0;
 			[oProperties setDelegate:m_Properties_DataSource];
 		}
 
+	[[oPreviewPanel window] orderOut:self];
+
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
 	[self setCurrentView:[pController currentView] inFrame:[pController currentFrame]];
@@ -982,9 +1017,30 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -windowWillClose\n"));
 }
 
-- (NSTextField *)preview
++ (void)setPreviewText:(id)previewText
 {
-	return oPreview;
+	if (s_instance) {
+		if ([previewText isKindOfClass:[NSString class]]) {
+			NSString * str = (NSString *) previewText;
+			[s_instance setPreviewString:str];
+		}
+		if ([previewText isKindOfClass:[NSAttributedString class]]) {
+			NSAttributedString * str = (NSAttributedString *) previewText;
+			[s_instance setPreviewString:[str string]];
+		}
+	}
+}
+
+- (void)setPreviewString:(NSString *)previewString
+{
+	[oPreview setStringValue:previewString];
+
+	[oPreviewPanel setPreviewString:previewString];
+}
+
+- (NSWindow *)previewPanel
+{
+	return [oPreviewPanel window];
 }
 
 - (void)setColor:(XAP_Toolbar_Id)tlbrid
@@ -1628,7 +1684,6 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 					[oFontSize setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
 
-					UT_ASSERT(szState);
 					if (szState)
 						{
 							NSString * selection = [NSString stringWithUTF8String:szState];
@@ -1649,6 +1704,10 @@ static XAP_CocoaToolPalette * s_instance = 0;
 									[oFontSize selectItemAtIndex:index];
 								}
 							[oFontSize setStringValue:selection];
+						}
+					else // mixed selection
+						{
+							[oFontSize setStringValue:@""];
 						}
 				}
 		}
