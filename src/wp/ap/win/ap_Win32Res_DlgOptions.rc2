@@ -65,6 +65,8 @@
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar		1038
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar		1039
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar		1040
+#define AP_RID_DIALOG_OPTIONS_LBL_BidiOptions			1041
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl		1042
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -185,6 +187,11 @@ FONT 8, "MS Sans Serif"
 BEGIN
 	AUTOCHECKBOX    "Enable smart quotes",
                     AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable, 7, 11, 300, 10
+	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_LBL_BidiOptions,
+					7, 29, 305, 30
+	CONTROL			"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
+					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+					15, 42, 291, 10
 END
 
 #endif /* RC_INVOKED */

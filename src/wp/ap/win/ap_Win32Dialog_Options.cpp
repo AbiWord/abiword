@@ -423,6 +423,17 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	case AP_RID_DIALOG_OPT_OTHER:
 		{
+			// Hidi Bidi Controls
+			HWND hwndBidiBox = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_LBL_BidiOptions);
+			HWND hwndBidiChk = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl);
+			ShowWindow( hwndBidiBox, SW_HIDE);
+			ShowWindow( hwndBidiChk, SW_HIDE);
+#ifdef BIDI_ENABLED
+			ShowWindow( hwndBidiBox, SW_SHOW);
+			ShowWindow( hwndBidiChk, SW_SHOW);
+			_DS(OPTIONS_LBL_BidiOptions,			DLG_Options_Label_BiDiOptions);
+			_DS(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
+#endif					
 			_DS(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
 		}
 		break;
@@ -491,6 +502,10 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	case AP_RID_DIALOG_OPTIONS_COMBO_UNITS:
 		return 0;
+
+#ifdef BIDI_ENABLED
+	case AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl:	_enableDisableLogic(id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);	return 0;
+#endif
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for sub-dialog\n",wId));
@@ -614,7 +629,13 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	case id_CHECK_SMART_QUOTES_ENABLE:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(OTHER_INDEX),id_CHECK_SMART_QUOTES_ENABLE),value);
 		return;
-		
+
+#ifdef BIDI_ENABLED
+	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(OTHER_INDEX),id_CHECK_OTHER_DEFAULT_DIRECTION_RTL),value);
+		return;
+#endif
+
 	default:
 //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -643,6 +664,9 @@ DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellNumbers);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellInternet);
 
 DEFINE_GET_SET_BOOL(OTHER_INDEX,SmartQuotesEnable);
+#ifdef BIDI_ENABLED
+DEFINE_GET_SET_BOOL(OTHER_INDEX,OtherDirectionRtl);
+#endif
 
 DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 

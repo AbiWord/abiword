@@ -1511,6 +1511,8 @@ void fp_Line::splitRunsAtSpaces(void)
 
 UT_sint32 fp_Line::_createMapOfRuns()
 {
+	UT_uint32 i=0;
+
 	if(!m_iRunsRTLcount)
 	{
 		//UT_DEBUGMSG(("_createMapOfRuns: ltr line only\n"));
@@ -1564,7 +1566,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		if(!m_iRunsLTRcount)
 		{
 			//UT_DEBUGMSG(("_createMapOfRuns: rtl line only\n"));			
-			for(UT_uint32 i = 0; i < count/2; i++)
+			for(i = 0; i < count/2; i++)
 			{
 				s_pMapOfRuns[i]= count - i - 1;
 				s_pMapOfRuns[count - i - 1] = i;
@@ -1589,7 +1591,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			else
 				s_pMapOfRuns[0] = (iRunDirection) ? !RTLdominant : RTLdominant;
 				
-			for (UT_uint32 i=1; i < count; i++)
+			for (i=1; i < count; i++)
 			{
 				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 				iRunDirection = pRun->getDirection();
@@ -1649,7 +1651,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
         	//UT_DEBUGMSG(("pre-map1 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
         	//now we can do the reorganisation
-        	for (UT_uint32 i=0; i < count; i++)
+        	for (i=0; i < count; i++)
         	{
 				if(s_pMapOfRuns[i] != 0) //foreign direction of text
 				{
@@ -1677,7 +1679,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
         if(RTLdominant) //we have to switch all the runs around the centre.
 		{
-            for (UT_uint32 i = 0; i < count/2; i++)
+            for (i = 0; i < count/2; i++)
 			{
                 UT_ASSERT((count - i - 1) < count);
                 temp = s_pMapOfRuns[i];

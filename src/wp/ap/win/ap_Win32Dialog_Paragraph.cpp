@@ -310,6 +310,15 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 		{
 			m_hwndSpacing = hWnd;
 
+			// Hide Bidi Check Box unless required
+			{
+				HWND hwndBidi = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_CHECK_BIDI);
+				ShowWindow(hwndBidi,SW_HIDE);
+#ifdef BIDI_ENABLED
+				ShowWindow(hwndBidi,SW_SHOW);
+#endif
+			}
+
 			// localize controls
 			_DS(PARA_TEXT_ALIGN,		DLG_Para_LabelAlignment);
 			_DS(PARA_TEXT_INDENT,		DLG_Para_LabelIndentation);
@@ -322,6 +331,9 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PARA_TEXT_AFTER,		DLG_Para_LabelAfter);
 			_DS(PARA_TEXT_LEAD,			DLG_Para_LabelLineSpacing);
 			_DS(PARA_TEXT_AT,			DLG_Para_LabelAt);
+#ifdef BIDI_ENABLED
+			_DS(PARA_CHECK_BIDI,		DLG_Para_DomDirection);
+#endif
 
 			// populate fixed choices
 			{
@@ -355,6 +367,9 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_SST(PARA_EDIT_BEFORE,	id_SPIN_BEFORE_SPACING);
 			_SST(PARA_EDIT_AFTER,	id_SPIN_AFTER_SPACING);
 			_SST(PARA_EDIT_AT,		id_SPIN_SPECIAL_SPACING);
+#ifdef BIDI_ENABLED
+			_SST(PARA_CHECK_BIDI,	id_CHECK_DOMDIRECTION);
+#endif
 		}
 		break;
 
@@ -505,6 +520,9 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	_CHECK(PARA_CHECK_BREAK,	id_CHECK_PAGE_BREAK);
 	_CHECK(PARA_CHECK_SUPPRESS,	id_CHECK_SUPPRESS);
 	_CHECK(PARA_CHECK_NOHYPHEN,	id_CHECK_NO_HYPHENATE);
+#ifdef BIDI_ENABLED
+	_CHECK(PARA_CHECK_BIDI,		id_CHECK_DOMDIRECTION);
+#endif
 
 	case IDCANCEL:						// also AP_RID_DIALOG_PARA_BTN_CANCEL
 		m_answer = a_CANCEL;
