@@ -28,9 +28,6 @@
 #include "fp_Line.h"
 
 #include "ut_string.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -453,7 +450,10 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower)
 		len = strlen(roman);
 		while (--len >= 0) 
 		{
-			roman[len] = tolower(roman[len]);
+		        UT_sint32 r = roman[len];
+		        if( (r >= (UT_sint32) 'A') && (r <= (UT_sint32) 'Z'))
+			       r = r + 64;
+			roman[len] = (char) r;
 		}
 	}
 
