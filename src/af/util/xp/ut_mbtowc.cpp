@@ -21,6 +21,7 @@
 #include <string.h>
 #include <limits.h>
 #include "ut_mbtowc.h"
+#include "ut_iconv.h"
 
 // UTF-8 can use up to 6 bytes
 #define MY_MB_LEN_MAX 6

@@ -19,6 +19,7 @@
 
 #include <string.h>
 #include "ut_wctomb.h"
+#include "ut_iconv.h"
 
 #if 0
 /*
