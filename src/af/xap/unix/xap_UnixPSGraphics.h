@@ -97,10 +97,11 @@ protected:
 	void			_emit_PrologMacros(void);
 	void			_emit_FontMacros(void);
 	void			_emit_SetFont(void);
-	void 			_emit_SetColor(UT_RGBColor& clr);
+	void 			_emit_SetColor(void);
 	
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;
+	UT_RGBColor		m_currentColor;
 	ps_Generate *	m_ps;
 	const char *	m_szFilename;
 	const char *	m_szTitle;

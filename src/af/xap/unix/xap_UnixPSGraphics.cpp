@@ -61,6 +61,10 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 	m_bIsFile = bIsFile;
 	m_ps = 0;
 	m_fm = fontManager;
+
+	m_currentColor.m_red = 0;
+	m_currentColor.m_grn = 0;
+	m_currentColor.m_blu = 0;
 }
 
 PS_Graphics::~PS_Graphics()
@@ -160,7 +164,16 @@ UT_uint32 PS_Graphics::getResolution() const
 
 void PS_Graphics::setColor(UT_RGBColor& clr)
 {
-	_emit_SetColor(clr);
+	if (clr.m_red == m_currentColor.m_red &&
+		clr.m_grn == m_currentColor.m_grn &&
+		clr.m_blu == m_currentColor.m_blu)
+		return;
+
+	m_currentColor.m_red = clr.m_red;
+	m_currentColor.m_grn = clr.m_grn;
+	m_currentColor.m_blu = clr.m_blu;
+	
+	_emit_SetColor();
 }
 
 DG_Font* PS_Graphics::getGUIFont()
@@ -617,15 +630,15 @@ void PS_Graphics::_emit_SetFont(void)
 	m_ps->writeBytes(buf);
 }
 
-void PS_Graphics::_emit_SetColor(UT_RGBColor& clr)
-{
+void PS_Graphics::_emit_SetColor(void)
+{	
 	// We're printing 8 digits of color... do we want to
 	// be any more precise, or perhaps less?  8 was a
 	// completely arbitrary decision on my part.  :)
 	char buf[128];
 	sprintf(buf,"%.8f %.8f %.8f setrgbcolor\n",
-			((float) clr.m_red / 255.0),
-			((float) clr.m_grn / 255.0),
-			((float) clr.m_blu / 255.0));
+			((float) m_currentColor.m_red / 255.0),
+			((float) m_currentColor.m_grn / 255.0),
+			((float) m_currentColor.m_blu / 255.0));
 	m_ps->writeBytes(buf);
 }
