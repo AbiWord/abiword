@@ -8715,6 +8715,15 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 			bDoExtraBlock = true;
 		}
 	}
+//
+// Can't insert into a TOC 
+//
+	if(getDoc()->isTOCAtPos(m_dposPaste) && 
+	   getDoc()->isTOCAtPos(m_dposPaste-1) && 
+		(pts != PTX_EndTOC))
+	{
+		m_dposPaste--;
+	}
 	if(bDoExtraBlock && (pts == PTX_SectionTable))
 	{
 		getDoc()->insertStrux(m_dposPaste,PTX_Block);

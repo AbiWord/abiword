@@ -10328,13 +10328,9 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 		return false;
 	}
 //
-// Can't place point between TOC and endToc
+// Can't place point at endToc
 //
-	if( m_pDoc->isTOCAtPos(pos-1))
-	{
-		return false;
-	}
-	if( m_pDoc->isTOCAtPos(pos-2))
+	if( m_pDoc->isTOCAtPos(pos-1) && m_pDoc->isTOCAtPos(pos))
 	{
 		return false;
 	}

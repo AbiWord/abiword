@@ -473,6 +473,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	if((pfsContainer->getStruxType() == PTX_SectionTOC) && (pts != PTX_EndTOC))
 	{
 		bFoundContainer = _getStruxFromPosition(pfsContainer->getPos(),&pfsContainer);
+		dpos--;
 	}
 	if(isEndFootnote(pfsContainer))
 	{
