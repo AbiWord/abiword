@@ -95,6 +95,9 @@ ifeq ($(OS_RELEASE_MAJOR), 2)
 	DL_LIBS = dl
 endif
 
+# Compiler option to link statically (to avoid run-time linkage)
+STATIC_FLAGS		= -static
+
 ABI_NATIVE	= unix
 ABI_FE		= Unix
 

@@ -79,6 +79,9 @@ PORT_FLAGS		+=
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 DL_LIBS			= 
 
+# Compiler option to link statically (to avoid run-time linkage)
+STATIC_FLAGS		= -static
+
 ABI_NATIVE	= unix
 ABI_FE		= Unix
 
