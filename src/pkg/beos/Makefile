@@ -26,16 +26,15 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 PKGBASENAME=AbiSuite-$(ABI_BUILD_VERSION)
 
-default:	$(ABI_DIST_TARGET)
+distribution:	$(ABI_DIST_TARGET)
 
 zip:
 	@echo "Building binary zip file..."
-	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
-	@rm -rf $(DIST)/tmp
-	@$(subst xxxx,$(DIST)/tmp,$(VERIFY_DIRECTORY))
-	@(cd $(OUTDIR); tar -cf - AbiSuite) | (cd $(DIST)/tmp;          tar -xf -)
-	@(cd $(OUTDIR); tar -cf - bin)      | (cd $(DIST)/tmp/AbiSuite; tar -xf -)
-	(cd $(DIST);				\
-		mv tmp $(PKGBASENAME);		\
-		zip -r $(PKGBASENAME) $(PKGBASENAME)
-		rm -rf $(PKGBASENAME))
+	$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
+	rm -rf $(DIST)/tmp
+	$(subst xxxx,$(DIST)/tmp,$(VERIFY_DIRECTORY))
+	(cd $(OUTDIR); tar -cf - AbiSuite) | (cd $(DIST)/tmp;          tar -xf -)
+	(cd $(OUTDIR); tar -cf - bin)      | (cd $(DIST)/tmp/AbiSuite; tar -xf -)
+	(cd $(DIST)/tmp; mv AbiSuite $(PKGBASENAME))
+	(cd $(DIST)/tmp; tar -czf ../$(PKGBASENAME).tar.gz $(PKGBASENAME))
+	(cd $(DIST); rm -rf tmp)

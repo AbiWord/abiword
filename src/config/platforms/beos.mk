@@ -87,4 +87,11 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 ABI_NATIVE	= beos
 ABI_FE		= BeOS
 
+##################################################################
+## ABIPKGDIR defines the directory containing the Makefile to use to
+## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)
+## This is relative to $(ABI_ROOT)/src/pkg
+
+ABIPKGDIR	= beos
+
 # End of beos defs

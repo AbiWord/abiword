@@ -62,7 +62,8 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
-	@$(subst xxxx,$(RESOURCES),$(ATTACH_RESOURCE))
+	@xres -o $@ $(RESOURCES)
+	@listres $@
 
 build:: $(TARGETS)
 
