@@ -265,6 +265,10 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	{
 		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
 	}
+	if(m_pView)
+	{
+		m_pView->notifyListeners(AV_CHG_ALL);
+	}
 	return UT_OK;
 
 Cleanup:

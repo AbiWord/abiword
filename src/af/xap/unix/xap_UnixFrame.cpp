@@ -341,7 +341,7 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		GR_Graphics * pG = pView->getGraphics();
 		pG->doRepaint(&rClip);
 	}
-	return TRUE;
+	return FALSE;
 }
 
 /*!

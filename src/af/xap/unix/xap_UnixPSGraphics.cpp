@@ -84,7 +84,7 @@ UT_uint32 _scaleFont(PSFont * pFont, UT_uint32 units)
 	XftFaceLocker locker(pXftFont);
 
 	UT_uint32 retval = units * pFont->getSize() / locker.getFace()->units_per_EM;
-	UT_DEBUGMSG(("_scaleFont(%u) -> %u\n", units, retval));
+	xxx_UT_DEBUGMSG(("_scaleFont(%u) -> %u\n", units, retval));
 
 	return retval;
 #else
@@ -612,7 +612,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			font_emitted = true;
 #endif
 
-			UT_DEBUGMSG(("ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n"));
+			xxx_UT_DEBUGMSG(("ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n"));
 			
 			// What? !!  That means that if we don't use an unicode locale,
 			// we can not print accented characters!  Why?
@@ -941,10 +941,10 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_DEBUGMSG(("_drawCharsUTF8\n"));
+	xxx_UT_DEBUGMSG(("_drawCharsUTF8\n"));
 	const encoding_pair*  enc = 0;
 	UT_AdobeEncoding* ae = 0;
-	
+	UT_sint32 curwidth = 0;
 	UT_ASSERT(m_pCurrentFont);
 
 	enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
@@ -969,6 +969,20 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 	const UT_UCSChar * pS = pChars+iCharOffset;
 	const UT_UCSChar * pEnd = pS+iLength;
 	UT_UCSChar currentChar;
+
+#if 1
+//
+// Debugging code. Disable when printing works.
+//
+	UT_String sChar;
+	const UT_UCSChar * pT = pS;
+	for(UT_uint32 j=0; j< iLength; j++)
+	{
+		sChar += (char) *pT;
+		pT++;
+	}
+	UT_DEBUGMSG(("PSGraphics UTF8 draw| %s x %d y %d \n",sChar.c_str(),xoff,yoff));
+#endif
 
 	//when printing 8-bit chars we enclose them in brackets, but 16-bit
 	//chars must be printed by name without brackets
@@ -997,12 +1011,16 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			{
 				open_bracket = false;
 				sprintf((char *) pD,") %d %d MS\n",xoff,yoff);
+				xoff += curwidth;
+				curwidth =0;
 				m_ps->writeBytes(buf);
 				pD = buf;
 			}
 			else if(!using_names)
 			{
+				xoff += curwidth;
 				sprintf((char *) pD," %d %d MV ",xoff,yoff);
+				curwidth =0;
 				pD = buf + strlen(buf);
 				using_names = true;
 			}
@@ -1026,14 +1044,21 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			strcpy(pD, (const char*)glyph);
 			pD += strlen(glyph);
 			strcpy(pD, " GS ");
+			xoff += curwidth;
+			curwidth = 0;
 			pD += 4;
 		}
 		else
 		{
-			UT_DEBUGMSG(("char < 255\n"));
+			xxx_UT_DEBUGMSG(("char < 255\n"));
 
 			if(!open_bracket)
 			{
+//
+// mark this point as where the text needs to be drawn from.
+//
+				xoff += curwidth;
+				curwidth =0;
 				*pD++ = '(';
 				open_bracket = true;
 				using_names = false;
@@ -1056,6 +1081,8 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			*pD++ = (char)currentChar;
 #endif
 		}
+		curwidth += measureUnRemappedChar(currentChar);
+		xxx_UT_DEBUGMSG((" width %d curwidth %d xoff %d curwidth+xoff %d char %c \n", measureUnRemappedChar(currentChar),curwidth, xoff,xoff+curwidth,(char) currentChar));
 		pS++;
 	}
 	if(open_bracket)
@@ -1086,7 +1113,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 
 	// emit a change in line width
 	_emit_SetLineWidth();
-	
+	UT_ASSERT(y1 < 400000);
 	char buf[LINE_BUFFER_SIZE];
 //	UT_sint32 nA = getFontAscent();
 	g_snprintf(buf,sizeof (buf),"%d %d %d %d ML\n", _UD(x2), _UD(y2), _UD(x1), _UD(y1));
@@ -1470,6 +1497,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
             
             if(!bFound)
 #ifdef USE_XFT
+				UT_DEBUGMSG(("_ps: Adding font %s tp list to embed \n",pName.c_str()));
     		    vec.addItem(UT_strdup(pName.c_str()));
 #else
     		    vec.addItem((void*) pName);
@@ -1535,7 +1563,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 		    	continue;
             
             vec.addItem((void*)pName);
-
+			UT_DEBUGMSG(("PS: Aboiut to embed font %s \n",pName));
     		// Make sure the font file will open, maybe it disappeared...
 			UT_ASSERT(m_ps);
 			if (!unixfont->embedInto(*m_ps))

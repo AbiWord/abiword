@@ -543,7 +543,17 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	UT_sint32 offy =0;
 	UT_sint32 offx =0;
 	fp_Column * pCol = (fp_Column *) pBroke->getColumn();
-	pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+	fp_Page * pPage = pBroke->getPage(); 
+	pPage->getScreenOffsets(pCol, col_x,col_y);
+	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+//
+// Now correct for printing
+//
+		UT_sint32 xdiff,ydiff;
+		pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
+		col_y = col_y - ydiff;
+	}
 	if(pBroke->getMasterTable() && !bNested)
 	{
 		offx = pBroke->getMasterTable()->getX();
