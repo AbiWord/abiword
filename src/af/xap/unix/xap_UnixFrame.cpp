@@ -798,57 +798,81 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 	// TODO: or text/html handler in a global registry
 
 	// ORDER:
+	// Use value of environment variable BROWSER, if valid; otherwise:
 	// 1) konqueror
 	// 2) mozilla
 	// 3) netscape
 	// 4) kdehelp
 	// 5) lynx in an xterm
 
-	if(progExists("konqueror"))
+  	char *env_browser = getenv ("BROWSER");
+  	if (env_browser)
+  	{
+		if(progExists(env_browser))
+		{
+			if (strstr (env_browser, "netscape"))
+			{
+				fmtstring = g_strdup_printf("%s -remote openURL\\('%%s'\\) || %s '%%s' &", env_browser, env_browser);
+				if (fmtstring) execstring = g_strdup_printf(fmtstring, szURL, szURL);
+			}
+			else
+			{
+				fmtstring = g_strdup_printf("%s '%%s' &", env_browser);
+				if (fmtstring) execstring = g_strdup_printf(fmtstring, szURL);
+			}
+		}
+  	}
+	if (fmtstring == 0)
 	{
-		fmtstring = "konqueror '%s' &";
-		execstring = g_strdup_printf(fmtstring, szURL);
+		if(progExists("konqueror"))
+		{
+			fmtstring = "konqueror '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
+		else if(progExists("galeon"))
+		{
+		  	fmtstring = "galeon '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
+		// Anyone know how to find out where it might be, regardless?
+		else if(progExists("mozilla"))
+		{
+		        fmtstring = "mozilla '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
+		else if(progExists("netscape"))
+		{
+			// Try to connect to a running Netscape, if not, start new one
+			fmtstring = "netscape -remote openURL\\('%s'\\) || netscape '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL, szURL);
+		}
+		else if(progExists("khelpcenter"))
+		{
+			fmtstring = "khelpcenter '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
+		else if(progExists("gnome-help-browser"))
+		{
+			fmtstring = "gnome-help-browser '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
+		else if(progExists("lynx"))
+		{
+			fmtstring = "xterm -e lynx '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
+		else if(progExists("w3m"))
+		{
+			fmtstring = "xterm -e w3m '%s' &";
+	 		execstring = g_strdup_printf(fmtstring, szURL);
+	 	}
 	}
-	else if(progExists("galeon"))
-	{
-	  	fmtstring = "galeon '%s' &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	// Anyone know how to find out where it might be, regardless?
-	else if(progExists("mozilla"))
-	{
-	        fmtstring = "mozilla '%s' &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("netscape"))
-	{
-		// Try to connect to a running Netscape, if not, start new one
-		fmtstring = "netscape -remote openURL\\('%s'\\) || netscape '%s' &";
-		execstring = g_strdup_printf(fmtstring, szURL, szURL);
-	}
-	else if(progExists("khelpcenter"))
-	{
-		fmtstring = "khelpcenter '%s' &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("gnome-help-browser"))
-	{
-		fmtstring = "gnome-help-browser '%s' &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("lynx"))
-	{
-		fmtstring = "xterm -e lynx '%s' &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("w3m"))
-	{
-		fmtstring = "xterm -e w3m '%s' &";
- 		execstring = g_strdup_printf(fmtstring, szURL);
- 	}
 
-	system(execstring);
-	g_free (execstring);
+	if (execstring)
+	{
+		system (execstring);
+		g_free (execstring);
+	}
 	return false;
 }
 
