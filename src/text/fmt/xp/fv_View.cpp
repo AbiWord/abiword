@@ -6455,8 +6455,17 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 	}
 	else if(applyTo == FORMAT_TABLE_TABLE)
 	{
+		UT_DEBUGMSG(("Doing apply FORMAT_TABLE_TABLE \n"));
 		// Loop through the table cells to adjust their formatting		
 		// get the number of rows and columns in the current table
+
+// First set the table format
+
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,properties,PTX_SectionTable);	
+
+// Now clear these away from the cell's so they'll inherit the table's 
+// properties.
+
 		UT_sint32 numRows;
 		UT_sint32 numCols;
 		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
@@ -6477,10 +6486,6 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 					UT_DEBUGMSG(("MARCM: Yikes! There is no cell at position (%dx%d)!\n", j, i));
 			}
 		}
-
-// Now set the table format
-
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,properties,PTX_SectionTable);	
 	}
 	else
 	{

@@ -63,6 +63,10 @@
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
 								 const char * color, PP_PropertyMap::Line & line);
 
+
+static void s_border_properties_cell (const char * border_color, const char * border_style, const char * border_width,
+								 const char * color, PP_PropertyMap::Line & line, const PP_PropertyMap::Line lineTable);
+
 static void s_background_properties (const char * pszBgStyle, const char * pszBgColor,
 									 const char * pszBackgroundColor,
 									 PP_PropertyMap::Background & background);
@@ -749,7 +753,7 @@ void fl_TableLayout::_lookupProperties(void)
 {
 
 //  Find the folded Level of the strux
-	bool bFolded = (isHidden() == FP_HIDDEN_FOLDED);
+
 	lookupFoldedLevel();
 	if(getFoldedLevel()>0)
 	{
@@ -1118,6 +1122,7 @@ void fl_TableLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("bot-style",       pszBorderStyle);
 	pSectionAP->getProperty ("bot-thickness",   pszBorderWidth);
 
+
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom);
 
 	pszBorderColor = NULL;
@@ -1149,6 +1154,7 @@ void fl_TableLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("top-thickness",   pszBorderWidth);
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop);
+
 
 	/* table fill
 	 */
@@ -2006,7 +2012,9 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("bot-style",       pszBorderStyle);
 	pSectionAP->getProperty ("bot-thickness",   pszBorderWidth);
 
-	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom);
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
+
+	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom,pTL->getBottomStyle());
 
 	pszBorderColor = NULL;
 	pszBorderStyle = NULL;
@@ -2016,7 +2024,8 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("left-style",      pszBorderStyle);
 	pSectionAP->getProperty ("left-thickness",  pszBorderWidth);
 
-	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft);
+
+	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft,pTL->getLeftStyle());
 
 	pszBorderColor = NULL;
 	pszBorderStyle = NULL;
@@ -2026,7 +2035,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("right-style",     pszBorderStyle);
 	pSectionAP->getProperty ("right-thickness", pszBorderWidth);
 
-	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight);
+	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight,pTL->getRightStyle());
 
 	pszBorderColor = NULL;
 	pszBorderStyle = NULL;
@@ -2036,7 +2045,8 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("top-style",       pszBorderStyle);
 	pSectionAP->getProperty ("top-thickness",   pszBorderWidth);
 
-	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop);
+	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop,pTL->getTopStyle());
+
 
 	/* cell fill
 	 */
@@ -2265,4 +2275,86 @@ static void s_border_properties (const char * border_color, const char * border_
 			double thickness = UT_LAYOUT_RESOLUTION;
 			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
 		}
+}
+
+/*!
+ * Like above except if the property is not defined from the const char's
+ * It's inherited from the lineTable class.
+ */
+static void s_border_properties_cell (const char * border_color, 
+									  const char * border_style, 
+									  const char * border_width,
+									  const char * color, 
+									  PP_PropertyMap::Line & line,
+									  const PP_PropertyMap::Line lineTable
+									  )
+{
+	/* cell-border properties:
+	 * 
+	 * (1) color      - defaults to value of "color" property
+	 * (2) line-style - defaults to solid (in contrast to "none" in CSS)
+	 * (3) thickness  - defaults to 1 layout unit (??, vs "medium" in CSS)
+	 */
+	line.reset ();
+	
+	PP_PropertyMap::TypeColor t_border_color = PP_PropertyMap::color_type (border_color);
+	if (t_border_color)
+	{
+		line.m_t_color = t_border_color;
+		if (t_border_color == PP_PropertyMap::color_color)
+			UT_parseColor (border_color, line.m_color);
+	}
+	else if (color)
+	{
+		PP_PropertyMap::TypeColor t_color = PP_PropertyMap::color_type (color);
+
+		line.m_t_color = t_color;
+		if (t_color == PP_PropertyMap::color_color)
+			UT_parseColor (color, line.m_color);
+	}
+	else if(lineTable.m_t_color)
+	{
+		line.m_t_color = lineTable.m_t_color;
+		line.m_color = lineTable.m_color;
+	}
+	line.m_t_linestyle = PP_PropertyMap::linestyle_type (border_style);
+	if (!line.m_t_linestyle)
+	{ 
+		if(lineTable.m_t_linestyle)
+		{
+			line.m_t_linestyle = lineTable.m_t_linestyle;
+		}
+		else
+		{
+			line.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		}
+	}
+	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
+	if (line.m_t_thickness == PP_PropertyMap::thickness_length)
+	{
+		if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
+   		{
+			double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+		}
+		else
+			line.m_thickness = UT_convertToLogicalUnits (border_width);
+	
+		if (!line.m_thickness)
+		{
+			double thickness = UT_LAYOUT_RESOLUTION;
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+		}
+	}
+	else if(lineTable.m_t_thickness ==  PP_PropertyMap::thickness_length)
+   	{
+		line.m_thickness = lineTable.m_thickness;
+		line.m_t_thickness = lineTable.m_t_thickness;
+	}
+	else //
+	{
+		line.m_t_thickness = PP_PropertyMap::thickness_length;
+		double thickness = UT_LAYOUT_RESOLUTION;
+		line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+	}
 }
