@@ -115,7 +115,7 @@ UT_Bool AP_Dialog_Replace::findNext(char * string)
 	
 	// call view to do the work
 	UT_Bool result = m_pView->findNext(unicodeString, UT_TRUE);
-
+ 
 	if (unicodeString)
 		free(unicodeString);
 

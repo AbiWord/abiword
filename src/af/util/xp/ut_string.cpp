@@ -228,8 +228,7 @@ UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
 	UT_ASSERT(src);
 	
 	UT_UCSChar * 	d = dest;
-	UT_UCSChar *	s = src;
-	UT_uint32 		i = 0;
+	UT_UCSChar *	s = (UT_UCSChar *) src;
 
 	while (*s != NULL)
 		*d++ = *s++;
@@ -237,7 +236,7 @@ UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
 
 	return dest;
 }
-
+ 
 // note that dest should be twice the size of src, and zeroed,
 // to accept the proper narrow src values
 UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
@@ -246,8 +245,7 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	UT_ASSERT(src);
 	
 	UT_UCSChar * 	d = dest;
-	char *			s = src;
-	UT_uint32 		i = 0;
+	char *			s = (char *) src;
 
 	while (*s != NULL)
 		*d++ = *s++;
