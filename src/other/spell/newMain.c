@@ -4,7 +4,7 @@
 #include "ispell.h"
 #include "sp_spell.h"
 #include "iconv.h"
-
+#include "ut_types.h"
 
 
 /***************************************************************************/
@@ -234,7 +234,7 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
 	toucs2(word16,length);
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, &In, &len_in, &Out, &len_out);
+        iconv(translate_in, (ICONV_CONST char **)&In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
     
@@ -282,7 +282,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
 	toucs2(word16,length);	
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, &In, &len_in, &Out, &len_out);
+        iconv(translate_in, (ICONV_CONST char **)&In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
    
@@ -337,7 +337,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
 
             len_in = l;
             len_out = sizeof(unsigned short) * l;
-            iconv(translate_out, &In, &len_in, &Out, &len_out);	    
+            iconv(translate_out, (ICONV_CONST char **)&In, &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
 	    fromucs2(sg->word[c], (unsigned short*)Out-ucs2);
         }

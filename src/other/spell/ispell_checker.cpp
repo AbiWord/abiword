@@ -170,7 +170,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
 	toucs2(word16,length);
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, &In, &len_in, &Out, &len_out);
+        iconv(translate_in, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
         *Out = '\0';
     }
     
@@ -220,7 +220,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 		toucs2(word16,length);	
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, &In, &len_in, &Out, &len_out);
+        iconv(translate_in, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
         *Out = '\0';
     }
    
@@ -278,7 +278,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 
             len_in = l;
             len_out = sizeof(unsigned short) * l;
-            iconv(translate_out, &In, &len_in, &Out, &len_out);	    
+            iconv(translate_out, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
 			fromucs2(sg->word[c], (unsigned short*)Out-ucs2);
         }
@@ -297,7 +297,7 @@ ISpellChecker::requestDictionary(const char *szLang)
 	// by now I just pick american.hash dictionary
 	const char *hashname = "american.hash";
 
-    if (linit(hashname) < 0)
+    if (linit(const_cast<ICONV_CONST char *>(hashname)) < 0)
     {
         /* TODO gripe -- could not load the dictionary */
         return false;
@@ -332,7 +332,7 @@ ISpellChecker::requestDictionary(const char *szLang)
             }
         }
     }
-    try_autodetect_charset(hashname);
+    try_autodetect_charset(const_cast<ICONV_CONST char *>(hashname));
 
     /* Test for known "hashname"s */
     if(translate_in == (iconv_t)-1)
