@@ -177,14 +177,51 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	if (!m_bStartPage)
 		return;
 
-	UT_UTF8String utf8 (pChars + iCharOffset, iLength);
+	// keep x values (including widths) in layout units to minimize rounding errors, tdu as late as possible
+	yoff = scale_ydir (tdu(yoff + getFontAscent()));
 
 	// push a graphics state & save it. then set the font
 	gnome_print_gsave (m_gpc);
 	gnome_print_setfont (m_gpc, m_pCurrentFont);
 
-	gnome_print_moveto(m_gpc, tdu(xoff), scale_ydir (tdu(yoff + getFontAscent())));
-	gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
+	if (!pCharWidths) {
+		// short circuit if no character widths given. at least fields use this
+		UT_UTF8String utf8 (pChars + iCharOffset, iLength);
+		gnome_print_moveto (m_gpc, tdu (xoff), yoff);
+		gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
+		return;
+	}
+
+	// this following nastiness is needed for justified text, since it now
+	// uses charwidths to specify how large a space or tab character should be
+	// this means that we must emit moveto()s instead of spaces
+	UT_UTF8String utf8;
+	bool last_was_space = false;
+	UT_sint32 advance = 0, prevAdvance = 0;
+
+	for (UT_sint32 i = 0; i < iLength; i++) {
+		UT_UCS4Char ch = pChars[iCharOffset + i];
+		advance += pCharWidths [i];
+
+		if (UT_UCS4_isspace (ch)) { // not sure if this needs to be a UCS4 space test or just an ASCII space test...
+			if (!last_was_space && !utf8.empty()) { // draw non-space chars at every flush
+				gnome_print_moveto (m_gpc, tdu (xoff + prevAdvance), yoff);
+				gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
+				utf8.clear ();
+			} else
+				last_was_space = true;		   
+			prevAdvance = advance;
+		} else {
+			last_was_space = false;
+			utf8.appendUCS4 (&ch, 1);
+		}
+	}
+
+	// chars remain - flush buffer
+	if (!utf8.empty ()) {
+		gnome_print_moveto (m_gpc, tdu (xoff + prevAdvance), yoff);
+		gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
+	}
 
 	// pop the graphics state
 	gnome_print_grestore (m_gpc);
