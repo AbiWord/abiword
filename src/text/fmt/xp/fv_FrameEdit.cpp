@@ -929,6 +929,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		{
 			return false;
 		}
+		posAtXY = pBL->getPosition();
 //
 // Need this for offset to column
 //
