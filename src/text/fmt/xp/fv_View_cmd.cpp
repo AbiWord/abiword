@@ -447,7 +447,15 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		free(props_in);
 
 		_ensureThatInsertionPointIsOnScreen();
+
+		//special handling is required for delete in revisions mode
+		//where we have to move the insertion point
+		if(isMarkRevisions())
+		{
+			_charMotion(bForward,count);
+		}
 	}
+
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
