@@ -2289,6 +2289,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 	m_pDoc->undoCmd(count);
 	allowChangeInsPoint();
 	m_pDoc->setDontImmediatelyLayout(false);
+
 //
 // Now do a general update to make everything look good again.
 //
@@ -2304,7 +2305,13 @@ void FV_View::cmdUndo(UT_uint32 count)
 // 		_setPoint(getSavedPosition());
 // 		clearSavedPosition();
 // 	}
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
 	// Move insertion point out of field run if it is in one
 	//
 	_charMotion(true, 0);
@@ -2314,15 +2321,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 //
 	notifyListeners(AV_CHG_ALL);
 
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
 
 	_updateInsertionPoint();
-
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
-	m_iPieceTableState = 0;
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -2354,6 +2354,10 @@ void FV_View::cmdRedo(UT_uint32 count)
 // 	}
 	m_pDoc->setDontImmediatelyLayout(false);
 
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
@@ -2366,10 +2370,6 @@ void FV_View::cmdRedo(UT_uint32 count)
 	notifyListeners(AV_CHG_ALL);
 
 	_updateInsertionPoint();
-
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
-	m_iPieceTableState = 0;
 }
 
 UT_Error FV_View::cmdSave(void)
@@ -2421,14 +2421,15 @@ void FV_View::cmdCut(void)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	_generalUpdate();
-
-
-	_fixInsertionPointCoords();
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
+
+	_generalUpdate();
+
+
+	_fixInsertionPointCoords();
 }
 
 // bToClipboard is true if you want to copy to the CLIPBOARD

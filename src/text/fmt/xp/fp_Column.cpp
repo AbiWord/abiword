@@ -246,7 +246,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	UT_sint32 my_yoff = 0;
 	fp_Container * pCon = (fp_Container *) this;
 	fp_Container * pPrev = NULL;
-	while(!pCon->isColumnType())
+	while(pCon && !pCon->isColumnType())
 	{
 		my_xoff += pCon->getX();
 		UT_sint32 iycon = pCon->getY();
@@ -297,8 +297,16 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		pPrev = pCon;
 		pCon = pCon->getContainer();
 	}
-	xoff = pCon->getX() + my_xoff + pContainer->getX();
-	yoff = pCon->getY() + my_yoff + pContainer->getY();
+	if(pCon)
+	{
+		xoff = pCon->getX() + my_xoff + pContainer->getX();
+		yoff = pCon->getY() + my_yoff + pContainer->getY();
+	}
+	else
+	{
+		xoff = 0;
+		yoff = 0;
+	}
 }
 
 /*!

@@ -253,6 +253,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 	errorCode = pie->importFile(szFilename);
 	delete pie;
+	m_bLoading = false;
 
 	if (errorCode)
 	{
@@ -262,7 +263,6 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	}
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
-	m_bLoading = false;
 	updateFields();
 
 	if(markClean)

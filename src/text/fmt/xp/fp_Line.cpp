@@ -178,11 +178,19 @@ UT_sint32  fp_Line::getColumnGap(void)
 fp_Container * fp_Line::getColumn(void)
 {
 	fp_Container * pCon = getContainer();
+	if(pCon == NULL)
+	{
+		return NULL;
+	}
 	if(pCon->getContainerType() != FP_CONTAINER_CELL)
 	{
 		return pCon->getColumn();
 	}
 	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	if(pTab == NULL)
+	{
+		return NULL;
+	}
 	UT_ASSERT(pTab->getContainerType() == FP_CONTAINER_TABLE);
 	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
 	if(pBroke == NULL)

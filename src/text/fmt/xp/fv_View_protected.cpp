@@ -378,6 +378,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 //
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+	m_pDoc->allowChangeInsPoint();
 	_generalUpdate();
 
 
@@ -411,6 +412,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 		m_pDoc->endUserAtomicGlob();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
+	m_pDoc->setDontChangeInsPoint();
 //
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 // with a bogus line-type property. We'll restore it later.
@@ -2689,11 +2691,16 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_fixInsertionPointCoords()
 {
-	if( getPoint() )
+	UT_sint32 x = 0;
+	if( getPoint()  )
 	{
-		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
+		_findPositionCoords(getPoint(), m_bPointEOL, x, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
 	}
-
+	if(x == 0)
+	{
+		return;
+	}
+	m_xPoint = x;
 	fp_Page * pPage = getCurrentPage();
 	UT_RGBColor * pClr = NULL;
 	if (pPage)
