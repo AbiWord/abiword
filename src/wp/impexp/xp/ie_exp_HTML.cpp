@@ -1165,17 +1165,6 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 			tagOpenClose (m_utf8_1, true);
 		}
 	
-	/* print header comment
-	 */
-	const UT_UTF8String delimiter(s_Delimiter);
-	tagComment (delimiter);
-	for (UT_uint32 hdri = 0; hdri < 3; hdri++)
-		{
-			m_utf8_1 = s_Header[hdri];
-			tagComment (m_utf8_1);
-		}
-	tagComment (delimiter);
-
 	/* open root element, i.e. <html>; namespace it if XHTML
 	 */
 	m_utf8_1 = "html";
@@ -1190,6 +1179,19 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	 */
 	m_utf8_1 = "head";
 	tagOpen (TT_HEAD, m_utf8_1);
+
+	/* print header comment
+	 * we insert them that let, because IE6 expect to find <HTML> root within
+	 * 6 lines.
+	 */
+	const UT_UTF8String delimiter(s_Delimiter);
+	tagComment (delimiter);
+	for (UT_uint32 hdri = 0; hdri < 3; hdri++)
+		{
+			m_utf8_1 = s_Header[hdri];
+			tagComment (m_utf8_1);
+		}
+	tagComment (delimiter);
 
 	/* we add a meta tag describing the document's charset as UTF-8
 	 * even with XHTML because Safari and Camino fail to recognize
