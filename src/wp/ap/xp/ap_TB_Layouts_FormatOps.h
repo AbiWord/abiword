@@ -57,11 +57,9 @@ BeginLayout(FormatOps)
         ToolbarItem(AP_TOOLBAR_ID_UNINDENT)
         ToolbarItem(AP_TOOLBAR_ID_INDENT)
 
-#if defined(HAVE_GNOME) || defined(__QNXNTO__)
      /* TODO: these should be moved out into the general public */
      Spacer()
      ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
      ToolbarItem(AP_TOOLBAR_ID_COLOR_FORE)
-#endif
 	
 EndLayout()
