@@ -15,8 +15,8 @@
 #include "ev_Menu_Actions.h"
 
 // for scandir - TODO: make me less unixy
-#include <unistd.h>
-#include <dirent.h>
+//win32 #include <unistd.h>
+//win32 #include <dirent.h>
 
 // HACK to not collide with perl DEBUG
 #ifdef DEBUG

@@ -1040,18 +1040,10 @@ UT_contextGlyph::UT_contextGlyph()
 			s_smart_quotes[i].pLang = lang.getCodeFromCode(s_smart_quotes[i].pLang);
 		}
 
-		const XML_Char *default_utf8;
-		UT_GrowBuf gb;
-		bool bNoErr = XAP_App::getApp()->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault), &default_utf8);
-		UT_ASSERT( bNoErr );
+		// retrieve the default glyph and any other preferences we
+		// depend on
+		_prefsListener(XAP_App::getApp(), NULL, NULL, NULL);
 		
-		UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
-
-		if(gb.getPointer(0))
-			s_cDefaultGlyph = *(gb.getPointer(0));
-		else
-			s_cDefaultGlyph = '?';
-
 		// add a listener to the preferences, so that we know when the
 		// user changed his/her mind
 		XAP_App::getApp()->getPrefs()->addListener(_prefsListener,NULL);
@@ -1073,7 +1065,7 @@ void UT_contextGlyph::static_destructor()
 	}
 }
 
-void UT_contextGlyph::_prefsListener(	XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
+void UT_contextGlyph::_prefsListener(XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
 {
 	UT_return_if_fail(pApp);
 	const XML_Char *default_utf8;
