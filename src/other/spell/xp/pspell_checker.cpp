@@ -70,9 +70,9 @@ utf32_to_utf8(const UT_UCS4Char * word32, int length)
 	unsigned char *result;
 	  
 	/* Note that length is in shorts, so we have to double it here */
-	result = (unsigned char*)
-		UT_convert ((const char *)word32, length*4, UCS_INTERNAL,
-			"utf-8", NULL, &len_out);
+	result = reinterpret_cast<unsigned char*>(
+		UT_convert (reinterpret_cast<const char *>(word32), length*4, UCS_INTERNAL,
+			"utf-8", NULL, &len_out));
 
 	/* We assume that UT_convert creates a buffer big enough for this: */
 	if(len_out > 0)
@@ -97,11 +97,11 @@ utf8_to_utf32(const char *word8, int length)
 	UT_UCS4Char * word32;
 
 	result = (unsigned char *)
-		UT_convert (word8, length, "utf-8", UCS_INTERNAL, NULL, &len_out);
+		UT_convert (word8, length, "UTF-8", UCS_INTERNAL, NULL, &len_out);
 
 	UT_return_val_if_fail ( result, NULL ) ;
 
-	word32 = (UT_UCS4Char *)result;
+	word32 = reinterpret_cast<UT_UCS4Char *>(result);
 
 	/* Hack: len_out is in bytes */
 	len_out /= 4;
@@ -188,7 +188,7 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
 	unsigned char *word8 = utf32_to_utf8(szWord, len);
 	UT_return_val_if_fail ( word8, SpellChecker::LOOKUP_ERROR ) ;
 	
-	switch (pspell_manager_check(spell_manager, (char*)word8))
+	switch (pspell_manager_check(spell_manager, reinterpret_cast<char*>(word8)))
 	{
 	case 0:
 		ret = SpellChecker::LOOKUP_FAILED; break;
@@ -229,7 +229,7 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 	unsigned char *word8 = utf32_to_utf8(szWord, len);
 	UT_return_val_if_fail ( word8, 0 ) ;
 	
-	word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
+	word_list   = pspell_manager_suggest(spell_manager, reinterpret_cast<char*>(word8));
 	suggestions = pspell_word_list_elements(word_list);
 	count       = pspell_word_list_size(word_list);
 	FREEP(word8);
@@ -249,7 +249,7 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 		UT_UCSChar *word = utf8_to_utf32(new_word, len);
 		if (word)
 		{
-			sg->addItem ((void *)word);
+			sg->addItem (static_cast<void *>(word));
 			i++;
 		}
 	}
@@ -263,7 +263,7 @@ PSpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
   if (spell_manager && word && len) {
     unsigned char *word8 = utf32_to_utf8(word, len);
     UT_return_val_if_fail (word8, false) ;
-    pspell_manager_add_to_personal(spell_manager, (char *)word8);
+    pspell_manager_add_to_personal(spell_manager, reinterpret_cast<char *>(word8));
     FREEP(word8);
     return true;
   }
