@@ -169,10 +169,31 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 	return buf;
 }
 
+static void s_buildDirName(const UT_Vector& vDirComponents, UT_uint32 iComponentsNeeded, char* pDirBuf)
+{
+	UT_ASSERT(iComponentsNeeded <= vDirComponents.getItemCount());
+
+	if(iComponentsNeeded == 0)
+	{
+		strcpy(pDirBuf, "\\");
+		return;
+	}
+
+	UT_uint32 i = 0;
+	strcpy(pDirBuf, (const char*) vDirComponents.getNthItem(i++));
+
+	while(--iComponentsNeeded)
+	{
+		strcat(pDirBuf, "\\");
+		strcat(pDirBuf, (const char*) vDirComponents.getNthItem(i++));
+	}
+}
+
 void XAP_Win32App::_setAbiSuiteLibDir(void)
 {
 	char buf[PATH_MAX];
 	char buf2[PATH_MAX];
+	char szApplicationName[PATH_MAX];
 	const char * sz = NULL;
 
 	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
@@ -224,7 +245,8 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	//                     /samples/en-US/*.abw
 	//             /dictionary/*.hash
 	//
-	// we want to set the library directory to .../AbiSuite
+	// we want to set the library directory to the
+	// directory which stand for .../AbiSuite
 	// (aka "getExeDir()/../..")
 	//
 	// if this is a developer build in the canonical build
@@ -258,12 +280,15 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 		while ( (p=strtok(NULL,"\\")) )
 			v.addItem(p);
 
+		strcpy(szApplicationName, getApplicationName());
+		strtok(szApplicationName, " ");
+
 		int n = v.getItemCount();
 		if (   (n > 2)
 			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0)
-			&& (UT_stricmp((const char *)v.getNthItem(n-3),"AbiSuite")==0))
+			&& (UT_stricmp((const char *)v.getNthItem(n-2),szApplicationName)==0))
 		{
-			strcat(buf,"\\..\\..");		// TODO trim the string rather than use ..'s
+			s_buildDirName(v, n - 2, buf);
 			XAP_App::_setAbiSuiteLibDir(buf);
 			return;
 		}
@@ -271,7 +296,8 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 		if (   (n > 1)
 			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0))
 		{
-			strcat(buf,"\\..\\AbiSuite"); // TODO trim the string rather than use ..'s
+			s_buildDirName(v, n - 1, buf);
+			strcat(buf,"\\AbiSuite");
 			XAP_App::_setAbiSuiteLibDir(buf);
 			return;
 		}
