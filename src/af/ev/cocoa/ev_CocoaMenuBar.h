@@ -32,6 +32,8 @@ class XAP_CocoaApp;
 class AP_CocoaFrame;
 class EV_CocoaMenuBar;
 
+#if 0
+
 #define EV_COCOAMENU_MODSHIFT     0x080
 #define EV_COCOAMENU_MODCONTROL   0x100
 #define EV_COCOAMENU_MODALTERNATE 0x200
@@ -73,23 +75,18 @@ struct EV_CocoaCommandKeyRef
 -(void)menuNeedsUpdate;
 @end
 
+#endif
+
 /*****************************************************************/
 
 class EV_CocoaMenuBar : public EV_CocoaMenu
 {
 public:
-	static EV_CocoaMenuBar * instantiate(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName);
-	static EV_CocoaMenuBar * instance();
-private:
 	EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName);
-public:
+
 	virtual ~EV_CocoaMenuBar();
 
-	virtual bool		synthesizeMenuBar(NSMenu *menuBar);
-	virtual bool		rebuildMenuBar();
-	virtual bool		refreshMenu(AV_View * pView);
-    virtual void        destroy(void);
-
+#if 0
 	NSMenu *			getMenuBar() const { return m_wMenuBar; }
 
 	bool				lookupCommandKey (struct EV_CocoaCommandKeyRef * keyRef) const;
@@ -105,6 +102,7 @@ private:
 protected:
 	NSMenu *			m_wMenuBar;
 	UT_Vector			m_vecKeyRef;
+#endif
 };
 
 #endif /* EV_COCOAMENUBAR_H */

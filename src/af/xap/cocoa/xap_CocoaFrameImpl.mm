@@ -315,35 +315,6 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 }
 
 /*!
- * This code is used by the dynamic menu API to rebuild the menus after a
- * a change in the menu structure.
- */
-void XAP_CocoaFrameImpl::rebuildMenus(void)
-{
-	UT_ASSERT_NOT_REACHED();
-#if 0
-//
-// Destroy the old menu bar
-//
-	m_pCocoaMenu->destroy();
-//
-// Delete the old class
-//
-	DELETEP(m_pCocoaMenu);
-//
-// Build a new one.
-//
-	m_pCocoaMenu = new EV_CocoaMenuBar(m_pCocoaApp,(AP_CocoaFrame*)getFrame(),
-									 m_szMenuLayoutName,
-									 m_szMenuLabelSetName);
-	UT_ASSERT(m_pCocoaMenu);
-	bool bResult = m_pCocoaMenu->rebuildMenuBar();
-	UT_ASSERT(bResult);
-#endif
-}
-
-
-/*!
  * This code is used by the dynamic toolbar API to rebuild a toolbar after a
  * a change in the toolbar structure.
  */

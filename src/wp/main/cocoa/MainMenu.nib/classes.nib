@@ -5,12 +5,36 @@
             CLASS = "XAP_CocoaAppController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                "m_aboutMenuItem" = NSMenuItem; 
-                "m_menuBar" = NSMenu; 
-                "m_prefMenuItem" = NSMenuItem; 
-                "m_quitMenuItem" = NSMenuItem; 
+                "oMenuItem_AbiWordHelp" = NSMenuItem; 
+                "oMenuItem_AboutAbiWord" = NSMenuItem; 
+                "oMenuItem_Edit" = NSMenuItem; 
+                "oMenuItem_File" = NSMenuItem; 
+                "oMenuItem_Format" = NSMenuItem; 
+                "oMenuItem_Help" = NSMenuItem; 
+                "oMenuItem_Insert" = NSMenuItem; 
+                "oMenuItem_Preferences" = NSMenuItem; 
+                "oMenuItem_Table" = NSMenuItem; 
+                "oMenuItem_Tools" = NSMenuItem; 
+                "oMenuItem_View" = NSMenuItem; 
+                "oMenuItem_Window" = NSMenuItem; 
+                "oMenu_AbiWord" = NSMenu; 
+                "oMenu_Edit" = NSMenu; 
+                "oMenu_File" = NSMenu; 
+                "oMenu_Format" = NSMenu; 
+                "oMenu_Help" = NSMenu; 
+                "oMenu_Insert" = NSMenu; 
+                "oMenu_Table" = NSMenu; 
+                "oMenu_Tools" = NSMenu; 
+                "oMenu_View" = NSMenu; 
+                "oMenu_Window" = NSMenu; 
             }; 
             SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {orderFrontPreferencesPanel = id; }; 
+            CLASS = "XAP_CocoaApplication"; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSApplication; 
         }
     ); 
     IBVersion = 1; 

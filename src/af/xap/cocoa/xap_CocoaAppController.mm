@@ -27,33 +27,77 @@
 #include "ev_CocoaMenuBar.h"
 
 #include "xap_CocoaApp.h"
+#include "xap_CocoaAppController.h"
+#include "xap_CocoaModule.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 
 #include "ie_types.h"
 
-#import "xap_CocoaAppController.h"
+#include "ap_Menu_Id.h"
+
+struct EV_CocoaKeyEquiv
+{
+	XAP_Menu_Id		menuid;
+	char *			equiv;
+	unsigned int	modifier;
+};
+
+static struct EV_CocoaKeyEquiv KeyEquiv[] = {
+	{	AP_MENU_ID_FILE_NEW,				"n",	NSCommandKeyMask									}, // Cmd-N
+	{	AP_MENU_ID_FILE_NEW_USING_TEMPLATE,	"N",	NSCommandKeyMask									}, // Cmd-Shift-N
+	{	AP_MENU_ID_FILE_OPEN,				"o",	NSCommandKeyMask									}, // Cmd-O
+	{	AP_MENU_ID_FILE_SAVE,				"s",	NSCommandKeyMask									}, // Cmd-S
+	{	AP_MENU_ID_FILE_SAVEAS,				"S",	NSCommandKeyMask									}, // Cmd-Shift-S
+	{	AP_MENU_ID_FILE_CLOSE,				"w",	NSCommandKeyMask									}, // Cmd-W
+	{	AP_MENU_ID_FILE_PAGESETUP,			"P",	NSCommandKeyMask									}, // Cmd-Shift-P
+	{	AP_MENU_ID_FILE_PRINT,				"p",	NSCommandKeyMask									}, // Cmd-P
+	{	AP_MENU_ID_EDIT_UNDO,				"z",	NSCommandKeyMask									}, // Cmd-Z
+	{	AP_MENU_ID_EDIT_REDO,				"Z",	NSCommandKeyMask									}, // Cmd-Shift-Z
+	{	AP_MENU_ID_EDIT_CUT,				"x",	NSCommandKeyMask									}, // Cmd-X
+	{	AP_MENU_ID_EDIT_COPY,				"c",	NSCommandKeyMask									}, // Cmd-C
+	{	AP_MENU_ID_EDIT_PASTE,				"v",	NSCommandKeyMask									}, // Cmd-V
+	{	AP_MENU_ID_EDIT_PASTE_SPECIAL,		"V",	NSCommandKeyMask|NSAlternateKeyMask					}, // Cmd-Shift-Alt-V
+	{	AP_MENU_ID_EDIT_SELECTALL,			"a",	NSCommandKeyMask									}, // Cmd-A
+	{	AP_MENU_ID_EDIT_FIND,				"f",	NSCommandKeyMask									}, // Cmd-F
+	{	AP_MENU_ID_EDIT_GOTO,				"j",	NSCommandKeyMask									}, // Cmd-J
+	{	AP_MENU_ID_VIEW_RULER,				"r",	NSCommandKeyMask									}, // Cmd-R
+	{	AP_MENU_ID_FMT_FONT,				"t",	NSCommandKeyMask									}, // Cmd-T
+	{	AP_MENU_ID_FMT_BOLD,				"b",	NSCommandKeyMask									}, // Cmd-B
+	{	AP_MENU_ID_FMT_ITALIC,				"i",	NSCommandKeyMask									}, // Cmd-I
+	{	AP_MENU_ID_FMT_UNDERLINE,			"u",	NSCommandKeyMask									}, // Cmd-U
+	{	AP_MENU_ID_TOOLS_SPELL,				":",	NSCommandKeyMask									}, // Cmd-:
+	{	AP_MENU_ID_ALIGN_LEFT,				"{",	NSCommandKeyMask									}, // Cmd-{
+	{	AP_MENU_ID_ALIGN_CENTER,			"|",	NSCommandKeyMask									}, // Cmd-|
+	{	AP_MENU_ID_ALIGN_RIGHT,				"}",	NSCommandKeyMask									}, // Cmd-}
+	{	0,									0,		0													}
+};
 
 @implementation XAP_CocoaApplication
 
-- (id)init
+- (void)terminate:(id)sender
 {
-	if (self = [super init])
-		{
-			m_MenuDelegate = 0;
-		}
-	return self;
+	UT_UCS4String ucs4_empty;
+	ev_EditMethod_invoke("querySaveAndExit", ucs4_empty);
 }
 
-- (void)dealloc
+- (void)orderFrontStandardAboutPanel:(id)sender
 {
-	if (m_MenuDelegate)
-		{
-			[m_MenuDelegate release];
-			m_MenuDelegate = 0;
-		}
-	[super dealloc];
+	UT_UCS4String ucs4_empty;
+	ev_EditMethod_invoke("dlgAbout", ucs4_empty);
+}
+
+- (void)orderFrontPreferencesPanel:(id)sender
+{
+	UT_UCS4String ucs4_empty;
+	ev_EditMethod_invoke("dlgOptions", ucs4_empty);
+}
+
+- (void)openContextHelp:(id)sender
+{
+	UT_UCS4String ucs4_empty; // Can we use this to override help-contents location? e.g., to bundle help files? [TODO]
+	ev_EditMethod_invoke("helpContents", ucs4_empty); // [TODO: this needs to be redireced to firstResponder]
 }
 
 - (void)sendEvent:(NSEvent *)anEvent
@@ -87,8 +131,7 @@
 												if (!(modifierFlags & NSAlternateKeyMask))
 													{
 														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-,)]\n"));
-														UT_UCS4String ucs4_empty;
-														ev_EditMethod_invoke("dlgOptions", ucs4_empty);
+														[self orderFrontPreferencesPanel:self];
 														bEventHandled = true;
 													}
 												break;
@@ -98,8 +141,7 @@
 												if (!(modifierFlags & NSAlternateKeyMask))
 													{
 														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-?)]\n"));
-														UT_UCS4String ucs4_empty; // Can we use this to override help-contents location? e.g., to bundle help files? [TODO]
-														ev_EditMethod_invoke("helpContents", ucs4_empty);
+														[self openContextHelp:self];
 														bEventHandled = true;
 													}
 												break;
@@ -150,8 +192,7 @@
 												if (!(modifierFlags & NSAlternateKeyMask))
 													{
 														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-Q)]\n"));
-														UT_UCS4String ucs4_empty;
-														ev_EditMethod_invoke("querySaveAndExit", ucs4_empty);
+														[self terminate:self];
 														bEventHandled = true;
 													}
 												break;
@@ -162,12 +203,12 @@
 								}
 						}
 
-					if (!bEventHandled && m_MenuDelegate && bFrameIsActive)
+					if (!bEventHandled && false /* m_MenuDelegate */ && bFrameIsActive)
 						{
 							id  target;
 							SEL action;
 
-							if ([m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action])
+							if (false /* [m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action] */)
 								{
 									[self sendAction:action to:target from:self];
 									bEventHandled = true;
@@ -239,49 +280,56 @@
 		}
 }
 
-- (void)setMenuDelegate:(EV_CocoaMenuDelegate *)menuDelegate
-{
-	if (m_MenuDelegate)
-		{
-			[m_MenuDelegate release];
-		}
-
-	m_MenuDelegate = menuDelegate;
-
-	if (m_MenuDelegate)
-		{
-			[m_MenuDelegate retain];
-		}
-}
-
 @end
 
-XAP_CocoaAppController * XAP_AppController_Instance = nil;
+static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 @implementation XAP_CocoaAppController
 
-- (id) init 
++ (XAP_CocoaAppController*)sharedAppController // do we really need/want this?? the app controller is instantiated within the application's nib
 {
-	if (XAP_AppController_Instance) {
-		NSLog (@"Attempt to allocate more that one XAP_CocoaAppController");
-		return nil;
-	}
-	self = [super init];
-	if (self) {
-		XAP_AppController_Instance = self;
-		[[NSApplication sharedApplication] setDelegate:self];
-		m_bFileOpenedDuringLaunch = NO;
-		m_bApplicationLaunching = YES;
-	}
+	if (!XAP_AppController_Instance)
+		{
+			[[XAP_CocoaAppController alloc] init];
+		}
+	return XAP_AppController_Instance;
+}
+
+- (id)init 
+{
+	if (XAP_AppController_Instance)
+		{
+			NSLog (@"Attempt to allocate more that one XAP_CocoaAppController");
+			return nil;
+		}
+
+	if (self = [super init])
+		{
+			XAP_AppController_Instance = self;
+
+			m_bFileOpenedDuringLaunch = NO;
+			m_bApplicationLaunching   = YES;
+
+			m_bAutoLoadPluginsAfterLaunch = NO;
+
+			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
+		}
 	return self;
 }
 
-+ (XAP_CocoaAppController*)sharedAppController
+- (void)dealloc
 {
-	if (!XAP_AppController_Instance) {
-		[[XAP_CocoaAppController alloc] init];
-	}
-	return XAP_AppController_Instance;
+	if (m_ContextMenu)
+		{
+			[m_ContextMenu release];
+			m_ContextMenu = 0;
+		}
+	[super dealloc];
+}
+
+- (void)setAutoLoadPluginsAfterLaunch:(BOOL)autoLoadPluginsAfterLaunch
+{
+	m_bAutoLoadPluginsAfterLaunch = autoLoadPluginsAfterLaunch;
 }
 
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key
@@ -304,19 +352,48 @@ XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	UT_DEBUGMSG(("[XAP_CocoaAppController -applicationDidFinishLaunching:]\n"));
 	m_bApplicationLaunching = NO;
 
-	if (m_bFileOpenedDuringLaunch == NO)
-	{
-		UT_DEBUGMSG(("No file opened during launch, so opening untitled document:\n"));
-		[self applicationOpenUntitledFile:NSApp];
-	}
-	if (EV_CocoaMenuBar * application_menu = EV_CocoaMenuBar::instance())
-	{
-		[NSApp setMainMenu:(application_menu->getMenuBar())];
-	}
+	XAP_CocoaApp * pApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+
+	if (EV_CocoaMenuBar * pCocoaMenuBar = pApp->getCocoaMenuBar())
+		{
+			m_AppItem[XAP_CocoaAppMenu_File  ] = oMenuItem_File;
+			m_AppItem[XAP_CocoaAppMenu_Edit  ] = oMenuItem_Edit;
+			m_AppItem[XAP_CocoaAppMenu_View  ] = oMenuItem_View;
+			m_AppItem[XAP_CocoaAppMenu_Insert] = oMenuItem_Insert;
+			m_AppItem[XAP_CocoaAppMenu_Format] = oMenuItem_Format;
+			m_AppItem[XAP_CocoaAppMenu_Tools ] = oMenuItem_Tools;
+			m_AppItem[XAP_CocoaAppMenu_Table ] = oMenuItem_Table;
+			m_AppItem[XAP_CocoaAppMenu_Window] = oMenuItem_Window;
+			m_AppItem[XAP_CocoaAppMenu_Help  ] = oMenuItem_Help;
+
+			m_AppMenu[XAP_CocoaAppMenu_File  ] = oMenu_File;
+			m_AppMenu[XAP_CocoaAppMenu_Edit  ] = oMenu_Edit;
+			m_AppMenu[XAP_CocoaAppMenu_View  ] = oMenu_View;
+			m_AppMenu[XAP_CocoaAppMenu_Insert] = oMenu_Insert;
+			m_AppMenu[XAP_CocoaAppMenu_Format] = oMenu_Format;
+			m_AppMenu[XAP_CocoaAppMenu_Tools ] = oMenu_Tools;
+			m_AppMenu[XAP_CocoaAppMenu_Table ] = oMenu_Table;
+			m_AppMenu[XAP_CocoaAppMenu_Window] = oMenu_Window;
+			m_AppMenu[XAP_CocoaAppMenu_Help  ] = oMenu_Help;
+
+			UT_DEBUGMSG(("[...FinishLaunching] Building application menu:\n"));
+			pCocoaMenuBar->buildAppMenu();
+		}
 	[XAP_CocoaToolPalette instance:self];
+
+	if (m_bAutoLoadPluginsAfterLaunch)
+		{
+			UT_DEBUGMSG(("[...FinishLaunching] Auto-Loading plug-ins:\n"));
+			XAP_CocoaModule::loadAllPlugins();
+		}
+	if (m_bFileOpenedDuringLaunch == NO)
+		{
+			UT_DEBUGMSG(("[...FinishLaunching] No file opened during launch, so opening untitled document:\n"));
+			[self applicationOpenUntitledFile:NSApp];
+		}
 }
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender // probably unused now that NSApp's terminate is overridden
 {
 	UT_DEBUGMSG(("- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender\n"));
 	UT_UCS4String ucs4_empty;
@@ -324,7 +401,7 @@ XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	return (bQuit ? NSTerminateNow : NSTerminateCancel);
 }
 
-- (void)applicationWillTerminate:(NSNotification *)aNotification
+- (void)applicationWillTerminate:(NSNotification *)aNotification // probably unused now that NSApp's terminate is overridden
 {
 	if ([XAP_CocoaToolPalette instantiated])
 		{
@@ -418,34 +495,174 @@ XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[self applicationOpenFile:NSApp];
 	return self;
 }
-
+/*
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
 {
 	XAP_CocoaApp * pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
 	return (NSMenu *) pCocoaApp->getDockNSMenu ();
 }
-
-
-- (NSMenu *)getMenuBar
+ */
+/* For building the Application Menu
+ */
+- (void)setAboutTitle:(NSString *)title
 {
-	return m_menuBar;
+	[oMenuItem_AboutAbiWord setTitle:title];
 }
 
-- (NSMenuItem *)_aboutMenu
+- (void)setPrefsTitle:(NSString *)title
 {
-	return m_aboutMenuItem;
+	[oMenuItem_Preferences setTitle:title];
 }
 
-- (NSMenuItem *)_quitMenu
+- (void)setCHelpTitle:(NSString *)title // context-help
 {
-	return m_quitMenuItem;
+	[oMenuItem_AbiWordHelp setTitle:title];
 }
 
-- (NSMenuItem *)_preferenceMenu
+- (void)setTitle:(NSString *)title forMenu:(XAP_CocoaAppMenu_Id)appMenu
 {
-	return m_prefMenuItem;
+	switch (appMenu)
+		{
+		case XAP_CocoaAppMenu_File:
+		case XAP_CocoaAppMenu_Edit:
+		case XAP_CocoaAppMenu_View:
+		case XAP_CocoaAppMenu_Insert:
+		case XAP_CocoaAppMenu_Format:
+		case XAP_CocoaAppMenu_Tools:
+		case XAP_CocoaAppMenu_Table:
+		case XAP_CocoaAppMenu_Window: // ??
+		case XAP_CocoaAppMenu_Help:
+			[m_AppItem[appMenu] setTitle:title];
+			break;
+
+		case XAP_CocoaAppMenu_AbiWord: // disallow
+
+		case XAP_CocoaAppMenu_count__:
+		default:
+			// shouldn't really happen, but...
+			break;
+		}
 }
 
+- (const char *)keyEquivalentForMenuID:(int /* XAP_Menu_Id */)menuid modifierMask:(unsigned int *)mask
+{
+	const char * equiv = 0;
+
+	struct EV_CocoaKeyEquiv * pKE = KeyEquiv;
+	while (pKE->equiv)
+		{
+			if (menuid == (int) pKE->menuid)
+				{
+					equiv = pKE->equiv;
+					if ( mask)
+						*mask = pKE->modifier;
+					break;
+				}
+			++pKE;
+		}
+	return equiv;
+}
+
+- (NSMenu *)contextMenu
+{
+	return m_ContextMenu;
+}
+
+- (void)appendContextItem:(NSMenuItem *)item
+{
+	[m_ContextMenu addItem:item];
+}
+
+- (void)appendItem:(NSMenuItem *)item toMenu:(XAP_CocoaAppMenu_Id)appMenu
+{
+	switch (appMenu)
+		{
+		case XAP_CocoaAppMenu_File:
+		case XAP_CocoaAppMenu_Edit:
+		case XAP_CocoaAppMenu_View:
+		case XAP_CocoaAppMenu_Insert:
+		case XAP_CocoaAppMenu_Format:
+		case XAP_CocoaAppMenu_Tools:
+		case XAP_CocoaAppMenu_Table:
+		case XAP_CocoaAppMenu_Help:
+			{
+				// UT_DEBUGMSG(("appendItem: toMenu:\"%s\"\n", [[m_AppItem[appMenu] title] UTF8String]));
+				[m_AppMenu[appMenu] addItem:item];
+			}
+			break;
+
+		case XAP_CocoaAppMenu_AbiWord:
+		case XAP_CocoaAppMenu_Window:
+			// these menus treated separately
+
+		case XAP_CocoaAppMenu_count__:
+		default:
+			// shouldn't really happen, but...
+			break;
+		}
+}
+
+- (void)clearContextMenu
+{
+	while (int count = [m_ContextMenu numberOfItems])
+		{
+			[m_ContextMenu removeItemAtIndex:(count - 1)];
+		}
+}
+
+- (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu
+{
+	switch (appMenu)
+		{
+		case XAP_CocoaAppMenu_File:
+		case XAP_CocoaAppMenu_Edit:
+		case XAP_CocoaAppMenu_View:
+		case XAP_CocoaAppMenu_Insert:
+		case XAP_CocoaAppMenu_Format:
+		case XAP_CocoaAppMenu_Tools:
+		case XAP_CocoaAppMenu_Table:
+			while (int count = [m_AppMenu[appMenu] numberOfItems])
+				{
+					[m_AppMenu[appMenu] removeItemAtIndex:(count - 1)];
+				}
+			break;
+
+		case XAP_CocoaAppMenu_Help:
+			while (int count = [m_AppMenu[appMenu] numberOfItems])
+				{
+					if (count == 1) // the first Help item (context-help) is treated separately
+						break;
+					[m_AppMenu[appMenu] removeItemAtIndex:(count - 1)];
+				}
+			break;
+
+		case XAP_CocoaAppMenu_AbiWord:
+		case XAP_CocoaAppMenu_Window:
+			// these menus treated separately
+
+		case XAP_CocoaAppMenu_count__:
+		default:
+			// shouldn't really happen, but...
+			break;
+		}
+}
+
+- (void)clearAllMenus
+{
+	// !AbiWord
+	[self clearMenu:XAP_CocoaAppMenu_File  ];
+	[self clearMenu:XAP_CocoaAppMenu_Edit  ];
+	[self clearMenu:XAP_CocoaAppMenu_View  ];
+	[self clearMenu:XAP_CocoaAppMenu_Insert];
+	[self clearMenu:XAP_CocoaAppMenu_Format];
+	[self clearMenu:XAP_CocoaAppMenu_Tools ];
+	[self clearMenu:XAP_CocoaAppMenu_Table ];
+	// !Windows
+	[self clearMenu:XAP_CocoaAppMenu_Help  ];
+}
+
+/* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
+ */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
 	if (frame)

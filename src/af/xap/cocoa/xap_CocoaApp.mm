@@ -56,7 +56,6 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), 
 	m_dialogFactory(this), 
 	m_controlFactory(),
-	m_pDockMenu(0),
 	m_pCocoaMenu(NULL),
 	m_szMenuLayoutName(NULL),
 	m_szMenuLabelSetName(NULL)
@@ -102,11 +101,6 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 
 XAP_CocoaApp::~XAP_CocoaApp()
 {
-	if (m_pDockMenu)
-		{
-			EV_CocoaMenuBar::releaseDockMenu((EV_CocoaDockMenu *) m_pDockMenu);
-			m_pDockMenu = 0;
-		}
 	DELETEP(m_pCocoaToolbarIcons);
 	FREEP(m_szMenuLayoutName);
 	FREEP(m_szMenuLabelSetName);
@@ -157,28 +151,7 @@ void XAP_CocoaApp::reallyExit()
 
 void XAP_CocoaApp::notifyFrameCountChange()
 {
-	if (m_pDockMenu)
-		{
-			EV_CocoaMenuBar::releaseDockMenu((EV_CocoaDockMenu *) m_pDockMenu);
-			m_pDockMenu = 0;
-		}
 	XAP_App::notifyFrameCountChange();
-}
-
-void * XAP_CocoaApp::getDockNSMenu ()
-{
-	if (m_pDockMenu)
-		{
-			EV_CocoaDockMenu * pMenu = (EV_CocoaDockMenu *) m_pDockMenu;
-			[pMenu menuNeedsUpdate];
-		}
-	else
-		{
-			UT_Vector vecDocs;
-			enumerateFrames(vecDocs);
-			m_pDockMenu = (void *) EV_CocoaMenuBar::synthesizeDockMenu(vecDocs);
-		}
-	return m_pDockMenu;
 }
 
 UT_sint32 XAP_CocoaApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001-2004 Hubert Figuiere
@@ -25,62 +27,79 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+
+#include "xap_CocoaAppController.h"
 #include "xap_Types.h"
+
 #include "ev_Menu.h"
+#include "ev_Menu_Layouts.h"
+
+class UT_Stack;
 
 class AV_View;
+
 class XAP_CocoaApp;
-class AP_CocoaFrame;
+
 class EV_CocoaMenu;
 class EV_CocoaMenuBar;
+class EV_Menu_Action;
+class EV_Menu_Label;
+
+class AP_CocoaFrame;
 
 /*****************************************************************/
+
 @interface EV_CocoaMenuTarget : NSObject
 {
-	EV_CocoaMenu*	_xap;
+	EV_CocoaMenu *	m_menu;
 }
-- (void)setXAPOwner:(EV_CocoaMenu*)owner;
-- (id)menuSelected:(id)sender;
+- (id)initWithMenu:(EV_CocoaMenu *)menu;
+- (void)menuSelected:(id)sender;
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
 @end
-
-@interface EV_NSMenu : NSMenu
-{
-	NSMutableArray * _virtualItems;
-	EV_CocoaMenu * _xap;
-}
-
--(id)initWithXAP:(EV_CocoaMenu*)owner andTitle:(NSString*)title;
-
--(void)dealloc;
--(void)addVirtualItem:(id <NSMenuItem>)newItem;
--(NSEnumerator*)virtualItemsEnumerator;
-
-@end
-
-
 
 class EV_CocoaMenu : public EV_Menu
 {
 public:
-	EV_CocoaMenu(XAP_CocoaApp * pCocoaApp,
-				const char * szMenuLayoutName,
-				const char * szMenuLabelSetName);
+	EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu);
+
 	virtual ~EV_CocoaMenu();
 
-	bool				synthesizeMenu(NSMenu * wMenuRoot, EV_CocoaMenuBar * pMenuBar = 0);
-	bool				menuEvent(XAP_Menu_Id menuid);
-	virtual bool		refreshMenu(AV_View * pView) = 0;
-	void				_refreshMenu(EV_NSMenu *menu);
-	
-protected:
-	bool				_isItemPresent(XAP_Menu_Id menuid) const;
-
-	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
+	void				buildAppMenu();
 private:
-	static NSString* _getItemCmd (const char * mnemonic, unsigned int & modifiers, UT_uint32 * keyRefKey = 0);
-	XAP_CocoaApp *		m_pCocoaApp;
+	void				addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel, EV_Menu_LayoutFlags flags);
+	void				addToAppMenu(NSMenuItem * item);
+public:
+	bool				menuEvent(XAP_Menu_Id menuid);
+
+	void				validateMenuItem(XAP_Menu_Id menuid, bool & bEnabled, bool & bChecked, const char *& szLabel);
+
+	NSString *			convertToString(const char * label, bool strip_dots = false);
+
+private:
+	/*
+	static NSString *	_getItemCmd (const char * mnemonic, unsigned int & modifiers, UT_uint32 * keyRefKey = 0);
+	 */
+	XAP_CocoaApp *			m_pCocoaApp;
 	
-	EV_CocoaMenuTarget	*m_menuTarget;
+	EV_CocoaMenuTarget *	m_menuTarget;
+	XAP_CocoaAppMenu_Id		m_AppMenuCurrent;
+
+	UT_Stack *				m_menuStack;
+
+	void					MenuStack_clear();
+	bool					MenuStack_push(NSMenu * menu);
+	NSMenu *				MenuStack_pop();
+	NSMenu *				MenuStack_top() const;
+
+protected:
+	virtual bool			_doAddMenuItem(UT_uint32 layout_pos); // does nothing, returns false
+
+private:
+	char *					m_buffer;
+	UT_uint32				m_maxlen;
+
+	bool					m_bContextMenu;
 };
 
 #endif /* EV_COCOAMENU_H */

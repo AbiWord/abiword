@@ -31,56 +31,62 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
+
 #include <popt.h>
 
+#include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
+#include "ut_math.h"
 #include "ut_misc.h"
+#include "ut_png.h"
+
 #include "ut_PerlBindings.h"
 #include "ut_Script.h"
-#include "ut_math.h"
+
+#include "ev_CocoaMenuBar.h"
+#include "ev_EditMethod.h"
 
 #include "xap_Args.h"
-#include "ap_Args.h"
-#include "ap_Convert.h"
-#include "ap_CocoaFrame.h"
-#include "ap_CocoaApp.h"
-#include "spell_manager.h"
-#include "ap_Strings.h"
-#include "xap_EditMethods.h"
-#include "ap_LoadBindings.h"
-#include "ap_CocoaClipboard.h"
-#include "ap_CocoaPrefs.h"
-#include "ap_CocoaSplash.h"
-#include "ev_CocoaMenuBar.h"
+#include "xap_CocoaAppController.h"
 #include "xap_DialogFactory.h"
-#include "xap_Dlg_MessageBox.h"
 #include "xap_Dialog_Id.h"
+#include "xap_Dlg_MessageBox.h"
+#include "xap_EditMethods.h"
+#include "xap_EncodingManager.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Menu_Layouts.h"
+#include "xap_Module.h"
+#include "xap_ModuleManager.h"
+#include "xap_Prefs.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_Toolbar_Layouts.h"
+
 #include "xav_View.h"
 
-#include "ev_EditMethod.h"
-#include "ev_CocoaMenuBar.h"
-#include "gr_Graphics.h"
 #include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
+#include "gr_Graphics.h"
 #include "gr_Image.h"
-#include "ut_bytebuf.h"
-#include "ut_png.h"
-#include "ut_debugmsg.h"
 
-#include "fv_View.h"
 #include "fp_Run.h"
 
-#include "ut_string_class.h"
-#include "xap_EncodingManager.h"
+#include "fv_View.h"
+
+#include "ap_Args.h"
+#include "ap_CocoaApp.h"
+#include "ap_CocoaClipboard.h"
+#include "ap_CocoaFrame.h"
+#include "ap_CocoaPrefs.h"
+#include "ap_CocoaSplash.h"
+#include "ap_Convert.h"
+#include "ap_LoadBindings.h"
+#include "ap_Prefs_SchemeIds.h"
+#include "ap_Strings.h"
 
 #include "ie_impexp_Register.h"
 
@@ -93,14 +99,8 @@
 #include "ie_imp_Text.h"
 #include "ie_impGraphic.h"
 
-#include "xap_Prefs.h"
-#include "ap_Prefs_SchemeIds.h"
-#include "gr_Image.h"
+#include "spell_manager.h"
 
-#include "xap_Module.h"
-#include "xap_ModuleManager.h"
-
-#import "xap_CocoaAppController.h"
 
 
 // quick hack - this is defined in ap_EditMethods.cpp
@@ -324,6 +324,9 @@ bool AP_CocoaApp::initialize(void)
 	}
 	FREEP(m_szMenuLabelSetName);
 	m_szMenuLabelSetName = UT_strdup(szMenuLabelSetName);
+	UT_ASSERT(m_szMenuLabelSetName);
+	if (!m_szMenuLabelSetName)
+		return false;
 	
 	getMenuFactory()->buildMenuLabelSet(m_szMenuLabelSetName);
 	const char * szMenuLayoutName = NULL;
@@ -336,20 +339,23 @@ bool AP_CocoaApp::initialize(void)
 	}
 	FREEP(m_szMenuLayoutName);
 	m_szMenuLayoutName = UT_strdup(szMenuLayoutName);
+	UT_ASSERT(m_szMenuLayoutName);
+	if (!m_szMenuLayoutName)
+		return false;
 
 	// synthesize a menu from the info in our base class.
 
-	m_pCocoaMenu = EV_CocoaMenuBar::instantiate(this, m_szMenuLayoutName, m_szMenuLabelSetName);
+	m_pCocoaMenu = new EV_CocoaMenuBar(this, m_szMenuLayoutName, m_szMenuLabelSetName);
 	UT_ASSERT(m_pCocoaMenu);
-	bool bResult = m_pCocoaMenu->synthesizeMenuBar([XAP_AppController_Instance getMenuBar]);
-	UT_ASSERT(bResult);
-	
-	
+	if (!m_pCocoaMenu)
+		return false;
+
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
 	if(bLoadPlugins || !bFound)
 	{
-		loadAllPlugins();
+		XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+		[pController setAutoLoadPluginsAfterLaunch:YES];
 	}
     //////////////////////////////////////////////////////////////////
 
@@ -642,165 +648,6 @@ bool AP_CocoaApp::canPasteFromClipboard(void)
 	FREEP(pData);
 	
 	return bFoundOne;
-}
-
-/* return > 0 for directory entries ending in ".Abi"
- */
-static int s_Abi_only (struct dirent * d)
-{
-	const char * name = d->d_name;
-
-	if (name)
-		{
-			int length = strlen (name);
-
-			if (length > 4)
-				if (strcmp (name + length - 4, ".Abi") == 0)
-					return 1;
-
-			if (length > 7)
-				if (strcmp (name + length - 7, ".so-abi") == 0)
-					return 1;
-		}
-	return 0;
-}
-
-/* return true if dirname exists and is a directory; symlinks probably not counted
- */
-static bool s_dir_exists (const char * dirname)
-{
-  struct stat sbuf;
-
-  if (stat (dirname, &sbuf) == 0)
-    if ((sbuf.st_mode & S_IFMT) == S_IFDIR)
-      return true;
-
-  return false;
-}
-
-/* MacOSX applications look for plugins in Contents/Plug-ins, and there's probably
- * no need to jump through scandir hoops identifying these. Third party plugins or
- * plugins not distributed with AbiWord.app can be found in the system directory
- * "/Library/Application Support" or in the user's home equivalent - I'm choosing
- * to make the plug-in directory "/Library/Application Support/AbiWord/Plug-ins".
- * 
- * The System Overview recommends that plugins be given a suffix that the
- * application claims (presumably as a document type) so I'm opting for the suffix
- * ".Abi".
- */
-void AP_CocoaApp::loadAllPlugins ()
-{
-	int support_dir_count = 0;
-
-	UT_UTF8String support_dir[3];
-
-	/* Load from:
-	 *  a. "/Library/Application Support/AbiSuite/Plug-ins"
-	 *  b. "/Library/Application Support/AbiSuite/Plug-ins"
-	 *  c. "$HOME/Library/Application Support/AbiSuite/Plug-ins"
-	 */
-
-	NSString * app_path = [[NSBundle mainBundle] bundlePath];
-	if (app_path)
-		if (NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"])
-			{
-				support_dir[support_dir_count] = [plugin_path UTF8String];
-
-				if (s_dir_exists (support_dir[support_dir_count].utf8_str()))
-					{
-						UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",support_dir[support_dir_count].utf8_str()));
-						support_dir_count++;
-					}
-				else
-					{
-						UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s (not found)\n",support_dir[support_dir_count].utf8_str()));
-					}
-			}
-
-	/* create the system plugins directory - if we can...
-	 */
-	if (s_createDirectoryIfNecessary ("/Library", true))
-		if (s_createDirectoryIfNecessary ("/Library/Application Support", true))
-			if (s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite", true))
-				s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite/Plug-ins", true);
-
-	support_dir[support_dir_count] = "/Library/Application Support/AbiSuite/Plug-ins";
-
-	if (!s_dir_exists (support_dir[support_dir_count].utf8_str()))
-		{
-			UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[support_dir_count].utf8_str()));
-		}
-	else
-		{
-			UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[support_dir_count].utf8_str()));
-			support_dir_count++;
-		}
-
-	const char * homedir = getUserPrivateDirectory ();
-	if (homedir == 0)
-		{
-			UT_DEBUGMSG(("FJF: no home directory?\n"));
-		}
-	else if (!s_dir_exists (homedir))
-		{
-			UT_DEBUGMSG(("FJF: invalid home directory?\n"));
-		}
-	else
-		{
-			UT_UTF8String plugin_dir(homedir);
-			plugin_dir += "/Plug-ins";
-			if (!s_createDirectoryIfNecessary (plugin_dir.utf8_str()))
-				{
-					UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.utf8_str()));
-				}
-			else
-				{
-					UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.utf8_str()));
-					support_dir[support_dir_count++] = plugin_dir;
-				}
-		}
-
-	for (int i = 0; i < support_dir_count; i++)
-		{
-			struct dirent ** namelist = 0;
-			int n = scandir (support_dir[i].utf8_str(), &namelist, s_Abi_only, alphasort);
-			UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].utf8_str()));
-			if (n < 0)
-				{
-					continue;
-				}
-			if (n == 0)
-				{
-					FREEP (namelist);
-					continue;
-				}
-
-			UT_UTF8String plugin_path;
-			while (n--)
-				{
-					plugin_path  = support_dir[i];
-					plugin_path += '/';
-					plugin_path += namelist[n]->d_name;
-
-					UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.utf8_str()));
-					if (XAP_ModuleManager::instance().loadModule (plugin_path.utf8_str()))
-						{
-							UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
-						}
-					else
-						{
-							UT_DEBUGMSG(("DOM: didn't load plug-in: %s\n", namelist[n]->d_name));
-						}
-
-					free (namelist[n]);
-				}
-			free (namelist);
-		}
-
-	/* SPI modules don't register automatically on loading, so
-	 * now that we've loaded the modules we need to register them:
-	 */
-	XAP_ModuleManager::instance().registerPending ();
 }
 
 /*****************************************************************/

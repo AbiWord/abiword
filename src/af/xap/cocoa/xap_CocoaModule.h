@@ -44,13 +44,15 @@ protected:
 
 	virtual ~XAP_CocoaModule (void);
 
-	virtual bool   load (const char * name);
-	virtual bool   unload (void);
+	virtual bool	load (const char * name);
+	virtual bool	unload (void);
 
 public:
-	virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
-	virtual bool   getModuleName (char ** dest) const;
-	virtual bool   getErrorMsg (char ** dest) const;
+	virtual bool	resolveSymbol (const char * symbol_name, void ** symbol);
+	virtual bool	getModuleName (char ** dest) const;
+	virtual bool	getErrorMsg (char ** dest) const;
+
+	static void		loadAllPlugins (); // called on start-up, and *only* then
 
 private:
 	UT_UTF8String	m_szname;

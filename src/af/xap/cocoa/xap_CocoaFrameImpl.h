@@ -105,7 +105,7 @@ public:
 //	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				_queue_resize();
 	virtual EV_Menu*			_getMainMenu();
-	virtual void                rebuildMenus(void);
+
     virtual void                _rebuildToolbar(UT_uint32 ibar);
 	void                        _setController (XAP_CocoaFrameController * ctrl);
 	XAP_CocoaFrameController *	_getController () { return m_frameController; };

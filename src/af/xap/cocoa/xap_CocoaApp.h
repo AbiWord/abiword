@@ -57,7 +57,6 @@ public:
 	virtual XAP_Frame * 					newFrame() = 0;
 	virtual void							reallyExit();
 	virtual void							notifyFrameCountChange ();
-	void *									getDockNSMenu ();
 
 	virtual XAP_DialogFactory *				getDialogFactory();
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory();
@@ -113,7 +112,7 @@ private:
 	NSTimeInterval			m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
-	void*				m_pDockMenu;
+
 protected:				// TODO move that to private
 	EV_CocoaMenuBar*			m_pCocoaMenu;
 	const char*			m_szMenuLayoutName;

@@ -20,6 +20,8 @@
  * 02111-1307, USA.
  */
 
+#ifndef XAP_COCOAAPPCONTROLLER_H
+#define XAP_COCOAAPPCONTROLLER_H
 
 #import <Cocoa/Cocoa.h>
 
@@ -30,22 +32,67 @@ class XAP_Frame;
 
 @interface XAP_CocoaApplication : NSApplication
 {
-	EV_CocoaMenuDelegate *	m_MenuDelegate;
+	// 
 }
-- (id)init;
-- (void)dealloc;
+- (void)terminate:(id)sender;
+- (void)orderFrontStandardAboutPanel:(id)sender;
+- (void)orderFrontPreferencesPanel:(id)sender;
+- (void)openContextHelp:(id)sender;
 - (void)sendEvent:(NSEvent *)anEvent;
-- (void)setMenuDelegate:(EV_CocoaMenuDelegate *)menuDelegate;
 @end
 
-@interface XAP_CocoaAppController : NSObject {
-	IBOutlet NSMenu* m_menuBar;
-	IBOutlet NSMenuItem* m_aboutMenuItem;
-	IBOutlet NSMenuItem* m_prefMenuItem;
-	IBOutlet NSMenuItem* m_quitMenuItem;
+enum XAP_CocoaAppMenu_Id
+{
+	XAP_CocoaAppMenu_AbiWord = 0,
+	XAP_CocoaAppMenu_File,
+	XAP_CocoaAppMenu_Edit,
+	XAP_CocoaAppMenu_View,
+	XAP_CocoaAppMenu_Insert,
+	XAP_CocoaAppMenu_Format,
+	XAP_CocoaAppMenu_Tools,
+	XAP_CocoaAppMenu_Table,
+	XAP_CocoaAppMenu_Window,
+	XAP_CocoaAppMenu_Help,
+	XAP_CocoaAppMenu_count__
+};
 
-	BOOL m_bFileOpenedDuringLaunch;
-	BOOL m_bApplicationLaunching;
+@interface XAP_CocoaAppController : NSObject
+{
+	IBOutlet NSMenu *		oMenu_AbiWord;
+
+	IBOutlet NSMenuItem *	oMenuItem_AboutAbiWord;
+	IBOutlet NSMenuItem *	oMenuItem_Preferences;
+
+	IBOutlet NSMenu *		oMenu_File;
+	IBOutlet NSMenu *		oMenu_Edit;
+	IBOutlet NSMenu *		oMenu_View;
+	IBOutlet NSMenu *		oMenu_Insert;
+	IBOutlet NSMenu *		oMenu_Format;
+	IBOutlet NSMenu *		oMenu_Tools;
+	IBOutlet NSMenu *		oMenu_Table;
+	IBOutlet NSMenu *		oMenu_Window;
+	IBOutlet NSMenu *		oMenu_Help;
+
+	IBOutlet NSMenuItem *	oMenuItem_File;
+	IBOutlet NSMenuItem *	oMenuItem_Edit;
+	IBOutlet NSMenuItem *	oMenuItem_View;
+	IBOutlet NSMenuItem *	oMenuItem_Insert;
+	IBOutlet NSMenuItem *	oMenuItem_Format;
+	IBOutlet NSMenuItem *	oMenuItem_Tools;
+	IBOutlet NSMenuItem *	oMenuItem_Table;
+	IBOutlet NSMenuItem *	oMenuItem_Window;
+	IBOutlet NSMenuItem *	oMenuItem_Help;
+
+	IBOutlet NSMenuItem *	oMenuItem_AbiWordHelp;
+
+	NSMenu *				m_ContextMenu;
+
+	NSMenu *				m_AppMenu[XAP_CocoaAppMenu_count__];
+	NSMenuItem *			m_AppItem[XAP_CocoaAppMenu_count__];
+
+	BOOL			m_bFileOpenedDuringLaunch;
+	BOOL			m_bApplicationLaunching;
+	BOOL			m_bAutoLoadPluginsAfterLaunch;
 
 	AV_View *		m_pViewCurrent;
 	XAP_Frame *		m_pFrameCurrent;
@@ -56,6 +103,9 @@ class XAP_Frame;
 + (XAP_CocoaAppController*)sharedAppController;
 
 - (id)init;
+- (void)dealloc;
+
+- (void)setAutoLoadPluginsAfterLaunch:(BOOL)autoLoadPluginsAfterLaunch;
 
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key;
 
@@ -74,13 +124,29 @@ class XAP_Frame;
 - (id)dockFileNew:(id)sender;
 - (id)dockFileOpen:(id)sender;
 
-- (NSMenu *)applicationDockMenu:(NSApplication *)sender;
+/* - (NSMenu *)applicationDockMenu:(NSApplication *)sender; */
 
-- (NSMenu *)getMenuBar;
-- (NSMenuItem *)_aboutMenu;
-- (NSMenuItem *)_preferenceMenu;
-- (NSMenuItem *)_quitMenu;
+/* For building the Application Menu
+ */
+- (void)setAboutTitle:(NSString *)title;
+- (void)setPrefsTitle:(NSString *)title;
+- (void)setCHelpTitle:(NSString *)title; // context-help
 
+- (void)setTitle:(NSString *)title forMenu:(XAP_CocoaAppMenu_Id)appMenu;
+
+- (const char *)keyEquivalentForMenuID:(int /* XAP_Menu_Id */)menuid modifierMask:(unsigned int *)mask;
+
+- (NSMenu *)contextMenu;
+
+- (void)appendContextItem:(NSMenuItem *)item;
+- (void)appendItem:(NSMenuItem *)item toMenu:(XAP_CocoaAppMenu_Id)appMenu;
+
+- (void)clearContextMenu;
+- (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu; // except AbiWord & Windows
+- (void)clearAllMenus;                          // except AbiWord & Windows
+
+/* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
+ */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
 - (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
 
@@ -91,4 +157,4 @@ class XAP_Frame;
 - (XAP_Frame *)previousFrame;
 @end
 
-extern XAP_CocoaAppController* XAP_AppController_Instance;
+#endif /* ! XAP_COCOAAPPCONTROLLER_H */
