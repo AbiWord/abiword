@@ -209,7 +209,7 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 			HandleMenus (::MenuSelect(theEvent.where));
 			break;
 		case inSysWindow:
-#ifdef XP_MAC_TARGET_CARBON
+#if defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON
 #else
 			::SystemClick (&theEvent, targetWin);
 #endif
@@ -218,10 +218,13 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 			if (frame != NULL) {
 				frame->raise ();
 			}
+			else {
+				::BringToFront (targetWin);
+			}
 			break;
 		case inDrag:
 			::DragWindow (targetWin, theEvent.where, 
-#ifdef XP_MAC_TARGET_CARBON
+#if defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON
 			NULL			/* valid only for Carbon 1.0 and forward */
 #else
 			&qd.screenBits.bounds
@@ -239,6 +242,11 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 			break;
 		case inZoomIn:
 		case inZoomOut:
+			if (::TrackBox (targetWin, theEvent.where, winLocation)) {
+				if (frame != NULL) {
+					
+				}
+			}			
 			break;
 		}
 		break;
