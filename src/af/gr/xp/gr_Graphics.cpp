@@ -198,6 +198,7 @@ void GR_Graphics::setLineProperties ( double    inWidthPixels,
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
+
 #ifndef WITH_PANGO
 UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length)
 {
@@ -233,7 +234,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 		{
 			charWidth = measureUnRemappedChar(currentChar);
 
-			if(charWidth == GR_CW_UNKNOWN)
+			if(charWidth == GR_CW_UNKNOWN || charWidth ==GR_CW_ABSENT)
 				charWidth = 0;
 			else if(UT_isOverstrikingChar(currentChar) != UT_NOT_OVERSTRIKING && charWidth > 0)
 				charWidth = -charWidth;
@@ -879,7 +880,3 @@ void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars,
 
 
 #endif
-
-GR_GraphicsFactory::GR_GraphicsFactory ()
-{
-}

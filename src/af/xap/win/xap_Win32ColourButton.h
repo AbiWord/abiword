@@ -62,7 +62,7 @@ public:
 		else
 			FillRect(dis->hDC, &colourArea, GetSysColorBrush(COLOR_BTNFACE));											
 
-		if (dis->itemState &  ODS_SELECTED == ODS_SELECTED)
+		if ((dis->itemState &  ODS_SELECTED) == ODS_SELECTED)
 			DrawEdge(dis->hDC, &dis->rcItem, EDGE_RAISED, BF_RECT |BF_FLAT);		
 	}
 

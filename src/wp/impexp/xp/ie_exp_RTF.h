@@ -29,7 +29,7 @@
 #include "pl_Listener.h"
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 class PD_Document;
 class PD_Style;

@@ -24,6 +24,8 @@
 #include "ut_string_class.h"
 #include "ut_vector.h"
 
+#include "xap_Strings.h"
+
 #include "ev_Toolbar_Layouts.h"
 #include "ev_EditBits.h"
 
@@ -40,6 +42,8 @@ struct ABI_EXPORT XAP_Toolbar_Factory_lt
 struct ABI_EXPORT XAP_Toolbar_Factory_tt
 {
   const char *				m_name;
+  XAP_String_Id				m_label;
+  const XML_Char*			m_prefKey;
   UT_uint32					m_nrEntries;
   XAP_Toolbar_Factory_lt *	m_lt;
 };
@@ -59,8 +63,12 @@ public:
   void insertItemAfter(void * p, XAP_Toolbar_Id id);
   bool removeToolbarId(XAP_Toolbar_Id id);
   const char * getToolbarName(void);
+  XAP_String_Id getLabelStringID(void);
+  const XML_Char * getPrefKey(void);
 private:
   UT_String m_name;
+  XAP_String_Id m_label;
+  const XML_Char*			m_prefKey;
   UT_Vector m_Vec_lt;
 };
 
@@ -87,9 +95,13 @@ public:
 	bool             resetAllToolbarsToDefault(void);
     bool             saveToolbarsInCurrentScheme(void);
     bool             restoreToolbarsFromCurrentScheme(void);
+	const UT_Vector & 	getToolbarNames(void);
+	UT_uint32			countToolbars(void) const;
+	const XML_Char*		prefKeyForToolbar(UT_uint32 t) const;
 private:
   UT_Vector m_vecTT;
   XAP_App * m_pApp;
+  UT_Vector m_tbNames;
 };
 
 

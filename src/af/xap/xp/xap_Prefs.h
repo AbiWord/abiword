@@ -41,7 +41,8 @@ class UT_String;
 enum {
 	PREF_FLAG_GEOMETRY_POS = 0x1,     // Position is valid
 	PREF_FLAG_GEOMETRY_SIZE = 0x2,    // Size is valid
-	PREF_FLAG_GEOMETRY_NOUPDATE = 0x4 // User specified, don't update it
+	PREF_FLAG_GEOMETRY_NOUPDATE = 0x4, // User specified, don't update it
+	PREF_FLAG_GEOMETRY_MAXIMIZED = 0x8 // Maximize at start
 };
 
 typedef void (*PrefsListener) (

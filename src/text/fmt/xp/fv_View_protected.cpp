@@ -64,7 +64,7 @@
 #include "fd_Field.h"
 #include "spell_manager.h"
 #include "ut_rand.h"
-
+#include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
@@ -2899,13 +2899,13 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			return true;
 		}
 		PT_DocPosition curpos = pBlock->getPosition() + pCurRun->getBlockOffset();
-		if (pCurRun == pRun2 || curpos >= posEnd)
+		if ((pCurRun->getLength() > 0 ) && (pCurRun == pRun2 || curpos >= posEnd))
 		{
 			bDone = true;
 		}
 		if(curpos > posEnd)
 		{
-			break;
+//			break;
 		}
 		xxx_UT_DEBUGMSG(("draw_between positions pos is %d width is %d \n",curpos,pCurRun->getWidth()));
 		UT_ASSERT(pBlock);
@@ -2925,7 +2925,14 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				{
 					CellLine * pCellLine = new CellLine();
 					pCellLine->m_pCell = pCell;
-					pCellLine->m_pBrokenTable = pTab;
+					if(!pCell->isInNestedTable())
+					{
+						pCellLine->m_pBrokenTable = pTab;
+					}
+					else
+					{
+						pCellLine->m_pBrokenTable = NULL;
+					}
 					pCellLine->m_pLine = pLine;
 					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
 					vecTables.addItem(static_cast<void *>(pCellLine));
@@ -3031,8 +3038,11 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	for(i=0; i< static_cast<UT_sint32>(vecTables.getItemCount()); i++)
 	{
  		CellLine * pCellLine = static_cast<CellLine *>(vecTables.getNthItem(i));
- 		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable); 	
-		pCellLine->m_pCell->drawLinesAdjacent(); 	
+		if(!pCellLine->m_pCell->isInNestedTable())
+		{
+			pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable); 	
+			pCellLine->m_pCell->drawLinesAdjacent();
+		} 	
 	}
 	UT_VECTOR_PURGEALL(CellLine *, vecTables);
 	xxx_UT_DEBUGMSG(("Finished Drawing lines in tables \n"));
@@ -3192,8 +3202,22 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	// will iterate forwards until it actually find a block if there
 	// isn't one previous to pos.
 	// (Removed code duplication. Jesper, 2001.01.25)
-	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
+//
+// Have to deal with special case of point being exactly on a footnote/endnote
+// boundary
+//
+	bool onFootnoteBoundary = false;
+	if(m_pDoc->isFootnoteAtPos(pos))
+	{
+		onFootnoteBoundary = true;
+		pos--;
+	}
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	if(onFootnoteBoundary)
+	{
+		pos++;
+	}
 	// probably an empty document, return instead of
 	// dereferencing NULL.	Dom 11.9.00
 	if(!pBlock)
@@ -3313,7 +3337,6 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		height = iPointHeight;
 	}
-
 	if (ppBlock)
 	{
 		*ppBlock = pBlock;
@@ -3572,7 +3595,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// one pixel border a
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
@@ -3596,7 +3619,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				UT_RGBColor clrPageSep(192,192,192);		// light gray
 				m_pG->setColor(clrPageSep);
 
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
@@ -3640,7 +3663,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
@@ -3686,7 +3709,31 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
 	if (!m_pDoc->getAllowChangeInsPoint())
 		return;
-
+	if(!m_pDoc->isPieceTableChanging())
+	{
+//
+// Have to deal with special case of point being exactly on a footnote/endnote
+// boundary. Move the point past the footnote so we always have Footnote field
+// followed by footnotestrux in the piecetable
+//
+		fl_FootnoteLayout * pFL = NULL;
+		if(m_pDoc->isFootnoteAtPos(pt))
+		{
+			pFL = getClosestFootnote(pt);
+			if(pFL == NULL)
+			{
+				fl_EndnoteLayout * pEL = getClosestEndnote(pt);
+				if(pEL)
+				{
+					pt += pEL->getLength();
+				}
+			}
+			else
+			{
+				pt += pFL->getLength();
+			}
+		}		
+	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 	_fixInsertionPointCoords();
@@ -3790,7 +3837,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
-	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth \n",posOld,iOldDepth));
+	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth %d \n",posOld,iOldDepth));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -3962,7 +4009,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// run on the left of the requested position, so we just need to move
 	// to its end if the position does not fall into that run
 	xxx_UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
-	if(!bForward && (iRunEnd <= m_iInsPoint) && (pRun->getBlockOffset() > 0))
+	if(!bForward && (iRunEnd < m_iInsPoint) && (pRun->getBlockOffset() > 0))
 	{
 		_setPoint(iRunEnd - 1);
 	}

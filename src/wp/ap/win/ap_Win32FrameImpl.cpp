@@ -595,7 +595,7 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	// register class for the container window (this will contain the document
 	// and the rulers and the scroll bars)
 
-	_snprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, "%SContainer", app->getApplicationName());
+	_snprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, "%sContainer", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
@@ -615,7 +615,7 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	UT_return_val_if_fail(a, false);
 
 	// register class for the actual document window
-	_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%SDocument", app->getApplicationName());
+	_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);

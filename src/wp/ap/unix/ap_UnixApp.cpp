@@ -117,10 +117,10 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <bonobo/bonobo-macros.h>
 #include <bonobo/bonobo-object.h>
-
+#include <libart_lgpl/art_affine.h>
 #include "xap_UnixGnomePrintGraphics.h"
 #include "ap_EditMethods.h"
-
+#include <libgnomeprint/gnome-print.h>
 static int mainBonobo(int argc, const char ** argv);
 #endif
 #ifdef LOGFILE
@@ -1041,7 +1041,7 @@ static gint s_hideSplash(gpointer /*data*/)
 {
     if (wSplash)
     {
-		gtk_timeout_remove(death_timeout_handler);
+		g_source_remove(death_timeout_handler);
 		gtk_widget_destroy(wSplash);
 		wSplash = NULL;
 		DELETEP(pUnixGraphics);
@@ -1078,7 +1078,7 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 		{
 			firstExpose = true;
 			// kill the window after splashTimeoutValue ms
-			death_timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
+			death_timeout_handler = g_timeout_add_full(0,splashTimeoutValue, s_hideSplash, NULL,NULL);
 		}
     }
 
@@ -1429,6 +1429,11 @@ void AP_UnixApp::initPopt (AP_Args * Args)
 #endif
 }
 
+
+#define PMSCALE 0.5
+#define PMW (PMSCALE * P_WIDTH)
+#define PMH (PMSCALE * P_HEIGHT)
+
 /*!
  * A callback for AP_Args's doWindowlessArgs call which handles
  * platform-specific windowless args.
@@ -1479,10 +1484,13 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			if (Args->m_expProps)
 				conv.setExpProps (Args->m_expProps);
 
-			PS_GraphicsFactory printFactory (Args->m_sPrintTo);
+			PS_Graphics pGraphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
+								   Args->m_sPrintTo, 
+								   pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
+								   (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
 
 			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, printFactory);
+			conv.print (Args->m_sFile, &pGraphics);
 	    }
 		else
 	    {
@@ -1492,6 +1500,67 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 
 		return false;
 	}
+	if (Args->m_iToThumb > 0) 
+	{
+
+#ifdef HAVE_GNOME
+
+		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
+	    {
+#if 0 // work out how to do this later
+			AP_Convert conv ;
+			if (Args->m_impProps)
+				conv.setImpProps (Args->m_impProps);
+			if (Args->m_expProps)
+				conv.setExpProps (Args->m_expProps);
+			UT_String sdimXY = Args->m_sThumbXY;
+			UT_uint32 loc = UT_String_findCh(sdimXY,'x');
+			if(loc>(size_t)-10)
+			{
+				return false;
+			}
+			UT_String sX = sdimXY.substr(0,loc);
+			UT_String sY = sdimXY.substr(loc+1,sdimXY.size());
+			UT_sint32 iX = atoi(sX.c_str());
+			UT_sint32 iY = atoi(sY.c_str());
+			guchar * buf;
+			gdouble p2b[6];
+			gint bpp = 3;
+			art_affine_scale (p2b, 1.0, -1.0);
+			p2b[5] = iY; // number of pixels in height
+			buf = g_new (guchar, iX * iY * bpp); 
+
+			GnomePrintContext * pc = gnome_print_rbuf_new (buf, iX, iY, bpp * iX, p2b, FALSE);
+
+			PD_Document *pDoc = new PD_Document(this);
+			pDoc->readFromFile(Args->m_sFile, IEFT_Unknown, Args->m_impProps);
+			double inWidth = pDoc->m_docPageSize.Width(DIM_IN);
+			double inHeight = pDoc->m_docPageSize.Height(DIM_IN);
+			XAP_UnixGnomePrintGraphics * pGraphics = new XAP_UnixGnomePrintGraphics(pc, inWidth,inHeight);
+			conv.setVerbose(Args->m_iVerbose);
+			conv.printFirstPage (pGraphics,pDoc);
+			UNREFP(pDoc);
+			gnome_print_context_close (pc);
+			GdkPixbuf* pb = gdk_pixbuf_new_from_data (buf, GDK_COLORSPACE_RGB, 
+													  false,
+													  8, iX, iY, bpp * iX, 
+													  NULL, NULL);
+			GError * err;
+			gdk_pixbuf_save(pb,Args->m_sThumb,"png",&err);
+#endif
+			return true;
+	    }
+		else
+	    {
+			// couldn't load document
+			fprintf(stderr, "Error: no file to print!\n");
+	    }
+		
+		return false;
+#else
+		fprintf(stderr,"Only works in GNOME build \n");
+#endif
+	}
 
 	if(Args->m_sPlugin)
 	{
@@ -1500,9 +1569,11 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 //
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
-		Args->m_sPlugin = poptGetArg(Args->poptcon);
+		const char * szRequest = NULL;
+		//		szRequest = poptGetArg(Args->poptcon);
+		szRequest = Args->m_sPlugin;
 		bool bFound = false;	
-		printf(" Looking for plugin name %s \n",Args->m_sPlugin);
+		printf(" Looking for plugin name %s \n",szRequest);
 		if(Args->m_sPlugin != NULL)
 		{
 			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
@@ -1512,7 +1583,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 				pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
 				szName = pModule->getModuleInfo()->name;
 				printf("Plugin %s loaded \n",szName);
-				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+				if(UT_strcmp(szName,szRequest) == 0)
 				{
 					printf("plugin %s found sending control there! \n",szName);
 					bFound = true;
@@ -1521,7 +1592,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			printf("Plugin %s not found or loaded \n",szRequest);
 			return false;
 		}
 //
