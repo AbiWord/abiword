@@ -768,7 +768,7 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 	{
 		for(UT_sint32 n = 0; n < m_iLength; n++)
 		{
-			if(s_pWidthBuff[n+1] < 0 || s_pWidthBuff[n+1] >= GR_OC_LEFT_FLUSHED)
+			if((n < m_iLength - 1) && ((s_pWidthBuff[n+1] < 0) || (s_pWidthBuff[n+1] >= GR_OC_LEFT_FLUSHED)))
 			{
 				// remember the width of the non-zero character
 				UT_sint32 iWidth = s_pWidthBuff[n];
