@@ -550,10 +550,6 @@ private:
 
 	UT_UTF8String           m_mailMergeLink;
 
-public:
-	UT_XML_ID_Generator		m_XML_ID;
-
-private:
 	// these are for use with the export*VisDirection functions
 	const fl_BlockLayout *  m_pVDBl;
 	fp_Run *                m_pVDRun;

@@ -468,7 +468,7 @@ UT_GenericUTF8Hash::UT_GenericUTF8Hash (UT_uint32 increment) :
 
 UT_GenericUTF8Hash::~UT_GenericUTF8Hash ()
 {
-	clear ();
+	clear (false);
 	if (m_pair) free (m_pair);
 }
 
@@ -552,7 +552,37 @@ bool UT_GenericUTF8Hash::del (const char * key)
 	return removed;
 }
 
+/* returns false if no such key-value
+ */
+bool UT_GenericUTF8Hash::del (const UT_UTF8String & key)
+{
+	UT_GenericBase * value = 0;
+
+	bool removed = del (key, value);
+
+	if (removed && value)
+		delete value;
+
+	return removed;
+}
+
 bool UT_GenericUTF8Hash::del (const char * key, UT_GenericBase *& value) // return value rather than deleting
+{
+	UT_uint32 index;
+	if (!lookup (key, index)) return false;
+
+	value = m_pair[index]->getValue ();
+
+	delete m_pair[index];
+
+	if (index < --m_pair_count)
+		{
+			memmove (m_pair + index, m_pair + index + 1, (m_pair_count - index) * sizeof (KeyValue *));
+		}
+	return true;
+}
+
+bool UT_GenericUTF8Hash::del (const UT_UTF8String & key, UT_GenericBase *& value) // return value rather than deleting
 {
 	UT_uint32 index;
 	if (!lookup (key, index)) return false;
@@ -695,7 +725,7 @@ UT_UTF8Hash::UT_UTF8Hash () :
 
 UT_UTF8Hash::~UT_UTF8Hash ()
 {
-	// 
+	clear ();
 }
 
 bool UT_UTF8Hash::pair (UT_uint32 index, const UT_UTF8String *& key, const UT_UTF8String *& value) const
@@ -782,7 +812,21 @@ bool UT_UTF8Hash::ins (const char ** attrs)
 	return okay;
 }
 
-bool UT_UTF8Hash::del (const char * key, UT_UTF8String *& value) // return value rather than deleting
+/* return value rather than deleting
+ */
+bool UT_UTF8Hash::del (const char * key, UT_UTF8String *& value)
+{
+	UT_GenericBase * generic_value = 0;
+
+	bool found = UT_GenericUTF8Hash::del (key, generic_value);
+
+	value = static_cast<UT_UTF8String *>(generic_value);
+	return found;
+}
+
+/* return value rather than deleting
+ */
+bool UT_UTF8Hash::del (const UT_UTF8String & key, UT_UTF8String *& value)
 {
 	UT_GenericBase * generic_value = 0;
 

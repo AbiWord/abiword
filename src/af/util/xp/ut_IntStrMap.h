@@ -201,15 +201,18 @@ private:
 protected:
 	UT_GenericUTF8Hash (UT_uint32 increment);
 public:
-	virtual ~UT_GenericUTF8Hash ();
-
-	/* deletes all key/value pairs, but doesn't free() array of pointers
+	/* the destructor calls clear(false);
+	 * subclasses' destructors should call clear(true) if values need to be deleted
 	 */
-	void clear (bool delete_values = true);
+	virtual ~UT_GenericUTF8Hash ();
 
 	inline UT_uint32 count () const { return m_pair_count; }
 
 protected:
+	/* deletes all key/value pairs, but doesn't free() array of pointers
+	 */
+	void clear (bool delete_values);
+
 	/* for easy sequential access of map members:
 	 */
 	virtual bool pair (UT_uint32 index, const UT_UTF8String *& key, const UT_GenericBase *& value) const;
@@ -221,7 +224,12 @@ protected:
 	/* returns false if no such key-value
 	 */
 	virtual bool del (const char * key);
-	virtual bool del (const char * key, UT_GenericBase *& value); // return value rather than deleting
+	virtual bool del (const UT_UTF8String & key);
+
+	/* return value rather than deleting
+	 */
+	virtual bool del (const char * key, UT_GenericBase *& value);
+	virtual bool del (const UT_UTF8String & key, UT_GenericBase *& value);
 
 	virtual const UT_GenericBase * lookup (const char * key);
 	virtual const UT_GenericBase * lookup (const UT_UTF8String & key);
@@ -250,6 +258,11 @@ public:
 
 	~UT_UTF8Hash ();
 
+	inline void clear ()
+	{
+		UT_GenericUTF8Hash::clear (true);
+	}
+
 	/* for easy sequential access of map members:
 	 */
 	bool pair (UT_uint32 index, const UT_UTF8String *& key, const UT_UTF8String *& value) const;
@@ -271,7 +284,15 @@ public:
 	{
 		return UT_GenericUTF8Hash::del (key);
 	}
-	bool del (const char * key, UT_UTF8String *& value); // return value rather than deleting
+	inline bool del (const UT_UTF8String & key)
+	{
+		return UT_GenericUTF8Hash::del (key);
+	}
+
+	/* return value rather than deleting
+	 */
+	bool del (const char *          key, UT_UTF8String *& value);
+	bool del (const UT_UTF8String & key, UT_UTF8String *& value);
 
 	inline const UT_UTF8String * operator[] (const char * key)
 	{
