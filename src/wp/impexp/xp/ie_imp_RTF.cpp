@@ -3,6 +3,7 @@
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
+ * Copyright (C) 2001, 2004 Hubert Figuiere <hfiguiere@teaser.fr>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -9187,22 +9188,12 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, UT_sint
  */
 bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 {
-	UT_Byte ch = 0;
-	UT_String bookmarkName;
+	UT_UTF8String bookmarkName;
 
 	xxx_UT_DEBUGMSG(("hub: HandleBookmark of type %d\n", type));
 
-
-	while (ch != '}')
-	{
-		if (!ReadCharFromFile(&ch)) {
-			return false;
-		}
-		if (ch != '}') {
-			bookmarkName += ch;
-		}
-	}
-	SkipBackChar (ch);
+	/* read the bookmark name. It is PCDATA hence we are likely to find non ASCII data.*/
+	HandlePCData(bookmarkName);
 
 	const XML_Char * props [5];
 	props [0] = "type";
@@ -9219,7 +9210,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		break;
 	}
 	props [2] = "name";
-	props [3] = bookmarkName.c_str();
+	props [3] = bookmarkName.utf8_str();
 	props [4] = NULL;
 	xxx_UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 	if(m_bCellBlank || m_bEndTableOpen)
