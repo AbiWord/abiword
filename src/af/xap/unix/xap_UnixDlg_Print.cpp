@@ -364,7 +364,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 			gtk_widget_show (label);
 
-			GtkObject * adjustment = gtk_adjustment_new(1, 1, 50, 1, 5, 0.0);
+			GtkObject * adjustment = gtk_adjustment_new(1, 1, 200, 1, 5, 0.0);
 			spinCopies  = gtk_spin_button_new( GTK_ADJUSTMENT(adjustment), 1, 0 );
 			//gtk_scale_set_digits(GTK_SCALE(spinCopies), 0);
 			gtk_box_pack_start (GTK_BOX (hbox), spinCopies, FALSE, TRUE, 0);
