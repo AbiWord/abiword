@@ -469,10 +469,8 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// We write this first so that the sniffer can detect AbiWord 
 	// documents more easily.   
 
-#if 0
 	// TODO: write out a DOCTYPE description after we update the DTD
 	m_pie->write ("<!DOCTYPE abw PUBLIC \"-//W3C//DTD ABW 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
-#endif
 
 	m_pie->write("<abiword");
 	m_pie->write(" version=\"");
