@@ -5222,7 +5222,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	{
 		return;
 	}
-	if (1)		// TODO support tables
+	if (true)		// TODO support tables
 	{
 		// we are in a column context
 
@@ -5234,8 +5234,14 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		bool bDirection;
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
+		UT_return_if_fail(pRun);
+
 		fp_Container * pContainer = pRun->getLine()->getContainer();
 		fl_SectionLayout * pSection = pContainer->getSectionLayout();
+
+		UT_return_if_fail(pContainer);
+		UT_return_if_fail(pSection);
+
 		if (pSection->getType() == FL_SECTION_DOC)
 		{
 			fp_Column* pColumn = (fp_Column*) pContainer;
