@@ -77,7 +77,8 @@ static const Ispell2Lang_t m_mapping[] = {
   { "russian.hash",    "ru-RU" },
   { "slovensko.hash",  "sl-SI" },
   { "svenska.hash",    "sv-SE" },
-  { "ukrainian.hash",  "uk-UA" }
+  { "ukrainian.hash",  "uk-UA" },
+  { "yiddish-yivo.hash",	"yi" }
 };
 
 
