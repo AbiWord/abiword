@@ -296,6 +296,8 @@ bool GR_QNXImage::_convertPNGFromBuffer(const UT_ByteBuf *pBB, UT_sint32 iDispla
 	/*  We want libpng to deinterlace the image for us */
 	UT_uint32 iInterlacePasses = png_set_interlace_handling(png_ptr);
 
+	png_set_bgr(png_ptr);
+
 	UT_uint32 iBytesInRow = width * 3;
 
 	Fatmap* pFM = new Fatmap;
