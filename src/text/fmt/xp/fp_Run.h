@@ -865,11 +865,9 @@ public:
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
-#if 0
 	UT_uint32				getPID() const {return m_iPID;}
 private:
 	UT_uint32 m_iPID;
-#endif
 };
 
 class ABI_EXPORT fp_FieldFootnoteAnchorRun : public fp_FieldRun
@@ -883,11 +881,9 @@ public:
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
-#if 0
 	UT_uint32				getPID() const {return m_iPID;}
 private:
 	UT_uint32 m_iPID;
-#endif
 };
 
 class ABI_EXPORT fp_FieldTimeRun : public fp_FieldRun

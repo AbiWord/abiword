@@ -161,6 +161,14 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 				{
 					fieldType = fd_Field::FD_FileName;
 				}
+				else if (0 == UT_strcmp(pszType, "footnote_ref"))
+				{
+					fieldType = fd_Field::FD_Footnote_Ref;
+				}
+				else if (0 == UT_strcmp(pszType, "footnote_anchor"))
+				{
+					fieldType = fd_Field::FD_Footnote_Anchor;
+				}
 		        else
         		{
 		            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

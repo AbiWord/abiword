@@ -88,6 +88,8 @@ ST_LOCALISED_STYLES stLocalised[] =
 	{"Section Heading",         XAP_STRING_ID_STYLE_SECTHEADING},	
 	{"Endnote Reference",       XAP_STRING_ID_STYLE_ENDREFERENCE},	
 	{"Endnote Text",            XAP_STRING_ID_STYLE_ENDTEXT},		
+	{"Footnote Reference",      XAP_STRING_ID_STYLE_FOOTREFERENCE},	
+	{"Footnote Text",           XAP_STRING_ID_STYLE_FOOTTEXT},		
 	{"Numbered Heading 1",      XAP_STRING_ID_STYLE_NUMHEAD1},		
 	{"Numbered Heading 2",      XAP_STRING_ID_STYLE_NUMHEAD2},		
 	{"Numbered Heading 3",      XAP_STRING_ID_STYLE_NUMHEAD3},		
@@ -234,10 +236,12 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	UT_String_sprintf(stTmp, szFmt, pszFamily, "Section");
     _s("Section Heading","P","Numbered Heading 1","Normal", stTmp.c_str());
 
-#ifndef NDEBUG
 	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Endnote Text","P", "Normal", "Current Settings", "text-position:normal");
-#endif
+
+	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
+	_s("Footnote Text","P", "Normal", "Current Settings", "text-position:normal; font-size8pt");
+
 
 #if 0
 	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");

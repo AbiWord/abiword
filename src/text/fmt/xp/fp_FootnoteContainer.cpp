@@ -89,7 +89,7 @@ void fp_FootnoteContainer::clearScreen(void)
 		getGraphics()->setLineWidth(iLineThick);
 		UT_sint32 yline = yoff;
 		yline = yline - iLineThick - 4; // FIXME This should not be a magic numer!
-		UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
+		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
 		getGraphics()->fillRect(*pBGColor,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
 	}
 
@@ -131,7 +131,7 @@ fl_DocSectionLayout * fp_FootnoteContainer::getDocSectionLayout(void)
 void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 {
 	UT_sint32 pos = getPage()->findFootnoteContainer(this);
-	UT_DEBUGMSG(("fp_Footnote:draw: pos %d \n",pos));
+	xxx_UT_DEBUGMSG(("fp_Footnote:draw: pos %d \n",pos));
 	if(pos == 0)
 	{
 		UT_RGBColor black(0,0,0);
@@ -152,7 +152,7 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		iLineThick = UT_MAX(1,iLineThick);
 		pDA->pG->setLineWidth(iLineThick);
 		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
-		UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
+		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
 		pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
 	}
 	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));

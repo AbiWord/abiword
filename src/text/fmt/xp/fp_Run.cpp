@@ -46,6 +46,7 @@
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fl_FootnoteLayout.h"
+#include "fp_FootnoteContainer.h"
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
@@ -4024,7 +4025,32 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-// END OF DOM NEW FIELDS
+// Count the footnotes on this page before this one.
+
+static UT_sint32 countFootnotesBefore(fp_Page *pPage,const XML_Char * footid)
+{
+	UT_return_val_if_fail(pPage,-1);
+	UT_return_val_if_fail(footid,-1);
+	UT_uint32 iFootID = atoi(footid);
+	UT_uint32 i =0;
+	UT_uint32 noFootnotes = pPage->countFootnoteContainers();
+	UT_sint32 iBefore =-1;
+	for(i=0;i<noFootnotes;i++)
+	{
+		fp_FootnoteContainer * pFC = pPage->getNthFootnoteContainer(i);
+		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC->getSectionLayout();
+		if(pFL->getFootnotePID() == iFootID)
+		{
+			iBefore = i;
+			break;
+		}
+	}
+	return iBefore;
+}
+
+
+// Count the endnotes before this one.
+
 
 static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
 {
@@ -4060,46 +4086,39 @@ static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
 	return endnoteNo;
 }
 
+
+
 // Refers to an footnote in the main body of the text.
 fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-#if 0
 	const PP_AttrProp * pp = getAP();
-	const XML_Char * endid;
-	bool bRes = pp->getAttribute("endnote-id", endid);
+	const XML_Char * footid;
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
-	m_iPID = atol(endid);
-#endif
+	m_iPID = atol(footid);
 }
 
 
 bool fp_FieldFootnoteRefRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
-	const XML_Char * endid;
-	bool bRes = pp->getAttribute("endnote-id", endid);
+	const XML_Char * footid = NULL;
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
-
-	// now we need to find the block's footnote section.
-	fl_FootnoteLayout * pFootL = static_cast<fl_FootnoteLayout *>(getBlock()->getNext());
-
-	// Hmm, this is kind of messy; we can be called before
-	// the endnote section has been added.
-	if (pFootL == NULL)
+	fp_Line * pLine = getLine();
+	fp_Page * pPage = NULL;
+	UT_sint32 iBefore = 0;
+	if(pLine)
 	{
-		UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
-		UT_UCS4_strcpy_char(sz_ucs_FieldValue, "?");
-		return _setValue(sz_ucs_FieldValue);
+		pPage = pLine->getPage();
 	}
-	UT_ASSERT(pFootL->getType() == FL_SECTION_FOOTNOTE);
-
-	// Now, count out how many paragraphs have special endnote-id tags
-	// until we reach the desired paragraph.  (para == block)
-
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pFootL->getFirstLayout();
-	int endnoteNo = countEndnotesBefore(pBL, endid);
+	if(pPage)
+	{
+		iBefore = countFootnotesBefore(pPage,footid);
+	}
+	UT_sint32 footnoteNo = iBefore+1;
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
@@ -4107,7 +4126,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	UT_String szFieldValue;
 
 	// How do we superscript the endnote?
-	szFieldValue = UT_String_sprintf ("[%d]", endnoteNo);
+	szFieldValue = UT_String_sprintf ("[%d]", footnoteNo);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 
@@ -4116,45 +4135,42 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-#if 0
 	const PP_AttrProp * pp = getAP();
-	const XML_Char * endid;
-	bool bRes = pp->getAttribute("endnote-id", endid);
+	const XML_Char * footid;
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
-	m_iPID = atol(endid);
-#endif
+	m_iPID = atoi(footid);
 }
 
 // Appears in the FootnoteContainer, one per footnote.
 bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
-	const XML_Char * endid;
-	bool bRes = pp->getAttribute("endnote-id", endid);
+	const XML_Char * footid = NULL;
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
-
-	fl_SectionLayout * pFootSL = getBlock()->getSectionLayout();
-	//UT_ASSERT((pFootSL->getType() == FL_SECTION_ENDNOTE));
-
-	// this can happen when we delete last endnote
-	if(pFootSL->getType() != FL_SECTION_FOOTNOTE)
-		return false;
-	// Now, count out how many paragraphs have special endnote-id tags
-	// until we reach the desired paragraph.  (para == block)
-
-	// should this actually be refactored?
-
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pFootSL->getFirstLayout();
-	int endnoteNo = countEndnotesBefore(pBL, endid);
+	fp_Line * pLine = getLine();
+	fp_Page * pPage = NULL;
+	UT_sint32 iBefore = 0;
+	if(pLine)
+	{
+		pPage = pLine->getPage();
+	}
+	if(pPage)
+	{
+		iBefore = countFootnotesBefore(pPage,footid);
+	}
+	UT_sint32 footnoteNo = iBefore+1;
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
 	UT_String szFieldValue;
 
-	szFieldValue = UT_String_sprintf ("[%d] ", endnoteNo);
+	// How do we superscript the endnote?
+	szFieldValue = UT_String_sprintf ("[%d]", footnoteNo);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 

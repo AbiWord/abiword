@@ -68,6 +68,7 @@ class fl_ContainerLayout;
 class fl_BlockLayout;
 class fl_HdrFtrSectionLayout;
 class fl_HdrFtrShadow;
+class fl_FootnoteLayout;
 class fb_LineBreaker;
 class fp_ShadowContainer;
 class fp_Column;
@@ -189,6 +190,8 @@ public:
 	virtual fp_Container * getLastContainer(void) const;
 	virtual void        setFirstContainer(fp_Container * pCon);
 	virtual void        setLastContainer(fp_Container * pCon);
+	
+	fl_FootnoteLayout  *       getFootnoteLayout(UT_uint32 footnotePID);
 
 
 	virtual void        markAllRunsDirty(void);
@@ -209,7 +212,7 @@ public:
 	UT_uint32                   getColumnGap(void) const;
 	UT_uint32			        getFootnoteLineThickness(void) const
 		{ return m_iFootnoteLineThickness;}
-	
+
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32			getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }

@@ -65,7 +65,8 @@ public:
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
-
+	UT_uint32                getFootnotePID(void) const
+		{return m_iFootnotePID;}
 protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);
@@ -77,6 +78,7 @@ private:
 	fl_DocSectionLayout*	 m_pDocSL;
 	bool                   m_bNeedsFormat;
 	bool                   m_bNeedsRebuild;
+	UT_uint32              m_iFootnotePID;
 };
 
 #endif /* FOOTNOTELAYOUT_H */

@@ -656,7 +656,7 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
 	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
-
+	UT_DEBUGMSG(("ap_TopRulerDrawPara: bRTL = %d \n",bRTL));
 	if (m_draggingWhat == DW_LEFTINDENTWITHFIRST)
 	{
 		if(bRTL)

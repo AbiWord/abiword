@@ -386,6 +386,31 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	}
 }
 
+fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
+{
+	fl_ContainerLayout * pCL = getFirstLayout();
+	fl_FootnoteLayout * pFL = NULL;
+	bool bFound = false;
+	while(pCL && !bFound)
+	{
+		if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		{
+			pFL = (fl_FootnoteLayout *) pCL;
+			if(pFL->getFootnotePID() == pid)
+			{
+				bFound = true;
+				break;
+			}
+		}
+		pCL = pCL->getNext();
+	}
+	if(bFound)
+	{
+		return pFL;
+	}
+	return NULL;
+}
+			
 void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL)
 {
 	if(pHFSL == NULL)

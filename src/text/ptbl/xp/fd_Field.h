@@ -77,6 +77,9 @@ class ABI_EXPORT fd_Field
 		
 		FD_Endnote_Ref,
 		FD_Endnote_Anchor,
+
+		FD_Footnote_Ref,
+		FD_Footnote_Anchor,
 		
 		FD_PageReference,
 		FD_MailMerge,

@@ -58,7 +58,8 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout*
  	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_FOOTNOTE,FL_CONTAINER_FOOTNOTE,PTX_SectionFootnote,pMyContainerLayout),
 	  m_pDocSL(pDocSL),
 	  m_bNeedsFormat(true),
-	  m_bNeedsRebuild(false)
+	  m_bNeedsRebuild(false),
+	  m_iFootnotePID(0)
 {
 	_createFootnoteContainer();
 	_insertFootnoteContainer(getFirstContainer());
@@ -175,8 +176,6 @@ fl_SectionLayout * fl_FootnoteLayout::getSectionLayout(void) const
 */
 fp_Container* fl_FootnoteLayout::getNewContainer(fp_Container *)
 {
-	UT_ASSERT(getPrev() == NULL);
-	UT_ASSERT((getFirstContainer() == NULL) && (getLastContainer()==NULL));
 	UT_DEBUGMSG(("PLAM: creating new footnote container\n"));
 	_createFootnoteContainer();
 	_insertFootnoteContainer(getFirstContainer());
@@ -185,7 +184,7 @@ fp_Container* fl_FootnoteLayout::getNewContainer(fp_Container *)
 
 void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 {
-	UT_DEBUGMSG(("inserting footnote container into parent container\n"));
+	UT_DEBUGMSG(("inserting footnote container into container list\n"));
 	fl_ContainerLayout * pUPCL = myContainingLayout();
 	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) getPrev();
 	fp_Container * pPrevCon = NULL;
@@ -196,15 +195,25 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 	if(pPrevL != NULL)
 	{
 		pPrevCon = pPrevL->getLastContainer();
+		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			pPrevCon = (fp_Container *) static_cast<fl_BlockLayout *>(pPrevL)->findLineWithFootnotePID(getFootnotePID());
+		}
 		pUpCon = pPrevCon->getContainer();
 	}
 	else
 	{
 		pUpCon = pUPCL->getLastContainer();
 	}
-
-	pPage = pUpCon->getPage();
-	pNewFC->setContainer(pUpCon);
+	if(pPrevCon)
+	{
+		pPage = pPrevCon->getPage();
+	}
+	else
+	{
+		pPage = pUpCon->getPage();
+	}
+	pNewFC->setContainer(NULL);
 
 	// need to put onto page as well, in the appropriate place.
 	UT_ASSERT(pPage);
@@ -307,11 +316,20 @@ bool fl_FootnoteLayout::recalculateFields(UT_uint32 iUpdateCount)
 
 void fl_FootnoteLayout::_lookupProperties(void)
 {
-// 	const PP_AttrProp* pSectionAP = NULL;
+ 	const PP_AttrProp* pSectionAP = NULL;
 
-// 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
+	const XML_Char *pszFootnotePID = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("footnote-id",pszFootnotePID))
+	{
+		m_iFootnotePID = 0;
+	}
+	else
+	{
+		m_iFootnotePID = atoi(pszFootnotePID);
+	}
 }
 
 void fl_FootnoteLayout::_localCollapse(void)
@@ -335,17 +353,16 @@ void fl_FootnoteLayout::_localCollapse(void)
 void fl_FootnoteLayout::collapse(void)
 {
 	_localCollapse();
-
 	fp_FootnoteContainer *pFC = (fp_FootnoteContainer *) getFirstContainer();
-//
-// Remove it from the footnote container
-//
 	if (pFC)
 	{
-		fp_Column * pCol = (fp_Column *) pFC->getContainer();
-		if(pCol)
+//
+// Remove it from the page.
+//
+		if(pFC->getPage())
 		{
-			pCol->removeContainer(pFC);
+			pFC->getPage()->removeFootnoteContainer(pFC);
+			pFC->setPage(NULL);
 		}
 //
 // remove it from the linked list.

@@ -38,6 +38,7 @@
 #include "fl_BlockLayout.h"
 #include "fl_Squiggles.h"
 #include "fl_SectionLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fl_AutoNum.h"
 #include "fp_Page.h"
 #include "fp_PageSize.h"
@@ -5479,7 +5480,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 // Clear the rest of the info
 //
 	memset(pInfo,0,sizeof(*pInfo));
-	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_SECTION_FOOTNOTE)
+	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
 	{
 		fp_Column* pColumn = NULL;
 		fl_DocSectionLayout* pDSL = NULL;
@@ -5508,7 +5509,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
-		if(pSection->getContainerType() == FL_SECTION_FOOTNOTE)
+		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
 		{
 			pInfo->m_iCurrentColumn = 1;
 			pInfo->m_iNumColumns = 1;
@@ -5521,7 +5522,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
-		
+		UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
 	}
 	else if(isHdrFtrEdit())
 	{
@@ -5696,6 +5697,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 {
 	memset(pInfo,0,sizeof(*pInfo));
+	UT_DEBUGMSG(("ap_LeftRulerInfo: get Leftruler info \n"));
 
 	if (1)								// TODO support tables
 	{
@@ -5741,11 +5743,13 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		fl_DocSectionLayout * pDSL = NULL;
 		fp_Container * pContainer = pRun->getLine()->getContainer();
 		bool isFootnote = false;
-		if(pContainer->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
+		if(pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			pSection = pContainer->getPage()->getOwningSection();
 			pDSL = (fl_DocSectionLayout *) pSection;
 			isFootnote = true;
+			UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else
 		{
@@ -7444,7 +7448,7 @@ bool FV_View::insertFootnote()
 		return false;
 
 	// add field for footnote reference
-	// first, make up an id for this endnote.
+	// first, make up an id for this footnote.
 	static XML_Char footpid[15];
 	UT_uint32 pid = 0;
 	while (pid < AUTO_LIST_RESERVED)
@@ -7452,12 +7456,12 @@ bool FV_View::insertFootnote()
 	sprintf(footpid, "%i", pid);
 
 	const XML_Char* attrs[] = {
-		"endnote-id", footpid,
+		"footnote-id", footpid,
 		NULL, NULL
 	};
 
 	/*	Apply the character style at insertion point and insert the
-		Endnote reference. */
+		Footnote reference. */
 
 	PT_DocPosition FrefStart = getPoint();
 	PT_DocPosition FrefEnd = FrefStart + 1;
@@ -7474,23 +7478,21 @@ bool FV_View::insertFootnote()
 
 	PT_DocPosition dpFT = 0;
 
-	if (pDSL->getEndnote() == NULL)
-	{
-		PT_DocPosition dpBody = getPoint();
+	PT_DocPosition dpBody = getPoint();
 
-		if (!insertFootnoteSection(footpid))
-			return false;
-		dpFT = getPoint()+1; // +1 compensates for field insertion
-		bCreatedFootnoteSL = true;
-		_setPoint(dpBody);
-	}
-	fl_DocSectionLayout * pFootnoteSL = pDSL->getEndnote();
-
-	if (cmdInsertField("endnote_ref", attrs)==false)
+	if (!insertFootnoteSection(footpid))
 		return false;
-	setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+	dpFT = getPoint()+1; // +1 compensates for field insertion
+	bCreatedFootnoteSL = true;
+	_setPoint(dpBody);
+	UT_uint32 iFootpid = atoi(footpid);
+	fl_FootnoteLayout * pFootnoteSL = pDSL->getFootnoteLayout(iFootpid);
 
-	// Also endnote-id should not follow to next paras.
+	if (cmdInsertField("footnote_ref", attrs)==false)
+		return false;
+	setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+
+	// Also footnote-id should not follow to next paras.
 
 	fl_BlockLayout * pBL;
 
@@ -7498,9 +7500,9 @@ bool FV_View::insertFootnote()
 		_setPoint(dpFT);
 	else
 	{
-		// warp to endnote section.
+		// warp to footnote section.
 		// We know the position of the reference mark, so we will search from
-		// the start up to this position for all endnote_ref runs and count
+		// the start up to this position for all footnote_ref runs and count
 		// them. From this we will work out our position and insert the block
 		// at the appropriate place, this will automatically ensure that
 		// the field resolves to correct number
@@ -7529,7 +7531,7 @@ bool FV_View::insertFootnote()
 					if(pRun->getType() == FPRUN_FIELD)
 					{
 						fp_FieldRun * pF = static_cast<fp_FieldRun *>(pRun);
-						if(pF->getFieldType() == FPFIELD_endnote_ref)
+						if(pF->getFieldType() == FPFIELD_footnote_ref)
 						{
 							enoteCount++;
 						}
@@ -7556,12 +7558,12 @@ bool FV_View::insertFootnote()
 		// and insert a new block
 		UT_DEBUGMSG(("fv_View::insertFootnote: FrefStart %d, enoteCount %d\n", FrefStart, enoteCount));
 
-		// count through enoteCount distinct endnote ids
+		// count through enoteCount distinct footnote ids
 		XML_Char * previd = NULL;
 
 		while(pBL)
 		{
-			// skip any non-endnote blocks
+			// skip any non-footnote blocks
 			UT_DEBUGMSG(("enoteCount %d\n", enoteCount));
 
 			UT_ASSERT(pBL);
@@ -7571,7 +7573,7 @@ bool FV_View::insertFootnote()
 				break;
 
 			const XML_Char * someid;
-			pp->getAttribute("endnote-id", someid);
+			pp->getAttribute("footnote-id", someid);
 
 			if (!previd || (previd && someid && UT_strcmp(someid, previd) != 0))
 			{
@@ -7591,8 +7593,8 @@ bool FV_View::insertFootnote()
 		if (previd != NULL)
 			free(previd);
 
-		// now if we do not have a block, we are inserting the last endnote
-		// so we will just get the last block in the section and move to the end
+		// now if we do not have a block, we are inserting the last footnote
+		// so we will just get the last block in the section and move to the foot
 		// if we do have a block, we move to the start of it
 		PT_DocPosition dp;
 
@@ -7606,7 +7608,7 @@ bool FV_View::insertFootnote()
 			bool bRes = pBL->getAttrProp(&pp);
 			if (bRes)
 			{
-				pp->getAttribute("endnote-id", someid);
+				pp->getAttribute("footnote-id", someid);
 				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",footpid,someid));
 			}
 #endif
@@ -7626,7 +7628,7 @@ bool FV_View::insertFootnote()
 			bool bRes = pBL->getAttrProp(&pp);
 			if (bRes)
 			{
-				pp->getAttribute("endnote-id", someid);
+				pp->getAttribute("footnote-id", someid);
 				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",footpid,someid));
 			}
 #endif
@@ -7638,7 +7640,7 @@ bool FV_View::insertFootnote()
 
 		// add new block.
 		const XML_Char* block_attrs[] = {
-			"endnote-id", footpid,
+			"footnote-id", footpid,
 			NULL, NULL
 		};
 
@@ -7663,7 +7665,7 @@ bool FV_View::insertFootnote()
 
 	_clearSelection();
 	_setPoint(FanchStart);
-	if (cmdInsertField("endnote_anchor", attrs)==false)
+	if (cmdInsertField("footnote_anchor", attrs)==false)
 		return false;
 	FanchEnd = getPoint();
 
@@ -7712,12 +7714,12 @@ bool FV_View::insertFootnote()
 bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 {
 	const XML_Char* block_attrs[] = {
-		"endnote-id", enpid,
+		"footnote-id", enpid,
 		NULL, NULL
 	};
 
 	const XML_Char* block_attrs2[] = {
-		"endnote-id", enpid,
+		"footnote-id", enpid,
 		"style", "Normal", // xxx 'Footnote Body'
 		NULL, NULL
 	};

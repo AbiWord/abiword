@@ -718,6 +718,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 
 	// if not, we walk backwards thru the list and try to find it.
 	UT_sint32 numEndTable = 0;
+	UT_sint32 numEndFootnote = 0;
 	for (pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
@@ -726,9 +727,17 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 			{
 				numEndTable++;
 			}
-			if(pfsTemp->getStruxType() == PTX_SectionTable)
+			else if(pfsTemp->getStruxType() == PTX_SectionTable)
 			{
 				numEndTable--;
+			}
+			else if(pfsTemp->getStruxType() == PTX_EndFootnote)
+			{
+				numEndFootnote++;
+			}
+			else if(pfsTemp->getStruxType() == PTX_SectionFootnote)
+			{
+				numEndFootnote--;
 			}
 			if (pfsTemp->getStruxType() == pts || (pts == PTX_Section && pfsTemp->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsTemp->getStruxType() == PTX_Block))	// did we find it
 			{

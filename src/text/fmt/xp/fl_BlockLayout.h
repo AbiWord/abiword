@@ -201,7 +201,7 @@ public:
 
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;
-
+	fp_Line *       findLineWithFootnotePID(UT_uint32 pid);
 	UT_sint32 getMaxNonBreakableRun(void);
 
 	fp_Line* findPrevLineInDocument(fp_Line*);

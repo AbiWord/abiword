@@ -35,6 +35,7 @@
 #include "fb_LineBreaker.h"
 #include "fb_Alignment.h"
 #include "fp_Column.h"
+#include "fp_FootnoteContainer.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
@@ -815,6 +816,38 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 		return pDSL;
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return NULL;
+}
+
+
+fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid)
+{
+	fp_Line * pLine = (fp_Line *) getFirstContainer();
+	UT_Vector vecFoots;
+	bool bFound = false;
+	while(pLine && !bFound)
+	{
+		vecFoots.clear();
+		if(pLine->getFootnoteContainers(&vecFoots))
+		{
+			UT_uint32 i = 0;
+			for(i=0; i< vecFoots.getItemCount(); i++)
+			{
+				fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFoots.getNthItem(i);
+				fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC->getSectionLayout();
+				if(pFL->getFootnotePID() == pid)
+				{
+					bFound = true;
+					break;
+				}
+			}
+		}
+		pLine = (fp_Line *) pLine->getNext();
+	}
+	if(bFound)
+	{
+		return pLine;
+	}
 	return NULL;
 }
 
@@ -3064,11 +3097,11 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	{
 		pNewRun = new fp_FieldListLabelRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "endnote_ref") == 0)
+	else if(UT_strcmp(pszType, "footnote_ref") == 0)
 	{
 		pNewRun = new fp_FieldFootnoteRefRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
+	else if(UT_strcmp(pszType, "footnote_anchor") == 0)
 	{
 		pNewRun = new fp_FieldFootnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
