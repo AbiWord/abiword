@@ -4183,6 +4183,12 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 			// TODO don't have a backpointer to it.
 			// UT_DEBUGMSG(("_auto: [xp %ld][yp %ld] [w %ld][h %ld]\n",
 			//			 xPos,yPos,pView->m_iWindowWidth,pView->m_iWindowHeight));
+			//
+			// Sevior: Is This what you wanted? Uncomment these lines when
+			// needed.
+            //
+			//XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+			//UT_ASSERT((pFrame));
 
 			if (yPos < 0)
 			{

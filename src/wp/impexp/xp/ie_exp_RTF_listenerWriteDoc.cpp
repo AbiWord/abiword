@@ -380,6 +380,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_apiThisBlock = 0;
 	m_sdh = NULL;
 	m_bToClipboard = bToClipboard;
+	_setTabEaten(false);
 	// when we are going to the clipboard, we should implicitly
 	// assume that we are starting in the middle of a section
 	// and block.  when going to a file we should not.
@@ -411,10 +412,26 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			_openSpan(api);
 			
 			PT_BufIndex bi = pcrs->getBufIndex();
-			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
+			const UT_UCSChar * pData = m_pDocument->getPointer(bi);
+//
+// Code to deal with the tab following a list label. Eat it!!
+//
+			UT_uint32 length = pcrs->getLength();
+			if(_isListBlock() && !_isTabEaten())
+			{
+				if(*pData == UCS_TAB)
+				{	
+					_setTabEaten(true);
+					pData++;
+					length--;
+					if(length == 0)
+						return true;
+				}
+			}
+			_openSpan(api);
+			_outputData(pData,length);
 
 			return true;
 		}
@@ -457,7 +474,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api)
 {
-  UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  api = %x \n",szPrefix,api));
+  UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
 }
 
 bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
@@ -475,6 +492,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_closeSpan();
 			_closeBlock();
 			_closeSection();
+			_setTabEaten(false);
 
 			// begin a new section.  in RTF this is expressed as
 			//
@@ -491,7 +509,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_closeSpan();
 			_closeBlock();
 			_closeSection();
-
+			_setTabEaten(false);
 			// begin a new section.  in RTF this is expressed as
 			//
 			// <section> := <secfmt>* <hdrftr>? <para>+ (\sect <section>)?
@@ -506,6 +524,8 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		{
 			_closeSpan();
 			_closeBlock();
+			_setListBlock(false);
+			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
 			return true;
@@ -765,6 +785,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		id = atoi(szListid);
 	if(id != 0 )
 	{
+		_setListBlock( true);
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("*");
 		m_pie->_rtf_keyword("abilist");

@@ -65,7 +65,12 @@ protected:
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
-	
+	bool                _isListBlock(void) const { return m_bIsListBlock;}
+	bool                _isTabEaten(void) const { return m_bIsTabEaten;}
+	void                _setListBlock( bool bListBlock) 
+		                             { m_bIsListBlock = bListBlock;}
+	void                _setTabEaten( bool bTabEaten)
+		                             { m_bIsTabEaten = bTabEaten;} 
 	void				_rtf_docfmt(void);
 	void				_rtf_open_section(PT_AttrPropIndex api);
 	void				_rtf_open_block(PT_AttrPropIndex api);
@@ -78,7 +83,8 @@ protected:
 	bool				m_bJustStartingSection;
 	bool				m_bToClipboard;
 	PT_AttrPropIndex	m_apiLastSpan;
-
+	bool                m_bIsListBlock;
+	bool                m_bIsTabEaten;
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
 	UT_Wctomb		m_wctomb;

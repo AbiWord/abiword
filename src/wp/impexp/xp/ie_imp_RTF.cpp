@@ -2712,6 +2712,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			fielddef[1] = "list_label";
 			fielddef[2] = NULL;
 			bret =   m_pDocument->appendObject(PTO_Field,fielddef);
+			UT_UCSChar cTab = UCS_TAB;
+//
+// Put the tab back in.
+//
+			m_pDocument->appendSpan(&cTab,1);
 			return bret;
 		}
 		else
@@ -2727,6 +2732,12 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			if(bPasteList)
 			{
 				bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+				m_dposPaste++;
+//
+// Put the tab back in.
+//
+				UT_UCSChar cTab = UCS_TAB;
+				m_pDocument->insertSpan(m_dposPaste,&cTab,1);
 				m_dposPaste++;
 				PL_StruxDocHandle sdh_cur,sdh_next;
 				PT_DocPosition pos_next;
