@@ -137,6 +137,10 @@ typedef UT_uint32 EV_EditEventMapperResult;
 #define EV_EEMR_COMPLETE		((EV_EditEventMapperResult) 4) /* complete sequence */
 
 /****************************************************************/
+
+// fwd. decl.
+class EV_EditBindingMap;
+
 /****************************************************************/
 
 class EV_EditEventMapper
