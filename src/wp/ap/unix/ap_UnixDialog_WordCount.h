@@ -52,6 +52,14 @@ public:
 
 protected:
 
+	static void s_response(GtkWidget * wid, gint id, AP_UnixDialog_WordCount * me ) ;
+
+	enum
+	  {
+	    BUTTON_UPDATE,
+	    BUTTON_CLOSE
+	  } ResponseId ;
+
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	void				_populateWindowData(void);

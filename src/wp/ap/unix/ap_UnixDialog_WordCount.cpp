@@ -67,19 +67,6 @@ AP_UnixDialog_WordCount::~AP_UnixDialog_WordCount(void)
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_WordCount * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_OK();
-}
-
-
-static void s_update_clicked(GtkWidget * widget, AP_UnixDialog_WordCount * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Update();
-}
-
 static void s_autocheck_clicked(GtkWidget * widget, AP_UnixDialog_WordCount * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -91,15 +78,6 @@ static void s_updateRate_changed(GtkWidget * widget,
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Spin();
-}
-
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixDialog_WordCount * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
 }
 
 /*****************************************************************/
@@ -115,6 +93,13 @@ void  AP_UnixDialog_WordCount::activate(void)
 	gdk_window_raise (m_windowMain->window);
 }
 
+void AP_UnixDialog_WordCount::s_response(GtkWidget * wid, gint id, AP_UnixDialog_WordCount * me )
+{
+  if ( id == BUTTON_CLOSE )
+    me->event_OK () ;
+  else if ( id == BUTTON_UPDATE )
+    me->event_Update () ;
+}
 
 void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
 {
@@ -123,22 +108,7 @@ void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
 
 	UT_ASSERT(mainWindow);
 
-	// Save dialog the ID number and pointer to the widget
-
-	UT_sint32 sid =(UT_sint32)  getDialogId();
-	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
-
-	// This magic command displays the frame that characters will be
-	// inserted into.
-	connectFocusModeless(GTK_WIDGET(mainWindow),m_pApp);
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
+	abiSetupModelessDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CLOSE);
 
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
@@ -289,39 +259,18 @@ void AP_UnixDialog_WordCount::destroy(void)
 GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 {
 	GtkWidget * vbox;
-	GtkWidget * hbuttonboxWordCount;
-	GtkWidget * separator;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-
-	gtk_container_set_border_width(GTK_CONTAINER (m_windowMain), 20);
         ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-	gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
+	m_windowMain = abiDialogNew(true, m_WindowName);
 
-	vbox = gtk_vbox_new (FALSE, 4);
+	vbox = GTK_DIALOG(m_windowMain)->vbox;
 	gtk_widget_show (vbox);
-	gtk_container_add (GTK_CONTAINER (m_windowMain), vbox);
 
 	_constructWindowContents ();
 	gtk_box_pack_start (GTK_BOX (vbox), m_wContent, FALSE, FALSE, 0);
 
-	separator = gtk_hseparator_new ();
-	gtk_box_pack_start(GTK_BOX (vbox), separator, FALSE, TRUE, 0);
-
-	hbuttonboxWordCount = gtk_hbutton_box_new ();
-	g_object_set_data (G_OBJECT (m_windowMain), "hbuttonboxWordCount", hbuttonboxWordCount);
-	gtk_widget_show (hbuttonboxWordCount);
-	gtk_box_pack_start(GTK_BOX (vbox), hbuttonboxWordCount, FALSE, TRUE, 0);
-
-	m_buttonUpdate = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Update));
-	gtk_widget_show (m_buttonUpdate);
-	gtk_box_pack_end(GTK_BOX(hbuttonboxWordCount), m_buttonUpdate, FALSE, FALSE, 0);
-
-	m_buttonClose = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Close));
-	gtk_widget_show (m_buttonClose);
-	gtk_box_pack_end(GTK_BOX(hbuttonboxWordCount), m_buttonClose, FALSE,FALSE, 0);
+	m_buttonUpdate = abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_REFRESH, BUTTON_UPDATE);
+	m_buttonClose = abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE);
 
 	gtk_widget_grab_focus (m_buttonUpdate);
 	_connectSignals ();
@@ -536,17 +485,9 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 
 void AP_UnixDialog_WordCount::_connectSignals(void)
 {
+  g_signal_connect(G_OBJECT(m_windowMain), "response", G_CALLBACK(s_response), this);
+
 	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonClose),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(m_buttonUpdate),
-					   "clicked",
-					   G_CALLBACK(s_update_clicked),
-					   (gpointer) this);
-
 	g_signal_connect (G_OBJECT (m_Spinrange), "value_changed",
 						G_CALLBACK (s_updateRate_changed),
 						(gpointer) this);
@@ -555,18 +496,6 @@ void AP_UnixDialog_WordCount::_connectSignals(void)
 					   "clicked",
 					   G_CALLBACK(s_autocheck_clicked),
 					   (gpointer) this);
-
-	// the catch-alls
-	// Don't use g_signal_connect_after for Modeless dialogs
-	g_signal_connect(G_OBJECT(m_windowMain),
-							 "delete_event",
-							 G_CALLBACK(s_delete_clicked),
-							 (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
 }
 
 
