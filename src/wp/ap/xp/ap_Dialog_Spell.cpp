@@ -384,7 +384,7 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    makeWordVisible ();
    UT_sint32 iNewLength = UT_UCS4_strlen(newword);
 
-   result = m_pView->cmdCharInsert(newword, iNewLength);
+   result = m_pPreserver->cmdCharInsert(newword, iNewLength);
    m_pView->updateScreen();
    
    // If this is the last block, adjust the end length accordingly

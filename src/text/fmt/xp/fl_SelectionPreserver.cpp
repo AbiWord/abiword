@@ -40,3 +40,13 @@ FL_SelectionPreserver::~FL_SelectionPreserver ()
 	if (m_bHadSelection)
 		m_pView->cmdSelect (m_docRange.m_pos1, m_docRange.m_pos2);
 }
+
+bool FL_SelectionPreserver::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
+{
+	// TODO: how to handle bForce???
+	m_docRange.m_pos2 += count;
+	if (!m_pView->isSelectionEmpty ())
+		m_docRange.m_pos2 -= UT_UCS4_strlen (m_pView->getSelectionText());
+
+	return m_pView->cmdCharInsert (text, count, bForce);
+}
