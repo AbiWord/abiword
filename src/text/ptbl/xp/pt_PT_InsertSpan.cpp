@@ -756,6 +756,11 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			case PTO_Field:
 				return pfo->getIndexAP();
 				
+				// TODO: determine what we want to do about these guys
+			case PTO_Bookmark:
+			case PTO_Hyperlink:
+			  return 0;
+
 			default:
 				UT_ASSERT(0);
 				return 0;

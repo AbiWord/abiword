@@ -128,8 +128,10 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 
     _s("Section Heading","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
 
+#ifndef NDEBUG
 	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Endnote Text","P", "Normal", "Current Settings", "text-position:normal");
+#endif
 
 #if 0
 	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
