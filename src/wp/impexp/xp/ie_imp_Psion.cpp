@@ -123,7 +123,7 @@ IE_Imp_Psion::IE_Imp_Psion(PD_Document * pDocument)
 	: IE_Imp(pDocument)
 {
 	// Ouch. This is ugly. We simply never reset it.
-	psiconv_error_handler = &psion_error_handler;
+	psiconv_error_handler = (psiconv_error_handler_t)&psion_error_handler;
 #ifdef UT_DEBUG
 	psiconv_verbosity=PSICONV_VERB_DEBUG;
 #else

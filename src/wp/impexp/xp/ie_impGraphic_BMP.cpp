@@ -266,7 +266,7 @@ UT_Error IE_ImpGraphic_BMP::Initialize_PNG()
 	m_pBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
 
 	/* Setting up the Data Writing Function */
-	png_set_write_fn(m_pPNG, (void *)m_pBB, _write_png, _write_flush);
+	png_set_write_fn(m_pPNG, (void *)m_pBB, (png_rw_ptr)_write_png, (png_flush_ptr)_write_flush);
 
 	return UT_OK;
 }

@@ -54,6 +54,9 @@
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
 
+#ifdef __MRC__
+extern "C"
+#endif
 static int n_compare (const void * a, const void * b)
 {
   const char * name = (const char *)a;
@@ -145,9 +148,9 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	
 	parser = XML_ParserCreate(NULL);
 	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, startElement, endElement);
-	XML_SetCharacterDataHandler(parser, charData);
-	XML_SetUnknownEncodingHandler(parser,XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
+	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement, (XML_EndElementHandler)endElement);
+	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
+	XML_SetUnknownEncodingHandler(parser,(XML_UnknownEncodingHandler)XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
 
 	while (!done)
 	{

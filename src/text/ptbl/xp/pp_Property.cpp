@@ -98,6 +98,9 @@ static PP_Property _props[] =
 
 };
 
+#ifdef __MRC__
+extern "C"
+#endif
 static int s_compare (const void * a, const void * b)
 {
   const PP_Property * prop;
