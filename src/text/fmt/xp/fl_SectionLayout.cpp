@@ -3904,15 +3904,20 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_ContainerLayout* pBL, 
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeSpan(pcrsc)
-			&& bResult;
+		if(pShadowBL)
+		{
+		  bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeSpan(pcrsc) && bResult;
+		}
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc)
+	if(pBL)
+	{
+	  bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc)
 		&& bResult;
+	}
 	return bResult;
 }
 
