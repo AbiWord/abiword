@@ -3940,8 +3940,8 @@ UT_Error FV_View::cmdInsertTOC(void)
 // Point is here after insert TOC-------------------------|
 //
 	fl_BlockLayout * pBL = getCurrentBlock();
-	PT_DocPosition pos = pBL->getPosition(true) -1;
-	if(pBL->getNext() == NULL)
+	PT_DocPosition pos = pBL->getPosition(true);
+	if((pBL->getNext() == NULL) || (pBL->getPrev() == NULL))
 	{
 		insertParagraphBreak();
 		pBL = getCurrentBlock();
