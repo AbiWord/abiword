@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h" 
 #include "ev_CocoaKeyboard.h"
+#include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
@@ -52,7 +53,7 @@
 	return NO;
 }
 
-/* NSResponder methods */
+/*
 - (void)NVKEvent:(EV_EditBits)code;
 {
 	AV_View * pView = m_pFrame->getCurrentView();
@@ -63,75 +64,172 @@
 		pCocoaKeyboard->NVKEvent(pView, code);
 	}
 }
+*
 
+/*!
+	Invoke an Abi method
+ */
+- (void)invokeEditMethod:(const char*)method
+{
+	EV_EditMethod* pEM;
+	pEM = XAP_App::getApp()->getEditMethodContainer()->findEditMethodByName(method);
+	AV_View * pView = m_pFrame->getCurrentView();
+	EV_Keyboard * pCocoaKeyboard = m_pFrame->getKeyboard();
+	pCocoaKeyboard->invokeKeyboardMethod(pView,pEM,0,0);
+}
+
+
+/* NSResponder methods */
 - (void)insertNewline:(id)sender
 {
-	[self  NVKEvent:EV_NVK_RETURN];
+	[self invokeEditMethod:"insertParagraphBreak"];
 }
 
 - (void)insertTab:(id)sender
 {
-	[self  NVKEvent:EV_NVK_TAB];
+	[self invokeEditMethod:"insertTab"];
 }
 
 - (void)deleteBackward:(id)sender
 {
-	[self  NVKEvent:EV_NVK_BACKSPACE];
+	[self invokeEditMethod:"delLeft"];
 }
 
 - (void)deleteForward:(id)sender
 {
-	[self  NVKEvent:EV_NVK_DELETE];
+	[self invokeEditMethod:"delRight"];
 }
 
 - (void)moveForward:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_RIGHT];
+	[self invokeEditMethod:"warpInsPtRight"];
 }
 
 - (void)moveRight:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_RIGHT];
+	[self invokeEditMethod:"warpInsPtRight"];
 }
 
 - (void)moveBackward:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_LEFT];
+	[self invokeEditMethod:"warpInsPtLeft"];
 }
 
 - (void)moveLeft:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_LEFT];
+	[self invokeEditMethod:"warpInsPtLeft"];
 }
 
 - (void)moveUp:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_UP];
+	[self invokeEditMethod:"warpInsPtPrevLine"];
 }
 
 - (void)moveDown:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_DOWN];
+	[self invokeEditMethod:"warpInsPtNextLine"];
+}
+- (void)moveWordForward:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtEOW"];
+}
+- (void)moveWordBackward:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtBOW"];
 }
 
 - (void)moveToBeginningOfLine:(id)sender
 {
-	[self  NVKEvent:EV_NVK_HOME];
+	[self invokeEditMethod:"warpInsPtBOL"];
 }
 
 - (void)moveToEndOfLine:(id)sender
 {
-	[self  NVKEvent:EV_NVK_END];
+	[self invokeEditMethod:"warpInsPtEOL"];
 }
-
+- (void)moveToBeginningOfParagraph:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtBOP"];
+}
+- (void)moveToEndOfParagraph:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtEOP"];
+}
+- (void)moveToEndOfDocument:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtEOD"];
+}
+- (void)moveToBeginningOfDocument:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtBOD"];
+}
 - (void)pageDown:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_PAGEDOWN];
+	[self invokeEditMethod:"warpInsPtNextScreen"];
 }
 - (void)pageUp:(id)sender;
 {
-	[self  NVKEvent:EV_NVK_PAGEUP];
+	[self invokeEditMethod:"warpInsPtPrevScreen"];
 }
+
+- (void)moveBackwardAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelLeft"];
+}
+- (void)moveForwardAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelRight"];
+}
+- (void)moveWordForwardAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelEOW"];
+}
+- (void)moveWordBackwardAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelBOW"];
+}
+- (void)moveUpAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelPrevLine"];
+}
+- (void)moveDownAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelNextLine"];
+}
+- (void)moveToBeginningOfLineAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelBOL"];
+}
+- (void)moveToEndOfLineAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelEOL"];
+}
+
+- (void)scrollPageUp:(id)sender
+{
+	[self invokeEditMethod:"scrollPageUp"];
+}
+- (void)scrollPageDown:(id)sender
+{
+	[self invokeEditMethod:"scrollPageDown"];
+}
+- (void)scrollLineUp:(id)sender
+{
+	[self invokeEditMethod:"scrollLineUp"];
+}
+- (void)scrollLineDown:(id)sender
+{
+	[self invokeEditMethod:"scrollLineDown"];
+}
+- (void)scrollToBeginningOfDocument:(id)sender
+{
+	[self invokeEditMethod:"scrollToTop"];
+}
+- (void)scrollToEndOfDocument:(id)sender
+{
+	[self invokeEditMethod:"scrollToBottom"];
+}
+
 
 /* NSTextInput protocol */
 - (NSAttributedString *)attributedSubstringFromRange:(NSRange)theRange
@@ -157,7 +255,8 @@
 		[self performSelector:aSelector withObject:self];
 		return;
 	}
-	UT_ASSERT_NOT_REACHED();
+	UT_DEBUGMSG(("Unrecognized selector:%s\n", [NSStringFromSelector(aSelector) UTF8String]));
+//	UT_ASSERT_NOT_REACHED();
 }
 
 
