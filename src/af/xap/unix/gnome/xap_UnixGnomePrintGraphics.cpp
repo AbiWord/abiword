@@ -274,6 +274,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 	m_bStartPrint  = false;
 	m_bStartPage   = false;
 	m_pCurrentFont = NULL;
+	m_pCurrentPSFont = NULL;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 
@@ -355,8 +356,9 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 {
 	UT_ASSERT(pFont);
 	PSFont * psFont = (static_cast<PSFont*> (pFont));
-
 	m_pCurrentPSFont = psFont;
+
+
 	// TODO: We *must* be smarter about this, maybe a hash
 	// TODO: of PSFonts -> GnomeFonts
 
