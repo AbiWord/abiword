@@ -118,7 +118,7 @@ struct _cb_data {
 	XAP_Toolbar_Id id; 
 };
 
-int cb_select(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+static int s_combo_select(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 
 	if (info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
 		return 0;
@@ -129,18 +129,18 @@ int cb_select(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	struct _cb_data *cb_data = (struct _cb_data *)data;
 	cb_data->tb->toolbarEvent(cb_data->id, (UT_UCSChar *)cb->item, (UT_uint32)cb->item_len);
 
-	return 0;
+	return Pt_CONTINUE;
 }
 
-int but_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+static int s_button_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 
 	struct _cb_data *cb_data = (struct _cb_data *)data;
 	cb_data->tb->toolbarEvent(cb_data->id, 0, 0);
 
-	return 0;
+	return Pt_CONTINUE;
 }
 
-int s_colour_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+static int s_colour_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	int					ret;
 	char				*title;
 	char				oklabel[3];
@@ -185,9 +185,9 @@ bool EV_QNXToolbar::synthesize(void)
 	struct _cb_data *tcb;		//Toolbar item call back
 	PtWidget_t  *tb;			//Toolbar item
 	PhImage_t   *image;			
-	PhArea_t	area;
+	int 		n = 0;
 
-	PtWidget_t * wTLW = m_pQNXFrame->getTopLevelWindow();
+	//PtWidget_t * wTLW = m_pQNXFrame->getTopLevelWindow();
 	//PtWidget_t * wVBox = m_pQNXFrame->getVBoxWidget();
 
 #if 0
@@ -203,30 +203,15 @@ bool EV_QNXToolbar::synthesize(void)
 		style = Pt_TEXT_IMAGE;
 #endif
 	
-#define TB_HEIGHT 45
-	area.pos.x = 0; 
-	area.pos.y = m_pQNXFrame->m_AvailableArea.pos.y;
-	area.size.w = m_pQNXFrame->m_AvailableArea.size.w; 
-	area.size.h = TB_HEIGHT;
-	m_pQNXFrame->m_AvailableArea.pos.y += area.size.h + 3;
-	m_pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
 
-	int n = 0;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-#define _TB_ANCHOR_	(Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-		 			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); 
-	PtSetArg(&args[n++], Pt_ARG_TG_FLAGS, Pt_TG_COLLAPSIBLE, Pt_TG_COLLAPSIBLE);
-	m_wToolbarGroup = PtCreateWidget(PtToolbarGroup, wTLW, n, args);
+	m_wToolbarGroup = m_pQNXFrame->getTBGroupWidget();
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_FLAGS, 0, Pt_TOOLBAR_FOLLOW_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_LAYOUT_FLAGS, Pt_TOOLBAR_FROM_LINE_START, Pt_TOOLBAR_FROM_LINE_START);
 	m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
 	UT_ASSERT(m_wToolbar);
 	
-	memset(&area, 0, sizeof(area));
-	area.pos.y = 
-	area.pos.x = 3;
 	m_vecToolbarWidgets.clear();
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -268,7 +253,6 @@ bool EV_QNXToolbar::synthesize(void)
 					}
 
 					n = 0;
-					//printf("Add a button @ %d/%d ! \n", area.pos.x, area.pos.y);
 					//This would add a ? help topic thingy
 					//PtSetArg(&args[n++], Pt_ARG_HELP_TOPIC, szToolTip, 0);
 					//PtSetArg(&args[n++], Pt_ARG_EFLAGS, Pt_INTERNAL_HELP, Pt_INTERNAL_HELP);
@@ -276,7 +260,9 @@ bool EV_QNXToolbar::synthesize(void)
 					PtSetArg(&args[n++], Pt_ARG_LABEL_FLAGS, Pt_SHOW_BALLOON, Pt_SHOW_BALLOON); 
 					PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, szToolTip, 0); 
 
-					PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0); 
+					PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_HIGHLIGHTED);
+
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 					if (image) {
 						PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE);
@@ -284,16 +270,13 @@ bool EV_QNXToolbar::synthesize(void)
 						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
 						//PtSetArg(&args[n++], Pt_ARG_ARM_DATA, image, sizeof(*image)); 
 						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
-						PtSetArg(&args[n++], Pt_ARG_DIM, &image->size, 0); 
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
-						area.pos.x += image->size.w + 10;
 					}
 					else {
 						if(!szToolTip) {
 							PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "No Label/Icon?", 0); 
 						}
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
-						area.pos.x += 20 + 10;
 					}
 					if (tb) {
 						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
@@ -301,7 +284,7 @@ bool EV_QNXToolbar::synthesize(void)
 						tcb->id = id;	
 						tcb->m_widget = tb;
 						if(pAction->getItemType() == EV_TBIT_PushButton) {
-							PtAddCallback(tb, Pt_CB_ACTIVATE, but_activate, tcb);
+							PtAddCallback(tb, Pt_CB_ACTIVATE, s_button_activate, tcb);
 						} else {
 							PtAddCallback(tb, Pt_CB_ACTIVATE, s_colour_activate, tcb);
 						}
@@ -321,14 +304,16 @@ bool EV_QNXToolbar::synthesize(void)
 					}
 
 					n = 0;
-					//printf("Add a button @ %d/%d ! \n", area.pos.x, area.pos.y);
 					//This would add a ? help topic thingy
 					//PtSetArg(&args[n++], Pt_ARG_HELP_TOPIC, szToolTip, 0);
 					//PtSetArg(&args[n++], Pt_ARG_EFLAGS, Pt_INTERNAL_HELP, Pt_INTERNAL_HELP);
 					//This will add the balloon help
 					PtSetArg(&args[n++], Pt_ARG_LABEL_FLAGS, Pt_SHOW_BALLOON, Pt_SHOW_BALLOON); 
 					PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, szToolTip, 0); 
-					PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0); 
+
+					PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_HIGHLIGHTED);
+
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_TOGGLE); 
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 					if (image) {
@@ -338,22 +323,19 @@ bool EV_QNXToolbar::synthesize(void)
 						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
 						//PtSetArg(&args[n], Pt_ARG_ARM_DATA, image, sizeof(*image)); n++;
 						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
-						PtSetArg(&args[n++], Pt_ARG_DIM, &image->size, 0); 
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
-						area.pos.x += image->size.w + 10;
 					}
 					else {
 						//printf("Text button \n");
 						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "pbut", 0); 
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
-						area.pos.x += 20 + 10;
 					}
 					if (tb) {
 						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
 						tcb->tb = this;
 						tcb->id = id;	
 						tcb->m_widget = tb;
-						PtAddCallback(tb, Pt_CB_ACTIVATE, but_activate, tcb);
+						PtAddCallback(tb, Pt_CB_ACTIVATE, s_button_activate, tcb);
 					}
 				}
 				break;
@@ -377,11 +359,7 @@ bool EV_QNXToolbar::synthesize(void)
 				}
 
 				n = 0;
-				area.size.w = iWidth;
-				area.size.h = 20;
-				//printf("Setting CB: %d,%d %d/%d \n", 
-				//		area.pos.x, area.pos.y, area.size.w, area.size.h);
-				PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
+				PtSetArg(&args[n++], Pt_ARG_WIDTH, iWidth, 0); 
 				PtSetArg(&args[n++], Pt_ARG_VISIBLE_COUNT, 6, 0); 
 				PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 				PtSetArg(&args[n++], Pt_ARG_LIST_FLAGS, 
@@ -389,7 +367,6 @@ bool EV_QNXToolbar::synthesize(void)
 						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS);
 				PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 				tb = PtCreateWidget(PtComboBox, m_wToolbar, n, args);
-				area.pos.x += area.size.w + 20;
 
 				// populate it
 				if (pControl && tb) {
@@ -412,7 +389,7 @@ bool EV_QNXToolbar::synthesize(void)
 					tcb->tb = this;
 					tcb->id = id;	
 					tcb->m_widget = tb;
-					PtAddCallback(tb, Pt_CB_SELECTION, cb_select, tcb);
+					PtAddCallback(tb, Pt_CB_SELECTION, s_combo_select, tcb);
 				}
  			}
 			break;
@@ -434,19 +411,12 @@ bool EV_QNXToolbar::synthesize(void)
 		case EV_TLF_Spacer:
 		{
 			n = 0;
-			//printf("Setting seperator: %d,%d %d/%d \n", 
-			//		area.pos.x, area.pos.y, area.size.w, area.size.h);
-#if !defined(FULL_TOOLBAR_USAGE)
-			area.size.w = 10;
-			area.size.h = TB_HEIGHT - (2 * area.pos.y);
-			PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
+#if defined(FULL_TOOLBAR_USAGE)
+			tb = m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
+#else
 			PtSetArg(&args[n++], Pt_ARG_SEP_FLAGS, Pt_SEP_VERTICAL, Pt_SEP_ORIENTATION);
 			PtSetArg(&args[n++], Pt_ARG_SEP_TYPE, Pt_ETCHED_IN, 0);
 			tb = PtCreateWidget(PtSeparator, m_wToolbar, n, args);
-			area.pos.x += 10;
-#else
-			n = 0;
-			tb = m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
 #endif
 
 			if (tb) {

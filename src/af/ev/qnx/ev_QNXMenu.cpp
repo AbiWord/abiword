@@ -715,25 +715,7 @@ EV_QNXMenuBar::~EV_QNXMenuBar(void)
 
 bool EV_QNXMenuBar::synthesizeMenuBar(void)
 {
-    PtArg_t args[10];
-	int 	n = 0;
-
-	int     width;
-
-	width = m_pQNXFrame->m_AvailableArea.size.w;
-	PhPoint_t	pos;
-	pos.y = 0; pos.x = 2;
-
-	//printf("Menu: synthesizing menu .... width %d \n", width);
-#define _MNU_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-					 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
-	PtSetArg(&args[n], Pt_ARG_ANCHOR_FLAGS, _MNU_ANCHOR_, _MNU_ANCHOR_); n++;
-	PtSetArg(&args[n], Pt_ARG_RESIZE_FLAGS, 0, Pt_RESIZE_X_BITS); n++;
-	//PtSetArg(&args[n], Pt_ARG_POS, &pos, 0);
-	PtSetArg(&args[n], Pt_ARG_WIDTH, width, 0); n++;
-	m_wMenuBar = PtCreateWidget(PtMenuBar, 
-								m_pQNXFrame->getTopLevelWindow(), 
-								n, args);
+	m_wMenuBar = PtCreateWidget(PtMenuBar, m_pQNXFrame->getTBGroupWidget(), 0, NULL);
 	synthesizeMenu(m_wMenuBar);
 	return true;
 }
