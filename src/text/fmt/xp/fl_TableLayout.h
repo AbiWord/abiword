@@ -139,7 +139,6 @@ public:
 	virtual void		        redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
-
 	void                        markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                        clearRebuild(void) { m_bNeedsRebuild = false;}
 	bool                        needsRebuild(void) const { return m_bNeedsRebuild;}

@@ -235,6 +235,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 void fl_TableLayout::format(void)
 {
 	bool bRebuild = false;
+	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true);
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
@@ -300,16 +301,21 @@ void fl_TableLayout::updateLayout(void)
 		return;
 	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	bool bNeedsFormat = false;
 	while (pBL)
 	{
 		if (pBL->needsReformat())
 		{
 			pBL->updateLayout();
+			bNeedsFormat = true;
 		}
 
 		pBL = pBL->getNext();
 	}
-	format();
+	if(bNeedsFormat || isDirty())
+	{
+		format();
+	}
 }
 
 void fl_TableLayout::redrawUpdate(void)
@@ -1240,8 +1246,8 @@ void fl_CellLayout::format(void)
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
-		
 	}
+	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true);
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{

@@ -356,6 +356,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pFirstOwnedPage = NULL;
 	m_bNeedsFormat = false;
 	m_bNeedsRebuild = false;
+	m_bNeedsSectionBreak = true;
 	m_pDoc = pLayout->getDocument();
 	_lookupProperties();
 }
@@ -915,7 +916,6 @@ void fl_DocSectionLayout::updateLayout(void)
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
-	bool bReformat = true;
 	while (pBL)
 	{
 		eHidden  = pBL->isHidden();
@@ -928,7 +928,6 @@ void fl_DocSectionLayout::updateLayout(void)
  			if (pBL->needsReformat())
 			{
 				pBL->format();
-				bReformat = true;
 			}
 			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
 			{
@@ -938,9 +937,10 @@ void fl_DocSectionLayout::updateLayout(void)
 
 		pBL = pBL->getNext();
 	}
-	if(bReformat)
+	if(needsSectionBreak())
 	{
 		fb_ColumnBreaker::breakSection(this);
+		UT_ASSERT(!needsSectionBreak());
 	}
 	if(needsRebuild())
 	{
@@ -956,7 +956,6 @@ void fl_DocSectionLayout::redrawUpdate(void)
 
 	// we only need to break and redo this section if its contents
 	// have changed, i.e., if the field values changed
-	bool bBreakMe = false;
 	
 	while (pBL)
 	{
@@ -966,7 +965,6 @@ void fl_DocSectionLayout::redrawUpdate(void)
 			if(bReformat)
 			{
 				pBL->format();
-				bBreakMe = true;
 			}
 		}
 		if (pBL->needsRedraw())
@@ -977,7 +975,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 		pBL = pBL->getNext();
 	}
 
-	if(bBreakMe)
+	if(needsSectionBreak() || needsRebuild())
 	{
 		fb_ColumnBreaker::breakSection(this);
 	

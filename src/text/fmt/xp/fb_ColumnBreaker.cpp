@@ -47,7 +47,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	fl_ContainerLayout* pFirstLayout = NULL;
 	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
-
+	UT_ASSERT(pSL->needsSectionBreak());
+	pSL->setNeedsSectionBreak(false);
 	pFirstLayout = pSL->getFirstLayout();
 	if (!pFirstLayout)
 		return 0;

@@ -268,6 +268,8 @@ public:
 	void                formatAllHdrFtr(void);
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
+	void                setNeedsSectionBreak(bool bSet) {m_bNeedsSectionBreak =bSet;}
+	bool                needsSectionBreak(void) const { return m_bNeedsSectionBreak;}
 
 private:
 	virtual void		_lookupProperties(void);
@@ -334,6 +336,7 @@ private:
 	fl_DocSectionLayout* m_pEndnoteOwnerSL;
 	bool                m_bNeedsFormat;
 	bool                m_bNeedsRebuild;
+	bool                m_bNeedsSectionBreak;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout
