@@ -100,7 +100,7 @@ UT_Error UT_XML::parse (const char * szFilename)
       return UT_ERROR;
     }
 
-  XML_SetUnknownEncodingHandler (parser, static_cast<XML_UnknownEncodingHandler>(XAP_EncodingManager::XAP_XML_UnknownEncodingHandler), 0);
+  XML_SetUnknownEncodingHandler (parser, reinterpret_cast<XML_UnknownEncodingHandler>(XAP_EncodingManager::XAP_XML_UnknownEncodingHandler), 0);
 
   XML_SetElementHandler (parser, _startElement, _endElement);
   XML_SetCharacterDataHandler (parser, _charData);
@@ -149,7 +149,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
       return UT_ERROR;
     }
 
-  XML_SetUnknownEncodingHandler (parser, static_cast<XML_UnknownEncodingHandler>(XAP_EncodingManager::XAP_XML_UnknownEncodingHandler), 0);
+  XML_SetUnknownEncodingHandler (parser, reinterpret_cast<XML_UnknownEncodingHandler>(XAP_EncodingManager::XAP_XML_UnknownEncodingHandler), 0);
 
   XML_SetElementHandler (parser, _startElement, _endElement);
   XML_SetCharacterDataHandler (parser, _charData);
