@@ -4511,7 +4511,7 @@ msgstr "Rwmaneg, Macintosh"
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:369
 msgid "Russian (Russia)"
-msgstr "Rwsieg, (Rwsia)"
+msgstr "Rwsieg (Rwsia)"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:371
