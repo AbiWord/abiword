@@ -3402,7 +3402,6 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 
 	while(pPrev)
 	{
-		pSpan = NULL;
 		getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
 		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
 			break;
