@@ -73,7 +73,7 @@ protected:
 
 	UT_Bool							_refreshID(AP_Toolbar_Id id);
 	UT_Bool							_refreshItem(AV_View * pView, 
-												 EV_Toolbar_Action * pAction, 
+												 const EV_Toolbar_Action * pAction, 
 												 AP_Toolbar_Id id);
 
 	static LRESULT CALLBACK			_ComboWndProc(HWND, UINT, WPARAM, LPARAM);

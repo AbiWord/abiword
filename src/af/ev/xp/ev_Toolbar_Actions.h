@@ -68,11 +68,12 @@ typedef enum _ev_Toolbar_ItemType
 	EV_TBIT_BOGUS			= 0,
 	EV_TBIT_PushButton		= 1,			/* simple push to fire */
 	EV_TBIT_ToggleButton	= 2,			/* push-on/push-off */
-	EV_TBIT_EditText		= 3,			/* text entry field */
-	EV_TBIT_DropDown		= 4,			/* list box w/no text entry */
-	EV_TBIT_ComboBox		= 5,			/* list box w/ text entry */
-	EV_TBIT_StaticLabel		= 6,			/* a static control */
-	EV_TBIT_Spacer			= 7				/* for extra space between buttons */
+	EV_TBIT_GroupButton		= 3,			/* like a Toggle, but w/group semantics */
+	EV_TBIT_EditText		= 4,			/* text entry field */
+	EV_TBIT_DropDown		= 5,			/* list box w/no text entry */
+	EV_TBIT_ComboBox		= 6,			/* list box w/ text entry */
+	EV_TBIT_StaticLabel		= 7,			/* a static control */
+	EV_TBIT_Spacer			= 8				/* for extra space between buttons */
 	
 } EV_Toolbar_ItemType;
 

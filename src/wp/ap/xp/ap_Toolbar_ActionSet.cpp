@@ -88,21 +88,21 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 
-	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_ToggleButton,	"alignLeft",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_ToggleButton,	"alignCenter",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_ToggleButton,	"alignRight",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_ToggleButton,	"alignJustify",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_GroupButton,	"alignLeft",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_GroupButton,	"alignCenter",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_GroupButton,	"alignRight",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_GroupButton,	"alignJustify",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
-	_s(AP_TOOLBAR_ID_PARA_0BEFORE,	EV_TBIT_ToggleButton,	"paraBefore0",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_PARA_12BEFORE,	EV_TBIT_ToggleButton,	"paraBefore12",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_PARA_0BEFORE,	EV_TBIT_GroupButton,	"paraBefore0",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_PARA_12BEFORE,	EV_TBIT_GroupButton,	"paraBefore12",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
-	_s(AP_TOOLBAR_ID_SINGLE_SPACE,	EV_TBIT_ToggleButton,	"singleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_MIDDLE_SPACE,	EV_TBIT_ToggleButton,	"middleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_DOUBLE_SPACE,	EV_TBIT_ToggleButton,	"doubleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_SINGLE_SPACE,	EV_TBIT_GroupButton,	"singleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_MIDDLE_SPACE,	EV_TBIT_GroupButton,	"middleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_DOUBLE_SPACE,	EV_TBIT_GroupButton,	"doubleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
-	_s(AP_TOOLBAR_ID_1COLUMN,		EV_TBIT_ToggleButton,	"sectColumns1",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
-	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_ToggleButton,	"sectColumns2",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
-	_s(AP_TOOLBAR_ID_3COLUMN,		EV_TBIT_ToggleButton,	"sectColumns3",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_1COLUMN,		EV_TBIT_GroupButton,	"sectColumns1",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_GroupButton,	"sectColumns2",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_3COLUMN,		EV_TBIT_GroupButton,	"sectColumns3",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
 	// ... add others here ...
 	
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);

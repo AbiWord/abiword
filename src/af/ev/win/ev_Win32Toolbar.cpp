@@ -73,6 +73,25 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,
 	if (!pAction)
 		return UT_FALSE;
 
+	AV_View * pView = m_pWin32Frame->getCurrentView();
+
+	// make sure we ignore presses on "down" group buttons
+	if (pAction->getItemType() == EV_TBIT_GroupButton)
+	{
+		const char * szState = 0;
+		EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
+
+		if (EV_TIS_ShouldBeToggled(tis))
+		{
+			// if this assert fires, you got a click while the button is down
+			// if your widget set won't let you prevent this, handle it here
+			UT_ASSERT(UT_TODO);
+			
+			// can safely ignore this event
+			return UT_TRUE;
+		}
+	}
+
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
 		return UT_FALSE;
@@ -83,7 +102,7 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(m_pWin32Frame->getCurrentView(),pEM,1,pData,dataLength);
+	invokeToolbarMethod(pView,pEM,1,pData,dataLength);
 	return UT_TRUE;
 }
 
@@ -351,6 +370,12 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 					bButton = UT_TRUE;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_CHECK;     
+					break;
+
+				case EV_TBIT_GroupButton:
+					bButton = UT_TRUE;
+					tbb.fsState = TBSTATE_ENABLED; 
+					tbb.fsStyle = TBSTYLE_CHECKGROUP;     
 					break;
 
 				case EV_TBIT_ComboBox:
@@ -701,7 +726,7 @@ UT_Bool EV_Win32Toolbar::_refreshID(AP_Toolbar_Id id)
 	return _refreshItem(pView, pAction, id);
 }
 
-UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, EV_Toolbar_Action * pAction, AP_Toolbar_Id id)
+UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, AP_Toolbar_Id id)
 {
 	const char * szState = 0;
 	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
@@ -723,6 +748,7 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, EV_Toolbar_Action * pActi
 			break;
 	
 		case EV_TBIT_ToggleButton:
+		case EV_TBIT_GroupButton:
 			{
 				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 				UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);

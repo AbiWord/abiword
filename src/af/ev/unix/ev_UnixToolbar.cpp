@@ -173,6 +173,27 @@ UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id,
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	UT_ASSERT(pAction);
 
+	AV_View * pView = m_pUnixFrame->getCurrentView();
+
+#if 0
+	// make sure we ignore presses on "down" group buttons
+	if (pAction->getItemType() == EV_TBIT_GroupButton)
+	{
+		const char * szState = 0;
+		EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
+
+		if (EV_TIS_ShouldBeToggled(tis))
+		{
+			// if this assert fires, you got a click while the button is down
+			// if your widget set won't let you prevent this, handle it here
+			UT_ASSERT(UT_TODO);
+			
+			// can safely ignore this event
+			return UT_TRUE;
+		}
+	}
+#endif 
+
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
 		return UT_FALSE;
@@ -183,7 +204,7 @@ UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(m_pUnixFrame->getCurrentView(),pEM,1,pData,dataLength);
+	invokeToolbarMethod(pView,pEM,1,pData,dataLength);
 	return UT_TRUE;
 }
 
@@ -259,6 +280,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				break;
 
 			case EV_TBIT_ToggleButton:
+			case EV_TBIT_GroupButton:
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
@@ -492,6 +514,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				break;
 			
 				case EV_TBIT_ToggleButton:
+				case EV_TBIT_GroupButton:
 				{
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
