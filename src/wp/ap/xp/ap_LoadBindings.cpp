@@ -31,6 +31,8 @@
 #include "ev_EditBinding.h"
 #include "ap_LoadBindings.h"
 #include "ap_LB_Default.h"
+#include "ap_LB_Emacs.h"
+#include "ap_LB_EmacsCtrlX.h"
 #include "ap_LB_DeadAbovedot.h"
 #include "ap_LB_DeadAcute.h"
 #include "ap_LB_DeadBreve.h"
@@ -59,7 +61,8 @@ struct _lb
 static struct _lb s_lbTable[] =
 {
 	{	"default",			ap_LoadBindings_Default,			NULL	}, // stock AbiWord bindings
-	
+	{   "emacs",            ap_LoadBindings_Emacs,              NULL    }, // emacs key bindings
+	{   "emacsctrlx",       ap_LoadBindings_EmacsCtrlX,         NULL    }, // emacs ctrl-x key bindings
 	{	"deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'
 	{	"deadacute",		ap_LoadBindings_DeadAcute,			NULL	}, // key prefixes.
 	{	"deadbreve",		ap_LoadBindings_DeadBreve,			NULL	},
@@ -185,6 +188,20 @@ void AP_BindingSet::_loadChar(EV_EditBindingMap * pebm,
 				pebm->setBinding(EV_EKP_PRESS|pCharTable[k].m_eb|ems,pCharTable[k].m_szMethod[m]);
 			}
 
-	// TODO Load non-terminal prefix keys
-	UT_ASSERT(!pCharPrefixTable);
+	// load prefix keys
+	
+	for (k=0; k<cCharPrefixTable; k++)
+		for (m=0; m<EV_COUNT_EMS_NoShift; m++)
+			if (pCharPrefixTable[k].m_szMapName[m] && *pCharPrefixTable[k].m_szMapName[m])
+			{
+				EV_EditModifierState ems = EV_EMS_FromNumberNoShift(m);
+				EV_EditBindingMap * pebmSub = getMap(pCharPrefixTable[k].m_szMapName[m]);
+				if (pebmSub)
+				{
+					EV_EditBinding * pebSub = new EV_EditBinding(pebmSub);
+					if (pebSub)
+						pebm->setBinding(EV_EKP_PRESS|pCharPrefixTable[k].m_eb|ems,pebSub);
+				}
+			}
+
 }

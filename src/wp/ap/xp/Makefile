@@ -44,6 +44,8 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_LB_DeadOgonek.cpp		\
 		ap_LB_DeadTilde.cpp		\
 		ap_LB_Default.cpp		\
+		ap_LB_Emacs.cpp			\
+		ap_LB_EmacsCtrlX.cpp		\
 		ap_Menu_ActionSet.cpp		\
 		ap_Menu_Functions.cpp		\
 		ap_Menu_LabelSet.cpp		\
