@@ -74,15 +74,14 @@ int  UT_QNXComboSetPos(PtWidget_t *widget, int index) {
 }
 
 int  UT_QNXComboGetPos(PtWidget_t *widget) {
-	PtArg_t  arg;
-	int      *index = NULL;
+	unsigned short *index = NULL;
+	int      ret;
 
 	UT_ASSERT(widget);
+	PtGetResource(widget, Pt_ARG_CBOX_SEL_ITEM, &index, 0);
+	ret = (index) ? *index : 0;
 
-	PtSetArg(&arg, Pt_ARG_CBOX_SEL_ITEM, &index, 0);
-	PtGetResources(widget, 1, &arg);
-
-	return (index) ? *index : 0;
+	return ret;
 }
 
 /**** All for the modal/modeless dialogs (from unix) ****/
