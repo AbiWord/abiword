@@ -1042,6 +1042,11 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 												  &pfNewEnd,
 												  &fragOffsetNewEnd);
 //
+// Each strux is one in length, we've added one while delaying the delete
+// so subtract it now.
+//
+					dpos1 -= 1;
+//
 // Now delete the Frame strux. Doing things in this order works for
 // the layout classes for both the delete (needs the endFrame strux 
 // deleted first) and for
@@ -1050,11 +1055,11 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				while(bResult && (pfs->getStruxType() != PTX_SectionFrame))
 				{
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
-					PT_DocPosition myPos = pfs->getPos();
 					if(m_fragments.areFragsDirty())
 					{
 						m_fragments.cleanFrags();
 					}
+					PT_DocPosition myPos = pfs->getPos();
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
 					bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
 //
