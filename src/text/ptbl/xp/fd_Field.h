@@ -76,9 +76,11 @@ class ABI_EXPORT fd_Field
 		
 		FD_Endnote_Ref,
 		FD_Endnote_Anchor,
+		
+		FD_PageReference,
 		__last_field_dont_use__
 	} FieldType;
-    fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);
+    fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType, const XML_Char *pParam);
     virtual							~fd_Field(void);
     bool							update(void);
     void							setBlock(fl_BlockLayout * pBlock);
@@ -86,6 +88,7 @@ class ABI_EXPORT fd_Field
 	FieldType						getFieldType(void) const;
 	XML_Char *						getValue(void) const;
 	void							setValue(XML_Char * szValue);
+	const XML_Char * 				getParameter(void) const {return m_pParameter;};
     // probably need different types of update
     // which are overridden in the appropriate subclass
     // eg positionChangeUpdate
@@ -102,6 +105,7 @@ class ABI_EXPORT fd_Field
     UT_uint32 m_updateCount;
     FieldType m_iFieldType;
 	XML_Char * m_szValue;
+	const XML_Char * m_pParameter;
 };
 
 #endif

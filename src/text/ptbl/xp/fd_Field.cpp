@@ -31,12 +31,16 @@
 #include "ut_types.h"
 
 fd_Field::fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, 
-                   FieldType fieldType)
+                   FieldType fieldType, const XML_Char *pParam)
     : m_fragObject(fO),m_pPieceTable(pt),
-      m_updateCount(0), m_iFieldType(fieldType)
+      m_updateCount(0), m_iFieldType(fieldType), m_pParameter(0)
 {
 	m_pBlock = NULL;
 	m_szValue = NULL;
+	if(pParam)
+	{
+		m_pParameter = UT_strdup(pParam);
+	}
 }
 
 
@@ -44,6 +48,8 @@ fd_Field::~fd_Field(void)
 {
 	FREEP(m_szValue);
 	m_szValue = NULL;
+	if(m_pParameter)
+		delete [] m_pParameter;
 }
 
 void fd_Field::setBlock( fl_BlockLayout *pBlock)

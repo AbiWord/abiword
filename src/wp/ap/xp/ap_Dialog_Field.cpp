@@ -36,6 +36,7 @@ AP_Dialog_Field::AP_Dialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
     m_answer = a_OK;
 	m_iTypeIndex = 0;
     m_iFormatIndex = 0;
+    m_pParameter = 0;
 }
 
 AP_Dialog_Field::tAnswer AP_Dialog_Field::getAnswer(void) const
@@ -47,4 +48,11 @@ const char *AP_Dialog_Field::GetFieldFormat(void) const
 {
     return (const char *)fp_FieldFmts[m_iFormatIndex].m_Tag;
 
+}
+
+void AP_Dialog_Field::setParameter(const XML_Char * pParam)
+{
+	if(m_pParameter)
+		delete [] m_pParameter;
+	m_pParameter = UT_strdup(pParam);
 }

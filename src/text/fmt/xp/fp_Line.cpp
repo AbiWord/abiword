@@ -2287,7 +2287,7 @@ UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
 	return 0;
 }
 
-bool fp_Line::recalculateFields(void)
+bool fp_Line::recalculateFields(bool bLayoutDependentOnly)
 {
 	bool bResult = false;
 	
@@ -2299,6 +2299,8 @@ bool fp_Line::recalculateFields(void)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = (fp_FieldRun*) pRun;
+			if(bLayoutDependentOnly && ! pFieldRun->isLayoutDependent())
+				continue;
 			bool bSizeChanged = pFieldRun->calculateValue();
 
 			bResult = bResult || bSizeChanged;

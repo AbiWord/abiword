@@ -605,6 +605,8 @@ public:
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);
 	
+	virtual bool			isLayoutDependent() const {return false;};
+	
 protected:
 	virtual void			_draw(dg_DrawArgs*) {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
@@ -616,6 +618,7 @@ protected:
 	UT_RGBColor				m_colorBG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
 	fp_FieldsEnum			m_iFieldType;
+	const XML_Char *		m_pParameter;
 	enum
 	{
 		TEXT_POSITION_NORMAL,
@@ -663,6 +666,19 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool 			isLayoutDependent() const {return true;}
+	
+};
+
+class ABI_EXPORT fp_FieldPageReferenceRun : public fp_FieldRun
+{
+public:
+	
+	fp_FieldPageReferenceRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool 			isLayoutDependent() const {return true;}
 };
 
 class ABI_EXPORT fp_FieldPageCountRun : public fp_FieldRun
@@ -673,6 +689,8 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool 			isLayoutDependent() const {return true;}
+	
 };
 
 class ABI_EXPORT fp_FieldDateRun : public fp_FieldRun

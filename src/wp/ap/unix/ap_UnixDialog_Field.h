@@ -58,6 +58,7 @@ protected:
 
 	GtkWidget * m_listTypes;
 	GtkWidget * m_listFields;
+	GtkWidget * m_entryParam;
 
 };
 

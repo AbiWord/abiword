@@ -62,6 +62,7 @@ AP_UnixDialog_Field::AP_UnixDialog_Field(XAP_DialogFactory * pDlgFactory,
 
 	m_listTypes = NULL;
 	m_listFields = NULL;
+	m_entryParam = NULL;
 }
 
 AP_UnixDialog_Field::~AP_UnixDialog_Field(void)
@@ -181,6 +182,8 @@ void AP_UnixDialog_Field::event_OK(void)
 	// use this as index to get the actual data value for the row.
 	indexrow = GPOINTER_TO_INT(fieldslistitem->data);
 	m_iFormatIndex = GPOINTER_TO_INT(gtk_clist_get_row_data( GTK_CLIST(m_listFields),indexrow));
+	
+	setParameter(gtk_entry_get_text(GTK_ENTRY(m_entryParam)));
 	m_answer = AP_Dialog_Field::a_OK;
 	gtk_main_quit();
 }
@@ -330,6 +333,7 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	GtkWidget *labelFields;
 	GtkWidget *scrolledwindowTypes;
 	GtkWidget *scrolledwindowFields;
+	GtkWidget *labelParam;
 	XML_Char * unixstr = NULL;	// used for conversions
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -378,6 +382,16 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	gtk_widget_set_usize (m_listFields, 198, 218);
 	gtk_container_add (GTK_CONTAINER (scrolledwindowFields), m_listFields);
 
+	// add the entry for optional parameter
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Parameters));
+	labelParam = gtk_label_new (unixstr);
+	FREEP(unixstr);
+	gtk_box_pack_start (GTK_BOX (vboxFields), labelParam, FALSE, FALSE, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelParam), 0, 0.5);
+	
+	m_entryParam = gtk_entry_new();
+	gtk_box_pack_start (GTK_BOX (vboxFields), m_entryParam, FALSE, FALSE, 0);
+	
 	gtk_signal_connect_after(GTK_OBJECT(m_listTypes),
 							 "select_row",
 							 GTK_SIGNAL_FUNC(s_types_clicked),

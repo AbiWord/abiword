@@ -1356,7 +1356,7 @@ fl_BlockLayout::format()
 		if (!m_pFirstLine)
 			_stuffAllRunsOnALine();
 
-		recalculateFields();
+		recalculateFields(false);
 
 		// Reformat paragraph
 		m_pBreaker->breakParagraph(this);
@@ -3194,7 +3194,9 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	// Get the field type.
 
 	const XML_Char* pszType = NULL;
+	//const XML_Char* pszParam = NULL;
 	pSpanAP->getAttribute("type", pszType);
+	//pSpanAP->getAttribute("param", pszParam);
 	UT_ASSERT(pszType);
 
 	// Create the field run.
@@ -3222,6 +3224,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	else if(UT_strcmp(pszType, "page_number") == 0)
 	{
 		pNewRun = new fp_FieldPageNumberRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else if(UT_strcmp(pszType, "page_ref") == 0)
+	{
+		pNewRun = new fp_FieldPageReferenceRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "page_count") == 0)
 	{
@@ -3343,7 +3349,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	pNewRun->calculateValue();
 
 	_doInsertRun(pNewRun);
-	recalculateFields();
+	recalculateFields(false);
 	return true;
 }
 
@@ -5007,7 +5013,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	return true;
 }
 
-bool fl_BlockLayout::recalculateFields(void)
+bool fl_BlockLayout::recalculateFields(bool bLayoutDependentOnly)
 {
 	_assertRunListIntegrity();
 
@@ -5018,6 +5024,8 @@ bool fl_BlockLayout::recalculateFields(void)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
+            if(bLayoutDependentOnly && !pFieldRun->isLayoutDependent())
+            	continue;
 
 			const bool bSizeChanged = pFieldRun->calculateValue();
 
@@ -5034,6 +5042,7 @@ bool fl_BlockLayout::recalculateFields(void)
 
 	return bResult;
 }
+
 
 bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 										 eTabType & iType, eTabLeader &iLeader )

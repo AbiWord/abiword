@@ -43,6 +43,7 @@
 #include "ut_growbuf.h"
 
 #include "ap_Prefs.h"
+#include "xap_Frame.h"
 
 // TODO can we use the indexAP provided in the change records
 // TODO to remember the attr/prop for each run rather than
@@ -2435,7 +2436,8 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 	:	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD),
 		m_pFont(0),
 		m_pFontLayout(0),
-		m_iFieldType(FPFIELD_start)
+		m_iFieldType(FPFIELD_start),
+		m_pParameter(0)
 {
 	bool gotField = pBL->getField(iOffsetFirst,m_pField);
 	UT_ASSERT(gotField);
@@ -2465,9 +2467,12 @@ bool fp_FieldRun::recalcWidth()
 
 bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 {
-
 	if (0 != UT_UCS_strcmp(p_new_value, m_sFieldValue))
 	{
+		UT_DEBUGMSG(("fp_FieldRun::_setValue: setting new value\n"));
+#ifdef BIDI_ENABLED
+		m_bRefreshDrawBuffer = true;
+#endif		
 		clearScreen();
 
 		UT_UCS_strcpy(m_sFieldValue, p_new_value);
@@ -2491,6 +2496,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 			return false;
 		}
 	}
+	UT_DEBUGMSG(("fp_FieldRun::_setValue: value has not changed\n"));
 
 	return false;
 }
@@ -2552,6 +2558,8 @@ void fp_FieldRun::lookupProperties(void)
 //	m_pG->setFont(m_pFont);  Why??? DOM!!
 
 	const XML_Char* pszType = NULL;
+	const XML_Char* pszParam = NULL;
+	
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
@@ -2569,25 +2577,24 @@ void fp_FieldRun::lookupProperties(void)
 	}
 
 	if(pSpanAP)
+	{
 		pSpanAP->getAttribute("type", pszType);
+		pSpanAP->getAttribute("param", pszParam);
+	}
 	else
+	{
 		pBlockAP->getAttribute("type",pszType);
+		pBlockAP->getAttribute("param", pszParam);
+	}
+		
+	if(pszParam)
+		m_pParameter = pszParam;
+	
 	// i leave this in because it might be obscuring a larger bug
 	//UT_ASSERT(pszType);
 	if (!pszType) return;
 
 #ifdef BIDI_ENABLED
-/*  ###TF	
-	const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-	if(!UT_stricmp(pszDirection, "rtl"))
-	{
-		m_iDirection = FRIBIDI_TYPE_RTL;
-	}
-	else
-	{
-		m_iDirection = FRIBIDI_TYPE_LTR;
-	}
-*/
 	m_iDirection = FRIBIDI_TYPE_ON;
 #endif
 
@@ -3647,6 +3654,117 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 
 	return _setValue(sz_ucs_FieldValue);
 }
+
+////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+fp_FieldPageReferenceRun::fp_FieldPageReferenceRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
+	: fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldPageReferenceRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	if(!m_pParameter)
+		return false;
+		
+	FV_View * pView = getBlock()->getView();
+	// on import the field value can be requested before the View exists
+	// so we cannot assert here
+	//UT_ASSERT(pView);
+	if(!pView)
+		return false;
+	
+	fp_Run * pRun;
+	fl_BlockLayout * pBlock;
+	fl_SectionLayout * pSection = pView->getLayout()->getFirstSection();
+	UT_ASSERT(pSection);
+	bool bFound = false;
+	
+	while (pSection)
+	{
+		pBlock = pSection->getFirstBlock();
+	
+		while (pBlock)
+		{
+			pRun = pBlock->getFirstRun();
+			while (pRun)
+			{
+				xxx_UT_DEBUGMSG(("pRun 0x%x, type %d\n", pRun, pRun->getType()));
+				if(pRun->getType() == FPRUN_BOOKMARK)
+				{
+					fp_BookmarkRun * pB = static_cast<fp_BookmarkRun*>(pRun);
+					if(pB->isStartOfBookmark() && !UT_strcmp(m_pParameter,pB->getName()))
+					{
+						bFound = true;
+						break;
+					}
+				}
+				pRun = pRun->getNext();
+			}
+			if(bFound)
+				break;
+				
+			pBlock = pBlock->getNext();
+		}
+		if(bFound)
+			break;
+		pSection = pSection->getNext();
+	}
+
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	
+	if(    pRun
+		&& pRun->getLine()
+		&& pRun->getLine()->getContainer()
+		&& pRun->getLine()->getContainer()->getPage())
+	{
+		fp_Page* pPage = pRun->getLine()->getContainer()->getPage();
+		FL_DocLayout* pDL = pPage->getDocLayout();
+		
+		UT_sint32 iPageNum = 0;
+		UT_uint32 iNumPages = pDL->countPages();
+		for (UT_uint32 i=0; i<iNumPages; i++)
+		{
+			fp_Page* pPg = pDL->getNthPage(i);
+        	
+        	if (pPg == pPage)
+			{
+				iPageNum = i + 1;
+				break;
+			}
+		}
+		sprintf(szFieldValue, "%d", iPageNum);
+	}
+	else
+	{
+		// did not find the bookmark, set the field to an error value
+		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+		UT_ASSERT((pFrame));
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_FIELD_Error);
+		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound);
+		char * format = new char[strlen(pMsg1) + strlen(pMsg2) + 5];
+		
+		sprintf(format, "{%s: %s}", pMsg1, pMsg2);
+		sprintf(szFieldValue, format, m_pParameter);
+		
+		delete [] format;
+	}
+	
+	if (m_pField)
+	  m_pField->setValue((XML_Char*) szFieldValue);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+
+///////////////////////////////////////////////////////////////////////////
 
 fp_FieldPageCountRun::fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {

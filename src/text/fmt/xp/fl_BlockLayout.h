@@ -171,7 +171,7 @@ public:
 	} eSpacingPolicy;
 
 	int 		format();
-	bool		recalculateFields(void);
+	bool		recalculateFields(bool bLayoutDependentOnly);
 	
 	void		redrawUpdate();
 

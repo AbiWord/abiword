@@ -6216,7 +6216,17 @@ static bool s_doField(FV_View * pView)
 	if (pDialog->getAnswer() == AP_Dialog_Field::a_OK)
 	{
 		// TODO - Insert field correctly
-		pView->cmdInsertField(pDialog->GetFieldFormat());
+		const XML_Char * pParam = pDialog->getParameter();
+		const XML_Char * pAttr[3];
+		const XML_Char param_name[] = "param";
+		pAttr[0] = (const XML_Char *)&param_name;
+		pAttr[1] = pParam;
+		pAttr[2] = 0;
+		
+		if(pParam)
+			pView->cmdInsertField(pDialog->GetFieldFormat(),(const XML_Char **)&pAttr[0]);
+		else
+			pView->cmdInsertField(pDialog->GetFieldFormat());
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

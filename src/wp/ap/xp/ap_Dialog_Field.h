@@ -37,10 +37,14 @@ public:
 	AP_Dialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	AP_Dialog_Field::tAnswer	getAnswer(void) const;
 	const char *GetFieldFormat(void) const;
+	const XML_Char * getParameter(void) const {return m_pParameter;};
+	void	setParameter(const XML_Char * pParam);
 protected:
 	AP_Dialog_Field::tAnswer	m_answer;
 	int m_iTypeIndex;
 	int m_iFormatIndex;
+private:
+	XML_Char * m_pParameter;
 };
 
 #endif /* AP_DIALOG_FIELD_H */

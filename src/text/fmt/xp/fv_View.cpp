@@ -4934,10 +4934,12 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	case AP_JUMPTARGET_BOOKMARK:
 		{
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
-			fl_BlockLayout * pBL = pSL->getFirstBlock();
-			fp_Run* pRun = pBL->getFirstRun();
+			fl_BlockLayout * pBL;
+			fp_Run* pRun;
 			fp_BookmarkRun * pB[2];
 			UT_uint32 i = 0;
+			bool bFound = false;
+			
 			UT_DEBUGMSG(("fv_View::gotoTarget: bookmark [%s]\n",numberString));
 			if(!strncmp(numberString,"http://",7))
 			{
@@ -4949,20 +4951,41 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			if(m_pDoc->isBookmarkUnique((const XML_Char *)numberString))
 				goto book_mark_not_found; //bookmark does not exist
 				
-			while(pRun)
+			while(pSL)
 			{
-				if(pRun->getType()== FPRUN_BOOKMARK)
+				pBL = pSL->getFirstBlock();
+				
+				while(pBL)
 				{
-					fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
-					if(!strcmp(pBR->getName(),numberString))
+					pRun = pBL->getFirstRun();
+					
+					while(pRun)
 					{
-						pB[i] = pBR;
-						i++;
-						if(i>1)
+						if(pRun->getType()== FPRUN_BOOKMARK)
+						{
+							fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
+							if(!strcmp(pBR->getName(),numberString))
+							{
+								pB[i] = pBR;
+								i++;
+								if(i>1)
+								{
+									bFound = true;
+									break;
+								}
+							}
+						}
+						if(bFound)
 							break;
+						pRun = pRun->getNext();
 					}
+					if(bFound)	
+						break;
+					pBL = pBL->getNext();
 				}
-				pRun = pRun->getNext();
+				if(bFound)
+					break;
+				pSL = pSL->getNext();
 			}
 			
 			if(pB[0] && pB[1])
@@ -5639,6 +5662,26 @@ void FV_View::_generalUpdate(void)
 	if(!shouldScreenUpdateOnGeneralUpdate())
 		return;
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+	
+	// now we have updated the overall layout, next we have to
+	// update all layout-dependent fields, if the size of any of the fields
+	// changes, then we have to redo the layout again ... we should really
+	// do this in a loop, but if it does not change in the second go, we will
+	// leave it for the time being
+	
+	bool bChange =  false;
+	fl_SectionLayout * pSL = m_pLayout->getFirstSection();
+	while(pSL)
+	{
+		bChange |= pSL->recalculateFields(true);
+		pSL  = pSL->getNext();
+	}
+	
+	if(bChange)
+	{
+		UT_DEBUGMSG(("fv_View::_generalUpdate: width of some fields changed, pass 2\n"));
+		m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+	}
 //
 // No need to update other stuff if we're doing a preview
 //
@@ -7894,24 +7937,48 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		fl_BlockLayout * pBlock[2];
 		UT_uint32 i = 0;
 		
-		fp_Run * pRun = m_pLayout->getFirstSection()->getFirstBlock()->getFirstRun();
+		fl_BlockLayout *pBL;
+		fl_SectionLayout *pSL = m_pLayout->getFirstSection();
+		fp_Run * pRun;
+		bool bFound = false;
 		
 		//find the first of the two bookmarks
-		while(pRun)
+		while(pSL)
 		{
-			if(pRun->getType()== FPRUN_BOOKMARK)
+			pBL = pSL->getFirstBlock();
+			
+			while(pBL)	
 			{
-				pB1 = static_cast<fp_BookmarkRun*>(pRun);
-				if(!UT_XML_strcmp((const XML_Char *)szName, pB1->getName()))
+				pRun = pBL->getFirstRun();
+				
+				while(pRun)
 				{
-					bmBlockOffset[i] = pRun->getBlockOffset();
-					pBlock[i] = pRun->getBlock();
-					i++;
-					if(i>1)
+					if(pRun->getType()== FPRUN_BOOKMARK)
+					{
+						pB1 = static_cast<fp_BookmarkRun*>(pRun);
+						if(!UT_XML_strcmp((const XML_Char *)szName, pB1->getName()))
+						{
+							bmBlockOffset[i] = pRun->getBlockOffset();
+							pBlock[i] = pRun->getBlock();
+							i++;
+							if(i>1)
+							{
+								bFound = true;
+								break;
+							}
+						}
+					}
+					if(bFound)
 						break;
+					pRun = pRun->getNext();
 				}
+				if(bFound)
+					break;
+				pBL = pBL->getNext();
 			}
-			pRun = pRun->getNext();
+			if(bFound)
+				break;
+			pSL = pSL->getNext();
 		}
 		
 		UT_ASSERT(pRun && pRun->getType()==FPRUN_BOOKMARK && pBlock || pBlock);
