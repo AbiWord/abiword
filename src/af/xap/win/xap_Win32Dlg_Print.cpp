@@ -230,6 +230,13 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
 	pDevMode->dmCopies = 1;
 	pDevMode->dmCollate = DMCOLLATE_FALSE;
+	GlobalUnlock(m_pPersistPrintDlg->hDevMode);
+
+	// any changes to the DEVMODE structure must be followed by this call before the
+	// modified structure can be used !!!
+	GR_Win32Graphics::fixDevMode(m_pPersistPrintDlg->hDevMode);
+
+	pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 	ResetDC(m_pPersistPrintDlg->hDC,pDevMode);
 	GlobalUnlock(pDevMode);
 	
