@@ -36,66 +36,72 @@
 
 class pf_Frag;
 
-fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  PL_StruxDocHandle pFirst, fl_AutoNum * pParent, const XML_Char * lDelim, const XML_Char * lDecimal, List_Type lType, PD_Document * pDoc)
+fl_AutoNum::fl_AutoNum(	UT_uint32 id,
+						UT_uint32 start,
+						PL_StruxDocHandle pFirst,
+						fl_AutoNum * pParent,
+						const XML_Char * lDelim,
+						const XML_Char * lDecimal,
+						List_Type lType,
+						PD_Document * pDoc)
+:	m_pParent(pParent),
+	m_pDoc(pDoc),
+	m_List_Type(lType),
+	m_iID(id),
+	m_iParentID(0),
+	m_iLevel(pParent ? pParent->getLevel() + 1 : 1),
+	m_iStartValue(start),
+	m_iAsciiOffset(0),
+	m_bUpdatingItems(UT_FALSE),
+	m_bUpdate(UT_TRUE),
+	m_bDirty(UT_FALSE),
+	m_ioffset(0),
+	m_bWordMultiStyle(UT_TRUE),
+	m_pParentItem(0)
 {
-        UT_uint32 i;
-	m_iID = id;
-	m_iStartValue = start;
-	m_iAsciiOffset = 0;
-	m_bUpdatingItems = UT_FALSE;
-	m_bWordMultiStyle = UT_TRUE;
-	m_ioffset = 0;
-	m_bDirty = UT_FALSE;
-        i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
+	UT_uint32 i;
+	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
-	m_pParent = pParent;
-	if (m_pParent) 
-	{
-		m_iLevel = m_pParent->getLevel() + 1;
-	} 
-	else 
-	{
-		m_iLevel = 1;
-	}
 
  	addItem(pFirst);	
-        m_List_Type = lType;
-	m_pDoc = pDoc;
+
 	m_pDoc->addList(this);
 	// New 6/11/200. m_pParentItem is the item in the parent list
 	// that the new list points
-	m_pParentItem = NULL; // set it later 
-        m_bUpdate = UT_TRUE;
-	
 }
 
-fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_uint32 start, const XML_Char * lDelim, const XML_Char * lDecimal, PD_Document * pDoc)
+fl_AutoNum::fl_AutoNum(	UT_uint32 id,
+						UT_uint32 parent_id,
+						List_Type lType,
+						UT_uint32 start,
+						const XML_Char * lDelim,
+						const XML_Char * lDecimal,
+						PD_Document * pDoc)
+:	m_pParent(0),
+	m_pDoc(pDoc),
+	m_List_Type(lType),
+	m_iID(id),
+	m_iParentID(parent_id),
+	m_iLevel(1),
+	m_iStartValue(start),
+	m_iAsciiOffset(0),
+	m_bUpdatingItems(UT_FALSE),
+	m_bUpdate(UT_TRUE),
+	m_bDirty(UT_FALSE),
+	m_ioffset(0),
+	m_bWordMultiStyle(UT_TRUE),
+	m_pParentItem(0)
 {
-	m_iID = id;
-	m_iParentID = parent_id;
-	m_iStartValue = start;
-	m_iAsciiOffset = 0;
-	m_bUpdatingItems = UT_FALSE;
-	m_ioffset = 0;
-	m_bWordMultiStyle = UT_TRUE;
-	m_bDirty = UT_FALSE;
-
 	// Set in Block???
 	UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
-
-	m_pParent = NULL;
-	m_pDoc = pDoc;
-        m_bUpdate = UT_TRUE;
-		
-	m_List_Type = lType;
 }
 
 
 void fl_AutoNum::addItem(PL_StruxDocHandle pItem)
 {
-        UT_sint32 i = m_pItems.findItem(const_cast<void *>(pItem));
-        if(i < 0 )
+    UT_sint32 i = m_pItems.findItem(const_cast<void *>(pItem));
+    if(i < 0 )
 	{
 	        m_pItems.addItem(const_cast<void *>(pItem));
 	}
@@ -515,13 +521,13 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 
 PL_StruxDocHandle fl_AutoNum::getParentItem(void)
 {
-        return m_pParentItem;
+	return m_pParentItem;
 }
 
 
 void fl_AutoNum::setParentItem(PL_StruxDocHandle pItem)
 {
-        m_pParentItem = pItem;
+	m_pParentItem = pItem;
 	m_bDirty = UT_TRUE;
 }
 
@@ -756,10 +762,10 @@ UT_Bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
 fl_AutoNum * fl_AutoNum::getActiveParent(void) 
 {
 	fl_AutoNum * pAutoNum = m_pParent;
-       
+
 	while (pAutoNum && pAutoNum->isEmpty())
 		pAutoNum = pAutoNum->getParent();
-	
+
 	return pAutoNum;
 }
 
@@ -771,15 +777,14 @@ void fl_AutoNum::setParent(fl_AutoNum * pParent)
 
 void fl_AutoNum::update(UT_uint32 start)
 {
-  //	UT_DEBUGMSG(("Entering update\n"));
-	if(isUpdating())
-	        return;
+//	UT_DEBUGMSG(("Entering update\n"));
+	if (isUpdating())
+		return;
 	//_calculateLabelStr(0);
 	_updateItems(start, NULL);
-        void * sdh = const_cast<void *>( getFirstItem());
+	void * sdh = const_cast<void *>( getFirstItem());
 	if (m_pParent && !m_pParent->isUpdating())
 	{
-	        
 		UT_uint32 ndx = m_pParent->m_pItems.findItem(sdh);
 		m_pParent->update(ndx + 1);
 	}
@@ -789,26 +794,26 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 {
   //	UT_DEBUGMSG(("Entering _updateItems\n"));
 	UT_sint32 j;
-        if(m_bUpdate == UT_TRUE)
-        {
-                UT_sint32 numlists = m_pDoc->getListsCount();
-	        m_bUpdatingItems = UT_TRUE;
-	        for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
-	        {
-	  //	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
-		        PL_StruxDocHandle pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
-		        m_pDoc->listUpdate(pTmp);
+	if(m_bUpdate == UT_TRUE)
+	{
+		UT_sint32 numlists = m_pDoc->getListsCount();
+		m_bUpdatingItems = UT_TRUE;
+		for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
+		{
+	//	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
+			PL_StruxDocHandle pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
+			m_pDoc->listUpdate(pTmp);
 			
  // scan through all the lists and update child lists if connected to this item
 	
 			PL_StruxDocHandle pItem =  (PL_StruxDocHandle) m_pItems.getNthItem(i);  
 			for(j=0; j<numlists; j++)
 			{
-			         fl_AutoNum * pAuto = m_pDoc->getNthList(j);
-				 if( pItem == pAuto->getParentItem() && pItem != notMe)
-				 {
-				          pAuto->_updateItems(0,pItem);
-				 }
+				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
+				if( pItem == pAuto->getParentItem() && pItem != notMe)
+				{
+					pAuto->_updateItems(0,pItem);
+				}
 			}
 		}
 		m_bUpdatingItems = UT_FALSE;
@@ -818,10 +823,10 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 
 PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_uint32 list_num)
 {
-        if(list_num <0 || list_num >= m_pItems.getItemCount())
-	        return (PL_StruxDocHandle) NULL;
+	if(list_num <0 || list_num >= m_pItems.getItemCount())
+		return (PL_StruxDocHandle) NULL;
 	else
-	        return (PL_StruxDocHandle) m_pItems.getNthItem(list_num);
+		return (PL_StruxDocHandle) m_pItems.getNthItem(list_num);
 }
 
 PL_StruxDocHandle fl_AutoNum::getPrevInList( PL_StruxDocHandle pItem)

@@ -970,13 +970,13 @@ fp_FieldData fp_FieldFmts[] = {
 #undef  _FIELD
 #undef  _FIELDTYPE
 
-fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
+fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
+:	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD),
+	m_pFont(0),
+	m_pFontLayout(0),
+	m_iFieldType(FPFIELD_start)
 {
-	m_pFont = NULL;
-	m_pFontLayout = NULL;
-
 	m_sFieldValue[0] = 0;
-	
 }
 
 UT_Bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)

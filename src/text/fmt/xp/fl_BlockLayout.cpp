@@ -4665,8 +4665,8 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
 	pView->_ensureThatInsertionPointIsOnScreen();
-	DELETEP(attribs);
-	DELETEP(props);
+	FREEP(attribs);
+	FREEP(props);
 }
 
 void    fl_BlockLayout::StopList(void)
@@ -4719,15 +4719,17 @@ void    fl_BlockLayout::StopList(void)
 	pView->_eraseInsertionPoint();
 	//format();
 	//
-	// Set formatiing to match the next paragraph if it exists
+	// Set formatting to match the next paragraph if it exists
 	//
 	const XML_Char ** props = NULL;
 	const XML_Char * szAlign, * szIndent;
 	pPrev = getPrev();
 	pNext = getNext();
 	
-	if(id != 0)
+	if (id != 0)
 	{
+		UT_ASSERT(pPrev);	// TMN: Is an assert appropriate here?
+
 		//First, look for block in list
 		UT_Bool bmatch = UT_FALSE;
 		bmatch = (UT_Bool)(pPrev->isListItem() && pPrev->getLevel() == level && pPrev->getAutoNum()->getID() == id);
@@ -4747,7 +4749,7 @@ void    fl_BlockLayout::StopList(void)
 		}
 		
 		if (pPrev)
-	        	pPrev->getListPropertyVector( &vp);
+			pPrev->getListPropertyVector( &vp);
 		else if (pNext)
 			pNext->getListPropertyVector( &vp);
 		else
