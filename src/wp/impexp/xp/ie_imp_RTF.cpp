@@ -836,7 +836,8 @@ RTFProps_bCharProps::RTFProps_bCharProps(void):
 	bm_colourNumber(false),
 	bm_hasBgColour(false),
 	bm_bgcolourNumber(false),
-	bm_listTag(false)
+	bm_listTag(false),
+	bm_RTL(false)
 {
 }
 
@@ -1082,6 +1083,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_styleNumber = -1;
 	m_listTag = 0;
 	m_szLang = 0;
+	m_RTL = false;
 }
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -1801,7 +1803,31 @@ bool IE_Imp_RTF::StartNewSection()
 //
 bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 {
-	return m_gbBlock.ins(m_gbBlock.getLength(), reinterpret_cast<UT_GrowBufElement*>(&ch), 1);
+	// certain characters require additional processing
+	// Opening paranthesis, etc., need to be prefixed with direciton marker
+	UT_GrowBufElement c;
+	if(m_currentRTFState.m_charProps.m_RTL)
+		c = UCS_RLM;
+	else
+		c = UCS_LRM;
+	
+	if(ch == '(' || ch == '{' || ch == '[')
+	{
+		if(!m_gbBlock.ins(m_gbBlock.getLength(), &c, 1))
+			return false;
+	}
+	
+	if(!m_gbBlock.ins(m_gbBlock.getLength(), reinterpret_cast<UT_GrowBufElement*>(&ch), 1))
+		return false;
+
+	// closing parenthesis, etc., need to be affixed with direciton marker
+	if(ch == ')' || ch == '}' || ch == ']')
+	{
+		if(!m_gbBlock.ins(m_gbBlock.getLength(), &c, 1))
+			return false;
+	}
+
+	return true;
 }
 
 
@@ -3682,6 +3708,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_LTR;
 			return true;
 		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrch") == 0)
+		{
+			xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
+			m_currentRTFState.m_charProps.m_RTL = false;
+			return true;
+		}
 		break;
 
 	case 'm':
@@ -3890,6 +3922,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			UT_DEBUGMSG(("rtf imp.: rtlsect\n"));
 			m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_RTL;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtlch") == 0)
+		{
+			xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
+			m_currentRTFState.m_charProps.m_RTL = true;
 			return true;
 		}
 		else if(strcmp(reinterpret_cast<char*>(pKeyword), "row") == 0)

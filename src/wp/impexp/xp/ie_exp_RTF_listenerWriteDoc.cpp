@@ -53,6 +53,7 @@
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
+#include <fribidi/fribidi.h>
 
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
@@ -63,6 +64,8 @@ void s_RTF_ListenerWriteDoc::_closeSection(void)
 
 void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 {
+	// first reset ie's char direciton info
+	m_pie->setCharRTL(FRIBIDI_TYPE_UNSET);
 //
 // Force the output of char properties for blank lines or list items.
 //
@@ -160,6 +163,25 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 
 	for (pData=data; (pData<data+length); /**/)
 	{
+		// first handle direciton issues
+		FriBidiCharType type = fribidi_get_type((FriBidiChar)*pData);
+
+		if(FRIBIDI_IS_STRONG(type))
+		{
+			if(m_pie->isCharRTL() != FRIBIDI_TYPE_LTR && !FRIBIDI_IS_RTL(type))
+			{
+				// changing from rtl to ltr
+				m_pie->_rtf_keyword("ltrch");
+				m_pie->setCharRTL(FRIBIDI_TYPE_LTR);
+			}
+			else if(m_pie->isCharRTL() != FRIBIDI_TYPE_RTL && FRIBIDI_IS_RTL(type))
+			{
+				// changing from ltr to rtl
+				m_pie->_rtf_keyword("rtlch");
+				m_pie->setCharRTL(FRIBIDI_TYPE_RTL);
+			}
+	   }
+			
 		switch (*pData)
 		{
 		case '\\':
@@ -200,6 +222,19 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			break;
 
 		default:
+			// remove supperfluous direction markers ...
+			if(*pData == UCS_LRM && m_pie->isCharRTL() == FRIBIDI_TYPE_LTR)
+			{
+				pData++;
+				continue;
+			}
+			else if(*pData == UCS_RLM && m_pie->isCharRTL() == FRIBIDI_TYPE_RTL)
+			{
+				pData++;
+				continue;
+			}
+		
+			
 			if (XAP_EncodingManager::get_instance()->cjk_locale())
 			{
 				/*FIXME: can it happen that wctomb will fail under CJK locales? */

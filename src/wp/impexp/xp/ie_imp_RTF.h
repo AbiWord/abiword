@@ -79,18 +79,19 @@ public:
 	bool	m_topline;
 	bool	m_botline;
 	bool    m_superscript;
-	double    m_superscript_pos;       // unit is pt. if 0.0, ignore
+	double  m_superscript_pos;       // unit is pt. if 0.0, ignore
 	bool    m_subscript;
-	double    m_subscript_pos;         // unit is pt. if 0.0, ignore
-	double    m_fontSize;			// font size in points
+	double  m_subscript_pos;         // unit is pt. if 0.0, ignore
+	double  m_fontSize;			// font size in points
 	UT_uint32    m_fontNumber;		// index into font table
 	bool    m_hasColour;        // if false, ignore colour number
     UT_uint32    m_colourNumber;	// index into colour table
 	bool    m_hasBgColour; // if false, ignore colour number
-	UT_uint32    m_bgcolourNumber; // index into colour table
+	UT_uint32  m_bgcolourNumber; // index into colour table
 	UT_sint32  m_styleNumber ; //index into the style table
 	UT_uint32  m_listTag; // tag for lists to hang off
 	const char * m_szLang;
+	bool    m_RTL;
 };
 
 class ABI_EXPORT RTFProps_bCharProps
@@ -118,6 +119,7 @@ public:
 	bool bm_hasBgColour; // if false, ignore colour number
 	bool bm_bgcolourNumber; // index into colour table
 	bool bm_listTag; // tag for lists to hanfg off
+	bool bm_RTL;
 };
 
 struct ABI_EXPORT _rtfListTable
