@@ -333,9 +333,10 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStretch,
 										 const char* pszFontSize)
 {
-#ifdef USE_XFT	
-	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
-																   pszFontStretch, pszFontSize);
+
+#ifdef USE_XFT 
+	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
+																				 pszFontStretch, pszFontSize);
 	return pUnixFont->getName();
 #else
 	return NULL;
@@ -381,7 +382,7 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 {
 	m_pApp = app;
 	m_pWin = win;
-#ifndef WITH_PANGO
+#if (!defined(WITH_PANGO) || defined(USE_XFT))
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
 #endif
@@ -1202,8 +1203,8 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 									const char* pszFontStretch,
 									const char* pszFontSize)
 {
-	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
-																   pszFontStretch, pszFontSize);
+	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
+															  pszFontStretch, pszFontSize);
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
 	// This piece of code scales the FONT chosen at low resolution to that at high

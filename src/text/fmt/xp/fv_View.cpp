@@ -337,10 +337,12 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 // delete this font!
 //
 #if defined(ANY_UNIX)
+	#if 0 // fonts are cached and destoyed when the XAP_UnixFontManager is destroyed
 	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		delete pFont;
 	}
+	#endif
 #else
 	delete pFont;
 #endif

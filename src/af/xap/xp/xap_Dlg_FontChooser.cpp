@@ -554,6 +554,8 @@ void XAP_Preview_FontPreview::draw(void)
 	if(!pszWeight)
 		pszWeight = "normal";
 
+// In UNIX, we don't really need this font "caching" mechanism, since the XAP_UnixFontManager does
+// it already. However it might be usefull on other platforms, so I'll leave it here for now - MarcM.
 	if (
 		!m_pFont ||
 		

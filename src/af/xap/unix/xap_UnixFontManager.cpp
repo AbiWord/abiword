@@ -133,6 +133,9 @@ unhandled:
 
 #endif
 
+// initialize our static member pFontManager
+XAP_UnixFontManager * XAP_UnixFontManager::pFontManager = 0;
+
 XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
 #ifndef USE_XFT
 												 , m_pExtraXFontPath(0),
@@ -156,6 +159,21 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
 
+	// remove all the font from our cache
+	UT_DEBUGMSG(("MARCM: Removing %d fonts from cache\n", m_vecFontCache.getItemCount() / 2));
+	UT_sint32 k;
+	for (k = ((UT_sint32)m_vecFontCache.getItemCount())-1; k >= 1; k-=2)
+	{
+		XAP_UnixFont * pFont = m_vecFontCache.getNthItem(k);
+		pFont->setFontManager(NULL);
+		DELETEP(pFont);
+		m_vecFontCache.deleteNthItem(k);
+		char * fdescr = m_vecFontCache.getNthItem(k-1);
+		FREEP(fdescr);
+		m_vecFontCache.deleteNthItem(k-1);
+	}
+	pFontManager = NULL;
+	
 #ifndef USE_XFT
 	// we have to remove what we have added to the X font path
 	// the code below is not perfect, because if some other
@@ -619,7 +637,7 @@ UT_Vector * XAP_UnixFontManager::getAllFonts(void)
 
 #ifdef USE_XFT
 
-static XAP_UnixFont* buildFont(FcPattern* fp)
+static XAP_UnixFont* buildFont(XAP_UnixFontManager * pFM, FcPattern* fp)
 {
 	unsigned char* fontFile = NULL;
 	bool bold = false;
@@ -677,10 +695,11 @@ static XAP_UnixFont* buildFont(FcPattern* fp)
 		break;
 	}
 			
-	XAP_UnixFont* font = new XAP_UnixFont;
+	XAP_UnixFont* font = new XAP_UnixFont(pFM);
 	if (!font->openFileAs((char*) fontFile, metricFile.c_str(), xlfd, s))
 	{
 		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
+		font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
 		DELETEP(font);
 	}
 //
@@ -690,10 +709,11 @@ static XAP_UnixFont* buildFont(FcPattern* fp)
 	if((font == NULL) && (s != XAP_UnixFont::STYLE_NORMAL))
 	{
 		s = XAP_UnixFont::STYLE_NORMAL;
-		font = new XAP_UnixFont;
+		font = new XAP_UnixFont(pFM);
 		if (!font->openFileAs((char*) fontFile, metricFile.c_str(), xlfd, s))
 		{
 			UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
+			font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
 			DELETEP(font);
 		}
 	}
@@ -706,7 +726,7 @@ bool XAP_UnixFontManager::scavengeFonts()
 {
 	for (int i = 0; i < m_pFontSet->nfont; ++i)
 	{
-		XAP_UnixFont* pFont = buildFont(m_pFontSet->fonts[i]);
+		XAP_UnixFont* pFont = buildFont(this, m_pFontSet->fonts[i]);
 
 		if (pFont)
 			_addFont(pFont);
@@ -715,7 +735,7 @@ bool XAP_UnixFontManager::scavengeFonts()
 	return true;
 }
 
-XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
+XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName) const
 {
 	FcPattern* fp;
 	FcPattern* result_fp;
@@ -749,7 +769,7 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 		return NULL;
 	}
 
-	XAP_UnixFont* pFont = buildFont(result_fp);
+	XAP_UnixFont* pFont = buildFont(this, result_fp);
 	FcPatternDestroy(result_fp);
 	return pFont;
 }
@@ -758,7 +778,7 @@ class FontHolder
 {
 public:
 	FontHolder(XAP_UnixFont* pFont = NULL) : m_pFont(pFont) {}
-	~FontHolder() { delete m_pFont; }
+	~FontHolder() { /*delete m_pFont;*/ } // MARCM: We don't have to delete the font font anymore, since this is done by the XAP_FontManager.
 
 	void setFont(XAP_UnixFont* pFont) { delete m_pFont; m_pFont = pFont; }
 	XAP_UnixFont* getFont() { return m_pFont; }
@@ -877,7 +897,27 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 		st += pszFontWeight;
 	}
 
-	return searchFont(st.c_str());
+	// check if a font with this description is already in our cache
+	UT_sint32 k;
+	for (k = 0; k < ((UT_sint32)m_vecFontCache.getItemCount())-1; k+=2)
+	{
+		if (!strcmp(st.c_str(), (const char *)m_vecFontCache.getNthItem(k)))
+		{
+			UT_DEBUGMSG(("MARCM: Yes! We have a font cache HIT for font: %s\n", st.c_str()));
+			return (XAP_UnixFont *)m_vecFontCache.getNthItem(k+1);
+		}
+	}
+		
+	// find the font the hard way
+	XAP_UnixFont * pFont = searchFont(st.c_str());
+
+	// add the font to our cache as well
+	char * fontStr = NULL;
+	CLONEP(fontStr, st.c_str());
+	m_vecFontCache.addItem(fontStr);
+	m_vecFontCache.addItem(pFont);
+	
+	return pFont;
 }
 
 #else
@@ -938,6 +978,25 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont16Bit(void)
 }
 
 #endif
+
+void XAP_UnixFontManager::unregisterFont(XAP_UnixFont * pFont)
+{
+	// Check if the font is in our cache. If so, remove it from the cache and free the font description.
+	// Do NOT delete the font. That should be handled by whoever is calling this function
+	UT_sint32 k;
+	for (k = 0; k < ((UT_sint32)m_vecFontCache.getItemCount())-1; k+=2)
+	{
+		if (pFont == m_vecFontCache.getNthItem(k+1))
+		{
+			char * fdescr = (char *)m_vecFontCache.getNthItem(k);
+			UT_DEBUGMSG(("MARCM: Removing font %s from cache\n", fdescr));
+			FREEP(fdescr);
+			m_vecFontCache.deleteNthItem(k+1);
+			m_vecFontCache.deleteNthItem(k);
+			return;
+		}
+	}
+}
 
 XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 											XAP_UnixFont::style s)

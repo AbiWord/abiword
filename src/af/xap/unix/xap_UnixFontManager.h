@@ -57,9 +57,9 @@ public:
 									XAP_UnixFont::style s);
 
 #ifdef USE_XFT	
-	static XAP_UnixFont*	searchFont(const char* pszXftName);
+	XAP_UnixFont*			searchFont(const char* pszXftName) const;
 
-	static XAP_UnixFont*	findNearestFont(const char* pszFontFamily,
+	XAP_UnixFont*			findNearestFont(const char* pszFontFamily,
 											const char* pszFontStyle,
 											const char* pszFontVariant,
 											const char* pszFontWeight,
@@ -67,6 +67,13 @@ public:
 											const char* pszFontSize);
 #endif
 	
+	void					unregisterFont(XAP_UnixFont * pFont);
+	
+	// MARCM: this should point to the only instance of XAP_UnixFontManager, 
+	// so we can reach our Font Manager from a static context. Without having this static
+	// member, font caching can't be implemented without a whole lot of code rewriting
+	static XAP_UnixFontManager* pFontManager;
+
 private:
 
 #ifndef USE_XFT
@@ -76,6 +83,8 @@ private:
 #endif
 	
 	void					_addFont(XAP_UnixFont* font);
+
+	UT_Vector				m_vecFontCache;
 
 	// perhaps this should be a hash to avoid duplicates?
 	UT_Vector				m_searchPaths;

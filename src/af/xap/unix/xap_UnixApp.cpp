@@ -226,6 +226,7 @@ bool XAP_UnixApp::_loadFonts()
 	UT_uint32 i = 0;
 	
 	m_fontManager = new XAP_UnixFontManager();
+	XAP_UnixFontManager::pFontManager = m_fontManager; // set the static variable pFontManager, so we can access our fontmanager from a static context
 	UT_ASSERT(m_fontManager);
 
 	// find all the fonts in the appropriate places.  the list of directories

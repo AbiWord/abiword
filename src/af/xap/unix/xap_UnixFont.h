@@ -44,6 +44,7 @@
 #endif
 
 class ps_Generate;
+class XAP_UnixFontManager;
 
 struct uniWidth
 {
@@ -68,7 +69,7 @@ class ABI_EXPORT XAP_UnixFont
 		STYLE_LAST	// this must be last
 	};
 
-	XAP_UnixFont(void);
+	XAP_UnixFont(XAP_UnixFontManager * pFM);
 	XAP_UnixFont(const XAP_UnixFont & copy);
 	
 	~XAP_UnixFont(void);
@@ -128,7 +129,9 @@ class ABI_EXPORT XAP_UnixFont
 	float					measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 	UT_String				getPostscriptName() const;
 #endif
-
+	
+	void					setFontManager(XAP_UnixFontManager * pFm);
+	
 protected:
 	bool					_createTtfSupportFiles();
 	bool					_createPsSupportFiles();
@@ -184,6 +187,8 @@ protected:
 	font_type				m_fontType;
 	bool                    m_bisCopy;
 
+	XAP_UnixFontManager	*	m_pFontManager;
+	
 public:
 	static XAP_UnixFont *			s_defaultNonCJKFont[4];
 	static XAP_UnixFont *			s_defaultCJKFont[4];
