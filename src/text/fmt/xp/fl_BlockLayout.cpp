@@ -5865,6 +5865,9 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	const XML_Char * szDelim,*szDec, * szStart, * szAlign, * szIndent;
 	const XML_Char * szFont,* szListStyle;
 	UT_uint32 startv, level, currID;
+
+	// TODO -- this mixture of float and double is a mess, we should
+	// either use double throughout or float
 	float fAlign, fIndent;
 
 	m_pDoc->getStyle((const char *)style, &pStyle);
@@ -5905,7 +5908,7 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 		else
 			dLeft = UT_convertToInches(getProperty("margin-right",true));
 
-		fAlign += dLeft;
+		fAlign += (float)dLeft;
 	}
 	else
 	{

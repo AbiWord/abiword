@@ -555,8 +555,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 
 bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 {
-  PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
-  PT_DocPosition posTable,posCell,posEndCell,posPrevCell;
+  PL_StruxDocHandle cellSDH,tableSDH;
+  PT_DocPosition posTable,posCell;
   UT_sint32 iLeft,iRight,iTop,iBot;
   _getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
 
@@ -1189,6 +1189,9 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
  */
 UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML_Char * pPropsArray[])
 {
+	// TODO -- why does this function return UT_Error? If bool is
+	// sufficient, it should return bool, and if not, than the
+	// UT_Error & bool operations below are probably not safe
 	UT_Error tmp_var;
 
 //
@@ -1253,10 +1256,10 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			props[5] = sLeft.c_str();
 			props[6] = sColRight.c_str();
 			props[7] = sRight.c_str();
-			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props);
+			tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props);
 			UT_DEBUGMSG(("SEVIOR: 3  cur point %d \n",getPoint()));
 			pointBreak = getPoint();
-			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_Block);
+			tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_Block);
 //			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_Block);
 			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
 			if(getPoint() == pointBreak)
@@ -1267,11 +1270,11 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			{
 				pointTable = getPoint();
 			}
-			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_EndCell);
+			tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_EndCell);
 			UT_DEBUGMSG(("SEVIOR: 5  cur point %d \n",getPoint()));
 		}
 	}
-	tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_EndTable);
+	tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_EndTable);
 	UT_DEBUGMSG(("SEVIOR: 6  cur point %d \n",getPoint()));
 	setPoint(pointTable);
 	m_pDoc->endUserAtomicGlob();
