@@ -218,19 +218,8 @@ void AP_TopRuler::setHeight(UT_uint32 iHeight)
 
 UT_uint32 AP_TopRuler::getHeight(void) const
 {
-	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView == NULL)
-	{
+	if (m_pG == NULL) {
 		return 0;
-	}
-	GR_Graphics * pG = pView->getGraphics();
-	if ((m_pG == NULL) && (pG== NULL)) 
-	{
-		return 0;
-	}
-	else if(pG != NULL)
-	{
-		return pG->tlu(m_iHeight);
 	}
 	return m_pG->tlu(m_iHeight);
 }
