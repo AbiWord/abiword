@@ -50,41 +50,14 @@ static	float	getButtonHeight ()
 static	float	getButtonSpace () 
 					{ return 4.0f; };
 					
-#if 0
-/**
- * toolbar_append_with_eventbox
- *
- * Borrowed code from gnumeric (src/gnumeric-util.c)
- *
- * @toolbar               toolbar
- * @widget                widget to insert
- * @tooltip_text          tooltip text
- * @tooltip_private_text  longer tooltip text
- *
- * Packs widget in an eventbox and adds the eventbox to toolbar.
- * This lets a windowless widget (e.g. combo box) have tooltips.
- **/
-static GtkWidget *
-toolbar_append_with_eventbox (GtkToolbar *toolbar, GtkWidget  *widget,
-			      const char *tooltip_text,
-			      const char *tooltip_private_text)
+
+@implementation EV_CocoaToolbarTarget
+- (id)toolbarSelected:(id)sender
 {
-	GtkWidget *eventbox;
-
-	UT_ASSERT(GTK_IS_TOOLBAR (toolbar));
-	UT_ASSERT(widget != NULL);
-
-	/* An event box to receive events - this is a requirement for having
-           tooltips */
-	eventbox = gtk_event_box_new ();
-	gtk_widget_show (widget);
-	gtk_container_add (GTK_CONTAINER (eventbox), widget);
-	gtk_widget_show (eventbox);
-	gtk_toolbar_append_widget (GTK_TOOLBAR (toolbar), eventbox,
-				   tooltip_text, tooltip_private_text);
-	return eventbox;
+	UT_DEBUGMSG (("@EV_CocoaToolbarTarget (id)toolbarSelected:(id)sender\n"));
 }
-#endif
+@end
+
 
 class _wd								// a private little class to help
 {										// us remember all the widgets that
@@ -264,26 +237,27 @@ _wd::~_wd(void)
 EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCocoaFrame,
 							   const char * szToolbarLayoutName,
 							   const char * szToolbarLabelSetName)
-	: EV_Toolbar(pCocoaApp->getEditMethodContainer(),
+	: m_pCocoaApp (pCocoaApp), m_pCocoaFrame(pCocoaFrame),
+	  EV_Toolbar(pCocoaApp->getEditMethodContainer(),
 				 szToolbarLayoutName,
 				 szToolbarLabelSetName)
 {
-	m_pCocoaApp = pCocoaApp;
-	m_pCocoaFrame = pCocoaFrame;
 	m_pViewListener = 0;
 	m_wToolbar = nil;
 	m_lid = 0;							// view listener id
+	m_target = [[EV_CocoaToolbarTarget alloc] init];
 }
 
 EV_CocoaToolbar::~EV_CocoaToolbar(void)
 {
 	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 	_releaseListener();
+	[m_target release];
 }
 
 
 NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLabel, _wd * wd, NSView *parent,
-												float & btnX, NSWindowController * controller)
+												float & btnX)
 {
 	const float BTN_WIDTH = getButtonWidth ();
 	const float BTN_HEIGHT = getButtonHeight ();
@@ -321,30 +295,29 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 	wd->m_widget = btn;
 	[btn setTag:(int)wd];
 	NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
-	[conn setLabel:@"toolbarSelected"];
-	[conn setDestination:controller];
+	[conn setLabel:@"toolbarSelected:"];
+	[conn setDestination:m_target];
 	[conn setSource:btn];
+	[conn establishConnection];
+	[conn release];
 	return btn;
 }
 
-bool EV_CocoaToolbar::toolbarEvent(/* _wd * wd,*/
+bool EV_CocoaToolbar::toolbarEvent(_wd * wd,
 									 UT_UCSChar * pData,
 									 UT_uint32 dataLength)
 
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-	return false;
-#if 0
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
 	// return true iff handled.
 
-	XAP_Toolbar_Id id = wd->m_id;
+	XAP_Toolbar_Id tlbrid = wd->m_id;
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
-	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
+	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(tlbrid);
 	UT_ASSERT(pAction);
 
 	AV_View * pView = m_pCocoaFrame->getCurrentView();
@@ -362,6 +335,9 @@ bool EV_CocoaToolbar::toolbarEvent(/* _wd * wd,*/
 
 			UT_ASSERT(wd && wd->m_widget);
 			
+			UT_DEBUGMSG(("TODO handle toolbar toggling\n"));
+			UT_ASSERT (UT_TODO);
+		#if 0
 			// Block the signal, throw the button back up/down
 			bool wasBlocked = wd->m_blockSignal;
 			wd->m_blockSignal = true;
@@ -369,7 +345,7 @@ bool EV_CocoaToolbar::toolbarEvent(/* _wd * wd,*/
 										 !GTK_TOGGLE_BUTTON(wd->m_widget)->active);
 			//gtk_toggle_button_toggled(item);
 			wd->m_blockSignal = wasBlocked;
-
+		#endif
 			// can safely ignore this event
 			return true;
 		}
@@ -387,7 +363,6 @@ bool EV_CocoaToolbar::toolbarEvent(/* _wd * wd,*/
 
 	invokeToolbarMethod(pView,pEM,pData,dataLength);
 	return true;
-#endif
 }
 
 
@@ -468,7 +443,7 @@ bool EV_CocoaToolbar::synthesize(void)
 	const float BTN_SPACE = getButtonSpace ();
 
 	// create a Cocoa toolbar from the info provided.
-	float btnX = 0.0f;
+	float btnX = BTN_SPACE;
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -483,7 +458,11 @@ bool EV_CocoaToolbar::synthesize(void)
 	NSView * toolbarParent = [pToolbarWinCtrl getTopView];
 	UT_ASSERT (toolbarParent);
 	NSRect viewBounds = [toolbarParent bounds];
+	float viewHeight = viewBounds.size.height;	// the toolbar window view height
 	viewBounds.size.height = 48.0;
+	xxx_UT_DEBUGMSG (("toolbar has %u subviews\n", [[toolbarParent subviews] count]));
+	// revert the coordinate as they are upside down in NSView
+	viewBounds.origin.y = viewHeight - ([[toolbarParent subviews] count] + 1) * viewBounds.size.height;
 	m_wToolbar = [[NSView alloc] initWithFrame:viewBounds];
 	[toolbarParent addSubview:m_wToolbar];
 	[m_wToolbar setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
@@ -530,6 +509,7 @@ bool EV_CocoaToolbar::synthesize(void)
 					  GDK_ACTION_COPY);
 	gtk_signal_connect(GTK_OBJECT(m_wToolbar),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop_toolbar),this);
 #endif
+	NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
@@ -557,7 +537,7 @@ bool EV_CocoaToolbar::synthesize(void)
 			case EV_TBIT_PushButton:
 			{
 				NSButton * btn;
-				btn = _makeToolbarButton (EV_TBIT_PushButton, pLabel, wd, m_wToolbar, btnX, [XAP_CocoaToolbarWindow sharedToolbar]);
+				btn = _makeToolbarButton (EV_TBIT_PushButton, pLabel, wd, m_wToolbar, btnX);
 
 #if 0 // TODO
 				gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
@@ -591,7 +571,7 @@ bool EV_CocoaToolbar::synthesize(void)
 			case EV_TBIT_GroupButton:
 				{
 					NSButton *btn;
-					btn = _makeToolbarButton (pAction->getItemType(), pLabel, wd, m_wToolbar, btnX, [XAP_CocoaToolbarWindow sharedToolbar]);
+					btn = _makeToolbarButton (pAction->getItemType(), pLabel, wd, m_wToolbar, btnX);
 #if 0
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
@@ -634,8 +614,6 @@ bool EV_CocoaToolbar::synthesize(void)
 				btnFrame.origin.y = BTN_SPACE;
 				btnFrame.size.width = fWidth;
 				btnFrame.size.height = BTN_HEIGHT;
-				btnX += BTN_WIDTH + BTN_SPACE;
-
 
 				NSComboBox * comboBox = [[NSComboBox alloc] initWithFrame:btnFrame];
 				UT_ASSERT(comboBox);
@@ -643,7 +621,11 @@ bool EV_CocoaToolbar::synthesize(void)
 				wd->m_widget = comboBox;
 				[comboBox setTag:(int)wd];
 				[comboBox setEditable:NO];
-
+				[conn setDestination:m_target];
+				[conn setSource:comboBox];
+				[conn setLabel:@"toolbarSelected:"];
+				[conn establishConnection];
+				btnX = [comboBox frame].size.width + [comboBox frame].origin.x + BTN_SPACE;
 #if 0 //TODO
 
 				// handle popup events, so we can block our signals until the popdown
@@ -694,8 +676,10 @@ bool EV_CocoaToolbar::synthesize(void)
 							NSString * str = [NSString stringWithCString:sz];
 							[comboBox addItemWithObjectValue:str];
 						}
-//						[comboBox selectItemAtIndex:0];
-//						[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
+						if (items > 0) {
+							[comboBox selectItemAtIndex:0];
+							[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
+						}
 					}
 				}
 				
@@ -812,6 +796,7 @@ bool EV_CocoaToolbar::synthesize(void)
 			UT_ASSERT(0);
 		}
 	}
+	[conn release];
 #if 0
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);

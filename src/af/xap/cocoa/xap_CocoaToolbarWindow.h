@@ -30,6 +30,7 @@ class EV_CocoaToolbar;
 }
 + (XAP_CocoaToolbarWindow *)sharedToolbar;
 + (XAP_CocoaToolbarWindow *)createFromNib;
+- (void)windowDidLoad;
 - (void)removeAllToolbars;
 - (BOOL)addToolbar:(EV_CocoaToolbar *)aToolbar;
 - (BOOL)removeToolbar:(EV_CocoaToolbar *)aToolbar;

@@ -37,6 +37,12 @@ class AP_CocoaToolbar_Icons;
 class EV_CocoaToolbar_ViewListener;
 class EV_Toolbar_Label;
 
+@interface EV_CocoaToolbarTarget : NSObject
+{
+}
+- (id)toolbarSelected:(id)sender;
+@end
+
 class _wd;
 
 class EV_CocoaToolbar : public EV_Toolbar
@@ -48,7 +54,7 @@ public:
 	
 	virtual ~EV_CocoaToolbar(void);
 
-	bool toolbarEvent(/*_wd * wd,*/ UT_UCSChar * pData, UT_uint32 dataLength);
+	bool toolbarEvent(_wd * wd, UT_UCSChar * pData, UT_uint32 dataLength);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
@@ -72,12 +78,12 @@ protected:
 //	GdkEvent *                      m_eEvent;
 	NSView *						m_wToolbar;
 	NSView *						m_superView;
-//	GtkWidget * 					m_wHandleBox;
 	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
 	UT_Vector						m_vecToolbarWidgets;
 private:
 	NSButton * _makeToolbarButton (int type, EV_Toolbar_Label * pLabel, _wd * wd, NSView *parent,
-												float & btnX, NSWindowController * controller);
+												float & btnX);
+	EV_CocoaToolbarTarget * 		m_target;
 };
 
 #endif /* EV_COCOATOOLBAR_H */

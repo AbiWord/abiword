@@ -31,7 +31,9 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaToolbarWindow createFromNib\n"));
 
-	return [[XAP_CocoaToolbarWindow alloc] initWithWindowNibName:@"xap_CocoaToolbarWindow"];
+	XAP_CocoaToolbarWindow * tlbr = [[XAP_CocoaToolbarWindow alloc] initWithWindowNibName:@"xap_CocoaToolbarWindow"];
+
+	return tlbr;
 }
 
 + (XAP_CocoaToolbarWindow *)sharedToolbar
@@ -41,6 +43,22 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 		[pSharedToolbar window];
 	}
 	return pSharedToolbar;
+}
+
+/*!
+	Standard method override
+ */
+- (void)windowDidLoad
+{
+	NSWindow * myWindow = [self window];
+	UT_ASSERT (myWindow);	// if does not occur, then this is real bad news.
+	NSRect screenFrame = [[myWindow screen] frame];
+	NSRect windowFrame = [myWindow frame];
+	windowFrame.size.width = screenFrame.size.width;
+	windowFrame.origin.x = 0.0f;
+	windowFrame.origin.y = 0.0f;
+	[myWindow setFrame:windowFrame display:YES];
+	[super windowDidLoad];
 }
 
 - (void)removeAllToolbars
