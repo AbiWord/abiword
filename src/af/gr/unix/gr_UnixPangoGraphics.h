@@ -70,6 +70,8 @@ public:
 									  int iCharOffset, int iLength,
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
+                    
+  virtual void		setFont(GR_Font* pFont);
 
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
@@ -82,19 +84,21 @@ public:
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
 #if 0
 	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext);
+#endif
 
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
+#if 0
 	virtual void      justify(GR_RenderInfo & ri);
 
     	virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const;
+#endif	
     	virtual void      positionToXY(const GR_RenderInfo & ri,
 								   UT_sint32& x, UT_sint32& y,
 								   UT_sint32& x2, UT_sint32& y2,
 								   UT_sint32& height, bool& bDirection) const;
-	
 	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const;
-
+#if 0
   protected:
 	inline bool       _needsSpecialBreaking(GR_UnixPangoRenderInfo &ri);
 	inline bool       _needsSpecialCaretPositioning(GR_UnixPangoRenderInfo &ri);

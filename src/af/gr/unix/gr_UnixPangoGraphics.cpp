@@ -33,50 +33,10 @@
 extern "C"  UT_uint16    wvLangToLIDConverter(const char * lang);
 extern "C"  const char * wvLIDToLangConverter(UT_uint16);
 
-//HINSTANCE GR_UnixPangoGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_UnixPangoGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_UnixPangoGraphics::s_Version;
-//const SCRIPT_PROPERTIES ** GR_UnixPangoGraphics::s_ppScriptProperties = NULL;
 int GR_UnixPangoGraphics::s_iMaxScript = 0;
 
-/*
-tScriptItemize       GR_UnixPangoGraphics::fScriptItemize       = NULL;
-tScriptShape         GR_UnixPangoGraphics::fScriptShape         = NULL;
-tScriptFreeCache     GR_UnixPangoGraphics::fScriptFreeCache     = NULL;
-tScriptStringOut     GR_UnixPangoGraphics::fScriptStringOut     = NULL;
-tScriptStringAnalyse GR_UnixPangoGraphics::fScriptStringAnalyse = NULL;
-tScriptStringFree    GR_UnixPangoGraphics::fScriptStringFree    = NULL;
-tScriptTextOut       GR_UnixPangoGraphics::fScriptTextOut       = NULL;
-tScriptPlace         GR_UnixPangoGraphics::fScriptPlace         = NULL;
-tScriptJustify       GR_UnixPangoGraphics::fScriptJustify       = NULL;
-tScriptCPtoX         GR_UnixPangoGraphics::fScriptCPtoX         = NULL;
-tScriptXtoCP         GR_UnixPangoGraphics::fScriptXtoCP         = NULL;
-tScriptBreak         GR_UnixPangoGraphics::fScriptBreak         = NULL;
-tScriptIsComplex     GR_UnixPangoGraphics::fScriptIsComplex     = NULL;
-tScriptGetProperties GR_UnixPangoGraphics::fScriptGetProperties = NULL;
-tScriptRecordDigitSubstitution GR_UnixPangoGraphics::fScriptRecordDigitSubstitution = NULL;
-
-enum usp_error
-{
-	uspe_unknown       = 0x00000000,
-	uspe_loadfail      = 0x00000001,
-	uspe_nohinst       = 0x00000002,
-	uspe_nofunct       = 0x00000003,
-	uspe_noscriptprops = 0x00000004
-};
-
-
-class usp_exception
-{
-  public:
-	usp_exception():error(uspe_unknown){};
-	usp_exception(usp_error e):error(e){};
-	
-	~usp_exception(){};
-	
-	usp_error error;
-};
-*/
 
 class GR_UnixPangoItem: public GR_Item
 {
@@ -283,150 +243,6 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(HDC hdc, const DOCINFO * pDI, XAP_App
 		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 	}
 }
-*/
-/*
-#define loadUSPFunction(name)                           \
-f##name = (t##name)GetProcAddress(s_hUniscribe, #name); \
-if(!f##name)                                            \
-{                                                       \
-	usp_exception e(uspe_nofunct);                      \
-	throw(e);                                           \
-	return false;                                       \
-}
-
-#define logScript(iId)                                                                   \
-{                                                                                        \
-    {                                                                                    \
-	    UT_String s;                                                                     \
-		char _buff[100];                                                                 \
-        GetLocaleInfoA(MAKELCID((WORD)s_ppScriptProperties[iId]->langid, SORT_DEFAULT),  \
-				      LOCALE_SENGLANGUAGE,                                               \
-					  _buff,                                                             \
-					  100);                                                              \
-		                                                                                 \
-		s += _buff;                                                                      \
-                                                                                         \
-		GetLocaleInfoA(MAKELCID((WORD)s_ppScriptProperties[iId]->langid, SORT_DEFAULT),  \
-				      LOCALE_SENGCOUNTRY,                                                \
-					  _buff,                                                             \
-					  100);                                                              \
-                                                                                         \
-		s += " (";                                                                       \
-		s += _buff;                                                                      \
-		s += ")";                                                                        \
-		                                                                                 \
-		UT_DEBUGMSG(("Uniscribe %s\n", s.c_str()));                                      \
-	    if(XAP_App::getApp()->getPrefs())                                                \
-	    {                                                                                \
-		   XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str());         \
-	    }                                                                                \
-    }                                                                                    \
-}
-*/
-/*
-bool GR_UnixPangoGraphics::_constructorCommonCode()
-{
-	// try to load Uniscribe
-	s_iInstanceCount++;
-	
-	if(s_iInstanceCount == 1)
-	{
-		s_Version.set(0,1,0,0);
-		
-		s_hUniscribe = LoadLibrary("usp10.dll");
-
-		if(!s_hUniscribe)
-		{
-			usp_exception e(uspe_loadfail);
-			throw(e);
-			return false;
-		}
-		
-#if 1 //def DEBUG
-		char FileName[250];
-		if(GetModuleFileName(s_hUniscribe,&FileName[0],250))
-		{
-			DWORD dummy;
-			DWORD iSize = GetFileVersionInfoSize(FileName,&dummy);
-
-			if(iSize)
-			{
-				char * pBuff = (char*)malloc(iSize);
-				if(pBuff && GetFileVersionInfo(FileName, 0, iSize, pBuff))
-				{
-					LPVOID buff2;
-					UINT   buff2size;
-					
-					if(VerQueryValue(pBuff,"\\",
-									 &buff2,
-									 &buff2size))
-					{
-						VS_FIXEDFILEINFO * pFix = (VS_FIXEDFILEINFO *) buff2;
-						UT_uint32 iV1 = (pFix->dwFileVersionMS & 0xffff0000) >> 16;
-						UT_uint32 iV2 = pFix->dwFileVersionMS & 0x0000ffff;
-						UT_uint32 iV3 = (pFix->dwFileVersionLS & 0xffff0000) >> 16;
-						UT_uint32 iV4 = pFix->dwFileVersionLS & 0x0000ffff;
-							
-						UT_DEBUGMSG(("GR_UnixPangoGraphics: Uniscribe version %d.%d.%d.%d\n",
-									 iV1, iV2, iV3, iV4));
-						if(XAP_App::getApp()->getPrefs())
-						{
-							UT_String s;
-							UT_String_sprintf(s, "usp10.dll version %d.%d.%d.%d", iV1, iV2, iV3, iV4);
-							XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str()); 
-						}
-						
-					}
-				}
-				free(pBuff);
-			}
-		}
-#endif
-
-		// now we load the functions we need
-		loadUSPFunction(ScriptItemize);
-		loadUSPFunction(ScriptShape);
-		loadUSPFunction(ScriptFreeCache);
-		loadUSPFunction(ScriptStringOut);
-		loadUSPFunction(ScriptStringAnalyse);
-		loadUSPFunction(ScriptStringFree);
-		loadUSPFunction(ScriptTextOut);
-		loadUSPFunction(ScriptPlace);
-		loadUSPFunction(ScriptJustify);
-		loadUSPFunction(ScriptCPtoX);
-		loadUSPFunction(ScriptXtoCP);
-		loadUSPFunction(ScriptBreak);
-		loadUSPFunction(ScriptIsComplex);
-		loadUSPFunction(ScriptRecordDigitSubstitution);
-		loadUSPFunction(ScriptGetProperties);
-		
-		HRESULT hRes = fScriptGetProperties(&s_ppScriptProperties, & s_iMaxScript);
-		if(hRes)
-		{
-			usp_exception e(uspe_noscriptprops);
-			throw(e);
-			return false;
-		}
-#ifdef DEBUG
-		for(UT_uint32 i = 0; i < s_iMaxScript; ++i)
-		{
-			logScript(i);
-		}
-#endif
-	}
-	else // we are not the first instance, USP should be loaded
-	{
-		if(!s_hUniscribe)
-		{
-			usp_exception e(uspe_nohinst);
-			throw(e);
-			return false;
-		}
-	}
-	
-	return true;
-}
-#undef loadUSPFunction
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
@@ -514,23 +330,20 @@ GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 //#define GRWIN32USP_ITEMBUFF_SIZE 20
 bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
-	static gunichar wcInChars[GRUNIXPANGO_CHARBUFF_SIZE];
   UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize\n"));
-	//static SCRIPT_ITEM Items[GRWIN32USP_ITEMBUFF_SIZE];
+	static gunichar wcInChars[GRUNIXPANGO_CHARBUFF_SIZE];
 
 	gunichar *pInChars = &wcInChars[0];
-	//SCRIPT_ITEM * pItems = &Items[0];
 	bool bDeleteChars = false;
-	//bool bDeleteItems = false;
 
+  if (text.getStatus() != UTIter_OK) UT_DEBUGMSG(("itemize failed text.getStatus not OK at start\n"));
 	UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 	UT_uint32 iPosStart = text.getPosition();
 	UT_uint32 iPosEnd   = text.getUpperLimit();
 	UT_return_val_if_fail(iPosEnd < 0xffffffff && iPosEnd >= iPosStart, false);
 	
-	//PangoContext *context = gdk_pango_context_get();
-	//!!!WDG is there a GtkWindow/Widget to get the context for?
 	PangoContext *context = gdk_pango_context_get_for_screen(gdk_screen_get_default());
+  UT_return_val_if_fail(context, false);
 
 	UT_uint32 iLen = iPosEnd - iPosStart + 1; // including iPosEnd
 
@@ -545,6 +358,8 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	UT_uint32 i;
 	for(i = 0; i < iLen; ++i, ++text)
 	{
+    UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize: i %d, iLen %d, Start %d, End %d\n", i, iLen, iPosStart, iPosEnd));
+    if (text.getStatus() != UTIter_OK) UT_DEBUGMSG(("itemize failed text.getStatus not OK\n"));
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 		//pInChars[i] = (WCHAR)text.getChar();
 		//!!!WDG need to convert the UCS4 from getChar() to UTF8 for input to pango
@@ -561,79 +376,31 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	// Does the text iterator need changed to contain a UTF8 version of the string?
 	// or subclassed?
 	int start = 0;
-	glong length = g_utf8_strlen(pUTF8text, iLen*4);
+	glong length = g_utf8_strlen(pUTF8text, -1);
 	
 	
 	UT_uint32       iItemCount;
 	/*
 	UT_uint16 iLid = wvLangToLIDConverter(I.getLang());
-	
-	SCRIPT_STATE ss;
-	ss.uBidiLevel = I.getEmbedingLevel();
-	ss.fOverrideDirection = I.getDirOverride() == FRIBIDI_TYPE_UNSET ? 0 : 1;
-	ss.fInhibitSymSwap = 0;
-	ss.fCharShape = 1;
-	ss.fDigitSubstitute = 1;
-	ss.fInhibitLigate = 0;
-	ss.fDisplayZWG = I.getShowControlChars();
-	ss.fArabicNumContext = 0;
-	ss.fGcpClusters = 0;
-	ss.fReserved = 0;
-	ss.fEngineReserved = 0;
-
-	SCRIPT_CONTROL sc;
-	sc.uDefaultLanguage = iLid; 
-	sc.fContextDigits = 1; 
-	sc.fInvertPreBoundDir = 0; 
-	sc.fInvertPostBoundDir = 0; 
-	sc.fLinkStringBefore = 0; 
-	sc.fLinkStringAfter = 0; 
-	sc.fNeutralOverride = 0; 
-	sc.fNumericOverride = 0; 
-	sc.fLegacyBidiClass = 0; 
-	sc.fReserved = 0; 
 	*/
-
-		
-	//HRESULT hRes = fScriptItemize(pInChars, iLen, GRWIN32USP_ITEMBUFF_SIZE, &sc, &ss, pItems, &iItemCount);
 	PangoAttrList *pAttr = pango_attr_list_new();
+  
+  UT_DEBUGMSG(("itemize: pango_itemize (%s), start(%d), length(%d)\n", pUTF8text, start, length));
 	GList *gItems = pango_itemize(context, pUTF8text, start, length, pAttr, NULL);
 	iItemCount = g_list_length(gItems);
 	//!!!WDG haven't decided what to do about attributes yet
 	pango_attr_list_unref(pAttr);
-	/*
-	if(hRes)
-	{
-		UT_return_val_if_fail(hRes == E_OUTOFMEMORY, false);
-		UT_uint32 iItemBuffSize = GRWIN32USP_ITEMBUFF_SIZE;
-		UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize: item buffer too small (len %d)\n", iItemBuffSize));
-		
-		do
-		{
-			iItemBuffSize *= 2;
-			
-			if(bDeleteItems)
-				delete [] pItems;
-			
-			pItems = new SCRIPT_ITEM[iItemBuffSize];
-			UT_return_val_if_fail(pItems, false);
-			bDeleteItems = true;
-
-			hRes = fScriptItemize(pInChars, iLen, iItemBuffSize, NULL, &ss, pItems, &iItemCount);
-			
-		}while(hRes == E_OUTOFMEMORY);
-
-		UT_return_val_if_fail(hRes == 0, false);
-	}
-	*/
 	
 	// now we process the ouptut
+  UT_DEBUGMSG(("itemize: number of items %d\n", iItemCount));
 	for(i = 0; i < iItemCount; ++i)
 	{
+    UT_DEBUGMSG(("itemize: creating item %d\n", i));
 		//GR_UnixPangoItem * pI = new GR_UnixPangoItem(pItems[i]);
 		PangoItem *pItem = (PangoItem *)g_list_nth(gItems, i)->data;
 		GR_UnixPangoItem * pI = new GR_UnixPangoItem(pItem, pUTF8text);
 		// !!!WDG remember to free the PangoItems when you are finished with them
+    if (!pI) UT_DEBUGMSG(("itemize failed didn't get new pangoitem\n"));
 		UT_return_val_if_fail(pI, false);
 
 		//I.addItem(pItems[i].iCharPos, pI);
@@ -645,13 +412,10 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	g_free(pUTF8text);
 
 
-	/*
-	if(bDeleteItems)
-		delete [] pItems;
-	*/
 	if(bDeleteChars)
 		delete [] pInChars;
-	
+  
+	UT_DEBUGMSG(("itemize succeeded\n"));
 	return true;
 }
 
@@ -668,6 +432,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	{
 		//ri = new GR_UnixPangoRenderInfo((GR_ScriptType)pItem->m_si.a.eScript);
 		// !!!WDG how does this relate to pango?
+    ri = new GR_UnixPangoRenderInfo((GR_ScriptType)1);
 		UT_return_val_if_fail(ri, false);
 	}
 	else
@@ -703,7 +468,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		bDeleteChars = true; // data on heap; cleanup later
 	}
 
-	UT_uint32 i;
+	UT_sint32 i;
 	for(i = 0; i < si.m_iLength; ++i, ++si.m_Text)
 	{
 		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
@@ -916,11 +681,11 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	return true;
 }
 
-#if 0
+
 UT_sint32 GR_UnixPangoGraphics::getTextWidth(const GR_RenderInfo & ri) const
 {
   UT_DEBUGMSG(("GR_UnixPangoGraphics::getTextWidth\n"));
-	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	// !!!WDG How to do this for pango?
 	UT_sint32 iWidth = 0;
@@ -977,7 +742,6 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(const GR_RenderInfo & ri) const
 
 	return iWidth;
 }
-#endif
 
 void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
@@ -1038,8 +802,9 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
-	UT_return_if_fail(pItem && pFont);
+	UT_return_if_fail(pItem && pFont && pFont->m_pf);
 
+  UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff);
 
@@ -1116,7 +881,11 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 								 pJustify,
 								 RI.m_pGoffsets);
 	#endif
-	pango_xft_render(m_pXftDraw, &m_XftColor, pFont->m_pf, RI.m_pGlyphs, xoff, yoff);
+  UT_DEBUGMSG(("about to pango_xft_render xoff %d yoff %d\n", xoff, yoff));
+  UT_return_if_fail(m_pXftDraw && &m_XftColor && RI.m_pGlyphs);
+  //PangoXftFont *pxftf = PangoXftFont(m_pXftFontD);
+  //UT_return_if_fail(PANGO_XFT_IS_FONT (pxftf));
+	//pango_xft_render(m_pXftDraw, &m_XftColor, pxftf, RI.m_pGlyphs, xoff, yoff);
 
 	#if 0
 	pItem->m_si.a.eScript = eScript;
@@ -1204,7 +973,7 @@ void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_Grow
     returns true on success
  */
  
- /*
+#if 0
 bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pText && ri.m_pItem, false);
@@ -1309,12 +1078,12 @@ bool GR_UnixPangoGraphics::_needsSpecialCaretPositioning(GR_UnixPangoRenderInfo 
 
 	return (s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsCaretInfo != 0);
 }
-
+#endif
 
 
 UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri, bool bPermanent)
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 
 	if(!RI.m_pJustify)
@@ -1349,7 +1118,40 @@ UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri, bool bPer
 
 UT_sint32 GR_UnixPangoGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pItem, 0);
+  //!!!WDG using XP version for now
+	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO && ri.m_pItem, 0);
+  
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+
+	UT_return_val_if_fail(RI.m_pChars, 0);
+
+	UT_sint32 iCount = 0;
+	bool bNonBlank = false;
+
+	for(UT_sint32 i = (UT_sint32)RI.m_iLength-1; i >= 0; --i)
+	{
+		if(RI.m_pChars[i] != UCS_SPACE)
+		{
+			bNonBlank = true;
+			continue;
+		}
+		
+		// only count this space if this is not last run, or if we
+		// have found something other than spaces
+		if(!ri.m_bLastOnLine || bNonBlank)
+			iCount++;
+	}
+
+	if(!bNonBlank)
+	{
+		return -iCount;
+	}
+	else
+	{
+		return iCount;
+	}
+
+#if 0
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	UT_return_val_if_fail(RI.m_pVisAttr,0);
 	
@@ -1473,8 +1275,10 @@ UT_sint32 GR_UnixPangoGraphics::countJustificationPoints(const GR_RenderInfo & r
 
 	RI.m_eJustification = SCRIPT_JUSTIFY_NONE;
 	return 0;
+#endif
 }
 
+#if 0
 void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pItem);
@@ -1518,10 +1322,12 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 
 	UT_ASSERT_HARMLESS( !iExtraSpace );
 }
+#endif
 
+#if 0
 UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &) ri;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
 	UT_return_val_if_fail(pItem, 0);
@@ -1555,21 +1361,34 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 	UT_ASSERT_HARMLESS( !hRes );
 	return iPos + iTrail;
 }
+#endif
 
 void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 										  UT_sint32& x, UT_sint32& y,
 										  UT_sint32& x2, UT_sint32& y2,
 										  UT_sint32& height, bool& bDirection) const
 {
-	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &) ri;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
-	//UT_uint32 iZoom = getZoomPercentage();
-	
+  
 	if(!pItem)
 		return;
-
 	bool bTrailing = true;
+
+  #if 0
+  void        pango_glyph_string_index_to_x   (PangoGlyphString *glyphs,
+                                             char *text,
+                                             int length,
+                                             PangoAnalysis *analysis,
+                                             int index_,
+                                             gboolean trailing,
+                                             int *x_pos);
+  #endif
+  pango_glyph_string_index_to_x (RI.m_pGlyphs, pItem->m_text.utf8_str(), pItem->m_text.byteLength(), &(pItem->m_pi->analysis), 
+    RI.m_iOffset, bTrailing, &x);
+
+#if 0
 
 	int * pAdvances = RI.m_pJustify ? RI.s_pJustifiedAdvances : RI.m_pAdvances;
 	
@@ -1596,17 +1415,18 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 
 	
 	UT_ASSERT_HARMLESS( !hRes );
+#endif
 	x = x;
 	x2 = x;
 }
-*/
+
 void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 									int iCharOffset, int iLength,
 									UT_sint32 xoff, UT_sint32 yoff,
 									int * /*pCharWidth*/)
 {
   UT_UTF8String *testchars = new UT_UTF8String(pChars);
-  UT_DEBUGMSG(("GR_UnixPangoGraphics::drawChars %S\n", testchars->utf8_str()));
+  xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::drawChars %S\n", testchars->utf8_str()));
   delete testchars;
 	if(!pChars || ! iLength)
 		return;
@@ -1647,6 +1467,92 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 	if(bDelete)
 		delete [] pwChars;
 	#endif
+}
+
+void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
+{
+	UT_ASSERT(pFont);
+	if(pFont == NULL)
+	{
+		return;
+	}
+	XAP_UnixFontHandle * pUFont = static_cast<XAP_UnixFontHandle *> (pFont);
+
+	// Sometimes we ask gr_UnixGraphics to build big (*BIG*) fonts only to
+	// get the linear metrics of the font (in the so called "layout units").
+	// Xft is not able to open fonts so big, so if we are called with such
+	// a font, then we don't even try to open it.
+	// IMO the code should not create a big GR_Font to get the linear metrics,
+	// but just ask for the metrics with float precision, for instance.
+	// I'm just taking here the shortest path to get Xft working...
+
+	// this is probably caching done on the wrong level
+	// TODO: turn this off when our text runs get a bit smarter
+
+	// this probably is not safe. It was observed in the win32 build that
+	// identity of font pointer does not imply identity of font, i.e.,
+	// code like this
+	// 
+	//   f1 = new GR_Font();
+	//   delete f1;
+	//   f2 = new GR_Font(); /* different font altogether */
+	//
+	//   can result in f1 == f2 and since the allocation and
+	//   deallocation of fonts happens outside of the graphics class,
+	//   the chached m_pFont could well be pointing to
+	//   a different font than intended (or something completely
+	//   different. I am not sure whether this is or is not the case
+	//   on Unix, really depends on where the font pointer comes from,
+	//   so I will not meddle with this, but it needs to be
+	//   investigated by someone who knows better -- Tomas
+	
+	// It's worse. Fonts can get deallocated in the cache but have
+    // pointers to them in fp_Run.h. I can detect them here and prevent
+	// crashes but I don't know
+	// how to communicate this back to fp_Run and fully solve this right now 
+	// - Martin
+
+	//	XAP_UnixFont * pUnixFont = pUFont->getUnixFont();
+	//  bool bDealloc = m_pFontManager->isDeallocated(pUnixFont);
+	//  UT_ASSERT(!bDealloc);
+
+	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
+	   (pUFont->getSize() == m_pFont->getSize()))
+	{
+		// although the new font is the same as the current set one,
+		// make at least sure that we point our font pointer to the "new" one, 
+		// as the caller of this function expects
+		m_pFont = pUFont;
+		return;
+	}
+#if 0
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+#endif
+	m_pFont = pUFont;
+	char * szUnixFontName = UT_strdup(m_pFont->getUnixFont()->getName());
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
+
+#if 0
+	if (szLCFontName)
+	{
+		if(strstr(szLCFontName,"symbol") != NULL)
+		{
+			if(strstr(szLCFontName,"star") != NULL)
+				m_bIsSymbol = false;
+			else
+				m_bIsSymbol = true;
+		}
+		if(strstr(szLCFontName,"dingbat") != NULL)
+			m_bIsDingbat = true;
+	}
+	FREEP(szLCFontName);
+	//	m_bIsSymbol = false;
+	//  m_bIsDingbat = false;
+#endif
+	
+	m_pXftFontL = m_pFont->getLayoutXftFont();
+	m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
 }
 
 
