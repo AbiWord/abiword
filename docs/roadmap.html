@@ -7,143 +7,178 @@
 <BODY>
 <H2 align=Center>AbiWord Roadmap</H2>
 
+<ul>
+<li>Last updated:  26 March 1999, the current tarball is 0.5.2
+
+<li>Please see the <a href="#notes">notes</a> at the bottom of this list.
+</ul>
+
+<hr>
+
 <TABLE WIDTH=100% BORDER=1>
 <TR ALIGN=CENTER>
-  <TD WIDTH=25%><B>0.4</B></TD>
-  <TD WIDTH=25%><B>0.6</B></TD>
-  <TD WIDTH=25%><B>0.8</B></TD>
-  <TD WIDTH=25%><B>1.0</B></TD>
+  <TD WIDTH=25%><B>0.7.0</B></TD>
+  <TD WIDTH=25%><B>0.9.0/1.0.0</B></TD>
+  <TD WIDTH=25%><B>Unknown</B></TD>
+  <TD WIDTH=25%><B>Future</B></TD>
   </TR>
 
+<tr>
+<td>
+
+<P>The primary goal of the 0.7.0 release is to introduce the
+availability of compiled binaries.  Accordingly, we're investing
+effort in polishing the user experience.</p>
+
+<P>We're also trying to be as sure as we can that the file format
+implemented in this release is the not going to change again.  The
+expectation is that with this release, people may start to <b>use</b>
+AbiWord more, and we want to take steps to ensure document
+compatibility.</p>
+
+</td>
+
+<td><P>We'll call AbiWord 0.9.0 when it has [substantially] all of the
+features we want in our "1.0" release.  Accordingly, the list below
+represents our current plan for the "1.0" feature set.  This
+list is still subject to a certain amount of change.</P>
+
+<P>After sufficient bug fixing on the 0.9.0 code base,
+we'll call it 1.0.0 and consider it to be a maintenance tree.  When
+we're ready to start adding post-1.0 features, we'll fork a new
+development tree.</p></td>
+
+<td><p>We're not quite sure where these features go yet.</p></td>
+
+<td><p>We believe these features are NOT going to be in 1.0.</p></td>
+
+</tr>
+
 <TR>
+  <!-- ********************** column 1 ********************** -->
+
   <TD VALIGN=top>
   <UL>
-<hr><b>eric</b><br> 
-    <LI>add code to coalesce runs on the fly during text insertion
-    <LI>insert, delete section breaks
-    <LI>page margins, size, orientation 
-
-<hr><b>jeff</b><br> 
-
-<hr><b>paul</b><br> 
-    <LI>fix spell checker 
-
-<hr><b>shaw</b><br>
-
-<hr><b>unassigned</b><br>
-    <LI>paragraph settings dialog
-    <LI>section settings dialog
-    <LI>cleanup contextual problems with editing
-
-<hr><b>done</b><br> 
-    <LI>embedded images for GDK and PostScript
-    <LI>ruler (margins, indents, tabs)
-    <LI>fix bug 192 (ins pt draw on forced break)
-    <LI>fix bug 233 (PS line leading)
-    <LI>write <i>ColumnBreaker</i>, including support for forced column/page breaks, better widow/orphan control, and vertical keeps.
-    <LI>fix bug 7 (character overhang redraw problems)
-    <LI>basic support for calculated fields, including a time field
-    <LI>basic left-aligned tabs, including default tabs and defined tabs
-    <LI>fix Linux printing and font problems
-    <LI>basic embedded image support in layout and Win32 draw code
-    <LI>forced line breaks
-    <LI>toolbar buttons for multiple columns
-    <LI>toolbar buttons for paragraph, line spacing
-    <LI>widow/orphan control
-    <LI>paragraph indents, outdents, left/right margins 
-    <LI>paragraph top/bottom margins
-    <LI>find/replace
-    <LI>finish edit-aware layout engine
-    <LI>page view
-    <LI>plain-text on clipboard 
-    <LI>basic app framework
-    <LI>scrolling
-    <LI>character formatting 
-    <LI>cursor movement 
-    <LI>insert/delete 
-    <LI>paragraph alignment 
-    <LI>save/load 
-    <LI>selections 
-    <LI>simple line breaking 
-    <LI>text color 
-    <LI>toolbar 
-    <LI>undo/redo
-    <LI>text import/export
+<hr><b>File format stability</b><br>
+    <li>Make the importer gracefully ignore unrecognized tags, perhaps with a warning to the user (jeff@abisource.com)
+    <li>ensure that file format contains the version number of the app which wrote the file (jeff@abisource.com)
+    <li>define file format for tables (jeff@abisource.com, eric@abisource.com)
+<hr><b>Bugs</b><br>
+    <li>bugs 94, 218, 241, 242, 243, 260 (all of which may be related; specially requested by Bob) (jeff@abisource.com)
+    <li>bug:  spaces should not wrap to the beginning of a line (362) (eric@abisource.com)
+    <LI>fix bug 7 (character overhang redraw problems) (eric@abisource.com)
+    <LI>add code to coalesce runs on the fly during text insertion (eric@abisource.com)
+<hr><b>Features</b><br>
+    <LI>headers and footers (eric@abisource.com)
+    <li>Additional types of fields (especially page numbers)
+    <LI>lists (eric@abisource.com)
+    <LI>basic layout engine for style sheets (paul@abisource.com)
+    <li>leech (double-click on an ABW file under Windows) (jeff@abisource.com)
+    <LI>finish code to insert, delete section breaks
+    <LI>add ability to manipulate page margins, size, orientation 
+<hr><b>Tree</b><br>
+    <li>sort out paradigm for how external libraries get built and used by our code
+    <li>move src/other/expat out of the abi tree, treating it like zlib, png, and other external libs
+    <li>remove abi/src/ps from the CVS tree
+    <li>Abstract ptbl and fmt code into a XAP text layout library for use by multiple AbiSuite apps (eric@abisource.com)
+<hr><b>Other</b><br>
+    <li>figure out memory usage issues on long text file import (eric@abisource.com)
+    <li>create fp_LayoutContainer class, fp_Column as a subclass of it (eric@abisource.com)
+<hr><b>Binaries</b> (AbiSource staff will take care of all of these)<br>
+    <li>Define locations of necessary support files in a user installation (dictionaries, sample documents, strings files, Unix fonts)
+    <li>Define sample documents and design of Help menu.  Implement menu and write documents.
+    <li>installer for Win32
+    <li>packaging and install scripts for Linux.  RPM, DEB, tar/script, etc. (shaw@abisource.com)
+    <li>setup production builds process, automated builds, version numbering
+    <li>artwork for splash screen, about box, icon (scott@abisource.com)
 
     </UL>
     </TD>
     
+  <!-- ********************** column 2 ********************** -->
 <TD VALIGN=top>
     <UL>
-<hr><b>eric</b><br> 
+<hr><b>Misc GUI work</b><br>
+    <LI>DLOG:  goto
+    <LI>DLOG:  word count
+    <li>DLOG:  Format/Paragraph
+    <li>DLOG:  Format/Tabs
+    <li>DLOG:  File/Page Setup (aka Format/Section)
+    <li>DLOG:  Format/Columns
+    <li>DLOG:  Insert/Break
+    <li>DLOG:  Insert/Page Numbers
+    <li>DLOG:  Insert Date,Time
+    <li>DLOG:  Insert Field
+    <li>DLOG:  Insert Symbol
+    <li>DLOG:  spell check
+    <LI>DLOG:  Options, with tabs for various kinds of options
+    <li>app framework support for status bar
+    <li>View/Toolbars
+    <li>View/Ruler
+    <li>View/Status Bar
+    <li>context menu for images
+    <li>Context cursors for image and image size
+    <LI>image resize.  Involves the addition of "handles" on the corners and edges of the image, when it's selected for resize.  Requires mouse interaction and drag code.  This should be possible to do entirely in XP code.
+<hr><b>Features</b><br>
     <LI>superscripts/subscripts 
-    <LI>vertical keeps 
-
-<hr><b>jeff</b><br> 
-    <LI>headers and footers  
-    <LI>lists
-
-<hr><b>paul</b><br> 
+    <LI>vertical keeps (partially done, in fb_ColumnBreaker.cpp)
+    <LI>horizontal keeps 
     <LI>horizontal rules
-
-<hr><b>shaw</b><br> 
-    <LI>goto
-    <LI>word count
-
-<hr><b>unassigned</b><br>
-    <LI>Clipboard support for XML
-
-<hr><b>done</b><br> 
-    <LI>Word 97 import (pass 1)
-    <LI>fix bug 181 (haveTempSpanFmt)
-    <LI>context menus 
-    <LI>context cursors (was: I-beam vs. hand pointer)
-
+    <LI>Define/implement interaction of clipboard with import/export APIs to allow for copy/paste of formatted text.  Support copy/paste of RTF in this manner, verifying that it interoperates with Microsoft Word on Win32 systems.
+<hr><b>Spell</b><br>
+    <li>Tag by language so spell checker can use the right dictionary
+    <li>Figure out whether to change dictionary file format (ispell file format is completely dependent upon compiler and platform)
+    <li>context menu for spell
+<hr><b>Import/Export</b><br>
+    <LI>RTF export
+    <li>import/export WordPerfect (lansdoct@screech.cs.alfred.edu, shannonw@cygnus.com)
+    <li>Replace Word97 import code with a more maintainable code base. (justin@ukans.edu)
+<hr><b>Layout engine work</b><br>
+    <LI>show invisibles 
+    <LI>paragraph full justification  
+    <LI>tables
+    <li>tabs:  center, right
+<hr><b>Other</b><br>
+    <li>Get the BeOS port checked into the tree. (thomasf@qnx.com, eric@abisource.com)
+    <li>switch to UTF-8 encoding for internal piece table storage (jeff@abisource.com, eric@abisource.com)
+    <li>Cleanup mapping of Unicode encodings to font encodings, focusing on: bullets, dashes, fancy quotation marks, symbols, dingbats (eric@abisource.com)
+    <LI>online help (in HTML?)
     </UL>
     </TD>
 
+  <!-- ********************** column 3 ********************** -->
 <TD VALIGN=top>
     <UL>
 
-<hr><b>unassigned</b><br>
-    <LI>online help 
-    <LI>options dialog
-    <LI>RTF import/export
-    <LI>show invisibles 
-    <LI>dashes
-    <LI>fancy quotation marks 
-    <LI>autosave 
-    <LI>horizontal keeps 
-    <LI>image resize 
-    <LI>insert symbol 
-    <LI>normal view 
-    <LI>print preview 
-    <LI>Word 97 import (pass 2)
+    <li>Gnome-ify
+    <li>Qt port, anyone?  <tt>:-)</tt>
+    <li>MacOS port, anyone?  John Brewer (jbrewer@jera.com) has checked in a start on this.
+    <li>HTML import (michael@surfnetcity.com.au)
+    <li>Inline marks for bookmarks, TOC, index, etc. (julian.morrison@virgin.net)
     <LI>Word 97 export
-    <LI>zoom
-    <LI>leech 
-    <LI>paragraph full justification  
-    <LI>setup
-    <LI>splash and about box 
+    <LI>autosave 
+    <LI>automatic switching to fancy quotation marks 
+    <li>Experiment with 'cons' as a replacement for our build system.  Would this get us faster, more accurate builds on more platforms?
+    <li>floats
+    <li>improvements to RTF importer
 
     </UL>
     </TD>
 
+  <!-- ********************** column 4 ********************** -->
 <TD VALIGN=top>
 <UL>
-<hr><b>unassigned</b><br>
-    <LI>style sheets
-    <LI>tables
+    <LI>print preview (zoom works as a nice substitute)
+    <li>SVG graphics
+    <LI>normal view 
     <LI>drop caps 
+    <li>paragraph borders and shading
     <LI>footnotes 
     <LI>outline mode 
-    <LI>TOC 
-
-<hr><b>unknown (1.0, 2.0 or ...)</b><br>
-    <LI>JavaScript
-    <LI>JavaScript -- Testing Object Model
-    <LI>JavaScript -- End User Object Model
-    <LI>Unicode support
+    <li>decimal-aligned tabs
+    <LI>Table of contents
+    <LI>JavaScript macros
+    <LI>Multilingual document support for CJKV, Hebrew, Arabic
     <LI>Background color
     <LI>Threads
 
@@ -153,7 +188,75 @@
 </TR>
 
 </TABLE>
+
+<hr>
+
+<a name="notes">
+<h3>Notes</h3>
+</a>
+
+<ul>
+<li>This roadmap changes a lot.  More specifically, the status and
+plan for the project changes a lot, and this roadmap struggles to keep
+up.
+
+<li>Version numbers use a scheme similar to the Linux kernel:
+Major.Minor.Patch -- The Major version number indicates the overall
+version of the app, with differences distinguishing very substantial
+levels of features.  The Minor version number indicates an overall
+level of features within that Major version.  Odd numbered Minor
+versions are development releases which are not in maintenance.  A
+release with an even numbered Minor version indicates a release which
+is believed to be stable and which will be maintained even as
+development of the next version proceeds in a separate source code
+tree.
+
+<li>There will not be a 0.6.0 release, as the features worked on
+during the 0.5.x releases will not be placed in a maintenance tree.
+
+<li>There will not be a 0.8.0 release, for the same reason.
+
+<li>This is, in some sense, a To-Do list.  However, since it does not
+include a complete listing of bugs, it should not be regarded as the
+only listing of work that needs to be done.  The difference between a
+bug and a missing feature can be subtle, at times.  We mention a
+specific bug here under certain circumstances, such as when we know
+that we'll want it to be fixed for a certain release.  In general, you
+should check our <a href="http://www.abisource.com/bugzilla/">bug
+database</a> for additional information.  The mention of specific bugs
+in association with specific releases is not intended to imply that
+those are the only bugs which will get fixed for that release.
+
+<li>In general, this list contains only work which is not yet done.
+Once it's done, we remove it from this list.  If it's partially done,
+we'll remove it and replace it with a reminder of the part that's not
+done yet.  If you want a summary of what has already been done, we'd
+suggest our <a href="http://www.abisource.com/bonsai">Bonsai</a> 
+or 
+<a href="http://www.abisource.com/mailinglists/abiword-dev/">archives of the mailing list</a>.
+
+<li>If you see an email address specified in parenthesis after any
+item, that's the person we believe is working on it, or who has
+mentioned an intent to do so.  If there's no email address there, we
+probably don't know who's doing it.  Contributors welcome, AbiWord is
+a 
+<a href="http://www.tuxedo.org/~esr/writings/cathedral-bazaar/index.html">Bazaar</a>.
+
+<li>Please notify the mailing list if you see anything on this list
+which is inaccurate or out-of-date.
+
+<li>If you want to work on something, please mention your intent to do
+so on the mailing list.  This will allow us to avoid clashes and keep
+this roadmap up to date.  Also, most of the features mentioned below
+have had at least some discussion, so there is a history of
+assumptions about how each feature should work.  We don't have a full,
+written spec for the behavior of everything, so if you want to uncover
+those assumptions, you'll have to ask.  <tt>:-)</tt>
+
+<li>The project mailing list is <a href="mailto:abiword-dev@abisource.com">abiword-dev@abisource.com</a>.
+
+</ul>
+
 </BODY>
 </HTML>
-
 
