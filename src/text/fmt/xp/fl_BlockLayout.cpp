@@ -57,7 +57,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pFirstLine = NULL;
 	m_pLastLine = NULL;
 	m_bFormatting = UT_FALSE;
-	m_bNeedsReformat = UT_FALSE;
 
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
@@ -80,12 +79,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	{
 		m_pNext = NULL;
 	}
-}
-
-fl_BlockLayout::~fl_BlockLayout()
-{
-	_destroySpellCheckLists();
-	_purgeLayout(UT_FALSE);
 }
 
 FL_DocLayout* fl_BlockLayout::getDocLayout()
@@ -138,6 +131,12 @@ void fl_BlockLayout::_lookupProperties(void)
 	m_iLeftMargin = pG->convertDimension(getProperty("margin-left"));
 	m_iRightMargin = pG->convertDimension(getProperty("margin-right"));
 	m_iTextIndent = pG->convertDimension(getProperty("text-indent"));
+}
+
+fl_BlockLayout::~fl_BlockLayout()
+{
+	_destroySpellCheckLists();
+	_purgeLayout();
 }
 
 void fl_BlockLayout::_fixColumns(void)
@@ -248,7 +247,7 @@ void fl_BlockLayout::clearScreen(DG_Graphics* pG)
 	}
 }
 
-void fl_BlockLayout::_purgeLayout(UT_Bool bVisible)
+void fl_BlockLayout::_purgeLayout(void)
 {
 	fp_Line* pLine;
 
@@ -385,6 +384,7 @@ int fl_BlockLayout::format()
 		
 		m_pBreaker->breakParagraph(this);
 
+#if 0		
 		/*
 		  A delete could mean that there are empty lines
 		  in the block.  If so, we need to remove them.
@@ -398,9 +398,14 @@ int fl_BlockLayout::format()
 
 			// note that we do NOT delete pLine here.  It is deleted elsewhere.
 		}
+#else
+		_removeAllEmptyLines();
+#endif
 	}
 	else
 	{
+		_removeAllEmptyLines();
+		
 		// we don't ... construct just enough to keep going
 		DG_Graphics* pG = m_pLayout->getGraphics();
 		m_pFirstRun = new fp_Run(this, pG, 0, 0);
@@ -421,8 +426,6 @@ int fl_BlockLayout::format()
 
 	checkForWidowsAndOrphans();
 
-	setNeedsReformat(UT_FALSE);
-	
 	return 0;	// TODO return code
 }
 
@@ -499,16 +502,6 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 	}
 
 	return pLine;
-}
-
-void fl_BlockLayout::setNeedsReformat(UT_Bool b)
-{
-	m_bNeedsReformat = b;
-}
-
-UT_Bool fl_BlockLayout::needsReformat()
-{
-	return m_bNeedsReformat;
 }
 
 const char*	fl_BlockLayout::getProperty(const XML_Char * pszName) const
@@ -1347,7 +1340,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	}
 
 	format();
-	m_pLayout->reformat();
 
 	if (pView)
 	{
@@ -1464,7 +1456,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	}
 
 	format();
-	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
@@ -1649,7 +1640,6 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 	}
 
 	format();
-	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
@@ -1692,8 +1682,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 		UT_ASSERT(pLine);
 										
 		pLine->removeRun(pNuke);
-										
 		delete pNuke;
+		
 		pPrevBL->m_pFirstRun = NULL;
 	}
 
@@ -1782,7 +1772,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	}
 
 	// get rid of everything else about the block
-	_purgeLayout(UT_TRUE);
+	_purgeLayout();
 
 	pPrevBL->m_pNext = m_pNext;
 							
@@ -1802,9 +1792,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	pPrevBL->_destroySpellCheckLists();
 	m_pLayout->addBlockToSpellCheckQueue(pPrevBL);
 							
-	// in case anything else moved
-	pPrevBL->m_pLayout->reformat();
-
 	FV_View* pView = pPrevBL->m_pLayout->getView();
 	if (pView)
 	{
@@ -1834,7 +1821,6 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	// TODO right, don't reformat anything on a simple align operation.  Just erase, re-align, and draw.
 	_lookupProperties();
 	format();
-	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
@@ -1963,9 +1949,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 
 	m_pLayout->addBlockToSpellCheckQueue(pNewBL);
 	
-	// in case anything else moved
-	m_pLayout->reformat();
-
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{

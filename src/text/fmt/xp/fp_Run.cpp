@@ -532,66 +532,6 @@ UT_Bool	fp_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 	return UT_TRUE;
 }
 
-UT_Bool	fp_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
-{
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
-	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
-
-	UT_sint32 iLeftWidth = 0;
-	UT_sint32 iRightWidth = m_iWidth;
-
-	si.iOffset = -1;
-
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-	UT_uint32 offset = m_iOffsetFirst;
-	UT_uint32 len = m_iLen;
-	UT_Bool bContinue = UT_TRUE;
-
-	while (bContinue)
-	{
-		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
-		UT_ASSERT(lenSpan>0);
-
-		for (UT_uint32 i=0; i<lenSpan; i++)
-		{
-			iLeftWidth += pCharWidths[i + offset];
-			iRightWidth -= pCharWidths[i + offset];
-
-			
-			if (32 == pSpan[i])					// TODO isn't this a bit english specific ??
-			{
-				si.iLeftWidth = iLeftWidth;
-				si.iRightWidth = iRightWidth;
-				si.iOffset = i + offset;
-
-				bContinue = UT_FALSE;
-				break;
-			}
-		}
-
-		if (len <= lenSpan)
-		{
-			bContinue = UT_FALSE;
-		}
-		else
-		{
-			offset += lenSpan;
-			len -= lenSpan;
-		}
-	}
-
-	if ((si.iOffset == -1) || (si.iLeftWidth == m_iWidth))
-	{
-		// there were no split points which fit.
-		return UT_FALSE;
-	}
-
-	UT_ASSERT(si.iLeftWidth < m_iWidth);
-
-	return UT_TRUE;
-}
-
 void fp_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 {
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);

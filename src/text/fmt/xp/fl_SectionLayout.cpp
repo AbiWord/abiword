@@ -133,6 +133,11 @@ void fl_SectionLayout::deleteEmptyColumns(void)
 
 				pCol->getPage()->removeColumnLeader(pCol);
 
+				if (pCol == m_pFirstColumn)
+				{
+					m_pFirstColumn = pLastInGroup->getNext();
+				}
+
 				if (pLastInGroup == m_pLastColumn)
 				{
 					m_pLastColumn = pCol->getPrev();
@@ -322,26 +327,6 @@ int fl_SectionLayout::format()
 	}
 
 	return 0;	// TODO return code
-}
-
-UT_Bool fl_SectionLayout::reformat()
-{
-	UT_Bool bResult = UT_FALSE;
-	fl_BlockLayout*	pBL = m_pFirstBlock;
-
-	while (pBL)
-	{
-		if (pBL->needsReformat())
-		{
-			pBL->format();
-			
-			bResult = UT_TRUE;
-		}
-
-		pBL = pBL->getNext(UT_FALSE);
-	}
-
-	return bResult;
 }
 
 void fl_SectionLayout::_purgeLayout()

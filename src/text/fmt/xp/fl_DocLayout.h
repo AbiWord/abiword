@@ -107,7 +107,6 @@ public:
 	void	deletePage(fp_Page*);
 
 	int			formatAll();
-	int			reformat();
 
 	void 		addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked);
 

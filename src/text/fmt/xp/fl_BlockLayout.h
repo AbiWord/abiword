@@ -60,9 +60,6 @@ public:
 	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, fl_BlockLayout*, fl_SectionLayout*, PT_AttrPropIndex indexAP);
 	~fl_BlockLayout();
 
-	void 		setNeedsReformat(UT_Bool);
-	UT_Bool 	needsReformat();
-
 	int 		format();
 	
 	fp_Line*	getNewLine(UT_sint32 iHeight);
@@ -129,7 +126,7 @@ public:
 protected:
 	void					_lookupProperties(void);
 	void			 		_fixColumns(void);
-	void					_purgeLayout(UT_Bool bVisible);
+	void					_purgeLayout(void);
 	void					_removeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 	void					_destroySpellCheckLists(void);
@@ -138,8 +135,6 @@ protected:
 
 	UT_uint32				_getLastChar();
 
-	int						m_bNeedsReformat;
-	
 	UT_GrowBuf				m_gbCharWidths;
 
 	FL_DocLayout*	       	m_pLayout;

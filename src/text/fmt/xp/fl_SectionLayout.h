@@ -47,7 +47,6 @@ public:
 	fp_Column*			getFirstColumn() const;
 	fp_Column*			getLastColumn() const;
 	int					format();
-	UT_Bool				reformat();
 
 	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
 	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }

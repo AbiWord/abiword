@@ -97,7 +97,6 @@ class fp_Run
 	int						split(fp_RunSplitInfo&);
 	UT_Bool					split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	UT_Bool					findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	UT_Bool					findMinLeftFitSplitPoint(fp_RunSplitInfo& si);
 
 	void 					calcWidths(UT_GrowBuf * pgbCharWidths);
 	void            		expandWidthTo(UT_uint32);

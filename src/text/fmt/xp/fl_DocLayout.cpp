@@ -384,26 +384,6 @@ int FL_DocLayout::formatAll()
 	return 0;
 }
 
-int FL_DocLayout::reformat()
-{
-	UT_Bool bStillGoing = UT_TRUE;
-	int countSections = m_vecSectionLayouts.getItemCount();
-
-	while (bStillGoing)
-	{
-		bStillGoing = UT_FALSE;
-		
-		for (int i=0; i<countSections; i++)
-		{
-			fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
-
-			bStillGoing = pSL->reformat() || bStillGoing;
-		}
-	}
-
-	return 0;
-}
-
 #ifdef FMT_TEST
 void FL_DocLayout::__dump(FILE * fp) const
 {
