@@ -461,7 +461,7 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	strcat(buff, "/");	// re-add the slash on end
 #else
 	// UT_GetTempPath(sizeof(buff), buff);
-	strcpy(buff, "/tmp/"
+	strcpy(buff, "/tmp/");
 #endif
 	strcat(buff, szFName);
 	if (!(fp = fopen(buff, "wb"))) {
