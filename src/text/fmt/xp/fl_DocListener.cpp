@@ -357,30 +357,49 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
-		UT_ASSERT(UT_TODO);
-		return UT_FALSE;
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		switch (pL->getType())
+		{
+		case PTX_Section:
+		{
+			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			fl_SectionLayout * pNewSL = NULL;
+			UT_Bool bResult = pSL->doclistener_insertStrux(pcrx,sdh,&pNewSL);
+			*psfh = (PL_StruxFmtHandle)pNewSL;
+			return bResult;
+		}
+		
+		case PTX_Block:
+		default:
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_FALSE;
+		}
+		}
+	}
 			
 	case PTX_Block:
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		switch (pL->getType())
 		{
-			fl_Layout * pL = (fl_Layout *)sfh;
-			switch (pL->getType())
-			{
-			case PTX_Block:
-				{
-					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-					fl_BlockLayout * pNewBL = NULL;
-					UT_Bool bResult = pBL->doclistener_insertStrux(pcrx,sdh,&pNewBL);
-					*psfh = (PL_StruxFmtHandle)pNewBL;
-					return bResult;
-				}
-				
-			case PTX_Section:
-			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				return UT_FALSE;
-			}
+		case PTX_Block:
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			fl_BlockLayout * pNewBL = NULL;
+			UT_Bool bResult = pBL->doclistener_insertStrux(pcrx,sdh,&pNewBL);
+			*psfh = (PL_StruxFmtHandle)pNewBL;
+			return bResult;
 		}
-		break;
+				
+		case PTX_Section:
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_FALSE;
+		}
+	}
+	break;
 			
 	default:
 		UT_ASSERT(0);

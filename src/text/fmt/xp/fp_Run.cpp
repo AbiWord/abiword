@@ -1408,3 +1408,159 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff, pDA->yoff - m_iAscent);
 }
 
+fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
+{
+	if (bLookupProperties)
+	{
+		lookupProperties();
+	}
+}
+
+void fp_ForcedColumnBreakRun::lookupProperties(void)
+{
+}
+
+UT_Bool fp_ForcedColumnBreakRun::canBreakAfter(void) const
+{
+	return UT_FALSE;
+}
+
+UT_Bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
+{
+	return UT_FALSE;
+}
+
+int fp_ForcedColumnBreakRun::split(fp_RunSplitInfo& si)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
+}
+
+UT_Bool fp_ForcedColumnBreakRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
+}
+
+UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+{
+	return UT_FALSE;
+}
+
+UT_Bool fp_ForcedColumnBreakRun::calcWidths(UT_GrowBuf * pgbCharWidths)
+{
+	return UT_TRUE;
+}
+
+void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+{
+	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	bBOL = UT_FALSE;
+	bEOL = UT_FALSE;
+}
+
+void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+{
+	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
+	UT_sint32 xoff;
+	UT_sint32 yoff;
+
+	UT_ASSERT(m_pLine);
+	
+	m_pLine->getOffsets(this, xoff, yoff);
+	x = xoff;
+	y = yoff;
+	height = m_pLine->getHeight();
+}
+
+void fp_ForcedColumnBreakRun::_clearScreen(void)
+{
+	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+}
+
+void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
+{
+	UT_ASSERT(pDA->pG == m_pG);
+}
+
+fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
+{
+	if (bLookupProperties)
+	{
+		lookupProperties();
+	}
+}
+
+void fp_ForcedPageBreakRun::lookupProperties(void)
+{
+}
+
+UT_Bool fp_ForcedPageBreakRun::canBreakAfter(void) const
+{
+	return UT_FALSE;
+}
+
+UT_Bool fp_ForcedPageBreakRun::canBreakBefore(void) const
+{
+	return UT_FALSE;
+}
+
+int fp_ForcedPageBreakRun::split(fp_RunSplitInfo& si)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
+}
+
+UT_Bool fp_ForcedPageBreakRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
+}
+
+UT_Bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+{
+	return UT_FALSE;
+}
+
+UT_Bool fp_ForcedPageBreakRun::calcWidths(UT_GrowBuf * pgbCharWidths)
+{
+	return UT_TRUE;
+}
+
+void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+{
+	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	bBOL = UT_FALSE;
+	bEOL = UT_FALSE;
+}
+
+void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+{
+	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
+	UT_sint32 xoff;
+	UT_sint32 yoff;
+
+	UT_ASSERT(m_pLine);
+	
+	m_pLine->getOffsets(this, xoff, yoff);
+	x = xoff;
+	y = yoff;
+	height = m_pLine->getHeight();
+}
+
+void fp_ForcedPageBreakRun::_clearScreen(void)
+{
+	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+}
+
+void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
+{
+	UT_ASSERT(pDA->pG == m_pG);
+}
+

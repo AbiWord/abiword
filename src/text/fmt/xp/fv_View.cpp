@@ -740,6 +740,37 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	return bResult;
 }
 
+void FV_View::insertSectionBreak(void)
+{
+	if (!isSelectionEmpty())
+	{
+		_deleteSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+
+	// insert a new paragraph with the same attributes/properties
+	// as the previous (or none if the first paragraph in the section).
+
+	// ==>: we *don't* call _clearPointAP() in this case 
+
+	// before inserting a section break, we insert a block break
+	m_pDoc->insertStrux(_getPoint(), PTX_Block);
+	m_pDoc->insertStrux(_getPoint(), PTX_Section);
+	
+	m_pLayout->deleteEmptyColumnsAndPages();
+		
+	_updateScreen();
+	
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
+
 void FV_View::insertParagraphBreak(void)
 {
 	if (!isSelectionEmpty())

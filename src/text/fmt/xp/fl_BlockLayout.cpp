@@ -1324,6 +1324,8 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	{
 		switch (pChars[i])
 		{
+		case 12:	// form feed, forced page break
+		case 11:	// vertical tab, forced column break
 		case 10:	// newline
 		case 9:		// tab
 			if (bNormal)
@@ -1338,6 +1340,14 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 			*/
 			switch (pChars[i])
 			{
+			case 12:
+				_doInsertForcedPageBreakRun(i + blockOffset);
+				break;
+				
+			case 11:
+				_doInsertForcedColumnBreakRun(i + blockOffset);
+				break;
+				
 			case 10:
 				_doInsertForcedLineBreakRun(i + blockOffset);
 				break;
@@ -1375,6 +1385,22 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 UT_Bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
+UT_Bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
+UT_Bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_ForcedColumnBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -1556,6 +1582,8 @@ UT_Bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 
 UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 {
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_InsertSpan);
+
+	UT_ASSERT(pcrs->getPosition() >= getPosition());
 	
 	PT_BlockOffset blockOffset = (pcrs->getPosition() - getPosition());
 	UT_uint32 len = pcrs->getLength();
@@ -1581,6 +1609,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	{
 		switch (pChars[i])
 		{
+		case 12:	// form feed, forced page break
+		case 11:	// vertical tab, forced column break
 		case 10:	// newline
 		case 9:		// tab
 			if (bNormal)
@@ -1595,6 +1625,14 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 			*/
 			switch (pChars[i])
 			{
+			case 12:
+				_doInsertForcedPageBreakRun(i + blockOffset);
+				break;
+				
+			case 11:
+				_doInsertForcedColumnBreakRun(i + blockOffset);
+				break;
+				
 			case 10:
 				_doInsertForcedLineBreakRun(blockOffset + i);
 				break;

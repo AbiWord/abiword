@@ -218,6 +218,46 @@ protected:
 	virtual void       		_clearScreen(void);
 };
 
+class fp_ForcedColumnBreakRun : public fp_Run
+{
+ public:
+	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+
+	virtual void			lookupProperties(void);
+	virtual int				split(fp_RunSplitInfo&);
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+	
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(void);
+};
+
+class fp_ForcedPageBreakRun : public fp_Run
+{
+ public:
+	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+
+	virtual void			lookupProperties(void);
+	virtual int				split(fp_RunSplitInfo&);
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+	
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(void);
+};
+
 class fp_ImageRun : public fp_Run
 {
  public:

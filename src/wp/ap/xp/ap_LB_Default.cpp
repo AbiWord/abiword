@@ -88,7 +88,7 @@ static struct ap_bs_NVK s_NVKTable[] =
 	{EV_NVK_TAB,		{ "insertTab",			"",					"cycleWindows",	"cycleWindowsBck",
 						  "",					"",					"",				""					}},
 	{EV_NVK_RETURN,		{ "insertParagraphBreak", "insertLineBreak", "insertPageBreak", "insertColumnBreak",
-						  "",					"",					"",				""					}},
+						  "insertSectionBreak",	"",					"",				""					}},
 //	{EV_NVK_ESCAPE,		{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
 	{EV_NVK_PAGEUP,		{ "scrollPageUp",		"extSelPageUp",		"",				"",

@@ -513,3 +513,14 @@ UT_Bool fl_SectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	return UT_FALSE;
 }
 
+UT_Bool fl_SectionLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
+									PL_StruxDocHandle sdh,
+									fl_SectionLayout ** ppNewBL)
+{
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
+
+	UT_ASSERT(UT_TODO);
+	
+	return UT_FALSE;
+}
+

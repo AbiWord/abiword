@@ -17,14 +17,13 @@
  * 02111-1307, USA.
  */
 
-
-
 #include <stdlib.h>
 
 #include "fb_LineBreaker.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_Column.h"
 
 #include "ut_assert.h"
 
@@ -63,6 +62,16 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 				switch (iCurRunType)
 				{
+				case FPRUN_FORCEDCOLUMNBREAK:
+				{
+					pLastRunToKeep = pCurrentRun;
+					goto done_with_run_loop;
+				}
+				case FPRUN_FORCEDPAGEBREAK:
+				{
+					pLastRunToKeep = pCurrentRun;
+					goto done_with_run_loop;
+				}
 				case FPRUN_FORCEDLINEBREAK:
 				{
 					pLastRunToKeep = pCurrentRun;

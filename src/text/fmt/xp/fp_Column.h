@@ -80,6 +80,7 @@ public:
 	void				updateLayout(void);
 	void 				moveLineToNextColumn(UT_uint32 iBump);
 	void				moveLineToNextColumn(fp_Line* pLine);
+	void				bumpLinesToNextColumn(UT_uint32 iFirstToBump);
 	void				moveLineFromNextColumn(fp_Line* pLine);
 	UT_sint32			getSpaceAtBottom(void) const;
 

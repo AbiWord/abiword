@@ -25,6 +25,7 @@
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
+#include "fp_Run.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_BlockLayout.h"
@@ -262,7 +263,11 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 	else
 	{
 		UT_ASSERT(pNewLine->isFirstLineInBlock()
-				  || (getPrev() && getPrev()->getLastLine()->getBlock() == pBL));
+				  || (getPrev()
+					  && getPrev()->getLastLine()
+					  && (getPrev()->getLastLine()->getBlock() == pBL)
+					  )
+			);
 		
 		m_vecLines.insertItemAt(pNewLine, 0);
 		pNewLine->setY(0);
@@ -352,6 +357,17 @@ void fp_Column::moveLineToNextColumn(UT_uint32 iBump)
 	UT_ASSERT(pNextColumn->getFirstLine() == pBumpLine);
 }
 
+void fp_Column::bumpLinesToNextColumn(UT_uint32 iFirstToBump)
+{
+	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	UT_uint32 i;
+
+	for (i=iCountLines-1; i >= iFirstToBump; i--)
+	{
+		moveLineToNextColumn(i);
+	}
+}
+
 void fp_Column::checkForWidowsAndOrphans(void)
 {
 	fp_Line* pLine;
@@ -380,6 +396,7 @@ void fp_Column::updateLayout(void)
 		m_bNeedsLayout = UT_FALSE;
 		
 		UT_Bool bBumpedSomething = UT_FALSE;
+		UT_Bool bDoNotSlurp = UT_FALSE;
 		UT_sint32 iCurY = 0;
 		UT_uint32 count = m_vecLines.getItemCount();
 		UT_uint32 i;
@@ -432,7 +449,40 @@ void fp_Column::updateLayout(void)
 			iCurY += pLine->getHeight();
 		}
 
-		if (!bBumpedSomething && (iCurY < m_iMaxHeight))
+#if 0
+		count = m_vecLines.getItemCount();
+		if (count > 0)
+		{
+			for (i = 0; i<count; i++)
+			{
+				fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+				fp_Run* pLastRunOnLine = pLine->getLastRun();
+
+				if (
+					(pLastRunOnLine->getType() == FPRUN_FORCEDCOLUMNBREAK)
+					)
+				{
+					if ((i+1) < count)
+					{
+						bumpLinesToNextColumn(i+1);
+						bBumpedSomething = UT_TRUE;
+					}
+					bDoNotSlurp = UT_TRUE;
+					break;
+				}
+			}
+		}
+#endif
+		
+		if (bBumpedSomething)
+		{
+			bDoNotSlurp = UT_TRUE;
+		}
+		
+		if (
+			!bDoNotSlurp
+			&& (iCurY < m_iMaxHeight)
+			)
 		{
 			fp_Column* pNextColumn = getNext();
 				

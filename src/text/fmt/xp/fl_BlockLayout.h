@@ -147,6 +147,8 @@ protected:
 
 	UT_Bool					_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool					_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset);
+	UT_Bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
+	UT_Bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertTabRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	UT_Bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);

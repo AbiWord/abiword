@@ -34,6 +34,7 @@ class fp_Column;
 class PD_Document;
 class PP_AttrProp;
 class PX_ChangeRecord_StruxChange;
+class PX_ChangeRecord_Strux;
 
 class fl_SectionLayout : public fl_Layout
 {
@@ -65,6 +66,9 @@ public:
 
 	void				deleteEmptyColumns(void);
 	UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	UT_Bool doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
+									PL_StruxDocHandle sdh,
+									fl_SectionLayout ** ppNewBL);
 
 protected:
 	void				_purgeLayout();

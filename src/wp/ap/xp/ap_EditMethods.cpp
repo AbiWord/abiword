@@ -140,6 +140,7 @@ public:
 	static EV_EditMethod_Fn insertTab;
 	static EV_EditMethod_Fn insertSoftBreak;
 	static EV_EditMethod_Fn insertParagraphBreak;
+	static EV_EditMethod_Fn insertSectionBreak;
 	static EV_EditMethod_Fn insertLineBreak;
 	static EV_EditMethod_Fn insertPageBreak;
 	static EV_EditMethod_Fn insertColumnBreak;
@@ -313,6 +314,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertTab),			_M_,	""),
 	EV_EditMethod(NF(insertSoftBreak),		_M_,	""),
 	EV_EditMethod(NF(insertParagraphBreak),	_M_,	""),
+	EV_EditMethod(NF(insertSectionBreak),	_M_,	""),
 	EV_EditMethod(NF(insertLineBreak),		_M_,	""),
 	EV_EditMethod(NF(insertPageBreak),		_M_,	""),
 	EV_EditMethod(NF(insertColumnBreak),	_M_,	""),
@@ -1371,14 +1373,6 @@ Defun(insertData)
 	return UT_TRUE;
 }
 
-Defun1(insertTab)
-{
-	ABIWORD_VIEW;
-	UT_UCSChar c = 0x0009;
-	pView->cmdCharInsert(&c,1);
-	return UT_TRUE;
-}
-
 Defun0(insertSoftBreak)
 {
 	return UT_TRUE;
@@ -1391,6 +1385,31 @@ Defun1(insertParagraphBreak)
 	return UT_TRUE;
 }
 
+Defun1(insertSectionBreak)
+{
+	ABIWORD_VIEW;
+	pView->insertSectionBreak();
+	return UT_TRUE;
+}
+
+/*
+  Note that within the piece table, we use the following
+  representations:
+    char code				meaning
+	9  (tab)				tab
+	10 (line feed)			forced line break
+	11 (vertical tab)		forced column break
+	12 (form feed)			forced page break
+*/
+
+Defun1(insertTab)
+{
+	ABIWORD_VIEW;
+	UT_UCSChar c = 0x0009;
+	pView->cmdCharInsert(&c,1);
+	return UT_TRUE;
+}
+
 Defun1(insertLineBreak)
 {
 	ABIWORD_VIEW;
@@ -1399,13 +1418,19 @@ Defun1(insertLineBreak)
 	return UT_TRUE;
 }
 
-Defun0(insertPageBreak)
+Defun1(insertColumnBreak)
 {
+	ABIWORD_VIEW;
+	UT_UCSChar c = 0x000b;
+	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
 
-Defun0(insertColumnBreak)
+Defun1(insertPageBreak)
 {
+	ABIWORD_VIEW;
+	UT_UCSChar c = 0x000c;
+	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
 
