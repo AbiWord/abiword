@@ -1,0 +1,114 @@
+# Anjuta Version 0.9.99 
+Compatibility Level: 1 
+
+<PROJECT_DESCRIPTION_START>
+AbiWord is cross platform Word Processor<PROJECT_DESCRIPTION_END>
+<CONFIG_PROGS_START>
+<CONFIG_PROGS_END>
+<CONFIG_LIBS_START>
+<CONFIG_LIBS_END>
+<CONFIG_HEADERS_START>
+<CONFIG_HEADERS_END>
+<CONFIG_CHARACTERISTICS_START>
+<CONFIG_CHARACTERISTICS_END>
+<CONFIG_LIB_FUNCS_START>
+<CONFIG_LIB_FUNCS_END>
+<CONFIG_ADDITIONAL_START>
+<CONFIG_ADDITIONAL_END>
+<CONFIG_FILES_START>
+<CONFIG_FILES_END>
+<MAKEFILE_AM_START>
+<MAKEFILE_AM_END>
+
+props.file.type=project
+
+anjuta.version=0.9.99
+anjuta.compatibility.level=1
+
+project.name=abiword
+project.type=GENERIC
+project.target.type=EXECUTABLE
+project.version=1.1.1
+project.author=Abi the Ant
+project.source.target=abiword
+
+project.excluded.modules=
+
+project.has.gettext=0
+
+project.programming.language=C++
+
+project.menu.entry=AbiWord Version 0.1
+project.menu.group=Applications
+project.menu.comment=AbiWord Version 0.1
+project.menu.icon=
+project.menu.need.terminal=0
+
+project.configure.options=
+
+anjuta.program.arguments=
+
+project.config.blocked=0
+
+project.config.disable.overwriting=1 1 1 1 1 1 1 1 1 
+project.config.extra.modules.before=
+project.config.extra.modules.after=
+
+module.include.name=include
+module.include.type=
+module.include.expanded=0
+module.include.files=
+
+module.source.name=src
+module.source.type=
+module.source.expanded=0
+module.source.files=
+
+module.pixmap.name=pixmaps
+module.pixmap.type=
+module.pixmap.expanded=0
+module.pixmap.files=
+
+module.data.name=data
+module.data.type=
+module.data.expanded=0
+module.data.files=
+
+module.help.name=help
+module.help.type=
+module.help.expanded=0
+module.help.files=
+
+module.doc.name=doc
+module.doc.type=
+module.doc.expanded=0
+module.doc.files=
+
+module.po.expanded=0
+module.po.files=
+
+compiler.options.supports=
+
+compiler.options.include.paths=
+
+compiler.options.library.paths=
+
+compiler.options.libraries=
+compiler.options.libraries.selected=
+
+compiler.options.defines=
+
+compiler.options.warning.buttons=0 0 1 1 1 1 1 1 1 1 1 0 1 1 0 1 
+
+compiler.options.optimize.buttons=0 1 0 0 
+
+compiler.options.other.buttons=1 0 
+
+compiler.options.other.c.flags=
+
+compiler.options.other.l.flags=
+
+compiler.options.other.l.libs=
+
+project.source.paths=
+
