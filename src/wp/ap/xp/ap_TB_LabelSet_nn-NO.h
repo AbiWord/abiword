@@ -113,10 +113,11 @@ BeginSetEnc(nn,NO,true,"iso-8859-1")
 
      ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, "Bruk format", tb_stock_paint_xpm, NULL, "Brukar tidlegare kopiert formatering på merkt tekst")
 
+#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Tving VTH-retning",		tb_text_direction_ltr_xpm,	NULL, "Tvingar venstre til høgre-retning for tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Tving HTV-retning",		tb_text_direction_rtl_xpm,	NULL, "Tvingar høgre til venstre-retning for tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Avsnittsretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endrar hovudtekstretning for avsnitt")
-
+#endif
      // ... add others here ...
 
 EndSet()
