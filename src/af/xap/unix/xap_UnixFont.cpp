@@ -656,7 +656,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 		int result = abi_parseFile(fp, &m_metricsData, P_GM);
 		switch (result)
 		{
-			case parseError:
+			case parseFileRes_parseError:
 				g_snprintf(message, 1024,
 				   "AbiWord encountered errors parsing the font metrics file\n"
 				   "[%s].\n"
@@ -664,7 +664,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 				   m_metricfile);
 				messageBoxOK(message);
 				break;
-			case earlyEOF:
+			case parseFileRes_earlyEOF:
 				g_snprintf(message, 1024,
 				   "AbiWord encountered a premature End of File (EOF) while parsing\n"
 				   "the font metrics file [%s].\n"
@@ -674,7 +674,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 				free (m_metricsData);
 				m_metricsData = NULL;
 				break;
-			case storageProblem:
+			case parseFileRes_storageProblem:
 				// if we got here, either the metrics file is broken (like it's
 				// saying it has 209384098278942398743982 kerning lines coming, and
 				// we know we can't allocate that), or we really did run out of memory.

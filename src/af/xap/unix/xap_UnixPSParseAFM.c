@@ -78,6 +78,7 @@
 #include <math.h>
 #include <ctype.h>
 
+#define _POLLUTE_MY_NAMESPACE_BABY
 #include "xap_UnixPSParseAFM.h"
  
 #define lineterm EOL	/* line terminating character */

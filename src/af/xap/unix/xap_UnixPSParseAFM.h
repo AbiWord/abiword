@@ -142,11 +142,17 @@
  * storageProblem means that there were problems allocating storage for
  * the data structures that would have contained the AFM data.
  */
-#define ok 0
-#define parseError -1
-#define earlyEOF -2
-#define storageProblem -3
+#define parseFileRes_ok 0
+#define parseFileRes_parseError -1
+#define parseFileRes_earlyEOF -2
+#define parseFileRes_storageProblem -3
 
+#ifdef _POLLUTE_MY_NAMESPACE_BABY
+#define ok             parseFileRes_ok
+#define parseError     parseFileRes_parseError
+#define earlyEOF       parseFileRes_earlyEOF
+#define storageProblem parseFileRes_storageProblem
+#endif
 
 
 /************************* TYPES *********************************/
