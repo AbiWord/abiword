@@ -146,6 +146,7 @@ class PD_Document;
 - (NSString *)title;
 
 - (NSString *)selectWord;
+- (NSString *)selectedText;
 
 - (void)insertText:(NSString *)text;
 

@@ -148,12 +148,23 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 		LocalizeControl(_fixedColSizeBtn, pSS, AP_STRING_ID_DLG_InsertTable_FixedColSize);
 		[_fixedColSizeBtn setTag:(int)AP_Dialog_InsertTable::b_FIXEDSIZE];
 		[_fixedColSizeData setFloatValue:_xap->getColumnWidth()];
+
+		[_fixedColSizeData    setEnabled:NO];
+		[_fixedColSizeStepper setEnabled:NO];
 	}
 }
 
 - (IBAction)cancelAction:(id)sender
 {
 	_xap->event_Cancel();
+}
+
+- (IBAction)colSizeAction:(id)sender
+{
+	BOOL bEnabled = (AP_Dialog_InsertTable::b_FIXEDSIZE == (AP_Dialog_InsertTable::columnType) [[_radioMatrix selectedCell] tag]) ? YES : NO;
+
+	[_fixedColSizeData    setEnabled:bEnabled];
+	[_fixedColSizeStepper setEnabled:bEnabled];
 }
 
 - (IBAction)fixedColSizeAction:(id)sender

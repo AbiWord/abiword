@@ -73,6 +73,7 @@ private:
 	AP_CocoaDialog_InsertTable *_xap;
 }
 - (IBAction)cancelAction:(id)sender;
+- (IBAction)colSizeAction:(id)sender;
 - (IBAction)fixedColSizeAction:(id)sender;
 - (IBAction)fixedColSizeStepperAction:(id)sender;
 - (IBAction)numColAction:(id)sender;
