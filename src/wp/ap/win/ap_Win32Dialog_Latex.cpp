@@ -49,7 +49,7 @@ AP_Win32Dialog_Latex::~AP_Win32Dialog_Latex(void)
 void  AP_Win32Dialog_Latex::activate(void)
 {
 	// FIXME move to XP
-	UT_ASSERT (m_windowMain);
+	UT_ASSERT (0);
 	
 	ConstructWindowName();
 }
