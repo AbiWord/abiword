@@ -41,9 +41,9 @@
 #include "ap_UnixStatusBar.h"
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
-#include "swoosh_app_48.xpm"
+#include "abiword_48_tm.xpm"
 #else
-#include "abi_app_48.xpm"
+#include "abiword_48.xpm"
 #endif
 
 /*****************************************************************/
@@ -646,7 +646,7 @@ void AP_UnixFrame::_setWindowIcon(void)
 	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window,
 													  &mask,
 													  NULL,
-													  abi_app_48_xpm);
+													  abiword_48_xpm);
 	UT_ASSERT(pixmap && mask);
 		
 	gdk_window_set_icon(window->window, NULL, pixmap, mask);
