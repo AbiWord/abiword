@@ -151,7 +151,7 @@ bool IE_Exp_PalmDoc::_openFile(const char * szFilename)
         UT_DEBUGMSG(("Creating PDF header....\n"));
         _zero_fill( m_header.name, sizeof(m_header.name) );
         strncpy( m_header.name, UT_basename ( szFilename ), sizeof(m_header.name) - 1 );
-        if ( strlen( szFilename ) > sizeof(m_header.name) - 1 )
+        if ( strlen( UT_basename( szFilename ) ) > sizeof(m_header.name) - 1 )
             strncpy( m_header.name + sizeof(m_header.name) - 4, "...", 3 );
         m_header.attributes		= 0;
         m_header.version		= 0;
