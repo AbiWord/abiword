@@ -854,7 +854,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	
 	m_pie->write("\n");
 	
-	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">\n");
+	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
 	m_pie->write("<html>\n");
 	m_pie->write("<head>\n");
 	m_pie->write("<title>AbiWord Document</title>\n");
