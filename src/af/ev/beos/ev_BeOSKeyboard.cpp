@@ -176,7 +176,7 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 		UT_DEBUGMSG(("VKC 0x%x ignore 0x%x \n", nvk, EV_NVK__IGNORE__));
 	    
 		//Trap Ten-Key Data
-		UT_uint16 charData;
+		UT_UCS4Char charData;
 		bool ignore = false;
 		if (!(modifier & B_SHIFT_KEY))
 			if (modifier & B_NUM_LOCK)
@@ -260,7 +260,7 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 		}
 	}
 	else {
-		UT_uint16 charData;
+		UT_UCS4Char charData;
 
 		charData = s_getUCSChar(keychar, modifier, rawchar, bytes);
 

@@ -82,6 +82,7 @@ OS_ENDIAN		= BigEndian32
 endif
 
 # Shared library flags
+LDFLAGS			= -L/boot/home/config/lib
 #MKSHLIB		= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
