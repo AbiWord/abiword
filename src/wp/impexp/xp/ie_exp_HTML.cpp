@@ -638,8 +638,9 @@ void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 
 	UT_uint32 depth = m_tagStack.getDepth () + extra;
 
-	for (UT_uint32 i = 0; i < (depth >> 3); i++) m_utf8_0 += "\t";
-	for (UT_uint32 i = 0; i < (depth &  7); i++) m_utf8_0 += " ";
+	UT_uint32 i;  // MSVC DOES NOT SUPPORT CURRENT for SCOPING RULES!!!
+	for (i = 0; i < (depth >> 3); i++) m_utf8_0 += "\t";
+	for (i = 0; i < (depth &  7); i++) m_utf8_0 += " ";
 }
 
 void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress,
