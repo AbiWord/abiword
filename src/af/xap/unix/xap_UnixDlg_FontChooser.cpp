@@ -1005,7 +1005,8 @@ UT_Bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
 			styleNumber = XAP_UnixFont::STYLE_BOLD_ITALIC;
 			break;
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_FALSE;
 		}
 	}
 	else
