@@ -1666,6 +1666,25 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 	DELETEP(m_pAutoScrollTimer);
 	m_pAutoScrollTimer = NULL;
 }
+// ---------------- start goto ---------------
+
+UT_Bool FV_View::gotoPage(UT_uint32 pageNumber)
+{
+	UT_ASSERT(m_pLayout);
+
+	// check for range
+	if (pageNumber < 0 || pageNumber > (UT_uint32) m_pLayout->countPages())
+		return UT_FALSE;
+
+	// get the right page
+	fp_Page * page = m_pLayout->getNthPage(pageNumber);
+	UT_ASSERT(page);
+
+	// peek inside the page
+	// ...
+
+	return UT_FALSE;
+}
 
 // ---------------- start find and replace ---------------
 

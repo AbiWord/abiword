@@ -127,6 +127,12 @@ public:
 
 // ----------------------
 
+	// goto
+	
+	UT_Bool			gotoPage(UT_uint32 pageNumber);
+
+// ----------------------
+	
 	// find and replace 
 	void 			findReset();
 	
