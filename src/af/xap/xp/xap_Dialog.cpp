@@ -27,31 +27,27 @@
 
 /*****************************************************************/
 
-XAP_Dialog::XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+XAP_Dialog::XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
+		       const char * helpUrl )
+  : m_pApp ( NULL ), m_pDlgFactory ( pDlgFactory ), m_id ( id )
 {
-	UT_ASSERT(pDlgFactory);
+  m_pApp = pDlgFactory->getApp();
 
-	m_pDlgFactory = pDlgFactory;
-	m_id = id;
-	m_pApp = pDlgFactory->getApp();
-
-	UT_ASSERT(m_pApp);
+  if ( helpUrl )
+    {
+      // TODO: properly localize the help string
+      UT_String_sprintf ( m_helpUrl, "%s", helpUrl ) ;
+    }
 }
 
 XAP_Dialog::~XAP_Dialog(void)
 {
 }
 
-XAP_Dialog_Id XAP_Dialog::getDialogId(void) const
-{
-	return m_id;
-}
-
-
 /*****************************************************************/
 
-XAP_Dialog_NonPersistent::XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog(pDlgFactory,id)
+XAP_Dialog_NonPersistent::XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl )
+	: XAP_Dialog(pDlgFactory,id, helpUrl)
 {
 }
 
@@ -61,8 +57,8 @@ XAP_Dialog_NonPersistent::~XAP_Dialog_NonPersistent(void)
 
 /*****************************************************************/
 
-XAP_Dialog_Persistent::XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog(pDlgFactory,id),
+XAP_Dialog_Persistent::XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl)
+	: XAP_Dialog(pDlgFactory,id, helpUrl),
 	  m_bInUse(false)
 {
 }
@@ -85,8 +81,8 @@ void XAP_Dialog_Persistent::useEnd(void)
 
 /*****************************************************************/
 
-XAP_Dialog_FramePersistent::XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Persistent(pDlgFactory,id)
+XAP_Dialog_FramePersistent::XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl)
+	: XAP_Dialog_Persistent(pDlgFactory,id, helpUrl)
 {
 }
 
@@ -106,8 +102,8 @@ void XAP_Dialog_FramePersistent::useEnd(void)
 
 /*****************************************************************/
 
-XAP_Dialog_AppPersistent::XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Persistent(pDlgFactory,id)
+XAP_Dialog_AppPersistent::XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl)
+	: XAP_Dialog_Persistent(pDlgFactory,id, helpUrl)
 {
 }
 
@@ -127,8 +123,8 @@ void XAP_Dialog_AppPersistent::useEnd(void)
 
 
 
-XAP_Dialog_Modeless::XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_AppPersistent(pDlgFactory,id)
+XAP_Dialog_Modeless::XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl)
+	: XAP_Dialog_AppPersistent(pDlgFactory,id, helpUrl)
 {
 	UT_ASSERT(pDlgFactory);
 
@@ -146,12 +142,12 @@ XAP_Dialog_Modeless::~XAP_Dialog_Modeless(void)
 
 void XAP_Dialog_Modeless::useStart(void)
 {
-  // UT_DEBUGMSG(("Called generic useStart in XAP_DIALOG_Modeless \n"));
+  xxx_UT_DEBUGMSG(("Called generic useStart in XAP_DIALOG_Modeless \n"));
 }
 
 void XAP_Dialog_Modeless::useEnd(void)
 {
-  // UT_DEBUGMSG(("Called generic useEnd in XAP_DIALOG_Modeless \n"));
+  xxx_UT_DEBUGMSG(("Called generic useEnd in XAP_DIALOG_Modeless \n"));
 }
 
 void XAP_Dialog_Modeless::modeless_cleanup(void)

@@ -22,7 +22,7 @@
 
 #include "ut_types.h"
 #include "xap_Types.h"
-
+#include "ut_string_class.h"
 
 class XAP_DialogFactory;
 class XAP_App;
@@ -48,28 +48,34 @@ typedef enum _XAP_Dialog_Type
 class ABI_EXPORT XAP_Dialog
 {
 public:
-	XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
+		   const char * helpUrl = NULL );
 	virtual ~XAP_Dialog(void);
 
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
 
-	XAP_Dialog_Id				getDialogId(void) const;
-	XAP_App *					getApp(void) const { return m_pApp;}
+	XAP_Dialog_Id				getDialogId(void) const { return m_id; }
+	XAP_App *				getApp(void) const { return m_pApp;}
 	
+	const UT_String& getHelpUrl () const { return m_helpUrl ; }
+
 protected:
-	XAP_App *					m_pApp;
+	XAP_App *				m_pApp;
 	XAP_DialogFactory *			m_pDlgFactory;
 	XAP_Dialog_Id				m_id;
+
+ private:
+	UT_String m_helpUrl ;
 };
 
 
 class ABI_EXPORT XAP_Dialog_NonPersistent : public XAP_Dialog
 {
 public:
-	XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_NonPersistent(void);
 
-	virtual void				runModal(XAP_Frame * pFrame) = 0;
+	virtual void			runModal(XAP_Frame * pFrame) = 0;
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_NON_PERSISTENT; };
 	
@@ -79,7 +85,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_Persistent : public XAP_Dialog
 {
 public:
-	XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_Persistent(void);
 
 	virtual void				useStart(void);
@@ -93,7 +99,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_FramePersistent : public XAP_Dialog_Persistent
 {
 public:
-	XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_FramePersistent(void);
 
 	virtual void				useStart(void);
@@ -108,7 +114,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_AppPersistent : public XAP_Dialog_Persistent
 {
 public:
-	XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_AppPersistent(void);
 
 	virtual void				useStart(void);
@@ -124,7 +130,7 @@ protected:
 class ABI_EXPORT XAP_Dialog_Modeless : public XAP_Dialog_AppPersistent
 {
 public:
-	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_Dialog_Modeless(void);
 
 	void						useStart(void);
