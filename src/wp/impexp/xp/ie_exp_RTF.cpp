@@ -535,15 +535,46 @@ void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 
 void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 {
+	UT_iconv_t conv;
+	const char * current = pbuf;
+	UT_uint32 count = 0;
+
+	UT_DEBUGMSG(("data = %s\n", pbuf));
 	if (m_bLastWasKeyword)
 	{
 		write(" ");
 		m_bLastWasKeyword = false;
 	}
 
-	if(0 == buflen)
+	if(0 == buflen) {
 		return;
-	write(pbuf,buflen);
+	}
+
+	conv = UT_iconv_open("UCS-4", "utf-8");
+	UT_ASSERT(conv);
+	while (count < buflen) {
+		if (*current > 127) { 
+			UT_UCS4Char wc;
+			size_t insz, sz;
+			char * dest = (char*)(&wc);
+			insz = buflen - count;
+			sz = sizeof(wc);
+			UT_iconv(conv, &current, &insz, &dest, &sz);
+			if (wc > 0x00ff) {
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+			}
+			else {
+				_rtf_nonascii_hex2(wc);
+			}
+			count += buflen - insz;
+		}
+		else {
+			write (current, 1);
+			current++;
+			count++;
+		}
+	}
+	UT_iconv_close(conv);
 }
 
 void IE_Exp_RTF::_rtf_nl(void)
@@ -1411,7 +1442,6 @@ void IE_Exp_RTF::_write_stylesheets(void)
 		{
 			_rtf_keyword("snext", _getStyleNumber(pStyleNext));
 		}
-
 		_rtf_chardata(pStyle->getName(), strlen(pStyle->getName()));
 		_rtf_chardata(";",1);
 		_rtf_close_brace();

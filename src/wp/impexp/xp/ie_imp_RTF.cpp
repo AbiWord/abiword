@@ -2150,7 +2150,7 @@ UT_Error IE_Imp_RTF::_parseText()
 					int digit;
 
 					// hexval calls digval
-					ok = hexVal(static_cast<char>(c), digit);
+ 					ok = hexVal(static_cast<char>(c), digit);
 					b += digit;
 					cNibble--;
 					if (!cNibble  &&  ok)
@@ -2740,6 +2740,33 @@ bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
 
 }
 
+
+UT_UCS4Char IE_Imp_RTF::ReadHexChar(void) 
+{
+	UT_UCS4Char wc = 0;
+	unsigned char ch;
+	int val;
+
+	if (ReadCharFromFile(&ch))
+	{
+		if (hexVal(ch, val)) {
+			wc = val << 4;
+		}
+		else {
+			UT_DEBUGMSG(("invalid Hex %c\n", ch));
+		}
+		if (ReadCharFromFile(&ch))
+		{
+			if (hexVal(ch, val)) {
+				wc += val;
+			}
+			else {
+				UT_DEBUGMSG(("invalid Hex %c\n", ch));
+			}
+		}
+	}
+	return wc;
+}
 
 /*!
   Push a char back to the stream.
@@ -9501,7 +9528,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 
 	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
-	UT_String styleName = "";
+	UT_UCS4String styleName;// = "";
 	UT_sint32 styleNumber = 0;
 	while (nesting>0 && status == true)
 	{
@@ -9519,6 +9546,12 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			if (!status)
 			{
 				return status;
+			}
+			else if (strcmp(reinterpret_cast<const char *>(&keyword[0]), "'") == 0) {
+				/* FIXME really hackish. What if we have this in middle of keywords */
+				UT_UCS4Char wc;
+				wc = ReadHexChar();
+				styleName += wc;
 			}
 			else if (strcmp(reinterpret_cast<const char *>(&keyword[0]), "sbasedon") == 0)
 			{
@@ -9610,16 +9643,24 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 
 			while (ch != '}' && ch != ';')
 			{
-				styleName += ch;
-                if (!ReadCharFromFile(&ch))
+				/* 
+				   we have seen cases, including AbiWord, were stylename
+				   were generated with non ASCII names encoded as 8bits...
+				   We assume it is the document charset.
+				*/
+				UT_UCS4Char wc;
+				m_mbtowc.mbtowc(wc,static_cast<UT_Byte>(ch));
+				styleName += wc;
+                if (!ReadCharFromFile(&ch)) {
 		            return false;
+				}
 				if (ch =='}')
 				{
 					UT_DEBUGMSG(("RTF: Badly formatted style name, no ';'"));
 					nesting--;
 				}
 			}
-			char * buffer  = UT_strdup(styleName.c_str());
+			char * buffer  = UT_strdup(styleName.utf8_str());
 			char * oldbuffer;
 			m_styleTable.setNthItem(styleNumber,static_cast<void *>(buffer),reinterpret_cast<void **>(&oldbuffer));
 			FREEP(oldbuffer);
