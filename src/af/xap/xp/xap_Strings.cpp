@@ -153,7 +153,7 @@ XAP_DiskStringSet::~XAP_DiskStringSet(void)
 
 	for (k=kLimit-1; k>=0; k--)
 	{
-		XML_Char * sz = static_cast<XML_Char *>(m_vecStringsXAP.getNthItem(k));
+		XML_Char * sz = m_vecStringsXAP.getNthItem(k);
 		if (sz)
 			free(sz);
 	}
@@ -251,7 +251,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		szDup[length]='\0';
 	}
 
-	void * pOldValue = NULL;
+    XML_Char* pOldValue = NULL;
 	bool bResult = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
 	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
 
@@ -269,7 +269,7 @@ const XML_Char * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 
 	if (id < kLimit)
 	{
-		const XML_Char * szValue = reinterpret_cast<XML_Char *>(m_vecStringsXAP.getNthItem(id));
+		const XML_Char * szValue = m_vecStringsXAP.getNthItem(id);
 		if (szValue)
 			return szValue;
 	}

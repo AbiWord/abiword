@@ -220,7 +220,7 @@ public:
 	bool                addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock);
 	bool                removeBlockFromTOC(fl_BlockLayout * pBlock);
 	bool                isBlockInTOC(fl_BlockLayout * pBlock);
-	bool                getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_Vector * pVecBlock);
+	bool                getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock,  UT_GenericVector<fl_BlockLayout*>* pVecBlock);
 	bool                addTOC(fl_TOCLayout * pTOC);
 	bool                removeTOC(fl_TOCLayout * pTOC);
 	bool                fillTOC(fl_TOCLayout * pTOC);
@@ -273,7 +273,7 @@ protected:
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
-									   class UT_StringPtrMap *, void *);
+									   UT_StringPtrMap *, void *);
 
 
 	static void			_redrawUpdate(UT_Worker * pTimer);
@@ -286,12 +286,12 @@ private:
 	fl_DocListener*		m_pDocListener;
 	PL_ListenerId		m_lid;
 
-	UT_Vector			m_vecPages;
+	UT_GenericVector<fp_Page *> m_vecPages;
 	fl_DocSectionLayout*m_pFirstSection;
 	fl_DocSectionLayout*m_pLastSection;   
 
 	// spell check stuff
-	UT_Vector			m_vecUncheckedBlocks;
+	UT_GenericVector<fl_BlockLayout *> m_vecUncheckedBlocks;
 	fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
 	fl_PartOfBlock*		m_pPendingWordForSpell;
 	bool				m_bSpellCheckCaps;
@@ -314,8 +314,8 @@ private:
 	bool                m_bDeletingLayout;
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
-	UT_Vector           m_vecFootnotes;
-	UT_Vector           m_vecEndnotes;
+	UT_GenericVector<fl_FootnoteLayout *> m_vecFootnotes;
+	UT_GenericVector<fl_EndnoteLayout *> m_vecEndnotes;
 	FootnoteType        m_FootnoteType;
 	UT_sint32           m_iFootnoteVal;
 	bool                m_bRestartFootSection;
@@ -326,7 +326,7 @@ private:
 	bool                m_bPlaceAtDocEnd;
 	bool                m_bPlaceAtSecEnd;
 	UT_uint32           m_iGraphicTick;
-	UT_Vector           m_vecTOC;
+	UT_GenericVector<fl_TOCLayout *> m_vecTOC;
 };
 
 #endif /* DOCLAYOUT_H */

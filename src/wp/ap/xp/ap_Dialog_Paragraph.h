@@ -160,12 +160,12 @@ private:
 		inline void changed (bool c) { m_bChanged = c; }
 	};
 
-	UT_Vector				m_vecProperties; // properties stored as a vector
+	UT_GenericVector<sControlData *> m_vecProperties; // properties stored as a vector
 
 	void					_addPropertyItem (tControl index, const sControlData & control_data);
 	inline sControlData *	_getPropertyItem (tControl index) const
 	{
-		return reinterpret_cast<sControlData *>(m_vecProperties.getNthItem (static_cast<UT_uint32>(index)));
+		return m_vecProperties.getNthItem (static_cast<UT_uint32>(index));
 	}
 
 	// which dimension system we're using as "native" for this document

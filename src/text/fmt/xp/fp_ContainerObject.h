@@ -254,13 +254,13 @@ public:
 		{ m_vecContainers.clear();}
 	fp_ContainerObject *   getNthCon(UT_uint32 i) const
 		{ if(countCons() == 0) return NULL;
-		   return static_cast<fp_ContainerObject *>(m_vecContainers.getNthItem(i));}
+		   return m_vecContainers.getNthItem(i);}
 	void                   addCon(fp_ContainerObject * pCon)
-		{m_vecContainers.addItem((void *) pCon);}
+		{m_vecContainers.addItem(pCon);}
 	UT_uint32              countCons(void) const
 		{return m_vecContainers.getItemCount();}
 	UT_sint32              findCon(fp_ContainerObject * pCon) const
-		{return m_vecContainers.findItem(static_cast<void *>(pCon));}
+		{return m_vecContainers.findItem(pCon);}
 	void                   deleteNthCon(UT_sint32 i);
 	void                   insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 		{m_vecContainers.insertItemAt(pCon,i);}
@@ -274,7 +274,7 @@ public:
 	fp_Container *      getMyBrokenContainer(void) const;
 	void                setMyBrokenContainer(fp_Container * pMyBroken);
 	void                clearBrokenContainers(void);
-	UT_uint32           binarysearchCons(void *key,int (*compar)(const void *,
+	UT_uint32           binarysearchCons(const void* key,int (*compar)(const void *,
 																 const void *));
 	UT_uint32           getBrokenCount(void) { return m_cBrokenContainers; }
 	void                incBrokenCount(void) { m_cBrokenContainers += 1; }
@@ -286,7 +286,7 @@ private:
 	fp_Container*          m_pContainer;
 	fp_ContainerObject *   m_pNext;
 	fp_ContainerObject *   m_pPrev;
-	UT_Vector              m_vecContainers;
+	UT_GenericVector<fp_ContainerObject *> m_vecContainers;
 	fp_Container *         m_pMyBrokenContainer;
 	UT_uint32              m_cBrokenContainers;
     fg_FillType            m_FillType;                        

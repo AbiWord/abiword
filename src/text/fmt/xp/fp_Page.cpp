@@ -271,7 +271,7 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 	for(i=0; !bstop && (i<  m_vecColumnLeaders.getItemCount()); i++)
 	{
 		maxHeight = 0;
-		pColumn = static_cast<fp_Column *>(m_vecColumnLeaders.getNthItem(i));
+		pColumn = m_vecColumnLeaders.getNthItem(i);
 		totalHeight += pColumn->getDocSectionLayout()->getSpaceAfter();
 		while(pColumn != NULL)
 		{
@@ -468,7 +468,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 	for (i=0; i<count; i++)
 	{
-		fp_Column* pCol = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
+		fp_Column* pCol = m_vecColumnLeaders.getNthItem(i);
 		while (pCol)
 		{
 			dg_DrawArgs da = *pDA;
@@ -516,7 +516,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	count = m_vecFootnotes.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_FootnoteContainer* pFC = static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(i));
+		fp_FootnoteContainer* pFC = m_vecFootnotes.getNthItem(i);
 		dg_DrawArgs da = *pDA;
 		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
@@ -533,7 +533,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	count = m_vecFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_FrameContainer* pFC = static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(i));
+		fp_FrameContainer* pFC = m_vecFrames.getNthItem(i);
 		dg_DrawArgs da = *pDA;
 		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
@@ -561,7 +561,7 @@ UT_uint32 fp_Page::countColumnLeaders(void) const
 
 fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 {
-	return static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(n));
+	return m_vecColumnLeaders.getNthItem(n);
 }
 
 /*!
@@ -1341,7 +1341,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 //
 	for (i=0; i<count; i++)
 	{
-		pLeader = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
+		pLeader = m_vecColumnLeaders.getNthItem(i);
 
 		pColumn = pLeader;
 		iMinXDist = 0xffffffff;
@@ -1573,7 +1573,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 	UT_sint32 i = 0;
 	for (i=0; i<count; i++)
 	{
-		fp_Column* pCol = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
+		fp_Column* pCol = m_vecColumnLeaders.getNthItem(i);
 		while (pCol)
 		{
 			pCol->markDirtyOverlappingRuns(*pMyFrameRect);
@@ -1598,7 +1598,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 	count = m_vecFootnotes.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_FootnoteContainer* pFC = static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(i));
+		fp_FootnoteContainer* pFC = m_vecFootnotes.getNthItem(i);
 		pFC->markDirtyOverlappingRuns(*pMyFrameRect);
 	}
 
@@ -1607,7 +1607,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 	count = m_vecFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_FrameContainer* pFC = static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(i));
+		fp_FrameContainer* pFC = m_vecFrames.getNthItem(i);
 		if(pFC != pFrameC)
 		{
 			pFC->markDirtyOverlappingRuns(*pMyFrameRect);
@@ -1623,18 +1623,18 @@ UT_uint32 fp_Page::countFrameContainers(void) const
 
 UT_sint32 fp_Page::findFrameContainer(fp_FrameContainer * pFC)
 {
-	UT_sint32 i = m_vecFrames.findItem(static_cast<void *>(pFC));
+	UT_sint32 i = m_vecFrames.findItem(pFC);
 	return i;
 }
 
 fp_FrameContainer* fp_Page::getNthFrameContainer(UT_sint32 n) const 
 {
-	return static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(n));
+	return m_vecFrames.getNthItem(n);
 } 
 
 bool fp_Page::insertFrameContainer(fp_FrameContainer * pFC)
 {
-	m_vecFrames.addItem(static_cast<void *>(pFC));
+	m_vecFrames.addItem(pFC);
 	if(pFC)
 	{
 		pFC->setPage(this);
@@ -1673,13 +1673,13 @@ UT_uint32 fp_Page::countFootnoteContainers(void) const
 
 UT_sint32 fp_Page::findFootnoteContainer(fp_FootnoteContainer * pFC)
 {
-	UT_sint32 i = m_vecFootnotes.findItem(static_cast<void *>(pFC));
+	UT_sint32 i = m_vecFootnotes.findItem(pFC);
 	return i;
 }
 
 fp_FootnoteContainer* fp_Page::getNthFootnoteContainer(UT_sint32 n) const 
 {
-	return static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(n));
+	return m_vecFootnotes.getNthItem(n);
 } 
 
 bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
@@ -1690,7 +1690,7 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 	fp_FootnoteContainer * pFTemp = NULL;
 	for(i=0; i< m_vecFootnotes.getItemCount();i++)
 	{
-		pFTemp = static_cast<fp_FootnoteContainer *>(m_vecFootnotes.getNthItem(i));
+		pFTemp = m_vecFootnotes.getNthItem(i);
 		if(fVal < pFTemp->getValue())
 		{
 			loc = i;
@@ -1699,11 +1699,11 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 	}
 	if(pFTemp == NULL)
 	{
-		m_vecFootnotes.addItem(static_cast<void *>(pFC));
+		m_vecFootnotes.addItem(pFC);
 	}
 	else if( i>= m_vecFootnotes.getItemCount())
 	{
-		m_vecFootnotes.addItem(static_cast<void *>(pFC));
+		m_vecFootnotes.addItem(pFC);
 	}
 	else
 	{

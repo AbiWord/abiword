@@ -330,18 +330,18 @@ void XAP_App::resetToolbarsToDefault(void)
 	//
 	m_pToolbarFactory->resetAllToolbarsToDefault();
 	UT_uint32 count = m_vecFrames.getItemCount();
-	UT_Vector vClones;
+	UT_GenericVector<XAP_Frame*> vClones;
 	UT_uint32 i = 0;
 	for(i=0; i< count; i++)
 	{
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_vecFrames.getNthItem(i));
+		XAP_Frame * pFrame = m_vecFrames.getNthItem(i);
 		if(pFrame->getViewNumber() > 0)
 		{
 			getClones(&vClones,pFrame);
 			UT_uint32 j=0;
 			for(j=0; j < vClones.getItemCount(); j++)
 			{
-				XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(j));
+				XAP_Frame * f = vClones.getNthItem(j);
 				f->rebuildAllToolbars();
 			}
 		}
@@ -426,37 +426,36 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	if (pCloneOf)
 	{
 		// locate vector of this frame's clones
-		void * pEntry = const_cast<void *>(m_hashClones.pick(pCloneOf->getViewKey()));
-		UT_Vector * pvClones = NULL;
+		UT_GenericVector<XAP_Frame*> * pEntry = m_hashClones.pick(pCloneOf->getViewKey());
+		UT_GenericVector<XAP_Frame*> * pvClones = NULL;
 
 		if (pEntry)
 		{
 			// hash table entry already exists
-			pvClones = static_cast<UT_Vector *>(pEntry);
+			pvClones = pEntry;
 
 			if (!pvClones)
 			{
 				// nothing there, so create a new one
-				pvClones = new UT_Vector();
+				pvClones = new UT_GenericVector<XAP_Frame*>();
 				UT_ASSERT(pvClones);
 
 				pvClones->addItem(pCloneOf);
 
 				// reuse this slot
-				m_hashClones.set(pCloneOf->getViewKey(), 
-						 static_cast<void *>(pvClones));
+				m_hashClones.set(pCloneOf->getViewKey(), pvClones);
 			}
 		}
 		else
 		{
 			// create a new one
-			pvClones = new UT_Vector();
+			pvClones = new UT_GenericVector<XAP_Frame*>();
 			UT_ASSERT(pvClones);
 
 			pvClones->addItem(pCloneOf);
 
 			// add it to the hash table
-			m_hashClones.insert(pCloneOf->getViewKey(), static_cast<void *>(pvClones));
+			m_hashClones.insert(pCloneOf->getViewKey(), pvClones);
 		}
 
 		pvClones->addItem(pFrame);
@@ -464,7 +463,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 		// notify all clones of their new view numbers
 		for (UT_uint32 j=0; j<pvClones->getItemCount(); j++)
 		{
-			XAP_Frame * f = static_cast<XAP_Frame *>(pvClones->getNthItem(j));
+			XAP_Frame * f = pvClones->getNthItem(j);
 			UT_ASSERT(f);
 
 			f->setViewNumber(j+1);
@@ -493,12 +492,12 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	if (pFrame->getViewNumber() > 0)
 	{
 		// locate vector of this frame's clones
-		void * pEntry = const_cast<void *>(m_hashClones.pick(pFrame->getViewKey()));
+		UT_GenericVector<XAP_Frame*>* pEntry = m_hashClones.pick(pFrame->getViewKey());
 		UT_ASSERT(pEntry);
 
 		if (pEntry)
 		{
-			UT_Vector * pvClones = static_cast<UT_Vector *>(pEntry);
+			UT_GenericVector<XAP_Frame*> * pvClones = pEntry;
 			UT_ASSERT(pvClones);
 
 			// remove this frame from the vector
@@ -518,7 +517,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 			if (count == 1)
 			{
 				// remaining clone is now a singleton
-				f = static_cast<XAP_Frame *>(pvClones->getNthItem(count-1));
+				f = pvClones->getNthItem(count-1);
 				UT_ASSERT(f);
 
 				f->setViewNumber(0);
@@ -569,7 +568,7 @@ bool XAP_App::forgetClones(XAP_Frame * pFrame)
 		return forgetFrame(pFrame);
 	}
 
-	UT_Vector vClones;
+	UT_GenericVector<XAP_Frame*> vClones;
 	getClones(&vClones, pFrame);
 	
 	for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
@@ -581,17 +580,15 @@ bool XAP_App::forgetClones(XAP_Frame * pFrame)
 	return true;
 }
 
-bool XAP_App::getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame)
+bool XAP_App::getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * pFrame)
 {
 	UT_ASSERT(pvClonesCopy);
 	UT_ASSERT(pFrame);
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-	void * pEntry = const_cast<void *>(m_hashClones.pick(pFrame->getViewKey()));
-	UT_ASSERT(pEntry);
 
-	UT_Vector * pvClones = static_cast<UT_Vector *>(pEntry);
+	UT_GenericVector<XAP_Frame*> * pvClones = m_hashClones.pick(pFrame->getViewKey());
 	UT_ASSERT(pvClones);
 
 	return pvClonesCopy->copy(pvClones);
@@ -603,12 +600,12 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-	void * pEntry = const_cast<void *>(m_hashClones.pick(pFrame->getViewKey()));
+	UT_GenericVector<XAP_Frame*>* pEntry = m_hashClones.pick(pFrame->getViewKey());
 	UT_ASSERT(pEntry);
 
 	if (pEntry)
 	{
-		UT_Vector * pvClones = static_cast<UT_Vector *>(pEntry);
+		UT_GenericVector<XAP_Frame*>* pvClones = pEntry;
 		UT_ASSERT(pvClones);
 
 		UT_uint32 count = pvClones->getItemCount();
@@ -617,7 +614,7 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 
 		for (UT_uint32 j=0; j<count; j++)
 		{
-			f = static_cast<XAP_Frame *>(pvClones->getNthItem(j));
+			f = pvClones->getNthItem(j);
 			UT_ASSERT(f);
 
 			f->updateTitle();
@@ -638,7 +635,7 @@ XAP_Frame * XAP_App::getFrame(UT_uint32 ndx) const
 	
 	if (ndx < m_vecFrames.getItemCount())
 	{
-		pFrame = static_cast<XAP_Frame *>(m_vecFrames.getNthItem(ndx));
+		pFrame = m_vecFrames.getNthItem(ndx);
 		UT_ASSERT(pFrame);
 	}
 	return pFrame;
@@ -699,7 +696,7 @@ bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
 /*!
  * Look up the custom dictionary for suggested words
  */
-void XAP_App::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord)
+void XAP_App::suggestWord(UT_GenericVector<UT_UCSChar*> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord)
 {
 	if(m_pDict)
 	{

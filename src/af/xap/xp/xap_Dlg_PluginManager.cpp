@@ -50,14 +50,14 @@ bool XAP_Dialog_PluginManager::deactivatePlugin (XAP_Module * which) const
 
 bool XAP_Dialog_PluginManager::deactivateAllPlugins () const
 {
-	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+	const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 
 	UT_ASSERT (pVec);
 	if (pVec == 0) return false;
 
 	while (UT_uint32 size = pVec->size ())
 	{
-		if (XAP_Module * pMod = reinterpret_cast<XAP_Module *>(pVec->getNthItem (0)))
+		if (XAP_Module * pMod = pVec->getNthItem (0))
 		{
 			deactivatePlugin (pMod);
 		}

@@ -126,7 +126,7 @@ public:
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
     fl_BlockLayout  *        findMatchingBlock(fl_BlockLayout * pBlock);
-	UT_sint32                isInVector(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks);
+	UT_sint32                isInVector(fl_BlockLayout * pBlock, UT_GenericVector<TOCEntry *>* pVecBlocks);
 	UT_uint32                getTOCPID(void) const
 		{ return m_iTOCPID;}
 	bool                     isStyleInTOC(UT_UTF8String & sStyle);
@@ -184,7 +184,7 @@ private:
 	eTabLeader               m_iTabLeader2;
 	eTabLeader               m_iTabLeader3;
 	eTabLeader               m_iTabLeader4;
-	UT_Vector                m_vecEntries;
+	UT_GenericVector<TOCEntry *> m_vecEntries;
 	UT_sint32                m_iCurrentLevel;
 	UT_UTF8String            m_sTOCHeading;
 	bool                     m_bTOCHeading;

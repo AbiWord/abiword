@@ -773,13 +773,13 @@ GladeXML * abiDialogNewFromXML(const char * glade_file)
  * from UT_Vector.
  * All menu item will have the index of the item stored in its user-data
  */
-GtkWidget * abiGtkMenuFromCStrVector(const UT_Vector & vec, GCallback cb, gpointer data)
+GtkWidget * abiGtkMenuFromCStrVector(const UT_GenericVector<const char*> & vec, GCallback cb, gpointer data)
 {
 	UT_uint32 i;
 	GtkWidget * menu = gtk_menu_new();
 	
 	for (i = 0; i < vec.getItemCount(); i++) {
-		GtkWidget * menuItem = gtk_menu_item_new_with_label(static_cast<const char*>(vec[i]));
+		GtkWidget * menuItem = gtk_menu_item_new_with_label(vec[i]);
 		g_object_set_data(G_OBJECT(menuItem), "user_data", reinterpret_cast<void*>(i));
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(cb), data);
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItem);

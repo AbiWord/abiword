@@ -154,7 +154,7 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 	UT_String key;
 
 	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s",pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
-	const void *pEntry = m_hashFontCache.pick(key.c_str());
+	GR_Font *pEntry = m_hashFontCache.pick(key.c_str());
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
@@ -165,11 +165,11 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 		xxx_UT_DEBUGMSG(("Insert font %x in gr_Graphics cache \n",pFont));
 		// add it to the cache
 		m_hashFontCache.insert(key.c_str(),
-							   const_cast<void *>(static_cast<const void *>(pFont)));
+							   pFont);
 	}
 	else
 	{
-		pFont = (GR_Font*)(pEntry);
+		pFont = pEntry;
 	}
 	return pFont;
 }
@@ -181,7 +181,7 @@ GR_Graphics::~GR_Graphics()
 
 void GR_Graphics::_destroyFonts ()
 {
-	UT_HASH_PURGEDATA(GR_Font *, &m_hashFontCache, delete);
+	m_hashFontCache.purgeData();
 	m_hashFontCache.clear ();
 }
 

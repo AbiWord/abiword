@@ -80,17 +80,17 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet)
 {
 	m_stLanguage = pLabelSet->getLanguage();
 	m_first = pLabelSet->getFirst();
-	const UT_Vector * vecLabels = pLabelSet->getAllLabels();
+	const UT_GenericVector<EV_Menu_Label *> * vecLabels = pLabelSet->getAllLabels();
 	UT_uint32 i = 0;
 	for(i=0; i< vecLabels->getItemCount(); i++)
 	{
-	    EV_Menu_Label * pEvl = static_cast<EV_Menu_Label *>(vecLabels->getNthItem(i));
+	    const EV_Menu_Label * pEvl = vecLabels->getNthItem(i);
 		EV_Menu_Label * pNewLab = NULL;
 		if(pEvl != NULL)
 		{
 		    pNewLab = new EV_Menu_Label(pEvl->getMenuId(),pEvl->getMenuLabel(),pEvl->getMenuStatusMessage());
 		}
-		m_labelTable.addItem(static_cast<void *>(pNewLab));
+		m_labelTable.addItem(pNewLab);
 	}
 }
 
@@ -103,7 +103,7 @@ bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 								const char * szMenuLabel,
 								const char * szStatusMsg)
 {
-	void *tmp;
+	EV_Menu_Label * pTmpLbl;
 	XAP_Menu_Id last = m_first + m_labelTable.size();
 	
 	if (id < m_first || id >= last)
@@ -112,17 +112,12 @@ bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 	UT_sint32 index = id - m_first;
 
 	EV_Menu_Label *label = new EV_Menu_Label(id, szMenuLabel, szStatusMsg);
-	UT_sint32 error = m_labelTable.setNthItem(index, label, &tmp);
-	EV_Menu_Label * pTmpLbl = static_cast<EV_Menu_Label *> (tmp);
+	UT_sint32 error = m_labelTable.setNthItem(index, label, &pTmpLbl);
 	DELETEP(pTmpLbl);
 	return (error == 0);
 }
 
-#ifdef __MRC__
-EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id)
-#else
 EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
-#endif
 {
 	XAP_Menu_Id last = m_first + m_labelTable.size();
 	if (id < m_first || id >= last)
@@ -130,7 +125,7 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 
 	UT_uint32 index = (id - m_first);
 	
-	EV_Menu_Label * pLabel = static_cast<EV_Menu_Label *> (m_labelTable.getNthItem(index));
+	EV_Menu_Label * pLabel = m_labelTable.getNthItem(index);
 
 	if (!pLabel)
 	{

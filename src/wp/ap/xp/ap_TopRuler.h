@@ -39,7 +39,6 @@
 class XAP_App;
 class XAP_Frame;
 class XAP_Prefs;
-class UT_StringPtrMap;
 class AV_ScrollObj;
 class UT_Timer;
 class fp_CellContainer;
@@ -106,7 +105,7 @@ public:
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{
-					delete static_cast<AP_TopRulerTableInfo *>(m_vecTableColInfo->getNthItem(i));
+					delete m_vecTableColInfo->getNthItem(i);
 				}
 				delete m_vecTableColInfo;
 			}
@@ -116,7 +115,7 @@ public:
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{
-					delete static_cast<AP_TopRulerTableInfo *>(m_vecFullTable->getNthItem(i));
+					delete m_vecFullTable->getNthItem(i);
 				}
 				delete m_vecFullTable;
 				m_vecFullTable = NULL;
@@ -150,8 +149,8 @@ public:
 
 // Column information for current table
 
-	UT_Vector             * m_vecTableColInfo;
-	UT_Vector             * m_vecFullTable;
+	UT_GenericVector<AP_TopRulerTableInfo *> * m_vecTableColInfo;
+	UT_GenericVector<AP_TopRulerTableInfo *> * m_vecFullTable;
 	UT_sint32               m_iTablePadding;
 	UT_sint32               m_iCells;
 	UT_sint32               m_iCurCell;

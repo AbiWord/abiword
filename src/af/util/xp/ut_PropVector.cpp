@@ -44,20 +44,21 @@ void UT_PropVector::addOrReplaceProp(const XML_Char * pszProp, const XML_Char * 
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2) {
 		pszV = reinterpret_cast<const XML_Char *>(getNthItem(i));
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
+		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0)) {
 			break;
+		}
 	}
 	if((iCount > 0) && (i < iCount)) {
-		void * pVal;
-		char * val = UT_strdup(pszVal);
-		setNthItem(i+1, static_cast<void *>(val), &pVal);
+	    XML_Char* pVal;
+		XML_Char * val = UT_strdup(pszVal);
+		setNthItem(i+1, val, &pVal);
 		FREEP(pVal);
 	}
 	else {
-		char * prop = UT_strdup(pszProp);
-		char * val = UT_strdup(pszVal);
-		addItem(static_cast<void *>(prop));
-		addItem(static_cast<void *>(val));
+		XML_Char * prop = UT_strdup(pszProp);
+		XML_Char * val = UT_strdup(pszVal);
+		addItem(prop);
+		addItem(val);
 	}
 	return;
 }
@@ -75,13 +76,13 @@ void UT_PropVector::getProp(const XML_Char * pszProp,
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = reinterpret_cast<const XML_Char *>(getNthItem(i));
+		pszV = getNthItem(i);
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
 	{
-		pszVal = reinterpret_cast<const XML_Char *>(getNthItem(i+1));
+		pszVal = getNthItem(i+1);
 	}
 	return;
 }
@@ -104,14 +105,15 @@ void UT_PropVector::removeProp(const XML_Char * pszProp)
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = reinterpret_cast<const XML_Char *>(getNthItem(i));
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
+		pszV = getNthItem(i);
+		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0)) {
 			break;
+		}
 	}
 	if(i < iCount)
 	{
-		char * pSP = static_cast<char *>(getNthItem(i));
-		char * pSV = static_cast<char *>(getNthItem(i+1));
+		XML_Char * pSP = getNthItem(i);
+		XML_Char * pSV = getNthItem(i+1);
 		FREEP(pSP);
 		FREEP(pSV);
 		deleteNthItem(i+1);

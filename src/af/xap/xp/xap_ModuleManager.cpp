@@ -72,7 +72,7 @@
 XAP_ModuleManager::XAP_ModuleManager ()	:
   m_spider(new XAP_Spider)
 {
-	m_modules = new UT_Vector (11);
+	m_modules = new UT_GenericVector<XAP_Module*> (11);
 }
 
 /*!
@@ -283,7 +283,7 @@ void XAP_ModuleManager::unloadModule (UT_sint32 ndx)
 {
 	UT_return_if_fail(m_modules != NULL);
 
-	XAP_Module * pModule = reinterpret_cast<XAP_Module *>(m_modules->getNthItem (ndx));
+	XAP_Module * pModule = m_modules->getNthItem (ndx);
 
 	m_modules->deleteNthItem (ndx);
 
@@ -318,7 +318,7 @@ void XAP_ModuleManager::unloadUnregistered ()
 		bad_module = -1;
 		for (UT_uint32 i = 0; i < m_modules->size (); i++)
 		{
-			XAP_Module * pModule = reinterpret_cast<XAP_Module *>(m_modules->getNthItem (i));
+			XAP_Module * pModule = m_modules->getNthItem (i);
 			if (!pModule->registered ())
 			{
 				bad_module = static_cast<UT_sint32>(i);
@@ -334,7 +334,7 @@ void XAP_ModuleManager::unloadUnregistered ()
  *
  * \return a vector containing XAP_Module*'s
  */
-const UT_Vector * XAP_ModuleManager::enumModules () const
+const UT_GenericVector<XAP_Module*> * XAP_ModuleManager::enumModules () const
 {
 	// TODO: perhaps we should clone this
 	return m_modules;

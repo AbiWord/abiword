@@ -59,6 +59,9 @@ enum _progress_flags {
 // have classes for each statusbar element, to boot). Ideally, we would somehow create a statusbar
 // at run-time using an XML file. But it's too much work, for too little benefit, to do that right now.
 
+class AP_StatusBarField;
+
+
 class AP_StatusBar : public AV_Listener
 {
 public:
@@ -81,14 +84,14 @@ public:
     virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
     virtual AV_ListenerType getType(void) { return AV_LISTENER_STATUSBAR;}
 
-    UT_Vector *             getFields() { return &m_vecFields; }
+    UT_GenericVector<AP_StatusBarField*> *             getFields() { return &m_vecFields; }
 protected:
 
     XAP_Frame *			m_pFrame;
     AV_View *			m_pView;
 
     bool			m_bInitFields;
-    UT_Vector			m_vecFields;			/* vector of 'ap_sb_Field *' */
+    UT_GenericVector<AP_StatusBarField*> m_vecFields;			/* vector of 'ap_sb_Field *' */
     void *			m_pStatusMessageField;	/* actually 'AP_StatusBarField_StatusMessage *' */
     void *			m_pStatusProgressField;	/* actually 'AP_StatusBarField_ProgressBar *' */
 

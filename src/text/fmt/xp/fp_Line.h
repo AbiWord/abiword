@@ -125,7 +125,7 @@ public:
 	bool		containsForcedColumnBreak(void) const;
 	bool		containsForcedPageBreak(void) const;
 	bool        containsFootnoteReference(void);
-	bool        getFootnoteContainers(UT_Vector * pvecFoots);
+	bool        getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer *>* pvecFoots);
 	void 		addRun(fp_Run*);
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
@@ -234,7 +234,7 @@ private:
 
 	UT_sint32		m_iX;
 	UT_sint32		m_iY;
-	UT_Vector		m_vecRuns;
+	UT_GenericVector<fp_Run *>	m_vecRuns;
 
 	bool			m_bNeedsRedraw;
 	//bool			m_bRedoLayout;

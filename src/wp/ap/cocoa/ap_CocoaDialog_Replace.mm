@@ -376,18 +376,18 @@ void AP_CocoaDialog_Replace::_updateLists()
 }
 
 
-- (void)updateFindWhat:(UT_Vector*)list
+- (void)updateFindWhat:(UT_GenericVector<UT_UCS4Char*>*)list
 {
 	[self _updateCombo:_whatCombo withList:list];
 }
 
 
-- (void)updateReplaceWith:(UT_Vector*)list
+- (void)updateReplaceWith:(UT_GenericVector<UT_UCS4Char*>*)list
 {
 	[self _updateCombo:_replaceCombo withList:list];
 }
 
-- (void)_updateCombo:(NSComboBox*)combo withList:(UT_Vector*)list
+- (void)_updateCombo:(NSComboBox*)combo withList:(UT_GenericVector<UT_UCS4Char*>*)list
 {
 	UT_uint32 vecSize, i;
 	[combo removeAllItems];

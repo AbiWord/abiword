@@ -225,9 +225,9 @@ class ABI_EXPORT ie_imp_table
 	UT_sint32           getCellXOnRow(void) { return m_iCellXOnRow;}
 	void                incPosOnRow(void) { m_iPosOnRow++;}
 	void                incCellXOnRow(void) { m_iCellXOnRow++;}
-	bool                getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec);
+	bool                getVecOfCellsOnRow(UT_sint32 row, UT_GenericVector<ie_imp_cell*> * pVec);
 	bool                removeRow(UT_sint32 row);
-	void                appendRow(UT_Vector * pVecRowOfCells);
+	void                appendRow(UT_GenericVector<ie_imp_cell*>* pVecRowOfCells);
 	bool                doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2,bool bIsLast = false);
  private:
 	void                _buildCellXVector(void);
@@ -242,7 +242,7 @@ class ABI_EXPORT ie_imp_table
 	bool                m_bTableUsed;
 	UT_sint32           m_iPosOnRow;
 	UT_sint32           m_iCellXOnRow;
-	UT_Vector           m_vecCells;
+	UT_GenericVector<ie_imp_cell*> m_vecCells;
 	UT_NumberVector           m_vecCellX;
 	UT_NumberVector           m_vecSavedX;
 };			
@@ -330,9 +330,9 @@ public:
 	bool	           InlineFormat (const XML_Char ** attributes);
 
 	bool	           Object (PTObjectType pto, const XML_Char ** attributes);
-    void               padAllRowsWithCells(UT_Vector & vecCells,UT_sint32 extra);
-	void               padRowWithCells(UT_Vector & vecCells,UT_sint32 row, UT_sint32 extra);
-	CellHelper *       getCellAtRowCol(UT_Vector & vecCells, UT_sint32 row, UT_sint32 col);
+    void               padAllRowsWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 extra);
+	void               padRowWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 row, UT_sint32 extra);
+	CellHelper *       getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col);
 private:
 
 	/* 1. Need a section on column definitions, allowing for <col> and <colgroup><col>
@@ -370,9 +370,9 @@ private:
 	UT_sint32			m_col_next;
 	UT_sint32			m_row_next;
 
-	UT_Vector   		m_thead;
-	UT_Vector   		m_tfoot;
-	UT_Vector   		m_tbody;
+	UT_GenericVector<CellHelper *>	m_thead;
+	UT_GenericVector<CellHelper *>	m_tfoot;
+	UT_GenericVector<CellHelper *>	m_tbody;
 
 	CellHelper *		m_current;
 	TableZone			m_tzone;

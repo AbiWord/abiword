@@ -141,7 +141,7 @@ protected:
     bool            m_bWhiteSignificant;
     bool            m_bWasSpace;
 
-    UT_Vector		m_vecInlineFmt;
+    UT_GenericVector<XML_Char*> m_vecInlineFmt;
     UT_Stack		m_stackFmtStartIndex;
 
     UT_ByteBuf		m_currentDataItem;

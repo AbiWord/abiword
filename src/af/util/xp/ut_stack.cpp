@@ -36,7 +36,7 @@ bool UT_Stack::pop(void ** ppVoid)
 	UT_uint32 indexEnd = m_vecStack.getItemCount();
 	if (!indexEnd)
 		return false;
-	*ppVoid = static_cast<void*>(m_vecStack.getLastItem());
+	*ppVoid = const_cast<void*>(m_vecStack.getLastItem());
 	m_vecStack.deleteNthItem(indexEnd-1);
 	return true;
 }
@@ -47,7 +47,7 @@ bool UT_Stack::viewTop(void ** ppVoid) const
 	UT_uint32 indexEnd = m_vecStack.getItemCount();
 	if (!indexEnd)
 		return false;
-	*ppVoid = static_cast<void*>(m_vecStack.getLastItem());
+	*ppVoid = const_cast<void*>(m_vecStack.getLastItem());
 	return true;
 }
 

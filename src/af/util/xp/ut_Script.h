@@ -32,7 +32,10 @@
 
 typedef UT_sint32 UT_ScriptIdType;
 
-class UT_Vector;
+#ifndef UTVECTOR_H
+#include "ut_vector.h"
+#endif
+
 class UT_Script;
 class UT_ScriptLibrary;
 
@@ -122,7 +125,7 @@ private:
 	friend void __dummy_method_dont_use(void);
 
 	static UT_ScriptLibrary mInstance;
-	UT_Vector* mSniffers;
+	UT_GenericVector<UT_ScriptSniffer *>* mSniffers;
 	UT_String m_stErrMsg;
 };
 

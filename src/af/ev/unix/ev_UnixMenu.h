@@ -60,7 +60,7 @@ protected: // FIXME! These variables should be private.
 	GtkAccelGroup * 	m_accelGroup;
 	
 	// actual GTK menu widgets
-	UT_Vector			m_vecMenuWidgets;
+	UT_GenericVector<GtkWidget*> m_vecMenuWidgets;
 private:	
         void _convertStringToAccel(const char *s, guint &accel_key, GdkModifierType &ac_mods);   
         const char * s_getStockPixmapFromId (int id);

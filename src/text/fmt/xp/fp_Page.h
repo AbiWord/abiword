@@ -149,16 +149,16 @@ private:
 
 	bool				m_bNeedsRedraw;
 
-	UT_Vector			m_vecColumnLeaders;
+	UT_GenericVector<fp_Column *> m_vecColumnLeaders;
 
 	fl_DocSectionLayout*	m_pOwner;
 
 	fp_ShadowContainer* m_pFooter;
 	fp_ShadowContainer* m_pHeader;
 
-	UT_Vector			m_vecFootnotes;
+	UT_GenericVector<fp_FootnoteContainer *> m_vecFootnotes;
 	fg_FillType         m_FillType;
-	UT_Vector           m_vecFrames;
+	UT_GenericVector<fp_FrameContainer *> m_vecFrames;
 	fl_TOCLayout *      m_pLastMappedTOC;
 };
 

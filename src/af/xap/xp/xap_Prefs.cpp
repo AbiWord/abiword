@@ -84,13 +84,13 @@ XAP_PrefsScheme::~XAP_PrefsScheme(void)
 	FREEP(m_szName);
 
 	// loop through and free the values
-	UT_Vector * pVec = m_hash.enumerate ();
+	UT_GenericVector<XML_Char*> * pVec = m_hash.enumerate ();
 
 	UT_uint32 cnt = pVec->size();
 
 	for (UT_uint32 i = 0 ; i < cnt; i++)
 	  {
-	    char * val = static_cast<char *>(pVec->getNthItem (i));
+	    char * val = pVec->getNthItem (i);
 	    FREEP(val);
 	  }
 
@@ -111,21 +111,19 @@ bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
 bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 {
 	++m_uTick;
-	const void * pEntry = m_hash.pick(szKey);
+	XML_Char * pEntry = m_hash.pick(szKey);
 	if (pEntry)
 	{
-		if (strcmp(static_cast<const char*>(szValue),static_cast<const char *>(pEntry)) == 0)
+		if (strcmp(szValue,pEntry) == 0)
 			return true;				// equal values, no changes required
 		
 		FREEP(pEntry);
-		m_hash.set (szKey, 
-			    static_cast<void *>(UT_strdup (szValue)));
+		m_hash.set (szKey, UT_strdup (szValue));
 	}
 	else
 	{
 		// otherwise, need to add a new entry
-		m_hash.insert(szKey,
-			      static_cast<void *>(UT_strdup(szValue)));
+		m_hash.insert(szKey, UT_strdup(szValue));
 	}
 
 	m_pPrefs->_markPrefChange( szKey );
@@ -140,22 +138,22 @@ bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, bool bValue)
 
 bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
-	const void *pEntry = m_hash.pick(szKey);
+	XML_Char *pEntry = m_hash.pick(szKey);
 	if (!pEntry)
 		return false;
 
 	if (pszValue)
-		*pszValue = static_cast<const XML_Char*>(pEntry);
+		*pszValue = pEntry;
 	return true;
 }
 
 bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
 {
-	const void * pEntry = m_hash.pick(stKey);
+	XML_Char *pEntry = m_hash.pick(stKey);
 	if (!pEntry)
 		return false;
 
-	stValue = static_cast<const char *>(pEntry);
+	stValue = pEntry;
 	return true;
 }
 
@@ -193,20 +191,20 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 //
 // Output prefs in alphabetic Order.
 //
-	UT_Vector vecKeys;
-	UT_Vector * vecD = m_hash.keys();
+	UT_GenericVector<const char*> vecKeys;
+	UT_GenericVector<const UT_String*> * vecD = m_hash.keys();
 	UT_uint32 i=0;
 	vecKeys.clear();
 	for(i=0; i< vecD->getItemCount(); i++)
 	{
-		vecKeys.addItem(static_cast<const void *>(static_cast<UT_String *>(vecD->getNthItem(i))->c_str()));
+		vecKeys.addItem(vecD->getNthItem(i)->c_str());
 	}
 	vecKeys.qsort(compareStrings);
 	delete vecD;
 	const char * szKey = NULL;
 	const char * szValue = NULL;
-	szKey = reinterpret_cast<XML_Char *>(vecKeys.getNthItem(k));
-	szValue = static_cast<const XML_Char *>(m_hash.pick(szKey));
+	szKey = vecKeys.getNthItem(k);
+	szValue = m_hash.pick(szKey);
 	if(szValue && *szValue)
 	{
 		*pszKey = szKey;
@@ -287,7 +285,7 @@ const char * XAP_Prefs::getRecent(UT_uint32 k) const
 	
 void XAP_Prefs::addRecent(const char * szRecent)
 {
-	const char * sz;
+	char * sz;
 	bool bFound = false;
 
 	if (m_iMaxRecent == 0)
@@ -301,7 +299,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	// was it already here? 
 	for (UT_uint32 i=0; i<m_vecRecent.getItemCount(); i++)
 	{
-		sz = reinterpret_cast<const char *>(m_vecRecent.getNthItem(i));
+		sz = m_vecRecent.getNthItem(i);
 		if ((sz==szRecent) || !strcmp(sz, szRecent))
 		{
 			// yep, we're gonna move it up
@@ -314,10 +312,10 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	if (!bFound)
 	{
 		// nope.  make a new copy to store
-		UT_cloneString((char *&)sz, szRecent);
+		UT_cloneString(sz, szRecent);
 	}
 
-	m_vecRecent.insertItemAt(const_cast<void *>(static_cast<const void *>(sz)), 0);
+	m_vecRecent.insertItemAt(sz, 0);
 	_pruneRecent();
 }
 
@@ -326,7 +324,7 @@ void XAP_Prefs::removeRecent(UT_uint32 k)
 	UT_ASSERT(k>0);
 	UT_ASSERT(k<=getRecentCount());
 
-	char * sz = static_cast<char *>(m_vecRecent.getNthItem(k-1));
+	char * sz = m_vecRecent.getNthItem(k-1);
 	FREEP(sz);
 
 	m_vecRecent.deleteNthItem(k-1);
@@ -342,7 +340,7 @@ void XAP_Prefs::_pruneRecent(void)
 		// nuke the whole thing
 		for (i = static_cast<signed>(count); i > 0 ; i--)
 		{
-			char * sz = static_cast<char *>(m_vecRecent.getNthItem(i-1));
+			char * sz = m_vecRecent.getNthItem(i-1);
 			FREEP(sz);
 		}
 
@@ -445,7 +443,7 @@ void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level lev
 	// s->escapeXML(); // since we embed these as comments we do not
 	                   // have to do this
 
-	m_vecLog.addItem((void*) s);
+	m_vecLog.addItem(s);
 }
 
 
@@ -485,11 +483,11 @@ XAP_Prefs::~XAP_Prefs(void)
 
 /*****************************************************************/
 
-XAP_PrefsScheme * XAP_Prefs::_getNthScheme(UT_uint32 k, const UT_Vector &vecSchemes) const
+XAP_PrefsScheme * XAP_Prefs::_getNthScheme(UT_uint32 k, const UT_GenericVector<XAP_PrefsScheme *> &vecSchemes) const
 {
 	UT_uint32 kLimit = vecSchemes.getItemCount();
 	if (k < kLimit)
-		return static_cast<XAP_PrefsScheme *>(vecSchemes.getNthItem(k));
+		return vecSchemes.getNthItem(k);
 	else
 		return NULL;
 }
@@ -941,7 +939,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 				UT_XML_cloneString((XML_Char *&)sz, a[1]);
 
 				// NOTE: we keep the copied string in the vector
-				m_vecRecent.addItem(static_cast<void *>(sz));
+				m_vecRecent.addItem(sz);
 			}
 
 			a += 2;
@@ -1499,7 +1497,7 @@ void XAP_Prefs::addListener	  ( PrefsListener pFunc, void *data )
 	pPair->m_pFunc = pFunc;
 	pPair->m_pData = data;
 
-	m_vecPrefsListeners.addItem( static_cast<void *>(pPair) );
+	m_vecPrefsListeners.addItem(pPair);
 }
 
 // optional parameter, data.  If given (i.e., != 0), will try to match data,
@@ -1511,7 +1509,7 @@ void XAP_Prefs::removeListener ( PrefsListener pFunc, void *data )
 
 	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
 	{
-		pPair = static_cast<tPrefsListenersPair *>(m_vecPrefsListeners.getNthItem(index));
+		pPair = m_vecPrefsListeners.getNthItem(index);
 		UT_ASSERT(pPair);
 		if ( pPair ) {
 			if ( pPair->m_pFunc == pFunc && (!data || pPair->m_pData == data) ) {
@@ -1563,8 +1561,7 @@ void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 	UT_uint32	index;
 	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
 	{
-		tPrefsListenersPair *p = (tPrefsListenersPair *)
-			m_vecPrefsListeners.getNthItem( index );
+		tPrefsListenersPair *p = m_vecPrefsListeners.getNthItem( index );
 
 		UT_ASSERT(p && p->m_pFunc);
 	

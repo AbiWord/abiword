@@ -268,7 +268,7 @@ void AP_Dialog_Tab::_event_Set(void)
 
 	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
-		fl_TabStop *pTabInfo = static_cast<fl_TabStop *>(m_tabInfo.getNthItem(i));
+		fl_TabStop *pTabInfo = m_tabInfo.getNthItem(i);
 		UT_ASSERT(pTabInfo);
 
 		// if we have a tab at that unit
@@ -295,7 +295,7 @@ void AP_Dialog_Tab::_event_Clear(void)
 	{
 		UT_return_if_fail(index < static_cast<UT_sint32>(m_tabInfo.getItemCount()));
 
-		_deleteTabFromTabString(static_cast<fl_TabStop *>(m_tabInfo.getNthItem(index)));
+		_deleteTabFromTabString(m_tabInfo.getNthItem(index));
 
 		UT_return_if_fail(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
@@ -447,7 +447,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 
 	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
-		fl_TabStop *pTabInfo = static_cast<fl_TabStop *>(m_tabInfo.getNthItem(i));
+		fl_TabStop *pTabInfo = m_tabInfo.getNthItem(i);
 		UT_ASSERT(pTabInfo);
 
 		// if we have a tab at that unit
@@ -478,7 +478,7 @@ char *AP_Dialog_Tab::_getTabDimensionString(UT_uint32 tabIndex)
 
 	UT_ASSERT(tabIndex < m_tabInfo.getItemCount());
 
-	fl_TabStop *pTabInfo = static_cast<fl_TabStop *>(m_tabInfo.getNthItem(tabIndex));
+	fl_TabStop *pTabInfo = m_tabInfo.getNthItem(tabIndex);
 
 	const char* pStart = &m_pszTabStops[pTabInfo->getOffset()];
 	const char* pEnd = pStart;

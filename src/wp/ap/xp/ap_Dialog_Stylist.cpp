@@ -225,15 +225,15 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	m_vecAllStyles.clear();
 	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
 	m_vecStyleRows.clear();
-	UT_Vector vecStyles;
+	UT_GenericVector<const PD_Style *> vecStyles;
 	const PD_Style * pStyle = NULL;
 	const char * pszStyle = NULL;
 	UT_DEBUGMSG(("In Build styles num styles in doc %d \n",numStyles));
 	for(i=0; i < numStyles; i++)
 	{
 		pDoc->enumStyles(i, &pszStyle, &pStyle);
-		m_vecAllStyles.addItem(static_cast<const void *>(pStyle));
-		vecStyles.addItem(static_cast<const void *>(pStyle));
+		m_vecAllStyles.addItem(pStyle);
+		vecStyles.addItem(pStyle);
 	}
 //
 // OK now build the tree of Styles
@@ -244,10 +244,10 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	Stylist_row * pStyleRow = new Stylist_row();
 	UT_UTF8String sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_HeadingStyles);
 	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
+	m_vecStyleRows.addItem(pStyleRow);
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = vecStyles.getNthItem(i);
 		if(isHeading(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -262,10 +262,10 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	pStyleRow = new Stylist_row();
 	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_ListStyles);
 	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
+	m_vecStyleRows.addItem(pStyleRow);
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = vecStyles.getNthItem(i);
 		if(pStyle && isList(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -280,10 +280,10 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	pStyleRow = new Stylist_row();
 	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_FootnoteStyles);
 	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
+	m_vecStyleRows.addItem(pStyleRow);
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = vecStyles.getNthItem(i);
 		if(pStyle && isFootnote(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -301,7 +301,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	UT_sint32 iCount = 0;
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = vecStyles.getNthItem(i);
 		if(pStyle && isUser(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -313,7 +313,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	}
 	if(iCount > 0)
 	{
-		m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
+		m_vecStyleRows.addItem(pStyleRow);
 	}
 	else
 	{
@@ -325,10 +325,10 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_MiscStyles);
 	pStyleRow = new Stylist_row();
 	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
+	m_vecStyleRows.addItem(pStyleRow);
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = vecStyles.getNthItem(i);
 		if(pStyle)
 		{
 			sTmp = pStyle->getName();
@@ -521,7 +521,7 @@ Stylist_row::~Stylist_row(void)
 void Stylist_row::addStyle(UT_UTF8String & sStyle)
 {
 	UT_UTF8String * psStyle = new UT_UTF8String(sStyle);
-	m_vecStyles.addItem(static_cast<void *>(psStyle));
+	m_vecStyles.addItem(psStyle);
 }
 
 void Stylist_row::setRowName(UT_UTF8String & sRowName)
@@ -546,7 +546,7 @@ bool Stylist_row::findStyle(UT_UTF8String & sStyleName, UT_sint32 & col)
 	bool bFound = false;
 	for(i=0; (i<numCols) && !bFound;i++)
 	{
-		UT_UTF8String * psStyle = static_cast<UT_UTF8String *>(m_vecStyles.getNthItem(i));
+		UT_UTF8String * psStyle = m_vecStyles.getNthItem(i);
 		if(*psStyle == sStyleName)
 		{
 			col = i;
@@ -565,7 +565,7 @@ bool Stylist_row::getStyle(UT_UTF8String & sStyleName, UT_sint32 col)
 	{
 		return false;
 	}
-	UT_UTF8String * psStyle = static_cast<UT_UTF8String *>(m_vecStyles.getNthItem(col));
+	UT_UTF8String * psStyle = m_vecStyles.getNthItem(col);
 	sStyleName = *psStyle;
 	return true;
 }

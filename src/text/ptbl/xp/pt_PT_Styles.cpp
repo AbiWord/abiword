@@ -295,7 +295,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 
 	pStyle = new PD_BuiltinStyle(this, indexAP, szName);
 	if (pStyle)
-		m_hashStyles.insert(szName, (void*) pStyle);
+		m_hashStyles.insert(szName, pStyle);
 
 	return true;
 }
@@ -348,7 +348,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 //
 
 		if (pStyle)
-			m_hashStyles.insert(szName,(void *)pStyle);
+			m_hashStyles.insert(szName,pStyle);
 
 		return true;
 	}
@@ -381,12 +381,9 @@ bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	//UT_ASSERT(szName && *szName);
 
-	const void * pHashEntry = m_hashStyles.pick (szName);
-	if (!pHashEntry)
+	PD_Style * pStyle = m_hashStyles.pick (szName);
+	if (!pStyle)
 		return false;
-
-	PD_Style * pStyle = (PD_Style *) pHashEntry;
-	//UT_ASSERT(pStyle);
 
 	if (ppStyle)
 	{
@@ -429,10 +426,10 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 
-	UT_Vector * vStyle = m_hashStyles.enumerate() ;
+	UT_GenericVector<PD_Style*> * vStyle = m_hashStyles.enumerate() ;
 	vStyle->qsort(compareStyleNames);
 
-	PD_Style * pStyle = (PD_Style *) vStyle->getNthItem(k);
+	PD_Style * pStyle = vStyle->getNthItem(k);
 	UT_ASSERT(pStyle);
 
 	if (ppStyle)

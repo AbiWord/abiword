@@ -97,7 +97,7 @@ typedef enum {
 
 class SpellChecker;
 class fl_TabStop;
-void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTabs);
+void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs);
 
 class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 {
@@ -157,8 +157,8 @@ public:
 	inline bool isListItem(void) const { return m_bListItem; }
 	bool isFirstInList(void);
 //	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
-	void	getListAttributesVector( UT_Vector * va);
-	void  getListPropertyVector( UT_Vector * vp);
+	void	getListAttributesVector(UT_GenericVector<const XML_Char*> * va);
+	void  getListPropertyVector(UT_GenericVector<const XML_Char*> * vp);
 
 	char *	getFormatFromListType(FL_ListType iListType);
 	void remItemFromList(void);
@@ -404,7 +404,7 @@ protected:
 	fp_Run* 				m_pFirstRun;
 	fl_SectionLayout*		m_pSectionLayout;
 
-	UT_Vector				m_vecTabs;
+	UT_GenericVector<fl_TabStop*>	m_vecTabs;
 	UT_sint32				m_iDefaultTabInterval;
 	// read-only caches of the underlying properties
 	UT_uint32				m_iOrphansProperty;

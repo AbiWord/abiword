@@ -145,7 +145,7 @@ protected:
 private:
 	
 	IE_MailMerge_Listener * m_pListener;
-	UT_StringPtrMap m_map;
+	UT_GenericStringMap<UT_UTF8String *> m_map;
 };
 
 void IE_MailMerge_RegisterXP ();

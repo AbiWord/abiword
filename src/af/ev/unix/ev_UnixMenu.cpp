@@ -964,9 +964,9 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					
 					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)
-					void ** old = NULL;
+					GtkWidget* old = NULL;
 					GtkWidget *oldItem = GTK_WIDGET(m_vecMenuWidgets.getNthItem(k));
-					if (m_vecMenuWidgets.setNthItem(k, w, old))
+					if (m_vecMenuWidgets.setNthItem(k, w, &old))
 					{
 						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
 						UT_ASSERT(0);
@@ -994,7 +994,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// if no dynamic label, all we need to do
 				// is enable/disable and/or check/uncheck it.
 
-				GtkWidget * item = static_cast<GtkWidget *>(m_vecMenuWidgets.getNthItem(k));
+				GtkWidget * item = m_vecMenuWidgets.getNthItem(k);
 				UT_ASSERT(item);
 
 				// check boxes 
@@ -1011,7 +1011,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			}
 
 			// Get the item
-			GtkWidget * item = static_cast<GtkWidget *>(m_vecMenuWidgets.getNthItem(k));
+			GtkWidget * item = m_vecMenuWidgets.getNthItem(k);
 
 			// if item is null, there is no widget for it, so ignore its attributes for
 			// this pass
@@ -1033,8 +1033,8 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// have no children
 				GtkWidget * w = gtk_menu_item_new();
 				UT_ASSERT(w);
-				void ** blah = NULL;
-				if(m_vecMenuWidgets.setNthItem(k, w, blah))
+				GtkWidget* blah = NULL;
+				if(m_vecMenuWidgets.setNthItem(k, w, &blah))
 				{
 					UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
 					UT_ASSERT(0);
@@ -1079,7 +1079,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
-			GtkWidget * item = static_cast<GtkWidget *>(m_vecMenuWidgets.getNthItem(k));
+			GtkWidget * item = m_vecMenuWidgets.getNthItem(k);
 			UT_ASSERT(item);
 
 			bool bEnable = true;
@@ -1089,7 +1089,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				if (mis & EV_MIS_Gray)
 					bEnable = false;
 			}
-			gtk_widget_set_sensitive(static_cast<GtkWidget *>(item), bEnable);
+			gtk_widget_set_sensitive(item, bEnable);
 
 			// must have an entry for each and every layout item in the vector
 			stack.push(item);

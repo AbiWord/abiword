@@ -1611,7 +1611,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 		PT_DocPosition pos = m_Selection.getSelectionAnchor();
 		fp_Run* pRun = NULL;
 
-		UT_Vector vBlock;
+		UT_GenericVector<fl_BlockLayout *> vBlock;
 		getBlocksInSelection( &vBlock);
 		UT_uint32 count = vBlock.getItemCount();
 		fl_BlockLayout * pBlock = NULL;
@@ -1632,7 +1632,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 			}
 			else
 			{
-				pBlock = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+				pBlock = vBlock.getNthItem(i);
 				pRun = pBlock->getFirstRun();
 			}
 
@@ -2016,7 +2016,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-	UT_Vector vBlock;
+	UT_GenericVector<fl_BlockLayout *> vBlock;
 	getBlocksInSelection( &vBlock);
 //
 // Turn off cursor
@@ -2036,7 +2036,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
 		UT_DEBUGMSG(("SEVIOR: Processing block %d \n",i));
-		fl_BlockLayout * pBlock =  static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+		fl_BlockLayout * pBlock =  vBlock.getNthItem(i);
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		if(pBlock->isListItem() == true)
 		{
@@ -2114,7 +2114,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
  */
 UT_sint32 FV_View::getNumColumnsInSelection(void)
 {
-	UT_Vector vecBlocks;
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	getBlocksInSelection(&vecBlocks);
 	UT_sint32 i =0;
 	UT_sint32 iNumCols = 0;
@@ -2124,7 +2124,7 @@ UT_sint32 FV_View::getNumColumnsInSelection(void)
 	fp_CellContainer * pCellCon = NULL;
 	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
 	{
-		pBlock = static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(i));
+		pBlock = vecBlocks.getNthItem(i);
 		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
 		{
 			return 0;
@@ -2150,7 +2150,7 @@ UT_sint32 FV_View::getNumColumnsInSelection(void)
  */
 UT_sint32 FV_View::getNumRowsInSelection(void)
 {
-	UT_Vector vecBlocks;
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	getBlocksInSelection(&vecBlocks);
 	UT_sint32 i =0;
 	UT_sint32 iNumRows = 0;
@@ -2160,7 +2160,7 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 	fp_CellContainer * pCellCon = NULL;
 	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
 	{
-		pBlock = static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(i));
+		pBlock = vecBlocks.getNthItem(i);
 		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
 		{
 			return 0;
@@ -2180,7 +2180,7 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 	return iNumRows;
 }
 
-void FV_View::getBlocksInSelection( UT_Vector * vBlock)
+void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock)
 {
 	PT_DocPosition startpos = getPoint();
 	PT_DocPosition endpos = startpos;
@@ -2500,7 +2500,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 // Glob piecetable changes together.
 //
 	m_pDoc->beginUserAtomicGlob();
-	UT_Vector vBlock;
+	UT_GenericVector<fl_BlockLayout *> vBlock;
 	if(bisListStyle)
 	{
 		getBlocksInSelection( &vBlock);
@@ -2526,7 +2526,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
-			pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+			pBL = vBlock.getNthItem(i);
 			curPos = pBL->getPosition();
 			if(pBL->isListItem())
 			{
@@ -2593,7 +2593,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		UT_uint32 i;
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
-			pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+			pBL = vBlock.getNthItem(i);
 			curPos = pBL->getPosition();
 			if(curPos < posStart)
 			{
@@ -2614,7 +2614,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 	else if(bHasNumberedHeading)
 	{
-		fl_BlockLayout*  currBlock = static_cast<fl_BlockLayout *>(vBlock.getNthItem(0));
+		fl_BlockLayout*  currBlock = vBlock.getNthItem(0);
 		PT_DocPosition pos = currBlock->getPosition(true) -1;
 		PL_StruxDocHandle curSdh = currBlock->getStruxDocHandle();
 		if(pos < 2 )
@@ -2664,7 +2664,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
-							pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+							pBL = vBlock.getNthItem(i);
 							curPos = pBL->getPosition();
 							if(curPos < posStart)
 							{
@@ -2687,7 +2687,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					{
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
-							pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+							pBL = vBlock.getNthItem(i);
 							curPos = pBL->getPosition();
 							if(curPos < posStart)
 							{
@@ -2723,7 +2723,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 // Start looking from the block following and skip through to end of Doc.
 //
-				fl_BlockLayout * pNext = static_cast<fl_BlockLayout *>(vBlock.getLastItem());
+				fl_BlockLayout * pNext = vBlock.getLastItem();
 				pNext = static_cast<fl_BlockLayout *>(pNext->getNext());
 				if(pNext)
 				{
@@ -2738,7 +2738,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			{
 				for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
 				{
-					pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+					pBL = vBlock.getNthItem(i);
 					curPos = pBL->getPosition();
 					if(curPos < posStart)
 					{
@@ -2766,7 +2766,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
-					pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(j));
+					pBL = vBlock.getNthItem(j);
 					curPos = pBL->getPosition();
 					if(curPos < posStart)
 					{
@@ -2793,7 +2793,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					goto finish_up;
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
-					pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(j));
+					pBL = vBlock.getNthItem(j);
 					curPos = pBL->getPosition();
 					if(curPos < posStart)
 					{
@@ -3306,7 +3306,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
-	UT_Vector v;
+	UT_GenericVector<_fmtPair *> v;
 	UT_uint32 i;
 	_fmtPair * f;
 
@@ -3437,7 +3437,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 		{
 			f = new _fmtPair(PP_getNthPropertyName(n),pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 			if(f->m_val != NULL)
-				v.addItem(static_cast<void *>(f));
+				v.addItem(f);
 			else
 				delete f;
 		}
@@ -3502,7 +3502,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 
 				while (i > 0)
 				{
-					f = static_cast<_fmtPair *>(v.getNthItem(i-1));
+					f = v.getNthItem(i-1);
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 
@@ -3539,7 +3539,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	UT_uint32 numProps = count;
 	while (i > 0)
 	{
-		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
+		f = v.getNthItem(i-1);
 		i--;
 
 		p[0] = f->m_prop;
@@ -3563,7 +3563,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
    \param	v Pointer to Vector of all the blocks found
 */
 
-void FV_View::getAllBlocksInList(UT_Vector * v)
+void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v)
 {
 	//
 	// get all the blocks in the list
@@ -3614,7 +3614,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	//
 	// indentChange is the increment to the current alignment.
 	//
-	UT_Vector v;
+	UT_GenericVector<fl_BlockLayout *> v;
 	UT_String szAlign;
 	UT_String szIndent;
 	double fIndent;
@@ -3643,7 +3643,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	
 	for(i = 0; i<v.getItemCount();i++)
 	{
-		pBlock = static_cast<fl_BlockLayout *>(v.getNthItem(i));
+		pBlock = v.getNthItem(i);
 		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_RTL)
 			indent = ind_right;
 		else
@@ -4007,7 +4007,8 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	bool bRet;
 	UT_uint32 i=0;
 	XML_Char pszStart[80],pszAlign[20],pszIndent[20];
-	UT_Vector va,vp,vb;
+	UT_GenericVector<const XML_Char*> va,vp;
+	UT_GenericVector<PL_StruxDocHandle> vb;
 	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
 
 	// Signal PieceTable Change
@@ -4084,7 +4085,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
-		attribs[i] = static_cast<XML_Char *>(va.getNthItem(i));
+		attribs[i] = va.getNthItem(i);
 	}
 	attribs[i] = static_cast<XML_Char *>(NULL);
 	//
@@ -4094,7 +4095,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
-		props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
+		props[i] = vp.getNthItem(i);
 	}
 	props[i] = static_cast<XML_Char *>(NULL);
 
@@ -4126,7 +4127,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
-	UT_Vector v;
+	UT_GenericVector<_fmtPair *> v;
 	UT_uint32 i;
 	_fmtPair * f;
 
@@ -4178,7 +4179,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 		{
 			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,false);
 			if(f->m_val != NULL)
-				v.addItem(static_cast<void *>(f));
+				v.addItem(f);
 			else
 				delete f;
 		}
@@ -4213,7 +4214,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 				while (i > 0)
 				{
-					f = static_cast<_fmtPair *>(v.getNthItem(i-1));
+					f = v.getNthItem(i-1);
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,false);
 
@@ -4256,7 +4257,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	UT_uint32 numProps = count;
 	while (i > 0)
 	{
-		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
+		f = v.getNthItem(i-1);
 		i--;
 
 		p[0] = f->m_prop;
@@ -4337,7 +4338,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	{
 		return false;
 	}
-	UT_Vector v;
+	UT_GenericVector<_fmtPair *> v;
 	UT_uint32 i;
 	_fmtPair * f = NULL;
 
@@ -4380,7 +4381,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 		{
 			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 			if(f->m_val != NULL)
-				v.addItem(static_cast<void *>(f));
+				v.addItem(f);
 			else
 				delete f;
 		}
@@ -4414,7 +4415,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 				while (i > 0)
 				{
-					f = static_cast<_fmtPair *>(v.getNthItem(i-1));
+					f = v.getNthItem(i-1);
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 					UT_ASSERT(value);
@@ -4453,7 +4454,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	UT_uint32 numProps = count;
 	while (i > 0)
 	{
-		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
+		f = v.getNthItem(i-1);
 		i--;
 
 		p[0] = f->m_prop;
@@ -6423,14 +6424,14 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 		
 		// Do the actual change
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
-		UT_Vector vBlock;
+		UT_GenericVector<fl_BlockLayout*> vBlock;
 		getBlocksInSelection(&vBlock);
 		fl_ContainerLayout * pCL = NULL;
 		fl_CellLayout * pCell = NULL;
 		UT_uint32 i =0;
 		for(i=0; i<vBlock.getItemCount();i++)
 		{
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+			fl_BlockLayout * pBL = vBlock.getNthItem(i);
 			pCL = pBL->myContainingLayout();
 			if(pCL->getContainerType() == FL_CONTAINER_CELL)
 			{
@@ -6940,7 +6941,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		UT_sint32 i =0;
 		fp_CellContainer * pCur = NULL;
 		UT_sint32 iCellCount = 0;
-		pInfo->m_vecTableColInfo = new UT_Vector();
+		pInfo->m_vecTableColInfo = new UT_GenericVector<AP_TopRulerTableInfo*>();
 		while( i < numcols)
 		{
 			pCur = pTab->getCellAtRowColumn(row,i);
@@ -6964,7 +6965,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
 				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());
-				pInfo->m_vecTableColInfo->addItem(static_cast<void *>(pTInfo));
+				pInfo->m_vecTableColInfo->addItem(pTInfo);
 				i = pCur->getRightAttach();
 				iCellCount++;
 			}
@@ -6977,7 +6978,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 //
 // Now fill the full vector including merged cells.
 //
-		pInfo->m_vecFullTable = new UT_Vector();
+		pInfo->m_vecFullTable = new UT_GenericVector<AP_TopRulerTableInfo *>();
 		for( i=0;i < numcols;i++)
 		{
 			pCur = pTab->getCellAtRowColumn(0,i);
@@ -7006,7 +7007,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
 				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());
-				pInfo->m_vecFullTable->addItem(static_cast<void *>(pTInfo));
+				pInfo->m_vecFullTable->addItem(pTInfo);
 			}
 		}
 	}
@@ -7262,7 +7263,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			UT_sint32 numrows = pTab->getNumRows();
 			UT_sint32 i =0;
 			fp_CellContainer * pCur = NULL;
-			pInfo->m_vecTableRowInfo = new UT_Vector();
+			pInfo->m_vecTableRowInfo = new UT_GenericVector<AP_LeftRulerTableInfo*>();
 			pCur = pTab->getCellAtRowColumn(0,col);
 			fp_CellContainer * pPrev = pCur;	
 			while( i < numrows)
@@ -7295,7 +7296,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 					pLInfo->m_iBotCellPos = pCur->getStopY();
 					pLInfo->m_iTopSpacing = pCur->getY() - pCur->getStartY();
 					pLInfo->m_iBotSpacing = pCur->getStopY() - (pCur->getY() + pCur->getHeight());
-					pInfo->m_vecTableRowInfo->addItem(static_cast<void *>(pLInfo));
+					pInfo->m_vecTableRowInfo->addItem(pLInfo);
 					i = pCur->getBottomAttach();
 				}
 				else
@@ -9893,7 +9894,8 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
     \param vRect -- vector where to store UT_Rect* referring to vieports of pages in vPages
     \param vPage -- vector where to store pointers to currently visible pages
 */
-void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector &vPages) const
+void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &vRect, 
+													UT_GenericVector<fp_Page*> &vPages) const
 {
 	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page * pPage = m_pLayout->getFirstPage();
@@ -9947,7 +9949,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 						 getWindowHeight()));
 
 
-			vPages.addItem(static_cast<void*>(pPage));
+			vPages.addItem(pPage);
 
 			// now create the rectangle
 			// NB the adjustedTop is relative to the screen, but we
@@ -9987,7 +9989,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 										  iPortWidth,
 										  iPortHeight);
 
-			vRect.addItem(static_cast<void*>(pRect));
+			vRect.addItem(pRect);
 		}
 
 		curY += iPageHeight + getPageViewSep();

@@ -88,13 +88,13 @@ public:
 	// track), yet, there was no single call that would require to make
 	// a temporary copy of this table on the stack, so I have done
 	// away with this (Tomas)
-	inline const UT_Vector& getAllLabels() const { return m_labelTable; }
+	inline const UT_GenericVector<EV_Menu_Label *>& getAllLabels() const { return m_labelTable; }
 #else
-	const UT_Vector *		getAllLabels() const { return &m_labelTable;}
+	const UT_GenericVector<EV_Menu_Label *> *		getAllLabels() const { return &m_labelTable;}
 #endif
 
 private:
-	UT_Vector			m_labelTable;
+	UT_GenericVector<EV_Menu_Label *>	m_labelTable;
 	XAP_Menu_Id			m_first;
 	UT_String			m_stLanguage;	/* for the convenience of the app only  */
 };

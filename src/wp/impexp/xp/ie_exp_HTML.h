@@ -202,8 +202,8 @@ private:
 	s_StyleTree *		m_style_tree;
 	bool				m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
-	UT_Vector           m_vecFootnotes;
-	UT_Vector           m_vecEndnotes;
+	UT_GenericVector<PD_DocumentRange *> m_vecFootnotes;
+	UT_GenericVector<PD_DocumentRange *> m_vecEndnotes;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
 };

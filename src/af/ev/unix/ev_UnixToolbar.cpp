@@ -852,7 +852,7 @@ bool EV_UnixToolbar::synthesize(void)
 				{
 					pControl->populate();
 
-					const UT_Vector * v = pControl->getContents();
+					const UT_GenericVector<const char*> * v = pControl->getContents();
 					UT_ASSERT(v);
 
 					if (v)
@@ -860,7 +860,7 @@ bool EV_UnixToolbar::synthesize(void)
 						UT_uint32 items = v->getItemCount();
 						for (UT_uint32 m=0; m < items; m++)
 						{
-							char * sz = static_cast<char *>(v->getNthItem(m));
+							const char * sz = v->getNthItem(m);
 							GtkWidget * li = gtk_list_item_new_with_label(sz);
 							gtk_widget_show(li);
 							gtk_container_add (GTK_CONTAINER(GTK_COMBO(comboBox)->list), li);
@@ -1041,7 +1041,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				{
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
-					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
+					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
 					GtkButton * item = GTK_BUTTON(wd->m_widget);
 					UT_ASSERT(item);
@@ -1057,7 +1057,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
-					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
+					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
 					GtkToggleButton * item = GTK_TOGGLE_BUTTON(wd->m_widget);
 					UT_ASSERT(item);
@@ -1081,7 +1081,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				{
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					
-					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
+					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
 					GtkCombo * item = GTK_COMBO(wd->m_widget);
 					UT_ASSERT(item);
@@ -1116,7 +1116,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
                 {
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					
-					_wd * wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(k));
+					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
 					UT_ASSERT(wd->m_widget);
 					gtk_widget_set_sensitive(GTK_WIDGET(wd->m_widget), !bGrayed);   // Disable/enable toolbar item
@@ -1191,7 +1191,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	{
 		pLayoutItem = m_pToolbarLayout->getLayoutItem(i);
 		id = pLayoutItem->getToolbarId();
-		wd = static_cast<_wd *>(m_vecToolbarWidgets.getNthItem(i));
+		wd = m_vecToolbarWidgets.getNthItem(i);
 		if(id == AP_TOOLBAR_ID_FMT_STYLE)
 			break;
 	}
@@ -1210,7 +1210,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Now the combo box has to be refilled from this
 //						
-	const UT_Vector * v = pControl->getContents();
+	const UT_GenericVector<const char*> * v = pControl->getContents();
 	UT_ASSERT(v);
 //
 // Now  we must remove and delete the old glist so we can attach the new
@@ -1229,7 +1229,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	UT_uint32 items = v->getItemCount();
 	for (UT_uint32 m=0; m < items; m++)
 	{
-		char * sz = static_cast<char *>(v->getNthItem(m));
+		const char * sz = v->getNthItem(m);
 		GtkWidget * li = gtk_list_item_new_with_label(sz);
 		gtk_widget_show(li);
 		gtk_container_add (GTK_CONTAINER(GTK_COMBO(item)->list), li);

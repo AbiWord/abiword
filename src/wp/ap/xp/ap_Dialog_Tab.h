@@ -120,7 +120,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	UT_Dimension		m_dim;
 
 	char *		m_pszTabStops;	// from rulerInfo
-	UT_Vector	m_tabInfo;		// list of fl_TabStop *
+	UT_GenericVector<fl_TabStop*>	m_tabInfo;		// list of fl_TabStop *
 
 	// AP level handlers
 	void _event_TabChange(void);		// when the edit box changes

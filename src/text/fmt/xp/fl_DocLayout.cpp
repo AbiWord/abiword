@@ -578,7 +578,7 @@ UT_uint32 FL_DocLayout::countFootnotes(void)
  */
 void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)
 {
-	m_vecFootnotes.addItem(static_cast<void *>(pFL));
+	m_vecFootnotes.addItem(pFL);
 }
 
 /*!
@@ -593,7 +593,7 @@ fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
 	}
 	else
 	{
-		return static_cast<fl_FootnoteLayout *>(m_vecFootnotes.getNthItem(i));
+		return m_vecFootnotes.getNthItem(i);
 	}
 }
 
@@ -602,7 +602,7 @@ fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
  */
 void FL_DocLayout::removeFootnote(fl_FootnoteLayout * pFL)
 {
-	UT_sint32 i = m_vecFootnotes.findItem(static_cast<void *>(pFL));
+	UT_sint32 i = m_vecFootnotes.findItem(pFL);
 	if(i< 0)
 	{
 		return;
@@ -837,7 +837,7 @@ UT_uint32 FL_DocLayout::countEndnotes(void)
  */
 void FL_DocLayout::addEndnote(fl_EndnoteLayout * pFL)
 {
-	m_vecEndnotes.addItem(static_cast<void *>(pFL));
+	m_vecEndnotes.addItem(pFL);
 }
 
 /*!
@@ -852,7 +852,7 @@ fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i)
 	}
 	else
 	{
-		return static_cast<fl_EndnoteLayout *>(m_vecEndnotes.getNthItem(i));
+		return m_vecEndnotes.getNthItem(i);
 	}
 }
 
@@ -861,7 +861,7 @@ fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i)
  */
 void FL_DocLayout::removeEndnote(fl_EndnoteLayout * pFL)
 {
-	UT_sint32 i = m_vecEndnotes.findItem(static_cast<void *>(pFL));
+	UT_sint32 i = m_vecEndnotes.findItem(pFL);
 	if(i< 0)
 	{
 		return;
@@ -1068,7 +1068,7 @@ bool FL_DocLayout::isBlockInTOC(fl_BlockLayout * pBlock)
  * Return false if no matching block were found.
  * true otherwise
  */
-bool FL_DocLayout::getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks)
+bool FL_DocLayout::getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_GenericVector<fl_BlockLayout*>* pVecBlocks)
 {
 	UT_sint32 count = getNumTOCs();
 	if(count == 0)
@@ -1082,7 +1082,7 @@ bool FL_DocLayout::getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_Vector 
 		if(pTOC->isBlockInTOC(pBlock))
 		{
 			fl_BlockLayout * pMatch = pTOC->getMatchingBlock(pBlock);
-			pVecBlocks->addItem(static_cast<void *>(pMatch));
+			pVecBlocks->addItem(pMatch);
 		}
 	}
 	return (pVecBlocks->getItemCount() > 0);
@@ -1090,7 +1090,7 @@ bool FL_DocLayout::getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_Vector 
 	
 bool FL_DocLayout::addTOC(fl_TOCLayout * pTOC)
 {
-	m_vecTOC.addItem(static_cast<void *>(pTOC));
+	m_vecTOC.addItem(pTOC);
 	return true;
 }
 
@@ -1101,7 +1101,7 @@ bool FL_DocLayout::removeTOC(fl_TOCLayout * pTOC)
 	{
 		return false;
 	}
-	UT_sint32 i = m_vecTOC.findItem(static_cast<void *>(pTOC));
+	UT_sint32 i = m_vecTOC.findItem(pTOC);
 	if(i < 0)
 	{
 		return false;
@@ -1150,7 +1150,7 @@ UT_sint32 FL_DocLayout::getHeight()
 
 	for (int i=0; i<count; i++)
 	{
-		fp_Page* p = static_cast<fp_Page*>(m_vecPages.getNthItem(i));
+		fp_Page* p = m_vecPages.getNthItem(i);
 
 		iHeight += p->getHeight();
 		if(getView() && (getView()->getViewMode() != VIEW_PRINT))
@@ -1188,7 +1188,7 @@ UT_sint32 FL_DocLayout::getWidth()
 
 	for (int i=0; i<count; i++)
 	{
-		fp_Page* p = static_cast<fp_Page*>(m_vecPages.getNthItem(i));
+		fp_Page* p = m_vecPages.getNthItem(i);
 
 		// we layout pages vertically, so this is max, not sum
 		if (static_cast<UT_sint32>(iWidth) < p->getWidth())
@@ -1264,14 +1264,14 @@ UT_sint32 FL_DocLayout::findPage(fp_Page * pPage)
 	{
 		return -1;
 	}
-	return m_vecPages.findItem(static_cast<void *>(pPage));
+	return m_vecPages.findItem(pPage);
 }
 
 fp_Page* FL_DocLayout::getNthPage(int n)
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
 
-	return static_cast<fp_Page*>(m_vecPages.getNthItem(n));
+	return m_vecPages.getNthItem(n);
 }
 
 fp_Page* FL_DocLayout::getFirstPage()
@@ -1281,7 +1281,7 @@ fp_Page* FL_DocLayout::getFirstPage()
 		return NULL;
 	}
 
-	return static_cast<fp_Page*>(m_vecPages.getNthItem(0));
+	return m_vecPages.getNthItem(0);
 }
 
 fp_Page* FL_DocLayout::getLastPage()
@@ -1291,7 +1291,7 @@ fp_Page* FL_DocLayout::getLastPage()
 		return NULL;
 	}
 
-	return static_cast<fp_Page*>(m_vecPages.getNthItem(m_vecPages.getItemCount()-1));
+	return m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
 }
 
 void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false */)
@@ -1621,7 +1621,7 @@ void FL_DocLayout::deleteEmptyPages( bool bDontNotify /* default false */)
 	int iCountPages = m_vecPages.getItemCount();
 	for (i=iCountPages - 1; i>=0; i--)
 	{
-		fp_Page* p = static_cast<fp_Page*>(m_vecPages.getNthItem(i));
+		fp_Page* p = m_vecPages.getNthItem(i);
 		UT_ASSERT(p);
 		if (p && p->isEmpty())
 		{
@@ -1677,7 +1677,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
 	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
-		fp_Page * pPage = static_cast<fp_Page *>(m_vecPages.getNthItem(k));
+		fp_Page * pPage = m_vecPages.getNthItem(k);
 		if(pPage->getOwningSection() == pFirstDSL)
 		{
 			UT_DEBUGMSG(("SEVIOR: Rebuilding from page %d \n",k));
@@ -1783,7 +1783,7 @@ void FL_DocLayout::updateColor()
 	UT_uint32 i =0;
 	for(i=0; i<m_vecPages.getItemCount(); i++)
 	{
-		pPage = static_cast<fp_Page *>(m_vecPages.getNthItem(i));
+		pPage = m_vecPages.getNthItem(i);
 		pPage->getFillType()->setTransColor(m_szCurrentTransparentColor);
 		pPage->getFillType()->markTransparentForPrint();
 	}
@@ -1948,14 +1948,14 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	pDocLayout->m_bImSpellCheckingNow = true;
 
 	// Find vector of blocks to check.
-	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
+	UT_GenericVector<fl_BlockLayout *>* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
 	UT_ASSERT(vecToCheck);
 
 	UT_uint32 i = vecToCheck->getItemCount();
 	if (i > 0)
 	{
 		// Check each block in the queue
-		fl_BlockLayout *pB = static_cast<fl_BlockLayout *>(vecToCheck->getFirstItem());
+		fl_BlockLayout *pB = vecToCheck->getFirstItem();
 		if (pB != NULL)
 		{
 			// This looping seems like a lot of wasted effort when we
@@ -3184,7 +3184,7 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 	{
 		m_pPendingBlockForSmartQuote = NULL;
 	}
-	UT_sint32 loc = m_vecUncheckedBlocks.findItem(static_cast<void *>(pBlock));
+	UT_sint32 loc = m_vecUncheckedBlocks.findItem(pBlock);
 	if(loc >= 0)
 	{
 		m_vecUncheckedBlocks.deleteNthItem(loc);

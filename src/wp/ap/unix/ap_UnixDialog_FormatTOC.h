@@ -72,7 +72,7 @@ private:
 	UT_Vector   m_vecChangeStyleBtns;
 	UT_Vector   m_vecStyleEntries;
 	UT_Vector   m_vecTextTypes;
-	UT_Vector   m_vecAllPropVals;
+	UT_GenericVector<UT_UTF8String*>   m_vecAllPropVals;
 	UT_sint32   m_iMainLevel;
 	UT_sint32   m_iDetailsLevel;
 	UT_sint32   m_iIndentValue;

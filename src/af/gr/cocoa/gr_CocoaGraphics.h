@@ -186,8 +186,8 @@ private:
 	XAP_CocoaNSView *  			m_pWin;
 	NSMutableDictionary*		m_fontProps;
 	CGContextRef				m_CGContext;
-	UT_Vector					m_cacheArray;
-	UT_Vector					m_cacheRectArray;
+	UT_GenericVector<id>		m_cacheArray;
+	UT_GenericVector<NSRect*>	m_cacheRectArray;
 	NSColor *					m_currentColor;
 
 	// our currently requested font by handle

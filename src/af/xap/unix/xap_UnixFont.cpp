@@ -189,10 +189,10 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 	m_pFontManager = copy.m_pFontManager;
 
 	/* copy the fonts in our cache */
-	const UT_Vector & copyAllocFonts = copy.m_allocFonts;
+	const UT_GenericVector<allocFont *> & copyAllocFonts = copy.m_allocFonts;
 	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
 	  {
-		  allocFont *p = static_cast<allocFont *>(copyAllocFonts.getNthItem(i));
+		  allocFont *p = copyAllocFonts.getNthItem(i);
 		  insertFontInCache(p->pixelSize, XftFontCopy(GDK_DISPLAY(), p->xftFont));
 		  UT_ASSERT(m_allocFonts.getItemCount() < 100000);
 
@@ -735,7 +735,7 @@ XftFont *XAP_UnixFont::getFontFromCache(UT_uint32 pixelsize, bool /*bIsLayout*/,
 
 	while (l < count)
 	  {
-		  entry = static_cast<allocFont *>(m_allocFonts.getNthItem(l));
+		  entry = m_allocFonts.getNthItem(l);
 		  if (entry && entry->pixelSize == pixelsize)
 			  return entry->xftFont;
 		  l++;
@@ -751,7 +751,7 @@ void XAP_UnixFont::insertFontInCache(UT_uint32 pixelsize, XftFont * pXftFont) co
 	entry->xftFont = pXftFont;
 
 	m_pXftFont = pXftFont;
-	m_allocFonts.push_back(static_cast<void *>(entry));
+	m_allocFonts.push_back(entry);
 	UT_ASSERT(m_allocFonts.getItemCount() < 100000);
 }
 

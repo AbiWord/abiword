@@ -242,7 +242,7 @@ GR_Font * PS_Graphics::_findFont(const char* pszFontFamily,
 	UT_uint32 k, count;
 	for (k = 0, count = m_vecFontList.getItemCount(); k < count; k++)
 	{
-		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
+		PSFont * psf = m_vecFontList.getNthItem(k);
 		UT_ASSERT(psf);
 
 		// is this good enough for a match?
@@ -258,7 +258,7 @@ GR_Font * PS_Graphics::_findFont(const char* pszFontFamily,
 	}
 
 	// wasn't already there, add it
-	m_vecFontList.addItem(static_cast<void *>(pFont));
+	m_vecFontList.addItem(pFont);
 
 	// it's always the last in the list
 	UT_uint32 n = m_vecFontList.getItemCount() - 1;
@@ -806,7 +806,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 
 	for (k=0; k<kLimit; k++)
 	{
-		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
+		PSFont * psf = m_vecFontList.getNthItem(k);
 		if(bFontKeyword)
 		{
 			vec.addItem(static_cast<void *>(UT_strdup("font")));
@@ -860,7 +860,7 @@ void PS_Graphics::_emit_IncludeResource(void)
     	{
     		char buf[128];
 
-    		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
+    		PSFont * psf = m_vecFontList.getNthItem(k);
 
     		// Instead of including the resources, we actually splat the fonts
     		// into the document.  This looks really slow... perhaps buffer line
@@ -926,7 +926,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 		const char* pFResource[2] = {"font", NULL};
 		for (k=0; k<kLimit; k++)
 		{
-			PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
+			PSFont * psf = m_vecFontList.getNthItem(k);
 			if(bFontKeyword)
 			{
 				vec.addItem(static_cast<void *>(UT_strdup("font")));
@@ -1004,7 +1004,7 @@ void PS_Graphics::_emit_FontMacros(void)
 
 	for (k=0; k<kLimit; k++)
 	{
-		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
+		PSFont * psf = m_vecFontList.getNthItem(k);
 		UT_String stName(psf->getUnixFont()->getPostscriptName());
 		g_snprintf(buf,sizeof(buf),"  /F%d {%d /%s FSF setfont} bind def\n", k,
 				psf->getSize(), stName.c_str());

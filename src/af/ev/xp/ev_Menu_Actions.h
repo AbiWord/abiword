@@ -139,7 +139,7 @@ public:
 	const EV_Menu_Action *	getAction(XAP_Menu_Id id) const;
 
 private:
-	UT_Vector			m_actionTable;
+	UT_GenericVector<EV_Menu_Action *>	m_actionTable;
 	XAP_Menu_Id			m_first;
 };
 

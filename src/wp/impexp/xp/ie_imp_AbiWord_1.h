@@ -32,10 +32,10 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
+#include "ut_hash.h"
 
 #include "ie_imp_XML.h"
 
-class UT_StringPtrMap;
 
 class PD_Document;
 
@@ -91,7 +91,7 @@ protected:
 
     UT_uint32			m_iInlineStart;
 
-	UT_StringPtrMap *	m_refMap;
+	UT_GenericStringMap<UT_UTF8String *> *	m_refMap;
 	bool                m_bAutoRevisioning;
 };
 

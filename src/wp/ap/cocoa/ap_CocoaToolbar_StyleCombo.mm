@@ -69,12 +69,12 @@ bool AP_CocoaToolbar_StyleCombo::populate(void)
 	// HACK: for now, just hardwire it
 	// NB if you change the case of the labels, it will stop working
 	// unless you also change all the places where the style appears!
-	m_vecContents.addItem((void *) "Normal");
-	m_vecContents.addItem((void *) "Heading 1");
-	m_vecContents.addItem((void *) "Heading 2");
-	m_vecContents.addItem((void *) "Heading 3");
-	m_vecContents.addItem((void *) "Plain Text");
-	m_vecContents.addItem((void *) "Block Text");
+	m_vecContents.addItem("Normal");
+	m_vecContents.addItem("Heading 1");
+	m_vecContents.addItem("Heading 2");
+	m_vecContents.addItem("Heading 3");
+	m_vecContents.addItem("Plain Text");
+	m_vecContents.addItem("Block Text");
 #else
 	// TODO: need a view/doc pointer to get this right
 	// ALSO: will need to repopulate as new styles added
@@ -84,7 +84,7 @@ bool AP_CocoaToolbar_StyleCombo::populate(void)
 
 	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
 	{
-		m_vecContents.addItem((void *) szName);
+		m_vecContents.addItem(szName);
 	}
 #endif 
 
@@ -112,7 +112,7 @@ bool AP_CocoaToolbar_StyleCombo::repopulate(void)
 
 	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
 	{
-		m_vecContents.addItem((void *) szName);
+		m_vecContents.addItem(szName);
 	}
 	return true;
 }

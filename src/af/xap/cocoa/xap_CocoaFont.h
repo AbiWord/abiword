@@ -23,6 +23,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "ut_vector.h"
 #include "gr_Graphics.h"
 
 /*
@@ -31,7 +32,6 @@
   GR_Font is a completely virtual class with no data or accessors of
   its own.
 */
-class UT_Vector;
 
 class XAP_CocoaFont : public GR_Font
 {

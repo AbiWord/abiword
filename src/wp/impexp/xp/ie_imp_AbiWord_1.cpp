@@ -175,7 +175,7 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 	
   if (m_refMap)
   {
-	  UT_HASH_PURGEDATA (UT_UTF8String *, m_refMap, delete);
+	  m_refMap->purgeData();
 	  delete m_refMap;
 	  m_refMap = 0;
   }
@@ -184,7 +184,7 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, true), m_bWroteSection (false),
     m_bWroteParagraph(false), m_bDocHasLists(false), m_bDocHasPageSize(false),
-	m_iInlineStart(0), m_refMap(new UT_StringPtrMap),
+	m_iInlineStart(0), m_refMap(new UT_GenericStringMap<UT_UTF8String*>),
 	m_bAutoRevisioning(false)
 {
 }
@@ -1169,7 +1169,7 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 
 			new_id = &re_id;
 		}
-	else if ((new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (old_id))) == 0)
+	else if ((new_id = m_refMap->pick (old_id)) == 0)
 		{
 			/* first occurence of this href/dataid; add to map
 			 */
@@ -1177,7 +1177,7 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 			if (ri_id)
 				{
 					m_refMap->insert (old_id, ri_id);
-					if ((new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (old_id))) == 0)
+					if ((new_id = m_refMap->pick (old_id)) == 0)
 						{
 							delete ri_id;
 						}
@@ -1330,7 +1330,7 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 
 			/* map dataid to new resource ID
 			 */
-			const UT_UTF8String * new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (r_id));
+			const UT_UTF8String * new_id = m_refMap->pick (r_id);
 			if (new_id == 0) return false;
 
 			XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(RM.resource (new_id->utf8_str (), true));

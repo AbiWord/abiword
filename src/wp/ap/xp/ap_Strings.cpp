@@ -293,7 +293,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		szDup[length]='\0';
 	}
 
-	void * pOldValue = NULL;
+	XML_Char * pOldValue = NULL;
 	bool bResult = (m_vecStringsAP.setNthItem(id-AP_STRING_ID__FIRST__,szDup,&pOldValue) == 0);
 	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
 

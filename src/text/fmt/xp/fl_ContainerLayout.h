@@ -158,7 +158,7 @@ private:
 	fp_Container *              m_pFirstContainer;
 	fp_Container *              m_pLastContainer;
 	FPVisibility                m_eHidden;
-	UT_Vector                   m_vecFrames;
+	UT_GenericVector<fl_FrameLayout *> m_vecFrames;
     UT_sint32                   m_iFoldedLevel;
     UT_uint32                   m_iFoldedID;
 };

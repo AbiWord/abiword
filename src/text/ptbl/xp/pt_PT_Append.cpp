@@ -125,7 +125,7 @@ bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 	return true;
 }
 
-bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
+bool pt_PieceTable::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 {
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);

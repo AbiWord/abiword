@@ -82,14 +82,14 @@ public:
 	void						StopList(void);
 	void						Apply(void);
 	void						fillDialogFromBlock(void);
-	void						fillDialogFromVector(UT_Vector * inVec);
+	void						fillDialogFromVector(UT_GenericVector<const XML_Char*> * inVec);
 	void						PopulateDialogData(void);
 	void						fillFakeLabels(void);
 	bool						isLastOnLevel(void);
 	XML_Char *					getListStyleString( UT_uint32 iListType);
 	UT_uint32					decodeListType(char * listformat);
-	UT_sint32					findVecItem(UT_Vector * v, char * key);
-	UT_sint32					findVecItem(UT_Vector * v, const char * key);
+	UT_sint32					findVecItem(UT_GenericVector<const XML_Char*> * v, char * key);
+	UT_sint32					findVecItem(UT_GenericVector<const XML_Char*> * v, const char * key);
 	void						fillUncustomizedValues(void);
 	UT_uint32					getID(void);
 	UT_uint32					getStoredID(void) { return m_iID;}

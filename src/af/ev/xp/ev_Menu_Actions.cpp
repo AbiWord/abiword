@@ -130,7 +130,7 @@ EV_Menu_ActionSet::EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last)
 	size_t i;
 	
 	for (i = 0; i < nb_items; ++i)
-		m_actionTable.addItem(0);
+		m_actionTable.addItem(NULL);
 }
 
 EV_Menu_ActionSet::~EV_Menu_ActionSet()
@@ -148,7 +148,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
 								  const UT_String& stScriptName)
 {
-	void *tmp;
+	EV_Menu_Action * pTmpAction;
 
 	if ((id < m_first) || (id >= m_first + static_cast<UT_sint32>(m_actionTable.size())))
 		return false;
@@ -156,9 +156,8 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 	UT_uint32 index = (id - m_first);
 	EV_Menu_Action *pAction = new EV_Menu_Action(id, bHoldsSubMenu, bRaisesDialog, bCheckable, bRadio,
 												 szMethodName, pfnGetState, pfnGetLabel, stScriptName);
-	UT_uint32 error = m_actionTable.setNthItem(index, pAction, &tmp);
+	UT_uint32 error = m_actionTable.setNthItem(index, pAction, &pTmpAction);
 
-	EV_Menu_Action * pTmpAction = static_cast<EV_Menu_Action *> (tmp);
 	DELETEP(pTmpAction);
 	return (error == 0);
 }

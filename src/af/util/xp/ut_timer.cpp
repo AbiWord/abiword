@@ -22,7 +22,7 @@
 #include "ut_assert.h"
 
 // declare static member
-static UT_Vector static_vecTimers;
+static UT_GenericVector<UT_Timer*> static_vecTimers;
 
 UT_Timer::UT_Timer()
 	: m_iIdentifier(0)
@@ -41,7 +41,7 @@ UT_Timer::~UT_Timer()
 	}
 }
 
-UT_Vector & UT_Timer::_getVecTimers ()
+UT_GenericVector<UT_Timer*> & UT_Timer::_getVecTimers ()
 { 
 	return static_vecTimers;
 }
@@ -71,7 +71,7 @@ UT_Timer* UT_Timer::findTimer(UT_uint32 iIdentifier)
 	int count = static_vecTimers.getItemCount();
 	for (int i=0; i<count; i++)
 	{
-		UT_Timer* pTimer = static_cast<UT_Timer*>(static_vecTimers.getNthItem(i));
+		UT_Timer* pTimer = static_vecTimers.getNthItem(i);
 		UT_ASSERT(pTimer);
 		
 		if (pTimer->getIdentifier() == iIdentifier)

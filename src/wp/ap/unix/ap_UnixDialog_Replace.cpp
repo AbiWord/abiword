@@ -459,7 +459,7 @@ void AP_UnixDialog_Replace::_updateLists()
 	_updateList(m_comboReplace, &m_replaceList);
 }
 
-void AP_UnixDialog_Replace::_updateList(GtkWidget* combo, UT_Vector* list)
+void AP_UnixDialog_Replace::_updateList(GtkWidget* combo, UT_GenericVector<UT_UCS4Char*>* list)
 {
 	if (!combo) return; // no combo? do nothing
 	if (!list) return; // no list? do nothing
@@ -472,7 +472,7 @@ void AP_UnixDialog_Replace::_updateList(GtkWidget* combo, UT_Vector* list)
 	for (i = 0; i<list->getItemCount(); i++)
 	{
 		// leaving the size 0 causes the string class to determine the length itself
-		UT_UCS4String ucs4s((UT_UCS4Char*)list->getNthItem(i), 0); 
+		UT_UCS4String ucs4s(list->getNthItem(i), 0); 
 		
 		// clone the string, since we can't use utf8_str()'s result -> ucs4s will disappear from stack
 		char* utf8s;

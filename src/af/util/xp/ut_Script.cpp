@@ -55,7 +55,7 @@ UT_Script::~UT_Script()
 UT_ScriptLibrary UT_ScriptLibrary::mInstance;
 
 UT_ScriptLibrary::UT_ScriptLibrary ()
-	: mSniffers (new UT_Vector (5))
+	: mSniffers (new UT_GenericVector<UT_ScriptSniffer *>(5))
 {
 }
 
@@ -121,7 +121,7 @@ void UT_ScriptLibrary::unregisterScript ( UT_ScriptSniffer * s )
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
     {
-		pSniffer = static_cast <UT_ScriptSniffer *>(mSniffers->getNthItem(i));
+		pSniffer = mSniffers->getNthItem(i);
 		if (pSniffer)
 			pSniffer->setType(i+1);
     }
@@ -134,7 +134,7 @@ void UT_ScriptLibrary::unregisterAllScripts ()
   
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		pSniffer = static_cast <UT_ScriptSniffer *>(mSniffers->getNthItem(i));
+		pSniffer = mSniffers->getNthItem(i);
 		if (pSniffer)
 			pSniffer->unref();
     }
@@ -150,7 +150,7 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForContents(const char * szBuf,
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
+		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
 		if (s->recognizeContents(szBuf, iNumbytes))
 		{
 			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
@@ -183,7 +183,7 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForSuffix(const char * szSuffix)
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem(k));
+		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem(k));
 		if (s->recognizeSuffix(szSuffix))
 		{
 			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
@@ -214,7 +214,7 @@ const char * UT_ScriptLibrary::suffixesForType(UT_ScriptIdType ieft)
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer*>(mSniffers->getNthItem(k));
+		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer*>(mSniffers->getNthItem(k));
 		if (s->supportsType(ieft))
 		{
 			const char *szDummy;
@@ -271,7 +271,7 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
+		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
 		if (s->supportsType(ieft))
 			return s->constructScript(ppscript);
     }
@@ -288,7 +288,7 @@ bool UT_ScriptLibrary::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getNumScripts();
 	if (ndx < nrElements)
 	{
-		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (ndx));
+		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (ndx));
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 

@@ -144,7 +144,7 @@ public:
 	void                setLineMarkers(void);
 	bool                containsFootnoteReference(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
-	bool                getFootnoteContainers(UT_Vector * pvecFoots);
+	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
 	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff);
    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
@@ -352,7 +352,7 @@ public:
 	fp_Column *         getBrokenColumn(void);
 	void                drawLines();
 	bool                containsFootnoteReference(void);
-	bool                getFootnoteContainers(UT_Vector * pvecFoots);
+	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
     virtual void        clearScreen(void);
 	virtual bool        isVBreakable(void);
@@ -473,8 +473,8 @@ private:
 	UT_sint32               m_iBorderWidth;
 	bool                    m_bIsHomogeneous;
 
-	UT_Vector               m_vecRows;
-	UT_Vector               m_vecColumns;
+	UT_GenericVector<fp_TableRowColumn *> m_vecRows;
+	UT_GenericVector<fp_TableRowColumn *> m_vecColumns;
 
 // Local size request and allocation.
 

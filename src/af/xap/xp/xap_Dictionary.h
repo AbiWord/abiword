@@ -48,7 +48,7 @@ public:
 	bool				load(void);
 	bool				save(void);
 	UT_uint32                       countCommonChars(UT_UCSChar * pszNeedle, UT_UCSChar *pszHaystack);
-	void                            suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 len);
+	void                            suggestWord(UT_GenericVector<UT_UCSChar *> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 len);
 	bool                            addWord(const char * pWord);
 	bool				addWord(const UT_UCSChar * pWord, UT_uint32 len);
 	bool				isWord(const UT_UCSChar * pWord, UT_uint32 len) const;
@@ -66,7 +66,7 @@ protected:
 	const char *		m_szFilename;
 
 	bool				m_bDirty;
-	UT_StringPtrMap	    m_hashWords;
+	UT_GenericStringMap<UT_UCSChar *>	    m_hashWords;
 
 private:
 	FILE *				m_fp;

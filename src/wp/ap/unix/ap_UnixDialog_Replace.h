@@ -73,7 +73,7 @@ private:
 
 	static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Replace * dlg);
 	
-	void			_updateList(GtkWidget* combo, UT_Vector* list);
+	void			_updateList(GtkWidget* combo, UT_GenericVector<UT_UCS4Char*>* list);
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

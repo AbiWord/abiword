@@ -44,7 +44,7 @@ public:
 	bool       findStyle(UT_UTF8String & sStyleName, UT_sint32 & col);
 	bool       getStyle(UT_UTF8String & sStyleName, UT_sint32 col);
 private:
-	UT_Vector      m_vecStyles;
+	UT_GenericVector<UT_UTF8String *> m_vecStyles;
 	UT_UTF8String  m_sRowName;
 };
 
@@ -65,8 +65,8 @@ public:
 	bool             isFootnote(PD_Style * pStyle,UT_sint32 iDepth=10);
 	bool             isUser(PD_Style *pStyle);
 private:
-	UT_Vector    m_vecAllStyles;
-	UT_Vector    m_vecStyleRows;
+	UT_GenericVector<const PD_Style *>    m_vecAllStyles;
+	UT_GenericVector<Stylist_row *> m_vecStyleRows;
 };
 		
 

@@ -62,13 +62,15 @@ XAP_Dictionary::~XAP_Dictionary()
 	FREEP(m_szFilename);
 
   	//UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), free);
+	m_hashWords.freeData();
+#if 0
 	UT_StringPtrMap::UT_Cursor _hc1(&m_hashWords);
 	for (UT_UCSChar * _hval1 = const_cast<UT_UCSChar *>(reinterpret_cast<const UT_UCSChar *>(_hc1.first())); _hc1.is_valid(); _hval1 = const_cast<UT_UCSChar *>(reinterpret_cast<const UT_UCSChar *>(_hc1.next())) )
 	{ 
 		if (_hval1)
 			free (_hval1);
 	}
-	
+#endif
 }
 
 const char * XAP_Dictionary::getShortName(void) const
@@ -282,14 +284,14 @@ bool XAP_Dictionary::save(void)
 	if (!_openFile("w"))
 		return false;
 
-	UT_Vector * pVec = m_hashWords.enumerate();
+	UT_GenericVector<UT_UCSChar *> * pVec = m_hashWords.enumerate();
 	UT_ASSERT(pVec);
 
 	UT_uint32 size = pVec->size();
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		UT_UCSChar * pWord = static_cast<UT_UCSChar *>(pVec->getNthItem(i));
+		UT_UCSChar * pWord = pVec->getNthItem(i);
 		_outputUTF8(pWord, UT_UCS4_strlen(pWord));
 		_writeBytes(reinterpret_cast<const UT_Byte *>("\n"));
 	}
@@ -369,7 +371,7 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 	FREEP(ucs_dup);
 
 #endif
-	if(!m_hashWords.insert(key2,static_cast<void *>(copy)))
+	if(!m_hashWords.insert(key2,copy))
 		FREEP(copy);
 	
 	FREEP(key);
@@ -402,12 +404,12 @@ bool XAP_Dictionary::addWord(const char * word)
 \returns UT_Vector * pVecSuggestions this a vector of suggestions.
 The returner is responsible for deleting these words. 
 */
-void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 len)
+void XAP_Dictionary::suggestWord(UT_GenericVector<UT_UCSChar *> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 len)
 {
   //
   // Get the words in the local dictionary
   //
-  UT_Vector * pVec = m_hashWords.enumerate();
+  UT_GenericVector<UT_UCSChar *> * pVec = m_hashWords.enumerate();
   UT_ASSERT(pVec);
   UT_uint32 i=0;
   UT_uint32 count = pVec->getItemCount();
@@ -426,7 +428,7 @@ void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar *
   //
   for(i=0; i< count; i++)
   {
-    UT_UCSChar * pszDict = static_cast<UT_UCSChar *>(pVec->getNthItem(i));
+    UT_UCSChar * pszDict = pVec->getNthItem(i);
     UT_UCSChar * pszReturn = NULL;
     float lenDict = static_cast<float>(UT_UCS4_strlen(pszDict));
     UT_uint32 wordInDict = countCommonChars(pszDict,pszWord);
@@ -438,7 +440,7 @@ void XAP_Dictionary::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar *
     if((frac1 > 0.8) && (frac2 > 0.8))
     {
 	  UT_UCS4_cloneString(&pszReturn, pszDict);
-	  pVecSuggestions->addItem(static_cast<void *>(pszReturn));
+	  pVecSuggestions->addItem(pszReturn);
     }
   }
   FREEP(pszWord);

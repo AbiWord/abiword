@@ -337,7 +337,7 @@ static LigatureData s_hebrewShapingLigature[] =
 // never first/second part of a ligature; they are use to speedup
 // processing and their contents are generated automatically when the
 // class is initialised by the following two functions
-static UT_Vector s_noLigature;
+static UT_GenericVector<UCSRange*> s_noLigature;
 
 void GR_ContextGlyph::_generateNoLigatureTable()
 {
@@ -347,7 +347,7 @@ void GR_ContextGlyph::_generateNoLigatureTable()
 	pRange->low = 0;
 	pRange->high = s_ligature[0].code_low - 1;
 
-	s_noLigature.addItem((void*)pRange);
+	s_noLigature.addItem(pRange);
 	xxx_UT_DEBUGMSG(("No Ligature table: adding {0x%04x, 0x%04x}\n",
 				 pRange->low, pRange->high));
 	
@@ -371,7 +371,7 @@ void GR_ContextGlyph::_generateNoLigatureTable()
 			iLow = s_ligature[i].code_low;
 			pRange->high = iLow - 1;
 			
-			s_noLigature.addItem((void*)pRange);
+			s_noLigature.addItem(pRange);
 			xxx_UT_DEBUGMSG(("No Ligature table: adding {0x%04x, 0x%04x}\n",
 						 pRange->low, pRange->high));
 		}
@@ -391,7 +391,7 @@ void GR_ContextGlyph::_generateNoLigatureTable()
 	pRange->low = iLow + 1;
 	pRange->high = 0xffffffff;
 
-	s_noLigature.addItem((void*)pRange);
+	s_noLigature.addItem(pRange);
 	xxx_UT_DEBUGMSG(("No Ligature table: adding {0x%04x, 0x%04x}\n",
 				 pRange->low, pRange->high));
 	
@@ -574,7 +574,8 @@ static LetterData s_table[] =
 // the following vector holds ranges of characters that do not require
 // shaping; it is used to speed up processing and its contents are
 // generated automatically by the function below
-static UT_Vector s_noShaping;
+static UT_GenericVector<UCSRange*> s_noShaping;
+
 void GR_ContextGlyph::_generateNoShapingTable()
 {
 	// handle the first entry separately ...
@@ -583,7 +584,7 @@ void GR_ContextGlyph::_generateNoShapingTable()
 	pRange->low = 0;
 	pRange->high = s_table[0].code - 1;
 
-	s_noShaping.addItem((void*)pRange);
+	s_noShaping.addItem(pRange);
 	xxx_UT_DEBUGMSG(("No Shaping table: adding {0x%04x, 0x%04x}\n",
 				 pRange->low, pRange->high));
 	
@@ -606,7 +607,7 @@ void GR_ContextGlyph::_generateNoShapingTable()
 			iPrev = s_table[i].code;
 			pRange->high = iPrev - 1;
 			
-			s_noShaping.addItem((void*)pRange);
+			s_noShaping.addItem(pRange);
 			xxx_UT_DEBUGMSG(("No Shaping table: adding {0x%04x, 0x%04x}\n",
 						 pRange->low, pRange->high));
 		}
@@ -625,7 +626,7 @@ void GR_ContextGlyph::_generateNoShapingTable()
 	pRange->low = iPrev + 1;
 	pRange->high = 0xffffffff;
 
-	s_noShaping.addItem((void*)pRange);
+	s_noShaping.addItem(pRange);
 	xxx_UT_DEBUGMSG(("No Shaping table: adding {0x%04x, 0x%04x}\n",
 				 pRange->low, pRange->high));
 }
@@ -704,13 +705,12 @@ bool GR_ContextGlyph::isNotContextSensitive(UT_UCS4Char c) const
 
 	for(UT_uint32 i = 0; i < s_noShaping.getItemCount(); i++)
 	{
-		if(c >= static_cast<UCSRange*>(s_noShaping.getNthItem(i))->low &&
-		   c <= static_cast<UCSRange*>(s_noShaping.getNthItem(i))->high)
+		if(c >= s_noShaping.getNthItem(i)->low && c <= s_noShaping.getNthItem(i)->high)
 		{
 			return true;
 		}
 		
-		if(c < static_cast<UCSRange*>(s_noShaping.getNthItem(i))->low)
+		if(c < s_noShaping.getNthItem(i)->low)
 		{
 			// we have already overshot ...
 			return false;
@@ -729,13 +729,12 @@ bool GR_ContextGlyph::isNotFirstInLigature(UT_UCS4Char c) const
 	// will exit in the first three cycles of the loop
 	for(UT_uint32 i = 0; i < s_noLigature.getItemCount(); i++)
 	{
-		if(c >= static_cast<UCSRange*>(s_noLigature.getNthItem(i))->low &&
-		   c <= static_cast<UCSRange*>(s_noLigature.getNthItem(i))->high)
+		if(c >= s_noLigature.getNthItem(i)->low && c <= s_noLigature.getNthItem(i)->high)
 		{
 			return true;
 		}
 
-		if(c < static_cast<UCSRange*>(s_noLigature.getNthItem(i))->low)
+		if(c < s_noLigature.getNthItem(i)->low)
 		{
 			// we have already overshot ...
 			return false;

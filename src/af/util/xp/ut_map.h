@@ -29,7 +29,7 @@
 #endif
 #include "ut_rbtree.h"
 
-class UT_Pair;
+#include "ut_pair.h"
 
 class ABI_EXPORT UT_Map
 {
@@ -38,7 +38,7 @@ public:
 	// not the same as UT_Map::key_t.
 	typedef const void* key_t;
 	typedef const void* data_t;
-	typedef const UT_Pair* value_t;
+	typedef const UT_Pair<void*,void*>* value_t;
 	typedef UT_RBTree::Iterator Iterator;
 	typedef UT_RBTree::comparator comparator;
 

@@ -156,7 +156,7 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 
 	for (UT_uint32 iItem = nItems; iItem; --iItem)
 	{
-		mapping = static_cast<DictionaryMapping*>(vec.getNthItem(iItem - 1));
+		mapping = static_cast<DictionaryMapping*>(const_cast<void*>(vec.getNthItem(iItem - 1)));
 
 		if (checker->doesDictionaryExist(mapping->lang.c_str()))
 			vecRslt->addItem( strdup(mapping->lang.c_str()));

@@ -124,7 +124,7 @@ bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 	return false;
 }
 
-bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const UT_GenericVector<XML_Char*>* pVecAttributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())

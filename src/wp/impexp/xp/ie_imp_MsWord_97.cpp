@@ -1104,7 +1104,7 @@ void IE_Imp_MsWord_97::_flush ()
 		  UT_sint32 i =0;
 		  for(i=0;i< static_cast<UT_sint32>(m_vecEmObjects.getItemCount()); i++)
 		  {
-			  pObject = static_cast<emObject *>(m_vecEmObjects.getNthItem(i));
+			  pObject = m_vecEmObjects.getNthItem(i);
 			  const XML_Char* propsArray[5];
 			  if(pObject->objType == PTO_Bookmark)
 			  {
@@ -1541,7 +1541,7 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 		pObject->props1 = propsArray[1];
 		pObject->objType = PTO_Bookmark;
 		pObject->props2 = propsArray[3];
-		m_vecEmObjects.addItem(static_cast<void *>(pObject));
+		m_vecEmObjects.addItem(pObject);
 	}
 	else
 	{
@@ -3710,7 +3710,7 @@ bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
 						pNewSpan->iLeft = iLeft+1;
 						pNewSpan->iRight = iRight;
 						pNewSpan->width = pSpan->width - colWidths[iLeft];
-						m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+						m_vecColumnWidths.addItem(pNewSpan);
 					}
 				}
 				else if(colWidths[iRight - 1] > 0)
@@ -3721,7 +3721,7 @@ bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
 						pNewSpan->iLeft = iLeft;
 						pNewSpan->iRight = iRight-1;
 						pNewSpan->width = pSpan->width - colWidths[iRight-1];
-						m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+						m_vecColumnWidths.addItem(pNewSpan);
 					}
 				}
 //
@@ -3733,7 +3733,7 @@ bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
 					UT_sint32 k =0;
 					for(k=0; k<static_cast<UT_sint32>(m_vecColumnWidths.size()); k++)
 					{
-						MsColSpan * pMulSpan = reinterpret_cast<MsColSpan *>(m_vecColumnWidths.getNthItem(i));
+						MsColSpan * pMulSpan = m_vecColumnWidths.getNthItem(i);
 						UT_sint32 iMulLeft = pMulSpan->iLeft;
 						UT_sint32 iMulRight = pMulSpan->iRight;
 						if(iMulLeft == iLeft && iMulRight < iRight)
@@ -3748,7 +3748,7 @@ bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
 								pNewSpan->iLeft = iMulRight+1;
 								pNewSpan->iRight = iRight;
 								pNewSpan->width = pSpan->width - pMulSpan->width;
-								m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+								m_vecColumnWidths.addItem(pNewSpan);
 							}
 
 						}
@@ -3763,7 +3763,7 @@ bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
 								pNewSpan->iLeft = iLeft;
 								pNewSpan->iRight = iMulLeft;
 								pNewSpan->width = pSpan->width - pMulSpan->width;
-								m_vecColumnWidths.addItem(reinterpret_cast<void *>(pNewSpan));
+								m_vecColumnWidths.addItem(pNewSpan);
 							}							
 						}
 					}
@@ -3786,7 +3786,7 @@ bool IE_Imp_MsWord_97::findMatchSpan(UT_sint32 iLeft,UT_sint32 iRight)
 	UT_sint32 i =0;
 	for(i=0; i< static_cast<UT_sint32>(m_vecColumnWidths.size());i++)
 	{
-		MsColSpan * pSpan = reinterpret_cast<MsColSpan *>(m_vecColumnWidths.getNthItem(i));
+		MsColSpan * pSpan = m_vecColumnWidths.getNthItem(i);
 		if(pSpan->iLeft == iLeft && pSpan->iRight == iRight)
 		{
 			return true;
@@ -3984,7 +3984,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 		  pSpan->iRight = iRight;
 		  pSpan->width = width;
 		  xxx_UT_DEBUGMSG(("MsImport iLeft %d  iRight %d width  %d \n",iLeft,iRight,width));
-		  m_vecColumnWidths.addItem(reinterpret_cast<void *>(pSpan));
+		  m_vecColumnWidths.addItem(pSpan);
 	  }
   }
 

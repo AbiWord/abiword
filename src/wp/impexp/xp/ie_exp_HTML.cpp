@@ -663,7 +663,7 @@ private:
 	UT_uint32		m_tlistListID;
 	FL_ListType		m_tlistType;
 
-	UT_StringPtrMap	m_SavedURLs;
+	UT_GenericStringMap<UT_UTF8String*>	m_SavedURLs;
 
 	bool            m_bIgnoreTillEnd;
 	PT_DocPosition  m_iEmbedStartPos;
@@ -672,7 +672,7 @@ private:
 	double          m_dSecLeftMarginInches;
 	double          m_dSecRightMarginInches;
 	double          m_dCellWidthInches;
-	UT_Vector       m_vecDWidths;
+	UT_GenericVector<double*> m_vecDWidths;
 	UT_UTF8String & m_sLinkCSS;
 	UT_UTF8String & m_sTitle;
 
@@ -2954,7 +2954,7 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 				i = j + 1;
 				double * pDWidth = new double;
 				*pDWidth = UT_convertToInches(sSub.c_str());
-				m_vecDWidths.addItem(reinterpret_cast<void *>(pDWidth));
+				m_vecDWidths.addItem(pDWidth);
 			}
 		}
 	}
@@ -2972,7 +2972,7 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 		{
 			double * pDWidth = new double;
 			*pDWidth = colWidth;
-			m_vecDWidths.addItem(reinterpret_cast<void *>(pDWidth));
+			m_vecDWidths.addItem(pDWidth);
 		}
 	}
 }
@@ -3342,7 +3342,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	{
 		for(i = 0; i< static_cast<UT_sint32>(m_vecDWidths.getItemCount());i++)
 		{
-			double * pDWidth = reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
+			double * pDWidth = m_vecDWidths.getNthItem(i);
 			double percent = 100.0*(*pDWidth/totWidth);
 
 			{
@@ -3418,7 +3418,7 @@ void s_HTML_Listener::_setCellWidthInches(void)
 		// probably covering up some sort of issue
 		// but we assert above, so we'll notice it again
 		if (i < (UT_sint32)m_vecDWidths.size ())
-			tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
+			tot += *(m_vecDWidths.getNthItem(i));
 	}
 	m_dCellWidthInches = tot;
 }
@@ -4265,14 +4265,14 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_handlePendingImages ()
 {
-	UT_StringPtrMap::UT_Cursor cursor (&m_SavedURLs);
+	UT_GenericStringMap<UT_UTF8String*>::UT_Cursor cursor (&m_SavedURLs);
 
-	const void * val = 0;
+	const UT_UTF8String * val = 0;
 	for (val = cursor.first (); cursor.is_valid (); val = cursor.next ())
 	{
 		const char * dataid = cursor.key().c_str ();
 
-		const UT_UTF8String * saved_url = reinterpret_cast<const UT_UTF8String *>(val);
+		const UT_UTF8String * saved_url = val;
 		UT_UTF8String * url = const_cast<UT_UTF8String *>(saved_url);
 
 		const char * szName = 0;
@@ -5920,12 +5920,12 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 
 void IE_Exp_HTML::addFootnote(PD_DocumentRange * pDocRange)
 {
-	m_vecFootnotes.addItem(reinterpret_cast<void *>(pDocRange));
+	m_vecFootnotes.addItem(pDocRange);
 }
 
 void IE_Exp_HTML::addEndnote(PD_DocumentRange * pDocRange)
 {
-	m_vecEndnotes.addItem(reinterpret_cast<void *>(pDocRange));
+	m_vecEndnotes.addItem(pDocRange);
 }
 
 UT_sint32 IE_Exp_HTML::getNumFootnotes(void)

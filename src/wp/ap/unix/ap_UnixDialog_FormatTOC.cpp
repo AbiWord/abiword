@@ -518,24 +518,24 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 
 void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 {
-	UT_Vector * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-	UT_Vector * vecPropList = getVecLabelPropValue();
+	const UT_GenericVector<const XML_Char*> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	const UT_GenericVector<const XML_Char*> * vecPropList = getVecLabelPropValue();
 	UT_sint32 nTypes = vecTypeList->getItemCount();
-	UT_String * sProp = NULL;
-	UT_String * sVal = NULL;
+	UT_UTF8String * sProp = NULL;
+	UT_UTF8String * sVal = NULL;
 
 	UT_sint32 j = 0;
-	sProp = new UT_String("toc-label-type");
+	sProp = new UT_UTF8String("toc-label-type");
 	GtkWidget * wM = gtk_menu_new();
-	m_vecAllPropVals.addItem(static_cast<void *>(sProp));
+	m_vecAllPropVals.addItem(sProp);
 	for(j=0; j< nTypes; j++)
 	{
-		sVal = new UT_String(static_cast<char *>(vecTypeList->getNthItem(j)));
-		m_vecAllPropVals.addItem(static_cast<void *>(sVal));
+		sVal = new UT_UTF8String(vecTypeList->getNthItem(j));
+		m_vecAllPropVals.addItem(sVal);
 		const gchar * szLab = static_cast<const gchar *>(vecTypeList->getNthItem(j));
 		UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));
 		GtkWidget * pW = gtk_menu_item_new_with_label(szLab);
-		g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)(sProp->c_str()));
+		g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)(sProp->utf8_str()));
 		const gchar * szVal = static_cast<const gchar *>(vecPropList->getNthItem(j));
 		g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(szVal));
 		g_signal_connect(G_OBJECT(pW),
@@ -549,15 +549,15 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 
 // Now the Page Numbering style
 //
-	sProp = new UT_String("toc-page-type");
+	sProp = new UT_UTF8String("toc-page-type");
 	wM = gtk_menu_new();
-	m_vecAllPropVals.addItem(static_cast<void *>(sProp));
+	m_vecAllPropVals.addItem(sProp);
 	for(j=0; j< nTypes; j++)
 	{
-		sVal = new UT_String(static_cast<char *>(vecTypeList->getNthItem(j)));
-		m_vecAllPropVals.addItem(static_cast<void *>(sVal));
-		GtkWidget * pW = gtk_menu_item_new_with_label(static_cast<char *>(vecTypeList->getNthItem(j)));
-		g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)sProp->c_str());
+		sVal = new UT_UTF8String(vecTypeList->getNthItem(j));
+		m_vecAllPropVals.addItem(sVal);
+		GtkWidget * pW = gtk_menu_item_new_with_label(vecTypeList->getNthItem(j));
+		g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)sProp->utf8_str());
 		const gchar * szVal = static_cast<const gchar *>(vecPropList->getNthItem(j));
 		g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(szVal));
 		g_signal_connect(G_OBJECT(pW),
@@ -573,24 +573,24 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 
 void AP_UnixDialog_FormatTOC::_createTABTypeItems(void)
 {
-	UT_Vector * vecLabels = getVecTABLeadersLabel();
-	UT_Vector * vecProps = getVecTABLeadersProp();
+	const UT_GenericVector<const XML_Char*> * vecLabels = getVecTABLeadersLabel();
+	const UT_GenericVector<const XML_Char*> * vecProps = getVecTABLeadersProp();
 	UT_sint32 nTypes = vecLabels->getItemCount();
-	UT_String * sProp = NULL;
-	UT_String * sVal = NULL;
+	UT_UTF8String * sProp = NULL;
+	UT_UTF8String * sVal = NULL;
 	UT_sint32 j = 0;
-	sProp = new UT_String("toc-tab-leader");
+	sProp = new UT_UTF8String("toc-tab-leader");
 	GtkWidget * wM = gtk_menu_new();
 	for(j=0; j< nTypes; j++)
 	{
-		m_vecAllPropVals.addItem(static_cast<void *>(sProp));
-		sVal = new UT_String(static_cast<char *>(vecProps->getNthItem(j)));
-		m_vecAllPropVals.addItem(static_cast<void *>(sVal));
+		m_vecAllPropVals.addItem(sProp);
+		sVal = new UT_UTF8String(vecProps->getNthItem(j));
+		m_vecAllPropVals.addItem(sVal);
 		const gchar * szLab = static_cast<const gchar *>(vecLabels->getNthItem(j));
 		UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));
 		GtkWidget * pW = gtk_menu_item_new_with_label(szLab);
-		g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)(sProp->c_str()));
-		g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(sVal->c_str()));
+		g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)(sProp->utf8_str()));
+		g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(sVal->utf8_str()));
 
 		g_signal_connect(G_OBJECT(pW),
 						 "activate",
@@ -631,12 +631,12 @@ void  AP_UnixDialog_FormatTOC::event_Apply(void)
 
 gpointer AP_UnixDialog_FormatTOC::_makeProp(const char * szProp, UT_sint32 i)
 {
-	UT_String sLocal = szProp;
-	UT_String sVal = UT_String_sprintf("%d",i);
+	UT_UTF8String sLocal = szProp;
+	UT_UTF8String sVal = UT_UTF8String_sprintf("%d",i);
 	sLocal += sVal;
-	UT_String * pS = new UT_String(sLocal);
-	m_vecAllPropVals.addItem(static_cast<void *>(pS));
-	return (gpointer) pS->c_str();
+	UT_UTF8String * pS = new UT_UTF8String(sLocal);
+	m_vecAllPropVals.addItem(pS);
+	return (gpointer) pS->utf8_str();
 }
 
 /*!

@@ -516,7 +516,7 @@ UT_uint32 AD_Document::getHighestRevisionId() const
 
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		iId = UT_MAX(iId, reinterpret_cast<const AD_Revision *>(m_vRevisions.getNthItem(i))->getId());
+		iId = UT_MAX(iId, m_vRevisions.getNthItem(i)->getId());
 	}
 
 	return iId;
@@ -529,7 +529,7 @@ const AD_Revision * AD_Document::getHighestRevision() const
 
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const AD_Revision * t = reinterpret_cast<const AD_Revision *>(m_vRevisions.getNthItem(i));
+		const AD_Revision * t = m_vRevisions.getNthItem(i);
 		UT_uint32 t_id = t->getId();
 
 		if(t_id > iId)
@@ -546,14 +546,14 @@ bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart,
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const AD_Revision * r = reinterpret_cast<const AD_Revision*>(m_vRevisions.getNthItem(i));
+		const AD_Revision * r = m_vRevisions.getNthItem(i);
 		if(r->getId() == iId)
 			return false;
 	}
 
 	AD_Revision * pRev = new AD_Revision(iId, pDesc, tStart, iVer);
 
-	m_vRevisions.addItem(static_cast<void*>(pRev));
+	m_vRevisions.addItem(pRev);
 	forceDirty();
 	m_iRevisionID = iId;
 	return true;
@@ -565,7 +565,7 @@ bool AD_Document::addRevision(UT_uint32 iId,
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const AD_Revision * r = reinterpret_cast<const AD_Revision*>(m_vRevisions.getNthItem(i));
+		const AD_Revision * r = m_vRevisions.getNthItem(i);
 		if(r->getId() == iId)
 			return false;
 	}
@@ -581,7 +581,7 @@ bool AD_Document::addRevision(UT_uint32 iId,
 	
 	AD_Revision * pRev = new AD_Revision(iId, pD, tStart, iVer);
 
-	m_vRevisions.addItem(static_cast<void*>(pRev));
+	m_vRevisions.addItem(pRev);
 	forceDirty();
 	m_iRevisionID = iId;
 	return true;
@@ -682,7 +682,7 @@ UT_uint32 AD_Document::findAutoRevisionId(UT_uint32 iVersion) const
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const AD_Revision *pRev=reinterpret_cast<const AD_Revision*>(m_vRevisions.getNthItem(i));
+		const AD_Revision *pRev= m_vRevisions.getNthItem(i);
 		UT_return_val_if_fail(pRev, 0);
 		
 		if(pRev->getVersion() == iVersion)
@@ -708,7 +708,7 @@ UT_uint32 AD_Document::findNearestAutoRevisionId(UT_uint32 iVersion, bool bLesse
 	
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const AD_Revision *pRev=reinterpret_cast<const AD_Revision*>(m_vRevisions.getNthItem(i));
+		const AD_Revision *pRev= m_vRevisions.getNthItem(i);
 		UT_return_val_if_fail(pRev, 0);
 
 		if(bLesser)

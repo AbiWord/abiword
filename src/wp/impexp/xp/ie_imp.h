@@ -168,7 +168,7 @@ public:
 	virtual bool appendObject (PTObjectType pto, const XML_Char ** attribs,
 					   const XML_Char ** props = NULL);
 	virtual bool appendFmt(const XML_Char ** attributes);
-	virtual bool appendFmt(const UT_Vector * pVecAttributes);
+	virtual bool appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes);
 
 public:
 	const UT_UTF8String * getProperty (const char * key) {

@@ -36,13 +36,13 @@ void GR_CharWidthsCache::_instantiate(void)
 }
 
 GR_CharWidthsCache::GR_CharWidthsCache()
-	: m_pFontHash (new UT_StringPtrMap())
+	: m_pFontHash (new UT_GenericStringMap<GR_CharWidths*>())
 {
 }
 
 GR_CharWidthsCache::~GR_CharWidthsCache()
 {
-	UT_HASH_PURGEDATA(GR_CharWidths*, m_pFontHash, delete);
+	m_pFontHash->purgeData();
 	DELETEP(m_pFontHash);
 }
 
@@ -62,11 +62,11 @@ GR_CharWidths*	GR_CharWidthsCache::getWidthsForFont(const GR_Font* pFont)
 	GR_CharWidths* pCharWidths;
 
 	UT_ASSERT(m_pFontHash);
-	pCharWidths = (GR_CharWidths*)(m_pFontHash->pick(pFont->hashKey()));
+	pCharWidths = m_pFontHash->pick(pFont->hashKey());
 	if (!pCharWidths) {
 		addFont(pFont);
 		UT_DEBUGMSG(("added font widths to cache for font with hashkey '%s'\n", pFont->hashKey().c_str()));
-		pCharWidths = (GR_CharWidths*)(m_pFontHash->pick(pFont->hashKey()));
+		pCharWidths = m_pFontHash->pick(pFont->hashKey());
 		UT_ASSERT(pCharWidths);
 	}
 	return pCharWidths;

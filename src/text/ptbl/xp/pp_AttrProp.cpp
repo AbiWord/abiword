@@ -36,6 +36,8 @@
 #include "pp_AttrProp.h"
 #include "pp_Revision.h"
 
+
+
 /****************************************************************/
 PP_AttrProp::PP_AttrProp()
 {
@@ -51,9 +53,9 @@ PP_AttrProp::~PP_AttrProp()
 	xxx_UT_DEBUGMSG(("deleting pp_AttrProp %x \n",this));
 	if (m_pAttributes)
 	{
-		UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
+		UT_GenericStringMap<XML_Char*>::UT_Cursor c1(m_pAttributes);
 
-		const XML_Char * s = static_cast<const XML_Char *>(c1.first());
+		const XML_Char * s = c1.first();
 
 		while (true) {
 			FREEP(s);
@@ -61,7 +63,7 @@ PP_AttrProp::~PP_AttrProp()
 			if (!c1.is_valid())
 				break;
 
-			s = static_cast<const XML_Char *>(c1.next());
+			s = c1.next();
 		}
 
 		delete m_pAttributes;
@@ -72,18 +74,17 @@ PP_AttrProp::~PP_AttrProp()
 
 	if(m_pProperties)
 	{
-		UT_StringPtrMap::UT_Cursor c(m_pProperties);
-		const UT_Pair * entry = NULL;
-		for (entry = static_cast<const UT_Pair*>(c.first()); c.is_valid();
-		     entry = static_cast<const UT_Pair*>(c.next()))
+		UT_StringPtrMap<PropertyPair*>::UT_Cursor c(m_pProperties);
+		const PropertyPair * entry = NULL;
+		for (entry = c.first(); c.is_valid(); entry = c.next())
 		{
 			if(entry)
 			{
 				// hack. don't do it.
-				void* tmp = const_cast<void*> (entry->first());
-				FREEP(tmp);
+				const XML_Char* tmp = entry->first();
+				FREEP(const_cast<XML_Char*>(tmp));
 				if (entry->second())
-					delete static_cast<PP_PropertyType *const>(entry->second());
+					delete entry->second();
 				delete entry;
 			}
 		}
@@ -144,13 +145,13 @@ bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
  *
  * \param attributes A UT_Vector of strings, read in (attribute, value) form.
  */
-bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
+bool PP_AttrProp::setAttributes(const UT_GenericVector<XML_Char*> * pVector)
 {
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)
 	{
-		const XML_Char * pName = static_cast<XML_Char *>(pVector->getNthItem(k));
-		const XML_Char * pValue = static_cast<XML_Char *>(pVector->getNthItem(k+1));
+		const XML_Char * pName = pVector->getNthItem(k);
+		const XML_Char * pValue = pVector->getNthItem(k+1);
 		if (!setAttribute(pName,pValue))
 			return false;
 	}
@@ -182,13 +183,13 @@ bool	PP_AttrProp::setProperties(const XML_Char ** properties)
  *
  * \param pVector A UT_Vector of strings, read in (properties, value) form.
  */
-bool PP_AttrProp::setProperties(const UT_Vector * pVector)
+bool PP_AttrProp::setProperties(const UT_GenericVector<XML_Char*> * pVector)
 {
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)
 	{
-		const XML_Char * pName = static_cast<XML_Char *>(pVector->getNthItem(k));
-		const XML_Char * pValue = static_cast<XML_Char *>(pVector->getNthItem(k+1));
+		const XML_Char * pName = pVector->getNthItem(k);
+		const XML_Char * pValue = pVector->getNthItem(k+1);
 		if (!setProperty(pName,pValue))
 			return false;
 	}
@@ -266,7 +267,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			while (isspace(*q))
 				q++;
 
-			setProperty(static_cast<const XML_Char*>(p), static_cast<const XML_Char*>(q));
+			setProperty(p, q);
 		}
 
 		free(pOrig);
@@ -276,7 +277,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	{
 		if (!m_pAttributes)
 		{
-			m_pAttributes = new UT_StringPtrMap(5);
+			m_pAttributes = new UT_GenericStringMap<XML_Char*>(5);
 			if (!m_pAttributes)
 			{
 				UT_DEBUGMSG(("setAttribute: could not allocate hash table.\n"));
@@ -297,7 +298,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		UT_lowerString(copy);
 		char * szDupValue = UT_strdup(szValue);
 
-		if(!m_pAttributes->insert(copy, static_cast<void *>(szDupValue)))
+		if(!m_pAttributes->insert(copy, szDupValue))
 			FREEP(szDupValue);
 
 		FREEP(copy);
@@ -310,7 +311,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 {
 	if (!m_pProperties)
 	{
-		m_pProperties = new UT_StringPtrMap(5);
+		m_pProperties = new 	UT_GenericStringMap<PropertyPair*>(5);
 		if (!m_pProperties)
 		{
 			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));
@@ -327,22 +328,22 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	// removed
 	bool bRemove = (!szValue || !*szValue);
 #endif
-	const void * pEntry = m_pProperties->pick(szName);
+	const PropertyPair * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
 	{
-		const UT_Pair* p = static_cast<const UT_Pair*>(pEntry);
+		const PropertyPair* p = pEntry;
 
 		// hack. don't do it.
-		void* tmp = const_cast<void*> (p->first());
+		const XML_Char* tmp = p->first();
 		UT_ASSERT(!m_bIsReadOnly);
 		if(strcmp(szName,"line-height") == 0)
 		{
 			UT_DEBUGMSG(("Found line-height, Old value %s new value is %s \n",tmp,szValue));
 		}
 
-		FREEP(tmp);
+		FREEP(const_cast<XML_Char*>(tmp));
 		if (p->second())
-			delete static_cast<PP_PropertyType *const>(p->second());
+			delete p->second();
 		delete p;
 #if 0
 		if(bRemove)
@@ -352,8 +353,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		else
 #endif
 		{
-			m_pProperties->set(szName,
-							   static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
+			m_pProperties->set(szName, new PropertyPair(UT_strdup(szValue), NULL));
 		}
 		
 	}
@@ -363,8 +363,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		if(!bRemove)
 #endif
 		{
-			m_pProperties->insert(szName,
-								  static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
+			m_pProperties->insert(szName, new PropertyPair(UT_strdup(szValue), NULL));
 		}
 	}
 	return true;
@@ -378,8 +377,8 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 		return false;
 
 	int i = 0;
-	UT_StringPtrMap::UT_Cursor c(m_pAttributes);
-	const void * val = NULL;
+	UT_GenericStringMap<XML_Char*>::UT_Cursor c(m_pAttributes);
+	const XML_Char * val = NULL;
 
 	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
 	{
@@ -388,8 +387,8 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 
 	if ((i == ndx) && c.is_valid())
 	  {
-	    szName = static_cast<const XML_Char*>(c.key().c_str());
-	    szValue = static_cast<const XML_Char*>(val);
+	    szName = c.key().c_str();
+	    szValue = val;
 	    return true;
 	  }
 	return false;
@@ -404,8 +403,8 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
   		return false;
 
  	int i = 0;
- 	UT_StringPtrMap::UT_Cursor c(m_pProperties);
- 	const void * val = NULL;
+ 	UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
+ 	const PropertyPair * val = NULL;
 
 	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
  	{
@@ -414,8 +413,8 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
 
 	if ( (i == ndx) && c.is_valid())
  		{
-		  szName = static_cast<const XML_Char*>(c.key().c_str());
-		  szValue = static_cast<XML_Char* const>(static_cast<const UT_Pair*>(val)->first());
+		  szName = c.key().c_str();
+		  szValue = val->first();
 		  return true;
  		}
 	return false;
@@ -426,11 +425,11 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	if (!m_pProperties)
 		return false;
 
-	const void * pEntry = m_pProperties->pick(szName);
+	const PropertyPair * pEntry = m_pProperties->pick(szName);
 	if (!pEntry)
 		return false;
 
-	szValue = static_cast<XML_Char *const>(static_cast<const UT_Pair*>(pEntry)->first());
+	szValue = pEntry->first();
 
 	return true;
 }
@@ -440,32 +439,31 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 	if (!m_pProperties)
 		return NULL;
 
-	const UT_Pair * pEntry = static_cast<const UT_Pair *>(m_pProperties->pick(szName));
+	const PropertyPair * pEntry = m_pProperties->pick(szName);
 	if (!pEntry)
 		return NULL;
 
 	if(!pEntry->second())
 	{
-		m_pProperties->set(szName, new UT_Pair
-				   (pEntry->first(),
-				    PP_PropertyType::createPropertyType(Type,
-									static_cast<XML_Char *const>(pEntry->first()))));
+		m_pProperties->set(szName, new PropertyPair(pEntry->first(),
+				    PP_PropertyType::createPropertyType(Type,pEntry->first())));
 		delete pEntry;
-		pEntry = static_cast<const UT_Pair *>(m_pProperties->pick(szName));
+		pEntry = m_pProperties->pick(szName);
 	}
 
-	return static_cast<PP_PropertyType *const>(pEntry->second());
+	return pEntry->second();
 }
+
 bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	if (!m_pAttributes)
 		return false;
 
-	const void * pEntry = m_pAttributes->pick(szName);
+	const XML_Char * pEntry = m_pAttributes->pick(szName);
 	if (!pEntry)
 		return false;
 
-	szValue = static_cast<const XML_Char *>(pEntry);
+	szValue = pEntry;
 
 
 	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue));
@@ -609,22 +607,22 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 	if (countMyAttrs != 0)
 	{
-		UT_StringPtrMap::UT_Cursor ca1(m_pAttributes);
-		UT_StringPtrMap::UT_Cursor ca2(pMatch->m_pAttributes);
+		UT_GenericStringMap<XML_Char*>::UT_Cursor ca1(m_pAttributes);
+		UT_GenericStringMap<XML_Char*>::UT_Cursor ca2(pMatch->m_pAttributes);
 
-		const void * v1 = ca1.first();
-		const void * v2 = ca2.first();
+		const XML_Char * v1 = ca1.first();
+		const XML_Char * v2 = ca2.first();
 
 		do
 		{
-			const XML_Char *l1 = static_cast<const XML_Char *>(ca1.key().c_str());
-			const XML_Char *l2 = static_cast<const XML_Char *>(ca2.key().c_str());
+			const XML_Char *l1 = ca1.key().c_str();
+			const XML_Char *l2 = ca2.key().c_str();
 
 			if (strcmp(l1, l2) != 0)
 				return false;
 
-			l1 = static_cast<const XML_Char *>(v1);
-			l2 = static_cast<const XML_Char *>(v2);
+			l1 = v1;
+			l2 = v2;
 
 			if (strcmp(l1,l2) != 0)
 				return false;
@@ -636,22 +634,22 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 	if (countMyProps > 0)
 	{
-		UT_StringPtrMap::UT_Cursor cp1(m_pProperties);
-		UT_StringPtrMap::UT_Cursor cp2(pMatch->m_pProperties);
+		UT_GenericStringMap<PropertyPair*>::UT_Cursor cp1(m_pProperties);
+		UT_GenericStringMap<PropertyPair*>::UT_Cursor cp2(pMatch->m_pProperties);
 
-		const void * v1 = cp1.first();
-		const void * v2 = cp2.first();
+		const PropertyPair* v1 = cp1.first();
+		const PropertyPair* v2 = cp2.first();
 
 		do
 		{
-			const XML_Char *l1 = static_cast<const XML_Char *>(cp1.key().c_str());
-			const XML_Char *l2 = static_cast<const XML_Char *>(cp2.key().c_str());
+			const XML_Char *l1 = cp1.key().c_str();
+			const XML_Char *l2 = cp2.key().c_str();
 
 			if (strcmp(l1, l2) != 0)
 				return false;
 
-			l1 = (XML_Char *) (static_cast<const UT_Pair*>(v1))->first();;
-			l2 = (XML_Char *) (static_cast<const UT_Pair*>(v2))->first();;
+			l1 = v1->first();
+			l2 = v2->first();
 
 			if (strcmp(l1,l2) != 0)
 				return false;
@@ -750,23 +748,24 @@ void PP_AttrProp::_clearEmptyProperties()
 	if(!m_pProperties)
 		return;
 
-	UT_StringPtrMap::UT_Cursor _hc1(m_pProperties);
-	const void * pEntry;
+	UT_GenericStringMap<PropertyPair*>::UT_Cursor _hc1(m_pProperties);
+	PropertyPair * pEntry;
 
-	for ( pEntry  = static_cast<const UT_Pair*>(_hc1.first()); _hc1.is_valid(); pEntry = static_cast<const UT_Pair*>(_hc1.next()) )
+	for ( pEntry  = _hc1.first(); _hc1.is_valid(); pEntry = _hc1.next())
 	{
 		if (pEntry)
 		{
-			const UT_Pair* p = static_cast<const UT_Pair*>(pEntry);
+			const PropertyPair* p = pEntry;
 
-			if(*(static_cast<XML_Char *const>(p->first())) == 0)
+			if(*(p->first()) == 0)
 			{
 
-				void* tmp = const_cast<void*> (p->first());
+				XML_Char* tmp = const_cast<XML_Char*>(p->first());
 				UT_ASSERT(!m_bIsReadOnly);
 				FREEP(tmp);
-				if (p->second())
-					delete static_cast<PP_PropertyType *const>(p->second());
+				if (p->second()) {
+					delete p->second();
+				}
 				delete p;
 
 				m_pProperties->remove(_hc1.key(),pEntry);
@@ -780,10 +779,10 @@ void PP_AttrProp::_clearEmptyAttributes()
 	if(!m_pAttributes)
 		return;
 
-	UT_StringPtrMap::UT_Cursor _hc1(m_pAttributes);
-	const XML_Char * pEntry;
+	UT_GenericStringMap<XML_Char*>::UT_Cursor _hc1(m_pAttributes);
+	XML_Char * pEntry;
 
-	for ( pEntry  = static_cast<const XML_Char*>(_hc1.first()); _hc1.is_valid(); pEntry = static_cast<const XML_Char*>(_hc1.next()) )
+	for ( pEntry  = _hc1.first(); _hc1.is_valid(); pEntry = _hc1.next())
 	{
 		if (pEntry && !*pEntry)
 		{
@@ -992,13 +991,13 @@ void PP_AttrProp::_computeCheckSum(void)
   
  	if (m_pAttributes)
   	{
- 		UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
- 		const void *val = c1.first();
+ 		UT_GenericStringMap<XML_Char*>::UT_Cursor c1(m_pAttributes);
+ 		const XML_Char *val = c1.first();
  
  		while (val != NULL)
  		{
- 			s1 = static_cast<const XML_Char *>(c1.key().c_str());
- 			s2 = static_cast<const XML_Char *>(val);
+ 			s1 = c1.key().c_str();
+ 			s2 = val;
   
  			cch = UT_XML_strlen(s1);
   
@@ -1019,14 +1018,14 @@ void PP_AttrProp::_computeCheckSum(void)
  
  	if (m_pProperties)
   	{
- 		UT_StringPtrMap::UT_Cursor c2(m_pProperties);
- 		const void *val;
+ 		UT_GenericStringMap<PropertyPair*>::UT_Cursor c2(m_pProperties);
+ 		const PropertyPair *val;
  
  		val = c2.first();
  		while (val != NULL)
  		{
- 			s1 = static_cast<const XML_Char *>(c2.key().c_str());
- 			s2 = static_cast<XML_Char *const>(static_cast<const UT_Pair*>(val)->first());
+ 			s1 = c2.key().c_str();
+ 			s2 = val->first();
  
  			cch = UT_XML_strlen(s1);
  

@@ -123,8 +123,8 @@ public:
 			     GtkSelectionData *selection_data,
 			     guint info, T_AllowGet which);
 
-	UT_Vector  m_vecFormat_AP_Name;
-	UT_Vector  m_vecFormat_GdkAtom;
+	UT_GenericVector<const char*>  m_vecFormat_AP_Name;
+	UT_GenericVector<GdkAtom>  m_vecFormat_GdkAtom;
 
 	UT_ByteBuf m_databuf; // for gets only
 

@@ -1775,13 +1775,14 @@ GR_Image * GR_UnixGraphics::genImageFromRectangle(const UT_Rect &rec)
 
 void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 {
-	void * oldR = NULL;	
+	UT_Rect* oldR = NULL;	
 
-	m_vSaveRect.setNthItem(iIndx, static_cast<void*>(new UT_Rect(r)),&oldR);
-	if(oldR)
-		delete static_cast<UT_Rect*>(oldR);
+	m_vSaveRect.setNthItem(iIndx, new UT_Rect(r),&oldR);
+	if(oldR) {
+		delete oldR;
+	}
 
-	void * oldC = NULL;
+	GdkPixbuf * oldC = NULL;
 	UT_sint32 idx = _tduX(r.left);
 	UT_sint32 idy = _tduY(r.top);
 	UT_sint32 idw = _tduR(r.width);
@@ -1792,7 +1793,7 @@ void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 												   NULL,
 												   idx, idy, 0, 0,
 												   idw, idh);
-	m_vSaveRectBuf.setNthItem(iIndx, static_cast<void*>(pix), &oldC);
+	m_vSaveRectBuf.setNthItem(iIndx, pix, &oldC);
 
 	if(oldC)
 		g_object_unref (G_OBJECT (oldC));
@@ -1800,8 +1801,8 @@ void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 
 void GR_UnixGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	UT_Rect * r = static_cast<UT_Rect*>(m_vSaveRect.getNthItem(iIndx));
-	GdkPixbuf *p = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(iIndx));
+	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
+	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
 	UT_sint32 idx = _tduX(r->left);
 	UT_sint32 idy = _tduY(r->top);
 

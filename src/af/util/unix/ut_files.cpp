@@ -58,13 +58,13 @@ bool progExists(const char* progName)
 	UT_String envpath = getenv("PATH");
 	UT_String* path;
 
-	UT_Vector * utvPath = simpleSplit(envpath, ':');
+	UT_GenericVector<UT_String*> * utvPath = simpleSplit(envpath, ':');
 	if (!utvPath)
 	  return false;
 
 	for(UT_uint32 i = 0; i < utvPath->getItemCount(); i++)
 	{
-		path = static_cast<UT_String*>(utvPath->getNthItem(i));
+		path = utvPath->getNthItem(i);
 		laststat = stat(UT_catPathname(path->c_str(), progName), &statbuf);
 
 		if(laststat == 0 && (S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode)))

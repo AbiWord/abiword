@@ -185,9 +185,9 @@ UT_sint32                    getBottomOffset(void) const;
 	UT_sint32                getRowSpacing(void) const;
 	UT_sint32                getLeftColPos(void) const
 		{ return m_iLeftColPos;}
-	const UT_Vector *        getVecColProps(void) const
+	const UT_GenericVector<fl_ColProps*> * getVecColProps(void) const
 		{ return &m_vecColProps;}
-	const UT_Vector *        getVecRowProps(void) const
+	const UT_GenericVector<fl_RowProps*> * getVecRowProps(void) const
 		{ return &m_vecRowProps;}
 
 	const PP_PropertyMap::Background & getBackground () const { return m_background; }
@@ -231,8 +231,8 @@ private:
 	UT_sint32              m_iRowSpacing;
 	UT_sint32              m_iLeftColPos;
 	bool                   m_bRecursiveFormat;
-	UT_Vector              m_vecColProps;
-	UT_Vector              m_vecRowProps;
+	UT_GenericVector<fl_ColProps *> m_vecColProps;
+	UT_GenericVector<fl_RowProps *> m_vecRowProps;
 	FL_RowHeightType       m_iRowHeightType;
 	UT_sint32              m_iRowHeight;
 

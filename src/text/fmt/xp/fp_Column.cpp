@@ -1442,7 +1442,7 @@ void fp_Column::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	UT_sint32 iOldY  =-1;
-	UT_Vector vecBlocks;
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	fp_Line * pLastLine = NULL;
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	UT_sint32 i  = 0;
@@ -1496,13 +1496,13 @@ void fp_Column::layout(void)
 			UT_sint32 count = static_cast<UT_sint32>(vecBlocks.getItemCount());
 			if(count == 0)
 			{
-				vecBlocks.addItem(reinterpret_cast<void *>(pLastLine->getBlock()));
+				vecBlocks.addItem(pLastLine->getBlock());
 			}
 			else
 			{
-				if(static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(count-1)) != pLastLine->getBlock())
+				if(vecBlocks.getNthItem(count-1) != pLastLine->getBlock())
 				{
-					vecBlocks.addItem(reinterpret_cast<void *>(pLastLine->getBlock()));
+					vecBlocks.addItem(pLastLine->getBlock());
 				}
 			}
 		}
@@ -1541,7 +1541,7 @@ void fp_Column::layout(void)
 	UT_sint32 count = vecBlocks.getItemCount();
 	for(i=0; i < count; i++)
 	{
-		fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(i));
+		fl_BlockLayout * pBlock = vecBlocks.getNthItem(i);
 		if(i < count -1)
 		{
 			pBlock->setFramesOnPage(NULL);

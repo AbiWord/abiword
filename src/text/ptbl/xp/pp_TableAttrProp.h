@@ -46,7 +46,7 @@ public:
 									 const XML_Char ** properties,
 									 UT_uint32 * pSubscript);
 
-	bool					createAP(const UT_Vector * pVector,
+	bool					createAP(const UT_GenericVector<XML_Char*>* pVector,
 									 UT_uint32 * pSubscript);
 
 	bool					findMatch(const PP_AttrProp * pMatch,
@@ -55,8 +55,8 @@ public:
 	const PP_AttrProp *		getAP(UT_uint32 subscript) const;
 
 protected:
-	UT_Vector				m_vecTable;
-	UT_Vector				m_vecTableSorted;
+	UT_GenericVector<PP_AttrProp *> m_vecTable;
+	UT_GenericVector<PP_AttrProp *>	m_vecTableSorted;
 };
 
 #endif /* PP_TABLEATTRPROP_H */

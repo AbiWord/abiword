@@ -305,7 +305,7 @@ void AP_Dialog_Lists::Apply(void)
  * This piece of code changes the list style at the current point to the
  * Style requested by the user.
  */
-	UT_Vector vBlock;
+	UT_GenericVector<fl_BlockLayout*> vBlock;
 	UT_uint32 i = 0;
 	getView()->getBlocksInSelection(&vBlock);
 	UT_uint32 count = vBlock.getItemCount();
@@ -678,7 +678,7 @@ UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
  * Fill our variables from this vector.
  * This is used by the Modal dialog and is filled from the styles dialog.
  */
-void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
+void AP_Dialog_Lists::fillDialogFromVector( UT_GenericVector<const XML_Char*> * vp)
 {
 	UT_sint32 i;
 	if(vp->getItemCount() > 0)
@@ -686,7 +686,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 		i = findVecItem(vp,"start-value");
 		if(i >= 0)
 		{
-			m_iStartValue = atoi( (const XML_Char *) vp->getNthItem(i+1));
+			m_iStartValue = atoi(vp->getNthItem(i+1));
 		}
 		else
 		{
@@ -696,7 +696,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 		i = findVecItem(vp,"margin-left");
 		if(i>=0)
 		{
-			m_fAlign = (float)UT_convertToInches((const XML_Char *) vp->getNthItem(i+1));
+			m_fAlign = (float)UT_convertToInches(vp->getNthItem(i+1));
 		}
 		else
 		{
@@ -706,7 +706,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 		i = findVecItem(vp,"text-indent");
 		if(i >= 0)
 		{
-			m_fIndent = (float)UT_convertToInches((const XML_Char *) vp->getNthItem(i+1));
+			m_fIndent = (float)UT_convertToInches(vp->getNthItem(i+1));
 		}
 		else
 		{
@@ -716,35 +716,35 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 		i = findVecItem(vp,"list-delim");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) vp->getNthItem(i+1));
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, vp->getNthItem(i+1));
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, "%L");
 		}
 		i = findVecItem(vp,"list-decimal");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) vp->getNthItem(i+1));
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, vp->getNthItem(i+1));
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, ".");
 		}
 
 		i = findVecItem(vp,"field-font");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) vp->getNthItem(i+1));
+			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, vp->getNthItem(i+1));
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, "NULL");
 		}
 		i = findVecItem(vp,"list-style");
 		if( i>= 0)
 		{
-			m_DocListType = getBlock()->getListTypeFromStyle( (const XML_Char *) vp->getNthItem(i+1));
+			m_DocListType = getBlock()->getListTypeFromStyle(vp->getNthItem(i+1));
 			m_NewListType = m_DocListType;
 		}
 		else
@@ -761,7 +761,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
  */
 void AP_Dialog_Lists::fillDialogFromBlock(void)
 {
-	UT_Vector va,vp;
+	UT_GenericVector<const XML_Char*> va,vp;
 
 	if (getBlock()->getPreviousList() != NULL)
 	{
@@ -798,7 +798,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"start-value");
 		if(i >= 0)
 		{
-			m_iStartValue = atoi( (const XML_Char *) vp.getNthItem(i+1));
+			m_iStartValue = atoi(vp.getNthItem(i+1));
 		}
 		else
 		{
@@ -808,7 +808,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"margin-left");
 		if(i>=0)
 		{
-			m_fAlign = (float)UT_convertToInches((const XML_Char *) vp.getNthItem(i+1));
+			m_fAlign = (float)UT_convertToInches(vp.getNthItem(i+1));
 		}
 		else
 		{
@@ -818,7 +818,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"text-indent");
 		if(i >= 0)
 		{
-			m_fIndent = (float)UT_convertToInches((const XML_Char *) vp.getNthItem(i+1));
+			m_fIndent = (float)UT_convertToInches(vp.getNthItem(i+1));
 		}
 		else
 		{
@@ -837,11 +837,11 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else if(i >=0 )
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) vp.getNthItem(i+1));
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, vp.getNthItem(i+1));
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, "%L");
 		}
 
 
@@ -857,26 +857,26 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) vp.getNthItem(i+1));
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, vp.getNthItem(i+1));
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, ".");
 		}
 
 		i = findVecItem(&vp,"field-font");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) vp.getNthItem(i+1));
+			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, vp.getNthItem(i+1));
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, "NULL");
 		}
 		i = findVecItem(&vp,"list-style");
 		if( i>= 0)
 		{
-			m_DocListType = getBlock()->getListTypeFromStyle( (const XML_Char *) vp.getNthItem(i+1));
+			m_DocListType = getBlock()->getListTypeFromStyle(vp.getNthItem(i+1));
 		}
 		else
 		{
@@ -977,7 +977,7 @@ UT_uint32 AP_Dialog_Lists::getID(void)
  * This method returns the index to the value corresponding to the
  * key in this props vector
  */
-UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
+UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const XML_Char*> * v, char * key)
 {
 	const char* const_key = key;
 	return findVecItem( v, const_key);
@@ -987,7 +987,7 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
  * This method returns the index to the value corresponding to the
  * key in this props vector
  */
-UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, const char * key)
+UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const XML_Char*> * v, const char * key)
 {
 	UT_sint32 i = v->getItemCount();
 	if(i < 0)

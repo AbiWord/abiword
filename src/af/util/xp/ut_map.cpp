@@ -92,13 +92,13 @@ UT_Map::~UT_Map()
 	// effects (with a bit of luck a segfault).
 	Iterator end(m_rbtree.end());
 	for (Iterator it(m_rbtree.begin()); it != end; ++it)
-		delete const_cast<UT_Pair*> (static_cast<const UT_Pair*> (it.value()));
+		delete const_cast<UT_Pair<void*,void*>*> (static_cast<const UT_Pair<void*,void*>*> (it.value()));
 }
 
 bool
 UT_Map::insert(key_t key, data_t data)
 {
-	return m_rbtree.insert(new UT_Pair((const pair_type)(key), (const pair_type)(data)));
+	return m_rbtree.insert(new UT_Pair<void*,void*>((void*)(key), (void*)(data)));
 }
 
 void
@@ -113,7 +113,7 @@ UT_Map::erase(key_t key)
 UT_Map::Iterator
 UT_Map::find(key_t key)
 {
-	UT_Pair tmp((const pair_type)key, (const pair_type)data_t());
+	UT_Pair<void*,void*> tmp((void*)key, (void*)data_t());
 	Iterator retval(m_rbtree.find_if(&tmp, equal));
 	return retval;
 }
@@ -121,7 +121,7 @@ UT_Map::find(key_t key)
 UT_Map::Iterator
 UT_Map::find_if(key_t key, comparator pred)
 {
-	UT_Pair tmp((const pair_type)key, (const pair_type)data_t());
+	UT_Pair<void*,void*> tmp((void*)key, (void*)data_t());
 	Iterator retval(m_rbtree.find_if(&tmp, pred));
 	return retval;
 }

@@ -1502,7 +1502,7 @@ bool fp_CellContainer::containsFootnoteReference(void)
 /*!
  * This method returns a vector of all the footnote layouts in this cell
  */
-bool fp_CellContainer::getFootnoteContainers(UT_Vector * pVecFoots)
+bool fp_CellContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots)
 {
 	fp_Container * pCon = getFirstContainer();
 	bool bFound = false;
@@ -1514,7 +1514,7 @@ bool fp_CellContainer::getFootnoteContainers(UT_Vector * pVecFoots)
 			if(pLine->containsFootnoteReference())
 			{
 				bFound = true;
-				UT_Vector vecFC;
+				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				pLine->getFootnoteContainers(&vecFC);
 				UT_uint32 i =0;
 				for(i=0; i< vecFC.getItemCount();i++)
@@ -1529,7 +1529,7 @@ bool fp_CellContainer::getFootnoteContainers(UT_Vector * pVecFoots)
 			if(pTab->containsFootnoteReference())
 			{
 				bFound = true;
-				UT_Vector vecFC;
+				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				pTab->getFootnoteContainers(&vecFC);
 				UT_uint32 i =0;
 				for(i=0; i< vecFC.getItemCount();i++)
@@ -2215,13 +2215,13 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 			pLine = static_cast<fp_Line *>(pCon);
 			if(pLine->containsFootnoteReference())
 			{
-				UT_Vector vecFC;
+				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				if(pLine->getFootnoteContainers(&vecFC))
 				{
 					UT_uint32 k  = 0;
 					for(k=0; k < vecFC.getItemCount(); k++)
 					{
-						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFC.getNthItem(k));
+						fp_FootnoteContainer * pFC = vecFC.getNthItem(k);
 						conHeight += pFC->getHeight();
 						if((pFC->getPage() == NULL) || (pFC->getPage() != pLine->getPage()))
 						{
@@ -3039,7 +3039,7 @@ UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
 {
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	UT_ASSERT(pTL);
-	const UT_Vector * pVecRow = pTL->getVecRowProps();
+	const  UT_GenericVector<fl_RowProps*>* pVecRow = pTL->getVecRowProps();
 	if(static_cast<UT_sint32>(pVecRow->getItemCount()) < (iRow + 1))
 	{
 		if(m_iRowHeight == 0)
@@ -3063,7 +3063,7 @@ UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
 		}
 		return iMeasHeight;
 	}
-	fl_RowProps * pRowProps = static_cast<fl_RowProps *>(pVecRow->getNthItem(iRow));
+	fl_RowProps * pRowProps = pVecRow->getNthItem(iRow);
 	UT_sint32 iRowHeight = pRowProps->m_iRowHeight;
 	FL_RowHeightType rowType = pRowProps->m_iRowHeightType;
 	if(rowType == FL_ROW_HEIGHT_EXACTLY )
@@ -3269,7 +3269,7 @@ void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 		  m_vecRows.clear();
 		  for(i=0; i< m_iRows; i++)
 		  {
-			  m_vecRows.addItem(static_cast<void*>(new fp_TableRowColumn()));
+			  m_vecRows.addItem(new fp_TableRowColumn());
 			  fp_TableRowColumn * pRow = getNthRow(i);
 			  pRow->requisition = 0;
 			  pRow->allocation = 0;
@@ -3291,7 +3291,7 @@ void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 		  m_vecColumns.clear();
 		  for(i=0; i< m_iCols; i++)
 		  {
-			  m_vecColumns.addItem(static_cast<void*>(new fp_TableRowColumn()));
+			  m_vecColumns.addItem(new fp_TableRowColumn());
 			  fp_TableRowColumn *pCol= getNthCol(i);
 			  pCol->requisition = 0;
 			  pCol->allocation = 0;
@@ -4424,7 +4424,7 @@ bool fp_TableContainer::containsFootnoteReference(void)
 /*!
  * This method returns a vector of call the footnote layouts in this table
  */
-bool fp_TableContainer::getFootnoteContainers(UT_Vector * pVecFoots)
+bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots)
 {
 	fp_Container * pCon = getFirstContainer();
 	if(isThisBroken())
@@ -4456,7 +4456,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_Vector * pVecFoots)
 								if(pLine->containsFootnoteReference())
 								{
 									bFound = true;
-									UT_Vector vecFC;
+									UT_GenericVector<fp_FootnoteContainer*> vecFC;
 									pLine->getFootnoteContainers(&vecFC);
 									UT_uint32 i =0;
 									for(i=0; i< vecFC.getItemCount();i++)
@@ -4471,7 +4471,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_Vector * pVecFoots)
 								if(pTab->containsFootnoteReference())
 								{
 									bFound = true;
-									UT_Vector vecFC;
+									UT_GenericVector<fp_FootnoteContainer*> vecFC;
 									pTab->getFootnoteContainers(&vecFC);
 									UT_uint32 i =0;
 									for(i=0; i< vecFC.getItemCount();i++)
@@ -4486,7 +4486,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_Vector * pVecFoots)
   				}
 				else
 				{
-					UT_Vector vecFC;
+					UT_GenericVector<fp_FootnoteContainer*> vecFC;
 					pCell->getFootnoteContainers(&vecFC);
 					UT_uint32 i =0;
 					for(i=0; i< vecFC.getItemCount();i++)
@@ -4503,7 +4503,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_Vector * pVecFoots)
 			bFound = pTab->containsFootnoteReference();
 			if(bFound)
 			{
-				UT_Vector vecFC;
+				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				pTab->getFootnoteContainers(&vecFC);
 				UT_uint32 i =0;
 				for(i=0; i< vecFC.getItemCount();i++)
@@ -5342,12 +5342,12 @@ void  fp_TableContainer::_size_allocate_pass2(void)
   UT_sint32 row, col;
   fp_Allocation allocation;
   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-  const UT_Vector * pVecColProps = pTL->getVecColProps();
+  const UT_GenericVector<fl_ColProps*> * pVecColProps = pTL->getVecColProps();
   if(pVecColProps->getItemCount() > 0)
   {
 	  for (col = 0; (col < static_cast<UT_sint32>(pVecColProps->getItemCount())) && (col <getNumCols()); col++)
 	  {
-		  fl_ColProps * pColProp = static_cast<fl_ColProps *>(pVecColProps->getNthItem(col));
+		  fl_ColProps * pColProp = pVecColProps->getNthItem(col);
 		  getNthCol(col)->allocation = pColProp->m_iColWidth - getNthCol(col)->spacing;
 		  if(col == (getNumCols() - 1) )
 		  {
@@ -5360,7 +5360,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
   
   child = static_cast<fp_CellContainer *>(getNthCon(0));
   double dBorder = static_cast<double>(m_iBorderWidth);
-   while (child)
+  while (child)
   {
 	  fp_Requisition child_requisition;
 	  child->sizeRequest(&child_requisition);
@@ -5445,13 +5445,13 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 fp_TableRowColumn * fp_TableContainer::getNthCol(UT_sint32 i)
 {
 	UT_ASSERT(i < static_cast<UT_sint32>(m_vecColumns.getItemCount()));
-	return static_cast<fp_TableRowColumn *>(m_vecColumns.getNthItem(i));
+	return m_vecColumns.getNthItem(i);
 }
 
 fp_TableRowColumn * fp_TableContainer::getNthRow(UT_sint32 i)
 {
 	UT_ASSERT(i < static_cast<UT_sint32>(m_vecRows.getItemCount()));
-	return static_cast<fp_TableRowColumn *>(m_vecRows.getNthItem(i));
+	return m_vecRows.getNthItem(i);
 }
 
 
@@ -5463,7 +5463,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   pRequisition->height = 0;
   bool bDefinedColWidth = false;
   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-  const UT_Vector * pVecColProps = pTL->getVecColProps();
+  const UT_GenericVector<fl_ColProps *> * pVecColProps = pTL->getVecColProps();
   if(pVecColProps->getItemCount() > 0)
   {
 	  bDefinedColWidth = true;
@@ -5479,7 +5479,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   {
 	  if(bDefinedColWidth && (col < static_cast<UT_sint32>(pVecColProps->getItemCount())) )
 	  {
-		  fl_ColProps * pColProp = static_cast<fl_ColProps *>(pVecColProps->getNthItem(col));
+		  fl_ColProps * pColProp = pVecColProps->getNthItem(col);
 		  getNthCol(col)->requisition = pColProp->m_iColWidth;
 	  }
 	  pRequisition->width += getNthCol(col)->requisition;

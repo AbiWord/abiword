@@ -624,7 +624,7 @@ EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
 {
 	if(ibar >= m_pFrameImpl->m_vecToolbars.getItemCount())
 		return NULL;
-	return static_cast<EV_Toolbar *>(m_pFrameImpl->m_vecToolbars.getNthItem(ibar));
+	return m_pFrameImpl->m_vecToolbars.getNthItem(ibar);
 }
 
 bool XAP_Frame::repopulateCombos(void)

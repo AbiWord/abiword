@@ -537,7 +537,7 @@ public:
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
-	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return static_cast<RTF_msword97_list *>(m_vecWord97Lists.getNthItem(i));}
+	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return m_vecWord97Lists.getNthItem(i);}
     bool  isWord97Lists(void) const { return (m_vecWord97Lists.getItemCount() > 0);}
 
 	enum PictFormat {
@@ -739,10 +739,10 @@ private:
 	UT_Stack m_stateStack;
 	RTFStateStore m_currentRTFState;
 
-	UT_Vector m_fontTable;
+	UT_GenericVector<RTFFontTableItem*> m_fontTable;
 	UT_NumberVector m_colourTable;
 	UT_Vector m_hdrFtrTable;
-	UT_Vector m_styleTable;
+	UT_GenericVector<XML_Char *> m_styleTable;
 
 	struct _rtfAbiListTable
 	{
@@ -754,8 +754,8 @@ private:
 		UT_uint32 mapped_id;
 		UT_uint32 mapped_parentid;
 	};
-	UT_Vector m_vecAbiListTable;
-	_rtfAbiListTable * getAbiList( UT_uint32 i) {return static_cast<_rtfAbiListTable *>(m_vecAbiListTable.getNthItem(i));}
+	UT_GenericVector<_rtfAbiListTable *> m_vecAbiListTable;
+	_rtfAbiListTable * getAbiList( UT_uint32 i) {return m_vecAbiListTable.getNthItem(i);}
 
 	RTF_msword97_listOverride* _getTableListOverride(UT_uint32 id);
 
@@ -776,8 +776,8 @@ private:
 	bool                m_parsingHdrFtr;
 	UT_uint32           m_icurOverride;
 	UT_uint32           m_icurOverrideLevel;
-	UT_Vector           m_vecWord97Lists;
-	UT_Vector           m_vecWord97ListOverride;
+	UT_GenericVector<RTF_msword97_list *> m_vecWord97Lists;
+	UT_GenericVector<RTF_msword97_listOverride*>           m_vecWord97ListOverride;
 	void _appendHdrFtr ();
 	bool _appendField (const XML_Char *xmlField, const XML_Char ** pszAttribs=NULL);
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML);
@@ -816,13 +816,4 @@ private:
 };
 
 #endif /* IE_IMP_RTF_H */
-
-
-
-
-
-
-
-
-
 

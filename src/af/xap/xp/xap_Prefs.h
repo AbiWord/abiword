@@ -97,7 +97,7 @@ public:
 	
 protected:
 	XML_Char *			m_szName;
-	UT_StringPtrMap	    m_hash;
+	UT_GenericStringMap<XML_Char*> m_hash;
 	XAP_Prefs *			m_pPrefs;
 	UT_uint32			m_uTick;   // ticks up every time setValue() or setValueBool() is called
 };
@@ -161,22 +161,29 @@ public:
 	void					_markPrefChange	( const XML_Char *szKey );
 protected:
 	void					_pruneRecent(void);
-	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k, const UT_Vector &vecSchemes) const;
+	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k, 
+										  const UT_GenericVector<XAP_PrefsScheme *> &vecSchemes) const;
 
 	XAP_App *				m_pApp;
 	bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
 	bool					m_bUseEnvLocale; /* use POSIX env vars to set locale */
 
-	UT_Vector				m_vecSchemes;		/* vector of XAP_PrefsScheme */
-	UT_Vector				m_vecPluginSchemes;	/* vector of XAP_PrefsScheme */
+	UT_GenericVector<XAP_PrefsScheme *>	m_vecSchemes;		/* vector of XAP_PrefsScheme */
+	UT_GenericVector<XAP_PrefsScheme *>	m_vecPluginSchemes;	/* vector of XAP_PrefsScheme */
 	XAP_PrefsScheme *		m_currentScheme;
 	XAP_PrefsScheme *		m_builtinScheme;
 
 	UT_uint32				m_iMaxRecent;
-	UT_Vector				m_vecRecent;		/* vector of (char *) */
-	UT_Vector               m_vecLog;           /* vector of UT_UTF8String */
-	
-	UT_Vector				m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
+	UT_GenericVector<char*>	m_vecRecent;		/* vector of (char *) */
+	UT_GenericVector<UT_UTF8String *> m_vecLog;           /* vector of UT_UTF8String */
+
+	typedef struct					/* used to store the listener/data pairs in the vector  */
+	{
+		PrefsListener	m_pFunc;
+		void			*m_pData;
+	} tPrefsListenersPair;
+
+	UT_GenericVector<tPrefsListenersPair *>	m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
 	UT_StringPtrMap		    m_ahashChanges;
 	bool					m_bInChangeBlock;
 	void					_sendPrefsSignal( UT_StringPtrMap *hash );
@@ -209,11 +216,6 @@ private:
 		bool				m_bFoundGeometry;
 	} m_parserState;
 
-	typedef struct					/* used to store the listener/data pairs in the vector  */
-	{
-		PrefsListener	m_pFunc;
-		void			*m_pData;
-	} tPrefsListenersPair;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

@@ -184,7 +184,7 @@ protected:
 								 	UT_sint32 			xoff,
 								    UT_sint32 			yoff); 
 								 		
-	UT_Vector		m_vecFontList;
+	UT_GenericVector<PSFont *>	m_vecFontList;
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;
 	ps_Generate *	m_ps;

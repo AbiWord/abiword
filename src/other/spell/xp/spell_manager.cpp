@@ -78,9 +78,9 @@ SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, s
 	return ret;
 }
 
-UT_Vector *SpellChecker::suggestWord(const UT_UCSChar* word, size_t len)
+UT_GenericVector<UT_UCSChar*> *SpellChecker::suggestWord(const UT_UCSChar* word, size_t len)
 {
-	UT_Vector *pvSugg = _suggestWord(word, len);
+	UT_GenericVector<UT_UCSChar*> *pvSugg = _suggestWord(word, len);
 
 	m_BarbarismChecker.suggestWord(word, len, pvSugg);
 

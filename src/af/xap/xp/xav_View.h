@@ -164,8 +164,8 @@ protected:
 	UT_uint32                       m_iTick; // Count changes
 	bool				m_bInsertMode;
 
-	UT_Vector			m_scrollListeners;
-	UT_Vector			m_vecListeners;
+	UT_GenericVector<AV_ScrollObj*>	m_scrollListeners;
+	UT_GenericVector<AV_Listener*>	m_vecListeners;
 
 private:
 	AV_View(const AV_View&);	// no impl.

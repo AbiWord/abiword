@@ -63,7 +63,7 @@ public:
 	UT_svg *getSVG() const { return m_pSVG; }
 
 	UT_sint32 m_iTreeLevel;
-	UT_Vector m_SVG_Matrix;
+	UT_GenericVector<UT_SVGMatrix*> m_SVG_Matrix;
 	UT_SVGMatrix *m_CurrentMatrix;
 };
 

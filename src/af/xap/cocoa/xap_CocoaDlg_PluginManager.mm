@@ -211,11 +211,11 @@ void XAP_CocoaDialog_PluginManager::_refreshTab1 ()
 {
 	XAP_Module * pModule = NULL;
 
-	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+	const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 
 	[(NSMutableArray*)[m_dataSource array] removeAllObjects];
 	for (UT_uint32 i = 0; i < pVec->size(); i++) {
-		pModule = (XAP_Module *)pVec->getNthItem (i);
+		pModule = pVec->getNthItem (i);
 		NSString* str = [[NSString alloc ] initWithUTF8String:pModule->getModuleInfo()->name];
 		[m_dataSource addString:str];
 		[str release];
@@ -227,7 +227,7 @@ void XAP_CocoaDialog_PluginManager::_refreshTab2 ()
 	XAP_Module * pModule = 0;
 	int selectedRow = [m_dlg selectedPlugin];
 	if (selectedRow != -1) {
-		pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow);
+		pModule = XAP_ModuleManager::instance().enumModules()->getNthItem(selectedRow);
 	}
 
 	if (pModule)

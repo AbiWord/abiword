@@ -83,7 +83,7 @@ bool AP_CocoaToolbar_FontCombo::populate(void)
 		const char * fName = strdup([item UTF8String]);
 		UT_ASSERT (fName);
 		if ((*fName != '.') && (*fName != '#')) {	// this is also what Camino does.
-			m_vecContents.addItem((void *)(fName));
+			m_vecContents.addItem(fName);
 		}
 		else {
 			FREEP(fName);

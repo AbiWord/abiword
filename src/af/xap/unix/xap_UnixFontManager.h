@@ -44,7 +44,7 @@ public:
 
 	bool					scavengeFonts(void);
 
-	UT_Vector *			    getAllFonts(void);
+	UT_GenericVector<XAP_UnixFont*> *  getAllFonts(void);
 	XAP_UnixFont *			getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
 
 	XAP_UnixFont *			getFont(const char * fontname,
@@ -78,10 +78,10 @@ private:
 
 	void					_addFont(XAP_UnixFont* font,GR_Graphics * pG);
 
-	UT_StringPtrMap 		m_fontHash;
+	UT_GenericStringMap<XAP_UnixFont *> m_fontHash;
 	FcFontSet*		m_pFontSet;
 	FcConfig*		m_pConfig;
-	UT_Vector       m_vecDeallocatedFonts;
+	UT_GenericVector<const XAP_UnixFont *>  m_vecDeallocatedFonts;
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */

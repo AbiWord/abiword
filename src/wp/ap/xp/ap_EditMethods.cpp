@@ -7798,13 +7798,13 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		// Get all clones of this frame and set the new page dimensions
 		//
 
-		UT_Vector vClones;
+		UT_GenericVector<XAP_Frame*> vClones;
 		if(pFrame->getViewNumber() > 0)
 		{
 			pApp->getClones(&vClones,pFrame);
 			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 			{
-				XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
+				XAP_Frame * f = vClones.getNthItem(i);
 				UT_sint32 iZoom = f->getZoomPercentage();
 				XAP_Frame::tZoomType zt = f->getZoomType();
 				if((zt == XAP_Frame::z_PAGEWIDTH) || (zt == XAP_Frame::z_WHOLEPAGE))
@@ -7907,37 +7907,37 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	// Convert them into const char strings and change the section format
 	//
-	UT_Vector v;
+	UT_GenericVector<const XML_Char*> v;
 	szLeftMargin = UT_convertInchesToDimensionString(docMargUnits,dLeftMargin);
-	v.addItem(static_cast<const void *>("page-margin-left"));
-	v.addItem(static_cast<const void *>(szLeftMargin.c_str()));
+	v.addItem("page-margin-left");
+	v.addItem(szLeftMargin.c_str());
 
 	szRightMargin = UT_convertInchesToDimensionString(docMargUnits,dRightMargin);
-	v.addItem(static_cast<const void *>("page-margin-right"));
-	v.addItem(static_cast<const void *>(szRightMargin.c_str()));
+	v.addItem("page-margin-right");
+	v.addItem(szRightMargin.c_str());
 
 	szTopMargin = UT_convertInchesToDimensionString(docMargUnits,dTopMargin);
-	v.addItem(static_cast<const void *>("page-margin-top"));
-	v.addItem(static_cast<const void *>(szTopMargin.c_str()));
+	v.addItem("page-margin-top");
+	v.addItem(szTopMargin.c_str());
 
 	szBottomMargin = UT_convertInchesToDimensionString(docMargUnits,dBottomMargin);
-	v.addItem(static_cast<const void *>("page-margin-bottom"));
-	v.addItem(static_cast<const void *>(szBottomMargin.c_str()));
+	v.addItem("page-margin-bottom");
+	v.addItem(szBottomMargin.c_str());
 
 	szFooterMargin = UT_convertInchesToDimensionString(docMargUnits,dFooterMargin);
-	v.addItem(static_cast<const void *>("page-margin-footer"));
-	v.addItem(static_cast<const void *>(szFooterMargin.c_str()));
+	v.addItem("page-margin-footer");
+	v.addItem(szFooterMargin.c_str());
 
 	szHeaderMargin = UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin);
-	v.addItem(static_cast<const void *>("page-margin-header"));
-	v.addItem(static_cast<const void *>(szHeaderMargin.c_str()));
+	v.addItem("page-margin-header");
+	v.addItem(szHeaderMargin.c_str());
 
 	UT_uint32 countv = v.getItemCount() + 1;
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countv, sizeof(XML_Char *)));
 	UT_uint32 i;
 	for(i=0; i<v.getItemCount();i++)
 	{
-		props[i] = static_cast<XML_Char *>(v.getNthItem(i));
+		props[i] = v.getNthItem(i);
 	}
 	props[i] = static_cast<XML_Char *>(NULL);
 	if(ppView->isHdrFtrEdit())
@@ -9448,13 +9448,13 @@ static bool s_doStylesDlg(FV_View * pView)
 	//
 	// Get all clones of this frame and set styles combo box
 	//
-	UT_Vector vClones;
+	UT_GenericVector<XAP_Frame*> vClones;
 	if(pFrame->getViewNumber() > 0)
 	{
 		pApp->getClones(&vClones,pFrame);
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		{
-			XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
+			XAP_Frame * f = vClones.getNthItem(i);
 			f->repopulateCombos();
 		}
 	}

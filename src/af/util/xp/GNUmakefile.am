@@ -40,6 +40,8 @@ else
 THREAD_OBJ=
 endif
 
+CFLAGS+=-frepo
+
 libUtil_xp_a_SOURCES=\
 	ut_AdobeEncoding.cpp 	\
 	ut_allocator.cpp	\

@@ -221,7 +221,7 @@ public:
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
-	bool					appendFmt(const UT_Vector * pVecAttributes);
+	bool					appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
@@ -291,7 +291,7 @@ public:
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
-	const UT_StringPtrMap & getAllStyles()const {return m_hashStyles;}
+	const UT_GenericStringMap<PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
 
@@ -513,7 +513,7 @@ protected:
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
-	UT_StringPtrMap		    m_hashStyles;
+	UT_GenericStringMap<PD_Style *> m_hashStyles;
 
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;

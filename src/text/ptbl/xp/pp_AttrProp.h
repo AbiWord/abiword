@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
+#include "ut_pair.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
 
@@ -50,9 +51,9 @@ public:
 	// terminated by a null name.
 
 	bool	setAttributes(const XML_Char ** attributes);
-	bool    setAttributes(const UT_Vector * pVector);
+	bool    setAttributes(const UT_GenericVector<XML_Char*> * pVector);
 	bool	setProperties(const XML_Char ** properties);
-	bool	setProperties(const UT_Vector * pVector);
+	bool	setProperties(const UT_GenericVector<XML_Char*> * pVector);
 
 	const XML_Char ** getAttributes () const { return m_pAttributes ? m_pAttributes->list () : 0; }
 	const XML_Char ** getProperties () const { return m_pProperties ? m_pProperties->list () : 0; }
@@ -98,8 +99,10 @@ protected:
 	void _clearEmptyAttributes();
 
 
-	UT_StringPtrMap * m_pAttributes;
-	UT_StringPtrMap * m_pProperties;
+	typedef UT_Pair<const XML_Char*,const PP_PropertyType *> PropertyPair;
+
+	UT_GenericStringMap<XML_Char*> * m_pAttributes; // of XML_Char*
+	UT_GenericStringMap<PropertyPair*> * m_pProperties; // of PropertyPair
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 	UT_uint32			m_index;	//$HACK

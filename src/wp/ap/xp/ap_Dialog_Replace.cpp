@@ -376,7 +376,7 @@ void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 	getActiveFrame()->showMessageBox(message);
 }
 
-bool AP_Dialog_Replace::_manageList(UT_Vector* list, UT_UCSChar* string)
+bool AP_Dialog_Replace::_manageList(UT_GenericVector<UT_UCS4Char*>* list, UT_UCSChar* string)
 {
 	UT_UCS4String us(string);
 	UT_uint32 i = 0;
@@ -387,7 +387,7 @@ bool AP_Dialog_Replace::_manageList(UT_Vector* list, UT_UCSChar* string)
 	// check if the current string is already in the list
 	for (i=0; i<list->getItemCount(); i++) 
 	{
-		if (!UT_UCS4_strcmp(string, static_cast<UT_UCSChar*>(list->getNthItem(i))))
+		if (!UT_UCS4_strcmp(string, list->getNthItem(i)))
 		{
 			found = true;
 			break;

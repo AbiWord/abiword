@@ -73,7 +73,6 @@ struct dg_DrawArgs;
 
 class UT_Worker;
 class UT_Timer;
-class UT_StringPtrMap;
 
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
@@ -251,10 +250,10 @@ public:
 	bool	isTabListBehindPoint(void);
 	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(FL_ListType listType);
-	void	getBlocksInSelection( UT_Vector * vBlock);
+	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock);
 	UT_sint32 getNumColumnsInSelection(void);
 	UT_sint32 getNumRowsInSelection(void);
-	void	getAllBlocksInList( UT_Vector * vBlock);
+	void	getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * vBlock);
 	bool	isPointBeforeListLabel(void);
 	bool	isCurrentListBlockEmpty(void);
 	bool	cmdStartList(const XML_Char * style);
@@ -589,7 +588,8 @@ public:
 	UT_RGBColor			getColorHdrFtr(void) const { return m_colorHdrFtr; }
 	UT_RGBColor			getColorColumnLine(void) const { return m_colorColumnLine; }
 
-	void                getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector &vPages) const;
+	void                getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &vRect, 
+															 UT_GenericVector<fp_Page*> &vPages) const;
 
 	//
 	// image selection && resizing && dragging functions

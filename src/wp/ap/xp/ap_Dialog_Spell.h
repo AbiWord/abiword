@@ -74,8 +74,8 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    bool m_bIsSelection;
 
    // change/ignore all hash tables
-   UT_StringPtrMap * m_pChangeAll;
-   UT_StringPtrMap * m_pIgnoreAll;
+   UT_GenericStringMap<UT_UCSChar*> * m_pChangeAll;
+   UT_GenericStringMap<UT_UCSChar*> * m_pIgnoreAll;
    
    // these variables keep track of the current
    // location/state of the search through the
@@ -105,7 +105,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    
    // current suggested corrections to the 
    // most recently misspelled word
-   UT_Vector * m_Suggestions;
+   UT_GenericVector<UT_UCSChar*> * m_Suggestions;
 
    bool	m_bCancelled;
    short m_iSelectedRow;

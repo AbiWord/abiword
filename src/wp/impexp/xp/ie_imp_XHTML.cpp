@@ -671,7 +671,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_UTF8String * prev = 0;
 			if (m_divStyles.getItemCount ())
 				{
-					prev = reinterpret_cast<UT_UTF8String *>(m_divStyles.getLastItem ());
+					prev = m_divStyles.getLastItem ();
 				}
 			UT_UTF8String * style = 0;
 			if (prev)
@@ -1315,7 +1315,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 			if (m_divStyles.getItemCount ())
 				{
 					UT_UTF8String * prev = 0;
-					prev = reinterpret_cast<UT_UTF8String *>(m_divStyles.getLastItem ());
+					prev = m_divStyles.getLastItem ();
 					DELETEP(prev);
 				}
 			m_divStyles.pop_back ();
@@ -1695,7 +1695,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 
 	UT_UTF8String * div_style = 0;
 	if (m_divStyles.getItemCount ())
-		div_style = reinterpret_cast<UT_UTF8String *>(m_divStyles.getLastItem ());
+		div_style = m_divStyles.getLastItem ();
 
 	UT_UTF8String style;
 	if (div_style)
@@ -1821,7 +1821,7 @@ bool IE_Imp_XHTML::appendFmt( const XML_Char ** attributes)
 	return true;
 }
 
-bool IE_Imp_XHTML::appendFmt( const UT_Vector * pVecAttributes)
+bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
 {
 	if(!bInTable())
 		{

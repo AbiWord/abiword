@@ -1188,7 +1188,7 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
 	UT_sint32 i= 0;
 	for(i=0; i< count; i+=2)
 	{
-		gchar * sz = static_cast<gchar *>(m_vecAllProps.getNthItem(i));
+		gchar * sz = static_cast<gchar *>(const_cast<XML_Char*>(m_vecAllProps.getNthItem(i)));
 		GtkWidget * li = gtk_list_item_new_with_label(sz);
 		gtk_widget_show(li);
 		gtk_container_add(GTK_CONTAINER(delCombo->list),li);

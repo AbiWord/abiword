@@ -278,7 +278,7 @@ XAP_Frame * AP_Frame::buildFrame(XAP_Frame * pF)
 UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNew)
 {
 	bool bUpdateClones;
-	UT_Vector vClones;
+	UT_GenericVector<XAP_Frame*> vClones;
 	XAP_App * pApp = getApp();
 	UT_uint32 j = 0;
 	if(pApp->findFrame(this) < 0)
@@ -292,7 +292,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	}
 	for(j=0; j<vClones.getItemCount();j++)
 	{
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(vClones.getNthItem(j));
+		XAP_Frame * pFrame = vClones.getNthItem(j);
 		if(pApp->findFrame(pFrame) < 0)
 		{
 			pApp->rememberFrame(pFrame,this);
@@ -319,7 +319,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	{
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		{
-			AP_Frame * pFrame = static_cast<AP_Frame *>(vClones.getNthItem(i));
+			AP_Frame * pFrame = static_cast<AP_Frame*>(vClones.getNthItem(i));
 			if(pFrame != this)
 			{
 				pFrame->_replaceDocument(m_pDoc);
@@ -338,7 +338,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft)
 UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markClean)
 {
 	bool bUpdateClones;
-	UT_Vector vClones;
+	UT_GenericVector<XAP_Frame*> vClones;
 	XAP_App * pApp = getApp();
 
 	bUpdateClones = (getViewNumber() > 0);
@@ -379,7 +379,7 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
  */
 UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 {
-	UT_Vector vecClones;
+	UT_GenericVector<XAP_Frame*> vecClones;
 	XAP_Frame *pF = NULL;
 	XAP_App * pApp = getApp();
 	UT_ASSERT(pApp);

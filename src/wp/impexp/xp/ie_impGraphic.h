@@ -27,7 +27,6 @@
 
 class FG_Graphic;
 class UT_ByteBuf;
-class UT_Vector;
 class IE_ImpGraphic;
 
 /*!

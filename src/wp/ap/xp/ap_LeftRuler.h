@@ -38,7 +38,6 @@
 class XAP_App;
 class XAP_Frame;
 class XAP_Prefs;
-class UT_StringPtrMap;
 class AV_ScrollObj;
 class GR_Graphics;
 class ap_RulerTicks;
@@ -89,7 +88,7 @@ public:
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{
-					delete static_cast<AP_LeftRulerTableInfo *>(m_vecTableRowInfo->getNthItem(i));
+					delete m_vecTableRowInfo->getNthItem(i);
 				}
 				delete m_vecTableRowInfo;
 			}
@@ -111,7 +110,7 @@ public:
 	UT_sint32               m_iNumRows;
 	UT_sint32               m_iCurrentRow;
 	UT_sint32               m_iTablePadding;
-	UT_Vector *             m_vecTableRowInfo;
+	UT_GenericVector<AP_LeftRulerTableInfo *> * m_vecTableRowInfo;
 };
 	
 /*****************************************************************/

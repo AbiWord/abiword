@@ -97,7 +97,7 @@ public:
 
 	virtual bool  appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	virtual bool  appendFmt( const XML_Char ** attributes);
-	virtual bool  appendFmt( const UT_Vector * pVecAttributes);
+	virtual bool  appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
 	virtual bool  appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	virtual bool  appendObject(PTObjectType pto, const XML_Char ** attributes);
 
@@ -133,7 +133,7 @@ private:
 	UT_String	m_dirname;
 
 	UT_Vector	m_divClasses;
-	UT_Vector	m_divStyles;
+	UT_GenericVector<UT_UTF8String *>	m_divStyles;
 	bool        bInTable(void);
 };
 

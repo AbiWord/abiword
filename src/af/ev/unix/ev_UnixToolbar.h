@@ -76,7 +76,7 @@ protected:
 	GtkWidget *						m_wToolbar;
 	GtkWidget * 					m_wHandleBox;
 	AP_UnixToolbar_Icons 			m_pUnixToolbarIcons;
-	UT_Vector						m_vecToolbarWidgets;
+	UT_GenericVector<_wd*>			m_vecToolbarWidgets;
 };
 
 #endif /* EV_UNIXTOOLBAR_H */

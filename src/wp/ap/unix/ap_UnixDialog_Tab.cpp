@@ -537,7 +537,7 @@ GtkWidget *AP_UnixDialog_Tab::_lookupWidget ( tControl id )
 {
 	UT_return_val_if_fail(m_Widgets.getItemCount() > static_cast<UT_uint32>(id), NULL);
 
-	GtkWidget *w = static_cast<GtkWidget*>(m_Widgets.getNthItem(static_cast<UT_uint32>(id)));
+	GtkWidget *w = m_Widgets.getNthItem(static_cast<UT_uint32>(id));
 	UT_ASSERT(w && GTK_IS_WIDGET(w));
 
 	return w;

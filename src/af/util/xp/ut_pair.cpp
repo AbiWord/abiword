@@ -22,9 +22,11 @@
 #include <string.h>
 #include "ut_pair.h"
 
+#if 0
 UT_Pair::UT_Pair(const pair_type first, const pair_type second)
 :	m_first(first),
 	m_second(second)
+
 {
 }
 
@@ -32,3 +34,4 @@ UT_Pair::~UT_Pair()
 {
 }
 
+#endif

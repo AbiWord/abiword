@@ -826,10 +826,10 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_clist_clear(GTK_CLIST(m_fontList));
 
 	// throw them in the hash save duplicates
-	UT_Vector * fonts = m_fontManager->getAllFonts();
+	UT_GenericVector<XAP_UnixFont*>* fonts = m_fontManager->getAllFonts();
 	for (UT_uint32 i = 0; i < fonts->size(); i++)
 	{
-		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(fonts->getNthItem(i));
+		const XAP_UnixFont * pFont = fonts->getNthItem(i);
 		const char * fName = pFont->getName();
 
 		if (!fontHash.contains(fName, NULL))

@@ -69,7 +69,7 @@ XAP_Menu_Id
 EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 {
 	UT_DEBUGMSG(("Adding path %s.\n", path.c_str()));
-	UT_Vector *names = simpleSplit(path, '/');
+	UT_GenericVector<UT_String*> *names = simpleSplit(path, '/');
 //	EV_Menu_ActionSet *pMenuActionSet = getApp()->getMenuActionSet();
 	const UT_String *label;
 	UT_uint32 last_pos = 1;
@@ -84,7 +84,7 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	size_t end = names->size() - 1;
 	for (size_t i = 0; i < end; ++i)
 	{
-		label = static_cast<const UT_String*> ((*names)[i]);
+		label = (*names)[i];
 		UT_ASSERT(label);
 		index = EV_searchMenuLabel(m_pMenuLabelSet, *label);
 
@@ -97,7 +97,7 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 			// and now we add the new submenus
 			for (size_t j = i; j < end; ++j)
 			{
-				label = static_cast<const UT_String*> ((*names)[j]);
+				label = (*names)[j];
 				UT_ASSERT(label);
 				index = m_pMenuLayout->addLayoutItem(++lpos, EV_MLF_BeginSubMenu);
 //				pMenuActionSet->addAction(action);
@@ -127,8 +127,8 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	// and now we create the menu item
 	index = m_pMenuLayout->addLayoutItem(last_pos, EV_MLF_Normal);
 //	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
-	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, (static_cast<const UT_String *>(names->back()))->c_str(),
-												(static_cast<const UT_String *>(names->back()))->c_str()));
+	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, names->back()->c_str(),
+												names->back()->c_str()));
 
 	if (!_doAddMenuItem(last_pos))
 	{
@@ -259,7 +259,7 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 
 XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &label)
 {
-	const UT_Vector * labels_table = labels->getAllLabels();
+	const UT_GenericVector<EV_Menu_Label *> * labels_table = labels->getAllLabels();
 	const EV_Menu_Label *l = 0;
 
 	UT_ASSERT(labels_table);
@@ -268,7 +268,7 @@ XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &
 
 	for (UT_uint32 i = 0; i < size_labels; ++i)
 	{
-		l = const_cast<const EV_Menu_Label *> (static_cast<EV_Menu_Label *> (labels_table->getNthItem(i)));
+		l = labels_table->getNthItem(i);
 		if (l && label ==l->getMenuLabel())
 		{
 			id = l->getMenuId();

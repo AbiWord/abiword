@@ -225,8 +225,8 @@ private:
 	UT_sint32               m_iYoff;
 	UT_RGBColor				m_curColor;
 
-	UT_Vector				m_vSaveRect;
-	UT_Vector 				m_vSaveRectBuf;
+	UT_GenericVector<UT_Rect*>     m_vSaveRect;
+	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;       

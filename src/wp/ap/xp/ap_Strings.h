@@ -73,7 +73,7 @@ public:
 	virtual bool				loadStringsFromDisk(const char * szFilename);
 
 protected:
-	UT_Vector					m_vecStringsAP;
+	UT_GenericVector<XML_Char*>					m_vecStringsAP;
 };
 
 

@@ -107,7 +107,7 @@ public:
 	virtual bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = 0);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					forgetClones(XAP_Frame * pFrame);
-	virtual bool					getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame);
+	virtual bool					getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * pFrame);
 	virtual XAP_Frame * 			newFrame() = 0;
 	virtual void					reallyExit() = 0;
 
@@ -135,7 +135,7 @@ public:
 	// only used in ispell builds because aspell doesn't suck...
 	bool				addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
 	bool				isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
-	void                            suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
+	void                            suggestWord(UT_GenericVector<UT_UCSChar*> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
     XAP_Prefs *						getPrefs() const;
 	bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	bool							getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
@@ -246,8 +246,8 @@ protected:
 	XAP_Dictionary *						m_pDict;
 	XAP_Prefs *								m_prefs;			/* populated in AP_<platform>App::initialize() */
 
-	UT_Vector								m_vecFrames;
-	UT_StringPtrMap							m_hashClones;
+	UT_GenericVector<XAP_Frame*>			m_vecFrames;
+	UT_GenericStringMap<UT_GenericVector<XAP_Frame*>*>	m_hashClones;
 	XAP_Frame *								m_lastFocussedFrame;
 	XAP_Menu_Factory *                      m_pMenuFactory;
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;

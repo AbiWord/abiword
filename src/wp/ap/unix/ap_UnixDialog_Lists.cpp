@@ -344,13 +344,13 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 	{
 		for(i=0; i< count;i++)
 		{
-			wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(i));
+			wF = m_vecFoldCheck.getNthItem(i);
 			ID = m_vecFoldID.getNthItem(i);
 			g_signal_handler_block(G_OBJECT(wF),ID);
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
 			g_signal_handler_unblock(G_OBJECT(wF),ID);
 		}
-		wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(0));
+		wF = m_vecFoldCheck.getNthItem(0);
 		ID = m_vecFoldID.getNthItem(0);
 		g_signal_handler_block(G_OBJECT(wF),ID);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),TRUE);
@@ -361,13 +361,13 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 	{
 		for(i=0; i< count;i++)
 		{
-			wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(i));
+			wF = m_vecFoldCheck.getNthItem(i);
 			ID = m_vecFoldID.getNthItem(i);
 			g_signal_handler_block(G_OBJECT(wF),ID);
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
 			g_signal_handler_unblock(G_OBJECT(wF),ID);
 		}
-		wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(iLevel));
+		wF = m_vecFoldCheck.getNthItem(iLevel);
 		ID = m_vecFoldID.getNthItem(iLevel);
 		g_signal_handler_block(G_OBJECT(wF),ID);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),TRUE);
@@ -1092,7 +1092,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 {
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_Vector * list = unixapp->getFontManager()->getAllFonts();
+	UT_GenericVector<XAP_UnixFont*>* list = unixapp->getFontManager()->getAllFonts();
 	UT_uint32 count = list->size();
 
 	GList *glFonts = NULL;
@@ -1101,7 +1101,7 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(list->getNthItem(i));
+		XAP_UnixFont * pFont = list->getNthItem(i);
 		const gchar * lgn  = reinterpret_cast<const gchar *>(pFont->getName());
 		if((strstr(currentfont,lgn)==NULL) || (strlen(currentfont)!=strlen(lgn)) )
 		{

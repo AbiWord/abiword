@@ -37,8 +37,8 @@ public:
 	EV_EditEventMapper *			getMapByName(const char * szName) const;
 
 protected:
-	UT_Vector						m_vecEventMaps; /* EV_EditEventMapper * */
-	UT_Vector						m_vecNames;		/* const char * */
+	UT_GenericVector<EV_EditEventMapper *>	m_vecEventMaps; /* EV_EditEventMapper * */
+	UT_GenericVector<const char*>			m_vecNames;		/* const char * */
 	
 	UT_uint32						m_indexCurrentEventMap;
 };

@@ -357,7 +357,7 @@ void XAP_CocoaFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 	pToolbar = _newToolbar(m_pCocoaApp, pFrame, szTBName,
 						   (const char *) m_szToolbarLabelSetName);
 	static_cast<EV_CocoaToolbar *>(pToolbar)->rebuildToolbar(oldpos);
-	m_vecToolbars.setNthItem(ibar, (void *) pToolbar, NULL);
+	m_vecToolbars.setNthItem(ibar, pToolbar, NULL);
 //
 // Refill the framedata pointers
 //
@@ -633,7 +633,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 - (NSArray*)getToolbars
 {
 	NSMutableArray*	array = [NSMutableArray array];
-	const UT_Vector & toolbars = m_frame->_getToolbars();
+	const UT_GenericVector<EV_Toolbar*> & toolbars = m_frame->_getToolbars();
 	UT_uint32 count = toolbars.getItemCount();
 	for (UT_uint32 i = 0; i < count; i++) {
 		const EV_CocoaToolbar* tlbr = static_cast<const EV_CocoaToolbar*>(toolbars[i]);

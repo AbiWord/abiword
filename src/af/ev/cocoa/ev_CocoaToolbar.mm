@@ -381,7 +381,7 @@ bool EV_CocoaToolbar::synthesize(void)
 				{
 					pControl->populate();
 
-					const UT_Vector * v = pControl->getContents();
+					const UT_GenericVector<const char*> * v = pControl->getContents();
 					UT_ASSERT(v);
 
 					if (v)
@@ -389,7 +389,7 @@ bool EV_CocoaToolbar::synthesize(void)
 						UT_uint32 items = v->getItemCount();
 						for (UT_uint32 m=0; m < items; m++)
 						{
-							char * sz = (char *)v->getNthItem(m);
+							const char * sz = v->getNthItem(m);
 							
 							NSString * str = [NSString stringWithUTF8String:sz];	// autoreleased
 							[comboBox addItemWithObjectValue:str];
@@ -676,7 +676,7 @@ bool EV_CocoaToolbar::repopulateStyles(void)
 //
 // Now the combo box has to be refilled from this
 //						
-	const UT_Vector * v = pControl->getContents();
+	const UT_GenericVector<const char *> * v = pControl->getContents();
 	UT_ASSERT(v);
 //
 // Now  we must remove and delete the old glist so we can attach the new
@@ -691,7 +691,7 @@ bool EV_CocoaToolbar::repopulateStyles(void)
 	UT_uint32 items = v->getItemCount();
 	for (UT_uint32 m=0; m < items; m++)
 	{
-		char * sz = (char *)v->getNthItem(m);
+		const char * sz = v->getNthItem(m);
 		NSString * str = [[NSString alloc] initWithUTF8String:sz];
 		UT_ASSERT(str);
 		if (str) {

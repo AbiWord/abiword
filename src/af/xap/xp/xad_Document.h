@@ -38,7 +38,6 @@
 #include "time.h"
 
 // fwd. decl.
-class UT_StringPtrMap;
 class XAP_ResourceManager;
 class UT_UUID;
 class XAP_Frame;
@@ -215,7 +214,7 @@ public:
 	bool            addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
 								time_t tStart, UT_uint32 iVersion);
 	
-	UT_Vector &         getRevisions() {return m_vRevisions;}
+	const UT_GenericVector<AD_Revision*> &         getRevisions() {return m_vRevisions;}
 	UT_uint32           getHighestRevisionId() const;
 	const AD_Revision*  getHighestRevision() const;
 
@@ -278,7 +277,7 @@ private:
 	// these are for tracking versioning
 	bool            m_bHistoryWasSaved;
 	UT_Vector       m_vHistory;
-	UT_Vector       m_vRevisions;
+	UT_GenericVector<AD_Revision*> m_vRevisions;
 
 	bool            m_bMarkRevisions;
 	bool            m_bShowRevisions;

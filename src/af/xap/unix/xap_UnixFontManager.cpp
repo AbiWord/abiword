@@ -51,7 +51,7 @@ XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256),
 
 XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
-	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
+	m_fontHash.purgeData();
 	UT_VECTOR_PURGEALL(XAP_UnixFont *,m_vecDeallocatedFonts);
 	if (m_pFontSet)
 		FcFontSetDestroy (m_pFontSet);
@@ -75,9 +75,9 @@ static UT_sint32 compareFontNames(const void * vF1, const void * vF2)
 	return UT_strcmp((*pF1)->getName(), (*pF2)->getName());
 }
 
-UT_Vector * XAP_UnixFontManager::getAllFonts(void)
+UT_GenericVector<XAP_UnixFont*>* XAP_UnixFontManager::getAllFonts(void)
 {
-	UT_Vector* pVec = m_fontHash.enumerate();
+	UT_GenericVector<XAP_UnixFont*>* pVec = m_fontHash.enumerate();
 	UT_ASSERT(pVec);
 	if(pVec->getItemCount() > 1)
 		pVec->qsort(compareFontNames);
@@ -533,7 +533,7 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 	g_snprintf(keyBuffer, 512, "%s@%d", fontname, s);
 	UT_upperString(keyBuffer);
 	
-	const XAP_UnixFont* entry = static_cast<const XAP_UnixFont *>(m_fontHash.pick(keyBuffer));
+	const XAP_UnixFont* entry = m_fontHash.pick(keyBuffer);
 
 	//UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
@@ -549,10 +549,10 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont,GR_Graphics * pG)
 {
 	// we index fonts by a combined "name" and "style"
 	const char* fontkey = newfont->getFontKey();
-	const void * curfont_entry = m_fontHash.pick(fontkey);
+	const XAP_UnixFont * curfont_entry = m_fontHash.pick(fontkey);
 	if (curfont_entry)
 	{
-		const XAP_UnixFont* curfont = static_cast<const XAP_UnixFont*>(curfont_entry);
+		const XAP_UnixFont* curfont = curfont_entry;
 //
 // Delay the deletion of this font until this class is deleted. There could
 // be a pointer to this font in fp_Run as well as being in the GR_Graphics
@@ -577,5 +577,5 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont,GR_Graphics * pG)
 	*/
 	xxx_UT_DEBUGMSG(("Made newfont %x \n",newfont));
 
-	m_fontHash.insert(fontkey, static_cast<void *>(newfont));
+	m_fontHash.insert(fontkey, newfont);
 }

@@ -42,14 +42,14 @@ EV_Toolbar_Control::~EV_Toolbar_Control(void)
 {
 }
 
-const UT_Vector * EV_Toolbar_Control::getContents(void) const
+const UT_GenericVector<const char*> * EV_Toolbar_Control::getContents(void) const
 {
 	return &m_vecContents;
 }
 
-XML_Char * EV_Toolbar_Control::getNthItem(UT_uint32 n) const
+const char * EV_Toolbar_Control::getNthItem(UT_uint32 n) const
 {
-	return static_cast<XML_Char *>(m_vecContents.getNthItem(n));
+	return m_vecContents.getNthItem(n);
 }
 
 UT_uint32 EV_Toolbar_Control::getPixelWidth(void) const

@@ -128,7 +128,7 @@ protected:
 	XAP_StringSet *				m_pFallbackStringSet;
 
 private:
-	UT_Vector					m_vecStringsXAP;
+	UT_GenericVector<XML_Char*>	m_vecStringsXAP;
 
 	struct
 	{

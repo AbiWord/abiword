@@ -350,12 +350,12 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 }	
 
 
-UT_Vector*			AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList(void)
+const UT_GenericVector<const XML_Char*>* AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList(void)
 {
-	static UT_Vector* vec = NULL;
+	static UT_GenericVector<const XML_Char*>* vec = NULL;
 	if (vec == NULL) {
-		const char **current = s_FootnoteTypeDesc;
-		vec = new UT_Vector();
+		const XML_Char **current = s_FootnoteTypeDesc;
+		vec = new UT_GenericVector<const XML_Char*>();
 		while (*current) {
 			vec->addItem(*current);
 			current++;

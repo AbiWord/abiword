@@ -60,11 +60,11 @@ public:
     UT_UTF8String     getTOCPropVal(UT_UTF8String & sProp);
     UT_UTF8String     getTOCPropVal(const char * szProp);
     UT_UTF8String     getTOCPropVal(const char * szProp,UT_sint32 i);
-	UT_Vector *       getVecTABLeadersLabel(void)
+	const UT_GenericVector<const XML_Char*> *       getVecTABLeadersLabel(void)
 		{ return & m_vecTABLeadersLabel;}
-	UT_Vector *       getVecTABLeadersProp(void)
+	const UT_GenericVector<const XML_Char*> *       getVecTABLeadersProp(void)
 		{ return & m_vecTABLeadersProp;}
-	UT_Vector *       getVecLabelPropValue(void)
+	const UT_GenericVector<const XML_Char*>*   getVecLabelPropValue(void)
 		{ return & m_vecLabelPropValue;}
 	void              incrementStartAt(UT_sint32 iLevel, bool bInc);
     double            getIncrement(const char * sz);
@@ -76,9 +76,9 @@ private:
 	const PP_AttrProp *   m_pAP;
 	bool                  m_bTOCFilled;
 	UT_UTF8String         m_sTOCProps;
-	UT_Vector             m_vecTABLeadersLabel;
-	UT_Vector             m_vecTABLeadersProp;
-	UT_Vector             m_vecLabelPropValue;
+	UT_GenericVector<const XML_Char*> m_vecTABLeadersLabel;
+	UT_GenericVector<const XML_Char*> m_vecTABLeadersProp;
+	UT_GenericVector<const XML_Char*> m_vecLabelPropValue;
 };
 
 #endif /* AP_DIALOG_FORMATTOC_H */

@@ -1441,7 +1441,7 @@ void XAP_UnixFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 	pToolbar = _newToolbar(m_pUnixApp, pFrame, szTBName,
 			       static_cast<const char *>(m_szToolbarLabelSetName));
 	static_cast<EV_UnixToolbar *>(pToolbar)->rebuildToolbar(oldpos);
-	m_vecToolbars.setNthItem(ibar, static_cast<void *>(pToolbar), NULL);
+	m_vecToolbars.setNthItem(ibar, pToolbar, NULL);
 	// Refill the framedata pointers
 
 	pFrame->refillToolbarsInFrameData();

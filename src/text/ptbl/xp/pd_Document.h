@@ -259,7 +259,7 @@ public:
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
-	bool					appendFmt(const UT_Vector * pVecAttributes);
+	bool					appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
@@ -343,7 +343,7 @@ public:
     bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszValue);
     bool                    getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszValue);
 	// styles
-	void                    getAllUsedStyles(UT_Vector * pVecStyles);
+	void                    getAllUsedStyles(UT_GenericVector<PD_Style*> * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	PD_Style *				getStyleFromSDH(PL_StruxDocHandle sdh);
@@ -393,7 +393,7 @@ public:
 	fl_AutoNum *			getNthList(UT_uint32 i) const;
 	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
 	UT_uint32				getListsCount(void) const;
-	void					addList(const fl_AutoNum * pAutoNum);
+	void					addList(fl_AutoNum * pAutoNum);
 	bool					appendList(const XML_Char ** attributes);
 	bool					fixListHierarchy(void);
 	void					removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
@@ -457,7 +457,7 @@ public:
 	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value);
 	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const;
 
-	UT_StringPtrMap & getMetaData () { return m_metaDataMap ; }
+	UT_GenericStringMap<UT_UTF8String*> & getMetaData () { return m_metaDataMap ; }
 
 	// document-level property handling functions
 	const PP_AttrProp *     getAttrProp() const;
@@ -557,11 +557,11 @@ private:
 private:
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;
-	UT_Vector				m_vecListeners;
-	UT_Vector				m_vecLists;
+	UT_GenericVector<PL_Listener *> m_vecListeners;
+	UT_GenericVector<fl_AutoNum *> m_vecLists;
 	bool                    m_bHasListStopped;
 
-	UT_StringPtrMap		    m_hashDataItems;
+	UT_GenericStringMap<struct _dataItemPair*> m_hashDataItems;
 public:
 	IE_FileInfo				m_fileImpExpInfo;
 private:
@@ -574,12 +574,12 @@ private:
 	bool                    m_bLoading;
 	UT_Vector				m_vBookmarkNames;
 	bool                    m_bLockedStyles;
-	UT_StringPtrMap         m_metaDataMap;
+	UT_GenericStringMap<UT_UTF8String*> m_metaDataMap;
 	PT_AttrPropIndex        m_indexAP;
 	bool                    m_bDontImmediatelyLayout;
 
 	// mapping UT_String=>UT_UTF8String pointer
-	UT_StringPtrMap         m_mailMergeMap;
+	UT_GenericStringMap<UT_UTF8String*>  m_mailMergeMap;
 
 	UT_UCS4Char             m_iLastDirMarker;
 

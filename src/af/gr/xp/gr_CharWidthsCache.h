@@ -21,8 +21,8 @@
 #define _GR_CHAR_WIDTHS_CACHE_H__
 
 #include "ut_types.h"
+#include "ut_hash.h"
 
-class UT_StringPtrMap;
 class GR_Font;
 class GR_CharWidths;
 
@@ -75,7 +75,7 @@ private:
 	/*!
 		The font hash that contains the GR_CharWidths
 	 */
-	UT_StringPtrMap*			m_pFontHash;
+	UT_GenericStringMap<GR_CharWidths*>*			m_pFontHash;
 };
 
 

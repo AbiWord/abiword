@@ -987,7 +987,7 @@ void fl_TableLayout::_lookupProperties(void)
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
 				pColP->m_iColWidth = UT_convertToLogicalUnits(sSub.c_str());
-				m_vecColProps.addItem(static_cast<void *>(pColP));
+				m_vecColProps.addItem(pColP);
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
 		}
@@ -1083,12 +1083,12 @@ void fl_TableLayout::_lookupProperties(void)
 				}
 				else
 				{
-					pRowP = static_cast<fl_RowProps *>(m_vecRowProps.getNthItem(iProp));
+					pRowP = m_vecRowProps.getNthItem(iProp);
 				}
 				pRowP->m_iRowHeight = UT_convertToLogicalUnits(sSub.c_str());
 				if(bNew)
 				{
-					m_vecRowProps.addItem(static_cast<void *>(pRowP));
+					m_vecRowProps.addItem(pRowP);
 				}
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pRowP->m_iRowHeight));
 				iProp++;
@@ -1100,7 +1100,7 @@ void fl_TableLayout::_lookupProperties(void)
 		UT_uint32 i = 0;
 		for(i=0; i< m_vecRowProps.getItemCount(); i++)
 		{
-			fl_RowProps * pRowP = static_cast<fl_RowProps *>(m_vecRowProps.getNthItem(i));
+			fl_RowProps * pRowP = m_vecRowProps.getNthItem(i);
 			pRowP->m_iRowHeight = 0;
 		}
 	}

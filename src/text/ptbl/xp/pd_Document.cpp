@@ -124,8 +124,10 @@ PD_Document::~PD_Document()
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
 	// remove the meta data
-	UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
-	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
+	m_metaDataMap.purgeData();
+	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
+	m_mailMergeMap.purgeData();
+	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
@@ -140,7 +142,7 @@ PD_Document::~PD_Document()
 void PD_Document::setMetaDataProp ( const UT_String & key,
 									const UT_UTF8String & value )
 {
-	UT_UTF8String * old = (UT_UTF8String *)(m_metaDataMap.pick ( key ) );
+	UT_UTF8String * old = m_metaDataMap.pick ( key );
 	DELETEP(old);
 	
 	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
@@ -152,7 +154,7 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
   bool found = false;
   outProp = "";
 
-  const UT_UTF8String * val = static_cast<const UT_UTF8String *>(m_metaDataMap.pick (key));
+  const UT_UTF8String * val = m_metaDataMap.pick (key);
   found = (val != NULL);
 
   if (val && val->size ()) outProp = *val;
@@ -162,7 +164,7 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
 
 UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 {
-  const UT_UTF8String * val = static_cast<const UT_UTF8String *>(m_mailMergeMap.pick ( key ) );
+  const UT_UTF8String * val = m_mailMergeMap.pick ( key );
   if (val)
     return *val;
   return "";
@@ -170,14 +172,14 @@ UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 
 bool PD_Document::mailMergeFieldExists(const UT_String & key) const
 {
-    const void * val = static_cast<const void *>(m_mailMergeMap.pick ( key ));
+    const UT_UTF8String * val = m_mailMergeMap.pick ( key );
     return (val != NULL);
 }
 
 void PD_Document::setMailMergeField(const UT_String & key,
 									const UT_UTF8String & value)
 {
-	UT_UTF8String * old = (UT_UTF8String *)(m_mailMergeMap.pick ( key ) );
+	UT_UTF8String * old = m_mailMergeMap.pick ( key );
 	DELETEP(old);
 
 	UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
@@ -496,11 +498,11 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 	// refreshed; in this case if style stamp > element stamp, element
 	// would reformat) Tomas, June 7, 2003
 	
-	UT_Vector vStyles;
+	UT_GenericVector<PD_Style*> vStyles;
 	getAllUsedStyles(&vStyles);
 	for(UT_uint32 i = 0; i < vStyles.getItemCount();i++)
 	{
-		PD_Style * pStyle = (PD_Style*) vStyles.getNthItem(i);
+		PD_Style * pStyle = vStyles.getNthItem(i);
 
 		if(pStyle)
 			updateDocForStyleChange(pStyle->getName(),!pStyle->isCharStyle());
@@ -914,7 +916,7 @@ bool PD_Document::appendFmt(const XML_Char ** attributes)
 	return m_pPieceTable->appendFmt(attributes);
 }
 
-bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
+bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 {
 	UT_ASSERT(m_pPieceTable);
 
@@ -1707,7 +1709,7 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
  * styles in the basedon heiracy and the followedby list
  *
  */
-void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
+void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 {
 	UT_sint32 i = 0;
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
@@ -1746,20 +1748,20 @@ void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 			UT_ASSERT(pStyle);
 			if(pStyle)
 			{
-				if(pVecStyles->findItem(static_cast<void *>(pStyle)) < 0)
-					pVecStyles->addItem(static_cast<void *>(pStyle));
+				if(pVecStyles->findItem(pStyle) < 0)
+					pVecStyles->addItem(pStyle);
 				PD_Style * pBasedOn = pStyle->getBasedOn();
 				i = 0;
 				while(pBasedOn != NULL && i <  pp_BASEDON_DEPTH_LIMIT)
 				{
-					if(pVecStyles->findItem(static_cast<void *>(pBasedOn)) < 0)
-						pVecStyles->addItem(static_cast<void *>(pBasedOn));
+					if(pVecStyles->findItem(pBasedOn) < 0)
+						pVecStyles->addItem(pBasedOn);
 					i++;
 					pBasedOn = pBasedOn->getBasedOn();
 				}
 				PD_Style * pFollowedBy = pStyle->getFollowedBy();
-				if(pFollowedBy && (pVecStyles->findItem(static_cast<void *>(pFollowedBy)) < 0))
-					pVecStyles->addItem(static_cast<void *>(pFollowedBy));
+				if(pFollowedBy && (pVecStyles->findItem(pFollowedBy) < 0))
+					pVecStyles->addItem(pFollowedBy);
 			}
 		}
 //
@@ -1771,6 +1773,21 @@ void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 // Done!
 //
 }
+
+
+struct prevStuff
+{
+private:
+	pf_Frag::PFType fragType;
+	pf_Frag_Strux * lastFragStrux;
+	PT_AttrPropIndex indexAPFrag;
+	pf_Frag * thisFrag;
+	PT_DocPosition thisPos;
+	PT_DocPosition thisStruxPos;
+	UT_uint32 fragLength;
+	bool bChangeIndexAP;
+	friend bool PD_Document::removeStyle(const XML_Char * pszName);
+};
 
 /*!
  * This method removes the style of name pszName from the styles definition and removes
@@ -1806,23 +1823,12 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	UT_ASSERT(pNormal);
 	PT_AttrPropIndex indexNormal = pNormal->getIndexAP();
 
-	struct prevStuff
-	{
-		pf_Frag::PFType fragType;
-		pf_Frag_Strux * lastFragStrux;
-		PT_AttrPropIndex indexAPFrag;
-		pf_Frag * thisFrag;
-		PT_DocPosition thisPos;
-		PT_DocPosition thisStruxPos;
-		UT_uint32 fragLength;
-		bool bChangeIndexAP;
-	};
 //
 // Now scan through the document finding all instances of pszName as either
 // the style or the basedon style or the followed by style. Replace these with
 // "normal"
 //
-	UT_Vector vFrag;
+	UT_GenericVector<prevStuff *> vFrag;
 
 	PT_DocPosition pos = 0;
 	PT_DocPosition posLastStrux = 0;
@@ -1878,7 +1884,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			pStuff->thisStruxPos = pos;
 			pStuff->fragLength = currentFrag->getLength();
 			pStuff->bChangeIndexAP = true;
-			vFrag.addItem(static_cast<void *>(pStuff));
+			vFrag.addItem(pStuff);
 //
 // OK set this frag's indexAP to that of basedon of our deleted style or
 // Normal.
@@ -1920,7 +1926,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 				pStuff->thisStruxPos = pos;
 				pStuff->fragLength = currentFrag->getLength();
 				pStuff->bChangeIndexAP = false;
-				vFrag.addItem(static_cast<void *>(pStuff));
+				vFrag.addItem(pStuff);
 			}
 //
 // Look if followedBy points to our style
@@ -1936,7 +1942,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 				pStuff->thisStruxPos = pos;
 				pStuff->fragLength = currentFrag->getLength();
 				pStuff->bChangeIndexAP = false;
-				vFrag.addItem(static_cast<void *>(pStuff));
+				vFrag.addItem(pStuff);
 			}
 		}
 		pos = pos + currentFrag->getLength();
@@ -2116,7 +2122,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 	for (k=0; k<kLimit; k++)
 		if (m_vecListeners.getNthItem(k) == 0)
 		{
-			static_cast<void>(m_vecListeners.setNthItem(k,pListener,NULL));
+			m_vecListeners.setNthItem(k,pListener,NULL);
 			goto ClaimThisK;
 		}
 
@@ -2157,7 +2163,7 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 
 	for (lid=0; lid<lidCount; lid++)
 	{
-		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
 		if (pListener)
 		{
 			pListener->signal(iSignal);
@@ -2239,7 +2245,7 @@ void PD_Document::processDeferredNotifications(void)
 
 	for (lid=0; lid<lidCount; lid++)
 	{
-		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
 		if (pListener)
 		{
 			pListener->processDeferredNotifications();
@@ -2294,7 +2300,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 
 	for (lid=0; lid<lidCount; lid++)
 	{
-		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
 		if (pListener)
 		{
 			PL_StruxDocHandle sdhNew = static_cast<PL_StruxDocHandle>(pfsNew);
@@ -2634,15 +2640,15 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
-	m_hashDataItems.insert(szName, static_cast<void *>(pPair));
+	m_hashDataItems.insert(szName, pPair);
 
 	// give them back a handle if they want one
 
 	if (ppHandle)
 	{
-		const void *pHashEntry = m_hashDataItems.pick(szName);
+		const struct _dataItemPair* pHashEntry = m_hashDataItems.pick(szName);
 		UT_ASSERT(pHashEntry);
-		*ppHandle = const_cast<void *>(pHashEntry);
+		*ppHandle = const_cast<struct _dataItemPair *>(pHashEntry);
 	}
 
 	return true;
@@ -2743,8 +2749,8 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 
-	UT_StringPtrMap::UT_Cursor c(&m_hashDataItems);
-	const void *pHashEntry = NULL;
+	UT_GenericStringMap<struct _dataItemPair*>::UT_Cursor c(&m_hashDataItems);
+	const struct _dataItemPair* pHashEntry = NULL;
 	UT_uint32 i;
 
 	for (i = 0, pHashEntry = c.first();
@@ -2754,9 +2760,9 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	  }
 
 	if (ppHandle && c.is_valid())
-		*ppHandle = const_cast<void *>(pHashEntry);
+		*ppHandle = const_cast<struct _dataItemPair*>(pHashEntry);
 
-	const struct _dataItemPair* pPair = static_cast<const struct _dataItemPair*>(pHashEntry);
+	const struct _dataItemPair* pPair = pHashEntry;
 	UT_ASSERT(pPair);
 
 	if (ppByteBuf)
@@ -2782,13 +2788,13 @@ void PD_Document::_destroyDataItemData(void)
 	if (m_hashDataItems.size() == 0)
 		return;
 
-	UT_StringPtrMap::UT_Cursor c(&m_hashDataItems);
-	const void *val = NULL;
+	UT_GenericStringMap<struct _dataItemPair*>::UT_Cursor c(&m_hashDataItems);
+	struct _dataItemPair *val = NULL;
 
 	for (val = c.first(); c.is_valid(); val = c.next())
 	  {
 		xxx_UT_DEBUGMSG(("DOM: destroying data item\n"));
-		struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(val));
+		struct _dataItemPair* pPair = val;
 		UT_ASSERT(pPair);
 		UT_String key = c.key();
 		m_hashDataItems.remove (key, NULL);
@@ -3369,7 +3375,7 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 
 	while (i<cnt)
 	{
-		pAutoNum = const_cast<fl_AutoNum *>(static_cast<const fl_AutoNum *>(m_vecLists[i]));
+		pAutoNum = m_vecLists[i];
 		if (pAutoNum->getID() == id)
 			return pAutoNum;
 		i++;
@@ -3385,7 +3391,7 @@ bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
 		return false;
 
 	if (pAutoNum)
-		*pAutoNum = const_cast<fl_AutoNum *>(static_cast<const fl_AutoNum *>(m_vecLists[k]));
+		*pAutoNum = m_vecLists[k];
 
 	return true;
 }
@@ -3393,7 +3399,7 @@ bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
 fl_AutoNum * PD_Document::getNthList(UT_uint32 i) const
 {
 	UT_ASSERT(i >= 0);
-	return const_cast<fl_AutoNum *>(static_cast<const fl_AutoNum *>(m_vecLists[i]));
+	return m_vecLists[i];
 }
 
 UT_uint32 PD_Document::getListsCount(void) const
@@ -3401,14 +3407,14 @@ UT_uint32 PD_Document::getListsCount(void) const
 	return m_vecLists.getItemCount();
 }
 
-void PD_Document::addList(const fl_AutoNum * pAutoNum)
+void PD_Document::addList(fl_AutoNum * pAutoNum)
 {
 	UT_uint32 id = pAutoNum->getID();
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
 	for(i=0; i < numlists; i++)
 	{
-		fl_AutoNum * pAuto = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
+		fl_AutoNum * pAuto = m_vecLists.getNthItem(i);
 		if(pAuto->getID() == id)
 			break;
 	}
@@ -3494,7 +3500,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 	UT_uint32 numlists = m_vecLists.getItemCount();
 	for(i=0; i < numlists; i++)
 	{
-		fl_AutoNum * pAuto = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
+		fl_AutoNum * pAuto = m_vecLists.getNthItem(i);
 		if(pAuto->getID() == id)
 			break;
 	}
@@ -3533,7 +3539,7 @@ void PD_Document::updateDirtyLists(void)
 	bool bDirtyList = false;
 	for(i=0; i< iNumLists; i++)
 	{
-		pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
+		pAutoNum = m_vecLists.getNthItem(i);
 		if(pAutoNum->isEmpty())
 		{
 			delete pAutoNum;
@@ -3544,7 +3550,7 @@ void PD_Document::updateDirtyLists(void)
 	}
 	for(i=0; i< iNumLists; i++)
 	{
-		pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
+		pAutoNum = m_vecLists.getNthItem(i);
 		if(pAutoNum->isDirty() == true)
 		{
 			pAutoNum->update(0);
@@ -3555,7 +3561,7 @@ void PD_Document::updateDirtyLists(void)
 	{
 		for(i=0; i< iNumLists; i++)
 		{
-			pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
+			pAutoNum = m_vecLists.getNthItem(i);
 			pAutoNum->fixHierarchy();
 			pAutoNum->findAndSetParentItem();
 		}
@@ -3576,7 +3582,7 @@ bool PD_Document::fixListHierarchy(void)
 	{
 		for (UT_uint32 i = 0; i < iNumLists; i++)
 		{
-			pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
+			pAutoNum = m_vecLists.getNthItem(i);
 			pAutoNum->fixHierarchy();
 		}
 		return true;
@@ -4267,21 +4273,21 @@ bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
-	const UT_StringPtrMap & hS1 = m_pPieceTable->getAllStyles();
-	const UT_StringPtrMap & hS2 = d.m_pPieceTable->getAllStyles();
+	const UT_GenericStringMap<PD_Style*> & hS1 = m_pPieceTable->getAllStyles();
+	const UT_GenericStringMap<PD_Style*> & hS2 = d.m_pPieceTable->getAllStyles();
 
 	if(hS1.size() != hS2.size())
 		return false;
 
 	UT_StringPtrMap hFmtMap;
-	UT_StringPtrMap::UT_Cursor c(&hS1);
+	UT_GenericStringMap<PD_Style*>::UT_Cursor c(&hS1);
 
 	const PD_Style * pS1, * pS2;
-	for(pS1 = (const PD_Style*)c.first(); pS1 != NULL; pS1 = (const PD_Style*)c.next())
+	for(pS1 = c.first(); pS1 != NULL; pS1 = c.next())
 	{
 		const UT_String &key = c.key();
 
-		pS2 = (const PD_Style *) hS2.pick(key);
+		pS2 = hS2.pick(key);
 
 		if(!pS2)
 			return false;

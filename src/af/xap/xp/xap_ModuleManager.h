@@ -33,9 +33,10 @@
 #include "ut_types.h"
 #endif
 
+#include "ut_vector.h"
+
 #include "xap_Module.h"
 
-class UT_Vector;
 
 class XAP_Spider;
 
@@ -66,7 +67,7 @@ public:
 	void         unloadUnregistered ();
 	void         unloadAllPlugins ();
 
-	const UT_Vector * enumModules () const;
+	const UT_GenericVector<XAP_Module*> * enumModules () const;
 
 private:
 
@@ -75,7 +76,7 @@ private:
 
 	XAP_Spider * m_spider;
 
-	UT_Vector * m_modules;
+	UT_GenericVector<XAP_Module*> * m_modules;
 };
 
 #endif /* XAP_MODULE_MANAGER_H */

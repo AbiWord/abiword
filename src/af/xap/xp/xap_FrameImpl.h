@@ -35,7 +35,6 @@ class EV_Toolbar;
 class EV_Mouse;
 class EV_Keyboard;
 class UT_Timer;
-class UT_Vector;
 class UT_Worker;
 class GR_Graphics;
 class AV_View;
@@ -52,7 +51,7 @@ class ABI_EXPORT XAP_FrameImpl
 public:
 	XAP_Frame*	getFrame() { return m_pFrame; };	/* needed for Obj-C access */
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp) = 0;
-	const UT_Vector & _getToolbars() const
+	const UT_GenericVector<EV_Toolbar*> & _getToolbars() const
 					{ return m_vecToolbars; };
 
 protected:
@@ -101,7 +100,7 @@ protected:
 	UT_Vector m_vecToolbarLayoutNames;
 	const char * m_szToolbarLabelSetName;	/* language for toolbars */
 	const char * m_szToolbarAppearance;
-	UT_Vector m_vecToolbars;
+	UT_GenericVector<EV_Toolbar*> m_vecToolbars;
 
 	const char * m_szMenuLayoutName;
 	const char * m_szMenuLabelSetName;		/* language for menus */

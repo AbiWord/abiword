@@ -223,7 +223,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 
 void XAP_UnixDialog_PluginManager::setPluginList()
 {
-	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+	const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 	
 	GtkListStore *model;
 	GtkTreeIter iter;
@@ -235,7 +235,7 @@ void XAP_UnixDialog_PluginManager::setPluginList()
  	// build a list of all items
     for (UT_uint32 i = 0; i < pVec->size(); i++)
 	{
-		XAP_Module * pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
+		XAP_Module * pModule = pVec->getNthItem (i);
 		gtk_list_store_append (model, &iter);
 		gtk_list_store_set (model, &iter,
 					  		0, pModule->getModuleInfo()->name,

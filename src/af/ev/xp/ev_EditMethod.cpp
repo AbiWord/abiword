@@ -197,13 +197,10 @@ EV_EditMethod * EV_EditMethodContainer::getNthEditMethod(UT_uint32 ndx)
 	if (ndx < m_countStatic)
 		return &m_arrayStaticEditMethods[ndx];
 	else
-		return static_cast<EV_EditMethod *>(m_vecDynamicEditMethods.getNthItem(ndx-m_countStatic));
+		return m_vecDynamicEditMethods.getNthItem(ndx-m_countStatic);
 }
 
 // for use in a binary search of an EV_EditMethod array
-#ifdef __MRC__
-extern "C"
-#endif
 static int ev_compar (const void * a, const void * b)
 {
 	const char * str = static_cast<const char *>(a);
@@ -223,11 +220,11 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 
 	// first, see if it's in our hashtable
 	// TODO: should this be class-wide instead of static here?
-	static UT_StringPtrMap emHash (m_countStatic);
+	static UT_GenericStringMap<EV_EditMethod *> emHash (m_countStatic);
 
-	const void * entry = emHash.pick (szName);
+	EV_EditMethod * entry = emHash.pick (szName);
 	if (entry)
-	    return static_cast<EV_EditMethod *>(const_cast<void *>(entry));
+	    return entry;
 
 	// nope, bsearch for it in our private array
 	mthd = static_cast<EV_EditMethod *>(bsearch(szName, 
@@ -240,7 +237,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	{
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
-	    emHash.insert(szName, static_cast<void *>(mthd));
+	    emHash.insert(szName, mthd);
 	    return mthd;
 	}
 
@@ -251,7 +248,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	kLast = m_vecDynamicEditMethods.getItemCount();
 	for (k=0; k<kLast; k++)
 	{
-		EV_EditMethod * pem = static_cast<EV_EditMethod *>(m_vecDynamicEditMethods.getNthItem(k));
+		EV_EditMethod * pem = m_vecDynamicEditMethods.getNthItem(k);
 		if (strcmp(szName,pem->getName()) == 0)
 			return pem;
 	}

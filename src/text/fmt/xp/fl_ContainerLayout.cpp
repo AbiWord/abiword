@@ -665,8 +665,8 @@ bool fl_ContainerLayout::isOnScreen() const
 	if(bHidden)
 		return false;
 	
-	UT_Vector vRect;
-	UT_Vector vPages;
+	UT_GenericVector<UT_Rect*> vRect;
+	UT_GenericVector<fp_Page*> vPages;
 
 	pView->getVisibleDocumentPagesAndRectangles(vRect, vPages);
 
@@ -691,12 +691,12 @@ bool fl_ContainerLayout::isOnScreen() const
 		{
 			for(UT_uint32 i = 0; i < iCount; i++)
 			{
-				fp_Page * pPage = static_cast<fp_Page*>(vPages.getNthItem(i));
+				fp_Page * pPage = vPages.getNthItem(i);
 
 				if(pPage == pMyPage)
 				{
 					UT_Rect r;
-					UT_Rect *pR = static_cast<UT_Rect*>(vRect.getNthItem(i));
+					UT_Rect *pR = vRect.getNthItem(i);
 
 					if(!pC->getPageRelativeOffsets(r))
 						break;
@@ -723,14 +723,14 @@ bool fl_ContainerLayout::isOnScreen() const
 void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
 {
 	UT_DEBUGMSG(("Adding frame %x to list in container %x \n",pFrame,this));
-	UT_sint32 i = m_vecFrames.findItem(static_cast<void *>(pFrame));
+	UT_sint32 i = m_vecFrames.findItem(pFrame);
 	if(i>= 0)
 	{
 		UT_DEBUGMSG(("Adding already existing frame \n"));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-	m_vecFrames.addItem(static_cast<void *>(pFrame));
+	m_vecFrames.addItem(pFrame);
 }
 
 UT_sint32 fl_ContainerLayout::getNumFrames(void) const
@@ -744,7 +744,7 @@ fl_FrameLayout * fl_ContainerLayout::getNthFrameLayout(UT_sint32 i) const
 	{
 		return NULL;
 	}
-	return static_cast<fl_FrameLayout *>(m_vecFrames.getNthItem(i));
+	return m_vecFrames.getNthItem(i);
 }
 
 
@@ -754,7 +754,7 @@ fp_FrameContainer * fl_ContainerLayout::getNthFrameContainer(UT_sint32 i) const
 	{
 		return NULL;
 	}
-	fl_FrameLayout * pFrame= static_cast<fl_FrameLayout *>(m_vecFrames.getNthItem(i));
+	fl_FrameLayout * pFrame= m_vecFrames.getNthItem(i);
 	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pFrame->getFirstContainer());
 	return pFC;
 }
@@ -762,7 +762,7 @@ fp_FrameContainer * fl_ContainerLayout::getNthFrameContainer(UT_sint32 i) const
 void fl_ContainerLayout:: removeFrame(fl_FrameLayout * pFrame)
 {
 	UT_DEBUGMSG(("Remove Frame %x from this container %x \n",pFrame,this));
-	UT_sint32 i = m_vecFrames.findItem(static_cast<void *>(pFrame));
+	UT_sint32 i = m_vecFrames.findItem(pFrame);
 	if(i >= 0)
 	{
 		m_vecFrames.deleteNthItem(i);

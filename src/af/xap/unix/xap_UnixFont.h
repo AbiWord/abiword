@@ -146,7 +146,7 @@ private:
 	char * 					m_fontKey;
 
 	// a cache of XftFont * at a given size
-	mutable UT_Vector		m_allocFonts;
+	mutable UT_GenericVector<allocFont *>	m_allocFonts;
 	
 	char * 					m_name;
 	XAP_UnixFont::style		m_style;

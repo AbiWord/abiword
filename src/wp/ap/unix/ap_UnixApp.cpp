@@ -1666,11 +1666,11 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		printf(" Looking for plugin name %s \n",szRequest);
 		if(Args->m_sPlugin != NULL)
 		{
-			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 			printf(" %d plugins loaded \n",pVec->getItemCount());
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
-				pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
+				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
 				printf("Plugin %s loaded \n",szName);
 				if(UT_strcmp(szName,szRequest) == 0)
@@ -1714,10 +1714,10 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
 		bool bFound = false;	
-		const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+		const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 		{
-			pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
+			pModule = pVec->getNthItem (i);
 			szName = pModule->getModuleInfo()->name;
 			printf("Plugin %s loaded \n",szName);
 			if(UT_strcmp(szName,"AbiControl") == 0)

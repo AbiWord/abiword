@@ -30,9 +30,12 @@
 #include "ut_types.h"
 #endif
 
+#ifndef UTVECTOR_H
+#include "ut_vector.h"
+#endif
+
 class UT_RGBColor;
 class UT_Rect;
-class UT_Vector;
 class UT_String;
 class UT_UTF8String;
 
@@ -165,7 +168,7 @@ ABI_EXPORT const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char*
 UT_sint32 signedHiWord(UT_uint32 dw);
 UT_sint32 signedLoWord(UT_uint32 dw);
 
-UT_Vector * simpleSplit (const UT_String & str, char separator = ' ',
+UT_GenericVector<UT_String*> * simpleSplit (const UT_String & str, char separator = ' ',
 						 size_t max = 0 /* 0 == full split */);
 
 void warpString(UT_String& str, size_t col_max = 75);

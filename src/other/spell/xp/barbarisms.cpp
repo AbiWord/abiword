@@ -34,14 +34,14 @@ BarbarismChecker::BarbarismChecker()
 
 BarbarismChecker::~BarbarismChecker()
 {	  
-	UT_StringPtrMap::UT_Cursor _hc1(&m_map);		
+	UT_GenericStringMap<UT_GenericVector<UT_UCS4Char *>*>::UT_Cursor _hc1(&m_map);		
 
-    for (UT_Vector* pVec = (UT_Vector*) _hc1.first(); _hc1.is_valid(); pVec = (UT_Vector*) _hc1.next() ) 
+    for (UT_GenericVector<UT_UCS4Char *>* pVec = _hc1.first(); _hc1.is_valid(); pVec = _hc1.next() ) 
 	{ 
 		if (pVec)									
 		{
 			for (UT_uint32 i=0; i < pVec->getItemCount(); i++)
-				delete (char *)pVec->getNthItem(i);
+				delete pVec->getNthItem(i);
 				
 			delete pVec;			
 		}
@@ -100,7 +100,7 @@ bool BarbarismChecker::checkWord(const UT_UCSChar * word32, size_t length)
 	Looks for an exact case match of the suggestion
 	Returns true if word is a barbarism
 */
-bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg)
+bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length, UT_GenericVector<UT_UCSChar*>* pVecsugg)
 {
 	const char* pUTF8;
 	const UT_UCS4Char *pWord;
@@ -112,7 +112,7 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 
 	pUTF8 = stUTF8.utf8_str();
 
-	UT_Vector* vec = static_cast<UT_Vector*>(const_cast<void *>(m_map.pick(pUTF8)));
+	UT_GenericVector<UT_UCS4Char *>* vec = m_map.pick(pUTF8);
 	if (!vec)
 		return false;
 
@@ -123,12 +123,12 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 
 	for (UT_uint32 iItem = nItems; iItem; --iItem)
 	{
-		pWord = static_cast<UT_UCS4Char *>(vec->getNthItem(iItem - 1));
+		pWord = vec->getNthItem(iItem - 1);
 		nSize = sizeof(UT_UCS4Char) * (UT_UCS4_strlen(pWord) + 1);
 		suggest32 = static_cast<UT_UCS4Char*>(malloc(nSize));
 		memcpy (suggest32, pWord, nSize);
 		
-		pVecsugg->insertItemAt(static_cast<void *>(suggest32), 0);
+		pVecsugg->insertItemAt(suggest32, 0);
 	}
 
 	return true;
@@ -143,7 +143,7 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 
 	Returns true if word is a barbarism
 */
-bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg)
+bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_GenericVector<UT_UCSChar*>* pVecsugg)
 {
 	bool bIsBarbarism = false;
 	bool bIsLower = true;
@@ -207,7 +207,7 @@ bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_V
 			/* Make the first letter of all the results uppercase */
 			for (UT_uint32 iItem = nItems; iItem; --iItem)
 			{
-				pSug = static_cast<UT_UCSChar *>(pVecsugg->getNthItem(iItem - 1));
+				pSug = pVecsugg->getNthItem(iItem - 1);
 				*pSug = UT_UCS4_toupper(*pSug);
 			}
 		}
@@ -236,7 +236,7 @@ void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
 		const char * word = UT_getAttribute ("word", atts);
 		if (word != NULL)
 		{
-			m_pCurVector = new UT_Vector();
+			m_pCurVector = new UT_GenericVector<UT_UCS4Char *>();
 			m_map.insert (word, m_pCurVector);
 		}
 		else

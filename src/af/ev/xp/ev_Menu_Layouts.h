@@ -86,7 +86,7 @@ public:
 
 private:
 	UT_String			    m_stName;			/* the name of our layout (like "MainMenu") */
-	UT_Vector				m_layoutTable;
+	UT_GenericVector <EV_Menu_LayoutItem *> m_layoutTable;
 	XAP_Menu_Id				m_iMaxId;
 };
 

@@ -152,7 +152,7 @@ public:
 protected:
 	UT_uint32			m_countStatic;
 	EV_EditMethod *		m_arrayStaticEditMethods;		// not malloced
-	UT_Vector			m_vecDynamicEditMethods;
+	UT_GenericVector<EV_EditMethod *>	m_vecDynamicEditMethods;
 };
 
 /*****************************************************************/

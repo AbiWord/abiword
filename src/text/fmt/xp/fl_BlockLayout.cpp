@@ -267,7 +267,7 @@ static int compare_tabs(const void* p1, const void* p2)
 	return 0;
 }
 
-void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTabs)
+void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs)
 {
 	// no matter what, clear prior tabstops
 	UT_uint32 iCount = m_vecTabs.getItemCount();
@@ -275,7 +275,7 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 
 	for (i=0; i<iCount; i++)
 	{
-		fl_TabStop* pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(i));
+		fl_TabStop* pTab = m_vecTabs.getNthItem(i);
 
 		delete pTab;
 	}
@@ -1172,7 +1172,7 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid)
 {
 	fp_Line * pLine = static_cast<fp_Line *>(getFirstContainer());
-	UT_Vector vecFoots;
+	UT_GenericVector<fp_FootnoteContainer *> vecFoots;
 	bool bFound = false;
 	while(pLine && !bFound)
 	{
@@ -1182,7 +1182,7 @@ fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid)
 			UT_uint32 i = 0;
 			for(i=0; i< vecFoots.getItemCount(); i++)
 			{
-				fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFoots.getNthItem(i));
+				fp_FootnoteContainer * pFC = vecFoots.getNthItem(i);
 				fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pFC->getSectionLayout());
 				if(pFL->getFootnotePID() == pid)
 				{
@@ -4565,13 +4565,13 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	//
 	if(!m_bIsTOC && m_bStyleInTOC)
 	{
-		UT_Vector vecBlocksInTOCs;
+		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
 			UT_sint32 i = 0;
 			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
 			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_insertSpan(pcrs);
 			}
 		}
@@ -4959,13 +4959,13 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	//
 	if(!m_bIsTOC && m_bStyleInTOC)
 	{
-		UT_Vector vecBlocksInTOCs;
+		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
 			UT_sint32 i = 0;
 			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
 			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_deleteSpan(pcrs);
 			}
 		}
@@ -4996,7 +4996,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	PT_BlockOffset blockOffset = pcrsc->getBlockOffset();
 	UT_uint32 len = pcrsc->getLength();
 	UT_ASSERT(len > 0);
-	UT_Vector vecLines;
+	UT_GenericVector<fp_Line *> vecLines;
 	vecLines.clear();
 	// First look for the first run inside the span
 	fp_Run* pRun = m_pFirstRun;
@@ -5077,9 +5077,9 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		}
 		// TODO: do we need to call lookupProperties for other run types.
 		fp_Line * pLine = pRun->getLine();
-		if((pLine!= NULL) && (vecLines.findItem(reinterpret_cast<void *>(pLine)) < 0))
+		if((pLine!= NULL) && (vecLines.findItem(pLine) < 0))
 		{
-			vecLines.addItem(reinterpret_cast<void *>(pLine));
+			vecLines.addItem(pLine);
 		}
 		pRun = pRun->getNextRun();
 	}
@@ -5092,7 +5092,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	//
    	for(i=0; i< vecLines.getItemCount(); i++)
 	{
-		fp_Line * pLine = static_cast<fp_Line *>(vecLines.getNthItem(i));
+		fp_Line * pLine = vecLines.getNthItem(i);
 		pLine->clearScreen();
 	}
 	_assertRunListIntegrity();
@@ -6503,13 +6503,13 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	//
 	if(!m_bIsTOC && m_bStyleInTOC)
 	{
-		UT_Vector vecBlocksInTOCs;
+		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
 			UT_sint32 i = 0;
 			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
 			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_insertObject(pcro);
 			}
 		}
@@ -6591,13 +6591,13 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	//
 	if(!m_bIsTOC && m_bStyleInTOC)
 	{
-		UT_Vector vecBlocksInTOCs;
+		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
 			UT_sint32 i = 0;
 			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
 			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_deleteObject(pcro);
 			}
 		}
@@ -6760,7 +6760,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 	for (i=0; i<iCountTabs; i++)
 	{
-		fl_TabStop* pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(i));
+		fl_TabStop* pTab = m_vecTabs.getNthItem(i);
 		UT_ASSERT(pTab);
 
 		if (pTab->getPosition() > iMaxX)
@@ -7286,7 +7286,7 @@ void fl_BlockLayout::remItemFromList(void)
 	XML_Char lid[15], buf[5];
 	UT_uint32 id;
 	bool bRet;
-	UT_Vector vp;
+	UT_GenericVector<const XML_Char*> vp;
 	if( m_bListLabelCreated == true)
 	{
 		m_bListLabelCreated = false;
@@ -7335,7 +7335,7 @@ void fl_BlockLayout::remItemFromList(void)
 				}
 				else
 				{
-					props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
+					props[i] = vp.getNthItem(i);
 				}
 			}
 			props[i] = static_cast<XML_Char *>(NULL);
@@ -7357,7 +7357,7 @@ void fl_BlockLayout::remItemFromList(void)
 				}
 				else
 				{
-					props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
+					props[i] = vp.getNthItem(i);
 				}
 			}
 			props[i] = static_cast<XML_Char *>(NULL);
@@ -7516,7 +7516,7 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
-void	fl_BlockLayout::getListAttributesVector( UT_Vector * va)
+void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const XML_Char*> * va)
 {
 	//
 	// This function fills the vector va with list attributes
@@ -7535,17 +7535,20 @@ void	fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 	//	pBlockAP->getAttribute("level",buf);
 	if(lid != NULL)
 	{
-		va->addItem( (void *)("listid"));  va->addItem( (void *)(lid));
+		va->addItem("listid");  
+		va->addItem(lid);
 		count++;
 	}
 	if(buf != NULL)
 	{
-		va->addItem( (void *)("level")); va->addItem( (void *)(buf));
+		va->addItem("level"); 
+		va->addItem(buf);
 		count++;
 	}
 	if(style != NULL)
 	{
-		va->addItem( (void *)(PT_STYLE_ATTRIBUTE_NAME));	va->addItem( (void *)(style));
+		va->addItem(PT_STYLE_ATTRIBUTE_NAME);	
+		va->addItem(style);
 		count++;
 	}
 	if(count == 0)
@@ -7555,7 +7558,7 @@ void	fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 }
 
 
-void	fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
+void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const XML_Char*>* vp)
 {
 	//
 	// This function fills the vector vp with list properties. All vector
@@ -7577,42 +7580,48 @@ void	fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	const XML_Char * pszListStyle =  getProperty("list-style",true);
 	if(pszStart != NULL)
 	{
-		vp->addItem( (void *)("start-value"));	vp->addItem( (void *)(pszStart));
+		vp->addItem("start-value");	
+		vp->addItem(pszStart);
 	}
 	if(pszAlign != NULL)
 	{
 		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
-			vp->addItem( (void *)("margin-right"));
+			vp->addItem("margin-right");
 		else
-			vp->addItem( (void *)("margin-left"));
+			vp->addItem("margin-left");
 
-		vp->addItem( (void *)(pszAlign));
+		vp->addItem(pszAlign);
 
 		count++;
 	}
 	if(pszIndent != NULL)
 	{
-		vp->addItem( (void *)("text-indent"));	vp->addItem( (void *)(pszIndent));
+		vp->addItem("text-indent");	
+		vp->addItem(pszIndent);
 		count++;
 	}
 	if(lDelim != NULL)
 	{
-		vp->addItem( (void *)("list-delim")); vp->addItem( (void *)(lDelim));
+		vp->addItem("list-delim"); 
+		vp->addItem(lDelim);
 		count++;
 	}
 	if(lDecimal != NULL)
 	{
-		vp->addItem( (void *)("list-decimal")); vp->addItem( (void *)(lDecimal));
+		vp->addItem("list-decimal");
+		vp->addItem(lDecimal);
 		count++;
 	}
 	if(fFont != NULL)
 	{
-		vp->addItem( (void *)("field-font")); vp->addItem( (void *)(fFont));
+		vp->addItem("field-font"); 
+		vp->addItem(fFont);
 		count++;
 	}
 	if(pszListStyle != NULL)
 	{
-		vp->addItem( (void *)("list-style")); vp->addItem( (void *)(pszListStyle));
+		vp->addItem("list-style"); 
+		vp->addItem(pszListStyle);
 		count++;
 	}
 	if(count == 0)
@@ -7631,7 +7640,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	XML_Char * style = getListStyleString(lType);
 	bool bRet;
 	UT_uint32 id=0;
-	UT_Vector vp,va;
+	UT_GenericVector<const XML_Char*> vp,va;
 
 	fl_AutoNum * pAutoNum;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -7673,21 +7682,21 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 					sizeof(pszIndent),
 					UT_convertInchesToDimensionString(DIM_IN, indent, 0));
 
-	va.addItem( (void *)("listid")); 		va.addItem( (void *)(lid));
-	va.addItem( (void *)("parentid"));		va.addItem( (void *)(pid));
-	va.addItem( (void *)("level"));			va.addItem( (void *)(buf));
-	vp.addItem( (void *)("start-value"));	vp.addItem( (void *)(pszStart));
+	va.addItem("listid"); 		va.addItem(lid);
+	va.addItem("parentid");		va.addItem(pid);
+	va.addItem("level");		va.addItem(buf);
+	vp.addItem("start-value");	vp.addItem(pszStart);
 
 	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
-		vp.addItem( (void *)("margin-right"));
+		vp.addItem("margin-right");
 	else
-	    vp.addItem( (void *)("margin-left"));
+	    vp.addItem("margin-left");
 
-	vp.addItem( (void *)(pszAlign));
+	vp.addItem(pszAlign);
 
-	vp.addItem( (void *)("text-indent"));	vp.addItem( (void *)(pszIndent));
-	vp.addItem( (void *)("field-font")); 	vp.addItem( (void *)(fFont));
-	vp.addItem( (void *)("list-style")); 	vp.addItem( (void *)(style));
+	vp.addItem("text-indent");	vp.addItem(pszIndent);
+	vp.addItem("field-font"); 	vp.addItem(fFont);
+	vp.addItem("list-style"); 	vp.addItem(style);
 	xxx_UT_DEBUGMSG(("SEVIOR: Starting List with font %s \n",fFont));
 
 
@@ -7705,14 +7714,14 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
-		attribs[i] = static_cast<XML_Char *>(va.getNthItem(i));
+		attribs[i] = va.getNthItem(i);
 	}
 	attribs[i] = static_cast<XML_Char *>(NULL);
 
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
-		props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
+		props[i] = vp.getNthItem(i);
 	}
 	props[i] = static_cast<XML_Char *>(NULL);
 	setStarting( false);
@@ -7735,7 +7744,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 	static XML_Char lid[15],pszlevel[5];
 	bool bRet;
 	UT_uint32 id, level;
-	UT_Vector vp;
+	UT_GenericVector<const XML_Char*> vp;
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
 	bool bHasStopped = m_pDoc->hasListStopped();
@@ -7837,9 +7846,9 @@ void	fl_BlockLayout::StopListInBlock(void)
 			else
 				vp.addItem("margin-left");
 
-			vp.addItem((void *)(align));
+			vp.addItem(align);
 			vp.addItem("text-indent");
-			vp.addItem((void *)(indent));
+			vp.addItem(indent);
 		}
 	}
 	else
@@ -7876,20 +7885,20 @@ void	fl_BlockLayout::StopListInBlock(void)
 		}
 
 		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
-			vp.addItem((void *)("margin-right"));
+			vp.addItem("margin-right");
 		else
-			vp.addItem((void *)("margin-left"));
+			vp.addItem("margin-left");
 
-		vp.addItem((void *)(static_cast<const void *>(szAlign)));
-		vp.addItem((void *)("text-indent"));
-		vp.addItem((void *)(static_cast<const void *>(szIndent)));
+		vp.addItem(szAlign);
+		vp.addItem("text-indent");
+		vp.addItem(szIndent);
 	}
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
 	props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
 	for (i = 0; i < vp.getItemCount(); i++)
 	{
-		props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
+		props[i] = vp.getNthItem(i);
 	}
 	props[i] = NULL;
 	sprintf(pszlevel, "%i", level);
@@ -8145,7 +8154,7 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	// Make the current block an element of the list before in the block nextList
 	//
 	UT_ASSERT(nextList);
-	UT_Vector va,vp;
+	UT_GenericVector<const XML_Char*> va,vp;
 
 	nextList->getListPropertyVector( &vp);
 	nextList->getListAttributesVector( &va);
@@ -8155,14 +8164,14 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
-		attribs[i] = static_cast<XML_Char *>(va.getNthItem(i));
+		attribs[i] = va.getNthItem(i);
 	}
 	attribs[i] = static_cast<XML_Char *>(NULL);
 
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
-		props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
+		props[i] = vp.getNthItem(i);
 	}
 	props[i] = static_cast<XML_Char *>(NULL);
 	m_bStartList =	false;
@@ -8184,7 +8193,7 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	// Make the current block the next element of the list in the block prevList
 	//
 	UT_ASSERT(prevList);
-	UT_Vector va,vp;
+	UT_GenericVector<const XML_Char*> va,vp;
 //
 // Defensive code. This should not happen
 //
@@ -8199,14 +8208,14 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
-		attribs[i] = static_cast<XML_Char *>(va.getNthItem(i));
+		attribs[i] = va.getNthItem(i);
 	}
 	attribs[i] = static_cast<XML_Char *>(NULL);
 
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
-		props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
+		props[i] = vp.getNthItem(i);
 	}
 	props[i] = static_cast<XML_Char *>(NULL);
 	m_bStartList =	false;

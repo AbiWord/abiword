@@ -173,7 +173,7 @@ void fp_Container::clearBrokenContainers(void)
 }
 
 
-UT_uint32 fp_Container::binarysearchCons(void * key, int (*compar)(const 
+UT_uint32 fp_Container::binarysearchCons(const void* key, int (*compar)(const 
 void *, const void *))
 {
 	UT_uint32 u = m_vecContainers.binarysearch(key, compar);

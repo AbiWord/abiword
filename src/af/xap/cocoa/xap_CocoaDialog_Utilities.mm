@@ -97,14 +97,14 @@ void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XA
 
 	\desc The popup button gets emptied first.
  */
-void FillPopupWithCStrVector(NSPopUpButton* menu, const UT_Vector& vec)
+void FillPopupWithCStrVector(NSPopUpButton* menu, const UT_GenericVector<const char*>& vec)
 {
 	int i;
 	int count = vec.getItemCount();
 	
 	[menu removeAllItems];
 	for (i = 0; i < count; i++) {
-		[menu addItemWithTitle:[NSString stringWithUTF8String:static_cast<const char*>(vec[i])]];
+		[menu addItemWithTitle:[NSString stringWithUTF8String:vec[i]]];
 	}
 }
 

@@ -74,7 +74,7 @@ public:
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog
 
-	UT_Vector m_Widgets;
+	UT_GenericVector<GtkWidget*> m_Widgets;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// unix specific

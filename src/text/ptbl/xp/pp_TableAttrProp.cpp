@@ -129,7 +129,7 @@ bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 	if (!createAP(&subscript))
 		return false;
 
-	PP_AttrProp * pAP = (PP_AttrProp *)m_vecTable.getNthItem(subscript);
+	PP_AttrProp * pAP = m_vecTable.getNthItem(subscript);
 	UT_ASSERT(pAP);
 	if (!pAP->setAttributes(attributes) || !pAP->setProperties(properties))
 		return false;
@@ -142,14 +142,14 @@ bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const UT_Vector * pVector,
+bool pp_TableAttrProp::createAP(const UT_GenericVector<XML_Char*> * pVector,
 								   UT_uint32 * pSubscript)
 {
 	UT_uint32 subscript;
 	if (!createAP(&subscript))
 		return false;
 
-	PP_AttrProp * pAP = (PP_AttrProp *)m_vecTable.getNthItem(subscript);
+	PP_AttrProp * pAP = m_vecTable.getNthItem(subscript);
 	UT_ASSERT(pAP);
 	if (!pAP->setAttributes(pVector))
 		return false;

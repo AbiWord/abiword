@@ -238,7 +238,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 	
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
 	{
-		free(static_cast<gchar *>(m_fontlist.getNthItem(i)));
+		free(m_fontlist.getNthItem(i));
 	}
 	m_fontlist.clear();
 	modeless_cleanup();
@@ -480,7 +480,7 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 	g_list_free( m_InsertS_Font_list);
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		 free( static_cast<gchar *>(m_fontlist.getNthItem(i)));
+		 free( m_fontlist.getNthItem(i));
 
 	modeless_cleanup();
 	
@@ -551,7 +551,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 {	  
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_Vector * list = unixapp->getFontManager()->getAllFonts();
+	UT_GenericVector<XAP_UnixFont*>* list = unixapp->getFontManager()->getAllFonts();
 	UT_uint32 count = list->size();
 
 	GList *glFonts = NULL;
@@ -560,14 +560,14 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(list->getNthItem(i));
+		const XAP_UnixFont * pFont = list->getNthItem(i);
 		const gchar * lgn  = static_cast<const gchar *>(pFont->getName());
 		
 		if((strstr(currentfont.c_str(),lgn)==NULL) || (currentfont.size() !=strlen(lgn)) )
 		{
 			currentfont = lgn;
-			m_fontlist.addItem(static_cast<void *>( UT_strdup(currentfont.c_str())));
-			glFonts = g_list_prepend(glFonts, static_cast<gchar *>(m_fontlist.getNthItem(j)));
+			m_fontlist.addItem(static_cast<gchar*>(UT_strdup(currentfont.c_str())));
+			glFonts = g_list_prepend(glFonts, m_fontlist.getNthItem(j));
 			j++;
 		}
 	}	

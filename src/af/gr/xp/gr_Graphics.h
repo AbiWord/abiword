@@ -71,6 +71,7 @@ class GR_Painter;
 class ABI_EXPORT GR_Font
 {
 	friend class GR_Graphics;
+	friend class UT_GenericStringMap<GR_Font*>;
 
  public:
 
@@ -726,7 +727,7 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32        m_iPrevXOffset;
 	GR_Transform     m_Transform;
 
-	UT_StringPtrMap	 m_hashFontCache;
+	UT_GenericStringMap<GR_Font*> m_hashFontCache;
 
 	UT_uint32 m_paintCount;
 

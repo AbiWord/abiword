@@ -1296,7 +1296,7 @@ struct NumberedStyle
  */
 void IE_Exp_RTF::_clearStyles()
 {
-    UT_HASH_PURGEDATA(NumberedStyle *, &m_hashStyles, delete);
+	m_hashStyles.purgeData();
 }
 
 #ifdef _MSC_VER	// MSVC++ warns about 'e' : unreferenced local variable
@@ -1317,7 +1317,7 @@ void IE_Exp_RTF::_selectStyles()
     UT_uint32 nStyleNumber = 0;
     const char * szName;
     const PD_Style * pStyle;
-	UT_Vector vecStyles;
+	UT_GenericVector<PD_Style*> vecStyles;
 	getDoc()->getAllUsedStyles(&vecStyles);
     for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i)
 	{
@@ -1407,11 +1407,9 @@ void IE_Exp_RTF::_write_stylesheets(void)
     _rtf_open_brace();
     _rtf_keyword("stylesheet");
 
-    UT_StringPtrMap::UT_Cursor hc(&m_hashStyles);
+    UT_GenericStringMap<NumberedStyle*>::UT_Cursor hc(&m_hashStyles);
     const NumberedStyle * pns;
-    for (pns = reinterpret_cast<const NumberedStyle *>(hc.first());
-		 hc.is_valid();
-		 pns = reinterpret_cast<const NumberedStyle *>(hc.next()))
+    for (pns = hc.first(); hc.is_valid(); pns = hc.next())
 	{
 		const PD_Style * pStyle = pns->pStyle;
 		_rtf_nl();

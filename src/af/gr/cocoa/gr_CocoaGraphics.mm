@@ -1139,10 +1139,10 @@ void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 	[imageRep release];
 	// update cache arrays
 	id oldObj;
-	m_cacheArray.setNthItem(iIndx, cache, (void **)&oldObj);
+	m_cacheArray.setNthItem(iIndx, cache, &oldObj);
 	[oldObj release];
 	NSRect *old;
-	m_cacheRectArray.setNthItem(iIndx, cacheRect, (void **)&old);
+	m_cacheRectArray.setNthItem(iIndx, cacheRect, &old);
 	if (old) {
 		delete old;
 	}
@@ -1151,8 +1151,8 @@ void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 
 void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	NSRect* cacheRect = static_cast<NSRect*>(m_cacheRectArray.getNthItem(iIndx));
-	NSImage* cache = static_cast<NSImage*>(m_cacheArray.getNthItem(iIndx));
+	NSRect* cacheRect = m_cacheRectArray.getNthItem(iIndx);
+	NSImage* cache = m_cacheArray.getNthItem(iIndx);
 	NSPoint pt = cacheRect->origin;
 	pt.x -= 1;		/* I don't know why this offset, but it is nicer no more pixeldirt */
 	pt.y += cacheRect->size.height;

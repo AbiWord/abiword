@@ -58,7 +58,7 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
 	static UT_UTF8String sNone = pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_None);
-	m_vecTABLeadersLabel.addItem(const_cast<void *>(static_cast<const void *>(sNone.utf8_str())));
+	m_vecTABLeadersLabel.addItem(sNone.utf8_str());
 	m_vecTABLeadersLabel.addItem("....");
 	m_vecTABLeadersLabel.addItem("----");
 	m_vecTABLeadersLabel.addItem("____");

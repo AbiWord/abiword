@@ -215,17 +215,17 @@ void FV_View::_clearSelection(void)
 	else
 	{
 		UT_sint32 i = 0;
-		UT_Vector vecRanges;
+		UT_GenericVector<PD_DocumentRange *> vecRanges;
 		vecRanges.clear();
 		for(i=0; i<m_Selection.getNumSelections();i++)
 		{
 			PD_DocumentRange * pTmp =m_Selection.getNthSelection(i);
 			PD_DocumentRange * pTmp2 = new PD_DocumentRange(m_pDoc,pTmp->m_pos1,pTmp->m_pos2);
-			vecRanges.addItem(static_cast<void *>(pTmp2));
+			vecRanges.addItem(pTmp2);
 		}
 		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
 		{
-			PD_DocumentRange * pDocR = static_cast<PD_DocumentRange *>(vecRanges.getNthItem(i));
+			PD_DocumentRange * pDocR = vecRanges.getNthItem(i);
 			if(pDocR)
 			{
 				iPos1 = pDocR->m_pos1;
@@ -240,7 +240,7 @@ void FV_View::_clearSelection(void)
 		_resetSelection();
 		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
 		{
-			PD_DocumentRange * pDocR = static_cast<PD_DocumentRange *>(vecRanges.getNthItem(i));
+			PD_DocumentRange * pDocR = vecRanges.getNthItem(i);
 			if(pDocR)
 			{
 				iPos1 = pDocR->m_pos1;
@@ -1215,7 +1215,7 @@ void FV_View::_insertSectionBreak(void)
 	//
 	// Duplicate previous header/footers for this section.
 	//
-	UT_Vector vecPrevHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout *> vecPrevHdrFtr;
 	pPrevDSL->getVecOfHdrFtrs( &vecPrevHdrFtr);
 	UT_uint32 i =0;
 	const XML_Char* block_props[] = {
@@ -1227,7 +1227,7 @@ void FV_View::_insertSectionBreak(void)
 	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
 	for(i=0; i< vecPrevHdrFtr.getItemCount(); i++)
 	{
-		  pHdrFtrSrc = static_cast<fl_HdrFtrSectionLayout *>(vecPrevHdrFtr.getNthItem(i));
+		  pHdrFtrSrc = vecPrevHdrFtr.getNthItem(i);
 		  hfType = pHdrFtrSrc->getHFType();
 		  insertHeaderFooter(block_props, hfType, pCurDSL); // cursor is now in the header/footer
 		  if(hfType == FL_HDRFTR_HEADER)
@@ -2946,36 +2946,46 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	_drawOrClearBetweenPositions(iPos1, iPos2, false,false);
 }
 
-/*
+/*!
+  This class was local to FV_View::_drawOrClearBetweenPositions(),
+  but you can't use local types for a template instancation.
+  HACK: I did move it outside and made everything private to prevent
+  anyone else to use it.
+ */
+class CellLine
+{
+private:
+	CellLine(void):
+		m_pCell(NULL),
+		m_pBrokenTable(NULL),
+		m_pLine(NULL)
+		{}
+	virtual ~CellLine(void)
+		{
+			m_pCell = NULL;
+			m_pBrokenTable = NULL;
+			m_pLine = NULL;
+		}
+	fp_CellContainer * m_pCell;
+	fp_TableContainer * m_pBrokenTable;
+	fp_Line * m_pLine;
+	friend bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1,
+													  PT_DocPosition iPos2, 
+													  bool bClear, bool bFullLineHeight);
+};
+
+/*!
   This method simply iterates over every run between two doc positions
   and draws or clears and redraws each one. We clear if bClear is true 
   otherwise we just draw selected.
- If bClear is true then the if bFullLineHeight is true the runs are 
- cleared to their full height.
+  If bClear is true then the if bFullLineHeight is true the runs are 
+  cleared to their full height.
 */
 bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bClear, bool bFullLineHeight)
 {
 //
 // Handle little class for redrawing lines around cells
 //
-	class CellLine
-	{
-	public:
-		CellLine(void):
-			m_pCell(NULL),
-			m_pBrokenTable(NULL),
-			m_pLine(NULL)
-			{}
-		virtual ~CellLine(void)
-			{
-				m_pCell = NULL;
-				m_pBrokenTable = NULL;
-				m_pLine = NULL;
-			}
-		fp_CellContainer * m_pCell;
-		fp_TableContainer * m_pBrokenTable;
-		fp_Line * m_pLine;
-	};
 	
 	// make sure iPos1 < iPos2
 	if (iPos1 >= iPos2)
@@ -2992,7 +3002,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 	UT_uint32 uheight;
-	UT_Vector vecTables;
+	UT_GenericVector<CellLine *> vecTables;
 //
 // This fixes a bug from insert file, when the view we copy from is selected
 // If don't bail out now we get all kinds of crazy dirty on the screen.
@@ -3066,7 +3076,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 					pCellLine->m_pLine = pLine;
 					pCellLine->m_pBrokenTable = pTab;
 					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
-					vecTables.addItem(static_cast<void *>(pCellLine));
+					vecTables.addItem(pCellLine);
 				}
 			}
 			fl_CellLayout * pCellLayout = static_cast<fl_CellLayout *>(pCL);
@@ -3166,7 +3176,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	UT_sint32 i =0;
 	for(i=0; i< static_cast<UT_sint32>(vecTables.getItemCount()); i++)
 	{
- 		CellLine * pCellLine = static_cast<CellLine *>(vecTables.getNthItem(i));
+ 		CellLine * pCellLine = vecTables.getNthItem(i);
 		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics());
 		pCellLine->m_pCell->drawLinesAdjacent();
 
@@ -4518,7 +4528,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	// clean up
 	static fl_BlockLayout * s_pLastBL = 0;
 	static fl_PartOfBlock * s_pLastPOB = 0;
-	static const UT_Vector * s_pvCachedSuggestions = 0;
+	static const UT_GenericVector<UT_UCSChar*>* s_pvCachedSuggestions = 0;
 
 	// can we use the cached suggestions?
 	if (pBL != s_pLastBL || pPOB != s_pLastPOB)
@@ -4529,7 +4539,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 			// clean up
 			for (UT_uint32 i = 0; i < s_pvCachedSuggestions->getItemCount(); i++)
 			{
-				UT_UCSChar * sug = static_cast<UT_UCSChar *>(s_pvCachedSuggestions->getNthItem(i));
+				const UT_UCSChar * sug = s_pvCachedSuggestions->getNthItem(i);
 				FREEP(sug);
 			}
 
@@ -4583,22 +4593,22 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		// lookup suggestions
 
 		// create an empty vector
-		UT_Vector * pvFreshSuggestions = 0;
+		UT_GenericVector<UT_UCSChar*>* pvFreshSuggestions = 0;
 		UT_ASSERT(!pvFreshSuggestions);
 
-		pvFreshSuggestions = new UT_Vector();
+		pvFreshSuggestions = new UT_GenericVector<UT_UCSChar*>();
 		UT_ASSERT(pvFreshSuggestions);
 
 		if (checker->checkWord(stMisspelledWord.ucs4_str(), pPOB->getLength()) == SpellChecker::LOOKUP_FAILED)
 		{
 			// get suggestions from spelling engine
-			const UT_Vector *cpvEngineSuggestions;
+			const UT_GenericVector<UT_UCSChar*>* cpvEngineSuggestions;
 
 			cpvEngineSuggestions = checker->suggestWord (stMisspelledWord.ucs4_str(), pPOB->getLength());
 
 			for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
 			{
-				const UT_UCSChar *sug = reinterpret_cast<const UT_UCSChar *>(cpvEngineSuggestions->getNthItem(i));
+				UT_UCSChar *sug = cpvEngineSuggestions->getNthItem(i);
 				UT_ASSERT(sug);
 				pvFreshSuggestions->addItem(sug);
 			}
@@ -4617,7 +4627,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	if ((s_pvCachedSuggestions->getItemCount()) &&
 		( ndx <= s_pvCachedSuggestions->getItemCount()))
 	{
-		UT_UCS4_cloneString(&szSuggest, static_cast<UT_UCSChar *>(s_pvCachedSuggestions->getNthItem(ndx-1)));
+		UT_UCS4_cloneString(&szSuggest, s_pvCachedSuggestions->getNthItem(ndx-1));
 	}
 
 	return szSuggest;

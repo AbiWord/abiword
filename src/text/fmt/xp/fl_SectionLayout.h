@@ -277,7 +277,7 @@ public:
     void                markForReformat(void) { m_bNeedsFormat = true;}
     bool                needsReFormat(void) const { return m_bNeedsFormat;}
 	bool                isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage);
-    void                getVecOfHdrFtrs(UT_Vector * vecHdrFtr);
+    void                getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr);
 	void                formatAllHdrFtr(void);
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
@@ -345,6 +345,9 @@ private:
 	UT_String           m_sPaperColor;
 	UT_String           m_sScreenColor;
 };
+
+class _PageHdrFtrShadowPair;
+
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout
 {
@@ -428,7 +431,7 @@ private:
 
 	fl_DocSectionLayout*		m_pDocSL;
 	HdrFtrType					m_iHFType;
-	UT_Vector					m_vecPages;
+	UT_GenericVector<_PageHdrFtrShadowPair*> m_vecPages;
 	fp_Container *              m_pHdrFtrContainer;
 };
 

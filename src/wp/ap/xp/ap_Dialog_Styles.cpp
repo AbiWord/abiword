@@ -97,8 +97,8 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 	{
 		char * pSP = UT_strdup(pszProp);
 		char * pSV = UT_strdup(pszVal);
-		m_vecAllProps.addItem((void *) pSP);
-		m_vecAllProps.addItem((void *) pSV);
+		m_vecAllProps.addItem(pSP);
+		m_vecAllProps.addItem(pSV);
 		return;
 	}
 	UT_sint32 i = 0;
@@ -110,17 +110,17 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 	}
 	if(i < iCount)
 	{
-		char * pSV = (char *) m_vecAllProps.getNthItem(i+1);
-		FREEP(pSV);
+		const char * pSV = m_vecAllProps.getNthItem(i+1);
+		FREEP(const_cast<char*>(pSV));
 		pSV = UT_strdup(pszVal);
-		m_vecAllProps.setNthItem(i+1, (void *) pSV, NULL);
+		m_vecAllProps.setNthItem(i+1, pSV, NULL);
 	}
 	else
 	{
 		char * pSP = UT_strdup(pszProp);
 		char * pSV = UT_strdup(pszVal);
-		m_vecAllProps.addItem((void *) pSP);
-		m_vecAllProps.addItem((void *) pSV);
+		m_vecAllProps.addItem(pSP);
+		m_vecAllProps.addItem(pSV);
 	}
 	return;
 }
@@ -174,8 +174,8 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	{
 		char * pSP = UT_strdup(pszProp);
 		char * pSV = UT_strdup(pszVal);
-		m_vecAllAttribs.addItem((void *) pSP);
-		m_vecAllAttribs.addItem((void *) pSV);
+		m_vecAllAttribs.addItem(pSP);
+		m_vecAllAttribs.addItem(pSV);
 		return;
 	}
 	UT_sint32 i = 0;
@@ -187,17 +187,17 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	}
 	if(i < iCount)
 	{
-		char * pSV = (char *) m_vecAllAttribs.getNthItem(i+1);
-		FREEP(pSV);
+		const char * pSV = m_vecAllAttribs.getNthItem(i+1);
+		FREEP(const_cast<char*>(pSV));
 		pSV = UT_strdup(pszVal);
-		m_vecAllAttribs.setNthItem(i+1, (void *) pSV, NULL);
+		m_vecAllAttribs.setNthItem(i+1, pSV, NULL);
 	}
 	else
 	{
 		char * pSP = UT_strdup(pszProp);
 		char * pSV = UT_strdup(pszVal);
-		m_vecAllAttribs.addItem((void *) pSP);
-		m_vecAllAttribs.addItem((void *) pSV);
+		m_vecAllAttribs.addItem(pSP);
+		m_vecAllAttribs.addItem(pSV);
 	}
 	return;
 }
@@ -682,7 +682,7 @@ void AP_Dialog_Styles::ModifyTabs(void)
 void AP_Dialog_Styles::ModifyLists(void)
 {
 	UT_DEBUGMSG(("DOM: Doing stuff in Modify Lists \n"));
-	UT_Vector vp;
+	UT_GenericVector<const XML_Char*> vp;
 
 //
 // Fire up a Modal version of Lists dialog
@@ -705,38 +705,38 @@ void AP_Dialog_Styles::ModifyLists(void)
 //
 	if(getPropsVal("list-style"))
 	{
-		vp.addItem((void *) "list-style");
-		vp.addItem((void *) getPropsVal("list-style"));
+		vp.addItem("list-style");
+		vp.addItem(getPropsVal("list-style"));
 	}
 	if(getPropsVal("start-value"))
 	{
-		vp.addItem((void *) "start-value");
-		vp.addItem((void *) getPropsVal("start-value"));
+		vp.addItem("start-value");
+		vp.addItem(getPropsVal("start-value"));
 	}
 	if(getPropsVal("list-delim"))
 	{
-		vp.addItem((void *) "list-delim");
-		vp.addItem((void *) getPropsVal("list-delim"));
+		vp.addItem("list-delim");
+		vp.addItem(getPropsVal("list-delim"));
 	}
 	if(getPropsVal("margin-left"))
 	{
-		vp.addItem((void *) "margin-left");
-		vp.addItem((void *) getPropsVal("margin-left"));
+		vp.addItem("margin-left");
+		vp.addItem(getPropsVal("margin-left"));
 	}
 	if(getPropsVal("field-font"))
 	{
-		vp.addItem((void *) "field-font");
-		vp.addItem((void *) getPropsVal("field-font"));
+		vp.addItem("field-font");
+		vp.addItem(getPropsVal("field-font"));
 	}
 	if(getPropsVal("list-decimal"))
 	{
-		vp.addItem((void *) "list-decimal");
-		vp.addItem((void *) getPropsVal("list-decimal"));
+		vp.addItem("list-decimal");
+		vp.addItem(getPropsVal("list-decimal"));
 	}
 	if(getPropsVal("text-indent"))
 	{
-		vp.addItem((void *) "text-indent");
-		vp.addItem((void *) getPropsVal("text-indent"));
+		vp.addItem("text-indent");
+		vp.addItem(getPropsVal("text-indent"));
 	}
 	pDialog->fillDialogFromVector(&vp);
 //

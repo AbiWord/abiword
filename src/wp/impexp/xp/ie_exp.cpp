@@ -37,7 +37,7 @@
 
 #include "pd_Document.h"
 
-static UT_Vector m_sniffers(20);
+static UT_GenericVector<IE_ExpSniffer *> m_sniffers(20);
 
 /*****************************************************************/
 /*****************************************************************/
@@ -83,7 +83,7 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
 	{
-		pSniffer = static_cast <IE_ExpSniffer *>(m_sniffers.getNthItem(i));
+		pSniffer = m_sniffers.getNthItem(i);
 		if (pSniffer)
         	pSniffer->setFileType(i+1);
 	}
@@ -96,7 +96,7 @@ void IE_Exp::unregisterAllExporters ()
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		pSniffer = static_cast <IE_ExpSniffer *>(m_sniffers.getNthItem(i));
+		pSniffer = m_sniffers.getNthItem(i);
 		if (pSniffer)
 			pSniffer->unref();
 	}
@@ -302,7 +302,7 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem(k));
+		IE_ExpSniffer * s = m_sniffers.getNthItem(k);
 		UT_ASSERT(s);
 		if (s->recognizeSuffix(szSuffix))
 		{
@@ -382,7 +382,7 @@ IEFileType IE_Exp::fileTypeForDescription(const char * szDescription)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ExpSniffer * pSniffer = static_cast<IE_ExpSniffer *>(m_sniffers.getNthItem(k));
+		IE_ExpSniffer * pSniffer = m_sniffers.getNthItem(k);
 
 		const char * szDummy;
 		const char * szDescription2 = 0;
@@ -415,7 +415,7 @@ IE_ExpSniffer * IE_Exp::snifferForFileType(IEFileType ieft)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem(k));
+		IE_ExpSniffer * s = m_sniffers.getNthItem(k);
 		if (s->supportsFileType(ieft))
 			return s;
 	}
@@ -514,7 +514,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	UT_uint32 nrElements = getExporterCount ();
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem (k));
+		IE_ExpSniffer * s = m_sniffers.getNthItem (k);
 		if (s->supportsFileType(ieft))
 		{
 			return s->constructExporter (pDocument, ppie);
@@ -539,7 +539,7 @@ bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
 
 	if (ndx < getExporterCount())
 	{
-		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem (ndx));
+		IE_ExpSniffer * s = m_sniffers.getNthItem (ndx);
 		UT_return_val_if_fail(s, false);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}

@@ -23,11 +23,11 @@
 
 
 class UT_PropVector 
-	: public UT_Vector
+	: public UT_GenericVector<XML_Char*>
 {
 public:
 	UT_PropVector()
-		: UT_Vector() {};
+		: UT_GenericVector<XML_Char*>() {};
 	void addOrReplaceProp(const XML_Char * pszProp, const XML_Char * pszVal);
 	void getProp(const XML_Char * pszProp, const XML_Char * &pszVal);
 	void removeProp(const XML_Char * pszProp);

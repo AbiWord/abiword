@@ -30,6 +30,27 @@
 #include "ut_types.h"
 #endif
 
+
+template <class T, class U> class  ABI_EXPORT UT_Pair
+{
+public:
+	UT_Pair(T first, U second)
+		:	m_first(first),
+			m_second(second) {}
+	virtual ~UT_Pair()
+		{ }
+
+	const T first() const  
+		{ return m_first; }
+	const U second() const 
+		{ return m_second; }
+
+private:
+	const T m_first;
+	const U m_second;
+};
+
+#if 0
 typedef void* pair_type;
 
 class ABI_EXPORT UT_Pair
@@ -45,5 +66,7 @@ private:
 	const pair_type m_first;
 	const pair_type m_second;
 };
+
+#endif
 
 #endif

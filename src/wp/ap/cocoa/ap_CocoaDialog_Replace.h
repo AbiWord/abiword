@@ -96,9 +96,9 @@ private:
 - (bool)findReverse;
 - (void)setFindReverse:(bool)val;
 
-- (void)updateFindWhat:(UT_Vector*)list;
-- (void)updateReplaceWith:(UT_Vector*)list;
-- (void)_updateCombo:(NSComboBox*)combo withList:(UT_Vector*)list;
+- (void)updateFindWhat:(UT_GenericVector<UT_UCS4Char*>*)list;
+- (void)updateReplaceWith:(UT_GenericVector<UT_UCS4Char*>*)list;
+- (void)_updateCombo:(NSComboBox*)combo withList:(UT_GenericVector<UT_UCS4Char*>*)list;
 @end
 
 

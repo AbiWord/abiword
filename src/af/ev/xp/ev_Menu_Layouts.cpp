@@ -156,7 +156,7 @@ bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV
 {
 	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
 	m_iMaxId = private_max(m_iMaxId, id);
-	void *old;
+	EV_Menu_LayoutItem *old;
 	m_layoutTable.setNthItem(indexLayoutItem, new EV_Menu_LayoutItem(id, flags), &old);
 	EV_Menu_LayoutItem * pOld = static_cast<EV_Menu_LayoutItem *> (old);
 	DELETEP(pOld);
@@ -170,8 +170,9 @@ UT_uint32 EV_Menu_Layout::getLayoutIndex(XAP_Menu_Id id) const
 
 	for (index = 0; index < size_table; ++index)
 	{
-		if ((static_cast<const EV_Menu_LayoutItem *> (m_layoutTable[index]))->getMenuId() == id)
+		if ((m_layoutTable[index])->getMenuId() == id) {
 			break;
+		}
 	}
 
 	return ((index < size_table) ? index : 0);
@@ -180,7 +181,7 @@ UT_uint32 EV_Menu_Layout::getLayoutIndex(XAP_Menu_Id id) const
 EV_Menu_LayoutItem * EV_Menu_Layout::getLayoutItem(UT_uint32 indexLayoutItem) const
 {
 	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
-	return static_cast<EV_Menu_LayoutItem *> (m_layoutTable.getNthItem(indexLayoutItem));
+	return m_layoutTable.getNthItem(indexLayoutItem);
 }
 
 const char * EV_Menu_Layout::getName() const

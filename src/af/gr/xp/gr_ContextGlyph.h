@@ -27,12 +27,12 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
+#include "ut_hash.h"
 #include "ut_misc.h"
 #include "ut_TextIterator.h"
 
 #include <fribidi.h>
 
-class UT_StringPtrMap;
 class XAP_App;
 class XAP_Prefs;
 

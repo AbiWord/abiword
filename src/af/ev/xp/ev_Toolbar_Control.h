@@ -38,8 +38,8 @@ public:
 
 	virtual bool		populate(void) = 0;
 
-	const UT_Vector *	getContents(void) const;
-	XML_Char *			getNthItem(UT_uint32 n) const;
+	const UT_GenericVector<const char*> *	getContents(void) const;
+	const char *		getNthItem(UT_uint32 n) const;
 
 	UT_uint32			getMaxLength(void) const;
 	UT_uint32			getPixelWidth(void) const;
@@ -52,7 +52,7 @@ protected:
 	UT_uint32		m_nPixels;
 	bool			m_bSort;
 
-	UT_Vector		m_vecContents;
+	UT_GenericVector<const char*> 	m_vecContents;
 };
 
 #endif /* EV_TOOLBAR_CONTROL_H */

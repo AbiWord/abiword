@@ -407,13 +407,13 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	// NB: be careful about the order of these
 	_purgeLayout();
 
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout*> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		pHdrFtr = vecHdrFtr.getNthItem(i);
 		delete pHdrFtr;
 	}
 
@@ -1617,13 +1617,13 @@ void fl_DocSectionLayout::collapse(void)
 	//
 	// Clear the header/footers too
 	//
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout*> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		pHdrFtr = vecHdrFtr.getNthItem(i);
 		pHdrFtr->clearScreen();
 	}
 	//
@@ -1631,7 +1631,7 @@ void fl_DocSectionLayout::collapse(void)
 	//
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		pHdrFtr = vecHdrFtr.getNthItem(i);
 		pHdrFtr->collapse();
 	}
 	// remove all the columns from their pages
@@ -1660,7 +1660,7 @@ void fl_DocSectionLayout::collapse(void)
 	{
 		fp_Column* pNext = static_cast<fp_Column *>(pCol->getNext());
 		delete pCol;
-		pCol = pNext;
+		pCol = pNext;	
 	}
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
@@ -1801,12 +1801,12 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 //
 // The addPage methods will add the page to the correct HdrFtrSL.
 //
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		if(pHdrFtr->getHFType() < FL_HDRFTR_FOOTER)
 		{
 			if(pPrev && pPrev->getOwningSection() == this && pPrev->getHdrFtrP(FL_HDRFTR_HEADER) == NULL )
@@ -1845,12 +1845,12 @@ void fl_DocSectionLayout::prependOwnedHeaderPage(fp_Page* pPage)
 //
 // The addPage methods will add the page to the correct HdrFtrSL.
 //
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		if(pHdrFtr->getHFType() < FL_HDRFTR_FOOTER)
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: prepending page %x \n",pPage));
@@ -1873,12 +1873,12 @@ void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 //
 // The addPage methods will add the page to the correct HdrFtrSL.
 //
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		if(pHdrFtr->getHFType() >= FL_HDRFTR_FOOTER)
 		{
 			pHdrFtr->addPage(pPage);
@@ -1890,40 +1890,40 @@ void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 /*!
  * This fills a vector with all the valid header/footers.
  */
-void fl_DocSectionLayout::getVecOfHdrFtrs(UT_Vector * vecHdrFtr)
+void fl_DocSectionLayout::getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr)
 {
 	vecHdrFtr->clear();
 	if (m_pHeaderFirstSL != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pHeaderFirstSL));
+		vecHdrFtr->addItem(m_pHeaderFirstSL);
 	}
 	if (m_pHeaderLastSL  != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pHeaderLastSL));
+		vecHdrFtr->addItem(m_pHeaderLastSL);
 	}
 	if (m_pHeaderEvenSL  != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pHeaderEvenSL));
+		vecHdrFtr->addItem(m_pHeaderEvenSL);
 	}
 	if (m_pHeaderSL  != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pHeaderSL));
+		vecHdrFtr->addItem(m_pHeaderSL);
 	}
 	if (m_pFooterFirstSL != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pFooterFirstSL));
+		vecHdrFtr->addItem(m_pFooterFirstSL);
 	}
 	if (m_pFooterLastSL != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pFooterLastSL));
+		vecHdrFtr->addItem(m_pFooterLastSL);
 	}
 	if (m_pFooterEvenSL != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pFooterEvenSL));
+		vecHdrFtr->addItem(m_pFooterEvenSL);
 	}
 	if (m_pFooterSL != NULL)
 	{
-		vecHdrFtr->addItem(static_cast<void *>(m_pFooterSL));
+		vecHdrFtr->addItem(m_pFooterSL);
 	}
 }
 
@@ -1933,12 +1933,12 @@ void fl_DocSectionLayout::getVecOfHdrFtrs(UT_Vector * vecHdrFtr)
 void fl_DocSectionLayout::formatAllHdrFtr(void)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing formatAllHdrFtr \n"));
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		xxx_UT_DEBUGMSG(("SEVIOR: Doing formatting %x in formatAllHdrFtr \n",pHdrFtr));
 		pHdrFtr->format();
 	}
@@ -1950,12 +1950,12 @@ void fl_DocSectionLayout::formatAllHdrFtr(void)
  */
 void fl_DocSectionLayout::checkAndRemovePages(void)
 {
-	UT_Vector vecHdrFtr;
+	UT_GenericVector <fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		pHdrFtr->checkAndRemovePages();
 	}
 }
@@ -1967,12 +1967,12 @@ void fl_DocSectionLayout::checkAndRemovePages(void)
  */
 void fl_DocSectionLayout::addValidPages(void)
 {
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		pHdrFtr->addValidPages();
 	}
 }
@@ -1983,13 +1983,13 @@ void fl_DocSectionLayout::addValidPages(void)
  */
 void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 {
-	UT_Vector vecHdrFtr;
+	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
 	UT_DEBUGMSG(("Delete Owned Page %x \n",pPage));
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
+		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		if(pHdrFtr->isPageHere(pPage))
 		{
 			pHdrFtr->deletePage(pPage);
@@ -2226,7 +2226,7 @@ void fl_HdrFtrSectionLayout::collapse(void)
 	UT_uint32 i;
 	for (i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		fp_Page * ppPage = pPair->getPage();
 		delete pPair->getShadow();
 		ppPage->removeHdrFtr(getHFType());
@@ -2245,7 +2245,7 @@ void fl_HdrFtrSectionLayout::collapseBlock(fl_ContainerLayout *pBlock)
 	UT_uint32 i;
 	for (i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		fl_ContainerLayout * pShadowBL = pPair->getShadow()->findMatchingContainer(pBlock);
 		UT_ASSERT(pShadowBL);
 		if(pShadowBL)
@@ -2269,7 +2269,7 @@ bool fl_HdrFtrSectionLayout::recalculateFields(UT_uint32 iUpdateCount)
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		UT_ASSERT(pPair->getShadow());
 		bResult = pPair->getShadow()->recalculateFields(iUpdateCount) || bResult;
 	}
@@ -2282,7 +2282,7 @@ fl_HdrFtrShadow * fl_HdrFtrSectionLayout::getFirstShadow(void)
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	if(iCount != 0)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(0));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(0);
 		return pPair->getShadow();
 	}
 	return NULL;
@@ -2317,7 +2317,7 @@ fl_HdrFtrShadow *  fl_HdrFtrSectionLayout::findShadow(fp_Page* pPage)
        UT_sint32 iPage = _findShadow(pPage);
        if(iPage < 0)
 	        return NULL;
-       _PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(iPage));
+       _PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(iPage);
        return pPair->getShadow();
 }
 
@@ -2326,7 +2326,7 @@ UT_sint32 fl_HdrFtrSectionLayout::_findShadow(fp_Page* pPage)
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		if (pPair->getPage() == pPage)
 		{
@@ -2719,10 +2719,10 @@ void fl_HdrFtrSectionLayout::checkAndRemovePages(void)
 // Check that the pages we have are still valid. Delete them if they're not.
 //
 	UT_sint32 i = 0;
-	UT_Vector pageForDelete;
+	UT_GenericVector<fp_Page*> pageForDelete;
 	for(i =0; i< iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		UT_ASSERT(pPair);
 		UT_ASSERT(pPair->getShadow());
 
@@ -2731,17 +2731,17 @@ void fl_HdrFtrSectionLayout::checkAndRemovePages(void)
 		{
 			if(!getDocSectionLayout()->isThisPageValid(getHFType(),ppPage))
 			{
-				pageForDelete.addItem(static_cast<void *>(ppPage));
+				pageForDelete.addItem(ppPage);
 			}
 		}
 		else
 		{
-			pageForDelete.addItem(static_cast<void *>(ppPage));
+			pageForDelete.addItem(ppPage);
 		}
 	}
 	for(i=0; i< static_cast<UT_sint32>(pageForDelete.getItemCount()); i++)
 	{
-		fp_Page * pPage = static_cast<fp_Page *>(pageForDelete.getNthItem(i));
+		fp_Page * pPage = pageForDelete.getNthItem(i);
 		deletePage(pPage);
 	}
 	if( pageForDelete.getItemCount() > 0)
@@ -2807,7 +2807,7 @@ void fl_HdrFtrSectionLayout::format(void)
 
 	for (i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		pPair->getShadow()->format();
 	}
 	layout();
@@ -2839,7 +2839,7 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
   	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		pPair->getShadow()->updateLayout();
 	}
@@ -2853,7 +2853,7 @@ void fl_HdrFtrSectionLayout::markAllRunsDirty(void)
   	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		pPair->getShadow()->markAllRunsDirty();
 	}
@@ -2872,7 +2872,7 @@ void fl_HdrFtrSectionLayout::layout(void)
   	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		pPair->getShadow()->layout();
 	}
@@ -2886,7 +2886,7 @@ void fl_HdrFtrSectionLayout::clearScreen(void)
   	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		pPair->getShadow()->clearScreen();
 	}
@@ -2905,7 +2905,7 @@ void fl_HdrFtrSectionLayout::redrawUpdate(void)
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		if(m_pLayout->findPage(pPair->getPage()) >= 0)
 		{
 			pPair->getShadow()->redrawUpdate();
@@ -2944,7 +2944,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL
 
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		if(pShadowBL)
@@ -2984,7 +2984,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_ContainerLayout* p
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		if(pShadowBL)
@@ -3019,7 +3019,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_ContainerLayout* pBL, 
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		// Find matching block in this shadow.
 
@@ -3043,7 +3043,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_ContainerLayout* pBL, 
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		// Find matching block in this shadow.
 
@@ -3068,7 +3068,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_ContainerLayout* pBL, 
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		// Find matching block in this shadow.
 
@@ -3093,7 +3093,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		// Find matching block in this shadow.
 
@@ -3117,7 +3117,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL,
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		// Find matching block in this shadow.
 
@@ -3165,7 +3165,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		// Find matching block in this shadow.
 		if(pBL)
@@ -3240,7 +3240,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pB
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
 		bResult = pPair->getShadow()->bl_doclistener_insertSection(pBL, FL_SECTION_DOC, pcrx, sdh, lid, pfnBindHandles)
 			&& bResult;
@@ -3257,7 +3257,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_ContainerLayout* pBL
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertObject(pcro)
@@ -3278,7 +3278,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_ContainerLayout* pBL
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteObject(pcro)
@@ -3300,7 +3300,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_ContainerLayout* pBL
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeObject(pcroc)
@@ -3322,7 +3322,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_ContainerLayout* pB
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		if(pShadowBL)
@@ -3357,7 +3357,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_ContainerLayout* pB
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		if(pShadowBL)
@@ -3392,7 +3392,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pB
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeFmtMark(pcrfmc)

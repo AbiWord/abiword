@@ -852,10 +852,10 @@ UT_sint32 signedHiWord(UT_uint32 dw)
  * string in the vector will contain the remainder of the original string 
  * (str).
  */
-UT_Vector * simpleSplit (const UT_String & str, char separator,
+UT_GenericVector<UT_String*> * simpleSplit (const UT_String & str, char separator,
 						 size_t max)
 {
-	UT_Vector * utvResult = new UT_Vector();
+	UT_GenericVector<UT_String*> * utvResult = new UT_GenericVector<UT_String*>();
 	UT_String* utsEntry;
 	UT_uint32 start = 0;
 

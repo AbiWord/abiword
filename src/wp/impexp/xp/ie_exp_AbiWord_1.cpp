@@ -1006,12 +1006,12 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 	const char * szName = NULL;
 	const PD_Style * pStyle=NULL;
-	UT_Vector vecStyles;
+	UT_GenericVector<PD_Style *> vecStyles;
 	m_pDocument->getAllUsedStyles(&vecStyles);
 	UT_uint32 k = 0;
 	for (k=0; k < vecStyles.getItemCount(); k++)
 	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(k));
+		pStyle = vecStyles.getNthItem(k);
 		if (!bWroteOpenStyleSection)
 		{
 			m_pie->write("<styles>\n");
@@ -1024,7 +1024,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 	for (k=0; m_pDocument->enumStyles(k, &szName, &pStyle); k++)
 	{
-		if (!pStyle->isUserDefined() || (vecStyles.findItem(const_cast<void *>(static_cast<const void *>(pStyle))) >= 0))
+		if (!pStyle->isUserDefined() || (vecStyles.findItem(const_cast<PD_Style*>(pStyle))) >= 0)
 			continue;
 
 		if (!bWroteOpenStyleSection)
@@ -1111,7 +1111,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
   // TODO: set dc.date and abiword.date_created if document is new (i.e. first save)
 
-  UT_StringPtrMap & ref = m_pDocument->getMetaData() ;
+  UT_GenericStringMap<UT_UTF8String*> & ref = m_pDocument->getMetaData() ;
 
   // don't print out a thing
   if ( ref.size () == 0 )
@@ -1119,14 +1119,14 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
   m_pie->write("<metadata>\n");
 
-  UT_StringPtrMap::UT_Cursor cursor ( &ref ) ;
+  UT_GenericStringMap<UT_UTF8String*>::UT_Cursor cursor ( &ref ) ;
 
-  const void * val = NULL ;
+  const UT_UTF8String * val = NULL ;
   for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
     {
       if ( val )
 	{
-	  const UT_UTF8String *stringval = static_cast<const UT_UTF8String*>(val);
+	  const UT_UTF8String *stringval = val;
 	  if( stringval->size () > 0 )
 	    {
 	      m_pie->write( "<m key=\"" ) ;
@@ -1284,12 +1284,12 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 
 	const AD_Revision * pRev=NULL;
 
-	UT_Vector & vRevisions = m_pDocument->getRevisions();
+	const UT_GenericVector<AD_Revision*> & vRevisions = m_pDocument->getRevisions();
 
 	UT_uint32 k = 0;
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
-		pRev = static_cast<AD_Revision *>(vRevisions.getNthItem(k));
+		pRev = vRevisions.getNthItem(k);
 		UT_return_if_fail(pRev);
 		
 		UT_String s;

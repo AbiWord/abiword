@@ -394,7 +394,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	bool bFound = false;
 	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
 	{
-		pEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
+		pEntry = m_vecEntries.getNthItem(i);
 		pPrevBL = pEntry->getBlock();
 		xxx_UT_DEBUGMSG(("Looking at Block %x pos %d \n",pPrevBL,pPrevBL->getPosition()));
 		if(pPrevBL->getPosition() > posNew)
@@ -409,7 +409,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	{
 		if(i > 0)
 		{
-			pEntry =  static_cast<TOCEntry *>(m_vecEntries.getNthItem(i-1));
+			pEntry =  m_vecEntries.getNthItem(i-1);
 			pPrevBL =  pEntry->getBlock();
 		}
 		else
@@ -449,15 +449,15 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	TOCEntry *pNewEntry = createNewEntry(pNewBlock);
 	if(iAllBlocks == 0)
 	{
-		m_vecEntries.insertItemAt(static_cast<void *>(pNewEntry),0);
+		m_vecEntries.insertItemAt(pNewEntry,0);
 	}
 	else if (iAllBlocks < static_cast<UT_sint32>(m_vecEntries.getItemCount()))
 	{
-		m_vecEntries.insertItemAt(static_cast<void *>(pNewEntry),iAllBlocks);
+		m_vecEntries.insertItemAt(pNewEntry,iAllBlocks);
 	}
 	else
 	{
-		m_vecEntries.addItem(static_cast<void *>(pNewEntry));
+		m_vecEntries.addItem(pNewEntry);
 	}
 	_calculateLabels();
 //
@@ -494,7 +494,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 }
 
 UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock, 
-								   UT_Vector * pVecEntries)
+								   UT_GenericVector<TOCEntry *>* pVecEntries)
 {
 	TOCEntry * pThisEntry = NULL;
 	fl_BlockLayout * pThisBL = NULL;
@@ -502,7 +502,7 @@ UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock,
 	for(i=0; i< static_cast<UT_sint32>(pVecEntries->getItemCount()); i++)
 	{
 
-		pThisEntry = static_cast<TOCEntry *>(pVecEntries->getNthItem(i));
+		pThisEntry = pVecEntries->getNthItem(i);
 		pThisBL = pThisEntry->getBlock();
 		if(pThisBL->getStruxDocHandle() == pBlock->getStruxDocHandle())
 		{
@@ -536,7 +536,7 @@ fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 	bool bFound = false;
 	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
 	{
-		pThisEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
+		pThisEntry = m_vecEntries.getNthItem(i);
 		pThisBL = pThisEntry->getBlock();
 		if(pThisBL->getStruxDocHandle() == pBlock->getStruxDocHandle())
 		{
@@ -559,7 +559,7 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock)
 	bool bFound = false;
 	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
 	{
-		pThisEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
+		pThisEntry = m_vecEntries.getNthItem(i);
 		pThisBL = pThisEntry->getBlock();
 		if(pThisBL->getStruxDocHandle() == pBlock->getStruxDocHandle())
 		{
@@ -635,8 +635,8 @@ void fl_TOCLayout::_calculateLabels(void)
 	{
 		return;
 	}
-	pThisEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(0));
-	stEntry.push(static_cast<void *>(pThisEntry));
+	pThisEntry = m_vecEntries.getNthItem(0);
+	stEntry.push(pThisEntry);
 	for(i=0; i<	iCount; i++)
 	{
 		if(pPrevEntry == NULL)
@@ -646,13 +646,13 @@ void fl_TOCLayout::_calculateLabels(void)
 			pPrevEntry = pThisEntry;
 			continue;
 		}
-		pThisEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
+		pThisEntry = m_vecEntries.getNthItem(i);
 		if(pThisEntry->getLevel() == pPrevEntry->getLevel())
 		{
 			pThisEntry->setPosInList(pPrevEntry->getPosInList()+1);
 			void * pTmp;
 			stEntry.viewTop(&pTmp);
-			TOCEntry * pPrevLevel = static_cast<TOCEntry *>(pTmp);
+			TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
 			if(pPrevLevel && pPrevLevel->getLevel() < pThisEntry->getLevel())
 			{
 				pThisEntry->calculateLabel(pPrevLevel);
@@ -677,7 +677,7 @@ void fl_TOCLayout::_calculateLabels(void)
 			{
 				void * pTmp;
 				stEntry.pop(&pTmp);
-				pPrevEntry = static_cast<TOCEntry *>(pTmp);
+				pPrevEntry = static_cast<TOCEntry*>(pTmp);
 				if(pPrevEntry->getLevel() == pThisEntry->getLevel())
 				{
 					bStop = true;
@@ -688,7 +688,7 @@ void fl_TOCLayout::_calculateLabels(void)
 				pThisEntry->setPosInList(pPrevEntry->getPosInList()+1);
 				void * pTmp;
 				stEntry.viewTop(&pTmp);
-				TOCEntry * pPrevLevel = static_cast<TOCEntry *>(pTmp);
+				TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
 				if(pPrevLevel && pPrevLevel->getLevel() < pThisEntry->getLevel())
 				{
 					pThisEntry->calculateLabel(pPrevLevel);
@@ -775,7 +775,7 @@ bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
 	{
 
-		pEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
+		pEntry = m_vecEntries.getNthItem(i);
 		fl_BlockLayout *pBL = pEntry->getBlock();
 		if(pBL->getStruxDocHandle() == sdh)
 		{
@@ -797,7 +797,7 @@ UT_UTF8String * fl_TOCLayout::getTOCListLabel(fl_BlockLayout * pBlock)
 	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
 	{
 
-		pEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
+		pEntry = m_vecEntries.getNthItem(i);
 		fl_BlockLayout *pBL = pEntry->getBlock();
 		if(pBL->getStruxDocHandle() == sdh)
 		{

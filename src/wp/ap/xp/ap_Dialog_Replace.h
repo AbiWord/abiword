@@ -104,13 +104,13 @@ public:
 	char						m_WindowName[100];
 		
 	// save a list of find a replace texts
-	UT_Vector					m_findList;
-	UT_Vector					m_replaceList;
+	UT_GenericVector<UT_UCS4Char*>	m_findList;
+	UT_GenericVector<UT_UCS4Char*>	m_replaceList;
 	virtual void				_updateLists() = 0; // must be implemented in non-xp code
 	
  private:
 	// returns true when the internal list was changed
-	bool						_manageList(UT_Vector* list, UT_UCSChar* string);	 	
+	bool						_manageList(UT_GenericVector<UT_UCS4Char*>* list, UT_UCSChar* string);	 	
 };
 
 #endif /* AP_DIALOG_REPLACE_H */

@@ -145,7 +145,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	gint m_iFontOptionsID;
 	UT_sint32  m_iPageLists;
 	UT_sint32  m_iPageFold;
-	UT_Vector  m_vecFoldCheck;
+	UT_GenericVector<GtkWidget*>  m_vecFoldCheck;
 	UT_NumberVector  m_vecFoldID;
 };
 

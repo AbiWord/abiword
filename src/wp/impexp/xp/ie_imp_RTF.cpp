@@ -1483,7 +1483,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	UT_sint32 i =0;
 	for (i = size-1; i>=0; i--)
 	{
-		RTFFontTableItem* pItem = static_cast<RTFFontTableItem*>(m_fontTable.getNthItem(i));
+		RTFFontTableItem* pItem = m_fontTable.getNthItem(i);
 		delete pItem;
 	}
 
@@ -1492,7 +1492,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	size = m_styleTable.getItemCount();
 	for (i = 0; i < size; i++)
 	{
-		char * pItem = static_cast<char *>(m_styleTable.getNthItem(i));
+		char * pItem = m_styleTable.getNthItem(i);
 		FREEP(pItem);
 	}
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
@@ -1722,24 +1722,24 @@ void IE_Imp_RTF::HandleCell(void)
 //
 	if(m_bRowJustPassed && m_bDoCloseTable && (getTable()!= NULL))
 	{
-		UT_Vector vecOldCells;
-		UT_Vector vecCopyCells;
+		UT_GenericVector<ie_imp_cell *> vecOldCells;
+		UT_GenericVector<ie_imp_cell *> vecCopyCells;
 		UT_sint32 row = getTable()->getRow();
 		getTable()->getVecOfCellsOnRow(row-1, &vecOldCells);
 		UT_uint32 i =0;
 		for(i=0; i< vecOldCells.getItemCount();i++)
 		{
-			ie_imp_cell * pCell = static_cast<ie_imp_cell *>(vecOldCells.getNthItem(i));
+			ie_imp_cell * pCell = vecOldCells.getNthItem(i);
 			ie_imp_cell * pNewCell = new ie_imp_cell(NULL,NULL,NULL,0);
 			pNewCell->copyCell(pCell);
-			vecCopyCells.addItem(static_cast<void *>(pNewCell));
+			vecCopyCells.addItem(pNewCell);
 		}
 		UT_ASSERT(vecOldCells.getItemCount() > 0);
 		CloseTable();
 		OpenTable(true);
 		for(i=0; i< vecCopyCells.getItemCount();i++)
 		{
-			ie_imp_cell * pCopyCell = static_cast<ie_imp_cell *>(vecCopyCells.getNthItem(i));
+			ie_imp_cell * pCopyCell = vecCopyCells.getNthItem(i);
 			if(i>0)
 			{
 //
@@ -2660,7 +2660,7 @@ RTFFontTableItem* IE_Imp_RTF::GetNthTableFont(UT_uint32 fontNum)
 {
 	if (fontNum < m_fontTable.getItemCount())
 	{
-		return static_cast<RTFFontTableItem*>(m_fontTable.getNthItem(fontNum));
+		return m_fontTable.getNthItem(fontNum);
 	}
 	else
 	{
@@ -7559,7 +7559,7 @@ bool IE_Imp_RTF::HandleTableList(void)
 // Increment list counting vector
 //
 	RTF_msword97_list * pList = new  RTF_msword97_list(this);
-	m_vecWord97Lists.addItem(static_cast<void *>(pList));
+	m_vecWord97Lists.addItem(pList);
 //
 // OK Parse this \list
 //
@@ -8081,7 +8081,7 @@ IE_Imp_RTF::_getTableListOverride(UT_uint32 id)
 
 	for (i = 0; i < m_vecWord97ListOverride.size(); i++)
 	{
-		pLOver = static_cast<RTF_msword97_listOverride *>(m_vecWord97ListOverride.getNthItem(i));
+		pLOver = m_vecWord97ListOverride.getNthItem(i);
 		if (id == pLOver->m_RTF_listID)
 		{
 			return pLOver;
@@ -8106,7 +8106,7 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 //
 // Increment override counting vector
 //
-	m_vecWord97ListOverride.addItem(static_cast<void *>(pLOver));
+	m_vecWord97ListOverride.addItem(pLOver);
     RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
     RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
@@ -8441,7 +8441,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	{
 		m_fontTable.addItem(NULL);
 	}
-	void* pOld = NULL;
+	RTFFontTableItem* pOld = NULL;
 	// some RTF files define the fonts several time. This is INVALID according to the
 	// specifications. So we ignore it.
 	if (m_fontTable[fontIndex] == NULL)
@@ -9185,7 +9185,7 @@ bool IE_Imp_RTF::HandleAbiLists()
 		}
 		if(i >= m_numLists)
 		{
-			m_vecAbiListTable.addItem( static_cast<void *>(new _rtfAbiListTable));
+			m_vecAbiListTable.addItem(new _rtfAbiListTable);
 			getAbiList(m_numLists)->orig_id = m_currentRTFState.m_paraProps.m_rawID ;
 			getAbiList(m_numLists)->orig_parentid = m_currentRTFState.m_paraProps.m_rawParentID ;
 			getAbiList(m_numLists)->level = m_currentRTFState.m_paraProps.m_level ;
@@ -9657,7 +9657,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 	{
 		pStyle = PT_STYLE_ATTRIBUTE_NAME;
-		pStyleName = static_cast<const XML_Char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+		pStyleName = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];
 	}
 		
 	if(pszAttribs == NULL)
@@ -9807,7 +9807,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	UT_sint32 BasedOn[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 FollowedBy[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 styleCount = 0;
-	UT_Vector vecStyles;
+	UT_GenericVector<UT_GenericVector<const XML_Char*>*> vecStyles;
 	RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
 	RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
@@ -9862,7 +9862,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				else if(0)
 				{
 					// TODO: Why is this code here? It left over from before the BasedOn array
-					char * val = reinterpret_cast<char *>(m_styleTable.getNthItem(parameter));
+					char * val = m_styleTable.getNthItem(parameter);
 					if (val != NULL)
 					{
 						attribs[attribsCount++] = PT_BASEDON_ATTRIBUTE_NAME;
@@ -9889,7 +9889,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				else if(parameter < styleNumber)
 				{
 					// TODO: Why is this code here? It left over from before the FollowedBy array
-					char * val = static_cast<char *>(m_styleTable.getNthItem(parameter));
+					char * val = m_styleTable.getNthItem(parameter);
 					if (val != NULL)
 					{
 	               		attribs[attribsCount++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
@@ -9954,7 +9954,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			char * buffer  = UT_strdup(styleName.utf8_str());
 			char * oldbuffer;
-			m_styleTable.setNthItem(styleNumber,static_cast<void *>(buffer),reinterpret_cast<void **>(&oldbuffer));
+			m_styleTable.setNthItem(styleNumber,buffer,&oldbuffer);
 			FREEP(oldbuffer);
 			break;
 		}
@@ -9967,7 +9967,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			attribs[attribsCount++] = static_cast<const char *>(&propBuffer[0]);
 
 			attribs[attribsCount++] = PT_NAME_ATTRIBUTE_NAME;
-			attribs[attribsCount++] = static_cast<const char *>(m_styleTable[styleNumber]);
+			attribs[attribsCount++] = m_styleTable[styleNumber];
 
 			attribs[attribsCount++] = PT_TYPE_ATTRIBUTE_NAME;
 			attribs[attribsCount++] = styleType;
@@ -9976,19 +9976,19 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 // OK now we clone this and save it so we can set basedon's and followedby's
 //
 			UT_sint32 i =0;
-			UT_Vector * pVecAttr = new UT_Vector();
+			UT_GenericVector<const XML_Char*>* pVecAttr = new UT_GenericVector<const XML_Char*>();
 			for( i= 0; i< static_cast<UT_sint32>(attribsCount); i++)
 			{
 				if(attribs[i] != NULL)
 				{
-					pVecAttr->addItem(static_cast<void *>(UT_strdup(attribs[i])));
+					pVecAttr->addItem(UT_strdup(attribs[i]));
 				}
 				else
 				{
-					pVecAttr->addItem(static_cast<void *>(NULL));
+					pVecAttr->addItem(NULL);
 				}
 			}
-			vecStyles.addItem(static_cast<void *>(pVecAttr));
+			vecStyles.addItem(pVecAttr);
 
 			// Reset
 			styleCount++;
@@ -10025,30 +10025,30 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		// Reset
 		attribsCount = 0;
 		attribs[attribsCount] = NULL;
-		UT_Vector * pCurStyleVec = static_cast<UT_Vector *>(vecStyles.getNthItem(i));
+		UT_GenericVector<const XML_Char*> * pCurStyleVec = vecStyles.getNthItem(i);
 		UT_sint32 nAtts = static_cast<UT_sint32>(pCurStyleVec->getItemCount());
 		UT_sint32 j = 0;
 		const char * szName = NULL;
 
 		while(j < nAtts)
 		{
-			const char * szAtt = static_cast<char *>(pCurStyleVec->getNthItem(j++));
+			const char * szAtt = pCurStyleVec->getNthItem(j++);
 			attribs[attribsCount++] = szAtt;
 			if( UT_strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
 			{
-				szName = static_cast<char *>(pCurStyleVec->getNthItem(j++));
+				szName = pCurStyleVec->getNthItem(j++);
 				attribs[attribsCount++] = szName;
 			}
 			else if( UT_strcmp(szAtt, PT_BASEDON_ATTRIBUTE_NAME)== 0)
 			{
-				const char * szNext = static_cast<char *>(pCurStyleVec->getNthItem(j++));
+				const char * szNext = pCurStyleVec->getNthItem(j++);
 				if(NULL == szNext)
 				{
 					UT_sint32 istyle = BasedOn[i];
 					// must not mix static and dynamically allocated strings in the same
 					// array, otherwise there is no way we can free it !!!
 					//attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
-					attribs[attribsCount++] = static_cast<const char *>(m_styleTable[istyle]);
+					attribs[attribsCount++] = m_styleTable[istyle];
 				}
 				else
 				{
@@ -10057,14 +10057,14 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if( UT_strcmp(szAtt, PT_FOLLOWEDBY_ATTRIBUTE_NAME)== 0)
 			{
-				const char * szNext = static_cast<char *>(pCurStyleVec->getNthItem(j++));
+				const char * szNext = pCurStyleVec->getNthItem(j++);
 				if(NULL == szNext)
 				{
 					UT_sint32 istyle = FollowedBy[i];
 					// must not mix static and dynamically allocated strings in the same
 					// array, otherwise there is no way we can free it !!!
 					// attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
-					attribs[attribsCount++] = static_cast<const char *>(m_styleTable[istyle]);
+					attribs[attribsCount++] = m_styleTable[istyle];
 				}
 				else
 				{
@@ -10073,7 +10073,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else
 			{
-				szAtt = static_cast<char *>(pCurStyleVec->getNthItem(j++));
+				szAtt = pCurStyleVec->getNthItem(j++);
 				attribs[attribsCount++] = szAtt;
 			}
 			attribs[attribsCount] = NULL;
@@ -10097,11 +10097,11 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 		for(j=0; j< nAtts; j++)
 		{
-			char * sz = static_cast<char *>(pCurStyleVec->getNthItem(j));
+			const XML_Char * sz = pCurStyleVec->getNthItem(j);
 			if(sz != NULL)
 				// MUST NOT USED delete[] on strings allocated by malloc/calloc !!!
 				// delete [] sz;
-				FREEP(sz);
+				FREEP(const_cast<XML_Char*>(sz));
 		}
 		delete pCurStyleVec;
 

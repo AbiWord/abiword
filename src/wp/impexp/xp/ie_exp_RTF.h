@@ -101,6 +101,8 @@ public:
 					    IE_Exp ** ppie);
 };
 
+struct NumberedStyle;
+
 class ABI_EXPORT IE_Exp_RTF : public IE_Exp
 {
 	friend class s_RTF_ListenerWriteDoc;
@@ -178,7 +180,7 @@ protected:
 	UT_sint32					m_braceLevel;			/* nesting depth of {} braces */
 	bool						m_bLastWasKeyword;		/* just wrote a keyword, so need space before text data */
 	bool						m_atticFormat; 		/* whether to use unicode for all characters >0xff or convert to native windows encoding*/
-	UT_StringPtrMap                                 m_hashStyles;
+	UT_GenericStringMap<NumberedStyle*> m_hashStyles;
 	/* Hash containing styles to be exported. The key is the
 	   AbiWord style name. The value is a NumberedStyle object
 	   (see the cpp file). */

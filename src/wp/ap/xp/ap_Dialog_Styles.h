@@ -103,8 +103,8 @@ protected:
 	AP_Preview_Paragraph  *		  m_pParaPreview;
 	XAP_Preview_FontPreview *	  m_pCharPreview;
 	AP_Preview_Abi *	          m_pAbiPreview;
-	UT_Vector                     m_vecAllProps;
-	UT_Vector                     m_vecAllAttribs;
+	UT_GenericVector<const XML_Char*> m_vecAllProps;
+	UT_GenericVector<const XML_Char*> m_vecAllAttribs;
 
 private:
 	XAP_Frame *                   m_pFrame;

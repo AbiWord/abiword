@@ -26,7 +26,7 @@
 #include "ut_debugmsg.h"
 
 static const UT_uint32 merge_size_guess = 3;
-static UT_Vector m_sniffers (merge_size_guess);
+static UT_GenericVector<IE_MergeSniffer *> m_sniffers (merge_size_guess);
 
 /************************************************************************/
 /************************************************************************/
@@ -53,10 +53,8 @@ bool IE_MailMerge::fireMergeSet ()
 	
 	pDoc = m_pListener->getMergeDocument ();
 	if (pDoc) {
-		UT_StringPtrMap::UT_Cursor _hc1(&m_map);
-		for (const UT_UTF8String * _hval1 = static_cast<const UT_UTF8String *>(_hc1.first());
-			 _hc1.is_valid(); 
-			 _hval1 = static_cast<const UT_UTF8String *>(_hc1.next()) )
+		UT_GenericStringMap<UT_UTF8String *>::UT_Cursor _hc1(&m_map);
+		for (const UT_UTF8String * _hval1 = _hc1.first(); _hc1.is_valid(); _hval1 = _hc1.next() )
 		{ 
 			if (_hval1)
 				pDoc->setMailMergeField (_hc1.key(), *_hval1);
@@ -66,7 +64,7 @@ bool IE_MailMerge::fireMergeSet ()
 	}
 	
 	bool bret = m_pListener->fireUpdate ();
-	UT_HASH_PURGEDATA(UT_UTF8String*, &m_map, delete) ;
+	m_map.purgeData();
 	
 	return bret;
 }
@@ -98,7 +96,7 @@ IEMergeType IE_MailMerge::fileTypeForContents(const char * szBuf,
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * s = static_cast<IE_MergeSniffer *>(m_sniffers.getNthItem (k));
+		IE_MergeSniffer * s = m_sniffers.getNthItem (k);
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEMT_Unknown == best) || (confidence >= best_confidence)))
 		{
@@ -137,7 +135,7 @@ IEMergeType IE_MailMerge::fileTypeForSuffix(const char * szSuffix)
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * s = static_cast<IE_MergeSniffer *>(m_sniffers.getNthItem(k));
+		IE_MergeSniffer * s = m_sniffers.getNthItem(k);
 		
 		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
 		if ((confidence > 0) && ((IEMT_Unknown == best) || (confidence >= best_confidence)))
@@ -175,7 +173,7 @@ IEMergeType IE_MailMerge::fileTypeForDescription(const char * szDescription)
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * pSniffer = static_cast<IE_MergeSniffer *>(m_sniffers.getNthItem(k));
+		IE_MergeSniffer * pSniffer = m_sniffers.getNthItem(k);
 		
 		const char * szDummy;
 		const char * szDescription2 = 0;
@@ -236,7 +234,7 @@ IE_MergeSniffer * IE_MailMerge::snifferForFileType(IEMergeType ieft)
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * s = static_cast<IE_MergeSniffer*>(m_sniffers.getNthItem(k));
+		IE_MergeSniffer * s = m_sniffers.getNthItem(k);
 		if (s->supportsFileType(ieft))
 			return s;
 	}
@@ -318,7 +316,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		
 		for (UT_uint32 k=0; k < nrElements; k++)
 		{
-		    IE_MergeSniffer * s = static_cast<IE_MergeSniffer *>(m_sniffers.getNthItem (k));
+		    IE_MergeSniffer * s = m_sniffers.getNthItem (k);
 
 		    UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 		    UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
@@ -357,7 +355,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * s = static_cast<IE_MergeSniffer *>(m_sniffers.getNthItem (k));
+		IE_MergeSniffer * s = m_sniffers.getNthItem (k);
 		if (s->supportsFileType(ieft))
 			return s->constructMerger(ppie);
 	}
@@ -373,7 +371,7 @@ bool IE_MailMerge::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getMergerCount();
 	if (ndx < nrElements)
     {
-		IE_MergeSniffer * s = static_cast<IE_MergeSniffer *>(m_sniffers.getNthItem (ndx));
+		IE_MergeSniffer * s = m_sniffers.getNthItem (ndx);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
     }
 	
@@ -410,7 +408,7 @@ void IE_MailMerge::unregisterMerger (IE_MergeSniffer * s)
 	UT_uint32 i     = 0;
 	for(i = ndx-1; i < size; i++)
     {
-		pSniffer = static_cast <IE_MergeSniffer *>(m_sniffers.getNthItem(i));
+		pSniffer = m_sniffers.getNthItem(i);
 		if (pSniffer)
 			pSniffer->setFileType(i+1);
     }
@@ -423,7 +421,7 @@ void IE_MailMerge::unregisterAllMergers ()
 	
 	for (UT_uint32 i = 0; i < size; i++)
     {
-		pSniffer = static_cast <IE_MergeSniffer *>(m_sniffers.getNthItem(i));
+		pSniffer = m_sniffers.getNthItem(i);
 		if (pSniffer)
 			pSniffer->unref();
     }
@@ -673,9 +671,9 @@ private:
 		{
 			UT_UTF8String * dup = new UT_UTF8String (item);
 			if (isHeader)
-				m_headers.addItem (static_cast<void *>(dup));
+				m_headers.addItem (dup);
 			else
-				m_items.addItem(static_cast<void *>(dup));
+				m_items.addItem(dup);
 		}
 
 	bool fire ()
@@ -688,8 +686,8 @@ private:
 			for (UT_uint32 i = 0; i < m_headers.size (); i++) {
 				UT_UTF8String * key, * val;
 
-				key = static_cast<UT_UTF8String *>(m_headers.getNthItem(i));
-				val = static_cast<UT_UTF8String *>(m_items.getNthItem(i));
+				key = m_headers.getNthItem(i);
+				val = m_items.getNthItem(i);
 
 				addMergePair (*key, *val);
 			}
@@ -700,8 +698,8 @@ private:
 			return fireMergeSet ();
 		}
 
-	UT_Vector m_headers;
-	UT_Vector m_items;
+	UT_GenericVector<UT_UTF8String *> m_headers;
+	UT_GenericVector<UT_UTF8String *> m_items;
 
 	char m_delim;
 	bool mLooping;

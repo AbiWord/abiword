@@ -2315,7 +2315,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	UT_sint32 iLeftTwips = 0;
 	iLeftTwips =  (UT_sint32) (cellLeftPos*1440.0);
 	m_pie->_rtf_keyword("trleft",iLeftTwips);
-	UT_Vector vecColProps;
+	UT_GenericVector<fl_ColProps *> vecColProps;
 	vecColProps.clear();
 	if(szColumnProps && *szColumnProps)
 	{
@@ -2333,7 +2333,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
 				pColP->m_iColWidth = static_cast<UT_sint32>(colWidth);
-				vecColProps.addItem(static_cast<void *>(pColP));
+				vecColProps.addItem(pColP);
 			}
 		}
 	}
@@ -2454,7 +2454,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		{
 			for(j= 0; (j< m_Table.getRight()) && (j < static_cast<UT_sint32>(vecColProps.getItemCount())); j++)
 			{
-				fl_ColProps * pColP = static_cast<fl_ColProps *>(vecColProps.getNthItem(j));
+				fl_ColProps * pColP = vecColProps.getNthItem(j);
 				double bigWidth = static_cast<double>(pColP->m_iColWidth);
 				thisX += bigWidth/10000.0;
 			}

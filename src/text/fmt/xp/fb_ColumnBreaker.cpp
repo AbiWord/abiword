@@ -217,14 +217,14 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					// Ok.  Now, deduct the proper amount from iMaxColHeight.
 
 					// OK get a vector of the footnote containers in this line.
-					UT_Vector vecFootnotes;
+					UT_GenericVector<fp_FootnoteContainer*> vecFootnotes;
 					pCurLine->getFootnoteContainers(&vecFootnotes);
 					fp_Page *pCurPage = pCurColumn->getPage();
 					// Now loop through all these and add them to the height.
 					UT_sint32 i =0;
 					for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
 					{
-						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
+						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
 						if(pFC && ((pFC->getPage() == NULL) || (pFC->getPage() != pCurPage)))
 						{
 							iFootnoteHeight += pFC->getHeight();
@@ -616,7 +616,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				if(pCurLine->containsFootnoteReference())
 				{
 					// OK get a vector of the footnote containers in this line.
-					UT_Vector vecFootnotes;
+					UT_GenericVector<fp_FootnoteContainer*> vecFootnotes;
 					pCurLine->getFootnoteContainers(&vecFootnotes);
 				
 					// Now loop through all these and check they're on this
@@ -626,7 +626,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					UT_sint32 i =0;
 					for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
 					{
-						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
+						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
 						if(pFC != NULL)
 						{
 							fp_Page * myPage = pFC->getPage();
@@ -662,7 +662,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					if(pCurTable->containsFootnoteReference())
 					{
 						// OK get a vector of the footnote containers in this line.
-						UT_Vector vecFootnotes;
+						UT_GenericVector<fp_FootnoteContainer*> vecFootnotes;
 						pCurTable->getFootnoteContainers(&vecFootnotes);
 						
 					// Now loop through all these and check they're on this
@@ -673,7 +673,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
 						{
 							xxx_UT_DEBUGMSG(("Found reference %d in broken table %x \n",i,pCurTable));
-							fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
+							fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
 							fp_Page * myPage = pFC->getPage();
 							xxx_UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
 							if(myPage != pCurPage)

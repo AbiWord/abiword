@@ -169,7 +169,7 @@ void ISpellChecker::clearIgnores()
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		UT_UCSChar * pData = static_cast<UT_UCSChar *>(pVec->getNthItem(i));
+		UT_UCSChar * pData = static_cast<UT_UCSChar *>(const_cast<void*>(pVec->getNthItem(i)));
 		DELETEPV(pData);
 	}
 
@@ -319,7 +319,7 @@ ISpellChecker::_checkWord(const UT_UCSChar *ucszWord, size_t length)
     return retVal; /* 0 - not found, 1 on found, -1 on error */
 }
 
-UT_Vector *
+UT_GenericVector<UT_UCSChar*>*
 ISpellChecker::_suggestWord(const UT_UCSChar *ucszWord, size_t length)
 {
     ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
@@ -351,7 +351,7 @@ ISpellChecker::_suggestWord(const UT_UCSChar *ucszWord, size_t length)
 	else
 		return NULL;
 
-	UT_Vector * sgvec = new UT_Vector();
+	UT_GenericVector<UT_UCSChar*>* sgvec = new UT_GenericVector<UT_UCSChar*>();
 
 	// Normal spell checker suggests words second
 	if (!m_bIsDictionaryWord)
@@ -390,7 +390,7 @@ ISpellChecker::_suggestWord(const UT_UCSChar *ucszWord, size_t length)
 				*(reinterpret_cast<UT_UCS4Char *>(Out)) = 0;
 			}
 
-			sgvec->addItem(static_cast<void *>(ucszSugg));
+			sgvec->addItem(ucszSugg);
 		}
 	}
 
@@ -464,7 +464,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 	 */
 	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
 	{
-		DictionaryMapping * mapping = static_cast<DictionaryMapping *>(m_mapping.getNthItem ( i ));
+		DictionaryMapping * mapping = static_cast<DictionaryMapping *>(const_cast<void*>(m_mapping.getNthItem ( i )));
 		if (mapping->lang.size() && !strcmp (szLang, mapping->lang.c_str()))
 		{
 			szFile = mapping->dict;
@@ -564,7 +564,7 @@ bool ISpellChecker::doesDictionaryExist (const char * szLang)
 
 	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
 	{
-		DictionaryMapping * mapping = static_cast<DictionaryMapping *>(m_mapping.getNthItem ( i ));
+		DictionaryMapping * mapping = static_cast<DictionaryMapping *>(const_cast<void*>(m_mapping.getNthItem ( i )));
 		if (mapping->lang.size() && !strcmp (szLang, mapping->lang.c_str()))
 		{
 			szFile = mapping->dict;

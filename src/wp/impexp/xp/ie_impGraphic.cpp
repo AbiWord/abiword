@@ -28,7 +28,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-static UT_Vector s_impGraphicTable ( 6 );
+static UT_GenericVector<IE_ImpGraphicSniffer*> s_impGraphicTable ( 6 );
 
 void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 {
@@ -55,7 +55,7 @@ void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
 	{
-		pSniffer = static_cast <IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem(i));
+		pSniffer = s_impGraphicTable.getNthItem(i);
 		if (pSniffer)
         	pSniffer->setType(i+1);
 	}
@@ -68,7 +68,7 @@ void IE_ImpGraphic::unregisterAllImporters ()
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		pSniffer = static_cast <IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem(i));
+		pSniffer = s_impGraphicTable.getNthItem(i);
 		if (pSniffer)
 			pSniffer->unref();
 	}
@@ -92,7 +92,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpGraphicSniffer * s = static_cast<IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem(k));
+		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem(k);
 		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
@@ -127,7 +127,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpGraphicSniffer * s = static_cast<IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (k));
+		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem (k);
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
@@ -158,7 +158,7 @@ bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getImporterCount();
 	if (ndx < nrElements)
 	{
-		IE_ImpGraphicSniffer * s = static_cast<IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (ndx));
+		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem (ndx);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 
@@ -192,7 +192,7 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 	// use the importer for the specified file type
 	for (UT_uint32 k=0; (k < s_impGraphicTable.size()); k++)
 	{
-		IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer*>(static_cast<const IE_ImpGraphicSniffer*>(s_impGraphicTable[k]));
+		IE_ImpGraphicSniffer * s = s_impGraphicTable[k];
 		if (s->supportsType(ft))
 			return s->constructImporter(ppieg);
 	}
@@ -238,7 +238,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
       
       for (UT_uint32 k=0; k < nrElements; k++)
 	{
-	  IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer*>(static_cast<const IE_ImpGraphicSniffer*>(s_impGraphicTable[k]));
+	  IE_ImpGraphicSniffer * s = s_impGraphicTable[k];
 	  
 	  UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 	  UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
@@ -264,7 +264,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
   // use the importer for the specified file type
   for (UT_uint32 k=0; (k < nrElements); k++)
     {
-      IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer*>(static_cast<const IE_ImpGraphicSniffer*>(s_impGraphicTable[k]));
+      IE_ImpGraphicSniffer * s = s_impGraphicTable[k];
       if (s->supportsType(ft))
 	return s->constructImporter(ppieg);
     }

@@ -5,8 +5,8 @@
 #include "spell_manager.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
+#include "ut_hash.h"
 
-class UT_StringPtrMap;
 
 class ISpellChecker : public SpellChecker
 {
@@ -38,7 +38,7 @@ private:
 
 
 	virtual SpellCheckResult	_checkWord(const UT_UCSChar* word, size_t len);
-	virtual UT_Vector*			_suggestWord(const UT_UCSChar* word, size_t len);
+	virtual UT_GenericVector<UT_UCSChar*>*	_suggestWord(const UT_UCSChar* word, size_t len);
 
 	//
 	// The member functions after this point were formerly global functions

@@ -34,6 +34,7 @@ typedef enum _FV_SelectionMode
 	FV_SelectionMode_TableRow
 } FV_SelectionMode;
 
+class UT_ByteBuf;
 class FL_DocLayout;
 class PD_Document;
 class FV_View;
@@ -98,9 +99,9 @@ private:
 	PT_DocPosition        m_iSelectRightAnchor;
 	fl_TableLayout *      m_pTableOfSelectedColumn;
 	fl_TOCLayout  *       m_pSelectedTOC;
-	UT_Vector             m_vecSelRanges;
-	UT_Vector             m_vecSelRTFBuffers;
-	UT_Vector             m_vecSelCellProps;
+	UT_GenericVector<PD_DocumentRange *> m_vecSelRanges;
+	UT_GenericVector<UT_ByteBuf*> m_vecSelRTFBuffers;
+	UT_GenericVector<FV_SelectionCellProps*> m_vecSelCellProps;
 };
 
 #endif /* FV_Selection_H */

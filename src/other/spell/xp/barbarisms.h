@@ -35,7 +35,7 @@ public:
 	
 	bool checkWord(const UT_UCSChar * word32, size_t length);
 	
-	bool suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg);
+	bool suggestWord(const UT_UCSChar *word32, size_t length, UT_GenericVector<UT_UCSChar*>* pVecsugg);
 	
 	/* 
 		Implementation of UT_XML::Listener
@@ -46,10 +46,10 @@ public:
 
 private:
 
-	bool suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg);			
+	bool suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_GenericVector<UT_UCSChar*>* pVecsugg);			
 	
-	UT_StringPtrMap	m_map;
-	UT_Vector*		m_pCurVector;	
+	UT_GenericStringMap<UT_GenericVector<UT_UCS4Char *>*>	m_map;
+	UT_GenericVector<UT_UCS4Char *>*		m_pCurVector;	
 
 	UT_String m_sLang;
 };
