@@ -313,8 +313,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			)
 		{
 			const XML_Char* pszDecor = szValue;
+
+			XML_Char* p;
+			if (!UT_cloneString(p, pszDecor))
+			{
+				// TODO outofmem
+			}
 			
-			XML_Char*	p = strdup(pszDecor);
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
@@ -337,7 +342,12 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			const XML_Char* pszDecor = szValue;
 			
-			XML_Char*	p = strdup(pszDecor);
+			XML_Char* p;
+			if (!UT_cloneString(p, pszDecor))
+			{
+				// TODO outofmem
+			}
+			
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
@@ -428,7 +438,12 @@ void s_HTML_Listener::_closeSpan(void)
 		{
 			const XML_Char* pszDecor = szValue;
 			
-			XML_Char*	p = strdup(pszDecor);
+			XML_Char* p;
+			if (!UT_cloneString(p, pszDecor))
+			{
+				// TODO outofmem
+			}
+			
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
@@ -451,7 +466,12 @@ void s_HTML_Listener::_closeSpan(void)
 		{
 			const XML_Char* pszDecor = szValue;
 			
-			XML_Char*	p = strdup(pszDecor);
+			XML_Char* p;
+			if (!UT_cloneString(p, pszDecor))
+			{
+				// TODO outofmem
+			}
+			
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
