@@ -1772,7 +1772,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 				fp_Container * ppPrev = (fp_Container *) pPrevLine;
 				while(ppPrev && ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE)
 				{
-					ppPrev = ppPrev->getPrev();
+					ppPrev = (fp_Container *)ppPrev->getPrev();
 				}
 				if(ppPrev)
 				{
