@@ -138,6 +138,7 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	_DS(TEXT_ABOVE,		DLG_MergeCells_Above);		
 	_DS(TEXT_BELOW,		DLG_MergeCells_Below);		
 	_DS(TEXT_FRAME,		DLG_MergeCells_Frame);		
+	_DSX(BTN_CANCEL,	DLG_Close);				
 				
 	// Localise caption
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_MergeCellsTitle));	
@@ -240,6 +241,7 @@ BOOL AP_Win32Dialog_MergeCells::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPar
 		}		
 		
 		case AP_RID_DIALOG_MERGECELLS_BTN_CANCEL:						
+		case IDCANCEL:		// We want to close button work
 			m_answer = a_CANCEL; 						
 			EndDialog(hWnd,0);
 			return 1;
