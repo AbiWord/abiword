@@ -37,7 +37,7 @@ class EV_EditBindingMap;
 /*****************************************************************/
 /*****************************************************************/
 
-class EV_EditBinding
+class ABI_EXPORT EV_EditBinding
 {
 public:
 	EV_EditBinding(EV_EditBindingMap * pebm);
@@ -66,7 +66,7 @@ class ev_EB_Char_Table;
 /*****************************************************************/
 /*****************************************************************/
 
-class EV_EditBindingMap
+class ABI_EXPORT EV_EditBindingMap
 {
 public:
 	EV_EditBindingMap(EV_EditMethodContainer * pemc);

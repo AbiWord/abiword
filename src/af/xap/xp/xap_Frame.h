@@ -54,7 +54,7 @@ class ap_Scrollbar_ViewListener;
 ******************************************************************
 *****************************************************************/
 
-class XAP_InputModes
+class ABI_EXPORT XAP_InputModes
 {
 public:
 	XAP_InputModes(void);
@@ -76,7 +76,7 @@ protected:
 
 //////////////////////////////////////////////////////////////////
 	
-class XAP_Frame
+class ABI_EXPORT XAP_Frame
 {
 public:
 	XAP_Frame(XAP_App * app);

@@ -54,7 +54,7 @@ class UT_String;
 ******************************************************************
 *****************************************************************/
 
-class XAP_App
+class ABI_EXPORT XAP_App
 {
 public:									/* TODO these should be protected */
 	static const char* s_szBuild_ID;

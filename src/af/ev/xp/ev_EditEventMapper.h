@@ -143,7 +143,7 @@ class EV_EditBindingMap;
 
 /****************************************************************/
 
-class EV_EditEventMapper
+class ABI_EXPORT EV_EditEventMapper
 {
 public:
 	EV_EditEventMapper(EV_EditBindingMap * pebm);

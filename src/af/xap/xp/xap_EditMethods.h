@@ -22,7 +22,9 @@
 #ifndef XAP_EDITMETHOD_H
 #define XAP_EDITMETHOD_H
 
-EV_EditMethodContainer * AP_GetEditMethods(void);
+#include "ut_types.h"
+
+ABI_EXPORT EV_EditMethodContainer * AP_GetEditMethods(void);
 
 #endif /* XAP_EDITMETHOD_H */
 

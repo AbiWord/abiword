@@ -26,7 +26,7 @@
 class GR_Graphics;
 class UT_ByteBuf;
 
-class GR_Image
+class ABI_EXPORT GR_Image
 {
 public:
 	GR_Image();
@@ -70,13 +70,13 @@ private:
 	UT_sint32			m_iDisplayHeight;
 };
 
-class GR_RasterImage : public GR_Image
+class ABI_EXPORT GR_RasterImage : public GR_Image
 {
 public:
    	virtual GRType		getType() { return GRT_Raster; }
 };
 
-class GR_ImageFactory
+class ABI_EXPORT GR_ImageFactory
 {
 public:
    	virtual GR_Image*	createNewImage(const char* pszName, GR_Image::GRType iType = GR_Image::GRT_Raster) = 0;

@@ -27,7 +27,7 @@ class EV_EditEventMapper;
 class EV_EditMethod;
 class AV_View;
 
-class EV_Keyboard
+class ABI_EXPORT EV_Keyboard
 {
 public:
 	EV_Keyboard(EV_EditEventMapper * pEEM);

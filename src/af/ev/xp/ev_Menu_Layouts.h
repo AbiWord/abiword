@@ -51,7 +51,7 @@ typedef enum _ev_Menu_LayoutFlags
 
 /*****************************************************************/
 
-class EV_Menu_LayoutItem
+class ABI_EXPORT EV_Menu_LayoutItem
 {
 public:
 	EV_Menu_LayoutItem(XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
@@ -69,7 +69,7 @@ private:
 
 class EV_Menu_LabelSet;
 
-class EV_Menu_Layout					/* a glorified array with bounds checking */
+class ABI_EXPORT EV_Menu_Layout					/* a glorified array with bounds checking */
 {
 public:
 	EV_Menu_Layout(const UT_String &szName, UT_uint32 nrLayoutItems);

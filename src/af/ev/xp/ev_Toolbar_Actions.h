@@ -81,7 +81,7 @@ typedef enum _ev_Toolbar_ItemType
 
 /*****************************************************************/
 
-class EV_Toolbar_Action
+class ABI_EXPORT EV_Toolbar_Action
 {
 public:
 	EV_Toolbar_Action(XAP_Toolbar_Id id,
@@ -108,7 +108,7 @@ protected:
 
 /*****************************************************************/
 
-class EV_Toolbar_ActionSet				/* a glorified array with bounds checking */
+class ABI_EXPORT EV_Toolbar_ActionSet				/* a glorified array with bounds checking */
 {
 public:
 	EV_Toolbar_ActionSet(XAP_Toolbar_Id first, XAP_Toolbar_Id last);

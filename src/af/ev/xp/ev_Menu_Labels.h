@@ -40,7 +40,7 @@
 
 // TODO decide if we should make all labels Unicode
 
-class EV_Menu_Label
+class ABI_EXPORT EV_Menu_Label
 {
 public:
 	EV_Menu_Label(XAP_Menu_Id id,
@@ -60,7 +60,7 @@ private:
 
 /*****************************************************************/
 
-class EV_Menu_LabelSet					/* a glorified array with bounds checking */
+class ABI_EXPORT EV_Menu_LabelSet					/* a glorified array with bounds checking */
 {
 public:
 	EV_Menu_LabelSet(const char * szLanguage,

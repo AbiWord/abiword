@@ -46,7 +46,7 @@ typedef enum _ev_Toolbar_LayoutFlags
 
 /*****************************************************************/
 
-class EV_Toolbar_LayoutItem
+class ABI_EXPORT EV_Toolbar_LayoutItem
 {
 public:
 	EV_Toolbar_LayoutItem(XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags);
@@ -62,7 +62,7 @@ protected:
 
 /*****************************************************************/
 
-class EV_Toolbar_Layout					/* a glorified array with bounds checking */
+class ABI_EXPORT EV_Toolbar_Layout					/* a glorified array with bounds checking */
 {
 public:
 	EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItems);

@@ -79,7 +79,7 @@ typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(XAP_Frame * pFrame, cons
 
 /*****************************************************************/
 
-class EV_Menu_Action
+class ABI_EXPORT EV_Menu_Action
 {
 public:
 	EV_Menu_Action(XAP_Menu_Id id,
@@ -112,7 +112,7 @@ private:
 
 /*****************************************************************/
 
-class EV_Menu_ActionSet					/* a glorified array with bounds checking */
+class ABI_EXPORT EV_Menu_ActionSet					/* a glorified array with bounds checking */
 {
 public:
 	EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last);

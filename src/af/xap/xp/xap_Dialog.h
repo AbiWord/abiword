@@ -45,7 +45,7 @@ typedef enum _XAP_Dialog_Type
 } XAP_Dialog_Type;
 
 
-class XAP_Dialog
+class ABI_EXPORT XAP_Dialog
 {
 public:
 	XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -63,7 +63,7 @@ protected:
 };
 
 
-class XAP_Dialog_NonPersistent : public XAP_Dialog
+class ABI_EXPORT XAP_Dialog_NonPersistent : public XAP_Dialog
 {
 public:
 	XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -76,7 +76,7 @@ public:
 protected:
 };
 
-class XAP_Dialog_Persistent : public XAP_Dialog
+class ABI_EXPORT XAP_Dialog_Persistent : public XAP_Dialog
 {
 public:
 	XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -90,7 +90,7 @@ protected:
 	bool						m_bInUse;
 };
 
-class XAP_Dialog_FramePersistent : public XAP_Dialog_Persistent
+class ABI_EXPORT XAP_Dialog_FramePersistent : public XAP_Dialog_Persistent
 {
 public:
 	XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -105,7 +105,7 @@ public:
 protected:
 };
 
-class XAP_Dialog_AppPersistent : public XAP_Dialog_Persistent
+class ABI_EXPORT XAP_Dialog_AppPersistent : public XAP_Dialog_Persistent
 {
 public:
 	XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -121,7 +121,7 @@ protected:
 };
 
 
-class XAP_Dialog_Modeless : public XAP_Dialog_AppPersistent
+class ABI_EXPORT XAP_Dialog_Modeless : public XAP_Dialog_AppPersistent
 {
 public:
 	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

@@ -74,7 +74,7 @@ typedef UT_uint32 EV_EditMethodType;
 /*****************************************************************/
 /*****************************************************************/
 
-class EV_EditMethodCallData
+class ABI_EXPORT EV_EditMethodCallData
 {
 public:
 	EV_EditMethodCallData();
@@ -95,7 +95,7 @@ typedef bool ( EV_EditMethod_Fn) (AV_View * pView, EV_EditMethodCallData * pCall
 /*****************************************************************/
 /*****************************************************************/
 
-class EV_EditMethod
+class ABI_EXPORT EV_EditMethod
 {
 public:
 	EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditMethodType emt, const char * szDescription);
@@ -115,7 +115,7 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-class EV_EditMethodContainer
+class ABI_EXPORT EV_EditMethodContainer
 {
 public:
 	EV_EditMethodContainer(UT_uint32 cStatic, EV_EditMethod arrayStaticEditMethods[]);

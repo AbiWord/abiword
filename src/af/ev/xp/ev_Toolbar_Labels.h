@@ -39,7 +39,7 @@
 
 // TODO decide if we should make all labels Unicode
 
-class EV_Toolbar_Label
+class ABI_EXPORT EV_Toolbar_Label
 {
 public:
 	EV_Toolbar_Label(XAP_Toolbar_Id id,
@@ -65,7 +65,7 @@ protected:
 
 /*****************************************************************/
 
-class EV_Toolbar_LabelSet					/* a glorified array with bounds checking */
+class ABI_EXPORT EV_Toolbar_LabelSet					/* a glorified array with bounds checking */
 {
 public:
 	EV_Toolbar_LabelSet(const char * szLanguage,

@@ -23,10 +23,12 @@
 
 // Singleton class that will load/unload modules for us
 
+#include "ut_types.h"
+
 class XAP_Module;
 class UT_Vector;
 
-class XAP_ModuleManager
+class ABI_EXPORT XAP_ModuleManager
 {
 	friend class XAP_Module;
 

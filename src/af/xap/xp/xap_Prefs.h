@@ -50,7 +50,7 @@ typedef void (*PrefsListener) (
 ** between schemes.
 ******************************************************************/
 
-class XAP_PrefsScheme
+class ABI_EXPORT XAP_PrefsScheme
 {
 public:
 	XAP_PrefsScheme(XAP_Prefs *pPrefs, const XML_Char * szSchemeName);
@@ -89,7 +89,7 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-class XAP_Prefs
+class ABI_EXPORT XAP_Prefs
 {
 public:
 	XAP_Prefs(XAP_App * pApp);

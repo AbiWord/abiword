@@ -39,7 +39,7 @@ class XAP_App;
 class XAP_Frame;
 class UT_String;
 
-class EV_Menu
+class ABI_EXPORT EV_Menu
 {
 public:
 	EV_Menu(EV_EditMethodContainer * pEMC,

@@ -31,7 +31,7 @@ class UT_svg;
 class UT_SVGMatrix;
 class GR_Graphics;
 
-class GR_VectorImage : public GR_Image
+class ABI_EXPORT GR_VectorImage : public GR_Image
 {
 public:
 	GR_VectorImage(const char* szName);

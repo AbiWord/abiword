@@ -23,9 +23,10 @@
 #ifndef EV_EDITVIRTUALKEY_H
 #define EV_EDITVIRTUALKEY_H
 
+#include "ut_types.h"
 #include "ev_EditBits.h"
 
-class EV_NamedVirtualKey
+class ABI_EXPORT EV_NamedVirtualKey
 {
 public:
 	static const char *	getName(EV_EditBits eb);

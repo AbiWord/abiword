@@ -38,7 +38,7 @@
 // we want to have C linkage for both 
 // this and for all of our required functions
 extern "C" {
-	typedef struct {
+	typedef ABI_EXPORT struct {
 		char * name;
 		char * desc;
 		char * version;

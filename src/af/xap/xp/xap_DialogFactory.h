@@ -38,7 +38,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class XAP_DialogFactory
+class ABI_EXPORT XAP_DialogFactory
 {
 public:
 	struct _dlg_table

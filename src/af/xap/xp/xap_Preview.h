@@ -28,7 +28,7 @@
 
 #include "gr_Graphics.h"
 
-class XAP_Preview
+class ABI_EXPORT XAP_Preview
 {
 public:
 

@@ -2,12 +2,13 @@
 #define XAP_LOG
 
 #include <stdio.h>
+#include "ut_types.h"
 
 class UT_String;
 class AV_View;
 class EV_EditMethodCallData;
 
-class XAP_Log
+class ABI_EXPORT XAP_Log
 {
 public:
 	void log(const UT_String &method_name, AV_View *pAV_View, EV_EditMethodCallData *pCallData);

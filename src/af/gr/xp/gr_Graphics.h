@@ -35,7 +35,7 @@ class XAP_Frame;
 	and functionality is contained within its subclasses, each of which provides
 	the implementation for some specific font technology.
 */
-class GR_Font
+class ABI_EXPORT GR_Font
 {
 public:
 	GR_Font();

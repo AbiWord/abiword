@@ -33,7 +33,7 @@ class EV_Toolbar_Layout;
 class EV_Toolbar_LabelSet;
 class AV_View;
 
-class EV_Toolbar
+class ABI_EXPORT EV_Toolbar
 {
 public:
 	EV_Toolbar(EV_EditMethodContainer * pEMC,

@@ -24,7 +24,7 @@
 
 class GR_Graphics;
 
-struct dg_DrawArgs
+struct ABI_EXPORT dg_DrawArgs
 {
 	dg_DrawArgs();
 	

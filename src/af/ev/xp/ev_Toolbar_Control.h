@@ -30,7 +30,7 @@ class EV_Toolbar;
 // this abstract class encapsulates the contents of a toolbar control.  
 // it allows the EV_Toolbar logic to build and manage the underlying widgets.
 
-class EV_Toolbar_Control
+class ABI_EXPORT EV_Toolbar_Control
 {
 public:
 	EV_Toolbar_Control(EV_Toolbar * pToolbar);

@@ -28,7 +28,7 @@ class EV_EditEventMapper;
 class EV_EditMethod;
 class AV_View;
 
-class EV_Mouse
+class ABI_EXPORT EV_Mouse
 {
 public:
 	EV_Mouse(EV_EditEventMapper * pEEM);

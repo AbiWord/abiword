@@ -25,7 +25,7 @@
 
 //////////////////////////////////////////////////////////////////
 
-class GR_CharWidths
+class ABI_EXPORT GR_CharWidths
 {
 public:
 	GR_CharWidths(void);

@@ -27,7 +27,7 @@
 #include "ut_xml.h"
 #include "ut_iconv.h"
 
-struct XAP_LangInfo
+struct ABI_EXPORT XAP_LangInfo
 {
 	/*no memeber can have NULL value. If string is empty, then value is
 	 not defined. All fields are strings to simplify searches.
@@ -43,7 +43,7 @@ struct XAP_LangInfo
 };
 
 
-class XAP_EncodingManager
+class ABI_EXPORT XAP_EncodingManager
 {
 public:
     /*

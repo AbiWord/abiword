@@ -31,7 +31,7 @@
 	which aren't in the standard dictionary.  The contents are stored as
 	UTF8 plaintext, with one word per line. 
 */
-class XAP_Dictionary
+class ABI_EXPORT XAP_Dictionary
 {
 public:
 	XAP_Dictionary(const char * szFilename);
