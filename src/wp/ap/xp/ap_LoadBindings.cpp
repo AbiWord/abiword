@@ -35,6 +35,7 @@
 #include "ap_LB_EmacsCtrlX.h"
 #include "ap_LB_viEdit.h"
 #include "ap_LB_viEdit_d.h"
+#include "ap_LB_viEdit_c.h"
 #include "ap_LB_viInput.h"
 #include "ap_LB_DeadAbovedot.h"
 #include "ap_LB_DeadAcute.h"
@@ -56,7 +57,7 @@ typedef UT_Bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap 
 
 struct _lb
 {
-	UT_Bool						m_bCanCycle;
+	UT_Bool						m_bCanCycle;	// visible to CycleInputMode
 	const char *				m_name;
 	ap_LoadBindings_pFn			m_fn;
 	EV_EditBindingMap *			m_pebm;			// must be deleted
@@ -70,6 +71,7 @@ static struct _lb s_lbTable[] =
 
 	{	UT_TRUE,  "viEdit",				ap_LoadBindings_viEdit,				NULL	}, // vi Edit-Mode bindings
 	{	UT_FALSE, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL	}, // vi Edit-Mode d-prefix key bindings
+	{	UT_FALSE, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL	}, // vi Edit-Mode c-prefix key bindings
 	{	UT_FALSE, "viInput",			ap_LoadBindings_viInput,			NULL	}, // vi Input-Mode bindings
 
 	{	UT_FALSE, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'

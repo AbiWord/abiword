@@ -46,6 +46,7 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_LB_Emacs.cpp			\
 		ap_LB_EmacsCtrlX.cpp		\
 		ap_LB_viEdit.cpp		\
+		ap_LB_viEdit_c.cpp		\
 		ap_LB_viEdit_d.cpp		\
 		ap_LB_viInput.cpp		\
 		ap_Menu_ActionSet.cpp		\

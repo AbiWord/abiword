@@ -32,7 +32,7 @@
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
 #include "ap_LoadBindings.h"
-#include "ap_LB_viEdit_d.h"
+#include "ap_LB_viEdit_c.h"
 
 #define _S		| EV_EMS_SHIFT
 #define _C		| EV_EMS_CONTROL
@@ -51,8 +51,8 @@
 static struct ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,						_C,						_A,		   _A_C		}},
-	{0x64, /* d      */ { "viCmd_dd",				"",						"",			""		}},
-	{0x77, /* w      */ { "delEOW",				"",			    		"",			""		}},
+	{0x24, /* $      */ { "viCmd_c24",				"",						"",			""		}},
+	{0x77, /* w      */ { "viCmd_cw",				"",			    		"",			""		}},
 };
 
 
@@ -62,7 +62,7 @@ static struct ap_bs_Char s_CharTable[] =
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_viEdit_d(AP_BindingSet * pThis,
+UT_Bool ap_LoadBindings_viEdit_c(AP_BindingSet * pThis,
 								 EV_EditBindingMap * pebm)
 {
 	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);

@@ -302,10 +302,10 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x41, /* A      */ { "viCmd_A",			"",					"",				""					}},
 	{0x42, /* B      */ { "",					"",					"",				""					}},
 	{0x43, /* C      */ { "",					"",					"",				""					}},
-	{0x44, /* D      */ { "",					"",					"",				""					}},
+	{0x44, /* D      */ { "delEOL",				"",					"",				""					}},
 	{0x45, /* E      */ { "",					"",					"",				""					}},
 	{0x46, /* F      */ { "",					"",					"",				""					}},
-	{0x47, /* G      */ { "",					"",					"",				""					}},
+	{0x47, /* G      */ { "warpInsPtEOD",		"",					"",				""					}},
 	{0x48, /* H      */ { "",					"",					"",				""					}},
 	//Move cursor to BOL and then switch to Insert mode
 	{0x49, /* I      */ { "viCmd_I",			"",					"",				""					}},
@@ -317,7 +317,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x4e, /* N      */ { "",					"",					"",				""					}},
 	//Should move cursor to begining of line,  insert a return and switch to Input mode
 	{0x4f, /* O      */ { "viCmd_O",			"",					"",				""					}},
-	{0x50, /* P      */ { "",					"",					"",				""					}},
+	{0x50, /* P      */ { "viCmd_P",			"",					"",				""					}},
 	{0x51, /* Q      */ { "",					"",					"",				""					}},
 	{0x52, /* R      */ { "",					"",					"",				""					}},
 	{0x53, /* S      */ { "",					"",	   				"",				""					}},
@@ -331,7 +331,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x5b, /* [      */ { "warpInsPtBOB",		"",					"",				""					}},
 	{0x5c, /* \      */ { "",					"",					"",				""					}},
 	{0x5d, /* ]      */ { "warpInsPtEOB",		"",					"",				""					}},
-	{0x5e, /* ^      */ { "",					"",					"",				""					}},
+	{0x5e, /* ^      */ { "warpInsPtBOL",		"",					"",				""					}},
 	{0x5f, /* -      */ { "",					"",					"",				""					}},
 	{0x60, /* `      */ { "",					"",					"",				""					}},
 	{0x61, /* a      */ { "viCmd_a",			"",					"",				""					}},
@@ -491,6 +491,7 @@ static struct ap_bs_Char_Prefix s_CharPrefixTable[] =
 {
 //  Warning: case is significant here Ctrl-x and Ctrl-X are different :-)	
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
+	{0x63, /* c      */ { "viEdit_c",			"",					"",				""					}},
 	{0x64, /* d      */ { "viEdit_d",			"",					"",				""					}},
 };
 

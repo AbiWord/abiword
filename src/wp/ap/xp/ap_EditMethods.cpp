@@ -282,9 +282,12 @@ public:
 	static EV_EditMethod_Fn viCmd_I;
 	static EV_EditMethod_Fn viCmd_J;
 	static EV_EditMethod_Fn viCmd_O;
+	static EV_EditMethod_Fn viCmd_P;
 	static EV_EditMethod_Fn viCmd_a;
 	static EV_EditMethod_Fn viCmd_o;
-	static EV_EditMethod_Fn viCmd_dw;
+	static EV_EditMethod_Fn viCmd_dd;
+	static EV_EditMethod_Fn viCmd_c24;
+	static EV_EditMethod_Fn viCmd_cw;
 
 	static EV_EditMethod_Fn noop;
 
@@ -509,9 +512,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viCmd_I),		0,	""),
 	EV_EditMethod(NF(viCmd_J),		0,	""),
 	EV_EditMethod(NF(viCmd_O),		0,	""),
+	EV_EditMethod(NF(viCmd_P),		0,	""),
 	EV_EditMethod(NF(viCmd_a),		0,	""),
 	EV_EditMethod(NF(viCmd_o),		0,	""),
-	EV_EditMethod(NF(viCmd_dw),		0,	""),
+	EV_EditMethod(NF(viCmd_dd),		0,	""),
+	EV_EditMethod(NF(viCmd_c24),	0,	""),
+	EV_EditMethod(NF(viCmd_cw),		0,	""),
 
 	EV_EditMethod(NF(noop),					0,	""),
 
@@ -3553,35 +3559,50 @@ Defun(viCmd_A)
 	// insert after the end of the current line
 	return ( EX(warpInsPtEOL) && EX(setInputVI) );
 }
-Defun0(viCmd_I)
+Defun(viCmd_I)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	// insert before the beginning of current line
+	return ( EX(warpInsPtBOL) && EX(setInputVI) );
 }
 Defun0(viCmd_J)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 	return UT_FALSE;
 }
-Defun0(viCmd_O)
+Defun(viCmd_O)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	// insert new line before current line, go into input mode
+	return ( EX(warpInsPtBOL) && EX(insertLineBreak) && EX(setInputVI) );
 }
-
+Defun(viCmd_P)
+{
+	// paste text before cursor
+	return ( EX(warpInsPtLeft) && EX(paste) );
+}
 Defun(viCmd_a)
 {
 	// insert after the current position
 	return ( EX(warpInsPtRight) && EX(setInputVI) );
 }
 
-Defun0(viCmd_o)
+Defun(viCmd_o)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	// insert new line after current line, go into input mode
+	return ( EX(warpInsPtEOL) && EX(insertLineBreak) && EX(setInputVI) );
 }
-Defun0(viCmd_dw)
+Defun(viCmd_dd)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	// delete the current line
+	return ( EX(warpInsPtBOL) && EX(delEOL) );
+}
+/* c$ */
+Defun(viCmd_c24)
+{
+	//delete to end of current line, start input
+	return ( EX(delEOL) && EX(setInputVI) );
+}
+Defun(viCmd_cw)
+{
+	// delete to the end of current word, start input mode
+	return ( EX(delEOW) && EX(setInputVI) );
 }
