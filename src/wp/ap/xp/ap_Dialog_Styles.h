@@ -42,6 +42,9 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	typedef enum { a_OK, a_CANCEL }   tAnswer;
 	AP_Dialog_Styles::tAnswer	  getAnswer(void) const;
 
+	// wish that this could be protected
+	void _tabCallback(const char *, const char *);
+
  protected:
 	void event_paraPreviewUpdated (const XML_Char * pageLeftMargin,
 				       const XML_Char * pageRightMargin,
@@ -71,6 +74,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void ModifyFont(void);
 	void ModifyParagraph(void);
 	void ModifyTabs(void);
+
 	void updateCurrentStyle(void);
     bool createNewStyle(const XML_Char * szName);
 	bool applyModifiedStyleToDoc(void);

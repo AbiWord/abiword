@@ -27,6 +27,12 @@
 #include "fl_BlockLayout.h"
 
 class XAP_Frame;
+class AP_Dialog_Tab;
+class FV_View;
+
+typedef void (*TabSaveCallBack)(AP_Dialog_Tab * pDlg, 
+								FV_View *pView, const char * szTabStops,
+								const char * szDflTabStop, void * closure);
 
 class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 {
@@ -62,6 +68,8 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 
 	static unsigned char AlignmentToChar( eTabType a );
 	static eTabType		 CharToAlignment( unsigned char ch );
+
+	void setSaveCallback (TabSaveCallBack, void * closure);
 
  protected:
 
@@ -125,6 +133,9 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 
 	void _event_somethingChanged();			// when anything changes - text, align, or leader
 
+private:
+	TabSaveCallBack m_pCallbackFn;
+	void * m_closure;
 
 	char buf[20];
 

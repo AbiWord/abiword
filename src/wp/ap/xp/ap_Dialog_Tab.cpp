@@ -39,10 +39,9 @@
 #include "ap_TopRuler.h"		// for AP_TopRulerInfo
 
 AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_OK), m_pFrame(0),
+	  m_pCallbackFn(0), m_closure(0)
 {
-	m_answer = a_OK;
-	m_pFrame = (XAP_Frame *)0;		// needs to be set from runModal for some of the event_'s to work
 }
 
 AP_Dialog_Tab::~AP_Dialog_Tab(void)
@@ -51,33 +50,26 @@ AP_Dialog_Tab::~AP_Dialog_Tab(void)
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 
+void AP_Dialog_Tab::setSaveCallback (TabSaveCallBack pCb, void * closure)
+{
+	m_pCallbackFn = pCb;
+	m_closure = closure;
+}
+
 AP_Dialog_Tab::tAnswer AP_Dialog_Tab::getAnswer(void) const
 {
 	return m_answer;
 }
 
-void AP_Dialog_Tab::_storeWindowData(void)
+void AP_Dialog_Tab::_storeWindowData()
 {
 	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
 
-	const XML_Char * properties[3];
-	properties[0] = "tabstops";
-	properties[1] = m_pszTabStops;
-	properties[2] = 0;
-	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1]));
+	UT_ASSERT(m_pCallbackFn);
 
-	pView->setBlockFormat(properties);
-
-	properties[0] = "default-tab-interval";
-	properties[1] = _gatherDefaultTabStop();
-	properties[2] = 0;
-	UT_ASSERT(properties[1]);
-	UT_DEBUGMSG(("AP_Dialog_Tab: Default Tab Stop [%s]\n",properties[1]));
-
-	pView->setBlockFormat(properties);
-
+	(*m_pCallbackFn)(this, pView, m_pszTabStops, _gatherDefaultTabStop(), m_closure);
 }
 
 void AP_Dialog_Tab::_populateWindowData(void)

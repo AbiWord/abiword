@@ -41,6 +41,8 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 
+#include "ap_Dialog_Tab.h"
+
 AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
@@ -420,19 +422,56 @@ void AP_Dialog_Styles::ModifyFont(void)
 	pDialogFactory->releaseDialog(pDialog);
 }
 
+void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
+									const char *szDflTabStop)
+{
+	// TODO: fix mem leaks
+	if (szTabStops)
+		addOrReplaceVecProp("tabstops", UT_strdup(szTabStops));
+	if (szDflTabStop)
+		addOrReplaceVecProp("default-tab-interval", UT_strdup(szDflTabStop));
+}
+
+static void
+s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView, 
+				   const char * szTabStops, const char * szDflTabStop,
+				   void * closure)
+{
+	UT_ASSERT(closure);
+
+	AP_Dialog_Styles * pStyleDlg = static_cast<AP_Dialog_Styles *>(closure);
+
+	pStyleDlg->_tabCallback(szTabStops, szDflTabStop);
+}
+
 void AP_Dialog_Styles::ModifyTabs(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Tabs \n"));
+	UT_DEBUGMSG(("DOM: Doing stuff in Modify Tabs \n"));
+
 //
-// Fire up the tabs dialog. TODO. Should move the PieceTable manipulations into
-// ap_EditMethods so we can intercept them.
+// Fire up the Tab dialog
 //
 
+	XAP_Dialog_Id id = AP_DIALOG_ID_TAB;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *) getFrame()->getDialogFactory();
+
+	AP_Dialog_Tab * pDialog
+		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	pDialog->setSaveCallback(s_TabSaveCallBack, (void *)this);
+
+	pDialog->runModal(getFrame());
+
+	pDialogFactory->releaseDialog(pDialog);
 }
 
 void AP_Dialog_Styles::ModifyLists(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Lists \n"));
+	UT_DEBUGMSG(("DOM: Doing stuff in Modify Lists \n"));
+	UT_ASSERT(UT_TODO);
 }
 
 /*!

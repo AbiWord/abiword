@@ -3914,6 +3914,28 @@ static bool s_doFontDlg(FV_View * pView)
 	return bOK;
 }
 
+static void
+s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView, 
+				   const char * szTabStops, const char * szDflTabStop,
+				   void * closure)
+{
+	const XML_Char * properties[3];
+	properties[0] = "tabstops";
+	properties[1] = szTabStops;
+	properties[2] = 0;
+	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1]));
+
+	pView->setBlockFormat(properties);
+
+	properties[0] = "default-tab-interval";
+	properties[1] = szDflTabStop;
+	properties[2] = 0;
+	UT_ASSERT(properties[1]);
+	UT_DEBUGMSG(("AP_Dialog_Tab: Default Tab Stop [%s]\n",properties[1]));
+
+	pView->setBlockFormat(properties);
+}
+
 static bool s_doTabDlg(FV_View * pView)
 {
 
@@ -3931,6 +3953,8 @@ static bool s_doTabDlg(FV_View * pView)
 	
 	if(pDialog)
 	{
+		// setup the callback function, no closure
+		pDialog->setSaveCallback(s_TabSaveCallBack, NULL);
 
 		// run the dialog
 		pDialog->runModal(pFrame);
@@ -3941,9 +3965,6 @@ static bool s_doTabDlg(FV_View * pView)
 		switch (answer)
 		{
 		case AP_Dialog_Tab::a_OK:
-			
-			break;
-			
 		case AP_Dialog_Tab::a_CANCEL:
 			// do nothing
 			break;
