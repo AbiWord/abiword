@@ -9615,7 +9615,7 @@ FV_View::countWords(void)
 			pRun = pLine->getFirstRun();
 	}
 
-	wCount.words_no_hdrftr = wCount.word - wCount.words_no_hdrftr;
+	//wCount.words_no_hdrftr = wCount.word - wCount.words_no_hdrftr;
 
 	return (wCount);
 }
