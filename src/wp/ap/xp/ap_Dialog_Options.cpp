@@ -22,19 +22,23 @@
 #include <string.h>
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_units.h"
 #include "ut_debugmsg.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
+#include "xap_Dlg_MessageBox.h"
 #include "xap_Prefs.h"
 
 #include "ap_Dialog_Options.h"
 #include "ap_Prefs_SchemeIds.h"
+#include "ap_Strings.h"
 
 AP_Dialog_Options::AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
 	m_answer = a_OK;
+	m_pFrame = (XAP_Frame *)0;		// needs to be set from runModal for some of the event_'s to work
 }
 
 AP_Dialog_Options::~AP_Dialog_Options(void)
@@ -63,6 +67,22 @@ void AP_Dialog_Options::_storeWindowData(void)
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefs->getCurrentScheme());
 
+	// turn off all notification to PrefListeners via XAP_Prefs
+	pPrefs->startBlockChange();
+
+	// before we continue to remember all the changed values, check to see if
+	// we have turned OFF PrefsAutoSave.  If so, toggle that value, then force
+	// a prefs save, then update everything else
+	//			shack@uiuc.edu
+	if ( pPrefs->getAutoSavePrefs() == UT_TRUE && _gatherPrefsAutoSave() == UT_FALSE ) {
+
+		pPrefs->setAutoSavePrefs( UT_FALSE );
+		pPrefs->savePrefsFile();				// TODO: check the results
+	}
+	else {	// otherwise, just set the value
+		pPrefs->setAutoSavePrefs( _gatherPrefsAutoSave() );
+	}
+
 	// check to see if there is any other scheme besides _buildin_
 	UT_ASSERT( pPrefsScheme );	
 	if ( !strcmp( pPrefs->getCurrentScheme()->getSchemeName(), "_builtin_") ) {
@@ -82,26 +102,46 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckInternet, _gatherSpellInternet() );
 
 
-	//TODO m_pApp  get current view so we can _toggleAutoSpell
+	// TODO: change to snprintf
+	XML_Char szBuffer[40];
+	sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
+	pPrefsScheme->setValue( AP_PREF_KEY_OptionsTabNumber, szBuffer );
 
-	// do we want to save the preferences automatically here?
-	// probably not, but for now, lets do until I add the TODO 
-	// "do you want to save your changes?" dialog
-	//			shack@uiuc.edu
-	if ( pPrefs->getAutoSavePrefs() == UT_FALSE ) {
-		// TODO: check the results
-		pPrefs->savePrefsFile();
+	// save ruler units value
+	pPrefsScheme->setValue( AP_PREF_KEY_RulerUnits, UT_dimensionName( _gatherViewRulerUnits()) );
+
+	// allow XAP_Prefs to notify all the listeners of changes
+	pPrefs->endBlockChange();
+
+	// if we hit the Save button, then force a save after the gather
+	if ( m_answer == a_SAVE ) {
+		pPrefs->savePrefsFile();				// TODO: check the results
 	}
+
+}
+
+void AP_Dialog_Options::_eventSave(void)
+{
+	m_answer = a_SAVE;
+
+	_storeWindowData();	
+
+	m_answer = a_OK;
 }
 
 void AP_Dialog_Options::_populateWindowData(void)
 {
 	UT_Bool			b;
 	XAP_Prefs		*pPrefs;
+	const XML_Char	*pszBuffer;	
+
+	// TODO: move this logic when we get a PrefsListener API and turn this
+	//		 dialog into an app-specific
 
 	pPrefs = m_pApp->getPrefs();
 	UT_ASSERT( pPrefs );
 
+	// ------------ Spell
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck,&b))
 		_setSpellCheckAsType (b);
 
@@ -113,6 +153,18 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckInternet,&b))
 		_setSpellInternet (b);
+	
+	// ------------ Prefs	
+	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
+
+	// ------------ View
+	if (pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits,&pszBuffer))
+		_setViewRulerUnits (UT_determineDimension(pszBuffer));
+
+	// ------------ the page tab number 
+	if (pPrefs->getPrefsValue(AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
+		_setNotebookPageNum (atoi(pszBuffer));
+
 
 	// enable/disable controls
 	_initEnableControls();
@@ -143,20 +195,26 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 // The initialize the controls (i.e., disable controls not coded yet)
 void AP_Dialog_Options::_initEnableControls()
 {
+	// spelling
 	_controlEnable( id_CHECK_SPELL_SUGGEST,			UT_FALSE );
 	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS,		UT_FALSE );
 	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		UT_FALSE );
-	_controlEnable( id_CHECK_SPELL_NUMBERS,			UT_FALSE );
 	_controlEnable( id_CHECK_SPELL_INTERNET,		UT_FALSE );
 	_controlEnable( id_LIST_DICTIONARY,				UT_FALSE );
-	_controlEnable( id_CHECK_PREFS_AUTO_SAVE,		UT_FALSE );
+	_controlEnable( id_BUTTON_DICTIONARY_EDIT,		UT_FALSE );
+	_controlEnable( id_BUTTON_IGNORE_EDIT,			UT_FALSE );
+
+	// prefs
 	_controlEnable( id_COMBO_PREFS_SCHEME,			UT_FALSE );
+
+	// view
 	_controlEnable( id_CHECK_VIEW_SHOW_RULER,		UT_FALSE );
-	_controlEnable( id_LIST_VIEW_RULER_UNITS,		UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_SHOW_TOOLBARS,	UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_ALL,				UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_HIDDEN_TEXT,		UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_UNPRINTABLE,		UT_FALSE );
+
+	// general
 	_controlEnable( id_BUTTON_SAVE,					UT_FALSE );
 }
 
@@ -164,14 +222,23 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 {
 	XAP_Prefs		*pPrefs;
 	const XML_Char	*old_name;
+	int currentPage;
 
 	pPrefs = m_pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 
+	// SetDefaults
+	//	To set the defaults, save the scheme name and notebook page number,
+	//  re-populate the window with the _buildit_ scheme, then reset the 
+	//	scheme name and page number.
+	// If the user hits cancel, then nothing is saved in user_prefs
+
 	old_name = pPrefs->getCurrentScheme()->getSchemeName();
 
-	pPrefs->setCurrentScheme("_builtin_");		
+	currentPage = _gatherNotebookPageNum();
 
+	pPrefs->setCurrentScheme("_builtin_");		
+	
 	_populateWindowData();
 
 	// TODO i'm not sure you want to do the following at this
@@ -179,5 +246,59 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 	// TODO set us to "_builtin_" and that's it.  if the user
 	// TODO then changes something, we should create a new
 	// TODO scheme and fill in the new value.  --jeff
+	_setNotebookPageNum( currentPage );		
 	pPrefs->setCurrentScheme(old_name);
+}
+
+void AP_Dialog_Options::_event_IgnoreReset(void)
+{
+	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreReset"));
+	UT_ASSERT( m_pFrame );
+
+#if 0
+	// TODO:  shack@uiuc.edu: waiting for a vote for reset strings...
+
+    XAP_DialogFactory * pDialogFactory
+        = (XAP_DialogFactory *)(m_pFrame->getDialogFactory());
+
+    XAP_Dialog_MessageBox * pDialog
+        = (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+    UT_ASSERT(pDialog);
+
+    const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+    pDialog->setMessage(pSS->getValue(AP_STRING_ID_DLG_Options_Spell_IgnoreResetAll));
+    pDialog->setButtons(XAP_Dialog_MessageBox::b_YNC);
+    pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO); // should this be YES?
+
+    pDialog->runModal(m_pFrame);
+
+    XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+    pDialogFactory->releaseDialog(pDialog);
+
+	// if hit cancel, go no further
+	if (ans == XAP_Dialog_MessageBox::a_CANCEL)
+	{
+		UT_DEBUGMSG(("Canceled"));
+		return;
+	}
+
+    if (ans == XAP_Dialog_MessageBox::a_YES)
+	{
+		UT_DEBUGMSG(("Yes"));
+		// do it
+
+	}
+#endif
+}
+
+void AP_Dialog_Options::_event_IgnoreEdit(void)
+{
+	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreEdit"));
+}
+
+void AP_Dialog_Options::_event_DictionaryEdit(void)
+{
+	UT_DEBUGMSG(("AP_Dialog_Options::_event_DictionaryEdit"));
 }

@@ -53,6 +53,9 @@
 #define AP_PREF_KEY_SpellCheckInternet				"SpellCheckInternet"		/* enable spell checking internet names {0,1} */
 #define AP_PREF_DEFAULT_SpellCheckInternet			"1"
 
+#define AP_PREF_KEY_OptionsTabNumber				"OptionsTabNumber"			/* the page number of the currently shown page in the */
+#define AP_PREF_DEFAULT_OptionsTabNumber			"0"							/* options dialog */
+
 #define AP_PREF_KEY_RulerUnits						"RulerUnits"				/* value in UT_dimensionName() */
 #define AP_PREF_DEFAULT_RulerUnits					"in"
 
@@ -91,6 +94,7 @@ dcl(AutoSpellCheck)
 dcl(SpellCheckCaps)
 dcl(SpellCheckNumbers)
 dcl(SpellCheckInternet)
+dcl(OptionsTabNumber)
 dcl(RulerUnits)
 dcl(SpellCheckWordList)
 dcl(StringSet)

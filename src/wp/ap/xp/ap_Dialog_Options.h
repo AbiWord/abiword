@@ -23,6 +23,7 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
+#include "ut_units.h"
 
 class XAP_Frame;
 
@@ -36,15 +37,16 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	virtual void	runModal(XAP_Frame * pFrame) = 0;
 
 	// answer from dialog
-	typedef enum { a_OK, a_CANCEL } tAnswer;
-	typedef enum { unit_IN, unit_MM, unit_CM, unit_TWIPS, 
-				   unit_POINTS, unit_PIXELS } tUnits;
+	typedef enum { a_OK, a_CANCEL, a_SAVE } tAnswer;
+	typedef enum { unit_IN, unit_CM, unit_POINTS  } tUnits;
 
 	// control ids
 	typedef enum { id_CHECK_SPELL_CHECK_AS_TYPE = 0, id_CHECK_SPELL_HIDE_ERRORS,
 				   id_CHECK_SPELL_SUGGEST, id_CHECK_SPELL_MAIN_ONLY, 
 				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS, 
 				   id_CHECK_SPELL_INTERNET, id_LIST_DICTIONARY,
+				   id_BUTTON_DICTIONARY_EDIT, id_BUTTON_IGNORE_RESET,
+				   id_BUTTON_IGNORE_EDIT,
 
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
@@ -74,36 +76,51 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	void _initEnableControls();
 
 	void _populateWindowData(void);
+	void _eventSave(void);
 
 	void _storeWindowData(void);	// calls the following functions to
 									// lookup values to set as preferences
 								// don't see any need to make virtual yet, all
 								// optdlgs should as for the same preferences
 
-#define SET_GATHER_BOOLV(a) virtual UT_Bool _gather##a(void) = 0; \
-					 	    virtual void    _set##a( UT_Bool ) = 0
-	SET_GATHER_BOOLV			(SpellCheckAsType);
-	SET_GATHER_BOOLV			(SpellHideErrors);
-	SET_GATHER_BOOLV			(SpellSuggest);
-	SET_GATHER_BOOLV			(SpellMainOnly);
-	SET_GATHER_BOOLV			(SpellUppercase);
-	SET_GATHER_BOOLV			(SpellNumbers);
-	SET_GATHER_BOOLV			(SpellInternet);
+#define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
+					 	virtual void    _set##a( u ) = 0
+	SET_GATHER			(SpellCheckAsType,	UT_Bool);
+	SET_GATHER			(SpellHideErrors,	UT_Bool);
+	SET_GATHER			(SpellSuggest,		UT_Bool);
+	SET_GATHER			(SpellMainOnly,		UT_Bool);
+	SET_GATHER			(SpellUppercase,	UT_Bool);
+	SET_GATHER			(SpellNumbers,		UT_Bool);
+	SET_GATHER			(SpellInternet,		UT_Bool);
 
-	SET_GATHER_BOOLV			(PrefsAutoSave);
+	SET_GATHER			(PrefsAutoSave,		UT_Bool);
 
-	SET_GATHER_BOOLV			(ViewShowRuler);
-	SET_GATHER_BOOLV			(ViewShowToolbars);
+	SET_GATHER			(ViewShowRuler,		UT_Bool);
+ 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewShowToolbars,	UT_Bool);
 
-	SET_GATHER_BOOLV			(ViewAll);
-	SET_GATHER_BOOLV			(ViewHiddenText);
-	SET_GATHER_BOOLV			(ViewUnprintable);
-#undef SAVE_GATHER_BOOLV
+	SET_GATHER			(ViewAll,			UT_Bool);
+	SET_GATHER			(ViewHiddenText,	UT_Bool);
+	SET_GATHER			(ViewUnprintable,	UT_Bool);
+
+ 	// so we can save and restore to the same page - must be able to return
+  	// the current page and reset it later (i.e., don't use a handle, but a
+  	// page index)
+  	SET_GATHER			(NotebookPageNum,	int );
+#undef SET_GATHER
 	
  protected:
 	tAnswer				m_answer;
+	XAP_Frame *			m_pFrame;
 
-	virtual void _event_SetDefaults(void);
+public:
+	// NOTE: Theses have been changed to "public" so we can use static call
+	// back handlers under GTK.  This will allow greater protection from
+	// conflicting function names
+	void _event_SetDefaults(void);
+	void _event_IgnoreReset(void);
+	void _event_IgnoreEdit(void);
+	void _event_DictionaryEdit(void);
 };
 
 #endif /* AP_DIALOG_PARAGRAPH_H */

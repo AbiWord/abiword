@@ -42,9 +42,12 @@
 
 /*****************************************************************/
 
-#define WIDGET_DIALOG_TAG "dialog"
+#define WIDGET_MENU_OPTION_PTR		"menuoptionptr"
+#define WIDGET_MENU_VALUE_TAG		"value"
 
 /*****************************************************************/
+
+#define _(a) a
 
 XAP_Dialog * AP_UnixDialog_Options::static_constructor(XAP_DialogFactory * pFactory,
                                                          XAP_Dialog_Id id)
@@ -99,6 +102,21 @@ static void s_delete_clicked(GtkWidget * /* widget */,
                              AP_UnixDialog_Options * dlg)
 { UT_ASSERT(dlg); dlg->event_WindowDelete(); }
 
+static void s_ignore_reset_clicked( GtkWidget * /* widget */,
+								    gpointer  data )
+{ AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+  UT_ASSERT(dlg); dlg->_event_IgnoreReset(); }
+
+static void s_ignore_edit_clicked( GtkWidget * /* widget */,
+								    gpointer  data )
+{ AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+  UT_ASSERT(dlg); dlg->_event_IgnoreEdit(); }
+
+static void s_dict_edit_clicked( GtkWidget * /* widget */,
+								    gpointer  data )
+{ AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
+  UT_ASSERT(dlg); dlg->_event_DictionaryEdit(); }
+
 // these function will allow multiple widget to tie into the same logic
 // function (at the AP level) to enable/disable stuff
 void s_checkbutton_toggle( GtkWidget *w, AP_UnixDialog_Options *dlg )
@@ -112,6 +130,23 @@ void s_checkbutton_toggle( GtkWidget *w, AP_UnixDialog_Options *dlg )
 void s_defaults_clicked( GtkWidget *widget, AP_UnixDialog_Options *dlg)
 { UT_ASSERT(widget && dlg); dlg->_event_SetDefaults(); }
 
+static gint s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Options * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	GtkWidget *option_menu = (GtkWidget *)gtk_object_get_data(GTK_OBJECT(widget),
+												 WIDGET_MENU_OPTION_PTR);
+	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
+
+	gpointer p = gtk_object_get_data( GTK_OBJECT(widget),
+												WIDGET_MENU_VALUE_TAG);
+
+	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
+
+	UT_DEBUGMSG(("s_menu_item_activate [%d %s]", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
+
+	return TRUE;
+}
 
 /*****************************************************************/
 
@@ -120,6 +155,9 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     // Build the window's widgets and arrange them
     GtkWidget * mainWindow = _constructWindow();
     UT_ASSERT(mainWindow);
+
+	// save for use with event
+	m_pFrame = pFrame;
 
     // Populate the window's data items
     _populateWindowData();
@@ -183,13 +221,20 @@ void AP_UnixDialog_Options::event_WindowDelete(void)
 }
 
 /*****************************************************************/
-
+#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
+        do {												\
+	        gtk_signal_connect(GTK_OBJECT(w), "activate",	\
+                GTK_SIGNAL_FUNC(s_menu_item_activate),		\
+                (gpointer) this);							\
+        } while (0)
 GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 {
     //////////////////////////////////////////////////////////////////////
 	// BEGIN: glade stuff (interface.c)
 
-#define _(a) a
+	// for the internationalization	
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
 	GtkWidget *windowOptions;
 	GtkWidget *table2;
 	GtkWidget *hbuttonbox2;
@@ -240,7 +285,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 	windowOptions = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_object_set_data (GTK_OBJECT (windowOptions), "windowOptions", windowOptions);
-	gtk_window_set_title (GTK_WINDOW (windowOptions), _("Options"));
+	gtk_window_set_title (GTK_WINDOW (windowOptions),
+		pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle) );
 
 	table2 = gtk_table_new (2, 1, FALSE);
 	gtk_widget_ref (table2);
@@ -260,7 +306,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox2), GTK_BUTTONBOX_END);
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox2), 10);
 
-	buttonSave = gtk_button_new_with_label (_("Sa&ve"));
+	buttonSave = gtk_button_new_with_label ( pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Save) );
 	gtk_widget_ref (buttonSave);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSave", buttonSave,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -268,7 +314,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonSave);
 	GTK_WIDGET_SET_FLAGS (buttonSave, GTK_CAN_DEFAULT);
 
-	buttonDefaults = gtk_button_new_with_label (_("De&faults"));
+	buttonDefaults = gtk_button_new_with_label ( 
+							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default ));
 	gtk_widget_ref (buttonDefaults);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonDefaults", buttonDefaults,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -276,7 +323,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonDefaults);
 	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
 
-	buttonOk = gtk_button_new_with_label (_("OK"));
+	buttonOk = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_widget_ref (buttonOk);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonOk", buttonOk,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -284,7 +331,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonOk);
 	GTK_WIDGET_SET_FLAGS (buttonOk, GTK_CAN_DEFAULT);
 
-	buttonCancel = gtk_button_new_with_label (_("Cancel"));
+	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_widget_ref (buttonCancel);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonCancel", buttonCancel,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -309,7 +356,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_container_add (GTK_CONTAINER (notebook1), tableSpell);
 	gtk_container_set_border_width (GTK_CONTAINER (tableSpell), 10);
 
-	checkbuttonSpellHideErrors = gtk_check_button_new_with_label (_("Hide &spelling errors in the document"));
+	checkbuttonSpellHideErrors = gtk_check_button_new_with_label
+		(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellHideErrors ));
 	gtk_widget_ref (checkbuttonSpellHideErrors);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellHideErrors", checkbuttonSpellHideErrors,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -318,7 +366,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	checkbuttonSpellSuggest = gtk_check_button_new_with_label (_("A&lways suggest corrections"));
+	checkbuttonSpellSuggest = gtk_check_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellSuggest));
 	gtk_widget_ref (checkbuttonSpellSuggest);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellSuggest", checkbuttonSpellSuggest,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -327,7 +375,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	checkbuttonSpellMainOnly = gtk_check_button_new_with_label (_("Suggest from &main dictionary only"));
+	checkbuttonSpellMainOnly = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellMainOnly));
 	gtk_widget_ref (checkbuttonSpellMainOnly);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellMainOnly", checkbuttonSpellMainOnly,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -336,7 +384,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	checkbuttonSpellUppercase = gtk_check_button_new_with_label (_("Ignore words in &UPPERCASE"));
+	checkbuttonSpellUppercase = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellUppercase));
 	gtk_widget_ref (checkbuttonSpellUppercase);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellUppercase", checkbuttonSpellUppercase,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -345,7 +393,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	checkbuttonSpellNumbers = gtk_check_button_new_with_label (_("Ignore words with num&bers"));
+	checkbuttonSpellNumbers = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellNumbers));
 	gtk_widget_ref (checkbuttonSpellNumbers);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellNumbers", checkbuttonSpellNumbers,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -354,7 +402,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	checkbuttonSpellInternet = gtk_check_button_new_with_label (_("Ignore Internet and &file addresses"));
+	checkbuttonSpellInternet = gtk_check_button_new_with_label ( pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellInternet));
 	gtk_widget_ref (checkbuttonSpellInternet);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellInternet", checkbuttonSpellInternet,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -363,7 +411,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	label4 = gtk_label_new (_("Ignored words: "));
+	label4 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord));
 	gtk_widget_ref (label4);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "label4", label4,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -373,7 +421,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (0), 0, 0);
 	gtk_label_set_justify (GTK_LABEL (label4), GTK_JUSTIFY_LEFT);
 
-	checkbuttonSpellCheckAsType = gtk_check_button_new_with_label (_("Check s&pelling as you type"));
+	checkbuttonSpellCheckAsType = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType));
 	gtk_widget_ref (checkbuttonSpellCheckAsType);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellCheckAsType", checkbuttonSpellCheckAsType,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -382,7 +430,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	buttonSpellIgnoreReset = gtk_button_new_with_label (_("&Reset"));
+	buttonSpellIgnoreReset = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Btn_IgnoreReset));
 	gtk_widget_ref (buttonSpellIgnoreReset);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSpellIgnoreReset", buttonSpellIgnoreReset,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -391,7 +439,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 3);
 
-	buttonSpellIgnoreEdit = gtk_button_new_with_label (_("&Edit..."));
+	buttonSpellIgnoreEdit = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Btn_IgnoreEdit));
 	gtk_widget_ref (buttonSpellIgnoreEdit);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSpellIgnoreEdit", buttonSpellIgnoreEdit,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -400,7 +448,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 4, 0);
 
-	buttonSpellDictionary = gtk_button_new_with_label (_("&Dictionary..."));
+	buttonSpellDictionary = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Options_Btn_CustomDict));
 	gtk_widget_ref (buttonSpellDictionary);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSpellDictionary", buttonSpellDictionary,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -409,7 +457,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 4, 0);
 
-	label5 = gtk_label_new (_("Custom Dictionary:"));
+	label5 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellCustomDict));
 	gtk_widget_ref (label5);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "label5", label5,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -428,12 +476,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 	listSpellDicts_menu = gtk_menu_new ();
-	glade_menuitem = gtk_menu_item_new_with_label (_("custom.dic"));
+	glade_menuitem = gtk_menu_item_new_with_label ("custom.dic");	// TODO - get from prefs / var
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listSpellDicts_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpellDicts), listSpellDicts_menu);
 
-	labelSpell = gtk_label_new (_("Spelling"));
+	labelSpell = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Spelling));
 	gtk_widget_ref (labelSpell);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelSpell", labelSpell,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -448,7 +496,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_container_add (GTK_CONTAINER (notebook1), tablePreferences);
 	gtk_container_set_border_width (GTK_CONTAINER (tablePreferences), 10);
 
-	checkbuttonPrefsAutoSave = gtk_check_button_new_with_label (_("&Automatically save preferences"));
+	checkbuttonPrefsAutoSave = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave));
 	gtk_widget_ref (checkbuttonPrefsAutoSave);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonPrefsAutoSave", checkbuttonPrefsAutoSave,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -457,7 +505,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	label6 = gtk_label_new (_("Current Preferences Scheme:"));
+	label6 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme));
 	gtk_widget_ref (label6);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "label6", label6,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -481,7 +529,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (comboPrefsSchemesEdit);
 
-	labelPreferences = gtk_label_new (_("Preferences"));
+	labelPreferences = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_ref (labelPreferences);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelPreferences", labelPreferences,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -503,7 +551,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_widget_show (vbox4);
 	gtk_box_pack_start (GTK_BOX (hboxView), vbox4, TRUE, TRUE, 5);
 
-	frame2 = gtk_frame_new (_("Show/Hide..."));
+	frame2 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewShowHide));
 	gtk_widget_ref (frame2);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "frame2", frame2,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -524,14 +572,14 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_widget_show (hbox10);
 	gtk_box_pack_start (GTK_BOX (vbox7), hbox10, FALSE, FALSE, 0);
 
-	checkbuttonViewRuler = gtk_check_button_new_with_label (_("&Ruler"));
+	checkbuttonViewRuler = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewRuler));
 	gtk_widget_ref (checkbuttonViewRuler);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewRuler", checkbuttonViewRuler,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (checkbuttonViewRuler);
 	gtk_box_pack_start (GTK_BOX (hbox10), checkbuttonViewRuler, FALSE, FALSE, 0);
 
-	labelUnits = gtk_label_new (_("&units:"));
+	labelUnits = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewUnits));
 	gtk_widget_ref (labelUnits);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelUnits", labelUnits,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -546,34 +594,58 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_widget_show (listViewRulerUnit);
 	gtk_box_pack_start (GTK_BOX (hbox10), listViewRulerUnit, FALSE, FALSE, 0);
 	listViewRulerUnit_menu = gtk_menu_new ();
-	glade_menuitem = gtk_menu_item_new_with_label (_("inch"));
+	glade_menuitem = gtk_menu_item_new_with_label (_("inch"));		// TODO
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_IN );	
+ 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
-	glade_menuitem = gtk_menu_item_new_with_label (_("mm"));
+ 	
+ 	// glade_menuitem = gtk_menu_item_new_with_label (_("mm"));
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_CM );	
+ 	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+ 	// gtk_widget_show (glade_menuitem);
+ 	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
+ 
+	glade_menuitem = gtk_menu_item_new_with_label (_("cm"));		// TODO
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_CM );	
+ 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
-	glade_menuitem = gtk_menu_item_new_with_label (_("cm"));
+ 
+ 	// glade_menuitem = gtk_menu_item_new_with_label (_("twips"));
+ 	// gtk_widget_show (glade_menuitem);
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer)  );	
+ 	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+ 	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
+ 
+	glade_menuitem = gtk_menu_item_new_with_label (_("points"));	// TODO
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
+  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_PT );	
+  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
-	glade_menuitem = gtk_menu_item_new_with_label (_("twips"));
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
-	glade_menuitem = gtk_menu_item_new_with_label (_("points"));
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
-	glade_menuitem = gtk_menu_item_new_with_label (_("pixels"));
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
+  
+  	// glade_menuitem = gtk_menu_item_new_with_label (_("pixels"));
+  	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
+  	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer)  );	
+  	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+  	// gtk_widget_show (glade_menuitem);
+  	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
+  
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listViewRulerUnit), listViewRulerUnit_menu);
 
-	checkbuttonViewToolbars = gtk_check_button_new_with_label (_("&Toolbars"));
+	checkbuttonViewToolbars = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewToolbars));
 	gtk_widget_ref (checkbuttonViewToolbars);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewToolbars", checkbuttonViewToolbars,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (checkbuttonViewToolbars);
 	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewToolbars, FALSE, FALSE, 0);
 
-	frameViewStuff = gtk_frame_new (_("View..."));
+	frameViewStuff = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewViewFrame));
 	gtk_widget_ref (frameViewStuff);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "frameViewStuff", frameViewStuff,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -587,28 +659,28 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	gtk_widget_show (vbox6);
 	gtk_container_add (GTK_CONTAINER (frameViewStuff), vbox6);
 
-	checkbuttonViewAll = gtk_check_button_new_with_label (_("A&ll"));
+	checkbuttonViewAll = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewAll));
 	gtk_widget_ref (checkbuttonViewAll);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewAll", checkbuttonViewAll,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (checkbuttonViewAll);
 	gtk_box_pack_start (GTK_BOX (vbox6), checkbuttonViewAll, FALSE, FALSE, 0);
 
-	checkbuttonViewHidden = gtk_check_button_new_with_label (_("&Hidden Text"));
+	checkbuttonViewHidden = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewHiddenText));
 	gtk_widget_ref (checkbuttonViewHidden);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewHidden", checkbuttonViewHidden,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (checkbuttonViewHidden);
 	gtk_box_pack_start (GTK_BOX (vbox6), checkbuttonViewHidden, FALSE, FALSE, 0);
 
-	checkbuttonViewUnprintable = gtk_check_button_new_with_label (_("Un&printable characters"));
+	checkbuttonViewUnprintable = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewUnprintable));
 	gtk_widget_ref (checkbuttonViewUnprintable);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewUnprintable", checkbuttonViewUnprintable,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (checkbuttonViewUnprintable);
 	gtk_box_pack_start (GTK_BOX (vbox6), checkbuttonViewUnprintable, FALSE, FALSE, 0);
 
-	labelView = gtk_label_new (_("View"));
+	labelView = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_View));
 	gtk_widget_ref (labelView);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelView", labelView,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -640,20 +712,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
     //////////////////////////////////////////////////////////////////////
 	// END: glade stuff
 
-
-    //////////////////////////////////////////////////////////////////////
-    // the control buttons
-    gtk_signal_connect(GTK_OBJECT(buttonOk),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_ok_clicked),
-                       (gpointer) this);
-    
-    gtk_signal_connect(GTK_OBJECT(buttonCancel),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_cancel_clicked),
-                       (gpointer) this);
-
-
     // the catch-alls
     gtk_signal_connect_after(GTK_OBJECT(windowOptions),
                              "delete_event",
@@ -678,6 +736,22 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
                        GTK_SIGNAL_FUNC(s_defaults_clicked),
                        (gpointer) this);
 
+    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreEdit),
+                       "clicked",
+                       GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
+                       (gpointer) this);
+
+    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreReset),
+                       "clicked",
+                       GTK_SIGNAL_FUNC(s_ignore_reset_clicked),
+                       (gpointer) this);
+
+    gtk_signal_connect(GTK_OBJECT(buttonSpellDictionary),
+                       "clicked",
+                       GTK_SIGNAL_FUNC(s_dict_edit_clicked),
+                       (gpointer) this);
+
+	// to enable/disable other controls (hide errors)
 	gtk_signal_connect(GTK_OBJECT(checkbuttonSpellCheckAsType),
 						"toggled",
                        GTK_SIGNAL_FUNC(s_checkbutton_toggle),
@@ -698,6 +772,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
     // might need to be queried or altered later.
 
     m_windowMain = windowOptions;
+	m_notebook = notebook1;
 
     m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
     m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
@@ -709,6 +784,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	m_listSpellDicts				= listSpellDicts;
 	m_listSpellDicts_menu			= listSpellDicts_menu;
 	m_buttonSpellDictionary			= buttonSpellDictionary;
+	m_buttonSpellIgnoreEdit			= buttonSpellIgnoreEdit;
+	m_buttonSpellIgnoreReset		= buttonSpellIgnoreReset;
 
     m_checkbuttonPrefsAutoSave		= checkbuttonPrefsAutoSave;
 	m_comboPrefsScheme				= comboPrefsSchemes;
@@ -733,6 +810,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	{
 		GtkWidget *w = _lookupWidget( (tControl)i );
 		UT_ASSERT( w && GTK_IS_WIDGET(w) );
+
+		/* check to see if there is any data already stored there (note, will
+		 * not work if 0's is stored in multiple places  */
+		UT_ASSERT( gtk_object_get_data(GTK_OBJECT(w), "tControl" ) == NULL);
+
 		gtk_object_set_data( GTK_OBJECT(w), "tControl", (gpointer) i );
 	}
 
@@ -743,6 +825,8 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 {
 	switch (id)
 	{
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// spell
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		return m_checkbuttonSpellCheckAsType;
 		break;
@@ -775,6 +859,20 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_listSpellDicts;
 		break;
 
+	case id_BUTTON_DICTIONARY_EDIT:
+		return m_buttonSpellDictionary;
+		break;
+
+	case id_BUTTON_IGNORE_RESET:
+		return m_buttonSpellIgnoreReset;
+		break;
+
+	case id_BUTTON_IGNORE_EDIT:
+		return m_buttonSpellIgnoreEdit;
+		break;
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// prefs
 	case id_CHECK_PREFS_AUTO_SAVE:
 		return m_checkbuttonPrefsAutoSave;
 		break;
@@ -783,6 +881,8 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_comboPrefsScheme;
 		break;
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// view
 	case id_CHECK_VIEW_SHOW_RULER:
 		return m_checkbuttonViewShowRuler;
 		break;
@@ -807,6 +907,8 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_checkbuttonViewUnprintable;
 		break;
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// general
 	case id_BUTTON_SAVE:
 		return m_buttonSave;
 		break;
@@ -859,7 +961,77 @@ DEFINE_GET_SET_BOOL(SpellInternet);
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 
 DEFINE_GET_SET_BOOL	(ViewShowRuler);
-	// have a units option
+
+UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void) 
+{				
+	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
+	return (UT_Dimension)((gint)gtk_object_get_data( GTK_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )); 
+}			
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// This function will lookup a option box by the value stored in the 
+//	user data under the key WIDGET_MENU_VALUE_TAG
+//
+typedef struct {
+	int index;
+	int found;
+	gchar *key;
+	gpointer data;
+} search_data;
+
+static void search_for_value ( GtkWidget *widget, gpointer _value )
+{
+	search_data *value = (search_data *)_value;
+
+	if ( !GTK_IS_MENU_ITEM(widget))
+		return;
+
+	value->index++;
+
+	gint v = (gint) gtk_object_get_data( GTK_OBJECT(widget), value->key );
+	if ( v == (gint)value->data )
+	{
+		// UT_DEBUGMSG(("search_for_value [%d]", (gint) value->data ));
+		value->found = value->index;
+	}
+}
+
+// returns -1 if not found
+int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key )
+{
+	UT_ASSERT( option_menu && key && GTK_IS_OPTION_MENU(option_menu));
+
+	// lookup for the key with the value of dim
+	search_data data = { -1, -1, key, value };
+
+	GtkWidget *menu = gtk_option_menu_get_menu( GTK_OPTION_MENU(option_menu));
+	UT_ASSERT(menu&&GTK_IS_MENU(menu));
+
+	// iterate through all the values
+	gtk_container_forall ( GTK_CONTAINER(menu), search_for_value, (gpointer) &data );
+
+	// if we found a value that matches, then say select it
+	if ( data.found >= 0 )
+	{
+		gtk_option_menu_set_history( GTK_OPTION_MENU(option_menu), data.found );
+		UT_DEBUGMSG(("search found %d", data.found ));
+	}
+	else
+		UT_DEBUGMSG(("search NOT found (searched %d indexes)", data.index ));
+
+	return data.found;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim) 
+{	
+	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
+
+	int r = option_menu_set_by_key ( m_listViewRulerUnits, (gpointer)dim, WIDGET_MENU_VALUE_TAG ); 
+	UT_ASSERT( r != -1 );
+}
+
 DEFINE_GET_SET_BOOL	(ViewShowToolbars);
 
 DEFINE_GET_SET_BOOL	(ViewAll);
@@ -868,3 +1040,14 @@ DEFINE_GET_SET_BOOL	(ViewUnprintable);
 
 #undef DEFINE_GET_SET_BOOL
 
+int AP_UnixDialog_Options::_gatherNotebookPageNum(void) 
+{				
+	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
+	return gtk_notebook_get_current_page( GTK_NOTEBOOK(m_notebook) ); 
+}			
+
+void    AP_UnixDialog_Options::_setNotebookPageNum(int pn) 
+{	
+	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
+	gtk_notebook_set_page( GTK_NOTEBOOK(m_notebook), pn ); 
+}

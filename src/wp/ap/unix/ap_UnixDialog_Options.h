@@ -37,39 +37,35 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	// callbacks can fire these events
-	virtual void event_OK(void);
-	virtual void event_Cancel(void);
-	virtual void event_WindowDelete(void);
-
  protected:
 
 	GtkWidget *_lookupWidget( tControl id );
 	virtual void _controlEnable( tControl id, UT_Bool value );
 
 	// we implement these so the XP dialog can set/grab our data
-#define SET_GATHER_BOOL(a) virtual UT_Bool _gather##a(void);  \
-						   virtual void    _set##a( UT_Bool )
-
-	SET_GATHER_BOOL			(SpellCheckAsType);
-	SET_GATHER_BOOL			(SpellHideErrors);
-	SET_GATHER_BOOL			(SpellSuggest);
-	SET_GATHER_BOOL			(SpellMainOnly);
-	SET_GATHER_BOOL			(SpellUppercase);
-	SET_GATHER_BOOL			(SpellNumbers);
-	SET_GATHER_BOOL			(SpellInternet);
-
-	SET_GATHER_BOOL			(PrefsAutoSave);
-
-	SET_GATHER_BOOL			(ViewShowRuler);
-		// have a units option
-	SET_GATHER_BOOL			(ViewShowToolbars);
-
-	SET_GATHER_BOOL			(ViewAll);
-	SET_GATHER_BOOL			(ViewHiddenText);
-	SET_GATHER_BOOL			(ViewUnprintable);
-
-#undef SET_GATHER_BOOL
+#define SET_GATHER(a,t) virtual t _gather##a(void);  \
+ 					    virtual void    _set##a( t )
+ 
+ 	SET_GATHER			(SpellCheckAsType,	UT_Bool );
+ 	SET_GATHER			(SpellHideErrors,	UT_Bool );
+ 	SET_GATHER			(SpellSuggest,		UT_Bool );
+ 	SET_GATHER			(SpellMainOnly,		UT_Bool );
+ 	SET_GATHER			(SpellUppercase,	UT_Bool );
+ 	SET_GATHER			(SpellNumbers,		UT_Bool );
+ 	SET_GATHER			(SpellInternet,		UT_Bool );
+ 
+ 	SET_GATHER			(PrefsAutoSave,		UT_Bool );
+ 
+ 	SET_GATHER			(ViewShowRuler,		UT_Bool );
+	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+ 	SET_GATHER			(ViewShowToolbars,	UT_Bool );
+ 
+ 	SET_GATHER			(ViewAll,			UT_Bool );
+ 	SET_GATHER			(ViewHiddenText,	UT_Bool );
+ 	SET_GATHER			(ViewUnprintable,	UT_Bool );
+  
+ 	SET_GATHER			(NotebookPageNum,	int );
+#undef SET_GATHER
 	
  protected:
 	
@@ -80,6 +76,7 @@ public:
 	// there are a ton of them in this dialog
 
 	GtkWidget * m_windowMain;
+	GtkWidget * m_notebook;
 
     GtkWidget * m_checkbuttonSpellCheckAsType;
     GtkWidget * m_checkbuttonSpellHideErrors;
@@ -91,12 +88,15 @@ public:
 	GtkWidget * m_listSpellDicts;
 	GtkWidget * m_listSpellDicts_menu;
 	GtkWidget * m_buttonSpellDictionary;
+	GtkWidget * m_buttonSpellIgnoreEdit;
+	GtkWidget * m_buttonSpellIgnoreReset;
 
     GtkWidget * m_checkbuttonPrefsAutoSave;
 	GtkWidget * m_comboPrefsScheme;
 
     GtkWidget * m_checkbuttonViewShowRuler;
     GtkWidget * m_listViewRulerUnits;
+    GtkWidget * m_listViewRulerUnits_menu;
     GtkWidget * m_checkbuttonViewShowToolbars;
     GtkWidget * m_checkbuttonViewAll;
     GtkWidget * m_checkbuttonViewHiddenText;
