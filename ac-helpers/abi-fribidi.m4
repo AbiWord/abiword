@@ -74,7 +74,7 @@ AC_DEFUN([ABI_FRIBIDI_OPT], [
 		if [ test "x$abi_fribidi_dir" = "x" ]; then
 			AC_PATH_PROG(abi_fribidi_config,fribidi-config, ,[$PATH])
 		else
-			AC_PATH_PROG(abi_fribidi_config,fribidi-config, ,[$abi_fribidi_dir/bin:$PATH])
+			AC_PATH_PROG(abi_fribidi_config,fribidi-config, ,[$abi_fribidi_dir/bin $PATH])
 		fi
 		if [ test "x$abi_fribidi_config" = "x" ]; then
 			if [ test $abi_fribidi_opt = required ]; then

@@ -25,28 +25,25 @@ SPELL_LIBS=""
 
 ABI_PSPELL_OPT(0.12.0,yes)
 
-if test "$abi_pspell_opt" = no; then
-	abi_spell_message="(ispell)"
-	abi_spell=ispell
-elif test "$abi_pspell_opt" = yes; then
+if test "$abi_pspell_opt" = yes; then
 	if test "$abi_gnu_aspell" = no; then
 		abi_spell_message="pspell in system location"
 	else
 		abi_spell_message="GNU aspell in system location"
 	fi
 	abi_spell=psyspell
-else
+elif test "$abi_pspell_opt" != no; then
 	if test "$abi_gnu_aspell" = no; then
 		abi_spell_message="pspell in $abi_pspell_opt"
 	else
 		abi_spell_message="GNU aspell in $abi_pspell_opt"
 	fi
 	abi_spell=pspell
+else
+	abi_spell=ispell
 fi
 
-if test $abi_spell = ispell; then
-	SPELL_CFLAGS="-DHAVE_ISPELL=1"
-else
+if test $abi_spell != ispell; then
 	if test "$abi_gnu_aspell" = no; then
 		abi_pspell_cflags=""
 		abi_pspell_libs="-lpspell -lpspell-modules -lltdl"
@@ -67,13 +64,23 @@ else
 			SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
 		],[	AC_MSG_ERROR([* * * pspell not found in system location * * *])
 		],$abi_pspell_libs)
-	],[	AC_MSG_ERROR([* * * pspell not found in system location * * *])
+		abi_spell_default=no
+	],[	AC_MSG_WARN([* * * pspell not found in system location * * *])
+		abi_spell_default=yes
 	])
 	if test $abi_spell = pspell; then
 		CPPFLAGS="$_abi_cppflags"
 	else
 		abi_spell=pspell
 	fi
+	if test $abi_spell_default = yes; then
+		abi_spell=ispell
+	fi
+fi
+
+if test $abi_spell = ispell; then
+	abi_spell_message="(ispell)"
+	SPELL_CFLAGS="-DHAVE_ISPELL=1"
 fi
 
 AC_SUBST(SPELL_CFLAGS)
