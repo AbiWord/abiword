@@ -42,7 +42,14 @@
 
 /*
  * $Log$
+ * Revision 1.5  2002/09/19 05:31:15  hippietrail
+ * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
+ * K&R function declarations removed, converted to Doxygen style comments
+ * where possible.  No code has been changed (I hope).  Compiles for me but
+ * unable to test.
+ *
  * Revision 1.4  2002/09/17 03:03:29  hippietrail
+ *
  * After seeking permission on the developer list I've reformatted all the
  * spelling source which seemed to have parts which used 2, 3, 4, and 8
  * spaces for tabs.  It should all look good with our standard 4-space
@@ -102,14 +109,14 @@
 #ifdef NO_CAPITALIZATION_SUPPORT
 #define HASHUPPER(c)	c
 #else /* NO_CAPITALIZATION_SUPPORT */
-#define HASHUPPER(c)	mytoupper(DEREF_FIRST_ARG(istate) c)
+#define HASHUPPER(c)	mytoupper(istate, c)
 #endif /* NO_CAPITALIZATION_SUPPORT */
 
-int hash (FIRST_ARG(istate) ichar_t *s, int hashtblsize)
-#if 0
-    register ichar_t *	s;
-    register int	hashtblsize;
-#endif
+/*
+ * \param s
+ * \param hashtblsize
+ */
+int hash (ispell_state_t *istate, ichar_t *s, int hashtblsize)
 {
     register long	h = 0;
     register int	i;

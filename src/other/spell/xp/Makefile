@@ -32,8 +32,6 @@ CPPSRCS= spell_manager.cpp
 ifeq ($(ABI_OPT_PSPELL),1)
 	CPPSRCS+= pspell_checker.cpp
 else
-# TF CHANGE: Drop newMain
-#	CSRCS=	newMain.c good.c tgood.c lookup.c makedent.c hash.c 
 	CSRCS=	good.c tgood.c lookup.c makedent.c hash.c \
 correct.c 
 	CPPSRCS+= ispell_checker.cpp

@@ -47,7 +47,14 @@
 
 /*
  * $Log$
+ * Revision 1.9  2002/09/19 05:31:15  hippietrail
+ * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
+ * K&R function declarations removed, converted to Doxygen style comments
+ * where possible.  No code has been changed (I hope).  Compiles for me but
+ * unable to test.
+ *
  * Revision 1.8  2002/09/17 03:03:29  hippietrail
+ *
  * After seeking permission on the developer list I've reformatted all the
  * spelling source which seemed to have parts which used 2, 3, 4, and 8
  * spaces for tabs.  It should all look good with our standard 4-space
@@ -677,135 +684,111 @@ struct hashheader
 #define ICHARTOSSTR_SIZE (INPUTWORDLEN + 4 * MAXAFFIXLEN + 4)
 #define STRTOSICHAR_SIZE ((INPUTWORDLEN + 4 * MAXAFFIXLEN + 4) \
 			  * sizeof (ichar_t))
-
-/*
- * termcap variables
- */
-#ifdef MAIN
-# define EXTERN /* nothing */
-#else
-# define EXTERN extern
-#endif
-
-
 /* TF CHANGE: We should fill this as a structure
               and then use it throughout.
 */
-#define DONT_USE_GLOBALS
 
-#if defined(DONT_USE_GLOBALS)
 #define ONLY_ARG(var)	ispell_state_t *var
 #define FIRST_ARG(var)	ispell_state_t *var,
 #define DEREF(var, x)	var->x
 #define DEREF_FIRST_ARG(var)	var,
-#undef  EXTERN
-#define EXTERN
+
 typedef struct _ispell_state {
-#else
-#define ONLY_ARG(var) 	void	
-#define FIRST_ARG(var) 			
-#define DEREF(var, x)	x
-#define DEREF_FIRST_ARG(var)	
-#endif
-
-EXTERN char *	BC;	/* backspace if not ^H */
-EXTERN char *	cd;	/* clear to end of display */
-EXTERN char *	cl;	/* clear display */
-EXTERN char *	cm;	/* cursor movement */
-EXTERN char *	ho;	/* home */
-EXTERN char *	nd;	/* non-destructive space */
-EXTERN char *	so;	/* standout */
-EXTERN char *	se;	/* standout end */
-EXTERN int	sg;	/* space taken by so/se */
-EXTERN char *	ti;	/* terminal initialization sequence */
-EXTERN char *	te;	/* terminal termination sequence */
-EXTERN int	li;	/* lines */
-EXTERN int	co;	/* columns */
+	char *	BC;	/* backspace if not ^H */
+	char *	cd;	/* clear to end of display */
+	char *	cl;	/* clear display */
+	char *	cm;	/* cursor movement */
+	char *	ho;	/* home */
+	char *	nd;	/* non-destructive space */
+	char *	so;	/* standout */
+	char *	se;	/* standout end */
+	int	sg;	/* space taken by so/se */
+	char *	ti;	/* terminal initialization sequence */
+	char *	te;	/* terminal termination sequence */
+	int	li;	/* lines */
+	int	co;	/* columns */
 
 #if 0
-EXTERN int	contextsize;	/* number of lines of context to show */
-EXTERN char	contextbufs[MAXCONTEXT][BUFSIZ]; /* Context of current line */
-EXTERN int	contextoffset;	/* Offset of line start in contextbufs[0] */
-EXTERN char *	currentchar;	/* Location in contextbufs */
+	int	contextsize;	/* number of lines of context to show */
+	char	contextbufs[MAXCONTEXT][BUFSIZ]; /* Context of current line */
+	int	contextoffset;	/* Offset of line start in contextbufs[0] */
+	char *	currentchar;	/* Location in contextbufs */
 #endif
 
-EXTERN char	ctoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Current token as char */
-EXTERN ichar_t	itoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Ctoken as ichar_t str */
+	char	ctoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Current token as char */
+	ichar_t	itoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Ctoken as ichar_t str */
 
 #if 0
-EXTERN char	termcap[2048];	/* termcap entry */
-EXTERN char	termstr[2048];	/* for string values */
-EXTERN char *	termptr;	/* pointer into termcap, used by tgetstr */
+	char	termcap[2048];	/* termcap entry */
+	char	termstr[2048];	/* for string values */
+	char *	termptr;	/* pointer into termcap, used by tgetstr */
 #endif
 
-EXTERN int	numhits;	/* number of hits in dictionary lookups */
-EXTERN struct success
-		hits[MAX_HITS]; /* table of hits gotten in lookup */
+	int	numhits;	/* number of hits in dictionary lookups */
+	struct success
+			hits[MAX_HITS]; /* table of hits gotten in lookup */
 
-EXTERN char *	hashstrings;	/* Strings in hash table */
-EXTERN struct hashheader
-		hashheader;	/* Header of hash table */
-EXTERN struct dent *
-		hashtbl;	/* Main hash table, for dictionary */
-EXTERN int	hashsize;	/* Size of main hash table */
+	char *	hashstrings;	/* Strings in hash table */
+	struct hashheader
+			hashheader;	/* Header of hash table */
+	struct dent *
+			hashtbl;	/* Main hash table, for dictionary */
+	int	hashsize;	/* Size of main hash table */
 
-EXTERN char	hashname[MAXPATHLEN]; /* Name of hash table file */
+	char	hashname[MAXPATHLEN]; /* Name of hash table file */
 
-EXTERN int	aflag;		/* NZ if -a or -A option specified */
-EXTERN int	cflag;		/* NZ if -c (crunch) option */
-EXTERN int	lflag;		/* NZ if -l (list) option */
-EXTERN int	incfileflag;	/* whether xgets() acts exactly like gets() */
-EXTERN int	nodictflag;	/* NZ if dictionary not needed */
+	int	aflag;		/* NZ if -a or -A option specified */
+	int	cflag;		/* NZ if -c (crunch) option */
+	int	lflag;		/* NZ if -l (list) option */
+	int	incfileflag;	/* whether xgets() acts exactly like gets() */
+	int	nodictflag;	/* NZ if dictionary not needed */
 
-EXTERN int	uerasechar;	/* User's erase character, from stty */
-EXTERN int	ukillchar;	/* User's kill character */
+	int	uerasechar;	/* User's erase character, from stty */
+	int	ukillchar;	/* User's kill character */
 
-EXTERN unsigned int laststringch; /* Number of last string character */
-EXTERN int	defdupchar;	/* Default duplicate string type */
+	unsigned int laststringch; /* Number of last string character */
+	int	defdupchar;	/* Default duplicate string type */
 
-EXTERN int	numpflags;		/* Number of prefix flags in table */
-EXTERN int	numsflags;		/* Number of suffix flags in table */
-EXTERN struct flagptr pflagindex[SET_SIZE + MAXSTRINGCHARS];
-					/* Fast index to pflaglist */
-EXTERN struct flagent *	pflaglist;	/* Prefix flag control list */
-EXTERN struct flagptr sflagindex[SET_SIZE + MAXSTRINGCHARS];
-					/* Fast index to sflaglist */
-EXTERN struct flagent *	sflaglist;	/* Suffix flag control list */
+	int	numpflags;		/* Number of prefix flags in table */
+	int	numsflags;		/* Number of suffix flags in table */
+	struct flagptr pflagindex[SET_SIZE + MAXSTRINGCHARS];
+						/* Fast index to pflaglist */
+	struct flagent *	pflaglist;	/* Prefix flag control list */
+	struct flagptr sflagindex[SET_SIZE + MAXSTRINGCHARS];
+						/* Fast index to sflaglist */
+	struct flagent *	sflaglist;	/* Suffix flag control list */
 
-EXTERN struct strchartype *		/* String character type collection */
-		chartypes;
+	struct strchartype *		/* String character type collection */
+			chartypes;
 
-EXTERN FILE *	infile;			/* File being corrected */
-EXTERN FILE *	outfile;		/* Corrected copy of infile */
+	FILE *	infile;			/* File being corrected */
+	FILE *	outfile;		/* Corrected copy of infile */
 
-EXTERN char *	askfilename;		/* File specified in -f option */
+	char *	askfilename;		/* File specified in -f option */
 
-EXTERN int	changes;		/* NZ if changes made to cur. file */
-EXTERN int	readonly;		/* NZ if current file is readonly */
-EXTERN int	quit;			/* NZ if we're done with this file */
+	int	changes;		/* NZ if changes made to cur. file */
+	int	readonly;		/* NZ if current file is readonly */
+	int	quit;			/* NZ if we're done with this file */
 
 #define MAXPOSSIBLE	100	/* Max no. of possibilities to generate */
 
-EXTERN char	possibilities[MAXPOSSIBLE][INPUTWORDLEN + MAXAFFIXLEN];
-				/* Table of possible corrections */
-EXTERN int	pcount;		/* Count of possibilities generated */
-EXTERN int	maxposslen;	/* Length of longest possibility */
-EXTERN int	easypossibilities; /* Number of "easy" corrections found */
-				/* ..(defined as those using legal affixes) */
+	char	possibilities[MAXPOSSIBLE][INPUTWORDLEN + MAXAFFIXLEN];
+					/* Table of possible corrections */
+	int	pcount;		/* Count of possibilities generated */
+	int	maxposslen;	/* Length of longest possibility */
+	int	easypossibilities; /* Number of "easy" corrections found */
+					/* ..(defined as those using legal affixes) */
 
-/*
- * The following array contains a list of characters that should be tried
- * in "missingletter."  Note that lowercase characters are omitted.
- */
-EXTERN int	Trynum;		/* Size of "Try" array */
-EXTERN ichar_t	Try[SET_SIZE + MAXSTRINGCHARS];
+	/*
+	 * The following array contains a list of characters that should be tried
+	 * in "missingletter."  Note that lowercase characters are omitted.
+	 */
+	int	Trynum;		/* Size of "Try" array */
+	ichar_t	Try[SET_SIZE + MAXSTRINGCHARS];
 
-EXTERN UT_iconv_t  translate_in; /* Selected translation from/to Unicode */
-EXTERN UT_iconv_t  translate_out;
-
-#if defined(DONT_USE_GLOBALS)
+	UT_iconv_t  translate_in; /* Selected translation from/to Unicode */
+	UT_iconv_t  translate_out;
 } ispell_state_t;
-#endif
 
 
 
@@ -927,10 +910,8 @@ int hash (FIRST_ARG(istate) ichar_t* s, int hashtblsize);
 #endif
 
 
-#if defined(DONT_USE_GLOBALS)
 ispell_state_t *alloc_ispell_struct();
 void free_ispell_struct(ispell_state_t *istate);
-#endif
 
 #ifdef __cplusplus
 }

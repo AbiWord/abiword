@@ -1,5 +1,3 @@
-#define  DONT_USE_GLOBALS
-
 #include "ispell.h"
 #include "ut_iconv.h"
 
@@ -22,52 +20,16 @@
 #include "ap_HashDownloader.h"
 #endif
 
-/***************************************************************************/
-/* Reduced Gobals needed by ispell code.                                   */
-/***************************************************************************/
-#ifndef DONT_USE_GLOBALS
-       int              numhits;
-struct success          hits[MAX_HITS];
-
-struct flagptr          pflagindex[SET_SIZE + MAXSTRINGCHARS];/*prefix index*/
-struct flagent          *pflaglist; /* prefix flag control list */
-       int              numpflags;  /* Number of prefix flags in table*/
-struct flagptr          sflagindex[SET_SIZE + MAXSTRINGCHARS];/*suffix index*/
-struct flagent          *sflaglist; /* suffix flag control list */
-       int              numsflags;  /* Number of prefix flags in table*/
-
-struct hashheader       hashheader; /* Header of hash table */
-       int              hashsize;   /* Size of main hash table */
-       char             *hashstrings = NULL; /* Strings in hash table */
-struct dent             *hashtbl;    /* Main hash table, for dictionary */
-
-struct strchartype      *chartypes;  /* String character type collection */
-       int              defdupchar;   /* Default duplicate string type */
-       unsigned int     laststringch; /* Number of last string character */
-
-
-char     possibilities[MAXPOSSIBLE][INPUTWORDLEN + MAXAFFIXLEN];
-                                /* Table of possible corrections */
-int      pcount;         /* Count of possibilities generated */
-int      maxposslen;     /* Length of longest possibility */
-int      easypossibilities; /* Number of "easy" corrections found */
-                                /* ..(defined as those using legal affixes) */
-
-int deftflag = -1;              /* NZ for TeX mode by default */
-int prefstringchar = -1;        /* Preferred string character type */
-UT_iconv_t  translate_in = (UT_iconv_t)-1; /* Selected translation from/to Unicode */
-UT_iconv_t  translate_out = (UT_iconv_t)-1;
-
-/*
- * The following array contains a list of characters that should be tried
- * in "missingletter."  Note that lowercase characters are omitted.
+/*!
+ * Read encoding file which must accompany dictionary hash file
+ * The filename must be identical to the hash name with "-encoding"
+ * appended.  The file must contain only an encoding name in ASCII
+ * suitable for use with iconv.
+ * 
+ * \param hashname Name of spelling hash file
  */
-int      Trynum;         /* Size of "Try" array */
-ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
-
-#endif
-
-static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
+static void
+s_try_autodetect_charset(ispell_state_t *istate, char* hashname)
 {
 	int len = 0 ;
 	char buf[3000];
@@ -92,41 +54,34 @@ static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
 		*p = '\0';
 		if (!*start) /* empty enc */
 		    return;
-		DEREF(istate, translate_in) = UT_iconv_open(start, UCS_INTERNAL);
-		DEREF(istate, translate_out) = UT_iconv_open(UCS_INTERNAL, start);
+		istate->translate_in = UT_iconv_open(start, UCS_INTERNAL);
+		istate->translate_out = UT_iconv_open(UCS_INTERNAL, start);
 	}
 }
 
 /***************************************************************************/
 
 ISpellChecker::ISpellChecker()
-  : deftflag(-1), prefstringchar(-1), g_bSuccessfulInit(false)
+  : deftflag(-1), prefstringchar(-1), m_bSuccessfulInit(false)
 {
-#if defined(DONT_USE_GLOBALS)
 	m_pISpellState = NULL;
-#endif
 }
 
 ISpellChecker::~ISpellChecker()
 {
-#if defined(DONT_USE_GLOBALS)
 	if (!m_pISpellState)
 		return;
 
 	lcleanup(m_pISpellState);
-#else
-	lcleanup();
-#endif
-	if(UT_iconv_isValid (DEREF(m_pISpellState, translate_in) ))
-		UT_iconv_close(DEREF(m_pISpellState, translate_in));
-	DEREF(m_pISpellState, translate_in) = (UT_iconv_t)-1;
-	if(UT_iconv_isValid(DEREF(m_pISpellState, translate_out)))
-		UT_iconv_close(DEREF(m_pISpellState, translate_out));
-	DEREF(m_pISpellState, translate_out) = (UT_iconv_t)-1;
 
-#if defined(DONT_USE_GLOBALS)
+	if(UT_iconv_isValid (m_pISpellState->translate_in ))
+		UT_iconv_close(m_pISpellState->translate_in);
+	m_pISpellState->translate_in = (UT_iconv_t)-1;
+	if(UT_iconv_isValid(m_pISpellState->translate_out))
+		UT_iconv_close(m_pISpellState->translate_out);
+	m_pISpellState->translate_out = (UT_iconv_t)-1;
+
 	FREEP(m_pISpellState);
-#endif
 }
 
 SpellChecker::SpellCheckResult
@@ -136,7 +91,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
     ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
 
-    if (!g_bSuccessfulInit)
+    if (!m_bSuccessfulInit)
     {
         return SpellChecker::LOOKUP_FAILED;
     }
@@ -144,7 +99,13 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
     if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return SpellChecker::LOOKUP_FAILED;
 
-	if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
+	/* TODO get rid of this heuristic - for if we don't have
+	 * iconv support for latin1 we've got bigger problems -
+	 * if we convert to 8 bit this way for other encodings we're only
+	 * generating garbage which may silently introduce errors
+	 * and it will make it harder to find the cause
+	 */
+	if(!UT_iconv_isValid(m_pISpellState->translate_in))
     {
         /* copy to 8bit string and null terminate */
         register char *p;
@@ -166,13 +127,13 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
 
         len_in = length * sizeof(UT_UCSChar);
         len_out = sizeof( word8 ) - 1;
-        UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
+        UT_iconv(m_pISpellState->translate_in, &In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
 
-	if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
-		if ( good(DEREF_FIRST_ARG(m_pISpellState) iWord, 0, 0, 1, 0) == 1 ||
-		 compoundgood(DEREF_FIRST_ARG(m_pISpellState) iWord, 1 ) == 1 )
+	if( !strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0) )
+		if ( good(m_pISpellState, iWord, 0, 0, 1, 0) == 1 ||
+		 compoundgood(m_pISpellState, iWord, 1 ) == 1 )
 			retVal = SpellChecker::LOOKUP_SUCCEEDED;
 		else
 			retVal = SpellChecker::LOOKUP_FAILED;
@@ -190,14 +151,20 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
     int  c;
 
-	if (!g_bSuccessfulInit)
+	if (!m_bSuccessfulInit)
 		return 0;
 	if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return 0;
 	if (!sgvec)
 		return 0;
 
-	if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
+	/* TODO get rid of this heuristic - for if we don't have
+	 * iconv support for latin1 we've got bigger problems -
+	 * if we convert to 8 bit this way for other encodings we're only
+	 * generating garbage which may silently introduce errors
+	 * and it will make it harder to find the cause
+	 */
+	if(!UT_iconv_isValid(m_pISpellState->translate_in))
     {
         /* copy to 8bit string and null terminate */
         register char *p;
@@ -220,18 +187,18 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		char *Out = word8;
 		len_in = length * sizeof(UT_UCSChar);
 		len_out = sizeof( word8 ) - 1;
-		UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
+		UT_iconv(m_pISpellState->translate_in, &In, &len_in, &Out, &len_out);
 		*Out = '\0';
     }
 
-	if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
-		makepossibilities(DEREF_FIRST_ARG(m_pISpellState) iWord);
+	if( !strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0) )
+		makepossibilities(m_pISpellState, iWord);
 
-	for (c = 0; c < DEREF(m_pISpellState, pcount); c++)
+	for (c = 0; c < m_pISpellState->pcount; c++)
     {
 		int l;
 
-		l = strlen(DEREF(m_pISpellState, possibilities[c]));
+		l = strlen(m_pISpellState->possibilities[c]);
 
 		UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
 		if (theWord == NULL)
@@ -240,13 +207,13 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		    return sgvec;
         }
 
-		if (DEREF(m_pISpellState, translate_out) == (iconv_t)-1)
+		if (m_pISpellState->translate_out == (iconv_t)-1)
         {
 			/* copy to 16bit string and null terminate */
 			register int x;
 
 			for (x = 0; x < l; x++)
-				theWord[x] = (unsigned char)DEREF(m_pISpellState, possibilities[c][x]);
+				theWord[x] = (unsigned char)m_pISpellState->possibilities[c][x];
 			theWord[l] = 0;
         }
 		else
@@ -256,12 +223,12 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 			 unsigned int len_in, len_out;
 			*/
 			size_t len_in, len_out;
-			const char *In = DEREF(m_pISpellState, possibilities[c]);
+			const char *In = m_pISpellState->possibilities[c];
 			char *Out = (char *)theWord;
 
 			len_in = l;
 			len_out = sizeof(UT_UCS4Char) * (l+1);
-			UT_iconv(DEREF(m_pISpellState, translate_out), &In, &len_in, &Out, &len_out);
+			UT_iconv(m_pISpellState->translate_out, &In, &len_in, &Out, &len_out);
 			*((UT_UCS4Char *)Out) = 0;
 		}
 
@@ -270,7 +237,8 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	return sgvec;
 }
 
-static void couldNotLoadDictionary ( const char * szLang )
+static void
+s_couldNotLoadDictionary ( const char * szLang )
 {
 	XAP_Frame           * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
@@ -295,7 +263,7 @@ static void couldNotLoadDictionary ( const char * szLang )
 	else
 	{
 		// TODO -- create a dialog not bound to a frame
-		UT_DEBUGMSG(( "ispell_checker::couldNotLoadDictionary: could not load dictionary for %s\n", szLang ));
+		UT_DEBUGMSG(( "ispell_checker::s_couldNotLoadDictionary: could not load dictionary for %s\n", szLang ));
 	}
 }
 
@@ -314,7 +282,7 @@ ISpellChecker::loadGlobalDictionary ( const char *szHash )
 {
 	char *hashname = NULL;
 	hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), szHash ) ;
-	if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
+	if (linit(m_pISpellState, const_cast<char*>(hashname)) < 0)
 	{
 		FREEP( hashname );
 		return(NULL);
@@ -328,7 +296,7 @@ ISpellChecker::loadLocalDictionary ( const char *szHash )
 {
 	char *hashname = NULL;
 	hashname = s_buildHashName ( XAP_App::getApp()->getUserPrivateDirectory(), szHash ) ;
-	if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
+	if (linit(m_pISpellState, const_cast<char*>(hashname)) < 0)
 	{
 		FREEP( hashname );
 		return(NULL);
@@ -337,34 +305,46 @@ ISpellChecker::loadLocalDictionary ( const char *szHash )
 }
 
 
+/*!
+ * Load ispell dictionary hash file for given language.
+ * 
+ * \param szLang -  The language tag ("en-US") we want to use
+ * \return The name of the dictionary file
+ */
 char *
 ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 {
 	char *hashname = NULL;
-	char * hFile = NULL ;
+	const char * szFile = NULL ;
 #ifdef HAVE_CURL
 	UT_sint32 ret;
 #endif
 
+	/* TODO
+	 * Add support for "deterministic dictionary names"
+	 * As well as the dictionary name mapping table, we should
+	 * look for dictionaries with names of the form: en-US.hash
+	 * This makes it trivial to add new spelling support
+	 * without modifying the code and recompiling.
+	 * Which should have priority when both exist?
+	 */
 	for (UT_uint32 i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
 	{
 		if (!strcmp (szLang, m_mapping[i].lang))
 		{
-			hFile = m_mapping[i].dict;
+			szFile = m_mapping[i].dict;
 			break;
 		}
 	}
 
-	if ( hFile == NULL )
+	if ( szFile == NULL )
 		return NULL ;
 
-#if defined(DONT_USE_GLOBALS)
 	m_pISpellState = alloc_ispell_struct();
-#endif
 
-	if (!(hashname = loadGlobalDictionary(hFile)))
+	if (!(hashname = loadGlobalDictionary(szFile)))
 	{
-		if (!(hashname = loadLocalDictionary(hFile)))
+		if (!(hashname = loadLocalDictionary(szFile)))
 		{
 #ifdef HAVE_CURL
 			AP_HashDownloader *hd = (AP_HashDownloader *)XAP_App::getApp()->getHashDownloader();
@@ -373,8 +353,8 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 			setUserSaidNo(0);
 			  
 			if (!hd || ((ret = hd->suggestDownload(pFrame, szLang)) != 1)
-			  || (!(hashname = loadGlobalDictionary(hFile))
-			  && !(hashname = loadLocalDictionary(hFile))) )
+			  || (!(hashname = loadGlobalDictionary(szFile))
+			  && !(hashname = loadLocalDictionary(szFile))) )
 			{
 				if (hd && ret == 0)
 					setUserSaidNo(1);
@@ -406,23 +386,27 @@ ISpellChecker::requestDictionary(const char *szLang)
 		 */
 		if (!getUserSaidNo())
 #endif
-			couldNotLoadDictionary ( szLang );
+			s_couldNotLoadDictionary ( szLang );
 		return false ;
 	}
 
-	g_bSuccessfulInit = true;
+	m_bSuccessfulInit = true;
 
 	/* Test for utf8 first */
-	prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
+	/* TODO get rid of heuristic - use only *-encoding file - more deterministic, less
+	 * entropy and confusion */
+	prefstringchar = findfiletype(m_pISpellState, "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
 	if (prefstringchar >= 0)
 	{
-		DEREF(m_pISpellState, translate_in) = UT_iconv_open("utf-8", UCS_INTERNAL);
-		DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_INTERNAL, "utf-8");
+		m_pISpellState->translate_in = UT_iconv_open("utf-8", UCS_INTERNAL);
+		m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "utf-8");
 
 	}
 
 	/* Test for "latinN" */
-	if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
+	/* TODO get rid of heuristic - use only *-encoding file - more deterministic, less
+	 * entropy and confusion */
+	if(!UT_iconv_isValid(m_pISpellState->translate_in))
 	{
 		UT_String teststring;
 		int n1;
@@ -431,39 +415,47 @@ ISpellChecker::requestDictionary(const char *szLang)
 		for(n1 = 1; n1 <= 15; n1++)
 		{
 			UT_String_sprintf(teststring, "latin%u", n1);
-			prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
+			prefstringchar = findfiletype(m_pISpellState, teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
 			if (prefstringchar >= 0)
 			{
-				DEREF(m_pISpellState, translate_in) = UT_iconv_open(teststring.c_str(), UCS_INTERNAL);
-				DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_INTERNAL, teststring.c_str());
+				m_pISpellState->translate_in = UT_iconv_open(teststring.c_str(), UCS_INTERNAL);
+				m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, teststring.c_str());
 				break;
 			}
 		}
 	}
-	try_autodetect_charset(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname));
+
+	/* Get Hash encoding from hash's accompanying *-encoding file */
+	/* TODO this should be the only method of finding the hash's encoding- more deterministic, less
+	 * entropy and confusion */
+	s_try_autodetect_charset(m_pISpellState, const_cast<char*>(hashname));
 
 	/* Test for known "hashname"s */
-	if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
+	/* TODO get rid of heuristic - use only *-encoding file - more deterministic, less
+	 * entropy and confusion */
+	if(!UT_iconv_isValid(m_pISpellState->translate_in))
 	{
 		if( strstr( hashname, "russian.hash" ))
 		{
 			/* ISO-8859-5, CP1251 or KOI8-R */
-			DEREF(m_pISpellState, translate_in) = UT_iconv_open("KOI8-R", UCS_INTERNAL);
-			DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_INTERNAL, "KOI8-R");
+			m_pISpellState->translate_in = UT_iconv_open("KOI8-R", UCS_INTERNAL);
+			m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "KOI8-R");
 		}
 	}
 
 	/* If nothing found, use latin1 */
-	if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
+	/* TODO get rid of fallback - use only *-encoding file - more deterministic, less
+	 * entropy and confusion */
+	if(!UT_iconv_isValid(m_pISpellState->translate_in))
 	{
-		DEREF(m_pISpellState, translate_in) = UT_iconv_open("latin1", UCS_INTERNAL);
-		DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_INTERNAL, "latin1");
+		m_pISpellState->translate_in = UT_iconv_open("latin1", UCS_INTERNAL);
+		m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "latin1");
 	}
 
 	if (prefstringchar < 0)
-		DEREF(m_pISpellState, defdupchar) = 0;
+		m_pISpellState->defdupchar = 0;
 	else
-		DEREF(m_pISpellState, defdupchar) = prefstringchar;
+		m_pISpellState->defdupchar = prefstringchar;
 
 	FREEP(hashname);
 	return true;

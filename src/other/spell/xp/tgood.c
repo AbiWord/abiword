@@ -44,7 +44,14 @@
 
 /*
  * $Log$
+ * Revision 1.5  2002/09/19 05:31:20  hippietrail
+ * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
+ * K&R function declarations removed, converted to Doxygen style comments
+ * where possible.  No code has been changed (I hope).  Compiles for me but
+ * unable to test.
+ *
  * Revision 1.4  2002/09/17 03:03:31  hippietrail
+ *
  * After seeking permission on the developer list I've reformatted all the
  * spelling source which seemed to have parts which used 2, 3, 4, and 8
  * spaces for tabs.  It should all look good with our standard 4-space
@@ -161,58 +168,59 @@
 void		chk_aff P ((ichar_t * word, ichar_t * ucword, int len,
 		  int ignoreflagbits, int allhits, int pfxopts, int sfxopts));
 */
-static void	pfx_list_chk P ((FIRST_ARG(istate) ichar_t * word, ichar_t * ucword,
+static void	pfx_list_chk P ((ispell_state_t *istate, ichar_t * word, ichar_t * ucword,
 		  int len, int optflags, int sfxopts, struct flagptr * ind,
 		  int ignoreflagbits, int allhits));
-static void	chk_suf P ((FIRST_ARG(istate) ichar_t * word, ichar_t * ucword, int len,
+static void	chk_suf P ((ispell_state_t *istate, ichar_t * word, ichar_t * ucword, int len,
 		  int optflags, struct flagent * pfxent, int ignoreflagbits,
 		  int allhits));
-static void	suf_list_chk P ((FIRST_ARG(istate) ichar_t * word, ichar_t * ucword, int len,
+static void	suf_list_chk P ((ispell_state_t *istate, ichar_t * word, ichar_t * ucword, int len,
 		  struct flagptr * ind, int optflags, struct flagent * pfxent,
 		  int ignoreflagbits, int allhits));
-int		expand_pre P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
+int		expand_pre P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
 		  MASKTYPE mask[], int option, char * extra));
-static int	pr_pre_expansion P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
+static int	pr_pre_expansion P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
 		  struct flagent * flent, MASKTYPE mask[], int option,
 		  char * extra));
-int		expand_suf P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
+int		expand_suf P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
 		  MASKTYPE mask[], int optflags, int option, char * extra));
-static int	pr_suf_expansion P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
+static int	pr_suf_expansion P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
 		  struct flagent * flent, int option, char * extra));
-static void	forcelc P ((FIRST_ARG(istate) ichar_t * dst, int len));
+static void	forcelc P ((ispell_state_t *istate, ichar_t * dst, int len));
 
-/* Check possible affixes */
-void chk_aff (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, 
+/*!
+ * Check possible affixes
+ *
+ * \param word Word to be checked
+ * \param ucword Upper-case-only copy of word
+ * \param len The length of word/ucword
+ * \param ignoreflagbits Ignore whether affix is legal
+ * \param allhits Keep going after first hit
+ * \param pfxopts Options to apply to prefixes
+ * \param sfxopts Options to apply to suffixes
+ */
+void chk_aff (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, 
 			  int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
-#if 0
-    ichar_t *		word;		/* Word to be checked */
-    ichar_t *		ucword;		/* Upper-case-only copy of word */
-    int			len;		/* The length of word/ucword */
-    int			ignoreflagbits;	/* Ignore whether affix is legal */
-    int			allhits;	/* Keep going after first hit */
-    int			pfxopts;	/* Options to apply to prefixes */
-    int			sfxopts;	/* Options to apply to suffixes */
-#endif
 {
     register ichar_t *	cp;		/* Pointer to char to index on */
     struct flagptr *	ind;		/* Flag index table to test */
 
-    pfx_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, pfxopts, sfxopts, &DEREF(istate, pflagindex[0]),
+    pfx_list_chk (istate, word, ucword, len, pfxopts, sfxopts, &istate->pflagindex[0],
       ignoreflagbits, allhits);
     cp = ucword;
 	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
-    ind = &DEREF(istate, pflagindex[*cp++]);
+    ind = &istate->pflagindex[*cp++];
     while (ind->numents == 0  &&  ind->pu.fp != NULL)
 	{
 		if (*cp == 0)
 			return;
 		if (ind->pu.fp[0].numents)
 		{
-			pfx_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, pfxopts, sfxopts, &ind->pu.fp[0],
+			pfx_list_chk (istate, word, ucword, len, pfxopts, sfxopts, &ind->pu.fp[0],
 			  ignoreflagbits, allhits);
-			if (DEREF(istate, numhits)  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
+			if (istate->numhits  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 				return;
 		}
 		/* HACK: bail on unrecognized chars */
@@ -220,27 +228,28 @@ void chk_aff (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword,
 			return;
 		ind = &ind->pu.fp[*cp++];
 	}
-    pfx_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, pfxopts, sfxopts, ind, ignoreflagbits,
+    pfx_list_chk (istate, word, ucword, len, pfxopts, sfxopts, ind, ignoreflagbits,
       allhits);
-    if (DEREF(istate, numhits)  &&  !allhits  &&  /* !cflag  &&*/  !ignoreflagbits)
+    if (istate->numhits  &&  !allhits  &&  /* !cflag  &&*/  !ignoreflagbits)
 		return;
-    chk_suf (DEREF_FIRST_ARG(istate) word, ucword, len, sfxopts, (struct flagent *) NULL,
+    chk_suf (istate, word, ucword, len, sfxopts, (struct flagent *) NULL,
       ignoreflagbits, allhits);
 }
 
-/* Check some prefix flags */
-static void pfx_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, int len, int optflags, 
+/*!
+ * Check some prefix flags
+ *
+ * \param word Word to be checked
+ * \param ucword Upper-case-only word
+ * \param len The length of ucword
+ * \param optflags Options to apply
+ * \param sfxopts Options to apply to suffixes
+ * \param ind Flag index table
+ * \param ignoreflagbits Ignore whether affix is legal
+ * \param allhits Keep going after first hit
+ * */
+static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, int len, int optflags, 
 					int sfxopts, struct flagptr * ind, int ignoreflagbits, int allhits)
-#if 0
-    ichar_t *		word;		/* Word to be checked */
-    ichar_t *		ucword;		/* Upper-case-only word */
-    int			len;		/* The length of ucword */
-    int			optflags;	/* Options to apply */
-    int			sfxopts;	/* Options to apply to suffixes */
-    struct flagptr *	ind;		/* Flag index table */
-    int			ignoreflagbits;	/* Ignore whether affix is legal */
-    int			allhits;	/* Keep going after first hit */
-#endif
 {
     int			cond;		/* Condition number */
     register ichar_t *	cp;		/* Pointer into end of ucword */
@@ -305,7 +314,7 @@ static void pfx_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, int 
 
 				if (ignoreflagbits)
 				{
-					if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL)
+					if ((dent = ispell_lookup (istate, tword, 1)) != NULL)
 					{
 						cp = tword2;
 						if (flent->affl)
@@ -330,22 +339,22 @@ static void pfx_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, int 
 #endif /* Capitalizaition handler 12/98 */
 					}
 				}
-				else if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL
+				else if ((dent = ispell_lookup (istate, tword, 1)) != NULL
 				  &&  TSTMASKBIT (dent->mask, flent->flagbit))
 				{
-					if (DEREF(istate, numhits) < MAX_HITS)
+					if (istate->numhits < MAX_HITS)
 					{
-						DEREF(istate, hits[DEREF(istate, numhits)].dictent) = dent;
-						DEREF(istate, hits[DEREF(istate, numhits)].prefix) = flent;
-						DEREF(istate, hits[DEREF(istate, numhits)].suffix) = NULL;
-						DEREF(istate, numhits)++;
+						istate->hits[istate->numhits].dictent = dent;
+						istate->hits[istate->numhits].prefix = flent;
+						istate->hits[istate->numhits].suffix = NULL;
+						istate->numhits++;
 					}
 					if (!allhits)
 					{
 #ifndef NO_CAPITALIZATION_SUPPORT
-						if (cap_ok (DEREF_FIRST_ARG(istate) word, &DEREF(istate, hits[0]), len))
+						if (cap_ok (istate, word, &istate->hits[0], len))
 							return;
-						DEREF(istate, numhits) = 0;
+						istate->numhits = 0;
 #else /* NO_CAPITALIZATION_SUPPORT */
 						return;
 #endif /* NO_CAPITALIZATION_SUPPORT */
@@ -355,46 +364,48 @@ static void pfx_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, int 
 				 * Handle cross-products.
 				 */
 				if (flent->flagflags & FF_CROSSPRODUCT)
-						chk_suf (DEREF_FIRST_ARG(istate) word, tword, tlen, sfxopts | FF_CROSSPRODUCT,
+						chk_suf (istate, word, tword, tlen, sfxopts | FF_CROSSPRODUCT,
 					flent, ignoreflagbits, allhits);
 			}
 	    }
 	}
 }
 
-/* Check possible suffixes */
-static void chk_suf (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, 
+/*!
+ * Check possible suffixes
+ *
+ * \param word Word to be checked
+ * \param ucword Upper-case-only word
+ * \param len The length of ucword
+ * \param optflags Affix option flags
+ * \param pfxent Prefix flag entry if cross-prod
+ * \param ignoreflagbits Ignore whether affix is legal
+ * \param allhits Keep going after first hit
+ */
+static void
+chk_suf (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, 
 					int len, int optflags, struct flagent *pfxent, 
 					int ignoreflagbits, int allhits)
-#if 0
-    ichar_t *		word;		/* Word to be checked */
-    ichar_t *		ucword;		/* Upper-case-only word */
-    int			len;		/* The length of ucword */
-    int			optflags;	/* Affix option flags */
-    struct flagent *	pfxent;		/* Prefix flag entry if cross-prod */
-    int			ignoreflagbits;	/* Ignore whether affix is legal */
-    int			allhits;	/* Keep going after first hit */
-#endif
 {
     register ichar_t *	cp;		/* Pointer to char to index on */
     struct flagptr *	ind;		/* Flag index table to test */
 
-    suf_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, &DEREF(istate, sflagindex[0]), optflags, pfxent,
+    suf_list_chk (istate, word, ucword, len, &istate->sflagindex[0], optflags, pfxent,
       ignoreflagbits, allhits);
     cp = ucword + len - 1;
 	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
-    ind = &DEREF(istate, sflagindex[*cp]);
+    ind = &istate->sflagindex[*cp];
     while (ind->numents == 0  &&  ind->pu.fp != NULL)
 	{
 		if (cp == ucword)
 			return;
 		if (ind->pu.fp[0].numents)
 		{
-			suf_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, &ind->pu.fp[0],
+			suf_list_chk (istate, word, ucword, len, &ind->pu.fp[0],
 			  optflags, pfxent, ignoreflagbits, allhits);
-			if (DEREF(istate, numhits) != 0  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
+			if (istate->numhits != 0  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 				return;
 		}
 		/* HACK: bail on unrecognized chars */
@@ -402,23 +413,23 @@ static void chk_suf (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword,
 			return;
 		ind = &ind->pu.fp[*--cp];
 	}
-    suf_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, ind, optflags, pfxent,
+    suf_list_chk (istate, word, ucword, len, ind, optflags, pfxent,
       ignoreflagbits, allhits);
 }
     
-static void suf_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, 
+/*!
+ * \param word Word to be checked
+ * \param ucword Upper-case-only word
+ * \param len The length of ucword
+ * \param ind Flag index table
+ * \param optflags Affix option flags
+ * \param pfxent Prefix flag entry if crossonly
+ * \param ignoreflagbits Ignore whether affix is legal
+ * \pram allhits Keep going after first hit
+ */
+static void suf_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, 
 						  int len, struct flagptr *ind, int optflags, 
 						  struct flagent *pfxent, int ignoreflagbits, int allhits)
-#if 0
-    ichar_t *		word;		/* Word to be checked */
-    ichar_t *		ucword;		/* Upper-case-only word */
-    int			len;		/* The length of ucword */
-    struct flagptr *	ind;		/* Flag index table */
-    int			optflags;	/* Affix option flags */
-    struct flagent *	pfxent;		/* Prefix flag entry if crossonly */
-    int			ignoreflagbits;	/* Ignore whether affix is legal */
-    int			allhits;	/* Keep going after first hit */
-#endif
 {
     register ichar_t *	cp;		/* Pointer into end of ucword */
     int			cond;		/* Condition number */
@@ -491,7 +502,7 @@ static void suf_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword,
 				 */
 				if (ignoreflagbits)
 				{
-					if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL)
+					if ((dent = ispell_lookup (istate, tword, 1)) != NULL)
 					{
 						cp = tword2;
 						if ((optflags & FF_CROSSPRODUCT)
@@ -532,24 +543,24 @@ static void suf_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword,
 #endif /* Capitalization handler 12/98 */
 					}
 				}
-				else if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL
+				else if ((dent = ispell_lookup (istate, tword, 1)) != NULL
 				  &&  TSTMASKBIT (dent->mask, flent->flagbit)
 				  &&  ((optflags & FF_CROSSPRODUCT) == 0
 					|| TSTMASKBIT (dent->mask, pfxent->flagbit)))
 				{
-					if (DEREF(istate, numhits) < MAX_HITS)
+					if (istate->numhits < MAX_HITS)
 					{
-						DEREF(istate, hits[DEREF(istate, numhits)].dictent) = dent;
-						DEREF(istate, hits[DEREF(istate, numhits)].prefix) = pfxent;
-						DEREF(istate, hits[DEREF(istate, numhits)].suffix) = flent;
-						DEREF(istate, numhits)++;
+						istate->hits[istate->numhits].dictent = dent;
+						istate->hits[istate->numhits].prefix = pfxent;
+						istate->hits[istate->numhits].suffix = flent;
+						istate->numhits++;
 					}
 					if (!allhits)
 					{
 #ifndef NO_CAPITALIZATION_SUPPORT
-						if (cap_ok (DEREF_FIRST_ARG(istate) word, &DEREF(istate, hits[0]), len))
+						if (cap_ok (istate, word, &istate->hits[0], len))
 							return;
-						DEREF(istate, numhits) = 0;
+						istate->numhits = 0;
 #else /* NO_CAPITALIZATION_SUPPORT */
 						return;
 #endif /* NO_CAPITALIZATION_SUPPORT */
@@ -560,47 +571,51 @@ static void suf_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword,
 	}
 }
 
-/*
+/*!
  * Expand a dictionary prefix entry
+ *
+ * \param croot Char version of rootword
+ * \param rootword Root word to expand
+ * \param mask Mask bits to expand on
+ * \param option Option, see expandmode
+ * \param extra Extra info to add to line
+ *
+ * \return
  */
-int expand_pre (FIRST_ARG(istate) char *croot, ichar_t *rootword, MASKTYPE mask[], 
+int expand_pre (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE mask[], 
 				int option, char *extra)
-#if 0
-    char *			croot;		/* Char version of rootword */
-    ichar_t *			rootword;	/* Root word to expand */
-    register MASKTYPE		mask[];		/* Mask bits to expand on */
-    int				option;		/* Option, see expandmode */
-    char *			extra;		/* Extra info to add to line */
-#endif
 {
     int				entcount;	/* No. of entries to process */
     int				explength;	/* Length of expansions */
     register struct flagent *
 				flent;		/* Current table entry */
 
-    for (flent = DEREF(istate, pflaglist), entcount = DEREF(istate, numpflags), explength = 0;
+    for (flent = istate->pflaglist, entcount = istate->numpflags, explength = 0;
       entcount > 0;
       flent++, entcount--)
 	{
 		if (TSTMASKBIT (mask, flent->flagbit))
 			explength +=
-			  pr_pre_expansion (DEREF_FIRST_ARG(istate) croot, rootword, flent, mask, option, extra);
+			  pr_pre_expansion (istate, croot, rootword, flent, mask, option, extra);
 	}
     return explength;
 }
 
-/* Print a prefix expansion */
-static int pr_pre_expansion (FIRST_ARG(istate)  char *croot, ichar_t *rootword, 
+/*!
+ * Print a prefix expansion
+ *
+ * \param croot Char version of rootword
+ * \param rootword Root word to expand
+ * \param flent Current table entry
+ * \param mask Mask bits to expand on
+ * \param option Option, see	expandmode
+ * \param extra Extra info to add to line
+ *
+ * \return
+ */
+static int pr_pre_expansion (ispell_state_t *istate,  char *croot, ichar_t *rootword, 
 							struct flagent *flent, MASKTYPE mask[], int option, 
 							char *extra)
-#if 0
-    char *			croot;		/* Char version of rootword */
-    register ichar_t *		rootword;	/* Root word to expand */
-    register struct flagent *	flent;		/* Current table entry */
-    MASKTYPE			mask[];		/* Mask bits to expand on */
-    int				option;		/* Option, see	expandmode */
-    char *			extra;		/* Extra info to add to line */
-#endif
 {
     int				cond;		/* Current condition number */
     register ichar_t *		nextc;		/* Next case choice */
@@ -616,7 +631,7 @@ static int pr_pre_expansion (FIRST_ARG(istate)  char *croot, ichar_t *rootword,
     tlen += flent->affl;
     for (cond = 0, nextc = rootword;  cond < flent->numconds;  cond++)
 	{
-		if ((flent->conds[mytoupper (DEREF_FIRST_ARG(istate) *nextc++)] & (1 << cond)) == 0)
+		if ((flent->conds[mytoupper (istate, *nextc++)] & (1 << cond)) == 0)
 			return 0;
 	}
     /*
@@ -638,12 +653,12 @@ static int pr_pre_expansion (FIRST_ARG(istate)  char *croot, ichar_t *rootword,
 		nextc = tword + flent->affl;
 	}
     (void) icharcpy (nextc, rootword + flent->stripl);
-    if (myupper (DEREF_FIRST_ARG(istate) rootword[0]))
+    if (myupper (istate, rootword[0]))
 	{
 		/* We must distinguish followcase from capitalized and all-upper */
 		for (nextc = rootword + 1;  *nextc;  nextc++)
 		{
-			if (!myupper (DEREF_FIRST_ARG(istate) *nextc))
+			if (!myupper (istate, *nextc))
 				break;
 		}
 		if (*nextc)
@@ -651,59 +666,60 @@ static int pr_pre_expansion (FIRST_ARG(istate)  char *croot, ichar_t *rootword,
 			/* It's a followcase or capitalized word.  Figure out which. */
 			for (  ;  *nextc;  nextc++)
 			{
-				if (myupper (DEREF_FIRST_ARG(istate) *nextc))
+				if (myupper (istate, *nextc))
 					break;
 			}
 			if (*nextc)
 			{
 				/* It's followcase. */
-				if (!myupper (DEREF_FIRST_ARG(istate) tword[flent->affl]))
-					forcelc (DEREF_FIRST_ARG(istate) tword, flent->affl);
+				if (!myupper (istate, tword[flent->affl]))
+					forcelc (istate, tword, flent->affl);
 			}
 			else
 			{
 				/* It's capitalized */
-				forcelc (DEREF_FIRST_ARG(istate) tword + 1, tlen - 1);
+				forcelc (istate, tword + 1, tlen - 1);
 			}
 		}
 	}
     else
 	{
 		/* Followcase or all-lower, we don't care which */
-		if (!myupper (DEREF_FIRST_ARG(istate) *nextc))
-			forcelc (DEREF_FIRST_ARG(istate) tword, flent->affl);
+		if (!myupper (istate, *nextc))
+			forcelc (istate, tword, flent->affl);
 	}
     if (option == 3)
 		(void) printf ("\n%s", croot);
     if (option != 4)
-		(void) printf (" %s%s", ichartosstr (DEREF_FIRST_ARG(istate) tword, 1), extra);
+		(void) printf (" %s%s", ichartosstr (istate, tword, 1), extra);
     if (flent->flagflags & FF_CROSSPRODUCT)
 		return tlen
-		  + expand_suf (DEREF_FIRST_ARG(istate) croot, tword, mask, FF_CROSSPRODUCT, option, extra);
+		  + expand_suf (istate, croot, tword, mask, FF_CROSSPRODUCT, option, extra);
     else
 		return tlen;
 }
 
-/*
+/*!
  * Expand a dictionary suffix entry
+ *
+ * \param croot Char version of rootword
+ * \param rootword Root word to expand 
+ * \param mask Mask bits to expand on
+ * \param optflags Affix option flags
+ * \param option Option, see expandmode
+ * \param extra Extra info to add to line
+ *
+ * \return
  */
-int expand_suf (FIRST_ARG(istate) char *croot, ichar_t *rootword, MASKTYPE mask[], 
+int expand_suf (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE mask[], 
 				int optflags, int option, char *extra)
-#if 0
-    char *			croot;		/* Char version of rootword */
-    ichar_t *			rootword;	/* Root word to expand */
-    register MASKTYPE		mask[];		/* Mask bits to expand on */
-    int				optflags;	/* Affix option flags */
-    int				option;		/* Option, see expandmode */
-    char *			extra;		/* Extra info to add to line */
-#endif
 {
     int				entcount;	/* No. of entries to process */
     int				explength;	/* Length of expansions */
     register struct flagent *
 				flent;		/* Current table entry */
 
-    for (flent = DEREF(istate, sflaglist), entcount = DEREF(istate, numsflags), explength = 0;
+    for (flent = istate->sflaglist, entcount = istate->numsflags, explength = 0;
       entcount > 0;
       flent++, entcount--)
 	{
@@ -712,22 +728,25 @@ int expand_suf (FIRST_ARG(istate) char *croot, ichar_t *rootword, MASKTYPE mask[
 			if ((optflags & FF_CROSSPRODUCT) == 0
 			  ||  (flent->flagflags & FF_CROSSPRODUCT))
 			explength +=
-			  pr_suf_expansion (DEREF_FIRST_ARG(istate) croot, rootword, flent, option, extra);
+			  pr_suf_expansion (istate, croot, rootword, flent, option, extra);
 		}
 	}
     return explength;
 }
 
-/* Print a suffix expansion */
-static int pr_suf_expansion (FIRST_ARG(istate) char *croot, ichar_t *rootword, 
+/*!
+ * Print a suffix expansion
+ *
+ * \param croot Char version of rootword
+ * \param rootword Root word to expand
+ * \param flent Current table entry
+ * \param option Option, see expandmode
+ * \param extra Extra info to add to line
+ *
+ * \return
+ */
+static int pr_suf_expansion (ispell_state_t *istate, char *croot, ichar_t *rootword, 
 							struct flagent *flent, int option, char *extra)
-#if 0
-    char *			croot;		/* Char version of rootword */
-    register ichar_t *		rootword;	/* Root word to expand */
-    register struct flagent *	flent;		/* Current table entry */
-    int				option;		/* Option, see expandmode */
-    char *			extra;		/* Extra info to add to line */
-#endif
 {
     int				cond;		/* Current condition number */
     register ichar_t *		nextc;		/* Next case choice */
@@ -742,7 +761,7 @@ static int pr_suf_expansion (FIRST_ARG(istate) char *croot, ichar_t *rootword,
 		return 0;
     for (nextc = rootword + tlen;  --cond >= 0;  )
 	{
-		if ((flent->conds[mytoupper (DEREF_FIRST_ARG(istate) *--nextc)] & (1 << cond)) == 0)
+		if ((flent->conds[mytoupper (istate, *--nextc)] & (1 << cond)) == 0)
 			return 0;
 	}
     /*
@@ -755,25 +774,25 @@ static int pr_suf_expansion (FIRST_ARG(istate) char *croot, ichar_t *rootword,
     if (flent->affl)
 	{
 		(void) icharcpy (nextc, flent->affix);
-		if (!myupper (DEREF_FIRST_ARG(istate) nextc[-1]))
-			forcelc (DEREF_FIRST_ARG(istate) nextc, flent->affl);
+		if (!myupper (istate, nextc[-1]))
+			forcelc (istate, nextc, flent->affl);
 	}
     else
 		*nextc = 0;
     if (option == 3)
 		(void) printf ("\n%s", croot);
     if (option != 4)
-		(void) printf (" %s%s", ichartosstr (DEREF_FIRST_ARG(istate) tword, 1), extra);
+		(void) printf (" %s%s", ichartosstr (istate, tword, 1), extra);
     return tlen + flent->affl - flent->stripl;
 }
 
-static void forcelc (FIRST_ARG(istate) ichar_t *dst, int len)			/* Force to lowercase */
-#if 0
-    register ichar_t *		dst;		/* Destination to modify */
-    register int		len;		/* Length to copy */
-#endif
+/*!
+ * \param dst Destination to modify
+ * \param len Length to copy
+ */
+static void forcelc (ispell_state_t *istate, ichar_t *dst, int len)			/* Force to lowercase */
 {
 
     for (  ;  --len >= 0;  dst++)
-		*dst = mytolower (DEREF_FIRST_ARG(istate) *dst);
+		*dst = mytolower (istate, *dst);
 }

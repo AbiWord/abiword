@@ -24,7 +24,6 @@ TARGETS = correct.o ¶
 		   hash.o ¶
 		   lookup.o ¶
 		   makedent.o ¶
-		   newMain.o ¶
 		   tgood.o
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
