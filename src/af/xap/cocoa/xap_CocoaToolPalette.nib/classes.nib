@@ -28,6 +28,7 @@
                 oFontName = NSPopUpButton; 
                 oFontSize = NSComboBox; 
                 oPanel = NSPanel; 
+                oPreview = NSTextField; 
                 oProperties = NSOutlineView; 
                 "oSwitch_BG" = NSButton; 
                 "oSwitch_FG" = NSButton; 

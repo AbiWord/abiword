@@ -137,6 +137,8 @@ private:
 	IBOutlet NSButton *oSwitch_BG;
 	IBOutlet NSButton *oSwitch_FG;
 
+	IBOutlet NSTextField *oPreview;
+
 	IBOutlet NSOutlineView *oProperties;
 
 	IBOutlet NSPanel *oPanel;
@@ -173,6 +175,8 @@ private:
 - (void)windowDidLoad;
 - (void)close;
 - (void)windowWillClose;
+
+- (NSTextField *)preview;
 
 - (void)setColor:(XAP_Toolbar_Id)tlbrid;
 

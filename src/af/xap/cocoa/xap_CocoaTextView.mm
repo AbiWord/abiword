@@ -29,7 +29,7 @@
 #include "xav_View.h"
 
 #import "xap_CocoaTextView.h"
-
+#import "xap_CocoaToolPalette.h"
 
 @implementation XAP_CocoaTextView
 
@@ -301,13 +301,15 @@
 
 - (NSRect)firstRectForCharacterRange:(NSRange)theRange
 {
-	UT_ASSERT_NOT_REACHED();
+	// UT_ASSERT_NOT_REACHED();
+UT_DEBUGMSG(("characterRange=(location=%u,length=%u)\n",theRange.location,theRange.length));
 	return NSZeroRect;
 }
 
 
 - (BOOL)hasMarkedText
 {
+UT_DEBUGMSG(("m_hasMarkedText=%s\n",m_hasMarkedText ? "YES" : "NO"));
 	return m_hasMarkedText;
 }
 
@@ -317,6 +319,7 @@
 	/* NSString * str = (NSString *) aString;
 	 * UT_DEBUGMSG(("insertText '%s' in window '%s'\n", [str UTF8String], [[[self window] title] UTF8String]));
 	 */
+UT_DEBUGMSG(("insertText: length=%u\n", [aString length]));
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = m_pFrame->getCurrentView();
 	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>
@@ -324,25 +327,54 @@
 
 	if (pView)
 		pCocoaKeyboard->insertTextEvent(pView, aString);	
+
+	if ([XAP_CocoaToolPalette instantiated]) {
+		[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:@""];
+	}
+	m_selectedRange = NSMakeRange(NSNotFound, 0);
+	m_hasMarkedText = NO;
 }
 
 
 - (NSRange)markedRange
 {
-	UT_ASSERT_NOT_REACHED();
-	return NSMakeRange (NSNotFound, 0);
+	// UT_ASSERT_NOT_REACHED();
+	UT_DEBUGMSG(("markedRange (m_hasMarkedText=%s)\n",m_hasMarkedText ? "YES" : "NO"));
+
+	/* This method gets called when you delete the current character sequence to 0 length,
+	 * so let's clear the preview...
+	 */
+	if ([XAP_CocoaToolPalette instantiated]) {
+		[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:@""];
+	}
+	m_selectedRange = NSMakeRange(NSNotFound, 0);
+	m_hasMarkedText = NO;
+
+	return m_selectedRange;
 }
 
 - (NSRange)selectedRange
 {
+UT_DEBUGMSG(("selectedRange=(location=%u,length=%u)\n",m_selectedRange.location,m_selectedRange.length));
 	return m_selectedRange;
 }
 
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange
 {
+	if ([XAP_CocoaToolPalette instantiated]) {
+		if ([aString isKindOfClass:[NSString class]]) {
+			NSString * str = (NSString *) aString;
+			[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:str];
+		}
+		if ([aString isKindOfClass:[NSAttributedString class]]) {
+			NSAttributedString * str = (NSAttributedString *) aString;
+			[[[XAP_CocoaToolPalette instance:self] preview] setStringValue:[str string]];
+		}
+	}
 	m_selectedRange = selRange;
 	m_hasMarkedText = (selRange.length != 0 ? YES : NO);
 	UT_DEBUGMSG(("Hub TODO: handle -[XAP_CocoaTextView setMarkedText:selectedRange:]\n"));
+UT_DEBUGMSG(("range=(location=%u,length=%u) [aString length]=%u\n",selRange.location,selRange.length,[aString length]));
 	/*
 		Steal code from the selection handling code in XP land. We have the AV_View
 		so everything is here.

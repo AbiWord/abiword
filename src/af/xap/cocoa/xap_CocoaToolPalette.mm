@@ -982,6 +982,11 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -windowWillClose\n"));
 }
 
+- (NSTextField *)preview
+{
+	return oPreview;
+}
+
 - (void)setColor:(XAP_Toolbar_Id)tlbrid
 {
 	if (!m_pViewCurrent)
