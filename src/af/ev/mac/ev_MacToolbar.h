@@ -63,6 +63,9 @@ class EV_MacToolbar : public EV_Toolbar
 	ControlHandle	getControl () { return m_hMainControl; };
 	UT_Vector &	getWidgets () { return m_vecToolbarWidgets; };
 	XAP_MacApp * getApp() { return m_pMacApp; };		// refactor and put it in EV_Toolbar
+	enum {
+		ABI_TOOLBAR_COMMAND = 'TLBR'
+	};
  protected:
     void 	_releaseListener(void);
  private:

@@ -42,15 +42,18 @@ public:
 	                { return m_window; };
 	void	requestToolbarRect (Rect & r) const;
 static	UInt16	getButtonWidth ()
-					{ return 28; };
+					{ return 30; };
 static	UInt16	getButtonHeight ()
-					{ return 28; };
+					{ return 30; };
 static	UInt16	getButtonSpace () 
 					{ return 4; };
 private:
 	static int		m_instanceCount;
 	WindowRef		m_window;
 	XAP_MacFrame*	m_pMacFrame;
+static pascal OSStatus HandleToolbarMenus (EventHandlerCallRef nextHandler, 
+											EventRef theEvent, void* userData);
+
 //	EV_MacToolbar*	m_toolbars;
 };
 

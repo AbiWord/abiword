@@ -87,6 +87,22 @@ XAP_MacToolbar_Control::setToolbar (XAP_MacFrame * frame)
 	SInt16 height = 0;
 	OSStatus err;
 	ControlHandle toolbarControl;
+	static bool eventSetUp = false;
+	
+#if defined(USE_CARBON_EVENTS)
+	if (!eventSetUp) {
+		::InstallStandardEventHandler (::GetWindowEventTarget(m_window));
+		EventTypeSpec eventTypes[1];
+		eventTypes[0].eventClass = kEventClassCommand;
+		eventTypes[0].eventKind = kEventCommandProcess;
+		EventHandlerRef handlerRef;
+		EventHandlerUPP handlerUPP = NewEventHandlerUPP (HandleToolbarMenus);
+		err = ::InstallWindowEventHandler (m_window, handlerUPP, 1, eventTypes, (void*)this, &handlerRef);
+		UT_ASSERT (err == noErr);
+		UT_DEBUGMSG (("event handler setup\n"));
+		eventSetUp = true;
+	}
+#endif
 
 	if (frame == m_pMacFrame) {
 		UT_DEBUGMSG (("XAP_MacToolbar_Control::setToolbar: Already that frame !!\n"));
@@ -139,5 +155,43 @@ XAP_MacToolbar_Control::setToolbar (XAP_MacFrame * frame)
 void
 XAP_MacToolbar_Control::requestToolbarRect (Rect & r) const
 {
-	::SetRect (&r, 0, 0, 1024, 36);
+	::SetRect (&r, 0, 0, 1024, getButtonHeight() + (getButtonSpace() * 2));
 }
+
+
+
+#if defined(USE_CARBON_EVENTS)
+/*!
+	Carbon event handler
+ */
+pascal OSStatus XAP_MacToolbar_Control::HandleToolbarMenus (EventHandlerCallRef nextHandler, 
+											EventRef theEvent, void* userData)
+{
+	OSStatus err = noErr;
+	XAP_MacApp *	myApp = (XAP_MacApp *)userData;
+	UT_ASSERT (myApp);
+	UInt32			eventKind;
+	HICommand		cmd;
+	
+	eventKind = ::GetEventKind (theEvent);
+	if (eventKind == kEventCommandProcess) {
+		XAP_Menu_Id xapId;
+		EV_MacToolbar	*tlbr;
+		GetEventParameter (theEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof (HICommand), NULL, &cmd);
+
+		xapId = cmd.commandID;
+		
+		tlbr = (EV_MacToolbar *) ((XAP_MacToolbar_Control *)userData)->m_pMacFrame->getToolbar (0);
+		UT_ASSERT (tlbr);
+
+
+		tlbr->toolbarEvent (xapId, NULL, 0);
+	}
+	
+	err = CallNextEventHandler (nextHandler, theEvent);
+	return err;
+}
+
+
+#endif
+

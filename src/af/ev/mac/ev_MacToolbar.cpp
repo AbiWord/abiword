@@ -231,10 +231,12 @@ bool EV_MacToolbar::synthesize(void)
 				info.contentType = kControlContentPictHandle;
 				info.u.picture = iconHandle;
 				// find why the iconHandle is bogus and makes Carbon crashing
-				err = SetControlData (control, kControlEntireControl, kControlBevelButtonContentTag, 
+				err = ::SetControlData (control, kControlEntireControl, kControlBevelButtonContentTag, 
 				                      sizeof (info), &info);
 				UT_ASSERT (err == noErr);
-                btnX += BTN_WIDTH + BTN_SPACE;
+				err = ::SetControlCommandID (control, id);
+				UT_ASSERT (err == noErr);
+				btnX += BTN_WIDTH + BTN_SPACE;
                 break;
 			case EV_TBIT_ToggleButton:
 			case EV_TBIT_GroupButton:
@@ -258,6 +260,8 @@ bool EV_MacToolbar::synthesize(void)
 				// find why the iconHandle is bogus and makes Carbon crashing
 				err = SetControlData (control, kControlEntireControl, kControlBevelButtonContentTag, 
 				                      sizeof (info), &info);
+				UT_ASSERT (err == noErr);
+				err = ::SetControlCommandID (control, id);
 				UT_ASSERT (err == noErr);
 				btnX += BTN_WIDTH + BTN_SPACE;
                 break;
@@ -297,7 +301,9 @@ bool EV_MacToolbar::synthesize(void)
                 // control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
 				err = ::EmbedControl (control, m_hMainControl);
 				UT_ASSERT (err == noErr);
-                btnX += iWidth + BTN_SPACE;
+				err = ::SetControlCommandID (control, id);
+				UT_ASSERT (err == noErr);
+				btnX += iWidth + BTN_SPACE;
 				if (pControl)
 				{
 					pControl->populate();
