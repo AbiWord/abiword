@@ -70,6 +70,11 @@
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
 #	include "tb_text_underline_S.xpm"
+	// Finnish translations
+#	include "tb_text_bold_L.xpm"
+#	include "tb_text_strikeout_Y.xpm"
+#	include "tb_text_underline_A.xpm"
+#	include "tb_text_italic_K.xpm"
 	
 	// ... add new icons here (don't forget to add below the #else) ...
 
@@ -110,6 +115,11 @@
 	DefineToolbarIcon(tb_text_bold_G_xpm)
 	DefineToolbarIcon(tb_text_strikeout_B_xpm)
 	DefineToolbarIcon(tb_text_underline_S_xpm)
+	// Finnish translations
+	DefineToolbarIcon(tb_text_bold_L_xpm)
+	DefineToolbarIcon(tb_text_strikeout_Y_xpm)
+	DefineToolbarIcon(tb_text_underline_A_xpm)
+	DefineToolbarIcon(tb_text_italic_K_xpm)
 
 	// ... also add new icons here ...
 
