@@ -374,11 +374,18 @@ public:
 	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
-	virtual UT_Bool			isSubscript(void) const { return UT_FALSE; }
+	virtual UT_Bool			isSubscript(void)  const { return UT_FALSE; }
 
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
+        enum
+        {
+                TEXT_POSITION_NORMAL,
+                TEXT_POSITION_SUPERSCRIPT,
+                TEXT_POSITION_SUBSCRIPT
+        };
+        UT_Byte                         m_fPosition;
 };
 
 #endif /* FP_RUN_H */

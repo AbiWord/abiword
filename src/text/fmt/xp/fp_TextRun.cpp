@@ -394,7 +394,6 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 yoff;
 
 	UT_ASSERT(m_pLine);
-	
 	m_pLine->getOffsets(this, xoff, yoff);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -405,7 +404,6 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	{
 		xoff += pCharWidths[i];
 	}
-
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
 		yoff -= m_iAscent * 1/2;
@@ -418,6 +416,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	x = xoff;
 	y = yoff;
 	height = m_iHeight;
+
 }
 
 UT_Bool fp_TextRun::canMergeWithNext(void)
@@ -1336,7 +1335,7 @@ UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 	return UT_FALSE;
 }
 
-UT_Bool fp_TextRun::isSuperscript(void) const
+UT_Bool fp_TextRun::isSuperscript(void) const 
 {
 	return (m_fPosition == TEXT_POSITION_SUPERSCRIPT);
 }

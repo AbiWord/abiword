@@ -74,6 +74,20 @@ void fp_FmtMarkRun::lookupProperties(void)
 	m_iDescentLayoutUnits = m_pG->getFontDescent();
 	m_iHeightLayoutUnits = m_pG->getFontHeight();
 
+	PD_Document * pDoc = m_pBL->getDocument();
+
+	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
+
+	if (0 == UT_stricmp(pszPosition, "superscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
+	}
+	else if (0 == UT_stricmp(pszPosition, "subscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUBSCRIPT;
+	} 
+	else m_fPosition = TEXT_POSITION_NORMAL;
+
 }
 
 UT_Bool fp_FmtMarkRun::canBreakAfter(void) const
@@ -106,9 +120,18 @@ void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint
 	UT_ASSERT(m_pLine);
 	
 	m_pLine->getOffsets(this, xoff, yoff);
+	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+	{
+		yoff -= m_iAscent * 1/2;
+	}
+	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
+	{
+		yoff += m_iDescent /* * 3/2 */;
+	}
 	x = xoff;
 	y = yoff;
 	height = m_iHeight;
+
 }
 
 UT_uint32 fp_FmtMarkRun::containsOffset(UT_uint32 /* iOffset */)

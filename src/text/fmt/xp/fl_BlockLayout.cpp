@@ -878,7 +878,7 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 	
 	UT_ASSERT(iPos >= dPos);
 	UT_uint32 iRelOffset = iPos - dPos;
-
+	if(iRelOffset < 0) iRelOffset = 0;
 	if (!m_pFirstLine || !m_pFirstRun)
 	{
 		// when we have no formatting information, can't find anything
@@ -889,10 +889,21 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 	while (pRun)
 	{
 		UT_uint32 iWhere = pRun->containsOffset(iRelOffset);
+		if (FP_RUN_JUSTAFTER == iWhere)
+		{
+		       if(pRun->getNext())
+		       {
+			    if(pRun->getNext()->containsOffset(iRelOffset) == FP_RUN_INSIDE)
+			    {
+			          pRun->findPointCoords(iRelOffset, x, y, height);
+				  return pRun->getNext();
+			    }
+		       }
+		}
 		if (FP_RUN_INSIDE == iWhere)
 		{
-			pRun->findPointCoords(iRelOffset, x, y, height);
-			return pRun;
+		  pRun->findPointCoords(iRelOffset, x, y, height);	
+		return pRun;
 		}
 		else if (bEOL && (FP_RUN_JUSTAFTER == iWhere))
 		{
@@ -918,8 +929,17 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 		UT_uint32 iWhere = pRun->containsOffset(iRelOffset);
 		if ((FP_RUN_JUSTAFTER == iWhere))
 		{
-			pRun->findPointCoords(iRelOffset, x, y, height);
-			return pRun;
+		    fp_Run* nextRun = pRun->getNext();
+		    if(nextRun)	
+		    {
+		          nextRun->lookupProperties();
+		          nextRun->findPointCoords(iRelOffset, x, y, height);
+		    }
+		    else
+		    {
+		          pRun->findPointCoords(iRelOffset, x, y, height);
+		    }
+		return pRun;
 		}
 
 		if (!pRun->getNext())
@@ -931,7 +951,6 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 				return pRun;
 			}
 		}
-		
 		pRun = pRun->getNext();
 	}
 
@@ -946,10 +965,16 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 	{
 		if (pRun->canContainPoint())
 		{
-			pRun->findPointCoords(iRelOffset, x, y, height);
+			if(!pRun->getNext())
+			  {
+			    pRun->findPointCoords(iRelOffset, x, y, height);
+			  }
+			else
+			  {
+			    pRun->getNext()->findPointCoords(iRelOffset, x, y, height);
+			  }
 			return pRun;
 		}
-		
 		pRun = pRun->getNext();
 	}
 	
@@ -2021,7 +2046,6 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			
 //			pOtherHalfOfSplitRun->recalcWidth();
 		}
-		
 		pRun = pRun->getNext();
 	}
 

@@ -237,13 +237,13 @@ UT_Bool fp_Run::canContainPoint(void) const
 
 UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 {
-	if ((iOffset >= m_iOffsetFirst) && (iOffset < (m_iOffsetFirst + m_iLen)))
-	{
-		return FP_RUN_INSIDE;
-	}
-	else if (iOffset == (m_iOffsetFirst + m_iLen))
+	if (iOffset == (m_iOffsetFirst + m_iLen))
 	{
 		return FP_RUN_JUSTAFTER;
+	}
+	else if ((iOffset >= m_iOffsetFirst) && (iOffset < (m_iOffsetFirst + m_iLen)))
+	{
+		return FP_RUN_INSIDE;
 	}
 	else
 	{
@@ -405,6 +405,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		m_pG->fillRect(clrNormalBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 	}
 }
+
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -1023,6 +1025,7 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 	x = xoff;
 	y = yoff;
 	height = m_pLine->getHeight();
+
 }
 
 void fp_ForcedColumnBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
