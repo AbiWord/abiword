@@ -36,5 +36,5 @@ zip:
 	(cd $(OUTDIR); tar -cf - AbiSuite) | (cd $(DIST)/tmp;          tar -xf -)
 	(cd $(OUTDIR); tar -cf - bin)      | (cd $(DIST)/tmp/AbiSuite; tar -xf -)
 	(cd $(DIST)/tmp; mv AbiSuite $(PKGBASENAME))
-	(cd $(DIST)/tmp; tar -czf ../$(PKGBASENAME).tar.gz $(PKGBASENAME))
+	(cd $(DIST)/tmp; zip -r ../$(PKGBASENAME).zip $(PKGBASENAME))
 	(cd $(DIST); rm -rf tmp)
