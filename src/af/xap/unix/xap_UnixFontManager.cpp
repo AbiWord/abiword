@@ -238,6 +238,9 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 		delete[] newPath ;
 	}
 #endif // !USE_XFT
+#ifdef USE_XFT
+DELETEP(pFontManager);
+#endif // USE_XFT
 }
 
 #ifndef USE_XFT
