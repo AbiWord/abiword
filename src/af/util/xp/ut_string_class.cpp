@@ -35,6 +35,8 @@
 #include "ut_debugmsg.h"		// UT_DEBUGMSG
 #include "ut_iconv.h"
 #include "ut_assert.h"			// UT_ASSERT
+#include "ut_mbtowc.h"
+#include "ut_bytebuf.h"
 
 //
 // This string class is intended to meet the following requirements.
@@ -821,6 +823,14 @@ UT_UTF8String &	UT_UTF8String::operator=(const UT_UTF8String & rhs)
 	return *this;
 }
 
+
+UT_UTF8String &	UT_UTF8String::operator+=(const UT_UCS4Char            rhs)
+{
+	pimpl->appendUCS4 (&rhs, 1);
+	return *this;
+}
+
+
 UT_UTF8String &	UT_UTF8String::operator+=(const char * rhs)
 {
 	UT_return_val_if_fail(rhs, *this);
@@ -847,6 +857,18 @@ void UT_UTF8String::assign (const char * sz, size_t n /* == 0 => null-terminatio
 void UT_UTF8String::append (const char * sz, size_t n /* == 0 => null-termination */)
 {
 	pimpl->append (sz, n);
+}
+
+void UT_UTF8String::appendBuf (const UT_ByteBuf & buf, UT_UCS4_mbtowc & converter)
+{
+	int i;
+	UT_UCS4Char wc;
+	const UT_Byte *ptr = buf.getPointer(0);
+	
+	for (i = 0; i < buf.getLength(); i++) {
+		converter.mbtowc(wc, static_cast<char>(ptr[i])); 
+		pimpl->appendUCS4(&wc, 1);
+	}
 }
 
 void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => null-termination */)

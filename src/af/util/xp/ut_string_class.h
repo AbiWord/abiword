@@ -41,6 +41,8 @@
 #include "ut_stringbuf.h"
 
 // Forward declarations
+class UT_ByteBuf;
+class UT_UCS4_mbtowc;
 class UT_String;
 class UT_UTF8String;
 class UT_UCS4String;
@@ -192,9 +194,10 @@ public:
 	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
 	UT_UTF8String &	operator=(const UT_UCS4String & rhs);
 
+	UT_UTF8String &	operator+=(const UT_UCS4Char     rhs);
 	UT_UTF8String &	operator+=(const char *          rhs);
 	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
-	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);
+	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);	
 
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,
@@ -204,6 +207,7 @@ public:
 
 	void		assign (const char * sz, size_t n = 0 /* 0 == null-termination */);
 	void		append (const char * sz, size_t n = 0 /* 0 == null-termination */);
+	void        appendBuf (const UT_ByteBuf & buf, UT_UCS4_mbtowc & converter);
 
 	void		appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == null-termination */);
 

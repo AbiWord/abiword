@@ -586,6 +586,8 @@ private:
 	RTF_KEYWORD_ID KeywordToID(const char * keyword);
 	bool HandleStarKeyword();
 
+	bool HandlePCData(UT_UTF8String & str);
+
 	bool ReadColourTable();
 	bool ReadFontTable();
 	bool ReadOneFontFromTable();
@@ -691,6 +693,8 @@ private:
 	void           HandleShapeVal(void);
 	void           HandleShapeText(void);
 	void           HandleEndShape(void);
+// Meta data
+	bool           HandleInfoMetaData(void);
 
 	bool           bUseInsertNotAppend(void);
 // Little convience wrapper

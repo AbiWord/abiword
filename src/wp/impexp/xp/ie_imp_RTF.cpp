@@ -3431,6 +3431,7 @@ bool IE_Imp_RTF::HandlePicture()
 
 	bool isBinary = false;
 	long binaryLen = 0;
+	RTF_KEYWORD_ID keywordID;
 
 	do {
 		if (!ReadCharFromFile(&ch))
@@ -3446,39 +3447,37 @@ bool IE_Imp_RTF::HandlePicture()
 			{
 				UT_DEBUGMSG(("Unexpected EOF during RTF import?\n"));
 			}
-
-			if (strcmp(reinterpret_cast<char*>(&keyword[0]), "pngblip") == 0)
+			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+			switch (keywordID)
 			{
+			case RTF_KW_pngblip:
 				format = picPNG;
-			}
-			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "jpegblip") == 0)
-			{
+				break;
+			case RTF_KW_jpegblip:
 				format = picJPEG;
-			}
-			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "wmetafile") == 0)
-			{
+				break;
+			case RTF_KW_wmetafile:
 				format = picWMF;
-			}
-			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "picwgoal") == 0)
-			{
+				break;
+			case RTF_KW_picwgoal:
 				if (parameterUsed)
-					{
-						if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone))
-							imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
-						imageProps.wGoal = parameter;
+				{
+					if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)) {
+						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 					}
-			}
-			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "pichgoal") == 0)
-			{
+					imageProps.wGoal = parameter;
+				}
+				break;
+			case RTF_KW_pichgoal:
 				if (parameterUsed)
-					{
-						if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone))
-							imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
-						imageProps.hGoal = parameter;
+				{
+					if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)) {
+						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 					}
-			}
-			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "picscalex") == 0)
-			{
+					imageProps.hGoal = parameter;
+				}
+				break;
+			case RTF_KW_picscalex:
 				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
 					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
 				{
@@ -3488,9 +3487,8 @@ bool IE_Imp_RTF::HandlePicture()
 						imageProps.scaleX = static_cast<unsigned short>(parameter);
 					}
 				}
-			}
-			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "picscaley") == 0)
-			{
+				break;
+			case RTF_KW_picscaley:
 				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
 					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
 				{
@@ -3500,14 +3498,16 @@ bool IE_Imp_RTF::HandlePicture()
 						imageProps.scaleY = static_cast<unsigned short>(parameter);
 					}
 				}
-			}
-			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "bin") == 0)
-			{
+				break;
+			case RTF_KW_bin:
 				UT_ASSERT_HARMLESS(parameterUsed);
 				if (parameterUsed) {
 					isBinary = true;
 					binaryLen = parameter;
 				}
+				break;
+			default:
+				UT_DEBUGMSG(("Unhandled keyword in \\pict group: %s\n", keyword));
 			}
 			break;
 		case '{':
@@ -4797,8 +4797,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		return HandleItalic(fParam ? false : true);
 	case RTF_KW_info:
 		// TODO Ignore document info for the moment
-		m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-		return true;
+		return HandleInfoMetaData();
 	case RTF_KW_ilvl:
 		m_currentRTFState.m_paraProps.m_iOverrideLevel = static_cast<UT_uint32>(param);
 		return true;
@@ -5474,15 +5473,17 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					break;
 				case RTF_KW_shppict:
 					UT_DEBUGMSG (("ignoring shppict\n"));
-					m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+					SkipCurrentGroup();
+//					m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 					return true;
 					break;
 				case RTF_KW_shpinst:
 					UT_DEBUGMSG(("Doing shpinst \n"));
-
+					SkipCurrentGroup();
+					/*
 					m_iStackDepthAtFrame = m_stateStack.getDepth();
 					m_bFrameOpen = true;
-
+					*/
 					return true;
 					break;
 				case RTF_KW_nesttableprops:
@@ -10058,3 +10059,169 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 }
 
 
+/*!
+  Handle document meta data
+ */
+bool IE_Imp_RTF::HandleInfoMetaData()
+{
+	RTF_KEYWORD_ID keywordID;
+	RTFTokenType tokenType;
+	unsigned char keyword[MAX_KEYWORD_LEN];
+	UT_sint16 parameter = 0;
+	bool paramUsed = false;	
+	int nested = 0;
+	bool result;
+	char * metaDataKey;
+	UT_UTF8String metaDataProp;
+	enum {
+		ACT_NONE,
+		ACT_PCDATA,
+		ACT_DATETIME
+	} action = ACT_NONE;
+
+	
+	do {
+		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN,false);
+		switch (tokenType) {
+		case RTF_TOKEN_ERROR:
+			UT_ASSERT_NOT_REACHED();
+			return false;
+			break;
+		case RTF_TOKEN_KEYWORD:			
+			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+			
+			switch(keywordID) {
+			case RTF_KW_title:
+				metaDataKey = PD_META_KEY_TITLE;
+				action = ACT_PCDATA;
+				break;
+			case RTF_KW_subject:
+				metaDataKey = PD_META_KEY_SUBJECT;
+				action = ACT_PCDATA;
+				break;
+			case RTF_KW_author:
+				metaDataKey = PD_META_KEY_CREATOR;
+				action = ACT_PCDATA;
+				break;
+			case RTF_KW_manager:
+				metaDataKey = PD_META_KEY_PUBLISHER;
+				action = ACT_PCDATA;
+				break;
+			case RTF_KW_company:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;
+			case RTF_KW_operator:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;
+			case RTF_KW_keywords:
+				metaDataKey = PD_META_KEY_KEYWORDS;
+				action = ACT_PCDATA;
+				break;
+			case RTF_KW_comment:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;
+			case RTF_KW_doccomm:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;		
+			case RTF_KW_hlinkbase:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;
+			case RTF_KW_creatim:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;
+			case RTF_KW_revtim:
+				metaDataKey = PD_META_KEY_DATE_LAST_CHANGED;
+				action = ACT_DATETIME;
+				break;
+			case RTF_KW_printim:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;
+			case RTF_KW_buptim:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				break;
+			default:
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+			}
+			if (action == ACT_PCDATA) {
+				metaDataProp = "";
+				result = HandlePCData(metaDataProp);
+			}
+			else if (action == ACT_DATETIME) {
+				result = SkipCurrentGroup();
+				action = ACT_NONE;
+				//result = HandlMetaDataTime(&metaTime);
+			}
+			// if any action needs to be done
+			if (action !=  ACT_NONE) {
+				getDoc()->setMetaDataProp(metaDataKey, metaDataProp);
+			}
+			break;
+		case RTF_TOKEN_OPEN_BRACE:
+			nested++;
+			break;
+		case RTF_TOKEN_CLOSE_BRACE:
+			nested--;
+			break;
+		case RTF_TOKEN_DATA:
+			// Ignore data because we don't know what to do with it
+			break;
+		default:
+			break;
+		}
+	} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
+	return true;
+}
+
+
+bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
+{
+	RTFTokenType tokenType;
+	unsigned char keyword[MAX_KEYWORD_LEN];
+	UT_sint16 parameter = 0;
+	bool paramUsed = false;	
+
+	UT_ByteBuf buf;
+	
+	do {
+		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN, false);
+		switch (tokenType) {
+		case RTF_TOKEN_KEYWORD:			
+			if ((*keyword == '\'') && (keyword[1] == 0)) {
+				UT_UCS4Char wc;
+				UT_Byte ch;
+				wc = ReadHexChar();
+				// here we assume that the read char fit on ONE byte. Should be correct.
+				ch = static_cast<UT_Byte>(wc);
+				buf.append(&ch, 1);
+			}
+			break;
+		case RTF_TOKEN_DATA:
+			buf.append(keyword, 1);
+			break;
+		case RTF_TOKEN_ERROR:
+			// force close brace to exit loop
+			tokenType = RTF_TOKEN_CLOSE_BRACE;
+			break;
+		case RTF_TOKEN_CLOSE_BRACE:
+			SkipBackChar('}');
+			break;
+		default:
+					
+			break;
+		}
+	}
+	while (tokenType != RTF_TOKEN_CLOSE_BRACE);
+
+	str.appendBuf(buf, m_mbtowc);
+
+	return true;
+}
