@@ -114,16 +114,21 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 								pAP->getAttribute(name, pRevision);
 							}
 
+							// if the request is for removal of fmt, in the revision mode, we still
+							// have to add these props (the removal is indicated by their emptyness)
+							PTChangeFmt revPtc = ptc != PTC_RemoveFmt ? ptc : PTC_AddFmt;
 							PP_RevisionAttr Revisions(pRevision);
-							Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attributes,properties);
 
+							Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,
+												  attributes,properties);
+							
 							const XML_Char * ppRevAttrib[3];
 							ppRevAttrib[0] = name;
 							ppRevAttrib[1] = Revisions.getXMLstring();
 							ppRevAttrib[2] = NULL;
+							
 
-
-							bResult = _fmtChangeStruxWithNotify(ptc,pfs,ppRevAttrib,NULL);
+							bResult = _fmtChangeStruxWithNotify(revPtc,pfs,ppRevAttrib,NULL);
 							UT_return_val_if_fail (bResult,false);
 						}
 						if (pfs == pfs_End)

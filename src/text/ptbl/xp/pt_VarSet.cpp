@@ -252,13 +252,16 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		{
 			// first of all deal with list-attributes if the new style is not
 			// a list style and the old style is a list style
-			if(pStyle->isList() && properties)
+			if(pStyle->isList())
 			{
 				UT_DEBUGMSG(("old style is a list style\n"));
 				// OK, old style is a list, is the new style?
 				// (the following function cares not whether we are dealing
 				//  with attributes or properties)
-				const XML_Char * pNewStyle = UT_getAttribute("list-style", properties);
+				const XML_Char * pNewStyle = NULL;
+
+				if(properties)
+					pNewStyle = UT_getAttribute("list-style", properties);
 				
 				// we do not care about the value, just about whether it is there
 				if(!pNewStyle)

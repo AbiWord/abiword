@@ -19,6 +19,8 @@
 
 #include "pp_Revision.h"
 #include "pp_AttrProp.h"
+#include "pd_Style.h"
+#include "pd_Document.h"
 #include "ut_debugmsg.h"
 //#include <limits.h>
 
@@ -28,6 +30,8 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 	if(!props && !attrs)
 		return;
 
+	const char * empty = "";
+	
 	if(props)
 	{
 		char * pProps = UT_strdup(props);
@@ -41,8 +45,10 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 			p = strtok(NULL, ";");
 
 			// if we have no p, that means the property is being removed ...
-			const char * v = p ? p : "";
-			
+			const char * v = p ? p : empty;
+			if(! UT_strcmp(v, "-/-"))
+				v = empty;
+		
 			if(n)
 			{
 				setProperty(n,v);
@@ -78,7 +84,10 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		{
 			char * n = p;
 			p = strtok(NULL, ";");
-			const char * v = p ? p : "";
+
+			const char * v = p ? p : empty;
+			if(! UT_strcmp(v, "-/-"))
+				v = empty;
 			
 			if(n)
 			{
@@ -147,7 +156,7 @@ void PP_Revision::_refreshString()
 	for(i = 0; i < iCount; i++)
 	{
 		getNthProperty(i,n,v);
-		if(!v) v = "";
+		if(!v || !*v) v = "-/-";
 		
 		m_sXMLProps += n;
 		m_sXMLProps += ":";
@@ -160,7 +169,7 @@ void PP_Revision::_refreshString()
 	for(i = 0; i < iCount; i++)
 	{
 		getNthAttribute(i,n,v);
-		if(!v) v = "";
+		if(!v || !*v) v = "-/-";
 
 		m_sXMLAttrs += n;
 		m_sXMLAttrs += ":";
@@ -427,7 +436,7 @@ bool PP_RevisionAttr::changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId)
     it is used in full-history mode when transfering attrs and props from the revision attribute
     into the main attrs and props
 */
-void PP_RevisionAttr::pruneForCumulativeResult()
+void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 {
 	// first we are looking for any deletions which cancel anything below them
 	bool bDelete = false;
@@ -448,9 +457,6 @@ void PP_RevisionAttr::pruneForCumulativeResult()
 	}
 
 	// now we merge props and attrs in what is left
-	if(m_vRev.getItemCount() < 2)
-		return;
-	
 	PP_Revision * r0 = (PP_Revision *)m_vRev.getNthItem(0);
 	UT_return_if_fail(r0);
 	
@@ -467,6 +473,10 @@ void PP_RevisionAttr::pruneForCumulativeResult()
 		--i;
 	}
 
+    // explode the style if present
+	if(pDoc)
+		r0->explodeStyle(pDoc);
+	
 	// get rid of any empty props and attrs
 	r0->prune();
 	
@@ -694,7 +704,10 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 		UT_uint32 r_id = r->getId();
 		PP_RevisionType r_type = r->getType();
 
-		if(iId == r_id && eType != r_type)
+		if(iId != r_id)
+			continue;
+		
+		if(eType != r_type)
 		{
 			// we are trying to add a revision id already in the vector
 			// but of a different -- this is legal, i.e., the
@@ -761,8 +774,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 				const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
 				m_vRev.addItem((void*)pRevision);
 			}
-			else if((eType == PP_REVISION_FMT_CHANGE) && (   r_type == PP_REVISION_ADDITION
-														  || r_type == PP_REVISION_ADDITION_AND_FMT))
+			else if((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_ADDITION))
 			{
 				// the editor first added this fragment, and now wants
 				// to apply a format change on the top of that
@@ -770,9 +782,12 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 				// to merge any existing props in the revision with
 				// the new ones
 
-				// I will implement this here, but this case should
-				// really be handled higher up and the property
-				// changes should be applied directly to the fragments props
+				r->setProperties(pProps);
+				r->setAttributes(pAttrs);
+			}
+			else if((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_ADDITION_AND_FMT))
+			{
+				// addition with a fmt change, just add our changes to it
 				r->setProperties(pProps);
 				r->setAttributes(pAttrs);
 			}
@@ -781,11 +796,18 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 			m_pLastRevision = NULL;
 			return;
 		}
-
-		if(iId == r_id && eType == r_type)
+		else //(eType == r_type)
 		{
-			// we are trying to add an id already in the vector
-			// do nothing
+			// we are trying to add a type already in the vector; this is legal but makes sense only
+			// if both are fmt changes
+			if(!((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_FMT_CHANGE)))
+				return;
+			
+			r->setProperties(pProps);
+			r->setAttributes(pAttrs);
+			
+			m_bDirty = true;
+			m_pLastRevision = NULL;
 			return;
 		}
 	}

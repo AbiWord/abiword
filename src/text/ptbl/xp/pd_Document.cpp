@@ -2483,7 +2483,9 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 			{
 				if(pNewAP)
 				{
-					// store the AP
+					// explode style, prune and store the AP
+					pNewAP->explodeStyle(this);
+					pNewAP->prune();
 					pNewAP->markReadOnly();
 					
 					PT_AttrPropIndex api;
@@ -2569,7 +2571,9 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 
 	if(pNewAP)
 	{
-		// store the AP
+		// explode style, prune and store the AP
+		pNewAP->explodeStyle(this);
+		pNewAP->prune();
 		pNewAP->markReadOnly();
 					
 		PT_AttrPropIndex api;

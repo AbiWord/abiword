@@ -81,7 +81,7 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 			// attrs and props
 				
 			Revisions.setRevision(pRev);
-			Revisions.pruneForCumulativeResult();
+			Revisions.pruneForCumulativeResult(m_pDocument);
 			pRevisedAP = Revisions.getLastRevision();
 			UT_return_val_if_fail( pRevisedAP, false );
 

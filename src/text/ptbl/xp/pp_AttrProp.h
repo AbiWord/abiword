@@ -29,6 +29,8 @@
 #include "pp_Property.h"
 #include "pt_Types.h"
 
+class PD_Document;
+
 // the following class holds the state of the view when we set
 // m_iRevisionIndex
 class ABI_EXPORT PP_RevisionState
@@ -136,6 +138,8 @@ public:
 	bool               getRevisionHidden() const {return m_bRevisionHidden;}
 
 	void prune();
+	bool explodeStyle(PD_Document * pDoc);
+	
 	
 protected:
 	void _computeCheckSum(void);

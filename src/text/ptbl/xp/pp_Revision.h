@@ -25,11 +25,13 @@
 #include "ut_vector.h"
 #include "pp_AttrProp.h"
 
+class PD_Document;
+
 typedef enum {
-	PP_REVISION_ADDITION,
-	PP_REVISION_DELETION,
-	PP_REVISION_FMT_CHANGE,
-	PP_REVISION_ADDITION_AND_FMT
+	PP_REVISION_ADDITION         = 0x01,
+	PP_REVISION_DELETION         = 0x02,
+	PP_REVISION_FMT_CHANGE       = 0x04,
+	PP_REVISION_ADDITION_AND_FMT = 0x05
 } PP_RevisionType;
 
 /*! PP_Revision is a class that encapsulates a single revision,
@@ -92,7 +94,14 @@ class PP_Revision: public PP_AttrProp
 
       where n is a numerical id of the revision and props is regular
       property string, for instance
+
           font-family:Times New Roman
+
+      revoval of property/attribute is indicated by setting to -/-, e.g.,
+
+          font-family:-/-
+
+      (the revision attribute parser in the class translates that into "")
 
 
   The class provides methods for adding and removing individual
@@ -133,9 +142,9 @@ class PP_RevisionAttr
 
 	UT_uint32             getRevisionsCount() const {return m_vRev.getItemCount();}
 
-	void                  pruneForCumulativeResult();
+	void                  pruneForCumulativeResult(PD_Document * pDoc);
 	
-	/*! please not that the following are convenience functions; if
+	/*! please note that the following are convenience functions; if
 	    you need to make repeated enqueries, it is better to call
 	    getGreatestLesserOrEqualRevision() or getLastRevision() and
 	    querie the returned PP_Revision object.

@@ -35,6 +35,8 @@
 
 #include "pp_AttrProp.h"
 #include "pp_Revision.h"
+#include "pd_Style.h"
+#include "pd_Document.h"
 
 
 
@@ -301,9 +303,24 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		UT_lowerString(copy);
 		char * szDupValue = szValue ? UT_strdup(szValue) : NULL;
 
-		if(!m_pAttributes->insert(copy, szDupValue))
-			FREEP(szDupValue);
+		const char * pEntry = m_pAttributes->pick(copy);
 
+		if(pEntry)
+		{
+			// attribute exists, replace it
+			FREEP(pEntry);
+			m_pAttributes->set(copy, szDupValue);
+		}
+		else
+		{
+			bool bRet = m_pAttributes->insert(copy, szDupValue);
+			UT_ASSERT_HARMLESS( bRet );
+			if(!bRet)
+			{
+				FREEP(szDupValue);
+			}
+		}
+		
 		FREEP(copy);
 
 		return true;
@@ -1164,3 +1181,49 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 	return true;
 }
 
+bool PP_AttrProp::explodeStyle(PD_Document * pDoc)
+{
+	UT_return_val_if_fail(pDoc,false);
+	
+	// expand style if present
+	const XML_Char * pszStyle = NULL;
+	if(getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
+	{
+		PD_Style * pStyle = NULL;
+
+        if(pszStyle && (UT_strcmp(pszStyle, "None") != 0) && pDoc->getStyle(pszStyle,&pStyle))
+        {
+			UT_Vector vAttrs;
+			UT_Vector vProps;
+
+			pStyle->getAllAttributes(&vAttrs, 100);
+			pStyle->getAllProperties(&vProps, 100);
+
+			setProperties((const UT_GenericVector<XML_Char*> *) &vProps);
+
+			// attributes are more complicated, because there are some style attributes that must
+			// not be transferred to the generic AP
+			for(UT_uint32 i = 0; i < vAttrs.getItemCount(); i += 2)
+			{
+				const XML_Char * pName = (const XML_Char *)vAttrs.getNthItem(i);
+				if(!pName || !UT_strcmp(pName, "type")
+				          || !UT_strcmp(pName, "name")
+				          || !UT_strcmp(pName, "basedon")
+				          || !UT_strcmp(pName, "followedby")
+ 				          || !UT_strcmp(pName, "props"))
+				{
+					continue;
+				}
+
+				const XML_Char * pValue = (const XML_Char *)vAttrs.getNthItem(i+1);
+
+				setAttribute(pName, pValue);
+			}
+		}
+	}
+
+	return true;
+}
+
+
+	
