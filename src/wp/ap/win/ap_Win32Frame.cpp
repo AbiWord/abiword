@@ -733,6 +733,8 @@ UT_Error AP_Win32Frame::_importDocument(const char * szFilename, int ieft,
 ReplaceDocument:
 	getApp()->forgetClones(this);
 
+	m_iUntitled = _getNextUntitledNumber();
+
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
 	return UT_OK;
