@@ -169,20 +169,34 @@ UT_Bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) co
 		return UT_FALSE;
 	if (pcrSpan->getIndexAP() != pcrUndo->getIndexAP())
 		return UT_FALSE;
-	if (pcrSpan->getPosition() != pcrUndo->getPosition())
-		return UT_FALSE;
+
+	// TODO decide if we need to test isDifferentFmt bit in the two ChangeRecords.
 
 	PX_ChangeRecord_Span * pcrUndoSpan = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
 	UT_uint32 lengthUndo = pcrUndoSpan->getLength();
 	PT_BufIndex biUndo = pcrUndoSpan->getBufIndex();
+
+	UT_uint32 lengthSpan = pcrSpan->getLength();
 	PT_BufIndex biSpan = pcrSpan->getBufIndex();
 
-	if (m_varset.getBufIndex(biUndo,lengthUndo) != biSpan)
+	if (pcrSpan->getPosition() == pcrUndo->getPosition())
+	{
+		if (m_varset.getBufIndex(biUndo,lengthUndo) == biSpan)
+			return UT_TRUE;				// a forward delete
+
 		return UT_FALSE;
+	}
+	else if ((pcrSpan->getPosition() + lengthSpan) == pcrUndo->getPosition())
+	{
+		if (m_varset.getBufIndex(biSpan,lengthSpan) == biUndo)
+			return UT_TRUE;				// a backward delete
 
-	// TODO decide if we need to test isDifferentFmt bit in the two ChangeRecords.
-
-	return UT_TRUE;
+		return UT_FALSE;
+	}
+	else
+	{
+		return UT_FALSE;
+	}
 }
 
 UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
@@ -201,10 +215,17 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
 	PT_BlockOffset fragOffset_First;
+	PT_BlockOffset fragOffset_End;
 	
 	UT_Bool bFound1 = getFragFromPosition(dpos1,&pf_First,&fragOffset_First);
-	UT_Bool bFound2 = getFragFromPosition(dpos2,&pf_End,NULL);
+	UT_Bool bFound2 = getFragFromPosition(dpos2,&pf_End,&fragOffset_End);
 	UT_ASSERT(bFound1 && bFound2);
+
+	if ((fragOffset_End==0) && pf_End->getPrev() && (pf_End->getPrev()->getType() == pf_Frag::PFT_Text))
+	{
+		pf_End = pf_End->getPrev();
+		fragOffset_End = pf_End->getLength();
+	}
 	
 	// see if the amount of text to be deleted is completely
 	// contained withing the fragment found.  if so, we have

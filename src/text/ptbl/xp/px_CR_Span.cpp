@@ -78,6 +78,13 @@ void PX_ChangeRecord_Span::coalesce(const PX_ChangeRecord_Span * pcr)
 	UT_ASSERT(getIndexAP() == pcr->getIndexAP());
 
 	m_length += pcr->getLength();
+
+	if (pcr->getPosition() < getPosition())			// if we have a prepend (like a backspace)
+	{
+		m_position = pcr->getPosition();
+		m_bufIndex = pcr->getBufIndex();
+	}
+	
 	return;
 }
 
