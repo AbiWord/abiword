@@ -27,13 +27,6 @@ po
 	files are maintained as a convenience for translators, many of whom
 	are already accustomed to working with them (as opposed to .strings).
 
-dist
-	This is where things are placed after they are built.  Under this
-	directory, you'll find one or more directories which are named
-	in accordance with the platform on which the build took place.
-	The dist directory is initially absent, since nothing is placed
-	there until it has been built.
-
 regtest
 	Regression testing tools (scripts, documents, and the like) reside
 	here.
