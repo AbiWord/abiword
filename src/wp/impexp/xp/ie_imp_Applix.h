@@ -77,26 +77,42 @@ protected:
 	    APPLIX_T,
 	    GLOBALS_T,
 	    START_STYLES_T,
-	    STYLE_T,
-	    COLOR_T,
 	    END_STYLES_T,
+		STYLE_T,
+	    COLOR_T,
 	    START_FLOW_T,			  
+	    END_FLOW_T,
 	    WP400_T,
 	    TEXT_T,
 	    PARA_T,
-	    END_FLOW_T,
 	    START_VARS_T,
-	    VARIABLE_T,
 	    END_VARS_T,
+	    VARIABLE_T,
 	    END_DOCUMENT_T,
 		OBJECT_T,
 		PICTURE_T,
 		SECTION_T,
 		MARKER_T,
+		START_FIELD_T,
+		END_FIELD_T,
+		FIELD_VALUE_T,
 	    NOT_A_TAG, 
 	    tag_Unknown
 	} Applix_tag_t;
-	
+
+	// context in the file
+	// because T tag have different meanings.
+	typedef enum {
+		axCtxNone,
+		axCtxDef,
+		axCtxFlow,
+		axCtxHdrFtr,
+		axCtxFootnote,
+		axCtxVar
+	} Applix_context_t;
+
+	Applix_context_t        m_axContext;
+
 	void                    _dispatchTag (Applix_tag_t tag, const char *buf, size_t len);
 	// tokenizer helpers
 	typedef struct {
@@ -106,11 +122,12 @@ protected:
 	static Applix_mapping_t axwords[];
 	static Applix_tag_t     s_name_2_tag (const char *name, size_t n);
 	static Applix_tag_t     s_getTagName(const char *str, size_t len);
-	static void             s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
-	static void             s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
-	static void             s_decodeToUCS (const char *str, size_t len, UT_UCSChar * c);
+	static short            s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
+	static short            s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c);
+	static short            s_decodeToUCS (const char *str, size_t len, UT_UCSChar * c);
 	bool                    _applixGetLine (UT_ByteBuf* pBuf, FILE *fp);
 	void                    _applixDecodeText (const char * buf, size_t len);
+	void                    _applixNewPara (const char * buf, size_t len);
 };
 
 #endif /* IE_IMP_APPLIX_H */

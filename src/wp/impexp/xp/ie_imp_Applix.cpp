@@ -207,7 +207,7 @@ IE_Imp_Applix::~IE_Imp_Applix()
 }
 
 IE_Imp_Applix::IE_Imp_Applix(PD_Document * pDocument)
-	: IE_Imp(pDocument), m_bLastWasP(false), m_bInT(false), m_textBuf(1024)
+	: IE_Imp(pDocument), m_bLastWasP(false), m_bInT(false), m_textBuf(1024), m_axContext(axCtxVar)
 {
 	
 }
@@ -231,16 +231,16 @@ IE_Imp_Applix::Applix_mapping_t IE_Imp_Applix::axwords[] =
     {"Applix", APPLIX_T},
     {"Globals", GLOBALS_T},
     {"start_styles", START_STYLES_T},
+    {"end_styles", END_STYLES_T},
     {"style", STYLE_T},
     {"color", COLOR_T},
-    {"end_styles", END_STYLES_T},
     {"start_flow", START_FLOW_T},
+    {"end_flow", END_FLOW_T},
     {"WP400", WP400_T},
     {"text", TEXT_T},
     {"T", TEXT_T},
     {"para", PARA_T},
     {"P", PARA_T},
-    {"end_flow", END_FLOW_T},
     {"start_vars", START_VARS_T},
     {"variable", VARIABLE_T},
     {"V", VARIABLE_T},
@@ -250,6 +250,12 @@ IE_Imp_Applix::Applix_mapping_t IE_Imp_Applix::axwords[] =
     {"picture", PICTURE_T},
     {"section", SECTION_T},
     {"marker", MARKER_T},
+	{"start_field", START_FIELD_T},
+	{"S_F", START_FIELD_T},
+	{"end_field", END_FIELD_T},
+	{"E_F", END_FIELD_T},
+	{"field_value", FIELD_VALUE_T},
+	{"FV", FIELD_VALUE_T},
 };
 
 
@@ -342,24 +348,28 @@ IE_Imp_Applix::s_getTagName(const char *str, size_t len)
   \param str the buffer containing the sequence without ^ in head
   \param len the actual length of the buffer not includin the trailing 0. Must be at least 2 
   \retval c the output char
-  \return void
+  \return the number of bytes read
   \note '^' is invalid and must be handle before
  */
-void IE_Imp_Applix::s_decodeToUCS (const char *str, size_t len, UT_UCSChar * c)
+short IE_Imp_Applix::s_decodeToUCS (const char *str, size_t len, UT_UCSChar * c)
 {
+	short ret;
+	
 	if ((*str >= 'a') && (*str <= 'p'))
 	{
-		s_8bitsToUCS (str, len, c);
+		ret = s_8bitsToUCS (str, len, c);
 	}
 	else if (((*str >= ' ') && (*str <= '_')) || (*str == '`'))
 	{
-		s_16bitsToUCS (str, len, c);
+		ret = s_16bitsToUCS (str, len, c);
 	}
 	else 
 	{
 		*c = 0;
 		UT_DEBUGMSG (("invalid escape sequence\n"));
+		ret = 0;
 	}
+	return ret;
 }
 
 
@@ -368,11 +378,11 @@ void IE_Imp_Applix::s_decodeToUCS (const char *str, size_t len, UT_UCSChar * c)
   \param str the buffer containing the sequence without ^ in head
   \param len the actual length of the buffer not includin the trailing 0. Must be at least 2 
   \retval c the output char
-  \return void
+  \return the number of bytes read
   \note the documentation is vague on this point, but I suspect that the charset
   \note is ISO-8859-1
  */
-void IE_Imp_Applix::s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
+short IE_Imp_Applix::s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
 {
     short decoded = 0;
     
@@ -384,13 +394,14 @@ void IE_Imp_Applix::s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
     *c = 0;
     if (*str == '^')
     {
-		return;
+		return 0;
     }
     if (len >= 2) 
     {
 		decoded = ((str[0] - 'a') << 4) + (str[1] - 'a');
 		*c = decoded;
     }
+	return 2;
 }
 
 
@@ -399,11 +410,11 @@ void IE_Imp_Applix::s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
   \param str the buffer containing the sequence without ^ in head
   \param len the actual length of the buffer not includin the trailing 0. Must be at least 3
   \retval c the output char
-  \return void
+  \return the number of bytes read
   \note the documentation is vague on this point, but I suspect that the charset
   \note is UNICODE encoded in UCS-2
  */
-void IE_Imp_Applix::s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
+short IE_Imp_Applix::s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
 {
     short decoded = 0;
     
@@ -415,14 +426,15 @@ void IE_Imp_Applix::s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
     *c = 0;
     if (*str == '^')
     {
-		return;
+		return 0;
     }
     if (len >= 3) 
     {
 		// TODO handle `
-		decoded = ((str[0] - ' ') << 10) + ((str[1] - ' ') << 5) + (str[1] - ' ');
+		decoded = ((str[0] - ' ') << 10) + ((str[1] - ' ') << 5) + (str[2] - ' ');
 		*c = decoded;
     }
+	return 3;
 }
 
 
@@ -544,10 +556,24 @@ void IE_Imp_Applix::_dispatchTag (Applix_tag_t tag, const char *buf, size_t len)
 {
     switch (tag)
     {
-	
+	case PARA_T:
+		_applixNewPara (buf, len);
+		break;
     case TEXT_T:
-		_applixDecodeText (buf, len);
-		UT_DEBUGMSG (("Applix: text tag found\n"));
+		if (m_axContext == axCtxFlow) 
+		{
+			_applixDecodeText (buf, len);
+		}
+		break;
+	case START_STYLES_T:
+		m_axContext = axCtxDef;
+		break;
+	case START_FLOW_T:
+		m_axContext = axCtxFlow;
+		break;
+	case END_STYLES_T:
+	case END_FLOW_T:
+		m_axContext = axCtxNone;
 		break;
     default:
 		UT_DEBUGMSG (("Applix: unknown tag\n"));
@@ -571,7 +597,7 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 	size_t pos = 0;
 	wchar_t wc;
 	UT_Byte    ch;
-	
+	UT_UCSChar c;	
 
 	// be sure to discard buffer
 	m_textBuf.truncate(0);
@@ -584,6 +610,8 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 			break;
 		}
 	}
+	//skip the opening "
+	pos++;
 	do 
 	{
 		ch = buf [pos];
@@ -600,17 +628,26 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 			ch = buf [pos];
 			if (ch != '^')
 			{
-				// TODO decode the char.
+				short n;
+				n = s_decodeToUCS (&buf [pos], len - pos, &c);
+				pos += n - 1;    // -1 because we move to the last byte of encoding, not after. 
+				m_textBuf.append(&c, 1);
+				ch = 0;
 			}
 			break;
+#if 0
+		case '"':
+			// skip a " alone: a real " would be escaped.
+			ch = 0;
+			break;
+#endif
 		}
 		// here if ch == 0 then don't add anything. NUL gets ignored
 		if (ch) 
 		{
-			UT_UCSChar c;
-			c = (UT_UCSChar)wc;
 			m_mbtowc.mbtowc(wc, ch);
-			m_textBuf.ins(m_textBuf.getLength(), &c, 1);
+			c = (UT_UCSChar)wc;
+			m_textBuf.append(&c, 1);
 		}
 		
 		pos++;
@@ -621,11 +658,25 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 
 	if (m_textBuf.getLength() > 0) 
 	{
-		m_pDocument->appendStrux (PTX_Block, NULL);
 		m_pDocument->appendSpan (m_textBuf.getPointer (0), m_textBuf.getLength ());
 		m_textBuf.truncate(0);
 	}
 }
+
+void IE_Imp_Applix::_applixNewPara (const char *buf, size_t len)
+{
+	// flush the current run
+	UT_uint32 runlen;
+	runlen = m_textBuf.getLength ();
+	if (runlen > 0) 
+	{
+		UT_DEBUGMSG(("applix: flushing\n"));
+		m_pDocument->appendSpan (m_textBuf.getPointer (0), runlen);
+	}
+	UT_DEBUGMSG(("applix: new para\n"));
+	m_pDocument->appendStrux (PTX_Block, NULL);	
+}
+
 
 
 /*****************************************************************/
