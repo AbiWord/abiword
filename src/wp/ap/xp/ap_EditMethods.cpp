@@ -7361,7 +7361,6 @@ Defun1(viewRuler)
 	// actually do the dirty work
 	pFrame->toggleRuler(pFrameData->m_bShowRuler);
 
-#if 1
 	// POLICY: make this the default for new frames, too
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -7370,7 +7369,6 @@ Defun1(viewRuler)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler);
-#endif
 
 	return true;
 }
@@ -7421,7 +7419,6 @@ Defun1(viewPara)
 	ABIWORD_VIEW;
 	pView->setShowPara(pFrameData->m_bShowPara);
 
-#if 1
 	// POLICY: make this the default for new frames, too
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -7431,7 +7428,6 @@ Defun1(viewPara)
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool(AP_PREF_KEY_ParaVisible, pFrameData->m_bShowPara);
-#endif
 	pView->notifyListeners(AV_CHG_ALL);
 
 	return true;
@@ -8844,14 +8840,12 @@ Defun1(cycleInputMode)
 
 	bool bResult = (pFrame->setInputMode(szNextInputMode) != 0);
 
-#if 1
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValue((XML_Char*)AP_PREF_KEY_KeyBindings,
 					  (XML_Char*)szNextInputMode);
-#endif
 
 	return bResult;
 }
@@ -8880,13 +8874,11 @@ Defun1(toggleInsertMode)
 	// the view actually does the dirty work
 	pAV_View->setInsertMode(pFrameData->m_bInsertMode);
 
-#if 1
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode);
-#endif
 
 	return true;
 }

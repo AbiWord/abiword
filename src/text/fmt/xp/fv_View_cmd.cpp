@@ -1833,10 +1833,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		}
 	}
 	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
-	setPoint(pointTable);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
-	_generalUpdate();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -1846,6 +1844,10 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	_restorePieceTableState();
 
 	_ensureInsertionPointOnScreen();
+	setPoint(pointTable);
+	notifyListeners (AV_CHG_ALL);
+	_generalUpdate();
+
 	return e;
 }
 
@@ -1949,10 +1951,11 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	_ensureInsertionPointOnScreen();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+
+	_ensureInsertionPointOnScreen();
 	_setPoint(getPoint());
 
 	return bResult;
