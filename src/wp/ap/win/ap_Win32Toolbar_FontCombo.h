@@ -36,6 +36,7 @@ public:
 	virtual bool		populate(void);
 
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
+	virtual UT_uint32   getDroppedWidth() const;
 
 protected:
 	static int CALLBACK				_EnumFontsProc(LPLOGFONT lplf, 

@@ -38,7 +38,7 @@ public:
 	virtual bool		populate(void);
 	bool				repopulate(void);
 
-	UT_uint32			getDroppedWidth() const { return m_nDroppedWidth; }
+	virtual UT_uint32   getDroppedWidth() const { return m_nDroppedWidth; }
 
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 

@@ -38,7 +38,7 @@ AP_Win32Toolbar_SizeCombo::AP_Win32Toolbar_SizeCombo(EV_Toolbar * pToolbar,
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_SIZE);
 
-	m_nPixels = 40;		// TODO: do a better calculation
+	m_nPixels = 45;		// TODO: do a better calculation
 	m_nLimit = 4;
 }
 

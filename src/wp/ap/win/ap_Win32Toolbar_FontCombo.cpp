@@ -42,7 +42,7 @@ AP_Win32Toolbar_FontCombo::AP_Win32Toolbar_FontCombo(EV_Toolbar * pToolbar,
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_FONT);
 
-	m_nPixels = 130;		// TODO: do a better calculation
+	m_nPixels = 160;		// TODO: do a better calculation
 	m_nLimit = LF_FACESIZE;
 	m_bSort = true;
 }
@@ -97,4 +97,10 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf,
 	ctl->m_vecContents.addItem(p);
 
 	return 1;
+}
+
+UT_uint32 AP_Win32Toolbar_FontCombo::getDroppedWidth() const
+{
+	// TODO make better calculation of dropped width
+	return getPixelWidth() + 100;
 }

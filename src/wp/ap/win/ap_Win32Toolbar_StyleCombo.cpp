@@ -45,7 +45,7 @@ AP_Win32Toolbar_StyleCombo::AP_Win32Toolbar_StyleCombo(EV_Toolbar * pToolbar,
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
 
-	m_nPixels = 120;		// TODO: do a better calculation
+	m_nPixels = 160;		// TODO: do a better calculation
 	m_nLimit = 20;
 	m_bSort = true;
 	// If 'm_nPixels' is wide enough, the following takes care of the
