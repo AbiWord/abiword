@@ -33,6 +33,7 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_exp_Text.cpp				\
 			ie_exp_HRText.cpp			\
 			ie_exp_RTF.cpp				\
+			ie_exp_RTF_AttrProp.cpp			\
 			ie_exp_RTF_listenerGetProps.cpp		\
 			ie_exp_RTF_listenerWriteDoc.cpp		\
 			ie_exp_LaTeX.cpp			\

@@ -23,12 +23,15 @@
 
 #include "ie_exp.h"
 #include "ut_vector.h"
+#include "ut_hash.h"
 #include "ut_misc.h"
 #include "pl_Listener.h"
 class PD_Document;
+class PD_Style;
 class PP_AttrProp;
 class s_RTF_ListenerWriteDoc;
 class s_RTF_ListenerGetProps;
+class s_RTF_AttrPropAdapter;
 struct _rtf_font_info;
 
 // The exporter/writer for RTF file format (based upon spec version 1.5).
@@ -99,13 +102,21 @@ protected:
 	void				_rtf_nl(void);
 	bool				_write_rtf_header(void);
 	bool				_write_rtf_trailer(void);
+
+	void                            _clearStyles();
+	void                            _selectStyles();
+	UT_uint32                       _getStyleNumber(const PD_Style * pStyle);
+	UT_uint32                       _getStyleNumber(const XML_Char * szStyleName);
+
+	void                            _write_prop_ifnotdefault(const PD_Style * pStyle, const XML_Char * szPropName, const char * szRTFName);
+	void                            _write_prop_ifyes(const PD_Style * pStyle, const XML_Char * szPropName, const char * szRTFName);
+	void                            _write_tabdef(const char * szTabStops);
+        void                            _write_charfmt(const s_RTF_AttrPropAdapter &);
+        void                            _write_style_fmt(const PD_Style *);
+	void                            _write_stylesheets(void);
+
 	UT_sint32			_findFont(const _rtf_font_info * pfi) const;
 	void				_addFont(const _rtf_font_info * pfi);
-	void				_rtf_compute_font_properties(const _rtf_font_info * pfi,
-													 const char ** p_sz_font_name,
-													 const char ** p_sz_rtf_family,
-													 int * p_rtf_pitch,
-													 bool * pbTrueType) const;
 
  private:	
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
@@ -116,39 +127,28 @@ protected:
 	UT_sint32					m_braceLevel;			/* nesting depth of {} braces */
 	bool						m_bLastWasKeyword;		/* just wrote a keyword, so need space before text data */
 	bool						m_atticFormat; 		/* whether to use unicode for all characters >0xff or convert to native windows encoding*/
+	UT_StringPtrMap                                 m_hashStyles;
+	/* Hash containing styles to be exported. The key is the
+	   AbiWord style name. The value is a NumberedStyle object
+	   (see the cpp file). */
 };
 
 /*****************************************************************/
 /*****************************************************************/
 
+/* This struct contains the RTF font info as needed for the 
+   font table. */
 struct _rtf_font_info
 {
-	_rtf_font_info(const PP_AttrProp * pSpanAP,
-				   const PP_AttrProp * pBlockAP,
-				   const PP_AttrProp * pSectionAP)
-       : m_pSpanAP(pSpanAP), m_pBlockAP(pBlockAP), m_pSectionAP(pSectionAP)
-		{
-		}
-
-	~_rtf_font_info(void)
-		{
-		}
-
-	bool _is_same(const PP_AttrProp * pSpanAP,
-					 const PP_AttrProp * pBlockAP,
-					 const PP_AttrProp * pSectionAP) const
-		{
-			return ((pSpanAP==m_pSpanAP) && (pBlockAP==m_pBlockAP) && (pSectionAP==m_pSectionAP));
-		}
-
-	bool _is_same(const _rtf_font_info * pfi) const
-		{
-			return _is_same(pfi->m_pSpanAP,pfi->m_pBlockAP,pfi->m_pSectionAP);
-		}
-	
-	const PP_AttrProp * m_pSpanAP;
-	const PP_AttrProp * m_pBlockAP;
-	const PP_AttrProp * m_pSectionAP;
+    _rtf_font_info(const s_RTF_AttrPropAdapter & apa);
+    bool _is_same(const _rtf_font_info & fi) const;
+    
+    /* Neither of the char variables should be freed. */
+    const XML_Char * szFamily;
+    int nCharset;
+    int nPitch;
+    const XML_Char * szName;
+    bool fTrueType;
 };
 
 #endif /* IE_EXP_RTF_H */

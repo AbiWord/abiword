@@ -26,6 +26,7 @@
 
 #include "ut_string.h"
 #include "ie_exp_RTF_listenerGetProps.h"
+#include "ie_exp_RTF_AttrProp.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
@@ -274,7 +275,7 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 	// write it out now.  so, we build a vector of the stuff we want
 	// to write (and make sure it's unique).
 
-	_rtf_font_info fi(pSpanAP,pBlockAP,pSectionAP);
+	_rtf_font_info fi(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument));
 	UT_sint32 ndxFont = m_pie->_findFont(&fi);
 	if (ndxFont == -1)
 		m_pie->_addFont(&fi);

@@ -34,6 +34,7 @@
 #include "ut_png.h"
 #include "ut_bytebuf.h"
 #include "ie_exp_RTF_listenerWriteDoc.h"
+#include "ie_exp_RTF_AttrProp.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
@@ -90,100 +91,10 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 	m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 
-	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
-	UT_ASSERT(ndxColor != -1);
+	m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 
-	if (ndxColor != 0) // black text, the default
-		m_pie->_rtf_keyword("cf",ndxColor);
-
-	szColor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-
-	if (UT_stricmp (szColor, "transparent") != 0)
-	{
-		ndxColor = m_pie->_findColor((char*)szColor);
-		UT_ASSERT(ndxColor != -1);
-		if (ndxColor != 1) // white background, the default
-		{
-			m_pie->_rtf_keyword("cb",ndxColor);
-		}
-	}
-
-   	_rtf_font_info fi(pSpanAP,pBlockAP,pSectionAP);
-	UT_sint32 ndxFont = m_pie->_findFont(&fi);
-	UT_ASSERT(ndxFont != -1);
-	m_pie->_rtf_keyword("f",ndxFont);	// font index in fonttbl
-
-	const XML_Char * szFontSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	double dbl = UT_convertToPoints(szFontSize);
-	UT_sint32 d = (UT_sint32)(dbl*2.0);
-
-	// if (d != 24) - always write this out
-	m_pie->_rtf_keyword("fs",d);	// font size in half points
-
-	const XML_Char * szFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))
-		m_pie->_rtf_keyword("i");
-
-	const XML_Char * szFontWeight = PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	if (szFontWeight && *szFontWeight && (UT_strcmp(szFontWeight,"bold")==0))
-		m_pie->_rtf_keyword("b");
-
-	const XML_Char * szFontDecoration = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	if (szFontDecoration && *szFontDecoration)
-	{
-		if (strstr(szFontDecoration,"underline") != 0)
-			m_pie->_rtf_keyword("ul");
-		if (strstr(szFontDecoration,"overline") != 0)
-			m_pie->_rtf_keyword("ol");
-		if (strstr(szFontDecoration,"line-through") != 0)
-			m_pie->_rtf_keyword("strike");
-		if (strstr(szFontDecoration,"topline") != 0)
-		{
-			m_pie->_rtf_keyword("*");
-			m_pie->_rtf_keyword("topline");
-		}
-		if (strstr(szFontDecoration,"bottomline") != 0)
-		{
-			m_pie->_rtf_keyword("*");
-			m_pie->_rtf_keyword("botline");
-		}
-	}
-
-	const XML_Char * szFontPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	if (szFontPosition && *szFontPosition)
-	{
-		if (!UT_strcmp(szFontPosition,"superscript"))
-			m_pie->_rtf_keyword("super");
-		else if (!UT_strcmp(szFontPosition,"subscript"))
-			m_pie->_rtf_keyword("sub");
-	}
-
-#if 0
-	const XML_Char * szLang = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	// TODO: convert lang to numerical code
-#endif
-
-#ifdef BIDI_ENABLED
-
-	const XML_Char * szDir = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-
-	if (szDir)
-	{
-		if (!UT_strcmp (szDir, "ltr"))
-			m_pie->_rtf_keyword ("ltrch");
-		else
-			m_pie->_rtf_keyword ("rtlch");
-	}
-
-#endif
-
-	// TODO do something with our font-stretch and font-variant properties
-	// note: we assume that kerning has been turned off at global scope.
-	
 	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
-	return;
 }
 
 void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 length)
@@ -696,34 +607,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 //////////////////////////////////////////////////////////////////
 
-class _t 
-{
-public:
-	_t(const char * szTL, const char * szTT, const char * szTK, UT_sint32 tp)
-		{
-			m_szTabLeaderKeyword = szTL;
-			m_szTabTypeKeyword = szTT;
-			m_szTabKindKeyword = szTK;
-			m_iTabPosition = tp;
-		}
-	const char *    m_szTabLeaderKeyword;
-	const char *	m_szTabTypeKeyword;
-	const char *	m_szTabKindKeyword;
-	UT_sint32		m_iTabPosition;
-};
-
-static int compare_tabs(const void* p1, const void* p2)
-{
-	_t ** ppTab1 = (_t **) p1;
-	_t ** ppTab2 = (_t **) p2;
-
-	if ((*ppTab1)->m_iTabPosition < (*ppTab2)->m_iTabPosition)
-		return -1;
-	if ((*ppTab1)->m_iTabPosition > (*ppTab2)->m_iTabPosition)
-		return 1;
-	return 0;
-}
-
 void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 {
 	m_apiThisBlock = api;
@@ -786,6 +669,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	
 	m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 
+	const XML_Char * szStyle = NULL;
+	if (pBlockAP->getAttribute("style", szStyle)) 
+	{
+	    m_pie->_rtf_keyword("s", m_pie->_getStyleNumber(szStyle));
+	}
 
 	///
 	/// OK if there is list info in this paragraph we encase it inside
@@ -1059,95 +947,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if (UT_strcmp(szKeepWithNext,"yes")==0)
 		m_pie->_rtf_keyword("keepn");
 
-	if (szTabStops && *szTabStops)
-	{
-		// write tabstops for this paragraph
-		// TODO the following parser was copied from abi/src/text/fmt/xp/fl_BlockLayout.cpp
-		// TODO we should extract both of them and share the code.
-
-		UT_Vector vecTabs;
-		
-		const char* pStart = szTabStops;
-		while (*pStart)
-		{
-			const char * szTT = "tx";	// TabType -- assume text tab (use "tb" for bar tab)
-			const char * szTK = NULL;	// TabKind -- assume left tab
-			const char * szTL = NULL;    // TabLeader
-			const char* pEnd = pStart;
-			while (*pEnd && (*pEnd != ','))
-				pEnd++;
-			const char* p1 = pStart;
-			while ((p1 < pEnd) && (*p1 != '/'))
-				p1++;
-			if ( (p1 == pEnd) || ((p1+1) == pEnd) )
-				;						// left-tab is default
-			else
-			{
-				switch (p1[1])
-				{
-				default:
-				case 'L': 	szTK = NULL; 	break;
-				case 'R':	szTK = "tqr";	break;
-				case 'C':	szTK = "tqc";	break;
-				case 'D':	szTK = "tqdec";	break;
-				case 'B':	szTT = "tb";    szTK= NULL;	break; // TabKind == bar tab
-				}
-				switch (p1[2])
-				{
-				default:
-				case '0': szTL = NULL;      break;
-				case '1': szTL = "tldot";   break;
-				case '2': szTL = "tlhyph";    break;
-				case '3': szTL = "tlul";    break;
-				case '4': szTL = "tleq";    break;
-				}
-			}
-
-			char pszPosition[32];
-			UT_uint32 iPosLen = p1 - pStart;
-			UT_ASSERT(iPosLen < 32);
-			UT_uint32 k;
-			for (k=0; k<iPosLen; k++)
-				pszPosition[k] = pStart[k];
-			pszPosition[k] = 0;
-			// convert position into twips
-			double dbl = UT_convertToPoints(pszPosition);
-			UT_sint32 d = (UT_sint32)(dbl * 20.0);
-			
-			_t * p_t = new _t(szTL,szTT,szTK,d);
-			vecTabs.addItem(p_t);
-
-			pStart = pEnd;
-			if (*pStart)
-			{
-				pStart++;	// skip past delimiter
-				while (*pStart == UCS_SPACE)
-					pStart++;
-			}
-		}
-
-		// write each tab in order:
-		// <tabdef> ::= ( <tab> | <bartab> )+
-		// <tab>    ::= <tabkind>? <tablead>? \tx
-		// <bartab> ::= <tablead>? \tb
-
-		vecTabs.qsort(compare_tabs);
-
-		UT_uint32 k;
-		UT_uint32 kLimit = vecTabs.getItemCount();
-		for (k=0; k<kLimit; k++)
-		{
-			_t * p_t = (_t *)vecTabs.getNthItem(k);
-			// write <tabkind>
-			if (p_t->m_szTabKindKeyword && *p_t->m_szTabKindKeyword)
-				m_pie->_rtf_keyword(p_t->m_szTabKindKeyword);
-			if (p_t->m_szTabLeaderKeyword && *p_t->m_szTabLeaderKeyword)
-				m_pie->_rtf_keyword(p_t->m_szTabLeaderKeyword);
-			m_pie->_rtf_keyword(p_t->m_szTabTypeKeyword,p_t->m_iTabPosition);
-
-			delete p_t;
-		}
-	}
+	m_pie->_write_tabdef(szTabStops);
 }
 
 //////////////////////////////////////////////////////////////////

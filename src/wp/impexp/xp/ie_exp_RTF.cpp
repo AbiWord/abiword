@@ -23,6 +23,7 @@
 #include "ut_base64.h"
 #include "ut_misc.h"
 #include "ut_units.h"
+#include "ut_vector.h"
 #include "pt_Types.h"
 #include "ie_exp_RTF.h"
 #include "pd_Document.h"
@@ -43,6 +44,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
+#include "ie_exp_RTF_AttrProp.h"
 #include "ie_exp_RTF_listenerWriteDoc.h"
 #include "ie_exp_RTF_listenerGetProps.h"
 
@@ -77,6 +79,7 @@ IE_Exp_RTF::~IE_Exp_RTF()
 {
 	UT_VECTOR_FREEALL(char *,m_vecColors);
 	UT_VECTOR_PURGEALL(_rtf_font_info *,m_vecFonts);
+	_clearStyles();
 }
 
 /*****************************************************************/
@@ -159,6 +162,10 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 		getDoc()->tellListener(static_cast<PL_Listener *>(m_pListenerGetProps));
 	DELETEP(m_pListenerGetProps);
 
+	// Important: This must come before the header is written so
+        // every font used in a style is properly entered in the font table.
+	_selectStyles();
+
 	// write rtf header
 
 	if (!_write_rtf_header())
@@ -187,33 +194,6 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 /*****************************************************************/
 /*****************************************************************/
 #if 0
-void s_RTF_Listener::_handleStyles(void)
-{
-	bool bWroteOpenStyleSection = false;
-
-	const char * szName;
-	const PD_Style * pStyle;
-
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
-	{
-		if (!pStyle->isUsed())
-			continue;
-
-		if (!bWroteOpenStyleSection)
-		{
-			m_pie->write("<styles>\n");
-			bWroteOpenStyleSection = true;
-		}
-
-		PT_AttrPropIndex api = pStyle->getIndexAP();
-		_openTag("s","/",true,api);
-	}
-
-	if (bWroteOpenStyleSection)
-		m_pie->write("</styles>\n");
-
-	return;
-}
 
 void s_RTF_Listener::_handleDataItems(void)
 {
@@ -513,20 +493,13 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		for (k=0; k<kLimit; k++)
 		{
 			const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
-			const char * szFontName = NULL;
-			const char * szFamily = NULL;
-			int pitch;
-			bool bTrueType;
-			
-			_rtf_compute_font_properties(pk,&szFontName,&szFamily,&pitch,&bTrueType);
-			
 			_rtf_nl();
 			_rtf_open_brace();
-			_rtf_keyword("f",k);								// font index number
-			_rtf_keyword(szFamily);								// {\fnil,\froman,\fswiss,...}
-			_rtf_keyword("fcharset",charsetcode);
-			_rtf_keyword("fprq",pitch);							// {0==default,1==fixed,2==variable}
-			_rtf_keyword((bTrueType) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
+			_rtf_keyword("f", k);								// font index number
+			_rtf_keyword(pk->szFamily);								// {\fnil,\froman,\fswiss,...}
+			_rtf_keyword("fcharset",pk->nCharset);
+			_rtf_keyword("fprq",pk->nPitch);							// {0==default,1==fixed,2==variable}
+			_rtf_keyword((pk->fTrueType) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
 			
 			// we do nothing with or use default values for
 			// \falt \panose \fname \fbias \ftnil \fttruetype \fontfile
@@ -535,7 +508,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 			// the actual font name and a semicolon -- i couldn't see this
 			// described in the specification, but it was in other RTF files
 			// that i saw and really seems to help Word and WordPad....
-			_rtf_fontname(szFontName);
+			_rtf_fontname(pk->szName);
 			
 			_rtf_close_brace();
 		}
@@ -564,7 +537,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_close_brace();
 	}
 
-	// TODO write the "style sheets"...
+	_write_stylesheets();
 	// TODO write the "list table"...
 	// TODO write the "rev table"...
 
@@ -576,12 +549,507 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	return (m_error == 0);
 }
 
+/*!
+ * Write an rtf keyword if the given property isn't the default
+ * value. Use this only with twips-valued properties.
+ *
+ * !param pStyle       A style.
+ * !param szPropName   The property to check.
+ * !param szRTFName    The RTF keyword to use if the property
+ *                     doesn't have the default value.
+ */
+void IE_Exp_RTF::_write_prop_ifnotdefault(const PD_Style * pStyle, 
+					  const XML_Char * szPropName, 
+					  const char * szRTFName)
+{
+    const XML_Char * sz = NULL;
+    if (pStyle->getProperty((const XML_Char *)szPropName, sz)) {
+	_rtf_keyword_ifnotdefault_twips(szRTFName, sz, 0);
+    }
+}
+
+/*!
+ * Write an RTF keyword if the given property is "yes".
+ */
+void IE_Exp_RTF::_write_prop_ifyes(const PD_Style * pStyle, 
+				   const XML_Char * szPropName, 
+				   const char * szRTFName)
+{
+    const XML_Char * sz = NULL;
+    if (pStyle->getProperty((const XML_Char *)szPropName, sz) && UT_strcmp(sz, "yes") == 0) {
+	    _rtf_keyword(szRTFName);
+    }
+}
+
+/*
+ * Used to hold tab information by _write_tabdef.
+ */
+class _t 
+{
+public:
+	_t(const char * szTL, const char * szTT, const char * szTK, UT_sint32 tp)
+		{
+			m_szTabLeaderKeyword = szTL;
+			m_szTabTypeKeyword = szTT;
+			m_szTabKindKeyword = szTK;
+			m_iTabPosition = tp;
+		}
+	const char *    m_szTabLeaderKeyword;
+	const char *	m_szTabTypeKeyword;
+	const char *	m_szTabKindKeyword;
+	UT_sint32		m_iTabPosition;
+};
+
+static int compare_tabs(const void* p1, const void* p2)
+{
+	_t ** ppTab1 = (_t **) p1;
+	_t ** ppTab2 = (_t **) p2;
+
+	if ((*ppTab1)->m_iTabPosition < (*ppTab2)->m_iTabPosition)
+		return -1;
+	if ((*ppTab1)->m_iTabPosition > (*ppTab2)->m_iTabPosition)
+		return 1;
+	return 0;
+}
+
+/*!
+ * Write out the <tabdef> paragraph formatting.
+ */
+void IE_Exp_RTF::_write_tabdef(const char * szTabStops)
+{
+	if (szTabStops && *szTabStops)
+	{
+		// write tabstops for this paragraph
+		// TODO the following parser was copied from abi/src/text/fmt/xp/fl_BlockLayout.cpp
+		// TODO we should extract both of them and share the code.
+
+		UT_Vector vecTabs;
+		
+		const char* pStart = szTabStops;
+		while (*pStart)
+		{
+			const char * szTT = "tx";	// TabType -- assume text tab (use "tb" for bar tab)
+			const char * szTK = NULL;	// TabKind -- assume left tab
+			const char * szTL = NULL;    // TabLeader
+			const char* pEnd = pStart;
+			while (*pEnd && (*pEnd != ','))
+				pEnd++;
+			const char* p1 = pStart;
+			while ((p1 < pEnd) && (*p1 != '/'))
+				p1++;
+			if ( (p1 == pEnd) || ((p1+1) == pEnd) )
+				;						// left-tab is default
+			else
+			{
+				switch (p1[1])
+				{
+				default:
+				case 'L': 	szTK = NULL; 	break;
+				case 'R':	szTK = "tqr";	break;
+				case 'C':	szTK = "tqc";	break;
+				case 'D':	szTK = "tqdec";	break;
+				case 'B':	szTT = "tb";    szTK= NULL;	break; // TabKind == bar tab
+				}
+				switch (p1[2])
+				{
+				default:
+				case '0': szTL = NULL;      break;
+				case '1': szTL = "tldot";   break;
+				case '2': szTL = "tlhyph";    break;
+				case '3': szTL = "tlul";    break;
+				case '4': szTL = "tleq";    break;
+				}
+			}
+
+			char pszPosition[32];
+			UT_uint32 iPosLen = p1 - pStart;
+			UT_ASSERT(iPosLen < 32);
+			UT_uint32 k;
+			for (k=0; k<iPosLen; k++)
+				pszPosition[k] = pStart[k];
+			pszPosition[k] = 0;
+			// convert position into twips
+			double dbl = UT_convertToPoints(pszPosition);
+			UT_sint32 d = (UT_sint32)(dbl * 20.0);
+			
+			_t * p_t = new _t(szTL,szTT,szTK,d);
+			vecTabs.addItem(p_t);
+
+			pStart = pEnd;
+			if (*pStart)
+			{
+				pStart++;	// skip past delimiter
+				while (*pStart == UCS_SPACE)
+					pStart++;
+			}
+		}
+
+		// write each tab in order:
+		// <tabdef> ::= ( <tab> | <bartab> )+
+		// <tab>    ::= <tabkind>? <tablead>? \tx
+		// <bartab> ::= <tablead>? \tb
+
+		vecTabs.qsort(compare_tabs);
+
+		UT_uint32 k;
+		UT_uint32 kLimit = vecTabs.getItemCount();
+		for (k=0; k<kLimit; k++)
+		{
+			_t * p_t = (_t *)vecTabs.getNthItem(k);
+			// write <tabkind>
+			if (p_t->m_szTabKindKeyword && *p_t->m_szTabKindKeyword)
+				_rtf_keyword(p_t->m_szTabKindKeyword);
+			if (p_t->m_szTabLeaderKeyword && *p_t->m_szTabLeaderKeyword)
+				_rtf_keyword(p_t->m_szTabLeaderKeyword);
+			_rtf_keyword(p_t->m_szTabTypeKeyword,p_t->m_iTabPosition);
+
+			delete p_t;
+		}
+	}
+}
+
+/*!
+ * Write out the <charfmt> paragraph or character formatting. This
+ * does not print opening and closing braces.
+ */
+void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
+{
+	const XML_Char * szColor = apa.getProperty("color");
+	UT_sint32 ndxColor = _findColor((char*)szColor);
+	UT_ASSERT(ndxColor != -1);
+
+	if (ndxColor != 0) // black text, the default
+		_rtf_keyword("cf",ndxColor);
+
+	szColor = apa.getProperty("bgcolor");
+
+	if (szColor && UT_stricmp (szColor, "transparent") != 0)
+	{
+		ndxColor = _findColor((char*)szColor);
+		UT_ASSERT(ndxColor != -1);
+		if (ndxColor != 1) // white background, the default
+		{
+			_rtf_keyword("cb",ndxColor);
+		}
+	}
+
+   	_rtf_font_info fi(apa);
+	UT_sint32 ndxFont = _findFont(&fi);
+	UT_ASSERT(ndxFont != -1);
+	_rtf_keyword("f",ndxFont);	// font index in fonttbl
+
+	const XML_Char * szFontSize = apa.getProperty("font-size");
+	double dbl = UT_convertToPoints(szFontSize);
+	UT_sint32 d = (UT_sint32)(dbl*2.0);
+
+	// if (d != 24) - always write this out
+	_rtf_keyword("fs",d);	// font size in half points
+
+	const XML_Char * szFontStyle = apa.getProperty("font-style");
+	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))
+		_rtf_keyword("i");
+
+	const XML_Char * szFontWeight = apa.getProperty("font-weight");
+	if (szFontWeight && *szFontWeight && (UT_strcmp(szFontWeight,"bold")==0))
+		_rtf_keyword("b");
+
+	const XML_Char * szFontDecoration = apa.getProperty("text-decoration");
+	if (szFontDecoration && *szFontDecoration)
+	{
+		if (strstr(szFontDecoration,"underline") != 0)
+			_rtf_keyword("ul");
+		if (strstr(szFontDecoration,"overline") != 0)
+			_rtf_keyword("ol");
+		if (strstr(szFontDecoration,"line-through") != 0)
+			_rtf_keyword("strike");
+		if (strstr(szFontDecoration,"topline") != 0)
+		{
+			_rtf_keyword("*");
+			_rtf_keyword("topline");
+		}
+		if (strstr(szFontDecoration,"bottomline") != 0)
+		{
+			_rtf_keyword("*");
+			_rtf_keyword("botline");
+		}
+	}
+
+	const XML_Char * szFontPosition = apa.getProperty("text-position");
+	if (szFontPosition && *szFontPosition)
+	{
+		if (!UT_strcmp(szFontPosition,"superscript"))
+			_rtf_keyword("super");
+		else if (!UT_strcmp(szFontPosition,"subscript"))
+			_rtf_keyword("sub");
+	}
+
+#if 0
+	const XML_Char * szLang = apa.getProperty("lang");
+	// TODO: convert lang to numerical code
+#endif
+
+#ifdef BIDI_ENABLED
+
+	const XML_Char * szDir = apa.getProperty("dir");
+
+	if (szDir)
+	{
+		if (!UT_strcmp (szDir, "ltr"))
+			_rtf_keyword ("ltrch");
+		else
+			_rtf_keyword ("rtlch");
+	}
+
+#endif
+	// TODO do something with our font-stretch and font-variant properties
+	// note: we assume that kerning has been turned off at global scope.
+}
+
+/*!
+ * Write out the formatting group for one style in the RTF header.
+ */
+void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
+{
+    // brdrdef: not implemented because AbiWord does not have borders
+    // at time of this writing.
+
+    // parfmt
+    _write_prop_ifyes(pStyle, "keep-together", "keep");
+    _write_prop_ifyes(pStyle, "keep-with-next", "keepn");
+
+    const XML_Char * sz = NULL;
+    if (pStyle->getProperty((const XML_Char *)"text-align", sz)) 
+	{
+		if (UT_strcmp(sz, "left") == 0) 
+		{
+			// Default, so no need to print anything
+		} 
+		else if (UT_strcmp(sz, "right") == 0) 
+		{
+			_rtf_keyword("qr");
+		} 
+		else if (UT_strcmp(sz, "center") == 0) 
+		{
+			_rtf_keyword("qc");
+		}
+		else if (UT_strcmp(sz, "justify") == 0) 
+		{
+			_rtf_keyword("qj");
+		} 
+		else 
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+    }
+
+    const XML_Char * szLineHeight = NULL;
+    if (pStyle->getProperty((const XML_Char *) "line-height", szLineHeight)
+	&& strcmp(szLineHeight,"1.0") != 0) 
+	{
+		double f = UT_convertDimensionless(szLineHeight);
+		if (f != 0.0) 
+		{
+			UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
+			_rtf_keyword("sl",dSpacing);
+			_rtf_keyword("slmult",1);
+		}
+    }
+
+    _write_prop_ifnotdefault(pStyle, "text-indent", "fi");
+    _write_prop_ifnotdefault(pStyle, "margin-left", "li");
+    _write_prop_ifnotdefault(pStyle, "margin-right", "ri");
+    _write_prop_ifnotdefault(pStyle, "margin-top", "sb");
+    _write_prop_ifnotdefault(pStyle, "margin-bottom", "sa");
+
+    // apoctl
+
+    // tabdef
+    if (pStyle->getProperty((const XML_Char *) "tabstops", sz)) _write_tabdef(sz);
+    
+
+    // shading
+
+    // chrfmt
+    _write_charfmt(s_RTF_AttrPropAdapter_Style(pStyle));
+}
+
+/*!
+ * This is just a pair: style and style number. It is used for
+ * two-way association of PD_Style and RTF style number.
+ */
+struct NumberedStyle 
+{
+    const PD_Style * pStyle;
+    UT_uint32 n;
+
+    NumberedStyle(const PD_Style * pStyle, UT_uint32 n) : 
+	pStyle(pStyle), n(n) {}
+};
+
+/*!
+ * Clear the style hash.
+ */
+void IE_Exp_RTF::_clearStyles()
+{
+    UT_HASH_PURGEDATA(NumberedStyle *, &m_hashStyles, delete);
+}
+
+/*!
+ * Select styles for export. This inserts all styles to be exported
+ * into the style hash. Also, it makes sure that all fonts used in
+ * styles are present in the font table.
+ */
+void IE_Exp_RTF::_selectStyles()
+{
+    _clearStyles();
+
+    UT_uint32 i;
+    UT_uint32 nStyleNumber = 0;
+    const char * szName;
+    const PD_Style * pStyle;
+    for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i) 
+	{
+		if (pStyle->isUsed() || pStyle->isUserDefined()) 
+		{
+			
+//
+//OK do a recursive search through the basedon heiracy and export those first.
+//
+			PD_Style * pBasedOn = const_cast<PD_Style *>(pStyle)->getBasedOn();
+			UT_uint32 iBased = 0;
+			while(iBased < 20 && pBasedOn != NULL)
+			{
+				const char * pszBasedOn = pBasedOn->getName();
+				NumberedStyle * pns = (NumberedStyle *) m_hashStyles.pick(pszBasedOn);
+				const PD_Style * pcStyle = reinterpret_cast<const PD_Style *>(pBasedOn);
+				if(pns == NULL)
+				{
+					m_hashStyles.insert(szName, new NumberedStyle(pcStyle, ++nStyleNumber));
+					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pcStyle));
+					if (_findFont(&fi) == -1)
+						_addFont(&fi);
+				}
+				iBased++;
+				pBasedOn = pBasedOn->getBasedOn();
+			}
+//
+// Now export the followed by style
+//
+			PD_Style * pFollowedBy = const_cast<PD_Style *>(pStyle)->getFollowedBy();
+			if(pFollowedBy != NULL)
+			{
+				const char * pszFollowedBy = pFollowedBy->getName();
+				const PD_Style * pcStyle = reinterpret_cast<const PD_Style *>(pFollowedBy);
+				NumberedStyle * pns = (NumberedStyle *) m_hashStyles.pick(pszFollowedBy);
+				if(pns == NULL)
+				{
+					m_hashStyles.insert(szName, new NumberedStyle(pFollowedBy, ++nStyleNumber));
+					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pcStyle));
+					if (_findFont(&fi) == -1)
+						_addFont(&fi);
+				}
+			}
+//
+// Add this style to the hash
+//
+			NumberedStyle * pns = (NumberedStyle *) m_hashStyles.pick(szName);
+			if(pns == NULL)
+			{
+				m_hashStyles.insert(szName, new NumberedStyle(pStyle, ++nStyleNumber));
+				_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle));
+				if (_findFont(&fi) == -1)
+					_addFont(&fi);
+			}
+		}
+    }
+}
+
+
+/*!
+ * Return the style number that was assigned to the given style.
+ * The style must be present in the style hash.
+ */
+UT_uint32 IE_Exp_RTF::_getStyleNumber(const PD_Style * pStyle)
+{
+    return _getStyleNumber(pStyle->getName());
+}
+
+/*!
+ * Return the style number that was assigned to the named style.
+ * The style must be present in the style hash.
+ */
+UT_uint32 IE_Exp_RTF::_getStyleNumber(const XML_Char * szStyle)
+{
+    const NumberedStyle * pns = reinterpret_cast<const NumberedStyle *>(m_hashStyles.pick(szStyle));
+    UT_ASSERT(pns != NULL);
+    return pns->n;
+}
+
+/*!
+ * Write the stylesheets group of the RTF header. Only styles that
+ * are used by the document are written.
+ */
+void IE_Exp_RTF::_write_stylesheets(void)
+{
+    if (getDoc()->getStyleCount() == 0) return;
+
+    _rtf_nl();
+    _rtf_open_brace();
+    _rtf_keyword("stylesheet");
+
+    UT_StringPtrMap::UT_Cursor hc(&m_hashStyles);
+    const NumberedStyle * pns;
+    for (pns = reinterpret_cast<const NumberedStyle *>(hc.first()); 
+		 hc.is_valid(); 
+		 pns = reinterpret_cast<const NumberedStyle *>(hc.next())) 
+	{
+		const PD_Style * pStyle = pns->pStyle;
+		_rtf_nl();
+		_rtf_open_brace();
+		
+		if (pStyle->isCharStyle()) 
+		{
+			_rtf_keyword("*");
+			_rtf_keyword("cs", pns->n);
+		} 
+		else 
+		{
+			_rtf_keyword("s", pns->n);
+		}
+		
+		_write_style_fmt(pStyle);
+		
+		const PD_Style * pStyleBasedOn =  reinterpret_cast<const PD_Style *> (const_cast<PD_Style *>(pStyle)->getBasedOn());
+		// TODO: Can this really return NULL?
+		if (pStyleBasedOn != NULL) 
+		{
+			_rtf_keyword("sbasedon", _getStyleNumber(pStyleBasedOn));
+		}
+		
+		const PD_Style * pStyleNext = reinterpret_cast<const PD_Style *> (const_cast<PD_Style *>(pStyle)->getFollowedBy());
+		// TODO: Can this really return NULL?
+		if (pStyleNext != NULL) 
+		{
+			_rtf_keyword("snext", _getStyleNumber(pStyleNext));
+		}
+	
+		_rtf_chardata(pStyle->getName(), strlen(pStyle->getName()));
+		_rtf_close_brace();
+    }
+
+    _rtf_close_brace();
+}
+
 bool IE_Exp_RTF::_write_rtf_trailer(void)
 {
 	_rtf_close_brace();
 	return (m_error == 0);
 }
 
+/*!
+ * Find a font in the font table. Return the index of the font. If
+ * it is not found, return -1.
+ */
 UT_sint32 IE_Exp_RTF::_findFont(const _rtf_font_info * pfi) const
 {
 	UT_ASSERT(pfi);
@@ -592,23 +1060,20 @@ UT_sint32 IE_Exp_RTF::_findFont(const _rtf_font_info * pfi) const
 	for (k=0; k<kLimit; k++)
 	{
 		const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
-		if (pk->_is_same(pfi))
+		if (pk->_is_same(*pfi))
 			return k;
 	}
 
 	return -1;
 }
 
+/*!
+ * Add a font to the font table. The font must not be present
+ * in the font table at the start of the call.
+ */
 void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 {
 	UT_ASSERT(pfi && (_findFont(pfi)==-1));
-
-	// note: this does not guarantee uniqueness of actual fonts,
-	// note: since the three AP's may have other stuff besides
-	// note: just font info -- two identical fonts with different
-	// note: colors, for example -- will appear as two distinct
-	// note: entries -- we don't care.
-	
 	_rtf_font_info * pNew = new _rtf_font_info(*pfi);
 	if (pNew)
 		m_vecFonts.addItem(pNew);
@@ -616,36 +1081,65 @@ void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 	return;
 }
 
-void IE_Exp_RTF::_rtf_compute_font_properties(const _rtf_font_info * pfi,
-											  const char ** p_sz_font_name,
-											  const char ** p_sz_rtf_family,
-											  int * p_rtf_pitch,
-											  bool * p_rtf_bTrueType) const
+_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa)
 {
-	static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
+    // Not a typo. The AbiWord "font-family" property is what RTF
+    // calls font name. It has values like "Courier New".
+    szName = apa.getProperty("font-family");
+    
+    static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
+    GR_Font::FontFamilyEnum ff;
+    GR_Font::FontPitchEnum fp;
+    bool tt;
+    GR_Font::s_getGenericFontProperties((char*)szName, &ff, &fp, &tt);
 
-	const XML_Char * szFontFamily = PP_evalProperty("font-family",
-													pfi->m_pSpanAP,pfi->m_pBlockAP,pfi->m_pSectionAP,
-													getDoc(),true);
-
-	GR_Font::FontFamilyEnum ff;
-	GR_Font::FontPitchEnum fp;
-	bool tt;
-	
-	GR_Font::s_getGenericFontProperties((char*)szFontFamily, &ff, &fp, &tt);
-
-	// TODO there is a general confusion in this program between fontname and fontfamily.
-	// TODO one is "Courier New" and the other is "Modern".  it seems that we interchange
-	// TODO these in a few places....
-	
-	*p_sz_font_name = szFontFamily;
-	
-	if ((ff >= 0) && (ff < (int)NrElements(t_ff)))
-		*p_sz_rtf_family = t_ff[ff];
-	else
-		*p_sz_rtf_family = t_ff[GR_Font::FF_Unknown];
-
-	*p_rtf_pitch = fp;
-
-	*p_rtf_bTrueType = tt;
+    if ((ff >= 0) && (ff < (int)NrElements(t_ff)))
+	szFamily = t_ff[ff];
+    else
+	szFamily = t_ff[GR_Font::FF_Unknown];
+    nCharset = XAP_EncodingManager::get_instance()->getWinCharsetCode();
+    nPitch = fp;
+    fTrueType = tt;
 }
+
+/*!
+ * True if the two objects represent the same RTF font.
+ */
+bool _rtf_font_info::_is_same(const _rtf_font_info & fi) const
+{
+	bool bMatchFontFamily = false;
+	bool bMatchFontName = true;
+	if(szFamily && *szFamily && fi.szFamily && *fi.szFamily)
+	{
+		bMatchFontFamily =  UT_strcmp(szFamily, fi.szFamily) == 0;
+	}
+	else if ( szFamily == fi.szFamily) // Both null pointers
+	{
+		bMatchFontFamily = true;
+	}
+	else if (  szFamily && fi.szFamily && *szFamily == *fi.szFamily) // Both pointer to NULLs
+	{
+		bMatchFontFamily = true;
+	}
+	if(szName && *szName && fi.szName && *fi.szName)
+	{
+		bMatchFontName =  UT_strcmp(szName, fi.szName) == 0;
+	}
+	else if ( szName == fi.szName) // Both null pointers
+	{
+		bMatchFontName = true;
+	}
+	else if ( szName && fi.szName && *szName == *fi.szName) // Both pointer to NULLs
+	{
+		bMatchFontName = true;
+	}
+
+    return bMatchFontFamily
+	&& nCharset == fi.nCharset
+	&& nPitch == fi.nPitch
+	&& bMatchFontName
+	&& fTrueType == fi.fTrueType;
+}
+
+
+

@@ -5810,6 +5810,10 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	int nesting = 1;
 	unsigned char ch;
 	char * styleType = "P";
+	UT_sint32 BasedOn[2000]; // 2000 styles. I know this should be a Vector.
+	UT_sint32 FollowedBy[2000]; // 2000 styles. I know this should be a Vector.
+	UT_sint32 styleCount = 0;
+	UT_Vector vecStyles;
 	RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
 	RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
@@ -5841,9 +5845,16 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			{
 				if (parameter >= styleNumber)
 				{
-					UT_DEBUGMSG(("Cannot base this style on style %d when I am style %d",parameter,styleNumber));
-					// ignore
-					// return false;
+//
+// Have to deal with out of sequence styles. ie A style maybe basedon a style that 
+// has not yet been seen.
+//
+// So remember it and fill it later..
+//
+					BasedOn[styleCount] = (UT_sint32) parameter;
+					attribs[attribsCount++] = PT_BASEDON_ATTRIBUTE_NAME;
+					attribs[attribsCount++] = NULL;
+					attribs[attribsCount]   = NULL;
 				}
 				else 
 				{
@@ -5858,7 +5869,20 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if (strcmp((char *)keyword, "snext") == 0)
 			{
-				if (parameter != styleNumber)
+				if (parameter > styleNumber)
+				{
+//
+// Have to deal with out of sequence styles. ie A style maybe basedon a style that 
+// has not yet been seen.
+//
+// So remember it and fill it later..
+//
+					FollowedBy[styleCount] = (UT_sint32) parameter;
+					attribs[attribsCount++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
+					attribs[attribsCount++] = NULL;
+					attribs[attribsCount]   = NULL;
+				}
+				else if(parameter < styleNumber)
 				{
 					char * val = (char *)m_styleTable.getNthItem(parameter);
 					if (val != NULL)
@@ -5923,24 +5947,27 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 
 			attribs[attribsCount++] = PT_TYPE_ATTRIBUTE_NAME;
 			attribs[attribsCount++] = styleType;
-			attribs[attribsCount] = NULL;
+//			attribs[attribsCount] = NULL;
 //
-// If style exists we have to redefine it like this
+// OK now we clone this and save it so we can set basedon's and followedby's
 //
-			const char * szName = (const char *)m_styleTable[styleNumber];
-			PD_Style * pStyle = NULL;
-			if(getDoc()->getStyle(szName, &pStyle))
+			UT_sint32 i =0;
+			UT_Vector * pVecAttr = new UT_Vector();
+			for( i= 0; i< (UT_sint32) attribsCount; i++)
 			{
-				pStyle->addAttributes(attribs);
-				pStyle->getBasedOn();
-				pStyle->getFollowedBy();
+				if(attribs[i] != NULL)
+				{
+					pVecAttr->addItem((void *) UT_strdup(attribs[i]));
+				}
+				else
+				{
+					pVecAttr->addItem((void *) NULL);
+				}
 			}
-			else
-			{
-				getDoc()->appendStyle(attribs);
-			}
+			vecStyles.addItem((void *) pVecAttr);
 
 			// Reset
+			styleCount++;
 			attribsCount = 0;
 			attribs[attribsCount] = NULL;
 			styleNumber = 0;
@@ -5957,11 +5984,103 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			propBuffer[0] = NULL;
 		}
 	}
+//
+// Finished Style definitions
+//
 	DELETEP(pParas);
 	DELETEP(pChars);
 	DELETEP(pbParas);
 	DELETEP(pbChars);
-	
+//
+// Now we loop through them all and write them into our document.
+//
+	UT_sint32 count = (UT_sint32) vecStyles.getItemCount();
+	UT_sint32 i = 0;
+	for(i=0; i< count; i++)
+	{
+		// Reset
+		attribsCount = 0;
+		attribs[attribsCount] = NULL;
+		UT_Vector * pCurStyleVec = (UT_Vector *) vecStyles.getNthItem(i);
+		UT_sint32 nAtts = (UT_sint32) pCurStyleVec->getItemCount();
+		UT_sint32 j = 0;
+		const char * szName = NULL;
+
+		while(j < nAtts)
+		{
+			const char * szAtt = (const char *) pCurStyleVec->getNthItem(j++);
+			attribs[attribsCount++] = szAtt;
+			if( UT_strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
+			{ 
+				szName = (const char *) pCurStyleVec->getNthItem(j++);
+				attribs[attribsCount++] = szName;
+			}
+			else if( UT_strcmp(szAtt, PT_BASEDON_ATTRIBUTE_NAME)== 0)
+			{
+				const char * szNext = (const char *) pCurStyleVec->getNthItem(j++);
+				if(NULL == szNext)
+				{
+					UT_sint32 istyle = BasedOn[i];
+					attribs[attribsCount++] = UT_strdup(( const char *) m_styleTable[istyle]);
+				}
+				else
+				{
+					attribs[attribsCount++] = szNext;
+				}
+			}
+			else if( UT_strcmp(szAtt, PT_FOLLOWEDBY_ATTRIBUTE_NAME)== 0)
+			{
+				const char * szNext = (const char *) pCurStyleVec->getNthItem(j++);
+				if(NULL == szNext)
+				{
+					UT_sint32 istyle = FollowedBy[i];
+					attribs[attribsCount++] = UT_strdup(( const char *) m_styleTable[istyle]);
+				}
+				else
+				{
+					attribs[attribsCount++] = szNext;
+				}
+			}
+			else
+			{
+				szAtt = (const char *) pCurStyleVec->getNthItem(j++);
+				attribs[attribsCount++] = szAtt;
+			}	
+			attribs[attribsCount] = NULL;
+		}
+//
+// If style exists we have to redefine it like this
+//
+		PD_Style * pStyle = NULL;
+		if(getDoc()->getStyle(szName, &pStyle))
+		{
+			pStyle->addAttributes(attribs);
+			pStyle->getBasedOn();
+			pStyle->getFollowedBy();
+		}
+		else
+		{
+			getDoc()->appendStyle(attribs);
+		}
+		UT_DEBUGMSG(("SEVIOR: Defining style %s \n",szName)); 
+		for(j=0; j< nAtts; j++)
+		{
+			char * sz = (char *) pCurStyleVec->getNthItem(j);
+			UT_DEBUGMSG(("SEVIOR: Atrribute %d %s \n",j,sz));
+		}
+
+//
+// OK Now delete all this allocated memory...
+//
+		for(j=0; j< nAtts; j++)
+		{
+			char * sz = (char *) pCurStyleVec->getNthItem(j);
+			if(sz != NULL)
+				delete [] sz;
+		}
+		delete pCurStyleVec;
+
+	}
 	status = PopRTFState();
 	return status;
 
