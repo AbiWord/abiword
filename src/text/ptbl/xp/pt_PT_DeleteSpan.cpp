@@ -104,6 +104,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			// first retrive the starting and ending fragments
 			pf_Frag * pf1, * pf2;
 			PT_BlockOffset Offset1, Offset2;
+			bool bTableStrux = false;
 
 			if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
 				return bRet;
@@ -134,17 +135,21 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_Block:
 						iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
 						break;
-					case PTX_SectionEndnote:
 					case PTX_SectionTable:
 					case PTX_SectionCell:
+						bTableStrux = true;
+						// fall through
+					case PTX_SectionEndnote:
 					case PTX_SectionFootnote:
 					case PTX_SectionFrame:
 						bHasEndStrux = true;
 						// fall through ...
-					case PTX_Section:
-					case PTX_SectionHdrFtr:
 					case PTX_EndCell:
 					case PTX_EndTable:
+						bTableStrux = true;
+						// fall through
+					case PTX_Section:
+					case PTX_SectionHdrFtr:
 				    case PTX_EndFootnote:
 				    case PTX_EndEndnote:
 				    case PTX_EndFrame:
@@ -179,7 +184,14 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				UT_ASSERT(0); // Dunno what this could be
 				break;
 			}
-					 
+
+			if(bTableStrux && !bDeleteTableStruxes)
+			{
+				// skip over this frag
+				dpos1 += iLen;
+				continue;
+			}
+			
 			if(!pAP->getAttribute(name, pRevision))
 				pRevision = NULL;
 
