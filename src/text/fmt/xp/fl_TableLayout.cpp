@@ -874,7 +874,7 @@ void fl_TableLayout::_lookupProperties(void)
 			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
 			if((j+1)>i && sProps[j] == '/')
 			{
-				UT_String sSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
+				UT_String sSub = sProps.substr(i,(j-i));
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
