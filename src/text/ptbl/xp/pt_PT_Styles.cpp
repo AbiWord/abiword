@@ -164,7 +164,6 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 	pStyle = new PD_BuiltinStyle(this, indexAP, szName);
 	if (pStyle)
 	  {
-	    UT_DEBUGMSG(("DOM: insert style name: %s\n", szName));
 		m_hashStyles.insert(szName,
 				    (void *)pStyle);
 	  }
