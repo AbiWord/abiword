@@ -45,6 +45,8 @@ dnl Detect our platform (unix, win32, etc)
 dnl Do this before the GNOME stuff
 ABI_DETECT_PLATFORM
 
+ABI_CHECK_PKG_CHECK
+
 dnl Checks for libraries.
 dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
 with_unix=false
