@@ -151,6 +151,6 @@ const char * EV_Toolbar_LabelSet::getLanguage(void) const
 void EV_Toolbar_LabelSet::setLanguage(const char *szLanguage)
 {
 	if (m_szLanguage)
-		DELETEP(m_szLanguage);
+		FREEP(m_szLanguage);
 	UT_cloneString(m_szLanguage,szLanguage);
 }
