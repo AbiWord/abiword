@@ -12,7 +12,7 @@
 
 #include "ut_debugmsg.h"
 
-#	define UCS_2_INTERNAL "UCS-2"
+#define UCS_2_INTERNAL "UCS-2BE"
 
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
@@ -57,45 +57,6 @@ iconv_t  translate_out = (iconv_t)-1;
 int      Trynum;         /* Size of "Try" array */
 ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 
-#endif
-
-extern "C" {
-extern int XAP_EncodingManager__swap_utos, XAP_EncodingManager__swap_stou;
-}
-
-#if 0
-// DON'T USE !!!!
-/*this one fills ucs2 with values that iconv will treat as UCS-2. */
-static void toucs2(const unsigned short *word16, int length, unsigned short *out)
-{
-	int i = 0;
-	const unsigned short* in = word16;
-/*	unsigned short* out = ucs2; */
-	for(;i<length;++i)
-	{
-		if (XAP_EncodingManager__swap_utos)
-		    out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
-		else
-		    out[i] = in[i];
-	}
-	out[i]= 0;
-}
-
-/*this one copies from 'ucs2' to word16 swapping bytes if necessary */
-static void fromucs2(unsigned short *word16, int length, unsigned short *ucs2)
-{
-	int i = 0;
-	unsigned short *in = ucs2;
-	unsigned short *out = word16; 
-	for(;i<length;++i)
-	{
-		if (XAP_EncodingManager__swap_stou)
-			out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
-		else
-			out[i] = in[i];
-	}
-	out[i]= 0;
-}
 #endif
 
 static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)

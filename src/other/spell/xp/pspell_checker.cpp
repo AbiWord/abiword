@@ -36,8 +36,7 @@
 #include "ut_iconv.h"
 #include "ut_string.h"
 
-#define UCS_2_INTERNAL "UCS-2"
-
+#define UCS_2_INTERNAL "UCS-2BE"
 
 /*!
  * Convert an UTF16 string to an UTF8 string
