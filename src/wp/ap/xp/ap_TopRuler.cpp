@@ -938,6 +938,11 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 	UT_sint32 x = m_draggingCenter - xFixed;
 	UT_ASSERT(x>=0);
 
+	// when dragging the column gap, we draw lines on both
+	// sides of the gap.
+	
+	UT_sint32 xOther = m_draggingRect.left - xFixed;
+
 	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
 	UT_ASSERT(pG);
 
@@ -953,6 +958,8 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 
 		// erase old guide
 		pG->xorLine(m_xGuide, 0, m_xGuide, h);
+		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
+			pG->xorLine(m_xOtherGuide, 0, m_xOtherGuide, h);
 		m_bGuide = UT_FALSE;
 	}
 
@@ -960,9 +967,12 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 	{
 		UT_ASSERT(m_bValidMouseClick);
 		pG->xorLine(x, 0, x, h);
+		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
+			pG->xorLine(xOther, 0, xOther, h);
 
 		// remember this for next time
 		m_xGuide = x;
+		m_xOtherGuide = xOther;
 		m_bGuide = UT_TRUE;
 	}
 }
@@ -1650,6 +1660,10 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 	// this as a cancel.  so we need to put everything back the
 	// way it was on the ruler.
 
+	// clear the guide line
+
+	_xorGuide(UT_TRUE);
+
 	// erase the widget that we are dragging.   remember what we
 	// are dragging, clear it, and then restore it at the bottom.
 	
@@ -1666,10 +1680,6 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 			draw(&m_dragging2Rect, &m_infoCache);
 		m_bBeforeFirstMotion = UT_TRUE;
 	}
-
-	// clear the guide line
-
-	_xorGuide(UT_TRUE);
 
 	// redraw the widget we are dragging at its original location
 	

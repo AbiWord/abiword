@@ -217,8 +217,9 @@ protected:
 
 	unsigned char		m_iDefaultTabType;
 
-	UT_Bool				m_bGuide;	// UT_TRUE ==> guide line XORed onscreen
-	UT_sint32			m_xGuide;	// valid iff m_bGuide
+	UT_Bool				m_bGuide;	/* UT_TRUE ==> guide line XORed onscreen */
+	UT_sint32			m_xGuide;	/* valid iff m_bGuide */
+	UT_sint32			m_xOtherGuide;
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
