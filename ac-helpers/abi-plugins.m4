@@ -27,6 +27,7 @@ PLUGIN_LIST=""
 PLUGIN_DEFS=""
 
 abi_builtin_plugins=no
+
 _abi_plugin_list=""
 
 AC_ARG_WITH(builtin_plugins,[  --with-builtin-plugins  (experimental) compile-in a selection of plugins],[
@@ -37,6 +38,19 @@ AC_ARG_WITH(builtin_plugins,[  --with-builtin-plugins  (experimental) compile-in
 
 		if test "$withval" != "yes"; then
 			_abi_plugin_list=`echo $withval | tr ',' ' '`
+		elif test -d ../abiword-plugins; then
+			_abi_pwd=`pwd`
+			cd ../abiword-plugins
+			for i in `find . -name "*.a" -print`; do
+				i=`dirname $i`;
+				i=`dirname $i`;
+				i=`dirname $i`;
+				i=`basename $i`;
+				if test "$i" != "."; then
+					_abi_plugin_list="$_abi_plugin_list $i"
+				fi
+			done
+			cd $_abi_pwd
 		fi
 	fi
 ])
@@ -51,7 +65,29 @@ if test $abi_builtin_plugins = yes; then
 
 		case $p in
 		abicommand)
-		_abi_plugin_lib=AbiCommand
+			_abi_plugin_lib=AbiCommand
+			ABI_COMMAND_LDFLAGS=""
+			have_readline=unknown
+			AC_CHECK_HEADER(readline/readline.h,[
+				AC_CHECK_HEADER(readline/history.h,[
+					AC_CHECK_LIB(readline,readline,[
+						have_readline=yes
+						LDFLAGS="-ltermcap $LDFLAGS"
+						ABI_COMMAND_LDFLAGS="-ltermcap $ABI_COMMAND_LDFLAGS"
+					],[	AC_CHECK_LIB(readline,rl_initialize,[
+							have_readline=yes
+							LDFLAGS="-lcurses $LDFLAGS"
+							ABI_COMMAND_LDFLAGS="-lcurses $ABI_COMMAND_LDFLAGS"
+						],have_readline=no,-lcurses)
+					],-ltermcap)
+				],have_readline=no)
+			],have_readline=no)
+
+			if test $have_readline != yes; then
+				AC_MSG_ERROR([abicommand: error - readline libs or hdrs not found])
+			else
+				PLUGIN_LIBS="$PLUGIN_LIBS -lreadline -lhistory $ABI_COMMAND_LDFLAGS"
+			fi
 		;;
 		abigimp)
 		_abi_plugin_lib=AbiGimp
@@ -120,7 +156,9 @@ if test $abi_builtin_plugins = yes; then
 		_abi_plugin_lib=AbiRSVG
 		;;
 		magick)
-		_abi_plugin_lib=AbiMagick
+			_abi_plugin_lib=AbiMagick
+			ABI_MAGICKPP_OPT(5.4.0,no)
+			PLUGIN_LIBS="$PLUGIN_LIBS `$abi_magickpp_config --ldflags` `$abi_magickpp_config --libs`"
 		;;
 		wmf)
 		_abi_plugin_lib=AbiWMF
@@ -150,7 +188,9 @@ if test $abi_builtin_plugins = yes; then
 		_abi_plugin_lib=AbiNroff
 		;;
 		OpenWriter)
-		_abi_plugin_lib=AbiOpenWriter
+			_abi_plugin_lib=AbiOpenWriter
+			PKG_CHECK_MODULES(_abi_openwriter,libgsf-1 >= 1.4.0)
+			PLUGIN_LIBS="$PLUGIN_LIBS $_abi_openwriter_LIBS"
 		;;
 		pdb)
 		_abi_plugin_lib=AbiPalmDoc
@@ -162,7 +202,9 @@ if test $abi_builtin_plugins = yes; then
 		_abi_plugin_lib=AbiPW
 		;;
 		sdw)
-		_abi_plugin_lib=AbiSDW
+			_abi_plugin_lib=AbiSDW
+			PKG_CHECK_MODULES(_abi_sdw,libgsf-1 >= 1.4.0)
+			PLUGIN_LIBS="$PLUGIN_LIBS $_abi_sdw_LIBS"
 		;;
 		t602)
 		_abi_plugin_lib=AbiT602
@@ -171,7 +213,9 @@ if test $abi_builtin_plugins = yes; then
 		_abi_plugin_lib=AbiWML
 		;;
 		wordperfect)
-		_abi_plugin_lib=AbiWordPerfect
+			_abi_plugin_lib=AbiWordPerfect
+			PKG_CHECK_MODULES(_abi_wordperfect,libwpd-1 >= 0.5.0)
+			PLUGIN_LIBS="$PLUGIN_LIBS $_abi_wordperfect_LIBS"
 		;;
 		xhtml)
 		_abi_plugin_lib=AbiXHTML
