@@ -6019,13 +6019,11 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 
 	const PP_AttrProp * pAP = NULL;
 
-	UT_return_val_if_fail(m_pDoc, false);
-	
 	if(!getAttrProp(apIndx,&pAP))
 		return false;
 
 	if(   pAP->getRevisedIndex() != 0xffffffff
-	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, isMarkRevisions()))
 	{
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
@@ -6062,7 +6060,7 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 		return false;
 
 	if(   pAP->getRevisedIndex() != 0xffffffff
-	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, isMarkRevisions()))
 	{
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
