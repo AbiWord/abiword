@@ -1098,19 +1098,17 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			if (pszFontSize)
 			{
-				if (!span)
-				{
-					char * old_locale = setlocale (LC_NUMERIC, "C");
-					m_pie->write(UT_String_sprintf("<span style=\"font-size: %fpt", UT_convertToPoints(pszFontSize)));
-					setlocale (LC_NUMERIC, old_locale);
-					span = true;
-				}
-				else
-				{
-					char * old_locale = setlocale (LC_NUMERIC, "C");
-					m_pie->write(UT_String_sprintf("; font-size: %fpt", UT_convertToPoints(pszFontSize)));
-					setlocale (LC_NUMERIC, old_locale);
-				}
+			  char * old_locale = setlocale (LC_NUMERIC, "C");
+			  if (!span)
+			    {
+			      m_pie->write(UT_String_sprintf("<span style=\"font-size: %fpt", UT_convertToPoints(pszFontSize)));
+			      span = true;
+			    }
+			  else
+			    {
+			      m_pie->write(UT_String_sprintf("; font-size: %fpt", UT_convertToPoints(pszFontSize)));
+			    }
+			  setlocale (LC_NUMERIC, old_locale);
 			}
 
 			if (pszBgColor && !IS_TRANSPARENT_COLOR(pszBgColor))
@@ -1839,24 +1837,28 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					const XML_Char * szWidth = 0;
 					const XML_Char * szHeight = 0;
 
+					const char * old_locale = setlocale(LC_NUMERIC, "C");
+
 					if(pAP->getProperty("width", szWidth) &&
 					   pAP->getProperty("height", szHeight))
 					  {
 					    if(szWidth)
 					      {
-						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szWidth, DIM_PX));
+						UT_String_sprintf(buf, "%f", (int) UT_convertToDimension(szWidth, DIM_PX));
 						m_pie->write (" width=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
 					      }
 					    if(szHeight)
 					      {
-						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szHeight, DIM_PX));
+						UT_String_sprintf(buf, "%f", (int) UT_convertToDimension(szHeight, DIM_PX));
 						m_pie->write (" height=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
 					      }
 					  }
+					
+					setlocale(LC_NUMERIC, old_locale);
 
 					// close the img tag with "/" only in XHTML
 					if (! m_bIs4) {
