@@ -47,6 +47,13 @@
 #define AP_CLIPBOARD_IMAGE_GIF                  "image/gif"
 #define AP_CLIPBOARD_IMAGE_BMP                  "image/bmp"
 #define AP_CLIPBOARD_IMAGE_TIFF                 "image/tiff"
+#define AP_CLIPBOARD_IMAGE_WBMP                 "image/vnd.wap.wbmp"
+#define AP_CLIPBOARD_IMAGE_XBM                  "image/x-xbitmap"
+#define AP_CLIPBOARD_IMAGE_XPM                  "image/x-xpixmap"
+#define AP_CLIPBOARD_IMAGE_PNM                  "image/x-portable-anymap"
+#define AP_CLIPBOARD_IMAGE_PGM                  "image/x-portable-graymap"
+#define AP_CLIPBOARD_IMAGE_PPM                  "image/x-portable-pixmap"
+#define AP_CLIPBOARD_IMAGE_RAS                  "image/x-cmu-raster"
 
 // text cut+paste: should handled by GTK+2 at the XAP layer
 #define AP_CLIPBOARD_TEXT_UTF8_STRING           "UTF8_STRING"
@@ -63,9 +70,16 @@ static const char * rtfszFormatsAccepted[] = {
 static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_PNG,
   AP_CLIPBOARD_IMAGE_JPEG,
+  AP_CLIPBOARD_IMAGE_TIFF,
   AP_CLIPBOARD_IMAGE_GIF,
   AP_CLIPBOARD_IMAGE_BMP,
-  AP_CLIPBOARD_IMAGE_TIFF,
+  AP_CLIPBOARD_IMAGE_XBM,
+  AP_CLIPBOARD_IMAGE_XPM,
+  AP_CLIPBOARD_IMAGE_PNM,
+  AP_CLIPBOARD_IMAGE_PPM,
+  AP_CLIPBOARD_IMAGE_PGM,
+  AP_CLIPBOARD_IMAGE_WBMP,
+  AP_CLIPBOARD_IMAGE_RAS,
   0 } ;
 
 static const char * txtszFormatsAccepted[] = {
