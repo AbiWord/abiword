@@ -740,7 +740,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	
 	HFONT hFont = CreateFontIndirect(&lf);
 	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
-	HFONT hFontOld = SelectObject(hdc,hFont);
+	HFONT hFontOld = (HFONT) SelectObject(hdc,hFont);
 	GetTextMetrics(hdc,&tm);
 	SelectObject(hdc,hFontOld);
 	DeleteObject(hFont);
