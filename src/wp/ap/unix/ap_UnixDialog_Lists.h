@@ -68,6 +68,11 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GList *					_getGlistFonts (void);
 	void					_fillFontMenu(GtkWidget* menu);
 
+	GtkWidget *				m_wMainWindow;
+
+	GtkWidget * m_wApply;
+	GtkWidget * m_wClose;
+
  private:
 	GList *					m_glFonts;
 	GR_UnixGraphics *		m_pPreviewWidget;
@@ -78,10 +83,6 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	UT_Bool					m_bisCustomFrameHidden;
 	UT_Timer *				m_pAutoUpdateLists;
 
-	GtkWidget *				m_wMainWindow;
-
-	GtkWidget * m_wApply;
-	GtkWidget * m_wClose;
 	GtkWidget * m_wContents;
 	GtkWidget * m_wStartNewList;
 	GtkWidget * m_wApplyCurrent;
