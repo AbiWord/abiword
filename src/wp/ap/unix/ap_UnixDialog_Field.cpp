@@ -126,11 +126,11 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 	centerDialog(parentWindow, mainWindow);
 	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
 
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
+
+	// Show the top level dialog,
+	gtk_widget_show_all(mainWindow);
 
 	// Run into the GTK event loop for this window.
 	gtk_main();
@@ -309,9 +309,8 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	// connect all the signals
 	_connectSignals ();
 
-	// and action!
-	gtk_widget_show_all (m_windowMain);
-
+    // The main window is shown with gtk_widget_show_all() in runModal().
+    
 	return m_windowMain;
 }
 
