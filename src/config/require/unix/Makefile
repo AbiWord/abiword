@@ -82,6 +82,11 @@ _ZLIB_:
 	      -o -r /usr/local/lib/libz.a			\
 	      -o -r ${X11BASE}/lib/libz.a			\
 	      -o -r /usr/X11R6/lib/libz.a			\
+	      -o -r /usr/lib/libz.so				\
+	      -o -r ${LOCALBASE}/lib/libz.so			\
+	      -o -r /usr/local/lib/libz.so			\
+	      -o -r ${X11BASE}/lib/libz.so			\
+	      -o -r /usr/X11R6/lib/libz.so			\
 	    ]; then						\
 		echo Found zlib in system directories;		\
 	else							\
