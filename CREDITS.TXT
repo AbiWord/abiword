@@ -73,7 +73,7 @@ Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
 Aaron Lehmann <aaronl@vitelus.com>              Ruler placement patch
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
-Frodo Looijaard  <frodol@dds.nl>                Psion Import               
+Frodo Looijaard  <frodol@dds.nl>                Psion import/export
 Kenneth MacDonald <kenny@holyrood.ed.ac.uk>     Color Printing patch
 Brian Marick <marick@rstcorp.com>       
 Lalo Martins <lalo@webcom.com>
