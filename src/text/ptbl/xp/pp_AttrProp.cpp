@@ -276,7 +276,12 @@ UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_C
 		const XML_Char ** p = properties;
 		while (*p)
 		{
-			UT_ASSERT(p[1] && *p[1]);	// require value for each name
+			/*
+				Jeff, I weakened the following assert because we 
+				*want* to represent no tabstops as an empty string.
+				If this isn't safe, let me know.   -- PCR
+			*/
+			UT_ASSERT(p[1] /* && *p[1] */);	// require value for each name
 			const XML_Char * szValue = NULL;
 			if (!getProperty(p[0],szValue))
 				return UT_FALSE;		// item not present
