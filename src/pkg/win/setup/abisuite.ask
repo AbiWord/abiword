@@ -253,6 +253,7 @@
 <datafile name="__CANONDIR__/AbiWord/sample/en-US/Latin1.abw" relpath="AbiWord/sample/en-US" />
 
 <datafile name="__CANONDIR__/AbiWord/strings/ca-ES.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/cy-CY.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/da-DK.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/de-DE.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/du-NL.strings" relpath="AbiWord/strings" />
@@ -264,6 +265,8 @@
 <datafile name="__CANONDIR__/AbiWord/strings/id-ID.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/it-IT.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/no-BOK.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/no-NYN.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/pl-PL.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/pt-BR.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/pt-PT.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/sv-SE.strings" relpath="AbiWord/strings" />
