@@ -693,7 +693,7 @@ ABI_OPTIONS+=DirectPrint:Off
 #endif
 
 CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
-EXTRA_LIBS	+=	$(GNOME_LIBS) -lXft
+EXTRA_LIBS	+=	$(GNOME_LIBS)
 ABI_GNOME_DIR		= gnome
 ABI_GNOME_PREFIX	= Gnome
 ABI_OPTIONS+=Gnome:On
@@ -705,7 +705,7 @@ GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
 GLIB_CFLAGS     :=      $(shell $(GLIB_CONFIG) --cflags)
 CFLAGS 		+=	$(GTK_CFLAGS) $(GLIB_CFLAGS)
-EXTRA_LIBS	+=	$(GTK_LIBS) -lXft
+EXTRA_LIBS	+=	$(GTK_LIBS)
 #
 # Enable this line for electric fence.
 #
