@@ -1931,6 +1931,26 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	// TODO move this title to resources?
 	cf = (GtkFontSelectionDialog *) gtk_font_selection_dialog_new("Font Selection");
 
+	// To match the Windows dialog, we add a "color" tab to the font dialog
+	// This is built up top to satisfy the requirement that these widgets
+	// exist to set their properties.  :)
+	GtkWidget * colorSelector = gtk_color_selection_new();
+	UT_ASSERT(colorSelector);
+	gtk_widget_show(colorSelector);
+
+	// Padded with spaces to fake min size without gtk_widget_set_usize()
+	GtkWidget * tabLabel = gtk_label_new("        Color        ");
+	UT_ASSERT(tabLabel);
+	gtk_widget_show(tabLabel);
+	
+	GtkFontSelection * fontsel = GTK_FONT_SELECTION(cf->fontsel);
+	UT_ASSERT(fontsel);
+
+	gtk_notebook_insert_page(&fontsel->notebook,
+							 colorSelector,
+							 tabLabel,
+							 1); // 0 based index
+
     // Connect the signals to the buttons
 	gtk_signal_connect(GTK_OBJECT(cf->ok_button),
 					   "clicked",
@@ -2071,21 +2091,22 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 		free(p);
 	}
 
-	// This is color.  Color is not usually an attribute
-	// of a font, but Microsoft thinks so.
-/*
-  s = UT_getAttribute("color", props_in);
-  if (s)
-  {
-  UT_RGBColor c;
-  UT_parseColor(s, c);
-  DWORD rgbCurrent;		// current text color
+	// Set color in the color selector
+	s = UT_getAttribute("color", props_in);
+	if (s)
+	{
+		UT_RGBColor c;
+		UT_parseColor(s, c);
 
-  rgbCurrent = RGB(c.m_red, c.m_grn, c.m_blu);
+		gdouble currentColor[4];
 
-  cf.rgbColors = rgbCurrent;
-  }
-*/
+		currentColor[0] = ((gdouble) c.m_red / (gdouble) 255.0);
+		currentColor[1] = ((gdouble) c.m_grn / (gdouble) 255.0);
+		currentColor[2] = ((gdouble) c.m_blu / (gdouble) 255.0);
+		currentColor[3] = 1; // Alpha channel?
+
+		gtk_color_selection_set_color(GTK_COLOR_SELECTION(colorSelector), currentColor);
+	}
 
 	if (!gtk_font_selection_dialog_set_font_name(cf, fontString))
 	{
@@ -2099,7 +2120,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	gchar * sampleString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijlkmnopqrstuvwxyz";
 	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
-	/* Run the dialog */
+	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 	gtk_main();
@@ -2263,18 +2284,19 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 				i += 2;
 			}
 
-			// GTK doesn't currently return color attributes for
-			// selected fonts, so we'll use whatever was set when
-			// the user started the selection.  This may change if
-			// a color tab is added to the selector dialog.
+			// Color
+			gdouble gotColor[4];
+			gtk_color_selection_get_color(GTK_COLOR_SELECTION(colorSelector), gotColor);
+			
+			char buf_color[6];
+			sprintf(buf_color, "%02x%02x%02x",
+					(unsigned int) (gotColor[0] * (gdouble) 255.0),
+					(unsigned int) (gotColor[1] * (gdouble) 255.0),
+					(unsigned int) (gotColor[2] * (gdouble) 255.0));
 
-			s = UT_getAttribute("color", props_in);
-			if (s)
-			{
-				props_out[i] = "color";
-				props_out[i+1] = strdup(s);
-				i += 2;
-			}
+			props_out[i] = "color";
+			props_out[i+1] = buf_color;
+			i += 2;
 
 			// apply changes
 			pView->setCharFormat(props_out);
