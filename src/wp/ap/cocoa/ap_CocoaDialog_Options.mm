@@ -1537,7 +1537,7 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 
 + (AP_CocoaDialog_OptionsController *)loadFromNib
 {
-	AP_CocoaDialog_OptionsController * dlg = [[AP_CocoaDialog_OptionsController alloc] initWithWindowNibName:@"ap_CocoaDlg_Options"];
+	AP_CocoaDialog_OptionsController * dlg = [[AP_CocoaDialog_OptionsController alloc] initWithWindowNibName:@"ap_CocoaDialog_Options"];
 	return [dlg autorelease];
 }
 

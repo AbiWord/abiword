@@ -92,12 +92,12 @@ protected:
 	virtual void				_showOrHideStatusbar(void);
 	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 
+	NSScroller *				m_hScrollbar;
+	NSScroller *				m_vScrollbar;
+	XAP_CocoaNSView *			m_docAreaGRView;
 #if 0	
 	GtkAdjustment *				m_pVadj;
 	GtkAdjustment *				m_pHadj;
-	GtkWidget *					m_hScroll;
-	GtkWidget *					m_vScroll;
-	GtkWidget *					m_dArea;
 	GtkWidget *					m_table;
 	GtkWidget *					m_innertable;
 	GtkWidget *					m_topRuler;

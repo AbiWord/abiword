@@ -112,7 +112,9 @@ AP_CocoaSplash::AP_CocoaSplash (UT_uint32 width, UT_uint32 height, NSImage * ima
     [m_window setHidesOnDeactivate:NO];
     [m_window setExcludedFromWindowsMenu:YES];
     [m_window setAlphaValue:0.8];
+#ifdef NDEBUG
     [m_window setLevel:NSFloatingWindowLevel];
+#endif
 
 	NSRect box;
 

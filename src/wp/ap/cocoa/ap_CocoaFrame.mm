@@ -103,10 +103,58 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 
 	bool bFocus;
 	XAP_CocoaFontManager * fontManager = ((XAP_CocoaApp *) getApp())->getFontManager();
-	NSScrollView *scroller = [_getController() getMainView];
-	pG = new GR_CocoaGraphics(scroller, fontManager, getApp());
+	NSView*		docArea = [_getController() getMainView];
+	NSArray*	docAreaSubviews;
+	
+	docAreaSubviews = [docArea subviews];
+	if ([docAreaSubviews count] != 0) {
+		NSEnumerator *enumerator = [docAreaSubviews objectEnumerator];
+		NSView* aSubview;
+	
+		while (aSubview = [enumerator nextObject]) {
+			[aSubview removeFromSuperviewWithoutNeedingDisplay];
+		}
+		
+		m_hScrollbar = NULL;
+		m_vScrollbar = NULL;
+		m_docAreaGRView = NULL;
+	}
+	NSRect frame = [docArea bounds];
+	NSRect controlFrame;
+	
+	/* vertical scrollbar */
+	controlFrame.origin.y = [NSScroller scrollerWidth];
+	controlFrame.size.width = [NSScroller scrollerWidth];
+	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
+	controlFrame.origin.x = frame.size.width - controlFrame.size.width;
+	m_vScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
+	[docArea addSubview:m_vScrollbar];
+	[m_vScrollbar setAutoresizingMask:(NSViewMinXMargin |  NSViewHeightSizable)];
+	[m_vScrollbar release];
+	
+	/* horizontal scrollbar */
+	controlFrame.origin.x = 0;
+	controlFrame.origin.y = 0;
+	controlFrame.size.height = [NSScroller scrollerWidth];
+	controlFrame.size.width = frame.size.width - controlFrame.size.height;
+	m_hScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
+	[docArea addSubview:m_hScrollbar];
+	[m_hScrollbar setAutoresizingMask:(NSViewMaxYMargin |  NSViewWidthSizable)];
+	[m_hScrollbar release];
+	
+	/* doc view */
+	controlFrame.origin.x = 0;
+	controlFrame.origin.y = [NSScroller scrollerWidth];
+	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
+	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
+	m_docAreaGRView = [[XAP_CocoaNSView alloc] initWith: this andFrame:controlFrame];
+	[docArea addSubview:m_docAreaGRView];
+	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
+	[m_docAreaGRView release];
+
+	
+	pG = new GR_CocoaGraphics(m_docAreaGRView, fontManager, getApp());
 	ENSUREP(pG);
-  	[scroller setDocumentView:pG->_getView()];
 	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	pG->setZoomPercentage(iZoom);
 	
@@ -293,8 +341,7 @@ Cleanup:
 void AP_CocoaFrame::setXScrollRange(void)
 {
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	NSScrollView *scroller = [_getController() getMainView];
-	NSRect rect = [[scroller documentView] frame];
+	NSRect rect = [m_docAreaGRView frame];
 	int windowWidth = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
@@ -304,8 +351,8 @@ void AP_CocoaFrame::setXScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 	
-	[scroller setHorizontalPageScroll:windowWidth];
-	[scroller setHorizontalLineScroll:20.0f];
+//	[m_hScrollbar setHorizontalPageScroll:windowWidth];
+//	[m_hScrollbar setHorizontalLineScroll:20.0f];
 	
 #if 0
 	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
@@ -329,8 +376,7 @@ void AP_CocoaFrame::setXScrollRange(void)
 void AP_CocoaFrame::setYScrollRange(void)
 {
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	NSScrollView *scroller = [_getController() getMainView];
-	NSRect rect = [[scroller documentView] frame];
+	NSRect rect = [m_docAreaGRView frame];
 	int windowHeight = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
@@ -340,8 +386,8 @@ void AP_CocoaFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	[scroller setVerticalPageScroll:windowHeight];
-	[scroller setVerticalLineScroll:20.0f];
+//	[m_vScrollbar setVerticalPageScroll:windowHeight];
+//	[m_vScrollbar setVerticalLineScroll:20.0f];
 
 #if 0
 	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
@@ -368,6 +414,9 @@ AP_CocoaFrame::AP_CocoaFrame(XAP_CocoaApp * app)
 {
 	// TODO
 	m_pData = NULL;
+	m_hScrollbar = NULL;
+	m_vScrollbar = NULL;
+	m_docAreaGRView = NULL;
 }
 
 AP_CocoaFrame::AP_CocoaFrame(AP_CocoaFrame * f)
@@ -1029,7 +1078,6 @@ bool AP_CocoaFrame::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void
 - (id)initWith:(XAP_CocoaFrame *)frame
 {
 	UT_DEBUGMSG (("Cocoa: @AP_CocoaFrameController initWith:frame\n"));
-	[self initWithWindowNibName:frame->_getNibName()];
 	return [super initWith:frame];
 }
 
