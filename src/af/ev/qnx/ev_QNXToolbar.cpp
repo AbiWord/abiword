@@ -45,6 +45,12 @@
 #include "ap_Toolbar_Id.h"
 
 /*****************************************************************/
+PtWidget_t * popupBalloon(PtWidget_t *window,PtWidget_t *widget,int position,char *text,char *font,PgColor_t fill_color,PgColor_t text_color)
+{
+char *tooltip;
+PtGetResource(widget,Pt_ARG_USER_DATA,&tooltip,0);
+return (PtInflateBalloon(window,widget,position,tooltip,"TextFont09",fill_color,text_color));
+}
 /*****************************************************************/
 
 EV_QNXToolbar::EV_QNXToolbar(XAP_QNXApp * pQNXApp, XAP_Frame * pFrame,
@@ -227,18 +233,18 @@ bool EV_QNXToolbar::synthesize(void)
 	//PtWidget_t * wTLW = m_pQNXFrame->getTopLevelWindow();
 	//PtWidget_t * wVBox = m_pQNXFrame->getVBoxWidget();
 
-#if 0
 	const XML_Char * szValue = NULL;
 	m_pQNXApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_ASSERT((szValue) && (*szValue));
-	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+
+	char style = Pt_IMAGE;
+
 	if (UT_XML_stricmp(szValue,"icon")==0)
 		style = Pt_IMAGE;
 	else if (UT_XML_stricmp(szValue,"text")==0)
 		style = Pt_Z_STRING;
 	else if (UT_XML_stricmp(szValue,"both")==0)
 		style = Pt_TEXT_IMAGE;
-#endif
 	
 	XAP_QNXFrameImpl * pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl()); 
 	m_wToolbarGroup = pQNXFrameImpl->getTBGroupWidget();
@@ -299,27 +305,21 @@ bool EV_QNXToolbar::synthesize(void)
 					}
 
 					n = 0;
-					//This would add a ? help topic thingy
-					//PtSetArg(&args[n++], Pt_ARG_HELP_TOPIC, szToolTip, 0);
-					//PtSetArg(&args[n++], Pt_ARG_EFLAGS, Pt_INTERNAL_HELP, Pt_INTERNAL_HELP);
-					//This will add the balloon help
 					PtSetArg(&args[n++], Pt_ARG_LABEL_FLAGS, Pt_SHOW_BALLOON, Pt_SHOW_BALLOON); 
-					PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, szToolTip, 0); 
+					PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pLabel->getToolbarLabel(), 0); 
+					PtSetArg(&args[n++], Pt_ARG_LABEL_BALLOON,&popupBalloon,0);
+					PtSetArg(&args[n++], Pt_ARG_BALLOON_POSITION,Pt_BALLOON_BOTTOM,0);
+					PtSetArg(&args[n++], Pt_ARG_TEXT_FONT,"TextFont06",0);
 
 					PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
-					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_HIGHLIGHTED);
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_HIGHLIGHTED | Pt_GETS_FOCUS);
+					PtSetArg(&args[n++], Pt_ARG_USER_DATA, szToolTip, strlen(szToolTip));
 
-					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 					if (image) {
-						PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE);
-						//Set the flags on the image to
-						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
-						//PtSetArg(&args[n++], Pt_ARG_ARM_DATA, image, sizeof(*image)); 
+						PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, style, 0);
 						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
 					}
-					else if(!szToolTip) {
-						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "No Label/Icon?", 0); 
-					}
+
 					tb = PtCreateWidget(PtButton, tbgroup, n, args);
 					if (tb) {
 						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
@@ -347,9 +347,6 @@ bool EV_QNXToolbar::synthesize(void)
 					}
 
 					n = 0;
-					//This would add a ? help topic thingy
-					//PtSetArg(&args[n++], Pt_ARG_HELP_TOPIC, szToolTip, 0);
-					//PtSetArg(&args[n++], Pt_ARG_EFLAGS, Pt_INTERNAL_HELP, Pt_INTERNAL_HELP);
 					//This will add the balloon help
 					PtSetArg(&args[n++], Pt_ARG_LABEL_FLAGS, Pt_SHOW_BALLOON, Pt_SHOW_BALLOON); 
 					PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, szToolTip, 0); 
@@ -363,11 +360,7 @@ bool EV_QNXToolbar::synthesize(void)
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_TOGGLE); 
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 					if (image) {
-						//For balloons set Pt_TEXT_IMAGE ...
 						PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE);
-						//Set the flags on the image to
-						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
-						//PtSetArg(&args[n], Pt_ARG_ARM_DATA, image, sizeof(*image)); n++;
 						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
 					}
 					else {
@@ -708,3 +701,4 @@ void EV_QNXToolbar::hide(void) {
     PtUnrealizeWidget(m_wToolbar);
 	PtSetResource(m_wToolbar, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
 }
+
