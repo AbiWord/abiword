@@ -623,9 +623,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_RevisionSec);
 		m_parseState = _PS_Revision;
 
-		const XML_Char * szId = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
-		if(szId)
-			m_currentRevisionId = atoi(szId);
+		const XML_Char * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
+		if(szS)
+		{
+			m_currentRevisionId = atoi(szS);
+			m_currentRevisionTime = 0;
+
+			szS = UT_getAttribute("time-started",atts);
+			if(szS)
+				m_currentRevisionTime = (time_t)atoi(szS);
+		}
 
 		return;
 	}
@@ -892,7 +899,8 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		{
 			// the revision had no comment associated, so it was not
 			// added to the doc by the xml paraser
-			X_CheckError(getDoc()->addRevision(m_currentRevisionId, NULL, 0));
+			X_CheckError(getDoc()->addRevision(m_currentRevisionId, NULL, 0,
+											   m_currentRevisionTime));
 			m_currentRevisionId = 0;
 		}
 		

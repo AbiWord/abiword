@@ -147,14 +147,22 @@ enum
 class PD_Revision
 {
   public:
-	PD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc):m_iId(iId),m_pDescription(pDesc){};
-	~PD_Revision(){delete m_pDescription;}
+	PD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start)
+		:m_iId(iId),m_pDescription(pDesc), m_tStart(start){};
+	
+	~PD_Revision(){delete [] m_pDescription;}
+	
 	UT_uint32         getId()const{return m_iId;}
 	UT_UCS4Char *     getDescription() const {return m_pDescription;}
 
+	// NB: getStartTime() == 0 should be interpreted as 'unknown'
+	time_t            getStartTime() const {return m_tStart;}
+	void              setStartTime(time_t t) {m_tStart = t;}
+
   private:
-	UT_uint32 m_iId;
+	UT_uint32     m_iId;
 	UT_UCS4Char * m_pDescription;
+	time_t        m_tStart;
 };
 
 
@@ -174,8 +182,10 @@ public:
 	virtual UT_Error		importStyles(const char * szFilename, int ieft, bool bDocProps = false);
 
 	virtual UT_Error		newDocument(void);
-	virtual bool			isDirty(void) const;
 
+	virtual bool			isDirty(void) const;
+	virtual void            forceDirty();
+	
 	virtual bool			canDo(bool bUndo) const;
 	virtual UT_uint32		undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);
@@ -421,8 +431,13 @@ public:
 	void                    setShowRevisionId(UT_uint32 iId);
 	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
 	void                    setRevisionId(UT_uint32 iId);
-	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc);
-	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen);
+
+	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc,
+										time_t tStart);
+	
+	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
+										time_t tStart);
+	
 	UT_Vector &             getRevisions() {return m_vRevisions;}
 	UT_uint32               getHighestRevisionId() const;
 	const PD_Revision *     getHighestRevision() const;

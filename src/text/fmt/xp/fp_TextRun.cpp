@@ -2318,7 +2318,6 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 			// keep looping
 			i = findCharacter(i+1-iBlockOffset, UCS_SPACE);
 		}
-		_setRecalcWidth(true);
 	}
 }
 

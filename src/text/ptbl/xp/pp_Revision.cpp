@@ -496,6 +496,32 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 	return m_pLastRevision;
 }
 
+/*!
+   find revision with id == iId; if revision is not found minId
+   contains the smallest id in this set greater than iId; if return value is and minId
+   is 0xffffffff then there are revisions preset
+*/
+const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 &minId)
+{
+	minId = 0xffffffff;
+
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		const PP_Revision * t = (const PP_Revision *)m_vRev.getNthItem(i);
+		UT_uint32 t_id = t->getId();
+
+		if(t_id == iId)
+		{
+			return t;
+		}
+
+		if(minId > t_id && t_id > iId)
+			minId = t_id;
+	}
+
+	return NULL;
+}
+
 
 /*! given revision level id, this function returns true if given
     segment of text is to be visible, false if it is to be hidden

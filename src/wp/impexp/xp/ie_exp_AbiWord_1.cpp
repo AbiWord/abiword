@@ -1271,6 +1271,8 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
 		pRev = static_cast<PD_Revision *>(vRevisions.getNthItem(k));
+		UT_return_if_fail(pRev);
+		
 		UT_String s;
 		
 		if (!bWroteOpenRevisionsSection)
@@ -1284,10 +1286,17 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 			bWroteOpenRevisionsSection = true;
 		}
 
-		UT_String_sprintf(s, "<r id=\"%d\">", pRev->getId());
+		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%d\">",
+						  pRev->getId(),
+						  pRev->getStartTime());
+		
 		m_pie->write(s.c_str());
 
-		_outputData(pRev->getDescription(), UT_UCS4_strlen(pRev->getDescription()));
+		if(pRev->getDescription())
+		{
+			_outputData(pRev->getDescription(), UT_UCS4_strlen(pRev->getDescription()));
+		}
+		
 
 		m_pie->write("</r>\n");
 	}

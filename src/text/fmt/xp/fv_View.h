@@ -541,7 +541,8 @@ public:
 	// NB: 'show revisions' state is view-specific
 	bool                isShowRevisions() const {return m_bShowRevisions;}
 	void                toggleShowRevisions();
-		
+	void                setShowRevisions(bool bShow);
+	
 	void                cmdSetRevisionLevel(UT_uint32 i);
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
 

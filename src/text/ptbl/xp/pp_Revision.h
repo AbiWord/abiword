@@ -119,7 +119,8 @@ class PP_RevisionAttr
 														   const PP_Revision ** ppR);
 	
 	const PP_Revision *   getLastRevision();
-
+	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId);
+	
 	/*! please not that the following are convenience functions; if
 	    you need to make repeated enqueries, it is better to call
 	    getGreatestLesserOrEqualRevision() or getLastRevision() and

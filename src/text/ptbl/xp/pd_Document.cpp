@@ -172,7 +172,7 @@ const PD_Revision * PD_Document::getHighestRevision() const
 	return r;
 }
 
-bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
+bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -181,15 +181,18 @@ bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
 			return false;
 	}
 
-	PD_Revision * pRev = new PD_Revision(iId, pDesc);
+	PD_Revision * pRev = new PD_Revision(iId, pDesc, tStart);
 
 	m_vRevisions.addItem(static_cast<void*>(pRev));
-	m_bForcedDirty = true;
+	forceDirty();
 	m_iRevisionID = iId;
 	return true;
 }
 
-bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen)
+bool PD_Document::addRevision(UT_uint32 iId,
+							  const UT_UCS4Char * pDesc,
+							  UT_uint32 iLen,
+							  time_t tStart)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -207,10 +210,10 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 		pD[iLen] = 0;
 	}
 	
-	PD_Revision * pRev = new PD_Revision(iId, pD);
+	PD_Revision * pRev = new PD_Revision(iId, pD, tStart);
 
 	m_vRevisions.addItem(static_cast<void*>(pRev));
-	m_bForcedDirty = true;
+	forceDirty();
 	m_iRevisionID = iId;
 	return true;
 }
@@ -4174,7 +4177,7 @@ void PD_Document::setMarkRevisions(bool bMark)
 	if(m_bMarkRevisions != bMark)
 	{
 		m_bMarkRevisions = bMark;
-		m_bForcedDirty = true;
+		forceDirty();
 	}
 }
 
@@ -4187,7 +4190,8 @@ void PD_Document::setShowRevisions(bool bShow)
 {
 	if(m_bShowRevisions != bShow)
 	{
-		m_bForcedDirty = true;
+		m_bShowRevisions = bShow;
+		forceDirty();
 	}
 }
 
@@ -4201,7 +4205,7 @@ void PD_Document::setShowRevisionId(UT_uint32 iId)
 	if(iId != m_iShowRevisionID)
 	{
 		m_iShowRevisionID = iId;
-		m_bForcedDirty = true;
+		forceDirty();
 	}
 }
 
@@ -4210,6 +4214,21 @@ void PD_Document::setRevisionId(UT_uint32 iId)
 	if(iId != m_iRevisionID)
 	{
 		m_iRevisionID  = iId;
-		m_bForcedDirty = true;
+		// not in this case; this value is not persistent between sessions
+		//forceDirty();
 	}
 }
+
+/*!
+    force the document into being dirty and signal this to our listeners
+*/
+void PD_Document::forceDirty()
+{
+	m_bForcedDirty = true;
+
+	// now notify listeners ...
+	// this is necessary so that the save command is available after
+	// operations that only change m_bForcedDirty
+	signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD);	
+}
+

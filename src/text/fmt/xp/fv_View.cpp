@@ -9466,33 +9466,42 @@ void FV_View::toggleMarkRevisions()
 
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
 
-		_generalUpdate();
-
 		// Signal piceTable is stable again
 		_restorePieceTableState();
 
+		// might need to do general update here; leave it off for now
+		// _generalUpdate();
 		_fixInsertionPointCoords();
 	}
 
 	if(isMarkRevisions() && !m_bShowRevisions)
 	{
 		// make sure we see what we are doing ...
-		toggleShowRevisions();
+		setShowRevisions(true);
 	}
 }
 
+void FV_View::setShowRevisions(bool bShow)
+{
+	if(m_bShowRevisions != bShow)
+	{
+		m_bShowRevisions = bShow;
+
+		// set the doc value as well, so that on save we preserve the last
+		// used setting
+		m_pDoc->setShowRevisions(bShow);
+
+		// now we have to re-do document layout from bottom up
+		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+
+		_fixInsertionPointCoords();
+	}
+}
+
+
 void FV_View::toggleShowRevisions()
 {
-	m_bShowRevisions = !m_bShowRevisions;
-
-	// set the doc value as well, so that on save we preserve the last
-	// used setting
-	m_pDoc->setShowRevisions(m_bShowRevisions);
-
-	// now we have to re-do document layout from bottom up
-	m_pDoc->signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_REBUILD);
-
-	_fixInsertionPointCoords();
+	setShowRevisions(!m_bShowRevisions);
 }
 
 bool FV_View::isMarkRevisions()

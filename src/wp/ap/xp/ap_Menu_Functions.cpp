@@ -1036,11 +1036,20 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-        if(pView->isShowRevisions()) {
-            return EV_MIS_Toggled;
-        }
+	UT_uint32 s = 0;
+	
+	if(pView->isMarkRevisions())
+	{
+		// cannot hide revisions when in revisions mode
+		return EV_MIS_Gray;
+	}
 
-        return EV_MIS_ZERO;
+	if(pView->isShowRevisions())
+	{
+		return EV_MIS_Toggled;
+	}
+
+	return EV_MIS_ZERO;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)

@@ -192,22 +192,25 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		m_pRevisions = NULL;
 	}
 
-	// NB this call will recreate m_pRevisions for us
+	setVisibility(FP_VISIBLE); // set default visibility
+	
+	// NB the call will recreate m_pRevisions for us and it will
+	// change visibility if it is affected by the presence of revisions
 	getSpanAP(pSpanAP,bDelete);
 
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
-	//evaluate the "display" property
 
+	//evaluate the "display" property and superimpose it over anything
+	//we got as the result of revisions
 	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
 												 pSectionAP, pDoc, true);
 
 	if(pszDisplay && !UT_strcmp(pszDisplay,"none"))
 	{
-		setVisibility(FP_HIDDEN_TEXT);
-	}
-	   else
-	{
-		setVisibility(FP_VISIBLE);
+		if(m_eVisibility == FP_VISIBLE)
+			setVisibility(FP_HIDDEN_TEXT);
+		else
+			setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
 	}
 
 	// here we handle background colour -- we parse the property into
@@ -220,57 +223,13 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	{
 		pG = getGraphics();
 	}
+	
 	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
 
-	// revisions stuff ...
-	if(m_pRevisions)
-	{
-		FV_View* pView = _getView();
-		UT_return_if_fail(pView);
-
-		UT_uint32 iId  = pView->getRevisionLevel();
-		bool bShow     = pView->isShowRevisions();
-
-		if(!bShow)
-		{
-			// revisions are not to be shown, i.e., additions are to
-			// be hidden, fmt changes ignored, and deletions will be visible
-			const PP_Revision * pRev = m_pRevisions->getLastRevision();
-
-			if( pRev &&
-				(  (pRev->getType() == PP_REVISION_ADDITION)
-				 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)))
-			{
-				if(getVisibility() == FP_HIDDEN_TEXT)
-				{
-					setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
-				}
-				else
-				{
-					setVisibility(FP_HIDDEN_REVISION);
-				}
-			}
-		}
-		else if(!m_pRevisions->isVisible(iId))
-		{
-			// we are to show revisions with id <= iId
-			if(getVisibility() == FP_HIDDEN_TEXT)
-			{
-				setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
-			}
-			else
-			{
-				setVisibility(FP_HIDDEN_REVISION);
-			}
-		}
-		else
-		{
-			// this revision is visible; we need to call
-			// setVisibility() if the revision was not so in the
-			// previous incarnation of this run
-			UT_DEBUGMSG(("fp_Run::lookupProperties: visible revision\n"));
-		}
-	}
+	// here we used to set revision-based visibility, but that has to
+	// be done inside getSpanAP() because we need to know whether the
+	// revision is to be visible or not before we can properly apply
+	// any properties the revision contains.
 
 	//if we are responsible for deleting pSpanAP, then just do so
 	if(bDelete)
@@ -453,7 +412,7 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 */
 void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 {
-	PP_AttrProp * pMySpanAP;
+	PP_AttrProp * pMySpanAP = NULL;
 	if(getType() != FPRUN_FMTMARK)
 	{
 		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
@@ -480,26 +439,123 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 		if(!m_pRevisions)
 			m_pRevisions = new PP_RevisionAttr(pRevision);
 
-		//next step is to parse any properties associated with this
-		//revision
+		UT_return_if_fail(m_pRevisions);
+		
+		//first we need to ascertain if this revision is visible
+		FV_View* pView = _getView();
+		UT_return_if_fail(pView);
 
-		const PP_Revision * pRev = m_pRevisions->getLastRevision();
+		UT_uint32 iId  = pView->getRevisionLevel();
+		bool bShow     = pView->isShowRevisions();
+		const PP_Revision * pRev;
+		UT_sint32 i = 0;
+		UT_uint32 iMinId;
 
-		if( pRev &&
-		  ((pRev->getType() == PP_REVISION_FMT_CHANGE)
-		 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)))
+		pRev = m_pRevisions->getLastRevision();
+		UT_return_if_fail(pRev);
+		
+		UT_uint32 iMaxId = pRev->getId();
+		
+	
+		if(!bShow)
 		{
-			// create copy of span AP and then set all props contained
-			// in our revision;
-			pMySpanAP = new PP_AttrProp;
+			// revisions are not to be shown, i.e., additions are to
+			// be hidden, fmt changes ignored, and deletions will be visible
 
-			(*pMySpanAP) = *pSpanAP;
-			(*pMySpanAP) = *pRev;
+			// see if the first revision is an addition ...
+			i = 1;
+			do
+			{
+				pRev = m_pRevisions->getRevisionWithId(i, iMinId);
 
-			pSpanAP = pMySpanAP;
-			bDeleteAfter = true;
+				if(!pRev)
+				{
+					UT_DEBUGMSG(("fp_Run::getSpanAP: iMinId %d\n", iMinId));
+					
+					if(iMinId == 0xffffffff)
+					{
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						return;
+					}
+
+					// jump directly to the first revision ...
+					i = iMinId;
+				}
+			}
+			while(!pRev && i <= (UT_sint32)iMaxId);
+			
+				
+			if(  (pRev->getType() == PP_REVISION_ADDITION)
+			   ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+			{
+				setVisibility(FP_HIDDEN_REVISION);
+				return;
+			}
+
+			// if we got this far, we found no additions, i.e., this
+			// text was part of the document before the revisions were
+			// applied all other revisions need to be ingored
+			setVisibility(FP_VISIBLE);
+			return;
 		}
-	}
+		else if(!m_pRevisions->isVisible(iId))
+		{
+			// we are to show revisions with id <= iId
+			setVisibility(FP_HIDDEN_REVISION);
+			return;
+		}
+
+		// the revision is visible
+		setVisibility(FP_VISIBLE);
+		UT_DEBUGMSG(("fp_Run::lookupProperties: visible revision\n"));
+
+		//next step is to find any fmt changes, layering them as
+		//subsequent revisions come
+		i = 1;
+
+		for(i = 1; i <= (UT_sint32)iMaxId; i++)
+		{
+			pRev = m_pRevisions->getRevisionWithId(i,iMinId);
+
+			if(!pRev)
+			{
+				if(iMinId == 0xffffffff)
+				{
+					UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+					break;
+				}
+
+				// advance i so that we do not waste our time, -1
+				// because of i++ in loop
+				i = iMinId - 1;
+				continue;
+			}
+			
+			
+			if(  (pRev->getType() == PP_REVISION_FMT_CHANGE)
+				 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+			{
+				// create copy of span AP and then set all props contained
+				// in our revision;
+				if(!pMySpanAP)
+				{
+					pMySpanAP = new PP_AttrProp;
+					UT_return_if_fail(pMySpanAP);
+				
+					(*pMySpanAP) = *pSpanAP;
+					(*pMySpanAP) = *pRev;
+					pSpanAP = pMySpanAP;
+					bDeleteAfter = true;
+				}
+				else
+				{
+					// add fmt to our AP
+					pMySpanAP->setAttributes(pRev->getAttributes());
+					pMySpanAP->setProperties(pRev->getProperties());
+				}
+			}
+		} // for
+	} // if "revision"
 }
 
 void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
