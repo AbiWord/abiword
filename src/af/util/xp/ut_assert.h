@@ -50,6 +50,27 @@
 				 0)))
 #	endif
 
+#elif defined(__QNX__)
+	// A QNX variant.
+#	ifdef NDEBUG
+		// When NDEBUG is defined, assert() does nothing.
+		// So we let the system header files take care of it.
+#		include <assert.h>
+#		define UT_ASSERT assert
+#	else
+		// Otherwise, we want a slighly modified behavior.
+		// We'd like assert() to ask us before crashing.
+		// We treat asserts as logic flaws, which are sometimes
+		// recoverable, but that should be noted.
+#		include <assert.h>
+#		include "ut_qnxAssert.h"
+#		define UT_ASSERT(expr)			\
+				((void) ((expr) ||	\
+				(UT_BeOSAssertMsg(#expr,\
+				 __FILE__, __LINE__),	\
+				 0)))
+#	endif
+
 #else
 
 	// A Unix variant.

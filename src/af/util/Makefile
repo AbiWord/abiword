@@ -54,6 +54,15 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_$(ABI_FE)Assert.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
+ifeq ($(ABI_NATIVE), qnx)
+## TODO fix capitalization and change to $(ABI_FE)
+PLATFORM_OBJS=	$(OBJDIR)/ut_qnxAssert.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_qnxString.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_qnxTimer.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_Xpm2Bitmap.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
+endif
+
 ### add this to the OBJS when we need it for calc.
 ###		$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
 
