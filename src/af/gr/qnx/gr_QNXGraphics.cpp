@@ -71,9 +71,15 @@ int GR_QNXGraphics::DrawSetup() {
 		//Instead use this
 		if (PtRectIntersect(&_rdraw, &m_pClipList->rect) == 0) {
 			//This should never happen!
-			UT_DEBUGMSG(("No intersection of widget and clip list!"));
+			UT_DEBUGMSG(("No intersection of widget %d,%d %d,%d ", 
+						  _rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y));
+			UT_DEBUGMSG(("and clip list %d,%d %d,%d ",
+						  m_pClipList->rect.ul.x, m_pClipList->rect.ul.y, 
+						  m_pClipList->rect.lr.x, m_pClipList->rect.lr.y));
 			UT_ASSERT(0);
-			PtBasicWidgetCanvas(m_pDraw, &_rdraw);				
+			//Instead set a 0,0 area
+			//PtBasicWidgetCanvas(m_pDraw, &_rdraw);				
+			memset(&_rdraw, 0, sizeof(_rdraw));				
 		}
 	}
 
@@ -612,44 +618,74 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 
 	offset.x = -1*dx;
 	offset.y = -1*dy;
-	
-	UT_DEBUGMSG(("GR Scroll %d,%d %d,%d  by %d,%d",
-			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
-#if 0
-	//This generates an expose event on the area uncovered by the blit
-	//which the framework draws over anyway and so it flickers a bit.
-	//and is ineffecient on slower machines. 
-	//FIX: use the flux to disable the sending of the damage event! ...
-	//PtStartFlux(m_pDraw);
-	PtBlit(m_pDraw, &rect, &offset);
-	//PtEndFlux(m_pDraw);
-#else
-	//PROBLEM: This doesn't seem to  clip properly
 
-	//OR: This does the blit on the region, so the rect must be in
+	UT_DEBUGMSG(("GR Scroll1 Before %d,%d %d,%d  by %d,%d",
+			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+	
+	//This does the blit on the region, so the rect must be in
 	//the windows co-ordinates.  But it doesn't automatically
 	//generate a damage event like PtBlit does so we only re-draw once.
 	PhPoint_t shift;
 	PtWidgetOffset(m_pDraw, &shift);
 	PtTranslateRect(&rect, &shift);					
+
 	//The problem here is with clipping ... can I clip the the rect?
 	//Alternately, I should be able to adjust the rect by the offset
 	//on the opposite side that it is scrolling ... clipping would be
 	//way easier though.
-
 	adjust_rect(&rect, &offset);
-	UT_DEBUGMSG(("GR Adj Scroll %d,%d %d,%d  by %d,%d",
+
+	UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 	//to get an expose call PtDamageExtent(region_widget, damage_rect)
-#endif
 }
 
 void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
+//TF NOTE: This is still screwed up ... lots of screen dirt!
+#if 0
+	PhRect_t 	rect, widgetrect;
+	PhPoint_t 	offset;
+
+	PtBasicWidgetCanvas(m_pDraw, &widgetrect);
+
+	rect.ul.x = 
+	rect.lr.x = (width >= 0) ? x_src : x_src + width;
+	rect.ul.y = 
+	rect.lr.y = (height >= 0) ? y_src : y_src + height;
+	rect.lr.x += (width >= 0) ? width : -1*width;
+	rect.lr.y += (height >= 0) ? height : -1*height;
+
+	offset.x = -1*(x_src - x_dest);
+	offset.y = -1*(y_src - y_dest);
+
+	UT_DEBUGMSG(("GR Scroll2 Before %d,%d %d,%d  by %d,%d",
+			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+
+	if (PtRectIntersect(&widgetrect, &rect) == 0) {
+		UT_DEBUGMSG(("No intersection! "));
+		UT_ASSERT(0);
+	}
+	else {
+		rect = widgetrect;
+	}
+
+	PhPoint_t shift;
+	PtWidgetOffset(m_pDraw, &shift);
+	PtTranslateRect(&rect, &shift);					
+
+//	adjust_rect(&rect, &offset);
+
+	UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
+			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+
+	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+#else
 	UT_ASSERT(0);
+#endif
 }
 
 void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
