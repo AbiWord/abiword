@@ -251,11 +251,14 @@ PtArg_t args[10];
 PtSetResource(label2,Pt_ARG_TEXT_STRING,getComment2Label(),0);
 
       PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);
-      PtAddCallback(btnCancel,Pt_CB_ACTIVATE,ph_event_ok,this);
+      PtAddCallback(btnCancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
       PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
       PtAddCallback(toggle1,Pt_CB_ACTIVATE,ph_event_toggle_change,this);
       PtAddCallback(toggle2,Pt_CB_ACTIVATE,ph_event_toggle_change,this);
 
+			m_toggle2 = toggle2;
+			m_text1		= text1;
+			m_toggle1	= toggle1;
 return mainwindow;
 }
 
