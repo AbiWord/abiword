@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -415,12 +415,14 @@ ReplaceDocument:
 XAP_Frame * AP_UnixFrame::cloneFrame(void)
 {
 	AP_UnixFrame * pClone = new AP_UnixFrame(this);
+	UT_Error error = UT_OK;
 	ENSUREP(pClone);
 
 	if (!pClone->initialize())
 		goto Cleanup;
 
-	if (!E2B(pClone->_showDocument()))
+	error = pClone->_showDocument();
+	if (error)
 		goto Cleanup;
 
 	pClone->show();

@@ -74,7 +74,8 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 			XAP_Frame * pNewUnixFrame = pApp->newFrame ();
 			filename = (char *) names->data;
 
-			if (!E2B(pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */)))
+			UT_Error error = pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */);
+			if (error)
 			{
 				// TODO: warn user that we couldn't open that file
 				
@@ -99,7 +100,9 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 		XAP_Frame * pNewUnixFrame = pApp->newFrame();
 		filename = (char *) selection_data->data;
 
-		if (!E2B(pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */)))
+		UT_Error error = pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */)
+
+		if (error)
 			pNewUnixFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
 
 #endif

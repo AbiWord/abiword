@@ -747,12 +747,12 @@ Defun1(fileNew)
 		pFrame = pNewFrame;
 
 	// the IEFileType here doesn't really matter, since the name is NULL
-	UT_Bool bRet = E2B(pFrame->loadDocument(NULL, IEFT_Unknown));
+	UT_Error error = pFrame->loadDocument(NULL, IEFT_Unknown);
 
 	if (pNewFrame)
 		pNewFrame->show();
 
-	return bRet;
+	return E2B(error);
 }
 
 /*****************************************************************/
@@ -1340,10 +1340,10 @@ Defun1(fileOpen)
 	
 	// we own storage for pNewFile and must free it.
 
-	UT_Bool bRes = E2B(_fileOpen(pFrame, pNewFile, ieft));
+	UT_Error error = _fileOpen(pFrame, pNewFile, ieft);
 
 	free(pNewFile);
-	return bRes;
+	return E2B(error);
 }
 
 Defun(fileSave)
@@ -1462,12 +1462,12 @@ static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 	// BROKEN: since the user can explictly export as any type.
 	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
 	
-	UT_Bool bRes = E2B(_fileOpen(pFrame, szRecent, IEFT_Unknown));
+	UT_Error error = _fileOpen(pFrame, szRecent, IEFT_Unknown);
 
-	if (!bRes)
+	if (error)
 		pPrefs->removeRecent(ndx);
 
-	return bRes;
+	return E2B(error);
 }
 
 Defun1(openRecent_1)
