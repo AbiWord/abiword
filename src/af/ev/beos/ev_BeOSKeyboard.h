@@ -22,14 +22,13 @@
 #ifndef EV_BEOSKEYBOARD_H
 #define EV_BEOSKEYBOARD_H
 
-#include <Be.h>
-
 #include "ev_Keyboard.h"
 #include "ev_EditBits.h"
 
 class AV_View;
 class XAP_BeOSApp;
 class XAP_BeOSFrame;
+class BMessage;
 
 class ev_BeOSKeyboard : public EV_Keyboard
 {

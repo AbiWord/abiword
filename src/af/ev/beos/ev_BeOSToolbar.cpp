@@ -209,10 +209,8 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 //This is used to make the toolbar reflect the current state of
 //the document (enable, disable, set font values etc
 UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
-
-	printf("UNIMPLEMENTED REFRESH TOOLBAR \n");
-#if 0
-	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pBeOSApp->getToolbarActionSet();
+	const EV_Toolbar_ActionSet * pToolbarActionSet;
+	pToolbarActionSet = m_pBeOSApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
@@ -327,7 +325,6 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 	m_pTBView->Window()->Lock();
 	m_pTBView->Draw(m_pTBView->Bounds()); 	
 	m_pTBView->Window()->Unlock();
-#endif
 	return UT_TRUE;
 }
 
@@ -335,7 +332,6 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 UT_Bool EV_BeOSToolbar::toolbarEvent(AP_Toolbar_Id id,
 				 UT_UCSChar * pData,
 				 UT_uint32 dataLength) {
-#if 0
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
 	// return UT_TRUE iff handled.
@@ -354,10 +350,9 @@ UT_Bool EV_BeOSToolbar::toolbarEvent(AP_Toolbar_Id id,
 	UT_ASSERT(pEMC);
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
-	UT_ASSERT(pEM);						// make sure it's bound to something
+	UT_ASSERT(pEM);			// make sure it's bound to something
 
-	invokeToolbarMethod(m_pBeOSFrame->getCurrentView(),pEM,1,pData,dataLength);
-#endif
+	invokeToolbarMethod(m_pBeOSFrame->getCurrentView(),pEM,pData,dataLength);
 	return UT_TRUE;
 }
 

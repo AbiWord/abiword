@@ -32,7 +32,6 @@ class AV_View;
 class XAP_BeOSApp;
 class XAP_BeOSFrame;
 
-
 /*****************************************************************/
 
 class EV_BeOSMenu : public EV_Menu

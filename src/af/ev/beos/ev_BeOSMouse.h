@@ -28,7 +28,8 @@
 
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrame.h"
-#include <Be.h>
+
+class BMessage;
 
 /*****************************************************************/
 

@@ -33,7 +33,8 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 
-#include <InterfaceDefs.h>
+#include <Menu.h>
+#include <MessageFilter.h>
 
 /*********************************************************************/
 /*

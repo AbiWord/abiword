@@ -29,7 +29,7 @@
 #include "ev_EditEventMapper.h"
 #include "xav_View.h"
 
-#include <InterfaceDefs.h>
+#include <MessageFilter.h>
 //uint32		modifiers();
 
 class MouseFilter: public BMessageFilter {
@@ -109,7 +109,7 @@ void ev_BeOSMouse::mouseUp(AV_View* pView, BMessage *msg)
 	msg->FindInt32("modifiers", &mod);
 	msg->FindPoint("where", &pt);
 
-	printf("MOUSE: Up \n");
+	//printf("MOUSE: Up \n");
 
 	if (mod & B_SHIFT_KEY)
 		ems |= EV_EMS_SHIFT;
@@ -172,7 +172,7 @@ void ev_BeOSMouse::mouseClick(AV_View* pView, BMessage *msg)
 	msg->FindInt32("modifiers", &mod);
 	msg->FindPoint("where", &pt);
 
-	printf("MOUSE: Click \n");
+	//printf("MOUSE: Click \n");
 
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON1;
@@ -238,7 +238,7 @@ void ev_BeOSMouse::mouseMotion(AV_View* pView, BMessage *msg)
 	msg->FindInt32("modifiers", &mod);
 	msg->FindPoint("where", &pt);
 
-	printf("MOUSE: Move \n");
+	//printf("MOUSE: Move \n");
 	
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON1;
