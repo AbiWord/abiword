@@ -430,26 +430,24 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 	return true;
 }
 
-void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
+								 PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	if (x <= 0)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
 		// don't set bBOL to false here
 		bEOL = false;
-
-		UT_ASSERT(bBOL == true || bBOL == false);
-
 		return;
 	}
 
 	if (x >= m_iWidth)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
-
-		UT_ASSERT(bEOL == true || bEOL == false);
-		UT_ASSERT(bBOL == true || bBOL == false);
-
+		// Setting bEOL fixes bug 1149. But bEOL has been set in the
+		// past - probably somewhere else, so this is not necessarily
+		// the correct place to do it.  2001.02.25 jskov
+		bEOL = true;
 		return;
 	}
 
@@ -492,10 +490,6 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 #else
 			pos = m_pBL->getPosition() + i;
 #endif
-
-			UT_ASSERT(bEOL == true || bEOL == false);
-			UT_ASSERT(bBOL == true || bBOL == false);
-
 			return;
 		}
 	}

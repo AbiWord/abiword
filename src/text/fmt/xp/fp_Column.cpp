@@ -365,10 +365,6 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 			if (((y - pLine->getY()) >= 0) && ((y - pLine->getY()) < (UT_sint32)(pLine->getHeight())))
 			{
 				pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-
-				UT_ASSERT(bEOL == true || bEOL == false);
-				UT_ASSERT(bBOL == true || bBOL == false);
-				
 				return;
 			}
 		}
@@ -397,10 +393,6 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 					{
 						pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
 					}
-
-					UT_ASSERT(bEOL == true || bEOL == false);
-					UT_ASSERT(bBOL == true || bBOL == false);
-
 					return;
 				}
 			}
@@ -410,20 +402,12 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 		if ((i == 0) && (y < pLine->getY()))
 		{
 			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-
-			UT_ASSERT(bEOL == true || bEOL == false);
-			UT_ASSERT(bBOL == true || bBOL == false);
-			
 			return;
 		}
 		
 		if ((i == (count-1)) && (y >= (pLine->getY() + (UT_sint32)pLine->getHeight())))
 		{
 			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-
-			UT_ASSERT(bEOL == true || bEOL == false);
-			UT_ASSERT(bBOL == true || bBOL == false);
-			
 			return;
 		}
 	}

@@ -3204,10 +3204,6 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
 	UT_ASSERT(iNewPoint != iOldPoint);
 
-	UT_ASSERT(bEOL == true || bEOL == false);
-	UT_ASSERT(bBOL == true || bBOL == false);
-
-
 	_setPoint(iNewPoint, bEOL);
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -5829,9 +5825,6 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	bool bEOL = false;
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
-	UT_ASSERT(bEOL == true || bEOL == false);
-	UT_ASSERT(bBOL == true || bBOL == false);
-
 	return bBOL;
 }
 
@@ -5870,7 +5863,6 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
-	UT_ASSERT(bEOL == true || bEOL == false);
 
 	if (!m_pDoc->getAllowChangeInsPoint())
 	{

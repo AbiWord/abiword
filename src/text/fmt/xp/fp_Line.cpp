@@ -317,7 +317,8 @@ void fp_Line::remove(void)
 	m_pContainer->removeLine(this);
 }
 
-void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
+							  bool& bBOL, bool& bEOL)
 {
 	const int count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
@@ -335,10 +336,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 
 		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
 		pFirstRun->mapXYToPosition(0, y2, pos, bBOL, bEOL);
-
-		UT_ASSERT(bEOL == true || bEOL == false);
-		UT_ASSERT(bBOL == true || bBOL == false);
-
 		return;
 	}
 
@@ -364,9 +361,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 				{
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
-					UT_ASSERT(bEOL == true || bEOL == false);
-					UT_ASSERT(bBOL == true || bBOL == false);
-
 					return;
 				}
 			}
@@ -378,9 +372,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 				UT_ASSERT(FPRUN_FMTMARK == pRun2->getType());
 
 				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
-
-				UT_ASSERT(bEOL == true || bEOL == false);
-				UT_ASSERT(bBOL == true || bBOL == false);
 
 				return;
 			}
@@ -431,9 +422,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 	{
 		pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
 	}
-	UT_ASSERT(bEOL == true || bEOL == false);
-	UT_ASSERT(bBOL == true || bBOL == false);
-
 }
 
 void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
