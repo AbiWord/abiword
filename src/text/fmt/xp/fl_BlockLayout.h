@@ -88,54 +88,70 @@ typedef enum {
 class ABI_EXPORT fl_CharWidths
 {
 public:
-	fl_CharWidths() : m_gbCharWidths(256), m_gbCharWidthsLayoutUnits(256)
+	fl_CharWidths() : m_gbCharWidths(256)
+#ifndef WITH_PANGO		
+		, m_gbCharWidthsLayoutUnits(256)
+#endif		
 		{
 		}
 
 private:
 
 	UT_GrowBuf m_gbCharWidths;
+#ifndef WITH_PANGO	
 	UT_GrowBuf m_gbCharWidthsLayoutUnits;
+#endif	
 
 public:
 
 	bool ins(UT_uint32 position, UT_uint32 length)
 		{
-			m_gbCharWidths.ins(position, length);
-			return m_gbCharWidthsLayoutUnits.ins(position, length);
+#ifndef WITH_PANGO			
+			m_gbCharWidthsLayoutUnits.ins(position, length);
+#endif			
+			return m_gbCharWidths.ins(position, length);
+			
 		}
 
 	bool del(UT_uint32 position, UT_uint32 amount)
 		{
-			m_gbCharWidths.del(position, amount);
-			return m_gbCharWidthsLayoutUnits.del(position, amount);
+#ifndef WITH_PANGO			
+			m_gbCharWidthsLayoutUnits.del(position, amount);
+#endif			
+			return m_gbCharWidths.del(position, amount);
 		}
 	UT_uint32 getLength(void) const
 		{
+#ifndef WITH_PANGO
 			UT_ASSERT(m_gbCharWidths.getLength() == m_gbCharWidthsLayoutUnits.getLength());
+#endif			
 			return m_gbCharWidths.getLength();
 		}
 	bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
 		{
-			m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
-			return m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
+#ifndef WITH_PANGO			
+			m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
+#endif
+			return m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
 		}
 	void truncate(UT_uint32 position)
 		{
 			m_gbCharWidths.truncate(position);
+#ifndef WITH_PANGO			
 			m_gbCharWidthsLayoutUnits.truncate(position);
+#endif
 		}
 
 	UT_GrowBuf *getCharWidths()
 		{
 			return &m_gbCharWidths;
 		}
+#ifndef WITH_PANGO	
 	UT_GrowBuf *getCharWidthsLayoutUnits()
 		{
 			return &m_gbCharWidthsLayoutUnits;
 		}
-
-
+#endif	
 };
 
 
@@ -251,20 +267,17 @@ public:
 	void clearScreen(GR_Graphics*);
 
 	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
-	inline UT_sint32	getTextIndentInLayoutUnits(void) const { return m_iTextIndentLayoutUnits; }
 	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
-	inline UT_sint32	getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
-	inline UT_sint32	getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
-	inline UT_sint32	getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
+#ifndef WITH_PANGO	
+	inline UT_sint32	getTextIndentInLayoutUnits(void) const { return m_iTextIndentLayoutUnits; }
+	inline UT_sint32	getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
+	inline UT_sint32	getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
+	inline UT_sint32	getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
 	inline UT_sint32	getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
-#if 0	
-	void				setTextIndent(UT_sint32 i);
-	void				setLeftMargin(UT_sint32 i);
-	void				setRightMargin(UT_sint32 i);
-#endif
+#endif	
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	inline FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
 	inline fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
@@ -296,17 +309,19 @@ public:
 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType, 
 							eTabLeader &iLeader );
+	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
+							UT_sint32& iPosition, eTabType& iType,
+							eTabLeader &iLeader );
+#ifndef WITH_PANGO	
 	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
 										 UT_sint32& iPosition, 
 										 eTabType& iType, 
 										 eTabLeader &iLeader);
-	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
-							UT_sint32& iPosition, eTabType& iType,
-							eTabLeader &iLeader );
 	bool	findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
 										 UT_sint32& iPosition,
 										 eTabType& iType,
 										 eTabLeader &iLeader);
+#endif	
 	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
 	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
@@ -453,24 +468,29 @@ protected:
 
 	UT_Vector				m_vecTabs;
 	UT_sint32				m_iDefaultTabInterval;
+#ifndef WITH_PANGO	
 	UT_sint32				m_iDefaultTabIntervalLayoutUnits;
-
+#endif
 	// read-only caches of the underlying properties
 	UT_uint32				m_iOrphansProperty;
 	UT_uint32				m_iWidowsProperty;
 	UT_sint32				m_iTopMargin;
-	UT_sint32				m_iTopMarginLayoutUnits;
 	UT_sint32				m_iBottomMargin;
-	UT_sint32				m_iBottomMarginLayoutUnits;
 	UT_sint32				m_iLeftMargin;
-	UT_sint32				m_iLeftMarginLayoutUnits;
 	UT_sint32				m_iRightMargin;
-	UT_sint32				m_iRightMarginLayoutUnits;
 	UT_sint32				m_iTextIndent;
+#ifndef WITH_PANGO	
+	UT_sint32				m_iTopMarginLayoutUnits;
+	UT_sint32				m_iBottomMarginLayoutUnits;
+	UT_sint32				m_iLeftMarginLayoutUnits;
+	UT_sint32				m_iRightMarginLayoutUnits;
 	UT_sint32				m_iTextIndentLayoutUnits;
+#endif	
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
+#ifndef WITH_PANGO	
 	double					m_dLineSpacingLayoutUnits;
+#endif	
 	//bool					m_bExactSpacing;
 	eSpacingPolicy			m_eSpacingPolicy;
 	bool					m_bKeepTogether;
@@ -527,8 +547,10 @@ public:
 	
 	UT_sint32		getPosition() { return iPosition;}
 	void			setPosition(UT_sint32 value) { iPosition = value;}
+#ifndef WITH_PANGO	
 	UT_sint32		getPositionLayoutUnits() { return iPositionLayoutUnits;}
 	void			setPositionLayoutUnits(UT_sint32 value) { iPositionLayoutUnits = value;}
+#endif	
 	eTabType		getType() { return iType;}
 	void			setType(eTabType type) { iType = type;}
 	eTabLeader		getLeader() { return iLeader;};
@@ -539,7 +561,9 @@ public:
 	void operator = (const fl_TabStop &Other)
 		{
 			iPosition = Other.iPosition;
+#ifndef WITH_PANGO			
 			iPositionLayoutUnits = Other.iPositionLayoutUnits;
+#endif			
 			iType = Other.iType;
 			iLeader = Other.iLeader;
 			iOffset = Other.iOffset;
@@ -548,7 +572,9 @@ public:
 protected:
 
 	UT_sint32		iPosition;
+#ifndef WITH_PANGO	
 	UT_sint32		iPositionLayoutUnits;
+#endif	
 	eTabType		iType;
 	eTabLeader		iLeader;
 	UT_uint32		iOffset;

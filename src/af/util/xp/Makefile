@@ -64,6 +64,10 @@ ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 CPPSRCS += ut_contextGlyph.cpp
 endif		
 
+ifeq ($(ABI_OPT_PANGO),1)
+CPPSRCS += ut_abi-pango.cpp
+endif
+
 ifeq ($(ABI_OPT_PERL),1)
 CPPSRCS += ut_PerlBindings.cpp
 endif

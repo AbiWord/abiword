@@ -87,20 +87,26 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iOldX(0),
 		m_iY(0),
 		m_iHeight(0),
-		m_iHeightLayoutUnits(0),
 		m_iWidth(0),
-		m_iWidthLayoutUnits(0),
-		m_iOffsetFirst(iOffsetFirst),
-		m_iLen(iLen),
 		m_iAscent(0),
 		m_iDescent(0),
+#ifndef WITH_PANGO		
+		m_iHeightLayoutUnits(0),
+		m_iWidthLayoutUnits(0),
 		m_iAscentLayoutUnits(0),
 		m_iDescentLayoutUnits(0),
+#endif		
+		m_iOffsetFirst(iOffsetFirst),
+		m_iLen(iLen),
 		m_pG(pG),
 		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
 		m_pField(0),
+#ifndef WITH_PANGO		
 		m_pScreenFont(0),
 		m_pLayoutFont(0),
+#else
+		m_pPangoFont(0),
+#endif		
 		m_fDecorations(0),
 		m_iLineWidth(0),
 		m_iLinethickness(0),
@@ -183,9 +189,11 @@ fp_Run::_inheritProperties(void)
 		m_iAscent = pRun->getAscent();
 		m_iDescent = pRun->getDescent();
 		m_iHeight = pRun->getHeight();
+#ifndef WITH_PANGO		
 		m_iAscentLayoutUnits = pRun->getAscentInLayoutUnits();
 		m_iDescentLayoutUnits = pRun->getDescentInLayoutUnits();
 		m_iHeightLayoutUnits = pRun->getHeightInLayoutUnits();
+#endif		
 	}
 	else
 	{
@@ -200,7 +208,9 @@ fp_Run::_inheritProperties(void)
 
 		FL_DocLayout * pLayout = m_pBL->getDocLayout();
 
+#ifndef WITH_PANGO		
 		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+		
 		if (pFont != m_pScreenFont)
 		  {
 		    m_pScreenFont = pFont;
@@ -217,6 +227,17 @@ fp_Run::_inheritProperties(void)
 		    m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
 		    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
 		  }
+#else
+		PangoFont* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+		
+		if (pFont != m_pPangoFont)
+		  {
+		    m_pPangoFont = pFont;
+		    m_iAscent = m_pG->getFontAscent(pFont);	
+		    m_iDescent = m_pG->getFontDescent(pFont);
+		    m_iHeight = m_pG->getFontHeight(pFont);
+		  }
+#endif
 	}
 }
 
@@ -1028,16 +1049,16 @@ void fp_TabRun::lookupProperties(void)
 	m_pBL->getAttrProp(&pBlockAP);
 	m_pBL->getField(m_iOffsetFirst,m_pField);
 
-
-	// look for fonts in this DocLayout's font cache
-	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
-	
 	
 	getHighlightColor(); // Highlight color
 	getPageColor(); // update Page Color member variable.
+
+
+	// look for fonts in this DocLayout's font cache
+	FL_DocLayout * pLayout = m_pBL->getDocLayout();
+#ifndef WITH_PANGO	
+	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
 	if (pFont != m_pScreenFont)
 	{
@@ -1056,6 +1077,19 @@ void fp_TabRun::lookupProperties(void)
 	    m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
 	    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
 	}
+#else
+	PangoFont* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	
+	if (pFont != m_pPangoFont)
+	{
+	    m_pPangoFont = pFont;
+	    m_iAscent = m_pG->getFontAscent(pFont);	
+	    m_iDescent = m_pG->getFontDescent(pFont);
+	    m_iHeight = m_pG->getFontHeight(pFont);
+	}
+
+#endif
+	
 #ifdef BIDI_ENABLED
 	if(m_iDirection != FRIBIDI_TYPE_WS)
 	{
@@ -1859,7 +1893,10 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 	m_iLen = 1;
 	m_bDirty = true;
 	m_iWidth = 0;
+#ifndef WITH_PANGO	
 	m_iWidthLayoutUnits = 0;
+#endif
+	
 #ifdef BIDI_ENABLED
 	UT_ASSERT((pBL));
 	m_iDirection = FRIBIDI_TYPE_WS;
@@ -2018,7 +2055,10 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	m_iLen = 1;
 	m_bDirty = false;
 	m_iWidth = 0;
+#ifndef WITH_PANGO	
 	m_iWidthLayoutUnits = 0;
+#endif
+	
 #ifdef BIDI_ENABLED
 	UT_ASSERT((pBL));
 	m_iDirection = FRIBIDI_TYPE_WS;
@@ -2446,8 +2486,10 @@ void fp_ImageRun::lookupProperties(void)
 	{
 		m_iWidth = m_pImage->getDisplayWidth();
 		m_iHeight = m_pImage->getDisplayHeight();
+#ifndef WITH_PANGO		
 		m_iWidthLayoutUnits = m_pImage->getLayoutWidth();
 		m_iHeightLayoutUnits = m_pImage->getLayoutHeight();
+#endif		
 	}
 	else
 	{
@@ -2455,16 +2497,21 @@ void fp_ImageRun::lookupProperties(void)
 			
 		m_iWidth = m_pG->convertDimension("0.5in");
 		m_iHeight = m_pG->convertDimension("0.5in");
+#ifndef WITH_PANGO		
 		m_iWidthLayoutUnits = UT_convertToLayoutUnits("0.5in");
 		m_iHeightLayoutUnits = UT_convertToLayoutUnits("0.5in");
+#endif		
 	}
 		
 	UT_ASSERT(m_iWidth > 0);
 	UT_ASSERT(m_iHeight > 0);
 	m_iImageWidth = m_iWidth;
-	m_iImageWidthLayoutUnits = m_iWidthLayoutUnits;
 	m_iImageHeight = m_iHeight;
+#ifndef WITH_PANGO	
+	m_iImageWidthLayoutUnits = m_iWidthLayoutUnits;
 	m_iImageHeightLayoutUnits = m_iHeightLayoutUnits;
+#endif
+	
 //
 // This code deals with too big images
 //
@@ -2475,26 +2522,32 @@ void fp_ImageRun::lookupProperties(void)
 		{
 			double dw = (double) getLine()->getMaxWidth();
 			double rat = (dw - 1.0)/dw;
+			m_iWidth = getLine()->getMaxWidth() -1;
+#ifndef WITH_PANGO			
 			double dwL = (double) getLine()->getMaxWidthInLayoutUnits();
 			double dnwL = dwL - dwL*rat;
-			m_iWidth = getLine()->getMaxWidth() -1;
 			m_iWidthLayoutUnits = (UT_sint32) dnwL;
+#endif			
 		}
 		if(getLine()->getContainer() != NULL && 
 		   getLine()->getContainer()->getMaxHeight() - 1 < m_iHeight)
 		{
 			double dh = (double) getLine()->getContainer()->getMaxHeight();
-			double dhL = (double) getLine()->getContainer()->getMaxHeightInLayoutUnits();
-			double rat = (dh - 1.0)/dh;
-			double dnhL = dhL - dhL*rat; 
 			m_iHeight = getLine()->getContainer()->getMaxHeight() -1;
+			double rat = (dh - 1.0)/dh;
+#ifndef WITH_PANGO			
+			double dhL = (double) getLine()->getContainer()->getMaxHeightInLayoutUnits();
+			double dnhL = dhL - dhL*rat; 
 			m_iHeightLayoutUnits = (UT_sint32) dnhL;
+#endif			
 		}
 	}
 	m_iAscent = m_iHeight;
 	m_iDescent = 0;
+#ifndef WITH_PANGO	
 	m_iAscentLayoutUnits = m_iHeightLayoutUnits;
 	m_iDescentLayoutUnits = 0;
+#endif	
 }
 
 bool fp_ImageRun::canBreakAfter(void) const
@@ -2708,7 +2761,13 @@ bool fp_FieldRun::recalcWidth()
 {
 	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	lookupProperties();
+	
+#ifndef WITH_PANGO	
 	m_pG->setFont(m_pFont);
+#else
+	m_pG->setFont(m_pPangoFont);
+#endif
+	
 	UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", m_iWidth, iNewWidth));
 	if (iNewWidth != m_iWidth)
@@ -2725,9 +2784,10 @@ bool fp_FieldRun::recalcWidth()
 		}
 		m_iWidth = iNewWidth;
 
+#ifndef WITH_PANGO
 		m_pG->setFont(m_pFontLayout);
 		m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
-
+#endif
 		return true;
 	}
 
@@ -2806,14 +2866,20 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 		{
 			UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 			lookupProperties();
+#ifndef WITH_PANGO			
 			m_pG->setFont(m_pFont);
+#else
+			m_pG->setFont(m_pPangoFont);
+#endif			
 			UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 			if (iNewWidth != m_iWidth)
 			{
 				m_iWidth = iNewWidth;
 				markWidthDirty();
+#ifndef WITH_PANGO				
 				m_pG->setFont(m_pFontLayout);
 				m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+#endif				
 				return true;
 			}
 
@@ -2873,11 +2939,11 @@ void fp_FieldRun::lookupProperties(void)
 	m_iAscent = m_pG->getFontAscent(m_pFont);	
 	m_iDescent = m_pG->getFontDescent(m_pFont);
 	m_iHeight = m_pG->getFontHeight(m_pFont);
-
+#ifndef WITH_PANGO
 	m_iAscentLayoutUnits = m_pG->getFontAscent(m_pFontLayout);	
 	m_iDescentLayoutUnits = m_pG->getFontDescent(m_pFontLayout);
 	m_iHeightLayoutUnits = m_pG->getFontHeight(m_pFontLayout);
-
+#endif
 //	m_pG->setFont(m_pFont);  Why??? DOM!!
 
 	const XML_Char* pszType = NULL;

@@ -246,6 +246,7 @@ void fp_TextRun::lookupProperties(void)
 	}
 	else m_fPosition = TEXT_POSITION_NORMAL;
 
+#ifndef WITH_PANGO	
 	GR_Font * pFont;
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
@@ -268,8 +269,26 @@ void fp_TextRun::lookupProperties(void)
 		m_iDescentLayoutUnits = m_pG->getFontDescent(m_pLayoutFont);
 		m_iHeightLayoutUnits = m_pG->getFontHeight(m_pLayoutFont);
 	  }
+#else
+	PangoFont * pFont;
+
+	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	if (m_pPangoFont != pFont)
+	  {
+		m_bRecalcWidth = true;
+		m_pPangoFont = pFont;
+		m_iAscent = m_pG->getFontAscent(m_pScreenFont);
+		m_iDescent = m_pG->getFontDescent(m_pScreenFont);
+		m_iHeight = m_pG->getFontHeight(m_pScreenFont);
+	  }
+#endif
+	
 #if 1
+#ifndef WITH_PANGO	
 	m_pG->setFont(m_pScreenFont);
+#else
+	m_pG->setFont(m_pPangoFont);
+#endif	
 #endif
 
 	//set the language member
@@ -915,8 +934,10 @@ void fp_TextRun::mergeWithNext(void)
 
 	m_pField = pNext->m_pField;
 	m_iWidth += pNext->m_iWidth;
+#ifndef WITH_PANGO	
 	m_iWidthLayoutUnits += pNext->m_iWidthLayoutUnits;
-
+#endif
+	
 #ifdef BIDI_ENABLED
 	UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
 	// first of all, make sure the X coordinance of the merged run is correct
@@ -1023,8 +1044,13 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 #endif
 	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, iSplitOffset, m_iLen - (iSplitOffset - m_iOffsetFirst), false);
 	UT_ASSERT(pNew);
+#ifndef WITH_PANGO	
 	pNew->m_pScreenFont = this->m_pScreenFont;
 	pNew->m_pLayoutFont = this->m_pLayoutFont;
+#else
+	pNew->m_pPangoFont = this->m_pPangoFont;
+#endif
+	
 	pNew->m_fDecorations = this->m_fDecorations;
 	pNew->m_colorFG = this->m_colorFG;
 	pNew->m_pField = this->m_pField;
@@ -1033,10 +1059,11 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iAscent = this->m_iAscent;
 	pNew->m_iDescent = this->m_iDescent;
 	pNew->m_iHeight = this->m_iHeight;
+#ifndef WITH_PANGO	
 	pNew->m_iAscentLayoutUnits = this->m_iAscentLayoutUnits;
-	UT_ASSERT(pNew->m_iAscentLayoutUnits);
 	pNew->m_iDescentLayoutUnits = this->m_iDescentLayoutUnits;
 	pNew->m_iHeightLayoutUnits = this->m_iHeightLayoutUnits;
+#endif	
 	pNew->m_iLineWidth = this->m_iLineWidth;
 	pNew->m_bDirty = this->m_bDirty;
 	pNew->m_pLanguage = this->m_pLanguage;
@@ -1093,25 +1120,13 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	delete[] m_pSpanBuff;
 	m_pSpanBuff = pSB;
+#endif
 
 	// we will use the _addupCharWidths() function here instead of recalcWidth(), since when
 	// a run is split the info in the block's char-width array is not affected, so we do not
 	//have to recalculate these
-
 	_addupCharWidths();
 	pNew->_addupCharWidths();
-#else
-#if 0
-	m_bRecalcWidth = true;
-	m_iWidth = simpleRecalcWidth(Width_type_display);
-	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
-	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
-	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
-#else
-	_addupCharWidths();
-	pNew->_addupCharWidths();
-#endif
-#endif
 
 
 #ifdef BIDI_ENABLED
@@ -1181,18 +1196,27 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 		// will be done by recalcWidth()
 #endif	
 		UT_GrowBufElement* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
-		_fetchCharWidths(m_pScreenFont, pCharWidths);
 
+#ifndef WITH_PANGO
+		_fetchCharWidths(m_pScreenFont, pCharWidths);
 		pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
 		_fetchCharWidths(m_pLayoutFont, pCharWidths);
+		m_pG->setFont(m_pScreenFont);
+#else
+		_fetchCharWidths(m_pPangoFont, pCharWidths);
+#endif
 
-	m_pG->setFont(m_pScreenFont);
 #ifdef BIDI_ENABLED
 	};
 #endif
 }
 
+#ifndef WITH_PANGO
 UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
+#else	
+UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
+#endif
+	
 #ifndef BIDI_ENABLED
 const
 #endif
@@ -1213,6 +1237,7 @@ const
 
 
 	UT_GrowBuf * pgbCharWidths;
+#ifndef WITH_PANGO	
 	switch(iWidthType)
 	{
 		case Width_type_display:
@@ -1228,6 +1253,9 @@ const
 			return 0;
 			break;
 	}
+#else
+	pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+#endif	
 
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
@@ -1237,23 +1265,28 @@ const
 #ifdef BIDI_ENABLED
 		_refreshDrawBuffer();
 
+#ifndef WITH_PANGO		
 		if(iWidthType == Width_type_display)
 			m_pG->setFont(m_pScreenFont);
 		else
 			m_pG->setFont(m_pLayoutFont);
-
+#endif		
 
 		for (UT_sint32 i=0; i<iLength; i++)
 		{
+#ifndef WITH_PANGO
+			// with PANGO this is taken care of by _refreshDrawBuffer()
 			if(s_bUseContextGlyphs)
 			{
 				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_GrowBufElement*)pCharWidths + m_iOffsetFirst + i);
 			}
+#endif			
 			iWidth += pCharWidths[i + m_iOffsetFirst];
 		}
-
+#ifndef WITH_PANGO		
 		m_pG->setFont(m_pScreenFont);
-#else
+#endif		
+#else // non-BIDI build
 		const UT_UCSChar* pSpan;
 		UT_uint32 lenSpan;
 		UT_uint32 offset = m_iOffsetFirst;
@@ -1320,26 +1353,6 @@ bool fp_TextRun::recalcWidth(void)
 	calculate width here directly, rather than calling simpleRecalcWidth
 	since it allows us to carry out only a sinle evaluation of the context
 */
-#if 0
-	UT_sint32 iWidth = simpleRecalcWidth(Width_type_display);
-
-	if (iWidth == m_iWidth)
-	{
-		return false;
-	}
-
-
-	if (m_iWidth)
-	{
-		clearScreen();
-	}
-
-	m_iWidth = iWidth;
-	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
-
-	return true;
-#else
-
 	if(m_bRecalcWidth)
 	{
 		m_bRecalcWidth = false;
@@ -1350,6 +1363,8 @@ bool fp_TextRun::recalcWidth(void)
 		// in the cache
 		_refreshDrawBuffer();
 
+#ifndef WITH_PANGO
+		// with Pango the width gets recalcuated in _refreshDrawBuffer()
 		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
 		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 
@@ -1366,9 +1381,6 @@ bool fp_TextRun::recalcWidth(void)
 			|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
 
 		UT_sint32 j,k;
-#if 0
-		UT_uint32 iResolution = m_pBL->getDocLayout()->getGraphics()->getResolution();
-#endif
 
 		for (UT_uint32 i = 0; i < m_iLen; i++)
 		{
@@ -1383,44 +1395,21 @@ bool fp_TextRun::recalcWidth(void)
 			{
 				m_pG->setFont(m_pLayoutFont);
 				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsLayout + k);
-
-#if 1
 				m_pG->setFont(m_pScreenFont);
 				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
 				
-#else
-				// this produces much superior width than using measureString; unfortunately
-				// when drawing actual run, we get a better carret location, but out of sync
-				// with the text Windows draws on screen.
-				UT_uint32 iCharWidth, iRem;
-
-				iCharWidth = *(pCharWidthsLayout + k);
-				iCharWidth *= iResolution;
-				iRem = iCharWidth % UT_LAYOUT_UNITS;
-				iCharWidth /= UT_LAYOUT_UNITS;
-				if(iRem >= UT_LAYOUT_UNITS/2)
-					iCharWidth++;
-
-				*(pCharWidthsDisplay + k) = iCharWidth;
-#endif
 			}
 				m_iWidth += pCharWidthsDisplay[k];
 				m_iWidthLayoutUnits += pCharWidthsLayout[k];
 
 		}
-
-#else
+#endif // #ifndef WITH_PANGO
+#else // non-BIDI
 		m_iWidth = simpleRecalcWidth(Width_type_display);
 		m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
-#endif
-#ifndef BIDI_ENABLED
-		// this is not needed in bidi build, and possible not in non-bidi either
-#if 0
-		if(m_iWidth)
-			clearScreen();
-#endif
-#endif
+
 		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x, L 0x%x): m_iWidth %d, m_iW*L*U* %d\n",this,m_pLine,m_iWidth, m_iWidthLayoutUnits));
+#endif
 		return true;
 	}
 	else
@@ -1428,10 +1417,8 @@ bool fp_TextRun::recalcWidth(void)
 		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): the run has not changed\n",this));
 		return false;
 	}
-#endif
 }
 
-#if 1//def BIDI_ENABLED
 // this function is just like recalcWidth, except it does not change the character width
 // information kept by the block, but assumes that information is correct.
 // the only place it is currently used is the split() function. Since spliting a run into
@@ -1439,32 +1426,36 @@ bool fp_TextRun::recalcWidth(void)
 // untouched
 bool fp_TextRun::_addupCharWidths(void)
 {
+	UT_sint32 iWidth = 0;
 	UT_GrowBuf *pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
-	UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
-
 	UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
+#ifndef WITH_PANGO
+	UT_sint32 iWidthLayoutUnits = 0;
+	UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_GrowBufElement* pCharWidthsLayout  = pgbCharWidthsLayout->getPointer(0);
+#endif	
 	xxx_UT_DEBUGMSG(("fp_TextRun::_addupCharWidths: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
 
-	UT_sint32 iWidth = 0;
-	UT_sint32 iWidthLayoutUnits = 0;
 
 	for (UT_uint32 i = m_iOffsetFirst; i < m_iLen + m_iOffsetFirst; i++)
 	{
 		iWidth += pCharWidthsDisplay[i];
+#ifndef WITH_PANGO		
 		iWidthLayoutUnits += pCharWidthsLayout[i];
+#endif		
 	}
 
 	if(iWidth != m_iWidth)
 	{
 		m_iWidth = iWidth;
+#ifndef WITH_PANGO		
 		m_iWidthLayoutUnits = iWidthLayoutUnits;
+#endif		
 		return true;
 	}
 
 	return false;
 }
-#endif
 
 void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
@@ -1483,8 +1474,11 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	}
 	else
 	{
+#ifndef WITH_PANGO		
 		m_pG->setFont(m_pScreenFont);
-		
+#else
+		m_pG->setFont(m_pPangoFont);
+#endif
 		/*
 		  TODO this should not be hard-coded.  We need to figure out
 		  what the appropriate background color for this run is, and
@@ -1728,8 +1722,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	// now draw the whole string
-       m_pG->setFont(m_pScreenFont);
-       m_pG->setColor(m_colorFG); // set colour just in case we drew a first/last char with a diff colour
+#ifndef WITH_PANGO	
+	m_pG->setFont(m_pScreenFont);
+#else
+	m_pG->setFont(m_pPangoFont);
+#endif
+	
+	m_pG->setColor(m_colorFG); // set colour just in case we drew a first/last char with a diff colour
 
 #ifdef BIDI_ENABLED
 	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
@@ -2043,6 +2042,8 @@ void fp_TextRun::shape()
 	if(m_bRefreshDrawBuffer)
 	{
 		m_bRefreshDrawBuffer = false;
+		_freeGlyphString();
+		
 		FriBidiCharType iVisDir = getVisDirection();
 
 		const UT_UCSChar* pSpan = NULL;
@@ -2081,46 +2082,91 @@ void fp_TextRun::shape()
 		UT_UTF8String wholeStringUtf8 (pWholeString, m_iLen);
 		
 		// let Panog to analyse the string
-		GList * pAnalysis = pango_itemize(  pContext,
-											wholeStringUtf8.utf8_str(),
-											0,
-											wholeStringUtf8.byteLength(),
-											NULL, // PangoAttrList, not sure about this
-											NULL											
-		);
+		GList * pItems = pango_itemize(m_pG->getPangoContext(),
+									   wholeStringUtf8.utf8_str(),
+									   0,
+									   wholeStringUtf8.byteLength(),
+									   NULL, // PangoAttrList, not sure about this
+									   NULL											
+									   );
 		
 		// now do the shaping
-		pango_shape(wholeStringUtf8.utf8_str(),
-					wholeStringUtf8.byteLength(),
-					pAnalysis,
-					m_pGlyphsString);
-
+		GList * pListItem = g_list_first(pItems);
+		UT_ASSERT(m_pGlyphString == NULL);
+		
+		while(pListItem)
+		{
+			PangoItem * pItem = (PangoItem*) pListItem->data;
+			PangoGlyphString * pGString = pango_glyph_string_new();
+			
+			pango_shape(wholeStringUtf8.utf8_str(),
+						pItem->offset,
+						pItem->length,
+						&pItem->analysis,
+						pGString);
+			
+			m_pGlyphString = g_list_append((gpointer) pGString);
+			pListItem = pListItem->next;
+		}
+		
 		// next we need to refresh our character widths
-
 		m_bRecalcWidth = false;
 
 		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
-		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+		//UT_GrowBuf * pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 
-		UT_sint32* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0) + m_iOffsetFirst;
-		UT_sint32* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0) + m_iOffsetFirst;
+		UT_GrowBufElement * pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0) + m_iOffsetFirst;
+		//UT_GrowBufElement * pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0) + m_iOffsetFirst;
 
 		m_iWidth = 0;
+#ifndef WITH_PANGO		
 		m_iWidthLayoutUnits = 0;
-
+#endif
+		
 		// the display width are easy ...
-		pango_glyph_string_get_logical_widths(m_pGlyphString,
-											  wholeStringUtf8.utf8_str(),
-											  wholeStringUtf8.byteLength(),
-											  ?,
-											  pCharWidthsDisplay);
+		GList * pListGlyph = g_list_first(m_pGlyphString);
+		pListItem = g_list_first(pItems);
+		
+		UT_GrowBufElement * pCharWidthDisplayPtr = pCharWidthsDisplay;
+		const gchar * text = wholeStringUtf8.utf8_str();
+		PangoRectangle ink_rect;
+#if 0		
+		m_iWidthLayoutUnits = 0;
+#endif		
+		m_iWidth = 0;
+				
+		while(pListGlyph)
+		{
+			UT_ASSERT(pListItem);
+			
+			PangoGlyphString * pGString = (PangoGlyphString *)pListGlyph->data;
+			PangoItem *        pItem    = (PangoItem *)pListItem->data;
+			
+			pango_glyph_string_get_logical_widths(pGString,
+											  text,
+											  pItem->length,
+											  iVisDir == FRIBIDI_TYPE_RTL ? 1 : 0,
+											  pCharWidthsDisplayPtr);
+			
+#if 0
+			// not sure whether we need to do this, or can just add up below ...
+			pango_glyph_string_extents(pGString, m_pPangoFont, &ink_rect,NULL);
+			m_iWidths += ink_rect.width;
+#endif
+			for(UT_sint32 j = 0; j < pItem->num_chars; j++)
+				m_iWidth += pCharWidthsDisplayPtr[j];
+			
+			text += pItem->length;
+			pCharWidthsDisplayPtr += pItem->num_chars;
+			
+			pListGlyph = pListGlyph->next;
+			pListItem = pListItem->next;
+		}
 
-		for(UT_uint32 i = 0; i < m_iLen; i++)
-			m_iWidth += *pCharWidthsDisplay[i];
-		
-		// not sure about the layout width yet, but I think we will not need those
-		// at all, just the overall width
-		
+		// now clear up the item's list
+		g_list_foreach(pItems, UT_free1PangoItem, NULL);
+		g_list_free(pItems);
+
 	} //if(m_bRefreshDrawBuffer)	
 }
 #endif
@@ -2662,6 +2708,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 	return iTrailingDistance;
 }
 
+#ifndef WITH_PANGO
 UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
@@ -2690,6 +2737,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
 
 	return iTrailingDistance;
 }
+#endif
 
 void fp_TextRun::resetJustification()
 {
@@ -3203,4 +3251,16 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 }
 #endif
 
+#endif
+
+#ifdef WITH_PANGO
+void fp_TextRun::_freeGlyphString()
+{
+	if(m_pGlyphString)
+	{
+		g_list_foreach(m_pGlyphString, UT_free1PangoGlyphString, NULL);
+		g_list_free(m_pGlyphString);
+		m_pGlyphString = NULL;
+	}
+}
 #endif

@@ -43,7 +43,7 @@
 #endif
 
 #ifdef WITH_PANGO
-#include <pango-1.0/pango/pango.h>
+#include "ut_abi-pango.h"
 #endif
 #endif // BIDI_ENABLED
 
@@ -61,7 +61,9 @@ public:
 	virtual bool			alwaysFits(void) const;
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
+#ifndef WITH_PANGO	
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
+#endif	
 	UT_uint32				countTrailingSpaces(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 	
@@ -134,7 +136,10 @@ public:
 	   constructor in order that the constructor can decide whether it is creating the first instance
 	   or not*/
 #ifdef WITH_PANGO
-	PangoGlyphString *  m_pGlyphString;
+ private:
+	void _freeGlyphString();
+	
+	GList *             m_pGlyphString;
 #else
 	UT_UCSChar *		m_pSpanBuff;
 	UT_uint32			m_iSpanBuffSize;

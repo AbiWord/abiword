@@ -41,7 +41,13 @@ class UT_GrowBuf;
 class fl_BlockLayout;
 class fp_Line;
 class GR_Graphics;
+
+#ifndef WITH_PANGO
 class GR_Font;
+#else
+struct PangoFont;
+#endif
+
 class GR_Image;
 class PD_Document;
 class PP_AttrProp;
@@ -125,19 +131,23 @@ public:
 	fl_BlockLayout*	getBlock() const 				{ return m_pBL; }
 	UT_sint32		getX() const 					{ return m_iX; }
 	UT_sint32		getY() const 					{ return m_iY; }
+
 	UT_sint32		getHeight() const				{ return m_iHeight; }
-	UT_sint32		getHeightInLayoutUnits() const	{ return m_iHeightLayoutUnits; }
 	UT_sint32		getWidth() const				{ return m_iWidth; }
+	UT_uint32		getAscent() const				{ return m_iAscent; }
+	UT_uint32		getDescent() const 				{ return m_iDescent; }
+#ifndef WITH_PANGO	
+	UT_sint32		getHeightInLayoutUnits() const	{ return m_iHeightLayoutUnits; }
 	UT_sint32		getWidthInLayoutUnits() const	{ return m_iWidthLayoutUnits; }
+	UT_uint32		getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
+	UT_uint32		getDescentInLayoutUnits() const	{ return m_iDescentLayoutUnits; }
+#endif
+	
 	fp_Run* 		getNext() const					{ return m_pNext; }
 	fp_Run*			getPrev() const					{ return m_pPrev; }
 	UT_uint32		getBlockOffset() const			{ return m_iOffsetFirst; }
 	UT_uint32		getLength() const				{ return m_iLen; }
 	GR_Graphics*	getGraphics() const				{ return m_pG; }
-	UT_uint32		getAscent() const				{ return m_iAscent; }
-	UT_uint32		getDescent() const 				{ return m_iDescent; }
-	UT_uint32		getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
-	UT_uint32		getDescentInLayoutUnits() const	{ return m_iDescentLayoutUnits; }
 	fp_HyperlinkRun * getHyperlink() const 			{ return m_pHyperlink;}
 
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);
@@ -188,8 +198,10 @@ public:
 	virtual bool			isForcedBreak(void) const { return false; }
 	virtual bool			alwaysFits(void) const { return false; }
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
-	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }	
-	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }	
+	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }
+#ifndef WITH_PANGO	
+	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }
+#endif
 	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) = 0;
@@ -246,15 +258,17 @@ protected:
 	UT_sint32				m_iOldX;
 	UT_sint32				m_iY;
 	UT_sint32				m_iHeight;
-	UT_sint32				m_iHeightLayoutUnits;
 	UT_sint32				m_iWidth;
-	UT_sint32				m_iWidthLayoutUnits;
-	UT_uint32				m_iOffsetFirst;
-	UT_uint32				m_iLen;
 	UT_uint32				m_iAscent;
 	UT_uint32				m_iDescent;
+#ifndef WITH_PANGO
+	UT_sint32				m_iHeightLayoutUnits;
+	UT_sint32				m_iWidthLayoutUnits;
 	UT_uint32				m_iAscentLayoutUnits;
 	UT_uint32				m_iDescentLayoutUnits;
+#endif
+	UT_uint32				m_iOffsetFirst;
+	UT_uint32				m_iLen;
 	GR_Graphics*			m_pG;
 	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field*				m_pField;
@@ -269,8 +283,12 @@ protected:
 	// A local cache of the page color. This makes clearscreen() a bit faster
 	UT_RGBColor             m_colorPG;
 
+#ifndef WITH_PANGO	
 	GR_Font * m_pScreenFont;
 	GR_Font * m_pLayoutFont;
+#else
+	PangoFont * m_pPangoFont;
+#endif	
 	
 	bool	m_bRecalcWidth;
 
@@ -536,9 +554,11 @@ protected:
 	FG_Graphic *             m_pFGraphic;
 	GR_Image*				m_pImage;
 	UT_sint32               m_iImageWidth;
-	UT_sint32               m_iImageWidthLayoutUnits;
 	UT_sint32               m_iImageHeight;
+#ifndef WITH_PANGO
+	UT_sint32               m_iImageWidthLayoutUnits;
 	UT_sint32               m_iImageHeightLayoutUnits;
+#endif	
 	UT_String               m_WidthProp;
 	UT_String               m_HeightProp;
 };
@@ -630,8 +650,13 @@ protected:
 	virtual void			_defaultDraw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 
+#ifndef WITH_PANGO
 	GR_Font*				m_pFont;
 	GR_Font*				m_pFontLayout;
+#else
+	//PangoFont *           m_pPangoFont; // I do not think we need this, just refer to fp_Run
+#endif
+	
 	UT_RGBColor				m_colorFG;
 	UT_RGBColor				m_colorBG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];

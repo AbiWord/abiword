@@ -287,7 +287,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 fl_TabStop::fl_TabStop()
 {
 	iPosition = 0;
+#ifndef WITH_PANGO	
 	iPositionLayoutUnits = 0;
+#endif	
 	iType = FL_TAB_NONE;
 	iLeader = FL_LEADER_NONE;
 }
@@ -402,7 +404,9 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 			
 			fl_TabStop* pTabStop = new fl_TabStop();
 			pTabStop->setPosition(iPosition);
+#ifndef WITH_PANGO			
 			pTabStop->setPositionLayoutUnits(UT_convertToLayoutUnits(pszPosition));
+#endif			
 			pTabStop->setType(iType);
 			pTabStop->setLeader(iLeader);
 			pTabStop->setOffset(pStart - pszTabStops);
@@ -523,22 +527,34 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		const char* szProp;
 		UT_sint32*	pVar;
+#ifndef WITH_PANGO		
 		UT_sint32*	pVarLU;
+#endif		
 	}
 	const rgProps[] =
 	{
-		{ "margin-top", 	&m_iTopMargin,		&m_iTopMarginLayoutUnits	},
+#ifndef WITH_PANGO		
+		{ "margin-top", 	&m_iTopMargin ,		&m_iTopMarginLayoutUnits    },
 		{ "margin-bottom",	&m_iBottomMargin,	&m_iBottomMarginLayoutUnits },
 		{ "margin-left",	&m_iLeftMargin, 	&m_iLeftMarginLayoutUnits	},
 		{ "margin-right",	&m_iRightMargin,	&m_iRightMarginLayoutUnits	},
 		{ "text-indent",	&m_iTextIndent, 	&m_iTextIndentLayoutUnits	}
+#else
+		{ "margin-top", 	&m_iTopMargin    },
+		{ "margin-bottom",	&m_iBottomMargin },
+		{ "margin-left",	&m_iLeftMargin,  },
+		{ "margin-right",	&m_iRightMargin, },
+		{ "text-indent",	&m_iTextIndent,  }
+#endif		
 	};
 	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const PP_PropertyTypeSize * pProp = (const PP_PropertyTypeSize *)getPropertyType((XML_Char*)mai.szProp, Property_type_size);
 		*mai.pVar	= pG->convertDimension(pProp->getValue(), pProp->getDim());
+#ifndef WITH_PANGO		
 		*mai.pVarLU = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
+#endif		
 	}
 
 	{
@@ -607,11 +623,14 @@ void fl_BlockLayout::_lookupProperties(void)
 	if (!m_iDefaultTabInterval)
 	{
 		m_iDefaultTabInterval = pG->convertDimension("1pt");
+#ifndef WITH_PANGO		
 		m_iDefaultTabIntervalLayoutUnits = UT_convertSizeToLayoutUnits(1.0, DIM_PT);
+#endif		
 	}
+#ifndef WITH_PANGO	
 	else
 	m_iDefaultTabIntervalLayoutUnits = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
-
+#endif
 
 	const char * pszSpacing = getProperty("line-height");
 
@@ -640,18 +659,26 @@ void fl_BlockLayout::_lookupProperties(void)
 			pTmp[posPlus] = 0;
 
 			m_dLineSpacing = pG->convertDimension(pTmp.c_str());
+#ifndef WITH_PANGO			
 			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pTmp.c_str());
+#endif			
 		}
 		else if (UT_hasDimensionComponent(pszSpacing))
 		{
 			m_eSpacingPolicy = spacing_EXACT;
 			m_dLineSpacing = pG->convertDimension(pszSpacing);
+#ifndef WITH_PANGO			
 			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pszSpacing);
+#endif			
 		}
 		else
 		{
 			m_eSpacingPolicy = spacing_MULTIPLE;
-			m_dLineSpacing = m_dLineSpacingLayoutUnits = UT_convertDimensionless(pszSpacing);
+			m_dLineSpacing =
+#ifndef WITH_PANGO				
+				m_dLineSpacingLayoutUnits =
+#endif				
+				    UT_convertDimensionless(pszSpacing);
 		}
 	}
 
@@ -1633,10 +1660,16 @@ fl_CharWidths * fl_BlockLayout::getCharWidths(void)
 	return &m_gbCharWidths;
 }
 
+#ifndef WITH_PANGO
 void fl_BlockLayout::getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const
+#else
+void fl_BlockLayout::getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) const
+#endif	
 {
 	dSpacing = m_dLineSpacing;
+#ifndef WITH_PANGO	
 	dSpacingLayout = m_dLineSpacingLayoutUnits;
+#endif	
 	eSpacing = m_eSpacingPolicy;
 }
 
@@ -4990,6 +5023,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 }
 
+#ifndef WITH_PANGO
 bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 													  eTabType& iType, eTabLeader &iLeader)
 {
@@ -5070,25 +5104,6 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 
 	UT_ASSERT(m_iDefaultTabIntervalLayoutUnits > 0);
 
-#if 0
-	// TMN: Original brute-force
-	UT_sint32 iPos = 0;
-	for (;;)
-	{
-		if (iPos > iStartX)
-		{
-			iPosition = iPos;
-			iType = FL_TAB_LEFT;
-			return true;
-		}
-
-		iPos += m_iDefaultTabIntervalLayoutUnits;
-	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return false;
-#else
 	// mathematical approach
 	const UT_sint32 iPos = (iStartX / m_iDefaultTabIntervalLayoutUnits + 1) *
 		m_iDefaultTabIntervalLayoutUnits;
@@ -5108,9 +5123,8 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 	UT_ASSERT(iPos > iStartX);
 
 	return true;
-#endif
-
 }
+#endif
 
 bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 										 eTabType & iType, eTabLeader &iLeader )
@@ -5182,7 +5196,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 			fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(iCountTabs - 1);
 			UT_ASSERT(pTab);
 			
-			iPosition = pTab->getPositionLayoutUnits();
+			iPosition = pTab->getPosition();
 			iType = pTab->getType();
 			iLeader = pTab->getLeader();
 
@@ -5230,6 +5244,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	return true;
 }
 
+#ifndef WITH_PANGO
 bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 													  eTabType& iType, eTabLeader &iLeader)
 {
@@ -5350,6 +5365,7 @@ bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 	return true;
 
 }
+#endif
 
 bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, fl_TabStop *pTabInfo)
 {
@@ -6944,7 +6960,9 @@ void fl_BlockLayout::setTextIndent(UT_sint32 iInd)
 	const UT_sint32 Screen_resolution = pG->getResolution();
 
 	m_iTextIndent = iInd;
+#ifndef WITH_PANGO	
 	m_iTextIndentLayoutUnits = m_iTextIndent * UT_LAYOUT_UNITS / Screen_resolution;
+#endif	
 	double dInches = iInd / Screen_resolution;
 	
 	const char * szProp = getProperty("text-indent", true);
