@@ -44,6 +44,7 @@ public:									// we create...
 		m_pUnixToolbar = pUnixToolbar;
 		m_id = id;
 		m_widget = widget;
+		m_blockSignal = false;
 	};
 	
 	~_wd(void)
@@ -58,12 +59,14 @@ public:									// we create...
 		_wd * wd = (_wd *)user_data;
 		UT_ASSERT(wd);
 
-		wd->m_pUnixToolbar->toolbarEvent(wd->m_id);
+		if (!wd->m_blockSignal)
+			wd->m_pUnixToolbar->toolbarEvent(wd->m_id);
 	};
 
 	EV_UnixToolbar *	m_pUnixToolbar;
 	AP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
+	bool				m_blockSignal;
 };
 
 /*****************************************************************/
@@ -233,7 +236,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 
 	gtk_widget_show(m_wToolbar);
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wToolbar,FALSE,TRUE,0);
-	
+
 	return UT_TRUE;
 }
 
@@ -302,6 +305,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 						// Disable/enable toolbar item
 						gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 
+
 						UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 									m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 									((bGrayed) ? "disabled" : "enabled")));
@@ -318,11 +322,19 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 						GtkToggleButton * item = GTK_TOGGLE_BUTTON(wd->m_widget);
 						UT_ASSERT(item);
 						
-						// Disable/enable toolbar item
-						gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 						// Press/unpress the item
-						item->active = bToggled;
+						//item->active = bToggled;
 
+						// Block the signal, throw the toggle event
+						bool wasBlocked = wd->m_blockSignal;
+						wd->m_blockSignal = true;
+						gtk_toggle_button_set_state(item, bToggled);
+						//gtk_toggle_button_toggled(item);
+						wd->m_blockSignal = wasBlocked;
+						
+						// Disable/enable toolbar item
+						//gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
+						
 						UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
 									 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 									 ((bGrayed) ? "disabled" : "enabled"),
@@ -356,35 +368,4 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 	}
 
 	return UT_TRUE;
-}
-
-GtkWidget *	EV_UnixToolbar::_findToolbarChild(guint n)
-{
-	/*
-	  Since GTK+ toolbars have no way to find objects, we do it here
-	  for ourselves by walking its list of children.  While walking
-	  the list of children we ignore spaces, not incrementing the
-	  counter unless our widget is valid for comparison.
-	*/
-	UT_ASSERT(m_wToolbar);
-
-	GtkToolbar * toolbar = GTK_TOOLBAR(m_wToolbar);
-	GList * children;
-	GtkToolbarChild * child;
-
-	guint i = 0;
-	
-	for (children = toolbar->children; children; children = children->next)
-	{
-		child = (GtkToolbarChild *) children->data;
-
-		if (child->type == GTK_TOOLBAR_CHILD_BUTTON)
-		{
-			if (i == n - 1) // widget has 0-based index
-				return child->widget;
-			i++;
-		}
-	}
-
-	return NULL;
 }

@@ -363,7 +363,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 		UT_ASSERT(pUnixToolbar);
 		bResult = pUnixToolbar->synthesize();
 		UT_ASSERT(bResult);
-		
+
 		m_vecUnixToolbars.addItem(pUnixToolbar);
 	}
 	

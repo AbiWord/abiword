@@ -48,7 +48,6 @@ public:
 
 protected:
 	void							_releaseListener(void);
-	GtkWidget *					 	_findToolbarChild(guint n);
 	
 	AP_UnixApp *					m_pUnixApp;
 	AP_UnixFrame *					m_pUnixFrame;
