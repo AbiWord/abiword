@@ -48,6 +48,28 @@
 
 class fl_AutoNum;
 
+/*!
+  This macros allow the use of an iconv fallback name if needed.
+ */
+#define CPNAME_OR_FALLBACK(destination,name,fallbackname)\
+{  \                                                                                             
+	static char* cpname = NULL;\                                     
+	if (!cpname)    \                                                                             
+	{       \                                                                             
+		iconv_t cd = iconv_open(name,name);     \
+		if (cd == (iconv_t)-1) \
+		{ \
+			cpname = fallbackname;\
+		} \
+		else \
+		{ \
+			cpname = name;  \
+			iconv_close(cd); \
+		} \
+	} \                                                                             
+	destination = cpname;  \                                                                      
+}
+
 
 static const UT_uint32 MAX_KEYWORD_LEN = 256;
 
@@ -169,21 +191,21 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 		{
 			// 437	United States IBM
 			// 708	Arabic (ASMO 708)
-			case 708:
-				m_szEncoding = "ASMO-708";	// ISO-8859-6
-				break;
+		case 708:
+			m_szEncoding = "ASMO-708";	// ISO-8859-6
+			break;
 			// 709	Arabic (ASMO 449+, BCON V4)
 			// 710	Arabic (Transparent Arabic)
 			// 711	Arabic (Nafitha Enhanced)
 			// 720	Arabic (Transparent ASMO)
 			// 819	Windows 3.1 (United States & Western Europe)
-			case 819:
-				m_szEncoding = "CP819";	// ISO-8859-1
-				break;
+		case 819:
+			m_szEncoding = "CP819";	// ISO-8859-1
+			break;
 			// 850	IBM Multilingual
-			case 850:
-				m_szEncoding = "CP850";
-				break;
+		case 850:
+			m_szEncoding = "CP850";
+			break;
 			// 852	Eastern European
 			// 860	Portuguese
 			// 862	Hebrew
@@ -191,22 +213,31 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			// 864	Arabic
 			// 865	Norwegian
 			// 866	Soviet Union
-			case 866:
-				m_szEncoding = "CP866";
-				break;
+		case 866:
+			m_szEncoding = "CP866";
+			break;
 			// 932	Japanese
-			case 932:
-				m_szEncoding = "CP932";
-				break;
+		case 932:
+			m_szEncoding = "CP932";
+			break;
+			// 936  Chinese: Simplified
+		case 936:
+			CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GB2312");
+			m_szEncoding = "CP936";
+			break;
+			// 950  Chinese: Traditional
+		case 950:
+			CPNAME_OR_FALLBACK(m_szEncoding,"CP950","BIG5");
+			break;
 			// 1250	Windows 3.1 (Eastern European)
-			case 1250:
-				m_szEncoding = "CP1250";	// MS-EE
-				break;
+		case 1250:
+			m_szEncoding = "CP1250";	// MS-EE
+			break;
 			// 1251	Windows 3.1 (Soviet Union)
-			case 1251:
-				m_szEncoding = "CP1251";	// MS-CYRL
-				break;
-
+		case 1251:
+			m_szEncoding = "CP1251";	// MS-CYRL
+			break;
+			
 			// These were produced by MS WordPad 5.0 on Win2K
 			// TODO What do we do with negative values?
 			// -8534 - Devanagari	(57002) 
@@ -221,8 +252,8 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			// -8525 - Panjabi		(57011) 
 			// -7536 - Georgian		(58000)
 			// -7535 - Armenian		(58001)
-			default:
-				m_szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(m_codepage);
+		default:
+			m_szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(m_codepage);
 		}
 	}
 	else if (m_charSet)
@@ -236,17 +267,23 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 				UT_DEBUGMSG(("RTF Font charset 'Symbol' not implemented\n"));
 				UT_ASSERT(UT_NOT_IMPLEMENTED);
 				break;
+			case 77:    // Source Vlad Harchev from OpenOffice
+				m_szEncoding = "MACINTOSH";
+				break;
 			case 128:	// SHIFTJIS_CHARSET
 				m_szEncoding = "CP932";
 				break;
 			case 129:	// Hangul - undocumented?
 				m_szEncoding = "CP949";
 				break;
+			case 130:   // Source Vlad Harchev from OpenOffice
+				m_szEncoding = "CP1361";
+				break;
 			case 134:	// Chinese GB - undocumented?
-				m_szEncoding = "CP936";
+				CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GB2312");
 				break;
 			case 136:	// Chinese BIG5 - undocumented?
-				m_szEncoding = "CP950";
+				CPNAME_OR_FALLBACK(m_szEncoding,"CP950","BIG5");
 				break;
 			case 161:	// GREEK_CHARSET
 				m_szEncoding = "CP1253";	// MS-GREEK
