@@ -44,6 +44,7 @@ public:
 	UT_sint32				getPositionInList( fl_Layout * pItem) const;
 	void					setListType(List_Type lType);
 	void					setDelim(const XML_Char * pszDelim);
+	const XML_Char *                        getDelim(void);
 	void					setDecimal(const XML_Char * pszDecimal);
 
 	UT_uint16				getStartValue(void) const { return m_iStartValue; }

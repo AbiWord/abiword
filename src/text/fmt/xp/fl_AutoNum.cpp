@@ -152,14 +152,6 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	rightDelim[i - rTmp] = '\0';
 	UT_DEBUGMSG(("Left Delim: %s, Right Delim: %s\n", leftDelim, rightDelim));
 	
-	if (depth == 0)
-	{
-		psz = UT_XML_strlen(leftDelim);
-		for (i = 0; i < psz; i++)
-		{
-			labelStr[(*insPoint)++] = leftDelim[i];
-		}
-	}
 
         if(m_pParent != NULL  && m_List_Type < BULLETED_LIST)
 	{
@@ -184,6 +176,16 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	       return;
 	}
 	place = place + m_iStartValue;
+
+	//	if (depth == 0 )
+	if( m_List_Type < BULLETED_LIST)
+	{
+		psz = UT_XML_strlen(leftDelim);
+		for (i = 0; i < psz; i++)
+		{
+			labelStr[(*insPoint)++] = leftDelim[i];
+		}
+	}
 		
 	switch( m_List_Type)
 	{ 
@@ -281,7 +283,8 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 			break;
 	}
 	
-	if (depth == 0)
+	//if (depth == 0)
+	if( m_List_Type < BULLETED_LIST)
 	{
 		psz = UT_XML_strlen(rightDelim);
 		for (i = 0; i < psz; i++)
@@ -328,6 +331,11 @@ void fl_AutoNum::setDelim(const XML_Char * lDelim)
 {
 	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
+}
+
+const XML_Char * fl_AutoNum::getDelim( void)
+{
+        return m_pszDelim;
 }
 
 void fl_AutoNum::setDecimal(const XML_Char * lDecimal)

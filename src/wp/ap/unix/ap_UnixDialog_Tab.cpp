@@ -1024,6 +1024,7 @@ void AP_UnixDialog_Tab::_setSelectTab( UT_sint32 v )
 	}
 	else
 	{
+	  UT_DEBUGMSG(("SEVIOR: _setSelectTab not implemented \n"));
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 	}
 }

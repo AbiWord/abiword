@@ -81,6 +81,7 @@ static void s_typeChangedBullet (GtkWidget * widget, AP_UnixDialog_Lists * me)
 
 static void s_styleChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
+        me->setMemberVariables();
 	me->previewExposed();
 }
 
@@ -195,6 +196,7 @@ void    AP_UnixDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 	        {
 		         pDialog->m_bAutoUpdate_happening_now = UT_TRUE;
 			 pDialog->updateDialog();
+			 pDialog->previewExposed();
 			 pDialog->m_bAutoUpdate_happening_now = UT_FALSE;
 		}
 	}
@@ -203,8 +205,11 @@ void    AP_UnixDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 
 void AP_UnixDialog_Lists::previewExposed(void)
 {
-        setMemberVariables();
-        event_PreviewAreaExposed();
+        if(m_pPreviewWidget)
+        {
+	  //	        setMemberVariables();
+                event_PreviewAreaExposed();
+	}
 } 
 
 
@@ -239,6 +244,7 @@ void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), m_WindowName);
 	updateDialog();
+	previewExposed();
 }
 
 
@@ -275,6 +281,8 @@ void  AP_UnixDialog_Lists::typeChanged(gint style)
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 					  m_wListStyleNumbered_menu);
 	}
+	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
+	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
 	previewExposed();
 }
 
@@ -324,11 +332,13 @@ void  AP_UnixDialog_Lists::customChanged(void)
 {
 	if(m_bisCustomFrameHidden == UT_TRUE)
 	{
+		fillWidgetFromDialog();
 	        gtk_widget_show(m_wCustomFrame);
 		gtk_arrow_set(GTK_ARROW(m_wCustomArrow),GTK_ARROW_DOWN,GTK_SHADOW_OUT);
 		m_bisCustomFrameHidden = UT_FALSE;
                 m_bisCustomized = UT_TRUE;
-		fillWidgetFromDialog();
+		setMemberVariables();
+		previewExposed();
 	}
 	else
 	{
@@ -336,6 +346,7 @@ void  AP_UnixDialog_Lists::customChanged(void)
 		gtk_arrow_set(GTK_ARROW(m_wCustomArrow),GTK_ARROW_RIGHT,GTK_SHADOW_OUT);
 		m_bisCustomFrameHidden = UT_TRUE;
                 m_bisCustomized = UT_FALSE;
+		_setData();
 	}
 }
 
@@ -348,8 +359,13 @@ void AP_UnixDialog_Lists::fillWidgetFromDialog(void)
 
 void AP_UnixDialog_Lists::updateDialog(void)
 {
-	_populateWindowData();
-	setAllSensitivity();
+        List_Type oldlist = m_iListType;
+        if(m_bisCustomized == UT_FALSE)
+	         _populateWindowData();
+        if((oldlist != m_iListType) && (m_bisCustomized == UT_FALSE))
+                 m_newListType = m_iListType;
+        if(m_bisCustomized == UT_FALSE)
+  	         _setData();
 }
 
 void AP_UnixDialog_Lists::setAllSensitivity(void)
@@ -1080,7 +1096,7 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 	gtk_signal_connect (GTK_OBJECT (m_oIndentAlign_adj), "value_changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
-	gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "value_changed",
+	gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 
 
@@ -1139,7 +1155,12 @@ void AP_UnixDialog_Lists::_setData(void)
 		}
 	}
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wStartSpin),(float) m_iStartValue);
+	// first, we stop the entry from sending the changed signal to our handler
+	gtk_signal_handler_block_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
+
 	gtk_entry_set_text( GTK_ENTRY(m_wDelimEntry), (const gchar *) m_pszDelim);
+	// turn signals back on
+	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
 }
 
 

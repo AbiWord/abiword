@@ -324,14 +324,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 
 void  AP_Dialog_Lists::fillFakeLabels(void)
 {
-       if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
-       }
-       else if(m_newListType > DASHED_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Dingbats");
-       }
+  UT_DEBUGMSG(("SEVIOR: fillFakeLabels m_newListType = %d \n",m_newListType));
 
        if(m_bisCustomized == UT_FALSE)
        {
@@ -340,7 +333,17 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 	      {
 		      m_iLevel++;
 	      }
-	      fillUncustomizedValues();
+	      PopulateDialogData();
+       }
+       if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
+       {
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
+               UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+       }
+       else if(m_newListType > DASHED_LIST)
+       {
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Dingbats");
+               UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
        }
        m_pFakeAuto->setListType(m_newListType);
        m_pFakeAuto->setDelim(m_pszDelim);
@@ -368,7 +371,7 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
        // Now generate the AutoNum
        //
        DELETEP(m_pFakeAuto);
-       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, "%L");
+       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim);
        m_pFakeAuto->insertFirstItem(m_pFakeLayout[0], NULL);
        m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
        for(i=1; i<4; i++)
@@ -442,10 +445,9 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 	                 m_fIndent = -0.25;
 		}
 
-		i = findVecItem(&vp,"list-delim");
-		if( i>=0 )
+		if(getAutoNum() != NULL)
 		{
-	                 UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) vp.getNthItem(i+1));
+	                 UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, getAutoNum()->getDelim());
 		}       
 		else
 		{
@@ -480,11 +482,11 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
                 i = findVecItem(&va,"style");
 		if( i>= 0)
 		{
-	                 m_newListType = getBlock()->getListTypeFromStyle( (const XML_Char *) va.getNthItem(i+1));
+	                 m_iListType = getBlock()->getListTypeFromStyle( (const XML_Char *) va.getNthItem(i+1));
 		}
 		else
 		{
-	                 m_newListType = NUMBERED_LIST;
+	                 m_iListType = NUMBERED_LIST;
 		}
 
 		i = findVecItem(&va,"level");
@@ -498,16 +500,27 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
        }
        if(getAutoNum() != NULL)
+       {
 	        m_iID = getAutoNum()->getID();
+		m_iListType = getAutoNum()->getType();
+       }
        else
 	        m_iID = 0;
+       UT_DEBUGMSG(("SEVIOR: In fillDialogfromblock m_iListType = %d m_newListType= %d \n",m_iListType,m_newListType));
 }
 
 void  AP_Dialog_Lists::PopulateDialogData(void)
 {
        const XAP_StringSet * pSS = m_pApp->getStringSet();
-       fillDialogFromBlock();
        m_isListAtPoint = getBlock()->isListItem();
+       if(m_isListAtPoint == UT_TRUE)
+       {   
+	      fillDialogFromBlock();
+       }
+       else
+       {
+       	      fillUncustomizedValues();
+       }
        if(m_isListAtPoint == UT_TRUE)
        {
 	      const char * tmp1 =  (char *) getBlock()->getListLabel();
@@ -515,8 +528,8 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
               m_curListLevel = getBlock()->getLevel();
               m_curStartValue = getAutoNum()->getStartValue32();
               m_iStartValue = getAutoNum()->getStartValue32();
-	      m_iListType =  getAutoNum()->getType();
-	      m_newListType =  getAutoNum()->getType();
+	      //              m_iListType =  getAutoNum()->getType();
+	      //	      m_newListType =  getAutoNum()->getType();
 	      if(m_iListType == NUMBERED_LIST)
 	      {
 		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
@@ -714,7 +727,6 @@ void AP_Lists_preview::draw(void)
 			yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/4;
 			m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
 			twidth = m_gc->measureString(ucs_label,0,len,NULL);
-			UT_DEBUGMSG(("SEVIOR: width = %d \n",twidth));
 			if(twidth > maxw)
 			    maxw = twidth;
 		}
@@ -726,10 +738,9 @@ void AP_Lists_preview::draw(void)
 	if(maxw > 0) 
 	        maxw++;
 	
-	// todo 8.5 should be the page width in inches
-        UT_sint32 vspace = (iHeight - 2*yoff -iFont)*i/16;
-	UT_DEBUGMSG(("SEVIOR: vspace = %d \n",vspace));
-	z = (fwidth - 2.0*static_cast<float>(xoff)) /8.5;
+	// todo 6.5 should be the page width in inches
+        // UT_sint32 vspace = (iHeight - 2*yoff -iFont)*i/16;
+	z = (fwidth - 2.0*static_cast<float>(xoff)) /6.5;
         UT_sint32 ialign = static_cast<UT_sint32>( z*m_fAlign);
         xx = xoff + maxw + ialign;
         if(xx < (xoff + maxw + indent))
