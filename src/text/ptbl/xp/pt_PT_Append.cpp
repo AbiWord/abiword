@@ -96,22 +96,41 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
 
-	// create a new fragment for this text span.
 	// append the text data to the end of the buffer.
-	// set the formatting Attributes/Properties to that
-	// of the last fmt set in this paragraph.
-	// becauase we are loading, we do not create change
-	// records or any of the other stuff that an insertSpan
-	// would do.
 
 	PT_BufIndex bi;
 	if (!m_varset.appendBuf(pbuf,length,&bi))
 		return UT_FALSE;
+
+	// set the formatting Attributes/Properties to that
+	// of the last fmt set in this paragraph.
+
+	// see if this span can be appended to the previous fragment
+	// (perhaps the parser was a bit lazy in chunking up the data).
+
+	pf_Frag * pfLast = m_fragments.getLast();
+	if (pfLast->getType() == pf_Frag::PFT_Text)
+	{
+		pf_Frag_Text * pfLastText = static_cast<pf_Frag_Text *>(pfLast);
+		if (   (pfLastText->getIndexAP() == loading.m_indexCurrentInlineAP)
+			&& m_varset.isContiguous(pfLastText->getBufIndex(),pfLastText->getLength(),bi))
+		{
+			pfLastText->changeLength(pfLastText->getLength() + length);
+			return UT_TRUE;
+		}
+	}
+	
+	// could not coalesce, so create a new fragment for this text span.
 
 	pf_Frag_Text * pft = new pf_Frag_Text(this,bi,length,loading.m_indexCurrentInlineAP);
 	if (!pft)
 		return UT_FALSE;
 
 	m_fragments.appendFrag(pft);
+
+	// becauase we are loading, we do not create change
+	// records or any of the other stuff that an insertSpan
+	// would do.
+
 	return UT_TRUE;
 }

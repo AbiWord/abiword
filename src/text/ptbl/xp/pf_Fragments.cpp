@@ -75,6 +75,11 @@ pf_Frag * pf_Fragments::getFirst(void) const
 	return m_pFirst;
 }
 
+pf_Frag * pf_Fragments::getLast(void) const
+{
+	return m_pLast;
+}
+
 void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 {
 	// insert the new fragment after the given fragment.

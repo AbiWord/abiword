@@ -45,6 +45,7 @@ public:
 	void					unlinkFrag(pf_Frag * pf);
 	
 	pf_Frag *				getFirst(void) const;
+	pf_Frag *				getLast(void) const;
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
