@@ -142,13 +142,11 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	m_pHashDownloader = (XAP_HashDownloader *)(new AP_UnixHashDownloader());
 #endif
 
-//
-// hack to link abi_widget - thanks fjf
-//
+#ifndef HAVE_GNOME
+    // hack to link abi_widget - thanks fjf
 	if(this == 0)
-	{
 		GtkWidget * pUn = abi_widget_new_with_file("fred.abw");
-	}
+#endif
 }
 
 /*!
@@ -1522,12 +1520,14 @@ void AP_UnixApp::catchSignals(int sig_num)
 // Bonobo Control factory stuff
 //-------------------------------------------------------------------
 
-static BonoboControl * AbiWidget_control_new(AbiWidget * abi);
+static BonoboControl * AbiWidget_control_new (AbiWidget * abi);
 
 /*****************************************************************/
 /* Implements the Bonobo/Persist:1.0, Bonobo/PersistStream:1.0,
    Bonobo/PersistFile:1.0 Interfaces */
 /*****************************************************************/
+
+#define ABI_BUFFER_SIZE 32768
 
 /*
  * Loads a document from a Bonobo_Stream. Code gratitutously stolen 
@@ -1560,7 +1560,7 @@ load_document_from_stream (BonoboPersistStream *ps,
 	
 	do 
 	{
-		Bonobo_Stream_read (stream, 32768, &buffer, ev);
+		Bonobo_Stream_read (stream, ABI_BUFFER_SIZE, &buffer, ev);
 		if (ev->_major != CORBA_NO_EXCEPTION)
 			goto exit_clean;
 
@@ -1606,7 +1606,7 @@ save_document_to_stream (BonoboPersistStream *ps,
 {
 	AbiWidget *abiwidget;
 	Bonobo_Stream_iobuf *stream_buffer;
-	CORBA_octet buffer [ 32768 ] = "" ;
+	CORBA_octet buffer [ ABI_BUFFER_SIZE ] = "" ;
 	CORBA_long len_read = 0;
 	FILE * tmpfile = NULL;
 
@@ -1625,7 +1625,7 @@ save_document_to_stream (BonoboPersistStream *ps,
 
 	if ( !strcmp ( "application/msword", type ) )
 	  ext = ".doc" ; 
-	else if ( !strcmp ( "application/rtf", type ) || !strcmp ("text/rtf", type) )
+	else if ( !strcmp ( "application/rtf", type ) || !strcmp ("text/rtf", type) || !strcmp ("text/richtext", type) )
 	  ext = ".rtf" ;
 	else if ( !strcmp ( "text/plain", type ) )
 	  ext = ".txt" ;
@@ -1645,10 +1645,12 @@ save_document_to_stream (BonoboPersistStream *ps,
 	  return ;
 
 	tmpfile = fopen(szTempfile, "wb");
+	if (!tmpfile)
+		return; // should never happen, but who knows...
 
 	do 
 	{
-	  len_read = fread ( buffer, sizeof(CORBA_octet), 32768, tmpfile ) ;
+	  len_read = fread ( buffer, sizeof(CORBA_octet), ABI_BUFFER_SIZE, tmpfile ) ;
 
 	  stream_buffer = Bonobo_Stream_iobuf__alloc ();
 	  stream_buffer->_buffer = (CORBA_octet*)buffer;
@@ -1684,9 +1686,6 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 
 	g_return_val_if_fail(abi != NULL, CORBA_OBJECT_NIL);
 	g_return_val_if_fail(IS_ABI_WIDGET(abi), CORBA_OBJECT_NIL);
-
-	g_message ("abiwiget_get_object: %d - %s",
-			   only_if_exists, item_name);
 
 	object = (BonoboObject *) AbiWidget_control_new(abi);
 
@@ -1743,8 +1742,8 @@ static Bonobo_Persist_ContentTypeList *
 pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 						   CORBA_Environment *ev)
 {
-	return bonobo_persist_generate_content_types (11, "application/x-abiword", "text/abiword", "application/msword", 
-												  "application/rtf", "text/rtf", "text/plain", "text/html", "text/xhtml+xml",
+	return bonobo_persist_generate_content_types (12, "application/x-abiword", "text/abiword", "application/msword", 
+												  "application/rtf", "text/rtf", "text/richtext", "text/plain", "text/html", "text/xhtml+xml",
 												  "application/x-applix-word", "appplication/vnd.palm", "text/vnd.wap.wml");
 }
 
@@ -1845,6 +1844,8 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 /* Bonobo Inteface-Adding Code */
 /*****************************************************************/
 
+#define ABIWORD_OAF_IID "OAFIID:GNOME_AbiWord_Control"
+
 //
 // Add extra interfaces to load data into the control
 //
@@ -1860,20 +1861,25 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
 
+	// temporarily disable menu merging and such
+	bonobo_control_set_automerge (BONOBO_CONTROL (to_aggregate), FALSE);
+
 	/* Inteface Bonobo::PropertyBag */
 
 	guint n_pspecs = 0;
 	BonoboPropertyBag * pb = bonobo_property_bag_new (NULL, NULL, NULL);
-	const GParamSpec ** pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs);
+	GParamSpec ** pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs);
 	bonobo_property_bag_map_params (pb, G_OBJECT (abiwidget), pspecs, n_pspecs);
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
+
+	/* Interface Bonobo::Persist */
 
 	/* Interface Bonobo::PersistStream */
 
 	stream = bonobo_persist_stream_new (load_document_from_stream, 
 										save_document_to_stream, 
 										pstream_get_content_types, 
-										"AbiWord::IID",
+										ABIWORD_OAF_IID,
 										abiwidget);
 	if (!stream) {
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
@@ -1887,7 +1893,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	file = bonobo_persist_file_new (load_document_from_file,
 									save_document_to_file, 
-									"AbiWord::IID",
+									ABIWORD_OAF_IID,
 									abiwidget);
 	if (!file) {
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
@@ -1934,33 +1940,13 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	return to_aggregate;
 }
 
-static BonoboControl* 
-AbiControl_construct(BonoboControl * control, AbiWidget * abi)
+static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 {
-	g_return_val_if_fail(abi != NULL, NULL);
-	g_return_val_if_fail(control != NULL, NULL);
-	g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
-
-	//
-	// persist_stream , persist_file interfaces/methods, item container
-	// 	
-	AbiControl_add_interfaces (ABI_WIDGET(abi),
-							   BONOBO_OBJECT(control));
-
-
-	return control;
-}
-
-static BonoboControl * AbiWidget_control_new(AbiWidget * abi)
-{
-    g_return_val_if_fail(abi != NULL, NULL);
-    g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
-
-    // create a BonoboControl from a widget
-    BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
-    control = AbiControl_construct(control, abi);
-    
-    return control;
+  // create a BonoboControl from a widget
+  BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
+  AbiControl_add_interfaces (ABI_WIDGET(abi),
+							 BONOBO_OBJECT(control));
+  return control;
 }
 
 /*
@@ -1971,27 +1957,20 @@ static BonoboControl * AbiWidget_control_new(AbiWidget * abi)
 static BonoboObject*
 bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
 {
-  BonoboControl    * control;
-  GtkWidget        * abi;
-  
   /*
    * create a new AbiWidget instance
-   */
-  
+   */  
   AP_UnixApp * pApp = (AP_UnixApp *) XAP_App::getApp();
-  abi = abi_widget_new_with_app (pApp);
+  GtkWidget  * abi  = abi_widget_new_with_app (pApp);
   gtk_widget_show (abi);
   
-  // create a BonoboControl from a widget
-  
-  control = AbiWidget_control_new (ABI_WIDGET(abi));
-
-  return BONOBO_OBJECT (control);
+  return BONOBO_OBJECT (AbiWidget_control_new (ABI_WIDGET (abi)));
 }
 
 static int mainBonobo(int argc, char * argv[])
 {
 	UT_ASSERT (UT_TODO);
+	return 0;
 }
 
 #endif /* HAVE_GNOME */
