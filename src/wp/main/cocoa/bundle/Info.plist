@@ -32,6 +32,8 @@
 				<string>zabw</string>
 				<string>ZABW</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWDocument.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>AbiWord Compressed Document Format</string>
 			<key>CFBundleTypeOSTypes</key>
