@@ -97,6 +97,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bForcedDirty(false),
 	  m_bLockedStyles(false),        // same as lockStyles(false)
 	  m_bMarkRevisions(false),
+	  m_bShowRevisions(true),
 	  m_iRevisionID(1),
 	  m_bDontImmediatelyLayout(false),
 	  m_iLastDirMarker(0),
@@ -362,6 +363,29 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		setAttrProp(NULL);
 	}
 
+	// get document-wide revision settings
+	const PP_AttrProp * pAP = getAttrProp();
+	
+	if(pAP)
+	{
+		const XML_Char * pA = NULL;
+		UT_uint32 iOn;
+		bool bFound = pAP->getAttribute("revisions-mark", pA);
+		if(bFound)
+		{
+			iOn = atoi(pA);
+			m_bMarkRevisions = (iOn != 0);
+		}
+
+		
+		bFound = pAP->getAttribute("revisions-show", pA);
+		if(bFound)
+		{
+			iOn = atoi(pA);
+			m_bShowRevisions = (iOn != 0);
+		}
+	}
+	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 
@@ -449,6 +473,30 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		// this also initializes m_indexAP
 		setAttrProp(NULL);
 	}
+
+	// get document-wide revision settings
+	const PP_AttrProp * pAP = getAttrProp();
+	
+	if(pAP)
+	{
+		const XML_Char * pA = NULL;
+		UT_uint32 iOn;
+		bool bFound = pAP->getAttribute("revisions-mark", pA);
+		if(bFound)
+		{
+			iOn = atoi(pA);
+			m_bMarkRevisions = (iOn != 0);
+		}
+
+		
+		bFound = pAP->getAttribute("revisions-show", pA);
+		if(bFound)
+		{
+			iOn = atoi(pA);
+			m_bShowRevisions = (iOn != 0);
+		}
+	}
+
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
@@ -3645,8 +3693,8 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	if(!bRet)
 		return false;
 
-	const XML_Char * attr[21];
-	attr[20] = NULL;
+	const XML_Char * attr[25];
+	attr[24] = NULL;
 
 	attr[0] = "xmlns";
 	attr[1] = "http://www.abisource.com/awml.dtd";
@@ -3675,13 +3723,23 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	attr[16] = "fileformat";
 	attr[17] = ABIWORD_FILEFORMAT_VERSION;
 
+	UT_String rev_m;
+	UT_String_sprintf(rev_m, "%d", isMarkRevisions());
+	attr[18] = "revisions-mark";
+	attr[19] = rev_m.c_str();
+
+	UT_String rev_s;
+	UT_String_sprintf(rev_s, "%d", isShowRevisions());
+	attr[20] = "revisions-show";
+	attr[21] = rev_s.c_str();
+
 	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 	{
-		attr[18] = "version";
-		attr[19] = XAP_App::s_szBuild_Version;
+		attr[22] = "version";
+		attr[23] = XAP_App::s_szBuild_Version;
 	}
 	else
-		attr[18] = NULL;
+		attr[22] = NULL;
 
 	bRet =  setAttributes(attr);
 	if(!bRet)

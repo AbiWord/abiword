@@ -1031,6 +1031,18 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
         return EV_MIS_ZERO;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+        if(pView->isShowRevisions()) {
+            return EV_MIS_Toggled;
+        }
+
+        return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 {
 	ABIWORD_VIEW;

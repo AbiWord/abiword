@@ -46,6 +46,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable);

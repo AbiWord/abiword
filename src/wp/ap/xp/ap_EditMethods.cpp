@@ -632,6 +632,7 @@ public:
 	static EV_EditMethod_Fn revisionAccept;
 	static EV_EditMethod_Fn revisionReject;
 	static EV_EditMethod_Fn revisionSetViewLevel;
+	static EV_EditMethod_Fn toggleShowRevisions;
 
 	static EV_EditMethod_Fn insertTable;
 
@@ -1059,6 +1060,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleMarkRevisions),  0,  ""),
 	EV_EditMethod(NF(toggleOline),			0,  ""),
 	EV_EditMethod(NF(togglePlain),			0,	""),
+	EV_EditMethod(NF(toggleShowRevisions),  0,  ""),
 	EV_EditMethod(NF(toggleStrike), 		0,	""),
 	EV_EditMethod(NF(toggleSub),			0,	""),
 	EV_EditMethod(NF(toggleSuper),			0,	""),
@@ -11258,6 +11260,15 @@ Defun1(toggleMarkRevisions)
 		s_doMarkRevisions(pFrame, pDoc, pView);
 	}
 
+	return true;
+}
+
+Defun1(toggleShowRevisions)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	pView->toggleShowRevisions();
 	return true;
 }
 

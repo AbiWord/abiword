@@ -203,7 +203,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_CaretListID(0),
 		m_FrameEdit(this),
 		m_VisualDragText(this),
-		m_Selection(this)
+		m_Selection(this),
+		m_bShowRevisions(true)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -361,6 +362,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	const char * pszFamily = pFont->getFamily();
 	if (pszFamily)
 		PP_setDefaultFontFamily(pszFamily);
+
+	// should we display revisions?
+	m_bShowRevisions = m_pDoc->isShowRevisions();
 	
 	// initialize change cache
 	m_chg.bUndo = false;
@@ -9468,6 +9472,26 @@ void FV_View::toggleMarkRevisions()
 
 		_fixInsertionPointCoords();
 	}
+
+	if(isMarkRevisions() && !m_bShowRevisions)
+	{
+		// make sure we see what we are doing ...
+		toggleShowRevisions();
+	}
+}
+
+void FV_View::toggleShowRevisions()
+{
+	m_bShowRevisions = !m_bShowRevisions;
+
+	// set the doc value as well, so that on save we preserve the last
+	// used setting
+	m_pDoc->setShowRevisions(m_bShowRevisions);
+
+	// now we have to re-do document layout
+	_generalUpdate();
+	_fixInsertionPointCoords();
+	
 }
 
 bool FV_View::isMarkRevisions()

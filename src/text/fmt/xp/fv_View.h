@@ -536,7 +536,12 @@ public:
 	/* Revision related functions */
 	void                toggleMarkRevisions();
 	void                cmdAcceptRejectRevision(bool bReject, UT_sint32 x, UT_sint32 y);
+	// NB: 'mark revisions' state is document-wide
 	bool                isMarkRevisions();
+	// NB: 'show revisions' state is view-specific
+	bool                isShowRevisions() const {return m_bShowRevisions;}
+	void                toggleShowRevisions();
+		
 	void                cmdSetRevisionLevel(UT_uint32 i){m_iViewRevision = i;}
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
 
@@ -849,6 +854,7 @@ private:
 	FV_FrameEdit        m_FrameEdit;
 	FV_VisualDragText   m_VisualDragText;
 	FV_Selection        m_Selection;
+	bool                m_bShowRevisions;
 };
 
 #endif /* FV_VIEW_H */

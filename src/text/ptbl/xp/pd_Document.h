@@ -413,6 +413,8 @@ public:
 	//
 	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
 	void                    toggleMarkRevisions(){m_bMarkRevisions = m_bMarkRevisions ? false : true;}
+	bool                    isShowRevisions() const{ return m_bShowRevisions;}
+	void                    setShowRevisions(bool bShow) { m_bShowRevisions = bShow;}
 	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
 	void                    setRevisionId(UT_uint32 iId) {m_iRevisionID  = iId;}
 	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc);
@@ -540,6 +542,7 @@ private:
 	bool                    m_bLockedStyles;
 	UT_StringPtrMap         m_metaDataMap;
 	bool                    m_bMarkRevisions;
+	bool                    m_bShowRevisions;
 	UT_uint32               m_iRevisionID;
 	UT_Vector               m_vRevisions;
 	PT_AttrPropIndex        m_indexAP;
