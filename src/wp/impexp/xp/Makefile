@@ -42,9 +42,9 @@ LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
 ifeq ($(OS_NAME), WIN32)
-INCLUDES=		-I$(ABI_XX_ROOT)/src/other/libmswordview
+INCLUDES=		-I$(ABI_XX_ROOT)/../wv
 else
-INCLUDES=		-I$(ABI_ROOT)/src/other/libmswordview
+INCLUDES=		-I$(ABI_ROOT)/../wv
 endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
