@@ -30,7 +30,7 @@
  * Protected constructor
  */
 XAP_Module::XAP_Module ()
-  : m_spider(0), m_creator (0), m_bLoaded(false), m_bRegistered(false), m_szSPI(0)
+  : m_spider(0), m_creator (0), m_bLoaded(false), m_bRegistered(false), m_iStatus(0), m_szSPI(0)
 {
 	// zero this out
 	memset (&m_info, 0, sizeof (m_info));
@@ -62,7 +62,6 @@ bool XAP_Module::registerThySelf ()
 		if ((m_szSPI = m_spider->add_spi (this)) != 0) return true; // register properly later
 
 	int (*plugin_init_func) (XAP_ModuleInfo *);
-	int result = 0;
 
 	if (resolveSymbol ("abi_plugin_register", (void **)&plugin_init_func))
 	{
@@ -74,10 +73,10 @@ bool XAP_Module::registerThySelf ()
 
 		// assure that this is null
 		memset (&m_info, 0, sizeof (m_info));
-		result = plugin_init_func (&m_info);		
+		m_iStatus = plugin_init_func (&m_info);		
 	}
 
-	return (result ? true : false);
+	return (m_iStatus ? true : false);
 }
 
 /*!
@@ -105,6 +104,27 @@ bool XAP_Module::registerPending ()
 }
 
 /*!
+ * Whether the plugin is registered
+ *
+ * \return true if registered, false otherwise
+ */
+bool XAP_Module::registered ()
+{
+	if (!m_bLoaded) return false;
+
+	if (m_szSPI)
+	{
+		if (m_spider == 0) return false; // huh?
+		return m_spider->spi_registered (m_szSPI);
+	}
+	else
+	{
+		if (!m_bRegistered) return false;
+		return (m_iStatus ? true : false);
+	}
+}
+
+/*!
  * Before unloading a module, call this function to unregister
  * the plugin, so that it might free resources, de-init itself,
  * etc...
@@ -115,38 +135,33 @@ bool XAP_Module::unregisterThySelf ()
 {
 	UT_ASSERT (m_bLoaded && m_bRegistered);
 
-	if (!m_bRegistered) return true; // well,...
-	if (!m_bLoaded)     return true;
+	bool result = true;
 
-	if (m_szSPI)
+	if (registered ())
 	{
-		if (m_spider == 0) return false; // huh?
+		int (*plugin_cleanup_func) (XAP_ModuleInfo *);
 
-		m_spider->unregister_spi (m_szSPI);
-		m_szSPI = 0;
-		memset (&m_info, 0, sizeof (m_info));
-		m_bRegistered = false;
-		return true;
-	}
-
-	int (*plugin_cleanup_func) (XAP_ModuleInfo *);
-	int result = 0;
-
-	if (resolveSymbol ("abi_plugin_unregister", (void **)&plugin_cleanup_func))
-	{
-		if (!plugin_cleanup_func)
+		if (m_szSPI)
 		{
-			// damn this sucks. probably not an abiword plugin
-			return false;
+			m_spider->unregister_spi (m_szSPI);
 		}
-
-		result = plugin_cleanup_func (&m_info);
+		else if (resolveSymbol ("abi_plugin_unregister", (void **) &plugin_cleanup_func))
+		{
+			if (plugin_cleanup_func)
+			{
+				if (plugin_cleanup_func (&m_info) == 0) result = false;
+			}
+		}
 	}
 
 	// reset this to 0
 	memset (&m_info, 0, sizeof (m_info));
+
 	m_bRegistered = false;
-	return (result ? true : false);
+	m_iStatus = 0;
+	m_szSPI = 0;
+
+	return result;
 }
 
 /*!

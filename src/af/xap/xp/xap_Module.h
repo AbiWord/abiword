@@ -67,8 +67,9 @@ protected:
 	// unload this module from memory. true on success
 	virtual bool unload (void) = 0;	
 	
+public:
+	bool registered ();
 private:
-
 	bool registerPending ();
 	// silly names. fscking c/c++ has the keyword 'register' taken #:^)
 	bool registerThySelf ();
@@ -85,7 +86,7 @@ public:
 	// *symbol refers to the actual representation of @symbol_name
 	//
 	// void (*func) (XAP_ModuleInfo *);
-	// resolveSymbol ("abi_plugin_init", &(void *)func);
+	// resolveSymbol ("abi_plugin_init", (void **) &func);
 	// int result = func (&m_info);
 	virtual bool resolveSymbol (const char * symbol_name, void ** symbol) = 0;
 	
@@ -100,13 +101,14 @@ public:
 	inline XAP_ModuleManager * getCreator () const {return m_creator;}
 
 	inline const XAP_ModuleInfo *getModuleInfo (void) const {return &m_info;}
-	
+
 private:
 
 	XAP_Spider          * m_spider;
 	XAP_ModuleManager   * m_creator;
 	bool                  m_bLoaded;
 	bool                  m_bRegistered;
+	int                   m_iStatus;
 	const char          * m_szSPI;
 	XAP_ModuleInfo        m_info;
 };
