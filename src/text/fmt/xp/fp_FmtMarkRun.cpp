@@ -72,7 +72,7 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("fmtmark lookup properties: Font Ascent %d  Font Descent %d Font %x Span %x \n",getAscent(),getDescent(),pFont,pSpanAP));
 	PD_Document * pDoc = getBlock()->getDocument();
 
-	_setDirection(FRIBIDI_TYPE_WS);
+	_setDirection(UT_BIDI_WS);
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",
 												   pSpanAP,
@@ -212,7 +212,7 @@ void fp_DummyRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("fmtmark lookup properties: Font Ascent %d  Font Descent %d Font %x Span %x \n",getAscent(),getDescent(),pFont,pSpanAP));
 	_setWidth(0);
 	_setLength(1);
-	_setDirection(FRIBIDI_TYPE_WS);
+	_setDirection(UT_BIDI_WS);
 
 }
 

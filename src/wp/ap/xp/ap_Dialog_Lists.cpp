@@ -42,8 +42,6 @@
 #include "xad_Document.h"
 #include "gr_Painter.h"
 
-#include <fribidi.h>
-
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 :	XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists"),
 	m_pView(0),
@@ -1203,7 +1201,7 @@ void AP_Lists_preview::draw(void)
 	// Now finally draw the preview
 	//
 
-	FriBidiCharType iDirection = getLists()->getBlock()->getDominantDirection();
+	UT_BidiCharType iDirection = getLists()->getBlock()->getDominantDirection();
 
 	for(i=0; i<8; i++)
 	{
@@ -1221,33 +1219,11 @@ void AP_Lists_preview::draw(void)
 
 			if(lv != NULL)
 			{
-				len = UT_MIN(UT_UCS4_strlen(lv),51);
+				len = UT_MIN(UT_UCS4_strlen(lv),49);
 
 				if(len > 1 && XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
 				{
-					FriBidiChar * fLogStr = new FriBidiChar[len+1];
-					FriBidiChar * fVisStr = new FriBidiChar[len+1];
-					UT_return_if_fail (fLogStr && fVisStr);
-
-					for(j=0; j<=len;j++)
-						fLogStr[j] = lv[j];
-
-					fribidi_log2vis(/* input */
-			    		 fLogStr,
-					     len,
-					     &iDirection,
-					     /* output */
-					     fVisStr,
-					     NULL,
-					     NULL,
-					     NULL
-					     );
-
-					for(j=0; j<=len;j++)
-						ucs_label[j] = (UT_UCSChar)fVisStr[j];
-
-					delete [] fLogStr;
-					delete [] fVisStr;
+					UT_bidiReorderString(lv, len, iDirection, ucs_label);
 				}
 				else
 				{
@@ -1259,7 +1235,7 @@ void AP_Lists_preview::draw(void)
 				len = UT_UCS4_strlen(ucs_label);
 				yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
 
-				if(iDirection == FRIBIDI_TYPE_RTL)
+				if(iDirection == UT_BIDI_RTL)
 					painter.drawChars(ucs_label,0,len,iWidth - xoff - indent - maxw,yloc);
 				else
 					painter.drawChars(ucs_label,0,len,xoff+indent,yloc);
@@ -1267,7 +1243,7 @@ void AP_Lists_preview::draw(void)
 				yy = m_iLine_pos[i];
 				awidth = iWidth - 2*xoff - xy;
 
-				if(iDirection == FRIBIDI_TYPE_RTL)
+				if(iDirection == UT_BIDI_RTL)
 					painter.fillRect(clrGrey,xoff,yy,awidth,aheight);
 				else
 					painter.fillRect(clrGrey,xy,yy,awidth,aheight);
@@ -1277,7 +1253,7 @@ void AP_Lists_preview::draw(void)
 				yy = m_iLine_pos[i];
 				awidth = iWidth - 2*xoff - xy;
 
-				if(iDirection == FRIBIDI_TYPE_RTL)
+				if(iDirection == UT_BIDI_RTL)
 					painter.fillRect(clrGrey,xoff,yy,awidth,aheight);
 				else
 					painter.fillRect(clrGrey,xy,yy,awidth,aheight);
@@ -1288,7 +1264,7 @@ void AP_Lists_preview::draw(void)
 			yy = m_iLine_pos[i];
 			awidth = iWidth - 2*xoff - xx;
 
-			if(iDirection == FRIBIDI_TYPE_RTL)
+			if(iDirection == UT_BIDI_RTL)
 				painter.fillRect(clrGrey,xoff,yy,awidth,aheight);
 			else
 				painter.fillRect(clrGrey,xy,yy,awidth,aheight);

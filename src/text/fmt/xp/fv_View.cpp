@@ -2064,11 +2064,11 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 			double blockLeft = 0.0;
 			if(pPrev != NULL)
 			{
-				prevLeft = pPrev->getDominantDirection() == FRIBIDI_TYPE_LTR
+				prevLeft = pPrev->getDominantDirection() == UT_BIDI_LTR
 				  ? UT_convertToInches(pPrev->getProperty(margin_left,true))
 				  : UT_convertToInches(pPrev->getProperty(margin_right,true));
 
-				blockLeft = pBlock->getDominantDirection() == FRIBIDI_TYPE_LTR
+				blockLeft = pBlock->getDominantDirection() == UT_BIDI_LTR
 				  ? UT_convertToInches(pBlock->getProperty(margin_left,true))
 				  : UT_convertToInches(pBlock->getProperty(margin_right,true));;
 			}
@@ -3656,7 +3656,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	for(i = 0; i<v.getItemCount();i++)
 	{
 		pBlock = v.getNthItem(i);
-		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_RTL)
+		if(pBlock->getDominantDirection() == UT_BIDI_RTL)
 			indent = ind_right;
 		else
 			indent = ind_left;
@@ -3777,7 +3777,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	// run should lookup its properties)
 
 	bool bDomDirChange = false;
-	FriBidiCharType iDomDir = FRIBIDI_TYPE_LTR;
+	UT_BidiCharType iDomDir = UT_BIDI_LTR;
 
 	const XML_Char ** p  = properties;
 
@@ -3788,7 +3788,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 			bDomDirChange = true;
 			if(!UT_strcmp(*(p+1), "rtl"))
 			{
-				iDomDir = FRIBIDI_TYPE_RTL;
+				iDomDir = UT_BIDI_RTL;
 			}
 			break;
 		}
@@ -3807,13 +3807,13 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 		while(pBl)
 		{
 
-			if(iDomDir == FRIBIDI_TYPE_RTL)
+			if(iDomDir == UT_BIDI_RTL)
 			{
-				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
+				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_LTR);
 			}
 			else
 			{
-				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
+				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_RTL);
 			}
 
 			pBl = static_cast<fl_BlockLayout *>(pBl->getNext());
@@ -7640,7 +7640,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	{
 		UT_ASSERT(pBlock);
 		xxx_UT_DEBUGMSG(("Entered BOL margin: dir %d\n", pBlock->getDominantDirection()));
-		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_RTL)
+		if(pBlock->getDominantDirection() == UT_BIDI_RTL)
 		{
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (3)\n"));
 			m_prevMouseContext = EV_EMC_RIGHTOFTEXT;

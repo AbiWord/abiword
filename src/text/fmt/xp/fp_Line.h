@@ -193,9 +193,9 @@ public:
 	UT_uint32	getVisIndx(fp_Run* pRun);
 	fp_Run *	getRunAtVisPos(UT_uint32 i);
 	void		setMapOfRunsDirty(){m_bMapDirty = true;};
-	void		addDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
-	void		removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
-	void		changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir, bool bRefreshMap = true);
+	void		addDirectionUsed(UT_BidiCharType dir, bool bRefreshMap = true);
+	void		removeDirectionUsed(UT_BidiCharType dir, bool bRefreshMap = true);
+	void		changeDirectionUsed(UT_BidiCharType oldDir, UT_BidiCharType newDir, bool bRefreshMap = true);
 
 
 #ifdef FMT_TEST
@@ -209,7 +209,7 @@ protected:
 								 UT_uint32 iCountRuns,
 								 FL_WORKING_DIRECTION eWorkingDirection,
 								 FL_WHICH_TABSTOP eUseTabStop,
-								 FriBidiCharType iDomDirection
+								 UT_BidiCharType iDomDirection
 								 );
 
 private:
@@ -246,10 +246,10 @@ private:
 	UT_uint32       _getRunLogIndx(UT_uint32 indx);
 	UT_sint32       _createMapOfRuns();
 #ifdef USE_STATIC_MAP
-	static FriBidiLevel    * s_pEmbeddingLevels;
-	static FriBidiStrIndex * s_pMapOfRunsL2V;
-	static FriBidiStrIndex * s_pMapOfRunsV2L;
-	static FriBidiChar     * s_pPseudoString;
+	static UT_Byte     * s_pEmbeddingLevels;
+	static UT_uint32   * s_pMapOfRunsL2V;
+	static UT_uint32   * s_pMapOfRunsV2L;
+	static UT_UCS4Char * s_pPseudoString;
 
 
 	static UT_uint32   s_iMapOfRunsSize;

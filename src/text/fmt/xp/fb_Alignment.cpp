@@ -33,7 +33,7 @@
 
 void fb_Alignment_left::initialize(fp_Line * pLine )
 {
-		if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
+		if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL)
 		{
 	    	m_iStartPosition = 0 - pLine->calculateWidthOfTrailingSpaces();
 	 	}
@@ -87,7 +87,7 @@ void fb_Alignment_right::initialize(fp_Line *pLine)
 
 	m_startPosition = pLine->getMaxWidth() - iWidth;
 	
-	if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
+	if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL)
 	{
 		m_startPosition -= iTrailing;
 	}
@@ -129,7 +129,7 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 		xxx_UT_DEBUGMSG(("fb_Alignment_justify::initialize (0x%x), iWidth %d, m_iExtraWidth %d\n",this,iWidth,m_iExtraWidth));
 		pLine->justify(m_iExtraWidth);
 
-		if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
+		if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL)
 		{
 			m_iStartPosition = pLine->getMaxWidth();
 		}
@@ -138,7 +138,7 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 			m_iStartPosition = 0;
 		}
 	}
-	else if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL) //this is RTL block, the last line behaves as if right-justified
+	else if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL) //this is RTL block, the last line behaves as if right-justified
 	{
 	    m_iStartPosition = pLine->getMaxWidth();
 	}

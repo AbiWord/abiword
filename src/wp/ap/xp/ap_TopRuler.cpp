@@ -600,7 +600,7 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 	UT_sint32 xAbsRight;
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 /*	if(bRTL)
 	{
@@ -712,7 +712,7 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 	UT_sint32 ls, rs;                   // the sizes of left and right markers
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 	if(bRTL)
 	{
@@ -747,7 +747,7 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 	xxx_UT_DEBUGMSG(("ap_TopRulerDrawPara: bRTL = %d \n",bRTL));
 	if (m_draggingWhat == DW_LEFTINDENTWITHFIRST)
 	{
@@ -892,7 +892,7 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 
 	if (pTab)
 
-	if((static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
+	if((static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL)
 	{
 		UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 		*pTab = xAbsRight - iPosition;
@@ -1537,7 +1537,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	fl_BlockLayout * pBL = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	UT_return_val_if_fail(pBL,false);
 	
-	bool bRTLpara = pBL->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTLpara = pBL->getDominantDirection() == UT_BIDI_RTL;
 	if(bRTLpara)
 		xrel = xAbsRight - anchor;
 	else
@@ -1928,7 +1928,7 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	UT_sint32 xrel;
 
     UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 	xxx_UT_DEBUGMSG(("setTableLineDrag: x = %d \n",x));
 	if(bRTL)
 		xrel = xAbsRight - static_cast<UT_sint32>(x);
@@ -2030,7 +2030,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	UT_sint32 xrel;
 
     UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 	if(bRTL)
 		xrel = xAbsRight - static_cast<UT_sint32>(x);
@@ -2399,7 +2399,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	bool bRTLglobal;
 	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 	if(bRTLpara)
 		xgrid = tick.snapPixelToGrid(xAbsRight - static_cast<UT_sint32>(x));
@@ -2794,7 +2794,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			eTabLeader iLeader;
     		UT_sint32 xrel;
 
-			bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+			bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 			if(bRTLpara)
 				xrel = xAbsRight - xgrid;
@@ -2971,7 +2971,7 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iL
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
     UT_sint32 xrel;
 
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 
 	if(bRTLpara)
@@ -3090,7 +3090,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	bool bRTLglobal;
 	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 	if(bRTLglobal)
 		xAbsRight = _getFirstPixelInColumn(&m_infoCache, 0) +
@@ -3982,7 +3982,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 t = rect.top;
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 	GR_Painter painter(m_pG);
 
@@ -4062,7 +4062,7 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 t = rect.top;
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
 
 	GR_Painter painter(m_pG);
 

@@ -20,8 +20,6 @@
 #ifndef FV_VIEW_H
 #define FV_VIEW_H
 
-#include <fribidi.h>
-
 #include "xap_Features.h"
 
 //#include "ut_misc.h"
@@ -129,8 +127,8 @@ private:
 enum FV_BIDI_Order
 {
 	FV_Order_Visual = 0,
-	FV_Order_Logical_LTR = FRIBIDI_TYPE_LTR,
-	FV_Order_Logical_RTL = FRIBIDI_TYPE_RTL
+	FV_Order_Logical_LTR = UT_BIDI_LTR,
+	FV_Order_Logical_RTL = UT_BIDI_RTL
 };
 
 								

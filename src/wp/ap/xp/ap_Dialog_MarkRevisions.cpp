@@ -26,8 +26,6 @@
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Strings.h"
 
-#include <fribidi.h>
-
 AP_Dialog_MarkRevisions::AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogmarkrevisions"), m_answer(a_CANCEL),
@@ -110,26 +108,17 @@ char * AP_Dialog_MarkRevisions::getComment1()
 	// now we run this string through fribidi
 	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 	{
-		FriBidiChar *fbdStr = (FriBidiChar *)pC;
-		FriBidiChar *fbdStr2 = 0;
+		UT_UCS4Char *pStr2 = 0;
 		UT_uint32 iLen = UT_UCS4_strlen(pC);
 
-		fbdStr2  = (FriBidiChar *)UT_calloc( iLen + 1, sizeof(FriBidiChar));
-		UT_return_val_if_fail(fbdStr2,NULL);
+		pStr2  = (UT_UCS4Char *)UT_calloc( iLen + 1, sizeof(UT_UCS4Char));
+		UT_return_val_if_fail(pStr2,NULL);
 		bFree = true;
 
-		FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+		UT_BidiCharType iDomDir = UT_bidiGetCharType(pC[0]);
 
-		fribidi_log2vis (		/* input */
-						 fbdStr,
-						 iLen,
-						 &fbdDomDir,
-						 /* output */
-						 fbdStr2,
-						 NULL,
-						 NULL,
-						 NULL);
-		pC = (const UT_UCS4Char *) fbdStr2;
+		UT_bidiReorderString(pC, iLen, iDomDir, pStr2);
+		pC = pStr2;
 
 	}
 

@@ -18,7 +18,6 @@
  */
 
 #include "fp_DirectionMarkerRun.h"
-#include <fribidi.h>
 #include "fl_BlockLayout.h"
 #include "fp_TextRun.h"
 #include "fp_Line.h"
@@ -39,7 +38,7 @@ fp_DirectionMarkerRun::fp_DirectionMarkerRun(fl_BlockLayout* pBL,
 	m_iMarker = cMarker;
 	
 	_setDirty(true);
-	_setDirection(fribidi_get_type(static_cast<FriBidiChar>(m_iMarker)));
+	_setDirection(UT_bidiGetCharType(m_iMarker));
 	lookupProperties();
 }
 
@@ -178,7 +177,7 @@ void fp_DirectionMarkerRun::findPointCoords(UT_uint32 iOffset,
 	getLine()->getOffsets(this, x, y);
 	x2 = x;
 	y2 = y;
-	bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
+	bDirection = (getVisDirection() != UT_BIDI_LTR);
 }
 
 void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
@@ -192,7 +191,7 @@ void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 		UT_sint32 xoff = 0, yoff = 0;
 		getLine()->getScreenOffsets(this, xoff, yoff);
 
-		if(getVisDirection() == FRIBIDI_TYPE_RTL)
+		if(getVisDirection() == UT_BIDI_RTL)
 		{
 			xoff -= m_iDrawWidth;
 		}

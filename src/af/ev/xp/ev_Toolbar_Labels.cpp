@@ -27,7 +27,6 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ev_Toolbar_Labels.h"
-#include <fribidi.h>
 #include "ut_wctomb.h"
 #include "ut_mbtowc.h"
 #include "xap_App.h"
@@ -64,7 +63,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 	{
         UT_uint32 iOldLen = 0;
-        FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
+        UT_UCS4Char *fbdStr = 0, *fbdStr2 = 0;
 
 		const char * encoding = (XAP_EncodingManager::get_instance()->getNativeSystemEncodingName()) ?
 		  XAP_EncodingManager::get_instance()->getNativeSystemEncodingName() :
@@ -93,10 +92,10 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 						delete [] fbdStr2;
 					}
 
-					fbdStr   = new FriBidiChar [iStrLen + 1];
-					UT_ASSERT(fbdStr);
-					fbdStr2  = new FriBidiChar [iStrLen + 1];
-					UT_ASSERT(fbdStr2);
+					fbdStr   = new UT_UCS4Char [iStrLen + 1];
+					UT_return_if_fail(fbdStr);
+					fbdStr2  = new UT_UCS4Char [iStrLen + 1];
+					UT_return_if_fail(fbdStr2);
 					iOldLen = iStrLen;
 				}
 
@@ -107,24 +106,17 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				{
 					if(mbtowc_conv.mbtowc(wc,szStr[i]))
 					{
-						fbdStr[j++] = static_cast<FriBidiChar>(wc);
+						fbdStr[j++] = wc;
 					}
 				}
 
-				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+				// TODO -- this should be lang based as we do for string set
+				UT_BidiCharType iDomDir = UT_bidiGetCharType(fbdStr[0]);
 
 // this has been crashing with en-US (but not en-GB), due to some
 // weird memory managment in the fribidi library; so I defined
 // USE_SIMPLE_MALLOC for it, which solved the problem
-				fribidi_log2vis (		/* input */
-				       fbdStr,
-				       j,
-				       &fbdDomDir,
-			    	   /* output */
-				       fbdStr2,
-				       NULL,
-				       NULL,
-				       NULL);
+				UT_bidiReorderString(fbdStr, j, iDomDir, fbdStr2);
 
 				for(i = 0; i < j; i++)
 				{

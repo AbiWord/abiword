@@ -876,10 +876,10 @@ static SmartQuote s_smart_quotes_default[] =
 static UT_UCSChar s_getMirrorChar(UT_UCSChar c)
 {
 	//got to do this, otherwise bsearch screws up
-	FriBidiChar fbc = static_cast<FriBidiChar>(c), mfbc;
+	UT_UCS4Char mc;
 
-	if (fribidi_get_mirror_char (/* Input */ fbc, /* Output */&mfbc))
-		return static_cast<UT_UCSChar>(mfbc);
+	if (UT_bidiGetMirrorChar(c,mc))
+		return mc;
 	else
 		return c;
 }
@@ -1254,7 +1254,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 											  UT_UCSChar *dest,
 											  UT_uint32 len,
 											  const XML_Char   * pLang,
-											  FriBidiCharType    iDirection,
+											  UT_BidiCharType    iDirection,
 											  bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
 											  const void * fparam) const
 {
@@ -1437,7 +1437,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 		// last thing to do is to deal with mirror characters
 		if(!pLet)
 		{
-			if(iDirection == FRIBIDI_TYPE_RTL)
+			if(iDirection == UT_BIDI_RTL)
 				glyph = s_getMirrorChar(current);
 			else
 				glyph = current;
@@ -1545,7 +1545,7 @@ GRShapingResult GR_ContextGlyph::copyString(UT_TextIterator & text,
 											UT_UCSChar *dest,
 											UT_uint32 len,
 											const XML_Char * /*pLang*/,
-											FriBidiCharType iDirection,
+											UT_BidiCharType iDirection,
 											bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
 											const void * fparam) const
 {
@@ -1560,7 +1560,7 @@ GRShapingResult GR_ContextGlyph::copyString(UT_TextIterator & text,
 		current = text.getChar();
 		
 		// deal with mirror characters
-		if(iDirection == FRIBIDI_TYPE_RTL)
+		if(iDirection == UT_BIDI_RTL)
 			glyph = s_getMirrorChar(current);
 		else
 			glyph = current;

@@ -56,7 +56,6 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "gr_Image.h"
-#include <fribidi.h>
 
 class fp_ContainerObject;
 
@@ -194,9 +193,9 @@ public:
 		{ return m_pSectionLayout; }
     void         setSectionLayout(fl_SectionLayout * pSL)
 		{ m_pSectionLayout = pSL; }
-	virtual inline FriBidiCharType getDirection(void)
+	virtual inline UT_BidiCharType getDirection(void)
 		{ return m_iDirection;}
-	virtual inline void setDirection(FriBidiCharType c) {m_iDirection = c;}
+	virtual inline void setDirection(UT_BidiCharType c) {m_iDirection = c;}
 	virtual UT_sint32	getHeight(void) const = 0;
 
 
@@ -227,8 +226,8 @@ private:
 	/*!
 	  Section layout type used for this container
 	*/
-	fl_SectionLayout*		        m_pSectionLayout;
-	FriBidiCharType         m_iDirection;
+	fl_SectionLayout*       m_pSectionLayout;
+	UT_BidiCharType         m_iDirection;
 };
 
 

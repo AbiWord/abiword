@@ -947,8 +947,8 @@ bool UT_UCS2_isspace(UT_UCS2Char c)
 
 bool UT_UCS2_isalpha(UT_UCS2Char c)
 {
-    FriBidiCharType type = fribidi_get_type(c);
-    return (FRIBIDI_IS_LETTER(type) != 0);
+    UT_BidiCharType type = UT_bidiGetCharType(c);
+    return (UT_BIDI_IS_LETTER(type) != 0);
 };
 
 bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
@@ -1132,8 +1132,8 @@ bool UT_UCS4_isspace(UT_UCS4Char c)
 
 bool UT_UCS4_isalpha(UT_UCS4Char c)
 {
-    FriBidiCharType type = fribidi_get_type(c);
-    return (FRIBIDI_IS_LETTER(type) != 0);
+    UT_BidiCharType type = UT_bidiGetCharType(c);
+    return (UT_BIDI_IS_LETTER(type) != 0);
 };
 
 bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
@@ -1582,3 +1582,34 @@ const char* std_size_string(float f)
   return string;
 };
 
+#ifndef WIN32
+
+UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
+{
+	return fribidi_get_type(c);
+}
+
+bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
+						  UT_UCS4Char * pStrOut)
+{
+	// if this assert fails, we have a serious problem ...
+	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
+	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, NULL, NULL, NULL));
+}
+
+bool UT_bidiMapLog2Vis(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
+					   UT_uint32 *pL2V, UT_uint32 * pV2L, UT_Byte * pEmbed)
+{
+	// if this assert fails, we have a serious problem ...
+	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
+	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir,
+								  NULL, (FriBidiStrIndex*)pL2V, (FriBidiStrIndex*)pV2L, (FriBidiLevel*)pEmbed));
+}
+
+bool UT_bidiGetMirrorChar(UT_UCS4Char c, UT_UCS4Char &mc)
+{
+	return (0 != fribidi_get_mirror_char(c, (FriBidiChar*)&mc));
+}
+
+
+#endif

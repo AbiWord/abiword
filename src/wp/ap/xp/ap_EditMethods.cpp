@@ -3591,7 +3591,7 @@ Defun1(warpInsPtLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL,1);
+	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL,1);
 	return true;
 }
 
@@ -3599,7 +3599,7 @@ Defun1(warpInsPtRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() != FRIBIDI_TYPE_RTL,1);
+	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() != UT_BIDI_RTL,1);
 	return true;
 }
 
@@ -3640,7 +3640,7 @@ Defun1(warpInsPtBOW)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
+	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
 		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
 	else
 		pView->moveInsPtTo(FV_DOCPOS_BOW);
@@ -3653,7 +3653,7 @@ Defun1(warpInsPtEOW)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
+	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
 		pView->moveInsPtTo(FV_DOCPOS_BOW);
 	else
 		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
@@ -4209,7 +4209,7 @@ Defun1(extSelLeft)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL,1);
+	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL,1);
 
 	return true;
 }
@@ -4219,7 +4219,7 @@ Defun1(extSelRight)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()!=FRIBIDI_TYPE_RTL,1);
+	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()!=UT_BIDI_RTL,1);
 
 	return true;
 }
@@ -4245,7 +4245,7 @@ Defun1(extSelBOW)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
+	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
 		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
 	else
 		pView->extSelTo(FV_DOCPOS_BOW);
@@ -4258,7 +4258,7 @@ Defun1(extSelEOW)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
+	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
 		pView->extSelTo(FV_DOCPOS_BOW);
 	else
 		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
@@ -9694,8 +9694,8 @@ Defun1(toggleUnIndent)
   s_getPageMargins (pView, margin_left, margin_right,
 					page_margin_left, page_margin_right);
 
-  FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
-  allowed = iBlockDir == FRIBIDI_TYPE_LTR ? margin_left : margin_right;
+  UT_BidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
+  allowed = iBlockDir == UT_BIDI_LTR ? margin_left : margin_right;
   if ( allowed <= 0. )
 	  return true ;
 
@@ -9755,20 +9755,20 @@ Defun1(toggleDomDirection)
 	properties[3] = static_cast<XML_Char *>(&cur_alignment[0]);
 
 
-	if(pBl->getDominantDirection()== FRIBIDI_TYPE_RTL)
+	if(pBl->getDominantDirection()== UT_BIDI_RTL)
 	{
 		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
 		/*
 		//the last run in the block is the FmtMark, and we need
 		//to reset its direction
-		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
+		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_LTR);
 		*/
 	}
 	else
 	{
 		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
 		/*
-		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
+		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_RTL);
 		*/
 	}
 

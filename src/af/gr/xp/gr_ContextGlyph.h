@@ -31,8 +31,6 @@
 #include "ut_misc.h"
 #include "ut_TextIterator.h"
 
-#include <fribidi.h>
-
 class XAP_App;
 class XAP_Prefs;
 
@@ -122,7 +120,7 @@ public:
 								 UT_UCSChar      * dest,
 								 UT_uint32         len,
 								 const XML_Char  * pLang,
-								 FriBidiCharType   iDirection,
+								 UT_BidiCharType   iDirection,
 								 bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
 								 const void * custom_param = NULL) const;
 	
@@ -130,7 +128,7 @@ public:
 							   UT_UCSChar      * dest,
 							   UT_uint32         len,
 							   const XML_Char  * pLang,
-							   FriBidiCharType   iDirection,
+							   UT_BidiCharType   iDirection,
 							   bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
 							   const void * custom_param = NULL) const;
 	

@@ -232,7 +232,7 @@ private:
 	bool m_bInPara;
 	bool m_bLTRCharContext;
 	bool m_bLTRParaContext;
-	FriBidiCharType  m_iOverrideIssued;
+	UT_BidiCharType  m_iOverrideIssued;
 	bool m_bBidiMode;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;

@@ -46,7 +46,7 @@
 fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout* pSectionLayout)
 	:       m_iConType(iType),
 			m_pSectionLayout(pSectionLayout),
-			m_iDirection(FRIBIDI_TYPE_UNSET)
+			m_iDirection(UT_BIDI_UNSET)
 {
 	UT_ASSERT(pSectionLayout);
 }

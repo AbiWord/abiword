@@ -172,8 +172,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bListItem(false),
 	  m_szStyle(NULL),
 	  m_bIsCollapsed(true),
-	  m_iDomDirection(FRIBIDI_TYPE_UNSET),
-	  m_iDirOverride(FRIBIDI_TYPE_UNSET),
+	  m_iDomDirection(UT_BIDI_UNSET),
+	  m_iDirOverride(UT_BIDI_UNSET),
 	  m_bIsTOC(false),
 	  m_bStyleInTOC(false),
 	  m_iTOCLevel(0)
@@ -446,29 +446,29 @@ void fl_BlockLayout::_lookupProperties(void)
 		pszDir = getProperty("dom-dir", true);
 	}
 		
-	FriBidiCharType iOldDirection = m_iDomDirection;
+	UT_BidiCharType iOldDirection = m_iDomDirection;
 
  	FV_View * pView = getView();
 
 	if(pView && pView->getBidiOrder() != FV_Order_Visual)
 	{
 		if(pView->getBidiOrder() == FV_Order_Logical_LTR)
-			m_iDomDirection = FRIBIDI_TYPE_LTR;
+			m_iDomDirection = UT_BIDI_LTR;
 		else
-			m_iDomDirection = FRIBIDI_TYPE_RTL;
+			m_iDomDirection = UT_BIDI_RTL;
 	}
 	else if(!strcmp(pszDir,"rtl"))
 	{
-		m_iDomDirection = FRIBIDI_TYPE_RTL;
+		m_iDomDirection = UT_BIDI_RTL;
 	}
 	else
-		m_iDomDirection = FRIBIDI_TYPE_LTR;
+		m_iDomDirection = UT_BIDI_LTR;
 
 	// if the direction was previously set and the new dominant
 	// direction is different, we have to split all runs in this
 	// block at their direciton boundaries, because the base
 	// direction influences the visual direciton of weak characters
-	if(iOldDirection != FRIBIDI_TYPE_UNSET && iOldDirection != m_iDomDirection)
+	if(iOldDirection != UT_BIDI_UNSET && iOldDirection != m_iDomDirection)
 	{
 		fp_Run * pRun = getFirstRun();
 
@@ -481,7 +481,7 @@ void fl_BlockLayout::_lookupProperties(void)
 				//we get the next run in line prior to breaking this
 				//one up, so that we do not break those already broken
 				pRun = pRun->getNextRun();
-				pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+				pTextRun->breakMeAtDirBoundaries(UT_BIDI_IGNORE);
 			}
 			else if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
 			{
@@ -4344,7 +4344,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	  weak characters, we need to ensure that any weak characters on either side
 	  are in runs of their own.
 	*/
-	FriBidiCharType iDirection = pNewRun->getDirection();
+	UT_BidiCharType iDirection = pNewRun->getDirection();
 	if(FRIBIDI_IS_STRONG(iDirection) && pNewRun->getType() == FPRUN_TEXT)
 	{
 		static_cast<fp_TextRun*>(pNewRun)->breakNeighborsAtDirBoundaries();
@@ -4954,16 +4954,16 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 	// the text runs affected by this, plus the run before and after,
 	// so that the bidi algorithm can be properly applied
 	if(pTR_del1)
-		pTR_del1->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+		pTR_del1->breakMeAtDirBoundaries(UT_BIDI_IGNORE);
 	
 	if(pTR_del2)
-		pTR_del2->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+		pTR_del2->breakMeAtDirBoundaries(UT_BIDI_IGNORE);
 
 	if(pTR_prev)
-		pTR_prev->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+		pTR_prev->breakMeAtDirBoundaries(UT_BIDI_IGNORE);
 
 	if(pTR_next)
-		pTR_next->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+		pTR_next->breakMeAtDirBoundaries(UT_BIDI_IGNORE);
 
 	_assertRunListIntegrity();
 
@@ -6828,7 +6828,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 		if (pTab->getPosition() > iStartX)
 		{
-			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			if(m_iDomDirection == UT_BIDI_RTL)
 			{
 				if(m_iRightMargin > iStartX && m_iRightMargin < pTab->getPosition())
 				{
@@ -6868,7 +6868,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 	UT_sint32 iMin;
 
-	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+	if(m_iDomDirection == UT_BIDI_RTL)
 		iMin = m_iRightMargin;
 	else
 		iMin = m_iLeftMargin;
@@ -6877,7 +6877,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	{
 		iPosition = iMin;
 
-		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		if(m_iDomDirection == UT_BIDI_RTL)
 			iType = FL_TAB_RIGHT;
 		else
 			iType = FL_TAB_LEFT;
@@ -6896,7 +6896,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	else
 		iPosition = iPos;
 
-	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+	if(m_iDomDirection == UT_BIDI_RTL)
 		iType = FL_TAB_RIGHT;
 	else
 		iType = FL_TAB_LEFT;
@@ -6937,7 +6937,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 			pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(i>0?i-1:0));
 			UT_ASSERT(pTab);
 
-			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			if(m_iDomDirection == UT_BIDI_RTL)
 			{
 				if(m_iRightMargin > pTab->getPosition() && m_iRightMargin < iStartX)
 				{
@@ -6991,7 +6991,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 	UT_sint32 iMin;
 
-	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+	if(m_iDomDirection == UT_BIDI_RTL)
 		iMin = m_iRightMargin;
 	else
 		iMin = m_iLeftMargin;
@@ -7000,7 +7000,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	{
 		iPosition = iMin;
 
-		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		if(m_iDomDirection == UT_BIDI_RTL)
 			iType = FL_TAB_RIGHT;
 		else
 			iType = FL_TAB_LEFT;
@@ -7016,7 +7016,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 		m_iDefaultTabInterval;
 	iPosition = iPos;
 
-		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		if(m_iDomDirection == UT_BIDI_RTL)
 			iType = FL_TAB_RIGHT;
 		else
 			iType = FL_TAB_LEFT;
@@ -7491,7 +7491,7 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 		pStyle->getProperty(static_cast<const XML_Char *>("list-decimal"), szDec);
 		pStyle->getProperty(static_cast<const XML_Char *>("start-value"), szStart);
 
-		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		if(m_iDomDirection == UT_BIDI_RTL)
 		   pStyle->getProperty(static_cast<const XML_Char *>("margin-right"), szAlign);
 	    else
 		   pStyle->getProperty(static_cast<const XML_Char *>("margin-left"), szAlign);
@@ -7516,7 +7516,7 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 			UT_ASSERT(0);
 
 		double dLeft;
-		if(m_iDomDirection == FRIBIDI_TYPE_LTR)
+		if(m_iDomDirection == UT_BIDI_LTR)
 			dLeft = UT_convertToInches(getProperty("margin-left",true));
 		else
 			dLeft = UT_convertToInches(getProperty("margin-right",true));
@@ -7628,7 +7628,7 @@ void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const XML_Char*>* vp
 	const XML_Char * lDecimal =  getProperty("list-decimal",true);
 
 	const XML_Char * pszAlign;
-	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+	if(m_iDomDirection == UT_BIDI_RTL)
 		pszAlign =  getProperty("margin-right",true);
 	else
 		pszAlign =  getProperty("margin-left",true);
@@ -7643,7 +7643,7 @@ void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const XML_Char*>* vp
 	}
 	if(pszAlign != NULL)
 	{
-		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		if(m_iDomDirection == UT_BIDI_RTL)
 			vp->addItem("margin-right");
 		else
 			vp->addItem("margin-left");
@@ -7745,7 +7745,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	va.addItem("level");		va.addItem(buf);
 	vp.addItem("start-value");	vp.addItem(pszStart);
 
-	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+	if(m_iDomDirection == UT_BIDI_RTL)
 		vp.addItem("margin-right");
 	else
 	    vp.addItem("margin-left");
@@ -7874,7 +7874,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 			m_pDoc->getStyle(static_cast<char *>(getListStyleString(newType)), &pStyle);
 			if (pStyle)
 			{
-				if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+				if(m_iDomDirection == UT_BIDI_RTL)
 					pStyle->getProperty(static_cast<const XML_Char *>("margin-right"), szAlign);
 				else
 					pStyle->getProperty(static_cast<const XML_Char *>("margin-left"), szAlign);
@@ -7899,7 +7899,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 								UT_convertInchesToDimensionString(DIM_IN, fIndent, 0));
 			}
 
-			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			if(m_iDomDirection == UT_BIDI_RTL)
 				vp.addItem("margin-right");
 			else
 				vp.addItem("margin-left");
@@ -7920,7 +7920,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 
 		if (pPrev)
 		{
-			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			if(m_iDomDirection == UT_BIDI_RTL)
 				szAlign = pPrev->getProperty("margin-right", true);
 			else
 				szAlign = pPrev->getProperty("margin-left", true);
@@ -7929,7 +7929,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 		}
 		else if (pNext)
 		{
-			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			if(m_iDomDirection == UT_BIDI_RTL)
 				szAlign = pNext->getProperty("margin-right", true);
 			else
 				szAlign = pNext->getProperty("margin-left", true);
@@ -7942,7 +7942,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 			szIndent = "0.0000in";
 		}
 
-		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		if(m_iDomDirection == UT_BIDI_RTL)
 			vp.addItem("margin-right");
 		else
 			vp.addItem("margin-left");
@@ -7985,7 +7985,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 		pListProps[2] =  "list-style";
 		pListProps[3] =  NULL;
 
-		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		if(m_iDomDirection == UT_BIDI_RTL)
 			pListProps[4] =  "margin-right";
 		else
 			pListProps[4] =  "margin-left";
@@ -8146,7 +8146,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 {
 
     const char * szAlign;
-	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+	if(m_iDomDirection == UT_BIDI_RTL)
 		szAlign = getProperty("margin-right",true);
 	else
 		szAlign = getProperty("margin-left",true);
@@ -8163,7 +8163,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 	{
 		if(pPrev->isListItem())
 		{
-			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			if(m_iDomDirection == UT_BIDI_RTL)
 				szAlign = pPrev->getProperty("margin-right",true);
 			else
 				szAlign = pPrev->getProperty("margin-left",true);
@@ -8621,7 +8621,7 @@ void fl_BlockLayout::setTextIndent(UT_sint32 iInd)
 }
 #endif
 
-void fl_BlockLayout::setDominantDirection(FriBidiCharType iDirection)
+void fl_BlockLayout::setDominantDirection(UT_BidiCharType iDirection)
 {
 	m_iDomDirection = iDirection;
 	XML_Char * prop[] = {NULL, NULL, 0};
@@ -8631,7 +8631,7 @@ void fl_BlockLayout::setDominantDirection(FriBidiCharType iDirection)
 
 	prop[0] = static_cast<XML_Char *>(&ddir[0]);
 
-	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+	if(m_iDomDirection == UT_BIDI_RTL)
 	{
 		prop[1] = static_cast<XML_Char *>(&rtl[0]);
 	}

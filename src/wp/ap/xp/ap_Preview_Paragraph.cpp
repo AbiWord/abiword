@@ -33,8 +33,6 @@
 #include "ap_Dialog_Lists.h"
 #include "gr_Painter.h"
 
-#include <fribidi.h>
-
 /************************************************************************/
 
 // all of these are measured in pixels
@@ -263,7 +261,7 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 										   const UT_UCSChar * text,
 										   AP_Dialog_Lists * dlg)
-  : XAP_Preview(gc), m_dir(FRIBIDI_TYPE_LTR)
+  : XAP_Preview(gc), m_dir(UT_BIDI_LTR)
 {
 	UT_ASSERT_HARMLESS(text && dlg);
 
@@ -346,7 +344,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   const UT_UCSChar * text,
-										   XAP_Dialog * dlg) : XAP_Preview(gc), m_dir(FRIBIDI_TYPE_LTR)
+										   XAP_Dialog * dlg) : XAP_Preview(gc), m_dir(UT_BIDI_LTR)
 {
   // this method heavily relies upon the parent dlg to call setFormat()
   // rather than auto-generating defaults
@@ -403,7 +401,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   const UT_UCSChar * text,
 					   AP_Dialog_Paragraph * dlg)
-	: XAP_Preview(gc),m_dir(FRIBIDI_TYPE_LTR)
+	: XAP_Preview(gc),m_dir(UT_BIDI_LTR)
 {
 	UT_ASSERT_HARMLESS(text && dlg);
 
@@ -454,7 +452,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									(AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
 
 		if(dlg->_getCheckItemValue(AP_Dialog_Paragraph::id_CHECK_DOMDIRECTION) == AP_Dialog_Paragraph::check_TRUE)
-			m_dir = FRIBIDI_TYPE_RTL;
+			m_dir = UT_BIDI_RTL;
 	}
 
 	{
@@ -704,7 +702,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	UT_uint32 willDrawAt = left;
 
-	if(m_dir == FRIBIDI_TYPE_RTL)
+	if(m_dir == UT_BIDI_RTL)
 		willDrawAt += maxPixelsForThisLine;
 
  	spaceCharWidth <<= 8;	// Calculate spacing at 256 times the resolution
@@ -713,7 +711,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
  	switch(align)
  	{
  	case AP_Dialog_Paragraph::align_RIGHT:
-		if(m_dir == FRIBIDI_TYPE_LTR)
+		if(m_dir == UT_BIDI_LTR)
 
 	    // for right, we just draw at the difference in spaces added onto the first line stop.
 	    willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine);
@@ -731,7 +729,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		break;
 	default:
 		// aligh_LEFT is caught here
-		if(m_dir == FRIBIDI_TYPE_RTL)
+		if(m_dir == UT_BIDI_RTL)
 			willDrawAt =  pixelsForThisLine + left;
 
 		break;
@@ -741,9 +739,8 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	UT_uint32 k;
 
-	FriBidiChar fb1[100];
-	FriBidiChar fb2[100];
-	UT_UCSChar  str[100];
+	UT_UCS4Char fb1[100];
+	UT_UCS4Char fb2[100];
 	UT_uint32 j, iLen;
 
 	GR_Painter painter(m_gc);
@@ -754,27 +751,16 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		// with the overall pargraph direction will be in wrong order, but that is not a big deal
   	    iLen = UT_UCS4_strlen((UT_UCSChar *) words->getNthItem(k));
 	    for(j = 0; j < iLen; j++)
-		    fb1[j] = ((UT_UCSChar *) words->getNthItem(k))[j];
+		    fb1[j] = ((UT_UCS4Char *)words->getNthItem(k))[j];
 
-		fribidi_log2vis (		/* input */
-						 &fb1[0],
-						 iLen,
-						 &m_dir,
-						 /* output */
-						 &fb2[0],
-						 NULL,
-						 NULL,
-						 NULL);
+		UT_bidiReorderString(&fb1[0], iLen, m_dir, &fb2[0]);
 
-		for(j = 0; j < iLen; j++)
-		    str[j] = (UT_UCSChar)fb2[j];
-
-		if(m_dir == FRIBIDI_TYPE_RTL)
+		if(m_dir == UT_BIDI_RTL)
 		    willDrawAt -= ((widths->getNthItem(k)) << 8) + spaceCharWidth;
 
-		painter.drawChars(str, 0,	iLen, willDrawAt >> 8, y);
+		painter.drawChars(fb2, 0,	iLen, willDrawAt >> 8, y);
 
-		if(m_dir == FRIBIDI_TYPE_LTR)
+		if(m_dir == UT_BIDI_LTR)
 		    willDrawAt += ((widths->getNthItem(k)) << 8) + spaceCharWidth;
 	}
 

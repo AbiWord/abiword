@@ -21,7 +21,6 @@
 #ifndef __WINE__
 #include <stdexcept>
 #endif
-#include <fribidi.h>
 #include "gr_Win32USPGraphics.h"
 #include "ut_debugmsg.h"
 #include "xap_App.h"
@@ -77,15 +76,16 @@ class usp_exception
 class GR_Win32USPItem: public GR_Item
 {
 	friend class GR_Win32USPGraphics;
-	
+
   public:
 	virtual ~GR_Win32USPItem(){};
 	
 	virtual GR_ScriptType getType() const {return (GR_ScriptType) m_si.a.eScript;}
 	virtual GR_Item *     makeCopy() const {return new GR_Win32USPItem(m_si);} // make a copy of this item
 	virtual GRRI_Type     getClassId() const {return GRRI_WIN32_UNISCRIBE;}
-	
 
+	bool isRTL() const {return m_si.a.fRTL != 0;}
+	
   protected:
 	GR_Win32USPItem(SCRIPT_ITEM si):m_si(si){};
 	GR_Win32USPItem(GR_ScriptType t){ m_si.a.eScript = (WORD)t;};
@@ -635,8 +635,8 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	RI->m_bShapingFailed = false;
 	
-	// we need to maker sure that the analysis embeding level is in sync with si.m_iVisDir
-	pItem->m_si.a.fRTL = si.m_iVisDir == FRIBIDI_TYPE_RTL ? 1 : 0;
+	// we need to make sure that the analysis embeding level is in sync with si.m_iVisDir
+	pItem->m_si.a.fRTL = si.m_iVisDir == UT_BIDI_RTL ? 1 : 0;
 	HRESULT hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
 
@@ -683,7 +683,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		
 		UT_DEBUGMSG(("gr_Win32USPGraphics::shape: ScriptShape failed (hRes 0x%04x\n); disabling shaping\n"));
 
-		// we only disable shaping temporarily, because of the font changes later, we need to try again
+		// we only disable shaping temporarily, because if the font changes later, we need to try again
 		RI->m_bShapingFailed = true;
 		WORD eScript = pItem->m_si.a.eScript;
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
@@ -757,7 +757,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	// work out shaping result
 	DWORD dFlags = SIC_COMPLEX;
 
-	if(si.m_iVisDir == FRIBIDI_TYPE_RTL)
+	if(si.m_iVisDir == UT_BIDI_RTL)
 		dFlags |= SIC_NEUTRAL;
 
 	SCRIPT_DIGITSUBSTITUTE sds;
@@ -957,6 +957,12 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	}
 	
 	UINT dFlags = 0;
+
+	// need to disapble shaping if call to ScriptShape failed ...
+	WORD eScript = pItem->m_si.a.eScript;
+	if(RI.m_bShapingFailed)
+		pItem->m_si.a.eScript = GRScriptType_Undefined;
+
 	HRESULT hRes = fScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
 								 dFlags, /*option flags*/
 								 NULL, /*not sure about this*/
@@ -968,6 +974,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 								 pJustify,
 								 RI.m_pGoffsets);
 
+	pItem->m_si.a.eScript = eScript;
 	//RI.m_bRejustify = false; -- the docs are misleading; rejustification is always needed
 	
 	UT_ASSERT_HARMLESS( !hRes );
@@ -1135,13 +1142,17 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 bool GR_Win32USPGraphics::_needsSpecialBreaking(GR_Win32USPRenderInfo &ri)
 {
 	UT_return_val_if_fail(s_ppScriptProperties && ri.m_pItem, false);
-
+	if(ri.m_bShapingFailed)
+		return false;
+	
 	return (s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsWordBreaking != 0);
 }
 
 bool GR_Win32USPGraphics::_needsSpecialCaretPositioning(GR_Win32USPRenderInfo &ri)
 {
 	UT_return_val_if_fail(s_ppScriptProperties && ri.m_pItem, false);
+	if(ri.m_bShapingFailed)
+		return false;
 
 	return (s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsCaretInfo != 0);
 }
@@ -1515,6 +1526,14 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	UT_uint32 iGlyphLen1 = iGlyphOffset;
 	UT_uint32 iGlyphLen2 = m_iIndicesCount - iGlyphLen1;
 
+	GR_Win32USPItem &I = (GR_Win32USPItem &)*m_pItem;
+	if(I.isRTL())
+	{
+		UT_uint32 t = iGlyphLen1;
+		iGlyphLen1 =  iGlyphLen2;
+		iGlyphLen2 = t;
+	}
+	
 	UT_uint32 iCharLen1 = m_iOffset;
 	UT_uint32 iCharLen2 = m_iCharCount - iCharLen1;
 
@@ -1545,15 +1564,42 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 		UT_return_val_if_fail(RI.m_pClust, false);
 		RI.m_iClustSize = iCharLen2;
 	}
-	
-	memcpy(RI.m_pIndices,  m_pIndices  + iGlyphOffset, sizeof(WORD)*iGlyphLen2);
-	memcpy(RI.m_pVisAttr,  m_pVisAttr  + iGlyphOffset, sizeof(SCRIPT_VISATTR)*iGlyphLen2);
 
-	// now we need to copy the cluster info (relative to the original start
-	// of the string)
-	for(UT_uint32 i = 0; i < iCharLen2; ++i)
+	if(I.isRTL())
 	{
-		RI.m_pClust[i] = m_pClust[i+m_iOffset] - m_iOffset;
+		UT_uint32 i;
+		// RI is the first segment of the visual buffers
+		memcpy(RI.m_pIndices, m_pIndices, sizeof(WORD)*iGlyphLen2);
+		memcpy(RI.m_pVisAttr,  m_pVisAttr, sizeof(SCRIPT_VISATTR)*iGlyphLen2);
+
+		// now we need to copy the cluster info (relative to the original start
+		// of the string)
+		for(i = 0; i < iCharLen2; ++i)
+		{
+			RI.m_pClust[i] = m_pClust[i+m_iOffset];
+		}
+		
+		memmove(m_pIndices, m_pIndices + iGlyphOffset, sizeof(WORD)*iGlyphLen1);
+		memmove(m_pVisAttr, m_pVisAttr + iGlyphOffset, sizeof(SCRIPT_VISATTR)*iGlyphLen1);
+
+		// now we need to copy the cluster info (relative to the original start
+		// of the string)
+		for(i = 0; i < iCharLen1; ++i)
+		{
+			m_pClust[i] = m_pClust[i] - m_iOffset;
+		}
+	}
+	else
+	{
+		memcpy(RI.m_pIndices,  m_pIndices  + iGlyphOffset, sizeof(WORD)*iGlyphLen2);
+		memcpy(RI.m_pVisAttr,  m_pVisAttr  + iGlyphOffset, sizeof(SCRIPT_VISATTR)*iGlyphLen2);
+
+		// now we need to copy the cluster info (relative to the original start
+		// of the string)
+		for(UT_uint32 i = 0; i < iCharLen2; ++i)
+		{
+			RI.m_pClust[i] = m_pClust[i+m_iOffset] - m_iOffset;
+		}
 	}
 	
 	m_iIndicesCount = iGlyphLen1; RI.m_iIndicesCount = iGlyphLen2;

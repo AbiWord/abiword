@@ -46,12 +46,12 @@
 
 #ifdef USE_STATIC_MAP
 //initialize the static members of the class
-FriBidiChar     * fp_Line::s_pPseudoString = 0;
-FriBidiStrIndex * fp_Line::s_pMapOfRunsL2V = 0;
-FriBidiStrIndex * fp_Line::s_pMapOfRunsV2L = 0;
-FriBidiLevel    * fp_Line::s_pEmbeddingLevels = 0;
-UT_uint32 	      fp_Line::s_iMapOfRunsSize = 0;
-fp_Line         * fp_Line::s_pMapOwner = 0;
+UT_UCS4Char * fp_Line::s_pPseudoString = 0;
+UT_uint32   * fp_Line::s_pMapOfRunsL2V = 0;
+UT_uint32   * fp_Line::s_pMapOfRunsV2L = 0;
+UT_Byte     * fp_Line::s_pEmbeddingLevels = 0;
+UT_uint32     fp_Line::s_iMapOfRunsSize = 0;
+fp_Line     * fp_Line::s_pMapOwner = 0;
 #else
 //make sure that any references to the static members are renamed to their non-static versions
 #define s_iMapOfRunsSize m_iMapOfRunsSize
@@ -97,17 +97,17 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	#ifdef USE_STATIC_MAP
 	if(!s_pMapOfRunsL2V)
 	{
-		s_pMapOfRunsL2V = new FriBidiStrIndex[RUNS_MAP_SIZE];
-		s_pMapOfRunsV2L = new FriBidiStrIndex[RUNS_MAP_SIZE];
-		s_pPseudoString    = new FriBidiChar[RUNS_MAP_SIZE];
-		s_pEmbeddingLevels =  new FriBidiLevel[RUNS_MAP_SIZE];
+		s_pMapOfRunsL2V = new UT_uint32 [RUNS_MAP_SIZE];
+		s_pMapOfRunsV2L = new UT_uint32[RUNS_MAP_SIZE];
+		s_pPseudoString    = new UT_UCS4Char[RUNS_MAP_SIZE];
+		s_pEmbeddingLevels =  new UT_Byte[RUNS_MAP_SIZE];
 		s_iMapOfRunsSize = RUNS_MAP_SIZE;
 	}
     #else
-	m_pMapOfRunsL2V = new FriBidiStrIndex[RUNS_MAP_SIZE];
-	m_pMapOfRunsV2L = new FriBidiStrIndex[RUNS_MAP_SIZE];
-	m_pPseudoString    = new FriBidiChar[RUNS_MAP_SIZE];
-	m_pEmbeddingLevels =  new FriBidiLevel[RUNS_MAP_SIZE];
+	m_pMapOfRunsL2V = new UT_uint32[RUNS_MAP_SIZE];
+	m_pMapOfRunsV2L = new UT_uint32[RUNS_MAP_SIZE];
+	m_pPseudoString    = new UT_UCS4Char[RUNS_MAP_SIZE];
+	m_pEmbeddingLevels =  new UT_Byte[RUNS_MAP_SIZE];
 	m_iMapOfRunsSize = RUNS_MAP_SIZE;
     #endif
 
@@ -942,11 +942,11 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 	// the run index is visual and if we are in LTR paragraph we
 	// are deleting to the right of the run, while if we are in RTL
 	// paragraph we are deleting to the _left_ (Tomas, Oct 25, 2003)
-	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
+	UT_BidiCharType iDomDirection = m_pBlock->getDominantDirection();
 	
 	UT_sint32 i;
 
-	if(iDomDirection == FRIBIDI_TYPE_LTR)
+	if(iDomDirection == UT_BIDI_LTR)
 	{
 		for(i = runIndex; i < count; i++)
 		{
@@ -1074,7 +1074,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		xxx_UT_DEBUGMSG(("Width of clear %d \n",m_iClearToPos + leftClear - xoff));
 		xxx_UT_DEBUGMSG((" m_iClearToPos %d leftClear %d xoff %d xoffline %d \n",m_iClearToPos,leftClear,xoff,xoffLine));
 		// now we do the clearing
-		if(iDomDirection == FRIBIDI_TYPE_LTR)
+		if(iDomDirection == UT_BIDI_LTR)
 		{
 			// clear from the start of the run (minus any adjustments)
 			// to the end of the line
@@ -1113,7 +1113,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 
 		// now we need to mark all the runs between us and the end of
 		// the line as dirty
-		if(iDomDirection == FRIBIDI_TYPE_RTL)
+		if(iDomDirection == UT_BIDI_RTL)
 		{
 			// we are working from the visual index to the left
 			if(runIndex > 0)
@@ -1404,7 +1404,7 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 	FB_AlignmentType eAlignment = pAlignment->getType();
 
 	// find out the direction of the paragraph
-	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
+	UT_BidiCharType iDomDirection = m_pBlock->getDominantDirection();
 
 	eWorkingDirection = WORK_FORWARD;
 	eUseTabStop = USE_NEXT_TABSTOP;
@@ -1415,7 +1415,7 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 	switch (eAlignment)
 	{
 		case FB_ALIGNMENT_LEFT:
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 				eUseTabStop = USE_PREV_TABSTOP;
 			else
 				eUseTabStop = USE_NEXT_TABSTOP;
@@ -1424,7 +1424,7 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 			break;
 
 		case FB_ALIGNMENT_RIGHT:
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 				eUseTabStop = USE_NEXT_TABSTOP;
 			else
 				eUseTabStop = USE_PREV_TABSTOP;
@@ -1438,7 +1438,7 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 			break;
 
 		case FB_ALIGNMENT_JUSTIFY:
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 				eWorkingDirection = WORK_BACKWARD;
 			else
 				eWorkingDirection = WORK_FORWARD;
@@ -1470,10 +1470,10 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, F
 	fp_Run* pRun = m_vecRuns.getNthItem(_getRunLogIndx(iIndx));
 
 	// find out the direction of the paragraph
-	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
+	UT_BidiCharType iDomDirection = m_pBlock->getDominantDirection();
 
 	UT_sint32 iXreal;
-	if(iDomDirection == FRIBIDI_TYPE_RTL)
+	if(iDomDirection == UT_BIDI_RTL)
 		iXreal = m_iMaxWidth - iWidth;
 	else
 		iXreal = iWidth;
@@ -1496,7 +1496,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, F
 
 //xxx_UT_DEBUGMSG(("new iXreal %d, iXLreal %d\n", iXreal, iXLreal));
 
-	if(iDomDirection == FRIBIDI_TYPE_RTL)
+	if(iDomDirection == UT_BIDI_RTL)
 	{
 		iWidth = m_iMaxWidth - iXreal;
 	}
@@ -1516,7 +1516,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 									UT_uint32 iCountRuns,
 									FL_WORKING_DIRECTION eWorkingDirection,
 									FL_WHICH_TABSTOP eUseTabStop,
-									FriBidiCharType iDomDirection
+									UT_BidiCharType iDomDirection
 									)
 {
 	if(!pRun)
@@ -1562,7 +1562,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 				// are to use next or previous tabstop
 				else if(eUseTabStop == USE_NEXT_TABSTOP)
 				{
-					if(iDomDirection == FRIBIDI_TYPE_RTL)
+					if(iDomDirection == UT_BIDI_RTL)
 					{
 						UT_sint32 iStartPos = getContainer()->getWidth() - iX;
 						bRes = findNextTabStop(iStartPos, iPos, iTabType, iTabLeader);
@@ -1573,7 +1573,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 				}
 				else
 				{
-					if(iDomDirection == FRIBIDI_TYPE_RTL)
+					if(iDomDirection == UT_BIDI_RTL)
 					{
 						UT_sint32 iStartPos = getContainer()->getWidth() - iX;
 						
@@ -1593,12 +1593,12 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 				UT_sint32 iXprev;
 				iXprev = iX;
 				
-				FriBidiCharType iVisDirection = pTabRun->getVisDirection();
+				UT_BidiCharType iVisDirection = pTabRun->getVisDirection();
 				
 				switch ( iTabType )
 				{
 				case FL_TAB_LEFT:
-					if(iVisDirection == FRIBIDI_TYPE_LTR && iDomDirection == FRIBIDI_TYPE_LTR)
+					if(iVisDirection == UT_BIDI_LTR && iDomDirection == UT_BIDI_LTR)
 					{
 						iX = iPos;
 						
@@ -1659,7 +1659,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 					}
 
 					case FL_TAB_RIGHT:
-						if(iVisDirection == FRIBIDI_TYPE_RTL && iDomDirection == FRIBIDI_TYPE_RTL)
+						if(iVisDirection == UT_BIDI_RTL && iDomDirection == UT_BIDI_RTL)
 						{
 							iX = iPos;
 							iWidth = abs(iX - iXprev);
@@ -1905,7 +1905,7 @@ void fp_Line::layout(void)
 	UT_sint32 iStartX = 0;
 
 	// find out the direction of the paragraph
-	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
+	UT_BidiCharType iDomDirection = m_pBlock->getDominantDirection();
 
 	// a variable to keep the processing direction
 	// NB: it is important that WORK_FORWARD is set to 1 and
@@ -1922,7 +1922,7 @@ void fp_Line::layout(void)
 	switch (eAlignment)
 	{
 		case FB_ALIGNMENT_LEFT:
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 				eUseTabStop = USE_PREV_TABSTOP;
 			else
 				eUseTabStop = USE_NEXT_TABSTOP;
@@ -1931,7 +1931,7 @@ void fp_Line::layout(void)
 			break;
 
 		case FB_ALIGNMENT_RIGHT:
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 				eUseTabStop = USE_NEXT_TABSTOP;
 			else
 				eUseTabStop = USE_PREV_TABSTOP;
@@ -1949,7 +1949,7 @@ void fp_Line::layout(void)
 			break;
 
 		case FB_ALIGNMENT_JUSTIFY:
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 			{
 				eWorkingDirection = WORK_BACKWARD;
 				iStartX = m_iMaxWidth;
@@ -2140,7 +2140,7 @@ void fp_Line::layout(void)
 					
 					if(!bLineErased && iStartX != s_pOldXs[k])
 					{
-						if(iDomDirection == FRIBIDI_TYPE_LTR)
+						if(iDomDirection == UT_BIDI_LTR)
 							bLineErased = true;
 						
 						iIndxToEraseFrom = k;
@@ -2197,7 +2197,7 @@ void fp_Line::layout(void)
 						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
 						if(!bLineErased && iStartX != s_pOldXs[iK])
 						{
-							if(iDomDirection == FRIBIDI_TYPE_LTR)
+							if(iDomDirection == UT_BIDI_LTR)
 								bLineErased = true;
 							
 							iIndxToEraseFrom = iK;
@@ -2210,7 +2210,7 @@ void fp_Line::layout(void)
 						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
 						if(!bLineErased && iStartX != s_pOldXs[iK])
 						{
-							if(iDomDirection == FRIBIDI_TYPE_LTR)
+							if(iDomDirection == UT_BIDI_LTR)
 								bLineErased = true;
 							
 							iIndxToEraseFrom = iK;
@@ -2244,7 +2244,7 @@ void fp_Line::layout(void)
 					//eClearScreen = iCurX + iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
 					if(!bLineErased && iCurX + iStartX != s_pOldXs[k])
 					{
-						if(iDomDirection == FRIBIDI_TYPE_LTR)
+						if(iDomDirection == UT_BIDI_LTR)
 							bLineErased = true;
 						
 						iIndxToEraseFrom = k;
@@ -2523,11 +2523,11 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	UT_sint32 iX = m_pBlock->getLeftMargin();
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
 
-	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
 
 	if (isFirstLineInBlock())
 	{
-		if(iBlockDir == FRIBIDI_TYPE_LTR)
+		if(iBlockDir == UT_BIDI_LTR)
 			iX += m_pBlock->getTextIndent();
 	}
 
@@ -2756,14 +2756,14 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 	UT_sint32 iTrailingBlank = 0;
 
 
-	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
 	UT_sint32 i;
 	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
 
 	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
 		// work from the run on the visual end of the line
-		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
+		UT_sint32 k = iBlockDir == UT_BIDI_LTR ? i : iCountRuns - i - 1;
 		fp_Run* pRun = m_vecRuns.getNthItem(_getRunLogIndx(k));
 
 		if(pRun->isHidden())
@@ -2790,13 +2790,13 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 	UT_uint32 iSpaceCount = 0;
 	bool bStartFound = false;
 
-	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
 
 	// first calc the width of the line
 	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
 		// work from the run on the visual end of the line
-		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
+		UT_sint32 k = iBlockDir == UT_BIDI_LTR ? i : iCountRuns - i - 1;
 		fp_Run* pRun = m_vecRuns.getNthItem(_getRunLogIndx(k));
 
 		if (pRun->getType() == FPRUN_TAB)
@@ -2909,7 +2909,7 @@ void fp_Line::justify(UT_sint32 iAmount)
 		{
 			bool bFoundStart = false;
 
-			FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+			UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
 			UT_sint32 count = m_vecRuns.getItemCount();
 			UT_ASSERT(count);
 
@@ -2918,7 +2918,7 @@ void fp_Line::justify(UT_sint32 iAmount)
 			for (UT_sint32 i=count-1; i >= 0 && iSpaceCount > 0; i--)
 			{
 				// work from the run on the visual end of the line
-				UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : count  - i - 1;
+				UT_sint32 k = iBlockDir == UT_BIDI_LTR ? i : count  - i - 1;
 				fp_Run* pRun = m_vecRuns.getNthItem(_getRunLogIndx(k));
 
 				if (pRun->getType() == FPRUN_TAB)
@@ -3066,10 +3066,10 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 			s_iMapOfRunsSize = count + 20; //allow for 20 extra runs, so that we do not have to
 										   //do this immediately again
-			s_pMapOfRunsL2V = new FriBidiStrIndex[s_iMapOfRunsSize];
-			s_pMapOfRunsV2L = new FriBidiStrIndex[s_iMapOfRunsSize];
-			s_pPseudoString    = new FriBidiChar[s_iMapOfRunsSize];
-			s_pEmbeddingLevels =  new FriBidiLevel[s_iMapOfRunsSize];
+			s_pMapOfRunsL2V = new UT_uint32[s_iMapOfRunsSize];
+			s_pMapOfRunsV2L = new UT_uint32[s_iMapOfRunsSize];
+			s_pPseudoString    = new UT_UCS4Char[s_iMapOfRunsSize];
+			s_pEmbeddingLevels =  new UT_Byte[s_iMapOfRunsSize];
 
 
 			UT_ASSERT(s_pMapOfRunsL2V && s_pMapOfRunsV2L && s_pPseudoString && s_pEmbeddingLevels);
@@ -3085,10 +3085,10 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 			s_iMapOfRunsSize = RUNS_MAP_SIZE;
 
-			s_pMapOfRunsL2V = new FriBidiStrIndex[s_iMapOfRunsSize];
-			s_pMapOfRunsV2L = new FriBidiStrIndex[s_iMapOfRunsSize];
-			s_pPseudoString    = new FriBidiChar[RUNS_MAP_SIZE];
-			s_pEmbeddingLevels =  new FriBidiLevel[RUNS_MAP_SIZE];
+			s_pMapOfRunsL2V = new UT_uint32[s_iMapOfRunsSize];
+			s_pMapOfRunsV2L = new UT_uint32[s_iMapOfRunsSize];
+			s_pPseudoString    = new UT_UCS4Char[RUNS_MAP_SIZE];
+			s_pEmbeddingLevels =  new UT_Byte[RUNS_MAP_SIZE];
 
 
 			UT_ASSERT(s_pMapOfRunsL2V && s_pMapOfRunsV2L && s_pPseudoString && s_pEmbeddingLevels);
@@ -3103,7 +3103,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			{
 				s_pMapOfRunsL2V[i] = i;
 				s_pMapOfRunsV2L[i] = i;
-				m_vecRuns.getNthItem(i)->setVisDirection(FRIBIDI_TYPE_LTR);
+				m_vecRuns.getNthItem(i)->setVisDirection(UT_BIDI_LTR);
 			}
 			return UT_OK;
 		}
@@ -3120,15 +3120,15 @@ UT_sint32 fp_Line::_createMapOfRuns()
 				s_pMapOfRunsV2L[i]= count - i - 1;
 				s_pMapOfRunsL2V[count - i - 1] = i;
 				s_pMapOfRunsV2L[count - i - 1] = i;
-				m_vecRuns.getNthItem(i)->setVisDirection(FRIBIDI_TYPE_RTL);
-				m_vecRuns.getNthItem(count - i - 1)->setVisDirection(FRIBIDI_TYPE_RTL);
+				m_vecRuns.getNthItem(i)->setVisDirection(UT_BIDI_RTL);
+				m_vecRuns.getNthItem(count - i - 1)->setVisDirection(UT_BIDI_RTL);
 			}
 
 			if(count % 2)	//the run in the middle
 			{
 				s_pMapOfRunsL2V[count/2] = count/2;
 				s_pMapOfRunsV2L[count/2] = count/2;
-				m_vecRuns.getNthItem(count/2)->setVisDirection(FRIBIDI_TYPE_RTL);
+				m_vecRuns.getNthItem(count/2)->setVisDirection(UT_BIDI_RTL);
 
 			}
 
@@ -3155,49 +3155,42 @@ UT_sint32 fp_Line::_createMapOfRuns()
 				iRunDirection = m_vecRuns.getNthItem(i)->getDirection();
 				switch(iRunDirection)
 				{
-					case FRIBIDI_TYPE_LTR : s_pPseudoString[i] = static_cast<FriBidiChar>('a'); break;
-					case FRIBIDI_TYPE_RTL : s_pPseudoString[i] = static_cast<FriBidiChar>(0x05d0); break;
-					//case FRIBIDI_TYPE_WL
-					//case FRIBIDI_TYPE_WR
-					case FRIBIDI_TYPE_EN  : s_pPseudoString[i] = static_cast<FriBidiChar>('0'); break;
-					case FRIBIDI_TYPE_ES  : s_pPseudoString[i] = static_cast<FriBidiChar>('/'); break;
-					case FRIBIDI_TYPE_ET  : s_pPseudoString[i] = static_cast<FriBidiChar>('#'); break;
-					case FRIBIDI_TYPE_AN  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x0660); break;
-					case FRIBIDI_TYPE_CS  : s_pPseudoString[i] = static_cast<FriBidiChar>(','); break;
-					case FRIBIDI_TYPE_BS  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x000A); break;
-					case FRIBIDI_TYPE_SS  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x000B); break;
-					case FRIBIDI_TYPE_WS  : s_pPseudoString[i] = static_cast<FriBidiChar>(' '); break;
-					case FRIBIDI_TYPE_AL  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x062D); break;
-					case FRIBIDI_TYPE_NSM : s_pPseudoString[i] = static_cast<FriBidiChar>(0x0300); break;
-					case FRIBIDI_TYPE_LRE : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202A); break;
-					case FRIBIDI_TYPE_RLE : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202B); break;
-					case FRIBIDI_TYPE_LRO : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202D); break;
-					case FRIBIDI_TYPE_RLO : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202E); break;
-					case FRIBIDI_TYPE_PDF : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202C); break;
-					case FRIBIDI_TYPE_ON  : s_pPseudoString[i] = static_cast<FriBidiChar>('!'); break;
+					case UT_BIDI_LTR : s_pPseudoString[i] = static_cast<UT_UCS4Char>('a'); break;
+					case UT_BIDI_RTL : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x05d0); break;
+					//case UT_BIDI_WL
+					//case UT_BIDI_WR
+					case UT_BIDI_EN  : s_pPseudoString[i] = static_cast<UT_UCS4Char>('0'); break;
+					case UT_BIDI_ES  : s_pPseudoString[i] = static_cast<UT_UCS4Char>('/'); break;
+					case UT_BIDI_ET  : s_pPseudoString[i] = static_cast<UT_UCS4Char>('#'); break;
+					case UT_BIDI_AN  : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x0660); break;
+					case UT_BIDI_CS  : s_pPseudoString[i] = static_cast<UT_UCS4Char>(','); break;
+					case UT_BIDI_BS  : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x000A); break;
+					case UT_BIDI_SS  : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x000B); break;
+					case UT_BIDI_WS  : s_pPseudoString[i] = static_cast<UT_UCS4Char>(' '); break;
+					case UT_BIDI_AL  : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x062D); break;
+					case UT_BIDI_NSM : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x0300); break;
+					case UT_BIDI_LRE : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x202A); break;
+					case UT_BIDI_RLE : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x202B); break;
+					case UT_BIDI_LRO : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x202D); break;
+					case UT_BIDI_RLO : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x202E); break;
+					case UT_BIDI_PDF : s_pPseudoString[i] = static_cast<UT_UCS4Char>(0x202C); break;
+					case UT_BIDI_ON  : s_pPseudoString[i] = static_cast<UT_UCS4Char>('!'); break;
 
 				}
 				xxx_UT_DEBUGMSG(("fp_Line::_createMapOfRuns: pseudo char 0x%x\n",s_pPseudoString[i]));
 			}
 
-			FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+			UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
+			GR_Graphics * pG = m_pBlock->getDocLayout()->getGraphics();
 
-			fribidi_log2vis(/* input */
-			 s_pPseudoString,
-			 count,
-			 &iBlockDir,
-			 /* output */
-			 /*FriBidiChar *visual_str*/ NULL,
-			 s_pMapOfRunsL2V,
-			 s_pMapOfRunsV2L,
-			 s_pEmbeddingLevels
-			 );
+			bool bRet = UT_bidiMapLog2Vis(s_pPseudoString, count, iBlockDir,
+										  s_pMapOfRunsL2V, s_pMapOfRunsV2L, s_pEmbeddingLevels);
 
 			 //the only other thing that remains is to pass the visual
 			 //directions down to the runs.
 			 for (i=0; i<count;i++)
 			 {
-				m_vecRuns.getNthItem(i)->setVisDirection(s_pEmbeddingLevels[i]%2 ? FRIBIDI_TYPE_RTL : FRIBIDI_TYPE_LTR);
+				m_vecRuns.getNthItem(i)->setVisDirection(s_pEmbeddingLevels[i]%2 ? UT_BIDI_RTL : UT_BIDI_LTR);
 				xxx_UT_DEBUGMSG(("L2V %d, V2L %d, emb. %d [run 0x%x]\n", s_pMapOfRunsL2V[i],s_pMapOfRunsV2L[i],s_pEmbeddingLevels[i],m_vecRuns.getNthItem(i)));
 			 }
 		}//if/else only rtl
@@ -3286,7 +3279,7 @@ fp_Run * fp_Line::getFirstVisRun()
 // _createMapOfRuns (when outside of fp_Line, make sure that only
 // the last call gets true)
 
-void fp_Line::addDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
+void fp_Line::addDirectionUsed(UT_BidiCharType dir, bool bRefreshMap)
 {
 	if(FRIBIDI_IS_RTL(dir))
 	{
@@ -3299,14 +3292,14 @@ void fp_Line::addDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
 		xxx_UT_DEBUGMSG(("fp_Line::addDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 	}
 	
-	if(bRefreshMap && dir != FRIBIDI_TYPE_UNSET)
+	if(bRefreshMap && dir != UT_BIDI_UNSET)
 	{
 		m_bMapDirty = true;
 		//_createMapOfRuns();
 	}
 }
 
-void fp_Line::removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
+void fp_Line::removeDirectionUsed(UT_BidiCharType dir, bool bRefreshMap)
 {
 	if(FRIBIDI_IS_RTL(dir))
 	{
@@ -3319,14 +3312,14 @@ void fp_Line::removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
 		xxx_UT_DEBUGMSG(("fp_Line::removeDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 	}
 
-	if(bRefreshMap && dir != FRIBIDI_TYPE_UNSET)
+	if(bRefreshMap && dir != UT_BIDI_UNSET)
 	{
 		m_bMapDirty = true;
 		//_createMapOfRuns();
 	}
 }
 
-void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir, bool bRefreshMap)
+void fp_Line::changeDirectionUsed(UT_BidiCharType oldDir, UT_BidiCharType newDir, bool bRefreshMap)
 {
 	if(oldDir == newDir)
 		return;
@@ -3354,7 +3347,7 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 	}
 
 
-	if(bRefreshMap && newDir != FRIBIDI_TYPE_UNSET)
+	if(bRefreshMap && newDir != UT_BIDI_UNSET)
 	{
 		m_bMapDirty = true;
 		_createMapOfRuns();

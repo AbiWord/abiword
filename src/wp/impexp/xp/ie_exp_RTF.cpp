@@ -60,7 +60,7 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument)
 	m_braceLevel = 0;
 	m_bLastWasKeyword = false;
 	m_atticFormat = false;
-	m_CharRTL = FRIBIDI_TYPE_UNSET;
+	m_CharRTL = UT_BIDI_UNSET;
 }
 
 IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument,bool atticFormat)
@@ -72,7 +72,7 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument,bool atticFormat)
 	m_braceLevel = 0;
 	m_bLastWasKeyword = false;
 	m_atticFormat = atticFormat;
-	m_CharRTL = FRIBIDI_TYPE_UNSET;
+	m_CharRTL = UT_BIDI_UNSET;
 }
 
 IE_Exp_RTF::~IE_Exp_RTF()
@@ -1175,13 +1175,13 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		if (!UT_strcmp (szDirOvrr, "ltr"))
 		{
 			_rtf_keyword ("ltrch");
-			m_CharRTL = FRIBIDI_TYPE_LTR;
+			m_CharRTL = UT_BIDI_LTR;
 			bProceed = false;
 		}
 		else if (!UT_strcmp (szDirOvrr, "rtl"))
 		{
 			_rtf_keyword ("rtlch");
-			m_CharRTL = FRIBIDI_TYPE_RTL;
+			m_CharRTL = UT_BIDI_RTL;
 			bProceed  = false;
 		}
 	}

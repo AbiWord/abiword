@@ -1129,7 +1129,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_listTag = 0;
 	m_szLang = 0;
 	m_RTL = false;
-	m_dirOverride = FRIBIDI_TYPE_UNSET;
+	m_dirOverride = UT_BIDI_UNSET;
 }
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -1303,7 +1303,7 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_footerYTwips = 0;
 	m_gutterTwips = 0;
     m_colSpaceTwips = 0;
-	m_dir = FRIBIDI_TYPE_UNSET;
+	m_dir = UT_BIDI_UNSET;
 }
 
 RTFProps_FrameProps::RTFProps_FrameProps(void):
@@ -2526,7 +2526,7 @@ bool IE_Imp_RTF::StartNewPara()
 	m_newParaFlagged = true;
 
 	// need to reset any left-over direction override
-	m_currentRTFState.m_charProps.m_dirOverride = FRIBIDI_TYPE_UNSET;
+	m_currentRTFState.m_charProps.m_dirOverride = UT_BIDI_UNSET;
 	return ok;
 }
 
@@ -4858,7 +4858,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		return true;
 	case RTF_KW_ltrsect:
 		xxx_UT_DEBUGMSG(("rtf imp.: ltrsect\n"));
-		m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_LTR;
+		m_currentRTFState.m_sectionProps.m_dir = UT_BIDI_LTR;
 		return true;
 	case RTF_KW_ltrch:
 		xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
@@ -5016,7 +5016,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		return true;
 	case RTF_KW_rtlsect:
 		UT_DEBUGMSG(("rtf imp.: rtlsect\n"));
-		m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_RTL;
+		m_currentRTFState.m_sectionProps.m_dir = UT_BIDI_RTL;
 		return true;
 	case RTF_KW_rtlch:
 		xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
@@ -5664,11 +5664,11 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 		propBuffer += m_currentRTFState.m_charProps.m_szLang;
 	}
 
-	if(m_currentRTFState.m_charProps.m_dirOverride == FRIBIDI_TYPE_LTR)
+	if(m_currentRTFState.m_charProps.m_dirOverride == UT_BIDI_LTR)
 	{
 		propBuffer += ";dir-override:ltr";
 	}
-	else if(m_currentRTFState.m_charProps.m_dirOverride == FRIBIDI_TYPE_RTL)
+	else if(m_currentRTFState.m_charProps.m_dirOverride == UT_BIDI_RTL)
 	{
 		propBuffer += ";dir-override:rtl";
 	}
@@ -5723,30 +5723,30 @@ bool IE_Imp_RTF::_appendSpan()
 
 	if(m_bBidiMode)
 	{
-		FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
+		UT_BidiCharType iOverride = UT_BIDI_UNSET, cType, cLastType = UT_BIDI_UNSET, cNextType;
 		UT_uint32 iLast = 0;
 		UT_UCS4Char c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)));
 	
-		cType = fribidi_get_type(c);
+		cType = UT_bidiGetCharType(c);
 	
 		for(UT_uint32 i = 0; i < iLen; i++)
 		{
 			if(i < iLen - 1 )
 			{
 				c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(i+1)));
-				cNextType = fribidi_get_type(c);
+				cNextType = UT_bidiGetCharType(c);
 			}
 			else
 			{
-				cNextType = FRIBIDI_TYPE_UNSET;
+				cNextType = UT_BIDI_UNSET;
 			}
 		
 		
-			if(FRIBIDI_IS_NEUTRAL(cType))
+			if(UT_BIDI_IS_NEUTRAL(cType))
 			{
 				if(!m_currentRTFState.m_charProps.m_RTL
-				   && iOverride != FRIBIDI_TYPE_LTR
-				   && (cLastType != FRIBIDI_TYPE_LTR || cNextType != FRIBIDI_TYPE_LTR))
+				   && iOverride != UT_BIDI_LTR
+				   && (cLastType != UT_BIDI_LTR || cNextType != UT_BIDI_LTR))
 				{
 					if(i - iLast > 0)
 					{
@@ -5757,13 +5757,13 @@ bool IE_Imp_RTF::_appendSpan()
 						if(!getDoc()->appendSpan(p, i - iLast))
 							return false;
 					}
-					iOverride = FRIBIDI_TYPE_LTR;
+					iOverride = UT_BIDI_LTR;
 					propsArray[1] = prop_ltr.c_str();
 					iLast = i;
 				}
 				else if(m_currentRTFState.m_charProps.m_RTL
-						&& iOverride != FRIBIDI_TYPE_RTL
-						&& (cLastType != FRIBIDI_TYPE_RTL || cNextType != FRIBIDI_TYPE_RTL))
+						&& iOverride != UT_BIDI_RTL
+						&& (cLastType != UT_BIDI_RTL || cNextType != UT_BIDI_RTL))
 				{
 					if(i - iLast > 0)
 					{
@@ -5774,7 +5774,7 @@ bool IE_Imp_RTF::_appendSpan()
 						if(!getDoc()->appendSpan(p, i - iLast))
 							return false;
 					}
-					iOverride = FRIBIDI_TYPE_RTL;
+					iOverride = UT_BIDI_RTL;
 					propsArray[1] = prop_rtl.c_str();
 					iLast = i;
 				}
@@ -5783,7 +5783,7 @@ bool IE_Imp_RTF::_appendSpan()
 			{
 				// strong character; if we previously issued an override,
 				// we need to cancel it
-				if(iOverride != FRIBIDI_TYPE_UNSET)
+				if(iOverride != UT_BIDI_UNSET)
 				{
 					if(i - iLast > 0)
 					{
@@ -5794,7 +5794,7 @@ bool IE_Imp_RTF::_appendSpan()
 						if(!getDoc()->appendSpan(p, i - iLast))
 							return false;
 					}
-					iOverride = FRIBIDI_TYPE_UNSET;
+					iOverride = UT_BIDI_UNSET;
 					propsArray[1] = prop_basic.c_str();
 					iLast = i;
 				}
@@ -5863,30 +5863,30 @@ bool IE_Imp_RTF::_insertSpan()
 	
 	if(m_bBidiMode)
 	{
-		FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
+		UT_BidiCharType iOverride = UT_BIDI_UNSET, cType, cLastType = UT_BIDI_UNSET, cNextType;
 		UT_uint32 iLast = 0;
 		UT_UCS4Char c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)));
 	
-		cType = fribidi_get_type(c);
+		cType = UT_bidiGetCharType(c);
 	
 		for(UT_uint32 i = 0; i < iLen; i++)
 		{
 			if(i < iLen - 1 )
 			{
 				c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(i+1)));
-				cNextType = fribidi_get_type(c);
+				cNextType = UT_bidiGetCharType(c);
 			}
 			else
 			{
-				cNextType = FRIBIDI_TYPE_UNSET;
+				cNextType = UT_BIDI_UNSET;
 			}
 		
 		
-			if(FRIBIDI_IS_NEUTRAL(cType))
+			if(UT_BIDI_IS_NEUTRAL(cType))
 			{
 				if(!m_currentRTFState.m_charProps.m_RTL
-				   && iOverride != FRIBIDI_TYPE_LTR
-				   && (cLastType != FRIBIDI_TYPE_LTR || cNextType != FRIBIDI_TYPE_LTR))
+				   && iOverride != UT_BIDI_LTR
+				   && (cLastType != UT_BIDI_LTR || cNextType != UT_BIDI_LTR))
 				{
 					if(i - iLast > 0)
 					{
@@ -5900,13 +5900,13 @@ bool IE_Imp_RTF::_insertSpan()
 						
 						m_dposPaste += i - iLast;						
 					}
-					iOverride = FRIBIDI_TYPE_LTR;
+					iOverride = UT_BIDI_LTR;
 					propsArray[1] = prop_ltr.c_str();
 					iLast = i;
 				}
 				else if(m_currentRTFState.m_charProps.m_RTL
-						&& iOverride != FRIBIDI_TYPE_RTL
-						&& (cLastType != FRIBIDI_TYPE_RTL || cNextType != FRIBIDI_TYPE_RTL))
+						&& iOverride != UT_BIDI_RTL
+						&& (cLastType != UT_BIDI_RTL || cNextType != UT_BIDI_RTL))
 				{
 					if(i - iLast > 0)
 					{
@@ -5920,7 +5920,7 @@ bool IE_Imp_RTF::_insertSpan()
 						
 						m_dposPaste += i - iLast;						
 					}
-					iOverride = FRIBIDI_TYPE_RTL;
+					iOverride = UT_BIDI_RTL;
 					propsArray[1] = prop_rtl.c_str();
 					iLast = i;
 				}
@@ -5929,7 +5929,7 @@ bool IE_Imp_RTF::_insertSpan()
 			{
 				// strong character; if we previously issued an override,
 				// we need to cancel it
-				if(iOverride != FRIBIDI_TYPE_UNSET)
+				if(iOverride != UT_BIDI_UNSET)
 				{
 					if(i - iLast > 0)
 					{
@@ -5943,7 +5943,7 @@ bool IE_Imp_RTF::_insertSpan()
 						
 						m_dposPaste += i - iLast;						
 					}
-					iOverride = FRIBIDI_TYPE_UNSET;
+					iOverride = UT_BIDI_UNSET;
 					propsArray[1] = prop_basic.c_str();
 					iLast = i;
 				}
@@ -6956,14 +6956,14 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 #endif
-	if(m_currentRTFState.m_sectionProps.m_dir != FRIBIDI_TYPE_UNSET)
+	if(m_currentRTFState.m_sectionProps.m_dir != UT_BIDI_UNSET)
 	{
 		const char r[] = "rtl";
 		const char l[] = "ltr";
 		const char ar[] = "right";
 		const char al[] = "left";
 		const char * d, * a;
-		if(m_currentRTFState.m_sectionProps.m_dir == FRIBIDI_TYPE_RTL)
+		if(m_currentRTFState.m_sectionProps.m_dir == UT_BIDI_RTL)
 		{
 			d = r;
 			a = ar;

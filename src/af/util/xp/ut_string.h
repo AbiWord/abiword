@@ -250,6 +250,53 @@ ABI_EXPORT UT_UCS4Char       UT_UCS4_toupper(UT_UCS4Char c);
 */
 ABI_EXPORT const char*  std_size_string(float f);
 
+// for now we do this to match def. of FriBidiCharType; after 2.2, we will migrate to platform specific definitions ...
+typedef long UT_BidiCharType;
+
+#include <fribidi.h>
+
+#define UT_BIDI_LTR FRIBIDI_TYPE_LTR
+#define UT_BIDI_RTL FRIBIDI_TYPE_RTL
+#define UT_BIDI_WS FRIBIDI_TYPE_WS
+#define UT_BIDI_EN FRIBIDI_TYPE_EN
+#define UT_BIDI_ES FRIBIDI_TYPE_ES
+#define UT_BIDI_ET FRIBIDI_TYPE_ET
+#define UT_BIDI_AN FRIBIDI_TYPE_AN
+#define UT_BIDI_CS FRIBIDI_TYPE_CS
+#define UT_BIDI_BS FRIBIDI_TYPE_BS
+#define UT_BIDI_SS FRIBIDI_TYPE_SS
+#define UT_BIDI_AL FRIBIDI_TYPE_AL
+#define UT_BIDI_NSM FRIBIDI_TYPE_NSM
+#define UT_BIDI_RLE FRIBIDI_TYPE_RLE
+#define UT_BIDI_LRE FRIBIDI_TYPE_LRE
+#define UT_BIDI_LRO FRIBIDI_TYPE_LRO
+#define UT_BIDI_RLO FRIBIDI_TYPE_RLO
+#define UT_BIDI_PDF FRIBIDI_TYPE_PDF
+#define UT_BIDI_ON FRIBIDI_TYPE_ON
+
+
+#define UT_BIDI_UNSET FRIBIDI_TYPE_UNSET
+#define UT_BIDI_IGNORE FRIBIDI_TYPE_IGNORE
+
+#define UT_BIDI_IS_STRONG FRIBIDI_IS_STRONG
+#define UT_BIDI_IS_WEAK FRIBIDI_IS_WEAK
+#define UT_BIDI_IS_NUMBER FRIBIDI_IS_NUMBER
+#define UT_BIDI_IS_RTL FRIBIDI_IS_RTL
+#define UT_BIDI_IS_NEUTRAL FRIBIDI_IS_NEUTRAL
+#define UT_BIDI_IS_LETTER FRIBIDI_IS_LETTER
+
+
+ABI_EXPORT UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c);
+
+ABI_EXPORT bool            UT_bidiMapLog2Vis(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
+											 UT_uint32 *pL2V, UT_uint32 * pV2L, UT_Byte * pEmbed);
+
+ABI_EXPORT bool            UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
+												UT_UCS4Char * pStrOut);
+
+
+ABI_EXPORT bool            UT_bidiGetMirrorChar(UT_UCS4Char c, UT_UCS4Char &mc);
+
 UT_END_EXTERN_C
 
 #endif /* UT_STRING_H */

@@ -3152,7 +3152,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 
             xxx_UT_DEBUGMSG(("pThisRun [0x%x], vis dir. %d\n", pThisRun, pThisRun->getVisDirection()));
 
-            if(pThisRun && pThisRun->getVisDirection() == FRIBIDI_TYPE_RTL)
+            if(pThisRun && pThisRun->getVisDirection() == UT_BIDI_RTL)
                 s_swapQuote(replacement);
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;

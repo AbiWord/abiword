@@ -2637,16 +2637,16 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 				goto normal_insert;
 			
 			{
-				FriBidiCharType iDomDir = pBlock->getDominantDirection();
+				UT_BidiCharType iDomDir = pBlock->getDominantDirection();
 				
 				UT_UCS4Char data[2];
 				data[1] = *text;
 		
-				if(pLR->m_eDir == UTLANG_RTL && iDomDir != FRIBIDI_TYPE_RTL)
+				if(pLR->m_eDir == UTLANG_RTL && iDomDir != UT_BIDI_RTL)
 				{
 					data[0] = UCS_RLM;
 				}
-				else if(pLR->m_eDir == UTLANG_LTR  && iDomDir != FRIBIDI_TYPE_LTR)
+				else if(pLR->m_eDir == UTLANG_LTR  && iDomDir != UT_BIDI_LTR)
 				{
 					data[0] = UCS_LRM;
 				}

@@ -47,7 +47,6 @@
 
 #include "ut_OverstrikingChars.h"
 #include "ut_Language.h"
-#include <fribidi.h>
 #include "ap_Prefs.h"
 #include "gr_Painter.h"
 
@@ -75,10 +74,10 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
     // we will use this as an indication that the direction
     // property has not been yet set normal values are -1,0,1
     // (neutral, ltr, rtl)
-	_setDirection(FRIBIDI_TYPE_UNSET);
+	_setDirection(UT_BIDI_UNSET);
 
     // no override by default
-	m_iDirOverride = FRIBIDI_TYPE_UNSET;
+	m_iDirOverride = UT_BIDI_UNSET;
 
 	if (bLookupProperties)
 	{
@@ -257,20 +256,20 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 
 
-	FriBidiCharType iOldOverride = m_iDirOverride;
-	FriBidiCharType iNewOverride;
+	UT_BidiCharType iOldOverride = m_iDirOverride;
+	UT_BidiCharType iNewOverride;
 	const XML_Char *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	// the way MS Word handles bidi is peculiar and requires that we allow
 	// temporarily a non-standard value for the dir-override property
 	// called "nobidi"
 	if(!pszDirection)
-		iNewOverride = FRIBIDI_TYPE_UNSET;
+		iNewOverride = UT_BIDI_UNSET;
 	else if(!strcmp(pszDirection, "ltr"))
-		iNewOverride = FRIBIDI_TYPE_LTR;
+		iNewOverride = UT_BIDI_LTR;
 	else if(!strcmp(pszDirection, "rtl"))
-		iNewOverride = FRIBIDI_TYPE_RTL;
+		iNewOverride = UT_BIDI_RTL;
 	else
-		iNewOverride = FRIBIDI_TYPE_UNSET;
+		iNewOverride = UT_BIDI_UNSET;
 
 
 	bChanged |= (iOldOverride != iNewOverride);
@@ -283,22 +282,22 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		if the previous direction override was not strong, and the current one is, we have
 		to break this run's neighbours
 	*/
-	if(iNewOverride == FRIBIDI_TYPE_UNSET && iOldOverride != FRIBIDI_TYPE_UNSET)
+	if(iNewOverride == UT_BIDI_UNSET && iOldOverride != UT_BIDI_UNSET)
 	{
 		// we have to do this without applying the new override otherwise the
 		// LTR and RTL run counters of the present line will be messed up;
 		// breakMeAtDirBoundaries will take care of applying the new override
 		breakMeAtDirBoundaries(iNewOverride);
 	}
-	else if(iNewOverride != FRIBIDI_TYPE_UNSET && iOldOverride == FRIBIDI_TYPE_UNSET)
+	else if(iNewOverride != UT_BIDI_UNSET && iOldOverride == UT_BIDI_UNSET)
 	{
 		// first we have to apply the new override
-		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
+		setDirection(UT_BIDI_UNSET, iNewOverride);
 		// now do the breaking
 		breakNeighborsAtDirBoundaries();
 	}
 	else
-		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
+		setDirection(UT_BIDI_UNSET, iNewOverride);
 
 	if(bChanged && !bDontClear)
 		clearScreen();
@@ -527,7 +526,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	text.setUpperLimit(text.getPosition() + getLength() - 1);
 	UT_uint32 iPosStart = text.getPosition();
 	
-	bool bReverse = (getVisDirection() == FRIBIDI_TYPE_RTL);
+	bool bReverse = (getVisDirection() == UT_BIDI_RTL);
 	UT_sint32 iNext = -1;
 	
 	for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
@@ -647,15 +646,15 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 								 PT_DocPosition& pos, 
 								 bool& bBOL, bool& bEOL, bool &isTOC)
 {
-	FriBidiCharType iVisDirection = getVisDirection();
-	FriBidiCharType iDomDirection = getBlock()->getDominantDirection();
+	UT_BidiCharType iVisDirection = getVisDirection();
+	UT_BidiCharType iDomDirection = getBlock()->getDominantDirection();
 
 	if (x <= 0)
 	{
-		if(iVisDirection == FRIBIDI_TYPE_RTL)
+		if(iVisDirection == UT_BIDI_RTL)
 		{
 			pos = getBlock()->getPosition() + getBlockOffset() + getLength();
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 			{
 				bEOL = true;
 				bBOL = false;
@@ -678,11 +677,11 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 
 	if (x >= getWidth())
 	{
-		if(iVisDirection == FRIBIDI_TYPE_RTL)
+		if(iVisDirection == UT_BIDI_RTL)
 		{
 			pos = getBlock()->getPosition() + getBlockOffset();
 
-			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			if(iDomDirection == UT_BIDI_RTL)
 			{
 				bEOL = false;
 				bBOL = true;
@@ -722,7 +721,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 		
 		// catch the case of a click directly on the left half of the
 		// first character in the run
-		UT_uint32 k = iVisDirection == FRIBIDI_TYPE_RTL ? getLength() - 1 : 0;
+		UT_uint32 k = iVisDirection == UT_BIDI_RTL ? getLength() - 1 : 0;
 		UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
 
 		if (x < (iCW / 2))
@@ -731,7 +730,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 
 			// if this character is RTL then clicking on the left side
 			// means the user wants to postion the caret _after_ this char
-			if(iVisDirection == FRIBIDI_TYPE_RTL)
+			if(iVisDirection == UT_BIDI_RTL)
 				pos++;
 
 			bBOL = false;
@@ -753,9 +752,9 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 			if (iWidth > x)
 			{
 				if (((iWidth - x) <= (RI.m_pWidths[i] / 2)
-					 && (iVisDirection == FRIBIDI_TYPE_LTR))
+					 && (iVisDirection == UT_BIDI_LTR))
 					|| (((iWidth - x) > (RI.m_pWidths[i] / 2)
-						 && (iVisDirection == FRIBIDI_TYPE_RTL))
+						 && (iVisDirection == UT_BIDI_RTL))
 						))
 				{
 					i++;
@@ -826,12 +825,12 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		// for (UT_uint32 i=getBlockOffset(); i<offset; i++)
 		for (UT_uint32 i=0; i<offset; i++)
 		{
-			UT_uint32 k = iDirection == FRIBIDI_TYPE_RTL ? getLength() - i - 1: i;
+			UT_uint32 k = iDirection == UT_BIDI_RTL ? getLength() - i - 1: i;
 			UT_uint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
 			xdiff += iCW;
 		}
 
-		UT_sint32 iNextDir = iDirection == FRIBIDI_TYPE_RTL ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL; //if this is last run we will anticipate the next to have *different* direction
+		UT_sint32 iNextDir = iDirection == UT_BIDI_RTL ? UT_BIDI_LTR : UT_BIDI_RTL; //if this is last run we will anticipate the next to have *different* direction
 		fp_Run * pRun = 0;	 //will use 0 as indicator that there is no need to deal with the second caret
 
 		if(offset == getLength()) //this is the end of the run
@@ -850,7 +849,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 			}
 		}
 
-		if(iDirection == FRIBIDI_TYPE_RTL)				   //#TF rtl run
+		if(iDirection == UT_BIDI_RTL)				   //#TF rtl run
 		{
 			x = xoff + getWidth() - xdiff; //we want the caret right of the char
 		}
@@ -861,7 +860,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 		if(pRun && (iNextDir != iDirection)) //followed by run of different direction, have to split caret
 		{
-			x2 = (iNextDir == FRIBIDI_TYPE_LTR) ? xoff2 : xoff2 + pRun->getWidth();
+			x2 = (iNextDir == UT_BIDI_LTR) ? xoff2 : xoff2 + pRun->getWidth();
 			y2 = yoff2;
 		}
 		else
@@ -870,7 +869,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 			y2 = yoff;
 		}
 
-		bDirection = (iDirection != FRIBIDI_TYPE_LTR);
+		bDirection = (iDirection != UT_BIDI_LTR);
 		y = yoff;
 		height = getHeight();
 		xxx_UT_DEBUGMSG(("findPointCoords: TextRun yoff %d \n",yoff));
@@ -879,7 +878,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	{
 		y = y2 = yoff;
 		height = getHeight();
-		bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
+		bDirection = (getVisDirection() != UT_BIDI_LTR);
 		m_pRenderInfo->m_iOffset = iOffset - getBlockOffset() - 1;
 		m_pRenderInfo->m_iLength = getLength();
 		getGraphics()->positionToXY(*m_pRenderInfo, x, y, x2, y2, height, bDirection);
@@ -1004,10 +1003,10 @@ void fp_TextRun::mergeWithNext(void)
 
 	// we need to take into consideration whether this run has been reversed
 	// in which case the order of the concating needs to be reversed too
-	FriBidiCharType iVisDirection = getVisDirection();
+	UT_BidiCharType iVisDirection = getVisDirection();
 
-	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
+	bool bReverse = (!s_bBidiOS && iVisDirection == UT_BIDI_RTL)
+		  || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR && _getDirection() == UT_BIDI_RTL);
 
 	UT_uint32 iNextLen = pNext->getLength();
 	UT_uint32 iMyLen   = getLength();
@@ -1037,15 +1036,15 @@ void fp_TextRun::mergeWithNext(void)
 	// if appending a strong run onto a weak one, make sure the overall direction
 	// is that of the strong run, and tell the line about this, since the call
 	// to removeRun above decreased the line's direction counter
-	if(!FRIBIDI_IS_STRONG(_getDirection()) && FRIBIDI_IS_STRONG(pNext->_getDirection()))
+	if(!UT_BIDI_IS_STRONG(_getDirection()) && UT_BIDI_IS_STRONG(pNext->_getDirection()))
 	{
 		_setDirection(pNext->_getDirection());
 		getLine()->addDirectionUsed(_getDirection());
 	}
-	else if(FRIBIDI_IS_WEAK(_getDirection()) && FRIBIDI_IS_WEAK(pNext->_getDirection()))
+	else if(UT_BIDI_IS_WEAK(_getDirection()) && UT_BIDI_IS_WEAK(pNext->_getDirection()))
 	{
 		// numbers will take precedence
-		if(FRIBIDI_IS_NUMBER(pNext->_getDirection()))
+		if(UT_BIDI_IS_NUMBER(pNext->_getDirection()))
 		{
 			_setDirection(pNext->_getDirection());
 			// no need to inform the line, since the visual direction
@@ -1063,7 +1062,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	UT_ASSERT(iSplitOffset >= getBlockOffset());
 	UT_ASSERT(iSplitOffset < (getBlockOffset() + getLength()));
 
-	FriBidiCharType iVisDirection = getVisDirection();
+	UT_BidiCharType iVisDirection = getVisDirection();
 	fp_TextRun* pNew = new fp_TextRun(getBlock(), iSplitOffset, getLength() - (iSplitOffset - getBlockOffset()), false);
 
 
@@ -1119,9 +1118,9 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	// split the rendering info, this will save us refreshing it
 	// which is very expensive (see notes on the mergeWithNext())
-	bool bReverse = ((!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-					 || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR
-						           && _getDirection() == FRIBIDI_TYPE_RTL));
+	bool bReverse = ((!s_bBidiOS && iVisDirection == UT_BIDI_RTL)
+					 || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR
+						           && _getDirection() == UT_BIDI_RTL));
 
 	// runs can be split even before any shaping has been done on the, in which case we do not have
 	// the redering info yet; in such cases we only have m_pItem
@@ -1153,7 +1152,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	
 	setLength(iSplitOffset - getBlockOffset(), false);
 
-	getLine()->insertRunAfter(pNew, this);
+	if(getLine())
+		getLine()->insertRunAfter(pNew, this);
 
 	// we will use the _addupCharWidths() function here instead of recalcWidth(), since when
 	// a run is split the info in the block's char-width array is not affected, so we do not
@@ -1164,7 +1164,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	//bool bDomDirection = getBlock()->getDominantDirection();
 
-	if(iVisDirection == FRIBIDI_TYPE_LTR)
+	if(iVisDirection == UT_BIDI_LTR)
 	{
 		pNew->_setX(getX() + getWidth());
 	}
@@ -1583,7 +1583,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				iSegmentOffset[2] = iSel2 - iRunBase;
 				iSegmentWidth[1] = rSegment.width;
 
-				if(getVisDirection() == FRIBIDI_TYPE_LTR)
+				if(getVisDirection() == UT_BIDI_LTR)
 				{
 					iSegmentWidth[0] = rSegment.left - pDA->xoff;
 					iSegmentWidth[2] = getWidth() - (rSegment.width + iSegmentWidth[0]);
@@ -1725,8 +1725,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// segments due to different colour of the foreground
 	UT_sint32 iX = pDA->xoff;
 
-	FriBidiCharType iVisDir = getVisDirection();
-	if(iVisDir == FRIBIDI_TYPE_RTL)
+	UT_BidiCharType iVisDir = getVisDirection();
+	if(iVisDir == UT_BIDI_RTL)
 	{
 		iX += getWidth();
 	}
@@ -1742,11 +1742,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			pG->setColor(getFGColor());
 		}
 		
-		UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
+		UT_uint32 iMyOffset = iVisDir == UT_BIDI_RTL ?
 			iLen-iSegmentOffset[iSegment+1]  :
 			iSegmentOffset[iSegment];
 		
-		if(iVisDir == FRIBIDI_TYPE_RTL)
+		if(iVisDir == UT_BIDI_RTL)
 			iX -= iSegmentWidth[iSegment];
 		
 		m_pRenderInfo->m_iOffset = iMyOffset;
@@ -1763,7 +1763,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 						  iX,
 						  yTopOfRun,pRI->m_pAdvances + iMyOffset);
 #endif
-		if(iVisDir == FRIBIDI_TYPE_LTR)
+		if(iVisDir == UT_BIDI_LTR)
 			iX += iSegmentWidth[iSegment];
 	}
 
@@ -1849,7 +1849,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 		pRect->left = getGraphics()->getTextWidth(*m_pRenderInfo);
 	}
 	
-	if(getVisDirection() == FRIBIDI_TYPE_LTR)
+	if(getVisDirection() == UT_BIDI_LTR)
 	{
 		pRect->left += xoff; //if this is ltr then adding xoff is all that is needed
 	}
@@ -1859,7 +1859,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	pRect->width = getGraphics()->getTextWidth(*m_pRenderInfo);
 
 	//in case of rtl we are now in the position to calculate the position of the the left corner
-	if(getVisDirection() == FRIBIDI_TYPE_RTL) pRect->left = xoff + getWidth() - pRect->left - pRect->width;
+	if(getVisDirection() == UT_BIDI_RTL) pRect->left = xoff + getWidth() - pRect->left - pRect->width;
 }
 
 /*!
@@ -1892,7 +1892,7 @@ bool fp_TextRun::_refreshDrawBuffer()
 	{
 		UT_return_val_if_fail(m_pItem, false);
 
-		FriBidiCharType iVisDir = getVisDirection();
+		UT_BidiCharType iVisDir = getVisDirection();
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
@@ -1912,8 +1912,8 @@ bool fp_TextRun::_refreshDrawBuffer()
 		{
 			GR_XPRenderInfo * pRI = (GR_XPRenderInfo *) m_pRenderInfo;
 		
-			if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
-			   || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL))
+			if((!s_bBidiOS && iVisDir == UT_BIDI_RTL)
+			   || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR && _getDirection() == UT_BIDI_RTL))
 				UT_UCS4_strnrev(pRI->m_pChars, iLen);
 		}
 		
@@ -1956,11 +1956,11 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	else
 		pG->setColor(getFGColor());
 
-	FriBidiCharType iVisDirection = getVisDirection();
+	UT_BidiCharType iVisDirection = getVisDirection();
 
 	GR_Painter painter(pG);
 
-	UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
+	UT_uint32 iPos = iVisDirection == UT_BIDI_LTR ? getLength() - 1 : 0;
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
@@ -1974,7 +1974,7 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	}
 	else
 	{
-		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
+		UT_uint32 iPos = iVisDirection == UT_BIDI_LTR ? getLength() - 1 : 0;
 		m_pRenderInfo->m_iOffset = iPos;
 		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + iPos);
 	}
@@ -2025,7 +2025,7 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	}
 	else
 	{
-		UT_uint32 iPos = getVisDirection() == FRIBIDI_TYPE_RTL ? getLength() - 1 : 0;
+		UT_uint32 iPos = getVisDirection() == UT_BIDI_RTL ? getLength() - 1 : 0;
 		m_pRenderInfo->m_iOffset = iPos;
 		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + iPos);
 	}
@@ -2266,7 +2266,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 		// HACK
 		fp_TextRun * pThis = const_cast<fp_TextRun*>(this);
-		bool bReverse = (pThis->getVisDirection() == FRIBIDI_TYPE_RTL);
+		bool bReverse = (pThis->getVisDirection() == UT_BIDI_RTL);
 
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
@@ -2420,26 +2420,26 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 }
 
 
-void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
+void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 {
 	if( !getLength()
-	|| (   dir == FRIBIDI_TYPE_UNSET
-		&& _getDirection() != FRIBIDI_TYPE_UNSET
+	|| (   dir == UT_BIDI_UNSET
+		&& _getDirection() != UT_BIDI_UNSET
 		&& dirOverride == m_iDirOverride
 		)
 	  )
 		return; //ignore 0-length runs, let them be treated on basis of the app defaults
 
-	FriBidiCharType prevDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;
-	if(dir == FRIBIDI_TYPE_UNSET)
+	UT_BidiCharType prevDir = m_iDirOverride == UT_BIDI_UNSET ? _getDirection() : m_iDirOverride;
+	if(dir == UT_BIDI_UNSET)
 	{
 		// only do this once
-		if(_getDirection() == FRIBIDI_TYPE_UNSET)
+		if(_getDirection() == UT_BIDI_UNSET)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
 
-			_setDirection(fribidi_get_type(static_cast<FriBidiChar>(firstChar)));
+			_setDirection(UT_bidiGetCharType(firstChar));
 		}
 	}
 	else //meaningfull value received
@@ -2447,7 +2447,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 		_setDirection(dir);
 	}
 
-	if(dirOverride != FRIBIDI_TYPE_IGNORE)
+	if(dirOverride != UT_BIDI_IGNORE)
 	{
 
 		m_iDirOverride = dirOverride;
@@ -2457,7 +2457,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 		// it to that direction, if it is weak, we have to make the line
 		// to calculate it
 
-		if(dirOverride != FRIBIDI_TYPE_UNSET)
+		if(dirOverride != UT_BIDI_UNSET)
 			setVisDirection(dirOverride);
 	}
 
@@ -2471,9 +2471,9 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 		functions when the run is loaded from a document on the disk.)
 	*/
 
-	FriBidiCharType curDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;
+	UT_BidiCharType curDir = m_iDirOverride == UT_BIDI_UNSET ? _getDirection() : m_iDirOverride;
 
-	UT_ASSERT(curDir != FRIBIDI_TYPE_UNSET);
+	UT_ASSERT(curDir != UT_BIDI_UNSET);
 
 	if(curDir != prevDir)
 	{
@@ -2493,7 +2493,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 	NB !!!
 	This function will set the m_iDirOverride member and change the properties
 	in the piece table correspondingly; however, note that if dir ==
-	FRIBIDI_TYPE_UNSET, this function must immediately return.
+	UT_BIDI_UNSET, this function must immediately return.
 
 	Because of this specialised behaviour and since it does not do any updates, etc.,
 	its usability is limited -- its main purpose is to allow to set this property
@@ -2501,9 +2501,9 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 	after the run is created. For all other purposes one of the standard
 	edit methods should be used.
 */
-void fp_TextRun::setDirOverride(FriBidiCharType dir)
+void fp_TextRun::setDirOverride(UT_BidiCharType dir)
 {
-	if(dir == FRIBIDI_TYPE_UNSET || dir == m_iDirOverride)
+	if(dir == UT_BIDI_UNSET || dir == m_iDirOverride)
 		return;
 
 	const XML_Char * prop[] = {NULL, NULL, 0};
@@ -2515,10 +2515,10 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 
 	switch(dir)
 	{
-		case FRIBIDI_TYPE_LTR:
+		case UT_BIDI_LTR:
 			prop[1] = static_cast<const XML_Char*>(&ltr[0]);
 			break;
-		case FRIBIDI_TYPE_RTL:
+		case UT_BIDI_RTL:
 			prop[1] = static_cast<const XML_Char*>(&rtl[0]);
 			break;
 		default:
@@ -2548,8 +2548,8 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 */
 void fp_TextRun::breakNeighborsAtDirBoundaries()
 {
-	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
-	FriBidiCharType iDirection = getDirection();
+	UT_BidiCharType iPrevType, iType = UT_BIDI_UNSET;
+	UT_BidiCharType iDirection = getDirection();
 
 	fp_TextRun *pNext = NULL, *pPrev = NULL, *pOtherHalf;
 	PT_BlockOffset curOffset = 0;
@@ -2571,17 +2571,17 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
 		UT_return_if_fail(text.getStatus() == UTIter_OK);
 
-		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+		iPrevType = iType = UT_bidiGetCharType(c);
 
 		if(pPrev->getLength() > 1)
 		{
-			while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
+			while(curOffset > pPrev->getBlockOffset() && !UT_BIDI_IS_STRONG(iType))
 			{
 				curOffset--;
 				c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
 				UT_return_if_fail(text.getStatus() == UTIter_OK);
 
-				iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+				iType = UT_bidiGetCharType(c);
 				if(iType != iPrevType)
 				{
 					pPrev->split(curOffset+1);
@@ -2597,7 +2597,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 			}
 		}
 
-		if(FRIBIDI_IS_STRONG(iPrevType))
+		if(UT_BIDI_IS_STRONG(iPrevType))
 			break;
 
 		// if we got this far, the whole previous run is weak, so we want to
@@ -2628,17 +2628,17 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
 		UT_return_if_fail(text.getStatus() == UTIter_OK);
 
-		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+		iPrevType = iType = UT_bidiGetCharType(c);
 		bool bDirSet = false;
 
 		if(pNext->getLength() > 1)
 		{
 			while(curOffset < pNext->getBlockOffset() + pNext->getLength() - 1
-				  && !FRIBIDI_IS_STRONG(iType))
+				  && !UT_BIDI_IS_STRONG(iType))
 			{
 				curOffset++;
 				c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
-				iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+				iType = UT_bidiGetCharType(c);
 
 				if(iType != iPrevType)
 				{
@@ -2662,7 +2662,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 
 		}
 
-		if(FRIBIDI_IS_STRONG(iPrevType))
+		if(UT_BIDI_IS_STRONG(iPrevType))
 			break;
 
 		// if we got this far, the whole next run is weak, so we want to
@@ -2683,7 +2683,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	}
 }
 
-void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
+void fp_TextRun::breakMeAtDirBoundaries(UT_BidiCharType iNewOverride)
 {
 	// we cannot use the draw buffer here because in case of ligatures it might
 	// contain characters of misleading directional properties
@@ -2696,7 +2696,7 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 		return;
 	
 	PT_BlockOffset currOffset = getBlockOffset();
-	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
+	UT_BidiCharType iPrevType, iType = UT_BIDI_UNSET;
 
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
@@ -2704,7 +2704,7 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 	UT_UCS4Char c = text[currOffset + fl_BLOCK_STRUX_OFFSET];
 	UT_return_if_fail(text.getStatus() == UTIter_OK);
 
-	iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+	iPrevType = iType = UT_bidiGetCharType(c);
 
 	if(iLen == 1)
 	{
@@ -2713,7 +2713,7 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 		// run contained one strong character and one white space, and
 		// the strong char was deleted, we need to set direction to
 		// what is appropriate for the whitespace)
-		setDirection(iType, FRIBIDI_TYPE_IGNORE);
+		setDirection(iType, UT_BIDI_IGNORE);
 		return;
 	}
 	
@@ -2725,7 +2725,7 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 			c = text[currOffset + fl_BLOCK_STRUX_OFFSET];
 			UT_return_if_fail(text.getStatus() == UTIter_OK);
 
-			iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+			iType = UT_bidiGetCharType(c);
 		}
 
 		// if we reached the end of the origianl run, then stop

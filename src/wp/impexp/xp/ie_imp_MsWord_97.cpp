@@ -74,8 +74,6 @@
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
 
-#include <fribidi.h>
-
 //#define BIDI_DEBUG
 //
 // Forward decls. to wv's callbacks
@@ -804,7 +802,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bInPara(false),
 	m_bLTRCharContext(true),
 	m_bLTRParaContext(true),
-	m_iOverrideIssued(FRIBIDI_TYPE_UNSET),
+	m_iOverrideIssued(UT_BIDI_UNSET),
 	m_bBidiMode(false),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
@@ -1195,30 +1193,30 @@ void IE_Imp_MsWord_97::_flush ()
 		  const UT_UCS4Char * pStart = m_pTextRun.ucs4_str();
 		  UT_uint32 iLen = m_pTextRun.size();
 		  
-		  FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
+		  UT_BidiCharType iOverride = UT_BIDI_UNSET, cType, cLastType = UT_BIDI_UNSET, cNextType;
 		  UT_uint32 iLast = 0;
 		  UT_UCS4Char c = *pStart;
 	
-		  cType = fribidi_get_type(c);
+		  cType = UT_bidiGetCharType(c);
 	
 		  for(UT_uint32 i = 0; i < iLen; i++)
 		  {
 			  if(i < iLen - 1 )
 			  {
 				  c = *(pStart+i+1);
-				  cNextType = fribidi_get_type(c);
+				  cNextType = UT_bidiGetCharType(c);
 			  }
 			  else
 			  {
-				  cNextType = FRIBIDI_TYPE_UNSET;
+				  cNextType = UT_BIDI_UNSET;
 			  }
 		
 		
-			  if(FRIBIDI_IS_NEUTRAL(cType))
+			  if(UT_BIDI_IS_NEUTRAL(cType))
 			  {
 				  if(m_bLTRCharContext
-					 && iOverride != FRIBIDI_TYPE_LTR
-					 && (cLastType != FRIBIDI_TYPE_LTR || cNextType != FRIBIDI_TYPE_LTR))
+					 && iOverride != UT_BIDI_LTR
+					 && (cLastType != UT_BIDI_LTR || cNextType != UT_BIDI_LTR))
 				  {
 					  if(i - iLast > 0)
 					  {
@@ -1229,13 +1227,13 @@ void IE_Imp_MsWord_97::_flush ()
 						  if(!_appendSpan(p, i - iLast))
 							  return;
 					  }
-					  iOverride = FRIBIDI_TYPE_LTR;
+					  iOverride = UT_BIDI_LTR;
 					  propsArray[1] = prop_ltr.c_str();
 					  iLast = i;
 				  }
 				  else if(!m_bLTRCharContext
-						  && iOverride != FRIBIDI_TYPE_RTL
-						  && (cLastType != FRIBIDI_TYPE_RTL || cNextType != FRIBIDI_TYPE_RTL))
+						  && iOverride != UT_BIDI_RTL
+						  && (cLastType != UT_BIDI_RTL || cNextType != UT_BIDI_RTL))
 				  {
 					  if(i - iLast > 0)
 					  {
@@ -1246,7 +1244,7 @@ void IE_Imp_MsWord_97::_flush ()
 						  if(!_appendSpan(p, i - iLast))
 							  return;
 					  }
-					  iOverride = FRIBIDI_TYPE_RTL;
+					  iOverride = UT_BIDI_RTL;
 					  propsArray[1] = prop_rtl.c_str();
 					  iLast = i;
 				  }
@@ -1255,7 +1253,7 @@ void IE_Imp_MsWord_97::_flush ()
 			  {
 				  // strong character; if we previously issued an override,
 				  // we need to cancel it
-				  if(iOverride != FRIBIDI_TYPE_UNSET)
+				  if(iOverride != UT_BIDI_UNSET)
 				  {
 					  if(i - iLast > 0)
 					  {
@@ -1266,7 +1264,7 @@ void IE_Imp_MsWord_97::_flush ()
 						  if(!_appendSpan(p, i - iLast))
 							  return;
 					  }
-					  iOverride = FRIBIDI_TYPE_UNSET;
+					  iOverride = UT_BIDI_UNSET;
 					  propsArray[1] = prop_basic.c_str();
 					  iLast = i;
 				  }

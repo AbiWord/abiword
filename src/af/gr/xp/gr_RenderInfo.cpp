@@ -25,9 +25,6 @@
 #include "gr_RenderInfo.h"
 #include "gr_ContextGlyph.h"
 #include "gr_Graphics.h"
-#include <fribidi.h>
-
-
 
 void GR_Itemization::clear()
 {
@@ -374,7 +371,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 			// glyph is to check for the presence of the placeholder
 			UT_uint32 off2  = offset + iLen;
 
-			if(m_iVisDir == FRIBIDI_TYPE_RTL)
+			if(m_iVisDir == UT_BIDI_RTL)
 			{
 				off2 = m_iLength - off2 - 1;
 			}
@@ -437,7 +434,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 			UT_UCS4Char * d = m_pChars+offset;
 			UT_UCS4Char * s = m_pChars+offset+iLen;
 
-			if(m_iVisDir == FRIBIDI_TYPE_RTL)
+			if(m_iVisDir == UT_BIDI_RTL)
 			{
 				d = m_pChars + (m_iLength - (offset + iLen - 1));
 				s = m_pChars + (m_iLength - offset);
@@ -449,7 +446,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 			d = (UT_UCS4Char *) m_pWidths+offset;
 			s = (UT_UCS4Char *) m_pWidths+offset+iLen;
 
-			if(m_iVisDir == FRIBIDI_TYPE_RTL)
+			if(m_iVisDir == UT_BIDI_RTL)
 			{
 				d = (UT_UCS4Char *) m_pWidths + (m_iLength - offset + iLen - 1);
 				s = (UT_UCS4Char *) m_pWidths + (m_iLength - offset);
@@ -508,7 +505,7 @@ void GR_XPRenderInfo::_stripLigaturePlaceHolders()
 	UT_sint32 len = (UT_sint32) m_iLength;
 	bool bReverse = false;
 
-	if(m_iVisDir == FRIBIDI_TYPE_RTL)
+	if(m_iVisDir == UT_BIDI_RTL)
 	{
 		// we will be using addition on the width buffer so we need to
 		// zerow it
@@ -677,7 +674,7 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 
 	UT_return_if_fail(m_iLength <= m_iBufferSize);
 
-	if(m_iVisDir == FRIBIDI_TYPE_RTL )
+	if(m_iVisDir == UT_BIDI_RTL )
 	{
 		// we expect the width array to be the result of processing by
 		// _stripLigaturePlaceHolders(), which is in the same order as

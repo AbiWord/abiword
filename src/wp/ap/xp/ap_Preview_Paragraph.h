@@ -27,7 +27,6 @@
 
 #include "xap_Preview.h"
 #include "ap_Dialog_Paragraph.h"
-#include <fribidi.h>
 
 // fwd decl.
 class AP_Dialog_Lists;
@@ -149,7 +148,7 @@ class AP_Preview_Paragraph : public XAP_Preview
 
 	GR_Font * m_font;
 	UT_uint32 m_fontHeight;
-	FriBidiCharType m_dir;
+	UT_BidiCharType m_dir;
 };
 
 #endif /* AP_PREVIEW_PARAGRAPH_H */

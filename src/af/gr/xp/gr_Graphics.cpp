@@ -37,7 +37,6 @@
 #include "ut_TextIterator.h"
 #include "gr_Caret.h"
 #include "gr_RenderInfo.h"
-#include <fribidi.h>
 
 // static class member initializations
 UT_uint32 GR_Font::s_iAllocCount = 0;
@@ -749,13 +748,13 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	// the main loop that will span the whole text of the iterator
 	while(text.getStatus() == UTIter_OK)
 	{
-		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
+		UT_BidiCharType iPrevType, iNextType, iLastStrongType = UT_BIDI_UNSET, iType;
 		
 		UT_UCS4Char c = text.getChar();
 		
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 		
-		iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+		iType = UT_bidiGetCharType(c);
 
 		//we have to break the text into chunks that each will go into a
 		//separate run in a manner that will ensure that the text will
@@ -775,7 +774,7 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		while(text.getStatus() == UTIter_OK)
 		{
 			iPrevType = iType;
-			if(FRIBIDI_IS_STRONG(iType))
+			if(UT_BIDI_IS_STRONG(iType))
 				iLastStrongType = iType;
 			
 			c = text.getChar();
@@ -785,7 +784,7 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 			iLastOffset = text.getPosition();
 			++text;
 			
-			iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+			iType = UT_bidiGetCharType(c);
 			if(iType != iPrevType)
 			{
 				// potential direction boundary see if we can ignore
@@ -799,7 +798,7 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 				// I am leaving it here so that I do not add it one
 				// day again (Tomas, Apr 10, 2003)
 				
-				if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
+				if(UT_BIDI_IS_NEUTRAL(iPrevType) && UT_BIDI_IS_NEUTRAL(iType))
 				{
 					// two neutral characters in a row will have the same
 					// direction
@@ -808,7 +807,7 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 				}
 				else
 #endif
-				if(FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
+				if(UT_BIDI_IS_STRONG(iPrevType) && UT_BIDI_IS_NEUTRAL(iType))
 				{
 					// we can ignore a neutral character following a
 					// strong one if it is followed by a strong
@@ -825,7 +824,7 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 						++text;
 						
-						iNextType = fribidi_get_type(static_cast<FriBidiChar>(c));
+						iNextType = UT_bidiGetCharType(c);
 						xxx_UT_DEBUGMSG(("GR_Graphics::itemize: iNextType 0x%04x\n", iNextType));
 						
 						if(iNextType == iPrevType)
@@ -836,14 +835,14 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 						// if the next character is strong, we cannot
 						// ignore the boundary
-						if(FRIBIDI_IS_STRONG(iNextType))
+						if(UT_BIDI_IS_STRONG(iNextType))
 							break;
 					}
 
 					// restore position
 					text.setPosition(iOldPos);
 				}
-				else if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_STRONG(iType))
+				else if(UT_BIDI_IS_NEUTRAL(iPrevType) && UT_BIDI_IS_STRONG(iType))
 				{
 					// a neutral character followed by a strong one -- we
 					// can ignore it, if the neutral character was
@@ -991,7 +990,7 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
 	UT_return_if_fail(RI.m_pWidths);
 	
-	bool bReverse = (RI.m_iVisDir == FRIBIDI_TYPE_RTL);
+	bool bReverse = (RI.m_iVisDir == UT_BIDI_RTL);
 
 	UT_uint32 i;
 
@@ -1263,6 +1262,7 @@ void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
 	
 	UT_return_if_fail(UT_NOT_IMPLEMENTED);
 }
+
 
 #endif // #ifndef ABI_GRAPHICS_PLUGIN
 

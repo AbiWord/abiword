@@ -43,7 +43,6 @@
 #ifdef WIN32
   #include "ut_Win32OS.h"
 #endif
-#include <fribidi.h>
 
 
 /*****************************************************************/
@@ -680,25 +679,25 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				UT_UCS4Char cRLM = UCS_RLM;
 				UT_UCS4Char cLRM = UCS_LRM;
 
-				FriBidiCharType type = fribidi_get_type(static_cast<FriBidiChar>(*pData));
+				UT_BidiCharType type = UT_bidiGetCharType(*pData);
 				
-				if(m_eDirMarkerPending == DO_RTL && type == FRIBIDI_TYPE_RTL)
+				if(m_eDirMarkerPending == DO_RTL && type == UT_BIDI_RTL)
 				{
 					//the override corresponds to the marker, no marker needed
 					m_eDirMarkerPending = DO_UNSET;
 				}
-				else if(m_eDirMarkerPending == DO_RTL && type == FRIBIDI_TYPE_LTR)
+				else if(m_eDirMarkerPending == DO_RTL && type == UT_BIDI_LTR)
 				{
 					//need to issue marker
 					_outputData(&cRLM, 1);
 					m_eDirMarkerPending = DO_UNSET;
 				}
-				else if(m_eDirMarkerPending == DO_LTR && type == FRIBIDI_TYPE_LTR)
+				else if(m_eDirMarkerPending == DO_LTR && type == UT_BIDI_LTR)
 				{
 					//the override corresponds to the marker, no marker needed
 					m_eDirMarkerPending = DO_UNSET;
 				}
-				else if(m_eDirMarkerPending == DO_LTR && type == FRIBIDI_TYPE_RTL)
+				else if(m_eDirMarkerPending == DO_LTR && type == UT_BIDI_RTL)
 				{
 					//need to issue marker
 					_outputData(&cLRM, 1);

@@ -38,7 +38,6 @@
 #include "fg_Graphic.h"
 #include "fl_AutoLists.h"
 #include "pp_Property.h"
-#include <fribidi.h>
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
@@ -220,8 +219,8 @@ public:
 	inline bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
 	inline bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
 
-	inline FriBidiCharType getDominantDirection(void) const { return m_iDomDirection; }
-	void setDominantDirection(FriBidiCharType iDirection);
+	inline UT_BidiCharType getDominantDirection(void) const { return m_iDomDirection; }
+	void setDominantDirection(UT_BidiCharType iDirection);
 
 	inline fl_Squiggles* getSquiggles(void) const { return m_pSquiggles; }
 
@@ -430,8 +429,8 @@ protected:
 	bool                    m_bIsCollapsed;
 	bool                    m_bHasUpdatableField;
 
-	FriBidiCharType 		m_iDomDirection;
-	FriBidiCharType 		m_iDirOverride;
+	UT_BidiCharType 		m_iDomDirection;
+	UT_BidiCharType 		m_iDirOverride;
 
 	bool                    m_bIsTOC;
 	bool                    m_bStyleInTOC;

@@ -4215,7 +4215,7 @@ void PD_Document::lockStyles(bool b)
     and from the listener we can get access to the layout, down to the
     runs which carry the information that we need.  Tomas, May 3, 2003
  */
-bool PD_Document::exportGetVisDirectionAtPos(PT_DocPosition pos, FriBidiCharType &type)
+bool PD_Document::exportGetVisDirectionAtPos(PT_DocPosition pos, UT_BidiCharType &type)
 {
 	if(pos == m_iVDLastPos && m_pVDRun)
 	{

@@ -23,6 +23,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <fribidi.h>
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -66,4 +67,32 @@ void UT_unlink (const char * base)
 	// should perform identically, but remove was choosen since it is ANSI C (stdio.h)
 	// unlink (base);
 	remove(base);
+}
+
+UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
+{
+	return fribidi_get_type(c);
+}
+
+bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
+						  UT_UCS4Char * pStrOut)
+{
+	// if this assert fails, we have a serious problem ...
+	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
+	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, NULL, NULL, NULL));
+}
+
+bool UT_bidiMapLog2Vis(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
+					   UT_uint32 *pL2V, UT_uint32 * pV2L, UT_Byte * pEmbed)
+{
+	// if this assert fails, we have a serious problem ...
+	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
+	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir,
+								  NULL, (FriBidiStrIndex*)pL2V, (FriBidiStrIndex*)pV2L, (FriBidiLevel*)pEmbed));
+}
+
+
+bool UT_bidiGetMirrorChar(UT_UCS4Char c, UT_UCS4Char &mc)
+{
+	return (0 != fribidi_get_mirror_char(c, (FriBidiChar*)&mc));
 }

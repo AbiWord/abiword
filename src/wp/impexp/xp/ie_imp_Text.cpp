@@ -37,7 +37,6 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"
-#include <fribidi.h>
 
 #include "pt_PieceTable.h"
 #include "pf_Frag_Strux.h"
@@ -242,9 +241,9 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 		// we look for the first strong character
 		for(UT_uint32 i = 0; i < iLength; i++, p++)
 		{
-			FriBidiCharType type = fribidi_get_type(static_cast<FriBidiChar>(*p));
+			UT_BidiCharType type = UT_bidiGetCharType(*p);
 
-			if(FRIBIDI_IS_STRONG(type))
+			if(UT_BIDI_IS_STRONG(type))
 			{
 				m_bBlockDirectionPending = false;
 
@@ -256,7 +255,7 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 
 				UT_String props("dom-dir:");
 				
-				if(FRIBIDI_IS_RTL(type))
+				if(UT_BIDI_IS_RTL(type))
 					props += "rtl;text-align:right";
 				else
 					props += "ltr;text-align:left";
@@ -279,8 +278,8 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 				// then we will remove it
 				if(m_bFirstBlockData && i==0 && iLength > 1 && (*p == UCS_LRM || *p == UCS_RLM))
 				{
-					FriBidiCharType next_type = fribidi_get_type(static_cast<FriBidiChar>(*(p+1)));
-					if(FRIBIDI_IS_STRONG(next_type))
+					UT_BidiCharType next_type = UT_bidiGetCharType(*(p+1));
+					if(UT_BIDI_IS_STRONG(next_type))
 					{
 						pData++;
 						iLength--;

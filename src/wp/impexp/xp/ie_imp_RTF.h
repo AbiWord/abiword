@@ -35,7 +35,6 @@
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
-#include <fribidi.h>
 #include  "ie_Table.h"
 #include "ie_imp_RTFParse.h"
 
@@ -94,7 +93,7 @@ public:
 	UT_uint32  m_listTag; // tag for lists to hang off
 	const char * m_szLang;
 	bool    m_RTL;
-	FriBidiCharType m_dirOverride;
+	UT_BidiCharType m_dirOverride;
 };
 
 class ABI_EXPORT RTFProps_bCharProps
@@ -400,7 +399,7 @@ struct ABI_EXPORT RTFProps_SectionProps
 	UT_sint32       m_footerYTwips;
 	UT_sint32       m_gutterTwips;
 	UT_sint32       m_colSpaceTwips;
-	FriBidiCharType m_dir;
+	UT_BidiCharType m_dir;
 };
 
 // Frame properties

@@ -39,7 +39,6 @@
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
-#include <fribidi.h>
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -572,7 +571,7 @@ public:
 	// position pos from an associated layout. They are intended to be
 	// used by exporters into (daft) formats where such information
 	// might be required (e.g. RTF).
-	bool                    exportGetVisDirectionAtPos(PT_DocPosition pos, FriBidiCharType &type);
+	bool                    exportGetVisDirectionAtPos(PT_DocPosition pos, UT_BidiCharType &type);
 private:
 	bool                    _exportInitVisDirection(PT_DocPosition pos);
 	bool                    _exportFindVisDirectionRunAtPos(PT_DocPosition pos);

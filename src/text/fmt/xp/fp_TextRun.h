@@ -86,15 +86,15 @@ public:
 	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
 
 	// applies provided values of direction and override to the run
-	void					setDirection(FriBidiCharType dir, FriBidiCharType override);
+	void					setDirection(UT_BidiCharType dir, UT_BidiCharType override);
 
 	// the usability of the following function is *very* limited, see the note in cpp file
-	void					setDirOverride(FriBidiCharType dir);
-	virtual FriBidiCharType getDirection() const { return m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;}
-	FriBidiCharType 		getDirOverride() const { return m_iDirOverride; }
+	void					setDirOverride(UT_BidiCharType dir);
+	virtual UT_BidiCharType getDirection() const { return m_iDirOverride == UT_BIDI_UNSET ? _getDirection() : m_iDirOverride;}
+	UT_BidiCharType 		getDirOverride() const { return m_iDirOverride; }
 
 	void				breakNeighborsAtDirBoundaries();
-	void				breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
+	void				breakMeAtDirBoundaries(UT_BidiCharType iNewOverride);
 	void                setShapingRequired(GRShapingResult eR)
 	                         {m_pRenderInfo->m_eShapingResult = eR;}
 	void                orShapingRequired(GRShapingResult eR)
@@ -111,7 +111,7 @@ public:
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 	
 	static UT_uint32	s_iClassInstanceCount;
-	FriBidiCharType 	m_iDirOverride;
+	UT_BidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
 
 private:

@@ -57,7 +57,6 @@
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
-#include <fribidi.h>
 
 static UT_sint32 convertInchToTwips(double inch)
 {
@@ -80,7 +79,7 @@ void s_RTF_ListenerWriteDoc::_closeSection(void)
 void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 {
 	// first reset ie's char direciton info
-	m_pie->setCharRTL(FRIBIDI_TYPE_UNSET);
+	m_pie->setCharRTL(UT_BIDI_UNSET);
 //
 // Force the output of char properties for blank lines or list items.
 //
@@ -579,13 +578,13 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 	for (pData=data; (pData<data+length); /**/)
 	{
 		// first handle direciton issues
-		FriBidiCharType type;
+		UT_BidiCharType type;
 
 		if(  !bIgnorePosition
 		   && m_pDocument->exportGetVisDirectionAtPos(pos + (pData - data),type)
 		  )
 		{
-			if(m_pie->isCharRTL() != FRIBIDI_TYPE_LTR && !FRIBIDI_IS_RTL(type))
+			if(m_pie->isCharRTL() != UT_BIDI_LTR && !FRIBIDI_IS_RTL(type))
 			{
 				// changing from rtl to ltr
 				FlushBuffer();
@@ -596,9 +595,9 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 
 				m_pie->_rtf_keyword("abinodiroverride"); 
 				m_pie->_rtf_keyword("ltrch");
-				m_pie->setCharRTL(FRIBIDI_TYPE_LTR);
+				m_pie->setCharRTL(UT_BIDI_LTR);
 			}
-			else if(m_pie->isCharRTL() != FRIBIDI_TYPE_RTL && FRIBIDI_IS_RTL(type))
+			else if(m_pie->isCharRTL() != UT_BIDI_RTL && FRIBIDI_IS_RTL(type))
 			{
 				// changing from ltr to rtl
 				FlushBuffer();
@@ -609,7 +608,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 
 				m_pie->_rtf_keyword("abinodiroverride"); 
 				m_pie->_rtf_keyword("rtlch");
-				m_pie->setCharRTL(FRIBIDI_TYPE_RTL);
+				m_pie->setCharRTL(UT_BIDI_RTL);
 			}
 	   }
 			
@@ -654,12 +653,12 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 
 		default:
 			// remove supperfluous direction markers ...
-			if(*pData == UCS_LRM && m_pie->isCharRTL() == FRIBIDI_TYPE_LTR)
+			if(*pData == UCS_LRM && m_pie->isCharRTL() == UT_BIDI_LTR)
 			{
 				pData++;
 				continue;
 			}
-			else if(*pData == UCS_RLM && m_pie->isCharRTL() == FRIBIDI_TYPE_RTL)
+			else if(*pData == UCS_RLM && m_pie->isCharRTL() == UT_BIDI_RTL)
 			{
 				pData++;
 				continue;

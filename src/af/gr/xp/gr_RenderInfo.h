@@ -23,7 +23,6 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "gr_ContextGlyph.h"
-#include <fribidi.h>
 
 class UT_TextIterator;
 class GR_Graphics;
@@ -158,8 +157,8 @@ class GR_Itemization
 	void            setEmbedingLevel(UT_uint32 l) {m_iEmbedingLevel = l;}
 	UT_uint32       getEmbedingLevel() const {return m_iEmbedingLevel;}
 
-	void            setDirOverride(FriBidiCharType o) {m_iDirOverride = o;}
-	FriBidiCharType getDirOverride() const {return m_iDirOverride;}
+	void            setDirOverride(UT_BidiCharType o) {m_iDirOverride = o;}
+	UT_BidiCharType getDirOverride() const {return m_iDirOverride;}
 
 	void            setShowControlChars(bool s) {m_bShowControlChars = s;}
 	bool            getShowControlChars() const {return m_bShowControlChars;}
@@ -172,7 +171,7 @@ class GR_Itemization
 	UT_Vector       m_vItems;
 
 	UT_uint32       m_iEmbedingLevel;
-	FriBidiCharType m_iDirOverride;
+	UT_BidiCharType m_iDirOverride;
 	bool            m_bShowControlChars;
 	const char *    m_pLang;
 };
@@ -209,7 +208,7 @@ class GR_RenderInfo
 	GR_RenderInfo(GR_ScriptType type)
 		: m_iOffset(0), m_iLength(0), m_eShapingResult(GRSR_Unknown),
  		  m_eState(GRSR_Unknown), m_eScriptType(type),
-		  m_pText(NULL), m_iVisDir(FRIBIDI_TYPE_LTR),
+		  m_pText(NULL), m_iVisDir(UT_BIDI_LTR),
 	      m_xoff(0), m_yoff(),
 	      m_pGraphics(NULL), m_pFont(NULL),
 		  m_iJustificationPoints(0),
@@ -239,7 +238,7 @@ class GR_RenderInfo
 	GRShapingResult     m_eState;
 	GR_ScriptType       m_eScriptType;
 	UT_TextIterator *   m_pText;
-	FriBidiCharType     m_iVisDir;
+	UT_BidiCharType     m_iVisDir;
 	UT_sint32           m_xoff;
 	UT_sint32           m_yoff;
 
@@ -311,7 +310,7 @@ class GR_ShapingInfo
   public:
 	GR_ShapingInfo(UT_TextIterator & text, UT_uint32 iLen,
 				   const char * pLang,
-				   FriBidiCharType iVisDir,
+				   UT_BidiCharType iVisDir,
 				   GRShapingResult eShapingRequired,
 				   GR_Font * pFont,
 				   GR_Item * pItem)
@@ -326,7 +325,7 @@ class GR_ShapingInfo
 	UT_TextIterator &   m_Text;
 	UT_uint32           m_iLength;
 	const char *        m_pLang;
-	FriBidiCharType     m_iVisDir;
+	UT_BidiCharType     m_iVisDir;
 	GRShapingResult     m_eShapingRequired;
 
 	const GR_Font *     m_pFont;

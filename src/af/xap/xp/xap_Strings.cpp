@@ -38,8 +38,6 @@
 #include "xap_Strings.h"
 #include "xap_EncodingManager.h"
 
-#include <fribidi.h>
-
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings
 //////////////////////////////////////////////////////////////////
@@ -223,43 +221,27 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		{
 			if (p && *p)
 			{
-				FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
-				fbdStr   = new FriBidiChar [kLimit + 1];
-				UT_ASSERT(fbdStr);
-				fbdStr2  = new FriBidiChar [kLimit + 1];
+				UT_UCS4Char * fbdStr2  = new UT_UCS4Char [kLimit + 1];
 				UT_ASSERT(fbdStr2);
 
 				UT_sint32 i;
-				for(i = 0; i < kLimit; i++)
-				{
-					fbdStr[i] = static_cast<FriBidiChar>(p[i]);
-				}
 
 				// Testing the first char is not good enough; we really need to get this from the
 				// language
 				// FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
-				FriBidiCharType fbdDomDir = FRIBIDI_TYPE_LTR;
+				UT_BidiCharType iDomDir = UT_BIDI_LTR;
 				UT_Language l;
 				if(UTLANG_RTL == l.getDirFromCode(getLanguageName()))
-				   fbdDomDir = FRIBIDI_TYPE_RTL;
+				   iDomDir = UT_BIDI_RTL;
 
-				fribidi_log2vis (		/* input */
-				       fbdStr,
-				       kLimit,
-				       &fbdDomDir,
-				       /* output */
-				       fbdStr2,
-				       NULL,
-				       NULL,
-				       NULL);
+				UT_bidiReorderString(p, kLimit, iDomDir, fbdStr2);
 
 				for(i = 0; i < kLimit; i++)
 				{
-					p[i] = static_cast<UT_uint16>(fbdStr2[i]);
+					p[i] = fbdStr2[i];
 				}
 
-				UT_ASSERT(p[i] == 0);
-				delete[] fbdStr;
+				UT_ASSERT_HARMLESS(p[i] == 0);
 				delete[] fbdStr2;
 			}
 		}
@@ -465,91 +447,6 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 		UT_DEBUGMSG(("Problem reading document\n"));
 		goto Cleanup;
 	}
-
-
-	// TODO: the similar code in ev_Toolbar_Labels.cpp was causing crashes
-	// and until a solution to the problem is devised (see comments in that file)
-	// I am turning this off.
-
-#if 0
-	// now we run this stringset through fribidi
-	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
-	{
-		UT_uint32 kLimit = _getStringCount();
-		UT_uint32 k;
-        UT_uint32 iOldLen = 0;
-        FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
-
-		UT_UCS4_mbtowc mbtowc_conv;
-		UT_Wctomb wctomb_conv;
-		UT_UCS4Char wc;
-
-		char letter_buf[20];
-		int length;
-
-		for (k=0; k<kLimit; k++)
-		{
-			XML_Char * szValue = const_cast<XML_Char *>(_getNthString(k));
-			if (szValue && *szValue)
-			{
-				UT_uint32 iStrLen  = strlen(szValue);
-
-				if(iStrLen > iOldLen)
-				{
-					if(fbdStr)
-					{
-						delete [] fbdStr;
-						delete [] fbdStr2;
-					}
-
-					fbdStr   = new FriBidiChar [iStrLen];
-					UT_ASSERT(fbdStr);
-					fbdStr2  = new FriBidiChar [iStrLen];
-					UT_ASSERT(fbdStr2);
-					iOldLen = iStrLen;
-				}
-
-				UT_uint32 i;
-				UT_uint32 j = 0;
-				UT_uint32 k = 0;
-				for(i = 0; i < iStrLen; i++)
-				{
-					if(mbtowc_conv.mbtowc(wc,szValue[i]))
-					{
-						fbdStr[j++] = static_cast<FriBidiChar>(wc);
-					}
-				}
-
-				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
-
-				fribidi_log2vis (		/* input */
-				       fbdStr,
-				       j,
-				       &fbdDomDir,
-				       /* output */
-				       fbdStr2,
-				       NULL,
-				       NULL,
-				       NULL);
-
-				for(i = 0; i < j; i++)
-				{
-					if (wctomb_conv.wctomb(letter_buf,length,p[i]))
-					{
-						for(k = 0; k < length; k++)
-							szValue[i++] = letter_buf[k];
-						i--;
-					}
-				}
-
-				UT_ASSERT(szValue[i] == 0);
-			}
-		}
-
-		delete[] fbdStr;
-		delete[] fbdStr2;
-	}
-#endif
 
 	// we succeeded in parsing the file,
 	// now check for higher-level consistency.

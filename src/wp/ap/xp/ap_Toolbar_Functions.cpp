@@ -331,7 +331,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 	s_getPageMargins(pView, margin_left, margin_right,
 					 page_margin_left, page_margin_right);
 
-	FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
+	UT_BidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
 
 	switch(id)
 	{
@@ -341,7 +341,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 				s = EV_TIS_Gray;
 			break;
 		case AP_TOOLBAR_ID_UNINDENT:
-			allowed = iBlockDir == FRIBIDI_TYPE_LTR ? margin_left : margin_right;
+			allowed = iBlockDir == UT_BIDI_LTR ? margin_left : margin_right;
 
 			if (allowed <= 0.)
 				s = EV_TIS_Gray;

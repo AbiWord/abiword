@@ -29,7 +29,6 @@
 #include "pl_Listener.h"
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
-#include <fribidi.h>
 
 class PD_Document;
 class PD_Style;
@@ -120,8 +119,8 @@ public:
 	UT_uint32 getOverideCount(void)  const;
 	UT_uint32 getMatchingOverideNum(UT_uint32 ID);
 	void exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,const char * pszKeyword);
-	FriBidiCharType isCharRTL() {return m_CharRTL;}
-	void setCharRTL(FriBidiCharType t) {m_CharRTL = t;}
+	UT_BidiCharType isCharRTL() {return m_CharRTL;}
+	void setCharRTL(UT_BidiCharType t) {m_CharRTL = t;}
 
 protected:
 	virtual UT_Error	_writeDocument(void);
@@ -188,7 +187,7 @@ protected:
 	UT_Vector                   m_vecSimpleList;
 	UT_Vector                   m_vecOverides;
 
-	FriBidiCharType             m_CharRTL;
+	UT_BidiCharType             m_CharRTL;
 };
 
 /*****************************************************************/

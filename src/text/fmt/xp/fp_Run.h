@@ -36,7 +36,6 @@
 #include "gr_ContextGlyph.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
-#include <fribidi.h>
 #include "pp_Revision.h"
 #include "ut_string_class.h"
 #include "fp_ContainerObject.h"
@@ -269,10 +268,10 @@ public:
 	UT_sint32		    getMinOverline(void) ;
 	UT_sint32           getToplineThickness(void);
 
-	virtual FriBidiCharType	getDirection() const { return m_iDirection; };
-	FriBidiCharType		getVisDirection();
-	virtual void        setDirection(FriBidiCharType iDirection = FRIBIDI_TYPE_WS);
-	void				setVisDirection(FriBidiCharType iDir);
+	virtual UT_BidiCharType	getDirection() const { return m_iDirection; };
+	UT_BidiCharType		getVisDirection();
+	virtual void        setDirection(UT_BidiCharType iDirection = UT_BIDI_WS);
+	void				setVisDirection(UT_BidiCharType iDir);
 	UT_uint32           getVisPosition(UT_uint32 ilogPos);
 	UT_uint32           getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);
 	UT_uint32           getOffsetFirstVis();
@@ -322,9 +321,9 @@ protected:
 	void				_setDescent(int iDescent) {m_iDescent = iDescent;}
 	void				_setX(int iX) { m_iX = iX; }
 	void				_setY(int iY) { m_iY = iY; }
-	void				_setDirection(FriBidiCharType c) { m_iDirection = c; }
-	FriBidiCharType		_getDirection(void) const { return m_iDirection; }
-	FriBidiCharType		_getVisDirection(void) const { return m_iVisDirection; }
+	void				_setDirection(UT_BidiCharType c) { m_iDirection = c; }
+	UT_BidiCharType		_getDirection(void) const { return m_iDirection; }
+	UT_BidiCharType		_getVisDirection(void) const { return m_iVisDirection; }
 	GR_Font *			_getFont(void) const { return m_pFont; }
 	void  				_setFont(GR_Font * f) { m_pFont = f; }
 	unsigned char		_getDecorations(void) const { return m_fDecorations; }
@@ -391,8 +390,8 @@ private:
 	UT_uint32				m_iLen;
 	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field*				m_pField;
-	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
-	FriBidiCharType			m_iVisDirection;
+	UT_BidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
+	UT_BidiCharType			m_iVisDirection;
 	GRShapingResult			m_eRefreshDrawBuffer;
 
 	// the run highlight color. If the property is transparent use the page color

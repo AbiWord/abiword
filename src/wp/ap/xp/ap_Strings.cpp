@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <fribidi.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -238,37 +237,21 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		{
 			if (p && *p)
 			{
-				FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
-				fbdStr   = new FriBidiChar [kLimit + 1];
-				UT_return_val_if_fail (fbdStr, false);
-				fbdStr2  = new FriBidiChar [kLimit + 1];
+				UT_UCS4Char  *fbdStr2 = 0;
+				fbdStr2  = new UT_UCS4Char [kLimit + 1];
 				UT_return_val_if_fail (fbdStr2, false);
 
 				UT_sint32 i;
-				for(i = 0; i < kLimit; i++)
-				{
-					fbdStr[i] = (FriBidiChar) p[i];
-				}
 
-				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
-
-				fribidi_log2vis (		/* input */
-				       fbdStr,
-				       kLimit,
-				       &fbdDomDir,
-				       /* output */
-				       fbdStr2,
-				       NULL,
-				       NULL,
-				       NULL);
+				UT_BidiCharType iDomDir = UT_bidiGetCharType(p[0]);
+				UT_bidiReorderString(p,kLimit, iDomDir, fbdStr2);
 
 				for(i = 0; i < kLimit; i++)
 				{
-					p[i] = (UT_uint16) fbdStr2[i];
+					p[i] = fbdStr2[i];
 				}
 
 				UT_ASSERT_HARMLESS(p[i] == 0);
-				delete[] fbdStr;
 				delete[] fbdStr2;
 			}
 		}
