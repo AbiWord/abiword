@@ -5352,7 +5352,12 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	}
 
 //	This was...
+	if(m_pDoc->isDoingPaste())
+	{
+		format();
+	}
 	setNeedsReformat();
+
 
 	// if we were on screen we need to reformat immediately, since the ruler will be
 	// calling the findPointCoords() chain and if we are collapsed (as

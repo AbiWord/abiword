@@ -296,6 +296,37 @@ fp_Page * fp_Container::getPage(void) const
 	return NULL;
 }
 
+void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
+{
+	m_vecContainers.insertItemAt(pCon,i);
+}
+
+void fp_Container::addCon(fp_ContainerObject * pCon)
+{
+	m_vecContainers.addItem(pCon);
+}
+
+fp_ContainerObject *  fp_Container:: getNthCon(UT_uint32 i) const
+{ 
+	if(countCons() == 0) return NULL;
+	return m_vecContainers.getNthItem(i);
+}
+
+UT_uint32  fp_Container::countCons(void) const
+{
+	return m_vecContainers.getItemCount();
+}
+
+UT_sint32  fp_Container::findCon(fp_ContainerObject * pCon) const
+{
+	return m_vecContainers.findItem(pCon);
+}
+
+bool  fp_Container::isEmpty(void) const
+{
+	return m_vecContainers.getItemCount() == 0;
+}
+
 bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 {
 	// the X offset of a container is relative to page margin, what we

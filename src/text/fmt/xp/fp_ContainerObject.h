@@ -252,20 +252,13 @@ public:
 		{m_pPrev = pPrev;}
 	void                   clearCons(void)
 		{ m_vecContainers.clear();}
-	fp_ContainerObject *   getNthCon(UT_uint32 i) const
-		{ if(countCons() == 0) return NULL;
-		   return m_vecContainers.getNthItem(i);}
-	void                   addCon(fp_ContainerObject * pCon)
-		{m_vecContainers.addItem(pCon);}
-	UT_uint32              countCons(void) const
-		{return m_vecContainers.getItemCount();}
-	UT_sint32              findCon(fp_ContainerObject * pCon) const
-		{return m_vecContainers.findItem(pCon);}
+	fp_ContainerObject *   getNthCon(UT_uint32 i) const;
+	void                   addCon(fp_ContainerObject * pCon);
+	UT_uint32              countCons(void) const;
+	UT_sint32              findCon(fp_ContainerObject * pCon) const;
 	void                   deleteNthCon(UT_sint32 i);
-	void                   insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
-		{m_vecContainers.insertItemAt(pCon,i);}
-	bool                   isEmpty(void) const
-		{return m_vecContainers.getItemCount() == 0;}
+	void                   insertConAt(fp_ContainerObject * pCon, UT_sint32 i);
+	bool                   isEmpty(void) const;
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y) =0;
 	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) = 0;
 	virtual void        setAssignedScreenHeight(UT_sint32 iY) =0;

@@ -9212,16 +9212,25 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	props [2] = "name";
 	props [3] = bookmarkName.utf8_str();
 	props [4] = NULL;
-	xxx_UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+	UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 	if(m_bCellBlank || m_bEndTableOpen)
 	{
-		xxx_UT_DEBUGMSG(("Append block 3 \n"));
+		UT_DEBUGMSG(("Insert/Append block 3 \n"));
 		if (m_newSectionFlagged)
 		{
 			ApplySectionAttributes();
 			m_newSectionFlagged = false;
 		}
-		getDoc()->appendStrux(PTX_Block,NULL);
+		if(!bUseInsertNotAppend()) 
+		{
+			getDoc()->appendStrux(PTX_Block,NULL);
+		}
+		else
+		{
+			markPasteBlock();
+			getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_dposPaste++;
+		}
 		m_bCellBlank = false;
 		m_bEndTableOpen = false;
 	}
@@ -9230,7 +9239,14 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	{
 		getDoc()->appendObject(PTO_Bookmark, props);
 	}
-	else {
+	else 
+	{
+		if(isBlockNeededForPasteTable())
+		{
+			markPasteBlock();
+			getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_dposPaste++;
+		}
 		getDoc()->insertObject(m_dposPaste, PTO_Bookmark, props, NULL);
 		m_dposPaste++;
 	}
