@@ -48,7 +48,7 @@ ifeq ($(OS_NAME),WIN32)
 INCLUDES = -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib
 endif
 
-ifeq ($(OS_NAME),procnto)  
+ifeq ($(ABI_NATIVE), qnx)
 INCLUDES = -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib
 endif
 

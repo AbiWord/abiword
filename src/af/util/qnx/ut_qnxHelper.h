@@ -29,6 +29,9 @@
 									   Ph_WM_RENDER_ASPALETTE )
 #define ABI_MODAL_WINDOW_MANAGE_FLAGS (Ph_WM_RESIZE | Ph_WM_HIDE | Ph_WM_MAX )
 
+//Photon 1.14 needed an argument to PtModalEnd
+#define MODAL_END_ARG(x)
+
 /*
  This will center one window on another, if parent is NULL then
  the widget is centered on the screen.
