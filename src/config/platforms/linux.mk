@@ -42,7 +42,7 @@ i386_ARCH_FLAGS		=
 # Jerry LeVan <levan@eagle.eku.edu> provided the PPC flags
 # Gary Thomas <gdt@linuxppc.org> suggests using -fno-schedule-insns2 
 # for some EGCS builds
-PPC_ARCH_FLAGS		= -fsigned-char # -fno-schedule-insns2
+PPC_ARCH_FLAGS		= -fsigned-char -fno-schedule-insns2
 
 ALPHA_ARCH_FLAGS 	= 
 SPARC_ARCH_FLAGS 	= 
