@@ -8,6 +8,8 @@
 %define enable_optimize __ABI_OPT_OPTIMIZE__
 %define enable_pspell __ABI_OPT_PSPELL__
 
+%define enable_xft __ABI_OPT_XFT__
+
 # PLUGIN OPTIONS: 1 for yes, 0 for no
 %define enable_tools __ABI_PLUGINS_TOOLS__
 %define enable_impexp __ABI_PLUGINS_IMPEXP__
@@ -17,6 +19,24 @@
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
 
+%if %{enable_gnome}
+%define gnome --enable-gnome
+%else
+%define gnome --disable-gnome
+%endif
+
+%if %{enable_xft}
+%define xft --enable-xft
+%else
+%define xft --disable-xft
+%endif
+
+%if %{enable_debug}
+%define debug --enable-debug
+%else
+%define debug --disable-debug
+%endif
+
 %if %{enable_tools}
 %define plugin_tools --enable-abicommand --enable-abigimp --enable-aiksaurus --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell
 %else
@@ -24,7 +44,8 @@
 %endif
 
 %if %{enable_impexp}
-%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-docbook --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --enable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo
+#%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-docbook --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --enable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo
+%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-docbook --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --disable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo
 %else
 %define plugin_impexp --disable-gdkpixbuf --disable-bmp --disable-jpeg --disable-wmf --disable-applix --disable-bz2abw --disable-clarisworks --disable-docbook --disable-eml --disable-hancom --disable-hrtext --disable-html --disable-iscii-text --disable-kword --disable-latex --disable-mif --disable-mswrite --disable-nroff --disable-OpenWriter --disable-pdb --disable-psion --disable-pw --disable-sdw --disable-t602 --disable-wml --disable-wordperfect --disable-xhtml --disable-xsl-fo
 %endif
@@ -46,9 +67,9 @@ Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: RedHat 7.x Contrib
 # Basic requirements
-Requires: gtk+ >= 1.2.7
-Requires: glib >= 1.2.7
-Requires: %{name}-fonts
+Requires: gtk2 >= 2.0.0
+Requires: glib2 >= 2.0.0
+#Requires: %{name}-fonts
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -84,19 +105,20 @@ BuildRequires: bonobo-devel
 %description
 AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration this version is compiled with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
 
+%else
+%description
+AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration it is also possible to compile AbiWord with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
+%endif
+
 %package embeddable
 Requires: bonobo
+Requires: oaf
 BuildRequires: bonobo-devel
 Summary: Files for embedding AbiWord in other bonobo-aware programs.
 Group: Development/Libraries
 
 %description embeddable
 Files for embedding AbiWord in other bonobo-aware programs.
-
-%else
-%description
-AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration it is also possible to compile AbiWord with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
-%endif
 
 
 %if %{enable_perl}
@@ -164,12 +186,12 @@ This is the clipart portfolio used by AbiWord.
 %setup -q -n %{name}-%{version}/abi
 
 %build
-
-%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+./configure %{gnome} %{xft} %{debug} --prefix=$RPM_BUILD_ROOT/%{prefix} --exec-prefix=$RPM_BUILD_ROOT/%{prefix}
+%__make
 
 cd ../abiword-plugins
 ./nextgen.sh
-%configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
+%configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/AbiSuite --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
 %__make
 
 cd ../abi
@@ -181,32 +203,27 @@ cd ../abiword-plugins
 %__make install
 cd ../abi
 
-%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+#%__make DESTDIR=$RPM_BUILD_ROOT install
+%__make install
 
 # Manual fixes to Abi package
 
 # Fixes Abi start script and creates links
-%__perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord
-%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/bin/
-%__ln_s %{ABIPREFIX}/AbiSuite/bin/AbiWord $RPM_BUILD_ROOT/%{prefix}/bin/abiword
-%__ln_s %{ABIPREFIX}/AbiSuite/bin/AbiWord $RPM_BUILD_ROOT/%{prefix}/bin/AbiWord
+%__perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT/%{_bindir}/AbiWord
+%__rm $RPM_BUILD_ROOT/%{_bindir}/abiword
+%__cp $RPM_BUILD_ROOT/%{_bindir}/AbiWord $RPM_BUILD_ROOT/%{_bindir}/abiword
 
 # Creates GNOME menu entries
-%__mkdir_p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT%{prefix}/share/pixmaps/abiword_48.png
-%if %{enable_gnome}
-%__mkdir_p $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/abiword.desktop
-%endif
+%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/pixmaps
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{prefix}/share/pixmaps/abiword_48.png
+%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/gnome/apps/Applications/
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT/%{prefix}/share/gnome/apps/Applications/abiword.desktop
 
-%if %{enable_gnome}
 # Copies oaf files
 %__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/oaf
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{prefix}/share/oaf
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{prefix}/share/oaf
-# change above to below when gtk2 lands
-#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{prefix}/share/gnome-2.0/ui/
-%endif
+%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/gnome-2.0/ui
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{prefix}/share/gnome-2.0/ui/
 
 # Copies all clipart
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
@@ -223,10 +240,10 @@ cd ../abi
 %files
 %defattr(644,root,root,755)
 %attr(755,root,root) %{prefix}/bin/*
-%attr(755,root,root) %{ABIPREFIX}/AbiSuite/bin/*
-%{ABIPREFIX}/AbiSuite/COPYING
-%{ABIPREFIX}/AbiSuite/readme.txt
-%{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
+#%attr(755,root,root) %{ABIPREFIX}/AbiSuite/bin/*
+#%{ABIPREFIX}/AbiSuite/COPYING
+#%{ABIPREFIX}/AbiSuite/readme.txt
+#%{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
 %{ABIPREFIX}/AbiSuite/AbiWord/help/en-US
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
@@ -234,14 +251,12 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %{prefix}/share/pixmaps/abiword_48.png
-%if %{enable_gnome}
-%{ABIPREFIX}/oaf
 %{prefix}/share/gnome/apps/Applications/abiword.desktop
 
 %files embeddable
 %defattr(644,root,root,755)
 %{ABIPREFIX}/oaf
-%endif
+%{ABIPREFIX}/gnome-2.0/ui/
 
 %if %{enable_tools}
 %files plugins-tools
@@ -282,7 +297,7 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiOpenWriter.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiPW.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiPalmDoc.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
+#%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiT602.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWML.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWordPerfect.*
@@ -304,24 +319,24 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/fonts/*.e2u
 %{ABIPREFIX}/AbiSuite/fonts/*.u2g
 
-%post
-chmod a+x %{ABIPREFIX}/AbiSuite/bin/*
-
-%post fonts
-if test -z "`grep AbiSuite /etc/X11/fs/config`" ; then
-  if test -x /usr/sbin/chkfontpath ; then
-    /usr/sbin/chkfontpath --add %{ABIPREFIX}/AbiSuite/fonts
-  fi
-fi
-
-%postun fonts
-if test ! -e %{ABIPREFIX}/AbiSuite/fonts/fonts.dir ; then
-  if test -x /usr/sbin/chkfontpath ; then
-    /usr/sbin/chkfontpath --remove %{ABIPREFIX}/AbiSuite/fonts
-  fi
-fi
+#%post fonts
+#if test -z "`grep AbiSuite /etc/X11/fs/config`" ; then
+#  if test -x /usr/sbin/chkfontpath ; then
+#    /usr/sbin/chkfontpath --add %{ABIPREFIX}/AbiSuite/fonts
+#  fi
+#fi
+#
+#%postun fonts
+#if test ! -e %{ABIPREFIX}/AbiSuite/fonts/fonts.dir ; then
+#  if test -x /usr/sbin/chkfontpath ; then
+#    /usr/sbin/chkfontpath --remove %{ABIPREFIX}/AbiSuite/fonts
+#  fi
+#fi
 
 %changelog
+* Fri Aug 23 2002 Rui M. Silva Seabra <rms@1407.org>
+- Make spec compile abiword for gtk2.
+
 * Fri Jun 14 2002 Rui M. Silva Seabra <rms@1407.org>
 - Make rpm set better permissions on files AND dirs
 
