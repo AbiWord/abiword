@@ -50,6 +50,10 @@ NSIS_SRC = ./AbiWord.nsi
 NSIS_OPT = 
 endif
 
+ifeq ($(OS_NAME),MINGW32)
+NSIS_OPT += //DMINGW32=1
+endif
+
 $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
 	@rm -f $(BINDIR)/AbiWord.nsi; \
 	 $(ABICOPY) $(NSIS_SRC) $(BINDIR)/AbiWord.nsi; \

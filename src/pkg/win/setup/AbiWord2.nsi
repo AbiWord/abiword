@@ -462,6 +462,10 @@ Section "$(TITLE_section_abi)" section_abi
 	SetOutPath $INSTDIR\${PRODUCT}\bin
 	File "${PROGRAMEXE}"
 
+	!ifdef MINGW32
+		File "libAbiWord.dll"
+	!endif
+
 	SetOutPath $INSTDIR\${PRODUCT}
 	File "..\AbiSuite\AbiWord\system.*"
 	File /r "..\AbiSuite\AbiWord\strings"

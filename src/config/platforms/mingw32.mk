@@ -28,10 +28,10 @@
 ##
 PLATFORM_FLAGS	=
 PORT_FLAGS		=
-OS_CFLAGS               = -mwindows -DDM_SPECVERSION=0x0401
+OS_CFLAGS               = -mwindows -DDM_SPECVERSION=0x0400
 # DM_SPECVERSION should be defined in wingdi.h (MinGW bug 716733) but it
 # seems that other structures in that file correspond to this version
-# *** -DDM_SPECVERSION=0x0401 should be removed when bug 716733 will be fixed
+# *** -DDM_SPECVERSION=0x0400 should be removed when bug 716733 will be fixed
 ##
 
 # mingw doesn't like -ansi in compiling wv

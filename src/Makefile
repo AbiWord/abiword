@@ -226,6 +226,11 @@ ifeq ($(OS_NAME), WIN32)
 	@if [ -d $(ABI_ROOT)/../expat ]; then		\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
 	fi
+endif
+ifeq ($(OS_NAME), MINGW32)
+	@if [ -d $(ABI_ROOT)/../expat ]; then		\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
+	fi
 else
 	@if [ -d $(ABI_ROOT)/../expat ]; then		\
 		$(MAKE) -f Makefile -C $(ABI_ROOT)/../expat clean;	\
