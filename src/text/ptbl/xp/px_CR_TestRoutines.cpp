@@ -20,21 +20,33 @@
 **  
 */
 
-#include "pf_Frag_Strux_Section.h"
+#ifdef PT_TEST
+
+#include "ut_types.h"
+#include "ut_test.h"
+#include "ut_debugmsg.h"
+#include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Strux.h"
-
-#define pf_FRAG_STRUX_SECTION_LENGTH 1
 
 /*****************************************************************/
 /*****************************************************************/
 
-pf_Frag_Strux_Section::pf_Frag_Strux_Section(pt_PieceTable * pPT,
-											 PT_AttrPropIndex indexAP)
-	: pf_Frag_Strux(pPT,PTX_Section,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+void PX_ChangeRecord::dump(void) const
 {
+	static const char * name = "????????";
+	
+	switch (m_type)
+	{
+	case PX_ChangeRecord::PXT_GlobMarker:				name = "GlobGlob";	break;
+	case PX_ChangeRecord::PXT_InsertSpan:				name = "InstSpan";	break;
+	case PX_ChangeRecord::PXT_DeleteSpan:				name = "DeleSpan";	break;
+	case PX_ChangeRecord::PXT_ChangeSpan:				name = "ChngSpan";	break;
+	case PX_ChangeRecord::PXT_InsertStrux:				name = "InstStrx";	break;
+	case PX_ChangeRecord::PXT_DeleteStrux:				name = "DeleStrx";	break;
+	case PX_ChangeRecord::PXT_ChangeStrux:				name = "ChngStrx";	break;
+	}
+	
+	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %08lx]\n", name,m_atomic,m_indexAP));
 }
 
-pf_Frag_Strux_Section::~pf_Frag_Strux_Section()
-{
-}
+#endif /* PT_TEST */

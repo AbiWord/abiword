@@ -38,9 +38,3 @@ pf_Frag_Strux_ColumnSet::pf_Frag_Strux_ColumnSet(pt_PieceTable * pPT,
 pf_Frag_Strux_ColumnSet::~pf_Frag_Strux_ColumnSet()
 {
 }
-
-void pf_Frag_Strux_ColumnSet::dump(FILE * fp) const
-{
-	fprintf(fp,"      ColumnSet 0x%08lx api[%ld]\n",
-			(UT_uint32)this,m_indexAP);
-}

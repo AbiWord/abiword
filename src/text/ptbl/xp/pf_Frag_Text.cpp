@@ -85,27 +85,3 @@ void pf_Frag_Text::adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength)
 	m_bufIndex = bi;
 	m_length = newLength;
 }
-
-void pf_Frag_Text::dump(FILE * fp) const
-{
-#ifdef UT_DEBUG
-	fprintf(fp,"      TextFragment 0x%08lx b[%08lx,%ld] api[%08lx]\n",
-			(UT_uint32)this,m_bufIndex,m_length,m_indexAP);
-
-	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
-	char c;
-	UT_uint32 k;
-
-	fprintf(fp,"\t[");
-	for (k=0; k<m_length; k++)
-	{
-		// note: this is a cheap unicode to ascii conversion for
-		// note: debugging purposes only.
-		c = (  ((ptr[k] < 20) || (ptr[k] > 0x7f))
-			   ? '@'
-			   : (char)ptr[k]);
-		fprintf(fp,"%c",c);
-	}
-	fprintf(fp,"]\n");
-#endif
-}

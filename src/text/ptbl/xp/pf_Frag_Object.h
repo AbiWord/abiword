@@ -37,7 +37,9 @@ public:
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
 
-	virtual void			dump(FILE * fp) const;
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
 
 protected:
 	

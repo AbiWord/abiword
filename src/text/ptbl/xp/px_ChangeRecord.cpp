@@ -146,23 +146,3 @@ UT_Byte PX_ChangeRecord::getRevFlags(void) const
 		return 0;
 	}
 }
-	
-void PX_ChangeRecord::dump(void) const
-{
-#ifdef UT_DEBUG
-	static const char * name = "????????";
-	
-	switch (m_type)
-	{
-	case PX_ChangeRecord::PXT_GlobMarker:				name = "GlobGlob";	break;
-	case PX_ChangeRecord::PXT_InsertSpan:				name = "InstSpan";	break;
-	case PX_ChangeRecord::PXT_DeleteSpan:				name = "DeleSpan";	break;
-	case PX_ChangeRecord::PXT_ChangeSpan:				name = "ChngSpan";	break;
-	case PX_ChangeRecord::PXT_InsertStrux:				name = "InstStrx";	break;
-	case PX_ChangeRecord::PXT_DeleteStrux:				name = "DeleStrx";	break;
-	case PX_ChangeRecord::PXT_ChangeStrux:				name = "ChngStrx";	break;
-	}
-	
-	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %08lx]\n", name,m_atomic,m_indexAP));
-#endif
-}

@@ -46,7 +46,9 @@ public:
 	
 	pf_Frag *				getFirst(void) const;
 
-	void					dump(FILE * fp) const;
+#ifdef PT_TEST
+	void					__dump(FILE * fp) const;
+#endif
 	
 protected:
 	pf_Frag *				m_pFirst;

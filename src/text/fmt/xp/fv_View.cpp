@@ -1190,7 +1190,7 @@ void FV_View::Test_Dump(void)
 
 	sprintf(buf,"dump.buffer.%d",x);
 	FILE * fpDump = fopen(buf,"w");
-	m_pDoc->dump(fpDump);
+	m_pDoc->__dump(fpDump);
 	fclose(fpDump);
 
 #ifdef POSTSCRIPT	// Test_Dump

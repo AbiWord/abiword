@@ -10,7 +10,7 @@
 ** implied. See the License for the specific language governing
 ** rights and limitations under the License. 
 ** 
-** The Original Code is AbiWord.
+** The Original Code is AbiSource Utilities.
 ** 
 ** The Initial Developer of the Original Code is AbiSource, Inc.
 ** Portions created by AbiSource, Inc. are Copyright (C) 1998 AbiSource, Inc. 
@@ -20,28 +20,16 @@
 **  
 */
 
-#ifndef PF_FRAG_STRUX_COLUMNSET_H
-#define PF_FRAG_STRUX_COLUMNSET_H
+#include "ut_test.h"
 
-#include "ut_types.h"
-#include "pf_Frag.h"
-#include "pf_Frag_Strux.h"
-class pt_PieceTable;
-
-// pf_Frag_Strux_ColumnSet represents structure information for a 
-// ColumnSet.  This is part of the column information for a section;
-// that is, the number of columns on a page and their shapes.
-
-class pf_Frag_Strux_ColumnSet : public pf_Frag_Strux
+const char * UT_TestStatus_GetMessage(UT_TestStatus status)
 {
-public:
-	pf_Frag_Strux_ColumnSet(pt_PieceTable * pPT,
-							PT_AttrPropIndex indexAP);
-	virtual ~pf_Frag_Strux_ColumnSet();
-	
-#ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
-#endif
-};
+	switch (status)
+	{
+	case UT_Test_SystemError:	return "Error";
+	case UT_Test_Fail:			return "Fail";
+	case UT_Test_Pass:			return "Pass";
+	default:					return "Bogus";
+	}
+}
 
-#endif /* PF_FRAG_STRUX_COLUMNSET_H */

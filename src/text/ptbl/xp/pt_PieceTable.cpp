@@ -460,11 +460,3 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	
 	return UT_FALSE;
 }
-
-void pt_PieceTable::dump(FILE * fp) const
-{
-	fprintf(fp,"  PieceTable: State %d\n",(int)m_pts);
-	fprintf(fp,"  PieceTable: Fragments:\n");
-
-	m_fragments.dump(fp);
-}

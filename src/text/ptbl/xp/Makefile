@@ -54,14 +54,17 @@ RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
 CPPSRCS=		pd_Document.cpp			\
+			pd_Document_TestRoutines.cpp	\
 			pf_Frag.cpp			\
 			pf_Frag_Strux.cpp		\
 			pf_Frag_Strux_Block.cpp		\
 			pf_Frag_Strux_Column.cpp	\
 			pf_Frag_Strux_ColumnSet.cpp	\
 			pf_Frag_Strux_Section.cpp	\
+			pf_Frag_TestRoutines.cpp	\
 			pf_Frag_Text.cpp		\
 			pf_Fragments.cpp		\
+			pf_Fragments_TestRoutines.cpp	\
 			pp_AttrProp.cpp			\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
@@ -76,6 +79,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pt_PieceTable_InsertStrux.cpp	\
 			pt_PieceTable_Listener.cpp	\
 			pt_PieceTable_TempFmt.cpp	\
+			pt_PieceTable_TestRoutines.cpp	\
 			pt_PieceTable_Undo.cpp		\
 			pt_VarSet.cpp			\
 			px_ChangeHistory.cpp		\
@@ -83,9 +87,11 @@ CPPSRCS=		pd_Document.cpp			\
 			px_ChangeRecord_Span.cpp	\
 			px_ChangeRecord_SpanChange.cpp	\
 			px_ChangeRecord_Strux.cpp	\
-			px_ChangeRecord_StruxChange.cpp
+			px_ChangeRecord_StruxChange.cpp	\
+			px_ChangeRecord_TestRoutines.cpp
 
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
+
+INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG -DPT_TEST
 
 LIBRARY_NAME=		AbiDocStrux
 LIBRARY_VERSION=	$(ABI_VERSION)

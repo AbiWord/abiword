@@ -78,10 +78,3 @@ UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 	UT_ASSERT(0);
 	return UT_TRUE;
 }
-
-void pf_Frag::dump(FILE * fp) const
-{
-#ifdef UT_DEBUG
-	fprintf(fp,"      BaseDump 0x%08lx type[%d]\n",(UT_uint32)this,m_type);
-#endif
-}

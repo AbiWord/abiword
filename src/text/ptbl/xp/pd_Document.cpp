@@ -184,16 +184,6 @@ void PD_Document::setClean(void)
 	m_bDirty = UT_FALSE;
 }
 
-void PD_Document::dump(FILE * fp) const
-{
-	fprintf(fp,"Dump for %s:\n",m_szFilename);
-	fprintf(fp,"  Document is %s\n",((m_bDirty) ? "DIRTY" : "CLEAN"));
-	
-	if (m_pPieceTable)
-		m_pPieceTable->dump(fp);
-	
-}
-
 UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
 								  UT_UCSChar * p,
 								  UT_uint32 length)

@@ -38,9 +38,3 @@ pf_Frag_Strux_Column::pf_Frag_Strux_Column(pt_PieceTable * pPT,
 pf_Frag_Strux_Column::~pf_Frag_Strux_Column()
 {
 }
-
-void pf_Frag_Strux_Column::dump(FILE * fp) const
-{
-	fprintf(fp,"      Column 0x%08lx api[%ld]\n",
-			(UT_uint32)this,m_indexAP);
-}

@@ -32,6 +32,7 @@ EXPORT_HEADERS=		ut_assert.h		\
 			ut_pool.h		\
 			ut_stack.h		\
 			ut_string.h		\
+			ut_test.h		\
 			ut_timer.h		\
 			ut_types.h		\
 			ut_units.h		\
@@ -48,6 +49,7 @@ CPPSRCS=		ut_growbuf.cpp		\
 			ut_pool.cpp		\
 			ut_stack.cpp		\
 			ut_string.cpp		\
+			ut_test.cpp		\
 			ut_timer.cpp		\
 			ut_units.cpp		\
 			ut_vector.cpp

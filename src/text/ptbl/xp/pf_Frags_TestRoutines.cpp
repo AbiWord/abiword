@@ -20,28 +20,23 @@
 **  
 */
 
-#ifndef PF_FRAG_STRUX_COLUMNSET_H
-#define PF_FRAG_STRUX_COLUMNSET_H
+#ifdef PT_TEST
 
 #include "ut_types.h"
+#include "ut_test.h"
+#include "ut_assert.h"
+#include "pf_Fragments.h"
 #include "pf_Frag.h"
-#include "pf_Frag_Strux.h"
-class pt_PieceTable;
 
-// pf_Frag_Strux_ColumnSet represents structure information for a 
-// ColumnSet.  This is part of the column information for a section;
-// that is, the number of columns on a page and their shapes.
+/*****************************************************************/
+/*****************************************************************/
 
-class pf_Frag_Strux_ColumnSet : public pf_Frag_Strux
+void pf_Fragments::__dump(FILE * fp) const
 {
-public:
-	pf_Frag_Strux_ColumnSet(pt_PieceTable * pPT,
-							PT_AttrPropIndex indexAP);
-	virtual ~pf_Frag_Strux_ColumnSet();
-	
-#ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
-#endif
-};
+	pf_Frag * p;
 
-#endif /* PF_FRAG_STRUX_COLUMNSET_H */
+	for (p=m_pFirst; (p); p=p->getNext())
+		p->__dump(fp);
+}
+
+#endif /* PT_TEST */

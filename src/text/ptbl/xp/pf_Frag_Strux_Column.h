@@ -40,7 +40,9 @@ public:
 						 PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_Column();
 
-	virtual void			dump(FILE * fp) const;
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
 };
 
 #endif /* PF_FRAG_STRUX_COLUMN_H */

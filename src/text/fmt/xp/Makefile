@@ -62,7 +62,7 @@ CPPSRCS=		fv_View.cpp		\
 			fp_Run.cpp			\
 			fp_SectionSlice.cpp
 
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
+INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG -DPT_TEST
 
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)

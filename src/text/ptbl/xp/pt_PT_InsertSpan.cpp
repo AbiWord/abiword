@@ -132,23 +132,23 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		UT_ASSERT(0);
 		return UT_FALSE;
 
+	case pf_Frag::PFT_EndOfDoc:
 	case pf_Frag::PFT_Strux:
 		// if the position they gave us is the position of a strux
 		// we probably need to re-interpret it slightly.  inserting
 		// prior to a paragraph should probably be interpreted as
-		// appending to the previous paragraph.
+		// appending to the previous paragraph.  likewise, if they
+		// gave us the EOD marker, we probably want to try to append
+		// previous text fragment.
 
-		if (pf->getPrev()->getType() == pf_Frag::PFT_Text)
+		if (pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
 		{
 			pft = static_cast<pf_Frag_Text *>(pf->getPrev());
 			fragOffset = pft->getLength();
 			break;
 		}
-		//FALLTHRU INTENDED
 
-	case pf_Frag::PFT_EndOfDoc:
-
-		// empty paragraphs don't *have* anything to append to
+		// otherwise, we will just insert it before us.
 		fragOffset = 0;
 		break;
 		

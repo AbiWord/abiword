@@ -111,11 +111,3 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	if (m_pLast == pf)
 		m_pLast = pp;
 }
-
-void pf_Fragments::dump(FILE * fp) const
-{
-	pf_Frag * p;
-
-	for (p=m_pFirst; (p); p=p->getNext())
-		p->dump(fp);
-}

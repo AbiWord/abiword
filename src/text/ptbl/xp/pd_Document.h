@@ -39,6 +39,12 @@ class PP_AttrProp;
 class pf_Frag_Strux;
 class PX_ChangeRecord;
 
+#ifdef PT_TEST
+#include "ut_test.h"
+#endif
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 // PD_Document is the representation for a document.
 
 class PD_Document
@@ -117,7 +123,9 @@ public:
 
 	void					clearTemporarySpanFmt(void);
 
-	void					dump(FILE * fp) const;
+#ifdef PT_TEST
+	void					__dump(FILE * fp) const;
+#endif
 	
 protected:
 	const char *			m_szFilename;

@@ -49,7 +49,9 @@ public:
 	void					changeLength(UT_uint32 newLength);
 	void					adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength);
 	
-	virtual void			dump(FILE * fp) const;
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
 
 protected:
 	PT_BufIndex				m_bufIndex;

@@ -34,7 +34,12 @@
 class pf_Frag_Text;
 class pf_Frag_Strux;
 
+#ifdef PT_TEST
+#include "ut_test.h"
+#endif
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 // pt_PieceTable implements a "Piece Table" as described/suggested
 // by .../dev/design/PieceTable.html
 
@@ -117,7 +122,10 @@ public:
 	
 	// TODO add stuff for objects like in-line images.
 
-	void					dump(FILE * fp) const;
+#ifdef PT_TEST
+	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
+	void					__dump(FILE * fp) const;
+#endif /* PT_TEST */
 	
 protected:
 
