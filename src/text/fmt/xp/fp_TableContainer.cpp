@@ -707,12 +707,9 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 		if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
 		{
 //
-// Draw the top of the cell if the cell starts on this page.
+// Always draw the top of the cell.
 //
-				if(i == 0)
-				{
-					m_bDrawTop = true;
-				}
+			m_bDrawTop = true;
 			bStart = true;
 			pContainer->draw(&da);
 		}
@@ -2450,9 +2447,23 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
 	fp_CellContainer * pCell = (fp_CellContainer *) getMasterTable()->getNthCon(0);
 	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
+	fp_TableContainer *pMaster = getMasterTable();
 	while(pCell)
 	{
-		if((pCell->getY() > getYBottom()) || ((pCell->getY() + pCell->getHeight()) < getYBreak()) )
+		UT_sint32 botY = 0;
+		if(pCell->getBottomAttach() < pMaster->getNumRows())
+		{
+			botY = pMaster->getYOfRow(pCell->getBottomAttach());
+		}
+		else
+		{
+			fp_VerticalContainer * pVert = (fp_VerticalContainer *) pMaster;
+			botY = pMaster->getYOfRow(0) + pVert->getHeight();
+			botY -= (UT_sint32) (2.0 * SCALE_TO_SCREEN * ((double) pMaster->getBorderWidth()));
+			botY +=  pMaster->getNthRow(pMaster->getNumRows()-1)->spacing/2;
+		}
+
+		if((pCell->getY() > getYBottom()) || (botY < getYBreak()) )
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 			pCell = (fp_CellContainer *) pCell->getNext();
