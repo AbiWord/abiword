@@ -1385,7 +1385,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 #endif
 	}
 
-	const XML_Char * pszFootnoteLine;
+	const XML_Char * pszFootnoteLine = NULL;
 	pSectionAP->getProperty("section-footnote-line-thickness", (const XML_Char *&)pszFootnoteLine);
 	if (pszFootnoteLine && pszFootnoteLine[0])
 	{
