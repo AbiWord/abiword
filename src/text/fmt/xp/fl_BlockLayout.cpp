@@ -2799,22 +2799,24 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
     // Just use the initial offset from the provided pPOB - the word's
     // exact location/length is not known (since what we're provided
     // is just the editing limits).
-    fl_BlockSpellIterator* pWordIterator = new fl_BlockSpellIterator(this, pPOB->getOffset());
+    fl_BlockSpellIterator wordIterator(this, pPOB->getOffset());
 
 	const UT_UCSChar* pWord;
 	UT_sint32 iLength, iBlockPos;
 
-	if (pWordIterator->nextWordForSpellChecking(pWord, iLength, iBlockPos))
+    // The word iterator may be unable to find a word within the
+    // editing limits provided by the pPOB - so check that before
+    // continuing.
+    if (wordIterator.nextWordForSpellChecking(pWord,
+                                              iLength, iBlockPos)
+        && (iBlockPos+iLength <= pPOB->getOffset()+pPOB->getLength()))
     {
-        // The found word must be within the editing limits provided
-        UT_ASSERT(pPOB->getOffset() <= iBlockPos);
-        UT_ASSERT(pPOB->getLength() >= iLength);
         delete pPOB;
 
-		fl_PartOfBlock* pNewPOB = new fl_PartOfBlock(iBlockPos, iLength);
-		UT_ASSERT(pNewPOB);
+        fl_PartOfBlock* pNewPOB = new fl_PartOfBlock(iBlockPos, iLength);
+        UT_ASSERT(pNewPOB);
             
-		return _doCheckWord(pNewPOB, pWord );
+        return _doCheckWord(pNewPOB, pWord );
     }
 
 	// Delete the POB which is not longer needed
