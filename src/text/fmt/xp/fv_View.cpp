@@ -809,6 +809,39 @@ void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_
 	notifyListeners(AV_CHG_MOTION);
 }
 
+
+void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * properties[])
+{
+	bool bRet;
+	setCursorWait();
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	if(isHdrFtrEdit())
+	{
+		clearHdrFtrEdit();
+		warpInsPtToXY(0,0,false);
+	}
+	fl_FrameLayout * pFrame = getFrameLayout();
+	if(pFrame == NULL)
+	{
+		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+	}
+	PT_DocPosition posStart = pFrame->getPosition(true)+1;
+	PT_DocPosition posEnd = posStart;
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_SectionFrame);
+
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+
+	_ensureInsertionPointOnScreen();
+	clearCursorWait();
+	notifyListeners(AV_CHG_MOTION);
+}
+
 void FV_View::dragFrame(UT_sint32 x, UT_sint32 y)
 {
 	m_FrameEdit.mouseDrag(x,y);
@@ -2060,11 +2093,26 @@ PT_DocPosition FV_View::mapDocPos( FV_DocPos dp ) {
 PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 {
 	const char * dataId;
-	PT_DocPosition pos = getSelectedImage(&dataId);
+	PT_DocPosition pos = 0;
+	if(m_prevMouseContext == EV_EMC_POSOBJECT)
+	{
+		fl_FrameLayout * pFrame = getFrameLayout();
+		const PP_AttrProp* pAP = NULL;
+		pFrame->getAP(pAP);
+		if(pAP == NULL)
+		{
+			return 0;
+		}
+		bool bFoundDataID = pAP->getAttribute(PT_STRUX_IMAGE_DATAID, dataId);
+		pos = pFrame->getPosition();
+	}
+	else
+	{
+		pos = getSelectedImage(&dataId);
 
 	// if nothing selected or selection not an image
-	if (pos == 0) return 0;
-
+		if (pos == 0) return 0;
+	}
 	if ( m_pDoc->getDataItemDataByName ( dataId, pBytes, NULL, NULL ) )
 	  {
 		return pos ;
@@ -8612,6 +8660,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
 	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+	xxx_UT_DEBUGMSG(("Current Pos %d \n",pos));
 //
 // Look if we're inside a frame
 //
@@ -8621,6 +8670,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 // Handle case of an image only as a backdrop to a frame. Then the frame
 // has no content.
 //
+		xxx_UT_DEBUGMSG(("In Frame \n"));
 		if(m_pDoc->isFrameAtPos(pos))
 		{
 			PL_StruxFmtHandle psfh = NULL;
@@ -8631,6 +8681,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
 			{
 				m_prevMouseContext = EV_EMC_POSOBJECT;;
+				xxx_UT_DEBUGMSG(("Over positioned object \n"));
 				return EV_EMC_POSOBJECT;;
 			}
 		}

@@ -386,6 +386,7 @@ public:
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos);
 	fl_FrameLayout * getFrameLayout(void);
 	void            setFrameFormat(const XML_Char ** props);
+	void            setFrameFormat(const XML_Char ** attribs, const XML_Char ** props);
 	void            setFrameFormat(const XML_Char ** props,FG_Graphic * pFG, UT_String & dataID);
 	void            convertInLineToPositioned(PT_DocPosition pos, 
 											const XML_Char ** attribs);

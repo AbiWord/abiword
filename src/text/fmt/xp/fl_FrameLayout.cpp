@@ -700,7 +700,10 @@ void fl_FrameLayout::format(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
-		pBL->setFramesOnPage(NULL);
+		if(!pBL->isCollapsed())
+		{
+		  pBL->setFramesOnPage(NULL);
+		}
 	}
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;

@@ -195,6 +195,7 @@ public:
 	static EV_EditMethod_Fn cursorImageSize;
 	static EV_EditMethod_Fn cursorTOC;
 
+	static EV_EditMethod_Fn contextPosObject;
 	static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
@@ -450,6 +451,7 @@ public:
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
 	static EV_EditMethod_Fn dlgFmtImage;
+	static EV_EditMethod_Fn dlgFmtPosImage;
 	static EV_EditMethod_Fn dlgHdrFtr;
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgBackground;
@@ -749,6 +751,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextImage), 0, ""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
+	EV_EditMethod(NF(contextPosObject), 0, ""),
 	EV_EditMethod(NF(contextRevision),	    0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
@@ -800,6 +803,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgColorPickerFore),	0,	""),
 	EV_EditMethod(NF(dlgColumns),			0,	""),
 	EV_EditMethod(NF(dlgFmtImage), 			0, ""),
+	EV_EditMethod(NF(dlgFmtPosImage), 			0, ""),
 	EV_EditMethod(NF(dlgFont),				0,	""),
 	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
@@ -4301,6 +4305,16 @@ Defun(contextImage)
 		pView->extSelHorizontal (true, 1);
 	  }
 	return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+
+Defun(contextPosObject)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	return s_doContextMenu(EV_EMC_POSOBJECT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextHyperlink)
@@ -9563,6 +9577,181 @@ Defun1(dlgBorders)
 	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
 	return true;
 }
+
+Defun (dlgFmtPosImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_Image * pDialog
+		= static_cast<XAP_Dialog_Image *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
+	UT_return_val_if_fail(pDialog, false);
+	fl_FrameLayout * pPosObj = pView->getFrameLayout();
+	if(pPosObj == NULL)
+	{
+	  return true;
+	}
+	if(pPosObj-> getFrameType() < FL_FRAME_WRAPPER_IMAGE)
+	{
+	  return true;
+	}
+	const PP_AttrProp* pAP = NULL;
+	pPosObj->getAP(pAP);
+	const XML_Char* szTitle = 0;
+	const XML_Char* szDescription = 0;
+	pDialog->setInHdrFtr(false);
+	const char * pszRulerUnits = NULL;
+	UT_Dimension dim = DIM_IN;
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
+	{
+		dim = UT_determineDimension(const_cast<char *>(pszRulerUnits));
+	}
+	pDialog->setPreferedUnits(dim);
+
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	// an approximate... TODO: make me more accurate
+	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
+	UT_sint32 iColWidth = pDSL->getActualColumnWidth();
+	UT_sint32 iColHeight = pDSL->getActualColumnHeight();
+	double max_width  = 0.95*iColWidth*72.0/UT_LAYOUT_RESOLUTION; // units are 1/72 of an inch
+	double max_height = 0.95*iColHeight*72.0/UT_LAYOUT_RESOLUTION;
+
+	pDialog->setMaxWidth (max_width);
+	pDialog->setMaxHeight (max_height);
+
+	if (pAP) 
+	{
+	  pAP->getAttribute ("title", szTitle);
+	  pAP->getAttribute ("alt", szDescription);
+	}
+
+	if (szTitle) 
+	{
+	  char * title = UT_XML_Decode (szTitle);
+	  pDialog->setTitle (title);
+	  FREEP(title);
+	}
+	if (szDescription) 
+	{
+	  char * description = UT_XML_Decode (szDescription);
+	  pDialog->setDescription (description);
+	  FREEP(description);
+	}
+	const XML_Char * pszWidth = NULL;
+	const XML_Char * pszHeight = NULL;
+	if(!pAP || !pAP->getProperty("frame-width",pszWidth))
+	{
+	  pszWidth = "1.0in";
+	}
+	pDialog->setWidth(pszWidth);
+	if(!pAP || !pAP->getProperty("frame-height",pszHeight))
+	{
+	  pszHeight = "1.0in";
+	}
+	pDialog->setHeight(pszHeight);
+	UT_DEBUGMSG(("Width %s Height %s \n",pszWidth,pszHeight));
+	WRAPPING_TYPE iWrap = WRAP_TEXTRIGHT;
+	if(pPosObj->getFrameWrapMode() == FL_FRAME_WRAPPED_TO_LEFT  )
+	{
+	  iWrap = WRAP_TEXTLEFT;
+	}
+	else if(pPosObj->getFrameWrapMode() == FL_FRAME_WRAPPED_BOTH_SIDES)
+	{
+	  iWrap = WRAP_TEXTBOTH;
+	} 
+	else if(pPosObj->getFramePositionTo() == FL_FRAME_POSITIONED_INLINE)
+	{
+	  iWrap = WRAP_INLINE;
+	}
+	POSITION_TO iPos = POSITION_TO_PARAGRAPH;
+	if(pPosObj->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN)
+	{
+	  iPos = POSITION_TO_COLUMN;
+	}
+	else if(pPosObj->getFramePositionTo() == FL_FRAME_POSITIONED_TO_PAGE)
+	{
+	  iPos = POSITION_TO_PAGE;
+	}
+	pDialog->setWrapping( iWrap);
+	pDialog->setPositionTo( iPos);
+	pDialog->runModal(pFrame);
+	
+	XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_Image::a_OK);
+	if(!bOK)
+	{
+	  return true;
+	}
+	if(pDialog->getWrapping() == WRAP_INLINE)
+	{
+	  // !! Have to convert back to inline!
+	}
+	else
+	{
+	  UT_String sWidth;
+	  UT_String sHeight;
+	  POSITION_TO newFormatMode = pDialog->getPositionTo(); 
+	  WRAPPING_TYPE newWrapMode = pDialog->getWrapping();
+	  const XML_Char * properties[] = {"frame-width", NULL, 
+					   "frame-height", NULL, 
+					   "wrap-mode",NULL,
+					   "position-to",NULL,0};
+
+	  sWidth = pDialog->getWidthString();
+	  sHeight = pDialog->getHeightString();
+	  UT_DEBUGMSG(("Width %s Height %s \n",sWidth.c_str(),sHeight.c_str()));
+	  properties[1] = sWidth.c_str();
+	  properties[3] = sHeight.c_str();
+	  if(newWrapMode == WRAP_TEXTRIGHT)
+	  {
+	    properties[5] = "wrapped-to-right";
+	  }
+	  else if(newWrapMode == WRAP_TEXTLEFT)
+	  {
+	    properties[5] = "wrapped-to-left";
+	  }
+	  else if(newWrapMode == WRAP_TEXTBOTH)
+	  {
+	    properties[5] = "wrapped-both";
+	  }
+	  if(newFormatMode == POSITION_TO_PARAGRAPH)
+	  {
+	    properties[7] = "block-above-text";
+	  }
+	  else if(newFormatMode == POSITION_TO_COLUMN)
+	  {
+	    properties[7] = "column-above-text";
+	  }
+	  else if(newFormatMode == POSITION_TO_PAGE)
+	  {
+	    properties[7] = "page-above-text";
+	  }
+
+	  UT_UTF8String title (pDialog->getTitle());
+	  UT_UTF8String description (pDialog->getDescription());
+
+	  title.escapeXML();
+	  description.escapeXML();
+
+	  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
+	  attribs[1] = title.utf8_str();
+	  attribs[3] = description.utf8_str();
+	  //
+	  // Change the frame!
+	  //
+	  pView->setFrameFormat(attribs,properties);
+	}
+	return true;
+}
+
 
 Defun(dlgFmtImage)
 {
