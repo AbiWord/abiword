@@ -627,7 +627,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 			return;
 		}
 		
-		char ch = 0;
+		signed char ch = 0;
 		while ((ch = unixfont->getPFAChar()) != EOF)
 			m_ps->writeBytes((UT_Byte *) &ch, 1);
 
