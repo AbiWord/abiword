@@ -1716,13 +1716,6 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		{
 			pContainer->setY(iY);
 		}
-		else
-		{
-//
-// FIXME: Dirty hack to clip.
-//
-//			pContainer->setY(-1000000);
-		}
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 	}
@@ -1743,7 +1736,7 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		fl_DocSectionLayout * pDSL = pHFSL->getDocSectionLayout();
 		bool bHdrFtr = (pHFSL->getHFType() <= FL_HDRFTR_HEADER_LAST);
 
-		pDSL->setHdrFtrHeightChange(bHdrFtr,iNewHeight+10);
+		pDSL->setHdrFtrHeightChange(bHdrFtr,iNewHeight+getGraphics()->tlu(3));
 	}
 }
 

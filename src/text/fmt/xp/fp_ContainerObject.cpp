@@ -275,8 +275,19 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 		}
 		else
 		{
-			fp_Column * pColumn = static_cast<fp_Column *>(pColumnC);
-			pDSL = pColumn->getDocSectionLayout();
+			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pColumnC->getSectionLayout());
+			if(pSL->getContainerType() == FL_CONTAINER_HDRFTR)
+			{
+				pDSL = static_cast<fl_HdrFtrSectionLayout *>(pSL)->getDocSectionLayout();
+			}
+			else if(pSL->getContainerType() == FL_CONTAINER_SHADOW)
+			{
+				pDSL = static_cast<fl_DocSectionLayout *>(static_cast<fl_HdrFtrShadow *>(pSL)->getSectionLayout());
+			}
+			else
+			{
+				pDSL = pSL->getDocSectionLayout();
+			}
 		}
 	}
 	else
