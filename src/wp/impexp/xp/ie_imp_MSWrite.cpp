@@ -116,8 +116,9 @@ bool IE_Imp_MSWrite_Sniffer::recognizeContents(const char * szBuf,
 {
     if ( iNumbytes > 8 )
     {
-        if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
-             szBuf[2] == (char)0 && szBuf[3] == (char)0 )
+        if ( (szBuf[0] == (char)0x31 || szBuf[0] == (char)0x32) && 
+             szBuf[1] == (char)0xbe &&
+             szBuf[4] == (char)0 && szBuf[5] == (char)0xab )
         {
             return(true);
         }
@@ -143,7 +144,7 @@ bool	IE_Imp_MSWrite_Sniffer::getDlgLabels(const char ** pszDesc,
 											 const char ** pszSuffixList,
 											 IEFileType * ft)
 {
-    *pszDesc = "MS-Write (.wri)";
+    *pszDesc = "Microsoft Write (.wri)";
     *pszSuffixList = "*.wri";
     *ft = getFileType();
     return true;
@@ -165,13 +166,10 @@ bool	IE_Imp_MSWrite_Sniffer::getDlgLabels(const char ** pszDesc,
 
 void IE_Imp_MSWrite::free_ffntb () 
 {
-    UT_uint32 i;
-	
-    for (i=0; i < wri_fonts_count; i++) {
-		if (wri_fonts[i].name) 
-			free (wri_fonts[i].name);
+    for (UT_uint32 i=0; i < wri_fonts_count; i++) {
+      FREEP(wri_fonts[i].name);
     }
-    free (wri_fonts);
+    FREEP(wri_fonts);
 }
 
 int IE_Imp_MSWrite::read_ffntb () 
@@ -239,14 +237,14 @@ int IE_Imp_MSWrite::read_ffntb ()
 		cbFfn--; 
 		ffn = (char*) malloc (cbFfn);
 		/* we've read the first byte, so we take one of cbFfn */
-		if (cbFfn != fread (ffn, 1, cbFfn, mFile)) {
+		if ((size_t)cbFfn != fread (ffn, 1, cbFfn, mFile)) {
 			perror ("wri_file");
 			return 1;
 		}
 		wri_fonts[font_count].name = ffn;
 		font_count++;
     }
-    if (font_count != wri_fonts_count) {
+    if ((unsigned)font_count != wri_fonts_count) {
 		wri_fonts_count = font_count;
 		UT_DEBUGMSG(("write file lied about number of fonts\n"));
     }
@@ -351,7 +349,7 @@ int IE_Imp_MSWrite::read_pap ()
 				}
 			}
 			
-			/* TODO: indentation and header/footer */
+			/* TODO: header/footer */
 			if (header) {
 				UT_DEBUGMSG(("Headers and footers not supported, skipping...\n")); 
             } else {
@@ -411,7 +409,7 @@ int IE_Imp_MSWrite::read_pap ()
 			}
 			
 			fcFirst = fcLim;
-			if (fcMac == fcLim) 
+			if (fcLim >= fcMac) 
 				return 0;
 		}
     }
@@ -470,7 +468,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 					hpsPos = char_page[bfProp + 10];
 			}
 			
-			if (ftc >= wri_fonts_count) {
+			if ((unsigned)ftc >= wri_fonts_count) {
 				ftc = wri_fonts_count - 1;
 			}
 			
@@ -611,8 +609,8 @@ static const struct wri_struct WRITE_PICTURE[] = {
 
 IE_Imp_MSWrite::~IE_Imp_MSWrite()
 {
-    free_wri_struct (write_file_header);
-	free_wri_struct (write_picture);
+  free_wri_struct (write_file_header);
+  free_wri_struct (write_picture);
 }
 
 
@@ -653,7 +651,8 @@ UT_Error IE_Imp_MSWrite::_parseFile()
 		return UT_ERROR;
     }
     if (wri_struct_value (write_file_header, "wTool") != 0125400) {
-		UT_DEBUGMSG(("wTool wrong, trying anyways ... \n"));
+		UT_DEBUGMSG(("Not a write file!\n"));
+		return UT_ERROR;
     }
     size = wri_struct_value (write_file_header, "fcMac") - 0x80;
     thetext = (UT_Byte*) malloc (size);
@@ -744,9 +743,10 @@ int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size)
     png_structp png_ptr;
     png_infop info_ptr;
     png_byte **rows;
-#endif
     int height, width, width_bytes, i;
     struct wri_image *img, **imgs;
+#endif
+    int mm;
 	
     if (size < 40) {
 		UT_DEBUGMSG(("Paragraph too small for object\n"));
@@ -755,9 +755,15 @@ int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size)
 	
     read_wri_struct_mem (write_picture, data);
     /*dump_wri_struct (write_picture);*/
-	
-    if (wri_struct_value (write_picture, "mm") == 0xe3) {
-		/* this is a picture */
+
+    mm = wri_struct_value (write_picture, "mm");
+
+    if (mm == 0x88) { /* this is a wmf file */
+
+	/* note from (data + 40) to (size - 49) there is the 
+	   metafile; xExt and yExt contain the size in inch 
+	   (divide by 1440.)) */
+    } else if (mm == 0xe3) { /* this is a picture */
 #if 0
 		if (wri_struct_value (write_picture, "bmPlanes") != 1) {
 			UT_DEBUGMSG(("Only one bitplane supported, please send this "
@@ -826,7 +832,7 @@ int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size)
 		wri_ole_read (data, size, mFile);
     }
 	
- err:
+ //err:
     free_wri_struct (write_picture);
 	
     return 0;

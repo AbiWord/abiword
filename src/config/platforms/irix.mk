@@ -102,5 +102,7 @@ ABI_FE		= Unix
 ABIPKGDIR       = irix 
 PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
+EXTRA_LIBS += -liconv
+
 # End of irix defs
 

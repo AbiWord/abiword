@@ -543,7 +543,6 @@ dcl(DLG_InsertBookmark_Msg, "Type a name for the bookmark, or select existing on
 dcl(DLG_InsertHyperlink_Title, "Insert Hyperlink")
 dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list.")
 
-
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")
 

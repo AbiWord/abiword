@@ -13,6 +13,11 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
+// for a silly messagebox
+#include <stdio.h>
+#include "xap_Frame.h"
+#include "xap_Strings.h"
+
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
 /***************************************************************************/
@@ -302,6 +307,21 @@ static const Ispell2Lang_t m_mapping[] = {
   { "svenska.hash",    "sv-SE" }
 };
 
+static void couldNotLoadDictionary ( const char * szLang )
+{
+  XAP_App             * pApp   = XAP_App::getApp ();
+  XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
+  const XAP_StringSet * pSS    = pApp->getStringSet ();
+
+  char buf[1024]; // evil hardcoded buffer size
+  const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
+  snprintf(buf, 1024, text, szLang);
+
+  pFrame->showMessageBox (buf,
+			  XAP_Dialog_MessageBox::b_O,
+			  XAP_Dialog_MessageBox::a_OK);
+}
+
 bool
 ISpellChecker::requestDictionary(const char *szLang)
 {
@@ -319,7 +339,7 @@ ISpellChecker::requestDictionary(const char *szLang)
 	  }
 
 	if (hashname == NULL) {
-	  UT_DEBUGMSG(("DOM: dictionary for lang:%s not found\n", szLang));
+	  couldNotLoadDictionary ( szLang );
 	  return false;
 	}
 
@@ -328,10 +348,9 @@ ISpellChecker::requestDictionary(const char *szLang)
 #endif
     if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
     {
-        /* TODO gripe -- could not load the dictionary */
-      UT_DEBUGMSG(("DOM: could not load dictionary (%s, %s)\n", hashname, szLang));
-        FREEP(hashname);
-        return false;
+      couldNotLoadDictionary ( szLang );
+      FREEP(hashname);
+      return false;
     }
 
     UT_DEBUGMSG(("DOM: loaded dictionary (%s %s)\n", hashname, szLang));

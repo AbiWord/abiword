@@ -167,6 +167,8 @@ dcl(DLG_PLUGIN_MANAGER_AUTHOR,          "Author")
 dcl(DLG_PLUGIN_MANAGER_VERSION,         "Version")
 dcl(DLG_PLUGIN_MANAGER_DETAILS,         "Plugin Details")
 
+dcl(DICTIONARY_CANTLOAD, "Could not load the ispell dictionary for the %s language")
+
 /* plugin error messages */
 dcl(DLG_PLUGIN_MANAGER_COULDNT_LOAD,    "Could not activate/load plugin")
 dcl(DLG_PLUGIN_MANAGER_COULDNT_UNLOAD,  "Could not deactivate plugin") 
