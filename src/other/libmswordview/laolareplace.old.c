@@ -157,7 +157,7 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
        fprintf(erroroutput,"1 ===========> Input file has faulty OLE format\n");
     return 5;
      }
-     num_bbd_blocks=(S32)LongInt(Block+0x2c);
+     num_bbd_blocks=(S32)LongInt((unsigned char*)Block+0x2c);
 	 if ((num_bbd_blocks == 0) || (num_bbd_blocks < 0))
 		{
        	fprintf(erroroutput,"2 ===========> Input file has ridiculous bbd, mem for the depot was %d\n",512*num_bbd_blocks);
@@ -170,8 +170,8 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
 		return(5);
 		}
      s = BDepot;
-     root_list[0]=LongInt(Block+0x30);
-     sbd_list[0]=(S16)LongInt(Block+0x3c);
+     root_list[0]=LongInt((unsigned char*)Block+0x30);
+     sbd_list[0]=(S16)LongInt((unsigned char*)Block+0x3c);
     if(debug) fprintf(erroroutput,"num_bbd_blocks %d, root start %d, sbd start %d\n",num_bbd_blocks,root_list[0],sbd_list[0]);
 	temppos = ftell(input);
 	fseek(input,0,SEEK_END);
@@ -186,7 +186,7 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
 			fprintf(erroroutput,"2.1 ===========> Input file has faulty bbd\n");
 			return 5;
 			}
-       	FilePos = 512*(LongInt(Block+0x4c+(i*4))+1);
+       	FilePos = 512*(LongInt((unsigned char*)Block+0x4c+(i*4))+1);
 		if (FilePos > fullen)
 			{
 			fprintf(erroroutput,"2.2 ===========> Input file has faulty bbd\n");
@@ -205,7 +205,7 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
      for(len=1;len<MAXBLOCKS;len++)
 	 	{
 		if (((sbd_list[len-1]*4) < (512*num_bbd_blocks))  && ((sbd_list[len-1]*4) > 0))
-			sbd_list[len] = LongInt(BDepot+(sbd_list[len-1]*4));
+			sbd_list[len] = LongInt((unsigned char*)BDepot+(sbd_list[len-1]*4));
 		else
 			{
          	fprintf(erroroutput,"3 ===========> Input file has faulty OLE format\n");
@@ -238,7 +238,7 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
          	fprintf(erroroutput,"3.1 ===========> Input file has faulty OLE format\n");
 			return(5);
 			}
-		root_list[len] = LongInt(BDepot+(root_list[len-1]*4));
+		root_list[len] = LongInt((unsigned char*)BDepot+(root_list[len-1]*4));
 		if(root_list[len]==-2) break;
 		}
      Root = malloc(512*len);
@@ -279,7 +279,7 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
      for(j=0;j<len*4;j++) {
        pps_list[j]->level = -1;
        s = Root+(j*0x80);
-       i=ShortInt(s+0x40);
+       i=ShortInt((unsigned char*)s+0x40);
 	   if (((j*0x80) + i) >= (512 * len))
 	   	{
 		fprintf(erroroutput,"1.1 ===========> probable corrupt ole file\n");
@@ -294,24 +294,24 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
          pps_list[j]->level = 0;
        }
        s+=0x02;
-       linkto = LongInt(s);
+       linkto = LongInt((unsigned char*)s);
        if ((linkto != -1) && (linkto < (len*4)) && (linkto > -1))
 	   	pps_list[j]->previous = pps_list[linkto];
        else pps_list[j]->previous = NULL;
        s+=0x04;
-       linkto = LongInt(s);
+       linkto = LongInt((unsigned char*)s);
        if ((linkto != -1) && (linkto < (len*4)) && (linkto > -1))
 	   	pps_list[j]->next = pps_list[linkto];
        else pps_list[j]->next = NULL;
        s+=0x04;
-       linkto = LongInt(s);
+       linkto = LongInt((unsigned char*)s);
        if ((linkto != -1) && (linkto < (len*4)) && (linkto > -1))
 	   	pps_list[j]->directory = pps_list[linkto];
        else pps_list[j]->directory = NULL;
        s+=0x28;
-       pps_list[j]->start = LongInt(s);
+       pps_list[j]->start = LongInt((unsigned char*)s);
        s+=0x04;
-       pps_list[j]->size = LongInt(s);
+       pps_list[j]->size = LongInt((unsigned char*)s);
      }
 
      /* go through the pps entries, tagging them with level number
@@ -376,7 +376,7 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
            return(5);
          }
          fwrite(Block,bytes,1,OLEfile);
-         pps_start = LongInt(Depot+(pps_start*4));
+         pps_start = LongInt((unsigned char*)Depot+(pps_start*4));
          pps_size -= BlockSize;
          if(pps_size <= 0) pps_start=-2;
        }

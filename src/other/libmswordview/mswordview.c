@@ -136,7 +136,7 @@ int outputbufferlen = 0;
 FlushCallback outputbufferfunc = NULL;
 void * outputbufferdata = NULL;
 
-void _initGlobals(void)
+static void _initGlobals(void)
 {
 	nostyles = 0;
 	key_atrd = NULL;
@@ -4382,7 +4382,7 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 					{
 						if (flag)
 						{
-							len = our_wctomb(target,letter);
+							len = our_wctomb((char*)target,letter);
 							error(erroroutput,"letter3: %x %d",letter,letter);
 							/*
 							  expand this in the ranges that we will have to handle 
@@ -4650,7 +4650,7 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 				{
 					if (flag)
 					{
-						len = our_wctomb(target,letter);
+						len = our_wctomb((char*)target,letter);
 						error(erroroutput,"letter3: %x %d",letter,letter);
 						/*
 						  expand this in the ranges that we will have to handle 
