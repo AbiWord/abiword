@@ -134,6 +134,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pTmpLine(NULL)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
+	pBL->setPrevListLabel(false);
 	m_FillType.setDocLayout(m_pBL->getDocLayout());
 }
 

@@ -181,7 +181,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iAccumulatedHeight(0),
 	  m_pVertContainer(NULL),
 	  m_iLinePosInContainer(0),
-	  m_bForceSectionBreak(false)
+	  m_bForceSectionBreak(false),
+	  m_bPrevListLabel(false)
 
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
@@ -4052,7 +4053,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 			break;
 		}
 	}
-
+	
 	UT_ASSERT(i == len);
 
 	if (bNormal && (iNormalBase < i))
@@ -4368,14 +4369,14 @@ bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
 bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 {
 	fp_Run * pNewRun = NULL;
-	if(!isContainedByTOC())
+	if(!isContainedByTOC() || !m_bPrevListLabel)
 	{
 		pNewRun = new fp_TabRun(this,blockOffset, 1);
 	}
 	else
 	{
 		UT_DEBUGMSG(("Insert dummy in place of TAB at %d \n",blockOffset));
-		pNewRun = new fp_DummyRun(this,0);
+		pNewRun = new fp_DummyRun(this,blockOffset);
 	}
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
@@ -4458,6 +4459,12 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of listlabel at %d \n",blockOffset));
 			_doInsertRun(pDumRun);
 			recalculateFields(0);
+			m_bPrevListLabel = true;
+			//
+			// Might have to put in code here to detect if there is already
+			// a tab run ahead of the list label. If so we replace it
+			// with a dummyrun
+			// fp_Run * pNextRun = pDumRun->getNextRun();
 			return true;
 		}
 	}

@@ -333,7 +333,8 @@ public:
 	// The following is a set of bit flags giving the reason this block is
 	// queued for background checking.	See specific values in fl_DocLayout.h
 	UT_uint32				m_uBackgroundCheckReasons;
-
+	void                    setPrevListLabel(bool b)
+	{ m_bPrevListLabel = b;}
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -451,6 +452,7 @@ protected:
 	fp_VerticalContainer *  m_pVertContainer;
 	UT_sint32               m_iLinePosInContainer;
 	bool                    m_bForceSectionBreak;
+	bool                    m_bPrevListLabel;
 };
 
 /*
