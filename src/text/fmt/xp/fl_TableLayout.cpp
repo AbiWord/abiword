@@ -1335,6 +1335,15 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	{
 		myContainingLayout()->setLastLayout(pPrev);
 	}
+	//
+	// Look to see if we're in a HdrFtr
+	//
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
+		pHFSL->bl_doclistener_deleteTableStrux(this,pcrx);
+	}
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 

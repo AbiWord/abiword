@@ -1332,7 +1332,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	if(count <= 0)
 		return;
 
-	UT_DEBUGMSG(("SEVIOR: Drawing line %x in line pDA, width %d \n",this,getWidth()));
+	xxx_UT_DEBUGMSG(("Drawing line %x in line pDA, width %d \n",this,getWidth()));
 	pDA->yoff += m_iAscent;
 	const UT_Rect* pRect = pDA->pG->getClipRect();
 
@@ -1380,7 +1380,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
+			xxx_UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
 		}
 		da.yoff -= pRun->getY();
 	}
