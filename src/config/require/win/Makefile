@@ -51,6 +51,7 @@ realclean::		$(REQUIREREALCLEAN)
 _ZLIB_:
 	@if [ -d $(ABI_ROOT)/../libs/zlib ]; then	\
 		echo Using precompiled zlib in libs directory;				\
+		dlltool -D $(ABI_ROOT)/../libs/zlib/zlib1.dll -d $(ABI_ROOT)/../libs/zlib/lib/zlib.def -l $(ABI_ROOT)/../libs/zlib/lib/libzdll.a;	\
 	else	if [ -d $(ABI_ROOT)/../zlib ]; then					\
 			echo "Found zlib in peer directory";				\
 			echo "Building zlib DLL, NOT for redistribution!" ;	\
