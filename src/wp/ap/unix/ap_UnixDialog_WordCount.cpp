@@ -292,6 +292,7 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 {
 	GtkWidget * vbox;
 	GtkWidget * hbuttonboxWordCount;
+	GtkWidget * separator;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
@@ -306,6 +307,9 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 
 	_constructWindowContents ();
 	gtk_box_pack_start (GTK_BOX (vbox), m_wContent, FALSE, FALSE, 0);
+
+	separator = gtk_hseparator_new ();
+	gtk_box_pack_start(GTK_BOX (vbox), separator, FALSE, TRUE, 0);
 
 	hbuttonboxWordCount = gtk_hbutton_box_new ();
 	gtk_object_set_data (GTK_OBJECT (m_windowMain), "hbuttonboxWordCount", hbuttonboxWordCount);
