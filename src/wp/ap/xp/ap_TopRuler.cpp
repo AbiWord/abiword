@@ -1407,7 +1407,6 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 		return true;
 	}
 
-
  	UT_sint32 anchor;
 	eTabType iType;
 	eTabLeader iLeader;
@@ -1436,7 +1435,6 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 		_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, xrel);
 		return true;
 	}
-
 
 	// next hit-test against the paragraph widgets
 
@@ -1531,11 +1529,11 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 				if(iCell < nCells)
 			{
-				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, "%s %d");
+				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, "");
 			}
 			else
 			{
-				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, "%s %d");
+				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, "");
 			}
 				return true;
 			}
@@ -3917,12 +3915,11 @@ void AP_TopRuler::setDimension( UT_Dimension newdim )
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
 {
 	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
-	char temp[100];
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
-	sprintf(temp, pzMessageFormat, pText);
+	UT_String pzMessageFormat (m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()));
+	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), pText));
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(temp);
+	pFrameData->m_pStatusBar->setStatusMessage(temp.c_str());
 }
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2)
@@ -3932,19 +3929,18 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	strcpy(buf1, pText);
 	pText = m_pG->invertDimension(tick.dimType, dValue2);
 
-	char temp[100];
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
-	sprintf(temp, pzMessageFormat, buf1, pText);
+	UT_String pzMessageFormat (m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()));
+	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), buf1, pText));
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(temp);
+	pFrameData->m_pStatusBar->setStatusMessage(temp.c_str());
 }
 
-void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * format)
+void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * /*format*/)
 {
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
+	UT_String pzMessageFormat (m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()));
 	static UT_String sCell;
-	UT_String_sprintf(sCell,format,pzMessageFormat,iCol);
+	UT_String_sprintf(sCell,pzMessageFormat.c_str(),iCol);
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 	pFrameData->m_pStatusBar->setStatusMessage(sCell.c_str());
@@ -3953,10 +3949,10 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 {
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()).c_str();
+	UT_String pzMessageFormat(m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()));
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	pFrameData->m_pStatusBar->setStatusMessage(pzMessageFormat);
+	pFrameData->m_pStatusBar->setStatusMessage(pzMessageFormat.c_str());
 }
 
 /* lambda */ void AP_TopRuler::_autoScroll(UT_Worker * pWorker)

@@ -3209,6 +3209,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 void FV_View::cmdEditHeader(void)
 {
 	_cmdEditHdrFtr(FL_HDRFTR_HEADER);
+	notifyListeners (AV_CHG_HDRFTR | AV_CHG_FMTSECTION);
 }
 
 /*!
@@ -3218,6 +3219,7 @@ void FV_View::cmdEditHeader(void)
 void FV_View::cmdEditFooter(void)
 {
 	_cmdEditHdrFtr(FL_HDRFTR_FOOTER);
+	notifyListeners (AV_CHG_HDRFTR | AV_CHG_FMTSECTION);
 }
 
 void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yPos)

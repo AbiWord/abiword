@@ -1104,7 +1104,8 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			pContainer = pRun->getLine()->getColumn();
 		}
 
-		if (pContainer->getContainerType() == FP_CONTAINER_COLUMN)
+		UT_ASSERT(pContainer);
+		if (pContainer && pContainer->getContainerType() == FP_CONTAINER_COLUMN)
 		{
 			fp_Column* pColumn = (fp_Column*) pContainer;
 
@@ -1125,7 +1126,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 				mask ^= AV_CHG_COLUMN;
 			}
 		}
-		else if (pContainer->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
+		else if (pContainer && pContainer->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 		{
 			// Hack the kludge:
 			// Clearly you can't change columns while editing a header. -PL
@@ -6599,11 +6600,7 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 bool FV_View::isHeaderOnPage(void)
 {
 	fp_Page * pPage = getCurrentPage();
-	UT_ASSERT(pPage);
-	if(pPage == NULL)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pPage, false);
 	return (pPage->getHdrFtrP(FL_HDRFTR_HEADER) != NULL);
 }
 
@@ -6614,11 +6611,7 @@ bool FV_View::isHeaderOnPage(void)
 bool FV_View::isFooterOnPage(void)
 {
 	fp_Page * pPage = getCurrentPage();
-	UT_ASSERT(pPage);
-	if(pPage == NULL)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pPage, false);
 	return (pPage->getHdrFtrP(FL_HDRFTR_FOOTER) != NULL);
 }
 

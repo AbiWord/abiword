@@ -182,14 +182,16 @@ fp_Container * fp_Line::getColumn(void)
 	{
 		return NULL;
 	}
-	if(pCon->getContainerType() != FP_CONTAINER_CELL)
+	else if(pCon->getContainerType() != FP_CONTAINER_CELL)
 	{
 		return pCon->getColumn();
 	}
-	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+
+	fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+	fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
 	if(pTab == NULL)
 	{
-		return NULL;
+	  return NULL;
 	}
 	UT_ASSERT(pTab->getContainerType() == FP_CONTAINER_TABLE);
 	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
@@ -198,7 +200,7 @@ fp_Container * fp_Line::getColumn(void)
 		return pCon->getColumn();
 	}
 	bool bFound = false;
-	fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+
 	while(pBroke && !bFound)
 	{
 		if(pBroke->isInBrokenTable(pCell,this))

@@ -63,7 +63,7 @@ dcl(TopMarginStatus,			"Top Margin [%s]")
 dcl(BottomMarginStatus, 		"Bottom Margin [%s]")
 dcl(HeaderStatus,				"Header [%s]")
 dcl(FooterStatus,				"Footer [%s]")
-dcl(ColumnStatus,               "Column [%s]")
+dcl(ColumnStatus,               "Column [%d]")
 dcl(InsertModeFieldINS, 		"INS")
 dcl(InsertModeFieldOVR, 		"OVR")
 
