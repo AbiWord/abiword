@@ -1,0 +1,1397 @@
+\ab:Associated Character Properties:Toggle
+\abibotline:AbiWord proprietary:
+\abicellprops:AbiWord proprietary:
+\abiendcell:AbiWord proprietary:
+\abiendtable:AbiWord proprietary:
+\abifieldD:AbiWord proprietary:
+\abilist:AbiWord proprietary:
+\abinodiroverride:AbiWord proprietary:
+\abitableprops:AbiWord proprietary:
+\abitopline:AbiWord proprietary:
+\absh:Positioned Objects and Frames:Value
+\abslock 7.0:Positioned Objects and Frames:Flag
+\absnoovrlpN 2000:Positioned Objects and Frames:Toggle
+\absw:Positioned Objects and Frames:Value
+\acaps:Associated Character Properties:Toggle
+\acccomma 7.0:Font (Character) Formatting Properties:Toggle
+\accdot 7.0:Font (Character) Formatting Properties:Toggle
+\accnone 7.0:Font (Character) Formatting Properties:Toggle
+\acf:Associated Character Properties:Value
+\additive :Style Sheet:Flag
+\adjustright 97:Section Formatting Properties:Flag
+\adn:Associated Character Properties:Value
+\aenddoc :Document Formatting Properties:Flag
+\aendnotes :Document formatting Properties:Flag
+\aexpnd:Associated Character Properties:Value
+\af:Associated Character Properties:Value
+\affixed 7.0:Paragraph Formatting Properties:Flag
+\afs:Associated Character Properties:Value
+\aftnbj :Document Formatting Properties:Flag
+\aftncn :Document Formatting Properties:Destination
+\aftnnalc :Document Formatting Properties:Flag
+\aftnnar :Document Formatting Properties:Flag
+\aftnnauc :Document Formatting Properties:Flag
+\aftnnchi :Document Formatting Properties:Flag
+\aftnnchosung 97:Document Formatting Properties:Flag
+\aftnncnum 97:Document Formatting Properties:Flag
+\aftnndbar 97:Document Formatting Properties:Flag
+\aftnndbnum 97:Document Formatting Properties:Flag
+\aftnndbnumd 97:Document Formatting Properties:Flag
+\aftnndbnumk 97:Document Formatting Properties:Flag
+\aftnndbnumt 97:Document Formatting Properties:Flag
+\aftnnganada 97:Document Formatting Properties:Flag
+\aftnngbnum 97:Document Formatting Properties:Flag
+\aftnngbnumd 97:Document Formatting Properties:Flag
+\aftnngbnumk 97:Document Formatting Properties:Flag
+\aftnngbnuml 97:Document Formatting Properties:Flag
+\aftnnrlc :Document Formatting Properties:Flag
+\aftnnruc :Document Formatting Properties:Flag
+\aftnnzodiac 97:Document Formatting Properties:Flag
+\aftnnzodiacd 97:Document Formatting Properties:Flag
+\aftnnzodiacl 97:Document Formatting Properties:Flag
+\aftnrestart :Document Formatting Properties:Flag
+\aftnrstcont :Document Formatting Properties:Flag
+\aftnsep :Document Formatting Properties:Destination
+\aftnsepc :Document Formatting Properties:Destination
+\aftnstart :Document Formatting Properties:Value
+\aftntj :Document Formatting Properties:Flag
+\ai:Associated Character Properties:Toggle
+\alang:Associated Character Properties:Value
+\allowfieldendsel 2002:Document Formatting Properties:Flag
+\allprot :Document Formatting Properties:Flag
+\alntblind 2000:Document Formatting Properties:Flag
+\alt:Style Sheet:Flag
+\animtextN 97:Font (Character) Formatting Properties:Value
+\annotation:Comments (Annotations):Destination
+\annotprot :Document Formatting Properties:Flag
+\ansi:Character Set:Flag
+\ansicpgN 97:Unicode RTF:Value
+\aoutl:Associated Character Properties:Toggle
+\ApplyBrkRules 2002:Document Formatting Properties:Flag
+\ascaps:Associated Character Properties:Toggle
+\ashad:Associated Character Properties:Toggle
+\asianbrkrule 2002:Document Formatting Properties:Flag
+\aspalpha 7.0:Paragraph Formatting Properties:Toggle
+\aspnum 7.0:Paragraph Formatting Properties:Toggle
+\astrike:Associated Character Properties:Toggle
+\atnauthor 2002:Comments (Annotations):Destination
+\atndate :Comments (Annotations):Destination
+\atnicn:Comments (Annotations):Destination
+\atnid:Comments (Annotations):Destination
+\atnparent 2002:Comments (Annotations):Destination
+\atnref :Comments (Annotations):Destination
+\atntime:Comments (Annotations):Destination
+\atrfend :Comments (Annotations):Destination
+\atrfstart :Comments (Annotations):Destination
+\aul:Associated Character Properties:Toggle
+\auld:Associated Character Properties:Toggle
+\auldb:Associated Character Properties:Toggle
+\aulnone:Associated Character Properties:Toggle
+\aulw:Associated Character Properties:Toggle
+\aup:Associated Character Properties:Value
+\author:Information Group:Destination
+\b:Font (Character) Formatting Properties:Toggle
+\background 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Destination
+\bdbfhdr 97:Document Formatting Properties:Flag
+\bdrrlswsix2000:Document Formatting Properties:Flag
+\bgbdiag:Paragraph Shading:Flag
+\bgcross:Paragraph Shading:Flag
+\bgdcross:Paragraph Shading:Flag
+\bgdkbdiag:Paragraph Shading:Flag
+\bgdkcross:Paragraph Shading:Flag
+\bgdkdcross:Paragraph Shading:Flag
+\bgdkfdiag:Paragraph Shading:Flag
+\bgdkhoriz:Paragraph Shading:Flag
+\bgdkvert:Paragraph Shading:Flag
+\bgfdiag:Paragraph Shading:Flag
+\bghoriz:Paragraph Shading:Flag
+\bgvert:Paragraph Shading:Flag
+\bin:Pictures:Value
+\binfsxn:Section Formatting Properties:Value
+\binsxn:Section Formatting Properties:Value
+\bkmkcolf:Bookmarks:Value
+\bkmkcoll:Bookmarks:Value
+\bkmkend:Bookmarks:Destination
+\bkmkpub:Macintosh Edition Manager Publisher Objects:Flag
+\bkmkstart:Bookmarks:Destination
+\bliptagN 97:Pictures:Value
+\blipuid 97:Pictures:Value
+\blipupiN 97:Pictures:Value
+\blue:Color Table:Value
+\bookfold 2002:Document Formatting Properties:Flag
+\bookfoldrev 2002:Document Formatting Properties:Flag
+\bookfoldsheetsN 2002:Document Formatting Properties:Value
+\botline:Abiword unknown:Value
+\box:Paragraph Borders:Flag
+\brdrartN 97:Document Formatting Properties:Value
+\brdrb:Paragraph Borders:Flag
+\brdrbar:Paragraph Borders:Flag
+\brdrbtw:Paragraph Borders:Flag
+\brdrcf:Paragraph Borders:Value
+\brdrdash :Paragraph Borders:Flag
+\brdrdashd 97:Paragraph Text:Flag
+\brdrdashdd 97:Paragraph Text:Flag
+\brdrdashdotstr 97:Paragraph Text:Flag
+\brdrdashsm 97:Paragraph Text:Flag
+\brdrdb:Paragraph Borders:Flag
+\brdrdot:Paragraph Borders:Flag
+\brdremboss 97:Paragraph Text:Flag
+\brdrengrave 97:Paragraph Text:Flag
+\brdrframe 97:Paragraph Borders:Flag
+\brdrhair:Paragraph Borders:Flag
+\brdrinset 2000:Paragraph Text:Flag
+\brdrl:Paragraph Borders:Flag
+\brdrnil 2002:Paragraph Borders:Flag
+\brdroutset 2000:Paragraph Text:Flag
+\brdrr:Paragraph Borders:Flag
+\brdrs:Paragraph Borders:Flag
+\brdrsh:Paragraph Borders:Flag
+\brdrt:Paragraph Borders:Flag
+\brdrtbl 2002:Paragraph Borders:Flag
+\brdrth:Paragraph Borders:Flag
+\brdrthtnlg 97:Paragraph Text:Flag
+\brdrthtnmg 97:Paragraph Text:Flag
+\brdrthtnsg 97:Paragraph Text:Flag
+\brdrtnthlg 97:Paragraph Text:Flag
+\brdrtnthmg 97:Paragraph Text:Flag
+\brdrtnthsg 97:Paragraph Text:Flag
+\brdrtnthtnlg 97:Paragraph Text:Flag
+\brdrtnthtnmg 97:Paragraph Text:Flag
+\brdrtnthtnsg 97:Paragraph Text:Flag
+\brdrtriple 97:Paragraph Text:Flag
+\brdrw:Paragraph Borders:Value
+\brdrwavy 97:Paragraph Text:Flag
+\brdrwavydb 97:Paragraph Text:Flag
+\brkfrm :Document Formatting Properties:Flag
+\brsp:Paragraph Borders:Value
+\bullet:Special Characters:Symbol
+\buptim:Information Group:Destination
+\bxe:Index Entries:Flag
+\caps:Font (Character) Formatting Properties:Toggle
+\category 7.0:Information Group:Destination
+\cb:Font (Character) Formatting Properties:Value
+\cbpat:Paragraph Shading:Value
+\cchs :Font (Character) Formatting Properties:Value
+\cell:Special Characters:Symbol
+\cellx:Table Definitions:Value
+\cf:Font (Character) Formatting Properties:Value
+\cfpat:Paragraph Shading:Value
+\cgridN 97:Font (Character) Formatting Properties:Value
+\charrsidN 2002:Track Changes (Revision Marks):Value
+\charscalex 7.0:Font (Character) Formatting Properties:Value
+\charscalexN 97:Character Text:Value
+\chatn:Special Characters:Symbol
+\chbgbdiag 97:Character Text:Flag
+\chbgcross 97:Character Text:Flag
+\chbgdcross 97:Character Text:Flag
+\chbgdkbdiag 97:Character Text:Flag
+\chbgdkcross 97:Character Text:Flag
+\chbgdkdcross 97:Character Text:Flag
+\chbgdkfdiag 97:Character Text:Flag
+\chbgdkhoriz 97:Character Text:Flag
+\chbgdkvert 97:Character Text:Flag
+\chbgfdiag 97:Character Text:Flag
+\chbghoriz 97:Character Text:Flag
+\chbgvert 97:Character Text:Flag
+\chbrdr 97:Character Text:Flag
+\chcbpatN 97:Character Text:Value
+\chcfpatN 97:Character Text:Value
+\chdate:Special Characters:Symbol
+\chdpa:Special Characters:Symbol
+\chdpl:Special Characters:Symbol
+\chftn:Special Characters:Symbol
+\chftnsep:Special Characters:Symbol
+\chftnsepc:Special Characters:Symbol
+\chpgn:Special Characters:Symbol
+\chshdngN 97:Character Text:Value
+\chtime:Special Characters:Symbol
+\clbgbdiag:Table Definitions:Flag
+\clbgcross:Table Definitions:Flag
+\clbgdcross:Table Definitions:Flag
+\clbgdkbdiag:Table Definitions:Flag
+\clbgdkcross:Table Definitions:Flag
+\clbgdkdcross:Table Definitions:Flag
+\clbgdkfdiag:Table Definitions:Flag
+\clbgdkhor:Table Definitions:Flag
+\clbgdkvert:Table Definitions:Flag
+\clbgfdiag:Table Definitions:Flag
+\clbghoriz:Table Definitions:Flag
+\clbgvert:Table Definitions:Flag
+\clbrdrb:Table Definitions:Flag
+\clbrdrl:Table Definitions:Flag
+\clbrdrr:Table Definitions:Flag
+\clbrdrt:Table Definitions:Flag
+\clcbpat:Table Definitions:Value
+\clcbpatrawN 2002:Table Definitions:Value
+\clcfpat:Table Definitions:Value
+\clcfpatrawN 2002:Table Definitions:Value
+\cldgll 7.0:Table Definitions:Flag
+\cldglu 7.0:Table Definitions:Flag
+\clFitText2000:Table Definitions:Flag
+\clftsWidthN2000:Table Definitions:Value
+\clmgf:Table Definitions:Flag
+\clmrg:Table Definitions:Flag
+\clNoWrap2000:Table Definitions:Flag
+\clpadbN2000:Table Definitions:Value
+\clpadfbN2000:Table Definitions:Value
+\clpadflN2000:Table Definitions:Value
+\clpadfrN2000:Table Definitions:Value
+\clpadftN2000:Table Definitions:Value
+\clpadlN2000:Table Definitions:Value
+\clpadrN2000:Table Definitions:Value
+\clpadtN2000:Table Definitions:Value
+\clshdng:Table Definitions:Value
+\clshdngraw 2002:Table Definitions:Value
+\clshdrawnil 2002:Table Definitions:Flag
+\cltxbtlr 7.0:Table Definitions:Flag
+\cltxlrtb 7.0:Table Definitions:Flag
+\cltxlrtb 97:Table Definitions:Flag
+\cltxlrtbv 7.0:Table Definitions:Flag
+\cltxtbrl 7.0:Table Definitions:Flag
+\cltxtbrl 97:Table Definitions:Flag
+\cltxtbrlv 7.0:Table Definitions:Flag
+\clvertalb 7.0:Table Definitions:Flag
+\clvertalc 7.0:Table Definitions:Flag
+\clvertalt 7.0:Table Definitions:Flag
+\clvmgf 7.0:Table Definitions:Flag
+\clvmrg 7.0:Table Definitions:Flag
+\clwWidthN2000:Table Definitions:Value
+\collapsed:Paragraph Formatting Properties:Flag
+\colno :Section Formatting Properties:Value
+\colortbl:Color Table:Destination
+\cols:Section Formatting Properties:Value
+\colsr :Section Formatting Properties:Value
+\colsx:Section Formatting Properties:Value
+\column:Special Characters:Symbol
+\colw :Section Formatting Properties:Value
+\comment:Information Group:Destination
+\company 7.0:Information Group:Destination
+\cpg:Code Page Support:Value
+\crauthN 97:Character Text:Value
+\crdateN 97:Character Text:Value
+\creatim:Information Group:Destination
+\cs:Font (Character) Formatting Properties:Value
+\ctrl:Style Sheet:Flag
+\ctsN 2000:Document Formatting Properties:Value
+\cufiN 2000:Paragraph Formatting Properties:Value
+\culiN 2000:Paragraph Formatting Properties:Value
+\curiN 2000:Paragraph Formatting Properties:Value
+\cvmme :Document Formatting Properties:Flag
+\datafield :Fields:Destination
+\date 97:Fields:Flag
+\dbch 7.0:Associated Character Properties:Flag
+\deff:Font Table:Value
+\defformat:Document Formatting Properties:Flag
+\deflang:Document Formatting Properties:Value
+\deflangfe 97:Document Formatting Properties:Value
+\defshp 2000:Pictures:Flag
+\deftab:Document Formatting Properties:Value
+\deleted:Font (Character) Formatting Properties:Toggle
+\delrsidN 2002:Track Changes (Revision Marks):Value
+\dfrauthN 97:Paragraph Text:Value
+\dfrdateN 97:Paragraph Text:Value
+\dfrmtxtx:Positioned Objects and Frames:Value
+\dfrmtxty:Positioned Objects and Frames:Value
+\dfrstart 97:Paragraph Text:Value
+\dfrstop 97:Paragraph Text:Value
+\dfrxst 97:Paragraph Text:Value
+\dghoriginN 7.0:Document Formatting Properties:Value
+\dghshowN 7.0:Document Formatting Properties:Value
+\dghspaceN 7.0:Document Formatting Properties:Value
+\dgmargin 97:Document Formatting Properties:Flag
+\dgsnap 7.0:Document Formatting Properties:Flag
+\dgvoriginN 7.0:Document Formatting Properties:Value
+\dgvshowN 7.0:Document Formatting Properties:Value
+\dgvspaceN 7.0:Document Formatting Properties:Value
+\dibitmap:Pictures:Value
+\dn:Font (Character) Formatting Properties:Value
+\dntblnsbdb 97:Document Formatting Properties:Flag
+\do :Drawing Objects:Destination
+\dobxcolumn :Drawing Objects:Flag
+\dobxmargin :Drawing Objects:Flag
+\dobxpage :Drawing Objects:Flag
+\dobymargin :Drawing Objects:Flag
+\dobypage :Drawing Objects:Flag
+\dobypara :Drawing Objects:Flag
+\doccomm:Information Group:Destination
+\doctemp:Document Formatting Properties:Flag
+\doctypeN 97:Document Formatting Properties:Value
+\docvar 7.0:Document Variables:Destination
+\dodhgt :Drawing Objects:Value
+\dolock :Drawing Objects:Flag
+\donotshowcomments 2002:Document Formatting Properties:Flag
+\donotshowinsdel 2002:Document Formatting Properties:Flag
+\donotshowmarkup 2002:Document Formatting Properties:Flag
+\donotshowprops 2002:Document Formatting Properties:Flag
+\dpaendhol :Drawing Objects:Flag
+\dpaendl :Drawing Objects:Value
+\dpaendsol :Drawing Objects:Flag
+\dpaendw :Drawing Objects:Value
+\dparc :Drawing Objects:Flag
+\dparcflipx :Drawing Objects:Flag
+\dparcflipy :Drawing Objects:Flag
+\dpastarthol :Drawing Objects:Flag
+\dpastartl :Drawing Objects:Value
+\dpastartsol :Drawing Objects:Flag
+\dpastartw :Drawing Objects:Value
+\dpcallout :Drawing Objects:Flag
+\dpcoa :Drawing Objects:Value
+\dpcoaccent :Drawing Objects:Flag
+\dpcobestfit :Drawing Objects:Flag
+\dpcoborder :Drawing Objects:Flag
+\dpcodabs :Drawing Objects:Value
+\dpcodbottom :Drawing Objects:Flag
+\dpcodcenter :Drawing Objects:Flag
+\dpcodescent:Drawing Objects:Value
+\dpcodtop :Drawing Objects:Flag
+\dpcolength :Drawing Objects:Value
+\dpcominusx :Drawing Objects:Flag
+\dpcominusy :Drawing Objects:Flag
+\dpcooffset :Drawing Objects:Value
+\dpcosmarta :Drawing Objects:Flag
+\dpcotdouble :Drawing Objects:Flag
+\dpcotright :Drawing Objects:Flag
+\dpcotsingle :Drawing Objects:Flag
+\dpcottriple :Drawing Objects:Flag
+\dpcount :Drawing Objects:Value
+\dpellipse :Drawing Objects:Flag
+\dpendgroup :Drawing Objects:Flag
+\dpfillbgcb :Drawing Objects:Value
+\dpfillbgcg :Drawing Objects:Value
+\dpfillbgcr :Drawing Objects:Value
+\dpfillbggray :Drawing Objects:Value
+\dpfillbgpal :Drawing Objects:Flag
+\dpfillfgcb :Drawing Objects:Value
+\dpfillfgcg :Drawing Objects:Value
+\dpfillfgcr :Drawing Objects:Value
+\dpfillfggray :Drawing Objects:Value
+\dpfillfgpal :Drawing Objects:Flag
+\dpfillpat :Drawing Objects:Value
+\dpgroup :Drawing Objects:Flag
+\dpline :Drawing Objects:Flag
+\dplinecob :Drawing Objects:Value
+\dplinecog :Drawing Objects:Value
+\dplinecor :Drawing Objects:Value
+\dplinedado :Drawing Objects:Flag
+\dplinedadodo :Drawing Objects:Flag
+\dplinedash :Drawing Objects:Flag
+\dplinedot :Drawing Objects:Flag
+\dplinegray :Drawing Objects:Value
+\dplinehollow :Drawing Objects:Flag
+\dplinepal :Drawing Objects:Flag
+\dplinesolid :Drawing Objects:Flag
+\dplinew :Drawing Objects:Value
+\dppolycount :Drawing Objects:Value
+\dppolygon :Drawing Objects:Flag
+\dppolyline :Drawing Objects:Flag
+\dpptx :Drawing Objects:Value
+\dppty :Drawing Objects:Value
+\dprect :Drawing Objects:Flag
+\dproundr :Drawing Objects:Flag
+\dpshadow :Drawing Objects:Flag
+\dpshadx :Drawing Objects:Value
+\dpshady :Drawing Objects:Value
+\dptxbtlr 7.0:Drawing Objects:Flag
+\dptxbx :Drawing Objects:Flag
+\dptxbxmar :Drawing Objects:Value
+\dptxbxtext :Drawing Objects:Destination
+\dptxlrtb 7.0:Drawing Objects:Flag
+\dptxlrtbv 7.0:Drawing Objects:Flag
+\dptxtbrl 7.0:Drawing Objects:Flag
+\dptxtbrlv 7.0:Drawing Objects:Flag
+\dpx :Drawing Objects:Value
+\dpxsize :Drawing Objects:Value
+\dpy :Drawing Objects:Value
+\dpysize :Drawing Objects:Value
+\dropcapli :Positioned Objects and Frames:Value
+\dropcapt :Positioned Objects and Frames:Value
+\ds:Section Formatting Properties:Value
+\dxfrtext:Positioned Objects and Frames:Value
+\dy:Information Group:Value
+\edmins:Information Group:Value
+\embo 97:Character Text:Toggle
+\emdash:Special Characters:Symbol
+\emfblip 97:Pictures:Flag
+\emspace :Special Characters:Symbol
+\endash:Special Characters:Symbol
+\enddoc:Document Formatting Properties:Flag
+\endnhere:Section Formatting Properties:Flag
+\endnotes:Document Formatting Properties:Flag
+\enspace :Special Characters:Symbol
+\expnd:Font (Character) Formatting Properties:Value
+\expndtw :Font (Character) Formatting Properties:Value
+\expshrtn 97:Document Formatting Properties:Flag
+\f:Font (Character) Formatting Properties:Value
+\faauto 97:Paragraph Formatting Properties:Value
+\facenter7.0:Paragraph Formatting Properties:Flag
+\facingp:Document Formatting Properties:Flag
+\fahang 7.0:Paragraph Formatting Properties:Flag
+\falt :Font Table:Destination
+\faroman7.0:Paragraph Formatting Properties:Flag
+\favar 7.0:Paragraph Formatting Properties:Flag
+\fbiasN 97:Font Table:Value
+\fbidi:Font Table:Flag
+\fchars 7.0:Document Formatting Properties:Destination
+\fcharset :Font Table:Value
+\fdecor:Font Table:Flag
+\fet :Document Formatting Properties:Value
+\fetch:Font Table:Flag
+\ffdefres 97:Form Fields:Value
+\ffdeftext 97:Form Fields:Destination
+\ffentrymcr 97:Form Fields:Destination
+\ffexitmcr 97:Form Fields:Destination
+\ffformat 97:Form Fields:Destination
+\ffhaslistboxN 97:Form Fields:Value
+\ffhelptext 97:Form Fields:Destination
+\ffhpsN 97:Form Fields:Value
+\ffl 97:Form Fields:Destination
+\ffmaxlen 97:Form Fields:Value
+\ffname 97:Form Fields:Destination
+\ffownhelpN 97:Form Fields:Value
+\ffownstatN 97:Form Fields:Value
+\ffprotN 97:Form Fields:Value
+\ffrecalcN 97:Form Fields:Value
+\ffresN 97:Form Fields:Value
+\ffsizeN 97:Form Fields:Value
+\ffstattext 97:Form Fields:Destination
+\fftypeN 97:Form Fields:Value
+\fftypetxtN 97:Form Fields:Value
+\fi:Paragraph Formatting Properties:Value
+\fid :File Table:Value
+\field:Fields:Destination
+\file :File Table:Destination
+\filetbl :File Table:Destination
+\fittextN 2000:Font (Character) Formatting Properties:Value
+\fldalt :Document Formatting Properties:Flag
+\flddirty:Fields:Flag
+\fldedit:Fields:Flag
+\fldinst:Fields:Destination
+\fldlock:Fields:Flag
+\fldpriv:Fields:Flag
+\fldrslt:Fields:Destination
+\fldtype 97:Fields:Destination
+\fmodern:Font Table:Flag
+\fn:Style Sheet:Value
+\fname 7.0:Font Table:Destination
+\fnetwork :File Table:Flag
+\fnil:Font Table:Flag
+\fnonfilesys2002:File Table:Flag
+\fontemb:Font Table:Destination
+\fontfile:Font Table:Destination
+\fonttbl:Font Table:Destination
+\footer:Headers and Footers:Destination
+\footerf:Headers and Footers:Destination
+\footerl:Headers and Footers:Destination
+\footerr:Headers and Footers:Destination
+\footery:Section Formatting Properties:Value
+\footnote:Footnotes:Destination
+\formdisp :Document Formatting Properties:Flag
+\formfield 97:Form Fields:Destination
+\formprot :Document Formatting Properties:Flag
+\formshade :Document Formatting Properties:Flag
+\fosnum :File Table:Value
+\fprq :Font Table:Value
+\fracwidth:Document Formatting Properties:Flag
+\frelative :File Table:Value
+\frmtxbtlr 7.0:Positioned Objects and Frames:Flag
+\frmtxlrtb 7.0:Positioned Objects and Frames:Flag
+\frmtxlrtbv 7.0:Positioned Objects and Frames:Flag
+\frmtxtbrl 7.0:Positioned Objects and Frames:Flag
+\frmtxtbrlv 7.0:Positioned Objects and Frames:Flag
+\froman:Font Table:Flag
+\fromhtml 97:Document Formatting Properties:Flag
+\fromtext 97:Document Formatting Properties:Flag
+\fs:Font (Character) Formatting Properties:Value
+\fscript:Font Table:Flag
+\fswiss:Font Table:Flag
+\ftnalt :Document Formatting Properties:Flag
+\ftnbj:Document Formatting Properties:Flag
+\ftncn:Document Formatting Properties:Destination
+\ftnil:Font Table:Flag
+\ftnlytwnine 2000:Document Formatting Properties:Flag
+\ftnnalc :Document Formatting Properties:Flag
+\ftnnar :Document Formatting Properties:Flag
+\ftnnauc :Document Formatting Properties:Flag
+\ftnnchi :Document Formatting Properties:Flag
+\ftnnchosung 97:Document Formatting Properties:Flag
+\ftnncnum 97:Document Formatting Properties:Flag
+\ftnndbar 97:Document Formatting Properties:Flag
+\ftnndbnum 97:Document Formatting Properties:Flag
+\ftnndbnumd 97:Document Formatting Properties:Flag
+\ftnndbnumk 97:Document Formatting Properties:Flag
+\ftnndbnumt 97:Document Formatting Properties:Flag
+\ftnnganada 97:Document Formatting Properties:Flag
+\ftnngbnum 97:Document Formatting Properties:Flag
+\ftnngbnumd 97:Document Formatting Properties:Flag
+\ftnngbnumk 97:Document Formatting Properties:Flag
+\ftnngbnuml 97:Document Formatting Properties:Flag
+\ftnnrlc :Document Formatting Properties:Flag
+\ftnnruc :Document Formatting Properties:Flag
+\ftnnzodiac 97:Document Formatting Properties:Flag
+\ftnnzodiacd 97:Document Formatting Properties:Flag
+\ftnnzodiacl 97:Document Formatting Properties:Flag
+\ftnrestart:Document Formatting Properties:Flag
+\ftnrstcont :Document Formatting Properties:Flag
+\ftnrstpg :Document Formatting Properties:Flag
+\ftnsep:Document Formatting Properties:Destination
+\ftnsepc:Document Formatting Properties:Destination
+\ftnstart:Document Formatting Properties:Value
+\ftntj:Document Formatting Properties:Flag
+\fttruetype:Font Table:Flag
+\fvaliddos :File Table:Flag
+\fvalidhpfs :File Table:Flag
+\fvalidmac :File Table:Flag
+\fvalidntfs :File Table:Flag
+\g 97:Font (Character) Formatting Properties:Destination
+\gcw 97:Font (Character) Formatting Properties:Value
+\generator 2002:Generator:Destination
+\green:Color Table:Value
+\gridtbl 97:Font (Character) Formatting Properties:Destination
+\gutter:Document Formatting Properties:Value
+\gutterprl 7.0:Document Formatting Properties:Flag
+\guttersxn:Section Formatting Properties:Value
+\header:Headers and Footers:Destination
+\headerf:Headers and Footers:Destination
+\headerl:Headers and Footers:Destination
+\headerr:Headers and Footers:Destination
+\headery:Section Formatting Properties:Value
+\hich 7.0:Associated Character Properties:Flag
+\highlight 7.0:Highlighting:Value
+\hlfr 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\hlinkbase 97:Information Group:Value
+\hlloc 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\hlsrc 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\horzdoc 7.0:Document Formatting Properties:Flag
+\horzsect 7.0:Section Formatting Properties:Flag
+\hr:Information Group:Value
+\htmautsp 2000:Document Formatting Properties:Flag
+\htmlbase :Control Words Introduced by Other Microsoft Products:Flag
+\htmlrtf:Control Words Introduced by Other Microsoft Products:Toggle
+\htmltag:Control Words Introduced by Other Microsoft Products:Destination
+\hyphauto :Document Formatting Properties:Toggle
+\hyphcaps :Document Formatting Properties:Toggle
+\hyphconsec :Document Formatting Properties:Value
+\hyphhotz:Document Formatting Properties:Value
+\hyphpar :Paragraph Formatting Properties:Toggle
+\i:Font (Character) Formatting Properties:Toggle
+\id:Information Group:Value
+\ilvl 97:Paragraph Text:Value
+\impr 97:Character Text:Toggle
+\info:Information Group:Destination
+\insrsidN 2002:Track Changes (Revision Marks):Value
+\intbl:Paragraph Formatting Properties:Flag
+\ipgpN2002:Paragraph Group Propreties:Value
+\irowbandN2002:Table Definitions:Value
+\irowN2002:Table Definitions:Value
+\itapN 2000:Paragraph Formatting Properties:Value
+\ixe:Index Entries:Flag
+\jcompress 7.0:Document Formatting Properties:Flag
+\jexpand 7.0:Document Formatting Properties:Flag
+\jpegblip 97:Pictures:Flag
+\jsksu 2000:Document Formatting Properties:Flag
+\keep:Paragraph Formatting Properties:Flag
+\keepn:Paragraph Formatting Properties:Flag
+\kerning :Font (Character) Formatting Properties:Value
+\keycode:Style Sheet:Destination
+\keywords:Information Group:Destination
+\ksulangN 2000:Document Formatting Properties:Value
+\landscape:Document Formatting Properties:Flag
+\lang:Font (Character) Formatting Properties:Value
+\langfeN 2000:Font (Character) Formatting Properties:Value
+\langfenpN 2000:Font (Character) Formatting Properties:Value
+\langnpN 2000:Font (Character) Formatting Properties:Value
+\lastrow2002:Table Definitions:Flag
+\lbrN 2000:Special Characters:Symbol
+\lchars 7.0:Document Formatting Properties:Destination
+\ldblquote:Special Characters:Symbol
+\level:Paragraph Formatting Properties:Value
+\levelfollowN 97:List Table:Value
+\levelindentN 97:List Table:Value
+\leveljcN 97:List Table:Value
+\leveljcnN 2000:List Table:Value
+\levellegalN 97:List Table:Value
+\levelnfcN 97:List Table:Value
+\levelnfcnN 2000:List Table:Value
+\levelnorestartN 97:List Table:Value
+\levelnumbers 97:List Table:Destination
+\leveloldN 97:List Table:Value
+\levelpictureN 2002:List Table:Value
+\levelprevN 97:List Table:Value
+\levelprevspaceN 97:List Table:Value
+\levelspaceN 97:List Table:Value
+\levelstartatN 97:List Table:Value
+\leveltemplateidN2000:List Table:Value
+\leveltext 97:List Table:Value
+\li:Paragraph Formatting Properties:Value
+\line:Special Characters:Symbol
+\linebetcol:Section Formatting Properties:Flag
+\linecont:Section Formatting Properties:Flag
+\linemod:Section Formatting Properties:Value
+\lineppage:Section Formatting Properties:Flag
+\linerestart:Section Formatting Properties:Flag
+\linestart:Document Formatting Properties:Value
+\linestarts:Section Formatting Properties:Value
+\linex:Section Formatting Properties:Value
+\linkself:Objects:Flag
+\linkstyles :Document Formatting Properties:Flag
+\linkval 7.0:Information Group:Value
+\linN 2000:Paragraph Formatting Properties:Value
+\lisaN 2000:Paragraph Formatting Properties:Value
+\lisbN 2000:Paragraph Formatting Properties:Value
+\listhybrid 2000:List Table:Flag
+\listidN 97:List Table:Value
+\listname 97:List Table:Destination
+\listoverridecountN 97:List Table:Value
+\listoverrideformatN 97:List Table:Value
+\listoverridestartN 97:List Table:Value
+\listoverridetable:List Table:Destination
+\listpictureN 2002:List Table:Value
+\listrestarthdnN 97:List Table:Value
+\listsimpleN 97:List Table:Value
+\liststyleidN 2002:List Table:Value
+\liststylename 2002:List Table:Value
+\listtable:List Table:Destination
+\listtag::
+\listtemplateidN 97:List Table:Value
+\listtext 97:Paragraph Text:Destination
+\lnbrkrule2000:Document Formatting Properties:Flag
+\lndscpsxn:Section Formatting Properties:Flag
+\lnongrid 7.0:Document Formatting Properties:Flag
+\loch 7.0:Associated Character Properties:Flag
+\lquote:Special Characters:Symbol
+\ls 97:List Table:Value
+\ltrch:Font (Character) Formatting Properties:Flag
+\ltrdoc:Document Formatting Properties:Flag
+\ltrmark 2002:Special Characters:Symbol
+\ltrpar:Paragraph Formatting Properties:Flag
+\ltrrow:Table Definitions:Flag
+\ltrsect:Section Formatting Properties:Flag
+\lytcalctblwd 2000:Document Formatting Properties:Flag
+\lytexcttp 97:Document Formatting Properties:Flag
+\lytprtmet 97:Document Formatting Properties:Flag
+\lyttblrtgr 2000:Document Formatting Properties:Flag
+\mac:Character Set:Flag
+\macpict:Pictures:Flag
+\makebackup:Document Formatting Properties:Flag
+\manager 7.0:Information Group:Destination
+\margb:Document Formatting Properties:Value
+\margbsxn:Section Formatting Properties:Value
+\margl:Document Formatting Properties:Value
+\marglsxn:Section Formatting Properties:Value
+\margmirror:Document Formatting Properties:Flag
+\margr:Document Formatting Properties:Value
+\margrsxn:Section Formatting Properties:Value
+\margt:Document Formatting Properties:Value
+\margtsxn:Section Formatting Properties:Value
+\mhtmltag:Control Words Introduced by Other Microsoft Products:Destination
+\min:Information Group:Value
+\mo:Information Group:Value
+\msmcap 97:Document Formatting Properties:Flag
+\nestcell2000:Table Definitions:Symbol
+\nestrow2000:Table Definitions:Symbol
+\nesttableprops2000:Table Definitions:Destination
+\nextfile:Document Formatting Properties:Destination
+\nobrkwrptbl 2002:Document Formatting Properties:Flag
+\nocolbal :Document Formatting Properties:Flag
+\nocompatoptions 2002:Document Formatting Properties:Flag
+\nocwrap 7.0:Paragraph Formatting Properties:Flag
+\noextrasprl :Document Formatting Properties:Flag
+\nofchars:Information Group:Value
+\nofcharsws 97:Information Group:Value
+\nofpages:Information Group:Value
+\nofwords:Information Group:Value
+\nolead 97:Document Formatting Properties:Flag
+\noline:Paragraph Formatting Properties:Flag
+\nolnhtadjtbl2000:Document Formatting Properties:Flag
+\nonesttables2000:Table Definitions:Destination
+\nonshppict 97:Pictures:Flag
+\nooverflow 7.0:Paragraph Formatting Properties:Flag
+\noproof 2000:Font (Character) Formatting Properties:Flag
+\nosectexpand 97:Font (Character) Formatting Properties:Flag
+\nosnaplinegrid 97:Paragraph Formatting Properties:Flag
+\nospaceforul 97:Document Formatting Properties:Flag
+\nosupersub :Font (Character) Formatting Properties:Flag
+\notabind :Document Formatting Properties:Flag
+\noultrlspc 97:Document Formatting Properties:Flag
+\nowidctlpar :Paragraph Formatting Properties:Flag
+\nowrap:Positioned Objects and Frames:Flag
+\nowwrap 7.0:Paragraph Formatting Properties:Flag
+\noxlattoyen 97:Document Formatting Properties:Flag
+\objalias:Objects:Destination
+\objalign:Objects:Value
+\objattph 7.0:Objects:Flag
+\objautlink:Objects:Flag
+\objclass:Objects:Destination
+\objcropb:Objects:Value
+\objcropl:Objects:Value
+\objcropr:Objects:Value
+\objcropt:Objects:Value
+\objdata:Objects:Destination
+\object:Objects:Destination
+\objemb:Objects:Flag
+\objh:Objects:Value
+\objhtml 97:Objects:Flag
+\objicemb:Objects:Flag
+\objlink:Objects:Flag
+\objlock:Objects:Flag
+\objname:Objects:Destination
+\objocx 97:Objects:Flag
+\objpub:Objects:Flag
+\objscalex:Objects:Value
+\objscaley:Objects:Value
+\objsect:Objects:Destination
+\objsetsize:Objects:Flag
+\objsub:Objects:Flag
+\objtime:Objects:Destination
+\objtransy:Objects:Value
+\objupdate :Objects:Flag
+\objw:Objects:Value
+\ol:Font (Character) Formatting Properties:Toggle
+\oldas2000:Document Formatting Properties:Flag
+\oldcprops 2002:Track Changes (Revision Marks):Destination
+\oldlinewrap 97:Document Formatting Properties:Flag
+\oldpprops 2002:Track Changes (Revision Marks):Destination
+\oldsprops 2002:Track Changes (Revision Marks):Destination
+\oldtprops 2002:Track Changes (Revision Marks):Destination
+\operator:Information Group:Destination
+\otblrul :Document Formatting Properties:Flag
+\outl:Font (Character) Formatting Properties:Toggle
+\outlinelevelN 97:Paragraph Text:Value
+\overlay 97:Paragraph Text:Flag
+\page:Special Characters:Symbol
+\pagebb:Paragraph Formatting Properties:Flag
+\panose 97:Font Table:Destination
+\paperh:Document Formatting Properties:Value
+\paperw:Document Formatting Properties:Value
+\par:Special Characters:Symbol
+\pararsidN 2002:Track Changes (Revision Marks):Value
+\pard:Paragraph Formatting Properties:Flag
+\pc:Character Set:Flag
+\pca:Character Set:Flag
+\pgbrdrb 97:Document Formatting Properties:Flag
+\pgbrdrfoot 97:Document Formatting Properties:Flag
+\pgbrdrhead 97:Document Formatting Properties:Flag
+\pgbrdrl 97:Document Formatting Properties:Flag
+\pgbrdroptN 97:Document Formatting Properties:Value
+\pgbrdrr 97:Document Formatting Properties:Flag
+\pgbrdrsnap 97:Document Formatting Properties:Flag
+\pgbrdrt 97:Document Formatting Properties:Flag
+\pghsxn:Section Formatting Properties:Value
+\pgnbidia 2000:Section Formatting Properties:Flag
+\pgnbidib 2000:Section Formatting Properties:Flag
+\pgnchosung 97:Bullets and Numbering:Flag
+\pgncnum 97:Bullets and Numbering:Flag
+\pgncont:Section Formatting Properties:Flag
+\pgndbnum 7.0:Section Formatting Properties:Flag
+\pgndbnumd 7.0:Section Formatting Properties:Flag
+\pgndbnumk 97:Bullets and Numbering:Flag
+\pgndbnumt 97:Bullets and Numbering:Flag
+\pgndec:Section Formatting Properties:Flag
+\pgndecd 7.0:Section Formatting Properties:Flag
+\pgnganada 97:Bullets and Numbering:Flag
+\pgngbnum 97:Bullets and Numbering:Flag
+\pgngbnumd 97:Bullets and Numbering:Flag
+\pgngbnumk 97:Bullets and Numbering:Flag
+\pgngbnuml 97:Bullets and Numbering:Flag
+\pgnhindia 2002:Section Formatting Properties:Flag
+\pgnhindib 2002:Section Formatting Properties:Flag
+\pgnhindic 2002:Section Formatting Properties:Flag
+\pgnhindid 2002:Section Formatting Properties:Flag
+\pgnhn :Section Formatting Properties:Value
+\pgnhnsc :Section Formatting Properties:Flag
+\pgnhnsh :Section Formatting Properties:Flag
+\pgnhnsm :Section Formatting Properties:Flag
+\pgnhnsn :Section Formatting Properties:Flag
+\pgnhnsp :Section Formatting Properties:Flag
+\pgnidN 2002:Section Formatting Properties:Value
+\pgnlcltr:Section Formatting Properties:Flag
+\pgnlcrm:Section Formatting Properties:Flag
+\pgnrestart:Section Formatting Properties:Flag
+\pgnstart:Document Formatting Properties:Value
+\pgnstarts:Section Formatting Properties:Value
+\pgnthaia 2002:Section Formatting Properties:Flag
+\pgnthaib 2002:Section Formatting Properties:Flag
+\pgnthaic 2002:Section Formatting Properties:Flag
+\pgnucltr:Section Formatting Properties:Flag
+\pgnucrm:Section Formatting Properties:Flag
+\pgnvieta 2002:Section Formatting Properties:Flag
+\pgnx:Section Formatting Properties:Value
+\pgny:Section Formatting Properties:Value
+\pgnzodiac 97:Bullets and Numbering:Flag
+\pgnzodiacd 97:Bullets and Numbering:Flag
+\pgnzodiacl 97:Bullets and Numbering:Flag
+\pgp 2002:Paragraph Group Properties:Destination
+\pgptbl 2002:Paragraph Group Properties:Destination
+\pgwsxn:Section Formatting Properties:Value
+\phcol:Positioned Objects and Frames:Flag
+\phmrg:Positioned Objects and Frames:Flag
+\phpg:Positioned Objects and Frames:Flag
+\picbmp :Pictures:Flag
+\picbpp :Pictures:Value
+\piccropb:Pictures:Value
+\piccropl:Pictures:Value
+\piccropr:Pictures:Value
+\piccropt:Pictures:Value
+\pich:Pictures:Value
+\pichgoal:Pictures:Value
+\picprop 97:Pictures:Destination
+\picscaled:Pictures:Flag
+\picscalex:Pictures:Value
+\picscaley:Pictures:Value
+\pict:Pictures:Destination
+\picw:Pictures:Value
+\picwgoal:Pictures:Value
+\plain:Font (Character) Formatting Properties:Flag
+\pmmetafile:Pictures:Value
+\pn :Bullets and Numbering:Destination
+\pnacross :Bullets and Numbering:Flag
+\pnaiu 7.0:Bullets and Numbering:Flag
+\pnaiud 7.0:Bullets and Numbering:Flag
+\pnaiueo 97:Bullets and Numbering:Flag
+\pnaiueod 97:Bullets and Numbering:Flag
+\pnb :Bullets and Numbering:Toggle
+\pnbidia 2000:Bullets and Numbering:Flag
+\pnbidib 2000:Bullets and Numbering:Flag
+\pncaps :Bullets and Numbering:Toggle
+\pncard :Bullets and Numbering:Flag
+\pncf :Bullets and Numbering:Value
+\pnchosung 97:Bullets and Numbering:Flag
+\pncnum 7.0:Bullets and Numbering:Flag
+\pndbnum 7.0:Bullets and Numbering:Flag
+\pndbnumd 97:Bullets and Numbering:Flag
+\pndbnumk 97:Bullets and Numbering:Flag
+\pndbnuml 97:Bullets and Numbering:Flag
+\pndbnumt 97:Bullets and Numbering:Flag
+\pndec :Bullets and Numbering:Flag
+\pndecd 7.0:Bullets and Numbering:Flag
+\pnf :Bullets and Numbering:Value
+\pnfs :Bullets and Numbering:Value
+\pnganada 97:Bullets and Numbering:Flag
+\pnganada 97:Bullets and Numbering:Flag
+\pngblip 97:Pictures:Flag
+\pngbnum 97:Bullets and Numbering:Flag
+\pngbnumd 97:Bullets and Numbering:Flag
+\pngbnumk 97:Bullets and Numbering:Flag
+\pngbnuml 97:Bullets and Numbering:Flag
+\pnhang :Bullets and Numbering:Flag
+\pni :Bullets and Numbering:Toggle
+\pnindent :Bullets and Numbering:Value
+\pniroha 7.0:Bullets and Numbering:Flag
+\pnirohad 7.0:Bullets and Numbering:Flag
+\pnlcltr :Bullets and Numbering:Flag
+\pnlcrm :Bullets and Numbering:Flag
+\pnlvl :Bullets and Numbering:Value
+\pnlvlblt :Bullets and Numbering:Flag
+\pnlvlbody :Bullets and Numbering:Flag
+\pnlvlcont :Bullets and Numbering:Flag
+\pnnumonce :Bullets and Numbering:Flag
+\pnord :Bullets and Numbering:Flag
+\pnordt :Bullets and Numbering:Flag
+\pnprev :Bullets and Numbering:Flag
+\pnqc :Bullets and Numbering:Flag
+\pnql :Bullets and Numbering:Flag
+\pnqr :Bullets and Numbering:Flag
+\pnrauthN 97:Paragraph Text:Value
+\pnrdateN 97:Paragraph Text:Value
+\pnrestart :Bullets and Numbering:Flag
+\pnrnfcN 97:Paragraph Text:Value
+\pnrnot 97:Paragraph Text:Flag
+\pnrpnbrN 97:Paragraph Text:Value
+\pnrrgbN 97:Paragraph Text:Value
+\pnrstartN 97:Paragraph Text:Value
+\pnrstopN 97:Paragraph Text:Value
+\pnrxstN 97:Paragraph Text:Value
+\pnscaps :Bullets and Numbering:Toggle
+\pnseclvl :Bullets and Numbering:Destination
+\pnsp :Bullets and Numbering:Value
+\pnstart :Bullets and Numbering:Value
+\pnstrike :Bullets and Numbering:Toggle
+\pntext :Bullets and Numbering:Destination
+\pntxta :Bullets and Numbering:Destination
+\pntxtb :Bullets and Numbering:Destination
+\pnucltr :Bullets and Numbering:Flag
+\pnucrm :Bullets and Numbering:Flag
+\pnul :Bullets and Numbering:Toggle
+\pnuld :Bullets and Numbering:Flag
+\pnuldash 7.0:Bullets and Numbering:Flag
+\pnuldashd 7.0:Bullets and Numbering:Flag
+\pnuldashdd 7.0:Bullets and Numbering:Flag
+\pnuldb :Bullets and Numbering:Flag
+\pnulhair 7.0:Bullets and Numbering:Flag
+\pnulnone :Bullets and Numbering:Flag
+\pnulth 7.0:Bullets and Numbering:Flag
+\pnulw :Bullets and Numbering:Flag
+\pnulwave 7.0:Bullets and Numbering:Flag
+\pnzodiac 97:Bullets and Numbering:Flag
+\pnzodiacd 97:Bullets and Numbering:Flag
+\pnzodiacl 97:Bullets and Numbering:Flag
+\posnegx :Positioned Objects and Frames:Value
+\posnegy :Positioned Objects and Frames:Value
+\posx:Positioned Objects and Frames:Value
+\posxc:Positioned Objects and Frames:Flag
+\posxi:Positioned Objects and Frames:Flag
+\posxl:Positioned Objects and Frames:Flag
+\posxo:Positioned Objects and Frames:Flag
+\posxr:Positioned Objects and Frames:Flag
+\posy:Positioned Objects and Frames:Value
+\posyb:Positioned Objects and Frames:Flag
+\posyc:Positioned Objects and Frames:Flag
+\posyil:Positioned Objects and Frames:Flag
+\posyin 97:Paragraph Text:Flag
+\posyout 97:Paragraph Text:Flag
+\posyt:Positioned Objects and Frames:Flag
+\prcolbl :Document Formatting Properties:Flag
+\printdata :Document Formatting Properties:Flag
+\printim:Information Group:Destination
+\private 97:Document Formatting Properties:Destination
+\propname 7.0:Information Group:Value
+\proptype 7.0:Information Group:Value
+\psover:Document Formatting Properties:Flag
+\psz :Document Formatting Properties:Value
+\pubauto:Macintosh Edition Manager Publisher Objects:Flag
+\pvmrg:Positioned Objects and Frames:Flag
+\pvpara:Positioned Objects and Frames:Flag
+\pvpg:Positioned Objects and Frames:Flag
+\pwdN:Control Words Introduced by Other Microsoft Products:Destination
+\pxe7.0:Index Entries:Destination
+\qc:Paragraph Formatting Properties:Flag
+\qd 7.0:Paragraph Formatting Properties:Flag
+\qj:Paragraph Formatting Properties:Flag
+\qk 2002:Paragraph Formatting Properties:Flag
+\ql:Paragraph Formatting Properties:Flag
+\qmspace 7.0:Special Characters:Symbol
+\qr:Paragraph Formatting Properties:Flag
+\qt 2002:Paragraph Formatting Properties:Flag
+\rawbgdkbdiag 2002:Table Definitions:Flag
+\rawclbgbdiag 2002:Table Definitions:Flag
+\rawclbgcross 2002:Table Definitions:Flag
+\rawclbgdcross 2002:Table Definitions:Flag
+\rawclbgdkcross 2002:Table Definitions:Flag
+\rawclbgdkdcross 2002:Table Definitions:Flag
+\rawclbgdkfdiag 2002:Table Definitions:Flag
+\rawclbgdkhor 2002:Table Definitions:Flag
+\rawclbgdkvert 2002:Table Definitions:Flag
+\rawclbgfdiag 2002:Table Definitions:Flag
+\rawclbghoriz 2002:Table Definitions:Flag
+\rawclbgvert 2002:Table Definitions:Flag
+\rdblquote:Special Characters:Symbol
+\red:Color Table:Value
+\rempersonalinfo 2002:Document Formatting Properties:Flag
+\result:Objects:Destination
+\revauth :Font (Character) Formatting Properties:Value
+\revauthdelN 97:Character Text:Value
+\revbar:Document Formatting Properties:Value
+\revdttm :Font (Character) Formatting Properties:Value
+\revdttmdelN 97:Character Text:Value
+\revised:Font (Character) Formatting Properties:Toggle
+\revisions:Document Formatting Properties:Flag
+\revprop:Document Formatting Properties:Value
+\revprot :Document Formatting Properties:Flag
+\revtbl :Track Changes:Destination
+\revtim:Information Group:Destination
+\ri:Paragraph Formatting Properties:Value
+\rinN 2000:Paragraph Formatting Properties:Value
+\row:Special Characters:Symbol
+\rquote:Special Characters:Symbol
+\rsidN 2002:Track Changes (Revision Marks):Value
+\rsidrootN 2002:Track Changes (Revision Marks):Value
+\rsidtbl 2002:Track Changes (Revision Marks):Destination
+\rsltbmp:Objects:Flag
+\rslthtml 2000:Objects:Flag
+\rsltmerge:Objects:Flag
+\rsltpict:Objects:Flag
+\rsltrtf:Objects:Flag
+\rslttxt:Objects:Flag
+\rtf:RTF Version:Destination
+\rtlch:Font (Character) Formatting Properties:Flag
+\rtldoc:Document Formatting Properties:Flag
+\rtlgutter 2000:Document Formatting Properties:Flag
+\rtlmark 2002:Special Characters:Symbol
+\rtlpar:Paragraph Formatting Properties:Flag
+\rtlrow:Table Definitions:Flag
+\rtlsect:Section Formatting Properties:Flag
+\rxe:Index Entries:Destination
+\s:Paragraph Formatting Properties:Value
+\sa:Paragraph Formatting Properties:Value
+\saautoN 2000:Paragraph Formatting Properties:Toggle
+\saftnnalc 2002:Section Formatting Properties:Flag
+\saftnnar 2002:Section Formatting Properties:Flag
+\saftnnauc 2002:Section Formatting Properties:Flag
+\saftnnchi 2002:Section Formatting Properties:Flag
+\saftnnchosung 2002:Section Formatting Properties:Flag
+\saftnncnum 2002:Section Formatting Properties:Flag
+\saftnndbar 2002:Section Formatting Properties:Flag
+\saftnndbnum 2002:Section Formatting Properties:Flag
+\saftnndbnumd 2002:Section Formatting Properties:Flag
+\saftnndbnumk 2002:Section Formatting Properties:Flag
+\saftnndbnumt 2002:Section Formatting Properties:Flag
+\saftnnganada 2002:Section Formatting Properties:Flag
+\saftnngbnum 2002:Section Formatting Properties:Flag
+\saftnngbnumd 2002:Section Formatting Properties:Flag
+\saftnngbnumk 2002:Section Formatting Properties:Flag
+\saftnngbnuml 2002:Section Formatting Properties:Flag
+\saftnnrlc 2002:Section Formatting Properties:Flag
+\saftnnruc 2002:Section Formatting Properties:Flag
+\saftnnzodiac 2002:Section Formatting Properties:Flag
+\saftnnzodiacd 2002:Section Formatting Properties:Flag
+\saftnnzodiacl 2002:Section Formatting Properties:Flag
+\saftnrestart 2002:Section Formatting Properties:Flag
+\saftnrstcont 2002:Section Formatting Properties:Flag
+\saftnstart 2002:Section Formatting Properties:Flag
+\sautoupd 97:Style Sheet:Flag
+\sb:Paragraph Formatting Properties:Value
+\sbasedon:Style Sheet:Value
+\sbautoN 2000:Paragraph Formatting Properties:Toggle
+\sbkcol:Section Formatting Properties:Flag
+\sbkeven:Section Formatting Properties:Flag
+\sbknone:Section Formatting Properties:Flag
+\sbkodd:Section Formatting Properties:Flag
+\sbkpage:Section Formatting Properties:Flag
+\sbys:Paragraph Formatting Properties:Flag
+\scaps:Font (Character) Formatting Properties:Toggle
+\scompose 2000:Style Sheet:Flag
+\sec:Information Group:Value
+\sect:Special Characters:Symbol
+\sectd:Section Formatting Properties:Flag
+\sectdefaultcl 97:Section Formatting Properties:Value
+\sectexpandN 97:Section Formatting Properties:Value
+\sectlinegridN 97:Section Formatting Properties:Value
+\sectnum:Special Characters:Symbol
+\sectrsidN 2002:Track Changes (Revision Marks):Value
+\sectspecifycl 97:Section Formatting Properties:Value
+\sectspecifygenN:Section Formatting Properties:Flag
+\sectspecifyl 97:Section Formatting Properties:Value
+\sectunlocked :Section Formatting Properties:Flag
+\sftnbj 2002:Section Formatting Properties:Flag
+\sftnnalc 2002:Section Formatting Properties:Flag
+\sftnnar 2002:Section Formatting Properties:Flag
+\sftnnauc 2002:Section Formatting Properties:Flag
+\sftnnchi 2002:Section Formatting Properties:Flag
+\sftnnchosung 2002:Section Formatting Properties:Flag
+\sftnncnum 2002:Section Formatting Properties:Flag
+\sftnndbar 2002:Section Formatting Properties:Flag
+\sftnndbnum 2002:Section Formatting Properties:Flag
+\sftnndbnumd 2002:Section Formatting Properties:Flag
+\sftnndbnumk 2002:Section Formatting Properties:Flag
+\sftnndbnumt 2002:Section Formatting Properties:Flag
+\sftnnganada 2002:Section Formatting Properties:Flag
+\sftnngbnum 2002:Section Formatting Properties:Flag
+\sftnngbnumd 2002:Section Formatting Properties:Flag
+\sftnngbnumk 2002:Section Formatting Properties:Flag
+\sftnngbnuml 2002:Section Formatting Properties:Flag
+\sftnnrlc 2002:Section Formatting Properties:Flag
+\sftnnruc 2002:Section Formatting Properties:Flag
+\sftnnzodiac 2002:Section Formatting Properties:Flag
+\sftnnzodiacd 2002:Section Formatting Properties:Flag
+\sftnnzodiacl 2002:Section Formatting Properties:Flag
+\sftnrestart 2002:Section Formatting Properties:Flag
+\sftnrstcont 2002:Section Formatting Properties:Flag
+\sftnrstpg 2002:Section Formatting Properties:Flag
+\sftnstart 2002:Section Formatting Properties:Flag
+\sftntj 2002:Section Formatting Properties:Flag
+\shad:Font (Character) Formatting Properties:Toggle
+\shading:Paragraph Shading:Value
+\shidden 97:Style Sheet:Flag
+\shift:Style Sheet:Flag
+\shp:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Destination
+\shpbottomN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shpbxcolumn 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpbxignore 2000:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpbxmargin 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpbxpage 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpbyignore 2000:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpbymargin 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpbypage 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpbypara 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shpfblwtxtN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shpfhdrN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shpgrp 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shpinst 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Destination
+\shpleftN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shplidN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shplockanchor 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Flag
+\shppict 97:Pictures:Destination
+\shprightN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shprslt 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shptopN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shptxt 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shpwrkN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shpwrN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\shpzN 97:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Value
+\sl:Paragraph Formatting Properties:Value
+\slmult :Paragraph Formatting Properties:Value
+\sn:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Destination
+\snaptogridincell 2002:Document Formatting Properties:Flag
+\snext:Style Sheet:Value
+\softcol :Special Characters:Flag
+\softlheight :Special Characters:Value
+\softline :Special Characters:Flag
+\softpage :Special Characters:Flag
+\sp:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Destination
+\spersonal 2000:Style Sheet:Flag
+\splytwnine 2000:Document Formatting Properties:Flag
+\sprsbsp 97:Document Formatting Properties:Flag
+\sprslnsp 7.0:Document Formatting Properties:Flag
+\sprsspbf :Document Formatting Properties:Flag
+\sprstsm 97:Document Formatting Properties:Flag
+\sprstsp :Document Formatting Properties:Flag
+\spv2002:Paragraph Formatting Properties:Flag
+\sreply 2000:Style Sheet:Flag
+\ssemihidden 2002:Style Sheet:Flag
+\staticval 7.0:Information Group:Value
+\stextflow 97:Section Text:Value
+\strike:Font (Character) Formatting Properties:Toggle
+\striked1 97:Character Text:Toggle
+\stshfbiN 2002:Default Fonts:Value
+\stshfdbchN 2002:Default Fonts:Value
+\stshfhichN 2002:Default Fonts:Value
+\stshflochN 2002:Default Fonts:Value
+\stylesheet:Style Sheet:Destination
+\styrsidN 2002:Track Changes (Revision Marks):Value
+\sub :Font (Character) Formatting Properties:Flag
+\subdocument :Paragraph Formatting Properties:Value
+\subfontbysize 7.0:Document Formatting Properties:Flag
+\subject:Information Group:Destination
+\super :Font (Character) Formatting Properties:Flag
+\sv:Word 97 through Word 2002 RTF for Drawing Objects (Shapes):Destination
+\swpbdr :Document Formatting Properties:Flag
+\tab:Special Characters:Symbol
+\tabsnoovrlp2000:Table Definitions:Flag
+\taprtl2000:Table Definitions:Flag
+\tb:Tabs:Value
+\tbllkbestfit 2002:Table Definitions:Flag
+\tbllkborder 2002:Table Definitions:Flag
+\tbllkcolor 2002:Table Definitions:Flag
+\tbllkfont 2002:Table Definitions:Flag
+\tbllkhdrcols 2002:Table Definitions:Flag
+\tbllkhdrrows 2002:Table Definitions:Flag
+\tbllklastcol 2002:Table Definitions:Flag
+\tbllklastrow 2002:Table Definitions:Flag
+\tbllkshading 2002:Table Definitions:Flag
+\tblrsidN 2002:Table Definitions:Flag
+\tc:Table of Contents Entries:Destination
+\tcelld 97:Table Definitions:Flag
+\tcf:Table of Contents Entries:Value
+\tcl:Table of Contents Entries:Value
+\tcn :Table of Contents Entries:Flag
+\tdfrmtxtBottomN2000:Table Definitions:Value
+\tdfrmtxtLeftN2000:Table Definitions:Value
+\tdfrmtxtRightN2000:Table Definitions:Value
+\tdfrmtxtTopN2000:Table Definitions:Value
+\template:Document Formatting Properties:Destination
+\time 97:Fields:Flag
+\title:Information Group:Destination
+\titlepg:Section Formatting Properties:Flag
+\tldot:Tabs:Flag
+\tleq:Tabs:Flag
+\tlhyph:Tabs:Flag
+\tlmdot 7.0:Tabs:Flag
+\tlth:Tabs:Flag
+\tlul:Tabs:Flag
+\topline:Abiword unknown:Value
+\toplinepunct2002:Document Formatting Properties:Flag
+\tphcol2000:Table Definitions:Flag
+\tphmrg2000:Table Definitions:Flag
+\tphpg2000:Table Definitions:Flag
+\tposnegxN2000:Table Definitions:Value
+\tposnegyN2000:Table Definitions:Value
+\tposxc2000:Table Definitions:Flag
+\tposxi2000:Table Definitions:Flag
+\tposxl2000:Table Definitions:Flag
+\tposxN2000:Table Definitions:Value
+\tposxo2000:Table Definitions:Flag
+\tposxr2000:Table Definitions:Flag
+\tposy2000:Table Definitions:Flag
+\tposyb2000:Table Definitions:Flag
+\tposyc2000:Table Definitions:Flag
+\tposyil2000:Table Definitions:Flag
+\tposyin2000:Table Definitions:Flag
+\tposyoutv2000:Table Definitions:Flag
+\tposyt2000:Table Definitions:Flag
+\tpvmrg2000:Table Definitions:Flag
+\tpvpara2000:Table Definitions:Flag
+\tpvpg2000:Table Definitions:Flag
+\tqc:Tabs:Flag
+\tqdec:Tabs:Flag
+\tqr:Tabs:Flag
+\transmf :Document Formatting Properties:Flag
+\trauthN2002:Table Definitions:Value
+\trautofitN 2000:Table Definitions:Toggle
+\trbgbdiag2002:Table Definitions:Flag
+\trbgcross2002:Table Definitions:Flag
+\trbgdcross2002:Table Definitions:Flag
+\trbgdkbdiag2002:Table Definitions:Flag
+\trbgdkcross2002:Table Definitions:Flag
+\trbgdkdcross2002:Table Definitions:Flag
+\trbgdkfdiag2002:Table Definitions:Flag
+\trbgdkhor2002:Table Definitions:Flag
+\trbgdkvert2002:Table Definitions:Flag
+\trbgfdiag2002:Table Definitions:Flag
+\trbghoriz2002:Table Definitions:Flag
+\trbgvert2002:Table Definitions:Flag
+\trbrdrb :Table Definitions:Flag
+\trbrdrh :Table Definitions:Flag
+\trbrdrl :Table Definitions:Flag
+\trbrdrr :Table Definitions:Flag
+\trbrdrt :Table Definitions:Flag
+\trbrdrv :Table Definitions:Flag
+\trcbpatN2002:Table Definitions:Value
+\trcfpatN2002:Table Definitions:Value
+\trdateN:Table Definitions:Value
+\trftsWidthAN2000:Table Definitions:Value
+\trftsWidthBN2000:Table Definitions:Value
+\trftsWidthN2000:Table Definitions:Value
+\trgaph:Table Definitions:Value
+\trhdr :Table Definitions:Flag
+\trkeep :Table Definitions:Flag
+\trleft:Table Definitions:Value
+\trowd:Table Definitions:Flag
+\trpaddbN2000:Table Definitions:Value
+\trpaddfbN2000:Table Definitions:Value
+\trpaddflN2000:Table Definitions:Value
+\trpaddfrN2000:Table Definitions:Value
+\trpaddftN2000:Table Definitions:Value
+\trpaddlN2000:Table Definitions:Value
+\trpaddrN2000:Table Definitions:Value
+\trpaddtN2000:Table Definitions:Value
+\trpatN 2002:Table Definitions:Value
+\trqc:Table Definitions:Flag
+\trql:Table Definitions:Flag
+\trqr:Table Definitions:Flag
+\trrh:Table Definitions:Value
+\trshdngN2002:Table Definitions:Value
+\trspdbN2000:Table Definitions:Value
+\trspdfbN2000:Table Definitions:Value
+\trspdflN2000:Table Definitions:Value
+\trspdfrN2000:Table Definitions:Value
+\trspdftN2000:Table Definitions:Value
+\trspdlN2000:Table Definitions:Value
+\trspdrN2000:Table Definitions:Value
+\trspdtN2000:Table Definitions:Value
+\truncatefontheight:Document Formatting Properties:Flag
+\trwWidthAN2000:Table Definitions:Value
+\trwWidthBN2000:Table Definitions:Value
+\trwWidthN2000:Table Definitions:Value
+\ts 2002:Style Sheet:Value
+\tsbgbdiag 2002:Table Styles:Flag
+\tsbgcross 2002:Table Styles:Flag
+\tsbgdcross 2002:Table Styles:Flag
+\tsbgdkbdiag 2002:Table Styles:Flag
+\tsbgdkcross 2002:Table Styles:Flag
+\tsbgdkdcross 2002:Table Styles:Flag
+\tsbgdkfdiag 2002:Table Styles:Flag
+\tsbgdkhor 2002:Table Styles:Flag
+\tsbgdkvert 2002:Table Styles:Flag
+\tsbgfdiag 2002:Table Styles:Flag
+\tsbghoriz 2002:Table Styles:Flag
+\tsbgvert 2002:Table Styles:Flag
+\tsbrdrb 2002:Table Styles:Flag
+\tsbrdrdgl 2002:Table Styles:Flag
+\tsbrdrdgr 2002:Table Styles:Flag
+\tsbrdrh 2002:Table Styles:Flag
+\tsbrdrl 2002:Table Styles:Flag
+\tsbrdrr 2002:Table Styles:Flag
+\tsbrdrr 2002:Table Styles:Flag
+\tsbrdrt 2002:Table Styles:Flag
+\tsbrdrv 2002:Table Styles:Flag
+\tscbandhorzeven 2002:Table Styles:Flag
+\tscbandhorzodd 2002:Table Styles:Flag
+\tscbandsh 2002:Table Styles:Flag
+\tscbandsv 2002:Table Styles:Flag
+\tscbandverteven 2002:Table Styles:Flag
+\tscbandvertodd 2002:Table Styles:Flag
+\tscellcbpatN 2002:Table Styles:Value
+\tscellcfpatN 2002:Table Styles:Value
+\tscellpaddbN 2002:Table Styles:Value
+\tscellpaddfbN 2002:Table Styles:Value
+\tscellpaddflN 2002:Table Styles:Value
+\tscellpaddfrN 2002:Table Styles:Value
+\tscellpaddftN 2002:Table Styles:Value
+\tscellpaddlN 2002:Table Styles:Value
+\tscellpaddrN 2002:Table Styles:Value
+\tscellpaddtN 2002:Table Styles:Value
+\tscellpctN 2002:Table Styles:Value
+\tscellwidth 2002:Table Styles:Flag
+\tscellwidthfts 2002:Table Styles:Flag
+\tscfirstcol 2002:Table Styles:Flag
+\tscfirstrow 2002:Table Styles:Flag
+\tsclastcol 2002:Table Styles:Flag
+\tsclastrow 2002:Table Styles:Flag
+\tscnecell 2002:Table Styles:Flag
+\tscnwcell 2002:Table Styles:Flag
+\tscsecell 2002:Table Styles:Flag
+\tscswcell 2002:Table Styles:Flag
+\tsd 2002:Table Styles:Flag
+\tsnowrap 2002:Table Styles:Flag
+\tsrowd 2002:Style Sheet:Flag
+\tsvertalb 2002:Table Styles:Flag
+\tsvertalc 2002:Table Styles:Flag
+\tsvertalt 2002:Table Styles:Flag
+\twoonone 7.0:Document Formatting Properties:Flag
+\tx:Tabs:Value
+\txe:Index Entries:Destination
+\ucN 97:Unicode RTF:Value
+\ud 97:Unicode RTF:Destination
+\ul:Font (Character) Formatting Properties:Toggle
+\ulcN 2000:Font (Character) Formatting Properties:Value
+\uld:Font (Character) Formatting Properties:Flag
+\uldash 7.0:Font (Character) Formatting Properties:Toggle
+\uldashd 7.0:Font (Character) Formatting Properties:Toggle
+\uldashdd 7.0:Font (Character) Formatting Properties:Toggle
+\uldb:Font (Character) Formatting Properties:Toggle
+\ulhair 7.0:Font (Character) Formatting Properties:Toggle
+\ulhwave 2000:Font (Character) Formatting Properties:Toggle
+\ulldash 2000:Font (Character) Formatting Properties:Toggle
+\ulnone:Font (Character) Formatting Properties:Flag
+\ulth 7.0:Font (Character) Formatting Properties:Toggle
+\ulth 97:Character Text:Toggle
+\ulthd 2000:Font (Character) Formatting Properties:Toggle
+\ulthdash 2000:Font (Character) Formatting Properties:Toggle
+\ulthdashd 2000:Font (Character) Formatting Properties:Toggle
+\ulthdashdd 2000:Font (Character) Formatting Properties:Toggle
+\ulthldash 2000:Font (Character) Formatting Properties:Toggle
+\ululdbwave 2000:Font (Character) Formatting Properties:Toggle
+\ulw:Font (Character) Formatting Properties:Flag
+\ulwave 7.0:Font (Character) Formatting Properties:Toggle
+\uN 97:Unicode RTF:Value
+\up:Font (Character) Formatting Properties:Value
+\upr 97:Unicode RTF:Destination
+\urtfN:Control Words Introduced by Other Microsoft Products:Destination
+\useltbaln 2000:Document Formatting Properties:Flag
+\userprops 7.0:Information Group:Destination
+\v:Font (Character) Formatting Properties:Toggle
+\vern:Information Group:Value
+\version:Information Group:Value
+\vertalb:Section Formatting Properties:Flag
+\vertalc:Section Formatting Properties:Flag
+\vertalj:Section Formatting Properties:Flag
+\vertalt:Section Formatting Properties:Flag
+\vertdoc 7.0:Document Formatting Properties:Flag
+\vertsect 7.0:Section Formatting Properties:Flag
+\viewkindN 97:Document Formatting Properties:Value
+\viewnobound 2002:Document Formatting Properties:Flag
+\viewscaleN 97:Document Formatting Properties:Value
+\viewzkN 97:Document Formatting Properties:Value
+\wbitmap:Pictures:Value
+\wbmbitspixel:Pictures:Value
+\wbmplanes:Pictures:Value
+\wbmwidthbytes:Pictures:Value
+\webhidden 2000:Font (Character) Formatting Properties:Flag
+\widctlpar:Paragraph Formatting Properties:Flag
+\widowctrl:Document Formatting Properties:Flag
+\windowcaption 97:Document Formatting Properties:Value
+\wmetafile:Pictures:Value
+\wpeqn 97:Fields:Flag
+\wpjst 97:Document Formatting Properties:Flag
+\wpsp 97:Document Formatting Properties:Flag
+\wraptrsp :Document Formatting Properties:Flag
+\wrppunct2002:Document Formatting Properties:Flag
+\xe:Index Entries:Destination
+\xef:Index Entries:Value
+\yr:Information Group:Value
+\ytsN2002:Paragraph Formatting Properties:Value
+\yxe 97:Index Entries:Flag
+\zwbo 7.0:Special Characters:Symbol
+\zwj 2002:Special Characters:Symbol
+\zwnbo 7.0:Special Characters:Symbol
+\zwnj 2002:Special Characters:Symbol
