@@ -129,7 +129,7 @@ UT_uint32 PD_Document::getHighestRevisionId() const
 
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		iId = UT_MAX(iId, static_cast<const PD_Revision *>(m_vRevisions.getNthItem(i))->getId());
+		iId = UT_MAX(iId, reinterpret_cast<const PD_Revision *>(m_vRevisions.getNthItem(i))->getId());
 	}
 
 	return iId;
@@ -142,7 +142,7 @@ const PD_Revision * PD_Document::getHighestRevision() const
 
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const PD_Revision * t = static_cast<const PD_Revision *>(m_vRevisions.getNthItem(i));
+		const PD_Revision * t = reinterpret_cast<const PD_Revision *>(m_vRevisions.getNthItem(i));
 		UT_uint32 t_id = t->getId();
 
 		if(t_id > iId)
@@ -160,7 +160,7 @@ bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const PD_Revision * r = static_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
+		const PD_Revision * r = reinterpret_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
 		if(r->getId() == iId)
 			return false;
 	}
@@ -177,7 +177,7 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const PD_Revision * r = static_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
+		const PD_Revision * r = reinterpret_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
 		if(r->getId() == iId)
 			return false;
 	}
@@ -3304,7 +3304,7 @@ void PD_Document::removeBookmark(const XML_Char * pName)
 {
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
-		const XML_Char * pBM =  static_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
+		const XML_Char * pBM =  reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
 		if(!UT_XML_strcmp(pName, pBM))
 		{
 			m_vBookmarkNames.deleteNthItem(i);
@@ -3319,7 +3319,7 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 {
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
-		const XML_Char * pBM =  static_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
+		const XML_Char * pBM =  reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
 		if(!UT_XML_strcmp(pName, pBM))
 			return false;
 	}
