@@ -37,6 +37,7 @@
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
+#include "ap_Prefs.h"
 
 #ifdef WIN32
 #include "ut_Win32OS.h"
@@ -47,12 +48,17 @@
 
 IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument),
-	  m_pListener(NULL),
-	  m_bIsEncoded(bEncoded)
+	  m_pListener(NULL)
 {
 	UT_ASSERT(pDocument);
 
 	m_error = 0;
+
+	// Get encoding dialog prefs setting
+	bool bAlwaysPrompt;
+	m_pDocument->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
+
+	m_bIsEncoded = bAlwaysPrompt | bEncoded;
 
 	const char *szEncodingName = pDocument->getEncodingName();
 	if (!szEncodingName || !*szEncodingName)

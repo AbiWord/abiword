@@ -35,6 +35,7 @@
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
+#include "ap_Prefs.h"
 
 /*!
   Construct ImportStream
@@ -525,11 +526,15 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 {
 	UT_ASSERT(pDocument);
 
+	// Get encoding dialog prefs setting
+	bool bAlwaysPrompt;
+	m_pDocument->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
+
+	m_bIsEncoded = bAlwaysPrompt | bEncoded;
+
 	const char *szEncodingName = pDocument->getEncodingName();
 	if (!szEncodingName || !*szEncodingName)
 		szEncodingName = XAP_EncodingManager::get_instance()->getNativeEncodingName();
-
-	m_bIsEncoded = bEncoded;
 
 	_setEncoding(szEncodingName);
 }
