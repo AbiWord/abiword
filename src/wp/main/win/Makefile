@@ -35,7 +35,7 @@ ABIICONV = Abi_libiconv
 else
 ABIICONV =
 endif
-MINGRES_INCS=--include-dir=../../ap/win --include-dir=../../../af/xap/win
+MINGRES_INCS=--include-dir=../../ap/win --include-dir=../../../af/xap/win --include-dir=../../../af/util/win
 CPPSRCS+=		dummy.cpp
 
 ABI_LIBS=	kernel32 user32 gdi32 winspool comdlg32 advapi32 \
