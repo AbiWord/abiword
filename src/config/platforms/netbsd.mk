@@ -19,7 +19,7 @@
 ## 02111-1307, USA.
 
 ##############################################################################
-## NetBSD platform defines, courtesy of jyonw@asu.edu
+## NetBSD platform defines, courtesy of John Wood (jyonw@asu.edu)
 ##############################################################################
 
 # Define tools
@@ -40,7 +40,7 @@ OPTIMIZER	= -g -Wall -Wshadow
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O
+OPTIMIZER	= -O2
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
