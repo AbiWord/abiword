@@ -56,7 +56,12 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	m_pLastColumn = NULL;
 
 	setAttrPropIndex(indexAP);
-	
+
+	_lookupProperties();
+}
+
+void fl_SectionLayout::_lookupProperties(void)
+{
 	const PP_AttrProp* pSectionAP = NULL;
 	
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
@@ -64,20 +69,35 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	const char* pszNumColumns = NULL;
 	const char* pszColumnGap = NULL;
 
+	/*
+	  TODO shouldn't we be using PP_evalProperty like
+	  the blockLayout does?
+	*/
+	
 	pSectionAP->getProperty("columns", pszNumColumns);
 	pSectionAP->getProperty("column-gap", pszColumnGap);
 	
-	if (pszNumColumns && pszNumColumns[0] && pszColumnGap && pszColumnGap[0])
+	if (pszNumColumns && pszNumColumns[0])
 	{
 		m_iNumColumns = atoi(pszNumColumns);
-		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
 	}
 	else
 	{
 		m_iNumColumns = 1;
+	}
+
+	if (pszColumnGap && pszColumnGap[0])
+	{
+		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
+	}
+	else
+	{
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
 	}
 
+	/*
+	  TODO these margins should NOT be hard-coded
+	*/
 	m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
 	m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
 	m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
@@ -436,10 +456,54 @@ UT_Bool fl_SectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 
 	setAttrPropIndex(pcrxc->getIndexAP());
 
-	// TODO _lookupProperties
-	
-	UT_ASSERT(UT_TODO);
+	_lookupProperties();
 
+	// clear all the columns
+	fp_Column* pCol = m_pFirstColumn;
+	while (pCol)
+	{
+		pCol->clearScreen();
+
+		pCol = pCol->getNext();
+	}
+
+	// remove all the columns from their pages
+	pCol = m_pFirstColumn;
+	while (pCol)
+	{
+		if (pCol->getLeader() == pCol)
+		{
+			pCol->getPage()->removeColumnLeader(pCol);
+		}
+
+		pCol = pCol->getNext();
+	}
+
+	// get rid of all the layout information for every block
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->collapse();
+
+		pBL = pBL->getNext(UT_FALSE);
+	}
+
+	// delete all our columns
+	pCol = m_pFirstColumn;
+	while (pCol)
+	{
+		fp_Column* pNext = pCol->getNext();
+
+		delete pCol;
+
+		pCol = pNext;
+	}
+
+	m_pFirstColumn = NULL;
+	m_pLastColumn = NULL;
+	
+	format();
+	
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{

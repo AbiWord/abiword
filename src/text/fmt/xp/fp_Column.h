@@ -99,6 +99,8 @@ public:
 	void				setX(UT_sint32);
 	void				setY(UT_sint32);
 
+	void				clearScreen(void);
+	
 protected:
 	UT_uint32 				_getBottomOfLastLine(void) const;
 

@@ -268,7 +268,7 @@ void fl_BlockLayout::_lookupProperties(void)
 fl_BlockLayout::~fl_BlockLayout()
 {
 	_destroySpellCheckLists();
-	_purgeLayout();
+	purgeLayout();
 }
 
 void fl_BlockLayout::_fixColumns(void)
@@ -315,11 +315,30 @@ void fl_BlockLayout::clearScreen(DG_Graphics* pG)
 	}
 }
 
-void fl_BlockLayout::_purgeLayout(void)
+void fl_BlockLayout::collapse(void)
 {
-	fp_Line* pLine;
+	fp_Run* pRun = m_pFirstRun;
+	while (pRun)
+	{
+		pRun->setLine(NULL);
+		
+		pRun = pRun->getNext();
+	}
+	
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
+	{
+		_removeLine(pLine);
+		pLine = m_pFirstLine;
+	}
 
-	pLine = m_pFirstLine;
+	UT_ASSERT(m_pFirstLine == NULL);
+	UT_ASSERT(m_pLastLine == NULL);
+}
+
+void fl_BlockLayout::purgeLayout(void)
+{
+	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
 		_removeLine(pLine);
@@ -2119,7 +2138,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	}
 
 	// get rid of everything else about the block
-	_purgeLayout();
+	purgeLayout();
 
 	pPrevBL->m_pNext = m_pNext;
 							

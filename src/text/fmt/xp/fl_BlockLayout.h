@@ -133,6 +133,9 @@ public:
 		the normal flow, in order.
 	*/
 
+	void					purgeLayout(void);
+	void					collapse(void);
+	
 protected:
 
 #ifndef NDEBUG
@@ -150,7 +153,6 @@ protected:
 	
 	void					_lookupProperties(void);
 	void			 		_fixColumns(void);
-	void					_purgeLayout(void);
 	void					_removeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 	void					_destroySpellCheckLists(void);

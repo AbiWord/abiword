@@ -583,6 +583,17 @@ void fp_Column::updateLayout(void)
 	}
 }
 
+void fp_Column::clearScreen(void)
+{
+	int count = m_vecLines.getItemCount();
+	for (int i = 0; i<count; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+
+		pLine->clearScreen();
+	}
+}
+
 void fp_Column::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecLines.getItemCount();

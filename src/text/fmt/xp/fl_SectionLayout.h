@@ -69,6 +69,7 @@ public:
 protected:
 	void				_purgeLayout();
 	fb_LineBreaker *	_getLineBreaker(void);
+	void				_lookupProperties(void);
 
 	FL_DocLayout*		m_pLayout;
 	fb_LineBreaker*		m_pLB;
