@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2003 Jordi Mas i Hernàdez, jmas@softcatala.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,66 +22,195 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
 #include "xap_App.h"
 #include "xap_Win32App.h"
+#include "ap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_MailMerge.h"
 #include "ap_Win32Dialog_MailMerge.h"
-
 #include "ap_Win32Resources.rc2"
 
-/*****************************************************************/
+#define GWL(hwnd)		(AP_Win32Dialog_MailMerge*)GetWindowLong((hwnd), DWL_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_MailMerge*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
 
+
+/*****************************************************************/
 XAP_Dialog * AP_Win32Dialog_MailMerge::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													       XAP_Dialog_Id id)
 {
 	AP_Win32Dialog_MailMerge * p = new AP_Win32Dialog_MailMerge(pFactory,id);
 	return p;
 }
 
 AP_Win32Dialog_MailMerge::AP_Win32Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
+										             XAP_Dialog_Id id)
 	: AP_Dialog_MailMerge(pDlgFactory,id)
-{
-}
-
+{		
+	
+}   
+    
 AP_Win32Dialog_MailMerge::~AP_Win32Dialog_MailMerge(void)
-{
+{	
+	
 }
 
 void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
+	UT_ASSERT(pFrame);	
 	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+	m_pFrame = pFrame;
 
-	2.  Do a case sensitive global replace on the words MailMerge and STUB
-		in both files. 
+	int iResult;
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+	LPCTSTR lpTemplate = NULL;
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	UT_ASSERT(m_id == AP_DIALOG_ID_MAILMERGE);
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MAILMERGE);
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+							(DLGPROC)s_dlgProc,(LPARAM)this);
+
+	UT_ASSERT((hResult != NULL));
+
+	m_hwndDlg = hResult;
+
+	// Save dialog the ID number and pointer to the widget
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+	iResult = ShowWindow(m_hwndDlg, SW_SHOW );
+	iResult = BringWindowToTop( m_hwndDlg );
+
+	UT_ASSERT((iResult != 0));	
 }
 
+BOOL CALLBACK AP_Win32Dialog_MailMerge::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{		
+	AP_Win32Dialog_MailMerge * pThis;
+	
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		pThis = (AP_Win32Dialog_MailMerge *)lParam;
+		SWL(hWnd,lParam);
+		return pThis->_onInitDialog(hWnd,wParam,lParam);
+		
+	case WM_COMMAND:
+		pThis = GWL(hWnd);
+		return pThis->_onCommand(hWnd,wParam,lParam);
+	default:
+		return 0;
+	}
+}
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MAILMERGE_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MAILMERGE_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+
+// This handles the WM_INITDIALOG message for the top-level dialog.
+BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{		
+	init();
+	
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// Localise Controls
+	_DS(STATIC_AVAIL,	DLG_MailMerge_AvailableFields);		
+	_DS(STATIC_FIELD,	DLG_MailMerge_Insert_No_Colon);		
+	_DS(BTN_OPEN,		DLG_MailMerge_OpenFile);		
+	_DS(BTN_INSERT,		DLG_InsertButton);		
+	_DSX(BTN_CLOSE,		DLG_Close);				
+	
+	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_MailMerge_MailMergeTitle));	
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	
+	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_MAILMERGE_BTN_CLOSE));
+	return 0; // 0 because we called SetFocus
+}
+
+
+
+BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+		case AP_RID_DIALOG_MAILMERGE_LISTBOX:
+		if (HIWORD(wParam)==LBN_DBLCLK)
+		{
+			char szBuff[255];
+			int nItem = SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETCURSEL, 0, 0);
+			
+			if (nItem!=LB_ERR)
+			{	
+				SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)szBuff);			
+				setMergeField(szBuff);			
+				addClicked();
+			}
+			return 1;
+		}		
+		
+		case AP_RID_DIALOG_MAILMERGE_BTN_INSERT:		
+		{	
+			char szBuff[255];
+			
+			GetDlgItemText(m_hwndDlg,  AP_RID_DIALOG_MAILMERGE_EDIT_FIELD, szBuff, 255);
+			
+			setMergeField(szBuff);
+			addClicked();
+			return 1;
+		}
+		
+		case AP_RID_DIALOG_MAILMERGE_BTN_OPEN:		
+		{			
+			eventOpen();
+			SetFocus(m_hwndDlg);
+			return 1;
+		}	
+		
+		
+		case AP_RID_DIALOG_MAILMERGE_BTN_CLOSE:		
+		case IDCANCEL:		// We want to close button work
+		{			
+			DestroyWindow(m_hwndDlg);		
+			modeless_cleanup();
+			return 1;
+		}	
+		
+		default:							// we did not handle this notification
+			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+			return 0;						// return zero to let windows take care of it.
+	}
+}
+
+
+void AP_Win32Dialog_MailMerge::setFieldList()
+{
+	if(!m_vecFields.size())	return;	
+
+	UT_uint32 i;
+	UT_UTF8String * str;
+	UT_String	sAnsi;
+	
+	SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_RESETCONTENT,	0, 0);
+		
+ 	// build a list of all items
+    for (i = 0; i < m_vecFields.size(); i++)
+	{
+		str = (UT_UTF8String*)m_vecFields[i];
+		sAnsi = 	AP_Win32App::s_fromUTF8ToAnsi(str->utf8_str());
+		
+		SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_ADDSTRING,
+			0, (LPARAM)sAnsi.c_str());
+	}
+	
+}

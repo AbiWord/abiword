@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2003 Jordi Mas i Hernàdez, jmas@softcatala.org
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,8 +35,16 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
+	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	
 protected:
 
+	virtual void setFieldList();
+	
+	HWND							m_hwndDlg;	//  dialog box Windows
 };
 
 #endif /* AP_WIN32DIALOG_MAILMERGE_H */
