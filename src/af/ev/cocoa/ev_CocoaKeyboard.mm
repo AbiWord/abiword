@@ -70,15 +70,11 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 	if (modifierFlags & NSAlternateKeyMask)
 		state |= EV_EMS_ALT;
 
-	const char * s = [[e characters] UTF8String];
-	int uLength = strlen(s);
-	UT_UCS2Char * ucs = (UT_UCS2Char*)UT_convert((char*)s, uLength,
-												 "UTF-8", "UCS-2",
-												 NULL, NULL);
-
+	NSString *characters = [e characters];
+	int uLength = [characters length];
 	for (int ind = 0; ind < uLength; ind++)
 	{
-		UT_uint32 charData = (UT_uint32)ucs[ind];
+		UT_uint32 charData = [characters characterAtIndex:ind]; // can we go faster than that ?
 		xxx_UT_DEBUGMSG(("CocoaKeyboard::pressKeyEvent: key value %x\n",charData));
 		if (s_isVirtualKeyCode(charData))
 		{
@@ -156,7 +152,7 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 				return true;
 			}
 		}
-		}
+	}
 
 	return false;
 }
