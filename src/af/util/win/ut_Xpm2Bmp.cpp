@@ -56,7 +56,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 	UT_ASSERT(n == 4);
 	UT_ASSERT(xpm_width > 0);
 	UT_ASSERT(xpm_height > 0);
-	UT_ASSERT((nrColors > 0) && (nrColors < 256));
+
 	UT_ASSERT(charsPerPixel > 0);
 
 	width = xpm_width < maxWidth ? xpm_width : maxWidth;
