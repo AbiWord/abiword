@@ -104,7 +104,6 @@
 #endif
 
 #include <popt.h>
-static void s_poptInit(AP_Args *Args);
 
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
@@ -1332,7 +1331,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 bool AP_UnixApp::parseCommandLine(poptContext poptcon)
 {
 	int kWindowsOpened = 0;
-	char *file = NULL;
+	const char *file = NULL;
 
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
@@ -1377,10 +1376,10 @@ void AP_UnixApp::initPopt(AP_Args *Args)
 {
 	int nextopt;
 
-	Args->options = Args->const_opts;
+	Args->options = const_cast<poptOption*>(Args->const_opts);
 	Args->poptcon = poptGetContext("AbiWord", 
-							   Args->XArgs->m_argc, Args->XArgs->m_argv, 
-								   Args->options, 0);
+				       Args->XArgs->m_argc, (const char **)Args->XArgs->m_argv, 
+				       Args->options, 0);
 
     while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 || 
 		   nextopt == POPT_ERROR_BADOPT)
