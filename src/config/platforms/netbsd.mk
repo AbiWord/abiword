@@ -50,18 +50,64 @@ DLL_SUFFIX	= so
 AR		= ar cr $@
 
 # Compiler flags
-ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g -Wall -ansi -pedantic
-DEFINES		= -DDEBUG -UNDEBUG
-OBJ_DIR_SFX	= DBG
+
+ifeq ($(ABI_OPT_PANGO),1)
+	OBJ_DIR_SFX	= PANGO_
 else
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
-DEFINES		=
-OBJ_DIR_SFX	= OBJ
+	OBJ_DIR_SFX	= 
+endif
+
+DEFINES		= 
+OPTIMIZER	= 
+
+ifeq ($(ABI_OPT_PROF),1)
+OPTIMIZER	= -pg -fprofile-arcs -ftest-coverage
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+ABI_OPT_OPTIMIZE= 1
+ABI_OPTIONS	+= Profile:On
+endif
+
+ifeq ($(ABI_OPT_OPTIMIZE),1)
+OPTIMIZER	+= -O3 -fomit-frame-pointer
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
+ABI_OPTIONS	+= Optimize:On
+ABI_OPT_DEBUG	= 0
+else
+OPTIMIZER	= -O2
+endif
+
+ifeq ($(ABI_OPT_DEBUG),1)
+OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
+ABI_OPT_PACIFY_COMPILER = 1
+DEFINES		= -DDEBUG -UNDEBUG
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
+endif
+
+
+ifeq ($(ABI_OPT_GNOME),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+endif
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)EXP_
+endif
+
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
+
+ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
+WARNFLAGS	= -Weffc++
+else
+WARNFLAGS	=
+endif
+
+ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
+WARNFLAGS	+= -Wall -ansi -pedantic
 endif
 
 # Includes
-OS_INCLUDES		+=
+OS_INCLUDES		=
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
+OS_INCLUDES		+= -I$(ABI_ROOT)/../libiconv/include
+endif
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
