@@ -32,15 +32,9 @@ TARGETS=		$(LIBRARY)
 # note: and add a line to the intall section which copies it to
 # note: the $(DIST)/bin directory on Windows.
 
-ifeq ($(ABI_NATIVE), win)
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_Win32Keyboard.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_Win32Mouse.$(OBJ_SUFFIX)
-endif
-ifeq ($(ABI_NATIVE), unix)
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_UnixKeyboard.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_UnixMenu.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_UnixMouse.$(OBJ_SUFFIX)
-endif
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Menu.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Mouse.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ev_EditBinding.$(OBJ_SUFFIX)		\

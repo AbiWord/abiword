@@ -32,13 +32,8 @@ TARGETS=		$(LIBRARY)
 # note: and add a line to the intall section which copies it to
 # note: the $(DIST)/bin directory on Windows.
 
-ifeq ($(ABI_NATIVE), win)
-PLATFORM_OBJS=
-endif
-ifeq ($(ABI_NATIVE), unix)
-PLATFORM_OBJS=	unix/$(OBJDIR)/ap_UnixAp.$(OBJ_SUFFIX)			\
-		unix/$(OBJDIR)/ap_UnixFrame.$(OBJ_SUFFIX)
-endif
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Ap.$(OBJ_SUFFIX)			\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ap_Ap.$(OBJ_SUFFIX)			\

@@ -32,12 +32,7 @@ TARGETS=		$(LIBRARY)
 # note: and add a line to the intall section which copies it to
 # note: the $(DIST)/bin directory on Windows.
 
-ifeq ($(ABI_NATIVE), win)
-PLATFORM_OBJS=
-endif
-ifeq ($(ABI_NATIVE), unix)
-PLATFORM_OBJS=	unix/$(OBJDIR)/gr_UnixGraphics.$(OBJ_SUFFIX)
-endif
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\

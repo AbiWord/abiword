@@ -82,6 +82,7 @@ LDFLAGS = -DEBUG -DEBUGTYPE:CV
 OS_DLLFLAGS = -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
 
 ABI_NATIVE=	win
+ABI_FE=	Win32
 endif
 # end of WinNT section
 #######################
@@ -115,6 +116,7 @@ PORT_FLAGS		+= -D_XOPEN_SOURCE
 
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 ABI_NATIVE=	unix
+ABI_FE=	Unix
 
 endif
 # end of Linux section
