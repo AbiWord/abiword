@@ -58,20 +58,91 @@
 
 - (void)sendEvent:(NSEvent *)anEvent
 {
-	if (m_MenuDelegate)
-		if ([anEvent type] == NSKeyDown)
-			if ([anEvent modifierFlags] & NSCommandKeyMask)
-				{
-					id  target;
-					SEL action;
+	NSWindow * keyWindow = [self keyWindow];
 
-					if ([m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action])
-						{
-							[self sendAction:action to:target from:self];
-							return;
-						}
-				}
-	[super sendEvent:anEvent];
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [self delegate];
+
+	bool bFrameIsActive = pController ? ([pController currentFrame] ? true : false) : false;
+
+	bool bEventHandled = false;
+
+	if ([anEvent type] == NSKeyDown)
+		if ([anEvent modifierFlags] & NSCommandKeyMask)
+			{
+				if (m_MenuDelegate && (bFrameIsActive || !keyWindow))
+					{
+						id  target;
+						SEL action;
+
+						if ([m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action])
+							{
+								[self sendAction:action to:target from:self];
+								bEventHandled = true;
+							}
+					}
+				else if (keyWindow && !bFrameIsActive)
+					{
+						NSString * str = [anEvent charactersIgnoringModifiers];
+						if ([str length] == 1)
+							{
+								unichar uc;
+								[str getCharacters:&uc];
+
+								if ((uc & 0x7f) == uc)
+									switch (static_cast<char>(uc))
+										{
+										case 'a': // In other applications this would normally be handled by the Edit menu
+											{
+												if (NSResponder * firstResponder = [keyWindow firstResponder])
+													{
+														[firstResponder selectAll:self];
+														bEventHandled = true;
+													}
+												break;
+											}
+										case 'c': // In other applications this would normally be handled by the Edit menu
+											{
+												if (NSResponder * firstResponder = [keyWindow firstResponder])
+													if ([firstResponder respondsToSelector:@selector(copy:)])
+														{
+															NSText * textResponder = (NSText *) firstResponder;
+															[textResponder copy:self];
+															bEventHandled = true;
+														}
+												break;
+											}
+										case 'v': // In other applications this would normally be handled by the Edit menu
+											{
+												if (NSResponder * firstResponder = [keyWindow firstResponder])
+													if ([firstResponder respondsToSelector:@selector(paste:)])
+														{
+															NSText * textResponder = (NSText *) firstResponder;
+															[textResponder paste:self];
+															bEventHandled = true;
+														}
+												break;
+											}
+										case 'x': // In other applications this would normally be handled by the Edit menu
+											{
+												if (NSResponder * firstResponder = [keyWindow firstResponder])
+													if ([firstResponder respondsToSelector:@selector(cut:)])
+														{
+															NSText * textResponder = (NSText *) firstResponder;
+															[textResponder cut:self];
+															bEventHandled = true;
+														}
+												break;
+											}
+										default:
+											break;
+										}
+							}
+					}
+			}
+	if (!bEventHandled)
+		{
+			[super sendEvent:anEvent];
+		}
 }
 
 - (void)setMenuDelegate:(EV_CocoaMenuDelegate *)menuDelegate
@@ -91,7 +162,7 @@
 
 @end
 
-XAP_CocoaAppController* XAP_AppController_Instance = nil;
+XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 @implementation XAP_CocoaAppController
 
