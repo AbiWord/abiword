@@ -46,7 +46,7 @@ struct _bb
 
 static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-	struct _bb* p = (struct _bb*) png_ptr->io_ptr;
+	struct _bb* p = (struct _bb*) png_get_io_ptr(png_ptr);
 	const UT_Byte* pBytes = p->pBB->getPointer(0);
 
 	memcpy(data, pBytes + p->iCurPos, length);

@@ -50,7 +50,7 @@ struct _bb
 
 static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-	struct _bb* p = (struct _bb*) png_ptr->io_ptr;
+	struct _bb* p = (struct _bb*) png_get_io_ptr(png_ptr);
 	const UT_Byte* pBytes = p->pBB->getPointer(0);
 
 	memcpy(data, pBytes + p->iCurPos, length);
@@ -192,7 +192,7 @@ GR_Win32Image::~GR_Win32Image()
 
 static void _png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-	UT_ByteBuf* pBB = (UT_ByteBuf*) png_ptr->io_ptr;
+	UT_ByteBuf* pBB = (UT_ByteBuf*) png_get_io_ptr(png_ptr);
 
 	pBB->ins(pBB->getLength(), data, length);
 }
