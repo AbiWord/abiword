@@ -53,7 +53,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_bNeedsRedraw(true),
 		m_pOwner(pOwner),
 		m_pFooter(0),
-		m_pHeader(0)
+		m_pHeader(0),
+		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
@@ -74,6 +75,14 @@ fp_Page::~fp_Page()
 		m_pOwner = NULL;
 		pDSL->deleteOwnedPage(this);
 	}
+}
+
+/*!
+ * FillType class for the page.
+ */
+fg_FillType * fp_Page::getFillType(void)
+{
+	return &m_FillType;
 }
 
 bool fp_Page::isEmpty(void) const
@@ -1159,7 +1168,7 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 
 		while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
 		{
-			pLastRun = pLastRun->getPrev();
+			pLastRun = pLastRun->getPrevRun();
 		}
 
 		if(pLastRun->isForcedBreak())

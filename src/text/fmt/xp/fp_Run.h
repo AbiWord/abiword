@@ -38,6 +38,7 @@
 #include <fribidi.h>
 #include "pp_Revision.h"
 #include "ut_string_class.h"
+#include "fp_ContainerObject.h"
 
 class UT_GrowBuf;
 class fp_Line;
@@ -126,7 +127,7 @@ enum FPRUN_CLEAR_SCREEN
                                but may also do other processing to maintain
 							   internal state.
 */
-class ABI_EXPORT fp_Run
+class ABI_EXPORT fp_Run : fp_ContainerObject
 {
 public:
 	fp_Run(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst,
@@ -144,10 +145,18 @@ public:
 	UT_sint32		        getWidth() const		        { return m_iWidth; }
 	UT_uint32		        getAscent() const				{ return m_iAscent; }
 	UT_uint32		        getDescent() const 				{ return m_iDescent; }
-	virtual UT_uint32       getDrawingWidth() const         { return m_iWidth; }
+	virtual UT_sint32       getDrawingWidth() const         { return static_cast<UT_sint32>(m_iWidth); }
 	
-	fp_Run* 		        getNext() const					{ return m_pNext; }
-	fp_Run*			        getPrev() const					{ return m_pPrev; }
+	fp_Run* 		        getNextRun() const					{ return m_pNext; }
+	fp_Run*			        getPrevRun() const					{ return m_pPrev; }
+	virtual fp_ContainerObject * getNext(void) const { return NULL;}
+	virtual fp_ContainerObject * getPrev(void) const { return NULL;}
+	virtual fp_Container *       getNextContainerInSection(void) const { return NULL;}
+	virtual fp_Container *       getPrevContainerInSection(void) const { return NULL;}
+	virtual void                 setNext(fp_ContainerObject * pNull) {}
+	virtual void                 setPrev(fp_ContainerObject * pNull) {}
+	virtual void                 draw(GR_Graphics * pG) {}
+
 	UT_uint32		        getBlockOffset() const			{ return m_iOffsetFirst; }
 	UT_uint32		        getLength() const				{ return m_iLen; }
 	GR_Graphics*	        getGraphics() const;
@@ -174,12 +183,13 @@ public:
 
 	void					setLine(fp_Line*);
 	void					setBlock(fl_BlockLayout * pBL) { _setBlock(pBL); }
-	void					setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
-	void					setY(UT_sint32);
+	virtual void            setX(UT_sint32 x, bool bDontClearIfNeeded = false);
+	void			        Run_setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
+	virtual void			setY(UT_sint32);
 	void					setBlockOffset(UT_uint32);
 	void					setLength(UT_uint32 iLen, bool bRefresh = true);
-	void					setNext(fp_Run*, bool bRefresh = true);
-	void					setPrev(fp_Run*, bool bRefresh = true);
+	void					setNextRun(fp_Run*, bool bRefresh = true);
+	void					setPrevRun(fp_Run*, bool bRefresh = true);
 	void					setHyperlink(fp_HyperlinkRun * pH);
 	void					markWidthDirty() {m_bRecalcWidth = true;}
 	bool					isFirstRunOnLine(void) const;
@@ -188,8 +198,18 @@ public:
 	bool					isFirstVisRunOnLine(void) const;
 	bool					isLastVisRunOnLine(void) const;
 	void					markDrawBufferDirty() {m_bRefreshDrawBuffer = true;}
-	void					draw(dg_DrawArgs*);
-	void            		clearScreen(bool bFullLineHeightRect = false);
+	virtual void			draw(dg_DrawArgs*);
+	virtual void            clearScreen(void);
+	void                    Run_ClearScreen(bool bFullLineHeightRect = false);
+	virtual void            setWidth(UT_sint32 iW) {}
+	virtual void            setHeight(UT_sint32 iH) {}
+	virtual bool            isVBreakable(void) {return false;}
+	virtual bool            isHBreakable(void) {return false;}
+	virtual UT_sint32       wantVBreakAt(UT_sint32 i) {return i;}
+	virtual UT_sint32       wantHBreakAt(UT_sint32 i) {return i;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32) { return NULL;}
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) { return NULL;}
+
 	void					markAsDirty(void);
 	void                    setCleared(void);
 	bool					isDirty(void) const { return m_bDirty; }
@@ -254,7 +274,8 @@ public:
 	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
 	void					forceRecalcWidth(void) { m_bRecalcWidth = true; }
 	void					forceRefreshDrawBuffer(void) { m_bRefreshDrawBuffer = true; }
-
+	void                    Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
+	fg_FillType *           getFillType(void);            
 
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -385,6 +406,7 @@ private:
 	UT_RGBColor 			m_pColorFG;
 	FPVisibility            m_eHidden;
 	bool                    m_bIsCleared;
+	fg_FillType             m_FillType;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
@@ -524,7 +546,7 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual UT_uint32       getDrawingWidth() const { return m_iDrawWidth;}
+	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
 
 //
 // Tomas this breaks line breaking....

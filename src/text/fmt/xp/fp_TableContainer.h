@@ -180,7 +180,8 @@ public:
 		
 	PP_PropertyMap::Background getBackground () const;
 
-	void setBackground (const PP_PropertyMap::Background & style) { m_background = style; }
+	void setBackground (const PP_PropertyMap::Background & style);
+
 
 	PP_PropertyMap::Line getBottomStyle (const fl_TableLayout * table) const;
 	PP_PropertyMap::Line getLeftStyle   (const fl_TableLayout * table) const;

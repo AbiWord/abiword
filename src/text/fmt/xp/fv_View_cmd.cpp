@@ -2528,15 +2528,15 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 
 	fp_Run *pRun = pBlock->getFirstRun();
 	while (pRun && pRun->getBlockOffset()+ pRun->getLength() < iRelPos)
-		pRun= pRun->getNext();
+		pRun= pRun->getNextRun();
 
 	UT_ASSERT(pRun);
-	pRun->getPrev();
+	pRun->getPrevRun();
 
 	UT_ASSERT(pRun);
 #if 0
 	if(pRun->getType()== FPRUN_FMTMARK || pRun->getType()== FPRUN_HYPERLINK || pRun->getType()== FPRUN_BOOKMARK)
-		pRun  = pRun->getNext();
+		pRun  = pRun->getNextRun();
 
 	UT_ASSERT(pRun);
 #endif
@@ -2854,7 +2854,7 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 
 	//find the run at pos1
 	while(pRun && pRun->getBlockOffset() <= curPos)
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 
 	// this sometimes happens, not sure why
 	//UT_ASSERT(pRun);
@@ -2863,7 +2863,7 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 
 	// now we have the run immediately after the run in question, so
 	// we step back
-	pRun = pRun->getPrev();
+	pRun = pRun->getPrevRun();
 	UT_ASSERT(pRun);
 	if(!pRun)
 		return false;
@@ -3481,8 +3481,8 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 		PT_DocPosition iRelPos = getPoint() - pBlock->getPosition(false);
 
 		pRun = pBlock->getFirstRun();
-		while (pRun && pRun->getNext() && pRun->getBlockOffset()+ pRun->getLength() <= iRelPos)
-			pRun= pRun->getNext();
+		while (pRun && pRun->getNextRun() && pRun->getBlockOffset()+ pRun->getLength() <= iRelPos)
+			pRun= pRun->getNextRun();
 
 		UT_ASSERT(pRun);
 
@@ -3508,12 +3508,12 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 
 			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
 
-			pRun = pRun->getPrev();
+			pRun = pRun->getPrevRun();
 		}
 
 		// we have already processed the original run, so lets start
 		// with the one after it
-		pRun = pOrigRun->getNext();
+		pRun = pOrigRun->getNextRun();
 
 		while(pRun && pRun->containsRevisions())
 		{
@@ -3524,7 +3524,7 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 
 			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
 
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 		}
 #endif
 	}

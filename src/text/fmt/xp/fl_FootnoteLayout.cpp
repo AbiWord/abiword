@@ -404,7 +404,7 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 			PT_DocPosition posBL = pBL->getPosition();
 			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) < posFL))
 			{
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 			if(pRun && pRun->getLine())
 			{

@@ -26,7 +26,7 @@
 #include "pt_Types.h"
 #include "fl_SectionLayout.h"
 #include "fp_PageSize.h"
-
+#include "fp_ContainerObject.h"
 
 class FL_DocLayout;
 class fp_Column;
@@ -105,6 +105,7 @@ public:
 	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
 	void                clearScreenFootnotes(void);
 	UT_sint32           getFootnoteHeight(void);
+	fg_FillType *       getFillType(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -138,6 +139,7 @@ private:
 	fp_ShadowContainer* m_pHeader;
 
 	UT_Vector			m_vecFootnotes;
+	fg_FillType         m_FillType;
 };
 
 #endif /* PAGE_H */

@@ -401,14 +401,14 @@ bool fp_TextRun::canBreakAfter(void) const
 			}
 		}
 	}
-	else if (!getNext())
+	else if (!getNextRun())
 	{
 		return true;
 	}
 
-	if (getNext())
+	if (getNextRun())
 	{
-		return getNext()->canBreakBefore();
+		return getNextRun()->canBreakBefore();
 	}
 
 	return false;
@@ -433,9 +433,9 @@ bool fp_TextRun::canBreakBefore(void) const
 	}
 	else
 	{
-		if (getNext())
+		if (getNextRun())
 		{
-			return getNext()->canBreakBefore();
+			return getNextRun()->canBreakBefore();
 		}
 		else
 		{
@@ -842,7 +842,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 	if(offset == (getBlockOffset() + getLength())) //this is the end of the run
 	{
-		pRun = getNext();
+		pRun = getNextRun();
 
 		if(pRun)
 		{
@@ -884,16 +884,16 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 bool fp_TextRun::canMergeWithNext(void)
 {
-	if (!getNext() ||
+	if (!getNextRun() ||
 		!getLine() ||
-		getNext()->getType() != FPRUN_TEXT ||
-		!getNext()->getLine())
+		getNextRun()->getType() != FPRUN_TEXT ||
+		!getNextRun()->getLine())
 	{
 		return false;
 	}
 
 
-	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNext());
+	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNextRun());
 
 	if (
 		(pNext->getBlockOffset() != (getBlockOffset() + getLength()))
@@ -936,11 +936,11 @@ bool fp_TextRun::canMergeWithNext(void)
 
 void fp_TextRun::mergeWithNext(void)
 {
-	UT_ASSERT(getNext() && (getNext()->getType() == FPRUN_TEXT));
+	UT_ASSERT(getNextRun() && (getNextRun()->getType() == FPRUN_TEXT));
 	UT_ASSERT(getLine());
-	UT_ASSERT(getNext()->getLine());
+	UT_ASSERT(getNextRun()->getLine());
 
-	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNext());
+	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNextRun());
 
 	UT_ASSERT(pNext->getBlockOffset() == (getBlockOffset() + getLength()));
 	UT_ASSERT(pNext->_getFont() == _getFont());
@@ -1043,11 +1043,11 @@ void fp_TextRun::mergeWithNext(void)
 	setLength(iMyLen + iNextLen, false);
 	_setDirty(isDirty() || pNext->isDirty());
 
-	setNext(pNext->getNext(), false);
-	if (getNext())
+	setNextRun(pNext->getNextRun(), false);
+	if (getNextRun())
 	{
 		// do not mark anything dirty
-		getNext()->setPrev(this, false);
+		getNextRun()->setPrevRun(this, false);
 	}
 
 	pNext->getLine()->removeRun(pNext, false);
@@ -1130,14 +1130,14 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->setVisibility(this->isHidden());
 
 	// do not force recalculation of the draw buffer and widths
-	pNew->setPrev(this, false);
-	pNew->setNext(this->getNext(), false);
-	if (getNext())
+	pNew->setPrevRun(this, false);
+	pNew->setNextRun(this->getNextRun(), false);
+	if (getNextRun())
 	{
 		// do not mark anything dirty
-		getNext()->setPrev(pNew, false);
+		getNextRun()->setPrevRun(pNew, false);
 	}
-	setNext(pNew, false);
+	setNextRun(pNew, false);
 
 	setLength(iSplitOffset - getBlockOffset());
 
@@ -1460,27 +1460,27 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		// like italic Times New Roman f
 		//
 		fp_Line * thisLine = getLine();
-		fp_Run * pPrev = getPrev();
+		fp_Run * pPrev = getPrevRun();
 		UT_sint32 leftClear = getAscent()/2;
 		UT_sint32 rightClear = getAscent()/2;
 		if(thisLine != NULL)
 		{
 			while(pPrev != NULL && pPrev->getLine() == thisLine && pPrev->getLength() == 0)
-				pPrev = pPrev->getPrev();
+				pPrev = pPrev->getPrevRun();
 
 			if (pPrev != NULL && pPrev->getLine() == thisLine &&
 				(pPrev->getType() == FPRUN_TEXT || pPrev->getType() == FPRUN_FIELD || pPrev->getType() == FPRUN_IMAGE))
  				leftClear = 0;
 		}
-		getGraphics()->fillRect(clrNormalBackground, xoff - leftClear, yoff, getWidth() + leftClear + rightClear, getLine()->getHeight());
+		Fill(getGraphics(),xoff - leftClear, yoff, getWidth() + leftClear + rightClear, getLine()->getHeight());
 		xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",leftClear,getWidth(),xoff,getLine()->getHeight()));
 		if(pPrev)
 		{
 			pPrev->markAsDirty();
 		}
-		if(getNext())
+		if(getNextRun())
 		{
-			getNext()->markAsDirty();
+			getNextRun()->markAsDirty();
 		}
 	}
 	if(getLine())
@@ -1551,23 +1551,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		clrSelBackground -= color_offset;
 	}
 
-	// draw the page background if we are in the screen context, and the page color is set (ie. non-transparent).
-	if (pG->queryProperties(GR_Graphics::DGP_SCREEN) &&
-		!clrPageBackground.isTransparent ())
-		pG->fillRect(clrPageBackground,
-					pDA->xoff,
-					yTopOfSel + getAscent() - getLine()->getAscent(),
-					getWidth(),
-					getLine()->getHeight());
-	
-	// draw the highlighting of this run, if any
-	if (!clrNormalBackground.isTransparent ())
-		pG->fillRect(clrNormalBackground,
-					pDA->xoff,
-					yTopOfSel + getAscent() - getLine()->getAscent(),
-					getWidth(),
-					getLine()->getHeight());
 
+	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
+					getWidth(),
+					getLine()->getHeight());
 	// calculate selection rectangles ...
 	UT_uint32 iBase = getBlock()->getPosition();
 	UT_uint32 iRunBase = iBase + getBlockOffset();
@@ -2928,11 +2915,11 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	UT_uint32 spanOffset = 0;
 	UT_uint32 lenSpan = 0;
 
-	if(  getPrev()
-	  && getPrev()->getType() == FPRUN_TEXT
-	  && getPrev()->getVisDirection() != iDirection)
+	if(  getPrevRun()
+	  && getPrevRun()->getType() == FPRUN_TEXT
+	  && getPrevRun()->getVisDirection() != iDirection)
 	{
-		pPrev = static_cast<fp_TextRun*>(getPrev());
+		pPrev = static_cast<fp_TextRun*>(getPrevRun());
 		curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
 	}
 
@@ -2954,8 +2941,8 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 				pPrev->split(curOffset+1);
 
 				//now we want to reset the direction of the second half
-				UT_ASSERT(pPrev->getNext()->getType() == FPRUN_TEXT);
-				pOtherHalf = static_cast<fp_TextRun*>(pPrev->getNext());
+				UT_ASSERT(pPrev->getNextRun()->getType() == FPRUN_TEXT);
+				pOtherHalf = static_cast<fp_TextRun*>(pPrev->getNextRun());
 				pOtherHalf->setDirection(iPrevType, pOtherHalf->getDirOverride());
 				iPrevType = iType;
 				// we do not want to break here, since pPrev still points to the
@@ -2970,9 +2957,9 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		// reset its direction and proceed with the run before it
 		pPrev->setDirection(iPrevType, pPrev->getDirOverride());
 
-		if(pPrev->getPrev() && pPrev->getPrev()->getType() == FPRUN_TEXT)
+		if(pPrev->getPrevRun() && pPrev->getPrevRun()->getType() == FPRUN_TEXT)
 		{
-			pPrev = static_cast<fp_TextRun*>(pPrev->getPrev());
+			pPrev = static_cast<fp_TextRun*>(pPrev->getPrevRun());
 			curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
 		}
 		else
@@ -2981,11 +2968,11 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	}
 
 	// now do the same thing with the following run
-	if(  getNext()
-	  && getNext()->getType() == FPRUN_TEXT
-	  && getNext()->getVisDirection() != iDirection)
+	if(  getNextRun()
+	  && getNextRun()->getType() == FPRUN_TEXT
+	  && getNextRun()->getVisDirection() != iDirection)
 	{
-		pNext = static_cast<fp_TextRun*>(getNext());
+		pNext = static_cast<fp_TextRun*>(getNextRun());
 		curOffset = pNext->getBlockOffset();
 	}
 
@@ -3014,8 +3001,8 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 				pNext->setDirection(iPrevType, pNext->getDirOverride());
 
 				// now set direction of the second half
-				UT_ASSERT(pNext->getNext()->getType() == FPRUN_TEXT);
-				pOtherHalf = static_cast<fp_TextRun*>(pNext->getNext());
+				UT_ASSERT(pNext->getNextRun()->getType() == FPRUN_TEXT);
+				pOtherHalf = static_cast<fp_TextRun*>(pNext->getNextRun());
 
 				pOtherHalf->setDirection(iType, pOtherHalf->getDirOverride());
 				bDirSet = true;
@@ -3038,9 +3025,9 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		if(!bDirSet)
 			pNext->setDirection(iPrevType, pNext->getDirOverride());
 
-		if(pNext->getNext() && pNext->getNext()->getType() == FPRUN_TEXT)
+		if(pNext->getNextRun() && pNext->getNextRun()->getType() == FPRUN_TEXT)
 		{
-			pNext = static_cast<fp_TextRun*>(pNext->getNext());
+			pNext = static_cast<fp_TextRun*>(pNext->getNextRun());
 			curOffset = pNext->getBlockOffset();
 		}
 		else
@@ -3101,8 +3088,8 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 		// so we know where the continuos fragment ends ...
 		pRun->split(currOffset + spanOffset);
 		pRun->setDirection(iPrevType, iNewOverride);
-		UT_ASSERT(pRun->getNext() && pRun->getNext()->getType() == FPRUN_TEXT);
-		pRun = static_cast<fp_TextRun*>(pRun->getNext());
+		UT_ASSERT(pRun->getNextRun() && pRun->getNextRun()->getType() == FPRUN_TEXT);
+		pRun = static_cast<fp_TextRun*>(pRun->getNextRun());
 		iPrevType = iType;
 	}
 }

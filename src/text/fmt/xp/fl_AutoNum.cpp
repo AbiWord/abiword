@@ -942,7 +942,7 @@ bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 				return true;
 			}
 		}
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 		if(pRun == NULL)
 		{
 			bStop = true;

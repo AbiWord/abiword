@@ -83,43 +83,45 @@
 fp_Run::fp_Run(fl_BlockLayout* pBL,
 			   UT_uint32 iOffsetFirst,
 			   UT_uint32 iLen,
-			   FP_RUN_TYPE iType)
-	:	m_iType (iType),
-		m_pLine(0),
-		m_pBL(pBL),
-		m_pNext(0),
-		m_pPrev(0),
-		m_iX(0),
-		m_iOldX(0),
-		m_iY(0),
-		m_iWidth(0),
-		m_iHeight(0),
-		m_iAscent(0),
-		m_iDescent(0),
-		m_iOffsetFirst(iOffsetFirst),
-		m_iLen(iLen),
-		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
-		m_pField(0),
-		m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
-		m_iVisDirection(FRIBIDI_TYPE_UNSET),
-		m_bRefreshDrawBuffer(true),
-		m_pColorHL(255,255,255,true), // set highlight colour to transparent
-		m_pFont(0),
+			   FP_RUN_TYPE iType) : 
+	fp_ContainerObject(FP_CONTAINER_RUN, pBL->getSectionLayout()),
+	m_iType (iType),
+	m_pLine(0),
+	m_pBL(pBL),
+	m_pNext(0),
+	m_pPrev(0),
+	m_iX(0),
+	m_iOldX(0),
+	m_iY(0),
+	m_iWidth(0),
+	m_iHeight(0),
+	m_iAscent(0),
+	m_iDescent(0),
+	m_iOffsetFirst(iOffsetFirst),
+	m_iLen(iLen),
+	m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
+	m_pField(0),
+	m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
+	m_iVisDirection(FRIBIDI_TYPE_UNSET),
+	m_bRefreshDrawBuffer(true),
+	m_pColorHL(255,255,255,true), // set highlight colour to transparent
+	m_pFont(0),
 #if defined(WITH_PANGO)
-		m_pPangoFont(0),
+	m_pPangoFont(0),
 #endif
-		m_bRecalcWidth(false),
-		m_fDecorations(0),
-		m_iLineWidth(0),
-		m_iLinethickness(0),
-		m_iUnderlineXoff(0),
-		m_imaxUnderline(0),
-		m_iminOverline(0),
-		m_iOverlineXoff(0),
-		m_pHyperlink(0),
-		m_pRevisions(NULL),
-		m_eHidden(FP_VISIBLE),
-		m_bIsCleared(true)
+	m_bRecalcWidth(false),
+	m_fDecorations(0),
+	m_iLineWidth(0),
+	m_iLinethickness(0),
+	m_iUnderlineXoff(0),
+	m_imaxUnderline(0),
+	m_iminOverline(0),
+	m_iOverlineXoff(0),
+	m_pHyperlink(0),
+	m_pRevisions(NULL),
+	m_eHidden(FP_VISIBLE),
+	m_bIsCleared(true),
+	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT)
 {
         // set the default background color and the paper color of the
 	    // section owning the run.
@@ -142,6 +144,33 @@ fp_Run::~fp_Run()
 	m_pBL = NULL;
 	m_pLine = NULL;
 #endif
+}
+
+fg_FillType * fp_Run::getFillType(void)
+{
+	return &m_FillType;
+}
+
+void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
+				  UT_sint32 height)
+{
+	xxx_UT_DEBUGMSG(("-------------------Fill called!!!!----\n"));
+	if((width < 1) || (height < 1))
+	{
+		return;
+	}
+	if(getType() != FPRUN_FIELD)
+	{
+		UT_sint32 srcX = getX();
+		UT_sint32 srcY = getY();
+		m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
+	}
+	else
+	{
+		UT_sint32 srcX = getX();
+		UT_sint32 srcY = getY();
+		m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
+	}
 }
 
 void fp_Run::lookupProperties()
@@ -185,6 +214,7 @@ void fp_Run::lookupProperties()
 	// colour from higher layout elements
 	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	_setColorHL(pszBGcolor);
+	m_FillType.setColor(pszBGcolor);
 
 	// updateHighlightColor();
 	updatePageColor();
@@ -248,9 +278,9 @@ bool fp_Run::hasLayoutProperties(void) const
 fp_Run*
 fp_Run::_findPrevPropertyRun(void) const
 {
-	fp_Run* pRun = getPrev();
+	fp_Run* pRun = getPrevRun();
 	while (pRun && !pRun->hasLayoutProperties())
-	    pRun = pRun->getPrev();
+	    pRun = pRun->getPrevRun();
 
 	return pRun;
 }
@@ -442,30 +472,30 @@ bool fp_Run::updateBackgroundColor(void)
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
 {
 	newRun.unlinkFromRunList();
-	newRun.setNext(this);
+	newRun.setNextRun(this);
 	if (m_pPrev)
 	{
-		m_pPrev->setNext(&newRun);
+		m_pPrev->setNextRun(&newRun);
 		if(newRun.getType()!= FPRUN_HYPERLINK)
 		newRun.setHyperlink( m_pPrev->getHyperlink());
 	}
-	newRun.setPrev(m_pPrev);
-	setPrev(&newRun);
+	newRun.setPrevRun(m_pPrev);
+	setPrevRun(&newRun);
 
 }
 
 void fp_Run::insertIntoRunListAfterThis(fp_Run& newRun)
 {
 	newRun.unlinkFromRunList();
-	newRun.setPrev(this);
+	newRun.setPrevRun(this);
 	if(newRun.getType()!= FPRUN_HYPERLINK)
 		newRun.setHyperlink(m_pHyperlink);
 	if (m_pNext)
 	{
-		m_pNext->setPrev(&newRun);
+		m_pNext->setPrevRun(&newRun);
 	}
-	newRun.setNext(m_pNext);
-	setNext(&newRun);
+	newRun.setNextRun(m_pNext);
+	setNextRun(&newRun);
 }
 
 void fp_Run::unlinkFromRunList()
@@ -477,26 +507,26 @@ void fp_Run::unlinkFromRunList()
 		fp_HyperlinkRun * pH = static_cast<fp_HyperlinkRun*>(this);
 		if(pH->isStartOfHyperlink())
 		{
-			fp_Run * pRun = getNext();
+			fp_Run * pRun = getNextRun();
 
 			while(pRun && pRun->getHyperlink() == pH)
 			{
 				pRun->setHyperlink(NULL);
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 		}
 	}
 
 	if (m_pPrev)
 	{
-		m_pPrev->setNext(m_pNext);
+		m_pPrev->setNextRun(m_pNext);
 	}
 	if (m_pNext)
 	{
-		m_pNext->setPrev(m_pPrev);
-		setNext(0);
+		m_pNext->setPrevRun(m_pPrev);
+		setNextRun(0);
 	}
-	setPrev(0);
+	setPrevRun(0);
 }
 
 void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
@@ -565,13 +595,18 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 	}
 }
 
+void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
+{
+	Run_setX(iX, FP_CLEARSCREEN_AUTO);
+}
+
 // the parameter eClearScreen has a default value AUTO
 // we need this extra parameter be able to specify false when calling from
 // inside of the first pass of fp_Line::layout(), which sets
 // only a temporary value of iX which is then adjusted in the
 // second pass, without this the run will redraw twice, once always unnecessarily
 // and most of the time both times unnecessarily
-void	fp_Run::setX(UT_sint32 iX, FPRUN_CLEAR_SCREEN eClearScreen)
+void	fp_Run::Run_setX(UT_sint32 iX, FPRUN_CLEAR_SCREEN eClearScreen)
 {
 	switch(eClearScreen)
 	{
@@ -621,7 +656,13 @@ void fp_Run::setLine(fp_Line* pLine)
 
 	m_pLine = pLine;
 	if(pLine != NULL)
-		updateBackgroundColor();
+	{
+		m_FillType.setParent(pLine->getFillType());
+	}
+	else
+	{
+		m_FillType.setParent(NULL);
+	}
 }
 
 
@@ -639,7 +680,7 @@ void fp_Run::setLine(fp_Line* pLine)
 
 */
 
-void fp_Run::setNext(fp_Run* p, bool bRefresh)
+void fp_Run::setNextRun(fp_Run* p, bool bRefresh)
 {
 	if(p != m_pNext)
 	{
@@ -658,7 +699,7 @@ void fp_Run::setNext(fp_Run* p, bool bRefresh)
 	}
 }
 
-void fp_Run::setPrev(fp_Run* p, bool bRefresh)
+void fp_Run::setPrevRun(fp_Run* p, bool bRefresh)
 {
 	if(p != m_pPrev)
 	{
@@ -738,7 +779,12 @@ void fp_Run::setBlockOffset(UT_uint32 offset)
 	m_iOffsetFirst = offset;
 }
 
-void fp_Run::clearScreen(bool bFullLineHeightRect)
+void fp_Run::clearScreen(void)
+{
+	Run_ClearScreen(false);
+}
+
+void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 {
 	if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -763,15 +809,7 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 		{
 
 			_clearScreen(bFullLineHeightRect);
-#if 0
-			// this clears any posible underlining from revisions,
-			// hyperlinks, squiggles, etc.
-			UT_sint32 xoff = 0, yoff = 0;
-			m_pLine->getScreenOffsets(this, xoff, yoff);
-			UT_uint32 iWidth = getDrawingWidth();
 
-			getGraphics()->fillRect(m_colorPG,xoff, yoff + _UL(4), iWidth, _UL(3));
-#endif
 			// make sure we only get erased once
 			_setDirty(true);
 			markAsDirty();
@@ -1287,8 +1325,9 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
 
     getGraphics()->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
-    if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
-        getGraphics()->fillRect(_getColorHL(),xoffText,yoffText,iTextWidth,iTextHeight);
+    if((iTextWidth < iWidth) && (iTextHeight < iHeight))
+	{
+		Fill(getGraphics(),xoffText,yoffText,iTextWidth,iTextHeight);
         getGraphics()->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
@@ -1447,7 +1486,7 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 
 	if (iOffset == (getBlockOffset() + getLength()))  //#TF is this the right-most logical element of the run?
 	{
-	    pRun = getNext();
+	    pRun = getNextRun();
 	    if(pRun)
 	    {
 	        pRun->getLine()->getOffsets(pRun, xoff2, yoff2);
@@ -1531,7 +1570,7 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
-	getGraphics()->fillRect(_getColorPG(),xoff, yoff, getWidth(), getLine()->getHeight());
+	Fill(getGraphics(),xoff, yoff, getWidth(), getLine()->getHeight());
 }
 
 void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
@@ -1610,7 +1649,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
 	GR_Graphics * pG = pDA->pG;
 
-	UT_RGBColor clrNormalBackground(_getColorHL());
 	// need to draw to the full height of line to join with line above.
 	UT_sint32 xoff= 0, yoff=0, DA_xoff = pDA->xoff;
 
@@ -1697,11 +1735,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		if (!_getColorPG().isTransparent ())
-			pG->fillRect(_getColorPG(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
-		if (!_getColorHL().isTransparent ())	
-			pG->fillRect(_getColorHL(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
-		
+		Fill(getGraphics(),DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
@@ -1947,7 +1981,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     }
 	else
     {
-		getGraphics()->fillRect(_getColorPG(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
+		Fill(getGraphics(),iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	if (pView->getShowPara())
     {
@@ -2132,14 +2166,14 @@ bool fp_BookmarkRun::letPointPass(void) const
 
 void fp_BookmarkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	fp_Run *pRun = getNext();
+	fp_Run *pRun = getNextRun();
 	UT_ASSERT(pRun);
 	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL);
 }
 
 void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	fp_Run * pRun = getNext();
+	fp_Run * pRun = getNextRun();
 	UT_ASSERT(pRun);
 
 	pRun->findPointCoords(iOffset, x, y,  x2, y2, height, bDirection);
@@ -2160,9 +2194,9 @@ void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	if(m_bIsStart)
-		getGraphics()->fillRect(_getColorPG(), xoff, yoff, 4, 8);
+		Fill(getGraphics(), xoff, yoff, 4, 8);
 	else
-		getGraphics()->fillRect(_getColorPG(), xoff - 4, yoff, 4, 8);
+		Fill(getGraphics(),xoff - 4, yoff, 4, 8);
 
 }
 
@@ -2311,14 +2345,14 @@ bool fp_HyperlinkRun::letPointPass(void) const
 
 void fp_HyperlinkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	fp_Run *pRun = getNext();
+	fp_Run *pRun = getNextRun();
 	UT_ASSERT(pRun);
 	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL);
 }
 
 void fp_HyperlinkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	fp_Run * pRun = getNext();
+	fp_Run * pRun = getNextRun();
 	UT_ASSERT(pRun);
 
 	pRun->findPointCoords(iOffset, x, y,  x2, y2, height, bDirection);
@@ -2491,7 +2525,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	{
 		xoff -= m_iDrawWidth;
 	}
-	getGraphics()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
+	Fill(getGraphics(),xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 }
 
 /*!
@@ -2593,7 +2627,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		getGraphics()->fillRect(_getColorPG(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		Fill(getGraphics(),m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	if (pView->getShowPara())
 	{
@@ -2799,8 +2833,7 @@ void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = getLine()->getHeight();
-
-	getGraphics()->fillRect(_getColorPG(),xoff, yoff, getWidth(), iLineHeight);
+	Fill(getGraphics(),xoff, yoff, getWidth(), iLineHeight);
 }
 
 const char * fp_ImageRun::getDataId(void) const
@@ -3058,14 +3091,14 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 
 			FriBidiCharType prevType/*, nextType*/, myType;
 #if 0
-			if(getNext())
-				nextType = getNext()->getVisDirection();
+			if(getNextRun())
+				nextType = getNextRun()->getVisDirection();
 			else
 				nextType = getBlock()->getDominantDirection();
 #endif
 
-			if(getPrev())
-				prevType = getPrev()->getVisDirection();
+			if(getPrevRun())
+				prevType = getPrevRun()->getVisDirection();
 			else
 				prevType = getBlock()->getDominantDirection();
 
@@ -3383,12 +3416,12 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 // We're actually just before the next run and in the insertion point will be
 // in the next run so make the insertion point reflect this.
 //
-		if(getNext() && getNext()->hasLayoutProperties()  )
+		if(getNextRun() && getNextRun()->hasLayoutProperties()  )
 		{
-			height = getNext()->getHeight();
+			height = getNextRun()->getHeight();
 			UT_sint32 xx,xx2,yy2,hheight;
 			bool bbDirection;
-			getNext()->findPointCoords(iOffset+1,xx,y,xx2,yy2, hheight,
+			getNextRun()->findPointCoords(iOffset+1,xx,y,xx2,yy2, hheight,
 									   bbDirection);
 			height = hheight;
 
@@ -3413,14 +3446,14 @@ bool fp_FieldRun::calculateValue(void)
 	//        UT_ASSERT(getField());
 
 /*  UT_sint32 count = 0;
-    fp_Run* pNext = getNext();
+    fp_Run* pNext = getNextRun();
 	while(pNext != NULL && pNext->getField() != NULL )
 	{
 	    if(getField() == NULL)
 		{
 		        getField() = pNext->getField();
 		}
-	    pNext = getNext();
+	    pNext = getNextRun();
 		count++;
 	}
 	if(count == 0)
@@ -3430,7 +3463,7 @@ bool fp_FieldRun::calculateValue(void)
 	}
 	else
 	{
-	    pNext = getPrev();
+	    pNext = getPrevRun();
 		setWidth(pNext->getWidth());
 		_setHeight(pNext->getHeight());
 	}
@@ -3450,7 +3483,7 @@ void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = getLine()->getHeight();
-	getGraphics()->fillRect(_getColorPG(), xoff, yoff, getWidth(), iLineHeight);
+	Fill(getGraphics(), xoff, yoff, getWidth(), iLineHeight);
 }
 
 void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
@@ -3510,8 +3543,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			// updateHighlightColor();
-			pG->fillRect(_getColorHL(), pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			Fill(getGraphics(),pDA->xoff, iFillTop, getWidth(), iFillHeight);
 		}
 	}
 
@@ -4431,7 +4463,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 						break;
 					}
 				}
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 			if(bFound)
 				break;
@@ -4738,7 +4770,7 @@ void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
-    getGraphics()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
+	Fill(getGraphics(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
 void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
@@ -4858,7 +4890,7 @@ void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
     UT_sint32 xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);
     UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
-    getGraphics()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
+	Fill(getGraphics(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
 void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)

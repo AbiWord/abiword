@@ -183,7 +183,7 @@ bool fp_Line::assertLineListIntegrity(void)
 			}
 			UT_ASSERT(pRunLine == pRunBlock);
 		}
-		pRunBlock = pRunBlock->getNext();
+		pRunBlock = pRunBlock->getNextRun();
 	}
 	xxx_UT_DEBUGMSG(("Line %x Width of line is %d num runs is %d \n",this,width,k)); //   UT_ASSERT(width < getMaxWidth());
 	return true;
@@ -288,6 +288,14 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	{
 		clearScreen();
 	}
+	if(pContainer != NULL)
+	{
+		getFillType()->setParent(pContainer->getFillType());
+	}
+	else
+	{
+		getFillType()->setParent(NULL);
+	}
 
 	fp_Container::setContainer(pContainer);
 	if(pContainer == NULL)
@@ -295,7 +303,6 @@ void fp_Line::setContainer(fp_Container* pContainer)
 		return;
 	}
 	setMaxWidth(pContainer->getWidth());
-	updateBackgroundColor();
 }
 
 void fp_Line::updateBackgroundColor()
@@ -341,7 +348,7 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 {
 	// need to tell the previous run to redraw, in case this run contained
 	// overstriking characters
-//	fp_Run* pPrevRun  = pRun->getPrev();
+//	fp_Run* pPrevRun  = pRun->getPrevRun();
 //	if(pPrevRun)
 //		pPrevRun->clearScreen();
 
@@ -866,7 +873,8 @@ void fp_Line::clearScreen(void)
 				return;
 			}
 			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
-			pRun->getGraphics()->fillRect(pRun->getPageColor(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
+			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
+
 //
 // Sevior: I added this for robustness.
 //
@@ -952,8 +960,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			}
 			UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) < getPage()->getWidth());
 			xxx_UT_DEBUGMSG(("Clear from run to end height %d \n",getHeight()));
-			pRun->getGraphics()->fillRect(pRun->getPageColor(),
-										  xoff - leftClear,
+			pRun->Fill(getGraphics(),xoff - leftClear,
 										  yoff,
 										  m_iClearToPos + leftClear
         										  - (xoff - xoffLine),
@@ -963,18 +970,18 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 //
 			pRun->markAsDirty();
 			pRun->setCleared();
-			if(pRun->getPrev() && pRun->getPrev()->getLine() == this)
+			if(pRun->getPrevRun() && pRun->getPrevRun()->getLine() == this)
 			{
-				pRun->getPrev()->markAsDirty();
+				pRun->getPrevRun()->markAsDirty();
 			}
 			getBlock()->setNeedsRedraw();
 			setNeedsRedraw();
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 			bool bStop = false;
 			while(pRun && !bStop)
 			{
 				pRun->markAsDirty();
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 				if(pRun && (pRun->getLine() != this))
 				{
 					bStop = true;
@@ -1045,7 +1052,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		// TODO: bidi bug: this only works if the logical and visual
 		// order are identical
 		UT_sint32 j = runIndex - 1;
-		fp_Run * pPrev = pRun->getPrev();
+		fp_Run * pPrev = pRun->getPrevRun();
 		UT_sint32 leftClear = 0;
 		while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
 		{
@@ -1102,12 +1109,12 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
 		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
-		pRun->getGraphics()->fillRect(pRun->getPageColor(),
-									  xoff - leftClear,
-									  yoff,
-									  m_iClearToPos + leftClear
-									         - (xoff - xoffLine),
-									  getHeight());
+		pRun->Fill(getGraphics(), xoff - leftClear,
+				   yoff,
+				   m_iClearToPos + leftClear
+				   - (xoff - xoffLine),
+				   getHeight());
+
 //
 // Sevior: I added this for robustness.
 //
@@ -1119,16 +1126,16 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 		pRun->markAsDirty();
 		pRun->setCleared();
-		if(pRun->getPrev() && pRun->getPrev()->getLine() == this)
+		if(pRun->getPrevRun() && pRun->getPrevRun()->getLine() == this)
 		{
-			pRun->getPrev()->markAsDirty();
+			pRun->getPrevRun()->markAsDirty();
 		}
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 		bool bStop = false;
 		while(pRun && !bStop)
 		{
 			pRun->markAsDirty();
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 			if(pRun && (pRun->getLine() != this))
 			{
 				bStop = true;
@@ -2421,7 +2428,7 @@ fp_Run* fp_Line::getLastTextRun(void) const
 		pRun = static_cast<fp_Run*>(m_vecRuns.getLastItem());
 		while(pRun != NULL && pRun->getType() != FPRUN_TEXT)
 		{
-			pRun = pRun->getPrev();
+			pRun = pRun->getPrevRun();
 		}
 		if(pRun == NULL)
 		{

@@ -142,7 +142,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 						while(pRun && pRun != pOffendingRun)
 						{
 							m_iWorkingLineWidth -= pRun->getWidth();
-							pRun = pRun->getPrev();
+							pRun = pRun->getPrevRun();
 						}
 						// This run needs splitting.
 						xxx_UT_DEBUGMSG(("Break at 1 Trailing Space %d Wording width %d \n",iTrailingSpace,m_iWorkingLineWidth));
@@ -215,7 +215,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 						{
 							// if there are some runs between this tab ran and the last run that the line knows
 							// belongs to it; we have to add these as well
-							fp_Run * pRun = pOriginalLastOnLine->getNext();
+							fp_Run * pRun = pOriginalLastOnLine->getNextRun();
 							while(pRun)
 							{
 								fp_Line * pL = pRun->getLine();
@@ -227,7 +227,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 								if(pRun == pCurrentRun)
 									break;
 
-								pRun = pRun->getNext();
+								pRun = pRun->getNextRun();
 							}
 #if DEBUG
 							pLine->assertLineListIntegrity();
@@ -268,7 +268,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 				} // switch
 
 				pPreviousRun = pCurrentRun;
-				pCurrentRun = pCurrentRun->getNext();
+				pCurrentRun = pCurrentRun->getNextRun();
 
 				iIndx++;
 
@@ -350,7 +350,7 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 			break;
 		}
 
-		pCurrentRun = pCurrentRun->getPrev();
+		pCurrentRun = pCurrentRun->getPrevRun();
 	}
 	while(pCurrentRun);
 
@@ -408,7 +408,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 		fp_Run* pRunLookingBackwards = pCurrentRun;
 		while (pRunLookingBackwards != m_pFirstRunToKeep)
 		{
-			pRunLookingBackwards = pRunLookingBackwards->getPrev();
+			pRunLookingBackwards = pRunLookingBackwards->getPrevRun();
 
 			if ( !pRunLookingBackwards )
 			  {
@@ -481,7 +481,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 				/*
 				  Force a break right before the offending run.
 				*/
-				m_pLastRunToKeep = pOffendingRun->getPrev();
+				m_pLastRunToKeep = pOffendingRun->getPrevRun();
 
 				bFoundBreakAfter = true;
 			}
@@ -520,7 +520,7 @@ bool fb_LineBreaker::_splitAtNextNonBlank(fp_Run *pCurrentRun)
 	{
 		// cannot split run so split before.
 		xxx_UT_DEBUGMSG(("Cannot split at next non-blank \n"));
-		m_pLastRunToKeep = pCurrentRun->getPrev();
+		m_pLastRunToKeep = pCurrentRun->getPrevRun();
 	}
 
 	return true;
@@ -532,11 +532,11 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 	fp_TextRun *pRunToSplit = static_cast<fp_TextRun*>(pCurrentRun);
 
 	pRunToSplit->split(splitInfo.iOffset + 1);	// TODO err check this
-	UT_ASSERT(pRunToSplit->getNext());
-	UT_ASSERT(pRunToSplit->getNext()->getType() == FPRUN_TEXT);
+	UT_ASSERT(pRunToSplit->getNextRun());
+	UT_ASSERT(pRunToSplit->getNextRun()->getType() == FPRUN_TEXT);
 
 	fp_TextRun *pOtherHalfOfSplitRun;
-	pOtherHalfOfSplitRun = static_cast<fp_TextRun*>(pRunToSplit->getNext());
+	pOtherHalfOfSplitRun = static_cast<fp_TextRun*>(pRunToSplit->getNextRun());
 
 // todo decide if we need to call recalcWidth() now on the 2 pieces.
 //							pRunToSplit->recalcWidth();
@@ -579,7 +579,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		else
 		{
 			pPrevRun = pCurrentRun;
-			pCurrentRun = pCurrentRun->getNext();
+			pCurrentRun = pCurrentRun->getNextRun();
 		}
 	}
 
@@ -628,7 +628,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			}
 			pNextLine->insertRun(pRunToBump);
 
-			pRunToBump = pRunToBump->getPrev();
+			pRunToBump = pRunToBump->getPrevRun();
 			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
 		}
 	}

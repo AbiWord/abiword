@@ -919,6 +919,16 @@ bool fp_CellContainer::isInNestedTable(void)
 	return true;
 }
 
+void fp_CellContainer::setBackground (const PP_PropertyMap::Background & style)
+{
+	m_background = style;
+	PP_PropertyMap::Background background = getBackground ();
+	if(background.m_t_background == PP_PropertyMap::background_solid)
+	{
+		getFillType()->setColor(background.m_color);
+	}
+}
+
 /*!
  * Draw background and lines around a cell in a broken table.
  */

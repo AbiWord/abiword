@@ -58,6 +58,8 @@
 
 #include <fribidi.h>
 
+class fp_ContainerObject;
+
 typedef enum {
 	FG_FILL_TRANSPARENT,
 	FG_FILL_COLOR,
@@ -120,10 +122,11 @@ typedef enum {
 class ABI_EXPORT fg_FillType
 {
 public:
-	fg_FillType(fg_FillType *pParent, fp_Container * pContainer, FG_Fill_Type iType);
+	fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, FG_Fill_Type iType);
 	virtual ~ fg_FillType(void);
 	void           setParent(fg_FillType * pParent);
 	void           setColor(UT_RGBColor & color);
+	void           setColor(const char * pszColor);
 	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage);
 	void           setTransparent(void);
 	void           setDocLayout(FL_DocLayout * pDocLayout);
@@ -133,16 +136,16 @@ public:
 	FG_Fill_Type   getFillType(void) const;
 	FL_DocLayout * getDocLayout(void);
 private:
-    void        	_regenerateImage(GR_Graphics * pG);
-	fg_FillType *   m_pParent;
-	fp_Container *  m_pContainer;
-	FL_DocLayout *  m_pDocLayout;
-	FG_Fill_Type    m_FillType;
-	GR_Image *      m_pImage;
-	FG_Graphic *    m_pGraphic;    
-	UT_uint32       m_iGraphicTick;
-	bool            m_bTransparentForPrint;
-	UT_RGBColor     m_color;
+    void        	     _regenerateImage(GR_Graphics * pG);
+	fg_FillType *        m_pParent;
+	fp_ContainerObject * m_pContainer;
+	FL_DocLayout *       m_pDocLayout;
+	FG_Fill_Type         m_FillType;
+	GR_Image *           m_pImage;
+	FG_Graphic *         m_pGraphic;    
+	UT_uint32            m_iGraphicTick;
+	bool                 m_bTransparentForPrint;
+	UT_RGBColor          m_color;
 };
 
 
@@ -155,7 +158,7 @@ public:
 	  Return container type
 	  \return Type
 	*/
-	FP_ContainerType	getContainerType(void) const { return m_iType; }
+	FP_ContainerType	getContainerType(void) const { return m_iConType; }
 	bool                isColumnType(void) const;
 	virtual void		setWidth(UT_sint32) = 0;
 	virtual void		setHeight(UT_sint32) = 0 ;
@@ -201,7 +204,7 @@ private:
 	/*!
 	  Container type
 	*/
-	FP_ContainerType		m_iType;
+	FP_ContainerType		m_iConType;
 	/*!
 	  Section layout type used for this container
 	*/

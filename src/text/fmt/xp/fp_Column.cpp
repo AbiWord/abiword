@@ -1024,6 +1024,20 @@ fp_Column::~fp_Column()
 //	UT_ASSERT(countCons() == 0);
 }
 
+void fp_Column::setPage(fp_Page * pPage)
+{
+	if(pPage == NULL)
+	{
+		getFillType()->setParent(NULL);
+	}
+	else
+	{
+		getFillType()->setParent(pPage->getFillType());
+	}
+	m_pPage = pPage;
+}
+
+
 /*!
  Draw column outline
  \param pDA Draw arguments

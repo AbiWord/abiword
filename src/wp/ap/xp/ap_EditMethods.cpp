@@ -3399,7 +3399,7 @@ Defun(selectObject)
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 		while(pRun && pRun->getType() != FPRUN_IMAGE)
 		{
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 		}
 		if(pRun && pRun->getType() == FPRUN_IMAGE)
 		{
@@ -8574,7 +8574,7 @@ Defun(dlgFmtImage)
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 		while(pRun && pRun->getType() != FPRUN_IMAGE)
 		{
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 		}
 		if(pRun && pRun->getType() == FPRUN_IMAGE)
 		{
@@ -11106,7 +11106,7 @@ Defun(resizeImage)
 			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 			while(pRun && pRun->getType() != FPRUN_IMAGE)
 			{
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 			if(pRun && pRun->getType() == FPRUN_IMAGE)
 			{
@@ -11243,7 +11243,7 @@ Defun(endResizeImage)
 			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 			while(pRun && pRun->getType() != FPRUN_IMAGE)
 			{
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 			if(pRun && pRun->getType() == FPRUN_IMAGE)
 			{
@@ -11463,7 +11463,7 @@ Defun(dragImage)
 				pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 				while(pRun && pRun->getType() != FPRUN_IMAGE)
 				{
-					pRun = pRun->getNext();
+					pRun = pRun->getNextRun();
 				}
 				if(pRun && pRun->getType() == FPRUN_IMAGE)
 				{

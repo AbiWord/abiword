@@ -51,7 +51,7 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual UT_uint32       getDrawingWidth() const { return m_iDrawWidth;}
+	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
 
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,

@@ -754,7 +754,7 @@ void FV_View::toggleCase (ToggleCase c)
 				{
 					offset += pRun->getLength();
 					low += pRun->getLength();
-					pRun = pRun->getNext();
+					pRun = pRun->getNextRun();
 				}
 
 				fp_TextRun * pPrevTR = NULL;
@@ -771,7 +771,7 @@ void FV_View::toggleCase (ToggleCase c)
 					iLen += iDiff;
 					iLenToCopy -= iDiff;
 					pPrevTR = static_cast<fp_TextRun*>(pRun);
-					pRun = pRun->getNext();
+					pRun = pRun->getNextRun();
 				}
 
 				if(!iLen) // sequence of 0-len runs only
@@ -1389,7 +1389,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 
 			while(pRun && pRun->getType() != FPRUN_IMAGE)
 			{
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 			if(pRun && pRun->getType() == FPRUN_IMAGE)
 			{
@@ -1637,7 +1637,7 @@ bool FV_View::isCurrentListBlockEmpty(void)
 					break;
 				}
 			}
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 		}
 		else
 		{
@@ -1672,7 +1672,7 @@ bool FV_View::isPointBeforeListLabel(void)
 	bool   bDirection;
 
 	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
-	pRun = pRun->getPrev();
+	pRun = pRun->getPrevRun();
 	while(pRun != NULL && bBefore == true)
 	{
 		if(pRun->getType()== FPRUN_FIELD)
@@ -1683,7 +1683,7 @@ bool FV_View::isPointBeforeListLabel(void)
 				bBefore = false;
 			}
 		}
-		pRun = pRun->getPrev();
+		pRun = pRun->getPrevRun();
 	}
 	return bBefore;
 }
@@ -2717,7 +2717,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 				const PP_AttrProp * pAP;
 				bool bCheck = false;
 
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 				if (!pRun)
 				{
 					// go to first run of next block
@@ -3100,7 +3100,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 
 
 			if (!pRun)
@@ -3491,7 +3491,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 				fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 				bFoundPageNumber = (pFRun->getFieldType() == FPFIELD_page_number);
 			}
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 		}
 		if(!bFoundPageNumber)
 			pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
@@ -4171,10 +4171,10 @@ bool FV_View::isTabListBehindPoint(void)
 	{
 		return false;
 	}
-	pRun = pRun->getPrev();
+	pRun = pRun->getPrevRun();
 	while((pRun != NULL) && (pRun->getType()== FPRUN_FMTMARK))
 	{
-		pRun = pRun->getPrev();
+		pRun = pRun->getPrevRun();
 	}
 	if (!pRun || pRun->getType() != FPRUN_FIELD)
 	{
@@ -4217,7 +4217,7 @@ bool FV_View::isTabListAheadPoint(void)
 	// Find first run that is not an FPRUN_FMTMARK
 	while (pRun && (pRun->getType() == FPRUN_FMTMARK))
 	{
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 
 	if (!pRun || pRun->getType() != FPRUN_FIELD)
@@ -4231,10 +4231,10 @@ bool FV_View::isTabListAheadPoint(void)
 		return false;
 	}
 
-	pRun = pRun->getNext();
+	pRun = pRun->getNextRun();
 	while (pRun && (pRun->getType()== FPRUN_FMTMARK))
 	{
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 	if (!pRun || pRun->getType() != FPRUN_TAB)
 	{
@@ -4893,7 +4893,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 						}
 						if(bFound)
 							break;
-						pRun = pRun->getNext();
+						pRun = pRun->getNextRun();
 					}
 					if(bFound)
 						break;
@@ -5333,9 +5333,9 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 		pRun = pBL->findPointCoords(getPoint(), false, xPoint,
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
-		if(pRun && pRun->getPrev())
+		if(pRun && pRun->getPrevRun())
 		{
-			pRun->getPrev()->markAsDirty();
+			pRun->getPrevRun()->markAsDirty();
 		}
 		_generalUpdate();
 	}
@@ -5357,9 +5357,9 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 		pRun = pBL->findPointCoords(getPoint(), false, xPoint,
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
-		if(pRun && pRun->getPrev())
+		if(pRun && pRun->getPrevRun())
 		{
-			pRun->getPrev()->markAsDirty();
+			pRun->getPrevRun()->markAsDirty();
 		}
 	}
 	m_pDoc->endUserAtomicGlob();
@@ -6925,7 +6925,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	while(pRun && pRun->getType() ==  FPRUN_FMTMARK)
 	{
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 
 	if (!pRun)
@@ -7455,7 +7455,7 @@ FV_View::countWords(void)
 			{
 				iLineOffset += pRun->getLength();
 				pPrevRun = pRun;
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 			UT_ASSERT(pRun);
 			if (!pRun)
@@ -7502,7 +7502,7 @@ FV_View::countWords(void)
 			while (pRun && pRun->getLine() == pLine)
 			{
 				iLineOffset += pRun->getLength();
-				pRun = pRun->getNext();
+				pRun = pRun->getNextRun();
 			}
 			pLine = static_cast<fp_Line *>(pLine->getNext());
 			UT_ASSERT((pLine && pRun) || (static_cast<void*>(pLine) == static_cast<void*>(pRun)));
@@ -8069,9 +8069,9 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->getLastLayout());
 	posEOD = pBL->getPosition(false);
 	fp_Run * pRun = pBL->getFirstRun();
-	while( pRun->getNext() != NULL)
+	while( pRun->getNextRun() != NULL)
 	{
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 	posEOD += pRun->getBlockOffset();
 	return true;
@@ -8545,10 +8545,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 	pBL = _findBlockAtPosition(FanchStart);
 	UT_ASSERT(pBL != 0);
 
-	if (pBL->getFirstRun()->getNext())
+	if (pBL->getFirstRun()->getNextRun())
 	{
-		bWidthChange = pBL->getFirstRun()->getNext()->recalcWidth();
-		xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstRun()->getNext()->getType(),bWidthChange));
+		bWidthChange = pBL->getFirstRun()->getNextRun()->recalcWidth();
+		xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstRun()->getNextRun()->getType(),bWidthChange));
 		pBL->setNeedsReformat();
 	}
 //

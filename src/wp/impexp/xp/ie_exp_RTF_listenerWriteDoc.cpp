@@ -639,7 +639,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 //
 	while(pRun && pRun->getType() == FPRUN_FMTMARK)
 	{
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 	if((pRun== NULL) || pRun->getType() != FPRUN_FIELD )
 	{

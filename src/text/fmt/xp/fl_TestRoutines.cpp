@@ -204,7 +204,7 @@ void fl_BlockLayout::__dump(FILE * fp) const
 
 	pRun = m_pFirstRun;
 	pLine = (fp_Line*)-1;
-	for (; (pRun); pRun=pRun->getNext())
+	for (; (pRun); pRun=pRun->getNextRun())
 	{
 		if (pRun->getLine() != pLine)
 		{

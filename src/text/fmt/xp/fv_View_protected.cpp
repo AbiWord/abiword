@@ -768,7 +768,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			   && (pLastRun->isForcedBreak()
 				   || (FPRUN_ENDOFPARAGRAPH == pLastRun->getType())))
 		{
-			pLastRun = pLastRun->getPrev();
+			pLastRun = pLastRun->getPrevRun();
 		}
 
 		if (pLastRun->isForcedBreak()
@@ -3004,12 +3004,12 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			}
 			else
 			{
-				pCurRun->clearScreen(bFullLineHeight);
+				pCurRun->Run_ClearScreen(bFullLineHeight);
 				pCurRun->draw(&da);
 			}
 		}
 
-		pCurRun = pCurRun->getNext();
+		pCurRun = pCurRun->getNextRun();
 		if (!pCurRun)
 		{
 			fl_BlockLayout* pNextBlock;
@@ -3152,9 +3152,9 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 			}
 		}
 		pCurRun->clearScreen(bFullLineHeightRect);
-		if (pCurRun->getNext())
+		if (pCurRun->getNextRun())
 		{
-			pCurRun = pCurRun->getNext();
+			pCurRun = pCurRun->getNextRun();
 		}
 		else
 		{
@@ -3259,10 +3259,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	if(bEOL && pRun && posEOD == getPoint())
 	{
 		bool bBack = true;
-		while(pRun && pRun->getPrev() && !pRun->isField() && pRun->getWidth() == 0)
+		while(pRun && pRun->getPrevRun() && !pRun->isField() && pRun->getWidth() == 0)
 		{
 			bBack = false;
-			pRun = pRun->getPrev();
+			pRun = pRun->getPrevRun();
 		}
 		if(pRun && pRun->isField() && bBack)
 		{
@@ -3275,9 +3275,9 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	else if( (pRun == NULL) && (posEOD == getPoint()))
 	{
 		pRun = pBlock->getFirstRun();
-		while(pRun && (pRun->getNext() != NULL))
+		while(pRun && (pRun->getNextRun() != NULL))
 		{
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 		}
 	}
 	if (pRun)
@@ -3951,9 +3951,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// sub layouts (blocks, sections, table cells, tables ...)
 
 		// get the next run that can contain insertion point
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 		while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
-			pRun = pRun->getNext();
+			pRun = pRun->getNextRun();
 		if(pRun)
 		{
 			_setPoint(1 + pBlock->getPosition(false) + pRun->getBlockOffset());
@@ -4139,7 +4139,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 					}
 					if(bFound)
 						break;
-					pRun = pRun->getNext();
+					pRun = pRun->getNextRun();
 				}
 				if(bFound)
 					break;
@@ -4204,7 +4204,7 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 
 	//find the run at pos
 	while(pRun && pRun->getBlockOffset() <= curPos)
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 
 	UT_ASSERT(pRun);
 	if(!pRun)
@@ -4212,7 +4212,7 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 
 	// now we have the run immediately after the run in question, so
 	// we step back
-	pRun = pRun->getPrev();
+	pRun = pRun->getPrevRun();
 	UT_ASSERT(pRun);
 	if(!pRun)
 		return NULL;
@@ -4227,9 +4227,9 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 	// Continue checking for hyperlinks.
 	while(pRun && pRun->getBlockOffset() <= curPosEnd)
 	{
-		pRun = pRun->getNext();
-		if (pRun && pRun->getPrev() && pRun->getPrev()->getHyperlink() != NULL)
-			return pRun->getPrev()->getHyperlink();
+		pRun = pRun->getNextRun();
+		if (pRun && pRun->getPrevRun() && pRun->getPrevRun()->getHyperlink() != NULL)
+			return pRun->getPrevRun()->getHyperlink();
 	}
 
 	// OK, we're really safe now.
@@ -4254,13 +4254,13 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	// now reset the hyperlink member for the runs that belonged to this
 	// hyperlink
 
-	fp_Run * pRun = pRun = pH1->getNext();
+	fp_Run * pRun = pRun = pH1->getNextRun();
 	UT_ASSERT(pRun);
 	while(pRun && pRun->getHyperlink() != NULL)
 	{
 		UT_DEBUGMSG(("fv_View::_deleteHyperlink: reseting run 0x%x\n", pRun));
 		pRun->setHyperlink(NULL);
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 
 	UT_ASSERT(pRun);
@@ -4569,9 +4569,9 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
 		pLast = static_cast<fl_BlockLayout *>(pLast->getNext());
 	}
 	fp_Run * pRun = pLast->getFirstRun();
-	while( pRun->getNext() != NULL)
+	while( pRun->getNextRun() != NULL)
 	{
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 	iPos2 += pRun->getBlockOffset();
 //

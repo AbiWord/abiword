@@ -1672,23 +1672,25 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	}
 //
 // OK set the links and move all blocks in this section into the previous section.
-
-	fl_ContainerLayout * pBCur = getFirstLayout();
-	fl_ContainerLayout * pBPrev = pPrevSL->getLastLayout();
-	UT_ASSERT(pBCur && pBPrev);
-	
-	pBCur->setPrev(pBPrev);
-	pBPrev->setNext(pBCur);
-	while(pBCur != NULL)
+	if(getFirstLayout())
 	{
-		xxx_UT_DEBUGMSG(("updating block %x \n",pBCur));
-		pBCur->setContainingLayout(pBPrev->myContainingLayout());
-		if(pBCur->getContainerType() == FL_CONTAINER_BLOCK)
+		fl_ContainerLayout * pBCur = getFirstLayout();
+		fl_ContainerLayout * pBPrev = pPrevSL->getLastLayout();
+		UT_ASSERT(pBCur && pBPrev);
+	
+		pBCur->setPrev(pBPrev);
+		pBPrev->setNext(pBCur);
+		while(pBCur != NULL)
 		{
-			static_cast<fl_BlockLayout *>(pBCur)->
-				setSectionLayout(pPrevSL);
+			xxx_UT_DEBUGMSG(("updating block %x \n",pBCur));
+			pBCur->setContainingLayout(pBPrev->myContainingLayout());
+			if(pBCur->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				static_cast<fl_BlockLayout *>(pBCur)->
+					setSectionLayout(pPrevSL);
+			}
+			pBCur = pBCur->getNext();
 		}
-		pBCur = pBCur->getNext();
 	}
 	setFirstLayout(NULL);
 	setLastLayout(NULL);
@@ -2453,9 +2455,9 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	posStart = getFirstLayout()->getPosition(true) - 1;
 	posEnd = getLastLayout()->getPosition(false);
 	fp_Run * pRun = getLastLayout()->getFirstRun();
-	while(pRun->getNext() != NULL)
+	while(pRun->getNextRun() != NULL)
 	{
-		pRun = pRun->getNext();
+		pRun = pRun->getNextRun();
 	}
 	posEnd += pRun->getBlockOffset();
 	PL_StruxDocHandle sdh=NULL;
@@ -2940,13 +2942,27 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_ContainerLayout* p
 		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_populateObject(blockOffset,pcro)
-			&& bResult;
+		if(pShadowBL)
+		{
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_populateObject(blockOffset,pcro)
+				&& bResult;
+		}
+		else
+		{
+			bResult = false;
+		}
 	}
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-  	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_populateObject(blockOffset,pcro)
-  		&& bResult;
+	if(pBL)
+	{
+		bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_populateObject(blockOffset,pcro)
+			&& bResult;
+	}
+	else
+	{
+		bResult = false;
+	}
 	return bResult;
 }
 
@@ -3285,13 +3301,27 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_ContainerLayout* pB
 		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteFmtMark(pcrfm)
-			&& bResult;
+		if(pShadowBL)
+		{
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteFmtMark(pcrfm)
+				&& bResult;
+		}
+		else
+		{
+			bResult = false;
+		}
 	}
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm)	&& bResult;
+	if(pBL)
+	{
+		bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm)	&& bResult;
+	}
+	else
+	{
+		bResult = false;
+	}
 	return bResult;
 }
 

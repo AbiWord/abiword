@@ -206,7 +206,7 @@ public:
 	  \return Page
 	*/
 
-	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}
+	void				setPage(fp_Page* pPage);
 	virtual fp_Page*	getPage(void) const
 		{ return m_pPage; }
 	/*!

@@ -31,6 +31,7 @@
 #include "fp_FootnoteContainer.h"
 #include "fl_FootnoteLayout.h"
 #include "fl_DocLayout.h"
+#include "fp_Column.h"
 
 /*!
   Create container
@@ -38,7 +39,7 @@
   \param pSectionLayout Section layout type used for this container
  */
 fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout* pSectionLayout)
-	:       m_iType(iType),
+	:       m_iConType(iType),
 			m_pSectionLayout(pSectionLayout),
 			m_iDirection(FRIBIDI_TYPE_UNSET)
 {
@@ -50,7 +51,7 @@ fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout*
  */
 fp_ContainerObject::~fp_ContainerObject()
 {
-	m_iType = static_cast<FP_ContainerType>(-1);
+	m_iConType = static_cast<FP_ContainerType>(-1);
 }
 
 /*!
@@ -58,10 +59,10 @@ fp_ContainerObject::~fp_ContainerObject()
  */
 bool fp_ContainerObject::isColumnType(void) const
 {
-  bool b = (m_iType == FP_CONTAINER_COLUMN) 
-	  || (m_iType == FP_CONTAINER_COLUMN_SHADOW)
-	  || (m_iType == FP_CONTAINER_COLUMN_POSITIONED)
-	  || (m_iType == FP_CONTAINER_FOOTNOTE)
+  bool b = (m_iConType == FP_CONTAINER_COLUMN) 
+	  || (m_iConType == FP_CONTAINER_COLUMN_SHADOW)
+	  || (m_iConType == FP_CONTAINER_COLUMN_POSITIONED)
+	  || (m_iConType == FP_CONTAINER_FOOTNOTE)
 	  ;
   return b;
 }
@@ -152,7 +153,7 @@ void fp_Container::setContainer(fp_Container * pCO)
 	m_pContainer = pCO;
 	if(pCO != NULL)
 	{
-		m_FillType.setParent(pCO->getFillType()->getParent());
+		m_FillType.setParent(pCO->getFillType());
 	}
 	else
 	{
@@ -284,7 +285,7 @@ fg_FillType * fp_Container::getFillType(void)
  * or image defined here unless the fill type is transparent. If't transparent
  * we recursively call it's parents until it's not transparent.
  */
-fg_FillType::fg_FillType(fg_FillType *pParent, fp_Container * pContainer, FG_Fill_Type iType):
+fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, FG_Fill_Type iType):
 	m_pParent(pParent),
 	m_pContainer(pContainer),
 	m_pDocLayout(NULL),
@@ -316,8 +317,35 @@ void  fg_FillType::setParent(fg_FillType * pParent)
  */
 void fg_FillType::setColor(UT_RGBColor & color)
 {
+	UT_DEBUGMSG(("Fill type set to color class \n"));
 	m_FillType = FG_FILL_COLOR;
 	m_color = color;
+	DELETEP(m_pImage);
+	DELETEP(m_pGraphic);
+}
+
+/*!
+ * set this class to have a solid color fill unless this is a NULL string
+ * pointer 
+ */
+void fg_FillType::setColor(const char * pszColor)
+{
+	if(pszColor)
+	{
+		if(UT_strcmp(pszColor,"transparent") == 0)
+		{
+			m_FillType = FG_FILL_TRANSPARENT;
+		}
+		else
+		{
+			m_FillType = FG_FILL_COLOR;
+		}
+		m_color.setColor(pszColor);
+	}
+	else
+	{
+		m_FillType = FG_FILL_TRANSPARENT;
+	}
 	DELETEP(m_pImage);
 	DELETEP(m_pGraphic);
 }
@@ -396,14 +424,15 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 {
 	UT_Rect src;
 	UT_Rect dest;
+	xxx_UT_DEBUGMSG(("----Called fill -- Parent = %x Container %x FillType %d \n",m_pParent,m_pContainer,m_FillType));
 	if(!pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		if(m_bTransparentForPrint)
 		{
-			if(getParent())
+			if(getParent() && m_pContainer)
 			{
-				 UT_sint32 newX = x - (m_pContainer->getX());
-				 UT_sint32 newY = y - (m_pContainer->getY());
+				 UT_sint32 newX = x + (m_pContainer->getX());
+				 UT_sint32 newY = y + (m_pContainer->getY());
 				 getParent()->Fill(pG,newX,newY,x,y,width,height);
 				 return;
 			 }
@@ -411,10 +440,10 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 }
 		 if(m_FillType == FG_FILL_TRANSPARENT)
 		 {
-			 if(getParent())
+			 if(getParent() && m_pContainer )
 			 {
-				 UT_sint32 newX = srcX - (m_pContainer->getX());
-				 UT_sint32 newY = srcY - (m_pContainer->getY());
+				 UT_sint32 newX = srcX + (m_pContainer->getX());
+				 UT_sint32 newY = srcY + (m_pContainer->getY());
 				 getParent()->Fill(pG,newX,newY,x,y,width,height);
 				 return;
 			 }
@@ -443,24 +472,29 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	 }
 	 if(m_FillType == FG_FILL_TRANSPARENT)
 	 {
-		 if(getParent())
+		 xxx_UT_DEBUGMSG(("Fill type transparent ! \n"));
+		 if(getParent() && m_pContainer)
 		 {
-			 UT_sint32 newX = srcX - (m_pContainer->getX());
-			 UT_sint32 newY = srcY - (m_pContainer->getY());
+			 xxx_UT_DEBUGMSG(("Fill type transparent chaining up to parent %x ! \n",getParent()));
+			 UT_sint32 newX = srcX + (m_pContainer->getX());
+			 UT_sint32 newY = srcY + (m_pContainer->getY());
 			 getParent()->Fill(pG,newX,newY,x,y,width,height);
 			 return;
 		 }
+		 xxx_UT_DEBUGMSG(("Fill type transparent but no parent ! \n"));
 		 UT_RGBColor white(255,255,255);
 		 pG->fillRect(white,x,y,width,height);
 		 return;
 	 }
 	 if(m_FillType == FG_FILL_COLOR)
 	 {
+		 xxx_UT_DEBUGMSG(("Fill type Color ! \n"));
 		 pG->fillRect(m_color,x,y,width,height);
 		 return;
 	 }
 	 if(m_FillType == FG_FILL_IMAGE)
 	 {
+		 xxx_UT_DEBUGMSG(("Fill type Image ! \n"));
 		 if(m_pDocLayout->getGraphicTick() != m_iGraphicTick)
 		 {
 			 _regenerateImage(pG);
