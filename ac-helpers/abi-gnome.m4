@@ -85,8 +85,8 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` -DHAVE_GNOME=1"
-	GNOME_LIBS="`gnome-config --libs $gnomelibs`"
+	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` `nautilus-config --cflags` -DHAVE_GNOME=1"
+	GNOME_LIBS="`gnome-config --libs $gnomelibs` `nautilus-config --libs`"
 fi
 
 AC_SUBST(GNOME_CFLAGS)

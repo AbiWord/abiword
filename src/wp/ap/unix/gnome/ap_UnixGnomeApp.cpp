@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -102,8 +102,6 @@ static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget *
 static BonoboControl * AbiWidget_control_new(AbiWidget * abi);
 
 static int NautilusMain(int argc, char *argv[]);
-FILE * logfile;
-
 
 /*****************************************************************/
 
@@ -169,11 +167,9 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 	// Check to see if we've been activated as a Nautilus view
 	//
 
-	logfile = fopen("/home/msevior/abilog","w");
 	bool bNautilusFactory = false;
   	for (UT_uint32 k = 1; k < XArgs.m_argc; k++)
 	{
-	  fprintf(logfile," command passed %s \n",XArgs.m_argv[k]);
 	  if (*XArgs.m_argv[k] == '-')
 	    if (strstr(XArgs.m_argv[k],"nautilus_abiword_view_factory") != 0)
 		{
@@ -181,8 +177,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 			break;
 		}
 	}
-	fprintf(logfile,"AbiWord activated by nautilus %d \n",bNautilusFactory);
-	fclose(logfile);
+
 	if(bNautilusFactory)
 	{
 	    
@@ -331,34 +326,36 @@ static void get_prop (BonoboPropertyBag 	*bag,
 	  CORBA_Environment 	*ev,
 	  gpointer 		 user_data)
 {
-	AbiWidget 	*abi;
-	
+	g_return_if_fail (user_data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET(user_data));
-		
-	/*
-	 * get data from our AbiWidget
-	 */
-//
-// first create a fresh gtkargument.
-//
+
+	AbiWidget * abi = ABI_WIDGET(user_data); 
+
+	//
+	// first create a fresh gtkargument.
+	//
 	GtkArg * gtk_arg = (GtkArg *) g_new0 (GtkArg,1);
-//
-// Now copy the bonobo argument to this so we know what to extract from
-// AbiWidget.
-//
+
+	//
+	// Now copy the bonobo argument to this so we know what to extract from
+	// AbiWidget.
+	//
+
 	bonobo_arg_to_gtk(gtk_arg,arg);
-//
-// OK get the data from the widget. Only one argument at a time.
-//
-	abi = ABI_WIDGET(user_data); 
+
+	//
+	// OK get the data from the widget. Only one argument at a time.
+	//
 	gtk_object_getv(GTK_OBJECT(abi),1,gtk_arg);
-//
-// Now copy it back to the bonobo argument.
-//
+
+	//
+	// Now copy it back to the bonobo argument.
+	//
 	bonobo_arg_from_gtk (arg, gtk_arg);
-//
-// Free up allocated memory
-//
+
+	//
+	// Free up allocated memory
+	//
 	if (gtk_arg->type == GTK_TYPE_STRING && GTK_VALUE_STRING (*gtk_arg))
 	{
 		g_free (GTK_VALUE_STRING (*gtk_arg));
@@ -377,21 +374,25 @@ static void set_prop (BonoboPropertyBag 	*bag,
 {
 	AbiWidget 	*abi;
 	
-	g_return_if_fail (IS_ABI_WIDGET(user_data));
-		
+	g_return_if_fail (user_data != NULL);
+	g_return_if_fail (IS_ABI_WIDGET(user_data));		
+
 	abi = ABI_WIDGET (user_data); 
-//
-// Have to translate BonoboArg to GtkArg now. This is really easy.
-//
+
+	//
+	// Have to translate BonoboArg to GtkArg now. This is really easy.
+	//
 	GtkArg * gtk_arg = (GtkArg *) g_new0 (GtkArg,1);
 	bonobo_arg_to_gtk(gtk_arg,arg);
-//
-// Can only pass one argument at a time.
-//
+
+	//
+	// Can only pass one argument at a time.
+	//
 	gtk_object_setv(GTK_OBJECT(abi),1,gtk_arg);
-//
-// Free up allocated memory
-//
+
+	//
+	// Free up allocated memory
+	//
 	if (gtk_arg->type == GTK_TYPE_STRING && GTK_VALUE_STRING (*gtk_arg))
 	{
 		g_free (GTK_VALUE_STRING (*gtk_arg));
@@ -418,17 +419,17 @@ load_document_from_stream (BonoboPersistStream *ps,
 	AbiWidget *abiwidget;
 	Bonobo_Stream_iobuf *buffer;
 	CORBA_long len_read;
-    FILE * tmpfile;
+	FILE * tmpfile;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
 
 	abiwidget = (AbiWidget *) data;
 
-	/* copy stream to a tmp file */
-//
-// Create a temp file name.
-//
+
+	//
+	// Create a temp file name.
+	//
 	char szTempfile[ 2048 ];
 	UT_tmpnam(szTempfile);
 
@@ -455,10 +456,10 @@ load_document_from_stream (BonoboPersistStream *ps,
 
 	fclose(tmpfile);
 
-//
-// Load the file.
-//
-//
+	//
+	// Load the file.
+	//
+	//
 	g_object_set(G_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
 	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
 	return;
@@ -491,10 +492,9 @@ save_document_to_stream (BonoboPersistStream *ps,
 
 	abiwidget = (AbiWidget *) data;
 
-	/* copy stream to a tmp file */
-//
-// Create a temp file name.
-//
+	//
+	// Create a temp file name.
+	//
 	char szTempfile[ 2048 ];
 	UT_tmpnam(szTempfile);
 
@@ -613,9 +613,9 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 
 	abiwidget = ABI_WIDGET (data);
 
-//
-// Load the file.
-//
+	//
+	// Load the file.
+	//
 	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) filename,NULL);
 	return 0;
 }
@@ -635,6 +635,7 @@ save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
 
   return 0 ;
 }
+
 //
 // Data content for persist stream
 //
@@ -656,8 +657,6 @@ print_document (GnomePrintContext         *ctx,
 		const Bonobo_PrintScissor *opt_scissor,
 		gpointer                   user_data)
 {
-  printf ( "DOM: inside of print_document!!\n" ) ;
-
   // assert pre-conditions
   g_return_if_fail (user_data != NULL);
   g_return_if_fail (IS_ABI_WIDGET (user_data));
@@ -723,7 +722,7 @@ print_document (GnomePrintContext         *ctx,
 }
 
 /*****************************************************************/
-/* Implements the Bonobo/Zoom:1.0 Interface */
+/* Implements the Bonobo/Zoomable:1.0 Interface */
 /*****************************************************************/
 
 // increment/decrement zoom percentages by this amount
@@ -796,8 +795,8 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
   FV_View * pView = (FV_View*) pFrame->getCurrentView();
   UT_return_if_fail(pView!=NULL);
 
-  UT_uint32 newZoom = pView->calculateZoomPercentForPageWidth();
-  pFrame->setZoomType( XAP_Frame::z_PAGEWIDTH );
+  UT_uint32 newZoom = pView->calculateZoomPercentForWholePage();
+  pFrame->setZoomType( XAP_Frame::z_WHOLEPAGE );
   pFrame->setZoomPercentage(newZoom);
 }
 
@@ -872,19 +871,20 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (printer));
 
-	/* BonoboItemContainer */
+	/* Interface Bonobo/ItemContainer */
 
 	item_container = bonobo_item_container_new ();
 
 	g_signal_connect (G_OBJECT (item_container),
-			    "get_object",
-			    G_CALLBACK (abiwidget_get_object),
-			    abiwidget);
+			  "get_object",
+			  G_CALLBACK (abiwidget_get_object),
+			  abiwidget);
 	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (item_container));
 	
-	/* Bonobo::Zoomable */
+	/* Interface Bonobo::Zoomable */
+
 	zoomable = bonobo_zoomable_new () ;
 	if ( !zoomable ) {
 	  bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
@@ -895,29 +895,29 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 				     BONOBO_OBJECT (zoomable));
 
 	g_signal_connect(G_OBJECT(zoomable), "zoom_in",
-			   G_CALLBACK(zoom_in_func), abiwidget);
+			 G_CALLBACK(zoom_in_func), abiwidget);
 	g_signal_connect(G_OBJECT(zoomable), "zoom_out",
-			   G_CALLBACK(zoom_out_func), abiwidget);
+			 G_CALLBACK(zoom_out_func), abiwidget);
 	g_signal_connect(G_OBJECT(zoomable), "zoom_to_fit",
-			   G_CALLBACK(zoom_to_fit_func), abiwidget);
+			 G_CALLBACK(zoom_to_fit_func), abiwidget);
 	g_signal_connect(G_OBJECT(zoomable), "zoom_to_default",
-			   G_CALLBACK(zoom_to_default_func), abiwidget);
+			 G_CALLBACK(zoom_to_default_func), abiwidget);
 	g_signal_connect(G_OBJECT(zoomable), "set_zoom_level",
-			   G_CALLBACK(zoom_level_func), abiwidget);
+			 G_CALLBACK(zoom_level_func), abiwidget);
 
 	return to_aggregate;
 }
 
 static BonoboControl * AbiWidget_control_new(AbiWidget * abi)
 {
-    BonoboControl * control;
-	g_return_val_if_fail(abi != NULL, NULL);
-	g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
-	/* create a BonoboControl from a widget */
-	control = bonobo_control_new (GTK_WIDGET(abi));
-	control = AbiControl_construct(control, abi);
+    g_return_val_if_fail(abi != NULL, NULL);
+    g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
 
-	return control;
+    // create a BonoboControl from a widget
+    BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
+    control = AbiControl_construct(control, abi);
+    
+    return control;
 }
 
 
@@ -927,11 +927,12 @@ static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget *
 	g_return_val_if_fail(abi != NULL, NULL);
 	g_return_val_if_fail(control != NULL, NULL);
 	g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
+
 	/* 
 	 * create a property bag:
-	 * we provide our accessor functions for properties, 	and 
+	 * we provide our accessor functions for properties, and 
 	 * the gtk widget
-	 * */
+	 */
 	prop_bag = bonobo_property_bag_new (get_prop, set_prop, abi);
 	bonobo_control_set_properties (control, prop_bag);
 
@@ -1004,7 +1005,7 @@ static int mainBonobo(int argc, char * argv[])
 		("OAFIID:GNOME_AbiWord_ControlFactory",
 		 bonobo_AbiWidget_factory, NULL);
 	if (!factory)
-		printf("Registration of Bonobo button factory failed");
+		printf("Registration of Bonobo generic factory failed");
 
 	
 	/*
@@ -1021,29 +1022,7 @@ static int NautilusMain(int argc, char *argv[])
 {
 	int ires =0;
 
-    // Setup signal handlers, primarily for segfault
-    // If we segfaulted before here, we *really* blew it
-#if 1    
-    struct sigaction sa;
-    
-    sa.sa_handler = signalWrapper;
-    
-    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
-    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-/* #ifndef AIX - I presume these are always #define not extern... -fjf */
-#if defined (SA_NODEFER) && defined (SA_RESETHAND)
-    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
-#else
-    sa.sa_flags = 0;
-#endif
-   
-    sigaction(SIGSEGV, &sa, NULL);
-    sigaction(SIGBUS, &sa, NULL);
-    sigaction(SIGILL, &sa, NULL);
-    sigaction(SIGQUIT, &sa, NULL);
-    sigaction(SIGFPE, &sa, NULL);
-#endif
-	ires = nautilus_view_standard_main ("/home/msevior/abidir/AbiSuite/bin/AbiWord",
+	ires = nautilus_view_standard_main ("abiword",
 					    "1.0.6",
 					    NULL,	/* Could be PACKAGE */
 					    NULL,	/* Could be GNOMELOCALEDIR */
@@ -1056,5 +1035,3 @@ static int NautilusMain(int argc, char *argv[])
 					    (void *)nautilus_abiword_content_view_get_type);
 	return ires;
 }
-
-
