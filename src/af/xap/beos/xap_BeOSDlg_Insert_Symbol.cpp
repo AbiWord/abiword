@@ -28,7 +28,7 @@
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
-#include "xap_BeOSDialog_Insert_Symbol.h"
+#include "xap_BeOSDlg_Insert_Symbol.h"
 
 //#include "xap_BeOSResources.rc2"
 
