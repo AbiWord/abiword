@@ -791,10 +791,10 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		GR_Graphics * pGr = pView->getGraphics ();
 		UT_Rect rClip;
 		xxx_UT_DEBUGMSG(("Expose area: x %d y %d width %d  height %d \n",pExposeEvent->area.x,pExposeEvent->area.y,pExposeEvent->area.width,pExposeEvent->area.height));
-		rClip.left = pGr->tlu(pExposeEvent->area.x)+1;
-		rClip.top = pGr->tlu(pExposeEvent->area.y)+1;
-		rClip.width = pGr->tlu(pExposeEvent->area.width);
-		rClip.height = pGr->tlu(pExposeEvent->area.height);
+		rClip.left = pGr->tlu(pExposeEvent->area.x);
+		rClip.top = pGr->tlu(pExposeEvent->area.y);
+		rClip.width = pGr->tlu(pExposeEvent->area.width)+1;
+		rClip.height = pGr->tlu(pExposeEvent->area.height)+1;
 
 		pView->draw(&rClip);
 	}
