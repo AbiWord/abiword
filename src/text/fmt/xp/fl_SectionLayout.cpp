@@ -4363,7 +4363,7 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 	{
 		m_pDoc->miniDump(pBL->getStruxDocHandle(),6);
 	}
-	UT_ASSERT(ppBL);
+	//UT_ASSERT(ppBL);
 	xxx_UT_DEBUGMSG(("Search for block in shadow %x \n",this));
 	return ppBL;
 }
@@ -4924,7 +4924,8 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			m_pDoc->miniDump(sdh,6);
 		}
-		UT_ASSERT(m_pCurrentTL);
+
+		UT_return_val_if_fail(m_pCurrentTL,false);
 		UT_DEBUGMSG(("!!!! Append End Table to Shadow \n"));
 		if(m_pCurrentTL->getContainerType() != FL_CONTAINER_TABLE)
 		{
