@@ -187,7 +187,8 @@ bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * c
 	[_icon setImage:[NSImage imageNamed:@"margin"]];
 
 	if (_xap) {
-		[_adjustData setIntValue:(_xap->getPageScale())];
+		[_adjustData    setIntValue:(_xap->getPageScale())];
+		[_adjustStepper setIntValue:(_xap->getPageScale())];
 
 		_last_margin_unit = _xap->getMarginUnits();
 
@@ -230,7 +231,12 @@ bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * c
 
 - (IBAction)adjustAction:(id)sender
 {
-	[_adjustStepper setIntValue:[sender intValue]];
+	int percent = [sender intValue];
+
+	percent = (percent < 1) ? 1 : ((percent > 1000) ? 1000 : percent);
+
+	[_adjustData    setIntValue:percent];
+	[_adjustStepper setIntValue:percent];
 }
 
 - (IBAction)adjustStepperAction:(id)sender

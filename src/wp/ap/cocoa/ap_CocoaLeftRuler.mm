@@ -53,7 +53,8 @@
 AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame),
 		m_wLeftRuler(nil),
-		m_rootWindow(nil)
+		m_rootWindow(nil),
+		m_delegate(nil)
 {
 	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<AP_CocoaFrameImpl*>(m_pFrame->getFrameImpl())->_getController()) getVRuler];
 }
@@ -81,7 +82,10 @@ XAP_CocoaNSView * AP_CocoaLeftRuler::createWidget(void)
 void AP_CocoaLeftRuler::setView(AV_View * pView)
 {
 	AP_LeftRuler::setView(pView);
-	
+
+	if (m_delegate)
+		return;
+
 	DELETEP(m_pG);
 
 	GR_CocoaAllocInfo ai(m_wLeftRuler, m_pFrame->getApp());

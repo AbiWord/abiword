@@ -70,11 +70,12 @@ AP_CocoaTopRuler::~AP_CocoaTopRuler(void)
 	}
 }
 
-
-
 void AP_CocoaTopRuler::setView(AV_View * pView)
 {
 	AP_TopRuler::setView(pView);
+
+	if (m_delegate)
+		return;
 
 	DELETEP(m_pG);
 
