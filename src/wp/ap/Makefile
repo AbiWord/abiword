@@ -51,6 +51,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_MarkRevisions.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_ListRevisions.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_MetaData.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_MailMerge.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)		\
@@ -158,7 +159,9 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_InsertBookmark.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_FormatFootnotes.$(OBJ_SUFFIX)\
-		$(OBJDIR)/ap_Dialog_InsertHyperlink.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_InsertHyperlink.$(OBJ_SUFFIX)\
+		$(OBJDIR)/ap_Dialog_MetaData.$(OBJ_SUFFIX)\
+		$(OBJDIR)/ap_Dialog_MailMerge.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_MarkRevisions.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_Dialog_ListRevisions.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\

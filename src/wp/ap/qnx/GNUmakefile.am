@@ -62,6 +62,7 @@ libWpAp_qnx_a_SOURCES=\
 	ap_@ABI_FE@Dialog_MarkRevisions.cpp	\
 	ap_@ABI_FE@Dialog_ListRevisions.cpp	\
 	ap_@ABI_FE@Dialog_MergeCells.cpp	\
+	ap_@ABI_FE@Dialog_MailMerge.cpp	\
 	ap_@ABI_FE@Frame.cpp			\
 	ap_@ABI_FE@LeftRuler.cpp		\
 	ap_@ABI_FE@Prefs.cpp			\

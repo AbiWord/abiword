@@ -43,8 +43,9 @@ glade_DATA = \
 	ap_UnixDialog_HdrFtr.glade \
 	ap_UnixDialog_InsertTable.glade \
 	ap_UnixDialog_Insert_DateTime.glade \
-	ap_UnixDialog_PageNumbers.glade
-	
+	ap_UnixDialog_PageNumbers.glade		\
+	ap_UnixDialog_MailMerge.glade
+
 if WITH_CURL
 CURL_SOURCE_OBJ = ap_@ABI_FE@HashDownloader.cpp ap_@ABI_FE@Dialog_Download_File.cpp
 else
@@ -82,6 +83,7 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@Dialog_ListRevisions.cpp	\
 	ap_@ABI_FE@Dialog_MergeCells.cpp	\
 	ap_@ABI_FE@Dialog_MetaData.cpp		\
+	ap_@ABI_FE@Dialog_MailMerge.cpp		\
 	ap_@ABI_FE@Prefs.cpp			\
 	ap_@ABI_FE@StatusBar.cpp		\
 	ap_@ABI_FE@Toolbar_FontCombo.cpp	\

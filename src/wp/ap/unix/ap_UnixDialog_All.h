@@ -72,6 +72,7 @@
 #   include "ap_UnixDialog_MergeCells.h"
 #   include "ap_UnixDialog_FormatTable.h"
 #   include "ap_UnixDialog_FormatFootnotes.h"
+#   include "ap_UnixDialog_MailMerge.h"
 #ifdef HAVE_CURL
 #	include "ap_UnixDialog_Download_File.h"
 #endif
@@ -151,6 +152,7 @@
      DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_UnixDialog_MergeCells)
 	 DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_UnixDialog_FormatTable)
 	 DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_UnixDialog_FormatFootnotes)
+	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_UnixDialog_Download_File)
 #endif

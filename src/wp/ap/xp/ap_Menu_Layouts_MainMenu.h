@@ -119,6 +119,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_PAGENO)
 		MenuItem(AP_MENU_ID_INSERT_DATETIME)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)
+		MenuItem(AP_MENU_ID_INSERT_MAILMERGE)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
 
                 /* the autotext submenus */

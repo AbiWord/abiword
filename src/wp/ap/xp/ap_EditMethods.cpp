@@ -81,6 +81,7 @@
 #include "ap_Dialog_MergeCells.h"
 #include "ap_Dialog_FormatTable.h"
 #include "ap_Dialog_FormatFootnotes.h"
+#include "ap_Dialog_MailMerge.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -377,6 +378,7 @@ public:
 	static EV_EditMethod_Fn insPageNo;
 	static EV_EditMethod_Fn insDateTime;
 	static EV_EditMethod_Fn insField;
+	static EV_EditMethod_Fn insMailMerge;
 	static EV_EditMethod_Fn insSymbol;
 	static EV_EditMethod_Fn insFile;
 	static EV_EditMethod_Fn insFootnote;
@@ -847,6 +849,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insField), 		0,		""),
 	EV_EditMethod(NF(insFile), 0, ""),
 	EV_EditMethod(NF(insFootnote),			0,		""),
+	EV_EditMethod(NF(insMailMerge), 		0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
 	EV_EditMethod(NF(insertAbovedotData),	_D_,	""),
@@ -8153,7 +8156,6 @@ static bool s_doField(FV_View * pView)
 
 	if (pDialog->getAnswer() == AP_Dialog_Field::a_OK)
 	{
-		// TODO - Insert field correctly
 		const XML_Char * pParam = pDialog->getParameter();
 		const XML_Char * pAttr[3];
 		const XML_Char param_name[] = "param";
@@ -8177,6 +8179,44 @@ Defun1(insField)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doField(pView);
+}
+
+Defun1(insMailMerge)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_MailMerge * pDialog
+		= static_cast<AP_Dialog_MailMerge *>(pDialogFactory->requestDialog(AP_DIALOG_ID_MAILMERGE));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	pDialog->runModal(pFrame);
+
+	if (pDialog->getAnswer() == AP_Dialog_MailMerge::a_OK)
+	{
+		const XML_Char * pParam = pDialog->getMergeField().utf8_str();
+		const XML_Char * pAttr[3];
+		const XML_Char param_name[] = "param";
+		pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
+		pAttr[1] = pParam;
+		pAttr[2] = 0;
+
+		pView->cmdInsertField("mail_merge",static_cast<const XML_Char **>(&pAttr[0]));
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return true;
 }
 
 Defun1(insFile)
