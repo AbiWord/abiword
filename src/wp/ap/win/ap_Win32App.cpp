@@ -88,6 +88,8 @@
 #include "ap_Win32HashDownloader.h"
 #endif
 
+#include "ap_Strings.h"
+
 // extern prototype - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 /*****************************************************************/
@@ -134,8 +136,11 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 	return false;
 }
 
+typedef BOOL __declspec(dllimport) (CALLBACK *InitCommonControlsEx_fn)(LPINITCOMMONCONTROLSEX lpInitCtrls);
+
 bool AP_Win32App::initialize(void)
 {
+	bool bSuccess = true;
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
 	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 	UT_ASSERT(bVerified);
@@ -268,7 +273,53 @@ bool AP_Win32App::initialize(void)
 
 	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);	
 	
-	
+	//////////////////////////////////////////////////////////////////
+	// Check for necessary DLLs now that we can do localized error messages
+	//////////////////////////////////////////////////////////////////
+
+	// Ensure that we have Unicows dll
+	if (!UT_IsWinNT())
+	{
+		HMODULE hModule = LoadLibrary("unicows.dll");
+		
+		if (!hModule)
+		{
+			UT_String sErr(UT_String_sprintf(m_pStringSet->getValue(AP_STRING_ID_WINDOWS_NEED_UNICOWS),
+											 "Unicows"));
+
+			MessageBox(NULL, sErr.c_str(), NULL, MB_OK);
+
+			bSuccess = false;
+		}
+		else
+			FreeLibrary(hModule);
+	}
+
+	// Ensure that common control DLL is loaded
+	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
+	UT_ASSERT(hinstCC);
+	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
+	if( hinstCC != NULL )
+		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
+	if( pInitCommonControlsEx != NULL )
+	{
+		INITCOMMONCONTROLSEX icex;
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES 	// load the rebar and toolbar
+					| ICC_TAB_CLASSES | ICC_UPDOWN_CLASS	// and tab and spin controls
+					;
+		pInitCommonControlsEx(&icex);
+	}
+	else
+	{
+		InitCommonControls();
+
+		UT_String sErr(UT_String_sprintf(m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING),
+										 "Unicows"));
+
+		MessageBox(NULL, sErr.c_str(), NULL, MB_OK);
+	}
+
 	//////////////////////////////////////////////////////////////////
 	// load the all Plugins from the correct directory
 	//////////////////////////////////////////////////////////////////
@@ -313,7 +364,7 @@ bool AP_Win32App::initialize(void)
 	 */
 	XAP_ModuleManager::instance().registerPending ();
 
-	return true;
+	return bSuccess;
 }
 
 
@@ -945,8 +996,6 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 
 /*****************************************************************/
 
-typedef BOOL __declspec(dllimport) (CALLBACK *InitCommonControlsEx_fn)(LPINITCOMMONCONTROLSEX lpInitCtrls);
-
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -963,48 +1012,6 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_WNDW);
 #endif
-
-	// Ensure that we have Unicows dll
-	if (!UT_IsWinNT())
-	{
-		HMODULE hModule = LoadLibrary("unicows.dll");
-		
-		if (!hModule)
-		{
-			MessageBox(NULL,
-				"AbiWord needs the UNICOWS.DLL library \n"
-				, NULL, MB_OK);
-			return 0;
-		}
-		else
-			FreeLibrary(hModule);
-	}
-
-	// Ensure that common control DLL is loaded
-	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
-	UT_ASSERT(hinstCC);
-	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
-	if( hinstCC != NULL )
-		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
-	if( pInitCommonControlsEx != NULL )
-	{
-		INITCOMMONCONTROLSEX icex;
-		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-		icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES 	// load the rebar and toolbar
-					| ICC_TAB_CLASSES | ICC_UPDOWN_CLASS	// and tab and spin controls
-					;
-		pInitCommonControlsEx(&icex);
-	}
-	else
-	{
-		InitCommonControls();
-		MessageBox(NULL,
-			"AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
-			"than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-			"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
-			"\n\thttp://www.abisource.com\n\n"
-			"You can use the program, but the toolbar may be missing.", NULL, MB_OK);
-	}
 
 	// HACK: load least-common-denominator Rich Edit control
 	// TODO: fix Spell dlg so we don't rely on this

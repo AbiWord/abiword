@@ -109,7 +109,7 @@ dcl(DLG_FR_FinishedReplace, "AbiWord has finished its search of the document and
 dcl(DLG_Break_BreakTitle,		"Insert break")
 dcl(DLG_Break_BreakTitle_Capital,	"Insert Break")
 dcl(DLG_Break_Insert,			"Insert")
-dcl(DLG_Break_SectionBreaks,		"Section breaks")
+dcl(DLG_Break_SectionBreaks,	"Section breaks")
 dcl(DLG_Break_SectionBreaks_Capital,	"Section Breaks")
 dcl(DLG_Break_PageBreak,		"&Page break")
 dcl(DLG_Break_ColumnBreak,		"&Column break")
@@ -413,8 +413,8 @@ dcl(DLG_MergeCells_Below,	    	     "Merge Below")
 dcl(DLG_FormatTableTitle,	    	     "Format Table")
 dcl(DLG_FormatTable_Borders,	   	     "Borders")
 dcl(DLG_FormatTable_Background,    	     "Background")
-dcl(DLG_FormatTable_Border_Color,    	     "Border color:")
-dcl(DLG_FormatTable_Background_Color,	     "Background color:")
+dcl(DLG_FormatTable_Border_Color,    	 "Border color:")
+dcl(DLG_FormatTable_Background_Color,    "Background color:")
 dcl(DLG_FormatTable_Color,		     "Color:")
 dcl(DLG_FormatTable_Preview,	   	     "Preview")
 dcl(DLG_FormatTable_Apply_To,	   	     "Apply to:")
@@ -678,10 +678,15 @@ dcl(DLG_DlFile_Status, 		"Abiword is now downloading %s from:\n%s")
 
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")
-	 dcl(SCRIPT_NOSCRIPTS, "No scripts found")
-	 dcl(SCRIPT_CANTRUN, "Error executing script %s")
+dcl(SCRIPT_NOSCRIPTS, "No scripts found")
+dcl(SCRIPT_CANTRUN, "Error executing script %s")
 
-	dcl(MSG_CHECK_PRINT_MODE,"Headers and Footers can only be created and edited while in Print View Mode. \n To enter this mode choose ""View"" then ""Print Layout"" from the Menus. \n Would you like to enter Print Layout mode right now?")
+dcl(MSG_CHECK_PRINT_MODE,"Headers and Footers can only be created and edited while in Print View Mode. \n To enter this mode choose ""View"" then ""Print Layout"" from the Menus. \n Would you like to enter Print Layout mode right now?")
+
+
+/* Windows ap_App */
+dcl(WINDOWS_NEED_UNICOWS,	"AbiWord needs the file %s.dll\nPlease download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm")
+dcl(WINDOWS_COMCTL_WARNING,	"AbiWord is designed for a newer version of the system file COMCTL32.DLL\nthan the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\nA solution to this problem is explained in the FAQ on the AbiSource web site\n\n\thttp://www.abisource.com\n\nYou can use the program, but the toolbar may be missing.")
 
 	 /* below are autotext defaults */
 
