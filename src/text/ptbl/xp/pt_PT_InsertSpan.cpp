@@ -698,6 +698,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 
 			case PTO_Field:
 			case PTO_Math:
+			case PTO_Embed:
 				return pfo->getIndexAP();
 
 			// TODO: determine what we want to do about these guys

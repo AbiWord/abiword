@@ -69,6 +69,7 @@ CPPSRCS=		fv_View.cpp			\
 			fv_Selection.cpp \
 			fv_InlineImage.cpp \
 			fp_MathRun.cpp \
+			fp_EmbedRun.cpp \
 
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)

@@ -777,6 +777,24 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					}
                     return true;
                 }
+ 			case PTO_Embed:
+                {
+                    _closeSpan();
+                    _closeField();
+                    _openTag("embed","/",false,api,pcr->getXID());
+					const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
+					if (image_name)
+					{
+						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
+						m_pUsedImages.insert(image_name);
+						UT_UTF8String * sPNGname = new UT_UTF8String("snapshot-png-");
+						m_vecSnapNames.addItem(sPNGname);
+						*sPNGname += image_name;
+						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
+						m_pUsedImages.insert(sPNGname->utf8_str());
+					}
+                    return true;
+                }
   			case PTO_Bookmark:
    				{
    					_closeSpan();

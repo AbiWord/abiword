@@ -69,7 +69,8 @@ libFmt_a_SOURCES= \
 	fv_VisualDragText.cpp \
 	fv_InlineImage.cpp \
 	fv_Selection.cpp \
-	fp_MathRun.cpp
+	fp_MathRun.cpp \
+	fp_EmbedRun.cpp
 
 
 

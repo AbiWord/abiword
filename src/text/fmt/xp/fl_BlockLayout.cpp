@@ -77,6 +77,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "fp_MathRun.h"
+#include "fp_EmbedRun.h"
 
 #include "xap_EncodingManager.h"
 
@@ -4745,6 +4746,16 @@ bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropInde
 	return _doInsertRun(pNewRun);
 }
 
+
+bool	fl_BlockLayout::_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
+{
+	fp_Run * pNewRun = NULL;
+	pNewRun = new fp_EmbedRun(this,blockOffset,indexAP,oh);
+	UT_ASSERT(pNewRun); // TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
 bool	fl_BlockLayout::_doInsertTOCTabRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_TabRun(this,blockOffset, 1);
@@ -7643,6 +7654,12 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		_doInsertMathRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
 		return true;
 
+
+	case PTO_Embed:
+		UT_DEBUGMSG(("Populate Embed:\n"));
+		_doInsertEmbedRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
+		return true;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -7713,6 +7730,16 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	}
 
 
+	case PTO_Embed:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Embed:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertEmbedRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
+		break;
+
+	}
+
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -7777,6 +7804,13 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		case PTO_Math:
 		{
 			UT_DEBUGMSG(("Edit:DeleteObject:Math:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset, 1);
+			break;
+		}
+		case PTO_Embed:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Embed:\n"));
 			blockOffset = pcro->getBlockOffset();
 			_delete(blockOffset, 1);
 			break;
@@ -7969,6 +8003,43 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 					pMathRun->clearScreen();
 				}
 				pMathRun->lookupProperties();
+
+				goto done;
+			}
+			pRun = pRun->getNextRun();
+		}
+
+		return false;
+	}
+
+	case PTO_Embed:
+	{
+		UT_DEBUGMSG(("Edit:ChangeObject:Embed:\n"));
+		blockOffset = pcroc->getBlockOffset();
+		fp_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			if (pRun->getBlockOffset() == blockOffset && (pRun->getType()!= FPRUN_FMTMARK))
+			{
+				if(pRun->getType()!= FPRUN_EMBED)
+				{
+					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
+					while(pRun && pRun->getType() == FPRUN_FMTMARK)
+					{
+						pRun = pRun->getNextRun();
+					}
+				}
+				if(!pRun || pRun->getType() != FPRUN_EMBED)
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
+				}
+				fp_EmbedRun* pEmbedRun = static_cast<fp_EmbedRun*>(pRun);
+				if(!isHdrFtr())
+				{
+					pEmbedRun->clearScreen();
+				}
+				pEmbedRun->lookupProperties();
 
 				goto done;
 			}

@@ -242,6 +242,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_VERSION         33 //<version>
 #define TT_TOC             34 //<toc> (Table of Contents
 #define TT_MATH            35 //<math> Math Run
+#define TT_EMBED            36 //<embed> Generic Embeded Run
 
 
 /*
@@ -272,6 +273,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"cell",		    TT_CELL		    },
 	{	"d",			TT_DATAITEM		},
 	{	"data",			TT_DATASECTION	},
+	{   "embed",      TT_EMBED      },
 	{   "endnote",      TT_ENDNOTE      },
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
@@ -511,6 +513,14 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		m_bInMath = true;
+		return;
+	}
+	case TT_EMBED:
+	{
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(appendObject(PTO_Embed,atts));
+		m_iImageId++;
+		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		return;
 	}
 	case TT_BOOKMARK:
@@ -974,6 +984,10 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		UT_DEBUGMSG(("In math set false \n"));
 		X_VerifyParseState(_PS_Block);
 		return;
+	case TT_EMBED:						// not a container, so we don't pop stack
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
 
 	case TT_BOOKMARK:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
@@ -1350,8 +1364,8 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 			const XML_Char * r_id = 0;
 			const XML_Char * r_64 = 0;
 
-			enum { mt_unknown, mt_png, mt_svg, mt_mathml } mt = mt_unknown;
-
+			enum { mt_unknown, mt_png, mt_svg, mt_mathml,mt_embed } mt = mt_unknown;
+			const XML_Char * pszEmbed = NULL;
 			const XML_Char ** attr = atts;
 			while (*attr)
 				{
@@ -1370,6 +1384,11 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 								mt = mt_svg;
 							else if (strcmp (*attr, "application/mathml+xml") == 0)
 								mt = mt_mathml;
+							else
+								{
+									pszEmbed = *attr;
+									mt = mt_embed;
+								}
 
 							attr++;
 						}
@@ -1418,6 +1437,14 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 					if (strcmp (r_64, "no") == 0) // hmm, CDATA fun
 						{
 							ri->type ("application/mathml+xml"); // preferred by MathML 2.0
+							m_currentDataItemEncoded = false;
+							add_resource = true;
+						}
+					break;
+				case mt_embed:
+					if (strcmp (r_64, "no") == 0) // hmm, CDATA fun
+						{
+							ri->type (pszEmbed); 
 							m_currentDataItemEncoded = false;
 							add_resource = true;
 						}

@@ -87,7 +87,8 @@ enum FP_RUN_TYPE
 	FPRUN_DIRECTIONMARKER           = 14,
 	FPRUN_DUMMY                     = 15,
 	FPRUN_MATH                      = 16,
-	FPRUN__LAST__					= 17
+	FPRUN_EMBED                      = 17,
+	FPRUN__LAST__					= 18
 };
 
 // specifies how setX should handle screen clearing
