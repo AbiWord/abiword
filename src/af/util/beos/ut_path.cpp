@@ -71,3 +71,15 @@ bool UT_isRegularFile(const char* filename)
     return false;
 }
 
+/* Untested, but should work */
+time_t UT_mTime(const char* path)
+{
+    struct stat buf;
+    
+    if (stat(path, &buf) != -1)
+    {
+		return((time_t)-1);
+    }
+    
+    return(buf.st_mtime);
+}

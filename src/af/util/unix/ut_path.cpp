@@ -71,3 +71,18 @@ bool UT_isRegularFile(const char* filename)
     return false;
 }
 
+
+/*!
+	If the directory/file 'path' exist its mtime (modification time) is returned
+*/
+time_t UT_mTime(const char* path)
+{
+    struct stat buf;
+    
+    if (stat(path, &buf) != -1)
+    {
+		return((time_t)-1);
+    }
+    
+    return(buf.st_mtime);
+}

@@ -20,11 +20,14 @@
 #ifndef UT_PATH_H
 #define UT_PATH_H
 #include "ut_types.h"
+#include <time.h>
 
 ABI_EXPORT const char* UT_basename(const char* path);
 
 ABI_EXPORT bool UT_directoryExists(const char* dir);
 
 ABI_EXPORT bool UT_isRegularFile(const char* filename);
+
+ABI_EXPORT time_t UT_mTime(const char* path);
 
 #endif /* UT_PATH_H */

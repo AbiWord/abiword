@@ -62,3 +62,8 @@ bool UT_isRegularFile(const char* filename)
 	return false;
 }
 
+time_t UT_mTime(const char* path)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return((timer_t)-1);
+}
