@@ -240,9 +240,17 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	if(iType == FL_CONTAINER_BLOCK)
 	{
 		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
+		{
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true);
+		}
+		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_TABLE))
+		{
+			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), (fl_SectionLayout *) pPrev->myContainingLayout(), indexAP);
+		}
 		else
+		{
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP);
+		}
 	}
 	if(iType == FL_CONTAINER_TABLE)
 	{

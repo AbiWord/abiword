@@ -371,6 +371,50 @@ void fl_TableLayout::updateTable(void)
 }
 
 
+bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pLBlock,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
+
+	fl_ContainerLayout * pNewCL = NULL;
+	pNewCL = insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
+	fl_BlockLayout * pBlock = (fl_BlockLayout *) pNewCL;
+//
+// Set the sectionlayout of this table to that of the block since it is that scope
+//
+	pBlock->setSectionLayout((fl_SectionLayout *) myContainingLayout());
+	pNewCL->setContainingLayout(myContainingLayout());
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewCL;
+	pfnBindHandles(sdh,lid,sfhNew);
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	return true;
+}
+
+
 bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
@@ -973,7 +1017,7 @@ void fl_CellLayout::createCellContainer(void)
 	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
 	pCellContainer->setWidth(iWidth);
 	UT_sint32 iWidthLayout = pDSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - pDSL->getLeftMarginInLayoutUnits() - pDSL->getRightMarginInLayoutUnits();
-	UT_DEBUGMSG(("SEVIOR: Setting initial width of cell %x to %d \n",pCellContainer,iWidthLayout));
+	xxx_UT_DEBUGMSG(("SEVIOR: Setting initial width of cell %x to %d \n",pCellContainer,iWidthLayout));
 	pCellContainer->setWidthInLayoutUnits(iWidthLayout);
 }
 
@@ -1253,7 +1297,7 @@ void fl_CellLayout::_lookupProperties(void)
 	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
-	UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
+	xxx_UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
 	  the blockLayout does?

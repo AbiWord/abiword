@@ -717,7 +717,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // 
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
 			bool bResult = true;
-			UT_DEBUGMSG(("SEVIOR: looking at strux type %d to delete \n",pfs->getStruxType()));
 			if(_StruxIsNotTable(pfs))
 			{
 				if(bPrevWasCell && pfs->getStruxType()== PTX_Block)
@@ -1485,17 +1484,13 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		//  first, and then the actual spans.
 		_changePointWithNotify(old_dpos2);
 
-		UT_sint32 oldDepth = stDelayStruxDelete.getDepth();
+		UT_uint32 oldDepth = stDelayStruxDelete.getDepth();
 		bSuccess = _deleteFormatting(dpos1, dpos2);
 		if (bSuccess)
 			bSuccess = _deleteComplexSpan(dpos1, dpos2, &stDelayStruxDelete);
 		
 		bool prevDepthReached = false;
 		PT_DocPosition finalPos = dpos1;
-		if(bDeleteTableStruxes)
-		{
-			dpos1 = dpos1 + 1;
-		}
 		while (bSuccess && stDelayStruxDelete.getDepth() > 0)
 		{
 			pf_Frag_Strux * pfs;
@@ -1509,9 +1504,20 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 			PT_DocPosition dp;
 			if(bDeleteTableStruxes || prevDepthReached )
 			{
-				_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
-				bSuccess = _deleteStruxWithNotify(dpos1 - pfs->getLength(), pfs,
-											  &pf, &dp);
+				PT_DocPosition myPos = pfs->getPos();
+				if(!prevDepthReached)
+				{
+//					_deleteFormatting(myPos - pfs->getLength(), myPos);
+//					bSuccess = _deleteStruxWithNotify(myPos - pfs->getLength(), pfs,
+//													  &pf, &dp);
+					bSuccess = _deleteStruxWithNotify(myPos, pfs, &pf, &dp);
+				}
+				else
+				{
+					_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
+					bSuccess = _deleteStruxWithNotify(dpos1 - pfs->getLength(), pfs,
+													  &pf, &dp);
+				}
 			}
 			else
 			{
