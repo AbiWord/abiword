@@ -386,7 +386,8 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(parent);
 	// center it
     centerDialog(parent, GTK_WIDGET(pFS));
-
+	gtk_window_set_transient_for(GTK_WINDOW(pFS), GTK_WINDOW(parent));
+	
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));
 

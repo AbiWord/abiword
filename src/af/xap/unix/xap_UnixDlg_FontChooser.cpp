@@ -582,7 +582,8 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(parent);
 	// center it
     centerDialog(parent, GTK_WIDGET(cf));
-
+	gtk_window_set_transient_for(GTK_WINDOW(cf), GTK_WINDOW(parent));
+	
 	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));

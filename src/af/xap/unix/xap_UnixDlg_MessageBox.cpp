@@ -167,7 +167,7 @@ void AP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
 	// New GTK+ dialog window
-	GtkWidget * dialog_window = gtk_dialog_new();
+	GtkWidget * dialog_window = gtk_dialog_new();								 
 	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
 							  "destroy",
 							  GTK_SIGNAL_FUNC(s_cancel_clicked),
@@ -353,6 +353,7 @@ void AP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	// center it
     centerDialog(parent, dialog_window);
+	gtk_window_set_transient_for(GTK_WINDOW(dialog_window), GTK_WINDOW(parent));
 
 	gtk_grab_add(GTK_WIDGET(dialog_window));
 	gtk_widget_show(dialog_window);

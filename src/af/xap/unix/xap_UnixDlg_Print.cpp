@@ -384,7 +384,8 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	UT_ASSERT(parent);
 	// center it
     centerDialog(parent, window);
-
+	gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(parent));
+	
 	gtk_widget_show (window);
 
 	gtk_main();

@@ -373,7 +373,8 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(parent);
 	// center it
     centerDialog(parent, topLevel);
-
+	gtk_window_set_transient_for(GTK_WINDOW(topLevel), GTK_WINDOW(parent));
+	
 	if (m_id == AP_DIALOG_ID_FIND)
 		gtk_widget_grab_default(findButton);
 	else
