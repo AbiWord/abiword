@@ -383,6 +383,8 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 	GtkWidget *gnomeButtons;
 	GtkWidget *Apply;
 	GtkWidget *Close;
+	GtkWidget *hseparator1;
+
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
@@ -400,6 +402,12 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 	//---------------------------------------------------------
 	// Do the stuff on the bottom that should be gnomized
 	//------------------------------------------------------------------
+
+	// Seperator
+	
+	hseparator1 = gtk_hseparator_new ();
+	gtk_widget_show (hseparator1);
+	gtk_box_pack_start (GTK_BOX (contents), hseparator1, FALSE, TRUE, 0);
 
 
 	// Buttons
@@ -487,7 +495,6 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *applyCurrent;
 	GtkWidget *startSubList;
 	GtkWidget *resumeList;
-	GtkWidget *hseparator1;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -779,16 +786,6 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (radioBox), startSubList, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (startSubList), 3);
 	
-	//	resumeList = gtk_radio_button_new_with_label (radioBox_group,pSS->getValue(AP_STRING_ID_DLG_Lists_Resume));
-	//	radioBox_group = gtk_radio_button_group (GTK_RADIO_BUTTON (resumeList));
-	//	gtk_widget_show (resumeList);
-	//	gtk_box_pack_start (GTK_BOX (radioBox), resumeList, TRUE, TRUE, 0);
-	//	gtk_container_set_border_width (GTK_CONTAINER (resumeList), 3);
-	
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (overallVbox), hseparator1, FALSE, TRUE, 0);
-
 
 	// Save useful widgets in member variables
 
