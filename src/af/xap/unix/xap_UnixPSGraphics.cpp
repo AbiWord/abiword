@@ -202,12 +202,23 @@ UT_uint32 PS_Graphics::getFontDescent()
 
 UT_uint32 PS_Graphics::getFontHeight(GR_Font * fnt)
 {
-  return getFontAscent(fnt)+getFontDescent(fnt);
+	UT_sint32 height = getFontAscent(fnt) + getFontDescent(fnt);
+
+#if 0
+	UT_DEBUGMSG(("SEVIOR: Font height in PS-print = %d \n",height));
+	PSFont * pFont = static_cast<PSFont *>(fnt);
+	XAP_UnixFont *uf          = pFont->getUnixFont();
+	char *abi_name            = (char*)uf->getName();
+	UT_DEBUGMSG(("SEVIOR: Font size in PS-print = %d Font Name %s \n",pFont->getSize(),abi_name));
+#endif
+
+	return height;
 }
 
 UT_uint32 PS_Graphics::getFontHeight()
 {
-  return getFontAscent()+getFontDescent();
+	UT_sint32 height = getFontAscent((GR_Font *)m_pCurrentFont) + getFontDescent((GR_Font *) m_pCurrentFont);
+	return height;
 }
 	
 UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -243,10 +254,10 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	
     	register int x;
 		UT_UCSChar currentChar;
-		UT_DEBUGMSG(("SEVIOR: raw char = %d \n",p[k]));
+		xxx_UT_DEBUGMSG(("SEVIOR: raw char = %d \n",p[k]));
 		currentChar = remapGlyph(p[k], false);
 		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
-		UT_DEBUGMSG(("SEVIOR: current char = %d  width = %d \n",currentChar,x));
+		xxx_UT_DEBUGMSG(("SEVIOR: current char = %d  width = %d \n",currentChar,x));
 		
 		iCharWidth += x;
 		pWidths[k] = x;
@@ -362,7 +373,7 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 		iSize = iSizeLayout;
 	} 
 
-	UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
+	xxx_UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
 	PSFont * pFont = new PSFont(item, iSize);
 	UT_ASSERT(pFont);
 

@@ -139,6 +139,7 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 
 	m_fontfile = NULL;
 	m_metricfile = NULL;
+	m_uniWidths = NULL;
 	
 	m_metricsData = NULL;
 
@@ -302,7 +303,7 @@ const char * XAP_UnixFont::getXLFD(void)
 
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c)
 {
-	if(!m_uniWidths)
+	if(!m_uniWidths || m_metricsData)
 		getMetricsData();
 
 	uniWidth * w = (uniWidth *) bsearch(&c, m_uniWidths, m_metricsData->numOfChars, sizeof(uniWidth), s_compareUniWidthsChar);
