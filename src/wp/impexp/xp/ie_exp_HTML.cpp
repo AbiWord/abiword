@@ -4247,7 +4247,7 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 		{
 			tree = new s_StyleTree(this,style_name,style);
 		}
-	UT_CATCH(...)
+	UT_CATCH(UT_CATCH_ANY)
 		{
 			tree = 0;
 		}
@@ -4290,6 +4290,10 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 		}
 	else parent = this;
 
+	if (!parent) {
+		UT_ASSERT_NOT_REACHED();
+		return false;
+	}
 	return parent->add (style_name, style);
 }
 
