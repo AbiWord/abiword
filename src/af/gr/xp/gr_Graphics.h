@@ -399,7 +399,6 @@ class ABI_EXPORT GR_Graphics
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect;}
 	virtual void      scroll(UT_sint32, UT_sint32) = 0;
-
 	virtual void      scroll(UT_sint32 x_dest,
 							 UT_sint32 y_dest,
 							 UT_sint32 x_src,
@@ -645,6 +644,8 @@ class ABI_EXPORT GR_Graphics
 	// classes, but have your own static variable for the derrived
 	// class !!!
 	virtual const UT_VersionInfo & getVersion() const {UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED ); return s_Version;}
+	UT_uint32         getPaintCount(void) const
+		{ return  m_paintCount;}
 	
  protected:
 
