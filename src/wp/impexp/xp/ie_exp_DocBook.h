@@ -28,19 +28,28 @@ class s_DocBook_Listener;
 
 // The exporter/writer for DocBook
 
+class IE_Exp_DocBook_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_DocBook_Sniffer () {}
+	virtual ~IE_Exp_DocBook_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
+
 class IE_Exp_DocBook : public IE_Exp
 {
 public:
 	IE_Exp_DocBook(PD_Document * pDocument);
 	virtual ~IE_Exp_DocBook();
-
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);

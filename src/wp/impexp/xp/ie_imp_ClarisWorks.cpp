@@ -92,6 +92,55 @@ UT_Error IE_Imp_ClarisWorks::importFile(const char * szFilename)
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Imp_ClarisWorks_Sniffer::recognizeContents(const char * szBuf, 
+												   UT_uint32 iNumbytes)
+{
+    if (iNumbytes >= 8) 
+    {
+        if ((szBuf[4] == 'B') && (szBuf[5] == 'O') && (szBuf [6] == 'B')
+            && (szBuf [7] == 'O'))
+        {
+            if (szBuf [0] == CW_HANDLED_VERSION) 
+            {
+                return (true);
+            }
+            else 
+            {
+                UT_DEBUGMSG (("%s,%d: Mismatch version.\n",__FILE__,__LINE__));
+            }
+        }
+    
+    }
+
+    return(false);
+}
+
+bool IE_Imp_ClarisWorks_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+   return (UT_stricmp(szSuffix,".cwk") == 0);
+}
+
+UT_Error IE_Imp_ClarisWorks_Sniffer::constructImporter(PD_Document * pDocument,
+													   IE_Imp ** ppie)
+{
+   IE_Imp_ClarisWorks * p = new IE_Imp_ClarisWorks(pDocument);
+   *ppie = p;
+   return UT_OK;
+}
+
+bool	IE_Imp_ClarisWorks_Sniffer::getDlgLabels(const char ** pszDesc,
+												 const char ** pszSuffixList,
+												 IEFileType * ft)
+{
+   *pszDesc = "ClarisWorks/AppleWorks 5 (.cwk)";
+   *pszSuffixList = "*.cwk";
+   *ft = getFileType();
+   return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Imp_ClarisWorks::~IE_Imp_ClarisWorks()
 {
 }
@@ -299,55 +348,6 @@ void IE_Imp_ClarisWorks::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_ClarisWorks::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-    if (iNumbytes >= 8) 
-    {
-        if ((szBuf[4] == 'B') && (szBuf[5] == 'O') && (szBuf [6] == 'B')
-            && (szBuf [7] == 'O'))
-        {
-            if (szBuf [0] == CW_HANDLED_VERSION) 
-            {
-                return (true);
-            }
-            else 
-            {
-                UT_DEBUGMSG (("%s,%d: Mismatch version.\n",__FILE__,__LINE__));
-            }
-        }
-    
-    }
-
-    return(false);
-}
-
-bool IE_Imp_ClarisWorks::RecognizeSuffix(const char * szSuffix)
-{
-   return (UT_stricmp(szSuffix,".cwk") == 0);
-}
-
-UT_Error IE_Imp_ClarisWorks::StaticConstructor(PD_Document * pDocument,
-                                           IE_Imp ** ppie)
-{
-   IE_Imp_ClarisWorks * p = new IE_Imp_ClarisWorks(pDocument);
-   *ppie = p;
-   return UT_OK;
-}
-
-bool	IE_Imp_ClarisWorks::GetDlgLabels(const char ** pszDesc,
-                                     const char ** pszSuffixList,
-                                     IEFileType * ft)
-{
-   *pszDesc = "ClarisWorks/AppleWorks 5 (.cwk)";
-   *pszSuffixList = "*.cwk";
-   *ft = IEFT_ClarisWorks;
-   return true;
-}
-
-bool IE_Imp_ClarisWorks::SupportsFileType(IEFileType ft)
-{
-   return (IEFT_ClarisWorks == ft);
-}
 
 
 

@@ -287,6 +287,32 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 
+/*****************************************************************/
+/*****************************************************************/
+
+bool IE_Exp_MsWord_97_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!UT_stricmp(szSuffix,".doc") || !UT_stricmp(szSuffix, ".dot"));
+}
+
+UT_Error IE_Exp_MsWord_97_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
+{
+	IE_Exp_MsWord_97 * p = new IE_Exp_MsWord_97(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_MsWord_97_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
+{
+	*pszDesc = "MsWord 2000 (.doc)";
+	*pszSuffixList = "*.doc; *.dot";
+	*ft = getFileType();
+	return true;
+}
+
 /********************************************************/
 /********************************************************/
 
@@ -299,37 +325,6 @@ IE_Exp_MsWord_97::IE_Exp_MsWord_97(PD_Document *pDocument)
 
 IE_Exp_MsWord_97::~IE_Exp_MsWord_97()
 {
-}
-
-/********************************************************/
-/********************************************************/
-
-bool IE_Exp_MsWord_97::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".doc") == 0);
-}
-
-UT_Error IE_Exp_MsWord_97::StaticConstructor(PD_Document * pDocument,
-                                             IE_Exp ** ppie)
-{
-	IE_Exp_MsWord_97 * p = new IE_Exp_MsWord_97(pDocument);
-        *ppie = p;
-	return UT_OK;
-}
-
-bool IE_Exp_MsWord_97::GetDlgLabels(const char ** pszDesc,
-                                        const char ** pszSuffixList,
-                                        IEFileType * ft)
-{
-	*pszDesc = "Microsoft Word (.doc)";
-	*pszSuffixList = "*.doc";
-	*ft = IEFT_MsWord_97;
-	return true;
-}
-
-bool IE_Exp_MsWord_97::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_MsWord_97 == ft);
 }
 
 /********************************************************/

@@ -108,32 +108,27 @@ IE_Exp_WML::~IE_Exp_WML()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_WML::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_WML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-        return (!(UT_stricmp(szSuffix,".wml")));
+	return (!UT_stricmp(szSuffix,".wml"));
 }
 
-UT_Error IE_Exp_WML::StaticConstructor(PD_Document * pDocument,
-				       IE_Exp ** ppie)
+UT_Error IE_Exp_WML_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_WML * p = new IE_Exp_WML(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_WML::GetDlgLabels(const char ** pszDesc,
-				 const char ** pszSuffixList,
-				 IEFileType * ft)
+bool IE_Exp_WML_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "WML (.wml)";
 	*pszSuffixList = "*.wml";
-	*ft = IEFT_WML;
+	*ft = getFileType();
 	return true;
-}
-
-bool IE_Exp_WML::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_WML == ft);
 }
 
 /*****************************************************************/

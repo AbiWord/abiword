@@ -30,6 +30,25 @@ class PD_Document;
 
 // The importer/reader for AbiWord file format version 1.
 
+class IE_Imp_AbiWord_1_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_AbiWord_1_Sniffer() {}
+	virtual ~IE_Imp_AbiWord_1_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 class IE_Imp_AbiWord_1 : public IE_Imp_XML
 {
 public:
@@ -41,15 +60,6 @@ public:
 
     virtual UT_Error	importFile(const char * szFilename);
 
-    static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-    static bool		RecognizeSuffix(const char * szSuffix);
-    static UT_Error		StaticConstructor(PD_Document * pDocument,
-	    IE_Imp ** ppie);
-    static bool		GetDlgLabels(const char ** pszDesc,
-	    const char ** pszSuffixList,
-	    IEFileType * ft);
-    static bool 		SupportsFileType(IEFileType ft);
-	
 protected:
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);

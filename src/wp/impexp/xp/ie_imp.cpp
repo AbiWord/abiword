@@ -18,14 +18,15 @@
  */
 
 
-#include "string.h"
+#include <string.h>
 
-#include "ut_types.h"
 #include "ut_string.h"
+#include "ut_vector.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
 
 #include "ie_imp.h"
+
 #include "ie_imp_AbiWord_1.h"
 #include "ie_imp_GZipAbiWord.h"
 #include "ie_imp_MsWord_97.h"
@@ -38,59 +39,52 @@
 #include "ie_imp_DocBook.h"
 #include "ie_imp_PalmDoc.h"
 #include "ie_imp_Psion.h"
-
 #include "ie_imp_XSL-FO.h"
 #include "ie_imp_Applix.h"
-#include "ie_imp_MIF.h"
+
+#define IEFT_ABIWORD_1 ((IEFileType)(IE_Imp::fileTypeForSuffix(".abw")))
+#define IEFT_Text ((IEFileType)(IE_Imp::fileTypeForSuffix(".txt")))
+
+static UT_Vector m_sniffers (20);
 
 /*****************************************************************/
 /*****************************************************************/
 
-struct _imp
-{
-	bool			(*fpRecognizeContents)(const char * szBuf,
-							UT_uint32 iNumbytes);
-	bool			(*fpRecognizeSuffix)(const char * szSuffix);
-	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
-										   IE_Imp ** ppie);
-	bool			(*fpGetDlgLabels)(const char ** szDesc,
-									  const char ** szSuffixList,
-									  IEFileType * ft);
-	bool			(*fpSupportsFileType)(IEFileType ft);
-};
 
-#define DeclareImporter(n)	{ n::RecognizeContents, n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
-
-static struct _imp s_impTable[] =
+/* static */
+void IE_Imp::init ()
 {
-	DeclareImporter(IE_Imp_AbiWord_1),
+	static bool b_init = false;
+
+	if (b_init)
+		return;
+
+	IE_Imp::registerImporter(new IE_Imp_AbiWord_1_Sniffer ());
 #ifdef DEBUG
-	DeclareImporter(IE_Imp_Applix),
+	IE_Imp::registerImporter(new IE_Imp_Applix_Sniffer ());
 #endif
-	DeclareImporter(IE_Imp_DocBook),
-	DeclareImporter(IE_Imp_MsWord_97),
-	DeclareImporter(IE_Imp_XSL_FO),
-	DeclareImporter(IE_Imp_XHTML),
-#if 0
-	DeclareImporter(IE_Imp_MIF),
-#endif
-	DeclareImporter(IE_Imp_PalmDoc),
-	DeclareImporter(IE_Imp_Psion_TextEd),
-	DeclareImporter(IE_Imp_Psion_Word),
-	DeclareImporter(IE_Imp_RTF),
-	DeclareImporter(IE_Imp_Text),
-	DeclareImporter(IE_Imp_UTF8),
-	DeclareImporter(IE_Imp_WML),
-	DeclareImporter(IE_Imp_GZipAbiWord)
-};
+	IE_Imp::registerImporter(new IE_Imp_DocBook_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_MsWord_97_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_XSL_FO_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_PalmDoc_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_Psion_TextEd_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_Psion_Word_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_UTF8_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
 
-		
+	b_init = true;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
 IE_Imp::IE_Imp(PD_Document * pDocument)
+	: m_pDocument(pDocument)
 {
-	m_pDocument = pDocument;
 }
 
 IE_Imp::~IE_Imp()
@@ -100,20 +94,58 @@ IE_Imp::~IE_Imp()
 /*****************************************************************/
 /*****************************************************************/
 
+IE_ImpSniffer::IE_ImpSniffer()
+	: m_type (IEFT_Bogus)
+{
+}
+
+IE_ImpSniffer::~IE_ImpSniffer()
+{
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+void IE_Imp::registerImporter (IE_ImpSniffer * s)
+{
+	UT_uint32 ndx = 0;
+
+	UT_ASSERT(m_sniffers.addItem (s, &ndx) == UT_OK);
+	UT_ASSERT(ndx >= 0);
+
+	s->setFileType(ndx+1);
+}
+
+void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
+{
+	UT_uint32 ndx = 0;
+
+	ndx = s->getFileType(); // 1:1 mapping
+
+	UT_ASSERT(ndx >= 0);
+
+	m_sniffers.deleteNthItem (ndx-1);
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
 	// so we must query a match for all file types
-	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
+	UT_uint32 nrElements = getImporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		struct _imp * s = &s_impTable[k];
-		if (s->fpRecognizeContents(szBuf, iNumbytes))
+		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		if (s->recognizeContents(szBuf, iNumbytes))
 		{
-			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
-				if (s->fpSupportsFileType((IEFileType) a))
-					return (IEFileType) a;
+				if (s->supportsFileType((IEFileType) a+1))
+					return (IEFileType) a+1;
 			}
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -136,14 +168,16 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
 	// so we must query a suffix match for all file types
-	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
+	UT_uint32 nrElements = getImporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		struct _imp * s = &s_impTable[k];
-		if (s->fpRecognizeSuffix(szSuffix))
+		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		if (s->recognizeSuffix(szSuffix))
 		{
-			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
-				if (s->fpSupportsFileType((IEFileType) a))
+				if (s->supportsFileType((IEFileType) a))
 					return (IEFileType) a;
 			}
 
@@ -160,10 +194,10 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 }
 
 UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
-				   const char * szFilename,
-				   IEFileType ieft,
-				   IE_Imp ** ppie,
-				   IEFileType * pieft)
+								   const char * szFilename,
+								   IEFileType ieft,
+								   IE_Imp ** ppie,
+								   IEFileType * pieft)
 {
 	// construct an importer of the right type.
 	// caller is responsible for deleting the importer object
@@ -224,14 +258,17 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	UT_ASSERT(ieft != IEFT_Unknown);
 
 	// tell the caller the type of importer they got
-	if (pieft != NULL) *pieft = ieft;
+	if (pieft != NULL) 
+		*pieft = ieft;
 
 	// use the importer for the specified file type
-	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
+	UT_uint32 nrElements = getImporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		struct _imp * s = &s_impTable[k];
-		if (s->fpSupportsFileType(ieft))
-			return s->fpStaticConstructor(pDocument,ppie);
+		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		if (s->supportsFileType(ieft))
+			return s->constructImporter(pDocument,ppie);
 	}
 
 	// if we got here, no registered importer handles the
@@ -243,17 +280,21 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 }
 
 bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
-								   const char ** pszDesc,
-								   const char ** pszSuffixList,
-								   IEFileType * ft)
+								const char ** pszDesc,
+								const char ** pszSuffixList,
+								IEFileType * ft)
 {
-	if (ndx < NrElements(s_impTable))
-		return s_impTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
+	UT_uint32 nrElements = getImporterCount();
+	if (ndx < nrElements)
+	{
+		IE_ImpSniffer * s = (IE_ImpSniffer *) m_sniffers.getNthItem (ndx);
+		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
+	}
 
 	return false;
 }
 
 UT_uint32 IE_Imp::getImporterCount(void)
 {
-	return NrElements(s_impTable);
+	return m_sniffers.size();
 }

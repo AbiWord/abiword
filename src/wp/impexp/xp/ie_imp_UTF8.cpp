@@ -31,6 +31,92 @@
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Imp_UTF8_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+{
+	bool bSuccess = false;
+	const unsigned char *p = reinterpret_cast<const unsigned char *>(szBuf);
+
+	while (p < reinterpret_cast<const unsigned char *>(szBuf + iNumbytes))
+	{
+		int len;
+		
+		if ((*p & 0x80) == 0)				// ASCII
+		{
+			++p;
+			continue;
+		}
+		else if ((*p & 0xc0) == 0x80)			// not UTF-8
+		{
+			return false;
+		}
+		else if (*p == 0xfe || *p == 0xff)		// BOM markers?  RFC2279 says illegal
+		{
+			//UT_DEBUGMSG(("  BOM?\n"));
+			++p;
+			continue;
+		}
+		else if ((*p & 0xfe) == 0xfc)			// lead byte in 6-byte sequence
+			len = 6;
+		else if ((*p & 0xfc) == 0xf8)			// lead byte in 5-byte sequence
+			len = 5;
+		else if ((*p & 0xf8) == 0xf0)			// lead byte in 4-byte sequence
+			len = 4;
+		else if ((*p & 0xf0) == 0xe0)			// lead byte in 3-byte sequence
+			len = 3;
+		else if ((*p & 0xe0) == 0xc0)			// lead byte in 2-byte sequence
+			len = 2;
+		else	
+		{
+			// the above code covers all cases - if we reach here the logic is wrong
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+	
+		while (--len)
+		{
+			++p;
+			if (p >= reinterpret_cast<const unsigned char *>(szBuf + iNumbytes))
+			{
+				//UT_DEBUGMSG(("  out of data!\n"));
+				break;
+			}
+			if ((*p & 0xc0) == 0x80)
+				bSuccess = true;
+			else
+				return false;
+		}
+		++p;
+	}
+	
+	return bSuccess;
+}
+
+bool IE_Imp_UTF8_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".utf8") == 0);
+}
+
+UT_Error IE_Imp_UTF8_Sniffer::constructImporter(PD_Document * pDocument,
+												IE_Imp ** ppie)
+{
+	IE_Imp_UTF8 * p = new IE_Imp_UTF8(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool	IE_Imp_UTF8_Sniffer::getDlgLabels(const char ** pszDesc,
+										  const char ** pszSuffixList,
+										  IEFileType * ft)
+{
+	*pszDesc = "UTF8 (.utf8)";
+	*pszSuffixList = "*.utf8";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 /*
   Import a plain text file formatted in UTF8.
   We allow either LF or CR or CRLF line termination.
@@ -303,94 +389,4 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	return;
 }
 
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-	bool bSuccess = false;
-	const unsigned char *p = reinterpret_cast<const unsigned char *>(szBuf);
-
-	while (p < reinterpret_cast<const unsigned char *>(szBuf + iNumbytes))
-	{
-		int len;
-		
-		if ((*p & 0x80) == 0)				// ASCII
-		{
-			++p;
-			continue;
-		}
-		else if ((*p & 0xc0) == 0x80)			// not UTF-8
-		{
-			return false;
-		}
-		else if (*p == 0xfe || *p == 0xff)		// BOM markers?  RFC2279 says illegal
-		{
-			//UT_DEBUGMSG(("  BOM?\n"));
-			++p;
-			continue;
-		}
-		else if ((*p & 0xfe) == 0xfc)			// lead byte in 6-byte sequence
-			len = 6;
-		else if ((*p & 0xfc) == 0xf8)			// lead byte in 5-byte sequence
-			len = 5;
-		else if ((*p & 0xf8) == 0xf0)			// lead byte in 4-byte sequence
-			len = 4;
-		else if ((*p & 0xf0) == 0xe0)			// lead byte in 3-byte sequence
-			len = 3;
-		else if ((*p & 0xe0) == 0xc0)			// lead byte in 2-byte sequence
-			len = 2;
-		else	
-		{
-			// the above code covers all cases - if we reach here the logic is wrong
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
-		}
-	
-		while (--len)
-		{
-			++p;
-			if (p >= reinterpret_cast<const unsigned char *>(szBuf + iNumbytes))
-			{
-				//UT_DEBUGMSG(("  out of data!\n"));
-				break;
-			}
-			if ((*p & 0xc0) == 0x80)
-				bSuccess = true;
-			else
-				return false;
-		}
-		++p;
-	}
-	
-	return bSuccess;
-}
-
-bool IE_Imp_UTF8::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".utf8") == 0);
-}
-
-UT_Error IE_Imp_UTF8::StaticConstructor(PD_Document * pDocument,
-										IE_Imp ** ppie)
-{
-	IE_Imp_UTF8 * p = new IE_Imp_UTF8(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_UTF8::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "UTF8 (.utf8)";
-	*pszSuffixList = "*.utf8";
-	*ft = IEFT_UTF8;
-	return true;
-}
-
-bool IE_Imp_UTF8::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_UTF8 == ft);
-}
 

@@ -34,6 +34,22 @@ class s_MsWord_97_Listener;
 
 // The exporter/writer for the MsWord 97 format
 
+class IE_Exp_MsWord_97_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_MsWord_97_Sniffer () {}
+	virtual ~IE_Exp_MsWord_97_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_MsWord_97 : public IE_Exp
 {
 		friend class s_MsWord_97_Listener;
@@ -42,15 +58,6 @@ class IE_Exp_MsWord_97 : public IE_Exp
  public:
         IE_Exp_MsWord_97(PD_Document * pDocument);
         ~IE_Exp_MsWord_97();
-
-        static bool          RecognizeSuffix(const char * szSuffix);
-        static UT_Error         StaticConstructor(PD_Document * pDocument,
-                                                                                   IE_Exp ** ppie);
-        static bool          GetDlgLabels(const char ** pszDesc,
-                                             const char ** pszSuffixList,
-                                             IEFileType * ft);
-
-        static bool          SupportsFileType(IEFileType ft);
 
 		void            		write(const char * sz);
 		void            		write(const char * sz, UT_uint32 length);

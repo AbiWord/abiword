@@ -26,6 +26,23 @@
 
 // The exporter/writer for GZipped AbiWord file format.
 
+class IE_Exp_GZipAbiWord_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_GZipAbiWord_Sniffer () {}
+	virtual ~IE_Exp_GZipAbiWord_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
+
 class IE_Exp_GZipAbiWord : public IE_Exp_AbiWord_1
 {
 public:

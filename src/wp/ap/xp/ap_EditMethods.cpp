@@ -1093,8 +1093,6 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 										pFrame->getTitle(200));
 }
 
-#define BAD_FILETYPE ((UT_sint32)(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) - 1)
-
 static bool s_AskForPathname(XAP_Frame * pFrame,
 							 bool bSaveAs,
 							 const char * pSuggestedName,
@@ -1172,12 +1170,12 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	// AbiWord uses IEFT_AbiWord_1 as the default
 
 	// try to remember the previous file type
-	static UT_sint32 dflFileType = BAD_FILETYPE;
+	static IEFileType dflFileType = IEFT_Bogus;
 
-	if (*ieft != BAD_FILETYPE)
-	  dflFileType = (UT_sint32) *ieft;
+	if (*ieft != IEFT_Bogus)
+		dflFileType = *ieft;
 	else
-	  dflFileType = (UT_sint32) IEFT_AbiWord_1;
+		dflFileType = IE_Exp::fileTypeForSuffix (".abw");
 
 	pDialog->setDefaultFileType(dflFileType);
 		
@@ -1492,7 +1490,7 @@ Defun1(fileOpen)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = (IEFileType)BAD_FILETYPE;
+	IEFileType ieft = IEFT_Bogus;
 	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1580,7 +1578,7 @@ Defun1(openTemplate)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = (IEFileType)BAD_FILETYPE;
+	IEFileType ieft = IEFT_Bogus;
 	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1634,7 +1632,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	IEFileType ieft = (IEFileType)BAD_FILETYPE;
+	IEFileType ieft = IEFT_Bogus;
 	char * pNewFile = NULL;
 	bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
 
@@ -1685,7 +1683,7 @@ Defun1(fileImport)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = (IEFileType)BAD_FILETYPE;
+	IEFileType ieft = IEFT_Bogus;
 	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1707,7 +1705,7 @@ Defun1(fileSaveAs)
 Defun1(fileSaveAsWeb)
 {
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-  IEFileType ieft = IEFT_HTML;
+  IEFileType ieft = IE_Exp::fileTypeForSuffix (".html");
   char * pNewFile = NULL;
   bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
   
@@ -1715,7 +1713,7 @@ Defun1(fileSaveAsWeb)
     return false;
 
   UT_Error errSaved;
-  errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft);
+  errSaved = pAV_View->cmdSaveAs(pNewFile, ieft);
   if (errSaved)
     {
       // throw up a dialog
@@ -1751,9 +1749,11 @@ Defun1(filePreviewWeb)
 
   UT_Error errSaved = UT_OK;
 
+  #define IEFT_HTML IE_Exp::fileTypeForSuffix(".html")
+
   // we do this because we don't want to change the default
   // document extension or rename what we're working on
-  errSaved = pAV_View->cmdSaveAs(szTempFileName, (int)IEFT_HTML, false);
+  errSaved = pAV_View->cmdSaveAs(szTempFileName, IEFT_HTML, false);
 
   if(errSaved != UT_OK)
     {
@@ -6730,7 +6730,7 @@ Defun(scriptPlay)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = (IEFileType)BAD_FILETYPE;
+	IEFileType ieft = IEFT_Bogus;
 	bool bOK = s_AskForPathname(pFrame, false, NULL, &pNewFile, &ieft);
 
 	if (!bOK || !pNewFile)

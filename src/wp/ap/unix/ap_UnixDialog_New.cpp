@@ -39,6 +39,8 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ie_imp.h"
 
+#define IEFT_AbiWord_1 IE_Imp::fileTypeForSuffix(".abw")
+
 /*************************************************************************/
 
 XAP_Dialog * AP_UnixDialog_New::static_constructor(XAP_DialogFactory * pFactory,

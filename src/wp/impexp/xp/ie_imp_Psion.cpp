@@ -55,6 +55,102 @@
 // The style combo box does not support new styles yet... 
 #undef ENABLE_STYLES
 
+/*****************************************************************/
+/*****************************************************************/
+
+bool IE_Imp_Psion_Word_Sniffer::recognizeContents(const char * szBuf, 
+												  UT_uint32 iNumbytes)
+{
+	
+	UT_uint32 i;
+
+	psiconv_buffer pl = psiconv_buffer_new();
+	if (!pl) 
+		return false;
+	for (i=0; i < iNumbytes; i++)
+		if ((psiconv_buffer_add(pl,szBuf[i]))) {
+			psiconv_buffer_free(pl);
+			return false;
+		}
+	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
+	psiconv_buffer_free(pl);
+	if (filetype == psiconv_word_file)
+		return true;
+	else
+		return false;
+}
+
+bool IE_Imp_Psion_Word_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".psiword") == 0);
+}
+
+UT_Error IE_Imp_Psion_Word_Sniffer::constructImporter(PD_Document * pDocument, 
+													  IE_Imp ** ppie)
+{
+	IE_Imp_Psion_Word * p = new IE_Imp_Psion_Word(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+// We take the .psi suffix for now, but this will need to change to none at all
+bool	IE_Imp_Psion_Word_Sniffer::getDlgLabels(const char ** pszDesc,
+												const char ** pszSuffixList,
+												IEFileType * ft)
+{
+	*pszDesc = "Psion Word (.psiword)";
+	*pszSuffixList = "*.psiword";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+bool IE_Imp_Psion_TextEd_Sniffer::recognizeContents(const char * szBuf, 
+													UT_uint32 iNumbytes)
+{
+	
+	UT_uint32 i;
+
+	psiconv_buffer pl = psiconv_buffer_new();
+	if (!pl) 
+		return false;
+	for (i=0; i < iNumbytes; i++)
+		if ((psiconv_buffer_add(pl,szBuf[i]))) {
+			psiconv_buffer_free(pl);
+			return false;
+		}
+	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
+	psiconv_buffer_free(pl);
+	if (filetype == psiconv_texted_file)
+		return true;
+	else
+		return false;
+}
+
+bool IE_Imp_Psion_TextEd_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".psitext") == 0);
+}
+
+UT_Error IE_Imp_Psion_TextEd_Sniffer::constructImporter(PD_Document * pDocument, IE_Imp ** ppie)
+{
+	IE_Imp_Psion_TextEd * p = new IE_Imp_Psion_TextEd(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+// We take the .psi suffix for now, but this will need to change to none at all
+bool IE_Imp_Psion_TextEd_Sniffer::getDlgLabels(const char ** pszDesc,
+											   const char ** pszSuffixList,
+											   IEFileType * ft)
+{
+	*pszDesc = "Psion TextEd (.psitext)";
+	*pszSuffixList = "*.psitext";
+	*ft = getFileType();
+	return true;
+}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -783,56 +879,6 @@ UT_Error IE_Imp_Psion_Word::parseFile(psiconv_file psionfile)
 );
 }
 
-
-bool IE_Imp_Psion_Word::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-	
-	UT_uint32 i;
-
-	psiconv_buffer pl = psiconv_buffer_new();
-	if (!pl) 
-		return false;
-	for (i=0; i < iNumbytes; i++)
-		if ((psiconv_buffer_add(pl,szBuf[i]))) {
-			psiconv_buffer_free(pl);
-			return false;
-		}
-	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
-	psiconv_buffer_free(pl);
-	if (filetype == psiconv_word_file)
-		return true;
-	else
-		return false;
-}
-
-bool IE_Imp_Psion_Word::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".psiword") == 0);
-}
-
-UT_Error IE_Imp_Psion_Word::StaticConstructor(PD_Document * pDocument, IE_Imp ** ppie)
-{
-	IE_Imp_Psion_Word * p = new IE_Imp_Psion_Word(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-// We take the .psi suffix for now, but this will need to change to none at all
-bool	IE_Imp_Psion_Word::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "Psion Word (.psiword)";
-	*pszSuffixList = "*.psiword";
-	*ft = IEFT_Psion_Word;
-	return true;
-}
-
-bool IE_Imp_Psion_Word::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_Psion_Word == ft);
-}
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -854,56 +900,6 @@ UT_Error IE_Imp_Psion_TextEd::parseFile(psiconv_file psionfile)
 		return UT_IE_NOMEMORY;
 	return readParagraphs(((psiconv_texted_f) 
 	                       (psionfile->file))->texted_sec->paragraphs,NULL);
-}
-
-
-bool IE_Imp_Psion_TextEd::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-	
-	UT_uint32 i;
-
-	psiconv_buffer pl = psiconv_buffer_new();
-	if (!pl) 
-		return false;
-	for (i=0; i < iNumbytes; i++)
-		if ((psiconv_buffer_add(pl,szBuf[i]))) {
-			psiconv_buffer_free(pl);
-			return false;
-		}
-	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
-	psiconv_buffer_free(pl);
-	if (filetype == psiconv_texted_file)
-		return true;
-	else
-		return false;
-}
-
-bool IE_Imp_Psion_TextEd::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".psitext") == 0);
-}
-
-UT_Error IE_Imp_Psion_TextEd::StaticConstructor(PD_Document * pDocument, IE_Imp ** ppie)
-{
-	IE_Imp_Psion_TextEd * p = new IE_Imp_Psion_TextEd(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-// We take the .psi suffix for now, but this will need to change to none at all
-bool	IE_Imp_Psion_TextEd::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "Psion TextEd (.psitext)";
-	*pszSuffixList = "*.psitext";
-	*ft = IEFT_Psion_TextEd;
-	return true;
-}
-
-bool IE_Imp_Psion_TextEd::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_Psion_TextEd == ft);
 }
 
 /*****************************************************************/

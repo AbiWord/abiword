@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <string.h>
+#include "string.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -92,33 +92,27 @@ IE_Exp_UTF8::~IE_Exp_UTF8()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_UTF8::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_UTF8_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".utf8") == 0);
+	return (!UT_stricmp(szSuffix,".utf8"));
 }
 
-UT_Error IE_Exp_UTF8::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
+UT_Error IE_Exp_UTF8_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_UTF8 * p = new IE_Exp_UTF8(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_UTF8::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
+bool IE_Exp_UTF8_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "UTF8 (.utf8)";
 	*pszSuffixList = "*.utf8";
-	*ft = IEFT_UTF8;
+	*ft = getFileType();
 	return true;
-}
-
-
-bool IE_Exp_UTF8::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_UTF8 == ft);
 }
 
 /*****************************************************************/

@@ -33,6 +33,25 @@ class PD_Document;
 
 // The importer/reader for Microsoft Word 97, 95, and 6.0
 
+class IE_Imp_MsWord_97_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_MsWord_97_Sniffer() {}
+	virtual ~IE_Imp_MsWord_97_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 class IE_Imp_MsWord_97 : public IE_Imp
 {
 public:

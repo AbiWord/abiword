@@ -33,6 +33,42 @@ class _rtf_font_info;
 
 // The exporter/writer for RTF file format (based upon spec version 1.5).
 
+class IE_Exp_RTF_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_RTF_Sniffer () {}
+	virtual ~IE_Exp_RTF_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
+/*
+ * this is for exporting to RTF understood by attic software
+ * like WordPad and probably Word6.0.
+ */
+class IE_Exp_RTF_attic_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_RTF_attic_Sniffer () {}
+	virtual ~IE_Exp_RTF_attic_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_RTF : public IE_Exp
 {
 	friend class s_RTF_ListenerWriteDoc;
@@ -42,26 +78,6 @@ public:
 	IE_Exp_RTF(PD_Document * pDocument);
 	IE_Exp_RTF(PD_Document * pDocument,bool atticFormat);
 	virtual ~IE_Exp_RTF();
-
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
-
-	/*
-	    these group for exporting to RTF understood by attic software
-	    like WordPad and probably Word6.0.
-	*/
-	static bool		RecognizeSuffix_attic(const char * szSuffix);
-	static UT_Error		StaticConstructor_attic(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels_attic(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType_attic(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);

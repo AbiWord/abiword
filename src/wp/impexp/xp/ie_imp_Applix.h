@@ -28,6 +28,25 @@ class PD_Document;
 
 // The importer/reader for Applix Word files
 
+class IE_Imp_Applix_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_Applix_Sniffer() {}
+	virtual ~IE_Imp_Applix_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 class IE_Imp_Applix : public IE_Imp
 {
 public:
@@ -37,15 +56,6 @@ public:
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData);
-
-	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
 	UT_Error			_parseFile(FILE * fp);

@@ -29,12 +29,42 @@
 #include "ut_growbuf.h"
 #include "xap_EncodingManager.h"
 
-/*****************************************************************/
-/*****************************************************************/
-
 /*
   Import MIF documents
 */
+
+/*****************************************************************/
+/*****************************************************************/
+
+bool IE_Imp_MIF_Sniffer::recognizeContents(const char * szBuf, 
+										   UT_uint32 iNumbytes)
+{
+  // TODO: try to sensibly recognize the contents of the buffer
+	return(false);
+}
+
+bool IE_Imp_MIF_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".mif") == 0);
+}
+
+UT_Error IE_Imp_MIF_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Imp ** ppie)
+{
+	IE_Imp_MIF * p = new IE_Imp_MIF(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool	IE_Imp_MIF_Sniffer::getDlgLabels(const char ** pszDesc,
+										 const char ** pszSuffixList,
+										 IEFileType * ft)
+{
+	*pszDesc = "MIF (.mif)";
+	*pszSuffixList = "*.mif";
+	*ft = getFileType();
+	return true;
+}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -104,42 +134,5 @@ void IE_Imp_MIF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								  unsigned char * pData, UT_uint32 lenData)
 {
 	return;
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_MIF::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-  // TODO: try to sensibly recognize the contents of the buffer
-	return(false);
-}
-
-bool IE_Imp_MIF::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".mif") == 0);
-}
-
-UT_Error IE_Imp_MIF::StaticConstructor(PD_Document * pDocument,
-										IE_Imp ** ppie)
-{
-	IE_Imp_MIF * p = new IE_Imp_MIF(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_MIF::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "MIF (.mif)";
-	*pszSuffixList = "*.mif";
-	*ft = IEFT_MIF;
-	return true;
-}
-
-bool IE_Imp_MIF::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_MIF == ft);
 }
 

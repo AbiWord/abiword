@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef IE_EXP_H
 #define IE_EXP_H
 
@@ -40,6 +38,34 @@ class UT_ByteBuf;
 // IE_Exp defines the base class for file exporters.
 //////////////////////////////////////////////////////////////////
 
+class IE_Exp;
+
+class IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_ExpSniffer();
+	virtual ~IE_ExpSniffer();
+	
+	// these you get for free
+	inline bool supportsFileType (IEFileType type) {return m_type == type;}
+	inline IEFileType getFileType() const {return m_type;}
+	
+	// these you must override these
+	virtual bool recognizeSuffix (const char * szSuffix) = 0;
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft) = 0;
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie) = 0;
+	
+private:
+	// only IE_Exp ever calls this
+	inline void setFileType (IEFileType type) {m_type = type;}
+	IEFileType m_type;
+};
+
 class IE_Exp
 {
 public:
@@ -51,15 +77,20 @@ public:
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
 	static UT_Error		constructExporter(PD_Document * pDocument,
-						  const char * szFilename,
-						  IEFileType ieft,
-						  IE_Exp ** ppie,
-						  IEFileType * pieft = NULL);
-	static bool		enumerateDlgLabels(UT_uint32 ndx,
-						   const char ** pszDesc,
-						   const char ** pszSuffixList,
-						   IEFileType * ft);
+										  const char * szFilename,
+										  IEFileType ieft,
+										  IE_Exp ** ppie,
+										  IEFileType * pieft = NULL);
+	static bool		    enumerateDlgLabels(UT_uint32 ndx,
+										   const char ** pszDesc,
+										   const char ** pszSuffixList,
+										   IEFileType * ft);
 	static UT_uint32	getExporterCount(void);
+
+	static void init ();
+
+	static void registerExporter (IE_ExpSniffer *);
+	static void unregisterExporter (IE_ExpSniffer *);
 	
 public:
 	IE_Exp(PD_Document * pDocument);

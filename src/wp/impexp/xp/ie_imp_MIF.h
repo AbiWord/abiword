@@ -28,6 +28,25 @@ class PD_Document;
 
 // The importer/reader for MIF files
 
+class IE_Imp_MIF_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_MIF_Sniffer() {}
+	virtual ~IE_Imp_MIF_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 class IE_Imp_MIF : public IE_Imp
 {
 public:

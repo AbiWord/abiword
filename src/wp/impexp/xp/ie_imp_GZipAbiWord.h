@@ -27,6 +27,25 @@
 
 // The importer/reader for GZipped AbiWord file format version 1.
 
+class IE_Imp_GZipAbiWord_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_GZipAbiWord_Sniffer() {}
+	virtual ~IE_Imp_GZipAbiWord_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 class IE_Imp_GZipAbiWord : public IE_Imp_AbiWord_1
 {
 public:
@@ -35,15 +54,6 @@ public:
 
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData);
-
-	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
 
 protected:
     virtual bool			_openFile(const char * szFilename);

@@ -30,6 +30,25 @@ class PD_Document;
 
 // The importer/reader for ClarisWorks/AppleWorks Files
 
+class IE_Imp_ClarisWorks_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_ClarisWorks_Sniffer() {}
+	virtual ~IE_Imp_ClarisWorks_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 class IE_Imp_ClarisWorks : public IE_Imp
 {
  public:
@@ -40,17 +59,7 @@ class IE_Imp_ClarisWorks : public IE_Imp
    virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
                                         unsigned char * pData, 
                                         UT_uint32 lenData);
-   
-   static bool		RecognizeContents(const char * szBuf, 
-                                                  UT_uint32 iNumbytes);
-   static bool		RecognizeSuffix(const char * szSuffix);
-   static UT_Error		StaticConstructor(PD_Document * pDocument,
-                                                  IE_Imp ** ppie);
-   static bool		GetDlgLabels(const char ** pszDesc,
-                                             const char ** pszSuffixList,
-                                             IEFileType * ft);
-   static bool 		SupportsFileType(IEFileType ft);
-   
+  
  protected:
    UT_Error			_parseFile(FILE * fp);
    UT_Error			_writeHeader(FILE * fp);

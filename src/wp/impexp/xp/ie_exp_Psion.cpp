@@ -220,33 +220,27 @@ IE_Exp_Psion_TextEd::~IE_Exp_Psion_TextEd(void)
 {
 }
 
-bool IE_Exp_Psion_TextEd::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_Psion_TextEd_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".psitext") == 0);
+	return (!UT_stricmp(szSuffix,".psitext"));
 }
 
-UT_Error IE_Exp_Psion_TextEd::StaticConstructor(PD_Document * pDocument,
-                                                IE_Exp ** ppie)
+UT_Error IE_Exp_Psion_TextEd_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_Psion_TextEd * p = new IE_Exp_Psion_TextEd(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool IE_Exp_Psion_TextEd::GetDlgLabels(const char ** pszDesc,
-                                   const char ** pszSuffixList,
-                                   IEFileType * ft)
+bool IE_Exp_Psion_TextEd_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "Psion TextEd (.psitext)";
 	*pszSuffixList = "*.psitext";
-	*ft = IEFT_Psion_TextEd;
+	*ft = getFileType();
 	return true;
-}
-
-
-bool IE_Exp_Psion_TextEd::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_Psion_TextEd == ft);
 }
 
 // Translate the psiconv_file fragments in the exporter object to a
@@ -283,33 +277,27 @@ IE_Exp_Psion_Word::~IE_Exp_Psion_Word(void)
 {
 }
 
-bool IE_Exp_Psion_Word::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_Psion_Word_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".psiword") == 0);
+	return (!UT_stricmp(szSuffix,".psiword"));
 }
 
-UT_Error IE_Exp_Psion_Word::StaticConstructor(PD_Document * pDocument,
-                                                IE_Exp ** ppie)
+UT_Error IE_Exp_Psion_Word_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_Psion_Word * p = new IE_Exp_Psion_Word(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool IE_Exp_Psion_Word::GetDlgLabels(const char ** pszDesc,
-                                   const char ** pszSuffixList,
-                                   IEFileType * ft)
+bool IE_Exp_Psion_Word_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "Psion Word (.psiword)";
-	*pszSuffixList = "*.psiword";
-	*ft = IEFT_Psion_Word;
+	*pszSuffixList = "*.mif";
+	*ft = getFileType();
 	return true;
-}
-
-
-bool IE_Exp_Psion_Word::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_Psion_Word == ft);
 }
 
 // Translate the psiconv_file fragments in the exporter object to a

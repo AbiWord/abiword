@@ -76,8 +76,6 @@ static int word_colors[][3] = {
    {0xc0, 0xc0, 0xc0}, /* light gray */
 };
 
-/*****************************************************************/
-
 /*
  * This next bit of code is so we can hopefully import 
  * At least some of MSWord's fields
@@ -142,6 +140,115 @@ static unsigned int s_mapNameToToken(const char* name)
     return 0;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+bool IE_Imp_MsWord_97_Sniffer::recognizeContents(const char * szBuf, 
+												 UT_uint32 iNumbytes)
+{
+	// TODO: This is rather crude, because we don't parse OLE files.
+	// TODO: For the time being, we assume that any OLE file is an
+	// TODO: msword document.
+	// TODO: Caolan is gonna kill me for this.  :)
+	// Most of the magic numbers here were taken from the public domain
+	// /etc/magic file distributed with the file(1) command written
+	// by Ian F. Darwin, with contributions and magic entries from
+	// Rob McMahon, Guy Harris, Christos Zoulas <christos@astron.com>,
+	// Mark Moraes <moraes@deshaw.com>, and Pawel Wiecek.
+
+	char *magic = 0;
+	int magicoffset = 0;
+
+	magic = "Microsoft Word 6.0 Document" ;
+	magicoffset = 2080 ;
+
+	if ( iNumbytes > magicoffset+strlen(magic) )
+	{
+		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		{
+			return(true);
+		}
+	}
+	magic = "Documento Microsoft Word 6" ;
+	magicoffset = 2080 ;
+	if ( iNumbytes > magicoffset+strlen(magic) )
+	{
+		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		{
+			return(true);
+		}
+	}
+
+	magic = "MSWordDoc" ;
+	magicoffset = 2112 ;
+	if ( iNumbytes > magicoffset+strlen(magic) )
+	{
+		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		{
+			return(true);
+		}
+	}
+	if ( iNumbytes > 8 )
+	{
+		if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
+			 szBuf[2] == (char)0 && szBuf[3] == (char)0 )
+		{
+			return(true);
+		}
+		if ( szBuf[0] == 'P' && szBuf[1] == 'O' &&
+			 szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`' )
+		{
+			return(true);
+		}
+		if ( szBuf[0] == (char)0xfe && szBuf[1] == (char)0x37 &&
+			 szBuf[2] == (char)0 && szBuf[3] == (char)0x23 )
+		{
+			return(true);
+		}
+		// OLE magic:
+		// TODO: Dig through the OLE file
+		if ( szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
+			 szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
+			 szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
+			 szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1 )
+		{
+			return(true);
+		}
+		if ( szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
+			 szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
+			 szBuf[4] == (char)0 && szBuf[5] == (char)0 )
+		{
+			return(true);
+		}
+	}
+	return(false);
+}
+
+bool IE_Imp_MsWord_97_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!UT_stricmp(szSuffix,".doc") || 
+			!UT_stricmp(szSuffix,".dot"));
+}
+
+UT_Error IE_Imp_MsWord_97_Sniffer::constructImporter(PD_Document * pDocument,
+													 IE_Imp ** ppie)
+{
+	IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool	IE_Imp_MsWord_97_Sniffer::getDlgLabels(const char ** pszDesc,
+											   const char ** pszSuffixList,
+											   IEFileType * ft)
+{
+	*pszDesc = "Microsoft Word (.doc, .dot)";
+	*pszSuffixList = "*.doc; *.dot";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
 /*****************************************************************/
 
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
@@ -991,113 +1098,6 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iImageCount = 0;
 }
 
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, 
-										 UT_uint32 iNumbytes)
-{
-	// TODO: This is rather crude, because we don't parse OLE files.
-	// TODO: For the time being, we assume that any OLE file is an
-	// TODO: msword document.
-	// TODO: Caolan is gonna kill me for this.  :)
-	// Most of the magic numbers here were taken from the public domain
-	// /etc/magic file distributed with the file(1) command written
-	// by Ian F. Darwin, with contributions and magic entries from
-	// Rob McMahon, Guy Harris, Christos Zoulas <christos@astron.com>,
-	// Mark Moraes <moraes@deshaw.com>, and Pawel Wiecek.
-	char *magic ;
-	int magicoffset ;
-	magic = "Microsoft Word 6.0 Document" ;
-	magicoffset = 2080 ;
-	if ( iNumbytes > magicoffset+strlen(magic) )
-	{
-		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
-		{
-			return(true);
-		}
-	}
-	magic = "Documento Microsoft Word 6" ;
-	magicoffset = 2080 ;
-	if ( iNumbytes > magicoffset+strlen(magic) )
-	{
-		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
-		{
-			return(true);
-		}
-	}
-	magic = "MSWordDoc" ;
-	magicoffset = 2112 ;
-	if ( iNumbytes > magicoffset+strlen(magic) )
-	{
-		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
-		{
-			return(true);
-		}
-	}
-	if ( iNumbytes > 8 )
-	{
-		if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
-			 szBuf[2] == (char)0 && szBuf[3] == (char)0 )
-		{
-			return(true);
-		}
-		if ( szBuf[0] == 'P' && szBuf[1] == 'O' &&
-			 szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`' )
-		{
-			return(true);
-		}
-		if ( szBuf[0] == (char)0xfe && szBuf[1] == (char)0x37 &&
-			 szBuf[2] == (char)0 && szBuf[3] == (char)0x23 )
-		{
-			return(true);
-		}
-		// OLE magic:
-		// TODO: Dig through the OLE file
-		if ( szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
-			 szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
-			 szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
-			 szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1 )
-		{
-			return(true);
-		}
-		if ( szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
-			 szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
-			 szBuf[4] == (char)0 && szBuf[5] == (char)0 )
-		{
-			return(true);
-		}
-	}
-	return(false);
-}
-
-bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
-{
-	return (!UT_stricmp(szSuffix,".doc") || !UT_stricmp(szSuffix,".dot"));
-}
-
-UT_Error IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
-											 IE_Imp ** ppie)
-{
-	IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEFileType * ft)
-{
-	*pszDesc = "Microsoft Word (.doc, .dot)";
-	*pszSuffixList = "*.doc; *.dot";
-	*ft = IEFT_MsWord_97;
-	return true;
-}
-
-bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_MsWord_97 == ft);
-}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

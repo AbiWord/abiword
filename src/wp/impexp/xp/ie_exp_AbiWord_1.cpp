@@ -48,6 +48,32 @@
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Exp_AbiWord_1_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!UT_stricmp(szSuffix,".abw"));
+}
+
+UT_Error IE_Exp_AbiWord_1_Sniffer::constructImporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
+{
+	IE_Exp_AbiWord_1 * p = new IE_Exp_AbiWord_1(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_AbiWord_1_Sniffer::getDlgLabels(const char ** pszDesc,
+											const char ** pszSuffixList,
+											IEFileType * ft)
+{
+	*pszDesc = "AbiWord (.abw)";
+	*pszSuffixList = "*.abw";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
@@ -57,37 +83,6 @@ IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument)
 
 IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
 {
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Exp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".abw") == 0);
-}
-
-UT_Error IE_Exp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
-											 IE_Exp ** ppie)
-{
-	IE_Exp_AbiWord_1 * p = new IE_Exp_AbiWord_1(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Exp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEFileType * ft)
-{
-	*pszDesc = "AbiWord (.abw)";
-	*pszSuffixList = "*.abw";
-	*ft = IEFT_AbiWord_1;
-	return true;
-}
-
-bool IE_Exp_AbiWord_1::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_AbiWord_1 == ft);
 }
 	  
 /*****************************************************************/
@@ -690,55 +685,38 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 void s_AbiWord_1_Listener::_handleIgnoredWords(void)
 {
 	UT_ASSERT(m_pDocument);
+
 	XAP_App *pApp = m_pDocument->getApp();
 	UT_ASSERT(pApp);
+
 	XAP_Prefs *pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 	
-	bool saveIgnores;
+	bool saveIgnores = false;
 	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsSave, &saveIgnores);
-	UT_DEBUGMSG(("Ignored words list %s being saved with document\n", saveIgnores?"is":"is not"));
-	if (!saveIgnores) return;  // don't bother
-	bool bWroteOpenIgnoredWordsSection = false;
+
+	bool bWroteIgnoredWords = false;
+
+	if (!saveIgnores) 
+		return;  // don't bother
 
 	const UT_UCSChar *word;
 	for (UT_uint32 i = 0; m_pDocument->enumIgnores(i, &word); i++)
 	{
-		if (!bWroteOpenIgnoredWordsSection)
+
+		if (!bWroteIgnoredWords)
 		{
+			bWroteIgnoredWords = true;
 			m_pie->write("<ignoredwords>\n");
-			bWroteOpenIgnoredWordsSection = true;
 		}
+		
 		m_pie->write("<iw>");
-		for (UT_uint32 udex=0; word[udex]; ++udex)
-		{
-			UT_UCSChar ch = word[udex];
-			switch (ch)
-			{
-			case '&':   m_pie->write("&amp;");  break;
-			case '<':   m_pie->write("&lt;");  break;
-			case '>':   m_pie->write("&gt;");  break;
-			case '"':   m_pie->write("&quot;");  break;
-			default:
-				char utb[100];
-				if (ch < ' ' || ch >= 128)
-				{
-					sprintf(utb, "&#x%x;", ch);
-				}
-				else
-				{
-					utb[0] = (char)ch;
-					utb[1] = 0;
-				}
-				m_pie->write(utb);
-			}
-		}
+		_outputData (word, UT_UCS_strlen (word));
 		m_pie->write("</iw>\n");
 	}
 
-	if (bWroteOpenIgnoredWordsSection)
+	if (bWroteIgnoredWords)
 		m_pie->write("</ignoredwords>\n");
-
 	return;
 }
 

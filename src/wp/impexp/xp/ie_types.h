@@ -20,18 +20,6 @@
 #ifndef IE_TYPES_H
 #define IE_TYPES_H
 
-
-// These have been replaced with error codes.
-/* typedef enum _IEStatus { IES_OK,
-						 IES_Error,
-						 IES_FileNotFound,
-						 IES_NoMemory,
-						 IES_UnknownType,
-						 IES_BogusDocument,
-						 IES_CouldNotOpenForWriting,
-						 IES_CouldNotWriteToFile } IEStatus;
-*/
-
 /*
   NOTE:  File filters can support one or MORE of the following
   NOTE:  file types.  However, each of these file types can be
@@ -39,31 +27,14 @@
   NOTE:  supported by all the filters combined should be equal
   NOTE:  to (or less than) the number below.
 */
-typedef enum _IEFileType { IEFT_Unknown,
-						   IEFT_AbiWord_1,
-						   IEFT_GZipAbiWord,
-						   IEFT_MsWord_97,
-						   IEFT_HTML,		  
-						   IEFT_RTF,
-						   IEFT_Text,
-						   IEFT_HRText,
-						   IEFT_UTF8,
-						   IEFT_LaTeX,
-						   IEFT_PalmDoc,
-						   IEFT_RTF_attic,
-						   IEFT_WML,
-						   IEFT_XHTML,
-						   IEFT_DocBook,
-                           IEFT_MSWrite,
-                           IEFT_ClarisWorks,
-						   IEFT_Psion_TextEd,
-						   IEFT_Psion_Word,
-						   IEFT_EBOOK,
-						   IEFT_APPLIX,
-						   IEFT_MIF,
-						   IEFT_XSL_FO,
-						   IEFT_LAST_BOGUS } IEFileType;
 
+#include "ut_types.h"
+
+typedef UT_sint32 IEFileType;
+#define IEFT_Bogus   (IEFileType)-1
+#define IEFT_Unknown (IEFileType)0
+
+// todo: make this go away with a new imaging architecture
 typedef enum _IEGraphicFileType { IEGFT_Unknown,
 								  IEGFT_PNG,
 								  IEGFT_SVG,

@@ -44,19 +44,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_WML::~IE_Imp_WML()
-{
-}
-
-IE_Imp_WML::IE_Imp_WML(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument, false)
-{
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_WML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_WML_Sniffer::recognizeContents(const char * szBuf, 
+										   UT_uint32 iNumbytes)
 {
   // simply search for "<wml"
   // no doubt, this could be better
@@ -68,32 +57,39 @@ bool IE_Imp_WML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
   return true;
 }
 
-bool IE_Imp_WML::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_WML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".wml") == 0);
 }
 
-UT_Error IE_Imp_WML::StaticConstructor(PD_Document * pDocument,
-					IE_Imp ** ppie)
+UT_Error IE_Imp_WML_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Imp ** ppie)
 {
 	IE_Imp_WML * p = new IE_Imp_WML(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Imp_WML::GetDlgLabels(const char ** pszDesc,
-				  const char ** pszSuffixList,
-				  IEFileType * ft)
+bool IE_Imp_WML_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "WML (.wml)";
 	*pszSuffixList = "*.wml";
-	*ft = IEFT_WML;
+	*ft = getFileType();
 	return true;
 }
 
-bool IE_Imp_WML::SupportsFileType(IEFileType ft)
+/*****************************************************************/
+/*****************************************************************/
+
+IE_Imp_WML::~IE_Imp_WML()
 {
-	return (IEFT_WML == ft);
+}
+
+IE_Imp_WML::IE_Imp_WML(PD_Document * pDocument)
+	: IE_Imp_XML(pDocument, false)
+{
 }
 
 /*****************************************************************/

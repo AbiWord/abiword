@@ -28,6 +28,22 @@ class s_HTML_Listener;
 
 // The exporter/writer for HTML
 
+class IE_Exp_HTML_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_HTML_Sniffer () {}
+	virtual ~IE_Exp_HTML_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_HTML : public IE_Exp
 {
 public:

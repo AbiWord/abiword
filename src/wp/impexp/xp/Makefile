@@ -33,7 +33,6 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_RTF.cpp				\
 			ie_exp_RTF_listenerGetProps.cpp		\
 			ie_exp_RTF_listenerWriteDoc.cpp		\
-			ie_exp_UTF8.cpp				\
 			ie_exp_LaTeX.cpp			\
 			ie_exp_PalmDoc.cpp			\
 			ie_exp_WML.cpp				\
@@ -63,6 +62,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_impGraphic_BMP.cpp			\
 			ie_imp_Psion.cpp
 
+#			ie_exp_UTF8.cpp				\
 
 LIBRARY_NAME=		AbiImpExp
 LIBRARY_VERSION=	$(ABI_VERSION)

@@ -32,6 +32,69 @@
 
 /*****************************************************************/
 /*****************************************************************/
+
+bool IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf, 
+											 UT_uint32 iNumbytes)
+{
+	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
+	UT_uint32 iBytesScanned = 0 ;
+	const char *p ;
+	char *magic ;
+	p = szBuf ;
+	while( iLinesToRead-- )
+	{
+		magic = "<html " ;
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
+		magic = "<!DOCTYPE html" ;
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
+		/*  Seek to the next newline:  */
+		while ( *p != '\n' && *p != '\r' )
+		{
+			iBytesScanned++ ; p++ ;
+			if( iBytesScanned+2 >= iNumbytes ) return(false);
+		}
+		/*  Seek past the next newline:  */
+		if ( *p == '\n' || *p == '\r' )
+		{
+			iBytesScanned++ ; p++ ;
+			if ( *p == '\n' || *p == '\r' )
+			{
+				iBytesScanned++ ; p++ ;
+			}
+		}
+	}
+	return(false);
+}
+
+bool IE_Imp_XHTML_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!(UT_stricmp(szSuffix,".html")) || !(UT_stricmp(szSuffix,".xhtml"))
+			|| !(UT_stricmp(szSuffix,".htm")));
+}
+
+UT_Error IE_Imp_XHTML_Sniffer::constructImporter(PD_Document * pDocument,
+												 IE_Imp ** ppie)
+{
+	IE_Imp_XHTML * p = new IE_Imp_XHTML(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
+										   const char ** pszSuffixList,
+										   IEFileType * ft)
+{
+	*pszDesc = "XHTML (.html)";
+	*pszSuffixList = "*.html";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
   // hackishly, we append two lists to every document
   // to represent the <ol> and <ul> list types
   // <ol> has an id of 1 and <ul> is given the list id of 2
@@ -94,71 +157,6 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 // 3. append a field of type "list_label"
 // 4. insert character run with type "list_label"
 // 5. insert a tab
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_XHTML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
-	UT_uint32 iBytesScanned = 0 ;
-	const char *p ;
-	char *magic ;
-	p = szBuf ;
-	while( iLinesToRead-- )
-	{
-		magic = "<html " ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
-		magic = "<!DOCTYPE html" ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
-		/*  Seek to the next newline:  */
-		while ( *p != '\n' && *p != '\r' )
-		{
-			iBytesScanned++ ; p++ ;
-			if( iBytesScanned+2 >= iNumbytes ) return(false);
-		}
-		/*  Seek past the next newline:  */
-		if ( *p == '\n' || *p == '\r' )
-		{
-			iBytesScanned++ ; p++ ;
-			if ( *p == '\n' || *p == '\r' )
-			{
-				iBytesScanned++ ; p++ ;
-			}
-		}
-	}
-	return(false);
-}
-
-bool IE_Imp_XHTML::RecognizeSuffix(const char * szSuffix)
-{
-	return (!(UT_stricmp(szSuffix,".html")) || !(UT_stricmp(szSuffix,".xhtml")) || !(UT_stricmp(szSuffix,".htm")));
-}
-
-UT_Error IE_Imp_XHTML::StaticConstructor(PD_Document * pDocument,
-											 IE_Imp ** ppie)
-{
-	IE_Imp_XHTML * p = new IE_Imp_XHTML(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_XHTML::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEFileType * ft)
-{
-	*pszDesc = "XHTML (.html)";
-	*pszSuffixList = "*.html";
-	*ft = IEFT_XHTML;
-	return true;
-}
-
-bool IE_Imp_XHTML::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_XHTML == ft);
-}
 
 /*****************************************************************/
 /*****************************************************************/

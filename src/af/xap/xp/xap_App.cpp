@@ -41,14 +41,15 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 
+#include "ie_imp.h"
+#include "ie_exp.h"
 
 /*****************************************************************/
 
 XAP_App * XAP_App::m_pApp = NULL;
 
 XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
-	: m_hashClones(5),
-	  m_pArgs(pArgs),
+	: m_pArgs(pArgs),
 	  m_szAppName(szAppName),
 	  m_szAbiSuiteLibDir(NULL),
 	  m_pEMC(NULL),
@@ -57,11 +58,16 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_pToolbarActionSet(NULL),
 	  m_pDict(NULL),
 	  m_prefs(NULL),
+	  m_hashClones(5),
 	  m_lastFocussedFrame(NULL)
 {
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;
 	clearIdTable();
+
+	// initialize the importers/exporters
+	IE_Imp::init();
+	IE_Exp::init();
 }
 
 XAP_App::~XAP_App()

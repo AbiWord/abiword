@@ -32,6 +32,42 @@
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Imp_Text_Sniffer::recognizeContents(const char * szBuf, 
+											UT_uint32 iNumbytes)
+{
+	// We give the other guys a chance, since this
+	// importer is so generic.  
+	return false;
+}
+
+bool IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	// We give the other guys a chance, since this
+	// importer is so generic.
+	return (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"));
+}
+
+UT_Error IE_Imp_Text_Sniffer::constructImporter(PD_Document * pDocument,
+												IE_Imp ** ppie)
+{
+	IE_Imp_Text * p = new IE_Imp_Text(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool	IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
+										  const char ** pszSuffixList,
+										  IEFileType * ft)
+{
+	*pszDesc = "Text (.txt)";
+	*pszSuffixList = "*.txt";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 /*
   Import US-ASCII (actually Latin-1) data from a plain
   text file.  We allow either LF or CR or CRLF line
@@ -237,43 +273,4 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	return;
 }
 
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_Text::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-	// We give the other guys a chance, since this
-	// importer is so generic.  
-	return false;
-}
-
-bool IE_Imp_Text::RecognizeSuffix(const char * szSuffix)
-{
-	// We give the other guys a chance, since this
-	// importer is so generic.  
-	return false;
-}
-
-UT_Error IE_Imp_Text::StaticConstructor(PD_Document * pDocument,
-										IE_Imp ** ppie)
-{
-	IE_Imp_Text * p = new IE_Imp_Text(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_Text::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "Text (.txt)";
-	*pszSuffixList = "*.txt";
-	*ft = IEFT_Text;
-	return true;
-}
-
-bool IE_Imp_Text::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_Text == ft);
-}
 

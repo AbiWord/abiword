@@ -48,6 +48,35 @@
 
 #define APPLIX_LINE 80 // Applix only allows 80 chars per line
 
+/*****************************************************************/
+/*****************************************************************/
+
+bool IE_Exp_Applix_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".aw") == 0);
+}
+
+UT_Error IE_Exp_Applix_Sniffer::constructImporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
+{
+	IE_Exp_Applix * p = new IE_Exp_Applix(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_Applix_Sniffer::getDlgLabels(const char ** pszDesc,
+											const char ** pszSuffixList,
+											IEFileType * ft)
+{
+	*pszDesc = "Applix Words (.aw)";
+	*pszSuffixList = "*.aw";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 //////////////////////////////////////////////////////////////////
 // a private listener class to help us translate the document
 // into a Applix stream.  code is at the bottom of this file.
@@ -118,38 +147,6 @@ IE_Exp_Applix::IE_Exp_Applix(PD_Document * pDocument)
 
 IE_Exp_Applix::~IE_Exp_Applix()
 {
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Exp_Applix::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".aw") == 0);
-}
-
-UT_Error IE_Exp_Applix::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
-{
-	IE_Exp_Applix * p = new IE_Exp_Applix(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Exp_Applix::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "Applix Word (.aw)";
-	*pszSuffixList = "*.aw";
-	*ft = IEFT_APPLIX;
-	return true;
-}
-
-
-bool IE_Exp_Applix::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_APPLIX == ft);
 }
 
 /*****************************************************************/

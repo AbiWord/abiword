@@ -64,7 +64,7 @@ char * UT_tmpnam(char * base)
 		close (fd);
 		strncpy (base, name, strlen (name));
 		g_free (name);
-		return name;
+		return base;
 	}
 
 	return base;

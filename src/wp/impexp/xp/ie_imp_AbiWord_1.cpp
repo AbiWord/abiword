@@ -35,30 +35,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
-{
-}
-
-IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, true)
-{
-	m_bDocHasLists = false;
-	m_bDocHasPageSize = false;
-}
-
-/* Quick hack for GZipAbiWord */
-UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
-{
-        UT_Error bret = IE_Imp_XML::importFile(szFilename);
-	if(m_bDocHasPageSize == false)
-	       m_pDocument->setDefaultPageSize();
-	return bret;
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf, 
+												  UT_uint32 iNumbytes)
 {
 	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
 	UT_uint32 iBytesScanned = 0 ;
@@ -92,36 +70,55 @@ bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes
 	return(false);
 }
 
-bool IE_Imp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_AbiWord_1_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".abw") == 0);
+	return (UT_stricmp(szSuffix, ".abw") == 0);
 }
 
-UT_Error IE_Imp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
-											 IE_Imp ** ppie)
+bool IE_Imp_AbiWord_1_Sniffer::getDlgLabels (const char ** szDesc,
+											 const char ** szSuffixList,
+											 IEFileType * ft)
+{
+	*szDesc = "AbiWord (.abw)";
+	*szSuffixList = "*.abw";
+	*ft = getFileType();
+	return true;
+}
+
+UT_Error IE_Imp_AbiWord_1_Sniffer::constructImporter (PD_Document * pDocument,
+													  IE_Imp ** ppie)
 {
 	IE_Imp_AbiWord_1 * p = new IE_Imp_AbiWord_1(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEFileType * ft)
+/*****************************************************************/
+/*****************************************************************/
+
+IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 {
-	*pszDesc = "AbiWord (.abw)";
-	*pszSuffixList = "*.abw";
-	*ft = IEFT_AbiWord_1;
-	return true;
 }
 
-bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
+IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
+  : IE_Imp_XML(pDocument, true)
 {
-	return (IEFT_AbiWord_1 == ft);
+	m_bDocHasLists = false;
+	m_bDocHasPageSize = false;
+}
+
+/* Quick hack for GZipAbiWord */
+UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
+{
+	UT_Error bret = IE_Imp_XML::importFile(szFilename);
+	if(m_bDocHasPageSize == false)
+		m_pDocument->setDefaultPageSize();
+	return bret;
 }
 
 /*****************************************************************/
 /*****************************************************************/
+
 
 #define TT_OTHER		0
 #define TT_DOCUMENT		1		// a document <abiword>

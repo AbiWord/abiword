@@ -41,6 +41,32 @@
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Exp_DocBook_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".dbk") == 0);
+}
+
+UT_Error IE_Exp_DocBook_Sniffer::constructImporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
+{
+	IE_Exp_DocBook * p = new IE_Exp_DocBook(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_DocBook_Sniffer::getDlgLabels(const char ** pszDesc,
+											const char ** pszSuffixList,
+											IEFileType * ft)
+{
+	*pszDesc = "DocBook (.dbk)";
+	*pszSuffixList = "*.dbk";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Exp_DocBook::IE_Exp_DocBook(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
@@ -50,37 +76,6 @@ IE_Exp_DocBook::IE_Exp_DocBook(PD_Document * pDocument)
 
 IE_Exp_DocBook::~IE_Exp_DocBook()
 {
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Exp_DocBook::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".dbk") == 0);
-}
-
-UT_Error IE_Exp_DocBook::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
-{
-	IE_Exp_DocBook * p = new IE_Exp_DocBook(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Exp_DocBook::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "DocBook (.dbk)";
-	*pszSuffixList = "*.dbk";
-	*ft = IEFT_DocBook;
-	return true;
-}
-
-bool IE_Exp_DocBook::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_DocBook == ft);
 }
 
 /*****************************************************************/

@@ -45,6 +45,32 @@
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Exp_HTML_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!UT_stricmp(szSuffix,".html") || !UT_stricmp(szSuffix, ".htm"));
+}
+
+UT_Error IE_Exp_HTML_Sniffer::constructImporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
+{
+	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
+{
+	*pszDesc = "XHTML (.html)";
+	*pszSuffixList = "*.html; *.htm";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
@@ -54,37 +80,6 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 
 IE_Exp_HTML::~IE_Exp_HTML()
 {
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Exp_HTML::RecognizeSuffix(const char * szSuffix)
-{
-	return (!(UT_stricmp(szSuffix,".html")) || (!UT_stricmp(szSuffix,".htm")) || (!UT_stricmp(szSuffix, ".xhtml")));
-}
-
-UT_Error IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
-{
-	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Exp_HTML::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "XHTML (.html)";
-	*pszSuffixList = "*.html";
-	*ft = IEFT_HTML;
-	return true;
-}
-
-bool IE_Exp_HTML::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_HTML == ft);
 }
 
 /*****************************************************************/

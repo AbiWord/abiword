@@ -25,6 +25,25 @@
 
 class PD_Document;
 
+class IE_Imp_DocBook_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_DocBook_Sniffer() {}
+	virtual ~IE_Imp_DocBook_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 // The importer/reader for DocBook files.
 
 class IE_Imp_DocBook : public IE_Imp_XML

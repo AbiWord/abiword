@@ -549,7 +549,13 @@ void XAP_Preview_FontPreview::draw(void)
 		UT_sint32 iDrop = iTop + iAscent * 2 /3;
 		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
-
+	
+	m_gc->drawLine(0, 0, getWindowWidth(), 0);
+	m_gc->drawLine(getWindowWidth() - 1, 0, getWindowWidth() - 1,
+		getWindowHeight());
+	m_gc->drawLine(getWindowWidth() - 1, getWindowHeight() - 1, 0,
+		getWindowHeight() - 1);
+	m_gc->drawLine(0, getWindowHeight() - 1, 0, 0);
 }
 
 void XAP_Preview_FontPreview::clearScreen(void)

@@ -26,12 +26,10 @@
 #include "ut_debugmsg.h"
 
 IE_Exp_PalmDoc::IE_Exp_PalmDoc(PD_Document * pDocument)
-	: IE_Exp_Text(pDocument)
+	: IE_Exp_Text(pDocument), m_pdfp(0), m_numRecords(0),
+	  m_fileSize(0)
 {
-    m_pdfp = 0;
-    m_numRecords = 0;
-    m_fileSize = 0;
-    m_buf = new buffer;
+	m_buf = new buffer;
     m_buf->len = BUFFER_SIZE;
     m_buf->position = 0;
 
@@ -45,31 +43,27 @@ IE_Exp_PalmDoc::~IE_Exp_PalmDoc()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_PalmDoc::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_PalmDoc_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-    return (UT_stricmp(szSuffix,".pdb") == 0);
+	return (!UT_stricmp(szSuffix,".pdb"));
 }
 
-UT_Error IE_Exp_PalmDoc::StaticConstructor(PD_Document * pDocument,
-	IE_Exp ** ppie)
+UT_Error IE_Exp_PalmDoc_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
-    *ppie = new IE_Exp_PalmDoc(pDocument);
-    return UT_OK;
+	IE_Exp_PalmDoc * p = new IE_Exp_PalmDoc(pDocument);
+	*ppie = p;
+	return UT_OK;
 }
 
-bool	IE_Exp_PalmDoc::GetDlgLabels(const char ** pszDesc,
-	const char ** pszSuffixList,
-	IEFileType * ft)
+bool IE_Exp_PalmDoc_Sniffer::getDlgLabels(const char ** pszDesc,
+										  const char ** pszSuffixList,
+										  IEFileType * ft)
 {
-    *pszDesc = "Palm Document (.pdb)";
-    *pszSuffixList = "*.pdb";
-    *ft = IEFT_PalmDoc;
-    return true;
-}
-
-bool IE_Exp_PalmDoc::SupportsFileType(IEFileType ft)
-{
-    return (IEFT_PalmDoc == ft);
+	*pszDesc = "PalmDoc (.pdb)";
+	*pszSuffixList = "*.pdb";
+	*ft = getFileType();
+	return true;
 }
 
 /*****************************************************************/

@@ -82,61 +82,52 @@ IE_Exp_RTF::~IE_Exp_RTF()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_RTF::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".rtf") == 0);
+	return (!UT_stricmp(szSuffix,".rtf"));
 }
 
-UT_Error IE_Exp_RTF::StaticConstructor(PD_Document * pDocument,
-									   IE_Exp ** ppie)
+UT_Error IE_Exp_RTF_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_RTF::GetDlgLabels(const char ** pszDesc,
-								 const char ** pszSuffixList,
-								 IEFileType * ft)
+bool IE_Exp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "Rich Text Format (.rtf)";
 	*pszSuffixList = "*.rtf";
-	*ft = IEFT_RTF;
+	*ft = getFileType();
 	return true;
 }
 
-bool IE_Exp_RTF::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_RTF == ft);
-}
-
 /*for attic*/
-bool IE_Exp_RTF::RecognizeSuffix_attic(const char * szSuffix)
+
+bool IE_Exp_RTF_attic_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".rtf") == 0);
+	return (!UT_stricmp(szSuffix,".rtf"));
 }
 
-UT_Error IE_Exp_RTF::StaticConstructor_attic(PD_Document * pDocument,
-									   IE_Exp ** ppie)
+UT_Error IE_Exp_RTF_attic_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument,1);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_RTF::GetDlgLabels_attic(const char ** pszDesc,
-								 const char ** pszSuffixList,
-								 IEFileType * ft)
+bool IE_Exp_RTF_attic_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "Rich Text Format for old apps (.rtf)";
 	*pszSuffixList = "*.rtf";
-	*ft = IEFT_RTF_attic;
+	*ft = getFileType();
 	return true;
-}
-
-bool IE_Exp_RTF::SupportsFileType_attic(IEFileType ft)
-{
-	return (IEFT_RTF_attic == ft);
 }
 	  
 /*****************************************************************/

@@ -90,33 +90,27 @@ IE_Exp_MIF::~IE_Exp_MIF()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_MIF::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_MIF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".mif") == 0);
+	return (!UT_stricmp(szSuffix,".mif"));
 }
 
-UT_Error IE_Exp_MIF::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
+UT_Error IE_Exp_MIF_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_MIF * p = new IE_Exp_MIF(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_MIF::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
+bool IE_Exp_MIF_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "MIF (.mif)";
 	*pszSuffixList = "*.mif";
-	*ft = IEFT_MIF;
+	*ft = getFileType();
 	return true;
-}
-
-
-bool IE_Exp_MIF::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_MIF == ft);
 }
 
 /*****************************************************************/

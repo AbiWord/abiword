@@ -60,19 +60,50 @@ protected:
 };
 
 
+class IE_Imp_Psion_Word_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_Psion_Word_Sniffer() {}
+	virtual ~IE_Imp_Psion_Word_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
+class IE_Imp_Psion_TextEd_Sniffer : public IE_ImpSniffer
+{
+	friend class IE_Imp;
+
+public:
+	IE_Imp_Psion_TextEd_Sniffer() {}
+	virtual ~IE_Imp_Psion_TextEd_Sniffer() {}
+
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+};
+
 class IE_Imp_Psion_Word : public IE_Imp_Psion
 {
 public:
 	IE_Imp_Psion_Word(PD_Document * pDocument);
 	~IE_Imp_Psion_Word();
-	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
+
 
 protected:
 	virtual	UT_Error	parseFile(psiconv_file psionfile);
@@ -83,14 +114,6 @@ class IE_Imp_Psion_TextEd : public IE_Imp_Psion
 public:
 	IE_Imp_Psion_TextEd(PD_Document * pDocument);
 	~IE_Imp_Psion_TextEd();
-	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
 
 protected:
 	virtual	UT_Error	parseFile(psiconv_file psionfile);

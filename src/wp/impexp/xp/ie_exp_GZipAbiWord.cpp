@@ -38,32 +38,31 @@ IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_GZipAbiWord::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-    return (UT_stricmp(szSuffix,".zabw") == 0);
+	return (!UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix, ".abw.gz"));
 }
 
-UT_Error IE_Exp_GZipAbiWord::StaticConstructor(PD_Document * pDocument,
-	IE_Exp ** ppie)
+UT_Error IE_Exp_GZipAbiWord_Sniffer::constructImporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
 {
-    *ppie = new IE_Exp_GZipAbiWord(pDocument);
-    return UT_OK;
+	IE_Exp_GZipAbiWord * p = new IE_Exp_GZipAbiWord(pDocument);
+	*ppie = p;
+	return UT_OK;
 }
 
-bool	IE_Exp_GZipAbiWord::GetDlgLabels(const char ** pszDesc,
-	const char ** pszSuffixList,
-	IEFileType * ft)
+bool IE_Exp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
+											const char ** pszSuffixList,
+											IEFileType * ft)
 {
-    *pszDesc = "GZipped AbiWord (.zabw)";
-    *pszSuffixList = "*.zabw";
-    *ft = IEFT_GZipAbiWord;
-    return true;
+	*pszDesc = "GZipped AbiWord (.zabw)";
+	*pszSuffixList = "*.zabw; *.abw.gz";
+	*ft = getFileType();
+	return true;
 }
 
-bool IE_Exp_GZipAbiWord::SupportsFileType(IEFileType ft)
-{
-    return (IEFT_GZipAbiWord == ft);
-}
+/*****************************************************************/
+/*****************************************************************/
 
 bool IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
 {

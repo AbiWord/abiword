@@ -1,4 +1,4 @@
-/* AbiWord
+E/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef IE_EXP_UTF8_H
 #define IE_EXP_UTF8_H
 
@@ -28,19 +27,27 @@ class s_UTF8_Listener;
 
 // The exporter/writer for Plain Text Files in UTF8.
 
+class IE_Exp_UTF8_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_UTF8_Sniffer () {}
+	virtual ~IE_Exp_UTF8_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_UTF8 : public IE_Exp
 {
 public:
 	IE_Exp_UTF8(PD_Document * pDocument);
 	virtual ~IE_Exp_UTF8();
-
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);

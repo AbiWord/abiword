@@ -24,35 +24,72 @@
 #include "ut_types.h"
 #include "ie_types.h"
 
+#include "ut_vector.h"
+
 class PD_Document;
 class PD_DocumentRange;
 
 // IE_Imp defines the abstract base class for file importers.
 
+class IE_Imp;
+
+class IE_ImpSniffer
+{
+	friend class IE_Imp;
+	
+public:
+	IE_ImpSniffer();
+	virtual ~IE_ImpSniffer();
+	
+	// these you get for free
+	inline bool supportsFileType (IEFileType type) {return m_type == type;}
+	inline IEFileType getFileType() const {return m_type;}
+	
+	// these you must override these
+	virtual bool recognizeContents (const char * szBuf, 
+									UT_uint32 iNumbytes) = 0;
+	virtual bool recognizeSuffix (const char * szSuffix) = 0;
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft) = 0;
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie) = 0;
+	
+private:
+	// only IE_Imp ever calls this
+	inline void setFileType (IEFileType type) {m_type = type;}
+	IEFileType m_type;
+};
+
 class IE_Imp
 {
 public:
-
+	
 	// constructs an importer of the right type based upon
 	// either the filename or sniffing the file.  caller is
 	// responsible for destroying the importer when finished
 	// with it.
 
 	static IEFileType	fileTypeForContents(const char * szBuf,
-					UT_uint32 iNumbytes);
+											UT_uint32 iNumbytes);
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
 	static UT_Error		constructImporter(PD_Document * pDocument,
-						  const char * szFilename,
-						  IEFileType ieft,
-						  IE_Imp ** ppie, 
-						  IEFileType * pieft = NULL);
-	static bool		enumerateDlgLabels(UT_uint32 ndx,
-						   const char ** pszDesc,
-						   const char ** pszSuffixList,
-						   IEFileType * ft);
+										  const char * szFilename,
+										  IEFileType ieft,
+										  IE_Imp ** ppie, 
+										  IEFileType * pieft = NULL);
+
+	static bool		    enumerateDlgLabels(UT_uint32 ndx,
+										   const char ** pszDesc,
+										   const char ** pszSuffixList,
+										   IEFileType * ft);
 	static UT_uint32	getImporterCount(void);
+	static void init();
+
+	static void registerImporter (IE_ImpSniffer * sniffer);
+	static void unregisterImporter (IE_ImpSniffer * sniffer);
 
  public:
 	IE_Imp(PD_Document * pDocument);

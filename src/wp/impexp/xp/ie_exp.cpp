@@ -27,85 +27,112 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_bytebuf.h"
+#include "ut_vector.h"
+
 #include "ut_debugmsg.h"
+
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_GZipAbiWord.h"
-
 #include "ie_exp_MsWord_97.h"
 #include "ie_exp_MIF.h"
-
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
 #include "ie_exp_HRText.h"
 #include "ie_exp_HTML.h"
-#include "ie_exp_UTF8.h"
 #include "ie_exp_LaTeX.h"
 #include "ie_exp_PalmDoc.h"
 #include "ie_exp_WML.h"
 #include "ie_exp_DocBook.h"
 #include "ie_exp_Psion.h"
-
-#include "ie_exp_MIF.h"
 #include "ie_exp_Applix.h"
 #include "ie_exp_XSL-FO.h"
+//#include "ie_exp_UTF8.h"
+
+#define IEFT_AbiWord_1 IE_Exp::fileTypeForSuffix(".abw")
+
+static UT_Vector m_sniffers(20);
 
 /*****************************************************************/
 /*****************************************************************/
 
-struct _xp
+/* static */
+void IE_Exp::init ()
 {
-	bool			(*fpRecognizeSuffix)(const char * szSuffix);
+	static bool b_init = false;
 
-	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
-										   IE_Exp ** ppie);
-	bool			(*fpGetDlgLabels)(const char ** szDesc,
-									  const char ** szSuffixList,
-									  IEFileType * ft);
-	bool			(*fpSupportsFileType)(IEFileType ft);
-};
+	if (b_init)
+		return;
 
-#define DeclareExporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
-#define DeclareExporter_sub(n,subfmt)	{ n::RecognizeSuffix_##subfmt, n::StaticConstructor_##subfmt, n::GetDlgLabels_##subfmt, n::SupportsFileType_##subfmt }
-
-static struct _xp s_expTable[] =
-{
-	DeclareExporter(IE_Exp_AbiWord_1),
-	DeclareExporter(IE_Exp_Applix),
-	DeclareExporter(IE_Exp_DocBook),
+	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());
+	
 #ifdef DEBUG
-	DeclareExporter(IE_Exp_MsWord_97),
-	//	Don't declare until it works
+	IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
 #endif
-	DeclareExporter(IE_Exp_XSL_FO),
-	DeclareExporter(IE_Exp_HTML),
-	DeclareExporter(IE_Exp_LaTeX),
-#if 0
-	DeclareExporter(IE_Exp_MIF),
-	//      Don't declare until it works
-#endif
-	DeclareExporter(IE_Exp_PalmDoc),
-	DeclareExporter(IE_Exp_Psion_TextEd),
-	DeclareExporter(IE_Exp_Psion_Word),
-	DeclareExporter(IE_Exp_RTF),
-	DeclareExporter_sub(IE_Exp_RTF,attic),
-	DeclareExporter(IE_Exp_Text),
-	DeclareExporter(IE_Exp_HRText),
-	DeclareExporter(IE_Exp_UTF8),
-	DeclareExporter(IE_Exp_WML),
-	DeclareExporter(IE_Exp_GZipAbiWord)
-};
+	
+	IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_PalmDoc_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_Psion_TextEd_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_Psion_Word_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_RTF_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
+	//IE_Exp::registerExporter(new IE_Exp_UTF8_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
+
+	b_init = true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+IE_ExpSniffer::IE_ExpSniffer ()
+	: m_type (IEFT_Bogus)
+{
+}
+
+IE_ExpSniffer::~IE_ExpSniffer ()
+{
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+void IE_Exp::registerExporter (IE_ExpSniffer * s)
+{
+	UT_uint32 ndx = 0;
+
+	UT_ASSERT(m_sniffers.addItem (s, &ndx) == UT_OK);
+	UT_ASSERT(ndx >= 0);
+
+	s->setFileType(ndx+1);
+}
+
+void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
+{
+	UT_uint32 ndx = 0;
+
+	ndx = s->getFileType(); // 1:1 mapping
+
+	UT_ASSERT(ndx >= 0);
+
+	m_sniffers.deleteNthItem (ndx-1);
+}
 
 /*****************************************************************/
 /*****************************************************************/
 
 IE_Exp::IE_Exp(PD_Document * pDocument)
+	: m_pDocument(pDocument),
+	  m_pDocRange (0), m_pByteBuf(0),
+	  m_szFileName(0), m_fp(0)
 {
-	m_fp = 0;
-	m_pDocument = pDocument;
-	m_pDocRange = NULL;
-	m_pByteBuf = NULL;
-	m_szFileName = NULL;
 }
 
 IE_Exp::~IE_Exp()
@@ -294,15 +321,17 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
 	// so we must query a suffix match for all file types
-	for (UT_uint32 k=0; (k < NrElements(s_expTable)); k++)
+	UT_uint32 nrElements = getExporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		struct _xp * s = &s_expTable[k];
-		if (s->fpRecognizeSuffix(szSuffix))
+		IE_ExpSniffer * s = (IE_ExpSniffer*) m_sniffers.getNthItem(k);
+		if (s->recognizeSuffix(szSuffix))
 		{
-			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			for (UT_uint32 a = 0; a < nrElements; a++)
 			{
-				if (s->fpSupportsFileType((IEFileType) a))
-					return (IEFileType) a;
+				if (s->supportsFileType((IEFileType) a+1))
+					return (IEFileType) a+1;
 			}
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -320,10 +349,10 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 }
 
 UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
-				   const char * szFilename,
-				   IEFileType ieft,
-				   IE_Exp ** ppie,
-				   IEFileType * pieft)
+								   const char * szFilename,
+								   IEFileType ieft,
+								   IE_Exp ** ppie,
+								   IEFileType * pieft)
 {
 	// construct the right type of exporter.
 	// caller is responsible for deleing the exporter object
@@ -344,14 +373,18 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	UT_ASSERT(ieft != IEFT_Unknown);
 
    	// let the caller know what kind of exporter they're getting
-   	if (pieft != NULL) *pieft = ieft;
+   	if (pieft != NULL) 
+		*pieft = ieft;
    
 	// use the exporter for the specified file type
-	for (UT_uint32 k=0; (k < NrElements(s_expTable)); k++)
+	UT_uint32 nrElements = getExporterCount ();
+	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		struct _xp * s = &s_expTable[k];
-		if (s->fpSupportsFileType(ieft))
-			return s->fpStaticConstructor(pDocument,ppie);
+		IE_ExpSniffer * s = (IE_ExpSniffer*) m_sniffers.getNthItem (k);
+		if (s->supportsFileType(ieft))
+		{
+			return s->constructImporter (pDocument, ppie);
+		}
 	}
 
 	// if we got here, no registered exporter handles the
@@ -359,22 +392,27 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	// assume it is our format and try to write it.
 	// if that fails, just give up.
 	*ppie = new IE_Exp_AbiWord_1(pDocument);
-	if (pieft != NULL) *pieft = IEFT_AbiWord_1;
+	if (pieft != NULL) 
+		*pieft = IEFT_AbiWord_1;
  	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
 
 bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
-								   const char ** pszDesc,
-								   const char ** pszSuffixList,
-								   IEFileType * ft)
+								const char ** pszDesc,
+								const char ** pszSuffixList,
+								IEFileType * ft)
 {
-	if (ndx < NrElements(s_expTable))
-		return s_expTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
+
+	if (ndx < getExporterCount())
+	{
+		IE_ExpSniffer * s = (IE_ExpSniffer*) m_sniffers.getNthItem (ndx);
+		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
+	}
 
 	return false;
 }
 
 UT_uint32 IE_Exp::getExporterCount(void)
 {
-	return NrElements(s_expTable);
+	return m_sniffers.size();
 }

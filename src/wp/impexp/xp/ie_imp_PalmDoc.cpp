@@ -49,6 +49,53 @@ _zero_fill(  Byte *p,  int len )
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Imp_PalmDoc_Sniffer::recognizeContents(const char * szBuf, 
+											   UT_uint32 iNumbytes)
+{
+	pdb_header	* header;
+
+	// not enough bytes to make a good enough guess
+	if (!iNumbytes || (iNumbytes < sizeof (pdb_header)))
+	  return(false);
+
+	// evil, type unsafe cast
+	header = (pdb_header *) szBuf;
+
+	if (strncmp( header->type,    DOC_TYPE,    sizeof(header->type) ) ||
+	    strncmp( header->creator, DOC_CREATOR, sizeof(header->creator) ))
+        {
+		return false;
+	}
+
+	return(true);
+}
+
+bool IE_Imp_PalmDoc_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".pdb") == 0);
+}
+
+UT_Error IE_Imp_PalmDoc_Sniffer::constructImporter(PD_Document * pDocument,
+												   IE_Imp ** ppie)
+{
+	IE_Imp_PalmDoc * p = new IE_Imp_PalmDoc(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Imp_PalmDoc_Sniffer::getDlgLabels(const char ** pszDesc,
+										  const char ** pszSuffixList,
+										  IEFileType * ft)
+{
+	*pszDesc = "Palm Document (.pdb)";
+	*pszSuffixList = "*.pdb";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 #define X_CleanupIfError(error,exp)	do { if (((error)=(exp)) != UT_OK) goto Cleanup; } while (0)
 
 UT_Error IE_Imp_PalmDoc::importFile(const char * szFilename)
@@ -242,57 +289,6 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 void IE_Imp_PalmDoc::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				     unsigned char * pData, UT_uint32 lenData)
 {
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_PalmDoc::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-        pdb_header	* header;
-
-	// not enough bytes to make a good enough guess
-	if (!iNumbytes || (iNumbytes < sizeof (pdb_header)))
-	  return(false);
-
-	// evil, type unsafe cast
-	header = (pdb_header *) szBuf;
-
-	if (strncmp( header->type,    DOC_TYPE,    sizeof(header->type) ) ||
-	    strncmp( header->creator, DOC_CREATOR, sizeof(header->creator) ))
-        {
-		return false;
-	}
-
-	return(true);
-}
-
-bool IE_Imp_PalmDoc::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".pdb") == 0);
-}
-
-UT_Error IE_Imp_PalmDoc::StaticConstructor(PD_Document * pDocument,
-										IE_Imp ** ppie)
-{
-	IE_Imp_PalmDoc * p = new IE_Imp_PalmDoc(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_PalmDoc::GetDlgLabels(const char ** pszDesc,
-				     const char ** pszSuffixList,
-				     IEFileType * ft)
-{
-	*pszDesc = "Palm Document (.pdb)";
-	*pszSuffixList = "*.pdb";
-	*ft = IEFT_PalmDoc;
-	return true;
-}
-
-bool IE_Imp_PalmDoc::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_PalmDoc == ft);
 }
 
 /*****************************************************************/

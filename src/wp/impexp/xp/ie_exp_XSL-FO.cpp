@@ -116,33 +116,31 @@ IE_Exp_XSL_FO::~IE_Exp_XSL_FO()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_XSL_FO::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_XSL_FO_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".fo") == 0);
+	return (!UT_stricmp(szSuffix,".fo"));
 }
 
-UT_Error IE_Exp_XSL_FO::StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie)
+UT_Error IE_Exp_XSL_FO_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_XSL_FO * p = new IE_Exp_XSL_FO(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_XSL_FO::GetDlgLabels(const char ** pszDesc,
-									const char ** pszSuffixList,
-									IEFileType * ft)
+bool IE_Exp_XSL_FO_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "XSL-FO (.fo)";
 	*pszSuffixList = "*.fo";
-	*ft = IEFT_XSL_FO;
+	*ft = getFileType();
 	return true;
 }
 
-bool IE_Exp_XSL_FO::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_XSL_FO == ft);
-}
+/*****************************************************************/
+/*****************************************************************/
 
 UT_Error IE_Exp_XSL_FO::_writeDocument(void)
 {

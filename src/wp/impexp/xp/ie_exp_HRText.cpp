@@ -54,46 +54,39 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_HRText::IE_Exp_HRText(PD_Document * pDocument)
-	: IE_Exp(pDocument)
+bool IE_Exp_HRText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	m_error = 0;
-	m_pListener = NULL;
+	return (UT_stricmp(szSuffix,".abw") == 0);
 }
 
-IE_Exp_HRText::~IE_Exp_HRText()
-{
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Exp_HRText::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".txt") == 0);
-}
-
-UT_Error IE_Exp_HRText::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
+UT_Error IE_Exp_HRText_Sniffer::constructImporter(PD_Document * pDocument,
+												  IE_Exp ** ppie)
 {
 	IE_Exp_HRText * p = new IE_Exp_HRText(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_HRText::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
+bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
+										 const char ** pszSuffixList,
+										 IEFileType * ft)
 {
 	*pszDesc = "Human Readable Text (.txt)";
 	*pszSuffixList = "*.txt";
-	*ft = IEFT_HRText;
+	*ft = getFileType();
 	return true;
 }
 
-bool IE_Exp_HRText::SupportsFileType(IEFileType ft)
+/*****************************************************************/
+/*****************************************************************/
+
+IE_Exp_HRText::IE_Exp_HRText(PD_Document * pDocument)
+	: IE_Exp(pDocument), m_pListener(0)
 {
-	return (IEFT_HRText == ft);
+}
+
+IE_Exp_HRText::~IE_Exp_HRText()
+{
 }
 
 /*****************************************************************/

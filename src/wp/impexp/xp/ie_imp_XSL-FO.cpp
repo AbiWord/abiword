@@ -47,19 +47,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_XSL_FO::~IE_Imp_XSL_FO()
-{
-}
-
-IE_Imp_XSL_FO::IE_Imp_XSL_FO(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument, false)
-{
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_XSL_FO::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_XSL_FO_Sniffer::recognizeContents(const char * szBuf, 
+											  UT_uint32 iNumbytes)
 {
 	UT_uint32 iLinesToRead = 6;
 	UT_uint32 iBytesScanned = 0;
@@ -94,32 +83,39 @@ bool IE_Imp_XSL_FO::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
   return false;
 }
 
-bool IE_Imp_XSL_FO::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_XSL_FO_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".fo") == 0);
 }
 
-UT_Error IE_Imp_XSL_FO::StaticConstructor(PD_Document * pDocument,
-					IE_Imp ** ppie)
+UT_Error IE_Imp_XSL_FO_Sniffer::constructImporter(PD_Document * pDocument,
+												  IE_Imp ** ppie)
 {
 	IE_Imp_XSL_FO * p = new IE_Imp_XSL_FO(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Imp_XSL_FO::GetDlgLabels(const char ** pszDesc,
-									const char ** pszSuffixList,
-									IEFileType * ft)
+bool	IE_Imp_XSL_FO_Sniffer::getDlgLabels(const char ** pszDesc,
+											const char ** pszSuffixList,
+											IEFileType * ft)
 {
 	*pszDesc = "XSL-FO (.fo)";
 	*pszSuffixList = "*.fo";
-	*ft = IEFT_XSL_FO;
+	*ft = getFileType();
 	return true;
 }
 
-bool IE_Imp_XSL_FO::SupportsFileType(IEFileType ft)
+/*****************************************************************/
+/*****************************************************************/
+
+IE_Imp_XSL_FO::~IE_Imp_XSL_FO()
 {
-	return (IEFT_XSL_FO == ft);
+}
+
+IE_Imp_XSL_FO::IE_Imp_XSL_FO(PD_Document * pDocument)
+	: IE_Imp_XML(pDocument, false)
+{
 }
 
 /*****************************************************************/

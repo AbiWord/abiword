@@ -95,6 +95,45 @@ static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+bool IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf, 
+										   UT_uint32 iNumbytes)
+{
+	if ( iNumbytes < 5 )
+	{
+		return(false);
+	}
+	if ( strncmp( szBuf, "{\\rtf", 5 ) == 0 )
+	{
+		return(true) ;
+	}
+	return(false);
+}
+
+bool IE_Imp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".rtf") == 0);
+}
+
+UT_Error IE_Imp_RTF_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Imp ** ppie)
+{
+	IE_Imp_RTF * p = new IE_Imp_RTF(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool	IE_Imp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
+										 const char ** pszSuffixList,
+										 IEFileType * ft)
+{
+	*pszDesc = "Rich Text Format (.rtf)";
+	*pszSuffixList = "*.rtf";
+	*ft = getFileType();
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
 // End List definitions
@@ -422,47 +461,6 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 
 /*****************************************************************/
 /*****************************************************************/
-
-bool IE_Imp_RTF::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-	if ( iNumbytes < 5 )
-	{
-		return(false);
-	}
-	if ( strncmp( szBuf, "{\\rtf", 5 ) == 0 )
-	{
-		return(true) ;
-	}
-	return(false);
-}
-
-bool IE_Imp_RTF::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".rtf") == 0);
-}
-
-UT_Error IE_Imp_RTF::StaticConstructor(PD_Document * pDocument,
-										IE_Imp ** ppie)
-{
-	IE_Imp_RTF * p = new IE_Imp_RTF(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_RTF::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "Rich Text Format (.rtf)";
-	*pszSuffixList = "*.rtf";
-	*ft = IEFT_RTF;
-	return true;
-}
-
-bool IE_Imp_RTF::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_RTF == ft);
-}
 
 
 // flush any remaining text in the previous para and flag

@@ -66,7 +66,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 		struct _impGraphic * s = &s_impGraphicTable[k];
 		if (s->fpRecognizeSuffix(szSuffix))
 		{
-			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			for (UT_uint32 a = 0; a < (int) IEGFT_LAST_BOGUS; a++)
 			{
 				if (s->fpSupportsFileType((IEGraphicFileType) a))
 					return (IEGraphicFileType) a;
@@ -93,7 +93,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 		struct _impGraphic * s = &s_impGraphicTable[k];
 		if (s->fpRecognizeContents(szBuf, iNumbytes))
 		{
-			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			for (UT_uint32 a = 0; a < (int) IEGFT_LAST_BOGUS; a++)
 			{
 				if (s->fpSupportsFileType((IEGraphicFileType) a))
 					return (IEGraphicFileType) a;

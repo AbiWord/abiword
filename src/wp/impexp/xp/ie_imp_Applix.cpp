@@ -29,6 +29,50 @@
 #include "ut_growbuf.h"
 #include "xap_EncodingManager.h"
 
+// these should both be case insensitive
+#define AX_STR_CMP(x, y) UT_strcmp((x), (y))
+#define AX_STRN_CMP(x, y, z) strncmp((x), (y), (z))
+
+#define APPLIX_LINE_LENGTH 80 // applix does 80 to a line
+#define nAxWords (sizeof(axwords) / sizeof(axwords[1]))
+
+/*****************************************************************/
+/*****************************************************************/
+
+bool IE_Imp_Applix_Sniffer::recognizeContents(const char * szBuf, 
+											  UT_uint32 iNumbytes)
+{
+	// this should be suffecient, at least for my liking
+	const char * magic = "<Applix Words>";
+
+	if (!AX_STRN_CMP(szBuf, magic, strlen(magic)))
+		return true;
+	return false;
+}
+
+bool IE_Imp_Applix_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".aw") == 0);
+}
+
+UT_Error IE_Imp_Applix_Sniffer::constructImporter(PD_Document * pDocument,
+												  IE_Imp ** ppie)
+{
+	IE_Imp_Applix * p = new IE_Imp_Applix(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Imp_Applix_Sniffer::getDlgLabels(const char ** pszDesc,
+										 const char ** pszSuffixList,
+										 IEFileType * ft)
+{
+	*pszDesc = "Applix Word (.aw)";
+	*pszSuffixList = "*.aw";
+	*ft = getFileType();
+	return true;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -143,13 +187,6 @@ static Applix_mapping_t axwords[] =
 	{"end_document", END_DOCUMENT_T}
 };
 
-// these should both be case insensitive
-#define AX_STR_CMP(x, y) UT_strcmp((x), (y))
-#define AX_STRN_CMP(x, y, z) strncmp((x), (y), (z))
-
-#define APPLIX_LINE_LENGTH 80 // applix does 80 to a line
-#define nAxWords (sizeof(axwords) / sizeof(axwords[1]))
-
 static Applix_tag_t
 s_name_2_tag (const char *name, size_t n)
 {
@@ -239,43 +276,4 @@ void IE_Imp_Applix::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 /*****************************************************************/
 /*****************************************************************/
-
-bool IE_Imp_Applix::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-	// this should be suffecient, at least for my liking
-	const char * magic = "<Applix Words>";
-
-	if (!AX_STRN_CMP(szBuf, magic, strlen(magic)))
-		return true;
-	return false;
-}
-
-bool IE_Imp_Applix::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".aw") == 0);
-}
-
-UT_Error IE_Imp_Applix::StaticConstructor(PD_Document * pDocument,
-										IE_Imp ** ppie)
-{
-	IE_Imp_Applix * p = new IE_Imp_Applix(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Imp_Applix::GetDlgLabels(const char ** pszDesc,
-									const char ** pszSuffixList,
-									IEFileType * ft)
-{
-	// TOOD: get the real filename extension used
-	*pszDesc = "Applix Word (.aw)";
-	*pszSuffixList = "*.aw";
-	*ft = IEFT_APPLIX;
-	return true;
-}
-
-bool IE_Imp_Applix::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_APPLIX == ft);
-}
 

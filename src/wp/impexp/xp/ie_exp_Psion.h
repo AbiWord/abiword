@@ -53,21 +53,44 @@ protected:
 	virtual psiconv_file _createPsionFile(void) = 0;
 };
 
+class IE_Exp_Psion_TextEd_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_Psion_TextEd_Sniffer () {}
+	virtual ~IE_Exp_Psion_TextEd_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
+class IE_Exp_Psion_Word_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_Psion_Word_Sniffer () {}
+	virtual ~IE_Exp_Psion_Word_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_Psion_TextEd : public IE_Exp_Psion
 {
 public:
 	// Constructors and destructor
 	IE_Exp_Psion_TextEd(PD_Document * pDocument);
 	virtual ~IE_Exp_Psion_TextEd(void);
-
-	// Overriding methods from the base class
-	static bool RecognizeSuffix(const char * szSuffix);
-	static UT_Error StaticConstructor(PD_Document * pDocument,
-	                                  IE_Exp ** ppie);
-	static bool GetDlgLabels(const char ** pszDesc,
-	                           const char ** pszSuffixList,
-	                           IEFileType * ft);
-	static bool SupportsFileType(IEFileType ft);
 
 protected:
 	// New methods
@@ -80,15 +103,6 @@ public:
 	// Constructors and destructor
 	IE_Exp_Psion_Word(PD_Document * pDocument);
 	virtual ~IE_Exp_Psion_Word(void);
-
-	// Overriding methods from the base class
-	static bool RecognizeSuffix(const char * szSuffix);
-	static UT_Error StaticConstructor(PD_Document * pDocument,
-	                                  IE_Exp ** ppie);
-	static bool GetDlgLabels(const char ** pszDesc,
-	                           const char ** pszSuffixList,
-	                           IEFileType * ft);
-	static bool SupportsFileType(IEFileType ft);
 
 protected:
 	// New methods

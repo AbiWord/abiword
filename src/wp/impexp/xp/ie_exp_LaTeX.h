@@ -28,19 +28,27 @@ class s_LaTeX_Listener;
 
 // The exporter/writer for LaTeX
 
+class IE_Exp_LaTeX_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_LaTeX_Sniffer () {}
+	virtual ~IE_Exp_LaTeX_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_LaTeX : public IE_Exp
 {
 public:
 	IE_Exp_LaTeX(PD_Document * pDocument);
 	virtual ~IE_Exp_LaTeX();
-
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);

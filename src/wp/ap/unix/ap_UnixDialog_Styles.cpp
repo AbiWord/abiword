@@ -636,7 +636,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	frameParaPrev = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_ParaPrev));
 	ParaPreviewArea = gtk_drawing_area_new();
-	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 60);
+	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), ParaPreviewArea);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameParaPrev, TRUE, TRUE, 2);
@@ -646,7 +646,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	frameCharPrev = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_CharPrev));
 	CharPreviewArea = gtk_drawing_area_new();
-	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 60);
+	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), CharPreviewArea);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameCharPrev, TRUE, TRUE, 2);
@@ -660,6 +660,8 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
 	gtk_widget_set_usize(DescriptionArea, 300, 60);
 	gtk_container_add(GTK_CONTAINER(frameDescription), DescriptionArea);
+	gtk_misc_set_alignment(GTK_MISC(DescriptionArea), 0, 0);
+	gtk_misc_set_padding(GTK_MISC(DescriptionArea), 8, 6);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameDescription, TRUE, TRUE, 2);
 	gtk_widget_show(DescriptionArea);

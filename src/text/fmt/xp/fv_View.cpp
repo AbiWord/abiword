@@ -1847,7 +1847,8 @@ void FV_View::insertParagraphBreak(void)
 		pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
 
 		UT_ASSERT((szValue));
-		setStyle(szValue);
+		if (UT_strcmp((const char *) szValue, (const char *) style) != 0)
+			setStyle(szValue);
 	}
 
 	m_pDoc->endUserAtomicGlob();

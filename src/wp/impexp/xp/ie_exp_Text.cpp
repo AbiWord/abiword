@@ -95,33 +95,27 @@ IE_Exp_Text::~IE_Exp_Text()
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_Text::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".txt") == 0);
+	return (!UT_stricmp(szSuffix,".txt") || !UT_stricmp(szSuffix, ".text"));
 }
 
-UT_Error IE_Exp_Text::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
+UT_Error IE_Exp_Text_Sniffer::constructImporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
 {
 	IE_Exp_Text * p = new IE_Exp_Text(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Exp_Text::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
+bool IE_Exp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
 {
 	*pszDesc = "Text (.txt)";
-	*pszSuffixList = "*.txt";
-	*ft = IEFT_Text;
+	*pszSuffixList = "*.txt; *.text";
+	*ft = getFileType();
 	return true;
-}
-
-
-bool IE_Exp_Text::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_Text == ft);
 }
 
 /*****************************************************************/

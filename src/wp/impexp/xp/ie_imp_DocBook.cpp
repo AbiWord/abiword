@@ -37,24 +37,14 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_DocBook::~IE_Imp_DocBook()
-{
-}
-
-IE_Imp_DocBook::IE_Imp_DocBook(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument, false)
-{
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_DocBook::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_DocBook_Sniffer::recognizeContents(const char * szBuf, 
+											   UT_uint32 iNumbytes)
 {
   // no doubt, this could be better
   // but this should suffice for all I care
 
-  if(strstr(szBuf, "<!DOCTYPE book") == NULL && strstr(szBuf, "<!doctype book") == NULL)
+  if(strstr(szBuf, "<!DOCTYPE book") == NULL && 
+	 strstr(szBuf, "<!doctype book") == NULL)
     return false;
 
   if(strstr(szBuf, "<book") == NULL)
@@ -63,32 +53,39 @@ bool IE_Imp_DocBook::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
   return true;
 }
 
-bool IE_Imp_DocBook::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_DocBook_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".dbk") == 0);
 }
 
-UT_Error IE_Imp_DocBook::StaticConstructor(PD_Document * pDocument,
-					IE_Imp ** ppie)
+UT_Error IE_Imp_DocBook_Sniffer::constructImporter(PD_Document * pDocument,
+												   IE_Imp ** ppie)
 {
 	IE_Imp_DocBook * p = new IE_Imp_DocBook(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Imp_DocBook::GetDlgLabels(const char ** pszDesc,
-				  const char ** pszSuffixList,
-				  IEFileType * ft)
+bool	IE_Imp_DocBook_Sniffer::getDlgLabels(const char ** pszDesc,
+											 const char ** pszSuffixList,
+											 IEFileType * ft)
 {
 	*pszDesc = "DocBook (.dbk)";
 	*pszSuffixList = "*.dbk";
-	*ft = IEFT_DocBook;
+	*ft = getFileType();
 	return true;
 }
 
-bool IE_Imp_DocBook::SupportsFileType(IEFileType ft)
+/*****************************************************************/
+/*****************************************************************/
+
+IE_Imp_DocBook::~IE_Imp_DocBook()
 {
-	return (IEFT_DocBook == ft);
+}
+
+IE_Imp_DocBook::IE_Imp_DocBook(PD_Document * pDocument)
+	: IE_Imp_XML(pDocument, false)
+{
 }
 
 /*****************************************************************/

@@ -42,6 +42,32 @@
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Exp_LaTeX_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!UT_stricmp(szSuffix,".tex") || !UT_stricmp(szSuffix, ".latex"));
+}
+
+UT_Error IE_Exp_LaTeX_Sniffer::constructImporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
+{
+	IE_Exp_LaTeX * p = new IE_Exp_LaTeX(pDocument);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
+										const char ** pszSuffixList,
+										IEFileType * ft)
+{
+	*pszDesc = "LaTeX (.tex)";
+	*pszSuffixList = "*.tex; *.latex";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 #define DEFAULT_SIZE "12pt"
 #define EPSILON 0.1
 
@@ -61,37 +87,6 @@ IE_Exp_LaTeX::IE_Exp_LaTeX(PD_Document * pDocument)
 
 IE_Exp_LaTeX::~IE_Exp_LaTeX()
 {
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Exp_LaTeX::RecognizeSuffix(const char * szSuffix)
-{
-	return (UT_stricmp(szSuffix,".latex") == 0);
-}
-
-UT_Error IE_Exp_LaTeX::StaticConstructor(PD_Document * pDocument,
-										IE_Exp ** ppie)
-{
-	IE_Exp_LaTeX * p = new IE_Exp_LaTeX(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool	IE_Exp_LaTeX::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList,
-								  IEFileType * ft)
-{
-	*pszDesc = "LaTeX (.latex)";
-	*pszSuffixList = "*.latex";
-	*ft = IEFT_LaTeX;
-	return true;
-}
-
-bool IE_Exp_LaTeX::SupportsFileType(IEFileType ft)
-{
-	return (IEFT_LaTeX == ft);
 }
 
 /*****************************************************************/

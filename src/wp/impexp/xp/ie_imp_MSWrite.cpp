@@ -55,7 +55,46 @@
 #endif
 
 
+/*****************************************************************/
+/*****************************************************************/
 
+bool IE_Imp_MSWrite_Sniffer::recognizeContents(const char * szBuf, 
+											   UT_uint32 iNumbytes)
+{
+    if ( iNumbytes > 8 )
+    {
+        if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
+             szBuf[2] == (char)0 && szBuf[3] == (char)0 )
+        {
+            return(true);
+        }
+    }
+    return(false);
+}
+
+bool IE_Imp_MSWrite_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+    return (UT_stricmp(szSuffix,".wri") == 0);
+}
+
+
+UT_Error IE_Imp_MSWrite_Sniffer::constructImporter(PD_Document * pDocument,
+												   IE_Imp ** ppie)
+{
+    IE_Imp_MSWrite * p = new IE_Imp_MSWrite(pDocument);
+    *ppie = p;
+    return UT_OK;
+}
+
+bool	IE_Imp_MSWrite_Sniffer::getDlgLabels(const char ** pszDesc,
+											 const char ** pszSuffixList,
+											 IEFileType * ft)
+{
+    *pszDesc = "MS-Write (.wri)";
+    *pszSuffixList = "*.wri";
+    *ft = getFileType();
+    return true;
+}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -381,55 +420,6 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 /*****************************************************************/
 /*****************************************************************/
-
-bool IE_Imp_MSWrite::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
-{
-    if ( iNumbytes > 8 )
-    {
-        if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
-             szBuf[2] == (char)0 && szBuf[3] == (char)0 )
-        {
-            return(true);
-        }
-    }
-    return(false);
-}
-
-
-
-bool IE_Imp_MSWrite::RecognizeSuffix(const char * szSuffix)
-{
-    return (UT_stricmp(szSuffix,".wri") == 0);
-}
-
-
-
-UT_Error IE_Imp_MSWrite::StaticConstructor(PD_Document * pDocument,
-                                           IE_Imp ** ppie)
-{
-    IE_Imp_MSWrite * p = new IE_Imp_MSWrite(pDocument);
-    *ppie = p;
-    return UT_OK;
-}
-
-
-
-bool	IE_Imp_MSWrite::GetDlgLabels(const char ** pszDesc,
-                                     const char ** pszSuffixList,
-                                     IEFileType * ft)
-{
-    *pszDesc = "MS-Write (.wri)";
-    *pszSuffixList = "*.wri";
-    *ft = IEFT_MSWrite;
-    return true;
-}
-
-bool IE_Imp_MSWrite::SupportsFileType(IEFileType ft)
-{
-    return (IEFT_MSWrite == ft);
-}
-
-
 
 
 ///////////////////////////////////////////////////////////////////
