@@ -22,9 +22,43 @@
 #ifndef UT_ASSERT_H
 #define UT_ASSERT_H
 
-#include <assert.h>
+#ifdef WIN32
 
-#define UT_ASSERT assert
+	// Win32 assert() is cool, so we use it as is.
+
+#	include <assert.h>
+#	define UT_ASSERT assert
+
+#else
+
+	// A Unix variant.
+
+#	ifdef NDEBUG
+
+		// When NDEBUG is defined, assert() does nothing.
+		// So we let the system header files take care of it.
+
+#		include <assert.h>
+#		define UT_ASSERT assert
+
+#	else
+		// Otherwise, we want a slighly modified behavior.
+		// We'd like assert() to ask us before crashing.
+		// We treat asserts as logic flaws, which are sometimes
+		// recoverable, but that should be noted.
+
+#		include <assert.h>
+#		include "ut_unixAssert.h"
+#		define UT_ASSERT(expr)								\
+			((void) ((expr) ||								\
+				(UT_UnixAssertMsg(__STRING(expr),			\
+								  __FILE__, __LINE__),		\
+				 0)))
+#	endif
+
+#endif
+
+
 #define UT_NOT_IMPLEMENTED		0
 #define UT_SHOULD_NOT_HAPPEN	0
 #define UT_TODO					0
