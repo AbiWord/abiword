@@ -36,7 +36,12 @@
 #include "xap_Win32DragAndDrop.h"
 #include "fl_DocLayout.h"
 
-char szName[]="Softcatala";
+XAP_Win32DropTarget::XAP_Win32DropTarget()
+{
+	m_uCF_RTF = RegisterClipboardFormat(CF_RTF);	
+	m_nCount = 0;
+	
+};
 
 STDMETHODIMP XAP_Win32DropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
 {
@@ -58,35 +63,41 @@ STDMETHODIMP_(ULONG) XAP_Win32DropTarget::Release()
 }
 
 //
-//      Called when the mouse first enters our DropTarget window 
+//      Called when the mouse first enters our DropTarget window
+//	We check which formats we really support
 //
-
-/*
-TODO:
-
-determine what the data object contains, call the data object's 
-IDataObject::EnumFormatEtc method. Use the enumerator object returned by the 
-method to enumerate the formats contained by the data object. If your 
-application does not want to accept any of these formats, return 
-DROPEFFECT_NONE. For the purposes of this scenario, your application should 
-ignore any data objects that do not contain formats used to transfer files, such 
-as CF_HDROP. 
-*/
 STDMETHODIMP XAP_Win32DropTarget::DragEnter (LPDATAOBJECT pDataObj, DWORD grfKeyState, POINTL pointl, LPDWORD pdwEffect)
-{
-	//TODO: Check which formats we really support
-	*pdwEffect = DROPEFFECT_COPY;		
+{	
+	FORMATETC 	fmte = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+	
+	m_bSupportedFormat = false;	
+
+	// Dropping files
+	if (NOERROR == pDataObj->QueryGetData(&fmte))	
+		m_bSupportedFormat = true;				
+	
+	// RTF
+	fmte.cfFormat = m_uCF_RTF;
+	
+	if (NOERROR == pDataObj->QueryGetData(&fmte))	
+		m_bSupportedFormat = true;
+	
+	*pdwEffect = (m_bSupportedFormat) ? DROPEFFECT_COPY : DROPEFFECT_NONE;
+		
 	return S_OK;
 }
 
-STDMETHODIMP XAP_Win32DropTarget::DragOver  (DWORD grfKeyState, POINTL pointl, LPDWORD pdwEffect)
-{        
+STDMETHODIMP XAP_Win32DropTarget::DragOver(DWORD grfKeyState, POINTL pointl, LPDWORD pdwEffect)
+{        	
+	*pdwEffect = (m_bSupportedFormat) ? DROPEFFECT_COPY : DROPEFFECT_NONE;			
+	
+	SendMessage(m_pFrame->getTopLevelWindow(), WM_VSCROLL, SB_LINEDOWN, NULL);
+	
 	return S_OK;
 }
 
 
-
-STDMETHODIMP XAP_Win32DropTarget::DragLeave ()
+STDMETHODIMP XAP_Win32DropTarget::DragLeave()
 {
 	return S_OK;
 }
@@ -100,8 +111,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState
         
 	FORMATETC  	formatetc;
 	STGMEDIUM	medium;
-	char*		pData;
-	UINT 		uCF_RTF;
+	char*		pData;	
 	UT_uint32 	iStrLen;
 	IE_Imp* 	pImp = 0;
 	const char * 	szEncoding = 0;
@@ -120,18 +130,17 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState
 		// We send an event Message Window to the Win32Frame since historicaly
 		// the file loading was processed there
 		if (count) 
-			SendMessage(pFrame->getTopLevelWindow(), WM_DROPFILES, (WPARAM)medium.hGlobal, 0);	
+			SendMessage(m_pFrame->getTopLevelWindow(), WM_DROPFILES, (WPARAM)medium.hGlobal, 0);	
 				
 		ReleaseStgMedium(&medium);	     
 		return S_OK;
 	}
+	
 
 	//
-	// Is the user dropping RTF Files?
-	//	
-	uCF_RTF = RegisterClipboardFormat(CF_RTF);
-			
-	formatetc.cfFormat = uCF_RTF;
+	// Is the user dropping RTF text?
+	//				
+	formatetc.cfFormat = m_uCF_RTF;
 	formatetc.ptd = NULL;
 	formatetc.dwAspect  = DVASPECT_CONTENT;
 	formatetc.lindex  = -1;
@@ -139,8 +148,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState
 	
 	medium.hGlobal = NULL;	
 	medium.pUnkForRelease = NULL;	
-      
-      	// TODO: Add more formats
+            	
       	// Does not support RTF
         if (!SUCCEEDED(pDataObj->GetData(&formatetc, &medium)))
 	       	return S_OK;
@@ -149,7 +157,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState
 	iStrLen =  strlen(pData);
 	
 	// Get document range
-	AP_FrameData* pFrameData = (AP_FrameData*) pFrame->getFrameData();
+	AP_FrameData* pFrameData = (AP_FrameData*) m_pFrame->getFrameData();
 	FL_DocLayout *pDocLy =	pFrameData->m_pDocLayout;
 	FV_View * pView =  pDocLy->getView();	
 	PD_DocumentRange dr(pView->getDocument(),pView->getPoint(),pView->getPoint());
@@ -159,8 +167,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState
 	if (pImp)
 	{		
 		szEncoding = XAP_EncodingManager::get_instance()->getNative8BitEncodingName();		
-		
-		//szEncoding = XAP_EncodingManager::get_instance()->getUCS2LEName();				
+						
 		pImp->pasteFromBuffer(&dr, (unsigned char *)pData, iStrLen,szEncoding);
 		
 		delete pImp;		

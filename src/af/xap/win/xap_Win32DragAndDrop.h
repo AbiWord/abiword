@@ -45,28 +45,34 @@ class XAP_Win32Frame;
 
 interface XAP_Win32DropTarget : public IDropTarget
 {
-	
 
-	XAP_Win32DropTarget() {};
+public:
+	
+	XAP_Win32DropTarget();	
 	~XAP_Win32DropTarget() {};
 	
+	// Ole Methods
 	STDMETHODIMP QueryInterface (REFIID riid, LPVOID FAR* ppv);
 	STDMETHODIMP_(ULONG) AddRef ();
 	STDMETHODIMP_(ULONG) Release ();
 
- 	// Drap and drop methods
+ 	
 	STDMETHODIMP DragEnter (LPDATAOBJECT pDataObj, DWORD grfKeyState,
 			POINTL pt, LPDWORD pdwEffect);
 	STDMETHODIMP DragOver  (DWORD grfKeyState, POINTL pt, LPDWORD pdwEffect);
 	STDMETHODIMP DragLeave ();
 	STDMETHODIMP Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState, POINTL pt,
 			LPDWORD pdwEffect);
-	
-	XAP_Win32Frame*		pFrame;			
-	
+		
+	// Helper
+	void setFrame(XAP_Win32Frame* pFrame) {m_pFrame = pFrame;};	
 private:
 	
 	int   			m_nCount;                 // reference count
+	UINT			m_uCF_RTF;
+	bool			m_bSupportedFormat;	
+	XAP_Win32Frame*		m_pFrame;			
+	
 
 };
 

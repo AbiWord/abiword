@@ -303,7 +303,7 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 
 	
 	// Register drag and drop data and files
-	m_dropTarget.pFrame = this;
+	m_dropTarget.setFrame(this);
 	RegisterDragDrop(m_hwndFrame, &m_dropTarget);	
 		
 	return;
