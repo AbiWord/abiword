@@ -103,7 +103,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 			if (fontcount < 0)
 			{
 				char message[512];
-				g_snprintf(message, 512, "WARNING: Font directory file [%s]\ndeclares an invalid number of fonts (%ld).",
+				g_snprintf(message, 512, "WARNING: Font index file [%s]\ndeclares an invalid number of fonts (%ld).",
 						   filename, fontcount);
 				messageBoxOK(message);
 			}
@@ -122,7 +122,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 					// premature EOF (it's always premature if there are more
 					// fonts specified than found)
 					char message[512];
-					g_snprintf(message, 512, "Premature end of file from font directory file [%s];\n"
+					g_snprintf(message, 512, "Premature end of file from font index file [%s];\n"
 							   "%ld fonts were supposed to be declared, but I only got %ld.\n"
 							   "I will continue, but things may not work correctly.\n",
 							   filename, fontcount, line);
@@ -150,8 +150,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 	{
 		// TODO this is not big enough for a really big list of fonts!
 		char message[10240];
-		g_snprintf(message, 10240, "Found no font directory files ('fonts.dir') in any directories\n"
-				   "in font path:\n\n");
+		g_snprintf(message, 10240, "Found no font index files ('fonts.dir') in any directories in font path:\n\n");
 		{
 			UT_uint32 dircount = m_searchPaths.getItemCount();
 			for (i = 0; i < dircount; i++)
@@ -166,13 +165,16 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 		g_snprintf(message2, 11264,
 				   "%s"
 				   "\n"
-				   "Do the directories in this list contain valid font directory\n"
-				   "files ('fonts.dir') and the actual font files ('*.pfa', '*.afm') files\n"
-				   "they declare?\n"
+				   "Do the directories in this list contain valid font index files\n"
+				   "('fonts.dir') and the actual font files ('*.pfa', '*.afm') files they declare?\n"
 				   "\n"
-				   "See 'http://www.abisource.com/dev_download.phtml#type1'\n"
-				   "for instructions on how to install these fonts and properly\n"
-				   "set up your environment.", message);
+				   "If you have retrieved a recent Unix font package, installing it using the\n"
+				   "default destination location and adding a font path entry to your X display\n"
+				   "server should produce a working setup.\n"
+				   "\n"
+				   "Please read the file 'README' included in the Unix font distribution releases\n"
+				   "for instructions on installing these fonts.",
+				   message);
 		messageBoxOK(message2);
 		return UT_FALSE;
 	}
@@ -182,12 +184,14 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 		// we have no fonts, just quit
 		char message[1024];
 		g_snprintf(message, 1024, "Found no actual font data files ('*.pfa', '*.afm') in\n"
-				   "the font path ('$ABIWORD_FONTPATH') even though I found %ld font\n"
-				   "directory files ('fonts.dir').\n"
+				   "the font path even though I found [%ld] font index files ('fonts.dir').\n"
 				   "\n"
-				   "See 'http://www.abisource.com/dev_download.phtml#type1' for\n"
-				   "instructions on how to install these fonts and properly\n"
-				   "set up your environment.", totaldirs);
+				   "It is possible that the AbiSuite Unix fonts were not completely and successfully\n"
+				   "installed.\n"
+				   "\n"
+				   "Please read the file 'README' included in the Unix font distribution releases\n"
+				   "for instructions on installing these fonts.",
+				   totaldirs);
 		messageBoxOK(message);
 		return UT_FALSE;
 	}

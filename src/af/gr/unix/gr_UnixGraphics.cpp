@@ -371,7 +371,7 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 					   "\n"
 					   "AbiWord cannot continue without this font.", pszFontFamily);
 			messageBoxOK(message);
-			exit(-1);
+			exit(1);
 		}
 		
 	}

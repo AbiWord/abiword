@@ -383,14 +383,16 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	{
 		char message[1024];
 		g_snprintf(message, 1024,
-				   "Could not load X font\n"
-				   "[%s].\n"
-				   "If this font is an AbiWord Type 1 font, has this font file\n"
-				   "been properly installed according to the instructions at\n"
-				   "'http://www.abisource.com/dev_download.phtml#type1'?\n",
+				   "Could not load X font:\n\n"
+				   "%s\n\n"
+				   "This could mean that the X display server font path has not been set\n"
+				   "to reflect the addition of the AbiSuite font set.\n"
+				   "\n"
+				   "Please read the file 'README' included in the Unix font distribution releases\n"
+				   "for instructions on installing these fonts.",
 				   newxlfd);
 		messageBoxOK(message);
-		UT_ASSERT(0);
+		exit(1);
 	}
 
 	free(newxlfd);
