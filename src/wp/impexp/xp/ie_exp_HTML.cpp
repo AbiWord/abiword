@@ -95,7 +95,9 @@ IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer ()
 
 bool IE_Exp_HTML_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (!UT_stricmp (szSuffix, ".xhtml"));
+	return (!UT_stricmp (szSuffix, ".xhtml") || 
+			!(UT_stricmp (szSuffix, ".html")) || 
+			!(UT_stricmp (szSuffix, ".htm")));
 }
 
 UT_Error IE_Exp_HTML_Sniffer::constructExporter (PD_Document * pDocument,
