@@ -52,8 +52,8 @@ BeginLayout(FormatOps)
 #if defined(HAVE_GNOME)
      /* TODO: these should be moved out into the general public */
      Spacer()
-     ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
      ToolbarItem(AP_TOOLBAR_ID_COLOR_FORE)
+     ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
 #endif
 	
 EndLayout()
