@@ -43,19 +43,45 @@ public:
 	static void				autoupdateLists(UT_Timer * pTimer);
 
 
-private:
-	XAP_Win32DialogHelper	_win32Dialog;
-
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 	
-	void					_fillListTypeMenu( int List_id);
-	void					enableControls(void);
+	void					_enableControls();
 	void					_onApply();
 
-	UT_Timer *              m_pAutoUpdateLists;
+private:
+	// overridden virtual functions
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
+
+	// current selection of the drop-list combo boxes
+	int						_getTypeComboCurSel() const;
+	int						_getStyleComboCurSel() const;
+	void					_setTypeComboCurSel(int iSel);
+	void					_setStyleComboCurSel(int iSel);
+
+	UT_Bool					_isNewList() const;
+	void					_fillTypeList();
+	void					_fillStyleList(int iType);
+	void					_typeChanged();
+	void					_styleChanged();
+	void					_customChanged();
+	void					_enableCustomControls(UT_Bool bEnable = UT_TRUE);
+	void					_updateCaption();
+	void					_previewExposed();
+	void					_setData();			// data -> "view"
+	void					_getData();			// "view" -> data
+	List_Type				_getListType() const;
+	void					_setListType(List_Type type);
+	void					_selectFont();
+	virtual const XML_Char*	_getDingbatsFontName() const;
+
+	UT_Timer*				m_pAutoUpdateLists;
+	XAP_Win32DialogHelper	_win32Dialog;
+	XAP_Win32PreviewWidget*	m_pPreviewWidget;
+	UT_Bool					m_bDisplayCustomControls;
 };
 
 #endif /* AP_Win32Dialog_List_H */
