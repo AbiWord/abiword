@@ -177,8 +177,10 @@ void FL_DocLayout::fillLayouts(void)
 // The act of adding the listner to the document also causes the
 // the document to pump it's content into the layout classes.
 //
+	m_pDoc->setDontImmediatelyLayout(true);
 	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
 	UT_ASSERT(m_lid != 123);
+	m_pDoc->setDontImmediatelyLayout(false);
 	formatAll();
 	if(m_pView)
 	{
@@ -688,6 +690,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	// add page view dimensions
 #if 1
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
+	UT_ASSERT(0);
 	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
 		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(k);

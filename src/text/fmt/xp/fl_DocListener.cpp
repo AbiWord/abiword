@@ -603,7 +603,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 // Reached the top of the stack. Allow the table layout now.
 //
-			m_pDoc->setDontImmediatelyLayout(false);
+			//	m_pDoc->setDontImmediatelyLayout(false);
 			pTL->format();
 		}
 	}

@@ -1414,6 +1414,10 @@ ie_imp_table * IE_Imp_RTF::getTable(void)
 
 void IE_Imp_RTF::OpenTable(void)
 {
+	if(!m_pImportFile)
+	{
+		return;
+	}
 	if(!m_bParaWrittenForSection)
 	{
 		FlushStoredChars(true);
@@ -1445,6 +1449,10 @@ void IE_Imp_RTF::CloseTable(void)
 //
 // Close table removes extraneous struxes like unmatched PTX_SectionCell's
 //
+	if(!m_pImportFile && (getTable() == NULL))
+	{
+		return;
+	}
 
 	if(getTable() && getTable()->wasTableUsed())
 	{
@@ -1499,6 +1507,10 @@ void IE_Imp_RTF::CloseTable(void)
 
 void IE_Imp_RTF::HandleCell(void)
 {
+	if(!m_pImportFile)
+	{
+		return;
+	}
 //
 // Flush out anything we've been holding
 //	
@@ -1541,6 +1553,11 @@ void IE_Imp_RTF::HandleCell(void)
 
 void IE_Imp_RTF::FlushCellProps(void)
 {
+	if(!m_pImportFile)
+	{
+		return;
+	}
+
 	getCell()->setMergeAbove( m_currentRTFState.m_cellProps.m_bVerticalMerged );
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
 }
@@ -1548,11 +1565,20 @@ void IE_Imp_RTF::FlushCellProps(void)
 
 void IE_Imp_RTF::FlushTableProps(void)
 {
+	if(!m_pImportFile)
+	{
+		return;
+	}
 	getTable()->setAutoFit( m_currentRTFState.m_tableProps.m_bAutoFit );
 }
 
 void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 {
+	if(!m_pImportFile)
+	{
+		return;
+	}
+
 	if(getTable() == NULL)
 	{
 		OpenTable();
@@ -1595,6 +1621,11 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 
 void IE_Imp_RTF::HandleRow(void)
 {
+	if(!m_pImportFile)
+	{
+		return;
+	}
+
 	UT_DEBUGMSG(("SEVIOR: Handle Row now \n"));
 	getTable()->removeExtraneousCells();
 	m_TableControl.NewRow();
@@ -4394,27 +4425,30 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // Look to see if the nesting level of our tables has changed.
 //
-	if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+	if(m_pImportFile)
 	{
-		if(m_bParaWrittenForSection)
+		if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+		{
+			if(m_bParaWrittenForSection)
+			{
+				UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+				{
+					UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+					OpenTable();
+				}
+				UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			}
+		}
+		else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 		{
 			UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-			while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
-				UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
-				OpenTable();
+				CloseTable();
 			}
 			UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 		}
-	}
-	else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
-	{
-		UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-		while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
-		{
-			CloseTable();
-		}
-		UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 	}
 	m_bParaWrittenForSection = true;
 
@@ -5086,7 +5120,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
-	if(true /*m_currentRTFState.m_sectionProps.m_headerYTwips != 0*/)
+	if(m_currentRTFState.m_sectionProps.m_headerYTwips != 0)
 	{
 		UT_sint32 sheader = 0;
 //
@@ -5095,7 +5129,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 //
 // So the header margin = topmargin - header height.
 //
-		if(true/*m_currentRTFState.m_sectionProps.m_topMargTwips != 0*/)
+		if(m_currentRTFState.m_sectionProps.m_topMargTwips != 0)
 		{
 			sheader = m_currentRTFState.m_sectionProps.m_headerYTwips;
 			if(sheader < 0)
@@ -5111,7 +5145,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
-	if(true /*m_currentRTFState.m_sectionProps.m_footerYTwips != 0*/)
+	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
 	{
 		UT_sint32 sfooter = 0;
 //
@@ -5120,7 +5154,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 //
 // So the footer margin = bottom margin - footer height.
 //
-		if(true /*m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0*/)
+		if(m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0)
 		{
 			sfooter = m_currentRTFState.m_sectionProps.m_bottomMargTwips - m_currentRTFState.m_sectionProps.m_footerYTwips;
 			if(sfooter < 0)

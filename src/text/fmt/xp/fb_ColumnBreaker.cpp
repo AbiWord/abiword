@@ -68,7 +68,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
 #endif
 		bool bEquivColumnBreak = false;
-		xxx_UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
+		UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
 		if((iMaxSecCol > 0) && (iMaxSecCol < iMaxColHeight))
 		{
 			iMaxColHeight = iMaxSecCol;
@@ -157,7 +157,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				  table and if it can be broken to fit in the column.
 				*/
 
-				xxx_UT_DEBUGMSG(("SEVIOR: iWorkingColHeight %d iTotalContainerSpace %d iMaxColHeight %d pCurContainer %x height %d \n",iWorkingColHeight,iTotalContainerSpace,iMaxColHeight,   pCurContainer,  iContainerHeight));
+				UT_DEBUGMSG(("SEVIOR: iWorkingColHeight %d iTotalContainerSpace %d iMaxColHeight %d pCurContainer %x height %d \n",iWorkingColHeight,iTotalContainerSpace,iMaxColHeight,   pCurContainer,  iContainerHeight));
 				if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
 				{
 					if (_breakTable(pOffendingContainer,
@@ -174,7 +174,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					// force it.
 
 					pLastContainerToKeep = pFirstContainerToKeep;
-					xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 2 %x \n",pLastContainerToKeep));
+					UT_DEBUGMSG(("SEVIOR: Set lasttokeep 2 %x \n",pLastContainerToKeep));
 				}
 				else
 				{
@@ -199,7 +199,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					{
 
 						pLastContainerToKeep = pOffendingContainer->getPrevContainerInSection();
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 3 %x \n",pLastContainerToKeep));
+						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 3 %x \n",pLastContainerToKeep));
 						UT_ASSERT(pLastContainerToKeep);
 //
 // All this deals with widows and orphans. We don't need this for
@@ -272,7 +272,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						*/
 
 						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 4 %x \n",pLastContainerToKeep));
+						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 4 %x \n",pLastContainerToKeep));
 					}
 					else if ((iNumContainersInLayout < (iWidows + iOrphans))
 						&& (iNumContainersBeforeOffending == iNumLayoutContainersInThisColumn)
@@ -313,7 +313,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 								
 							}
 						}
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 5 %x \n",pLastContainerToKeep));
+						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 5 %x \n",pLastContainerToKeep));
 					}
 					else if (
 						(iNumContainersBeforeOffending < iOrphans)
@@ -326,7 +326,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						*/
 
 						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 6 %x \n",pLastContainerToKeep));
+						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 6 %x \n",pLastContainerToKeep));
 					}
 					else if (
 						(iNumContainersAfterOffending < iWidows)
@@ -341,19 +341,19 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						UT_uint32 iNumContainersNeeded = (iWidows - iNumContainersAfterOffending);
 
 						pLastContainerToKeep = (fp_Container *) pOffendingContainer->getPrevContainerInSection();
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 7 %x \n",pLastContainerToKeep));
+						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 7 %x \n",pLastContainerToKeep));
 						for (UT_uint32 iBump = 0; iBump < iNumContainersNeeded; iBump++)
 						{
 
 							pLastContainerToKeep = (fp_Container *) pLastContainerToKeep->getPrevContainerInSection();
-							xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
+							UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
 						}
 					}
 					else
 					{
 
 						pLastContainerToKeep = (fp_Container *) pOffendingContainer->getPrevContainerInSection();
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
+						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
 					}
 				}
 				break;
@@ -369,7 +369,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					{
 
 						pLastContainerToKeep = pCurContainer;
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 9 %x \n",pLastContainerToKeep));
+						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 9 %x \n",pLastContainerToKeep));
 						bBreakOnColumnBreak = (pL->containsForcedColumnBreak()) ;
 						bBreakOnPageBreak = pL->containsForcedPageBreak();
 						if(iWorkingColHeight >= iMaxColHeight)
@@ -535,7 +535,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 {
 	bool bDoTableBreak;
 
-	xxx_UT_DEBUGMSG(("SEVIOR: Offending container is table %x \n",pOffendingContainer));
+    UT_DEBUGMSG(("SEVIOR: Offending container is table %x \n",pOffendingContainer));
 	fp_TableContainer * pTab = (fp_TableContainer *) pOffendingContainer;
 	if(!pTab->isThisBroken())
 	{
@@ -545,8 +545,8 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 		pTab->deleteBrokenTables();
 		bDoTableBreak = true;
-		xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
-		xxx_UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
+		UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
+		UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
 	}
 	else
 	{
@@ -615,7 +615,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // Break it at 0 first.
 //
 			UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
-			xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
+			UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
 			fp_Container * pNext = (fp_Container *) pTab->getNext();
 			UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
 			if(pNext)
@@ -651,9 +651,9 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // be bumped into the next column. Pretty cool eh ? :-)
 //
 			pOffendingContainer = (fp_Container *) pBroke->VBreakAt(iBreakAt);
-			xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
+		    UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
 			pLastContainerToKeep = (fp_Container *) pTab;
-			xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",pLastContainerToKeep));
+			UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",pLastContainerToKeep));
 		}
 		return true;
 	}
@@ -665,8 +665,8 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
         // This is the first of this table set. Clear the old broken
         // tables and rebreak.
 		pTab->deleteBrokenTables();
-		xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
-		xxx_UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
+		UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
+		UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
 	}
 
     // If we don't break the table, the heights of the broken table's
@@ -724,10 +724,10 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
             // becomes the offending container and will be bumped into
             // the next column. Pretty cool eh ? :-)
 			pOffendingContainer = (fp_Container *) pBroke->VBreakAt(iBreakAt);
-			xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",
+			UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",
 							 pOffendingContainer));
 			pLastContainerToKeep = (fp_Container *) pTab;
-			xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",
+			UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",
 							 pLastContainerToKeep));
 		}
 		return true;

@@ -504,11 +504,15 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 //
 			return;
 		}
+		iTop -= pBroke->getYBreak();
+		iBot -= pBroke->getYBreak();
+		UT_DEBUGMSG(("SEVIOR: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d \n",iBot,col_y,m_iBotY,pCol->getHeight()));
 		if(iTop < col_y)
 		{
 			iTop = col_y;
 			bDrawTop = false;
 		}
+		UT_DEBUGMSG(("SEVIOR: After ibot = %d  sum %d \n",iBot,col_y + pCol->getHeight()));
 		if(iBot > col_y + pCol->getHeight())
 		{
 			iBot =  col_y + pCol->getHeight();
@@ -526,6 +530,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		{
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
+		UT_DEBUGMSG(("SEVIOR: m_bDrawbot %d  bDrawBot %d \n",m_bDrawBot, bDrawBot));
 		if(m_bDrawBot && bDrawBot)
 		{
 			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
@@ -952,7 +957,7 @@ fp_Container * fp_CellContainer::getPrevContainerInSection() const
 
 void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 {
-	xxx_UT_DEBUGMSG(("Doing size request on %x \n",pRequest));
+	UT_DEBUGMSG(("Doing size request on %x \n",pRequest));
 	UT_sint32 count = countCons();
 	UT_sint32 i =0;
 	UT_sint32 height = 0;
@@ -1042,7 +1047,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 
 	m_MyRequest.width = width;
 	m_MyRequest.height = height;
-	xxx_UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
+	UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
 }
 
 void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
