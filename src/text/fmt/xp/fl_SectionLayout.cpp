@@ -673,9 +673,6 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
   	if(m_pFooterSL)
 		m_pFooterSL->collapse();
 
-	m_pFirstColumn = NULL;
-	m_pLastColumn = NULL;
-
 	// clear all the columns
 	fp_Column* pCol = m_pFirstColumn;
 	while (pCol)
@@ -703,6 +700,10 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 
 		pCol = pCol->getNext();
 	}
+
+
+	m_pFirstColumn = NULL;
+	m_pLastColumn = NULL;
 
 	// get rid of all the layout information for every block
 	fl_BlockLayout*	pBL = m_pFirstBlock;
