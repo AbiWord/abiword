@@ -60,11 +60,11 @@ AP_Win32Dialog_Replace::~AP_Win32Dialog_Replace(void)
 {
 }
 
+#if 0
 // FindCallback()  - called when user hits enter in the Find text field
 //  				 or when the <Find Next> button is hit
 static void FindCallback(GtkWidget *widget, AP_Win32Dialog_Replace  *repDialog)
 {
-#if 0
 	gchar *entryText;
 
 	/* TODO:  know who allocates and frees this memory returned from
@@ -73,18 +73,18 @@ static void FindCallback(GtkWidget *widget, AP_Win32Dialog_Replace  *repDialog)
 	entryText = gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
 	printf("Entry contents: \"%s\"\n", ((entryText) ? entryText : "NULL"));
 
-#endif
 /*
 	AdvancePointer();
 	Highlight();
 */
 }
+#endif
 
 
+#if 0
 static void ReplaceCallback(GtkWidget *widget, 
 							AP_Win32Dialog_Replace  *repDialog)
 {
-#if 0
 	gchar *replaceText;
 
 	/* TODO:  know who allocates and frees this memory returned from
@@ -96,13 +96,13 @@ static void ReplaceCallback(GtkWidget *widget,
 
 	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
 	printf("replace contents: \"%s\"\n",((replaceText) ? replaceText : "NULL"));
-#endif
 }
+#endif
 
+#if 0
 static void ReplaceAllCallback(GtkWidget *widget, 
 							AP_Win32Dialog_Replace  *repDialog)
 {
-#if 0
 	gchar *replaceText;
 
 	/* TODO:  know who allocates and frees this memory returned from
@@ -111,24 +111,22 @@ static void ReplaceAllCallback(GtkWidget *widget,
 	printf("ReplaceCallback... called\n");
 	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
 	printf("replace contents: \"%s\"\n", replaceText);
-#endif
 }
+#endif
 
+#if 0
 static void MatchCaseCallback(GtkWidget *checkbutton, GtkWidget *entry)
 {
-#if 0
 	gtk_entry_set_visibility(GTK_ENTRY(entry),
 						GTK_TOGGLE_BUTTON(checkbutton)->active);
 	printf("MatchCaseCallback(): I've been called\n");
-#endif
 }
 
 static void CancelCallback(GtkWidget *button, GtkWidget *entry)
 {
-#if 0
 	printf("Cancel button called \n");
-#endif
 }
+#endif
 
 
 
