@@ -45,7 +45,7 @@ public:
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
-	static IEStatus		constructExporter(PD_Document * pDocument,
+	static UT_Error		constructExporter(PD_Document * pDocument,
 										  const char * szFilename,
 										  IEFileType ieft,
 										  IE_Exp ** ppie);
@@ -59,13 +59,13 @@ public:
 	IE_Exp(PD_Document * pDocument);
 	virtual ~IE_Exp();
 
-	virtual IEStatus	writeFile(const char * szFilename);
-	virtual IEStatus	copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf);
+	virtual UT_Error	writeFile(const char * szFilename);
+	virtual UT_Error	copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf);
 	virtual void		write(const char * sz);
 	virtual void		write(const char * sz, UT_uint32 length);
 
 protected:
-	virtual IEStatus	_writeDocument(void) = 0;
+	virtual UT_Error	_writeDocument(void) = 0;
 	
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will

@@ -372,7 +372,7 @@ void AP_BeOSApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	if (pExpRtf)
 	{
 		UT_ByteBuf buf;
-		IEStatus status = pExpRtf->copyToBuffer(pDocRange,&buf);
+		UT_Error status = pExpRtf->copyToBuffer(pDocRange,&buf);
 		UT_Byte b = 0;
 		buf.append(&b,1);			// null terminate string
 		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
@@ -386,7 +386,7 @@ void AP_BeOSApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	if (pExpText)
 	{
 		UT_ByteBuf buf;
-		IEStatus status = pExpText->copyToBuffer(pDocRange,&buf);
+		UT_Error status = pExpText->copyToBuffer(pDocRange,&buf);
 		UT_Byte b = 0;
 		buf.append(&b,1);			// null terminate string
 		m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());

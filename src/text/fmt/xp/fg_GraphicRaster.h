@@ -41,7 +41,7 @@ public:
 
 	virtual GR_Image*	generateImage(GR_Graphics* pG);
 
-	virtual UT_ErrorCode   	insertIntoDocument(PD_Document* pDoc, double fDPI,
+	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
 										   UT_uint32 iPos, const char* szName);
 
 	UT_Bool				setRaster_PNG(UT_ByteBuf* pBB);

@@ -627,10 +627,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 EV_EditMethodContainer * AP_GetEditMethods(void)
 {
-	// Construct a container for all of the methods this application
-	// knows about.
+       // Construct a container for all of the methods this application
+       // knows about.
 
-	return new EV_EditMethodContainer(NrElements(s_arrayEditMethods),s_arrayEditMethods);
+       return new EV_EditMethodContainer(NrElements(s_arrayEditMethods),s_arrayEditMethods);
 }
 
 #undef _D_
@@ -731,7 +731,7 @@ Defun1(fileNew)
 		pFrame = pNewFrame;
 
 	// the IEFileType here doesn't really matter, since the name is NULL
-	UT_Bool bRet = pFrame->loadDocument(NULL, IEFT_Unknown);
+	UT_Error bRet = pFrame->loadDocument(NULL, IEFT_Unknown);
 
 	if (pNewFrame)
 		pNewFrame->show();
@@ -749,7 +749,7 @@ Defun1(fileNew)
 // TODO we want to abstract things further and make us think about
 // TODO localization of the question strings....
 
-static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_ErrorCode errorCode)
+static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
 	pFrame->raise();
 
@@ -1126,7 +1126,7 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 /*****************************************************************/
 /*****************************************************************/
 
-static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_ErrorCode errorCode)
+static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode)
 {
 	pFrame->raise();
 
@@ -1150,7 +1150,7 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	    break;
 
 	  case -303:
-	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnkownType),pNewFile);
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),pNewFile);
 	    break;
 
 	  case -304:
@@ -1163,6 +1163,10 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 
 	  case -306:
 	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),pNewFile);
+	    break;
+
+	  case -307:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),pNewFile);
 	    break;
 
 	  default:
@@ -1180,7 +1184,7 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	return (ans);
 }
 
-static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
+static UT_Error _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 {
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
@@ -1189,8 +1193,8 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 	UT_ASSERT(pPrefs);
 
 	XAP_Frame * pNewFrame = NULL;
-	UT_Bool bRes = UT_FALSE;
-	UT_ErrorCode errorCode = UT_IE_ImportError;
+	// not needed UT_Bool bRes = UT_FALSE;
+	UT_Error errorCode = UT_IE_IMPORTERROR;
 
 	// see if requested file is already open in another frame
 	UT_sint32 ndx = pApp->findFrame(pNewFile);
@@ -1204,8 +1208,8 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 		{
 			// re-load the document in pNewFrame
 
-			bRes = pNewFrame->loadDocument(pNewFile, ieft);
-			if (bRes)
+			errorCode = pNewFrame->loadDocument(pNewFile, ieft);
+			if (!errorCode)
 			{
 				pNewFrame->show();
 				pPrefs->addRecent(pNewFile);
@@ -1218,10 +1222,10 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 		else
 		{
 			// cancel the FileOpen.
-			bRes = UT_TRUE;		// don't remove from recent list
+			errorCode = UT_OK;		// don't remove from recent list
 		}
 		
-		return bRes;
+		return errorCode;
 	}
 
 	// We generally open documents in a new frame, which keeps the
@@ -1244,8 +1248,8 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 			return UT_FALSE;
 		}
 		
-		bRes = pNewFrame->loadDocument(pNewFile, ieft);
-		if (bRes)
+		errorCode = pNewFrame->loadDocument(pNewFile, ieft);
+		if (!errorCode)
 		{
 			pNewFrame->show();
 			pPrefs->addRecent(pNewFile);
@@ -1274,13 +1278,13 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 			// TODO to take an 'UT_Bool bShowWindow' argument....
 
 			// the IEFileType here doesn't really matter since the file name is NULL
-			bRes = pNewFrame->loadDocument(NULL, IEFT_Unknown);
-			if (bRes)
+			errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
+			if (!errorCode)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
 		
-		return bRes;
+		return errorCode;
 	}
 
 	// we are replacing the single-view, unmodified, untitled document.
@@ -1288,8 +1292,8 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 	// and return -- we do not replace this untitled document with a
 	// new untitled document.
 
-	bRes = pFrame->loadDocument(pNewFile, ieft);
-	if (bRes)
+	errorCode = pFrame->loadDocument(pNewFile, ieft);
+	if (!errorCode)
 	{
 		pFrame->show();
 		pPrefs->addRecent(pNewFile);
@@ -1299,7 +1303,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
 
-	return bRes;
+	return errorCode;
 }
 
 Defun1(fileOpen)
@@ -1312,8 +1316,8 @@ Defun1(fileOpen)
 	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
-		return UT_FALSE;
-
+	  return UT_FALSE;
+	
 	// we own storage for pNewFile and must free it.
 
 	UT_Bool bRes = _fileOpen(pFrame, pNewFile, ieft);
@@ -1331,8 +1335,14 @@ Defun(fileSave)
 	if (!pFrame->getFilename())
 		return EX(fileSaveAs);
 
-	UT_ErrorCode bSaved;
+	       
+	UT_Error bSaved;
 	bSaved = pAV_View->cmdSave();
+
+	// if it has a problematic extension save as instead
+	if (bSaved == UT_EXTENSIONERROR)
+	  return EX(fileSaveAs);
+
 	if (bSaved)
 	{
 		// throw up a dialog
@@ -1365,7 +1375,7 @@ Defun1(fileSaveAs)
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 	
-	UT_ErrorCode bSaved;
+	UT_Error bSaved;
 	bSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft);
 	if (bSaved)
 	{
@@ -1757,13 +1767,28 @@ Defun(querySaveAndExit)
 */
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
-UT_ErrorCode toErrorCode(IEStatus IES)
+// I dislike the fact that this function is here, but have yet to find a better location
+
+
+UT_sint32 isPNG(const char * szFileName)
 {
-  if (!IES)
-    return UT_OK;
-  else
-    return ((300 + IES - 1) * -1);
+  FILE * fp = fopen(szFileName, "r");
+  char str[10] = "";
+  char str2[10] = "\211PNG";
+  fgets(str, 4, fp);
+  fclose(fp);
+  return (strncmp(str, str2, 4));
 }
+
+// This function is no longer needed
+// 
+// UT_Error toErrorCode(IEStatus IES)
+// {
+//   if (!IES)
+//     return UT_OK;
+//   else
+//     return ((300 + IES - 1) * -1);
+// }
 
 Defun1(fileInsertGraphic)
 {
@@ -1782,20 +1807,32 @@ Defun1(fileInsertGraphic)
 	// we own storage for pNewFile and must free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
-	IE_ImpGraphic *pIEG;
+       	IE_ImpGraphic *pIEG;
 	FG_Graphic* pFG;
 
-	UT_ErrorCode errorCode;
+	UT_Error errorCode;
 
-	errorCode = toErrorCode(IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG));
+	// here we see that it is really a png file - this will have to be modified 
+	// as we add support for new graphics types
+
+	UT_sint32 tmpVar = isPNG(pNewFile);
+	if(!(tmpVar == 0))
+	  {
+	    errorCode = UT_IE_FAKETYPE;
+	    s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+	    FREEP(pNewFile);
+	    return UT_FALSE;
+	  }
+
+	errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
 	if(errorCode) 
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
 		return UT_FALSE;
 	  }
-
-	errorCode = toErrorCode(pIEG->importGraphic(pNewFile, &pFG));
+	
+	errorCode = pIEG->importGraphic(pNewFile, &pFG);
 	if(errorCode) 
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);

@@ -95,12 +95,12 @@ UT_Bool IE_Exp_Text::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".txt") == 0);
 }
 
-IEStatus IE_Exp_Text::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Exp_Text::StaticConstructor(PD_Document * pDocument,
 										IE_Exp ** ppie)
 {
 	IE_Exp_Text * p = new IE_Exp_Text(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
 UT_Bool	IE_Exp_Text::GetDlgLabels(const char ** pszDesc,
@@ -122,11 +122,11 @@ UT_Bool IE_Exp_Text::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Exp_Text::_writeDocument(void)
+UT_Error IE_Exp_Text::_writeDocument(void)
 {
 	m_pListener = new s_Text_Listener(m_pDocument,this, (m_pDocRange!=NULL));
 	if (!m_pListener)
-		return IES_NoMemory;
+		return UT_IE_NOMEMORY;
 
 	if (m_pDocRange)
 		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),m_pDocRange);
@@ -134,7 +134,7 @@ IEStatus IE_Exp_Text::_writeDocument(void)
 		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener));
 	DELETEP(m_pListener);
 	
-	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
+	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
 /*****************************************************************/

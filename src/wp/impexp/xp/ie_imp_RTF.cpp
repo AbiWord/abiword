@@ -202,7 +202,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 }
 
 
-IEStatus IE_Imp_RTF::importFile(const char * szFilename)
+UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 {
 	m_newParaFlagged = UT_TRUE;
 	m_newSectionFlagged = UT_TRUE;
@@ -211,28 +211,28 @@ IEStatus IE_Imp_RTF::importFile(const char * szFilename)
 	if (!fp)
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		return IES_FileNotFound;
+		return UT_IE_FILENOTFOUND;
 	}
 	
-	IEStatus iestatus = _writeHeader(fp);
-	if (iestatus == IES_OK)
+	UT_Error error = _writeHeader(fp);
+	if (error)
 	{
-		iestatus = _parseFile(fp);
+		error = _parseFile(fp);
 	}
 
 	fclose(fp);
 	
-	return iestatus;
+	return error;
 }
 
 
-IEStatus IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
+UT_Error IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
 {
-		return IES_OK;
+		return UT_OK;
 }
 
 
-IEStatus IE_Imp_RTF::_parseFile(FILE* fp)
+UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 {
 	m_pImportFile = fp;
 
@@ -313,7 +313,7 @@ IEStatus IE_Imp_RTF::_parseFile(FILE* fp)
 	{
 		ok = FlushStoredChars();
 	}
-	return ok ? IES_OK : IES_Error;
+	return ok ? UT_OK : UT_ERROR;
 }
 
 /*****************************************************************/
@@ -324,12 +324,12 @@ UT_Bool IE_Imp_RTF::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".rtf") == 0);
 }
 
-IEStatus IE_Imp_RTF::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Imp_RTF::StaticConstructor(PD_Document * pDocument,
 										IE_Imp ** ppie)
 {
 	IE_Imp_RTF * p = new IE_Imp_RTF(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
 UT_Bool	IE_Imp_RTF::GetDlgLabels(const char ** pszDesc,

@@ -1,3 +1,4 @@
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -33,7 +34,7 @@
 #include "ie_exp_Text.h"
 #include "ie_exp_HTML.h"
 #include "ie_exp_UTF8.h"
-#include "ie_exp_LATEX.h"
+#include "ie_exp_LaTeX.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -42,7 +43,7 @@ struct _xp
 {
 	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
 
-	IEStatus		(*fpStaticConstructor)(PD_Document * pDocument,
+	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Exp ** ppie);
 	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList,
@@ -60,7 +61,7 @@ static struct _xp s_expTable[] =
 	DeclareExporter(IE_Exp_Text),
 	DeclareExporter(IE_Exp_UTF8),
 	DeclareExporter(IE_Exp_HTML),
-	DeclareExporter(IE_Exp_LATEX),
+	DeclareExporter(IE_Exp_LaTeX),
 };
 
 /*****************************************************************/
@@ -132,16 +133,16 @@ void IE_Exp::_abortFile(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-IEStatus IE_Exp::writeFile(const char * szFilename)
+UT_Error IE_Exp::writeFile(const char * szFilename)
 {
 	UT_ASSERT(m_pDocument);
 	UT_ASSERT(szFilename && *szFilename);
 
 	if (!_openFile(szFilename))
-		return IES_CouldNotOpenForWriting;
+		return UT_IE_COULDNOTWRITE;
 
-	IEStatus status = _writeDocument();
-	if (status == IES_OK)
+	UT_Error error = _writeDocument();
+	if (!error)
 		_closeFile();
 	else
 		_abortFile();
@@ -149,10 +150,10 @@ IEStatus IE_Exp::writeFile(const char * szFilename)
 	// Note: we let our caller worry about resetting the dirty bit
 	// Note: on the document and possibly updating the filename.
 	
-	return status;
+	return error;
 }
 
-IEStatus IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
+UT_Error IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
 {
 	// copy selected range of the document into the provided
 	// byte buffer.  (this will be given to the clipboard later)
@@ -230,7 +231,7 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 	
 }
 
-IEStatus IE_Exp::constructExporter(PD_Document * pDocument,
+UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 								   const char * szFilename,
 								   IEFileType ieft,
 								   IE_Exp ** ppie)
@@ -266,7 +267,7 @@ IEStatus IE_Exp::constructExporter(PD_Document * pDocument,
 	// assume it is our format and try to write it.
 	// if that fails, just give up.
 	*ppie = new IE_Exp_AbiWord_1(pDocument);
-	return ((*ppie) ? IES_OK : IES_NoMemory);
+	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
 
 UT_Bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,

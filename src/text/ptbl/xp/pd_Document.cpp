@@ -27,6 +27,7 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
+#include "ut_misc.h"
 #include "pd_Document.h"
 #include "xad_Document.h"
 #include "pt_PieceTable.h"
@@ -35,6 +36,7 @@
 #include "ie_exp.h"
 #include "pf_Frag_Strux.h"
 #include "pd_Style.h"
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -75,46 +77,46 @@ PD_Document::~PD_Document()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool PD_Document::readFromFile(const char * szFilename, int ieft)
+UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 {
 	if (!szFilename || !*szFilename)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- invalid filename\n"));
-		return UT_FALSE;
+		return UT_INVALIDFILENAME;
 	}
 
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct piece table\n"));
-		return UT_FALSE;
+		return UT_NOPIECETABLE;
 	}
 
 	IE_Imp * pie = NULL;
-	IEStatus ies;
+	UT_Error errorCode;
 
-	ies = IE_Imp::constructImporter(this,szFilename,(IEFileType) ieft,&pie);
-	if (ies != IES_OK)
+	errorCode = IE_Imp::constructImporter(this,szFilename,(IEFileType) ieft,&pie);
+	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
-		return UT_FALSE;
+		return errorCode;
 	}
 
 	m_pPieceTable->setPieceTableState(PTS_Loading);
-	ies = pie->importFile(szFilename);
+	errorCode = pie->importFile(szFilename);
 	delete pie;
 
-	if (ies != IES_OK)
+	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not import file\n"));
-		return UT_FALSE;
+		return errorCode;
 	}
 	
 	UT_ASSERT(!m_szFilename);
 	if (!UT_cloneString((char *&)m_szFilename, szFilename))
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
-		return UT_FALSE;
+		return UT_IE_NOMEMORY;
 	}
 
 	// save out file type so future saves know the type imported as
@@ -122,16 +124,16 @@ UT_Bool PD_Document::readFromFile(const char * szFilename, int ieft)
 	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
-	return UT_TRUE;
+	return UT_OK;
 }
 
-UT_Bool PD_Document::newDocument(void)
+UT_Error PD_Document::newDocument(void)
 {
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
 	{
 		UT_DEBUGMSG(("PD_Document::newDocument -- could not construct piece table\n"));
-		return UT_FALSE;
+		return UT_NOPIECETABLE;
 	}
 
 	m_pPieceTable->setPieceTableState(PTS_Loading);
@@ -143,31 +145,31 @@ UT_Bool PD_Document::newDocument(void)
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
-	return UT_TRUE;
+	return UT_OK;
 }
 
-UT_ErrorCode PD_Document::saveAs(const char * szFilename, int ieft)
+UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
 {
 	if (!szFilename)
-		return UT_SaveNameError;
+		return UT_SAVE_NAMEERROR;
 	
 	IE_Exp * pie = NULL;
-	IEStatus ies;
+	UT_Error errorCode;
 
-	ies = IE_Exp::constructExporter(this,szFilename,(IEFileType) ieft,&pie);
-	if (ies != IES_OK)
+	errorCode = IE_Exp::constructExporter(this,szFilename,(IEFileType) ieft,&pie);
+	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
-		return UT_SaveExportError;
+		return UT_SAVE_EXPORTERROR;
 	}
 
-	ies = pie->writeFile(szFilename);
+	errorCode = pie->writeFile(szFilename);
 	delete pie;
 
-	if (ies != IES_OK)
+	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
-		return UT_SaveWriteError;
+		return UT_SAVE_WRITEERROR;
 	}
 
 	// no file name currently set - make this filename the filename
@@ -180,7 +182,7 @@ UT_ErrorCode PD_Document::saveAs(const char * szFilename, int ieft)
 	
 	char * szFilenameCopy = NULL;
     if (!UT_cloneString(szFilenameCopy,szFilename))
-		return UT_SaveOtherError;
+		return UT_SAVE_OTHERERROR;
 	m_szFilename = szFilenameCopy;
 
 	// save the type we just saved as
@@ -190,28 +192,36 @@ UT_ErrorCode PD_Document::saveAs(const char * szFilename, int ieft)
 	return UT_OK;
 }
 
-UT_ErrorCode PD_Document::save(void)
+UT_Error PD_Document::save(void)
 {
 	if (!m_szFilename || !*m_szFilename)
-		return UT_SaveNameError;
+		return UT_SAVE_NAMEERROR;
 
 	IE_Exp * pie = NULL;
-	IEStatus ies;
+	UT_Error errorCode;
 
-	ies = IE_Exp::constructExporter(this,m_szFilename,m_lastSavedAsType,&pie);
-	if (ies != IES_OK)
+	// make sure we don't cause extension problems
+
+	if(strcmp(UT_pathSuffix(m_szFilename), ".doc") == 0)
 	{
-		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
-		return UT_SaveExportError;
+	  UT_DEBUGMSG(("PD_Document::Save -- word extensions cause problems\n"));
+	  return UT_EXTENSIONERROR;
 	}
 
-	ies = pie->writeFile(m_szFilename);
+	errorCode = IE_Exp::constructExporter(this,m_szFilename,m_lastSavedAsType,&pie);
+	if (errorCode)
+	{
+		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	errorCode = pie->writeFile(m_szFilename);
 	delete pie;
 
-	if (ies != IES_OK)
+	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
-		return UT_SaveWriteError;
+		return UT_SAVE_WRITEERROR;
 	}
 
 	_setClean();

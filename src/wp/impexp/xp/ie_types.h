@@ -20,7 +20,9 @@
 #ifndef IE_TYPES_H
 #define IE_TYPES_H
 
-typedef enum _IEStatus { IES_OK,
+
+// These have been replaced with error codes.
+/* typedef enum _IEStatus { IES_OK,
 						 IES_Error,
 						 IES_FileNotFound,
 						 IES_NoMemory,
@@ -28,6 +30,7 @@ typedef enum _IEStatus { IES_OK,
 						 IES_BogusDocument,
 						 IES_CouldNotOpenForWriting,
 						 IES_CouldNotWriteToFile } IEStatus;
+*/
 
 /*
   NOTE:  File filters can support one or MORE of the following
@@ -44,7 +47,7 @@ typedef enum _IEFileType { IEFT_Unknown,
 						   IEFT_RTF,
 						   IEFT_Text,
 						   IEFT_UTF8,
-						   IEFT_LATEX,
+						   IEFT_LaTeX,
 						   IEFT_LAST_BOGUS } IEFileType;
 
 typedef enum _IEGraphicFileType { IEGFT_Unknown,

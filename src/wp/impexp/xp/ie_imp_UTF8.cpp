@@ -97,27 +97,27 @@ static void _smashUTF8(UT_GrowBuf * pgb)
 /*****************************************************************/
 /*****************************************************************/
 
-#define X_CleanupIfError(ies,exp)	do { if (((ies)=(exp)) != IES_OK) goto Cleanup; } while (0)
+#define X_CleanupIfError(error,exp)	do { if (((error)=(exp)) != UT_OK) goto Cleanup; } while (0)
 
-IEStatus IE_Imp_UTF8::importFile(const char * szFilename)
+UT_Error IE_Imp_UTF8::importFile(const char * szFilename)
 {
 	FILE *fp = fopen(szFilename, "r");
 	if (!fp)
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		return IES_FileNotFound;
+		return UT_IE_FILENOTFOUND;
 	}
 	
-	IEStatus iestatus;
+	UT_Error error;
 
-	X_CleanupIfError(iestatus,_writeHeader(fp));
-	X_CleanupIfError(iestatus,_parseFile(fp));
+	X_CleanupIfError(error,_writeHeader(fp));
+	X_CleanupIfError(error,_parseFile(fp));
 
-	iestatus = IES_OK;
+	error = UT_OK;
 
 Cleanup:
 	fclose(fp);
-	return iestatus;
+	return error;
 }
 
 #undef X_CleanupIfError
@@ -137,17 +137,17 @@ IE_Imp_UTF8::IE_Imp_UTF8(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-#define X_ReturnIfFail(exp,ies)		do { UT_Bool b = (exp); if (!b) return (ies); } while (0)
-#define X_ReturnNoMemIfError(exp)	X_ReturnIfFail(exp,IES_NoMemory)
+#define X_ReturnIfFail(exp,error)		do { UT_Bool b = (exp); if (!b) return (error); } while (0)
+#define X_ReturnNoMemIfError(exp)	X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
-IEStatus IE_Imp_UTF8::_writeHeader(FILE * /* fp */)
+UT_Error IE_Imp_UTF8::_writeHeader(FILE * /* fp */)
 {
 	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
 
-	return IES_OK;
+	return UT_OK;
 }
 
-IEStatus IE_Imp_UTF8::_parseFile(FILE * fp)
+UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 {
 	UT_GrowBuf gbBlock(1024);
 	UT_Bool bEatLF = UT_FALSE;
@@ -213,7 +213,7 @@ IEStatus IE_Imp_UTF8::_parseFile(FILE * fp)
 		X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 	}
 
-	return IES_OK;
+	return UT_OK;
 }
 
 #undef X_ReturnNoMemIfError
@@ -307,12 +307,12 @@ UT_Bool IE_Imp_UTF8::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".utf8") == 0);
 }
 
-IEStatus IE_Imp_UTF8::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Imp_UTF8::StaticConstructor(PD_Document * pDocument,
 										IE_Imp ** ppie)
 {
 	IE_Imp_UTF8 * p = new IE_Imp_UTF8(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
 UT_Bool	IE_Imp_UTF8::GetDlgLabels(const char ** pszDesc,

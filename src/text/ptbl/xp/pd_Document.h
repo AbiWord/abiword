@@ -59,16 +59,16 @@ class PD_Document : public AD_Document
 public:
 	PD_Document();
 
-	virtual UT_Bool			readFromFile(const char * szFilename, int ieft);
-	virtual UT_Bool			newDocument(void);
+	virtual UT_Error	       	readFromFile(const char * szFilename, int ieft);
+	virtual UT_Error	       	newDocument(void);
 	virtual UT_Bool			isDirty(void) const;
 
 	virtual UT_Bool			canDo(UT_Bool bUndo) const;
 	virtual UT_Bool			undoCmd(UT_uint32 repeatCount);
 	virtual UT_Bool			redoCmd(UT_uint32 repeatCount);
 
-	UT_ErrorCode   				saveAs(const char * szFilename, int ieft);
-	UT_ErrorCode	       			save(void);
+	UT_Error   				saveAs(const char * szFilename, int ieft);
+	UT_Error	       			save(void);
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);

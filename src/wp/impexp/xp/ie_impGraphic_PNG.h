@@ -31,9 +31,9 @@ public:
 									 const char ** pszSuffixList,
 									 IEGraphicFileType * ft);
 	static UT_Bool 		SupportsFileType(IEGraphicFileType ft);
-    static IEStatus		StaticConstructor(IE_ImpGraphic **ppieg);
+	static UT_Error		StaticConstructor(IE_ImpGraphic **ppieg);
 
-    virtual IEStatus	importGraphic(UT_ByteBuf* pBB, 
+        virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
 									  FG_Graphic ** ppfg);
 };
 

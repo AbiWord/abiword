@@ -33,12 +33,12 @@ public:
 	IE_Imp_Text(PD_Document * pDocument);
 	~IE_Imp_Text();
 
-	virtual IEStatus	importFile(const char * szFilename);
+	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData);
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static IEStatus		StaticConstructor(PD_Document * pDocument,
+	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
@@ -46,8 +46,8 @@ public:
 	static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	IEStatus			_parseFile(FILE * fp);
-	IEStatus			_writeHeader(FILE * fp);
+	UT_Error			_parseFile(FILE * fp);
+	UT_Error			_writeHeader(FILE * fp);
 };
 
 #endif /* IE_IMP_TEXT_H */

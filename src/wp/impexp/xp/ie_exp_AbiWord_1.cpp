@@ -19,6 +19,7 @@
 
 
 #include "ut_string.h"
+#include "ut_types.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "pt_Types.h"
@@ -54,12 +55,12 @@ UT_Bool IE_Exp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".abw") == 0);
 }
 
-IEStatus IE_Exp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Exp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
 											 IE_Exp ** ppie)
 {
 	IE_Exp_AbiWord_1 * p = new IE_Exp_AbiWord_1(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
 UT_Bool	IE_Exp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
@@ -348,6 +349,21 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInSpan = UT_FALSE;
 	m_apiLastSpan = 0;
 
+	// We write this first so that the sniffer can detect AbiWord 
+	// documents more easily.   
+
+	m_pie->write("<abiword");
+	m_pie->write(" version=\"");
+	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+	{
+		m_pie->write(XAP_App::s_szBuild_Version);
+	}
+	m_pie->write("\"");
+	m_pie->write(">\n");
+
+	// TODO add a file-format name/value pair to this tag.
+
+
 	// NOTE we output the following preamble in XML comments.
 	// NOTE this information is for human viewing only.
 	// TODO should this preamble have a DTD reference in it ??
@@ -425,16 +441,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// end of preamble.
 	// now we begin the actual document.
 	
-	// TODO add a file-format name/value pair to this tag.
 	
-	m_pie->write("<abiword");
-	m_pie->write(" version=\"");
-	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
-	{
-		m_pie->write(XAP_App::s_szBuild_Version);
-	}
-	m_pie->write("\"");
-	m_pie->write(">\n");
 	_handleStyles();
 }
 
@@ -560,18 +567,18 @@ UT_Bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Exp_AbiWord_1::_writeDocument(void)
+UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 {
 	m_pListener = new s_AbiWord_1_Listener(m_pDocument,this);
 	if (!m_pListener)
-		return IES_NoMemory;
+		return UT_IE_NOMEMORY;
 	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
-		return IES_Error;
+		return UT_ERROR;
 	delete m_pListener;
 
 	m_pListener = NULL;
 	
-	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
+	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
 /*****************************************************************/

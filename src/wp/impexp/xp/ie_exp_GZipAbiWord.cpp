@@ -43,11 +43,11 @@ UT_Bool IE_Exp_GZipAbiWord::RecognizeSuffix(const char * szSuffix)
     return (UT_stricmp(szSuffix,".zabw") == 0);
 }
 
-IEStatus IE_Exp_GZipAbiWord::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Exp_GZipAbiWord::StaticConstructor(PD_Document * pDocument,
 	IE_Exp ** ppie)
 {
     *ppie = new IE_Exp_GZipAbiWord(pDocument);
-    return IES_OK;
+    return UT_OK;
 }
 
 UT_Bool	IE_Exp_GZipAbiWord::GetDlgLabels(const char ** pszDesc,

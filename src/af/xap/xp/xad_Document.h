@@ -35,8 +35,8 @@ public:
 
 	const char *			getFilename(void) const;
 
-	virtual UT_Bool			readFromFile(const char * szFilename, int ieft) = 0;
-	virtual UT_Bool			newDocument(void) = 0;
+	virtual UT_Error   		readFromFile(const char * szFilename, int ieft) = 0;
+	virtual UT_Error			newDocument(void) = 0;
 	virtual UT_Bool			isDirty(void) const = 0;
 
 	virtual UT_Bool			canDo(UT_Bool bUndo) const = 0;

@@ -39,7 +39,7 @@
 struct _imp
 {
 	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
-	IEStatus		(*fpStaticConstructor)(PD_Document * pDocument,
+	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Imp ** ppie);
 	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList,
@@ -107,7 +107,7 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 	
 }
 
-IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
+UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 								   const char * szFilename,
 								   IEFileType ieft,
 								   IE_Imp ** ppie)
@@ -143,7 +143,7 @@ IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 	// assume it is our format and try to read it.
 	// if that fails, just give up.
 	*ppie = new IE_Imp_AbiWord_1(pDocument);
-	return ((*ppie) ? IES_OK : IES_NoMemory);
+	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
 
 UT_Bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,

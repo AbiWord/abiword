@@ -26,7 +26,7 @@
 #include "ut_base64.h"
 #include "ut_units.h"
 #include "pt_Types.h"
-#include "ie_exp_LATEX.h"
+#include "ie_exp_LaTeX.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "px_ChangeRecord.h"
@@ -38,46 +38,46 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_LATEX::IE_Exp_LATEX(PD_Document * pDocument)
+IE_Exp_LaTeX::IE_Exp_LaTeX(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
 	m_error = 0;
 	m_pListener = NULL;
 }
 
-IE_Exp_LATEX::~IE_Exp_LATEX()
+IE_Exp_LaTeX::~IE_Exp_LaTeX()
 {
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_LATEX::RecognizeSuffix(const char * szSuffix)
+UT_Bool IE_Exp_LaTeX::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".latex") == 0);
 }
 
-IEStatus IE_Exp_LATEX::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Exp_LaTeX::StaticConstructor(PD_Document * pDocument,
 										IE_Exp ** ppie)
 {
-	IE_Exp_LATEX * p = new IE_Exp_LATEX(pDocument);
+	IE_Exp_LaTeX * p = new IE_Exp_LaTeX(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
-UT_Bool	IE_Exp_LATEX::GetDlgLabels(const char ** pszDesc,
+UT_Bool	IE_Exp_LaTeX::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "LaTeX (.latex)";
 	*pszSuffixList = "*.latex";
-	*ft = IEFT_LATEX;
+	*ft = IEFT_LaTeX;
 	return UT_TRUE;
 }
 
-UT_Bool IE_Exp_LATEX::SupportsFileType(IEFileType ft)
+UT_Bool IE_Exp_LaTeX::SupportsFileType(IEFileType ft)
 {
-	return (IEFT_LATEX == ft);
+	return (IEFT_LaTeX == ft);
 }
 
 /*****************************************************************/
@@ -90,12 +90,12 @@ UT_Bool IE_Exp_LATEX::SupportsFileType(IEFileType ft)
 #define BT_BLOCKTEXT	5
 #define BT_PLAINTEXT	6
 
-class s_LATEX_Listener : public PL_Listener
+class s_LaTeX_Listener : public PL_Listener
 {
 public:
-	s_LATEX_Listener(PD_Document * pDocument,
-						IE_Exp_LATEX * pie);
-	virtual ~s_LATEX_Listener();
+	s_LaTeX_Listener(PD_Document * pDocument,
+						IE_Exp_LaTeX * pie);
+	virtual ~s_LaTeX_Listener();
 
 	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
@@ -130,7 +130,7 @@ protected:
 	void				_convertColor(char* szDest, const char* pszColor);
 	
 	PD_Document *		m_pDocument;
-	IE_Exp_LATEX *		m_pie;
+	IE_Exp_LaTeX *		m_pie;
 	UT_Bool				m_bInSection;
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
@@ -142,7 +142,7 @@ protected:
 
 };
 
-void s_LATEX_Listener::_closeSection(void)
+void s_LaTeX_Listener::_closeSection(void)
 {
 	if (!m_bInSection)
 	{
@@ -154,7 +154,7 @@ void s_LATEX_Listener::_closeSection(void)
 	return;
 }
 
-void s_LATEX_Listener::_closeBlock(void)
+void s_LaTeX_Listener::_closeBlock(void)
 {
 	if (!m_bInBlock)
 	{
@@ -188,7 +188,7 @@ void s_LATEX_Listener::_closeBlock(void)
 	return;
 }
 
-void s_LATEX_Listener::_openParagraph(PT_AttrPropIndex api)
+void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 {
 	if (!m_bInSection)
 	{
@@ -286,16 +286,16 @@ void s_LATEX_Listener::_openParagraph(PT_AttrPropIndex api)
 	m_bInBlock = UT_TRUE;
 }
 
-void s_LATEX_Listener::_openSection(PT_AttrPropIndex /* api*/)
+void s_LaTeX_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
 	m_pie->write("%% New AbiWord Section\n");
 }
 
-void s_LATEX_Listener::_convertColor(char* szDest, const char* pszColor)
+void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
 {
 	/*
 	  TODO we might want to be a little more careful about this.
-	  The proper LATEX color is #rrggbb, which is basically the same
+	  The proper LaTeX color is #rrggbb, which is basically the same
 	  as what we use this.  HTML browsers are likely to be more
 	  forgiving than we are, so this is probably not a big
 	  problem.
@@ -303,7 +303,7 @@ void s_LATEX_Listener::_convertColor(char* szDest, const char* pszColor)
 	strcpy(szDest, pszColor);
 }
 
-void s_LATEX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
+void s_LaTeX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 {
 	double fSizeInPoints = UT_convertToPoints(pszFontSize);
 
@@ -354,7 +354,7 @@ void s_LATEX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
   or something.  :-)	--EWS
 */
 
-void s_LATEX_Listener::_openSpan(PT_AttrPropIndex api)
+void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 {
 	if (!m_bInBlock)
 	{
@@ -500,7 +500,7 @@ void s_LATEX_Listener::_openSpan(PT_AttrPropIndex api)
 	}
 }
 
-void s_LATEX_Listener::_closeSpan(void)
+void s_LaTeX_Listener::_closeSpan(void)
 {
 	if (!m_bInSpan)
 		return;
@@ -611,7 +611,7 @@ void s_LATEX_Listener::_closeSpan(void)
 	return;
 }
 
-void s_LATEX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
+void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
 	if (!m_bInBlock)
 	{
@@ -712,8 +712,8 @@ void s_LATEX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		m_pie->write(buf,(pBuf-buf));
 }
 
-s_LATEX_Listener::s_LATEX_Listener(PD_Document * pDocument,
-										 IE_Exp_LATEX * pie)
+s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
+										 IE_Exp_LaTeX * pie)
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
@@ -774,7 +774,7 @@ s_LATEX_Listener::s_LATEX_Listener(PD_Document * pDocument,
 	m_pie->write("\n");
 }
 
-s_LATEX_Listener::~s_LATEX_Listener()
+s_LaTeX_Listener::~s_LaTeX_Listener()
 {
 	_closeSpan();
 	_closeBlock();
@@ -784,7 +784,7 @@ s_LATEX_Listener::~s_LATEX_Listener()
 	m_pie->write("\\end{document}\n");
 }
 
-UT_Bool s_LATEX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+UT_Bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								   const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -840,7 +840,7 @@ UT_Bool s_LATEX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	}
 }
 
-UT_Bool s_LATEX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+UT_Bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -897,14 +897,14 @@ UT_Bool s_LATEX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	}
 }
 
-UT_Bool s_LATEX_Listener::change(PL_StruxFmtHandle /*sfh*/,
+UT_Bool s_LaTeX_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
 }
 
-UT_Bool s_LATEX_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+UT_Bool s_LaTeX_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 PL_StruxDocHandle /*sdh*/,
 									 PL_ListenerId /* lid */,
@@ -916,7 +916,7 @@ UT_Bool s_LATEX_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 	return UT_FALSE;
 }
 
-UT_Bool s_LATEX_Listener::signal(UT_uint32 /* iSignal */)
+UT_Bool s_LaTeX_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;
@@ -926,24 +926,24 @@ UT_Bool s_LATEX_Listener::signal(UT_uint32 /* iSignal */)
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Exp_LATEX::_writeDocument(void)
+UT_Error IE_Exp_LaTeX::_writeDocument(void)
 {
-	m_pListener = new s_LATEX_Listener(m_pDocument,this);
+	m_pListener = new s_LaTeX_Listener(m_pDocument,this);
 	if (!m_pListener)
-		return IES_NoMemory;
+		return UT_IE_NOMEMORY;
 	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
-		return IES_Error;
+		return UT_ERROR;
 	delete m_pListener;
 
 	m_pListener = NULL;
 	
-	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
+	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-void s_LATEX_Listener::_handleDataItems(void)
+void s_LaTeX_Listener::_handleDataItems(void)
 {
 }
 

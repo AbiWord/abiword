@@ -18,24 +18,24 @@
  */
 
 
-#ifndef IE_EXP_HTML_H
-#define IE_EXP_HTML_H
+#ifndef IE_EXP_LATEX_H
+#define IE_EXP_LATEX_H
 
 #include "ie_exp.h"
 #include "pl_Listener.h"
 class PD_Document;
-class s_HTML_Listener;
+class s_LaTeX_Listener;
 
-// The exporter/writer for HTML
+// The exporter/writer for LaTeX
 
-class IE_Exp_HTML : public IE_Exp
+class IE_Exp_LaTeX : public IE_Exp
 {
 public:
-	IE_Exp_HTML(PD_Document * pDocument);
-	virtual ~IE_Exp_HTML();
+	IE_Exp_LaTeX(PD_Document * pDocument);
+	virtual ~IE_Exp_LaTeX();
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static IEStatus		StaticConstructor(PD_Document * pDocument,
+	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
@@ -43,9 +43,9 @@ public:
 	static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	virtual IEStatus	_writeDocument(void);
+	virtual UT_Error	_writeDocument(void);
 	
-	s_HTML_Listener *	m_pListener;
+	s_LaTeX_Listener *	m_pListener;
 };
 
-#endif /* IE_EXP_HTML_H */
+#endif /* IE_EXP_LATEX_H */

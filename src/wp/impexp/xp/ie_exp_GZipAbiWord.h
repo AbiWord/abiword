@@ -33,7 +33,7 @@ public:
 	virtual ~IE_Exp_GZipAbiWord();
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static IEStatus		StaticConstructor(PD_Document * pDocument,
+	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,

@@ -67,18 +67,18 @@ UT_uint32 AP_UnixFrame::getZoomPercentage(void)
 	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
 }
 
-UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
+UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 {
 	if (!m_pDoc)
 	{
 		UT_DEBUGMSG(("Can't show a non-existent document\n"));
-		return UT_FALSE;
+		return UT_IE_FILENOTFOUND;
 	}
 
 	if (!((AP_FrameData*)m_pData))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return UT_IE_IMPORTERROR;
 	}
 
 	GR_UnixGraphics * pG = NULL;
@@ -247,7 +247,7 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 
 	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 	
-	return UT_TRUE;
+	return UT_OK;
 
 Cleanup:
 	// clean up anything we created here
@@ -262,7 +262,7 @@ Cleanup:
 	UNREFP(m_pDoc);
 	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 
-	return UT_FALSE;
+	return UT_IE_ADDLISTENERERROR;
 }
 
 void AP_UnixFrame::setXScrollRange(void)
@@ -374,7 +374,7 @@ void AP_UnixFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft)
+UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 {
 	// are we replacing another document?
 	if (m_pDoc)
@@ -395,20 +395,21 @@ UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 		m_iUntitled = _getNextUntitledNumber();
 		goto ReplaceDocument;
 	}
-
-	if (pNewDoc->readFromFile(szFilename, ieft))
+	UT_Error errorCode;
+	errorCode = pNewDoc->readFromFile(szFilename, ieft);
+	if (!errorCode)
 		goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
 	UNREFP(pNewDoc);
-	return UT_FALSE;
+	return errorCode;
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
 
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
-	return UT_TRUE;
+	return UT_OK;
 }
 	
 XAP_Frame * AP_UnixFrame::cloneFrame(void)
@@ -419,7 +420,7 @@ XAP_Frame * AP_UnixFrame::cloneFrame(void)
 	if (!pClone->initialize())
 		goto Cleanup;
 
-	if (!pClone->_showDocument())
+	if (pClone->_showDocument())
 		goto Cleanup;
 
 	pClone->show();
@@ -437,7 +438,7 @@ Cleanup:
 	return NULL;
 }
 
-UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
+UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 {
 	UT_Bool bUpdateClones;
 	UT_Vector vClones;
@@ -448,14 +449,15 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 	{
 		pApp->getClones(&vClones, this);
 	}
-
-	if (! _loadDocument(szFilename, (IEFileType) ieft))
+	UT_Error errorCode;
+	errorCode =  _loadDocument(szFilename, (IEFileType) ieft);
+	if (errorCode)
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
 		// if the app is fully up yet.  we force our caller
 		// to deal with the problem.
-		return UT_FALSE;
+		return errorCode;
 	}
 
 	pApp->rememberFrame(this);

@@ -48,7 +48,7 @@ Martin Sevior <msevior@kosal0.triumf.ca>	Overline, variable width lines
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
-Sam Th <sytobinh@uchicago.edu>			File I/O error handling
+Sam Tobin-Hochstadt <sytobinh@uchicago.edu>	File I/O error handling
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>           
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings

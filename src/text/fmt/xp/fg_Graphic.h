@@ -55,7 +55,7 @@ public:
 	virtual GR_Image*	generateImage(GR_Graphics* pG) = 0;
 
 	//  Insert the object at the specified point in a document
-	virtual UT_ErrorCode   	insertIntoDocument(PD_Document* pDoc, double fDPI,
+	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
 									   UT_uint32 iPos, const char* szName) = 0;
 };
 

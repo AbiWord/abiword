@@ -928,7 +928,7 @@ UT_Bool AP_QNXApp::parseCommandLine(void)
                         
 			AP_QNXFrame * pFirstQNXFrame = new AP_QNXFrame(this);
 			pFirstQNXFrame->initialize();
-			if (pFirstQNXFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
+			if (!pFirstQNXFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
 			{
 				kWindowsOpened++;
 			}

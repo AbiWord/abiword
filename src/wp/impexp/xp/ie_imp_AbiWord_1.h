@@ -37,7 +37,7 @@ public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);
     ~IE_Imp_AbiWord_1();
 
-    virtual IEStatus	importFile(const char * szFilename);
+    virtual UT_Error	importFile(const char * szFilename);
     virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 	    unsigned char * pData, UT_uint32 lenData);
 
@@ -49,7 +49,7 @@ public:
     void				_charData(const XML_Char*, int);
 
     static UT_Bool		RecognizeSuffix(const char * szSuffix);
-    static IEStatus		StaticConstructor(PD_Document * pDocument,
+    static UT_Error		StaticConstructor(PD_Document * pDocument,
 	    IE_Imp ** ppie);
     static UT_Bool		GetDlgLabels(const char ** pszDesc,
 	    const char ** pszSuffixList,
@@ -76,7 +76,7 @@ protected:
 			       _PS_Style
     } ParseState;
 
-    IEStatus			m_iestatus;
+    UT_Error			m_error;
     ParseState			m_parseState;
     XML_Char			m_charDataSeen[4];
     UT_uint32			m_lenCharDataSeen;

@@ -56,7 +56,7 @@ public:
 										   IEGraphicFileType * ft);
 	static UT_uint32	getImporterCount(void);
 
-	static IEStatus		constructImporter(const char * szFilename,
+	static UT_Error		constructImporter(const char * szFilename,
 										  IEGraphicFileType ft,
 										  IE_ImpGraphic **ppieg);
 
@@ -64,10 +64,10 @@ public:
 
 	//  Note subclassers:  ownership of pBB is passes here, so
 	//  free pBB if you don't need it.
-    virtual IEStatus	importGraphic(UT_ByteBuf* pBB, 
+    virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
 									  FG_Graphic ** ppfg) = 0;
 
-	virtual IEStatus	importGraphic(const char * szFilename,
+	virtual UT_Error	importGraphic(const char * szFilename,
 									  FG_Graphic ** ppfg);
 
 private:

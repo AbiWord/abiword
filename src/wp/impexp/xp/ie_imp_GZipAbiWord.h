@@ -37,7 +37,7 @@ public:
 										unsigned char * pData, UT_uint32 lenData);
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static IEStatus		StaticConstructor(PD_Document * pDocument,
+	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,

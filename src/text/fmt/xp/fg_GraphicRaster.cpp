@@ -169,7 +169,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 //  reconstruct an equivalent FG_GraphicRaster object after this one
 //  is discarded.
 //
-UT_ErrorCode FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
+UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 										 UT_uint32 iPos, const char* szName)
 {
 	UT_ASSERT(pDoc);

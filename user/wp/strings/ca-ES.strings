@@ -84,7 +84,7 @@ MSG_RevertBuffer="Voleu obrir '%s' tal com estava la darrera vegada que es va de
 MSG_QueryExit="Voleu tancar totes les finestres i sortir?"
 MSG_ConfirmSave="Voleu desar els canvis fets a %s?"
 MSG_ImportError="Error d'importació al fitxer %s."
-MSG_DlgNotImp,              "%s not implemented yet.\n\nIf you are a programmer, feel free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise, please be patient."
+MSG_DlgNotImp="%s not implemented yet.\n\nIf you are a programmer, feel free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise, please be patient."
 PageInfoField="Pàgina: %d/%d"
 DLG_FR_FindTitle="Cerca"
 DLG_FR_ReplaceTitle="Reemplaça"

@@ -106,10 +106,10 @@ public:
 	virtual UT_Bool	canDo(UT_Bool bUndo) const;
 	virtual void	cmdUndo(UT_uint32 count);
 	virtual void	cmdRedo(UT_uint32 count);
-	virtual UT_ErrorCode	cmdSave(void);
-	virtual UT_ErrorCode	cmdSaveAs(const char * szFilename, int ieft);
+	virtual UT_Error	cmdSave(void);
+	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
 
-	UT_ErrorCode		cmdInsertGraphic(FG_Graphic*, const char*);
+	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 	
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
@@ -268,7 +268,7 @@ protected:
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
-	UT_ErrorCode   			_insertGraphic(FG_Graphic*, const char*);
+	UT_Error   			_insertGraphic(FG_Graphic*, const char*);
 
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 

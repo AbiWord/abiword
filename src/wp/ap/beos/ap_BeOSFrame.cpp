@@ -429,7 +429,7 @@ ReplaceDocument:
 
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
-	return UT_TRUE;
+	return UT_OK;
 }
 	
 XAP_Frame * AP_BeOSFrame::cloneFrame(void)

@@ -42,31 +42,31 @@ UT_Bool IE_ImpGraphic_PNG::SupportsFileType(IEGraphicFileType ft)
 	return (IEGFT_PNG == ft);
 }
 
-IEStatus IE_ImpGraphic_PNG::StaticConstructor(IE_ImpGraphic **ppieg)
+UT_Error IE_ImpGraphic_PNG::StaticConstructor(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_PNG();
 	if (*ppieg == NULL)
-		return IES_NoMemory;
+	  return UT_IE_NOMEMORY;
 
-	return IES_OK;
+	return UT_OK;
 }
 
 //  This actually creates our FG_Graphic object for a PNG
-IEStatus IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB, 
+UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB, 
 										  FG_Graphic ** ppfg)
 {
 	FG_GraphicRaster *pFGR;
 
 	pFGR = new FG_GraphicRaster();
 	if(pFGR == NULL)
-		return IES_NoMemory;
+		return UT_IE_NOMEMORY;
 
 	if(!pFGR->setRaster_PNG(pBB)) {
 		DELETEP(pFGR);
 		
-		return IES_BogusDocument;
+		return UT_IE_BOGUSDOCUMENT;
 	}
 
 	*ppfg = (FG_Graphic *) pFGR;
-	return IES_OK;
+	return UT_OK;
 }

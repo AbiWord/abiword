@@ -57,12 +57,12 @@ UT_Bool IE_Exp_HTML::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".html") == 0);
 }
 
-IEStatus IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,
 										IE_Exp ** ppie)
 {
 	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
 UT_Bool	IE_Exp_HTML::GetDlgLabels(const char ** pszDesc,
@@ -708,7 +708,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bInSpan = UT_FALSE;
 	
 	m_pie->write("<!-- ================================================================================  -->\n");
-	m_pie->write("<!-- This HTML file was created by AbiWord.                                             -->\n");
+	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\n");
 	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                    -->\n");
 	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com                -->\n");
 	m_pie->write("<!-- ================================================================================  -->\n");
@@ -908,18 +908,18 @@ UT_Bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Exp_HTML::_writeDocument(void)
+UT_Error IE_Exp_HTML::_writeDocument(void)
 {
 	m_pListener = new s_HTML_Listener(m_pDocument,this);
 	if (!m_pListener)
-		return IES_NoMemory;
+		return UT_IE_NOMEMORY;
 	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
-		return IES_Error;
+		return UT_ERROR;
 	delete m_pListener;
 
 	m_pListener = NULL;
 	
-	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
+	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
 /*****************************************************************/

@@ -55,25 +55,36 @@ typedef		unsigned char		UT_Bool;
 #define		UT_FALSE			((UT_Bool) 0)
 
 /*
-	UT_ErrorCode should be used far more than it is.  Any function
+	UT_Error should be used far more than it is.  Any function
 	which reasonably could fail at runtime for anything other than
 	a coding error or bug should return an error code.  Error codes
 	should be propogated properly.
+
+	Addendum: 1-23-99
+	If you have any problems with or suggestions for error codes, 
+	please send them to Sam Tobin-Hochstadt (sytobinh@uchicago.edu).
+	I am the person that has worked the most with them. 
 */
-typedef		UT_sint32			UT_ErrorCode;
-#define		UT_OK				((UT_ErrorCode) 0)
-#define		UT_OUTOFMEM			((UT_ErrorCode) -100)
-#define         UT_SaveWriteError               ((UT_ErrorCode) -201)
-#define         UT_SaveNameError                ((UT_ErrorCode) -202)
-#define         UT_SaveExportError              ((UT_ErrorCode) -203)
-#define         UT_SaveOtherError               ((UT_ErrorCode) -200) // This should eventually dissapear.
-#define         UT_IE_FileNotFound              ((UT_ErrorCode) -301)
-#define         UT_IE_NoMemory                  ((UT_ErrorCode) -301)
-#define         UT_IE_UnkownType                ((UT_ErrorCode) -301)
-#define         UT_IE_BogusDocument             ((UT_ErrorCode) -301)
-#define         UT_IE_CouldNotOpen              ((UT_ErrorCode) -301)
-#define         UT_IE_CouldNotWrite             ((UT_ErrorCode) -301)
-#define         UT_IE_ImportError               ((UT_ErrorCode) -301) // The general case
+typedef		UT_sint32				UT_Error;
+#define		UT_OK					((UT_Error) 0)
+#define		UT_ERROR            	((UT_Error) -1) 	// VERY generic
+#define		UT_OUTOFMEM				((UT_Error) -100)
+#define     UT_SAVE_WRITEERROR      ((UT_Error) -201)
+#define     UT_SAVE_NAMEERROR       ((UT_Error) -202)
+#define     UT_SAVE_EXPORTERROR     ((UT_Error) -203)
+#define     UT_EXTENSIONERROR       ((UT_Error) -204)
+#define     UT_SAVE_OTHERERROR      ((UT_Error) -200) 	// This should eventually dissapear.
+#define     UT_IE_FILENOTFOUND      ((UT_Error) -301)
+#define     UT_IE_NOMEMORY          ((UT_Error) -302)
+#define     UT_IE_UNKNOWNTYPE       ((UT_Error) -303)
+#define     UT_IE_BOGUSDOCUMENT     ((UT_Error) -304)
+#define     UT_IE_COULDNOTOPEN      ((UT_Error) -305)
+#define     UT_IE_COULDNOTWRITE     ((UT_Error) -306)
+#define     UT_IE_FAKETYPE          ((UT_Error) -307)
+#define     UT_INVALIDFILENAME      ((UT_Error) -308)
+#define     UT_NOPIECETABLE         ((UT_Error) -309)
+#define		UT_IE_ADDLISTENERERROR  ((UT_Error) -310)
+#define     UT_IE_IMPORTERROR       ((UT_Error) -300) 	// The general case
 
 
 /* 

@@ -4050,9 +4050,9 @@ void FV_View::cmdRedo(UT_uint32 count)
 	}
 }
 
-UT_ErrorCode FV_View::cmdSave(void)
+UT_Error FV_View::cmdSave(void)
 {
-  UT_ErrorCode tmpVar;
+  UT_Error tmpVar;
   tmpVar = m_pDoc->save();
   if (!tmpVar)
       notifyListeners(AV_CHG_SAVE);
@@ -4060,9 +4060,9 @@ UT_ErrorCode FV_View::cmdSave(void)
 }
 
 
-UT_ErrorCode FV_View::cmdSaveAs(const char * szFilename, int ieft)
+UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft)
 {
-  UT_ErrorCode tmpVar;
+  UT_Error tmpVar;
   tmpVar = m_pDoc->saveAs(szFilename, ieft);
   if (!tmpVar)
       notifyListeners(AV_CHG_SAVE);
@@ -4325,7 +4325,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 /*****************************************************************/
 
-UT_ErrorCode FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
+UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 {
 	UT_ASSERT(pFG);
 	UT_ASSERT(szName);
@@ -4334,7 +4334,7 @@ UT_ErrorCode FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 	return pFG->insertIntoDocument(m_pDoc, fDPI, getPoint(), szName);
 }
 
-UT_ErrorCode FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
+UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 {
 	UT_Bool bDidGlob = UT_FALSE;
 
@@ -4364,7 +4364,7 @@ UT_ErrorCode FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		ndx++;
 	}
 
-	UT_ErrorCode errorCode = _insertGraphic(pFG, szName);
+	UT_Error errorCode = _insertGraphic(pFG, szName);
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();

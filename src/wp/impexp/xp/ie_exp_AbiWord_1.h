@@ -35,7 +35,7 @@ public:
 	virtual ~IE_Exp_AbiWord_1();
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static IEStatus		StaticConstructor(PD_Document * pDocument,
+	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
@@ -43,7 +43,7 @@ public:
 	static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	virtual IEStatus	_writeDocument(void);
+	virtual UT_Error	_writeDocument(void);
 	
 	s_AbiWord_1_Listener *	m_pListener;
 };

@@ -40,7 +40,7 @@ public:
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
-	static IEStatus		constructImporter(PD_Document * pDocument,
+	static UT_Error		constructImporter(PD_Document * pDocument,
 										  const char * szFilename,
 										  IEFileType ieft,
 										  IE_Imp ** ppie);
@@ -53,7 +53,7 @@ public:
  public:
 	IE_Imp(PD_Document * pDocument);
 	virtual ~IE_Imp();
-	virtual IEStatus	importFile(const char * szFilename) = 0;
+	virtual UT_Error	importFile(const char * szFilename) = 0;
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData) = 0;
 

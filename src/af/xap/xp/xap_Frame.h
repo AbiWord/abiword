@@ -83,7 +83,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 	
 	virtual	XAP_Frame *			cloneFrame(void)=0;
-	virtual UT_Bool				loadDocument(const char * szFilename, int ieft)=0;
+	virtual UT_Error   			loadDocument(const char * szFilename, int ieft)=0;
 	virtual UT_Bool				close(void)=0;
 	virtual UT_Bool				raise(void)=0;
 	virtual UT_Bool				show(void)=0;
@@ -93,8 +93,8 @@ public:
 	const char *				getInputMode(void) const;
 
 	EV_EditEventMapper *		getEditEventMapper(void) const;
-	XAP_App *					getApp(void) const;
-	AV_View *					getCurrentView(void) const;
+	XAP_App *				getApp(void) const;
+	AV_View *		       		getCurrentView(void) const;
 	AD_Document *				getCurrentDoc(void) const;
 	const char *				getFilename(void) const;
 	const char *				getTitle(int len) const;

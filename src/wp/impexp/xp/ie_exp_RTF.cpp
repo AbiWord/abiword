@@ -70,12 +70,12 @@ UT_Bool IE_Exp_RTF::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".rtf") == 0);
 }
 
-IEStatus IE_Exp_RTF::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Exp_RTF::StaticConstructor(PD_Document * pDocument,
 									   IE_Exp ** ppie)
 {
 	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
 UT_Bool	IE_Exp_RTF::GetDlgLabels(const char ** pszDesc,
@@ -96,7 +96,7 @@ UT_Bool IE_Exp_RTF::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Exp_RTF::_writeDocument(void)
+UT_Error IE_Exp_RTF::_writeDocument(void)
 {
 	// The overall syntax for an RTF file is:
 	//
@@ -114,7 +114,7 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 		
 	m_pListenerGetProps = new s_RTF_ListenerGetProps(m_pDocument,this);
 	if (!m_pListenerGetProps)
-		return IES_NoMemory;
+		return UT_IE_NOMEMORY;
 	if (m_pDocRange)
 		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerGetProps),m_pDocRange);
 	else
@@ -124,14 +124,14 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 	// write rtf header
 
 	if (!_write_rtf_header())
-		return IES_CouldNotWriteToFile;
+		return UT_IE_COULDNOTWRITE;
 	
 	// create and install a listener to receive the document
 	// and write its content in rtf.
 	
 	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(m_pDocument,this, (m_pDocRange!=NULL));
 	if (!m_pListenerWriteDoc)
-		return IES_NoMemory;
+		return UT_IE_NOMEMORY;
 	if (m_pDocRange)
 		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),m_pDocRange);
 	else
@@ -141,9 +141,9 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 	// write any rtf trailer matter
 
 	if (!_write_rtf_trailer())
-		return IES_CouldNotWriteToFile;
+		return UT_IE_COULDNOTWRITE;
 	
-	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
+	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
 /*****************************************************************/

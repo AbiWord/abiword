@@ -33,14 +33,14 @@
 #include "ie_types.h"
 #include "ie_imp_MsWord_97.h"
 
-#define X_ReturnIfFail(exp,ies)     do { UT_Bool b = (exp); if (!b) return (ies); } while (0)
-#define X_ReturnNoMemIfError(exp)   X_ReturnIfFail(exp,IES_NoMemory)
+#define X_ReturnIfFail(exp,error)     do { UT_Bool b = (exp); if (!b) return (error); } while (0)
+#define X_ReturnNoMemIfError(exp)   X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
 #define X_CheckError(v)         do {  if (!(v))                             \
-                                      {  m_iestatus = IES_Error;            \
+                                      {  m_error = UT_ERROR;            \
                                          return; } } while (0)
 #define X_CheckError0(v)        do {  if (!(v))                             \
-                                      {  m_iestatus = IES_Error;            \
+                                      {  m_error = UT_ERROR;            \
                                          return 0; } } while (0)
 
 
@@ -73,7 +73,7 @@ static int word_colors[][3] = {
 
 /*****************************************************************/
 
-IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
+UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
 	FILE *fp = NULL;
 	UT_DEBUGMSG(("got to import file\n"));
@@ -82,8 +82,8 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	if (!fp)
 	{
 	   UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-	   m_iestatus = IES_FileNotFound;
-	   return m_iestatus;
+	   m_error = UT_IE_FILENOTFOUND;
+	   return m_error;
 	}
 	UT_DEBUGMSG(("wv importer\n"));
 
@@ -92,8 +92,8 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 		{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
 		wvOLEFree();
-		m_iestatus = IES_BogusDocument;
-		return m_iestatus;
+		m_error = UT_IE_BOGUSDOCUMENT;
+		return m_error;
 		}
 	
 	UT_DEBUGMSG(("just here\n"));
@@ -107,8 +107,8 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 	wvOLEFree();
 
-   	m_iestatus = IES_OK;
-	return m_iestatus;
+   	m_error = UT_OK;
+	return m_error;
 }
 
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
@@ -603,7 +603,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	: IE_Imp(pDocument)
 {
 	UT_DEBUGMSG(("constructed wv\n"));
-	m_iestatus = IES_OK;
+	m_error = UT_OK;
    
 	// to increase the speed and efficiency of the important,
 	// we'll queue characters into runs of text, and only
@@ -623,12 +623,12 @@ UT_Bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".doc") == 0);
 }
 
-IEStatus IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
+UT_Error IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
 					     IE_Imp ** ppie)
 {
 	IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
 	*ppie = p;
-	return IES_OK;
+	return UT_OK;
 }
 
 UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
