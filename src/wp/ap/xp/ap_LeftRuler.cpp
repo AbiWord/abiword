@@ -35,6 +35,7 @@
 #include "ap_Ruler.h"
 #include "ap_Prefs.h"
 #include "fv_View.h"
+#include "fp_TableContainer.h"
 
 #include "pd_Document.h"
 
@@ -336,6 +337,11 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 			}
 		}
 		break;
+	case DW_CELLMARK:
+		{
+			UT_DEBUGMSG(("CellMark not handled yet \n"));
+		}
+		break;
 	}
 
 	properties[1] = m_pG->invertDimension(tick.dimType,dyrel);
@@ -631,7 +637,7 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 		AP_LeftRulerInfo lfi;
 		(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
 
-		if (s_IsOnDifferentPage(&lfi, &m_lfi))
+//		if (s_IsOnDifferentPage(&lfi, &m_lfi))
 			draw(NULL,lfi);
 	}
 	
@@ -717,7 +723,7 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 }
 
 /*****************************************************************/
-
+ 
 void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom)
 {
 	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
@@ -776,6 +782,104 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rBottom.left + rBottom.width - 1,  rBottom.top + 1, rBottom.left + rBottom.width - 1, rBottom.top + rBottom.height - 1);
 	m_pG->drawLine( rBottom.left + rBottom.width - 1,  rBottom.top + rBottom.height - 1, rBottom.left + 1, rBottom.top + rBottom.height - 1);
 #endif
+}
+
+ 
+void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, 
+									   UT_Rect &rCell)
+{
+	if(pInfo->m_mode !=  AP_LeftRulerInfo::TRI_MODE_TABLE)
+	{
+		rCell.set(0,0,0,0);
+		return;
+	}
+	AP_LeftRulerTableInfo * pLInfo = NULL;
+	if(iCell < pInfo->m_iNumRows)
+	{
+		pLInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(iCell);
+	}
+	else
+	{
+		pLInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iNumRows -1);
+	}
+
+	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
+	UT_sint32 pos =0;
+	fp_TableContainer * pTab = (fp_TableContainer *) pLInfo->m_pCell->getContainer();
+	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+	fp_Page * pCurPage =  static_cast<FV_View *>(m_pView)->getCurrentPage();
+	fp_Page * pPage = NULL;
+	while(pBroke && (pPage == NULL))
+	{
+		if(pBroke->getPage() != pCurPage)
+		{
+			pBroke = (fp_TableContainer *) pBroke->getNext();
+		}
+		else
+		{
+			pPage = pBroke->getPage();
+		}
+	}
+	if(pPage == NULL)
+	{
+//
+// This cell is off the page
+//
+		rCell.set(0,0,0,0);
+		return;
+	}
+	UT_sint32 yoff = pBroke->getYBreak();
+	UT_sint32 yTab = 0;
+	if(pBroke->getYBreak() == 0)
+	{
+		yTab = pTab->getY();
+	}
+	UT_sint32 yEnd = yOrigin - pInfo->m_yBottomMargin - pInfo->m_yTopMargin + pInfo->m_yPageSize;
+	if(iCell != pInfo->m_iNumRows)
+	{
+		pos = yOrigin + yTab + pLInfo->m_iTopCellPos - yoff;
+	}
+	else
+	{
+		pos = yOrigin + yTab + pLInfo->m_iBotCellPos - yoff;
+	}
+
+	if((pos < yOrigin) || (pos > yEnd))
+	{
+//
+// This cell is off the page
+//
+		rCell.set(0,0,0,0);
+		return;
+	}
+	UT_sint32 hs = 2;					// halfSize
+	UT_sint32 fs = hs * 2;			// fullSize
+
+	rCell.set(0, pos  - hs, s_iFixedHeight, fs);
+}
+
+/*!
+ * Draw simple cell markers at each row position.
+ */
+void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
+{
+	if(pInfo->m_mode != AP_LeftRulerInfo::TRI_MODE_TABLE)
+	{
+		return;
+	}
+
+	UT_sint32 nrows = pInfo->m_iNumRows;
+	AP_LeftRulerTableInfo * pLInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iCurrentRow);
+	UT_sint32 i =0;
+	for(i=0;i <= nrows; i++)
+	{
+		UT_Rect rCell;
+		_getCellMarkerRects(pInfo,i,rCell);
+		if(rCell.width != 0)
+		{
+			m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, rCell);
+		}
+	}
 }
 
 /*****************************************************************/
@@ -941,12 +1045,15 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 			}
 		}
 	}
-
-	// draw the various widgets for the:
+	//
+	// draw the various widgets for the left ruler
 	// 
 	// current section properties {left-margin, right-margin};
 	_drawMarginProperties(pClipRect, &lfi, GR_Graphics::CLR3D_Foreground);
-	
+
+// Cell properties for a table
+
+	_drawCellProperties(&lfi);
 	if (pClipRect)
 	{
 		m_pG->setClipRect(NULL);

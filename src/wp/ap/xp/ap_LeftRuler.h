@@ -40,14 +40,48 @@ class UT_StringPtrMap;
 class AV_ScrollObj;
 class GR_Graphics;
 class ap_RulerTicks;
+class fp_CellContainer;
+/*****************************************************************/
+
 
 /*****************************************************************/
+class AP_LeftRulerTableInfo
+{
+public:
+	UT_sint32 m_iTopCellPos;
+	UT_sint32 m_iTopSpacing;
+	UT_sint32 m_iBotCellPos;
+	UT_sint32 m_iBotSpacing;
+	fp_CellContainer * m_pCell;
+};
+
+/*****************************************************************/
+
 /*****************************************************************/
 
 class AP_LeftRulerInfo
 {
 public:
 	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
+
+	AP_LeftRulerInfo(void) : 	m_mode(TRI_MODE_COLUMNS),
+								m_iNumRows(0),
+								m_vecTableRowInfo(NULL)
+		{
+		}
+	virtual ~AP_LeftRulerInfo(void)
+		{
+			if(m_vecTableRowInfo)
+			{
+				UT_sint32 count = (UT_sint32) m_vecTableRowInfo->getItemCount();
+				UT_sint32 i =0;
+				for(i=0; i< count; i++)
+				{
+					delete (AP_LeftRulerTableInfo *) m_vecTableRowInfo->getNthItem(i);
+				}
+				delete m_vecTableRowInfo;
+			}
+		}		
 		
 	Mode					m_mode;
 
@@ -58,6 +92,13 @@ public:
 	UT_uint32				m_yPoint;			/* absolute coord of current insertion point */
 	UT_sint32				m_yTopMargin;		/* content start relative to top of page */
 	UT_sint32				m_yBottomMargin;	/* content end relative to top of page */
+	
+// Things we need for Tables
+
+	UT_sint32               m_iNumRows;
+	UT_sint32               m_iCurrentRow;
+	UT_sint32               m_iTablePadding;
+	UT_Vector *             m_vecTableRowInfo;
 };
 	
 /*****************************************************************/
@@ -119,6 +160,10 @@ private:
 											  AP_LeftRulerInfo * pInfo, 
 											  GR_Graphics::GR_Color3D clr);
 
+
+	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell);
+	void		        _drawCellProperties( AP_LeftRulerInfo * pInfo);
+
 	void                _xorGuide(bool bClear=false);
 	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 
@@ -144,13 +189,14 @@ private:
 
 	typedef enum _draggingWhat { DW_NOTHING,
 								 DW_TOPMARGIN,
-								 DW_BOTTOMMARGIN
+								 DW_BOTTOMMARGIN,
+								 DW_CELLMARK
 	} DraggingWhat;
 
 	DraggingWhat		m_draggingWhat;
 	UT_sint32			m_draggingCenter; /* center of primary thing being dragged */
 	bool				m_bBeforeFirstMotion;
-
+	UT_sint32           m_draggingCell;
 	bool				m_bGuide;	/* true ==> guide line XORed onscreen */
 	UT_sint32			m_yGuide;	/* valid iff m_bGuide */
 

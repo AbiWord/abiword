@@ -5507,15 +5507,31 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		}
 
 		fp_Container * pContainer = pRun->getLine()->getContainer();
+		fp_Column * pColumn = (fp_Column *) pRun->getLine()->getColumn();
 
 		pInfo->m_yPoint = yCaret - pContainer->getY();
 
-		fl_SectionLayout * pSection = pContainer->getSectionLayout();
+		fl_SectionLayout * pSection = pColumn->getSectionLayout();
 		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-		if (pSection->getType() == FL_SECTION_DOC && !isHdrFtrEdit())
+//
+// Clear out the old table info
+//
+		if(pInfo->m_vecTableRowInfo)
+		{
+			UT_sint32 count = (UT_sint32) pInfo->m_vecTableRowInfo->getItemCount();
+			UT_sint32 i =0;
+			for(i=0; i< count; i++)
+			{
+				delete (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(i);
+			}
+			delete pInfo->m_vecTableRowInfo;
+			pInfo->m_vecTableRowInfo =NULL;
+		}
+
+		if (pContainer->getContainerType() == FP_CONTAINER_COLUMN && !isHdrFtrEdit())
 		{
 			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-			fp_Page * pPage = pContainer->getPage();
+			fp_Page * pPage = pColumn->getPage();
 
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
@@ -5547,13 +5563,72 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 			}
 
 		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_CELL)
+		{
+			fp_CellContainer * pCell = (fp_CellContainer *) pContainer;
+			fl_ContainerLayout * pCL = pSection->myContainingLayout();
+			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_TABLE;
+			while(pCL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+			{
+				pCL = pCL->myContainingLayout();
+			}
+			fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pCL;
+			if(pDSL == NULL)
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return;
+			}
+
+			fp_Page * pPage = pRun->getLine()->getPage();
+
+			UT_sint32 yoff = 0;
+			getPageYOffset(pPage, yoff);
+			pInfo->m_yPageStart = (UT_uint32)yoff;
+			pInfo->m_yPageSize = pPage->getHeight();
+			pDSL = pPage->getOwningSection();
+			pInfo->m_yTopMargin = pDSL->getTopMargin();
+			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
+			
+			fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
+			UT_sint32 col = pCell->getLeftAttach();
+			UT_sint32 numrows = pTab->getNumRows();
+			UT_sint32 i =0;
+			fp_CellContainer * pCur = NULL;
+			pInfo->m_vecTableRowInfo = new UT_Vector();
+			while( i < numrows)
+			{ 
+				pCur = pTab->getCellAtRowColumn(i,col);
+				if(pCur == pCell)
+				{
+					pInfo->m_iCurrentRow = i;
+				}
+				if(pCur)
+				{
+					AP_LeftRulerTableInfo *pLInfo = new  AP_LeftRulerTableInfo;
+					pLInfo->m_pCell = pCur;
+					pLInfo->m_iTopCellPos = pCur->getStartY();
+					pLInfo->m_iBotCellPos = pCur->getStopY();
+					pLInfo->m_iTopSpacing = (pCur->getY() - pCur->getStartY() );
+					pLInfo->m_iBotSpacing = ( pCur->getRightPos() - pCur->getX() 
+												- pCur->getWidth());
+					pInfo->m_vecTableRowInfo->addItem((void *) pLInfo);
+					i = pCur->getBottomAttach();
+				}
+				else
+				{
+					i = numrows + 1;
+				}
+			}
+			pInfo->m_iNumRows = pInfo->m_vecTableRowInfo->getItemCount();
+		}
+
 		else
 		{
 		}
 	}
 	else
 	{
-		// TODO support tables
+		// other yet to be written contexts (frames??)
 	}
 
 	return;
@@ -5950,7 +6025,8 @@ fp_Page* FV_View::getCurrentPage(void) const
 	if (pRun)
 	{
 		// we now have coords relative to the page containing the ins pt
-		fp_Page* pPointPage = pRun->getLine()->getContainer()->getPage();
+//		fp_Page* pPointPage = pRun->getLine()->getContainer()->getPage();
+		fp_Page* pPointPage = pRun->getLine()->getPage();
 
 		return pPointPage;
 	}

@@ -177,6 +177,50 @@ UT_sint32  fp_Line::getColumnGap(void)
 }
 
 /*!
+ * Returns the column containing this line. This takes account of broken tables.
+ */
+fp_Container * fp_Line::getColumn(void)
+{
+	fp_Container * pCon = getContainer();
+	if(pCon->getContainerType() != FP_CONTAINER_CELL)
+	{
+		return pCon->getColumn();
+	}
+	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	UT_ASSERT(pTab->getContainerType() == FP_CONTAINER_TABLE);
+	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+	if(pBroke == NULL)
+	{
+		return pCon->getColumn();
+	}
+	bool bFound = false;
+	fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+	while(pBroke && !bFound)
+	{
+		if(pBroke->isInBrokenTable(pCell,this))
+		{
+			bFound = true;
+			break;
+		}
+		pBroke = (fp_TableContainer *) pBroke->getNext();
+	}
+	if(bFound)
+	{
+		return pBroke->getColumn();
+	}
+	return pCon->getColumn();
+}
+
+/*!
+ * Returns the page containing this line. Takes account of broken tables.
+ */
+fp_Page * fp_Line::getPage(void)
+{
+	return getColumn()->getPage();
+}
+
+
+/*!
  * Returns true if this is the first line in the block.
  */
 bool fp_Line::isFirstLineInBlock(void) const
