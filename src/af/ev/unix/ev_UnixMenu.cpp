@@ -18,10 +18,12 @@
  */
  
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
@@ -442,23 +444,30 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				// this pointer will be filled conditionally later
 				GtkWidget * label = NULL;
-				
-				EV_EditEventMapper * pEEM = m_pUnixFrame->getEditEventMapper();
-				UT_ASSERT(pEEM);
-				EV_EditMethod * pEM = NULL;
 
+				// GTK triggers the menu accelerators off of MOD1 ***without
+				// regard to what XK_ keysym is bound to it.  therefore, if
+				// MOD1 is bound to XK_Alt_{L,R}, we do the following.
+
+				UT_Bool bAltOnMod1 = (ev_UnixKeyboard::getAltModifierMask() == GDK_MOD1_MASK);
+				UT_Bool bConflict = UT_FALSE;
+				
 				// Lookup any bindings cooresponding to MOD1-key and the lower-case
 				// version of the underlined char, since all the menus ignore upper
 				// case (SHIFT-MOD1-[char]) invokations of accelerators.
-				pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|tolower(keyCode),&pEM);
 
-				// if the pointer is valid, there is a conflict
-				UT_Bool bAccelConflict = UT_FALSE;
+				if (bAltOnMod1)
+				{
+					EV_EditEventMapper * pEEM = m_pUnixFrame->getEditEventMapper();
+					UT_ASSERT(pEEM);
+					EV_EditMethod * pEM = NULL;
+					pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|tolower(keyCode),&pEM);
+
+					// if the pointer is valid, there is a conflict
+					bConflict = (pEM != NULL);
+				}
 				
-				if (pEM)
-					bAccelConflict = UT_TRUE;
-
-				if (bAccelConflict)
+				if (bConflict)
 				{
 					// construct the label with NO underlined text and
 					// no accelerators bound
