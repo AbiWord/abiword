@@ -6843,7 +6843,11 @@ void FV_View::_checkPendingWordForSpell(void)
 			{
 				// no longer there, so check it
 				if (m_pLayout->checkPendingWordForSpell())
+				{
+					_eraseInsertionPoint();
 					updateScreen();
+					_drawInsertionPoint();
+				}
 			}
 		}
 	}
