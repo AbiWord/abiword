@@ -92,6 +92,9 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iAscentLayoutUnits = 0;
 	m_iDescentLayoutUnits = 0;
         m_pField = NULL;
+
+	// set a default background color
+	UT_setColor(m_colorBG, 255, 255, 255);
 }
 
 fp_Run::~fp_Run()
@@ -340,9 +343,12 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     UT_uint32 yoffText = yoff - m_pG->getFontAscent() * 2 / 3;
 
     m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
-    UT_RGBColor clrPaper(255,255,255);
+
+    //UT_RGBColor clrPaper(255,255,255);
+
+    UT_DEBUGMSG(("DOM: drawTextLine\n"));
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
-        m_pG->fillRect(clrPaper,xoffText,yoffText,iTextWidth,iTextHeight);
+        m_pG->fillRect(m_colorBG,xoffText,yoffText,iTextWidth,iTextHeight);
         m_pG->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
@@ -371,6 +377,8 @@ void fp_TabRun::lookupProperties(void)
 	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
     UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorFG);
+
+    UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorBG);
 
 	m_pG->setFont(pFont);
 	m_iAscent = m_pG->getFontAscent();	
@@ -495,7 +503,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 
 	UT_RGBColor clrSelBackground(192, 192, 192);
-	UT_RGBColor clrNormalBackground(255,255,255);
+	UT_RGBColor clrNormalBackground(m_colorBG.m_red,m_colorBG.m_grn,m_colorBG.m_blu);
 
 	UT_sint32 iFillHeight = m_pLine->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
@@ -1042,6 +1050,7 @@ void fp_FieldRun::lookupProperties(void)
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorFG);
 	UT_parseColor(PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorBG);
+	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorBG);
 
 	m_pG->setFont(m_pFont);
 
@@ -1240,7 +1249,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	        iYdraw +=  getDescent(); // * 3/2   
 	} 
  
-	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 

@@ -39,6 +39,7 @@
 static PP_Property _props[] =
 {
 	{ "color",					"000000",			1},
+	{ "bgcolor", "ffffff", 1},
 	{ "field-color",				"dcdcdc",	1},
 	{ "font-family",			"Times New Roman",	1},	// TODO this is Win32-specific.  must fix!
 	{ "field-font",			"NULL",	1},	

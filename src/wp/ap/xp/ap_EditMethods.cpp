@@ -4682,10 +4682,10 @@ Defun(colorForeTB)
 Defun(colorBackTB)
 {
         ABIWORD_VIEW;
+
+#if 0
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
-
-#if 1
 	pFrame->raise();
 	s_TellNotImplemented(pFrame, "Background Color", __LINE__);
 #else

@@ -84,6 +84,8 @@ void fp_TextRun::lookupProperties(void)
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE), m_colorFG);
 
+	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE), m_colorBG);
+
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
 
 	/*
@@ -713,10 +715,11 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 		  since document facilities allow the background color to be
 		  changed, for things such as table cells.
 		*/
-		UT_RGBColor clrNormalBackground(255,255,255);
+		UT_RGBColor clrNormalBackground(m_colorBG.m_red, m_colorBG.m_grn, m_colorBG.m_blu);
+		
 		if (m_pField)
 		{
-		        UT_setColor(clrNormalBackground,220, 220, 220);
+		  UT_setColor (clrNormalBackground, 220, 220, 220);
 		}
 		m_pG->setColor(clrNormalBackground);
 		
@@ -762,7 +765,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  appropriate selection background color based on the color
 	  of the foreground text, probably.
 	*/
-	UT_RGBColor clrNormalBackground(255,255,255);
+	//UT_RGBColor clrNormalBackground(255,255,255);
+	UT_RGBColor clrNormalBackground(m_colorBG.m_red, m_colorBG.m_grn, m_colorBG.m_blu);
 	UT_RGBColor clrSelBackground(192, 192, 192);
 	if (m_pField)
 	{
@@ -863,8 +867,8 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	FV_View* ppView = m_pBL->getDocLayout()->getView();
 	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
 #endif
-
-	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	// we also need to support this in printing
+	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_Rect r;
 

@@ -90,7 +90,7 @@ static char * mapFontName(const char *name)
 	// if we're passed crap, default to some normal font
 	if(!name || !*name)
 	  {
-	        UT_DEBUGMSG(("Dom: mapFontName: null name, returning default\n"));
+	        xxx_UT_DEBUGMSG(("Dom: mapFontName: null name, returning default\n"));
 	        return GPG_DEFAULT_FONT;
 	  }
 
@@ -143,7 +143,7 @@ gboolean fonts_match(GnomeFont *tmp, const gchar * intended)
 				return TRUE; // asked for and got helvetica
 
 		const gchar * what = gnome_font_get_name(tmp);
-		UT_DEBUGMSG(("DOM: intended - '%s' what - '%s'\n", intended, what));
+		xxx_UT_DEBUGMSG(("DOM: intended - '%s' what - '%s'\n", intended, what));
 
 		if(!g_strcasecmp(what, DEFAULT_GNOME_FONT))
 				return FALSE; // asked for something and got helvetica instead
@@ -189,7 +189,7 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 	if(tmp && fonts_match(tmp, abi_name))
 			return tmp;
 
-	UT_DEBUGMSG(("Dom: unreffing gnome font: ('%s','%s')\n", 
+	xxx_UT_DEBUGMSG(("Dom: unreffing gnome font: ('%s','%s')\n", 
 		     gnome_font_get_ps_name(tmp), abi_name));
 
 	// else we got something we didn't ask for
@@ -283,6 +283,8 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	const UT_UCSChar * pS;
 	const UT_UCSChar * pEnd;
 
+	xxx_UT_DEBUGMSG(("DOM: drawChars (x: %d) (y: %d)\n", xoff, yoff));
+
 	gnome_print_moveto(m_gpc, _scale_x_dir(xoff), _scale_y_dir(yoff));
 
 	pEnd = pChars + iCharOffset + iLength;
@@ -328,7 +330,7 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 
 #if 0
 	XAP_UnixFont *uf          = static_cast<PSFont*>(pFont)->getUnixFont();
-	UT_DEBUGMSG(("Dom: setting font:\n"
+	xxx_UT_DEBUGMSG(("Dom: setting font:\n"
 				 "\tsize returned: %f (requested %f)\n"
 				 "\tname returned: %s (requested %s)\n", 
 				 gnome_font_get_size(m_pCurrentFont),
@@ -366,7 +368,7 @@ void XAP_UnixGnomePrintGraphics::setColor(UT_RGBColor& clr)
 	m_currentColor.m_grn = clr.m_grn;
 	m_currentColor.m_blu = clr.m_blu;
 
-	UT_DEBUGMSG(("Dom: setColor\n"));
+	xxx_UT_DEBUGMSG(("Dom: setColor\n"));
 
 	gnome_print_setrgbcolor(m_gpc,
 				(int)(m_currentColor.m_red / 255),
@@ -432,7 +434,7 @@ void XAP_UnixGnomePrintGraphics::drawAnyImage (GR_Image* pImg,
 	PSFatmap * image = pPSImage->getData();
 
 #if 0
-	UT_DEBUGMSG(("DOM: image data:\n"
+	xxx_UT_DEBUGMSG(("DOM: image data:\n"
 				 "\tiDestWidth: %d\n"
 				 "\tiDestHeight: %d\n"
 				 "\twidth: %d\n"
@@ -526,14 +528,14 @@ UT_Bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
 
 UT_Bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
-		UT_DEBUGMSG(("DOM: startPage\n"));
+		xxx_UT_DEBUGMSG(("DOM: startPage\n"));
         gnome_print_beginpage(m_gpc, szPageLabel);
 	return UT_TRUE;
 }
 
 UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
 {
-		UT_DEBUGMSG(("DOM: endPage\n"));
+		xxx_UT_DEBUGMSG(("DOM: endPage\n"));
 
 	if(m_bNeedStroked)
 	  gnome_print_stroke(m_gpc);
@@ -545,7 +547,7 @@ UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
 UT_Bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
 
-		UT_DEBUGMSG(("DOM: endDocument\n"));
+		xxx_UT_DEBUGMSG(("DOM: endDocument\n"));
 		// bonobo version, we'd don't own the context
 		// or the master, just return
 	if(!m_gpm)
@@ -607,31 +609,40 @@ void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_sint32 x,
 										  UT_sint32 y, UT_sint32 w, 
 										  UT_sint32 h)
 {
-#if 1
-		return;
-#else
 		// draw background color
 		gnome_print_setrgbcolor(m_gpc,
 								(int)(c.m_red / 255),
 								(int)(c.m_grn / 255),
 								(int)(c.m_blu / 255));
 
+		// adjust for the text's height
+		//y += getFontDescent () + getFontHeight();
+		
 		/* Mirror gdk which excludes the far point */
-		w -= 1;
-		h -= 1;
-		gnome_print_moveto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y));
+#if 0
+		w -= (int)_scale_x_dir (1);
+		h -= (int)_scale_y_dir (1);
+#endif
+
+		xxx_UT_DEBUGMSG(("DOM: (w: %d) (h: %d) (x: %d) (y: %d)\n",
+						 w, h, x, y));
+
+		// Lauris says to do this: 
+		// newpath + moveto + lineto + lineto + lineto + lineto + closepath + fill
+		gnome_print_newpath (m_gpc);
+		gnome_print_moveto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y));		
 		gnome_print_lineto (m_gpc, _scale_x_dir(x+w), _scale_y_dir(y));
-		gnome_print_lineto (m_gpc, _scale_x_dir(x+w), _scale_y_dir(y-h));
-		gnome_print_lineto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y-h));
+		gnome_print_lineto (m_gpc, _scale_x_dir(x+w), _scale_y_dir(y+h));
+		gnome_print_lineto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y+h));
 		gnome_print_lineto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y));
+		gnome_print_closepath (m_gpc);
 		gnome_print_fill (m_gpc);
 
-		// reset color
+		// reset color to its original state
 		gnome_print_setrgbcolor(m_gpc,
 								(int)(m_currentColor.m_red / 255),
 								(int)(m_currentColor.m_grn / 255),
 								(int)(m_currentColor.m_blu / 255));
-#endif
 }
 
 void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_Rect & r)
@@ -690,11 +701,13 @@ GR_Font* XAP_UnixGnomePrintGraphics::getGUIFont()
 void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 		// nada
+		xxx_UT_DEBUGMSG(("DOM: FILLRECT3D\n"));
 }
 
 void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
 		// nada
+		xxx_UT_DEBUGMSG(("DOM: FILLRECT3D\n"));
 }
 
 
@@ -723,7 +736,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 	   this one */
 	//asc = (gint) (((double) 915.0) * gnome_font_get_size (font) / 10);
 
-//	UT_DEBUGMSG(("Font \"Ascent\" %i [%g, %g]\n", asc, bbox->y1,
+//	xxx_UT_DEBUGMSG(("Font \"Ascent\" %i [%g, %g]\n", asc, bbox->y1,
 //		     gnome_font_get_size (font)));
 
 	return asc;
@@ -746,7 +759,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
 	des = (gint) (bbox->y0 * gnome_font_get_size (font) / 10);
 	des *= -1;
 
-//	UT_DEBUGMSG(("Font \"Descent\" %i [%g, %g]\n", des, bbox->y0,
+//	xxx_UT_DEBUGMSG(("Font \"Descent\" %i [%g, %g]\n", des, bbox->y0,
 //		     gnome_font_get_size (font)));
 
 	return des;

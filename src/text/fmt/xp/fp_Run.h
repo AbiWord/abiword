@@ -215,6 +215,9 @@ protected:
 	UT_Bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field *                 m_pField;
 
+	// the paper's color at any given time
+	UT_RGBColor             m_colorBG;
+
 private:
 	fp_Run(const fp_Run&);			// no impl.
 	void operator=(const fp_Run&);	// no impl.
@@ -235,7 +238,7 @@ class fp_TabRun : public fp_Run
 	void					setWidth(UT_sint32);
 	
 protected:
-    UT_RGBColor             m_colorFG;
+    UT_RGBColor             m_colorFG;    
 
     virtual void            _drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual void			_draw(dg_DrawArgs*);
