@@ -92,7 +92,7 @@ public:
 	enum
 	{
 		FIND_FONT_AT_SCREEN_RESOLUTION,
-		FIND_FONT_AT_LAYOUT_RESOLUTION,
+		FIND_FONT_AT_LAYOUT_RESOLUTION
 	};
 	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
