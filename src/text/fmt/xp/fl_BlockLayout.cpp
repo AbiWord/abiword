@@ -4828,6 +4828,153 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 
 }
 
+bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
+										 eTabType & iType, eTabLeader &iLeader )
+{
+	UT_ASSERT(iStartX >= 0);
+
+	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
+	UT_uint32 i;
+
+	iLeader = FL_LEADER_NONE;
+	
+	for (i=0; i<iCountTabs; i++)
+	{
+		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
+		UT_ASSERT(pTab);
+
+		if (pTab->getPosition() > iMaxX)
+		{
+			break;
+		}
+		
+		if (pTab->getPosition() > iStartX)
+		{
+			pTab = (fl_TabStop*) m_vecTabs.getNthItem(i>0?i-1:0);
+			UT_ASSERT(pTab);
+			
+			iPosition = pTab->getPosition();
+			iType = pTab->getType();
+			iLeader = pTab->getLeader();
+
+			return true;
+		}
+	}
+	
+	// the special case where there is no tabstop after the tab
+	// but there is something before it
+	if(iCountTabs > 0 && i == iCountTabs)
+	{
+			UT_DEBUGMSG(("found tabstop indx=%d\n", iCountTabs - 1));
+			fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(iCountTabs - 1);
+			UT_ASSERT(pTab);
+			
+			iPosition = pTab->getPositionLayoutUnits();
+			iType = pTab->getType();
+			iLeader = pTab->getLeader();
+
+			return true;
+	}
+	
+	// now, handle the default tabs
+
+	UT_sint32 iMin = m_iLeftMargin;
+
+	if (iMin >= iStartX)
+	{
+		iPosition = iMin;
+		iType = FL_TAB_LEFT;
+		return true;
+	}
+	
+	UT_ASSERT(m_iDefaultTabInterval > 0);
+
+	// mathematical approach
+	// the -1 is to ensure we do not get iStartX
+	const UT_sint32 iPos = ((iStartX - 1)/ m_iDefaultTabInterval) *
+		m_iDefaultTabInterval;
+	iPosition = iPos;
+	iType = FL_TAB_LEFT;
+
+	UT_ASSERT(iPos <= iStartX);
+
+	return true;
+}
+
+bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
+													  eTabType& iType, eTabLeader &iLeader)
+{
+	UT_ASSERT(iStartX >= 0);
+	UT_DEBUGMSG(("fl_BlockLayout::findPrevTabStopInLayoutUnits\n"
+				 "       iStartX %d, iMaxX %d\n", iStartX, iMaxX));
+				
+	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
+	UT_uint32 i;
+
+	for (i=0; i<iCountTabs; i++)
+	{
+		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
+
+		if (pTab->getPositionLayoutUnits() > iMaxX)
+		{
+			break;
+		}
+		
+		if (pTab->getPositionLayoutUnits() > iStartX)
+		{
+			UT_DEBUGMSG(("found tabstop indx=%d\n", i-1));
+			pTab = (fl_TabStop*) m_vecTabs.getNthItem(i>0?i-1:0);
+			UT_ASSERT(pTab);
+			
+			iPosition = pTab->getPositionLayoutUnits();
+			iType = pTab->getType();
+			iLeader = pTab->getLeader();
+
+			return true;
+		}
+	}
+
+	// the special case where there is no tabstop after the tab
+	// but there is something before it
+	if(iCountTabs > 0 && i == iCountTabs)
+	{
+			UT_DEBUGMSG(("found tabstop indx=%d\n", iCountTabs - 1));
+			fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(iCountTabs - 1);
+			UT_ASSERT(pTab);
+			
+			iPosition = pTab->getPositionLayoutUnits();
+			iType = pTab->getType();
+			iLeader = pTab->getLeader();
+
+			return true;
+	}
+	
+	// now, handle the default tabs
+
+	UT_sint32 iMin = m_iLeftMarginLayoutUnits;
+	UT_DEBUGMSG(("not tabs: using default tabs; iMin %d, iStartX %d\n", iMin, iStartX));
+	if (iMin >= iStartX)
+	{
+		iPosition = iMin;
+		iType = FL_TAB_LEFT;
+		return true;
+	}
+
+	UT_ASSERT(m_iDefaultTabIntervalLayoutUnits > 0);
+
+	// mathematical approach
+	// the -1 is to ensure we do not get iStartX
+	const UT_sint32 iPos = ((iStartX-1) / m_iDefaultTabIntervalLayoutUnits) *
+		m_iDefaultTabIntervalLayoutUnits;
+	UT_ASSERT(iPos <= iStartX);
+
+	iPosition = iPos;
+	iType = FL_TAB_LEFT;
+	UT_DEBUGMSG(("iPosition %d\n", iPosition));
+	return true;
+
+}
+
 bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, fl_TabStop *pTabInfo)
 {
 	// a static function

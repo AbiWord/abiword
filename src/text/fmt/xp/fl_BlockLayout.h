@@ -288,6 +288,13 @@ public:
 										 UT_sint32& iPosition, 
 										 eTabType& iType, 
 										 eTabLeader &iLeader);
+ 	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
+							UT_sint32& iPosition, eTabType& iType,
+							eTabLeader &iLeader );
+ 	bool	findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
+										 UT_sint32& iPosition,
+										 eTabType& iType,
+										 eTabLeader &iLeader);
 
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const { return (UT_sint32) m_vecTabs.getItemCount(); }

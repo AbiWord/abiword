@@ -165,6 +165,8 @@ public:
 
 	bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
 	bool		findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
+	bool		findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
+	bool		findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
 	
 	void		setNeedsRedraw(void);
 	bool		needsRedraw(void) { return m_bNeedsRedraw; }
