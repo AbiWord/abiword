@@ -196,30 +196,36 @@ void XAP_BeOSFrame::_createTopLevelWindow(void)
 
 UT_Bool XAP_BeOSFrame::close()
 {
-	//Destroy the top level window
+	m_pBeWin->Lock();
+	m_pBeWin->Close();
+	m_pBeWin->Unlock();
 	return UT_TRUE;
 }
 
 UT_Bool XAP_BeOSFrame::raise()
 {
-	//GtkWidget * tlw = getTopLevelWindow();
-	//UT_ASSERT(tlw);
-	//gdk_window_raise(tlw->window);
-
+	
+	m_pBeWin->Lock();
+	m_pBeWin->Show();
+	m_pBeWin->Unlock();
 	return UT_TRUE;
 }
 
 UT_Bool XAP_BeOSFrame::show()
 {
+	m_pBeWin->Lock();
+	m_pBeWin->Show();
+	m_pBeWin->Unlock();
 	return UT_TRUE;
 }
 
 UT_Bool XAP_BeOSFrame::openURL(const char * szURL)
 {
-	// TODO: call NetPositive to open the specified URL
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-
-	return UT_FALSE;
+	char *url;
+	url = (char*)strdup(szURL);
+	be_roster->Launch("text/html", 1, &url);
+	free(url);
+	return UT_TRUE;
 }
 
 UT_Bool XAP_BeOSFrame::updateTitle()

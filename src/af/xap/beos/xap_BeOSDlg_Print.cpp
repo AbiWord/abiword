@@ -30,6 +30,38 @@
 #include "xap_BeOSFrame.h"
 #include "gr_BeOSGraphics.h"
 
+/*
+ Remove this once things are working right
+*/
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_MessageBox.h"
+
+static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
+{
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	char buf[1024];
+	// THIS ONE IS NOT LOCALIZED
+	sprintf(buf, "%s not implemented yet.\n\nAdd code in %s, line %d and mail patches to:\n\n\tabiword-dev@abisource.com", szWhat, __FILE__, iLine);
+
+	pDialog->setMessage(buf);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
+
+	pDialog->runModal(pFrame);
+
+//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+}
+
 /*****************************************************************/
 XAP_Dialog * XAP_BeOSDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
@@ -92,6 +124,8 @@ void XAP_BeOSDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 
 void XAP_BeOSDialog_Print::runModal(XAP_Frame * pFrame)
 {
+	s_TellNotImplemented(pFrame, "Printing on BeOS", __LINE__);
+
 	m_pBeOSFrame = static_cast<XAP_BeOSFrame *>(pFrame);
 	UT_ASSERT(m_pBeOSFrame);
 	
@@ -160,4 +194,3 @@ Fail:
 	m_answer = a_CANCEL;
 	return;
 }
-
