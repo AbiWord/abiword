@@ -96,7 +96,7 @@ public:
 	UT_sint32  m_styleNumber ; //index into the style table
 	UT_uint32  m_listTag; // tag for lists to hang off
 	const char * m_szLang;
-	bool    m_RTL;
+	UT_BidiCharType m_dir;
 	UT_BidiCharType m_dirOverride;
 	bool    m_Hidden;
 	PP_RevisionType m_eRevision;
@@ -223,7 +223,7 @@ struct ABI_EXPORT RTFProps_ParaProps
 	UT_uint32       m_iOverrideLevel;     // 0's index to the level
 	_rtfListTable   m_rtfListTable;
 	UT_sint32  m_styleNumber ; //index into the style table
-	bool            m_RTL;
+	UT_BidiCharType m_dir;
 	UT_sint32       m_tableLevel; //nesting level of the paragram in a table.
 	bool            m_bInTable; // true if paragraph is in a table
 	PP_RevisionType m_eRevision;
@@ -884,6 +884,10 @@ private:
 	bool		          m_bStruxImage;
 	UT_UTF8String	      m_sImageName;
 	bool                  m_bFrameStruxIn;
+
+	UT_BidiCharType       m_iAutoBidiOverride;
+	UT_BidiCharType       m_iBidiLastType;
+	UT_BidiCharType       m_iBidiNextType;
 
 };
 

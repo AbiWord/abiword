@@ -1133,7 +1133,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_styleNumber = -1;
 	m_listTag = 0;
 	m_szLang = 0;
-	m_RTL = false;
+	m_dir = UT_BIDI_UNSET;
 	m_dirOverride = UT_BIDI_UNSET;
 	m_Hidden = false;
 	m_eRevision = PP_REVISION_NONE;
@@ -1169,7 +1169,7 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_iOverride = 0;
 	m_iOverrideLevel = 0;
 	m_styleNumber = -1;
-	m_RTL = false;
+	m_dir = UT_BIDI_UNSET;
 	m_tableLevel = 1; // Has to be 1 because the RTF spec has itap defaulting 
 	                  // to this value
 	m_bInTable = false;
@@ -1247,7 +1247,7 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		m_bInTable = other.m_bInTable;
 	}
 
-	m_RTL = other.m_RTL;
+	m_dir = other.m_dir;
 	m_tableLevel = other.m_tableLevel;
 	return *this;
 }
@@ -1396,7 +1396,10 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bSectionHasPara(false),
 	m_bStruxInserted(false),
 	m_bStruxImage(false),
-	m_bFrameStruxIn(false)
+	m_bFrameStruxIn(false),
+	m_iAutoBidiOverride(UT_BIDI_UNSET),
+	m_iBidiLastType(UT_BIDI_UNSET),
+	m_iBidiNextType(UT_BIDI_UNSET)
 {
 	m_sImageName.clear();
 	if (!IE_Imp_RTF::keywordSorted) {
@@ -4376,7 +4379,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_ltrpar:
 		xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
-		m_currentRTFState.m_paraProps.m_RTL = false;
+		m_currentRTFState.m_paraProps.m_dir = UT_BIDI_RTL;
 		//reset doc bidi attribute
 		m_bBidiMode = false;
 		return true;
@@ -4384,16 +4387,17 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		xxx_UT_DEBUGMSG(("rtf imp.: ltrsect\n"));
 		m_currentRTFState.m_sectionProps.m_dir = UT_BIDI_LTR;
 		return true;
+	case RTF_KW_ltrmark:
 	case RTF_KW_ltrch:
 		xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
-		m_currentRTFState.m_charProps.m_RTL = false;
+		m_currentRTFState.m_charProps.m_dir = UT_BIDI_LTR;
 		
 		// we enter bidi mode if we encounter a character
 		// formatting inconsistent with the base direction of the
 		// paragraph; once in bidi mode, we have to stay there
 		// until the end of the current pragraph
 		m_bBidiMode = m_bBidiMode ||
-			(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
+			(m_currentRTFState.m_charProps.m_dir ^ m_currentRTFState.m_paraProps.m_dir);
 		return true;
 	case RTF_KW_mac:
 		// TODO some iconv's may have a different name - "MacRoman"
@@ -4559,7 +4563,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return true;
 	case RTF_KW_rtlpar:
 		xxx_UT_DEBUGMSG(("rtf imp.: rtlpar\n"));
-		m_currentRTFState.m_paraProps.m_RTL = true;
+		m_currentRTFState.m_paraProps.m_dir = UT_BIDI_RTL;
 		// reset the doc bidi attribute
 		m_bBidiMode = false;
 		return true;
@@ -4567,15 +4571,17 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		UT_DEBUGMSG(("rtf imp.: rtlsect\n"));
 		m_currentRTFState.m_sectionProps.m_dir = UT_BIDI_RTL;
 		return true;
+
+	case RTF_KW_rtlmark:
 	case RTF_KW_rtlch:
 		xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
-		m_currentRTFState.m_charProps.m_RTL = true;
+		m_currentRTFState.m_charProps.m_dir = UT_BIDI_RTL;
 		// we enter bidi mode if we encounter a character
 		// formatting inconsistent with the base direction of the
 		// paragraph; once in bidi mode, we have to stay there
 		// until the end of the current pragraph
 		m_bBidiMode = m_bBidiMode ||
-			(m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL);
+			(m_currentRTFState.m_charProps.m_dir ^ m_currentRTFState.m_paraProps.m_dir);
 		return true;
 	case RTF_KW_row:
 		HandleRow();
@@ -5365,7 +5371,7 @@ bool IE_Imp_RTF::_appendSpan()
 
 	if(m_bBidiMode)
 	{
-		UT_BidiCharType iOverride = UT_BIDI_UNSET, cType, cLastType = UT_BIDI_UNSET, cNextType;
+		UT_BidiCharType cType;
 		UT_uint32 iLast = 0;
 		UT_UCS4Char c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)));
 	
@@ -5376,19 +5382,19 @@ bool IE_Imp_RTF::_appendSpan()
 			if(i < iLen - 1 )
 			{
 				c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(i+1)));
-				cNextType = UT_bidiGetCharType(c);
+				m_iBidiNextType = UT_bidiGetCharType(c);
 			}
 			else
 			{
-				cNextType = UT_BIDI_UNSET;
+				m_iBidiNextType = UT_BIDI_UNSET;
 			}
 		
 		
 			if(UT_BIDI_IS_NEUTRAL(cType))
 			{
-				if(!m_currentRTFState.m_charProps.m_RTL
-				   && iOverride != UT_BIDI_LTR
-				   && (cLastType != UT_BIDI_LTR || cNextType != UT_BIDI_LTR))
+				if(m_currentRTFState.m_charProps.m_dir == UT_BIDI_LTR
+				   && m_iAutoBidiOverride != UT_BIDI_LTR
+				   && (m_iBidiLastType != UT_BIDI_LTR || m_iBidiNextType != UT_BIDI_LTR))
 				{
 					if(i - iLast > 0)
 					{
@@ -5399,14 +5405,14 @@ bool IE_Imp_RTF::_appendSpan()
 						if(!getDoc()->appendSpan(p, i - iLast))
 							return false;
 					}
-					iOverride = UT_BIDI_LTR;
+					m_iAutoBidiOverride = UT_BIDI_LTR;
 					propsArray[iPropOffset] = pProps;
 					propsArray[iPropOffset + 1] = prop_ltr.c_str();
 					iLast = i;
 				}
-				else if(m_currentRTFState.m_charProps.m_RTL
-						&& iOverride != UT_BIDI_RTL
-						&& (cLastType != UT_BIDI_RTL || cNextType != UT_BIDI_RTL))
+				else if(m_currentRTFState.m_charProps.m_dir == UT_BIDI_RTL
+						&& m_iAutoBidiOverride != UT_BIDI_RTL
+						&& (m_iBidiLastType != UT_BIDI_RTL || m_iBidiNextType != UT_BIDI_RTL))
 				{
 					if(i - iLast > 0)
 					{
@@ -5417,7 +5423,7 @@ bool IE_Imp_RTF::_appendSpan()
 						if(!getDoc()->appendSpan(p, i - iLast))
 							return false;
 					}
-					iOverride = UT_BIDI_RTL;
+					m_iAutoBidiOverride = UT_BIDI_RTL;
 					propsArray[iPropOffset] = pProps;
 					propsArray[iPropOffset + 1] = prop_rtl.c_str();
 					iLast = i;
@@ -5427,7 +5433,7 @@ bool IE_Imp_RTF::_appendSpan()
 			{
 				// strong character; if we previously issued an override,
 				// we need to cancel it
-				if(iOverride != UT_BIDI_UNSET)
+				if(m_iAutoBidiOverride != UT_BIDI_UNSET)
 				{
 					if(i - iLast > 0)
 					{
@@ -5438,7 +5444,7 @@ bool IE_Imp_RTF::_appendSpan()
 						if(!getDoc()->appendSpan(p, i - iLast))
 							return false;
 					}
-					iOverride = UT_BIDI_UNSET;
+					m_iAutoBidiOverride = UT_BIDI_UNSET;
 
 					if(bRevised)
 					{
@@ -5454,8 +5460,8 @@ bool IE_Imp_RTF::_appendSpan()
 				}
 			}
 
-			cLastType = cType;
-			cType = cNextType;
+			m_iBidiLastType = cType;
+			cType = m_iBidiNextType;
 		}
 
 		// insert what is left over
@@ -5544,7 +5550,7 @@ bool IE_Imp_RTF::_insertSpan()
 
 	if(m_bBidiMode)
 	{
-		UT_BidiCharType iOverride = UT_BIDI_UNSET, cType, cLastType = UT_BIDI_UNSET, cNextType;
+		UT_BidiCharType cType;
 		UT_uint32 iLast = 0;
 		UT_UCS4Char c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)));
 	
@@ -5555,19 +5561,19 @@ bool IE_Imp_RTF::_insertSpan()
 			if(i < iLen - 1 )
 			{
 				c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(i+1)));
-				cNextType = UT_bidiGetCharType(c);
+				m_iBidiNextType = UT_bidiGetCharType(c);
 			}
 			else
 			{
-				cNextType = UT_BIDI_UNSET;
+				m_iBidiNextType = UT_BIDI_UNSET;
 			}
 		
 		
 			if(UT_BIDI_IS_NEUTRAL(cType))
 			{
-				if(!m_currentRTFState.m_charProps.m_RTL
-				   && iOverride != UT_BIDI_LTR
-				   && (cLastType != UT_BIDI_LTR || cNextType != UT_BIDI_LTR))
+				if(m_currentRTFState.m_charProps.m_dir == UT_BIDI_LTR
+				   && m_iAutoBidiOverride != UT_BIDI_LTR
+				   && (m_iBidiLastType != UT_BIDI_LTR || m_iBidiNextType != UT_BIDI_LTR))
 				{
 					if(i - iLast > 0)
 					{
@@ -5575,20 +5581,20 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste,m_dposPaste+ i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_SetFmt, m_dposPaste,m_dposPaste+ i - iLast,
 													propsArray,NULL))
 							return false;
 						
 						m_dposPaste += i - iLast;						
 					}
-					iOverride = UT_BIDI_LTR;
+					m_iAutoBidiOverride = UT_BIDI_LTR;
 					propsArray[iPropOffset] = pProps;
 					propsArray[iPropOffset + 1] = prop_ltr.c_str();
 					iLast = i;
 				}
-				else if(m_currentRTFState.m_charProps.m_RTL
-						&& iOverride != UT_BIDI_RTL
-						&& (cLastType != UT_BIDI_RTL || cNextType != UT_BIDI_RTL))
+				else if(m_currentRTFState.m_charProps.m_dir == UT_BIDI_RTL
+						&& m_iAutoBidiOverride != UT_BIDI_RTL
+						&& (m_iBidiLastType != UT_BIDI_RTL || m_iBidiNextType != UT_BIDI_RTL))
 				{
 					if(i - iLast > 0)
 					{
@@ -5596,13 +5602,13 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste,m_dposPaste+ i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_SetFmt, m_dposPaste,m_dposPaste+ i - iLast,
 													propsArray,NULL))
 							return false;
 						
 						m_dposPaste += i - iLast;						
 					}
-					iOverride = UT_BIDI_RTL;
+					m_iAutoBidiOverride = UT_BIDI_RTL;
 					propsArray[iPropOffset] = pProps;
 					propsArray[iPropOffset + 1] = prop_rtl.c_str();
 					iLast = i;
@@ -5612,7 +5618,7 @@ bool IE_Imp_RTF::_insertSpan()
 			{
 				// strong character; if we previously issued an override,
 				// we need to cancel it
-				if(iOverride != UT_BIDI_UNSET)
+				if(m_iAutoBidiOverride != UT_BIDI_UNSET)
 				{
 					if(i - iLast > 0)
 					{
@@ -5620,13 +5626,13 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_SetFmt, m_dposPaste, m_dposPaste + i - iLast,
 													propsArray,NULL))
 							return false;
 						
 						m_dposPaste += i - iLast;						
 					}
-					iOverride = UT_BIDI_UNSET;
+					m_iAutoBidiOverride = UT_BIDI_UNSET;
 					if(bRevised)
 					{
 						propsArray[iPropOffset] = NULL;
@@ -5641,8 +5647,8 @@ bool IE_Imp_RTF::_insertSpan()
 				}
 			}
 
-			cLastType = cType;
-			cType = cNextType;
+			m_iBidiLastType = cType;
+			cType = m_iBidiNextType;
 		}
 
 		// insert what is left over
@@ -5652,7 +5658,7 @@ bool IE_Imp_RTF::_insertSpan()
 			if(!getDoc()->insertSpan(m_dposPaste, p ,iLen - iLast))
 				return false;
 						
-			if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + iLen - iLast,
+			if(!getDoc()->changeSpanFmt(PTC_SetFmt, m_dposPaste, m_dposPaste + iLen - iLast,
 										propsArray,NULL))
 				return false;
 						
@@ -6059,7 +6065,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	propBuffer += tempBuffer;
 
 	propBuffer += "dom-dir:";
-	if(m_currentRTFState.m_paraProps.m_RTL)
+	if(m_currentRTFState.m_paraProps.m_dir == UT_BIDI_RTL)
 		propBuffer += "rtl; ";
 	else
 		propBuffer += "ltr; ";
