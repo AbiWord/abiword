@@ -61,7 +61,7 @@ typedef enum _FVDocPos
 	FV_DOCPOS_BOP, FV_DOCPOS_EOP,	// page
 	FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
 	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
-	FV_DOCPOS_BOW, FV_DOCPOS_EOW	// word
+	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT	// word
 } FV_DocPos;
 
 typedef enum _FVJumpTarget

@@ -1933,7 +1933,7 @@ Defun1(warpInsPtBOW)
 Defun1(warpInsPtEOW)
 {
 	ABIWORD_VIEW;
-	pView->moveInsPtTo(FV_DOCPOS_EOW);
+	pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
 	return UT_TRUE;
 }
 
@@ -2239,7 +2239,7 @@ Defun1(extSelBOW)
 Defun1(extSelEOW)
 {
 	ABIWORD_VIEW;
-	pView->extSelTo(FV_DOCPOS_EOW);
+	pView->extSelTo(FV_DOCPOS_EOW_SELECT);
 	return UT_TRUE;
 }
 
@@ -2315,7 +2315,7 @@ Defun(selectAll)
 Defun(selectWord)
 {
 	ABIWORD_VIEW;
-	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW);
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
 	return UT_TRUE;
 }
 
@@ -2371,7 +2371,7 @@ Defun1(delBOW)
 Defun1(delEOW)
 {
 	ABIWORD_VIEW;
-	pView->delTo(FV_DOCPOS_EOW);
+	pView->delTo(FV_DOCPOS_EOW_SELECT);
 	return UT_TRUE;
 }
 

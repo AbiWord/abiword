@@ -727,7 +727,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 		}
 		break;
 
-	case FV_DOCPOS_EOW:
+	case FV_DOCPOS_EOW_MOVE:
 		{
 			UT_GrowBuf pgb(1024);
 
@@ -769,18 +769,21 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset]);
 			
 			// Needed so ctrl-right arrow will work
+			// This is the code that was causing bug 10
+			// There is still some weird behavior that should be investigated
+
 			for (; offset < pgb.getLength(); offset++)
 			{
-			    if (!UT_isWordDelimiter(pSpan[offset]))
+		       	    if (!UT_isWordDelimiter(pSpan[offset]))
 				break;
 			}
 			
 			for (; offset < pgb.getLength(); offset++)
 			{
 				if (!UT_isWordDelimiter(pSpan[offset]))
-				{
-					if (bBetween)
-						break;
+				{				  
+				  if (bBetween)
+				    break;
 				}
 				else if (pSpan[offset] != ' ')
 				    break;
@@ -788,9 +791,78 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 					bBetween = UT_TRUE;
 			}
 
-			iPos = offset + pBlock->getPosition();
+	     		iPos = offset + pBlock->getPosition();
 		}
 		break;
+
+	case FV_DOCPOS_EOW_SELECT:
+		{
+			UT_GrowBuf pgb(1024);
+
+			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
+			UT_ASSERT(bRes);
+
+			const UT_UCSChar* pSpan = pgb.getPointer(0);
+
+			UT_ASSERT(iPos >= pBlock->getPosition());
+			UT_uint32 offset = iPos - pBlock->getPosition();
+			UT_ASSERT(offset <= pgb.getLength());
+
+			if (offset == pgb.getLength())
+			{
+				if (!bKeepLooking)
+					break;
+
+				// is there a next block?
+				pBlock = pBlock->getNextBlockInDocument();
+
+				if (!pBlock)
+					break;
+
+				// yep.  look there instead
+				pgb.truncate(0);
+				bRes = pBlock->getBlockBuf(&pgb);
+				UT_ASSERT(bRes);
+
+				pSpan = pgb.getPointer(0);
+				offset = 0;
+
+				if (pgb.getLength() == 0)
+				{
+					iPos = pBlock->getPosition();
+					break;
+				}
+			}
+
+			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset]);
+			
+			// Needed so ctrl-right arrow will work
+			// This is the code that was causing bug 10
+			// There is still some weird behavior that should be investigated
+			/*
+			for (; offset < pgb.getLength(); offset++)
+			{
+		       	    if (!UT_isWordDelimiter(pSpan[offset]))
+				break;
+			}
+			*/
+			for (; offset < pgb.getLength(); offset++)
+			{
+				if (UT_isWordDelimiter(pSpan[offset]))
+				{				  
+				  if (bBetween)
+				    break;
+				}
+				else if (pSpan[offset] == ' ')
+				    break;
+				else
+					bBetween = UT_TRUE;
+			}
+
+	     		iPos = offset + pBlock->getPosition();
+		}
+		break;
+
 
 	case FV_DOCPOS_BOP: 
 		{
@@ -2439,7 +2511,7 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 	    
 	PT_DocPosition iNewPointWord;
 	if (iNewPoint > m_iSelectionAnchor)
-		iNewPointWord = _getDocPosFromPoint(iNewPoint,FV_DOCPOS_EOW,UT_FALSE);
+		iNewPointWord = _getDocPosFromPoint(iNewPoint,FV_DOCPOS_EOW_SELECT,UT_FALSE);
 	else
 		iNewPointWord = _getDocPosFromPoint(iNewPoint,FV_DOCPOS_BOW,UT_FALSE);
 
