@@ -49,6 +49,12 @@ struct uniWidth
 	UT_uint16  width;
 };
 
+/*!
+  Convert font measurement
+ */
+float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
+					   UT_uint32 iFontPoints);
+
 typedef enum {FONT_TYPE_PFA, FONT_TYPE_PFB, FONT_TYPE_TTF, FONT_TYPE_UNKNOWN} font_type;
 
 class ABI_EXPORT XAP_UnixFont
@@ -92,8 +98,6 @@ class ABI_EXPORT XAP_UnixFont
 
 	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void) const;
-
-	UT_uint16				getCharWidth(UT_UCSChar c) const;
 	
 	bool					embedInto(ps_Generate& ps);
 	bool					openPFA(void);
@@ -111,7 +115,6 @@ class ABI_EXPORT XAP_UnixFont
 
 	float					getAscender(UT_uint32 iSize) const;
 	float					getDescender(UT_uint32 iSize) const;
-	float					measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 	UT_String				getPostscriptName() const;
 	
 	void					setFontManager(XAP_UnixFontManager * pFm);
@@ -163,7 +166,6 @@ private:
 
 	/* last used font.  Only usable for when we don't care about the pixel size */
 	mutable XftFont*		m_pXftFont;
-	mutable GR_CharWidths	m_cw;
 };
 
 /* Values found in PFB files */
@@ -198,6 +200,7 @@ class XAP_UnixFontHandle : public GR_Font
 	virtual const char*			getFamily() const { return getUnixFont()->getName(); }
  
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
+	float measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 // private:
 	XAP_UnixFont*				m_font;
 	UT_uint32					m_size;

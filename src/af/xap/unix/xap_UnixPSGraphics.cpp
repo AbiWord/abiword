@@ -177,9 +177,11 @@ UT_uint32 PS_Graphics::getFontHeight()
 	
 UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-  // FIXME we should really be getting stuff from the font in layout units,
-  // FIXME but we're not smart enough to do that yet
-  return static_cast<UT_uint32>(m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution());
+	// FIXME we should really be getting stuff from the font in layout units,
+	// FIXME but we're not smart enough to do that yet
+	float fWidth = m_pCurrentFont->measureUnRemappedChar(c, m_pCurrentFont->getSize())
+		* ((double)getResolution() / (double)getDeviceResolution());
+	return static_cast<UT_uint32>(rintf(fWidth));
 }
 #endif //#ifndef WITH_PANGO
 

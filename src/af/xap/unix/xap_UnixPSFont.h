@@ -41,8 +41,9 @@ public:
 	void				setIndex(UT_uint32 ndx) { m_index = ndx; }
 	UT_uint32			getIndex(void) { return m_index; };	
 	
-	UT_uint16			getCharWidth(UT_UCSChar c);
-	UT_sint32           measureUnremappedCharForCache(UT_UCSChar cChar) const;
+//	UT_uint16			getCharWidth(UT_UCSChar c);
+	virtual UT_sint32   measureUnremappedCharForCache(UT_UCSChar cChar) const;
+	float               measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 
 protected:
 	XAP_UnixFont * 		m_hFont;

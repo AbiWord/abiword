@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -181,18 +182,22 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+	UT_UCSChar realChar;
 	if(!m_bIsSymbol && !m_bIsDingbat)
 	{
-		return (UT_uint32)(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+		realChar = c;
 	}
 	else if (m_bIsSymbol)
 	{
-		return static_cast<UT_uint32>(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeToUnicode(c)), m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+		realChar = static_cast<UT_UCSChar>(adobeToUnicode(c));
 	}
 	else
 	{
-		return (UT_uint32)(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
+		realChar = c;
 	}
+	float fWidth = m_pCurrentPSFont->measureUnRemappedChar(c, m_pCurrentPSFont->getSize())
+		* (float)getResolution() / (float)getDeviceResolution();
+	return static_cast<UT_uint32>(rintf(fWidth));
 }
 
 void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)

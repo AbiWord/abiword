@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "ut_endian.h"
 #include "xap_UnixApp.h"
@@ -914,20 +915,27 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// is that measureString() uses remapping to get past zero-width
 	// character cells.
 
+	UT_UCSChar newChar;
+	double fWidth;
+
 	if(!m_bIsSymbol && !m_bIsDingbat)
 	{
-		// FIXME we should really be getting stuff fromt he font in layout units,
-		// FIXME but we're not smart enough to do that yet
-		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar(c, m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
+		newChar = c;
 	}
 	else if(m_bIsSymbol)
 	{
-		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeToUnicode(c)), m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
+		newChar = static_cast<UT_UCSChar>(adobeToUnicode(c));
 	}
 	else
 	{
-		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeDingbatsToUnicode(c)), m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
+		newChar = static_cast<UT_UCSChar>(adobeDingbatsToUnicode(c));
 	}
+	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME but we're not smart enough to do that yet
+
+	fWidth = m_pFont->measureUnRemappedChar(newChar, m_pFont->getSize())
+		* ((double)getResolution() / (double)s_getDeviceResolution());
+	return static_cast<UT_uint32>(rint(fWidth));
 }
 
 UT_uint32 GR_UnixGraphics::s_getDeviceResolution(void)

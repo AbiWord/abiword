@@ -23,6 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 
+#include "gr_CharWidthsCache.h"
 #include "xap_UnixPSFont.h"
 
 /*
@@ -59,14 +60,33 @@ XAP_UnixFont * PSFont::getUnixFont(void)
 	return m_hFont;
 }
 
-UT_uint16 PSFont::getCharWidth(UT_UCSChar c)
-{
-	UT_ASSERT(m_hFont);
-	return m_hFont->getCharWidth(c);
-}
 
 UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return 0;
+	UT_sint32 width;
+	XftFaceLocker locker(m_hFont->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+	FT_Face pFace = locker.getFace();
+
+	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
+	FT_Error error =
+		FT_Load_Glyph(pFace, glyph_index,
+					FT_LOAD_LINEAR_DESIGN |
+					FT_LOAD_IGNORE_TRANSFORM |
+					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
+	if (error) {
+		return 0;
+	}
+
+	width = pFace->glyph->linearHoriAdvance;
+	return width;
+}
+
+
+float PSFont::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const
+{
+	XftFaceLocker locker(m_hFont->getLayoutXftFont(12));
+	float width =
+		fontPoints2float(iSize, locker.getFace(), getCharWidthFromCache(c));
+
+	return width;
 }

@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
+#include <math.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -163,9 +164,11 @@ UT_uint32 UnixNull_Graphics::getFontHeight()
 	
 UT_uint32 UnixNull_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-  // FIXME we should really be getting stuff fromt he font in layout units,
-  // FIXME but we're not smart enough to do that yet
-  return static_cast<UT_uint32>(m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution());
+	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME but we're not smart enough to do that yet
+	float fWidth = m_pCurrentFont->measureUnRemappedChar(c, m_pCurrentFont->getSize()) 
+		* ((double)getResolution() / (double)getDeviceResolution());
+	return static_cast<UT_uint32>(rintf(fWidth));
 }
 
 UT_uint32 UnixNull_Graphics::getDeviceResolution(void) const

@@ -37,6 +37,12 @@
 #include "xap_UnixFontManager.h"
 #include "gr_UnixGraphics.h"
 
+float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
+				     UT_uint32 iFontPoints)
+{
+	return iFontPoints * iSize * 1.0 / pFace->units_per_EM;
+}
+
 /* Xft face locker impl. */
 XftFaceLocker::XftFaceLocker(XftFont * pFont):m_pFont(pFont)
 {
@@ -108,6 +114,15 @@ UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) co
 	}
 
 	width = pFace->glyph->linearHoriAdvance;
+	return width;
+}
+
+float XAP_UnixFontHandle::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const
+{
+	XftFaceLocker locker(m_font->getLayoutXftFont(12));
+	float width =
+		fontPoints2float(iSize, locker.getFace(), getCharWidthFromCache(c));
+
 	return width;
 }
 
@@ -278,32 +293,6 @@ const char *XAP_UnixFont::getXLFD(void) const
 	return m_xlfd;
 }
 
-/**
- * Calculates the width of a character in original font units
- */
-UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
-{
-	/* don't care about the pixel size */
-	UT_sint32 width = static_cast<UT_sint32>(m_cw.getWidth(c));
-	if (width == GR_CW_UNKNOWN || width == GR_UNKNOWN_BYTE)
-	  {
-		  XftFaceLocker locker(getLayoutXftFont(12));
-		  FT_Face pFace = locker.getFace();
-
-		  FT_UInt glyph_index = FT_Get_Char_Index(pFace, c);
-		  FT_Error error =
-			  FT_Load_Glyph(pFace, glyph_index,
-					FT_LOAD_LINEAR_DESIGN |
-					FT_LOAD_IGNORE_TRANSFORM |
-					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
-		  if (error)
-			  return 0;
-
-		  width = pFace->glyph->linearHoriAdvance;
-		  m_cw.setWidth(c, width);
-	  }
-	return static_cast<UT_uint16>(width);
-}
 
 void XAP_UnixFont::_deleteEncodingTable()
 {
@@ -794,11 +783,6 @@ void XAP_UnixFont::getCoverage(UT_Vector & coverage)
 	  }
 }
 
-inline static float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
-				     UT_uint32 iFontPoints)
-{
-	return iFontPoints * iSize * 1.0 / pFace->units_per_EM;
-}
 
 float XAP_UnixFont::getAscender(UT_uint32 iSize) const
 {
@@ -826,15 +810,6 @@ float XAP_UnixFont::getDescender(UT_uint32 iSize) const
 	return fDescender;
 }
 
-float XAP_UnixFont::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const
-{
-	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
-	XftFaceLocker locker(getLayoutXftFont(12));
-	float width =
-		fontPoints2float(iSize, locker.getFace(), getCharWidth(c));
-	xxx_UT_DEBUGMSG(("XAP_UnixFont::measureUnRemappedChar(%c, %u) -> %f\n", static_cast<char>(c), iSize, width));
-	return width;
-}
 
 UT_String XAP_UnixFont::getPostscriptName() const
 {
