@@ -75,7 +75,7 @@ void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(mainWindow);
 	
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this,
-								 GTK_RESPONSE_CANCEL, false ) )
+								 GTK_RESPONSE_OK, false ) )
 	{
 		case GTK_RESPONSE_OK:
 			event_Ok (); break ;
@@ -202,9 +202,44 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 /*************************************************************************/
 /*************************************************************************/
 
+void AP_UnixDialog_New::event_RadioButtonSensitivity ()
+{
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioEmpty)))
+		// ^ empty document
+	{
+		gtk_widget_set_sensitive (m_choicesList, FALSE);
+		gtk_widget_set_sensitive (m_entryFilename, FALSE);
+		gtk_widget_set_sensitive (m_buttonFilename, FALSE);
+	}
+	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioNew)))
+		// ^ from template
+	{
+		gtk_widget_set_sensitive (m_choicesList, TRUE);
+		gtk_widget_set_sensitive (m_entryFilename, FALSE);
+		gtk_widget_set_sensitive (m_buttonFilename, FALSE);
+	}
+	else
+	{ // ^ open existing document
+		gtk_widget_set_sensitive (m_choicesList, FALSE);
+		gtk_widget_set_sensitive (m_entryFilename, TRUE);
+		gtk_widget_set_sensitive (m_buttonFilename, TRUE);
+	}
+}
+
+/*************************************************************************/
+/*************************************************************************/
+
 static void s_choose_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
 {
 	dlg->event_ToggleOpenExisting();
+}
+
+/*************************************************************************/
+/*************************************************************************/
+
+static void s_radiobutton_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
+{
+	dlg->event_RadioButtonSensitivity();
 }
 
 /*************************************************************************/
@@ -279,11 +314,12 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	m_radioExisting = glade_xml_get_widget(xml, "rdOpen");
 	m_radioEmpty = glade_xml_get_widget(xml, "rdEmpty");
 	m_entryFilename = glade_xml_get_widget(xml, "enFile");
+	m_buttonFilename = glade_xml_get_widget(xml, "btFile");
 	m_choicesList = glade_xml_get_widget(xml, "tvTemplates");
 
-	gtk_button_set_label(GTK_BUTTON(m_radioNew), pSS->getValue(AP_STRING_ID_DLG_NEW_Create));
-	gtk_button_set_label(GTK_BUTTON(m_radioExisting), pSS->getValue(AP_STRING_ID_DLG_NEW_Open));
-	gtk_button_set_label(GTK_BUTTON(m_radioEmpty), pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile));
+	localizeButton(m_radioNew, pSS, AP_STRING_ID_DLG_NEW_Create);
+	localizeButton(m_radioExisting, pSS, AP_STRING_ID_DLG_NEW_Open);
+	localizeButton(m_radioEmpty, pSS, AP_STRING_ID_DLG_NEW_StartEmpty);
 
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes ("Format",
@@ -347,6 +383,9 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	// now select first item in box
  	gtk_widget_grab_focus (m_choicesList);
 
+	// set the initial widget sensitivity state
+	event_RadioButtonSensitivity ();
+
 	g_signal_connect_after(G_OBJECT(m_choicesList),
 						   "cursor-changed",
 						   G_CALLBACK(s_template_clicked),
@@ -358,10 +397,25 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 						   static_cast<gpointer>(this));
 
 	// connect signals
-	g_signal_connect (G_OBJECT(m_radioExisting), 
+	g_signal_connect (G_OBJECT(m_buttonFilename), 
 					  "clicked",
 					  G_CALLBACK(s_choose_clicked), 
 					  (gpointer)this);
+
+	g_signal_connect (G_OBJECT(m_radioNew),
+					"clicked",
+					G_CALLBACK(s_radiobutton_clicked),
+					(gpointer)this);
+
+	g_signal_connect (G_OBJECT(m_radioExisting),
+					"clicked",
+					G_CALLBACK(s_radiobutton_clicked),
+					(gpointer)this);
+
+	g_signal_connect (G_OBJECT(m_radioEmpty),
+					"clicked",
+					G_CALLBACK(s_radiobutton_clicked),
+					(gpointer)this);
 
 	return m_mainWindow;
 }

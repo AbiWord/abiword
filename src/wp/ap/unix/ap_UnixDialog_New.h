@@ -42,6 +42,7 @@ public:
 	void event_Ok ();
 	void event_Cancel ();
 	void event_ToggleOpenExisting ();
+	void event_RadioButtonSensitivity ();
 	
 	void event_ListClicked();
 
@@ -60,6 +61,7 @@ private:
 	XAP_Frame * m_pFrame;
 
 	GtkWidget * m_entryFilename;
+	GtkWidget * m_buttonFilename;
 	GtkWidget * m_radioNew;
 	GtkWidget * m_radioExisting;
 	GtkWidget * m_radioEmpty;
