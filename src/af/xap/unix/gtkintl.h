@@ -1,8 +1,6 @@
 #ifndef __GTKINTL_H__
 #define __GTKINTL_H__
 
-#include "config.h"
-
 #ifdef ENABLE_NLS
 #include<libintl.h>
 #define _(String) dgettext(GETTEXT_PACKAGE,String)
