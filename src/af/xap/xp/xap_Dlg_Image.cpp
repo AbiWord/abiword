@@ -17,40 +17,13 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_DIALOG_PASSWORD_H
-#define XAP_DIALOG_PASSWORD_H
+#include "xap_Dlg_Image.h"
 
-#include "xap_Frame.h"
-#include "xap_Dialog.h"
-#include "xav_View.h"
-
-#include "ut_string_class.h"
-
-class XAP_Frame;
-
-class XAP_Dialog_Password : public XAP_Dialog_NonPersistent
+XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+  : XAP_Dialog_NonPersistent (pDlgFactory, id), m_answer(a_OK)
 {
-public:
-  
-  typedef enum { a_OK, a_Cancel } tAnswer;
+}
 
-	XAP_Dialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_Dialog_Password(void);
-
-	virtual void  runModal(XAP_Frame * pFrame) = 0;
-
-	UT_String getPassword () const { return m_passwd; }
-
-	tAnswer getAnswer () const { return m_answer; }
-
- protected:
-	void setPassword (const char *);
-	void setPassword (UT_String & pass);
-	void setAnswer ( tAnswer ans ) { m_answer = ans; }
-
- private:
-	UT_String m_passwd;
-	tAnswer m_answer;
-};
-
-#endif /* XAP_DIALOG_PASSWORD_H */
+XAP_Dialog_Image::~XAP_Dialog_Image ()
+{
+}

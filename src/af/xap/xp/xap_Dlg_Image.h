@@ -17,40 +17,42 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_DIALOG_PASSWORD_H
-#define XAP_DIALOG_PASSWORD_H
+#ifndef XAP_DIALOG_IMAGE_H
+#define XAP_DIALOG_IMAGE_H
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
 
-#include "ut_string_class.h"
+#include "ut_types.h"
 
 class XAP_Frame;
 
-class XAP_Dialog_Password : public XAP_Dialog_NonPersistent
+class XAP_Dialog_Image : public XAP_Dialog_NonPersistent
 {
 public:
   
   typedef enum { a_OK, a_Cancel } tAnswer;
 
-	XAP_Dialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_Dialog_Password(void);
+	XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_Dialog_Image(void);
 
 	virtual void  runModal(XAP_Frame * pFrame) = 0;
 
-	UT_String getPassword () const { return m_passwd; }
+	double getWidth () const { return m_width; }
+	double getHeight () const { return m_height; }
 
-	tAnswer getAnswer () const { return m_answer; }
+	// needed to set the initial width & height
+	void setWidth (double w) { m_width = w; }
+	void setHeight (double h) { m_height = h; }
 
- protected:
-	void setPassword (const char *);
-	void setPassword (UT_String & pass);
+ protected:	  
 	void setAnswer ( tAnswer ans ) { m_answer = ans; }
 
  private:
-	UT_String m_passwd;
+	double m_width;
+	double m_height;
 	tAnswer m_answer;
 };
 
-#endif /* XAP_DIALOG_PASSWORD_H */
+#endif /* XAP_DIALOG_IMAGE_H */
