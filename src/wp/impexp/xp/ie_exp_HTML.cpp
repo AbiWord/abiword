@@ -413,8 +413,6 @@ void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
 
 	if (bHaveProp && pAP)
 	{
-
-
 	  UT_sint32 rowspan = 1, colspan = 1;
 
 	  rowspan = mTableHelper.getBot() - mTableHelper.getTop();

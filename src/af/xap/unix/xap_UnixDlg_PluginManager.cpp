@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#define GTK_ENABLE_BROKEN
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -232,12 +230,14 @@ void XAP_UnixDialog_PluginManager::_refreshTab1 ()
 
 void XAP_UnixDialog_PluginManager::_refreshTab2 ()
 {
-  gint txt_len = gtk_text_get_length (GTK_TEXT(m_desc));
-  gint txt_pos = 0;
-  if (txt_len > 0) {
-    gtk_editable_delete_text (GTK_EDITABLE (m_desc), 0, 
-			      txt_len);
-  }
+#if 0
+  GtkTextIter start, end;
+
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_desc));
+  gtk_text_buffer_get_iter_at_offset ( buffer, &start, 0 );
+  gtk_text_buffer_get_iter_at_offset ( buffer, &end, -1 );
+  gtk_text_buffer_delete(buffer, &start, &end);
+#endif
   
   XAP_Module * pModule = 0;
   GList * selectedRow = 0;
@@ -270,10 +270,8 @@ void XAP_UnixDialog_PluginManager::_refreshTab2 ()
   gtk_entry_set_text (GTK_ENTRY (m_author), author);
   gtk_entry_set_text (GTK_ENTRY (m_version), version);
   
-  gtk_editable_insert_text (GTK_EDITABLE (m_desc),
-			    desc,
-			    strlen (desc),
-			    &txt_pos);
+  GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(m_desc) ) ;
+  gtk_text_buffer_set_text ( buffer, desc, -1 ) ;
 }
 
 /*****************************************************************/
@@ -484,10 +482,13 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), 
 				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   
-  textDescription = gtk_text_new (NULL, NULL);
+  textDescription = gtk_text_view_new ();
   gtk_widget_show (textDescription);
-  gtk_text_set_word_wrap (GTK_TEXT (textDescription), TRUE);
-  gtk_text_set_editable (GTK_TEXT (textDescription), FALSE);
+  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textDescription), GTK_WRAP_WORD);
+  gtk_text_view_set_editable(GTK_TEXT_VIEW(textDescription), FALSE);
+  // this function claims to be in the GTK2 spec, but is absent from my header
+  // files on RedHat (null)
+  //gtk_text_view_set_cursor_visable(GTK_TEXT_VIEW(textDescription), FALSE);
   gtk_container_add (GTK_CONTAINER (scrolledwindow2), textDescription);
   
   lblPluginDetails = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS));
