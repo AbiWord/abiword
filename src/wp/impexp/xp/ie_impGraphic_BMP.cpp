@@ -320,7 +320,7 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 	UT_uint32 col;
 	UT_uint32 position;
 	UT_uint32 row_width = m_iWidth * m_iBitsPerPlane / 8;
-	while ((row_width % 3) != 0) row_width++;
+	while ((row_width & 3) != 0) row_width++;
 	UT_Byte* row_transformed_data = new UT_Byte[row_width];
 
 	switch (m_iBitsPerPlane)
@@ -343,7 +343,7 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 			/* Calculating the start of each row */
 			position=m_iOffset + row*row_width;
 			/* Transforming the b/r to r/b */
-			for (col=0; col < row_width; col+=3)
+			for (UT_uint32 i=0, col=0; i < m_iWidth; i++,col+=3)
 			{
 				row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
 				row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
