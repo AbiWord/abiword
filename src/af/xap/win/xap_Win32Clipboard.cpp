@@ -100,9 +100,11 @@ HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 	
 bool XAP_Win32Clipboard::hasFormat(const char * format)
 {
-	HANDLE hData = getHandleInFormat(format);
-	GlobalUnlock(hData);
-	return (hData != NULL);
+	UINT iFormat = convertFormatString(format);
+	if (iFormat == 0)
+		return false;
+
+	return (IsClipboardFormatAvailable(iFormat) != FALSE);
 }
 
 //////////////////////////////////////////////////////////////////
