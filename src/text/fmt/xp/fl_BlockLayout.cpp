@@ -1757,8 +1757,10 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	PT_BlockOffset blockOffset = (pcrs->getPosition() - getPosition());
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
+#if 0
 	PT_BlockOffset beginning;
 	UT_uint32 end;
+#endif 
 
 	m_gbCharWidths.del(blockOffset, len);
 	

@@ -660,7 +660,7 @@ LRESULT CALLBACK AP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 		int nWidth = LOWORD(lParam);
 		int nHeight = HIWORD(lParam);
 
-		if (nWidth != f->m_iSizeWidth)
+		if (nWidth != (int) f->m_iSizeWidth)
 		{
 			MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
 		}
