@@ -81,12 +81,14 @@ public:									// we create...
 		size_t dataSize = 0;
 	    if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE)
 		{
-		    UT_UCS2Char * data = (UT_UCS2Char*)strdup(XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str cString]));
-			dataSize = strlen((char *)data);
+			NSString* tmp = [NSString stringWithCString:XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str cString])];
+			dataSize = [tmp length];
+		    data = (UT_UCS2Char*)malloc((dataSize + 1)*sizeof(UT_UCS2Char));
+			[str getCharacters:data];
 		}
 		else
 		{
-			UT_UCS2Char * data = (UT_UCS2Char *)malloc (sizeof (UT_UCS2Char) * (numChars + 1));
+			data = (UT_UCS2Char *)malloc (sizeof (UT_UCS2Char) * (numChars + 1));
 			[str getCharacters:data];
 			dataSize = numChars * sizeof(UT_UCS2Char);
 		}
