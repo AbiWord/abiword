@@ -7080,13 +7080,13 @@ Defun1(toggleSub)
 Defun1(toggleDirOverrideLTR)
 {
 	ABIWORD_VIEW;
-	return _toggleSpan(pView, "dir-override", "ltr", "off");
+	return _toggleSpan(pView, "dir-override", "ltr", "");
 }
 
 Defun1(toggleDirOverrideRTL)
 {
 	ABIWORD_VIEW;
-	return _toggleSpan(pView, "dir-override", "rtl", "off");
+	return _toggleSpan(pView, "dir-override", "rtl", "");
 }
 
 Defun1(toggleDomDirection)
