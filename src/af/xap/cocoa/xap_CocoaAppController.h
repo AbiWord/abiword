@@ -100,7 +100,8 @@ enum XAP_CocoaAppMenu_Id
 
 	NSMenuItem *			m_PluginsToolsSeparator;
 
-	BOOL			m_bFileOpenedDuringLaunch;
+	NSMutableArray *		m_FilesRequestedDuringLaunch;
+
 	BOOL			m_bApplicationLaunching;
 	BOOL			m_bAutoLoadPluginsAfterLaunch;
 

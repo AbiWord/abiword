@@ -308,7 +308,8 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			XAP_AppController_Instance = self;
 
-			m_bFileOpenedDuringLaunch = NO;
+			m_FilesRequestedDuringLaunch = [[NSMutableArray alloc] initWithCapacity:8];
+
 			m_bApplicationLaunching   = YES;
 
 			m_bAutoLoadPluginsAfterLaunch = NO;
@@ -329,6 +330,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (void)dealloc
 {
+	if (m_FilesRequestedDuringLaunch)
+		{
+			[m_FilesRequestedDuringLaunch release];
+			m_FilesRequestedDuringLaunch = 0;
+		}
 	if (m_PanelMenu)
 		{
 			[m_PanelMenu release];
@@ -428,7 +434,21 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			UT_DEBUGMSG(("[...FinishLaunching] Auto-Loading plug-ins:\n"));
 			XAP_CocoaModule::loadAllPlugins();
 		}
-	if (m_bFileOpenedDuringLaunch == NO)
+
+	BOOL bFileOpenedDuringLaunch = NO;
+
+	unsigned count = [m_FilesRequestedDuringLaunch count];
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+
+			if ([self application:NSApp openFile:filename])
+				{
+					bFileOpenedDuringLaunch = YES;
+				}
+		}
+	if (bFileOpenedDuringLaunch == NO)
 		{
 			UT_DEBUGMSG(("[...FinishLaunching] No file opened during launch, so opening untitled document:\n"));
 			[self applicationOpenUntitledFile:NSApp];
@@ -453,6 +473,12 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
+	if (m_bApplicationLaunching == YES)
+		{
+			[m_FilesRequestedDuringLaunch addObject:filename];
+			return YES;
+		}
+
 	UT_DEBUGMSG(("Requested to open %s\n", [filename UTF8String]));
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pNewFrame = pApp->newFrame();
@@ -467,9 +493,6 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	if (result)
 	{
 		pNewFrame->show();
-
-		if (m_bApplicationLaunching == YES)
-			m_bFileOpenedDuringLaunch = YES;
 	}
 	return (result ? YES : NO);
 }
@@ -494,6 +517,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
 {
+	if (m_bApplicationLaunching == YES)
+		{
+			return YES;
+		}
+
 	UT_DEBUGMSG(("Requested to open untitled file...\n"));
 
 	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
@@ -504,13 +532,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	if (!pEM)
 		return NO;
 
-	bool result = pEM->Fn(0,0);
-	if (result)
-	{
-		if (m_bApplicationLaunching == YES)
-			m_bFileOpenedDuringLaunch = YES;
-	}
-	return (result ? YES : NO);
+	return (pEM->Fn(0,0) ? YES : NO);
 }
 
 - (BOOL)applicationOpenFile:(NSApplication *)theApplication
