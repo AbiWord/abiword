@@ -164,6 +164,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	m_answer = a_OK;
 
+#define DRAWING_RESOLUTION 96
 	if (value == Pt_PRINTSEL_PRINT || value == Pt_PRINTSEL_PREVIEW) {
 		UT_uint32 first = 0, last = 0;
 		char *option;
@@ -173,7 +174,19 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 		//TODO: Do we need to specify a source of 72 dpi?
 
-		//Set the print resolution to the same as what we draw with
+#if 0 /* This makes bad things happen */
+		//Set the scaling to be 1 to 1, by setting x,y to -1000
+		point.x = point.y = -1000;
+		PpSetPC(m_pPrintContext, Pp_PC_SCALE, &point, 0);
+#endif
+
+		/* This doesn't make a difference, do it anyway */
+		//Set the source resolution so that we can scale properly
+		point.x = point.y = DRAWING_RESOLUTION;		
+		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_RESOLUTION, &point, 0);
+
+#if 0
+		//Set the print resolution to the same as what we draw with?
 		PpGetPC(m_pPrintContext, Pp_PC_PRINTER_RESOLUTION, (const void **)&gpoint);
 		UT_DEBUGMSG(("PRINT: Printer resolution is %d,%d", gpoint->x, gpoint->y));
 		if (gpoint->x < 300 || gpoint->y < 300) {
@@ -184,6 +197,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			PpGetPC(m_pPrintContext, Pp_PC_PRINTER_RESOLUTION, (const void **)&gpoint);
 			UT_DEBUGMSG(("PRINT: New Printing resolution is %d,%d", gpoint->x, gpoint->y));
 		}	
+#endif
 
 		//Set it up so we have no margins (1000th/inch)
 		nrect.ul.x = nrect.ul.y = 
@@ -191,33 +205,25 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		PpSetPC(m_pPrintContext, Pp_PC_MARGINS, &nrect, 0);
 
 		//Find out the non-printable margins for the paper (1000th/inch)
+#if 0
 		PpGetPC(m_pPrintContext, Pp_PC_NONPRINT_MARGINS, (const void **)&rect);
 		UT_DEBUGMSG(("PRINT: Non-Print Margins are %d,%d %d,%d ", 
 				rect->ul.x, rect->ul.y, rect->lr.x, rect->lr.y));
-
-		//Set the source offset to those non-printable margins (pixels?)
-		point.x = (rect->ul.x * 72) / 1000;
-		point.y = (rect->ul.y * 72) / 1000;
+		//... and set the source offset (pixels?) to the non-printable margins 
+		point.x = (rect->ul.x * DRAWING_RESOLUTION) / 1000;
+		point.y = (rect->ul.y * DRAWING_RESOLUTION) / 1000;
 		UT_DEBUGMSG(("PRINT: Setting offset to %d,%d pixels", point.x, point.y));
 		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_OFFSET, &point, 0);
+#endif
 
-		//Determine what the paper size is (1000th/inch)
+		//Determine the paper size (1000th/inch) which should be our source size
 		PpGetPC(m_pPrintContext, Pp_PC_PAPER_SIZE, (const void **)&dim);
 		UT_DEBUGMSG(("PRINT: Paper size is %d/%d ", dim->w, dim->h));
-
-#define DPI_LEVEL 72
-#if 0	/* Hardcode 612/792 for now */
-		size.w = ((dim->w -
-				  (rect->ul.x + rect->lr.x)) * DPI_LEVEL) / 1000;
-		size.h = ((dim->h -
-				  (rect->ul.y + rect->lr.y)) * DPI_LEVEL) / 1000;
-#else
-		size.w = 612;
-		size.h = 792;
-#endif
-		
+		size.w = (dim->w * DRAWING_RESOLUTION) / 1000;
+		size.h = (dim->h * DRAWING_RESOLUTION) / 1000;
 		UT_DEBUGMSG(("PRINT: Setting source size %d/%d ", size.w, size.h));
 		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_SIZE, &size, 0);
+
 
 		PpPageRange_t *range = NULL;
 		PpGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&range);
@@ -241,7 +247,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		}
 
 		m_bDoPrintToFile	= false;	//Let photon take care of this
-		m_bCollate			= false; //Pp_PC_COLLATING_MODE
+		m_bCollate			= false; 	//Pp_PC_COLLATING_MODE
 		
 		PpGetPC(m_pPrintContext, Pp_PC_COPIES, (const void **)&option);
 		m_nCopies			= __max(strtoul(option, NULL, 10), 1);

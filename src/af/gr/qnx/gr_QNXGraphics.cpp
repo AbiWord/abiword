@@ -161,14 +161,18 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
 {
-	/*Photon comment
-	   This resolution should be variable between the printer
-	   and the screen.  For now we return a fixed value of 
-	   72 and use that for the source resolution when printing. 
-	  Unix uses a fixed value of 100
+	/*Unix uses a fixed value of 100dpi for this value,
+      Windows does a call to get the context resolution.
+      Photon old fonts were 72dpi, the new ones are 96dpi
+      so we will use that.
+
+      In reality we should use a value which doesn't change 
+      and is based on something other than the changing font
+      values.  Also should something different be used for
+      the printing values vs the screen values?
 	*/
 
-	return 72 /* 100 */;
+	return 96;
 }
 
 void GR_QNXGraphics::flush(void)
