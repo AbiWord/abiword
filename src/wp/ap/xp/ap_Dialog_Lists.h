@@ -94,6 +94,10 @@ public:
 	fl_BlockLayout *			getBlock(void);
 	UT_uint32					getTick(void);
 	void						setTick(UT_uint32 iTick);
+	bool                                            isDirty(void) const {return m_bDirty;}
+	void                                            setDirty(void) {m_bDirty = true;}
+	void                                            clearDirty(void) {m_bDirty = false;}
+
 	bool						setView(FV_View * view);
 	FV_View *					getView(void);
 	AV_View *					getAvView(void);
@@ -161,6 +165,7 @@ protected:
 	PD_Document *                           m_pFakeDoc;
 private:
 	virtual const XML_Char*	_getDingbatsFontName() const;
+	bool                                    m_bDirty;
 };
 
 

@@ -343,7 +343,8 @@ dcl(DLG_Lists_Preview,                     "Preview")
 dcl(DLG_Lists_Start_New,                     "Start New List")
 dcl(DLG_Lists_Apply_Current,                "Apply to Current List")
 dcl(DLG_Lists_Start_Sub,                "Start Sublist")
-dcl(DLG_Lists_Resume,                "Resume Previous List")
+dcl(DLG_Lists_Resume,                "Attach to Previous List")
+dcl(DLG_Lists_SetDefault,                "Set Default Values")
 
      /* page numbers dialog */
 dcl(DLG_PageNumbers_Title,           "Page Numbers")

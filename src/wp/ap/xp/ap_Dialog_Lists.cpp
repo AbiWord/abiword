@@ -70,7 +70,8 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_bguiChanged(false),
 	m_paragraphPreview(0),
 	m_pListsPreview(0),
-	m_pFakeAuto(0)
+	m_pFakeAuto(0),
+	m_bDirty(false)
 {
 	for(UT_uint32 i=0; i<4; i++)
 	{
@@ -248,6 +249,7 @@ void AP_Dialog_Lists::setTick(UT_uint32 iTick)
 
 void AP_Dialog_Lists::Apply(void)
 {
+  UT_DEBUGMSG(("SEVIOR: Apply clicked m_newListType = %d \n",m_newListType));
 	if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
@@ -257,16 +259,7 @@ void AP_Dialog_Lists::Apply(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
 
-	if(m_bisCustomized == false)
-	{
-		m_iLevel = getBlock()->getLevel();
-		if(m_iLevel == 0 || m_bStartSubList == true)
-		{
-			m_iLevel++;
-		}
-		fillUncustomizedValues();
-	}
-	if(m_bApplyToCurrent == true && m_isListAtPoint == true)
+	if(m_bApplyToCurrent == true && m_isListAtPoint == true &&  m_newListType != NOT_A_LIST)
 	{
 		getView()->changeListStyle(getAutoNum(),m_newListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
 		if(getAutoNum() != NULL)
@@ -274,34 +267,39 @@ void AP_Dialog_Lists::Apply(void)
 			getAutoNum()->update(0);
 			// getBlock()->listUpdate();
 		}
+                clearDirty();
+		return;
+	}
+	else if ( m_isListAtPoint == true &&  m_newListType == NOT_A_LIST)
+	{
+	        if(getBlock()->isListItem() == true)
+		{
+		        getBlock()->StopList();
+		}
+		clearDirty();
 		return;
 	}
 	if(m_bStartNewList == true)
 	{ 
-		if(m_isListAtPoint == true || m_newListType == NOT_A_LIST)
+		if(m_isListAtPoint == true && m_newListType == NOT_A_LIST)
 		{
 			if(getBlock()->isListItem() == true)
 			{
 				getBlock()->StopList();
 			}
+			clearDirty();
 			return;
 		}
-		else if (m_bisCustomized == true)
+		else if ( m_isListAtPoint != true )
 		{
 		        getBlock()->getDocument()->disableListUpdates();
 			getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
 			getBlock()->getDocument()->enableListUpdates();
 			getBlock()->getDocument()->updateDirtyLists();
+			clearDirty();
 			return;
 		}
-		else if (m_bisCustomized == false)
-		{
-			getBlock()->StartList(getBlock()->getListStyleString(m_newListType));
-		}
-	}
-	if(m_bStartSubList == true && m_newListType != NOT_A_LIST )
-	{ 
-		if(m_isListAtPoint == true)
+		else
 		{
 			UT_uint32 curlevel = getBlock()->getLevel();
 			UT_uint32 currID = getBlock()->getAutoNum()->getID();
@@ -310,17 +308,23 @@ void AP_Dialog_Lists::Apply(void)
 			getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
 			getBlock()->getDocument()->enableListUpdates();
 			getBlock()->getDocument()->updateDirtyLists();
-			return;
-		}
-		else
-		{
-			fl_BlockLayout * rBlock = getBlock()->getPreviousList();
-			if(rBlock == NULL)
-				return;
-			getBlock()->resumeList(rBlock);
+			clearDirty();
 			return;
 		}
 	}
+	if(m_bStartSubList == true &&  m_isListAtPoint != true )
+	{ 
+		fl_BlockLayout * rBlock = getBlock()->getPreviousList();
+		if(rBlock == NULL)
+		{
+		        clearDirty();
+			return;
+		}
+		getBlock()->resumeList(rBlock);
+		clearDirty();
+		return;
+	}
+	clearDirty();
 }
 
 

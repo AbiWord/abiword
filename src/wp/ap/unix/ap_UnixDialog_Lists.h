@@ -45,25 +45,24 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 
 	void					customChanged(void);
 	void					applyClicked(void);
-	void					typeChanged( gint type);
+	void					styleChanged( gint style);
 	void					previewExposed(void);
-	void					setMemberVariables(void);
+	void					setXPFromLocal(void);
 	/* Just Plain Useful Functions */
-	void					fillWidgetFromDialog(void);
+	void					updateFromDocument(void);
 	void					setAllSensitivity(void);
 	void					updateDialog(void);
 	static void				autoupdateLists(UT_Timer * pTimer);
-	bool					m_bDoExpose;
 
  protected:
 	virtual GtkWidget *		_constructWindow(void);
 	GtkWidget *				_constructWindowContents(void);
-	void					_populateWindowData(void);
+	void					_setRadioButtonLabels(void);
 	void					_connectSignals(void);
 	void					_fillNumberedStyleMenu( GtkWidget *listmenu);
 	void					_fillBulletedStyleMenu( GtkWidget *listmenu);
 	void					_fillNoneStyleMenu( GtkWidget *listmenu);
-	void					_setData(void);
+	void					_loadXPDataIntoLocal(void);
 	void					_gatherData(void);
 	GList *					_getGlistFonts (void);
 	void					_fillFontMenu(GtkWidget* menu);
@@ -97,12 +96,12 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GSList    * m_wRadioGroup;
 	GtkWidget * m_wPreviewArea;
 	GtkWidget * m_wDelimEntry;
+	GtkWidget * m_wDecimalEntry;
 	GtkObject * m_oAlignList_adj;
 	GtkWidget * m_wAlignListSpin;
 	GtkObject * m_oIndentAlign_adj;
 	GtkWidget * m_wIndentAlignSpin;
 	GtkObject * m_oLevelSpin_adj;
-	GtkWidget * m_wLevelSpin;
 	GtkWidget * m_wFontOptions;
 	GtkWidget * m_wFontOptions_menu;
 	GtkWidget * m_wCustomFrame;
@@ -122,9 +121,12 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GtkWidget * m_wMenu_Num;
 	GtkWidget * m_wStartSub_label;
 	GtkWidget * m_wStartNew_label;
-	gint m_iLevelSpinID;
 	gint m_iDelimEntryID;
+	gint m_iDecimalEntryID;
 	gint m_iStyleBoxID;
+	gint m_iAlignListSpinID;
+	gint m_iIndentAlignSpinID;
+	gint m_iFontOptionsID;
 };
 
 #endif /* AP_UNIXDIALOG_LISTS_H */
