@@ -210,6 +210,7 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 107: return NULL /*"No List"*/;
 
 		case 153: return NULL /*"Table of Authorities"*/;
+		case 154: return NULL /*"Grille du tableau" in fr_FR*/;
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
