@@ -25,7 +25,7 @@
 #include "xap_App.h"
 
 // undefine this if you don't want the stock gnome icons in there too
-#define USE_STOCK_ICONS_TOO 1
+#define USE_STOCK_ICONS_TOO 0
 
 // TODO: make this use the GnomeIconList widget instead
 
