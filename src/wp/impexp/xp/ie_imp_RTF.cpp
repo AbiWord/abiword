@@ -4301,6 +4301,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		{
 			double dWidth = static_cast<double>(param)/1440; // convert to inches
 			UT_String sWidth;
+			char * old_locale = setlocale(LC_NUMERIC, "C");
 			UT_String_sprintf(sWidth,"%fin",dWidth);
 			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
 			{
