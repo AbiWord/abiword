@@ -34,11 +34,10 @@
 #define WIN32_LEAN_AND_MEAN
 
 #define ABI_FAR __declspec( dllexport )
-#define ABI_CALL __cdecl
+#define ABI_CALL extern "C"
 #define ABI_FAR_CALL ABI_CALL ABI_FAR
 
-#define ABI_PLUGIN_DECLARE(name) \
-BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved ) { return TRUE; } 
+#define ABI_PLUGIN_DECLARE(name) BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved ) { return TRUE; } 
 
 #else
 
