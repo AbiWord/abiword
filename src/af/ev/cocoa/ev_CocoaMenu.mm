@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,67 +47,159 @@
 #import "xap_CocoaFrameImpl.h"
 
 #import <Cocoa/Cocoa.h>
-#import <AppKit/NSNibControlConnector.h>
-
-class _wd								// a private little class to help
-{										// us remember all the widgets that
-public:									// we create...
-	_wd(EV_CocoaMenu * pCocoaMenu, XAP_Menu_Id menuid, NSMenuItem *item = nil);
-	~_wd(void) {};
-
-	NSMenuItem *        m_item;
-	EV_CocoaMenu *		m_pCocoaMenu;
-	XAP_Menu_Id			m_id;
-};
 
 
 @implementation EV_CocoaMenuTarget
+
+- (void)setXAPOwner:(EV_CocoaMenu*)owner
+{
+	_xap = owner;
+}
+
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
 	UT_ASSERT ([menuItem isKindOfClass:[NSMenuItem class]]);
-	_wd *wd = (_wd *)[menuItem tag];
-	
-//	wd->m_pCocoaMenu->_refreshMenu (wd->m_pCocoaMenu->getFrame()->getCurrentView(), [menuItem menu]);
-	return YES;
+	xxx_UT_DEBUGMSG(("validateMenuItem\n"));
+	return _xap->_validateMenuItem(menuItem);
 }
-
 
 - (id)menuSelected:(id)sender
 {
 	UT_DEBUGMSG (("@EV_CocoaMenuTarget (id)menuSelected:(id)sender\n"));
 
 	UT_ASSERT ([sender isKindOfClass:[NSMenuItem class]]);
-	_wd *wd = (_wd *)[sender tag];
-	UT_ASSERT  (wd);
-	wd->m_pCocoaMenu->menuEvent(wd->m_id);
-	return sender;		// FIXME we should we return here ?
+	_xap->menuEvent([sender tag]);
+	return sender;
 }
 
 @end
 
-/*****************************************************************/
-_wd::_wd(EV_CocoaMenu * pCocoaMenu, XAP_Menu_Id menuid, NSMenuItem *item)
+
+bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
 {
-	m_pCocoaMenu = pCocoaMenu;
-	m_id = menuid;
-	m_item = item;
+	XAP_Menu_Id cmd = [menuItem tag];
+	AV_View* pView = getFrame()->getCurrentView();
+
+	const EV_Menu_ActionSet * pMenuActionSet = XAP_App::getApp()->getMenuActionSet();
+	const EV_Menu_Action * pAction = pMenuActionSet->getAction(cmd);
+	const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(cmd);
+	EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(m_pMenuLayout->getLayoutIndex(cmd));
+
+	switch (pLayoutItem->getMenuLayoutFlags())
+	{
+	case EV_MLF_Normal:
+	{			
+		// see if we need to enable/disable and/or check/uncheck it.
+		bool bEnable = true;
+		bool bCheck = false;
+		
+		if (pAction->hasGetStateFunction())
+		{
+			EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+			if (mis & EV_MIS_Gray)
+				bEnable = false;
+			if (mis & EV_MIS_Toggled)
+				bCheck = true;
+		}
+
+		// Get the dynamic label
+		const char ** data = getLabelName(XAP_App::getApp(), getFrame(), pAction, pLabel);
+		const char * szLabelName = data[0];
+		const char * szMnemonicName = data[1];		
+
+		// No dynamic label, check/enable
+		if (!pAction->hasDynamicLabel())
+		{
+			[menuItem setState:(bCheck?NSOnState:NSOffState)];
+			return (bEnable?YES:NO);
+		}
+
+#if 0
+		// Dynamic label, check for remove
+		bool bRemoveIt = (!szLabelName || !*szLabelName);
+		if (bRemoveIt)
+		{
+			// wipe it out
+			gtk_widget_destroy(item);
+
+			// we must also mark this item in the vector as "removed",
+			// which means setting [k] equal to a fake item as done
+			// on creation of dynamic items.
+			// give it a fake, with no label, to make sure it passes the
+			// test that an empty (to be replaced) item in the vector should
+			// have no children
+			GtkWidget * w = gtk_menu_item_new();
+			UT_ASSERT(w);
+			void ** blah = NULL;
+			if(m_vecMenuWidgets.setNthItem(k, w, blah))
+			{
+				UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
+				UT_ASSERT(0);
+			}
+			break;
+		}
+#endif
+
+		// Dynamic label, check for add/change
+		// We always change the labels every time, it's actually cheaper
+		// than doing the test for conditional changes.
+
+		// create a new updated label
+		if (szLabelName && *szLabelName) {
+			NSString* str;
+			char buf[1024];
+			UT_DEBUGMSG(("changing menu label\n"));
+			_convertLabelToMac(buf, sizeof (buf), szLabelName);
+			str = [[NSString alloc] initWithUTF8String:buf];
+			[menuItem setTitle:str];
+			[str release];
+		}
+		if (szMnemonicName && *szMnemonicName) {
+			NSString* shortCut;
+			unsigned int modifier = 0;
+			UT_DEBUGMSG(("changing menu shortcut\n"));
+			shortCut = _getItemCmd (szMnemonicName, modifier);
+			[menuItem setKeyEquivalent:shortCut];
+		}
+		
+		[menuItem setState:(bCheck?NSOnState:NSOffState)];
+		return (bEnable?YES:NO);
+		break;
+	}
+	case EV_MLF_Separator:
+		break;
+
+	case EV_MLF_BeginSubMenu:
+	{
+		bool bEnable = true;
+		if (pAction->hasGetStateFunction())
+		{
+			EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+			if (mis & EV_MIS_Gray)
+				bEnable = false;
+		}
+		return (bEnable?YES:NO);
+		break;
+	}
+	case EV_MLF_EndSubMenu:
+	case EV_MLF_BeginPopupMenu:
+	case EV_MLF_EndPopupMenu:
+		break;
+		
+	default:
+		UT_ASSERT_NOT_REACHED();
+		break;
+	}
+
+	return true;
 }
 
+/*****************************************************************/
 
 #if 0
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
-	static void s_onActivate(GtkWidget * /* widget */, gpointer callback_data)
-	{
-		// this is a static callback method and does not have a 'this' pointer.
-		// map the user_data into an object and dispatch the event.
-
-		_wd * wd = (_wd *) callback_data;
-		UT_ASSERT(wd);
-
-		wd->m_pCocoaMenu->menuEvent(wd->m_id);
-	};
 
 	static void s_onMenuItemSelect(GtkWidget * widget, gpointer data)
 	{
@@ -145,48 +237,6 @@ public:									// we create...
 		pFrame->setStatusMessage(NULL);
 	};
 
-	static void s_onInitMenu(GtkMenuItem * menuItem, gpointer callback_data)
-	{
-		_wd * wd = (_wd *) callback_data;
-		UT_ASSERT(wd);
-
-		wd->m_pCocoaMenu->refreshMenu(wd->m_pCocoaMenu->getFrame()->getCurrentView());
-
-		// attach this new menu's accel group to be triggered off itself
-		gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
-		gtk_accel_group_lock(wd->m_accelGroup);
-	};
-
-	static void s_onDestroyMenu(GtkMenuItem * menuItem, gpointer callback_data)
-	{
-		_wd * wd = (_wd *) callback_data;
-		UT_ASSERT(wd);
-
-		// we always clear the status bar when a menu goes away, so we don't
-		// leave a message behind
-		AP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
-		UT_ASSERT(pFrame);
-
-		pFrame->setStatusMessage(NULL);
-		
-		// bind this menuitem to its parent menu
-		gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
-		gtk_accel_group_unlock(wd->m_accelGroup);
-	};
-
-	// GTK wants to run popup menus asynchronously, but we want synchronous,
-	// so we need to do a gtk_main_quit() on our own to show we're done
-	// with our modal work.
-	static void s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data)
-	{
-		// do the grunt work
-		s_onDestroyMenu(menuItem, callback_data);
-		gtk_main_quit();
-	};
-
-	GtkAccelGroup *		m_accelGroup;
-	EV_CocoaMenu *		m_pCocoaMenu;
-	XAP_Menu_Id			m_id;
 };
 #endif
 
@@ -201,11 +251,11 @@ EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCocoaFrame
 	  m_pCocoaFrame(pCocoaFrame)
 {
 	m_menuTarget = [[EV_CocoaMenuTarget alloc] init];
+	[m_menuTarget setXAPOwner:this];
 }
 
 EV_CocoaMenu::~EV_CocoaMenu()
 {
-	UT_VECTOR_SPARSEPURGEALL(_wd *, m_vecMenuWidgets);
 	[m_menuTarget release];
 }
 
@@ -245,7 +295,6 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 {
 	UT_DEBUGMSG(("EV_CocoaMenu::synthesizeMenu\n"));
-    // create a GTK menu from the info provided.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
@@ -258,7 +307,6 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
-	NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
 	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
@@ -306,10 +354,10 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				NSString * str = nil;
 				if (szLabelName) {
 					_convertLabelToMac(buf, sizeof (buf), szLabelName);
-					str = [NSString stringWithUTF8String:buf];
+					str = [[NSString alloc] initWithUTF8String:buf];
 				}
 				else {
-					str = [NSString string];
+					str = [[NSString alloc] init];
 				}
 				switch (menuid) {
 				
@@ -332,17 +380,10 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 					menuItem = [wParent addItemWithTitle:str action:nil
 									keyEquivalent:shortCut];
 				}
-				[conn setDestination:m_menuTarget];
-				[conn setSource:menuItem];
-				[conn setLabel:@"menuSelected:"];
-				[conn establishConnection];
-				
-				// TODO check that this does not leak when we destroy the menu
-				_wd * wd = new _wd (this, pLayoutItem->getMenuId(), menuItem);
-				[menuItem setTag:(int)wd];
-		
-				// item is created, add to class vector
-				m_vecMenuWidgets.addItem(wd);
+				[menuItem setTarget:m_menuTarget];
+				[menuItem setAction:@selector(menuSelected:)];
+				[menuItem setTag:pLayoutItem->getMenuId()];
+				[str release];
 			}
 			break;
 		}
@@ -371,13 +412,12 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			
 			
 			// item is created, add to class vector
-			_wd * wd = new _wd (this, pLayoutItem->getMenuId(), menuItem);
-			[menuItem setTag:(int)wd];
-			m_vecMenuWidgets.addItem(wd);
+			[menuItem setTag:(int)pLayoutItem->getMenuId()];
 
 			NSMenu * subMenu = [[NSMenu alloc] initWithTitle:str];
 			[menuItem setSubmenu:subMenu];
-			[subMenu setAutoenablesItems:NO];
+			[subMenu setAutoenablesItems:YES];
+			[subMenu release];
 			stack.push((void **)subMenu);
 			break;
 		}
@@ -388,8 +428,6 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			bResult = stack.pop((void **)&menu);
 			UT_ASSERT(bResult);
 
-			// item is created (albeit empty in this case), add to vector
-			m_vecMenuWidgets.addItem(NULL);
 			break;
 		}
 		case EV_MLF_Separator:
@@ -402,25 +440,20 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			UT_ASSERT(bResult);
 			[wParent addItem:menuItem];
 
-			_wd * wd = new _wd (this, pLayoutItem->getMenuId(), menuItem);
-			[menuItem setTag:(int)wd];
-			// item is created, add to class vector
-			m_vecMenuWidgets.addItem(wd);
+			[menuItem setTag:(int)pLayoutItem->getMenuId()];
 			break;
 		}
 
 		case EV_MLF_BeginPopupMenu:
 		case EV_MLF_EndPopupMenu:
-			m_vecMenuWidgets.addItem(NULL);	// reserve slot in vector so indexes will be in sync
 			break;
 			
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT_NOT_REACHED();
 			break;
 		}
 	}
 
-	[conn release];
 	// make sure our last item on the stack is the one we started with
 	NSMenu * wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
@@ -430,327 +463,12 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 	return true;
 }
 
-bool EV_CocoaMenu::_refreshMenu(AV_View * pView, NSMenu * wMenuRoot)
-{
-	// update the status of stateful items on menu bar.
 
-	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-
-	// we keep a stack of the widgets so that we can properly
-	// parent the menu items and deal with nested pull-rights.
-	bool bResult;
-	UT_Stack stack;
-	stack.push(wMenuRoot);
-
-	// -1 will catch the case where we're inserting and haven't actually
-	// entered into a real menu (only at a top level menu)
-	
-	int nPositionInThisMenu = -1;
-	
-	for (UT_uint32 k = 0; k < nrLabelItemsInLayout; ++k)
-	{
-		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		XAP_Menu_Id menuid = pLayoutItem->getMenuId();
-		const EV_Menu_Action * pAction = pMenuActionSet->getAction(menuid);
-		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(menuid);
-
-		switch (pLayoutItem->getMenuLayoutFlags())
-		{
-		case EV_MLF_Normal:
-		{
-			// Keep track of where we are in this menu; we get cut down
-			// to zero on the creation of each new submenu.
-		    nPositionInThisMenu++;
-			
-			// see if we need to enable/disable and/or check/uncheck it.
-			
-			bool bEnable = true;
-			bool bCheck = false;
-			
-			if (pAction->hasGetStateFunction())
-			{
-				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-				if (mis & EV_MIS_Gray)
-					bEnable = false;
-				if (mis & EV_MIS_Toggled)
-					bCheck = true;
-			}
-
-			// must have an entry for each and every layout item in the vector
-			UT_ASSERT((k < m_vecMenuWidgets.getItemCount() - 1));
-
-			// Get the dynamic label
-			const char ** data = getLabelName(m_pCocoaApp, m_pCocoaFrame, pAction, pLabel);
-			const char * szLabelName = data[0];
-				
-			// First we check to make sure the item exists.  If it does not,
-			// we create it and continue on.
-UT_ASSERT(UT_NOT_IMPLEMENTED);
-#if 0
-			GList * testchildren = gtk_container_children(GTK_CONTAINER(m_vecMenuWidgets.getNthItem(k)));
-			if (!testchildren)
-			{
-				// This should be the only place refreshMenu touches
-				// callback hooks, since this handles the case a widget doesn't
-				// exist for a given layout item
-				if (szLabelName && *szLabelName)
-				{
-					// find parent menu item
-					GtkWidget * wParent;
-					bResult = stack.viewTop((void **)&wParent);
-					UT_ASSERT(bResult);
-											
-					char labelbuf[1024];
-					// convert label into underscored version
-					_ev_convert(labelbuf, szLabelName);
-					// create a label
-					GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
-					UT_ASSERT(label);
-
-					// get a newly padded underscore version
-					char * padString = _ev_skip_first_underscore_pad_rest(labelbuf);
-					UT_ASSERT(padString);
-					gtk_label_parse_uline(GTK_LABEL(label), padString);
-					FREEP(padString);
-
-					// create the item with the underscored label
-					GtkWidget * w = gtk_menu_item_new();
-					UT_ASSERT(w);
-					// show and add the label to our menu item
-					gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-					gtk_container_add(GTK_CONTAINER(w), GTK_WIDGET(label));
-					gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
-					gtk_widget_show(GTK_WIDGET(label));
-					gtk_widget_show(w);
-
-					// set menu data to relate to class
-					g_object_set_user_data(G_OBJECT(w),this);
-					// create callback info data for action handling
-					_wd * wd = new _wd(this, id);
-					UT_ASSERT(wd);
-
-					// set parent data stuff
-					g_object_set_data(G_OBJECT(wMenuRoot), szLabelName, w);
-					// bury in parent 
-					gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, nPositionInThisMenu);
-					// connect callbacks
-					g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
-					g_signal_connect(G_OBJECT(w), "select", G_CALLBACK(_wd::s_onMenuItemSelect), wd);
-					g_signal_connect(G_OBJECT(w), "deselect", G_CALLBACK(_wd::s_onMenuItemDeselect), wd);				
-						
-					// we do NOT add a new item, we point the existing index at our new widget
-					// (update the pointers)
-					void ** old = NULL;
-					if (m_vecMenuWidgets.setNthItem(k, w, old))
-					{
-						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
-						UT_ASSERT(0);
-					}
-						
-					break;
-				}
-				else
-				{
-					// do not create a widget if the label is blank, it should not appear in the
-					// menu
-				}
-			}
-#endif
-			// No dynamic label, check/enable
-			if (!pAction->hasDynamicLabel())
-			{
-				// if no dynamic label, all we need to do
-				// is enable/disable and/or check/uncheck it.
-
-				NSMenuItem * item = (NSMenuItem *) m_vecMenuWidgets.getNthItem(k);
-				UT_ASSERT(item);
-				UT_ASSERT([item isKindOfClass:[NSMenuItem class]]);
-
-				// all get the gray treatment
-				[item setState:(bCheck ? NSOnState : NSOffState)];
-				[item setEnabled:(bEnable ? YES : NO)];
-
-				break;
-			}
-
-			// Get the item
-			NSMenuItem * item = (NSMenuItem *) m_vecMenuWidgets.getNthItem(k);
-
-			// if item is null, there is no widget for it, so ignore its attributes for
-			// this pass
-			if (!item) {
-				break;
-			}
-			UT_ASSERT([item isKindOfClass:[NSMenuItem class]]);
-						
-				// Dynamic label, check for remove
-			bool bRemoveIt = (!szLabelName || !*szLabelName);
-			if (bRemoveIt)
-			{
-				NSMenu * parentMenu = [item menu];
-				[parentMenu removeItem:item];
-				// TODO check that we don't leak the menu item. I think it is autoreleased, but I'm not sure 
-
-				// we must also mark this item in the vector as "removed",
-				// which means setting [k] equal to a fake item as done
-				// on creation of dynamic items.
-				// give it a fake, with no label, to make sure it passes the
-				// test that an empty (to be replaced) item in the vector should
-				// have no children
-				NSMenuItem * fakeItem = [[NSMenuItem alloc] init];
-				UT_ASSERT(fakeItem);
-				void ** blah = NULL;
-				if(m_vecMenuWidgets.setNthItem(k, fakeItem, blah))
-				{
-					UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
-					UT_ASSERT(0);
-				}
-				break;
-			}
-#if 0
-			// Dynamic label, check for add/change
-			// We always change the labels every time, it's actually cheaper
-			// than doing the test for conditional changes.
-			// TODO : check that it is cheaper in Cocoa. Obj-C method call is expensive !! -- Hub
-			{
-				// Get a list of children.  If there are any, destroy them
-				GList * children = gtk_container_children(GTK_CONTAINER(item));
-				if (children)
-				{
-					// Get the first item in the list
-					GList * firstItem = g_list_first(children);
-					UT_ASSERT(firstItem);
-					
-					// First item's data should be the label, since we added it first
-					// in construction.
-					GtkWidget * labelChild = GTK_WIDGET(firstItem->data);
-					UT_ASSERT(labelChild);
-
-					// destroy the current label
-					gtk_container_remove(GTK_CONTAINER(item), labelChild);
-
-					// unbind all accelerators
-					gtk_widget_remove_accelerators(item,
-												   "activate_item",
-												   FALSE);
-						
-					//gtk_widget_destroy(labelChild);
-				}
-				
-				// create a new updated label
-
-				char labelbuf[1024];
-				// convert label into underscored version
-				_ev_convert(labelbuf, szLabelName);
-				// create a label
-				GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
-				UT_ASSERT(label);
-
-				// get a newly padded underscore version
-				char * padString = _ev_skip_first_underscore_pad_rest(labelbuf);
-				UT_ASSERT(padString);
-				guint keyCode = gtk_label_parse_uline(label, padString);
-				FREEP(padString);
-
-				// show and add the label to our menu item
-				gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-				gtk_container_add(GTK_CONTAINER(item), GTK_WIDGET(label));
-				gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), item);
-				gtk_widget_show(GTK_WIDGET(label));
-
-				// bind to parent item's accel group
-				if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
-				{
-					gtk_widget_add_accelerator(item,
-											   "activate_item",
-											   GTK_MENU(item->parent)->accel_group,
-											   keyCode,
-											   0,
-											   GTK_ACCEL_LOCKED);
-				}
-
-				// finally, enable/disable and/or check/uncheck it.
-				if (GTK_IS_CHECK_MENU_ITEM(item))
-					GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-				gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
-			}
-#endif
-			// we are done with this menu item
-		}
-		break;
-		case EV_MLF_Separator:
-			nPositionInThisMenu++;
-			
-			break;
-
-		case EV_MLF_BeginSubMenu:
-		{
-			nPositionInThisMenu = -1;
-
-			// we need to nest sub menus to have some sort of context so
-			// we can parent menu items
-			NSMenu * item = (NSMenu *) m_vecMenuWidgets.getNthItem(k);
-			UT_ASSERT(item);
-			UT_ASSERT([item isKindOfClass:[NSMenu class]]);
-
-			stack.push(item);
-			break;
-		}
-		case EV_MLF_EndSubMenu:
-		{
-			NSMenu * item = NULL;
-			bResult = stack.pop((void **)&item);
-			UT_ASSERT(bResult);
-			UT_ASSERT ([item isKindOfClass:[NSMenu class]]);
-
-			break;
-		}
-
-		case EV_MLF_BeginPopupMenu:
-		case EV_MLF_EndPopupMenu:
-			break;
-			
-		default:
-			UT_ASSERT(0);
-			break;
-		}	
-	}
-
-	NSMenu * wDbg = NULL;
-	bResult = stack.pop((void **)&wDbg);
-	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == wMenuRoot);
-
-	return true;
-}
-
-/*!
- * That will add a new menu entry for the menu item at layout_pos.
- *
- * @param layout_pos UT_uint32 with the relative position of the item in the
- * menu.
- * @return true if there were no problems.  False elsewere.
- */
 bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
-{
-	UT_DEBUGMSG(("JCA: layout_pos = [%d]\n", layout_pos));
-	if (layout_pos > 0)
-	{
-		UT_DEBUGMSG(("Trying to insert at [%d] in a vector of size [%d].\n", layout_pos, m_vecMenuWidgets.size()));
-		UT_sint32 err = m_vecMenuWidgets.insertItemAt(NULL, layout_pos);
-
-		if (err != 0)
-			UT_DEBUGMSG(("Error [%d] inserting NULL item in a ut_vector.\n", err));
-
-		return (err == 0);
-	}
-
+{	
+	UT_ASSERT_NOT_REACHED();
 	return false;
 }
-
-
 
 
 /*!
@@ -809,7 +527,7 @@ bool EV_CocoaMenuBar::synthesizeMenuBar(NSMenu *menu)
 
 	synthesizeMenu(m_wMenuBar);
 	
-	[[NSApplication sharedApplication] setMainMenu:m_wMenuBar];
+	[NSApp setMainMenu:m_wMenuBar];
 	return true;
 }
 
@@ -818,41 +536,10 @@ bool EV_CocoaMenuBar::rebuildMenuBar()
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
 	return false;
-#if 0
-	GtkWidget * wVBox = m_pCocoaFrame->getVBoxWidget();
-
-	m_wHandleBox = gtk_handle_box_new();
-	UT_ASSERT(m_wHandleBox);
-
-	// Just create, don't show the menu bar yet.  It is later added
-	// to a 3D handle box and shown
-	m_wMenuBar = gtk_menu_bar_new();
-
-	synthesizeMenu(m_wMenuBar);
-	
-	// show up the properly connected menu structure
-	gtk_widget_show(m_wMenuBar);
-
-	// pack it in a handle box
-	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
-	gtk_widget_show(m_wHandleBox);
-	
-	// put it at position 1 in the vbox
- 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0); // was start
-	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox,0);
-
-	return true;
-#endif
 }
 
 bool EV_CocoaMenuBar::refreshMenu(AV_View * pView)
 {
-	// this makes an exception for initialization where a view
-	// might not exist... silly to refresh the menu then; it will
-	// happen in due course to its first display
-	if (pView)
-		return _refreshMenu(pView,m_wMenuBar);
-
 	return true;
 }
 
@@ -880,18 +567,12 @@ NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
 bool EV_CocoaMenuPopup::synthesizeMenuPopup()
 {
 	m_wMenuPopup = [[NSMenu alloc] initWithTitle:@""];
-	[m_wMenuPopup setAutoenablesItems:NO];
+	[m_wMenuPopup setAutoenablesItems:YES];
 	synthesizeMenu(m_wMenuPopup);
 	return true;
 }
 
 bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
 {
-	// this makes an exception for initialization where a view
-	// might not exist... silly to refresh the menu then; it will
-	// happen in due course to its first display
-	if (pView)
-		return _refreshMenu(pView, m_wMenuPopup);
-
 	return true;
 }

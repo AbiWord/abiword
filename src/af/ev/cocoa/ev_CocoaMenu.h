@@ -31,12 +31,14 @@
 class AV_View;
 class XAP_CocoaApp;
 class AP_CocoaFrame;
+class EV_CocoaMenu;
 
 /*****************************************************************/
 @interface EV_CocoaMenuTarget : NSObject
 {
-	
+	EV_CocoaMenu*	_xap;
 }
+- (void)setXAPOwner:(EV_CocoaMenu*)owner;
 - (id)menuSelected:(id)sender;
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
 @end
@@ -58,8 +60,7 @@ public:
 	
 	AP_CocoaFrame * 	getFrame();
 
-	bool				_refreshMenu(AV_View * pView, NSMenu * wMenuRoot); // can't set this one protected
-	                                     // as it is called from Obj-C
+	bool				_validateMenuItem(NSMenuItem* menuItem);
 protected:
 	bool				_isItemPresent(XAP_Menu_Id menuid) const;
 
@@ -70,8 +71,6 @@ private:
 	XAP_CocoaApp *		m_pCocoaApp;
 	AP_CocoaFrame *		m_pCocoaFrame;
 	
-	// actual GTK menu widgets
-	UT_Vector			m_vecMenuWidgets;
 	EV_CocoaMenuTarget	*m_menuTarget;
 };
 
