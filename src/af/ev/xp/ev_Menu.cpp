@@ -81,14 +81,7 @@ UT_Bool EV_Menu::invokeMenuMethod(FV_View * pView,
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-#ifdef UT_DEBUG
-	UT_DEBUGMSG(("invokeMenuMethod: %s repeat %d length %d with [",
-				 pEM->getName(),iPrefixCount,dataLength));
-	if (pData && dataLength)
-		for (UT_uint32 k=0; k<dataLength; k++)
-			UT_DEBUGMSG(("%04x(%c) ",pData[k],pData[k]));
-	UT_DEBUGMSG(("]\n"));
-#endif	
+	UT_DEBUGMSG(("invokeMenuMethod: %s repeat %d",pEM->getName(),iPrefixCount));
 
 	EV_EditMethodType t = pEM->getType();
 
