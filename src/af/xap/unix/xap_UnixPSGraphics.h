@@ -48,8 +48,8 @@ public:
 	static UT_uint32 s_getClassId() {return GRID_UNIX_PS;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}
 	
-	virtual GR_Capability getCapability() {return GRCAP_PRINTER;}
-	static const char *    graphicsDescriptor(void) return "Unix PostScript Graphics";}
+	virtual GR_Capability getCapability() {return GRCAP_PRINTER_ONLY;}
+	static const char *    graphicsDescriptor(void) { return "Unix PostScript Graphics";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 
 	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);

@@ -43,7 +43,7 @@ public:
 	virtual UT_uint32 getClassId() {return s_getClassId();}
 	
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
-	static const char *    graphicsDescriptor(void) return "Unix Null Graphics";}
+	static const char *    graphicsDescriptor(void) { return "Unix Null Graphics";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 
 	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
