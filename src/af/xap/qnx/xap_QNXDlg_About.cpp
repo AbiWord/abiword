@@ -218,24 +218,21 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 
 	snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
 
-#define WIN_WIDTH  300
-#define WIN_HEIGHT 250
+#define WIN_WIDTH  450
+#define WIN_HEIGHT 350
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, buf, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowAbout = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowAbout, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-
 	n = 0; 
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_FILL, Pt_GROUP_STRETCH_FILL);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_VERT_ALIGN, Pt_GROUP_VERT_CENTER, 0);
-	//PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_CENTER, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_CENTER, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
 	hboxAbout = PtCreateWidget(PtGroup, windowAbout, n, args);
 	
 	n = 0;
@@ -247,10 +244,11 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 	drawingareaGraphic = PtCreateWidget(PtRaw, hboxAbout, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH / 2, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_CENTER, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0);
 	vboxInfo = PtCreateWidget(PtGroup, hboxAbout, n, args);
 
 	n = 0;
@@ -276,7 +274,7 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE, Pt_GROUP_EQUAL_SIZE);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_RIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
 	hbox2 = PtCreateWidget(PtGroup, vboxInfo, n, args);
 
 	n = 0;
