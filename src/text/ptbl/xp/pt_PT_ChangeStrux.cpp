@@ -65,7 +65,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 	// apply a strux-level formating change to the given region.
 
-	UT_ASSERT(dpos1 < dpos2);
+	UT_ASSERT(dpos1 <= dpos2);
 	UT_Bool bHaveAttributes = (attributes && *attributes);
 	UT_Bool bHaveProperties = (properties && *properties);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do

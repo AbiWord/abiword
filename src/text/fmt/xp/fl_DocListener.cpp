@@ -701,7 +701,12 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 					// split charwidths across the two blocks
 					UT_uint32 lenNew = pBL->m_gbCharWidths.getLength() - blockOffset;
-
+#if 1
+// Paul, When blockOffset == pBL->...getLength(), the getPointer() below will fail.
+// We can probably promote this test into some of the if-else stuff earlier since
+// we probably don't need to do the split...
+UT_ASSERT(lenNew);
+#endif
 					pNewBL->m_gbCharWidths.ins(0, pBL->m_gbCharWidths.getPointer(blockOffset), lenNew);
 					pBL->m_gbCharWidths.truncate(blockOffset);
 
