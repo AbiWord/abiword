@@ -319,19 +319,21 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 	{
 		//if the file does not exist, we will load a generic one
 		//get the path from m_fontfile
-		// NB the file is separated from the file name by two slashes.
-		char * slash = strstr(m_fontfile, "//");
+		// NB sometimes the file is separated from the file name by two slashes.
+		char * slash = strrchr(m_fontfile, '/');
 		char * full_name;
 		if(slash)
 		{
-		    full_name = new char[(slash - m_fontfile) + 20];
-		    strncpy(full_name, m_fontfile, (slash - m_fontfile)+1);
+			if(*(slash - 1) == '/')
+				slash--;
+			full_name = new char[(slash - m_fontfile) + 20];
+			strncpy(full_name, m_fontfile, (slash - m_fontfile)+1);
 			full_name[(slash - m_fontfile)+1] = 0;
 		}
 		else
 		{
-		    full_name = new char[20];
-		    *full_name = 0;
+			full_name = new char[20];
+			*full_name = 0;
 		}
 			
 		if(XAP_EncodingManager::instance->isUnicodeLocale())
