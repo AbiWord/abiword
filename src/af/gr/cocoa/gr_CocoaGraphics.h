@@ -28,6 +28,7 @@
 
 class UT_ByteBuf;
 class GR_CocoaGraphics;
+class StNSViewLocker;
 
 @class XAP_CocoaNSView, XAP_CocoaNSScrollView;
 
@@ -140,6 +141,8 @@ class GR_CocoaGraphics : public GR_Graphics
 
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);
+	virtual void _beginPaint (void);
+	virtual void _endPaint (void);
 private:
 	void		_setClipRectImpl(const UT_Rect* pRect);
 
@@ -171,18 +174,32 @@ private:
 	static UT_uint32		s_iInstanceCount;
   
 	UT_sint32				m_iLineWidth;			// device unit
+	// line properties
+	JoinStyle m_joinStyle;
+	CapStyle m_capStyle;
+	LineStyle m_lineStyle;
+
 	GR_Graphics::Cursor		m_cursor;
 
 	GR_Graphics::ColorSpace	m_cs;
 	
 	UT_uint32				m_screenResolution;
 	bool					m_bIsPrinting;
+	
+	
+	
 public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 private:
 	/* private implementations. Allow esasy selection accross various ways */
 	void _initMetricsLayouts(void);
 	float _measureUnRemappedCharCached(const UT_UCSChar c);
+	void _setCapStyle(CapStyle inCapStyle);
+	void _setJoinStyle(JoinStyle inJoinStyle);
+	void _setLineStyle (LineStyle inLineStyle);
+	void _restartPaint(void);
+	//
+	StNSViewLocker* m_viewLocker;
 	//private font metrics objects
 	NSTextStorage *m_fontMetricsTextStorage;
     NSLayoutManager *m_fontMetricsLayoutManager;
