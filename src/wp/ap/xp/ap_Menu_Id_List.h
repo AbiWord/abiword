@@ -215,6 +215,7 @@ menuitem(WINDOW_9)
 menuitem(WINDOW_MORE)
 
 menuitem(WEB_WEBPREVIEW)
+menuitem(WEB_SAVEASWEB)
 
 menuitem(HELP)
 menuitem(HELP_CREDITS)

@@ -375,7 +375,7 @@ void EV_UnixGnomeMenu::s_getStockPixmapFromName (int id, const char *name,
 		{AP_MENU_ID_TOOLS_PLUGINS, GNOME_STOCK_MENU_EXEC},
 		{AP_MENU_ID_TOOLS_SCRIPTS, "Menu_AbiWord_Exec"},
 
-		{AP_MENU_ID_WEB_SAVEASWEB, "Menu_AbiWord_SaveAs"},
+		//		{AP_MENU_ID_WEB_SAVEASWEB, "fileSaveAsWeb"},
 		{AP_MENU_ID_WEB_WEBPREVIEW, GNOME_STOCK_MENU_INDEX},
 
 		{AP_MENU_ID_WINDOW_1, "Menu_AbiWord_New"},

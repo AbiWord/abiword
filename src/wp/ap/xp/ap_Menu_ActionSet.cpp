@@ -244,6 +244,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"dlgMoreWindows",	NULL,					ap_GetLabel_WindowMore);
 
+	_s(AP_MENU_ID_WEB_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
 	_s(AP_MENU_ID_WEB_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
 
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
