@@ -4766,15 +4766,6 @@ static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 	if (!pDialog)
 		return false;
 		
-	pDialog->setView(pView);
-	pDialog->runModeless(pFrame);
-	
-	//bool bOK = true;
-
-	// get result?
-	
-	pDialogFactory->releaseDialog(pDialog);
-
 	if(pDialog->isRunning() == true)
 	{
 		pDialog->activate();
@@ -4872,8 +4863,8 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
-		// OK I Will
-		if(pDialog->isRunning() == true)
+	// OK I Will
+	if(pDialog->isRunning() == true)
 	{
 		   pDialog->activate();
 	}
