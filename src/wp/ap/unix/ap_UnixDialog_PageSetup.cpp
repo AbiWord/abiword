@@ -89,7 +89,7 @@ create_spinentry (float v)
 {
   gchar * val;
   GtkAdjustment * SpinAdj = (GtkAdjustment *) 
-        gtk_adjustment_new( 10.0, 1.0, 5000.0, 0.1, 1.0, 0.0);
+        gtk_adjustment_new( v, 1.0, 5000.0, 0.1, 1.0, 0.0);
   GtkWidget * e = gtk_spin_button_new (SpinAdj, 1.0, 2);
   val = g_strdup_printf (FMT_STRING, v);
   gtk_entry_set_text (GTK_ENTRY (e), val);
@@ -196,20 +196,32 @@ static void s_entryPageHeight_changed(GtkWidget * widget, AP_UnixDialog_PageSetu
 
 void AP_UnixDialog_PageSetup::_setWidth(const char * buf)
 {
-	if( atof(buf) >= 0.0 && atof(buf) != m_PageSize.Width(getPageUnits()) )
+	double width = static_cast<double>(atof(buf));
+	double height = static_cast<double>(m_PageSize.Width(getPageUnits()));
+	if(m_PageSize.match(height,10.0))
 	{
-		m_PageSize.Set( static_cast<double>(atof(buf)),
-						static_cast<double>(m_PageSize.Height(getPageUnits())),
+		return;
+	}
+	if( width >= 0.00001 && !m_PageSize.match(width, static_cast<double>(m_PageSize.Width(getPageUnits()) )))
+	{
+		m_PageSize.Set( width,
+						height,
 						getPageUnits() );
 	}
 }
 
 void AP_UnixDialog_PageSetup::_setHeight(const char * buf)
 {
-	if( atof(buf) >= 0.0 && atof(buf) != m_PageSize.Height(getPageUnits()) )
+	double height = static_cast<double>(atof(buf));
+	if(m_PageSize.match(height,10.0))
 	{
-		m_PageSize.Set( m_PageSize.Width(getPageUnits()),
-						atof(buf),
+		return;
+	}
+	double width = static_cast<double>(m_PageSize.Width(getPageUnits()));
+	if( height >= 0.00001 && !m_PageSize.match(height,static_cast<double>(m_PageSize.Height(getPageUnits()))) )
+	{
+		m_PageSize.Set( width,
+						height,
 						getPageUnits() );
 	}
 }
@@ -246,6 +258,7 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 /* The paper size may have changed, update the Paper Size listbox */
 void AP_UnixDialog_PageSetup::_updatePageSizeList(void)
 {
+	xxx_UT_DEBUGMSG(("_updatePageSize set to %s \n",m_PageSize.getPredefinedName()));
   gint last_page_size = static_cast<gint>(fp_PageSize::NameToPredefined 
 	  (m_PageSize.getPredefinedName ()));
 
@@ -435,6 +448,8 @@ void AP_UnixDialog_PageSetup::runModal (XAP_Frame *pFrame)
     // Build the window's widgets and arrange them
     GtkWidget * mainWindow = _constructWindow();
     UT_return_if_fail(mainWindow);
+	m_PageSize = getPageSize();
+	_updatePageSizeList();
 
 	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
 							 BUTTON_CANCEL, false))

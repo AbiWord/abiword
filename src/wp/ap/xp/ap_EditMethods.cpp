@@ -7267,6 +7267,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	  //
  		pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
  		pDoc->m_docPageSize.Set(final_unit);
+
 		if (final_def == fp_PageSize::psCustom)
 		{
 			pDoc->m_docPageSize.Set(final_wid,
