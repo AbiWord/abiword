@@ -92,14 +92,16 @@ EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage)
 {
 	if (szLanguage && *szLanguage)
 	{
-		for (UT_uint32 k=0; k<NrElements(s_ltTable); k++)
+		UT_uint32 k;
+		
+		for (k=0; k<NrElements(s_ltTable); k++)
 			if (UT_stricmp(szLanguage,s_ltTable[k].m_name)==0)
 				return (s_ltTable[k].m_fn)();
 
 		// if we didn't find an exact match (Language and Locale),
 		// try finding the default set for this language.
 
-		for (UT_uint32 k=0; k<NrElements(s_ltTable); k++)
+		for (k=0; k<NrElements(s_ltTable); k++)
 			if (   (UT_strnicmp(szLanguage,s_ltTable[k].m_name,2)==0)
 				&& (s_ltTable[k].m_bIsDefaultSetForLanguage))
 				return (s_ltTable[k].m_fn)();
