@@ -91,17 +91,22 @@ else
 		endif #/* GNOME */
 	else # DEBUG
 
-		ifdef ABI_OPT_LIBXML2
-		OBJ_DIR_SFX	= GTK_XML
-		else 
-		OBJ_DIR_SFX	= DBG
-		endif #/* GTK_XML */
-
 	OPTIMIZER	= -O2 -Wall -ansi -pedantic
 	DEFINES		=
 	OBJ_DIR_SFX	= OBJ
 	endif #/* DEBUG */ 
 	endif #/* OPTIMIZE */
+	ifdef ABI_OPT_GNOME
+		ifdef ABI_OPT_LIBXML2
+		OBJ_DIR_SFX	= GNOME_XML
+		else
+		OBJ_DIR_SFX	= GNOME
+		endif #/* LIBXML2 */
+	else #/* GNOME */
+		ifdef ABI_OPT_LIBXML2
+		OBJ_DIR_SFX	= GTK_XML
+		endif #/* LIBXML2 */
+	endif #/* GNOME */
 
 endif #/* PROF */
 
