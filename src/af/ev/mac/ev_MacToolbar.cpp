@@ -177,6 +177,7 @@ bool EV_MacToolbar::synthesize(void)
         ControlHandle control;
         const char * szToolTip;
         Rect btnRect;
+		bool	bFoundIcon;
         
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
@@ -204,12 +205,10 @@ bool EV_MacToolbar::synthesize(void)
 
 			case EV_TBIT_PushButton:
                 // get pixmap
-
-				//				m_pMacToolbarIcons->getPixmapForIcon(wTLW->window,
-				//								  &wTLW->style->bg[GTK_STATE_NORMAL],
-				//								  pLabel->getIconName(),
-				//								  &wPixmap);
-				//UT_ASSERT(bFoundIcon);
+				CIconHandle iconHandle;
+				bFoundIcon = m_pMacToolbarIcons->getBitmapForIcon(pLabel->getIconName(),
+												  &iconHandle);
+				UT_ASSERT(bFoundIcon);
 
 
                 // build control
@@ -219,11 +218,22 @@ bool EV_MacToolbar::synthesize(void)
                 btnRect.right = btnX + 24;
                 
 				UT_DEBUGMSG (("Toolbar: new push button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
-                control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+                control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonNormalBevelProc, 0);
 				UT_ASSERT (control);
 				err = ::EmbedControl (control, toolbarControl);
 				UT_ASSERT (err == noErr);
+				// set its icon
+				ControlButtonContentInfo info;
+				info.contentType = kControlContentCIconHandle;
+				info.u.cIconHandle = iconHandle;
+				// find why the iconHandle is bogus and makes Carbon crashing
+				//err = SetControlData (control, kControlEntireControl, kControlBevelButtonContentTag, 
+				//                      sizeof (info), &info);
+				//UT_ASSERT (err == noErr);
                 btnX += 32;
+//				if (iconHandle) {
+//					::DisposeCIcon (iconHandle);
+//				}
                 break;
 			case EV_TBIT_ToggleButton:
 			case EV_TBIT_GroupButton:

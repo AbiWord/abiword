@@ -22,7 +22,7 @@
 #define XAP_MACTOOLBARICONS_H
 
 #include <QuickDraw.h>
-
+#include <Icons.h>
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -30,17 +30,19 @@
 
 /*****************************************************************/
 
-class XAP_MacToolbar_Icons : public AP_Toolbar_Icons
+class AP_MacToolbar_Icons : public AP_Toolbar_Icons
 {
 public:
-	XAP_MacToolbar_Icons(void);
-	~XAP_MacToolbar_Icons(void);
+	AP_MacToolbar_Icons(void);
+	~AP_MacToolbar_Icons(void);
 
-	bool getBitmapForIcon(UT_uint32 maxWidth,
-							 UT_uint32 maxHeight,
-							 UT_RGBColor * pColor,
-							 const char * szIconName,
-							 PixMapHandle pBitmap);
+//	bool getBitmapForIcon(UT_uint32 maxWidth,
+//							 UT_uint32 maxHeight,
+//							 UT_RGBColor * pColor,
+//							 const char * szIconName,
+//							 PixMapHandle pBitmap);
+	bool getBitmapForIcon(const char * szIconName,
+					   CIconHandle * pIconHandle);
 protected:
 };
 

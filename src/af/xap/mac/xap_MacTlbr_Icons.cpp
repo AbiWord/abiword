@@ -27,42 +27,35 @@
 #include "ut_Xpm2Bmp.h"
 #include "xap_MacTlbr_Icons.h"
 
-XAP_MacToolbar_Icons::XAP_MacToolbar_Icons(void)
+AP_MacToolbar_Icons::AP_MacToolbar_Icons(void)
 {
 }
 
-XAP_MacToolbar_Icons::~XAP_MacToolbar_Icons(void)
+AP_MacToolbar_Icons::~AP_MacToolbar_Icons(void)
 {
 	// TODO do we need to keep some kind of list
 	// TODO of the things we have created and
 	// TODO handed out, so that we can delete them ??
 }
 
-bool XAP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
-					   UT_uint32 maxHeight,
-					   UT_RGBColor * pColor,
-					   const char * szIconName,
-					   PixMapHandle pBitmap)
+bool AP_MacToolbar_Icons::getBitmapForIcon(const char * szIconName,
+					   CIconHandle * pIconHandle)
 {
 	UT_ASSERT(szIconName && *szIconName);
-	UT_ASSERT(pBitmap);
+	UT_ASSERT(pIconHandle);
+	UT_uint32 maxWidth, maxHeight;
+	maxWidth = maxHeight = 16;
 	
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	
 	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
-	if (!bFound)
+	if (!bFound) {
 		return false;
+	}
 	
-	bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,pColor,pBitmap);
+	bool bCreated = UT_Xpm2CIcon(pIconData,sizeofIconData,pIconHandle);
 	
 	return bCreated;
 }
-
-	
-
-
-
-
-
 

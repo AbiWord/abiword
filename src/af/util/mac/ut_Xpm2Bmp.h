@@ -21,15 +21,22 @@
 #define UT_XPM2BMP_H
 
 #include <QuickDraw.h>
+#include <Icons.h>
 
 class UT_RGBColor;
 
+#if 0
 bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 				   UT_uint32 maxHeight,
 				   const char ** pIconData,
 				   UT_uint32 sizeofData,
 				   UT_RGBColor * pBackgroundColor,
 				   PixMapHandle pBitmap);
+#endif
+bool UT_Xpm2CIcon (const char ** pIconData,
+					UT_uint32 sizeofData,
+					CIconHandle * pCIcon);
+
 
 #endif /* UT_XPM2BMP_H */
 

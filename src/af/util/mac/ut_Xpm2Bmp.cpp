@@ -22,12 +22,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef XP_MAC_TARGET_QUARTZ
+#ifndef XP_MAC_TARGET_MACOSX
 # include <QuickDraw.h>
 # include <MacMemory.h>
 #else
 # include <ApplicationServices/ApplicationServices.h>
 #endif
+
+#include <Icons.h>
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
@@ -40,6 +42,170 @@
 #define _RoundUp(x,y) ((((x)+((y)-1))/(y))*(y))
 
 /*****************************************************************/
+#if 0
+bool UT_Xpm2Bmp(UT_uint32 maxWidth,
+				   UT_uint32 maxHeight,
+				   const char ** pIconData,
+				   UT_uint32 sizeofData,
+				   UT_RGBColor * pBackgroundColor,
+				   CIconHandle * pCIcon)
+#endif
+bool UT_Xpm2CIcon (const char ** pIconData,
+					UT_uint32 sizeofData,
+					CIconHandle * pCIcon)
+{
+	UT_ASSERT(pIconData && *pIconData);
+	UT_ASSERT(sizeofData > 0);
+	UT_ASSERT(pCIcon);
+	
+	// first row contains: width height, number of colors, chars per pixel
+	UT_uint32 width, height, nrColors, charsPerPixel;
+	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
+					 &width,&height,&nrColors,&charsPerPixel);
+	UT_ASSERT(n == 4);
+	UT_ASSERT(width > 0);
+	UT_ASSERT(height > 0);
+	UT_ASSERT((nrColors > 0) && (nrColors < 256));
+	UT_ASSERT(charsPerPixel > 0);
+
+	CIconHandle myCICN;
+
+	char depth = 32; 	// default to 32 bits
+	Rect bounds, zeroBounds;
+	
+	::SetRect (&bounds, 0, 0, width, height);
+	::SetRect (&zeroBounds, 0, 0, 0, 0);
+
+	myCICN = (CIconHandle)NewHandleClear ((long)sizeof (CIcon));
+
+	/* Fill in the cicn's bitmap fields. */ 
+	
+	(**myCICN).iconBMap.baseAddr = nil;
+	(**myCICN).iconBMap.rowBytes = 0; //width / 8;
+	(**myCICN).iconBMap.bounds = zeroBounds;
+	
+	/* Fill in the cicn's mask bitmap fields. */
+	
+	(**myCICN).iconMask.baseAddr = nil;
+	(**myCICN).iconMask.rowBytes = 0; //width / 8;
+	(**myCICN).iconMask.bounds = zeroBounds;
+	
+	/* Fill in the cicn's pixmap fields. */
+	
+	(**myCICN).iconPMap.baseAddr = nil;
+	(**myCICN).iconPMap.rowBytes = (((bounds.right - bounds.left) * depth) / 8) | 0x8000;
+	(**myCICN).iconPMap.bounds = bounds;
+	(**myCICN).iconPMap.pmVersion = 0;
+	(**myCICN).iconPMap.packType = 0;
+	(**myCICN).iconPMap.packSize = 0;
+	(**myCICN).iconPMap.hRes = 0x00480000;
+	(**myCICN).iconPMap.vRes = 0x00480000;
+	(**myCICN).iconPMap.pixelSize = depth;
+	//(**myCICN).iconPMap.planeBytes= 0;
+	//(**myCICN).iconPMap.pmReserved= 0;
+	(**myCICN).iconPMap.pixelType = RGBDirect;
+	(**myCICN).iconPMap.cmpCount = 3;
+	(**myCICN).iconPMap.cmpSize = 8;
+	(**myCICN).iconPMap.pmTable = NULL; //::GetCTable (64 + depth); // fixme : handle non 32 bits pixmaps.
+	
+		
+	RGBColor *pRGB = (RGBColor*)malloc((nrColors + 1) * sizeof(RGBColor));
+	UT_ASSERT(pRGB);
+	UT_StringPtrMap hash(61);
+	UT_RGBColor color(0,0,0);
+	
+	// walk thru the palette
+	const char ** pIconDataPalette = &pIconData[1];
+	for (UT_uint32 k=0; (k < nrColors); k++)
+	{
+		char bufSymbol[10];
+		char bufKey[10];
+		char bufColorValue[100];
+
+		// we expect something of the form: ".. c #000000"
+		// but we allow a space as a character in the symbol, so we
+		// get the first field the hard way.
+		memset(bufSymbol,0,sizeof(bufSymbol));
+		for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
+			bufSymbol[kPx] = pIconDataPalette[k][kPx];
+		UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
+		
+		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1],
+						" %s %s",&bufKey,&bufColorValue);
+		UT_ASSERT(nf == 2);
+		UT_ASSERT(bufKey[0] = 'c');
+
+		// make the ".." a hash key and store our color index as the data.
+		// we add k+1 because the hash code does not like null pointers...
+		hash.insert(bufSymbol,(void *)(k+1));
+		
+		// store the actual color value in the 
+		// rgb quad array with our color index.
+		if (UT_stricmp(bufColorValue,"None")==0) {
+			pRGB[k].red = 0xffff; 
+			pRGB[k].green = 0;
+			pRGB[k].blue = 0;
+		}
+		else
+		{
+			// TODO fix this to also handle 
+			// #ffffeeeedddd type color references
+			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
+			UT_parseColor(bufColorValue, color);
+			pRGB[k].red	= color.m_red << 8;
+			pRGB[k].green	= color.m_grn << 8;
+			pRGB[k].blue	= color.m_blu << 8;
+		}
+	}
+
+	(**myCICN).iconData = NewHandleClear (((bounds.right - bounds.left) * (depth / 8)) * (bounds.bottom - bounds.top));
+
+	::HLock ((**myCICN).iconData);
+	char *bits = *((**myCICN).iconData);
+
+	int rgb_index;
+	const char ** pIconDataImage = &pIconDataPalette[nrColors];
+	short bytesPerRow = (**myCICN).iconPMap.rowBytes ^ 0x8000;
+	
+	for (UT_uint32 kRow=0; (kRow < height); kRow++) {
+		const char * p = pIconDataImage[kRow];
+		
+		for (UT_uint32 kCol=0; (kCol < width); kCol++) {
+			char bufPixel[10];
+			memset(bufPixel,0,sizeof(bufPixel));
+			for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
+				bufPixel[kPx] = *p++;
+
+			//printf("Looking for character %s \n", bufPixel);
+			const void * pEntry = hash.pick(bufPixel);
+			
+			rgb_index = ((UT_Byte)(pEntry)) -1;
+			//printf("Returned hash index %d \n", rgb_index); 
+
+			*(bits + kRow * bytesPerRow + kCol*4) 
+							= pRGB[rgb_index].blue;
+			*(bits + kRow * bytesPerRow + kCol*4 + 1) 
+							= pRGB[rgb_index].green;
+			*(bits + kRow * bytesPerRow + kCol*4 + 2) 
+							= pRGB[rgb_index].red; 
+		}
+	}
+
+	::HUnlock ((**myCICN).iconData);
+	//(**myCICN).iconPMap.baseAddr = (**myCICN).iconData;
+	free(pRGB);
+#if 0
+	Rect off = {0, 0, 24, 24};
+	Picture * newPict = ::OpenCPicture (&off);
+	::CopyBits ((**myCICN).iconPMap, (**myCICN).iconPMap, &off, &off, srcCopy, NULL);
+	::ClosePicture ();
+#endif
+	*pCIcon = myCICN;
+	return true;
+}
+
+
+
 
 #ifndef XP_MAC_TARGET_QUARTZ
 bool UT_Xpm2Bmp(UT_uint32 maxWidth,
