@@ -27,6 +27,7 @@ noinst_LIBRARIES = libImpexp.a
 libImpexp_a_SOURCES=\
 	ie_exp.cpp				\
 	ie_exp_AbiWord_1.cpp			\
+	ie_exp_AWT.cpp				\
 	ie_exp_Applix.cpp			\
 	ie_exp_GZipAbiWord.cpp                  \
 	ie_exp_HRText.cpp			\

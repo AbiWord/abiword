@@ -143,11 +143,10 @@ bool IE_Exp_AbiWord_1_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument)
-	: IE_Exp(pDocument)
+IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate)
+	: IE_Exp(pDocument), m_bIsTemplate(isTemplate), m_pListener(0)
 {
 	m_error = 0;
-	m_pListener = NULL;
 }
 
 IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
@@ -161,7 +160,7 @@ class s_AbiWord_1_Listener : public PL_Listener
 {
 public:
 	s_AbiWord_1_Listener(PD_Document * pDocument,
-						IE_Exp_AbiWord_1 * pie);
+						IE_Exp_AbiWord_1 * pie, bool isTemplate);
 	virtual ~s_AbiWord_1_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -202,6 +201,7 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
+	bool                m_bIsTemplate;
 	bool				m_bInSection;
 	bool				m_bInBlock;
 	bool				m_bInSpan;
@@ -434,8 +434,10 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 }
 
 s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
-										 IE_Exp_AbiWord_1 * pie)
+										   IE_Exp_AbiWord_1 * pie,
+										   bool isTemplate)
 {
+	m_bIsTemplate = isTemplate;
 	m_pDocument = pDocument;
 	m_pie = pie;
 	m_bInSection = false;
@@ -471,6 +473,11 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	}
 	m_pie->write("\" ");
 	m_pie->write(ABIWORD_FILEFORMAT);
+
+	if (m_bIsTemplate) {
+		m_pie->write (" template=\"true\"");
+	}
+
 	m_pie->write(">\n");
 
 	// TODO add a file-format name/value pair to this tag.
@@ -708,7 +715,7 @@ bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 {
-	m_pListener = new s_AbiWord_1_Listener(m_pDocument,this);
+	m_pListener = new s_AbiWord_1_Listener(m_pDocument,this, m_bIsTemplate);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))

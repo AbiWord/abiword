@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,23 +18,22 @@
  */
 
 
-#ifndef IE_EXP_ABIWORD_1_H
-#define IE_EXP_ABIWORD_1_H
+#ifndef IE_EXP_AWT_H
+#define IE_EXP_AWT_H
 
-#include "ie_exp.h"
-#include "pl_Listener.h"
+#include "ie_exp_AbiWord_1.h"
+
 class PD_Document;
-class s_AbiWord_1_Listener;
 
-// The exporter/writer for AbiWord file format version 1.
+// The exporter/writer for AbiWord Templates
 
-class IE_Exp_AbiWord_1_Sniffer : public IE_ExpSniffer
+class IE_Exp_AWT_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
 public:
-	IE_Exp_AbiWord_1_Sniffer () {}
-	virtual ~IE_Exp_AbiWord_1_Sniffer () {}
+	IE_Exp_AWT_Sniffer () {}
+	virtual ~IE_Exp_AWT_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -44,17 +43,11 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_AbiWord_1 : public IE_Exp
+class IE_Exp_AWT : public IE_Exp_AbiWord_1
 {
 public:
-	IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate = false);
-	virtual ~IE_Exp_AbiWord_1();
-	
-protected:
-	virtual UT_Error	_writeDocument(void);
-	
-	bool m_bIsTemplate;
-	s_AbiWord_1_Listener *	m_pListener;
+	IE_Exp_AWT(PD_Document * pDocument);
+	virtual ~IE_Exp_AWT();
 };
 
-#endif /* IE_EXP_ABIWORD_1_H */
+#endif /* IE_EXP_AWT_H */

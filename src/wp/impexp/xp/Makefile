@@ -24,6 +24,7 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		ie_exp.cpp				\
 			ie_exp_AbiWord_1.cpp			\
+			ie_exp_AWT.cpp				\
 			ie_exp_Applix.cpp			\
 			ie_exp_GZipAbiWord.cpp                  \
 			ie_exp_HTML.cpp				\

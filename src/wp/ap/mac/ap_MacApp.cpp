@@ -37,6 +37,7 @@
 
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
+#include "ie_exp_AWT.h"
 #include "ie_exp_GZipAbiWord.h"
 #include "ie_exp_MsWord_97.h"
 #include "ie_exp_MIF.h"
@@ -125,9 +126,7 @@ bool AP_MacApp::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	{
 		IE_Imp::registerImporter(new IE_Imp_AbiWord_1_Sniffer ());
-#ifdef DEBUG
 		IE_Imp::registerImporter(new IE_Imp_Applix_Sniffer ());
-#endif
 		IE_Imp::registerImporter(new IE_Imp_DocBook_Sniffer ());
 		IE_Imp::registerImporter(new IE_Imp_MsWord_97_Sniffer ());
 		IE_Imp::registerImporter(new IE_Imp_XSL_FO_Sniffer ());
@@ -142,6 +141,7 @@ bool AP_MacApp::initialize(void)
 		IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
 
 		IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());		
 #ifdef DEBUG

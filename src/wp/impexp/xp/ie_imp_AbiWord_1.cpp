@@ -136,15 +136,15 @@ bool IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 
 bool IE_Imp_AbiWord_1_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix, ".abw") == 0);
+	return (!UT_stricmp(szSuffix, ".abw") || !UT_stricmp(szSuffix, ".awt"));
 }
 
 bool IE_Imp_AbiWord_1_Sniffer::getDlgLabels (const char ** szDesc,
 											 const char ** szSuffixList,
 											 IEFileType * ft)
 {
-	*szDesc = "AbiWord (.abw)";
-	*szSuffixList = "*.abw";
+	*szDesc = "AbiWord Documents (.abw, .awt)";
+	*szSuffixList = "*.abw; *.awt";
 	*ft = getFileType();
 	return true;
 }
@@ -227,7 +227,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"c",			TT_INLINE		},
 	{	"cbr",			TT_COLBREAK		},
 	{	"d",			TT_DATAITEM		},
-	{	"data",			TT_DATASECTION		},
+	{	"data",			TT_DATASECTION	},
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
 	{	"i",			TT_IMAGE		},
@@ -235,13 +235,13 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"image",		TT_IMAGE		},
 	{	"iw",			TT_IGNOREDWORD	},
 	{	"l",			TT_LIST			},
-	{	"lists",		TT_LISTSECTION		},
+	{	"lists",		TT_LISTSECTION	},
 	{	"p",			TT_BLOCK		},
-	{   "pagesize",     TT_PAGESIZE             },
-	{	"pbr",			TT_PAGEBREAK		},
+	{   "pagesize",     TT_PAGESIZE     },
+	{	"pbr",			TT_PAGEBREAK	},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
-	{	"styles",		TT_STYLESECTION		},
+	{	"styles",		TT_STYLESECTION	},
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
