@@ -2935,6 +2935,10 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		return false;
 	}
 	pBL = _findBlockAtPosition(posStart+2);
+	if(pBL == NULL)
+	{
+		return false;
+	}
 	if((posStart == pBL->getPosition(true)) && (posEnd > posStart))
 	{
 		posStart++;
@@ -3359,6 +3363,10 @@ bool FV_View::getStyle(const XML_Char ** style)
 
 	// 1. get block style at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	if(pBlock == NULL)
+	{
+		return false;
+	}
 	pBlock->getAP(pBlockAP);
 
 	szBlock = x_getStyle(pBlockAP, true);
@@ -5012,6 +5020,10 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	if(pBlock == NULL)
+	{
+		return false;
+	}
 	pBlock->getAP(pBlockAP);
 
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
@@ -8756,7 +8768,10 @@ bool FV_View::isTextMisspelled() const
 {
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
-
+	if(pBlock == NULL)
+	{
+		return false;
+	}
 	if (!isPosSelected(pos))
 		if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
 		{
@@ -9031,8 +9046,8 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 
 	pos = getPoint();
 	pBL = _findBlockAtPosition(pos);
-	UT_ASSERT(pBL);
-
+	UT_return_val_if_fail(pBL,NULL);
+	
 	PT_DocPosition epos = 0;
 	getDocument()->getBounds(true, epos);
 	UT_DEBUGMSG(("end bound is %d\n", epos));
@@ -9098,7 +9113,10 @@ FV_View::countWords(void)
 
 	UT_sint32 iSelLen = high - low;
 	fl_BlockLayout * pBL = _findBlockAtPosition(low);
-
+	if(pBL == NULL)
+	{
+		return wCount;
+	}
 	// Selection may start inside first block
 	UT_sint32 iStartOffset = 0, iLineOffset = 0, iCount = 0;
 	fp_Line* pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
@@ -10062,6 +10080,10 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
 bool FV_View::isInHdrFtr(PT_DocPosition pos)
 {
 	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
+	if(pBL == NULL)
+	{
+		return false;
+	}
 	fl_ContainerLayout * pCL = pBL->myContainingLayout();
 	while(pCL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
 				  && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)
@@ -10188,7 +10210,13 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 bool FV_View::insertFootnote(bool bFootnote)
 {
 	// can only insert Footnote into an FL_SECTION_DOC or a Table
-	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
+	fl_BlockLayout * pBlock =  _findBlockAtPosition(getPoint());
+	if(pBlock == NULL)
+	{
+		return false;
+	}
+	fl_SectionLayout * pSL =  pBlock->getSectionLayout();
+
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
 	if(getHyperLinkRun(getPoint()) != NULL)

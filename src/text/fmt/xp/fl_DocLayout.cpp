@@ -103,7 +103,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
 		m_pRedrawUpdateTimer->start();
 	}
-
+	m_iFilled = 0;
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
 	// TODO and are not allowed to report failure.

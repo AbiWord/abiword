@@ -260,6 +260,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				pFrame->nullUpdate();
 				PT_DocPosition pos = pcrx->getPosition();
 				UT_uint32 percentFilled = 100*pos/m_pLayout->getDocSize();
+				m_pLayout->setPercentFilled(percentFilled);
 				UT_DEBUGMSG(("Percent filled = %d \n",percentFilled));
 				if(countStrux > 60)
 				{

@@ -138,6 +138,10 @@ public:
 	fp_Page*	getNthPage(int n);
 	UT_uint32	countPages();
 	UT_sint32   findPage(fp_Page * pPage);
+	UT_sint32   getPercentFilled(void)
+		{ return m_iFilled;}
+	void         setPercentFilled(UT_sint32 iFill)
+		{ m_iFilled = iFill;}
 	void        setLayoutIsFilling(bool bisFill) { m_bisLayoutFilling = bisFill;}
 	bool        isLayoutFilling(void) const { return m_bisLayoutFilling;}
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos) const;
@@ -335,6 +339,7 @@ private:
 	UT_uint32           m_iGraphicTick;
 	UT_GenericVector<fl_TOCLayout *> m_vecTOC;
 	PT_DocPosition      m_iDocSize;
+	UT_sint32           m_iFilled;
 };
 
 #endif /* DOCLAYOUT_H */
