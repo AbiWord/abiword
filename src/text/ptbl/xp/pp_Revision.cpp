@@ -132,6 +132,9 @@ void PP_RevisionAttr::_clear()
 */
 void PP_RevisionAttr::_init(const XML_Char *r)
 {
+	if(!r)
+		return;
+
 	// the string we are parsing looks like
 	// "+1,-2,!3{font-family: Times New Roman}"
 
