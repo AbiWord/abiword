@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@
 #include "ap_BeOSDialog_Paragraph.h"
 #include "ap_BeOSDialog_Spell.h"
 #include "ap_BeOSDialog_Options.h"
+#include "ap_BeOSDialog_WordCount.h"
 
 	// ... add new dialogs here ...
 
@@ -64,6 +65,7 @@
 	DeclareDialog(AP_DIALOG_ID_SPELL,		AP_BeOSDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,	AP_BeOSDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,		AP_BeOSDialog_Options)
+	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,	AP_BeOSDialog_WordCount)
 	
 	// ... also add new dialogs here ...
 

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@
 #	include "ap_QNXDialog_Paragraph.h"
 #	include "ap_QNXDialog_Options.h"
 #	include "ap_QNXDialog_Insert_DateTime.h"
+#	include "ap_QNXDialog_WordCount.h"
 
 	// ... add new dialogs here ...
 
@@ -70,6 +71,7 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)	
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME, AP_QNXDialog_Insert_DateTime)
+	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_QNXDialog_WordCount)
 
 	// ... also add new dialogs here ...
 
