@@ -477,7 +477,7 @@ void  XAP_UnixEncodingManager::initialize()
 				// by LANG
 
 			  UT_String OLDLANG (getenv("LANG"));
-#if defined(SETENV_MISSING) 
+#if defined(HAVE_PUTENV)
 			  UT_String MYLANG ("LANG=");
 			  
 			  MYLANG += LanguageISOName;
@@ -512,7 +512,7 @@ void  XAP_UnixEncodingManager::initialize()
 				
 				}
 
-#if defined(SETENV_MISSING)
+#if defined(HAVE_PUTENV)
 				MYLANG = "LANG=";
 				MYLANG += OLDLANG;
 				putenv(MYLANG.c_str());
