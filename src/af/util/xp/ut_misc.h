@@ -37,5 +37,10 @@ protected:
 #define UT_MIN(A,B)	(((A) < (B)) ? (A) : (B))
 
 double UT_convertToInches(const char* s);
+UT_Bool UT_scaleGeometry(const char * szLeftIn,
+						 const char * szWidthIn,
+						 UT_uint32 iWidthAvail,
+						 UT_uint32 * piLeft,
+						 UT_uint32 * piWidth);
 
 #endif /* UTMISC_H */

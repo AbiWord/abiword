@@ -82,3 +82,29 @@ double UT_convertToInches(const char* s)
 	return result;
 }
 
+UT_Bool UT_scaleGeometry(const char * szLeftIn,
+						 const char * szWidthIn,
+						 UT_uint32 iWidthAvail,
+						 UT_uint32 * piLeft,
+						 UT_uint32 * piWidth)
+{
+	/* Scale the given left-offset and width using the width available.
+	** Compute the actual left-offset and actual width used.
+	** We allow the given left-offset to be a number.
+	** We allow the given width to be a number or "*"; where "*" indicates
+	** we take all remaining space available.
+	*/
+
+	UT_uint32 iLeft = (UT_uint32) (UT_convertToInches(szLeftIn) * 100);
+	UT_uint32 iWidth;
+
+	if (szWidthIn[0] == '*')
+		iWidth = iWidthAvail - iLeft;
+	else
+		iWidth = (UT_uint32) (UT_convertToInches(szWidthIn) * 100);
+
+	*piLeft = iLeft;
+	*piWidth = iWidth;
+
+	return UT_TRUE;
+}
