@@ -234,10 +234,10 @@ PLATFORM_FLAGS      += $(HPPA_ARCH_FLAGS)
 OS_ENDIAN       = BigEndian32
 endif
 
-# may as well add gthread-2.0 here - fjf
+# may as well add gthread-2.0 & fribidi here - fjf
 # 
 GLIB_CONFIG	= pkg-config glib-2.0 gthread-2.0
-GTK_CONFIG	= pkg-config gtk+-2.0 gthread-2.0
+GTK_CONFIG	= pkg-config gtk+-2.0 gthread-2.0 fribidi
 # Do we need one for oaf?  No, we _should_ use bonobo-activation for that. -MG
 GNOME_CONFIG    = pkg-config libgnome-2.0 bonobo-activation-2.0 libgnomeprint-2.0 gal-2.0 libbonobo-2.0
 LIBXML_CONFIG	= xml2-config
