@@ -450,10 +450,12 @@ public:
 	bool				isInTable();
 	bool				isInTable(PT_DocPosition pos);
 	
+	void				_generalUpdate(void);
+	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
-	void				_generalUpdate(void);
+	
 
 	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 

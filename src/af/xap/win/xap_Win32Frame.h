@@ -25,6 +25,7 @@
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_Win32DialogFactory.h"
+#include "xap_Win32DragAndDrop.h"
 
 class XAP_Win32App;
 class ev_Win32Keyboard;
@@ -127,6 +128,8 @@ protected:
 	*/
 	UT_uint32					m_iSizeWidth;
 	UT_uint32					m_iSizeHeight;
+		
+	XAP_Win32DropTarget				m_dropTarget;
 };
 
 #endif /* XAP_WIN32FRAME_H */

@@ -34,6 +34,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <iostream.h>
+#include <ole2.h>
 
 #include "ut_debugmsg.h"
 #include "ut_bytebuf.h"
@@ -521,6 +522,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 			: strlen(reinterpret_cast<const char *>(pData));
 		UT_uint32 iLen = MyMin(iSize,iStrLen);
 
+		
 		IE_Imp * pImp = 0;
 		IE_Imp::constructImporter(pDocRange->m_pDoc, 0, IE_Imp::fileTypeForSuffix(szType), &pImp, 0);
 		if (pImp)
@@ -738,7 +740,8 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	bool bShowApp = true;
 	bool bShowSplash = true;
 	bool bSplashPref = true;
-
+	BOOL bInitialized; 
+	
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
 
@@ -785,6 +788,11 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	
 	AP_Win32App * pMyWin32App;
 
+	// OLE Stuff
+	if (SUCCEEDED(OleInitialize(NULL)))
+            bInitialized = TRUE;                    
+  
+	
 // We put this in a block to force the destruction of Args in the stack
 {	
 	// Load the command line into an XAP_Args class
@@ -874,6 +882,10 @@ __try
 			}
 	    }
 	}
+	
+	// Un-init OLE		               
+        if (bInitialized)
+                OleUninitialize();
 	
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyWin32App->shutdown();

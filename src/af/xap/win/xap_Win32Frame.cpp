@@ -42,6 +42,8 @@
 #pragma warning(disable: 4355)	// 'this' used in base member initializer list
 #endif
 
+XAP_Win32DropTarget	dropTarget;
+
 // TODO Fix the following header file. It seems to be incomplete
 // TODO #include <ap_EditMethods.h>
 // TODO In the mean time, define the needed function by hand
@@ -299,11 +301,11 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	GetClientRect(m_hwndStatusBar,&r);
 	m_iStatusBarHeight = r.bottom;
 
-	// Allow drag-and drop
-	DragAcceptFiles(m_hwndFrame, true);
-
-	// we let our caller decide when to show m_hwndFrame.
-
+	
+	// Register drag and drop data and files
+	m_dropTarget.pFrame = this;
+	RegisterDragDrop(m_hwndFrame, &m_dropTarget);	
+		
 	return;
 }
 
@@ -327,6 +329,9 @@ bool XAP_Win32Frame::close()
 		// if failed to get placement then invalidate stored settings
 		getApp()->setGeometry(0,0,0,0,0);
 	}
+	
+	RevokeDragDrop(m_hwndFrame);
+	
 
 	// NOTE: this should only be called from the closeWindow edit method
 	DestroyWindow(m_hwndFrame);
