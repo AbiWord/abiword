@@ -29,6 +29,7 @@
 
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
+#include "xap_UnixFontXLFD.h"
 
 #define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -279,14 +280,9 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : NULL;
 }
 
-/*
-  If you don't like C-style strings, this function will make you cry.
-*/
 void XAP_UnixFontManager::_allocateThisFont(const char * line,
 											const char * workingdir)
 {
-	// TODO (this one's easy): Make this function use the xap_UnixFontXLFD
-	// TODO (this one's easy): class!  It'll save lots of work.
 	/*
 	  Each line comes in as:
 	  
@@ -330,28 +326,22 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - missing XLFD "
 					 "file name at second position in line.\n"));
 		FREEP(linedup);
-		return;
+		return;		
 	}
 	// clean up that XLFD by removing surrounding spaces
 	xlfd = g_strstrip(xlfd);
-	
-	// while we're hanging around the XLFD, find both the weight and
-	// slant attributes to discern a "style"
-	char * ihatexlfds = strdup(xlfd);
-	UT_ASSERT(ihatexlfds);
-	// first hit will be the leading dash
-	strtok(ihatexlfds, "-");
-	// ignore first field
-	strtok(NULL, "-");
-	// get the weight (should be "regular" or "bold")
-	char * weight = strtok(NULL, "-");
+
+	// let this class munch on all the fields
+	XAP_UnixFontXLFD descriptor(xlfd);
+
+	// get the weight (should be "regular" or "bold") and the slant (should be
+	// "r" for Roman or "i" for Italic) to discern an internal "style"
+	const char * weight = descriptor.getWeight();
 	UT_ASSERT(weight);
-	// get the slant (should be "r" for Roman or "i" for Italic)
-	char * slant = strtok(NULL, "-");
+	const char * slant = descriptor.getSlant();
 	UT_ASSERT(slant);
 
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
-	
 	// sort from most common down
 	if (!UT_stricmp(weight, "regular") &&
 		!UT_stricmp(slant, "r"))
@@ -373,7 +363,6 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	{
 		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 	}
-	FREEP(ihatexlfds);
 	
 	// do some voodoo to get the AFM file from the file name
 	char * dot = strrchr(fontfile, '.');
@@ -398,7 +387,6 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 
 	// build a font and load it up
 	XAP_UnixFont * font = new XAP_UnixFont;
-	UT_ASSERT(font);
 	if (font->openFileAs((const char *) fontfile,
 						 (const char *) metricfile,
 						 (const char *) xlfd,
@@ -411,8 +399,6 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 		DELETEP(font);
 	}
 
-	// be careful not to free strings built from strtok()
-	// or pointer math.
 	FREEP(newstuff);
 	FREEP(metricfile);
 	FREEP(linedup);
