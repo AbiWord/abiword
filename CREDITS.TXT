@@ -35,6 +35,7 @@ Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
+Birger Langkjer <birger.langkjer@image.dk>	GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
 Brian Marick <marick@rstcorp.com>		
