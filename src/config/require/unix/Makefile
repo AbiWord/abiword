@@ -177,7 +177,7 @@ _ABIDISTFILES_:
 
 _LIBICONV_:
 
-ifdef ABI_REQUIRE_PEER_ICONV
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 		@if [ -d $(ABI_ROOT)/../libiconv ]; then                        	\
 			echo Found libiconv in peer directory;                  \
 			if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then  \
