@@ -211,7 +211,8 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 //
 // Button to clear background color
 //
-    GtkWidget * clearColor = gtk_button_new_with_label ("Clear Background Color");
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkWidget * clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearClr));
 	gtk_widget_show(clearColor);
 	
 	gtk_container_add(GTK_CONTAINER(vbox),clearColor);
