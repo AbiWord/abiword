@@ -1,8 +1,13 @@
 # BUILD OPTIONS: 1 for yes, 0 for no
 %define enable_static __UNIX_CAN_BUILD_STATIC__
-%define enable_debug __ABI_OPT_DEBUG__
+# Debug rpms are a bad idea, the only people using debug
+# builds (not symbols, which can be set via cxxflags, but
+# full blown ut_debug/pt_test/-DDEBUG/etc) are developers,
+# who won't be using rpms for it.
+%define enable_debug 0
 %define enable_gnome __ABI_OPT_GNOME__
-%define enable_perl __ABI_OPT_PERL__
+# Perl quite broken for now; unmaintained, unsupported.
+%define enable_perl 0
 %define enable_jpeg __ABI_OPT_LIBJPEG__
 %define enable_expat 0
 %define enable_optimize __ABI_OPT_OPTIMIZE__
@@ -14,7 +19,8 @@
 %endif
 
 %define AbiSuite AbiSuite-2.2
-%define AbiWord AbiWord-2.2
+# Does not appear to be used, at least not everywhere it could be
+%define AbiWord AbiWord
 %define version_flag ABI_BUILD_VERSION=%{version}
 %define ABIPREFIX %{_libdir}/%{AbiWord}
 
@@ -54,17 +60,17 @@
 
 
 Name: %{name}
-Summary: Multi-platform word processor
+Summary: Full-featured, lightweight, multi-platform word processor
 Version: %{version}
 Release: %{release}
-Source: %{name}-%{version}.tar.gz
-Group: Applications/Publishing
+Source: %{name}-%{version}.tar.bz2
+Group: Applications/Editors
 URL: http://www.abisource.com/
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 License: GPL
 Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
-Distribution: RedHat 7.x Contrib
+Distribution: Fedora Alternatives 2
 # Basic requirements
 Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
 BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
@@ -229,20 +235,20 @@ cd ../abi
 %__ln_s -f %{_bindir}/AbiWord-2.2 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.2
 
 # Creates GNOME menu entries
-%__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps
-#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps/abiword_48.png
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/abiword_48.png
+%__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/icons
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_datadir}/icons/abiword_48.png
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/applications/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 %__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.2|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 
 # Copies oaf files
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.server $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
 
 # Fix for wrong file rights on fonts,icons,clipart
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/pixmaps/*
-#%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/clipart/*
-#%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
+%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/clipart/*
+%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
 
 # this files are installed but they've already been copied to a better place
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
@@ -250,6 +256,8 @@ cd ../abi
 
 %__rm -f $RPM_BUILD_ROOT/%{_libdir}/%{AbiWord}/plugins/*.la
 %__rm -f $RPM_BUILD_ROOT/%{_libdir}/%{AbiWord}/plugins/*.a
+
+%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
 
 %clean
 %__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
@@ -260,7 +268,7 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/AbiWord/scripts/*
 %defattr(644,root,root,755)
 %{_datadir}/%{AbiSuite}/abi-nautilus-view-file.xml
-#%{_datadir}/%{AbiSuite}/COPYING
+%{_datadir}/%{AbiSuite}/COPYING
 %{_datadir}/%{AbiSuite}/README
 %{_datadir}/%{AbiSuite}/AbiWord/readme.txt
 #%{_datadir}/%{AbiSuite}/AbiWord/help/en-US
@@ -316,7 +324,6 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiEML.so
 %{_libdir}/%{AbiWord}/plugins/libAbiHancom.so
 %{_libdir}/%{AbiWord}/plugins/libAbiHRText.so
-#%{_libdir}/%{AbiWord}/plugins/libAbiHTML.so
 %{?_with_libwpd:%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.so}
 %{_libdir}/%{AbiWord}/plugins/libAbiISCII.so
 %{_libdir}/%{AbiWord}/plugins/libAbiJPEG.so
@@ -342,6 +349,9 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/clipart
 
 %changelog
+* Fri Aug 06 2004 Mark Gilbert <invalidmail@nonhost.net>
+- Fix various stuff, cleanup, sync with rui, sync with fedora.
+
 * Wed Apr 16 2003 Rui M. Seabra <rms@1407.org>
 - Remove unecessary comments
 
