@@ -6,11 +6,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 0.99.2\n"
 "POT-Creation-Date: 2002-02-21 16:14+0900\n"
-"PO-Revision-Date: 2002-02-21 16:51+0900\n"
+"PO-Revision-Date: 2002-02-26 10:08+0900\n"
 "Last-Translator: Masayuki Hatta <mhatta@gnu.org>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #.
@@ -69,7 +69,7 @@ msgstr "&1 %s"
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h.h:21
 msgid "&1 None"
-msgstr "&1 ¤Ê¤·"
+msgstr "&1 ãªã—"
 
 #. MENU_LABEL_WINDOW_2
 #: po/tmp/ap_String_Id.h.h:23
@@ -138,27 +138,27 @@ msgstr "&9 %s"
 #: po/tmp/ap_String_Id.h.h:45
 #, c-format
 msgid "&About %s"
-msgstr "%s ¤Ë¤Ä¤¤¤Æ(&A)"
+msgstr "%s ã«ã¤ã„ã¦(&A)"
 
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:47
 msgid "&Add"
-msgstr "ÄÉ²Ã(&A)"
+msgstr "è¿½åŠ (&A)"
 
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:49
 msgid "&Adjust to:"
-msgstr "°Ê²¼¤ËÄ´À°(&A):"
+msgstr "ä»¥ä¸‹ã«èª¿æ•´(&A):"
 
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:51
 msgid "&Align"
-msgstr "À°Îó(&A)"
+msgstr "æ•´åˆ—(&A)"
 
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h.h:53
 msgid "&All"
-msgstr "¤¹¤Ù¤Æ(&A)"
+msgstr "ã™ã¹ã¦(&A)"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:55
@@ -168,117 +168,117 @@ msgstr ""
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:57
 msgid "&Auto Spellcheck"
-msgstr "¼«Æ°¥¹¥Ú¥ë¥Á¥§¥Ã¥¯(&A)"
+msgstr "è‡ªå‹•ã‚¹ãƒšãƒ«ãƒã‚§ãƒƒã‚¯(&A)"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:59
 msgid "&Automatically save this Scheme"
-msgstr "¤³¤Î¥¹¥­¡¼¥à¤ò¼«Æ°Åª¤ËÊİÂ¸(&A)"
+msgstr "ã“ã®ã‚¹ã‚­ãƒ¼ãƒ ã‚’è‡ªå‹•çš„ã«ä¿å­˜(&A)"
 
 #. MENU_LABEL_INSERT_AUTOTEXT
 #: po/tmp/ap_String_Id.h.h:61
 msgid "&Autotext"
-msgstr "¼«Æ°¥Æ¥­¥¹¥È(&A)"
+msgstr "è‡ªå‹•ãƒ†ã‚­ã‚¹ãƒˆ(&A)"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h.h:63
 msgid "&Available formats:"
-msgstr "ÍøÍÑ²ÄÇ½¤Ê·Á¼°(&A):"
+msgstr "åˆ©ç”¨å¯èƒ½ãªå½¢å¼(&A):"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h.h:65
 msgid "&Before:"
-msgstr "°ÊÁ°(&B):"
+msgstr "ä»¥å‰(&B):"
 
 #. MENU_LABEL_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:67
 msgid "&Bold"
-msgstr "ÂÀ»ú(&B)"
+msgstr "å¤ªå­—(&B)"
 
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h.h:69
 msgid "&Bottom:"
-msgstr "²¼Éô(&B):"
+msgstr "ä¸‹éƒ¨(&B):"
 
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:71
 msgid "&Break"
-msgstr "¥Ö¥ì¡¼¥¯(&B)"
+msgstr "ãƒ–ãƒ¬ãƒ¼ã‚¯(&B)"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:73
 msgid "&Center"
-msgstr "Ãæ±û(&C)"
+msgstr "ä¸­å¤®(&C)"
 
 #. DLG_Spell_Change
 #: po/tmp/ap_String_Id.h.h:75
 msgid "&Change"
-msgstr "ÊÑ¹¹(&C)"
+msgstr "å¤‰æ›´(&C)"
 
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:77
 msgid "&Clip Art"
-msgstr "¥¯¥ê¥Ã¥×¥¢¡¼¥È(&C)"
+msgstr "ã‚¯ãƒªãƒƒãƒ—ã‚¢ãƒ¼ãƒˆ(&C)"
 
 #. MENU_LABEL_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:79
 msgid "&Close"
-msgstr "ÊÄ¤¸¤ë(&C)"
+msgstr "é–‰ã˜ã‚‹(&C)"
 
 #. DLG_Break_ColumnBreak
 #: po/tmp/ap_String_Id.h.h:81
 msgid "&Column break"
-msgstr "Îó¥Ö¥ì¡¼¥¯(&C)"
+msgstr "åˆ—ãƒ–ãƒ¬ãƒ¼ã‚¯(&C)"
 
 #. MENU_LABEL_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:83
 msgid "&Columns"
-msgstr "Îó(&C)"
+msgstr "åˆ—(&C)"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:85
 msgid "&Copy"
-msgstr "¥³¥Ô¡¼(&C)"
+msgstr "ã‚³ãƒ”ãƒ¼(&C)"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:87
 msgid "&Current Preferences Scheme"
-msgstr "¸½ºß¤ÎÀßÄê¥¹¥­¡¼¥à(&C)"
+msgstr "ç¾åœ¨ã®è¨­å®šã‚¹ã‚­ãƒ¼ãƒ (&C)"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:89
 msgid "&Delete hyperlink"
-msgstr "¥Ï¥¤¥Ñ¡¼¥ê¥ó¥¯¤òºï½ü(&D)"
+msgstr "ãƒã‚¤ãƒ‘ãƒ¼ãƒªãƒ³ã‚¯ã‚’å‰Šé™¤(&D)"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:91
 msgid "&Dictionary..."
-msgstr "¼­½ñ(&D)..."
+msgstr "è¾æ›¸(&D)..."
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:93
 msgid "&Document"
-msgstr "Ê¸½ñ(&D)"
+msgstr "æ–‡æ›¸(&D)"
 
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:95
 msgid "&Don't hyphenate"
-msgstr "¥Ï¥¤¥Õ¥Í¡¼¥È¤·¤Ê¤¤(&D)"
+msgstr "ãƒã‚¤ãƒ•ãƒãƒ¼ãƒˆã—ãªã„(&D)"
 
 #. MENU_LABEL_EDIT
 #: po/tmp/ap_String_Id.h.h:97
 msgid "&Edit"
-msgstr "ÊÔ½¸(&E)"
+msgstr "ç·¨é›†(&E)"
 
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:99
 msgid "&Enable smart quotes"
-msgstr "¥¹¥Ş¡¼¥È°úÍÑ¤òÍøÍÑ(&E)"
+msgstr "ã‚¹ãƒãƒ¼ãƒˆå¼•ç”¨ã‚’åˆ©ç”¨(&E)"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:101
 msgid "&Endnote"
-msgstr "¾ÏËöÃí(&E)"
+msgstr "ç« æœ«æ³¨(&E)"
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:103
@@ -288,117 +288,117 @@ msgstr ""
 #. MENU_LABEL_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:105
 msgid "&Extra"
-msgstr ""
+msgstr "ç‰¹åˆ¥(&E)"
 
 #. MENU_LABEL_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Field"
-msgstr "¥Õ¥£¡¼¥ë¥É(&F)"
+msgstr "ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰(&F)"
 
 #. DLG_Field_Fields
 #: po/tmp/ap_String_Id.h.h:109
 msgid "&Fields:"
-msgstr "¥Õ¥£¡¼¥ë¥É(&F):"
+msgstr "ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰(&F):"
 
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h.h:111
 msgid "&File"
-msgstr "¥Õ¥¡¥¤¥ë(&F)"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ«(&F)"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:113
 msgid "&Find"
-msgstr "¸¡º÷(&F)"
+msgstr "æ¤œç´¢(&F)"
 
 #. DLG_FR_FindNextButton
 #: po/tmp/ap_String_Id.h.h:115
 msgid "&Find Next"
-msgstr "¼¡¤ò¸¡º÷(&F)"
+msgstr "æ¬¡ã‚’æ¤œç´¢(&F)"
 
 #. MENU_LABEL_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:117
 msgid "&Font"
-msgstr "¥Õ¥©¥ó¥È(&F)"
+msgstr "ãƒ•ã‚©ãƒ³ãƒˆ(&F)"
 
 #. DLG_PageSetup_Footer
 #: po/tmp/ap_String_Id.h.h:119
 msgid "&Footer:"
-msgstr "¥Õ¥Ã¥¿(&F):"
+msgstr "ãƒ•ãƒƒã‚¿(&F):"
 
 #. MENU_LABEL_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:121
 msgid "&Formatting"
-msgstr "¥Õ¥©¡¼¥Ş¥Ã¥Æ¥£¥ó¥°(&F)"
+msgstr "ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒ†ã‚£ãƒ³ã‚°(&F)"
 
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:123
 msgid "&From File"
-msgstr ""
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã¿(&F)"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:125
 msgid "&Go To"
-msgstr ""
+msgstr "ã‚¸ãƒ£ãƒ³ãƒ—(&G)"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:127
 msgid "&Header and Footer"
-msgstr "¥Ø¥Ã¥À¤È¥Õ¥Ã¥¿(&H)"
+msgstr "ãƒ˜ãƒƒãƒ€ã¨ãƒ•ãƒƒã‚¿(&H)"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h.h:129
 msgid "&Header:"
-msgstr "¥Ø¥Ã¥À(&H):"
+msgstr "ãƒ˜ãƒƒãƒ€(&H):"
 
 #. DLG_PageSetup_Height
 #: po/tmp/ap_String_Id.h.h:131
 msgid "&Height:"
-msgstr "¹â¤µ(&H):"
+msgstr "é«˜ã•(&H):"
 
 #. MENU_LABEL_HELP
 #: po/tmp/ap_String_Id.h.h:133
 msgid "&Help"
-msgstr "¥Ø¥ë¥×(&H)"
+msgstr "ãƒ˜ãƒ«ãƒ—(&H)"
 
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&Hidden Text"
-msgstr "±£ÊÃ¥Æ¥­¥¹¥È(&H)"
+msgstr "éš è”½ãƒ†ã‚­ã‚¹ãƒˆ(&H)"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:137
 msgid "&Hyperlink"
-msgstr "¥Ï¥¤¥Ñ¡¼¥ê¥ó¥¯(&H)"
+msgstr "ãƒã‚¤ãƒ‘ãƒ¼ãƒªãƒ³ã‚¯(&H)"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Ignore"
-msgstr "Ìµ»ë(&I)"
+msgstr "ç„¡è¦–(&I)"
 
 #. MENU_LABEL_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:141
 msgid "&Ignore All"
-msgstr "¤¹¤Ù¤ÆÌµ»ë(&I)"
+msgstr "ã™ã¹ã¦ç„¡è¦–(&I)"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:143
 msgid "&Indents and Spacing"
-msgstr ""
+msgstr "ã‚¤ãƒ³ãƒ‡ãƒ³ãƒˆã¨é…ç½®(&I)"
 
 #. MENU_LABEL_INSERT
 #: po/tmp/ap_String_Id.h.h:145 po/tmp/xap_String_Id.h.h:17
 msgid "&Insert"
-msgstr "ÁŞÆş(&I)"
+msgstr "æŒ¿å…¥(&I)"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:147
 msgid "&Insert File"
-msgstr "¥Õ¥¡¥¤¥ë¤òÁŞÆş(&I)"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ¿å…¥(&I)"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:149
 msgid "&Italic"
-msgstr "¥¤¥¿¥ê¥Ã¥¯(&I)"
+msgstr "ã‚¤ã‚¿ãƒªãƒƒã‚¯(&I)"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:151
@@ -413,27 +413,27 @@ msgstr ""
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:155
 msgid "&Landscape"
-msgstr ""
+msgstr "ãƒ©ãƒ³ãƒ‰ã‚¹ã‚±ãƒ¼ãƒ—(&L)"
 
 #. MENU_LABEL_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:157
 msgid "&Language"
-msgstr "¸À¸ì(&L)"
+msgstr "è¨€èª(&L)"
 
 #. MENU_LABEL_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:159
 msgid "&Left"
-msgstr "º¸(&L)"
+msgstr "å·¦(&L)"
 
 #. DLG_PageSetup_Left
 #: po/tmp/ap_String_Id.h.h:161
 msgid "&Left:"
-msgstr "º¸(&L):"
+msgstr "å·¦(&L):"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:163
 msgid "&Margin"
-msgstr "Í¾Çò(&M)"
+msgstr "ä½™ç™½(&M)"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:165
@@ -448,27 +448,27 @@ msgstr ""
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h.h:169
 msgid "&Name:"
-msgstr "Ì¾Á°(&N):"
+msgstr "åå‰(&N):"
 
 #. MENU_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:171
 msgid "&New"
-msgstr "¿·µ¬(&N)"
+msgstr "æ–°è¦(&N)"
 
 #. MENU_LABEL_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:173
 msgid "&New Window"
-msgstr ""
+msgstr "æ–°è¦ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦(&W)"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:175
 msgid "&Next page"
-msgstr "¼¡¤Î¥Ú¡¼¥¸(&N)"
+msgstr "æ¬¡ã®ãƒšãƒ¼ã‚¸(&N)"
 
 #. MENU_LABEL_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:177
 msgid "&Normal Layout"
-msgstr ""
+msgstr "é€šå¸¸ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ(&N)"
 
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h.h:179
@@ -478,12 +478,12 @@ msgstr ""
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:181
 msgid "&Odd page"
-msgstr "´ñ¿ô¥Ú¡¼¥¸(&O)"
+msgstr "å¥‡æ•°ãƒšãƒ¼ã‚¸(&O)"
 
 #. MENU_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:183
 msgid "&Open"
-msgstr "³«¤¯(&O)"
+msgstr "é–‹ã(&O)"
 
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:185
@@ -493,57 +493,57 @@ msgstr ""
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:187
 msgid "&Page break"
-msgstr ""
+msgstr "ãƒšãƒ¼ã‚¸ãƒ–ãƒ¬ãƒ¼ã‚¯(&P)"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:189
 msgid "&Paragraph"
-msgstr "ÃÊÍî(&P)"
+msgstr "æ®µè½(&P)"
 
 #. MENU_LABEL_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:191
 msgid "&Paste"
-msgstr "Å½¤êÉÕ¤±(&P)"
+msgstr "è²¼ã‚Šä»˜ã‘(&P)"
 
 #. MENU_LABEL_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:193
 msgid "&Picture"
-msgstr "²èÁü(&P)"
+msgstr "ç”»åƒ(&P)"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:195
 msgid "&Portrait"
-msgstr ""
+msgstr "ãƒãƒ¼ãƒˆãƒ¬ã‚¤ãƒˆ(&P)"
 
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:197
 msgid "&Preferences"
-msgstr "ÀßÄê(&P)"
+msgstr "è¨­å®š(&P)"
 
 #. MENU_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:199
 msgid "&Print"
-msgstr "°õºş(&P)"
+msgstr "å°åˆ·(&P)"
 
 #. MENU_LABEL_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:201
 msgid "&Print Layout"
-msgstr "°õºş¥ì¥¤¥¢¥¦¥È(&P)"
+msgstr "å°åˆ·ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ(&P)"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:203
 msgid "&Redo"
-msgstr "¥ê¥É¥¥(&R)"
+msgstr "ãƒªãƒ‰ã‚¥(&R)"
 
 #. DLG_FR_ReplaceButton
 #: po/tmp/ap_String_Id.h.h:205
 msgid "&Replace"
-msgstr "ÃÖ´¹(&R)"
+msgstr "ç½®æ›(&R)"
 
 #. DLG_Options_Btn_IgnoreReset
 #: po/tmp/ap_String_Id.h.h:207
 msgid "&Reset"
-msgstr "¥ê¥»¥Ã¥È(&R)"
+msgstr "ãƒªã‚»ãƒƒãƒˆ(&R)"
 
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:209
@@ -553,82 +553,82 @@ msgstr ""
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:211
 msgid "&Right"
-msgstr "±¦(&R)"
+msgstr "å³(&R)"
 
 #. DLG_PageSetup_Right
 #: po/tmp/ap_String_Id.h.h:213
 msgid "&Right:"
-msgstr "±¦(&R):"
+msgstr "å³(&R):"
 
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:215
 msgid "&Ruler"
-msgstr "¥ë¡¼¥é¡¼(&R)"
+msgstr "ãƒ«ãƒ¼ãƒ©ãƒ¼(&R)"
 
 #. MENU_LABEL_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:217
 msgid "&Save"
-msgstr "ÊİÂ¸(&S)"
+msgstr "ä¿å­˜(&S)"
 
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:219
 msgid "&Search for Help"
-msgstr "¥Ø¥ë¥×¤ò¸¡º÷(&S)"
+msgstr "ãƒ˜ãƒ«ãƒ—ã‚’æ¤œç´¢(&S)"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:221
 msgid "&Show Status Bar"
-msgstr "¥¹¥Æ¡¼¥¿¥¹¥Ğ¡¼¤òÉ½¼¨(&S)"
+msgstr "ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼ã‚’è¡¨ç¤º(&S)"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:223
 msgid "&Special:"
-msgstr "¥¹¥Ú¥·¥ã¥ë(&S):"
+msgstr "ã‚¹ãƒšã‚·ãƒ£ãƒ«(&S):"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:225
 msgid "&Spelling"
-msgstr "¥¹¥Ú¥ê¥ó¥°(&S)"
+msgstr "ã‚¹ãƒšãƒ«(&S)"
 
 #. MENU_LABEL_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:227
 msgid "&Standard"
-msgstr "É¸½à(&S)"
+msgstr "æ¨™æº–(&S)"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:229
 msgid "&Status bar"
-msgstr "¥¹¥Æ¡¼¥¿¥¹¥Ğ¡¼(&S)"
+msgstr "ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒ¼(&S)"
 
 #. MENU_LABEL_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:231
 msgid "&Subscript"
-msgstr "²¼ÉÕ(&S)"
+msgstr "ä¸‹ä»˜(&S)"
 
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:233
 msgid "&Suppress line numbers"
-msgstr "¹ÔÈÖ¹æ¤òÉ½¼¨¤·¤Ê¤¤(&S)"
+msgstr "è¡Œç•ªå·ã‚’è¡¨ç¤ºã—ãªã„(&S)"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:235
 msgid "&Tabs"
-msgstr "¥¿¥Ö(&T)"
+msgstr "ã‚¿ãƒ–(&T)"
 
 #. DLG_Para_ButtonTabs
 #: po/tmp/ap_String_Id.h.h:237
 msgid "&Tabs..."
-msgstr "¥¿¥Ö(&T)..."
+msgstr "ã‚¿ãƒ–(&T)..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h.h:239
 msgid "&Toolbars"
-msgstr "¥Ä¡¼¥ë¥Ğ¡¼(&T)"
+msgstr "ãƒ„ãƒ¼ãƒ«ãƒãƒ¼(&T)"
 
 #. MENU_LABEL_TOOLS
 #: po/tmp/ap_String_Id.h.h:241
 msgid "&Tools"
-msgstr "¥Ä¡¼¥ë(&T)"
+msgstr "ãƒ„ãƒ¼ãƒ«(&T)"
 
 #. DLG_PageSetup_Top
 #: po/tmp/ap_String_Id.h.h:243
@@ -643,27 +643,27 @@ msgstr ""
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:247
 msgid "&Underline"
-msgstr "²¼Àş(&U)"
+msgstr "ä¸‹ç·š(&U)"
 
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:249
 msgid "&Undo"
-msgstr "¥¢¥ó¥É¥¥(&U)"
+msgstr "ã‚¢ãƒ³ãƒ‰ã‚¥(&U)"
 
 #. DLG_PageSetup_Units
 #: po/tmp/ap_String_Id.h.h:251
 msgid "&Units:"
-msgstr "Ã±°Ì(&U):"
+msgstr "å˜ä½(&U):"
 
 #. MENU_LABEL_VIEW
 #: po/tmp/ap_String_Id.h.h:253
 msgid "&View"
-msgstr ""
+msgstr "ãƒ“ãƒ¥ãƒ¼(&V)"
 
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:255
 msgid "&Web Layout"
-msgstr "Web ¥ì¥¤¥¢¥¦¥È(&L)"
+msgstr "Web ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ(&L)"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:257
@@ -673,22 +673,22 @@ msgstr ""
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h.h:259
 msgid "&Width:"
-msgstr "Éı(&W):"
+msgstr "å¹…(&W):"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:261
 msgid "&Window"
-msgstr "¥¦¥£¥ó¥É¥¦(&W)"
+msgstr "ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦(&W)"
 
 #. MENU_LABEL_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:263
 msgid "&Word Count"
-msgstr "Ã±¸ì¤ò¿ô¤¨¤ë(&W)"
+msgstr "å˜èªã‚’æ•°ãˆã‚‹(&W)"
 
 #. MENU_LABEL_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:265
 msgid "&Zoom"
-msgstr "¥º¡¼¥à(&Z)"
+msgstr "ã‚ºãƒ¼ãƒ (&Z)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h.h:267
@@ -698,7 +698,7 @@ msgstr ""
 #. DLG_Para_SpecialNone
 #: po/tmp/ap_String_Id.h.h:269
 msgid "(none)"
-msgstr ""
+msgstr "(ãªã—)"
 
 #. DLG_Para_SpacingHalf
 #: po/tmp/ap_String_Id.h.h:271
@@ -718,7 +718,7 @@ msgstr ""
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h.h:277
 msgid "AM/PM"
-msgstr ""
+msgstr "åˆå‰/åˆå¾Œ"
 
 #. AUTOTEXT_ATTN_2
 #: po/tmp/ap_String_Id.h.h:279
@@ -746,27 +746,27 @@ msgstr ""
 #. MENU_LABEL_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:287
 msgid "About &GNU Free Software"
-msgstr ""
+msgstr "GNU ãƒ•ãƒªãƒ¼ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ã«ã¤ã„ã¦(&G)"
 
 #. MENU_LABEL_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:289
 msgid "About &Open Source"
-msgstr ""
+msgstr "ã‚ªãƒ¼ãƒ—ãƒ³ã‚½ãƒ¼ã‚¹ã«ã¤ã„ã¦(&O)"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:291
 msgid "About G&NOME Office"
-msgstr ""
+msgstr "GNOME ã‚ªãƒ•ã‚£ã‚¹ã«ã¤ã„ã¦(&N)"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:293
 msgid "About the GNOME Office project"
-msgstr ""
+msgstr "GNOME ã‚ªãƒ•ã‚£ã‚¹ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã«ã¤ã„ã¦"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:295
 msgid "About the GNU project"
-msgstr ""
+msgstr "GNU ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã«ã¤ã„ã¦"
 
 #. MENU_STATUSLINE_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:297
@@ -866,7 +866,7 @@ msgstr ""
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:335
 msgid "Auto Save"
-msgstr ""
+msgstr "è‡ªå‹•ä¿å­˜"
 
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:337
@@ -886,7 +886,7 @@ msgstr ""
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:343
 msgid "Automatically update"
-msgstr ""
+msgstr "è‡ªå‹•çš„ã«ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:345
@@ -906,7 +906,7 @@ msgstr ""
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:351
 msgid "Back&ground"
-msgstr ""
+msgstr "èƒŒæ™¯(&G)"
 
 #. DLG_Tab_Radio_Bar
 #: po/tmp/ap_String_Id.h.h:353
@@ -941,12 +941,12 @@ msgstr ""
 #. MENU_LABEL_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:365
 msgid "Boo&kmark"
-msgstr ""
+msgstr "ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯(&K)"
 
 #. DLG_Goto_Target_Bookmark
 #: po/tmp/ap_String_Id.h.h:367
 msgid "Bookmark"
-msgstr ""
+msgstr "ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯"
 
 #. MSG_BookmarkNotFound
 #: po/tmp/ap_String_Id.h.h:369
@@ -1365,17 +1365,17 @@ msgstr ""
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:529
 msgid "Cu&t"
-msgstr ""
+msgstr "åˆ‡ã‚Šå–ã‚Š(&T)"
 
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h.h:531
 msgid "Current Date"
-msgstr ""
+msgstr "ç¾åœ¨ã®æ—¥ä»˜"
 
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h.h:533
 msgid "Current Font"
-msgstr ""
+msgstr "ç¾åœ¨ã®ãƒ•ã‚©ãƒ³ãƒˆ"
 
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h.h:535
@@ -1395,17 +1395,17 @@ msgstr ""
 #. DLG_Styles_DefCurrent
 #: po/tmp/ap_String_Id.h.h:541
 msgid "Current Settings"
-msgstr ""
+msgstr "ç¾åœ¨ã®è¨­å®š"
 
 #. FIELD_Datetime_CurrentTime
 #: po/tmp/ap_String_Id.h.h:543
 msgid "Current Time"
-msgstr ""
+msgstr "ç¾åœ¨ã®æ™‚é–“"
 
 #. DLG_Options_Label_ViewCursorBlink
 #: po/tmp/ap_String_Id.h.h:545
 msgid "Cursor &blink"
-msgstr ""
+msgstr "ã‚«ãƒ¼ã‚½ãƒ«ã®ç‚¹æ»…(&B)"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h.h:547
@@ -1430,7 +1430,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:555
 msgid "Date and &Time"
-msgstr ""
+msgstr "æ—¥ä»˜ã¨æ™‚é–“(&T)"
 
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:557
@@ -1610,17 +1610,17 @@ msgstr ""
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:627
 msgid "E&xit"
-msgstr ""
+msgstr "çµ‚äº†(&E)"
 
 #. MENU_LABEL_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:629
 msgid "Edit Footer"
-msgstr ""
+msgstr "ãƒ•ãƒƒã‚¿ã®ç·¨é›†"
 
 #. MENU_LABEL_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:631
 msgid "Edit Header"
-msgstr ""
+msgstr "ãƒ˜ãƒƒãƒ€ã®ç·¨é›†"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:633
@@ -1748,7 +1748,7 @@ msgstr ""
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:679
 msgid "File Name"
-msgstr ""
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ«å"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:681
@@ -1781,7 +1781,7 @@ msgstr ""
 #. DLG_Styles_ModifyFont
 #: po/tmp/ap_String_Id.h.h:691 po/tmp/xap_String_Id.h.h:203
 msgid "Font"
-msgstr ""
+msgstr "ãƒ•ã‚©ãƒ³ãƒˆ"
 
 #. DLG_Lists_ButtonFont
 #: po/tmp/ap_String_Id.h.h:693
@@ -2542,12 +2542,12 @@ msgstr ""
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:989
 msgid "Page Set&up"
-msgstr ""
+msgstr "ãƒšãƒ¼ã‚¸ã®è¨­å®š(&U)"
 
 #. DLG_PageSetup_Title
 #: po/tmp/ap_String_Id.h.h:991
 msgid "Page Setup"
-msgstr ""
+msgstr "ãƒšãƒ¼ã‚¸ã®è¨­å®š"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h.h:993
@@ -2568,17 +2568,17 @@ msgstr ""
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h.h:999
 msgid "Paper Si&ze:"
-msgstr ""
+msgstr "ç”¨ç´™ã®å¤§ãã•(&Z)"
 
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h.h:1001
 msgid "Paper..."
-msgstr ""
+msgstr "ç”¨ç´™..."
 
 #. DLG_Para_ParaTitle
 #: po/tmp/ap_String_Id.h.h:1003
 msgid "Paragraph"
-msgstr ""
+msgstr "æ®µè½"
 
 #. FIELD_Numbers_ParaCount
 #: po/tmp/ap_String_Id.h.h:1005
@@ -2588,7 +2588,7 @@ msgstr ""
 #. DLG_Styles_ParaPrev
 #: po/tmp/ap_String_Id.h.h:1007
 msgid "Paragraph Preview"
-msgstr ""
+msgstr "æ®µè½ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼"
 
 #. DLG_WordCount_Paragraphs
 #: po/tmp/ap_String_Id.h.h:1009
@@ -2746,7 +2746,7 @@ msgstr ""
 #. MENU_LABEL_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1069
 msgid "Remove Header"
-msgstr ""
+msgstr "ãƒ˜ãƒƒãƒ€ã‚’é™¤å»"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h.h:1071
@@ -2766,12 +2766,12 @@ msgstr ""
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1077
 msgid "Replace"
-msgstr ""
+msgstr "ç½®æ›"
 
 #. DLG_FR_ReplaceAllButton
 #: po/tmp/ap_String_Id.h.h:1079
 msgid "Replace &All"
-msgstr ""
+msgstr "ã™ã¹ã¦ç½®æ›(&A)"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1081
@@ -2781,7 +2781,7 @@ msgstr ""
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1083
 msgid "Report a &Bug"
-msgstr ""
+msgstr "ãƒã‚°ã‚’å ±å‘Š(&B)"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1085
@@ -2854,7 +2854,7 @@ msgstr ""
 #. TabToggleRightTab
 #: po/tmp/ap_String_Id.h.h:1111
 msgid "Right Tab"
-msgstr ""
+msgstr "å³ã‚¿ãƒ–"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1113
@@ -2869,7 +2869,7 @@ msgstr ""
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1117
 msgid "S&cripts"
-msgstr ""
+msgstr "ã‚¹ã‚¯ãƒªãƒ—ãƒˆ(&C)"
 
 #. AUTOTEXT_MAIL_5
 #: po/tmp/ap_String_Id.h.h:1119
@@ -2879,7 +2879,7 @@ msgstr ""
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h.h:1121
 msgid "Sa&ve"
-msgstr ""
+msgstr "ä¿å­˜(&V)"
 
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1123
@@ -2894,12 +2894,12 @@ msgstr ""
 #. MENU_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1127
 msgid "Save &As"
-msgstr ""
+msgstr "åå‰ã‚’ä»˜ã‘ã¦ä¿å­˜(&A)"
 
 #. MENU_LABEL_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1129
 msgid "Save as &web"
-msgstr ""
+msgstr "Web ã¨ã—ã¦ä¿å­˜(&W)"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1131
@@ -3020,7 +3020,7 @@ msgstr ""
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1177
 msgid "Shortcut Key"
-msgstr ""
+msgstr "ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚­ãƒ¼"
 
 #. DLG_Options_Label_Show
 #: po/tmp/ap_String_Id.h.h:1179
@@ -3030,7 +3030,7 @@ msgstr ""
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1181
 msgid "Show &Ruler"
-msgstr ""
+msgstr "ãƒ«ãƒ¼ãƒ©ãƒ¼ã‚’è¡¨ç¤º(&R)"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1183
@@ -3100,7 +3100,7 @@ msgstr ""
 #. DLG_Options_TabLabel_Spelling
 #: po/tmp/ap_String_Id.h.h:1209
 msgid "Spelling"
-msgstr ""
+msgstr "ã‚¹ãƒšãƒ«"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1211
@@ -3115,12 +3115,12 @@ msgstr ""
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:1215
 msgid "St&yle"
-msgstr ""
+msgstr "ã‚¹ã‚¿ã‚¤ãƒ«(&Y)"
 
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:1217
 msgid "Standard Toolbar"
-msgstr ""
+msgstr "æ¨™æº–ãƒ„ãƒ¼ãƒ«ãƒãƒ¼"
 
 #. DLG_Lists_Star_List
 #: po/tmp/ap_String_Id.h.h:1219
@@ -3230,7 +3230,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1261
 msgid "Sy&mbol"
-msgstr ""
+msgstr "è¨˜å·(&M)"
 
 #. TabStopStatus
 #: po/tmp/ap_String_Id.h.h:1263
@@ -3296,7 +3296,7 @@ msgstr ""
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:1287
 msgid "The spelling check is complete."
-msgstr ""
+msgstr "ã‚¹ãƒšãƒ«ãƒã‚§ãƒƒã‚¯ãŒå®Œäº†ã—ã¾ã—ãŸã€‚"
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:1289
@@ -3739,7 +3739,7 @@ msgstr ""
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:41
 msgid "Afrikaans"
-msgstr "¥¢¥Õ¥ê¥«¡¼¥ó¥¹¸ì"
+msgstr "ã‚¢ãƒ•ãƒªã‚«ãƒ¼ãƒ³ã‚¹èª"
 
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:45
@@ -3759,47 +3759,47 @@ msgstr ""
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:53
 msgid "Arabic (Egypt)"
-msgstr "¥¢¥é¥Ó¥¢¸ì(¥¨¥¸¥×¥È)"
+msgstr "ã‚¢ãƒ©ãƒ“ã‚¢èª(ã‚¨ã‚¸ãƒ—ãƒˆ)"
 
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:55
 msgid "Arabic (Saudi Arabia)"
-msgstr "¥¢¥é¥Ó¥¢¸ì(¥µ¥¦¥¸¥¢¥é¥Ó¥¢)"
+msgstr "ã‚¢ãƒ©ãƒ“ã‚¢èª(ã‚µã‚¦ã‚¸ã‚¢ãƒ©ãƒ“ã‚¢)"
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:57
 msgid "Arabic, ISO-8859-6"
-msgstr "¥¢¥é¥Ó¥¢¸ì¡¢ISO-8859-6"
+msgstr "ã‚¢ãƒ©ãƒ“ã‚¢èªã€ISO-8859-6"
 
 #. ENC_ARAB_MAC
 #: po/tmp/xap_String_Id.h.h:59
 msgid "Arabic, Macintosh"
-msgstr "¥¢¥é¥Ó¥¢¸ì¡¢Macintosh"
+msgstr "ã‚¢ãƒ©ãƒ“ã‚¢èªã€Macintosh"
 
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:61
 msgid "Arabic, Windows Code Page 1256"
-msgstr "¥¢¥é¥Ó¥¢¸ì¡¢Windows ¥³¡¼¥É¥Ú¡¼¥¸ 1256"
+msgstr "ã‚¢ãƒ©ãƒ“ã‚¢èªã€Windows ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸ 1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:63
 msgid "Armenian"
-msgstr "¥¢¥ë¥á¥Ë¥¢¸ì"
+msgstr "ã‚¢ãƒ«ãƒ¡ãƒ‹ã‚¢èª"
 
 #. ENC_ARME_ARMSCII
 #: po/tmp/xap_String_Id.h.h:65
 msgid "Armenian, ARMSCII-8"
-msgstr "¥¢¥ë¥á¥Ë¥¢¸ì¡¢ARMSCII-8"
+msgstr "ã‚¢ãƒ«ãƒ¡ãƒ‹ã‚¢èªã€ARMSCII-8"
 
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:67
 msgid "Assamese"
-msgstr "¥¢¥Ã¥µ¥à¸ì"
+msgstr "ã‚¢ãƒƒã‚µãƒ èª"
 
 #. DLG_PLUGIN_MANAGER_AUTHOR
 #: po/tmp/xap_String_Id.h.h:69
 msgid "Author"
-msgstr "Ãø¼Ô"
+msgstr "è‘—è€…"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:71
@@ -3809,12 +3809,12 @@ msgstr ""
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h.h:73
 msgid "Baltic, ISO-8859-4"
-msgstr "¥Ğ¥ë¥È¸ìÇÉ¡¢ISO-8859-4"
+msgstr "ãƒãƒ«ãƒˆèªæ´¾ã€ISO-8859-4"
 
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h.h:75
 msgid "Baltic, Windows Code Page 1257"
-msgstr "¥Ğ¥ë¥È¸ìÇÉ¡¢Windows ¥³¡¼¥É¥Ú¡¼¥¸ 1257"
+msgstr "ãƒãƒ«ãƒˆèªæ´¾ã€Windows ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸ 1257"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:77
@@ -3824,12 +3824,12 @@ msgstr ""
 #. DLG_UFS_StyleBold
 #: po/tmp/xap_String_Id.h.h:79
 msgid "Bold"
-msgstr ""
+msgstr "å¤ªå­—"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h.h:81
 msgid "Bold Italic"
-msgstr ""
+msgstr "å¤ªå­—ã‚¤ã‚¿ãƒªãƒƒã‚¯"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:85
@@ -3839,62 +3839,62 @@ msgstr ""
 #. DLG_Cancel
 #: po/tmp/xap_String_Id.h.h:87
 msgid "Cancel"
-msgstr ""
+msgstr "ä¸­æ­¢"
 
 #. LANG_CA_ES
 #: po/tmp/xap_String_Id.h.h:89
 msgid "Catalan"
-msgstr "¥«¥¿¥ë¡¼¥Ë¥ã¸ì"
+msgstr "ã‚«ã‚¿ãƒ«ãƒ¼ãƒ‹ãƒ£èª"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:91
 msgid "Central European, ISO-8859-2"
-msgstr ""
+msgstr "ä¸­æ¬§èªæ´¾ã€ISO-8859-2"
 
 #. ENC_CENT_MAC
 #: po/tmp/xap_String_Id.h.h:93
 msgid "Central European, Macintosh"
-msgstr ""
+msgstr "ä¸­æ¬§èªæ´¾ã€Macintosh"
 
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h.h:95
 msgid "Central European, Windows Code Page 1250"
-msgstr ""
+msgstr "ä¸­æ¬§èªæ´¾ã€Windows ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸ 1250"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:97
 msgid "Chinese (Hong Kong)"
-msgstr "Ãæ¹ñ¸ì(¹á¹Á)"
+msgstr "ä¸­å›½èª(é¦™æ¸¯)"
 
 #. LANG_ZH_CN
 #: po/tmp/xap_String_Id.h.h:99
 msgid "Chinese (PRC)"
-msgstr "Ãæ¹ñ¸ì(PRC)"
+msgstr "ä¸­å›½èª(PRC)"
 
 #. LANG_ZH_SG
 #: po/tmp/xap_String_Id.h.h:101
 msgid "Chinese (Singapore)"
-msgstr "Ãæ¹ñ¸ì(¥·¥ó¥¬¥İ¡¼¥ë)"
+msgstr "ä¸­å›½èª(ã‚·ãƒ³ã‚¬ãƒãƒ¼ãƒ«)"
 
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:103
 msgid "Chinese (Taiwan)"
-msgstr "Ãæ¹ñ¸ì(ÂæÏÑ)"
+msgstr "ä¸­å›½èª(å°æ¹¾)"
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr "Ãæ¹ñ¸ì ´ÊÂÎ»ú¡¢EUC-CN (GB2312)"
+msgstr "ä¸­å›½èª ç°¡ä½“å­—ã€EUC-CN (GB2312)"
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:107
 msgid "Chinese Simplified, GB_2312-80"
-msgstr ""
+msgstr "ä¸­å›½èª ç°¡ä½“å­—ã€GB_2312-80"
 
 #. ENC_CHSI_HZ
 #: po/tmp/xap_String_Id.h.h:109
 msgid "Chinese Simplified, HZ"
-msgstr ""
+msgstr "ä¸­å›½èª ç°¡ä½“å­—ã€HZ"
 
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:111
@@ -3924,7 +3924,7 @@ msgstr ""
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:121
 msgid "Clip Art"
-msgstr "¥¯¥ê¥Ã¥×¥¢¡¼¥È"
+msgstr "ã‚¯ãƒªãƒƒãƒ—ã‚¢ãƒ¼ãƒˆ"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:123
@@ -4336,27 +4336,27 @@ msgstr ""
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:295
 msgid "Korean"
-msgstr ""
+msgstr "éŸ“å›½èª"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h.h:297
 msgid "Korean, EUC-KR"
-msgstr ""
+msgstr "éŸ“å›½èªã€EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h.h:299
 msgid "Korean, Johab"
-msgstr ""
+msgstr "éŸ“å›½èªã€Johab"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h.h:301
 msgid "Korean, KSC_5601"
-msgstr ""
+msgstr "éŸ“å›½èªã€KSC_5601"
 
 #. ENC_KORE_WIN
 #: po/tmp/xap_String_Id.h.h:303
 msgid "Korean, Windows Code Page 949"
-msgstr ""
+msgstr "éŸ“å›½èªã€Windows ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸ 949"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:307
@@ -4451,32 +4451,32 @@ msgstr ""
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:345
 msgid "Plugin List"
-msgstr ""
+msgstr "ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ãƒªã‚¹ãƒˆ"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h.h:347
 msgid "Polish"
-msgstr ""
+msgstr "ãƒãƒ¼ãƒ©ãƒ³ãƒ‰èª"
 
 #. LANG_PT_BR
 #: po/tmp/xap_String_Id.h.h:349
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "ãƒãƒ«ãƒˆã‚¬ãƒ«èª(ãƒ–ãƒ©ã‚¸ãƒ«)"
 
 #. LANG_PT_PT
 #: po/tmp/xap_String_Id.h.h:351
 msgid "Portuguese (Portugal)"
-msgstr ""
+msgstr "ãƒãƒ«ãƒˆã‚¬ãƒ«èª(ãƒãƒ«ãƒˆã‚¬ãƒ«)"
 
 #. DLG_IP_Activate_Label
 #: po/tmp/xap_String_Id.h.h:355
 msgid "Preview Picture"
-msgstr ""
+msgstr "ç”»åƒã®ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼"
 
 #. DLG_UP_PrintButton
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Print"
-msgstr ""
+msgstr "å°åˆ·"
 
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:359
@@ -4501,7 +4501,7 @@ msgstr ""
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h.h:367
 msgid "Printer"
-msgstr ""
+msgstr "ãƒ—ãƒªãƒ³ã‚¿"
 
 #. DLG_UP_PrinterCommand
 #: po/tmp/xap_String_Id.h.h:369
@@ -4521,12 +4521,12 @@ msgstr ""
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:375
 msgid "Romanian, Macintosh"
-msgstr ""
+msgstr "ãƒ«ãƒ¼ãƒãƒ‹ã‚¢èªã€Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:377
 msgid "Russian (Russia)"
-msgstr ""
+msgstr "ãƒ­ã‚·ã‚¢èª(ãƒ­ã‚·ã‚¢)"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:379
@@ -4536,7 +4536,7 @@ msgstr ""
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:381
 msgid "Save File As"
-msgstr ""
+msgstr "åå‰ã‚’ä»˜ã‘ã¦ä¿å­˜"
 
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:383
@@ -4546,17 +4546,17 @@ msgstr ""
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:385
 msgid "Script:"
-msgstr ""
+msgstr "ã‚¹ã‚¯ãƒªãƒ—ãƒˆ:"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:387
 msgid "Select Encoding:"
-msgstr ""
+msgstr "ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚’é¸æŠ"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:389
 msgid "Select Language:"
-msgstr ""
+msgstr "è¨€èªã‚’é¸æŠ"
 
 #. DLG_UP_Selection
 #: po/tmp/xap_String_Id.h.h:391
@@ -4581,12 +4581,12 @@ msgstr ""
 #. LANG_SK_SK
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Slovak"
-msgstr ""
+msgstr "ã‚¹ãƒ­ãƒ´ã‚¡ã‚­ã‚¢èª"
 
 #. LANG_SL_SI
 #: po/tmp/xap_String_Id.h.h:401
 msgid "Slovenian"
-msgstr ""
+msgstr "ã‚¹ãƒ­ãƒ´ã‚§ãƒ‹ã‚¢èª"
 
 #. DLG_UFS_SmallCapsCheck
 #: po/tmp/xap_String_Id.h.h:403
@@ -4596,12 +4596,12 @@ msgstr ""
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:405
 msgid "Spanish (Mexico)"
-msgstr ""
+msgstr "ã‚¹ãƒšã‚¤ãƒ³èª(ãƒ¡ã‚­ã‚·ã‚³)"
 
 #. LANG_ES_ES
 #: po/tmp/xap_String_Id.h.h:407
 msgid "Spanish (Spain)"
-msgstr ""
+msgstr "ã‚¹ãƒšã‚¤ãƒ³èª(ã‚¹ãƒšã‚¤ãƒ³)"
 
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/xap_String_Id.h.h:409
@@ -4611,7 +4611,7 @@ msgstr ""
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:413
 msgid "Swedish"
-msgstr ""
+msgstr "ã‚¹ã‚¦ã‚§ãƒ¼ãƒ‡ãƒ³èª"
 
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:415
@@ -4621,22 +4621,22 @@ msgstr ""
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:417
 msgid "Thai"
-msgstr ""
+msgstr "ã‚¿ã‚¤èª"
 
 #. ENC_THAI_MAC
 #: po/tmp/xap_String_Id.h.h:419
 msgid "Thai, Macintosh"
-msgstr ""
+msgstr "ã‚¿ã‚¤èªã€Macintosh"
 
 #. ENC_THAI_TIS
 #: po/tmp/xap_String_Id.h.h:421
 msgid "Thai, TIS-620"
-msgstr ""
+msgstr "ã‚¿ã‚¤èªã€TIS-620"
 
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h.h:423
 msgid "Thai, Windows Code Page 874"
-msgstr ""
+msgstr "ã‚¿ã‚¤èªã€Windows ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸ 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h.h:425
@@ -4657,7 +4657,7 @@ msgstr ""
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:433
 msgid "Turkish"
-msgstr ""
+msgstr "ãƒˆãƒ«ã‚³èª"
 
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h.h:435
@@ -4677,7 +4677,7 @@ msgstr ""
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:441
 msgid "US-ASCII"
-msgstr ""
+msgstr "US-ASCII"
 
 #. LANG_UK_UA
 #: po/tmp/xap_String_Id.h.h:443
@@ -4848,7 +4848,7 @@ msgstr ""
 #. DLG_Zoom_ZoomTitle
 #: po/tmp/xap_String_Id.h.h:511
 msgid "Zoom"
-msgstr ""
+msgstr "ã‚ºãƒ¼ãƒ "
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:513
@@ -4868,24 +4868,24 @@ msgstr ""
 #. DLG_Unit_cm
 #: po/tmp/xap_String_Id.h.h:519
 msgid "cm"
-msgstr ""
+msgstr "ã‚»ãƒ³ãƒãƒ¡ãƒ¼ãƒˆãƒ«"
 
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:521
 msgid "inch"
-msgstr ""
+msgstr "ã‚¤ãƒ³ãƒ"
 
 #. DLG_Unit_mm
 #: po/tmp/xap_String_Id.h.h:523
 msgid "mm"
-msgstr ""
+msgstr "ãƒŸãƒªãƒ¡ãƒ¼ãƒˆãƒ«"
 
 #. DLG_Unit_pico
 #: po/tmp/xap_String_Id.h.h:525
 msgid "pica"
-msgstr ""
+msgstr "ãƒ‘ã‚¤ã‚«"
 
 #. DLG_Unit_points
 #: po/tmp/xap_String_Id.h.h:527
 msgid "points"
-msgstr ""
+msgstr "ãƒã‚¤ãƒ³ãƒˆ"

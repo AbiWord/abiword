@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword VERSION\n"
 "POT-Creation-Date: 2002-02-06 19:09+0100\n"
-"PO-Revision-Date: 2002-01-29 11:40+0100\n"
+"PO-Revision-Date: 2002-02-25 11:40+0100\n"
 "Last-Translator: Radek Vybíral <Radek.Vybiral@vsb.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4287,7 +4287,7 @@ msgstr "Hinduj¹tina"
 #. LANG_HU_HU
 #: po/tmp/xap_String_Id.h.h:257
 msgid "Hungarian"
-msgstr "Madar¹tina"
+msgstr "Maïar¹tina"
 
 #. LANG_IS_IS
 #: po/tmp/xap_String_Id.h.h:259
