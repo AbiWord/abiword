@@ -1091,6 +1091,9 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 	pBlock->getAttrProp(&pBlockAP);
 
 	v.addItem(new _fmtPair("text-align",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("text-indent",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("margin-left",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("margin-right",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("line-height",NULL,pBlockAP,pSectionAP));

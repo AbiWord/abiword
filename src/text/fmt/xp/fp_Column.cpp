@@ -216,11 +216,13 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 	{
 		iHeight = pNewLine->getHeight();
 	}
+
+	fl_BlockLayout* pBL = pNewLine->getBlock();
 	
 	if (pAfterLine)
 	{
 		UT_ASSERT(m_iMaxHeight > 0);
-		UT_ASSERT(pAfterLine->isLastLineInBlock() || (pNewLine->getBlock() == pAfterLine->getBlock()));
+		UT_ASSERT(pAfterLine->isLastLineInBlock() || (pBL == pAfterLine->getBlock()));
 
 		UT_sint32 iMargin = pNewLine->getMarginBefore();
 		
@@ -249,7 +251,7 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 	else
 	{
 		UT_ASSERT(pNewLine->isFirstLineInBlock()
-				  || (getPrev() && getPrev()->getLastLine()->getBlock() == pNewLine->getBlock()));
+				  || (getPrev() && getPrev()->getLastLine()->getBlock() == pBL));
 		
 		m_vecLines.insertItemAt(pNewLine, 0);
 		pNewLine->setY(0);
@@ -260,7 +262,17 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 		}
 	}
 
-	pNewLine->setMaxWidth(getWidth());
+	UT_sint32 iBaseX = pBL->getLeftMargin();
+
+	if (pNewLine->isFirstLineInBlock())
+		iBaseX += pBL->getTextIndent();
+
+	pNewLine->setBaseX(iBaseX);
+
+	UT_sint32 iMaxWidth = getWidth();
+	iMaxWidth -= iBaseX + pBL->getRightMargin();
+
+	pNewLine->setMaxWidth(iMaxWidth);
 	pNewLine->setColumn(this);
 
 	return UT_TRUE;

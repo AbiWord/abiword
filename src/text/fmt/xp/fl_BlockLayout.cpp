@@ -64,6 +64,42 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 	setAttrPropIndex(indexAP);
 
+	_lookupProperties();
+
+	m_pPrev = pPrev;
+	if (m_pPrev)
+	{
+		m_pNext = pPrev->m_pNext;
+		m_pPrev->m_pNext = this;
+		if (m_pNext)
+		{
+			m_pNext->m_pPrev = this;
+		}
+	}
+	else
+	{
+		m_pNext = NULL;
+	}
+}
+
+fl_BlockLayout::~fl_BlockLayout()
+{
+	_destroySpellCheckLists();
+	_purgeLayout(UT_FALSE);
+}
+
+FL_DocLayout* fl_BlockLayout::getDocLayout()
+{
+	return m_pLayout;
+}
+
+fl_SectionLayout * fl_BlockLayout::getSectionLayout()
+{
+	return m_pSectionLayout;
+}
+
+void fl_BlockLayout::_lookupProperties(void)
+{
 	{
 		const char* pszOrphans = getProperty("orphans");
 		if (pszOrphans && pszOrphans[0])
@@ -99,37 +135,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	
 	m_iTopMargin = pG->convertDimension(getProperty("margin-top"));
 	m_iBottomMargin = pG->convertDimension(getProperty("margin-bottom"));
-	
-	m_pPrev = pPrev;
-	if (m_pPrev)
-	{
-		m_pNext = pPrev->m_pNext;
-		m_pPrev->m_pNext = this;
-		if (m_pNext)
-		{
-			m_pNext->m_pPrev = this;
-		}
-	}
-	else
-	{
-		m_pNext = NULL;
-	}
-}
-
-fl_BlockLayout::~fl_BlockLayout()
-{
-	_destroySpellCheckLists();
-	_purgeLayout(UT_FALSE);
-}
-
-FL_DocLayout* fl_BlockLayout::getDocLayout()
-{
-	return m_pLayout;
-}
-
-fl_SectionLayout * fl_BlockLayout::getSectionLayout()
-{
-	return m_pSectionLayout;
+	m_iLeftMargin = pG->convertDimension(getProperty("margin-left"));
+	m_iRightMargin = pG->convertDimension(getProperty("margin-right"));
+	m_iTextIndent = pG->convertDimension(getProperty("text-indent"));
 }
 
 void fl_BlockLayout::_fixColumns(void)
@@ -528,16 +536,6 @@ UT_uint32 fl_BlockLayout::getPosition(UT_Bool bActualBlockPos) const
 UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
 {
 	return &m_gbCharWidths;
-}
-
-UT_sint32 fl_BlockLayout::getTopMargin(void) const
-{
-	return m_iTopMargin;
-}
-
-UT_sint32 fl_BlockLayout::getBottomMargin(void) const
-{
-	return m_iBottomMargin;
 }
 
 UT_uint32 fl_BlockLayout::getOrphansProperty(void) const
@@ -1798,6 +1796,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	pSL->removeBlock(this);
 
 	// update the display
+//	pPrevBL->_lookupProperties();	// TODO: this may be needed
 	pPrevBL->format();
 
 	pPrevBL->_destroySpellCheckLists();
@@ -1833,6 +1832,7 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 	// TODO: may want to figure out the specific change and do less work
 	// TODO right, don't reformat anything on a simple align operation.  Just erase, re-align, and draw.
+	_lookupProperties();
 	format();
 	m_pLayout->reformat();
 

@@ -48,6 +48,9 @@ static PP_Property _props[] =
 	{ "font-weight",			"normal",			1},
 	{ "margin-bottom",			"0in",				0},	// EWS -- I changed these to
 	{ "margin-top",				"0in",				0}, // zero to be consistent with other WPs
+	{ "margin-left",			"0in",				0},
+	{ "margin-right",			"0in",				0},
+	{ "text-indent",			"0in",				0},
 	{ "text-align",				"left",				1},
 	{ "text-decoration",		"none",				1},
 

@@ -98,10 +98,15 @@ public:
 	void dump();
 	void align();
 	void alignOneLine(fp_Line* pLine);
+
+	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
+	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
+	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
+	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
+	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
+
 	UT_uint32 getOrphansProperty(void) const;
 	UT_uint32 getWidowsProperty(void) const;
-	UT_sint32 getTopMargin(void) const;
-	UT_sint32 getBottomMargin(void) const;
 	void checkForWidowsAndOrphans(void);
 
 	void checkSpelling(void);
@@ -122,6 +127,7 @@ public:
 	*/
 
 protected:
+	void					_lookupProperties(void);
 	void			 		_fixColumns(void);
 	void					_purgeLayout(UT_Bool bVisible);
 	void					_removeLine(fp_Line*);
@@ -150,10 +156,14 @@ protected:
 
 	int						m_bFormatting;
 
+	// read-only caches of the underlying properties
 	UT_uint32				m_iOrphansProperty;
 	UT_uint32				m_iWidowsProperty;
 	UT_sint32				m_iTopMargin;
 	UT_sint32				m_iBottomMargin;
+	UT_sint32				m_iLeftMargin;
+	UT_sint32				m_iRightMargin;
+	UT_sint32				m_iTextIndent;
 
 	/*
 	  The following lists are used to keep track of the spell
