@@ -96,17 +96,9 @@
                        0)))
 #   endif
 
-#elif defined(HAVE_GNOME)
-#ifdef NDEBUG
-#include <assert.h>
-#define UT_ASSERT assert
-#else
-#include <glib.h>
-#define UT_ASSERT g_assert
-#endif
 #else
 
-	// A Unix variant.
+	// A Unix variant, possibly Gnome.
 
 #	ifdef NDEBUG
 
@@ -114,7 +106,8 @@
 		// So we let the system header files take care of it.
 
 #		include <assert.h>
-#		define UT_ASSERT assert
+#               include <glib.h>
+#		define UT_ASSERT g_assert
 
 #	else
 		// Otherwise, we want a slighly modified behavior.
