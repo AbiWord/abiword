@@ -302,6 +302,11 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 	// This is a static function.
 
 	XAP_Win32Dialog_About * pThis = (XAP_Win32Dialog_About *)GetWindowLong(hWnd,GWL_USERDATA);
+
+	if (!pThis)
+	{
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+	}
 	
 	switch (msg)
 	{
