@@ -22,13 +22,39 @@
 
 //////////////////////////////////////////////////////////////////////////////
 //
-//  The following class is an abstraction of a Text Iterator, which
-//  makes it possible to iterate sequentially over textual data
-//  without having to know anything about how that data might be stored
+//  UT_TextIterator class is an abstraction of a text iterator, making
+//  it possible to iterate sequentially over textual data without
+//  having to know anything about how that data might be stored.
 //
-//  this class is pure virtual, its sole purpose is to define generic interface
-//  so that we can pass a generic type into and out of functions
-//  Tomas, Nov 10, 2003
+//  This class is pure virtual, its sole purpose is to define generic
+//  interface so that we can pass a generic type into and out of
+//  functions. For example of implementation see pd_Iterator.h/cpp
+//
+//  Notes on imlementation
+//  ----------------------
+//  Any derrived classes should implement the individual functions to
+//  conform to the behaviour outlined in the comments in the class
+//  definion below.
+//  
+//  In addtion, the actual iterator implementations should provide a
+//  mechanism allowing to restrict upper and lower bounds (either at
+//  construction or subsequently), so that when passing iterators into
+//  functions it is not necessary to pass with them a length
+//  parameter. For example, PD_StruxIterator can provide access to the
+//  entire document from the start of the strux onwards; we might want
+//  to restrict this to the part that only belongs to a particular
+//  TextRun, etc.
+//  
+//  Notes on use
+//  ------------
+//  When passing iterators into functions, the iterator should be set
+//  at the position where processing is to start, i.e., the user is
+//  not expected to reposition the iterator before commencing
+//  processing. Also, the upper boundary should be restricted
+//  appropriately to indicate where the processing is to stop; this is
+//  preferable to passing an extra length parameter.
+//
+//  Tomas, November, 2003
 //
 
 //////////////////////////////////////////////////////////////////////
@@ -64,8 +90,8 @@ class pf_Frag;
 //                  operators (++, --, +=, -=) in this state will
 //                  lead to undefined results.
 //
-//     Error: any other error; this state is irrecoverable
-//                  
+//     Error: any other error; this state is irrecoverable, clean up
+//            and go home
 //
 enum UTIterStatus
 {
@@ -79,18 +105,20 @@ class ABI_EXPORT UT_TextIterator
 {
   public:
 
-	/////////////////////////////////////////
-	// data accessor
+	/////////////////////////////////////////////////////////////////////////
+	// data accessor; retrieves character at present position
+	// 
+	// NB: I.getChar() is functionally equivalent to I[getPosition()]
 	//
 	virtual UT_UCS4Char getChar() = 0;
 
 	/////////////////////////////////////////////////////////////////////////
-	// positon accessor; returns a value such that the following holds true:
-	// 
-	//     UT_TextIterator I(...);
-	//     UT_uint32 p = I.getPos();
-	//     UT_UCS4Char c = I[p]; // se below notes on operator []
-	//     I.getPosition() == p;
+	// positon accessor; returns a value representing current postion
+	//
+	// NB: The position can be expressed in an arbitrary coordinate
+	// system, typically one that makes sense to the actual
+	// implementation; when an iterator is passed into a function, the
+	// starting position might not be 0.
 	//
 	virtual UT_uint32   getPosition() const = 0;
 
@@ -100,29 +128,32 @@ class ABI_EXPORT UT_TextIterator
 	virtual void setPosition(UT_uint32 pos) = 0;
 
 	///////////////////////////////////////////////////////////////////
-	// return current state of the iterator (see definition of
-	// UTIterStatus above
+	// returns the current state of the iterator (see definition of
+	// UTIterStatus above)
 	//
 	virtual UTIterStatus getStatus() const = 0;
 
 	///////////////////////////////////////////////////////////////////
-	// make a copy of the iterator in its present state
+	// makes a copy of the iterator in its present state
 	//
 	virtual UT_TextIterator * makeCopy() = 0;
 
 	///////////////////////////////////////////////////////////////////
-	// increment operators -- we intentionally define prefix operators
-	// only, as post-fix versions provide no real advantage, and are
-	// less efficient
+	// increment operators
+	//
+	// NB: We intentionally define prefix operators only, as post-fix
+	// versions provide no real advantage, and are less efficient
+	//
 	virtual UT_TextIterator & operator ++ () = 0;
 	virtual UT_TextIterator & operator -- () = 0;
 	virtual UT_TextIterator & operator += (UT_sint32 i) = 0;
 	virtual UT_TextIterator & operator -= (UT_sint32 i) = 0;
 	
-	////////////////////////////////////////////////////////////////
-	// subscript operator;
+	////////////////////////////////////////////////////////////////////
+	// subscript operator []; repostions iterator and returns
+	// character at new postion
 	//
-	// NB: the operator physically advances the iterator to positon
+	// NB(1): the operator physically advances the iterator to positon
 	// pos before returning, i.e.,
 	//
 	//     UT_UCS4Char c = I[p];
@@ -132,8 +163,52 @@ class ABI_EXPORT UT_TextIterator
 	//     I.setPosition(p);
 	//     UT_UCS4Char c = I.getChar();
 	//
-	// are exactly equivalent
-	
+	// are exactly equivalent, leaving the iterator in the same state
+	//
+	// NB(2): if passed iterator as an argumenent in a function, you
+	// need to know the initial position to use this operator for
+	// processing which is relative to the state of iterator when
+	// passed to you, i.e., f1() and f2() below do exactly the same
+	// thing, f3() does not.
+	//
+	// function f1(UT_TextIterator & I, UT_uint32 len)
+	// {
+	//    UT_uint32 pos = I.getPosition();
+	//    
+	//    for(UT_uint32 i = pos; i < len + pos; i++)
+	//    {
+	//       UT_UCS4Char c = text[i];
+	//       // do something with c ...
+	//    }
+	// }
+	//
+	// function f2(UT_TextIterator & I, UT_uint32 len)
+	// {
+	//    for(UT_uint32 i = 0; i < len; ++i, ++I)
+	//    {
+	//       UT_UCS4Char c = text.getChar();
+	//       // do something with c ...
+	//    }
+	// }
+	//
+	// In contrast, f3() will start at the leftmost edge of the
+	// theoretical iterator range, which is probably not what you
+	// want; the actual implementation of the iterator can if fact
+	// restrict valid range of the subscript to an arbitrary range
+	// (i.e., I[0] may produce OutOfBounds state).
+	// 
+	// function f3(UT_TextIterator & I, UT_uint32 len)
+	// {
+	//    for(UT_uint32 i = 0; i < len; i++)
+	//    {
+	//       UT_UCS4Char c = text[i];
+	//       // do something with c ...
+	//    }
+	// }
+	//
+	// Bottom Line: unless told otherwise, assume that
+	// processing is to start from I.getPosition(), not 0.
+	//
 	virtual UT_UCS4Char   operator [](UT_uint32 pos) = 0;
 
 };
