@@ -1008,14 +1008,13 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_pie->write("<head>\n");
 	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=");
 	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
-	m_pie->write("\" />");
+	m_pie->write("\" />\n");
 	m_pie->write("<title>AbiWord Document</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!-- \n P { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");
 	m_pie->write("</style>\n");
 	m_pie->write("</head>\n");
 	m_pie->write("<body>\n");
-
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -1077,7 +1076,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				m_pie->write("\" src=\"");
 				m_pie->write(m_pie->getFileName());
 				m_pie->write(buf);
-				m_pie->write("\"/>\n");
+				m_pie->write("\" />\n");
 				return true;
 
 			case PTO_Field:

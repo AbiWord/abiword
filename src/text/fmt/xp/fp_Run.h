@@ -398,7 +398,7 @@ protected:
 	GR_Image*				m_pImage;
 };
 
-#define FPFIELD_MAX_LENGTH	63
+#define FPFIELD_MAX_LENGTH	127
 
 #define  _FIELD(type,desc,tag)  /*nothing*/
 #define  _FIELDTYPE(type,desc)  FPFIELDTYPE_##type,
@@ -449,7 +449,7 @@ class fp_FieldRun : public fp_Run
 {
 public:
 	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual ~fp_FieldRun() {};
+	virtual ~fp_FieldRun() {return;};
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
@@ -722,6 +722,42 @@ class fp_FieldBuildVersionRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class fp_FieldBuildOptionsRun : public fp_FieldRun
+{
+public:
+	fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class fp_FieldBuildTargetRun : public fp_FieldRun
+{
+public:
+	fp_FieldBuildTargetRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class fp_FieldBuildCompileDateRun : public fp_FieldRun
+{
+public:
+	fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class fp_FieldBuildCompileTimeRun : public fp_FieldRun
+{
+public:
+	fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }

@@ -2744,6 +2744,22 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	{
 	    pNewRun = new fp_FieldBuildIdRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
+	else if(UT_strcmp(pszType, "app_options") == 0)
+	  {
+	    pNewRun = new fp_FieldBuildOptionsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "app_target") == 0)
+	  {
+	    pNewRun = new fp_FieldBuildTargetRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "app_compiledate") == 0)
+	  {
+	    pNewRun = new fp_FieldBuildCompileDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "app_compiletime") == 0)
+	  {
+	    pNewRun = new fp_FieldBuildCompileTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
 	else
 	{
 		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

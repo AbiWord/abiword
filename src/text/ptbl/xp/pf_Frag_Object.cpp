@@ -152,6 +152,22 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 	  {
 	    fieldType = fd_Field::FD_App_ID;
 	  }
+	else if (0 == UT_strcmp(pszType, "app_options"))
+	  {
+	    fieldType = fd_Field::FD_App_Options;
+	  }
+	else if (0 == UT_strcmp(pszType, "app_target"))
+	  {
+	    fieldType = fd_Field::FD_App_Target;
+	  }
+	else if (0 == UT_strcmp(pszType, "app_compiledate"))
+	  {
+	    fieldType = fd_Field::FD_App_CompileDate;
+	  }
+	else if (0 == UT_strcmp(pszType, "app_compiletime"))
+	  {
+	    fieldType = fd_Field::FD_App_CompileTime;
+	  }
         else
         { 
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

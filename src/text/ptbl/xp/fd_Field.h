@@ -68,7 +68,12 @@ class fd_Field
 		FD_Doc_NbspCount,
 
 		FD_App_Version,
-		FD_App_ID
+		FD_App_ID,
+		FD_App_Options,
+		FD_App_Target,
+		FD_App_CompileTime,
+		FD_App_CompileDate,
+		__last_field_dont_use__
 	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);
     virtual                              ~fd_Field(void);

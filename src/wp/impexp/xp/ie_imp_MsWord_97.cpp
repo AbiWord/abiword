@@ -468,7 +468,7 @@ int IE_Imp_MsWord_97::_handleCommandField(char *command)
  * Caolan had this set to 40000 in wv/field.c
  * That seemed a bit excessive to me
  */
-#define FLD_SZ 4096
+#define FLD_SZ 40000
 static U16 command[FLD_SZ];
 static U16 argumen[FLD_SZ];
 
@@ -521,7 +521,7 @@ int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if (i >= FLD_SZ)
 	  {
 	    UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
-	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	    return 1;
 	  }
 

@@ -1557,17 +1557,6 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
-
-		/*
-		  TODO we might want special colors for fields.  We might also
-		  want the colors to be calculated on the fly instead of
-		  hard-coded.  See comment above in fp_TextRun::_draw*.
-		  For now, we are hard-coding a couple of shades of grey,
-		  with fields always being drawn a little darker than the
-		  surrounding text.
-		*/
-		UT_RGBColor clrSelBackground(112, 112, 112);
-		//		UT_RGBColor clrNormalBackground(220, 220, 220);
 		
 		UT_sint32 iFillTop = iYdraw;
 		UT_sint32 iFillHeight = getAscent() + getDescent();
@@ -1587,6 +1576,12 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 			&& (iSel2 > iRunBase)
 			)
 		{
+		  /*
+		    TODO: we might want special colors for fields.  We might 
+		    also want the colors to be calculated on the fly instead of
+		    hard-coded.  See comment above in fp_TextRun::_draw*.
+		  */
+		        UT_RGBColor clrSelBackground(112, 112, 112);
 			m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 		else
@@ -1989,10 +1984,8 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
-	XAP_App * pApp = _getAppFromBlk(m_pBL);
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, pApp->s_szBuild_ID);
-
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_ID);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2004,9 +1997,62 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
-	XAP_App * pApp = _getAppFromBlk(m_pBL);
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, pApp->s_szBuild_Version);
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Version);
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldBuildOptionsRun::fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldBuildOptionsRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Options);
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldBuildTargetRun::fp_FieldBuildTargetRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldBuildTargetRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Target);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldBuildCompileDateRun::fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldBuildCompileDateRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileDate);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldBuildCompileTimeRun::fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldBuildCompileTimeRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileTime);
 
 	return _setValue(sz_ucs_FieldValue);
 }
